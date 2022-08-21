@@ -1,0 +1,9 @@
+blank_issues_enabled: true
+version: 2.1
+contact_links:
+  - name: Supports
+    url: mailto:aaron.pham.2k21@gmail.com
+    about: Contact me if you have any question.
+  - name: Digital garden
+    url: aarnphm.xyz
+    about: Come and visit the place where I host my second brain.
