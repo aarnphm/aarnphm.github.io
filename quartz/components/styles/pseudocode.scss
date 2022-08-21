@@ -1,0 +1,135 @@
+@use "../../styles/base.scss";
+@use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
+
+.ps-root {
+  font-family: KaTeX_Main, "Times New Roman", Times, serif;
+  font-size: 1em;
+  font-weight: 100;
+  -webkit-font-smoothing: antialiased !important;
+  position: relative;
+
+  .ps-mathml {
+    clip: rect(1px, 1px, 1px, 1px);
+    border: 0;
+    height: 1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+
+  & > .clipboard-button {
+    top: 2rem;
+  }
+
+  &:hover > .clipboard-button {
+    opacity: 1;
+    transition: 0.2s;
+  }
+
+  .ps-clipboard {
+    .copy-icon {
+      display: inline;
+    }
+
+    .check-icon {
+      display: none;
+    }
+
+    &.check {
+      .copy-icon {
+        display: none;
+      }
+
+      .check-icon {
+        display: inline;
+      }
+    }
+  }
+
+  .ps-algorithm {
+    margin: 0.8em 0;
+    border-top: 3px solid #000;
+    border-bottom: 2px solid #000;
+
+    &.with-caption > .ps-line:first-child {
+      border-bottom: 2px solid #000;
+    }
+  }
+
+  .katex {
+    text-indent: 0;
+    font-size: 1em;
+  }
+
+  .MathJax,
+  .MathJax_CHTML {
+    text-indent: 0;
+    font-size: 1em !important;
+  }
+
+  .ps-line {
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+  }
+
+  .ps-funcname {
+    font-family: KaTeX_Main, "Times New Roman", Times, serif;
+    font-weight: 400;
+    font-variant: small-caps;
+    font-style: normal;
+    text-transform: none;
+  }
+
+  .ps-keyword {
+    font-family: KaTeX_Main, "Times New Roman", Times, serif;
+    font-weight: 700;
+    font-variant: normal;
+    font-style: normal;
+    text-transform: none;
+  }
+
+  .ps-comment {
+    font-family: KaTeX_Main, "Times New Roman", Times, serif;
+    font-weight: 400;
+    font-variant: normal;
+    font-style: normal;
+    text-transform: none;
+  }
+
+  .ps-linenum {
+    font-size: 0.8em;
+    line-height: 1em;
+    width: 1.6em;
+    text-align: right;
+    display: inline-block;
+    position: relative;
+    padding-right: 0.3em;
+  }
+
+  .ps-algorithmic {
+    &.with-linenum {
+      &.ps-line.ps-code {
+        text-indent: -1.6em;
+
+        & > span {
+          text-indent: 0;
+        }
+      }
+    }
+
+    &.with-scopelines {
+      & > div.ps-block {
+        border-left: none;
+      }
+
+      div.ps-block {
+        border-left-style: solid;
+        border-left-width: 0.1em;
+        padding-left: 0.6em;
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+public
+node_modules
+.quartz-cache
+.mypy_cache
+# content
+.venv
+safari.css

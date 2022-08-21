@@ -1,0 +1,18 @@
+{
+  "useLibraryCodeForTypes": true,
+  "typeCheckingMode": "strict",
+  "verboseOutput": true,
+  "define": {
+    "MYPY": true
+  },
+  "pythonVersion": "3.12",
+  "enableExperimentalFeatures": true,
+  "reportMissingImports": "warning",
+  "reportMissingTypeStubs": false,
+  "reportPrivateUsage": "warning",
+  "reportUnknownArgumentType": "warning",
+  "reportUnknownMemberType": "warning",
+  "reportUnknownVariableType": "warning",
+  "reportUnsupportedDunderAll": "warning",
+  "reportWildcardImportFromLibrary": "warning"
+}

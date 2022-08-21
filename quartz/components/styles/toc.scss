@@ -1,0 +1,191 @@
+@use "../../styles/variables.scss" as *;
+
+.toc {
+  display: flex;
+  flex-direction: column;
+}
+
+.page > #quartz-body.toc-hover {
+  .center,
+  .right.sidebar {
+    filter: blur(4px);
+    opacity: 0.2;
+    transition:
+      filter 0.3s ease,
+      opacity 0.3s ease;
+    pointer-events: none;
+  }
+}
+
+@keyframes fillExpand {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+nav#toc-vertical {
+  display: flex;
+  flex-direction: column;
+
+  position: fixed;
+  top: 50%;
+  left: 0;
+  transform: translateY(-100%);
+  cursor: pointer;
+  z-index: 1000;
+
+  button.toc-item {
+    display: inline-flex;
+    border: none;
+    background: inherit;
+    height: 0.6rem;
+    position: relative;
+    align-items: center;
+    cursor: pointer;
+
+    transform-origin: center;
+    transition: transform 0.3s ease;
+
+    &.in-view {
+      & > .fill {
+        opacity: 0.75;
+      }
+    }
+
+    & > .fill {
+      opacity: 0.35;
+      background-color: var(--dark);
+      height: 3px;
+      width: 100%;
+      min-width: 1rem;
+
+      transform: scaleX(0);
+      transform-origin: 0 0;
+      animation: fillExpand 0.5s forwards;
+      animation-delay: calc((var(--animation-order) - 1) * 0.1s + 0.5s);
+    }
+
+    & > .indicator {
+      display: none;
+      font-family: var(--bodyFont);
+      position: absolute;
+      padding-left: 90px;
+      white-space: nowrap;
+      left: 0;
+      top: -3px;
+      transform-origin: 0 50%;
+      height: 100%;
+    }
+
+    &:hover {
+      & > .indicator {
+        display: inline-block;
+      }
+    }
+  }
+}
+
+button#toc {
+  background-color: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+
+  & h3 {
+    font-size: 1rem;
+    display: inline-block;
+    margin: 0;
+  }
+}
+
+#toc-content {
+  list-style: none;
+  overflow: hidden;
+  overflow-y: auto;
+  max-height: 100%;
+  transition:
+    max-height 0.35s ease,
+    visibility 0s linear 0s;
+  position: relative;
+  visibility: visible;
+
+  & ul {
+    list-style: none;
+    padding: 0;
+    & > li > a {
+      color: var(--dark);
+      opacity: 0.35;
+      transition:
+        0.5s ease opacity,
+        0.3s ease color;
+
+      &.in-view {
+        opacity: 0.75;
+      }
+    }
+  }
+
+  > ul.overflow {
+    width: 100%;
+    position: relative;
+  }
+
+  @for $i from 0 through 6 {
+    .depth-#{$i} {
+      margin-left: calc(#{$i} * 1rem);
+      transition:
+        0.5s ease opacity,
+        0.3s ease color;
+
+      // Vertical line for depth > 0
+      @if $i > 0 {
+        position: relative;
+        --pseudo-opacity: 0.35;
+        --pseudo-bg: var(--gray);
+
+        &.in-view {
+          --pseudo-opacity: 0.75;
+        }
+
+        &::before {
+          content: "";
+          position: absolute;
+          left: -0.8rem;
+          top: 0;
+          bottom: 0;
+          width: 1px;
+          background-color: var(--pseudo-bg);
+          opacity: var(--pseudo-opacity);
+        }
+
+        & ~ .depth-#{$i - 1} {
+          &:first-of-type {
+            margin-top: 0.2rem;
+          }
+        }
+
+        &:last-of-type,
+        &:has(+ .depth-#{$i - 1}),
+        &:has(+ .depth-#{$i + 1}) {
+          &::after {
+            content: "";
+            position: absolute;
+            left: -0.8rem;
+            bottom: 0;
+            width: calc(#{$i+1} * 0.8rem);
+            height: 1px;
+            background-color: var(--pseudo-bg);
+            opacity: var(--pseudo-opacity);
+          }
+        }
+      }
+    }
+  }
+}

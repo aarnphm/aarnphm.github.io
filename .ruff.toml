@@ -1,0 +1,81 @@
+extend-include = ["*.ipynb"]
+line-length = 119
+indent-width = 2
+target-version = "py312"
+fix = true
+
+[format]
+preview = true
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = true
+
+
+[lint]
+select = [
+  "F",
+  "G",    # flake8-logging-format
+  "PERF", # perflint
+  "RUF",  # Ruff-specific rules
+  "W6",
+  "E71",
+  "E72",
+  "E112",
+  "E113",
+  # "E124",
+  "E203",
+  "E272",
+  # "E303",
+  # "E304",
+  # "E501",
+  # "E502",
+  "E702",
+  "E703",
+  "E731",
+  "W191",
+  "W291",
+  "W293",
+  "UP039", # unnecessary-class-parentheses
+]
+ignore = [
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
+  "ANN",     # Use mypy
+  "PLR2004", # magic value to use constant
+  "E501",    # ignore line length violation
+  "E401",    # ignore multiple line import
+  "E702",
+  "TCH004",  # don't move runtime import out, just warn about it
+  "RUF012",  # mutable attributes to be used with ClassVar
+  "E701",    # multiple statement on single line
+  "RUF012",
+  "ANN",     # Mypy is better at this
+  "E722",
+]
+
+[lint.flake8-type-checking]
+exempt-modules = ["typing", "typing_extensions"]
+runtime-evaluated-decorators = [
+  "attrs.define",
+  "attrs.frozen",
+  "trait",
+  "attr.attrs",
+  'attr.define',
+  '_attr.define',
+  'attr.frozen',
+]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.pycodestyle]
+ignore-overlong-task-comments = true
+max-line-length = 119
+
+[lint.flake8-quotes]
+avoid-escape = false
+inline-quotes = "single"
+multiline-quotes = "single"
+docstring-quotes = "single"

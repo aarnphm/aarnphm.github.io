@@ -1,0 +1,149 @@
+@use "../base.scss";
+@use "../variables.scss" as *;
+
+body[data-slug="index"] {
+  cursor: crosshair;
+  overflow-x: hidden;
+  background-image: url("/static/bg.webp");
+
+  & .page > #quartz-body {
+    & .center {
+      width: #{$pageWidth};
+      max-width: unset !important;
+      min-width: unset !important;
+      margin-top: 2rem !important;
+
+      & > *:not(hr) {
+        padding: 0 1rem;
+
+        &:last-child {
+          padding-bottom: 2rem;
+        }
+      }
+
+      @media all and ($desktop) {
+        margin-bottom: 2rem;
+      }
+
+      @media all and ($tablet) {
+        margin-right: auto !important;
+      }
+
+      @media all and ($mobile) {
+        width: initial;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+    }
+  }
+
+  & > * {
+    font-family: var(--bodyFont);
+  }
+
+  header {
+    display: flex !important;
+    margin-top: 1rem !important;
+    margin-bottom: 0.5rem !important;
+    border: none;
+  }
+
+  & > *,
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: normal;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "ITCGaramondStdLtCond", var(--bodyFont);
+    letter-spacing: -0.0275rem;
+  }
+
+  span[class*="rose"] {
+    color: rgb(215, 130, 126);
+    border-bottom: none;
+  }
+}
+
+[saved-theme="dark"] body[data-slug="index"] {
+  span[class*="rose"] {
+    color: rgb(235, 188, 186);
+  }
+}
+
+.notes-outer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+
+  #note-item {
+    .recent-links,
+    .notes-container {
+      display: flex;
+      font-family: "ITCGaramondStdLtCond", var(--bodyFont);
+    }
+
+    .recent-links {
+      flex-direction: column;
+    }
+  }
+}
+
+.landing-notes {
+  padding-inline-start: 0;
+  margin-left: 0;
+  font-variant-numeric: tabular-nums;
+  margin-top: 0;
+  margin-block-end: 0;
+
+  & li {
+    list-style: none;
+    padding: 0.15rem 0;
+    margin-bottom: 0.5rem;
+  }
+
+  & > li {
+    & .landing-meta {
+      display: grid;
+      grid-template-columns: 6rem auto;
+      gap: 2rem;
+      font-size: 1.272rem;
+
+      & > * {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+
+    & .landing-mspan {
+      color: var(--gray);
+      justify-self: start;
+    }
+  }
+}
+
+a.min-links {
+  color: inherit;
+  font-weight: inherit;
+  margin-left: unset !important;
+
+  &.internal {
+    background-color: inherit;
+    border-radius: 0;
+    padding: 0;
+  }
+}
+
+.clickable-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+}

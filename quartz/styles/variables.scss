@@ -1,0 +1,81 @@
+@use "sass:map";
+
+:root {
+  // See https://github.com/gwern/gwern.net/blob/9250d886d5470ca434be94f7189af76446ec5ccc/css/initial.css#L1771
+  --link-underline-background-color: var(--light);
+  --link-underline-gradient-line-color: currentColor;
+  --link-underline-background-image: url(data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIEBCSGBQA7);
+  --hr-highlighted-border-color: var(--gray);
+
+  // rose-pine-dawn
+  --base: #faf4ed;
+  --surface: var(--light);
+  --overlay: var(--lightgray);
+  --muted: var(--gray);
+  --subtle: var(--darkgray);
+  --text: var(--dark);
+  --rose: var(--secondary);
+  --love: var(--tertiary);
+  --gold: rgba(234, 157, 52, 1);
+  --pine: rgba(40, 105, 131, 1);
+  --foam: rgba(86, 148, 159, 1);
+  --iris: rgba(144, 122, 169, 1);
+}
+
+/**
+ * Animation-related
+ */
+$base-duration: 1;
+$row-delay: 0.4;
+$col-delay: 0.2;
+$rows: 4;
+$cols: 8;
+$max-delay: ($col-delay * $cols + $row-delay * $rows);
+
+/**
+ * Layout breakpoints
+ * $mobile: screen width below this value will use mobile styles
+ * $desktop: screen width above this value will use desktop styles
+ * Screen width between $mobile and $desktop width will use the tablet layout.
+ * assuming mobile < desktop
+ */
+$breakpoints: (
+  mobile: 780px,
+  desktop: 1200px,
+);
+
+$mobile: "(max-width: #{map.get($breakpoints, mobile)})";
+$tablet: "(min-width: #{map.get($breakpoints, mobile)}) and (max-width: #{map.get($breakpoints, desktop)})";
+$desktop: "(min-width: #{map.get($breakpoints, desktop)})";
+
+$pageWidth: #{map.get($breakpoints, mobile)};
+$sidePanelWidth: 280px; // 320px - 380px;
+$topSpacing: 3rem;
+$boldWeight: 700;
+$semiBoldWeight: 600;
+$normalWeight: 400;
+
+$mobileGrid: (
+  templateRows: "auto auto auto",
+  templateColumns: "minmax(auto, #{$pageWidth})",
+  rowGap: "5px",
+  columnGap: "5px",
+  templateAreas: '"grid-sidebar-left"\
+      "grid-header"\
+      "grid-sidebar-right"',
+);
+$tabletGrid: (
+  templateRows: "auto auto",
+  templateColumns: "#{$sidePanelWidth} minmax(auto, #{$pageWidth})",
+  rowGap: "5px",
+  columnGap: "5px",
+  templateAreas: '"grid-sidebar-left grid-header"\
+      "grid-sidebar-left grid-sidebar-right"',
+);
+$desktopGrid: (
+  templateRows: "auto",
+  templateColumns: "#{$sidePanelWidth} minmax(auto, #{$pageWidth}) #{$sidePanelWidth}",
+  rowGap: "5px",
+  columnGap: "5px",
+  templateAreas: '"grid-sidebar-left grid-header grid-sidebar-right"',
+);

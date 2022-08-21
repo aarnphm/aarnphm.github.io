@@ -1,0 +1,139 @@
+.collapsible-header {
+  position: relative;
+  margin-left: -9px;
+
+  &:first-child {
+    margin-top: 1rem;
+  }
+
+  &:last-child {
+    margin-bottom: 1rem;
+  }
+
+  // Indentation based on header level
+  &[data-level="2"] {
+    margin-left: 1rem;
+  }
+  &[data-level="3"] {
+    margin-left: 1.5rem;
+  }
+  &[data-level="4"] {
+    margin-left: 1.9rem;
+  }
+  &[data-level="5"] {
+    margin-left: 2.2rem;
+  }
+  &[data-level="6"] {
+    margin-left: 2.4rem;
+  }
+
+  & .collapsed-dots {
+    display: none;
+  }
+
+  &.collapsed {
+    margin-bottom: 1rem;
+
+    & .collapsed-dots {
+      display: block;
+    }
+  }
+
+  .header-controls {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+
+    & .toggle-button {
+      grid-column: 1;
+    }
+  }
+
+  & .toggle-button {
+    background-color: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    padding: 0;
+    color: var(--dark);
+    display: inline-flex;
+    align-items: center;
+
+    &:hover {
+      .circle-icon {
+        display: none;
+      }
+
+      &[aria-expanded="true"] {
+        .collapse-icon {
+          display: block;
+        }
+        .expand-icon {
+          display: none;
+        }
+      }
+
+      &[aria-expanded="false"] {
+        .expand-icon {
+          display: block;
+        }
+        .collapse-icon {
+          display: none;
+        }
+      }
+    }
+  }
+
+  & .toggle-icons {
+    display: grid;
+    grid-template-columns: 1fr;
+
+    .circle-icon,
+    .expand-icon,
+    .collapse-icon {
+      opacity: 0.85;
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    // Default state shows circle
+    .circle-icon {
+      display: block;
+    }
+    .expand-icon,
+    .collapse-icon {
+      display: none;
+    }
+  }
+
+  &.collapsed {
+    :where(h1, h2, h3, h4, h5, h6):not(.popover *) {
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+
+  :where(h1, h2, h3, h4, h5, h6):not(.popover *) {
+    margin: 0;
+  }
+
+  // Content styles
+  .collapsible-header-content-outer {
+    padding-left: 9px;
+    padding-bottom: 9px;
+
+    .collapsible-header-content {
+      border-left: 1px solid var(--lightgray);
+      overflow: hidden;
+      padding-left: 9px;
+      max-height: none;
+
+      &.collapsed {
+        border-bottom: unset;
+        max-height: 0 !important;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+    }
+  }
+}

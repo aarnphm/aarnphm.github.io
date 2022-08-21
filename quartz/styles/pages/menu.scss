@@ -1,0 +1,112 @@
+@use "../base.scss";
+@use "../variables.scss" as *;
+@use "../mixin.scss" as *;
+
+body[data-menu="true"] {
+  text-align: right;
+  background-image: unset !important;
+
+  .text-highlight {
+    position: relative;
+    background-color: unset;
+
+    &::before {
+      content: "";
+      background-color: var(--tertiary);
+      z-index: -1;
+      width: calc(100% - 25px);
+      height: calc(1em - 15px);
+      margin-top: 0.4em;
+      padding: 0 5px;
+      transition: all 0.2s;
+      position: absolute;
+      left: 0.8rem;
+      top: 2px;
+      opacity: 0.7;
+    }
+  }
+
+  .center {
+    background-image: url("/static/menu.svg");
+    background-repeat: no-repeat;
+  }
+
+  @media all and not ($desktop) {
+    .page > #quartz-body {
+      & .sidebar.left,
+      & .sidebar.right {
+        display: none;
+      }
+    }
+  }
+
+  .menu {
+    padding-top: 6rem;
+  }
+
+  a.internal {
+    font-weight: inherit;
+    font-style: italic;
+    font-size: 1.272rem;
+
+    @include links;
+  }
+
+  h1,
+  h2,
+  h3,
+  footer {
+    font-family: "ITCGaramondStdLtCond", var(--bodyFont);
+    letter-spacing: -0.0275rem;
+    font-weight: normal;
+  }
+
+  h1,
+  h2 {
+    text-align: left;
+    position: relative;
+    margin: 3rem 0;
+  }
+
+  hr {
+    width: 100%;
+    margin: 4rem 0 2rem;
+
+    &::after {
+      content: "";
+    }
+  }
+
+  p {
+    font-style: italic;
+  }
+
+  footer {
+    width: unset;
+  }
+
+  a[role="anchor"] {
+    display: none;
+  }
+
+  @media all and ($desktop) {
+    .menu {
+      padding: 6rem 3rem;
+    }
+
+    h1,
+    h2 {
+      font-size: 2.0582rem;
+    }
+
+    h3 {
+      font-size: 1.618rem;
+    }
+  }
+
+  @media all and ($desktop) {
+    footer {
+      margin-bottom: 3rem;
+    }
+  }
+}
