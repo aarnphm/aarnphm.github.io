@@ -1,0 +1,39 @@
+// smooth grid-column transitions for header-content
+// the group pseudo-element handles position/size morphing automatically
+::view-transition-group(header-content) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+// reduce cross-fade intensity for cleaner layout morph
+::view-transition-old(header-content) {
+  animation: 0.25s cubic-bezier(0.19, 1, 0.22, 1) both fade-out;
+}
+
+::view-transition-new(header-content) {
+  animation: 0.25s 0.25s cubic-bezier(0.19, 1, 0.22, 1) both fade-in;
+}
+
+// ensure filters (like blur effects) work during view transitions
+// by preventing view-transition stacking contexts from isolating elements
+::view-transition-group(*) {
+  isolation: auto;
+}
+
+::view-transition-old(*),
+::view-transition-new(*) {
+  mix-blend-mode: normal;
+  isolation: auto;
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}

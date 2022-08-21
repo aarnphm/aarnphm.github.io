@@ -1,0 +1,17 @@
+{
+  "accentColor": "",
+  "cssTheme": "Minimal",
+  "interfaceFontFamily": "PP Neue Montreal,Berkeley Mono",
+  "textFontFamily": "Space Grotesk,Berkeley Mono,PP Neue Montreal,Darker Grotesque",
+  "monospaceFontFamily": "Berkeley Mono",
+  "baseFontSize": 16,
+  "translucency": false,
+  "showViewHeader": true,
+  "enabledCssSnippets": [
+    "snippet"
+  ],
+  "baseFontSizeAction": true,
+  "theme": "system",
+  "nativeMenus": true,
+  "showRibbon": false
+}

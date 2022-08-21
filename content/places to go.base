@@ -1,0 +1,54 @@
+filters:
+  and:
+    - categories.containsAny(link("places to go"))
+formulas:
+  Type icon: list(type)[0].asFile().properties.icon
+  Type color: list(type)[0].asFile().properties.color
+properties:
+  file.name:
+    displayName: Place
+  note.rating:
+    displayName: Rating
+  note.address:
+    displayName: Address
+  formula.Type color:
+    displayName: Type color
+views:
+  - type: map
+    name: map
+    order:
+      - file.name
+      - rating
+      - formula.Type color
+      - formula.Type icon
+    coordinates: note.coordinates
+    markerIcon: formula.Type icon
+    markerColor: formula.Type color
+    defaultZoom: 12
+    clustering: true
+    defaultCenter:
+      - 43.6485848
+      - -79.3745828
+  - type: map
+    name: globe
+    filters:
+      and:
+        - list(type).contains(this)
+    order:
+      - file.name
+      - address
+    coordinates: note.coordinates
+    markerIcon: formula.Type icon
+    markerColor: formula.Type color
+  - type: table
+    name: wip
+    groupBy:
+      property: type
+      direction: ASC
+    order:
+      - file.name
+      - rating
+      - address
+    coordinates: note.coordinates
+    markerIcon: formula.Type icon
+    markerColor: formula.Type color

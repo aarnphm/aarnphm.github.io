@@ -1,0 +1,16 @@
+---
+category: christopher nolan
+date: "2024-02-07"
+description: obsession calcified into ritual—two magicians destroying themselves for applause, each sacrifice more grotesque than the last.
+director: Christopher Nolan
+id: the-prestige
+modified: 2025-10-29 02:14:59 GMT-04:00
+posters: "[[movies/posters/the-prestige.jpg]]"
+status: recurring
+studio: christopher nolan
+tags:
+  - movies
+  - dir/christopher nolan
+title: The Prestige
+year: 2006
+---

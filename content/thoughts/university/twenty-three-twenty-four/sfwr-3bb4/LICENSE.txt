@@ -1,0 +1,37 @@
+The Notebook Licence 0.5
+
+You may copy and distribute only verbatim copies of this license document.
+
+This license establishes the terms under which a given free Notebook Collection
+may be copied, modified, or distributed. A notebook here consists of interleaved
+chunks of program text (source) and explaining prose. Uses include textbooks and
+documented software artifacts. Unlike with other forms of software, here a
+"binary" form of notebooks is not considered, as the presence of the source
+and the prose is essential.
+
+The intent of this license is that the Copyright Holder, i.e. the author,
+maintains artistic control over the development and distribution of the Notebook
+Collection while still keeping the Notebook Collection open-sourced. You may
+make arrangements outside of this license directly with the Copyright Holder if
+this license does not suit your proposed use.
+
+(1) You are permitted to use the unmodified version, i.e. as obtained from this
+repository, and you may create and use a modified version for any purpose.
+
+(2) The unmodified version or a modified version may only be distributed to a
+closed group, like a course or a project team. Neither the unmodified nor a
+modified version may be distributed openly by any means, be it on its own or as
+part of a larger package. You may distribute openly by any means references to
+this repository, from which the unmodified version may be obtained.
+
+(3) A closed distribution of a modified version must contain a verbatim copy of
+this license, must preserve mentions of the original Copyright Holder, and must
+document how it differs from the unmodified version.
+
+THE NOTEBOOK COLLECTION IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS "AS
+IS' AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES. THE IMPLIED WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT ARE
+DISCLAIMED TO THE EXTENT PERMITTED BY YOUR LOCAL LAW. UNLESS REQUIRED BY LAW, NO
+COPYRIGHT HOLDER OR CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE
+PACKAGE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
