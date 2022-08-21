@@ -1,0 +1,79 @@
+.telescopic-container {
+  --refresh-width: 12px;
+  --gap-width: 1.4px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  position: relative;
+  margin: 1rem 0;
+  left: calc(-2 * (var(--refresh-width) + var(--gap-width)));
+  width: calc(100% + 2 * (var(--refresh-width) + var(--gap-width)));
+  gap: var(--gap-width);
+
+  .expand,
+  .replay {
+    visibility: hidden;
+    transition: visibility 0.2s ease-in-out;
+  }
+
+  &:hover {
+    .expand,
+    .replay {
+      visibility: visible;
+    }
+  }
+}
+
+#telescope {
+  color: var(--dark);
+}
+
+#telescope#telescope blockquote {
+  margin-left: 0;
+  padding-left: 1rem;
+  border-left: 1px solid var(--telescope-text-color);
+  display: block;
+}
+
+#telescope#telescope hr {
+  border: 0.5px solid var(--telescope-text-color);
+  margin: 3px 0;
+  display: block;
+}
+
+#telescope .details {
+  display: inline;
+  padding: 0 3px;
+  margin: -1px;
+  box-shadow:
+    0px 1px 0px 1px var(--light) inset,
+    0px 1px 0px 2px var(--telescope-border) inset;
+  cursor: pointer;
+}
+
+#telescope .details.open {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  cursor: initial;
+}
+
+#telescope .details.open > .summary,
+#telescope .details.close > .expanded {
+  display: none;
+}
+
+#telescope .details.close:hover {
+  box-shadow:
+    0px 1px 0px 0px var(--light) inset,
+    0px 1px 0px 1px var(--telescope-border) inset;
+  border-bottom: 1px solid var(--telescope-border);
+}
+
+#telescope .details *,
+#telescope p * {
+  list-style: none;
+  display: inline;
+}

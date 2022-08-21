@@ -1,0 +1,38 @@
+License number:  0000000857
+Name:            Derek Lipiec
+Organization:    McMaster University
+
+Product code:     QLABS
+Product name:     Quanser Interactive Labs
+License type:     local
+Minimum version:  4.1.0.0
+Maximum version:  4.1.65535.65535
+Feature set:      1
+Is limited use:   no
+Number of uses:   1000
+Number of models: 10
+Does expire:      no
+Expiry date:      2023/1/31
+Serial number:    2183-8796-6756-3240
+
+Product code:     QUARC
+Product name:     QUARC
+License type:     network
+Minimum version:  4.1.0.0
+Maximum version:  4.1.65535.65535
+Feature set:      18036526331986947
+Is limited use:   no
+Number of uses:   1000
+Number of models: 150
+Does expire:      no
+Expiry date:      2023/2/3
+Serial number:    6183-8796-7202-1003
+
+
+License file contents:
+--------------------------------- begin: cut here --------------------------------
+# License file generated on 2022/02/03 at 16:39:46
+SERVER localhost
+
+FEATURE QLABS 9cfc107593f2c96482e20e6b4d1304b85f382d8928ccf5a2be657cc6851ff601e485280deb8af172c89b36d3d578
+--------------------------------- end: cut here --------------------------------

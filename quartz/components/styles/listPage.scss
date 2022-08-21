@@ -1,0 +1,235 @@
+@use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
+
+ul.section-ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+li.section-li {
+  border-top: 1px solid;
+  padding: calc(var(--kern) * 1.5) 4px;
+  transition: border-color 0.3s;
+
+  &:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  &:hover {
+    background: var(--lightgray);
+  }
+
+  &.fade-out + &.fade-out {
+    border-top-color: var(--gray-200);
+  }
+
+  &.fade-out {
+    & > .note-link {
+      color: var(--gray-200);
+    }
+
+    & .tag-highlights {
+      color: var(--gray-200);
+
+      li {
+        color: var(--gray-200);
+
+        &::after {
+          border-color: var(--gray-200);
+        }
+      }
+    }
+  }
+
+  .note-link {
+    display: block;
+    text-decoration: none;
+    transform: translateY(calc(var(--align-baseline) * -1));
+    transition: color 0.3s;
+    font-weight: $normalWeight;
+    color: inherit;
+    &:hover {
+      background: transparent;
+    }
+
+    &::before {
+      content: "";
+      display: block;
+      height: 0;
+      margin-top: calc(var(--align-cap-height) + var(--align-baseline));
+    }
+
+    --grid-multiplier: 8;
+
+    & > .note-grid {
+      column-gap: calc(var(--kern) * 0.5);
+      display: grid;
+      grid-template-columns: calc(var(--kern) * var(--grid-multiplier)) 1fr;
+      align-items: baseline;
+
+      @media all and ($desktop) {
+        &:has(.tag-highlights):not(.stacked-content *):not(.popover *) {
+          grid-template-columns: calc(var(--kern) * var(--grid-multiplier)) repeat(2, 1fr);
+        }
+      }
+
+      & > .tag-highlights {
+        display: flex;
+        transition: color 0.3s;
+        gap: calc(var(--kern) * 1);
+        flex-direction: row;
+        margin-block: 0;
+        padding-inline: 0;
+        list-style: none;
+        justify-content: flex-end;
+        padding-right: 0;
+        vertical-align: 0.15em;
+
+        .popover &,
+        .stacked-content & {
+          display: none;
+        }
+
+        @media all and ($tablet) {
+          display: none;
+        }
+
+        li {
+          transform-origin: center left;
+          padding: 0 0.7em;
+          position: relative;
+
+          @include tinyFonts;
+          font-family: var(--codeFont);
+
+          &::after {
+            content: "";
+            border: 1px solid;
+            border-radius: 0;
+            transition: border-color 0.3s;
+            inset: 0 0 -0.12em;
+            pointer-events: none;
+            position: absolute;
+          }
+        }
+      }
+
+      & > .meta {
+        --align-cap-height: -3.5px;
+        --align-baseline: -3.5px;
+        font-family: var(--codeFont);
+        @include tinyFonts;
+      }
+    }
+  }
+}
+
+.notes-list {
+  padding-right: calc(var(--kern) * 2);
+  margin-top: calc(var(--kern));
+
+  .popover-inner & {
+    padding-right: 0;
+    grid-column: -3/3;
+  }
+}
+
+@media all and ($mobile) {
+  .notes-list {
+    padding-right: 0;
+  }
+
+  .tag-highlights,
+  .notes-evergreen {
+    display: none !important;
+  }
+}
+
+.notes-evergreen {
+  grid-column: 8/10;
+  display: flex;
+  flex-direction: column;
+  padding-left: calc(var(--kern) * 2);
+}
+
+@media all and ($tablet) {
+  .notes-evergreen {
+    grid-column: 8/-3;
+  }
+}
+
+.folder-layout {
+  &--et-a,
+  &--a-l {
+    grid-column: 5/10;
+  }
+
+  &--et-a {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "list evergreen"
+      "article article";
+    column-gap: calc(var(--kern) * 3);
+
+    .folder-layout--list {
+      grid-area: list;
+      height: fit-content;
+    }
+
+    .folder-layout--evergreen {
+      grid-area: evergreen;
+      grid-column: auto;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--kern) * 2);
+      height: 100%;
+    }
+
+    .folder-layout--article {
+      grid-area: article;
+      margin: 0;
+    }
+
+    .note-tags {
+      margin-top: calc(var(--kern) * 2);
+    }
+
+    @media all and ($mobile) {
+      display: block;
+
+      .folder-layout--list {
+        padding-right: 0;
+      }
+
+      .folder-layout--evergreen {
+        display: none;
+      }
+    }
+  }
+
+  &--a-l {
+    display: flex;
+    gap: calc(var(--kern) * 3);
+    flex-direction: column;
+
+    .folder-layout--article {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+    }
+
+    section {
+      flex: 1;
+      min-width: 0;
+      padding-right: 0;
+    }
+
+    @media all and ($mobile) {
+      flex-direction: column;
+      gap: calc(var(--kern) * 2);
+    }
+  }
+}

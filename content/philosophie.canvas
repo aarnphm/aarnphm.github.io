@@ -1,0 +1,26 @@
+{
+	"nodes":[
+		{"id":"dc87a40a46e80ebc","x":760,"y":2080,"width":2880,"height":2260,"type":"group","label":"Metaphysics"},
+		{"id":"8233d289568327ec","type":"group","x":-600,"y":-580,"width":2800,"height":1500,"label":"L'existentialisme"},
+		{"id":"e0165401786f31f2","x":2540,"y":3040,"width":460,"height":920,"type":"group","label":"Capitalism and Schizophrenia"},
+		{"id":"f63032e5ca92c1f0","type":"text","text":"inquiry that explore individual's struggle to lead an [[thoughts/authentic|authentic life]] despite the apparent [[thoughts/Camus#the absurd man|absurdity]] of [[thoughts/existence|existence]]\n\nThe school of philosophy that emerged as a backdrop of WWII, where entire generation was confronted with the anxiety-provoking given of death, freedom, and meaninglessness.","x":-580,"y":-400,"width":250,"height":400},
+		{"id":"882f7a4405e37c43","type":"file","file":"thoughts/Camus.md","x":920,"y":-520,"width":400,"height":400},
+		{"id":"02d0db935e88a86d","type":"file","file":"thoughts/Existentialism.md","x":-120,"y":-420,"width":460,"height":440},
+		{"id":"57dc7e7efe90ccec","x":795,"y":340,"width":145,"height":60,"type":"text","text":"Foundations"},
+		{"id":"26fb3b432059da13","type":"file","file":"thoughts/Metaphysics.md","x":790,"y":2380,"width":400,"height":400},
+		{"id":"20557e572c26bb9f","x":2560,"y":2140,"width":400,"height":400,"type":"file","file":"library/Nietzsche and Philosophy.md"},
+		{"id":"71165f60f118a576","x":2560,"y":3540,"width":400,"height":400,"type":"file","file":"library/A Thousand Plateaus.md"},
+		{"id":"18bcc32ce4240244","x":2560,"y":3080,"width":400,"height":400,"type":"file","file":"library/Anti-Oedipus.md"},
+		{"id":"e2d90b7520dfdb42","type":"file","file":"thoughts/Giles Deleuze.md","x":1560,"y":2720,"width":400,"height":440},
+		{"id":"faae35c17725308d","type":"file","file":"thoughts/Nietzsche.md","x":1560,"y":400,"width":400,"height":400}
+	],
+	"edges":[
+		{"id":"ec768f511070be18","fromNode":"f63032e5ca92c1f0","fromSide":"right","toNode":"02d0db935e88a86d","toSide":"left"},
+		{"id":"ba9f728dd331eb28","fromNode":"02d0db935e88a86d","fromSide":"right","toNode":"882f7a4405e37c43","toSide":"left","label":"absurd hero"},
+		{"id":"3ad68aa96e2426c8","fromNode":"20557e572c26bb9f","fromSide":"left","toNode":"e2d90b7520dfdb42","toSide":"right","label":"formulation of multiplicity"},
+		{"id":"8337aad04ffeb1e1","fromNode":"faae35c17725308d","fromSide":"left","toNode":"57dc7e7efe90ccec","toSide":"right"},
+		{"id":"edeacf613071bae3","fromNode":"57dc7e7efe90ccec","fromSide":"left","toNode":"02d0db935e88a86d","toSide":"bottom"},
+		{"id":"023364a8b8a25a35","fromNode":"faae35c17725308d","fromSide":"bottom","toNode":"e2d90b7520dfdb42","toSide":"top"},
+		{"id":"21679d0fa78d5f2c","fromNode":"e0165401786f31f2","fromSide":"left","toNode":"e2d90b7520dfdb42","toSide":"right","label":"desiring productions\n\nspatio-temporal dynamisms"}
+	]
+}

@@ -1,0 +1,7 @@
+{
+  "openExternalURLs": true,
+  "enableAdblocking": true,
+  "searchEngine": "google",
+  "markdownPath": "thoughts/",
+  "homepage": "http://localhost:8080"
+}

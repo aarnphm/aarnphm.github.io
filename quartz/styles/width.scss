@@ -1,0 +1,14 @@
+@use "./variables.scss" as *;
+
+$width-step-size: 10;
+$width-step-count: 18;
+
+@media all and ($desktop) {
+  @for $i from 1 through $width-step-count {
+    $value: $i * $width-step-size;
+
+    .w-#{$value} {
+      width: #{$value}%;
+    }
+  }
+}

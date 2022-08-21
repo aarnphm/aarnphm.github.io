@@ -1,0 +1,88 @@
+@use "sass:map";
+@use "../variables.scss" as *;
+@use "../mixin.scss" as *;
+
+[data-slug="dating/slides"],
+[data-slug="dating"] {
+  section {
+    &[data-activities] {
+      &:first-of-type {
+        margin-top: 1rem;
+      }
+
+      > p:first-of-type:not(.popover *) {
+        font-size: 22.2763px; // follows h3
+        font-weight: $semiBoldWeight;
+        margin-top: 1rem !important;
+        font-family: var(--headerFont);
+      }
+
+      ul:not(.popover *),
+      ol:not(.popover *) {
+        list-style-type: none;
+      }
+
+      ol:not(.popover *) {
+        padding-inline-start: 0px;
+      }
+    }
+
+    &[data-compat] {
+      &:first-of-type {
+        margin-top: 1rem;
+      }
+
+      > p:first-of-type:not(.popover *) {
+        font-size: 22.2763px; // follows h3
+        font-weight: $semiBoldWeight;
+        margin-top: 1rem;
+        font-family: var(--headerFont);
+      }
+    }
+  }
+}
+
+[data-slug="dating/slides"] {
+  #tldr {
+    margin-top: 2rem;
+  }
+}
+
+[data-slug="dating"] {
+  #tldr {
+    border-left: unset;
+    border: 2px solid var(--iris);
+    position: relative;
+    background-color: var(--light);
+    margin: 3rem 0;
+
+    & > * {
+      padding: 0 2rem;
+    }
+
+    &::before {
+      content: "tldr";
+      position: absolute;
+      top: -12px;
+      left: 12px;
+      background-color: var(--light);
+      color: var(--gray);
+      font-size: 12px;
+      font-weight: bold;
+      padding: 4px 8px;
+      border: 1px solid var(--dark);
+    }
+
+    &::after {
+      content: "";
+      background-image: url("/static/dotted.svg");
+      background-repeat: repeat;
+      z-index: -10;
+      top: 0.5rem;
+      left: 0.5rem;
+      right: -0.5rem;
+      bottom: -0.5rem;
+      position: absolute;
+    }
+  }
+}

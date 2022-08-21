@@ -1,0 +1,58 @@
+footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+
+  font-family: var(--bodyFont);
+  font-size: 0.8rem;
+  font-style: normal;
+
+  p {
+    margin: 0;
+  }
+
+  menu {
+    display: flex;
+    flex-direction: row;
+    line-height: 0;
+    list-style: none;
+    gap: 1rem;
+    padding: 0;
+    margin: 0;
+    padding-inline-start: 0;
+
+    & > li {
+      font-size: 0.8rem;
+      list-style: none;
+      display: flex;
+      flex-direction: row;
+
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+
+      border: none !important;
+
+      & > * {
+        color: inherit;
+      }
+    }
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+    transition: none;
+    border-radius: 0;
+    background-color: inherit;
+  }
+}
+
+.poetry {
+  padding-top: 1rem;
+  border-top: 1px solid var(--darkgray);
+}

@@ -1,0 +1,118 @@
+@use "../../styles/variables.scss" as *;
+
+@keyframes dropin {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  1% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.popover {
+  z-index: 999;
+  position: fixed;
+  overflow: visible;
+  padding: 1rem;
+  left: 0;
+  top: 0;
+  will-change: transform;
+  visibility: hidden;
+  opacity: 0;
+
+  .grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .byline {
+    & > * {
+      &:last-child {
+        border-left: 1px solid var(--lightgray);
+      }
+    }
+
+    div.first,
+    menu.tags {
+      grid-column: 1 / 1 !important;
+    }
+
+    .content-meta {
+      grid-column: 2 / 2 !important;
+    }
+  }
+
+  & > .popover-inner {
+    position: relative;
+    width: 30rem;
+    max-height: 20rem;
+    padding: 0 1rem 1rem 1rem;
+    font-weight: initial;
+    font-style: initial;
+    line-height: normal;
+    font-size: initial;
+    font-family: var(--bodyFont);
+    border: 1px solid var(--lightgray);
+    border-radius: var(--border-radius);
+    background-color: var(--light);
+    box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
+    overflow: auto;
+    overscroll-behavior: contain;
+    white-space: normal;
+    user-select: none;
+    cursor: default;
+
+    footer {
+      display: none;
+    }
+  }
+
+  & > .popover-inner[data-content-type] {
+    &[data-content-type*="pdf"],
+    &[data-content-type*="image"] {
+      padding: 0;
+      max-height: 100%;
+    }
+
+    &[data-content-type*="image"] {
+      img {
+        margin: 0;
+        border-radius: 0;
+        display: block;
+      }
+    }
+
+    &[data-content-type*="pdf"] {
+      iframe {
+        width: 100%;
+      }
+    }
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  @media all and ($mobile) {
+    display: none !important;
+  }
+}
+
+.footnote-popover,
+.bib-popover {
+  color: var(--dark);
+
+  & > .popover-inner {
+    padding: 0.5rem 0.5rem 1rem;
+  }
+}
+
+.active-popover,
+.popover:hover {
+  opacity: 1;
+  visibility: visible;
+}

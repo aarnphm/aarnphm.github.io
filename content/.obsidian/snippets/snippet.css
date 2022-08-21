@@ -1,0 +1,84 @@
+:root {
+  color-scheme: light dark;
+  --link-underline-gradient-line-color: currentColor;
+
+  // rose-pine-dawn
+  --base: #faf4ed;
+  --surface: var(--light);
+  --overlay: var(--lightgray);
+  --muted: var(--gray);
+  --subtle: var(--darkgray);
+  --text: var(--dark);
+  --rose: rgb(209, 77, 65);
+  --love: rgb(218, 112, 44);
+  --lime: rgb(135, 154, 57);
+  --gold: rgb(208, 162, 21);
+  --pine: rgb(58, 169, 159);
+  --foam: rgb(67, 133, 190);
+  --iris: rgb(139, 126, 200);
+  --dag-highlights: var(--foam);
+  --gray-200: rgba(0, 0, 0, 0.2);
+  --rail-width: 1.6rem;
+
+  // fonts
+  --kern: 12px;
+  --border-radius: var(--kern);
+  --align-cap-height: -6px;
+  --align-baseline: -6px;
+  --font-size: 16px;
+  --line-height: 1.4;
+  --line-px: calc(var(--line-height) * var(--font-size));
+  --sidepanel-padding: 14px;
+
+  // telescope
+  --telescope-highlight: rgb(252, 193, 146);
+  --telescope-highlight-hover: rgb(249, 174, 119);
+  --telescope-text-color: var(--dark);
+  --telescope-border: #888;
+}
+
+span[class*="rose"] {
+  color: rgb(215, 130, 126);
+  border-bottom: none;
+}
+
+.markdown-preview-view {
+  -webkit-font-variant-ligatures: common-ligatures;
+  font-variant-ligatures: common-ligatures;
+}
+
+.grid-two {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr;
+  grid-column-gap: 32px;
+  grid-row-gap: 32px;
+}
+
+.grid-pos-1 { grid-area: 1 / 1 / 3 / 3; }
+.grid-pos-2 { grid-area: 1 / 2 / 3 / 3; }
+
+.nolist {
+  ul,
+  ol {
+    list-style-type: none;
+  }
+}
+
+.status-bar {
+  display: none;
+}
+
+.slip {
+  border-left: unset;
+  border: 2px solid var(--iris);
+  position: relative;
+  background-color: var(--light);
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+
+  & > * {
+    padding: 0 2rem;
+  }
+}
+

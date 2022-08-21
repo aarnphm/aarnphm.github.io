@@ -1,0 +1,56 @@
+.expand-button,
+.clipboard-button {
+  position: absolute;
+  display: flex;
+  float: right;
+  right: 0;
+  margin: 0.3rem;
+  color: var(--gray);
+  background-color: var(--light);
+  opacity: 0;
+  transition: 0.2s;
+
+  .copy-icon {
+    display: block;
+  }
+  .check-icon {
+    display: none;
+  }
+
+  &.check {
+    .check-icon {
+      display: block;
+    }
+    .copy-icon {
+      display: none;
+    }
+  }
+
+  & > svg {
+    fill: var(--light);
+    filter: contrast(0.3);
+  }
+
+  &:hover {
+    opacity: 1;
+    transition: 0.2s;
+    cursor: pointer;
+    border-color: var(--secondary);
+  }
+
+  &:focus {
+    outline: 0;
+  }
+}
+
+.expand-button {
+  right: 1.6rem; // (margin from copy * 2 + spacing)
+}
+
+pre:hover {
+  & > .expand-button,
+  & > .clipboard-button {
+    opacity: 1;
+    transition: 0.2s;
+  }
+}

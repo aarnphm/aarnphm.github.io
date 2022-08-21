@@ -1,0 +1,39 @@
+[project]
+name = "minigpt"
+version = "0.1.0"
+description = "minigpt, but with pure numpy, triton, cuda, jax, rust"
+readme = "index.md"
+requires-python = ">=3.11"
+dependencies = [
+  "flax>=0.11.2",
+  "jax>=0.7.1",
+  "jaxlib>=0.7.1",
+  "numpy>=2.3.3",
+  "torch>=2.8.0",
+  "tqdm>=4.67.1",
+  "transformers>=4.56.1",
+  "huggingface-hub[hf-xet]>=0.34.4",
+  "tokenizers>=0.22.0",
+  "datasets>=4.0.0",
+  "safetensors>=0.6.2",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.4.2"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+extend-include = ["*.ipynb"]
+preview = true
+line-length = 80
+indent-width = 2
+
+[tool.ruff.format]
+preview = true
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+docstring-code-format = true

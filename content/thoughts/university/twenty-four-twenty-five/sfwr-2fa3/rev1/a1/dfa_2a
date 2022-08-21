@@ -1,0 +1,15 @@
+digraph {
+	rankdir=LR
+	node [shape=circle]
+	q0 [label=q0]
+	q1 [label=q1 peripheries=2]
+	q2 [label=q2]
+	node [shape=none]
+	qi [label=""]
+	qi -> q0 [label=""]
+	q0 -> q1 [label=b]
+	q1 -> q1 [label=b]
+	q1 -> q2 [label=a]
+	q2 -> q1 [label=a]
+	q2 -> q2 [label=b]
+}

@@ -1,0 +1,28 @@
+1. Cross Compiler Prefix:
+
+ arm-nilrt-linux-gnueabi-
+
+2. Cross Compiler Path:
+
+C:\build\17.0\arm\sysroots\i686-nilrtsdk-mingw32\usr\bin\arm-nilrt-linux-gnueabi
+
+3. Additional Flags for Miscellaneous for Cross GCC Compiler:
+
+-mfpu=vfpv3 -mfloat-abi=softfp --sysroot=C:\build\17.0\arm\sysroots\cortexa9-vfpv3-nilrt-linux-gnueabi
+
+4. Linker Flag Miscellaneous for Cross GCC Linker:
+
+--sysroot=C:\build\17.0\arm\sysroots\cortexa9-vfpv3-nilrt-linux-gnueabi
+
+5. More Paths for C/C++ General:
+
+C:\build\17.0\arm\sysroots\cortexa9-vfpv3-nilrt-linux-gnueabi\usr\include\c++\4.9.2
+C:\build\17.0\arm\sysroots\cortexa9-vfpv3-nilrt-linux-gnueabi\usr\include\c++\4.9.2\arm-nilrt-linux-gnueabi
+C:\build\17.0\arm\sysroots\cortexa9-vfpv3-nilrt-linux-gnueabi\usr\include
+
+
+6. Additional Symbol for Cross GCC Compiler: (you can define this symbol in C/C++ file.
+But if you have defined this symbol in C source file, you do not need to, cannot,  add this symbol in Eclipse)
+
+_GNU_SOURCE
+

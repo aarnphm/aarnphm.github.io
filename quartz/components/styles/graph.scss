@@ -1,0 +1,15 @@
+@use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
+
+.graph {
+  & > .global-graph-outer {
+    @include containerPopover;
+
+    & > .global-graph-container {
+      height: 80vh;
+      width: 75%;
+
+      @include containerInner;
+    }
+  }
+}
