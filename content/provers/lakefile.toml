@@ -1,0 +1,10 @@
+name = "provers"
+version = "0.1.0"
+defaultTargets = ["provers"]
+
+[[lean_lib]]
+name = "Provers"
+
+[[lean_exe]]
+name = "provers"
+root = "Main"

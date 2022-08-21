@@ -1,0 +1,34 @@
+@use "../../styles/variables.scss" as *;
+
+.seealso-tree {
+  grid-column: 8/11;
+
+  @media all and ($tablet) {
+    grid-column: 6/-3;
+  }
+
+  @media all and ($mobile) {
+    grid-column: 3/-3;
+    margin-top: 0.5rem;
+  }
+
+  h2 {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.6rem;
+    font-weight: 400;
+    text-transform: lowercase;
+    letter-spacing: 0.06em;
+    color: rgba(var(--darkgray), 0.6);
+  }
+
+  .seealso-tree-lines {
+    margin: 0;
+    padding: 0;
+    font-family: var(--codeFont);
+    font-size: 11.1px;
+    line-height: 2%;
+    white-space: pre;
+    margin-block: 0;
+    display: inline-block;
+  }
+}

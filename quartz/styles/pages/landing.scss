@@ -1,0 +1,156 @@
+@use "../base.scss";
+@use "../variables.scss" as *;
+
+body[data-slug="index"] {
+  overflow-x: hidden;
+  font-size: 1em;
+  text-transform: lowercase;
+
+  .popover-inner {
+    .side-col {
+      grid-column: 1/-1;
+    }
+  }
+
+  @media all and ($desktop) {
+    .main-col:not(.popover *) {
+      grid-column: 4/-4;
+    }
+
+    .side-col:not(.popover *) {
+      grid-column: 5/8;
+    }
+
+    .grid {
+      --grid-end: 0;
+    }
+  }
+
+  @media all and ($tablet) {
+    .main-col:not(.popover *) {
+      grid-column: 3/-4;
+    }
+
+    .side-col:not(.popover *) {
+      grid-column: 3/-3;
+    }
+  }
+
+  .page-content:not([data-plain="true"]) {
+    margin: 1rem 0;
+    border: 1px solid var(--gray);
+    padding: 0 2rem;
+  }
+
+  span[class*="rose"] {
+    background-color: rgb(215, 130, 126);
+    border-bottom: none;
+    color: var(--lightgray);
+  }
+}
+
+[saved-theme="dark"] body[data-slug="index"] {
+  span[class*="rose"] {
+    background-color: rgb(235, 188, 186);
+  }
+}
+
+.notes-outer {
+  display: grid;
+  grid-template-rows: repeat(auto-fit, minmax(300px, 1fr));
+
+  border: 0px solid var(--lightgray);
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+
+  section[data-note] {
+    .recent-links,
+    .notes-container {
+      display: flex;
+    }
+
+    .recent-links {
+      flex-direction: column;
+
+      a {
+        &:hover {
+          &.see-more {
+            background: var(--dark);
+            color: var(--light);
+          }
+        }
+      }
+    }
+  }
+}
+
+.hyperlinks {
+  border-top: 1px solid var(--lightgray);
+  margin-bottom: 1rem;
+}
+
+.landing-notes {
+  padding-inline-start: 0;
+  margin-left: 0;
+  margin-top: 8px;
+  margin-block-end: 0;
+
+  & li {
+    list-style: none;
+    padding: 0.15rem 0;
+    margin-bottom: 0.5rem;
+  }
+
+  & > li {
+    & .landing-meta {
+      display: grid;
+      grid-template-columns: 6rem auto;
+      gap: 2rem;
+
+      & > * {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-style: normal;
+      }
+    }
+
+    & .landing-mspan {
+      color: var(--gray);
+      justify-self: start;
+    }
+  }
+}
+
+a[data-skip-icons="true"] {
+  svg[data-icon] {
+    display: none;
+  }
+}
+
+a.min-links {
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+
+  &:hover {
+    .landing-mtitle {
+      text-decoration: underline;
+    }
+  }
+
+  &.internal {
+    background-color: unset;
+    border-radius: 0;
+    padding: 0;
+  }
+}
+
+.clickable-container {
+  display: flex;
+  gap: 0.5rem;
+  flex-flow: wrap;
+  align-items: baseline;
+  font-style: normal;
+  margin-top: 8px;
+}

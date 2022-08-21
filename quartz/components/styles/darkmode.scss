@@ -1,0 +1,95 @@
+.ti {
+  font-family: "tabler-icons" !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.darkmode {
+  cursor: pointer;
+  padding: 0;
+  background: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  color: var(--darkgray);
+  transition:
+    color 0.15s ease,
+    transform 0.15s ease;
+  user-select: none;
+  touch-action: manipulation;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--secondary);
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--secondary);
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+
+  & .ti {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    line-height: 1;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+
+    &::before {
+      display: block;
+    }
+  }
+}
+
+#light-toggle-system,
+#light-toggle-dark,
+#light-toggle-light {
+  display: none;
+}
+
+:root:not([data-theme-mode]) #light-toggle-system,
+:root[data-theme-mode="system"] #light-toggle-system,
+:root[data-theme-mode="dark"] #light-toggle-dark,
+:root[data-theme-mode="light"] #light-toggle-light {
+  display: inline-flex;
+}
+
+.ti-sun-moon::before {
+  content: "\f4a3";
+}
+
+.ti-sun-filled::before {
+  content: "\f6a9";
+}
+
+.ti-moon-filled::before {
+  content: "\f684";
+}
+
+:root[saved-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root[saved-theme="light"] {
+  color-scheme: light;
+}

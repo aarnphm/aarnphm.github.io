@@ -1,0 +1,10 @@
+{
+	"id": "obsidian-headings",
+	"name": "Obsidian Headings",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "Navigating Obsidians with tree-sitter style headings",
+	"author": "aarnphm",
+	"authorUrl": "https://aarnphm.xyz",
+	"isDesktopOnly": false
+}

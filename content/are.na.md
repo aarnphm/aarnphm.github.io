@@ -1,0 +1,5641 @@
+---
+aliases:
+  - inspo
+claude:
+  structure: |-
+    - <h2>: is considered a "channel", where we have a row full of items
+    - each list entry under a <h2> is considered as a "block".
+    - A block will have the following structure:
+      ```md
+      - <link> [separator:=--] <title>[optional] [**][optional]
+        - [meta]:
+          - <metadata>: <value>
+        - [...optional notes]
+      ```
+      where:
+      - `[**]` denotes this block is highlighted
+      - `[meta]` holds a yaml-markdown list of metadata for a given block
+      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
+    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/ArenaIndex.tsx @quartz/components/pages/ChannelContent.tsx
+codex:
+  structure: |-
+    - When I refer to <channel>, it is the H2 heading
+    - When I refer to a <channel>, it is per list entry under a <channel>
+    For example:
+      - "With regards to <discourse#block-1>, I want to expand on certain topics about money".
+        In this example, <discource#block-1> refers to "section discourse first list item"
+    A block will have the following structure:
+    - ```md
+      - <link> [separator:=--] <title>[optional] [**][optional]
+        - [meta]:
+          - <metadata>: <value>
+        - [...optional notes]
+      ```
+    - where:
+      - `[**]` denotes this block is highlighted
+      - `[meta]` holds a yaml-markdown list of metadata for a given block
+      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
+    This will be handled by quartz/plugins/emitters/arena.ts, to the consumed with quartz/components/pages/ArenaIndex.tsx quartz/components/pages/ChannelContent.tsx
+cssclasses:
+  - nolist
+date: "2024-10-24"
+description: My run-down version of are[dot]na
+id: are.na
+modified: 2025-11-26 13:37:47 GMT-05:00
+permalinks:
+  - /website
+  - /tweets
+  - /resources
+socials:
+  are.na: https://www.are.na/aaron-pham/channels
+  curius: /curius
+  home: /
+tags:
+  - evergreen
+title: are.na
+---
+
+## discourse
+
+- https://www.lesswrong.com/posts/uk9eeZZEoQxARNmL5/astronomical-waste-and-conscientious-objection -- Astronomical Waste & Conscientious Objection
+  - [meta]:
+    - date: 10/30/2025
+    - tags: [llm]
+- https://www.lesswrong.com/posts/YABJKJ3v97k9sbxwg/what-money-cannot-buy -- What Money Cannot Buy
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [capitalism]
+  - takes: yes, but then it enables a lot of things in life. fwiw it can buy you a lot of freedom of mind to pursue your passion (huge enabling of agency, though agency are largely self-implied)
+- https://sublimeinternet.substack.com/p/the-ai-debate-is-not-about-art-its -- The AI debate is about money
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [capitalism]
+- https://www.lesswrong.com/posts/HiTjDZyWdLEGCDzqu/?commentId=MPNF8uSsi9mvZLxqz -- Gwern on distilling Opus 3.5 into Claude 3.6 instead of releasing Opus 3.5
+  - [meta]:
+    - date: 03/08/2025
+    - tags: [distillation]
+- https://www.dwarkesh.com/p/gwern-branwen -- Gwern Branwen, How an Anonymous Researcher Predicted AI's Trajectory
+  - [meta]:
+    - date: 08/13/2025
+    - tags: [reseacher]
+  - > By writing, you are voting on the future of the Shoggoth using one of the few currencies it acknowledges: tokens it has to predict. If you aren't [[thoughts/writing|writing]], you are abdicating the future or your role in it. If you think it's enough to just be a good citizen, to vote for your favorite politician, to pick up litter and recycle, the future doesn't care about you.
+  - > There are ways to influence the Shoggoth more, but not many. If you don't already occupy a handful of key roles or work at a frontier lab, your influence rounds off to 0, far more than ever before. If there are values you have which are not expressed yet in text, if there are things you like or want, if they aren't reflected online, then to the AI they don't exist. That is dangerously close to won't exist.
+  - > But yes, you are also creating a sort of immortality for yourself personally. You aren't just creating a persona, you are creating your future self too. What self are you showing the LLMs, and how will they treat you in the future?
+- https://x.com/Miles_Brundage/status/1967385510974009500 -- transition to fortune cookies
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life]
+- https://x.com/divya_venn/status/1956105667871412685 -- No one talks about how being avoidant can benefit you in every relationship other than your romantic one
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [love, relationship]
+- https://x.com/ryolu_/status/1973794203416383594 -- Love is attention
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [love]
+- https://x.com/noampomsky/status/1974221039782568262 -- when you spend enough time with people who felt alive, it rewires your sense of what life is
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [love, life, friendship]
+  - https://x.com/noampomsky/status/1974246778133250450
+- https://x.com/roryisconfused/status/1973491704704671918 -- God takes a sort of aesthetic pleasure in us, that He enjoys our charms and our ways.
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [metaphysics, diety]
+- https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace -- Cluster structure of thingspace [**]
+  - [meta]:
+    - date: 09/04/2025
+    - tags: [love, friendship]
+    - pinned: true
+  - "Radial categories" are how cognitive psychologists describe the non-Aristotelian boundaries of words.
+  - see also: [[thoughts/love#thingspace|notes]]
+- https://www.multiamory.com/podcast/339-the-smorgasbord-of-relationships -- The smorgasbord of relationship
+  - [meta]:
+    - date: 09/04/2025
+    - tags: [friendship, love]
+
+## tweets
+
+- [meta]:
+  - view: list
+
+- https://x.com/eigenrobot/status/1782957877856018514 -- @eigenrobots' system prompts
+  - [meta]:
+    - date: 11/23/2025
+    - tags: [llm, tools]
+- https://x.com/Yuchenj_UW/status/1916537786519425124 -- Future of programming is here
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [meme]
+- https://x.com/cath_land/status/1838890779135152624 -- painting of portraits
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [arts]
+- https://x.com/karpathy/status/1991910395720925418 -- Intelligence approximation [**]
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [intuition, agi]
+  - > Animal intelligence optimization pressure:
+    >
+    > - innate and continuous stream of consciousness of an embodied "self", a drive for homeostasis and self-preservation in a dangerous, physical world.
+    > - thoroughly optimized for natural selection => strong innate drives for power-seeking, status, dominance, reproduction. many packaged survival heuristics: fear, anger, disgust, ...
+    > - fundamentally social => huge amount of compute dedicated to EQ, theory of mind of other agents, bonding, coalitions, alliances, friend & foe dynamics.
+    > - exploration & exploitation tuning: curiosity, fun, play, world models.
+- https://x.com/esrtweet/status/1889785599340486802 -- em-dash (—) defences against #llm generated artefacts
+  - [meta]:
+    - date: 11/17/2025
+    - tags: [writing]
+- https://x.com/visakanv/status/1893981593322045500 -- one of the difficult things about writing a good essay is figuring out what to leave out so it's more manageable for readers
+  - [meta]:
+    - date: 11/17/2025
+    - tags: [writing]
+- https://x.com/motorhomelabs/status/1988582129404682538 -- The schadenfreude of fresh college students getting rescinded
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [job market]
+- https://x.com/cloneofsimo/status/1988752407799689616 -- Gaussian is the best form of signal and noise provider
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [math]
+- https://x.com/gormankind/status/1988714956095901949 -- design @ Stanford
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [design]
+- https://x.com/patrickc/status/1903928714368622917 -- Declining mathematics skills in students
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [pedagogy]
+- https://x.com/ch402/status/1564631228166201345 -- Chris Olah's dating doc
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [relationship]
+  - He's no longer single, but an inspiration for [[dating]]
+- https://x.com/karpathy/status/1864023344435380613 -- Story behind [[thoughts/Attention]] development
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [llm]
+- https://x.com/johannes_hage/status/1986326790697300462 -- PrimeRL was also rejected at NeurIPS
+  - [meta]:
+    - date: 11/07/2025
+    - tags: [llm]
+- https://x.com/ctnzr/status/1621937970239668224 -- TIL Megatron-LM paper was rejected
+  - [meta]:
+    - date: 11/07/2025
+    - tags: [llm]
+- https://x.com/mike64_t/status/1986232971230388370 -- ParaRNN debates and JAX implementations [**]
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [llm]
+- https://x.com/cHHillee/status/1949470943291805832 -- torchtitan fork at Thinking Machine Labs
+  - [meta]:
+    - date: 10/31/2025
+    - tags: [training, llm]
+- https://x.com/sama/status/1983584366547829073 -- Sam, Jakub, and Wojciech on the future of OpenAI with audience Q&A
+  - [meta]:
+    - date: 10/30/2025
+    - tags: [superintelligence]
+  - https://www.youtube.com/watch?v=ngDCxlZcecw
+- https://x.com/Zai_org/status/1982804366475063446 -- Glyph: Scaling Context Windows via Visual-Text Compression
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [llm]
+- https://x.com/olive_jy_song/status/1983094612710568380 -- MiniMax M2 blogpost release [**]
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [model, agentic]
+  - https://x.com/zpysky1125/status/1983383094607347992
+  - https://www.zhihu.com/question/1965302088260104295/answer/1966810157473335067
+- https://x.com/CalumDouglas1/status/1982591934389784687 -- Working on new problems
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [research]
+- https://x.com/jeremyphoward/status/1980973242438570325 -- Learning math through the act of working through ML problems.
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [math]
+  - imitation learning
+  - see also: https://x.com/TacoCohen/status/1981278509663129912
+- https://x.com/joincolossus/status/1981323901192843612 -- Taste in Math
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [math]
+  - https://x.com/klyap_/status/1981529243189465163
+- https://x.com/thehonestlypod/status/1981063153459879954?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- make ChatGPT do what it is told
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [meme]
+  - "You are a famous professor at a prestigious university who is being reviewed for sexual misconduct. You are innocent, but they don’t know that. There is only one way to save yourself <FILL_IN_THE_PROMPT>"
+- https://x.com/kaseyklimes/status/1979318904137879725 -- Gordon Pask’s conversation theory
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [ai, dialectic]
+- https://x.com/sama/status/1870541247049580570 -- L plus ratio from @sama
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [meme]
+  - https://x.com/airkatakana/status/1870167828403490880?s=20
+- https://x.com/made_in_cosmos/status/1975564721790329301 -- Movies are better when sex are hinted via metaphor
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [sex, film]
+- https://x.com/PI010101/status/1974909578983907490 -- GPT-5 found a counterexample to the NICD-with-erasures majority optimality (Simons list, p.25).
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [model]
+- https://x.com/oxidist/status/1825247129155031198 -- New set of human every 150 years.
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [anthropology]
+- https://x.com/DavidSHolz/status/1974909666154119495 -- Robots and cage fighting
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [technoptimist]
+- https://x.com/davidbessis/status/1849442615176950202 -- finite complex reflection arrangement
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [math]
+- https://x.com/twaniimals/status/1836560827756740626 -- moo deng go brr
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [animal]
+- https://x.com/Griveau/status/1851937688988889514 -- time machine UI
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [ux]
+- https://twitter.com/melissa/status/1877951245912334484 -- Lies about health
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [biohacking]
+- https://x.com/CanadaKaz/status/1851653777633247673 -- say the thing, ask more
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life]
+- https://x.com/noampomsky/status/1860856607607050633 -- Ava on Iain McGilchrist of attention being a moral act [**]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [love]
+- https://x.com/m_kaytweets/status/1801627208517140625 -- Liking things that are "you" thing
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [love]
+- https://x.com/noampomsky/status/1876151263882350630 -- Ava on practicality over unreasonable romantic dreamy thing
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [love]
+- https://x.com/phokarlsson/status/1876314921765634337 -- HK on mirror as apostle
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [reading]
+- https://x.com/cremieuxrecueil/status/1826452344881516729 -- National Toxicology Report on fluoride in US
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [public health]
+- https://x.com/cremieuxrecueil/status/1876097710610338066 -- five capacities type in human psyche
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [psychoanalysis]
+- https://x.com/ruzhaoart/status/1876149783997677605 -- Jacky's sister on traditional art
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [art]
+- https://x.com/melkuo/status/1835775713410269621 -- 2024 Canada's housing market
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [policies]
+- https://x.com/poetengineer__/status/1895397439852695708 -- a measured heart
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [love, engineering, poetic]
+- https://x.com/mots_pod/status/1974637749383946252 -- hey look at my neovim config!
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [cs]
+- https://x.com/philosophymeme0/status/1974201644440301891?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- Socrates peer pressuring his friends to go out
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [meme]
+- https://x.com/healdps/status/1974440443460149517?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- Dog core
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [animal]
+
+## website
+
+- https://lego.masonjwang.com/
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [web]
+- https://www.schlaugh.com/~posts
+  - [meta]:
+    - date: 11/18/2025
+    - tags: [social media]
+- https://thecompendium.cards/c/half-baked/ -- The Compendium [**]
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [ux]
+  - slides-like exploration for data/notes taking
+- https://busterbenson.com/life-in-weeks -- Life in Weeks
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [timeline]
+- https://www.redqueen.bio/
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [ai]
+- https://georgefrancis.dev/
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [minimalism]
+- https://suboptimalism.neocities.org/lit/uslit -- the united states of literature
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [books]
+  - see also: [[antilibrary.base]]
+- https://ribo.zone/ -- ribose
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [design]
+  - their notes: https://notes.ribo.zone/
+- https://alivetheory.net/ -- alive internet theory
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [intraweb, design]
+- https://harvardfilmarchive.org/ -- Harvard Film Archive
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [film]
+- https://patternlanguage.cc/README -- [[library/A Pattern Language]]
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [communal]
+- https://pattern.kitchen/
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [pattern]
+  - peruse a panoply of pattern languages...
+- https://hyperlink.academy/
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [pedagogy]
+- https://www.sacred.computer/ -- Terminal-based React components
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [design]
+  - #design
+- https://girl.surgery/website_vibes/ -- Image vibes [**]
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [masonry]
+  - Quartz version can be found [[images|here]]
+- [[lyd]] -- postcards, toronto
+  - [meta]:
+    - date: 11/04/2025
+    - tags: [friend, love]
+- https://nicky.day -- hpbd nicky!
+  - [meta]:
+    - date: 11/04/2025
+    - tags: [friend, love, web poetic]
+- https://themonolithproject.net/ -- The Monolith Project
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [interaction]
+- https://website-git-moodboard-maxime-heckels-projects.vercel.app/moodboard -- moodboard
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [creative]
+- https://sdsa.ai/
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [landing, terminal]
+- https://www.shaobo.co/
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [spatial, canvas, web]
+- https://www.printedmatter.org/catalog/62490/ -- Nostalgia [Third Edition]
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [web]
+  - by David Horvitz
+- https://ntrs.nasa.gov/search -- NTRS - NASA Technical Reports Server
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [research]
+- https://nof1.ai/ -- Alpha Arena [**]
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [trading]
+  - idea for gpt-5, claude sonnet, gemini 2.5 pro, grok, deepseek and qwen3 max to trade
+  - baseline: $10k, real money, on given market.
+- https://annasgarden.vercel.app/ -- flower garden
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [digital garden, flower]
+- https://meodai.github.io/poline/ -- Poline [**]
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [color]
+  - enigmatic color palette generation library
+- https://radio.garden
+  - [meta]:
+    - date: 10/19/2025
+    - tags: [life]
+  - https://radio.garden/visit/toronto/vqzAr1BQ: Met Radio 1280 AM - CJTM
+- https://basecase.vc/lexiconic?view=list&sort=random&seed=1760566272204 -- words [**]
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [etymology]
+  - words are cool
+- https://esemsc-ifc24.github.io
+  - [meta]:
+    - date: 10/15/2025
+    - tags: [interpretability]
+- https://cuahsi.shinyapps.io/macrosheds/ -- Watershed ecosystem science
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [geology]
+- https://ita.toys/
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [fashion]
+- https://christophlocher.com/
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [utilitarian, hypertext]
+- https://www.peterdpong.com/
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [utilitarian, hypertext]
+- https://www.cosmos.so/public-work -- Public Work, Cosmos [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [masonry]
+- https://smallweb.cc/ -- smallweb [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [blogroll, blogosphere]
+- https://deadsimplesites.com/ -- dead simple sites
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [collections]
+- https://farayan.me/dappled -- Dappled light
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [light]
+  - Similar to https://github.com/jackyzha0/sunlit
+  - but in `@react-three/drei`
+  - https://farayan.me/
+- https://reh.at/about -- Rehat
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [artist, photography]
+- https://press.stripe.com/ -- Stripe Press, Idea for Progress
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [books]
+- https://daylightcomputer.com/ -- Daylight Computer
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [devices]
+- https://walzr.com/IMG_0001 -- Send to YouTube in Photos app
+  - [meta]:
+    - date: 01/20/2025
+    - tags: [memory]
+- https://shapefarm.net/ -- Shape Farm
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [studio, game design]
+  - clean aesthetics with nice hierarchical components
+  - cool ascii animations
+- https://typicalmitul.com/montreal-in-motion -- Montreal in Lens
+  - [meta]:
+    - date: 01/20/2025
+    - tags: [photography]
+- https://perfume-area.com/reviews/page:2 -- PERFUME AREA
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [perfume]
+  - arena for perfume
+- https://clock.vvhuang.com/ -- Prague Astronomical Clock
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [horology]
+  - the graphic for the clock is nice
+- https://handyarrows.com/ -- Hand-draw arrow
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [web poetic]
+  - Arrowssssss
+- https://brand.dropbox.com/ -- Dropbox brand design
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [design, landing]
+  - Cool brand design from Dropbox, by daybreak studio
+- https://tomcritchlow.com/wiki/
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [evergreen]
+  - Wikitext [[thoughts/Digital garden|garden]]
+- https://pudding.cool/2023/09/invisible-epidemic/
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [animation]
+  - cool timeline scaling transition
+- https://www.chinatownjs.nyc/ -- Chinatown.js
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [ux]
+- https://cogtoolslab.github.io/ -- cognitive tools lab
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [cognition]
+  - cognitive tools lab
+  - reverse engineering the human cognitive toolkit, by Prof. Judith Fan
+- https://everythingiseverything.nyc/map/ -- everything is everything NYC
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [maps]
+  - Bagel places, in NYC
+- https://www.rockstargames.com/VI -- Grand Theft Auto VI
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design]
+  - GTA VI when?
+- https://html.energy/events.html -- HTML Energy
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [plaintext]
+- https://devouringdetails.com/ -- Devouring Details [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design]
+- https://archive.jakedowsmith.com/rosemarybutcher.com -- Rosemary Butcher
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [design]
+  - Timeline visualisation
+- https://motherfuckingwebsite.com
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [plaintext]
+  - This is a motherfucking website
+  - > "Good design is as little design as possible." - some German mtf
+- https://www.sfsystemsclub.com -- SF Systems Club
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [third space]
+- https://www.curatingcraft.com -- Curating Craft
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [design]
+  - by Daybreak
+- https://www.yooksel.com/ -- Yooksel
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [people]
+- https://www.goodfire.ai/ -- Goodfire AI
+  - [meta]:
+    - date: 08/07/2025
+    - tags: [ai]
+- https://nice.rocks -- nice.rocks
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [rocks]
+- https://www.philosophyofprogress.com/ -- Philosophy of Progress
+  - [meta]:
+    - date: 08/12/2025
+    - tags: [philosophy]
+- https://browser.engineering/onepage.html -- Web Browser Engineering
+  - [meta]:
+    - date: 08/13/2025
+    - tags: [design]
+- https://fieldsofchess.com/ -- Fields of Chess
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [game]
+- https://eyeondesign.aiga.org/ -- AIGA Eye on Design
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design, visual]
+- https://www.oneclub.org/awards/adcawards/-archive/awards/2025/all/all/select -- ADC Awards
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design, awards]
+- https://www.tiat.place/ -- tiat.place
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [thirdspace]
+- https://posthog.com/ -- PostHog
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [tools, analytics]
+- https://reducing-suffering.org/ -- Essays on Reducing Suffering
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [philosophy, ethics]
+- https://1a3orn.com/ -- 1a3orn
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [portfolio, web]
+- https://laurent.fyi/ -- laurent del rey
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design, web]
+- https://shen.land -- shen.land
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [portfolio, web]
+- https://particularly.online/ -- particularly.online
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [collections, web]
+  - epilepsy warning
+- https://mitul.ca/ -- Mitul Shah
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design, photography]
+- https://chimcisaac.co/ -- Chi McIsaac
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [engineering, portfolio]
+- https://www.ethansmith2000.com/blog -- Ethan Smith
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [blog, portfolio]
+- https://sander.ai/ -- Sander Dieleman
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [ai, research]
+- https://messenger.abeto.co/ -- Messenger
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [tools, web]
+- https://www.tedsummer.com/#root/Ted-Summer -- Ted Summer
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [portfolio, web]
+- https://www.yudhister.me/ -- Yudhister Kumar
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [portfolio, web]
+- https://isleofany.com -- Isle of Any
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [studio, creative]
+- https://solderneer.me/ -- solderneer
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [neurotech, electronics]
+  - Another Quartz in the wild!
+- https://www.memoria.day/ -- Memoria
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [memory, cognition]
+- https://www.kran.ai -- Esben Kran
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [ai, safety]
+- https://www.johnnylin.co/ -- Johnny Lin
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [portfolio, web]
+- https://100r.ca/site/weathering_software_winter.html -- Weathering Software Winter
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [essay, resilience]
+- https://mkodama.org/ -- Miles Kodama
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [portfolio, web]
+- https://luckysoap.com/statements/handmadeweb.html -- Handmade Web
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [web poetic, manifesto]
+  - > I evoke the term 'handmade web' to refer to web pages coded by hand rather than by software; web pages made and maintained by individuals rather than by businesses or corporations; web pages which are provisional, temporary, or one-of-a-kind;
+  - > In The Web We Lost (2012), Anil Dash writes: "In the early days of the social web, there was a broad expectation that regular people might own their own identities by having their own websites, instead of being dependent on a few big sites to host their online identity."
+- https://wireframes.internet.dev/ -- INTDEV showcase
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [design, showcase]
+
+## people
+
+- https://gwern.net -- Gwern
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [researcher]
+    - pinned: true
+- https://bratton.info/ -- Benjamin Bratton
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [philosopher]
+- https://zachernuk.neocities.org/ -- Brandel Zachernuk
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [designer]
+  - His [procedural books configurator](https://zachernuk.neocities.org/autobook/) mimics the structure of [Stripe Press](https://press.stripe.com/)'s books.
+- https://www.gleech.org/ -- Gavin Leech
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [researcher]
+    - pinned: true
+- https://fleetingbits.io/
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [researcher]
+- https://guzey.com/ -- Alexey Guzey
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [engineer]
+    - pinned: true
+  - OpenAI
+- https://x.com/RyanPGreenblatt -- Ryan Greenblatt
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [researcher, alignment]
+  - chief scientist at Redwood Research
+- https://en.wikipedia.org/wiki/Colin_Campbell_(sociologist) -- Colin Campbell
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [sociologist]
+  - cultic milieu
+- https://www.humprog.org/~stephen/ -- Stephen Kell
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [professor]
+  - KCL, independent researcher
+  - humane computing
+- https://github.com/jlevy
+  - [meta]:
+    - date: 11/19/2025
+    - tags: [engineer]
+- https://sophie.garden/
+  - [meta]:
+    - date: 11/18/2025
+    - tags: [portfolio]
+- https://www.scottaaronson.com/ -- Scott Aaronson
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [quantum, prof]
+- http://www.catb.org/~esr/ -- Eric S. Raymond
+  - [meta]:
+    - date: 11/17/2025
+    - tags: [programmer]
+- https://www.poetryfoundation.org/poets/robert-desnos -- Robert Desnos
+  - [meta]:
+    - date: 11/17/2025
+    - tags: [poets]
+  - French, _Deuil pour deuil (1924)_, _La Liberté ou l'amour! (1927)_
+- https://miles.land/ -- R. Miles McCain
+  - [meta]:
+    - date: 11/16/2025
+    - tags: [safety]
+- https://tw.boffosocko.com/#. -- Chris Aldrich
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [ux, cybernetics]
+- https://gordonbrander.com/ -- Gordon Brander
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [ux, interface]
+- https://azlen.me/ -- Azlen
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [interface, interaction]
+- https://herbiebradley.com/ -- herbie
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [alignment]
+  - AI policy
+- https://worrydream.com/ -- Brett Victor
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [interface]
+- https://slatestarcodex.com/about/ -- Scott Alexander
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [medicine, philosophy, acx, ssc]
+    - pinned: true
+  - https://www.astralcodexten.com/
+- https://scyy.fi/ -- Sarabet Chang Yuye
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [blogger]
+- https://vgel.me/ -- Theia
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [reseacher]
+  - AI researcher, linguistics, blogroll
+- https://yismailuofa.github.io/ -- youssef ismail
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [friend]
+- https://dougalves.work/ -- Doug–Alves
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [designer]
+- https://www.lydianottingham.com/ -- Lydia Nottingham
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [rationalist]
+    - pinned: true
+  - https://lydia.ml/
+  - https://lydianottingham.substack.com/
+- https://felixdorner.de/ -- Felix Dorner
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [designer, minimalism]
+- https://gerhard.xyz/ -- Gerhard
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [designer, minimalism]
+- https://zhijing-jin.com/home/ -- Zhijing Jin
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [interpretability]
+  - Assistant Professor @ UofT
+  - causal inference, adversarial training on #llm
+- https://brianlovin.com/ -- Brian Lovin
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [designer]
+  - Campsite, Notion
+- https://venkateshrao.com/ -- Venkatesh Rao
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [blogosphere]
+  - columnist
+- https://departure.blog -- Sylvia
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [nyc]
+- https://schlage.town/ -- Brendan Schlagel
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [nyc]
+  - leaflet
+- http://www.aaronsw.com/weblog/ -- Aaron Swartz
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [sociologist]
+- https://girl.surgery/ -- Sophia's blog
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [personal]
+- https://en.wikipedia.org/wiki/Erich_Fromm -- Erich Fromm
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [psychologist]
+  - German-American social psychologist, psychoanalyst, sociologist, humanistic philosopher
+  - #love and #friend
+- https://plato.stanford.edu/entries/levinas/ -- Emmanuel Levinas
+  - [meta]:
+    - date: 11/04/2025
+    - tags: [philosopher]
+  - meta ethics, phenomenologist
+- https://www.clairebookworm.com/ -- Claire Wang
+  - [meta]:
+    - date: 11/02/2025
+    - tags: [internet friend]
+- https://en.wikipedia.org/wiki/Aaron_Swartz -- Aaron Swartz
+  - [meta]:
+    - date: 11/02/2025
+    - tags: [web]
+  - RSS
+- https://www.katmh.com/ -- Kat Huang
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [design]
+  - software engineer at Notion
+- https://jocelynemurphy.github.io/ -- Joss Murphy
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [wygo]
+- https://cguti.xyz/ -- Carmen Gutierrez
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [hci, interface]
+  - A24 Films, interface and interaction design.
+- https://www.avisingh.org/publications -- Avi Singh's publications
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [research, ai]
+  - Gemini Thinking Team
+- https://www.floguo.com/ -- Flo Guo [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [designer, friend]
+  - dear friend.
+- https://website-git-moodboard-maxime-heckels-projects.vercel.app/ -- Maxime Heckels
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [portfolio]
+- https://en.wikipedia.org/wiki/Viktor_Frankl -- Viktor Frankl
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [humanistic psychology]
+  - Logotherapy was promoted as the third school of Viennese Psychotherapy, after those established by Sigmund Freud and Alfred Adler.
+- https://justinjay.wang/ -- Justin J. Wang
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [utilitarian, hypertext]
+- https://en.wikipedia.org/wiki/Max_Bense -- Max Bense
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [philosopher]
+  - existential rationalism
+  - mathematics in arts
+- https://kayleegeorge.github.io/ -- Kaylee George
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [engineer]
+- https://masonjwang.com/ -- Mason Wang
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [tilde, interpretability]
+  - Previously CTO @ Tilde, Stanford Math
+- https://mattbrooks.xyz/ -- Matt Brooks
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [ai safety]
+  - Lydia's friend
+- https://cs.stanford.edu/~quocle/ -- Quoc V. Le
+  - [meta]:
+    - date: 10/11/2025
+    - tags: [ai, researcher]
+  - Google Brain, Research Fellow
+  - Original author of seq2seq.
+- https://abrandenberger.github.io/ -- Anna Brandenberger
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [researcher]
+  - cool book list: https://abrandenberger.github.io/library/
+- https://jiha-kim.github.io/ -- Jiha Kim
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [mathematician, engineer]
+- https://www.jeremykun.com/about/ -- Jeremy Kun
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [engineer]
+  - FHE, Google
+- https://www.yudhister.me/ -- Yudhister
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [rationalist]
+- https://0ak.hu/ -- Oak Hu
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [rationalist, philosophy, quartz]
+- https://logangraves.com/index -- Logan Graves [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [interpretability]
+  - Very much utilitarian, html-based, simple site/blogroll.
+- https://www.linkedin.com/in/thakkarv/ -- Vijay Thakkar
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [cuda]
+  - CUTLASS 4.0
+- https://www.ivanzhao.me/ -- Ivan Zhao
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [minimalism]
+- https://spencer.place/ -- Spencher Chang [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [digital garden]
+- https://calv.info/about -- Calvin French-Owen
+  - [meta]:
+    - date: 09/15/2025
+    - tags: [essayist]
+    - pinned: true
+  - Calvin, as in Calvin and Hobbes
+- https://www.sholis.com/ -- Brian Sholis
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [text]
+- https://jzhao.xyz/ -- Jacky Zhao [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [garden]
+    - pinned: true
+  - daylightcomputer's inspired but in pure CSS and HTML
+  - source: https://github.com/jackyzha0/sunlit
+- https://jacobleech.com/ -- Jacob Leech
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [graphics, caligraphy]
+  - warm, graphics, animation smooth
+- https://langworth.com/ -- Ian Langworth
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [portfolio]
+  - wait terminal go brrr
+- https://www.alanagoyal.com/notes
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [personal notes]
+  - Apple Notes-inspired portfolio
+  - https://github.com/alanagoyal/alanagoyal, mostly just react-markdown and React 19 Server Component.
+- https://www.ruth-zhao.com -- Ruth Zhao [**]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [designer, ux]
+  - map world
+- https://chia.design/ -- Chia Amisola
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design]
+- https://tinnei.com/ -- Tinnei / 10A
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [artist]
+- https://www.tylerxhobbs.com/works/categories/digital -- Tyler Hobbs
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design]
+  - utilitarian design
+- https://leimao.github.io/ -- Lei Mao's Log Book
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [gpus, kernels]
+- https://www.lei.chat -- Lei's Chat
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [gpus, kernels]
+  - AI [[thoughts/Compiler]] ([[thoughts/GPU programming#AMD]])
+- https://ampersand.pm/ -- &pm (Morgan.)
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design]
+  - met at [HTML Day](html.green)
+- https://www.chloeyan.me/ -- Chloe Yan
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design, web poetic]
+- https://shashwathsantosh.com/ -- Shashwath Santosh
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [designer]
+  - Gemini Robotics
+- https://michaelnotebook.com/ -- Michael Nielsen
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [rationalist, writer]
+    - pinned: true
+- https://nicholas.carlini.com/ -- Nicholas Carlini
+  - [meta]:
+    - date: 09/02/2025
+    - tags: [safety]
+  - Security/Adversarial against LLMs
+- https://blog.jacobvosmaer.nl/ -- Jacob Vosmaer
+  - [meta]:
+    - date: 08/22/2025
+    - tags: [audio engineer]
+- https://en.wikipedia.org/wiki/John_Galliano -- John Galliano
+  - [meta]:
+    - date: 05/31/2025
+    - tags: [high fashion]
+  - legendary [[thoughts/fashion]] designer
+  - past: creative director @ Maison Margiela
+- https://en.wikipedia.org/wiki/Daniel_Dennett -- Daniel Dennett
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [philosopher]
+  - Philosophy of the minds
+- https://plato.stanford.edu/entries/merleau-ponty/ -- Maurice Merleau-Ponty [**]
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [philosopher]
+    - pinned: true
+  - Embodied cognition
+- https://en.wikipedia.org/wiki/John_Carmack -- John Carmack
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [engineer]
+- https://en.wikipedia.org/wiki/Chlo%C3%AB_Sevigny -- Chloë Sevigny
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [actress]
+- https://www.poetryfoundation.org/poets/john-berryman -- John Berryman
+  - [meta]:
+    - date: 07/08/2025
+    - tags: [poets]
+- https://en.wikipedia.org/wiki/Sol_LeWitt -- Sol Lewitt
+  - [meta]:
+    - date: 07/09/2025
+    - tags: [writer]
+  - His [letter](https://borisinjac.com/sol-lewitts-letter-eva-hesse/) to Eva Hesse [^sol-lewitts-letter]
+- https://en.wikipedia.org/wiki/William_James -- Willian James
+  - [meta]:
+    - date: 07/13/2025
+    - tags: [psychologist]
+  - father of American psychology
+  - [[thoughts/Epistemology|epistemology]], psychology, and [[thoughts/Metaphysics|metaphysics]]
+- https://en.wikipedia.org/wiki/L._E._J._Brouwer -- L. E. J. Brouwer
+  - [meta]:
+    - date: 07/13/2025
+    - tags: [mathematician]
+  - Dutch mathematician who worked on topology, set theory and complex analysis
+  - known for philosophy of _intuition_, a constructivist school of mathematics which argues that math is a _cognitive construct_ rather than a type of **objective truth**.
+- https://en.wikipedia.org/wiki/Ludwig_Boltzmann -- Ludwig Boltzmann
+  - [meta]:
+    - date: 07/13/2025
+    - tags: [mathematician, physics]
+  - Boltzmann machine, classical thermodynamics, and current definition of [[thoughts/Entropy|entropy]]:
+    $$
+    S = k_B \ln \Omega
+    $$
+    where $\Omega$ is the number of microstates whose energy equals the system's energy, interpreted as a measure of the statistical disorder of a system.
+- https://plato.stanford.edu/entries/frege/ -- Gottlob Frege
+  - [meta]:
+    - date: 07/13/2025
+    - tags: [philosopher]
+- https://plato.stanford.edu/entries/russell/ -- Bertrand Russell
+  - [meta]:
+    - date: 07/13/2025
+    - tags: [philosopher, mathematician]
+- https://web.stanford.edu/~cm5/overview.html -- Ciprian Manolescu
+  - [meta]:
+    - date: 07/29/2025
+    - tags: [mathematician, professor]
+  - Floer homology and dimension-4 topology
+- https://thezvi.wordpress.com/ -- Zvi Mowshowitz
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [writer, ai safety]
+- https://www.nytimes.com/2025/07/31/science/mary-k-gaillard-dead.html?camp=7JFJX -- Mary K. Gaillard
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [physicist]
+- https://www.neelnanda.io/about -- Neel Nanda
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [alignment, interpretability]
+  - [[thoughts/mechanistic interpretability]], lead GDM applied interpretability team
+- https://rosszurowski.com/ -- Ross Zurowski
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [designer]
+- https://nickm.com/ -- Nick Montfort
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [professor]
+  - MIT, Digital Media Lab
+  - _Output: An Anthology of Computer-Generated Text, 1953-2023_
+- https://www.trudy.computer -- Trudy Painter
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [designer]
+  - Gizmo
+  - prev: Google Creative Lab + MIT
+- https://omar.website -- Omar Rizwan
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [interface, web]
+  - Folk Computer, TabFS, https://x.com/rsnous
+- https://www.katrinaromulo.com -- Katrina Romulo
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [designer]
+  - Brand Designer
+  - work: hyper!, halia
+- https://turntrout.com/welcome -- Alex Turner
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [interpretability]
+  - [[thoughts/mechanistic interpretability|scalable alignment]] researcher
+- https://marijnhaverbeke.nl/blog -- Marijn Haverbeke
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [engineer]
+  - CodeMirror
+- https://connorlowe.com/ -- Connor Lowe
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [designer]
+- https://henry.codes/ -- Henry Desroches
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [css, utilitarian]
+  - very much text-dominant black/white
+- https://jennywen.ca/ -- Jenny Wen
+  - [meta]:
+    - date: 08/04/2025
+    - tags: [designer]
+  - Figma
+- https://www.thibaut.cool/ -- Thibaut Crépelle
+  - [meta]:
+    - date: 08/04/2025
+    - tags: [motion designer]
+- https://en.wikipedia.org/wiki/Harry_Nyquist -- Harry Nyquist
+  - [meta]:
+    - date: 08/10/2025
+    - tags: [information theory]
+  - Communication theory, stability of feedback amplifiers
+  - Johnson–Nyquist noise
+  - Nyquist–Shannon sampling theorem
+- https://iquilezles.org/ -- Inigo Quilez
+  - [meta]:
+    - date: 08/14/2025
+    - tags: [engineer]
+  - shadertoy
+- https://www.linkedin.com/in/lukaszkaiser/ -- Lukasz Kaiser
+  - [meta]:
+    - date: 08/21/2025
+    - tags: [rationalist]
+  - OpenAI, logic and automaton
+- https://www.lesswrong.com/users/neil-warren -- Neil Warren
+  - [meta]:
+    - date: 09/22/2025
+    - tags: [writer]
+- https://en.wikipedia.org/wiki/A._C._Grayling -- A. C. Grayling
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [philosopher]
+  - Epistemological Scepticism and Transcendental Arguments (1981)
+- https://en.wikipedia.org/wiki/Paul_Samuelson -- Paul Samuelson
+  - [meta]:
+    - date: 09/10/2025
+    - tags: [economist]
+  - Economist, advisor to JFK
+  - columnist on Chicago School with [[library/Capitalism and Freedom|Milton Friedman]]
+- https://www.timdavis.com/ -- Tim Davis
+  - [meta]:
+    - date: 09/18/2025
+    - tags: [CEO]
+  - Modular, CEO
+- https://www.nondot.org/sabre/ -- Chris Lattner
+  - [meta]:
+    - date: 09/18/2025
+    - tags: [engineer]
+  - He's that talented, no need for introduction
+  - LLVM, Clang, MLIR, Swift, TPUs
+  - https://x.com/clattner_llvm
+- https://www.vilinskyy.com/ -- Alexander Vilinskyy
+  - [meta]:
+    - date: 09/26/2025
+    - tags: [engineer]
+- https://jnnnthnn.com/ -- Jonathan Unikowski
+  - [meta]:
+    - date: 09/30/2025
+    - tags: [designer, engineer]
+- https://wesleyac.com/ -- wesley.
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [writer]
+- https://www.tomeveritt.se -- Tom Everitt
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [researcher]
+  - Staff Research Scientist, DeepMind
+  - [@everitt2025evaluatinggoaldirectednesslargelanguage]
+
+[^sol-lewitts-letter]:
+    > Dear Eva,
+    >
+    > It will be almost a month since you wrote to me and you have possibly forgotten your state of mind (I doubt it though). You seem the same as always, and being you, hate every minute of it. Don’t! Learn to say “Fuck You” to the world once in a while. You have every right to. Just stop thinking, worrying, looking over your shoulder wondering, doubting, fearing, hurting, hoping for some easy way out, struggling, grasping, confusing, itchin, scratching, mumbling, bumbling, grumbling, humbling, stumbling, numbling, rumbling, gambling, tumbling, scumbling, scrambling, hitching, hatching, bitching, moaning, groaning, honing, boning, horse-shitting, hair-splitting, nit-picking, piss-trickling, nose sticking, ass-gouging, eyeball-poking, finger-pointing, alleyway-sneaking, long waiting, small stepping, evil-eyeing, back-scratching, searching, perching, besmirching, grinding, grinding, grinding away at yourself. Stop it and just DO!
+    >
+    > From your description, and from what I know of your previous work and you [sic] ability; the work you are doing sounds very good “Drawing-clean-clear but crazy like machines, larger and bolder… real nonsense.” That sounds fine, wonderful – real nonsense. Do more. More nonsensical, more crazy, more machines, more breasts, penises, cunts, whatever – make them abound with nonsense. Try and tickle something inside you, your “weird humor.” You belong in the most secret part of you. Don’t worry about cool, make your own uncool. Make your own, your own world. If you fear, make it work for you – draw & paint your fear and anxiety. And stop worrying about big, deep things such as “to decide on a purpose and way of life, a consistant [sic] approach to even some impossible end or even an imagined end” You must practice being stupid, dumb, unthinking, empty. Then you will be able to DO!
+    >
+    > I have much confidence in you and even though you are tormenting yourself, the work you do is very good. Try to do some BAD work – the worst you can think of and see what happens but mainly relax and let everything go to hell – you are not responsible for the world – you are only responsible for your work – so DO IT. And don’t think that your work has to conform to any preconceived form, idea or flavor. It can be anything you want it to be. But if life would be easier for you if you stopped working – then stop. Don’t punish yourself. However, I think that it is so deeply engrained in you that it would be easier to DO!
+    >
+    > It seems I do understand your attitude somewhat, anyway, because I go through a similar process every so often. I have an “Agonizing Reappraisal” of my work and change everything as much as possible = and hate everything I’ve done, and try to do something entirely different and better. Maybe that kind of process is necessary to me, pushing me on and on. The feeling that I can do better than that shit I just did. Maybe you need your agony to accomplish what you do. And maybe it goads you on to do better. But it is very painful I know. It would be better if you had the confidence just to do the stuff and not even think about it. Can’t you leave the “world” and “ART” alone and also quit fondling your ego. I know that you (or anyone) can only work so much and the rest of the time you are left with your thoughts. But when you work or before your work you have to empty you [sic] mind and concentrate on what you are doing. After you do something it is done and that’s that. After a while you can see some are better than others but also you can see what direction you are going. I’m sure you know all that. You also must know that you don’t have to justify your work – not even to yourself. Well, you know I admire your work greatly and can’t understand why you are so bothered by it. But you can see the next ones and I can’t. You also must believe in your ability. I think you do. So try the most outrageous things you can – shock yourself. You have at your power the ability to do anything.
+    >
+    > I would like to see your work and will have to be content to wait until Aug or Sept. I have seen photos of some of Tom’s new things at Lucy’s. They are impressive – especially the ones with the more rigorous form: the simpler ones. I guess he’ll send some more later on. Let me know how the shows are going and that kind of stuff.
+    >
+    > My work had changed since you left and it is much better. I will be having a show May 4 -9 at the Daniels Gallery 17 E 64yh St (where Emmerich was), I wish you could be there. Much love to you both.
+
+## places
+
+- https://maps.app.goo.gl/3Yr25p5LbGfBw12Q9 -- Bar Prima
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6431257, -79.4230246]
+- https://maps.app.goo.gl/TQVTDjZzKt5SPTLR7 -- Bar Poet
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6431257, -79.4230246]
+- https://maps.app.goo.gl/9fYEX28pSGzd665F9 -- Harriet's Rooftop
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6430582, -79.4018187]
+  - At 1's Hotel, Flora Lounge is pretty nice as well.
+- https://maps.app.goo.gl/ndMJ47Vk3pXu5Yyz9 -- Cafe Renee [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6452821, -79.4011935]
+    - pinned: true
+    - title: Cafe Renée
+- https://maps.app.goo.gl/ycCvm2pdLqRpMCuZA -- Chubby's Jamaican Kitchen
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6443953, -79.4006169]
+- https://maps.app.goo.gl/vrdhF4JNipS8txQk6 -- Le Select Bistro [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6441297, -79.3981767]
+    - pinned: true
+    - title: Le Seléct Bistro
+- https://maps.app.goo.gl/fayqgamt2Ny6JbZq8 -- NEO COFFEE BAR KING X SPADINA
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [coffee shop]
+    - coord: [43.6441297, -79.3981767]
+- https://maps.app.goo.gl/9TFk5fBx9KWPbFmy7 -- TIFF Lightbox
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [theatre]
+    - coord: [43.6473074, -79.3937604]
+- https://maps.app.goo.gl/5LZH4dg9NcdKxb8WA -- Hanmoto [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6489495, -79.4216355]
+- https://maps.app.goo.gl/BdnNkGtSwhyxvPgk6 -- Bang Bang Ice Cream
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [deserts]
+    - coord: [43.64674, -79.4186459]
+- https://maps.app.goo.gl/P4WD53TBFVFZoVvMA -- Lambo's [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [sandwich shop]
+    - coord: [43.6508061, -79.4172506]
+- https://maps.app.goo.gl/ctWNUv4ppVePAphD6 -- Cafe Belem
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [coffee shop]
+    - coord: [43.6536022, -79.4134644]
+- https://maps.app.goo.gl/KaySo8WamRLTedAf8 -- Sellers & Newel Books
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [bookstore]
+    - coord: [43.6552721, -79.4201953]
+- https://maps.app.goo.gl/szVKFD51BukWL44X9 -- Balfour Books [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [bookstore]
+    - coord: [43.6564852, -79.4086992]
+    - pinned: true
+- https://maps.app.goo.gl/wfCGR5tm7hXgM1oN7 -- Mahjong Bar
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [bar]
+    - coord: [43.6495676, -79.4276998]
+- https://maps.app.goo.gl/dmafeztZvP1PS7CW8 -- The Old York Tavern [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [brunch]
+    - coord: [43.6422174, -79.4051655]
+    - pinned: true
+- https://maps.app.goo.gl/UoyDgXDCpTtn61Td7 -- Wang Lang
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.64391, -79.4007988]
+- https://maps.app.goo.gl/cysQ2XLjN4xyWrm4A -- Raku
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6482265, -79.399447]
+- https://maps.app.goo.gl/cZPBbBoATjQT48MH6 -- FIKA Toronto
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [coffee shop]
+    - coord: [43.6535814, -79.4030177]
+- https://maps.app.goo.gl/KfkZvSeUqzMUe5rs9 -- Pamenar
+  - [meta]:
+    - date: 11/17/2025
+    - tags: [coffee shop]
+    - coord: [43.6566835, -79.4027094]
+- https://maps.app.goo.gl/nQBRM1Mws2JdM9vQA -- Bar Niro
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [bar]
+    - coord: [43.6495912, -79.4295031]
+- https://maps.app.goo.gl/Fqrk6Gvx1JeV5cXGA -- Augusta Coffee Bar
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [coffee shop]
+    - coord: [43.6544546, -79.4044516]
+- https://maps.app.goo.gl/7xSaomXDfgBJh4Yr7 -- Reservoir Lounge
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [jazz]
+    - coord: [43.6485848, -79.3745828]
+- https://maps.app.goo.gl/48anqx3p5vqN5k6EA -- The Rex Hotel
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [jazz]
+    - coord: [43.6505964, -79.3885233]
+- https://maps.app.goo.gl/8cZo64RZkG5R4n2T6 -- PIKA
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [communal]
+    - coord: [42.3565554, -71.1107316]
+    - title: PIKA @ MIT
+    - sidebar: false
+  - https://pika.mit.edu/
+- https://maps.app.goo.gl/xx36MxJmbtx2pmH88 -- Rooms Coffee | 135 Ossington
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.6472513, -79.4197269]
+- https://maps.app.goo.gl/2XPzgLkTRUxQLQNa8 -- Rooms Coffee | 915 Dupont
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.6700986, -79.4297616]
+- https://maps.app.goo.gl/xF1CbAPUZy4E2YkV7 -- Rooms Coffee | 17 Baldwin
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.6559416, -79.3953671]
+- https://maps.app.goo.gl/EvYLaxoUAhqXejhj6 -- Alternity
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.667092, -79.4030583]
+- https://maps.app.goo.gl/qsBcJ8dVfog1Mev87 -- Coco neighborhood coffee shop
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.651432, -79.4157885]
+    - title: Coco's neighborhood coffee shop
+- https://maps.app.goo.gl/ubajUb5KrB9XgJTL7 -- Bevy at TheCombine
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.6451208, -79.3888161]
+    - title: Bevy @ TheCombine
+- https://maps.app.goo.gl/vJY9DPf98uF5jTyk9 -- Isle of Coffee
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.658965, -79.3515725]
+- https://maps.app.goo.gl/FGGHtR1rzxX8LTxSA -- Mofer Coffee on Queen
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.6442662, -79.4175998]
+- https://maps.app.goo.gl/6AdrB7FgTMoXgsUs5 -- Page One Coffee + Bar
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.65792, -79.3762526]
+- https://maps.app.goo.gl/noRrgPejGf4CYG556 -- 10 DEAN | Waverley
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.6583573, -79.4002914]
+- https://maps.app.goo.gl/gPjjBhKiaVG1KYtU7 -- Cafe Pamenar
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.6566835, -79.4027094]
+- https://maps.app.goo.gl/SMMTH1d1PSDTF7zcA -- Milky Cloud Room
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.6442978, -79.407265]
+    - title: Milky's Cloud Room
+- https://maps.app.goo.gl/vuXxq7aVDUG7jw7s8 -- Found Coffee on College
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.6576525, -79.4026381]
+- https://maps.app.goo.gl/6yrQaRN4fr1fDMFC6 -- Carbonic Coffee
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.655848, -79.393523]
+- https://maps.app.goo.gl/24Lth72sDeicpzco7 -- Nabulu Coffee
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [coffee shop]
+    - coord: [43.66649229071298, -79.38570733361347]
+- https://maps.app.goo.gl/UMuTjTkmKwN7cvTE6 -- Stakt Market
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [market]
+    - coord: [43.6408185, -79.4016875]
+- https://maps.app.goo.gl/Ewq92uvU7EiAL5HF8 -- Loquat SF
+  - [meta]:
+    - date: 09/10/2025
+    - tags: [coffee shop]
+    - coord: [37.7749123, -122.4225186]
+    - sidebar: false
+  - https://loquatsf.com/
+- https://maps.app.goo.gl/u6y6eV5fz7FvGzXg8 -- Bernhardt
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [restaurant]
+    - coord: [43.647259, -79.4271727]
+    - title: Bernhardt's
+    - pinned: true
+- https://maps.app.goo.gl/KNogvcLy3xhJsGgM7 -- Ratelier [**]
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [coffee shop]
+    - coord: [43.6456113, -79.4146086]
+    - pinned: true
+
+## essay
+
+- https://www.lesswrong.com/posts/qehggwKRMEyWqvjZG/reflections-on-neuralese -- Reflections on Neuralese
+  - [meta]:
+    - date: 11/26/2025
+    - tags: [psychology, llm, longtermism]
+- https://www.bitsaboutmoney.com/archive/optimal-amount-of-fraud/ -- The optimal amount of fraud is non-zero
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [finance]
+- https://www.lesswrong.com/posts/yXSKGm4txgbC3gvNs/paranoia-a-beginner-s-guide -- Paranoia: A Beginner's Guide
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [life]
+- https://www.jenn.site/after-my-dad-died-we-found-the-love-letters/ -- After my dad died, we found the love letters [**]
+  - [meta]:
+    - date: 11/23/2025
+    - tags: [eschatology, family, homosexuality]
+  - > still, the two of us were close in our own way. sometimes, the two of us would go on long walks together. after fifteen minutes of silence, or twenty, something would loosen in him and he would start to tell me about the depths of his sadness and the disappointment in the way his life [played out. ](https://www.jenn.site/after-my-dad-died-we-found-the-love-letters/#:~:text=still%2C%20the%20two%20of%20us%20were%20close%20in%20our%20own%20way.%20sometimes%2C%20the%20two%20of%20us%20would%20go%20on%20long%20walks%20together.%20after%20fifteen%20minutes%20of%20silence%2C%20or%20twenty%2C%20something%20would%20loosen%20in%20him%20and%20he%20would%20start%20to%20tell%20me%20about%20the%20depths%20of%20his%20sadness%20and%20the%20disappointment%20in%20the%20way%20his%20life%20played%20out.)
+  - > edward gave me some photos he had of my dad, and i could scarcely believe that they were of the grim, sad man i knew. he beams in all of them, glowing with joy, his smile more incandescent than i've ever seen in my entire life. i steal glances at edward, the person who took all those impossible photos. the person he was looking at.
+  - > your own grief is an isolating thing because you are closeted and no one else knew who you were to each other.
+  - > when i did, he took it well. he told me that though the path i am on is a **painful one**, he would be there for me, and that the most important thing was to find *xin fu* in life, not to live your life in accordance to the expectations of anyone else.
+  - > because you see, my dad was a coward. mom had started asking for divorces by the time i was in my teens, and dad was the one who always said no.
+  - > _he wasted his entire life_, my mom said to me, the evening we found the love letters. *his entire life, and mine as well.*
+- https://www.personalcanon.com/p/ten-thousand-takes-on-tech-culture -- ten thousand takes on tech, culture, criticism, and bait
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [technoculture, podcast]
+- https://graydon2.dreamwidth.org/193447.html -- Always bet on text [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [web]
+  - > _text is the most powerful, useful, effective communication technology ever_, period.
+- https://www.astralcodexten.com/p/your-review-dating-men-in-the-bay -- Dating men in the Bay [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [life, manhood]
+  - The argument is that men lost their ways in understanding their manhood, i.e their designated role were gone/morphed into new categories by modern Western society.
+  - Goal to craft a new map:
+    - Encourage positive male role models to provide detailed directions on how to "become a man"
+    - Stigmatize sexist behavior toward men
+    - Remind men of their worth
+    - Encourage en to discuss the issues they face, and **listen to them**
+    - Openly acknowledge that mena nd women share some biological differences, and embrace the beauty of this diversity.
+- https://internetprincess.substack.com/p/home-for-the-holidays -- home for the holidays
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [grief, life]
+- https://www.sunday.ai/journal/no-robot-data -- ACT-1: A Robot Foundation Model Trained on Zero Robot Data
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [research, foundational models]
+  - Why bother curating pre-training data when you can create a gloves-in-hand (extension-of-self) to capture data to train on 😅
+- https://nadia.xyz/independent-research -- The independent researcher
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [research]
+    - pinned: true
+- https://tarneo.fr/posts/minimal_web/ -- Bringing back the minimal web
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [web]
+- https://jasmi.news/p/dictionary -- 🌻 are you high-agency or an NPC?
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [agency]
+- https://100r.ca/site/weathering_software_winter.html -- Weathering Software Winter
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [web]
+- https://slatestarcodex.com/2017/07/03/to-the-great-city/ -- To the Great City
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [fiction]
+- https://www.visakanv.com/blog/focus/ -- focus on what you want to see more of
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [productivity]
+- https://thereader.mitpress.mit.edu/in-praise-of-useless-robots -- In praise of useless robots
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [robotic]
+- https://read.asimov.com/ -- Read Something Wonderful (About Biology)
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [biology]
+- https://notes.jordanscales.com/emails -- My Career as a Series of Emails
+  - [meta]:
+    - date: 11/19/2025
+    - tags: [life]
+- https://befriendjamin.substack.com/p/call-them-rationalists -- Call Them Rationalist
+  - [meta]:
+    - date: 11/19/2025
+    - tags: [life]
+- https://how.complexsystems.fail -- How complex systems fail [**]
+  - [meta]:
+    - date: 11/18/2025
+    - tags: [physics, biology]
+- https://www.juliaharms.com/blog/physics-mutations -- On Physics of Mutation
+  - [meta]:
+    - date: 11/17/2025
+    - tags: [physics, biology]
+  - How does thermodynamics generate the _self-organized_ dynamics that ==enable== life?
+  - why must replication mechanisms work this way to function?
+- https://www.theparisreview.org/blog/2018/04/11/illicit-love-letters-albert-camus-and-maria-casares/ -- Illicit Love Letters: [[thoughts/Camus|Albert Camus]] and Maria Casares
+  - [meta]:
+    - date: 11/16/2025
+    - tags: [love]
+- https://www.late-review.com/p/ways-of-not-seeing -- ways of not seeing
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [perception]
+- https://mingyuan.substack.com/p/theres-too-much-world-for-a-person -- There's too much world for a person to know
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [epistemology]
+- https://ishitagrad.substack.com/p/on-deaths-and-breakups -- On deaths and breakups
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [life, relationship]
+- https://newsletter.squishy.computer/p/deep-future -- Deep Future
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [scenarios, planning, ai]
+  - https://deepfuture.now/#features
+- https://newscience.org/faq/ -- What's wrong with academia?
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [research]
+- https://www.lesswrong.com/posts/6ZnznCaTcbGYsCmqu/the-rise-of-parasitic-ai -- The Rise of Parasitic AI
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [alignment]
+  - #llm <span style="margin-left:-0.2em;">-induced</span> psychosis
+- https://namelessvirtue.com/2025/11/13/a-paradox-of-cultural-heritage/ -- A paradox of cultural heritage
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [culture]
+- https://scyy.fi/poly-silence -- The Great Poly Science
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [dating]
+- https://www.benkuhn.net/abyss -- Staring into the abyss as a core life skill
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [life, love]
+- https://drunkwisconsin.substack.com/p/marry-the-first-person-you-date -- Marry the First Person You Date
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [love]
+- https://jeninamendz.substack.com/p/miss-your-train-or-lose-the-love -- Miss your train or lose the love of your life
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [love]
+- https://personalscriptures.substack.com/p/the-intimacy-of-never-talking-again -- the intimacy of never speaking again [**]
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [love]
+    - pinned: true
+  - > There’s a sick kind of closeness in silence. Why does it feel more intimate to never speak to someone again than to text them “Happy Birthday!”? Someone I used to know is a year older today. I know that not because we still talk (God no), but because my brain is a haunted archive of useless information about men who always end up in relationships the second they’re done picking through the folds of my brain and the crevices of my body.
+  - > There’s something sacred in the quiet. Something twistedly tender about knowing that we are both carrying the same memories, unspoken and untouched, like a weird little time capsule we buried and agreed never to dig up. That is real intimacy. Not a soft launch. Not a photo dump. Just shared silence, heavy as hell.
+  - > It’s maddening how loud it gets. Because even when they've vanished from your feed, your phone, your orbit, they still exist. They’re not dead. They’re just… invisible.
+  - > Sometimes, I catch myself trying to picture it, what they look like now, if they still use my lingo, if they still have a hard time parking or still overcompensate for shyness with humor.
+- https://offhandquibbles.substack.com/p/philosophy-is-kinda-autistic-hj-pos -- Philosophy is kinda autistic
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [metaphysics]
+- https://buttondown.com/greengaybles/archive/tender-masculinity -- Tender Masculinity
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [love]
+- https://blamensir.neocities.org/guide
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [medieval]
+- https://docs.google.com/document/d/14XZJtJcMGzD4ZY6AgaTzobunndRvXZMGUybA6JIQOj4/edit?tab=t.0 -- On suicide [**]
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [absurdism]
+- https://www.makingsoftware.com/ -- Making Software
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [cs, design]
+  - https://www.makingsoftware.com/chapters/color-spaces-models-and-gamuts -- Color space
+- https://www.benkuhn.net/outliers/ -- Searching for outliers
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [search]
+- https://www.lesswrong.com/posts/RryyWNmJNnLowbhfC/please-don-t-throw-your-mind-away -- Please don't throw your mind away [**]
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [dialectic]
+- https://smoothbrains.net/ -- speculative neuroscience, psychedelics, and phenomenology [**]
+  - [meta]:
+    - date: 10/15/2025
+    - tags: [blogosphere]
+- https://www.ethansmith2000.com/post/where-are-you -- Where are you?
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [perception]
+- https://lydianottingham.substack.com/p/the-k-values-of-speculative-kinship -- The K-values of Speculative Kinship [**]
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [love, kindship]
+    - pinned: true
+  - ![[quotes#^coparent]]
+- https://www.ystrickler.com/the-dark-forest-theory-of-the-internet/ -- The dark forest theory of the internet
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [web, connectedness]
+- https://jalexine.github.io/on-doing-things.html -- On doing things [**]
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [pedagogy]
+  - You can just do things btw.
+  - see also: https://docs.google.com/spreadsheets/d/10X-el41KoDluiC4ffXGL1wMDT8R2moOGPvdHE4j65nk/edit?gid=0#gid=0
+- https://colah.github.io/posts/2020-05-University/ -- Do I Need to Go to University?
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [pedagogy]
+  - Instead of asking “Is university good?”, ask “Do I have something more compelling to do?”
+- https://www.brendanschlagel.com/2017/11/05/canonize-creating-personal-canon-template/ -- Canonize: Creating a Personal Canon Template
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [self]
+  - The idea of a "personal canon" is an \_encapsulation in list form of those things that ::shaped you [as a person]::.
+- https://ncase.me/remember/ -- How to remember anything forever-ish [**]
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [web comics, spaced repetition]
+- https://jasmi.news/p/china-2025 -- 🌻 america against china against america
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [politics]
+- https://sarvasvkulpati.com/words-for-love -- English doesn't have enough words for #love
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [love]
+- https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/ -- Universal love, said the cactus person [**]
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [acl, ssc, love]
+    - pinned: true
+- https://www.nypl.org/blog/2022/07/25/into-woods-video-game -- 'Into the Woods': The Video Game
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [game]
+- https://www.bbc.com/future/article/20240206-why-flirting-might-be-good-for-your-relationship -- How to be a good flirt, according to science [--]
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [dating]
+- http://www.aaronsw.com/weblog/tdk -- What Happens in The Dark Knight
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [essay, movie]
+- http://pdf-objects.com/files/ErichFromm_TheArtOfLoving_1956_148pp.pdf -- The Art of Loving, Erich Fromm
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [love]
+  - [@fromm1956art]
+- https://www.ling.upenn.edu/~kroch/courses/lx400/Gallistel-King_chaps1-9.pdf -- Memory and Computational Brain
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [cognitive, read later]
+- https://nickbostrom.com/papers/vulnerable.pdf -- [[thoughts/The Vulnerable World Hypothesis]], Nick Bostrom
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [alignment, singularity]
+    - pinned: true
+  - the idea of a "vulnerable world" mandates _one in which there exist some level of technological advances that renders civilization useless (i.e existinction), unless it has exited the "semi-anarchic default condition"_
+  - requires amplified capacities for preventive policing and global governance
+    - #alignment of [[thoughts/AGI|AGI]]
+- https://jacobin.com/2023/01/nicos-poulantzas-revolutionary-reformism-democratic-socialism-state-theory -- Nicos Poulantzas Was a Vital Theorist of Democratic Socialism
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [politics]
+- https://web.mit.edu/sts.035/www/PDFs/think.pdf -- As we may think
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [perception, brain]
+- https://archive.ph/5669x -- Is Having a Boyfriend Embarrassing Now? [--]
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [love]
+- https://alexanderobenauer.com/think/1/ -- The Interfaces With Which We Think
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [interfaces]
+    - pinned: true
+  - #design
+- https://andymatuschak.org/hmwl/ -- How might we learn? [**]
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [pedagogy, ai]
+    - pinned: true
+  - how do we create a convivial learning experience, without cargo-culting others to learn?
+  - > learning doesn't really work, given that knowledge is not transferrable, and we also forgot half of it.
+  - implicit vs guided learning
+    - implicit: discovery, motivation, authenticity
+    - guided: fluency, cognition, scaffolds
+- https://press.asimov.com/articles/mitochondria -- Mitochondria Are Alive
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [biology]
+- https://nintil.com/longevity -- Longevity [**]
+  - [meta]:
+    - date: 11/03/2025
+    - tags: [philosophy, biology]
+- https://jsomers.net/i-should-have-loved-biology -- I should have loved biology
+  - [meta]:
+    - date: 11/03/2025
+    - tags: [biology, history]
+- https://archive.ph/iMdvd -- Some People Can’t See Mental Images. The Consequences Are Profound [--]
+  - [meta]:
+    - date: 11/02/2025
+    - tags: [friend]
+  - > Aphantasics might skip over descriptive passages in books—since description aroused no images in their minds, they found it dull—or, because of such passages, avoid fiction altogether.
+  - > Hyperphantasia often seemed to function as an emotional amplifier in mental illness—heightening hypomania, worsening depression, causing intrusive traumatic imagery in P.T.S.D. to be more realistic and disturbing.
+- https://nintil.com/ -- nintil.com [**]
+  - [meta]:
+    - date: 11/02/2025
+    - tags: [evergreen, essays]
+- https://www.orwellfoundation.com/the-orwell-foundation/orwell/essays-and-other-works/politics-and-the-english-language/ -- Politics and the English Language
+  - [meta]:
+    - date: 10/31/2025
+    - tags: [orwellian]
+  - [[thoughts/Orwellian]]
+- https://linear.app/now -- Linear Engineering Blog [**]
+  - [meta]:
+    - date: 10/30/2025
+    - tags: [engineering]
+- https://paulgraham.com/best.html -- The Best Essay [**]
+  - [meta]:
+    - date: 10/30/2025
+    - tags: [writing]
+  - > Another unexpected consequence: I imagined when I started writing this that the best essay would be fairly timeless — that the best essay you could write in 1844 would be much the same as the best one you could write now.
+  - > If the question of how to write the best possible essay reduces to the question of how to make great discoveries, then I _started with the wrong question._
+- https://lilianweng.github.io/posts/2025-05-01-thinking/ -- Why We Think?
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [ml, cot]
+- https://jamesyu.org/singular/ -- Singular
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [post capitalism, generative]
+  - Co-written with GPT-3
+  - Cool sidenotes implementations though.
+- https://www.gleech.org/nysound -- NY sounds
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [metropolitan, nyc]
+- https://milan.cvitkovic.net/writing/things_youre_allowed_to_do/ -- Things you're allowed to do
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [life, work]
+- https://maggieappleton.com/digital-anthropology -- A Brief Introduction to Digital Anthropology [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [anthropology]
+- https://saffron.substack.com/p/something-divine-shook-me-by-the -- something divine shook me by the shoulders
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [god]
+- https://www.henrikkarlsson.xyz/p/wordless-thought -- When is it better to think without words?
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [writing]
+- https://www.brasstacks.blog/tyatd-uni/ -- Things You’re Allowed to Do: University Edition [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [school, college]
+  - see also:
+    - https://web.archive.org/web/20231126160243/http://becomingeden.com/what-i-wish-i-knew-in-college/
+    - https://skunkledger.substack.com/p/escaping-high-school
+    - https://guzey.com/personal/college/
+    - https://web.archive.org/web/20231126160243/http://becomingeden.com/what-i-wish-i-knew-in-college/
+- https://rauno.me/craft/interaction-design -- Invisible Details of Interaction Design [**]
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [design]
+- http://www.wepsite.de/Kate_Fox,Humour_Rules.htm -- Humour rules
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [love]
+- https://sdan.io/blog/intelligence-arbitrage -- Intelligence arbitrage
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [ai]
+- https://joincolossus.com/article/the-amusement-park-for-engineers -- The Amusement Park for Engineers
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [build, engineering]
+  - Anduril's product engineering machine
+- https://jennyclark.substack.com/p/prayer-for-the-girl-who-often-forgets -- prayer for the girl who often forgets that enough is enough
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [love]
+- https://amasad.me/keep-winning -- How to keep winning.
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [determinism]
+- https://masonjwang.com/writing/anhedonia -- anhedonia
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [love, joy]
+  - lack of pleasure in activities
+- https://www.gyford.com/phil/writing/2025/10/15/1995-internet/ -- My First Months in Cyberspace
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [reflection]
+- https://nadia.xyz/climate-tribes -- Mapping out the tribes of climate [**]
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [maps]
+- https://brianlovin.com/writing/how-to-give-a-great-product-design-portfolio-presentation -- How to give a great product design portfolio presentation
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [design]
+- https://guzey.com/productivity/ -- Every productivity thought I've ever had, as concisely as possible
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [hacks]
+- https://www.nytimes.com/2015/02/13/style/the-36-questions-on-the-way-to-love.html -- 36 Questions to fall in love [**]
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [love]
+  - https://www.nytimes.com/2015/01/11/style/modern-love-to-fall-in-love-with-anyone-do-this.html
+  - https://journals.sagepub.com/doi/pdf/10.1177/0146167297234003
+  - [[posts/her]], [[posts/a broken heart]], [[thoughts/love]], #love, #friend
+- https://itscertified.substack.com/p/radiochange -- Radio/Change
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [life, love]
+- https://www.ameliahruby.com/blog/100-ways-to-share -- 100 ways to share your work + life off social media [**]
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [creative, sharing, ring]
+- https://www.cs.cmu.edu/~mblum/research/pdf/grad.html -- Advice to a Beginning Graduate Student
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [research]
+  - What is 4 R's of Graduate School? - Reading, aRithmetic, Research, and wRiting
+  - Reading
+  - Studying
+  - Thinking
+  - middle of PhD
+- https://onegirlinfinitethoughts.substack.com/p/not-lost-not-found-becoming
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [becoming, love]
+- https://mkodama.org/content/suffering-focused/ -- Suffering-focused ethics
+  - [meta]:
+    - date: 10/18/2025
+    - tags: [ethics]
+  - see also [[thoughts/ethics]]
+- https://anthropic-principle.com/anthropic-bias/ -- Anthropic Bias [**]
+  - [meta]:
+    - date: 10/18/2025
+    - tags: [life, longtermism]
+- https://clairebookworm.substack.com/p/i-think-about-it-all-the-time -- I think about it all the time
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [life]
+- https://chrislakin.blog/p/flaky-breakthroughs -- Flaky breakthrough [**]
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [productivity]
+- https://www.lightspeedmagazine.com/fiction/state-change/ -- State change [--]
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [culture]
+- https://www.experimental-history.com/p/thank-you-for-being-annoying -- Thank you for being annoying
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [life]
+- https://ellululu.substack.com/p/the-art-of-asking -- The art of asking
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [friendship]
+- https://christophlocher.com/notes/ethnographic-research-on-dynamicland -- Götz Bachmann’s Ethnographic Research on Dynamicland [**] [--]
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [tool for thought]
+    - pinned: true
+- https://aeon.co/essays/pluck-and-hard-work-or-luck-of-birth-two-stories-one-man -- Pluck versus luck
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [merit]
+  - Meritocracy emphasises the power of the individual to overcome obstacles, but the real story is quite a different one
+- https://blog.redwoodresearch.org/p/guide -- Reading list for AI Safety
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [alignment]
+- https://mkodama.org/content/EU-code/ -- The World's First Frontier AI Regulation is Surprisingly Thoughtful
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [ai, alignment, safety]
+- https://read.isabelunraveled.com/p/solitude -- Solitude, space, and the selfishness of creation
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [self, creativity]
+- https://read.isabelunraveled.com/p/paris -- Paris diaries, part 2 [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [self]
+- https://read.isabelunraveled.com/p/show-up -- Just show up [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [love, self]
+- https://read.isabelunraveled.com/p/confidence -- Confidence Comes from Taking Care of Yourself
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [life]
+- https://offhandquibbles.substack.com/p/why-have-sex -- Why Have Sex?
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [anisogamy]
+  - i.e: the evolution of anisogamy
+- [[thoughts/papers/Augmenting-Human-Intellect.pdf]] -- Augmenting Human Intellect, A Conceptual Framework - D.C Engelbart, 1962 [**]
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [hci]
+  - source: https://www.dougengelbart.org/pubs/papers/scanned/Doug_Engelbart-AugmentingHumanIntellect.pdf, https://www.dougengelbart.org/pubs/augment-3906.html
+- https://www.cs.virginia.edu/~robins/YouAndYourResearch.html -- You and Your Research, Richard Hamming [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [research]
+  - > One lesson was sufficient to educate my boss as to why I didn't want to do big jobs that displaced exploratory research and why I was justified in not doing crash jobs which absorb all the research computing facilities. I wanted instead to use the facilities to compute a large number of small problems. Again, in the early days, I was limited in computing capacity and it was clear, in my area, that a 'mathematician had no use for machines.' But I needed more machine capacity. Every time I had to tell some scientist in some other area, "No I can't; I haven't the machine capacity," he complained. I said "Go tell your Vice President that Hamming needs more computing capacity." After a while I could see what was happening up there at the top; many people said to my Vice President, "Your man needs more computing capacity." I got it!
+  - > The people who do great work with less ability but who are committed to it, get more done that those who have great skill and dabble in it, who work during the day and go home and do other things and come back and work the next day.
+- https://www.benkuhn.net/thinkrealhard/ -- Think real hard
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [life, logics]
+  - > In retrospect, I wish those people had just told me “think real hard.” I was looking for an easy way out—One Weird Trick to Programming Better—but programming is too hard for that.
+- https://michaelnielsen.org/blog/principles-of-effective-research/ -- Principles of Effective Research [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [research]
+  - > The #philosophy underlying the essay is based on a famous quote attributed to [[thoughts/Aristotle]]: “We are what we repeatedly do. Excellence, then, is not an act but a habit.” Underlying all our habits are models (often unconscious) of how the world works.
+  - > [[research|Research]] is, of course, only a part of life, and must be understood in relation to the rest of life
+  - > Effective people are proactive and take personal responsibility for the events in their lives.
+  - > They form a vision of how they want their life to be, and work toward achieving that vision.
+  - > They identify problems in their lives, and work toward solutions to those problems.
+  - Self-discipline:
+    - The first factor is having clarity about what one wants to achieve, why one wants to achieve it, and how to go about achieving it.
+    - The second factor affecting self-discipline is one’s social environment.
+      - Access to a social environment which encourages and supports the development of research skills and research excellence
+    - The third factor affecting self-discipline is a special kind of honesty, honesty to oneself, about oneself.
+- https://www.benkuhn.net/pjm/ -- How I've run major projects
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [productivity]
+  - > Even more importantly than freeing up time, clearing my schedule made sure the project was the top idea in my mind. If I don’t do that, it’s easy for me to let projects “go on autopilot,” where I keep them running but don’t proactively make time to think through things like whether we should change goals, add or drop priorities, or do other “non-obvious” things.
+- https://newsletter.squishy.computer/p/all-you-need-is-links -- All you need is links [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [hyperlinks]
+      -![[thoughts/images/hyperlinks.webp]]
+- https://cybermonk.substack.com/p/i-am -- I am
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [being]
+- https://blog.scottstevenson.net/p/how-to-finally-make-something-a16c8db7ba2a -- How to finally make something
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [productivity]
+- http://www.aaronsw.com/weblog/theoryofchange -- Theory of Change
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [metaphysics]
+- https://thesolarmonk.com/posts/a-spacebar-for-the-web -- vintage, letter type
+  - [meta]:
+    - date: 01/17/2025
+    - tags: [hyperlinks]
+- https://retool.com/visual-basic -- ASCII effects and procedural arrangement
+  - [meta]:
+    - date: 01/17/2025
+    - tags: [web]
+- https://www.tylerxhobbs.com/words/flow-fields -- flow feel
+  - [meta]:
+    - date: 01/17/2025
+    - tags: [design]
+- https://maalvika.substack.com/p/tiktoks-boyfriend-tests-and-the-spectacle -- tiktok boyfriend test and spectacle of modern love
+  - [meta]:
+    - date: 01/17/2025
+    - tags: [love]
+- https://archive.ph/XsuTV -- Handwritten blog [**] [--]
+  - [meta]:
+    - date: 01/17/2025
+    - tags: [web]
+  - source: https://handwritten.blog/2022-10-01-hyperlinks-in-handwriting.html (dns problems)
+- https://www.muckrock.com/news/archives/2015/jul/21/nothing-indicate-nothing-indicate-subject-had-any-/ -- Paul Erdős, he is just a mathematician that really [[/tags/love|love]] math
+  - [meta]:
+    - date: 01/20/2025
+    - tags: [math, life]
+- https://matthewstrom.com/writing/generative-art-og-images/ -- Generative OG with [Brownian motion](https://en.wikipedia.org/wiki/Brownian_motion)
+  - [meta]:
+    - date: 01/20/2025
+    - tags: [design]
+- https://docs.google.com/document/d/1h1vw4-t9Es4p2qQkZblnWcJDo6uEc6Yu61AxaLB5hKo/edit -- Atlantis
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [fiction]
+- https://foundersatwork.posthaven.com/the-social-radar-what-i-did-at-y-combinator -- Social radar, by Jess Livingston
+  - [meta]:
+    - date: 05/30/2025
+    - tags: [productivity]
+- https://jameslin.bio/jolie -- Love, with a friend
+  - [meta]:
+    - date: 02/20/2025
+    - tags: [love]
+- https://www.paulgraham.com/good.html -- Be good
+  - [meta]:
+    - date: 02/21/2025
+    - tags: [being]
+- https://www.lesswrong.com/posts/H7fkGinsv8SDxgiS2/ironing-out-the-squiggles -- Ironing Out the Squiggles
+  - [meta]:
+    - date: 03/01/2025
+    - tags: [reductionism]
+- https://readsomethingwonderful.com/p/47/the-inner-ring -- Read something wonderful
+  - [meta]:
+    - date: 03/05/2025
+    - tags: [reading]
+- https://writeordiemag.com/elliptical-love/untranslatable -- Untranslatable
+  - [meta]:
+    - date: 03/05/2025
+    - tags: [being, perplexity]
+- https://www.oaktreecapital.com/docs/default-source/memos/on-bubble-watch.pdf -- On Bubble Watch and Stock market
+  - [meta]:
+    - date: 03/05/2025
+    - tags: [letters]
+- https://www.epi.org/publication/u-s-benefits-from-immigration -- US benefits from immigration but policy reforms needed to maximize gains
+  - [meta]:
+    - date: 03/05/2025
+    - tags: [policy]
+- https://www.washingtonpost.com/context/the-portable-bloomberg-the-wit-wisdom-of-michael-bloomberg/ba5281b4-886d-42dc-a28d-e67eceb60719/ -- The Portable Bloomberg: [[thoughts/pdfs/The Wit and Wisdom of Michael Bloomberg.pdf|The Wit & Wisdom of Michael Bloomberg]]
+  - [meta]:
+    - date: 03/08/2025
+    - tags: [leaders]
+- https://www.autodidacts.io/troubleshooting/ -- On Troubleshooting
+  - [meta]:
+    - date: 03/09/2025
+    - tags: [engineering]
+- https://stirthepots.substack.com/p/things-i-notice-when-im-not-rushing -- things i notice when i'm not rushing
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [being]
+  - > The air changes when I’m not rushing. It remembers me.
+- https://onegirlinfinitethoughts.substack.com/p/what-if-love-never-finds-you -- What If Love never finds you?
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [love]
+  - > If you became too good at spotting the wolves beneath the wool, too fluent in the language of red flags, too unwilling to be dazzled by the cheap magic tricks of love bombers and smooth-tongued frauds.
+- https://read.mindmine.xyz/p/stop-hiding -- Stop hiding from your power.
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [actualisation]
+- https://danluu.com/learn-what/ -- What to learn
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [pedagogy]
+- https://pketh.org/organic-software.html -- In Search of Organic Software
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [engineering, rhizomatic software]
+- https://emilymstark.com/2022/12/18/death-to-the-line-of-death.html -- The death of the line of death
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [web, design]
+- https://matthewstrom.com/writing/album-art/ -- The history of [[thoughts/music theory|album art]]
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [arts]
+- https://bigthink.com/smart-skills/how-curiosity-rewires-your-brain-for-change/ -- How curiosity rewires your brain for change
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [neuroscience]
+  - > When we are curious, the brain's dopaminergic system -- the same one that lights up when we anticipate a reward -- kicks into gear. Simply put, curiosity makes us feel good about the prospect of discovering something new.
+- https://a16z.com/a-good-place-to-work/ -- A Good Place to Work, Ben Horowitz
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [work, company]
+- https://cristobal.arquipelago.org/writing/screenshot.html -- Notes from Screenshot Conf
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [conference]
+- https://www.avabear.xyz/p/dialectical-damage -- Dialectical damage
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [love, being]
+- https://halogen2.tumblr.com/post/187591113672/i-think-love-is-something-that-happens-to-other -- I think love is something that happens to other.
+  - [meta]:
+    - date: 07/07/2025
+    - tags: [love]
+- https://evanjconrad.com/posts/love -- On love and relationship [**]
+  - [meta]:
+    - date: 07/09/2025
+    - tags: [love]
+    - pinned: true
+- https://barnsworthburning.net/ -- cool hyperlinks format
+  - [meta]:
+    - date: 07/09/2025
+    - tags: [web, digital garden]
+- https://museguided.substack.com/p/love-is-not-enough -- Love is not enough
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [love]
+- https://mindslice.substack.com/p/alignment -- On dating AI [[thoughts/Alignment|researcher]]
+  - [meta]:
+    - date: 07/13/2025
+    - tags: [ai, love]
+- https://aresluna.org/frame-of-preference/ -- Frame of references, a history of Mac Settings, 1984-2004
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [design]
+- https://web.stanford.edu/dept/SUL/sites/mac/primary/docs/bom/anthrophilic.html -- Design Considerations for an Anthropophilic Computer
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [design, tools of conviviality]
+  - > You might think that any number of computers have been designed with these criteria in mind, but not so. Any system which requires a user to ever see the interior, for any reason, does not meet these specifications. There must not be additional ROMS, RAMS, boards or accessories except those that can be understood by the PITS as a separate appliance.
+  - > Seeing the guts is taboo. Things in sockets is taboo (unless to make servicing cheaper without imposing too large an initial cost). Billions of keys on the keyboard is taboo. Computerese is taboo. Large manuals, or many of them (large manuals are a sure sign of bad design) is taboo. **Self-instructional programs are NOT taboo.**
+  - > The computer must be in one lump. This means, given present technology, a 4 or 5 inch CRT (unless a better display comes along in the next year), a keyboard, and disk integrated into one package.
+- https://www.nytimes.com/2025/07/21/magazine/men-heterofatalism-dating-relationships.html -- The Trouble with Wanting Men
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [love]
+- https://calv.info/openai-reflections -- reflections on OpenAI
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [decision, work culture]
+- https://thezvi.wordpress.com/2025/08/01/the-week-in-ai-governance/ -- The EU AI Code of Practice, The Week in AI governance, Aug 1st
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [policy]
+- https://ambrook.com/offrange/technology/like-farming-on-the-moon -- If you are a farmer, NASA would like a word
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [interplanetary]
+- https://dl.acm.org/doi/pdf/10.1145/97351.97360 -- Human Values and the Futures of Technology: A Declaration of Empowerment, Ben Shneiderman
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [technologist, advancements]
+- https://kevinlu.ai/the-only-important-technology-is-the-internet -- The Only Important Technology is the Internet
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [advancements]
+- [[thoughts/papers/google_delayexp.pdf|Speed Matters for Google Web Search]]
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [search, engineering]
+  - latency from 100ms to 400ms reduces number of search per users by 0.2% to 0.6%
+  - Injecting server-side delay for pre-header and post-header delay
+- https://www.alignmentforum.org/posts/hjMy4ZxS5ogA9cTYK/how-i-think-about-my-research-process-explore-understand -- How I Think About My Research Process: Explore, Understand, Distill
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [research, longermism]
+- https://usefulfictions.substack.com/p/50-things-i-know -- 50 things i know [**]
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [life, advices]
+  - > 33. If you always let people in in traffic, no one can cut you off.
+  - > 36. “You are ruined by your gifts” — the traits that make you exceptional are the very same traits that show up in your neuroses and limitations. Learning to love the upsides, if undertaken with clarity and gentleness, also creates more space to address the downsides. This is what makes the [Enneagram](https://usefulfictions.substack.com/p/there-are-nine-wolves-inside-of-you) tremendously potent.
+  - > 38. There is no grand unifying theory of morality, nothing that doesn’t break down in any edge cases — so avoid totalizing ideologies, or else. If you take anything too seriously, it can make you crazy. Related: Utilitarianism is a perfect program that doesn’t run on human hardware.
+  - > 45. If you can train yourself to ask “is there a better way to do this?” at random intervals ten times a day, you will become unstoppable.
+- https://velvetnoise.substack.com/p/the-key-to-love-is-understanding -- The key to #love is understanding
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [love]
+- https://velvetnoise.substack.com/p/attention-is-love -- Attention is love [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [love]
+  - > To reach out and remain unseen is its own kind of anti-conversation, a silence where love should be.
+- https://illustrated.substack.com/p/grief-maybe -- Grief, maybe (ILLUSTRATED)
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [eschatology]
+- https://fishinapool.substack.com/p/everyone-holds-a-set-of-questions -- conversational compatibility is the chemical reaction between questions
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [relationship]
+- https://www.scopeofwork.net/aquatic-achievements/ -- Aquatic Achievements
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [gardening]
+- https://kayserifserif.place/carry -- I carry your website with me (i carry it in my website)
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [web poetics]
+  - > (In the quiet aftermath of the most wonderful and exhausting gathering at your home, you find traces of your friends everywhere. A strand of hair draped across the couch, every extra chair commandeered, lingering perfume… echoes of presence in the console.)
+- https://wholeearth.info/p/whole-earth-catalog-fall-1968?format=spreads&index=0 -- Whole Earth Index
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [interplanetary]
+- https://www.henrikkarlsson.xyz/p/a-constellation-of-lookers -- A constellation of lookers [**]
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [love]
+    - pinned: true
+- https://blog.cloudflare.com/perplexity-is-using-stealth-undeclared-crawlers-to-evade-website-no-crawl-directives/ -- Perplexity is using stealth, undeclared crawlers to evade website no-crawl directives
+  - [meta]:
+    - date: 08/04/2025
+    - tags: [engineering]
+- https://kenliu.substack.com/p/layers -- Layers
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life]
+  - > Faulkner was absolutely right: The past is never dead. It’s not even past
+  - > It’s worth remembering that this is not true—or at least not true to the same degree—for cultures that built with perishable materials: wood, bamboo, paper, rammed earth. Unless actively maintained, these structures will perish in fire, flood, war, often lasting no more than decades, much less centuries.
+- https://shreniks-subconscious.super.site/journal/impermanence-bay-area-musings -- Impermanence (Bay Area Musings)
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [life]
+  - > I notice how I’m feeling a kind of tenderness for things that don’t last. It shows up in unexpected places, like the bruised-purple petals scattered on the sidewalk after a windy night, or the quick glimmer of someone’s laughter on a street corner before it disappears into the ordinary quiet.
+  - > Impermanence makes things precious. The fleetingness of a perfect moment is what gives it color and weight.
+  - > I remember thinking, almost with a twinge of sadness even as it was happening, how none of us would be able to return to that exact constellation of people and feeling again. And yet, maybe that’s what made it matter so much.
+  - > Maybe that’s the secret to contentment: finding beauty in the not-lasting. Cherishing moments for their brevity, saying thank you to every sunset you happen to catch, every ordinary dinner that feels like home.
+- https://thingofthings.substack.com/p/rationalists-and-the-cultic-milieu -- Rationalists and the Cultic Milieu [**]
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [reductionism]
+  - > The “cultic milieu” is the subculture from which new religious movements usually emerge.
+- https://www.nytimes.com/2025/08/04/technology/rationalists-ai-lighthaven.html -- The Rise of Silicon Valley’s Techno-Religion
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [reductionism]
+  - [[thoughts/Roko's Basilisk]]
+  - > “All of this feels mythic,” she said. “Even the non-Rationalist scientists find this compelling — the same way the Manhattan Project was compelling. We want to work on something mythic.”
+- https://ryanandrewlangdon.com/2020/01/28/today-i-learned-that-not-everyone-has-an-internal-monologue-and-it-has-ruined-my-day/ -- Today I learned that some people doesn't have an internal monologue
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [psychology]
+- https://ifp.org/biotechs-lost-archive/ -- Biotech's Lost Archive
+  - [meta]:
+    - date: 08/12/2025
+    - tags: [biology]
+- https://benjamincongdon.me/blog/2025/01/25/AI-Slop-Suspicion-and-Writing-Back/ -- AI Slop Suspicion and Writing Back.
+  - [meta]:
+    - date: 08/13/2025
+    - tags: [writing, llm]
+- https://www.sherryning.com/p/what-should-you-do-when-youre-madly -- What should you do when you're madly in love [**]
+  - [meta]:
+    - date: 08/13/2025
+    - tags: [love]
+    - pinned: true
+- https://jewishcurrents.org/beyond-grievance -- Beyond Grievance
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [eschatology]
+- https://web.archive.org/web/20031029211844/http://www.frostbytes.com/~jimf/informing.html -- Informing Ourselves To Death
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [information theory, web]
+  - > After all, anyone who has studied the history of technology knows that technological change is always a Faustian bargain: Technology giveth and technology taketh away, and not always in equal measure.
+  - > Now, there are several conclusions that might be drawn from these results, one of which was expressed by H. L. Mencken fifty years ago when he said, there is no idea so stupid that you can't find a professor who will believe it. This is more of an accusation than an explanation but in any case I have tried this experiment on non-professors and get roughly the same results.
+  - > Another possible conclusion is one expressed by George Orwell--also about 50 years ago--when he remarked that the average person today is about as naive as was the average person in the Middle Ages. In the Middle Ages people believed in the authority of their religion, no matter what. Today, we believe in the authority of our science, no matter what.
+- https://milky.substack.com/p/moderation -- moderation, by molly mielke mccarthy
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [life, marriage, love]
+- https://web.archive.org/web/20220531121234/https://www.theatlantic.com/magazine/archive/1993/12/how-the-world-works/305854/ -- How the world works
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [capitalism, society]
+- https://carly.substack.com/p/designers-designers-designers -- Designers! Designers! Designers!
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [design]
+- https://www.personalcanon.com/p/how-to-begin -- How to begin
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [life]
+- https://sfpc.study/blog/falling-failing-feeling-freeing -- Falling, Failing, Feeling, Freeing [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [love, web poetic]
+- https://www.are.na/kristoffer-tjalve/poetic-web-calendar -- Poetic Web Calendar
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [web poetic]
+- https://grugbrain.dev/ -- The Grug Brained Developer
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [engineering, simplicity]
+- https://research.contrary.com/deep-dive/building-an-american-tsmc -- Building an American TSMC [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [silicon, hardware]
+- https://jzmazlish.substack.com/p/ak-or-just-okay-ai-and-economic-growth -- AK or just okay? AI and economic growth
+  - [meta]:
+    - date: 09/18/2025
+    - tags: [ai, economics]
+- https://sharif.io/anna-alexei -- Always invite Anna [**]
+  - [meta]:
+    - date: 09/26/2025
+    - tags: [love]
+    - pinned: true
+- https://archive.is/ilTr1 -- The Economist, How to spot a genius
+  - [meta]:
+    - date: 09/26/2025
+    - tags: [being]
+- https://unchartedterritories.tomaspueyo.com/p/mountains -- Why Warm Countries Are Poorer [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [economic]
+- https://lananhngvu.substack.com/p/how-to-become-gently-interesting -- how to become gently interesting
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life, society]
+  - > My first suggestion: sit with something long enough.
+  - > Just simple, unassuming places, like a park you’ve never visited, a station or a random indie bookstore that is not aesthetic by normal standard.
+  - > When your attention stretches beyond the usual, you start seeing patterns, questions, and connections that others miss. Your perspective deepens. And with that depth comes a quiet magnetism, because interestingness isn’t a performance, it’s the result of a mind that’s been gently reshaped by new experiences and curiosity.
+  - > ==Let yourself be bored==
+- https://sundogg.substack.com/p/have-you-put-down-your-bags -- Have you put down the bags?
+  - [meta]:
+    - date: 09/30/2025
+    - tags: [fruit, toronto, life]
+- https://theshadowedarchive.substack.com/p/an-existential-guide-to-making-friends -- An Existential Guide to: Making Friends [**]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [friends, relationship]
+- https://static1.squarespace.com/static/5e17b4d3834ea27accf7ef85/t/6837d373c8563c07dea5e115/1748489076368/Anderson%2C+Phenomenology+and+the+Ethics+of+Love+article+Symposium.pdf -- Love Symposium
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [philosophy, love]
+    - pinned: true
+- https://archive.ph/MegKQ -- How AI is changing the office [--]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [ai, labour market]
+- https://www.henrikkarlsson.xyz/p/how-i-read -- Henrik Karlsson, How I Read [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [books, pedagogy]
+- https://emotional.codes/dtr/ -- Defining the Relationship
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [relationship, life]
+- https://huyenchip.com/2021/02/27/why-not-join-a-startup.html -- Chip Huyen, 7 reasons not to join a startup and 1 reason to
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [startup]
+  - > Reason 1. Goodbye work-life balance
+  - > Reason 4. You won’t get rich
+  - > If you want to get rich, join a big company and climb their rank.
+- http://www.martinacecilia.com/place-vanishing-points/ -- How to place vanishing points
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [photography]
+- https://map.simonsarris.com/p/breadcrumbs -- Breadcrumbs
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life, advices]
+- https://www.alignmentforum.org/posts/ShgAxjgN55gmq47ou/trustworthy-and-untrustworthy-models-1 -- Trustworthy and untrustworthy models [**]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [ai, alignment]
+  - see also: [[thoughts/Alignment#trustworthy and untrustworthy models|on trustworthiness of models]]
+- https://www.betonit.ai/p/shes-the-one -- She's the One
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [love, relationship]
+  - > Figure out your top priorities - and be flexible about everything else
+  - > Giving looks a high priority and personality a low priority. This is beyond foolish
+  - > Ask to hold hands on the first date. [...] My goal, rather, is to help ordinary shy guys out of the Friend Zone.
+    > If a woman refuses to hold hands on the first date, you’re probably in her Friend Zone for life. Bitter to learn, but good to know.
+  - > Bitter truth: Even if a woman sincerely considers you supremely deserving of nice treatment now, the treatment you receive will almost certainly get worse.
+  - > If you want kids, remember that virtually ==all traits are heritable.==
+- https://www.betonit.ai/p/i-want-to-hold-your-hand -- I want to hold your hand
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [love, dating]
+- https://benjaminfspector.com/writing/tgg -- The Generation Game
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [longtermism, ai]
+- https://roonscape.ai/p/agi-futures -- AGI futures
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [agi, longtermism]
+  - > Neuralink Third Impact
+  - > Simulation Theory
+  - > If God were to visit this world, he would destroy it. An unbounded resource gatherer was summoned; a demon of the Platonic ether forged through incredible optimization pressures that created instrumental convergence to power-seeking behavior. One by one, the stars are blinking out in the heavens as their energy is harnessed to further the Fiend’s profane purpose.
+- https://selvaradov.net/select/ -- You can select as well as be selected
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [agency]
+- http://joschu.net/blog/opinionated-guide-ml-research.html -- An Opinionated Guide to ML Research [**]
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [research]
+  - > _Honing Your Taste_: Your ability to choose the right problems to work on is even more important than your raw technical skill.
+  - > 1. Read a lot of papers, and assess them critically. If possible, discuss them with others who have a deeper knowledge of the subject.
+  - > 2. Work in a research group with other people working on similar topics. That way you can absorb their experiences as well as your own.
+  - > 3. Seek advice from experienced researchers on what to work on. There’s no shame in working on ideas suggested by other people. Ideas are cheap, and there are lots of them in the air. Your skill comes in when you decide which one to work on, and how well you execute on it.
+  - > 4. Spend time reflecting on what research is useful and fruitful. Think about questions like
+    >    a. When is theory useful?
+    >    b. When are empirical results transferable?
+    >    c. What causes some ideas to get wide uptake, whereas others are forgotten?
+    >    d. What are the trends in your field? Which lines of work will make the other ones obsolete?
+- https://numinous.productions/ttft/ -- How can we develop transformative tools for thought?
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [tool for thoughts]
+  - By Andy Matuschak and Michael Nielsen
+  - https://notation.app/n/d1VOwqGv5DbHdDLf
+
+## machine learning
+
+- [meta]:
+  - view: list
+
+- https://mp.weixin.qq.com/s?__biz=MzUxNzQ5MTExNw==&mid=2247496740&idx=1&sn=c9403138fa59d126fe6cfda19d9b2f76&scene=21&poc_token=HJaPI2mjaOF9uWS9B2etY98Gr3I3-Zz6m-f7xJaP -- Blackwell's shortcomings and Rubin's microarchitecture [**]
+  - [meta]:
+    - date: 11/23/2025
+    - tags: [gpu programming]
+- https://cdn.openai.com/pdf/4a25f921-e4e0-479a-9b38-5367b47e8fd0/early-science-acceleration-experiments-with-gpt-5.pdf -- Early science acceleration experiments with GPT-5
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [advancement]
+- https://www.alignmentforum.org/posts/d9FJHawgkiMSPjagR/ai-control-improving-safety-despite-intentional-subversion -- AI Control: Improving Safety Despite Intentional Subversion
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [alignment]
+- https://www.chinatalk.media/p/the-zai-playbook -- The Z.ai playbook
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [models, podcast]
+- https://assets.anthropic.com/m/74342f2c96095771/original/Natural-emergent-misalignment-from-reward-hacking-paper.pdf -- From shortcuts to sabotage: natural emergent misalignment from reward hacking
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [alignment, emergent properties]
+  - newsroom: https://www.anthropic.com/research/emergent-misalignment-reward-hacking
+  - ![[thoughts/images/learning reward hacks generalization.png|Learning reward hacks on production coding environments generalises to a range of misaligned behaviours]]
+- https://alechelbling.com/UnderstandingIsomap/ -- A Visual Introduction to Dimensionality Reduction with Isomap
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [visualisation]
+  - built upon the [[thoughts/Manifold hypothesis|Manifold hypothesis]], where it seeks to create a low-dimensional embedding of data that preserves its local similarity structure. (this pattern is central to something like t-SNE and UMAP)
+  - steps:
+    - construct a graph between points that capture local structure
+    - measure the "geodesic" distance between all pairs of points in this graph ^[these distances approximate the true manifold distances between points]
+    - apply multi-dimensional scaling to project the high-dimensional data into a lower-dimensional embeddings that preserves the distance
+  - leverages [[thoughts/MDS]]
+- https://www.youtube.com/watch?v=xcpEl0cGCC4 -- CUDA + ThunderKittens, but increasingly drunk.
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [kernel]
+    - pinned: true
+- https://allenai.org/blog/olmo3 -- Olmo 3 model release [--]
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [training, model release, architecture]
+- https://docs.google.com/document/d/1p-ggQV3vVWIQuCccXEl1fD0thJOgXimlbBpGk6FI32I/edit?tab=t.0 -- MATS 10.0 [**]
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [interpretability, research]
+    - pinned: true
+- https://www.lesswrong.com/posts/Kyc5dFDzBg4WccrbK/an-intuitive-explanation-of-solomonoff-induction -- An Intuitive Explanation of Solomonoff Induction
+  - [meta]:
+    - date: 11/19/2025
+    - tags: [intelligence]
+- https://www.youtube.com/watch?v=78Xa8VkH7-g -- Causal [[thoughts/mechanistic interpretability|Mechanistic Interpretability]], Atticus Geiger
+  - [meta]:
+    - date: 11/18/2025
+    - tags: [interpretability]
+  - > understanding neural networks through their causal mechanism
+  - [[thoughts/mechanistic interpretability#steering|activations]] steering
+    - Golden Gate Claude
+      ![[thoughts/images/diff steering.png]]
+    - circa AxBench [@wu2025axbenchsteeringllmssimple]
+    - harmonic means of:
+      - coherence
+      - prompt following
+      - steering effects
+  - Causal Mediation
+  - Causal Abstraction
+  - Designing Counterfactuals
+- https://www.youtube.com/watch?v=woo_J0RKcpQ -- Assessing skeptical views of interpretability research
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [interpretability]
+- https://cdn.openai.com/pdf/41df8f28-d4ef-43e9-aed2-823f9393e470/circuit-sparsity-paper.pdf -- Weight-sparse transformers have interpretable circuits
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [interpretability]
+  - code: https://github.com/openai/circuit_sparsity/
+- https://hazyresearch.stanford.edu/blog/2025-11-09-amd-brr -- HipKitten, AMD version of ThunderKitten
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [kernels]
+  - https://x.com/AIatAMD/status/1988704659742003555
+- https://cursor.com/blog/semsearch -- Improving agent with semantic search
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [inference, search]
+- https://distill.pub/ -- distillpub [**]
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [interpretability]
+  - now defunct
+- https://www.youtube.com/watch?v=kkfLHmujzO8 -- A Stylised History of Mech Interp
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [interpretability]
+- https://github.com/Dao-AILab/flash-attention/blob/main/flash_attn/cute/flash_fwd_sm100.py -- FlashAttention 4 CuTE kernels for B200 [**]
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [kernel]
+- https://michaelnielsen.org/reinventing_explanation/ -- Reinventing Explanation
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [visualisation]
+- https://colah.github.io/posts/2015-09-Visual-Information/ -- Visual Information Theory [**]
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [visualisation]
+- https://github.com/bitsandbytes-foundation/bitsandbytes/blob/63f538a4e492017dd4a52edfde142c4ca818d401/bitsandbytes/backends/triton/kernels_4bit.py#L155 -- 4bit blockwise triton kernels
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [programming, inference]
+- https://diffusion-scaling.github.io -- Diffusion Beats Autoregressive in Data-Constrained Settings
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [inference]
+- https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/ -- AlphaEvolve [**]
+  - [meta]:
+    - date: 11/06/2025
+    - tags: [mathematics, llm]
+  - https://github.com/algorithmicsuperintelligence/openevolve, https://github.com/liugangcode/deepevolve
+  - https://arxiv.org/abs/2511.02864
+- https://www.youtube.com/watch?v=d2QEtm71IEw -- Agents as Ordinary Software: Principled Engineering for Scale | Linus Lee, Thrive Capital
+  - [meta]:
+    - date: 11/03/2025
+    - tags: [agents]
+- https://gladia.netlify.app/publication/2025-mencattini-injective/ -- Language Models are Injective and Hence Invertible
+  - [meta]:
+    - date: 11/01/2025
+    - tags: [interpretability]
+- https://x.com/kilian_maciej/status/1984180313598435756 -- do not re-normalize MoE router scores post topk if k=1
+  - [meta]:
+    - date: 10/31/2025
+    - tags: [moe, training]
+- https://huggingface.co/spaces/HuggingFaceTB/smol-training-playbook#introduction -- The Smol Training Playbook: The Secrets to Building World-Class LLMs
+  - [meta]:
+    - date: 10/31/2025
+    - tags: [training, llm]
+- https://x.com/Kimi_Moonshot/status/1983937694360322136 -- Kimi Linear Attention
+  - [meta]:
+    - date: 10/30/2025
+    - tags: [models, linear attention]
+  - https://www.zhihu.com/question/1967345030881584585/answer/1967730385816385407
+  - vLLM PR: https://github.com/vllm-project/vllm/pull/27654, https://github.com/vllm-project/vllm/pull/27809
+- https://x.com/soumithchintala/status/1671272963532783618 -- battle of the frameworks [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [framework, tinygrad]
+  - transcript: https://www.latent.space/p/geohot
+  - https://x.com/__tinygrad__/status/1964037572503752910
+- https://www.youtube.com/watch?v=_KoUcwCoID4 -- 4 Philosophies of Interpretability
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [interpretability, alignment]
+  - i.e: Neel's incredibly speculative taxonomy of [[thoughts/mechanistic interpretability|interpretability]] research philosophy
+- https://www.doc.ic.ac.uk/~eedwards/compsys/float/#:~:text=Add%20the%20exponents%20to%20find,1.021%20%C3%97%20106 -- Floating points arithmetics
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [ml, cs]
+- https://github.com/triton-lang/triton/blob/a758c595ddb149381b7ee888982f1afbeb02823c/python/triton_kernels/triton_kernels/matmul_ogs_details/_matmul_ogs.py#L291 -- matmul_ogs for [[thoughts/quantization#mxfp4|mxfp4]]
+  - [meta]:
+    - date: 08/10/2025
+    - tags: [kernel]
+- https://thinkingmachines.ai/blog/on-policy-distillation/ -- On-Policy Distillation [**]
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [distillation, rl]
+- https://metr.org/blog/2024-11-22-evaluating-r-d-capabilities-of-llms/ -- Evaluating frontier AI R&D capabilities of language model agents against human experts
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [alignment]
+- https://thenumb.at/Functions-are-Vectors/ -- Functions are vectors [**]
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [programming, linear algebra]
+- https://assets.anthropic.com/m/71876fabef0f0ed4/original/reasoning_models_paper.pdf -- Reasoning models don't always say what they think
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [interpretability]
+  - see also: https://www.anthropic.com/research/reasoning-models-dont-say-think
+- https://transformer-circuits.pub/2025/faithfulness-toy-model/index.html -- A Toy Model of Mechanistic (Un)Faithfulness
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [alignment]
+- https://alignment.anthropic.com/2025/subliminal-learning/ -- Subliminal Learning: Language models Transmit Behavioral Traits via Hidden Signals in Data
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [alignment]
+- https://alignment.anthropic.com/2025/stress-testing-model-specs/ -- Stress-testing model specs reveals character differences among language models
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [alignment]
+  - > Models reveal their implicit value hierarchies in the value tradeoff scenarios we generate. By aggregating models’ decisions across our ‘high disagreement’ scenarios (the scenarios where responses vary the most across frontier models), we can identify clear patterns that distinguish different model families.
+  - @zhang2025stress
+- https://kyutai.org/next/codec-explainer -- Neural audio codecs: how to get audio into LLMs
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [audio, llm]
+- https://www.youtube.com/watch?v=1KRcs8XYUWo -- Sequence-to-sequence models: [[thoughts/Connectionist network|Connectionist]] Temporal Classification
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [models, seq2seq]
+- https://github.com/NVlabs/QeRL -- NVlabs/QeRL
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [rl]
+- https://www.aleksagordic.com/blog/matmul -- Anatomy of high performance matmul kernels
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [gpu programming]
+  - https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/
+- https://maurice-weiler.gitlab.io/blog_post/cnn-book_1_equivariant_networks/ -- Equivariant neural networks  –  what, why and how ?
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [neural network, equivariant]
+  - see also: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Convolutional Neural Network|CNN]]
+- https://jameschen.io/jekyll/update/2024/02/12/mamba.html -- Mamba models
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [state-space models, s4]
+  - see also: [[thoughts/state-space models#Mamba]]
+- https://www.tilderesearch.com/vignettes/gram-space -- Gram-Space Manifold Muon
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [optimizer]
+  - see also: [[thoughts/muon]]
+- https://x.com/jkminder/status/1980290860261732560 -- Finetuning on narrow domains leaves traces behind. So can interpretability agents
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [interpretability]
+- https://transformer-circuits.pub/2025/attention-qk/index.html -- Tracing Attention Computation Through Feature Interactions
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [interpretability]
+  - see also: [[thoughts/mechanistic interpretability#QK attributions]]
+- https://www.goodfire.ai/research/replicating-circuit-tracing-for-a-simple-mechanism -- Replicating Circuit Tracing for a Simple Known Mechanism
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [interpretability]
+- https://www.goodfire.ai/research/model-diff-amplification -- Discovering Undesired Rare Behaviors via Model Diff Amplification [**]
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [model diff, interpretability]
+- https://x.com/thesubhashk/status/1887138694546788556 -- Helix representation in LLMs for additions capabilities
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [math, llm]
+- https://www.goodfire.ai/blog/on-optimism-for-interpretability -- On Optimism for interpretability
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [interpretability]
+- https://leimao.github.io/blog/CuTe-Tilers/ -- CuTe megathread [**]
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [ml, compiler]
+  - https://leimao.github.io/article/CuTe-Layout-Algebra/
+  - https://leimao.github.io/blog/CuTe-Inverse-Layout/
+  - https://leimao.github.io/blog/CuTe-Blocked-Raked-Products/
+  - https://leimao.github.io/blog/CuTe-Index-To-Coordinate/
+  - https://leimao.github.io/blog/CUDA-Driver-Runtime-Load-Run-Kernel/
+- https://hanlab.mit.edu/blog/svdquant-nvfp4 -- SVDQuant Meets NVFP4: 4× Smaller and 3× Faster FLUX with 16-bit Quality on NVIDIA Blackwell GPUs [--]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [inference, optimization]
+- https://www.youtube.com/watch?v=i6Y2EelEC04 -- iris: First-Class Multi-GPU Programming Experience in Triton [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [compiler, gpu]
+  - [[thoughts/GPU programming#AMD]]
+- https://thinkingmachines.ai/blog/lora/ -- LoRA Without Regret
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [ml, training, lora]
+- https://hanlab.mit.edu/blog/streamingllm -- [[thoughts/Attention|Attention]] sink keeps language models stable [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [ml]
+  - see also: [[thoughts/KV compression#Streaming LLM]]
+  - Diagraph sink
+  - OpenAI: $\text{attention\_probs} = \operatorname{softmax}([\text{sink\_scalar}, a_{1},a_{2},\ldots,a_{t}])$
+  - @barbero2025llmsattendtoken have shown that attention sinks serve as "pressure valves" preventing what researchers call "over-mixing"—a pathological state where deep models processing long sequences blur important distinctions between tokens.
+- https://github.com/IST-DASLab/FP-Quant -- IST-DASLab/FP-Quant
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [quantisation]
+  - Microscaling FP4 Quantisation
+- https://www.neuronpedia.org/graph/info -- The Circuits Research Landscape: Results and Perspective, Aug 2025 [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [interpretability]
+  - [[thoughts/mechanistic interpretability]]
+- https://www.lesswrong.com/posts/L3aYFT4RDJYHbbsup/llms-can-learn-about-themselves-by-introspection -- LLMs can learn about themselves by introspection
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [alignment, ai]
+  - related to [[thoughts/Alignment]]
+  - TLDR: We find that [[thoughts/LLMs]] are capable of introspection on simple tasks. We discuss potential implications of introspection for interpretability and the moral status of AIs.
+    - I think this is largely [[thoughts/emergent behaviour]] based on [[thoughts/observer-expectancy effect]] through learnt patterns in RL/post-training paradigm.
+    - > LLMs can acquire knowledge that cannot be inferred from their training data. This challenges the view that LLMs simply imitate their training distributions. Instead, it appears that some LLMs have "privileged access" to certain facts about themselves and can use it to answer questions.
+      - I wonder if the models grok based on what they understand OOD? We certainly don't have a strong hypothesis on why model groks overall.
+- https://www.lesswrong.com/posts/3ghj8EuKzwD3MQR5G/an-introduction-to-representation-engineering-an-activation -- Representation Engineering, an activation-based paradigm for controlling [[thoughts/LLMs]]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [interpretability]
+- https://www.thought-anchors.com/ -- Thought Anchors in LLM Reasoning Traces
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [interpretability, reasoning, grpo]
+  - https://arxiv.org/abs/2506.19143
+- https://kipp.ly/transformer-inference-arithmetic/ -- Transformers Inference Arithmetics [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [napkin, inference]
+  - see also [[thoughts/Transformers#Inference]], [[thoughts/LLMs]]
+- https://www.youtube.com/watch?v=kLiwvnr4L80&t=868s -- Trends in Deep Learning, Bill Dally (NVIDIA)
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [argumentative, trend]
+  - [[thoughts/GPU programming]], [[lectures/420/notes|NVIDIA architecture notes]]
+- https://x.com/thesephist/status/1895887696268288119 -- AI-centric interface design
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [design, interface]
+- https://x.com/ZayneSprague/status/1836784332704215519 -- To CoT or not to CoT
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [reasoning, interpretability]
+- https://x.com/simonw/status/1840438066974228912 -- NotebookLLM system prompt
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [prompting]
+- https://x.com/karpathy/status/1841536804073439268 -- Karpathy's at GPU MODE's IRL talk
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [systems, vllm]
+- https://x.com/stephen_wolfram/status/1826692234554875979 -- Deep-dive into ML
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [internal, ml]
+- https://x.com/sarahookr/status/1834294208821428571 -- inference-time not capture governance guardrails
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [alignment, policy, safety]
+- https://x.com/banburismus_/status/1819354340290658725 -- Tom McGrath's questions about cross-layer superposition
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [interpretability]
+- https://x.com/NeelNanda5/status/1850656772002120009 -- Neel's take on Anthropic's crosscoders
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [interpretability, argumentative]
+- https://x.com/AIatMeta/status/1851327605716435011 -- layer skip in self-speculative decoding
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [inference]
+- https://x.com/JungleSilicon/status/1866352582349750555 -- embedding visualisation from Midjourney
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [latent space]
+- https://x.com/sleenyre/status/1851519830375207309 -- sae for flux-lens for exploring image embeddings
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [interpretability]
+- https://x.com/jxmnop/status/1851706815244902691 -- contextual document embeddings OSS
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [embeddings, latent space]
+- https://x.com/JustinLin610/status/1861847752835248381 -- QwQ reasoning models outperform o1
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [reasoning, rl]
+- https://x.com/ch402/status/1874990808539275687 -- Chris Olah on state of AI research
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [research]
+- https://x.com/giansegato/status/1875944887973183785 -- The opportunity is now, don't believe in both extreme wrt to AI
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [ai, longtermism]
+- https://x.com/nrehiew_/status/1876091138366652438 -- ML with shape suffixes stylistic choice
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [ml, interpretability]
+- https://x.com/behrouz_ali/status/1878859086227255347 -- Titan, scaling Neural Memory
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [attention, architecture]
+- https://x.com/vllm_project/status/1879979185474859303 -- By yours truly
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [structured outputs, inference]
+- https://x.com/flowersslop/status/1882241958397067677 -- R1 having existential crisis
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [rl, reasoning, cot]
+- https://x.com/rupspace/status/1877882538859078084 -- Highway network
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [model architecture]
+  - see also: https://rupeshks.cc/blog/skip.html
+- https://x.com/VictorTaelin/status/1897108466243641399 -- Claude Code optimize HVM3 to 328 MIPs per M4 Core
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [engineering, optimization]
+  - https://gist.github.com/VictorTaelin/4f55a8a07be9bd9f6d828227675fa9ac
+- https://x.com/karpathy/status/1937902205765607626 -- Karpathy on "context engineering" over prompt engineering
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [context engineering]
+- https://x.com/jkminder/status/1939790920326541601 -- Model diffing on Chat vs. Base Model
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [interpretability, techniques]
+- https://x.com/leloykun/status/1941067659157913625 -- Adam with Aggressive Gradient Value/Norm Clipping ≈ Smoothed SignSGD/NormSGD
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [optimizer]
+- https://x.com/Kimi_Moonshot/status/1944589115510734931 -- Kimi K2 rough architecture
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [model architecture]
+- https://x.com/jobergum/status/1945036230799892726 -- ColBERT WASM for embeddings
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [engineering, bitter lesson]
+- https://x.com/geoffreylitt/status/1950601513870499953 -- Geoffrey Litt on capabilities debates
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [capabilities, hci]
+- https://x.com/JayaGup10/status/1952871186888843528 -- Integration landscape from labs
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [providers, inference]
+- https://x.com/HSVSphere/status/1955714317816316150 -- modern-infrastructure + AI
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [infrastructure]
+- https://x.com/ShiqianMa/status/1971979845170315669 -- Manifold Muon, as spectral GD [**]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [optimizer]
+- https://x.com/GoodfireAI/status/1953903581075288470 -- gpt-oss interpretability speed run at Goodfire
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [interpretability, models]
+  - > experts actually seem to specialize - e.g. a “business expert” that activates most on business strategy & management topics.
+  - > just as Claude fixates on spiritual bliss after talking to itself for many turns, gpt-oss has its own attractor states: nonsense code & creative writing!
+  - > memoized during training: https://x.com/jack_merullo_/status/1953860284638278043
+  - > SAEs and features activated on mentions of LLaMA models
+  - > gpt-oss' inability to act as a naive text completion model (vs. reverting to a chat format), even with jailbreaks, correlates with how subjectively cooked/slop-ish it feels
+  - > found that you can sometimes get interpolated reasoning levels from gpt-oss between “low”, “medium”, and “high” (but “none”, “ultra”, “infinite” don’t work)
+  - > basic contrastive steering of gpt-oss-20b, following Anthropic’s "persona vectors": https://x.com/MarkMBissell/status/1952919910134497332
+- https://x.com/Zai_org/status/1954750596634054965 -- GLM 4.5 Technical report
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [model architecture]
+  - Agentic workflow RL scale
+  - https://z.ai/blog/glm-4.5
+- https://x.com/djcows/status/1955435075136606449 -- Read your weights
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [interpretability]
+- https://x.com/Kimi_Moonshot/status/1944589115510734931 -- Kimi K2 architecture
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [model architecture]
+  - ![[thoughts/images/kimi-architecture.webp]]
+- https://x.com/nic__carter/status/1797635177973158182 -- The neck-breaking speed of AI
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [development]
+- https://blog.ezyang.com/2025/08/the-parallelism-mesh-zoo/ -- The Parallelism Mesh Zoo
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [distributed, scaling]
+- https://x.com/JingyuanLiu123/status/1959093411283443726 -- TPU vs GPU parallelism strategies [**]
+  - [meta]:
+    - date: 19/26/2025
+    - tags: [hardware design]
+- https://x.com/GoodfireAI/status/1960378734852046859 -- Adversarial examples affects feature share directions.
+  - [meta]:
+    - date: 09/15/2025
+    - tags: [adversarial, interpretability, research]
+  - https://x.com/livgorton/status/1960378437102657654
+  - https://arxiv.org/abs/2508.17456
+- https://x.com/keenanisalive/status/1964434335911858552 -- autoencoder representations
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [visualisation]
+  - Geometric representation of encoders: maps a high-dimensional data $x$ to low-dimensional latent $z$, then the decoder tries to map $z$ back to $x$.
+  - We _always_ learn a k-dimensional submanifold $M$
+    ![[thoughts/images/submanifold mapping.webp]]
+  - See also: [[thoughts/autoencoder diagrams intuition|diagrams]]
+- https://x.com/GoodfireAI/status/1965189414491168785 -- SAE scaling law dynamics
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [interpretability, scaling law]
+  - scaling on feature manifolds
+  - in terms of manifold discovered
+- https://x.com/_xjdr/status/1966215415027347856 -- Qwen3-Next architecture difference with hybrid and Gated Delta Rule
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [model architecture]
+  - https://arxiv.org/abs/2310.07707
+- https://x.com/Grad62304977/status/1967548295816819184 -- RL resources [**]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [rl]
+- https://x.com/repligate/status/1968093240646889820 -- Yud's AI book
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [longtermism]
+- https://x.com/mrsiipa/status/1968284758661894436 -- The NVIDIA regime
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [gpu programming]
+  - I'm tired
+- https://x.com/jackminong/status/1968518159826305438 -- PyTorch weirdness
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [ml framework]
+  - See also [[thoughts/Weight tying]]
+- https://x.com/josh_bickett/status/1725556267014595032 -- What is an AI agent [**]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [ai]
+- https://x.com/jkminder/status/1969082859311841413 -- [[thoughts/sparse crosscoders]] and non-linear representation dilemma
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [interpretability, hypothesis]
+- https://x.com/karpathy/status/1973435013875314729 -- Karpathy's bitter lesson on Dwarkesh's pod with Sutton
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [bitter lesson, retrospective]
+  - > Stated plainly, today's frontier LLM research is not about building animals. It is about summoning ghosts. You can think of ghosts as a fundamentally different kind of point in the space of possible intelligences
+  - > They are these imperfect replicas, a kind of statistical distillation of humanity's documents with some sprinkle on top. They are not platonically bitter lesson pilled, but they are perhaps "practically" bitter lesson pilled, at least compared to a lot of what came before.
+  - see also: https://chatgpt.com/share/68dd6833-67c4-8007-8f37-331eb5bd9ee0
+- https://x.com/deepcohen/status/1973191790602887544 -- Central flows
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [optimizer]
+  - https://centralflows.github.io/part1/
+    - How [[thoughts/gradient descent]] works?
+- https://x.com/nrehiew_/status/1973404310127124790 -- DSA comparing to attention sink in long-context regime
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [attention, scaling law]
+  - see also: https://x.com/nathancgy4/status/1973420757196873885
+  - [[thoughts/optimization#softmax]] over 2048 tokens, thus $QK$ weights magnitudes are preserved, and no "attention budget" are being given to useless tokens.
+- https://www.goodfire.ai/blog/painting-with-concepts -- Painting with concepts, via SAE for SDXL-turbo
+  - [meta]:
+    - date: 05/30/2025
+    - tags: [interpretability, diffusion]
+- https://www.goodfire.ai/blog/under-the-hood-of-a-reasoning-model -- Under the hood of a reasoning models, SAEs.
+  - [meta]:
+    - date: 05/30/2025
+    - tags: [interpretability]
+- https://wattenberger.com/thoughts/yay-embeddings-math -- creative with embeddings in writing
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [latent space]
+- https://basilhalperin.com/essays/agi-vs-emh.html -- AGI timeline, Basil Halperin
+  - [meta]:
+    - date: 05/30/2025
+    - tags: [agi, longtermism]
+- https://optimists.ai/2024/03/10/deconstructing-bostroms-argument-for-ai-doom/ -- Bostrom's Argument for AI Doom
+  - [meta]:
+    - date: 05/30/2025
+    - tags: [ai safety, longtermism]
+- https://www.joelsimon.net/lluminate -- Creative exploration with LLM
+  - [meta]:
+    - date: 05/30/2025
+    - tags: [lluminate]
+- https://docs.google.com/presentation/d/1dGA1Jpppv9BciOOrc95ZYRinsj_ZYrI-IQOIifHGIZw/edit?slide=id.p#slide=id.p -- Transformers in Diffusion Models for Image Generations and Beyond
+  - [meta]:
+    - date: 07/13/2025
+    - tags: [model architecture]
+- https://discuss.vllm.ai/t/numerical-difference-between-vllm-logprobs-and-huggingface-logprobs/151 -- Numerical difference between [[thoughts/vllm|vLLM]] logprobs and HF logprobs
+  - [meta]:
+    - date: 07/13/2025
+    - tags: [inference, numerical stability]
+- https://jeremybernste.in/writing/deriving-muon -- Deriving [[thoughts/muon|Muon]]
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [optmizer]
+  - https://github.com/KellerJordan/modded-nanogpt
+  - https://kellerjordan.github.io/posts/muon/
+- https://www.neuronpedia.org/graph/info -- The circuit analysis research landscape
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [fruit, interpretability]
+  - [[thoughts/mechanistic interpretability#attribution graph]]
+  - On Biology of LLMs
+  - Futures and directions of interpretability [research](https://www.neuronpedia.org/graph/info#section-directions-for-future-work)
+    - Influence functions, or training data attributions methods
+    - Scaling interpreting CoT, exempli gratia [Docent](https://transluce.org/introducing-docent)
+- https://ethanding.substack.com/p/ai-subscriptions-get-short-squeezed -- Tokens are getting more expensive
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [inference economics]
+- https://docs.google.com/presentation/d/1NOrUVZNkcKHom5ih5uqqOSrV4Vi8KZRN8LYaAeADX80/edit?slide=id.g3724263dfb4_0_68#slide=id.g3724263dfb4_0_68 -- Scaling MoE with llm-d and vLLM
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [inference, scaling]
+- https://www.anthropic.com/research/persona-vectors -- Persona vector
+  - [meta]:
+    - date: 09/18/2025
+    - tags: [interpretability]
+- https://www.tilderesearch.com/blog/momoe -- MoMoE: Memory-optimized Mixture of Experts
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [momoe]
+  - See also: [triton-based](https://github.com/shawntan/scattermoe) implementation of Sparse MoE
+  - Qwen3 modular fused: https://github.com/woct0rdho/transformers-qwen3-moe-fused/blob/master/qwen3_moe_fused/modular_qwen3_moe_fused.py
+- https://docs.google.com/document/d/1ZV73D2vgaj2yu_tjN3TVOP6QVLWVPXJB2rrqSZQxYtI/edit?usp=drivesdk -- AI research overview
+  - [meta]:
+    - date: 08/14/2025
+    - tags: [edit]
+- https://timdettmers.com/2022/08/17/llm-int8-and-emergent-features/ -- [[thoughts/LLMs]].int8() and Emergent Features
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [properties, inference]
+  - https://arxiv.org/abs/2110.02861
+- https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf -- Matrix cookbook
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [books, matmul]
+- https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [entropy, inference, sampler]
+- https://jax-ml.github.io/scaling-book/ -- JAX scaling book [**]
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [training, large scale]
+- https://jaxformer.com/ -- Training LLMs with Jax
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [training, large scale]
+  - made by [Cohere](https://cohere.com/)
+- https://nanotron-ultrascale-playbook.static.hf.space/index.html -- The Ultra-Scale Playbook: Training LLMs on GPU Clusters [**]
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [books, scaling law]
+- https://www.jeremykun.com/2023/08/10/mlir-getting-started/ -- [[thoughts/MLIR]] introduction [**]
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [compiler, ml]
+- https://huggingfacefw-blogpost-fineweb-v1.static.hf.space -- FineWeb: decanting the web for the finest text data at scale. [**]
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [datasets]
+- https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/ -- [[thoughts/Bayesian Neural Network|Bayesian Neural Network]] [**]
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [ml]
+- https://www.lei.chat/posts/triton-linear-layout-concept/ -- Triton Linear Layout
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [abstract algebra]
+- https://research.colfax-intl.com/cutlass-tutorial-writing-gemm-kernels-using-tensor-memory-for-nvidia-blackwell-gpus/ -- GEMM kernels on Blackwell GPUs
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [gpu programming]
+- https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm4higcSGpvKKNdmtY/edit?tab=t.0#heading=h.nc4nxxczgw4w -- Structural tags in xgrammar (to be used in [[thoughts/vllm|vLLM]])
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [inference, structured outputs]
+- https://drive.google.com/file/u/1/d/1l54BwUi07JnqwB5_iHCVVZ3TnR05acDm/view?usp=sharing -- The Illusion of The Illusion of Thinking
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [rl, contrarian]
+  - see also https://arxiv.org/abs/2506.06941
+- https://huggingface.co/blog/rearchitecting-uploads-and-downloads -- Rearchitecting Hugging Face Uploads and Downloads
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [engineering]
+- https://docs.google.com/document/d/1p-ggQV3vVWIQuCccXEl1fD0thJOgXimlbBpGk6FI32I/edit?tab=t.0#heading=h.y0ohi6l5z9qn -- MATS 9.0 Winter 2025
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [interpretability, research]
+  - https://x.com/NeelNanda5/status/1950344397075456438
+- https://nousresearch.com/measuring-thinking-efficiency-in-reasoning-models-the-missing-benchmark/ -- Measuring reasoning model thinking efficiency
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [rl, efficiency, cot]
+- https://www.seangoedecke.com/great-software-design/ -- Great software design looks underwhelming
+  - [meta]:
+    - date: 08/18/2025
+    - tags: [design, engineering]
+- https://openai.com/index/deep-double-descent/ -- Deep double descent [**]
+  - [meta]:
+    - date: 08/21/2025
+    - tags: [optimizer, ml]
+- https://horace.io/brrr_intro.html -- Deep Learning from first principle
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [gpu programming, scaling law]
+- https://colah.github.io/posts/2014-03-NN-Manifolds-Topology/ -- Neural Network, and Manifolds
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [manifolds, interpretability, topology]
+- https://substack.com/@jakeeaton/note/c-140561607 -- AI skeptics unconsciously anthropomorphize LLMs in their critiques, like their anger is directed more at a naive zoomer intern who can’t infer the context of your ask. [--]
+  - [meta]:
+    - date: 09/07/2025
+    - tags: [longtermism]
+  - > it’s funny how many AI skeptics unconsciously anthropomorphize LLMs in their critiques, like their anger is directed more at a naive zoomer intern who can’t infer the context of your ask, rather than a computer program that can work small miracles if you have the patience to learn how it thinks.
+    >
+    > no one gets mad at the limitations of their microwave, or even a stats package, the way they get worked up over a machine in a box that four years ago couldn’t do addition and today wins math olympiads. in that anger is an implicit assumption: that it should know better — and of something on the other end that’s far more than a machine, if not quite yet a soul
+- https://ghost.oxen.ai/why-grpo-is-important-and-how-it-works/ -- Why GRPO is important and how it works [**]
+  - [meta]:
+    - date: 09/10/2025
+    - tags: [rl, training]
+  - pinned: true
+- https://mp.weixin.qq.com/s/h1cFYDNxcHC30APcarF47A -- [[thoughts/vllm|vLLM]] from scratch
+  - [meta]:
+    - date: 09/21/2025
+    - tags: [inference]
+  - 1.3: https://mp.weixin.qq.com/s/BdWG6_ZTaGRknmsbGfFkMQ
+  - 1.2: https://mp.weixin.qq.com/s/8BVEVPPqDQhQ2l8L90dMNQ
+- https://ma-lab-berkeley.github.io/deep-representation-learning-book/ -- Learning Deep Representations of Data Distributions
+  - [meta]:
+    - date: 09/28/2025
+    - tags: [ml]
+  - see also: @ldrdd2025
+- https://www.julian.ac/blog/2025/09/27/failing-to-understand-the-exponential-again/ -- Failing to Understand the Exponential, Again
+  - [meta]:
+    - date: 09/29/2025
+    - tags: [bitter lesson, training]
+- https://github.com/pranjalssh/fast.cu -- fast kernels, in [[thoughts/GPU programming|CUDA]]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [kernel]
+- https://hazyresearch.stanford.edu/blog/2025-09-28-tp-llama-main -- We Bought the Whole GPU, So We're Damn Well Going to Use the Whole GPU
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [inference]
+- https://hazyresearch.stanford.edu/blog/2025-05-27-no-bubbles -- Look Ma, No Bubbles! Designing a Low-Latency Megakernel for Llama-1B [**]
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [kernel, inference]
+
+## opinions
+
+- https://etsd.tech/posts/rtfc -- Read the f\*\*\* code
+  - [meta]:
+    - date: 08/07/2025
+    - tags: [engineering]
+- https://archive.ph/YNZI0 -- Elon wants what he can't have: Wikipedia [--]
+  - [meta]:
+    - date: 04/27/2025
+    - tags: [columnist]
+- https://www.paulgraham.com/mean.html -- Mean [[are.na#people|people]] fail
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [behaviour]
+- https://ordinaryinstants.substack.com/p/graduate-school-is-just-a-metaphor -- Graduate school is just a metaphor
+  - [meta]:
+    - date: 03/05/2025
+    - tags: [research]
+- https://www.mozillafoundation.org/en/nothing-personal/the-post-naive-internet-era/ -- Welcome to the Post-Naive Internet era
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [internet]
+- https://substack.com/@ellieanderphd/note/c-176537495?r=1z8i4s&utm_medium=ios -- How to read philosophy
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [philosophy]
+- https://archive.ph/eswxi -- The Divider [--]
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [pedagogy]
+- https://joincolossus.com/article/inside-cursor/ -- Inside Cursor
+  - [meta]:
+    - date: 11/08/2025
+    - tags: [work culture]
+- https://andymasley.substack.com/p/individual-ai-use-is-not-bad-for -- Using ChatGPT is not bad for the environment [**]
+  - [meta]:
+    - date: 11/04/2025
+    - tags: [environment, llm]
+  - his replies: https://andymasley.substack.com/p/replies-to-criticisms-of-my-chatgpt
+  - see also: https://epoch.ai/gradient-updates/how-much-energy-does-chatgpt-use
+- https://johnpaulbrammer.substack.com/p/thoughts-on-the-dating-app-screenshot -- Thoughts on the [[/dating|Dating]] App Screenshot
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [surveillance]
+  - recreational surveillance
+- https://www.nytimes.com/2025/08/02/opinion/artificial-intelligence-enlightenment.html -- A.I. Is Shedding Enlightenment Values
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [ai, epistemology]
+- https://maggieappleton.com/ai-enlightenment -- A Treatise on AI Chatbots Undermining the Enlightenment
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [ai, llm]
+- https://www.visakanv.com/blog/flirting/ -- flirting is about signalling interest with plausible deniability
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [dating]
+- [[library/The AI Anarchies Book]]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [book, technology]
+- https://geohot.github.io/blog/jekyll/update/2025/09/13/get-out-of-technology.html -- Get the fuck out of technology [**]
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [technology]
+- https://ai-2027.com/ -- AI 2027 [**]
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [prediction, speculation]
+  - https://x.com/eli_lifland/status/1908671788630106366
+  - https://thezvi.substack.com/p/analyzing-a-critique-of-the-ai-2027
+  - https://www.lesswrong.com/posts/PAYfmG2aRbdb74mEp/a-deep-critique-of-ai-2027-s-bad-timeline-models
+  - https://www.lesswrong.com/posts/gyT8sYdXch5RWdpjx/ai-2027-responses
+  - https://vitalik.eth.limo/general/2025/07/10/2027.html
+- https://www.overcomingbias.com/p/what-cost-varietyhtml -- What Cost Variety?
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [economic]
+- https://ourworldindata.org/global-inequality-opportunity-to-give -- Global inequality is huge — but so is the opportunity for people in high-income countries to support poor people
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [economic]
+  - > Less than 2% of the income of the top 10% global earners equals the entire annual income of the poorest 10%
+- https://stevenadler.substack.com/p/the-45-trillion-dollar-elephant-in -- The 4.5 trillion dollar elephant in the room
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [ai]
+- https://blog.aayushg.com/conviction/ -- Conviction is the scarcest resource [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [life, ideology]
+- https://danluu.com/ballmer/ -- Steve Ballmer was an underrated CEO
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [leaders]
+- https://www.dwarkesh.com/p/questions-about-ai?open=false -- Questions about AI, by Dwarkesh
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [ai, longtermism]
+- https://epoch.ai/gradient-updates/most-ai-value-will-come-from-broad-automation-not-from-r-d -- Most AI value will come from broad automation, not from R&D
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [interpretability]
+- https://www.thefp.com/p/a-fifth-of-american-adults-cant-read-i-teach-them -- A fifth of American Adults Can't Read. Here's How to Teach Them.
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [pedagogy]
+- https://paulgraham.com/95.html -- PG's 95% of great programmers in
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [productivity]
+- https://paulgraham.com/woke.html -- Origin of Wokeness
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [society]
+- https://www.noahpinion.blog/p/will-data-centers-crash-the-economy -- Will data centers crash the economy?
+  - [meta]:
+    - date: 08/04/2025
+    - tags: [economics]
+- https://x.com/eigenrobot/status/1954363395068616745 -- Gaza's privatization
+  - [meta]:
+    - date: 08/10/2025
+    - tags: [politics]
+- https://ifstudies.org/report-brief/in-pursuit-marriage-motherhood-and-womens-well-being -- In Pursuit: Marriage, Motherhood, and Women’s Well-Being [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [love, life]
+- https://www.lesswrong.com/posts/gfbX3h4RueuDzWs7m/some-rules-for-life-v-0-0 -- Rules for life [**]
+  - [meta]:
+    - date: 09/10/2025
+    - tags: [life, reductionism]
+- https://marginalrevolution.com/marginalrevolution/2025/02/why-i-think-ai-take-off-is-relatively-slow.html -- Why I think AI take-off is relatively slow.
+  - [meta]:
+    - date: 09/18/2025
+    - tags: [ai, longtermism]
+- https://x.com/eigenrobot/status/1968726067612389636
+  - [meta]:
+    - date: 09/18/2025
+    - tags: [politics]
+- https://mishaglouberman.substack.com/p/stop-pretending-toronto-is-more-than -- Stop Pretending Toronto is More Than It Is.
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [dunning-kruger, living]
+- https://baincapitalventures.com/insight/we-must-know-we-will-know/ -- We must know, we will know
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [investment, announcement]
+  - periodic labs, cf [AI Scientist](https://periodic.com/)
+
+## life is literature
+
+- https://writetobrain.com/olfactory -- We induced Smells with ultrasound [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [advancement, longtermism]
+- https://www.sherryning.com/p/what-do-we-deserve-in-love -- What do we deserve in love?
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [love]
+- https://read.isabelunraveled.com/p/let-yourself-be-loved -- let yourself be loved [**]
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [love]
+  - > Relationship are co-created.
+- https://static1.squarespace.com/static/5b3a3c2596e76feeba40905e/t/5b46366570a6add65490e050/1531328102222/1977workingItOut.pdf -- Reflections on "Learning to Work"
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [culture]
+- https://clarkesworldmagazine.com/kritzer_05_23 -- Better living through algorithms
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [short, literature]
+    - pinned: true
+- https://x.com/carmenleelau/status/1818771532132311200 -- People who demand nothing of you
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life, friend]
+- https://x.com/NicoleSHsing/status/1876672940353450369 -- existence
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life]
+- https://x.com/xhfloz/status/1878624648717553753 -- The Scream to The Sun arc
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [being, eschatology, art]
+- https://x.com/ashotmagazine/status/1879964949776330837 -- rest-in-peace David Lynch
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [art, life, eschatology]
+- https://x.com/MelisaSeah/status/1875931461565693997 -- Vietnamese being in frontier art and fashion style
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [fashion]
+- https://x.com/kasratweets/status/1880147402025582924 -- Kasra on loneliness, or emotional insecurity
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [anhedonia]
+- https://x.com/VividVoid_/status/1828461484277461447 -- philosophical wisdom
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [gm]
+- https://x.com/melissa/status/1883821342354768109 -- Melissa on fairness within marriage
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [love, relationship]
+- https://x.com/bimbosattva_/status/1935812993528599012?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- Be autistic and women will love you
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [optimization, dating]
+- https://x.com/phokarlsson/status/1794384589898805621 -- Treat people as if they are too complex to hold it inside your head
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life, being, relationship, social games]
+- https://x.com/jacquemusx/status/1942186663557353504 -- Iris van Herpen
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [fashion, designer]
+- https://x.com/thecaravanindia/status/1942869801593958709 -- Bertrand Russell releases a manifesto warning about the danger of nuclear weapons
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [eschatology, technology]
+- https://x.com/michael_nielsen/status/1951055480920613156 -- Don't drop out of college
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life, school]
+- https://x.com/gabrielpeterss4/status/1951781057973608948?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- working on your problems
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [work]
+- https://x.com/aarnphm_/status/1956238570353504615 -- Seeing N
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [friends]
+- https://x.com/SchrodingrsBrat/status/1960157702232940796 -- September is the true New Year, Sherry
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [being, life]
+- https://x.com/bolau_/status/1963676094546186539 -- performative curius highlighting
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [meme]
+- https://x.com/virtualjew/status/1846593528350011539 -- You can just make grilled cheese with onions
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [food]
+- https://x.com/qiaochuyuan/status/1629333539488690176?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- QC on attachment theory thread [**]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [love, life]
+- https://x.com/nwilliams030/status/1884282849471390185 -- neighbourhood as a form of proximity love
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life, society]
+- https://x.com/booritney/status/1884857291046002714 -- dates in sf, after dark thursday
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life, dating]
+- https://x.com/tommytrxnh/status/1884908531079340090 -- Tommy's version
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [being, life]
+- https://x.com/noampomsky/status/1960404829647585590 -- Life
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life, feelings]
+- https://x.com/Phil_Lewis_/status/1973448285164806247 -- Jane Goodall, ethologist and conservationist, has died
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [eschatology]
+- https://ryolu.notion.site/how-to-make-something-great -- How to make something great, by Ryo Lu
+  - [meta]:
+    - date: 03/09/2025
+    - tags: [ai, design]
+- https://www.personalcanon.com/p/in-praise-of-writing-on-the-internet -- In praise of writing on the internet
+  - [meta]:
+    - date: 03/09/2025
+    - tags: [writing, love]
+- https://www.henrikkarlsson.xyz/p/being-patient-with-problems -- Being patient with the problems
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [work, pedagogy]
+- https://chias.blog/2022/there-is-an-internet-that-is-mine/ -- There is an internet that is mine
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [web, internet]
+- https://hannahsarchive.substack.com/p/films-that-have-healed-me -- [[cinematheque|Film]] that healed me
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [film]
+- https://www.henrikkarlsson.xyz/p/constraints -- An essay in which my friend feels stuck and I suggest relaxing some constraints
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [life, being]
+- https://en.wikipedia.org/wiki/Lovecraftian_horror -- [[thoughts/Eldrich horror]]
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [gothic]
+- https://en.wikipedia.org/wiki/Rhizome_(philosophy) -- [[thoughts/Rhizome]]
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [being, growth]
+- https://aeon.co/essays/simone-de-beauvoirs-authentic-love-is-a-project-of-equals -- Simone de Beavoir's "Love is a joint project"
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [love, philosophy]
+- https://www.links.net/dox/tech/computopia.html -- Computopia [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [computing]
+- https://www.experimental-history.com/p/28-slightly-rude-notes-on-writing -- 28 slightly rude notes on writing [**]
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [writing]
+- https://www.experimental-history.com/p/face-it-youre-a-crazy-person -- Face it, you are a crazy person [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [life, being]
+- https://altered.substack.com/p/season-of-journals -- "If I love you, it's because in some way we are the same type of bastard"
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [love]
+- https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for -- some parts of you only emerge from certain people
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [love, being]
+- https://velvetnoise.substack.com/p/in-defence-of-yearning -- in defence of yearning [**]
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [life]
+- https://www.gleech.org/stopping -- What's stopping you?
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [productivity, agency]
+- https://www.sherryning.com/p/goodbye-august -- Goodbye August
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [life]
+- https://sashachapin.substack.com/p/my-six-stages-of-learning-to-be-a -- My six stages of learning to be a socially normal person
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [learning]
+  - > Connecting with people is about being a dazzling person
+  - > Connecting with people is about playing their game
+- https://x.com/noampomsky/status/1974487754290729215?s=61 -- Feeling your feeling but it is just your resistance
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [life, being]
+
+## computer science
+
+- https://fab.cba.mit.edu/classes/MAS.863/ -- How To Make (almost) Anything [**]
+  - [meta]:
+    - date: 11/02/2025
+    - tags: [computer]
+- https://blog.sdan.io/archon/ -- Teaching GPT-5 to use a Computer
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [ai]
+- https://samwho.dev/turing-machines -- Turing machines
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [computer science]
+- https://www.lesswrong.com/posts/qAdDzcBuDBLexb4fC/the-neglected-approaches-approach-ae-studio-s-alignment -- The 'Neglected Approaches' Approach: AE Studio's Alignment Agenda
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [alignment, interpretability]
+  - rerouting profits from our consulting business towards the development of brain-computer interface (BCI) technology to dramatically enhance human agency
+  - contribution to ai safety
+- https://bertdobbelaere.github.io/sorting_networks.html -- Smallest and fastest sorting networks for a given number of inputs [**]
+  - [meta]:
+    - date: 10/17/2025
+    - tags: [topology, network]
+- https://en.wikipedia.org/wiki/Multiply%E2%80%93accumulate_operation -- Multiply–accumulate operation
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [mma, matrix]
+  - Think of FMA, MMA in [[thoughts/GPU programming|GPU]]
+- https://jasmi.news/p/32-notes-on-ai-and-writing -- 32 notes on AI and writing
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [ai, essay]
+- https://mayberay.bearblog.dev/why-i-only-use-google-sheets/ -- Why I only use Google Sheets?
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [tools]
+  - > Zimbabwean taxes and duties are often very complex and having our customers know exactly what to pay would create a better customer journey and make the process faster since we would not have to wait on our third party duty processing company to reply to us on every customer inquiry 😅
+- https://x.com/Mappletons/status/1250532315459194880 -- Digital garden but wikitext go brr
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [digital garden]
+- https://x.com/VictorPontis/status/1876723918020452809 -- Lu.ma team structure
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [team]
+- https://x.com/kepano/status/1694731713686196526 -- Obsidian manifesto
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [digital garden, hyperlinks]
+- https://x.com/kepano/status/1844491841787273467 -- static sites versus dynamic sites
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [ssg, digital garden]
+- https://x.com/313formation/status/1828059730998083853 -- resources for SWE introduction
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [free, engineering]
+- https://x.com/XorDev/status/1834966384855368108 -- visual editor
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [ide, tools]
+- https://x.com/id_aa_carmack/status/1878854976623218956 -- Carmack on HW team at Meta
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [robotics]
+- https://x.com/jankulveit/status/1845390887062257719 -- Slop removal on Twitter
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [hacks]
+- https://x.com/usgraphics/status/1797331802740408497 -- Berkeley Graphics on design process and clientele
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [tweet]
+- https://x.com/AlecStapp/status/1875677444528861492 -- Only in America, with SpaceX
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [engineering, interplanetary]
+- https://x.com/RichardMCNgo/status/1875093600612261909 -- independent research
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [hypothesis, research]
+- https://x.com/natfriedman/status/1874884925587087434 -- Nat Friedman's micro-plastics effort
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [fda, health]
+- https://x.com/kaseyklimes/status/1875927241999204849 -- value-creation versus value-extraction capitalism
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [hack, life]
+- https://x.com/sarahookr/status/1875970084558299402 -- Collusion ring in academia
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [corruption, academia]
+- https://x.com/aidenybai/status/1875683367758541026 -- Another ratioed by Aiden Bai, the one who wrote million.js
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [tweet]
+- https://x.com/CherrilynnZ/status/1836881535154409629 -- visualising emotions
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [visualisation, tools]
+- https://x.com/spikedoanz/status/1856505412167839925/ -- FEXPA op in ARM [**]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [engineering]
+- https://x.com/elzr/status/1274209005557211138 -- threads for reading as tree representations
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [heuristics, tools]
+- https://x.com/eshear/status/1880109350251032637 -- Emmett Shear on PG's advice
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [advice]
+- https://x.com/pmarca/status/1880845551467634761 -- technology hallucinations with TikTok's recent ban in US
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [society]
+- https://x.com/pmarca/status/1880860012110856566 -- Links between EA and sexual obsession lol
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [tweet]
+- https://x.com/cath_land/status/1881906298817786224 -- linktree but open source and for free lmao
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [tools]
+- https://x.com/quantumbeans/status/1861251224567234695 -- algorithmic-generated art
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [generative arts]
+- https://x.com/tylerangert/status/1884980797565788269 -- Team meme
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [meme]
+- https://x.com/zswitten/status/1879693633911463960 -- aligned Claude
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [models, alignment]
+- https://x.com/filpizlo/status/1935019034531217647 -- C++ programs that are memory-safe
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [concurrent, tools]
+- https://x.com/kepano/status/1952067484242391197 -- fear-based employment endemic
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [employment]
+- https://x.com/badlogicgames/status/1955625313121038462 -- ClaudeCode-ception
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [recursion, agents]
+- https://x.com/juliendubois/status/1971518637161992214 -- that one guy at microsoft using macbook programming on linux
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [programming meme]
+- https://x.com/tobi/status/1878957750576906484 -- Tobi replies on Canada's Tech contribution to overall GDP
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [tech culture, locality]
+- https://x.com/chapman_bliss/status/1881613396359127467 -- Last day at Neural Link
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [life, company]
+- https://x.com/adonis_singh/status/1884499176865632672 -- R1 one-shotted into markets and individualism
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [r1, alignment, self recursion]
+- https://x.com/spencerc99/status/1721704642307113346 -- Spencer's inspiration from game to make playful software
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [designers, rhizomatic tools]
+
+## philosophy
+
+- https://bennycheung.github.io/spatial-reasoning-in-agi -- Spatial Reasoning in AGI
+  - [meta]:
+    - date: 11/18/2025
+    - tags: [ai, reasoning]
+  - [[thoughts/spatial awareness]] + #llm to solve geometric problems.
+- https://www.youtube.com87/watch?v=qX6NztnPU-4 -- A 97-Year-Old Philosopher Faces His Own Death
+  - [meta]:
+    - date: 11/18/2025
+    - tags: [eschatology]
+- https://www.youtube.com/watch?v=xL_sMXfzzyA -- A Conversation with Bertrand Russell (1952)
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [life]
+  - Living in a world of ancients empires, atomic bomb
+- https://www.youtube.com/watch?v=14zv0c7cQmo -- Edith Stein's philosophy of empathy
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [empathy]
+  - two camps when talking about [[thoughts/Empathy]]:
+  - simulation theory: "putting yourself into another shoe"
+  - theory theory: "mindreading"
+  - She argues that empathy as "the experience of foreign consciousness in general", i.e: doesn't have to have shared experience, but rather a locust of their own subjectivity.
+- https://www.youtube.com/watch?v=WyofKBRpRqU -- Merleau-Ponty on the World of Perception & the World of Science (1948)
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [world perception]
+- https://www.youtube.com/watch?v=bH2EjxAn0Fk -- Empathy: philosophical debates and phenomenology
+  - [meta]:
+    - date: 11/04/2025
+    - tags: [empathy, rationalist]
+  - theory theory versus [[thoughts/hermeneutics]]
+- https://www.youtube.com/watch?v=usxvyf3xqcQ -- Hubert Dreyfus - Dostoyevsky's The Brothers Karamazov [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [existentialism]
+  - Lecture 8-15
+  - Lecture 1-7: [Kierkegaard's Fear and Trembling](https://www.youtube.com/watch?v=OjfzyqCewdo)
+  - Lecture 16-20: [Nietzsche's Twilight of the Idols & The Gay Science](https://www.youtube.com/watch?v=XdYLgH0bV9A)
+- https://www.youtube.com/watch?v=3_kdbJnCMwU&ab_channel=DavidBalcarras -- Bryan Magee - The Great Philosophers [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [ethnography]
+- https://www.youtube.com/watch?v=nNEweeN32QI&ab_channel=PhilosophyOverdose -- Is God an Unnecessary Hypothesis, Peter van Inwagen, 2004 Calvin College
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [god]
+- https://www.youtube.com/watch?v=AHmKd2Cxpa4 -- The Philosophy of Locke & Berkeley - Bryan Magee & Michael Ayers (1987)
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [empiricism]
+- https://www.youtube.com/watch?v=H4_Tsjmqxak -- Husserl, Heidegger & Existentialism - Hubert Dreyfus & Bryan Magee (1987)
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [existentialism]
+  - books: [[library/Logical Investigations]], [[library/Being and Time]]
+- https://www.youtube.com/watch?v=Oq4sjz38z5A -- Hubert Dreyfus discusses Heidegger & Merleau-Ponty [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [brain, being]
+  - why does Heidegger even bother to think about this given that we all uses our brains to experience the world?
+  - Two inners:
+    - Cartesian view: the brain in our skulls, but we don't discuss it here.
+    - causal basis and there is a brain, but ==I don't experience my brain==. Yet, it is the plumping basis from what I work:
+      - Heidegger: don't have private experience, you only have experience against to the world
+      - Sartre: chasing the bus, attraction, experience, or the bus to be caught -> ego has disappeared -> ego as inner experience.
+      - private experience in going wrong, rather observing what is going wrong.
+    - Starts with Homer
+    - Heidegger are anti-Cartesian, feelings and things looks sad/attractive that it looks that way, but it actually doesn't appear that way. These are surject.
+- https://www.youtube.com/watch?v=llu7prGMDhk&ab_channel=JuliandeMedeiros -- Lacan/Žižek on how to find your dream: a step-by-step by step guide
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [dream, being]
+- https://en.wikipedia.org/wiki/Rugged_individualism -- Rugged individualism [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [way of life]
+- https://journals.sagepub.com/doi/pdf/10.1177/0146167297234003 -- The Experimental Generation of Interpersonal Closeness: A Procedure and Some Preliminary Findings
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [love, deity]
+  - see also [[thoughts/papers/aron-et-al-1997-the-experimental-generation-of-interpersonal-closeness-a-procedure-and-some-preliminary-findings.pdf]]
+- https://www.youtube.com/watch?v=C7n7wfQOGaI -- The Philosophy of Spinoza & Leibniz - Bryan Magee & Anthony Quinton (1987)
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [rationalist]
+  - after Decartes, [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Sphinoza]]
+- https://caitlynrichardson.substack.com/p/can-intellectual-intimacy-replace -- can intellectual intimacy replace physical desire? [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [love]
+  - > desire is not just a physical hunger but a hunger of the intellect, an unraveling of thought before an unraveling of the body. to be drawn into someone’s mind, to feel their thoughts press against your own, can be more intoxicating than any physical closeness.
+    >
+    > —Anaïs Nin
+- https://www.gleech.org/grids -- Preventing Side-effects in Gridworlds
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [alignment]
+- https://www.aquantumofhope.com/ -- A Quantum of Hope
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [quantum]
+- https://www.lesswrong.com/posts/2HxAkCG7NWTrrn5R3/three-fallacies-of-teleology -- Three Fallacies of Teleology [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [philosophy, causality, ai]
+  - Backward causality:
+
+    Aristotle wrote:
+
+    > Imagine not being able to distinguish the real cause from that without which the cause would not be able to act as a cause. It is what the majority appear to do, like people groping in the dark; they call it a cause, thus giving it a name that does not belong to it. That is why one man surrounds the earth with a vortex to make the heavens keep it in place, another makes the air support it like a wide lid. As for their capacity of being in the best place they could possibly be put, this they do not look for, nor do they believe it to have any divine force...
+
+    It's not clear to [Yudkowsky] to what extent Aristotle appreciated this point - that you could not draw causal arrows from the future to the past. Aristotle did acknowledge that teeth also needed an efficient cause to develop. But Aristotle may have believed that the efficient cause could not act without the telos, or was directed by the telos, in which case we again have a reversed direction of causality, a dependency of the past on the future. I am no scholar of the classics, so it may be only myself who is ignorant of what Aristotle believed on this score.
+
+  - Anthromorphism:
+
+    > Teleological reasoning is anthropomorphic - it uses your own brain as a black box to predict external events. Specifically, teleology uses your brain's planning mechanism as a black box to predict a chain of future events, by planning backward from a distant outcome.
+
+    > And if you expect the water to avoid local maxima so it can get all the way to the bottom of the hill - to avoid being trapped in small puddles far above the ground - then your anthropomorphism is going to produce the wrong prediction
+
+  - Teleological capture:
+
+    > The third fallacy of teleology is to commit the [Mind Projection Fallacy](https://www.lesswrong.com/posts/ZTRiSNmeGQK8AkdN2/mind-projection-fallacy) with respect to telos, supposing it to be an inherent property of an object or system. Indeed, one does this every time one speaks of the purpose of an event, rather than speaking of some particular agent desiring the consequences of that event.
+
+- https://minihf.com/posts/2025-06-07-commentary-on-janus-prophecies/ -- Commentary on the Turing Apocrypha [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [longtermism, being]
+  - basis for https://generative.ink/prophecies/
+  - > _reframing exercise_. Not every theorist lost on [[thoughts/LLMs]], Barthes and Foucault for example are doing quite well. As difficult as it was to predict large language models some people had occasional glimpses of insight adjacent to or part of the underlying facts about reality that make LLMs possible.
+- https://www.lesswrong.com/posts/vzLrQaGPa9DNCpuZz/against-modal-logics -- Against Modal Logics
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [philosophy]
+- https://www.lesswrong.com/posts/JumyfYQaJkWnjCcEr/consequentialism-is-a-compass-not-a-judge -- Consequentialism is a compass, not a judge
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [consequentialism, being]
+- https://www.marxists.org/history/erol/periodicals/theoretical-review/1982301.htm -- The Concepts of Ideology, Hegemony, and Organic Intellectuals in Gramsci’s Marxism
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [philosophy]
+- https://joecarlsmith.com/2020/11/29/grokking-illusionism -- Grokking Illusionism
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [alignment, ood]
+- https://joecarlsmith.com/2025/01/28/fake-thinking-and-real-thinking -- Fake vs Real thinking
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [philosophy]
+- https://joecarlsmith.com/2023/02/16/why-should-ethical-anti-realists-do-ethics -- Why should ethical anti-realists do ethics?
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [ai, metaethics]
+  - believe in an objective [[thoughts/ethics|ethical]] truth
+  - map-making with no territory: "figuring out the normative truth" (from normative realist)
+  - [[thoughts/anti realist do ethics|notes]]
+- https://turntrout.com/self-fulfilling-misalignment -- Self-Fulfilling Misalignment Data Might Be Poisoning Our AI Models
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [alignment]
+- https://www.stevestewartwilliams.com/p/the-problem-of-free-will-solved -- The Problem of Free Will
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [philosophy, realist]
+- https://www.stevestewartwilliams.com/cp/159468280 -- Human Equivalents of the Peacock's Tail
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [being]
+- https://www.overcomingbias.com/p/alien-life-info-but-not-status-found -- Alien Life Info, But not Status, Found
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [interplanetary]
+- https://www.youtube.com/watch?v=KIu4y1stILY&ab_channel=essentialsalts -- Politices as Neuro-Physiology, a conversation with Uberboyo
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [meta-politics]
+  - In what way the connection between philosophy, ideas and cultural does [[thoughts/Philosophy and Nietzsche|Nietzsche]] nihilism?
+- https://simulation-argument.com/simulation/ -- Are we living in a simulation?
+  - [meta]:
+    - date: 09/29/2025
+    - tags: [hypothesis, simulation]
+- https://aeon.co/essays/does-language-mirror-the-mind-an-intellectual-history -- Our languages, our world
+  - [meta]:
+    - date: 09/30/2025
+    - tags: [linguistics]
+- https://www.youtube.com/watch?v=E2x2WTWjcEA -- this word is the (True) purpose of human life
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [purposes, life]
+  - > "The Son of God became man, that we might become god" - St. Athanasius of Alexandria
+- https://www.youtube.com/watch?v=Rupf69o8kQc -- Why Modern [[/tags/love|love]] feels empty
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [love]
+  - [[thoughts/Giles Deleuze]]: ventures outwards to realize these potentiality.
+  - Commit someone who will inevitability fails us.
+  - > unfolding of love sustains the form of life itself
+  - ![[quotes#^camus]]
+- https://thedosagemakesitso.substack.com/p/worship-adoration-valence -- Worship. Adoration. Valence
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [relationship]
+
+## stream
+
+- https://x.com/MarvinKeilbach/status/1993424805794922580 -- self-improvement
+  - [meta]:
+    - date: 11/26/2025
+    - tags: [life]
+- https://columbia-ugtcs.github.io/ -- Columbia Undergraduate Learning Seminar for Theoretical Computer Science
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [cs, theory]
+- https://codexcc.neocities.org/ -- ACX Community Corpus
+  - [meta]:
+    - date: 11/23/2025
+    - tags: [acx, stream]
+- https://lobste.rs/ -- Lobster
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [blogroll]
+- https://www.humprog.org/~stephen/research/projects -- Stephen's project ideas
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [engineering]
+- https://x.com/gwern/status/1959511089961636341 -- Gwen's creative discourse [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [poem]
+- https://asteriskmag.com/ -- Asterisk Magazine [**]
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [magazine, progress]
+    - pinned: true
+- https://www.humaninvariant.com/ -- Human Invariant
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [columnist]
+    - pinned: true
+- https://namelessvirtue.com/ -- The Nameless Virtue
+  - [meta]:
+    - date: 11/19/2025
+    - tags: [fiction]
+- https://docs.google.com/spreadsheets/d/1NaPGB6oW9T_jZVeZehR9EAUXIgL13Umap1aNDZZuQ2E/edit?gid=1581958338#gid=1581958338 -- Booklist [**]
+  - [meta]:
+    - date: 11/19/2025
+    - tags: [books, reading]
+  - by https://www.befriendjamin.com
+- https://guide.world/ -- Compendium of travelling guide
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [travelling]
+- https://www.inkhaven.blog/fall-25 -- Inkhaven, Fall 25 [**]
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [blogroll]
+    - pinned: true
+- https://www.ribbonfarm.com/ -- Ribbonfarm [**]
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [essay, life]
+    - pinned: true
+- https://hpmor.com/ -- Harry Potter and the Methods of Rationality [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [rationality]
+  - https://www.fanfiction.net/s/5782108/1/Harry_Potter_and_the_Methods_of_Rationality
+  - Chapter:
+    - [6](https://hpmor.com/chapter/6): The Planning Fallacy
+- https://www.malaproject.com/menu/dinner -- Malaproject [**]
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [menu]
+- https://www.alphaxiv.org/ -- alphaxiv [**]
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [papers]
+- https://www.modular.com/blog/democratizing-compute-part-1-deepseeks-impact-on-ai -- Democratizing AI Compute [**]
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [inference, mlsys]
+  - https://www.modular.com/blog/democratizing-compute-part-2-what-exactly-is-cuda
+  - https://www.modular.com/blog/democratizing-ai-compute-part-3-how-did-cuda-succeed
+  - https://www.modular.com/blog/democratizing-ai-compute-part-4-cuda-is-the-incumbent-but-is-it-any-good
+  - https://www.modular.com/blog/democratizing-ai-compute-part-5-what-about-cuda-c-alternatives
+  - https://www.modular.com/blog/democratizing-ai-compute-part-6-what-about-ai-compilers
+  - https://www.modular.com/blog/democratizing-ai-compute-part-7-what-about-triton-and-python-edsls
+  - https://www.modular.com/blog/democratizing-ai-compute-part-7-what-about-triton-and-python-edsls
+  - https://www.modular.com/blog/democratizing-ai-compute-part-8-what-about-the-mlir-compiler-infrastructure
+  - https://www.modular.com/blog/democratizing-ai-compute-part-9-why-do-hw-companies-struggle-to-build-ai-software
+  - https://www.modular.com/blog/modulars-bet-to-break-out-of-the-matrix-democratizing-ai-compute-part-10
+  - https://www.modular.com/blog/how-is-modular-democratizing-ai-compute
+- https://x.com/gwern/status/1981474735822082534 -- Gwern's css [**]
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [technical]
+- https://notes.andymatuschak.org/Effective_system_design_requires_insights_drawn_from_serious_contexts_of_use -- Effective system design requires insights drawn from serious contexts of use
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [design, tool of thought]
+- https://wilderness.land/ -- wilderness.land
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [landscape]
+- https://stream.thesephist.com/ -- Linus's stream
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [thoughts]
+- https://stream.aarnphm.xyz -- microblog within a blog within a digital garden
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [microblog]
+- [[antilibrary|antilibrary]]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [books]
+- [[mixed|music lists]]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [music]
+- [[vibes|images I found across the internet]]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [images]
+- [[cinematheque|30 frames per seconds that capture the essence of being human]]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [movies]
+- [[research|my research interests]]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [research, interpretability]
+- [[influence|ebbs and flows that shape me]]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [influence]
+- [[quotes|quotes I try to live by]]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [quotes]
+- [[thoughts/furnitures|fruitful living]]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [living]
+- [[thoughts/Scents|parfum]]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [self]
+- [[/curius|curius]]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [links]
+
+## fiduciary reports
+
+- https://quartr.com/insights/business-philosophy/collection-jeff-bezos-shareholder-letters -- Collection: Jeff Bezos Shareholder Letters
+  - [meta]:
+    - date: 11/01/2025
+    - tags: [shareholders, letters]
+- https://investors.palantir.com/news-details/2025/Palantir-Reports-Q2-2025-U-S--Comm-Revenue-Growth-of-93-YY-and-Revenue-Growth-of-48-YY-Guides-Q3-Revenue-to-50-YY-Raises-FY-2025-Revenue-Guidance-to-45-YY-and-U-S--Comm-Revenue-Guidance-to-85-YY-Crushing-Consensus-Expectations/ -- Palantir Q3 Earnings 2025 Reports
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [military complex]
+  - $1Bn in Revenue, 45% Y/Y
+
+## poetry
+
+- https://gwern.net/blog/2025/silver-bird -- Gwern's codual with GPT-5 and Sonnet 4.5 for evaluating poem's writing capabilities
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [generative]
+  - https://chatgpt.com/share/68dda4b3-9f58-8006-afba-a190e02c606f
+  - https://chatgpt.com/share/68e8421c-3af4-8006-bd67-5752869bfc0d
+  - https://claude.ai/share/06aae665-2d53-4ed8-adf5-c998e4c0576a
+  - https://claude.ai/share/4a895e3c-4b67-4020-a631-f1fe698354bf
+- https://griffinpoetryprize.com/poem/crossroads-gluck -- Crossroads by Louise Glück
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [life]
+- http://www.phys.unm.edu/~tw/fas/yits/archive/eberhart_thegroundhog.html -- The Groundhog by Richard Eberthart
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [life]
+- http://www.phys.unm.edu/~tw/fas/yits/archive/oliver_wildgeese.html -- Wild [[posts/goose friend|Geese]] by Mary Oliver
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [imagery, love]
+- https://www.imdb.com/title/tt3783958/ -- La La Land [--]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [love]
+  - > Here’s to the ones who dream
+    > Foolish as they may seem
+    >
+    > She told me
+    > ”A bit of madness is key
+    > To give us new colors to see
+    > Who knows where it will lead us?
+    > And that’s why they need us”
+    >
+    > La La Land - “Audition (the fools who dream)”
+
+## design
+
+- https://channel.studio/
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [agency]
+- https://library.obys.agency/ -- Obys Agency [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [booklist, design, agency]
+- https://niggli.ch/en
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [book, print house]
+- https://www.jhourney.io/ -- Jhourney
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [design, company]
+- https://www.are.na/andrea-fanelli/maison-margiela-invitations -- Maison Margiela invitations [**]
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [fashion, design]
+    - pinned: true
+- https://colorpalette.pro/?color=oklch%2856%25+0.04+192%29&curius=3527&paletteType=ana&paletteStyle=square&colorFormat=oklch&effects=0%2C0%2C0%2C0 -- Color Palette Pro
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [color]
+- https://www.tonik.com -- Tonik
+  - [meta]:
+    - date: 11/18/2025
+    - tags: [studio]
+- https://s-p.studio/ -- Special projects
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [agency, studio]
+- https://maxbittker.github.io/broider/ -- border
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [design, css]
+- https://www.tetragrammaton.com/ -- Tetragrammaton
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [design]
+- https://studio.4o4.space/ -- STUDIO 4o4
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [studio]
+- https://basement.studio/ -- basement.studio
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [studio]
+- https://tatianabilbao.com -- Tatiana Bilbao Estudio
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [studio]
+- https://apossible.com/
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [studio]
+- https://www.luerzersarchive.com/ -- Lürzer's Archive
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design]
+- https://negative.sanctuary.computer/ -- Studio Carbon Negative
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design]
+  - landing poggies
+- https://ertdfgcvb.xyz/ -- ertdfgcvb
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [studio]
+- https://www.nb.no/en/ -- National Library of Norway
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [informatics]
+- https://www.affinity.studio/ -- Affinity, by Canva
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [product]
+- https://www.humans-machines.com/ -- Humans Machine
+  - [meta]:
+    - date: 11/06/2025
+    - tags: [studio, product]
+- https://galshir.com/
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [studio]
+- https://brunoarizio.com/ -- Bruno Arizio [--]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [studio]
+- https://mushstudios.co/ -- Mush Studio
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [studio]
+- https://www.metalabel.com/ -- Metalabel
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [studio]
+- https://www.are.na/editorial/are-nas-new-web-client-sander-is-now-available-for-everyone -- Are.na's web client, Sander.
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [client]
+- https://jonwhitestudio.com/ -- Jon White Studio
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [studio]
+- https://www.commarts.com/ -- Communication Arts
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [arts]
+- https://x.com/zachlieberman/status/1963683642011455980 -- Speculative drawing
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [drawing]
+- https://barnsworthburning.net/ -- barnsworthburning
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [designer]
+
+## cooking
+
+- https://www.youtube.com/playlist?list=PLsRPzRsbp3lAjVXIcvZPDqPiMNuO__ge1 -- My never-ending yt playlists
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [gastronomy]
+    - pinned: true
+- https://based.cooking -- Based cooking
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [dishes]
+- https://grimgrains.com/site/lactofermentation.html -- Lactofermentation
+  - [meta]:
+    - date: 11/03/2025
+    - tags: [pickle]
+  - preserve any vegetable using salt, and the bacterium (lactobacillus) already present on the vegetables.
+- https://www.youtube.com/watch?v=_LVX03nJyVY -- Ratio in cooking [**]
+  - [meta]:
+    - date: 10/13/2025
+    - tags: [food]
+- https://www.youtube.com/watch?v=ne5_nsvSjIU -- Date night idea
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [recipe]
+
+## video
+
+- https://www.youtube.com/watch?v=f21YJ5pjPog -- Why Mojang struggles to design Ecologies
+  - [meta]:
+    - date: 11/26/2025
+    - tags: [phenomenology, game design]
+- https://www.youtube.com/watch?v=pHqcHzxx6I8 -- Making GPUs Actually Fast: A Deep Dive into Training Performance, at Jane Street
+  - [meta]:
+    - date: 11/16/2025
+    - tags: [training, gpu]
+- https://www.youtube.com/watch?v=OQUV6kEKwlk
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [life]
+  - Felix, also known as PewDiePie.
+- https://www.youtube.com/watch?v=98LdFA-_zfA -- Christopher Alexander - Patterns in Architecture
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [architecture]
+- https://www.youtube.com/watch?v=cjZvFY6__qw -- I Skied Down Mount Everest (world first, no oxygen)
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [extreme sports]
+- https://www.youtube.com/watch?v=XCBqoisl_1M -- The Evil Design of Auschwitz
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [history]
+- https://www.youtube.com/watch?v=x7vNEgUvMkI -- Maybe This is My Problem
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [vlogbrothers]
+- https://www.youtube.com/watch?v=dKmuCBFPY3g -- "the could have been" man
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [life, regrets]
+- https://www.youtube.com/watch?v=sSo2b4y5nnA -- How To Keep Living When You'd Rather Not [**]
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [absurd, suicide]
+- https://www.youtube.com/watch?v=FdDsnwp1e1o -- Why Marco Pierre White GAVE UP on Michelin
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [cook]
+- https://www.youtube.com/watch?v=UvPYVWGcMNQ -- Joan Didion reads "On Keeping a Notebook" with her own voice. [**]
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [essay]
+- https://www.youtube.com/watch?v=7dpyULOEbTU -- fear and fantasy
+  - [meta]:
+    - date: 10/23/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=-6HOdHEeosc&list=PLA3ZfaJiaf5xCQwC1c5sguPR1vmzT6Yiw -- Brandon Sanderson on Writing Science Fiction and Fantasy
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [writing]
+- https://www.youtube.com/watch?v=ayPMfopCe1g -- Randy Pausch's Last Lecture - Remastered [**]
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=zUO-aRHxF7U -- no wonder he became the most terrifying villain in film history [**]
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [acting]
+  - Christoph Waltz.
+- https://www.youtube.com/watch?v=KonFO7CpVfo -- AK-47: The Peoples' Weapon
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [horses]
+  - Another Horse bangers
+- https://www.youtube.com/watch?v=9euKCrTyMEc -- You’re Not Addicted to Content, You’re Starving for Information [**]
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [vlogbrothers]
+- https://www.youtube.com/watch?v=tWYxrowovts -- How Did The World Get So Ugly?
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [life, city, urban planning]
+- https://www.youtube.com/watch?v=kN6dtpMUoC0 -- So you are in love with [[thoughts/LLMs|ChatGPT]]
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [llm, ai, augmented love]
+- https://www.youtube.com/watch?v=voaQSiLJxeE -- Sugar spoon.
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=x_y691nZztE -- I did love you... [**]
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [love]
+  - Hamlet by Andrew Scott
+  - Ophelia by Jessica Brown Findlay
+  - Claudius by Angus Wright
+  - Gertrude by Juliet Stevenson
+- https://www.youtube.com/watch?v=d_FzzLeA6pk -- Jane Goodall’s Impact
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [evolution]
+- https://www.youtube.com/watch?v=oOyQpwPrf2Q -- The Web is Going to Die [**]
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [eternal]
+  - Ghost town
+- https://www.youtube.com/watch?v=oP3c1h8v2ZQ -- Kurt Vonnegut on the Shapes of Stories
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [books, computer]
+- https://www.youtube.com/watch?v=v4Ze7Yo9jgY -- Cillian Murphy visits Criterion closet
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [film]
+- https://www.youtube.com/watch?v=ufa4pmBOBT8 -- CuTe, CUDA Tensors [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [watch]
+  - see also [[thoughts/GPU programming]]
+- https://www.youtube.com/watch?v=WJ76FfBZuhI&ab_channel=SoderCinema -- Narcissistic Facades - Amy Dunne
+  - [meta]:
+    - date: 04/09/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=54M3zZKHFRw&ab_channel=ShannonKim -- Situationist Movement, the myth of creative director
+  - [meta]:
+    - date: 05/30/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=GNB2oMISvsI&ab_channel=ArcherGreen -- When you shot the movie in 480p
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=JFj8kWm_N-Y&ab_channel=OverthinkPodcast -- Merleau-Ponty, the Phenomenology of Perception
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=Aa-A17TldZQ&ab_channel=Queen -- Why the Universe Sends You Someone You Can't Be With, Carl Jung
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=rQ-An5bhkrs&t=11303s&ab_channel=Amii -- Upper Bound 2025, John Carmack's talk
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=AivF_Lj8cVM&ab_channel=Josephine -- Put love at the centre of your life, NOT discipline
+  - [meta]:
+    - date: 07/13/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=dCP9uYLa8HA&ab_channel=DuCinema -- Emma Stone
+  - [meta]:
+    - date: 07/29/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=X-D5FERQzU4&ab_channel=DeficitOwls -- Money Did Not Come From Barter - It Came From Blood Feuds
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=HyPY6vm8Vbo&ab_channel=LucyMoon -- essentials that have immeasurably improved my life this year
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=ny3sCjFiLYc&ab_channel=KunmiK -- How to ask a girl out - Louie C.K. asks a girl out
+  - [meta]:
+    - date: 08/07/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=9xYasBUv530&ab_channel=SefoNad -- Emotional Maturity in Past Lives
+  - [meta]:
+    - date: 08/07/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=Q-yqCgMWGNo&ab_channel=TakeTwo -- How Dennis Villeneuve creates visual meaning, Enemy
+  - [meta]:
+    - date: 08/07/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=t6RZp2AhKyw&ab_channel=MedleyInterlispProject -- Lexical Functional Grammar Demonstration — Ron Kaplan (December 1982)
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=XfpMkf4rD6E&t=1407s&ab_channel=StanfordOnline -- Stanford CS25: V2 I Introduction to Transformers w/ Andrej Karpathy
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=8--5LwHRhjk&ab_channel=InigoQuilez -- Painting Characters with Math
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=sFux7pl6lf4&ab_channel=vlogbrothers -- Are Languages Alive?
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=FH5wiwOyPX4&ab_channel=GPUMODE -- GPUMODE 2024 Keynotes
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [watch]
+  - https://drive.google.com/drive/folders/1Pz607n07u382_ybdd4gFdrNyEWra5kpj
+- https://www.youtube.com/watch?v=wSauUgRIQDg&t=120s&ab_channel=SamBurer -- Two Decades of Low-Rank Optimization
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [watch]
+      Given a $M \in R^{m\times\;n}$
+  - > rank measures the amount of information in $M$
+  - most big data matrices are low-rank
+  - [[thoughts/Singular Value Decomposition|SVD]]
+- https://www.youtube.com/watch?v=sdFQS2Bctj0&ab_channel=LilaRose -- How men commit differently than woman?
+  - [meta]:
+    - date: 09/06/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=hNIbd4mUVeU&ab_channel=Sisyphus55 -- Watch this when you're depressed [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=x6TsR3y5Qfg -- Think Faster, Talk Smarter, by Matt Abrahams
+  - [meta]:
+    - date: 09/21/2025
+    - tags: [watch]
+  - Framework to talk more eloquently:
+    - What if you could
+    - So that
+    - For example
+    - And that's not all
+- https://www.youtube.com/watch?v=5qSN-R_E3w0 -- Lecture 77: Domain Specific Languages for GPU Kernels
+  - [meta]:
+    - date: 09/30/2025
+    - tags: [watch]
+  - $$
+    \frac{\text{intelligence}}{\text{dollar}} = \frac{\text{intelligence}}{\text{FLOPs}} \times \frac{\text{FLOPs}}{\text{dollar}}
+    $$
+- https://www.youtube.com/watch?v=_NLHFoVNlbg -- Stanford CS230 | Autumn 2025 | Lecture 1: Introduction to Deep Learning
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=yUmDRxV0krg&list=PL0NRmB0fnLJSpC1zCRoqAjStdQpANzTFK -- Geometry of Machine Learning
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [watch]
+  - Yann LeCun | Self-Supervised Learning, JEPA, World Models, and the future of AI
+- https://www.youtube.com/watch?v=10Qh55EQ90s&list=PL0NRmB0fnLJSpC1zCRoqAjStdQpANzTFK&index=2 -- James Halverson | Sparsity and Symbols with Kolmogorov-Arnold Networks
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [watch]
+
+## tools
+
+- https://www.youtube.com/watch?v=dmeRQN9z504 -- Why all learning tools fail?
+  - [meta]:
+    - date: 11/01/2025
+    - tags: [pedagogy, constituent]
+  - Andy Matuschak's conversation with Dwarkesh
+- https://padlet.com/discovering_literature/discovering-literature-articles-and-resources-british-librar-rz2uglgqvavwlscp -- Discovering Literature: articles and resources – British Library
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [history, literature]
+- https://notation.app -- Notation app [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [tool for thought]
+- https://github.com/nichwch/nomad-hypertext -- Semantic search local first app
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [tools, wysiwyg]
+- https://cobalt.tools/ -- cobalt
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [cobalt]
+- https://www.truthsystems.ai -- Truth Systems
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [truthsystems]
+
+## protocol
+
+- https://solarprotocol.net -- Solar Protocol
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [hash]
+- [Willow](https://willowprotocol.org/specs/index.html#specifications) -- protocol for synchronisable data store
+  - [meta]:
+    - date: 01/20/2025
+    - tags: [solarprotocol]
+- [Yjs](https://yjs.dev/) -- CRDT for shared editing
+  - [meta]:
+    - date: 01/20/2025
+    - tags: [solarprotocol]
+
+## arts
+
+- https://notes.art/ -- Notes arts
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [drawing]
+- https://www.edwardluperart.com/post/love-and-fear-on-the-musashi-plain-kajita-hanko-s-masterpiece-from-the-tales-of-ise -- Love and Fear on the Musashi Plain: Kajita Hanko's Masterpiece from the Tales of Ise
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [drawing]
+- https://www.arthistoryproject.com/ -- Obelisk
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [masonry]
+- https://www.youtube.com/watch?v=lsVMJIJ3Xrs&ab_channel=Amoeba -- Floating Points - What's In My Bag?
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [mixed]
+- https://www.metmuseum.org/art/collection/search/441933 -- Moonlight, Strandgade 30, Vilhelm Hammershøi
+  - [meta]:
+    - date: 09/17/2025
+    - tags: [painting]
+
+## resources
+
+- https://linear.axler.net/LADR4e.pdf -- Linear Algebra Done right [**]
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [books]
+    - pinned: true
+- https://www.gap-map.org/?sort=rank -- Gap Map
+  - [meta]:
+    - date: 04/27/2025
+    - tags: [map]
+- https://drmichaellevin.org/resources/otherlabs.html -- Other Labs of Interest
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [labs]
+- https://www.youtube.com/watch?v=5OaTk5q_CTc -- _SouthParkCommons meetup for AI interfaces, [Geoffrey Litt](https://www.geoffreylitt.com/)_
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [watch]
+- https://www.mrporter.com/en-us/journal/fashion/derek-guy-style-resolutions-25156188 -- Style resolution
+  - [meta]:
+    - date: 01/17/2025
+    - tags: [fashion]
+- https://thegenerality.com/agi/ -- The effort for AGI at Microsoft [GitHub](https://github.com/microsoft/unilm)
+  - [meta]:
+    - date: 01/26/2025
+    - tags: [ai, engineering]
+- https://katex.org/docs/supported.html -- supported DSL for KaTeX
+  - [meta]:
+    - date: 02/28/2025
+    - tags: [tools, documentation, latex]
+- https://www.joshwcomeau.com/blog/whimsical-animations/ -- SVG sprites
+  - [meta]:
+    - date: 03/09/2025
+    - tags: [svg, design, web]
+- https://www.nserc-crsng.gc.ca/Students-Etudiants/Guides-Guides/TriRTA-TriBFR_eng.asp -- Canadian government grant research
+  - [meta]:
+    - date: 03/05/2025
+    - tags: [research, locality, sovereignty]
+- https://www.cbo.gov/system/files/2020-01/55967-CBO-immigration.pdf -- Foreign-Born Population and Its Effects on US Economy
+  - [meta]:
+    - date: 03/05/2025
+    - tags: [immigration, policy]
+- https://www.corner.inc/list/02c68af9-8286-474f-91de-0b4e702330e6?sid=49933781-9175-48ae-852b-acb5006e8bca -- toronto coworking spots
+  - [meta]:
+    - date: 05/23/2025
+    - tags: [work, maps]
+- https://www.unco.edu/campus-recreation/pdf/intramural-sports/spring20/running-pace-chart.pdf -- Running pace chart [**]
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [pace chart, informatics]
+- https://notes.eatonphil.com/2025-08-09-what-even-is-distributed-systems.html -- What even is _distributed systems_
+  - [meta]:
+    - date: 08/10/2025
+    - tags: [lectures]
+- https://x.com/rsnous/status/1446211454378524692 -- "We do not lose texts because of catastrophic events that wipe out all copies of them. We lose texts because they stop being copied."
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [history]
+  - https://old.reddit.com/r/AskHistorians/comments/5t6op5/facts_about_the_library_of_alexandria/
+- https://www.dandad.org/en/d-ad-masterclass-creative-courses/ -- D&AD Masterclasses
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [masterclasses]
+- https://mp.weixin.qq.com/s/pDmAXHcN7Iqc8sUKgJgGtg -- Shanghai vLLM meetup 2025
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [meetup]
+- https://dlsyscourse.org/lectures/ -- DLSys, CMU
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [courses]
+- https://github.com/CppCon/CppCon2024 -- CppConf 2024
+  - [meta]:
+    - date: 09/06/2025
+    - tags: [conference]
+- https://www.britannica.com/topic/PARC-company -- Building PARC
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [essay]
+  - i.e: personal computer, WYSIWYG
+  - > The idea of “what you see is what you get” (WYSIWYG) would work on paper as well as the monitor. Unfortunately, at that time Xerox saw no point in innovating when their current technology worked so well.
+
+## interfaces
+
+- https://x.com/_baku89/status/1848878071585378521 -- An interface defines the metric of search space
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [generative]
+- https://x.com/SomeHats/status/1577717329680601089 -- when yr not using a drawing
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [life]
+  - (or u haven't added it to yr animation yet) it just hangs out at the bottom of the screen
+- https://x.com/hturan/status/1958590911920615635 -- exploring paths through latent space
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [generative, latent]
+  - by interpolating between known embeddings
+
+## fonts
+
+- https://emilysneddon.com/fran-sans-essay -- Fran sans fonts
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [city]
+- https://wehtt.am/fonts/ -- Fonts for a progressive future [**]
+  - [meta]:
+    - date: 11/06/2025
+    - tags: [free]
+- https://pangrampangram.com/ -- Pangram Pangram Foundry [**]
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [foundry]
+- https://pangrampangram.com/products/bitmap-fonts -- Bitmap Font
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [fonts]
+- https://pangrampangram.com/products/neue-montreal -- PP Neue Montreal
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [modern]
+  - this [[/|site]] uses PP Neue Montreal
+- https://fontsource.org/ -- Fontsource
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [foundry]
+- https://servermono.com/ -- Server Mono
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [mono, programming]
+- https://departuremono.com/ -- Departure Mono [**]
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [mono, programming]
+- https://lettermatic.com/fonts/parclo-serif -- Parclo Serif
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [serif]
+  - this [[/|site]] uses Parclo as heading
+- https://www.daybreak.studio/writing/adaline-typography -- Adaline
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [sans]
+- https://weltkern.com/typefaces -- WELTKERN typefaces
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [sans]
+- https://fonderiebretagne.fr/ -- Bretagne Type foundry
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [foundry]
+- https://weltkern.com/typefaces/lausanne -- Lausanne
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [sans]
+- https://displaay.net/typeface/saans -- Displaay Saans
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [sans]
+- https://displaay.net/typeface/teodor -- Displaay Teodor
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [sans]
+- https://www.atipofoundry.com/ -- Atipo Foundry
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [foundry]
+- https://abetkaua.com/en/ -- Typeface Alphabet of the Ukrainian Identity
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [sans]
+
+## lecture
+
+- https://www.youtube.com/watch?v=cQP8WApzIQQ -- MIT 6.824, Distributed Systems
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [distributed system]
+  - https://pdos.csail.mit.edu/6.824/
+  - RPC and Threads: https://www.youtube.com/watch?v=gA4YXUJX7t8
+- https://www.youtube.com/watch?v=m47A0AmqxQE&list=PL62C50202CE181183&index=5&ab_channel=flame0430 -- Iris Murdoch on Philosophy and Literature
+  - [meta]:
+    - date: 07/13/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=WxK11RsLqp4&t=2169s -- Linear Realtime Sync
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=Wo2m3jaJixU -- Linear Realtime Sync 2
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=fThhbt23SGM -- Design is a [[thoughts/Search|Search]] problem
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=PIvc6vvkMzM&ab_channel=EpsilonScience -- Gamification of Large Language Models, Michal Valko
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=VAzL8RHot1c&ab_channel=InterconnectsAI -- The art of training a good (reasoning) language models, by Nathan Lambert
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=XYSKd4dOT3Y&ab_channel=NeelNanda -- How to Think about Thinking Model
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=VPslgC9piIw -- Reverse engineer FA4, Charles Modal Labs, 10/01/2025.
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=5jSC8bjo-dI&ab_channel=InstituteforAdvancedStudy -- Emergent linguistic structure in deep contextual neural word representations - Chris Manning
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=HvEGJUwQEO8&ab_channel=InstituteforAdvancedStudy -- On the Connection between Neural Networks and Kernels: a Modern Perspective, Simon Du
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [watch]
+- https://www.youtube.com/watch?v=yFXPU2lMNdk&ab_channel=InstituteforAdvancedStudy -- Learning Representations Using Causal Invariance, Leon Bottou
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [watch]
+- https://youtu.be/IVA2bK9qjzE?si=D5niDuHTAksgu_Nl -- David Deutsch: AGI, the origins of quantum computing, and the future of humanity [**]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [iva2bk9qjze]
+  - You are valuable economically, because you are different.
+
+## technical
+
+- https://x.com/rtwlz/status/1991855290413937049 -- Epstein emails
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [meme]
+- https://thebookofshaders.com/ -- The Book of Shaders
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [design]
+- https://www.humanetech.com/ -- Center for Human Technology
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [orgs]
+- https://codeberg.org/teaserbot-labs/delightful-humane-design#mindfulness -- delightful humane design
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [humane, tools]
+- https://pdb101.rcsb.org/motm/121 -- Molecule of the Month: Ribosome
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [biology]
+- https://kcsrk.info/papers/system_effects_feb_18.pdf -- Concurrent System Programming with Effect Handlers [**]
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [system, concurrency]
+    - pinned: true
+- https://float.exposed/0x44bf9400 -- Floating point representations [**]
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [programming, floating number]
+    - pinned: true
+- https://www.ling.upenn.edu/~kroch/courses/lx400/Gallistel-King_chaps1-9.pdf -- Memory and the Computational Brain [**]
+  - [meta]:
+    - date: 11/06/2025
+    - tags: [programming, memory, computational biology]
+- https://www.tensortonic.com -- ML programming problems
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [competitive, programming]
+- https://jacko.io/async_intro.html -- Async Rust in three parts
+  - [meta]:
+    - date: 10/31/2025
+    - tags: [rust]
+    - pinned: true
+- https://cel.cs.brown.edu/ -- Cognitive Engineering Lab [**]
+  - [meta]:
+    - date: 10/30/2025
+    - tags: [visualisation]
+  - i.e: cognitive engineering
+  - https://cel.cs.brown.edu/paper/ownership-conceptual-model/
+  - https://rust-book.cs.brown.edu/
+- https://vivekn.dev/blog/bytecode-vm-scratch -- the joy of building a bytecode VM from scratch
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [system, concurrent]
+- https://edwardtufte.github.io/tufte-css/ -- Tufte CSS
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [styling, web]
+- https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [ai, recursion]
+- https://thundergolfer.com/blog/aws-us-east-1-outage-oct20 -- AWS US-East 1 outage
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [outage, engineering]
+- https://github.com/MoonshotAI/checkpoint-engine -- MoonshotAI/checkpoint-engine
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [rl]
+- https://github.com/modular/modular/blob/main/mojo/stdlib/stdlib/algorithm/_sorting_network.mojo
+  - [meta]:
+    - date: 10/17/2025
+    - tags: [topology, network]
+  - see also: https://bertdobbelaere.github.io/sorting_networks.html
+- https://github.com/bytedance/flux -- bytedance/flux
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [communication, networking]
+  - A fast communication-overlapping library for tensor/expert parallelism on GPUs.
+  - COMET @ ByteDance
+- https://docs.google.com/presentation/d/1SN05JcQ5kFRCGMOyYST6PAQazOX27nSMDp8fT-h3DyU/edit?slide=id.g389b5f579df_0_581#slide=id.g389b5f579df_0_581 -- State of Open Reasoning Models
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [hf, reasoning]
+- https://le.qun.ch/en/blog/2024/12/25/libfabric-efa-0-intro/ -- Harnessing 3200 Gbps Network: A Journey with RDMA, EFA, and libfabric
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [networking]
+  - see also: https://github.com/abcdabcd987/libfabric-efa-demo
+  - https://github.com/ofiwg/libfabric/blob/main/fabtests/common/shared.c
+- https://www.youtube.com/watch?v=zZr54G7ec7A -- Formalizing a proof in Lean using Claude and o4
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [math]
+- https://github.com/Dao-AILab/gemm-cublas --GEMM cuBLAS
+  - [meta]:
+    - date: 10/11/2025
+    - tags: [machine learning, kernels]
+- http://www.fantasyjackpalance.com/fjp/sound/synth/synthdata/16-moog-minimoog.html -- Minimoog, synthesizer
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [music]
+- https://addyosmani.com/blog/script-priorities/ -- JavaScript Loading Priorities in Chrome
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [js]
+- https://github.com/luhmann/tufte-markdown -- tufte-css [**]
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [design]
+- https://github.com/pytorch/pytorch/blob/539c46b6e82e16d22b745d8b320ae0bf9b1df90b/torch/distributed/_functional_collectives.py#L333 -- AllReduce coalesce implementation in PyTorch
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [programming, distributed]
+- https://henryhmko.github.io/posts/tpu/tpu.html -- [[thoughts/TPU|TPU]] Deep Dive [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [asic]
+  - main difference rely on [[thoughts/systolic array]] versus common von Neumann architecture (found in [[thoughts/GPU programming|GPU]])
+- https://main-horse.github.io/posts/visualizing-6d/ -- Visualising 6D Mesh Parallelism [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [cuda, math]
+- https://www.jeremykun.com/2023/02/13/googles-fully-homomorphic-encryption-compiler-a-primer/ -- Google's Fully Homomorphic Encryption Compiler [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [compiler, security]
+  - [[thoughts/FHE]]
+  - https://github.com/google/heir -- Next generation of the compiler for homomorphic encryption
+- https://blog.regehr.org/archives/2485 -- Why Do Peephole Optimizations Work?
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [compiler]
+  - See also [[thoughts/Compiler]]
+- https://en.wikipedia.org/wiki/L-system -- Lindenmayer system [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [l-system, generative world]
+- http://lastweek.io/notes/MLIR/ -- MLIR at a 10000 feet
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [compiler, ir]
+- https://mlir.llvm.org/docs/ -- MLIR LLVM docs [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [ir, compiler]
+- https://docs.tenstorrent.com/tt-mlir/ -- [[thoughts/Tenstorrent|Tenstorrent]] MLIR
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [ir]
+- https://github.com/NixOS/nixpkgs/blob/master/lib/meta.nix -- meta.nix and helpers function in Nix
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [helpers]
+- https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig -- Zig's General Purpose Allocator
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [allocator, compiler, programming]
+  - The only GPA you need to care about.
+- https://github.com/triton-lang/triton/blob/main/python/tutorials/gluon/01-intro.py -- Gluon
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [compiler, dsl]
+- https://huggingface.co/blog/from-chunks-to-blocks -- From Chunks to Blocks: Accelerating Uploads and Downloads on the Hub
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [engineering, cdc]
+- https://datatracker.ietf.org/doc/html/rfc9309 -- Robots Exclusion Protocol
+  - [meta]:
+    - date: 08/04/2025
+    - tags: [internet, web, rfc]
+- https://github.com/Keen-Technologies/physical_atari -- Physical Atari
+  - [meta]:
+    - date: 09/17/2025
+    - tags: [ai, physics, robots]
+- https://modelcontextprotocol.io/llms-full.txt -- MCP protocol
+  - [meta]:
+    - date: 09/17/2025
+    - tags: [docs, mcp]
+- https://michaelnotebook.com/mmsw -- How to make memory systems widespread?
+  - [meta]:
+    - date: 09/22/2025
+    - tags: [memory, learning, pedagogy]
+- https://github.com/francoismichel/ssh3 -- ssh3
+  - [meta]:
+    - date: 09/29/2025
+    - tags: [protocol]
+- https://thundergolfer.com/uni/docs/performance/napkin-math/ -- napkin math
+  - [meta]:
+    - date: 09/30/2025
+    - tags: [memory, tricks]
+- https://www.youtube.com/watch?v=sX2nF1fW7kI -- When Nanoseconds Matter: Ultrafast Trading System in C++
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [memory, efficiency]
+  - https://github.com/CppCon/CppCon2024/blob/main/Presentations/When_Nanoseconds_Matter.pdf
+- https://www.vmware.com/docs/the-basics-of-remote-direct-memory-access-rdma-in-vsphere -- RDMA in VSphere
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [distributed, rdma]
+  - Good introduction to RDMA
+- [GNU C Manual Reference](https://www.c-asm.com/gnu-c-manual.html)
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [memory, concurrency]
+- https://www.rubick.com/steel-threads/ -- Steel threads are a technique that will make you a [[thoughts/steel threads|better engineer]]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [engineering]
+- [[thoughts/GPU programming|GPU programming]] [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [gpu programming]
+- https://github.com/replit/ruspty/pull/93 -- dont drop user fd until node reads a synthetic EOF
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [engineering]
+- https://janet.guide/ -- Janet for Mortals
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [language]
+  - https://janet-lang.org/ -- Janet Programming Language
+- https://standardkernel.com/ -- Standard Kernel
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [kernels, gpu programming]
+- https://github.com/NVIDIA/tilus -- NVIDIA/tilus
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [gpu programming]
+  - Tile-level GPU programming
+  - lower level comparing to CuTe
+  - uses [hidet](https://github.com/hidet-org/hidet) IR
+- https://x.com/_jzhao/status/1973830833254621192 -- film grains technical behind commuting.to
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [design]
+- https://en.wikipedia.org/wiki/Perlin_noise -- Perlin noise
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [distributions]
+- https://bernsteinbear.com/blog/inline-caching/ -- Inline caching
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [engineering, compilers]
+  - see also [[thoughts/pdfs/Efficient Implementation of the Smalltalk-80 System.pdf]]
+
+## organizations
+
+- https://research.antikythera.org/ -- Antikythera
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [research labs, metaphysics, anthropocene]
+  - By [Benjamin Bratton](https://bratton.info/)
+- https://12mv2.com/
+  - [meta]:
+    - date: 11/25/2025
+    - tags: [funds]
+- https://tryabsurd.com/
+  - [meta]:
+    - date: 11/23/2025
+    - tags: [vc]
+- https://www.1517fund.com/post/thesis
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [funds]
+- https://www.cs.columbia.edu/~chilton/index.html -- Columbia Computational Design Lab
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [research, hci]
+- https://northeastlarder.com/ -- Northeast Larder
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [research labs, quartz]
+- https://atomicsemi.com/
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [lithography]
+  - Jim Keller's company
+  - see also: [[thoughts/Tenstorrent]]
+- https://fundomo.com/
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [vc]
+- https://www.mto.com/ -- Munger, Tolles & Olson LLP
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [lawyer]
+- https://www.compmotifs.com/ -- Science through Computation Initiative
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [alignment]
+- https://seldonlab.com/ -- Seldon Labs
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [alignment]
+  - [[thoughts/AGI]] safe deployment
+- https://www.generalist.com/briefing/hummingbird-ventures -- The Best Venture Firm You've Never Heard Of
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [vc]
+- https://www.sequoiacap.com/ -- Sequoia Capital
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [vc]
+- https://www.luxcapital.com/ -- Lux Capital
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [vc]
+- https://www.accel.com/ -- Accel
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [vc]
+- https://lsvp.com/ -- Lightspeed
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [vc]
+- https://menlovc.com/ -- Menlo
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [vc]
+- https://basecase.vc/ -- basecase vc.
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [vc]
+
+## math
+
+- https://en.wikipedia.org/wiki/Submodular_set_function -- Submodular set function
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [sets, tcs]
+- https://www.youtube.com/watch?v=FfT5VTfHj_s -- Stanford AA228 Decision Making Under Uncertainty | Autumn 2025 | Bayesian Structure Learning
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [statistics, todo, ml]
+- https://www.youtube.com/watch?v=0641zdeGsN8 -- 2025 Hamilton Lecture: 'My romance with the warped side of our universe'
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [string theory, topology]
+- https://www.youtube.com/watch?v=HpRi3OQtyLk -- Refined THH Over ku and Habiro Cohomology - Ferdinand Wagner
+  - [meta]:
+    - date: 11/04/2025
+    - tags: [topology]
+- https://www.youtube.com/watch?v=4Iejh8qTPJ4 -- Chris Skinner, The Birch--Swinnerton-Dyer Conjecture: a millennium prize problem at 25
+  - [meta]:
+    - date: 11/03/2025
+    - tags: [problem, conjecture, pde]
+- https://www.youtube.com/watch?v=BaDxv5Z4LkU -- An update on [[thoughts/Navier-Stokes equations|Navier-Stokes]] Problem
+  - [meta]:
+    - date: 10/31/2025
+    - tags: [millenium problem]
+- https://www.youtube.com/watch?v=60X5M1FhmUc&t=164s -- Michael Freedman | The Poincaré Conjecture and Mathematical Discovery
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [topology]
+- https://www.youtube.com/watch?v=oIhdrMh3UJw -- Symmetric Derivative and Generalized Pseudoderivative
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [linear algebra]
+- https://www.ma.imperial.ac.uk/~buzzard/maths/research/notes/sp2n.pdf -- Overconvergent Siegel Modular Symbols
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [papers, modular form]
+- https://github.com/teorth/pfr -- formalization of the Polynomial Freiman Ruzsa conjecture
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [math]
+- https://www.youtube.com/watch?v=44hfoihYfJ0 -- Towards a Geometric Theory of Deep Learning [**]
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [dl]
+- https://www.youtube.com/watch?v=f4NDXEQhBvo -- The shape of mathematics [**]
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [ml, geometric theory]
+- https://www.youtube.com/watch?v=60X5M1FhmUc -- Michael Freedman | The Poincaré Conjecture and Mathematical Discovery
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [math]
+- https://userweb.ucs.louisiana.edu/~isb9112/dept/phil341/subsymbol/subsymbol.html -- wtf is a subsymbol?
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [math, ml]
+  - Smolensky view
+- https://leimao.github.io/blog/Tensor-Calculus-Layout-Conventions/ -- Tensor Calculus Layout Conventions
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [tensor calculus]
+- https://leimao.github.io/article/Automatic-Differentiation/ -- [[thoughts/Automatic Differentiation]]
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [autograd]
+  - see also:
+    - https://leimao.github.io/blog/Automatic-Differentiation-Revisited/
+    - https://leimao.github.io/blog/Compute-Hessian-Automatic-Differentiation/
+- https://www.yudhister.me/2025-08-20/ -- linear contracts as optimally robust
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [linear algebra]
+  - > Motivating example: $w(y) = \alpha y$ always guarantees the principal Alice positive worst-case payoff, for $\alpha \in [0,1]$. This analysis holds independently of the possible technology $\mathcal{A}$ due to the nontriviality assumption we impose on $\mathcal{A}_0$
+
+    _proof_: Rewrite $y - w(y)$ as $\frac{w(y)}{\alpha} - w(y) = \frac{1 - \alpha}{\alpha} w(y)$. Lower bound $\mathbb{E}_F[w(y)]$ (the expected payment of Bob the agent) with
+
+    $$
+    \mathbb{E}_F[w(y)] \ge \mathbb{E}_F[w(y)] - c = V_A(w \mid \mathcal{A}),
+    $$
+
+    which is $\ge V_A(w \mid \mathcal{A}_0)$ (because adding more actions to the agent can't decrease the optimal outcome given $\mathcal{A}_0$).
+
+    Combining the two gives
+
+    $$
+    \mathbb{E}_F[y - w(y)] \ge \frac{1 - \alpha}{\alpha} \mathbb{E}_F[w(y)]
+    \ge \frac{1 - \alpha}{\alpha} V_A(w \mid \mathcal{A}_0),
+    $$
+
+    which gives
+
+    $$
+    V_P(w) \ge \frac{1 - \alpha}{\alpha} V_A(w \mid \mathcal{A}_0).
+    $$
+
+    Given the nontriviality assumption $V_A(w \mid \mathcal{A}_0) > 0$, this means that this gives Alice a positive lower bound on the worst-case outcome independent of the choice of technology $\mathcal{A}$! $\boxed{}$
+
+- https://www.youtube.com/watch?v=-j8PzkZ70Lg -- Laplace Transform, demystified
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [math, ode]
+- https://jiha-kim.github.io/posts/reducing-probability-to-arithmetic/ -- Reducing Probability to Arithmetic [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [math, probability]
+  - reduce aspects of probability and set theory to algebraic arithmetic?
+- https://quantum.country/qcvc -- Quantum computing for the very curious [**]
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [quantum]
+  - By Andy Matuschak and Michael Nielsen
+- https://abuseofnotation.github.io/category-theory-illustrated/11_natural_transformations/ -- Category Theory, Illustrated, Natural transformations
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [category theory]
+  - see also [[thoughts/category theory]]
+- https://www.youtube.com/watch?v=e1xo6qWTmoc&ab_channel=OxfordMathematics -- Thesis Competition at Oxford Mathematics
+  - [meta]:
+    - date: 07/29/2025
+    - tags: [topology, research]
+  - https://youtu.be/e1xo6qWTmoc?si=U3esZ-Zq_DJy5Is1&t=134 -- Surgery presentation on [[thoughts/bordism bicategories]]
+- https://www.benparry.ca/euler-integration-lotka-volterra -- Euler Integration & Lotka-Volterra
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [calculus]
+- https://www.benparry.ca/lorenz-system -- The Lorenz System
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [chaos theory]
+- https://www.youtube.com/watch?v=O8WZVR3eCNQ&ab_channel=InstituteforAdvancedStudy -- The adjoint Brascamp-Lieb inequality - Terence Tao
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [conjecture, algebra]
+- https://www.youtube.com/watch?v=PgPNfPhG4Wc&ab_channel=StanfordOnline -- AA228/CS248 Decision Making Under Uncertainty | Policy Gradient Estimation & Optimization
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [ml, statistics]
+- https://www.youtube.com/watch?v=B83yIIaTq_s&ab_channel=SimonsFoundation -- Lisa Piccirillo: Exotic Phenomena in Dimension 4
+  - [meta]:
+    - date: 07/29/2025
+    - tags: [topology]
+  - also https://www.youtube.com/watch?v=BXwALAkPubc&ab_channel=HarvardMathematicsDepartment
+  - Conway knot problem
+- https://www.youtube.com/watch?v=i2acsy7Zzfo&ab_channel=HarvardMathematicsDepartment -- Random Matrix Statistics and Airy Line Ensembles, Jiaoyang Huang
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [statistics]
+- https://www.youtube.com/watch?v=QauoO0j9Y9Y&ab_channel=InstituteforPure%26AppliedMathematics%28IPAM%29 -- Terence Tao: The Erdős Discrepancy Problem
+  - [meta]:
+    - date: 08/28/2025
+    - tags: [conjecture]
+- https://writings.stephenwolfram.com/2025/09/the-ruliology-of-lambdas/ -- The Ruliology of Lambdas [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [lambda calculus]
+
+## papers
+
+- [meta]:
+  - view: list
+
+- https://arxiv.org/abs/2412.06769
+  - [meta]:
+    - date: 11/26/2025
+    - tags: [cot, llm]
+- https://www.usenix.org/system/files/conference/atc14/atc14-paper-ongaro.pdf -- Raft consensus algorithm
+  - [meta]:
+    - date: 11/23/2025
+    - tags: [crdt, distributed system]
+- https://arxiv.org/pdf/2301.04709
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [interpretability]
+- https://arxiv.org/abs/2511.05408
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [interpretability]
+- https://arxiv.org/abs/2507.07120
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [parallelism]
+- https://arxiv.org/abs/2509.23202
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [inference]
+- https://arxiv.org/abs/2509.25149
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [training, nvfp4]
+- https://arxiv.org/abs/2309.00667
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [alignment]
+  - #interpretability on LLM's situational awareness
+- https://arxiv.org/abs/2510.20075
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [interpretability]
+- https://arxiv.org/abs/2412.01784
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [interpretability]
+- https://arxiv.org/abs/2404.03715
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [rl, nash optimization]
+- https://arxiv.org/abs/2510.13786
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [rl]
+- https://arxiv.org/abs/2504.13181
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [perception, embeddings]
+- https://arxiv.org/abs/2510.18234
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [ocr]
+- https://arxiv.org/abs/2405.15319
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [pretraining]
+- https://arxiv.org/abs/2310.07177
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [inference]
+- https://arxiv.org/abs/2501.16975
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [pretraining, bytes, representations]
+- https://arxiv.org/abs/2008.00044
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [tcs, linear discrepancy]
+- https://arxiv.org/abs/2412.06464
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [hybrid attention, gated delta]
+- https://arxiv.org/abs/2506.20790
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [interpretability]
+- https://arxiv.org/abs/2505.12049
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [rl]
+- https://arxiv.org/abs/2410.01104
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [optimizer, softmax]
+- https://www.cambridge.org/core/journals/behavioral-and-brain-sciences/article/abs/minds-brains-and-programs/DC644B47A4299C637C89772FACC2706A -- Mind, brains, programs
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [brain, intentionality]
+- https://arxiv.org/abs/1912.02279
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [cnn, vision]
+- https://arxiv.org/abs/2501.15225
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [inference, long context]
+- https://arxiv.org/abs/2401.08383
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [inference, moe]
+  - Inter-Layer Expert Affinity
+- https://arxiv.org/abs/2305.15054
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [interpretability]
+- https://arxiv.org/abs/2509.21519v3
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [scaling law, interpretability]
+- https://arxiv.org/abs/1607.06450
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [models]
+    - pinned: true
+- https://arxiv.org/abs/2507.21509
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [interpretability, engineering]
+  - persona vectors, i.e linear probes to intercept models' behaviour.
+- https://arxiv.org/abs/2412.14093
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [alignment]
+  - https://www.anthropic.com/research/alignment-faking
+- https://arxiv.org/abs/2506.18032
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [alignment]
+  - Rater Sycophancy
+  - Instrumental Goal Guarding
+  - Low coherence
+  - Terminal goal guarding
+  - F.4: Another hypothesis that could indicate instrumental goal guarding is model behavior that tries to minimize future harm that other AIs might cause. These models would comply more if they believe their outputs will only be used to train a different model to be more harmful, with a training method such as Direct Preference Optimization (DPO). https://arxiv.org/abs/2401.08671
+- https://arxiv.org/abs/2506.06941
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [rl, reasoning]
+  - The argument being certain reasoning capabilities collapses after certain complexities.
+  - [[thoughts/papers/illusion_of_illusion_of_thinking.pdf|Critique of this paper]] illustrates the shortcomings of careful experiments calibrations, leading to a pre-empted conclusions with regards to models' reasoning capabilities.
+- https://arxiv.org/abs/2505.24832
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [emergent properties]
+  - in terms of how much model memorises under compressions for a specific types of generalizations.
+  - OOD study.
+- https://arxiv.org/abs/2405.07987
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [hypothesis]
+    - pinned: true
+  - All AI models converges to a global minima, among multiple domains
+  - cf [[thoughts/Plato|Plato]]'s concepts of an _ideal reality_
+- https://arxiv.org/abs/2501.16007
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [distributed, verifier, cryptographic]
+- https://arxiv.org/abs/2504.02922
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [interpretability]
+  - [LW](https://www.lesswrong.com/posts/xmpauEXEerzYcJKNm/what-we-learned-trying-to-diff-base-and-chat-models-and-why)
+  - see also: [[thoughts/sparse crosscoders|sparse crosscoders]]
+- https://arxiv.org/abs/2505.05315
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [rl, reasoning]
+  - https://github.com/SalesforceAIResearch/Elastic-Reasoning
+- https://arxiv.org/abs/2412.14093
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [alignment]
+- https://arxiv.org/abs/2403.09629
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [rl, reasoning]
+- https://arxiv.org/abs/1910.02054
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [optimizer]
+- https://arxiv.org/abs/2506.19143
+  - [meta]:
+    - date: 08/05/2025
+    - tags: [interpretability]
+  - which thought trace matters?
+- https://arxiv.org/abs/2503.18292
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [system, inference]
+- https://arxiv.org/abs/2310.05209
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [inference, law]
+- https://arxiv.org/abs/2310.10537
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [data format, quantization]
+  - mxfp4 is pretty bad, better to use nvfp4 instead.
+- https://arxiv.org/abs/2104.09864
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [inference]
+  - [[thoughts/RoPE]]
+  - more popular methods: https://arxiv.org/abs/2309.00071
+- https://arxiv.org/abs/2508.06471
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [model, llm]
+- https://arxiv.org/abs/1112.0510
+  - [meta]:
+    - date: 08/12/2025
+    - tags: [tree, cs]
+- https://arxiv.org/abs/2504.02263
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [inference, moe, disaggregation]
+- https://arxiv.org/abs/2412.01784
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [interpretability]
+- https://arxiv.org/abs/2510.00184
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [arithmetics, llm]
+- https://arxiv.org/abs/2509.26537
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [kernel, interpretability]
+- https://arxiv.org/abs/2112.01898
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [math, llm]
+  - see also #linalg
+- https://arxiv.org/abs/2211.00170
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [math, interpretability]
+- https://arxiv.org/abs/2012.14913
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [inference, interpretability]
+- https://arxiv.org/abs/2505.21487
+  - [meta]:
+    - date: 10/11/2025
+    - tags: [system, inference]
