@@ -1,0 +1,29 @@
+baseURL = "https://aarnphm.xyz"
+languageCode = "en-us"
+title = "aaron's garden"
+googleAnalytics = "G-ZY6ND8M0X0"
+relativeURLs = false
+disablePathToLower = true
+ignoreFiles = ["/content/templates/*", "/content/private/*"]
+summaryLength = 20
+enableGitInfo = true
+
+[author]
+name = "Aaron Pham"
+[markup]
+[markup.highlight]
+noClasses = false
+anchorLineNos = false
+codeFences = true
+guessSyntax = true
+hl_Lines = ""
+lineAnchors = ""
+lineNoStart = 1
+lineNos = true
+lineNumbersInTable = true
+style = "dracula"
+[frontmatter]
+lastmod = ["lastmod", ":git", "date", "publishDate"]
+publishDate = ["publishDate", "date"]
+[markup.goldmark.renderer]
+unsafe = true
