@@ -1,0 +1,150 @@
+@use "sass:map";
+@use "../../styles/variables.scss" as *;
+
+.toolbar {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 3;
+
+  .toolbar-content {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    gap: 0.5rem;
+    padding: 0.25rem;
+
+    // Hide all buttons except pen button by default
+    .toolbar-item:not(.pen-button) {
+      opacity: 0;
+      transform: translateX(1rem);
+      pointer-events: none;
+    }
+
+    // Show all buttons on hover
+    &:hover {
+      .toolbar-item:not(.pen-button) {
+        opacity: 1;
+        transform: translateX(0);
+        pointer-events: auto;
+      }
+    }
+
+    .toolbar-item {
+      padding: 0.5rem;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--light);
+      border: 1px solid var(--lightgray);
+      cursor: pointer;
+      white-space: nowrap;
+      color: var(--darkgray);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      // Pen button specific styles
+      &.pen-button {
+        background-color: var(--light);
+
+        &:hover {
+          border-color: var(--gray);
+        }
+      }
+
+      &:not(.pen-button):hover {
+        background-color: var(--lightgray);
+        border-color: var(--gray);
+
+        .tooltip {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      // Active state for toggle button
+      &[data-state="collapsed"] {
+        .expand-icon {
+          display: inline;
+        }
+        .collapse-icon {
+          display: none;
+        }
+      }
+
+      &[data-state="expanded"] {
+        .expand-icon {
+          display: none;
+        }
+        .collapse-icon {
+          display: inline;
+        }
+      }
+
+      // Staggered animation for items
+      @for $i from 2 through 10 {
+        &:nth-child(#{$i}) {
+          transition-delay: ($i - 1) * 0.05s;
+        }
+      }
+    }
+
+    // Tooltip styles
+    .tooltip {
+      position: absolute;
+      right: calc(100% + 0.5rem);
+      background-color: var(--light);
+      color: var(--darkgray);
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--dark);
+      font-size: 0.875rem;
+      font-family: "Newsreader", var(--bodyFont);
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateX(0.5rem);
+      pointer-events: none;
+      transition: all 0.2s ease;
+
+      // Tooltip arrow
+      &::after {
+        content: "";
+        position: absolute;
+        right: -0.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        border-width: 0.25rem 0 0.25rem 0.25rem;
+        border-style: solid;
+        border-color: transparent transparent transparent var(--dark);
+      }
+    }
+  }
+}
+
+.pdf-toast {
+  position: fixed;
+  bottom: 5rem;
+  right: 1rem;
+  background-color: var(--light);
+  color: var(--tertiary);
+  padding: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+  border: 1px solid var(--tertiary);
+  font-family: var(--bodyFont);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

@@ -1,0 +1,11 @@
+body[data-poem="true"] {
+  .page > #quartz-body {
+    & .sidebar.left {
+      display: none !important;
+    }
+
+    & .sidebar.right {
+      visibility: hidden;
+    }
+  }
+}
