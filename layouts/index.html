@@ -9,7 +9,7 @@
       {{partial "header.html" .}}
       <div class="bio">
         <div class="sidebar">
-          {{partial "toc.html" .}}
+          <div id="toc" class="delay t-3">{{partial "toc.html" .}}</div>
           <div class="delay t-4">
             <h2>Recent Notes</h2>
             {{$notes := where .Site.RegularPages "Section" "cache"}}

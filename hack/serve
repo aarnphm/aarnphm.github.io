@@ -3,4 +3,4 @@
 GIT_ROOT=$(git rev-parse --show-toplevel)
 cd "$GIT_ROOT" || exit 1
 
-hugo server --enableGitInfo --minify
+hugo server --enableGitInfo --minify -D

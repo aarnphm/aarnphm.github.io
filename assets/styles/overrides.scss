@@ -79,6 +79,49 @@
   }
 }
 
+.singleContent {
+  & > .sidebar {
+    flex: 0 0 30%;
+
+    & > div {
+      margin-bottom: 2em;
+    }
+
+    & ul {
+      list-style: none;
+      padding: 0;
+      margin-left: 0;
+      z-index: 0;
+    }
+
+    & > div > a {
+      opacity: 0.6;
+    }
+
+    & h2 {
+      font-size: 1.4rem;
+      margin: 0.75em 0;
+    }
+
+    & li {
+      margin-bottom: 0.8em;
+    }
+
+    & h3 {
+      margin: 0;
+    }
+
+    & .meta {
+      margin: 0.2em 0;
+    }
+
+    & .tags > li > a {
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+  }
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;

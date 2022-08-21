@@ -80,22 +80,21 @@
     crossorigin="anonymous"
   ></script>
 
+  <!-- floating ui tings -->
   <script src="https://unpkg.com/@floating-ui/core@0.7.3"></script>
   <script src="https://unpkg.com/@floating-ui/dom@0.5.4"></script>
   {{ $popover := resources.Get "js/popover.js" | resources.Fingerprint "md5" |
   resources.Minify }}
   <script src="{{$popover.Permalink}}"></script>
 
-  {{ if $.Site.Data.config.enableCodeBlockTitle }} {{ $codeTitle :=
-  resources.Get "js/code-title.js" | resources.Fingerprint "md5" |
-  resources.Minify }}
+  {{ $codeTitle := resources.Get "js/code-title.js" | resources.Fingerprint
+  "md5" | resources.Minify }}
   <script src="{{$codeTitle.Permalink}}"></script>
-  {{end}} {{ if $.Site.Data.config.enableCodeBlockCopy }} {{ $clipboard :=
-  resources.Get "js/clipboard.js" | resources.Fingerprint "md5" |
-  resources.Minify }}
+  {{ $clipboard := resources.Get "js/clipboard.js" | resources.Fingerprint "md5"
+  | resources.Minify }}
   <script src="{{$clipboard.Permalink}}"></script>
-  {{ end }} {{ $callouts := resources.Get "js/callouts.js" |
-  resources.Fingerprint "md5" | resources.Minify }}
+  {{ $callouts := resources.Get "js/callouts.js" | resources.Fingerprint "md5" |
+  resources.Minify }}
   <script src="{{$callouts.Permalink}}"></script>
 
   <!--  Preload page vars  -->

@@ -7,7 +7,7 @@
     <div class="singlePage">
       <!-- Begin actual content -->
       {{partial "header.html" .}}
-      <article>
+      <article class="singleContent">
         {{if .Title}}
         <h1>{{ .Title }}</h1>
         {{end}}
@@ -19,12 +19,9 @@
             >Edit Source</a
           >
         </p>
-        <ul class="tags">
-          {{ range (.GetTerms "tags") }}
-          <li><a href="{{ .Permalink }}">{{ .LinkTitle | humanize }}</a></li>
-          {{ end }}
-        </ul>
-        {{partial "toc.html" .}} {{partial "content.html" . }}
+        {{partial "tags.html" .}}
+        <div class="sidebar">{{partial "toc.html" .}}</div>
+        {{partial "content.html" . }}
       </article>
       {{partial "footer.html" .}}
     </div>
