@@ -1,0 +1,157 @@
+summaries:
+  missing: values.filter(value.isType("null")).length
+filters:
+  or:
+    - file.hasTag("book")
+    - and:
+        - file.inFolder("library")
+        - not:
+            - file.hasTag("evergreen", "meta")
+        - not:
+            - file.inFolder("library/posters")
+properties:
+  file.tags:
+    displayName: tags
+  file.basename:
+    displayName: notes
+views:
+  - type: cards
+    name: gallery
+    groupBy:
+      property: category
+      direction: ASC
+    order:
+      - file.basename
+      - date
+      - notebook
+      - category
+      - tags
+    sort:
+      - property: date
+        direction: DESC
+      - property: title
+        direction: ASC
+      - property: notebook
+        direction: ASC
+    summaries: {}
+    columnSize:
+      note.title: 401
+      note.date: 147
+      note.notebook: 125
+    cardSize: 320
+    image: note.posters
+  - type: table
+    name: all
+    groupBy:
+      property: category
+      direction: DESC
+    order:
+      - title
+      - date
+      - status
+      - finished
+      - subcategory
+      - notebook
+    sort:
+      - property: date
+        direction: DESC
+      - property: title
+        direction: DESC
+      - property: notebook
+        direction: ASC
+      - property: status
+        direction: ASC
+    columnSize:
+      note.title: 401
+      note.date: 147
+      note.subcategory: 172
+  - type: table
+    name: philosophy
+    filters:
+      and:
+        - category == "philosophy"
+    groupBy:
+      property: status
+      direction: ASC
+    order:
+      - title
+      - date
+      - status
+      - author
+      - subcategory
+      - file.backlinks
+      - notebook
+    sort:
+      - property: notebook
+        direction: ASC
+      - property: date
+        direction: DESC
+      - property: subcategory
+        direction: ASC
+      - property: category
+        direction: DESC
+      - property: status
+        direction: DESC
+      - property: title
+        direction: ASC
+    summaries: {}
+    columnSize:
+      note.title: 401
+      note.date: 147
+      note.subcategory: 172
+      file.backlinks: 222
+  - type: table
+    name: top of mind
+    filters:
+      and:
+        - date >= "2023-06-06"
+        - and:
+            - category == "philosophy"
+            - '!subcategory.containsAny("Aurelius", "Descartes")'
+            - status.containsAny("to read", "evergreen")
+    order:
+      - file.name
+      - file.tags
+      - date
+      - status
+  - type: table
+    name: wip
+    filters:
+      and:
+        - '!status.containsAny("finished", "evergreen")'
+    groupBy:
+      property: category
+      direction: DESC
+    order:
+      - title
+      - date
+      - subcategory
+      - author
+    sort:
+      - property: author
+        direction: DESC
+      - property: title
+        direction: DESC
+      - property: category
+        direction: DESC
+      - property: status
+        direction: DESC
+    columnSize:
+      note.title: 401
+      note.date: 147
+      note.author: 237
+  - type: list
+    name: dynalist
+    groupBy:
+      property: category
+      direction: ASC
+    order:
+      - file.name
+      - author
+      - notebook
+    sort:
+      - property: file.name
+        direction: ASC
+    markers: bullet
+    indentProperties: true
+    separator: ","

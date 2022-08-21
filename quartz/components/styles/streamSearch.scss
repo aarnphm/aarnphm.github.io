@@ -1,0 +1,61 @@
+@use "sass:map";
+@use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
+
+.stream-search-container {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.stream-search-form {
+  display: flex;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.stream-search-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--lightgray);
+  border-radius: 6px;
+  background: var(--light);
+  color: var(--dark);
+  font-family: inherit;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--secondary) 15%, transparent);
+  }
+
+  &::placeholder {
+    color: var(--gray);
+  }
+}
+
+.stream-search-status {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin-bottom: 1rem;
+  padding: 0.25rem 0;
+}
+
+// Highlight matching text in stream entries
+.stream-entry-content {
+  .search-highlight {
+    background: color-mix(in srgb, var(--secondary) 25%, transparent);
+    color: var(--dark);
+    font-weight: 500;
+    padding: 0.05em 0.15em;
+    border-radius: 2px;
+  }
+}
+
+// Hide filtered entries
+.stream-entry[style*="display: none"] {
+  display: none;
+}

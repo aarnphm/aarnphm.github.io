@@ -1,0 +1,17 @@
+{
+  "accentColor": "",
+  "cssTheme": "Minimal",
+  "interfaceFontFamily": "PP Neue Montreal,Berkeley Mono",
+  "textFontFamily": "Berkeley Mono,PP Neue Montreal",
+  "monospaceFontFamily": "Berkeley Mono",
+  "baseFontSize": 15,
+  "translucency": false,
+  "showViewHeader": true,
+  "enabledCssSnippets": [
+    "snippet"
+  ],
+  "baseFontSizeAction": true,
+  "theme": "system",
+  "nativeMenus": true,
+  "showRibbon": false
+}

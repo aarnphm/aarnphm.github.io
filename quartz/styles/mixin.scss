@@ -1,0 +1,216 @@
+@use "sass:list";
+@use "sass:meta";
+@use "./variables.scss" as *;
+
+@mixin iconStyles {
+  margin-left: auto;
+  white-space: nowrap;
+  color: var(--lightgray);
+  padding: 2px 0px;
+  fill: lightgray;
+  opacity: 0;
+}
+
+@mixin dagHighlights {
+  color: var(--dag-highlights);
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+}
+
+@mixin tinyFonts {
+  font-size: 11.1px;
+  font-style: normal;
+  font-weight: $normalWeight;
+  letter-spacing: 0;
+  letter-spacing: 0.4px;
+  line-height: 15px;
+  text-transform: uppercase;
+}
+
+@mixin closeButton {
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--darkgray);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--lightgray);
+    color: var(--dark);
+  }
+}
+
+@mixin badgeCapsule(
+  $bg: rgb(241, 241, 241),
+  $fg: rgb(119, 119, 119),
+  $hover-bg: rgb(222, 222, 222),
+  $padding: 2px 4px,
+  $radius: 6px,
+  $font-size: 10px,
+  $font-family: var(--codeFont),
+  $uppercase: true,
+  $cursor: pointer,
+  $border-color: transparent
+) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: $padding;
+  border-radius: $radius;
+  font-size: $font-size;
+  font-family: $font-family;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: if($uppercase, 0.08em, normal);
+  text-transform: if($uppercase, uppercase, none);
+  background-color: $bg;
+  color: $fg;
+  border: 1px solid $border-color;
+  cursor: $cursor;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    background-color: $hover-bg;
+    color: $fg;
+    border-color: $border-color;
+  }
+
+  [saved-theme="dark"] & {
+    background-color: var(--highlight);
+    color: var(--dark);
+  }
+}
+
+@mixin font-face($family, $filename, $format, $style: normal, $weight: normal, $path: "/fonts/") {
+  @font-face {
+    font-family: $family;
+    font-style: $style;
+    font-weight: $weight;
+    font-display: swap;
+    @if meta.type-of($filename) == "list" and meta.type-of($format) == "list" {
+      $src: ();
+      @for $i from 1 through list.length($filename) {
+        $src: list.append(
+          $src,
+          url("#{$path}#{list.nth($filename, $i)}") format(#{list.nth($format, $i)}),
+          comma
+        );
+      }
+      src: $src;
+    } @else {
+      src: url("#{$path}#{$filename}") format($format);
+    }
+  }
+}
+
+@mixin indicatorHook {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 2px;
+    height: calc(100% - 0.1em);
+    color: inherit;
+    border-left: 1px solid;
+    border-color: inherit;
+    transform: translate(-40%);
+  }
+}
+
+@mixin links {
+  background-image: linear-gradient(
+    var(--link-underline-gradient-line-color),
+    var(--link-underline-gradient-line-color)
+  );
+  background-size: 1px 1px;
+  background-repeat: repeat-x;
+  background-position: 0% calc(100% - 0.1em);
+  font-variant-numeric: oldstyle-nums;
+
+  & > .indicator-hook {
+    position: relative;
+    padding-left: 0.1em;
+
+    @include indicatorHook;
+  }
+}
+
+@mixin containerPopover {
+  position: fixed;
+  contain: layout;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+
+  &.active {
+    display: flex;
+  }
+}
+
+@mixin inputContainer {
+  .input-container {
+    position: relative;
+    display: flex;
+
+    & > input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 1rem;
+      font-family: var(--bodyFont);
+      color: var(--dark);
+      background-color: var(--light);
+      font-size: 1.1em;
+      border: none;
+      border-radius: 0;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+}
+
+@mixin containerInner {
+  max-height: 80vh;
+  margin-top: 7vh;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80vw;
+  overflow: hidden;
+
+  border: 1px solid var(--lightgray);
+  border-radius: var(--border-radius);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--light);
+  box-sizing: border-box;
+  box-shadow:
+    0 14px 50px rgba(27, 33, 48, 0.12),
+    0 10px 30px rgba(27, 33, 48, 0.16);
+}
+
+@mixin steps {
+  &::after {
+    content: "";
+    background-image: url("/static/dotted.svg");
+    background-repeat: repeat;
+    z-index: -10;
+    top: 0.5rem;
+    left: 0.5rem;
+    right: -0.5rem;
+    bottom: -0.5rem;
+    position: absolute;
+  }
+}

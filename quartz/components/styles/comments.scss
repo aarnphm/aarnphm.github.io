@@ -1,0 +1,20 @@
+main {
+  .gsc-header {
+    display: none !important;
+  }
+
+  .gsc-comment-box:not(.gsc-comment-box-is-reply),
+  .gsc-comment-box-write,
+  .rounded-md,
+  .gsc-comment-box-textarea {
+    border-radius: 0rem;
+  }
+
+  .rounded-t,
+  .rounded-md,
+  .gsc-comment-box-textarea-extras {
+    border-radius: 0rem !important;
+    border-start-end-radius: 0rem !important;
+    border-start-start-radius: 0rem !important;
+  }
+}

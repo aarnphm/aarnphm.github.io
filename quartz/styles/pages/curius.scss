@@ -1,0 +1,585 @@
+@use "sass:map";
+@use "../variables.scss" as *;
+@use "../mixin.scss" as *;
+
+@keyframes dots {
+  0%,
+  20%,
+  100% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .curius,
+  .curius-friends,
+  .curius-trail {
+    animation-duration: 300ms;
+    animation-delay: 0s;
+    animation-name: appear;
+    animation-fill-mode: backwards;
+  }
+}
+
+body[data-slug="curius"] {
+  .navigation-container {
+    display: none;
+    margin-top: 1em;
+
+    &.active {
+      display: block;
+    }
+  }
+
+  .left-col {
+    grid-column: 3/5;
+  }
+
+  .aside-container {
+    margin-top: 2rem;
+    position: sticky;
+    top: 2rem;
+    align-self: flex-start;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+
+    @media all and ($mobile) {
+      display: none;
+    }
+    @media all and ($tablet) {
+      display: none;
+    }
+  }
+
+  footer {
+    padding-left: 0 !important;
+  }
+
+  .curius-col {
+    grid-column: 5/9;
+    padding-left: 24px;
+
+    @media all and ($tablet) {
+      grid-column: 3/-3;
+      padding-left: 0;
+    }
+    @media all and ($mobile) {
+      grid-column: 3/-3;
+      padding-left: 0;
+    }
+  }
+
+  & .highlight {
+    background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
+    border-radius: 5px;
+    scroll-margin-top: 2rem;
+  }
+
+  & li {
+    padding: 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent transparent var(--lightgray);
+    border-image: initial;
+  }
+
+  a {
+    &:hover {
+      color: var(--tertiary) !important;
+      background-color: transparent !important;
+    }
+  }
+}
+
+.highlight-modal {
+  position: absolute;
+  border: 1px solid rgb(170, 170, 170);
+  background-color: var(--light);
+  z-index: 1000;
+  padding: 0 20px;
+  width: 350px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  visibility: hidden;
+
+  & ul {
+    list-style-type: none;
+    padding: 0;
+  }
+}
+
+.curius-header {
+  margin: 2rem auto 1rem;
+}
+
+.curius-page-container {
+  & li[id|="curius-item"] {
+    background-color: inherit;
+
+    & > * {
+      margin-left: 0.25rem;
+    }
+
+    &[class~="focus"]:first-child,
+    &[class~="active"]:first-child,
+    &[class="curius-item"]:first-child {
+      margin-top: 1rem;
+    }
+
+    &[class~="active"],
+    &[class~="focus"] {
+      background: var(--lightgray);
+      border: 1px solid var(--dark);
+    }
+  }
+}
+
+#curius-fetching-text {
+  display: none;
+  margin-top: 1rem;
+
+  &::after {
+    content: "";
+    animation: dots 1s infinite;
+  }
+
+  &.active {
+    display: inline-block;
+  }
+}
+
+.curius-item-title {
+  display: flex;
+  align-items: center;
+
+  a,
+  span {
+    color: inherit !important;
+    font-weight: normal !important;
+    text-decoration: none;
+
+    &:hover:not([data-highlight]) {
+      transition: none;
+      text-decoration: underline;
+    }
+  }
+}
+
+.curius-item-icons {
+  display: flex;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+svg.favorite-icon {
+  clip-path: circle(20% at 50% 50%);
+  color: rgb(236, 180, 19);
+  transition: all 200ms ease 0s;
+  width: fit-content;
+  height: fit-content;
+
+  &.focus {
+    clip-path: circle(100% at 50% 40%);
+  }
+}
+
+.curius {
+  & > * {
+    text-align: left;
+    box-sizing: border-box;
+    padding-bottom: 0.5rem;
+  }
+
+  time {
+    font-size: 0.8rem;
+  }
+
+  div[id="curius-fragments"] {
+    & li {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      padding-left: 0;
+      padding-inline: 0;
+    }
+  }
+
+  & div[id*="curius-misc"] {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    font-style: italic;
+  }
+
+  & div[id*="curius-highlight"] {
+    cursor: pointer;
+    color: #886c5a;
+    background-color: #fdebd0;
+    display: inline-block;
+    font-style: normal;
+  }
+
+  & [saved-theme="dark"] div[id*="curius-highlight"] {
+    color: #fdebd0;
+    background-color: #795548;
+  }
+
+  .curius-item-metadata {
+    margin-bottom: 0.5rem;
+  }
+
+  .curius-item-fa {
+    margin-right: 2px;
+    align-items: center;
+    -webkit-box-pack: center;
+    width: 12px;
+    color: rgb(68, 68, 68);
+  }
+
+  .curius-item-address {
+    color: rgb(170, 170, 170);
+    white-space: nowrap;
+    padding-left: 5px;
+  }
+
+  .curius-item-link {
+    max-width: 80%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    & > * {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 50%;
+    }
+  }
+
+  ul[class="curius-item-tags"] {
+    display: flex;
+    padding-inline-start: 0px;
+    margin-block-start: 0;
+
+    & > li {
+      @include badgeCapsule();
+      margin-bottom: 0;
+      margin-right: 5px;
+
+      & > a {
+        color: inherit;
+        text-decoration: none;
+        font-weight: inherit;
+        transition: color 0.2s;
+
+        &:hover {
+          color: inherit !important;
+        }
+      }
+    }
+  }
+}
+
+.curius-header {
+  background-color: unset !important;
+
+  .curius-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 11px;
+  }
+
+  .curius-search-snippet {
+    color: rgb(170, 170, 170);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+    margin: 0 auto 0;
+  }
+
+  .curius-search {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    position: relative;
+
+    & #curius-bar {
+      flex: 1;
+      outline: none;
+      background-color: var(--lightgray);
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: var(--bodyFont);
+      box-sizing: border-box;
+      border-radius: 2px;
+      color: var(--dark);
+      padding: 0.4rem 0.5rem;
+      border: 1px solid var(--lightgray);
+      width: 100%;
+    }
+
+    & #curius-search-container {
+      position: absolute;
+      box-sizing: border-box;
+      z-index: unset;
+      box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
+      display: none;
+      box-sizing: border-box;
+      background-color: var(--light);
+      max-height: 50vh;
+      // var(curius-col * 7) - padding
+      max-width: calc(var(--grid-col-width) * 7 - 24px);
+      // #curius-bar height + padding
+      margin-top: 3rem;
+      overflow: hidden auto;
+
+      @media all and ($mobile) {
+        width: initial;
+        right: 1rem;
+        left: 1rem;
+      }
+
+      &.active {
+        z-index: 999;
+        display: inline-block;
+        width: 100%;
+      }
+
+      a.curius-search-link {
+        padding: 10px;
+        margin: auto;
+        display: block;
+        border-color: var(--lightgray);
+        border-width: 0px 0px 1px;
+        border-style: solid;
+        text-decoration: inherit;
+        color: inherit;
+        outline: none;
+        cursor: pointer;
+        font-weight: inherit;
+        transition: background 0.2s ease;
+        &:hover,
+        &:focus {
+          background-color: var(--lightgray);
+          border-radius: 5px;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+.curius-friends,
+.curius-trail {
+  border: 1px solid var(--gray);
+  padding: 8px;
+  cursor: pointer;
+}
+
+.curius-friends {
+  display: none !important;
+
+  a,
+  span {
+    color: inherit !important;
+    font-weight: normal !important;
+    text-decoration: none;
+
+    &:hover:not([data-highlight]) {
+      transition: none;
+      text-decoration: underline;
+    }
+  }
+
+  &.active {
+    display: block !important;
+  }
+
+  #friends-list {
+    max-height: 49vh;
+    overflow-y: auto;
+  }
+
+  .friend-li {
+    display: none;
+    padding: 2px;
+
+    &.active {
+      display: block;
+    }
+
+    & > .friend-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    &.friend-pinned {
+      .friend-name {
+        display: inline;
+        padding: 0 3px;
+        margin: -1px;
+
+        box-shadow:
+          0px 1px 0px 1px var(--light) inset,
+          0px 1px 0px 2px var(--pine) inset;
+
+        &:hover {
+          box-shadow:
+            0px 1px 0px 0px var(--light) inset,
+            0px 1px 0px 1px var(--pine) inset;
+          border-bottom: 1px solid var(--pine);
+        }
+      }
+    }
+  }
+
+  .friend-shortcut {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 75%;
+  }
+
+  #see-more-friends {
+    cursor: pointer;
+
+    svg {
+      transition: transform 0.3s ease;
+    }
+
+    .fold {
+      transform: rotateZ(-180deg);
+    }
+  }
+}
+
+.curius-trail {
+  font-size: 11px;
+  width: inherit;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  cursor: pointer;
+  display: none;
+
+  &.active {
+    display: block;
+  }
+
+  .curius-trail-header {
+    display: flex;
+    font-size: initial;
+    flex-direction: column;
+  }
+
+  .curius-item-address,
+  .trail-description {
+    font-size: 10px;
+    color: var(--gray);
+    font-style: italic;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
+
+#trail-list {
+  margin-top: 0;
+}
+
+.trails-li {
+  margin-bottom: 1rem;
+  border-bottom-style: none !important;
+}
+
+.trail-ul {
+  padding-inline-start: 5px;
+  list-style: none;
+  border-left: 1px solid var(--lightgray);
+  margin-left: 1rem;
+  padding: 0 0 0 1.2rem;
+  margin-top: 5px;
+
+  & li {
+    gap: 1rem;
+
+    &[class~="focus"] {
+      background: var(--lightgray);
+      border: 0px solid var(--dark);
+      border-top-width: 1px;
+      border-bottom-width: 1px;
+    }
+  }
+
+  li.curius-item-title {
+    align-items: center;
+    padding: 0 8px;
+
+    & .curius-item-link {
+      white-space: nowrap;
+      width: 50%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .curius-item-span {
+      max-width: 100%;
+    }
+  }
+}
+
+.curius-pagination {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2rem;
+  align-items: center;
+  margin-top: 2rem;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+
+  span {
+    cursor: pointer;
+    color: var(--dark);
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--tertiary);
+    }
+
+    &[style*="hidden"] {
+      color: var(--gray);
+      cursor: default;
+    }
+  }
+}
