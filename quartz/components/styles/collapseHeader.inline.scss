@@ -1,0 +1,232 @@
+@use "../../styles/variables.scss" as *;
+
+$connector-width: 1px;
+$toggle-gap: 0rem;
+
+.collapsible-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.collapsible-header-spacer {
+  height: 1rem;
+  display: flex;
+  align-items: center;
+
+  .collapse-rail {
+    width: var(--rail-width);
+    height: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .collapse-line--spacer {
+    width: $connector-width;
+    height: 100%;
+    background: color-mix(in srgb, var(--gray) 24%, transparent);
+    border-radius: $connector-width;
+  }
+}
+
+.collapsible-header-hr {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  gap: $toggle-gap;
+
+  .collapse-rail {
+    width: var(--rail-width);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .collapse-line--hr {
+    width: $connector-width;
+    height: 3rem;
+    background: color-mix(in srgb, var(--gray) 24%, transparent);
+    border-radius: $connector-width;
+  }
+}
+
+.collapsible-header {
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+  }
+
+  .collapse-shell {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .collapse-toggle {
+    display: grid;
+    grid-template-columns: var(--rail-width) 1fr auto;
+    align-items: center;
+    gap: $toggle-gap;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .collapse-rail {
+    width: var(--rail-width);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+
+    &--body {
+      align-items: center;
+      gap: 0;
+
+      .collapse-line {
+        min-height: calc(100% - 0.5rem);
+      }
+    }
+  }
+
+  .collapse-line {
+    width: $connector-width;
+    background: color-mix(in srgb, var(--gray) 24%, transparent);
+    border-radius: $connector-width;
+    flex: 1;
+    min-height: 1rem;
+  }
+
+  .collapse-node {
+    width: 1.05rem;
+    height: 1.05rem;
+    border-radius: 0.45rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .collapse-node-dot {
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--iris) 62%, var(--dark) 30%);
+    transition: background 0.2s ease;
+  }
+
+  .collapse-shell:not(.is-open) .collapse-node-dot {
+    background: color-mix(in srgb, var(--gray) 62%, transparent);
+  }
+
+  .collapse-title {
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    min-width: 0;
+    color: var(--dark);
+    overflow: hidden;
+    white-space: normal;
+    height: 100%;
+    align-items: center;
+
+    & > * {
+      min-width: 0;
+    }
+
+    a[data-role="anchor"] {
+      margin-left: 0.35rem;
+    }
+  }
+
+  .toggle-icons {
+    width: 1.05rem;
+    height: 1.05rem;
+    display: grid;
+    padding: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    align-items: center;
+    justify-items: center;
+    pointer-events: none;
+    position: relative;
+
+    svg {
+      grid-column: 1;
+      grid-row: 1;
+      opacity: 0.85;
+      display: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .circle-icon {
+      display: block;
+    }
+  }
+
+  .collapse-toggle:hover .toggle-icons .circle-icon,
+  .collapse-toggle:focus-visible .toggle-icons .circle-icon {
+    display: none;
+  }
+
+  .collapse-toggle:hover[aria-expanded="true"] .toggle-icons .collapse-icon,
+  .collapse-toggle:focus-visible[aria-expanded="true"] .toggle-icons .collapse-icon {
+    display: block;
+  }
+
+  .collapse-toggle:hover[aria-expanded="false"] .toggle-icons .expand-icon,
+  .collapse-toggle:focus-visible[aria-expanded="false"] .toggle-icons .expand-icon {
+    display: block;
+  }
+
+  .collapse-body {
+    display: grid;
+    grid-template-columns: var(--rail-width) 1fr;
+    column-gap: $toggle-gap;
+    padding: 0;
+  }
+
+  .collapse-body[hidden] {
+    display: none;
+  }
+
+  .collapse-body-content {
+    min-width: 0;
+  }
+
+  .collapsible-header-content {
+    color: color-mix(in srgb, var(--gray) 75%, var(--dark) 25%);
+  }
+
+  .collapsed-dots {
+    display: none;
+    margin-left: 0.35rem;
+    transform: translateY(2px);
+  }
+
+  .collapse-shell:not(.is-open) {
+    .collapse-body {
+      display: none;
+    }
+
+    .collapsed-dots {
+      display: inline-flex;
+    }
+
+    .collapse-title {
+      color: color-mix(in srgb, var(--gray) 68%, var(--dark) 32%);
+    }
+  }
+}

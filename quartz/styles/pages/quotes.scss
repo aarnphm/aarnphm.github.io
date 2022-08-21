@@ -1,0 +1,40 @@
+[data-slug="quotes"] {
+  & article {
+    & > hr::after {
+      content: "";
+    }
+
+    & > blockquote:not(.twitter-tweet) {
+      border-left: none;
+      padding-top: 1rem;
+      padding-left: 1.8rem;
+      margin: inherit;
+
+      & > p {
+        &:first-of-type {
+          &:before,
+          &:after {
+            font-size: 2em;
+            line-height: 0.1em;
+            vertical-align: -0.4em;
+          }
+
+          &:before {
+            content: "“";
+            margin-right: 0.25em;
+          }
+
+          &:after {
+            content: "”";
+            margin-left: 0.25em;
+          }
+        }
+
+        &:last-of-type {
+          margin-top: 0.8rem;
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
