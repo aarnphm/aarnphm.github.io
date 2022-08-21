@@ -1,0 +1,139 @@
+<head>
+  <!-- Meta tags -->
+  <meta charset="UTF-8" />
+  <meta
+    name="description"
+    content="{{if .IsHome}}{{$.Site.Data.config.description}}{{else}}{{.Summary}}{{end}}"
+  />
+  <title>
+    {{ if .Title }}{{ .Title }}{{ else }}{{ $.Site.Data.config.pageTitle }}{{
+    end }}
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Social Tags -->
+  <!-- TODO: image -->
+  <meta property="og:url" content="https://jzhao.xyz" />
+  <meta property="og:title" content="{{ .Scratch.Get "title" | humanize }}" />
+  <meta property="og:description" content="{{ .Scratch.Get "description" }}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@aarnphm_" />
+  <meta name="twitter:title" content="{{ .Scratch.Get "title" }}"> <meta
+  name="twitter:description" content="{{ .Scratch.Get "description" }}" />
+
+  <!-- HTML Favicon -->
+  {{ $favicon := $.Site.Data.config.favicon | default (slice (dict "rel"
+  "shortcut icon" "type" "image/png" "href" "icon.png")) }} {{ $type := (printf
+  "%T" $favicon) }} {{ if eq $type "string" }} {{ $favicon | safeHTML }} {{ else
+  }} {{ range $favicon }}
+  <link
+    rel="{{.rel}}"
+    {{if
+    .type}}type="{{.type}}"
+    {{end}}
+    {{if
+    .sizes}}sizes="{{.sizes}}"
+    {{end}}
+    href="{{$.Site.BaseURL}}/{{.href}}"
+  />
+  {{- end }} {{ end }}
+
+  <!-- CSS Stylesheets and Fonts -->
+  {{$sass := resources.Match "styles/[!_]*.scss" }} {{$css := slice }} {{range
+  $sass}} {{$scss := . | resources.ToCSS (dict "outputStyle" "compressed") }}
+  {{$css = $css | append $scss}} {{end}} {{$scss := resources.Get
+  "styles/_callouts.scss" | resources.ToCSS (dict "outputStyle" "compressed") }}
+  {{$css = $css | append $scss}} {{$finalCss := $css | resources.Concat
+  "styles.css" | resources.Fingerprint "md5" | resources.Minify }}
+  <link href="{{$finalCss.Permalink}}" rel="stylesheet" />
+
+  {{$lightSyntax := resources.Get "styles/_light_syntax.scss" | resources.ToCSS
+  (dict "outputStyle" "compressed") | resources.Fingerprint "md5" |
+  resources.Minify }}
+  <link href="{{$lightSyntax.Permalink}}" rel="stylesheet" id="theme-link" />
+
+  <!-- Base scripts -->
+  {{$scripts := (slice "js/darkmode.js" "js/util.js")}} {{range $scripts}}
+  {{$scriptname := .}} {{ $s := resources.Get $scriptname |
+  resources.ExecuteAsTemplate $scriptname . | resources.Fingerprint "md5" |
+  resources.Minify }}
+  <script src="{{$s.Permalink}}"></script>
+  {{end}}
+
+  <!-- katex support -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"
+    integrity="sha384-R4558gYOUz8mP9YWpZJjofhk+zx0AS11p36HnD2ZKj/6JR5z27gSSULCNHIRReVs"
+    crossorigin="anonymous"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"
+    integrity="sha384-z1fJDqw8ZApjGO3/unPWUPsIymfsJmyrDVWC8Tv/a1HeOtGmkwNd/7xUS0Xcnvsx"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/auto-render.min.js"
+    integrity="sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR"
+    crossorigin="anonymous"
+  ></script>
+
+  <script src="https://unpkg.com/@floating-ui/core@0.7.3"></script>
+  <script src="https://unpkg.com/@floating-ui/dom@0.5.4"></script>
+  {{ $popover := resources.Get "js/popover.js" | resources.Fingerprint "md5" |
+  resources.Minify }}
+  <script src="{{$popover.Permalink}}"></script>
+
+  {{ if $.Site.Data.config.enableCodeBlockTitle }} {{ $codeTitle :=
+  resources.Get "js/code-title.js" | resources.Fingerprint "md5" |
+  resources.Minify }}
+  <script src="{{$codeTitle.Permalink}}"></script>
+  {{end}} {{ if $.Site.Data.config.enableCodeBlockCopy }} {{ $clipboard :=
+  resources.Get "js/clipboard.js" | resources.Fingerprint "md5" |
+  resources.Minify }}
+  <script src="{{$clipboard.Permalink}}"></script>
+  {{ end }} {{ $callouts := resources.Get "js/callouts.js" |
+  resources.Fingerprint "md5" | resources.Minify }}
+  <script src="{{$callouts.Permalink}}"></script>
+
+  <!--  Preload page vars  -->
+  <script>
+    const BASE_URL = {{.Site.BaseURL}}
+
+      const render = () => {
+      // NOTE: everything within this callback will be executed for every page navigation. This is a good place to put JavaScript that loads or modifies data on the page, adds event listeners, etc. If you are only dealing with basic DOM replacement, use the init function
+
+      const siteBaseURL = new URL(BASE_URL);
+      const pathBase = siteBaseURL.pathname;
+      const pathWindow = window.location.pathname;
+      const isHome = pathBase == pathWindow;
+
+      addCopyButtons();
+      addTitleToCodeBlocks();
+      addCollapsibleCallouts();
+    }
+
+    const init = (doc = document) => {
+      // NOTE: everything within this callback will be executed for initial page navigation. This is a good place to put JavaScript that only replaces DOM nodes.
+      addCopyButtons();
+      addTitleToCodeBlocks();
+      // Enable latex support
+      renderMathInElement(doc.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+        ],
+        throwOnError : false
+      });
+    };
+  </script>
+  {{ $router := resources.Get "js/router.js" | resources.Fingerprint "md5" |
+  resources.Minify }}
+  <script type="module">
+    import { attachSPARouting } from "{{$router.Permalink}}";
+    attachSPARouting(init, render);
+  </script>
+</head>
+{{ template "_internal/google_analytics.html" . }}

@@ -1,9 +1,8 @@
-// Replace this with your own font imports!
-@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;600;700&family=Source+Sans+Pro:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@339&family=Playfair+Display:wght@543&family=Source+Serif+Pro&display=swap");
 :root {
-  --font-body: "Source Sans Pro";
-  --font-header: "Inter";
-  --font-mono: "Fira Code";
+  --font-body: "Source Serif Pro";
+  --font-header: "Playfair Display";
+  --font-mono: "JetBrains Mono";
 }
 
 // typography
@@ -22,7 +21,7 @@ html {
 }
 
 .singlePage {
-  padding: 2em 15vw 2em 15vw;
+  padding: 2em 20vw 2em 20vw;
   @media all and (max-width: 1200px) {
     padding: 25px 5vw;
   }
@@ -30,10 +29,11 @@ html {
 
 body {
   margin: 0;
-  height: 100vh;
+  height: 100%;
   width: 100vw;
   max-width: 100%;
   box-sizing: border-box;
+  position: relative;
   background-color: var(--light);
 }
 
@@ -65,7 +65,6 @@ thead {
 p,
 ul,
 text,
-a,
 tr,
 td,
 li,
@@ -87,7 +86,7 @@ p {
 
 .mainTOC {
   border-radius: 5px;
-  padding: 0.75em 0;
+  // padding: 0.75em 0;
 
   & details {
     & summary {
@@ -252,11 +251,10 @@ article {
   & > li > a {
     border-radius: 8px;
     border: var(--outlinegray) 1px solid;
-    padding: 0.2em 0.5em;
+    padding: 0.1em 0.5em;
     &::before {
       content: "#";
       margin-right: 0.3em;
-      color: var(--outlinegray);
     }
   }
 }
@@ -282,7 +280,7 @@ a {
   font-size: 1em;
   font-weight: 700;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
   color: var(--secondary);
   &:hover {
     color: var(--tertiary) !important;
@@ -453,7 +451,8 @@ header {
       width: 100%;
       border-radius: 4px;
       background: var(--light);
-      box-shadow: 0 14px 50px rgba(27, 33, 48, 0.12), 0 10px 30px rgba(27, 33, 48, 0.16);
+      box-shadow: 0 14px 50px rgba(27, 33, 48, 0.12),
+        0 10px 30px rgba(27, 33, 48, 0.16);
       margin-bottom: 2em;
     }
 
@@ -548,7 +547,7 @@ header {
     & p {
       margin: 0;
       padding-right: 1em;
-      flex-basis: 6em;
+      width: clamp(6em, 6em, 6em);
     }
   }
 
@@ -618,14 +617,10 @@ header {
     font-size: 0.8rem;
   }
 
-  & > p {
-    margin: 0;
-    padding: 0.5rem 0;
-  }
-
   & > p,
   & > a {
     font-size: 1rem;
+    margin: 0.7rem 0;
     font-weight: 400;
     user-select: none;
   }

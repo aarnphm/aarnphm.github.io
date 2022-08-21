@@ -1,0 +1,111 @@
+// based on rose-pine theme
+:root {
+  --light: #faf4ed;
+  --dark: #141021;
+  --secondary: #284b63;
+  --tertiary: #84a59d;
+  --visited: #afbfc9;
+  --primary: #f28482;
+  --gray: #4e4e4e;
+  --lightgray: #e7e5e0;
+  --outlinegray: #d2d0c9;
+  --million-progress-bar-color: var(--secondary);
+}
+
+[saved-theme="dark"] {
+  --light: #232136 !important;
+  --dark: #fbfffe !important;
+  --secondary: #819fb3 !important;
+  --visited: #4a575e !important;
+  --tertiary: #84a59d !important;
+  --primary: #f58382 !important;
+  --gray: #d4d4d4 !important;
+  --lightgray: #33312f !important;
+  --outlinegray: #444444 !important;
+}
+
+#index {
+  & > .bio {
+    display: flex;
+    gap: 1.5em;
+    z-index: 1;
+    position: relative;
+
+    @media screen and (max-width: 1440px) {
+      flex-direction: column-reverse !important;
+      gap: 4em;
+    }
+
+    & > .sidebar {
+      flex: 0 0 30%;
+
+      & > div {
+        margin-bottom: 2em;
+      }
+
+      & ul {
+        list-style: none;
+        padding: 0;
+        margin-left: 0;
+        z-index: 0;
+      }
+
+      & > div > a {
+        opacity: 0.6;
+      }
+
+      & h2 {
+        font-size: 1.4rem;
+        margin: 0.75em 0;
+      }
+
+      & li {
+        margin-bottom: 0.8em;
+      }
+
+      & h3 {
+        margin: 0;
+      }
+
+      & .meta {
+        margin: 0.2em 0;
+      }
+
+      & .tags > li > a {
+        font-size: 0.9em;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+hr {
+  overflow: visible; /* For IE */
+  padding: 0;
+  margin: 5em auto;
+  border: none;
+  color: var(--gray);
+  text-align: center;
+  width: 40%;
+  z-index: -999;
+  border-color: var(--gray);
+  &:after {
+    content: "* * *";
+    z-index: -999;
+    display: inline-block;
+    margin: -1em 0 0.5em;
+    font-size: 1.5em;
+    padding: 0.5em 1em;
+    background: var(--light);
+    transform: translateY(-0.1em);
+  }
+}

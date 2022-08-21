@@ -1,20 +1,41 @@
 <!DOCTYPE html>
 <html lang="{{ .Lang }}">
-{{ partial "head.html" . }}
+  {{ partial "_meta.html" . }}
 
-<body>
-{{partial "search.html" .}}
-<div class="singlePage">
-    <!-- Begin actual content -->
-    {{partial "header.html" .}}
-    <article>
-        {{partial "toc.html" .}}
-        {{partial "textprocessing.html" . }}
-        {{if $.Site.Data.config.enableRecentNotes}}
-          {{partial "recent.html" . }}
-        {{end}}
-    </article>
-    {{partial "footerIndex.html" .}}
-</div>
-</body>
+  <body>
+    {{partial "search.html" .}}
+    <div id="index" class="singlePage">
+      <!-- Begin actual content -->
+      {{partial "header.html" .}}
+      <div class="bio">
+        <div class="sidebar">
+          {{partial "toc.html" .}}
+          <div class="delay t-4">
+            <h2>Recent Notes</h2>
+            {{$notes := where .Site.RegularPages "Section" "cache"}}
+            <ul class="delay stagger">
+              {{range first 2 $notes }}
+              <li>
+                <div class="section">
+                  <div class="desc">
+                    <h3><a href="{{ .Permalink }}">{{- .Title -}}</a></h3>
+                  </div>
+                  <p class="meta">
+                    {{.WordCount}} words on {{ .Lastmod.Format "Jan 2, 2006" }}
+                  </p>
+                  {{partial "tags.html" .}}
+                </div>
+              </li>
+              {{end}}
+            </ul>
+            <a href="/cache">See {{sub (len $notes) 2}} more →</a>
+          </div>
+        </div>
+        <article>
+          <div class="delay stagger">{{partial "content.html" . }}</div>
+        </article>
+      </div>
+      <div class="delay t-4">{{partial "footer.html" .}}</div>
+    </div>
+  </body>
 </html>

@@ -1,21 +1,13 @@
 name: Aaron Pham
-enableToc: true
-openToc: false
 enableLinkPreview: true
-enableLatex: true
 enableCodeBlockTitle: true
 enableCodeBlockCopy: true
-enableCallouts: true
-enableFooter: true
-enableContextualBacklinks: true
-enableRecentNotes: false
-enableGitHubEdit: true
 GitHubLink: https://github.com/aarnphm/aarnphm.github.io/tree/main/content
 enableSemanticSearch: true
 operandApiKey: "a582703d-7145-4c2e-8759-b1209578a7cc"
 description: |
-  Hi, my name is Aaron, this is my little corner of the internet, where I will share what I have been working on, and thoughts on the tech I'm interested in.
-  I'm curious about building developer tools, improve interaction amongs biological beings and computers, and be more unbiased about the world around me.
+  Hi, my name is Aaron, this is my little corner of the internet, where I will share what I have been working on, and thoughts on how to build more responsible technology.
+  I'm curious about how we can design better infrastructure to run algorithms at scale more efficiently, and be more unbiased about the world around me.
   This is the place where I try to organize my thoughts and incubates ideas that lives in my biological backlog.
 pageTitle: aaron's garden
 perma:
