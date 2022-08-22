@@ -1,6 +1,6 @@
 baseURL = "https://aarnphm.xyz"
 languageCode = "en-us"
-title = "aaron's garden"
+title = "Aaron's notes"
 googleAnalytics = "G-ZY6ND8M0X0"
 relativeURLs = false
 disablePathToLower = true

@@ -1,5 +1,5 @@
 ---
-title: "aaron's garden"
+title: "Aaron's notes"
 tags:
   - evergreen
 ---
