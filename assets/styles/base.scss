@@ -99,7 +99,7 @@ p {
 #TableOfContents > ol {
   counter-reset: section;
   margin-left: 0em;
-  padding-left: 1.5em;
+  padding-left: 0.5em;
   & > li {
     counter-increment: section;
     & > ol {

@@ -12,14 +12,14 @@ building tools in open and training deep neural nets. This is my digital garden,
 ## 📖 work.
 
 Currently, I'm working as a software engineer at [BentoML](https://www.bentoml.com/),
-a high performance frameworks to help data scientist ships their machine learning models
+a high performance frameworks to help data scientist ship their machine learning models
 to production. On the side, I'm building developer tools and build system that evolves
 around deep neural nets as well as experiment with a variety of languages 🦀 🐍 🐉 👻.
 
-Outside of code, I'm learning French, taking photos and building keyboards 😄
+Outside of code, I'm learning French, running a photography gig, and building keyboards 😄
 
 I'm curious about how we can design better and more efficient infrastructure to run
-algorithms at scale, improve interoperability between humans and machine and become more responsible technologist.
+algorithms at scale, improve interoperability between living beings and machine, and become more responsible technologist.
 
 In the second decade of my life, I'm learning to be more unbiased about the world
 around me, and have a better sleeping schedule.
