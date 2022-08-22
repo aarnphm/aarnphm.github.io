@@ -12,7 +12,7 @@ function initPopover(baseURL) {
     links
       .filter((li) => li.dataset.src || li.dataset.idx)
       .forEach((li) => {
-        let el;
+        var el;
         if (li.dataset.ctx) {
           const linkDest = content[li.dataset.src];
           const popoverElement = `<div class="popover">
@@ -25,21 +25,9 @@ function initPopover(baseURL) {
           const linkDest =
             content[li.dataset.src.replace(/\/$/g, "").replace(basePath, "")];
           if (linkDest) {
-            const splitLink = li.href.split("#");
-            let cleanedContent = removeMarkdown(linkDest.content);
-            if (splitLink.length > 1) {
-              const headingName = splitLink[1].replace(/\-/g, " ");
-              const headingIndex = cleanedContent
-                .toLowerCase()
-                .indexOf("<b>" + headingName + "</b>");
-              cleanedContent = cleanedContent.substring(
-                headingIndex,
-                cleanedContent.length,
-              );
-            }
             const popoverElement = `<div class="popover">
     <h3>${linkDest.title}</h3>
-    <p>${cleanedContent.split(" ", 20).join(" ")}...</p>
+    <p>${removeMarkdown(linkDest.content).split(" ", 20).join(" ")}...</p>
     <p class="meta">${new Date(linkDest.lastmodified).toLocaleDateString()}</p>
 </div>`;
             el = htmlToElement(popoverElement);

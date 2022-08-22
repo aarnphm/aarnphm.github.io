@@ -98,8 +98,27 @@
   <script src="{{$callouts.Permalink}}"></script>
 
   <!--  Preload page vars  -->
+  {{$linkIndex := resources.Get "indices/linkIndex.json" | resources.Fingerprint
+  "md5" | resources.Minify | }} {{$contentIndex := resources.Get
+  "indices/contentIndex.json" | resources.Fingerprint "md5" | resources.Minify
+  }}
   <script>
     const BASE_URL = {{ .Site.BaseURL }}
+    const fetchData = Promise.all([
+      fetch("{{ $linkIndex.Permalink }}")
+        .then(data => data.json())
+        .then(data => ({
+          index: data.index,
+          links: data.links,
+        })),
+      fetch("{{ $contentIndex.Permalink }}")
+        .then(data => data.json()),
+    ])
+    .then(([{index, links}, content]) => ({
+      index,
+      links,
+      content,
+    }))
 
     const render = () => {
       // NOTE: everything within this callback will be executed for every page navigation. This is a good place to put JavaScript that loads or modifies data on the page, adds event listeners, etc. If you are only dealing with basic DOM replacement, use the init function

@@ -39,7 +39,7 @@ While I can't give you a tour of the garden, here are some of the links you can 
 exploring:
 
 - [Every so slightly blank canvas](/cache): Collection of thoughts that I jot down!
-- [Exploration easel](/cache/Projects.md): List of projects I have built throughout the
+- [Exploration easel](cache/Projects.md): List of projects I have built throughout the
   year!
 - [The anti-procastination toolkit](/books): List of books I have read and currently
   reading!
