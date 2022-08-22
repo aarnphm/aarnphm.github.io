@@ -39,5 +39,5 @@ registerHandlers(
         )
         .then((results) => displayResults(results));
     }
-  })
+  }),
 );
