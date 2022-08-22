@@ -9,10 +9,10 @@
       {{partial "header.html" .}}
       <div class="bio">
         <div class="sidebar">
-          <div class="delay t-4">
+          <div id="recent-notes">
             <h2>Recent Notes</h2>
             {{$notes := where .Site.RegularPages "Section" "cache"}}
-            <ul class="delay stagger">
+            <ul>
               {{$numDisplayNotes := $.Site.Data.config.numDisplayNotes}} {{range
               first $numDisplayNotes $notes }}
               <li>
@@ -34,10 +34,10 @@
           </div>
         </div>
         <article>
-          <div class="delay stagger">{{partial "content.html" . }}</div>
+          <div id="main-content">{{partial "content.html" . }}</div>
         </article>
       </div>
-      <div class="delay t-4">{{partial "footer.html" .}}</div>
+      <div id="main-footer">{{partial "footer.html" .}}</div>
     </div>
   </body>
 </html>

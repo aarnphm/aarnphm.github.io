@@ -19,8 +19,11 @@
       </p>
 
       {{partial "tags.html" .}}
-      <div class="singleContent">
-        <div id="toc" class="sidebar">{{partial "toc.html" .}}</div>
+      <div class="content-container">
+        <div class="sidebar">
+          <div id="toc">{{partial "toc.html" .}}</div>
+          <div class="backlinks-container">{{partial "backlinks.html" .}}</div>
+        </div>
         <article>{{partial "content.html" . }}</article>
       </div>
       {{partial "footer.html" .}}

@@ -5,9 +5,7 @@ tags:
   - technical
 ---
 
-You might heard about Docker, or have a vague understanding of what Docker is.
-
-Docker is fun 😄
+You might heard about Docker, or have a vague understanding of what Docker is. Docker is fun 😄 We love OCI container out here
 
 ## Containers through Docker
 

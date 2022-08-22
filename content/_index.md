@@ -1,7 +1,7 @@
 ---
 title: "aaron's garden"
 tags:
-  - perma
+  - evergreen
 ---
 
 > _I just wondered how things were put together. - Claude Shannon_
@@ -24,7 +24,7 @@ algorithms at scale, improve interoperability between humans and machine and bec
 In the second decade of my life, I'm learning to be more unbiased about the world
 around me, and have a better sleeping schedule.
 
-## ❓this.
+## ❓ why.
 
 I have been writing for a while, but never really got the courage and time to publish anything. Working has been taking most of my time, and I couldn't allocate time for writing. Recently, I have been experiencing insomnia and though it might sounds
 horrible as it is, I started to pick up the pen and jot down my thoughts again. Digital
@@ -34,3 +34,11 @@ I found that I actually learn the most when I write, as it encourages me to read
 and actually explore on topics I want to learn more, so here we go 🚀
 
 Since all my notes and thoughts are scattered amongs too many platforms (Slack, Discord, Notion, Apple Notes, Samsung Notes), it will take a while for me to move everything here, so please be patient 🐣
+
+While I can't give you a tour of the garden, here are some of the links you can start
+exploring:
+
+- [Every so slightly blank canvas](/cache): Collection of thoughts that I jot down!
+- [Exploration easel](/cache/Projects.md): List of projects I have built throughout the
+  year!
+-

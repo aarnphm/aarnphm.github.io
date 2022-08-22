@@ -99,9 +99,9 @@
 
   <!--  Preload page vars  -->
   <script>
-    const BASE_URL = {{.Site.BaseURL}}
+    const BASE_URL = {{ .Site.BaseURL }}
 
-      const render = () => {
+    const render = () => {
       // NOTE: everything within this callback will be executed for every page navigation. This is a good place to put JavaScript that loads or modifies data on the page, adds event listeners, etc. If you are only dealing with basic DOM replacement, use the init function
 
       const siteBaseURL = new URL(BASE_URL);
@@ -113,6 +113,9 @@
       addTitleToCodeBlocks();
       addCollapsibleCallouts();
     }
+
+    {{$baseUrl:=strings.TrimRight "/" .Site.BaseURL }}
+    initPopover({{$baseUrl}})
 
     const init = (doc = document) => {
       // NOTE: everything within this callback will be executed for initial page navigation. This is a good place to put JavaScript that only replaces DOM nodes.
