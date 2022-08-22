@@ -24,7 +24,7 @@ algorithms at scale, improve interoperability between living beings and machine,
 In the second decade of my life, I'm learning to be more unbiased about the world
 around me, and have a better sleeping schedule.
 
-## ❓ why.
+## ❓why.
 
 I have been writing for a while, but never really got the courage and time to publish anything. Working has been taking most of my time, and I couldn't allocate time for writing. Recently, I have been experiencing insomnia and though it might sounds
 horrible as it is, I started to pick up the pen and jot down my thoughts again. Digital

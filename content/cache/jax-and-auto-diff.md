@@ -6,4 +6,6 @@ tags:
   - machinelearning
 ---
 
-One of the reason for Jax is that Python is [slow](cache/make-python-faster.md)
+In this article, we will build a basic word search model using Flax and Jax. Throughout
+the building process, we will explore what autodiff is and how Jax enables researcher to
+write better and more efficient ML application. Source code can be found [_here_](https://github.com/aarnphm/semantic-jax)

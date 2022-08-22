@@ -24,6 +24,10 @@
   --outlinegray: #444444 !important;
 }
 
+body {
+  min-height: 100vh;
+}
+
 #index {
   & > .bio {
     display: flex;
@@ -32,12 +36,12 @@
     position: relative;
 
     @media screen and (max-width: 1440px) {
-      flex-direction: column-reverse !important;
+      flex-direction: column !important;
       gap: 4em;
     }
 
     & > .sidebar {
-      flex: 0 0 30%;
+      flex: 0 0 20%;
 
       & > div {
         margin-bottom: 2em;
@@ -80,11 +84,9 @@
 }
 
 .singlePage {
-  & > .content-container {
-    display: flex;
+  & > .content {
+    display: inline-flex;
     gap: 1.5em;
-    z-index: 1;
-    position: relative;
 
     @media screen and (max-width: 1440px) {
       flex-direction: column-reverse !important;
@@ -92,9 +94,8 @@
     }
 
     & > .article {
-      & > div {
-        margin-bottom: 2em;
-      }
+      flex: 1 0 auto;
+      // overflow-wrap: unset;
     }
 
     & > .sidebar {

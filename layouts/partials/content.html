@@ -63,7 +63,7 @@
 {{ $counter := 0 }}
 {{ $counter1 := 0 }}
 {{ $finder := index $blockquoteclasses1 $counter }}
-{{range $blockquotetags}}
+{{range $blockquotetags }}
   {{ $finder = index $blockquoteclasses1 $counter }}
   {{ if (in $finder "[!") }}
     {{ $inner := index $blockquoteclasses $counter1 }}

@@ -17,11 +17,10 @@
           >Edit Source</a
         >
       </p>
-
       {{partial "tags.html" .}}
-      <div class="content-container">
+      <div class="content">
         <div class="sidebar">
-          <div id="toc">{{partial "toc.html" .}}</div>
+          <div>{{partial "toc.html" .}}</div>
           <div class="backlinks-container">{{partial "backlinks.html" .}}</div>
         </div>
         <article>{{partial "content.html" . }}</article>

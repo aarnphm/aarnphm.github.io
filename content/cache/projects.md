@@ -14,7 +14,7 @@ BentoML is a framework that simplifies ML model deployment and provides a faster
 
 We recently rewrote the library for our 1.0 releases, including a new design to improve serving performance, provide a new packaging format for machine learning application, and easy integration with SOTA ML frameworks natively.
 
-The container generation features support [OCI-compliant](/cache/docker.md) container, where we provides multiple architecture support, GPU support, automatic generation upon build time, with efficient caching implemented to reduce build time and improve agility.
+The container generation features support [OCI-compliant](/cache/container.md) container, where we provides multiple architecture support, GPU support, automatic generation upon build time, with efficient caching implemented to reduce build time and improve agility.
 
 I have also implement gRPC support for a BentoServer, enable better interoperability between existing Kubernetes infrastructure where gRPC is used and newly created Bento.
 
