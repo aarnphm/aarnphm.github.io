@@ -6,7 +6,7 @@ tags:
   - evergreen
 ---
 
-The list below are notable projects I'm currently maintaining/finished. A more incomplete list of ideas that I will do sometime can be found in [[cache/backburners|backlog]].
+The list below are notable projects I'm currently maintaining/finished. A more incomplete list of ideas that I will do sometime can be found in [[cache/backburners|backburners]]. My resume can also be found [here](https://aarnphm.xyz/resumes/2022-aaronpham-resume.pdf).
 
 ## BentoML -- Unified Model Serving Framework 🍱
 
