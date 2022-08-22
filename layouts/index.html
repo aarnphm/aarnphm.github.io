@@ -9,12 +9,12 @@
       {{partial "header.html" .}}
       <div class="bio">
         <div class="sidebar">
-          <div id="toc" class="delay t-3">{{partial "toc.html" .}}</div>
           <div class="delay t-4">
             <h2>Recent Notes</h2>
             {{$notes := where .Site.RegularPages "Section" "cache"}}
             <ul class="delay stagger">
-              {{range first 2 $notes }}
+              {{$numDisplayNotes := $.Site.Data.config.numDisplayNotes}} {{range
+              first $numDisplayNotes $notes }}
               <li>
                 <div class="section">
                   <div class="desc">
@@ -28,7 +28,9 @@
               </li>
               {{end}}
             </ul>
-            <a href="/cache">See {{sub (len $notes) 2}} more →</a>
+            <a href="/cache"
+              >See {{sub (len $notes) $numDisplayNotes}} more →</a
+            >
           </div>
         </div>
         <article>

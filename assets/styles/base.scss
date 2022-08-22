@@ -302,15 +302,6 @@ code {
   background: var(--lightgray);
 }
 
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 footer {
   margin-top: 4em;
   text-align: center;

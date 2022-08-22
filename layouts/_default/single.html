@@ -6,23 +6,23 @@
     {{partial "search.html" .}}
     <div class="singlePage">
       <!-- Begin actual content -->
-      {{partial "header.html" .}}
-      <article class="singleContent">
-        {{if .Title}}
-        <h1>{{ .Title }}</h1>
-        {{end}}
-        <p class="meta">
-          Last updated {{ partial "date-fmt.html" .}}
-          <a
-            href="{{$.Site.Data.config.GitHubLink}}/{{.File.Path}}"
-            rel="noopener"
-            >Edit Source</a
-          >
-        </p>
-        {{partial "tags.html" .}}
-        <div class="sidebar">{{partial "toc.html" .}}</div>
-        {{partial "content.html" . }}
-      </article>
+      {{partial "header.html" .}} {{if .Title}}
+      <h1>{{ .Title }}</h1>
+      {{end}}
+      <p class="meta">
+        Last updated {{ partial "date-fmt.html" .}}
+        <a
+          href="{{$.Site.Data.config.GitHubLink}}/{{.File.Path}}"
+          rel="noopener"
+          >Edit Source</a
+        >
+      </p>
+
+      {{partial "tags.html" .}}
+      <div class="singleContent">
+        <div id="toc" class="sidebar">{{partial "toc.html" .}}</div>
+        <article>{{partial "content.html" . }}</article>
+      </div>
       {{partial "footer.html" .}}
     </div>
   </body>

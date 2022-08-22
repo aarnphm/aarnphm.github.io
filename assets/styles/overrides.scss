@@ -80,7 +80,17 @@
 }
 
 .singleContent {
-  & > .sidebar {
+  display: flex;
+  gap: 1.5em;
+  z-index: 1;
+  position: relative;
+
+  @media screen and (max-width: 1440px) {
+    flex-direction: column-reverse !important;
+    gap: 4em;
+  }
+
+  & > #toc {
     flex: 0 0 30%;
 
     & > div {
@@ -110,24 +120,6 @@
     & h3 {
       margin: 0;
     }
-
-    & .meta {
-      margin: 0.2em 0;
-    }
-
-    & .tags > li > a {
-      font-size: 0.9em;
-      font-weight: 600;
-    }
-  }
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
   }
 }
 

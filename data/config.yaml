@@ -2,6 +2,7 @@ name: Aaron Pham
 enableLinkPreview: true
 enableCodeBlockTitle: true
 enableCodeBlockCopy: true
+numDisplayNotes: 6
 GitHubLink: https://github.com/aarnphm/aarnphm.github.io/tree/main/content
 enableSemanticSearch: true
 operandApiKey: "aacf2958-0bd9-4a6f-99f5-5a46c9e26ddc"
@@ -9,7 +10,7 @@ description: |
   Hi, my name is Aaron, this is my little corner of the internet, where I will share what I have been working on, and thoughts on how to build more responsible technology.
   I'm curious about how we can design better infrastructure to run algorithms at scale more efficiently, and be more unbiased about the world around me.
   This is the place where I try to organize my thoughts and incubates ideas that lives in my biological backlog.
-pageTitle: aaron's garden
+pageTitle: Aaron's notes
 perma:
   - name: Twitter
     url: https://twitter.com/aarnphm_
