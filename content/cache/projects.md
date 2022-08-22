@@ -2,9 +2,13 @@
 title: "Projects"
 date: 2022-08-21T21:50:54-07:00
 tags:
-- technical
-- evergreen
+  - technical
+  - evergreen
 ---
 
-The list below are some of the projects and experience I have accummulated over the past
-few years working. A more unorganized list of ideas that is currently in my [[cache/backburners|backlog]] and exists somewhere on my ever long GitHub repo.
+The list below are notable projects I'm currently maintaining/finished. A more incomplete list of ideas that I will do sometime can be found in [[cache/backburners|backlog]].
+
+## BentoML -- Unified Model Serving Framework 🍱
+
+BentoML is a framework that simplifies ML model deployment and provides a faster way to ship your ML model to
+production.

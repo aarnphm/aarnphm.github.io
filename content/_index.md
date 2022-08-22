@@ -41,4 +41,5 @@ exploring:
 - [Every so slightly blank canvas](/cache): Collection of thoughts that I jot down!
 - [Exploration easel](/cache/Projects.md): List of projects I have built throughout the
   year!
--
+- [The anti-procastination toolkit](/books): List of books I have read and currently
+  reading!
