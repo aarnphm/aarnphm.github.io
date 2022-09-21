@@ -70,10 +70,4 @@ a large container.
 
 <br/>
 
-## Solutions
-
-If that is a lot to process, I completely agree with you on the absurdity of these terminologies to newbies.
-
-### BuildKit
-
-#### How to use buildkit
+## Heres comes BuildKit.
