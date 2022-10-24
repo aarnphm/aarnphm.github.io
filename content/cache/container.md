@@ -5,7 +5,7 @@ tags:
   - technical
 ---
 
-> _This article dives into some of containers concepts as well as discuss tools such as Docker that enable users to utilize the most out of container technology._
+> _This article dives into some of containers concepts as well as discuss tools such as Docker that enable users to utilise the most out of container technology._
 >
 > _It only assumes the basic knowledge of Docker and a vague recollection of how to write a Dockerfile._
 >
@@ -39,9 +39,9 @@ _the above `Dockerfile` is only used for demonstration purpose only_
 
 <br/>
 
-You then proceed to build your containers with `docker build -t my-awesome-model .` It took a while to build, considering it is a large model. Everything works perfectly, and you were able to show it off to your colleague.
+You then proceed to build your containers with `docker build -t my-awesome-model .` It took a while to build, considering it is a large model. Everything works perfectly, and you were able to handle this docker image to your DevOps team for production.
 
-You now want to continue to improve the model, which requires you to perform hypertuning the model, and continue to train the model.
+You now want to continue to improve the model, which requires you to perform hyper-tuning the model, and continue to train the model.
 
 After training, you proceed to rebuild the container. However, you notice that it still takes quite a while to rebuild the container.
 
@@ -66,7 +66,7 @@ given model_). After building you discovered that your result container is way l
 than expected, and it will eat up all of your AWS budget by the virtue of hosting
 a large container.
 
-> 🤔 How does one minimize a size of a given container?
+> 🤔 How does one minimise the size of a given container?
 
 <br/>
 

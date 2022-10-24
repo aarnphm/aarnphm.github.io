@@ -6,7 +6,7 @@ tags:
   - evergreen
 ---
 
-The list below are notable projects I'm currently maintaining/finished. A more incomplete list of ideas that I will do sometime can be found in [[cache/backburners|backburners]]. My resume can also be found [here](https://aarnphm.xyz/resumes/2022-aaronpham-resume.pdf).
+The list below are notable projects I'm currently maintaining/finished. A more incomplete list of ideas that I will do sometime can be found in [[backburners]]. My resume can also be found [here](https://aarnphm.xyz/resumes/2022-aaronpham-resume.pdf).
 
 ## BentoML -- Unified Model Serving Framework 🍱
 
@@ -16,7 +16,7 @@ We recently rewrote the library for our 1.0 releases, including a new design to 
 
 The container generation features support [OCI-compliant](/cache/container.md) container, where we provides multiple architecture support, GPU support, automatic generation upon build time, with efficient caching implemented to reduce build time and improve agility.
 
-I have also implement gRPC support for a BentoServer, enable better interoperability between existing Kubernetes infrastructure where gRPC is used and newly created Bento.
+I have also implement and design gRPC support for a BentoServer, enable better interoperability between existing Kubernetes infrastructure where gRPC is used and newly created Bento.
 
 _Built with: Python, Jinja, Go, BuildKit, gRPC_
 
