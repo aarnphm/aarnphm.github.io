@@ -18,6 +18,11 @@ Current drawbacks:
 - Runner doesn't have a client signature
 	- `runner.run` should support `*args` and `**kwargs`
 
+###### Data format
+- Arrow
+
+
+---
 
 ## Requirements
 
@@ -26,7 +31,7 @@ Current drawbacks:
 - Makes the local/remote behaviour more consistent.
 	- Local:
 		- IPC vs. RPC
-		- low latency -> minimal serialization on the wire
+		- low latency &arr; minimal serialization on the wire
 		- Arrow format vs. Flatbuffer <- single element types
 		- Composite type?
 			`{str: Tensor}`
@@ -43,7 +48,7 @@ Current drawbacks:
 	- [Triton Inference Server][#triton-inference-server]
 	- [TFServing](https://github.com/tensorflow/serving)
 	- [TorchServe](https://pytorch.org/serve/)
-- KServe [Predict V2][#predict-v2] protocol
+- KServe [Predict V2](https://kserve.github.io/website/modelserving/inference_api/#inference) protocol
 	- Only support tensor format
 	- Currently use protobuf, which is unnecessary overhead when serving in local use-case 
 	- Triton Inference Server, ONNXRuntime Server, and TFServing is adopting this design.
@@ -53,8 +58,27 @@ Current drawbacks:
 - polyglot environment
 - benchmarks: C++ and Go
 
+### LOOK INTO
+- KServe and Triton handles dictionary inputs?
+- arrow supports dictionary? with different shape?
+- Arrow format?
+	- Tensor?
+		- High dimension not supported? (reshape)
+		- Tensorflow
+
+- flatbuffer vs. protobuf
+	- flatbuffer + protobuf?
+	- bytes field: flatbuffer
+
+grpc+flatbuffer (flatbuffer bytes into bytes protobuf bytes field)
+
+serialization framework?
+- protobuf
+- flatbuffer
+- cap'n proto
 
 
+---
 ## Q?
 
 We can have multiple interfaces for this design.
@@ -92,11 +116,19 @@ Supervisor -> runner
 
 > Batch configuration?
 
-- Model optimization (Orthogonal)
-	- We should consider optimization using:
-		- ONNXRuntime
-		- TVM
-		- TensorRT
+flatbuffer -> gRPC transform payload
+
+---
+#Nov-1
+
+Dictionary format?
+- inputs/outputs is heterogenous?
+```python
+inputs = {"key": 1, "key2": np.ndarray([[1,2,3,4]])}
+```
+
+
+
 
 ---
 ###### Appendix
