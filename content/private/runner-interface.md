@@ -22,6 +22,16 @@ Current drawbacks:
 - Arrow
 
 
+Confusion?
+- What is the scope of the runner?
+	- based on model and saved -> interface is dynamic generated
+	- static generated :RECOMMEND:
+	- calling runner (put anything in there) -> convert args -> IR
+- signature: validation and types (subsets of runner schema)
+	- runner limited
+
+flatbuffer and arrow
+
 ---
 
 ## Requirements
