@@ -7,20 +7,7 @@ tags:
 
 # Runner Interface
 
-Currently, our Runner are loosely defined. We have a `Runnable` interface that allows user to implement the runner server.
-
-Current drawbacks:
-- No payload type is specified. Runner should specify the type of the payload on wire:
-	- Tensor (bytes)
-	- Array-like (`np.array`, `jnp.array`)
-	- Tabular-like (`pd.DataFrame`, `cudf.DataFrame`)
-	- Python objects? `{str: Any}`
-- Runner doesn't have a client signature
-	- `runner.run` should support `*args` and `**kwargs`
-
-###### Data format
-- Arrow
-
+##### Data format
 
 Confusion?
 - What is the scope of the runner?
@@ -32,9 +19,19 @@ Confusion?
 
 flatbuffer and arrow
 
----
+#Nov-1
 
-## Requirements
+Dictionary format?
+- inputs/outputs is heterogenous?
+```python
+inputs = {"key": 1, "key2": np.ndarray([[1,2,3,4]])}
+```
+
+
+
+
+
+##### Requirements
 
 > Each runner inference should be a RPC call.
 
@@ -127,17 +124,6 @@ Supervisor -> runner
 > Batch configuration?
 
 flatbuffer -> gRPC transform payload
-
----
-#Nov-1
-
-Dictionary format?
-- inputs/outputs is heterogenous?
-```python
-inputs = {"key": 1, "key2": np.ndarray([[1,2,3,4]])}
-```
-
-
 
 
 ---
