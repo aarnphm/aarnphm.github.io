@@ -7,9 +7,9 @@ tags:
 
 ### Nagle's algorithm and Delay ACK
 
-- *small packets* -> not for TCP
--> Nagle algorithm: `Maximize ratio of packets - data content`
--> Delay ACK: `silly window`
+- _small packets_ -> not for TCP
+  -> Nagle algorithm: `Maximize ratio of packets - data content`
+  -> Delay ACK: `silly window`
 
 ```text
 if available_data & window_size > MSS
