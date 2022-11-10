@@ -1,4 +1,0 @@
-### Endianness
-
-Arrow: Little endian
-
