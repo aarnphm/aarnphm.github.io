@@ -132,6 +132,12 @@ Supervisor -> runner
 flatbuffer -> gRPC transform payload
 
 ---
+#Nov-16
+
+Complex data types:
+- nested?
+
+---
 
 [#triton-inference-server]: https://github.com/triton-inference-server/server
 [#predict-v2]: https://kserve.github.io/website/modelserving/inference_api/
