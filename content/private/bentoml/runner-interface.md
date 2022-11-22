@@ -137,6 +137,34 @@ flatbuffer -> gRPC transform payload
 Complex data types:
 - nested?
 
+#Nov-21
+
+Frontend
+- TF, Keras, PyTorch
+
+Runtime
+- ONNXRuntime, TensorRT and Tensorflow, PyTorch
+
+Compilers
+- TensorRT, TVM, ONNX (ecosystem), OpenVINO
+
+Server:
+- Triton
+
+delay image building to deploy on same metal.
+
+
+tensorrt: no timeline
+triton: end of jan
+
+
+
+
+
+
+
+
+
 ---
 
 [#triton-inference-server]: https://github.com/triton-inference-server/server
