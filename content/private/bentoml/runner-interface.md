@@ -157,7 +157,8 @@ delay image building to deploy on same metal.
 tensorrt: no timeline
 triton: end of jan
 
-
+support mixed data types
+-> bytes stream
 
 
 
