@@ -5,4 +5,4 @@ tags:
   - technical
 ---
 
-Rust and FFI
+[[Rust]] and FFI
