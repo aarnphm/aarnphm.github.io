@@ -205,6 +205,9 @@ Steps:
 prototype:
 - [vaex](https://github.com/vaexio/vaex)
 
+
+batch-inference at runners level.
+
 ---
 
 [#triton-inference-server]: https://github.com/triton-inference-server/server
