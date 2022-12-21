@@ -15,3 +15,7 @@ fn main() {
 	let s = String::from("Hello");
 }
 ```
+
+borrow mutable ONCE
+- long running owners
+- refcount
