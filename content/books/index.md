@@ -6,8 +6,7 @@ date: 2022-08-21T23:41:51-07:00
 A list of books I have finished reading, wanting to read and are living in my [antilibrary](https://nesslabs.com/antilibrary)
 
 ## current.
-
-- Infinite Jest by DFW
+- *The Outsiders: Eight Unconventional CEOs and Their Radically Rational Blueprint for Success* by [Will Thorndike](https://store.hbr.org/search.php?search_query=Will%20Thorndike&section=product) 
 
 ## to read.
 
@@ -17,6 +16,7 @@ A list of books I have finished reading, wanting to read and are living in my [a
 
 ### 2022
 
+- Infinite Jest by DFW
 - Dune series by Frank Herbert
 - Kafka on the Shore by Haruki Murakami
 - 21 Lessons for the 21st Century by Yuval Noah Harari
