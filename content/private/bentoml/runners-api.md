@@ -1,12 +1,15 @@
-Runners Server
+### Runners Server
 
-### Distributed
-- Yatai
+```mermaid
 
-API Server     Runner Server
+flowchart LR
+	B[API Server]
+	B --> C[Runner Server]
+```
+
 
 - Payload
-```
+```prolog
 Payload
 	data: arrow.RecordBatch (conversion at client)
 		runner_client: arrow_to_{numpy,pandas,tensor,file,parquet}
@@ -14,4 +17,3 @@ Payload
 	metadata: Map<str, Any> {
 	}
 ```
-API Server => Runner Server
