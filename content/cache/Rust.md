@@ -5,7 +5,6 @@ tags:
   - technical
 ---
 
-
 Ownership and Borrowing
 - Stack and heaps
 
@@ -19,3 +18,5 @@ fn main() {
 borrow mutable ONCE
 - long running owners
 - refcount
+
+Foreign-Function Interfaces (FFI)
