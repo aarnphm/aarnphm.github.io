@@ -1,7 +1,5 @@
 ---
 id: "_index"
-aliases:
-  - "📖 work."
 tags:
   - "evergreen"
 title: "Aaron's notes"

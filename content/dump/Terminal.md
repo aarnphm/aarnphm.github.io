@@ -1,7 +1,5 @@
 ---
 id: "Terminal"
-aliases:
-  - "Terminal emulator"
 tags:
   - "seed"
   - "terminal"

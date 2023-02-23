@@ -1,6 +1,5 @@
 ---
 id: "XLA"
-aliases: []
 tags:
   - "seed"
   - "machinelearning"
