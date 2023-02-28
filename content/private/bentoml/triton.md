@@ -8,33 +8,53 @@ tags:
 title: "Triton Inference Server with BentoML"
 ---
 
-## 10x serving performance with BentoML and Triton Inference Server
+<!--toc:start-->
+- [BentoML. Triton Inference Server. Choose 2](#bentoml-triton-inference-server-choose-2)
+- [What is Triton Inference Server?](#what-is-triton-inference-server)
+- [Preparing your model](#preparing-your-model)
+- [Create a Triton Runner](#create-a-triton-runner)
+- [Packaging BentoService with Triton Inference Server](#packaging-bentoservice-with-triton-inference-server)
+- [Conclusion](#conclusion)
+<!--toc:end-->
 
-<!--
-Potential title:
-- Fast track model serving with BentoML and Triton Inference Server
--->
+## BentoML. Triton Inference Server. Choose 2
 
-We are entering the era of Large Language Models Operations (LLMOps) where
-everyone is trying to bring their own version of ChatGPT, FLAN T5, or BLOOM to
-production. Common problems teams are running into when running inference on
-these large models include resource utilization (how can one setup and utilize
-computation resources more efficiently?), serving latency (how can we reduce the
-latency of our model?), and scalability (how can we scale our model to handle
-more requests?). In this blog post, we will be demonstrating the capabilities of
-BentoML and Triton Inference Server to help you solve these problems.
+We are seeing a surge in recent months of developments and works on large language models (LLM)
+and its applications such as [ChatGPT](https://chat.openai.com/), [Stable Diffusion](https://stability.ai/blog/stable-diffusion-v2-release), [Copilot](https://github.com/features/copilot).
+
+However, deploying and serving LLMs at scale is a challenging task that requires specific domain expertise and inference infrastructure.
+A [rough estimation](https://twitter.com/tomgoldsteincs/status/1600196981955100694?s=20) of running ChatGPT shows that serving efficiency are critical to make such models to work at scale.
+These operations are often known as Large Language Models Operations (LLMOps). LLMOps, in general, is considered as a subset of MLOps, which is a set of practices combining software engineering, DevOps, and data science to automate and scale the end-to-end lifecycle of ML models.
+
+Teams can encounter several problems when running inference on large models, including:
+
+- *Resource utilisation*: Large models require a significant amount of computational power to run, which can be a challenge for teams with limited resources. Serving frameworks should utilize all available resources to be cost-effective.
+- *Model optimization*: Large models often contains a lot of redundant layers and parameters that can be pruned to reduce model size and speed up inference. A serving framework ideally should be able to provide support for model optimization library to aid this process.
+- *Serving latency*: Large language models often require complex batching strategies to enable real-time inference. A serving framework should be equipped with batching strategies to optimize for low-latency serving.
+
+In this blog post, we will be demonstrating the capabilities of BentoML and Triton Inference Server to help you solve these problems.
 
 ## What is Triton Inference Server?
 
 You might wonder, what is Triton Inference Server? Triton Inference Server is a
 high performance, open-source inference server for serving deep learning models.
 It is designed to handle the variety of deep learning models and frameworks,
-such as ONNX, Tensorflow, TensorRT. It is also designed with optimization to
+such as ONNX, Tensorflow, [TensorRT](https://developer.nvidia.com/tensorrt). It is also designed with optimization to
 maximize hardware utilization through various model execution and efficient
 batching strategies.
 
+> Triton Inference Server is great for serving large language models, where you want
+> a high-performance inference server that can utilize all available resources with complex
+> batching strategies.
+
+## What is BentoML?
+
+For those who are not familiar with BentoML, BentoML is an open-source framework
+for serving and deploying machine learning models. It provides a high-level
+API for defining machine learning models and APIs, and provides a set of
+
 In a nutshell, BentoML provides the capabilities for users to run Triton
-Inference Server through our
+Inference Server through BentoML's
 [Runner](https://docs.bentoml.org/en/latest/concepts/runner.html) architecture,
 via `bentoml.triton.Runner`. This allows users to run Triton Inference Server as
 a Runner runtime, with similar APIs as other BentoML's built-in Runners.
@@ -44,7 +64,7 @@ triton_runner = bentoml.triton.Runner("triton-runner", model_repository="s3://or
 ```
 
 We built this integration with Triton Inference Server as a first step in our
-progress to improve and optimize our Runner performance. One of the reasons why
+progress to improve and optimize BentoML's Runner performance. One of the reasons why
 we choose Triton is that the framework is written in C++ and not Python,
 therefore it triumphs over its Python counterpart in terms of hardware
 utilization and performance.
