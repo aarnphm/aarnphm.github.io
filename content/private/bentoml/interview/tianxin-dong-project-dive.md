@@ -1,5 +1,5 @@
 ---
-id: "tianxin-project-dive"
+id: "tianxin-dong-project-dive"
 tags: []
 ---
 
@@ -18,8 +18,7 @@ kubevela:
 - maintain CI
 - 6 ppl
 
-mainly focus on CD, not CI?
--> has their own IDL for yaml spec
+mainly focus on CD, not CI? -> has their own IDL for yaml spec
 
 To be serverless workflow, but currently are integrated in kubernetes
 
