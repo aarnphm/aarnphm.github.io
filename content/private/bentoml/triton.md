@@ -288,3 +288,5 @@ You can read more about this integration from our
 If you enjoyed this article, feel free to support us by starring our
 [GitHub](https://github.com/bentoml/BentoML), and join our community
 [Slack](https://l.linklyhq.com/l/ktOX) channel!
+
+architecture -> UX code (actions)
