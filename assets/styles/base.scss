@@ -1,49 +1,45 @@
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@339&family=Playfair+Display:wght@543&family=Source+Serif+Pro&display=swap");
+// Replace this with your own font imports!
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;600;700&family=Source+Sans+Pro:wght@400;600&display=swap');
 :root {
-  --font-body: "Source Serif Pro";
-  --font-header: "Playfair Display";
-  --font-mono: "JetBrains Mono";
+  --font-body: "Source Sans Pro";
+  --font-header: "Inter";
+  --font-mono: "Fira Code"
 }
 
 // typography
 html {
   scroll-behavior: smooth;
   &:lang(ar) {
-    & p,
-    & h1,
-    & h2,
-    & h3,
-    article {
+    & p, & h1, & h2, & h3, article, header {
       direction: rtl;
       text-align: right;
     }
   }
+  & footer > p {
+    text-align: center !important;
+  }
 }
 
 .singlePage {
-  padding: 2em 20vw 2em 20vw;
+  padding: 4em 30vw;
+  margin: 0 auto;
+  max-width: 1000px;
   @media all and (max-width: 1200px) {
     padding: 25px 5vw;
   }
 }
 
+
 body {
   margin: 0;
-  height: 100%;
+  height: 100vh;
   width: 100vw;
   max-width: 100%;
   box-sizing: border-box;
-  position: relative;
   background-color: var(--light);
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-thead {
+h1, h2, h3, h4, h5, h6, thead {
   font-family: var(--font-header);
   color: var(--dark);
   font-weight: revert;
@@ -62,14 +58,7 @@ thead {
   color: var(--dark);
 }
 
-p,
-ul,
-text,
-tr,
-td,
-li,
-ol,
-ul {
+p, ul, text, a, tr, td, li, ol, ul {
   font-family: var(--font-body);
   color: var(--gray);
   fill: var(--gray);
@@ -78,9 +67,7 @@ ul {
   padding: revert;
 }
 
-tbody,
-li,
-p {
+tbody, li, p {
   line-height: 1.5em;
 }
 
@@ -88,18 +75,24 @@ p {
   border-radius: 5px;
   padding: 0.75em 0;
 
-  & h3 {
-    margin: 0;
-    font-family: var(--font-header);
-    color: var(--dark);
-    font-weight: 700;
+  & details {
+    & summary {
+      cursor: zoom-in;
+      font-family: var(--font-header);
+      color: var(--dark);
+      font-weight: 700;
+    }
+
+    &[open] summary {
+      cursor: zoom-out;
+    }
   }
 }
 
 #TableOfContents > ol {
   counter-reset: section;
-  margin-left: 0em;
-  padding-left: 0.5em;
+  margin-left: 0;
+  padding-left: 1.5em;
   & > li {
     counter-increment: section;
     & > ol {
@@ -117,8 +110,7 @@ p {
     content: counter(section) "  ";
   }
 
-  & > li::marker,
-  & > li > ol > li::marker {
+  & > li::marker, & > li > ol > li::marker {
     font-family: var(--font-body);
     font-weight: 700;
   }
@@ -131,8 +123,7 @@ table {
   border-collapse: collapse;
 }
 
-td,
-th {
+td, th {
   padding: 0.2em 1em;
   border: 1px solid var(--outlinegray);
 }
@@ -149,11 +140,11 @@ p > img + em {
 }
 
 sup {
-  line-height: 0;
+  line-height: 0
 }
 
 blockquote {
-  margin-left: 0em;
+  margin-left: 0;
   border-left: 3px solid var(--secondary);
   padding-left: 1em;
   transition: border-color 0.2s ease;
@@ -183,8 +174,7 @@ blockquote {
       background-color: transparent !important;
     }
 
-    & a[href$="#"],
-    &.active a {
+    & a[href$="#"], &.active a {
       opacity: 0.2;
     }
   }
@@ -219,7 +209,7 @@ article {
   }
 
   & p {
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
   }
 }
 
@@ -239,16 +229,17 @@ article {
 
   & > li {
     display: inline-block;
-    margin: 0.4em 0;
+    margin: 0.4em 0.2em;
   }
 
   & > li > a {
     border-radius: 8px;
     border: var(--outlinegray) 1px solid;
-    padding: 0.1em 0.5em;
+    padding: 0.2em 0.5em;
     &::before {
       content: "#";
       margin-right: 0.3em;
+      color: var(--outlinegray);
     }
   }
 }
@@ -274,7 +265,7 @@ a {
   font-size: 1em;
   font-weight: 700;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
   color: var(--secondary);
   &:hover {
     color: var(--tertiary) !important;
@@ -296,6 +287,11 @@ code {
   background: var(--lightgray);
 }
 
+@keyframes fadeIn {
+  0% {opacity:0;}
+  100% {opacity:1;}
+}
+
 footer {
   margin-top: 4em;
   text-align: center;
@@ -305,13 +301,53 @@ footer {
 }
 
 hr {
-  width: 25%;
-  margin: 4em auto;
-  height: 2px;
-  border-radius: 1px;
-  border-width: 0;
-  color: var(--dark);
-  background-color: var(--dark);
+  width: 100%;
+  margin: 2em auto;
+  height: 1px;
+  border: none;
+  background-color: var(--outlinegray);
+}
+
+.page-end {
+  display: flex;
+  flex-direction: row;
+  gap: 2em;
+
+  @media all and (max-width: 780px) {
+    flex-direction: column;
+  }
+
+  & > * {
+    flex: 1 0 0;
+  }
+
+  & > .backlinks-container {
+    & > ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      & > li {
+        margin: 0.5em 0;
+        padding: 0.25em 1em;
+        border: var(--outlinegray) 1px solid;
+        border-radius: 5px
+      }
+    }
+  }
+
+  & #graph-container {
+    border: var(--outlinegray) 1px solid;
+    border-radius: 5px;
+    box-sizing: border-box;
+    min-height: 250px;
+    margin: 0.5em 0;
+
+    & > svg {
+      margin-bottom: -5px;
+
+    }
+  }
 }
 
 .centered {
@@ -395,8 +431,7 @@ header {
       width: 100%;
       border-radius: 4px;
       background: var(--light);
-      box-shadow: 0 14px 50px rgba(27, 33, 48, 0.12),
-        0 10px 30px rgba(27, 33, 48, 0.16);
+      box-shadow: 0 14px 50px rgba(27, 33, 48, 0.12), 0 10px 30px rgba(27, 33, 48, 0.16);
       margin-bottom: 2em;
     }
 
@@ -433,8 +468,7 @@ header {
         background: var(--light);
         outline: none;
 
-        &:hover,
-        &:focus {
+        &:hover, &:focus {
           background: rgba(180, 180, 180, 0.15);
         }
 
@@ -449,8 +483,7 @@ header {
           border-bottom: 1px solid var(--outlinegray);
         }
 
-        & > h3,
-        & > p {
+        & > h3, & > p {
           margin: 0;
         }
       }
@@ -468,6 +501,7 @@ header {
   list-style: none;
   margin-top: 2em;
   padding-left: 0;
+
 }
 
 .section-li {
@@ -491,18 +525,34 @@ header {
     & p {
       margin: 0;
       padding-right: 1em;
-      width: clamp(6em, 6em, 6em);
+      flex-basis: 6em;
     }
   }
 
   & h3 {
     opacity: 1;
     font-weight: 700;
-    margin: 0em;
+    margin: 0;
   }
 
   & .meta {
     opacity: 0.6;
+  }
+}
+
+@keyframes dropin {
+  0% {
+    display: none;
+    opacity: 0;
+    visibility: hidden;
+  }
+  1% {
+    display: inline-block;
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
   }
 }
 
@@ -520,7 +570,7 @@ header {
   transition: opacity 0.2s ease, transform 0.2s ease;
   user-select: none;
   overflow-wrap: anywhere;
-  box-shadow: 6px 6px 36px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 6px 6px 36px 0 rgba(0,0,0,0.25);
 
   @media all and (max-width: 600px) {
     display: none !important;
@@ -538,23 +588,26 @@ header {
     margin: 0.25rem 0;
   }
 
-  & > .meta {
+  & .meta {
     margin-top: 0.25rem;
     opacity: 0.5;
     font-family: var(--font-mono);
     font-size: 0.8rem;
   }
 
-  & > p,
-  & > a {
+  & > p {
+    margin: 0;
+    padding: 0.5rem 0;
+  }
+
+  & > p, & > a {
     font-size: 1rem;
-    margin: 0.7rem 0;
     font-weight: 400;
     user-select: none;
   }
 }
 
-#contact-buttons ul {
+#contact_buttons ul {
   list-style-type: none;
 
   li {
@@ -564,4 +617,9 @@ header {
   li a {
     padding: 0 1em;
   }
+}
+
+mark {
+  background-color: var(--highlighted);
+  color: var(--gray);
 }

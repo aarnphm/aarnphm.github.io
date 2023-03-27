@@ -1,43 +1,18 @@
 <!DOCTYPE html>
 <html lang="{{ .Lang }}">
-  {{ partial "_meta.html" . }}
+  {{ partial "head.html" . }}
 
   <body>
     {{partial "search.html" .}}
-    <div id="index" class="singlePage">
+    <div class="singlePage">
       <!-- Begin actual content -->
       {{partial "header.html" .}}
-      <div class="bio">
-        <div class="sidebar">
-          <div id="recent-notes">
-            <h2>Recent Notes</h2>
-            {{$notes := where .Site.RegularPages "Section" "cache"}}
-            <ul>
-              {{$numDisplayNotes := $.Site.Data.config.numDisplayNotes}} {{range
-              first $numDisplayNotes $notes }}
-              <li>
-                <div class="section">
-                  <div class="desc">
-                    <h3><a href="{{ .Permalink }}">{{- .Title -}}</a></h3>
-                  </div>
-                  <p class="meta">
-                    {{.WordCount}} words on {{ .Lastmod.Format "Jan 2, 2006" }}
-                  </p>
-                  {{partial "tags.html" .}}
-                </div>
-              </li>
-              {{end}}
-            </ul>
-            <a href="/cache"
-              >See {{sub (len $notes) $numDisplayNotes}} more →</a
-            >
-          </div>
-        </div>
-        <article>
-          <div>{{partial "content.html" . }}</div>
-        </article>
-      </div>
-      <div id="main-footer">{{partial "footer.html" .}}</div>
+      <article>
+        {{partial "textprocessing.html" . }} {{if
+        $.Site.Data.config.enableRecentNotes}} {{partial "recent.html" . }}
+        {{end}}
+      </article>
+      {{partial "footerIndex.html" .}}
     </div>
   </body>
 </html>

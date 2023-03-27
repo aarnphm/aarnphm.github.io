@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
-  {{ partial "_meta.html" . }}
+<html lang="{{ .Lang }}">
+{{ partial "head.html" . }}
 
-  <body>
-    <div class="singlePage">
-      {{partial "darkmode.html" .}}
-      <div class="centered">
+<body>
+<div class="singlePage">
+    {{partial "darkmode.html" .}}
+    <div class="centered">
         <h1>404.</h1>
-        <h3>Hey! You look a little lost. This page doesn't exist (or may be private).</h3>
-        <a href="{{ .Site.BaseURL }}">↳ Let's get you home.</a>
-      </div>
+        <h3>{{ i18n "404_message" }}</h3>
+        <a href="{{ .Site.BaseURL }}">{{ i18n "404_back" }}</a>
     </div>
-  </body>
+</div>
+</body>
 </html>
