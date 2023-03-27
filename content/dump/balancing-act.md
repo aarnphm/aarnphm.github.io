@@ -5,3 +5,5 @@ tags:
   - seed
   - personal
 ---
+
+Balancing w-l?

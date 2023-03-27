@@ -6,10 +6,7 @@ tags:
   - machinelearning
 ---
 
-In this article, we will build a basic word search model using Flax and Jax. Throughout the building process, we will explore what autodiff is and how Jax enables researcher to
-write better and more efficient ML application. Source code can be found [_here_](https://github.com/aarnphm/semantic-jax)
-
-### What is Jax?
+### Jax?
 
 - Numpy with [[Autograd]] builtin. Use [[XLA]] to compile and run NumPy code on accelerators.
 - Asynchronous dispatch, for sync use `block_until_ready()`
@@ -30,5 +27,14 @@ jnp.dot(x, x.T).block_until_ready()
 
 > Arrays are **immutable** in Jax
 
-- Centred around the idea of pure function.
+- Treat functions as pure as to compiled with [[XLA]]
+```python
+import jax.numpy as jnp
+
+from jax import jit
+
+@jit
+def diff(a, b, w=0):
+	return jnp.dot(a,b) + w
+```
 
