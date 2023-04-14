@@ -6,3 +6,14 @@ Scales and Major
 Half steps -> between E-F, B-C
 
 Full step from E -> F#
+
+- Effects
+- Vocals
+- Mids
+	- Guitar, piano
+ - Bass
+	- Synths/808
+ - Drums
+	 - Kick
+	  - Hi-hats
+	  - percs
