@@ -8,6 +8,30 @@ tags:
 
 The list below are notable projects I'm currently maintaining/finished. A more incomplete list of ideas that I will do sometime can be found in [[backburners]]. My resume can also be found [here](https://aarnphm.xyz/resumes/2022-aaronpham-resume.pdf).
 
+## OpenLLM -- Serve, fine-tune and deploy LLMs in production
+
+OpenLLM is an open-source platform designed to facilitate the deployment and operation of large language models (LLMs) in real-world applications. With OpenLLM, you can run inference on any open-source LLM, deploy them on the cloud or on-premises, and build powerful AI applications.
+
+Key features include:
+
+🚂 **State-of-the-art LLMs**: Integrated support for a wide range of open-source LLMs and model runtimes, including but not limited to Llama 2, StableLM, Falcon, Dolly, Flan-T5, ChatGLM, and StarCoder.
+
+🔥 **Flexible APIs**: Serve LLMs over a RESTful API or gRPC with a single command. You can interact with the model using a Web UI, CLI, Python/JavaScript clients, or any HTTP client of your choice.
+
+⛓️ **Freedom to build**: First-class support for LangChain, BentoML and Hugging Face, allowing you to easily create your own AI applications by composing LLMs with other models and services.
+
+🎯 **Streamline deployment**: Automatically generate your LLM server Docker images or deploy as serverless endpoints via [☁️ BentoCloud](https://l.bentoml.com/bento-cloud), which effortlessly manages GPU resources, scales according to traffic, and ensures cost-effectiveness.
+
+🤖️ **Bring your own LLM**: Fine-tune any LLM to suit your needs. You can load LoRA layers to fine-tune models for higher accuracy and performance for specific tasks. A unified fine-tuning API for models (`LLM.tuning()`) is coming soon.
+
+⚡ **Quantisation**: Run inference with less computational and memory costs though quantisation techniques like [bitsandbytes](https://github.com/TimDettmers/bitsandbytes) and [GPTQ](https://arxiv.org/abs/2210.17323).
+
+📡 **Streaming**: Support token streaming through server-sent events (SSE). You can use the `/v1/generate_stream` endpoint for streaming responses from LLMs.
+
+🔄 **Continuous batching**: Support continuous batching via [vLLM](https://github.com/vllm-project/vllm) for increased total throughput.
+
+_Built with: BentoML, Transformers, PyTorch, GitHub Actions_
+
 ## BentoML -- Unified Model Serving Framework 🍱
 
 BentoML is a framework that simplifies ML model deployment and provides a faster way to ship your ML model to production.

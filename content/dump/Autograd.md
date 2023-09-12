@@ -22,7 +22,7 @@ Forward mode
 - represented with tuple of original $v_i$ and *primal* $v_i^o$ (tangent)
 	$v_i \rightarrow (v_i, \dot{v^o})$
 
-- [[jax-and-auto-diff]] uses operator overloading.
+- [[Jax and AutoDiff goodness]] uses operator overloading.
 
 Reverse mode
 - store values and dependencies of intermediate variables in memory
