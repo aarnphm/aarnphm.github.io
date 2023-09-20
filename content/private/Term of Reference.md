@@ -1,9 +1,13 @@
 ---
-id: "term-of-reference"
-tags: []
+id: term-of-reference
+tags:
+  - hiring
+description: Term of references
 ---
 
+[[intern]]  probably what we need to do
 ## job description
+
 
 ## Scope of work
 

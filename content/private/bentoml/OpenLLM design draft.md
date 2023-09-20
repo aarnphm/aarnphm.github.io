@@ -1,14 +1,14 @@
 ---
-id: "open-llm"
+id: OpenLLM
 tags:
-  - "machinelearning"
-  - "bentoml"
+  - machinelearning
+  - bentoml
+description: "OpenLLM: Serve, fine-tune LLMs in production"
 ---
 
 
-# OpenLLM-Server
 
-OpenLLM-Server is a server for running LLM models in production. It is built on top of [BentoML](https://bentoml.com)
+OpenLLM is a server for running LLM models in production. It is built on top of [BentoML](https://bentoml.com)
 
 # To install it, run `pip install open-llm-server`
 

@@ -8,7 +8,7 @@ ML integrity
 Mike Cook two weeks in
 
 - 15 yrs exp
-- Gooogle -> Uber -> Box -> Startup (recently at Scale, Ripling)
+- Google -> Uber -> Box -> Startup (recently at Scale, Ripling)
 - A -> E
 
 rsn for joining robust? what is the vision?
