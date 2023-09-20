@@ -1,0 +1,8 @@
+{
+  "showFrontmatter": true,
+  "alwaysUpdateLinks": true,
+  "showUnsupportedFiles": true,
+  "spellcheck": true,
+  "vimMode": true,
+  "promptDelete": false
+}
