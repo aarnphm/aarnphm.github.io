@@ -13,13 +13,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "books/index.md",
+                "file": "dump/Civilisation and its Discontents.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "f3e839c2c0253a30",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/Civilisation and its Discontents.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -93,7 +106,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "books/index.md",
+                "file": "dump/Civilisation and its Discontents.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -110,7 +123,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "books/index.md",
+                "file": "dump/Civilisation and its Discontents.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -133,7 +146,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "books/index.md"
+                "file": "dump/Civilisation and its Discontents.md"
               }
             }
           },
@@ -174,8 +187,11 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "d520e31fe095d966",
+  "active": "f3e839c2c0253a30",
   "lastOpenFiles": [
+    "dump/Freud.md",
+    "dump/Civilisation and its Discontents.md",
+    "books/index.md",
     "templates/post.md",
     "templates",
     "tags/university.md",
@@ -187,7 +203,6 @@
     "tags/evergreen.md",
     "tags/bentoml.md.md",
     "tags/bentoml.md",
-    "books/index.md",
     "_index.md",
     "uni/philo-text-1aa3/Socrates.md",
     "uni/scientific-computation-4xc3/Lecture 0.md",
@@ -201,9 +216,7 @@
     "private/Hack The North.md",
     "private/Meetup.md",
     "private/Company interests/robust-intelligence.md",
-    "private/clement.md",
     "private/Company interests",
-    "private/poem.md",
     "uni/philo-text-1aa3/tut",
     "3bb4-system-design/00 Concurrent System Design/SetXY",
     "3bb4-system-design/00 Concurrent System Design/SetXY.c",
