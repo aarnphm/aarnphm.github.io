@@ -6,6 +6,7 @@ tags:
 ---
 
 Ownership and Borrowing
+
 - Stack and heaps
 
 ```rust
@@ -16,6 +17,7 @@ fn main() {
 ```
 
 borrow mutable ONCE
+
 - long running owners
 - refcount
 

@@ -49,9 +49,6 @@ move everything here, so please be patient 🐣
 While I can't give you a tour of the garden, here are some of the links you can
 start exploring:
 
-- [Every so slightly blank canvas](/dump): Collection of thoughts that I jot
-  down!
-- [Exploration easel](dump/Projects.md): List of projects I have built
-  throughout the year!
-- [The anti-procastination toolkit](/books): List of books I have read and
-  currently reading!
+- [Somewhat of a painted canvas](/dump): Scattered recollection of notes and dreams or whatnot.
+- [Exploration easel](/dump/Projects.md): List of projects I have built throughout the year!
+- [The second shelf](/books): books I have read, currently reading, or to be read in near future.

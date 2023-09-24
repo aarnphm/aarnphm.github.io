@@ -9,5 +9,5 @@ exmap forward obcommand app:go-forward
 nmap <C-i> :forwardv
 
 " Mapping
-nnoremap ; :
+nmap ; :
 imap jj <Esc>
