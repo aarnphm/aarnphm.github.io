@@ -8,7 +8,6 @@ tags:
 title: "BentoML. Triton Inference Server. Choose 2"
 ---
 
-
 We are seeing a surge in recent months of developments and works on large
 language models (LLM) and its applications such as ChatGPT,
 [Stable Diffusion](https://modelserving.com/blog/creating-stable-diffusion-20-service-with-bentoml-and-diffusers),

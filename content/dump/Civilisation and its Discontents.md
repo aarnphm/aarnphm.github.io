@@ -5,4 +5,5 @@ tags:
   - seed
 description: Civilisation and its discontent
 ---
-[[Freud]]'s works on Civilisation and its Discontents 
+
+[[Freud]]'s works on Civilisation and its Discontents

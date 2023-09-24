@@ -5,15 +5,17 @@ tags:
   - philosophy
 title: Presocratics philosophers
 ---
+
 ### Anaximander
+
 > material cause and first element of things was the unbounded _aperion_
 
 - earth is cylindrical form, that its depth is as a third part of its breath
 - begetting hot and cold was separated off from the eternal at the origin of the world.
 
-	The heavenly bodies are wheels of fire separated off from the fire which encircles the world, enclosed with air
+  The heavenly bodies are wheels of fire separated off from the fire which encircles the world, enclosed with air
 
-	Living creatures arose from the moist element as it was evaporated by the sun. Man was like another animal, namely, a fish, in the beginning.
+  Living creatures arose from the moist element as it was evaporated by the sun. Man was like another animal, namely, a fish, in the beginning.
 
 often associated with _aperion_ and _infinite_ as the fundamental of the universe
 
@@ -21,7 +23,7 @@ often associated with _aperion_ and _infinite_ as the fundamental of the univers
 
 ### Xenophanes
 
-1. 
+1.
 
 ---
 
@@ -29,14 +31,15 @@ often associated with _aperion_ and _infinite_ as the fundamental of the univers
 
 > Archaic
 > The questions of the beginning
-	Originate from the gods?
-	 Natural occurrence of where things from 
-  - Pythagoras
-	  - Scientific
+
+    Originate from the gods?
+     Natural occurrence of where things from
+
+- Pythagoras
+  - Scientific
 
 > Being is one entities
 > Not being is not known
-
 
 | Change is not being -> not green is
 
@@ -45,8 +48,7 @@ Appearance of changes = dilusion
 
 > Truth is being -> homogeneous changes
 
-
-Ultimate being is not one -> 
+Ultimate being is not one ->
 
 ## Materialism
 
@@ -55,7 +57,8 @@ atheist?
 ### Empedocles
 
 Perspective of nature
-- configuration of _materialism_ 
+
+- configuration of _materialism_
 
 Elements: Earth, Air, Fire and Water
 Elemental force: Love and Strifes
@@ -69,18 +72,18 @@ manifestation of these real articles
 Atomism
 
 Atomic hypothesis -> nature is Atoms and Void
+
 - Nature is body and void, nothing else, not purpose or design
-- Soul is the  body
-	System of the atom
-	 Atoms of different sizes and shape
-	 Coalesce and accumulate -> soul
-	 > Soul is the matter of the finest, smallest, matter, coherently all part of the organism
+- Soul is the body
+  System of the atom
+  Atoms of different sizes and shape
+  Coalesce and accumulate -> soul
+  > Soul is the matter of the finest, smallest, matter, coherently all part of the organism
 - Primary and secondary qualities
-	- Primary: atoms are size, shape, and height
-	- Secondary: molecular combinations include hot/cold, moist/dry
+  - Primary: atoms are size, shape, and height
+  - Secondary: molecular combinations include hot/cold, moist/dry
 
 > Sweet exists by convention, bitter by convention, colour by convention.
-
 
 Division comes to a stop when atom -> Atom is the least divisible factor
 

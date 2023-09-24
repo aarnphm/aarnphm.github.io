@@ -4,9 +4,11 @@ tags:
   - university
 title: Capstone ideas
 ---
+
 What do we want to do?
 
 Project charter
+
 - project scope
 - Objectives
 - Stakeholders

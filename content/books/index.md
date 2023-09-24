@@ -34,7 +34,6 @@ A list of books I have finished reading, wanting to read and are living in my [a
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
 - **Structure and Interpretation of Computer Programs** by Abelson and Sussman
 
-
 ## finished.
 
 ### 2023
@@ -54,7 +53,6 @@ A list of books I have finished reading, wanting to read and are living in my [a
 - **Kafka on the Shore** by Haruki Murakami
 - **21 Lessons for the 21st Century** by Yuval Noah Harari
 - **The Outsiders: Eight Unconventional CEOs and Their Radically Rational Blueprint for Success** by Will Thorndike
-
 
 ### 2021
 

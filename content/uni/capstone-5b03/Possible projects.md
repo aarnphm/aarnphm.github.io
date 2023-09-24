@@ -7,12 +7,12 @@ The following includes some of possible capstone projects that centered around [
 
 ### Fine tuning Large language models
 
-Abstract: With the recent rise of Generative AI, especially with the advent of large language models, 
+Abstract: With the recent rise of Generative AI, especially with the advent of large language models,
 there has been a lot of applications (Copilot, ChatGPT) that built on top of these LLMs, such as GPT-4 (OpenAI), Cohere, Anthropic, etc.
 However, using such APIs is not always economically feasible, as such gated models are often very expensive to run.
 Additionally, such users are prone to provide their private data to run on these vendors due to privacy concerns.
-With this in mind and the ever growing open source competitors, such as Llama 2, Falcon, etc., developers are looking into fine tuning 
-these smaller models to fit with the specific usecase. 
+With this in mind and the ever growing open source competitors, such as Llama 2, Falcon, etc., developers are looking into fine tuning
+these smaller models to fit with the specific usecase.
 
 Currently, this process is considered sparsed and often requires a lot of domain knowledge.
 The project should be able to discuss and explore what are the opportunities in terms of building a fine-tuning product that can help anyone,

@@ -1,9 +1,11 @@
 ---
 id: Socrates
 ---
+
 [[Presocratics]] exists before Socrates lived by materialism
 
 refers to Ionian:
+
 > keen on [nature] science. Why it comes to be, why exists?
 
 Dissatisfied with nature science
@@ -28,6 +30,7 @@ Philo-sophia
 love-wisdom != not being wise
 
 Can only love what we lack
+
 > Precisely not to be wise
 
 Philosophers vs. Fool: Philosophers knows hes not wise, whereas a fool doesn't
@@ -43,11 +46,13 @@ Hermenedies: Pythagorian cares for the soul (rational, pursue for rational)
 
 Neither gods nor beast
 Spiritual beings operate between gods and beast
+
 - not posses wisdom but can have the ability to pursue such wisdom
 
 Socrates
 
 What is X?
+
 - True of all case
 - Reason why something is an X
 
@@ -58,10 +63,7 @@ ex: Logos what gods love some, not others
 
 Plato -> Idea for all Socrates asks
 -> More than materialism
--> from Socratic or Platonic is wrong
-	- Idea is not material, not body in space or time
-	- Ordinary experience
-
+-> from Socratic or Platonic is wrong - Idea is not material, not body in space or time - Ordinary experience
 
 Charges for Athenian trials?
 

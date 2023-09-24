@@ -6,4 +6,3 @@ tags:
 ---
 
 Dear self,
-
