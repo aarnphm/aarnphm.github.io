@@ -4,6 +4,24 @@
     "type": "split",
     "children": [
       {
+        "id": "177ee1e7e1357935",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6a48c0ac9e130bfc",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "uni/philo-text-1aa3/Plato.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      },
+      {
         "id": "6f7720b5259662d6",
         "type": "tabs",
         "children": [
@@ -25,7 +43,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/Civilisation and its Discontents.md",
+                "file": "uni/hci-4hc3/M1 Critical Reflection.md",
                 "mode": "source",
                 "source": false
               }
@@ -106,7 +124,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/Civilisation and its Discontents.md",
+                "file": "uni/hci-4hc3/M1 Critical Reflection.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -123,7 +141,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/Civilisation and its Discontents.md",
+                "file": "uni/hci-4hc3/M1 Critical Reflection.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -146,7 +164,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/Civilisation and its Discontents.md"
+                "file": "uni/hci-4hc3/M1 Critical Reflection.md"
               }
             }
           },
@@ -167,9 +185,19 @@
                 "sortOrder": "frequency"
               }
             }
+          },
+          {
+            "id": "d791a2271f9139bc",
+            "type": "leaf",
+            "state": {
+              "type": "file-properties",
+              "state": {
+                "file": "uni/hci-4hc3/M1 Critical Reflection.md"
+              }
+            }
           }
         ],
-        "currentTab": 4
+        "currentTab": 6
       }
     ],
     "direction": "horizontal",
@@ -189,8 +217,17 @@
   },
   "active": "f3e839c2c0253a30",
   "lastOpenFiles": [
-    "dump/Freud.md",
+    "uni/philo-text-1aa3/tut/Phaedo and Apology.md",
+    "3bb4-system-design/a3/Quicksort.class",
+    "3bb4-system-design/a3/Quicksort.java",
+    "3bb4-system-design/a3/QuickSort.java",
+    "3bb4-system-design/a3",
+    "uni/philo-text-1aa3/1A3Reader(2019).pdf",
+    "uni/philo-text-1aa3/Plato.md",
+    "uni/philo-text-1aa3/tut/T1.md",
+    "uni/hci-4hc3/M1 Critical Reflection.md",
     "dump/Civilisation and its Discontents.md",
+    "dump/Freud.md",
     "books/index.md",
     "templates/post.md",
     "templates",
@@ -211,20 +248,10 @@
     "uni/capstone-5b03/start.md",
     "uni/capstone-5b03/Possible projects.md",
     "dump/In-memory representation.md",
-    "dump/A balancing act.md",
-    "dump/backburners.md",
-    "private/Hack The North.md",
-    "private/Meetup.md",
-    "private/Company interests/robust-intelligence.md",
     "private/Company interests",
     "uni/philo-text-1aa3/tut",
     "3bb4-system-design/00 Concurrent System Design/SetXY",
     "3bb4-system-design/00 Concurrent System Design/SetXY.c",
-    "3bb4-system-design/00 Concurrent System Design/SetXY.go",
-    "uni/philo-text-1aa3",
-    "3bb4-system-design/LICENSE.txt",
-    "3bb4-system-design/09 Coroutines and Futures/CoroutinesAndFutures.ipynb",
-    "3bb4-system-design/09 Coroutines and Futures",
     "3bb4-system-design/00 Concurrent System Design/pixar-processors.jpg",
     "3bb4-system-design/00 Concurrent System Design/pathfinder-concept.jpg"
   ]
