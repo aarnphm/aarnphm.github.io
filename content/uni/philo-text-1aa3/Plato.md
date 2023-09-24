@@ -161,7 +161,7 @@ What does wisdom do for us?
 > Doing wrong is worse than suffering wrong
 > Riches and power contribute nothing to happiness. Only wisdom and virtue matter, and wisdom is the ultimate virtue
 
-### Phaedo
+# Phaedo
 
 _by Plato_
 _a month later, Socrates' in jail, waiting for his execution_

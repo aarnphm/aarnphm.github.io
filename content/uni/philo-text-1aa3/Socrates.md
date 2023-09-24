@@ -1,8 +1,12 @@
 ---
 id: Socrates
+tags:
+  - university
+  - philosophy
+title: Socrates
 ---
 
-[[Presocratics]] exists before Socrates lived by materialism
+[[uni/philo-text-1aa3/Presocratics|Pre-Socratic]] lives by materialism
 
 refers to Ionian:
 

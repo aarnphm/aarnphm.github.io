@@ -1,3 +1,10 @@
+---
+title: "Music theory"
+tags:
+  - seeds
+  - evergreen
+---
+
 Half steps -> between E-F, B-C
 
 Full step from E -> F#

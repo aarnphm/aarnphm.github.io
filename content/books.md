@@ -1,6 +1,7 @@
 ---
-title: "Builiding antilibrary"
+title: "Building antilibrary"
 date: 2022-08-21T23:41:51-07:00
+id: "books"
 ---
 
 A (mostly) up-to-date book lists that I read, wanting, amd reading, or finished reading.
@@ -14,7 +15,8 @@ A list of books I have finished reading, wanting to read and are living in my [a
 ### philosophy
 
 - **The Critique of Pure Reason** by Immanuel Kant
-- **The Ego and the Id** by Sigmund [[Freud]]
+- **Beyond The Pleasure Principle** by Sigmund Freud
+- **The Ego and the Id** by Sigmund Freud
 
 ### non-fiction
 

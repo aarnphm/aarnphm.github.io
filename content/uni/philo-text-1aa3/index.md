@@ -3,6 +3,7 @@ id: Philosophical Text
 tags:
   - philosophy
   - university
+title: Philosophical Text
 ---
 
 ## Philosophical Text

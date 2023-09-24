@@ -1,11 +1,11 @@
 ---
-id: "lec-0"
+id: "Criteria"
 tags:
   - "university"
-title: "lecture 0"
+title: "Criteria"
 ---
 
-Check-in and 3 months scope``
+Check-in and 3 months scope
 
 1 hour a week
 
