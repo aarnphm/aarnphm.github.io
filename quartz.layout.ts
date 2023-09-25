@@ -11,6 +11,7 @@ export const sharedPageComponents: SharedLayout = {
       GitHub: "https://github.com/aarnphm",
       Twitter: "https://twitter.com/aarnphm_",
       Chat: "https://calendly.com/aarnphm_/30min",
+      Alias: "https://bento.me/aarnphm",
     },
   }),
 }
@@ -26,17 +27,9 @@ export const defaultContentPageLayout: PageLayout = {
     Component.DesktopOnly(
       Component.RecentNotes({
         title: "Recent Notes",
-        limit: 5,
+        limit: 10,
         filter: (f) => f.slug!.startsWith("dump/"),
         linkToMore: "dump/" as SimpleSlug,
-      }),
-    ),
-    Component.DesktopOnly(
-      Component.RecentNotes({
-        title: "University",
-        limit: 5,
-        filter: (f) => f.slug!.startsWith("uni/"),
-        linkToMore: "uni/" as SimpleSlug,
       }),
     ),
   ],

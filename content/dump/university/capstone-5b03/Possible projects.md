@@ -1,3 +1,10 @@
+---
+tags: 
+  - university
+id: Capstone projects
+title: Capstone projects
+---
+
 ## About the company
 
 BentoML is the company behind the open source project [BentoML](https://github.com/bentoml/BentoML), a framework for building reliable, scalable, and cost-efficient AI applications. It comes with everything you need for model serving, application packaging, and production deployment.
