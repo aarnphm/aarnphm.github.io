@@ -1,6 +1,7 @@
 ---
 tags:
   - university
+  - "hci"
 id: interactive-cycle
 title: Interactive cycle
 ---

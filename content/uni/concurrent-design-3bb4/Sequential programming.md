@@ -1,12 +1,18 @@
+---
+title: "Sequential programming"
+tags:
+  - university
+  - concurrency
+id: "Sequential programming"
+---
+
 ```mermaid
 flowchart TD
 
 1[x>=0] --> 2[z+u*y = x*y & u >=0] --> 4[z = x*y]
 ```
 
-Sequential composition
-
-Array as a partial function
+Sequential composition: Array as a partial function
 
 ```algorithm
 x := (x; E:F)

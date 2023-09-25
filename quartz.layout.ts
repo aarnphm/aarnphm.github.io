@@ -10,6 +10,7 @@ export const sharedPageComponents: SharedLayout = {
     links: {
       GitHub: "https://github.com/aarnphm",
       Twitter: "https://twitter.com/aarnphm_",
+      Chat: "https://calendly.com/aarnphm_/30min",
     },
   }),
 }

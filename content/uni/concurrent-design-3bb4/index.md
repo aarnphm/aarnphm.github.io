@@ -2,7 +2,7 @@
 title: "Concurrent System Design"
 tags:
   - university
-  - technical
+  - concurrency
 id: "Concurrent System Design"
 ---
 

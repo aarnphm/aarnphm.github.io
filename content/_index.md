@@ -5,11 +5,10 @@ tags:
 title: "Aaron's notes"
 ---
 
-> _I just wondered how things were put together. - Claude Shannon_
+> _Our capacity to deal with language is a complex, genetically-determined part of our biological endowment. It's a product of evolution, part of our nature._
+> _- Noam Chomsky_
 
-Welcome to my little digital garden. I'm Aaron, and I spend most of my time
-building tools in open and training deep neural nets. This is my digital garden,
-or a data dump from my so-called biological cache.
+I'm Aaron.
 
 ## 📖 work
 
@@ -49,6 +48,7 @@ move everything here, so please be patient 🐣
 While I can't give you a tour of the garden, here are some of the links you can
 start exploring:
 
+- [The rusty mailbox](/posts/): collections of either personal or technical [[dump/writing|writing]].
 - [Somewhat of a painted canvas](/dump): Scattered recollection of notes and dreams or whatnot.
 - [Exploration easel](/dump/Projects.md): List of projects I have built throughout the year!
 - [The second shelf](/books): books I have read, currently reading, or to be read in near future.

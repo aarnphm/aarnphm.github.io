@@ -3,7 +3,6 @@ id: "triton"
 tags:
   - "seed"
   - "machinelearning"
-  - "modelserver"
   - "bentoml"
 title: "BentoML. Triton Inference Server. Choose 2"
 ---

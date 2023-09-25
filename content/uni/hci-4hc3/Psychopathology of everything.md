@@ -2,6 +2,7 @@
 id: "psychopathology"
 tags:
   - "university"
+  - "hci"
 title: "Psychopathology of everything"
 ---
 
