@@ -6,17 +6,28 @@ tags:
   - evergreen
 ---
 
-- A shell language written in [[Rust]]
+- Terminal-enmulator in Rust
 
-  - Cloud native
-  - easy to read
-  - features
-    - pattern matching: `match r'![_*].' {...}`
-    - functional: `fn a = (s, n) { ... }`
+  - Want to stream current running progress and make it click-able?
+  - Vim and Emacs support
+  - multiplexer
+  - stream tty?
 
-- [[Rust]] key-value store
+  ```mermaid
+  flowchart TD
+
+  1[GUI] --> 2[tty] --> 3[rsh]
+  1 --> 5[multiplexer]
+  2 --> 1
+  ```
+
+- A new shell language with Rust-like syntax (rsh)
+  - I get fed up with bash
+  - Should be cloud-first?
+  - Nix inspiration for caching and package management?
+- [[dump/Rust|Rust]] key-value store
   - Think of it as MongoDB but has Redis capability
-- Dockerfile but easier to use
+- Simplified Dockerfile
   - Since dockerfile frontend are just using [BuildKit](https://github.com/moby/buildkit), maybe it can just be an OCI-compliant frontend.
   - Stay away from Docker 😄
   - frontend can be in TOML, YAML

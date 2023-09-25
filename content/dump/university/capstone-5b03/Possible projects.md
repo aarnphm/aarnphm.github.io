@@ -1,5 +1,5 @@
 ---
-tags: 
+tags:
   - university
 id: Capstone projects
 title: Capstone projects
@@ -10,7 +10,7 @@ title: Capstone projects
 BentoML is the company behind the open source project [BentoML](https://github.com/bentoml/BentoML), a framework for building reliable, scalable, and cost-efficient AI applications. It comes with everything you need for model serving, application packaging, and production deployment.
 At BentoML, we makes serving ML models in production hassle-free, and easy-to-use for AI developers, with optimization baked-in.
 
-The following includes some of possible [[uni/capstone-5b03/Criteria|capstone projects]] that centered around [OpenLLM](https://github.com/bentoml/OpenLLM), our serving solution for large language models.
+The following includes some of possible [[dump/university/capstone-5b03/Criteria|capstone projects]] that centered around [OpenLLM](https://github.com/bentoml/OpenLLM), our serving solution for large language models.
 
 ### Fine tuning Large language models
 

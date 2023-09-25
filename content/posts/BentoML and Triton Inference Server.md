@@ -1,7 +1,7 @@
 ---
-id: "triton"
+id: "BentoML and Triton Inference Server"
 tags:
-  - "seed"
+  - "technical"
   - "machinelearning"
   - "bentoml"
 title: "BentoML. Triton Inference Server. Choose 2"
@@ -53,7 +53,7 @@ execution and efficient batching strategies.
 
 ## What is BentoML?
 
-BentoML is an open-source platform designed to facilitate the development,
+[[dump/projects#bentoml--build-production-grade-ai-application|BentoML]] is an open-source platform designed to facilitate the development,
 shipping, and scaling of AI applications. It empowers teams to rapidly develop
 AI applications that involve multiple models and custom logic using Python. Once
 developed, BentoML allows these applications to be seamlessly shipped to

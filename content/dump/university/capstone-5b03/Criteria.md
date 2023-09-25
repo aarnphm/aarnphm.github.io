@@ -31,7 +31,7 @@ Charter 5%
 Project proposal 15%
 
 - How to solve a problem
-- hours -> to client
+- hours --> to client
 - milestone-based for achievement
 
 Summaries: 10%

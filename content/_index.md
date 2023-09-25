@@ -5,8 +5,7 @@ tags:
 title: "Aaron's notes"
 ---
 
-> _Our capacity to deal with language is a complex, genetically-determined part of our biological endowment. It's a product of evolution, part of our nature._
-> _- Noam Chomsky_
+> _Our capacity to deal with language is a complex, genetically-determined part of our biological endowment. It's a product of evolution, part of our nature. - Noam Chomsky_
 
 I'm Aaron.
 
