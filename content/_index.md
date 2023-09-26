@@ -9,9 +9,9 @@ title: "Aaron's notes"
 
 I'm Aaron. Welcome to my humble abode!
 
-Currently, I'm building efficient infrastructure for serving LLM and exploring 
+Currently, I'm building efficient infrastructure for serving LLM and exploring
 our interaction with machine learning models at [BentoML](https://www.bentoml.com/).
-What modality should we choose beyond text/chat for our interaction with these Large models (LMs)? 
+What modality should we choose beyond text/chat for our interaction with these Large models (LMs)?
 How can we make it more easy and accessible for everyone to utilise these models?
 
 In the grand scheme of things, I care a lot about improving interactions between
