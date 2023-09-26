@@ -7,15 +7,16 @@ title: "Aaron's notes"
 
 > _Our capacity to deal with language is a complex, genetically-determined part of our biological endowment. It's a product of evolution, part of our nature. - Noam Chomsky_
 
-I'm Aaron.
+I'm Aaron. Welcome to my humble abode!
 
-## 📖 work
+Currently, I'm building efficient infrastructure for serving LLM and exploring 
+our interaction with machine learning models at [BentoML](https://www.bentoml.com/).
+What modality should we choose beyond text/chat for our interaction with these Large models (LMs)? 
+How can we make it more easy and accessible for everyone to utilise these models?
 
-Currently, I'm working as a software engineer at
-[BentoML](https://www.bentoml.com/), a high performance frameworks to help data
-scientist ship their machine learning models to production. On the side, I'm
-building developer tools and build system that evolves around deep neural nets
-as well as experiment with a variety of languages 🦀 🐍 🐉 👻.
+In the grand scheme of things, I care a lot about building interactions between
+humans and machines, such that we have a freedom to create and investigate our curiosity:
+What is [agentic](https://jzhao.xyz/posts/agentic-computing) ML?
 
 Outside of code, I'm learning French, running a photography gig, and building
 keyboards 😄
@@ -26,8 +27,6 @@ machine, and become more responsible technologist.
 
 In the second decade of my life, I'm learning to be more unbiased about the
 world around me, and have a better sleeping schedule.
-
-## ❓why
 
 I have been writing for a while, but never really got the courage and time to
 publish anything. Working has been taking most of my time, and I couldn't
