@@ -22,9 +22,9 @@ playful with these system?
 While I can't give you a tour of the garden, here are some of the links you can start exploring:
 
 - [The rusty mailbox](/posts/): collections of either personal or technical [[dump/writing|writing]].
-- [Somewhat of a painted canvas](/dump): Scattered recollection of notes and dreams or whatnot.
-- [Exploration easel](/dump/projects): List of projects I have built throughout the year!
-- [The second shelf](/books): books I have read, currently reading, or to be read in near future.
+- [An unfinished drawing canvas](/dump): Scattered recollection of notes.
+- [Past life](/dump/projects): List of projects I have built throughout the year!
+- [The bookshelf far away](/books): books I have read, currently reading, or to be read in near future.
 
 If you need anything, please do let me know!
 

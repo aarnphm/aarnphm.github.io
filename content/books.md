@@ -20,19 +20,26 @@ A list of books I have finished reading, wanting to read and are living in my [a
 
 ### non-fiction
 
-- **Pretentiousness: Why it Matters** by Dan Fox
 - **Deep Work** by Cal Newport
 
 ### fiction
 
+- **Recursion** by Blake Crouch
+- **The metamorphosis** by Franz Kafka
+- **The Trial** by Franz Kafka
+- **Sea of Tranquility** by Emily St. John Mandel
+- **Oblivion** by David Foster Wallace
 - **The Uninhabitable Earth** by Wallace-Weels
 - **The Idiot** by Fyodor Dostoevsky
+- **The Brothers Karamazov** by Fyodor Dostoevsky
 - **Fall On Your Knees** by Ann-Marie MacDonald
+- **Foundation** series by Isaac Asimov
 
 ## current.
 
-- **The Metaphysics of Morals** by Immanuel Kant
+- **Pretentiousness: Why it Matters** by Dan Fox
 - **Crime and Punishment** by Fyodor Dostoevsky
+- **The Metaphysics of Morals** by Immanuel Kant
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
 - **Structure and Interpretation of Computer Programs** by Abelson and Sussman
 
