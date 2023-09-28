@@ -5,7 +5,7 @@ tags:
   - philosophy
 title: Plato v. Euthyphro
 ---
-
+See also [[Socrates]]
 # Apology
 
 - Defence against charges against them
@@ -249,3 +249,125 @@ _some time after Socrates' death_
 _Agathon, a poet of tragedies, is the host_
 
 > Soul is an abstraction from empirical knowledge.
+
+
+Alkibiades, of Scocrates:
+
+> This utterly unnatural, this truly extraordinary man ... this hopelessly arrogant, this unbelievably insolent man ... [of] amazing arrogance and pride ... he unique 
+
+- Seduction: is a game wrt Socrates
+
+-> Socrates life is one big game of irony
+
+Alkibiades: Seduction for a trade
+- invites Socrates to wrestle in the gym <-- doesn't work
+- drunk (no one has seen him drunk). Lies down -> makes move -> nothing
+
+> Finding yourself falling in love with Socrates
+> - Pretends to fall in love -> others will fall in love with him
+
+Ordinary irony: False --> to implies the opposite
+
+Socratic irony: Both is and is not seriously meant --> True in one way, false in another
+
+> _to Euthyphro_: You think that your knowledge of the divine, and of piety and impiety, is so accurate that ... you have no fear of having acted impiously in bringing your father to trial
+
+- Knowledge of divine is false --> false
+
+--> Euthyphro: self-righteous fouls doesn't understand anything
+
+
+Angers when seeing Socrates falling for someone else.
+
+Future replicates the past. Love must be more than intense alliances from others.
+
+> Socrates can't teach anybody anything that they don't already know
+> - Alkibiades is so rough beneath the smooth surface -> not interesting to bring in as disciple
+> - Alkibiades knows himself too much to love, to be drawn to Socrates
+> - Maybe Alkibiades can be redeemed by philosophers
+
+
+## Republic
+
+1. Metaphysics: philosophical theory of being
+
+> To be is to be an idea.
+
+Idea means ideal form, means it is perfect, doesn't know by the triad or the body
+
+Idea is intelligible (things grasped by intellect), not sensible (sense-perceptible things) being.
+
+True reality is world of ideas and immaterial, changeless, ethereal, fully rational.
+
+> Opinions without knowledge are shameful and ugly things.
+
+Sounds are copy of ideas <- bad
+
+> Idea of good is the idea to make things to be good.
+
+1. Idea of good is the most important thing that everyone know
+	- By conforming this, everything else would be useful and beneficient
+	- Don't know the idea of good = everything else is useless
+
+> Obtain knowledge of good is the foundation of Platonic philosophy
+
+Merely believed to be true: Everyone wants what is good
+
+> Every souls persue the goods and do what it is good
+
+Can't understand our own goods without knowing how our own goods integrate with the best self of everything.
+
+-> makes people the best of what they can be.
+
+Satisfied with opinion where knowledge is out there to be found?
+
+Opinion: doxa
+Knowledge: episteme
+Understanding: nous
+
+• Belief is liable to error, knowledge is not.  
+• Belief can be changed by persuasion, knowledge cannot be.  
+• Belief does not bring understanding, knowledge does.  
+• True belief, right opinion, is still essentially belief or opinion,  
+and cannot be knowledge since its truth is accidental.  
+• Opinion is shameful because it is not a passive thing that  
+innocently occurs to a person.
+
+### Sun: Visible Things : Sight
+
+Idea of good stands to intelligible things as intelligible things stand to understanding
+
+Good illuminate to us understanding
+
+- Cause of beings for ideas
+- Cause for knowledge
+
+Virtually all ideas (white light is virtually all colors)
+
+--> Makes all minds to be true and understanding.
+
+> To understand is to focus intellect on the form, idea (stare into the sun and not be blinded)
+
+Understand an idea is understand what true being is.
+
+Knowledge knows what is is and must be it is
+
+Criterion of knowledge:
+- Infallibility, the impossibility of error
+
+Understanding (nous) --> Philosophy
+Beauty, justice are entities
+
+Thought (dianoia) --> Science
+- Requires some intellectual understanding -> thoughts
+- Hypothesis: first principle of science yet stayed unexplained
+
+Perception (aesthesis) --> Opinion
+
+> How do we understand philosophy?
+
+## Dialetic
+
+> Inquiry that systematically attempts to grasp with respect to each thing itself what they being of it is ( that is, the idea)
+
+Does away with presuppositions. It overcomes everything hypothetical in thought and leads to presuppositionless knowledge.

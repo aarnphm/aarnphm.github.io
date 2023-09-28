@@ -1,9 +1,8 @@
 ---
 tags:
   - sapling
-  - personal
-id: "writing"
-title: "Writing"
+id: writing
+title: Writing
 ---
 
 # Writing

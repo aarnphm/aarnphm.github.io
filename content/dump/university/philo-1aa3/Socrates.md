@@ -6,7 +6,7 @@ tags:
 title: Socrates
 ---
 
-[[uni/philo-text-1aa3/Presocratics|Pre-Socratic]] lives by materialism
+[[dump/university/philo-1aa3/Presocratics|Pre-Socratic]] lives by materialism
 
 refers to Ionian:
 

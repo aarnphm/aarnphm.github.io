@@ -1,8 +1,7 @@
 ---
-title: "Projects"
+title: Projects
 date: 2022-08-21T21:50:54-07:00
 tags:
-  - seeds
   - technical
   - evergreen
 ---

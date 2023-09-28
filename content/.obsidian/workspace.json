@@ -25,26 +25,24 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_index.md",
+                "file": "dump/university/philo-1aa3/Plato.md",
                 "mode": "source",
                 "source": false
               }
             }
           },
           {
-            "id": "fb45c734adf69bff",
+            "id": "87086330838ee6da",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "dump/writing.md",
-                "mode": "source",
-                "source": false
+                "file": "dump/university/philo-1aa3/1A3~Assignment 1 (2023).pdf"
               }
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -73,7 +71,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:seeds",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -118,7 +116,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/writing.md",
+                "file": "dump/university/philo-1aa3/Plato.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -135,7 +133,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/writing.md",
+                "file": "dump/university/philo-1aa3/Plato.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -158,7 +156,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/writing.md"
+                "file": "dump/university/philo-1aa3/Plato.md"
               }
             }
           },
@@ -186,12 +184,12 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/writing.md"
+                "file": "dump/university/philo-1aa3/Plato.md"
               }
             }
           }
         ],
-        "currentTab": 6
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
@@ -209,45 +207,28 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "fb45c734adf69bff",
+  "active": "f3e839c2c0253a30",
   "lastOpenFiles": [
+    "dump/university/philo-1aa3/1A3~Assignment 1 (2023).pdf",
+    "dump/university/philo-1aa3/Plato.md",
+    "dump/university/philo-1aa3/Presocratics.md",
+    "dump/university/philo-1aa3/Socrates.md",
+    "dump/university/philo-1aa3/tut/T1.md",
+    "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
+    "dump/university/philo-1aa3/index.md",
     "_index.md",
+    "private/bentoml/Runner interface.md",
+    "private/bentoml/OpenLLM design draft.md",
+    "private/bentoml/New Runner API.md",
+    "private/bentoml/intern.md",
+    "dump/music theory.md",
+    "dump/projects.md",
     "dump/writing.md",
     "dump/XLA.md",
-    "uni/philo-text-1aa3/tut/Phaedo and Apology.md",
-    "3bb4-system-design/a3/Quicksort.class",
-    "3bb4-system-design/a3/Quicksort.java",
-    "3bb4-system-design/a3/QuickSort.java",
-    "3bb4-system-design/a3",
-    "uni/philo-text-1aa3/1A3Reader(2019).pdf",
-    "uni/philo-text-1aa3/Plato.md",
-    "uni/philo-text-1aa3/tut/T1.md",
-    "uni/hci-4hc3/M1 Critical Reflection.md",
     "dump/Civilisation and its Discontents.md",
     "dump/Freud.md",
     "books/index.md",
     "templates/post.md",
     "templates",
-    "tags/university.md",
-    "tags/technical.md",
-    "tags/seed.md",
-    "tags/personal.md",
-    "tags/modelserver.md",
-    "tags/machinelearning.md",
-    "tags/evergreen.md",
-    "tags/bentoml.md.md",
-    "tags/bentoml.md",
-    "uni/philo-text-1aa3/Socrates.md",
-    "uni/scientific-computation-4xc3/Lecture 0.md",
-    "uni/concurrent-design-3bb4/Sequential programming.md",
-    "uni/concurrent-design-3bb4/lecture.md",
-    "uni/capstone-5b03/start.md",
-    "uni/capstone-5b03/Possible projects.md",
-    "private/Company interests",
-    "uni/philo-text-1aa3/tut",
-    "3bb4-system-design/00 Concurrent System Design/SetXY",
-    "3bb4-system-design/00 Concurrent System Design/SetXY.c",
-    "3bb4-system-design/00 Concurrent System Design/pixar-processors.jpg",
-    "3bb4-system-design/00 Concurrent System Design/pathfinder-concept.jpg"
   ]
 }
