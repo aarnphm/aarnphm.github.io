@@ -4,12 +4,9 @@ tags:
   - philosophy
 description: Phaedo and Apology
 ---
+## Structure
 
-Problem
-
-Thesis
-
-Structure
+Problem --> Thesis --> Structure
 
 ## Apology
 
@@ -27,8 +24,8 @@ Structure
   - Ancient:
     - Physicist -> enquire things in heaven and under the earth
     - Sophist: Use arguments that leads people away from the truth
-      > - Doesn't care about physics
-      > - "human/political virtue" --> People aren't as wise as they were
+      - Doesn't care about physics
+      - "human/political virtue" --> People aren't as wise as they were
 
 - Corrupts the youth
   - Hates democracy

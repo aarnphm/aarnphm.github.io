@@ -5,7 +5,6 @@ tags:
   - "machinelearning"
 title: "XLA"
 ---
-
 - Accelerated Algebra
 - Developed from Tensorflow
 

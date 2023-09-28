@@ -8,7 +8,6 @@ title: "Autograd"
 
 Autodiff and [[XLA]]
 
-Let say:
 $f(x) = e^{2x} - x^3 \rightarrow \frac{df}{dx} = 2e^{2x} - 3x^2$ <- manual diff
 
 Others:

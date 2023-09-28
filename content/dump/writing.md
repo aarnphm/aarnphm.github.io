@@ -4,9 +4,6 @@ tags:
 id: writing
 title: Writing
 ---
-
-# Writing
-
 Why writing?
 
 > Writing as [crystallised] thought, a way of expressing the labyrinth of interconnected, messy, and many time incoherent ideas in my mind. It is a form of [knowledge distillation](https://jzhao.xyz/thoughts/knowledge-distillation) (Jacky on [writing](https://jzhao.xyz/thoughts/writing))
