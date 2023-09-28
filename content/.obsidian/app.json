@@ -11,5 +11,11 @@
     "margin": "0",
     "downscalePercent": 100
   },
-  "tabSize": 2
+  "tabSize": 2,
+  "newFileLocation": "current",
+  "newLinkFormat": "absolute",
+  "attachmentFolderPath": "./",
+  "showLineNumber": true,
+  "readableLineLength": false,
+  "strictLineBreaks": false
 }
