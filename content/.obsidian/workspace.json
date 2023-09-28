@@ -44,7 +44,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -118,7 +118,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "_index.md",
+                "file": "dump/writing.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -135,7 +135,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "_index.md",
+                "file": "dump/writing.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -158,7 +158,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "_index.md"
+                "file": "dump/writing.md"
               }
             }
           },
@@ -186,7 +186,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "_index.md"
+                "file": "dump/writing.md"
               }
             }
           }
@@ -209,10 +209,10 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "f3e839c2c0253a30",
+  "active": "fb45c734adf69bff",
   "lastOpenFiles": [
-    "dump/writing.md",
     "_index.md",
+    "dump/writing.md",
     "dump/XLA.md",
     "uni/philo-text-1aa3/tut/Phaedo and Apology.md",
     "3bb4-system-design/a3/Quicksort.class",
