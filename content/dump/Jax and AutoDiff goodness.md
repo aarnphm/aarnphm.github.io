@@ -8,7 +8,7 @@ tags:
 
 ### Jax?
 
-- Numpy with [[Autograd]] builtin. Use [[XLA]] to compile and run NumPy code on
+- Numpy with [[dump/Autograd]] builtin. Use [[dump/XLA]] to compile and run NumPy code on
   accelerators.
 - Asynchronous dispatch, for sync use `block_until_ready()`
 

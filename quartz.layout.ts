@@ -40,12 +40,9 @@ export const defaultContentPageLayout: PageLayout = {
         linkToMore: "dump/" as SimpleSlug,
       }),
     ),
-  ],
-  right: [
-    Component.Graph(),
     Component.DesktopOnly(Component.TableOfContents()),
-    Component.Backlinks(),
   ],
+  right: [Component.Graph(), Component.Backlinks()],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)
@@ -56,7 +53,12 @@ export const defaultListPageLayout: PageLayout = {
     Component.MobileOnly(Component.Spacer()),
     Component.Search(),
     Component.Darkmode(),
-    Component.DesktopOnly(Component.Explorer()),
+    Component.DesktopOnly(Component.Explorer({
+      filterFn: (node) => {
+        const omit = new Set(["posts", "tags"])
+        return !omit.has(node.name)
+      },
+    })),
   ],
   right: [],
 }

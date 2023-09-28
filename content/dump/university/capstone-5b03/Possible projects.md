@@ -2,7 +2,7 @@
 tags:
   - university
 id: Capstone projects
-title: Capstone projects
+title: Capstone
 ---
 
 ## About the company
