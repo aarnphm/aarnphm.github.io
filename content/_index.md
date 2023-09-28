@@ -14,10 +14,8 @@ our interaction with machine learning models at [BentoML](https://www.bentoml.co
 What modality should we choose beyond text/chat for our interaction with these Large models (LMs)?
 How can we make it more easy and accessible for everyone to utilise these models?
 
-In the grand scheme of things, I care a lot about improving interactions between
-humans and machines, and what learning, and collaboration looks like in near future:
-What is [agentic](https://jzhao.xyz/posts/agentic-computing) ML and how can we be more
-playful with these system?
+In the grand scheme of things, I care a lot about humans and machines interaction, and what learning, and collaboration looks like in near future:
+What is [agentic](https://jzhao.xyz/posts/agentic-computing) ML and how can we design playful interaction with these system?
 
 While I can't give you a tour of the garden, here are some of the links you can start exploring:
 
@@ -26,6 +24,6 @@ While I can't give you a tour of the garden, here are some of the links you can 
 - [Past life](/dump/projects): List of projects I have built throughout the year!
 - [The bookshelf far away](/books): books I have read, currently reading, or to be read in near future.
 
-If you need anything, please do let me know!
+Regards, your internet friend Aaron.
 
-Regards, Aaron.
+> People that I owed a lot to/inspired me from afar: [Jacky](https://jzhao.xyz/), [Chaoyu](https://twitter.com/chaoyu_), [Ava](https://www.avabear.xyz/), [Hank and John](https://www.youtube.com/@vlogbrothers)
