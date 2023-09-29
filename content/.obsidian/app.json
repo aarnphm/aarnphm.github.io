@@ -15,7 +15,9 @@
   "newFileLocation": "current",
   "newLinkFormat": "absolute",
   "attachmentFolderPath": "./",
-  "showLineNumber": true,
+  "showLineNumber": false,
   "readableLineLength": false,
-  "strictLineBreaks": false
+  "strictLineBreaks": false,
+  "showInlineTitle": true,
+  "rightToLeft": false
 }

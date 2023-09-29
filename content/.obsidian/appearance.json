@@ -5,6 +5,7 @@
   "textFontFamily": "JetBrainsMono Nerd Font",
   "monospaceFontFamily": "JetBrainsMono Nerd Font",
   "baseFontSize": 15,
-  "translucency": false,
-  "theme": "moonstone"
+  "translucency": true,
+  "theme": "moonstone",
+  "showViewHeader": true
 }

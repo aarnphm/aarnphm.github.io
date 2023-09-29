@@ -26,7 +26,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/Jax and AutoDiff goodness.md",
+                "file": "dump/university/philo-1aa3/Questions about Apology.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -108,7 +108,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/Jax and AutoDiff goodness.md",
+                "file": "dump/university/philo-1aa3/Questions about Apology.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -125,7 +125,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/Jax and AutoDiff goodness.md",
+                "file": "dump/university/philo-1aa3/Questions about Apology.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -148,7 +148,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/Jax and AutoDiff goodness.md"
+                "file": "dump/university/philo-1aa3/Questions about Apology.md"
               }
             }
           },
@@ -176,7 +176,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/Jax and AutoDiff goodness.md"
+                "file": "dump/university/philo-1aa3/Questions about Apology.md"
               }
             }
           }
@@ -201,6 +201,7 @@
   },
   "active": "87086330838ee6da",
   "lastOpenFiles": [
+    "dump/Jax and AutoDiff goodness.md",
     "dump/XLA.md",
     "dump/Autograd.md",
     "dump/university/philo-1aa3/1A3~Assignment 1 (2023).pdf",
@@ -228,7 +229,6 @@
     "private/bentoml/OpenLLM design draft.md",
     "private/bentoml/Runner interface.md",
     "_index.md",
-    "dump/university/philo-1aa3/Plato.md",
     "dump/university/philo-text-1aa3",
     "uni/philo-text-1aa3",
     "uni",
