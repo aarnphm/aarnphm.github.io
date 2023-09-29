@@ -26,7 +26,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md",
+                "file": "dump/university/philo-1aa3/tut/Assignments Notes.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -35,6 +35,25 @@
           }
         ],
         "currentTab": 1
+      },
+      {
+        "id": "35e2481d295cc149",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3b5aad73b232fce6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/university/philo-1aa3/Questions about Apology.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          }
+        ]
       }
     ],
     "direction": "vertical"
@@ -108,7 +127,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md",
+                "file": "dump/university/philo-1aa3/tut/Assignments Notes.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -125,7 +144,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md",
+                "file": "dump/university/philo-1aa3/tut/Assignments Notes.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -148,7 +167,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md"
+                "file": "dump/university/philo-1aa3/tut/Assignments Notes.md"
               }
             }
           },
@@ -176,7 +195,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md"
+                "file": "dump/university/philo-1aa3/tut/Assignments Notes.md"
               }
             }
           }
@@ -201,13 +220,15 @@
   },
   "active": "87086330838ee6da",
   "lastOpenFiles": [
+    "dump/university/philo-1aa3/Questions about Apology.md",
+    "dump/university/philo-1aa3/tut/Assignments Notes.md",
+    "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
+    "dump/university/philo-1aa3/tut/T1.md",
     "dump/Jax and AutoDiff goodness.md",
     "dump/XLA.md",
     "dump/Autograd.md",
     "dump/university/philo-1aa3/1A3~Assignment 1 (2023).pdf",
     "dump/Civilisation and its Discontents.md",
-    "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
-    "dump/university/philo-1aa3/Questions about Apology.md",
     "dump/writing.md",
     "Untitled.canvas",
     "templates/post.md",
@@ -227,8 +248,6 @@
     "private/bentoml/intern.md",
     "private/bentoml/New Runner API.md",
     "private/bentoml/OpenLLM design draft.md",
-    "private/bentoml/Runner interface.md",
-    "_index.md",
     "dump/university/philo-text-1aa3",
     "uni/philo-text-1aa3",
     "uni",
