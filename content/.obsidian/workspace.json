@@ -127,7 +127,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/philo-1aa3/tut/Assignments Notes.md",
+                "file": "dump/university/philo-1aa3/Questions about Apology.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -144,7 +144,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/philo-1aa3/tut/Assignments Notes.md",
+                "file": "dump/university/philo-1aa3/Questions about Apology.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -167,7 +167,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/philo-1aa3/tut/Assignments Notes.md"
+                "file": "dump/university/philo-1aa3/Questions about Apology.md"
               }
             }
           },
@@ -195,7 +195,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/philo-1aa3/tut/Assignments Notes.md"
+                "file": "dump/university/philo-1aa3/Questions about Apology.md"
               }
             }
           }
@@ -218,10 +218,11 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "87086330838ee6da",
+  "active": "3b5aad73b232fce6",
   "lastOpenFiles": [
-    "dump/university/philo-1aa3/Questions about Apology.md",
     "dump/university/philo-1aa3/tut/Assignments Notes.md",
+    "dump/university/index.md",
+    "dump/university/philo-1aa3/Questions about Apology.md",
     "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
     "dump/university/philo-1aa3/tut/T1.md",
     "dump/Jax and AutoDiff goodness.md",
@@ -247,7 +248,6 @@
     "private/Company interests/robust-intelligence.md",
     "private/bentoml/intern.md",
     "private/bentoml/New Runner API.md",
-    "private/bentoml/OpenLLM design draft.md",
     "dump/university/philo-text-1aa3",
     "uni/philo-text-1aa3",
     "uni",

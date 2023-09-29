@@ -19,3 +19,11 @@ Phaedo's philosophy for the soul
 -> Why Socrates believe justice cannot be fought for in public life
 -> Why S. is right/wrong
 -> Conclusion
+
+### Symposium pp. 105-106
+
+1. Beauty of one thing
+2. Beauty in every body is the same
+3. Beauty in mind/soul
+4. Beauty in the institution/law/science 
+5. Absolute beauty
