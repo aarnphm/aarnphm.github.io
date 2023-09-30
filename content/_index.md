@@ -17,13 +17,13 @@ How can we make it more easy and accessible for everyone to utilise these models
 In the grand scheme of things, I care a lot about humans and machines interaction, and what learning, and collaboration looks like in near future:
 What is [agentic](https://jzhao.xyz/posts/agentic-computing) ML and how can we design playful interaction with these system?
 
-While coherency and somewhat abstract from the 'about' page, I hope to invite you on the journey of exploring these  can't give you a tour of the garden,
+While coherency and somewhat abstract the 'about' page is, I hope to invite you on the journey of exploring these topics and hope you enjoy your stay.
 
 The following are some links you might want to start with:
 - [The bookshelf far away](/books): books I have read, currently reading, or to be read in near future.
 - [The rusty mailbox](/posts/): collections of either personal or technical [[dump/writing|writing]].
 - [An unfinished drawing canvas](/dump): Scattered recollection of notes.
-- [Past life](/dump/projects): List of projects I have built throughout the year!
+- [Easels stand](/dump/projects): List of projects I have built throughout the year!
 
 Regards, your internet friend Aaron.
 
