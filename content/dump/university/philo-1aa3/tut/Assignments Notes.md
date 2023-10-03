@@ -7,7 +7,7 @@ title: Socrates' Apology Brainstorm
 ### Q1.
 
 ex: Th. 
-E. dialogue shows Socrates' view that philosophy necessary for a good life
+E. dialogue shows [[dump/university/philo-1aa3/Socrates|Socrates]] view that philosophy necessary for a good life
 
 E. definition of piety and S's objection for it. --> discussion in Apology about relation between philosophy and good life
 
