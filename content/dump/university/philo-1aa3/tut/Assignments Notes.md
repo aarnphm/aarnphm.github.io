@@ -11,14 +11,15 @@ E. dialogue shows [[dump/university/philo-1aa3/Socrates|Socrates]] view that phi
 
 E. definition of piety and S's objection for it. --> discussion in Apology about relation between philosophy and good life
 
-Phaedo's philosophy for the soul
+[[dump/university/philo-1aa3/Plato#Phaedo|Phaedo]]'s philosophy for the soul
+
 
 ### Q2.
 
--> Intro: Th. : Whether agree or disagree with Socrates
--> Why Socrates believe justice cannot be fought for in public life
--> Why S. is right/wrong
--> Conclusion
+- Intro: Th. : Whether agree or disagree with Socrates
+	* Why Socrates believe justice cannot be fought for in public life
+	* Why S. is right/wrong
+- Conclusion
 
 ### Symposium pp. 105-106
 

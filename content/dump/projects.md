@@ -32,7 +32,7 @@ Key features include:
 
 _Built with: BentoML, Transformers, PyTorch, GitHub Actions_
 
-## BentoML -- Build Production-grade AI Application
+## [BentoML](https://bentoml.com/) -- Build Production-grade AI Application
 
 BentoML is a framework that simplifies ML model deployment and provides a faster way to ship your ML model to production.
 

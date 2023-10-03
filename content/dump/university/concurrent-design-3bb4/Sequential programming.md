@@ -5,6 +5,7 @@ tags:
   - concurrency
 id: "Sequential programming"
 ---
+See also [[dump/university/concurrent-design-3bb4/README|3BB4 - Concurrent System Design]]
 
 ```mermaid
 flowchart TD

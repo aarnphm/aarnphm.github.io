@@ -39,6 +39,8 @@ Problem --> Thesis --> Structure
 
 ## Phaedo
 
+^5916ea
+
 - Pain and pleasure
 - How suicide is wrong, facing death = good ?
 - Philosophers desire death?
