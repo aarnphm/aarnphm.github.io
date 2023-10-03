@@ -1,6 +1,7 @@
 ---
 tags:
-  - sapling
+  - personal
+  - seed
 id: writing
 title: Writing
 ---
