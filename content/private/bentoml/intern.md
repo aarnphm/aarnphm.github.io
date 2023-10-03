@@ -3,6 +3,22 @@ id: "intern"
 tags: []
 ---
 
+Map to url to uuid
+
+large uuid be? collision
+
+tradeoff? actual mapping vs. hash
+
+mapping:
+- no collision (store the actual mapping)
+
+
+> Optimized for reading, (some sort of cache)
+
+> Build URL shortener for real world (1b/month)
+
+> Peak traffic
+
 ## Design
 
 hash? or random uuid
@@ -22,7 +38,7 @@ incremental counter?
   - Collision?
 
 - Security concern?
-- guessable?J
+- guessable?
 
 10e6 entries/month
 
@@ -56,10 +72,31 @@ Storing?
   - read (caching layer)
   - only write to hit db
 
+Bottleneck is DB
+
+api server -> cache -> DB
+
+Assumption:
+- hot url
+
 - stack (minimize db access) -> horizontal scale on web server
 - write traffic? write in DB? reasonable db can handle this traffic?
 
+Cache: Eviction, LRU
+
 - Multi-region (handles copies)
+
+## Follow up
+- expire bit.ly links
+- How to avoid collision (increase hash space)
+    - same uuid -> what happened?
+
+- Security (reverse engineer)
+
+
+## Store the mapping, what is the db schema?
+
+partition?
 
 ## Curious and demonstrate continuous learning
 

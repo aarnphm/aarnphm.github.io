@@ -46,14 +46,41 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md",
+                "file": "dump/Cinematography.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "1431041507d25640",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/Lightning.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "0fd77b2fffe13136",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/Civilisation and its Discontents.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -92,14 +119,6 @@
             }
           },
           {
-            "id": "11bfcc6c1e42ed4e",
-            "type": "leaf",
-            "state": {
-              "type": "starred",
-              "state": {}
-            }
-          },
-          {
             "id": "36ce514ac8943e01",
             "type": "leaf",
             "state": {
@@ -127,7 +146,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md",
+                "file": "dump/Lightning.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -144,7 +163,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md",
+                "file": "dump/Lightning.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -167,7 +186,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md"
+                "file": "dump/Lightning.md"
               }
             }
           },
@@ -195,7 +214,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md"
+                "file": "dump/Lightning.md"
               }
             }
           }
@@ -218,18 +237,21 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "3b5aad73b232fce6",
+  "active": "1431041507d25640",
   "lastOpenFiles": [
+    "dump/Cinematography.md",
+    "dump/Lightning.md",
+    "dump/university/concurrent-design-3bb4/a4",
+    "dump/university/philo-1aa3/Questions about Apology.md",
+    "dump/Civilisation and its Discontents.md",
     "dump/university/philo-1aa3/tut/Assignments Notes.md",
     "dump/university/index.md",
-    "dump/university/philo-1aa3/Questions about Apology.md",
     "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
     "dump/university/philo-1aa3/tut/T1.md",
     "dump/Jax and AutoDiff goodness.md",
     "dump/XLA.md",
     "dump/Autograd.md",
     "dump/university/philo-1aa3/1A3~Assignment 1 (2023).pdf",
-    "dump/Civilisation and its Discontents.md",
     "dump/writing.md",
     "Untitled.canvas",
     "templates/post.md",
@@ -246,8 +268,6 @@
     "private/2023 - Letter to self.md",
     "private/Hack The North.md",
     "private/Company interests/robust-intelligence.md",
-    "private/bentoml/intern.md",
-    "private/bentoml/New Runner API.md",
     "dump/university/philo-text-1aa3",
     "uni/philo-text-1aa3",
     "uni",
@@ -256,7 +276,6 @@
     "3bb4-system-design/a3/QuickSort.java",
     "3bb4-system-design/a3",
     "uni/philo-text-1aa3/1A3Reader(2019).pdf",
-    "templates",
     "3bb4-system-design/00 Concurrent System Design/pixar-processors.jpg",
     "3bb4-system-design/00 Concurrent System Design/pathfinder-concept.jpg"
   ]
