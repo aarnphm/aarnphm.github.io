@@ -4,7 +4,7 @@
     "type": "split",
     "children": [
       {
-        "id": "6f7720b5259662d6",
+        "id": "35e2481d295cc149",
         "type": "tabs",
         "children": [
           {
@@ -13,19 +13,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_index.md",
+                "file": "private/bentoml/intern.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
               }
             }
-          }
-        ]
-      },
-      {
-        "id": "35e2481d295cc149",
-        "type": "tabs",
-        "children": [
+          },
           {
             "id": "3b5aad73b232fce6",
             "type": "leaf",
@@ -58,7 +52,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/capstone-5b03/Project charter.md",
+                "file": "dump/university/capstone-5b03/Possible projects.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -92,7 +86,7 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -158,7 +152,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "_index.md",
+                "file": "dump/university/capstone-5b03/Possible projects.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -175,7 +169,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "_index.md",
+                "file": "dump/university/capstone-5b03/Possible projects.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -198,7 +192,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "_index.md"
+                "file": "dump/university/capstone-5b03/Possible projects.md"
               }
             }
           },
@@ -226,7 +220,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "_index.md"
+                "file": "dump/university/capstone-5b03/Possible projects.md"
               }
             }
           }
@@ -249,8 +243,15 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "5e80245682f29b4e",
   "lastOpenFiles": [
+    "dump/university/capstone-5b03/Project charter.md",
+    "dump/university/capstone-5b03/Criteria.md",
+    "dump/university/capstone-5b03/index.md",
+    "dump/university/capstone-5b03/Possible projects.md",
+    "private/bentoml/intern.md",
+    "dump/Cinematography.md",
+    "_index.md",
     "dump/Civilisation and its Discontents.md",
     "dump/projects.md",
     "dump/university/concurrent-design-3bb4/Sequential programming.md",
@@ -258,16 +259,11 @@
     "private/Term of Reference.md",
     "dump/Lighting.md",
     "dump/university/hci-4hc3/index.md",
-    "dump/university/capstone-5b03/index.md",
     "tags/bentoml.md",
     "dump/Content-addressable storage.md",
-    "dump/university/capstone-5b03/Project charter.md",
-    "dump/university/capstone-5b03/Possible projects.md",
     "dump/university/concurrent-design-3bb4/index.md",
-    "dump/university/capstone-5b03/Criteria.md",
     "dump/university/concurrent-design-3bb4/README.md",
     "dump/university/philo-1aa3/index.md",
-    "dump/Cinematography.md",
     "dump/university/concurrent-design-3bb4/a4",
     "dump/university/philo-1aa3/Questions about Apology.md",
     "dump/university/index.md",
@@ -277,9 +273,7 @@
     "dump/XLA.md",
     "dump/Autograd.md",
     "dump/university/philo-1aa3/1A3~Assignment 1 (2023).pdf",
-    "dump/writing.md",
     "Untitled.canvas",
-    "templates/post.md",
     "dump/university/philo-text-1aa3",
     "uni/philo-text-1aa3",
     "uni",

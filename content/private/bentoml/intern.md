@@ -60,7 +60,7 @@ Storing?
 - estimate how big is the db? partition scheme or storage?
 
   8/16 bytes of uuid space, maxlen of the size (128/256 bytes)
-  - not scalable in instance db, not availablity
+  - not scalable in instance db, not availability
   - how partition? replicate db
   - partition based on url keyspace
   - hashing based on production
@@ -78,7 +78,6 @@ api server -> cache -> DB
 
 Assumption:
 - hot url
-
 - stack (minimize db access) -> horizontal scale on web server
 - write traffic? write in DB? reasonable db can handle this traffic?
 
