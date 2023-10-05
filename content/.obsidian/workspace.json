@@ -4,89 +4,23 @@
     "type": "split",
     "children": [
       {
-        "id": "35e2481d295cc149",
+        "id": "bef73dbc4acf9b02",
         "type": "tabs",
         "children": [
           {
-            "id": "d520e31fe095d966",
+            "id": "107517d43be92b23",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "private/bentoml/intern.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "3b5aad73b232fce6",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/Cinematography.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "1431041507d25640",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/university/capstone-5b03/Criteria.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "5e80245682f29b4e",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/university/capstone-5b03/Possible projects.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "23af3988ecc65ebc",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/university/hci-4hc3/index.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "7727561028eaffd4",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/projects.md",
+                "file": "dump/university/scicomp-4x03/pham-anh-400232791.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -152,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/capstone-5b03/Possible projects.md",
+                "file": "dump/university/scicomp-4x03/pham-anh-400232791.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -169,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/capstone-5b03/Possible projects.md",
+                "file": "dump/university/scicomp-4x03/pham-anh-400232791.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -192,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/capstone-5b03/Possible projects.md"
+                "file": "dump/university/scicomp-4x03/pham-anh-400232791.md"
               }
             }
           },
@@ -220,7 +154,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/capstone-5b03/Possible projects.md"
+                "file": "dump/university/scicomp-4x03/pham-anh-400232791.md"
               }
             }
           }
@@ -243,45 +177,45 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "5e80245682f29b4e",
+  "active": "59fd19f001b80287",
   "lastOpenFiles": [
-    "dump/university/capstone-5b03/Project charter.md",
-    "dump/university/capstone-5b03/Criteria.md",
-    "dump/university/capstone-5b03/index.md",
-    "dump/university/capstone-5b03/Possible projects.md",
-    "private/bentoml/intern.md",
+    "dump/university/scicomp-4x03/index.md",
+    "dump/university/scicomp-4x03/pham-anh-400232791.md",
+    "dump/university/scicomp-4x03/derivative-approx.svg",
+    "dump/university/scicomp-4x03/sin_approx.m",
+    "dump/university/scicomp-4x03/derivative_approx.m",
+    "dump/university/scicomp-4x03/check_exp.m",
+    "dump/projects.md",
+    "dump/Planimetric composition.md",
+    "dump/university/hci-4hc3/index.md",
+    "dump/university/philo-1aa3/index.md",
+    "dump/university/scicomp-4x03/__pycache__/approx_arccot.cpython-311.pyc",
+    "dump/university/scicomp-4x03/__pycache__",
+    "dump/university/scicomp-4x03/approx_arccot.py",
     "dump/Cinematography.md",
+    "dump/university/scicomp-4x03",
+    "private/bentoml/intern.md",
+    "dump/university/capstone-5b03/Criteria.md",
+    "dump/university/capstone-5b03/Possible projects.md",
+    "dump/university/capstone-5b03/Project charter.md",
+    "dump/university/capstone-5b03/index.md",
     "_index.md",
     "dump/Civilisation and its Discontents.md",
-    "dump/projects.md",
     "dump/university/concurrent-design-3bb4/Sequential programming.md",
     "dump/university/philo-1aa3/tut/Assignments Notes.md",
     "private/Term of Reference.md",
     "dump/Lighting.md",
-    "dump/university/hci-4hc3/index.md",
     "tags/bentoml.md",
     "dump/Content-addressable storage.md",
     "dump/university/concurrent-design-3bb4/index.md",
     "dump/university/concurrent-design-3bb4/README.md",
-    "dump/university/philo-1aa3/index.md",
     "dump/university/concurrent-design-3bb4/a4",
     "dump/university/philo-1aa3/Questions about Apology.md",
     "dump/university/index.md",
     "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
-    "dump/university/philo-1aa3/tut/T1.md",
-    "dump/Jax and AutoDiff goodness.md",
-    "dump/XLA.md",
-    "dump/Autograd.md",
     "dump/university/philo-1aa3/1A3~Assignment 1 (2023).pdf",
     "Untitled.canvas",
     "dump/university/philo-text-1aa3",
-    "uni/philo-text-1aa3",
-    "uni",
-    "3bb4-system-design/a3/Quicksort.class",
-    "3bb4-system-design/a3/Quicksort.java",
-    "3bb4-system-design/a3/QuickSort.java",
-    "3bb4-system-design/a3",
-    "uni/philo-text-1aa3/1A3Reader(2019).pdf",
     "3bb4-system-design/00 Concurrent System Design/pixar-processors.jpg",
     "3bb4-system-design/00 Concurrent System Design/pathfinder-concept.jpg"
   ]

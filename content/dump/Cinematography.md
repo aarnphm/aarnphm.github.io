@@ -15,3 +15,6 @@ Equipment:
 	- larger sensor pixel area
 
 > [[dump/Lighting|Lightning]] is key
+
+[[Planimetric composition]]
+- Wes Anderson

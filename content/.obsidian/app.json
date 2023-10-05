@@ -6,9 +6,10 @@
   "vimMode": true,
   "promptDelete": false,
   "pdfExportSettings": {
-    "pageSize": "Letter",
+    "includeName": true,
+    "pageSize": "A4",
     "landscape": false,
-    "margin": "0",
+    "margin": "1",
     "downscalePercent": 100
   },
   "tabSize": 2,
@@ -16,7 +17,7 @@
   "newLinkFormat": "absolute",
   "attachmentFolderPath": "./",
   "showLineNumber": false,
-  "readableLineLength": false,
+  "readableLineLength": true,
   "strictLineBreaks": false,
   "showInlineTitle": true,
   "rightToLeft": false
