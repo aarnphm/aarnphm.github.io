@@ -1,8 +1,8 @@
 ---
-id: Socrates' Apology Brainstorm
+id: Symposium
 tags:
   - university
-title: Socrates' Apology Brainstorm
+title: Symposium
 ---
 ### Q1.
 

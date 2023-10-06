@@ -11,9 +11,19 @@
             "id": "107517d43be92b23",
             "type": "leaf",
             "state": {
+              "type": "pdf",
+              "state": {
+                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
+              }
+            }
+          },
+          {
+            "id": "b14e968aacdfb257",
+            "type": "leaf",
+            "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/scicomp-4x03/pham-anh-400232791.md",
+                "file": "dump/university/philo-1aa3/Plato.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -70,8 +80,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 380.50390243530273,
-    "collapsed": true
+    "width": 380.50390243530273
   },
   "right": {
     "id": "5221182814b155cf",
@@ -87,7 +96,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/scicomp-4x03/pham-anh-400232791.md",
+                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +113,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/scicomp-4x03/pham-anh-400232791.md",
+                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -127,7 +136,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/scicomp-4x03/pham-anh-400232791.md"
+                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
               }
             }
           },
@@ -155,7 +164,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/scicomp-4x03/pham-anh-400232791.md"
+                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
               }
             }
           }
@@ -180,8 +189,15 @@
   },
   "active": "107517d43be92b23",
   "lastOpenFiles": [
-    "dump/university/scicomp-4x03/index.md",
+    "dump/university/philo-1aa3/tut/Republic.md",
+    "dump/university/philo-1aa3/tut/IMG_0308.jpg",
+    "dump/university/philo-1aa3/tut/IMG_0308.heic",
+    "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
+    "dump/university/philo-1aa3/tut/Symposium.md",
+    "dump/university/philo-1aa3/Plato.md",
+    "dump/university/philo-1aa3/Questions about Apology.md",
     "dump/university/scicomp-4x03/pham-anh-400232791.md",
+    "dump/university/scicomp-4x03/index.md",
     "dump/university/scicomp-4x03/derivative-approx.svg",
     "dump/university/scicomp-4x03/sin_approx.m",
     "dump/university/scicomp-4x03/derivative_approx.m",
@@ -203,20 +219,14 @@
     "_index.md",
     "dump/Civilisation and its Discontents.md",
     "dump/university/concurrent-design-3bb4/Sequential programming.md",
-    "dump/university/philo-1aa3/tut/Assignments Notes.md",
     "private/Term of Reference.md",
     "dump/Lighting.md",
     "tags/bentoml.md",
     "dump/Content-addressable storage.md",
     "dump/university/concurrent-design-3bb4/index.md",
-    "dump/university/concurrent-design-3bb4/README.md",
     "dump/university/concurrent-design-3bb4/a4",
-    "dump/university/philo-1aa3/Questions about Apology.md",
-    "dump/university/index.md",
-    "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
     "dump/university/philo-1aa3/1A3~Assignment 1 (2023).pdf",
     "Untitled.canvas",
-    "dump/university/philo-text-1aa3",
     "3bb4-system-design/00 Concurrent System Design/pixar-processors.jpg",
     "3bb4-system-design/00 Concurrent System Design/pathfinder-concept.jpg"
   ]
