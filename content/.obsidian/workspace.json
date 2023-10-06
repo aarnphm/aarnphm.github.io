@@ -23,14 +23,15 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/philo-1aa3/Plato.md",
+                "file": "dump/university/philo-1aa3/tut/Republic.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -96,7 +97,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf",
+                "file": "dump/university/philo-1aa3/tut/Republic.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -113,7 +114,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf",
+                "file": "dump/university/philo-1aa3/tut/Republic.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -136,7 +137,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
+                "file": "dump/university/philo-1aa3/tut/Republic.md"
               }
             }
           },
@@ -164,7 +165,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
+                "file": "dump/university/philo-1aa3/tut/Republic.md"
               }
             }
           }
@@ -187,14 +188,15 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "107517d43be92b23",
+  "active": "59fd19f001b80287",
   "lastOpenFiles": [
+    "dump/university/philo-1aa3/Plato.md",
+    "dump/university/philo-1aa3/1A3Reader(2019).pdf",
     "dump/university/philo-1aa3/tut/Republic.md",
     "dump/university/philo-1aa3/tut/IMG_0308.jpg",
     "dump/university/philo-1aa3/tut/IMG_0308.heic",
     "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
     "dump/university/philo-1aa3/tut/Symposium.md",
-    "dump/university/philo-1aa3/Plato.md",
     "dump/university/philo-1aa3/Questions about Apology.md",
     "dump/university/scicomp-4x03/pham-anh-400232791.md",
     "dump/university/scicomp-4x03/index.md",
@@ -225,7 +227,6 @@
     "dump/Content-addressable storage.md",
     "dump/university/concurrent-design-3bb4/index.md",
     "dump/university/concurrent-design-3bb4/a4",
-    "dump/university/philo-1aa3/1A3~Assignment 1 (2023).pdf",
     "Untitled.canvas",
     "3bb4-system-design/00 Concurrent System Design/pixar-processors.jpg",
     "3bb4-system-design/00 Concurrent System Design/pathfinder-concept.jpg"

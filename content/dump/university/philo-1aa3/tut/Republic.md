@@ -2,7 +2,6 @@
 id: Republic
 tags:
   - university
-  - philosophy
 title: Allegory of the cave, Republic
 ---
 Allegory of the cave:
