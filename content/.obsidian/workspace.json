@@ -70,7 +70,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 380.50390243530273
+    "width": 380.50390243530273,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -177,7 +178,7 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "107517d43be92b23",
   "lastOpenFiles": [
     "dump/university/scicomp-4x03/index.md",
     "dump/university/scicomp-4x03/pham-anh-400232791.md",
