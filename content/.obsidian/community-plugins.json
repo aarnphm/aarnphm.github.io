@@ -2,5 +2,8 @@
   "obsidian-style-settings",
   "table-editor-obsidian",
   "obsidian-vimrc-support",
-  "obsidian-minimal-settings"
+  "obsidian-minimal-settings",
+  "cm-editor-syntax-highlight-obsidian",
+  "obsidian-annotator",
+  "dataview"
 ]

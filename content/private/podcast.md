@@ -6,4 +6,6 @@ TODO:
 	- Combine with ChatGPT
 
 
+A podcast in a bath tub?
 
+Shower thoughts with Aaron.
