@@ -14,7 +14,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md",
+                "file": "posts/Questions about Apology.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -105,7 +105,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md",
+                "file": "posts/Questions about Apology.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -122,7 +122,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md",
+                "file": "posts/Questions about Apology.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -145,7 +145,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md"
+                "file": "posts/Questions about Apology.md"
               }
             }
           },
@@ -173,7 +173,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/philo-1aa3/Questions about Apology.md"
+                "file": "posts/Questions about Apology.md"
               }
             }
           }
@@ -198,8 +198,10 @@
   },
   "active": "b14e968aacdfb257",
   "lastOpenFiles": [
+    "dump/university/philo-1aa3/tut/Symposium.md",
+    "posts/Questions about Apology.md",
+    "posts/BentoML and Triton Inference Server.md",
     "dump/university/philo-1aa3/Plato PHILOS 1A03.pdf",
-    "dump/university/philo-1aa3/Questions about Apology.md",
     "dump/university/philo-1aa3/1A3Reader(2019).pdf",
     "tags/university.md",
     "tags/technical.md",
@@ -222,7 +224,6 @@
     "private/Company interests/robust-intelligence.md",
     "private/Company interests",
     "private/2023 - Letter to self.md",
-    "posts/BentoML and Triton Inference Server.md",
     "posts",
     "dump/writing.md",
     "dump/university/scicomp-4x03/sin_approx.m",
@@ -233,7 +234,6 @@
     "dump/university/scicomp-4x03/check_exp.m",
     "dump/university/scicomp-4x03/approx_arccot.py",
     "dump/university/philo-1aa3/tut/T1.md",
-    "dump/university/philo-1aa3/tut/Symposium.md",
     "dump/university/philo-1aa3/tut/IMG_0308.jpg",
     "dump/university/concurrent-design-3bb4/00 Concurrent System Design/pixar-processors.jpg",
     "dump/university/concurrent-design-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
