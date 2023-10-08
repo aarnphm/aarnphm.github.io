@@ -88,7 +88,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 380.50390243530273
+    "width": 380.50390243530273,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -197,6 +198,9 @@
   },
   "active": "b14e968aacdfb257",
   "lastOpenFiles": [
+    "dump/university/philo-1aa3/Plato PHILOS 1A03.pdf",
+    "dump/university/philo-1aa3/Questions about Apology.md",
+    "dump/university/philo-1aa3/1A3Reader(2019).pdf",
     "tags/university.md",
     "tags/technical.md",
     "tags/seed.md",
@@ -230,11 +234,7 @@
     "dump/university/scicomp-4x03/approx_arccot.py",
     "dump/university/philo-1aa3/tut/T1.md",
     "dump/university/philo-1aa3/tut/Symposium.md",
-    "dump/university/philo-1aa3/tut/Republic.md",
-    "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
     "dump/university/philo-1aa3/tut/IMG_0308.jpg",
-    "dump/university/philo-1aa3/tut",
-    "dump/university/philo-1aa3/1A3~Assignment 1 (2023).pdf",
     "dump/university/concurrent-design-3bb4/00 Concurrent System Design/pixar-processors.jpg",
     "dump/university/concurrent-design-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
     "blob.png",
