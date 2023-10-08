@@ -6,23 +6,10 @@
       {
         "id": "bef73dbc4acf9b02",
         "type": "tabs",
-        "dimension": 45.41432019308125,
+        "dimension": 45.414320193081245,
         "children": [
           {
             "id": "b14e968aacdfb257",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/university/philo-1aa3/tut/Symposium.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "9c06417c6dce8a56",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -34,21 +21,20 @@
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       },
       {
         "id": "d44f54ebcc448507",
         "type": "tabs",
-        "dimension": 54.58567980691875,
+        "dimension": 54.585679806918755,
         "children": [
           {
-            "id": "107517d43be92b23",
+            "id": "9c06417c6dce8a56",
             "type": "leaf",
             "state": {
               "type": "pdf",
               "state": {
-                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
+                "file": "dump/university/philo-1aa3/Plato PHILOS 1A03.pdf"
               }
             }
           }
@@ -102,8 +88,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 380.50390243530273,
-    "collapsed": true
+    "width": 380.50390243530273
   },
   "right": {
     "id": "5221182814b155cf",
@@ -210,46 +195,49 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "9c06417c6dce8a56",
+  "active": "b14e968aacdfb257",
   "lastOpenFiles": [
-    "dump/university/philo-1aa3/1A3Reader(2019).pdf",
-    "dump/university/philo-1aa3/Questions about Apology.md",
-    "dump/university/philo-1aa3/tut/Symposium.md",
+    "tags/university.md",
+    "tags/technical.md",
+    "tags/seed.md",
+    "tags/personal.md",
+    "tags/machinelearning.md",
+    "tags/evergreen.md",
+    "tags/bentoml.md",
+    "tags",
     "private/podcast.md",
-    "dump/university/philo-1aa3/Plato.md",
-    "dump/university/philo-1aa3/tut/Republic.md",
-    "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
-    "blob.png",
-    "dump/university/philo-1aa3/tut/IMG_0308.jpg",
-    "dump/university/philo-1aa3/tut/IMG_0308.heic",
+    "private/bentoml/joshua.md",
+    "private/bentoml/intern.md",
+    "private/bentoml/Runner interface.md",
+    "private/bentoml/OpenLLM design draft.md",
+    "private/bentoml/New Runner API.md",
+    "private/bentoml",
+    "private/Term of Reference.md",
+    "private/Meetup.md",
+    "private/Hack The North.md",
+    "private/Company interests/robust-intelligence.md",
+    "private/Company interests",
+    "private/2023 - Letter to self.md",
+    "posts/BentoML and Triton Inference Server.md",
+    "posts",
+    "dump/writing.md",
+    "dump/university/scicomp-4x03/sin_approx.m",
     "dump/university/scicomp-4x03/pham-anh-400232791.md",
     "dump/university/scicomp-4x03/index.md",
-    "dump/university/scicomp-4x03/derivative-approx.svg",
-    "dump/university/scicomp-4x03/sin_approx.m",
     "dump/university/scicomp-4x03/derivative_approx.m",
+    "dump/university/scicomp-4x03/derivative-approx.svg",
     "dump/university/scicomp-4x03/check_exp.m",
-    "dump/projects.md",
-    "dump/Planimetric composition.md",
-    "dump/university/hci-4hc3/index.md",
-    "dump/university/philo-1aa3/index.md",
-    "dump/university/scicomp-4x03/__pycache__/approx_arccot.cpython-311.pyc",
-    "dump/university/scicomp-4x03/__pycache__",
     "dump/university/scicomp-4x03/approx_arccot.py",
-    "dump/Cinematography.md",
-    "dump/university/scicomp-4x03",
-    "private/bentoml/intern.md",
-    "dump/university/capstone-5b03/Criteria.md",
-    "dump/university/capstone-5b03/Possible projects.md",
-    "dump/university/capstone-5b03/Project charter.md",
-    "dump/university/capstone-5b03/index.md",
-    "_index.md",
-    "dump/Civilisation and its Discontents.md",
-    "dump/university/concurrent-design-3bb4/Sequential programming.md",
-    "private/Term of Reference.md",
-    "dump/Lighting.md",
-    "tags/bentoml.md",
-    "dump/Content-addressable storage.md",
-    "dump/university/concurrent-design-3bb4/a4",
+    "dump/university/philo-1aa3/tut/T1.md",
+    "dump/university/philo-1aa3/tut/Symposium.md",
+    "dump/university/philo-1aa3/tut/Republic.md",
+    "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
+    "dump/university/philo-1aa3/tut/IMG_0308.jpg",
+    "dump/university/philo-1aa3/tut",
+    "dump/university/philo-1aa3/1A3~Assignment 1 (2023).pdf",
+    "dump/university/concurrent-design-3bb4/00 Concurrent System Design/pixar-processors.jpg",
+    "dump/university/concurrent-design-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
+    "blob.png",
     "Untitled.canvas",
     "3bb4-system-design/00 Concurrent System Design/pixar-processors.jpg",
     "3bb4-system-design/00 Concurrent System Design/pathfinder-concept.jpg"

@@ -16,6 +16,8 @@ E. definition of piety and S's objection for it. --> discussion in Apology about
 
 ### Q2.
 
+See [[dump/university/philo-1aa3/Questions about Apology|Questions about Apology]]
+
 - Intro: Th. : Whether agree or disagree with Socrates
 	* Why Socrates believe justice cannot be fought for in public life
 	* Why S. is right/wrong
