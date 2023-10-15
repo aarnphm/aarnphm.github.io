@@ -1,10 +1,9 @@
 ---
-id: "BentoML and Triton Inference Server"
+id: BentoML and Triton Inference Server
 tags:
-  - "technical"
-  - "machinelearning"
-  - "bentoml"
-title: "BentoML. Triton Inference Server. Choose 2"
+  - technical
+  - ml
+title: BentoML. Triton Inference Server. Choose 2
 ---
 
 We are seeing a surge in recent months of developments and works on large

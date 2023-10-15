@@ -17,7 +17,7 @@ A list of books I have finished reading, wanting to read and are living in my [a
 - **The Critique of Pure Reason** by Immanuel Kant
 - **Beyond The Pleasure Principle** by Sigmund Freud
 - **The Ego and the Id** by Sigmund Freud
-
+- A Treatise of Human Nature by David Hume
 ### non-fiction
 
 - **Deep Work** by Cal Newport

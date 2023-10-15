@@ -1,9 +1,9 @@
 ---
-id: "XLA"
+id: XLA
 tags:
-  - "seed"
-  - "machinelearning"
-title: "XLA"
+  - seed
+  - ml
+title: XLA
 ---
 - Accelerated Algebra
 - Developed from Tensorflow

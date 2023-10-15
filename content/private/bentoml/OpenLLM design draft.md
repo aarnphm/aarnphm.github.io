@@ -1,8 +1,8 @@
 ---
 id: OpenLLM
 tags:
-  - machinelearning
-  - bentoml
+  - ml
+  - openllm
 description: "OpenLLM: Serve, fine-tune LLMs in production"
 ---
 

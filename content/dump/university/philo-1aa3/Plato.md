@@ -3,7 +3,7 @@ id: Plato
 tags:
   - university
   - philosophy
-title: Plato v. Euthyphro
+title: Plato
 ---
 See also [[Socrates]]
 # Apology
@@ -132,9 +132,6 @@ What you think to harm me harms you a lot more
 
 He knows there is a life after death ?
 
----
-
-21st Sept
 
 > Divine mission: encourage Athenians in self-reflection for good moral life
 

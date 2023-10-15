@@ -19,8 +19,6 @@ Confusion?
 
 flatbuffer and arrow
 
-#Nov-1
-
 Dictionary format?
 
 - inputs/outputs is heterogenous?
@@ -131,12 +129,8 @@ Supervisor -> runner
 flatbuffer -> gRPC transform payload
 
 ---
-#Nov-16
-
 Complex data types:
 - nested?
-
-#Nov-21
 
 Frontend
 - TF, Keras, PyTorch
@@ -161,8 +155,6 @@ support mixed data types
 
 
 ---
-#dec-1
-
 Interface
 
 predict v2 support with grpc + flatbuffer

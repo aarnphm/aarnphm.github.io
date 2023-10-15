@@ -4,41 +4,63 @@
     "type": "split",
     "children": [
       {
-        "id": "bef73dbc4acf9b02",
+        "id": "618f3182900ccbc8",
         "type": "tabs",
-        "dimension": 45.414320193081245,
         "children": [
           {
-            "id": "b14e968aacdfb257",
+            "id": "2a25f5dfc14cf5fe",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/Questions about Apology.md",
+                "file": "dump/writing.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "8daa203aa207675e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/Unify LLM interface.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "ef65273ff6d88c2a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "books.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "7d5a991e2e7017bf",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/play.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
               }
             }
           }
-        ]
-      },
-      {
-        "id": "d44f54ebcc448507",
-        "type": "tabs",
-        "dimension": 54.585679806918755,
-        "children": [
-          {
-            "id": "9c06417c6dce8a56",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "dump/university/philo-1aa3/Plato PHILOS 1A03.pdf"
-              }
-            }
-          }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -67,7 +89,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "Sequen",
+                "query": "tag:#dec-1  ",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -88,8 +110,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 380.50390243530273,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "5221182814b155cf",
@@ -105,7 +126,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "posts/Questions about Apology.md",
+                "file": "dump/Unify LLM interface.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -122,7 +143,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "posts/Questions about Apology.md",
+                "file": "dump/Unify LLM interface.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -145,7 +166,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "posts/Questions about Apology.md"
+                "file": "dump/Unify LLM interface.md"
               }
             }
           },
@@ -173,7 +194,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "posts/Questions about Apology.md"
+                "file": "dump/Unify LLM interface.md"
               }
             }
           }
@@ -196,48 +217,50 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "b14e968aacdfb257",
+  "active": "8daa203aa207675e",
   "lastOpenFiles": [
-    "dump/university/philo-1aa3/tut/Symposium.md",
-    "posts/Questions about Apology.md",
+    "dump/play.md",
+    "books.md",
+    "dump/Unify LLM interface.md",
+    "private/bentoml/Runner interface.md",
+    "tags/bentoml.md",
+    "tags/ml.md",
+    "dump/XLA.md",
+    "private/bentoml/OpenLLM design draft.md",
+    "dump/Nagle and TCP Cork.md",
+    "dump/Jax and AutoDiff goodness.md",
     "posts/BentoML and Triton Inference Server.md",
+    "dump/Autograd.md",
+    "dump/writing.md",
+    "posts/Questions about Apology.md",
+    "dump/university/philo-1aa3/Plato.md",
     "dump/university/philo-1aa3/Plato PHILOS 1A03.pdf",
+    "lost.svg",
+    "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
+    "dump/university/philo-1aa3/Socrates.md",
+    "blob.png",
+    "dump/university/philo-1aa3/tut/Symposium.md",
     "dump/university/philo-1aa3/1A3Reader(2019).pdf",
     "tags/university.md",
     "tags/technical.md",
     "tags/seed.md",
     "tags/personal.md",
-    "tags/machinelearning.md",
     "tags/evergreen.md",
-    "tags/bentoml.md",
     "tags",
     "private/podcast.md",
     "private/bentoml/joshua.md",
     "private/bentoml/intern.md",
-    "private/bentoml/Runner interface.md",
-    "private/bentoml/OpenLLM design draft.md",
-    "private/bentoml/New Runner API.md",
     "private/bentoml",
-    "private/Term of Reference.md",
-    "private/Meetup.md",
-    "private/Hack The North.md",
-    "private/Company interests/robust-intelligence.md",
     "private/Company interests",
-    "private/2023 - Letter to self.md",
     "posts",
-    "dump/writing.md",
     "dump/university/scicomp-4x03/sin_approx.m",
-    "dump/university/scicomp-4x03/pham-anh-400232791.md",
-    "dump/university/scicomp-4x03/index.md",
     "dump/university/scicomp-4x03/derivative_approx.m",
     "dump/university/scicomp-4x03/derivative-approx.svg",
     "dump/university/scicomp-4x03/check_exp.m",
     "dump/university/scicomp-4x03/approx_arccot.py",
-    "dump/university/philo-1aa3/tut/T1.md",
     "dump/university/philo-1aa3/tut/IMG_0308.jpg",
     "dump/university/concurrent-design-3bb4/00 Concurrent System Design/pixar-processors.jpg",
     "dump/university/concurrent-design-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
-    "blob.png",
     "Untitled.canvas",
     "3bb4-system-design/00 Concurrent System Design/pixar-processors.jpg",
     "3bb4-system-design/00 Concurrent System Design/pathfinder-concept.jpg"

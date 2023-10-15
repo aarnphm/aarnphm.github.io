@@ -1,9 +1,9 @@
 ---
-id: "Autograd"
+id: Autograd
 tags:
-  - "seed"
-  - "machinelearning"
-title: "Autograd"
+  - seed
+  - ml
+title: Autograd
 ---
 
 Autodiff and [[XLA]]
