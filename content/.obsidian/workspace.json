@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/writing.md",
+                "file": "dump/university/philo-1aa3/Aristotle.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -21,38 +21,22 @@
             }
           },
           {
-            "id": "8daa203aa207675e",
+            "id": "0fe3baf1aed8622b",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "dump/Unify LLM interface.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
+                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
               }
             }
           },
           {
-            "id": "ef65273ff6d88c2a",
+            "id": "dc4198a80bb4055a",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "books.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "7d5a991e2e7017bf",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/play.md",
+                "file": "dump/university/philo-1aa3/tut/Epicurus.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -60,7 +44,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -110,7 +94,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 285.5,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -126,7 +111,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/Unify LLM interface.md",
+                "file": "dump/university/philo-1aa3/tut/Epicurus.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -143,7 +128,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/Unify LLM interface.md",
+                "file": "dump/university/philo-1aa3/tut/Epicurus.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -166,7 +151,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/Unify LLM interface.md"
+                "file": "dump/university/philo-1aa3/tut/Epicurus.md"
               }
             }
           },
@@ -194,7 +179,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/Unify LLM interface.md"
+                "file": "dump/university/philo-1aa3/tut/Epicurus.md"
               }
             }
           }
@@ -217,52 +202,54 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "8daa203aa207675e",
+  "active": "dc4198a80bb4055a",
   "lastOpenFiles": [
-    "dump/play.md",
-    "books.md",
-    "dump/Unify LLM interface.md",
-    "private/bentoml/Runner interface.md",
-    "tags/bentoml.md",
-    "tags/ml.md",
-    "dump/XLA.md",
-    "private/bentoml/OpenLLM design draft.md",
-    "dump/Nagle and TCP Cork.md",
-    "dump/Jax and AutoDiff goodness.md",
-    "posts/BentoML and Triton Inference Server.md",
-    "dump/Autograd.md",
-    "dump/writing.md",
+    "dump/university/compsci-4x03/midterm-sheets.md",
     "posts/Questions about Apology.md",
-    "dump/university/philo-1aa3/Plato.md",
+    "dump/university/philo-1aa3/tut/Epicurus.md",
     "dump/university/philo-1aa3/Plato PHILOS 1A03.pdf",
-    "lost.svg",
-    "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
+    "dump/university/compsci-4x03/A2.md",
+    "dump/music theory.md",
+    "dump/university/compsci-4x03/a2-fig6.png",
+    "dump/university/compsci-4x03/a2-fig5.png",
+    "dump/university/compsci-4x03/a2-fig3.png",
+    "dump/university/compsci-4x03/a2-fig4.png",
+    "dump/university/compsci-4x03/a2-fig2.png",
+    "dump/university/compsci-4x03/a2-fig1.png",
+    "dump/university/compsci-4x03/interp_problem.asv",
+    "dump/university/compsci-4x03/interp_problem.m",
+    "dump/university/compsci-4x03/pham-anh-400232791.md",
+    "dump/university/philo-1aa3/Aristotle.md",
+    "dump/university/compsci-4x03/hilb_problem.asv",
+    "dump/university/philo-1aa3/tut/Metaphysics.md",
+    "dump/university/compsci-4x03/hilb_problem.m",
+    "dump/university/compsci-4x03/combined-lecture.pdf",
+    "dump/university/concurrent-design-3bb4/a6/RebeccaReaderWriter.java",
+    "dump/university/concurrent-design-3bb4/a6/rebecca_fair_rw.py",
+    "dump/university/concurrent-design-3bb4/a6/ReaderWriter.class",
+    "dump/university/concurrent-design-3bb4/a6/ReaderWriter$2.class",
+    "dump/university/philo-1aa3/tut/T1.md",
+    "dump/university/compsci-4x03/index.md",
+    "dump/play.md",
+    "dump/openllm.LLM architecture.png",
+    "dump/Pasted image 20231023161933 1.png",
+    "dump/Unify LLM interface.md",
+    "dump/Pasted image 20231023161555.png",
+    "dump/university/philo-1aa3/Epicurus.md",
     "dump/university/philo-1aa3/Socrates.md",
-    "blob.png",
+    "dump/university/philo-1aa3/Presocratics.md",
+    "dump/university/philo-1aa3/Plato.md",
+    "dump/university/philo-1aa3/Nietzsche.md",
+    "dump/university/philo-1aa3/index.md",
+    "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
+    "dump/university/philo-1aa3/tut/Republic.md",
     "dump/university/philo-1aa3/tut/Symposium.md",
-    "dump/university/philo-1aa3/1A3Reader(2019).pdf",
-    "tags/university.md",
-    "tags/technical.md",
-    "tags/seed.md",
-    "tags/personal.md",
-    "tags/evergreen.md",
-    "tags",
-    "private/podcast.md",
-    "private/bentoml/joshua.md",
-    "private/bentoml/intern.md",
-    "private/bentoml",
-    "private/Company interests",
-    "posts",
-    "dump/university/scicomp-4x03/sin_approx.m",
-    "dump/university/scicomp-4x03/derivative_approx.m",
-    "dump/university/scicomp-4x03/derivative-approx.svg",
-    "dump/university/scicomp-4x03/check_exp.m",
-    "dump/university/scicomp-4x03/approx_arccot.py",
-    "dump/university/philo-1aa3/tut/IMG_0308.jpg",
-    "dump/university/concurrent-design-3bb4/00 Concurrent System Design/pixar-processors.jpg",
-    "dump/university/concurrent-design-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
-    "Untitled.canvas",
-    "3bb4-system-design/00 Concurrent System Design/pixar-processors.jpg",
-    "3bb4-system-design/00 Concurrent System Design/pathfinder-concept.jpg"
+    "dump/Freud.md",
+    "dump/writing.md",
+    "dump/XLA.md",
+    "books.md",
+    "dump/test.md",
+    "lost.svg",
+    "Untitled.canvas"
   ]
 }

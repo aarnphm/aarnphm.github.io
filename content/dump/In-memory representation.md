@@ -1,8 +1,9 @@
 ---
-title: "In memory representation"
+id: In-memory representation
 tags:
   - technical
   - seed
+title: In memory representation
 ---
 
 ### Flatbuffer

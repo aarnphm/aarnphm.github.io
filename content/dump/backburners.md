@@ -1,10 +1,14 @@
 ---
-title: "Backburners"
-date: 2022-08-21T21:52:52-07:00
+id: backburners
 tags:
   - technical
   - evergreen
+title: Backburners
 ---
+
+- Markdown latex renderer for Neovim
+
+  - Probably something similar to Obisidian's KateX support
 
 - Terminal-enmulator in Rust
 

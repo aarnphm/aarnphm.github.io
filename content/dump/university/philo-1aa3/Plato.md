@@ -3,6 +3,7 @@ id: Plato
 tags:
   - university
   - philosophy
+  - philos1aa3
 title: Plato
 ---
 See also [[Socrates]]
@@ -250,7 +251,7 @@ _Agathon, a poet of tragedies, is the host_
 
 Alkibiades, of Scocrates:
 
-> This utterly unnatural, this truly extraordinary man ... this hopelessly arrogant, this unbelievably insolent man ... [of] amazing arrogance and pride ... he unique 
+> This utterly unnatural, this truly extraordinary man ... this hopelessly arrogant, this unbelievably insolent man ... [of] amazing arrogance and pride ... he unique
 
 - Seduction: is a game wrt Socrates
 
@@ -322,12 +323,12 @@ Opinion: doxa
 Knowledge: episteme
 Understanding: nous
 
-• Belief is liable to error, knowledge is not.  
-• Belief can be changed by persuasion, knowledge cannot be.  
-• Belief does not bring understanding, knowledge does.  
-• True belief, right opinion, is still essentially belief or opinion,  
-and cannot be knowledge since its truth is accidental.  
-• Opinion is shameful because it is not a passive thing that  
+• Belief is liable to error, knowledge is not.
+• Belief can be changed by persuasion, knowledge cannot be.
+• Belief does not bring understanding, knowledge does.
+• True belief, right opinion, is still essentially belief or opinion,
+and cannot be knowledge since its truth is accidental.
+• Opinion is shameful because it is not a passive thing that
 innocently occurs to a person.
 
 ### Sun: Visible Things : Sight

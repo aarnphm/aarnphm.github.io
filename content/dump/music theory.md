@@ -1,8 +1,9 @@
 ---
-title: Music theory
+id: music theory
 tags:
   - evergreen
   - seed
+title: Music theory
 ---
 
 Half steps -> between E-F, B-C

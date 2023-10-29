@@ -1,8 +1,9 @@
 ---
-title: Nagle's algorithm and TCP_CORK
+id: Nagle and TCP Cork
 tags:
   - seed
   - networking
+title: Nagle's algorithm and TCP_CORK
 ---
 
 ### Nagle's algorithm and Delay ACK

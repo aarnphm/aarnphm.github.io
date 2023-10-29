@@ -17,7 +17,7 @@
   "newLinkFormat": "absolute",
   "attachmentFolderPath": "./",
   "showLineNumber": false,
-  "readableLineLength": false,
+  "readableLineLength": true,
   "strictLineBreaks": false,
   "showInlineTitle": true,
   "rightToLeft": false

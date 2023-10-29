@@ -3,6 +3,7 @@ id: Socrates
 tags:
   - university
   - philosophy
+  - philos1aa3
 title: Socrates
 ---
 

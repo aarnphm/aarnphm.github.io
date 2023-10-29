@@ -1,5 +1,5 @@
 ---
-id: University
+id: index
 tags:
   - university
 title: University

@@ -3,6 +3,7 @@ id: Presocratics
 tags:
   - university
   - philosophy
+  - philos1aa3
 title: Presocratics philosophers
 ---
 

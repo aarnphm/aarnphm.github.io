@@ -1,9 +1,9 @@
 ---
-title: Projects
-date: 2022-08-21T21:50:54-07:00
+id: projects
 tags:
+  - seed
   - technical
-  - evergreen
+title: Projects
 ---
 
 The list below are notable projects I'm currently maintaining/finished. A more incomplete list of ideas that I will do sometime can be found in [[dump/backburners]]

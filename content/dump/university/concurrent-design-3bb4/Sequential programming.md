@@ -1,10 +1,11 @@
 ---
-title: "Sequential programming"
+id: Sequential programming
 tags:
   - university
   - concurrency
-id: "Sequential programming"
+title: Sequential programming
 ---
+
 See also [[dump/university/concurrent-design-3bb4/README|3BB4 - Concurrent System Design]]
 
 ```mermaid

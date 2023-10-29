@@ -1,7 +1,7 @@
 ---
+id: System Image and Paradox of Technology
 tags:
   - university
-id: System Image
 title: System Images
 ---
 

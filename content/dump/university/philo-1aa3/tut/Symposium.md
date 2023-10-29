@@ -2,6 +2,7 @@
 id: Symposium
 tags:
   - university
+  - philos1aa3
 title: Symposium
 ---
 ### Q1.

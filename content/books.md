@@ -1,7 +1,8 @@
 ---
-title: "Building antilibrary"
-date: 2022-08-21T23:41:51-07:00
-id: "books"
+id: books
+tags:
+  - seed
+title: Building antilibrary
 ---
 
 A (mostly) up-to-date book lists that I read, wanting, amd reading, or finished reading.
@@ -14,10 +15,10 @@ A list of books I have finished reading, wanting to read and are living in my [a
 
 ### philosophy
 
-- **The Critique of Pure Reason** by Immanuel Kant
 - **Beyond The Pleasure Principle** by Sigmund Freud
-- **The Ego and the Id** by Sigmund Freud
-- A Treatise of Human Nature by David Hume
+- **A Treatise of Human Nature** by David Hume
+- **The Evolution of Modern Metaphysics: Making Sense of Things** by A. W. Moore
+- **Being and Some Philosophers** by Etienne Gilson
 ### non-fiction
 
 - **Deep Work** by Cal Newport
@@ -37,7 +38,8 @@ A list of books I have finished reading, wanting to read and are living in my [a
 
 ## current.
 
-- **Pretentiousness: Why it Matters** by Dan Fox
+- **The Ego and the Id** by Sigmund Freud
+- **The Critique of Pure Reason** by Immanuel Kant
 - **Crime and Punishment** by Fyodor Dostoevsky
 - **The Metaphysics of Morals** by Immanuel Kant
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
@@ -54,6 +56,7 @@ A list of books I have finished reading, wanting to read and are living in my [a
 - **The Subtle Art of Not Giving a Fuck** by Mark Manson
 - **The Midnight Library** by Matt Haig
 - **Out of Love** by Hazel Hayes
+- **Pretentiousness: Why it Matters** by Dan Fox
 
 ### 2022
 

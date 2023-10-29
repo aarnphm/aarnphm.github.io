@@ -1,8 +1,8 @@
 ---
-id: "Criteria"
+id: Criteria
 tags:
-  - "university"
-title: "Criteria"
+  - university
+title: Criteria
 ---
 
 Check-in and 3 months scope

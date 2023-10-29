@@ -1,9 +1,9 @@
 ---
-id: "psychopathology"
+id: Psychopathology of everything
 tags:
-  - "university"
-  - "hci"
-title: "Psychopathology of everything"
+  - university
+  - hci
+title: Psychopathology of everything
 ---
 
 ### The complexity of modern devices

@@ -1,10 +1,11 @@
 ---
-title: Autodiff and Jax
-date: 2022-08-21T21:47:43-07:00
+id: Jax and AutoDiff goodness
 tags:
   - seed
   - ml
+title: Autodiff and Jax
 ---
+
 ### Jax
 
 - Numpy + [[dump/Autograd|Autograd]]. Use [[dump/XLA|XLA]] to compile and run NumPy code on accelerators.

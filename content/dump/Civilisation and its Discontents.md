@@ -1,5 +1,5 @@
 ---
-id: Civilisation and its discontents
+id: Civilisation and its Discontents
 tags:
   - philosophy
   - seed

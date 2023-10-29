@@ -1,9 +1,9 @@
 ---
-title: "Concurrent System Design"
+id: index
 tags:
   - university
   - concurrency
-id: "Concurrent System Design"
+title: Concurrent System Design
 ---
 
 The following contains all contents for SFWRENG 3BB4 (Concurrent System Design) at McMaster University.

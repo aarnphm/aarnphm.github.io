@@ -2,6 +2,7 @@
 id: Tutorial 2
 tags:
   - philosophy
+  - philos1aa3
 description: Phaedo and Apology
 ---
 ## Structure

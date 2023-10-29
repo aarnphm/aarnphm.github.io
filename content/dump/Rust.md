@@ -1,8 +1,9 @@
 ---
-title: "Rust"
+id: Rust
 tags:
   - seed
   - technical
+title: Rust
 ---
 
 Ownership and Borrowing
