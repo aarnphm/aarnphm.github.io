@@ -6,15 +6,7 @@ import { pageResources, renderPage } from "../../components/renderPage"
 import { ProcessedContent, defaultProcessedContent } from "../vfile"
 import { FullPageLayout } from "../../cfg"
 import path from "path"
-import {
-  FilePath,
-  FullSlug,
-  SimpleSlug,
-  _stripSlashes,
-  joinSegments,
-  pathToRoot,
-  simplifySlug,
-} from "../../util/path"
+import { FilePath, FullSlug, SimpleSlug, _stripSlashes, joinSegments, pathToRoot, simplifySlug } from "../../util/path"
 import { defaultListPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { FolderContent } from "../../components"
 

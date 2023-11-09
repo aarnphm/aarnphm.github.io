@@ -6,8 +6,7 @@ import { FullSlug, RelativeURL, getFullSlug } from "../../util/path"
 
 const NODE_TYPE_ELEMENT = 1
 let announcer = document.createElement("route-announcer")
-const isElement = (target: EventTarget | null): target is Element =>
-  (target as Node)?.nodeType === NODE_TYPE_ELEMENT
+const isElement = (target: EventTarget | null): target is Element => (target as Node)?.nodeType === NODE_TYPE_ELEMENT
 const isLocalUrl = (href: string) => {
   try {
     const url = new URL(href)

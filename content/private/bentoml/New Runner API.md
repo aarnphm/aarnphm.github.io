@@ -1,5 +1,5 @@
-
 Previous links to [[Runner interface]]
+
 ### Runners Server
 
 ```mermaid
@@ -9,8 +9,8 @@ flowchart LR
 	B --> C[Runner Server]
 ```
 
-
 - Payload
+
 ```prolog
 Payload
 	data: arrow.RecordBatch (conversion at client)

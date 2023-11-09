@@ -5,7 +5,9 @@ tags:
   - philos1aa3
 title: Allegory of the cave, Republic
 ---
+
 Allegory of the cave:
+
 - See the shadow, but not the reflection of the real world
 - Escape the prisoner -> convince them to go out and see what the real world is
 - Talking about shadow (escape to identify real world now instead of the shadow)
@@ -23,7 +25,6 @@ Sun = knowledge, intelligible world
 shadow -> sensible world
 
 > taints these visions are unwilling to decent to human affair for the => which desire for allegory (don't want to go down to the cape)
-
 
 Fear of the unknown?
 

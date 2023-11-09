@@ -10,8 +10,8 @@ large uuid be? collision
 tradeoff? actual mapping vs. hash
 
 mapping:
-- no collision (store the actual mapping)
 
+- no collision (store the actual mapping)
 
 > Optimized for reading, (some sort of cache)
 
@@ -35,6 +35,7 @@ incremental counter?
 
 - challenging because of global sequence
 - RW Lock?
+
   - Collision?
 
 - Security concern?
@@ -60,6 +61,7 @@ Storing?
 - estimate how big is the db? partition scheme or storage?
 
   8/16 bytes of uuid space, maxlen of the size (128/256 bytes)
+
   - not scalable in instance db, not availability
   - how partition? replicate db
   - partition based on url keyspace
@@ -77,6 +79,7 @@ Bottleneck is DB
 api server -> cache -> DB
 
 Assumption:
+
 - hot url
 - stack (minimize db access) -> horizontal scale on web server
 - write traffic? write in DB? reasonable db can handle this traffic?
@@ -86,12 +89,13 @@ Cache: Eviction, LRU
 - Multi-region (handles copies)
 
 ## Follow up
+
 - expire bit.ly links
 - How to avoid collision (increase hash space)
-    - same uuid -> what happened?
+
+  - same uuid -> what happened?
 
 - Security (reverse engineer)
-
 
 ## Store the mapping, what is the db schema?
 

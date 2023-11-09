@@ -5,6 +5,7 @@ tags:
   - philos1aa3
 description: Phaedo and Apology
 ---
+
 ## Structure
 
 Problem --> Thesis --> Structure
@@ -39,7 +40,6 @@ Problem --> Thesis --> Structure
 - Won't act as what is good and knowledge -> living a life of ignorance -> not a worth living life.
 
 ## Phaedo
-
 
 - Pain and pleasure
 - How suicide is wrong, facing death = good ?

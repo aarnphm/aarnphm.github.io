@@ -6,13 +6,12 @@ tags:
 description: "OpenLLM: Serve, fine-tune LLMs in production"
 ---
 
-
-
 OpenLLM is a server for running LLM models in production. It is built on top of [BentoML](https://bentoml.com)
 
 # To install it, run `pip install open-llm-server`
 
 By default, it supports all of the open-source LLM:
+
 - Dolly -> databricks/dolly-v2-7b (figure out revision for transformers)
 - Flan-T5
 - Bloom
@@ -21,6 +20,7 @@ By default, it supports all of the open-source LLM:
 - llama.cpp + alpaca.cpp + GPT4All + Vicuna (All having the same cpp binding) (git hash)
 
 Start the server to serve the models locally:
+
 ```bash
 open-llm-server start flan-t5,llama
 
@@ -28,6 +28,7 @@ open-llm-server start flan-t5
 ```
 
 Users can also run some of the prebuilt server with any container engine with `open-llm-server run`:
+
 ```bash
 # 1
 docker pull openllm-server/llama:cpu
@@ -42,8 +43,8 @@ open-llm-server run-container bloom --target-device=cpu --container-engine=podma
 
 It will run and serve the model server.
 
-
 To interact with the server, use cURL, any HTTP Client, or `open-llm-client`:
+
 ```python
 
 import open_llm_client
@@ -61,16 +62,17 @@ client.async_chat
 ```
 
 It will returns a JSON response:
+
 ```json
 {
-    "message": "Hello, how are you? I am fine, thank you. How are you?",
-    "configuration": {
-        "prompt": "Hello, how are you?",
-        "temperature": 0.5,
-        "top_k": 3,
-        "top_p": 0.15,
-        "stop_sequence": "--"
-    }
+  "message": "Hello, how are you? I am fine, thank you. How are you?",
+  "configuration": {
+    "prompt": "Hello, how are you?",
+    "temperature": 0.5,
+    "top_k": 3,
+    "top_p": 0.15,
+    "stop_sequence": "--"
+  }
 }
 ```
 
@@ -80,7 +82,9 @@ To `/complete` a text, use:
 
 client.complete('Hello, how are you? My name is ...')
 ```
+
 The response will be:
+
 ```json
 {
     "choices": [ "Hello, how are you? My name is ...", "Hello, how are you? my name is Bento, and I'm a bento box" , "" ]
@@ -94,7 +98,7 @@ The response will be:
 }
 ```
 
-To create a text `/embed`-dings, one can do 
+To create a text `/embed`-dings, one can do
 
 - Embedding represent the meaning of text as a list of numbers. (can be use to compare for similarity)
 
@@ -108,6 +112,7 @@ print(cosine_similarity(embedding[0], embedding[1])) # 0.8
 ```
 
 This means your service will offer three endpoints:
+
 ```bash
 /chat
 /complete
@@ -120,22 +125,24 @@ By default, `open-llm-server` will start a HTTP server on port 5000, and it can 
 
 `start` will call a BentoML server underneath, and will import model if said weights is not found under the `BENTOML_HOME` directory
 
-
 The full list of arguments:
 -> runners name to match with model name (BENTOML_CONFIGURATION)
 
 - `--temperature 0..1`: specify how random the model output should be
-    `--temperature 0` will make model deterministic, and `--temperature 1` will make it completely random
+  `--temperature 0` will make model deterministic, and `--temperature 1` will make it completely random
 
 - `--top_k <int>`: specify how the model to pick the next token from top `k` tokens in the list, sorted by prob
-    - `--top_k 3` will choose the top 3 tokens
+
+  - `--top_k 3` will choose the top 3 tokens
 
 - `--top_p 0..1`: similar to `top_k`, but it based on the sum of their probabilities
-    - `--top_p 0.15` will pick the top `p` tokens that adds up to 15% of the total probability.
 
-- `--stop_sequence --`: useful for prompting, to determine a string that tells the model to stop generate more content 
-    - Currently only GPT-NeoX supports this
-    - prob just move to `--opt`
+  - `--top_p 0.15` will pick the top `p` tokens that adds up to 15% of the total probability.
+
+- `--stop_sequence --`: useful for prompting, to determine a string that tells the model to stop generate more content
+
+  - Currently only GPT-NeoX supports this
+  - prob just move to `--opt`
 
 - `--frequency_penalty 0..1`: penalize tokens that already appreared in preceeding text (including prompt) and scales based on how many times token has appeared
 
@@ -146,12 +153,13 @@ The full list of arguments:
 optimization arguments (P1)
 
 - `--lora`: Apply LoRA adapter to supported model
-    - https://github.com/microsoft/LoRA
-    - Low-Rank Adaptation of LLM
-        - reduce # of trainable parameters by learning pairs of rank-decomposition matrices while freezing original weights
+
+  - https://github.com/microsoft/LoRA
+  - Low-Rank Adaptation of LLM
+    - reduce # of trainable parameters by learning pairs of rank-decomposition matrices while freezing original weights
 
 - `--perflexity`: Show perflexity (performance) of the language model (P1)
-    - mainly for metrics
+  - mainly for metrics
 
 Other specific model options:
 
@@ -171,9 +179,8 @@ OPEN_LLM_STOP_SEQUENCE=0.234 OPEN_LLM_BLOOM_FRQUENCY_PENALTY=0.123 open-llm-serv
 Server-related args
 
 - `--grpc`: To start with a gRPC server instead of HTTP
-    - If multiple models are specified, the following `--deivce 'flan-t5:cpu,llama:gpu:0'` or `--device 'flan-t5:cpu' --device 'llama:gpu:0'` are accepted
+  - If multiple models are specified, the following `--deivce 'flan-t5:cpu,llama:gpu:0'` or `--device 'flan-t5:cpu' --device 'llama:gpu:0'` are accepted
 - All arguments that is pass through a BentoML server
-
 
 ## Internal implementation
 
@@ -298,6 +305,7 @@ def start(model, device, ...):
 ```
 
 To quickly create a runner from given sets of models, to use within your BentoML service:
+
 ```python
 
 from open_llm_server.llama import get_runner as get_llama_runner
@@ -311,5 +319,3 @@ svc = bentoml.Service(..., runners=[llama_runner, bloom_runner, my_other_runner]
 ```
 
 This means it will inherit all features and integration bentoml offers, including adding this into a FastAPI/ASGI app
-
-

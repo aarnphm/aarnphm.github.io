@@ -22,9 +22,7 @@ interface TocEntry {
   slug: string // this is just the anchor (#some-slug), not the canonical slug
 }
 
-export const TableOfContents: QuartzTransformerPlugin<Partial<Options> | undefined> = (
-  userOpts,
-) => {
+export const TableOfContents: QuartzTransformerPlugin<Partial<Options> | undefined> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
   return {
     name: "TableOfContents",

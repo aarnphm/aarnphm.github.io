@@ -43,9 +43,9 @@ int main(int argc, char *argv[]) {
   }
 
   numIters = atoi(argv[1]);
-  int numProducersAndConsumers = atoi(argv[2]);
-  pthread_t pids[numProducersAndConsumers], cids[numProducersAndConsumers];
-  int ids[numProducersAndConsumers];
+  int numPC = atoi(argv[2]);
+  pthread_t pids[numPC], cids[numPC];
+  int ids[numPC];
 
   pthread_attr_t attr;
   pthread_attr_init(&attr);
@@ -53,20 +53,19 @@ int main(int argc, char *argv[]) {
   sem_init(&empty, SHARED, 1); /* sem empty = 1 */
   sem_init(&full, SHARED, 0);  /* sem full = 0  */
 
-  for (int i = 0; i < numProducersAndConsumers; i++) {
+  for (int i = 0; i < numPC; i++) {
     ids[i] = i;
     pthread_create(&pids[i], &attr, Producer, &ids[i]);
     pthread_create(&cids[i], &attr, Consumer, &ids[i]);
   }
 
-  for (int i = 0; i < numProducersAndConsumers; i++) {
+  for (int i = 0; i < numPC; i++) {
     pthread_join(pids[i], NULL);
     pthread_join(cids[i], NULL);
   }
 
-  int expectedTotalSum =
-      numProducersAndConsumers * numIters * (numIters - 1) / 2;
-  printf("The expected total sum is %d\n", expectedTotalSum);
+  int expected = numPC * numIters * (numIters - 1) / 2;
+  printf("The expected total sum is %d\n", expected);
 
   return 0;
 }

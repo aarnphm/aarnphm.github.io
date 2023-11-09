@@ -22,4 +22,3 @@ Equipment:
 [[Planimetric composition]]
 
 - Wes Anderson
-

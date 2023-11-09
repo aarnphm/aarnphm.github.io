@@ -361,7 +361,23 @@ From the service level, the runner can be accessed with `llm.runner`
 
 llm = openllm.LLM("meta-llama/Llama-2-7b-chat-hf")
 
-svc = bentoml.Service('chat', runners=[llm.runners])
+# if vllm is available => use vllm else pt
+# 1. if not a path (given id) -> <framework>-<repo>--<model_id>
+# llm.bentomodel (if exists -> return full tags) -> else we download (version: revision_hash)
+# for vllm -> AsyncLLMEngine
+# for py -> transformers.<AutoModelForCausalLM|AutoModelForSeq2SeqLM>.from_pretrained
+# 2. given id is a path => depends on the config.json
+llm = openllm.LLM("", model_name='...', model_version="...", model_tag=None | bentoml.Tag)
+
+llm = openllm.LLM("asd", model_name='...', model_version="...", model_tag=None | bentoml.Tag)
+
+# openllm.Runner
+
+svc = bentoml.Service('chat', runners=[llm.runner])
+
+@svc.api(...)
+async def chat(input):
+	await llm.generate(...)
 ```
 
 The architecture of `openllm.LLM` are now as follow

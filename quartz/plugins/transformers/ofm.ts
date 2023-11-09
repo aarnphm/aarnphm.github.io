@@ -123,9 +123,7 @@ const calloutLineRegex = new RegExp(/^> *\[\!\w+\][+-]?.*$/, "gm")
 const tagRegex = new RegExp(/(?:^| )#((?:[-_\p{L}\d])+(?:\/[-_\p{L}\d]+)*)/, "gu")
 const blockReferenceRegex = new RegExp(/\^([A-Za-z0-9]+)$/, "g")
 
-export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> | undefined> = (
-  userOpts,
-) => {
+export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> | undefined> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
 
   const mdastToHtml = (ast: PhrasingContent | Paragraph) => {
@@ -223,9 +221,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
                     type: "html",
                     value: `<video src="${url}" controls></video>`,
                   }
-                } else if (
-                  [".mp3", ".webm", ".wav", ".m4a", ".ogg", ".3gp", ".flac"].includes(ext)
-                ) {
+                } else if ([".mp3", ".webm", ".wav", ".m4a", ".ogg", ".3gp", ".flac"].includes(ext)) {
                   return {
                     type: "html",
                     value: `<audio src="${url}" controls></audio>`,
@@ -315,13 +311,10 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
               const match = firstLine.match(calloutRegex)
               if (match && match.input) {
                 const [calloutDirective, typeString, collapseChar] = match
-                const calloutType = canonicalizeCallout(
-                  typeString.toLowerCase() as keyof typeof calloutMapping,
-                )
+                const calloutType = canonicalizeCallout(typeString.toLowerCase() as keyof typeof calloutMapping)
                 const collapse = collapseChar === "+" || collapseChar === "-"
                 const defaultState = collapseChar === "-" ? "collapsed" : "expanded"
-                const titleContent =
-                  match.input.slice(calloutDirective.length).trim() || capitalize(calloutType)
+                const titleContent = match.input.slice(calloutDirective.length).trim() || capitalize(calloutType)
                 const titleNode: Paragraph = {
                   type: "paragraph",
                   children: [{ type: "text", value: titleContent + " " }, ...restChildren],

@@ -201,9 +201,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     })
     .on("mouseover", function (_, d) {
       const neighbours: SimpleSlug[] = data[fullSlug].links ?? []
-      const neighbourNodes = d3
-        .selectAll<HTMLElement, NodeData>(".node")
-        .filter((d) => neighbours.includes(d.id))
+      const neighbourNodes = d3.selectAll<HTMLElement, NodeData>(".node").filter((d) => neighbours.includes(d.id))
       const currentId = d.id
       const linkNodes = d3
         .selectAll(".link")

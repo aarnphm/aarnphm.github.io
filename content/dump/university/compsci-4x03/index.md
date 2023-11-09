@@ -7,4 +7,3 @@ title: Scientific Computation
 ---
 
 Introduction to Scientific Computation
-

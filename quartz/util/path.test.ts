@@ -71,11 +71,7 @@ describe("transforms", () => {
     for (const [inp, expected] of pairs) {
       assert(checkPre(inp), `${inp} wasn't the expected input type`)
       const actual = transform(inp)
-      assert.strictEqual(
-        actual,
-        expected,
-        `after transforming ${inp}, '${actual}' was not '${expected}'`,
-      )
+      assert.strictEqual(actual, expected, `after transforming ${inp}, '${actual}' was not '${expected}'`)
       assert(checkPost(actual), `${actual} wasn't the expected output type`)
     }
   }
@@ -157,15 +153,7 @@ describe("transforms", () => {
 })
 
 describe("link strategies", () => {
-  const allSlugs = [
-    "a/b/c",
-    "a/b/d",
-    "a/b/index",
-    "e/f",
-    "e/g/h",
-    "index",
-    "a/test.png",
-  ] as FullSlug[]
+  const allSlugs = ["a/b/c", "a/b/d", "a/b/index", "e/f", "e/g/h", "index", "a/test.png"] as FullSlug[]
 
   describe("absolute", () => {
     const opts: TransformOptions = {
@@ -252,10 +240,7 @@ describe("link strategies", () => {
       assert.strictEqual(path.transformLink(cur, "../../../index.png", opts), "../../../index.png")
       assert.strictEqual(path.transformLink(cur, "../../../index#abc", opts), "../../../#abc")
       assert.strictEqual(path.transformLink(cur, "../../../", opts), "../../../")
-      assert.strictEqual(
-        path.transformLink(cur, "../../../a/test.png", opts),
-        "../../../a/test.png",
-      )
+      assert.strictEqual(path.transformLink(cur, "../../../a/test.png", opts), "../../../a/test.png")
       assert.strictEqual(path.transformLink(cur, "../../../e/g/h", opts), "../../../e/g/h")
       assert.strictEqual(path.transformLink(cur, "../../../e/g/h", opts), "../../../e/g/h")
       assert.strictEqual(path.transformLink(cur, "../../../e/g/h#abc", opts), "../../../e/g/h#abc")

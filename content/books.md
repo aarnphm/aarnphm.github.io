@@ -19,6 +19,7 @@ A list of books I have finished reading, wanting to read and are living in my [a
 - **A Treatise of Human Nature** by David Hume
 - **The Evolution of Modern Metaphysics: Making Sense of Things** by A. W. Moore
 - **Being and Some Philosophers** by Etienne Gilson
+
 ### non-fiction
 
 - **Deep Work** by Cal Newport

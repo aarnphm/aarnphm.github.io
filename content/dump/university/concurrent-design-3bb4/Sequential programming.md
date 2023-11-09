@@ -3,10 +3,13 @@ id: Sequential programming
 tags:
   - university
   - concurrency
+  - swfr3bb4
 title: Sequential programming
 ---
 
 See also [[dump/university/concurrent-design-3bb4/README|3BB4 - Concurrent System Design]]
+
+---
 
 ```mermaid
 flowchart TD
@@ -14,7 +17,30 @@ flowchart TD
 1[x>=0] --> 2[z+u*y = x*y & u >=0] --> 4[z = x*y]
 ```
 
-Sequential composition: Array as a partial function
+# Annotations and correctness
+
+```prolog
+{P} S {Q}
+```
+
+```mermaid
+---
+title: correctness assertion
+---
+stateDiagram-v2
+
+direction LR
+
+P --> Q: S
+```
+
+### rules for correctness
+
+if $P\wedge B \rightarrow Q$
+
+# Sequential composition
+
+_Array as a partial function_
 
 ```algorithm
 x := (x; E:F)

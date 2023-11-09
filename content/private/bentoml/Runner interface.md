@@ -5,7 +5,6 @@ tags:
   - seed
 ---
 
-
 ##### Data format
 
 Confusion?
@@ -129,23 +128,28 @@ Supervisor -> runner
 flatbuffer -> gRPC transform payload
 
 ---
+
 Complex data types:
+
 - nested?
 
 Frontend
+
 - TF, Keras, PyTorch
 
 Runtime
+
 - ONNXRuntime, TensorRT and Tensorflow, PyTorch
 
 Compilers
+
 - TensorRT, TVM, ONNX (ecosystem), OpenVINO
 
 Server:
+
 - Triton
 
 delay image building to deploy on same metal.
-
 
 tensorrt: no timeline
 triton: end of jan
@@ -153,15 +157,15 @@ triton: end of jan
 support mixed data types
 -> bytes stream
 
-
 ---
+
 Interface
 
 predict v2 support with grpc + flatbuffer
 
 flatbuffer (IPC)
 
-sol: flatbuffer + protobuf 
+sol: flatbuffer + protobuf
 
 ask v2 to use flatbuffer vs protobuf
 
@@ -170,13 +174,13 @@ prototype for usecase:
 - mock model -> types (small, big data)
 
 - torch hub yolov5 ONNX types
-	- tensor, tabular, numpy
+  - tensor, tabular, numpy
 
 ONNX i/o -> dict?
 
 RunnerServer:
-- Python
 
+- Python
 
 - arrow flight (unstable)
 - vanila gRPC + flatbuffer
@@ -184,18 +188,18 @@ RunnerServer:
 - expands runner handle client to support these protocol
 
 try:
+
 - flatbuffer in protobuf (bytes) vs. raw_bytes in protobuf (~python bytes) vs encoding tensor in protobuf (~ONNX format)
 - dict -> bytes -> protobuf/flatbuffer (raw_bytes)
 
-
 Steps:
+
 - connect with the predict v2 guy
 - branch -> result
 
-
 prototype:
-- [vaex](https://github.com/vaexio/vaex)
 
+- [vaex](https://github.com/vaexio/vaex)
 
 batch-inference at runners level.
 

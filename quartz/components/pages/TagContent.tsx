@@ -18,14 +18,9 @@ function TagContent(props: QuartzComponentProps) {
 
   const tag = simplifySlug(slug.slice("tags/".length) as FullSlug)
   const allPagesWithTag = (tag: string) =>
-    allFiles.filter((file) =>
-      (file.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes).includes(tag),
-    )
+    allFiles.filter((file) => (file.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes).includes(tag))
 
-  const content =
-    (tree as Root).children.length === 0
-      ? fileData.description
-      : htmlToJsx(fileData.filePath!, tree)
+  const content = (tree as Root).children.length === 0 ? fileData.description : htmlToJsx(fileData.filePath!, tree)
 
   if (tag === "") {
     const tags = [...new Set(allFiles.flatMap((data) => data.frontmatter?.tags ?? []))]

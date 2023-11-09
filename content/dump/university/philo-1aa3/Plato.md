@@ -6,7 +6,9 @@ tags:
   - philos1aa3
 title: Plato
 ---
+
 See also [[Socrates]]
+
 # Apology
 
 - Defence against charges against them
@@ -133,7 +135,6 @@ What you think to harm me harms you a lot more
 
 He knows there is a life after death ?
 
-
 > Divine mission: encourage Athenians in self-reflection for good moral life
 
 Difference
@@ -248,7 +249,6 @@ _Agathon, a poet of tragedies, is the host_
 
 > Soul is an abstraction from empirical knowledge.
 
-
 Alkibiades, of Scocrates:
 
 > This utterly unnatural, this truly extraordinary man ... this hopelessly arrogant, this unbelievably insolent man ... [of] amazing arrogance and pride ... he unique
@@ -258,10 +258,12 @@ Alkibiades, of Scocrates:
 -> Socrates life is one big game of irony
 
 Alkibiades: Seduction for a trade
+
 - invites Socrates to wrestle in the gym <-- doesn't work
 - drunk (no one has seen him drunk). Lies down -> makes move -> nothing
 
 > Finding yourself falling in love with Socrates
+>
 > - Pretends to fall in love -> others will fall in love with him
 
 Ordinary irony: False --> to implies the opposite
@@ -274,16 +276,15 @@ Socratic irony: Both is and is not seriously meant --> True in one way, false in
 
 --> Euthyphro: self-righteous fouls doesn't understand anything
 
-
 Angers when seeing Socrates falling for someone else.
 
 Future replicates the past. Love must be more than intense alliances from others.
 
 > Socrates can't teach anybody anything that they don't already know
+>
 > - Alkibiades is so rough beneath the smooth surface -> not interesting to bring in as disciple
 > - Alkibiades knows himself too much to love, to be drawn to Socrates
 > - Maybe Alkibiades can be redeemed by philosophers
-
 
 ## Republic
 
@@ -304,8 +305,8 @@ Sounds are copy of ideas <- bad
 > Idea of good is the idea to make things to be good.
 
 1. Idea of good is the most important thing that everyone know
-	- By conforming this, everything else would be useful and beneficient
-	- Don't know the idea of good = everything else is useless
+   - By conforming this, everything else would be useful and beneficient
+   - Don't know the idea of good = everything else is useless
 
 > Obtain knowledge of good is the foundation of Platonic philosophy
 
@@ -351,12 +352,14 @@ Understand an idea is understand what true being is.
 Knowledge knows what is is and must be it is
 
 Criterion of knowledge:
+
 - Infallibility, the impossibility of error
 
 Understanding (nous) --> Philosophy
 Beauty, justice are entities
 
 Thought (dianoia) --> Science
+
 - Requires some intellectual understanding -> thoughts
 - Hypothesis: first principle of science yet stayed unexplained
 

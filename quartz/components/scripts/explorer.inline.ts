@@ -83,13 +83,10 @@ function setupExplorer() {
 
     // Add click handlers for all folders (click handler on folder "label")
     if (collapseBehavior === "collapse") {
-      Array.prototype.forEach.call(
-        document.getElementsByClassName("folder-button"),
-        function (item) {
-          item.removeEventListener("click", toggleFolder)
-          item.addEventListener("click", toggleFolder)
-        },
-      )
+      Array.prototype.forEach.call(document.getElementsByClassName("folder-button"), function (item) {
+        item.removeEventListener("click", toggleFolder)
+        item.addEventListener("click", toggleFolder)
+      })
     }
 
     // Add click handler to main explorer
@@ -108,9 +105,7 @@ function setupExplorer() {
     explorerState = JSON.parse(storageTree)
     explorerState.map((folderUl) => {
       // grab <li> element for matching folder path
-      const folderLi = document.querySelector(
-        `[data-folderpath='/${folderUl.path}']`,
-      ) as HTMLElement
+      const folderLi = document.querySelector(`[data-folderpath='/${folderUl.path}']`) as HTMLElement
 
       // Get corresponding content <ul> tag and set state
       if (folderLi) {

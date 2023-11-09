@@ -11,4 +11,3 @@ title: Sigmund Freud
 ## The Ego and The Id
 
 ## Civilization and Its Discontent
-

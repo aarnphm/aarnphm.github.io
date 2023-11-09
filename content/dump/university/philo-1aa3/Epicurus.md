@@ -171,4 +171,3 @@ _The four-fold remedy_
 - Death presents no worry
 - The good is readily attainable
 - The terrible is readily endurable
-

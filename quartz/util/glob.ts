@@ -6,11 +6,7 @@ export function toPosixPath(fp: string): string {
   return fp.split(path.sep).join("/")
 }
 
-export async function glob(
-  pattern: string,
-  cwd: string,
-  ignorePatterns: string[],
-): Promise<FilePath[]> {
+export async function glob(pattern: string, cwd: string, ignorePatterns: string[]): Promise<FilePath[]> {
   const fps = (
     await globby(pattern, {
       cwd,

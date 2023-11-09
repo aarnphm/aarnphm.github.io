@@ -13,10 +13,7 @@ export function normalizeRelativeURLs(el: Element | Document, base: string | URL
 }
 
 const p = new DOMParser()
-async function mouseEnterHandler(
-  this: HTMLLinkElement,
-  { clientX, clientY }: { clientX: number; clientY: number },
-) {
+async function mouseEnterHandler(this: HTMLLinkElement, { clientX, clientY }: { clientX: number; clientY: number }) {
   const link = this
   async function setPosition(popoverElement: HTMLElement) {
     const { x, y } = await computePosition(link, popoverElement, {

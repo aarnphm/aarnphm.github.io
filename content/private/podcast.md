@@ -1,10 +1,10 @@
 > Summarising research papers
 
 TODO:
+
 - Name?
 - Build a faster PDF summariser with BentoML
-	- Combine with ChatGPT
-
+  - Combine with ChatGPT
 
 A podcast in a bath tub?
 

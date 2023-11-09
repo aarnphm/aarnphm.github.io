@@ -45,11 +45,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> =
 
             visit(tree, "element", (node, _index, _parent) => {
               // rewrite all links
-              if (
-                node.tagName === "a" &&
-                node.properties &&
-                typeof node.properties.href === "string"
-              ) {
+              if (node.tagName === "a" && node.properties && typeof node.properties.href === "string") {
                 let dest = node.properties.href as RelativeURL
                 node.properties.className ??= []
                 node.properties.className.push(isAbsoluteUrl(dest) ? "external" : "internal")
@@ -61,11 +57,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> =
                 // don't process external links or intra-document anchors
                 const isInternal = !(isAbsoluteUrl(dest) || dest.startsWith("#"))
                 if (isInternal) {
-                  dest = node.properties.href = transformLink(
-                    file.data.slug!,
-                    dest,
-                    transformOptions,
-                  )
+                  dest = node.properties.href = transformLink(file.data.slug!, dest, transformOptions)
 
                   // url.resolve is considered legacy
                   // WHATWG equivalent https://nodejs.dev/en/api/v18/url/#urlresolvefrom-to
@@ -74,9 +66,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> =
                   const [destCanonical, _destAnchor] = splitAnchor(canonicalDest)
 
                   // need to decodeURIComponent here as WHATWG URL percent-encodes everything
-                  const simple = decodeURIComponent(
-                    simplifySlug(destCanonical as FullSlug),
-                  ) as SimpleSlug
+                  const simple = decodeURIComponent(simplifySlug(destCanonical as FullSlug)) as SimpleSlug
                   outgoing.add(simple)
                   node.properties["data-slug"] = simple
                 }
@@ -101,11 +91,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> =
               ) {
                 if (!isAbsoluteUrl(node.properties.src)) {
                   let dest = node.properties.src as RelativeURL
-                  dest = node.properties.src = transformLink(
-                    file.data.slug!,
-                    dest,
-                    transformOptions,
-                  )
+                  dest = node.properties.src = transformLink(file.data.slug!, dest, transformOptions)
                   node.properties.src = dest
                 }
               }

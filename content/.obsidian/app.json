@@ -6,11 +6,11 @@
   "vimMode": true,
   "promptDelete": false,
   "pdfExportSettings": {
-    "includeName": false,
+    "includeName": true,
     "pageSize": "A4",
     "landscape": false,
     "margin": "0",
-    "downscalePercent": 70
+    "downscalePercent": 65
   },
   "tabSize": 2,
   "newFileLocation": "current",

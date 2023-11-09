@@ -15,22 +15,8 @@ import { WebSocketServer } from "ws"
 import { randomUUID } from "crypto"
 import { Mutex } from "async-mutex"
 import { CreateArgv } from "./args.js"
-import {
-  exitIfCancel,
-  escapePath,
-  gitPull,
-  popContentFolder,
-  stashContentFolder,
-} from "./helpers.js"
-import {
-  UPSTREAM_NAME,
-  QUARTZ_SOURCE_BRANCH,
-  ORIGIN_NAME,
-  version,
-  fp,
-  cacheFile,
-  cwd,
-} from "./constants.js"
+import { exitIfCancel, escapePath, gitPull, popContentFolder, stashContentFolder } from "./helpers.js"
+import { UPSTREAM_NAME, QUARTZ_SOURCE_BRANCH, ORIGIN_NAME, version, fp, cacheFile, cwd } from "./constants.js"
 
 /**
  * Handles `npx quartz create`
@@ -52,13 +38,9 @@ export async function handleCreate(argv) {
       if (!sourceDirectory) {
         outro(
           chalk.red(
-            `Setup strategies (arg '${chalk.yellow(
-              `-${CreateArgv.strategy.alias[0]}`,
-            )}') other than '${chalk.yellow(
+            `Setup strategies (arg '${chalk.yellow(`-${CreateArgv.strategy.alias[0]}`)}') other than '${chalk.yellow(
               "new",
-            )}' require content folder argument ('${chalk.yellow(
-              `-${CreateArgv.source.alias[0]}`,
-            )}') to be set`,
+            )}' require content folder argument ('${chalk.yellow(`-${CreateArgv.source.alias[0]}`)}') to be set`,
           ),
         )
         process.exit(1)
@@ -291,11 +273,7 @@ export async function handleBuild(argv) {
     if (argv.bundleInfo) {
       const outputFileName = "quartz/.quartz-cache/transpiled-build.mjs"
       const meta = result.metafile.outputs[outputFileName]
-      console.log(
-        `Successfully transpiled ${Object.keys(meta.inputs).length} files (${prettyBytes(
-          meta.bytes,
-        )})`,
-      )
+      console.log(`Successfully transpiled ${Object.keys(meta.inputs).length} files (${prettyBytes(meta.bytes)})`)
       console.log(await esbuild.analyzeMetafile(result.metafile, { color: true }))
     }
 
@@ -319,11 +297,7 @@ export async function handleBuild(argv) {
     await build(clientRefresh)
     const server = http.createServer(async (req, res) => {
       if (argv.baseDir && !req.url?.startsWith(argv.baseDir)) {
-        console.log(
-          chalk.red(
-            `[404] ${req.url} (warning: link outside of site, this is likely a Quartz bug)`,
-          ),
-        )
+        console.log(chalk.red(`[404] ${req.url} (warning: link outside of site, this is likely a Quartz bug)`))
         res.writeHead(404)
         res.end()
         return
@@ -345,8 +319,7 @@ export async function handleBuild(argv) {
           ],
         })
         const status = res.statusCode
-        const statusString =
-          status >= 200 && status < 300 ? chalk.green(`[${status}]`) : chalk.red(`[${status}]`)
+        const statusString = status >= 200 && status < 300 ? chalk.green(`[${status}]`) : chalk.red(`[${status}]`)
         console.log(statusString + chalk.grey(` ${argv.baseDir}${req.url}`))
         release()
       }
@@ -404,11 +377,7 @@ export async function handleBuild(argv) {
     server.listen(argv.port)
     const wss = new WebSocketServer({ port: argv.wsPort })
     wss.on("connection", (ws) => connections.push(ws))
-    console.log(
-      chalk.cyan(
-        `Started a Quartz server listening at http://localhost:${argv.port}${argv.baseDir}`,
-      ),
-    )
+    console.log(chalk.cyan(`Started a Quartz server listening at http://localhost:${argv.port}${argv.baseDir}`))
     console.log("hint: exit with ctrl+c")
     chokidar
       .watch(["**/*.ts", "**/*.tsx", "**/*.scss", "package.json"], {
@@ -431,9 +400,7 @@ export async function handleUpdate(argv) {
   const contentFolder = path.join(cwd, argv.directory)
   console.log(chalk.bgGreen.black(`\n Quartz v${version} \n`))
   console.log("Backing up your content")
-  execSync(
-    `git remote show upstream || git remote add upstream https://github.com/jackyzha0/quartz.git`,
-  )
+  execSync(`git remote show upstream || git remote add upstream https://github.com/jackyzha0/quartz.git`)
   await stashContentFolder(contentFolder)
   console.log(
     "Pulling updates... you may need to resolve some `git` conflicts if you've made changes to components or plugins.",
