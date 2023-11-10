@@ -48,7 +48,7 @@ function TagContent(props: QuartzComponentProps) {
             return (
               <div>
                 <h2>
-                  <a class="internal tag-link" href={`./${tag}`}>
+                  <a class="internal tag-link" href={`../tags/${tag}`}>
                     #{tag}
                   </a>
                 </h2>
