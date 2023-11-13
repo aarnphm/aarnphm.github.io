@@ -21,42 +21,6 @@
             }
           },
           {
-            "id": "0fe3baf1aed8622b",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
-              }
-            }
-          },
-          {
-            "id": "dc4198a80bb4055a",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/university/hci-4hc3/Interaction Critical Evaluation.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "6de9af45c7c33b0e",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/university/philo-1aa3/tut/Stoic.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
             "id": "7b119c74e52c08ce",
             "type": "leaf",
             "state": {
@@ -75,7 +39,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/philo-1aa3/Sphinoza.md",
+                "file": "posts/Questions about Metaphysics.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -88,7 +52,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/concurrent-design-3bb4/Semaphores.md",
+                "file": "posts/Questions about Apology.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -96,7 +60,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -146,7 +110,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 285.5
+    "width": 388.50390243530273,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -162,7 +127,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/philo-1aa3/Sphinoza.md",
+                "file": "posts/Questions about Metaphysics.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -179,7 +144,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/philo-1aa3/Sphinoza.md",
+                "file": "posts/Questions about Metaphysics.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -202,7 +167,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/philo-1aa3/Sphinoza.md"
+                "file": "posts/Questions about Metaphysics.md"
               }
             }
           },
@@ -230,7 +195,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/philo-1aa3/Sphinoza.md"
+                "file": "posts/Questions about Metaphysics.md"
               }
             }
           }
@@ -253,18 +218,59 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
+  "floating": {
+    "id": "55fa1078714e2086",
+    "type": "floating",
+    "children": [
+      {
+        "id": "531863e3a1977028",
+        "type": "window",
+        "children": [
+          {
+            "id": "65474551344073bd",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "0fe3baf1aed8622b",
+                "type": "leaf",
+                "state": {
+                  "type": "pdf",
+                  "state": {
+                    "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "vertical",
+        "x": -1794,
+        "y": -611,
+        "width": 1788,
+        "height": 3163,
+        "maximize": false,
+        "zoom": 0
+      }
+    ]
+  },
   "active": "f50a369522e9c642",
   "lastOpenFiles": [
-    "dump/university/philo-1aa3/Untitled.md",
-    "dump/university/philo-1aa3/Sphinoza.md",
-    "dump/university/philo-1aa3/Plato.md",
-    "dump/university/hci-4hc3/M3 Reflection.md",
-    "dump/Unify LLM interface.md",
     "dump/university/philo-1aa3/1A3Reader(2019).pdf",
+    "posts/Questions about Metaphysics.md",
+    "posts/Questions about Apology.md",
+    "dump/university/concurrent-design-3bb4/Semaphores.md",
+    "dump/university/philo-1aa3/Plato.md",
     "dump/university/philo-1aa3/tut/Stoic.md",
-    "dump/university/philo-1aa3/Questions about Metaphysics.md",
     "dump/university/hci-4hc3/Interaction Critical Evaluation.md",
     "dump/university/philo-1aa3/Aristotle.md",
+    "dump/university/philo-1aa3/tut/Metaphysics.md",
+    "dump/university/philo-1aa3/tut/Symposium.md",
+    "dump/university/philo-1aa3/tut/T1.md",
+    "dump/university/philo-1aa3/tut/Republic.md",
+    "dump/university/philo-1aa3/Sphinoza.md",
+    "dump/university/philo-1aa3/Untitled.md",
+    "dump/university/hci-4hc3/M3 Reflection.md",
+    "dump/Unify LLM interface.md",
     "dump/university/concurrent-design-3bb4/Sequential programming.md",
     "dump/university/concurrent-design-3bb4/a7/BoundedQueue.java",
     "dump/university/concurrent-design-3bb4/a7",
@@ -274,13 +280,11 @@
     "dump/university/concurrent-design-3bb4/midterm",
     "dump/university/concurrent-design-3bb4/pair_dancing.py",
     "dump/university/compsci-4x03/midterm-sheets.md",
-    "dump/university/concurrent-design-3bb4/Semaphores.md",
     "dump/university/compsci-4x03/A2.md",
     "dump/university/compsci-4x03/Combined lectures.pdf",
     "dump/university/compsci-4x03/combined-4x03.pdf",
     "dump/university/concurrent-design-3bb4/README.md",
     "dump/university/philo-1aa3/tut/Epicurus.md",
-    "posts/Questions about Apology.md",
     "dump/music theory.md",
     "dump/university/compsci-4x03/a2-fig6.png",
     "dump/university/compsci-4x03/a2-fig5.png",
@@ -289,17 +293,12 @@
     "dump/university/compsci-4x03/a2-fig2.png",
     "dump/university/compsci-4x03/a2-fig1.png",
     "dump/university/compsci-4x03/pham-anh-400232791.md",
-    "dump/university/philo-1aa3/tut/Metaphysics.md",
-    "dump/university/philo-1aa3/tut/T1.md",
     "dump/university/compsci-4x03/index.md",
     "dump/play.md",
     "dump/openllm.LLM architecture.png",
     "dump/Pasted image 20231023161933 1.png",
     "dump/Pasted image 20231023161555.png",
     "dump/university/philo-1aa3/Epicurus.md",
-    "dump/university/philo-1aa3/Socrates.md",
-    "dump/university/philo-1aa3/Presocratics.md",
-    "dump/university/philo-1aa3/Nietzsche.md",
     "lost.svg",
     "Untitled.canvas"
   ]
