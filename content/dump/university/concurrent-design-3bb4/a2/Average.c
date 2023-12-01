@@ -35,7 +35,8 @@ void *worker(struct Args *arg) {
 double sequentialaverage(int a[], int n) {
   // a has n elements
   double s = 0;
-  for (int i = 0; i < n; i++) s += a[i];
+  for (int i = 0; i < n; i++)
+    s += a[i];
   return s / n;
 }
 
@@ -44,7 +45,7 @@ static double parallelaverage(int a[], int n) {
   pthread_t threads[NUM_THREADS];
   struct Args args[NUM_THREADS];
 
-  for (int i=0; i<NUM_THREADS; i++) {
+  for (int i = 0; i < NUM_THREADS; i++) {
     args[i].a = a;
     args[i].l = i * n / NUM_THREADS;
     args[i].u = (i == NUM_THREADS - 1) ? n : (i + 1) * (n / NUM_THREADS);
@@ -54,13 +55,13 @@ static double parallelaverage(int a[], int n) {
   }
 
   for (int i = 0; i < NUM_THREADS; i++) {
-      pthread_join(threads[i], NULL);
+    pthread_join(threads[i], NULL);
   }
 
   double total_sum = 0.0;
 
   for (int i = 0; i < NUM_THREADS; i++) {
-      total_sum += args[i].avg;
+    total_sum += args[i].avg;
   }
 
   return total_sum / n;
@@ -70,8 +71,9 @@ int main(int argc, char *argv[]) {
   int n = atoi(argv[1]);
   int a[n];
   srand(time(NULL));
-  for (int i = 0; i < n; i++) a[i] = rand() % 10000;
-  
+  for (int i = 0; i < n; i++)
+    a[i] = rand() % 10000;
+
   struct timeval start, end;
   gettimeofday(&start, 0);
   double avg = sequentialaverage(a, n);
@@ -80,7 +82,7 @@ int main(int argc, char *argv[]) {
   long microseconds = end.tv_usec - start.tv_usec;
   long elapsed = seconds * 1e6 + microseconds;
   printf("Sequential: %f Time: %i microseconds\n", avg, elapsed);
-  
+
   gettimeofday(&start, 0);
   avg = parallelaverage(a, n);
   gettimeofday(&end, 0);

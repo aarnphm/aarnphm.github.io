@@ -1,9 +1,9 @@
 ---
-id: OpenLLM
+id: OpenLLM design draft
 tags:
   - ml
   - openllm
-description: "OpenLLM: Serve, fine-tune LLMs in production"
+description: OpenLLM: Serve, fine-tune LLMs in production
 ---
 
 OpenLLM is a server for running LLM models in production. It is built on top of [BentoML](https://bentoml.com)
@@ -46,17 +46,22 @@ It will run and serve the model server.
 To interact with the server, use cURL, any HTTP Client, or `open-llm-client`:
 
 ```python
-
 import open_llm_client
 
-client = open_llm_client.create('http://localhost:5000')
+client = open_llm_client.create("http://localhost:5000")
 ```
 
 To `/chat` with your model, use:
 
 ```python
-client.chat('Hello, how are you?')
-client.chat(prompt='Hello, how are you?', temperature=0.5, top_k=3, top_p=0.15, stop_sequence='--')
+client.chat("Hello, how are you?")
+client.chat(
+    prompt="Hello, how are you?",
+    temperature=0.5,
+    top_k=3,
+    top_p=0.15,
+    stop_sequence="--",
+)
 
 client.async_chat
 ```
@@ -79,8 +84,7 @@ It will returns a JSON response:
 To `/complete` a text, use:
 
 ```python
-
-client.complete('Hello, how are you? My name is ...')
+client.complete("Hello, how are you? My name is ...")
 ```
 
 The response will be:
@@ -103,12 +107,14 @@ To create a text `/embed`-dings, one can do
 - Embedding represent the meaning of text as a list of numbers. (can be use to compare for similarity)
 
 ```python
-embedding = client.embed(['Hello, how are you?', 'soup is my favorite food'])
+embedding = client.embed(["Hello, how are you?", "soup is my favorite food"])
+
 
 def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
-print(cosine_similarity(embedding[0], embedding[1])) # 0.8
+
+print(cosine_similarity(embedding[0], embedding[1]))  # 0.8
 ```
 
 This means your service will offer three endpoints:
@@ -189,23 +195,25 @@ Each LLM model is contained within a `LLMModel` class, which extends `bentoml.Mo
 ```python
 from open_llm_server.llama import get_runner
 
-llama_runner = get_runner('llama', top_k=3, top_p=0.15)
+llama_runner = get_runner("llama", top_k=3, top_p=0.15)
 ```
 
 ```python
 from open_llm_server import Registry
+
 
 def import_model(model_name: str) -> bentoml.Model:
     # import model here
     # This will be called in start()
     ...
 
+
 def get_runner(model_name: str):
     # create a bentoml.Runner
     try:
-         model = bentoml.models.get(model_name)
+        model = bentoml.models.get(model_name)
     except bentoml.exceptions.NotFound:
-         model = import_model()
+        model = import_model()
 
     runner = model.to_runner()
 
@@ -215,21 +223,25 @@ def get_runner(model_name: str):
     return runner
     ...
 
+
 class LLMRunnable(bentoml.Runnable, ABC):
+    def __init_subclass__(self, model_name: str | None = ...):
+        ...
 
-    def __init_subclass__(self, model_name: str | None = ...): ...
-
-    def process_cli_args(self, **args) -> dict[str, str]: ...
-
-    @bentoml.Runnable.method()
-    def complete(self, data): ...
+    def process_cli_args(self, **args) -> dict[str, str]:
+        ...
 
     @bentoml.Runnable.method()
-    def embed(self, data): ...
+    def complete(self, data):
+        ...
 
     @bentoml.Runnable.method()
-    def chat(self, data): ...
+    def embed(self, data):
+        ...
 
+    @bentoml.Runnable.method()
+    def chat(self, data):
+        ...
 
     # def to_runner(self, embedded: bool = False):
     #     try:
@@ -241,7 +253,6 @@ class LLMRunnable(bentoml.Runnable, ABC):
     #     if embedded:
     #         runner.init_local()
     #     return runner
-
 
 
 # P1
@@ -276,7 +287,6 @@ class LLMRunnable(bentoml.Runnable, ABC):
 To start a server programmatically:
 
 ```python
-
 import open_llm_server as olm
 
 olm.start(model="...", **kwargs)
@@ -307,7 +317,6 @@ def start(model, device, ...):
 To quickly create a runner from given sets of models, to use within your BentoML service:
 
 ```python
-
 from open_llm_server.llama import get_runner as get_llama_runner
 from open_llm_server.bloom import get_runner as get_bloom_runner
 

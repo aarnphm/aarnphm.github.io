@@ -6,35 +6,10 @@
       {
         "id": "618f3182900ccbc8",
         "type": "tabs",
+        "dimension": 45.81231079717457,
         "children": [
           {
             "id": "2a25f5dfc14cf5fe",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/university/philo-1aa3/Aristotle.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "7b119c74e52c08ce",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/university/philo-1aa3/Plato.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "f50a369522e9c642",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -47,12 +22,55 @@
             }
           },
           {
-            "id": "3a5afde0729ff804",
+            "id": "5fe9e346f7a83416",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/Questions about Apology.md",
+                "file": "dump/university/philo-1aa3/Sphinoza.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "3d3e1c74c1632000",
+        "type": "tabs",
+        "dimension": 54.18768920282543,
+        "children": [
+          {
+            "id": "5a3c31da07270950",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
+              }
+            }
+          },
+          {
+            "id": "3a5cb35a49a373f8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/university/philo-1aa3/Nietzsche.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "5e79be1f54e15b44",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "posts/Questions about Metaphysics.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -89,7 +107,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#dec-1  ",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -218,88 +236,53 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "floating": {
-    "id": "55fa1078714e2086",
-    "type": "floating",
-    "children": [
-      {
-        "id": "531863e3a1977028",
-        "type": "window",
-        "children": [
-          {
-            "id": "65474551344073bd",
-            "type": "tabs",
-            "children": [
-              {
-                "id": "0fe3baf1aed8622b",
-                "type": "leaf",
-                "state": {
-                  "type": "pdf",
-                  "state": {
-                    "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
-                  }
-                }
-              }
-            ]
-          }
-        ],
-        "direction": "vertical",
-        "x": -1794,
-        "y": -611,
-        "width": 1788,
-        "height": 3163,
-        "maximize": false,
-        "zoom": 0
-      }
-    ]
-  },
-  "active": "f50a369522e9c642",
+  "active": "2a25f5dfc14cf5fe",
   "lastOpenFiles": [
-    "dump/university/philo-1aa3/1A3Reader(2019).pdf",
+    "posts/Questions about Spinoza.md",
+    "dump/university/philo-1aa3/tut/Spinoza.md",
+    "dump/university/philo-1aa3/John Stuart Mill.md",
+    "dump/university/concurrent-design-3bb4/go.mod",
+    "dump/university/concurrent-design-3bb4/a9/threadsafebags.java",
+    "dump/university/concurrent-design-3bb4/a9/bags.java",
+    "dump/university/concurrent-design-3bb4/a9/AccountFairness.java",
+    "dump/university/concurrent-design-3bb4/a9/Account.java",
+    "dump/university/concurrent-design-3bb4/a11/publishsubscribe/publishsubscribe.go",
+    "dump/university/concurrent-design-3bb4/a11/priorityqueue/priorityqueue_heap.go",
+    "dump/university/concurrent-design-3bb4/a11/priorityqueue/priorityqueue.go",
+    "dump/university/concurrent-design-3bb4/a11/allocator/allocator_queue.go",
+    "dump/university/concurrent-design-3bb4/a11/allocator/allocator.go",
+    "dump/university/compsci-4x03/number of function evalutions versus x.png",
+    "dump/university/compsci-4x03/a3-p4-timeadd.png",
+    "dump/university/compsci-4x03/a3-p3-c-trapezoidal.png",
+    "dump/university/compsci-4x03/a3-p3-c-simpsons.png",
+    "dump/university/compsci-4x03/a3-p2-f2.svg",
+    "dump/university/compsci-4x03/a3-p2-f1.svg",
+    "dump/university/compsci-4x03/A3.md",
+    "dump/Why I Write.md",
+    "dump/GPU programming.md",
+    "dump/university/capstone-5b03/Possible projects.md",
+    "dump/university/philo-1aa3/Nietzsche.md",
+    "dump/university/philo-1aa3/Sphinoza.md",
     "posts/Questions about Metaphysics.md",
+    "dump/university/philo-1aa3/Aristotle.md",
+    "dump/university/capstone-5b03/Criteria.md",
+    "dump/university/capstone-5b03/Finals.md",
+    "dump/university/compsci-4x03/Untitled.md",
+    "dump/university/compsci-4x03/A2.md",
+    "dump/university/compsci-4x03/MATLAB A3 P4 Graph.png",
+    "dump/Unify LLM interface.md",
+    "dump/openllm.LLM architecture.png",
     "posts/Questions about Apology.md",
-    "dump/university/concurrent-design-3bb4/Semaphores.md",
     "dump/university/philo-1aa3/Plato.md",
+    "dump/university/concurrent-design-3bb4/Semaphores.md",
     "dump/university/philo-1aa3/tut/Stoic.md",
     "dump/university/hci-4hc3/Interaction Critical Evaluation.md",
-    "dump/university/philo-1aa3/Aristotle.md",
     "dump/university/philo-1aa3/tut/Metaphysics.md",
     "dump/university/philo-1aa3/tut/Symposium.md",
     "dump/university/philo-1aa3/tut/T1.md",
     "dump/university/philo-1aa3/tut/Republic.md",
-    "dump/university/philo-1aa3/Sphinoza.md",
-    "dump/university/philo-1aa3/Untitled.md",
-    "dump/university/hci-4hc3/M3 Reflection.md",
-    "dump/Unify LLM interface.md",
-    "dump/university/concurrent-design-3bb4/Sequential programming.md",
-    "dump/university/concurrent-design-3bb4/a7/BoundedQueue.java",
-    "dump/university/concurrent-design-3bb4/a7",
-    "dump/university/concurrent-design-3bb4/midterm/rider_m.py",
-    "dump/university/concurrent-design-3bb4/midterm/concur.c",
-    "dump/university/concurrent-design-3bb4/midterm/pair_dancing.py",
-    "dump/university/concurrent-design-3bb4/midterm",
-    "dump/university/concurrent-design-3bb4/pair_dancing.py",
-    "dump/university/compsci-4x03/midterm-sheets.md",
-    "dump/university/compsci-4x03/A2.md",
-    "dump/university/compsci-4x03/Combined lectures.pdf",
-    "dump/university/compsci-4x03/combined-4x03.pdf",
-    "dump/university/concurrent-design-3bb4/README.md",
-    "dump/university/philo-1aa3/tut/Epicurus.md",
-    "dump/music theory.md",
     "dump/university/compsci-4x03/a2-fig6.png",
     "dump/university/compsci-4x03/a2-fig5.png",
-    "dump/university/compsci-4x03/a2-fig3.png",
-    "dump/university/compsci-4x03/a2-fig4.png",
-    "dump/university/compsci-4x03/a2-fig2.png",
-    "dump/university/compsci-4x03/a2-fig1.png",
-    "dump/university/compsci-4x03/pham-anh-400232791.md",
-    "dump/university/compsci-4x03/index.md",
-    "dump/play.md",
-    "dump/openllm.LLM architecture.png",
-    "dump/Pasted image 20231023161933 1.png",
-    "dump/Pasted image 20231023161555.png",
-    "dump/university/philo-1aa3/Epicurus.md",
-    "lost.svg",
     "Untitled.canvas"
   ]
 }

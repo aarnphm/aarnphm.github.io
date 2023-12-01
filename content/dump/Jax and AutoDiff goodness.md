@@ -34,7 +34,8 @@ import jax.numpy as jnp
 
 from jax import jit
 
+
 @jit
 def diff(a, b, w=0):
-	return jnp.dot(a,b) + w
+    return jnp.dot(a, b) + w
 ```

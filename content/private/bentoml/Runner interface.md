@@ -1,8 +1,9 @@
 ---
-title: "Runner: A universal interface to run distributed ML application"
+id: Runner interface
 tags:
   - technical
   - seed
+title: Runner: A universal interface to run distributed ML application
 ---
 
 ##### Data format
@@ -23,7 +24,7 @@ Dictionary format?
 - inputs/outputs is heterogenous?
 
 ```python
-inputs = {"key": 1, "key2": np.ndarray([[1,2,3,4]])}
+inputs = {"key": 1, "key2": np.ndarray([[1, 2, 3, 4]])}
 ```
 
 ##### Requirements
