@@ -2,7 +2,7 @@
 id: Questions about Metaphysics
 tags:
   - philosophy
-  - seed
+  - sapling
 title: Questions about Metaphysics
 ---
 <!--

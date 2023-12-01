@@ -14,7 +14,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/Questions about Metaphysics.md",
+                "file": "posts/Questions about Spinoza.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -145,7 +145,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "posts/Questions about Metaphysics.md",
+                "file": "posts/Questions about Spinoza.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -162,7 +162,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "posts/Questions about Metaphysics.md",
+                "file": "posts/Questions about Spinoza.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -185,7 +185,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "posts/Questions about Metaphysics.md"
+                "file": "posts/Questions about Spinoza.md"
               }
             }
           },
@@ -213,7 +213,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "posts/Questions about Metaphysics.md"
+                "file": "posts/Questions about Spinoza.md"
               }
             }
           }
@@ -238,7 +238,9 @@
   },
   "active": "2a25f5dfc14cf5fe",
   "lastOpenFiles": [
+    "dump/university/philo-1aa3/Sphinoza.md",
     "posts/Questions about Spinoza.md",
+    "posts/Questions about Metaphysics.md",
     "dump/university/philo-1aa3/tut/Spinoza.md",
     "dump/university/philo-1aa3/John Stuart Mill.md",
     "dump/university/concurrent-design-3bb4/go.mod",
@@ -262,8 +264,6 @@
     "dump/GPU programming.md",
     "dump/university/capstone-5b03/Possible projects.md",
     "dump/university/philo-1aa3/Nietzsche.md",
-    "dump/university/philo-1aa3/Sphinoza.md",
-    "posts/Questions about Metaphysics.md",
     "dump/university/philo-1aa3/Aristotle.md",
     "dump/university/capstone-5b03/Criteria.md",
     "dump/university/capstone-5b03/Finals.md",

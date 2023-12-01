@@ -1,8 +1,7 @@
 ---
 id: Questions about Spinoza
 tags:
-  - philos1aa3
-  - university
+  - sapling
   - philosophy
 title: Questions about Spinoza
 ---
@@ -58,8 +57,8 @@ I pass over the other notions here, both because this is not the place to treat 
 Many people are accustomed to arguing in this way: If all things have followed from the necessity of God’s most perfect nature, why are there so many imperfections in nature? why are things so rotten that they stink? so ugly that they make us sick? why is there confusion, evil, and wrong-doing? I repeat that those who argue like this are easily answered. For the perfection of things is to be judged solely from their nature and power; things are not more or less perfect because they please or offend men’s senses, or because they are useful or harmful to human nature.
 But to those who ask ‘Why didn’t God create all men so that they would be governed by the command of reason?’ I answer only: ‘Because God had the material to create all things, from the highest degree of perfection to the lowest’; or, to put it more accurately, ‘Because the laws of God’s nature have been so ample that they sufficed for producing all things that can be conceived by an unlimited intellect’ (as I demonstrated in 16)—that is, producing everything that is conceivable or possible.
 -->
-
-In delving deeper into the philosophical insights of Baruch Spinoza's "Ethics," particularly his repudiation of teleology and the anthropocentric conception of divine power, it becomes essential to contrast these views with the philosophical tenets found in Friedrich Nietzsche's "Beyond Good and Evil." Spinoza, with his staunch rationalism, argues that misconceptions about the divine will lead to a skewed understanding of morality and aesthetics. He suggests that true morality emerges from comprehending nature and God as entities devoid of human-like intentions or ends. For Spinoza, morality is less about adhering to external moral codes and more about aligning oneself with a profound understanding of God's nature.
+---
+In delving deeper into the philosophical insights of Baruch [[dump/university/philo-1aa3/Sphinoza|Sphinoza]]'s "Ethics," particularly his repudiation of teleology and the anthropocentric conception of divine power, it becomes essential to contrast these views with the philosophical tenets found in Friedrich Nietzsche's "Beyond Good and Evil." Spinoza, with his staunch rationalism, argues that misconceptions about the divine will lead to a skewed understanding of morality and aesthetics. He suggests that true morality emerges from comprehending nature and God as entities devoid of human-like intentions or ends. For Spinoza, morality is less about adhering to external moral codes and more about aligning oneself with a profound understanding of God's nature.
 Nietzsche, while sharing Spinoza's scepticism of conventional morality, approaches the subject from a different vantage point. His concept of perspectivalism, particularly the idea of the "Will to Power", challenges traditional notions of morality and truth as expressions of an inherent drive in all living beings to assert and maintain influence and perspective. Unlike Spinoza, Nietzsche is more focused on the role of individual power in shaping morals, eschewing the existence of a higher being. While Spinoza prompts us to envision a deterministic universe without divine purpose, urging a more objective approach to morality, Nietzsche confronts us with the nihilistic consequences of such a universe, advocating for the creation of personal values in response. This juxtaposition of ideas is crucial in contemporary philosophical discussions, urging a critical reassessment of our moral beliefs. I posit that our moral values should not only draw strength from personal conviction but also be grounded in a rational understanding of our environment and history, informed by disciplines like anthropology. This balanced approach offers a way to navigate the complex landscape of moral philosophy in the modern world.
 
 
