@@ -4,50 +4,19 @@
     "type": "split",
     "children": [
       {
-        "id": "618f3182900ccbc8",
-        "type": "tabs",
-        "dimension": 45.81231079717457,
-        "children": [
-          {
-            "id": "2a25f5dfc14cf5fe",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "posts/Questions about Spinoza.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "5fe9e346f7a83416",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/university/philo-1aa3/Sphinoza.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          }
-        ]
-      },
-      {
         "id": "3d3e1c74c1632000",
         "type": "tabs",
-        "dimension": 54.18768920282543,
         "children": [
           {
             "id": "5a3c31da07270950",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
+                "file": "dump/university/hci-4hc3/Design Document.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
               }
             }
           },
@@ -77,8 +46,7 @@
               }
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -128,8 +96,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 388.50390243530273,
-    "collapsed": true
+    "width": 388.50390243530273
   },
   "right": {
     "id": "5221182814b155cf",
@@ -145,7 +112,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "posts/Questions about Spinoza.md",
+                "file": "dump/university/hci-4hc3/Design Document.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -162,7 +129,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "posts/Questions about Spinoza.md",
+                "file": "dump/university/hci-4hc3/Design Document.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -185,7 +152,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "posts/Questions about Spinoza.md"
+                "file": "dump/university/hci-4hc3/Design Document.md"
               }
             }
           },
@@ -213,7 +180,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "posts/Questions about Spinoza.md"
+                "file": "dump/university/hci-4hc3/Design Document.md"
               }
             }
           }
@@ -236,8 +203,12 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "2a25f5dfc14cf5fe",
+  "active": "5a3c31da07270950",
   "lastOpenFiles": [
+    "dump/university/hci-4hc3/Shape 6M.svg",
+    "dump/university/hci-4hc3/Shape.svg",
+    "dump/university/philo-1aa3/1A3Reader(2019).pdf",
+    "dump/university/hci-4hc3/Design Document.md",
     "dump/university/philo-1aa3/Sphinoza.md",
     "posts/Questions about Spinoza.md",
     "posts/Questions about Metaphysics.md",
@@ -252,7 +223,6 @@
     "dump/university/concurrent-design-3bb4/a11/priorityqueue/priorityqueue_heap.go",
     "dump/university/concurrent-design-3bb4/a11/priorityqueue/priorityqueue.go",
     "dump/university/concurrent-design-3bb4/a11/allocator/allocator_queue.go",
-    "dump/university/concurrent-design-3bb4/a11/allocator/allocator.go",
     "dump/university/compsci-4x03/number of function evalutions versus x.png",
     "dump/university/compsci-4x03/a3-p4-timeadd.png",
     "dump/university/compsci-4x03/a3-p3-c-trapezoidal.png",
@@ -280,9 +250,7 @@
     "dump/university/philo-1aa3/tut/Metaphysics.md",
     "dump/university/philo-1aa3/tut/Symposium.md",
     "dump/university/philo-1aa3/tut/T1.md",
-    "dump/university/philo-1aa3/tut/Republic.md",
     "dump/university/compsci-4x03/a2-fig6.png",
-    "dump/university/compsci-4x03/a2-fig5.png",
     "Untitled.canvas"
   ]
 }
