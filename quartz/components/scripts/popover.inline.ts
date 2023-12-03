@@ -4,6 +4,10 @@ import { normalizeRelativeURLs } from "../../util/path"
 const p = new DOMParser()
 async function mouseEnterHandler(this: HTMLLinkElement, { clientX, clientY }: { clientX: number; clientY: number }) {
   const link = this
+  if (link.dataset.noPopover === "true") {
+    return
+  }
+
   async function setPosition(popoverElement: HTMLElement) {
     const { x, y } = await computePosition(link, popoverElement, {
       middleware: [inline({ x: clientX, y: clientY }), shift(), flip()],
