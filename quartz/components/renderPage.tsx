@@ -3,9 +3,10 @@ import { QuartzComponent, QuartzComponentProps } from "./types"
 import HeaderConstructor from "./Header"
 import BodyConstructor from "./Body"
 import { JSResourceToScriptElement, StaticResources } from "../util/resources"
-import { FullSlug, RelativeURL, joinSegments } from "../util/path"
+import { FullSlug, RelativeURL, joinSegments, normalizeHastElement } from "../util/path"
 import { visit } from "unist-util-visit"
 import { Root, Element, ElementContent } from "hast"
+import { QuartzPluginData } from "../plugins/vfile"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -46,6 +47,18 @@ export function pageResources(baseDir: FullSlug | RelativeURL, staticResources: 
   }
 }
 
+let pageIndex: Map<FullSlug, QuartzPluginData> | undefined = undefined
+function getOrComputeFileIndex(allFiles: QuartzPluginData[]): Map<FullSlug, QuartzPluginData> {
+  if (!pageIndex) {
+    pageIndex = new Map()
+    for (const file of allFiles) {
+      pageIndex.set(file.slug!, file)
+    }
+  }
+
+  return pageIndex
+}
+
 export function renderPage(
   slug: FullSlug,
   componentData: QuartzComponentProps,
@@ -59,17 +72,15 @@ export function renderPage(
       if (classNames.includes("transclude")) {
         const inner = node.children[0] as Element
         const transcludeTarget = inner.properties?.["data-slug"] as FullSlug
-
-        // TODO: avoid this expensive find operation and construct an index ahead of time
-        const page = componentData.allFiles.find((f) => f.slug === transcludeTarget)
+        const page = getOrComputeFileIndex(componentData.allFiles).get(transcludeTarget)
         if (!page) {
           return
         }
 
         let blockRef = node.properties?.dataBlock as string | undefined
-        if (blockRef?.startsWith("^")) {
+        if (blockRef?.startsWith("#^")) {
           // block transclude
-          blockRef = blockRef.slice(1)
+          blockRef = blockRef.slice("#^".length)
           let blockNode = page.blocks?.[blockRef]
           if (blockNode) {
             if (blockNode.tagName === "li") {
@@ -81,7 +92,7 @@ export function renderPage(
             }
 
             node.children = [
-              blockNode,
+              normalizeHastElement(blockNode, slug, transcludeTarget),
               {
                 type: "element",
                 tagName: "a",
@@ -114,7 +125,9 @@ export function renderPage(
           }
 
           node.children = [
-            ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]),
+            ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map((child) =>
+              normalizeHastElement(child as Element, slug, transcludeTarget),
+            ),
             {
               type: "element",
               tagName: "a",
@@ -132,7 +145,9 @@ export function renderPage(
                 { type: "text", value: page.frontmatter?.title ?? `Transclude of ${page.slug}` },
               ],
             },
-            ...(page.htmlAst.children as ElementContent[]),
+            ...(page.htmlAst.children as ElementContent[]).map((child) =>
+              normalizeHastElement(child as Element, slug, transcludeTarget),
+            ),
             {
               type: "element",
               tagName: "a",
