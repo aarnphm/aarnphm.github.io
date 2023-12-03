@@ -20,7 +20,6 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The World as Will and Representation** by Arthur Schopenhauer
 - **The Prince** by Niccolò Machiavelli
 - **Why I Write** by George Orwell
-- **Why I Am So Wise** by Friedrich Nietzsche
 - **Thus Spoke Zarathustra** by Friedrich Nietzsche
 
 ### non-fiction
@@ -64,6 +63,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ### 2023
 
+- **Why I Am So Wise** by Friedrich Nietzsche
 - **Civilization and Its Discontents** by Sigmund Freud
 - **Dopamine Nation** by Dr. Anna Lembke
 - **In Emergency, Break Glass: What Nietzsche Can Teach Us About Joyful Living in a Tech-Saturated World** by Nate Anderson
