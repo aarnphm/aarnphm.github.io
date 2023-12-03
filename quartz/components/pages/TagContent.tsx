@@ -22,7 +22,7 @@ function TagContent(props: QuartzComponentProps) {
 
   const content = (tree as Root).children.length === 0 ? fileData.description : htmlToJsx(fileData.filePath!, tree)
 
-  if (tag === "") {
+  if (tag === "/") {
     const tags = [...new Set(allFiles.flatMap((data) => data.frontmatter?.tags ?? []))]
     const tagItemMap: Map<string, QuartzPluginData[]> = new Map()
     for (const tag of tags) {
