@@ -1,0 +1,80 @@
+extend-include = ["*.ipynb"]
+extend-select = [
+  "E",
+  "F",
+  "B",
+  "PIE",
+  "G",    # flake8-logging-format
+  "W",    # pycodestyle
+  "Q",    # flake8-quotes
+  "FA",   # flake8-future-annotations
+  "TCH",  # flake8-type-checking
+  "PLW",  # pylint-warning
+  "PLR",  # pylint-refactor
+  "PT",   # flake8-pytest-style
+  "PERF", # perflint
+  "RUF",  # Ruff-specific rules
+  "YTT",  # flake8-2020
+]
+fix = true
+ignore = [
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
+  "ANN",     # Use mypy
+  "PLR2004", # magic value to use constant
+  "E501",    # ignore line length violation
+  "E401",    # ignore multiple line import
+  "E702",
+  "TCH004",  # don't move runtime import out, just warn about it
+  "RUF012",  # mutable attributes to be used with ClassVar
+  "E701",    # multiple statement on single line
+]
+line-length = 119
+indent-width = 2
+target-version = "py38"
+unfixable = ["TCH004"]
+
+[lint.flake8-type-checking]
+exempt-modules = [
+  "typing",
+  "typing_extensions",
+  "openllm_core._typing_compat",
+  "openllm_client._typing_compat",
+]
+runtime-evaluated-base-classes = [
+  "openllm_core._configuration.LLMConfig",
+  "openllm_core._configuration.GenerationConfig",
+  "openllm_core._configuration.SamplingParams",
+  "openllm_core._configuration.ModelSettings",
+  "openllm.LLMConfig",
+]
+runtime-evaluated-decorators = [
+  "attrs.define",
+  "attrs.frozen",
+  "trait",
+  "attr.attrs",
+  'attr.define',
+  '_attr.define',
+  'attr.frozen',
+]
+
+[format]
+preview = true
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = true
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.pycodestyle]
+ignore-overlong-task-comments = true
+max-line-length = 119
+
+[lint.flake8-quotes]
+avoid-escape = false
+inline-quotes = "single"
+multiline-quotes = "single"
+docstring-quotes = "single"
