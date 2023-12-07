@@ -26,7 +26,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/compsci-4x03/A4.md",
+                "file": "dump/university/hci-4hc3/M4.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -100,7 +100,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/compsci-4x03/A4.md",
+                "file": "dump/university/hci-4hc3/M4.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -117,7 +117,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/compsci-4x03/A4.md",
+                "file": "dump/university/hci-4hc3/M4.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -140,7 +140,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/compsci-4x03/A4.md"
+                "file": "dump/university/hci-4hc3/M4.md"
               }
             }
           },
@@ -168,7 +168,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/compsci-4x03/A4.md"
+                "file": "dump/university/hci-4hc3/M4.md"
               }
             }
           }
@@ -193,11 +193,12 @@
   },
   "active": "5e79be1f54e15b44",
   "lastOpenFiles": [
+    "dump/university/compsci-4x03/A4.md",
+    "dump/university/hci-4hc3/M4.md",
     "dump/university/compsci-4x03/__pycache__/net.cpython-39.pyc",
     "dump/university/compsci-4x03/net.py",
     "dump/university/compsci-4x03/findPeriod.md",
     "dump/university/compsci-4x03/findPeriod.m",
-    "dump/university/compsci-4x03/A4.md",
     "dump/university/compsci-4x03/activate.m",
     "dump/university/compsci-4x03/a4-p1-failed.png",
     "dump/university/compsci-4x03/a4-p1-cost.png",
@@ -220,7 +221,6 @@
     "dump/university/compsci-4x03/A3.md",
     "dump/university/compsci-4x03/netbpfull.m||.md",
     "dump/university/compsci-4x03/nlsrun.m",
-    "dump/university/compsci-4x03/netbpfull.m",
     "dump/university/compsci-4x03/point.mat.md",
     "posts/Questions about Metaphysics.md",
     "dump/university/hci-4hc3/Design Document.md",
