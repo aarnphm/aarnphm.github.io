@@ -11,7 +11,7 @@ title: Aaron's notes
 
 I'm Aaron. Welcome to my humble abode!
 
-Currently, I'm building efficient infrastructure for serving LLM and exploring
+Currently, I'm building infrastructure for serving LLM and exploring
 our interaction with machine learning models at [[dump/projects#bentoml--build-production-grade-ai-application|BentoML]].
 What modality should we choose beyond text/chat for our interaction with these Large models (LMs)?
 How can we make it more easy and accessible for everyone to utilise these models?
@@ -20,9 +20,9 @@ Sometimes, I might spontaneously drop everything and make music, or spent all da
 
 The following are some links you might want to start with:
 
-- [The bookshelf far away](/books): books I have read, currently reading, or to be read in near future.
+- [Bookshelf](/books): books I have read, currently reading, or to be read in near future.
 - [The rusty mailbox](/posts/): collections of either personal or technical [[dump/writing|writing]].
-- [An unfinished drawing canvas](/dump): Scattered recollection of notes.
+- [Notes](/dump): Scattered recollection of notes.
 - [Easels stand](/dump/projects): List of [[dump/projects]] I have built throughout the year!
 
 Regards, your internet friend Aaron.
