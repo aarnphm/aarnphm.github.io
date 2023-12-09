@@ -7,7 +7,7 @@ tags:
 title: Plato
 ---
 
-See also [[Socrates]]
+See also [[dump/university/philo-1aa3/Socrates]]
 
 # Apology
 
@@ -99,7 +99,7 @@ Philosophical rulers ->
 - Crucial to make them wise and knowledgable
 - Establish education -> reason well and follow reasons
 
-[[Nietzsche]] -> problems with Socrates
+[[dump/university/philo-1aa3/Nietzsche|Nietzsche]] -> problems with Socrates
 
 - Reasoned and consciously sound
 - Un-examined mind is not worth living?
@@ -242,7 +242,7 @@ Plato: Such was the end of the comrade. The men who does he knows
 Conquer the west
 -> Western civilisation places a lot of sign in faith
 
-#### Symposium
+### Symposium
 
 _some time after Socrates' death_
 _Agathon, a poet of tragedies, is the host_

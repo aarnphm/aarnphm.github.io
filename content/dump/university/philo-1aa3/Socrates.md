@@ -11,7 +11,7 @@ title: Socrates
 
 refers to Ionian:
 
-> keen on [nature] science. Why it comes to be, why exists?
+> keen on _nature_ science. Why it comes to be, why exists?
 
 Dissatisfied with nature science
 

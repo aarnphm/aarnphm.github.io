@@ -54,11 +54,11 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 ## current.
 
 - **Beyond Good and Evil** by Friedrich Nietzsche
+- **The Metaphysics of Morals** by Immanuel Kant
 - **The Ego and the Id** by Sigmund Freud
 - **Beyond The Pleasure Principle** by Sigmund Freud
 - **The Critique of Pure Reason** by Immanuel Kant
 - **Crime and Punishment** by Fyodor Dostoevsky
-- **The Metaphysics of Morals** by Immanuel Kant
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
 - **Structure and Interpretation of Computer Programs** by Abelson and Sussman
 
@@ -76,6 +76,8 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **Out of Love** by Hazel Hayes
 - **Pretentiousness: Why it Matters** by Dan Fox
 - **The Republic** by Plato
+- **Apology** by Plato
+- **Symposium** by Plato
 
 ### 2022
 
