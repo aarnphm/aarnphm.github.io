@@ -1,5 +1,5 @@
 ---
-id: Philosophical Text
+id: index
 tags:
   - philosophy
   - university
@@ -8,4 +8,6 @@ title: Philosophical Text
 ---
 
 An introduction to philosophy through the close reading of selected classical texts.
-Authors to be considered may include Plato, Descartes, Hobbes, Hume, Marx, Mill, Nietzsche, Russell, and De Beauvoir
+Authors to be considered may include Plato, Descartes, Hobbes, Hume, Marx, Mill, Nietzsche.
+
+The full notes can be found [[dump/university/philo-1aa3/All.pdf|here]], with all of the reference [[dump/university/philo-1aa3/1A3Reader(2019).pdf|text]].

@@ -21,6 +21,8 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Prince** by Niccolò Machiavelli
 - **Why I Write** by George Orwell
 - **Thus Spoke Zarathustra** by Friedrich Nietzsche
+- **Twilight of the Idols** by Friedrich Nietzsche
+- **On The Genealogy of Morals** by Friedrich Nietzsche
 
 ### non-fiction
 
@@ -46,6 +48,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The End of the affair** by Graham Greene
 
 ### poetry
+
 - **Dog songs** by Mary Oliver
 
 ## current.

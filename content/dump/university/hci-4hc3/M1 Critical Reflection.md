@@ -4,6 +4,7 @@ tags:
   - university
   - hci
 title: M1 Reflection
+draft: true
 ---
 
 My experience with my teammates has been consistently positive. They have shown professionalism and responsiveness, providing constructive feedback and actively contributing their ideas. My previous 12-month co-op at a machine learning (ML) infrastructure startup, where I collaborated with a globally distributed team, emphasized the critical role of collaborative and agile development workflows in project success. As a result, the iterative process for idea generation came naturally to us when brainstorming concepts, ultimately leading us to choose the improvement of Mosaic as our project focus.

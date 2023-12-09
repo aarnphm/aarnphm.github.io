@@ -10,15 +10,13 @@ mu_hat = 1 - mu
 # Differential equations
 def equations(t, u):
   u1, u1_prime, u2, u2_prime = u
-  delta1 = ((u1 + mu) ** 2 + u2**2) ** 1.5
-  delta2 = ((u1 - mu_hat) ** 2 + u2**2) ** 1.5
+  delta1=((u1+mu)**2 + u2**2)**1.5
+  delta2=((u1-mu_hat)**2 + u2**2)**1.5
+  du1_primedt =u1 + 2*u2_prime - mu_hat*(u1+mu)/delta1 - mu*(u1-mu_hat)/delta2
+  du2_primedt =u2 - 2*u1_prime - mu_hat*u2/delta1 - mu*u2/delta2
 
-  du1dt = u1_prime
-  du1_primedt = u1 + 2 * u2_prime - mu_hat * (u1 + mu) / delta1 - mu * (u1 - mu_hat) / delta2
-  du2dt = u2_prime
-  du2_primedt = u2 - 2 * u1_prime - mu_hat * u2 / delta1 - mu * u2 / delta2
-
-  return [du1dt, du1_primedt, du2dt, du2_primedt]
+  #       du1dt                  du2dt
+  return [u1_prime, du1_primedt, u2_prime, du2_primedt]
 
 
 # Initial conditions
