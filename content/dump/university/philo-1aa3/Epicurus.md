@@ -146,7 +146,7 @@ Human lives without any organisation
   -> Violence is not a way of life
 
 > [!IMPORTANT]
-> Justice and pleasures are fudamental building blocks of society
+> Justice and pleasures are fundamental building blocks of society
 
 Saw the needs for more formal definition of contract => Law and Justice
 

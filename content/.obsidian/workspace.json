@@ -37,19 +37,22 @@
             "id": "354c81a20c1da2a0",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
+                "file": "dump/university/philo-1aa3/Nous.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
               }
             }
           },
           {
-            "id": "d0e7317303ecdc19",
+            "id": "09ac2c81ffe5bf54",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/philo-1aa3/Nous.md",
+                "file": "dump/university/philo-1aa3/Descartes.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -107,8 +110,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 388.50390243530273,
-    "collapsed": true
+    "width": 388.50390243530273
   },
   "right": {
     "id": "5221182814b155cf",
@@ -124,7 +126,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf",
+                "file": "dump/university/philo-1aa3/Nous.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -141,7 +143,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf",
+                "file": "dump/university/philo-1aa3/Nous.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -164,7 +166,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
+                "file": "dump/university/philo-1aa3/Nous.md"
               }
             }
           },
@@ -192,7 +194,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/philo-1aa3/1A3Reader(2019).pdf"
+                "file": "dump/university/philo-1aa3/Nous.md"
               }
             }
           }
@@ -215,11 +217,19 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "354c81a20c1da2a0",
+  "active": "59fd19f001b80287",
   "lastOpenFiles": [
+    "dump/university/philo-1aa3/spinoza-knowledge.png",
+    "dump/university/philo-1aa3/descartes-qualities.png",
+    "dump/university/philo-1aa3/Sphinoza.md",
     "dump/university/philo-1aa3/Nous.md",
-    "dump/university/philo-1aa3/1A3Reader(2019).pdf",
+    "dump/university/philo-1aa3/Descartes.md",
+    "dump/university/philo-1aa3/epistemology.png",
     "dump/university/philo-1aa3/Plato.md",
+    "dump/university/philo-1aa3/1A3Reader(2019).pdf",
+    "dump/university/philo-1aa3/aristotle-form.png",
+    "dump/university/philo-1aa3/aristotle-metaphysics.png",
+    "dump/university/philo-1aa3/knowledge-map-thoughts.png",
     "dump/university/philo-1aa3/Nietzsche.md",
     "dump/university/philo-1aa3/Epicurus.md",
     "dump/university/philo-1aa3/Aristotle.md",
@@ -242,10 +252,8 @@
     "dump/university/hci-4hc3/M3.md",
     "dump/university/hci-4hc3/M3 Reflection.md",
     "dump/university/hci-4hc3/M4.md",
-    "dump/university/compsci-4x03/A4.md",
     "dump/university/compsci-4x03/__pycache__/net.cpython-39.pyc",
     "dump/university/compsci-4x03/net.py",
-    "dump/university/compsci-4x03/findPeriod.md",
     "dump/university/compsci-4x03/findPeriod.m",
     "dump/university/compsci-4x03/activate.m",
     "dump/university/compsci-4x03/a4-p1-failed.png",
@@ -254,13 +262,8 @@
     "dump/university/compsci-4x03/a4-p1-acc.png",
     "dump/university/compsci-4x03/inverse_newt.py",
     "dump/university/compsci-4x03/a4-p8-delta-funcs.png",
-    "dump/university/compsci-4x03/a4-p8-delta.png",
-    "dump/university/compsci-4x03/a4-p8-four-graphs.png",
-    "dump/university/compsci-4x03/a4-p8-ts.png",
     "dump/university/compsci-4x03/lorenz.py",
     "dump/university/compsci-4x03/ode45.py",
-    "dump/university/compsci-4x03/a4-p7-10000.png",
-    "dump/university/compsci-4x03/a4-p7-100.png",
     "dump/university/compsci-4x03/rk4.py",
     "Untitled.canvas"
   ]

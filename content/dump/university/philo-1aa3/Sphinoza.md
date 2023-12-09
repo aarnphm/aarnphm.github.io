@@ -6,7 +6,7 @@ tags:
 title: Sphinoza
 ---
 
-### Ethics (1677)
+## Ethics (1677)
 
 Deus sive Nature
 European considered Sphinoza as Atheist => but his works mentioned God

@@ -1,24 +1,18 @@
 from __future__ import annotations
-import enum, numpy as np, matplotlib.pyplot as plt; from scipy.io import loadmat
+import enum, os, numpy as np, matplotlib.pyplot as plt; from scipy.io import loadmat
 
 def parse(): return (data:=loadmat('points.mat'))['x'], data['labels']
 
 # ylecun init_norm_
-def ylecun_(hidden, output_size):
-    # Calculate the scaling factor based on fan-in for each layer
-    scale_W2 = np.sqrt(1 / hidden)
-    scale_W3 = np.sqrt(1 / hidden)
-    scale_W4 = np.sqrt(1 / hidden)
-
-    # Initialize weights and biases
-    W2, b2 = np.random.randn(hidden, 2) * scale_W2, np.zeros((hidden, 1))
-    W3, b3 = np.random.randn(hidden, hidden) * scale_W3, np.zeros((hidden, 1))
-    W4, b4 = np.random.randn(output_size, hidden) * scale_W4, np.zeros((output_size, 1))
-
+def ylecun_(hidden: int, output_size: int) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    scale = np.sqrt(1 / hidden)
+    W2, b2 = np.random.randn(hidden, 2) * scale, np.zeros((hidden, 1))
+    W3, b3 = np.random.randn(hidden, hidden) * scale, np.zeros((hidden, 1))
+    W4, b4 = np.random.randn(output_size, hidden) * scale, np.zeros((output_size, 1))
     return W2, b2, W3, b3, W4, b4
 
 # activation function
-class Activation(enum.IntEnum):LeakyReLU = enum.auto();ReLU = enum.auto();Sigmoid = enum.auto()
+class Activation(enum.IntEnum):LeakyReLU=enum.auto();ReLU=enum.auto();Sigmoid=enum.auto()
 def leaky_relu(z: float,alpha: float = 0.01) -> float: return np.maximum(alpha*z, z)
 def relu(z: float) -> float: return np.maximum(0,z)
 def sigmoid(z: float) -> float: return 1/(1+np.exp(-z))
@@ -34,12 +28,10 @@ def forward(x, W2, b2, W3, b3, W4, b4): return (a2:=actfn(W2@x+b2)),(a3:=actfn(W
 def backprop(x, labels, a2, a3, a4, W3, W4):
   m, leaky_alpha = labels.shape[1], 0.01
   d4=(a4-labels)*a4*(1-a4)
-  d3=W4.T@d4*np.where(a3>0, 1, leaky_alpha) # * leaky_relu derivative
-  d2=W3.T@d3*np.where(a2>0, 1, leaky_alpha) # * leaky_relu derivative
-
+  d3=W4.T@d4*np.where(a3>0,1,leaky_alpha) # * leaky_relu derivative
+  d2=W3.T@d3*np.where(a2>0,1,leaky_alpha) # * leaky_relu derivative
   gradW4,gradW3,gradW2=d4@a3.T/m,d3@a2.T/m,d2@x.T/m
   gradb4,gradb3,gradb2=np.sum(d4,axis=1,keepdims=True)/m,np.sum(d3,axis=1,keepdims=True)/m,np.sum(d2,axis=1,keepdims=True)/m
-
   return gradW4,gradb4,gradW3,gradb3,gradW2,gradb2
 
 def train() -> int:
@@ -76,7 +68,7 @@ def train() -> int:
     if count % decay_step == 0: eta *= decay_rate
 
   # Plots
-  plot_decision_boundary(x, labels, W2, b2, W3, b3, W4, b4); plot_relations(count, costs, accuracies)
+  if DEBUG: plot_decision_boundary(x, labels, W2, b2, W3, b3, W4, b4); plot_relations(count, costs, accuracies)
   return 0
 
 def plot_decision_boundary(x, labels, W2, b2, W3, b3, W4, b4, h=0.01):
@@ -102,4 +94,4 @@ def plot_relations(count, costs, accuracies):
   plt.xlabel('Iterations'); plt.ylabel('Accuracy (%)')
   plt.show()
 
-if __name__ == '__main__': np.random.seed(420); raise SystemExit(train())
+if __name__ == '__main__': np.random.seed(420); DEBUG=os.getenv("DEBUG", str(False)).upper() == 'TRUE'; raise SystemExit(train())
