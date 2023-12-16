@@ -10,7 +10,7 @@
     "pageSize": "A4",
     "landscape": false,
     "margin": "0",
-    "downscalePercent": 65
+    "downscalePercent": 100
   },
   "tabSize": 2,
   "newFileLocation": "current",
@@ -18,7 +18,7 @@
   "attachmentFolderPath": "./",
   "showLineNumber": false,
   "readableLineLength": true,
-  "strictLineBreaks": false,
+  "strictLineBreaks": true,
   "showInlineTitle": true,
   "rightToLeft": false
 }

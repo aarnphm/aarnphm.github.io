@@ -1,0 +1,18 @@
+---
+id: Philosophy and Nietzsche
+tags:
+  - philosophy
+  - seed
+title: Philosophy and Nietzsche
+---
+
+Nietzsche's [[dump/university/philo-1aa3/Nietzsche|Life]] and overall influence
+
+## _Anatomy_ of Beyond Good and Evil
+
+Aphorism 1
+
+> The will to truth, which is still going to tempt us to many a hazardous enterprise; that celebrated veracity of which all philosophers have hitherto spoken with reverence: what questions this will to truth has already set before us! What strange, wicked, questionable questions! It is already a long story — yet does it not seem as if it has only just begun? Is it any wonder we should at last grow distrustful, lose our patience, turn impatiently away? That this sphinx should teach us too to ask questions? Who really is it that here questions us? What really is it in us that wants ‘the truth’? — We did indeed pause for a long time before the question of the origin of this will — until finally we came to a complete halt before an even more fundamental question. We asked after the value of this will. Granted we want truth: why not rather untruth? And uncertainty? Even ignorance? — The problem of the value of truth stepped before us — or was it we who stepped before this problem? Which of us is Oedipus here? Which of us sphinx? It is, it seems, a rendezvous of questions and question-marks. And, would you believe it, it has finally almost come to seem to us that this problem has never before been posed — that we have been the first to see it, to fix our eye on it, to hazard it? For there is a hazard in it and perhaps there exists no greater hazard
+
+## On Genealogy of Morals
+

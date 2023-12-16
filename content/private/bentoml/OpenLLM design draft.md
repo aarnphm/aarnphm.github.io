@@ -125,8 +125,6 @@ This means your service will offer three endpoints:
 /embed (create text embedding)
 ```
 
-> TODO: `/chat-sse`
-
 By default, `open-llm-server` will start a HTTP server on port 5000, and it can start multiple models by specifying its name separated by comma.
 
 `start` will call a BentoML server underneath, and will import model if said weights is not found under the `BENTOML_HOME` directory

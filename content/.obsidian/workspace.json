@@ -39,20 +39,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/philo-1aa3/Nous.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "09ac2c81ffe5bf54",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/university/philo-1aa3/Descartes.md",
+                "file": "dump/university/compsci-4x03/Equations.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -110,7 +97,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 388.50390243530273
+    "width": 388.50390243530273,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -126,7 +114,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/philo-1aa3/Nous.md",
+                "file": "dump/university/compsci-4x03/Equations.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -143,7 +131,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/philo-1aa3/Nous.md",
+                "file": "dump/university/compsci-4x03/Equations.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -166,7 +154,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/philo-1aa3/Nous.md"
+                "file": "dump/university/compsci-4x03/Equations.md"
               }
             }
           },
@@ -194,7 +182,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/philo-1aa3/Nous.md"
+                "file": "dump/university/compsci-4x03/Equations.md"
               }
             }
           }
@@ -217,20 +205,30 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "354c81a20c1da2a0",
   "lastOpenFiles": [
+    "dump/university/compsci-4x03/Sheets.md",
+    "dump/university/compsci-4x03/Equations.md",
+    "dump/university/compsci-4x03/Assignment 4 COMPSCI 4X03.pdf",
+    "dump/university/compsci-4x03/Assignment 3.pdf",
+    "dump/Assignment 4 COMPSCI 4X03.pdf",
+    "dump/Assignment 3.pdf",
+    "dump/university/compsci-4x03/4X03.pdf",
+    "dump/university/compsci-4x03/Review.md",
+    "dump/university/philo-1aa3/Descartes.md",
+    "dump/university/philo-1aa3/Nietzsche.md",
+    "dump/university/philo-1aa3/Socrates.md",
+    "dump/Philosophy and Nietzsche.md",
+    "dump/university/philo-1aa3/Nous.md",
     "dump/university/philo-1aa3/spinoza-knowledge.png",
     "dump/university/philo-1aa3/descartes-qualities.png",
     "dump/university/philo-1aa3/Sphinoza.md",
-    "dump/university/philo-1aa3/Nous.md",
-    "dump/university/philo-1aa3/Descartes.md",
     "dump/university/philo-1aa3/epistemology.png",
     "dump/university/philo-1aa3/Plato.md",
     "dump/university/philo-1aa3/1A3Reader(2019).pdf",
     "dump/university/philo-1aa3/aristotle-form.png",
     "dump/university/philo-1aa3/aristotle-metaphysics.png",
     "dump/university/philo-1aa3/knowledge-map-thoughts.png",
-    "dump/university/philo-1aa3/Nietzsche.md",
     "dump/university/philo-1aa3/Epicurus.md",
     "dump/university/philo-1aa3/Aristotle.md",
     "dump/university/philo-1aa3/tut/Epicurus.md",
@@ -241,7 +239,6 @@
     "dump/university/philo-1aa3/tut/Stoic.md",
     "dump/university/philo-1aa3/tut/Symposium.md",
     "dump/university/philo-1aa3/tut/T1.md",
-    "dump/university/philo-1aa3/Socrates.md",
     "dump/university/philo-1aa3/Presocratics.md",
     "dump/university/philo-1aa3/All.pdf",
     "dump/university/philo-1aa3/index.md",
@@ -249,22 +246,13 @@
     "dump/university/hci-4hc3/index.md",
     "dump/university/hci-4hc3/Interactive cycle.md",
     "dump/university/hci-4hc3/M1 Critical Reflection.md",
-    "dump/university/hci-4hc3/M3.md",
-    "dump/university/hci-4hc3/M3 Reflection.md",
-    "dump/university/hci-4hc3/M4.md",
     "dump/university/compsci-4x03/__pycache__/net.cpython-39.pyc",
     "dump/university/compsci-4x03/net.py",
     "dump/university/compsci-4x03/findPeriod.m",
-    "dump/university/compsci-4x03/activate.m",
     "dump/university/compsci-4x03/a4-p1-failed.png",
     "dump/university/compsci-4x03/a4-p1-cost.png",
     "dump/university/compsci-4x03/a4-p1-correct.png",
     "dump/university/compsci-4x03/a4-p1-acc.png",
-    "dump/university/compsci-4x03/inverse_newt.py",
-    "dump/university/compsci-4x03/a4-p8-delta-funcs.png",
-    "dump/university/compsci-4x03/lorenz.py",
-    "dump/university/compsci-4x03/ode45.py",
-    "dump/university/compsci-4x03/rk4.py",
     "Untitled.canvas"
   ]
 }
