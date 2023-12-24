@@ -19,10 +19,10 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Phenomenology of Spirit** by G. W. F. Hegel
 - **The World as Will and Representation** by Arthur Schopenhauer
 - **The Prince** by Niccolò Machiavelli
-- **Why I Write** by George Orwell
 - **Thus Spoke Zarathustra** by Friedrich Nietzsche
 - **Twilight of the Idols** by Friedrich Nietzsche
 - **On The Genealogy of Morals** by Friedrich Nietzsche
+- **Ecce Homo** by Friedrich Nietzsche
 
 ### non-fiction
 
@@ -45,7 +45,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **Foundation** series by Isaac Asimov
 - **The Three-Body Problem** by Liu Cixin
 - **Robinson Crusoe** by Daniel Defoe
-- **The End of the affair** by Graham Greene
+- **The end of the affair** by Graham Greene
 
 ### poetry
 
@@ -53,6 +53,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ## current.
 
+- **Nietzsche and Philosophy** by Gilles Deleuze
 - **Beyond Good and Evil** by Friedrich Nietzsche
 - **The Metaphysics of Morals** by Immanuel Kant
 - **The Ego and the Id** by Sigmund Freud
@@ -66,6 +67,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ### 2023
 
+- **Why I Write** by George Orwell
 - **Why I Am So Wise** by Friedrich Nietzsche
 - **Civilization and Its Discontents** by Sigmund Freud
 - **Dopamine Nation** by Dr. Anna Lembke

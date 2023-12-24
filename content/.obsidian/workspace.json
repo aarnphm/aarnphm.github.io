@@ -39,7 +39,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/compsci-4x03/Equations.md",
+                "file": "dump/Philosophy and Nietzsche.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -97,8 +97,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 388.50390243530273,
-    "collapsed": true
+    "width": 388.50390243530273
   },
   "right": {
     "id": "5221182814b155cf",
@@ -114,7 +113,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/compsci-4x03/Equations.md",
+                "file": "dump/Philosophy and Nietzsche.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -131,7 +130,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/compsci-4x03/Equations.md",
+                "file": "dump/Philosophy and Nietzsche.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -154,7 +153,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/compsci-4x03/Equations.md"
+                "file": "dump/Philosophy and Nietzsche.md"
               }
             }
           },
@@ -182,7 +181,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/compsci-4x03/Equations.md"
+                "file": "dump/Philosophy and Nietzsche.md"
               }
             }
           }
@@ -207,8 +206,11 @@
   },
   "active": "354c81a20c1da2a0",
   "lastOpenFiles": [
-    "dump/university/compsci-4x03/Sheets.md",
+    "dump/university/hci-4hc3/M5 Reflection.md",
     "dump/university/compsci-4x03/Equations.md",
+    "dump/university/hci-4hc3/14",
+    "dump/university/hci-4hc3/14/M5 Reflection.md",
+    "dump/university/compsci-4x03/Sheets.md",
     "dump/university/compsci-4x03/Assignment 4 COMPSCI 4X03.pdf",
     "dump/university/compsci-4x03/Assignment 3.pdf",
     "dump/Assignment 4 COMPSCI 4X03.pdf",
@@ -243,12 +245,8 @@
     "dump/university/philo-1aa3/All.pdf",
     "dump/university/philo-1aa3/index.md",
     "dump/university/hci-4hc3/Interaction Critical Evaluation.md",
-    "dump/university/hci-4hc3/index.md",
-    "dump/university/hci-4hc3/Interactive cycle.md",
-    "dump/university/hci-4hc3/M1 Critical Reflection.md",
     "dump/university/compsci-4x03/__pycache__/net.cpython-39.pyc",
     "dump/university/compsci-4x03/net.py",
-    "dump/university/compsci-4x03/findPeriod.m",
     "dump/university/compsci-4x03/a4-p1-failed.png",
     "dump/university/compsci-4x03/a4-p1-cost.png",
     "dump/university/compsci-4x03/a4-p1-correct.png",
