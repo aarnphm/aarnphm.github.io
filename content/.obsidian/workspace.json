@@ -47,7 +47,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -113,7 +113,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/Philosophy and Nietzsche.md",
+                "file": "dump/university/philo-1aa3/Socrates.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -130,7 +130,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/Philosophy and Nietzsche.md",
+                "file": "dump/university/philo-1aa3/Socrates.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -153,7 +153,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/Philosophy and Nietzsche.md"
+                "file": "dump/university/philo-1aa3/Socrates.md"
               }
             }
           },
@@ -181,7 +181,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/Philosophy and Nietzsche.md"
+                "file": "dump/university/philo-1aa3/Socrates.md"
               }
             }
           }
@@ -204,8 +204,9 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "354c81a20c1da2a0",
+  "active": "c57d6c6d87675796",
   "lastOpenFiles": [
+    "dump/Philosophy and Nietzsche.md",
     "dump/university/hci-4hc3/M5 Reflection.md",
     "dump/university/compsci-4x03/Equations.md",
     "dump/university/hci-4hc3/14",
@@ -220,7 +221,6 @@
     "dump/university/philo-1aa3/Descartes.md",
     "dump/university/philo-1aa3/Nietzsche.md",
     "dump/university/philo-1aa3/Socrates.md",
-    "dump/Philosophy and Nietzsche.md",
     "dump/university/philo-1aa3/Nous.md",
     "dump/university/philo-1aa3/spinoza-knowledge.png",
     "dump/university/philo-1aa3/descartes-qualities.png",
