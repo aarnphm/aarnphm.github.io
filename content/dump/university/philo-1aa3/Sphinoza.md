@@ -2,8 +2,9 @@
 id: Sphinoza
 tags:
   - philos1aa3
-  - university
+  - philosophy
 title: Sphinoza
+date: 2023-10-10
 ---
 
 ## Ethics (1677)

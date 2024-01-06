@@ -6,4 +6,4 @@ tags:
 description: Civilisation and its discontent
 ---
 
-[[Freud]]'s works on Civilisation and its Discontents
+[[dump/Freud|Freud]]'s works on Civilisation and its Discontents

@@ -46,7 +46,7 @@ const config: QuartzConfig = {
     transformers: [
       Plugin.FrontMatter(),
       Plugin.TableOfContents(),
-      Plugin.CreatedModifiedDate({ priority: ["git", "filesystem", "frontmatter"] }),
+      Plugin.CreatedModifiedDate({ priority: ["frontmatter", "filesystem", "git"] }),
       Plugin.Latex({ renderEngine: "katex" }),
       Plugin.SyntaxHighlighting(),
       Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false, parseTags: false }),

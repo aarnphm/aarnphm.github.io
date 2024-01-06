@@ -1,9 +1,10 @@
 ---
 id: Republic
 tags:
-  - university
+  - philosophy
   - philos1aa3
 title: Allegory of the cave, Republic
+date: 2023-09-13
 ---
 
 Allegory of the cave:

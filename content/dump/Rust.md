@@ -4,6 +4,7 @@ tags:
   - seed
   - technical
 title: Rust
+date: 2022-10-29
 ---
 
 Ownership and Borrowing

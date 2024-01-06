@@ -1,10 +1,10 @@
 ---
 id: OCI
 tags:
-  - technical
   - seed
   - container
 title: OCI Format
+date: 2023-08-10
 ---
 
 # Open Container Initiative

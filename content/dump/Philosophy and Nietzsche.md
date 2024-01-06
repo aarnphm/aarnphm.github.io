@@ -4,7 +4,7 @@ tags:
   - philosophy
   - seed
 title: Philosophy and Nietzsche
-noindex: true
+date: 2023-12-04
 ---
 
 Nietzsche's [[dump/university/philo-1aa3/Nietzsche|Life]] and overall influence
@@ -18,3 +18,7 @@ Nietzsche's [[dump/university/philo-1aa3/Nietzsche|Life]] and overall influence
 $\bigtriangledown\space 1$
 
 ## On Genealogy of Morals
+
+## Nietzsche and Philosophy
+
+_Giles Deleuze_

@@ -2,7 +2,7 @@
 id: music theory
 tags:
   - evergreen
-  - seed
+  - sapling
 title: Music theory
 ---
 

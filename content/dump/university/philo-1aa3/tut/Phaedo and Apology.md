@@ -1,9 +1,10 @@
 ---
-id: Tutorial 2
+id: Phaedo and Apology
 tags:
   - philosophy
   - philos1aa3
 description: Phaedo and Apology
+date: 2023-09-22
 ---
 
 ## Structure

@@ -4,6 +4,7 @@ tags:
   - seed
   - philosophy
 title: Will to Truth
+date: 2023-10-24
 ---
 
 Part of [[dump/university/philo-1aa3/Nietzsche|Nietzsche]]'s _Beyond Good and Evil_

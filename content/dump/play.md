@@ -2,7 +2,9 @@
 id: play
 tags:
   - seed
+  - philosophy
 title: Play
+date: 2023-10-18
 ---
 
 What is play?
@@ -70,8 +72,6 @@ Play involves lightness with rules — the ability to lightly step away from but
 To be serious about a game is to play it under the idea that its goals are really and genuinely important — as an Olympic athlete does.
 
 To be playful about games is neither to be utterly serious, or utterly ironic, but to move easily into and out of commitments to rule-sets
-
-Socratic dialogue about post-work society?
 
 What can we achieve with post-work society:
 

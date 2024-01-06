@@ -1,9 +1,10 @@
 ---
 id: Cinematography
 tags:
-  - seed
   - film
+  - evergreen
 title: Cinematography
+date: 2023-09-11
 ---
 
 Notes on format:
@@ -19,6 +20,6 @@ Equipment:
 
 > [[dump/Lighting|Lightning]] is key
 
-[[Planimetric composition]]
+[[dump/Planimetric composition]]
 
 - Wes Anderson

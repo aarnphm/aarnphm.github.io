@@ -3,6 +3,7 @@ id: writing
 tags:
   - sapling
 title: Writing
+date: 2023-07-29
 ---
 
 Why writing?

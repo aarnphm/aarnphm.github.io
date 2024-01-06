@@ -1,8 +1,8 @@
 ---
 id: index
 tags:
-  - university
   - concurrency
+  - sfwr3bb4
 title: Concurrent System Design
 ---
 

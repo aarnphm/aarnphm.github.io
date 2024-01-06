@@ -4,6 +4,7 @@ tags:
   - seed
   - networking
 title: Nagle's algorithm and TCP_CORK
+date: 2022-07-01
 ---
 
 ### Nagle's algorithm and Delay ACK
@@ -12,7 +13,7 @@ title: Nagle's algorithm and TCP_CORK
   -> Nagle algorithm: `Maximize ratio of packets - data content`
   -> Delay ACK: `silly window`
 
-```text
+```prolog
 if available_data & window_size > MSS
 	send payload on wire
 else
@@ -20,7 +21,6 @@ else
 		queue
 	else
 		send
-
 ```
 
 ### Cork algorithm

@@ -2,9 +2,9 @@
 id: Epicurus
 tags:
   - philosophy
-  - university
   - philos1aa3
 title: Epicurus
+date: 2023-11-09
 ---
 
 [[dump/university/philo-1aa3/Socrates|Socrates]] ideas:

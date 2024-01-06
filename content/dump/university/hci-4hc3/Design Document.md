@@ -3,18 +3,22 @@ id: Design Document
 tags:
   - hci
   - university
+noindex: true
+draft: true
 title: Design Document
 ---
+
 ## Stakeholders
+
 #### Students Seeking Quiet Study Areas
 
 - **Characteristic Types**: Needs quiet, individual study time, possibly with accessibility requirements.
 - **Priority Level**: Primary
 - **Justification**: These students rely on the app to find environments conducive to individual study, which is a core purpose of the app. Their satisfaction directly impacts the app's success.
 - **Information to Gather**:
-    - Preferred devices for app use
-    - Study habits and times
-    - Importance of silence and amenities (like outlets)
+  - Preferred devices for app use
+  - Study habits and times
+  - Importance of silence and amenities (like outlets)
 
 #### Group Study Students
 
@@ -22,9 +26,9 @@ title: Design Document
 - **Priority Level**: Primary
 - **Justification**: Group study users frequently utilize campus facilities and will benefit from features that support group collaboration, making them a critical user group.
 - **Information to Gather**:
-    - Frequency of group study sessions
-    - Typical group size and space requirements
-    - Preferences for on-campus vs. off-campus study locations
+  - Frequency of group study sessions
+  - Typical group size and space requirements
+  - Preferences for on-campus vs. off-campus study locations
 
 #### Commuter Students
 
@@ -32,9 +36,9 @@ title: Design Document
 - **Priority Level**: Secondary
 - **Justification**: While they may not be on campus as much as residents, their need for efficient study spot utilization is high when they are on campus.
 - **Information to Gather**:
-    - Travel patterns and times
-    - Preference for study spots near campus transit points
-    - Usage of on-the-go mobile devices vs. stationary computing
+  - Travel patterns and times
+  - Preference for study spots near campus transit points
+  - Usage of on-the-go mobile devices vs. stationary computing
 
 #### Technologically Inclined Students
 
@@ -42,9 +46,9 @@ title: Design Document
 - **Priority Level**: Secondary
 - **Justification**: These students represent a user group that is likely to contribute to the app's content by adding new tech-friendly study spots.
 - **Information to Gather**:
-    - Importance of tech amenities in a study place
-    - Frequency of app usage to find and add new study spots
-    - Interaction with app features for community engagement
+  - Importance of tech amenities in a study place
+  - Frequency of app usage to find and add new study spots
+  - Interaction with app features for community engagement
 
 #### Faculty and Staff
 
@@ -52,9 +56,9 @@ title: Design Document
 - **Priority Level**: Tertiary
 - **Justification**: Faculty and staff have unique insights into the suitability of study spaces for academic purposes and can act as secondary contributors to the app’s content.
 - **Information to Gather**:
-    - How often they recommend study spots to students
-    - What kind of spaces they seek for their own work or meetings
-    - Feedback on how the app could serve the academic community better
+  - How often they recommend study spots to students
+  - What kind of spaces they seek for their own work or meetings
+  - Feedback on how the app could serve the academic community better
 
 #### Campus Visitors and Future Students
 
@@ -62,11 +66,14 @@ title: Design Document
 - **Priority Level**: Tertiary
 - **Justification**: These users can benefit from the app when visiting the campus, and their experience can influence their perception of the campus facilities.
 - **Information to Gather**:
-    - Ease of use and navigability of the app for first-time users
-    - How the app might influence their impression of campus amenities
-    - Additional features that could aid in campus exploration
+  - Ease of use and navigability of the app for first-time users
+  - How the app might influence their impression of campus amenities
+  - Additional features that could aid in campus exploration
+
 ---
+
 ## Personas
+
 ### Persona 1: The Quiet Seeker (Kelly)
 
 **Characteristics**:
@@ -81,6 +88,7 @@ title: Design Document
 - Access to power outlets for devices
 
 **Challenges**:
+
 - Finding consistently quiet spaces on a busy campus
 - Knowing if a space will be quiet before arriving
 - Whether the trip to designated spaces is safe or not
@@ -198,8 +206,11 @@ title: Design Document
 
 - Tech amenities filters in the search feature
 - User submission interface for adding new study spots to the app
+
 ---
+
 ## Sketches
+
 ![[dump/university/hci-4hc3/Shape.svg]]
 
 ### Interactions:
@@ -236,7 +247,8 @@ title: Design Document
 - **Scalability**: The "Load more" button suggests there may be many study places, but too many listings could overwhelm the user.
 - **Feedback Mechanism**: There is no clear way for users to provide feedback on study places, which is crucial for a review-based app.
 - **Recommendation Logic**: There's a tag for "recommended," but it's unclear what criteria are used for recommendations. This could be recommended based on users needs, feedback?
-![[dump/university/hci-4hc3/Shape 6M.svg]]
+  ![[dump/university/hci-4hc3/Shape 6M.svg]]
+
 ### Interactions:
 
 - The top section seems to represent a map interface, which could be interactive, allowing users to pan or zoom in/out.
@@ -267,7 +279,9 @@ title: Design Document
 - **Scalability**: With only three saved spots shown, it's unclear how the app would handle a larger number of saved locations.
 - **Navigation Between Screens**: There are no visible controls for navigating back to a previous screen or to a detailed view of a selected location.
 - **Interaction with Saved Locations**: It's not specified what actions can be taken with saved locations—can they be edited, reordered, or deleted?
+
 ---
+
 ## Prototype
 
 [Figma](https://www.figma.com/proto/Y1OEODbxykwOFf3vXEKP1R/Campus-Review?page-id=51%3A14320&type=design&node-id=51-14347&viewport=3542%2C672%2C0.6&t=BUHiCbyijdJ3TbOn-1&scaling=scale-down&starting-point-node-id=51%3A14346&show-proto-sidebar=1&mode=design)

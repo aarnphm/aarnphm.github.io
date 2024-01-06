@@ -1,9 +1,10 @@
 ---
 id: Symposium
 tags:
-  - university
+  - philosophy
   - philos1aa3
 title: Symposium
+date: 2023-09-29
 ---
 
 ### Q1.

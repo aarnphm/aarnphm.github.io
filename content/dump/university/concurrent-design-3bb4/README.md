@@ -1,9 +1,9 @@
 ---
 id: "Concurrent System Design"
 tags:
-  - university
-  - technical
+  - sfwr3bb4
 title: "3BB4: Concurrent System Design"
+date: 2023-09-04
 ---
 
 ## Elements of Software Design

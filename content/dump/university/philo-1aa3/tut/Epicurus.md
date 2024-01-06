@@ -2,14 +2,13 @@
 id: Epicurus
 tags:
   - philos1aa3
-  - philosophy
-title: Epicurus
+title: Epicurus's Hedonism and Materialism
+date: 2023-09-11
 ---
 
 # Materialism
 
 - made of atoms
--
 
 # Central role of chance
 

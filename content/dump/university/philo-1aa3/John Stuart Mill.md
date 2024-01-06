@@ -2,9 +2,8 @@
 id: John Stuart Mill
 tags:
   - philos1aa3
-  - university
-  - philos1aa3
 title: John Stuart Mill
+date: 2023-11-30
 ---
 
 On _Liberty_

@@ -2,9 +2,9 @@
 id: index
 tags:
   - philosophy
-  - university
   - philos1aa3
 title: Philosophical Text
+date: 2023-09-04
 ---
 
 An introduction to philosophy through the close reading of selected classical texts.

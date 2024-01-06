@@ -1,11 +1,11 @@
 ---
 id: System Image and Paradox of Technology
 tags:
-  - university
-title: System Images
+  - swfr4hc3
+title: System Image and Paradox of Technology
 ---
 
-[[Psychopathology of everything#Fundamental principles of Interaction]] goes into the fundamentals of interaction when designing a product -> conceptual models
+[[dump/university/hci-4hc3/Psychopathology of everything#Fundamental principles of Interaction]] goes into the fundamentals of interaction when designing a product -> conceptual models
 
 - People create mental models of themselves, environment, interaction
 - Designer conceptual model vs. Users conceptual models

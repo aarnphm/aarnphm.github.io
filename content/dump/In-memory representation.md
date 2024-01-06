@@ -4,6 +4,7 @@ tags:
   - technical
   - seed
 title: In memory representation
+date: 2022-10-01
 ---
 
 ### Flatbuffer

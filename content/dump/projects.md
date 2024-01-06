@@ -1,7 +1,7 @@
 ---
 id: projects
 tags:
-  - seed
+  - evergreen
   - technical
 title: Projects
 ---

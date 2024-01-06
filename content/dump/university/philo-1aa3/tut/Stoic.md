@@ -2,7 +2,9 @@
 id: Stoic
 tags:
   - philos1aa3
-  - seed
+  - philosophy
+title: Stoic
+date: 2023-11-05
 ---
 
 ### Epictetus - Enchiridion

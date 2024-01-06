@@ -1,9 +1,10 @@
 ---
-id: Jax and AutoDiff goodness
+id: Jax and autograd
 tags:
   - seed
   - ml
-title: Autodiff and Jax
+title: autograd and Jax
+date: 2022-11-07
 ---
 
 ### Jax

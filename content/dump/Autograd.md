@@ -4,6 +4,7 @@ tags:
   - seed
   - ml
 title: Autograd
+date: 2021-10-10
 ---
 
 Autodiff and [[XLA]]

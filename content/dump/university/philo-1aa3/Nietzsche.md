@@ -1,10 +1,10 @@
 ---
 id: Nietzsche
 tags:
-  - university
   - philosophy
   - philos1aa3
 title: Nietzsche
+date: 2023-11-30
 ---
 
 _1844-1900_

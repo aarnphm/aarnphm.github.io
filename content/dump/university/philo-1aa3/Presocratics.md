@@ -1,10 +1,10 @@
 ---
 id: Presocratics
 tags:
-  - university
-  - philosophy
   - philos1aa3
+  - philosophy
 title: Presocratics philosophers
+date: 2023-09-09
 ---
 
 ### Anaximander

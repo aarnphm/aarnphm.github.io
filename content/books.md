@@ -1,8 +1,9 @@
 ---
 id: books
 tags:
-  - seed
+  - evergreen
 title: Building antilibrary
+date: 2022-04-22
 ---
 
 A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.

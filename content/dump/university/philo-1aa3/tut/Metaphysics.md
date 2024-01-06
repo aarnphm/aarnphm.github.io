@@ -2,9 +2,9 @@
 id: Metaphysics
 title: Metaphysics
 tags:
-  - university
   - philosophy
   - philos1aa3
+date: 2023-09-15
 ---
 
 # Wisdom

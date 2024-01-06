@@ -144,7 +144,9 @@
             "state": {
               "type": "all-properties",
               "state": {
-                "sortOrder": "frequency"
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
               }
             }
           },
@@ -179,6 +181,9 @@
   },
   "active": "c1282d9c4a576584",
   "lastOpenFiles": [
+    "dump/Jax and autograd.md",
+    "dump/Jax and AutoDiff.md",
+    "dump/university/concurrent-design-3bb4/Semaphores.md",
     "dump/Philosophy and Nietzsche.md",
     "dump/university/philo-1aa3/Socrates.md",
     "posts/2023.md",
@@ -222,8 +227,6 @@
     "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
     "dump/university/philo-1aa3/tut/Republic.md",
     "dump/university/philo-1aa3/tut/Spinoza.md",
-    "dump/university/philo-1aa3/tut/Stoic.md",
-    "dump/university/philo-1aa3/tut/Symposium.md",
     "Untitled.canvas"
   ]
 }

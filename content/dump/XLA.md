@@ -4,6 +4,7 @@ tags:
   - seed
   - ml
 title: XLA
+date: 2022-12-23
 ---
 
 - Accelerated Algebra

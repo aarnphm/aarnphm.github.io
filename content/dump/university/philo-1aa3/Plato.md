@@ -1,10 +1,10 @@
 ---
 id: Plato
 tags:
-  - university
   - philosophy
   - philos1aa3
 title: Plato
+date: 2023-11-08
 ---
 
 See also [[dump/university/philo-1aa3/Socrates]]

@@ -3,13 +3,17 @@ id: Equations
 tags:
   - seed
 title: ODEs, Polynomials approx., Linear Least Squares, and Errors
+date: 2023-12-06
 ---
+
 ### Machine epsilon
+
 $$fl(x) = x(1+\mathbf{\epsilon}) \space\text{where }|\epsilon|\leq{u}$$
 $$|\frac{fl(x)-x}{x}|=|\epsilon|\leq u \space\text{is called relative error.}$$
 $$\text{Cancellations occur when subtracting nearby number containing roundoff.}$$
 
 ### Taylor series
+
 $$
 \begin{aligned}
 f(x) &= \sum_{k=0}^{\inf}\frac{f^{(k)}(c)}{k!}(x-c)^k\\\
@@ -19,6 +23,7 @@ E_{n+1} &= \frac{f^{(n+1)}(\xi)}{(n+1)!}(h:=x-c)^{n+1}\\\
 $$
 
 ### Polynomial Interpolation
+
 $$
 \begin{aligned}
 v(x) = &\sum_{j=0}^{n}c_j\phi_{j}(x) \space \rightarrow \text{linearly independent iff} \space v(x) = 0 \space \forall \space x \rightarrow c_j=0 \space \forall \space j)\\\
@@ -26,6 +31,7 @@ v(x) = &\sum_{j=0}^{n}c_j\phi_{j}(x) \space \rightarrow \text{linearly independe
 \text{Linear system: } &\begin{bmatrix} \phi_0(x_0) & \phi_1(x_0) & \cdots & \phi_n(x_0) \\ \phi_0(x_1) & \phi_1(x_1) & \cdots & \phi_n(x_1) \\ \vdots      & \vdots      & \ddots & \vdots      \\ \phi_0(x_n) & \phi_1(x_n) & \cdots & \phi_n(x_n) \end{bmatrix} \begin{bmatrix} c_0 \\ c_1 \\ \vdots \\ c_n \end{bmatrix} = \begin{bmatrix} y_0 \\ y_1 \\ \vdots \\ y_n \end{bmatrix}
 \end{aligned}
 $$
+
 $$
 \begin{aligned}
 \text{Monomial basis: }&\phi_j(x)=x^j, \space j=0,1,...,n \space \rightarrow v(x)=\sum_{j=0}^{n}c_jx^j\\\
@@ -40,6 +46,7 @@ X: &\text{Vandermonde matrix} \rightarrow \text{det}(X)=\prod_{i=0}^{n-1} \left[
 &\bullet\space \text{can be poorly conditioned, work is }O(n^3)\\\
 \end{aligned}
 $$
+
 $$
 \begin{aligned}
 \text{Lagrange basis: }&L_j(x_i) =  \begin{cases}  0 & \text{if } i \neq j \\ 1 & \text{if } i = j \end{cases} \\\
@@ -47,12 +54,14 @@ $$
 &p_n(x_i) = \sum_{j=0}^{n} y_jL_j(x_i) = \sum_{j=0}^{i-1} y_jL_j(x_i) + y_iL_i(x_i) + \sum_{j=i+1}^{n} y_jL_j(x_i) = y_i\\\
 \end{aligned}
 $$
+
 $$
 \begin{aligned}
 \text{Newton's basis: }&\phi_j(x)=\prod_{i=0}^{j-1}(x-x_i), j=0:n\\\
 &p_n(x_i)=c_0 + c_1(x_i-x_0)+ \cdots + c_n(x_i-x_0)(x_i-x_1)\cdots(x_i-x_{n-1})=f(x_i)\\\
 \end{aligned}
 $$
+
 $$
 \begin{aligned}
 &\text{Divided differences: }f[x_i,\cdots,x_j] = \frac{f[x_{i+1},\cdots,x_j]-f[x_i,\cdots,x_{j-1}]}{x_j-x_i}\\\
@@ -70,6 +79,7 @@ $$
 $$
 
 ### Basic Numeric Integration
+
 $$
 \begin{aligned}
 &I_f = \int_{a}^{b}{f(x)dx} \approx \sum_{j=0}^{n}a_jf(x_j)\space\text{(quadrature rule)}\\\
@@ -78,6 +88,7 @@ $$
 &\bullet\space \text{Uses Lagrange form: }\int_{a}^{b}f(x)dx\approx\sum_{j=0}^{n}f(x_j)\int_{a}^{b}L_j(x)dx=\sum_{j=0}^{n}f(x_j)a_j\\\
 \end{aligned}
 $$
+
 $$
 \begin{aligned}
 \text{Trapezoidal rule: } &f(x) \approx p_1(x)=f(x_0)L_0(x) + f(x_1)L_1(x)\space(n=1, x_0=a,x_1=b)\\\
@@ -89,6 +100,7 @@ $$
 \therefore\space&\text{Error of Trapezoidal rule: }\space I_f - I_{trap} = -\frac{f^{''}(\eta)}{12}(b-a)^3\\\
 \end{aligned}
 $$
+
 $$
 \begin{aligned}
 \text{Midpoint rule: } &I_f \approx I_{mid} = (b-a)f(\frac{a+b}{2})\\\
@@ -98,6 +110,7 @@ $$
 \therefore\space&\text{Error of Midpoint rule: }\space I_f - I_{mid} = \frac{f^{''}(\eta)}{24}(b-a)^3\\\
 \end{aligned}
 $$
+
 $$
 \begin{aligned}
 \text{Simpson's rule: } &I_f \approx I_{simp} = \frac{b-a}{6}[f(a) + 4f(\frac{a+b}{2}) + f(b)]\\\
@@ -107,6 +120,7 @@ $$
 $$
 
 ### Composite Numeric Integration
+
 $$
 \begin{aligned}
 &\bullet\space\text{subdivide }[a,b]\space\text{int }r\space\text{subintervals}\\\
@@ -115,6 +129,7 @@ $$
 &t_0=a,t_r=b\space\rightarrow\space\int_{a}^{b}f(x)\,dx=\sum_{i=1}^{r}\int_{t_{i-1}}^{t_i}f(x)\,dx\\\
 \end{aligned}
 $$
+
 $$
 \begin{aligned}
 \text{Composite Trapezoidal rule: } &I_{cf} = \frac{h}{2} [f(a) + f(b)] + h \sum_{i=1}^{r-1} f(t_i)\\\
@@ -127,8 +142,10 @@ $$
 $$
 
 ### Linear Least Squares
-_Find $c_j$ such that $\sum_{k=0}^{m}(v(x_k)-y_k)^2=\sum_{k=0}^{m}(\sum_{j=0}^{n}c_j\phi_j(x_k)-y_k)^2$ is minimised_
+
+_Find $c_j$ such that $\sum_{k=0}^{m}(v(x*k)-y_k)^2=\sum*{k=0}^{m}(\sum*{j=0}^{n}c_j\phi_j(x_k)-y_k)^2$ is minimised*
 Conditions: $\frac{\partial \phi}{\partial a} = 0, \quad \frac{\partial \phi}{\partial b} = 0$
+
 $$
 \begin{aligned}
 \text{Linear fit: } y_k&=ax_k+b,k=1,\cdots,m\\\
@@ -181,6 +198,7 @@ y_m
 &\\\
 \end{aligned}
 $$
+
 $$
 \begin{aligned}
 \text{Solving linear system: }r &= b - Ax\\\
@@ -191,6 +209,7 @@ $$
 \rightarrow \sum_{i=1}^{m}a_{ik}\sum_{j=1}^{n}a_{ij}x_j &= \sum_{i=1}^{m}a_{ik}b_i, k=1,\cdots,n\space (\text{equivalent to } A^{T}Ax=A^{T}b)\\\
 \end{aligned}
 $$
+
 $$
 \begin{aligned}
 A^T Ax &= A^T b \space\text{is called the normal equations}\\\
@@ -207,6 +226,7 @@ S_1=S(a, b) &= \frac{h}{6} \left[ f(a) + 4f\left( \frac{a + b}{2} \right) + f(b)
 E_1=E(a, b) &= -\frac{1}{90} \left( \frac{h}{2} \right)^5 f^{(4)}(\xi), \quad \xi \text{ between } a \text{ and } b\\\
 \end{aligned}
 $$
+
 $$
 \begin{aligned}
 S =\space&\text{quadSimpson}(f, a, b, \text{tol})\\\
@@ -224,6 +244,7 @@ S =\space&\text{quadSimpson}(f, a, b, \text{tol})\\\
 $$
 
 ### Newton's Method for Nonlinear equations
+
 $$x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}$$
 
 Convergence: if $f, f', f''$ are continuous in a neighborhood of a root $r$ of $f$ and $f'(r) \neq 0$, then $\exists\delta\ >0\space : \space |r-x_0|\leq{\delta}$, then $\forall x_n\space : \space: |r-x_n|\leq{\delta}, |r-x_{n+1}|\leq c(\delta)|r-x_n|^2$
@@ -232,6 +253,7 @@ $$|e_{n+1}|\leq c(\delta)|e_n|^2$$ (Quadratic convergence, order is 2)
 Let $c(\delta)=\frac{1}{2}*\frac{\max_{|r-x|\leq{\delta}}|f''(x)|}{\min_{|r-x|\leq{\delta}}|f'(x)|}$
 
 For linear system: denote $\mathbf{x}=(x_1,x_2,\cdots,x_n)^T$ and $\mathbf{F}=(f_1,f_2,\cdots,f_n)$, find $\mathbf{x}^{*}$ such that $F(x^{*})=0$
+
 $$
 \begin{aligned}
 F(x^{(k)}) + F'(x^{(k)})(x^{(k+1)}-x^{(k)}) &= 0\\\ F'(x^{(k)}) \space&\text{is the Jacobian of } \mathbf{F} \space\text{at } x^{(k)}\\\
@@ -242,6 +264,7 @@ F(x^{(k)}) + F'(x^{(k)})(x^{(k+1)}-x^{(k)}) &= 0\\\ F'(x^{(k)}) \space&\text{is 
 $$
 
 ### IVP in ODEs.
+
 $$
 \begin{aligned}
 \text{Given } y'=f(t,y), y(a)=c, \text{ find } y(t) \text{ for } t\in[a,b]\\\
@@ -249,6 +272,7 @@ y' &\equiv y'(t) \equiv \frac{dy}{dt}\\\
 \text{System of n first-order: } y' &= f(t,y), f: \mathbb{R} \times \mathbb{R}^n \rightarrow \mathbb{R}^n\\\
 \end{aligned}
 $$
+
 $$
 \begin{aligned}
 \text{Forward Euler's method (explicit): } y_{t_{i+1}} &\approx y(t_i) + hf(t_i, y_(t_i))\\\
@@ -257,7 +281,9 @@ h &= \text{step size}\\\
 t_0 &= a, t_i=a+ih, i=1,2,\cdots,N\\\
 \end{aligned}
 $$
+
 $$\text{Backward Euler's method (implicit): } y_{i+1} = y_i + hf(t_{i+1}, y_{i+1})$$
+
 > Non-linear, then apply Newton's methods
 
 $$
@@ -273,6 +299,7 @@ $$
 $$
 
 ### Order, Error, Convergence and Stiffness
+
 $$
 \begin{aligned}
 \text{Local truncation error of FE: } &d_i = \frac{y(t_{i+1}) - y(t_i)}{h} - f(t_i, y(t_i)) = \frac{h}{2}y''(\eta_i)\space\text{(q=1)}\\\
@@ -298,6 +325,7 @@ $$
 > Stiffness is when the stepsize is restricted by stability rather than accuracy
 
 ### Runge-Kutta Methods
+
 $$
 \begin{aligned}
 \text{Implicit trapezoidal: } y'(t) &= f(t,y), y(t_i)=y_i\\\
@@ -314,6 +342,7 @@ d_i = O(h^2) &= \frac{y(t_{i+1})-y(t_i)}{h}-\frac{1}{2}[f(t_i,y(t_i)) + f(t_{i+1
 $$
 
 Classical RK4: based on Simpson's quadrature rule, $O(h^4)$ accuracy
+
 $$
 \begin{align*}
 Y_1 &= y_i \\\

@@ -1,10 +1,10 @@
 ---
 id: Sequential programming
 tags:
-  - university
   - concurrency
   - swfr3bb4
 title: Sequential programming
+date: 2023-09-11
 ---
 
 See also [[dump/university/concurrent-design-3bb4/README|3BB4 - Concurrent System Design]]

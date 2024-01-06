@@ -1,10 +1,9 @@
 ---
 id: Aristotle
 tags:
-  - university
-  - philosophy
   - philos1aa3
 title: Aristotle
+date: 2023-09-11
 ---
 
 # Aristotle

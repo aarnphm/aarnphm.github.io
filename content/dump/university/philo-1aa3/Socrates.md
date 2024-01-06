@@ -1,10 +1,10 @@
 ---
 id: Socrates
 tags:
-  - university
   - philosophy
   - philos1aa3
 title: Socrates
+date: 2023-09-25
 ---
 
 [[dump/university/philo-1aa3/Presocratics|Pre-Socratic]] lives by materialism

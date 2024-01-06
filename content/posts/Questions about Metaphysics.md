@@ -2,8 +2,9 @@
 id: Questions about Metaphysics
 tags:
   - philosophy
-  - sapling
+  - fruit
 title: Questions about Metaphysics
+date: 2023-11-16
 ---
 
 <!--
