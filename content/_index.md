@@ -3,6 +3,7 @@ id: _index
 tags:
   - evergreen
 title: Aaron's notes
+date: 2022-04-22
 ---
 
 <img src="./blob.png">

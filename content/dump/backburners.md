@@ -4,6 +4,7 @@ tags:
   - technical
   - evergreen
 title: Backburners
+date: 2022-01-25
 ---
 
 - Markdown latex renderer for Neovim

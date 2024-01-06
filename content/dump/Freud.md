@@ -4,6 +4,7 @@ tags:
   - seed
   - philosophy
 title: Sigmund Freud
+date: 2023-10-10
 ---
 
 ## Beyond the Pleasure Principle

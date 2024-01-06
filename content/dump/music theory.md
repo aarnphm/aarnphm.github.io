@@ -4,6 +4,7 @@ tags:
   - evergreen
   - sapling
 title: Music theory
+date: 2023-09-25
 ---
 
 Half steps -> between E-F, B-C

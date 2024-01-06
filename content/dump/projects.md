@@ -4,6 +4,7 @@ tags:
   - evergreen
   - technical
 title: Projects
+date: 2021-12-22
 ---
 
 The list below are notable projects I'm currently maintaining/finished. A more incomplete list of ideas that I will do sometime can be found in [[dump/backburners]]

@@ -4,6 +4,7 @@ tags:
   - seed
   - film
 title: Lighting
+date: 2023-11-11
 ---
 
 ### Key light
