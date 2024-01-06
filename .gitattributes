@@ -1,2 +1,2 @@
-content/dump/university/* linguist-vendored
+content/dump/university/**/* linguist-vendored
 * text=auto eol=lf
