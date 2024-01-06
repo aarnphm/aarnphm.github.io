@@ -1,13 +1,13 @@
 name: Deploy to GitHub Pages
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
 permissions:
   contents: read
   pages: write
   id-token: write
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: false
 jobs:
   build:
@@ -24,7 +24,7 @@ jobs:
       - name: Build Quartz
         run: npx quartz build
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: public
   deploy:
