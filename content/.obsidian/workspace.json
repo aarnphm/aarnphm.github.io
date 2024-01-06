@@ -8,20 +8,7 @@
         "type": "tabs",
         "children": [
           {
-            "id": "3a5cb35a49a373f8",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/university/philo-1aa3/Nietzsche.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "c57d6c6d87675796",
+            "id": "c1282d9c4a576584",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -32,22 +19,8 @@
                 "source": false
               }
             }
-          },
-          {
-            "id": "354c81a20c1da2a0",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/Philosophy and Nietzsche.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -204,18 +177,26 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "c57d6c6d87675796",
+  "active": "c1282d9c4a576584",
   "lastOpenFiles": [
-    "dump/images/2023-collage-finals.png",
+    "dump/Philosophy and Nietzsche.md",
     "dump/university/philo-1aa3/Socrates.md",
     "posts/2023.md",
-    "dump/images/2023-collage-heal.png",
+    "dump/papers/Fashion and the Homospectatorial Look.pdf",
+    "dump/papers",
+    "dump/images/openllm.LLM architecture.png",
+    "dump/images/2023-flac-1.mp3",
+    "dump/images/2023-collage-yosemite.png",
     "dump/images/2023-collage-htn.png",
+    "dump/images/2023-collage-heal.png",
+    "dump/images/2023-collage-finals.png",
+    "posts/2023: A letter.md",
+    "dump/Unify LLM interface.md",
+    "dump/openllm.LLM architecture.png",
     "dump/projects.md",
     "dump/images/2023-houses.jpeg",
     "dump/images/IMG_0229.jpeg",
     "dump/IMG_0229.jpeg",
-    "dump/Philosophy and Nietzsche.md",
     "dump/university/hci-4hc3/M5 Reflection.md",
     "dump/university/compsci-4x03/Equations.md",
     "dump/university/hci-4hc3/14",
@@ -231,13 +212,9 @@
     "dump/university/philo-1aa3/Nietzsche.md",
     "dump/university/philo-1aa3/Nous.md",
     "dump/university/philo-1aa3/spinoza-knowledge.png",
-    "dump/university/philo-1aa3/descartes-qualities.png",
     "dump/university/philo-1aa3/Sphinoza.md",
-    "dump/university/philo-1aa3/epistemology.png",
     "dump/university/philo-1aa3/Plato.md",
     "dump/university/philo-1aa3/1A3Reader(2019).pdf",
-    "dump/university/philo-1aa3/aristotle-form.png",
-    "dump/university/philo-1aa3/aristotle-metaphysics.png",
     "dump/university/philo-1aa3/Epicurus.md",
     "dump/university/philo-1aa3/Aristotle.md",
     "dump/university/philo-1aa3/tut/Epicurus.md",
@@ -247,11 +224,6 @@
     "dump/university/philo-1aa3/tut/Spinoza.md",
     "dump/university/philo-1aa3/tut/Stoic.md",
     "dump/university/philo-1aa3/tut/Symposium.md",
-    "dump/university/philo-1aa3/tut/T1.md",
-    "dump/university/philo-1aa3/Presocratics.md",
-    "dump/university/philo-1aa3/All.pdf",
-    "dump/university/compsci-4x03/__pycache__/net.cpython-39.pyc",
-    "dump/university/compsci-4x03/net.py",
     "Untitled.canvas"
   ]
 }
