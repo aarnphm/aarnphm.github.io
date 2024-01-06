@@ -4,6 +4,7 @@ tags:
   - philosophy
   - seed
 title: Philosophy and Nietzsche
+noindex: true
 ---
 
 Nietzsche's [[dump/university/philo-1aa3/Nietzsche|Life]] and overall influence
