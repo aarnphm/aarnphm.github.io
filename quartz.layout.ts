@@ -58,14 +58,6 @@ export const defaultListPageLayout: PageLayout = {
     Component.MobileOnly(Component.Spacer()),
     Component.Search(),
     Component.Darkmode(),
-    Component.DesktopOnly(
-      Component.Explorer({
-        filterFn: (node) => {
-          const omit = new Set(["posts", "tags"])
-          return !omit.has(node.name)
-        },
-      }),
-    ),
   ],
   right: [],
 }
