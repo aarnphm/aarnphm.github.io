@@ -18,7 +18,10 @@ interface RenderComponents {
   footer: QuartzComponent
 }
 
-export function pageResources(baseDir: FullSlug | RelativeURL, staticResources: StaticResources): StaticResources {
+export function pageResources(
+  baseDir: FullSlug | RelativeURL,
+  staticResources: StaticResources,
+): StaticResources {
   const contentIndexPath = joinSegments(baseDir, "static/contentIndex.json")
   const contentIndexScript = `const fetchData = fetch("${contentIndexPath}").then(data => data.json())`
 
@@ -162,7 +165,15 @@ export function renderPage(
     }
   })
 
-  const { head: Head, header, beforeBody, pageBody: Content, left, right, footer: Footer } = components
+  const {
+    head: Head,
+    header,
+    beforeBody,
+    pageBody: Content,
+    left,
+    right,
+    footer: Footer,
+  } = components
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
 
@@ -197,7 +208,8 @@ export function renderPage(
                   ))}
                 </Header>
                 <div class="popover-hint">
-                  {slug !== "index" && beforeBody.map((BodyComponent) => <BodyComponent {...componentData} />)}
+                  {slug !== "index" &&
+                    beforeBody.map((BodyComponent) => <BodyComponent {...componentData} />)}
                 </div>
               </div>
               <Content {...componentData} />

@@ -66,7 +66,9 @@ function highlight(searchTerm: string, text: string, trim?: boolean) {
     })
     .join(" ")
 
-  return `${startIndex === 0 ? "" : "..."}${slice}${endIndex === tokenizedText.length - 1 ? "" : "..."}`
+  return `${startIndex === 0 ? "" : "..."}${slice}${
+    endIndex === tokenizedText.length - 1 ? "" : "..."
+  }`
 }
 
 const encoder = (str: string) => str.toLowerCase().split(/([^a-z]|[^\x00-\x7F])/)
@@ -181,7 +183,9 @@ document.addEventListener("nav", async (e: unknown) => {
       title: searchType === "tags" ? data[slug].title : highlight(term, data[slug].title ?? ""),
       // if searchType is tag, display context from start of file and trim, otherwise use regular highlight
       content:
-        searchType === "tags" ? trimContent(data[slug].content) : highlight(term, data[slug].content ?? "", true),
+        searchType === "tags"
+          ? trimContent(data[slug].content)
+          : highlight(term, data[slug].content ?? "", true),
       tags: highlightTags(term, data[slug].tags),
     }
   }
@@ -254,7 +258,9 @@ document.addEventListener("nav", async (e: unknown) => {
     switch (searchType) {
       case "tags": {
         term = term.substring(1)
-        searchResults = (await index?.searchAsync({ query: term, limit: numSearchResults, index: ["tags"] })) ?? []
+        searchResults =
+          (await index?.searchAsync({ query: term, limit: numSearchResults, index: ["tags"] })) ??
+          []
         break
       }
       case "basic":
@@ -274,7 +280,11 @@ document.addEventListener("nav", async (e: unknown) => {
     }
 
     // order titles ahead of content
-    const allIds: Set<number> = new Set([...getByField("title"), ...getByField("content"), ...getByField("tags")])
+    const allIds: Set<number> = new Set([
+      ...getByField("title"),
+      ...getByField("content"),
+      ...getByField("tags"),
+    ])
     const finalResults = [...allIds].map((id) => formatForDisplay(term, id))
     displayResults(finalResults)
   }

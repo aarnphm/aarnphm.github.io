@@ -29,7 +29,8 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
   const output = argv.output
 
   const pluginCount = Object.values(cfg.plugins).flat().length
-  const pluginNames = (key: "transformers" | "filters" | "emitters") => cfg.plugins[key].map((plugin) => plugin.name)
+  const pluginNames = (key: "transformers" | "filters" | "emitters") =>
+    cfg.plugins[key].map((plugin) => plugin.name)
   if (argv.verbose) {
     console.log(`Loaded ${pluginCount} plugins`)
     console.log(`  Transformers: ${pluginNames("transformers").join(", ")}`)
@@ -45,7 +46,9 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
   perf.addEvent("glob")
   const allFiles = await glob("**/*.*", argv.directory, cfg.configuration.ignorePatterns)
   const fps = allFiles.filter((fp) => fp.endsWith(".md")).sort()
-  console.log(`Found ${fps.length} input files from \`${argv.directory}\` in ${perf.timeSince("glob")}`)
+  console.log(
+    `Found ${fps.length} input files from \`${argv.directory}\` in ${perf.timeSince("glob")}`,
+  )
 
   const filePaths = fps.map((fp) => joinSegments(argv.directory, fp) as FilePath)
   ctx.allSlugs = allFiles.map((fp) => slugifyFilePath(fp as FilePath))
@@ -62,7 +65,12 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
 }
 
 // setup watcher for rebuilds
-async function startServing(ctx: BuildCtx, mut: Mutex, initialContent: ProcessedContent[], clientRefresh: () => void) {
+async function startServing(
+  ctx: BuildCtx,
+  mut: Mutex,
+  initialContent: ProcessedContent[],
+  clientRefresh: () => void,
+) {
   const { argv } = ctx
 
   const ignored = await isGitIgnored()

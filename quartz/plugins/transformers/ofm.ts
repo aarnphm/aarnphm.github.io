@@ -241,8 +241,9 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
                     return {
                       type: "html",
                       data: { hProperties: { transclude: true } },
-                      value: `<blockquote class="transclude" data-url="${url}" data-block="${block}"><a href="${url + anchor
-                        }" class="transclude-inner">Transclude of ${url}${block}</a></blockquote>`,
+                      value: `<blockquote class="transclude" data-url="${url}" data-block="${block}"><a href="${
+                        url + anchor
+                      }" class="transclude-inner">Transclude of ${url}${block}</a></blockquote>`,
                     }
                   }
 
@@ -420,8 +421,9 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
                 node.data = {
                   hProperties: {
                     ...(node.data?.hProperties ?? {}),
-                    className: `callout ${collapse ? "is-collapsible" : ""} ${defaultState === "collapsed" ? "is-collapsed" : ""
-                      }`,
+                    className: `callout ${collapse ? "is-collapsible" : ""} ${
+                      defaultState === "collapsed" ? "is-collapsed" : ""
+                    }`,
                     "data-callout": calloutType,
                     "data-callout-fold": collapse,
                   },

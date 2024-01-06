@@ -84,7 +84,7 @@ function setupExplorer() {
     if (collapseBehavior === "collapse") {
       Array.prototype.forEach.call(
         document.getElementsByClassName("folder-button"),
-        function(item) {
+        function (item) {
           item.removeEventListener("click", toggleFolder)
           item.addEventListener("click", toggleFolder)
         },
@@ -97,7 +97,7 @@ function setupExplorer() {
   }
 
   // Set up click handlers for each folder (click handler on folder "icon")
-  Array.prototype.forEach.call(document.getElementsByClassName("folder-icon"), function(item) {
+  Array.prototype.forEach.call(document.getElementsByClassName("folder-icon"), function (item) {
     item.removeEventListener("click", toggleFolder)
     item.addEventListener("click", toggleFolder)
   })

@@ -5,7 +5,13 @@ import BodyConstructor from "../../components/Body"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { ProcessedContent, defaultProcessedContent } from "../vfile"
 import { FullPageLayout } from "../../cfg"
-import { FilePath, FullSlug, getAllSegmentPrefixes, joinSegments, pathToRoot } from "../../util/path"
+import {
+  FilePath,
+  FullSlug,
+  getAllSegmentPrefixes,
+  joinSegments,
+  pathToRoot,
+} from "../../util/path"
 import { defaultListPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { TagContent } from "../../components"
 

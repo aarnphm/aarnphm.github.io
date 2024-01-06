@@ -176,7 +176,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       d.fy = null
     }
 
-    const noop = () => { }
+    const noop = () => {}
     return d3
       .drag<Element, NodeData>()
       .on("start", enableDrag ? dragstarted : noop)
@@ -201,7 +201,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       const targ = resolveRelative(fullSlug, d.id)
       window.spaNavigate(new URL(targ, window.location.toString()))
     })
-    .on("mouseover", function(_, d) {
+    .on("mouseover", function (_, d) {
       const neighbours: SimpleSlug[] = data.get(slug)?.links ?? []
       const neighbourNodes = d3
         .selectAll<HTMLElement, NodeData>(".node")
@@ -230,7 +230,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
         .style("opacity", 1)
         .style("font-size", bigFont + "em")
     })
-    .on("mouseleave", function(_, d) {
+    .on("mouseleave", function (_, d) {
       const currentId = d.id
       const linkNodes = d3
         .selectAll(".link")

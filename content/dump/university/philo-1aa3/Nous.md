@@ -164,4 +164,3 @@ Spinoza: A human being cannot be a substance.
 3. Therefore no human being is a substance. Even less can a human being be what Descartes said—a composite of two substances.
 
 ![[dump/university/philo-1aa3/spinoza-knowledge.png]]
-

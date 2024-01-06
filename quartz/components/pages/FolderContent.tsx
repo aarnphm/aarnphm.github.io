@@ -25,7 +25,10 @@ function FolderContent(props: QuartzComponentProps) {
     allFiles: allPagesInFolder,
   }
 
-  const content = (tree as Root).children.length === 0 ? fileData.description : htmlToJsx(fileData.filePath!, tree)
+  const content =
+    (tree as Root).children.length === 0
+      ? fileData.description
+      : htmlToJsx(fileData.filePath!, tree)
 
   return (
     <div class="popover-hint">
