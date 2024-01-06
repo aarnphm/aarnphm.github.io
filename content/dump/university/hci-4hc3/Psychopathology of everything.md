@@ -4,6 +4,7 @@ tags:
   - university
   - hci
 title: Psychopathology of everything
+date: 2023-10-10
 ---
 
 ### The complexity of modern devices

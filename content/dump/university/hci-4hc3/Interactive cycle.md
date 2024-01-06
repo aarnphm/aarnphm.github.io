@@ -4,6 +4,7 @@ tags:
   - university
   - hci
 title: Interactive cycle
+date: 2023-10-10
 ---
 
 ```mermaid
