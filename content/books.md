@@ -47,7 +47,6 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **Foundation** series by Isaac Asimov
 - **The Three-Body Problem** by Liu Cixin
 - **Robinson Crusoe** by Daniel Defoe
-- **The end of the affair** by Graham Greene
 
 ### poetry
 
@@ -55,6 +54,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ## current.
 
+- **The end of the affair** by Graham Greene
 - **Nietzsche and Philosophy** by Gilles Deleuze
 - **Beyond Good and Evil** by Friedrich Nietzsche
 - **The Metaphysics of Morals** by Immanuel Kant
@@ -66,6 +66,8 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **Structure and Interpretation of Computer Programs** by Abelson and Sussman
 
 ## finished.
+
+### 2024
 
 ### 2023
 
