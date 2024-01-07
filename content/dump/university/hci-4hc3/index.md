@@ -1,9 +1,10 @@
 ---
 id: index
 tags:
+  - university
   - sfwr4hc3
+date: "2023-09-04"
 title: Human Centred Design
-date: 2023-09-04
 ---
 
 The following includes notes for the following course 4HC3 - Human-Centred Interface

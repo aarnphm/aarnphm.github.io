@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/2023.md",
+                "file": "books.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "posts/2023.md",
+                "file": "books.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "posts/2023.md",
+                "file": "books.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "posts/2023.md"
+                "file": "books.md"
               }
             }
           },
@@ -156,7 +156,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "posts/2023.md"
+                "file": "books.md"
               }
             }
           }
@@ -181,12 +181,13 @@
   },
   "active": "c1282d9c4a576584",
   "lastOpenFiles": [
+    "_index.md",
+    "posts/2023.md",
     "dump/Jax and autograd.md",
     "dump/Jax and AutoDiff.md",
     "dump/university/concurrent-design-3bb4/Semaphores.md",
     "dump/Philosophy and Nietzsche.md",
     "dump/university/philo-1aa3/Socrates.md",
-    "posts/2023.md",
     "dump/papers/Fashion and the Homospectatorial Look.pdf",
     "dump/papers",
     "dump/images/openllm.LLM architecture.png",
@@ -226,7 +227,6 @@
     "dump/university/philo-1aa3/tut/Metaphysics.md",
     "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
     "dump/university/philo-1aa3/tut/Republic.md",
-    "dump/university/philo-1aa3/tut/Spinoza.md",
     "Untitled.canvas"
   ]
 }

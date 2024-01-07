@@ -2,11 +2,11 @@
 id: Nous
 tags:
   - philos1aa3
+date: "2023-12-07"
 title: Nous
-date: 2023-12-07
 ---
 
-Notes: [[dump/university/philo-1aa3/All.pdf|notes]],
+Notes: [[dump/university/philo-1aa3/All.pdf|notes]]
 
 Reference: [[dump/university/philo-1aa3/1A3Reader(2019).pdf|text]]
 

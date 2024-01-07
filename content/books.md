@@ -20,6 +20,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Phenomenology of Spirit** by G. W. F. Hegel
 - **The World as Will and Representation** by Arthur Schopenhauer
 - **The Prince** by Niccolò Machiavelli
+- **The Birth of Tragedy** by Friedrich Nietzsche
 - **Thus Spoke Zarathustra** by Friedrich Nietzsche
 - **Twilight of the Idols** by Friedrich Nietzsche
 - **On The Genealogy of Morals** by Friedrich Nietzsche
