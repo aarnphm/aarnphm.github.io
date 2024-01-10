@@ -2,8 +2,8 @@
 id: books
 tags:
   - evergreen
+date: "2022-04-22"
 title: Building antilibrary
-date: 2022-04-22
 ---
 
 A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
@@ -21,17 +21,28 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The World as Will and Representation** by Arthur Schopenhauer
 - **The Prince** by Niccolò Machiavelli
 - **The Birth of Tragedy** by Friedrich Nietzsche
+- **The Will to Power** by Friedrich Nietzsche
+- **The Gay Science** by Friedrich Nietzsche
 - **Thus Spoke Zarathustra** by Friedrich Nietzsche
 - **Twilight of the Idols** by Friedrich Nietzsche
 - **On The Genealogy of Morals** by Friedrich Nietzsche
 - **Ecce Homo** by Friedrich Nietzsche
+- **The Critique of Practical Reason** by Immanuel Kant
+- **Groundwork of the Metaphysics of Morals** by Immanuel Kant
+- **Utilitarianism** by John Stuart Mill
+- **Meditations** by Marcus Aurelius
+- **Meditations on First Philosophy** by René Descartes in French
 
 ### non-fiction
 
 - **Deep Work** by Cal Newport
+- **Digital Minimalism** by Cal Newport
 - **Playing Software: Homo Ludens in Computational Culture** by Miguel Sicart
 - **Reimagining Capitalism in a World on Fire** by Rebecca Henderson
 - **Principles** by Ray Dalio
+- **Mindset** by Dr. Carol S. Dweck
+- **The Pleasure of Finding Things Out** by Richard P. Feynman
+- **Walden and Civil Disobedience** by Henry David Thoreau
 
 ### fiction
 
@@ -54,13 +65,14 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ## current.
 
+- **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
 - **The end of the affair** by Graham Greene
 - **Nietzsche and Philosophy** by Gilles Deleuze
 - **Beyond Good and Evil** by Friedrich Nietzsche
-- **The Metaphysics of Morals** by Immanuel Kant
 - **The Ego and the Id** by Sigmund Freud
 - **Beyond The Pleasure Principle** by Sigmund Freud
 - **The Critique of Pure Reason** by Immanuel Kant
+- **The Metaphysics of Morals** by Immanuel Kant
 - **Crime and Punishment** by Fyodor Dostoevsky
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
 - **Structure and Interpretation of Computer Programs** by Abelson and Sussman
@@ -84,6 +96,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Republic** by Plato
 - **Apology** by Plato
 - **Symposium** by Plato
+- **Pillow Thoughts IV** by Courtney Peppernell
 
 ### 2022
 

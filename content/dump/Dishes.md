@@ -3,19 +3,18 @@ id: Dishes
 tags:
   - evergreen
   - cooking
-title: Dishes
-date: 2023-10-26
+date: "2023-10-26"
+title: Menus
 ---
-
 A collection of courses.
 
 ### French
 
 1. Soupe à l'Oignon Gratinée
 
-2. Chicken liver paté la bread
+2. Chicken liver paté a la Jacques Pepin
 
-3. La trout meunière en brussel sprouts
+3. La trout meunière a la choux de Bruxelles
 
 4. Bourguignon boeuf or canard a l'orange
 

@@ -3,7 +3,6 @@ id: writing
 tags:
   - sapling
 date: "2023-07-29"
-draft: true
 title: Writing
 ---
 

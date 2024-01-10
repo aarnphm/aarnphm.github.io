@@ -4,23 +4,73 @@
     "type": "split",
     "children": [
       {
-        "id": "3d3e1c74c1632000",
+        "id": "1125e2091f0578b1",
         "type": "tabs",
         "children": [
           {
-            "id": "c1282d9c4a576584",
+            "id": "4ca55ab8b27c92fd",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "books.md",
+                "file": "dump/Language.md",
                 "mode": "source",
-                "backlinks": false,
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "670dbdf3d42e680b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/university/eng-3px3/index.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "fe4d5dd2ca4dcd7c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/university/eng-3px3/W1.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "6bc2ab4f65120102",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf"
+              }
+            }
+          },
+          {
+            "id": "d258693097600754",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/Expenses.md",
+                "mode": "source",
+                "backlinks": true,
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -86,7 +136,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "books.md",
+                "file": "dump/Expenses.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +153,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "books.md",
+                "file": "dump/Expenses.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +176,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "books.md"
+                "file": "dump/Expenses.md"
               }
             }
           },
@@ -156,7 +206,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "books.md"
+                "file": "dump/Expenses.md"
               }
             }
           }
@@ -179,54 +229,54 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "c1282d9c4a576584",
+  "active": "d258693097600754",
   "lastOpenFiles": [
+    "dump/index.md",
+    "dump/university/eng-3px3/index.md",
+    "dump/university/eng-3px3/3PX3 Introduction.pptx",
+    "dump/university/eng-3px3/W1.md",
+    "private/Reservation list.md",
+    "dump/university/astron-2e03/W1.md",
+    "dump/Expenses.md",
+    "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
+    "dump/university/eng-3px3",
+    "dump/university/astron-2e03/transit.png",
+    "dump/university/astron-2e03/exoplanets-discovery-technique.png",
+    "dump/university/sfwr-3dx4/What is Control System.md",
+    "dump/university/sfwr-3dx4/index.md",
+    "dump/Dishes.md",
+    "dump/Language.md",
+    "dump/Intelligence amplification.md",
+    "dump/university/sfwr-3dx4/intro.pdf",
+    "dump/university/sfwr-3dx4/W1.md",
+    "dump/university/sfwr-3dx4",
+    "dump/large models.md",
     "_index.md",
-    "posts/2023.md",
-    "dump/Jax and autograd.md",
-    "dump/Jax and AutoDiff.md",
-    "dump/university/concurrent-design-3bb4/Semaphores.md",
-    "dump/Philosophy and Nietzsche.md",
-    "dump/university/philo-1aa3/Socrates.md",
-    "dump/papers/Fashion and the Homospectatorial Look.pdf",
-    "dump/papers",
+    "[[dump/Language.md",
+    "[[dump",
+    "dump/Chaos.md",
+    "language.md",
+    "dump/university/astron-2e03/index.md",
+    "dump/university/astron-2e03",
+    "dump/Determinism.md",
+    "dump/university/sfwr-2c03/Deterministic.md",
+    "dump/university/sfwr-2c03/L1.pdf",
+    "dump/university/sfwr-2c03/Data Structures Lecture 1 2024.pdf",
+    "dump/university/sfwr-2c03/A1.pdf",
+    "dump/university/sfwr-2c03/A1.md",
+    "dump/university/sfwr-2c03/W1.md",
+    "dump/university/sfwr-2c03/index.md",
+    "posts/Chaos.md",
+    "books.md",
+    "posts/images/passage-giorgio-m.jpg",
+    "dump/images/passage-giorgio-m.jpg",
+    "dump/displacement.md",
     "dump/images/openllm.LLM architecture.png",
-    "dump/images/2023-flac-1.mp3",
     "dump/images/2023-collage-yosemite.png",
     "dump/images/2023-collage-htn.png",
     "dump/images/2023-collage-heal.png",
     "dump/images/2023-collage-finals.png",
-    "posts/2023: A letter.md",
-    "dump/Unify LLM interface.md",
     "dump/openllm.LLM architecture.png",
-    "dump/projects.md",
-    "dump/images/2023-houses.jpeg",
-    "dump/images/IMG_0229.jpeg",
-    "dump/IMG_0229.jpeg",
-    "dump/university/hci-4hc3/M5 Reflection.md",
-    "dump/university/compsci-4x03/Equations.md",
-    "dump/university/hci-4hc3/14",
-    "dump/university/hci-4hc3/14/M5 Reflection.md",
-    "dump/university/compsci-4x03/Sheets.md",
-    "dump/university/compsci-4x03/Assignment 4 COMPSCI 4X03.pdf",
-    "dump/university/compsci-4x03/Assignment 3.pdf",
-    "dump/Assignment 4 COMPSCI 4X03.pdf",
-    "dump/Assignment 3.pdf",
-    "dump/university/compsci-4x03/4X03.pdf",
-    "dump/university/compsci-4x03/Review.md",
-    "dump/university/philo-1aa3/Descartes.md",
-    "dump/university/philo-1aa3/Nietzsche.md",
-    "dump/university/philo-1aa3/Nous.md",
-    "dump/university/philo-1aa3/spinoza-knowledge.png",
-    "dump/university/philo-1aa3/Sphinoza.md",
-    "dump/university/philo-1aa3/Plato.md",
-    "dump/university/philo-1aa3/1A3Reader(2019).pdf",
-    "dump/university/philo-1aa3/Epicurus.md",
-    "dump/university/philo-1aa3/Aristotle.md",
-    "dump/university/philo-1aa3/tut/Epicurus.md",
-    "dump/university/philo-1aa3/tut/Metaphysics.md",
-    "dump/university/philo-1aa3/tut/Phaedo and Apology.md",
-    "dump/university/philo-1aa3/tut/Republic.md",
     "Untitled.canvas"
   ]
 }

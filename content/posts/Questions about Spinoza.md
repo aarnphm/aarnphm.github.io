@@ -1,10 +1,10 @@
 ---
 id: Questions about Spinoza
 tags:
-  - sapling
+  - philosophy
   - fruit
+date: "2023-11-30"
 title: Questions about Spinoza
-date: 2023-11-30
 ---
 
 <!--
