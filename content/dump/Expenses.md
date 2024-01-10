@@ -2,9 +2,9 @@
 id: Expenses
 tags:
   - evergreen
-date: 2024-01-09
-title: Expenses
+date: "2024-01-09"
 noindex: true
+title: Expenses
 ---
 
 A list to track personal expenses, or how I spend my money:
@@ -14,14 +14,12 @@ A list to track personal expenses, or how I spend my money:
 
 ### Subscriptions:
 
-| Subscription | $ | occurence | Currency | Card |
-| ---- | ---- | ---- | ---- | ---- |
-| ChatGPT Plus | 20 | M | USD | Chase |
-| Perplexity Pro | 200 | Y | USD | Chase |
-| bookbear express | 70 | Y | USD | Chase |
-| Apple One | 19.95 | M | USD | Chase |
-| Vocabulary | 29.99 | Y | USD | Chase |
-| Discord Nitro | 9.99 | M | USD | Chase |
-| Duolingo Max | 149.99 | Y | USD | Chase |
-
-Total: 
+| Description      | $      | occurrence | Currency | Card  |
+|------------------|--------|------------|----------|-------|
+| ChatGPT Plus     | 20     | M          | USD      | Chase |
+| Perplexity Pro   | 200    | Y          | USD      | Chase |
+| bookbear express | 70     | Y          | USD      | Chase |
+| Apple One        | 19.95  | M          | USD      | Chase |
+| Vocabulary       | 29.99  | Y          | USD      | Chase |
+| Discord Nitro    | 9.99   | M          | USD      | Chase |
+| Duolingo Max     | 149.99 | Y          | USD      | Chase |
