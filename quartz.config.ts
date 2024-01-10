@@ -49,7 +49,7 @@ const config: QuartzConfig = {
       Plugin.CreatedModifiedDate({ priority: ["frontmatter", "filesystem", "git"] }),
       Plugin.Latex({ renderEngine: "katex" }),
       Plugin.SyntaxHighlighting(),
-      Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false, parseTags: false }),
+      Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.CrawlLinks({ markdownLinkResolution: "absolute" }),
       Plugin.Description(),
