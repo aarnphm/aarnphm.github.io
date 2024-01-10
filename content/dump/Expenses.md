@@ -14,14 +14,14 @@ A list to track personal expenses, or how I spend my money:
 
 ### Subscriptions:
 
-| Subscription | $ | type | Currency | Card |
+| Subscription | $ | occurence | Currency | Card |
 | ---- | ---- | ---- | ---- | ---- |
-| ChatGPT Plus | 20 | monthly | USD | Chase |
-| Perplexity Pro | 200 | yearly | USD | Chase |
-| bookbear express | 70 | yearly | USD | Chase |
-| Apple One | 19.95 | monthly | USD | Chase |
-| Vocabulary | 29.99 | yearly | USD | Chase |
-| Discord Nitro | 9.99 | monthly | USD | Chase |
-| Duolingo Max | 149.99 | yearly | USD | Chase |
+| ChatGPT Plus | 20 | M | USD | Chase |
+| Perplexity Pro | 200 | Y | USD | Chase |
+| bookbear express | 70 | Y | USD | Chase |
+| Apple One | 19.95 | M | USD | Chase |
+| Vocabulary | 29.99 | Y | USD | Chase |
+| Discord Nitro | 9.99 | M | USD | Chase |
+| Duolingo Max | 149.99 | Y | USD | Chase |
 
 Total: 

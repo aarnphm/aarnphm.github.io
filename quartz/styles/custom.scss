@@ -3,9 +3,8 @@
 // put your custom CSS here!
 @use "./variables.scss" as *;
 
-body[data-slug="index"] img {
-  filter: invert(0%);
-  opacity: 0.85;
+body[data-slug="index"] .blob {
+  margin-top: -80px;
 }
 
 body {

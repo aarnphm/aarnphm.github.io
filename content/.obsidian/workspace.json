@@ -21,19 +21,6 @@
             }
           },
           {
-            "id": "670dbdf3d42e680b",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/university/eng-3px3/index.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
             "id": "fe4d5dd2ca4dcd7c",
             "type": "leaf",
             "state": {
@@ -60,9 +47,17 @@
             "id": "d258693097600754",
             "type": "leaf",
             "state": {
+              "type": "graph",
+              "state": {}
+            }
+          },
+          {
+            "id": "f27d84cd89d0382c",
+            "type": "leaf",
+            "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/Expenses.md",
+                "file": "posts/2023.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -136,7 +131,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/Expenses.md",
+                "file": "posts/2023.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -153,7 +148,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/Expenses.md",
+                "file": "posts/2023.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -176,7 +171,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/Expenses.md"
+                "file": "posts/2023.md"
               }
             }
           },
@@ -206,7 +201,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/Expenses.md"
+                "file": "posts/2023.md"
               }
             }
           }
@@ -229,23 +224,29 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "d258693097600754",
+  "active": "f27d84cd89d0382c",
   "lastOpenFiles": [
-    "dump/index.md",
+    "blob.png",
+    "new-blob.png",
+    "blob Background Removed.png",
+    "dump/Scents.md",
+    "posts/2023.md",
+    "dump/Expenses.md",
+    "dump/Language.md",
     "dump/university/eng-3px3/index.md",
-    "dump/university/eng-3px3/3PX3 Introduction.pptx",
     "dump/university/eng-3px3/W1.md",
+    "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
+    "posts/index.md",
+    "dump/index.md",
+    "dump/university/eng-3px3/3PX3 Introduction.pptx",
     "private/Reservation list.md",
     "dump/university/astron-2e03/W1.md",
-    "dump/Expenses.md",
-    "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
     "dump/university/eng-3px3",
     "dump/university/astron-2e03/transit.png",
     "dump/university/astron-2e03/exoplanets-discovery-technique.png",
     "dump/university/sfwr-3dx4/What is Control System.md",
     "dump/university/sfwr-3dx4/index.md",
     "dump/Dishes.md",
-    "dump/Language.md",
     "dump/Intelligence amplification.md",
     "dump/university/sfwr-3dx4/intro.pdf",
     "dump/university/sfwr-3dx4/W1.md",
@@ -265,18 +266,12 @@
     "dump/university/sfwr-2c03/A1.pdf",
     "dump/university/sfwr-2c03/A1.md",
     "dump/university/sfwr-2c03/W1.md",
-    "dump/university/sfwr-2c03/index.md",
-    "posts/Chaos.md",
-    "books.md",
     "posts/images/passage-giorgio-m.jpg",
     "dump/images/passage-giorgio-m.jpg",
-    "dump/displacement.md",
     "dump/images/openllm.LLM architecture.png",
     "dump/images/2023-collage-yosemite.png",
     "dump/images/2023-collage-htn.png",
     "dump/images/2023-collage-heal.png",
-    "dump/images/2023-collage-finals.png",
-    "dump/openllm.LLM architecture.png",
     "Untitled.canvas"
   ]
 }
