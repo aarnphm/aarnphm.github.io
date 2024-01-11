@@ -24,3 +24,4 @@ A list to track personal expenses, or how I spend my money:
 | Discord Nitro | 9.99 | M | USD | Chase |
 | Duolingo Max | 149.99 | Y | USD | Chase |
 | Midjourney | 10 | M | USD | Chase |
+| Uber One | 9.99 | M | USD | Chase |
