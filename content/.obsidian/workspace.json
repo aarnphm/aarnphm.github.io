@@ -13,7 +13,7 @@
             "state": {
               "type": "pdf",
               "state": {
-                "file": "dump/university/commerce-4be3/The Pay Model.pdf"
+                "file": "dump/university/sfwr-3dx4/frequency_domain.pdf"
               }
             }
           },
@@ -26,19 +26,8 @@
                 "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf"
               }
             }
-          },
-          {
-            "id": "4ca55ab8b27c92fd",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "dump/university/sfwr-3dx4/frequency_domain.pdf"
-              }
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       },
       {
         "id": "1125e2091f0578b1",
@@ -50,7 +39,20 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/astron-2e03/W1.md",
+                "file": "dump/university/sfwr-3dx4/Frequency Domain.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "06fd4f9535cf51ad",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/Philosophy and Nietzsche.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -136,7 +138,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/astron-2e03/W1.md",
+                "file": "dump/university/sfwr-3dx4/frequency_domain.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -153,7 +155,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/astron-2e03/W1.md",
+                "file": "dump/university/sfwr-3dx4/frequency_domain.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -176,7 +178,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/astron-2e03/W1.md"
+                "file": "dump/university/sfwr-3dx4/frequency_domain.pdf"
               }
             }
           },
@@ -206,7 +208,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/astron-2e03/W1.md"
+                "file": "dump/university/sfwr-3dx4/frequency_domain.pdf"
               }
             }
           }
@@ -229,19 +231,34 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "f5c3923f7a91caae",
+  "active": "f27d84cd89d0382c",
   "lastOpenFiles": [
+    "dump/university/sfwr-3dx4/Frequency Domain.md",
+    "dump/university/sfwr-3dx4/frequency_domain.pdf",
+    "dump/Language.md",
+    "dump/university/sfwr-2fa3/index.md",
+    "dump/university/sfwr-2fa3/W1.md",
+    "dump/writing.md",
+    "dump/university/sfwr-2fa3",
+    "dump/Will to Truth.md",
+    "dump/Entropy.md",
+    "dump/Chaos.md",
+    "posts/Chaos.md",
+    "dump/university/commerce-4be3/The Pay Model.pdf",
+    "dump/Philosophy and Nietzsche.md",
+    "dump/deep learning.md",
+    "dump/index.md",
+    "dump/Jax and autograd.md",
+    "dump/university/eng-3px3/W1.md",
+    "dump/university/astron-2e03/W1.md",
     "dump/university/astron-2e03/transit-timing-variation.png",
     "dump/university/astron-2e03/Screenshot 2024-01-11 at 16.14.50.png",
     "dump/university/astron-2e03/radius-period-diagram.png",
     "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
-    "dump/university/astron-2e03/W1.md",
     "dump/university/astron-2e03/transit-graph.png",
     "dump/university/commerce-4be3/Pay model.md",
     "dump/Expenses.md",
-    "dump/university/sfwr-3dx4/frequency_domain.pdf",
     "dump/university/commerce-4be3/index.md",
-    "dump/university/commerce-4be3/The Pay Model.pdf",
     "dump/merit pay.md",
     "dump/university/commerce-4be3/merit pay.md",
     "dump/university/sfwr-2c03/L1.pdf",
@@ -249,34 +266,18 @@
     "dump/university/commerce-4be3",
     "dump/university/sfwr-2c03/contains.cpp",
     "dump/Determinism.md",
-    "dump/university/eng-3px3/W1.md",
     "dump/university/sfwr-2c03/A1.pdf",
-    "dump/university/sfwr-3dx4/Frequency Domain.md",
     "posts/2023.md",
     "dump/university/sfwr-3dx4/Frequency Domain SFWRENG 3DX4.pdf",
-    "dump/Language.md",
     "blob.png",
     "new-blob.png",
     "blob Background Removed.png",
     "dump/Scents.md",
     "dump/university/eng-3px3/index.md",
-    "posts/index.md",
-    "dump/index.md",
     "dump/university/eng-3px3/3PX3 Introduction.pptx",
-    "private/Reservation list.md",
-    "dump/university/eng-3px3",
     "dump/university/astron-2e03/transit.png",
     "dump/university/astron-2e03/exoplanets-discovery-technique.png",
-    "dump/university/sfwr-3dx4/index.md",
-    "dump/Dishes.md",
-    "dump/Intelligence amplification.md",
-    "dump/university/sfwr-3dx4/W1.md",
-    "dump/large models.md",
-    "_index.md",
-    "[[dump/Language.md",
-    "dump/Chaos.md",
     "posts/images/passage-giorgio-m.jpg",
-    "dump/images/passage-giorgio-m.jpg",
     "Untitled.canvas"
   ]
 }

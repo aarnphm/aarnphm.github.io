@@ -8,4 +8,8 @@ title: Language
 ---
 # representation.
 
-text
+## text
+
+language models is mere representation of our knowledge
+
+techniques such as deep learning

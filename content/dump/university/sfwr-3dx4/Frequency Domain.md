@@ -88,6 +88,9 @@ $$
 \end{aligned}
 $$
 
+> [!important]
+> $C(s)=G(s)R(s)$
+
 > $G(s)$ is the **transfer function**
 
 Q:  $G(s) = \frac{1}{S+2}$. Input: $u(t)$. What is $y(t)$ ?
@@ -95,8 +98,58 @@ Q:  $G(s) = \frac{1}{S+2}$. Input: $u(t)$. What is $y(t)$ ?
 $$Y(s) = G(s)u(s) \rightarrow Y(s)=\frac{1}{s(s+2)} = \frac{A}{s} + \frac{B}{s+2} = \frac{1}{2\cdot{s}} - \frac{1}{2\cdot{(s+2)}}$$
 $$y(t) = -\frac{1}{2}(1-e^{-2t})u(t)$$
 
-### Inverse Laplace transform
+## Inverse Laplace transform
 
 $$
 \mathcal{L}^{-1} \{ F(s) \} = \frac{1}{2\pi j} \lim_{\omega \to \infty} \int_{\sigma-j\omega}^{\sigma+j\omega} F(s) e^{st} \, ds
 $$
+
+## Partial fraction expansion
+
+$$
+\begin{aligned}
+F(s) &= \frac{N(s)}{D(s)} \\\
+&\\\
+N(s) &: m^{th} \text{ order polynomial in } s \\\
+D(s) &: n^{th} \text{ order polynomial in } s \\\
+\end{aligned}
+$$
+### Decomposition of $\frac{N(s)}{D(s)}$
+
+1. **Divide if improper**: $\frac{N(s)}{D(s)}$ such that $\text{degree of }N(s) \leq \text{degree of } D(s)$ such that $\frac{N(s)}{D(s)} = \text{a polynomial } + \frac{N_1(s)}{D(s)}$
+2. **Factor Denominator**: into factor form
+	$$
+	(ps+q)^m \text{ and } (as^2+bs+c)^n
+	$$
+3. **Linear Factors**: $(ps+q)^m$ such that:
+	$$
+	\sum_{j=1}^{m}\frac{A_j}{(ps+q)^j}
+	$$
+4. **Quadratic Factors**: $(as^2+bs+c)^n$ such that
+	$$
+	\sum_{j=1}^{n}{\frac{B_j s+C_j}{(as^2+bs+c)^j}}
+	$$
+5. **Determine Unknown**
+
+## Stability analysis using Root of $D(s)$
+> roots of $D(s)$ as **poles**
+
+$$
+G(s) = \frac{N(s)}{D(s)} = \frac{N(s)}{\prod_{j=1}^{n}(s+p_j)} = \sum_{j=1}^{n}{\frac{A_j}{s+p_j}}
+$$
+> $p_i$ can be imaginary
+
+Solving for $g(t)$ gives
+$$
+g(t) = \sum_{j=1}^{n}{\mathcal{L}^{-1}\{\frac{A_j}{(s+p_j)}\}} = \sum_{j=1}^{n}{A_je^{-p_jt}}
+$$
+
+### Complex root
+
+For poles at $s=\sigma_i \pm j\omega$ we get
+
+$$
+\frac{\alpha + j\beta}{s + \sigma_i + j\omega_i} + \frac{\alpha - j\beta}{s + \sigma_i - j\omega_i}
+$$
+
+Wants to be on LHP for time-function associated with $s$ plane to be _stable_

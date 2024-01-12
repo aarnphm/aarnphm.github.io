@@ -8,7 +8,7 @@ draft: true
 title: chaos of living alone. abroad.
 ---
 
-_This is the extension of [[dump/Chaos|Chaos]] that I have been thinking about_
+_This is an extension of [[dump/Chaos|Chaos]] that I have been thinking about_
 
 ![[posts/images/passage-giorgio-m.jpg]]
 _Passage by Giorgio Morandi_
@@ -21,11 +21,16 @@ This untamed curious inner child, still clung to my being, propels me forward. S
 
 Let's begin this discussion of chaos through a Socratic dialect:
 
-## who are you trying to become?
+Who is Q?
 
-Perhaps it is less about becoming but more about unravelling the complexities from within. There is a certain naive desire, a childlike curiosity, that propels me towards the unknown, the seas of uncertainty. In embracing this naive desire, I become a vessel of my own making, navigating the complex seas of existence. As it may be, at the moment, I'm trying to protect that child and shield him from the turbulence and chaos we call life.
+Who is A?
 
-## why can't you move back home?
+
+## Q: who are you trying to become?
+
+A: Perhaps it is less about becoming but more about unravelling the complexities from within. There is a certain naive desire, a childlike curiosity, that propels me towards the unknown, the seas of uncertainty. In embracing this naive desire, I become a vessel of my own making, navigating the complex seas of existence. As it may be, at the moment, I'm trying to protect that child and shield him from the turbulence and chaos we call life.
+
+## Q: why can't you move back home?
 
 Consider the river and the dam. The river, a living artery, courses from its source with a purpose as clear as its waters. It meanders, shaped by the land it traverses, until it reaches the dam. Here, it lies in a deep réservoir, a body of water in waiting, destined to flow through turbines and continue its journey downstream. This cycle is perpetual: the sun draws the water skyward, and it returns as rain, nourishing the earth on its way back to the river. But the droplets that return are transformed, no longer the same entities that once rested in the dam’s embrace.
 

@@ -2,6 +2,7 @@
 id: writing
 tags:
   - sapling
+  - evergreen
 date: "2023-07-29"
 title: Writing
 ---
@@ -34,9 +35,22 @@ In this paradox lies the profound beauty and torment of writing. It’s a ceasel
 
 Excerpt from _George Orwell's Why I Write_
 
-Georges Orwell's _Why I Write_ explores his motivation behind writing. He identifies four main reasons:
+Sheer egoism:
+  > But there is also the minority of gifted, willful people who are determined to live their own lives to the end, and writers belong in this class. Serious writers, I should say, are on the whole more vain and self-centered than journalists, though less interested in money.
 
-1.
+Aesthetic enthusiasm:
+  - Perception of beauty in the external world, or, on the other hand, in words and their right arrangement
+  - Pleasure in the impact of one sound on another, in the firmness of good prose or the rhythm of a good story
+  - Desire to share an experience which one feels is valuable and ought not to be missed.
+
+Historical impulse
+  - Seeing things as they are, to find out true facts and store them up for the use of posterity.
+
+Political purpose
+  - Desire to push the world in a certain direction, to alter other peoples' idea of the kind of society that they should strive after.
+
+Orwell is often known for his democratic socialism, and opposed for totalitarianism. But his [[dump/Will to Truth|will to truth]] is fundamental to his writing, a true representation of intellectual honesty. In the context of totalitarianism, Orwell pointed out that such regimes demand the continuous alteration of the past and probably a disbelief in the very existence of [objective truth](https://www.goodreads.com/book/show/35610790-orwell-on-truth). He saw the danger in a society that drifts from the truth, stating that it will hate those who speak it.
+
 
 # as query.
 
@@ -47,6 +61,8 @@ _Excerpt from [A blog post is a very long and complex search query to find fasci
 > When writing in public, there is a common idea that you should make it *accessible*. This is a left over from mass media. Words addressed to a large and diverse set of people need to be simple and clear and free of jargon. It is valuable to write clearly of course, to a degree. Clear writing is clear thinking
 
 # as thoughts.
+
+Chain of thoughts
 
 # as art.
 

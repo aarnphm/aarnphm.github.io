@@ -5,7 +5,10 @@ tags:
 date: "2024-01-08"
 title: Chaos
 ---
+Chaos is the definition of [[dump/Entropy|entropy]]
 ## chaotic system.
+
+
 
 
 
@@ -19,7 +22,7 @@ What [[dump/Philosophy and Nietzsche|Nietzsche]] would probably say:
 
 - Chaos is the essence of existence.
   - The world is not governed by fixed rules and predetermined order
-  - "eternal recurrence" - a litmus test for an individual's capacity to affirm life <-
+  - "eternal recurrence" - a litmus test for an individual's capacity to affirm life <- Actively mentioned throughout [[dump/Philosophy and Nietzsche#Thus Spoke Zarathustra|Thus Spoke Zarathustra]].
 - The Übermensch must find his footing, create his own values and embrace such chaos.
 
 [[dump/university/philo-1aa3/John Stuart Mill|Utilitarianism]] relations to chaos?
