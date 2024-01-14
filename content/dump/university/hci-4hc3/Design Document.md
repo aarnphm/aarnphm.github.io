@@ -1,7 +1,6 @@
 ---
 id: Design Document
 tags:
-  - hci
   - university
   - sfwr4hc3
 date: "2024-01-07"

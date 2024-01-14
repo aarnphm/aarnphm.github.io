@@ -2,7 +2,6 @@
 id: Interactive cycle
 tags:
   - university
-  - hci
   - sfwr4hc3
 date: "2023-10-10"
 title: Interactive cycle

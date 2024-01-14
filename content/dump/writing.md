@@ -60,10 +60,7 @@ _Excerpt from [A blog post is a very long and complex search query to find fasci
 
 > When writing in public, there is a common idea that you should make it *accessible*. This is a left over from mass media. Words addressed to a large and diverse set of people need to be simple and clear and free of jargon. It is valuable to write clearly of course, to a degree. Clear writing is clear thinking
 
-# as thoughts.
-
-Chain of thoughts
-
-# as art.
-
-> We end
+<!-- # as thoughts. -->
+<!-- Chain of thoughts -->
+<!-- # as art. -->
+<!-- > We end -->

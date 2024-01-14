@@ -26,8 +26,22 @@
                 "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf"
               }
             }
+          },
+          {
+            "id": "6e2e5bc4520ba9b5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/Chaos.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       },
       {
         "id": "1125e2091f0578b1",
@@ -138,7 +152,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/sfwr-3dx4/frequency_domain.pdf",
+                "file": "dump/Chaos.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -155,7 +169,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/sfwr-3dx4/frequency_domain.pdf",
+                "file": "dump/Chaos.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -178,7 +192,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/sfwr-3dx4/frequency_domain.pdf"
+                "file": "dump/Chaos.md"
               }
             }
           },
@@ -208,7 +222,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/sfwr-3dx4/frequency_domain.pdf"
+                "file": "dump/Chaos.md"
               }
             }
           }
@@ -231,11 +245,17 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "f27d84cd89d0382c",
+  "active": "6e2e5bc4520ba9b5",
   "lastOpenFiles": [
+    "dump/papers/Nietzsche the Kantian Self and Eternal Recurrence.pdf",
+    "dump/papers/40337624.pdf",
+    "dump/Philosophy and Kant.md",
+    "dump/Transcendentals.md",
+    "dump/Will.md",
+    "dump/Chaos.md",
+    "dump/university/sfwr-3dx4/frequency_domain.pdf",
     "dump/university/approx.py",
     "dump/university/sfwr-3dx4/Frequency Domain.md",
-    "dump/university/sfwr-3dx4/frequency_domain.pdf",
     "dump/Language.md",
     "dump/university/sfwr-2fa3/index.md",
     "dump/university/sfwr-2fa3/W1.md",
@@ -243,7 +263,6 @@
     "dump/university/sfwr-2fa3",
     "dump/Will to Truth.md",
     "dump/Entropy.md",
-    "dump/Chaos.md",
     "posts/Chaos.md",
     "dump/university/commerce-4be3/The Pay Model.pdf",
     "dump/Philosophy and Nietzsche.md",
@@ -268,14 +287,9 @@
     "dump/university/sfwr-2c03/contains.cpp",
     "dump/Determinism.md",
     "dump/university/sfwr-2c03/A1.pdf",
-    "posts/2023.md",
-    "dump/university/sfwr-3dx4/Frequency Domain SFWRENG 3DX4.pdf",
     "blob.png",
     "new-blob.png",
     "blob Background Removed.png",
-    "dump/Scents.md",
-    "dump/university/eng-3px3/index.md",
-    "dump/university/eng-3px3/3PX3 Introduction.pptx",
     "dump/university/astron-2e03/transit.png",
     "dump/university/astron-2e03/exoplanets-discovery-technique.png",
     "posts/images/passage-giorgio-m.jpg",

@@ -1,7 +1,7 @@
 ---
 id: Pay model
 tags:
-  - commerce-4be3
+  - commerce4be3
 date: "2024-01-10"
 title: Pay model
 ---
