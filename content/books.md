@@ -66,7 +66,6 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 ## current.
 
 - **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
-- **The end of the affair** by Graham Greene
 - **Nietzsche and Philosophy** by Gilles Deleuze
 - **Beyond Good and Evil** by Friedrich Nietzsche
 - **The Ego and the Id** by Sigmund Freud
@@ -80,6 +79,8 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 ## finished.
 
 ### 2024
+
+- **The end of the affair** by Graham Greene
 
 ### 2023
 

@@ -21,8 +21,8 @@ The following are some links that might be of interest to you:
 - [shelf](/books): books I have read, currently reading, or to be read in near future.
 - [rusty mailbox](/posts/): collections of either personal or technical [[dump/writing|writing]].
 - [notes](/dump): Scattered recollection of notes.
-- [easels stand](/dump/projects): List of [[dump/projects]] I have built throughout the year!
-- [diffuser](/dump/Scents): List of [[dump/Scents|scents]] I have used, currently using, or on wish-lists.
+- [easels stand](/dump/projects): List of projects I have built throughout the year!
+- [diffuser](/dump/Scents): Scents I have used, currently using, or on wish-lists.
 
 > People I looked up, but not limited to: [Jacky](https://jzhao.xyz/), [Chaoyu](https://twitter.com/chaoyu_), [Sean](https://www.linkedin.com/in/ssheng/), [Ava](https://www.avabear.xyz/), [Hank and John](https://www.youtube.com/@vlogbrothers), [@fourtetkieran](https://www.fourtet.net/).
 

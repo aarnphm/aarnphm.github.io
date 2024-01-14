@@ -6,11 +6,16 @@ date: "2024-01-08"
 title: Chaos
 ---
 Chaos is the definition of [[dump/Entropy|entropy]]
+
 ## chaotic system.
 
+## as information.
 
+> Money is an information system for labor allocation.
 
+Money doesn't have any power intrinsically in itself. You can't simply throw more money into a system, as well as chaos into a system.
 
+Chaos is also an information system for growth. It manifests itself through different decisions. From chaos one can derive order through the learning of chaos.
 
 ## as definition.
 
