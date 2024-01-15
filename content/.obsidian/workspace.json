@@ -8,25 +8,25 @@
         "type": "tabs",
         "children": [
           {
+            "id": "a257729e85ff5697",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/university/sfwr-2c03/W1.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
             "id": "f27d84cd89d0382c",
             "type": "leaf",
             "state": {
               "type": "pdf",
               "state": {
-                "file": "dump/university/sfwr-3dx4/frequency_domain.pdf"
-              }
-            }
-          },
-          {
-            "id": "6e2e5bc4520ba9b5",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "dump/Chaos.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
+                "file": "dump/university/sfwr-2c03/binary-search.pdf"
               }
             }
           },
@@ -41,20 +41,17 @@
             }
           },
           {
-            "id": "a257729e85ff5697",
+            "id": "04bb2dff740b3884",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "dump/university/sfwr-2c03/W1.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
+                "file": "dump/university/sfwr-2c03/collections.pdf"
               }
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -121,7 +118,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/sfwr-2c03/W1.md",
+                "file": "dump/university/sfwr-2c03/binary-search.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -138,7 +135,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/sfwr-2c03/W1.md",
+                "file": "dump/university/sfwr-2c03/binary-search.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -161,7 +158,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/sfwr-2c03/W1.md"
+                "file": "dump/university/sfwr-2c03/binary-search.pdf"
               }
             }
           },
@@ -191,7 +188,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/sfwr-2c03/W1.md"
+                "file": "dump/university/sfwr-2c03/binary-search.pdf"
               }
             }
           }
@@ -214,23 +211,23 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "a257729e85ff5697",
+  "active": "f27d84cd89d0382c",
   "lastOpenFiles": [
-    "dump/university/sfwr-2c03/A1.md",
+    "dump/university/sfwr-2c03/L1.pdf",
+    "dump/university/sfwr-2c03/binary-search.pdf",
     "dump/university/sfwr-2c03/W1.md",
+    "dump/university/sfwr-2c03/collections.pdf",
+    "dump/university/sfwr-3dx4/frequency_domain.pdf",
+    "dump/Chaos.md",
+    "dump/university/sfwr-2c03/A1.md",
     "dump/university/sfwr-2c03/W2.md",
     "dump/university/sfwr-2c03/Binary Search.md",
     "dump/university/sfwr-2c03/growth.png",
     "dump/university/sfwr-2c03/compare-graphs.png",
-    "dump/university/sfwr-2c03/L1.pdf",
     "dump/university/sfwr-3dx4/Frequency Domain.md",
     "dump/Philosophy and Nietzsche.md",
-    "dump/university/sfwr-3dx4/frequency_domain.pdf",
     "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
-    "dump/Chaos.md",
-    "dump/university/sfwr-2c03/collections.pdf",
     "dump/university/sfwr-2c03/collections.pdf.crdownload",
-    "dump/university/sfwr-2c03/binary-search.pdf",
     "dump/papers/Nietzsche the Kantian Self and Eternal Recurrence.pdf",
     "dump/papers/40337624.pdf",
     "dump/Philosophy and Kant.md",
@@ -257,7 +254,6 @@
     "dump/university/commerce-4be3/Pay model.md",
     "dump/Expenses.md",
     "dump/university/commerce-4be3/index.md",
-    "dump/merit pay.md",
     "blob.png",
     "new-blob.png",
     "blob Background Removed.png",

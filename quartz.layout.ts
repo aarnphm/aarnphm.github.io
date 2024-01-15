@@ -21,7 +21,9 @@ function filterFunc(path: string, excludePaths: string[] = []) {
     const slug = f.slug!
     if (slug.startsWith(path + "/")) {
       const subpath = slug.slice(path.length + 1).split("/")[0]
-      return !excludePaths.includes(subpath) && f.slug! !== path + "/index" && !f.frontmatter?.noindex
+      return (
+        !excludePaths.includes(subpath) && f.slug! !== path + "/index" && !f.frontmatter?.noindex
+      )
     }
     return false
   }
@@ -52,13 +54,16 @@ export const defaultContentPageLayout: PageLayout = {
       Component.RecentNotes({
         title: "Recent Notes",
         limit: 3,
-        filter: filterFunc("dump", ['university']),
+        filter: filterFunc("dump", ["university"]),
         linkToMore: "dump/" as SimpleSlug,
       }),
     ),
     Component.DesktopOnly(Component.TableOfContents()),
   ],
-  right: [Component.Graph({ localGraph: { showTags: false }, globalGraph: { showTags: true } }), Component.Backlinks()],
+  right: [
+    Component.Graph({ localGraph: { showTags: false }, globalGraph: { showTags: true } }),
+    Component.Backlinks(),
+  ],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)
