@@ -2,6 +2,7 @@
 id: Chaos
 tags:
   - philosophy
+  - evergreen
 date: "2024-01-08"
 title: Chaos
 ---
@@ -9,6 +10,8 @@ title: Chaos
 Full posts on [chaos of living](posts/Chaos.md).
 
 > Chaos: a lossiness [collection](https://subconscious.substack.com/p/self-organizing-ideas) of one's [[dump/Will|will]] to life.
+
+The etymology of chaos traces back to the Greek word χάος (khaos), meaning which means "abyss, that which gapes wide open, that which is vast and [empty](https://www.merriam-webster.com/wordplay/chaos-meaning-and-history)".
 
 ## as system.
 
@@ -48,7 +51,6 @@ The Übermensch must find his footing, create his own values through labyrinth o
 What [[dump/university/philo-1aa3/John Stuart Mill|Mill]] would imply:
 
 
-
 ## as information.
 
 > Money is an information system for labor allocation.
@@ -56,4 +58,3 @@ What [[dump/university/philo-1aa3/John Stuart Mill|Mill]] would imply:
 Money doesn't have any power intrinsically in itself. You can't simply throw more money into a system, as well as chaos into a system.
 
 Chaos is also an information system for growth. It manifests itself through different decisions. From chaos one can derive order through the learning of chaos.
-
