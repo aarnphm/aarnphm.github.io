@@ -11,6 +11,7 @@ title: Scents
 
 - Maison Margiela's _Lazy Sunday Morning_
 - Maison Francis Kurkdjian's _OUD satin mood_
+- Tom Ford's _Noir de Noir_
 
 ### current.
 
