@@ -3,11 +3,11 @@ id: Autograd
 tags:
   - seed
   - ml
+date: "2021-10-10"
 title: Autograd
-date: 2021-10-10
 ---
 
-Autodiff and [[XLA]]
+Auto differentiation and [[dump/XLA|XLA]]
 
 $f(x) = e^{2x} - x^3 \rightarrow \frac{df}{dx} = 2e^{2x} - 3x^2$ <- manual diff
 
@@ -24,7 +24,7 @@ Forward mode
 - represented with tuple of original $v_i$ and _primal_ $v_i^o$ (tangent)
   $v_i \rightarrow (v_i, \dot{v^o})$
 
-- [[Jax and AutoDiff goodness]] uses operator overloading.
+- [[dump/Jax|Jax]] uses operator overloading.
 
 Reverse mode
 
