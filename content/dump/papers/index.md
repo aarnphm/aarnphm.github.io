@@ -3,6 +3,7 @@ id: index
 tags:
   - seed
 date: "2024-01-20"
+noindex: true
 title: papers.
 ---
 
