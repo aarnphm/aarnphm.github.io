@@ -81,6 +81,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 ### 2024
 
 - **The end of the affair** by Graham Greene
+- **The Little Book of [[dump/deep learning.md|Deep Learning]]** by François Fleuret
 
 ### 2023
 

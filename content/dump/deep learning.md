@@ -7,11 +7,11 @@ date: "2024-01-11"
 title: deep learning
 ---
 
-See also: [this book](https://fleuret.org/public/lbdl.pdf)
+See also: [The Little Book of Deep Learning](/books#2024) ([pdf](https://fleuret.org/public/lbdl.pdf))
 
 ### math.
 
-### frameworks
+### frameworks.
 
 - [PyTorch](https://pytorch.org/)
 - [[dump/Jax and autograd|Jax]]: stemming from [autograd](https://github.com/HIPS/autograd) project, by pretty much the same core team

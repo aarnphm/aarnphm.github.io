@@ -49,9 +49,32 @@
                 "file": "dump/university/sfwr-2c03/collections.pdf"
               }
             }
+          },
+          {
+            "id": "52462050db267e2c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/university/eng-3px3/W2.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "4d033560875ea0a2",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf"
+              }
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 5
       }
     ],
     "direction": "vertical"
@@ -118,7 +141,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/sfwr-2c03/binary-search.pdf",
+                "file": "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -135,7 +158,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/sfwr-2c03/binary-search.pdf",
+                "file": "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -158,7 +181,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/sfwr-2c03/binary-search.pdf"
+                "file": "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf"
               }
             }
           },
@@ -188,7 +211,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/sfwr-2c03/binary-search.pdf"
+                "file": "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf"
               }
             }
           }
@@ -211,14 +234,24 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "f27d84cd89d0382c",
+  "active": "4d033560875ea0a2",
   "lastOpenFiles": [
+    "dump/university/eng-3px3/quiz-template.docx",
+    "dump/university/eng-3px3/McMaster Quiz Template.docx",
+    "dump/university/eng-3px3/W2.md",
+    "dump/university/eng-3px3/W1.md",
+    "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf",
+    "dump/university/eng-3px3/McMasterU Quiz Template.docx",
+    "dump/university/eng-3px3/Unconfirmed 490675.crdownload",
+    "dump/university/eng-3px3/marginal-apple-q.jpeg",
+    "dump/university/eng-3px3/3PX3 Net Value Functions.pdf",
+    "dump/university/eng-3px3/3PX3 02 - Engineering Economics & Net Value Applications.pdf",
+    "dump/university/eng-3px3/3PX3 01 - Net Value Functions and Design Project Introduction.pdf",
+    "dump/university/sfwr-2c03/binary-search.pdf",
     "posts/Why should you learn philosophy during university.md",
     "dump/university/sfwr-2c03/L1.pdf",
-    "dump/university/sfwr-2c03/binary-search.pdf",
     "dump/university/sfwr-2c03/W1.md",
     "dump/university/sfwr-2c03/collections.pdf",
-    "dump/university/sfwr-3dx4/frequency_domain.pdf",
     "dump/Chaos.md",
     "dump/university/sfwr-2c03/A1.md",
     "dump/university/sfwr-2c03/W2.md",
@@ -227,38 +260,28 @@
     "dump/university/sfwr-2c03/compare-graphs.png",
     "dump/university/sfwr-3dx4/Frequency Domain.md",
     "dump/Philosophy and Nietzsche.md",
-    "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
-    "dump/university/sfwr-2c03/collections.pdf.crdownload",
-    "dump/papers/Nietzsche the Kantian Self and Eternal Recurrence.pdf",
-    "dump/papers/40337624.pdf",
     "dump/Philosophy and Kant.md",
     "dump/Transcendentals.md",
     "dump/Will.md",
-    "dump/university/approx.py",
     "dump/Language.md",
     "dump/university/sfwr-2fa3/index.md",
     "dump/university/sfwr-2fa3/W1.md",
     "dump/writing.md",
-    "dump/university/sfwr-2fa3",
     "dump/Will to Truth.md",
     "dump/Entropy.md",
     "posts/Chaos.md",
     "dump/deep learning.md",
     "dump/index.md",
     "dump/Jax and autograd.md",
-    "dump/university/eng-3px3/W1.md",
     "dump/university/astron-2e03/W1.md",
     "dump/university/astron-2e03/transit-timing-variation.png",
     "dump/university/astron-2e03/Screenshot 2024-01-11 at 16.14.50.png",
     "dump/university/astron-2e03/radius-period-diagram.png",
     "dump/university/astron-2e03/transit-graph.png",
     "dump/university/commerce-4be3/Pay model.md",
-    "dump/Expenses.md",
-    "dump/university/commerce-4be3/index.md",
     "blob.png",
     "new-blob.png",
     "blob Background Removed.png",
-    "dump/university/astron-2e03/transit.png",
     "Untitled.canvas"
   ]
 }
