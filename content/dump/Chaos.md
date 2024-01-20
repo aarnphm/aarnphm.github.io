@@ -53,7 +53,7 @@ What [[dump/university/philo-1aa3/John Stuart Mill|Mill]] would imply:
 
 ## as information.
 
-> Money is an information system for labor allocation.
+> [[dump/monetary|Money]] is an information system for labor allocation.
 
 Money doesn't have any power intrinsically in itself. You can't simply throw more money into a system, as well as chaos into a system.
 

@@ -16,7 +16,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 - **A Treatise of Human Nature** by David Hume
 - **The Evolution of Modern Metaphysics: Making Sense of Things** by A. W. Moore
-- **Being and Some Philosophers** by Etienne Gilson
+- [[dump/papers/Being and Some Philosophers.pdf|Being and Some Philosophers]] by Etienne Gilson
 - **The Phenomenology of Spirit** by G. W. F. Hegel
 - **The World as Will and Representation** by Arthur Schopenhauer
 - **The Prince** by Niccolò Machiavelli
@@ -87,18 +87,18 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 - **Why I Write** by George Orwell
 - **Why I Am So Wise** by Friedrich Nietzsche
-- **Civilization and Its Discontents** by Sigmund Freud
+- **[[dump/Civilisation and its Discontents|Civilisation and its Discontents]]** by Sigmund Freud
 - **Dopamine Nation** by Dr. Anna Lembke
-- **In Emergency, Break Glass: What Nietzsche Can Teach Us About Joyful Living in a Tech-Saturated World** by Nate Anderson
-- **Radically Human: How New Technology Is Transforming Business and Shaping Our Future** by Paul Daugherty and H. James Wilson
-- **The Subtle Art of Not Giving a Fuck** by Mark Manson
 - **The Midnight Library** by Matt Haig
 - **Out of Love** by Hazel Hayes
+- **In Emergency, Break Glass: What Nietzsche Can Teach Us About Joyful Living in a Tech-Saturated World** by Nate Anderson
+- **The Subtle Art of Not Giving a Fuck** by Mark Manson
 - **Pretentiousness: Why it Matters** by Dan Fox
 - **The Republic** by Plato
 - **Apology** by Plato
 - **Symposium** by Plato
 - **Pillow Thoughts IV** by Courtney Peppernell
+- **Radically Human: How New Technology Is Transforming Business and Shaping Our Future** by Paul Daugherty and H. James Wilson
 
 ### 2022
 
