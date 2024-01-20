@@ -1,10 +1,10 @@
 ---
-id: Jax and autograd
+id: Jax
 tags:
   - seed
   - ml
-title: autograd and Jax
-date: 2022-11-07
+date: "2022-11-07"
+title: Jax
 ---
 
 ### Jax

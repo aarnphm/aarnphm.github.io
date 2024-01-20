@@ -62,19 +62,9 @@
                 "source": false
               }
             }
-          },
-          {
-            "id": "4d033560875ea0a2",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf"
-              }
-            }
           }
         ],
-        "currentTab": 5
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -141,7 +131,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf",
+                "file": "dump/university/eng-3px3/W2.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -158,7 +148,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf",
+                "file": "dump/university/eng-3px3/W2.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -181,7 +171,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf"
+                "file": "dump/university/eng-3px3/W2.md"
               }
             }
           },
@@ -211,7 +201,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf"
+                "file": "dump/university/eng-3px3/W2.md"
               }
             }
           }
@@ -234,24 +224,27 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "4d033560875ea0a2",
+  "active": "52462050db267e2c",
   "lastOpenFiles": [
+    "dump/Jax.md",
+    "dump/Information Theory.md",
+    "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf",
+    "dump/university/eng-3px3/3PX3 Net Value Functions.pdf",
+    "dump/papers/Evolution of Modern Metaphysics 2012.pdf",
+    "dump/university/eng-3px3/3PX3 Introduction.pptx",
+    "private/private-note.md",
+    "notes/docker.md",
+    "notes",
     "dump/university/eng-3px3/quiz-template.docx",
     "dump/university/eng-3px3/McMaster Quiz Template.docx",
     "dump/university/eng-3px3/W2.md",
     "dump/university/eng-3px3/W1.md",
-    "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf",
     "dump/university/eng-3px3/McMasterU Quiz Template.docx",
     "dump/university/eng-3px3/Unconfirmed 490675.crdownload",
     "dump/university/eng-3px3/marginal-apple-q.jpeg",
-    "dump/university/eng-3px3/3PX3 Net Value Functions.pdf",
     "dump/university/eng-3px3/3PX3 02 - Engineering Economics & Net Value Applications.pdf",
-    "dump/university/eng-3px3/3PX3 01 - Net Value Functions and Design Project Introduction.pdf",
-    "dump/university/sfwr-2c03/binary-search.pdf",
     "posts/Why should you learn philosophy during university.md",
-    "dump/university/sfwr-2c03/L1.pdf",
     "dump/university/sfwr-2c03/W1.md",
-    "dump/university/sfwr-2c03/collections.pdf",
     "dump/Chaos.md",
     "dump/university/sfwr-2c03/A1.md",
     "dump/university/sfwr-2c03/W2.md",
@@ -272,13 +265,10 @@
     "posts/Chaos.md",
     "dump/deep learning.md",
     "dump/index.md",
-    "dump/Jax and autograd.md",
-    "dump/university/astron-2e03/W1.md",
     "dump/university/astron-2e03/transit-timing-variation.png",
     "dump/university/astron-2e03/Screenshot 2024-01-11 at 16.14.50.png",
     "dump/university/astron-2e03/radius-period-diagram.png",
     "dump/university/astron-2e03/transit-graph.png",
-    "dump/university/commerce-4be3/Pay model.md",
     "blob.png",
     "new-blob.png",
     "blob Background Removed.png",

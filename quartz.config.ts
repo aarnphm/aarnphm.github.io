@@ -51,7 +51,7 @@ const config: QuartzConfig = {
       Plugin.SyntaxHighlighting(),
       Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
       Plugin.GitHubFlavoredMarkdown(),
-      Plugin.CrawlLinks({ markdownLinkResolution: "absolute" }),
+      Plugin.CrawlLinks({ markdownLinkResolution: "absolute", externalLinkIcon: false }),
       Plugin.Description(),
     ],
     filters: [Plugin.RemoveDrafts()],
@@ -64,6 +64,7 @@ const config: QuartzConfig = {
       Plugin.ContentIndex({
         enableSiteMap: true,
         enableRSS: true,
+        rssLimit: 20,
       }),
       Plugin.Assets(),
       Plugin.Static(),

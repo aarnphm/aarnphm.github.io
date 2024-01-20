@@ -7,7 +7,7 @@ date: "2024-01-11"
 title: deep learning
 ---
 
-See also: [The Little Book of Deep Learning](/books#2024) ([pdf](https://fleuret.org/public/lbdl.pdf))
+See also: [The Little Book of Deep Learning](/books#2024) ([pdf](https://fleuret.org/public/lbdl.pdf) or [lectures](https://fleuret.org/dlc/))
 
 ### math.
 
