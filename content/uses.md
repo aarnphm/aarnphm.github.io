@@ -6,7 +6,7 @@ date: "2024-01-22"
 title: uses.
 ---
 
-Includes the tools I use, workflow,  etc.
+Includes the tools I use, workflow,  etc. my submission to [uses.tech](https://uses.tech)
 
 ### hardware.
 
@@ -15,7 +15,7 @@ Includes the tools I use, workflow,  etc.
 - Apple Trackpad 2
 - Mode Eighty (Signal Tactile, 68g spring, 205g0, Durock V2)
 - Keychron Q8 Pro (Gateron Ink Black, 205g0 + 105g0, Durock V2)
-- LG 4K 32UN880-B x2
+- LG 4K 32UN880-B x 2
 - [beyerdynamic DT 1990 Pro](https://global.beyerdynamic.com/dt-1990-pro.html)
 - Audioengine A2+
 - Yamaha AG03MK2W & Universal Audio Apollo Twin X DUO (Audio Interface)
