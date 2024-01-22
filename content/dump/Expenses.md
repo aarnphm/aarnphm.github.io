@@ -7,9 +7,7 @@ noindex: true
 title: Expenses
 ---
 
-A list to track personal expenses, or how I spend my money:
-
-> [!important]
+> [!important] TL;DR
 > This is for personal uses, and I fully understand that I'm very fortunate to afford such lifestyle.
 
 ### Subscriptions:
