@@ -1,9 +1,9 @@
 {
   "accentColor": "#e8a83b",
   "cssTheme": "Minimal",
-  "interfaceFontFamily": "JetBrainsMono Nerd Font",
-  "textFontFamily": "JetBrainsMono Nerd Font",
-  "monospaceFontFamily": "JetBrainsMono Nerd Font",
+  "interfaceFontFamily": "Berkeley Mono",
+  "textFontFamily": "Berkeley Mono",
+  "monospaceFontFamily": "Berkeley Mono",
   "baseFontSize": 16,
   "translucency": true,
   "theme": "moonstone",

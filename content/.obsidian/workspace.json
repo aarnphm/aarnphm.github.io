@@ -8,6 +8,14 @@
         "type": "tabs",
         "children": [
           {
+            "id": "005ced8b56d0862b",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {}
+            }
+          },
+          {
             "id": "a257729e85ff5697",
             "type": "leaf",
             "state": {
@@ -63,8 +71,7 @@
               }
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "vertical"
@@ -93,7 +100,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#philosophy",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -110,12 +117,12 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
-    "width": 388.50390243530273,
-    "collapsed": true
+    "width": 388.50390243530273
   },
   "right": {
     "id": "5221182814b155cf",
@@ -131,7 +138,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/eng-3px3/W2.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -148,7 +154,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/eng-3px3/W2.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -170,9 +175,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "dump/university/eng-3px3/W2.md"
-              }
+              "state": {}
             }
           },
           {
@@ -200,9 +203,7 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "dump/university/eng-3px3/W2.md"
-              }
+              "state": {}
             }
           }
         ],
@@ -224,8 +225,9 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "52462050db267e2c",
+  "active": "e12c0ccf161bce61",
   "lastOpenFiles": [
+    "dump/university/eng-3px3/W2.md",
     "dump/Jax.md",
     "dump/Information Theory.md",
     "dump/university/eng-3px3/Engineering Economics & Net Value Applications.pdf",
@@ -237,7 +239,6 @@
     "notes",
     "dump/university/eng-3px3/quiz-template.docx",
     "dump/university/eng-3px3/McMaster Quiz Template.docx",
-    "dump/university/eng-3px3/W2.md",
     "dump/university/eng-3px3/W1.md",
     "dump/university/eng-3px3/McMasterU Quiz Template.docx",
     "dump/university/eng-3px3/Unconfirmed 490675.crdownload",
