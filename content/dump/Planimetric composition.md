@@ -1,8 +1,7 @@
 ---
 id: Planimetric composition
 tags:
-  - seed
   - film
+date: "2023-08-11"
 title: Planimetric composition
-date: 2023-08-11
 ---

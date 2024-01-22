@@ -3,13 +3,13 @@ id: Cinematography
 tags:
   - film
   - evergreen
+date: "2023-09-11"
 title: Cinematography
-date: 2023-09-11
 ---
 
 Notes on format:
 
-- Anamorphic lenses
+- Anamorphic [[dump/lenses|lenses]]
 
 Equipment:
 
