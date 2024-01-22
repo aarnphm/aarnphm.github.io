@@ -16,10 +16,10 @@ A collection of courses.
 
 3. La trout meunière a la choux de Bruxelles
 
-4. Bourguignon boeuf or canard a l'orange
+4. Lamb with carrots three ways
 
 5. Salade verte
 
 6. Fromage
 
-7. Souffle au chocolat
+7. Chocolat mousse
