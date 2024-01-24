@@ -20,7 +20,8 @@ document.addEventListener("nav", async (e: unknown) => {
   function graphShortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (e.key === "g" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
-      document.getElementById("global-graph-icon")?.click()
+      const graphOpen = container?.classList.contains("active")
+      graphOpen ? hideGlobalGraph() : document.getElementById("global-graph-icon")?.click()
     }
   }
 
