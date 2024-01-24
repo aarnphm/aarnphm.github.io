@@ -24,10 +24,9 @@ export const HyperAlias = {
   mailbox: "/posts/",
   notes: "/dump/",
   projects: "/dump/projects",
-  scent: "/dump/Scents",
   uses: "/uses",
   advices: "/dump/quotes",
-  influence: "/influence",
+  affecter: "/influence",
 }
 export const SocialAlias = {
   github: "https://github.com/aarnphm",
@@ -69,7 +68,9 @@ export default (() => {
             </div>
           </div>
           {/* darkmode components */}
-          <input class="toggle" id="darkmode-toggle" type="checkbox" tabIndex={-1} />
+          <div class={`darkmode ${displayClass ?? ""}`}>
+            <input class="toggle" id="darkmode-toggle" type="checkbox" tabIndex={-1} />
+          </div>
           {/* landing content */}
           <div class="content-container">
             <img src="/static/avatar.png" class="landing-logo" />

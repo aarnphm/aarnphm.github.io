@@ -68,7 +68,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 3
       },
       {
         "id": "f6a24620298d0331",
@@ -165,7 +165,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/sfwr-3dx4/state_space.pdf",
+                "file": "dump/university/sfwr-2c03/sortings.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -182,7 +182,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/sfwr-3dx4/state_space.pdf",
+                "file": "dump/university/sfwr-2c03/sortings.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -205,7 +205,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/sfwr-3dx4/state_space.pdf"
+                "file": "dump/university/sfwr-2c03/sortings.pdf"
               }
             }
           },
@@ -235,7 +235,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/sfwr-3dx4/state_space.pdf"
+                "file": "dump/university/sfwr-2c03/sortings.pdf"
               }
             }
           }
@@ -258,12 +258,14 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "1b2e9784431472ae",
+  "active": "fae76a5cd1f47dd2",
   "lastOpenFiles": [
-    "dump/university/sfwr-3dx4/State space representation.md",
-    "dump/university/sfwr-3dx4/block.md",
+    "dump/university/sfwr-2c03/collections.pdf",
+    "dump/university/sfwr-2c03/binary-search.pdf",
     "dump/university/sfwr-3dx4/block_diagrams.pdf",
     "dump/university/sfwr-3dx4/state_space.pdf",
+    "dump/university/sfwr-3dx4/State space representation.md",
+    "dump/university/sfwr-3dx4/block.md",
     "dump/university/sfwr-3dx4/frequency_domain.pdf",
     "dump/university/sfwr-2c03/Sorting.md",
     "dump/university/sfwr-3dx4/Block Diagrams.md",
@@ -272,8 +274,6 @@
     "dump/university/sfwr-2c03/L1.pdf",
     "dump/university/sfwr-2c03/sortings.pdf",
     "dump/university/sfwr-2c03/compare-graphs.png",
-    "dump/university/sfwr-2c03/collections.pdf",
-    "dump/university/sfwr-2c03/binary-search.pdf",
     "dump/university/sfwr-2c03/sortings.pdf.crdownload",
     "dump/university/sfwr-2c03/collections.pdf.crdownload",
     "dump/university/sfwr-2c03/binary-search.pdf.crdownload",
@@ -298,7 +298,6 @@
     "private/Term of Reference.md",
     "private/Reservation list.md",
     "private/Meetup.md",
-    "private/Hack The North.md",
     "posts/images/passage-giorgio-m.jpg",
     "dump/university/sfwr-2c03/growth.png",
     "dump/university/philo-1aa3/tut/IMG_0308.jpg",

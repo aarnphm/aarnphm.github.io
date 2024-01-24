@@ -3,14 +3,19 @@ body[data-slug="index"] {
   h1 {
     font-family: "EB Garamond", serif;
   }
-}
-
-body[data-slug="index"] a {
-  color: inherit;
-  text-decoration: inherit;
-  font-weight: inherit;
-  transition: none;
-  border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
+  a {
+    color: inherit;
+    text-decoration: inherit;
+    font-weight: inherit;
+    transition: none;
+    border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
+  }
+  .darkmode {
+    display: block;
+    margin: 0;
+    width: inherit;
+    height: inherit;
+  }
 }
 
 body[data-slug="index"] a.internal[class*="landing-links"] {
@@ -21,14 +26,13 @@ body[data-slug="index"] a.internal[class*="landing-links"] {
   border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
 }
 
-[saved-theme="light"] body[data-slug="index"] a[class*="rose"] {
+body[data-slug="index"] a[class*="rose"] {
   color: rgb(215, 130, 126);
   border-bottom: none;
 }
 
 [saved-theme="dark"] body[data-slug="index"] a[class*="rose"] {
   color: rgb(235, 188, 186);
-  border-bottom: none;
 }
 
 body[data-slug="index"] p {
@@ -78,17 +82,13 @@ body[data-slug="index"] p {
   }
 
   & > hr {
-    margin: 2rem 2rem;
+    margin: 2rem;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .landing-usage {
     font-size: 1rem;
-  }
-}
-
-@media (max-width: 1800px) {
-  .content-container {
-    max-width: 24rem;
   }
 }
 
