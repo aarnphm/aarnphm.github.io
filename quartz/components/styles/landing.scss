@@ -10,6 +10,10 @@ body[data-slug="index"] a {
   border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
 }
 
+body[data-slug="index"] a.internal[class*="landing-links"] {
+  background-color: inherit;
+}
+
 [saved-theme="dark"] body[data-slug="index"] a {
   border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
 }

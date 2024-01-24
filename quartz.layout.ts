@@ -2,6 +2,7 @@ import { Data } from "vfile"
 import { PageLayout, SharedLayout } from "./quartz/cfg"
 import * as Component from "./quartz/components"
 import { SimpleSlug } from "./quartz/util/path"
+import { FileNode } from "./quartz/components/ExplorerNode"
 
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
@@ -77,7 +78,15 @@ export const defaultListPageLayout: PageLayout = {
     Component.MobileOnly(Component.Spacer()),
     Component.Search(),
     Component.Darkmode(),
-    Component.DesktopOnly(Component.Explorer()),
+    Component.DesktopOnly(
+      Component.Explorer({
+        title: "explore.",
+        filterFn: (node: FileNode) => {
+          const excludePaths = ["university", "papers", "tags"]
+          return !excludePaths.includes(node.name)
+        },
+      }),
+    ),
   ],
   right: [],
 }

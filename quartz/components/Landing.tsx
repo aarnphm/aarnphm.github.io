@@ -1,18 +1,33 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import landingStyle from "./styles/landing.scss"
+//@ts-ignore
+import popoverScript from "./scripts/popover.inline"
 
 export default (() => {
   function LandingComponent() {
     return (
-      <div>
+      <div class="popover-hint">
         <div class="content-container">
           <img src="/static/avatar.png" class="landing-logo" />
           <h1 class="landing-header">My name is Aaron.</h1>
           <p>
             Beige and <a class="rose">rosé</a> are my two favorite colours.{" "}
-            <a href={"/dump/Chaos"}>Chaos</a> constructs both the ego and the id. Reading and{" "}
-            <a href={"/dump/Dishes"}>cooking</a> is how I nurture my friendship. Nurturing one's
-            curiosity is the source for a happy life full of adventure.
+            <a href={"/dump/Chaos"} target="_blank" class="internal landing-links">
+              Chaos
+            </a>{" "}
+            constructs the id and form the ego. I enjoy treating my friends with{" "}
+            <a href={"/dump/Dishes"} target="_blank" class="internal landing-links">
+              cooking
+            </a>
+            . I spend a lot of time{" "}
+            <a href={"/dump/writing"} target="_blank" class="internal landing-links">
+              writing
+            </a>{" "}
+            and{" "}
+            <a href={"/books"} target="_blank" class="internal landing-links">
+              reading
+            </a>
+            . I'm pretty bullish on investing on my curiosity and fullfil one's desire in life.
           </p>
           <p class="landing-job">
             Currently, I'm building <a href="https://bentoml.com">serving infrastructure</a> and
@@ -21,31 +36,31 @@ export default (() => {
           <p class="landing-subhead">
             <em>garden</em>
             {": "}
-            <a href={"/books"} target="_blank">
+            <a href={"/books"} target="_blank" class="internal landing-links">
               books
             </a>
             {" · "}
-            <a href={"/posts/"} target="_blank">
+            <a href={"/posts/"} target="_blank" class="internal landing-links">
               mailbox
             </a>
             {" · "}
-            <a href={"/dump/"} target="_blank">
+            <a href={"/dump/"} target="_blank" class="internal landing-links">
               notes
             </a>
             {" · "}
-            <a href={"/dump/projects"} target="_blank">
+            <a href={"/dump/projects"} target="_blank" class="internal landing-links">
               projects
             </a>
             {" · "}
-            <a href={"/dump/Scents"} target="_blank">
+            <a href={"/dump/Scents"} target="_blank" class="internal landing-links">
               scent
             </a>
             {" · "}
-            <a href={"/uses"} target="_blank">
+            <a href={"/uses"} target="_blank" class="internal landing-links">
               uses
             </a>
             {" · "}
-            <a href={"/influence"} target="_blank">
+            <a href={"/influence"} target="_blank" class="internal landing-links">
               influence
             </a>
           </p>
@@ -69,6 +84,7 @@ export default (() => {
     )
   }
   LandingComponent.css = landingStyle
+  LandingComponent.afterDOMLoaded = popoverScript
 
   return LandingComponent
 }) satisfies QuartzComponentConstructor
