@@ -28,7 +28,7 @@ export default (() => {
               mailbox
             </a>{" "}
             •{" "}
-            <a href={"/dump"} target="_self">
+            <a href={"/dump/"} target="_self">
               notes
             </a>{" "}
             •{" "}
