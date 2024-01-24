@@ -80,7 +80,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/sfwr-2c03/W1.md",
+                "file": "dump/university/sfwr-2c03/Sorting.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -97,8 +97,7 @@
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -148,8 +147,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 388.50390243530273,
-    "collapsed": true
+    "width": 388.50390243530273
   },
   "right": {
     "id": "5221182814b155cf",
@@ -165,7 +163,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/sfwr-2c03/sortings.pdf",
+                "file": "dump/university/sfwr-2c03/Sorting.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -182,7 +180,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/sfwr-2c03/sortings.pdf",
+                "file": "dump/university/sfwr-2c03/Sorting.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -205,7 +203,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/sfwr-2c03/sortings.pdf"
+                "file": "dump/university/sfwr-2c03/Sorting.md"
               }
             }
           },
@@ -235,7 +233,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/sfwr-2c03/sortings.pdf"
+                "file": "dump/university/sfwr-2c03/Sorting.md"
               }
             }
           }
@@ -258,8 +256,13 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "fae76a5cd1f47dd2",
+  "active": "e4e98ae4effb6843",
   "lastOpenFiles": [
+    "dump/university/sfwr-2c03/sumary-sorting.png",
+    "dump/university/sfwr-2c03/Sorting.md",
+    "dump/university/sfwr-2c03/W1.md",
+    "dump/university/sfwr-2c03/sortings.pdf",
+    "dump/university/sfwr-2c03/0...N) of N values.md",
     "dump/university/sfwr-2c03/collections.pdf",
     "dump/university/sfwr-2c03/binary-search.pdf",
     "dump/university/sfwr-3dx4/block_diagrams.pdf",
@@ -267,12 +270,9 @@
     "dump/university/sfwr-3dx4/State space representation.md",
     "dump/university/sfwr-3dx4/block.md",
     "dump/university/sfwr-3dx4/frequency_domain.pdf",
-    "dump/university/sfwr-2c03/Sorting.md",
     "dump/university/sfwr-3dx4/Block Diagrams.md",
-    "dump/university/sfwr-2c03/W1.md",
     "dump/university/sfwr-2c03/W2.md",
     "dump/university/sfwr-2c03/L1.pdf",
-    "dump/university/sfwr-2c03/sortings.pdf",
     "dump/university/sfwr-2c03/compare-graphs.png",
     "dump/university/sfwr-2c03/sortings.pdf.crdownload",
     "dump/university/sfwr-2c03/collections.pdf.crdownload",
@@ -297,14 +297,12 @@
     "private/podcast.md",
     "private/Term of Reference.md",
     "private/Reservation list.md",
-    "private/Meetup.md",
     "posts/images/passage-giorgio-m.jpg",
     "dump/university/sfwr-2c03/growth.png",
     "dump/university/philo-1aa3/tut/IMG_0308.jpg",
     "dump/university/philo-1aa3/spinoza-knowledge.png",
     "dump/university/philo-1aa3/knowledge-map-thoughts.png",
     "dump/university/philo-1aa3/epistemology.png",
-    "dump/university/philo-1aa3/descartes-qualities.png",
     "Untitled.canvas"
   ]
 }

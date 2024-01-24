@@ -14,6 +14,15 @@ body {
   src: url("/static/EBGaramond.ttf");
 }
 
+@font-face {
+  font-family: "Berkeley Mono";
+  font-style: monospace;
+  font-weight: normal;
+  src:
+    url("/static/BerkeleyMono-Regular.woff2") format("woff2"),
+    url("/static/BerkeleyMono-Regular.woff") format("woff");
+}
+
 #texture {
   position: absolute;
   width: 100%;
@@ -113,8 +122,6 @@ body[data-slug="influence"] {
 }
 
 body[data-slug="dump/quotes"] {
-  font-family: "EB Garamond";
-
   h3,
   h4 {
     color: #000;

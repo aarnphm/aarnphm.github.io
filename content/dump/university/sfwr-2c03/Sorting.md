@@ -25,7 +25,6 @@ return result /* result = TS(L, 0, N-1) */
 ```
 
 ### selection sort.
-
 ```prolog
 Input: L[0...N) of N values
 For pos := 0 to N-2 do
@@ -35,4 +34,23 @@ For pos := 0 to N-2 do
       min := i
   swap L[pos] and L[min]
 ```
+Comparison: $\sum_{\text{pos}=0}^{N-2}(N-1-pos) = \Theta(N^2)$, changes $2(N-1) = \Theta(N)$
+
+### insertion sort.
+```prolog
+Input: L[0...N) of N values
+For pos := 1 to N-1 do
+  v := L[pos]
+  p := pos
+  while p > 0 and v< L[p-1] do
+    L[p] := L[p-1]
+    p := p-1
+  L[p] := v
 ```
+
+Comparison: $\leq \text{pos} = \sum_{\text{pos}=1}^{N-1} pos = \frac{N(N-1)}{2}$, changes $\leq \text{pos} = \sum_{\text{pos}=1}^{N-1}(1+pos) = \frac{N(N-1)}{2} + N - 1$
+
+![[dump/university/sfwr-2c03/sumary-sorting.png]]
+
+### merge sort.
+- divide-and-conquer
