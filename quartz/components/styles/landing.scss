@@ -70,6 +70,7 @@ body[data-slug="index"] p {
   }
 
   .landing-logo {
+    text-align: center;
     background-image: url("./static/avatar.png");
   }
 }
@@ -78,5 +79,21 @@ body[data-slug="index"] p {
   .content-container {
     margin-top: 6rem;
     margin-left: 14rem;
+  }
+}
+
+@media (min-width: 375px) {
+  .content-container {
+    width: 60%;
+  }
+}
+
+@media (max-width: 370px) {
+  .landing-logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+    height: 60%;
   }
 }

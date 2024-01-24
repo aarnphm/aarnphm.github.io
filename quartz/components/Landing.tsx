@@ -45,7 +45,7 @@ export default (() => {
               <a href={"/books"} target="_blank" class="internal landing-links">
                 reading
               </a>{" "}
-              when I'm not writing code. I'm pretty bullish on investing into self and fullfil one's
+              when I'm not coding. I'm pretty bullish on investing into self and fullfil one's
               desire in life.
             </p>
             <p class="landing-job">
