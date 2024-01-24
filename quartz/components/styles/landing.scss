@@ -86,6 +86,12 @@ body[data-slug="index"] p {
   }
 }
 
+@media (max-width: 1800px) {
+  .content-container {
+    max-width: 24rem;
+  }
+}
+
 @media (min-width: 768px) {
   .content-container {
     margin-top: 6rem;
@@ -99,7 +105,7 @@ body[data-slug="index"] p {
   }
 }
 
-@media (max-width: 370px) {
+@media (max-width: 320px) {
   .landing-logo {
     display: block;
     margin-left: auto;

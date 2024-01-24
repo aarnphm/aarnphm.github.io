@@ -18,4 +18,4 @@ y &= Cx + Du
 $$
 
 - _Linearly independent_
-- _State vector_: $x = \vec{x_{1},x_{2},\dots, x_{n}}$
+- _State vector_: $x = [x_{1},x_{2},\ldots, x_{n}]^{T}$
