@@ -1,0 +1,51 @@
+body[data-slug="index"] {
+  font-family: "EB Garamond", serif;
+}
+
+body[data-slug="index"] a {
+  color: inherit;
+  text-decoration: inherit;
+  font-weight: inherit;
+  transition: none;
+  border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
+}
+
+[saved-theme="dark"] body[data-slug="index"] a {
+  border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
+}
+
+.content-container {
+  width: 50%;
+  padding-bottom: 128px;
+  overflow: hidden;
+  max-width: 42rem;
+  margin: 2rem auto 0 auto;
+  position: relative;
+}
+
+.landing-header {
+  font-size: 1.5rem;
+  font-weight: normal;
+  line-height: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.landing-subhead {
+  padding-top: 1.5rem;
+}
+
+.landing-job {
+  padding-top: 0.5rem;
+}
+
+.landing-logo {
+  background-image: url("./static/avatar.png");
+}
+
+@media (min-width: 768px) {
+  .content-container {
+    margin-top: 6rem;
+    margin-left: 14rem;
+  }
+}

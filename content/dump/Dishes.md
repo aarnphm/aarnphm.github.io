@@ -16,10 +16,10 @@ A collection of courses.
 
 3. La trout meunière a la choux de Bruxelles
 
-4. Lamb with carrots three ways
+4. Canard a l'orange
 
-5. Salade verte
+5. Salade Landaise
 
-6. Fromage
+6. la charcuterie
 
-7. Chocolat mousse
+7. Mousse au chocolat

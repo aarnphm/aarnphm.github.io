@@ -3,13 +3,15 @@
 // put your custom CSS here!
 @use "./variables.scss" as *;
 
-body[data-slug="index"] .blob {
-  margin-top: -80px;
+body {
+  margin: 0;
 }
 
-body {
-  position: relative;
-  min-height: 100vh;
+@font-face {
+  font-family: "EB Garamond";
+  font-style: normal;
+  font-weight: normal;
+  src: url("https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap");
 }
 
 #texture {
@@ -26,10 +28,6 @@ body {
 [saved-theme="dark"] #texture {
   // mix-blend-mode: overlay;
   mix-blend-mode: soft-light;
-}
-
-[saved-theme="dark"] body[data-slug="index"] img[src*="banner.svg"] {
-  filter: invert(100%);
 }
 
 .left {
