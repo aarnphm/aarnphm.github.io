@@ -53,6 +53,11 @@ body[data-slug="index"] p {
   margin: 2rem auto 0 auto;
   position: relative;
 
+  .landing-logo {
+    text-align: center;
+    background-image: url("./static/avatar.png");
+  }
+
   .landing-header {
     font-size: 2rem;
     font-weight: normal;
@@ -69,9 +74,12 @@ body[data-slug="index"] p {
     padding-top: 0.5rem;
   }
 
-  .landing-logo {
-    text-align: center;
-    background-image: url("./static/avatar.png");
+  & > hr {
+    margin: 2rem 2rem;
+  }
+
+  .landing-usage {
+    font-size: 1rem;
   }
 }
 

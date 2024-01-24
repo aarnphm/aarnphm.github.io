@@ -3,6 +3,20 @@ import landingStyle from "./styles/landing.scss"
 //@ts-ignore
 import landingScript from "./scripts/landing.inline"
 
+const globalGraph = {
+  drag: true,
+  zoom: true,
+  depth: -1,
+  scale: 0.9,
+  repelForce: 0.5,
+  centerForce: 0.3,
+  linkDistance: 30,
+  fontSize: 0.6,
+  opacityScale: 1,
+  showTags: true,
+  removeTags: [],
+}
+
 export default (() => {
   function LandingComponent({ displayClass }: QuartzComponentProps) {
     return (
@@ -22,6 +36,13 @@ export default (() => {
                 />
                 <div id="results-container"></div>
               </div>
+            </div>
+          </div>
+          {/* graph components */}
+          <div class={`graph ${displayClass ?? ""}`}>
+            <div id="global-graph-icon"></div>
+            <div id="global-graph-outer">
+              <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)}></div>
             </div>
           </div>
           {/* landing content */}
@@ -97,6 +118,14 @@ export default (() => {
               <a href="https://curius.app/aaron-pham" target="_blank">
                 curius
               </a>
+            </p>
+            <hr />
+            <p class="landing-usage">
+              🖥️
+              {" · "}
+              <em>cmd</em> + <em>k</em> for search
+              {" · "}
+              <em>cmd</em> + <em>g</em> for graph
             </p>
           </div>
           {/* <div class="curius-container"> */}
