@@ -17,6 +17,22 @@ const globalGraph = {
   removeTags: [],
 }
 
+export const HyperAlias = {
+  books: "/books",
+  mailbox: "/posts/",
+  notes: "/dump/",
+  projects: "/dump/projects",
+  scent: "/dump/Scents",
+  uses: "/uses",
+  advices: "/dump/quotes",
+  influence: "/influence",
+}
+export const SocialAlias = {
+  github: "https://github.com/aarnphm",
+  twitter: "https://x.com/aarnphm_",
+  curius: "https://curius.app/aaron-pham",
+}
+
 export default (() => {
   function LandingComponent({ displayClass }: QuartzComponentProps) {
     return (
@@ -51,19 +67,19 @@ export default (() => {
             <h1 class="landing-header">My name is Aaron.</h1>
             <p>
               Beige and <a class="rose">rosé</a> are my two favorite colours.{" "}
-              <a href={"/dump/Chaos"} target="_blank" class="internal landing-links">
+              <a href={"/dump/Chaos"} target="_self" class="internal landing-links">
                 Chaos
               </a>{" "}
               constructs the id and form the ego. I enjoy treating my friends with{" "}
-              <a href={"/dump/Dishes"} target="_blank" class="internal landing-links">
+              <a href={"/dump/Dishes"} target="_self" class="internal landing-links">
                 cooking
               </a>
               . I spend a lot of time{" "}
-              <a href={"/dump/writing"} target="_blank" class="internal landing-links">
+              <a href={"/dump/writing"} target="_self" class="internal landing-links">
                 writing
               </a>{" "}
               and{" "}
-              <a href={"/books"} target="_blank" class="internal landing-links">
+              <a href={"/books"} target="_self" class="internal landing-links">
                 reading
               </a>{" "}
               when I'm not coding. I'm pretty bullish on investing into self and fullfil one's
@@ -76,48 +92,33 @@ export default (() => {
             <p class="landing-subhead">
               <em>garden</em>
               {": "}
-              <a href={"/books"} target="_blank" class="internal landing-links">
-                books
-              </a>
-              {" · "}
-              <a href={"/posts/"} target="_blank" class="internal landing-links">
-                mailbox
-              </a>
-              {" · "}
-              <a href={"/dump/"} target="_blank" class="internal landing-links">
-                notes
-              </a>
-              {" · "}
-              <a href={"/dump/projects"} target="_blank" class="internal landing-links">
-                projects
-              </a>
-              {" · "}
-              <a href={"/dump/Scents"} target="_blank" class="internal landing-links">
-                scent
-              </a>
-              {" · "}
-              <a href={"/uses"} target="_blank" class="internal landing-links">
-                uses
-              </a>
-              {" · "}
-              <a href={"/influence"} target="_blank" class="internal landing-links">
-                influence
-              </a>
+              {Object.entries(HyperAlias).map(([key, value]) => {
+                const isFinal = key === Object.keys(HyperAlias).at(-1)
+                return (
+                  <>
+                    <a href={value} target="_self" class="internal landing-links">
+                      {key}
+                    </a>
+                    {/* make sure to only append " · " if key and value is not the last item*/}
+                    {!isFinal ? " · " : ""}
+                  </>
+                )
+              })}
             </p>
             <p>
               <em>socials</em>
               {": "}
-              <a href="https://github.com/aarnphm" target="_blank">
-                github
-              </a>
-              {" · "}
-              <a href="https://x.com/aarnphm_" target="_blank">
-                twitter
-              </a>
-              {" · "}
-              <a href="https://curius.app/aaron-pham" target="_blank">
-                curius
-              </a>
+              {Object.entries(SocialAlias).map(([key, value]) => {
+                const isFinal = key === Object.keys(SocialAlias).at(-1)
+                return (
+                  <>
+                    <a href={value} target="_blank">
+                      {key}
+                    </a>
+                    {!isFinal ? " · " : ""}
+                  </>
+                )
+              })}
             </p>
             <hr />
             <p class="landing-usage">

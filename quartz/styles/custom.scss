@@ -89,3 +89,56 @@ hr {
 audio::-webkit-media-controls-panel {
   background-color: var(--lightgray);
 }
+
+// ** QUOTE DISPLAY **
+body[data-slug="dump/quotes"] {
+  font-family: "EB Garamond";
+  .page > #quartz-body {
+    .center p[class*="content-meta"],
+    .center ul[class*="tags"],
+    .center nav[class*="breadcrumb"],
+    .sidebar.right {
+      display: none;
+    }
+  }
+
+  h3,
+  h4 {
+    color: #000;
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+
+  article {
+    & > hr {
+      &::after {
+        content: "";
+      }
+    }
+    & > p {
+      padding-top: 1rem;
+      padding-left: 3rem;
+      font-size: 1.2rem;
+      margin: inherit;
+
+      &::before,
+      &::after {
+        font-size: 2em;
+        line-height: 0.1em;
+        vertical-align: -0.4em;
+      }
+
+      &::before {
+        content: "“";
+        margin-right: 0.25em;
+      }
+
+      &::after {
+        content: "”";
+        margin-left: 0.25em;
+      }
+    }
+  }
+}
