@@ -90,9 +90,10 @@ audio::-webkit-media-controls-panel {
   background-color: var(--lightgray);
 }
 
-// ** QUOTE DISPLAY **
-body[data-slug="dump/quotes"] {
-  font-family: "EB Garamond";
+// ** REMOVE DISPLAY ON SOME SLUG **
+body[data-slug="uses"],
+body[data-slug="dump/quotes"],
+body[data-slug="influence"] {
   .page > #quartz-body {
     .center p[class*="content-meta"],
     .center ul[class*="tags"],
@@ -101,6 +102,11 @@ body[data-slug="dump/quotes"] {
       display: none;
     }
   }
+}
+
+// ** QUOTE DISPLAY **
+body[data-slug="dump/quotes"] {
+  font-family: "EB Garamond";
 
   h3,
   h4 {

@@ -6,7 +6,7 @@ date: "2024-01-22"
 title: uses.
 ---
 
-Includes the tools I use, workflow,  etc. my submission to [uses.tech](https://uses.tech)
+Includes the tools I use, workflow,  etc. my [submission](https://uses.tech)
 
 ### hardware.
 
