@@ -14,6 +14,10 @@ body[data-slug="index"] a {
   border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
 }
 
+body[data-slug="index"] p {
+  font-size: 1.1rem;
+}
+
 .content-container {
   width: 50%;
   padding-bottom: 128px;
@@ -24,7 +28,7 @@ body[data-slug="index"] a {
 }
 
 .landing-header {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: normal;
   line-height: 2rem;
   padding-top: 1rem;

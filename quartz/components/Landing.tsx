@@ -1,4 +1,4 @@
-import { QuartzComponentConstructor } from "./types"
+import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import landingStyle from "./styles/landing.scss"
 
 export default (() => {
@@ -19,43 +19,49 @@ export default (() => {
             explore our interaction with large language models.
           </p>
           <p class="landing-subhead">
-            <em>garden</em>:{" "}
+            <em>garden</em>
+            {": "}
             <a href={"/books"} target="_blank">
               books
-            </a>{" "}
-            •{" "}
+            </a>
+            {" · "}
             <a href={"/posts/"} target="_blank">
               mailbox
-            </a>{" "}
-            •{" "}
+            </a>
+            {" · "}
             <a href={"/dump/"} target="_blank">
               notes
-            </a>{" "}
-            •{" "}
+            </a>
+            {" · "}
             <a href={"/dump/projects"} target="_blank">
               projects
-            </a>{" "}
-            •{" "}
+            </a>
+            {" · "}
             <a href={"/dump/Scents"} target="_blank">
               scent
-            </a>{" "}
-            •{" "}
+            </a>
+            {" · "}
             <a href={"/uses"} target="_blank">
               uses
-            </a>{" "}
-            •{" "}
+            </a>
+            {" · "}
             <a href={"/influence"} target="_blank">
               influence
             </a>
           </p>
           <p>
-            <em>socials:</em>{" "}
+            <em>socials</em>
+            {": "}
             <a href="https://github.com/aarnphm" target="_blank">
               github
-            </a>{" "}
-            •{" "}
+            </a>
+            {" · "}
             <a href="https://x.com/aarnphm_" target="_blank">
               twitter
+            </a>
+            {" · "}
+            <a href="https://curius.app/aaron-pham" target="_blank">
+              curius
             </a>
           </p>
         </div>
@@ -63,5 +69,6 @@ export default (() => {
     )
   }
   LandingComponent.css = landingStyle
+
   return LandingComponent
 }) satisfies QuartzComponentConstructor
