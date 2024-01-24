@@ -42,6 +42,10 @@ export default (() => {
             •{" "}
             <a href={"/uses"} target="_self">
               uses
+            </a>{" "}
+            •{" "}
+            <a href={"/influence"} target="_self">
+              influence
             </a>
           </p>
           <p>
