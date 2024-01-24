@@ -14,6 +14,16 @@ body[data-slug="index"] a {
   border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
 }
 
+[saved-theme="light"] body[data-slug="index"] a[class*="rose"] {
+  color: rgb(215, 130, 126);
+  border-bottom: none;
+}
+
+[saved-theme="dark"] body[data-slug="index"] a[class*="rose"] {
+  color: rgb(235, 188, 186);
+  border-bottom: none;
+}
+
 body[data-slug="index"] p {
   font-size: 1.1rem;
 }

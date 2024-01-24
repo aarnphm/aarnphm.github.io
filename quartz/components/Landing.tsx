@@ -9,10 +9,10 @@ export default (() => {
           <img src="/static/avatar.png" class="landing-logo" />
           <h1 class="landing-header">My name is Aaron.</h1>
           <p>
-            Beige and pink are my two favorite colours. <a href={"/dump/Chaos"}>Chaos</a> constructs
-            both the ego and the id. Reading and <a href={"/dump/Dishes"}>cooking</a> is how I
-            nurture my friendship. Nurturing one's curiosity is the source for a happy life and
-            adventure.
+            Beige and <a class="rose">rosé</a> are my two favorite colours.{" "}
+            <a href={"/dump/Chaos"}>Chaos</a> constructs both the ego and the id. Reading and{" "}
+            <a href={"/dump/Dishes"}>cooking</a> is how I nurture my friendship. Nurturing one's
+            curiosity is the source for a happy life full of adventure.
           </p>
           <p class="landing-job">
             Currently, I'm building <a href="https://bentoml.com">serving infrastructure</a> and
