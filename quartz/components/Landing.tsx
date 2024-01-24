@@ -24,27 +24,27 @@ export default (() => {
               books
             </a>{" "}
             •{" "}
-            <a href={"/posts/"} target="_self">
+            <a href={"/posts/"} target="_blank">
               mailbox
             </a>{" "}
             •{" "}
-            <a href={"/dump/"} target="_self">
+            <a href={"/dump/"} target="_blank">
               notes
             </a>{" "}
             •{" "}
-            <a href={"/dump/projects"} target="_self">
+            <a href={"/dump/projects"} target="_blank">
               projects
             </a>{" "}
             •{" "}
-            <a href={"/dump/Scents"} target="_self">
+            <a href={"/dump/Scents"} target="_blank">
               scent
             </a>{" "}
             •{" "}
-            <a href={"/uses"} target="_self">
+            <a href={"/uses"} target="_blank">
               uses
             </a>{" "}
             •{" "}
-            <a href={"/influence"} target="_self">
+            <a href={"/influence"} target="_blank">
               influence
             </a>
           </p>
