@@ -32,33 +32,46 @@ body[data-slug="index"] p {
   font-size: 1.1rem;
 }
 
+.landing {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  & > #content-container {
+    flex-grow: 1;
+  }
+
+  & > #curius-container {
+    flex-grow: 1;
+  }
+}
+
 .content-container {
-  width: 50%;
   padding-bottom: 128px;
   overflow: hidden;
   max-width: 42rem;
   margin: 2rem auto 0 auto;
   position: relative;
-}
 
-.landing-header {
-  font-size: 2rem;
-  font-weight: normal;
-  line-height: 2rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
+  .landing-header {
+    font-size: 2rem;
+    font-weight: normal;
+    line-height: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
 
-.landing-subhead {
-  padding-top: 1.5rem;
-}
+  .landing-subhead {
+    padding-top: 1.5rem;
+  }
 
-.landing-job {
-  padding-top: 0.5rem;
-}
+  .landing-job {
+    padding-top: 0.5rem;
+  }
 
-.landing-logo {
-  background-image: url("./static/avatar.png");
+  .landing-logo {
+    background-image: url("./static/avatar.png");
+  }
 }
 
 @media (min-width: 768px) {
