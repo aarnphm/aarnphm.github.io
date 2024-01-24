@@ -105,6 +105,13 @@ body[data-slug="influence"] {
 }
 
 // ** QUOTE DISPLAY **
+[saved-theme="dark"] body[data-slug="dump/quotes"] {
+  h3,
+  h4 {
+    color: #fff;
+  }
+}
+
 body[data-slug="dump/quotes"] {
   font-family: "EB Garamond";
 

@@ -1,7 +1,7 @@
 ---
 id: content
 tags:
-  - sfwr-3dx4
+  - sfwr3dx4
 date: "2024-01-24"
 title: PID Controller
 ---

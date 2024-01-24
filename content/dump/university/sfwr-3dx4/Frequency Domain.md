@@ -32,7 +32,7 @@ graph LR
     * -- "r(t)" --> System{{System}} -- "c(t)" --> End{{end}}
 ```
 
-_System as linear differntial equation_
+_System as linear differential equation_
 
 ## Laplace Transform
 
