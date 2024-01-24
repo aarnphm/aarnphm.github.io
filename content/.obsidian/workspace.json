@@ -11,20 +11,13 @@
             "id": "005ced8b56d0862b",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {}
-            }
-          },
-          {
-            "id": "49ce52e0e6fe42a8",
-            "type": "leaf",
-            "state": {
-              "type": "empty",
-              "state": {}
+              "type": "pdf",
+              "state": {
+                "file": "dump/university/sfwr-3dx4/lab1/lab1.pdf"
+              }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -90,6 +83,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "dump/university/sfwr-3dx4/lab1/lab1.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -106,6 +100,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "dump/university/sfwr-3dx4/lab1/lab1.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -127,7 +122,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "dump/university/sfwr-3dx4/lab1/lab1.pdf"
+              }
             }
           },
           {
@@ -155,7 +152,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {}
+              "state": {
+                "file": "dump/university/sfwr-3dx4/lab1/lab1.pdf"
+              }
             }
           }
         ],
@@ -177,16 +176,29 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "005ced8b56d0862b",
   "lastOpenFiles": [
+    "dump/university/sfwr-3dx4/lab1/content.md",
+    "dump/university/sfwr-3dx4/lab1/5.2-graph.png",
+    "dump/university/sfwr-3dx4/lab1/lab1.slx.autosave.bak",
+    "dump/university/sfwr-3dx4/lab1/lab1.pdf",
+    "dump/university/sfwr-3dx4/lab1/5.1-graph.png",
+    "dump/university/sfwr-3dx4/lab1/lab1.slx.autosave",
+    "dump/university/sfwr-3dx4/lab1/lab1.slx.bak",
+    "dump/university/sfwr-3dx4/lab1/lab1.slx",
+    "dump/university/sfwr-3dx4/lab1.pdf",
+    "dump/university/sfwr-3dx4/lab1/SRV02.slx",
+    "dump/university/sfwr-3dx4/lab1/lab1.md",
+    "dump/university/sfwr-3dx4/lab1",
+    "dump/university/sfwr-3dx4/untitled folder",
+    "dump/university/sfwr-3dx4/SRV02.slx",
+    "dump/university/sfwr-3dx4/lab1.md",
     "uses.md",
     "templates/post.md",
-    "templates",
     "tags/technical.md",
     "tags/seed.md",
     "tags/ml.md",
     "tags/evergreen.md",
-    "tags",
     "private/bentoml/intern.md",
     "private/bentoml/compensation.md",
     "private/bentoml/Runner interface.md",
@@ -194,28 +206,16 @@
     "private/bentoml/New Runner API.md",
     "private/Company interests/robust-intelligence.md",
     "private/podcast.md",
-    "private/bentoml",
     "private/Term of Reference.md",
     "private/Reservation list.md",
     "private/Meetup.md",
     "private/Hack The North.md",
-    "private/Company interests",
-    "private",
     "posts/images/passage-giorgio-m.jpg",
     "posts/index.md",
-    "posts/images",
     "posts/Why should you learn philosophy during university.md",
     "posts/Questions about Spinoza.md",
     "posts/Questions about Metaphysics.md",
     "posts/Questions about Apology.md",
-    "posts/Chaos.md",
-    "posts/BentoML and Triton Inference Server.md",
-    "posts/2023.md",
-    "posts",
-    "influence.md",
-    "dump/university/sfwr-3dx4/intro.pdf",
-    "dump/university/sfwr-3dx4/frequency_domain.pdf",
-    "dump/university/sfwr-3dx4",
     "dump/university/sfwr-2c03/growth.png",
     "dump/university/sfwr-2c03/compare-graphs.png",
     "dump/university/philo-1aa3/tut/IMG_0308.jpg",
@@ -223,8 +223,6 @@
     "dump/university/philo-1aa3/knowledge-map-thoughts.png",
     "dump/university/philo-1aa3/epistemology.png",
     "dump/university/philo-1aa3/descartes-qualities.png",
-    "dump/university/philo-1aa3/aristotle-metaphysics.png",
-    "dump/university/philo-1aa3/aristotle-form.png",
     "Untitled.canvas"
   ]
 }

@@ -9,3 +9,4 @@ tsconfig.tsbuildinfo
 .replit
 replit.nix
 quartz.git
+*.autosave
