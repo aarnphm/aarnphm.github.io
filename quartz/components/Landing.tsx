@@ -2,6 +2,8 @@ import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import landingStyle from "./styles/landing.scss"
 //@ts-ignore
 import landingScript from "./scripts/landing.inline"
+//@ts-ignore
+import darkModeScript from "./scripts/darkmode.inline"
 
 const globalGraph = {
   drag: true,
@@ -32,6 +34,11 @@ export const SocialAlias = {
   twitter: "https://x.com/aarnphm_",
   curius: "https://curius.app/aaron-pham",
 }
+export const KeybindAlias = {
+  "cmd+k": "search",
+  "cmd+g": "graph",
+  "cmd+a": "toggle dark mode",
+}
 
 export default (() => {
   function LandingComponent({ displayClass }: QuartzComponentProps) {
@@ -61,6 +68,8 @@ export default (() => {
               <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)}></div>
             </div>
           </div>
+          {/* darkmode components */}
+          <input class="toggle" id="darkmode-toggle" type="checkbox" tabIndex={-1} />
           {/* landing content */}
           <div class="content-container">
             <img src="/static/avatar.png" class="landing-logo" />
@@ -124,9 +133,14 @@ export default (() => {
             <p class="landing-usage">
               🖥️
               {" · "}
-              <em>cmd</em> + <em>k</em> for search
-              {" · "}
-              <em>cmd</em> + <em>g</em> for graph
+              {Object.entries(KeybindAlias).map(([key, value]) => {
+                const isFinal = key === Object.keys(KeybindAlias).at(-1)
+                return (
+                  <>
+                    <em>{key}</em> for {value} {!isFinal ? " · " : ""}
+                  </>
+                )
+              })}
             </p>
           </div>
           {/* <div class="curius-container"> */}
@@ -142,6 +156,7 @@ export default (() => {
     )
   }
   LandingComponent.css = landingStyle
+  LandingComponent.beforeDOMLoaded = darkModeScript
   LandingComponent.afterDOMLoaded = landingScript
 
   return LandingComponent

@@ -6,10 +6,20 @@ import searchScript from "./search.inline"
 import graphScript from "./graph.inline"
 import { registerEscapeHandler, removeAllChildren } from "./util"
 
-let prevShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
+const emitThemeChangeEvent = (theme: "light" | "dark") => {
+  const event: CustomEventMap["themechange"] = new CustomEvent("themechange", {
+    detail: { theme },
+  })
+  document.dispatchEvent(event)
+}
+
+let prevGraphShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
+let prevDarkShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
+
 document.addEventListener("nav", async (e: unknown) => {
   const container = document.getElementById("global-graph-outer")
 
+  // ** graph shortcut ** //
   function hideGlobalGraph() {
     container?.classList.remove("active")
     const graph = document.getElementById("global-graph-container")
@@ -24,11 +34,30 @@ document.addEventListener("nav", async (e: unknown) => {
       graphOpen ? hideGlobalGraph() : document.getElementById("global-graph-icon")?.click()
     }
   }
-
-  if (prevShortcutHandler) {
-    document.removeEventListener("keydown", prevShortcutHandler)
+  if (prevGraphShortcutHandler) {
+    document.removeEventListener("keydown", prevGraphShortcutHandler)
   }
   document.addEventListener("keydown", graphShortcutHandler)
-  prevShortcutHandler = graphShortcutHandler
+  prevGraphShortcutHandler = graphShortcutHandler
   registerEscapeHandler(container, hideGlobalGraph)
+
+  // ** darkmode shortcut ** //
+  const switchTheme = (e: any) => {
+    const newTheme = e.target.checked ? "dark" : "light"
+    document.documentElement.setAttribute("saved-theme", newTheme)
+    localStorage.setItem("theme", newTheme)
+    emitThemeChangeEvent(newTheme)
+  }
+  function darkModeShortcutHandler(e: HTMLElementEventMap["keydown"]) {
+    if (e.key === "a" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+      const toggleSwitch = document.getElementById("darkmode-toggle")
+      toggleSwitch?.click()
+    }
+  }
+  if (prevDarkShortcutHandler) {
+    document.removeEventListener("keydown", prevDarkShortcutHandler)
+  }
+  document.addEventListener("keydown", darkModeShortcutHandler)
+  prevDarkShortcutHandler = darkModeShortcutHandler
 })
