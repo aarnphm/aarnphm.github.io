@@ -1,5 +1,8 @@
 body[data-slug="index"] {
-  font-family: "EB Garamond", serif;
+  & > *,
+  h1 {
+    font-family: "EB Garamond", serif;
+  }
 }
 
 body[data-slug="index"] a {
