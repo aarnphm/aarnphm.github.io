@@ -1,13 +1,30 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import landingStyle from "./styles/landing.scss"
 //@ts-ignore
-import popoverScript from "./scripts/popover.inline"
+import landingScript from "./scripts/landing.inline"
 
 export default (() => {
-  function LandingComponent() {
+  function LandingComponent({ displayClass }: QuartzComponentProps) {
     return (
       <div class="popover-hint">
         <div class="landing">
+          {/* search components */}
+          <div class={`search ${displayClass ?? ""}`}>
+            <div id="search-container">
+              <div id="search-space">
+                <input
+                  autocomplete="off"
+                  id="search-bar"
+                  name="search"
+                  type="text"
+                  aria-label="Search for something"
+                  placeholder="Search for something"
+                />
+                <div id="results-container"></div>
+              </div>
+            </div>
+          </div>
+          {/* landing content */}
           <div class="content-container">
             <img src="/static/avatar.png" class="landing-logo" />
             <h1 class="landing-header">My name is Aaron.</h1>
@@ -95,7 +112,7 @@ export default (() => {
     )
   }
   LandingComponent.css = landingStyle
-  LandingComponent.afterDOMLoaded = popoverScript
+  LandingComponent.afterDOMLoaded = landingScript
 
   return LandingComponent
 }) satisfies QuartzComponentConstructor

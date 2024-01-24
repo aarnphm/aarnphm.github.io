@@ -32,19 +32,19 @@ body[data-slug="index"] p {
   font-size: 1.1rem;
 }
 
-.landing {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-
-  & > #content-container {
-    flex-grow: 1;
-  }
-
-  & > #curius-container {
-    flex-grow: 1;
-  }
-}
+// .landing {
+//   display: flex;
+//   flex-direction: row;
+//   justify-content: space-between;
+//
+//   & > #content-container {
+//     flex-grow: 1;
+//   }
+//
+//   & > #curius-container {
+//     flex-grow: 1;
+//   }
+// }
 
 .content-container {
   padding-bottom: 128px;
