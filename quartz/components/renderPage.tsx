@@ -201,9 +201,9 @@ export function renderPage(
       <Head {...componentData} />
       <body data-slug={slug}>
         {slug === "index" && <LandingComponent {...componentData} />}
-        {slug !== "index" && <div id="texture"></div>}
         {slug !== "index" && (
           <div id="quartz-root" class="page">
+            <div id="texture"></div>
             <Body {...componentData}>
               {LeftComponent}
               <div class="center">

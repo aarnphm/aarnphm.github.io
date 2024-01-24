@@ -1,7 +1,6 @@
 ---
 id: Psychopathology of everything
 tags:
-  - hci
   - sfwr4hc3
 date: "2023-10-10"
 title: Psychopathology of everything

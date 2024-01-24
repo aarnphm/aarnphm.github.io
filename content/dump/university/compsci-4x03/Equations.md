@@ -2,7 +2,6 @@
 id: Equations
 tags:
   - fruit
-  - university
   - swfr4x03
 date: "2023-12-06"
 title: ODEs, Polynomials approx., Linear Least Squares, and Errors
