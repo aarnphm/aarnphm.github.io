@@ -9,6 +9,7 @@ export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [],
   footer: Component.Footer({
+    disable: true,
     links: {
       GitHub: "https://github.com/aarnphm",
       Twitter: "https://twitter.com/aarnphm_",

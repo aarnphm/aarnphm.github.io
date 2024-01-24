@@ -4,12 +4,14 @@ import { version } from "../../package.json"
 
 interface Options {
   links: Record<string, string>
+  disable: boolean
 }
 
 export default ((opts?: Options) => {
   function Footer({ displayClass }: QuartzComponentProps) {
     const year = new Date().getFullYear()
     const links = opts?.links ?? []
+    if (opts?.disable) return <></>
     return (
       <footer class={`${displayClass ?? ""}`}>
         <hr />
