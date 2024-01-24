@@ -43,6 +43,14 @@ export const defaultContentPageLayout: PageLayout = {
     Component.MobileOnly(Component.Spacer()),
     Component.Search(),
     Component.Darkmode(),
+    Component.DesktopOnly(Component.TableOfContents()),
+    Component.Backlinks(),
+  ],
+  right: [
+    Component.Graph({
+      globalGraph: { linkDistance: 50 },
+      localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
+    }),
     Component.DesktopOnly(
       Component.RecentNotes({
         title: "Recent Writing",
@@ -59,14 +67,6 @@ export const defaultContentPageLayout: PageLayout = {
         linkToMore: "dump/" as SimpleSlug,
       }),
     ),
-    Component.DesktopOnly(Component.TableOfContents()),
-  ],
-  right: [
-    Component.Graph({
-      globalGraph: { linkDistance: 50 },
-      localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
-    }),
-    Component.Backlinks(),
   ],
 }
 
@@ -80,7 +80,6 @@ export const defaultListPageLayout: PageLayout = {
     Component.Darkmode(),
     Component.DesktopOnly(
       Component.Explorer({
-        title: "explore.",
         filterFn: (node: FileNode) => {
           const excludePaths = ["university", "papers", "tags"]
           return !excludePaths.includes(node.name)
