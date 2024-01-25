@@ -39,123 +39,132 @@ export const KeybindAlias = {
   "cmd+a": "toggle dark mode",
 }
 
+type AliasLinkProp = {
+  name: string
+  url: string
+  isFinal: boolean
+  newTab?: boolean
+}
+
+const AliasLink = ({ name, url, isFinal, newTab }: AliasLinkProp) => (
+  <>
+    <a href={url} target={newTab ? "_blank" : "_self"} className="internal landing-links">
+      {name}
+    </a>
+    {!isFinal && " · "}
+  </>
+)
+
+type SectionLinksProp = {
+  sectionData: { [key: string]: string }
+  newTab?: boolean
+}
+
+const SectionLinks = ({ sectionData, newTab = false }: SectionLinksProp) => (
+  <>
+    {Object.entries(sectionData).map(([key, value], index, array) => (
+      <AliasLink
+        key={key}
+        name={key}
+        url={value}
+        isFinal={index === array.length - 1}
+        newTab={newTab}
+      />
+    ))}
+  </>
+)
+
+const Search = ({ displayClass }: { displayClass?: string }) => (
+  <div class={`search ${displayClass ?? ""}`}>
+    <div id="search-container">
+      <div id="search-space">
+        <input
+          autocomplete="off"
+          id="search-bar"
+          name="search"
+          type="text"
+          aria-label="Search for something"
+          placeholder="Search for something"
+        />
+        <div id="search-layout">
+          <div id="results-container"></div>
+          <div id="preview-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+)
+
+const Graph = ({ displayClass }: { displayClass?: string }) => (
+  <div class={`graph ${displayClass ?? ""}`}>
+    <div id="global-graph-icon"></div>
+    <div id="global-graph-outer">
+      <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)}></div>
+    </div>
+  </div>
+)
+
+const DarkMode = ({ displayClass }: { displayClass?: string }) => (
+  <div class={`darkmode ${displayClass ?? ""}`}>
+    <input class="toggle" id="darkmode-toggle" type="checkbox" tabIndex={-1} />
+  </div>
+)
+
+const Content = () => (
+  <div class="content-container">
+    <img src="/static/avatar.png" class="landing-logo" />
+    <h1 class="landing-header">My name is Aaron.</h1>
+    <p>
+      Beige and <a class="rose">rosé</a> are my two favorite colours.{" "}
+      <a href={"/dump/Chaos"} target="_self" class="internal landing-links">
+        Chaos
+      </a>{" "}
+      constructs the id and form the ego. I enjoy treating my friends with{" "}
+      <a href={"/dump/Dishes"} target="_self" class="internal landing-links">
+        cooking
+      </a>
+      . I spend a lot of time{" "}
+      <a href={"/dump/writing"} target="_self" class="internal landing-links">
+        writing
+      </a>{" "}
+      and{" "}
+      <a href={"/books"} target="_self" class="internal landing-links">
+        reading
+      </a>{" "}
+      when I'm not coding. I'm pretty bullish on investing into self and fullfil one's desire in
+      life.
+    </p>
+    <p class="landing-job">
+      Currently, I'm building <a href="https://bentoml.com">serving infrastructure</a> and explore
+      our interaction with large language models.
+    </p>
+    <p class="landing-subhead">
+      <em>garden</em>: <SectionLinks sectionData={HyperAlias} />
+    </p>
+    <p>
+      <em>socials</em>: <SectionLinks sectionData={SocialAlias} newTab />
+    </p>
+    <hr />
+    <p class="landing-usage">
+      🖥️
+      {" · "}
+      {Object.entries(KeybindAlias).map(([key, value], index, array) => (
+        <>
+          <em>{key}</em> for {value} {index !== array.length - 1 && " · "}
+        </>
+      ))}
+    </p>
+  </div>
+)
+
 export default (() => {
   function LandingComponent({ displayClass }: QuartzComponentProps) {
     return (
       <div class="popover-hint">
-        <div class="landing">
-          {/* search components */}
-          <div class={`search ${displayClass ?? ""}`}>
-            <div id="search-container">
-              <div id="search-space">
-                <input
-                  autocomplete="off"
-                  id="search-bar"
-                  name="search"
-                  type="text"
-                  aria-label="Search for something"
-                  placeholder="Search for something"
-                />
-                <div id="search-layout">
-                  <div id="results-container"></div>
-                  <div id="preview-container"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* graph components */}
-          <div class={`graph ${displayClass ?? ""}`}>
-            <div id="global-graph-icon"></div>
-            <div id="global-graph-outer">
-              <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)}></div>
-            </div>
-          </div>
-          {/* darkmode components */}
-          <div class={`darkmode ${displayClass ?? ""}`}>
-            <input class="toggle" id="darkmode-toggle" type="checkbox" tabIndex={-1} />
-          </div>
-          {/* landing content */}
-          <div class="content-container">
-            <img src="/static/avatar.png" class="landing-logo" />
-            <h1 class="landing-header">My name is Aaron.</h1>
-            <p>
-              Beige and <a class="rose">rosé</a> are my two favorite colours.{" "}
-              <a href={"/dump/Chaos"} target="_self" class="internal landing-links">
-                Chaos
-              </a>{" "}
-              constructs the id and form the ego. I enjoy treating my friends with{" "}
-              <a href={"/dump/Dishes"} target="_self" class="internal landing-links">
-                cooking
-              </a>
-              . I spend a lot of time{" "}
-              <a href={"/dump/writing"} target="_self" class="internal landing-links">
-                writing
-              </a>{" "}
-              and{" "}
-              <a href={"/books"} target="_self" class="internal landing-links">
-                reading
-              </a>{" "}
-              when I'm not coding. I'm pretty bullish on investing into self and fullfil one's
-              desire in life.
-            </p>
-            <p class="landing-job">
-              Currently, I'm building <a href="https://bentoml.com">serving infrastructure</a> and
-              explore our interaction with large language models.
-            </p>
-            <p class="landing-subhead">
-              <em>garden</em>
-              {": "}
-              {Object.entries(HyperAlias).map(([key, value]) => {
-                const isFinal = key === Object.keys(HyperAlias).at(-1)
-                return (
-                  <>
-                    <a href={value} target="_self" class="internal landing-links">
-                      {key}
-                    </a>
-                    {/* make sure to only append " · " if key and value is not the last item*/}
-                    {!isFinal ? " · " : ""}
-                  </>
-                )
-              })}
-            </p>
-            <p>
-              <em>socials</em>
-              {": "}
-              {Object.entries(SocialAlias).map(([key, value]) => {
-                const isFinal = key === Object.keys(SocialAlias).at(-1)
-                return (
-                  <>
-                    <a href={value} target="_blank">
-                      {key}
-                    </a>
-                    {!isFinal ? " · " : ""}
-                  </>
-                )
-              })}
-            </p>
-            <hr />
-            <p class="landing-usage">
-              🖥️
-              {" · "}
-              {Object.entries(KeybindAlias).map(([key, value]) => {
-                const isFinal = key === Object.keys(KeybindAlias).at(-1)
-                return (
-                  <>
-                    <em>{key}</em> for {value} {!isFinal ? " · " : ""}
-                  </>
-                )
-              })}
-            </p>
-          </div>
-          {/* <div class="curius-container"> */}
-          {/*   <p> */}
-          {/*     Rabbit hole. More on{" "} */}
-          {/*     <a href="https://curius.app/aaron-pham" target="_blank"> */}
-          {/*       curius.app/aaron-pham */}
-          {/*     </a> */}
-          {/*   </p> */}
-          {/* </div> */}
-        </div>
+        <Search displayClass={displayClass} />
+        <Graph displayClass={displayClass} />
+        <DarkMode displayClass={displayClass} />
+        <Content />
       </div>
     )
   }
