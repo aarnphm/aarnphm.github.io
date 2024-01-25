@@ -25,12 +25,15 @@ body {
   &[data-slug="uses"],
   &[data-slug="dump/quotes"],
   &[data-slug="influence"] {
-    .page > #quartz-body {
-      .center p[class*="content-meta"],
-      .center ul[class*="tags"],
-      .center nav[class*="breadcrumb"],
-      .sidebar.left,
-      .sidebar.right {
+    .page {
+      & > #quartz-body {
+        .center nav[class*="breadcrumb"],
+        .sidebar.left,
+        .sidebar.right {
+          display: none;
+        }
+      }
+      & div[class$="footer"] {
         display: none;
       }
     }
@@ -151,4 +154,12 @@ hr {
 
 audio::-webkit-media-controls-panel {
   background-color: var(--lightgray);
+}
+
+.navigation-container {
+  display: flex;
+  justify-content: space-between;
+  text-align: left;
+  margin-right: 0;
+  margin-left: auto;
 }

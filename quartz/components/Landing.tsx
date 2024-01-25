@@ -161,10 +161,12 @@ export default (() => {
   function LandingComponent({ displayClass }: QuartzComponentProps) {
     return (
       <div class="popover-hint">
-        <Search displayClass={displayClass} />
-        <Graph displayClass={displayClass} />
-        <DarkMode displayClass={displayClass} />
-        <Content />
+        <div class="landing">
+          <Search displayClass={displayClass} />
+          <Graph displayClass={displayClass} />
+          <DarkMode displayClass={displayClass} />
+          <Content />
+        </div>
       </div>
     )
   }

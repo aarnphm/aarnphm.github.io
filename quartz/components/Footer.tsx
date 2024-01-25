@@ -3,17 +3,24 @@ import style from "./styles/footer.scss"
 import { version } from "../../package.json"
 
 interface Options {
-  links: Record<string, string>
-  disable: boolean
+  style?: "default" | "minimal"
+  disable?: boolean
+  links?: Record<string, string>
 }
 
-export default ((opts?: Options) => {
+const defaultOptions: Options = {
+  style: "minimal",
+  disable: false,
+}
+
+export default ((options?: Options) => {
+  const opts = { ...defaultOptions, ...options }
   function Footer({ displayClass }: QuartzComponentProps) {
     const year = new Date().getFullYear()
     const links = opts?.links ?? []
     if (opts?.disable) return <></>
-    return (
-      <footer class={`${displayClass ?? ""}`}>
+    return opts.style === "default" ? (
+      <footer class={`${opts.style}-footer${displayClass ?? ""}`}>
         <hr />
         <p>
           Built with <a href="https://quartz.jzhao.xyz/">Quartz v{version}</a>, © {year}
@@ -25,6 +32,17 @@ export default ((opts?: Options) => {
             </li>
           ))}
         </ul>
+      </footer>
+    ) : (
+      <footer class={`${opts.style}-footer${displayClass ?? ""}`}>
+        <div class="year">
+          <h5>© {year} on Earth</h5>
+        </div>
+        <div class="footnotes">
+          <h5>
+            Vous êtes arrivé au bout! <a href="/">Retour</a>
+          </h5>
+        </div>
       </footer>
     )
   }

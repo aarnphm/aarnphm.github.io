@@ -1,4 +1,5 @@
-footer {
+@use "../../styles/variables.scss" as *;
+.default-footer {
   text-align: left;
   margin-bottom: 4rem;
 
@@ -10,5 +11,40 @@ footer {
     flex-direction: row;
     gap: 1rem;
     margin-top: -1rem;
+  }
+}
+
+.minimal-footer {
+  display: flex;
+  margin-top: 2rem;
+  flex-direction: row;
+  justify-content: space-between;
+
+  box-sizing: border-box;
+  border: 0 solid var(--gray);
+  border-top-width: 1px;
+
+  font-size: 0.75rem;
+  line-height: 1rem;
+  padding: 1.5rem 2.5rem;
+
+  @media (min-width: 1280px) {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+
+  h5 {
+    font-family: "EB Garamond", serif;
+    font-size: 0.8rem;
+    font-style: normal;
+    margin: 0;
+  }
+
+  .footnotes {
+    text-align: right;
+  }
+  a {
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
   }
 }

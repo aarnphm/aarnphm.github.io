@@ -18,6 +18,8 @@ let prevDarkShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | und
 
 document.addEventListener("nav", async (e: unknown) => {
   const container = document.getElementById("global-graph-outer")
+  const landingNode = document.getElementById("landing")
+  console.log(landingNode)
 
   // ** graph shortcut ** //
   function hideGlobalGraph() {
@@ -51,8 +53,7 @@ document.addEventListener("nav", async (e: unknown) => {
   function darkModeShortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (e.key === "a" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
-      const toggleSwitch = document.getElementById("darkmode-toggle")
-      toggleSwitch?.click()
+      document.getElementById("darkmode-toggle")?.click()
     }
   }
   if (prevDarkShortcutHandler) {

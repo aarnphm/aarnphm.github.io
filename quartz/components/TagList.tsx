@@ -39,7 +39,7 @@ TagList.css = `
 .section-li > .section > .tags {
   justify-content: flex-end;
 }
-  
+
 .tags > li {
   display: inline-block;
   white-space: nowrap;
