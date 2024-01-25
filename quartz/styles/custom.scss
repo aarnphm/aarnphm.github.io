@@ -1,12 +1,5 @@
 @use "./base.scss";
-
-// put your custom CSS here!
 @use "./variables.scss" as *;
-
-body {
-  position: relative;
-  min-height: 100vh;
-}
 
 @font-face {
   font-family: "EB Garamond";
@@ -24,6 +17,69 @@ body {
     url("/static/BerkeleyMono-Regular.woff") format("woff");
 }
 
+body {
+  position: relative;
+  min-height: 100vh;
+
+  // Page specific display overrides
+  &[data-slug="uses"],
+  &[data-slug="dump/quotes"],
+  &[data-slug="influence"] {
+    .page > #quartz-body {
+      .center p[class*="content-meta"],
+      .center ul[class*="tags"],
+      .center nav[class*="breadcrumb"],
+      .sidebar.left,
+      .sidebar.right {
+        display: none;
+      }
+    }
+
+    .toc,
+    .page-title,
+    .recent-notes {
+      display: none;
+    }
+  }
+
+  // Quote display for dark theme
+  &[data-slug="dump/quotes"] {
+    h3,
+    h4 {
+      font-size: 1.5rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    article {
+      > hr::after {
+        content: "";
+      }
+      > p {
+        padding-top: 1rem;
+        padding-left: 3rem;
+        font-size: 1.2rem;
+        margin: inherit;
+        &:before,
+        &:after {
+          font-size: 2em;
+          line-height: 0.1em;
+          vertical-align: -0.4em;
+        }
+        &:before {
+          content: "“";
+          margin-right: 0.25em;
+        }
+        &:after {
+          content: "”";
+          margin-left: 0.25em;
+        }
+      }
+    }
+  }
+}
+
 #texture {
   position: absolute;
   width: 100%;
@@ -33,17 +89,16 @@ body {
   pointer-events: none;
   opacity: 0.15;
   z-index: 999;
-}
-
-[saved-theme="dark"] #texture {
-  mix-blend-mode: soft-light;
+  [saved-theme="dark"] & {
+    mix-blend-mode: soft-light;
+  }
 }
 
 .left {
   display: grid !important;
   gap: 1.5rem !important;
   grid-template-columns: 1fr;
-  grid-template-rows: min-content min-content min-content min-content;
+  grid-template-rows: repeat(4, min-content);
   align-items: center;
 
   .page-title {
@@ -96,72 +151,4 @@ hr {
 
 audio::-webkit-media-controls-panel {
   background-color: var(--lightgray);
-}
-
-// ** REMOVE DISPLAY ON SOME SLUG **
-body[data-slug="uses"],
-body[data-slug="dump/quotes"],
-body[data-slug="influence"] {
-  .page > #quartz-body {
-    .center p[class*="content-meta"],
-    .center ul[class*="tags"],
-    .center nav[class*="breadcrumb"],
-    .sidebar.left,
-    .sidebar.right {
-      display: none;
-    }
-  }
-  .recent-notes {
-    display: none;
-  }
-}
-
-// ** QUOTE DISPLAY **
-[saved-theme="dark"] body[data-slug="dump/quotes"] {
-  h3,
-  h4 {
-    color: #fff;
-  }
-}
-
-body[data-slug="dump/quotes"] {
-  h3,
-  h4 {
-    color: #000;
-    font-size: 1.5rem;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-  }
-
-  article {
-    & > hr {
-      &::after {
-        content: "";
-      }
-    }
-    & > p {
-      padding-top: 1rem;
-      padding-left: 3rem;
-      font-size: 1.2rem;
-      margin: inherit;
-
-      &::before,
-      &::after {
-        font-size: 2em;
-        line-height: 0.1em;
-        vertical-align: -0.4em;
-      }
-
-      &::before {
-        content: "“";
-        margin-right: 0.25em;
-      }
-
-      &::after {
-        content: "”";
-        margin-left: 0.25em;
-      }
-    }
-  }
 }

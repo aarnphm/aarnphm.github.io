@@ -79,7 +79,7 @@ Correct this failure with policies:
 ![[dump/university/eng-3px3/table-health-costs.png]]
 ### ethical consideration
 
-[!question] ethical
+[!important] ethical
 > What is the cost of negative societal/ethical/equality impact?
 > Can you put the price on safety?
 
@@ -88,8 +88,9 @@ F-N graph
 Emission for $PM_{2.5}$ per year is
 
 $$
-\begin{align}
-& = \frac{\text{Health cost per year}}{\text{total emission }} \cdot \text{emission off power generation} \cdot \frac{1}{total annual} \\\
-& = \frac{$166e9}{3.5e6\space \text{tonne}} * 6000 \text{ tones} * \frac{1}{640e9 \text{ kWh}} = $0.0004446429 \text{ per kWh} \\\
-\end{align}
+\begin{align*}
+& = \frac{\text{Health cost per year}}{\text{total emission }} \cdot \text{emission off power generation} \cdot \frac{1}{\text{total annual}} \\\
+& = \frac{\$166e9}{3.5e6\space \text{tonne}} * 6000 \text{ tones} * \frac{1}{640e9 \text{ kWh}} \\\
+&= \$0.0004446429 \text{ per kWh} \\\
+\end{align*}
 $$
