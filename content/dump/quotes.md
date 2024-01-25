@@ -19,6 +19,6 @@ The falseness of an opinion is not for us any objection to it: it is here, perha
 
 I just wondered how things were put together. -- Claude Shannon
 
-<div class=navigation-container>
-  <p>You might be interested in <a href="/dump/Chaos">this</a></p>
+<div class="navigation-container">
+  <p>You might be interested in <a href="/dump/Chaos" class="">this</a></p>
 </div>

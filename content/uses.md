@@ -52,3 +52,8 @@ used for [[dump/Dishes|hosting]]
 - made-in stainless steel pans and pots sets.
 - 12' All-Clad Saute Pan
 - Stand-mixer
+
+
+<div class="navigation-container">
+  <p>You might be interested in <a href="/books" class="">this</a></p>
+</div>

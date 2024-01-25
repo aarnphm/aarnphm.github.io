@@ -16,7 +16,7 @@
 
 .minimal-footer {
   display: flex;
-  margin-top: 2rem;
+  margin-top: 3rem;
   flex-direction: row;
   justify-content: space-between;
 
@@ -26,14 +26,9 @@
 
   font-size: 0.75rem;
   line-height: 1rem;
-  padding: 1.5rem 2.5rem;
+  padding: 1.5rem 0;
 
-  @media (min-width: 1280px) {
-    padding-left: 5rem;
-    padding-right: 5rem;
-  }
-
-  h5 {
+  p {
     font-family: "EB Garamond", serif;
     font-size: 0.8rem;
     font-style: normal;
@@ -43,6 +38,7 @@
   .footnotes {
     text-align: right;
   }
+
   a {
     text-decoration: underline;
     text-decoration-thickness: from-font;

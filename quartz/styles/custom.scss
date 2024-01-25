@@ -28,6 +28,7 @@ body {
     .page {
       & > #quartz-body {
         .center nav[class*="breadcrumb"],
+        .center ul[class*="tags"],
         .sidebar.left,
         .sidebar.right {
           display: none;
@@ -40,6 +41,8 @@ body {
 
     .toc,
     .page-title,
+    .search,
+    .darkmode,
     .recent-notes {
       display: none;
     }
@@ -157,9 +160,22 @@ audio::-webkit-media-controls-panel {
 }
 
 .navigation-container {
-  display: flex;
-  justify-content: space-between;
-  text-align: left;
-  margin-right: 0;
-  margin-left: auto;
+  font-family: "EB Garamond";
+  font-style: italic;
+  margin-top: 2rem;
+  text-align: right;
+  font-size: 0.9rem;
+
+  a {
+    background-color: transparent;
+    text-decoration: inherit;
+    font-weight: inherit;
+    transition: none;
+    border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
+    border-radius: 0;
+
+    &:hover > .popover {
+      display: none;
+    }
+  }
 }

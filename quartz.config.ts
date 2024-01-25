@@ -14,8 +14,8 @@ const config: QuartzConfig = {
     defaultDateType: "created",
     theme: {
       typography: {
-        header: "EB Garamond",
-        body: "Lora",
+        header: "Lora",
+        body: "EB Garamond",
         code: "Berkeley Mono",
       },
       colors: {

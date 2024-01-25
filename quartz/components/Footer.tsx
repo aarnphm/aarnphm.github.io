@@ -36,12 +36,12 @@ export default ((options?: Options) => {
     ) : (
       <footer class={`${opts.style}-footer${displayClass ?? ""}`}>
         <div class="year">
-          <h5>© {year} on Earth</h5>
+          <p>© {year} on Earth</p>
         </div>
         <div class="footnotes">
-          <h5>
+          <p>
             Vous êtes arrivé au bout! <a href="/">Retour</a>
-          </h5>
+          </p>
         </div>
       </footer>
     )
