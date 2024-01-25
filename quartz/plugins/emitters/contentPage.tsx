@@ -21,7 +21,6 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
   const { head: Head, header, beforeBody, pageBody, left, right, footer: Footer } = opts
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
-  const LandingComponent = Landing()
 
   return {
     name: "ContentPage",
@@ -30,7 +29,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         Head,
         Header,
         Body,
-        LandingComponent,
+        Landing(),
         ...header,
         ...beforeBody,
         pageBody,
