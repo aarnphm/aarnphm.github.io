@@ -66,7 +66,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 ## current.
 
 - **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
-- **Nietzsche and Philosophy** by Gilles Deleuze
+- **[[dump/Philosophy and Nietzsche|Nietzsche and Philosophy]]** by Gilles Deleuze
 - **Beyond Good and Evil** by Friedrich Nietzsche
 - **The Ego and the Id** by Sigmund Freud
 - **Beyond The Pleasure Principle** by Sigmund Freud
