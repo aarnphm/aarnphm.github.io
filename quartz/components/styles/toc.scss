@@ -28,7 +28,7 @@ button#toc {
 #toc-content {
   list-style: none;
   overflow: hidden;
-  max-height: none;
+  max-height: none !important;
   transition: max-height 0.5s ease;
   position: relative;
 
