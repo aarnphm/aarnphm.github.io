@@ -4,7 +4,8 @@
 @use "./variables.scss" as *;
 
 body {
-  margin: 0;
+  position: relative;
+  min-height: 100vh;
 }
 
 @font-face {
@@ -35,7 +36,6 @@ body {
 }
 
 [saved-theme="dark"] #texture {
-  // mix-blend-mode: overlay;
   mix-blend-mode: soft-light;
 }
 
@@ -59,8 +59,7 @@ body {
   }
 
   .toc {
-    grid-row: 3;
-    grid-column: 1 / 3;
+    grid-area: 5 / 1 / 5 / 3;
   }
 
   .recent-notes:nth-last-child(2) {
@@ -107,9 +106,13 @@ body[data-slug="influence"] {
     .center p[class*="content-meta"],
     .center ul[class*="tags"],
     .center nav[class*="breadcrumb"],
+    .sidebar.left,
     .sidebar.right {
       display: none;
     }
+  }
+  .recent-notes {
+    display: none;
   }
 }
 

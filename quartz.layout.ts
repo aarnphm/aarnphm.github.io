@@ -45,13 +45,6 @@ export const defaultContentPageLayout: PageLayout = {
     Component.Search(),
     Component.Darkmode(),
     Component.DesktopOnly(Component.TableOfContents()),
-    Component.Backlinks(),
-  ],
-  right: [
-    Component.Graph({
-      globalGraph: { linkDistance: 50 },
-      localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
-    }),
     Component.DesktopOnly(
       Component.RecentNotes({
         title: "Recent Writing",
@@ -68,6 +61,13 @@ export const defaultContentPageLayout: PageLayout = {
         linkToMore: "dump/" as SimpleSlug,
       }),
     ),
+  ],
+  right: [
+    Component.Graph({
+      globalGraph: { linkDistance: 50 },
+      localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
+    }),
+    Component.Backlinks(),
   ],
 }
 
