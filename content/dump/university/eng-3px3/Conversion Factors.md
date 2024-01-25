@@ -79,9 +79,11 @@ Correct this failure with policies:
 ![[dump/university/eng-3px3/table-health-costs.png]]
 ### ethical consideration
 
-[!important] ethical
-> What is the cost of negative societal/ethical/equality impact?
-> Can you put the price on safety?
+>[!question] ethical
+>
+> - What is the cost of negative societal/ethical/equality impact?
+>
+> - Can you put the price on safety?
 
 F-N graph
 
