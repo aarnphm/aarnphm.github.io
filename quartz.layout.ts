@@ -32,22 +32,14 @@ function filterFunc(path: string, excludePaths: string[] = []) {
 
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
-  beforeBody: [
-    // Component.ContentMeta(),
-    // Component.Breadcrumbs(),
-    Component.ArticleTitle(),
-    Component.TagList(),
-  ],
+  beforeBody: [Component.ArticleTitle(), Component.TagList()],
   left: [
-    Component.PageTitle(),
-    Component.MobileOnly(Component.Spacer()),
     Component.Search(),
     Component.Darkmode(),
-    Component.DesktopOnly(Component.TableOfContents()),
     Component.DesktopOnly(
       Component.RecentNotes({
         title: "Recent Writing",
-        limit: 2,
+        limit: 3,
         filter: filterFunc("posts"),
         linkToMore: "posts/" as SimpleSlug,
       }),
@@ -67,16 +59,13 @@ export const defaultContentPageLayout: PageLayout = {
       localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
     }),
     Component.Backlinks(),
+    Component.DesktopOnly(Component.TableOfContents()),
   ],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
-  beforeBody: [
-    Component.ArticleTitle(),
-    // Component.Breadcrumbs(),
-    // Component.ContentMeta()
-  ],
+  beforeBody: [Component.ArticleTitle()],
   left: [
     Component.PageTitle(),
     Component.MobileOnly(Component.Spacer()),

@@ -14,9 +14,15 @@
   }
 }
 
+.page {
+  & footer.minimal-footer {
+    width: 100%;
+  }
+}
+
 .minimal-footer {
   display: flex;
-  margin-top: 3rem;
+  margin-top: auto;
   flex-direction: row;
   justify-content: space-between;
 
@@ -25,8 +31,13 @@
   border-top-width: 1px;
 
   font-size: 0.75rem;
-  line-height: 1rem;
-  padding: 1.5rem 0;
+  line-height: 0.8rem;
+  padding: 1rem 2.5rem;
+
+  @media (min-width: 1280px) {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
 
   p {
     font-family: "EB Garamond", serif;
