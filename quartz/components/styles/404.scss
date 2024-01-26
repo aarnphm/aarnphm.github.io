@@ -1,0 +1,39 @@
+@use "../../styles/variables.scss" as *;
+
+#not-found {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  p.not-found-title {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  a {
+    font-weight: inherit;
+    font-style: italic;
+    text-align: right;
+
+    & .not-found-button {
+      text-align: right;
+      margin-top: 4rem;
+    }
+    & p {
+      margin-top: 2rem;
+      text-decoration: none;
+      transition:
+        color 0.3s ease,
+        text-decoration-color 0.3s ease;
+      cursor: pointer;
+      color: var(--darkgray);
+
+      &:hover {
+        color: var(--secondary);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-style: solid;
+      }
+    }
+  }
+}

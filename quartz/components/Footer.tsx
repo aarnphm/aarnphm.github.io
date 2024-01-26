@@ -40,7 +40,7 @@ export default ((options?: Options) => {
         </div>
         <div class="footnotes">
           <p>
-            Vous êtes arrivé au bout! <a href="/">Retour</a>
+            Vous êtes arrivé au bout! <a href="/">page d'accueil</a>
           </p>
         </div>
       </footer>

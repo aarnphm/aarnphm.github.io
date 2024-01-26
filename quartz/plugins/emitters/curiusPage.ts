@@ -1,77 +1,61 @@
 import { QuartzEmitterPlugin } from "../types"
 import { sharedPageComponents } from "../../../quartz.layout"
 import { CuriusContent } from "../../components"
+import BodyConstructor from "../../components/Body"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
 import path from "path"
-import {
-  FilePath,
-  FullSlug,
-  _stripSlashes,
-  joinSegments,
-  pathToRoot,
-  simplifySlug,
-} from "../../util/path"
+import { FilePath, FullSlug } from "../../util/path"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { QuartzComponentProps } from "../../components/types"
 import chalk from "chalk"
+import { defaultProcessedContent } from "../vfile"
 
-export const CuriusPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
+export const CuriusPage: QuartzEmitterPlugin = () => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
     beforeBody: [],
     left: [],
     right: [],
     pageBody: CuriusContent(),
-    ...userOpts,
   }
 
+  const { head: Head, pageBody, footer: Footer } = opts
+  const Body = BodyConstructor()
+
   return {
-    name: "CuriusContent",
+    name: "CuriusPage",
     getQuartzComponents() {
-      return [CuriusContent()]
+      return [Head, Body, pageBody, Footer]
     },
     async emit(ctx, content, resources): Promise<FilePath[]> {
-      const fps: FilePath[] = []
       const cfg = ctx.cfg.configuration
-      const allFiles = content.map((c) => c[1].data)
-
-      let containsCurius = false
-      for (const [tree, file] of content) {
-        const slug = file.data.slug!
-        if (slug === "curius") {
-          containsCurius = true
-          const externalResources = pageResources(pathToRoot(slug), resources)
-
-          const componentData: QuartzComponentProps = {
-            fileData: file.data,
-            externalResources: externalResources,
-            cfg: cfg,
-            children: [],
-            tree,
-            allFiles,
-          }
-
-          const content = renderPage(slug, componentData, opts, externalResources)
-          const fp = await write({
-            ctx,
-            content,
-            slug,
-            ext: ".html",
-          })
-          fps.push(fp)
-        }
+      const slug = "curius" as FullSlug
+      const url = new URL(`https://${cfg.baseUrl ?? "example.com"}`)
+      const path = url.pathname as FullSlug
+      const externalResources = pageResources(path, resources)
+      const [tree, vfile] = defaultProcessedContent({
+        slug,
+        text: "Curius",
+        description: "curius.app",
+        frontmatter: { title: "Curius", description: "curius.app", tags: [] },
+      })
+      const componentData: QuartzComponentProps = {
+        fileData: vfile.data,
+        externalResources,
+        cfg: cfg,
+        children: [],
+        tree,
+        allFiles: [],
       }
-
-      if (!containsCurius) {
-        console.log(
-          chalk.yellow(
-            `\nWarning: you seem to be missing an \`curius.md\` page file at the root of your \`${ctx.argv.directory}\` folder. This may cause errors when deploying.`,
-          ),
-        )
-      }
-
-      return fps
+      return [
+        await write({
+          ctx,
+          content: renderPage(slug, componentData, opts, externalResources),
+          slug,
+          ext: ".html",
+        }),
+      ]
     },
   }
 }
