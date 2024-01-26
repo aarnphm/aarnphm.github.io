@@ -25,6 +25,16 @@ export default (() => {
         {cfg.baseUrl && <meta property="og:image" content={ogImagePath} />}
         <meta property="og:width" content="1200" />
         <meta property="og:height" content="675" />
+        <meta
+          property="og:url"
+          content={
+            fileData.slug === "404" ? url.toString() : joinSegments(url.toString(), fileData.slug!)
+          }
+        />
+        {cfg.baseUrl && <meta property="twitter:image" content={ogImagePath} />}
+        <meta property="twitter:title" content={title} />
+        <meta property="twitter:description" content={description} />
+        <meta property="twitter:card" content="summary" />
         {/* <link rel="icon" href={iconPath} /> */}
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
