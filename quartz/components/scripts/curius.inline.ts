@@ -40,7 +40,8 @@ const timeSince = (date: Date | string) => {
 }
 
 async function fetchLinks(): Promise<Response> {
-  const res = await fetch("http://localhost:8001/api", {
+  const res = await fetch("https://portfolio-ten-blush-26.vercel.app/api/curius", {
+    method: "POST",
     headers: { "Content-Type": "application/json" },
   })
     .then((res) => res.json())
