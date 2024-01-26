@@ -3,8 +3,9 @@ id: Questions about Metaphysics
 tags:
   - philosophy
   - fruit
+date: "2023-11-16"
+description: Questions about Aristotle's Metaphysics
 title: Questions about Metaphysics
-date: 2023-11-16
 ---
 
 <!--

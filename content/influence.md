@@ -2,6 +2,7 @@
 id: influence
 tags: []
 date: "2024-01-23"
+description: A list of folks that inspires me a bunch
 title: affecter.
 ---
 

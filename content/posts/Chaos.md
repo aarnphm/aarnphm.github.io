@@ -4,8 +4,9 @@ tags:
   - life
   - evergreen
 date: "2024-01-07"
+description: chaos is a factor of time.
 draft: true
-title: chaos of living alone. abroad.
+title: chaos is a factor of time.
 ---
 
 _This is an extension of [[dump/Chaos|Chaos]] that I have been thinking about_

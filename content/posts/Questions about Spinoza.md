@@ -4,6 +4,7 @@ tags:
   - philosophy
   - fruit
 date: "2023-11-30"
+description: Questions about Spinoza's Ethics
 title: Questions about Spinoza
 ---
 

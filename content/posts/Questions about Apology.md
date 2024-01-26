@@ -3,8 +3,9 @@ id: Questions about Apology
 tags:
   - philosophy
   - fruit
+date: "2023-11-09"
+description: Questions about Plato's Apology
 title: Questions about Apology
-date: 2023-11-09
 ---
 
 <!--

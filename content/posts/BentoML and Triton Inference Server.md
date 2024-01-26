@@ -3,8 +3,8 @@ id: BentoML and Triton Inference Server
 tags:
   - technical
   - ml
-  - fruit
 date: "2023-03-22"
+description: BentoML and Triton Inference Server integration.
 title: BentoML. Triton Inference Server. Choose 2
 ---
 

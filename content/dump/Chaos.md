@@ -4,6 +4,7 @@ tags:
   - philosophy
   - evergreen
 date: "2024-01-08"
+description: Chaos a la carte.
 title: Chaos
 ---
 
