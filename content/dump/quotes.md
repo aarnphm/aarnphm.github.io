@@ -21,5 +21,5 @@ I just wondered how things were put together. -- Claude Shannon
 Life can be much broader when you discover one simple fact...that everything around you was made up by people no smarter than you. ... Once you learn that, [you'll never be the same again.] -- Steve Jobs
 
 <div class="navigation-container">
-  <p>You might be interested in <a href="/dump/Chaos" class="">this</a></p>
+  <p>You might be interested in <a href="/dump/Chaos" class="">this</a> or <a href="/dump" class="">that</a></p>
 </div>

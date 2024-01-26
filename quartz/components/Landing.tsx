@@ -43,23 +43,29 @@ type AliasLinkProp = {
   url: string
   isFinal: boolean
   newTab?: boolean
+  isInternal?: boolean
 }
 
-const AliasLink = ({ name, url, isFinal, newTab }: AliasLinkProp) => (
-  <>
-    <a href={url} target={newTab ? "_blank" : "_self"} className="internal landing-links">
-      {name}
-    </a>
-    {!isFinal && " · "}
-  </>
-)
+const AliasLink = ({ name, url, isFinal, newTab, isInternal = false }: AliasLinkProp) => {
+  const className = ["landing-links"]
+  if (isInternal) className.push("internal")
+  return (
+    <>
+      <a href={url} target={newTab ? "_blank" : "_self"} className={className.join(" ")}>
+        {name}
+      </a>
+      {!isFinal && " · "}
+    </>
+  )
+}
 
 type SectionLinksProp = {
   sectionData: { [key: string]: string }
   newTab?: boolean
+  isInternal?: boolean
 }
 
-const SectionLinks = ({ sectionData, newTab = false }: SectionLinksProp) => (
+const SectionLinks = ({ sectionData, newTab = false, isInternal = false }: SectionLinksProp) => (
   <>
     {Object.entries(sectionData).map(([key, value], index, array) => (
       <AliasLink
@@ -68,6 +74,7 @@ const SectionLinks = ({ sectionData, newTab = false }: SectionLinksProp) => (
         url={value}
         isFinal={index === array.length - 1}
         newTab={newTab}
+        isInternal={isInternal}
       />
     ))}
   </>
@@ -141,12 +148,12 @@ const Content = () => (
       and explore our interaction with large language models.
     </p>
     <p class="landing-subhead">
-      <em>garden</em>: <SectionLinks sectionData={HyperAlias} />
+      <em>garden</em>: <SectionLinks sectionData={HyperAlias} isInternal />
     </p>
     <p>
       <em>socials</em>: <SectionLinks sectionData={SocialAlias} newTab />
       {" · "}
-      <AliasLink name="curius" url="/curius" isFinal={true} newTab={false} />
+      <AliasLink name="curius" url="/curius" isFinal />
     </p>
     <hr />
     <p class="landing-usage">
