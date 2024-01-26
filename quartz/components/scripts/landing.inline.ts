@@ -6,13 +6,6 @@ import searchScript from "./search.inline"
 import graphScript from "./graph.inline"
 import { registerEscapeHandler, removeAllChildren } from "./util"
 
-const emitThemeChangeEvent = (theme: "light" | "dark") => {
-  const event: CustomEventMap["themechange"] = new CustomEvent("themechange", {
-    detail: { theme },
-  })
-  document.dispatchEvent(event)
-}
-
 let prevGraphShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 let prevDarkShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 
@@ -42,13 +35,6 @@ document.addEventListener("nav", async (e: unknown) => {
   prevGraphShortcutHandler = graphShortcutHandler
   registerEscapeHandler(container, hideGlobalGraph)
 
-  // ** darkmode shortcut ** //
-  const switchTheme = (e: any) => {
-    const newTheme = e.target.checked ? "dark" : "light"
-    document.documentElement.setAttribute("saved-theme", newTheme)
-    localStorage.setItem("theme", newTheme)
-    emitThemeChangeEvent(newTheme)
-  }
   function darkModeShortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (e.key === "a" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()

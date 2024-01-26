@@ -36,7 +36,7 @@ export default (() => {
         <meta property="twitter:description" content={description} />
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:site" content="@aarnphm_" />
-        {/* <link rel="icon" href={iconPath} /> */}
+        <link rel="icon" href={iconPath} />
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
