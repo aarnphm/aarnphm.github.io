@@ -1,0 +1,22 @@
+@use "../../styles/variables.scss" as *;
+
+.curius {
+  text-align: left;
+
+  & ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+
+  & li::marker {
+    content: "";
+  }
+
+  .curius-item-link {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+}

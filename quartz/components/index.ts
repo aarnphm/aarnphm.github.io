@@ -1,6 +1,7 @@
 import Content from "./pages/Content"
 import TagContent from "./pages/TagContent"
 import FolderContent from "./pages/FolderContent"
+import CuriusContent from "./pages/CuriusContent"
 import NotFound from "./pages/404"
 import ArticleTitle from "./ArticleTitle"
 import Darkmode from "./Darkmode"
@@ -44,4 +45,5 @@ export {
   NotFound,
   Breadcrumbs,
   Landing,
+  CuriusContent,
 }

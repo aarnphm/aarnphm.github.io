@@ -19,7 +19,6 @@ let prevDarkShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | und
 document.addEventListener("nav", async (e: unknown) => {
   const container = document.getElementById("global-graph-outer")
   const landingNode = document.getElementById("landing")
-  console.log(landingNode)
 
   // ** graph shortcut ** //
   function hideGlobalGraph() {

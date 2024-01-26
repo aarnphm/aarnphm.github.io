@@ -31,7 +31,6 @@ export const HyperAlias = {
 export const SocialAlias = {
   github: "https://github.com/aarnphm",
   twitter: "https://x.com/aarnphm_",
-  curius: "https://curius.app/aaron-pham",
 }
 export const KeybindAlias = {
   "cmd+k": "search",
@@ -143,6 +142,8 @@ const Content = () => (
     </p>
     <p>
       <em>socials</em>: <SectionLinks sectionData={SocialAlias} newTab />
+      {" · "}
+      <AliasLink name="curius" url="/curius" isFinal={true} newTab={false} />
     </p>
     <hr />
     <p class="landing-usage">
