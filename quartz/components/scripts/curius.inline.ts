@@ -1,3 +1,16 @@
+interface Highlight {
+  id: number
+  userId: number
+  linkId: number
+  highlight: string
+  createdDate: string
+  leftContext: string
+  rightContext: string
+  rawHighlight: string
+  comment_ids: string[]
+  comment: string
+}
+
 interface Link {
   id: number
   link: string
@@ -8,10 +21,13 @@ interface Link {
   createdDate: string
   modifiedDate: string
   lastCrawled: any
+  topics: Object[]
+  highlights: Highlight[]
+  userIds?: number[]
 }
 
 interface Response {
-  links: Link[]
+  userSaved: Link[]
 }
 
 const timeSince = (date: Date | string) => {
@@ -51,6 +67,7 @@ async function fetchLinks(): Promise<Response> {
 
 document.addEventListener("nav", async (e) => {
   const curius = document.getElementById("curius-container")
+  const description = document.getElementById("curius-description")
 
   const linkToHTML = (curiusLink: Link) => {
     const item = document.createElement("li")
@@ -74,13 +91,18 @@ document.addEventListener("nav", async (e) => {
 
   function displayLinks(finalLinks: Response) {
     if (!curius) return
-    if (finalLinks.links.length === 0) {
+    if (finalLinks.userSaved.length === 0) {
       curius.innerHTML = `<p>Failed to fetch links.</p>`
     } else {
-      curius.append(...finalLinks.links.map(linkToHTML))
+      curius.append(...finalLinks.userSaved.map(linkToHTML))
     }
   }
 
   const links = await fetchLinks()
+  console.log(links)
+  if (!description) return
+  const pItem = document.createElement("p")
+  pItem.innerHTML = `${links.userSaved.length} of <em>many</em> on <a href="https://curius.app/aaron-pham" target="_blank">curius dot app</a>`
+  description.appendChild(pItem)
   displayLinks(links)
 })

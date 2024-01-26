@@ -9,12 +9,7 @@ function CuriusContent(props: QuartzComponentProps) {
   return (
     <div class="popover-hint">
       <div class="curius">
-        <p>
-          More on{" "}
-          <a href="https://curius.app/aaron-pham" target="_blank">
-            curius dot app
-          </a>
-        </p>
+        <div id="curius-description"></div>
         <ul id="curius-container"></ul>
       </div>
       <div class="navigation-container">

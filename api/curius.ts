@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 
 export default async function handler(req: VercelRequest, resp: VercelResponse) {
-  const apiUrl = "https://curius.app/api/users/3584/searchLinks"
+  const apiUrl = "https://curius.app/api/users/3584/links"
 
   try {
     const response = await fetch(apiUrl, {
