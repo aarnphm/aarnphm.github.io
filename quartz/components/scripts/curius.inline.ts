@@ -40,7 +40,7 @@ const timeSince = (date: Date | string) => {
 }
 
 async function fetchLinks(): Promise<Response> {
-  const res = await fetch("https://curius.app/api/users/3584/searchLinks", {
+  const res = await fetch("http://localhost:8001/api", {
     headers: { "Content-Type": "application/json" },
   })
     .then((res) => res.json())
@@ -52,7 +52,6 @@ document.addEventListener("nav", async (e) => {
   const curius = document.getElementById("curius-container")
 
   const linkToHTML = (curiusLink: Link) => {
-    console.log(curiusLink)
     const item = document.createElement("li")
 
     const itemLink = document.createElement("a")
