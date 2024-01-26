@@ -134,8 +134,11 @@ const Content = () => (
       life.
     </p>
     <p class="landing-job">
-      Currently, I'm building <a href="https://bentoml.com">serving infrastructure</a> and explore
-      our interaction with large language models.
+      Currently, I'm building{" "}
+      <a href="https://bentoml.com" target="_blank" rel="noopener noreferrer">
+        serving infrastructure
+      </a>{" "}
+      and explore our interaction with large language models.
     </p>
     <p class="landing-subhead">
       <em>garden</em>: <SectionLinks sectionData={HyperAlias} />
