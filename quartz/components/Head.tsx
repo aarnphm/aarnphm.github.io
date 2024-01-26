@@ -34,7 +34,8 @@ export default (() => {
         {cfg.baseUrl && <meta property="twitter:image" content={ogImagePath} />}
         <meta property="twitter:title" content={title} />
         <meta property="twitter:description" content={description} />
-        <meta property="twitter:card" content="summary" />
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:site" content="@aarnphm_" />
         {/* <link rel="icon" href={iconPath} /> */}
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
