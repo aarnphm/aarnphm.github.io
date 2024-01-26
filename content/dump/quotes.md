@@ -8,15 +8,17 @@ title: Advice
 
 > _An ongoing collection of quotes, advices, and other things I've subscribed to, mostly from people I admire and friends._
 
-### On Thinking.
+### On perspectives.
 
 Our capacity to deal with [[dump/Language|language]] is a complex, genetically-determined part of our biological endowment. It's a product of evolution, part of our nature. -- Noam Chomsky
 
 The falseness of an opinion is not for us any objection to it: it is here, perhaps, that our new language sounds most strangely. The question is, how far an opinion is life-furthering, life-preserving, species-preserving, perhaps species-rearing, and we are fundamentally inclined to maintain that the falsest opinions — that the renunciation of false opinions would be [a renunciation of life]. -- [[dump/Philosophy and Nietzsche|Friedrich Nietzsche]]
 
-### On Drive.
+### On drive.
 
 I just wondered how things were put together. -- Claude Shannon
+
+Life can be much broader when you discover one simple fact...that everything around you was made up by people no smarter than you. ... Once you learn that, [you'll never be the same again.] -- Steve Jobs
 
 <div class="navigation-container">
   <p>You might be interested in <a href="/dump/Chaos" class="">this</a></p>

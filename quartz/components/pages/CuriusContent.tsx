@@ -20,7 +20,7 @@ function CuriusContent(props: QuartzComponentProps) {
       <div class="navigation-container">
         <p>
           You might be interested in{" "}
-          <a href="/posts" class="">
+          <a href="/dump/quotes" class="">
             this
           </a>
         </p>
