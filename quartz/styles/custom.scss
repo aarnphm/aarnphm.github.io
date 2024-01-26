@@ -44,6 +44,13 @@ body {
       & footer[class$="footer"] {
         display: none;
       }
+      .center {
+        width: $pageWidth + $sidePanelWidth;
+        .page-header {
+          width: inherit;
+          margin: 6rem 0 0;
+        }
+      }
     }
 
     .toc,
@@ -59,9 +66,25 @@ body {
 
   // Quote display for dark theme
   &[data-slug="dump/quotes"] {
-    h3,
+    & > * {
+      font-size: 1.2rem;
+    }
+
+    & h1 {
+      font-size: 2rem;
+      font-family: var(--bodyFont) !important;
+      font-weight: 500;
+    }
+
+    blockquote {
+      border-left: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    & h3,
     h4 {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
@@ -74,7 +97,6 @@ body {
       > p {
         padding-top: 1rem;
         padding-left: 3rem;
-        font-size: 1.2rem;
         margin: inherit;
         &:before,
         &:after {
@@ -174,7 +196,7 @@ audio::-webkit-media-controls-panel {
 }
 
 .navigation-container {
-  font-family: "EB Garamond";
+  font-family: var(--bodyFont);
   font-style: italic;
   margin-top: 2rem;
   text-align: right;

@@ -1,4 +1,6 @@
 import { pluralize } from "../../util/lang"
+import { joinSegments } from "../../util/path"
+import { removeAllChildren } from "./util"
 
 interface Highlight {
   id: number
@@ -13,6 +15,16 @@ interface Highlight {
   comment: string
 }
 
+interface Topic {
+  id: number
+  userId: number
+  topic: string
+  slug: string
+  public: boolean
+  createdDate: string
+  modifiedDate: string
+}
+
 interface Link {
   id: number
   link: string
@@ -23,7 +35,7 @@ interface Link {
   createdDate: string
   modifiedDate: string
   lastCrawled: any
-  topics: Object[]
+  topics: Topic[]
   highlights: Highlight[]
   userIds?: number[]
 }
@@ -31,6 +43,8 @@ interface Link {
 interface Response {
   userSaved: Link[]
 }
+
+const CURIUS = "https://curius.app/aaron-pham"
 
 const timeSince = (date: Date | string) => {
   const now = new Date()
@@ -75,82 +89,120 @@ async function fetchLinks(): Promise<Response> {
 
 let prevShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 
+const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
+const extractApexDomain = (url: string) => {
+  const match = url.match(externalLinkRegex)
+  return match ? match[1] : ""
+}
+
 document.addEventListener("nav", async (e) => {
   const curius = document.getElementById("curius")
-  const curiusContainer = document.getElementById("curius-container")
-  const curiusDescription = document.getElementById("curius-description")
+  const container = document.getElementById("curius-container")
+  const description = document.getElementById("curius-description")
 
-  if (!curius) return
-  curius.innerHTML = `<p>Fetching curius links...</p>`
+  if (!curius || !container || !description) return
+  curius.innerHTML = `<p id="curius-fetching-text">Fetching curius links</p>`
   const links = await fetchLinks()
   curius.innerHTML = ""
-  curius.append(curiusDescription ?? "", curiusContainer ?? "")
+  curius.append(description ?? "", container ?? "")
 
   const linkToHTML = (curiusLink: Link) => {
-    const item = document.createElement("li")
-    item.id = `curius-item-${curiusLink.id}`
+    const curiusItem = document.createElement("li")
+    curiusItem.id = `curius-item-${curiusLink.id}`
 
-    const itemTitle = document.createElement("h5")
+    // create title: itemHeader - links
+    const itemTitle = document.createElement("div")
+    itemTitle.classList.add("curius-item-title")
+    const itemHeader = document.createElement("div")
+    itemHeader.classList.add("curius-item-link")
     const itemLink = document.createElement("a")
-    itemLink.classList.add("curius-item-link")
     itemLink.href = curiusLink.link
     itemLink.setAttribute("target", "_blank")
     itemLink.setAttribute("rel", "noopener noreferrer")
-    itemLink.innerHTML = `${curiusLink.title}`
-    itemTitle.appendChild(itemLink)
+    itemLink.innerHTML = `<span class="curius-item-span">${curiusLink.title}</span>`
+    itemHeader.appendChild(itemLink)
+    const itemAddress = document.createElement("div")
+    itemAddress.classList.add("curius-item-address")
+    itemAddress.innerHTML = extractApexDomain(curiusLink.link)
+    itemTitle.append(itemHeader, itemAddress)
 
-    const metadata = document.createElement("ul")
-    metadata.id = `curius-metadata-${curiusLink.id}`
-    const itemSpan = document.createElement("li")
-    itemSpan.id = `curius-span-${curiusLink.id}`
-    itemSpan.innerHTML = `${timeSince(curiusLink.createdDate)}`
-    metadata.appendChild(itemSpan)
+    // metadata: tags\n ul -> {time since, highlights}
+    const itemMetadata = document.createElement("div")
+    itemMetadata.classList.add("curius-item-metadata")
+
+    const itemTags = document.createElement("div")
+    itemTags.classList.add("curius-item-tags")
+    itemTags.innerHTML =
+      curiusLink.topics.length > 0
+        ? `${curiusLink.topics
+            .map(
+              (topic) => `<ul><a href=${joinSegments(CURIUS, topic.slug)}>${topic.topic}</a></ul>`,
+            )
+            .join("")}`
+        : ``
+
+    const misc = document.createElement("div")
+    misc.id = `curius-misc-${curiusLink.id}`
+    const itemTime = document.createElement("span")
+    itemTime.id = `curius-span-${curiusLink.id}`
+    itemTime.innerHTML = `<time datetime=${curiusLink.modifiedDate} title=${new Date(
+      curiusLink.modifiedDate,
+    ).toString()}>${timeSince(curiusLink.createdDate)}</time>`
+    misc.appendChild(itemTime)
 
     if (curiusLink.highlights.length > 0) {
-      const itemHighlights = document.createElement("li")
+      const itemHighlights = document.createElement("div")
       itemHighlights.id = `curius-highlights-${curiusLink.id}`
       itemHighlights.innerHTML = `${pluralize(curiusLink.highlights.length, "highlight")}`
-      metadata.appendChild(itemHighlights)
+      misc.appendChild(itemHighlights)
     }
+    itemMetadata.append(itemTags, misc)
 
-    item.append(itemTitle, metadata)
-    return item
+    curiusItem.append(itemTitle, itemMetadata)
+    return curiusItem
   }
 
   function displayLinks(finalLinks: Response) {
-    if (!curiusContainer) return
+    if (!container) return
     if (finalLinks.userSaved.length === 0) {
-      curiusContainer.innerHTML = `<p>Failed to fetch links.</p>`
+      container.innerHTML = `<p>Failed to fetch links.</p>`
     } else {
-      curiusContainer.append(...finalLinks.userSaved.map(linkToHTML))
+      container.append(...finalLinks.userSaved.map(linkToHTML))
     }
   }
 
-  if (!curiusDescription) return
-  const pItem = document.createElement("p")
-  pItem.innerHTML = `${links.userSaved.length} of <a href="https://curius.app/aaron-pham" target="_blank"><em>curius.app/aaron-pham</em></a>`
-  curiusDescription.appendChild(pItem)
+  function displayDescription() {
+    if (!description) return
+    const item = document.createElement("p")
+    item.innerHTML = `${links.userSaved.length} of <a href="${CURIUS}" target="_blank"><em>curius.app/aaron-pham</em></a>`
+    description.appendChild(item)
+    return description
+  }
 
+  function navigationHandler() {
+    const navigation = document.createElement("div")
+    navigation.classList.add("navigation-container")
+    const navigationText = document.createElement("p")
+    navigationText.innerHTML = `You might be interested in <a href="/dump/quotes">this</a> or <a href="/">that</a>`
+    navigation.appendChild(navigationText)
+
+    function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
+      if (e.key === "e" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+        window.location.pathname = "/"
+      }
+    }
+
+    if (prevShortcutHandler) {
+      document.removeEventListener("keydown", prevShortcutHandler)
+    }
+
+    document.addEventListener("keydown", shortcutHandler)
+    prevShortcutHandler = shortcutHandler
+    return navigation
+  }
+
+  displayDescription()
   displayLinks(links)
-
-  const navigation = document.createElement("div")
-  navigation.classList.add("navigation-container")
-  const navigationText = document.createElement("p")
-  navigationText.innerHTML = `You might be interested in <a href="/dump/quotes">this</a> or <a href="/">that</a>`
-  navigation.appendChild(navigationText)
-  curius.appendChild(navigation)
-
-  function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if (e.key === "e" && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault()
-      window.location.pathname = "/"
-    }
-  }
-
-  if (prevShortcutHandler) {
-    document.removeEventListener("keydown", prevShortcutHandler)
-  }
-
-  document.addEventListener("keydown", shortcutHandler)
-  prevShortcutHandler = shortcutHandler
+  curius.appendChild(navigationHandler())
 })
