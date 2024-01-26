@@ -1,3 +1,5 @@
+import { pluralize } from "../../util/lang"
+
 interface Highlight {
   id: number
   userId: number
@@ -61,48 +63,78 @@ async function fetchLinks(): Promise<Response> {
     headers: { "Content-Type": "application/json" },
   })
     .then((res) => res.json())
+    .then((data) => {
+      data.userSaved.sort((a: Link, b: Link) => {
+        return new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
+      })
+      return data
+    })
     .catch((err) => console.error(err))
   return res
 }
 
 document.addEventListener("nav", async (e) => {
-  const curius = document.getElementById("curius-container")
-  const description = document.getElementById("curius-description")
+  const curius = document.getElementById("curius")
+  const curiusContainer = document.getElementById("curius-container")
+  const curiusDescription = document.getElementById("curius-description")
+
+  if (!curius) return
+  curius.innerHTML = `<p>Fetching curius links...</p>`
+  const links = await fetchLinks()
+  curius.innerHTML = ""
+  curius.append(curiusDescription ?? "", curiusContainer ?? "")
 
   const linkToHTML = (curiusLink: Link) => {
     const item = document.createElement("li")
+    item.id = `curius-item-${curiusLink.id}`
 
+    const itemTitle = document.createElement("h5")
     const itemLink = document.createElement("a")
     itemLink.classList.add("curius-item-link")
     itemLink.href = curiusLink.link
     itemLink.setAttribute("target", "_blank")
     itemLink.setAttribute("rel", "noopener noreferrer")
     itemLink.innerHTML = `${curiusLink.title}`
+    itemTitle.appendChild(itemLink)
 
-    const itemSpan = document.createElement("span")
+    const metadata = document.createElement("ul")
+    metadata.id = `curius-metadata-${curiusLink.id}`
+    const itemSpan = document.createElement("li")
     itemSpan.id = `curius-span-${curiusLink.id}`
     itemSpan.innerHTML = `${timeSince(curiusLink.createdDate)}`
+    metadata.appendChild(itemSpan)
 
-    item.id = `curius-item-${curiusLink.id}`
-    item.appendChild(itemLink)
-    item.appendChild(itemSpan)
+    if (curiusLink.highlights.length > 0) {
+      const itemHighlights = document.createElement("li")
+      itemHighlights.id = `curius-highlights-${curiusLink.id}`
+      itemHighlights.innerHTML = `${pluralize(curiusLink.highlights.length, "highlight")}`
+      metadata.appendChild(itemHighlights)
+    }
+
+    item.append(itemTitle, metadata)
     return item
   }
 
   function displayLinks(finalLinks: Response) {
-    if (!curius) return
+    if (!curiusContainer) return
     if (finalLinks.userSaved.length === 0) {
-      curius.innerHTML = `<p>Failed to fetch links.</p>`
+      curiusContainer.innerHTML = `<p>Failed to fetch links.</p>`
     } else {
-      curius.append(...finalLinks.userSaved.map(linkToHTML))
+      curiusContainer.append(...finalLinks.userSaved.map(linkToHTML))
     }
   }
 
-  const links = await fetchLinks()
-  console.log(links)
-  if (!description) return
+  if (!curiusDescription) return
   const pItem = document.createElement("p")
-  pItem.innerHTML = `${links.userSaved.length} of <em>many</em> on <a href="https://curius.app/aaron-pham" target="_blank">curius dot app</a>`
-  description.appendChild(pItem)
+  pItem.innerHTML = `${links.userSaved.length} of <a href="https://curius.app/aaron-pham" target="_blank"><em>curius.app/aaron-pham</em></a>`
+  curiusDescription.appendChild(pItem)
+
   displayLinks(links)
+
+  const navigation = document.createElement("div")
+  navigation.classList.add("navigation-container")
+  const navigationText = document.createElement("p")
+  navigationText.innerHTML = `You might be interested in <a href="/dump/quotes" class="internal">this</a>`
+  navigation.appendChild(navigationText)
+  curius.appendChild(navigation)
 })

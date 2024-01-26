@@ -8,17 +8,9 @@ import curiusScript from "../scripts/curius.inline"
 function CuriusContent(props: QuartzComponentProps) {
   return (
     <div class="popover-hint">
-      <div class="curius">
+      <div id="curius">
         <div id="curius-description"></div>
         <ul id="curius-container"></ul>
-      </div>
-      <div class="navigation-container">
-        <p>
-          You might be interested in{" "}
-          <a href="/dump/quotes" class="">
-            this
-          </a>
-        </p>
       </div>
     </div>
   )

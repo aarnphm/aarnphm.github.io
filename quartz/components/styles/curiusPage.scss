@@ -1,6 +1,6 @@
 @use "../../styles/variables.scss" as *;
 
-.curius {
+#curius {
   text-align: left;
 
   & ul {
@@ -15,8 +15,37 @@
     content: "";
   }
 
+  a.curius-item-link {
+    color: inherit !important;
+    font-weight: normal !important;
+    text-decoration: none;
+
+    &:hover {
+      transition: none;
+      text-decoration: underline;
+    }
+  }
+
   .curius-item-link {
     display: block;
-    margin-bottom: 0.5rem;
+  }
+
+  & ul[id*="curius-metadata"] {
+    font-style: italic;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  & li[id*="curius-highlight"] {
+    background-color: rgb(234, 157, 52, 0.4);
+    font-style: normal;
+  }
+  & [saved-theme="dark"] li[id*="curius-highlight"] {
+    background-color: rgb(246, 193, 119, 0.4);
   }
 }
