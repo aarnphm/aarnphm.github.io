@@ -1,5 +1,7 @@
 {
   "cleanUrls": true,
+  "installCommand": "npm install",
+  "buildCommand": "npx quartz build -o /tmp",
   "outputDirectory": "content",
   "redirects": [
     {
