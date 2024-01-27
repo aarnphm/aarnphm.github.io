@@ -1,6 +1,12 @@
 {
   "cleanUrls": true,
   "buildCommand": "npx quartz build",
+  "rewrites": [
+    {
+      "source": "/dump/:subdomain/:path",
+      "destination": "/api/redirect"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",

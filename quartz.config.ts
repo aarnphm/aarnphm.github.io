@@ -54,7 +54,7 @@ const config: QuartzConfig = {
         rawFiles: {
           enable: true,
           extensions: [".py", ".m", ".go", ".c", ".java"],
-          hostUrl: "https://endpoints.aarnphm.xyz/api/raw?slug=",
+          hostUrl: "https://raw.aarnphm.xyz/",
         },
       }),
       Plugin.GitHubFlavoredMarkdown(),
