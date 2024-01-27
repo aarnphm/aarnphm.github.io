@@ -39,6 +39,10 @@
     padding-right: 5rem;
   }
 
+  @media all and (max-width: 430px) {
+    padding: 1rem 0;
+  }
+
   p {
     font-family: "EB Garamond", serif;
     font-size: 0.8rem;

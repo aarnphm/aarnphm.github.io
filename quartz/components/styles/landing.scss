@@ -4,11 +4,11 @@
 @mixin bodyIndexStyles {
   cursor: crosshair;
 
-  @include excludePopover("& > *, h1") {
+  @include excludeId("& > *, h1") {
     font-family: var(--bodyFont);
   }
 
-  @include excludePopover("a") {
+  @include excludeId("a") {
     color: inherit;
     text-decoration: inherit;
     font-weight: inherit;
@@ -16,7 +16,7 @@
     border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
   }
 
-  @include excludePopover(".darkmode") {
+  @include excludeId(".darkmode") {
     display: block;
     margin: 0;
     width: inherit;
@@ -27,26 +27,26 @@
 body[data-slug="index"] {
   @include bodyIndexStyles;
 
-  @include excludePopover('a.internal[class*="landing-links"]') {
+  @include excludeId('a.internal[class*="landing-links"]') {
     background-color: inherit;
   }
 
-  @include excludePopover('a[class*="rose"]') {
+  @include excludeId('a[class*="rose"]') {
     color: rgb(215, 130, 126);
     border-bottom: none;
   }
 
-  @include excludePopover("p") {
+  @include excludeId("p") {
     font-size: 1.1rem;
   }
 }
 
 [saved-theme="dark"] body[data-slug="index"] {
-  @include excludePopover("a") {
+  @include excludeId("a") {
     border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
   }
 
-  @include excludePopover('a[class*="rose"]') {
+  @include excludeId('a[class*="rose"]') {
     color: rgb(235, 188, 186);
   }
 }
@@ -58,11 +58,11 @@ body[data-slug="index"] {
   margin: 2rem auto 0 auto;
   position: relative;
 
-  @include excludePopover(".landing-logo") {
+  @include excludeId(".landing-logo") {
     text-align: center;
   }
 
-  @include excludePopover(".landing-header") {
+  @include excludeId(".landing-header") {
     font-size: 2rem;
     font-weight: normal;
     line-height: 2rem;
@@ -70,41 +70,41 @@ body[data-slug="index"] {
     padding-bottom: 1rem;
   }
 
-  @include excludePopover(".landing-subhead") {
+  @include excludeId(".landing-subhead") {
     padding-top: 1.5rem;
   }
 
-  @include excludePopover(".landing-job") {
+  @include excludeId(".landing-job") {
     padding-top: 0.5rem;
   }
 
-  @include excludePopover("& > hr") {
+  @include excludeId("& > hr") {
     margin: 2rem;
     margin-left: auto;
     margin-right: auto;
   }
 
-  @include excludePopover(".landing-usage") {
+  @include excludeId(".landing-usage") {
     font-size: 1rem;
   }
 }
 
 // Media query styles
 @media (min-width: 768px) {
-  @include excludePopover(".content-container") {
+  @include excludeId(".content-container") {
     margin-top: 6rem;
     margin-left: 6rem;
   }
 }
 
 @media (min-width: 375px) {
-  @include excludePopover(".content-container") {
+  @include excludeId(".content-container") {
     width: 60%;
   }
 }
 
 @media (max-width: 320px) {
-  @include excludePopover(".landing-logo") {
+  @include excludeId(".landing-logo") {
     display: block;
     margin-left: auto;
     margin-right: auto;

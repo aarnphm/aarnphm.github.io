@@ -23,6 +23,19 @@
   min-height: 100vh;
 }
 
+@media all and (max-width: 412px) {
+  body {
+    font-size: 1rem;
+    @include excludeId(".page") {
+      @each $element in (".page-title", ".spacer") {
+        @include excludeId($element) {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
 body {
   position: relative;
   font-size: 1.1rem;
@@ -30,25 +43,25 @@ body {
   // Page specific display overrides
   @each $slug in ("uses", "dump/quotes", "curius", "influence") {
     &[data-slug="#{$slug}"] {
-      @include excludePopover(".page") {
-        @include excludePopover("& > #quartz-body") {
-          @include excludePopover("&") {
-            @include excludePopover('.center ul[class*="tags"]') {
+      @include excludeId(".page") {
+        @include excludeId("& > #quartz-body") {
+          @include excludeId("&") {
+            @include excludeId('.center ul[class*="tags"]') {
               display: none;
             }
-            @include excludePopover(".sidebar .left") {
+            @include excludeId(".sidebar .left") {
               display: none;
             }
-            @include excludePopover(".sidebar .right") {
+            @include excludeId(".sidebar .right") {
               display: none;
             }
           }
         }
-        @include excludePopover('& footer[class$="footer"]') {
+        @include excludeId('& footer[class$="footer"]') {
           display: none;
         }
 
-        @include excludePopover(".center") {
+        @include excludeId(".center") {
           .page-header {
             width: inherit;
             margin: 6rem 0 0;
@@ -59,7 +72,7 @@ body {
       @each $element
         in (".toc", ".page-title", ".search", ".darkmode", ".graph", ".backlinks", ".recent-notes")
       {
-        @include excludePopover($element) {
+        @include excludeId($element) {
           display: none;
         }
       }
@@ -68,30 +81,30 @@ body {
 
   // Quote display
   &[data-slug="dump/quotes"] {
-    @include excludePopover("& > *") {
+    @include excludeId("& > *") {
       font-size: 1.2rem;
     }
 
-    @include excludePopover("& h1") {
+    @include excludeId("& h1") {
       font-size: 2rem;
       font-family: var(--bodyFont) !important;
       font-weight: 500;
     }
 
-    @include excludePopover("& blockquote") {
+    @include excludeId("& blockquote") {
       border-left: none;
       padding-left: 0;
       margin: 0;
     }
 
-    @include excludePopover("& h3, & h4") {
+    @include excludeId("& h3, & h4") {
       font-size: 1.4rem;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
     }
 
-    @include excludePopover("& article") {
+    @include excludeId("& article") {
       & > hr::after {
         content: "";
       }

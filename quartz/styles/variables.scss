@@ -5,8 +5,8 @@ $sidePanelWidth: 380px;
 $topSpacing: 6rem;
 $fullPageWidth: $pageWidth + 2 * $sidePanelWidth;
 
-@mixin excludePopover($selector) {
-  #{$selector}:not(.popover, .popover *) {
+@mixin excludeId($selector) {
+  #{$selector}:not(.popover, .popover *, .search, .search *, .graph, .graph *) {
     @content;
   }
 }
