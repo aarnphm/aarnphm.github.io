@@ -1,4 +1,11 @@
 {
   "cleanUrls": true,
-  "outputDirectory": "content"
+  "outputDirectory": "content",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "https:///aarnphm.xyz/",
+      "permanent": true
+    }
+  ]
 }
