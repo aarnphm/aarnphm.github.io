@@ -10,15 +10,16 @@ export default async function handler(req: VercelRequest, resp: VercelResponse) 
   try {
     if (typeof slug !== "string") {
       resp.status(400).send({ error: "given query is not a string" })
+      return
     }
 
     const staticUrl = path.join(baseUrl, typeof slug !== "string" ? [...slug].join("/") : slug)
-    console.log(staticUrl)
 
     const data = await fetch(staticUrl)
       .then((res) => res.text())
       .catch((e) => {
         resp.status(500).send({ error: e.message })
+        return
       })
 
     resp.setHeader("Content-Type", "text/plain")
