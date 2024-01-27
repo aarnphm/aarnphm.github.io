@@ -17,24 +17,6 @@ function CuriusContent(props: QuartzComponentProps) {
 }
 
 CuriusContent.css = curiusStyle
-CuriusContent.afterDOMLoaded = curiusScript
-
-CuriusContent.beforeDOMLoaded = `
-function getElementBySlug(slug) {
-  return document.querySelector(\`body[data-slug="\${slug}"]\`)
-}
-const slugToCleanUp = ["uses", "dump/quotes", "curius", "influence"]
-document.addEventListener('nav', () => {
-slugToCleanUp.forEach(slug => {
-  if (getElementBySlug(slug)) {
-    document
-      .querySelector("#quartz-root")
-      ?.querySelectorAll(".sidebar")
-      .forEach((el) => el.remove())
-    document.querySelector("#quartz-root")?.querySelector(".minimal-footer")?.remove()
-  }
-})
-})
-`
+CuriusContent.beforeDOMLoaded = curiusScript
 
 export default (() => CuriusContent) satisfies QuartzComponentConstructor

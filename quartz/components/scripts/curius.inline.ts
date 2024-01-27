@@ -77,13 +77,18 @@ async function fetchLinks(): Promise<Response> {
   })
     .then((res) => res.json())
     .then((data) => {
-      data.userSaved.sort((a: Link, b: Link) => {
-        return new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
-      })
+      data.userSaved.sort(
+        (a: Link, b: Link) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime(),
+      )
       return data
     })
     .catch((err) => console.error(err))
   return res
+}
+
+const slugToCleanUp = ["uses", "dump/quotes", "curius", "influence"]
+function getElementBySlug(slug: string) {
+  return document.querySelector(`body[data-slug="\${slug}"]`)
 }
 
 let prevShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
@@ -95,6 +100,16 @@ const extractApexDomain = (url: string) => {
 }
 
 document.addEventListener("nav", async (e) => {
+  slugToCleanUp.forEach((slug) => {
+    if (getElementBySlug(slug)) {
+      document
+        .querySelector("#quartz-root")
+        ?.querySelectorAll(".sidebar")
+        .forEach((el) => el.remove())
+      document.querySelector("#quartz-root")?.querySelector(".minimal-footer")?.remove()
+    }
+  })
+
   const curius = document.getElementById("curius")
   const container = document.getElementById("curius-container")
   const description = document.getElementById("curius-description")
@@ -169,9 +184,14 @@ document.addEventListener("nav", async (e) => {
     if (!container) return
     if (finalLinks.userSaved.length === 0) {
       container.innerHTML = `<p>Failed to fetch links.</p>`
-    } else {
-      container.append(...finalLinks.userSaved.map(linkToHTML))
+      return
     }
+
+    const fragment = document.createDocumentFragment()
+    finalLinks.userSaved.forEach((link) => {
+      fragment.appendChild(linkToHTML(link))
+    })
+    container.append(fragment)
   }
 
   function displayDescription() {
