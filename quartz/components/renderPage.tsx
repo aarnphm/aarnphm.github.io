@@ -204,6 +204,7 @@ export function renderPage(
         {slug !== "index" && (
           <div id="quartz-root" class="page">
             <div id="texture"></div>
+            <div id="progress"></div>
             <Body {...componentData}>
               {LeftComponent}
               <div class="center">
