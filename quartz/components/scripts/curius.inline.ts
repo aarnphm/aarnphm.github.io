@@ -72,7 +72,7 @@ const timeSince = (date: Date | string) => {
 }
 
 async function fetchLinks(): Promise<Response> {
-  const res = await fetch("https://curius.aarnphm.xyz/api/curius", {
+  const res = await fetch("https://endpoints.aarnphm.xyz/api/curius", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
   })
