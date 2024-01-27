@@ -26,9 +26,7 @@ function getElementBySlug(slug) {
 const slugToCleanUp = ["uses", "dump/quotes", "curius", "influence"]
 document.addEventListener('nav', () => {
 slugToCleanUp.forEach(slug => {
-  const el = getElementBySlug(slug)
-  console.log(el)
-  if (el) {
+  if (getElementBySlug(slug)) {
     document
       .querySelector("#quartz-root")
       ?.querySelectorAll(".sidebar")
