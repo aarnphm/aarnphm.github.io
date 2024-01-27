@@ -1,10 +1,10 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node"
+import type { VercelResponse } from "@vercel/node"
 
 export const config = {
   runtime: "edge",
 }
 
-export default async function handler(req: VercelRequest, resp: VercelResponse) {
+export default async function handler(resp: VercelResponse) {
   resp.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=59")
   const baseUrl = "https://curius.app/api/users/3584/links"
   let allLinks: any[] = []
