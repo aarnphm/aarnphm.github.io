@@ -10,3 +10,4 @@ tsconfig.tsbuildinfo
 replit.nix
 quartz.git
 *.autosave
+.vercel

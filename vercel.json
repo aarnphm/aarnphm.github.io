@@ -1,5 +1,6 @@
 {
   "cleanUrls": true,
+  "buildCommand": "npx quartz build",
   "headers": [
     {
       "source": "/api/(.*)",
