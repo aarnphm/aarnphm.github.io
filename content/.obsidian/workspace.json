@@ -13,14 +13,28 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/astron-2e03/W1.md",
+                "file": "dump/university/sfwr-3dx4/index.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "fc9b3a9d4f4fdb0f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/university/sfwr-3dx4/index.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       },
       {
         "id": "69119e9afbbc55b6",
@@ -102,7 +116,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/astron-2e03/W1.md",
+                "file": "dump/university/sfwr-3dx4/index.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -119,7 +133,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/astron-2e03/W1.md",
+                "file": "dump/university/sfwr-3dx4/index.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -142,7 +156,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/astron-2e03/W1.md"
+                "file": "dump/university/sfwr-3dx4/index.md"
               }
             }
           },
@@ -172,7 +186,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/astron-2e03/W1.md"
+                "file": "dump/university/sfwr-3dx4/index.md"
               }
             }
           }
@@ -195,13 +209,18 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "fc9b3a9d4f4fdb0f",
   "lastOpenFiles": [
+    "dump/university/index.md",
+    "dump/university/sfwr-3dx4/index.md",
+    "tags/sfwr3dx4.md",
+    "dump/papers/index.md",
+    "tags/university.md",
+    "dump/university/astron-2e03/W1.md",
     "dump/university/astron-2e03/gravitational-microlensing.png",
     "dump/university/astron-2e03/astrometry.png",
     "dump/university/commerce-4be3/Defining Internal Alignment & Job Analysis.md",
     "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
-    "dump/university/astron-2e03/W1.md",
     "dump/university/commerce-4be3/Defining Internal Alignment.pdf",
     "dump/university/commerce-4be3/Pay model.md",
     "dump/university/sfwr-3dx4/state_space.pdf",
@@ -234,15 +253,10 @@
     "tags/evergreen.md",
     "private/bentoml/intern.md",
     "private/bentoml/compensation.md",
-    "private/bentoml/Runner interface.md",
-    "private/bentoml/OpenLLM design draft.md",
-    "private/bentoml/New Runner API.md",
-    "private/Company interests/robust-intelligence.md",
     "posts/images/passage-giorgio-m.jpg",
     "dump/university/sfwr-2c03/growth.png",
     "dump/university/philo-1aa3/tut/IMG_0308.jpg",
     "dump/university/philo-1aa3/spinoza-knowledge.png",
-    "dump/university/philo-1aa3/knowledge-map-thoughts.png",
     "Untitled.canvas"
   ]
 }

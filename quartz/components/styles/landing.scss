@@ -1,17 +1,22 @@
-body[data-slug="index"] {
+@use "../../styles/base.scss";
+@use "../../styles/variables.scss" as *;
+
+@mixin bodyIndexStyles {
   cursor: crosshair;
-  & > *,
-  h1 {
-    font-family: "EB Garamond", serif;
+
+  @include excludePopover("& > *, h1") {
+    font-family: var(--bodyFont);
   }
-  a {
+
+  @include excludePopover("a") {
     color: inherit;
     text-decoration: inherit;
     font-weight: inherit;
     transition: none;
     border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
   }
-  .darkmode {
+
+  @include excludePopover(".darkmode") {
     display: block;
     margin: 0;
     width: inherit;
@@ -19,25 +24,31 @@ body[data-slug="index"] {
   }
 }
 
-body[data-slug="index"] a.internal[class*="landing-links"] {
-  background-color: inherit;
+body[data-slug="index"] {
+  @include bodyIndexStyles;
+
+  @include excludePopover('a.internal[class*="landing-links"]') {
+    background-color: inherit;
+  }
+
+  @include excludePopover('a[class*="rose"]') {
+    color: rgb(215, 130, 126);
+    border-bottom: none;
+  }
+
+  @include excludePopover("p") {
+    font-size: 1.1rem;
+  }
 }
 
-[saved-theme="dark"] body[data-slug="index"] a {
-  border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
-}
+[saved-theme="dark"] body[data-slug="index"] {
+  @include excludePopover("a") {
+    border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
+  }
 
-body[data-slug="index"] a[class*="rose"] {
-  color: rgb(215, 130, 126);
-  border-bottom: none;
-}
-
-[saved-theme="dark"] body[data-slug="index"] a[class*="rose"] {
-  color: rgb(235, 188, 186);
-}
-
-body[data-slug="index"] p {
-  font-size: 1.1rem;
+  @include excludePopover('a[class*="rose"]') {
+    color: rgb(235, 188, 186);
+  }
 }
 
 .content-container {
@@ -47,11 +58,11 @@ body[data-slug="index"] p {
   margin: 2rem auto 0 auto;
   position: relative;
 
-  .landing-logo {
+  @include excludePopover(".landing-logo") {
     text-align: center;
   }
 
-  .landing-header {
+  @include excludePopover(".landing-header") {
     font-size: 2rem;
     font-weight: normal;
     line-height: 2rem;
@@ -59,40 +70,41 @@ body[data-slug="index"] p {
     padding-bottom: 1rem;
   }
 
-  .landing-subhead {
+  @include excludePopover(".landing-subhead") {
     padding-top: 1.5rem;
   }
 
-  .landing-job {
+  @include excludePopover(".landing-job") {
     padding-top: 0.5rem;
   }
 
-  & > hr {
+  @include excludePopover("& > hr") {
     margin: 2rem;
     margin-left: auto;
     margin-right: auto;
   }
 
-  .landing-usage {
+  @include excludePopover(".landing-usage") {
     font-size: 1rem;
   }
 }
 
+// Media query styles
 @media (min-width: 768px) {
-  .content-container {
+  @include excludePopover(".content-container") {
     margin-top: 6rem;
     margin-left: 6rem;
   }
 }
 
 @media (min-width: 375px) {
-  .content-container {
+  @include excludePopover(".content-container") {
     width: 60%;
   }
 }
 
 @media (max-width: 320px) {
-  .landing-logo {
+  @include excludePopover(".landing-logo") {
     display: block;
     margin-left: auto;
     margin-right: auto;

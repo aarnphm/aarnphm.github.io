@@ -28,86 +28,93 @@ body {
   font-size: 1.1rem;
 
   // Page specific display overrides
-  &[data-slug="uses"],
-  &[data-slug="dump/quotes"],
-  &[data-slug="curius"],
-  &[data-slug="influence"] {
-    .page {
-      & > #quartz-body {
-        .center nav[class*="breadcrumb"],
-        .center ul[class*="tags"],
-        .sidebar.left,
-        .sidebar.right {
+  @each $slug in ("uses", "dump/quotes", "curius", "influence") {
+    &[data-slug="#{$slug}"] {
+      @include excludePopover(".page") {
+        @include excludePopover("& > #quartz-body") {
+          @include excludePopover("&") {
+            @include excludePopover('.center ul[class*="tags"]') {
+              display: none;
+            }
+            @include excludePopover(".sidebar .left") {
+              display: none;
+            }
+            @include excludePopover(".sidebar .right") {
+              display: none;
+            }
+          }
+        }
+        @include excludePopover('& footer[class$="footer"]') {
+          display: none;
+        }
+
+        @include excludePopover(".center") {
+          width: $pageWidth + $sidePanelWidth;
+
+          .page-header {
+            width: inherit;
+            margin: 6rem 0 0;
+          }
+        }
+      }
+
+      @each $element
+        in (".toc", ".page-title", ".search", ".darkmode", ".graph", ".backlinks", ".recent-notes")
+      {
+        @include excludePopover($element) {
           display: none;
         }
       }
-      & footer[class$="footer"] {
-        display: none;
-      }
-      .center {
-        width: $pageWidth + $sidePanelWidth;
-        .page-header {
-          width: inherit;
-          margin: 6rem 0 0;
-        }
-      }
-    }
-
-    .toc,
-    .page-title,
-    .search,
-    .darkmode,
-    .graph,
-    .backlinks,
-    .recent-notes {
-      display: none;
     }
   }
 
-  // Quote display for dark theme
+  // Quote display
   &[data-slug="dump/quotes"] {
-    & > * {
+    @include excludePopover("& > *") {
       font-size: 1.2rem;
     }
 
-    & h1 {
+    @include excludePopover("& h1") {
       font-size: 2rem;
       font-family: var(--bodyFont) !important;
       font-weight: 500;
     }
 
-    blockquote {
+    @include excludePopover("& blockquote") {
       border-left: none;
       padding-left: 0;
       margin: 0;
     }
 
-    & h3,
-    h4 {
+    @include excludePopover("& h3, & h4") {
       font-size: 1.4rem;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
     }
 
-    article {
-      > hr::after {
+    @include excludePopover("& article") {
+      & > hr::after {
         content: "";
       }
-      > p {
+
+      & > p {
         padding-top: 1rem;
         padding-left: 3rem;
         margin: inherit;
+
         &:before,
         &:after {
           font-size: 2em;
           line-height: 0.1em;
           vertical-align: -0.4em;
         }
+
         &:before {
           content: "“";
           margin-right: 0.25em;
         }
+
         &:after {
           content: "”";
           margin-left: 0.25em;

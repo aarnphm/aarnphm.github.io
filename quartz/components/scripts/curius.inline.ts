@@ -86,11 +86,6 @@ async function fetchLinks(): Promise<Response> {
   return res
 }
 
-const slugToCleanUp = ["uses", "dump/quotes", "curius", "influence"]
-function getElementBySlug(slug: string) {
-  return document.querySelector(`body[data-slug="\${slug}"]`)
-}
-
 let prevShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
@@ -100,16 +95,6 @@ const extractApexDomain = (url: string) => {
 }
 
 document.addEventListener("nav", async (e) => {
-  slugToCleanUp.forEach((slug) => {
-    if (getElementBySlug(slug)) {
-      document
-        .querySelector("#quartz-root")
-        ?.querySelectorAll(".sidebar")
-        .forEach((el) => el.remove())
-      document.querySelector("#quartz-root")?.querySelector(".minimal-footer")?.remove()
-    }
-  })
-
   const curius = document.getElementById("curius")
   const container = document.getElementById("curius-container")
   const description = document.getElementById("curius-description")

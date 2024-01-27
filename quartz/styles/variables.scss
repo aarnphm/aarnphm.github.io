@@ -4,3 +4,9 @@ $tabletBreakpoint: 1200px;
 $sidePanelWidth: 380px;
 $topSpacing: 6rem;
 $fullPageWidth: $pageWidth + 2 * $sidePanelWidth;
+
+@mixin excludePopover($selector) {
+  #{$selector}:not(.popover, .popover *) {
+    @content;
+  }
+}
