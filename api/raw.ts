@@ -23,7 +23,7 @@ export default async function handler(req: VercelRequest, resp: VercelResponse) 
       })
 
     resp.setHeader("Content-Type", "text/plain")
-    resp.status(200).send({ content: data })
+    resp.status(200).send(data)
   } catch (e: any) {
     resp.status(500).send({ error: e.message })
   }
