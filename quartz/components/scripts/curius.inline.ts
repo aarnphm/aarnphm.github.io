@@ -145,9 +145,10 @@ document.addEventListener("nav", async (e) => {
     misc.id = `curius-misc-${curiusLink.id}`
     const itemTime = document.createElement("span")
     itemTime.id = `curius-span-${curiusLink.id}`
-    itemTime.innerHTML = `<time datetime=${curiusLink.modifiedDate} title=${new Date(
-      curiusLink.modifiedDate,
-    ).toString()}>${timeSince(curiusLink.createdDate)}</time>`
+    const modifiedDate = new Date(curiusLink.modifiedDate)
+    itemTime.innerHTML = `<time datetime=${
+      curiusLink.modifiedDate
+    } title="${modifiedDate.toUTCString()}">${timeSince(curiusLink.createdDate)}</time>`
     misc.appendChild(itemTime)
 
     if (curiusLink.highlights.length > 0) {
