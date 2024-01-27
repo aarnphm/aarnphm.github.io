@@ -108,6 +108,12 @@ document.addEventListener("nav", async (e) => {
   const linkToHTML = (curiusLink: Link) => {
     const curiusItem = document.createElement("li")
     curiusItem.id = `curius-item-${curiusLink.id}`
+    curiusItem.addEventListener("mouseenter", (e) => {
+      e.target.style.backgroundColor = "var(--lightgray)"
+    })
+    curiusItem.addEventListener("mouseleave", (e) => {
+      e.target.style.backgroundColor = ""
+    })
 
     // create title: itemHeader - links
     const itemTitle = document.createElement("div")

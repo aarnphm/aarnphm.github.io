@@ -1,11 +1,5 @@
 @use "../../styles/variables.scss" as *;
 
-body[data-slug="curius"] {
-  .page .center {
-    width: $pageWidth + $sidePanelWidth;
-  }
-}
-
 @keyframes dots {
   0%,
   20% {

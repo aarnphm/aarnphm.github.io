@@ -34,6 +34,8 @@ function filterFunc(path: string, excludePaths: string[] = []) {
 export const defaultContentPageLayout: PageLayout = {
   beforeBody: [Component.ArticleTitle(), Component.TagList()],
   left: [
+    Component.MobileOnly(Component.PageTitle()),
+    Component.MobileOnly(Component.Spacer()),
     Component.Search(),
     Component.Darkmode(),
     Component.DesktopOnly(
@@ -54,10 +56,12 @@ export const defaultContentPageLayout: PageLayout = {
     ),
   ],
   right: [
-    Component.Graph({
-      globalGraph: { linkDistance: 50 },
-      localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
-    }),
+    Component.DesktopOnly(
+      Component.Graph({
+        globalGraph: { linkDistance: 50 },
+        localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
+      }),
+    ),
     Component.Backlinks(),
     Component.DesktopOnly(Component.TableOfContents()),
   ],
@@ -67,6 +71,7 @@ export const defaultContentPageLayout: PageLayout = {
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [Component.ArticleTitle()],
   left: [
+    Component.MobileOnly(Component.PageTitle()),
     Component.MobileOnly(Component.Spacer()),
     Component.Search(),
     Component.Darkmode(),

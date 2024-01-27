@@ -49,8 +49,6 @@ body {
         }
 
         @include excludePopover(".center") {
-          width: $pageWidth + $sidePanelWidth;
-
           .page-header {
             width: inherit;
             margin: 6rem 0 0;
