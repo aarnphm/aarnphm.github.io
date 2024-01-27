@@ -32,7 +32,7 @@ function filterFunc(path: string, excludePaths: string[] = []) {
 
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
-  beforeBody: [Component.ArticleTitle(), Component.TagList()],
+  beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],
   left: [
     Component.MobileOnly(Component.PageTitle()),
     Component.MobileOnly(Component.Spacer()),

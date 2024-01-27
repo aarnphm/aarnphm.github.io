@@ -56,5 +56,5 @@ used for [[dump/Dishes|hosting]]
 
 
 <div class="navigation-container">
-  <p>You might be interested in <a href="/books" class="">this</a></p>
+  <p>You might be interested in <a href="/books" class="">this</a> or <a href="/dump" class="">that</a></p>
 </div>

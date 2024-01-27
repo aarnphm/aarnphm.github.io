@@ -64,7 +64,16 @@ body {
       }
 
       @each $element
-        in (".toc", ".page-title", ".search", ".darkmode", ".graph", ".backlinks", ".recent-notes")
+        in (
+          ".toc",
+          ".page-title",
+          ".search",
+          ".darkmode",
+          ".graph",
+          ".backlinks",
+          ".recent-notes",
+          ".content-meta"
+        )
       {
         @include excludeId($element) {
           display: none;

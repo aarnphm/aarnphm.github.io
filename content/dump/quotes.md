@@ -22,5 +22,5 @@ Life can be much broader when you discover one simple fact...that everything aro
 I just wondered how things were put together. -- Claude Shannon
 
 <div class="navigation-container">
-  <p>You might be interested in <a href="/dump/Chaos" class="">this</a> or <a href="/dump" class="">that</a></p>
+  <p>You might be interested in <a href="/dump/Chaos" class="">this</a> or <a href="/books" class="">that</a></p>
 </div>
