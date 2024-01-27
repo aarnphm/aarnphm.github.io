@@ -1,5 +1,5 @@
 ---
-id: Defining Internal Alignment & Job Analysis
+id: Defining Internal Alignment and Job Analysis
 tags:
   - commerce4be3
 date: "2024-01-24"
