@@ -16,12 +16,19 @@ import { PhrasingContent } from "mdast-util-find-and-replace/lib"
 import { capitalize } from "../../util/lang"
 import { PluggableList } from "unified"
 
+export interface RawFileOptions {
+  enable: boolean
+  hostUrl?: string
+  extensions: string[]
+}
+
 export interface Options {
   comments: boolean
   highlight: boolean
   wikilinks: boolean
   callouts: boolean
   mermaid: boolean
+  rawFiles: RawFileOptions
   parseTags: boolean
   parseArrows: boolean
   parseBlockReferences: boolean
@@ -36,6 +43,7 @@ const defaultOptions: Options = {
   wikilinks: true,
   callouts: true,
   mermaid: true,
+  rawFiles: { enable: false, extensions: [] },
   parseTags: true,
   parseArrows: true,
   parseBlockReferences: true,
@@ -269,6 +277,19 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
 
                 // internal link
                 const url = fp + anchor
+
+                if (
+                  opts.rawFiles.enable &&
+                  opts.rawFiles.extensions.includes(path.extname(fp).toLowerCase())
+                ) {
+                  const baseUrl = opts.rawFiles.hostUrl ?? "https://raw.githubusercontent.com/"
+                  return {
+                    type: "link",
+                    url: `${baseUrl}${url}`,
+                    children: [{ type: "text", value: alias ?? fp }],
+                  }
+                }
+
                 return {
                   type: "link",
                   url,

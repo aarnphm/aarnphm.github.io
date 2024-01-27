@@ -49,7 +49,14 @@ const config: QuartzConfig = {
       Plugin.CreatedModifiedDate({ priority: ["frontmatter", "filesystem"] }),
       Plugin.Latex({ renderEngine: "katex" }),
       Plugin.SyntaxHighlighting(),
-      Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
+      Plugin.ObsidianFlavoredMarkdown({
+        enableInHtmlEmbed: false,
+        rawFiles: {
+          enable: true,
+          extensions: [".py", ".m", ".go", ".c", ".java"],
+          hostUrl: "https://endpoints.aarnphm.xyz/api/raw?slug=",
+        },
+      }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.CrawlLinks({ markdownLinkResolution: "absolute", externalLinkIcon: false }),
       Plugin.Description(),

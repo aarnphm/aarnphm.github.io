@@ -6,7 +6,7 @@ export default async function handler(req: VercelRequest, resp: VercelResponse) 
   const protocol = req.headers["x-forwarded-proto"] || "http"
   const host = req.headers["x-forwarded-host"] || req.headers.host
   const baseUrl = `${protocol}://${host}`
-  const { path: slug } = req.query
+  const { slug: slug } = req.query
   try {
     if (typeof slug !== "string") {
       resp.status(400).send({ error: "given query is not a string" })
