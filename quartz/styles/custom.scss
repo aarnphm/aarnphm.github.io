@@ -138,6 +138,16 @@ body {
   }
 }
 
+// set all img to use fade-in animation
+img {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+img.visible {
+  opacity: 1;
+}
+
 hr {
   overflow: visible;
   padding: 0;
@@ -222,6 +232,10 @@ audio::-webkit-media-controls-panel {
     transition: none;
     border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
     border-radius: 0;
+
+    [saved-theme="dark"] & {
+      border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
+    }
 
     &:hover > .popover {
       display: none;

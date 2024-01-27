@@ -1,10 +1,5 @@
 const timeout = 500
 
-const filterPage = (slug: string): boolean => {
-  const dataSlug = document.querySelector("body")?.getAttribute("data-slug")
-  return !dataSlug?.startsWith(slug)
-}
-
 document.addEventListener("nav", () => {
   const progress = document.getElementById("progress")
   let hideTimeout: ReturnType<typeof setTimeout>
@@ -20,19 +15,30 @@ document.addEventListener("nav", () => {
     hideTimeout = setTimeout(hide, timeout)
   }
 
-  if (filterPage("tags")) show()
+  show()
 
   window.addEventListener("scroll", () => {
     if (!progress) return
-    if (filterPage("tags")) {
-      show()
-      const totalHeight =
-        document.documentElement.scrollHeight - document.documentElement.clientHeight
-      const scrollPosition = window.scrollY
-      const width = (scrollPosition / totalHeight) * 100
-      progress.style.width = width + "%"
-    }
+    show()
+    const totalHeight =
+      document.documentElement.scrollHeight - document.documentElement.clientHeight
+    const scrollPosition = window.scrollY
+    const width = (scrollPosition / totalHeight) * 100
+    progress.style.width = width + "%"
   })
 
-  if (filterPage("tags")) hideTimeout = setTimeout(hide, timeout)
+  hideTimeout = setTimeout(hide, timeout)
+})
+
+document.addEventListener("nav", () => {
+  const img = document.querySelectorAll("img")
+  const windowHeight = window.innerHeight / 1.5
+  const checkImgPosition = () => {
+    img.forEach((el) => {
+      const position = el.getBoundingClientRect().top
+      position - windowHeight <= 0 ? el.classList.add("visible") : el.classList.remove("visible")
+    })
+  }
+  window.addEventListener("scroll", checkImgPosition)
+  checkImgPosition()
 })

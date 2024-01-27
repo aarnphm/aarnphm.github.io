@@ -101,6 +101,10 @@
       display: inline;
       cursor: pointer;
 
+      [saved-theme="dark"] & {
+        background-color: var(--highlight);
+      }
+
       & > a {
         color: inherit;
         text-decoration: none;
