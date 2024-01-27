@@ -1,5 +1,4 @@
 import { pluralize } from "../../util/lang"
-import { joinSegments } from "../../util/path"
 import { removeAllChildren } from "./util"
 
 interface Highlight {
@@ -136,7 +135,10 @@ document.addEventListener("nav", async (e) => {
       curiusLink.topics.length > 0
         ? `${curiusLink.topics
             .map(
-              (topic) => `<ul><a href=${joinSegments(CURIUS, topic.slug)}>${topic.topic}</a></ul>`,
+              (topic) =>
+                `<ul><a href=${[CURIUS, topic.slug].join("/")} target="_blank">${
+                  topic.topic
+                }</a></ul>`,
             )
             .join("")}`
         : ``
