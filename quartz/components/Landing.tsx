@@ -31,6 +31,7 @@ export const HyperAlias = {
 export const SocialAlias = {
   github: "https://github.com/aarnphm",
   twitter: "https://x.com/aarnphm_",
+  curius: "/curius",
 }
 export const KeybindAlias = {
   "cmd+k": "search",
@@ -42,46 +43,24 @@ export const KeybindAlias = {
 type AliasLinkProp = {
   name: string
   url: string
-  isFinal: boolean
-  newTab?: boolean
   isInternal?: boolean
+  newTab?: boolean
 }
 
-const AliasLink = ({ name, url, isFinal, newTab, isInternal = false }: AliasLinkProp) => {
+const AliasLink = (props: AliasLinkProp) => {
+  const opts = { isInternal: false, newTab: false, ...props }
   const className = ["landing-links"]
-  if (isInternal) className.push("internal")
+  if (opts.isInternal) className.push("internal")
   return (
-    <>
-      <a href={url} target={newTab ? "_blank" : "_self"} className={className.join(" ")}>
-        {name}
+    <li>
+      <a href={opts.url} target={opts.newTab ? "_blank" : "_self"} className={className.join(" ")}>
+        {opts.name}
       </a>
-      {!isFinal && " · "}
-    </>
+    </li>
   )
 }
 
-type SectionLinksProp = {
-  sectionData: { [key: string]: string }
-  newTab?: boolean
-  isInternal?: boolean
-}
-
-const SectionLinks = ({ sectionData, newTab = false, isInternal = false }: SectionLinksProp) => (
-  <>
-    {Object.entries(sectionData).map(([key, value], index, array) => (
-      <AliasLink
-        key={key}
-        name={key}
-        url={value}
-        isFinal={index === array.length - 1}
-        newTab={newTab}
-        isInternal={isInternal}
-      />
-    ))}
-  </>
-)
-
-const Search = ({ displayClass }: { displayClass?: string }) => (
+const Search = () => (
   <div class="search">
     <div id="search-container">
       <div id="search-space">
@@ -102,7 +81,7 @@ const Search = ({ displayClass }: { displayClass?: string }) => (
   </div>
 )
 
-const Graph = ({ displayClass }: { displayClass?: string }) => (
+const Graph = () => (
   <div class="graph">
     <div id="global-graph-icon"></div>
     <div id="global-graph-outer">
@@ -111,7 +90,7 @@ const Graph = ({ displayClass }: { displayClass?: string }) => (
   </div>
 )
 
-const DarkMode = ({ displayClass }: { displayClass?: string }) => (
+const DarkMode = () => (
   <div class="darkmode">
     <input class="toggle" id="darkmode-toggle" type="checkbox" tabIndex={-1} />
   </div>
@@ -148,13 +127,22 @@ const Content = () => (
       </a>{" "}
       and explore our interaction with large language models.
     </p>
+    <hr />
     <p class="landing-subhead">
-      <em>garden</em>: <SectionLinks sectionData={HyperAlias} isInternal />
+      <h3>garden:</h3>
+      <ul>
+        {Object.entries(HyperAlias).map(([name, url], index, array) => (
+          <AliasLink key={name} name={name} url={url} isInternal />
+        ))}
+      </ul>
     </p>
     <p>
-      <em>socials</em>: <SectionLinks sectionData={SocialAlias} newTab />
-      {" · "}
-      <AliasLink name="curius" url="/curius" isFinal />
+      <h3>socials:</h3>
+      <ul>
+        {Object.entries(SocialAlias).map(([name, url], index, array) => (
+          <AliasLink key={name} name={name} url={url} newTab={name !== "curius"} />
+        ))}
+      </ul>
     </p>
     <hr />
     <p class="landing-usage">
@@ -177,9 +165,9 @@ export default (() => {
     return (
       <div class="popover-hint">
         <div class="landing">
-          <Search displayClass={displayClass} />
-          <Graph displayClass={displayClass} />
-          <DarkMode displayClass={displayClass} />
+          <Search />
+          <Graph />
+          <DarkMode />
           <Content />
         </div>
       </div>

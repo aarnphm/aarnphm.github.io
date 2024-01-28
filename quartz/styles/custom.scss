@@ -32,7 +32,10 @@
 
 body {
   position: relative;
-  font-size: 1.1rem;
+
+  @media all and (min-width: $tabletBreakpoint) {
+    font-size: 1.1rem;
+  }
 
   // Page specific display overrides
   @each $slug in ("uses", "dump/quotes", "curius", "influence") {
@@ -100,7 +103,7 @@ body {
       margin: 0;
     }
 
-    @include excludeId("& h3, & h4") {
+    @include excludeId("& h3", "& h4") {
       font-size: 1.4rem;
       font-style: normal;
       font-weight: 400;

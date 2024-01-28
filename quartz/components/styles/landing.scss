@@ -4,8 +4,11 @@
 @mixin bodyIndexStyles {
   cursor: crosshair;
 
-  @include excludeId("& > *, h1") {
+  @include excludeId("& > *", "h1", "h2", "h3", "h4") {
     font-family: var(--bodyFont);
+  }
+  @include excludeId("h3") {
+    font-weight: normal;
   }
 
   @include excludeId("a") {
@@ -14,6 +17,7 @@
     font-weight: inherit;
     transition: none;
     border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
+    border-radius: 0;
   }
 
   @include excludeId(".darkmode") {
@@ -62,27 +66,44 @@ body[data-slug="index"] {
     text-align: center;
   }
 
-  & li::marker {
-    content: " · ";
+  @include excludeId("hr") {
+    width: 100%;
+    &:after {
+      content: none;
+    }
   }
 
-  & > ul.keybinds {
+  @include excludeId("& ul", "& ul.keybinds") {
     display: flex;
     list-style: none;
     margin: 0;
     padding: 0;
     flex-direction: row;
     gap: 1rem;
-    margin-top: -1rem;
+    margin-top: 1rem;
+  }
+
+  @media all and (max-width: $pageWidth) {
+    @include excludeId("& ul", "& ul.keybinds") {
+      list-style: inherit;
+      flex-direction: column;
+      margin-top: 1rem;
+      padding-inline-start: 10px;
+      & li::marker {
+        content: none;
+      }
+    }
+  }
+
+  @include excludeId("& > ul.keybinds") {
+    margin-top: 2.5rem;
     font-family: var(--codeFont);
     color: rgb(119, 119, 119);
     font-size: 10px;
     cursor: pointer;
 
-    @media all and (max-width: $mobileBreakpoint) {
-      list-style: inherit;
-      flex-direction: column;
-      padding-inline-start: 20px;
+    & li::marker {
+      content: " · ";
     }
 
     & > a {
@@ -106,7 +127,7 @@ body[data-slug="index"] {
   }
 
   @include excludeId(".landing-subhead") {
-    padding-top: 1.5rem;
+    padding-top: -0.5rem;
   }
 
   @include excludeId(".landing-job") {
@@ -125,20 +146,14 @@ body[data-slug="index"] {
 }
 
 // Media query styles
-@media (min-width: 768px) {
+@media all and (min-width: 320px) {
   @include excludeId(".content-container") {
-    margin-top: 6rem;
-    margin-left: 6rem;
+    margin: 4rem auto 1.5rem;
+    width: 70%;
   }
 }
 
-@media (min-width: 375px) {
-  @include excludeId(".content-container") {
-    width: 60%;
-  }
-}
-
-@media (max-width: 320px) {
+@media all and (max-width: 320px) {
   @include excludeId(".landing-logo") {
     display: block;
     margin-left: auto;
