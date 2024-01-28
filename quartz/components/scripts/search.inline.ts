@@ -1,4 +1,4 @@
-import { Document, SimpleDocumentSearchResultSetUnit } from "flexsearch"
+import FlexSearch from "flexsearch"
 import { ContentDetails } from "../../plugins/emitters/contentIndex"
 import { registerEscapeHandler, removeAllChildren } from "./util"
 import { FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
@@ -11,7 +11,7 @@ interface Item {
   tags: string[]
 }
 
-let index: Document<Item> | undefined = undefined
+let index: FlexSearch.Document<Item> | undefined = undefined
 
 // Can be expanded with things like "term" in the future
 type SearchType = "basic" | "tags"
@@ -296,7 +296,7 @@ document.addEventListener("nav", async (e: unknown) => {
 
   async function onType(e: HTMLElementEventMap["input"]) {
     let term = (e.target as HTMLInputElement).value
-    let searchResults: SimpleDocumentSearchResultSetUnit[]
+    let searchResults: FlexSearch.SimpleDocumentSearchResultSetUnit[]
 
     if (term.toLowerCase().startsWith("#")) {
       searchType = "tags"
@@ -351,24 +351,23 @@ document.addEventListener("nav", async (e: unknown) => {
 
   // setup index if it hasn't been already
   if (!index) {
-    index = new Document({
+    index = new FlexSearch.Document({
       charset: "latin:extra",
-      optimize: true,
       encode: encoder,
       document: {
         id: "id",
         index: [
           {
             field: "title",
-            tokenize: "reverse",
+            tokenize: "forward",
           },
           {
             field: "content",
-            tokenize: "reverse",
+            tokenize: "forward",
           },
           {
             field: "tags",
-            tokenize: "reverse",
+            tokenize: "forward",
           },
         ],
       },
@@ -386,7 +385,7 @@ document.addEventListener("nav", async (e: unknown) => {
  * @param index index to fill
  * @param data data to fill index with
  */
-async function fillDocument(index: Document<Item, false>, data: any) {
+async function fillDocument(index: FlexSearch.Document<Item, false>, data: any) {
   let id = 0
   for (const [slug, fileData] of Object.entries<ContentDetails>(data)) {
     await index.addAsync(id, {
