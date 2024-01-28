@@ -221,9 +221,14 @@ audio::-webkit-media-controls-panel {
 }
 
 .mobile-only.explorer {
+  ul.overflow {
+    &:after {
+      background: none;
+    }
+  }
+
   #explorer-content:not(.collapsed) {
     width: 100%;
-    background-color: var(--light);
     height: inherit;
     position: absolute;
     z-index: 100;
@@ -234,7 +239,6 @@ audio::-webkit-media-controls-panel {
   #explorer-content.collapsed {
     left: 0;
     width: 0;
-    background-color: var(--light);
     height: inherit;
     position: absolute;
     z-index: 100;
