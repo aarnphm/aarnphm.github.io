@@ -16,12 +16,6 @@ import { PhrasingContent } from "mdast-util-find-and-replace/lib"
 import { capitalize } from "../../util/lang"
 import { PluggableList } from "unified"
 
-export interface RawFileOptions {
-  enable: boolean
-  cdn: string
-  extensions?: string[]
-}
-
 export interface Options {
   comments: boolean
   highlight: boolean
@@ -34,7 +28,6 @@ export interface Options {
   enableInHtmlEmbed: boolean
   enableYouTubeEmbed: boolean
   enableVideoEmbed: boolean
-  enableRawEmbed: RawFileOptions
 }
 
 const defaultOptions: Options = {
@@ -49,7 +42,6 @@ const defaultOptions: Options = {
   enableInHtmlEmbed: false,
   enableYouTubeEmbed: true,
   enableVideoEmbed: true,
-  enableRawEmbed: { enable: false, cdn: "", extensions: [] },
 }
 
 const icons = {
@@ -260,18 +252,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
                     return {
                       type: "html",
                       value: `<iframe src="${url}"></iframe>`,
-                    }
-                  } else if (opts.enableRawEmbed.enable) {
-                    const constructUrl = (cdn: string, fp: string) =>
-                      cdn.endsWith("/") ? cdn + fp : [cdn, fp].join("/")
-
-                    const extensions = opts.enableRawEmbed.extensions ?? []
-                    if (extensions.includes(ext)) {
-                      return {
-                        type: "link",
-                        url: constructUrl(opts.enableRawEmbed.cdn, url),
-                        children: [{ type: "text", value: alias ?? fp }],
-                      }
                     }
                   } else {
                     const block = anchor

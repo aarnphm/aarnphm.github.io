@@ -14,6 +14,12 @@ import { visit } from "unist-util-visit"
 import isAbsoluteUrl from "is-absolute-url"
 import { Root } from "hast"
 
+interface RawFileOptions {
+  enable: boolean
+  cdn: string
+  extensions?: string[]
+}
+
 interface Options {
   /** How to resolve Markdown paths */
   markdownLinkResolution: TransformOptions["strategy"]
@@ -22,6 +28,7 @@ interface Options {
   openLinksInNewTab: boolean
   lazyLoad: boolean
   externalLinkIcon: boolean
+  enableRawEmbed: RawFileOptions
 }
 
 const defaultOptions: Options = {
@@ -30,6 +37,7 @@ const defaultOptions: Options = {
   openLinksInNewTab: false,
   lazyLoad: false,
   externalLinkIcon: true,
+  enableRawEmbed: { enable: false, cdn: "", extensions: [] },
 }
 
 export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> = (userOpts) => {
@@ -56,9 +64,26 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> =
                 typeof node.properties.href === "string"
               ) {
                 let dest = node.properties.href as RelativeURL
+                const ext: string = path.extname(dest).toLowerCase()
                 const classes = (node.properties.className ?? []) as string[]
-                const isExternal = isAbsoluteUrl(dest)
+                const isExternal =
+                  opts.enableRawEmbed.enable && opts.enableRawEmbed.extensions?.includes(ext)
+                    ? true
+                    : isAbsoluteUrl(dest)
                 classes.push(isExternal ? "external" : "internal")
+
+                // We will need to translate the link to external here
+                if (isExternal && opts.enableRawEmbed.enable) {
+                  const extensions = opts.enableRawEmbed.extensions ?? []
+                  const constructUrl = (cdn: string, fp: string) =>
+                    cdn.endsWith("/") ? cdn + fp : [cdn, fp].join("/")
+                  if (extensions.includes(ext)) {
+                    dest = node.properties.href = constructUrl(
+                      opts.enableRawEmbed.cdn,
+                      dest,
+                    ) as RelativeURL
+                  }
+                }
 
                 if (isExternal && opts.externalLinkIcon) {
                   node.children.push({
