@@ -36,7 +36,7 @@ export const defaultContentPageLayout: PageLayout = {
   left: [
     Component.MobileOnly(Component.PageTitle()),
     Component.MobileOnly(Component.Spacer()),
-    Component.Search(),
+    Component.Search({ enablePreview: true }),
     Component.Darkmode(),
     Component.DesktopOnly(
       Component.RecentNotes({
@@ -73,7 +73,7 @@ export const defaultListPageLayout: PageLayout = {
   left: [
     Component.MobileOnly(Component.PageTitle()),
     Component.MobileOnly(Component.Spacer()),
-    Component.Search(),
+    Component.Search({ enablePreview: true }),
     Component.Darkmode(),
     Component.DesktopOnly(
       Component.Explorer({
