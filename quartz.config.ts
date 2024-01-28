@@ -51,10 +51,10 @@ const config: QuartzConfig = {
       Plugin.SyntaxHighlighting(),
       Plugin.ObsidianFlavoredMarkdown({
         enableInHtmlEmbed: false,
-        rawFiles: {
+        enableRawEmbed: {
           enable: true,
           extensions: [".py", ".m", ".go", ".c", ".java"],
-          hostUrl: "https://raw.aarnphm.xyz/",
+          cdn: "https://raw.aarnphm.xyz/",
         },
       }),
       Plugin.GitHubFlavoredMarkdown(),

@@ -18,8 +18,8 @@ import { PluggableList } from "unified"
 
 export interface RawFileOptions {
   enable: boolean
-  hostUrl?: string
-  extensions: string[]
+  cdn: string
+  extensions?: string[]
 }
 
 export interface Options {
@@ -28,13 +28,13 @@ export interface Options {
   wikilinks: boolean
   callouts: boolean
   mermaid: boolean
-  rawFiles: RawFileOptions
   parseTags: boolean
   parseArrows: boolean
   parseBlockReferences: boolean
   enableInHtmlEmbed: boolean
   enableYouTubeEmbed: boolean
   enableVideoEmbed: boolean
+  enableRawEmbed: RawFileOptions
 }
 
 const defaultOptions: Options = {
@@ -43,13 +43,13 @@ const defaultOptions: Options = {
   wikilinks: true,
   callouts: true,
   mermaid: true,
-  rawFiles: { enable: false, extensions: [] },
   parseTags: true,
   parseArrows: true,
   parseBlockReferences: true,
   enableInHtmlEmbed: false,
   enableYouTubeEmbed: true,
   enableVideoEmbed: true,
+  enableRawEmbed: { enable: false, cdn: "", extensions: [] },
 }
 
 const icons = {
@@ -261,6 +261,18 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
                       type: "html",
                       value: `<iframe src="${url}"></iframe>`,
                     }
+                  } else if (opts.enableRawEmbed.enable) {
+                    const constructUrl = (cdn: string, fp: string) =>
+                      cdn.endsWith("/") ? cdn + fp : [cdn, fp].join("/")
+
+                    const extensions = opts.enableRawEmbed.extensions ?? []
+                    if (extensions.includes(ext)) {
+                      return {
+                        type: "link",
+                        url: constructUrl(opts.enableRawEmbed.cdn, url),
+                        children: [{ type: "text", value: alias ?? fp }],
+                      }
+                    }
                   } else {
                     const block = anchor
                     return {
@@ -277,18 +289,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
 
                 // internal link
                 const url = fp + anchor
-
-                if (
-                  opts.rawFiles.enable &&
-                  opts.rawFiles.extensions.includes(path.extname(fp).toLowerCase())
-                ) {
-                  const baseUrl = opts.rawFiles.hostUrl ?? "https://raw.githubusercontent.com/"
-                  return {
-                    type: "link",
-                    url: `${baseUrl}${url}`,
-                    children: [{ type: "text", value: alias ?? fp }],
-                  }
-                }
 
                 return {
                   type: "link",
