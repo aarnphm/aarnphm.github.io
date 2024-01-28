@@ -36,6 +36,7 @@ export const KeybindAlias = {
   "cmd+k": "search",
   "cmd+g": "graph",
   "cmd+a": "toggle dark mode",
+  "cmd+/": "homepage",
 }
 
 type AliasLinkProp = {
@@ -81,7 +82,7 @@ const SectionLinks = ({ sectionData, newTab = false, isInternal = false }: Secti
 )
 
 const Search = ({ displayClass }: { displayClass?: string }) => (
-  <div class={`search ${displayClass ?? ""}`}>
+  <div class="search">
     <div id="search-container">
       <div id="search-space">
         <input
@@ -102,7 +103,7 @@ const Search = ({ displayClass }: { displayClass?: string }) => (
 )
 
 const Graph = ({ displayClass }: { displayClass?: string }) => (
-  <div class={`graph ${displayClass ?? ""}`}>
+  <div class="graph">
     <div id="global-graph-icon"></div>
     <div id="global-graph-outer">
       <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)}></div>
@@ -111,7 +112,7 @@ const Graph = ({ displayClass }: { displayClass?: string }) => (
 )
 
 const DarkMode = ({ displayClass }: { displayClass?: string }) => (
-  <div class={`darkmode ${displayClass ?? ""}`}>
+  <div class="darkmode">
     <input class="toggle" id="darkmode-toggle" type="checkbox" tabIndex={-1} />
   </div>
 )
@@ -157,13 +158,16 @@ const Content = () => (
     </p>
     <hr />
     <p class="landing-usage">
-      🖥️
-      {" · "}
-      {Object.entries(KeybindAlias).map(([key, value], index, array) => (
-        <>
-          <em>{key}</em> for {value} {index !== array.length - 1 && " · "}
-        </>
-      ))}
+      <ul class="keybinds">
+        {Object.entries(KeybindAlias).map(([key, value], index, array) => (
+          <li>
+            <a id="landing-keybind" data={key.replaceAll("+", "--")}>
+              {key}
+            </a>
+            : {value}
+          </li>
+        ))}
+      </ul>
     </p>
   </div>
 )

@@ -7,9 +7,6 @@ function NotFound(componentData: QuartzComponentProps) {
   return (
     <div id="not-found">
       <article class="popover-hint">
-        <a href="/" target="_self">
-          <img src="/blob.png" />
-        </a>
         <div id="typewritter"></div>
       </article>
     </div>

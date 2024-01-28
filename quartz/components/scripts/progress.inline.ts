@@ -1,5 +1,7 @@
 const timeout = 500
 
+let prevShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
+
 document.addEventListener("nav", () => {
   const progress = document.getElementById("progress")
   let hideTimeout: ReturnType<typeof setTimeout>
@@ -41,4 +43,21 @@ document.addEventListener("nav", () => {
   }
   window.addEventListener("scroll", checkImgPosition)
   checkImgPosition()
+})
+
+// keybind shortcut
+document.addEventListener("nav", () => {
+  function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
+    if (e.key === "/" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+      window.location.pathname = "/"
+    }
+  }
+
+  if (prevShortcutHandler) {
+    document.removeEventListener("keydown", prevShortcutHandler)
+  }
+
+  document.addEventListener("keydown", shortcutHandler)
+  prevShortcutHandler = shortcutHandler
 })

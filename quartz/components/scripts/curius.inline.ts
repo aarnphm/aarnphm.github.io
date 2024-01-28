@@ -86,8 +86,6 @@ async function fetchLinks(): Promise<Response> {
   return res
 }
 
-let prevShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
-
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
 const extractApexDomain = (url: string) => {
   const match = url.match(externalLinkRegex)
@@ -171,52 +169,23 @@ document.addEventListener("nav", async (e) => {
     return curiusItem
   }
 
-  function displayLinks(finalLinks: Response) {
-    if (!container) return
-    if (finalLinks.userSaved.length === 0) {
-      container.innerHTML = `<p>Failed to fetch links.</p>`
-      return
-    }
-
-    const fragment = document.createDocumentFragment()
-    finalLinks.userSaved.forEach((link) => {
-      fragment.appendChild(linkToHTML(link))
-    })
-    container.append(fragment)
+  const item = document.createElement("p")
+  item.innerHTML = `${links.userSaved.length} of <a href="${CURIUS}" target="_blank"><em>curius.app/aaron-pham</em></a>`
+  description.appendChild(item)
+  if (links.userSaved.length === 0) {
+    container.innerHTML = `<p>Failed to fetch links.</p>`
+    return
   }
 
-  function displayDescription() {
-    if (!description) return
-    const item = document.createElement("p")
-    item.innerHTML = `${links.userSaved.length} of <a href="${CURIUS}" target="_blank"><em>curius.app/aaron-pham</em></a>`
-    description.appendChild(item)
-    return description
-  }
-
-  function navigationHandler() {
-    const navigation = document.createElement("div")
-    navigation.classList.add("navigation-container")
-    const navigationText = document.createElement("p")
-    navigationText.innerHTML = `You might be interested in <a href="/dump/quotes">this</a> or <a href="/">that</a>`
-    navigation.appendChild(navigationText)
-
-    function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-      if (e.key === "e" && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault()
-        window.location.pathname = "/"
-      }
-    }
-
-    if (prevShortcutHandler) {
-      document.removeEventListener("keydown", prevShortcutHandler)
-    }
-
-    document.addEventListener("keydown", shortcutHandler)
-    prevShortcutHandler = shortcutHandler
-    return navigation
-  }
-
-  displayDescription()
-  displayLinks(links)
-  curius.appendChild(navigationHandler())
+  const fragment = document.createDocumentFragment()
+  links.userSaved.forEach((link) => {
+    fragment.appendChild(linkToHTML(link))
+  })
+  container.append(fragment)
+  const navigation = document.createElement("div")
+  navigation.classList.add("navigation-container")
+  const navigationText = document.createElement("p")
+  navigationText.innerHTML = `You might be interested in <a href="/dump/quotes">this</a> or <a href="/">that</a>`
+  navigation.appendChild(navigationText)
+  curius.append(navigation)
 })

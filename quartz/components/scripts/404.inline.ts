@@ -45,9 +45,4 @@ document.addEventListener("nav", () => {
   if (!typewritter) return
   typewritter.classList.add("typing")
   startTypingEffect(typewritter, phases)
-
-  var searchBox = document.querySelector(".search")
-  if (searchBox) {
-    searchBox.style.display = "none"
-  }
 })
