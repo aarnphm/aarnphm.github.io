@@ -39,8 +39,41 @@ interface Link {
   userIds?: number[]
 }
 
+interface User {
+  id: number
+  firstName: string
+  lastName: string
+  major?: string
+  interests?: string
+  expertise?: string
+  school: string
+  github?: string
+  twitter: string
+  website: string
+  createdDate: string
+  modifiedDate: string
+  lastOnline: string
+  lastCheckedNotifications: string
+  views: number
+  numFollowers: number
+  followed?: boolean
+  followingMe?: boolean
+  recentUsers: any[]
+  followingUsers: Following[]
+}
+
+interface Following {
+  id: number
+  firstName: string
+  lastName: string
+  userLink: string
+  lastOnline: string
+}
+
 interface Response {
-  userSaved: Link[]
+  links?: Link[]
+  user?: User
+  lastFetched: string
 }
 
 const CURIUS = "https://curius.app/aaron-pham"
@@ -70,20 +103,68 @@ const timeSince = (date: Date | string) => {
   }
 }
 
+const fetchLinksHeaders: RequestInit = {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+}
+
+const localFetchKey = "curiusLinks"
+const localTimeKey = "curiusLastFetch"
+
+const getLocalItem = (key: "curiusLinks" | "curiusLastFetch", value: any): any =>
+  localStorage.getItem(key) ?? value
+
 async function fetchLinks(): Promise<Response> {
-  const res = await fetch("https://raw.aarnphm.xyz/api/curius", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      data.userSaved.sort(
-        (a: Link, b: Link) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime(),
-      )
-      return data
-    })
-    .catch((err) => console.error(err))
-  return res
+  try {
+    // user metadata
+    const user = await fetch("https://raw.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
+      .then((res): Promise<Response> => res.json())
+      .then((data) => {
+        if (data === undefined || data.user === undefined) {
+          throw new Error("Failed to fetch user")
+        }
+        return data.user
+      })
+
+    const currentTime = new Date()
+    const lastFetched = new Date(getLocalItem(localTimeKey, 0))
+    // set fetched period to 5 minutes
+    const periods = 5 * 60 * 1000
+
+    const getLocalLinks = () => JSON.parse(getLocalItem(localFetchKey, "[]"))
+
+    if (currentTime.getTime() - lastFetched.getTime() < periods) {
+      return { links: getLocalLinks(), user: user, lastFetched: lastFetched.toString() }
+    }
+
+    localStorage.setItem("curiusLastFetch", currentTime.toString())
+
+    // fetch new links
+    const links: Link[] = await fetch(
+      "https://raw.aarnphm.xyz/api/curius?query=links",
+      fetchLinksHeaders,
+    )
+      .then((res) => res.json())
+      .then((data: Response) => {
+        if (data === undefined || data.links === undefined) {
+          throw new Error("Failed to fetch links")
+        }
+        data.links.sort(
+          (a: Link, b: Link) =>
+            new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime(),
+        )
+        return data.links
+      })
+
+    const existingLinks = getLocalLinks()
+    if (JSON.stringify(existingLinks) !== JSON.stringify(links)) {
+      localStorage.setItem("curiusLinks", JSON.stringify(links))
+    }
+    return { links, user, lastFetched: lastFetched.toString() }
+  } catch (err) {
+    console.error(err)
+    throw new Error("Failed to fetch links")
+  }
 }
 
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
@@ -92,52 +173,42 @@ const extractApexDomain = (url: string) => {
   return match ? match[1] : ""
 }
 
-document.addEventListener("nav", async (e) => {
-  const curius = document.getElementById("curius")
-  const container = document.getElementById("curius-container")
-  const description = document.getElementById("curius-description")
+const createLinkEl = (Link: Link): HTMLLIElement => {
+  const curiusItem = document.createElement("li")
+  curiusItem.id = `curius-item-${Link.id}`
+  curiusItem.onmouseenter = () => (curiusItem.style.backgroundColor = "var(--lightgray)")
+  curiusItem.onmouseleave = () => (curiusItem.style.backgroundColor = "")
 
-  if (!curius || !container || !description) return
-  curius.innerHTML = `<p id="curius-fetching-text">Fetching curius links</p>`
-  const links = await fetchLinks()
-  curius.innerHTML = ""
-  curius.append(description ?? "", container ?? "")
+  const createTitle = (Link: Link): HTMLDivElement => {
+    const item = document.createElement("div")
+    item.classList.add("curius-item-title")
 
-  const linkToHTML = (curiusLink: Link) => {
-    const curiusItem = document.createElement("li")
-    curiusItem.id = `curius-item-${curiusLink.id}`
-    curiusItem.addEventListener("mouseenter", (e) => {
-      e.target.style.backgroundColor = "var(--lightgray)"
-    })
-    curiusItem.addEventListener("mouseleave", (e) => {
-      e.target.style.backgroundColor = ""
-    })
+    const header = document.createElement("div")
+    const link = document.createElement("a")
+    link.href = Link.link
+    link.target = "_blank"
+    link.rel = "noopener noreferrer"
+    link.innerHTML = `<span class="curius-item-span">${Link.title}</span>`
+    header.classList.add("curius-item-link")
+    header.appendChild(link)
 
-    // create title: itemHeader - links
-    const itemTitle = document.createElement("div")
-    itemTitle.classList.add("curius-item-title")
-    const itemHeader = document.createElement("div")
-    itemHeader.classList.add("curius-item-link")
-    const itemLink = document.createElement("a")
-    itemLink.href = curiusLink.link
-    itemLink.setAttribute("target", "_blank")
-    itemLink.setAttribute("rel", "noopener noreferrer")
-    itemLink.innerHTML = `<span class="curius-item-span">${curiusLink.title}</span>`
-    itemHeader.appendChild(itemLink)
-    const itemAddress = document.createElement("div")
-    itemAddress.classList.add("curius-item-address")
-    itemAddress.innerHTML = extractApexDomain(curiusLink.link)
-    itemTitle.append(itemHeader, itemAddress)
+    const address = document.createElement("div")
+    address.classList.add("curius-item-address")
+    address.textContent = extractApexDomain(Link.link)
 
-    // metadata: tags\n ul -> {time since, highlights}
-    const itemMetadata = document.createElement("div")
-    itemMetadata.classList.add("curius-item-metadata")
+    item.append(header, address)
+    return item
+  }
 
-    const itemTags = document.createElement("div")
-    itemTags.classList.add("curius-item-tags")
-    itemTags.innerHTML =
-      curiusLink.topics.length > 0
-        ? `${curiusLink.topics
+  const createMetadata = (Link: Link): HTMLDivElement => {
+    const item = document.createElement("div")
+    item.classList.add("curius-item-metadata")
+
+    const tags = document.createElement("div")
+    tags.classList.add("curius-item-tags")
+    tags.innerHTML =
+      Link.topics.length > 0
+        ? `${Link.topics
             .map(
               (topic) =>
                 `<ul><a href=${[CURIUS, topic.slug].join("/")} target="_blank">${
@@ -148,40 +219,71 @@ document.addEventListener("nav", async (e) => {
         : ``
 
     const misc = document.createElement("div")
-    misc.id = `curius-misc-${curiusLink.id}`
-    const itemTime = document.createElement("span")
-    itemTime.id = `curius-span-${curiusLink.id}`
-    const modifiedDate = new Date(curiusLink.modifiedDate)
-    itemTime.innerHTML = `<time datetime=${
-      curiusLink.modifiedDate
-    } title="${modifiedDate.toUTCString()}">${timeSince(curiusLink.createdDate)}</time>`
-    misc.appendChild(itemTime)
+    misc.id = `curius-misc-${Link.id}`
+    const time = document.createElement("span")
+    time.id = `curius-span-${Link.id}`
+    const modifiedDate = new Date(Link.modifiedDate)
+    time.innerHTML = `<time datetime=${
+      Link.modifiedDate
+    } title="${modifiedDate.toUTCString()}">${timeSince(Link.createdDate)}</time>`
+    misc.appendChild(time)
 
-    if (curiusLink.highlights.length > 0) {
-      const itemHighlights = document.createElement("div")
-      itemHighlights.id = `curius-highlights-${curiusLink.id}`
-      itemHighlights.innerHTML = `${pluralize(curiusLink.highlights.length, "highlight")}`
-      misc.appendChild(itemHighlights)
+    if (Link.highlights.length > 0) {
+      const highlights = document.createElement("div")
+      highlights.id = `curius-highlights-${Link.id}`
+      highlights.innerHTML = `${pluralize(Link.highlights.length, "highlight")}`
+      misc.appendChild(highlights)
     }
-    itemMetadata.append(itemTags, misc)
 
-    curiusItem.append(itemTitle, itemMetadata)
-    return curiusItem
+    item.append(tags, misc)
+    return item
   }
 
+  ;[createTitle, createMetadata].forEach((fn) => curiusItem.appendChild(fn(Link)))
+
+  return curiusItem
+}
+
+document.addEventListener("nav", async (e: unknown) => {
+  // create an array of all these elements by Id functionally
+  const elements = ["curius", "curius-container", "curius-description"].map((id) =>
+    document.getElementById(id),
+  )
+
+  if (elements.some((el) => el === null)) return
+  const [curius, container, description] = elements as HTMLElement[]
+
+  const fetching = document.createElement("div")
+  fetching.id = "curius-fetching-text"
+  fetching.textContent = "Fetching curius links"
+  curius.appendChild(fetching)
+  const resp = await fetchLinks()
+  curius.removeChild(fetching)
+
+  const linksData = resp.links ?? []
+  const userData = resp.user ?? {}
+
   const item = document.createElement("p")
-  item.innerHTML = `${links.userSaved.length} of <a href="${CURIUS}" target="_blank"><em>curius.app/aaron-pham</em></a>`
+  const time = document.createElement("p")
+  time.innerHTML = `<em>last fetched: ${new Date(resp.lastFetched).toUTCString()}</em>`
+  const titleLink = document.createElement("span")
+  titleLink.textContent = `${linksData.length} of `
+  const curiusLink = document.createElement("a")
+  curiusLink.href = CURIUS
+  curiusLink.target = "_blank"
+  curiusLink.textContent = "curius.app/aaron-pham"
+  titleLink.append(curiusLink)
+  item.append(titleLink, time)
   description.appendChild(item)
-  if (links.userSaved.length === 0) {
+
+  const fragment = document.createDocumentFragment()
+  if (linksData.length === 0) {
     container.innerHTML = `<p>Failed to fetch links.</p>`
     return
   }
-
-  const fragment = document.createDocumentFragment()
-  links.userSaved.forEach((link) => {
-    fragment.appendChild(linkToHTML(link))
-  })
+  linksData.map((link) => fragment.appendChild(createLinkEl(link)))
   container.append(fragment)
+
   const navigation = document.createElement("div")
   navigation.classList.add("navigation-container")
   const navigationText = document.createElement("p")
