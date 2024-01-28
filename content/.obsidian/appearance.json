@@ -6,6 +6,6 @@
   "monospaceFontFamily": "Berkeley Mono",
   "baseFontSize": 15,
   "translucency": true,
-  "theme": "moonstone",
+  "theme": "obsidian",
   "showViewHeader": true
 }
