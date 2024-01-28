@@ -72,10 +72,7 @@ const Search = () => (
           aria-label="Search for something"
           placeholder="Search for something"
         />
-        <div id="search-layout">
-          <div id="results-container"></div>
-          <div id="preview-container"></div>
-        </div>
+        <div id="search-layout" data-preview={true}></div>
       </div>
     </div>
   </div>
