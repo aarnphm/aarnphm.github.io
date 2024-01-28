@@ -78,6 +78,15 @@ a {
     }
   }
 
+  &.internal .lucide-link {
+    height: 18px;
+    width: 18px;
+    margin: 0.15em 4px 0;
+    > path {
+      fill: var(--gray);
+    }
+  }
+
   &.external .external-icon {
     height: 1ex;
     margin: 0 0.15em;

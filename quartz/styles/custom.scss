@@ -242,11 +242,19 @@ audio::-webkit-media-controls-panel {
     height: inherit;
     position: absolute;
     z-index: 100;
-    transform: translateX(-100%);
+    // transform: translateX(-100%);
+    max-height: none !important;
+    opacity: 0.35;
+    transition:
+      0.5s ease opacity,
+      0.3s ease color;
   }
 
   #explorer .lucide-menu {
     stroke: var(--darkgray);
+    &:hover {
+      stroke: var(--dark);
+    }
   }
 }
 
