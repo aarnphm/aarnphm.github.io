@@ -17,25 +17,19 @@
     url("/static/BerkeleyMono-Regular.woff") format("woff");
 }
 
-@media all and (max-width: 412px) {
+@media all and (min-width: $tabletBreakpoint) {
   body {
-    font-size: 1rem;
-    @include excludeId(".page") {
-      @each $element in (".page-title", ".spacer") {
-        @include excludeId($element) {
-          display: none;
-        }
-      }
-    }
+    font-size: 1.1rem;
+  }
+}
+@media all and (max-width: 430px) {
+  body {
+    font-size: inherit;
   }
 }
 
 body {
   position: relative;
-
-  @media all and (min-width: $tabletBreakpoint) {
-    font-size: 1.1rem;
-  }
 
   // Page specific display overrides
   @each $slug in ("uses", "dump/quotes", "curius", "influence") {
@@ -87,8 +81,10 @@ body {
 
   // Quote display
   &[data-slug="dump/quotes"] {
-    @include excludeId("& > *") {
-      font-size: 1.2rem;
+    @media all and (min-width: $tabletBreakpoint) {
+      @include excludeId("& > *") {
+        font-size: 1.2rem;
+      }
     }
 
     @include excludeId("& h1") {
@@ -188,6 +184,9 @@ audio::-webkit-media-controls-panel {
   grid-template-rows: repeat(4, min-content);
   align-items: center;
 
+  .explorer {
+    grid-area: 1 / 1 / 2 / 2;
+  }
   .search {
     grid-area: 1 / 1 / 2 / 2;
   }
@@ -219,6 +218,37 @@ audio::-webkit-media-controls-panel {
   @media all and (max-width: $fullPageWidth) {
     display: flex !important;
   }
+}
+
+.mobile-only.explorer {
+  #explorer-content:not(.collapsed) {
+    width: 100%;
+    background-color: var(--light);
+    height: inherit;
+    position: absolute;
+    z-index: 100;
+    margin-top: 2rem;
+    transform: translateX(0);
+  }
+
+  #explorer-content.collapsed {
+    left: 0;
+    width: 0;
+    background-color: var(--light);
+    height: inherit;
+    position: absolute;
+    z-index: 100;
+    transform: translateX(-100%);
+  }
+
+  #explorer .lucide-menu {
+    stroke: var(--darkgray);
+  }
+}
+
+.no-scroll {
+  display: none;
+  overflow: hidden;
 }
 
 .navigation-container {

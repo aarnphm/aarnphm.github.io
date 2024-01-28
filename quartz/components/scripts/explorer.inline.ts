@@ -21,6 +21,16 @@ function toggleExplorer(this: HTMLElement) {
   const content = this.nextElementSibling as HTMLElement
   content.classList.toggle("collapsed")
   content.style.maxHeight = content.style.maxHeight === "0px" ? content.scrollHeight + "px" : "0px"
+  // prevent scroll under
+  const center = document.querySelector("#quartz-body .center")
+  if (document.querySelector(".mobile-only #explorer")) {
+    const queries = [".popover-hint", "footer", "#progress", ".backlinks"]
+    queries.map((query) => {
+      document.querySelectorAll(query)?.forEach((element) => {
+        element.classList.toggle("no-scroll")
+      })
+    })
+  }
 }
 
 function toggleFolder(evt: MouseEvent) {
@@ -125,6 +135,13 @@ function setupExplorer() {
 
 window.addEventListener("resize", setupExplorer)
 document.addEventListener("nav", () => {
+  const explorer = document.querySelector(".mobile-only #explorer")
+  if (explorer) {
+    explorer.classList.add("collapsed")
+    const content = explorer.nextElementSibling as HTMLElement
+    content.classList.add("collapsed")
+    content.style.maxHeight = "0px"
+  }
   setupExplorer()
 
   observer.disconnect()

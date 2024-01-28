@@ -44,8 +44,11 @@ button#explorer {
   list-style: none;
   overflow: hidden;
   max-height: none;
-  transition: max-height 0.35s ease;
-  margin-top: 0.5rem;
+
+  &:not(.mobile-only) {
+    transition: max-height 0.35s ease;
+    margin-top: 0.5rem;
+  }
 
   &.collapsed > .overflow::after {
     opacity: 0;

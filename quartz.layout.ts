@@ -30,11 +30,16 @@ function filterFunc(path: string, excludePaths: string[] = []) {
   }
 }
 
+const explorerFilterFn = (node: FileNode) => {
+  const excludePaths = ["university", "papers", "tags"]
+  return !excludePaths.includes(node.name)
+}
+
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
   beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],
   left: [
-    Component.MobileOnly(Component.PageTitle()),
+    Component.MobileOnly(Component.Explorer({ filterFn: explorerFilterFn })),
     Component.MobileOnly(Component.Spacer()),
     Component.Search({ enablePreview: true }),
     Component.Darkmode(),
@@ -71,18 +76,11 @@ export const defaultContentPageLayout: PageLayout = {
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [Component.ArticleTitle()],
   left: [
-    Component.MobileOnly(Component.PageTitle()),
+    Component.MobileOnly(Component.Explorer({ filterFn: explorerFilterFn })),
     Component.MobileOnly(Component.Spacer()),
     Component.Search({ enablePreview: true }),
     Component.Darkmode(),
-    Component.DesktopOnly(
-      Component.Explorer({
-        filterFn: (node: FileNode) => {
-          const excludePaths = ["university", "papers", "tags"]
-          return !excludePaths.includes(node.name)
-        },
-      }),
-    ),
+    Component.DesktopOnly(Component.Explorer({ filterFn: explorerFilterFn })),
   ],
   right: [],
 }
