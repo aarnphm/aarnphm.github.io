@@ -224,6 +224,7 @@ audio::-webkit-media-controls-panel {
 
 .mobile-only.explorer {
   ul.overflow {
+    height: inherit;
     &:after {
       background: none;
     }
@@ -236,6 +237,7 @@ audio::-webkit-media-controls-panel {
     z-index: 100;
     margin-top: 2rem;
     transform: translateX(0);
+    overflow: auto;
   }
 
   #explorer-content.collapsed {
@@ -244,7 +246,6 @@ audio::-webkit-media-controls-panel {
     height: inherit;
     position: absolute;
     z-index: 100;
-    // transform: translateX(-100%);
     max-height: none !important;
     opacity: 0.35;
     transition:
