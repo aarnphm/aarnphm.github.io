@@ -228,7 +228,7 @@ audio::-webkit-media-controls-panel {
 
   #explorer-content:not(.collapsed) {
     width: 100%;
-    height: inherit;
+    min-height: 80vh;
     position: absolute;
     z-index: 100;
     margin-top: 2rem;
@@ -242,7 +242,6 @@ audio::-webkit-media-controls-panel {
     height: inherit;
     position: absolute;
     z-index: 100;
-    max-height: none !important;
     opacity: 0.35;
     transition:
       0.5s ease opacity,
