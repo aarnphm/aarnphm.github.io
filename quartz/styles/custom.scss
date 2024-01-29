@@ -22,17 +22,6 @@
     url("/static/BerkeleyMono-Regular.woff") format("woff");
 }
 
-@media all and (min-width: $tabletBreakpoint) {
-  body {
-    font-size: 1.1rem;
-  }
-}
-@media all and (max-width: 430px) {
-  body {
-    font-size: inherit;
-  }
-}
-
 html {
   font-size: 100%;
 }
