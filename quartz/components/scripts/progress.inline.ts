@@ -12,7 +12,7 @@ document.addEventListener("nav", () => {
   }
   const show = () => {
     if (!progress) return
-    progress.style.backgroundColor = "var(--secondary)"
+    progress.style.backgroundColor = "var(--dark)"
     clearTimeout(hideTimeout)
     hideTimeout = setTimeout(hide, timeout)
   }
@@ -22,11 +22,9 @@ document.addEventListener("nav", () => {
   window.addEventListener("scroll", () => {
     if (!progress) return
     show()
-    const totalHeight =
-      document.documentElement.scrollHeight - document.documentElement.clientHeight
-    const scrollPosition = window.scrollY
-    const width = (scrollPosition / totalHeight) * 100
-    progress.style.width = width + "%"
+    var winScroll = document.body.scrollTop || document.documentElement.scrollTop
+    var height = document.documentElement.scrollHeight - document.documentElement.clientHeight
+    progress.style.height = (winScroll / height) * 100 + "%"
   })
 
   hideTimeout = setTimeout(hide, timeout)
@@ -41,7 +39,7 @@ document.addEventListener("nav", () => {
       position - windowHeight <= 0 ? el.classList.add("visible") : el.classList.remove("visible")
     })
   }
-  window.addEventListener("scroll", checkImgPosition)
+  window.onscroll = checkImgPosition
   checkImgPosition()
 })
 
