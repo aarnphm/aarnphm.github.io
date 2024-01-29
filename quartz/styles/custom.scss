@@ -1,6 +1,11 @@
 @use "./base.scss";
 @use "./variables.scss" as *;
 
+::selection {
+  color: var(--light);
+  background-color: var(--secondary);
+}
+
 @font-face {
   font-family: "EB Garamond";
   font-style: normal;
@@ -38,6 +43,8 @@ svg {
 
 body {
   position: relative;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 
   // Page specific display overrides
   @each $slug in ("uses", "dump/quotes", "curius", "influence") {
@@ -82,23 +89,23 @@ body {
       }
     }
 
-    @include excludeId("& h1") {
-      font-size: 2rem;
-      font-family: var(--bodyFont) !important;
-      font-weight: 500;
-    }
-
     @include excludeId("& blockquote") {
       border-left: none;
       padding-left: 0;
       margin: 0;
     }
 
-    @include excludeId("& h3", "& h4") {
+    @include excludeId("& h1", "& h3", "& h4") {
       font-size: 1.4rem;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
+    }
+
+    @include excludeId("& h1") {
+      font-size: 2rem;
+      font-family: var(--bodyFont) !important;
+      font-weight: 500;
     }
 
     @include excludeId("& article") {
