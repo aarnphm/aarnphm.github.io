@@ -14,7 +14,7 @@ const config: QuartzConfig = {
     defaultDateType: "created",
     theme: {
       typography: {
-        header: "Lora",
+        header: "DM Serif Text",
         body: "EB Garamond",
         code: "Berkeley Mono",
       },
@@ -53,7 +53,6 @@ const config: QuartzConfig = {
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",
-        externalLinkIcon: false,
         enableRawEmbed: {
           enable: true,
           extensions: [".py", ".m", ".go", ".c", ".java"],

@@ -239,7 +239,7 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
     return item
   }
 
-  ;[createTitle, createMetadata].forEach((fn) => curiusItem.appendChild(fn(Link)))
+  curiusItem.append(createTitle(Link), createMetadata(Link))
 
   return curiusItem
 }
