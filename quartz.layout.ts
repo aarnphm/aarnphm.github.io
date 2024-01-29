@@ -78,7 +78,7 @@ export const defaultListPageLayout: PageLayout = {
   left: [
     Component.MobileOnly(Component.Explorer({ filterFn: explorerFilterFn })),
     Component.MobileOnly(Component.Spacer()),
-    Component.Search({ enablePreview: true }),
+    Component.Search({ enablePreview: false }),
     Component.Darkmode(),
     Component.DesktopOnly(Component.Explorer({ filterFn: explorerFilterFn })),
   ],
