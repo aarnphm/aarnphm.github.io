@@ -22,7 +22,6 @@ export type ContentDetails = {
 interface Options {
   enableSiteMap: boolean
   enableRSS: boolean
-  enableRobots: boolean
   rssLimit?: number
   rssFullHtml: boolean
   includeEmptyFiles: boolean
@@ -31,7 +30,6 @@ interface Options {
 const defaultOptions: Options = {
   enableSiteMap: true,
   enableRSS: true,
-  enableRobots: true,
   rssLimit: 10,
   rssFullHtml: false,
   includeEmptyFiles: true,
@@ -47,20 +45,6 @@ function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndex): string {
     .map(([slug, content]) => createURLEntry(simplifySlug(slug), content))
     .join("")
   return `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${urls}</urlset>`
-}
-
-function generateRobotsTxt(cfg: GlobalConfiguration): string {
-  const base = cfg.baseUrl ?? ""
-  return `# *
-User-agent: *
-Allow: /
-
-# Host
-Host: https://${base}
-
-# Sitemaps
-Sitemap: https://${joinSegments(base, "sitemap.xml")}
-`
 }
 
 function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: number): string {
@@ -137,17 +121,6 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
             content: generateSiteMap(cfg, linkIndex),
             slug: "sitemap" as FullSlug,
             ext: ".xml",
-          }),
-        )
-      }
-
-      if (opts?.enableRobots) {
-        emitted.push(
-          await write({
-            ctx,
-            content: generateRobotsTxt(cfg),
-            slug: "robots" as FullSlug,
-            ext: ".txt",
           }),
         )
       }
