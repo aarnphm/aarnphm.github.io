@@ -1,11 +1,12 @@
 {
   "accentColor": "#e8a83b",
   "cssTheme": "Minimal",
-  "interfaceFontFamily": "Berkeley Mono",
-  "textFontFamily": "Berkeley Mono",
+  "interfaceFontFamily": "Bricolage Grotesque,EB Garamond,Berkeley Mono",
+  "textFontFamily": "EB Garamond,Bricolage Grotesque,Berkeley Mono",
   "monospaceFontFamily": "Berkeley Mono",
-  "baseFontSize": 15,
+  "baseFontSize": 20,
   "translucency": true,
-  "theme": "obsidian",
-  "showViewHeader": true
+  "theme": "moonstone",
+  "showViewHeader": true,
+  "enabledCssSnippets": []
 }

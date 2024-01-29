@@ -8,15 +8,12 @@
         "type": "tabs",
         "children": [
           {
-            "id": "3b0f0f8f890360ed",
+            "id": "442fea373d28f5ac",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "dump/university/sfwr-3dx4/index.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
+                "file": "dump/university/sfwr-2c03/L1.pdf"
               }
             }
           },
@@ -26,7 +23,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/sfwr-3dx4/index.md",
+                "file": "dump/university/sfwr-2c03/W1.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -34,36 +31,27 @@
             }
           },
           {
-            "id": "faf75e3016864935",
+            "id": "f2c906966556c782",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "dump/university/compsci-4x03/A4.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
+                "file": "dump/university/sfwr-2c03/a1/A1.pdf"
+              }
+            }
+          },
+          {
+            "id": "30e5ac085a6ae315",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "dump/university/sfwr-2c03/a1/A1.pdf"
               }
             }
           }
         ],
         "currentTab": 2
-      },
-      {
-        "id": "69119e9afbbc55b6",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "c4d09beb9d77576c",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf"
-              }
-            }
-          }
-        ]
       }
     ],
     "direction": "vertical"
@@ -129,7 +117,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/compsci-4x03/A4.md",
+                "file": "dump/university/sfwr-2c03/a1/A1.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -146,7 +134,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/compsci-4x03/A4.md",
+                "file": "dump/university/sfwr-2c03/a1/A1.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -169,7 +157,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/compsci-4x03/A4.md"
+                "file": "dump/university/sfwr-2c03/a1/A1.pdf"
               }
             }
           },
@@ -199,7 +187,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/compsci-4x03/A4.md"
+                "file": "dump/university/sfwr-2c03/a1/A1.pdf"
               }
             }
           }
@@ -219,12 +207,29 @@
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "table-editor-obsidian:Advanced Tables Toolbar": false
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "faf75e3016864935",
+  "active": "f2c906966556c782",
   "lastOpenFiles": [
+    "dump/university/sfwr-2c03/Assignment 2 files Jan 28, 2024",
+    "dump/university/sfwr-2c03/a1/A1.md",
+    "dump/university/sfwr-2c03/a1",
+    "dump/university/sfwr-2c03/a2/impl_22.cpp",
+    "dump/university/sfwr-2c03/a2/data_22.tsv",
+    "dump/university/sfwr-2c03/a2/assignment_2.pdf",
+    "dump/university/sfwr-2c03/a2",
+    "dump/university/sfwr-2c03/Assignment 2 files Jan 28, 2024.zip",
+    "dump/university/sfwr-2c03/Assignment 2 attached files Jan 28, 2024 1154 PM.zip",
+    "dump/university/sfwr-2c03/Unconfirmed 61576.crdownload",
+    "dump/university/sfwr-2c03/a1/Aaron_Pham_400232791_phama10_assignment_1.pdf",
+    "dump/university/sfwr-2c03/A1 1.md",
+    "dump/university/sfwr-2c03/W1.md",
+    "dump/university/sfwr-2c03/sumary-sorting.png",
+    "dump/university/sfwr-2c03/index.md",
     "dump/university/sfwr-3dx4/index.md",
+    "dump/university/compsci-4x03/A4.md",
     "dump/university/index.md",
     "tags/sfwr3dx4.md",
     "dump/papers/index.md",
@@ -233,26 +238,14 @@
     "dump/university/astron-2e03/gravitational-microlensing.png",
     "dump/university/astron-2e03/astrometry.png",
     "dump/university/commerce-4be3/Defining Internal Alignment & Job Analysis.md",
-    "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
-    "dump/university/commerce-4be3/Defining Internal Alignment.pdf",
     "dump/university/commerce-4be3/Pay model.md",
-    "dump/university/sfwr-3dx4/state_space.pdf",
-    "dump/university/sfwr-3dx4/block_diagrams.pdf",
-    "dump/university/sfwr-2c03/sortings.pdf",
-    "dump/university/sfwr-3dx4/frequency_domain.pdf",
     "dump/university/sfwr-2c03/Sorting.md",
-    "dump/university/sfwr-2c03/sumary-sorting.png",
-    "dump/university/sfwr-2c03/W1.md",
     "dump/university/sfwr-2c03/0...N) of N values.md",
-    "dump/university/sfwr-2c03/collections.pdf",
-    "dump/university/sfwr-2c03/binary-search.pdf",
     "dump/university/sfwr-3dx4/State space representation.md",
     "dump/university/sfwr-3dx4/block.md",
     "dump/university/sfwr-3dx4/Block Diagrams.md",
     "dump/university/sfwr-2c03/W2.md",
-    "dump/university/sfwr-2c03/L1.pdf",
     "dump/university/sfwr-2c03/compare-graphs.png",
-    "dump/university/sfwr-2c03/sortings.pdf.crdownload",
     "dump/university/sfwr-3dx4/lab1/content.md",
     "dump/university/sfwr-3dx4/lab1/5.2-graph.png",
     "dump/university/sfwr-3dx4/lab1/5.1-graph.png",
@@ -261,11 +254,6 @@
     "uses.md",
     "templates/post.md",
     "tags/technical.md",
-    "tags/seed.md",
-    "tags/ml.md",
-    "tags/evergreen.md",
-    "private/bentoml/intern.md",
-    "private/bentoml/compensation.md",
     "posts/images/passage-giorgio-m.jpg",
     "dump/university/sfwr-2c03/growth.png",
     "dump/university/philo-1aa3/tut/IMG_0308.jpg",
