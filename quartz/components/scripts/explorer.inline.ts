@@ -62,9 +62,14 @@ function toggleFolder(evt: MouseEvent) {
 }
 
 function setupExplorer() {
-  const explorer = document.getElementById("explorer")
   for (const explorer of document.querySelectorAll("#explorer") as NodeListOf<HTMLElement>) {
-    explorer.dataset.mobileonly === "true" && explorer.classList.add("collapsed")
+    const isMobileOnly = explorer.dataset.mobileonly === "true"
+    if (isMobileOnly) {
+      explorer.classList.add("collapsed")
+      const content = explorer.nextElementSibling as HTMLElement
+      content.classList.add("collapsed")
+      content.style.maxHeight = "0px"
+    }
     if (explorer.dataset.behavior === "collapse") {
       for (const item of document.getElementsByClassName(
         "folder-button",
@@ -113,13 +118,6 @@ function setupExplorer() {
 
 window.addEventListener("resize", setupExplorer)
 document.addEventListener("nav", () => {
-  const explorer = document.querySelector(".mobile-only #explorer")
-  if (explorer) {
-    explorer.classList.add("collapsed")
-    const content = explorer.nextElementSibling as HTMLElement
-    content.classList.add("collapsed")
-    content.style.maxHeight = "0px"
-  }
   setupExplorer()
   observer.disconnect()
 
