@@ -81,11 +81,11 @@ export default ((userOpts?: Partial<Options>) => {
         <button
           type="button"
           id="explorer"
-          class={displayClass === "mobile-only" ? "collapsed" : ""}
           data-behavior={opts.folderClickBehavior}
           data-collapsed={opts.folderDefaultState}
           data-savestate={opts.useSavedState}
           data-tree={jsonTree}
+          data-mobileonly={displayClass === "mobile-only"}
         >
           {displayClass === "desktop-only" ? (
             <>
