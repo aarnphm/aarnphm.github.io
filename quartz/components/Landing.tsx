@@ -157,7 +157,7 @@ const Content = () => (
 )
 
 export default (() => {
-  function LandingComponent({ displayClass }: QuartzComponentProps) {
+  function LandingComponent(componentData: QuartzComponentProps) {
     return (
       <div class="popover-hint">
         <div class="landing">
