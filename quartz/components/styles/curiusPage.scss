@@ -19,6 +19,21 @@
   }
 }
 
+.highlight-modal {
+  position: absolute;
+  border: 1px solid #000;
+  background-color: white;
+  z-index: 1000;
+  padding: 0 20px;
+  width: 350px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.highlight-modal ul {
+  list-style-type: none;
+  padding: 0;
+}
+
 #curius {
   text-align: left;
 
@@ -35,7 +50,7 @@
     align-items: center;
     cursor: pointer;
     white-space: nowrap;
-    border-radius: 7px;
+    border-radius: 6px;
     width: 100%;
     font-family: var(--bodyFont);
     box-sizing: border-box;
@@ -52,7 +67,7 @@
     margin-right: auto;
     width: $pageWidth;
     z-index: 999;
-    border-radius: 7px;
+    border-radius: 6px;
     box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
     background-color: var(--light);
     max-height: 50vh;
@@ -78,15 +93,7 @@
     cursor: pointer;
     font-weight: inherit;
     transition: background 0.2s ease;
-
-    &:hover,
-    &:focus {
-      background-color: var(--lightgray);
-      border-radius: 5px;
-      cursor: pointer;
-    }
   }
-
   .curius-search-title {
     display: flex;
   }
@@ -97,7 +104,16 @@
     overflow: hidden;
   }
 
-  & ul {
+  #curius-container {
+    & li[id|="curius-item"] {
+      & > * {
+        padding-left: 8px;
+      }
+    }
+  }
+
+  & ul,
+  #curius-container {
     list-style: none;
     display: flex;
     flex-direction: column;

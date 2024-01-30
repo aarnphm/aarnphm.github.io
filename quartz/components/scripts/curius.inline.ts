@@ -264,6 +264,46 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
       highlights.id = `curius-highlights-${Link.id}`
       highlights.innerHTML = `${pluralize(Link.highlights.length, "highlight")}`
       misc.appendChild(highlights)
+
+      const modal = document.getElementById("highlight-modal")
+      const modalList = document.getElementById("highlight-modal-list")
+
+      function onMouseEnter(event: MouseEvent) {
+        const highlightsData = Link.highlights
+
+        if (!modal || !modalList) return
+        // clear the previous modal
+        modalList.innerHTML = ""
+        curiusItem.style.backgroundColor = ""
+
+        highlightsData.forEach((highlight) => {
+          let hiItem = document.createElement("li")
+          hiItem.textContent = highlight.highlight
+          modalList.appendChild(hiItem)
+        })
+        modal.style.display = "block"
+        modal.classList.add("active")
+      }
+
+      function onMouseLeave(event: MouseEvent) {
+        curiusItem.style.backgroundColor = "var(--lightgray)"
+
+        if (!modal) return
+        modal.style.display = "none"
+        modal.classList.remove("active")
+      }
+      function onMouseMove(event: MouseEvent) {
+        curiusItem.style.backgroundColor = ""
+
+        if (!modal) return
+        modal.classList.add("active")
+        modal.style.left = `${event.pageX + 10}px`
+        modal.style.top = `${event.pageY + 10}px`
+      }
+
+      highlights.addEventListener("mouseenter", onMouseEnter)
+      highlights.addEventListener("mouseleave", onMouseLeave)
+      highlights.addEventListener("mousemove", onMouseMove)
     }
 
     item.append(tags, misc)
@@ -360,10 +400,14 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       e.preventDefault()
       const searchBarOpen = searchBar?.classList.contains("active")
       searchBarOpen ? hideLinks() : showLinks(sampleLinks)
+      searchBar?.focus()
     }
 
     if (!searchBar?.classList.contains("active")) return
-    else if (e.key === "Enter") {
+    else if (e.key.startsWith("Esc")) {
+      e.preventDefault()
+      hideLinks()
+    } else if (e.key === "Enter") {
       if (searchContainer?.contains(document.activeElement)) {
         const active = document.activeElement as HTMLInputElement
         active.click()

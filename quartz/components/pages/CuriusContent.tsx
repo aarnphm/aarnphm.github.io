@@ -19,14 +19,17 @@ function CuriusContent(props: QuartzComponentProps) {
         </p>
         <div class="curius-outer">
           <input
-            autocomplete="off"
             id="curius-bar"
             type="text"
             aria-label="Search for curius links"
             placeholder="Search for curius links"
           />
           <div id="curius-search-container"></div>
-          <ul id="curius-container"></ul>
+          <div id="curius-container">
+            <div class="highlight-modal" id="highlight-modal" style="display: none;">
+              <ul id="highlight-modal-list"></ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
