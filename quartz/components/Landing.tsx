@@ -27,6 +27,7 @@ export const HyperAlias = {
   uses: "/uses",
   advices: "/dump/quotes",
   affecter: "/influence",
+  tunes: "/music",
 }
 export const SocialAlias = {
   github: "https://github.com/aarnphm",
@@ -45,12 +46,13 @@ type AliasLinkProp = {
   url: string
   isInternal?: boolean
   newTab?: boolean
+  enablePopover?: boolean
 }
 
 const AliasLink = (props: AliasLinkProp) => {
-  const opts = { isInternal: false, newTab: false, ...props }
+  const opts = { isInternal: false, newTab: false, enablePopover: true, ...props }
   const className = ["landing-links"]
-  if (opts.isInternal) className.push("internal")
+  if (opts.isInternal && opts.enablePopover) className.push("internal")
   return (
     <li>
       <a href={opts.url} target={opts.newTab ? "_blank" : "_self"} className={className.join(" ")}>
@@ -128,7 +130,7 @@ const Content = () => (
       <h3>garden:</h3>
       <ul id="garden">
         {Object.entries(HyperAlias).map(([name, url], index, array) => (
-          <AliasLink key={name} name={name} url={url} isInternal />
+          <AliasLink key={name} name={name} url={url} isInternal enablePopover={name !== "tunes"} />
         ))}
       </ul>
     </p>

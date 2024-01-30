@@ -295,7 +295,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
   })
 }
 
-let prevShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
+let prevGraphShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 function renderGlobalGraph() {
   const slug = getFullSlug(window)
   const container = document.getElementById("global-graph-outer")
@@ -348,9 +348,9 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       graphOpen ? hideGlobalGraph() : renderGlobalGraph()
     }
   }
-  if (prevShortcutHandler) {
-    document.removeEventListener("keydown", prevShortcutHandler)
+  if (prevGraphShortcutHandler) {
+    document.removeEventListener("keydown", prevGraphShortcutHandler)
   }
   document.addEventListener("keydown", graphShortcutHandler)
-  prevShortcutHandler = graphShortcutHandler
+  prevGraphShortcutHandler = graphShortcutHandler
 })

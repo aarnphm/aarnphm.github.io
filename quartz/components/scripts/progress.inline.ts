@@ -1,10 +1,14 @@
+import { getFullSlug } from "../../util/path"
+
 const timeout = 500
 
-let prevShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
+let prevHomeShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 
-document.addEventListener("nav", () => {
+document.addEventListener("nav", (e: CustomEventMap["nav"]) => {
   const progress = document.getElementById("progress")
   let hideTimeout: ReturnType<typeof setTimeout>
+  const slug = e.detail.url
+  if (slug === "index") return
 
   const hide = () => {
     if (!progress) return
@@ -16,8 +20,6 @@ document.addEventListener("nav", () => {
     clearTimeout(hideTimeout)
     hideTimeout = setTimeout(hide, timeout)
   }
-
-  show()
 
   window.addEventListener("scroll", () => {
     if (!progress) return
@@ -44,18 +46,18 @@ document.addEventListener("nav", () => {
 })
 
 // keybind shortcut
-document.addEventListener("nav", () => {
+document.addEventListener("nav", (ev: CustomEventMap["nav"]) => {
   function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (e.key === "/" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
-      window.location.pathname = "/"
+      window.location.pathname = "/index"
     }
   }
 
-  if (prevShortcutHandler) {
-    document.removeEventListener("keydown", prevShortcutHandler)
+  if (prevHomeShortcutHandler) {
+    document.removeEventListener("keydown", prevHomeShortcutHandler)
   }
 
   document.addEventListener("keydown", shortcutHandler)
-  prevShortcutHandler = shortcutHandler
+  prevHomeShortcutHandler = shortcutHandler
 })

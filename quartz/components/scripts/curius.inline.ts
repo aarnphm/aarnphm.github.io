@@ -148,7 +148,7 @@ const localTimeKey = "curiusLastFetch"
 
 let index: FlexSearch.Document<Link> | undefined = undefined
 const numSearchResults = 5
-let prevShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
+let prevCuriusShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 
 const getLocalItem = (key: "curiusLinks" | "curiusLastFetch", value: any): any =>
   localStorage.getItem(key) ?? value
@@ -469,12 +469,12 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     showLinks(sampleLinks)
   }
 
-  if (prevShortcutHandler) {
-    document.removeEventListener("keydown", prevShortcutHandler)
+  if (prevCuriusShortcutHandler) {
+    document.removeEventListener("keydown", prevCuriusShortcutHandler)
   }
 
   document.addEventListener("keydown", shortcutHandler)
-  prevShortcutHandler = shortcutHandler
+  prevCuriusShortcutHandler = shortcutHandler
   searchBar?.removeEventListener("click", onClick)
   searchBar?.addEventListener("click", onClick)
   searchBar?.removeEventListener("input", onType)
