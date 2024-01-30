@@ -31,15 +31,14 @@ function filterFunc(path: string, excludePaths: string[] = []) {
 }
 
 const explorerFilterFn = (node: FileNode) => {
-  const excludePaths = ["university", "papers", "tags"]
-  return !excludePaths.includes(node.name)
+  return !["university", "papers", "tags"].some((path) => node.name.includes(path))
 }
 
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
   beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],
   left: [
-    Component.MobileOnly(Component.Explorer({ filterFn: explorerFilterFn })),
+    Component.MobileOnly(Component.Explorer()),
     Component.MobileOnly(Component.Spacer()),
     Component.Search({ enablePreview: true }),
     Component.Darkmode(),
@@ -76,7 +75,7 @@ export const defaultContentPageLayout: PageLayout = {
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [Component.ArticleTitle()],
   left: [
-    Component.MobileOnly(Component.Explorer({ filterFn: explorerFilterFn })),
+    Component.MobileOnly(Component.Explorer()),
     Component.MobileOnly(Component.Spacer()),
     Component.Search({ enablePreview: false }),
     Component.Darkmode(),
