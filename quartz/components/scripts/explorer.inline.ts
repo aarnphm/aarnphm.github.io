@@ -26,7 +26,7 @@ function toggleExplorer(this: HTMLElement) {
   if (this.dataset.mobileonly === "true") {
     const center = document.querySelector("#quartz-body .center")
     if (document.querySelector(".mobile-only #explorer")) {
-      const queries = [".popover-hint", "footer", "#progress", ".backlinks"]
+      const queries = [".popover-hint", "footer", "#progress", ".backlinks", ".graph", ".toc"]
       queries.map((query) => {
         document.querySelectorAll(query)?.forEach((element) => {
           element.classList.toggle("no-scroll")

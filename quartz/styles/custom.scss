@@ -169,7 +169,6 @@ audio::-webkit-media-controls-panel {
   gap: 1.5rem !important;
   grid-template-columns: 1fr;
   grid-template-rows: repeat(4, min-content);
-  align-items: center;
 
   .mobile-only.explorer & {
     grid-area: 1 / 1 / 2 / 2;

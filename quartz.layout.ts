@@ -59,12 +59,10 @@ export const defaultContentPageLayout: PageLayout = {
     ),
   ],
   right: [
-    Component.DesktopOnly(
-      Component.Graph({
-        globalGraph: { linkDistance: 50 },
-        localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
-      }),
-    ),
+    Component.Graph({
+      globalGraph: { linkDistance: 50 },
+      localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
+    }),
     Component.Backlinks(),
     Component.DesktopOnly(Component.TableOfContents()),
   ],
