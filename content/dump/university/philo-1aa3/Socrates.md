@@ -3,8 +3,8 @@ id: Socrates
 tags:
   - philosophy
   - philos1aa3
+date: "2023-09-25"
 title: Socrates
-date: 2023-09-25
 ---
 
 [[dump/university/philo-1aa3/Presocratics|Pre-Socratic]] lives by materialism
@@ -40,7 +40,7 @@ Can only love what we lack
 
 Philosophers vs. Fool: Philosophers knows hes not wise, whereas a fool doesn't
 
-Longs for wisdom => only god is wise
+Longs for wisdom --> only god is wise
 complete wisdom are not for human
 
 Learn from Pythagorias
@@ -66,10 +66,10 @@ ex: Logos what gods love some, not others
 > Platonic Idea (Form)
 > The idea of X is the form all particular Xs share, and which cause them to be X.
 
-Plato -> Idea for all Socrates asks
--> More than materialism
--> from Socratic or Platonic is wrong - Idea is not material, not body in space or time - Ordinary experience
+Plato --> Idea for all Socrates asks
+--> More than materialism
+--> from Socratic or Platonic is wrong - Idea is not material, not body in space or time - Ordinary experience
 
 Charges for Athenian trials?
 
-Animosity wrt to his way of being?
+Animosity with regards to to his way of being?
