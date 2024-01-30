@@ -2,11 +2,12 @@ import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import HeaderConstructor from "../../components/Header"
 import BodyConstructor from "../../components/Body"
+import LandingConstructor from "../../components/Landing"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
 import { FilePath, pathToRoot } from "../../util/path"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
-import { Content, Landing } from "../../components"
+import { Content } from "../../components"
 import chalk from "chalk"
 import { write } from "./helpers"
 
@@ -21,6 +22,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
   const { head: Head, header, beforeBody, pageBody, left, right, footer: Footer } = opts
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
+  const Landing = LandingConstructor()
 
   return {
     name: "ContentPage",
@@ -29,7 +31,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         Head,
         Header,
         Body,
-        Landing(),
+        Landing,
         ...header,
         ...beforeBody,
         pageBody,

@@ -16,7 +16,7 @@
 
 .page {
   & footer.minimal-footer {
-    width: 100%;
+    width: $fullPageWidth;
   }
 }
 
@@ -44,7 +44,7 @@
   }
 
   p {
-    font-family: "EB Garamond", serif;
+    font-family: var(--bodyFont);
     font-size: 0.8rem;
     font-style: normal;
     margin: 0;

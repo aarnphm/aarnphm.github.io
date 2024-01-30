@@ -2,7 +2,7 @@ import { render } from "preact-render-to-string"
 import { QuartzComponent, QuartzComponentProps } from "./types"
 import HeaderConstructor from "./Header"
 import BodyConstructor from "./Body"
-import Landing from "./Landing"
+import LandingConstructor from "./Landing"
 import { JSResourceToScriptElement, StaticResources } from "../util/resources"
 import { FullSlug, RelativeURL, joinSegments, normalizeHastElement } from "../util/path"
 import { visit } from "unist-util-visit"
@@ -177,6 +177,8 @@ export function renderPage(
   } = components
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
+  const Landing = LandingConstructor()
+  const cfg = componentData.cfg
 
   const LeftComponent = (
     <div class="left sidebar">
@@ -194,16 +196,15 @@ export function renderPage(
     </div>
   )
 
-  const LandingComponent = Landing()
-
   const doc = (
     <html>
       <Head {...componentData} />
       <body data-slug={slug}>
-        {slug === "index" && <LandingComponent {...componentData} />}
-        {slug !== "index" && (
+        {slug === "index" ? (
+          <Landing {...componentData} />
+        ) : (
           <div id="quartz-root" class="page">
-            <div id="texture"></div>
+            {cfg.enableTexture ? <div id="texture"></div> : <></>}
             <div id="progress"></div>
             <Body {...componentData}>
               {LeftComponent}
@@ -224,6 +225,7 @@ export function renderPage(
               </div>
               {RightComponent}
             </Body>
+            {cfg.defaultFooterStyle === "minimal" ? <br /> : <></>}
             <Footer {...componentData} />
           </div>
         )}

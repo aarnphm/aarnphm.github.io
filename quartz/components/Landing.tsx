@@ -95,7 +95,6 @@ const DarkMode = () => (
 
 const Content = () => (
   <div class="content-container">
-    <img src="/static/avatar.png" class="landing-logo" />
     <h1 class="landing-header">My name is Aaron.</h1>
     <p>
       Beige and <a class="rose">rosé</a> are my two favorite colours.{" "}

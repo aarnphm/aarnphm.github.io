@@ -7,12 +7,14 @@ const config: QuartzConfig = {
     locale: "en-US",
     enableSPA: true,
     enablePopovers: true,
+    enableTexture: false,
     analytics: {
       provider: "plausible",
     },
     baseUrl: "aarnphm.xyz",
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "created",
+    defaultFooterStyle: "minimal",
     theme: {
       typography: {
         header: "DM Serif Text",

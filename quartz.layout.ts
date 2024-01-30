@@ -12,7 +12,6 @@ export const sharedPageComponents: SharedLayout = {
     links: {
       GitHub: "https://github.com/aarnphm",
       Twitter: "https://twitter.com/aarnphm_",
-      Bento: "https://bento.me/aarnphm",
     },
   }),
 }
