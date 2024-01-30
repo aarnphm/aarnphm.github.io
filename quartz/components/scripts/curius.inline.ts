@@ -445,5 +445,10 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     }
   }
 
-  registerEscapeHandler(document.getElementById("quartz-body"), hideLinks)
+  for (const el of [
+    document.getElementById("quartz-body"),
+    document.getElementsByClassName("center")[0],
+  ] as (HTMLElement | null)[]) {
+    registerEscapeHandler(el, hideLinks)
+  }
 })
