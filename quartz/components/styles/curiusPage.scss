@@ -20,13 +20,7 @@
 }
 
 .highlight-modal {
-  position: absolute;
-  border: 1px solid #000;
-  background-color: white;
-  z-index: 1000;
-  padding: 0 20px;
-  width: 350px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  @include modalStyles;
 }
 
 .highlight-modal ul {

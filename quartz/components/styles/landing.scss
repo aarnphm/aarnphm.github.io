@@ -55,6 +55,19 @@ body[data-slug="index"] {
   }
 }
 
+.email-modal {
+  @include modalStyles;
+  border: 1px solid var(--lightgray);
+  background-color: var(--light);
+  width: 250px;
+
+  span {
+    font-size: 0.7rem;
+    color: var(--darkgray);
+    font-family: var(--codeFont);
+  }
+}
+
 .content-container {
   padding-bottom: 128px;
   overflow: hidden;

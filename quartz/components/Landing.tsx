@@ -138,6 +138,19 @@ const Content = () => (
         {Object.entries(SocialAlias).map(([name, url], index, array) => (
           <AliasLink key={name} name={name} url={url} newTab={name !== "curius"} />
         ))}
+        <li>
+          <a
+            class="landing-links"
+            id="landing-mail"
+            href="mailto:contact@aarnphm.xyz"
+            target="_blank"
+          >
+            contact
+            <div class="email-modal" id="email-modal" style="display: none;">
+              <span>mailto: contact[at]aarnphm[dot]xyz</span>
+            </div>
+          </a>
+        </li>
       </ul>
     </p>
     <hr />
