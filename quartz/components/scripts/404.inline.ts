@@ -43,6 +43,14 @@ function startTypingEffect(element: HTMLElement, phrasesArray: string[]) {
 document.addEventListener("nav", () => {
   const typewritter = document.getElementById("typewritter")
   if (!typewritter) return
-  typewritter.classList.add("typing")
-  startTypingEffect(typewritter, phases)
+  const parentNode = typewritter.parentElement?.parentNode
+  if (parentNode) {
+    for (const item of ["h1", "p"]) {
+      parentNode.querySelectorAll(item).forEach((el) => {
+        el.remove()
+      })
+    }
+    typewritter.classList.add("typing")
+    startTypingEffect(typewritter, phases)
+  }
 })
