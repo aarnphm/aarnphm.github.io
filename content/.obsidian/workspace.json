@@ -8,30 +8,19 @@
         "type": "tabs",
         "children": [
           {
-            "id": "fc9b3a9d4f4fdb0f",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "dump/university/sfwr-3dx4/frequency_domain.pdf"
-              }
-            }
-          },
-          {
             "id": "6b5b5a37da457ced",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/sfwr-3dx4/lab1/content.md",
+                "file": "dump/Fisher-Yates.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -97,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/sfwr-3dx4/lab1/content.md",
+                "file": "dump/Fisher-Yates.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -114,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/sfwr-3dx4/lab1/content.md",
+                "file": "dump/Fisher-Yates.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -137,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/sfwr-3dx4/lab1/content.md"
+                "file": "dump/Fisher-Yates.md"
               }
             }
           },
@@ -167,7 +156,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/sfwr-3dx4/lab1/content.md"
+                "file": "dump/Fisher-Yates.md"
               }
             }
           }
@@ -191,12 +180,9 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "6b5b5a37da457ced",
+  "active": "59fd19f001b80287",
   "lastOpenFiles": [
-    "dump/university/sfwr-3dx4/frequency_domain.pdf",
-    "dump/university/sfwr-3dx4/block_diagrams.pdf",
-    "dump/university/sfwr-3dx4/state_space.pdf",
-    "dump/university/sfwr-3dx4/lab1/lab1.pdf",
+    "dump/Fisher-Yates.md",
     "uses.md",
     "templates/post.md",
     "templates",
@@ -230,8 +216,11 @@
     "posts/Questions about Apology.md",
     "posts/Chaos.md",
     "posts",
-    "dump/university/sfwr-3dx4/lab1/5.1-graph.png",
+    "dump/university/sfwr-3dx4/state_space.pdf",
+    "dump/university/sfwr-3dx4/lab1/lab1.slx",
+    "dump/university/sfwr-3dx4/lab1/lab1.pdf",
     "dump/university/sfwr-3dx4/lab1/5.2-graph.png",
+    "dump/university/sfwr-3dx4/lab1/5.1-graph.png",
     "dump/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",
     "dump/university/sfwr-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
     "dump/university/sfwr-2c03/sumary-sorting.png",
