@@ -3,14 +3,14 @@ name: Build and Test
 on:
   pull_request:
     branches:
-      - v4
+      - main
   push:
     branches:
-      - v4
+      - main
 
 jobs:
   build-and-test:
-    if: ${{ github.repository == 'jackyzha0/quartz' }}
+    if: ${{ github.repository == 'aarnphm/aarnphm.github.io' }}
     strategy:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
