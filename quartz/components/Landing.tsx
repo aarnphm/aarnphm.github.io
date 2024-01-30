@@ -78,7 +78,7 @@ const Search = () => (
   </div>
 )
 
-const Graph = () => (
+export const Graph = () => (
   <div class="graph">
     <div id="global-graph-icon"></div>
     <div id="global-graph-outer">
@@ -87,7 +87,7 @@ const Graph = () => (
   </div>
 )
 
-const DarkMode = () => (
+export const DarkMode = () => (
   <div class="darkmode">
     <input class="toggle" id="darkmode-toggle" type="checkbox" tabIndex={-1} />
   </div>

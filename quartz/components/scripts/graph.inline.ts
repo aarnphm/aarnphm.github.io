@@ -332,7 +332,11 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   function hideGlobalGraph() {
     container?.classList.remove("active")
     const graph = document.getElementById("global-graph-container")
+    const sidebar = container?.closest(".sidebar") as HTMLElement
     if (!graph) return
+    if (sidebar) {
+      sidebar.style.zIndex = "unset"
+    }
     removeAllChildren(graph)
   }
 

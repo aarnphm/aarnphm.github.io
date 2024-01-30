@@ -1,4 +1,5 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "../types"
+import { Graph, DarkMode } from "../Landing"
 
 import curiusStyle from "../styles/curiusPage.scss"
 
@@ -8,6 +9,8 @@ import curiusScript from "../scripts/curius.inline"
 function CuriusContent(props: QuartzComponentProps) {
   return (
     <div class="popover-hint">
+      <Graph />
+      <DarkMode />
       <div id="curius">
         <p>
           <span>

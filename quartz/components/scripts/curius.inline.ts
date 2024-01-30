@@ -348,7 +348,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const navigation = document.createElement("div")
   navigation.classList.add("navigation-container")
   const navigationText = document.createElement("p")
-  navigationText.innerHTML = `You might be interested in <a href="/dump/quotes">this</a> or <a href="/">that</a>`
+  navigationText.innerHTML = `You might be interested in <a href="/dump/quotes" rel="noopener noreferrer">this</a> or <a href="/books" rel="noopener noreferrer">that</a>`
   navigation.appendChild(navigationText)
   curius.append(navigation)
 
@@ -398,9 +398,14 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (e.key === "k" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       e.preventDefault()
-      const searchBarOpen = searchBar?.classList.contains("active")
-      searchBarOpen ? hideLinks() : showLinks(sampleLinks)
-      searchBar?.focus()
+      if (!searchBar) return
+      const rect = searchBar.getBoundingClientRect()
+      // check if the search bar is in the viewport
+      if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
+        const searchBarOpen = searchBar.classList.contains("active")
+        searchBarOpen ? hideLinks() : showLinks(sampleLinks)
+        searchBar?.focus()
+      }
     }
 
     if (!searchBar?.classList.contains("active")) return
