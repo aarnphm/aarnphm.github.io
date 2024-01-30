@@ -27,6 +27,74 @@
     animation: dots 1s infinite;
   }
 
+  #curius-bar {
+    outline: none;
+    background-color: var(--lightgray);
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    white-space: nowrap;
+    border-radius: 7px;
+    width: 100%;
+    font-family: var(--bodyFont);
+    box-sizing: border-box;
+    color: var(--dark);
+    padding: 0.2em 1em;
+    border: 1px solid var(--lightgray);
+  }
+
+  #curius-search-container {
+    contain: layout;
+    position: absolute;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+    width: $pageWidth;
+    z-index: 999;
+    border-radius: 7px;
+    box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
+    background-color: var(--light);
+    max-height: 50vh;
+    margin-top: 1em;
+    overflow: auto;
+
+    &.active {
+      display: inline-block;
+    }
+  }
+
+  .curius-search-link {
+    padding: 10px;
+    margin: auto;
+    display: block;
+    width: 98%;
+    border-color: var(--lightgray);
+    border-width: 0px 0px 1px;
+    border-style: solid;
+    text-decoration: inherit;
+    color: inherit;
+    outline: 0px;
+    cursor: pointer;
+    font-weight: normal;
+
+    &:hover {
+      background-color: var(--primaryColor);
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  }
+
+  .curius-search-title {
+    display: flex;
+  }
+  .curius-search-snippet {
+    color: rgb(170, 170, 170);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
   & ul {
     list-style: none;
     display: flex;

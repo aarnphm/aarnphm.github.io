@@ -1,5 +1,6 @@
+import FlexSearch, { IndexOptions } from "flexsearch"
 import { pluralize } from "../../util/lang"
-import { removeAllChildren } from "./util"
+import { registerEscapeHandler, removeAllChildren } from "./util"
 
 interface Highlight {
   id: number
@@ -39,6 +40,21 @@ interface Link {
   userIds?: number[]
 }
 
+const LinkKeys: Array<keyof Link> = [
+  "id",
+  "link",
+  "title",
+  "favorite",
+  "snippet",
+  "toRead",
+  "createdDate",
+  "modifiedDate",
+  "lastCrawled",
+  "topics",
+  "highlights",
+  "userIds",
+]
+
 interface User {
   id: number
   firstName: string
@@ -73,10 +89,7 @@ interface Following {
 interface Response {
   links?: Link[]
   user?: User
-  lastFetched: string
 }
-
-const CURIUS = "https://curius.app/aaron-pham"
 
 const timeSince = (date: Date | string) => {
   const now = new Date()
@@ -108,8 +121,34 @@ const fetchLinksHeaders: RequestInit = {
   headers: { "Content-Type": "application/json" },
 }
 
+function random(min: number, max: number): number {
+  if (max == null) {
+    max = min
+    min = 0
+  }
+  return min + Math.floor(Math.random() * (max - min + 1))
+}
+
+function sample(object: any[], n: number): any[] {
+  const sample = [...object]
+  var length = sample.length
+  n = Math.max(Math.min(n, length), 0)
+  var last = length - 1
+  for (var index = 0; index < n; index++) {
+    var rand = random(index, last)
+    var temp = object[index]
+    sample[index] = sample[rand]
+    sample[rand] = temp
+  }
+  return sample.slice(0, n)
+}
+
 const localFetchKey = "curiusLinks"
 const localTimeKey = "curiusLastFetch"
+
+let index: FlexSearch.Document<Link> | undefined = undefined
+const numSearchResults = 5
+let prevShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 
 const getLocalItem = (key: "curiusLinks" | "curiusLastFetch", value: any): any =>
   localStorage.getItem(key) ?? value
@@ -131,16 +170,16 @@ async function fetchLinks(): Promise<Response> {
     // set fetched period to 5 minutes
     const periods = 5 * 60 * 1000
 
-    const getLocalLinks = () => JSON.parse(getLocalItem(localFetchKey, "[]"))
+    const links = JSON.parse(getLocalItem(localFetchKey, "[]"))
 
     if (currentTime.getTime() - lastFetched.getTime() < periods) {
-      return { links: getLocalLinks(), user: user, lastFetched: lastFetched.toString() }
+      return { links, user }
     }
 
     localStorage.setItem("curiusLastFetch", currentTime.toString())
 
     // fetch new links
-    const links: Link[] = await fetch(
+    const newLinks: Link[] = await fetch(
       "https://raw.aarnphm.xyz/api/curius?query=links",
       fetchLinksHeaders,
     )
@@ -149,20 +188,14 @@ async function fetchLinks(): Promise<Response> {
         if (data === undefined || data.links === undefined) {
           throw new Error("Failed to fetch links")
         }
-        data.links.sort(
-          (a: Link, b: Link) =>
-            new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime(),
-        )
         return data.links
       })
 
-    const existingLinks = getLocalLinks()
-    if (JSON.stringify(existingLinks) !== JSON.stringify(links)) {
+    if (JSON.stringify(links) !== JSON.stringify(newLinks)) {
       localStorage.setItem("curiusLinks", JSON.stringify(links))
     }
-    return { links, user, lastFetched: lastFetched.toString() }
+    return { links, user }
   } catch (err) {
-    console.error(err)
     throw new Error("Failed to fetch links")
   }
 }
@@ -211,9 +244,7 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
         ? `${Link.topics
             .map(
               (topic) =>
-                `<ul><a href=${[CURIUS, topic.slug].join("/")} target="_blank">${
-                  topic.topic
-                }</a></ul>`,
+                `<ul><a href="https://curius.app/aaron-pham/${topic.slug}" target="_blank">${topic.topic}</a></ul>`,
             )
             .join("")}`
         : ``
@@ -244,14 +275,15 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
   return curiusItem
 }
 
-document.addEventListener("nav", async (e: unknown) => {
-  // create an array of all these elements by Id functionally
-  const elements = ["curius", "curius-container", "curius-description"].map((id) =>
+document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
+  const elements = ["curius", "curius-container", "curius-search-container"].map((id) =>
     document.getElementById(id),
   )
+  const searchBar = document.getElementById("curius-bar") as HTMLInputElement | null
+  const resultCards = document.getElementsByClassName("curius-search-link")
 
   if (elements.some((el) => el === null)) return
-  const [curius, container, description] = elements as HTMLElement[]
+  const [curius, container, searchContainer] = elements as HTMLElement[]
 
   const fetching = document.createElement("div")
   fetching.id = "curius-fetching-text"
@@ -260,27 +292,16 @@ document.addEventListener("nav", async (e: unknown) => {
   const resp = await fetchLinks()
   curius.removeChild(fetching)
 
-  const linksData = resp.links ?? []
   const userData = resp.user ?? {}
-
-  const item = document.createElement("p")
-  const time = document.createElement("p")
-  time.innerHTML = `<em>last fetched: ${new Date(resp.lastFetched).toUTCString()}</em>`
-  const titleLink = document.createElement("span")
-  titleLink.textContent = `${linksData.length} of `
-  const curiusLink = document.createElement("a")
-  curiusLink.href = CURIUS
-  curiusLink.target = "_blank"
-  curiusLink.textContent = "curius.app/aaron-pham"
-  titleLink.append(curiusLink)
-  item.append(titleLink, time)
-  description.appendChild(item)
+  const linksData = resp.links ?? []
+  const sampleLinks = sample(linksData, 20)
 
   const fragment = document.createDocumentFragment()
   if (linksData.length === 0) {
     container.innerHTML = `<p>Failed to fetch links.</p>`
     return
   }
+
   linksData.map((link) => fragment.appendChild(createLinkEl(link)))
   container.append(fragment)
 
@@ -290,4 +311,136 @@ document.addEventListener("nav", async (e: unknown) => {
   navigationText.innerHTML = `You might be interested in <a href="/dump/quotes">this</a> or <a href="/">that</a>`
   navigation.appendChild(navigationText)
   curius.append(navigation)
+
+  async function onType(e: HTMLElementEventMap["input"]) {
+    let term = (e.target as HTMLInputElement).value
+    let searchResults =
+      (await index?.searchAsync({
+        query: term,
+        limit: numSearchResults,
+        index: ["title", "snippet", "topics"],
+      })) ?? []
+
+    const getByField = (field: string): number[] => {
+      const results = searchResults.filter((x) => x.field === field)
+      return results.length === 0 ? [] : ([...results[0].result] as number[])
+    }
+
+    const allIds: Set<number> = new Set([
+      ...getByField("title"),
+      ...getByField("snippet"),
+      ...getByField("topics"),
+    ])
+
+    showLinks([...allIds].map((id) => linksData[id]))
+  }
+
+  function createSearchLinks(link: Link): HTMLAnchorElement {
+    const curiusLink = document.createElement("a")
+    curiusLink.classList.add("curius-search-link")
+    curiusLink.target = "_blank"
+    curiusLink.href = link.link
+    const linkTitle = document.createElement("div")
+    linkTitle.classList.add("curius-search-title")
+    linkTitle.textContent = link.title
+    const linkSnippet = document.createElement("div")
+    linkSnippet.classList.add("curius-search-snippet")
+    linkSnippet.textContent = link.snippet
+    curiusLink.append(linkTitle, linkSnippet)
+    curiusLink.onclick = (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+      hideLinks()
+    }
+    return curiusLink
+  }
+
+  function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
+    if (e.key === "k" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+      e.preventDefault()
+      const searchBarOpen = searchBar?.classList.contains("active")
+      searchBarOpen ? hideLinks() : showLinks(sampleLinks)
+    }
+
+    if (!searchBar?.classList.contains("active")) return
+    else if (e.key === "Escape") {
+      e.preventDefault()
+      hideLinks()
+    } else if (e.key === "Enter") {
+      if (searchContainer?.contains(document.activeElement)) {
+        const active = document.activeElement as HTMLInputElement
+        active.click()
+      } else {
+        const anchor = document.getElementsByClassName(
+          "curius-search-link",
+        )[0] as HTMLInputElement | null
+        anchor?.click()
+      }
+    } else if (e.key === "ArrowUp" || (e.shiftKey && e.key === "Tab")) {
+      e.preventDefault()
+      // When first pressing ArrowDown, results wont contain the active element, so focus first element
+      if (!searchContainer?.contains(document.activeElement)) {
+        const firstResult = resultCards[0] as HTMLInputElement | null
+        firstResult?.focus()
+      }
+    } else if (e.key === "ArrowDown" || e.key === "Tab") {
+      e.preventDefault()
+
+      // When first pressing ArrowDown, results wont contain the active element, so focus first element
+      if (!searchContainer?.contains(document.activeElement)) {
+        const firstResult = resultCards[0] as HTMLInputElement | null
+        firstResult?.focus()
+      } else {
+        // If an element in results-container already has focus, focus next one
+        const nextResult = document.activeElement?.nextElementSibling as HTMLInputElement | null
+        nextResult?.focus()
+      }
+    }
+  }
+
+  function showLinks(links: Link[]) {
+    if (!searchContainer) return
+    searchBar?.classList.add("active")
+    removeAllChildren(searchContainer)
+    searchContainer?.append(...links.map(createSearchLinks))
+  }
+
+  function hideLinks() {
+    if (searchBar) {
+      searchBar.value = ""
+    }
+    searchBar?.classList.remove("active")
+    removeAllChildren(searchContainer)
+  }
+
+  if (prevShortcutHandler) {
+    document.removeEventListener("keydown", prevShortcutHandler)
+  }
+
+  document.addEventListener("keydown", shortcutHandler)
+  prevShortcutHandler = shortcutHandler
+  searchBar?.removeEventListener("click", () => showLinks(sampleLinks))
+  searchBar?.addEventListener("click", () => showLinks(sampleLinks))
+  searchBar?.removeEventListener("input", onType)
+  searchBar?.addEventListener("input", onType)
+
+  if (!index) {
+    const documentIndex = [
+      ...LinkKeys.map(
+        (key) =>
+          ({ field: key, tokenize: "forward" }) as IndexOptions<Link, false> & { field: string },
+      ),
+    ]
+    index = new FlexSearch.Document({
+      charset: "latin:extra",
+      document: { id: "id", index: documentIndex },
+    })
+
+    let id = 0
+    for (const link of linksData) {
+      await index.addAsync(id, { ...link })
+      id++
+    }
+  }
+
+  registerEscapeHandler(curius, hideLinks)
 })

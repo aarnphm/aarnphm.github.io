@@ -9,8 +9,25 @@ function CuriusContent(props: QuartzComponentProps) {
   return (
     <div class="popover-hint">
       <div id="curius">
-        <div id="curius-description"></div>
-        <ul id="curius-container"></ul>
+        <p>
+          <span>
+            See more on{" "}
+            <a href="https://curius.app/aaron-pham" target="_blank">
+              curius.app/aaron-pham
+            </a>
+          </span>
+        </p>
+        <div class="curius-outer">
+          <input
+            autocomplete="off"
+            id="curius-bar"
+            type="text"
+            aria-label="Search for curius links"
+            placeholder="Search for curius links"
+          />
+          <div id="curius-search-container"></div>
+          <ul id="curius-container"></ul>
+        </div>
       </div>
     </div>
   )
