@@ -74,12 +74,14 @@
     border-style: solid;
     text-decoration: inherit;
     color: inherit;
-    outline: 0px;
+    outline: none;
     cursor: pointer;
-    font-weight: normal;
+    font-weight: inherit;
+    transition: background 0.2s ease;
 
-    &:hover {
-      background-color: var(--primaryColor);
+    &:hover,
+    &:focus {
+      background-color: var(--lightgray);
       border-radius: 5px;
       cursor: pointer;
     }

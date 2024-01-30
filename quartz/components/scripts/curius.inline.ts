@@ -171,6 +171,7 @@ async function fetchLinks(): Promise<Response> {
     const periods = 5 * 60 * 1000
 
     const links = JSON.parse(getLocalItem(localFetchKey, "[]"))
+    console.log(links, user)
 
     if (currentTime.getTime() - lastFetched.getTime() < periods) {
       return { links, user }
@@ -302,7 +303,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     return
   }
 
-  linksData.map((link) => fragment.appendChild(createLinkEl(link)))
+  linksData.forEach((link) => fragment.appendChild(createLinkEl(link)))
   container.append(fragment)
 
   const navigation = document.createElement("div")
@@ -362,10 +363,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     }
 
     if (!searchBar?.classList.contains("active")) return
-    else if (e.key === "Escape") {
-      e.preventDefault()
-      hideLinks()
-    } else if (e.key === "Enter") {
+    else if (e.key === "Enter") {
       if (searchContainer?.contains(document.activeElement)) {
         const active = document.activeElement as HTMLInputElement
         active.click()
@@ -378,9 +376,9 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     } else if (e.key === "ArrowUp" || (e.shiftKey && e.key === "Tab")) {
       e.preventDefault()
       // When first pressing ArrowDown, results wont contain the active element, so focus first element
-      if (!searchContainer?.contains(document.activeElement)) {
-        const firstResult = resultCards[0] as HTMLInputElement | null
-        firstResult?.focus()
+      if (searchContainer?.contains(document.activeElement)) {
+        const prevResult = document.activeElement?.previousElementSibling as HTMLInputElement | null
+        prevResult?.focus()
       }
     } else if (e.key === "ArrowDown" || e.key === "Tab") {
       e.preventDefault()
@@ -412,14 +410,19 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     removeAllChildren(searchContainer)
   }
 
+  function onClick(e: HTMLElementEventMap["click"]) {
+    if (searchBar?.classList.contains("active")) return
+    showLinks(sampleLinks)
+  }
+
   if (prevShortcutHandler) {
     document.removeEventListener("keydown", prevShortcutHandler)
   }
 
   document.addEventListener("keydown", shortcutHandler)
   prevShortcutHandler = shortcutHandler
-  searchBar?.removeEventListener("click", () => showLinks(sampleLinks))
-  searchBar?.addEventListener("click", () => showLinks(sampleLinks))
+  searchBar?.removeEventListener("click", onClick)
+  searchBar?.addEventListener("click", onClick)
   searchBar?.removeEventListener("input", onType)
   searchBar?.addEventListener("input", onType)
 
@@ -442,5 +445,5 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     }
   }
 
-  registerEscapeHandler(curius, hideLinks)
+  registerEscapeHandler(document.getElementById("quartz-body"), hideLinks)
 })
