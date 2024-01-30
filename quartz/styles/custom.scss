@@ -1,11 +1,6 @@
 @use "./base.scss";
 @use "./variables.scss" as *;
 
-::selection {
-  color: var(--light);
-  background-color: var(--secondary);
-}
-
 @font-face {
   font-family: "EB Garamond";
   font-style: normal;

@@ -84,7 +84,16 @@ body[data-slug="index"] {
   }
 
   @media all and (max-width: $pageWidth) {
-    @include excludeId("& ul", "& ul.keybinds") {
+    @include excludeId("& ul[id='garden']") {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 1px;
+      padding: 0;
+      margin: 0;
+      list-style-type: none;
+    }
+
+    @include excludeId("& ul.keybinds") {
       list-style: inherit;
       flex-direction: column;
       margin-top: 1rem;

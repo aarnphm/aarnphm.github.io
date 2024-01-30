@@ -126,7 +126,7 @@ const Content = () => (
     <hr />
     <p class="landing-subhead">
       <h3>garden:</h3>
-      <ul>
+      <ul id="garden">
         {Object.entries(HyperAlias).map(([name, url], index, array) => (
           <AliasLink key={name} name={name} url={url} isInternal />
         ))}
@@ -134,7 +134,7 @@ const Content = () => (
     </p>
     <p>
       <h3>socials:</h3>
-      <ul>
+      <ul id="socials">
         {Object.entries(SocialAlias).map(([name, url], index, array) => (
           <AliasLink key={name} name={name} url={url} newTab={name !== "curius"} />
         ))}
