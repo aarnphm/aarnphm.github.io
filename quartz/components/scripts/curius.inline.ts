@@ -171,7 +171,6 @@ async function fetchLinks(): Promise<Response> {
     const periods = 5 * 60 * 1000
 
     const links = JSON.parse(getLocalItem(localFetchKey, "[]"))
-    console.log(links, user)
 
     if (currentTime.getTime() - lastFetched.getTime() < periods) {
       return { links, user }
@@ -192,10 +191,10 @@ async function fetchLinks(): Promise<Response> {
         return data.links
       })
 
-    if (JSON.stringify(links) !== JSON.stringify(newLinks)) {
-      localStorage.setItem("curiusLinks", JSON.stringify(links))
+    if (JSON.stringify(lrnks) !== JSON.stringify(newLinks)) {
+      localStorage.setItem("curiusLinks", JSON.stringify(newLinks))
     }
-    return { links, user }
+    return { links: newLinks, user }
   } catch (err) {
     throw new Error("Failed to fetch links")
   }
@@ -333,7 +332,8 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       ...getByField("topics"),
     ])
 
-    showLinks([...allIds].map((id) => linksData[id]))
+    const finalResults = [...allIds].map((id) => linksData[id])
+    showLinks(finalResults)
   }
 
   function createSearchLinks(link: Link): HTMLAnchorElement {
