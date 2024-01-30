@@ -301,8 +301,13 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
         modal.style.top = `${event.pageY + 10}px`
       }
 
+      highlights.removeEventListener("mouseenter", onMouseEnter)
       highlights.addEventListener("mouseenter", onMouseEnter)
+
+      highlights.removeEventListener("mouseleave", onMouseLeave)
       highlights.addEventListener("mouseleave", onMouseLeave)
+
+      highlights.removeEventListener("mousemove", onMouseMove)
       highlights.addEventListener("mousemove", onMouseMove)
     }
 
