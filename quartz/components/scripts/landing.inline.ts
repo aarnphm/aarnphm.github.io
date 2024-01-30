@@ -61,3 +61,21 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     landingEmail?.addEventListener("mouseleave", emailModalLeave)
   }
 })
+
+// keybind shortcut
+let prevHomeShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
+document.addEventListener("nav", (ev: CustomEventMap["nav"]) => {
+  function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
+    if (e.key === "/" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+      window.location.pathname = "/"
+    }
+  }
+
+  if (prevHomeShortcutHandler) {
+    document.removeEventListener("keydown", prevHomeShortcutHandler)
+  }
+
+  document.addEventListener("keydown", shortcutHandler)
+  prevHomeShortcutHandler = shortcutHandler
+})

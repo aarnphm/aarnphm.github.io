@@ -2,19 +2,18 @@ import { getFullSlug } from "../../util/path"
 
 const timeout = 500
 
-let prevHomeShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
-
 document.addEventListener("nav", (e: CustomEventMap["nav"]) => {
-  const progress = document.getElementById("progress")
   let hideTimeout: ReturnType<typeof setTimeout>
   const slug = e.detail.url
   if (slug === "index") return
 
   const hide = () => {
+    const progress = document.getElementById("progress")
     if (!progress) return
     progress.style.backgroundColor = "transparent"
   }
   const show = () => {
+    const progress = document.getElementById("progress")
     if (!progress) return
     progress.style.backgroundColor = "var(--dark)"
     clearTimeout(hideTimeout)
@@ -22,6 +21,7 @@ document.addEventListener("nav", (e: CustomEventMap["nav"]) => {
   }
 
   window.addEventListener("scroll", () => {
+    const progress = document.getElementById("progress")
     if (!progress) return
     show()
     var winScroll = document.body.scrollTop || document.documentElement.scrollTop
@@ -43,21 +43,4 @@ document.addEventListener("nav", () => {
   }
   window.onscroll = checkImgPosition
   checkImgPosition()
-})
-
-// keybind shortcut
-document.addEventListener("nav", (ev: CustomEventMap["nav"]) => {
-  function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if (e.key === "/" && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault()
-      window.location.pathname = "/index"
-    }
-  }
-
-  if (prevHomeShortcutHandler) {
-    document.removeEventListener("keydown", prevHomeShortcutHandler)
-  }
-
-  document.addEventListener("keydown", shortcutHandler)
-  prevHomeShortcutHandler = shortcutHandler
 })
