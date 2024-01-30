@@ -180,8 +180,10 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "6b5b5a37da457ced",
   "lastOpenFiles": [
+    "dump/Turing-complete Transformers.md",
+    "dump/papers/On The Measure of Intelligence.pdf",
     "dump/Fisher-Yates.md",
     "uses.md",
     "templates/post.md",
@@ -214,11 +216,9 @@
     "posts/Questions about Spinoza.md",
     "posts/Questions about Metaphysics.md",
     "posts/Questions about Apology.md",
-    "posts/Chaos.md",
     "posts",
     "dump/university/sfwr-3dx4/state_space.pdf",
     "dump/university/sfwr-3dx4/lab1/lab1.slx",
-    "dump/university/sfwr-3dx4/lab1/lab1.pdf",
     "dump/university/sfwr-3dx4/lab1/5.2-graph.png",
     "dump/university/sfwr-3dx4/lab1/5.1-graph.png",
     "dump/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",

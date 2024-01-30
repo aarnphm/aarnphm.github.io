@@ -6,7 +6,7 @@ date: "2024-01-30"
 title: Fisher-Yates
 ---
 
-Psuedocode:
+Pseudocode:
 
 ```prolog
 Write down the numbers from 1 through N.
