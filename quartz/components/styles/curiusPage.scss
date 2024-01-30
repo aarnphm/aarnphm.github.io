@@ -93,6 +93,12 @@
     cursor: pointer;
     font-weight: inherit;
     transition: background 0.2s ease;
+    &:hover,
+    &:focus {
+      background-color: var(--lightgray);
+      border-radius: 5px;
+      cursor: pointer;
+    }
   }
   .curius-search-title {
     display: flex;
