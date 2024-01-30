@@ -170,13 +170,13 @@ async function fetchLinks(): Promise<Response> {
     // set fetched period to 5 minutes
     const periods = 5 * 60 * 1000
 
-    const links = JSON.parse(getLocalItem(localFetchKey, "[]"))
+    const getCachedLinks = () => JSON.parse(getLocalItem(localFetchKey, "[]"))
 
     if (currentTime.getTime() - lastFetched.getTime() < periods) {
-      return { links, user }
+      return { links: getCachedLinks(), user }
     }
 
-    localStorage.setItem("curiusLastFetch", currentTime.toString())
+    localStorage.setItem(localTimeKey, currentTime.toString())
 
     // fetch new links
     const newLinks: Link[] = await fetch(
@@ -191,8 +191,8 @@ async function fetchLinks(): Promise<Response> {
         return data.links
       })
 
-    if (JSON.stringify(lrnks) !== JSON.stringify(newLinks)) {
-      localStorage.setItem("curiusLinks", JSON.stringify(newLinks))
+    if (JSON.stringify(getCachedLinks()) !== JSON.stringify(newLinks)) {
+      localStorage.setItem(localFetchKey, JSON.stringify(newLinks))
     }
     return { links: newLinks, user }
   } catch (err) {
