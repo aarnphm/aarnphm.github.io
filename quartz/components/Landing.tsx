@@ -146,7 +146,7 @@ const Content = () => (
       <ul class="keybinds">
         {Object.entries(KeybindAlias).map(([key, value], index, array) => (
           <li>
-            <a id="landing-keybind" data={key.replaceAll("+", "--")}>
+            <a id="landing-keybind" data-keybind={key.replaceAll("+", "--")}>
               {key}
             </a>
             : {value}
