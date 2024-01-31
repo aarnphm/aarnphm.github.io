@@ -395,8 +395,8 @@ async function createToolTip(item: HTMLElement) {
       placement: "top-start",
       strategy: "fixed",
     }).then(({ middlewareData }) => {
-      tooltip.style.left = `${clientX - 20}px`
-      tooltip.style.top = `${clientY - 30}px`
+      tooltip.style.left = `${clientX - 18}px`
+      tooltip.style.top = `${clientY - 40}px`
       tooltip.style.display = "block"
 
       const { x: arrowX, y: arrowY } = middlewareData.arrow as Partial<Coords>

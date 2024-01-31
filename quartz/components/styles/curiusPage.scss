@@ -21,23 +21,28 @@
 
 .tooltip {
   display: none;
+  max-width: 200px;
   padding: 0.3rem 0.3rem;
   position: absolute;
   pointer-events: none;
-  color: #fff;
   border: 1px solid transparent;
   border-radius: 2px;
   background: var(--lightgray);
-  font-size: 10px;
+  color: rgb(170, 170, 170);
+  font-size: 12px;
   transition: opacity 0.3s ease-out;
   z-index: 999;
+
+  [saved-theme="light"] & {
+    color: var(--dark);
+  }
 }
 
 #arrow,
 #arrow::before {
   position: absolute;
-  width: 8px; /* Arrow size */
-  height: 8px; /* Arrow size */
+  width: 8px;
+  height: 8px;
   z-index: -1;
 }
 
