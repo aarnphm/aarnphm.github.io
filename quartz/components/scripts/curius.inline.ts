@@ -285,6 +285,9 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
         modal.classList.add("active")
       }
 
+      highlights.removeEventListener("mouseenter", onMouseEnter)
+      highlights.addEventListener("mouseenter", onMouseEnter)
+
       function onMouseLeave(event: MouseEvent) {
         curiusItem.style.backgroundColor = "var(--lightgray)"
 
@@ -292,6 +295,9 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
         modal.style.display = "none"
         modal.classList.remove("active")
       }
+      highlights.removeEventListener("mouseleave", onMouseLeave)
+      highlights.addEventListener("mouseleave", onMouseLeave)
+
       function onMouseMove(event: MouseEvent) {
         curiusItem.style.backgroundColor = ""
 
@@ -300,13 +306,6 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
         modal.style.left = `${event.pageX + 10}px`
         modal.style.top = `${event.pageY + 10}px`
       }
-
-      highlights.removeEventListener("mouseenter", onMouseEnter)
-      highlights.addEventListener("mouseenter", onMouseEnter)
-
-      highlights.removeEventListener("mouseleave", onMouseLeave)
-      highlights.addEventListener("mouseleave", onMouseLeave)
-
       highlights.removeEventListener("mousemove", onMouseMove)
       highlights.addEventListener("mousemove", onMouseMove)
     }

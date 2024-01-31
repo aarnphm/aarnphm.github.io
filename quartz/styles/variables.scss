@@ -7,7 +7,9 @@ $fullPageWidth: $pageWidth + 2 * $sidePanelWidth;
 
 @mixin excludeId($selectors...) {
   @each $selector in $selectors {
-    #{$selector}:not(.popover, .popover *, .search, .search *, .graph, .graph *) {
+    #{$selector}:not(.popover):not(.popover *):not(.search):not(.search *):not(.graph):not(
+        .graph *
+      ) {
       @content;
     }
   }

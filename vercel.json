@@ -1,13 +1,14 @@
 {
   "cleanUrls": true,
+  "framework": null,
   "installCommand": "npm install",
-  "buildCommand": "npx quartz build",
+  "buildCommand": "",
   "outputDirectory": "content",
   "redirects": [
     {
       "source": "/",
       "destination": "https:///aarnphm.xyz/",
-      "permanent": true
+      "permanent": false
     }
   ]
 }

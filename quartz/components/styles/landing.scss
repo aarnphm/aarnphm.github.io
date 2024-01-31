@@ -6,8 +6,6 @@
 
   @include excludeId("& > *", "h1", "h2", "h3", "h4") {
     font-family: var(--bodyFont);
-  }
-  @include excludeId("h3") {
     font-weight: normal;
   }
 
@@ -18,13 +16,6 @@
     transition: none;
     border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
     border-radius: 0;
-  }
-
-  @include excludeId(".darkmode") {
-    display: block;
-    margin: 0;
-    width: inherit;
-    height: inherit;
   }
 }
 
@@ -74,10 +65,6 @@ body[data-slug="index"] {
   max-width: 42rem;
   margin: 2rem auto 0 auto;
   position: relative;
-
-  @include excludeId(".landing-logo") {
-    text-align: center;
-  }
 
   @include excludeId("hr") {
     width: 100%;
@@ -172,15 +159,5 @@ body[data-slug="index"] {
   @include excludeId(".content-container") {
     margin: 4rem auto 1.5rem;
     width: 70%;
-  }
-}
-
-@media all and (max-width: 320px) {
-  @include excludeId(".landing-logo") {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 60%;
-    height: 60%;
   }
 }

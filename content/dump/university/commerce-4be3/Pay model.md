@@ -101,3 +101,6 @@ collective bargaining
 ## pay techniques
 - four basic policies
 - tools and mechanism that are used to achieve objectives.
+
+
+Gender inequality [article](https://web.archive.org/web/20230602214140/https://www.theglobeandmail.com/business/careers/article-not-a-single-large-public-canadian-firm-has-closed-the-gender-pay-gap/)
