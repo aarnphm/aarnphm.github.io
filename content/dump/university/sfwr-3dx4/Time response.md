@@ -50,4 +50,4 @@ where $\phi = \tan^{-1}(\frac{\beta}{\alpha})$ and $K_4=\sqrt{(2\alpha)^2 + (2\b
 
 _Deriving_ $\zeta$:
 
-- For _under-damped_ system,
+- For _under-damped_ system, the poles are $\sigma = \frac{-a}{2}$
