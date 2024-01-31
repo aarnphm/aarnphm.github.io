@@ -33,10 +33,7 @@ export default ((options?: Options) => {
             </div>
             <div class="footnotes">
               <p>
-                Vous êtes arrivé au bout! <a href="/">page d'accueil</a>, avec{" "}
-                <a href="https://quartz.jzhao.xyz/" target="_blank">
-                  Quartz
-                </a>
+                Vous êtes arrivé au bout! <a href="/">page d'accueil</a>
               </p>
             </div>
           </>

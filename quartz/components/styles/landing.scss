@@ -30,10 +30,6 @@ body[data-slug="index"] {
     color: rgb(215, 130, 126);
     border-bottom: none;
   }
-
-  @include excludeId("p") {
-    font-size: 1.1rem;
-  }
 }
 
 [saved-theme="dark"] body[data-slug="index"] {

@@ -5,7 +5,6 @@
   font-family: "EB Garamond";
   font-style: normal;
   font-weight: normal;
-  font-size: 1.3rem;
   src: url("/static/EBGaramond.ttf");
 }
 
@@ -22,6 +21,11 @@ body {
   position: relative;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+
+  @include excludeId("p") {
+    font-size: 1.1rem;
+    font-weight: normal;
+  }
 
   // Page specific display overrides
   @each $slug in ("uses", "dump/quotes", "curius", "influence") {
