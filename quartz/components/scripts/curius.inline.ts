@@ -143,7 +143,8 @@ const localFetchKey = "curiusLinks"
 const localTimeKey = "curiusLastFetch"
 
 let index: FlexSearch.Document<Link> | undefined = undefined
-const numSearchResults = 5
+const numSearchResults = 10
+const fetchTimeout = 30 * 1000 // 30 seconds
 let prevCuriusShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 
 const getLocalItem = (key: "curiusLinks" | "curiusLastFetch", value: any): any =>
@@ -243,9 +244,10 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
     tags.innerHTML =
       Link.topics.length > 0
         ? `${Link.topics
-            .map(
-              (topic) =>
-                `<ul><a href="https://curius.app/aaron-pham/${topic.slug}" target="_blank">${topic.topic}</a></ul>`,
+            .map((topic) =>
+              topic.public
+                ? `<ul><a href="https://curius.app/aaron-pham/${topic.slug}" target="_blank">${topic.topic}</a></ul>`
+                : ``,
             )
             .join("")}`
         : ``
@@ -368,6 +370,7 @@ async function createToolTip(item: HTMLElement) {
   }
 
   function show(this: HTMLElement) {
+    if (item.classList.contains("disabled")) return
     async function setPosition(popoverElement: HTMLElement) {
       await computePosition(item, popoverElement, {
         placement: "top",
@@ -428,6 +431,7 @@ async function createToolTip(item: HTMLElement) {
   })
 
   parentNode?.appendChild(tooltip)
+  return tooltip
 }
 
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
@@ -464,8 +468,14 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   // Ensure refetchIcon exists before adding event listener
   if (refetchIcon) {
     createToolTip(refetchIcon)
+
     refetchIcon.addEventListener("click", async () => {
-      const els = ["#curius-fragments", ".javigation-container"].map((id) => {
+      if (refetchIcon.classList.contains("disabled")) return
+      refetchIcon.classList.add("disabled")
+      refetchIcon.style.opacity = "0.5"
+      setTimeout(() => refetchIcon.classList.remove("disabled"), fetchTimeout)
+
+      const els = ["#curius-fragments", ".navigation-container"].map((id) => {
         let el = document.querySelector(id) as HTMLDivElement
         if (el.parentNode) el.parentNode.removeChild(el)
         return el
@@ -484,6 +494,26 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       }
       container.appendChild(createFragments(newData))
       curius.appendChild(curNavigation)
+    })
+
+    const showRefetch = () => {
+      if (refetchIcon.classList.contains("disabled")) {
+        refetchIcon.style.opacity = "0.5"
+      }
+    }
+    const events = [
+      ["mouseenter", showRefetch],
+      [
+        "mouseleave",
+        () => {
+          if (refetchIcon.classList.contains("disabled")) return
+          refetchIcon.style.opacity = "0"
+        },
+      ],
+    ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
+    events.forEach(([event, listener]) => {
+      refetchIcon.removeEventListener(event, listener)
+      refetchIcon.addEventListener(event, listener)
     })
   }
 

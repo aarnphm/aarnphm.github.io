@@ -145,11 +145,15 @@
 
   & div[id*="curius-highlight"] {
     cursor: pointer;
-    background-color: rgb(234, 157, 52, 0.4);
+    color: #886c5a;
+    background-color: #fdebd0;
+    font-size: 1em;
+    display: inline-block;
     font-style: normal;
   }
   & [saved-theme="dark"] div[id*="curius-highlight"] {
-    background-color: rgb(246, 193, 119, 0.4);
+    color: #fdebd0;
+    background-color: #795548;
   }
 
   @mixin iconStyles {
