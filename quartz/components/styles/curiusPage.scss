@@ -38,18 +38,13 @@
   }
 }
 
-#arrow,
-#arrow::before {
+#arrow {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   z-index: -1;
-}
-
-#arrow::before {
-  content: "";
-  transform: rotate(45deg);
   background: var(--lightgray);
+  transform: rotate(45deg) translateX(-50%);
 }
 
 #curius {
@@ -132,6 +127,13 @@
     ::marker {
       content: "";
     }
+  }
+
+  & > .navigation-container,
+  #curius-fetching-text {
+    display: none;
+    opacity: 0;
+    margin-top: 1rem;
   }
 
   & div[id*="curius-misc"] {
