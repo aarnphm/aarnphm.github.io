@@ -6,6 +6,9 @@ alias: L1
 date: "2024-01-24"
 title: PID Controller
 ---
+
+See [[dump/university/sfwr-3dx4/lab1/lab1.pdf|labs]]
+
 ### prelab.
 
 The general open loop transfer function which models the angular velocity of $\omega(t)$ of a motor is:

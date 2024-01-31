@@ -32,9 +32,19 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "08a82da6a20b3b33",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "dump/university/sfwr-3dx4/lab1/lab1.pdf"
+              }
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -100,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/sfwr-2fa3/NFA.md",
+                "file": "dump/university/sfwr-3dx4/lab1/lab1.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -117,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/sfwr-2fa3/NFA.md",
+                "file": "dump/university/sfwr-3dx4/lab1/lab1.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -140,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/sfwr-2fa3/NFA.md"
+                "file": "dump/university/sfwr-3dx4/lab1/lab1.pdf"
               }
             }
           },
@@ -170,7 +180,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/sfwr-2fa3/NFA.md"
+                "file": "dump/university/sfwr-3dx4/lab1/lab1.pdf"
               }
             }
           }
@@ -194,12 +204,16 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "def4e6070bc16404",
+  "active": "08a82da6a20b3b33",
   "lastOpenFiles": [
+    "dump/university/sfwr-3dx4/lab1/lab1.slx.bak",
+    "dump/university/sfwr-3dx4/lab1/lab1.slx.autosave.bak",
+    "dump/university/sfwr-3dx4/lab1/lab1.slx.autosave",
+    "dump/university/sfwr-3dx4/lab1/content.md",
+    "dump/university/sfwr-2fa3/NFA.md",
     "dump/university/commerce-4be3/Gender Pay Gap Discussion.pdf",
     "dump/university/commerce-4be3/Discussion Post - Gender Pay Gap.pdf",
     "dump/university/sfwr-2fa3/W1.md",
-    "dump/university/sfwr-2fa3/NFA.md",
     "dump/university/sfwr-2fa3/eps-nfa.png",
     "dump/university/sfwr-2fa3/eps-nfa.png",
     "dump/university/sfwr-2fa3/yxx-nfa-4s.png",
@@ -231,13 +245,9 @@
     "private/podcast.md",
     "private/bentoml",
     "private/Term of Reference.md",
-    "private/Reservation list.md",
     "private/Company interests",
     "private",
     "posts/images/passage-giorgio-m.jpg",
-    "posts/images",
-    "posts",
-    "dump/university/sfwr-3dx4/state_space.pdf",
     "dump/university/sfwr-3dx4/lab1/5.2-graph.png",
     "dump/university/sfwr-3dx4/lab1/5.1-graph.png",
     "dump/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",
