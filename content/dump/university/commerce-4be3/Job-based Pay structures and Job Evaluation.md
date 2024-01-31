@@ -19,6 +19,9 @@ title: Job-based Pay structures and Job Evaluation
 - Keys:
   - Jobs and hierarchy they brings
   - skills and competencies they offer
+- Documents and version control it.
+- Subjective and Bias builtin
+- Research the roles within the jobs.
 
 ## Job Evaluation
 
@@ -49,4 +52,56 @@ aligned if
 
 ## choices of job evaluation
 
-### Simple Ranking
+### simple ranking.
+
+- order from highest to lowest based on relative values
+- advantages: simple, fast, easy to understand and explain to employees; least expensive initially.
+- disadvantages:
+  - ranking criteria is poorly defined -> evaluations become biased
+  - evaluators must be knowledgeable about all jobs
+  - results are difficult to defend and costly solutions maybe be required.
+
+| alternatives methods   | description    |
+|--------------- | --------------- |
+| Alternation   | order descriptions alternately at each extreme, evaluators agree on which jobs are the most valuable  |
+| Paired comparison | compare each job with every other job, number of comparisons = n(n-1)/2 |
+
+
+### classification
+
+- series of classes cover the range of jobs
+- descriptions are labels which capture general nature of work
+
+## point method
+
+- assignment of numeric score
+- procedure results in a relative ordering of jobs based on the number of points that each job "scores".
+
+
+### 1. Job Analysis
+- representative benchmark jobs is drawn for analysis
+
+
+### 2. Determine Compensable Factors
+- based on strategy and values of organisation
+- based on the work performed
+- acceptable to stakeholders affected by the resulting pay structure
+
+challenges:
+- small numbers
+- unique criteria
+
+### 3. Scale the Factors
+- 4 to 8 degrees
+
+### 4. Weigh the Factors
+- of important
+- weights reflect the relative importance of each Factors
+- determined through an advisory committee (a priori judgement approach)
+
+### 5 & 6. Communicate.
+
+Who?
+- employees
+- consultants
+- union representatives
