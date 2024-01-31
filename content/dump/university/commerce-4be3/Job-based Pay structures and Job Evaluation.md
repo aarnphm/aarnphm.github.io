@@ -112,3 +112,46 @@ Who?
 ### Design process and Job structures
 
 provides a hierarchy of work, or a job structure
+
+[[dump/university/commerce-4be3/Job description exercise|exercise]]
+
+## Skill-based plans
+
+- in the trade
+- link pay to the depth or breath of skills
+- pay individuals for all relevant skills -> wage attach to person
+
+###  types.
+
+1. depth
+  - based on knowledge of the person
+2. generalist/breadth
+  - increased by acquiring new knowledge
+
+> [!important] Purpose of skill-based
+> supports organisation's strategy, workflow, fair to employees, and motivates behaviour
+
+### Outcomes
+
+- well accepted by employees and provide strong motivation for individuals to increase new skills
+- become increasingly expensive
+- flexibility permits leaner staff
+- success is determined by how well it aligns
+
+## Competency-based plans
+
+- faireness and motivations
+
+- skill-based, foundation for successful work
+- core competencies are often linked to the mission statement
+- competency set translates core -> action
+- indicators are observable behaviour
+
+### Analysis
+- core competencies are not unique for each company
+- differs applies their competencies
+- verify their possession of that competency
+- no objective way to certifying competencies
+- relatively few levels and wide differentials for increased levels
+
+## internal alignment reflected in structures
