@@ -15,25 +15,25 @@ _Giles Deleuze_
 
 Multiplicity, being and affirmation
 
-Critical philosophy
-The study of sense and value
+Critical philosophy and  the study of sense and value
 
-The decadence of modern philos is the theory of value imposes conformism and a new form of submission
+The decadence of modern philosophy is the theory of value imposes conformism and a new form of submission
 
 Philosophy of sense and values has to be a critique
 
 ### Value
 
-Problem with Kant: failed to pose the problem of critique in terms of values
+Problem with [[dump/Philosophy and Kant|Kant]]: failed to pose the problem of critique in terms of values
 
-Notion of values implies critical reversal
+Notion of [[dump/aesthetic value|value]] implies critical reversal
 
-Critical philosophy has two inseparable moments: the referring back of all things and any kind of origin to values, but also the referring back of these values to something which is, as it were, thes origin and determines their value.
+Critical philosophy has two inseparable moments: the referring back of all things and any kind of origin to values, but also the referring back of these values to something which is, as it were, the origin and determines their value.
 
-This is Nietzsche's twofold struggle: against those who remove values from criticism, contenting themselves with producing inventories of existing values or we criticising things in the name of established values (the "philosophy labourers", Kant and Schopenhauer, BGE 211); but also agains those who criticise, or respect, values by deriving them from simple facts, from so-called "objective facts" (the utilitarians, the "scholars", BGE Part 6).
+This is Nietzsche's twofold struggle:
+- against those who remove values from criticism, contenting themselves with producing inventories of existing values or we criticising things in the name of established values (the "philosophy labourers", Kant and Schopenhauer, [BGE ](#anatomy-of-beyond-good-and-evil) 211)
+- against those who criticise, or respect, values by deriving them from simple facts, from so-called "objective facts" (the utilitarians, the "scholars", BGE Part 6).
 
 Nietzsche attacks both the "high" idea of foundation which leaves values indifferent to their own origin and the idea of a simple causal derivation or smooth beginning which suggests an indifferent origin of values
-
 
 Genealogy: substitute pathos of difference or distance for both Kantian principle of universality and the principle of resemblance dear to utilitarianism (GM I)
 
@@ -44,7 +44,7 @@ Genealogy: substitute pathos of difference or distance for both Kantian principl
 - Philosophy is symptomatology, not semeiology
 To interpret and to evaluate is to weigh causal and effects.
 
-Force
+Force is not a cause, but a symptom.
 
 ### Against dialectics
 
