@@ -54,3 +54,13 @@ Comparison: $\leq \text{pos} = \sum_{\text{pos}=1}^{N-1} pos = \frac{N(N-1)}{2}$
 
 ### merge sort.
 - divide-and-conquer
+
+### A lower bound for general-purpose sorting
+_assume we have a list of $L \lbrack 0 \dots N)$ of $N$ distinct values_
+
+$S$: All possible lists $L$ that are treated the same by A such that $C: L[i] < L[j]$
+
+> [!question]
+> Can we improve mergesort O(N) memory?
+
+### quick sort.

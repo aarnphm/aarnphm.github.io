@@ -16,8 +16,19 @@
                 "file": "dump/university/sfwr-3dx4/time_response.pdf"
               }
             }
+          },
+          {
+            "id": "b87f23c8c5a33303",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "dump/university/sfwr-2c03/merge-sort-a-la-carte.pdf"
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       },
       {
         "id": "bc7857c68f0eeb58",
@@ -29,7 +40,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/sfwr-3dx4/Time response.md",
+                "file": "dump/university/sfwr-2c03/Sorting.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -102,7 +113,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/sfwr-3dx4/Time response.md",
+                "file": "dump/university/sfwr-2c03/Sorting.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -119,7 +130,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/sfwr-3dx4/Time response.md",
+                "file": "dump/university/sfwr-2c03/Sorting.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -142,7 +153,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/sfwr-3dx4/Time response.md"
+                "file": "dump/university/sfwr-2c03/Sorting.md"
               }
             }
           },
@@ -172,7 +183,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/sfwr-3dx4/Time response.md"
+                "file": "dump/university/sfwr-2c03/Sorting.md"
               }
             }
           }
@@ -198,8 +209,14 @@
   },
   "active": "8231d3bb91eb97bb",
   "lastOpenFiles": [
-    "dump/university/sfwr-3dx4/time_response.pdf",
+    "dump/university/sfwr-2c03/merge-sort-a-la-carte.pdf",
+    "dump/university/sfwr-2c03/sortings.pdf",
+    "dump/university/sfwr-2c03/Sorting.md",
     "dump/university/sfwr-3dx4/Time response.md",
+    "dump/university/sfwr-3dx4/time_response.pdf",
+    "dump/university/sfwr-2c03/merge-sort-a-la-carte.pdf.crdownload",
+    "dump/university/sfwr-2c03/sortings.pdf.crdownload",
+    "dump/university/sfwr-2c03/collections.pdf.crdownload",
     "dump/university/sfwr-3dx4/second-order-system.png",
     "dump/university/sfwr-3dx4/state_space.pdf",
     "dump/university/sfwr-3dx4/Dynamic Systems Lecture.pdf",
@@ -220,21 +237,15 @@
     "private/bentoml/New Runner API.md",
     "private/Company interests/robust-intelligence.md",
     "private/podcast.md",
-    "private/bentoml",
     "private/Term of Reference.md",
     "private/Hack The North.md",
     "private/Reservation list.md",
     "private/Meetup.md",
-    "private/Company interests",
-    "private",
     "posts/index.md",
     "posts/images/passage-giorgio-m.jpg",
-    "posts/images",
     "posts/Why should you learn philosophy during university.md",
     "posts/Questions about Spinoza.md",
     "posts/Questions about Metaphysics.md",
-    "posts/Questions about Apology.md",
-    "posts",
     "dump/university/sfwr-3dx4/lab1/5.2-graph.png",
     "dump/university/sfwr-3dx4/lab1/5.1-graph.png",
     "dump/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",
