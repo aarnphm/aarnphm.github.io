@@ -51,3 +51,9 @@ where $\phi = \tan^{-1}(\frac{\beta}{\alpha})$ and $K_4=\sqrt{(2\alpha)^2 + (2\b
 _Deriving_ $\zeta$:
 
 - For _under-damped_ system, the poles are $\sigma = \frac{-a}{2}$
+
+### %OS (percent overshoot)
+
+$$
+\%OS = e^{\zeta \pi / \sqrt{1-\zeta^2}} \times 100 \%
+$$
