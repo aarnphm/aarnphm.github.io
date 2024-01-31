@@ -1,6 +1,7 @@
 import FlexSearch, { IndexOptions } from "flexsearch"
 import { pluralize } from "../../util/lang"
 import { registerEscapeHandler, removeAllChildren } from "./util"
+import { computePosition, offset, arrow, Coords } from "@floating-ui/dom"
 
 interface Highlight {
   id: number
@@ -116,11 +117,6 @@ const timeSince = (date: Date | string) => {
   }
 }
 
-const fetchLinksHeaders: RequestInit = {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-}
-
 function random(min: number, max: number): number {
   if (max == null) {
     max = min
@@ -153,7 +149,12 @@ let prevCuriusShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | u
 const getLocalItem = (key: "curiusLinks" | "curiusLastFetch", value: any): any =>
   localStorage.getItem(key) ?? value
 
-async function fetchLinks(): Promise<Response> {
+const fetchLinksHeaders: RequestInit = {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+}
+
+async function fetchLinks(refetch: boolean = false): Promise<Response> {
   try {
     // user metadata
     const user = await fetch("https://raw.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
@@ -172,7 +173,7 @@ async function fetchLinks(): Promise<Response> {
 
     const getCachedLinks = () => JSON.parse(getLocalItem(localFetchKey, "[]"))
 
-    if (currentTime.getTime() - lastFetched.getTime() < periods) {
+    if (!refetch && currentTime.getTime() - lastFetched.getTime() < periods) {
       return { links: getCachedLinks(), user }
     }
 
@@ -319,19 +320,120 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
   return curiusItem
 }
 
+function createNavigation() {
+  const navigation = document.createElement("div")
+  navigation.classList.add("navigation-container")
+  const navigationText = document.createElement("p")
+  navigationText.innerHTML = `You might be interested in <a href="/dump/quotes" rel="noopener noreferrer">this</a> or <a href="/books" rel="noopener noreferrer">that</a>`
+  navigation.appendChild(navigationText)
+  return navigation
+}
+
+function createFetching(text?: string) {
+  const fetching = document.createElement("div")
+  fetching.id = "curius-fetching-text"
+  fetching.textContent = text ?? "Fetching curius links"
+  return fetching
+}
+
+function createFragments(links: Link[]) {
+  const fragment = document.createElement("div")
+  fragment.id = "curius-fragments"
+  fragment.append(...links.map(createLinkEl))
+  return fragment
+}
+
+async function createToolTip(item: HTMLElement) {
+  if (!item) return
+
+  const parentNode = item.parentNode
+  const tooltip = document.createElement("div")
+  tooltip.classList.add("tooltip")
+  Object.assign(tooltip, {
+    id: "curius-tooltip",
+    textContent: item.dataset.tooltip ?? "helper",
+  })
+  const arrowElement = document.createElement("div")
+  arrowElement.id = "arrow"
+  arrowElement.dataset.popperArrow = ""
+  tooltip.appendChild(arrowElement)
+
+  const hide = () => {
+    item.style.opacity = "0"
+    tooltip.style.display = "none"
+  }
+
+  function show(this: HTMLElement) {
+    function setPosition(popoverElement: HTMLElement) {
+      computePosition(item, popoverElement, {
+        placement: "top",
+        middleware: [arrow({ element: arrowElement, padding: 5 }), offset(5)],
+      }).then(({ x, y, placement, middlewareData }) => {
+        Object.assign(popoverElement.style, {
+          left: `${x}px`,
+          top: `${y}px`,
+        })
+        const { x: arrowX, y: arrowY } = middlewareData.arrow as Partial<Coords>
+        Object.assign(arrowElement.style, {
+          left: arrowX != null ? `${arrowX}px` : "",
+          top: arrowY != null ? `${arrowY}px` : "",
+        })
+      })
+    }
+
+    item.style.opacity = "1"
+    tooltip.style.display = "inline-block"
+    setPosition(tooltip)
+    parentNode?.appendChild(tooltip)
+  }
+
+  function move(this: HTMLElement, { clientX, clientY }: { clientX: number; clientY: number }) {
+    if (tooltip.style.display === "none") return
+    const popoverElement = document.getElementById("curius-tooltip")
+    if (!popoverElement) return
+    computePosition(item, popoverElement, {
+      placement: "top-start",
+      strategy: "fixed",
+    }).then(({ middlewareData }) => {
+      tooltip.style.left = `${clientX - 20}px`
+      tooltip.style.top = `${clientY - 30}px`
+      tooltip.style.display = "block"
+
+      const { x: arrowX, y: arrowY } = middlewareData.arrow as Partial<Coords>
+      Object.assign(arrowElement.style, {
+        left: arrowX != null ? `${arrowX}px` : "",
+        top: arrowY != null ? `${arrowY}px` : "",
+      })
+    })
+  }
+
+  const caller = [
+    ["mouseleave", hide],
+    ["mouseenter", show],
+    ["mousemove", move],
+    ["focus", show],
+    ["blur", show],
+  ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
+  caller.forEach(([event, listener]) => {
+    item.removeEventListener(event, listener)
+    item.addEventListener(event, listener)
+  })
+}
+
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
-  const elements = ["curius", "curius-container", "curius-search-container"].map((id) =>
-    document.getElementById(id),
-  )
+  const elements = [
+    "#curius",
+    ".curius-title",
+    "#curius-search-container",
+    "#curius-container",
+  ].map((id) => document.querySelector(id))
   const searchBar = document.getElementById("curius-bar") as HTMLInputElement | null
   const resultCards = document.getElementsByClassName("curius-search-link")
 
   if (elements.some((el) => el === null)) return
-  const [curius, container, searchContainer] = elements as HTMLElement[]
+  const [curius, title, searchContainer, container] = elements as HTMLElement[]
 
-  const fetching = document.createElement("div")
-  fetching.id = "curius-fetching-text"
-  fetching.textContent = "Fetching curius links"
+  const fetching = createFetching()
   curius.appendChild(fetching)
   const resp = await fetchLinks()
   curius.removeChild(fetching)
@@ -340,22 +442,42 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const linksData = resp.links ?? []
   const sampleLinks = sample(linksData, 20)
 
-  const fragment = document.createDocumentFragment()
   if (linksData.length === 0) {
     container.innerHTML = `<p>Failed to fetch links.</p>`
     return
   }
+  container.append(createFragments(linksData))
+  curius.append(createNavigation())
 
-  linksData.forEach((link) => fragment.appendChild(createLinkEl(link)))
-  container.append(fragment)
+  const refetchIcon = document.getElementById("curius-refetch")
 
-  const navigation = document.createElement("div")
-  navigation.classList.add("navigation-container")
-  const navigationText = document.createElement("p")
-  navigationText.innerHTML = `You might be interested in <a href="/dump/quotes" rel="noopener noreferrer">this</a> or <a href="/books" rel="noopener noreferrer">that</a>`
-  navigation.appendChild(navigationText)
-  curius.append(navigation)
+  // Ensure refetchIcon exists before adding event listener
+  if (refetchIcon) {
+    createToolTip(refetchIcon)
+    refetchIcon.addEventListener("click", async () => {
+      const els = ["#curius-fragments", ".navigation-container"].map((id) => {
+        let el = document.querySelector(id) as HTMLDivElement
+        el.parentNode?.removeChild(el)
+        return el
+      })
+      const [curContainer, curNavigation] = els as HTMLDivElement[]
 
+      let cre = createFetching("Refetching curius links")
+      curius.appendChild(cre)
+      const refetched = await fetchLinks(true)
+      curius.removeChild(cre)
+
+      const newData = refetched.links ?? []
+      if (newData.length === 0) {
+        container.innerHTML = `<p>Failed to fetch links.</p>`
+        return
+      }
+      container.appendChild(createFragments(newData))
+      curius.appendChild(curNavigation)
+    })
+  }
+
+  // Search functionality
   async function onType(e: HTMLElementEventMap["input"]) {
     let term = (e.target as HTMLInputElement).value
     let searchResults =

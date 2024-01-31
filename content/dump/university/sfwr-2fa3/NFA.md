@@ -1,7 +1,7 @@
 ---
 id: NFA
 tags:
-  - swfr-2fa3
+  - sfwr2fa3
 date: "2024-01-30"
 title: NFA
 ---

@@ -17,8 +17,8 @@ $fullPageWidth: $pageWidth + 2 * $sidePanelWidth;
 
 @mixin modalStyles {
   position: absolute;
-  border: 1px solid #000;
-  background-color: white;
+  border: 1px solid rgb(170, 170, 170);
+  background-color: var(--light);
   z-index: 1000;
   padding: 0 20px;
   width: 350px;

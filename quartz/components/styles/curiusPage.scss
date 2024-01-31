@@ -19,13 +19,32 @@
   }
 }
 
-.highlight-modal {
-  @include modalStyles;
+.tooltip {
+  display: none;
+  padding: 0.3rem 0.3rem;
+  position: absolute;
+  pointer-events: none;
+  color: #fff;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: var(--lightgray);
+  font-size: 10px;
+  transition: opacity 0.3s ease-out;
+  z-index: 999;
 }
 
-.highlight-modal ul {
-  list-style-type: none;
-  padding: 0;
+#arrow,
+#arrow::before {
+  position: absolute;
+  width: 8px; /* Arrow size */
+  height: 8px; /* Arrow size */
+  z-index: -1;
+}
+
+#arrow::before {
+  content: "";
+  transform: rotate(45deg);
+  background: var(--lightgray);
 }
 
 #curius {
@@ -73,6 +92,87 @@
     }
   }
 
+  #curius-container {
+    & li[id|="curius-item"] {
+      & > * {
+        padding-left: 8px;
+      }
+    }
+  }
+
+  & ul,
+  #curius-container {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+    padding-left: 0;
+    padding-inline: 0;
+  }
+
+  & li {
+    padding: 8px 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent transparent var(--lightgray);
+    border-image: initial;
+
+    :first-child {
+      border-top: 1px solid transparent;
+    }
+
+    ::marker {
+      content: "";
+    }
+  }
+
+  & div[id*="curius-misc"] {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  & div[id*="curius-highlight"] {
+    cursor: pointer;
+    background-color: rgb(234, 157, 52, 0.4);
+    font-style: normal;
+  }
+  & [saved-theme="dark"] div[id*="curius-highlight"] {
+    background-color: rgb(246, 193, 119, 0.4);
+  }
+
+  @mixin iconStyles {
+    margin-left: auto;
+    white-space: nowrap;
+    color: var(--lightgray);
+    padding: 2px 0px;
+    fill: lightgray;
+    opacity: 0;
+  }
+
+  #curius-icons {
+    @include iconStyles;
+    display: flex;
+  }
+
+  #curius-refetch {
+    @include iconStyles;
+    padding: 0;
+    padding-left: 4px;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .curius-outer {
+    margin-top: 1rem;
+  }
+
   .curius-search-link {
     padding: 10px;
     margin: auto;
@@ -102,36 +202,6 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-  }
-
-  #curius-container {
-    & li[id|="curius-item"] {
-      & > * {
-        padding-left: 8px;
-      }
-    }
-  }
-
-  & ul,
-  #curius-container {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    margin-top: 1rem;
-    padding-left: 0;
-    padding-inline: 0;
-  }
-
-  & li {
-    padding: 8px 0;
-    border-width: 1px;
-    border-style: solid;
-    border-color: transparent transparent var(--lightgray);
-    border-image: initial;
-  }
-
-  & li:first-child {
-    border-top: 1px solid transparent;
   }
 
   .curius-item-title {
@@ -203,28 +273,13 @@
       }
     }
   }
+}
 
-  & li::marker {
-    content: "";
-  }
+.highlight-modal {
+  @include modalStyles;
+}
 
-  & div[id*="curius-misc"] {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-    font-style: italic;
-  }
-
-  & div[id*="curius-highlight"] {
-    background-color: rgb(234, 157, 52, 0.4);
-    font-style: normal;
-  }
-  & [saved-theme="dark"] div[id*="curius-highlight"] {
-    background-color: rgb(246, 193, 119, 0.4);
-  }
+.highlight-modal ul {
+  list-style-type: none;
+  padding: 0;
 }
