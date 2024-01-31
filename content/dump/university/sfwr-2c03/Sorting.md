@@ -64,3 +64,14 @@ $S$: All possible lists $L$ that are treated the same by A such that $C: L[i] < 
 > Can we improve mergesort O(N) memory?
 
 ### quick sort.
+
+Complexity of quicksort
+
+$$
+T(N) = \begin{cases}
+1 & \text{if } N \leq 1; \\\
+T(N-1) + N & \text{if } N > 1
+\end{cases}
+$$
+
+recursion tree:

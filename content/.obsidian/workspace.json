@@ -4,33 +4,6 @@
     "type": "split",
     "children": [
       {
-        "id": "7b3103e74466d019",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "08a82da6a20b3b33",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "dump/university/sfwr-3dx4/time_response.pdf"
-              }
-            }
-          },
-          {
-            "id": "b87f23c8c5a33303",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "dump/university/sfwr-2c03/merge-sort-a-la-carte.pdf"
-              }
-            }
-          }
-        ],
-        "currentTab": 1
-      },
-      {
         "id": "bc7857c68f0eeb58",
         "type": "tabs",
         "children": [
@@ -38,12 +11,9 @@
             "id": "8231d3bb91eb97bb",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "dump/university/sfwr-2c03/Sorting.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
+                "file": "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf"
               }
             }
           }
@@ -97,7 +67,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -113,7 +84,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/sfwr-2c03/Sorting.md",
+                "file": "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -130,7 +101,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/sfwr-2c03/Sorting.md",
+                "file": "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -153,7 +124,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/sfwr-2c03/Sorting.md"
+                "file": "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf"
               }
             }
           },
@@ -183,7 +154,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/sfwr-2c03/Sorting.md"
+                "file": "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf"
               }
             }
           }
@@ -209,17 +180,14 @@
   },
   "active": "8231d3bb91eb97bb",
   "lastOpenFiles": [
-    "dump/university/sfwr-2c03/merge-sort-a-la-carte.pdf",
-    "dump/university/sfwr-2c03/sortings.pdf",
     "dump/university/sfwr-2c03/Sorting.md",
-    "dump/university/sfwr-3dx4/Time response.md",
-    "dump/university/sfwr-3dx4/time_response.pdf",
-    "dump/university/sfwr-2c03/merge-sort-a-la-carte.pdf.crdownload",
-    "dump/university/sfwr-2c03/sortings.pdf.crdownload",
-    "dump/university/sfwr-2c03/collections.pdf.crdownload",
-    "dump/university/sfwr-3dx4/second-order-system.png",
-    "dump/university/sfwr-3dx4/state_space.pdf",
-    "dump/university/sfwr-3dx4/Dynamic Systems Lecture.pdf",
+    "dump/university/commerce-4be3/CS Rep Job Description.pdf",
+    "dump/university/commerce-4be3/Customer Service Representative - Job Description.pdf",
+    "dump/university/commerce-4be3/Universal Plan.pdf",
+    "dump/university/commerce-4be3/JE Universal Plan .pdf",
+    "dump/university/commerce-4be3/JE Universal Plan .pdf.crdownload",
+    "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
+    "dump/university/commerce-4be3/Job-based Pay structures and Job Evaluation.md",
     "uses.md",
     "templates/post.md",
     "templates",
@@ -230,22 +198,26 @@
     "tags/ml.md",
     "tags/evergreen.md",
     "tags",
-    "private/bentoml/compensation.md",
     "private/bentoml/intern.md",
+    "private/bentoml/compensation.md",
     "private/bentoml/Runner interface.md",
     "private/bentoml/OpenLLM design draft.md",
     "private/bentoml/New Runner API.md",
     "private/Company interests/robust-intelligence.md",
     "private/podcast.md",
+    "private/bentoml",
     "private/Term of Reference.md",
-    "private/Hack The North.md",
     "private/Reservation list.md",
     "private/Meetup.md",
-    "posts/index.md",
+    "private/Hack The North.md",
+    "private/Company interests",
     "posts/images/passage-giorgio-m.jpg",
+    "posts/index.md",
     "posts/Why should you learn philosophy during university.md",
     "posts/Questions about Spinoza.md",
     "posts/Questions about Metaphysics.md",
+    "posts/Questions about Apology.md",
+    "dump/university/sfwr-3dx4/second-order-system.png",
     "dump/university/sfwr-3dx4/lab1/5.2-graph.png",
     "dump/university/sfwr-3dx4/lab1/5.1-graph.png",
     "dump/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",
