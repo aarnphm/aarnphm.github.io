@@ -208,20 +208,23 @@ const extractApexDomain = (url: string) => {
 const createLinkEl = (Link: Link): HTMLLIElement => {
   const curiusItem = document.createElement("li")
   curiusItem.id = `curius-item-${Link.id}`
-  curiusItem.onmouseenter = () => (curiusItem.style.backgroundColor = "var(--lightgray)")
-  curiusItem.onmouseleave = () => (curiusItem.style.backgroundColor = "")
+  curiusItem.onmouseenter = () => curiusItem.classList.add("focus")
+  curiusItem.onmouseleave = () => curiusItem.classList.remove("focus")
 
   const createTitle = (Link: Link): HTMLDivElement => {
     const item = document.createElement("div")
     item.classList.add("curius-item-title")
 
     const header = document.createElement("div")
-    const link = document.createElement("a")
-    link.href = Link.link
-    link.target = "_blank"
-    link.rel = "noopener noreferrer"
-    link.innerHTML = `<span class="curius-item-span">${Link.title}</span>`
     header.classList.add("curius-item-link")
+
+    const link = document.createElement("a")
+    Object.assign(link, {
+      href: Link.link,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      innerHTML: `<span class="curius-item-span">${Link.title}</span>`,
+    })
     header.appendChild(link)
 
     const address = document.createElement("div")
@@ -274,7 +277,7 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
         if (!modal || !modalList) return
         // clear the previous modal
         modalList.innerHTML = ""
-        curiusItem.style.backgroundColor = ""
+        curiusItem.classList.remove("focus")
 
         highlightsData.forEach((highlight) => {
           let hiItem = document.createElement("li")
@@ -285,36 +288,41 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
         modal.classList.add("active")
       }
 
-      highlights.removeEventListener("mouseenter", onMouseEnter)
-      highlights.addEventListener("mouseenter", onMouseEnter)
-
       function onMouseLeave(event: MouseEvent) {
-        curiusItem.style.backgroundColor = "var(--lightgray)"
+        curiusItem.classList.add("focus")
 
         if (!modal) return
         modal.style.display = "none"
         modal.classList.remove("active")
       }
-      highlights.removeEventListener("mouseleave", onMouseLeave)
-      highlights.addEventListener("mouseleave", onMouseLeave)
 
       function onMouseMove(event: MouseEvent) {
-        curiusItem.style.backgroundColor = ""
+        curiusItem.classList.remove("focus")
 
         if (!modal) return
         modal.classList.add("active")
         modal.style.left = `${event.pageX + 10}px`
         modal.style.top = `${event.pageY + 10}px`
       }
-      highlights.removeEventListener("mousemove", onMouseMove)
-      highlights.addEventListener("mousemove", onMouseMove)
+
+      const events = [
+        ["mouseenter", onMouseEnter],
+        ["mouseleave", onMouseLeave],
+        ["mousemove", onMouseMove],
+      ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
+      events.forEach(([event, listener]) => {
+        highlights.removeEventListener(event, listener)
+        highlights.addEventListener(event, listener)
+      })
     }
 
     item.append(tags, misc)
     return item
   }
 
-  curiusItem.append(createTitle(Link), createMetadata(Link))
+  curiusItem.append(
+    ...([createTitle, createMetadata] as ((Link: Link) => Node)[]).map((fn) => fn(Link)),
+  )
 
   return curiusItem
 }
@@ -408,10 +416,14 @@ async function createPopover(item: HTMLElement) {
   return popover
 }
 
+const toggleVisibility = (el: HTMLElement, visible: boolean) =>
+  Object.assign(el.style, {
+    opacity: visible ? "1" : "0",
+    display: visible ? "block" : "none",
+  })
+
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const elements = [
-    "#curius",
-    ".curius-title",
     "#curius-search-container",
     "#curius-container",
     "#curius-fetching-text",
@@ -423,19 +435,12 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
   if (elements.some((el) => el === null)) return
 
-  const [curius, title, searchContainer, container, fetchText, fragment, nav] =
-    elements as HTMLElement[]
-
-  const toggleVisible = (el: HTMLElement, visible: boolean) =>
-    Object.assign(el.style, {
-      opacity: visible ? "1" : "0",
-      display: visible ? "block" : "none",
-    })
+  const [searchContainer, container, fetchText, fragment, nav] = elements as HTMLElement[]
 
   fetchText.textContent = "Fetching curius links"
-  toggleVisible(fetchText, true)
+  toggleVisibility(fetchText, true)
   const resp = await fetchLinks()
-  toggleVisible(fetchText, false)
+  toggleVisibility(fetchText, false)
 
   const userData = resp.user ?? {}
   const linksData = resp.links ?? []
@@ -446,7 +451,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     return
   }
   fragment.append(...linksData.map(createLinkEl))
-  toggleVisible(nav, true)
+  toggleVisibility(nav, true)
 
   const refetchIcon = document.getElementById("curius-refetch")
 
@@ -461,12 +466,12 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       setTimeout(() => refetchIcon.classList.remove("disabled"), fetchTimeout)
 
       removeAllChildren(fragment)
-      toggleVisible(nav, false)
+      toggleVisibility(nav, false)
 
-      toggleVisible(fetchText, true)
+      toggleVisibility(fetchText, true)
       fetchText.textContent = "Refreshing curius links"
       const refetched = await fetchLinks(true)
-      toggleVisible(fetchText, false)
+      toggleVisibility(fetchText, false)
 
       const newData = refetched.links ?? []
       if (newData.length === 0) {
@@ -474,7 +479,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
         return
       }
       fragment.append(...newData.map(createLinkEl))
-      toggleVisible(nav, true)
+      toggleVisibility(nav, true)
     })
 
     const events = [
