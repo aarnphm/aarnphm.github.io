@@ -347,6 +347,8 @@ async function createToolTip(item: HTMLElement) {
   if (!item) return
 
   const parentNode = item.parentNode
+  if (!parentNode) return
+
   const tooltip = document.createElement("div")
   tooltip.classList.add("tooltip")
   Object.assign(tooltip, {
@@ -358,14 +360,16 @@ async function createToolTip(item: HTMLElement) {
   arrowElement.dataset.popperArrow = ""
   tooltip.appendChild(arrowElement)
 
+  if (parentNode?.contains(tooltip)) return
+
   const hide = () => {
     item.style.opacity = "0"
     tooltip.style.display = "none"
   }
 
   function show(this: HTMLElement) {
-    function setPosition(popoverElement: HTMLElement) {
-      computePosition(item, popoverElement, {
+    async function setPosition(popoverElement: HTMLElement) {
+      await computePosition(item, popoverElement, {
         placement: "top",
         middleware: [arrow({ element: arrowElement, padding: 5 }), offset(5)],
       }).then(({ x, y, placement, middlewareData }) => {
@@ -384,14 +388,16 @@ async function createToolTip(item: HTMLElement) {
     item.style.opacity = "1"
     tooltip.style.display = "inline-block"
     setPosition(tooltip)
-    parentNode?.appendChild(tooltip)
   }
 
-  function move(this: HTMLElement, { clientX, clientY }: { clientX: number; clientY: number }) {
+  async function move(
+    this: HTMLElement,
+    { clientX, clientY }: { clientX: number; clientY: number },
+  ) {
     if (tooltip.style.display === "none") return
     const popoverElement = document.getElementById("curius-tooltip")
     if (!popoverElement) return
-    computePosition(item, popoverElement, {
+    await computePosition(item, popoverElement, {
       placement: "top-start",
       strategy: "fixed",
     }).then(({ middlewareData }) => {
@@ -399,11 +405,13 @@ async function createToolTip(item: HTMLElement) {
       tooltip.style.top = `${clientY - 40}px`
       tooltip.style.display = "block"
 
-      const { x: arrowX, y: arrowY } = middlewareData.arrow as Partial<Coords>
-      Object.assign(arrowElement.style, {
-        left: arrowX != null ? `${arrowX}px` : "",
-        top: arrowY != null ? `${arrowY}px` : "",
-      })
+      if (middlewareData.arrow) {
+        const { x: arrowX, y: arrowY } = middlewareData.arrow as Partial<Coords>
+        Object.assign(arrowElement.style, {
+          left: arrowX != null ? `${arrowX}px` : "",
+          top: arrowY != null ? `${arrowY}px` : "",
+        })
+      }
     })
   }
 
@@ -418,6 +426,8 @@ async function createToolTip(item: HTMLElement) {
     item.removeEventListener(event, listener)
     item.addEventListener(event, listener)
   })
+
+  parentNode?.appendChild(tooltip)
 }
 
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
@@ -455,9 +465,9 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   if (refetchIcon) {
     createToolTip(refetchIcon)
     refetchIcon.addEventListener("click", async () => {
-      const els = ["#curius-fragments", ".navigation-container"].map((id) => {
+      const els = ["#curius-fragments", ".javigation-container"].map((id) => {
         let el = document.querySelector(id) as HTMLDivElement
-        el.parentNode?.removeChild(el)
+        if (el.parentNode) el.parentNode.removeChild(el)
         return el
       })
       const [curContainer, curNavigation] = els as HTMLDivElement[]

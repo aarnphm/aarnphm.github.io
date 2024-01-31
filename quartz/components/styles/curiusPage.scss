@@ -170,8 +170,7 @@
     @include iconStyles;
     padding: 0;
     padding-left: 4px;
-    cursor: pointer;
-    pointer-events: auto;
+    outline: none;
   }
 
   .curius-outer {
