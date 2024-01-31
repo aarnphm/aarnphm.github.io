@@ -6,6 +6,9 @@ date: "2024-01-31"
 title: Job-based Pay structures and Job Evaluation
 ---
 
+See [[dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf|slides]]
+
+
 ## Speakers
 
 - ask better questions
@@ -105,3 +108,7 @@ Who?
 - employees
 - consultants
 - union representatives
+
+### Design process and Job structures
+
+provides a hierarchy of work, or a job structure
