@@ -82,6 +82,25 @@ function addGlobalPageResources(
     componentResources.css.push(popoverStyle)
   }
 
+  if (cfg.contentOnlyPages) {
+    componentResources.beforeDOMLoaded.push(`
+document.addEventListener("nav", () => {
+  [${cfg.contentOnlyPages.map((it) => `"${it}"`)}].forEach((slug) => {
+    if (document.querySelector(\`body[data-slug="\${slug}"]\`)) {
+      document
+        .querySelector("#quartz-root")
+        ?.querySelectorAll(".sidebar")
+        .forEach((el) => el.remove())
+      document
+        .querySelector("#quartz-root")
+        ?.querySelectorAll("footer")
+        .forEach((el) => el.remove())
+    }
+  })
+})
+`)
+  }
+
   if (cfg.analytics?.provider === "google") {
     const tagId = cfg.analytics.tagId
     staticResources.js.push({

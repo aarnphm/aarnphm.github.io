@@ -15,6 +15,7 @@ const config: QuartzConfig = {
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "created",
     defaultFooterStyle: "minimal",
+    contentOnlyPages: ["uses", "dump/quotes", "curius", "influence"],
     theme: {
       typography: {
         header: "DM Serif Text",
