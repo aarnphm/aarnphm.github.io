@@ -78,7 +78,6 @@
   }
 
   #curius-search-container {
-    contain: layout;
     position: absolute;
     box-sizing: border-box;
     margin-left: auto;
@@ -94,6 +93,10 @@
 
     &.active {
       display: inline-block;
+    }
+
+    @media (max-width: $fullPageWidth) {
+      max-width: calc(100% - 9vw);
     }
   }
 
