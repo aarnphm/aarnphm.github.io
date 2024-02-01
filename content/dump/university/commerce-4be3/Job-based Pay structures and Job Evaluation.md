@@ -155,3 +155,22 @@ provides a hierarchy of work, or a job structure
 - relatively few levels and wide differentials for increased levels
 
 ## internal alignment reflected in structures
+
+- purposed of job and person-based procedures is to design and manage a pay structure.
+
+## reliability and validity
+
+- consultants
+- improve reliability by using evaluators familiar with the work and trained in job evaluation.
+- validity refers to degree the evaluation assesses relative job worth.
+
+## Acceptability
+- formal appeals process -> request and re-analysis or skills re-evaluation.
+- employee attitude surveys assess perceptions of how useful evaluation is as a management tools.
+
+## bias.
+
+To ensure bias-free evaluation:
+- compensable factors and scales to include the content of jobs
+- factor weights are consistently biased against jobs
+- apply the plan as bias free a manner as feasible.
