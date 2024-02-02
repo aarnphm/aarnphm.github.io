@@ -13,7 +13,20 @@
             "state": {
               "type": "pdf",
               "state": {
-                "file": "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf"
+                "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf"
+              }
+            }
+          },
+          {
+            "id": "c2c31af33da48cfb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "dump/university/astron-2e03/W1.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
               }
             }
           }
@@ -67,8 +80,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 349.50390243530273
   },
   "right": {
     "id": "5221182814b155cf",
@@ -84,7 +96,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
+                "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -101,7 +113,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
+                "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -124,7 +136,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf"
+                "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf"
               }
             }
           },
@@ -154,7 +166,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf"
+                "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf"
               }
             }
           }
@@ -180,6 +192,12 @@
   },
   "active": "8231d3bb91eb97bb",
   "lastOpenFiles": [
+    "dump/university/astron-2e03/Exoplanets.md",
+    "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
+    "dump/university/astron-2e03/W1.md",
+    "dump/university/astron-2e03/Explanets.md",
+    "dump/Expenses.md",
+    "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
     "dump/university/commerce-4be3/Job description exercise.md",
     "dump/university/commerce-4be3/exercise.md",
     "dump/university/commerce-4be3/Job-based Pay structures and Job Evaluation.md",
@@ -204,20 +222,13 @@
     "private/Term of Reference.md",
     "private/Reservation list.md",
     "private/Meetup.md",
-    "private/Hack The North.md",
     "private/Company interests",
     "private",
     "posts/images/passage-giorgio-m.jpg",
-    "posts/index.md",
-    "posts/Why should you learn philosophy during university.md",
     "posts/images",
-    "posts/Questions about Spinoza.md",
-    "posts/Questions about Metaphysics.md",
     "posts",
     "dump/university/sfwr-3dx4/time_response.pdf",
-    "dump/university/sfwr-3dx4/state_space.pdf",
     "dump/university/sfwr-3dx4/second-order-system.png",
-    "dump/university/sfwr-3dx4/lab1/lab1.slx",
     "dump/university/sfwr-3dx4/lab1/5.2-graph.png",
     "dump/university/sfwr-3dx4/lab1/5.1-graph.png",
     "dump/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",
