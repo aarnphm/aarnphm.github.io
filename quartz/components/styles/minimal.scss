@@ -3,6 +3,7 @@
 .page {
   & footer.minimal-footer {
     width: 100%;
+    max-width: $fullPageWidth;
   }
 
   @media all and (max-width: $fullPageWidth) {
