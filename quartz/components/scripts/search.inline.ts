@@ -359,7 +359,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
     async function onMouseLeave(ev: MouseEvent) {
       const target = ev.target as HTMLAnchorElement
-      target.classList.remove("focus", "mouse")
+      target.classList.remove("focus")
     }
 
     const events = [
