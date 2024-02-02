@@ -23,3 +23,14 @@ export function removeAllChildren(node: HTMLElement) {
     node.removeChild(node.firstChild)
   }
 }
+
+export function registerEvents<
+  T extends Document | HTMLElement | null,
+  E extends keyof HTMLElementEventMap,
+>(element: T, ...events: [E, EventListenerOrEventListenerObject][]) {
+  if (!element) return
+  for (const [event, cb] of events) {
+    element.addEventListener(event, cb)
+    window.addCleanup(() => element.removeEventListener(event, cb))
+  }
+}
