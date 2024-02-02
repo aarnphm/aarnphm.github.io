@@ -493,19 +493,6 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     ])
     const finalResults = [...allIds].map((id) => formatForDisplay(term, id))
     await displayResults(finalResults)
-
-    if (!preview || !enablePreview) return
-    removeAllChildren(preview as HTMLElement)
-    // focus on first result, then also dispatch preview immediately
-    if (results?.firstElementChild) {
-      const firstChild = results.firstElementChild as HTMLElement
-      if (firstChild.classList.contains("no-match")) {
-        removeAllChildren(preview as HTMLElement)
-      } else {
-        firstChild.classList.add("focus")
-        await displayPreview(firstChild)
-      }
-    }
   }
 
   if (prevShortcutHandler) {
