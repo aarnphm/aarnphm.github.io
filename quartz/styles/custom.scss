@@ -19,46 +19,15 @@
 
 body {
   position: relative;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 
   @include excludeId("p") {
-    font-size: 1.1rem;
     font-weight: normal;
   }
 
-  // Page specific display overrides
-  @each $slug in ("uses", "dump/quotes", "curius", "influence") {
-    &[data-slug="#{$slug}"] {
-      @include excludeId(".page") {
-        @include excludeId("& > #quartz-body") {
-          @include excludeId("&") {
-            @include excludeId(
-              '.center ul[class*="tags"]',
-              ".sidebar .left",
-              ".sidebar .right",
-              'footer[class$="footer"]',
-              ".toc",
-              ".page-title",
-              ".search",
-              ".darkmode",
-              ".graph",
-              ".backlinks",
-              ".recent-notes",
-              ".content-meta"
-            ) {
-              display: none;
-            }
-          }
-        }
-
-        @include excludeId(".center") {
-          .page-header {
-            width: inherit;
-            margin: 6rem 0 0;
-          }
-        }
-      }
+  @include excludeId(".center") {
+    .page-header {
+      width: inherit;
+      margin: 6rem 0 0;
     }
   }
 
@@ -243,31 +212,6 @@ audio::-webkit-media-controls-panel {
 .no-scroll {
   display: none;
   overflow: hidden;
-}
-
-.navigation-container {
-  font-family: var(--bodyFont);
-  font-style: italic;
-  margin-top: 2rem;
-  text-align: right;
-  font-size: 0.9rem;
-
-  a {
-    background-color: transparent;
-    text-decoration: inherit;
-    font-weight: inherit;
-    transition: none;
-    border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
-    border-radius: 0;
-
-    [saved-theme="dark"] & {
-      border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
-    }
-
-    &:hover > .popover {
-      display: none;
-    }
-  }
 }
 
 #toc-content {

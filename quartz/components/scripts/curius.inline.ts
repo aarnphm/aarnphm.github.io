@@ -293,7 +293,7 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
           hiItem.textContent = highlight.highlight
           modalList.appendChild(hiItem)
         })
-        modal.style.display = "block"
+        modal.style.visibility = "visible"
         modal.classList.add("active")
       }
 
@@ -301,7 +301,7 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
         curiusItem.classList.add("focus")
 
         if (!modal) return
-        modal.style.display = "none"
+        modal.style.visibility = "hidden"
         modal.classList.remove("active")
       }
 
@@ -358,7 +358,7 @@ async function createTooltip(item: HTMLElement) {
 
   const hide = () => {
     item.style.opacity = "0"
-    tool.style.display = "none"
+    tool.style.visibility = "hidden"
   }
 
   function show(this: HTMLElement, { clientX, clientY }: { clientX: number; clientY: number }) {
@@ -384,7 +384,7 @@ async function createTooltip(item: HTMLElement) {
     }
 
     item.style.opacity = "1"
-    tool.style.display = "block"
+    tool.style.visibility = "show"
     setPosition(tool)
   }
 
@@ -413,7 +413,7 @@ const toggleVisibility = (el: HTMLElement, override?: boolean) => {
   }
   Object.assign(el.style, {
     opacity: isVisibile ? "1" : "0",
-    display: isVisibile ? "block" : "none",
+    visibility: isVisibile ? "visible" : "hidden",
   })
   localStorage.setItem(el.id, visible)
 }

@@ -3,6 +3,9 @@ id: quotes
 tags:
   - evergreen
 date: "2024-01-23"
+navigation:
+  next: /dump/Chaos
+  prev: dump/Philosophy-and-Nietzsche
 title: Advice
 ---
 <!-- NOTE: dump/quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
@@ -20,7 +23,3 @@ The falseness of an opinion is not for us any objection to it: it is here, perha
 Life can be much broader when you discover one simple fact...that everything around you was made up by people no smarter than you. ... Once you learn that, [you'll never be the same again.] -- Steve Jobs
 
 I just wondered how things were put together. -- Claude Shannon
-
-<div class="navigation-container">
-  <p>You might be interested in <a href="/dump/Chaos" class="">this</a> or <a href="/books" class="">that</a></p>
-</div>

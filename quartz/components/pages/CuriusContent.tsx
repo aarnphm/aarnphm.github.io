@@ -1,25 +1,11 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import MetaConstructor from "../Meta"
+import NavigationConstructor from "../Navigation"
 
 import curiusStyle from "../styles/curiusPage.scss"
 
 //@ts-ignore
 import curiusScript from "../scripts/curius.inline"
-
-const Navigation = () => (
-  <div class="navigation-container">
-    <p>
-      You might be interested in{" "}
-      <a href={"/dump/quotes"} rel="noopener noreferrer">
-        this
-      </a>{" "}
-      or{" "}
-      <a href={"/books"} rel="noopener noreferrer">
-        that
-      </a>
-    </p>
-  </div>
-)
 
 const Title = () => (
   <div class="curius-title">
@@ -49,7 +35,7 @@ const Title = () => (
 const CuriusContainer = () => (
   <div id="curius-container">
     <div id="curius-fragments"></div>
-    <div class="highlight-modal" id="highlight-modal" style="display: none;">
+    <div class="highlight-modal" id="highlight-modal">
       <ul id="highlight-modal-list"></ul>
     </div>
   </div>
@@ -57,6 +43,7 @@ const CuriusContainer = () => (
 
 function CuriusContent(componentData: QuartzComponentProps) {
   const Meta = MetaConstructor({ enableSearch: false })
+  const Navigation = NavigationConstructor({ prev: "/dump/quotes", next: "/books" })
   return (
     <div class="popover-hint">
       <Meta {...componentData} />
@@ -73,7 +60,7 @@ function CuriusContent(componentData: QuartzComponentProps) {
           <div id="curius-fetching-text"></div>
           <CuriusContainer />
         </div>
-        <Navigation />
+        <Navigation {...componentData} />
       </div>
     </div>
   )

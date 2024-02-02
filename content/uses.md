@@ -4,6 +4,9 @@ tags:
   - technical
 date: "2024-01-22"
 description: tools and everything drives my daily
+navigation:
+  next: /dump
+  prev: /books
 title: uses.
 ---
 
@@ -53,8 +56,3 @@ used for [[dump/Dishes|hosting]]
 - made-in stainless steel pans and pots sets.
 - 12' All-Clad Saute Pan
 - Stand-mixer
-
-
-<div class="navigation-container">
-  <p>You might be interested in <a href="/books" class="">this</a> or <a href="/dump" class="">that</a></p>
-</div>

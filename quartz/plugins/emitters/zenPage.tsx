@@ -3,6 +3,7 @@ import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.
 import HeaderConstructor from "../../components/Header"
 import BodyConstructor from "../../components/Body"
 import MetaConstructor from "../../components/Meta"
+import NavigationConstructor from "../../components/Navigation"
 import Spacer from "../../components/Spacer"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
@@ -12,7 +13,7 @@ import keybindScript from "../../components/scripts/keybind.inline"
 import { FilePath, FullSlug, pathToRoot } from "../../util/path"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { QuartzComponentProps } from "../../components/types"
-import { Content } from "../../components"
+import { ArticleTitle, Content } from "../../components"
 import chalk from "chalk"
 import { defaultProcessedContent } from "../vfile"
 
@@ -27,14 +28,16 @@ const defaultOptions: Options = {
 export const ZenPage: QuartzEmitterPlugin<Partial<Options>> = (opts?: Partial<Options>) => {
   const { slug: zenSlug } = { ...defaultOptions, ...opts }
   const Meta = MetaConstructor()
+  const Navigation = NavigationConstructor()
 
   const pageOpts: FullPageLayout = {
     ...sharedPageComponents,
     ...defaultContentPageLayout,
+    beforeBody: [ArticleTitle()],
     pageBody: Content(),
     left: [Meta],
     right: [],
-    footer: Spacer(),
+    footer: Navigation,
   }
 
   const { head: Head, header, beforeBody, pageBody, left, right, footer } = pageOpts
@@ -44,7 +47,18 @@ export const ZenPage: QuartzEmitterPlugin<Partial<Options>> = (opts?: Partial<Op
   return {
     name: "ZenPage",
     getQuartzComponents() {
-      return [Head, Header, Body, ...header, ...beforeBody, pageBody, ...left, ...right]
+      return [
+        Head,
+        Header,
+        Body,
+        Meta,
+        Navigation,
+        ...header,
+        ...beforeBody,
+        pageBody,
+        ...left,
+        ...right,
+      ]
     },
     async emit(ctx, content, resources): Promise<FilePath[]> {
       const fps: FilePath[] = []

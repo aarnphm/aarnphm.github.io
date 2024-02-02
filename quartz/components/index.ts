@@ -22,6 +22,7 @@ import RecentNotes from "./RecentNotes"
 import Breadcrumbs from "./Breadcrumbs"
 import Landing from "./Landing"
 import Meta from "./Meta"
+import Navigation from "./Navigation"
 
 export {
   ArticleTitle,
@@ -46,5 +47,7 @@ export {
   NotFound,
   Breadcrumbs,
   Landing,
+  Meta,
+  Navigation,
   CuriusContent,
 }

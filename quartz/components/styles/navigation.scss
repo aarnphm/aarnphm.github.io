@@ -1,0 +1,24 @@
+.navigation-container {
+  font-family: var(--bodyFont);
+  font-style: italic;
+  margin-top: 2rem;
+  text-align: right;
+  font-size: 0.9rem;
+
+  a {
+    background-color: transparent;
+    text-decoration: inherit;
+    font-weight: inherit;
+    transition: none;
+    border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
+    border-radius: 0;
+
+    [saved-theme="dark"] & {
+      border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
+    }
+
+    &:hover > .popover {
+      display: none;
+    }
+  }
+}
