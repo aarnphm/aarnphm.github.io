@@ -1,6 +1,6 @@
 import FlexSearch, { IndexOptions } from "flexsearch"
 import { pluralize } from "../../util/lang"
-import { registerEscapeHandler, removeAllChildren } from "./util"
+import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util"
 import { computePosition, arrow as arrowFloating, inline, offset } from "@floating-ui/dom"
 import type { Coords } from "@floating-ui/dom"
 
@@ -125,7 +125,7 @@ const formatTimeLeft = (timeLeft: number) => {
   return `${minutes}m ${seconds}s`
 }
 
-function random(min: number, max: number): number {
+const random = (min: number, max: number) => {
   if (max == null) {
     max = min
     min = 0
@@ -133,7 +133,7 @@ function random(min: number, max: number): number {
   return min + Math.floor(Math.random() * (max - min + 1))
 }
 
-function sample(object: any[], n: number): any[] {
+const sample = (object: any[], n: number) => {
   const sample = [...object]
   var length = sample.length
   n = Math.max(Math.min(n, length), 0)
@@ -147,23 +147,34 @@ function sample(object: any[], n: number): any[] {
   return sample.slice(0, n)
 }
 
-const localFetchKey = "curiusLinks"
-const localTimeKey = "curiusLastFetch"
-
-let index: FlexSearch.Document<Link> | undefined = undefined
-const numSearchResults = 20
-const fetchTimeout = 2 * 60 * 1000 // 2 minutes
-let disableEndTime: number | null = null
-let countdownIntervalId: NodeJS.Timeout | null = null
-let prevCuriusShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
-
 const getLocalItem = (key: "curiusLinks" | "curiusLastFetch", value: any): any =>
   localStorage.getItem(key) ?? value
 
+const localFetchKey = "curiusLinks"
+const localTimeKey = "curiusLastFetch"
+const numSearchResults = 20
+const fetchTimeout = 2 * 60 * 1000 // 2 minutes
 const fetchLinksHeaders: RequestInit = {
   method: "POST",
   headers: { "Content-Type": "application/json" },
 }
+
+let disableEndTime: number | null = null
+let countdownIntervalId: NodeJS.Timeout | null = null
+let index: FlexSearch.Document<Link> = new FlexSearch.Document({
+  charset: "latin:extra",
+  document: {
+    id: "id",
+    index: [
+      ...LinkKeys.map(
+        (key) =>
+          ({ field: key, tokenize: "forward" }) as IndexOptions<Link, false> & {
+            field: string
+          },
+      ),
+    ],
+  },
+})
 
 async function fetchLinks(refetch: boolean = false): Promise<Response> {
   // user metadata
@@ -280,7 +291,7 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
       const modal = document.getElementById("highlight-modal")
       const modalList = document.getElementById("highlight-modal-list")
 
-      function onMouseEnter(event: MouseEvent) {
+      const onMouseEnter = () => {
         const highlightsData = Link.highlights
 
         if (!modal || !modalList) return
@@ -297,7 +308,7 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
         modal.classList.add("active")
       }
 
-      function onMouseLeave(event: MouseEvent) {
+      const onMouseLeave = () => {
         curiusItem.classList.add("focus")
 
         if (!modal) return
@@ -305,13 +316,15 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
         modal.classList.remove("active")
       }
 
-      function onMouseMove(event: MouseEvent) {
+      const onMouseMove = ({ pageX, pageY }: MouseEvent) => {
         curiusItem.classList.remove("focus")
 
         if (!modal) return
         modal.classList.add("active")
-        modal.style.left = `${event.pageX + 10}px`
-        modal.style.top = `${event.pageY + 10}px`
+        Object.assign(modal.style, {
+          left: `${pageX + 10}px`,
+          top: `${pageY + 10}px`,
+        })
       }
 
       const events = [
@@ -319,10 +332,7 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
         ["mouseleave", onMouseLeave],
         ["mousemove", onMouseMove],
       ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
-      events.forEach(([event, listener]) => {
-        highlights.removeEventListener(event, listener)
-        highlights.addEventListener(event, listener)
-      })
+      registerEvents(highlights, ...events)
     }
 
     item.append(tags, misc)
@@ -388,34 +398,21 @@ async function createTooltip(item: HTMLElement) {
     setPosition(tool)
   }
 
-  const caller = [
+  const events = [
     ["mouseleave", hide],
     ["mouseenter", show],
   ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
-  caller.forEach(([event, listener]) => {
-    item.removeEventListener(event, listener)
-    item.addEventListener(event, listener)
-  })
+  registerEvents(item, ...events)
 
   parentNode?.appendChild(tool)
   return tool
 }
 
-const currentVisibility = (el: HTMLElement) => localStorage.getItem(el.id) ?? "true"
-
-const toggleVisibility = (el: HTMLElement, override?: boolean) => {
-  let visible = currentVisibility(el)
-  const isVisibile = override !== undefined ? override : visible === "true"
-  if (override !== undefined) {
-    visible = override ? "true" : "false"
-  } else {
-    visible = visible === "true" ? "false" : "true"
-  }
+const toggleVisibility = (el: HTMLElement, state: boolean) => {
   Object.assign(el.style, {
-    opacity: isVisibile ? "1" : "0",
-    visibility: isVisibile ? "visible" : "hidden",
+    opacity: state ? "1" : "0",
+    visibility: state ? "visible" : "hidden",
   })
-  localStorage.setItem(el.id, visible)
 }
 
 let prevGatedShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
@@ -426,18 +423,19 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     "#curius-fetching-text",
     "#curius-fragments",
     ".navigation-container",
+    ".curius-outer",
   ].map((id) => document.querySelector(id))
   const searchBar = document.getElementById("curius-bar") as HTMLInputElement | null
   const resultCards = document.getElementsByClassName("curius-search-link")
 
   if (elements.some((el) => el === null)) return
 
-  const [searchContainer, container, fetchText, fragment, nav] = elements as HTMLElement[]
+  const [searchContainer, container, fetchText, fragment, nav, outer] = elements as HTMLElement[]
 
   fetchText.textContent = "Fetching curius links"
-  toggleVisibility(fetchText)
+  toggleVisibility(fetchText, true)
   const resp = await fetchLinks()
-  toggleVisibility(fetchText)
+  toggleVisibility(fetchText, false)
 
   const userData = resp.user ?? {}
   const linksData = resp.links ?? []
@@ -461,23 +459,6 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       const timeLeft = Math.max(endTime - Date.now(), 0)
       const span = popover.querySelector("#curius-tooltip-content") as HTMLSpanElement
       span.textContent = timeLeft <= 0 ? refetchContent : `Wait time: ${formatTimeLeft(timeLeft)}`
-    }
-
-    const gatedRefresh = async (e: HTMLElementEventMap["keydown"]) => {
-      if ((e.key === "R" || e.key === "r") && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault()
-        e.stopPropagation()
-      }
-    }
-
-    if (refetchIcon.classList.contains("disabled")) {
-      if (prevGatedShortcutHandler) {
-        refetchIcon.removeEventListener("keydown", prevGatedShortcutHandler)
-      }
-      refetchIcon.addEventListener("keydown", gatedRefresh)
-      prevGatedShortcutHandler = gatedRefresh
-    } else {
-      refetchIcon.removeEventListener("keydown", gatedRefresh)
     }
 
     refetchIcon.addEventListener("click", async () => {
@@ -508,10 +489,10 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       removeAllChildren(fragment)
       toggleVisibility(nav, false)
 
-      toggleVisibility(fetchText)
+      toggleVisibility(fetchText, true)
       fetchText.textContent = "Refreshing curius links"
       const refetched = await fetchLinks(true)
-      toggleVisibility(fetchText)
+      toggleVisibility(fetchText, false)
 
       const newData = refetched.links ?? []
       if (newData.length === 0) {
@@ -554,8 +535,8 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       ],
     ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
     events.forEach(([event, listener]) => {
-      refetchIcon.removeEventListener(event, listener)
       refetchIcon.addEventListener(event, listener)
+      window.addCleanup(() => refetchIcon.removeEventListener(event, listener))
     })
   }
 
@@ -672,40 +653,24 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     showLinks(sampleLinks)
   }
 
-  if (prevCuriusShortcutHandler) {
-    document.removeEventListener("keydown", prevCuriusShortcutHandler)
-  }
-
   document.addEventListener("keydown", shortcutHandler)
-  prevCuriusShortcutHandler = shortcutHandler
-  searchBar?.removeEventListener("click", onClick)
-  searchBar?.addEventListener("click", onClick)
-  searchBar?.removeEventListener("input", onType)
-  searchBar?.addEventListener("input", onType)
+  window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
 
-  if (!index) {
-    const documentIndex = [
-      ...LinkKeys.map(
-        (key) =>
-          ({ field: key, tokenize: "forward" }) as IndexOptions<Link, false> & { field: string },
-      ),
-    ]
-    index = new FlexSearch.Document({
-      charset: "latin:extra",
-      document: { id: "id", index: documentIndex },
-    })
+  const events = [
+    ["click", onClick],
+    ["input", onType],
+  ] as [keyof HTMLElementEventMap, EventListenerOrEventListenerObject][]
+  registerEvents(searchBar, ...events)
+  registerEscapeHandler(outer, hideLinks)
 
-    let id = 0
-    for (const link of linksData) {
-      await index.addAsync(id, { ...link })
-      id++
-    }
-  }
-
-  for (const el of [
-    document.getElementById("quartz-body"),
-    document.getElementsByClassName("center")[0],
-  ] as (HTMLElement | null)[]) {
-    registerEscapeHandler(el, hideLinks)
-  }
+  await fillIndex(linksData)
 })
+
+async function fillIndex(links: Link[]) {
+  let id = 0
+  const promises: Array<Promise<unknown>> = []
+  for (const link of links) {
+    promises.push(index.addAsync(id++, { ...link }))
+  }
+  return await Promise.all(promises)
+}

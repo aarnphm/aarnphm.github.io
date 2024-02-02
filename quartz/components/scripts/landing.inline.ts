@@ -4,7 +4,7 @@ import popoverScript from "./popover.inline"
 import searchScript from "./search.inline"
 //@ts-ignore
 import graphScript from "./graph.inline"
-import { registerEscapeHandler, removeAllChildren } from "./util"
+import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util"
 
 function handleKeybindClick(ev: MouseEvent) {
   ev.preventDefault()
@@ -29,8 +29,7 @@ function handleKeybindClick(ev: MouseEvent) {
 
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   for (const modifier of document.querySelectorAll("#landing-keybind") as NodeListOf<HTMLElement>) {
-    modifier.removeEventListener("click", handleKeybindClick)
-    modifier.addEventListener("click", handleKeybindClick)
+    registerEvents(modifier, ["click", handleKeybindClick])
   }
 
   const slug = e.detail.url
@@ -53,11 +52,21 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       modal.style.display = "none"
     }
 
-    landingEmail?.removeEventListener("mouseenter", emailModalEnter)
-    landingEmail?.addEventListener("mouseenter", emailModalEnter)
-    landingEmail?.removeEventListener("mousemove", emailModalEnter)
-    landingEmail?.addEventListener("mousemove", emailModalEnter)
-    landingEmail?.removeEventListener("mouseleave", emailModalLeave)
-    landingEmail?.addEventListener("mouseleave", emailModalLeave)
+    const events = [
+      ["mouseenter", emailModalEnter],
+      ["mousemove", emailModalMove],
+      ["mouseleave", emailModalLeave],
+    ] as [keyof HTMLElementEventMap, (ev: MouseEvent) => void][]
+
+    registerEvents(
+      landingEmail,
+      ["mouseenter", () => (modal.style.display = "block")],
+      ["mouseleave", () => (modal.style.display = "none")],
+      [
+        "mousemove",
+        ({ pageX, pageY }) =>
+          Object.assign(modal.style, { left: `${pageX + 20}px`, top: `${pageY - 20}px` }),
+      ],
+    )
   }
 })

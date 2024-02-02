@@ -1,32 +1,22 @@
-import { registerEscapeHandler, removeAllChildren } from "./util"
-//@ts-ignore
+import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util"
 import { renderGlobalGraph } from "./graph.inline"
 import { getFullSlug } from "../../util/path"
 
-let prevDarkShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 document.addEventListener("nav", () => {
-  const toggleSwitch = document.querySelector("#darkmode-toggle") as HTMLInputElement
+  const darkModeSwitch = document.querySelector("#darkmode-toggle") as HTMLInputElement
+  const graphContainer = document.getElementById("global-graph-outer")
+
   function darkModeShortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (e.key === "a" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
-      toggleSwitch.click()
+      darkModeSwitch.click()
     }
   }
-  if (prevDarkShortcutHandler) {
-    document.removeEventListener("keydown", prevDarkShortcutHandler)
-  }
-  document.addEventListener("keydown", darkModeShortcutHandler)
-  prevDarkShortcutHandler = darkModeShortcutHandler
-})
-
-let prevGraphShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
-document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
-  const container = document.getElementById("global-graph-outer")
 
   function hideGlobalGraph() {
-    container?.classList.remove("active")
+    graphContainer?.classList.remove("active")
     const graph = document.getElementById("global-graph-container")
-    const sidebar = container?.closest(".sidebar") as HTMLElement
+    const sidebar = graphContainer?.closest(".sidebar") as HTMLElement
     if (!graph) return
     if (sidebar) {
       sidebar.style.zIndex = "unset"
@@ -37,32 +27,22 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   function graphShortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (e.key === "g" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
-      const graphOpen = container?.classList.contains("active")
+      const graphOpen = graphContainer?.classList.contains("active")
       graphOpen ? hideGlobalGraph() : renderGlobalGraph()
     }
   }
 
-  if (prevGraphShortcutHandler) {
-    document.removeEventListener("keydown", prevGraphShortcutHandler)
-  }
-  document.addEventListener("keydown", graphShortcutHandler)
-  prevGraphShortcutHandler = graphShortcutHandler
-})
-
-// home shortcut
-let prevHomeShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
-document.addEventListener("nav", (ev: CustomEventMap["nav"]) => {
   function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (e.key === "/" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
-      window.location.pathname = "/"
+      window.location.href = "/"
     }
   }
 
-  if (prevHomeShortcutHandler) {
-    document.removeEventListener("keydown", prevHomeShortcutHandler)
-  }
-
-  document.addEventListener("keydown", shortcutHandler)
-  prevHomeShortcutHandler = shortcutHandler
+  const mapping = [
+    ["keydown", darkModeShortcutHandler],
+    ["keydown", graphShortcutHandler],
+    ["keydown", shortcutHandler],
+  ] as [keyof HTMLElementEventMap, EventListenerOrEventListenerObject][]
+  registerEvents(document, ...mapping)
 })
