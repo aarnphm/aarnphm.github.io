@@ -95,25 +95,18 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
     if (node.nodeType === Node.TEXT_NODE) {
       let nodeText = node.nodeValue || ""
       tokenizedTerms.forEach((term) => {
-        const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // Escape special characters
-        const regex = new RegExp(escapedTerm, "gi")
-        if (regex.test(nodeText)) {
-          const matches = nodeText.match(regex)
-          if (matches) {
-            const spanContainer = document.createElement("span")
-            let lastIndex = 0
-            matches.forEach((match) => {
-              const matchIndex = nodeText.indexOf(match, lastIndex)
-              spanContainer.appendChild(
-                document.createTextNode(nodeText.slice(lastIndex, matchIndex)),
-              )
-              spanContainer.appendChild(createHighlightSpan(match))
-              lastIndex = matchIndex + match.length
-            })
-            spanContainer.appendChild(document.createTextNode(nodeText.slice(lastIndex)))
-            node.parentNode?.replaceChild(spanContainer, node)
-          }
-        }
+        const regex = new RegExp(term.toLowerCase(), "gi")
+        const matches = nodeText.match(regex)
+        const spanContainer = document.createElement("span")
+        let lastIndex = 0
+        matches?.forEach((match) => {
+          const matchIndex = nodeText.indexOf(match, lastIndex)
+          spanContainer.appendChild(document.createTextNode(nodeText.slice(lastIndex, matchIndex)))
+          spanContainer.appendChild(createHighlightSpan(match))
+          lastIndex = matchIndex + match.length
+        })
+        spanContainer.appendChild(document.createTextNode(nodeText.slice(lastIndex)))
+        node.parentNode?.replaceChild(spanContainer, node)
       })
     } else if (node.nodeType === Node.ELEMENT_NODE) {
       Array.from(node.childNodes).forEach(highlightTextNodes)
@@ -224,9 +217,9 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
         active.click()
       } else {
         const anchor = document.getElementsByClassName("result-card")[0] as HTMLInputElement | null
-        if (anchor?.classList.contains("no-match")) return
+        if (!anchor || anchor?.classList.contains("no-match")) return
         await displayPreview(anchor)
-        anchor?.click()
+        anchor.click()
       }
     } else if (e.key === "ArrowUp" || (e.shiftKey && e.key === "Tab")) {
       e.preventDefault()
@@ -359,7 +352,6 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
         el.blur()
       }
       const target = ev.target as HTMLInputElement
-      target.classList.add("mouse")
       await displayPreview(target)
       currentHover = target
       currentHover.classList.remove("focus")
@@ -457,6 +449,10 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
     if (searchLayout) {
       searchLayout.style.opacity = "1"
+    }
+
+    if (term === "" && searchLayout) {
+      searchLayout.style.opacity = "0"
     }
 
     if (term.toLowerCase().startsWith("#")) {

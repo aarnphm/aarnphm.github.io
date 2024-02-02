@@ -118,6 +118,13 @@ const timeSince = (date: Date | string) => {
   }
 }
 
+const formatTimeLeft = (timeLeft: number) => {
+  const totalSeconds = Math.ceil(timeLeft / 1000)
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  return `${minutes}m ${seconds}s`
+}
+
 function random(min: number, max: number): number {
   if (max == null) {
     max = min
@@ -144,8 +151,10 @@ const localFetchKey = "curiusLinks"
 const localTimeKey = "curiusLastFetch"
 
 let index: FlexSearch.Document<Link> | undefined = undefined
-const numSearchResults = 10
-const fetchTimeout = 30 * 1000 // 30 seconds
+const numSearchResults = 20
+const fetchTimeout = 2 * 60 * 1000 // 2 minutes
+let disableEndTime: number | null = null
+let countdownIntervalId: NodeJS.Timeout | null = null
 let prevCuriusShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 
 const getLocalItem = (key: "curiusLinks" | "curiusLastFetch", value: any): any =>
@@ -341,7 +350,6 @@ async function createPopover(item: HTMLElement) {
   })
   const arrowElement = document.createElement("div")
   arrowElement.id = "arrow"
-  arrowElement.dataset.popperArrow = ""
   popover.appendChild(arrowElement)
 
   if (parentNode?.contains(popover)) return
@@ -374,7 +382,7 @@ async function createPopover(item: HTMLElement) {
     }
 
     item.style.opacity = "1"
-    popover.style.display = "inline-block"
+    popover.style.display = "block"
     setPosition(popover)
   }
 
@@ -416,11 +424,18 @@ async function createPopover(item: HTMLElement) {
   return popover
 }
 
-const toggleVisibility = (el: HTMLElement, visible: boolean) =>
+const currentVisibility = (el: HTMLElement) => localStorage.getItem(el.id) ?? "true"
+
+const toggleVisibility = (el: HTMLElement) => {
+  let visible = currentVisibility(el)
+  const isVisibile = el.dataset?.visible ? el.dataset.visible === "true" : visible === "true"
+  visible = visible === "true" ? "false" : "true"
   Object.assign(el.style, {
-    opacity: visible ? "1" : "0",
-    display: visible ? "block" : "none",
+    opacity: isVisibile ? "1" : "0",
+    display: isVisibile ? "block" : "none",
   })
+  localStorage.setItem(el.id, visible)
+}
 
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const elements = [
@@ -438,9 +453,9 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const [searchContainer, container, fetchText, fragment, nav] = elements as HTMLElement[]
 
   fetchText.textContent = "Fetching curius links"
-  toggleVisibility(fetchText, true)
+  toggleVisibility(fetchText)
   const resp = await fetchLinks()
-  toggleVisibility(fetchText, false)
+  toggleVisibility(fetchText)
 
   const userData = resp.user ?? {}
   const linksData = resp.links ?? []
@@ -451,27 +466,56 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     return
   }
   fragment.append(...linksData.map(createLinkEl))
-  toggleVisibility(nav, true)
+  toggleVisibility(nav)
 
   const refetchIcon = document.getElementById("curius-refetch")
 
   // Ensure refetchIcon exists before adding event listener
   if (refetchIcon) {
-    createPopover(refetchIcon)
+    const popover = (await createPopover(refetchIcon)) as HTMLElement
+
+    function updatePopoverText(popover: HTMLElement, endTime: number) {
+      const timeLeft = Math.max(endTime - Date.now(), 0)
+      if (timeLeft <= 0) {
+        popover.textContent = "available"
+        popover.style.display = "none" // Optionally hide the popover when refresh is available
+      } else {
+        popover.textContent = `Wait time: ${formatTimeLeft(timeLeft)}`
+      }
+    }
 
     refetchIcon.addEventListener("click", async () => {
       if (refetchIcon.classList.contains("disabled")) return
       refetchIcon.classList.add("disabled")
       refetchIcon.style.opacity = "0.5"
-      setTimeout(() => refetchIcon.classList.remove("disabled"), fetchTimeout)
+
+      // Set the disable end time
+      disableEndTime = Date.now() + fetchTimeout // fetchTimeout should be defined somewhere in your code
+
+      // Update the tooltip immediately
+      updatePopoverText(popover as HTMLElement, disableEndTime)
+
+      // Set an interval to update the tooltip every second
+      countdownIntervalId = setInterval(() => {
+        updatePopoverText(popover as HTMLElement, disableEndTime!)
+      }, 1000)
+
+      // Remove disabled state after the timeout
+      setTimeout(() => {
+        refetchIcon.classList.remove("disabled")
+        refetchIcon.style.opacity = ""
+        disableEndTime = null
+        clearInterval(countdownIntervalId!)
+        countdownIntervalId = null
+      }, fetchTimeout)
 
       removeAllChildren(fragment)
-      toggleVisibility(nav, false)
+      toggleVisibility(nav)
 
-      toggleVisibility(fetchText, true)
+      toggleVisibility(fetchText)
       fetchText.textContent = "Refreshing curius links"
       const refetched = await fetchLinks(true)
-      toggleVisibility(fetchText, false)
+      toggleVisibility(fetchText)
 
       const newData = refetched.links ?? []
       if (newData.length === 0) {
@@ -479,24 +523,43 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
         return
       }
       fragment.append(...newData.map(createLinkEl))
-      toggleVisibility(nav, true)
+      toggleVisibility(nav)
     })
 
     const events = [
       [
         "mouseenter",
         () => {
-          if (refetchIcon.classList.contains("disabled")) {
+          if (refetchIcon.classList.contains("disabled") && disableEndTime) {
             refetchIcon.style.opacity = "0.5"
+            updatePopoverText(popover, disableEndTime)
+            if (countdownIntervalId === null) {
+              countdownIntervalId = setInterval(() => {
+                updatePopoverText(popover, disableEndTime!)
+              }, 1000)
+            }
           }
         },
       ],
       [
         "mouseleave",
-        () =>
-          refetchIcon.classList.contains("disabled")
-            ? (refetchIcon.style.opacity = "0.5")
-            : (refetchIcon.style.opacity = "0"),
+        () => {
+          // Clear the countdown when the mouse leaves
+          const popover = document.getElementById("curius-tooltip")
+          if (countdownIntervalId !== null) {
+            clearInterval(countdownIntervalId)
+            countdownIntervalId = null
+          }
+
+          if (refetchIcon.classList.contains("disabled")) {
+            refetchIcon.style.opacity = "0.5"
+          } else {
+            if (popover) {
+              popover.textContent = "refresh"
+              refetchIcon.style.opacity = "0"
+            }
+          }
+        },
       ],
     ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
     events.forEach(([event, listener]) => {

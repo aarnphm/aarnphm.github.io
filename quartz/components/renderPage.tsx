@@ -205,8 +205,8 @@ export function renderPage(
         ) : (
           <div id="quartz-root" class="page">
             {cfg.enableTexture ? <div id="texture"></div> : <></>}
-            <div id="progress"></div>
             <Body {...componentData}>
+              <div id="progress"></div>
               {LeftComponent}
               <div class="center">
                 <div class="page-header">

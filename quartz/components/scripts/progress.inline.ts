@@ -10,6 +10,7 @@ document.addEventListener("nav", (e: CustomEventMap["nav"]) => {
   const hide = () => {
     const progress = document.getElementById("progress")
     if (!progress) return
+    if (document.activeElement?.classList.contains("active")) return
     progress.style.backgroundColor = "transparent"
   }
   const show = () => {
