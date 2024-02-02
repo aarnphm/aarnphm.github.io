@@ -1,7 +1,7 @@
-@use "../../styles/variables.scss" as *;
-.default-footer {
+footer {
   text-align: left;
   margin-bottom: 4rem;
+  opacity: 0.7;
 
   & ul {
     list-style: none;
@@ -11,51 +11,5 @@
     flex-direction: row;
     gap: 1rem;
     margin-top: -1rem;
-  }
-}
-
-.page {
-  & footer.minimal-footer {
-    width: 100%;
-  }
-}
-
-.minimal-footer {
-  display: flex;
-  margin-top: auto;
-  flex-direction: row;
-  justify-content: space-between;
-
-  box-sizing: border-box;
-  border: 0 solid var(--gray);
-  border-top-width: 1px;
-
-  font-size: 0.75rem;
-  line-height: 0.8rem;
-  padding: 1rem 2.5rem;
-
-  @media (min-width: 1280px) {
-    padding-left: 5rem;
-    padding-right: 5rem;
-  }
-
-  @media all and (max-width: 430px) {
-    padding: 1rem 0;
-  }
-
-  p {
-    font-family: var(--bodyFont);
-    font-size: 0.8rem;
-    font-style: normal;
-    margin: 0;
-  }
-
-  .footnotes {
-    text-align: right;
-  }
-
-  a {
-    text-decoration: underline;
-    text-decoration-thickness: from-font;
   }
 }

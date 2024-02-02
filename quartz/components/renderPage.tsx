@@ -225,7 +225,6 @@ export function renderPage(
               </div>
               {RightComponent}
             </Body>
-            {cfg.defaultFooterStyle === "minimal" ? <br /> : <></>}
             <Footer {...componentData} />
           </div>
         )}

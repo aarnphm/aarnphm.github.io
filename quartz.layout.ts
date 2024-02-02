@@ -8,12 +8,7 @@ import { FileNode } from "./quartz/components/ExplorerNode"
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [],
-  footer: Component.Footer({
-    links: {
-      GitHub: "https://github.com/aarnphm",
-      Twitter: "https://twitter.com/aarnphm_",
-    },
-  }),
+  footer: Component.MinimalFooter(),
 }
 
 function filterFunc(path: string, excludePaths: string[] = []) {

@@ -14,7 +14,6 @@ const config: QuartzConfig = {
     baseUrl: "aarnphm.xyz",
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "created",
-    defaultFooterStyle: "minimal",
     theme: {
       typography: {
         header: "DM Serif Text",

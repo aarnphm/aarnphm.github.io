@@ -1,0 +1,42 @@
+@use "../../styles/variables.scss" as *;
+
+.page {
+  & footer.minimal-footer {
+    width: 100%;
+  }
+
+  @media all and (max-width: $fullPageWidth) {
+    & footer.minimal-footer {
+      width: initial;
+    }
+  }
+}
+
+.minimal-footer {
+  display: flex;
+  margin-top: auto;
+  flex-direction: row;
+  justify-content: space-between;
+
+  box-sizing: border-box;
+  border: 0 solid var(--gray);
+  border-top-width: 1px;
+
+  padding: 1rem 1rem;
+
+  @media all and (max-width: $tabletBreakpoint) {
+    padding: 1rem 0;
+  }
+
+  p {
+    font-family: var(--bodyFont);
+    font-size: 0.8rem;
+    font-style: normal;
+    margin: 0;
+  }
+
+  a {
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+  }
+}

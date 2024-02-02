@@ -23,6 +23,7 @@ import Breadcrumbs from "./Breadcrumbs"
 import Landing from "./Landing"
 import Meta from "./Meta"
 import Navigation from "./Navigation"
+import MinimalFooter from "./MinimalFooter"
 
 export {
   ArticleTitle,
@@ -50,4 +51,5 @@ export {
   Meta,
   Navigation,
   CuriusContent,
+  MinimalFooter,
 }
