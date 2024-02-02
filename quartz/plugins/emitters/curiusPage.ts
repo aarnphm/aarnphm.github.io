@@ -1,6 +1,6 @@
 import { QuartzEmitterPlugin } from "../types"
 import { sharedPageComponents } from "../../../quartz.layout"
-import { CuriusContent } from "../../components"
+import { CuriusContent, Spacer } from "../../components"
 import BodyConstructor from "../../components/Body"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
@@ -18,6 +18,7 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
     left: [],
     right: [],
     pageBody: CuriusContent(),
+    footer: Spacer(),
   }
 
   const { head: Head, pageBody, footer: Footer } = opts

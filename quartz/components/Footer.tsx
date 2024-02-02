@@ -1,6 +1,7 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import style from "./styles/footer.scss"
 import { version } from "../../package.json"
+import { classNames } from "../util/lang"
 
 interface Options {
   links?: Record<string, string>
@@ -11,7 +12,7 @@ export default ((options?: Options) => {
     const year = new Date().getFullYear()
     const links = options?.links ?? []
     return (
-      <footer class={`${cfg.defaultFooterStyle}-footer${displayClass ? ` ${displayClass}` : ""}`}>
+      <footer class={classNames(displayClass, `${cfg.defaultFooterStyle}-footer`)}>
         {cfg.defaultFooterStyle === "default" ? (
           <>
             <hr />

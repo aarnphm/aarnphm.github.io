@@ -292,8 +292,6 @@ audio::-webkit-media-controls-panel {
   & > *:not(.active) {
     #progress {
       position: fixed;
-      top: 0;
-      left: 0;
       width: 3px;
       height: 0;
       background-color: var(--dark);

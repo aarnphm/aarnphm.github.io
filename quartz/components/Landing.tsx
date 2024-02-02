@@ -1,23 +1,13 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import MetaConstructor from "./Meta"
+
 import landingStyle from "./styles/landing.scss"
 //@ts-ignore
 import landingScript from "./scripts/landing.inline"
 //@ts-ignore
 import darkModeScript from "./scripts/darkmode.inline"
-
-const globalGraph = {
-  drag: true,
-  zoom: true,
-  depth: -1,
-  scale: 0.9,
-  repelForce: 0.5,
-  centerForce: 0.3,
-  linkDistance: 30,
-  fontSize: 0.6,
-  opacityScale: 1,
-  showTags: true,
-  removeTags: [],
-}
+//@ts-ignore
+import keybindScript from "./scripts/keybind.inline"
 
 export const HyperAlias = {
   books: "/books",
@@ -61,39 +51,6 @@ const AliasLink = (props: AliasLinkProp) => {
     </li>
   )
 }
-
-const Search = () => (
-  <div class="search">
-    <div id="search-container">
-      <div id="search-space">
-        <input
-          autocomplete="off"
-          id="search-bar"
-          name="search"
-          type="text"
-          aria-label="Search for something"
-          placeholder="Search for something"
-        />
-        <div id="search-layout" data-preview={true}></div>
-      </div>
-    </div>
-  </div>
-)
-
-export const Graph = () => (
-  <div class="graph">
-    <div id="global-graph-icon"></div>
-    <div id="global-graph-outer">
-      <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)}></div>
-    </div>
-  </div>
-)
-
-export const DarkMode = () => (
-  <div class="darkmode">
-    <input class="toggle" id="darkmode-toggle" type="checkbox" tabIndex={-1} />
-  </div>
-)
 
 const Content = () => (
   <div class="content-container">
@@ -172,13 +129,12 @@ const Content = () => (
 )
 
 export default (() => {
+  const Meta = MetaConstructor()
   function LandingComponent(componentData: QuartzComponentProps) {
     return (
       <div class="popover-hint">
         <div class="landing">
-          <Search />
-          <Graph />
-          <DarkMode />
+          <Meta {...componentData} />
           <Content />
         </div>
       </div>
@@ -186,7 +142,7 @@ export default (() => {
   }
   LandingComponent.css = landingStyle
   LandingComponent.beforeDOMLoaded = darkModeScript
-  LandingComponent.afterDOMLoaded = landingScript
+  LandingComponent.afterDOMLoaded = landingScript + keybindScript
 
   return LandingComponent
 }) satisfies QuartzComponentConstructor

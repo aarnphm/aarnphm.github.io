@@ -295,8 +295,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
   })
 }
 
-let prevGraphShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
-function renderGlobalGraph() {
+export function renderGlobalGraph() {
   const slug = getFullSlug(window)
   const container = document.getElementById("global-graph-outer")
   const sidebar = container?.closest(".sidebar") as HTMLElement
@@ -328,29 +327,4 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const containerIcon = document.getElementById("global-graph-icon")
   containerIcon?.removeEventListener("click", renderGlobalGraph)
   containerIcon?.addEventListener("click", renderGlobalGraph)
-
-  function hideGlobalGraph() {
-    container?.classList.remove("active")
-    const graph = document.getElementById("global-graph-container")
-    const sidebar = container?.closest(".sidebar") as HTMLElement
-    if (!graph) return
-    if (sidebar) {
-      sidebar.style.zIndex = "unset"
-    }
-    removeAllChildren(graph)
-  }
-
-  const container = document.getElementById("global-graph-outer")
-  function graphShortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if (e.key === "g" && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault()
-      const graphOpen = container?.classList.contains("active")
-      graphOpen ? hideGlobalGraph() : renderGlobalGraph()
-    }
-  }
-  if (prevGraphShortcutHandler) {
-    document.removeEventListener("keydown", prevGraphShortcutHandler)
-  }
-  document.addEventListener("keydown", graphShortcutHandler)
-  prevGraphShortcutHandler = graphShortcutHandler
 })

@@ -1,7 +1,7 @@
 import FlexSearch, { IndexOptions } from "flexsearch"
 import { pluralize } from "../../util/lang"
 import { registerEscapeHandler, removeAllChildren } from "./util"
-import { computePosition, offset, arrow, inline } from "@floating-ui/dom"
+import { computePosition, arrow as arrowFloating, inline, offset } from "@floating-ui/dom"
 import type { Coords } from "@floating-ui/dom"
 
 interface Highlight {
@@ -336,27 +336,29 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
   return curiusItem
 }
 
-async function createPopover(item: HTMLElement) {
+async function createTooltip(item: HTMLElement) {
   if (!item) return
 
   const parentNode = item.parentNode
   if (!parentNode) return
 
-  const popover = document.createElement("div")
-  popover.classList.add("tooltip")
-  Object.assign(popover, {
-    id: "curius-tooltip",
+  const tool = document.createElement("div")
+  tool.classList.add("tooltip")
+  tool.id = `curius-tooltip-${item.dataset.id ?? "helper"}`
+  const content = document.createElement("span")
+  Object.assign(content, {
+    id: "curius-tooltip-content",
     textContent: item.dataset.tooltip ?? "helper",
   })
-  const arrowElement = document.createElement("div")
-  arrowElement.id = "arrow"
-  popover.appendChild(arrowElement)
+  const tip = document.createElement("div")
+  tip.id = "arrow"
+  tool.append(content, tip)
 
-  if (parentNode?.contains(popover)) return
+  if (parentNode.querySelector("#curius-tooltip")) return
 
   const hide = () => {
     item.style.opacity = "0"
-    popover.style.display = "none"
+    tool.style.display = "none"
   }
 
   function show(this: HTMLElement, { clientX, clientY }: { clientX: number; clientY: number }) {
@@ -365,8 +367,8 @@ async function createPopover(item: HTMLElement) {
         placement: "top",
         middleware: [
           inline({ x: clientX, y: clientY }),
-          arrow({ element: arrowElement, padding: 10 }),
-          offset(10),
+          arrowFloating({ element: tip, padding: 10 }),
+          offset(5),
         ],
       }).then(({ x, y, middlewareData }) => {
         Object.assign(popoverElement.style, {
@@ -374,7 +376,7 @@ async function createPopover(item: HTMLElement) {
           top: `${y}px`,
         })
         const { x: arrowX, y: arrowY } = middlewareData.arrow as Partial<Coords>
-        Object.assign(arrowElement.style, {
+        Object.assign(tip.style, {
           left: arrowX != null ? `${arrowX}px` : "",
           top: arrowY != null ? `${arrowY}px` : "",
         })
@@ -382,54 +384,33 @@ async function createPopover(item: HTMLElement) {
     }
 
     item.style.opacity = "1"
-    popover.style.display = "block"
-    setPosition(popover)
-  }
-
-  async function move(
-    this: HTMLElement,
-    { clientX, clientY }: { clientX: number; clientY: number },
-  ) {
-    await computePosition(item, arrowElement, {
-      placement: "top-start",
-      strategy: "fixed",
-    }).then(({ middlewareData }) => {
-      popover.style.left = `${clientX - 18}px`
-      popover.style.top = `${clientY - 40}px`
-      popover.style.display = "block"
-
-      if (middlewareData.arrow) {
-        const { x: arrowX, y: arrowY } = middlewareData.arrow as Partial<Coords>
-        Object.assign(arrowElement.style, {
-          left: arrowX != null ? `${arrowX}px` : "",
-          top: arrowY != null ? `${arrowY}px` : "",
-        })
-      }
-    })
+    tool.style.display = "block"
+    setPosition(tool)
   }
 
   const caller = [
     ["mouseleave", hide],
     ["mouseenter", show],
-    ["mousemove", move],
-    ["focus", show],
-    ["blur", show],
   ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
   caller.forEach(([event, listener]) => {
     item.removeEventListener(event, listener)
     item.addEventListener(event, listener)
   })
 
-  parentNode?.appendChild(popover)
-  return popover
+  parentNode?.appendChild(tool)
+  return tool
 }
 
 const currentVisibility = (el: HTMLElement) => localStorage.getItem(el.id) ?? "true"
 
-const toggleVisibility = (el: HTMLElement) => {
+const toggleVisibility = (el: HTMLElement, override?: boolean) => {
   let visible = currentVisibility(el)
-  const isVisibile = el.dataset?.visible ? el.dataset.visible === "true" : visible === "true"
-  visible = visible === "true" ? "false" : "true"
+  const isVisibile = override !== undefined ? override : visible === "true"
+  if (override !== undefined) {
+    visible = override ? "true" : "false"
+  } else {
+    visible = visible === "true" ? "false" : "true"
+  }
   Object.assign(el.style, {
     opacity: isVisibile ? "1" : "0",
     display: isVisibile ? "block" : "none",
@@ -437,6 +418,7 @@ const toggleVisibility = (el: HTMLElement) => {
   localStorage.setItem(el.id, visible)
 }
 
+let prevGatedShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const elements = [
     "#curius-search-container",
@@ -466,22 +448,36 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     return
   }
   fragment.append(...linksData.map(createLinkEl))
-  toggleVisibility(nav)
+  toggleVisibility(nav, true)
 
   const refetchIcon = document.getElementById("curius-refetch")
 
   // Ensure refetchIcon exists before adding event listener
   if (refetchIcon) {
-    const popover = (await createPopover(refetchIcon)) as HTMLElement
+    const refetchContent = refetchIcon.dataset.tooltip as string
+    const popover = (await createTooltip(refetchIcon)) as HTMLElement
 
     function updatePopoverText(popover: HTMLElement, endTime: number) {
       const timeLeft = Math.max(endTime - Date.now(), 0)
-      if (timeLeft <= 0) {
-        popover.textContent = "available"
-        popover.style.display = "none" // Optionally hide the popover when refresh is available
-      } else {
-        popover.textContent = `Wait time: ${formatTimeLeft(timeLeft)}`
+      const span = popover.querySelector("#curius-tooltip-content") as HTMLSpanElement
+      span.textContent = timeLeft <= 0 ? refetchContent : `Wait time: ${formatTimeLeft(timeLeft)}`
+    }
+
+    const gatedRefresh = async (e: HTMLElementEventMap["keydown"]) => {
+      if ((e.key === "R" || e.key === "r") && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+        e.stopPropagation()
       }
+    }
+
+    if (refetchIcon.classList.contains("disabled")) {
+      if (prevGatedShortcutHandler) {
+        refetchIcon.removeEventListener("keydown", prevGatedShortcutHandler)
+      }
+      refetchIcon.addEventListener("keydown", gatedRefresh)
+      prevGatedShortcutHandler = gatedRefresh
+    } else {
+      refetchIcon.removeEventListener("keydown", gatedRefresh)
     }
 
     refetchIcon.addEventListener("click", async () => {
@@ -510,7 +506,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       }, fetchTimeout)
 
       removeAllChildren(fragment)
-      toggleVisibility(nav)
+      toggleVisibility(nav, false)
 
       toggleVisibility(fetchText)
       fetchText.textContent = "Refreshing curius links"
@@ -523,16 +519,16 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
         return
       }
       fragment.append(...newData.map(createLinkEl))
-      toggleVisibility(nav)
+      toggleVisibility(nav, true)
     })
 
     const events = [
       [
         "mouseenter",
         () => {
-          if (refetchIcon.classList.contains("disabled") && disableEndTime) {
+          if (refetchIcon.classList.contains("disabled")) {
             refetchIcon.style.opacity = "0.5"
-            updatePopoverText(popover, disableEndTime)
+            updatePopoverText(popover, disableEndTime!)
             if (countdownIntervalId === null) {
               countdownIntervalId = setInterval(() => {
                 updatePopoverText(popover, disableEndTime!)
@@ -553,11 +549,6 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
           if (refetchIcon.classList.contains("disabled")) {
             refetchIcon.style.opacity = "0.5"
-          } else {
-            if (popover) {
-              popover.textContent = "refresh"
-              refetchIcon.style.opacity = "0"
-            }
           }
         },
       ],

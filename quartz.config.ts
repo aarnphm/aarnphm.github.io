@@ -15,7 +15,6 @@ const config: QuartzConfig = {
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "created",
     defaultFooterStyle: "minimal",
-    contentOnlyPages: ["uses", "dump/quotes", "curius", "influence"],
     theme: {
       typography: {
         header: "DM Serif Text",
@@ -73,6 +72,7 @@ const config: QuartzConfig = {
       Plugin.FolderPage(),
       Plugin.TagPage(),
       Plugin.CuriusPage(),
+      Plugin.ZenPage({ slug: ["uses", "dump/quotes", "influence"] }),
       Plugin.ContentIndex({ rssLimit: 40 }),
       Plugin.Assets(),
       Plugin.Static(),

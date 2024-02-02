@@ -1,5 +1,5 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "../types"
-import { Graph, DarkMode } from "../Landing"
+import MetaConstructor from "../Meta"
 
 import curiusStyle from "../styles/curiusPage.scss"
 
@@ -33,6 +33,7 @@ const Title = () => (
       id="curius-refetch"
       aria-labelledby="refetch"
       data-tooltip="refresh"
+      data-id="refetch"
       height="12"
       type="button"
       viewBox="0 -4 24 24"
@@ -54,11 +55,11 @@ const CuriusContainer = () => (
   </div>
 )
 
-function CuriusContent(props: QuartzComponentProps) {
+function CuriusContent(componentData: QuartzComponentProps) {
+  const Meta = MetaConstructor({ enableSearch: false })
   return (
     <div class="popover-hint">
-      <Graph />
-      <DarkMode />
+      <Meta {...componentData} />
       <div id="curius">
         <Title />
         <div class="curius-outer">
@@ -72,7 +73,7 @@ function CuriusContent(props: QuartzComponentProps) {
           <div id="curius-fetching-text"></div>
           <CuriusContainer />
         </div>
-        <Navigation data-visible={false} />
+        <Navigation />
       </div>
     </div>
   )

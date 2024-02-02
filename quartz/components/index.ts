@@ -21,6 +21,7 @@ import MobileOnly from "./MobileOnly"
 import RecentNotes from "./RecentNotes"
 import Breadcrumbs from "./Breadcrumbs"
 import Landing from "./Landing"
+import Meta from "./Meta"
 
 export {
   ArticleTitle,

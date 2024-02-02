@@ -9,7 +9,6 @@ const emitThemeChangeEvent = (theme: "light" | "dark") => {
   document.dispatchEvent(event)
 }
 
-let prevDarkShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 document.addEventListener("nav", () => {
   const switchTheme = (e: any) => {
     const newTheme = e.target.checked ? "dark" : "light"
@@ -25,18 +24,6 @@ document.addEventListener("nav", () => {
   if (currentTheme === "dark") {
     toggleSwitch.checked = true
   }
-
-  function darkModeShortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if (e.key === "a" && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault()
-      toggleSwitch.click()
-    }
-  }
-  if (prevDarkShortcutHandler) {
-    document.removeEventListener("keydown", prevDarkShortcutHandler)
-  }
-  document.addEventListener("keydown", darkModeShortcutHandler)
-  prevDarkShortcutHandler = darkModeShortcutHandler
 
   // Listen for changes in prefers-color-scheme
   const colorSchemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
