@@ -60,7 +60,7 @@ export default ((userOpts?: Partial<Options>) => {
   function Meta(componentData: QuartzComponentProps) {
     return (
       <>
-        {opts.enableSearch ? <Search /> : null}
+        {opts.enableSearch ? <Search /> : <></>}
         <Graph />
         <DarkMode />
       </>
