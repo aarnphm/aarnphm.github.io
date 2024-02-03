@@ -31,3 +31,9 @@ Life can be much broader when you discover one simple fact...that everything aro
 I just wondered how things were put together. -- Claude Shannon
 
 Never stop learning. Assume nothing, question everything. Teach others what you know. Analyze objectively -- Richard Feynman
+
+### On randomness and fun.
+
+I have to be successful because I like expensive things. -- some random person on twitter
+
+People like you think I get lucky. Here's the thing, I make my own luck. -- Harvey Specter
