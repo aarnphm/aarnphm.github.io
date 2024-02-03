@@ -12,6 +12,10 @@ title: Advice
 
 > _An ongoing collection of quotes, advices, and other things I've subscribed to, mostly from people I admire and friends._
 
+### On life.
+
+Throw me some wisdom, and advices? I have none. -- Jesse Camacho
+
 ### On perspectives.
 
 Our capacity to deal with [[dump/Language|language]] is a complex, genetically-determined part of our biological endowment. It's a product of evolution, part of our nature. -- Noam Chomsky
