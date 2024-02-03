@@ -402,7 +402,9 @@ async function createTooltip(item: HTMLElement) {
     ["mouseleave", hide],
     ["mouseenter", show],
   ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
-  registerEvents(item, ...events)
+  for (const [event, listener] of events) {
+    item.addEventListener(event, listener)
+  }
 
   parentNode?.appendChild(tool)
   return tool
@@ -415,7 +417,6 @@ const toggleVisibility = (el: HTMLElement, state: boolean) => {
   })
 }
 
-let prevGatedShortcutHandler: ((e: HTMLElementEventMap["keydown"]) => void) | undefined = undefined
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const elements = [
     "#curius-search-container",
@@ -453,38 +454,24 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   // Ensure refetchIcon exists before adding event listener
   if (refetchIcon) {
     const refetchContent = refetchIcon.dataset.tooltip as string
-    const popover = (await createTooltip(refetchIcon)) as HTMLElement
 
-    function updatePopoverText(popover: HTMLElement, endTime: number) {
-      const timeLeft = Math.max(endTime - Date.now(), 0)
-      const span = popover.querySelector("#curius-tooltip-content") as HTMLSpanElement
-      span.textContent = timeLeft <= 0 ? refetchContent : `Wait time: ${formatTimeLeft(timeLeft)}`
+    const preventRefreshDefault = (e: HTMLElementEventMap["keydown"]) => {
+      if ((e.key === "r" || e.key === "R") && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
     }
 
     refetchIcon.addEventListener("click", async () => {
-      if (refetchIcon.classList.contains("disabled")) return
+      if (refetchIcon.classList.contains("disabled")) {
+        document.addEventListener("keydown", preventRefreshDefault)
+        return
+      } else {
+        window.addCleanup(() => document.removeEventListener("keydown", preventRefreshDefault))
+      }
+
       refetchIcon.classList.add("disabled")
       refetchIcon.style.opacity = "0.5"
-
-      // Set the disable end time
-      disableEndTime = Date.now() + fetchTimeout // fetchTimeout should be defined somewhere in your code
-
-      // Update the tooltip immediately
-      updatePopoverText(popover as HTMLElement, disableEndTime)
-
-      // Set an interval to update the tooltip every second
-      countdownIntervalId = setInterval(() => {
-        updatePopoverText(popover as HTMLElement, disableEndTime!)
-      }, 1000)
-
-      // Remove disabled state after the timeout
-      setTimeout(() => {
-        refetchIcon.classList.remove("disabled")
-        refetchIcon.style.opacity = ""
-        disableEndTime = null
-        clearInterval(countdownIntervalId!)
-        countdownIntervalId = null
-      }, fetchTimeout)
 
       removeAllChildren(fragment)
       toggleVisibility(nav, false)
@@ -504,40 +491,14 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     })
 
     const events = [
-      [
-        "mouseenter",
-        () => {
-          if (refetchIcon.classList.contains("disabled")) {
-            refetchIcon.style.opacity = "0.5"
-            updatePopoverText(popover, disableEndTime!)
-            if (countdownIntervalId === null) {
-              countdownIntervalId = setInterval(() => {
-                updatePopoverText(popover, disableEndTime!)
-              }, 1000)
-            }
-          }
-        },
-      ],
+      ["mouseenter", () => (refetchIcon.style.opacity = "1")],
       [
         "mouseleave",
-        () => {
-          // Clear the countdown when the mouse leaves
-          const popover = document.getElementById("curius-tooltip")
-          if (countdownIntervalId !== null) {
-            clearInterval(countdownIntervalId)
-            countdownIntervalId = null
-          }
-
-          if (refetchIcon.classList.contains("disabled")) {
-            refetchIcon.style.opacity = "0.5"
-          }
-        },
+        () =>
+          (refetchIcon.style.opacity = refetchIcon.classList.contains("disabled") ? "0.5" : "0"),
       ],
-    ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
-    events.forEach(([event, listener]) => {
-      refetchIcon.addEventListener(event, listener)
-      window.addCleanup(() => refetchIcon.removeEventListener(event, listener))
-    })
+    ] as [keyof HTMLElementEventMap, EventListenerOrEventListenerObject][]
+    registerEvents(refetchIcon, ...events)
   }
 
   // Search functionality
