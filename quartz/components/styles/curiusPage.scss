@@ -103,7 +103,7 @@
     & li[id|="curius-item"] {
       background-color: inherit;
       &.focus {
-        background-color: var(--lightgray);
+        background: var(--lightgray);
       }
       & > * {
         padding-left: 8px;

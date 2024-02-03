@@ -27,36 +27,6 @@ interface Topic {
   modifiedDate: string
 }
 
-interface Link {
-  id: number
-  link: string
-  title: string
-  favorite: boolean
-  snippet: string
-  toRead: any
-  createdDate: string
-  modifiedDate: string
-  lastCrawled: any
-  topics: Topic[]
-  highlights: Highlight[]
-  userIds?: number[]
-}
-
-const LinkKeys: Array<keyof Link> = [
-  "id",
-  "link",
-  "title",
-  "favorite",
-  "snippet",
-  "toRead",
-  "createdDate",
-  "modifiedDate",
-  "lastCrawled",
-  "topics",
-  "highlights",
-  "userIds",
-]
-
 interface User {
   id: number
   firstName: string
@@ -93,7 +63,64 @@ interface Response {
   user?: User
 }
 
-const timeSince = (date: Date | string) => {
+interface Link {
+  id: number
+  link: string
+  title: string
+  favorite: boolean
+  snippet: string
+  toRead: any
+  createdDate: string
+  modifiedDate: string
+  lastCrawled: any
+  topics: Topic[]
+  highlights: Highlight[]
+  userIds?: number[]
+}
+
+const _Link: Link = {
+  id: 0,
+  link: "",
+  title: "",
+  favorite: false,
+  snippet: "",
+  toRead: null,
+  createdDate: "",
+  modifiedDate: "",
+  lastCrawled: null,
+  topics: [],
+  highlights: [],
+  userIds: [],
+}
+
+const localFetchKey = "curiusLinks"
+const localTimeKey = "curiusLastFetch"
+const numSearchResults = 20
+const fetchTimeout = 2 * 60 * 1000 // 2 minutes
+const fetchLinksHeaders: RequestInit = {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+}
+const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
+
+let disableEndTime: number | null = null
+let countdownIntervalId: NodeJS.Timeout | null = null
+let index: FlexSearch.Document<Link> = new FlexSearch.Document({
+  charset: "latin:extra",
+  document: {
+    id: "id",
+    index: [
+      ...Object.keys(_Link).map(
+        (key) =>
+          ({ field: key, tokenize: "forward" }) as IndexOptions<Link, false> & {
+            field: string
+          },
+      ),
+    ],
+  },
+})
+
+function timeSince(date: Date | string) {
   const now = new Date()
   const dateObject = date instanceof Date ? date : new Date(date)
   const diff = Math.floor((now.getTime() - dateObject.getTime()) / 1000)
@@ -118,14 +145,7 @@ const timeSince = (date: Date | string) => {
   }
 }
 
-const formatTimeLeft = (timeLeft: number) => {
-  const totalSeconds = Math.ceil(timeLeft / 1000)
-  const minutes = Math.floor(totalSeconds / 60)
-  const seconds = totalSeconds % 60
-  return `${minutes}m ${seconds}s`
-}
-
-const random = (min: number, max: number) => {
+function random(min: number, max: number) {
   if (max == null) {
     max = min
     min = 0
@@ -133,7 +153,7 @@ const random = (min: number, max: number) => {
   return min + Math.floor(Math.random() * (max - min + 1))
 }
 
-const sample = (object: any[], n: number) => {
+function sample(object: any[], n: number) {
   const sample = [...object]
   var length = sample.length
   n = Math.max(Math.min(n, length), 0)
@@ -147,34 +167,14 @@ const sample = (object: any[], n: number) => {
   return sample.slice(0, n)
 }
 
-const getLocalItem = (key: "curiusLinks" | "curiusLastFetch", value: any): any =>
-  localStorage.getItem(key) ?? value
-
-const localFetchKey = "curiusLinks"
-const localTimeKey = "curiusLastFetch"
-const numSearchResults = 20
-const fetchTimeout = 2 * 60 * 1000 // 2 minutes
-const fetchLinksHeaders: RequestInit = {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
+function getLocalItem(key: "curiusLinks" | "curiusLastFetch", value: any) {
+  return localStorage.getItem(key) ?? value
 }
 
-let disableEndTime: number | null = null
-let countdownIntervalId: NodeJS.Timeout | null = null
-let index: FlexSearch.Document<Link> = new FlexSearch.Document({
-  charset: "latin:extra",
-  document: {
-    id: "id",
-    index: [
-      ...LinkKeys.map(
-        (key) =>
-          ({ field: key, tokenize: "forward" }) as IndexOptions<Link, false> & {
-            field: string
-          },
-      ),
-    ],
-  },
-})
+function extractApexDomain(url: string) {
+  const match = url.match(externalLinkRegex)
+  return match ? match[1] : ""
+}
 
 async function fetchLinks(refetch: boolean = false): Promise<Response> {
   // user metadata
@@ -219,13 +219,7 @@ async function fetchLinks(refetch: boolean = false): Promise<Response> {
   return { links: newLinks, user }
 }
 
-const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
-const extractApexDomain = (url: string) => {
-  const match = url.match(externalLinkRegex)
-  return match ? match[1] : ""
-}
-
-const createLinkEl = (Link: Link): HTMLLIElement => {
+function createLinkEl(Link: Link): HTMLLIElement {
   const curiusItem = document.createElement("li")
   curiusItem.id = `curius-item-${Link.id}`
   curiusItem.onmouseenter = () => curiusItem.classList.add("focus")
@@ -339,9 +333,7 @@ const createLinkEl = (Link: Link): HTMLLIElement => {
     return item
   }
 
-  curiusItem.append(
-    ...([createTitle, createMetadata] as ((Link: Link) => Node)[]).map((fn) => fn(Link)),
-  )
+  curiusItem.append(createTitle(Link), createMetadata(Link))
 
   return curiusItem
 }
