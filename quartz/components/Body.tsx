@@ -9,7 +9,7 @@ function Body({ children }: QuartzComponentProps) {
   return <div id="quartz-body">{children}</div>
 }
 
-Body.afterDOMLoaded = clipboardScript + progressScript
+Body.afterDOMLoaded = progressScript + clipboardScript
 Body.css = clipboardStyle
 
 export default (() => Body) satisfies QuartzComponentConstructor

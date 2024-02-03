@@ -1,8 +1,7 @@
 import { getFullSlug } from "../../util/path"
 
-const timeout = 500
-
 document.addEventListener("nav", (e: CustomEventMap["nav"]) => {
+  const timeout = 500
   let hideTimeout: ReturnType<typeof setTimeout>
   const slug = e.detail.url
   if (slug === "index") return
