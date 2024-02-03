@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-test:
-    if: ${{ github.repository == 'aarnphm/aarnphm.github.io' }}
+    if: ${{ github.repository == 'jackyzha0/quartz' }}
     strategy:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
