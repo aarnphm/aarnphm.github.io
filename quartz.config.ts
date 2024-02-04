@@ -4,13 +4,13 @@ import * as Plugin from "./quartz/plugins"
 const config: QuartzConfig = {
   configuration: {
     pageTitle: "aarnphm.xyz",
-    locale: "en-US",
     enableSPA: true,
     enablePopovers: true,
     enableTexture: false,
     analytics: {
       provider: "plausible",
     },
+    locale: "en-US",
     baseUrl: "aarnphm.xyz",
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "created",

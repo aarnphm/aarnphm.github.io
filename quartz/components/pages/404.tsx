@@ -1,14 +1,15 @@
+import { i18n } from "../../i18n/i18next"
 import { QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import styles from "../styles/404.scss"
 //@ts-ignore
 import notFoundScript from "../scripts/404.inline"
 
-function NotFound(componentData: QuartzComponentProps) {
+function NotFound({ cfg }: QuartzComponentProps) {
   return (
     <div class="not-found">
       <article class="popover-hint">
         <h1>404</h1>
-        <p>Either this page is private or doesn't exist.</p>
+        <p>{i18n(cfg.locale, "404")}</p>
         <div id="typewritter"></div>
       </article>
     </div>
