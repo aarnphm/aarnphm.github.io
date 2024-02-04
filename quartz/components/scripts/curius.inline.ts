@@ -214,7 +214,7 @@ async function fetchLinks(refetch: boolean = false): Promise<Response> {
   return { links: newLinks, user }
 }
 
-function createNotePanel(Link: Link, note: HTMLDivElement) {
+function createNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement) {
   const titleNode = note.querySelector("#note-link") as HTMLAnchorElement
   const snippetNode = note.querySelector(".curius-note-snippet") as HTMLDivElement
   const highlightsNode = note.querySelector(".curius-note-highlights") as HTMLDivElement
@@ -229,6 +229,7 @@ function createNotePanel(Link: Link, note: HTMLDivElement) {
     const cleanUp = () => {
       note.style.visibility = "hidden"
       note.classList.remove("active")
+      parent.classList.remove("active")
     }
     close?.addEventListener("click", cleanUp)
     window.addCleanup(() => close?.removeEventListener("click", cleanUp))
@@ -393,7 +394,7 @@ function createLinkEl(Link: Link): HTMLLIElement {
     note.style.visibility = "visible"
     curiusItem.classList.add("active")
     currentActive = curiusItem
-    createNotePanel(Link, note)
+    createNotePanel(Link, note, curiusItem)
   }
 
   const events = [
