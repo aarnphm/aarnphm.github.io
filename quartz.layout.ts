@@ -32,7 +32,8 @@ const leftComponents = (enableRecentNotes: boolean = false) => {
   const left = [
     Component.MobileOnly(Component.Explorer()),
     Component.MobileOnly(Component.Spacer()),
-    Component.MobileOnly(Component.Darkmode()),
+    Component.Search(),
+    Component.Darkmode(),
   ]
   const recentNotes = [
     Component.DesktopOnly(
@@ -52,9 +53,19 @@ const leftComponents = (enableRecentNotes: boolean = false) => {
       }),
     ),
   ]
-  if (enableRecentNotes) {
-    left.push(...recentNotes)
-  }
+  if (enableRecentNotes) left.push(...recentNotes)
+  left.push(
+    ...[
+      Component.DesktopOnly(
+        Component.Graph({
+          globalGraph: { linkDistance: 50 },
+          localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
+        }),
+      ),
+      Component.DesktopOnly(Component.Backlinks()),
+      Component.DesktopOnly(Component.TableOfContents()),
+    ],
+  )
   return left
 }
 
@@ -62,16 +73,7 @@ const leftComponents = (enableRecentNotes: boolean = false) => {
 export const defaultContentPageLayout: PageLayout = {
   beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],
   left: leftComponents(),
-  right: [
-    Component.DesktopOnly(Component.Search()),
-    Component.DesktopOnly(Component.Darkmode()),
-    Component.Graph({
-      globalGraph: { linkDistance: 50 },
-      localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
-    }),
-    Component.Backlinks(),
-    Component.DesktopOnly(Component.TableOfContents()),
-  ],
+  right: [],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)
