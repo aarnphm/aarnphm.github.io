@@ -56,15 +56,13 @@ const leftComponents = (enableRecentNotes: boolean = false) => {
   if (enableRecentNotes) left.push(...recentNotes)
   left.push(
     ...[
-      Component.DesktopOnly(
-        Component.Graph({
-          globalGraph: { linkDistance: 50 },
-          localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
-        }),
-      ),
-      Component.DesktopOnly(Component.Backlinks()),
-      Component.DesktopOnly(Component.TableOfContents()),
-    ],
+      Component.Graph({
+        globalGraph: { linkDistance: 50 },
+        localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
+      }),
+      Component.Backlinks(),
+      Component.TableOfContents(),
+    ].flatMap(Component.DesktopOnly),
   )
   return left
 }
@@ -73,7 +71,7 @@ const leftComponents = (enableRecentNotes: boolean = false) => {
 export const defaultContentPageLayout: PageLayout = {
   beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],
   left: leftComponents(),
-  right: [],
+  right: [Component.MobileOnly(Component.Backlinks())],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)
