@@ -152,7 +152,7 @@ Tragedy in Nietzsche philosophy one must ask
 
 Zarathustra opposes playing to betting, dancing to leaping
 
-<hr />
+---
 
 ## _Anatomy_ of Beyond Good and Evil
 
@@ -160,6 +160,12 @@ Zarathustra opposes playing to betting, dancing to leaping
 
 [Source](https://www.marxists.org/reference/archive/nietzsche/1886/beyond-good-evil/ch01.htm)
 
+- Begins by critiquing the traditional approaches of [[dump/Will to Truth|truth]] and morality, deemed it "hazardous enterprise". From a perspective of a philosophers, who are "deemed to pursue the truth" doesn't seem to fully understand why
+
+---
+
 ## On Genealogy of Morals
+
+---
 
 ## Thus Spoke Zarathustra
