@@ -49,7 +49,7 @@ body {
   }
 
   // Quote display
-  &body[data-slug="dump/quotes"] {
+  &[data-slug="dump/quotes"] {
     @media all and (min-width: $tabletBreakpoint) {
       @include excludeId("& > *") {
         font-size: 1.2rem;
