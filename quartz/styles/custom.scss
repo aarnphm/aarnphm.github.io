@@ -140,6 +140,7 @@ audio::-webkit-media-controls-panel {
 .page {
   display: flex;
   min-height: 100vh;
+  flex-direction: column;
 
   & > #quartz-body {
     @media all and (min-width: $fullPageWidth) {
