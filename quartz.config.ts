@@ -6,7 +6,7 @@ const config: QuartzConfig = {
     pageTitle: "aarnphm.xyz",
     enableSPA: true,
     enablePopovers: true,
-    enableTexture: false,
+    enableTexture: true,
     analytics: {
       provider: "plausible",
     },
@@ -54,7 +54,7 @@ const config: QuartzConfig = {
       }),
       Plugin.Latex({ renderEngine: "katex" }),
       Plugin.SyntaxHighlighting(),
-      Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
+      Plugin.ObsidianFlavoredMarkdown(),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.TableOfContents(),
       Plugin.CrawlLinks({
