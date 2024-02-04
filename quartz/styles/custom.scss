@@ -24,7 +24,7 @@
 body {
   &:not([data-slug="uses"]):not([data-slug="curius"]):not([data-slug="dump/quotes"]):not(
       [data-slug="influence"]
-    ) {
+    ):not([data-slug^="tags"]):not([data-slug^="posts"]):not([data-slug^="dump"]) {
     @include excludeId(".page") {
       @include excludeId("& > #quartz-body") {
         @media all and (min-width: $fullPageWidth) {
