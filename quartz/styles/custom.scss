@@ -117,16 +117,6 @@ body {
   }
 }
 
-// set all img to use fade-in animation
-img {
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-}
-
-img.visible {
-  opacity: 1;
-}
-
 hr {
   overflow: visible;
   padding: 0;
@@ -166,6 +156,15 @@ audio::-webkit-media-controls-panel {
         transition: background-color 0.3s ease;
       }
     }
+  }
+}
+
+ul.overflow,
+ol.overflow {
+  height: 200px;
+
+  &:after {
+    background: inherit;
   }
 }
 

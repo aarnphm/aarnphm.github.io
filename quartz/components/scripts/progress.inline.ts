@@ -37,16 +37,3 @@ document.addEventListener("nav", (e: CustomEventMap["nav"]) => {
 
   hideTimeout = setTimeout(hide, timeout)
 })
-
-document.addEventListener("nav", () => {
-  const img = document.querySelectorAll("img")
-  const windowHeight = window.innerHeight / 1.5
-  const checkImgPosition = () => {
-    img.forEach((el) => {
-      const position = el.getBoundingClientRect().top
-      position - windowHeight <= 0 ? el.classList.add("visible") : el.classList.remove("visible")
-    })
-  }
-  window.onscroll = checkImgPosition
-  checkImgPosition()
-})

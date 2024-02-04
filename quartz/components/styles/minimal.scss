@@ -2,8 +2,8 @@
 
 .page {
   & footer.minimal-footer {
-    width: 100%;
-    max-width: $fullPageWidth;
+    margin-right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+    width: $pageWidth + $sidePanelWidth;
   }
 
   @media all and (max-width: $fullPageWidth) {
