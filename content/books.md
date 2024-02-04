@@ -4,7 +4,7 @@ tags:
   - evergreen
 date: "2022-04-22"
 description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
-title: Building antilibrary
+title: antilibrary.
 ---
 
 A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading. The [digital](/curius) version.

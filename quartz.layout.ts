@@ -83,6 +83,7 @@ export const defaultListPageLayout: PageLayout = {
     Component.Search(),
     Component.Darkmode(),
     Component.DesktopOnly(Component.Explorer({ filterFn: explorerFilterFn })),
+    Component.Meta({ enableSearch: false, enableDarkMode: false }),
   ],
   right: [],
 }

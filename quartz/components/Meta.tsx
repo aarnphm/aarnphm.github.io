@@ -49,10 +49,14 @@ export const DarkMode = () => (
 
 interface Options {
   enableSearch?: boolean
+  enableGraph?: boolean
+  enableDarkMode?: boolean
 }
 
 const defaultOptions: Options = {
   enableSearch: true,
+  enableGraph: true,
+  enableDarkMode: true,
 }
 
 export default ((userOpts?: Partial<Options>) => {
@@ -61,8 +65,8 @@ export default ((userOpts?: Partial<Options>) => {
     return (
       <>
         {opts.enableSearch ? <Search /> : <></>}
-        <Graph />
-        <DarkMode />
+        {opts.enableGraph ? <Graph /> : <></>}
+        {opts.enableDarkMode ? <DarkMode /> : <></>}
       </>
     )
   }
