@@ -28,6 +28,9 @@ body {
         .darkmode {
           display: none !important;
         }
+        .center {
+          margin-left: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+        }
       }
     }
   }
@@ -52,12 +55,14 @@ body {
     align-self: self-start;
     top: 6rem;
     min-width: $pageWidth;
+    height: 100vh;
+    box-shadow: none;
     & > * {
       margin: 0 3% 0 2%;
     }
 
     &.active {
-      box-shadow: rgba(0, 0, 0, 0.06) 0px 12px 12px;
+      box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 12px;
       flex-wrap: wrap;
     }
   }
@@ -293,10 +298,43 @@ body {
     }
   }
 
+  .curius-note-highlights {
+    padding-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+
+    & > li {
+      a {
+        background-color: var(--lightgray);
+      }
+      ::before {
+        content: "“";
+      }
+      ::after {
+        content: "”";
+      }
+    }
+  }
+
+  .icon-container {
+    margin-left: auto;
+    padding: 1px;
+    &:hover {
+      cursor: pointer;
+      background-color: var(--lightgray);
+      border-radius: 5px;
+    }
+  }
+
   .curius-note-title,
   .curius-item-title {
     font-size: 1.2rem;
     padding: 5px 0;
+  }
+
+  .curius-note-title {
+    display: flex;
+    align-items: flex-start;
   }
 
   .curius-item-address {

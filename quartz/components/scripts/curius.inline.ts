@@ -4,12 +4,16 @@ import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util
 import { computePosition, arrow as arrowFloating, inline, offset } from "@floating-ui/dom"
 import type { Coords } from "@floating-ui/dom"
 
-interface Highlight {
+interface Entity {
   id: number
+  createdDate: string
+  modifiedDate: string
+}
+
+interface Highlight extends Entity {
   userId: number
   linkId: number
   highlight: string
-  createdDate: string
   leftContext: string
   rightContext: string
   rawHighlight: string
@@ -17,18 +21,14 @@ interface Highlight {
   comment: string
 }
 
-interface Topic {
-  id: number
+interface Topic extends Entity {
   userId: number
   topic: string
   slug: string
   public: boolean
-  createdDate: string
-  modifiedDate: string
 }
 
-interface User {
-  id: number
+interface User extends Entity {
   firstName: string
   lastName: string
   major?: string
@@ -38,8 +38,6 @@ interface User {
   github?: string
   twitter: string
   website: string
-  createdDate: string
-  modifiedDate: string
   lastOnline: string
   lastCheckedNotifications: string
   views: number
@@ -63,15 +61,12 @@ interface Response {
   user?: User
 }
 
-interface Link {
-  id: number
+interface Link extends Entity {
   link: string
   title: string
   favorite: boolean
   snippet: string
   toRead: any
-  createdDate: string
-  modifiedDate: string
   lastCrawled: any
   topics: Topic[]
   highlights: Highlight[]
@@ -220,79 +215,49 @@ async function fetchLinks(refetch: boolean = false): Promise<Response> {
 }
 
 function createNotePanel(Link: Link, note: HTMLDivElement) {
-  removeAllChildren(note)
+  const titleNode = note.querySelector("#note-link") as HTMLAnchorElement
+  const snippetNode = note.querySelector(".curius-note-snippet") as HTMLDivElement
+  const highlightsNode = note.querySelector(".curius-note-highlights") as HTMLDivElement
 
-  function createNoteTitle() {
-    const titleDiv = document.createElement("div")
-    titleDiv.classList.add("curius-note-title")
-    Object.assign(titleDiv.style, {
-      display: "flex",
-      alignItems: "flex-start",
-      fontSize: "1.2rem",
-    })
-    const title = document.createElement("a")
-    Object.assign(title, {
-      href: Link.link,
-      target: "_blank",
-      rel: "noopener noreferrer",
-      innerHTML: `<span class="curius-item-span">${Link.title}</span>`,
-    })
-    const icon = document.createElement("div")
-    const svg = document.createElement("svg")
-    const attrs = {
-      viewBox: "0 0 24 24",
-      focusable: "false",
-      fill: "currentColor",
-      width: "15px",
-      height: "15px",
-    }
-    for (const [key, value] of Object.entries(attrs)) {
-      svg.setAttribute(key, value)
-    }
-    Object.assign(svg.style, {
-      color: "rgba(170, 170, 170)",
-      display: "inline-block",
-      fontSize: "1.5rem",
-      transition: "fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-      flexShrink: "0",
-      userSelect: "none",
-    })
-    const path = document.createElement("path")
-    path.setAttribute(
-      "d",
-      "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z",
-    )
-    svg.appendChild(path)
-    icon.appendChild(svg)
+  function updateNoteTitle() {
+    titleNode.innerHTML = `<span class="curius-item-span">${Link.title}</span>`
+    titleNode.href = Link.link
+    titleNode.target = "_blank"
+    titleNode.rel = "noopener noreferrer"
 
-    titleDiv.append(title, icon)
-    return titleDiv
+    const close = document.querySelector(".icon-container")
+    const cleanUp = () => {
+      note.style.visibility = "hidden"
+      note.classList.remove("active")
+    }
+    close?.addEventListener("click", cleanUp)
+    window.addCleanup(() => close?.removeEventListener("click", cleanUp))
   }
 
-  function createSnippet() {
-    const linkSnippet = document.createElement("div")
-    linkSnippet.classList.add("curius-note-snippet")
-    linkSnippet.textContent = Link.snippet
-    return linkSnippet
+  function updateSnippet() {
+    removeAllChildren(snippetNode)
+    snippetNode.textContent = Link.snippet
   }
 
-  function createHighlights() {
-    const highlight = document.createElement("div")
-    highlight.classList.add("curius-note-highlights")
-    if (Link.highlights.length === 0) return highlight
+  function updateHighlights() {
+    removeAllChildren(highlightsNode)
+    if (Link.highlights.length === 0) return
     for (const hl of Link.highlights) {
       const highlightItem = document.createElement("li")
       const hlLink = document.createElement("a")
       hlLink.dataset.highlight = hl.id.toString()
       hlLink.href = `${Link.link}?curius=${hl.userId}`
+      hlLink.target = "_blank"
+      hlLink.rel = "noopener noreferrer"
       hlLink.textContent = hl.highlight
       highlightItem.appendChild(hlLink)
-      highlight.appendChild(highlightItem)
+      highlightsNode.appendChild(highlightItem)
     }
-    return highlight
   }
 
-  note.append(createNoteTitle(), createSnippet(), createHighlights())
+  updateNoteTitle()
+  updateSnippet()
+  updateHighlights()
 }
 
 let currentActive: HTMLLIElement | null = null
@@ -567,7 +532,10 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       refetchIcon.style.opacity = "0.5"
 
       const notes = document.getElementById("curius-notes") as HTMLDivElement | null
-      if (notes) removeAllChildren(notes)
+      if (notes) {
+        notes.style.visibility = "hidden"
+        notes.classList.remove("active")
+      }
 
       removeAllChildren(fragment)
       toggleVisibility(nav, false)
@@ -641,6 +609,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     return curiusLink
   }
 
+  let currentSearchItem: HTMLInputElement | null = null
   function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (e.key === "k" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       e.preventDefault()
@@ -655,7 +624,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     }
 
     if (!searchBar?.classList.contains("active")) return
-    else if (e.key.startsWith("Esc")) {
+    if (e.key.startsWith("Esc")) {
       e.preventDefault()
       hideLinks()
     } else if (e.key === "Enter") {
@@ -673,6 +642,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       // When first pressing ArrowDown, results wont contain the active element, so focus first element
       if (searchContainer?.contains(document.activeElement)) {
         const prevResult = document.activeElement?.previousElementSibling as HTMLInputElement | null
+        currentSearchItem = prevResult
         prevResult?.focus()
       }
     } else if (e.key === "ArrowDown" || e.key === "Tab") {
@@ -681,18 +651,22 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       // When first pressing ArrowDown, results wont contain the active element, so focus first element
       if (!searchContainer?.contains(document.activeElement)) {
         const firstResult = resultCards[0] as HTMLInputElement | null
+        currentSearchItem = firstResult
         firstResult?.focus()
       } else {
         // If an element in results-container already has focus, focus next one
         const nextResult = document.activeElement?.nextElementSibling as HTMLInputElement | null
+        currentSearchItem = nextResult
         nextResult?.focus()
       }
     }
   }
 
   function showLinks(links: Link[]) {
-    const notes = document.getElementById("curius-notes") as HTMLDivElement | null
-    if (notes) removeAllChildren(notes)
+    const note = document.getElementById("curius-notes") as HTMLDivElement | null
+    if (note) {
+      note.style.visibility = "hidden"
+    }
     if (!searchContainer) return
     searchBar?.classList.add("active")
     removeAllChildren(searchContainer)
@@ -709,6 +683,10 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
   function onClick(e: HTMLElementEventMap["click"]) {
     if (searchBar?.classList.contains("active")) return
+    const note = document.getElementById("curius-notes") as HTMLDivElement | null
+    if (note) {
+      note.style.visibility = "hidden"
+    }
     showLinks(sampleLinks)
   }
 
