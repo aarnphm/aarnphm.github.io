@@ -26,24 +26,33 @@ body {
     font-size: 1.1rem;
   }
 
+  @mixin singleColumn {
+    @include excludeId(".page-header") {
+      margin-left: 0;
+      width: $pageWidth + $sidePanelWidth;
+    }
+
+    @include excludeId(".center") {
+      margin-right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+      width: $pageWidth + $sidePanelWidth;
+    }
+  }
+
+  &[data-slug^="tags"],
+  &[data-slug*="index"] {
+    @include singleColumn;
+  }
+
   &:not([data-slug="uses"]):not([data-slug="curius"]):not([data-slug="dump/quotes"]):not(
       [data-slug="influence"]
     ):not([data-slug^="tags"]):not([data-slug*="index"]) {
     @include excludeId(".page") {
       @include excludeId("& > #quartz-body") {
         @media all and (min-width: $fullPageWidth) {
+          @include singleColumn;
+
           @include excludeId(".sidebar.right") {
             width: 0;
-          }
-
-          @include excludeId(".page-header") {
-            margin-left: 0;
-            width: $pageWidth + $sidePanelWidth;
-          }
-
-          @include excludeId(".center") {
-            margin-right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
-            width: $pageWidth + $sidePanelWidth;
           }
         }
       }
