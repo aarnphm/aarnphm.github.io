@@ -57,7 +57,7 @@ const Content = () => (
   <div class="content-container">
     <h1 class="landing-header">My name is Aaron.</h1>
     <p>
-      Beige and <a class="rose">rosé</a> are my two favorite colours.{" "}
+      Beige and <span class="rose">rosé</span> are my two favorite colours.{" "}
       <a href={"/dump/Chaos"} target="_self" class="internal landing-links">
         Chaos
       </a>{" "}

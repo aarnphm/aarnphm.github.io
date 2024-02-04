@@ -33,6 +33,11 @@ body {
         }
       }
     }
+    .navigation-container {
+      visibility: hidden;
+      opacity: 0;
+      margin-top: 1em;
+    }
   }
 }
 
@@ -66,12 +71,6 @@ body {
       flex-wrap: wrap;
     }
   }
-}
-
-.navigation-container {
-  visibility: hidden;
-  opacity: 0;
-  margin-top: 1em;
 }
 
 .highlight-modal {

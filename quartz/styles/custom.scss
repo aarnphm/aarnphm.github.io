@@ -28,19 +28,32 @@ body {
 
   @mixin singleColumn {
     @include excludeId(".page-header") {
-      margin-left: 0;
+      margin: $topSpacing auto 0 auto;
       width: $pageWidth + $sidePanelWidth;
+      @media all and (max-width: $fullPageWidth) {
+        width: initial;
+        margin-top: 2rem;
+      }
     }
 
     @include excludeId(".center") {
+      margin-left: auto;
       margin-right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
       width: $pageWidth + $sidePanelWidth;
+
+      @media all and (max-width: $fullPageWidth) {
+        margin-right: 0;
+        width: initial;
+        margin-left: 0;
+      }
     }
   }
 
   &[data-slug^="tags"],
   &[data-slug*="index"] {
-    @include singleColumn;
+    @media all and (min-width: $fullPageWidth) {
+      @include singleColumn;
+    }
   }
 
   &:not([data-slug="uses"]):not([data-slug="curius"]):not([data-slug="dump/quotes"]):not(

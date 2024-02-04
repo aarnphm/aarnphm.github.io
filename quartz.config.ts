@@ -56,7 +56,7 @@ const config: QuartzConfig = {
       Plugin.SyntaxHighlighting(),
       Plugin.ObsidianFlavoredMarkdown(),
       Plugin.GitHubFlavoredMarkdown(),
-      Plugin.TableOfContents({ maxDepth: 4, collapseByDefault: true }),
+      Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",
         enableRawEmbed: {

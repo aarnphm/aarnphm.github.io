@@ -26,7 +26,7 @@ body[data-slug="index"] {
     background-color: inherit;
   }
 
-  @include excludeId('a[class*="rose"]') {
+  @include excludeId('span[class*="rose"]') {
     color: rgb(215, 130, 126);
     border-bottom: none;
   }
@@ -37,18 +37,18 @@ body[data-slug="index"] {
     border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
   }
 
-  @include excludeId('a[class*="rose"]') {
+  @include excludeId('span[class*="rose"]') {
     color: rgb(235, 188, 186);
   }
 }
 
 .content-container {
-  margin: calc($topSpacing + 3rem) auto 0;
+  margin: $topSpacing auto 0;
   position: relative;
-  width: 30%;
+  width: 40%;
 
   @media all and (max-width: $fullPageWidth) {
-    width: 50%;
+    width: 70%;
   }
 
   @include excludeId("hr") {

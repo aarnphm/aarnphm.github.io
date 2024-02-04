@@ -3,12 +3,15 @@
 .page {
   & footer.minimal-footer {
     margin-right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+    margin-left: auto;
     width: $pageWidth + $sidePanelWidth;
   }
 
   @media all and (max-width: $fullPageWidth) {
     & footer.minimal-footer {
       width: initial;
+      margin-left: 0;
+      margin-right: 0;
     }
   }
 }
