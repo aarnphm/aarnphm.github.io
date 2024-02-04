@@ -23,10 +23,16 @@ document.addEventListener("nav", (e: CustomEventMap["nav"]) => {
   window.addEventListener("scroll", () => {
     const progress = document.getElementById("progress")
     if (!progress) return
-    show()
+    if (document.querySelectorAll(".active").length > 0) {
+      hide()
+      return
+    } else {
+      show()
+    }
     var winScroll = document.body.scrollTop || document.documentElement.scrollTop
     var height = document.documentElement.scrollHeight - document.documentElement.clientHeight
     progress.style.height = (winScroll / height) * 100 + "%"
+    return
   })
 
   hideTimeout = setTimeout(hide, timeout)

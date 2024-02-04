@@ -33,10 +33,20 @@ const Title = () => (
 )
 
 const CuriusContainer = () => (
-  <div id="curius-container">
-    <div id="curius-fragments"></div>
-    <div class="highlight-modal" id="highlight-modal">
-      <ul id="highlight-modal-list"></ul>
+  <div class="curius-outer">
+    <input
+      id="curius-bar"
+      type="text"
+      aria-label="Search for curius links"
+      placeholder="Search for curius links"
+    />
+    <div id="curius-search-container"></div>
+    <div id="curius-fetching-text"></div>
+    <div id="curius-container">
+      <div id="curius-fragments"></div>
+      <div class="highlight-modal" id="highlight-modal">
+        <ul id="highlight-modal-list"></ul>
+      </div>
     </div>
   </div>
 )
@@ -49,17 +59,7 @@ function CuriusContent(componentData: QuartzComponentProps) {
       <Meta {...componentData} />
       <div id="curius">
         <Title />
-        <div class="curius-outer">
-          <input
-            id="curius-bar"
-            type="text"
-            aria-label="Search for curius links"
-            placeholder="Search for curius links"
-          />
-          <div id="curius-search-container"></div>
-          <div id="curius-fetching-text"></div>
-          <CuriusContainer />
-        </div>
+        <CuriusContainer />
         <Navigation {...componentData} />
       </div>
     </div>

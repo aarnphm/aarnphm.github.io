@@ -28,14 +28,14 @@ const explorerFilterFn = (node: FileNode) => {
   return !["university", "papers", "tags"].some((path) => node.name.includes(path))
 }
 
-// components for pages that display a single page (e.g. a single note)
-export const defaultContentPageLayout: PageLayout = {
-  beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],
-  left: [
+const leftComponents = (enableRecentNotes: boolean = false) => {
+  const left = [
     Component.MobileOnly(Component.Explorer()),
     Component.MobileOnly(Component.Spacer()),
-    Component.Search(),
-    Component.Darkmode(),
+    // Component.MobileOnly(Component.Search()),
+    Component.MobileOnly(Component.Darkmode()),
+  ]
+  const recentNotes = [
     Component.DesktopOnly(
       Component.RecentNotes({
         title: "Recent Writing",
@@ -52,8 +52,20 @@ export const defaultContentPageLayout: PageLayout = {
         linkToMore: "dump/" as SimpleSlug,
       }),
     ),
-  ],
+  ]
+  if (enableRecentNotes) {
+    left.push(...recentNotes)
+  }
+  return left
+}
+
+// components for pages that display a single page (e.g. a single note)
+export const defaultContentPageLayout: PageLayout = {
+  beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],
+  left: leftComponents(),
   right: [
+    Component.DesktopOnly(Component.Search()),
+    Component.DesktopOnly(Component.Darkmode()),
     Component.Graph({
       globalGraph: { linkDistance: 50 },
       localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
