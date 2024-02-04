@@ -48,8 +48,7 @@ body[data-slug="index"] {
   width: 30%;
 
   @media all and (max-width: $fullPageWidth) {
-    width: initial;
-    margin-top: 2rem;
+    width: 50%;
   }
 
   @include excludeId("hr") {

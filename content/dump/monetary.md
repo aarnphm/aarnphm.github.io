@@ -8,4 +8,7 @@ title: Monetary
 
 Karpathy on [AI's 30 under 30](https://twitter.com/karpathy/status/1748816969858720232)
 
-- side effect of generating value
+a side effect of generating value
+
+Money is **an [[dump/Information Theory|information]] system for labor allocation**
+
