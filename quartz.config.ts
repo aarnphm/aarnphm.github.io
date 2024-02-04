@@ -10,7 +10,7 @@ const config: QuartzConfig = {
     analytics: {
       provider: "plausible",
     },
-    locale: "en-US",
+    locale: "fr-FR",
     baseUrl: "aarnphm.xyz",
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "created",
