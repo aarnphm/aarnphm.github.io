@@ -17,29 +17,27 @@
     url("/static/BerkeleyMono-Regular.woff") format("woff");
 }
 
+#preview-container {
+  flex-grow: 1;
+}
+
 body {
-  position: relative;
-
-  @include excludeId("p") {
-    font-weight: normal;
-  }
-
   &:not([data-slug="uses"]):not([data-slug="curius"]):not([data-slug="dump/quotes"]):not(
       [data-slug="influence"]
     ) {
     @include excludeId(".page") {
       @include excludeId("& > #quartz-body") {
         @media all and (min-width: $fullPageWidth) {
-          .sidebar.left {
+          @include excludeId(".sidebar.left") {
             width: 0;
           }
 
-          .page-header {
+          @include excludeId(".page-header") {
             margin-left: 0;
             width: $pageWidth + $sidePanelWidth;
           }
 
-          .center {
+          @include excludeId(".center") {
             margin-left: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
             width: $pageWidth + $sidePanelWidth;
           }
@@ -141,7 +139,6 @@ audio::-webkit-media-controls-panel {
 
 .page {
   display: flex;
-  flex-direction: column;
   min-height: 100vh;
 
   & > #quartz-body {
