@@ -22,6 +22,10 @@
 }
 
 body {
+  @media all and (min-width: $fullPageWidth) {
+    font-size: 1.1rem;
+  }
+
   &:not([data-slug="uses"]):not([data-slug="curius"]):not([data-slug="dump/quotes"]):not(
       [data-slug="influence"]
     ):not([data-slug^="tags"]):not([data-slug*="index"]) {
@@ -194,10 +198,6 @@ audio::-webkit-media-controls-panel {
   grid-template-columns: 1fr;
   grid-template-rows: repeat(4, min-content);
 
-  .mobile-only.explorer & {
-    grid-area: 1 / 1 / 2 / 2;
-  }
-
   .search {
     grid-area: 1 / 1 / 2 / 2;
   }
@@ -233,7 +233,6 @@ audio::-webkit-media-controls-panel {
   }
 
   #explorer-content:not(.collapsed) {
-    width: 100%;
     min-height: 80vh;
     position: absolute;
     z-index: 100;

@@ -43,11 +43,14 @@ body[data-slug="index"] {
 }
 
 .content-container {
-  padding-bottom: 128px;
-  overflow: hidden;
-  max-width: 42rem;
-  margin: 2rem auto 0 auto;
+  margin: calc($topSpacing + 3rem) auto 0;
   position: relative;
+  width: 30%;
+
+  @media all and (max-width: $fullPageWidth) {
+    width: initial;
+    margin-top: 2rem;
+  }
 
   @include excludeId("hr") {
     width: 100%;
@@ -114,8 +117,6 @@ body[data-slug="index"] {
     font-size: 2rem;
     font-weight: normal;
     line-height: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
   }
 
   @include excludeId(".landing-subhead") {
@@ -134,13 +135,5 @@ body[data-slug="index"] {
 
   @include excludeId(".landing-usage") {
     font-size: 1rem;
-  }
-}
-
-// Media query styles
-@media all and (min-width: 320px) {
-  @include excludeId(".content-container") {
-    margin: 4rem auto 1.5rem;
-    width: 70%;
   }
 }

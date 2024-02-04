@@ -32,7 +32,6 @@ const leftComponents = (enableRecentNotes: boolean = false) => {
   const left = [
     Component.MobileOnly(Component.Explorer()),
     Component.MobileOnly(Component.Spacer()),
-    // Component.MobileOnly(Component.Search()),
     Component.MobileOnly(Component.Darkmode()),
   ]
   const recentNotes = [
