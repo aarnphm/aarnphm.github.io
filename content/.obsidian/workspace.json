@@ -50,7 +50,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -116,7 +117,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/sfwr-2c03/a2/A2.pdf",
+                "file": "dump/university/sfwr-2c03/a2/A2.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -133,7 +134,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/sfwr-2c03/a2/A2.pdf",
+                "file": "dump/university/sfwr-2c03/a2/A2.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -156,7 +157,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/sfwr-2c03/a2/A2.pdf"
+                "file": "dump/university/sfwr-2c03/a2/A2.md"
               }
             }
           },
@@ -186,7 +187,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/sfwr-2c03/a2/A2.pdf"
+                "file": "dump/university/sfwr-2c03/a2/A2.md"
               }
             }
           }
@@ -210,13 +211,14 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "c2c31af33da48cfb",
+  "active": "fb01b992e7d5fb16",
   "lastOpenFiles": [
-    "dump/university/sfwr-2c03/a2/A2.md",
+    "dump/university/sfwr-2c03/a2/Aaron_Pham_400232791_assignment_2.pdf",
     "dump/university/sfwr-2c03/a2/A2.pdf",
+    "dump/university/sfwr-2c03/a2/A2.md",
+    "dump/university/sfwr-2c03/sortings.pdf",
     "dump/university/sfwr-2c03/a2/real-world-comparison.png",
     "dump/university/sfwr-2c03/collections.pdf",
-    "dump/university/sfwr-2c03/sortings.pdf",
     "dump/university/sfwr-2c03/Sorting.md",
     "dump/university/sfwr-2c03/binary-search.pdf",
     "dump/university/astron-2e03/W1.md",

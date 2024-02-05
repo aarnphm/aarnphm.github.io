@@ -34,6 +34,8 @@ I just wondered how things were put together. -- Claude Shannon
 
 Never stop learning. Assume nothing, question everything. Teach others what you know. Analyze objectively -- Richard Feynman
 
+The first principle is that you must not fool yourself, and you are the easiest person to fool. -- Richard Feynman
+
 Success consists of going from failure to failure without loss of enthusiasm. -- Winston Churchill
 
 ### On randomness and fun.
