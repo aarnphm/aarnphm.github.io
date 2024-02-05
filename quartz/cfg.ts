@@ -25,7 +25,6 @@ export interface GlobalConfiguration {
   enableSPA: boolean
   /** Whether to display Wikipedia-style popovers when hovering over links */
   enablePopovers: boolean
-  enableTexture: boolean
   /** Analytics mode */
   analytics: Analytics
   /** Glob patterns to not search */

@@ -6,7 +6,6 @@ const config: QuartzConfig = {
     pageTitle: "aarnphm.xyz",
     enableSPA: true,
     enablePopovers: true,
-    enableTexture: true,
     analytics: {
       provider: "plausible",
     },

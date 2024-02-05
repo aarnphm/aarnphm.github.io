@@ -217,7 +217,7 @@ export function renderPage(
           <Landing {...componentData} />
         ) : (
           <div id="quartz-root" class="page">
-            {cfg.enableTexture ? <div id="texture"></div> : <></>}
+            <div id="texture"></div>
             <Body {...componentData}>
               <div id="progress"></div>
               {LeftComponent}
