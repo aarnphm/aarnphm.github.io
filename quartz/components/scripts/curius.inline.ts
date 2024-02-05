@@ -1,5 +1,4 @@
 import FlexSearch, { IndexOptions } from "flexsearch"
-import { pluralize } from "../../util/lang"
 import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util"
 import { computePosition, arrow as arrowFloating, inline, offset } from "@floating-ui/dom"
 import type { Coords } from "@floating-ui/dom"
@@ -321,7 +320,7 @@ function createLinkEl(Link: Link): HTMLLIElement {
     if (Link.highlights.length > 0) {
       const highlights = document.createElement("div")
       highlights.id = `curius-highlights-${Link.id}`
-      highlights.innerHTML = `${pluralize(Link.highlights.length, "highlight")}`
+      highlights.innerHTML = `${Link.highlights.length} highlight`
       misc.appendChild(highlights)
 
       const modal = document.getElementById("highlight-modal")

@@ -85,7 +85,7 @@ export const ZenPage: QuartzEmitterPlugin<Partial<Options>> = (opts?: Partial<Op
             tree,
             allFiles,
           }
-          const content = renderPage(slug, componentData, pageOpts, externalResources)
+          const content = renderPage(cfg, slug, componentData, pageOpts, externalResources)
 
           const fp = await write({
             ctx,

@@ -192,7 +192,6 @@ export function renderPage(
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
   const Landing = LandingConstructor()
-  const cfg = componentData.cfg
 
   const LeftComponent = (
     <div class="left sidebar">

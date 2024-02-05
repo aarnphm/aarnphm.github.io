@@ -5,7 +5,7 @@ tags:
 date: "2024-01-23"
 navigation:
   next: /dump/Chaos
-  prev: dump/Philosophy-and-Nietzsche
+  prev: /dump/Philosophy-and-Nietzsche
 title: Advice
 ---
 <!-- NOTE: dump/quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->

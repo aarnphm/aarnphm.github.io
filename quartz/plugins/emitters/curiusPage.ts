@@ -52,7 +52,7 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
       return [
         await write({
           ctx,
-          content: renderPage(slug, componentData, opts, externalResources),
+          content: renderPage(cfg, slug, componentData, opts, externalResources),
           slug,
           ext: ".html",
         }),
