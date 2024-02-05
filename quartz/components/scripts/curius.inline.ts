@@ -213,43 +213,6 @@ async function fetchLinks(refetch: boolean = false): Promise<Response> {
   return { links: newLinks, user }
 }
 
-function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement) {
-  const titleNode = note.querySelector("#note-link") as HTMLAnchorElement
-  const snippetNode = note.querySelector(".curius-note-snippet") as HTMLDivElement
-  const highlightsNode = note.querySelector(".curius-note-highlights") as HTMLDivElement
-
-  titleNode.innerHTML = `<span class="curius-item-span">${Link.title}</span>`
-  titleNode.href = Link.link
-  titleNode.target = "_blank"
-  titleNode.rel = "noopener noreferrer"
-
-  const close = document.querySelector(".icon-container")
-  const cleanUp = () => {
-    note.style.visibility = "hidden"
-    note.classList.remove("active")
-    parent.classList.remove("active")
-  }
-  close?.addEventListener("click", cleanUp)
-  window.addCleanup(() => close?.removeEventListener("click", cleanUp))
-
-  removeAllChildren(snippetNode)
-  snippetNode.textContent = Link.snippet
-
-  removeAllChildren(highlightsNode)
-  if (Link.highlights.length === 0) return
-  for (const hl of Link.highlights) {
-    const highlightItem = document.createElement("li")
-    const hlLink = document.createElement("a")
-    hlLink.dataset.highlight = hl.id.toString()
-    hlLink.href = `${Link.link}?curius=${hl.userId}`
-    hlLink.target = "_blank"
-    hlLink.rel = "noopener noreferrer"
-    hlLink.textContent = hl.highlight
-    highlightItem.appendChild(hlLink)
-    highlightsNode.appendChild(highlightItem)
-  }
-}
-
 let currentActive: HTMLLIElement | null = null
 
 function createLinkEl(Link: Link): HTMLLIElement {
@@ -373,29 +336,17 @@ function createLinkEl(Link: Link): HTMLLIElement {
 
   const onClick = (e: HTMLElementEventMap["click"]) => {
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
-    const note = document.querySelector("#curius-notes") as HTMLDivElement | null
-    if (!note) return
-
     if (currentActive) {
       currentActive.classList.remove("active")
     }
-    note.classList.add("active")
-    note.style.visibility = "visible"
     curiusItem.classList.add("active")
     currentActive = curiusItem
-    updateNotePanel(Link, note, curiusItem)
   }
 
   function onKeydown(e: HTMLElementEventMap["keydown"]) {
-    const note = document.querySelector("#curius-notes") as HTMLDivElement | null
-    if (!note) return
-
     if (e.key === "Escape") {
       e.preventDefault()
-      note.style.visibility = "hidden"
-      note.classList.remove("active")
-      if (currentActive) currentActive.classList.remove("active")
-      else curiusItem.classList.remove("active")
+      curiusItem.classList.remove("active")
       return
     }
   }
@@ -468,12 +419,6 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       refetchIcon.classList.add("disabled")
       refetchIcon.style.opacity = "0.5"
 
-      const notes = document.getElementById("curius-notes") as HTMLDivElement | null
-      if (notes) {
-        notes.style.visibility = "hidden"
-        notes.classList.remove("active")
-      }
-
       removeAllChildren(fragment)
       toggleVisibility(nav, false)
 
@@ -540,23 +485,18 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   }
 
   function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if (e.key === "k" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+    if (e.key === "k" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
-      if (!bar) return
-      const rect = bar.getBoundingClientRect()
-      // check if the search bar is in the viewport
-      if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
-        const searchBarOpen = bar.classList.contains("active")
-        searchBarOpen ? hideLinks() : showLinks(sampleLinks)
-        bar?.focus()
-      }
+      const searchBarOpen = container?.classList.contains("active")
+      searchBarOpen ? hideLinks() : showLinks(sampleLinks)
     }
 
-    if (!bar?.classList.contains("active")) return
-    if (e.key.startsWith("Esc")) {
-      e.preventDefault()
-      hideLinks()
-    } else if (e.key === "Enter") {
+    if (currentActive) {
+      currentActive.classList.remove("active")
+    }
+
+    if (!container?.classList.contains("active")) return
+    if (e.key === "Enter") {
       if (container?.contains(document.activeElement)) {
         const active = document.activeElement as HTMLInputElement
         active.click()
@@ -592,29 +532,20 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
   function onClick(e: HTMLElementEventMap["click"]) {
     if (bar?.classList.contains("active")) return
-    const note = document.getElementById("curius-notes") as HTMLDivElement | null
-    if (note) {
-      note.style.visibility = "hidden"
-    }
-    showLinks(sampleLinks)
+    const searchBarOpen = container?.classList.contains("active")
+    searchBarOpen ? hideLinks() : showLinks(sampleLinks)
   }
 
   function showLinks(links: Link[]) {
-    const note = document.getElementById("curius-notes") as HTMLDivElement | null
-    if (note) {
-      note.style.visibility = "hidden"
-    }
     if (!container) return
-    bar?.classList.add("active")
+    container?.classList.add("active")
     removeAllChildren(container)
     container?.append(...links.map(createSearchLinks))
   }
 
   function hideLinks() {
-    if (bar) {
-      bar.value = ""
-    }
-    bar?.classList.remove("active")
+    container?.classList.remove("active")
+    if (bar) bar.value = ""
     if (container) removeAllChildren(container)
   }
 
@@ -623,17 +554,16 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     curiusLink.classList.add("curius-search-link")
     curiusLink.target = "_blank"
     curiusLink.href = link.link
-    const linkTitle = document.createElement("div")
-    linkTitle.classList.add("curius-search-title")
-    linkTitle.textContent = link.title
-    const linkSnippet = document.createElement("div")
-    linkSnippet.classList.add("curius-search-snippet")
-    linkSnippet.textContent = link.snippet
-    curiusLink.append(linkTitle, linkSnippet)
-    curiusLink.onclick = (event) => {
-      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+    curiusLink.innerHTML = `<span class="curius-search-title">${link.title}</span><div class="curius-search-snippet">${link.snippet}</div>`
+
+    const onClick = (e: MouseEvent) => {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
       hideLinks()
     }
+
+    curiusLink.addEventListener("click", onClick)
+    window.addCleanup(() => curiusLink.removeEventListener("click", onClick))
+
     return curiusLink
   }
 
@@ -644,7 +574,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   bar?.addEventListener("click", onClick)
   window.addCleanup(() => bar?.removeEventListener("click", onClick))
 
-  registerEscapeHandler(document.querySelector(".curius-outer"), hideLinks)
+  registerEscapeHandler(container, hideLinks)
 
   await fillIndex(linksData)
 })
