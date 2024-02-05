@@ -30,7 +30,11 @@ const explorerFilterFn = (node: FileNode) => {
 }
 
 const leftComponents = (enableRecentNotes: boolean = false) => {
-  const left: QuartzComponent[] = [Component.Search(), Component.Darkmode()]
+  const left: QuartzComponent[] = [
+    Component.MobileOnly(Component.Spacer()),
+    Component.Search(),
+    Component.Darkmode(),
+  ]
   const recentNotes = [
     Component.RecentNotes({
       title: "Recent Writing",

@@ -21,13 +21,15 @@ body {
   &[data-slug="curius"] {
     .page {
       & > #quartz-body {
-        .sidebar.left,
-        .sidebar.right,
-        .darkmode {
-          display: none !important;
-        }
-        .center {
-          margin-left: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+        @media all and (min-width: $fullPageWidth) {
+          .sidebar.left,
+          .sidebar.right,
+          .darkmode {
+            display: none !important;
+          }
+          .center {
+            margin-left: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+          }
         }
       }
     }
@@ -44,10 +46,37 @@ body {
   grid-template-columns: $pageWidth auto;
   gap: 20px;
 
+  @media all and (max-width: $fullPageWidth) {
+    display: flex;
+    flex-direction: column;
+  }
+
   #curius-container {
     max-width: $pageWidth;
     margin-left: auto;
     grid-column: 1;
+
+    @media all and (max-width: $fullPageWidth) {
+      width: 100%;
+      max-width: 100%;
+      margin-left: 0;
+    }
+
+    & li[id|="curius-item"] {
+      background-color: inherit;
+      &.focus {
+        background: var(--lightgray);
+      }
+
+      &.active {
+        border: 1px solid rgba(108, 133, 199, 0.33);
+        background: var(--lightgray);
+      }
+
+      & > * {
+        padding-left: 8px;
+      }
+    }
   }
 
   #curius-notes {
@@ -60,6 +89,7 @@ body {
     min-width: $pageWidth;
     height: 100vh;
     box-shadow: none;
+
     & > * {
       margin: 0 3% 0 2%;
     }
@@ -67,6 +97,26 @@ body {
     &.active {
       box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 12px;
       flex-wrap: wrap;
+    }
+
+    @media all and (max-width: $fullPageWidth) {
+      position: fixed;
+      right: -100%;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      width: $sidePanelWidth;
+      z-index: 999;
+      transition: right 0.3s ease;
+      background: var(--light);
+
+      & > * {
+        margin: 0 1rem;
+      }
+
+      &.active {
+        right: 0;
+      }
     }
   }
 }
@@ -82,7 +132,10 @@ body {
 }
 
 .curius-search {
-  width: $pageWidth;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  box-sizing: border-box;
 
   & #curius-bar {
     outline: none;
@@ -99,10 +152,6 @@ body {
     color: var(--dark);
     padding: 0.2em 1em;
     border: 1px solid var(--lightgray);
-
-    @media (max-width: $fullPageWidth) {
-      max-width: calc(100% - 9vw);
-    }
   }
 
   & #curius-search-container {
@@ -122,18 +171,6 @@ body {
     &.active {
       display: inline-block;
     }
-
-    @media (max-width: $fullPageWidth) {
-      max-width: calc(100% - 9vw);
-    }
-  }
-}
-
-#curius {
-  & > * {
-    text-align: left;
-    box-sizing: border-box;
-    padding-bottom: 1em;
   }
 
   #curius-fetching-text {
@@ -145,27 +182,16 @@ body {
       animation: dots 1s infinite;
     }
   }
+}
 
-  #curius-container {
-    & li[id|="curius-item"] {
-      background-color: inherit;
-      &.focus {
-        background: var(--lightgray);
-      }
-
-      &.active {
-        border: 1px solid rgba(108, 133, 199, 0.33);
-        background: var(--lightgray);
-      }
-
-      & > * {
-        padding-left: 8px;
-      }
-    }
+#curius {
+  & > * {
+    text-align: left;
+    box-sizing: border-box;
+    padding-bottom: 1em;
   }
 
-  & ul,
-  #curius-container {
+  & ul {
     list-style: none;
     display: flex;
     flex-direction: column;

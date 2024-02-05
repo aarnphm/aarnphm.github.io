@@ -42,8 +42,8 @@ const CuriusContainer = () => (
           aria-label="Search for curius links"
           placeholder="Search for curius links"
         />
-        <div id="curius-search-container"></div>
         <div id="curius-fetching-text"></div>
+        <div id="curius-search-container"></div>
       </div>
       <div id="curius-fragments"></div>
       <div class="highlight-modal" id="highlight-modal">
