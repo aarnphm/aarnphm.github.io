@@ -27,10 +27,7 @@
   "recentNotes": {
     "seeRemainingMore": "Voir {{remaining}} plus"
   },
-  "search": {
-    "default": "Rechercher",
-    "placeholder": "Chercher quelque chose"
-  },
+  "search": "Rechercher",
   "tableOfContent": "Table des Matières",
   "tagContent": {
     "showingFirst": "Afficher en premier",

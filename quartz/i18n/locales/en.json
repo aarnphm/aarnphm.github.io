@@ -26,10 +26,7 @@
   "recentNotes": {
     "seeRemainingMore": "See {{remaining}} more"
   },
-  "search": {
-    "default": "Search",
-    "placeholder": "Search for something"
-  },
+  "search": "Search",
   "tableOfContent": "Table of Contents",
   "tagContent": {
     "showingFirst": "Showing first",
