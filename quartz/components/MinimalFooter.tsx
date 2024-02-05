@@ -10,7 +10,7 @@ export default (() => {
     return (
       <footer class={classNames(displayClass, "minimal-footer")}>
         <div class="year">
-          <p>© {year} on Earth</p>
+          <p>© {year} sur terre</p>
         </div>
         <div class="footnotes">
           <p>
