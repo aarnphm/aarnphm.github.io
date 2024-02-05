@@ -8,25 +8,45 @@
         "type": "tabs",
         "children": [
           {
-            "id": "8231d3bb91eb97bb",
+            "id": "c2c31af33da48cfb",
             "type": "leaf",
             "state": {
               "type": "pdf",
               "state": {
-                "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf"
+                "file": "dump/university/sfwr-2c03/a2/A2.pdf"
               }
             }
           },
           {
-            "id": "c2c31af33da48cfb",
+            "id": "fb01b992e7d5fb16",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/astron-2e03/W1.md",
+                "file": "dump/university/sfwr-2c03/a2/A2.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
+              }
+            }
+          },
+          {
+            "id": "477c4be14ac12c90",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "dump/university/sfwr-2c03/collections.pdf"
+              }
+            }
+          },
+          {
+            "id": "266f3a1517015109",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "dump/university/sfwr-2c03/sortings.pdf"
               }
             }
           }
@@ -96,7 +116,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
+                "file": "dump/university/sfwr-2c03/a2/A2.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -113,7 +133,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
+                "file": "dump/university/sfwr-2c03/a2/A2.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -136,7 +156,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf"
+                "file": "dump/university/sfwr-2c03/a2/A2.pdf"
               }
             }
           },
@@ -166,7 +186,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf"
+                "file": "dump/university/sfwr-2c03/a2/A2.pdf"
               }
             }
           }
@@ -190,11 +210,18 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "8231d3bb91eb97bb",
+  "active": "c2c31af33da48cfb",
   "lastOpenFiles": [
-    "dump/university/astron-2e03/Exoplanets.md",
-    "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
+    "dump/university/sfwr-2c03/a2/A2.md",
+    "dump/university/sfwr-2c03/a2/A2.pdf",
+    "dump/university/sfwr-2c03/a2/real-world-comparison.png",
+    "dump/university/sfwr-2c03/collections.pdf",
+    "dump/university/sfwr-2c03/sortings.pdf",
+    "dump/university/sfwr-2c03/Sorting.md",
+    "dump/university/sfwr-2c03/binary-search.pdf",
     "dump/university/astron-2e03/W1.md",
+    "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
+    "dump/university/astron-2e03/Exoplanets.md",
     "dump/university/astron-2e03/Explanets.md",
     "dump/Expenses.md",
     "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
@@ -220,14 +247,8 @@
     "private/podcast.md",
     "private/bentoml",
     "private/Term of Reference.md",
-    "private/Reservation list.md",
-    "private/Meetup.md",
     "private/Company interests",
-    "private",
     "posts/images/passage-giorgio-m.jpg",
-    "posts/images",
-    "posts",
-    "dump/university/sfwr-3dx4/time_response.pdf",
     "dump/university/sfwr-3dx4/second-order-system.png",
     "dump/university/sfwr-3dx4/lab1/5.2-graph.png",
     "dump/university/sfwr-3dx4/lab1/5.1-graph.png",
@@ -236,7 +257,6 @@
     "dump/university/sfwr-2fa3/yxx-nfa.png",
     "dump/university/sfwr-2fa3/yxx-nfa-4s.png",
     "dump/university/sfwr-2fa3/eps-nfa.png",
-    "dump/university/sfwr-2fa3/abxba-nfa.png",
     "Untitled.canvas"
   ]
 }

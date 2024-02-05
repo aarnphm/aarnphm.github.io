@@ -17,7 +17,6 @@ export const HyperAlias = {
   uses: "/uses",
   advices: "/dump/quotes",
   affecter: "/influence",
-  tunes: "/music",
 }
 export const SocialAlias = {
   github: "https://github.com/aarnphm",

@@ -24,6 +24,8 @@ The falseness of an opinion is not for us any objection to it: it is here, perha
 
 I always feel happy, you know why? Because I don’t expect anything from anyone. Expectations always hurt. Life is short. So love your life. Be Happy. & Keep smiling. Just live for yourself & before you speak, listen. Before you write, think. Before you spend, earn. Before you pray, forgive. Before you hurt, feel. Before you hate, love. Before you quit, try. Before you die, live. -- William Shakespeare
 
+A pessimist sees the difficulty in every opportunity; an optimist sees the opportunity in every difficulty. -- Winston Churchill
+
 ### On drive.
 
 Life can be much broader when you discover one simple fact...that everything around you was made up by people no smarter than you. ... Once you learn that, [you'll never be the same again.] -- Steve Jobs
@@ -31,6 +33,8 @@ Life can be much broader when you discover one simple fact...that everything aro
 I just wondered how things were put together. -- Claude Shannon
 
 Never stop learning. Assume nothing, question everything. Teach others what you know. Analyze objectively -- Richard Feynman
+
+Success consists of going from failure to failure without loss of enthusiasm. -- Winston Churchill
 
 ### On randomness and fun.
 
