@@ -6,19 +6,26 @@ date: "2024-01-30"
 title: Fisher-Yates
 ---
 
+Produced an _unbiased_ permutation: every permutation is equally likely.
+
 Pseudocode:
 
-```prolog
-Write down the numbers from 1 through N.
-Pick a random number k between one and the number of unstruck numbers remaining (inclusive).
-Counting from the low end, strike out the kth number not yet struck out, and write it down at the end of a separate list.
-Repeat from step 2 until all the numbers have been struck out.
-The sequence of numbers written down in step 3 is now a random permutation of the original numbers.
+```pseudo
+\begin{algorithm}
+\caption{Fisher-Yates shuffle}
+\begin{algorithmic}
+\REQUIRE An array $A$ of length $n$
+\FOR{$i = n-1$ \TO $1$}
+    \STATE $j \gets$ random integer such that $0 \leq j \leq i$
+    \STATE swap $A[i]$ and $A[j]$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
 ```
 
 Implementation of modern Fisher-Yates algorithm
 
-```js
+```js title="FisherYates.js"
 function sample(obj, n, guard) {
   if (n == null || guard) {
     if (!isArrayLike(obj)) obj = values(obj);

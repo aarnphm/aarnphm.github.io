@@ -3,6 +3,7 @@ import { PageLayout, SharedLayout } from "./quartz/cfg"
 import * as Component from "./quartz/components"
 import { SimpleSlug } from "./quartz/util/path"
 import { FileNode } from "./quartz/components/ExplorerNode"
+import { QuartzComponent } from "./quartz/components/types"
 
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
@@ -29,41 +30,31 @@ const explorerFilterFn = (node: FileNode) => {
 }
 
 const leftComponents = (enableRecentNotes: boolean = false) => {
-  const left = [
-    // Component.MobileOnly(Component.Explorer()),
-    Component.MobileOnly(Component.Spacer()),
-    Component.Search(),
-    Component.Darkmode(),
-  ]
+  const left: QuartzComponent[] = [Component.Search(), Component.Darkmode()]
   const recentNotes = [
-    Component.DesktopOnly(
-      Component.RecentNotes({
-        title: "Recent Writing",
-        limit: 3,
-        filter: filterFunc("posts"),
-        linkToMore: "posts/" as SimpleSlug,
-      }),
-    ),
-    Component.DesktopOnly(
-      Component.RecentNotes({
-        title: "Recent Notes",
-        limit: 3,
-        filter: filterFunc("dump", ["university"]),
-        linkToMore: "dump/" as SimpleSlug,
-      }),
-    ),
+    Component.RecentNotes({
+      title: "Recent Writing",
+      limit: 3,
+      filter: filterFunc("posts"),
+      linkToMore: "posts/" as SimpleSlug,
+    }),
+    Component.RecentNotes({
+      title: "Recent Notes",
+      limit: 3,
+      filter: filterFunc("dump", ["university"]),
+      linkToMore: "dump/" as SimpleSlug,
+    }),
   ]
-  if (enableRecentNotes) left.push(...recentNotes)
-  left.push(
-    ...[
-      Component.Graph({
-        globalGraph: { linkDistance: 50 },
-        localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
-      }),
-      Component.Backlinks(),
-      Component.TableOfContents(),
-    ].flatMap(Component.DesktopOnly),
-  )
+  const desktopOnly = [
+    Component.Graph({
+      globalGraph: { linkDistance: 50 },
+      localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
+    }),
+    Component.Backlinks(),
+    Component.TableOfContents(),
+  ]
+  if (enableRecentNotes) desktopOnly.push(...recentNotes)
+  left.push(...desktopOnly.flatMap(Component.DesktopOnly))
   return left
 }
 

@@ -9,7 +9,7 @@ title: projects.
 
 The list below are notable projects I'm currently maintaining/finished. A more incomplete list of ideas that I will do sometime can be found in [[dump/backburners]]. For [[dump/writing]] see [mailbox](/posts/)
 
-## [OpenLLM](https://github.com/bentoml/openllm) -- Serve, fine-tune and deploy LLMs in production
+## [OpenLLM](https://github.com/bentoml/openllm) -- Serve, fine-tune and deploy [[dump/large models|LLMs]] in production
 
 OpenLLM is an open-source platform designed to facilitate the deployment and operation of large language models (LLMs) in real-world applications. With OpenLLM, you can run inference on any open-source LLM, deploy them on the cloud or on-premises, and build powerful AI applications.
 
@@ -25,7 +25,7 @@ Key features include:
 
 🤖️ **Bring your own LLM**: Fine-tune any LLM to suit your needs. You can load LoRA layers to fine-tune models for higher accuracy and performance for specific tasks. A unified fine-tuning API for models (`LLM.tuning()`) is coming soon.
 
-⚡ **Quantisation**: Run inference with less computational and memory costs though quantisation techniques like [bitsandbytes](https://github.com/TimDettmers/bitsandbytes) and [GPTQ](https://arxiv.org/abs/2210.17323).
+⚡ **Quantisation**: Run inference with less computational and memory costs though [[dump/quantization|quantisation]] techniques like [bitsandbytes](https://github.com/TimDettmers/bitsandbytes) and [GPTQ](https://arxiv.org/abs/2210.17323).
 
 📡 **Streaming**: Support token streaming through server-sent events (SSE). You can use the `/v1/generate_stream` endpoint for streaming responses from LLMs.
 
