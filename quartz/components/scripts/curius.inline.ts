@@ -213,51 +213,41 @@ async function fetchLinks(refetch: boolean = false): Promise<Response> {
   return { links: newLinks, user }
 }
 
-function createNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement) {
+function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement) {
   const titleNode = note.querySelector("#note-link") as HTMLAnchorElement
   const snippetNode = note.querySelector(".curius-note-snippet") as HTMLDivElement
   const highlightsNode = note.querySelector(".curius-note-highlights") as HTMLDivElement
 
-  function updateNoteTitle() {
-    titleNode.innerHTML = `<span class="curius-item-span">${Link.title}</span>`
-    titleNode.href = Link.link
-    titleNode.target = "_blank"
-    titleNode.rel = "noopener noreferrer"
+  titleNode.innerHTML = `<span class="curius-item-span">${Link.title}</span>`
+  titleNode.href = Link.link
+  titleNode.target = "_blank"
+  titleNode.rel = "noopener noreferrer"
 
-    const close = document.querySelector(".icon-container")
-    const cleanUp = () => {
-      note.style.visibility = "hidden"
-      note.classList.remove("active")
-      parent.classList.remove("active")
-    }
-    close?.addEventListener("click", cleanUp)
-    window.addCleanup(() => close?.removeEventListener("click", cleanUp))
+  const close = document.querySelector(".icon-container")
+  const cleanUp = () => {
+    note.style.visibility = "hidden"
+    note.classList.remove("active")
+    parent.classList.remove("active")
   }
+  close?.addEventListener("click", cleanUp)
+  window.addCleanup(() => close?.removeEventListener("click", cleanUp))
 
-  function updateSnippet() {
-    removeAllChildren(snippetNode)
-    snippetNode.textContent = Link.snippet
+  removeAllChildren(snippetNode)
+  snippetNode.textContent = Link.snippet
+
+  removeAllChildren(highlightsNode)
+  if (Link.highlights.length === 0) return
+  for (const hl of Link.highlights) {
+    const highlightItem = document.createElement("li")
+    const hlLink = document.createElement("a")
+    hlLink.dataset.highlight = hl.id.toString()
+    hlLink.href = `${Link.link}?curius=${hl.userId}`
+    hlLink.target = "_blank"
+    hlLink.rel = "noopener noreferrer"
+    hlLink.textContent = hl.highlight
+    highlightItem.appendChild(hlLink)
+    highlightsNode.appendChild(highlightItem)
   }
-
-  function updateHighlights() {
-    removeAllChildren(highlightsNode)
-    if (Link.highlights.length === 0) return
-    for (const hl of Link.highlights) {
-      const highlightItem = document.createElement("li")
-      const hlLink = document.createElement("a")
-      hlLink.dataset.highlight = hl.id.toString()
-      hlLink.href = `${Link.link}?curius=${hl.userId}`
-      hlLink.target = "_blank"
-      hlLink.rel = "noopener noreferrer"
-      hlLink.textContent = hl.highlight
-      highlightItem.appendChild(hlLink)
-      highlightsNode.appendChild(highlightItem)
-    }
-  }
-
-  updateNoteTitle()
-  updateSnippet()
-  updateHighlights()
 }
 
 let currentActive: HTMLLIElement | null = null
@@ -393,8 +383,25 @@ function createLinkEl(Link: Link): HTMLLIElement {
     note.style.visibility = "visible"
     curiusItem.classList.add("active")
     currentActive = curiusItem
-    createNotePanel(Link, note, curiusItem)
+    updateNotePanel(Link, note, curiusItem)
   }
+
+  function onKeydown(e: HTMLElementEventMap["keydown"]) {
+    const note = document.querySelector("#curius-notes") as HTMLDivElement | null
+    if (!note) return
+
+    if (e.key === "Escape") {
+      e.preventDefault()
+      note.style.visibility = "hidden"
+      note.classList.remove("active")
+      if (currentActive) currentActive.classList.remove("active")
+      else curiusItem.classList.remove("active")
+      return
+    }
+  }
+
+  document.addEventListener("keydown", onKeydown)
+  window.addCleanup(() => document.removeEventListener("keydown", onKeydown))
 
   const events = [
     ["mouseenter", onMouseEnter],
@@ -407,70 +414,6 @@ function createLinkEl(Link: Link): HTMLLIElement {
   return curiusItem
 }
 
-async function createTooltip(item: HTMLElement) {
-  if (!item) return
-
-  const parentNode = item.parentNode
-  if (!parentNode) return
-
-  const tool = document.createElement("div")
-  tool.classList.add("tooltip")
-  tool.id = `curius-tooltip-${item.dataset.id ?? "helper"}`
-  const content = document.createElement("span")
-  Object.assign(content, {
-    id: "curius-tooltip-content",
-    textContent: item.dataset.tooltip ?? "helper",
-  })
-  const tip = document.createElement("div")
-  tip.id = "arrow"
-  tool.append(content, tip)
-
-  if (parentNode.querySelector("#curius-tooltip")) return
-
-  const hide = () => {
-    item.style.opacity = "0"
-    tool.style.visibility = "hidden"
-  }
-
-  function show(this: HTMLElement, { clientX, clientY }: { clientX: number; clientY: number }) {
-    async function setPosition(popoverElement: HTMLElement) {
-      await computePosition(item, popoverElement, {
-        placement: "top",
-        middleware: [
-          inline({ x: clientX, y: clientY }),
-          arrowFloating({ element: tip, padding: 10 }),
-          offset(5),
-        ],
-      }).then(({ x, y, middlewareData }) => {
-        Object.assign(popoverElement.style, {
-          left: `${x}px`,
-          top: `${y}px`,
-        })
-        const { x: arrowX, y: arrowY } = middlewareData.arrow as Partial<Coords>
-        Object.assign(tip.style, {
-          left: arrowX != null ? `${arrowX}px` : "",
-          top: arrowY != null ? `${arrowY}px` : "",
-        })
-      })
-    }
-
-    item.style.opacity = "1"
-    tool.style.visibility = "show"
-    setPosition(tool)
-  }
-
-  const events = [
-    ["mouseleave", hide],
-    ["mouseenter", show],
-  ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
-  for (const [event, listener] of events) {
-    item.addEventListener(event, listener)
-  }
-
-  parentNode?.appendChild(tool)
-  return tool
-}
-
 const toggleVisibility = (el: HTMLElement, state: boolean) => {
   Object.assign(el.style, {
     opacity: state ? "1" : "0",
@@ -480,28 +423,22 @@ const toggleVisibility = (el: HTMLElement, state: boolean) => {
 
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const elements = [
-    "#curius-search-container",
     "#curius-container",
     "#curius-fetching-text",
     "#curius-fragments",
     ".navigation-container",
-    ".curius-outer",
   ].map((id) => document.querySelector(id))
-  const searchBar = document.getElementById("curius-bar") as HTMLInputElement | null
-  const resultCards = document.getElementsByClassName("curius-search-link")
 
   if (elements.some((el) => el === null)) return
 
-  const [searchContainer, container, fetchText, fragment, nav, outer] = elements as HTMLElement[]
+  const [container, fetchText, fragment, nav] = elements as HTMLElement[]
 
   fetchText.textContent = "Fetching curius links"
   toggleVisibility(fetchText, true)
   const resp = await fetchLinks()
   toggleVisibility(fetchText, false)
 
-  const userData = resp.user ?? {}
   const linksData = resp.links ?? []
-  const sampleLinks = sample(linksData, 20)
 
   if (linksData.length === 0) {
     container.innerHTML = `<p>Failed to fetch links.</p>`
@@ -527,7 +464,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     document.addEventListener("keydown", preventRefreshDefault)
     window.addCleanup(() => document.removeEventListener("keydown", preventRefreshDefault))
 
-    refetchIcon.addEventListener("click", async () => {
+    const onClick = async () => {
       refetchIcon.classList.add("disabled")
       refetchIcon.style.opacity = "0.5"
 
@@ -552,7 +489,10 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       }
       fragment.append(...newData.map(createLinkEl))
       toggleVisibility(nav, true)
-    })
+    }
+
+    refetchIcon.addEventListener("click", onClick)
+    window.addCleanup(() => refetchIcon.removeEventListener("click", onClick))
 
     const events = [
       ["mouseenter", () => (refetchIcon.style.opacity = "1")],
@@ -564,6 +504,15 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     ] as [keyof HTMLElementEventMap, EventListenerOrEventListenerObject][]
     registerEvents(refetchIcon, ...events)
   }
+})
+
+document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
+  const bar = document.getElementById("curius-bar") as HTMLInputElement | null
+  const container = document.getElementById("curius-search-container") as HTMLDivElement | null
+
+  const resp = await fetchLinks()
+  const linksData = resp.links ?? []
+  const sampleLinks = sample(linksData, 20)
 
   // Search functionality
   async function onType(e: HTMLElementEventMap["input"]) {
@@ -590,6 +539,85 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     showLinks(finalResults)
   }
 
+  function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
+    if (e.key === "k" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+      e.preventDefault()
+      if (!bar) return
+      const rect = bar.getBoundingClientRect()
+      // check if the search bar is in the viewport
+      if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
+        const searchBarOpen = bar.classList.contains("active")
+        searchBarOpen ? hideLinks() : showLinks(sampleLinks)
+        bar?.focus()
+      }
+    }
+
+    if (!bar?.classList.contains("active")) return
+    if (e.key.startsWith("Esc")) {
+      e.preventDefault()
+      hideLinks()
+    } else if (e.key === "Enter") {
+      if (container?.contains(document.activeElement)) {
+        const active = document.activeElement as HTMLInputElement
+        active.click()
+      } else {
+        const anchor = document.getElementsByClassName(
+          "curius-search-link",
+        )[0] as HTMLInputElement | null
+        anchor?.click()
+      }
+    } else if (e.key === "ArrowUp" || (e.shiftKey && e.key === "Tab")) {
+      e.preventDefault()
+      // When first pressing ArrowDown, results wont contain the active element, so focus first element
+      if (container?.contains(document.activeElement)) {
+        const prevResult = document.activeElement?.previousElementSibling as HTMLInputElement | null
+        prevResult?.focus()
+      }
+    } else if (e.key === "ArrowDown" || e.key === "Tab") {
+      e.preventDefault()
+
+      // When first pressing ArrowDown, results wont contain the active element, so focus first element
+      if (!container?.contains(document.activeElement)) {
+        const firstResult = document.getElementsByClassName(
+          "curius-search-link",
+        )[0] as HTMLInputElement | null
+        firstResult?.focus()
+      } else {
+        // If an element in results-container already has focus, focus next one
+        const nextResult = document.activeElement?.nextElementSibling as HTMLInputElement | null
+        nextResult?.focus()
+      }
+    }
+  }
+
+  function onClick(e: HTMLElementEventMap["click"]) {
+    if (bar?.classList.contains("active")) return
+    const note = document.getElementById("curius-notes") as HTMLDivElement | null
+    if (note) {
+      note.style.visibility = "hidden"
+    }
+    showLinks(sampleLinks)
+  }
+
+  function showLinks(links: Link[]) {
+    const note = document.getElementById("curius-notes") as HTMLDivElement | null
+    if (note) {
+      note.style.visibility = "hidden"
+    }
+    if (!container) return
+    bar?.classList.add("active")
+    removeAllChildren(container)
+    container?.append(...links.map(createSearchLinks))
+  }
+
+  function hideLinks() {
+    if (bar) {
+      bar.value = ""
+    }
+    bar?.classList.remove("active")
+    if (container) removeAllChildren(container)
+  }
+
   function createSearchLinks(link: Link): HTMLAnchorElement {
     const curiusLink = document.createElement("a")
     curiusLink.classList.add("curius-search-link")
@@ -609,96 +637,14 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     return curiusLink
   }
 
-  let currentSearchItem: HTMLInputElement | null = null
-  function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if (e.key === "k" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
-      e.preventDefault()
-      if (!searchBar) return
-      const rect = searchBar.getBoundingClientRect()
-      // check if the search bar is in the viewport
-      if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
-        const searchBarOpen = searchBar.classList.contains("active")
-        searchBarOpen ? hideLinks() : showLinks(sampleLinks)
-        searchBar?.focus()
-      }
-    }
-
-    if (!searchBar?.classList.contains("active")) return
-    if (e.key.startsWith("Esc")) {
-      e.preventDefault()
-      hideLinks()
-    } else if (e.key === "Enter") {
-      if (searchContainer?.contains(document.activeElement)) {
-        const active = document.activeElement as HTMLInputElement
-        active.click()
-      } else {
-        const anchor = document.getElementsByClassName(
-          "curius-search-link",
-        )[0] as HTMLInputElement | null
-        anchor?.click()
-      }
-    } else if (e.key === "ArrowUp" || (e.shiftKey && e.key === "Tab")) {
-      e.preventDefault()
-      // When first pressing ArrowDown, results wont contain the active element, so focus first element
-      if (searchContainer?.contains(document.activeElement)) {
-        const prevResult = document.activeElement?.previousElementSibling as HTMLInputElement | null
-        currentSearchItem = prevResult
-        prevResult?.focus()
-      }
-    } else if (e.key === "ArrowDown" || e.key === "Tab") {
-      e.preventDefault()
-
-      // When first pressing ArrowDown, results wont contain the active element, so focus first element
-      if (!searchContainer?.contains(document.activeElement)) {
-        const firstResult = resultCards[0] as HTMLInputElement | null
-        currentSearchItem = firstResult
-        firstResult?.focus()
-      } else {
-        // If an element in results-container already has focus, focus next one
-        const nextResult = document.activeElement?.nextElementSibling as HTMLInputElement | null
-        currentSearchItem = nextResult
-        nextResult?.focus()
-      }
-    }
-  }
-
-  function showLinks(links: Link[]) {
-    const note = document.getElementById("curius-notes") as HTMLDivElement | null
-    if (note) {
-      note.style.visibility = "hidden"
-    }
-    if (!searchContainer) return
-    searchBar?.classList.add("active")
-    removeAllChildren(searchContainer)
-    searchContainer?.append(...links.map(createSearchLinks))
-  }
-
-  function hideLinks() {
-    if (searchBar) {
-      searchBar.value = ""
-    }
-    searchBar?.classList.remove("active")
-    removeAllChildren(searchContainer)
-  }
-
-  function onClick(e: HTMLElementEventMap["click"]) {
-    if (searchBar?.classList.contains("active")) return
-    const note = document.getElementById("curius-notes") as HTMLDivElement | null
-    if (note) {
-      note.style.visibility = "hidden"
-    }
-    showLinks(sampleLinks)
-  }
-
   document.addEventListener("keydown", shortcutHandler)
   window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
+  bar?.addEventListener("input", onType)
+  window.addCleanup(() => bar?.removeEventListener("input", onType))
+  bar?.addEventListener("click", onClick)
+  window.addCleanup(() => bar?.removeEventListener("click", onClick))
 
-  const events = [
-    ["click", onClick],
-    ["input", onType],
-  ] as [keyof HTMLElementEventMap, EventListenerOrEventListenerObject][]
-  registerEvents(searchBar, ...events)
-  registerEscapeHandler(outer, hideLinks)
+  registerEscapeHandler(document.querySelector(".curius-outer"), hideLinks)
 
   await fillIndex(linksData)
 })

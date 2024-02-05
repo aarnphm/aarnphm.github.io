@@ -2,7 +2,8 @@
 
 @keyframes dots {
   0%,
-  20% {
+  20%,
+  100% {
     content: "";
   }
   25% {
@@ -13,9 +14,6 @@
   }
   75% {
     content: "...";
-  }
-  100% {
-    content: "";
   }
 }
 
@@ -74,16 +72,13 @@ body {
 }
 
 .highlight-modal {
+  @include modalStyles;
   visibility: hidden;
 }
 
-#arrow {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  z-index: 101;
-  background: var(--lightgray);
-  transform: rotate(45deg);
+.highlight-modal ul {
+  list-style-type: none;
+  padding: 0;
 }
 
 .curius-search {
@@ -138,17 +133,17 @@ body {
   & > * {
     text-align: left;
     box-sizing: border-box;
+    padding-bottom: 1em;
   }
 
   #curius-fetching-text {
     visibility: hidden;
     opacity: 0;
     padding-top: 1rem;
-  }
-
-  #curius-fetching-text::after {
-    content: "";
-    animation: dots 1s infinite;
+    &::after {
+      content: "";
+      animation: dots 1s infinite;
+    }
   }
 
   #curius-container {
@@ -241,10 +236,6 @@ body {
     outline: none;
   }
 
-  .curius-title {
-    padding-bottom: 1rem;
-  }
-
   & [class*="snippet"] {
     color: rgb(170, 170, 170);
     text-overflow: ellipsis;
@@ -277,6 +268,7 @@ body {
       cursor: pointer;
     }
   }
+
   .curius-search-title {
     display: flex;
   }
@@ -284,13 +276,16 @@ body {
   .curius-note-highlights,
   .curius-note-title,
   .curius-item-title {
+    font-size: 1.2rem;
+    padding: 5px 0;
+
     a,
     span {
       color: inherit !important;
       font-weight: normal !important;
       text-decoration: none;
 
-      &:hover {
+      &:hover:not([data-highlight]) {
         transition: none;
         text-decoration: underline;
       }
@@ -325,12 +320,6 @@ body {
     }
   }
 
-  .curius-note-title,
-  .curius-item-title {
-    font-size: 1.2rem;
-    padding: 5px 0;
-  }
-
   .curius-note-title {
     display: flex;
     align-items: flex-start;
@@ -348,10 +337,6 @@ body {
     padding: 5px 0;
     text-overflow: ellipsis;
     overflow: hidden;
-  }
-
-  .curius-item-metadata {
-    margin-bottom: 4px;
   }
 
   .curius-item-tags {
@@ -387,33 +372,5 @@ body {
         }
       }
     }
-  }
-}
-
-.highlight-modal {
-  @include modalStyles;
-}
-
-.highlight-modal ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.tooltip {
-  visibility: hidden;
-  max-width: 200px;
-  padding: 0.3rem 0.3rem;
-  position: absolute;
-  pointer-events: none;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  background: var(--lightgray);
-  color: rgb(170, 170, 170);
-  font-size: 12px;
-  transition: opacity 0.3s ease-out;
-  z-index: 100;
-
-  [saved-theme="light"] & {
-    color: var(--dark);
   }
 }
