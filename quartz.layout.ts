@@ -25,12 +25,12 @@ function filterFunc(path: string, excludePaths: string[] = []) {
 }
 
 const explorerFilterFn = (node: FileNode) => {
-  return !["university", "papers", "tags"].some((path) => node.name.includes(path))
+  return !["tags"].some((path) => node.name.includes(path))
 }
 
 const leftComponents = (enableRecentNotes: boolean = false) => {
   const left = [
-    Component.MobileOnly(Component.Explorer()),
+    // Component.MobileOnly(Component.Explorer()),
     Component.MobileOnly(Component.Spacer()),
     Component.Search(),
     Component.Darkmode(),
@@ -78,12 +78,11 @@ export const defaultContentPageLayout: PageLayout = {
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [Component.ArticleTitle()],
   left: [
-    Component.MobileOnly(Component.Explorer()),
+    Component.Meta({ enableSearch: false, enableDarkMode: false }),
     Component.MobileOnly(Component.Spacer()),
     Component.Search(),
     Component.Darkmode(),
     Component.DesktopOnly(Component.Explorer({ filterFn: explorerFilterFn })),
-    Component.Meta({ enableSearch: false, enableDarkMode: false }),
   ],
   right: [],
 }

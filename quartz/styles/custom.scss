@@ -174,8 +174,6 @@ audio::-webkit-media-controls-panel {
 
 ul.overflow,
 ol.overflow {
-  height: 200px;
-
   &:after {
     background: inherit;
   }
@@ -255,52 +253,6 @@ ol.overflow {
   @media all and (max-width: $fullPageWidth) {
     display: flex !important;
   }
-}
-
-.mobile-only.explorer {
-  ul.overflow {
-    height: inherit;
-    &:after {
-      background: none;
-    }
-  }
-
-  #explorer-content:not(.collapsed) {
-    min-height: 80vh;
-    position: absolute;
-    z-index: 100;
-    margin-top: 2rem;
-    transform: translateX(0);
-    overflow: auto;
-  }
-
-  #explorer-content.collapsed {
-    left: 0;
-    width: 0;
-    height: inherit;
-    position: absolute;
-    z-index: 100;
-    opacity: 0.35;
-    transition:
-      0.5s ease opacity,
-      0.3s ease color;
-  }
-
-  #explorer .lucide-menu {
-    stroke: var(--darkgray);
-    &:hover {
-      stroke: var(--dark);
-    }
-  }
-}
-
-.no-scroll {
-  display: none;
-  overflow: hidden;
-}
-
-#toc-content {
-  position: inherit;
 }
 
 #texture {

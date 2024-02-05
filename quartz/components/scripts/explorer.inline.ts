@@ -22,18 +22,6 @@ function toggleExplorer(this: HTMLElement) {
 
   content.classList.toggle("collapsed")
   content.style.maxHeight = content.style.maxHeight === "0px" ? content.scrollHeight + "px" : "0px"
-  // prevent scroll under on mobile-only explorer
-  if (this.dataset.mobileonly === "true") {
-    const center = document.querySelector("#quartz-body .center")
-    if (document.querySelector(".mobile-only #explorer")) {
-      const queries = [".popover-hint", "footer", "#progress", ".backlinks", ".graph", ".toc"]
-      queries.map((query) => {
-        document.querySelectorAll(query)?.forEach((element) => {
-          element.classList.toggle("no-scroll")
-        })
-      })
-    }
-  }
 }
 
 function toggleFolder(evt: MouseEvent) {
@@ -62,58 +50,52 @@ function toggleFolder(evt: MouseEvent) {
 }
 
 function setupExplorer() {
-  for (const explorer of document.querySelectorAll("#explorer") as NodeListOf<HTMLElement>) {
-    const isMobileOnly = explorer.dataset.mobileonly === "true"
-    if (isMobileOnly) {
-      explorer.classList.add("collapsed")
-      const content = explorer.nextElementSibling as HTMLElement
-      content.classList.add("collapsed")
-      content.style.maxHeight = "0px"
-    }
-    if (explorer.dataset.behavior === "collapse") {
-      for (const item of document.getElementsByClassName(
-        "folder-button",
-      ) as HTMLCollectionOf<HTMLElement>) {
-        item.addEventListener("click", toggleFolder)
-        window.addCleanup(() => item.removeEventListener("click", toggleFolder))
-      }
-    }
+  const explorer = document.getElementById("explorer")
+  if (!explorer) return
 
-    explorer.addEventListener("click", toggleExplorer)
-    window.addCleanup(() => explorer.removeEventListener("click", toggleExplorer))
-
-    // Set up click handlers for each folder (click handler on folder "icon")
+  if (explorer.dataset.behavior === "collapse") {
     for (const item of document.getElementsByClassName(
-      "folder-icon",
+      "folder-button",
     ) as HTMLCollectionOf<HTMLElement>) {
       item.addEventListener("click", toggleFolder)
       window.addCleanup(() => item.removeEventListener("click", toggleFolder))
     }
-
-    // Get folder state from local storage
-    const storageTree = localStorage.getItem("fileTree")
-    const useSavedFolderState = explorer?.dataset.savestate === "true"
-    const oldExplorerState: FolderState[] =
-      storageTree && useSavedFolderState ? JSON.parse(storageTree) : []
-    const oldIndex = new Map(oldExplorerState.map((entry) => [entry.path, entry.collapsed]))
-    const newExplorerState: FolderState[] = explorer.dataset.tree
-      ? JSON.parse(explorer.dataset.tree)
-      : []
-    currentExplorerState = []
-    for (const { path, collapsed } of newExplorerState) {
-      currentExplorerState.push({ path, collapsed: oldIndex.get(path) ?? collapsed })
-    }
-
-    currentExplorerState.map((folderState) => {
-      const folderLi = document.querySelector(
-        `[data-folderpath='${folderState.path}']`,
-      ) as MaybeHTMLElement
-      const folderUl = folderLi?.parentElement?.nextElementSibling as MaybeHTMLElement
-      if (folderUl) {
-        setFolderState(folderUl, folderState.collapsed)
-      }
-    })
   }
+
+  explorer.addEventListener("click", toggleExplorer)
+  window.addCleanup(() => explorer.removeEventListener("click", toggleExplorer))
+
+  // Set up click handlers for each folder (click handler on folder "icon")
+  for (const item of document.getElementsByClassName(
+    "folder-icon",
+  ) as HTMLCollectionOf<HTMLElement>) {
+    item.addEventListener("click", toggleFolder)
+    window.addCleanup(() => item.removeEventListener("click", toggleFolder))
+  }
+
+  // Get folder state from local storage
+  const storageTree = localStorage.getItem("fileTree")
+  const useSavedFolderState = explorer?.dataset.savestate === "true"
+  const oldExplorerState: FolderState[] =
+    storageTree && useSavedFolderState ? JSON.parse(storageTree) : []
+  const oldIndex = new Map(oldExplorerState.map((entry) => [entry.path, entry.collapsed]))
+  const newExplorerState: FolderState[] = explorer.dataset.tree
+    ? JSON.parse(explorer.dataset.tree)
+    : []
+  currentExplorerState = []
+  for (const { path, collapsed } of newExplorerState) {
+    currentExplorerState.push({ path, collapsed: oldIndex.get(path) ?? collapsed })
+  }
+
+  currentExplorerState.map((folderState) => {
+    const folderLi = document.querySelector(
+      `[data-folderpath='${folderState.path}']`,
+    ) as MaybeHTMLElement
+    const folderUl = folderLi?.parentElement?.nextElementSibling as MaybeHTMLElement
+    if (folderUl) {
+      setFolderState(folderUl, folderState.collapsed)
+    }
+  })
 }
 
 window.addEventListener("resize", setupExplorer)
