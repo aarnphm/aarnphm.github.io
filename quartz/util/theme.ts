@@ -1,3 +1,5 @@
+import { GlobalConfiguration } from "../cfg"
+
 export interface ColorScheme {
   light: string
   lightgray: string
@@ -32,8 +34,20 @@ export function googleFontHref(theme: Theme) {
   return `https://fonts.googleapis.com/css2?family=${code}&family=${header}:wght@400;700&family=${body}:ital,wght@0,400;0,600;1,400;1,600&display=swap`
 }
 
-export function joinStyles(theme: Theme, ...stylesheet: string[]) {
+export function joinStyles(cfg: GlobalConfiguration, ...stylesheet: string[]) {
+  const theme = cfg.theme
   return `
+${
+  cfg.enableCursorChat &&
+  `
+input#cursor-chat-box {
+  outline: none;
+  background-color: var(--light);
+  font-family: "${cfg.theme.typography.body}", ${DEFAULT_SANS_SERIF} !important;
+}
+`
+}
+
 ${stylesheet.join("\n\n")}
 
 :root {

@@ -242,6 +242,11 @@ export function renderPage(
             <Footer {...componentData} />
           </div>
         )}
+        {cfg.enableCursorChat && (
+          <div id="cursor-chat-layer">
+            <input type="text" id="cursor-chat-box" />
+          </div>
+        )}
       </body>
       {pageResources.js
         .filter((resource) => resource.loadTime === "afterDOMReady")

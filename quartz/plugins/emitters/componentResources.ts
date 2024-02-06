@@ -138,6 +138,21 @@ function addGlobalPageResources(
     `)
   }
 
+  if (cfg.enableCursorChat) {
+    staticResources.css.push("https://unpkg.com/cursor-chat/dist/style.css")
+    staticResources.js.push({
+      script: `
+      document.addEventListener('nav', async () => {
+      const chat = await import('https://esm.sh/cursor-chat')
+      chat.initCursorChat("quartz-room")
+      })
+    `,
+      loadTime: "afterDOMReady",
+      moduleType: "module",
+      contentType: "inline",
+    })
+  }
+
   let wsUrl = `ws://localhost:${ctx.argv.wsPort}`
 
   if (ctx.argv.remoteDevHost) {
@@ -238,7 +253,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
       addGlobalPageResources(ctx, resources, componentResources)
 
       const stylesheet = joinStyles(
-        ctx.cfg.configuration.theme,
+        ctx.cfg.configuration,
         ...componentResources.css,
         googleFonts ?? "",
         styles,
