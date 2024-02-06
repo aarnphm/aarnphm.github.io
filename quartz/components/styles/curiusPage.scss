@@ -216,6 +216,12 @@ body {
     outline: none;
   }
 
+  & .highlight {
+    background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
+    border-radius: 5px;
+    scroll-margin-top: 2rem;
+  }
+
   & [class*="snippet"] {
     color: rgb(170, 170, 170);
     text-overflow: ellipsis;
@@ -225,6 +231,7 @@ body {
     -webkit-box-orient: vertical;
     line-height: 1.5;
     font-size: 0.9rem;
+    margin: 0 auto 1rem;
   }
 
   .curius-item-title {

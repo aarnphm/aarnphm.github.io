@@ -100,7 +100,7 @@ const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
 let disableEndTime: number | null = null
 let countdownIntervalId: NodeJS.Timeout | null = null
 let index: FlexSearch.Document<Link> = new FlexSearch.Document({
-  charset: "latin:extra",
+  charset: "latin:advanced",
   document: {
     id: "id",
     index: [
@@ -372,6 +372,65 @@ const toggleVisibility = (el: HTMLElement, state: boolean) => {
   })
 }
 
+const contextWindowWords = 30
+
+const tokenizeTerm = (term: string) => {
+  const tokens = term.split(/\s+/).filter((t) => t.trim() !== "")
+  const tokenLen = tokens.length
+  if (tokenLen > 1) {
+    for (let i = 1; i < tokenLen; i++) {
+      tokens.push(tokens.slice(0, i + 1).join(" "))
+    }
+  }
+
+  return tokens.sort((a, b) => b.length - a.length) // always highlight longest terms first
+}
+
+function highlight(searchTerm: string, text: string, trim?: boolean) {
+  const tokenizedTerms = tokenizeTerm(searchTerm)
+  let tokenizedText = text.split(/\s+/).filter((t) => t !== "")
+
+  let startIndex = 0
+  let endIndex = tokenizedText.length - 1
+  if (trim) {
+    const includesCheck = (tok: string) =>
+      tokenizedTerms.some((term) => tok.toLowerCase().startsWith(term.toLowerCase()))
+    const occurrencesIndices = tokenizedText.map(includesCheck)
+
+    let bestSum = 0
+    let bestIndex = 0
+    for (let i = 0; i < Math.max(tokenizedText.length - contextWindowWords, 0); i++) {
+      const window = occurrencesIndices.slice(i, i + contextWindowWords)
+      const windowSum = window.reduce((total, cur) => total + (cur ? 1 : 0), 0)
+      if (windowSum >= bestSum) {
+        bestSum = windowSum
+        bestIndex = i
+      }
+    }
+
+    startIndex = Math.max(bestIndex - contextWindowWords, 0)
+    endIndex = Math.min(startIndex + 2 * contextWindowWords, tokenizedText.length - 1)
+    tokenizedText = tokenizedText.slice(startIndex, endIndex)
+  }
+
+  const slice = tokenizedText
+    .map((tok) => {
+      // see if this tok is prefixed by any search terms
+      for (const searchTok of tokenizedTerms) {
+        if (tok.toLowerCase().includes(searchTok.toLowerCase())) {
+          const regex = new RegExp(searchTok.toLowerCase(), "gi")
+          return tok.replace(regex, `<span class="highlight">$&</span>`)
+        }
+      }
+      return tok
+    })
+    .join(" ")
+
+  return `${startIndex === 0 ? "" : "..."}${slice}${
+    endIndex === tokenizedText.length - 1 ? "" : "..."
+  }`
+}
+
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const elements = [
     "#curius-container",
@@ -462,6 +521,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   // Search functionality
   async function onType(e: HTMLElementEventMap["input"]) {
     let term = (e.target as HTMLInputElement).value
+    container?.classList.toggle("active", term !== "")
     let searchResults =
       (await index?.searchAsync({
         query: term,
@@ -480,8 +540,28 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       ...getByField("topics"),
     ])
 
-    const finalResults = [...allIds].map((id) => linksData[id])
-    showLinks(finalResults)
+    const finalResults = [...allIds].map((id) => formatLinks(term, id))
+    displayLinks(finalResults)
+  }
+
+  const formatLinks = (term: string, id: number): Link => {
+    const L = linksData[id]
+    return {
+      ...L,
+      title: highlight(term, L.title),
+      snippet: highlight(term, L.snippet, true),
+    }
+  }
+
+  function displayLinks(links: Link[]) {
+    if (!container) return
+    removeAllChildren(container)
+
+    if (links.length === 0) {
+      container.innerHTML = `<a class="curius-search-link"><span class="curius-search-title">No results found.</span><p class="curius-search-snippet">Try another search term?</p></a>`
+    } else {
+      container?.append(...links.map(createSearchLinks))
+    }
   }
 
   function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
@@ -489,6 +569,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       e.preventDefault()
       const searchBarOpen = container?.classList.contains("active")
       searchBarOpen ? hideLinks() : showLinks(sampleLinks)
+      return
     }
 
     if (currentActive) {
@@ -539,14 +620,13 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   function showLinks(links: Link[]) {
     if (!container) return
     container?.classList.add("active")
-    removeAllChildren(container)
-    container?.append(...links.map(createSearchLinks))
+    bar?.focus()
+    displayLinks(links)
   }
 
   function hideLinks() {
-    container?.classList.remove("active")
+    if (container) container.classList.remove("active")
     if (bar) bar.value = ""
-    if (container) removeAllChildren(container)
   }
 
   function createSearchLinks(link: Link): HTMLAnchorElement {
@@ -554,7 +634,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     curiusLink.classList.add("curius-search-link")
     curiusLink.target = "_blank"
     curiusLink.href = link.link
-    curiusLink.innerHTML = `<span class="curius-search-title">${link.title}</span><div class="curius-search-snippet">${link.snippet}</div>`
+    curiusLink.innerHTML = `<span class="curius-search-title">${link.title}</span><p class="curius-search-snippet">${link.snippet}</div>`
 
     const onClick = (e: MouseEvent) => {
       if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
