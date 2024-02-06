@@ -2,20 +2,6 @@
 @use "./variables.scss" as *;
 
 @font-face {
-  font-family: "EB Garamond";
-  font-style: normal;
-  font-weight: normal;
-  src: url("/static/EBGaramond.ttf");
-}
-
-@font-face {
-  font-family: "Cardo";
-  font-style: normal;
-  font-weight: normal;
-  src: url("/static/Cardo-Regular.ttf");
-}
-
-@font-face {
   font-family: "Berkeley Mono";
   font-style: monospace;
   font-weight: normal;
