@@ -219,7 +219,6 @@ export function renderPage(
           <Landing {...componentData} />
         ) : (
           <div id="quartz-root" class="page">
-            <div id="texture"></div>
             <Body {...componentData}>
               <div id="progress"></div>
               {LeftComponent}
