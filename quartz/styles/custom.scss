@@ -21,12 +21,12 @@
 }
 
 body {
-  @media all and (min-width: $fullPageWidth) {
-    font-size: 1.2rem;
-  }
+  font-size: 1.2rem;
+}
 
+body {
   @mixin singleColumn {
-    @include excludeId(".page-header") {
+    .page-header {
       margin: $topSpacing auto 0 auto;
       width: $pageWidth + $sidePanelWidth;
       @media all and (max-width: $fullPageWidth) {
@@ -35,7 +35,7 @@ body {
       }
     }
 
-    @include excludeId(".center") {
+    .center {
       margin-left: auto;
       margin-right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
       width: $pageWidth + $sidePanelWidth;
@@ -58,11 +58,11 @@ body {
   &:not([data-slug="uses"]):not([data-slug="curius"]):not([data-slug="dump/quotes"]):not(
       [data-slug="influence"]
     ):not([data-slug^="tags"]):not([data-slug*="index"]) {
-    @include excludeId(".page") {
-      @include excludeId("& > #quartz-body") {
+    .page {
+      & > #quartz-body {
         @include singleColumn;
         @media all and (min-width: $fullPageWidth) {
-          @include excludeId(".sidebar.right") {
+          .sidebar.right {
             width: 0;
           }
         }
@@ -72,32 +72,29 @@ body {
 
   // Quote display
   &[data-slug="dump/quotes"] {
-    @media all and (min-width: $tabletBreakpoint) {
-      @include excludeId("& > *") {
-        font-size: 1.2rem;
-      }
-    }
-
-    @include excludeId("& blockquote") {
+    & blockquote {
       border-left: none;
       padding-left: 0;
       margin: 0;
     }
 
-    @include excludeId("& h1", "& h3", "& h4") {
+    & h3,
+    & h4 {
       font-size: 1.4rem;
-      font-style: normal;
       font-weight: 400;
+      font-style: normal;
       line-height: normal;
     }
 
-    @include excludeId("& h1") {
+    & h1 {
       font-size: 2rem;
       font-family: var(--bodyFont) !important;
       font-weight: 500;
+      font-style: normal;
+      line-height: normal;
     }
 
-    @include excludeId("& article") {
+    & article {
       & > hr::after {
         content: "";
       }

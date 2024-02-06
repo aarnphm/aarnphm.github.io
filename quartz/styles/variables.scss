@@ -6,23 +6,3 @@ $topSpacing: 6rem;
 $fullPageWidth: $pageWidth + 2 * $sidePanelWidth;
 $boldWeight: 700;
 $normalWeight: 400;
-
-@mixin excludeId($selectors...) {
-  @each $selector in $selectors {
-    #{$selector}:not(.popover):not(.popover *):not(.search):not(.search *):not(.graph):not(
-        .graph *
-      ) {
-      @content;
-    }
-  }
-}
-
-@mixin modalStyles {
-  position: absolute;
-  border: 1px solid rgb(170, 170, 170);
-  background-color: var(--light);
-  z-index: 1000;
-  padding: 0 20px;
-  width: 350px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-}

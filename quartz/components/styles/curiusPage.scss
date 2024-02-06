@@ -31,8 +31,15 @@ body {
 }
 
 .highlight-modal {
-  @include modalStyles;
+  position: absolute;
+  border: 1px solid rgb(170, 170, 170);
+  background-color: var(--light);
+  z-index: 1000;
+  padding: 0 20px;
+  width: 350px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
   visibility: hidden;
+
   & ul {
     list-style-type: none;
     padding: 0;
@@ -46,6 +53,7 @@ body {
   box-sizing: border-box;
 
   & #curius-bar {
+    flex: 1;
     outline: none;
     background-color: var(--lightgray);
     height: 2rem;
@@ -64,6 +72,12 @@ body {
   }
 
   & #curius-search-container {
+    @media all and (max-width: $tabletBreakpoint) {
+      width: auto;
+      margin: 3rem auto;
+      display: flex;
+      flex-direction: row;
+    }
     position: absolute;
     box-sizing: border-box;
     width: $pageWidth;
