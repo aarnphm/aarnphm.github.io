@@ -20,9 +20,12 @@
 body {
   &[data-slug="curius"] {
     .navigation-container {
-      visibility: hidden;
-      opacity: 0;
+      display: none;
       margin-top: 1em;
+
+      &.active {
+        display: block;
+      }
     }
   }
 }
@@ -61,13 +64,6 @@ body {
   }
 
   & #curius-search-container {
-    @media all and (max-width: $fullPageWidth) {
-      width: auto;
-      right: 0;
-      left: 0;
-      margin: 3rem inherit 0;
-    }
-
     position: absolute;
     box-sizing: border-box;
     width: $pageWidth;
@@ -119,7 +115,6 @@ body {
     }
 
     &.active {
-      border: 1px solid rgba(108, 133, 199, 0.33);
       background: var(--lightgray);
     }
 
@@ -130,11 +125,13 @@ body {
 }
 
 #curius-fetching-text {
-  visibility: hidden;
-  opacity: 0;
+  display: none;
   &::after {
     content: "";
     animation: dots 1s infinite;
+  }
+  &.active {
+    display: inline-block;
   }
 }
 

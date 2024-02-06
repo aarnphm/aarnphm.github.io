@@ -90,15 +90,13 @@ const _Link: Link = {
 const localFetchKey = "curiusLinks"
 const localTimeKey = "curiusLastFetch"
 const numSearchResults = 20
-const fetchTimeout = 2 * 60 * 1000 // 2 minutes
+const refetchTimeout = 2 * 60 * 1000 // 2 minutes
 const fetchLinksHeaders: RequestInit = {
   method: "POST",
   headers: { "Content-Type": "application/json" },
 }
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
 
-let disableEndTime: number | null = null
-let countdownIntervalId: NodeJS.Timeout | null = null
 let index: FlexSearch.Document<Link> = new FlexSearch.Document({
   charset: "latin:advanced",
   document: {
@@ -212,8 +210,6 @@ async function fetchLinks(refetch: boolean = false): Promise<Response> {
   }
   return { links: newLinks, user }
 }
-
-let currentActive: HTMLLIElement | null = null
 
 function createLinkEl(Link: Link): HTMLLIElement {
   const curiusItem = document.createElement("li")
@@ -329,19 +325,9 @@ function createLinkEl(Link: Link): HTMLLIElement {
 
   curiusItem.append(createTitle(Link), createMetadata(Link))
 
-  const onMouseEnter = (e: HTMLElementEventMap["mouseenter"]) => curiusItem.classList.add("focus")
+  const onMouseEnter = () => curiusItem.classList.add("focus")
 
-  const onMouseLeave = (e: HTMLElementEventMap["mouseleave"]) =>
-    curiusItem.classList.remove("focus")
-
-  const onClick = (e: HTMLElementEventMap["click"]) => {
-    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
-    if (currentActive) {
-      currentActive.classList.remove("active")
-    }
-    curiusItem.classList.add("active")
-    currentActive = curiusItem
-  }
+  const onMouseLeave = () => curiusItem.classList.remove("focus")
 
   function onKeydown(e: HTMLElementEventMap["keydown"]) {
     if (e.key === "Escape") {
@@ -357,19 +343,11 @@ function createLinkEl(Link: Link): HTMLLIElement {
   const events = [
     ["mouseenter", onMouseEnter],
     ["mouseleave", onMouseLeave],
-    ["click", onClick],
   ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
 
   registerEvents(curiusItem, ...events)
 
   return curiusItem
-}
-
-const toggleVisibility = (el: HTMLElement, state: boolean) => {
-  Object.assign(el.style, {
-    opacity: state ? "1" : "0",
-    visibility: state ? "visible" : "hidden",
-  })
 }
 
 const contextWindowWords = 30
@@ -444,9 +422,9 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const [container, fetchText, fragment, nav] = elements as HTMLElement[]
 
   fetchText.textContent = "Fetching curius links"
-  toggleVisibility(fetchText, true)
+  fetchText.classList.toggle("active", true)
   const resp = await fetchLinks()
-  toggleVisibility(fetchText, false)
+  fetchText.classList.toggle("active", false)
 
   const linksData = resp.links ?? []
 
@@ -455,16 +433,15 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     return
   }
   fragment.append(...linksData.map(createLinkEl))
-  toggleVisibility(nav, true)
+  nav.classList.toggle("active", true)
 
   const refetchIcon = document.getElementById("curius-refetch")
 
   // Ensure refetchIcon exists before adding event listener
   if (refetchIcon) {
-    const refetchContent = refetchIcon.dataset.tooltip as string
-
     const preventRefreshDefault = (e: HTMLElementEventMap["keydown"]) => {
-      if (!refetchIcon.classList.contains("disabled")) return
+      const icon = document.getElementById("curius-refetch")
+      if (!icon || !icon.classList.contains("disabled")) return
       if ((e.key === "r" || e.key === "R") && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
         e.stopPropagation()
@@ -474,17 +451,21 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     document.addEventListener("keydown", preventRefreshDefault)
     window.addCleanup(() => document.removeEventListener("keydown", preventRefreshDefault))
 
+    let isTimeout = false
+
     const onClick = async () => {
+      if (isTimeout) return
+
       refetchIcon.classList.add("disabled")
       refetchIcon.style.opacity = "0.5"
 
       removeAllChildren(fragment)
-      toggleVisibility(nav, false)
+      nav.classList.toggle("active", false)
 
-      toggleVisibility(fetchText, true)
+      fetchText.classList.toggle("active", true)
       fetchText.textContent = "Refreshing curius links"
       const refetched = await fetchLinks(true)
-      toggleVisibility(fetchText, false)
+      fetchText.classList.toggle("active", false)
 
       const newData = refetched.links ?? []
       if (newData.length === 0) {
@@ -492,14 +473,25 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
         return
       }
       fragment.append(...newData.map(createLinkEl))
-      toggleVisibility(nav, true)
+      nav.classList.toggle("active", true)
+
+      isTimeout = true
+      setTimeout(() => {
+        refetchIcon.classList.remove("disabled")
+        refetchIcon.style.opacity = "0"
+        isTimeout = false
+      }, refetchTimeout)
     }
 
     refetchIcon.addEventListener("click", onClick)
     window.addCleanup(() => refetchIcon.removeEventListener("click", onClick))
 
     const events = [
-      ["mouseenter", () => (refetchIcon.style.opacity = "1")],
+      [
+        "mouseenter",
+        () =>
+          (refetchIcon.style.opacity = refetchIcon.classList.contains("disabled") ? "0.5" : "1"),
+      ],
       [
         "mouseleave",
         () =>
@@ -570,10 +562,6 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       const searchBarOpen = container?.classList.contains("active")
       searchBarOpen ? hideLinks() : showLinks(sampleLinks)
       return
-    }
-
-    if (currentActive) {
-      currentActive.classList.remove("active")
     }
 
     if (!container?.classList.contains("active")) return
