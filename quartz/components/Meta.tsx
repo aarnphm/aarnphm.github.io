@@ -1,3 +1,5 @@
+import { i18n } from "../i18n"
+import Darkmode from "./Darkmode"
 import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
 const globalGraph = {
@@ -14,38 +16,54 @@ const globalGraph = {
   removeTags: [],
 }
 
-export const Search = () => (
-  <div class="search">
-    <div id="search-container">
-      <div id="search-space">
-        <input
-          autocomplete="off"
-          id="search-bar"
-          name="search"
-          type="text"
-          aria-label="Search for something"
-          placeholder="Search for something"
-        />
-        <div id="search-layout" data-preview={true}></div>
+export const SearchConstructor = (() => {
+  function Search({ cfg }: QuartzComponentProps) {
+    const searchPlaceholder = i18n(cfg.locale).components.search.searchBarPlaceholder
+    return (
+      <div class="search">
+        <div id="search-container">
+          <div id="search-space">
+            <input
+              autocomplete="off"
+              id="search-bar"
+              name="search"
+              type="text"
+              aria-label={searchPlaceholder}
+              placeholder={searchPlaceholder}
+            />
+            <div id="search-layout" data-preview={true}></div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-)
+    )
+  }
+  return Search
+}) satisfies QuartzComponentConstructor
 
-export const Graph = () => (
-  <div class="graph">
-    <div id="global-graph-icon"></div>
-    <div id="global-graph-outer">
-      <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)}></div>
-    </div>
-  </div>
-)
+export const GraphConstructor = (() => {
+  function Graph(componentData: QuartzComponentProps) {
+    return (
+      <div class="graph">
+        <div id="global-graph-icon"></div>
+        <div id="global-graph-outer">
+          <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)}></div>
+        </div>
+      </div>
+    )
+  }
+  return Graph
+}) satisfies QuartzComponentConstructor
 
-export const DarkMode = () => (
-  <div class="darkmode">
-    <input class="toggle" id="darkmode-toggle" type="checkbox" tabIndex={-1} />
-  </div>
-)
+export const DarkmodeConstructor = (() => {
+  function Darkmode(componentData: QuartzComponentProps) {
+    return (
+      <div class="darkmode">
+        <input class="toggle" id="darkmode-toggle" type="checkbox" tabIndex={-1} />
+      </div>
+    )
+  }
+  return Darkmode
+}) satisfies QuartzComponentConstructor
 
 interface Options {
   enableSearch?: boolean
@@ -61,12 +79,16 @@ const defaultOptions: Options = {
 
 export default ((userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }
+  const Search = SearchConstructor()
+  const Graph = GraphConstructor()
+  const Darkmode = DarkmodeConstructor()
+
   function Meta(componentData: QuartzComponentProps) {
     return (
       <>
-        {opts.enableSearch ? <Search /> : <></>}
-        {opts.enableGraph ? <Graph /> : <></>}
-        {opts.enableDarkMode ? <DarkMode /> : <></>}
+        {opts.enableSearch ? <Search {...componentData} /> : <></>}
+        {opts.enableGraph ? <Graph {...componentData} /> : <></>}
+        {opts.enableDarkMode ? <Darkmode {...componentData} /> : <></>}
       </>
     )
   }

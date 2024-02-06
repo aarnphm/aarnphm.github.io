@@ -71,13 +71,13 @@ const NotesConstructor = (() => {
     const remaining = Math.max(0, pages.length - Limits)
     return (
       <>
-        <h2>recent notes:</h2>
+        <h2>récentes:</h2>
         <div class="notes-container">
           <div>
             <ul class="landing-notes">
               {pages.slice(0, Limits).map((page) => {
                 const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
-                const date = page.dates?.[cfg.defaultDateType]
+                const date = page.dates?.modified
 
                 return (
                   <li>
