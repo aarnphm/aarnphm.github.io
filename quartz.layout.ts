@@ -26,7 +26,7 @@ function filterFunc(path: string, excludePaths: string[] = []) {
 }
 
 const explorerFilterFn = (node: FileNode) => {
-  return !["tags"].some((path) => node.name.includes(path))
+  return !["tags", "university"].some((path) => node.name.includes(path))
 }
 
 const leftComponents = (enableRecentNotes: boolean = false) => {
