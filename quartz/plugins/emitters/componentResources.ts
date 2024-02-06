@@ -189,7 +189,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         const fontMapping: any[] = []
 
         // capture font-family, and the url
-        const regex = /url\((https:\/\/fonts.gstatic.com\/s\/[^)]+\.ttf)\)/g
+        const regex = /url\((https:\/\/fonts.gstatic.com\/s\/[^)]+\.wolff2)\)/g
 
         googleFonts = await fetch(googleFontHref(ctx.cfg.configuration.theme)).then((res) =>
           res.text(),
