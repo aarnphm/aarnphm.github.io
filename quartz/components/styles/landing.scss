@@ -100,6 +100,10 @@ body[data-slug="index"] {
       content: " · ";
     }
 
+    & li:first-of-type::marker {
+      content: none;
+    }
+
     & > a {
       color: inherit;
       text-decoration: none;

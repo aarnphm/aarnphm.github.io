@@ -9,12 +9,25 @@
 }
 
 @font-face {
+  font-family: "Cardo";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/static/Cardo-Regular.ttf");
+}
+
+@font-face {
   font-family: "Berkeley Mono";
   font-style: monospace;
   font-weight: normal;
   src:
     url("/static/BerkeleyMono-Regular.woff2") format("woff2"),
     url("/static/BerkeleyMono-Regular.woff") format("woff");
+}
+
+[role="article"]:hover {
+  border: 1px solid var(--highlight);
+  background: var(--highlight);
+  border-radius: 5px;
 }
 
 #preview-container {

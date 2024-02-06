@@ -3,11 +3,11 @@ id: play
 tags:
   - seed
   - philosophy
+date: "2023-10-18"
 title: Play
-date: 2023-10-18
 ---
 
-What is play?
+### play?
 
 - intentional activity of doing the thing you want to do
 
@@ -26,13 +26,17 @@ Four components
 - surprise
 - joy
 
-involves freedom of choice - social - about the process
+Involves freedom of choice - social - about the process
 
 ### Create spaces not product
 
 -> not necessarily meaning you are doing for yourself, but make it possible for others (Design Justice?)
 
-### Shifting education to focus on play
+### Play as a form of tinkering
+
+See also: [XH's tweet](https://twitter.com/xhfloz/status/1704176399173488823)
+
+Internet [playground](https://woolgather.sh/issue/2)
 
 Can we shift education system away from assessing students to let them explore their own interests?
 
@@ -54,6 +58,8 @@ Graeber on [What's the point of we can't have fun](https://davidgraeber.org/arti
 
 - “Man plays only when he is in the full sense of the word a man” (Friedrich Schiller, 1795)
 
+### Philosophy
+
 Philosophy as a form of play = Intellectual playfulness - Involves a form of perspective shifting - trying on or inhabit alternative perspective
 
 C. Thi Nguyen on [Playfulness vs Epistemic Traps](https://philpapers.org/archive/NGUPVE.pdf)
@@ -73,19 +79,14 @@ To be serious about a game is to play it under the idea that its goals are reall
 
 To be playful about games is neither to be utterly serious, or utterly ironic, but to move easily into and out of commitments to rule-sets
 
-What can we achieve with post-work society:
-
-- where we don't have to worry about monetary values?
-- Where we can explore?
-
 > To be playful is to wear the games' care lightly
 
 > To be playful is to be pretentious
 
-Pretentious: Why It Matters by Daniel Fox
+#### Pretentious: Why It Matters by Daniel Fox
 
 - argues that pretentious invokes curiosity and creativity, instead of negative connotation
 
-necessitates freedom, conditional freedom?
+Necessitates freedom, conditional freedom?
 
-does play invokes pressure?
+Play often initiate some sort of pressure, such that it expects us to be a part of the construction.

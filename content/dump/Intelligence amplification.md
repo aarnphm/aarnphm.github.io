@@ -15,4 +15,4 @@ These systems should be built on top of human intelligence, not replace it.
 
 Next-token prediction is primitive to call a system intelligent.
 
-Can a transformers ever be [[dump/Turing-complete Transformers|Turing-complete]]? Or
+Can a transformers ever be [[dump/Turing-complete Transformers|Turing-complete]]?

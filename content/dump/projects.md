@@ -11,7 +11,7 @@ The list below are notable projects I'm currently maintaining/finished. A more i
 
 ## [OpenLLM](https://github.com/bentoml/openllm) -- Serve, fine-tune and deploy [[dump/large models|LLMs]] in production
 
-OpenLLM is an open-source platform designed to facilitate the deployment and operation of large language models (LLMs) in real-world applications. With OpenLLM, you can run inference on any open-source LLM, deploy them on the cloud or on-premises, and build powerful AI applications.
+OpenLLM is an open-source platform designed to facilitate the deployment and operation of large language models ([[dump/large models|LLMs]]) in real-world applications. With OpenLLM, you can run inference on any open-source LLM, deploy them on the cloud or on-premises, and build powerful AI applications.
 
 Key features include:
 

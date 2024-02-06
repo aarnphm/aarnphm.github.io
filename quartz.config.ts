@@ -15,7 +15,7 @@ const config: QuartzConfig = {
     defaultDateType: "created",
     theme: {
       typography: {
-        header: "DM Serif Text",
+        header: "Cardo",
         body: "EB Garamond",
         code: "Berkeley Mono",
       },
@@ -76,6 +76,7 @@ const config: QuartzConfig = {
       Plugin.TagPage(),
       Plugin.CuriusPage(),
       Plugin.ZenPage({ slug: ["uses", "dump/quotes", "influence"] }),
+      // Plugin.Embeddings(),
       Plugin.ContentIndex({ rssLimit: 40 }),
       Plugin.Assets(),
       Plugin.Static(),
