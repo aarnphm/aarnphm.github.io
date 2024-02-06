@@ -1,0 +1,315 @@
+@use "../../styles/variables.scss" as *;
+
+@keyframes dots {
+  0%,
+  20%,
+  100% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+}
+
+body {
+  &[data-slug="curius"] {
+    .navigation-container {
+      display: none;
+      margin-top: 1em;
+
+      &.active {
+        display: block;
+      }
+    }
+  }
+}
+
+.highlight-modal {
+  position: absolute;
+  border: 1px solid rgb(170, 170, 170);
+  background-color: var(--light);
+  z-index: 1000;
+  padding: 0 20px;
+  width: 350px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  visibility: hidden;
+
+  & ul {
+    list-style-type: none;
+    padding: 0;
+  }
+}
+
+.curius-search {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  box-sizing: border-box;
+
+  & #curius-bar {
+    flex: 1;
+    outline: none;
+    background-color: var(--lightgray);
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    white-space: nowrap;
+    border-radius: 6px;
+    font-family: var(--bodyFont);
+    box-sizing: border-box;
+    color: var(--dark);
+    padding: 0.2em 1em;
+    border: 1px solid var(--lightgray);
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  & #curius-search-container {
+    @media all and (max-width: $tabletBreakpoint) {
+      width: auto;
+      margin: 3rem auto;
+      display: flex;
+      flex-direction: row;
+    }
+    position: absolute;
+    box-sizing: border-box;
+    width: $pageWidth;
+    z-index: 999;
+    border-radius: 6px;
+    box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
+    display: none;
+    flex-direction: row;
+    flex: 0 0 100%;
+    box-sizing: border-box;
+    background-color: var(--light);
+    max-height: 50vh;
+    // #curius-bar height + padding
+    margin-top: 3rem;
+    overflow: auto;
+
+    &.active {
+      display: inline-block;
+    }
+
+    a.curius-search-link {
+      padding: 10px;
+      margin: auto;
+      display: block;
+      border-color: var(--lightgray);
+      border-width: 0px 0px 1px;
+      border-style: solid;
+      text-decoration: inherit;
+      color: inherit;
+      outline: none;
+      cursor: pointer;
+      font-weight: inherit;
+      transition: background 0.2s ease;
+      &:hover,
+      &:focus {
+        background-color: var(--lightgray);
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+#curius-container {
+  & li[id|="curius-item"] {
+    background-color: inherit;
+    &.focus {
+      background: var(--lightgray);
+    }
+
+    &.active {
+      background: var(--lightgray);
+    }
+
+    & > * {
+      padding-left: 8px;
+    }
+  }
+}
+
+#curius-fetching-text {
+  display: none;
+  &::after {
+    content: "";
+    animation: dots 1s infinite;
+  }
+  &.active {
+    display: inline-block;
+  }
+}
+
+#curius {
+  & > * {
+    text-align: left;
+    box-sizing: border-box;
+    padding-bottom: 1em;
+  }
+
+  [id="curius-fragments"] {
+    & li {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      padding-left: 0;
+      padding-inline: 0;
+    }
+  }
+
+  & li {
+    padding: 8px 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent transparent var(--lightgray);
+    border-image: initial;
+
+    :first-child {
+      border-top: 1px solid transparent;
+    }
+
+    &::marker {
+      content: "";
+    }
+  }
+
+  & div[id*="curius-misc"] {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  & div[id*="curius-highlight"] {
+    cursor: pointer;
+    color: #886c5a;
+    background-color: #fdebd0;
+    font-size: 1em;
+    display: inline-block;
+    font-style: normal;
+  }
+
+  & [saved-theme="dark"] div[id*="curius-highlight"] {
+    color: #fdebd0;
+    background-color: #795548;
+  }
+
+  @mixin iconStyles {
+    margin-left: auto;
+    white-space: nowrap;
+    color: var(--lightgray);
+    padding: 2px 0px;
+    fill: lightgray;
+    opacity: 0;
+  }
+
+  #curius-icons {
+    @include iconStyles;
+    display: flex;
+  }
+
+  #curius-refetch {
+    @include iconStyles;
+    padding: 0;
+    padding-left: 4px;
+    outline: none;
+  }
+
+  & .highlight {
+    background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
+    border-radius: 5px;
+    scroll-margin-top: 2rem;
+  }
+
+  & [class*="snippet"] {
+    color: rgb(170, 170, 170);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-height: 1.5;
+    font-size: 0.9rem;
+    margin: 0 auto 1rem;
+  }
+
+  .curius-item-title {
+    font-size: 1.2rem;
+    padding: 5px 0;
+
+    a,
+    span {
+      color: inherit !important;
+      font-weight: normal !important;
+      text-decoration: none;
+
+      &:hover:not([data-highlight]) {
+        transition: none;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .curius-item-address {
+    color: rgb(170, 170, 170);
+    font-size: 0.9rem;
+    white-space: no-wrap;
+    padding: 5px;
+  }
+
+  .curius-item-link {
+    white-space: nowrap;
+    padding: 5px 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .curius-item-tags {
+    display: flex;
+    margin: 4px 0;
+
+    & > ul {
+      font-family: var(--codeFont);
+      margin-top: 0;
+      color: rgb(119, 119, 119);
+      background-color: rgb(241, 241, 241);
+      align-items: center;
+      margin-right: 5px;
+      text-transform: uppercase;
+      font-size: 10px;
+      border-radius: 6px;
+      padding: 2px 4px;
+      display: inline;
+      cursor: pointer;
+
+      [saved-theme="dark"] & {
+        background-color: var(--highlight);
+      }
+
+      & > a {
+        color: inherit;
+        text-decoration: none;
+        font-weight: inherit;
+        transition: color 0.2s;
+
+        :hover {
+          color: var(--primaryColor);
+        }
+      }
+    }
+  }
+}

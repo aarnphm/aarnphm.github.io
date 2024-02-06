@@ -72,12 +72,6 @@ body {
   }
 
   & #curius-search-container {
-    @media all and (max-width: $tabletBreakpoint) {
-      width: auto;
-      margin: 3rem auto;
-      display: flex;
-      flex-direction: row;
-    }
     position: absolute;
     box-sizing: border-box;
     width: $pageWidth;
@@ -93,6 +87,11 @@ body {
     // #curius-bar height + padding
     margin-top: 3rem;
     overflow: auto;
+
+    @media all and (max-width: $tabletBreakpoint) {
+      width: 100%;
+      margin: 3rem auto;
+    }
 
     &.active {
       display: inline-block;
@@ -156,12 +155,14 @@ body {
     padding-bottom: 1em;
   }
 
-  & ul {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    padding-left: 0;
-    padding-inline: 0;
+  div[id="curius-fragments"] {
+    & li {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      padding-left: 0;
+      padding-inline: 0;
+    }
   }
 
   & li {
@@ -173,10 +174,6 @@ body {
 
     :first-child {
       border-top: 1px solid transparent;
-    }
-
-    &::marker {
-      content: "";
     }
   }
 
