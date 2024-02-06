@@ -7,7 +7,7 @@ document.addEventListener("nav", () => {
   const graphContainer = document.getElementById("global-graph-outer")
 
   function darkModeShortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if (e.key === "a" && (e.ctrlKey || e.metaKey)) {
+    if (e.key === "o" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       darkModeSwitch.click()
     }
@@ -33,7 +33,7 @@ document.addEventListener("nav", () => {
   }
 
   function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if (e.key === "/" && (e.ctrlKey || e.metaKey)) {
+    if (e.key === "\\" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       window.location.href = "/"
     }

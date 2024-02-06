@@ -27,8 +27,8 @@ export const SocialAlias = {
 export const KeybindAlias = {
   "cmd+k": "search",
   "cmd+g": "graph",
-  "cmd+a": "toggle dark mode",
-  "cmd+/": "homepage",
+  "cmd+o": "toggle dark mode",
+  "cmd+\\": "homepage",
 }
 
 type AliasLinkProp = {
