@@ -34,9 +34,8 @@ export const Pseudocode: QuartzTransformerPlugin = () => ({
         {
           script: `
           document.addEventListener('nav', async () => {
-            const algos = document.querySelectorAll('.latex-pseudo')
-            if (algos.length > 0) {
-              pseudocode.renderClass('latex-pseudo', {lineNumbers: true});
+            if (document.querySelector('.pseudocode.latex-pseudo')) {
+              pseudocode.renderClass('latex-pseudo');
             }
           })
           `,
