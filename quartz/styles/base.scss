@@ -257,7 +257,7 @@ thead {
 
   article > & > a {
     color: var(--dark);
-    &.internal {
+    &.internal:not([class~="alias"]) {
       background-color: transparent;
     }
   }
