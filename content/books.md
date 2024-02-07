@@ -13,7 +13,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ## to read.
 
-### philosophy
+### [philosophy](/tags/philosophy)
 
 - **A Treatise of Human Nature** by David Hume
 - **The Evolution of Modern Metaphysics: Making Sense of Things** by A. W. Moore
@@ -21,18 +21,24 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Phenomenology of Spirit** by G. W. F. Hegel
 - **The World as Will and Representation** by Arthur Schopenhauer
 - **The Prince** by Niccolò Machiavelli
-- **The Birth of Tragedy** by Friedrich Nietzsche
-- **The Will to Power** by Friedrich Nietzsche
-- **The Gay Science** by Friedrich Nietzsche
-- **Thus Spoke Zarathustra** by Friedrich Nietzsche
-- **Twilight of the Idols** by Friedrich Nietzsche
-- **On The Genealogy of Morals** by Friedrich Nietzsche
-- **Ecce Homo** by Friedrich Nietzsche
-- **The Critique of Practical Reason** by Immanuel Kant
-- **Groundwork of the Metaphysics of Morals** by Immanuel Kant
-- **Utilitarianism** by John Stuart Mill
-- **Meditations** by Marcus Aurelius
-- **Meditations on First Philosophy** by René Descartes in French
+- **Utilitarianism** by John Stuart [[dump/university/philo-1aa3/John Stuart Mill|Mill]]
+- **Meditations on First Philosophy** by René [[dump/university/philo-1aa3/Descartes|Descartes]], French ed.
+
+
+#### [[dump/Philosophy and Nietzsche|Nietzsche]]
+
+- **The Birth of Tragedy**
+- **The Will to Power**
+- **The Gay Science**
+- **Thus Spoke Zarathustra**
+- **Twilight of the Idols**
+- **On The Genealogy of Morals**
+- **Ecce Homo**
+
+#### [[dump/Philosophy and Kant|Kant]]
+
+- **The Critique of Practical Reason**
+- **Groundwork of the Metaphysics of Morals**
 
 ### non-fiction
 
@@ -48,7 +54,6 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 ### fiction
 
 - **Recursion** by Blake Crouch
-- **The metamorphosis** by Franz Kafka
 - **The Trial** by Franz Kafka
 - **Sea of Tranquility** by Emily St. John Mandel
 - **Oblivion** by David Foster Wallace
@@ -70,17 +75,19 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **[[dump/Philosophy and Nietzsche|Nietzsche and Philosophy]]** by Gilles Deleuze
 - **Beyond Good and Evil** by Friedrich Nietzsche
 - **The Ego and the Id** by Sigmund Freud
-- **Beyond The Pleasure Principle** by Sigmund Freud
+- **Beyond The Pleasure Principle** by Sigmund [[dump/Freud|Freud]]
 - **The Critique of Pure Reason** by Immanuel Kant
 - **The Metaphysics of Morals** by Immanuel Kant
 - **Crime and Punishment** by Fyodor Dostoevsky
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
 - **Structure and Interpretation of Computer Programs** by Abelson and Sussman
+- **Meditations** by Marcus Aurelius
 
 ## finished.
 
 ### 2024
 
+- **The metamorphosis** by Franz Kafka
 - **The end of the affair** by Graham Greene
 - **The Little Book of [[dump/deep learning.md|Deep Learning]]** by François Fleuret
 

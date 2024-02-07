@@ -25,7 +25,7 @@ Philosophy of sense and values has to be a critique
 
 Problem with [[dump/Philosophy and Kant|Kant]]: failed to pose the problem of critique in terms of values
 
-Notion of [[dump/aesthetic value|value]] implies critical reversal
+Notion of [[dump/aesthetic value|aesthetic value]] implies critical reversal
 
 Critical philosophy has two inseparable moments: the referring back of all things and any kind of origin to values, but also the referring back of these values to something which is, as it were, the origin and determines their value.
 

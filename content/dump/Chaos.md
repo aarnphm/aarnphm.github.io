@@ -49,8 +49,6 @@ Chaos is the essence of one existence. Such that the world is not governed by fi
 
 The Übermensch must find his footing, create his own values through labyrinth of life. Chaos is important for the creation of anything that is truly new and valuable.
 
-What [[dump/university/philo-1aa3/John Stuart Mill|Mill]] would imply:
-
 
 ## as information.
 

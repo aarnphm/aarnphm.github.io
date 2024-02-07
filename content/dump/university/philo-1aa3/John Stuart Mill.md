@@ -2,8 +2,8 @@
 id: John Stuart Mill
 tags:
   - philos1aa3
+date: "2023-11-30"
 title: John Stuart Mill
-date: 2023-11-30
 ---
 
 On _Liberty_
@@ -40,4 +40,4 @@ Unlimited regards to actions to self-regarding actions, but not other-regarding 
 
 As individuals as we do, but still be Morals to others
 
-Moral is good thing. Ask Nietzsche's, what is good thing?
+[[dump/moral|Moral]] is good thing. Ask [[dump/Philosophy and Nietzsche|Nietzsche]]'s, what is good thing?
