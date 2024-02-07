@@ -4,54 +4,18 @@
     "type": "split",
     "children": [
       {
-        "id": "bc7857c68f0eeb58",
+        "id": "95b5049fe150a018",
         "type": "tabs",
         "children": [
           {
-            "id": "c2c31af33da48cfb",
+            "id": "50238818c2222780",
             "type": "leaf",
             "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/a2/A2.pdf"
-              }
-            }
-          },
-          {
-            "id": "fb01b992e7d5fb16",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/a2/A2.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "477c4be14ac12c90",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/collections.pdf"
-              }
-            }
-          },
-          {
-            "id": "266f3a1517015109",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/sortings.pdf"
-              }
+              "type": "empty",
+              "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -117,7 +81,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a2/A2.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -134,7 +97,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a2/A2.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -213,52 +175,52 @@
   },
   "active": "59fd19f001b80287",
   "lastOpenFiles": [
-    "dump",
-    "thoughts/images/htn-openllm.pdf",
-    "thoughts/quantization.md",
-    "thoughts/university/sfwr-2c03/a2/Aaron_Pham_400232791_assignment_2.pdf",
-    "thoughts/university/sfwr-2c03/a2/A2.pdf",
-    "thoughts/university/sfwr-2c03/a2/A2.md",
-    "thoughts/university/sfwr-2c03/sortings.pdf",
-    "thoughts/university/sfwr-2c03/a2/real-world-comparison.png",
-    "thoughts/university/sfwr-2c03/collections.pdf",
-    "thoughts/university/sfwr-2c03/Sorting.md",
-    "thoughts/university/sfwr-2c03/binary-search.pdf",
-    "thoughts/university/astron-2e03/W1.md",
-    "thoughts/university/astron-2e03/Solar System Exoplanets 2024.pdf",
-    "thoughts/university/astron-2e03/Exoplanets.md",
-    "dump/university/astron-2e03/Explanets.md",
-    "thoughts/Expenses.md",
-    "thoughts/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
-    "thoughts/university/commerce-4be3/Job description exercise.md",
-    "dump/university/commerce-4be3/exercise.md",
-    "thoughts/university/commerce-4be3/Job-based Pay structures and Job Evaluation.md",
     "uses.md",
-    "templates/post.md",
-    "templates",
-    "tags/university.md",
-    "tags/technical.md",
-    "tags/sfwr3dx4.md",
-    "tags/seed.md",
-    "tags/ml.md",
-    "tags/evergreen.md",
-    "tags",
-    "private/bentoml/intern.md",
-    "private/bentoml/compensation.md",
-    "private/bentoml/Runner interface.md",
-    "private/bentoml/OpenLLM design draft.md",
-    "private/bentoml/New Runner API.md",
-    "private/Company interests/robust-intelligence.md",
-    "private/podcast.md",
-    "posts/images/passage-giorgio-m.jpg",
+    "thoughts/writing.md",
+    "thoughts/university/sfwr-3dx4/time_response.pdf",
+    "thoughts/university/sfwr-3dx4/state_space.pdf",
+    "thoughts/university/sfwr-3dx4/stability.pdf",
+    "thoughts/university/sfwr-3dx4/stability.md",
     "thoughts/university/sfwr-3dx4/second-order-system.png",
+    "thoughts/university/sfwr-3dx4/lab1/lab1.slx",
+    "thoughts/university/sfwr-3dx4/lab1/lab1.pdf",
+    "thoughts/university/sfwr-3dx4/lab1/content.md",
+    "thoughts/university/sfwr-3dx4/lab1/SRV02.slx",
     "thoughts/university/sfwr-3dx4/lab1/5.2-graph.png",
     "thoughts/university/sfwr-3dx4/lab1/5.1-graph.png",
+    "thoughts/university/sfwr-3dx4/lab1",
+    "thoughts/university/sfwr-3dx4/intro.pdf",
+    "thoughts/university/sfwr-3dx4/index.md",
+    "thoughts/university/sfwr-3dx4/frequency_domain.pdf",
+    "thoughts/university/sfwr-3dx4/block_diagrams.pdf",
+    "thoughts/university/sfwr-3dx4/Time response.md",
+    "thoughts/university/sfwr-3dx4/State space representation.md",
+    "thoughts/university/sfwr-3dx4/Frequency Domain.md",
+    "thoughts/university/sfwr-3dx4/Block Diagrams.md",
+    "thoughts/university/sfwr-3bb4/index.md",
+    "thoughts/university/sfwr-3bb4/Sequential programming.md",
     "thoughts/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",
     "thoughts/university/sfwr-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
     "thoughts/university/sfwr-2fa3/yxx-nfa.png",
     "thoughts/university/sfwr-2fa3/yxx-nfa-4s.png",
+    "thoughts/university/sfwr-2fa3/index.md",
     "thoughts/university/sfwr-2fa3/eps-nfa.png",
+    "thoughts/university/sfwr-2fa3/abxba-nfa.png",
+    "thoughts/university/sfwr-2fa3/W1.md",
+    "thoughts/university/sfwr-2fa3/NFA.md",
+    "thoughts/university/sfwr-2c03/sumary-sorting.png",
+    "thoughts/university/sfwr-2c03/index.md",
+    "thoughts/university/sfwr-2c03/a2/A2.md",
+    "thoughts/university/sfwr-2c03/a1/A1.md",
+    "thoughts/university/sfwr-2c03/W2.md",
+    "thoughts/university/sfwr-2c03/W1.md",
+    "thoughts/university/sfwr-2c03/Sorting.md",
+    "thoughts/university/philo-1aa3/tut/T1.md",
+    "thoughts/university/philo-1aa3/tut/Symposium.md",
+    "thoughts/university/philo-1aa3/tut/Stoic.md",
+    "thoughts/university/philo-1aa3/tut/Spinoza.md",
+    "thoughts/university/philo-1aa3/tut/Republic.md",
+    "thoughts/university/philo-1aa3/tut/Phaedo and Apology.md",
     "Untitled.canvas"
   ]
 }

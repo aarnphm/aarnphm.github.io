@@ -14,13 +14,13 @@ import HeaderConstructor from "./Header"
 import { classNames } from "../util/lang"
 
 export const HyperAlias = {
-  books: "/books",
-  mailbox: "/posts/",
-  projects: "/thoughts/projects",
+  livres: "/books",
+  "boîte aux lettres": "/posts/",
+  projets: "/thoughts/projects",
   uses: "/uses",
   advices: "/quotes",
   affecter: "/influence",
-  scents: "/thoughts/Scents",
+  parfum: "/thoughts/Scents",
 }
 export const SocialAlias = {
   github: "https://github.com/aarnphm",
@@ -80,7 +80,7 @@ const NotesConstructor = (() => {
                         <span class="landing-mspan">
                           {formatDate(getDate(cfg, page)!, cfg.locale)}
                         </span>
-                        <u>{title}</u>
+                        <u lang={"en"}>{title}</u>
                       </div>
                     </a>
                   </li>
@@ -118,11 +118,11 @@ const ContentConstructor = (() => {
     return (
       <div class="content-container">
         <Header {...componentData}>
-          <h1>My name is Aaron.</h1>
+          <h1 lang={"en"}>My name is Aaron.</h1>
           <Keybind {...componentData} />
           <Darkmode {...componentData} />
         </Header>
-        <p>
+        <p lang="en">
           Beige and <span class="rose">rosé</span> are my two favorite colours.{" "}
           <a href={"/thoughts/Chaos"} target="_self" class="internal landing-links">
             Chaos
