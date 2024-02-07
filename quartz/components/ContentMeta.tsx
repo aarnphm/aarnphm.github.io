@@ -36,7 +36,6 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
     if (options.showReadingTime) {
       const results = readingTime(text)
       reading = Math.ceil(results.minutes)
-      console.log(results)
     }
 
     return (
