@@ -25,12 +25,16 @@ function recentFilter(path: string, excludePaths: string[] = []) {
   }
 }
 
-const left = (enableRecentNotes: boolean = false): Partial<PageLayout> => {
+const left = (
+  enableRecentNotes: boolean = false,
+  enableExplorer: boolean = false,
+  enableMeta: boolean = false,
+) => {
   const left: QuartzComponent[] = [
     Component.MobileOnly(Component.Spacer()),
-    Component.Keybind({ enableTooltip: false }),
     Component.Search(),
     Component.Darkmode(),
+    Component.Keybind({ enableTooltip: false }),
   ]
   const recentNotes = [
     Component.RecentNotes({
@@ -54,19 +58,28 @@ const left = (enableRecentNotes: boolean = false): Partial<PageLayout> => {
     Component.Backlinks(),
     Component.TableOfContents(),
   ]
+
+  if (enableMeta) left.push(Component.Meta({ enableSearch: false, enableDarkMode: false }))
+
   if (enableRecentNotes) desktopOnly.push(...recentNotes)
+  if (enableExplorer)
+    desktopOnly.push(
+      Component.Explorer({
+        filterFn: (node: FileNode) => {
+          return !["tags", "university"].some((path) => node.name.includes(path))
+        },
+      }),
+    )
   left.push(...desktopOnly.flatMap(Component.DesktopOnly))
+
   return { left }
 }
 
-const right = (): Partial<PageLayout> => {
+const right = () => {
   return { right: [Component.MobileOnly(Component.Backlinks())] }
 }
 
-const beforeBody = (
-  enableContentMeta: boolean = true,
-  enableTagList: boolean = true,
-): Partial<PageLayout> => {
+const beforeBody = (enableContentMeta: boolean = true, enableTagList: boolean = true) => {
   const beforeBody: QuartzComponent[] = [Component.ArticleTitle()]
   if (enableContentMeta) beforeBody.push(Component.ContentMeta())
   if (enableTagList) beforeBody.push(Component.TagList())
@@ -75,27 +88,14 @@ const beforeBody = (
 
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
-  ...(right() as PageLayout),
-  ...left(),
   ...beforeBody(),
+  ...left(),
+  ...right(),
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
-  ...(beforeBody(false, false) as PageLayout),
-  left: [
-    Component.Meta({ enableSearch: false, enableDarkMode: false }),
-    Component.MobileOnly(Component.Spacer()),
-    Component.Keybind({ enableTooltip: false }),
-    Component.Search(),
-    Component.Darkmode(),
-    Component.DesktopOnly(
-      Component.Explorer({
-        filterFn: (node: FileNode) => {
-          return !["tags", "university"].some((path) => node.name.includes(path))
-        },
-      }),
-    ),
-  ],
+  ...beforeBody(false, false),
+  ...left(false, true, true),
   right: [],
 }

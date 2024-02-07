@@ -9,10 +9,10 @@ export default (() => {
 
     return (
       <footer class={classNames(displayClass, "minimal-footer")}>
-        <div class="year">
+        <div id="year">
           <p>© {year} sur terre</p>
         </div>
-        <div class="footnotes">
+        <div id="footnotes">
           <p>
             Vous êtes arrivé au bout! <a href="/">page d'accueil</a>
           </p>
