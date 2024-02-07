@@ -183,13 +183,6 @@ audio::-webkit-media-controls-panel {
   }
 }
 
-ul.overflow,
-ol.overflow {
-  &:after {
-    background: inherit;
-  }
-}
-
 .left,
 .right {
   display: grid !important;
