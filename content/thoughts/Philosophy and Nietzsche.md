@@ -46,7 +46,7 @@ To interpret and to evaluate is to weigh causal and effects.
 
 Force is not a cause, but a symptom.
 
-### Against dialectics
+### Against [[thoughts/dialectics]]
 
 Theory of force
 Life struggles with another form of life

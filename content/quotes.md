@@ -18,6 +18,10 @@ title: Advice
 
 Throw me some wisdom, and advices? I have none. -- Jesse Camacho
 
+### On bits and bytes.
+
+Computer is a bicycle for the mind. -- [Steve Jobs](https://www.youtube.com/watch?v=ob_GX50Za6c&ab_channel=MichaelLawrence)
+
 ### On perspectives.
 
 Our capacity to deal with [[thoughts/Language|language]] is a complex, genetically-determined part of our biological endowment. It's a product of evolution, part of our nature. -- Noam Chomsky
