@@ -55,7 +55,11 @@ const config: QuartzConfig = {
       Plugin.Pseudocode(),
       Plugin.Latex({ renderEngine: "katex" }),
       Plugin.SyntaxHighlighting(),
-      Plugin.ObsidianFlavoredMarkdown(),
+      Plugin.ObsidianFlavoredMarkdown({
+        enableInHtmlEmbed: false,
+        enableVideoEmbed: true,
+        enableCheckbox: true,
+      }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.CrawlLinks({

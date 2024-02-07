@@ -1,5 +1,3 @@
-import { i18n } from "../i18n"
-import Darkmode from "./Darkmode"
 import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
 import style from "./styles/keybind.scss"
@@ -9,6 +7,7 @@ import { classNames } from "../util/lang"
 
 interface Options {
   default?: string[]
+  enableTooltip?: boolean
 }
 
 export const KeybindAlias = {
@@ -21,6 +20,7 @@ export const KeybindAlias = {
 
 const defaultOptions: Options = {
   default: ["⌘ ."],
+  enableTooltip: true,
 }
 
 const convert = (key: string) =>
@@ -50,9 +50,11 @@ export default ((userOpts?: Partial<Options>) => {
         <kbd id="shortcut-key" data-keybind={revert(defaultKey)}>
           {defaultKey}
         </kbd>
-        <div class="highlight-modal bind" id="highlight-modal">
-          <span>afficher les raccourcis clavier</span>
-        </div>
+        {opts.enableTooltip && (
+          <div class="highlight-modal bind" id="highlight-modal">
+            <span>afficher les raccourcis clavier</span>
+          </div>
+        )}
         <div id="shortcut-container">
           <div id="shortcut-space">
             <span id="title">raccourcis clavier</span>

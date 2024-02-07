@@ -141,7 +141,7 @@ document.addEventListener("nav", () => {
       e.preventDefault()
       container?.classList.toggle("active", false)
       if (window.location.pathname === "/") return
-      window.location.pathname = "/"
+      window.location.href = "/"
     }
   }
 

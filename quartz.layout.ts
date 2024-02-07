@@ -28,7 +28,7 @@ function recentFilter(path: string, excludePaths: string[] = []) {
 const left = (enableRecentNotes: boolean = false): Partial<PageLayout> => {
   const left: QuartzComponent[] = [
     Component.MobileOnly(Component.Spacer()),
-    Component.Keybind(),
+    Component.Keybind({ enableTooltip: false }),
     Component.Search(),
     Component.Darkmode(),
   ]
