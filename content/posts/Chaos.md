@@ -9,7 +9,7 @@ draft: true
 title: chaos is a factor of time.
 ---
 
-_This is an extension of [[dump/Chaos|Chaos]] that I have been thinking about_
+_This is an extension of [[thoughts/Chaos|Chaos]] that I have been thinking about_
 
 ![[posts/images/passage-giorgio-m.jpg]]
 _Passage by Giorgio Morandi_
@@ -35,7 +35,7 @@ A: Perhaps it is less about becoming but more about unravelling the complexities
 
 Consider the river and the dam. The river, a living artery, courses from its source with a purpose as clear as its waters. It meanders, shaped by the land it traverses, until it reaches the dam. Here, it lies in a deep réservoir, a body of water in waiting, destined to flow through turbines and continue its journey downstream. This cycle is perpetual: the sun draws the water skyward, and it returns as rain, nourishing the earth on its way back to the river. But the droplets that return are transformed, no longer the same entities that once rested in the dam’s embrace.
 
-The act of leaving one’s home for foreign shores is akin to such journey - a voyage of transformation, of encountering new landscapes, of merging with unfamiliar currents. When one leaves home, they embark on a trajectory vastly different from those who stay. The familiar becomes distant, and upon return, the once-known world feels alienated. You stand apart, changed in the eyes of those who remember you once were. "Home" remains a static concept, a memory preserved in amber, while you, like the river, have been irrevocably altered by your experiences. _In other words, this is often known as [[dump/displacement|the theme of displacement]]_
+The act of leaving one’s home for foreign shores is akin to such journey - a voyage of transformation, of encountering new landscapes, of merging with unfamiliar currents. When one leaves home, they embark on a trajectory vastly different from those who stay. The familiar becomes distant, and upon return, the once-known world feels alienated. You stand apart, changed in the eyes of those who remember you once were. "Home" remains a static concept, a memory preserved in amber, while you, like the river, have been irrevocably altered by your experiences. _In other words, this is often known as [[thoughts/displacement|the theme of displacement]]_
 
 To return home is to face a poignant paradox: the physical space may be unchanged, the same faces may greet you, the house of your childhood may still nestle in its familiar spot, but your perception of it all has shifted. Gone the person you once was; now you have become the confluence of experiences that mold the "now" you, just as the returning water is forever changed by its journey.
 

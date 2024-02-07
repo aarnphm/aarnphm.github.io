@@ -5,6 +5,7 @@
   font-family: "Berkeley Mono";
   font-style: monospace;
   font-weight: normal;
+  font-display: swap;
   src:
     url("/static/BerkeleyMono-Regular.woff2") format("woff2"),
     url("/static/BerkeleyMono-Regular.woff") format("woff");
@@ -22,104 +23,119 @@
 
 body {
   font-size: 1.2rem;
-}
 
-body {
-  @mixin singleColumn {
-    .page-header {
-      margin: $topSpacing auto 0 auto;
-      width: $pageWidth + $sidePanelWidth;
-      @media all and (max-width: $fullPageWidth) {
-        width: initial;
-        margin-top: 2rem;
+  .page {
+    & > #quartz-body {
+      .page-header {
+        margin: $topSpacing auto 0 auto;
+        width: $pageWidth + $sidePanelWidth;
+        @media all and (max-width: $fullPageWidth) {
+          width: initial;
+          margin-top: 2rem;
+        }
       }
-    }
 
-    .center {
-      margin-left: auto;
-      margin-right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
-      width: $pageWidth + $sidePanelWidth;
+      .center {
+        margin-left: auto;
+        margin-right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+        width: $pageWidth + $sidePanelWidth;
 
-      @media all and (max-width: $fullPageWidth) {
-        margin-right: 0;
-        width: initial;
-        margin-left: 0;
+        @media all and (max-width: $fullPageWidth) {
+          margin-right: 0;
+          width: initial;
+          margin-left: 0;
+        }
+      }
+
+      @media all and (min-width: $fullPageWidth) {
+        .sidebar.right {
+          width: 0;
+        }
       }
     }
   }
 
-  &[data-slug^="tags"],
-  &[data-slug*="index"] {
-    @media all and (min-width: $fullPageWidth) {
-      @include singleColumn;
-    }
-  }
-
-  &:not([data-slug="uses"]):not([data-slug="curius"]):not([data-slug="dump/quotes"]):not(
-      [data-slug="influence"]
-    ):not([data-slug^="tags"]):not([data-slug*="index"]) {
-    .page {
-      & > #quartz-body {
-        @include singleColumn;
-        @media all and (min-width: $fullPageWidth) {
-          .sidebar.right {
-            width: 0;
+  // restore initial three column for center view
+  &[data-slug="uses"],
+  &[data-slug="curius"],
+  &[data-slug="quotes"],
+  &[data-slug="influence"] {
+    .page > #quartz-body {
+      & .sidebar.right {
+        width: $sidePanelWidth;
+        right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+        flex-wrap: wrap;
+        & > * {
+          @media all and (max-width: $fullPageWidth) {
+            flex: 1;
+            min-width: 140px;
           }
         }
       }
+
+      & .center {
+        margin-left: auto;
+        margin-right: auto;
+        width: $pageWidth;
+        @media all and (max-width: $fullPageWidth) {
+          width: initial;
+          margin-left: 0;
+          margin-right: 0;
+        }
+      }
     }
   }
+}
 
-  // Quote display
-  &[data-slug="dump/quotes"] {
-    & blockquote {
-      border-left: none;
-      padding-left: 0;
-      margin: 0;
+// Quote display
+body[data-slug="quotes"] {
+  & blockquote {
+    border-left: none;
+    padding-left: 0;
+    margin: 0;
+  }
+
+  & h3,
+  & h4 {
+    font-size: 1.4rem;
+    font-weight: 400;
+    font-style: normal;
+    line-height: normal;
+  }
+
+  & h1 {
+    font-size: 2rem;
+    font-family: var(--bodyFont) !important;
+    font-weight: 500;
+    font-style: normal;
+    line-height: normal;
+  }
+
+  & article {
+    & > hr::after {
+      content: "";
     }
 
-    & h3,
-    & h4 {
-      font-size: 1.4rem;
-      font-weight: 400;
-      font-style: normal;
-      line-height: normal;
-    }
+    & > p {
+      padding-top: 1rem;
+      padding-left: 3rem;
+      margin: inherit;
 
-    & h1 {
-      font-size: 2rem;
-      font-family: var(--bodyFont) !important;
-      font-weight: 500;
-      font-style: normal;
-      line-height: normal;
-    }
-
-    & article {
-      & > hr::after {
-        content: "";
+      &:before,
+      &:after {
+        font-size: 2em;
+        line-height: 0.1em;
+        vertical-align: -0.4em;
       }
 
-      & > p {
-        padding-top: 1rem;
-        padding-left: 3rem;
-        margin: inherit;
+      &:before {
+        content: "“";
+        margin-right: 0.25em;
+      }
 
-        &:before,
-        &:after {
-          font-size: 2em;
-          line-height: 0.1em;
-          vertical-align: -0.4em;
-        }
-
-        &:before {
-          content: "“";
-          margin-right: 0.25em;
-        }
-
-        &:after {
-          content: "”";
-          margin-left: 0.25em;
-        }
+      &:after {
+        content: "”";
+        margin-left: 0.25em;
       }
     }
   }
@@ -174,12 +190,19 @@ ol.overflow {
   }
 }
 
-.left {
+.left,
+.right {
   display: grid !important;
   gap: 1.5rem !important;
   grid-template-columns: 1fr;
   grid-template-rows: repeat(4, min-content);
 
+  @media all and (max-width: $fullPageWidth) {
+    display: flex !important;
+  }
+}
+
+.left {
   .mobile-only.explorer & {
     grid-area: 1 / 1 / 2 / 2;
   }
@@ -212,18 +235,9 @@ ol.overflow {
   .recent-notes:nth-last-child(2) {
     grid-area: 3 / 1 / 4 / 3;
   }
-
-  @media all and (max-width: $fullPageWidth) {
-    display: flex !important;
-  }
 }
 
 .right {
-  display: grid !important;
-  gap: 1.5rem !important;
-  grid-template-columns: 1fr;
-  grid-template-rows: repeat(4, min-content);
-
   .search {
     grid-area: 1 / 1 / 2 / 2;
   }
@@ -243,9 +257,5 @@ ol.overflow {
 
   .backlinks {
     grid-area: 4 / 1 / 4 / 3;
-  }
-
-  @media all and (max-width: $fullPageWidth) {
-    display: flex !important;
   }
 }

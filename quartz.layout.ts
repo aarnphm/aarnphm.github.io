@@ -12,7 +12,7 @@ export const sharedPageComponents: SharedLayout = {
   footer: Component.MinimalFooter(),
 }
 
-function filterFunc(path: string, excludePaths: string[] = []) {
+function recentFilter(path: string, excludePaths: string[] = []) {
   return (f: Data) => {
     const slug = f.slug!
     if (slug.startsWith(path + "/")) {
@@ -25,11 +25,7 @@ function filterFunc(path: string, excludePaths: string[] = []) {
   }
 }
 
-const explorerFilterFn = (node: FileNode) => {
-  return !["tags", "university"].some((path) => node.name.includes(path))
-}
-
-const leftComponents = (enableRecentNotes: boolean = false) => {
+const left = (enableRecentNotes: boolean = false): Partial<PageLayout> => {
   const left: QuartzComponent[] = [
     Component.MobileOnly(Component.Spacer()),
     Component.Search(),
@@ -39,14 +35,14 @@ const leftComponents = (enableRecentNotes: boolean = false) => {
     Component.RecentNotes({
       title: "Recent Writing",
       limit: 3,
-      filter: filterFunc("posts"),
+      filter: recentFilter("posts"),
       linkToMore: "posts/" as SimpleSlug,
     }),
     Component.RecentNotes({
       title: "Recent Notes",
       limit: 3,
-      filter: filterFunc("dump", ["university"]),
-      linkToMore: "dump/" as SimpleSlug,
+      filter: recentFilter("thoughts", ["university"]),
+      linkToMore: "thoughts/" as SimpleSlug,
     }),
   ]
   const desktopOnly = [
@@ -59,25 +55,45 @@ const leftComponents = (enableRecentNotes: boolean = false) => {
   ]
   if (enableRecentNotes) desktopOnly.push(...recentNotes)
   left.push(...desktopOnly.flatMap(Component.DesktopOnly))
-  return left
+  return { left }
+}
+
+const right = (): Partial<PageLayout> => {
+  return { right: [Component.MobileOnly(Component.Backlinks())] }
+}
+
+const beforeBody = (
+  enableContentMeta: boolean = true,
+  enableTagList: boolean = true,
+): Partial<PageLayout> => {
+  const beforeBody: QuartzComponent[] = [Component.ArticleTitle()]
+  if (enableContentMeta) beforeBody.push(Component.ContentMeta())
+  if (enableTagList) beforeBody.push(Component.TagList())
+  return { beforeBody }
 }
 
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
-  beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],
-  left: leftComponents(),
-  right: [Component.MobileOnly(Component.Backlinks())],
+  ...(right() as PageLayout),
+  ...left(),
+  ...beforeBody(),
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
-  beforeBody: [Component.ArticleTitle()],
+  ...(beforeBody(false, false) as PageLayout),
   left: [
     Component.Meta({ enableSearch: false, enableDarkMode: false }),
     Component.MobileOnly(Component.Spacer()),
     Component.Search(),
     Component.Darkmode(),
-    Component.DesktopOnly(Component.Explorer({ filterFn: explorerFilterFn })),
+    Component.DesktopOnly(
+      Component.Explorer({
+        filterFn: (node: FileNode) => {
+          return !["tags", "university"].some((path) => node.name.includes(path))
+        },
+      }),
+    ),
   ],
   right: [],
 }

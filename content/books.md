@@ -17,15 +17,15 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 - **A Treatise of Human Nature** by David Hume
 - **The Evolution of Modern Metaphysics: Making Sense of Things** by A. W. Moore
-- [[dump/papers/Being and Some Philosophers.pdf|Being and Some Philosophers]] by Etienne Gilson
+- [[thoughts/papers/Being and Some Philosophers.pdf|Being and Some Philosophers]] by Etienne Gilson
 - **The Phenomenology of Spirit** by G. W. F. Hegel
 - **The World as Will and Representation** by Arthur Schopenhauer
 - **The Prince** by Niccolò Machiavelli
-- **Utilitarianism** by John Stuart [[dump/university/philo-1aa3/John Stuart Mill|Mill]]
-- **Meditations on First Philosophy** by René [[dump/university/philo-1aa3/Descartes|Descartes]], French ed.
+- **Utilitarianism** by John Stuart [[thoughts/university/philo-1aa3/John Stuart Mill|Mill]]
+- **Meditations on First Philosophy** by René [[thoughts/university/philo-1aa3/Descartes|Descartes]], French ed.
 
 
-#### [[dump/Philosophy and Nietzsche|Nietzsche]]
+#### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 
 - **The Birth of Tragedy**
 - **The Will to Power**
@@ -35,7 +35,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **On The Genealogy of Morals**
 - **Ecce Homo**
 
-#### [[dump/Philosophy and Kant|Kant]]
+#### [[thoughts/Philosophy and Kant|Kant]]
 
 - **The Critique of Practical Reason**
 - **Groundwork of the Metaphysics of Morals**
@@ -72,10 +72,10 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 ## current.
 
 - **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
-- **[[dump/Philosophy and Nietzsche|Nietzsche and Philosophy]]** by Gilles Deleuze
+- **[[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]]** by Gilles Deleuze
 - **Beyond Good and Evil** by Friedrich Nietzsche
 - **The Ego and the Id** by Sigmund Freud
-- **Beyond The Pleasure Principle** by Sigmund [[dump/Freud|Freud]]
+- **Beyond The Pleasure Principle** by Sigmund [[thoughts/Freud|Freud]]
 - **The Critique of Pure Reason** by Immanuel Kant
 - **The Metaphysics of Morals** by Immanuel Kant
 - **Crime and Punishment** by Fyodor Dostoevsky
@@ -89,13 +89,13 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 - **The metamorphosis** by Franz Kafka
 - **The end of the affair** by Graham Greene
-- **The Little Book of [[dump/deep learning.md|Deep Learning]]** by François Fleuret
+- **The Little Book of [[thoughts/deep learning|Deep Learning]]** by François Fleuret
 
 ### 2023
 
 - **Why I Write** by George Orwell
 - **Why I Am So Wise** by Friedrich Nietzsche
-- **[[dump/Civilisation and its Discontents|Civilisation and its Discontents]]** by Sigmund Freud
+- **[[thoughts/Civilisation and its Discontents|Civilisation and its Discontents]]** by Sigmund Freud
 - **Dopamine Nation** by Dr. Anna Lembke
 - **The Midnight Library** by Matt Haig
 - **Out of Love** by Hazel Hayes

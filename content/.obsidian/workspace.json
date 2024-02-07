@@ -13,7 +13,7 @@
             "state": {
               "type": "pdf",
               "state": {
-                "file": "dump/university/sfwr-2c03/a2/A2.pdf"
+                "file": "thoughts/university/sfwr-2c03/a2/A2.pdf"
               }
             }
           },
@@ -23,7 +23,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "dump/university/sfwr-2c03/a2/A2.md",
+                "file": "thoughts/university/sfwr-2c03/a2/A2.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -36,7 +36,7 @@
             "state": {
               "type": "pdf",
               "state": {
-                "file": "dump/university/sfwr-2c03/collections.pdf"
+                "file": "thoughts/university/sfwr-2c03/collections.pdf"
               }
             }
           },
@@ -46,7 +46,7 @@
             "state": {
               "type": "pdf",
               "state": {
-                "file": "dump/university/sfwr-2c03/sortings.pdf"
+                "file": "thoughts/university/sfwr-2c03/sortings.pdf"
               }
             }
           }
@@ -117,7 +117,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "dump/university/sfwr-2c03/a2/A2.md",
+                "file": "thoughts/university/sfwr-2c03/a2/A2.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -134,7 +134,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "dump/university/sfwr-2c03/a2/A2.md",
+                "file": "thoughts/university/sfwr-2c03/a2/A2.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -157,7 +157,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "dump/university/sfwr-2c03/a2/A2.md"
+                "file": "thoughts/university/sfwr-2c03/a2/A2.md"
               }
             }
           },
@@ -187,7 +187,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "dump/university/sfwr-2c03/a2/A2.md"
+                "file": "thoughts/university/sfwr-2c03/a2/A2.md"
               }
             }
           }
@@ -211,27 +211,28 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "fb01b992e7d5fb16",
+  "active": "59fd19f001b80287",
   "lastOpenFiles": [
-    "dump/images/htn-openllm.pdf",
-    "dump/quantization.md",
-    "dump/university/sfwr-2c03/a2/Aaron_Pham_400232791_assignment_2.pdf",
-    "dump/university/sfwr-2c03/a2/A2.pdf",
-    "dump/university/sfwr-2c03/a2/A2.md",
-    "dump/university/sfwr-2c03/sortings.pdf",
-    "dump/university/sfwr-2c03/a2/real-world-comparison.png",
-    "dump/university/sfwr-2c03/collections.pdf",
-    "dump/university/sfwr-2c03/Sorting.md",
-    "dump/university/sfwr-2c03/binary-search.pdf",
-    "dump/university/astron-2e03/W1.md",
-    "dump/university/astron-2e03/Solar System Exoplanets 2024.pdf",
-    "dump/university/astron-2e03/Exoplanets.md",
+    "dump",
+    "thoughts/images/htn-openllm.pdf",
+    "thoughts/quantization.md",
+    "thoughts/university/sfwr-2c03/a2/Aaron_Pham_400232791_assignment_2.pdf",
+    "thoughts/university/sfwr-2c03/a2/A2.pdf",
+    "thoughts/university/sfwr-2c03/a2/A2.md",
+    "thoughts/university/sfwr-2c03/sortings.pdf",
+    "thoughts/university/sfwr-2c03/a2/real-world-comparison.png",
+    "thoughts/university/sfwr-2c03/collections.pdf",
+    "thoughts/university/sfwr-2c03/Sorting.md",
+    "thoughts/university/sfwr-2c03/binary-search.pdf",
+    "thoughts/university/astron-2e03/W1.md",
+    "thoughts/university/astron-2e03/Solar System Exoplanets 2024.pdf",
+    "thoughts/university/astron-2e03/Exoplanets.md",
     "dump/university/astron-2e03/Explanets.md",
-    "dump/Expenses.md",
-    "dump/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
-    "dump/university/commerce-4be3/Job description exercise.md",
+    "thoughts/Expenses.md",
+    "thoughts/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
+    "thoughts/university/commerce-4be3/Job description exercise.md",
     "dump/university/commerce-4be3/exercise.md",
-    "dump/university/commerce-4be3/Job-based Pay structures and Job Evaluation.md",
+    "thoughts/university/commerce-4be3/Job-based Pay structures and Job Evaluation.md",
     "uses.md",
     "templates/post.md",
     "templates",
@@ -249,16 +250,15 @@
     "private/bentoml/New Runner API.md",
     "private/Company interests/robust-intelligence.md",
     "private/podcast.md",
-    "private/bentoml",
     "posts/images/passage-giorgio-m.jpg",
-    "dump/university/sfwr-3dx4/second-order-system.png",
-    "dump/university/sfwr-3dx4/lab1/5.2-graph.png",
-    "dump/university/sfwr-3dx4/lab1/5.1-graph.png",
-    "dump/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",
-    "dump/university/sfwr-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
-    "dump/university/sfwr-2fa3/yxx-nfa.png",
-    "dump/university/sfwr-2fa3/yxx-nfa-4s.png",
-    "dump/university/sfwr-2fa3/eps-nfa.png",
+    "thoughts/university/sfwr-3dx4/second-order-system.png",
+    "thoughts/university/sfwr-3dx4/lab1/5.2-graph.png",
+    "thoughts/university/sfwr-3dx4/lab1/5.1-graph.png",
+    "thoughts/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",
+    "thoughts/university/sfwr-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
+    "thoughts/university/sfwr-2fa3/yxx-nfa.png",
+    "thoughts/university/sfwr-2fa3/yxx-nfa-4s.png",
+    "thoughts/university/sfwr-2fa3/eps-nfa.png",
     "Untitled.canvas"
   ]
 }

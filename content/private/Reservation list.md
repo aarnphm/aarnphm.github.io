@@ -6,7 +6,7 @@ date: "2024-01-09"
 title: Reservation list
 ---
 
-Related to [[dump/Dishes|Tasting]]
+Related to [[thoughts/Dishes|Tasting]]
 
 Samuel Chen (Toronto)
 

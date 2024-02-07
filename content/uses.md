@@ -5,7 +5,7 @@ tags:
 date: "2024-01-22"
 description: tools and everything drives my daily
 navigation:
-  next: /dump
+  next: /thoughts
   prev: /books
 title: uses.
 ---
@@ -26,7 +26,7 @@ Includes the tools I use, workflow,  etc. my [submission](https://uses.tech)
 - Shure SM7B w/ Cloudlifter CL-1 (Microphone)
 - Logitech MX Master 3
 - Logitech BRIO 4K
-- A7III and [FX3](https://www.sony.ca/en/interchangeable-lens-cameras/products/ilme-fx3-body---kit) w/ a bunch of [[dump/lenses|lenses]] and rigs.
+- A7III and [FX3](https://www.sony.ca/en/interchangeable-lens-cameras/products/ilme-fx3-body---kit) w/ a bunch of [[thoughts/lenses|lenses]] and rigs.
 
 ### software.
 
@@ -42,7 +42,7 @@ Includes the tools I use, workflow,  etc. my [submission](https://uses.tech)
 - [Live 11 Suite](https://www.ableton.com/en/live/)
 - [Raycast](https://www.raycast.com/)
 - Rectangle
-- everything under [[dump/Expenses|expenses.]]
+- everything under [[thoughts/Expenses|expenses.]]
 
 ### programming languages.
 
@@ -51,7 +51,7 @@ Includes the tools I use, workflow,  etc. my [submission](https://uses.tech)
 
 ### cookware.
 
-used for [[dump/Dishes|hosting]]
+used for [[thoughts/Dishes|hosting]]
 
 - made-in stainless steel pans and pots sets.
 - 12' All-Clad Saute Pan
