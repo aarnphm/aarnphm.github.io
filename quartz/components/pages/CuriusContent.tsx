@@ -53,7 +53,8 @@ const CuriusContainer = () => (
 
 function CuriusContent(componentData: QuartzComponentProps) {
   const Meta = MetaConstructor({ enableSearch: false })
-  const Navigation = NavigationConstructor({ prev: "/dump/quotes", next: "/books" })
+  const Navigation = NavigationConstructor({ prev: "/quotes", next: "/books" })
+
   return (
     <div class="popover-hint">
       <Meta {...componentData} />

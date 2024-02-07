@@ -1,0 +1,108 @@
+@use "../../styles/variables.scss" as *;
+
+kbd {
+  font-family: var(--codeFont);
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--gray);
+  border-radius: 5px;
+  line-height: 1rem;
+}
+
+.keybind {
+  flex-grow: 0 !important;
+  font-size: 0.8rem !important;
+  min-width: fit-content;
+  max-width: 14rem;
+
+  .bind.highlight-modal {
+    padding: 0.2rem 0.4rem;
+    width: fit-content;
+  }
+
+  & > #shortcut-container {
+    position: fixed;
+    contain: layout;
+    z-index: 300;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto;
+    display: none;
+
+    &.active {
+      display: inline-block;
+    }
+
+    & > #shortcut-space {
+      min-width: 10%;
+      width: fit-content;
+      max-width: 14em;
+      margin: 20% auto auto;
+      gap: 1.5rem;
+      white-space: nowrap;
+
+      background: var(--light);
+      border: 1px solid rgb(170, 170, 170);
+      border-radius: 5px;
+
+      box-shadow:
+        0 14px 50px rgba(27, 33, 48, 0.12),
+        0 10px 30px rgba(27, 33, 48, 0.16);
+
+      & > * {
+        width: 100%;
+        margin-bottom: 2em;
+      }
+
+      & > div {
+        flex-grow: 1;
+      }
+
+      & span#title {
+        padding: 0.5rem 1rem;
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+
+        @media all and (max-width: $mobileBreakpoint) {
+          padding-left: 0.4rem;
+          padding-right: 0.4rem;
+        }
+      }
+
+      & ul {
+        display: flex;
+        flex-direction: column;
+        padding-inline-start: 1rem;
+        list-style: none;
+        margin-bottom: 0.5rem;
+
+        @media all and (max-width: $mobileBreakpoint) {
+          padding-inline-start: 4px;
+        }
+
+        & span {
+          font-size: 1rem;
+        }
+
+        & > li {
+          margin: 0;
+          padding: 0;
+
+          &::marker {
+            content: "";
+          }
+
+          & > #shortcuts {
+            display: flex;
+            width: 0 0 100%;
+            flex-direction: row;
+            align-items: center;
+            margin: 1rem 0;
+            gap: 1.5rem;
+          }
+        }
+      }
+    }
+  }
+}

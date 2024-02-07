@@ -1,27 +1,26 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import MetaConstructor from "./Meta"
 
-import landingStyle from "./styles/landing.scss"
-//@ts-ignore
-import landingScript from "./scripts/landing.inline"
-//@ts-ignore
-import darkModeScript from "./scripts/darkmode.inline"
-//@ts-ignore
-import keybindScript from "./scripts/keybind.inline"
+import style from "./styles/landing.scss"
 import { byDateAndAlphabetical } from "./PageList"
 import { i18n } from "../i18n"
 import { FullSlug, SimpleSlug, resolveRelative } from "../util/path"
 import { Data } from "vfile"
 import { getDate, formatDate } from "./Date"
+import DarkmodeConstructor from "./Darkmode"
+import SpacerConstructor from "./Spacer"
+import KeybindConstructor from "./Keybind"
+import HeaderConstructor from "./Header"
+import { classNames } from "../util/lang"
 
 export const HyperAlias = {
   books: "/books",
   mailbox: "/posts/",
-  projects: "/dump/projects",
+  projects: "/thoughts/projects",
   uses: "/uses",
-  advices: "/dump/quotes",
+  advices: "/quotes",
   affecter: "/influence",
-  scents: "/dump/Scents",
+  scents: "/thoughts/Scents",
 }
 export const SocialAlias = {
   github: "https://github.com/aarnphm",
@@ -29,13 +28,6 @@ export const SocialAlias = {
   curius: "/curius",
   contact: "mailto:contact@aarnphm.xyz",
 }
-export const KeybindAlias = {
-  "cmd+k": "search",
-  "cmd+g": "graph",
-  "cmd+o": "toggle dark mode",
-  "cmd+\\": "homepage",
-}
-
 type AliasLinkProp = {
   name: string
   url: string
@@ -55,10 +47,12 @@ const AliasLink = (props: AliasLinkProp) => {
   )
 }
 
-const Limits = 12
+const notesLimit = 12
 
 const NotesConstructor = (() => {
-  function Notes({ allFiles, fileData, cfg }: QuartzComponentProps) {
+  const Spacer = SpacerConstructor()
+
+  function Notes({ allFiles, fileData, displayClass, cfg }: QuartzComponentProps) {
     const pages = allFiles
       .filter((f: Data) => {
         return (
@@ -68,16 +62,15 @@ const NotesConstructor = (() => {
         )
       })
       .sort(byDateAndAlphabetical(cfg))
-    const remaining = Math.max(0, pages.length - Limits)
+    const remaining = Math.max(0, pages.length - notesLimit)
     return (
       <>
         <h2>récentes:</h2>
         <div class="notes-container">
           <div>
             <ul class="landing-notes">
-              {pages.slice(0, Limits).map((page) => {
+              {pages.slice(0, notesLimit).map((page) => {
                 const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
-                const date = page.dates?.modified
 
                 return (
                   <li>
@@ -97,7 +90,7 @@ const NotesConstructor = (() => {
               <p>
                 <u>
                   <a
-                    href={resolveRelative(fileData.slug!, "dump/" as SimpleSlug)}
+                    href={resolveRelative(fileData.slug!, "thoughts/" as SimpleSlug)}
                     class="min-links"
                   >
                     {i18n(cfg.locale).components.recentNotes.seeRemainingMore({ remaining })}
@@ -106,7 +99,7 @@ const NotesConstructor = (() => {
               </p>
             )}
           </div>
-          <div class="spacer"></div>
+          <Spacer {...({ allFiles, fileData, displayClass, cfg } as QuartzComponentProps)} />
         </div>
       </>
     )
@@ -115,23 +108,30 @@ const NotesConstructor = (() => {
 }) satisfies QuartzComponentConstructor
 
 const ContentConstructor = (() => {
+  const Header = HeaderConstructor()
   const Notes = NotesConstructor()
+  const Darkmode = DarkmodeConstructor()
+  const Keybind = KeybindConstructor()
 
   function Content(componentData: QuartzComponentProps) {
     return (
       <div class="content-container">
-        <h1>My name is Aaron.</h1>
+        <Header {...componentData}>
+          <h1>My name is Aaron.</h1>
+          <Keybind {...componentData} />
+          <Darkmode {...componentData} />
+        </Header>
         <p>
           Beige and <span class="rose">rosé</span> are my two favorite colours.{" "}
-          <a href={"/dump/Chaos"} target="_self" class="internal landing-links">
+          <a href={"/thoughts/Chaos"} target="_self" class="internal landing-links">
             Chaos
           </a>{" "}
           constructs the id and form the ego. I enjoy treating my friends with{" "}
-          <a href={"/dump/Dishes"} target="_self" class="internal landing-links">
+          <a href={"/thoughts/Dishes"} target="_self" class="internal landing-links">
             cooking
           </a>
           . I spend a lot of time{" "}
-          <a href={"/dump/writing"} target="_self" class="internal landing-links">
+          <a href={"/thoughts/writing"} target="_self" class="internal landing-links">
             writing
           </a>{" "}
           and{" "}
@@ -157,9 +157,9 @@ const ContentConstructor = (() => {
         <Notes {...componentData} />
         <hr />
         <div class="hyperlinks">
-          <h2>garden:</h2>
-          <div id="garden">
-            {Object.entries(HyperAlias).map(([name, url], index, array) => (
+          <h2>jardin:</h2>
+          <div class="clickable-container">
+            {Object.entries(HyperAlias).map(([name, url]) => (
               <>
                 <AliasLink
                   key={name}
@@ -171,8 +171,9 @@ const ContentConstructor = (() => {
               </>
             ))}
           </div>
-          <h2>socials:</h2>
-          <div id="socials">
+          <hr />
+          <h2>sociaux:</h2>
+          <div class="clickable-container">
             {Object.entries(SocialAlias).map(([name, url], index, array) => (
               <>
                 <AliasLink key={name} name={name} url={url} newTab={name !== "curius"} />
@@ -181,17 +182,6 @@ const ContentConstructor = (() => {
             ))}
           </div>
         </div>
-        <hr />
-        <ul class="keybinds">
-          {Object.entries(KeybindAlias).map(([key, value], index, array) => (
-            <li>
-              <a id="landing-keybind" data-keybind={key.replaceAll("+", "--")}>
-                {key}
-              </a>
-              : {value}
-            </li>
-          ))}
-        </ul>
       </div>
     )
   }
@@ -199,21 +189,22 @@ const ContentConstructor = (() => {
 }) satisfies QuartzComponentConstructor
 
 export default (() => {
-  const Meta = MetaConstructor()
+  const Meta = MetaConstructor({ enableDarkMode: false })
   const Content = ContentConstructor()
+  const Spacer = SpacerConstructor()
+
   function LandingComponent(componentData: QuartzComponentProps) {
     return (
       <div class="popover-hint">
-        <div class="landing">
+        <div class={classNames(componentData.displayClass, "landing")}>
           <Meta {...componentData} />
           <Content {...componentData} />
         </div>
       </div>
     )
   }
-  LandingComponent.css = landingStyle
-  LandingComponent.beforeDOMLoaded = darkModeScript
-  LandingComponent.afterDOMLoaded = landingScript + keybindScript
+
+  LandingComponent.css = style
 
   return LandingComponent
 }) satisfies QuartzComponentConstructor

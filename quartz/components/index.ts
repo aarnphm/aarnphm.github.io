@@ -24,6 +24,7 @@ import Landing from "./Landing"
 import Meta from "./Meta"
 import Navigation from "./Navigation"
 import MinimalFooter from "./MinimalFooter"
+import Keybind from "./Keybind"
 
 export {
   ArticleTitle,
@@ -52,4 +53,5 @@ export {
   Navigation,
   CuriusContent,
   MinimalFooter,
+  Keybind,
 }

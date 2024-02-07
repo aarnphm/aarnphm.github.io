@@ -4,10 +4,6 @@
 body[data-slug="index"] {
   cursor: crosshair;
 
-  .darkmode {
-    display: none;
-  }
-
   & > *,
   h1,
   h2,
@@ -53,6 +49,7 @@ body[data-slug="index"] {
   padding-inline-start: 0;
   margin-left: 0;
   font-variant-numeric: tabular-nums;
+  margin-top: 0;
 
   & li {
     list-style: none;
@@ -79,17 +76,15 @@ a.min-links {
   font-weight: inherit;
 }
 
-#garden,
-#socials {
+.clickable-container {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+  flex-direction: row;
 }
 
 .content-container {
-  margin-top: 3rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin: $topSpacing auto;
   max-width: $pageWidth;
   font-weight: normal;
 
@@ -99,42 +94,12 @@ a.min-links {
 
   hr {
     width: 100%;
-    &:after {
-      content: none;
-    }
-  }
-
-  & > ul.keybinds {
-    font-family: var(--codeFont);
-    color: rgb(119, 119, 119);
-    font-size: 10px;
-    cursor: pointer;
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    flex-direction: row;
-    gap: 1em;
-
-    @media all and (max-width: $tabletBreakpoint) {
-      flex-direction: column;
-    }
-
-    & > a {
-      color: inherit;
-      text-decoration: none;
-      font-weight: inherit;
-      transition: color 0.2s;
-
-      :hover {
-        color: var(--primaryColor);
-      }
-    }
-  }
-
-  & > hr {
     margin: 2rem;
     margin-left: auto;
     margin-right: auto;
+
+    &:after {
+      content: none;
+    }
   }
 }
