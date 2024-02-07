@@ -86,6 +86,7 @@ export const defaultListPageLayout: PageLayout = {
   left: [
     Component.Meta({ enableSearch: false, enableDarkMode: false }),
     Component.MobileOnly(Component.Spacer()),
+    Component.Keybind({ enableTooltip: false }),
     Component.Search(),
     Component.Darkmode(),
     Component.DesktopOnly(

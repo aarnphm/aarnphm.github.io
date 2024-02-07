@@ -230,6 +230,10 @@ audio::-webkit-media-controls-panel {
   .recent-notes:nth-last-child(2) {
     grid-area: 3 / 1 / 4 / 4;
   }
+
+  .explorer {
+    grid-area: 2 / 1 / 2 / 4;
+  }
 }
 
 .right {

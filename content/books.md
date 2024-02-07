@@ -64,6 +64,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **Foundation** series by Isaac Asimov
 - **The Three-Body Problem** by Liu Cixin
 - **Robinson Crusoe** by Daniel Defoe
+- **The Overstory** by Richard Powers
 
 ### poetry
 
