@@ -19,18 +19,13 @@
 .minimal-footer {
   display: flex;
   margin-top: auto;
+  padding: 1rem 0;
   flex-direction: row;
   justify-content: space-between;
 
   box-sizing: border-box;
   border: 0 solid var(--gray);
   border-top-width: 1px;
-
-  padding: 1rem 1rem;
-
-  @media all and (max-width: $tabletBreakpoint) {
-    padding: 1rem 0;
-  }
 
   p {
     font-family: var(--bodyFont);
@@ -39,8 +34,13 @@
     margin: 0;
   }
 
-  a {
+  & > a {
+    color: inherit;
     text-decoration: underline;
     text-decoration-thickness: from-font;
+    transition: none;
+    border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
+    border-radius: 0;
+    background-color: inherit;
   }
 }

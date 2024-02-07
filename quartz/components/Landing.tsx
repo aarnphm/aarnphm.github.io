@@ -152,7 +152,11 @@ const ContentConstructor = (() => {
           >
             serving infrastructure
           </a>{" "}
-          and explore our interaction with large language models.
+          and explore our interaction with{" "}
+          <a href={"/thoughts/LLMs"} target="_self" class="internal landing-links">
+            large language models
+          </a>
+          .
         </p>
         <hr />
         <Notes {...componentData} />

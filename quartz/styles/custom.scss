@@ -77,6 +77,12 @@ body {
         }
       }
 
+      a.external {
+        & .external-icon {
+          display: none;
+        }
+      }
+
       & .center {
         margin-left: auto;
         margin-right: auto;
@@ -205,14 +211,14 @@ audio::-webkit-media-controls-panel {
     grid-area: 1 / 1 / 2 / 2;
   }
 
-  .keybind {
-    grid-area: 1 / 3 / 2 / 4;
-  }
-
   .darkmode {
     grid-area: 1 / 2 / 2 / 3;
     height: initial;
     align-items: last baseline;
+  }
+
+  .keybind {
+    grid-area: 1 / 3 / 2 / 4;
   }
 
   .graph {

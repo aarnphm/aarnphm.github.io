@@ -43,8 +43,8 @@ const left = (userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }
 
   const left: QuartzComponent[] = [
-    Component.MobileOnly(Component.Spacer()),
     Component.Search(),
+    Component.MobileOnly(Component.Spacer()),
     Component.Darkmode(),
     Component.Keybind({ enableTooltip: false }),
   ]
@@ -115,6 +115,6 @@ export const defaultContentPageLayout: PageLayout = {
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
   ...beforeBody(false, false),
-  ...left({ enableExplorer: true, listView: true }),
+  ...left({ enableExplorer: true, enableMeta: true, listView: true }),
   right: [],
 }

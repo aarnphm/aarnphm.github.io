@@ -21,23 +21,33 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
   function ContentMetadata({ cfg, fileData, displayClass }: QuartzComponentProps) {
     const text = fileData.text
 
-    if (text) {
-      const segments: string[] = []
+    if (!text) return null
 
-      if (fileData.dates) {
-        segments.push(formatDate(getDate(cfg, fileData)!, cfg.locale))
-      }
+    let created: string | undefined
+    let modified: string | undefined
+    let reading: number | undefined
 
-      // Display reading time if enabled
-      if (options.showReadingTime) {
-        const { text: timeTaken, words: _words } = readingTime(text)
-        segments.push(timeTaken)
-      }
-
-      return <p class={classNames(displayClass, "content-meta")}>{segments.join(", ")}</p>
-    } else {
-      return null
+    if (fileData.dates) {
+      created = formatDate(getDate(cfg, fileData)!, cfg.locale)
+      modified = formatDate(fileData.dates.modified, cfg.locale)
     }
+
+    // Display reading time if enabled
+    if (options.showReadingTime) {
+      const results = readingTime(text)
+      reading = Math.ceil(results.minutes)
+      console.log(results)
+    }
+
+    return (
+      <p class={classNames(displayClass, "content-meta")}>
+        {created !== undefined && `c: ${created}`}
+        {" · "}
+        <em>{modified !== undefined && `m: ${modified}`}</em>
+        {" · "}
+        {reading !== undefined && `r: ${reading} ${reading === 1 ? "min" : "mins"}`}
+      </p>
+    )
   }
 
   ContentMetadata.css = `
