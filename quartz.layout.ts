@@ -25,11 +25,23 @@ function recentFilter(path: string, excludePaths: string[] = []) {
   }
 }
 
-const left = (
-  enableRecentNotes: boolean = false,
-  enableExplorer: boolean = false,
-  enableMeta: boolean = false,
-) => {
+interface Options {
+  enableRecentNotes: boolean
+  enableExplorer: boolean
+  enableMeta: boolean
+  listView: boolean
+}
+
+const defaultOptions: Options = {
+  enableRecentNotes: false,
+  enableExplorer: false,
+  enableMeta: false,
+  listView: false,
+}
+
+const left = (userOpts?: Partial<Options>) => {
+  const opts = { ...defaultOptions, ...userOpts }
+
   const left: QuartzComponent[] = [
     Component.MobileOnly(Component.Spacer()),
     Component.Search(),
@@ -50,19 +62,25 @@ const left = (
       linkToMore: "thoughts/" as SimpleSlug,
     }),
   ]
-  const desktopOnly = [
-    Component.Graph({
-      globalGraph: { linkDistance: 50 },
-      localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
-    }),
-    Component.Backlinks(),
-    Component.TableOfContents(),
-  ]
+  const desktopOnly = []
 
-  if (enableMeta) left.push(Component.Meta({ enableSearch: false, enableDarkMode: false }))
+  if (!opts.listView)
+    desktopOnly.push(
+      ...[
+        Component.Graph({
+          globalGraph: { linkDistance: 50 },
+          localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
+        }),
+        Component.Backlinks(),
+        Component.TableOfContents(),
+      ],
+    )
 
-  if (enableRecentNotes) desktopOnly.push(...recentNotes)
-  if (enableExplorer)
+  if (opts.enableMeta) left.push(Component.Meta({ enableSearch: false, enableDarkMode: false }))
+
+  if (opts.enableRecentNotes) desktopOnly.push(...recentNotes)
+
+  if (opts.enableExplorer)
     desktopOnly.push(
       Component.Explorer({
         filterFn: (node: FileNode) => {
@@ -70,6 +88,7 @@ const left = (
         },
       }),
     )
+
   left.push(...desktopOnly.flatMap(Component.DesktopOnly))
 
   return { left }
@@ -96,6 +115,6 @@ export const defaultContentPageLayout: PageLayout = {
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
   ...beforeBody(false, false),
-  ...left(false, true, true),
+  ...left({ enableExplorer: true, listView: true }),
   right: [],
 }
