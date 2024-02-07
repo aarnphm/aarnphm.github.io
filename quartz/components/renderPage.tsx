@@ -211,8 +211,10 @@ export function renderPage(
     </div>
   )
 
+  const lang = componentData.frontmatter?.lang ?? cfg.locale.split("-")[0]
+
   const doc = (
-    <html lang={cfg.locale.split("-")[0]}>
+    <html lang={lang}>
       <Head {...componentData} />
       <body data-slug={slug}>
         {slug === "index" ? (
