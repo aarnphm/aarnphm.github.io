@@ -51,7 +51,7 @@ export default ((userOpts?: Partial<Options>) => {
           {defaultKey}
         </kbd>
         <div class="highlight-modal bind" id="highlight-modal">
-          <span>Show keyboard shortcuts</span>
+          <span>afficher les raccourcis clavier</span>
         </div>
         <div id="shortcut-container">
           <div id="shortcut-space">
