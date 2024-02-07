@@ -6,14 +6,9 @@
   "outputDirectory": "content",
   "redirects": [
     {
-      "source": "/",
-      "destination": "https:///aarnphm.xyz/",
-      "permanent": false
-    },
-    {
-      "source": "^(https://)?curius\\.aarnphm\\.xyz",
-      "destination": "https://aarnphm.xyz/curius",
-      "permanent": false
+      "source": "/dump/(.*)",
+      "destination": "https:///aarnphm.xyz/thoughts/$1",
+      "permanent": true
     }
   ]
 }
