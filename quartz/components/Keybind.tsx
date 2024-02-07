@@ -46,7 +46,7 @@ export default ((userOpts?: Partial<Options>) => {
 
   function Keybind({ displayClass }: QuartzComponentProps) {
     return (
-      <div class={classNames(displayClass, "keybind")}>
+      <div class={classNames(displayClass, "keybind")} lang={"fr"}>
         <kbd id="shortcut-key" data-keybind={revert(defaultKey)}>
           {defaultKey}
         </kbd>

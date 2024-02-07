@@ -177,7 +177,7 @@ const ContentConstructor = (() => {
             ))}
           </div>
           <hr />
-          <h2>sociaux:</h2>
+          <h2>média:</h2>
           <div class="clickable-container">
             {Object.entries(SocialAlias).map(([name, url], index, array) => (
               <>
