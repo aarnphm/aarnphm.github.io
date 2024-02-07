@@ -63,6 +63,7 @@ const NotesConstructor = (() => {
       })
       .sort(byDateAndAlphabetical(cfg))
     const remaining = Math.max(0, pages.length - notesLimit)
+    const classes = ["min-links", "internal"].join(" ")
     return (
       <>
         <h2>récentes:</h2>
@@ -74,7 +75,7 @@ const NotesConstructor = (() => {
 
                 return (
                   <li>
-                    <a href={resolveRelative(fileData.slug!, page.slug!)} class="min-links">
+                    <a href={resolveRelative(fileData.slug!, page.slug!)} class={classes}>
                       <div class="landing-meta">
                         <span class="landing-mspan">
                           {formatDate(getDate(cfg, page)!, cfg.locale)}
@@ -91,7 +92,7 @@ const NotesConstructor = (() => {
                 <u>
                   <a
                     href={resolveRelative(fileData.slug!, "thoughts/" as SimpleSlug)}
-                    class="min-links"
+                    class={classes}
                   >
                     {i18n(cfg.locale).components.recentNotes.seeRemainingMore({ remaining })}
                   </a>

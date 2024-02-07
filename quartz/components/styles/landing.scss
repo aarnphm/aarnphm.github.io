@@ -74,6 +74,12 @@ body[data-slug="index"] {
 a.min-links {
   color: inherit;
   font-weight: inherit;
+
+  &.internal {
+    background-color: inherit;
+    border-radius: 0;
+    padding: 0;
+  }
 }
 
 .clickable-container {
