@@ -11,7 +11,12 @@
       "permanent": false
     },
     {
-      "source": "/dump(?:/(.*))?",
+      "source": "/dump",
+      "destination": "https://aarnphm.xyz/thoughts",
+      "permanent": false
+    },
+    {
+      "source": "/dump/(.*)",
       "destination": "https://aarnphm.xyz/thoughts/$1",
       "permanent": true
     }
