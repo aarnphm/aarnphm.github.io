@@ -6,6 +6,11 @@
   "outputDirectory": "content",
   "redirects": [
     {
+      "source": "/",
+      "destination": "https:///aarnphm.xyz/",
+      "permanent": false
+    },
+    {
       "source": "/dump/(.*)",
       "destination": "https:///aarnphm.xyz/thoughts/$1",
       "permanent": true
