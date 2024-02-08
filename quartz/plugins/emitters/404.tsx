@@ -17,7 +17,6 @@ export const NotFoundPage: QuartzEmitterPlugin = () => {
     beforeBody: [],
     left: [],
     right: [],
-    footer: Spacer(),
   }
 
   const { head: Head, pageBody, footer: Footer } = opts

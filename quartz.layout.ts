@@ -9,7 +9,9 @@ import { QuartzComponent } from "./quartz/components/types"
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [],
-  footer: Component.MinimalFooter(),
+  footer: Component.MinimalFooter({
+    links: { GitHub: "https://github.com/aarnphm", Twitter: "https://twitter.com/aarnphm_" },
+  }),
 }
 
 function recentFilter(path: string, excludePaths: string[] = []) {

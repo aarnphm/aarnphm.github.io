@@ -40,73 +40,73 @@ code {
 body {
   font-size: 1.2rem;
 
-  .page {
-    & > #quartz-body {
-      .page-header {
-        margin: $topSpacing auto 0 auto;
-        width: $pageWidth + $sidePanelWidth;
-        @media all and (max-width: $fullPageWidth) {
-          width: initial;
-          margin-top: 2rem;
-        }
-      }
-
-      .center {
-        margin-left: auto;
-        margin-right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
-        width: $pageWidth + $sidePanelWidth;
-
-        @media all and (max-width: $fullPageWidth) {
-          margin-right: 0;
-          width: initial;
-          margin-left: 0;
-        }
-      }
-
-      @media all and (min-width: $fullPageWidth) {
-        .sidebar.right {
-          width: 0;
-        }
-      }
-    }
-  }
-
-  // restore initial three column for center view
-  &[data-slug="uses"],
-  &[data-slug="curius"],
-  &[data-slug="quotes"],
-  &[data-slug="influence"] {
-    .page > #quartz-body {
-      & .sidebar.right {
-        width: $sidePanelWidth;
-        right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
-        flex-wrap: wrap;
-        & > * {
-          @media all and (max-width: $fullPageWidth) {
-            flex: 1;
-            min-width: 140px;
-          }
-        }
-      }
-
-      a.external {
-        & .external-icon {
-          display: none;
-        }
-      }
-
-      & .center {
-        margin-left: auto;
-        margin-right: auto;
-        width: $pageWidth;
-        @media all and (max-width: $fullPageWidth) {
-          width: initial;
-          margin-left: 0;
-          margin-right: 0;
-        }
-      }
-    }
-  }
+  // .page {
+  //   & > #quartz-body {
+  //     .page-header {
+  //       margin: $topSpacing auto 0 auto;
+  //       width: $pageWidth + $sidePanelWidth;
+  //       @media all and (max-width: $fullPageWidth) {
+  //         width: initial;
+  //         margin-top: 2rem;
+  //       }
+  //     }
+  //
+  //     .center {
+  //       margin-left: auto;
+  //       margin-right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+  //       width: $pageWidth + $sidePanelWidth;
+  //
+  //       @media all and (max-width: $fullPageWidth) {
+  //         margin-right: 0;
+  //         width: initial;
+  //         margin-left: 0;
+  //       }
+  //     }
+  //
+  //     @media all and (min-width: $fullPageWidth) {
+  //       .sidebar.right {
+  //         width: 0;
+  //       }
+  //     }
+  //   }
+  // }
+  //
+  // // restore initial three column for center view
+  // &[data-slug="uses"],
+  // &[data-slug="curius"],
+  // &[data-slug="quotes"],
+  // &[data-slug="influence"] {
+  //   .page > #quartz-body {
+  //     & .sidebar.right {
+  //       width: $sidePanelWidth;
+  //       right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+  //       flex-wrap: wrap;
+  //       & > * {
+  //         @media all and (max-width: $fullPageWidth) {
+  //           flex: 1;
+  //           min-width: 140px;
+  //         }
+  //       }
+  //     }
+  //
+  //     a.external {
+  //       & .external-icon {
+  //         display: none;
+  //       }
+  //     }
+  //
+  //     & .center {
+  //       margin-left: auto;
+  //       margin-right: auto;
+  //       width: $pageWidth;
+  //       @media all and (max-width: $fullPageWidth) {
+  //         width: initial;
+  //         margin-left: 0;
+  //         margin-right: 0;
+  //       }
+  //     }
+  //   }
+  // }
 }
 
 // Quote display
@@ -185,9 +185,9 @@ audio::-webkit-media-controls-panel {
 }
 
 .page {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
+  // display: flex;
+  // min-height: 100vh;
+  // flex-direction: column;
 
   & > #quartz-body {
     @media all and (min-width: $fullPageWidth) {
