@@ -49,6 +49,10 @@ figure[data-rehype-pretty-code-figure] {
   z-index: -1 !important;
 }
 
+body {
+  animation: fadeIn 2s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
 code {
   font-size: 0.8em;
 }
@@ -212,25 +216,6 @@ hr {
 
 audio::-webkit-media-controls-panel {
   background-color: var(--lightgray);
-}
-
-.page {
-  // display: flex;
-  // min-height: 100vh;
-  // flex-direction: column;
-
-  & > #quartz-body {
-    @media all and (min-width: $fullPageWidth) {
-      #progress {
-        position: fixed;
-        width: 3px;
-        height: 0;
-        background-color: var(--dark);
-        z-index: 1000;
-        transition: background-color 0.3s ease;
-      }
-    }
-  }
 }
 
 .left,

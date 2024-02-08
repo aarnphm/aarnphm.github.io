@@ -222,7 +222,6 @@ export function renderPage(
         ) : (
           <div id="quartz-root" class="page">
             <Body {...componentData}>
-              <div id="progress"></div>
               {LeftComponent}
               <div class="center">
                 <div class="page-header">
