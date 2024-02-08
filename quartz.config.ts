@@ -67,7 +67,7 @@ const config: QuartzConfig = {
         markdownLinkResolution: "absolute",
         enableRawEmbed: {
           enable: true,
-          extensions: [".py", ".m", ".go", ".c", ".java"],
+          extensions: [".py", ".m", ".go", ".c", ".java", ".cpp", ".h", ".hpp", ".cu"],
           cdn: "https://raw.aarnphm.xyz/",
         },
       }),
