@@ -11,4 +11,4 @@ Often known from the [GPT-3 paper](https://arxiv.org/abs/2005.14165), also from 
 
 I do think it should be thought as [[thoughts/Intelligence amplification|Intelligence amplification]] rather than "artificial intelligence" system.
 
-### Why I don't include [[thoughts/LLM]] in here?
+### Why I don't include [[thoughts/LLMs]] in here?

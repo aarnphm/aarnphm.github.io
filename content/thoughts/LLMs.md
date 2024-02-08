@@ -3,7 +3,6 @@ id: LLMs
 tags:
   - sapling
   - ml
-  - technical
 date: "2024-02-07"
 title: LLMs
 ---
@@ -23,13 +22,15 @@ Incredibly hard to scale, mainly due to their [[thoughts/large models|large]] me
 ### Optimization
 
 - [[thoughts/quantization|Quantization]]: reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
-- Continuous batching: Implementing [[thoughts/Attention#Paged Attention]] with custom scheduler to manage swapping kv-cache for better resource utilisation, implemented at [vLLM](https://github.com/vllm-project/vllm)
+- [[thoughts/Continuous batching]]: Implementing [[thoughts/Attention#Paged Attention]] with custom scheduler to manage swapping kv-cache for better resource utilisation
 
 ### on how we are being [[thoughts/education#teaching|taught]].
 
 How would we assess thinking?
 
-Similar to calculator, it _simplifies_ and increase accessibility to the masses, but in doing so _lost_ the value in _doing math_.
+Similar to calculator, it _simplifies_ and increase accessibility to the masses, but in doing so _lost_ the value in the _action of doing_ math.
+
+We do math to internalize the concept, and practice to thinking coherently. Similarly, we [[thoughts/writing|write]] to help
 
 The process of rephrasing and arranging sentences poses a challenges for the writer, and in doing so, teach you how to think coherently. Writing essays is an exercise for students to articulate their thoughts, rather than testing the understanding of the materials.
 

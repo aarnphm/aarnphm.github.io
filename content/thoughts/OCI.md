@@ -3,11 +3,9 @@ id: OCI
 tags:
   - seed
   - container
+date: "2023-08-10"
 title: OCI Format
-date: 2023-08-10
 ---
-
-# Open Container Initiative
 
 OCI format is a standard for packaging and running containerized applications.
 

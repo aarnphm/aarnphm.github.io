@@ -19,6 +19,8 @@ See also [[thoughts/Transformers]]
 
 [paper](https://arxiv.org/pdf/2309.06180.pdf)
 
+Used in conjunction with [[thoughts/Continuous batching]]
+
 Reduce memory usage of attention mechanism by swapping kv-cache in and out of memory. A block manager is similar to those of *virtual memory* in OS.
 
 Essentially, it's a form of **paging**, such that attention can be stored in contiguous memory.

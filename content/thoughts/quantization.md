@@ -18,7 +18,7 @@ See also: [[thoughts/images/htn-openllm.pdf|this talk]] I gave at Hack the North
 > [!note]
 > This also applies to post-training quantization, where the methodology is applied after the model has been trained, instead of during load-time.
 
-### `fp32` to `fp16`
+## `fp32` to `fp16`
 
 > Does my operation support `fp16`?
 
@@ -28,7 +28,7 @@ See also: [[thoughts/images/htn-openllm.pdf|this talk]] I gave at Hack the North
 
 For example `epsilon` in `LayerNormalization` usually is very small $1e^{-12}$, but smallest value in `fp16` is $\approx 6e^{-5}$, which cause `NaN` issues.
 
-### `fp32` to `int8`
+## `fp32` to `int8`
 
 Consider a float `x` in `[a, b]`, such that _affine quantization scheme_:
 
@@ -53,7 +53,7 @@ $$
 
 See also: [paper](https://arxiv.org/abs/1712.05877)
 
-### quantization time
+## quantization time
 
 - Post-training **dynamic quantization**: range of each activation is computed on the fly at _runtime_
 - Post-training **static quantization**: range of each activation is computed _offline_ before _runtime_
@@ -63,3 +63,8 @@ See also: [paper](https://arxiv.org/abs/1712.05877)
 - **Quantization aware training**: range of each activation is computed _during training_
   - `fake_quantize` operations are inserted in the computation graph
   - `fake_quantize` is a no-op during inference, but during training, it simulates the effect of quantization
+
+## Methods and libraries
+
+[bitsandbytes](https://github.com/TimDettmers/bitsandbytes) and [GPTQ](https://arxiv.org/abs/2210.17323)
+
