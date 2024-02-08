@@ -7,9 +7,9 @@ date: "2021-12-22"
 title: projects.
 ---
 
-The list below are notable projects I'm currently maintaining/finished. A more incomplete list of ideas that I will do sometime can be found in [[thoughts/backburners]]. For [[thoughts/writing]] see [mailbox](/posts/)
+The list below are notable projects I'm currently maintaining/finished. A more incomplete list of ideas that I will do sometime can be found in [[thoughts/backburners]]. For [[thoughts/writing]] see [mailbox](/posts/). If you want a resume see [[thoughts/images/2023-resume.pdf|here]]
 
-## [OpenLLM](https://github.com/bentoml/openllm) -- Serve, fine-tune and deploy [[thoughts/large models|LLMs]] in production
+## [OpenLLM](https://github.com/bentoml/openllm) -- Serve, fine-tune and deploy [[thoughts/LLMs|LLMs]] in production
 
 OpenLLM is an open-source platform designed to facilitate the deployment and operation of large language models ([[thoughts/large models|LLMs]]) in real-world applications. With OpenLLM, you can run inference on any open-source LLM, deploy them on the cloud or on-premises, and build powerful AI applications.
 

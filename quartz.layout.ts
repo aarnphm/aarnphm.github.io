@@ -50,27 +50,22 @@ const left = (userOpts?: Partial<Options>) => {
     Component.Darkmode(),
     Component.Keybind({ enableTooltip: false }),
   ]
-  const recentNotes = [
-    Component.RecentNotes({
-      title: "Recent Writing",
-      limit: 3,
-      filter: recentFilter("posts"),
-      linkToMore: "posts/" as SimpleSlug,
-    }),
-    Component.RecentNotes({
-      title: "Recent Notes",
-      limit: 3,
-      filter: recentFilter("thoughts", ["university"]),
-      linkToMore: "thoughts/" as SimpleSlug,
-    }),
-  ]
+
   const desktopOnly = []
 
-  if (!opts.listView) desktopOnly.push(...[Component.Backlinks(), Component.TableOfContents()])
+  if (!opts.listView) desktopOnly.push(Component.TableOfContents())
 
   if (opts.enableMeta) left.push(Component.Meta({ enableSearch: false, enableDarkMode: false }))
 
-  if (opts.enableRecentNotes) desktopOnly.push(...recentNotes)
+  if (opts.enableRecentNotes)
+    desktopOnly.push(
+      Component.RecentNotes({
+        title: "Notes Récentes",
+        limit: 5,
+        filter: recentFilter("thoughts", ["university"]),
+        linkToMore: "thoughts/" as SimpleSlug,
+      }),
+    )
 
   if (opts.enableExplorer)
     desktopOnly.push(
@@ -93,7 +88,7 @@ const right = () => {
         globalGraph: { linkDistance: 50 },
         localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
       }),
-      Component.MobileOnly(Component.Backlinks()),
+      Component.Backlinks(),
     ],
   }
 }
@@ -108,7 +103,7 @@ const beforeBody = (enableContentMeta: boolean = true, enableTagList: boolean = 
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
   ...beforeBody(),
-  ...left(),
+  ...left({ enableRecentNotes: true }),
   ...right(),
 }
 

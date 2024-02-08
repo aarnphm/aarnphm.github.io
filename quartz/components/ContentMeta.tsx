@@ -40,10 +40,8 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
 
     return (
       <p class={classNames(displayClass, "content-meta")}>
-        {created !== undefined && `c: ${created}`}
-        {" · "}
-        <em>{modified !== undefined && `m: ${modified}`}</em>
-        {" · "}
+        {created !== undefined && `c: ${created}, `}
+        <em>{modified !== undefined && `m: ${modified}, `}</em>
         {reading !== undefined && `r: ${reading} ${reading === 1 ? "min" : "mins"}`}
       </p>
     )

@@ -17,8 +17,8 @@ const config: QuartzConfig = {
     theme: {
       cdnCaching: true,
       typography: {
-        header: "Cardo",
-        body: "EB Garamond",
+        header: "GT Sectra Display",
+        body: "GT Sectra Book",
         code: "Berkeley Mono",
       },
       colors: {
