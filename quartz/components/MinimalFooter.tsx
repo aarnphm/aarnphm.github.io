@@ -48,28 +48,31 @@ export default ((opts?: Options) => {
     const links = opts?.links ?? []
 
     return (
-      <footer class={classNames(displayClass, "minimal-footer")}>
-        <div id="year">
-          {Object.entries(links).map(([text, link]) => {
-            const label = text.toLowerCase()
-            return (
-              <li>
-                <a href={link} target="_blank">
-                  <span role="img" class="min-icon" aria-label={label}>
-                    {getIcon(label)}
-                  </span>
-                </a>
-              </li>
-            )
-          })}
-        </div>
-        <div id="content">
-          <p class="info">
-            {i18n(cfg.locale).components.footer.createdWith}{" "}
-            <a href="https://quartz.jzhao.xyz/">Quartz v{version}</a> © {year}
-          </p>
-        </div>
-      </footer>
+      <>
+        {/* <div class={classNames(displayClass, "spacer")}></div> */}
+        <footer class={classNames(displayClass, "minimal-footer")}>
+          <div id="year">
+            {Object.entries(links).map(([text, link]) => {
+              const label = text.toLowerCase()
+              return (
+                <li>
+                  <a href={link} target="_blank">
+                    <span role="img" class="min-icon" aria-label={label}>
+                      {getIcon(label)}
+                    </span>
+                  </a>
+                </li>
+              )
+            })}
+          </div>
+          <div id="content">
+            <p class="info">
+              {i18n(cfg.locale).components.footer.createdWith}{" "}
+              <a href="https://quartz.jzhao.xyz/">Quartz v{version}</a> © {year}
+            </p>
+          </div>
+        </footer>
+      </>
     )
   }
 

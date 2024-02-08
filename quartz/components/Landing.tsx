@@ -127,23 +127,14 @@ const ContentConstructor = (() => {
         </Header>
         <p lang="en">
           Beige and <span class="rose">rosé</span> are my two favorite colours.{" "}
-          <a href={"/thoughts/Chaos"} target="_self" class="internal landing-links">
-            Chaos
-          </a>{" "}
-          constructs the id and form the ego. I enjoy treating my friends with{" "}
-          <a href={"/thoughts/Dishes"} target="_self" class="internal landing-links">
-            cooking
-          </a>
-          . I spend a lot of time{" "}
-          <a href={"/thoughts/writing"} target="_self" class="internal landing-links">
-            writing
-          </a>{" "}
-          and{" "}
-          <a href={"/books"} target="_self" class="internal landing-links">
-            reading
-          </a>{" "}
-          when I'm not coding. I'm pretty bullish on investing into self and fullfil one's desire in
-          life.
+          <AliasLink name="Chaos" url="/thoughts/Chaos" isInternal /> constructs the id and form the
+          ego. I enjoy treating my friends with{" "}
+          <AliasLink name="cooking" url="/thoughts/Dishes" isInternal />. I spend a lot of time{" "}
+          <AliasLink name="writing" url="/thoughts/writing" isInternal /> {","}
+          <AliasLink name="reading" url="/books" isInternal /> {","}
+          and maintaining <AliasLink name="open-source projects" url="/projects" isInternal />. I'm
+          pretty bullish on high <AliasLink name="agency" url="/thoughts/Agency" isInternal /> and
+          fullfil one's <AliasLink name="desire" url="/thoughts/desire" isInternal /> in life.
         </p>
         <p>
           Currently, I'm building{" "}
