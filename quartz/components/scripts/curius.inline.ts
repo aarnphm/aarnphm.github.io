@@ -422,18 +422,23 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
   const [container, fetchText, fragment, nav, total] = elements as HTMLElement[]
 
-  fetchText.textContent = "Fetching curius links"
+  fetchText.textContent = "Récupération des liens curius"
   fetchText.classList.toggle("active", true)
   const resp = await fetchLinks()
   fetchText.classList.toggle("active", false)
 
   const linksData = resp.links ?? []
 
-  if (linksData.length === 0) {
-    container.innerHTML = `<p>Failed to fetch links.</p>`
-    return
+  const callIfEmpty = (data: Link[]) => {
+    if (data.length === 0) {
+      container.innerHTML = `<p>Échec de la récupération des liens.</p>`
+      return
+    }
   }
+
+  callIfEmpty(linksData)
   fragment.append(...linksData.map(createLinkEl))
+  total.textContent = `${linksData.length} éléments`
   nav.classList.toggle("active", true)
 
   const refetchIcon = document.getElementById("curius-refetch")
@@ -464,16 +469,14 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       nav.classList.toggle("active", false)
 
       fetchText.classList.toggle("active", true)
-      fetchText.textContent = "Refreshing curius links"
+      fetchText.textContent = "Rafraîchissement des liens curius"
       const refetched = await fetchLinks(true)
       fetchText.classList.toggle("active", false)
 
       const newData = refetched.links ?? []
-      if (newData.length === 0) {
-        container.innerHTML = `<p>Failed to fetch links.</p>`
-        return
-      }
+      callIfEmpty(newData)
       fragment.append(...newData.map(createLinkEl))
+      total.textContent = `${newData.length} éléments`
       nav.classList.toggle("active", true)
 
       isTimeout = true

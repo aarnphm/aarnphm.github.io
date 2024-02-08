@@ -264,4 +264,8 @@ audio::-webkit-media-controls-panel {
   .backlinks {
     grid-area: 2 / 1 / 2 / 3;
   }
+
+  @media all and (max-width: $fullPageWidth) {
+    align-items: unset;
+  }
 }
