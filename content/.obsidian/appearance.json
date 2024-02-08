@@ -4,7 +4,7 @@
   "interfaceFontFamily": "Bricolage Grotesque,EB Garamond,Berkeley Mono",
   "textFontFamily": "EB Garamond,Bricolage Grotesque,Berkeley Mono",
   "monospaceFontFamily": "Berkeley Mono",
-  "baseFontSize": 23,
+  "baseFontSize": 24,
   "translucency": true,
   "theme": "moonstone",
   "showViewHeader": true,

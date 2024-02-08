@@ -14,15 +14,15 @@ title: Advice
 
 > _An ongoing collection of quotes, advices, and other things I've subscribed to, mostly from people I admire and friends._
 
-### On life.
+## On life.
 
 Throw me some wisdom, and advices? I have none. -- Jesse Camacho
 
-### On bits and bytes.
+## On bits and bytes.
 
 Computer is a bicycle for the mind. -- [Steve Jobs](https://www.youtube.com/watch?v=ob_GX50Za6c&ab_channel=MichaelLawrence)
 
-### On perspectives.
+## On perspectives.
 
 Our capacity to deal with [[thoughts/Language|language]] is a complex, genetically-determined part of our biological endowment. It's a product of evolution, part of our nature. -- Noam Chomsky
 
@@ -32,7 +32,7 @@ I always feel happy, you know why? Because I don’t expect anything from anyone
 
 A pessimist sees the difficulty in every opportunity; an optimist sees the opportunity in every difficulty. -- Winston Churchill
 
-### On drive.
+## On drive.
 
 Life can be much broader when you discover one simple fact...that everything around you was made up by people no smarter than you. ... Once you learn that, [you'll never be the same again.] -- Steve Jobs
 
@@ -44,7 +44,7 @@ The first principle is that you must not fool yourself, and you are the easiest 
 
 Success consists of going from failure to failure without loss of enthusiasm. -- Winston Churchill
 
-### On randomness and fun.
+## On randomness and fun.
 
 I have to be successful because I like expensive things. -- some random person on twitter
 

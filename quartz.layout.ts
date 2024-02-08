@@ -66,17 +66,7 @@ const left = (userOpts?: Partial<Options>) => {
   ]
   const desktopOnly = []
 
-  if (!opts.listView)
-    desktopOnly.push(
-      ...[
-        Component.Graph({
-          globalGraph: { linkDistance: 50 },
-          localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
-        }),
-        Component.Backlinks(),
-        Component.TableOfContents(),
-      ],
-    )
+  if (!opts.listView) desktopOnly.push(...[Component.Backlinks(), Component.TableOfContents()])
 
   if (opts.enableMeta) left.push(Component.Meta({ enableSearch: false, enableDarkMode: false }))
 
@@ -97,7 +87,15 @@ const left = (userOpts?: Partial<Options>) => {
 }
 
 const right = () => {
-  return { right: [Component.MobileOnly(Component.Backlinks())] }
+  return {
+    right: [
+      Component.Graph({
+        globalGraph: { linkDistance: 50 },
+        localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
+      }),
+      Component.MobileOnly(Component.Backlinks()),
+    ],
+  }
 }
 
 const beforeBody = (enableContentMeta: boolean = true, enableTagList: boolean = true) => {

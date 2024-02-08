@@ -257,24 +257,11 @@ audio::-webkit-media-controls-panel {
 }
 
 .right {
-  .search {
-    grid-area: 1 / 1 / 2 / 2;
-  }
-
-  .darkmode {
-    grid-area: 1 / 2 / 2 / 3;
-    height: initial;
-  }
-
   .graph {
-    grid-area: 2 / 1 / 2 / 3;
-  }
-
-  .toc {
-    grid-area: 3 / 1 / 3 / 3;
+    grid-area: 1 / 1 / 1 / 3;
   }
 
   .backlinks {
-    grid-area: 4 / 1 / 4 / 3;
+    grid-area: 2 / 1 / 2 / 3;
   }
 }

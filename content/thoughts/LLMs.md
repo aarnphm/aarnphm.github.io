@@ -14,7 +14,7 @@ See also: [[thoughts/images/htn-openllm.pdf|this talk]]
 
 Exhibits [[thoughts/emergent behaviour]] of [[thoughts/intelligence]], but probably not [[thoughts/AGI]] due to [[thoughts/observer-expectancy effect]]
 
-[[thoughts/LLMs|LLMs]] in one way or another is a form of [[thoughts/Behavirourism]], through [[thoughts/Machine learning|reinforcement learning]]. It is being "told" what is good or bad, and thus act accordingly towards the users. However, this induces [[thoughts/confirmation bias]] where one aligns and contains his/her prejudices towards the problem
+One way or another is a form of [[thoughts/Behavirourism]], through [[thoughts/Machine learning|reinforcement learning]]. It is being "told" what is good or bad, and thus act accordingly towards the users. However, this induces [[thoughts/confirmation bias]] where one aligns and contains his/her prejudices towards the problem
 
 ### Scalability
 
@@ -36,7 +36,11 @@ The process of rephrasing and arranging sentences poses a challenges for the wri
 
 ### AI generated content
 
-You can probably see a plethora of AI generated content, but **Garbage in, garbage out**. The quality of the content is highly dependent on the quality of the data it was trained on, or model are incredibly sensitive to [[thoughts/data]] variances and biases.
+You can probably see a plethora of AI generated content,
+
+Don't shit where you eat, **[[thoughts/Garbage in Garbage out|Garbage in, garbage out]]**. The quality of the content is highly dependent on the quality of the data it was trained on, or model are incredibly sensitive to [[thoughts/data]] variances and biases.
+
+See also: [All the better to see you with](https://www.kernelmag.io/2/all-the-better-to-see-you)
 
 ### Good-enough
 
@@ -53,13 +57,17 @@ notable mentions:
 - [Exa labs](https://twitter.com/ExaAiLabs)
 - [You.com](https://you.com/?chatMode=default)
 
-### End-user programming
+### Programming
+
+Overall should be a net positive, but it's a double-edged sword.
+
+#### as end-users
 
 [Source](https://www.geoffreylitt.com/2023/03/25/llm-end-user-programming.html)
 
 > I think it’s likely that soon all computer users will have the ability to develop small software tools from scratch, and to describe modifications they’d like made to software they’re already using
 
-### Programmers
+#### as developers
 
 Tool that lower of barrier of entry is always a good thing, but it often will lead to probably even higher discrepancies in quality of software
 

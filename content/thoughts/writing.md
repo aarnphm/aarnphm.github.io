@@ -19,7 +19,7 @@ The modality of text essentially creates a universal interface that allows indiv
 
 > What I am doing right now, writing this essay, is, technically, **a linear walk through the network of my ideas**. That is what writing is: turning a net into a line. But it is also very concretely what I do, since I have _externalised_ my ideas in [a note-taking system](https://obsidian.md/) where the thoughts are linked with hyperlinks. (Henrik Karlsson, [Reader-generated Essay](https://www.lesswrong.com/posts/ZtMsyMP5F7zzP8Gvc/reader-generated-essays))
 
-At its core, writing endeavours to transmute the chaos of existence into discernible narratives, offering a conduit for shared understanding amidst the inherent disarray of life. Such a form of [losseness in mutation](https://subconscious.substack.com/p/hypertext-montage)
+At its core, writing endeavours to transmute the chaos of existence into discernible narratives, offering a conduit for shared understanding amidst the inherent disarray of life. Such a form of [looseness in mutation](https://subconscious.substack.com/p/hypertext-montage)
 
 # paradox.
 

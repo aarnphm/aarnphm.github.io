@@ -11,8 +11,13 @@
             "id": "50238818c2222780",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "tags/technical.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
             }
           }
         ]
@@ -81,6 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "tags/technical.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -97,6 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "tags/technical.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -118,7 +125,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "tags/technical.md"
+              }
             }
           },
           {
@@ -146,7 +155,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {}
+              "state": {
+                "file": "tags/technical.md"
+              }
             }
           }
         ],
@@ -171,6 +182,13 @@
   },
   "active": "50238818c2222780",
   "lastOpenFiles": [
+    "tags/seed.md",
+    "tags/technical.md",
+    "tags/university.md",
+    "tags/ml.md",
+    "tags/evergreen.md",
+    "thoughts/Alignment.md",
+    "thoughts/Garbage in Garbage out.md",
     "thoughts/Constructionist.md",
     "thoughts/Compression.md",
     "thoughts/confirmation bias.md",
@@ -203,20 +221,13 @@
     "thoughts/university/sfwr-3dx4/Frequency Domain.md",
     "thoughts/university/sfwr-3dx4/Block Diagrams.md",
     "thoughts/university/sfwr-3bb4/index.md",
-    "thoughts/university/sfwr-3bb4/Sequential programming.md",
     "thoughts/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",
     "thoughts/university/sfwr-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
     "thoughts/university/sfwr-2fa3/yxx-nfa.png",
     "thoughts/university/sfwr-2fa3/yxx-nfa-4s.png",
-    "thoughts/university/sfwr-2fa3/index.md",
     "thoughts/university/sfwr-2fa3/eps-nfa.png",
     "thoughts/university/sfwr-2fa3/abxba-nfa.png",
-    "thoughts/university/sfwr-2fa3/W1.md",
-    "thoughts/university/sfwr-2fa3/NFA.md",
     "thoughts/university/sfwr-2c03/sumary-sorting.png",
-    "thoughts/university/sfwr-2c03/index.md",
-    "thoughts/university/sfwr-2c03/a1/A1.md",
-    "thoughts/university/sfwr-2c03/W2.md",
     "Untitled.canvas"
   ]
 }
