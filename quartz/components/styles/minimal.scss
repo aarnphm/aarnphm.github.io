@@ -1,11 +1,10 @@
-@use "../../styles/variables.scss" as *;
-
 .minimal-footer {
   display: flex;
   margin-top: auto;
-  padding: 1rem 0;
+  padding: 0;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 
   box-sizing: border-box;
   border: 0 solid var(--gray);
@@ -16,11 +15,13 @@
     font-size: 0.8rem;
     font-style: normal;
     margin: 0;
+    padding: 0;
   }
 
-  & > #year {
+  #icons {
     display: flex;
     flex-direction: row;
+    align-items: center;
   }
 
   & > a {
@@ -46,7 +47,7 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    line-height: 0;
+    line-height: 1;
     box-sizing: border-box;
 
     & > * {
