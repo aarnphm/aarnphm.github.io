@@ -119,7 +119,7 @@ function addGlobalPageResources(
   } else if (cfg.analytics?.provider === "umami") {
     componentResources.afterDOMLoaded.push(`
       const umamiScript = document.createElement("script")
-      umamiScript.src = "https://analytics.umami.is/script.js"
+      umamiScript.src = ${cfg.analytics.host} ?? "https://analytics.umami.is/script.js"
       umamiScript.setAttribute("data-website-id", "${cfg.analytics.websiteId}")
       umamiScript.async = true
 
@@ -195,57 +195,53 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
     },
     async emit(ctx, _content, resources): Promise<FilePath[]> {
       const promises: Promise<FilePath>[] = []
+      const cfg = ctx.cfg.configuration
       // component specific scripts and styles
       const componentResources = getComponentResources(ctx)
       // important that this goes *after* component scripts
       // as the "nav" event gets triggered here and we should make sure
       // that everyone else had the chance to register a listener for it
 
-      let googleFonts = null
+      let googleFontsStyleSheet = ""
       if (fontOrigin === "local") {
         // let the user do it themselves in css
       } else if (fontOrigin === "googleFonts") {
-        let match
-        const bufferPromise: Promise<FontContent>[] = []
+        if (cfg.theme.cdnCaching) {
+          resources.css.push(googleFontHref(cfg.theme))
+        } else {
+          let match
+          const regex = /url\((https:\/\/fonts.gstatic.com\/s\/[^)]+\.(woff2|ttf))\)/g
 
-        // capture font-family, and the url
-        const regex = /url\((https:\/\/fonts.gstatic.com\/s\/[^)]+\.(woff2|ttf))\)/g
+          googleFontsStyleSheet = await (
+            await fetch(googleFontHref(ctx.cfg.configuration.theme))
+          ).text()
 
-        googleFonts = await fetch(googleFontHref(ctx.cfg.configuration.theme)).then((res) =>
-          res.text(),
-        )
+          while ((match = regex.exec(googleFontsStyleSheet)) !== null) {
+            // match[0] is the `url(path)`, match[1] is the `path`
+            const url = match[1]
+            // the static name of this file.
+            const [filename, ext] = url.split("/").pop()!.split(".")
 
-        while ((match = regex.exec(googleFonts)) !== null) {
-          // match[0] is the `url(path)`, match[1] is the `path`
-          const url = match[1]
-          // the static name of this file.
-          const [filename, ext] = url.split("/").pop()!.split(".")
+            googleFontsStyleSheet = googleFontsStyleSheet.replace(url, `/fonts/${filename}.ttf`)
 
-          bufferPromise.push(
-            fetch(url)
-              .then((res) => {
-                if (!res.ok) {
-                  throw new Error(`Failed to fetch font`)
-                }
-                return res.arrayBuffer()
-              })
-              .then((buf) => ({ url, filename, ext, buf: Buffer.from(buf) })),
-          )
-        }
-
-        const fontBuffers = await Promise.all(bufferPromise)
-
-        for (const fontBuffer of fontBuffers) {
-          const { url, filename, ext, buf } = fontBuffer
-          promises.push(
-            write({
-              ctx,
-              slug: joinSegments("fonts", filename) as FullSlug,
-              ext: `.${ext}`,
-              content: buf,
-            }),
-          )
-          googleFonts = googleFonts.replace(url, `/fonts/${filename}.ttf`)
+            promises.push(
+              fetch(url)
+                .then((res) => {
+                  if (!res.ok) {
+                    throw new Error(`Failed to fetch font`)
+                  }
+                  return res.arrayBuffer()
+                })
+                .then((buf) => {
+                  return write({
+                    ctx,
+                    slug: joinSegments("fonts", filename) as FullSlug,
+                    ext: `.${ext}`,
+                    content: Buffer.from(buf),
+                  })
+                }),
+            )
+          }
         }
       }
 
@@ -254,7 +250,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
       const stylesheet = joinStyles(
         ctx.cfg.configuration,
         ...componentResources.css,
-        googleFonts ?? "",
+        googleFontsStyleSheet,
         styles,
       )
       const [prescript, postscript] = await Promise.all([
@@ -263,42 +259,39 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
       ])
 
       promises.push(
-        ...[
-          write({
-            ctx,
-            slug: "index" as FullSlug,
-            ext: ".css",
-            content: transform({
-              filename: "index.css",
-              code: Buffer.from(stylesheet),
-              minify: true,
-              targets: {
-                safari: (15 << 16) | (6 << 8), // 15.6
-                ios_saf: (15 << 16) | (6 << 8), // 15.6
-                edge: 115 << 16,
-                firefox: 102 << 16,
-                chrome: 109 << 16,
-              },
-              include: Features.MediaQueries,
-            }).code.toString(),
-          }),
-          write({
-            ctx,
-            slug: "prescript" as FullSlug,
-            ext: ".js",
-            content: prescript,
-          }),
-          write({
-            ctx,
-            slug: "postscript" as FullSlug,
-            ext: ".js",
-            content: postscript,
-          }),
-        ],
+        write({
+          ctx,
+          slug: "index" as FullSlug,
+          ext: ".css",
+          content: transform({
+            filename: "index.css",
+            code: Buffer.from(stylesheet),
+            minify: true,
+            targets: {
+              safari: (15 << 16) | (6 << 8), // 15.6
+              ios_saf: (15 << 16) | (6 << 8), // 15.6
+              edge: 115 << 16,
+              firefox: 102 << 16,
+              chrome: 109 << 16,
+            },
+            include: Features.MediaQueries,
+          }).code.toString(),
+        }),
+        write({
+          ctx,
+          slug: "prescript" as FullSlug,
+          ext: ".js",
+          content: prescript,
+        }),
+        write({
+          ctx,
+          slug: "postscript" as FullSlug,
+          ext: ".js",
+          content: postscript,
+        }),
       )
 
-      const fps = await Promise.all(promises)
-      return fps
+      return await Promise.all(promises)
     },
   }
 }
