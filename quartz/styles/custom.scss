@@ -21,6 +21,18 @@
   flex-grow: 1;
 }
 
+.katex {
+  font:
+    normal 1em KaTeX_Main,
+    var(--bodyFont),
+    serif !important;
+}
+
+span[class^="katex"] > *,
+figure[data-rehype-pretty-code-figure] {
+  z-index: -1 !important;
+}
+
 code {
   font-size: 0.8em;
 }
@@ -105,20 +117,18 @@ body[data-slug="quotes"] {
     margin: 0;
   }
 
+  & h1,
+  & h2,
   & h3,
   & h4 {
-    font-size: 1.4rem;
+    font-family: var(--bodyFont) !important;
     font-weight: 400;
     font-style: normal;
     line-height: normal;
   }
 
   & h1 {
-    font-size: 2rem;
-    font-family: var(--bodyFont) !important;
     font-weight: 500;
-    font-style: normal;
-    line-height: normal;
   }
 
   & article {

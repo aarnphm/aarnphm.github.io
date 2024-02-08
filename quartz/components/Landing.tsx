@@ -12,6 +12,7 @@ import SpacerConstructor from "./Spacer"
 import KeybindConstructor from "./Keybind"
 import HeaderConstructor from "./Header"
 import { classNames } from "../util/lang"
+import { GlobalConfiguration } from "../cfg"
 
 export const HyperAlias = {
   livres: "/books",
@@ -47,12 +48,13 @@ const AliasLink = (props: AliasLinkProp) => {
   )
 }
 
-const notesLimit = 12
+const notesLimit = 20
 
 const NotesConstructor = (() => {
   const Spacer = SpacerConstructor()
 
   function Notes({ allFiles, fileData, displayClass, cfg }: QuartzComponentProps) {
+    const modifiedCfg: GlobalConfiguration = { ...cfg, defaultDateType: "modified" }
     const pages = allFiles
       .filter((f: Data) => {
         return (
@@ -61,7 +63,7 @@ const NotesConstructor = (() => {
           ) && !f.frontmatter?.noindex
         )
       })
-      .sort(byDateAndAlphabetical(cfg))
+      .sort(byDateAndAlphabetical(modifiedCfg))
     const remaining = Math.max(0, pages.length - notesLimit)
     const classes = ["min-links", "internal"].join(" ")
     return (
@@ -71,14 +73,15 @@ const NotesConstructor = (() => {
           <div>
             <ul class="landing-notes">
               {pages.slice(0, notesLimit).map((page) => {
-                const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
+                const title =
+                  page.frontmatter?.title ?? i18n(modifiedCfg.locale).propertyDefaults.title
 
                 return (
                   <li>
                     <a href={resolveRelative(fileData.slug!, page.slug!)} class={classes}>
                       <div class="landing-meta">
                         <span class="landing-mspan">
-                          {formatDate(getDate(cfg, page)!, cfg.locale)}
+                          {formatDate(getDate(modifiedCfg, page)!, modifiedCfg.locale)}
                         </span>
                         <u lang={"en"}>{title}</u>
                       </div>
@@ -94,13 +97,17 @@ const NotesConstructor = (() => {
                     href={resolveRelative(fileData.slug!, "thoughts/" as SimpleSlug)}
                     class={classes}
                   >
-                    {i18n(cfg.locale).components.recentNotes.seeRemainingMore({ remaining })}
+                    {i18n(modifiedCfg.locale).components.recentNotes.seeRemainingMore({
+                      remaining,
+                    })}
                   </a>
                 </u>
               </p>
             )}
           </div>
-          <Spacer {...({ allFiles, fileData, displayClass, cfg } as QuartzComponentProps)} />
+          <Spacer
+            {...({ allFiles, fileData, displayClass, cfg: modifiedCfg } as QuartzComponentProps)}
+          />
         </div>
       </>
     )
