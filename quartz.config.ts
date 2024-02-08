@@ -76,7 +76,7 @@ const config: QuartzConfig = {
     filters: [Plugin.RemoveDrafts()],
     emitters: [
       Plugin.AliasRedirects(),
-      Plugin.ComponentResources({ fontOrigin: "googleFonts" }),
+      Plugin.ComponentResources({ fontOrigin: "local" }),
       Plugin.ContentPage(),
       Plugin.FolderPage(),
       Plugin.TagPage(),
