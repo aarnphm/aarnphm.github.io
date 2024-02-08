@@ -10,7 +10,7 @@ title: Chaos
 
 Full posts on [chaos of living](posts/Chaos.md).
 
-> Chaos: a lossiness [collection](https://subconscious.substack.com/p/self-organizing-ideas) of one's [[thoughts/Will|will]] to life.
+> Chaos: a looseness [collection](https://subconscious.substack.com/p/self-organizing-ideas) of one's [[thoughts/Will|will]] to life.
 
 The etymology of chaos traces back to the Greek word χάος (khaos), meaning which means abyss, that which gapes wide open, that which is vast and [empty](https://www.merriam-webster.com/wordplay/chaos-meaning-and-history)
 

@@ -14,14 +14,25 @@ See also: [[thoughts/images/htn-openllm.pdf|this talk]]
 
 Exhibits [[thoughts/emergent behaviour]] of [[thoughts/intelligence]], but probably not [[thoughts/AGI]] due to [[thoughts/observer-expectancy effect]]
 
+[[thoughts/LLMs|LLMs]] in one way or another is a form of [[thoughts/Behavirourism]], through [[thoughts/Machine learning|reinforcement learning]]. It is being "told" what is good or bad, and thus act accordingly towards the users. However, this induces [[thoughts/confirmation bias]] where one aligns and contains his/her prejudices towards the problem
+
 ### Scalability
 
 Incredibly hard to scale, mainly due to their [[thoughts/large models|large]] memory footprint and tokens memory allocation.
 
 ### Optimization
 
-- [[thoughts/Quantization|Quantization]]: reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
+- [[thoughts/quantization|Quantization]]: reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
 - Continuous batching: Implementing [[thoughts/Attention#Paged Attention]] with custom scheduler to manage swapping kv-cache for better resource utilisation, implemented at [vLLM](https://github.com/vllm-project/vllm)
+
+### on how we are being [[thoughts/education#teaching|taught]].
+
+How would we assess thinking?
+
+Similar to calculator, it _simplifies_ and increase accessibility to the masses, but in doing so _lost_ the value in _doing math_.
+
+The process of rephrasing and arranging sentences poses a challenges for the writer, and in doing so, teach you how to think coherently. Writing essays is an exercise for students to articulate their thoughts, rather than testing the understanding of the materials.
+
 
 ### AI generated content
 

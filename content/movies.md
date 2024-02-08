@@ -10,7 +10,23 @@ A (mostly) up-to-date film, movies, shows that I have consumed, or on the watch 
 
 > Similar to an [[books|antilibrary]], an anti-blockbusters is a collection of movies, short films that represents the art of film-making.
 
-## [[thoughts/Cinematography|cinema.]]
+Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.com/)
+
+## to [[thoughts/Cinematography|watch.]]
+
+- [ ] The King of Comedy (1982)
+- [ ] La Haine (1995)
+- [ ] Flame & Citron (2008)
+- [ ] Blue is the Warmest Color (2013)
+- [ ] Frances Ha (2012)
+- [ ] Paterson (2016)
+- [ ] Under The Silver Lake (2018)
+- [ ] The Father (2020)
+- [ ] Poor Things (2023)
+- [ ] Maestro (2023)
+- [ ] Dune: Part Two (2024)
+
+## recurring.
 
 ### vintage.
 
@@ -29,8 +45,6 @@ A (mostly) up-to-date film, movies, shows that I have consumed, or on the watch 
 - Notting Hill (1999)
 - Chicago (2002)
 
-- [ ] La Haine (1995)
-
 ### thriller.
 
 - The Breakfast Club (1985)
@@ -43,10 +57,6 @@ A (mostly) up-to-date film, movies, shows that I have consumed, or on the watch 
 - Fury (2014)
 - Joker (2019)
 - The Banshees of Inisherin (2022)
-
-- [ ] Poor Things (2023)
-- [ ] Maestro (2023)
-- [ ] Flame & Citron (2008)
 
 ### comedy.
 
@@ -63,8 +73,6 @@ A (mostly) up-to-date film, movies, shows that I have consumed, or on the watch 
 - Blade Runner 2048 (2017)
 - John Wick series (2014 - 2022)
 - Dune (2021)
-
-- [ ] Dune: Part Two (2024)
 
 ### a24.
 
@@ -131,7 +139,7 @@ A (mostly) up-to-date film, movies, shows that I have consumed, or on the watch 
 
 - The Wonderful Story of Henry Sugar (2023)
 
-## shows.
+### shows.
 
 - Black Mirror
 - Bojack Horseman

@@ -118,9 +118,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/a2/A2.md"
-              }
+              "state": {}
             }
           },
           {
@@ -148,9 +146,7 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/a2/A2.md"
-              }
+              "state": {}
             }
           }
         ],
@@ -173,8 +169,16 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "50238818c2222780",
   "lastOpenFiles": [
+    "thoughts/Constructionist.md",
+    "thoughts/Compression.md",
+    "thoughts/confirmation bias.md",
+    "thoughts/Behavirourism.md",
+    "thoughts/Agency.md",
+    "thoughts/critical thinking.md",
+    "thoughts/education.md",
+    "thoughts/university/sfwr-2c03/a2/A2.md",
     "movies.md",
     "uses.md",
     "thoughts/writing.md",
@@ -211,16 +215,8 @@
     "thoughts/university/sfwr-2fa3/NFA.md",
     "thoughts/university/sfwr-2c03/sumary-sorting.png",
     "thoughts/university/sfwr-2c03/index.md",
-    "thoughts/university/sfwr-2c03/a2/A2.md",
     "thoughts/university/sfwr-2c03/a1/A1.md",
     "thoughts/university/sfwr-2c03/W2.md",
-    "thoughts/university/sfwr-2c03/W1.md",
-    "thoughts/university/sfwr-2c03/Sorting.md",
-    "thoughts/university/philo-1aa3/tut/T1.md",
-    "thoughts/university/philo-1aa3/tut/Symposium.md",
-    "thoughts/university/philo-1aa3/tut/Stoic.md",
-    "thoughts/university/philo-1aa3/tut/Spinoza.md",
-    "thoughts/university/philo-1aa3/tut/Republic.md",
     "Untitled.canvas"
   ]
 }

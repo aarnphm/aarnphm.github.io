@@ -17,6 +17,8 @@ Throw away your 5-year life plan, yet create a garden of your curiosity
 
 Commercial viability vs. creativity endeavour
 
+### sofware.
+
 [Play with Engineering](https://www.youtube.com/watch?v=6Ao8GS488hA&t=579s&ab_channel=StrangeLoopConference)
 
 Four components
@@ -28,9 +30,11 @@ Four components
 
 Involves freedom of choice - social - about the process
 
+See also this tweet[^1]
+
 ### Create spaces not product
 
--> not necessarily meaning you are doing for yourself, but make it possible for others (Design Justice?)
+-> not necessarily meaning you are doing for yourself, but make it possible for others to utilize the space.
 
 ### Play as a form of tinkering
 
@@ -38,7 +42,7 @@ See also: [XH's tweet](https://twitter.com/xhfloz/status/1704176399173488823)
 
 Internet [playground](https://woolgather.sh/issue/2)
 
-Can we shift education system away from assessing students to let them explore their own interests?
+Can we shift [[thoughts/education#system|education system]] away from assessing students to let them explore their own interests?
 
 [Magic Circle](https://subconscious.substack.com/p/magic-circles)
 
@@ -90,3 +94,5 @@ To be playful about games is neither to be utterly serious, or utterly ironic, b
 Necessitates freedom, conditional freedom?
 
 Play often initiate some sort of pressure, such that it expects us to be a part of the construction.
+
+[^1]: https://twitter.com/xhfloz/status/1704176399173488823?s=20
