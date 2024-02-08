@@ -2,6 +2,7 @@
 id: Behavirourism
 tags:
   - education
+  - philosophy
 date: "2024-02-07"
 title: Behavirourism
 ---

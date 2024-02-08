@@ -95,3 +95,5 @@ x_i &\geq 0
 $$
 
 <!-- end date Feb 1 -->
+
+See also [[thoughts/university/eng-3px3/Linear Optimization]]
