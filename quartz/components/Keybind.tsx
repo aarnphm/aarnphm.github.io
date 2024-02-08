@@ -19,7 +19,7 @@ export const KeybindAlias = {
 }
 
 const defaultOptions: Options = {
-  default: ["⌘ ."],
+  default: ["⌘ .", "⌃ ."],
   enableTooltip: true,
 }
 
@@ -47,7 +47,7 @@ export default ((userOpts?: Partial<Options>) => {
   function Keybind({ displayClass }: QuartzComponentProps) {
     return (
       <div class={classNames(displayClass, "keybind")} lang={"fr"}>
-        <kbd id="shortcut-key" data-keybind={revert(defaultKey)}>
+        <kbd id="shortcut-key" data-mapping={JSON.stringify(opts.default?.map(revert))}>
           {defaultKey}
         </kbd>
         {opts.enableTooltip && (
@@ -62,9 +62,11 @@ export default ((userOpts?: Partial<Options>) => {
               {Object.entries(KeybindAlias).map(([key, value]) => (
                 <li>
                   <div id="shortcuts">
-                    <kbd id="clickable-kbd" data-keybind={revert(key)}>
-                      {convert(key)}
-                    </kbd>
+                    <div>
+                      <kbd id="clickable-kbd" data-keybind={revert(key)}>
+                        {convert(key)}
+                      </kbd>
+                    </div>
                     <span>{value}</span>
                   </div>
                 </li>

@@ -54,7 +54,6 @@ const NotesConstructor = (() => {
   const Spacer = SpacerConstructor()
 
   function Notes({ allFiles, fileData, displayClass, cfg }: QuartzComponentProps) {
-    const modifiedCfg: GlobalConfiguration = { ...cfg, defaultDateType: "modified" }
     const pages = allFiles
       .filter((f: Data) => {
         return (
@@ -63,7 +62,7 @@ const NotesConstructor = (() => {
           ) && !f.frontmatter?.noindex
         )
       })
-      .sort(byDateAndAlphabetical(modifiedCfg))
+      .sort(byDateAndAlphabetical(cfg))
     const remaining = Math.max(0, pages.length - notesLimit)
     const classes = ["min-links", "internal"].join(" ")
     return (
@@ -73,15 +72,14 @@ const NotesConstructor = (() => {
           <div>
             <ul class="landing-notes">
               {pages.slice(0, notesLimit).map((page) => {
-                const title =
-                  page.frontmatter?.title ?? i18n(modifiedCfg.locale).propertyDefaults.title
+                const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
 
                 return (
                   <li>
                     <a href={resolveRelative(fileData.slug!, page.slug!)} class={classes}>
                       <div class="landing-meta">
                         <span class="landing-mspan">
-                          {formatDate(getDate(modifiedCfg, page)!, modifiedCfg.locale)}
+                          {formatDate(getDate(cfg, page)!, cfg.locale)}
                         </span>
                         <u lang={"en"}>{title}</u>
                       </div>
@@ -97,7 +95,7 @@ const NotesConstructor = (() => {
                     href={resolveRelative(fileData.slug!, "thoughts/" as SimpleSlug)}
                     class={classes}
                   >
-                    {i18n(modifiedCfg.locale).components.recentNotes.seeRemainingMore({
+                    {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
                       remaining,
                     })}
                   </a>
@@ -105,9 +103,7 @@ const NotesConstructor = (() => {
               </p>
             )}
           </div>
-          <Spacer
-            {...({ allFiles, fileData, displayClass, cfg: modifiedCfg } as QuartzComponentProps)}
-          />
+          <Spacer {...({ allFiles, fileData, displayClass, cfg: cfg } as QuartzComponentProps)} />
         </div>
       </>
     )

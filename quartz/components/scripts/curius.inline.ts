@@ -415,11 +415,12 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     "#curius-fetching-text",
     "#curius-fragments",
     ".navigation-container",
+    ".total-links",
   ].map((id) => document.querySelector(id))
 
   if (elements.some((el) => el === null)) return
 
-  const [container, fetchText, fragment, nav] = elements as HTMLElement[]
+  const [container, fetchText, fragment, nav, total] = elements as HTMLElement[]
 
   fetchText.textContent = "Fetching curius links"
   fetchText.classList.toggle("active", true)

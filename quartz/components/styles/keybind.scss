@@ -23,7 +23,7 @@ kbd {
   & > #shortcut-container {
     position: fixed;
     contain: layout;
-    z-index: 999;
+    z-index: 300;
     left: 0;
     top: 0;
     width: 100vw;
@@ -36,9 +36,7 @@ kbd {
     }
 
     & > #shortcut-space {
-      min-width: 10%;
-      width: fit-content;
-      max-width: 14em;
+      width: 20%;
       margin: 20% auto auto;
       gap: 1.5rem;
       white-space: nowrap;
@@ -77,6 +75,7 @@ kbd {
         padding-inline-start: 1rem;
         list-style: none;
         margin-bottom: 0.5rem;
+        width: initial;
 
         @media all and (max-width: $mobileBreakpoint) {
           padding-inline-start: 4px;
@@ -90,15 +89,13 @@ kbd {
           margin: 0;
           padding: 0;
 
-          &::marker {
-            content: "";
-          }
-
           & > #shortcuts {
-            display: flex;
-            width: 0 0 100%;
-            flex-direction: row;
-            align-items: center;
+            & > * {
+              justify-content: center;
+            }
+
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             margin: 1rem 0;
             gap: 1.5rem;
           }

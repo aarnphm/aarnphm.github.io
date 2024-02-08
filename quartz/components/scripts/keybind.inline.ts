@@ -35,22 +35,27 @@ document.addEventListener("nav", async () => {
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (!shortcutKey) return
-    const [modifier, key] = (shortcutKey.dataset.keybind as string).split("--")
-    const eventProps = propagateEventProps(modifier)
+    for (const binding of JSON.parse(shortcutKey.dataset.mapping as string)) {
+      const [modifier, key] = binding.split("--")
+      const eventProps = propagateEventProps(modifier)
+      if (modal) hideModal()
 
-    if (modal) hideModal()
-
-    if (e.key === key && (e.ctrlKey === eventProps.ctrKey || e.metaKey === eventProps.metaKey)) {
-      e.preventDefault()
-      const containerOpen = container?.classList.contains("active")
-      containerOpen ? hideContainer() : showContainer()
+      if (e.key === key && (e.ctrlKey === eventProps.ctrKey || e.metaKey === eventProps.metaKey)) {
+        e.preventDefault()
+        const containerOpen = container?.classList.contains("active")
+        containerOpen ? hideContainer() : showContainer()
+        break
+      }
     }
   }
 
   const onClick = () => {
     const containerOpen = container?.classList.contains("active")
     if (modal) hideModal()
-    containerOpen ? hideContainer() : showContainer()
+    // NOTE: This is super brittle
+    const search = document.getElementById("search-container")
+    if (search?.classList.contains("active")) hideContainer()
+    else containerOpen ? hideContainer() : showContainer()
   }
 
   document.addEventListener("keydown", shortcutHandler)

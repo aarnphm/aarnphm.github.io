@@ -6,6 +6,7 @@ import curiusStyle from "../styles/curiusPage.scss"
 
 //@ts-ignore
 import curiusScript from "../scripts/curius.inline"
+import { i18n } from "../../i18n"
 
 const Title = () => (
   <div class="curius-title">
@@ -15,6 +16,7 @@ const Title = () => (
         curius.app/aaron-pham
       </a>
     </span>
+    <span class="total-links"></span>
     <svg
       id="curius-refetch"
       aria-labelledby="refetch"
@@ -32,27 +34,35 @@ const Title = () => (
   </div>
 )
 
-const CuriusContainer = () => (
-  <div id="curius-container">
-    <div class="curius-search">
-      <input
-        id="curius-bar"
-        type="text"
-        aria-label="Search for curius links"
-        placeholder="Search for curius links"
-      />
-      <div id="curius-search-container"></div>
-    </div>
-    <div id="curius-fetching-text"></div>
-    <div id="curius-fragments"></div>
-    <div class="highlight-modal" id="highlight-modal">
-      <ul id="highlight-modal-list"></ul>
-    </div>
-  </div>
-)
+const ContainerConstructor = (() => {
+  function Container({ cfg }: QuartzComponentProps) {
+    const searchPlaceholder = i18n(cfg.locale).components.search.searchBarPlaceholder
+    return (
+      <div id="curius-container">
+        <div class="curius-search">
+          <input
+            id="curius-bar"
+            type="text"
+            aria-label={searchPlaceholder}
+            placeholder={searchPlaceholder}
+          />
+          <div id="curius-search-container"></div>
+        </div>
+        <div id="curius-fetching-text"></div>
+        <div id="curius-fragments"></div>
+        <div class="highlight-modal" id="highlight-modal">
+          <ul id="highlight-modal-list"></ul>
+        </div>
+      </div>
+    )
+  }
+
+  return Container
+}) satisfies QuartzComponentConstructor
 
 function CuriusContent(componentData: QuartzComponentProps) {
   const Meta = MetaConstructor({ enableSearch: false })
+  const CuriusContainer = ContainerConstructor()
   const Navigation = NavigationConstructor({ prev: "/quotes", next: "/books" })
 
   return (
@@ -60,7 +70,7 @@ function CuriusContent(componentData: QuartzComponentProps) {
       <Meta {...componentData} />
       <div id="curius">
         <Title />
-        <CuriusContainer />
+        <CuriusContainer {...componentData} />
       </div>
       <Navigation {...componentData} />
     </div>

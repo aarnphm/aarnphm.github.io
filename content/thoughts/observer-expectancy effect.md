@@ -10,7 +10,7 @@ The observer's prejudices influence towards the people she/he is observing.
 
 ## Robert Rosenthal
 
-paper: _The effect of experimenter bias on the performance of the albino rat_
+paper: **The effect of experimenter bias on the performance of the albino rat**
 
 ### Clever Hans
 
