@@ -31,14 +31,12 @@ interface Options {
   enableRecentNotes: boolean
   enableExplorer: boolean
   enableMeta: boolean
-  listView: boolean
 }
 
 const defaultOptions: Options = {
   enableRecentNotes: false,
   enableExplorer: false,
   enableMeta: false,
-  listView: false,
 }
 
 const left = (userOpts?: Partial<Options>) => {
@@ -52,8 +50,6 @@ const left = (userOpts?: Partial<Options>) => {
   ]
 
   const desktopOnly = []
-
-  if (!opts.listView) desktopOnly.push(Component.TableOfContents())
 
   if (opts.enableMeta) left.push(Component.Meta({ enableSearch: false, enableDarkMode: false }))
 
@@ -89,6 +85,7 @@ const right = () => {
         localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
       }),
       Component.Backlinks(),
+      Component.DesktopOnly(Component.TableOfContents()),
     ],
   }
 }
@@ -110,6 +107,6 @@ export const defaultContentPageLayout: PageLayout = {
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
   ...beforeBody(false, false),
-  ...left({ enableExplorer: true, enableMeta: true, listView: true }),
+  ...left({ enableExplorer: true, enableMeta: true }),
   right: [],
 }

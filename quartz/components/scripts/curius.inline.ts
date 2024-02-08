@@ -2,7 +2,7 @@ import FlexSearch, { IndexOptions } from "flexsearch"
 import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util"
 import { computePosition, arrow as arrowFloating, inline, offset } from "@floating-ui/dom"
 import type { Coords } from "@floating-ui/dom"
-import { sample } from "../../util/glob"
+import { sample } from "../../util/helpers"
 
 interface Entity {
   id: number
