@@ -98,6 +98,8 @@ declare module "vfile" {
         enableToc: string
         cssclasses: string[]
         navigation: Navigation
+        construction: boolean
+        noindex: boolean
       }>
   }
 }

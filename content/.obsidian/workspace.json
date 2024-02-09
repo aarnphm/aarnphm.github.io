@@ -11,8 +11,13 @@
             "id": "810a3fdf2529fc6d",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "_index.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
             }
           }
         ]
@@ -81,6 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "_index.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -97,6 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "_index.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -118,7 +125,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "_index.md"
+              }
             }
           },
           {
@@ -146,7 +155,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {}
+              "state": {
+                "file": "_index.md"
+              }
             }
           }
         ],
@@ -171,6 +182,12 @@
   },
   "active": "810a3fdf2529fc6d",
   "lastOpenFiles": [
+    "thoughts/Hypertext.md",
+    "thoughts/images/hypertext.png",
+    "thoughts/Digital garden.md",
+    "thoughts/Database.md",
+    "thoughts/Networked Thoughts.md",
+    "thoughts/networked thoughts.md",
     "private/Term of Reference.md",
     "Untitled.canvas",
     "private/Reservation list.md",
@@ -192,11 +209,6 @@
     "tags/seed.md",
     "tags/university.md",
     "tags/ml.md",
-    "tags/evergreen.md",
-    "thoughts/Alignment.md",
-    "thoughts/Garbage in Garbage out.md",
-    "thoughts/Constructionist.md",
-    "thoughts/Compression.md",
     "thoughts/university/sfwr-3dx4/time_response.pdf",
     "thoughts/university/sfwr-3dx4/state_space.pdf",
     "thoughts/university/sfwr-3dx4/stability.pdf",
@@ -215,7 +227,6 @@
     "thoughts/university/sfwr-2fa3/yxx-nfa.png",
     "thoughts/university/sfwr-2fa3/yxx-nfa-4s.png",
     "thoughts/university/sfwr-2fa3/eps-nfa.png",
-    "thoughts/university/sfwr-2fa3/abxba-nfa.png",
-    "thoughts/university/sfwr-2c03/sumary-sorting.png"
+    "thoughts/university/sfwr-2fa3/abxba-nfa.png"
   ]
 }

@@ -32,7 +32,9 @@ export const ContentAlias = {
   "open-source projects": "/projects",
   agency: "/thoughts/Agency",
   desire: "/thoughts/desire",
+  hypertext: "/thoughts/Hypertext",
   "large language models": "/thoughts/LLMs",
+  "digital garden": "/thoughts/Digital-garden",
 }
 
 const combined = (...objects: any[]) => objects.flatMap(Object.values).map((a) => _stripSlashes(a))
@@ -90,11 +92,13 @@ const NotesConstructor = (() => {
             "music",
             "quotes",
             ...cfg.ignorePatterns,
-          ].some((it) => (f.slug as FullSlug).includes(it)) && !f.frontmatter?.noindex
+          ].some((it) => (f.slug as FullSlug).includes(it)) &&
+          !f.frontmatter?.noindex &&
+          !f.frontmatter?.construction
         )
       })
       .sort(byDateAndAlphabetical(cfg))
-    const remaining = Math.max(0, pages.length - notesLimit)
+    const remaining = Math.max(0, allFiles.length - notesLimit)
     const classes = ["min-links", "internal"].join(" ")
     return (
       <>
@@ -176,6 +180,11 @@ const ContentConstructor = (() => {
             serving infrastructure
           </a>{" "}
           and explore our interaction with {getContentAlias("large language models")}.
+        </p>
+        <p>
+          You are currently at the <em>index</em> of my {getContentAlias("hypertext")}{" "}
+          {getContentAlias("digital garden")}. As far as a "about" page goes, feel free to explore
+          around. Please don't hesitate to reach out if you have any questions or just want to chat.
         </p>
         <hr />
         <Notes {...componentData} />

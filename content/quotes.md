@@ -1,8 +1,5 @@
 ---
 id: quotes
-aliases:
-  - quotes
-  - advices
 tags:
   - evergreen
 date: "2024-01-23"
@@ -22,6 +19,8 @@ Throw me some wisdom, and advices? I have none. -- Jesse Camacho
 ## On bits and bytes.
 
 Computer is a bicycle for the mind. -- [Steve Jobs](https://www.youtube.com/watch?v=ob_GX50Za6c&ab_channel=MichaelLawrence)
+
+All I can say to the young is close your eyes. -- Ted Nelson
 
 ## On perspectives.
 

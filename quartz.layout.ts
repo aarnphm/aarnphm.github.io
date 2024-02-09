@@ -20,7 +20,10 @@ function recentFilter(path: string, excludePaths: string[] = []) {
     if (slug.startsWith(path + "/")) {
       const subpath = slug.slice(path.length + 1).split("/")[0]
       return (
-        !excludePaths.includes(subpath) && f.slug! !== path + "/index" && !f.frontmatter?.noindex
+        !excludePaths.includes(subpath) &&
+        f.slug! !== path + "/index" &&
+        !f.frontmatter?.noindex &&
+        !f.frontmatter?.construction
       )
     }
     return false
