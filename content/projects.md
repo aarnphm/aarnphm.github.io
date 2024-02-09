@@ -5,9 +5,16 @@ tags:
   - technical
 date: "2021-12-22"
 title: projects.
+aliases:
+ - resume
+ - resumes
 ---
 
-The list below are notable projects I'm currently [maintaining](https://github.com/aarnphm)/finished. A more incomplete list of ideas that I will do sometime can be found in [[thoughts/backburners]]. For [[thoughts/writing]] see [mailbox](/posts/). If you want a resume see [[thoughts/images/2023-resume.pdf|here]]
+Includes some of the projects I'm currently [maintaining](https://github.com/aarnphm). A more incomplete list of ideas can be found in [[thoughts/backburners]].
+
+For [[thoughts/writing]] see [mailbox](/posts/).
+
+Here is the [[thoughts/images/2023-resume.pdf|pdf]] version of this.
 
 ## OpenLLM -- Serve, fine-tune and deploy [[thoughts/LLMs|LLMs]] in production
 

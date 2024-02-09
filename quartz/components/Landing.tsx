@@ -17,7 +17,7 @@ import { GlobalConfiguration } from "../cfg"
 export const HyperAlias = {
   livres: "/books",
   "boîte aux lettres": "/posts/",
-  projets: "/thoughts/projects",
+  projets: "/projects",
   uses: "/uses",
   advices: "/quotes",
   affecter: "/influence",
@@ -29,7 +29,7 @@ export const ContentAlias = {
   cooking: "/thoughts/Dishes",
   writing: "/thoughts/writing",
   reading: "/books",
-  "open-source projects": "/thoughts/projects",
+  "open-source projects": "/projects",
   agency: "/thoughts/Agency",
   desire: "/thoughts/desire",
   "large language models": "/thoughts/LLMs",
@@ -211,10 +211,16 @@ export default (() => {
 
   function LandingComponent(componentData: QuartzComponentProps) {
     return (
-      <div class="popover-hint">
-        <div class={classNames(componentData.displayClass, "landing")}>
-          <Meta {...componentData} />
-          <Content {...componentData} />
+      <div id="quartz-root" class="page">
+        <div id="quartz-body">
+          <div class="center">
+            <article class="popover-hint">
+              <div class={classNames(componentData.displayClass, "landing")}>
+                <Meta {...componentData} />
+                <Content {...componentData} />
+              </div>
+            </article>
+          </div>
         </div>
       </div>
     )

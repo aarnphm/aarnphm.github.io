@@ -54,7 +54,7 @@ execution and efficient batching strategies.
 
 ## What is BentoML?
 
-[[thoughts/projects#bentoml--build-production-grade-ai-application|BentoML]] is an open-source platform designed to facilitate the development,
+[[projects#bentoml--build-production-grade-ai-application|BentoML]] is an open-source platform designed to facilitate the development,
 shipping, and scaling of AI applications. It empowers teams to rapidly develop
 AI applications that involve multiple models and custom logic using Python. Once
 developed, BentoML allows these applications to be seamlessly shipped to

@@ -94,12 +94,14 @@ a.min-links {
 }
 
 .content-container {
-  margin: $topSpacing auto;
-  max-width: $pageWidth;
-  font-weight: normal;
+  margin-top: $topSpacing;
 
   @media all and (max-width: $fullPageWidth) {
-    width: 60%;
+    width: initial;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 1rem;
   }
 
   hr {
