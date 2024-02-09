@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_index.md",
+                "file": "uses.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "_index.md",
+                "file": "uses.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "_index.md",
+                "file": "uses.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "_index.md"
+                "file": "uses.md"
               }
             }
           },
@@ -156,7 +156,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "_index.md"
+                "file": "uses.md"
               }
             }
           }
@@ -182,6 +182,7 @@
   },
   "active": "810a3fdf2529fc6d",
   "lastOpenFiles": [
+    "_index.md",
     "thoughts/Hypertext.md",
     "thoughts/images/hypertext.png",
     "thoughts/Digital garden.md",
@@ -199,7 +200,6 @@
     "private/bentoml/Runner interface.md",
     "thoughts/Philosophy and Nietzsche.md",
     "books.md",
-    "_index.md",
     "influence.md",
     "quotes.md",
     "thoughts/Philosophy-and-Nietzsche.md",

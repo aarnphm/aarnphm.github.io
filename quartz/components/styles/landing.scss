@@ -3,6 +3,7 @@
 
 body[data-slug="index"] {
   cursor: crosshair;
+  overflow-x: hidden;
 
   & > *,
   h1,
