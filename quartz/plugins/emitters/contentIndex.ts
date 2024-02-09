@@ -2,11 +2,19 @@ import { Root } from "hast"
 import { GlobalConfiguration } from "../../cfg"
 import { getDate } from "../../components/Date"
 import { escapeHTML } from "../../util/escape"
-import { FilePath, FullSlug, SimpleSlug, joinSegments, simplifySlug } from "../../util/path"
+import {
+  FilePath,
+  FullSlug,
+  SimpleSlug,
+  _stripSlashes,
+  joinSegments,
+  simplifySlug,
+} from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
 import { toHtml } from "hast-util-to-html"
 import { write } from "./helpers"
 import { i18n } from "../../i18n"
+import { LandingLinks } from "../../components/Landing"
 
 export type ContentIndex = Map<FullSlug, ContentDetails>
 export type ContentDetails = {
@@ -99,10 +107,32 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
       for (const [tree, file] of content) {
         const slug = file.data.slug!
         const date = getDate(ctx.cfg.configuration, file.data) ?? new Date()
+
+        // Handle index separately since we have a landing page
+        if (slug === "index") {
+          linkIndex.set(slug, {
+            links: LandingLinks as SimpleSlug[],
+            date: date,
+            content: "",
+            richContent: undefined,
+            title: file.data.frontmatter?.title!,
+            tags: file.data.frontmatter?.tags ?? [],
+            description: file.data.description ?? "",
+          })
+          continue
+        }
+
         if (opts?.includeEmptyFiles || (file.data.text && file.data.text !== "")) {
+          const links = file.data.links ?? []
+          if (LandingLinks.includes(slug)) {
+            links.push(simplifySlug("index" as FullSlug))
+          }
+
+          file.data.links = links
+
           linkIndex.set(slug, {
             title: file.data.frontmatter?.title!,
-            links: file.data.links ?? [],
+            links,
             tags: file.data.frontmatter?.tags ?? [],
             content: file.data.text ?? "",
             richContent: opts?.rssFullHtml

@@ -4,7 +4,7 @@ import MetaConstructor from "./Meta"
 import style from "./styles/landing.scss"
 import { byDateAndAlphabetical } from "./PageList"
 import { i18n } from "../i18n"
-import { FullSlug, SimpleSlug, resolveRelative } from "../util/path"
+import { FullSlug, SimpleSlug, _stripSlashes, resolveRelative } from "../util/path"
 import { Data } from "vfile"
 import { getDate, formatDate } from "./Date"
 import DarkmodeConstructor from "./Darkmode"
@@ -23,12 +23,29 @@ export const HyperAlias = {
   affecter: "/influence",
   parfum: "/thoughts/Scents",
 }
+
+export const ContentAlias = {
+  Chaos: "/thoughts/Chaos",
+  cooking: "/thoughts/Dishes",
+  writing: "/thoughts/writing",
+  reading: "/books",
+  "open-source projects": "/thoughts/projects",
+  agency: "/thoughts/Agency",
+  desire: "/thoughts/desire",
+  "large language models": "/thoughts/LLMs",
+}
+
+const combined = (...objects: any[]) => objects.flatMap(Object.values).map((a) => _stripSlashes(a))
+
+export const LandingLinks = combined(HyperAlias, ContentAlias)
+
 export const SocialAlias = {
   github: "https://github.com/aarnphm",
   twitter: "https://x.com/aarnphm_",
   curius: "/curius",
   contact: "mailto:contact@aarnphm.xyz",
 }
+
 type AliasLinkProp = {
   name: string
   url: string
@@ -46,6 +63,12 @@ const AliasLink = (props: AliasLinkProp) => {
       {opts.name}
     </a>
   )
+}
+
+type ContentType = keyof typeof ContentAlias
+
+const getContentAlias = (name: string) => {
+  return <AliasLink name={name} url={ContentAlias[name as ContentType] ?? "/"} isInternal />
 }
 
 const notesLimit = 20
@@ -81,7 +104,7 @@ const NotesConstructor = (() => {
                         <span class="landing-mspan">
                           {formatDate(getDate(cfg, page)!, cfg.locale)}
                         </span>
-                        <u lang={"en"}>{title}</u>
+                        <span class="title-span">{title}</span>
                       </div>
                     </a>
                   </li>
@@ -127,17 +150,12 @@ const ContentConstructor = (() => {
         </Header>
         <p lang="en">
           Beige and <span class="rose">rosé</span> are my two favorite colours.{" "}
-          <AliasLink name="Chaos" url="/thoughts/Chaos" isInternal /> constructs the id and form the
-          ego. I enjoy treating my friends with{" "}
-          <AliasLink name="cooking" url="/thoughts/Dishes" isInternal />. I spend a lot of time{" "}
-          <AliasLink name="writing" url="/thoughts/writing" isInternal />
+          {getContentAlias("Chaos")} constructs the id and form the ego. I enjoy treating my friends
+          with {getContentAlias("cooking")}. I spend a lot of time {getContentAlias("writing")}
           {", "}
-          <AliasLink name="reading" url="/books" isInternal />
-          {", "}
-          and maintaining{" "}
-          <AliasLink name="open-source projects" url="/thoughts/projects" isInternal />. I'm pretty
-          bullish on high <AliasLink name="agency" url="/thoughts/Agency" isInternal /> and fullfil
-          one's <AliasLink name="desire" url="/thoughts/desire" isInternal /> in life.
+          {getContentAlias("reading")}
+          {", "} and maintaining {getContentAlias("open-source projects")}. I'm pretty bullish on
+          high {getContentAlias("agency")} and fullfil one's {getContentAlias("desire")} in life.
         </p>
         <p>
           Currently, I'm building{" "}
@@ -149,11 +167,7 @@ const ContentConstructor = (() => {
           >
             serving infrastructure
           </a>{" "}
-          and explore our interaction with{" "}
-          <a href={"/thoughts/LLMs"} target="_self" class="internal landing-links">
-            large language models
-          </a>
-          .
+          and explore our interaction with {getContentAlias("large language models")}.
         </p>
         <hr />
         <Notes {...componentData} />
