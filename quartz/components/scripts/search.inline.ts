@@ -40,9 +40,9 @@ let index = new FlexSearch.Document<Item>({
 
 const p = new DOMParser()
 const fetchContentCache: Map<FullSlug, Element[]> = new Map()
-const contextWindowWords = 30
-const numSearchResults = 8
-const numTagResults = 5
+const contextWindowWords = 50
+const numSearchResults = 15
+const numTagResults = 15
 
 const tokenizeTerm = (term: string) => {
   const tokens = term.split(/\s+/).filter((t) => t.trim() !== "")

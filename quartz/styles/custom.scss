@@ -49,8 +49,9 @@ figure[data-rehype-pretty-code-figure] {
   z-index: -1 !important;
 }
 
-body {
-  animation: fadeIn 2s cubic-bezier(0.165, 0.84, 0.44, 1);
+.preview-inner span[class^="katex"] > *,
+.preview-inner figure[data-rehype-pretty-code-figure] {
+  z-index: 999 !important;
 }
 
 code {
