@@ -104,7 +104,7 @@ const NotesConstructor = (() => {
                         <span class="landing-mspan">
                           {formatDate(getDate(cfg, page)!, cfg.locale)}
                         </span>
-                        <span class="title-span">{title}</span>
+                        <u>{title}</u>
                       </div>
                     </a>
                   </li>

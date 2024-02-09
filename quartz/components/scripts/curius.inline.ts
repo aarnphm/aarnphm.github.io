@@ -441,6 +441,14 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     const onClick = async () => {
       if (isTimeout) return
 
+      const searchContainer = document.getElementById(
+        "curius-search-container",
+      ) as HTMLDivElement | null
+
+      if (searchContainer?.classList.contains("active")) {
+        searchContainer.classList.remove("active")
+      }
+
       refetchIcon.classList.add("disabled")
       refetchIcon.style.opacity = "0.5"
 

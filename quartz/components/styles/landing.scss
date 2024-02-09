@@ -22,7 +22,6 @@ body[data-slug="index"] {
     background-color: inherit;
   }
 
-  .title-span,
   a.internal[class*="landing-links"] {
     font-style: inherit;
     border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
@@ -36,7 +35,6 @@ body[data-slug="index"] {
 }
 
 [saved-theme="dark"] body[data-slug="index"] {
-  .title-span,
   a.internal[class*="landing-links"] {
     border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
   }

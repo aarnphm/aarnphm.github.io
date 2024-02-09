@@ -1,5 +1,6 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import navigationCss from "./styles/navigation.scss"
+import { FullSlug, TransformOptions, transformLink } from "../util/path"
 
 interface Options {
   prev: string
@@ -12,9 +13,27 @@ const defaultOptions: Options = {
 }
 
 export default ((userOpts?: Partial<Options>) => {
-  function Navigation({ fileData, componentData }: QuartzComponentProps) {
+  function Navigation({ fileData, allFiles }: QuartzComponentProps) {
+    const transformOpts: TransformOptions = {
+      strategy: "absolute",
+      allSlugs: allFiles.map((f) => f.slug as FullSlug),
+    }
+
+    const transformNav = (nav: string) =>
+      transformLink(fileData.slug!, nav.replace(/['"\[\]]+/g, ""), transformOpts)
+
+    const navigation = fileData.frontmatter?.navigation
+    let baseOpts: Options = defaultOptions
+    if (navigation) {
+      baseOpts = {
+        ...defaultOptions,
+        prev: transformNav(navigation.prev),
+        next: transformNav(navigation.next),
+      }
+    }
+
     const frontmatter = fileData.frontmatter
-    const opts = { ...defaultOptions, ...frontmatter?.navigation, ...userOpts }
+    const opts = { ...baseOpts, ...userOpts }
     return (
       <footer class="navigation-container">
         <p>

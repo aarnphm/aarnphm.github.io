@@ -1,13 +1,15 @@
 ---
 id: influence
+aliases:
+  - influence
 tags:
   - evergreen
   - growth
 date: "2024-01-23"
 description: A list of folks that inspires me a bunch
 navigation:
-  next: /posts
-  prev: /tags/philosophy
+  next: "[[posts]]"
+  prev: "[[tags/philosophy]]"
 title: affecter.
 ---
 

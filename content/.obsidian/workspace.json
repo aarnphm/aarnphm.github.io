@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "95b5049fe150a018",
+        "id": "a7b532ebdc2b683e",
         "type": "tabs",
         "children": [
           {
-            "id": "50238818c2222780",
+            "id": "810a3fdf2529fc6d",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tags/technical.md",
+                "file": "quotes.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "tags/technical.md",
+                "file": "quotes.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "tags/technical.md",
+                "file": "quotes.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "tags/technical.md"
+                "file": "quotes.md"
               }
             }
           },
@@ -156,7 +156,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "tags/technical.md"
+                "file": "quotes.md"
               }
             }
           }
@@ -180,10 +180,12 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "50238818c2222780",
+  "active": "810a3fdf2529fc6d",
   "lastOpenFiles": [
-    "tags/seed.md",
+    "2024-01-23.md",
+    "quotes.md",
     "tags/technical.md",
+    "tags/seed.md",
     "tags/university.md",
     "tags/ml.md",
     "tags/evergreen.md",
@@ -219,8 +221,6 @@
     "thoughts/university/sfwr-3dx4/Time response.md",
     "thoughts/university/sfwr-3dx4/State space representation.md",
     "thoughts/university/sfwr-3dx4/Frequency Domain.md",
-    "thoughts/university/sfwr-3dx4/Block Diagrams.md",
-    "thoughts/university/sfwr-3bb4/index.md",
     "thoughts/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",
     "thoughts/university/sfwr-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
     "thoughts/university/sfwr-2fa3/yxx-nfa.png",
