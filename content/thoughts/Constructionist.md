@@ -2,8 +2,8 @@
 id: Constructionist
 tags:
   - seed
+construction: true
 date: "2024-02-07"
-draft: true
 title: Constructionist
 ---
 

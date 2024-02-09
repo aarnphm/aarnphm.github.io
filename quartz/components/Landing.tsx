@@ -130,11 +130,14 @@ const ContentConstructor = (() => {
           <AliasLink name="Chaos" url="/thoughts/Chaos" isInternal /> constructs the id and form the
           ego. I enjoy treating my friends with{" "}
           <AliasLink name="cooking" url="/thoughts/Dishes" isInternal />. I spend a lot of time{" "}
-          <AliasLink name="writing" url="/thoughts/writing" isInternal /> {","}
-          <AliasLink name="reading" url="/books" isInternal /> {","}
-          and maintaining <AliasLink name="open-source projects" url="/projects" isInternal />. I'm
-          pretty bullish on high <AliasLink name="agency" url="/thoughts/Agency" isInternal /> and
-          fullfil one's <AliasLink name="desire" url="/thoughts/desire" isInternal /> in life.
+          <AliasLink name="writing" url="/thoughts/writing" isInternal />
+          {", "}
+          <AliasLink name="reading" url="/books" isInternal />
+          {", "}
+          and maintaining{" "}
+          <AliasLink name="open-source projects" url="/thoughts/projects" isInternal />. I'm pretty
+          bullish on high <AliasLink name="agency" url="/thoughts/Agency" isInternal /> and fullfil
+          one's <AliasLink name="desire" url="/thoughts/desire" isInternal /> in life.
         </p>
         <p>
           Currently, I'm building{" "}
