@@ -49,7 +49,7 @@ const left = (userOpts?: Partial<Options>) => {
     Component.Keybind({ enableTooltip: false }),
   ]
 
-  const desktopOnly = []
+  const desktopOnly: QuartzComponent[] = []
 
   if (opts.enableMeta) left.push(Component.Meta({ enableSearch: false, enableDarkMode: false }))
 

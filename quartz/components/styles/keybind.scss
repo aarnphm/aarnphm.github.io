@@ -38,16 +38,18 @@ kbd {
     & > #shortcut-space {
       width: 20%;
       margin: 20% auto auto;
-      gap: 1.5rem;
       white-space: nowrap;
 
       background: var(--light);
       border: 1px solid rgb(170, 170, 170);
-      border-radius: 5px;
-
+      border-radius: 7px;
       box-shadow:
         0 14px 50px rgba(27, 33, 48, 0.12),
         0 10px 30px rgba(27, 33, 48, 0.16);
+
+      @media all and (max-width: $fullPageWidth) {
+        width: 80%;
+      }
 
       & > * {
         width: 100%;

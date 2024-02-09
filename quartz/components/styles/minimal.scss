@@ -1,19 +1,17 @@
 .minimal-footer {
   display: flex;
-  margin-top: auto;
-  padding: 0;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-
   box-sizing: border-box;
   border: 0 solid var(--gray);
   border-top-width: 1px;
 
-  p {
-    font-family: var(--bodyFont);
-    font-size: 0.8rem;
-    font-style: normal;
+  font-family: var(--bodyFont);
+  font-size: 0.8rem;
+  font-style: normal;
+
+  & > * {
     margin: 0;
     padding: 0;
   }
@@ -21,7 +19,7 @@
   #icons {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    line-eheight: 0;
   }
 
   & > a {
@@ -37,17 +35,13 @@
   & li {
     font-size: 0.8rem;
     list-style: none;
-    margin: 0;
     margin-right: 0.8rem;
-    padding: 0;
     display: flex;
     flex-direction: row;
-    gap: 0.8rem;
 
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    line-height: 1;
     box-sizing: border-box;
 
     & > * {
