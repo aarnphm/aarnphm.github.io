@@ -15,7 +15,7 @@ export const KeybindAlias = {
   "cmd+g": "graphique",
   "cmd+o": "mode sombre",
   "cmd+\\": "page d'accueil",
-  ".": "curseur de chat",
+  "cmd+.": "curseur de chat",
 }
 
 const defaultOptions: Options = {
@@ -57,7 +57,7 @@ export default ((userOpts?: Partial<Options>) => {
         )}
         <div id="shortcut-container">
           <div id="shortcut-space">
-            <span id="title">raccourcis clavier</span>
+            <div id="title">raccourcis clavier</div>
             <ul>
               {Object.entries(KeybindAlias).map(([key, value]) => (
                 <li>
