@@ -73,40 +73,56 @@ const getContentAlias = (name: string) => {
   return <AliasLink name={name} url={ContentAlias[name as ContentType] ?? "/"} isInternal />
 }
 
-const notesLimit = 20
+interface Options {
+  slug: SimpleSlug
+  numLimits?: number
+  header?: string
+}
 
-const NotesConstructor = (() => {
+const defaultOptions: Options = {
+  header: "récentes",
+  slug: "thoughts/" as SimpleSlug,
+  numLimits: 15,
+}
+
+const NotesConstructor = ((userOpts?: Options) => {
   const Spacer = SpacerConstructor()
+
+  const opts = { ...defaultOptions, ...userOpts }
 
   function Notes({ allFiles, fileData, displayClass, cfg }: QuartzComponentProps) {
     const pages = allFiles
       .filter((f: Data) => {
-        return (
-          ![
-            "university",
-            "tags",
-            "index",
-            "influence",
-            "uses",
-            "curius",
-            "music",
-            "quotes",
-            ...cfg.ignorePatterns,
-          ].some((it) => (f.slug as FullSlug).includes(it)) &&
-          !f.frontmatter?.noindex &&
-          !f.frontmatter?.construction
-        )
+        if (f.slug!.startsWith(opts.slug)) {
+          return (
+            ![
+              "university",
+              "tags",
+              "index",
+              "influence",
+              "uses",
+              "curius",
+              "music",
+              "quotes",
+              ...cfg.ignorePatterns,
+            ].some((it) => (f.slug as FullSlug).includes(it)) &&
+            !f.frontmatter?.noindex &&
+            !f.frontmatter?.construction
+          )
+        }
+        return false
       })
       .sort(byDateAndAlphabetical(cfg))
-    const remaining = Math.max(0, allFiles.length - notesLimit)
+
+    const remaining = Math.max(0, pages.length - opts.numLimits!)
     const classes = ["min-links", "internal"].join(" ")
     return (
       <>
-        <h2>récentes:</h2>
+        <h2>{opts.header}.</h2>
         <div class="notes-container">
           <div>
             <ul class="landing-notes">
-              {pages.slice(0, notesLimit).map((page) => {
+              {pages.slice(0, opts.numLimits).map((page) => {
                 const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
 
                 return (
@@ -126,10 +142,7 @@ const NotesConstructor = (() => {
             {remaining > 0 && (
               <p>
                 <u>
-                  <a
-                    href={resolveRelative(fileData.slug!, "thoughts/" as SimpleSlug)}
-                    class={classes}
-                  >
+                  <a href={resolveRelative(fileData.slug!, opts.slug)} class={classes}>
                     {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
                       remaining,
                     })}
@@ -148,9 +161,14 @@ const NotesConstructor = (() => {
 
 const ContentConstructor = (() => {
   const Header = HeaderConstructor()
-  const Notes = NotesConstructor()
   const Darkmode = DarkmodeConstructor()
   const Keybind = KeybindConstructor()
+  const RecentNotes = NotesConstructor()
+  const RecentPosts = NotesConstructor({
+    header: "écriture",
+    slug: "posts/" as SimpleSlug,
+    numLimits: 3,
+  })
 
   function Content(componentData: QuartzComponentProps) {
     return (
@@ -183,11 +201,13 @@ const ContentConstructor = (() => {
         </p>
         <p>
           You are currently at the <em>index</em> of my {getContentAlias("hypertext")}{" "}
-          {getContentAlias("digital garden")}. As far as a "about" page goes, feel free to explore
-          around. Please don't hesitate to reach out if you have any questions or just want to chat.
+          {getContentAlias("digital garden")}. Feel free to explore around. Please don't hesitate to
+          reach out if you have any questions or just want to chat.
         </p>
         <hr />
-        <Notes {...componentData} />
+        <RecentPosts {...componentData} />
+        <hr />
+        <RecentNotes {...componentData} />
         <hr />
         <div class="hyperlinks">
           <h2>jardin:</h2>
