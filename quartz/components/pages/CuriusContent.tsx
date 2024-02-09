@@ -11,7 +11,7 @@ import { i18n } from "../../i18n"
 const Title = () => (
   <div class="curius-title">
     <span>
-      See more on{" "}
+      Voir plus sur{" "}
       <a href="https://curius.app/aaron-pham" target="_blank">
         curius.app/aaron-pham
       </a>

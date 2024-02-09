@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/university/philo-1aa3/tut/Being qua being.md",
+                "file": "thoughts/university/sfwr-3dx4/assignment1.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/philo-1aa3/tut/Being qua being.md",
+                "file": "thoughts/university/sfwr-3dx4/assignment1.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/philo-1aa3/tut/Being qua being.md",
+                "file": "thoughts/university/sfwr-3dx4/assignment1.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/philo-1aa3/tut/Being qua being.md"
+                "file": "thoughts/university/sfwr-3dx4/assignment1.md"
               }
             }
           },
@@ -156,7 +156,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/philo-1aa3/tut/Being qua being.md"
+                "file": "thoughts/university/sfwr-3dx4/assignment1.md"
               }
             }
           }
@@ -182,6 +182,9 @@
   },
   "active": "59fd19f001b80287",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-3dx4/assignment-1-circuit.png",
+    "thoughts/university/sfwr-3dx4/assignment1.md",
+    "thoughts/university/philo-1aa3/tut/Being qua being.md",
     "thoughts/Metaphysics.md",
     "books.md",
     "uses.md",
@@ -207,9 +210,6 @@
     "thoughts/Philosophy-and-Nietzsche.md",
     "tags/philosophy.md",
     "2024-01-23.md",
-    "tags/technical.md",
-    "tags/seed.md",
-    "tags/university.md",
     "thoughts/university/sfwr-3dx4/time_response.pdf",
     "thoughts/university/sfwr-3dx4/state_space.pdf",
     "thoughts/university/sfwr-3dx4/stability.pdf",

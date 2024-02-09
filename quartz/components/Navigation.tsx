@@ -33,19 +33,19 @@ export default ((userOpts?: Partial<Options>) => {
       }
     }
 
+    const getALink = (text: string, href: string) => (
+      <a href={href} rel="noopener noreferrer">
+        {text}
+      </a>
+    )
+
     const frontmatter = fileData.frontmatter
     const opts = { ...baseOpts, ...userOpts }
     return (
       <footer class="navigation-container">
         <p>
-          You might be interested in{" "}
-          <a href={opts.prev} rel="noopener noreferrer">
-            this
-          </a>{" "}
-          or{" "}
-          <a href={opts.next} rel="noopener noreferrer">
-            maybe this.
-          </a>
+          Vous pourriez être intéressé par {getALink("cela", opts.prev)} ou{" "}
+          {getALink("peut-être cela", opts.next)}.
         </p>
       </footer>
     )
