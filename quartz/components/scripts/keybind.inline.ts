@@ -37,10 +37,9 @@ document.addEventListener("nav", async () => {
     if (!shortcutKey) return
     for (const binding of JSON.parse(shortcutKey.dataset.mapping as string)) {
       const [modifier, key] = binding.split("--")
-      const eventProps = propagateEventProps(modifier)
       if (modal) hideModal()
 
-      if (e.key === key && (e.ctrlKey === eventProps.ctrKey || e.metaKey === eventProps.metaKey)) {
+      if (e.key === key && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
         const containerOpen = container?.classList.contains("active")
         containerOpen ? hideContainer() : showContainer()

@@ -15,11 +15,11 @@ export const KeybindAlias = {
   "cmd+g": "graphique",
   "cmd+o": "mode sombre",
   "cmd+\\": "page d'accueil",
-  "/": "curseur de chat",
+  ".": "curseur de chat",
 }
 
 const defaultOptions: Options = {
-  default: ["⌘ .", "⌃ ."],
+  default: ["⌘ /", "⌃ /"],
   enableTooltip: true,
 }
 
