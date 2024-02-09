@@ -50,6 +50,8 @@ figure[data-rehype-pretty-code-figure] {
 }
 
 .preview-inner span[class^="katex"] > *,
+.popover-inner span[class^="katex"] > *,
+.popover-inner figure[data-rehype-pretty-code-figure],
 .preview-inner figure[data-rehype-pretty-code-figure] {
   z-index: 999 !important;
 }
