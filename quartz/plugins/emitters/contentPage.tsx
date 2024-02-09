@@ -9,11 +9,12 @@ import {
 } from "../../components"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
-import { FilePath, pathToRoot } from "../../util/path"
+import { FilePath, joinSegments, pathToRoot } from "../../util/path"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { Content } from "../../components"
 import chalk from "chalk"
 import { write } from "./helpers"
+import DepGraph from "../../depgraph"
 
 export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
   const opts: FullPageLayout = {
@@ -48,6 +49,18 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         Footer,
       ]
     },
+    async getDependencyGraph(ctx, content, _resources) {
+      // TODO handle transclusions
+      const graph = new DepGraph<FilePath>()
+
+      for (const [_tree, file] of content) {
+        const sourcePath = file.data.filePath!
+        const slug = file.data.slug!
+        graph.addEdge(sourcePath, joinSegments(ctx.argv.output, slug + ".html") as FilePath)
+      }
+
+      return graph
+    },
     async emit(ctx, content, resources): Promise<FilePath[]> {
       const cfg = ctx.cfg.configuration
       const fps: FilePath[] = []
@@ -81,7 +94,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         fps.push(fp)
       }
 
-      if (!containsIndex) {
+      if (!containsIndex && !ctx.argv.fastRebuild) {
         console.log(
           chalk.yellow(
             `\nWarning: you seem to be missing an \`index.md\` home page file at the root of your \`${ctx.argv.directory}\` folder. This may cause errors when deploying.`,
