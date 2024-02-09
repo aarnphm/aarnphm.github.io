@@ -2,11 +2,9 @@
 id: Aristotle
 tags:
   - philos1aa3
+date: "2023-09-11"
 title: Aristotle
-date: 2023-09-11
 ---
-
-# Aristotle
 
 Two types of learning
 

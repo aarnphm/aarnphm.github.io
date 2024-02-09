@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "uses.md",
+                "file": "thoughts/university/philo-1aa3/tut/Being qua being.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "uses.md",
+                "file": "thoughts/university/philo-1aa3/tut/Being qua being.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "uses.md",
+                "file": "thoughts/university/philo-1aa3/tut/Being qua being.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "uses.md"
+                "file": "thoughts/university/philo-1aa3/tut/Being qua being.md"
               }
             }
           },
@@ -156,7 +156,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "uses.md"
+                "file": "thoughts/university/philo-1aa3/tut/Being qua being.md"
               }
             }
           }
@@ -180,8 +180,11 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "810a3fdf2529fc6d",
+  "active": "59fd19f001b80287",
   "lastOpenFiles": [
+    "thoughts/Metaphysics.md",
+    "books.md",
+    "uses.md",
     "_index.md",
     "thoughts/Hypertext.md",
     "thoughts/images/hypertext.png",
@@ -199,7 +202,6 @@
     "private/bentoml/interview questions.md",
     "private/bentoml/Runner interface.md",
     "thoughts/Philosophy and Nietzsche.md",
-    "books.md",
     "influence.md",
     "quotes.md",
     "thoughts/Philosophy-and-Nietzsche.md",
@@ -208,7 +210,6 @@
     "tags/technical.md",
     "tags/seed.md",
     "tags/university.md",
-    "tags/ml.md",
     "thoughts/university/sfwr-3dx4/time_response.pdf",
     "thoughts/university/sfwr-3dx4/state_space.pdf",
     "thoughts/university/sfwr-3dx4/stability.pdf",

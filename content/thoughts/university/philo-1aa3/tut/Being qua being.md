@@ -1,6 +1,6 @@
 ---
-id: Metaphysics
-title: Metaphysics
+id: Being qua being
+title: Being qua being
 tags:
   - philosophy
   - philos1aa3
