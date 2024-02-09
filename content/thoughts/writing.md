@@ -9,7 +9,7 @@ title: Writing
 
 # Why writing?
 
-> Writing as _crystallised_ thought, a way of expressing the labyrinth of interconnected, messy, and incoherent ideas in my mind. It is a form of [knowledge distillation](https://jzhao.xyz/thoughts/knowledge-distillation) (Jacky on [writing](https://jzhao.xyz/thoughts/writing))
+> Writing as _crystallised_ thought, a way of expressing the labyrinth of interconnected, messy, and incoherent ideas in my mind. It is a form of [knowledge distillation](https://jzhao.xyz/thoughts/knowledge-distillation) (Jacky on [writing](https://jzhao.xyz/thoughts/writing))
 
 Writing is an exploration, an excavation of self and the world in this painfully intricate dance. It is a way to bridge the chasm between ideas, to extend a filament of one consciousness to others. It is an extension of self, a second brain, where bounded by constraining nets of syntax and grammar, providing grounds for freedom of expression and articulate one's interests and curiosity.
 
@@ -31,7 +31,7 @@ And yet, writing is an acknowledgement of the indelible solitude inherent to hum
 
 In this paradox lies the profound beauty and torment of writing. It’s a ceaseless sojourn towards the horizon of connection, propelled by a boundless hope and a quixotic resolve, yet shadowed by the solemn acceptance of inherent disconnection. This complex interplay births the agony and the ecstasy of the writing voyage, the ceaseless pull between the allure of communion and the stark reality of intrinsic solitude.
 
-# as motivation.
+# motivation.
 
 Excerpt from _George Orwell's Why I Write_
 
@@ -52,7 +52,7 @@ Political purpose
 Orwell is often known for his democratic socialism, and opposed for totalitarianism. But his [[thoughts/Will to Truth|will to truth]] is fundamental to his writing, a true representation of intellectual honesty. In the context of totalitarianism, Orwell pointed out that such regimes demand the continuous alteration of the past and probably a disbelief in the very existence of [objective truth](https://www.goodreads.com/book/show/35610790-orwell-on-truth). He saw the danger in a society that drifts from the truth, stating that it will hate those who speak it.
 
 
-# as query.
+# query.
 
 _Excerpt from [A blog post is a very long and complex search query to find fascinating people and make them route interesting stuff to your inbox](https://www.henrikkarlsson.xyz/p/search-query)_
 

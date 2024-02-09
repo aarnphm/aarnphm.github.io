@@ -1,6 +1,7 @@
 ---
-id: "hack-the-north"
-tags: []
+id: hack-the-north
+tags:
+  - seed
 ---
 
 ## OpenLLM, and everything about running LLM in production

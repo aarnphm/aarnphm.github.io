@@ -11,13 +11,8 @@
             "id": "810a3fdf2529fc6d",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "quotes.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
+              "type": "graph",
+              "state": {}
             }
           }
         ]
@@ -86,7 +81,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "quotes.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +97,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "quotes.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,9 +118,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "quotes.md"
-              }
+              "state": {}
             }
           },
           {
@@ -155,9 +146,7 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "quotes.md"
-              }
+              "state": {}
             }
           }
         ],
@@ -180,10 +169,25 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "810a3fdf2529fc6d",
   "lastOpenFiles": [
-    "2024-01-23.md",
+    "private/Term of Reference.md",
+    "Untitled.canvas",
+    "private/Reservation list.md",
+    "private/podcast.md",
+    "private/Nox.md",
+    "private/Meetup.md",
+    "private/Hack The North.md",
+    "private/bentoml/interview questions.md",
+    "private/bentoml/Runner interface.md",
+    "thoughts/Philosophy and Nietzsche.md",
+    "books.md",
+    "_index.md",
+    "influence.md",
     "quotes.md",
+    "thoughts/Philosophy-and-Nietzsche.md",
+    "tags/philosophy.md",
+    "2024-01-23.md",
     "tags/technical.md",
     "tags/seed.md",
     "tags/university.md",
@@ -193,41 +197,25 @@
     "thoughts/Garbage in Garbage out.md",
     "thoughts/Constructionist.md",
     "thoughts/Compression.md",
-    "thoughts/confirmation bias.md",
-    "thoughts/Behavirourism.md",
-    "thoughts/Agency.md",
-    "thoughts/critical thinking.md",
-    "thoughts/education.md",
-    "thoughts/university/sfwr-2c03/a2/A2.md",
-    "movies.md",
-    "uses.md",
-    "thoughts/writing.md",
     "thoughts/university/sfwr-3dx4/time_response.pdf",
     "thoughts/university/sfwr-3dx4/state_space.pdf",
     "thoughts/university/sfwr-3dx4/stability.pdf",
-    "thoughts/university/sfwr-3dx4/stability.md",
     "thoughts/university/sfwr-3dx4/second-order-system.png",
     "thoughts/university/sfwr-3dx4/lab1/lab1.slx",
     "thoughts/university/sfwr-3dx4/lab1/lab1.pdf",
-    "thoughts/university/sfwr-3dx4/lab1/content.md",
     "thoughts/university/sfwr-3dx4/lab1/SRV02.slx",
     "thoughts/university/sfwr-3dx4/lab1/5.2-graph.png",
     "thoughts/university/sfwr-3dx4/lab1/5.1-graph.png",
     "thoughts/university/sfwr-3dx4/lab1",
     "thoughts/university/sfwr-3dx4/intro.pdf",
-    "thoughts/university/sfwr-3dx4/index.md",
     "thoughts/university/sfwr-3dx4/frequency_domain.pdf",
     "thoughts/university/sfwr-3dx4/block_diagrams.pdf",
-    "thoughts/university/sfwr-3dx4/Time response.md",
-    "thoughts/university/sfwr-3dx4/State space representation.md",
-    "thoughts/university/sfwr-3dx4/Frequency Domain.md",
     "thoughts/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",
     "thoughts/university/sfwr-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
     "thoughts/university/sfwr-2fa3/yxx-nfa.png",
     "thoughts/university/sfwr-2fa3/yxx-nfa-4s.png",
     "thoughts/university/sfwr-2fa3/eps-nfa.png",
     "thoughts/university/sfwr-2fa3/abxba-nfa.png",
-    "thoughts/university/sfwr-2c03/sumary-sorting.png",
-    "Untitled.canvas"
+    "thoughts/university/sfwr-2c03/sumary-sorting.png"
   ]
 }

@@ -80,9 +80,17 @@ const NotesConstructor = (() => {
     const pages = allFiles
       .filter((f: Data) => {
         return (
-          !["university", "tags", "index", "influence", "uses", "curius", "music", "quotes"].some(
-            (it) => (f.slug as FullSlug).includes(it),
-          ) && !f.frontmatter?.noindex
+          ![
+            "university",
+            "tags",
+            "index",
+            "influence",
+            "uses",
+            "curius",
+            "music",
+            "quotes",
+            ...cfg.ignorePatterns,
+          ].some((it) => (f.slug as FullSlug).includes(it)) && !f.frontmatter?.noindex
         )
       })
       .sort(byDateAndAlphabetical(cfg))

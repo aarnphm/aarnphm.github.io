@@ -1,6 +1,8 @@
 ---
-id: "intern"
-tags: []
+id: intern
+tags:
+  - "#seed"
+  - "#interview"
 ---
 
 Map to url to uuid

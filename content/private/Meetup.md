@@ -1,6 +1,7 @@
 ---
-id: "meetup-vn"
-tags: []
+id: meetup-vn
+tags:
+  - seed
 ---
 
 Six ways to Make People Like You

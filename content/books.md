@@ -13,7 +13,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ## to read.
 
-### [philosophy](/tags/philosophy)
+### [[tags/philosophy|philosophy]]
 
 - **A Treatise of Human Nature** by David Hume
 - **The Evolution of Modern Metaphysics: Making Sense of Things** by A. W. Moore

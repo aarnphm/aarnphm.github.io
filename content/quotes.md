@@ -8,7 +8,7 @@ tags:
 date: "2024-01-23"
 navigation:
   next: "[[thoughts/Chaos]]"
-  prev: "[[thoughts/Philosophy-and-Nietzsche]]"
+  prev: "[[thoughts/Philosophy and Nietzsche]]"
 title: Advice
 ---
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->

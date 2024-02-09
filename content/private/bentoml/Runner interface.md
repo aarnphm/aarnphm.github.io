@@ -3,7 +3,7 @@ id: Runner interface
 tags:
   - technical
   - seed
-title: Runner: A universal interface to run distributed ML application
+title: "Runner: A universal interface to run distributed ML application"
 ---
 
 ##### Data format

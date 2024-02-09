@@ -5,7 +5,7 @@ tags:
 description: Term of references
 ---
 
-[[intern]] probably what we need to do
+[[private/bentoml/interview questions]] probably what we need to do
 
 ## job description
 
