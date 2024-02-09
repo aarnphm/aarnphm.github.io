@@ -144,7 +144,7 @@ function addGlobalPageResources(
       script: `
       document.addEventListener('nav', async () => {
       const chat = await import('https://esm.sh/cursor-chat')
-      chat.initCursorChat("quartz-room")
+      chat.initCursorChat(\`cursor-chat-room-\${window.location.host + window.location.pathname}\`, { triggerKey: '.' })
       })
     `,
       loadTime: "afterDOMReady",
