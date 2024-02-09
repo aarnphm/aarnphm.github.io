@@ -25,10 +25,11 @@ export default ((userOpts?: Partial<Options>) => {
     const navigation = fileData.frontmatter?.navigation
     let baseOpts: Options = defaultOptions
     if (navigation) {
+      const [next, prev] = navigation
       baseOpts = {
         ...defaultOptions,
-        prev: transformNav(navigation.prev),
-        next: transformNav(navigation.next),
+        prev: transformNav(prev),
+        next: transformNav(next),
       }
     }
 

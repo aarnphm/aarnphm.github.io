@@ -5,8 +5,8 @@ tags:
 date: "2024-01-22"
 description: tools and everything drives my daily
 navigation:
-  next: "[[thoughts]]"
-  prev: "[[books]]"
+  - "[[thoughts]]"
+  - "[[books]]"
 title: uses.
 ---
 

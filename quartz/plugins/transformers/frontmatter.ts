@@ -80,11 +80,6 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options> | undefined> 
   }
 }
 
-interface Navigation {
-  prev: string
-  next: string
-}
-
 declare module "vfile" {
   interface DataMap {
     frontmatter: { [key: string]: unknown } & {
@@ -97,7 +92,7 @@ declare module "vfile" {
         draft: boolean
         enableToc: string
         cssclasses: string[]
-        navigation: Navigation
+        navigation: string[]
         construction: boolean
         noindex: boolean
       }>

@@ -8,8 +8,8 @@ tags:
 date: "2024-01-23"
 description: A list of folks that inspires me a bunch
 navigation:
-  next: "[[posts]]"
-  prev: "[[tags/philosophy]]"
+  - "[[posts]]"
+  - "[[tags/philosophy]]"
 title: affecter.
 ---
 
