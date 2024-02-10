@@ -236,7 +236,10 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
             // the static name of this file.
             const [filename, ext] = url.split("/").pop()!.split(".")
 
-            googleFontsStyleSheet = googleFontsStyleSheet.replace(url, `/fonts/${filename}.ttf`)
+            googleFontsStyleSheet = googleFontsStyleSheet.replace(
+              url,
+              `/static/fonts/${filename}.ttf`,
+            )
 
             promises.push(
               fetch(url)
@@ -249,7 +252,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
                 .then((buf) =>
                   write({
                     ctx,
-                    slug: joinSegments("fonts", filename) as FullSlug,
+                    slug: joinSegments("static", "fonts", filename) as FullSlug,
                     ext: `.${ext}`,
                     content: Buffer.from(buf),
                   }),
