@@ -28,8 +28,8 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
     head: Head(),
     header: [],
     beforeBody: [CuriusHeader()],
-    left: [CuriusNotes(), Meta],
-    right: [],
+    left: [CuriusNotes()],
+    right: [Meta],
     pageBody: CuriusContent(),
     footer: NavigationConstructor({ prev: "/quotes", next: "/books" }),
   }
