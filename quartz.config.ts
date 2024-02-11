@@ -82,7 +82,7 @@ const config: QuartzConfig = {
       Plugin.FolderPage(),
       Plugin.TagPage(),
       Plugin.CuriusPage(),
-      Plugin.ZenPage({ slug: ["uses", "quotes", "influence"] }),
+      Plugin.ZenPage({ slug: ["uses", "quotes", "influence", "books", "movies"] }),
       // Plugin.Embeddings(),
       Plugin.ContentIndex({ rssLimit: 40 }),
       Plugin.Assets(),

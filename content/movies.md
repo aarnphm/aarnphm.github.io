@@ -3,6 +3,9 @@ id: movies
 tags:
   - evergreen
 date: "2024-02-07"
+navigation:
+  - "[[thoughts/Continuous batching]]"
+  - "[[thoughts/aesthetic value]]"
 title: movies.
 ---
 
@@ -15,6 +18,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 ## to [[thoughts/Cinematography|watch.]]
 
 - [ ] The King of Comedy (1982)
+- [ ] Dead Poets Society (1989)
 - [ ] La Haine (1995)
 - [ ] Flame & Citron (2008)
 - [ ] Blue is the Warmest Color (2013)

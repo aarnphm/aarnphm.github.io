@@ -1,10 +1,6 @@
 @use "../../styles/variables.scss" as *;
 
 .curius-header {
-  & > * {
-    font-size: 0.8rem;
-  }
-
   .curius-title {
     display: flex;
     flex-direction: row;

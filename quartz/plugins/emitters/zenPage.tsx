@@ -9,7 +9,7 @@ import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
 import path from "path"
 // @ts-ignore
-import keybindScript from "../../components/scripts/keybind.inline"
+import script from "../../components/scripts/keybind.inline"
 import { FilePath, FullSlug, pathToRoot } from "../../util/path"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { QuartzComponentProps } from "../../components/types"
@@ -33,7 +33,6 @@ export const ZenPage: QuartzEmitterPlugin<Partial<Options>> = (opts?: Partial<Op
 
   const pageOpts: FullPageLayout = {
     ...sharedPageComponents,
-    ...defaultContentPageLayout,
     beforeBody: [ArticleTitle()],
     pageBody: Content(),
     left: [Meta],
@@ -82,7 +81,7 @@ export const ZenPage: QuartzEmitterPlugin<Partial<Options>> = (opts?: Partial<Op
             loadTime: "beforeDOMReady",
             contentType: "inline",
             spaPreserve: true,
-            script: keybindScript,
+            script: script,
           })
 
           const componentData: QuartzComponentProps = {
