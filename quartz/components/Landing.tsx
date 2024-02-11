@@ -22,6 +22,7 @@ export const HyperAlias = {
   advices: "/quotes",
   affecter: "/influence",
   parfum: "/thoughts/Scents",
+  tunes: "/music",
 }
 
 export const ContentAlias = {
@@ -70,7 +71,13 @@ const AliasLink = (props: AliasLinkProp) => {
 type ContentType = keyof typeof ContentAlias
 
 const getContentAlias = (name: string) => {
-  return <AliasLink name={name} url={ContentAlias[name as ContentType] ?? "/"} isInternal />
+  return (
+    <AliasLink
+      name={name}
+      url={ContentAlias[name as ContentType] ?? "/"}
+      isInternal={!name.includes("projects")}
+    />
+  )
 }
 
 interface Options {
@@ -211,7 +218,7 @@ const ContentConstructor = (() => {
                   name={name}
                   url={url}
                   isInternal
-                  enablePopover={name !== "tunes"}
+                  enablePopover={name !== "tunes" && name !== "projets"}
                 />
               </>
             ))}

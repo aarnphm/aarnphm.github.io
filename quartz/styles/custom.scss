@@ -61,7 +61,7 @@ code {
 }
 
 body {
-  @each $slug in [ "uses", "quotes", "influence", "books", "movies", "projects"] {
+  @each $slug in [ "uses", "quotes", "influence", "books", "movies", "projects", "music"] {
     &[data-slug="#{$slug}"] {
       .page > #quartz-body > .center > .page-header > .popover-hint {
         display: flex;
