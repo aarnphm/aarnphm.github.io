@@ -10,6 +10,7 @@ description: A list of folks that inspires me a bunch
 navigation:
   - "[[posts]]"
   - "[[tags/philosophy]]"
+preview: false
 title: affecter.
 zen: true
 ---

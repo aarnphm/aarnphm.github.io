@@ -104,11 +104,11 @@ body {
     background: transparent;
   }
   50% {
-    background: var(--lightgray);
+    background: var(--gray);
   }
   100% {
     width: 100%;
-    background: var(--gray);
+    background: var(--lightgray);
   }
 }
 

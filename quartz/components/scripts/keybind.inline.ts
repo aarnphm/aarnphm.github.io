@@ -174,20 +174,21 @@ const descriptionMapping = {
   onw: "A real-time navigation tools for safer commute",
 }
 
-type descriptionKey = keyof typeof descriptionMapping
+const yearMapping = {
+  openllm: "2023",
+  bentoml: "2023",
+  onw: "2021",
+}
 
 document.addEventListener("nav", () => {
-  const title = document.querySelectorAll(".title") as NodeListOf<HTMLSpanElement>
-  const description = document.querySelectorAll(".description") as NodeListOf<HTMLSpanElement>
-  console.log(title, description)
+  document.querySelectorAll(".project-item").forEach((el) => {
+    const title = el.querySelector(".title") as HTMLSpanElement
+    const description = el.querySelector(".description") as HTMLSpanElement
+    const year = el.querySelector(".year") as HTMLSpanElement
 
-  title.forEach((el) => {
-    const title: string = titleMapping[el.dataset.title as titleKey]
-    decodeString(el, title)
-  })
-  description.forEach((el) => {
-    const description: string = descriptionMapping[el.dataset.description as descriptionKey]
-    decodeString(el, description)
+    decodeString(title, titleMapping[title.dataset.name as titleKey])
+    decodeString(description, descriptionMapping[description.dataset.name as titleKey])
+    decodeString(year, yearMapping[year.dataset.name as titleKey])
   })
 })
 

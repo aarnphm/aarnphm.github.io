@@ -18,22 +18,22 @@ zen: true
 
 <div class="project-lists">
   <a href="https://github.com/bentoml/openllm" target="_blank" rel="noopener noreferrer" class="project-item">
-    <span class="title" data-title='openllm'></span>
-    <span class="description" data-description='openllm'></span>
+    <span class="title" data-name='openllm'></span>
+    <span class="description" data-name='openllm'></span>
     <div class="divider"></div>
-    <div class="year">2023</div>
+    <div class="year" data-name='openllm'></div>
   </a>
   <a href="https://bentoml.com" target="_blank" rel="noopener noreferrer" class="project-item">
-    <span class="title" data-title='bentoml'></span>
-    <span class="description" data-description='bentoml'></span>
+    <span class="title" data-name='bentoml'></span>
+    <span class="description" data-name='bentoml'></span>
     <div class="divider"></div>
-    <div class="year">2023</div>
+    <div class="year" data-name='bentoml'></div>
   </a>
   <a href="https://devpost.com/software/twogether" target="_blank" rel="noopener noreferrer" class="project-item">
-    <span class="title" data-title='onw'></span>
-    <span class="description" data-description='onw'></span>
+    <span class="title" data-name='onw'></span>
+    <span class="description" data-name='onw'></span>
     <div class="divider"></div>
-    <div class="year">2021</div>
+    <div class="year" data-name='onw'></div>
   </a>
 </div>
 
