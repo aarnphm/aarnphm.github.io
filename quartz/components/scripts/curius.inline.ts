@@ -247,6 +247,15 @@ function createLinkEl(Link: Link): HTMLLIElement {
     updateNotePanel(Link, note, currentActive)
   }
 
+  const removeOnScroll = (e: HTMLElementEventMap["scroll"]) => {
+    const note = document.getElementsByClassName("curius-notes")[0] as HTMLDivElement | null
+    if (!note) return
+    note.classList.remove("active")
+  }
+
+  document.addEventListener("scroll", removeOnScroll)
+  window.addCleanup(() => document.removeEventListener("scroll", removeOnScroll))
+
   registerEscapeHandler(curiusItem, () => curiusItem.classList.remove("active"))
   registerEvents(
     curiusItem,
