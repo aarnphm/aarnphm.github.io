@@ -215,7 +215,10 @@ export function renderPage(
   const doc = (
     <html lang={lang}>
       <Head {...componentData} />
-      <body data-slug={slug}>
+      <body
+        data-slug={slug}
+        data-enable-preview={componentData.fileData.frontmatter?.preview ?? true}
+      >
         {slug === "index" ? (
           <Landing {...componentData} />
         ) : (
