@@ -4,7 +4,7 @@ import MetaConstructor from "./Meta"
 import style from "./styles/landing.scss"
 import { byDateAndAlphabetical } from "./PageList"
 import { i18n } from "../i18n"
-import { FullSlug, SimpleSlug, _stripSlashes, resolveRelative } from "../util/path"
+import { FullSlug, SimpleSlug, stripSlashes, resolveRelative } from "../util/path"
 import { Data } from "vfile"
 import { getDate, formatDate } from "./Date"
 import DarkmodeConstructor from "./Darkmode"
@@ -38,7 +38,7 @@ export const ContentAlias = {
   "digital garden": "/thoughts/Digital-garden",
 }
 
-const combined = (...objects: any[]) => objects.flatMap(Object.values).map((a) => _stripSlashes(a))
+const combined = (...objects: any[]) => objects.flatMap(Object.values).map((a) => stripSlashes(a))
 
 export const LandingLinks = combined(HyperAlias, ContentAlias)
 

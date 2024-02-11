@@ -2,14 +2,7 @@ import { Root } from "hast"
 import { GlobalConfiguration } from "../../cfg"
 import { getDate } from "../../components/Date"
 import { escapeHTML } from "../../util/escape"
-import {
-  FilePath,
-  FullSlug,
-  SimpleSlug,
-  _stripSlashes,
-  joinSegments,
-  simplifySlug,
-} from "../../util/path"
+import { FilePath, FullSlug, SimpleSlug, joinSegments, simplifySlug } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
 import { toHtml } from "hast-util-to-html"
 import { write } from "./helpers"

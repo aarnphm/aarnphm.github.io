@@ -178,9 +178,13 @@ function concatZenStyles(zenMap: string[]): string {
   for (const slug of zenMap) {
     const style = `
       body[data-slug="${slug}"] {
-        .page > #quartz-body > .center > .page-header > .popover-hint {
-          display: flex;
-          flex-direction: row;
+        .page > #quartz-body > .center {
+          margin-top: 6rem;
+
+          & > .page-header > .popover-hint {
+            display: flex;
+            flex-direction: row;
+          }
         }
 
         & > * {
@@ -188,8 +192,8 @@ function concatZenStyles(zenMap: string[]): string {
           line-height: 1;
         }
 
-        .keybind {
-          margin-left: auto !important;
+        .page-header {
+          display: none;
         }
       }
     `

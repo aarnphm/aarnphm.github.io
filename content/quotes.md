@@ -11,8 +11,6 @@ zen: true
 ---
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
 
-> _An ongoing collection of quotes, advices, and other things I've subscribed to, mostly from people I admire and friends._
-
 ## On life.
 
 Throw me some wisdom, and advices? I have none. -- Jesse Camacho
