@@ -3,15 +3,13 @@ id: uses
 tags:
   - technical
 date: "2024-01-22"
-description: tools and everything drives my daily
+description: Includes the tools I use, workflow,  etc. my [submission](https://uses.tech)
 navigation:
   - "[[thoughts]]"
   - "[[books]]"
 title: uses.
 zen: true
 ---
-
-Includes the tools I use, workflow,  etc. my [submission](https://uses.tech)
 
 ### hardware.
 

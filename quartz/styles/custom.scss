@@ -60,29 +60,9 @@ code {
   font-size: 0.8em;
 }
 
-body {
-  @each $slug in [ "uses", "quotes", "influence", "books", "movies", "projects", "music"] {
-    &[data-slug="#{$slug}"] {
-      .page > #quartz-body > .center > .page-header > .popover-hint {
-        display: flex;
-        flex-direction: row;
-
-        & > * {
-          margin: 2rem 0 0;
-          line-height: 1;
-        }
-      }
-
-      .keybind {
-        margin-left: auto !important;
-      }
-    }
-  }
-
-  &[data-slug="projects"] {
-    footer {
-      display: none;
-    }
+body[data-slug="projects"] {
+  footer {
+    visibility: hidden;
   }
 }
 
@@ -113,7 +93,7 @@ body {
 }
 
 .project-lists {
-  margin-top: 2rem;
+  margin-top: 3rem;
   display: flex;
   flex-direction: column;
   gap: 28px;

@@ -173,6 +173,32 @@ function addGlobalPageResources(
   }
 }
 
+function concatZenStyles(zenMap: string[]): string {
+  let styles = []
+  for (const slug of zenMap) {
+    const style = `
+      body[data-slug="${slug}"] {
+        .page > #quartz-body > .center > .page-header > .popover-hint {
+          display: flex;
+          flex-direction: row;
+        }
+
+        & > * {
+          margin: 2rem 0 0;
+          line-height: 1;
+        }
+
+        .keybind {
+          margin-left: auto !important;
+        }
+      }
+    `
+    styles.push(style)
+  }
+
+  return styles.join("\n")
+}
+
 interface Options {
   fontOrigin: "googleFonts" | "local"
 }
@@ -206,7 +232,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
 
       return graph
     },
-    async emit(ctx, _content, resources): Promise<FilePath[]> {
+    async emit(ctx, content, resources): Promise<FilePath[]> {
       const promises: Promise<FilePath>[] = []
       const cfg = ctx.cfg.configuration
       // component specific scripts and styles
@@ -262,12 +288,22 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         }
       }
 
+      const zenMap: string[] = []
+      for (const [tree, file] of content) {
+        const slug = file.data.slug!
+        const zen = file.data.frontmatter?.zen
+        if (zen) zenMap.push(slug)
+      }
+
+      const zenStyle = concatZenStyles(zenMap)
+
       addGlobalPageResources(ctx, resources, componentResources)
 
       const stylesheet = joinStyles(
         ctx.cfg.configuration,
         ...componentResources.css,
         googleFontsStyleSheet,
+        zenStyle,
         styles,
       )
       const [prescript, postscript] = await Promise.all([

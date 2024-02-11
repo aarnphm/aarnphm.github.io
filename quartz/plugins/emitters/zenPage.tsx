@@ -20,7 +20,7 @@ export const ZenPage: QuartzEmitterPlugin = () => {
   const opts: FullPageLayout = {
     head: HeadConstructor(),
     header: [],
-    beforeBody: [ArticleTitle(), Keybind],
+    beforeBody: [],
     pageBody: Content(),
     left: [Meta],
     right: [],
