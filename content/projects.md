@@ -11,6 +11,7 @@ description: A list of projects I'm currently [maintaining](https://github.com/a
 navigation:
   - "[[thoughts/Chaos]]"
   - "[[thoughts/LLMs]]"
+preview: false
 title: projects.
 zen: true
 ---

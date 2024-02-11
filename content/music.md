@@ -7,6 +7,7 @@ description: musics I religiously listen to
 navigation:
   - "[[thoughts/Attention]]"
   - "[[movies]]"
+preview: false
 title: playlist.
 zen: true
 ---

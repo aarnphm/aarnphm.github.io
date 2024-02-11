@@ -213,13 +213,7 @@ const ContentConstructor = (() => {
           <div class="clickable-container">
             {Object.entries(HyperAlias).map(([name, url]) => (
               <>
-                <AliasLink
-                  key={name}
-                  name={name}
-                  url={url}
-                  isInternal
-                  enablePopover={name !== "tunes" && name !== "projets"}
-                />
+                <AliasLink key={name} name={name} url={url} isInternal />
               </>
             ))}
           </div>

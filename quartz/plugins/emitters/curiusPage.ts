@@ -56,7 +56,12 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
         slug,
         text: "Curius",
         description: "curius.app",
-        frontmatter: { title: "Curius", description: "curius.app", tags: [] },
+        frontmatter: {
+          title: "Curius",
+          description: "curius.app/aaron-pham",
+          tags: ["evergreen", "hyperlinks"],
+          preview: false,
+        },
       })
       const componentData: QuartzComponentProps = {
         fileData: vfile.data,
