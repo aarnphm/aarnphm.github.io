@@ -22,7 +22,7 @@ kbd {
   & > #shortcut-container {
     position: fixed;
     contain: layout;
-    z-index: 300;
+    z-index: 100;
     left: 0;
     top: 0;
     width: 100vw;
