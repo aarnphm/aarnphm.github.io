@@ -2,6 +2,7 @@ import { formatDate, getDate } from "./Date"
 import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import readingTime from "reading-time"
 import { classNames } from "../util/lang"
+import { i18n } from "../i18n"
 
 interface ContentMetaOptions {
   /**
@@ -25,7 +26,7 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
 
     let created: string | undefined
     let modified: string | undefined
-    let reading: number | undefined
+    let reading: string | undefined
 
     if (fileData.dates) {
       created = formatDate(getDate(cfg, fileData)!, cfg.locale)
@@ -34,15 +35,17 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
 
     // Display reading time if enabled
     if (options.showReadingTime) {
-      const results = readingTime(text)
-      reading = Math.ceil(results.minutes)
+      const { minutes, text: timeTaken, words: _words } = readingTime(text)
+      reading = i18n(cfg.locale).components.contentMeta.readingTime({
+        minutes: Math.ceil(minutes),
+      })
     }
 
     return (
       <p class={classNames(displayClass, "content-meta")}>
         {created !== undefined && `c: ${created}, `}
         <em>{modified !== undefined && `m: ${modified}, `}</em>
-        {reading !== undefined && `r: ${reading} ${reading === 1 ? "min" : "mins"}`}
+        {reading !== undefined && `r: ${reading}`}
       </p>
     )
   }
