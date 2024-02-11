@@ -8,6 +8,7 @@ navigation:
   - "[[thoughts]]"
   - "[[books]]"
 title: uses.
+zen: true
 ---
 
 Includes the tools I use, workflow,  etc. my [submission](https://uses.tech)

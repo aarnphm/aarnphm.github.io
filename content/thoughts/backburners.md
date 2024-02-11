@@ -3,8 +3,8 @@ id: backburners
 tags:
   - technical
   - evergreen
+date: "2022-01-25"
 title: Backburners
-date: 2022-01-25
 ---
 
 - Markdown latex renderer for Neovim
@@ -33,7 +33,7 @@ date: 2022-01-25
 - [[thoughts/Rust|Rust]] key-value store
   - Think of it as MongoDB but has Redis capability
 - Simplified Dockerfile
-  - Since dockerfile frontend are just using [BuildKit](https://github.com/moby/buildkit), maybe it can just be an OCI-compliant frontend.
+  - Since dockerfile frontend are just using [[thoughts/BuildKit]], maybe it can just be an OCI-compliant frontend.
   - Stay away from Docker 😄
   - frontend can be in TOML, YAML
 - bazil: A [Bazel](https://bazel.build/) for the unversed

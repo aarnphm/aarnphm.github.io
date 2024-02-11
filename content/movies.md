@@ -7,6 +7,7 @@ navigation:
   - "[[thoughts/Continuous batching]]"
   - "[[thoughts/aesthetic value]]"
 title: movies.
+zen: true
 ---
 
 A (mostly) up-to-date film, movies, shows that I have consumed, or on the watch list.

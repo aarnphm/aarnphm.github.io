@@ -60,6 +60,132 @@ code {
   font-size: 0.8em;
 }
 
+body {
+  @each $slug in [ "uses", "quotes", "influence", "books", "movies", "projects"] {
+    &[data-slug="#{$slug}"] {
+      .page > #quartz-body > .center > .page-header > .popover-hint {
+        display: flex;
+        flex-direction: row;
+
+        & > * {
+          margin: 2rem 0 0;
+          line-height: 1;
+        }
+      }
+
+      .keybind {
+        margin-left: auto !important;
+      }
+    }
+  }
+
+  &[data-slug="projects"] {
+    footer {
+      display: none;
+    }
+  }
+}
+
+@keyframes kbefore {
+  0% {
+    background: transparent;
+  }
+  50% {
+    background: var(--highlight);
+  }
+  100% {
+    width: 100%;
+    background: transparent;
+  }
+}
+
+@keyframes kafter {
+  0% {
+    background: transparent;
+  }
+  50% {
+    background: var(--lightgray);
+  }
+  100% {
+    width: 100%;
+    background: var(--gray);
+  }
+}
+
+.project-lists {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  box-sizing: border-box;
+
+  & a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: inherit;
+    font-weight: normal;
+    position: relative;
+    overflow: hidden;
+    padding: 12px;
+    margin: -12px;
+    border-radius: 12px;
+    outline: 0px;
+
+    &:hover {
+      background: hsl(0 0% 95.1%);
+      color: inherit !important;
+    }
+
+    .external-icon {
+      display: none;
+    }
+
+    span {
+      display: inline-block;
+    }
+
+    & > * {
+      line-height: 28px;
+      font-size: 14px;
+    }
+
+    span[class="title"] {
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    span[class="description"] {
+      font-size: 14px;
+      color: var(--gray);
+    }
+
+    .divider {
+      flex: 1 1 0%;
+      position: relative;
+
+      &::before {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        height: 1px;
+        width: 0px;
+        z-index: 3;
+        animation: 1s ease 0s 1 normal forwards running kbefore;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        height: 1px;
+        width: 0px;
+        animation: 1s ease 0s 1 normal forwards running kafter;
+      }
+    }
+  }
+}
+
 // Quote display
 body[data-slug="quotes"] {
   & blockquote {

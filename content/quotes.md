@@ -7,6 +7,7 @@ navigation:
   - "[[thoughts/Chaos]]"
   - "[[thoughts/Philosophy and Nietzsche]]"
 title: Advice
+zen: true
 ---
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
 

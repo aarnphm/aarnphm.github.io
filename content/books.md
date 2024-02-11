@@ -8,6 +8,7 @@ navigation:
   - "[[thoughts/LLMs]]"
   - "[[thoughts/Digital garden]]"
 title: antilibrary.
+zen: true
 ---
 
 A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading. The [digital](/curius) version.

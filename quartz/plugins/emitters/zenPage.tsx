@@ -1,46 +1,33 @@
 import { QuartzEmitterPlugin } from "../types"
-import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import HeaderConstructor from "../../components/Header"
+import HeadConstructor from "../../components/Head"
 import BodyConstructor from "../../components/Body"
 import MetaConstructor from "../../components/Meta"
 import NavigationConstructor from "../../components/Navigation"
-import Spacer from "../../components/Spacer"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
-import path from "path"
-// @ts-ignore
-import script from "../../components/scripts/keybind.inline"
-import { FilePath, FullSlug, pathToRoot } from "../../util/path"
+import { FilePath, pathToRoot } from "../../util/path"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { QuartzComponentProps } from "../../components/types"
-import { ArticleTitle, Content } from "../../components"
-import chalk from "chalk"
-import { defaultProcessedContent } from "../vfile"
+import { ArticleTitle, Content, Keybind as KeybindConstructor } from "../../components"
 import DepGraph from "../../depgraph"
 
-interface Options {
-  slug: string[]
-}
-
-const defaultOptions: Options = {
-  slug: [],
-}
-
-export const ZenPage: QuartzEmitterPlugin<Partial<Options>> = (opts?: Partial<Options>) => {
-  const { slug: zenSlug } = { ...defaultOptions, ...opts }
+export const ZenPage: QuartzEmitterPlugin = () => {
   const Meta = MetaConstructor()
   const Navigation = NavigationConstructor()
+  const Keybind = KeybindConstructor({ enableTooltip: false })
 
-  const pageOpts: FullPageLayout = {
-    ...sharedPageComponents,
-    beforeBody: [ArticleTitle()],
+  const opts: FullPageLayout = {
+    head: HeadConstructor(),
+    header: [],
+    beforeBody: [ArticleTitle(), Keybind],
     pageBody: Content(),
     left: [Meta],
     right: [],
     footer: Navigation,
   }
 
-  const { head: Head, header, beforeBody, pageBody, left, right, footer } = pageOpts
+  const { head: Head, header, beforeBody, pageBody, left, right, footer: Footer } = opts
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
 
@@ -52,12 +39,13 @@ export const ZenPage: QuartzEmitterPlugin<Partial<Options>> = (opts?: Partial<Op
         Header,
         Body,
         Meta,
-        Navigation,
+        Keybind,
         ...header,
         ...beforeBody,
         pageBody,
         ...left,
         ...right,
+        Footer,
       ]
     },
     async getDependencyGraph(ctx, content, _resources) {
@@ -74,15 +62,8 @@ export const ZenPage: QuartzEmitterPlugin<Partial<Options>> = (opts?: Partial<Op
 
       for (const [tree, file] of content) {
         const slug = file.data.slug!
-        if (zenSlug.includes(slug)) {
+        if (file.data.frontmatter?.zen === true) {
           const externalResources = pageResources(pathToRoot(slug), resources)
-
-          externalResources.js.push({
-            loadTime: "beforeDOMReady",
-            contentType: "inline",
-            spaPreserve: true,
-            script: script,
-          })
 
           const componentData: QuartzComponentProps = {
             fileData: file.data,
@@ -92,7 +73,7 @@ export const ZenPage: QuartzEmitterPlugin<Partial<Options>> = (opts?: Partial<Op
             tree,
             allFiles,
           }
-          const content = renderPage(cfg, slug, componentData, pageOpts, externalResources)
+          const content = renderPage(cfg, slug, componentData, opts, externalResources)
 
           const fp = await write({
             ctx,

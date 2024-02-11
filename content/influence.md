@@ -11,6 +11,7 @@ navigation:
   - "[[posts]]"
   - "[[tags/philosophy]]"
 title: affecter.
+zen: true
 ---
 
 I think a lot about this [[quotes#On drive.|quote]] from Steve Jobs, and realised that you are who you surrounded yourself with. Whether online, daily, we often populate our minds and time by the people we hang around or work with.

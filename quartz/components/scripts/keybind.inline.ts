@@ -29,6 +29,7 @@ document.addEventListener("nav", async () => {
   const shortcutKey = document.getElementById("shortcut-key")
   const keybind = document.getElementsByClassName("keybind")[0] as HTMLDivElement | null
 
+  console.log(document.getElementsByClassName("keybind"))
   const showContainer = () => container?.classList.add("active")
 
   const hideContainer = () => container?.classList.remove("active")
@@ -158,3 +159,66 @@ document.addEventListener("nav", () => {
     ["keydown", shortcutHandler],
   )
 })
+
+const titleMapping = {
+  openllm: "OpenLLM",
+  bentoml: "BentoML",
+  onw: "onw",
+}
+
+type titleKey = keyof typeof titleMapping
+
+const descriptionMapping = {
+  openllm: "Serve, fine-tune and deploy LLMs in production",
+  bentoml: "Build Production-grade AI Application",
+  onw: "A real-time navigation tools for safer commute",
+}
+
+type descriptionKey = keyof typeof descriptionMapping
+
+document.addEventListener("nav", () => {
+  const title = document.querySelectorAll(".title") as NodeListOf<HTMLSpanElement>
+  const description = document.querySelectorAll(".description") as NodeListOf<HTMLSpanElement>
+  console.log(title, description)
+
+  title.forEach((el) => {
+    const title: string = titleMapping[el.dataset.title as titleKey]
+    decodeString(el, title)
+  })
+  description.forEach((el) => {
+    const description: string = descriptionMapping[el.dataset.description as descriptionKey]
+    decodeString(el, description)
+  })
+})
+
+function decodeString(el: HTMLSpanElement, targetString: string, duration: number = 1000) {
+  const start = performance.now()
+  const end = start + duration
+
+  function update() {
+    const current = performance.now()
+    const progress = (current - start) / duration
+    const currentIndex = Math.floor(progress * targetString.length)
+
+    if (current < end) {
+      let decodingString =
+        targetString.substring(0, currentIndex) +
+        getRandomString(targetString.length - currentIndex)
+      el.textContent = decodingString
+      requestAnimationFrame(update)
+    } else {
+      el.textContent = targetString
+    }
+  }
+
+  requestAnimationFrame(update)
+}
+
+function getRandomString(length: number) {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  let result = ""
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length))
+  }
+  return result
+}

@@ -95,7 +95,7 @@ a.min-links {
 }
 
 .content-container {
-  margin-top: $topSpacing;
+  margin: $topSpacing auto;
 
   @media all and (max-width: $fullPageWidth) {
     width: initial;
