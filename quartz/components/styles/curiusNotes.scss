@@ -1,0 +1,103 @@
+@use "../../styles/variables.scss" as *;
+
+.curius-notes {
+  display: none;
+  overflow-y: auto;
+  box-shadow: none;
+  border: 1px solid var(--dark);
+  max-height: 50vh;
+
+  overflow-y: auto;
+
+  @media all and (max-width: $fullPageWidth) {
+    max-height: 10vh;
+  }
+
+  & > * {
+    margin: 0 8px;
+    font-size: 0.8rem;
+  }
+
+  &.active {
+    display: block;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 12px;
+    flex-wrap: wrap;
+
+    .icon-container {
+      @include iconStyles;
+      opacity: unset;
+      margin-left: auto;
+    }
+  }
+
+  .curius-note-title {
+    display: flex;
+    align-items: flex-start;
+    font-size: 0.9rem;
+  }
+
+  .curius-note-snippet {
+    color: rgb(170, 170, 170);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 16;
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+  }
+
+  .curius-note-title,
+  .curius-note-highlights {
+    padding: 0;
+    display: flex;
+
+    & > * {
+      padding: 5px 0;
+    }
+
+    a,
+    span {
+      color: inherit !important;
+      font-weight: normal !important;
+      text-decoration: none;
+
+      &:hover:not([data-highlight]) {
+        transition: none;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  & ul {
+    list-style-type: none;
+    padding: 0;
+
+    border: 0px solid var(--lightgray);
+    border-bottom: 1px;
+
+    & > li {
+      padding-inline-start: 2rem;
+    }
+  }
+
+  .curius-note-highlights {
+    flex-direction: column;
+    margin-top: 1rem;
+
+    :first-child {
+      border-top: 1px solid var(--lightgray);
+    }
+
+    & > li {
+      a {
+        background-color: var(--lightgray);
+      }
+      ::before {
+        content: "“";
+      }
+      ::after {
+        content: "”";
+      }
+    }
+  }
+}

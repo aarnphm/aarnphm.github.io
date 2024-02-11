@@ -24,13 +24,18 @@ export function removeAllChildren(node: HTMLElement) {
   }
 }
 
+type EventType = HTMLElementEventMap[keyof HTMLElementEventMap]
+type EventHandlers<E extends EventType> = (evt: E) => any
+
 export function registerEvents<
   T extends Document | HTMLElement | null,
   E extends keyof HTMLElementEventMap,
->(element: T, ...events: [E, EventListenerOrEventListenerObject][]) {
+>(element: T, ...events: [E, EventHandlers<HTMLElementEventMap[E]>][]) {
   if (!element) return
-  for (const [event, cb] of events) {
-    element.addEventListener(event, cb)
-    window.addCleanup(() => element.removeEventListener(event, cb))
-  }
+
+  events.forEach(([event, cb]) => {
+    const listener: EventListener = (evt) => cb(evt as HTMLElementEventMap[E])
+    element.addEventListener(event, listener)
+    window.addCleanup(() => element.removeEventListener(event, listener))
+  })
 }

@@ -166,7 +166,7 @@ const ContentConstructor = (() => {
     return (
       <div class="content-container">
         <Header {...componentData}>
-          <h1 lang={"en"}>My name is Aaron.</h1>
+          <h1 lang={"en"}>Bonjour, je suis Aaron.</h1>
           <Keybind {...componentData} />
           <Darkmode {...componentData} />
         </Header>

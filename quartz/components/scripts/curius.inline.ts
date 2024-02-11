@@ -1,148 +1,21 @@
-import FlexSearch, { IndexOptions } from "flexsearch"
 import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util"
 import { computePosition, arrow as arrowFloating, inline, offset } from "@floating-ui/dom"
 import type { Coords } from "@floating-ui/dom"
-import { sample } from "../../util/helpers"
-
-interface Entity {
-  id: number
-  createdDate: string
-  modifiedDate: string
-}
-
-interface Highlight extends Entity {
-  userId: number
-  linkId: number
-  highlight: string
-  leftContext: string
-  rightContext: string
-  rawHighlight: string
-  comment_ids: string[]
-  comment: string
-}
-
-interface Topic extends Entity {
-  userId: number
-  topic: string
-  slug: string
-  public: boolean
-}
-
-interface User extends Entity {
-  firstName: string
-  lastName: string
-  major?: string
-  interests?: string
-  expertise?: string
-  school: string
-  github?: string
-  twitter: string
-  website: string
-  lastOnline: string
-  lastCheckedNotifications: string
-  views: number
-  numFollowers: number
-  followed?: boolean
-  followingMe?: boolean
-  recentUsers: any[]
-  followingUsers: Following[]
-}
-
-interface Following {
-  id: number
-  firstName: string
-  lastName: string
-  userLink: string
-  lastOnline: string
-}
+import { Link, User } from "../types"
 
 interface Response {
   links?: Link[]
   user?: User
 }
 
-interface Trail {
-  id: number
-  trailName: string
-  ownerId: number
-  description: string
-  colorHex: string
-  emojiUnicode: string
-  flipped: any
-  hash: string
-  slug: string
-  createdDate: string
-}
-
-interface Link extends Entity {
-  link: string
-  title: string
-  favorite: boolean
-  snippet: string
-  toRead: any
-  createdBy: number
-  metadata: {
-    full_text: string
-    author: string
-    page_type: string
-  }
-  lastCrawled: any
-  trails: Trail[]
-  comments: string[]
-  mentions: string[]
-  topics: Topic[]
-  highlights: Highlight[]
-  userIds?: number[]
-}
-
-const _SENTINEL: Link = {
-  id: 0,
-  link: "",
-  title: "",
-  favorite: false,
-  snippet: "",
-  toRead: null,
-  createdBy: 0,
-  metadata: {
-    full_text: "",
-    author: "",
-    page_type: "",
-  },
-  createdDate: "",
-  modifiedDate: "",
-  lastCrawled: null,
-  trails: [],
-  comments: [],
-  mentions: [],
-  topics: [],
-  highlights: [],
-  userIds: [],
-}
-
 const localFetchKey = "curiusLinks"
 const localTimeKey = "curiusLastFetch"
-const numSearchResults = 20
 const refetchTimeout = 2 * 60 * 1000 // 2 minutes
 const fetchLinksHeaders: RequestInit = {
   method: "POST",
   headers: { "Content-Type": "application/json" },
 }
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
-
-let index: FlexSearch.Document<Link> = new FlexSearch.Document({
-  charset: "latin:advanced",
-  document: {
-    id: "id",
-    index: [
-      ...Object.keys(_SENTINEL).map(
-        (key) =>
-          ({ field: key, tokenize: "forward" }) as IndexOptions<Link, false> & {
-            field: string
-          },
-      ),
-    ],
-  },
-})
 
 const _IconMapping = {
   favourite: `<svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" data-tip="Unfavorite" data-for="links" style="vertical-align: unset;"><g><path d="m5.2 18.8l6 5.5-1.7 7.7c-0.2 1 0.2 2 1 2.5 0.3 0.3 0.8 0.5 1.3 0.5 0.4 0 0.7 0 1-0.2 0 0 0.2 0 0.2-0.1l6.8-3.9 6.9 3.9s0.1 0 0.1 0.1c0.9 0.4 1.9 0.4 2.5-0.1 0.9-0.5 1.2-1.5 1-2.5l-1.6-7.7c0.6-0.5 1.6-1.5 2.6-2.5l3.2-2.8 0.2-0.2c0.6-0.7 0.8-1.7 0.5-2.5s-1-1.5-2-1.7h-0.2l-7.8-0.8-3.2-7.2s0-0.1-0.2-0.1c-0.1-1.2-1-1.7-1.8-1.7s-1.7 0.5-2.2 1.3c0 0 0 0.2-0.1 0.2l-3.2 7.2-7.8 0.8h-0.2c-0.8 0.2-1.7 0.8-2 1.7-0.2 1 0 2 0.7 2.6z"></path></g></svg>`,
@@ -186,7 +59,7 @@ function extractApexDomain(url: string) {
   return match ? match[1] : ""
 }
 
-async function fetchLinks(refetch: boolean = false): Promise<Response> {
+export async function fetchLinks(refetch: boolean = false): Promise<Response> {
   // user metadata
   const user = await fetch("https://raw.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
     .then((res): Promise<Response> => res.json())
@@ -230,10 +103,10 @@ async function fetchLinks(refetch: boolean = false): Promise<Response> {
 }
 
 let currentActive: HTMLLIElement | null = null
-
 function createLinkEl(Link: Link): HTMLLIElement {
   const curiusItem = document.createElement("li")
   curiusItem.id = `curius-item-${Link.id}`
+  curiusItem.classList.add("curius-item")
 
   const createTitle = (Link: Link): HTMLDivElement => {
     const item = document.createElement("div")
@@ -334,18 +207,16 @@ function createLinkEl(Link: Link): HTMLLIElement {
 
         if (!modal) return
         modal.classList.add("active")
-        Object.assign(modal.style, {
-          left: `${pageX + 10}px`,
-          top: `${pageY + 10}px`,
-        })
+        modal.style.left = `${pageX + 10}px`
+        modal.style.top = `${pageY + 10}px`
       }
 
-      const events = [
+      registerEvents(
+        highlights,
         ["mouseenter", onMouseEnter],
         ["mouseleave", onMouseLeave],
         ["mousemove", onMouseMove],
-      ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
-      registerEvents(highlights, ...events)
+      )
     }
 
     item.append(tags, misc)
@@ -353,48 +224,36 @@ function createLinkEl(Link: Link): HTMLLIElement {
   }
 
   curiusItem.append(createTitle(Link), createMetadata(Link))
+  curiusItem.dataset.items = JSON.stringify(true)
 
-  const onMouseEnter = () => curiusItem.classList.add("focus")
+  const onMouseEnter = () => {
+    curiusItem.classList.add("focus")
+  }
 
-  const onMouseLeave = () => curiusItem.classList.remove("focus")
+  const onMouseLeave = () => {
+    curiusItem.classList.remove("focus")
+  }
 
   const onClick = (e: HTMLElementEventMap["click"]) => {
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
-    const note = document.querySelector("#curius-notes") as HTMLDivElement | null
+    if (currentActive) currentActive.classList.remove("active")
+
+    const note = document.getElementsByClassName("curius-notes")[0] as HTMLDivElement | null
     if (!note) return
 
-    if (currentActive) {
-      currentActive.classList.remove("active")
-    }
-    note.classList.add("active")
-    curiusItem.classList.add("active")
     currentActive = curiusItem
-    updateNotePanel(Link, note, curiusItem)
+    currentActive.classList.add("active")
+    note.classList.add("active")
+    updateNotePanel(Link, note, currentActive)
   }
 
-  function onKeydown(e: HTMLElementEventMap["keydown"]) {
-    const note = document.querySelector("#curius-notes") as HTMLDivElement | null
-    if (!note) return
-
-    if (e.key === "Escape") {
-      e.preventDefault()
-      note.classList.remove("active")
-      if (currentActive) currentActive.classList.remove("active")
-      else curiusItem.classList.remove("active")
-      return
-    }
-  }
-
-  document.addEventListener("keydown", onKeydown)
-  window.addCleanup(() => document.removeEventListener("keydown", onKeydown))
-
-  const events = [
+  registerEscapeHandler(curiusItem, () => curiusItem.classList.remove("active"))
+  registerEvents(
+    curiusItem,
     ["mouseenter", onMouseEnter],
     ["mouseleave", onMouseLeave],
     ["click", onClick],
-  ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
-
-  registerEvents(curiusItem, ...events)
+  )
 
   return curiusItem
 }
@@ -410,16 +269,18 @@ function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement
   titleNode.rel = "noopener noreferrer"
 
   const close = document.querySelector(".icon-container")
+
   const cleanUp = () => {
-    note.style.visibility = "hidden"
     note.classList.remove("active")
     parent.classList.remove("active")
   }
+
   close?.addEventListener("click", cleanUp)
   window.addCleanup(() => close?.removeEventListener("click", cleanUp))
+  registerEscapeHandler(note, cleanUp)
 
   removeAllChildren(snippetNode)
-  snippetNode.textContent = Link.snippet
+  snippetNode.textContent = Link.metadata ? Link.metadata.full_text : Link.snippet
 
   removeAllChildren(highlightsNode)
   if (Link.highlights.length === 0) return
@@ -434,65 +295,6 @@ function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement
     highlightItem.appendChild(hlLink)
     highlightsNode.appendChild(highlightItem)
   }
-}
-
-const contextWindowWords = 30
-
-const tokenizeTerm = (term: string) => {
-  const tokens = term.split(/\s+/).filter((t) => t.trim() !== "")
-  const tokenLen = tokens.length
-  if (tokenLen > 1) {
-    for (let i = 1; i < tokenLen; i++) {
-      tokens.push(tokens.slice(0, i + 1).join(" "))
-    }
-  }
-
-  return tokens.sort((a, b) => b.length - a.length) // always highlight longest terms first
-}
-
-function highlight(searchTerm: string, text: string, trim?: boolean) {
-  const tokenizedTerms = tokenizeTerm(searchTerm)
-  let tokenizedText = text.split(/\s+/).filter((t) => t !== "")
-
-  let startIndex = 0
-  let endIndex = tokenizedText.length - 1
-  if (trim) {
-    const includesCheck = (tok: string) =>
-      tokenizedTerms.some((term) => tok.toLowerCase().startsWith(term.toLowerCase()))
-    const occurrencesIndices = tokenizedText.map(includesCheck)
-
-    let bestSum = 0
-    let bestIndex = 0
-    for (let i = 0; i < Math.max(tokenizedText.length - contextWindowWords, 0); i++) {
-      const window = occurrencesIndices.slice(i, i + contextWindowWords)
-      const windowSum = window.reduce((total, cur) => total + (cur ? 1 : 0), 0)
-      if (windowSum >= bestSum) {
-        bestSum = windowSum
-        bestIndex = i
-      }
-    }
-
-    startIndex = Math.max(bestIndex - contextWindowWords, 0)
-    endIndex = Math.min(startIndex + 2 * contextWindowWords, tokenizedText.length - 1)
-    tokenizedText = tokenizedText.slice(startIndex, endIndex)
-  }
-
-  const slice = tokenizedText
-    .map((tok) => {
-      // see if this tok is prefixed by any search terms
-      for (const searchTok of tokenizedTerms) {
-        if (tok.toLowerCase().includes(searchTok.toLowerCase())) {
-          const regex = new RegExp(searchTok.toLowerCase(), "gi")
-          return tok.replace(regex, `<span class="highlight">$&</span>`)
-        }
-      }
-      return tok
-    })
-    .join(" ")
-
-  return `${startIndex === 0 ? "" : "..."}${slice}${
-    endIndex === tokenizedText.length - 1 ? "" : "..."
-  }`
 }
 
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
@@ -584,7 +386,8 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     refetchIcon.addEventListener("click", onClick)
     window.addCleanup(() => refetchIcon.removeEventListener("click", onClick))
 
-    const events = [
+    registerEvents(
+      refetchIcon,
       [
         "mouseenter",
         () =>
@@ -595,161 +398,6 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
         () =>
           (refetchIcon.style.opacity = refetchIcon.classList.contains("disabled") ? "0.5" : "0"),
       ],
-    ] as [keyof HTMLElementEventMap, EventListenerOrEventListenerObject][]
-    registerEvents(refetchIcon, ...events)
+    )
   }
 })
-
-document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
-  const bar = document.getElementById("curius-bar") as HTMLInputElement | null
-  const container = document.getElementById("curius-search-container") as HTMLDivElement | null
-
-  const resp = await fetchLinks()
-  const linksData = resp.links ?? []
-  const sampleLinks = sample(linksData, 20)
-
-  // Search functionality
-  async function onType(e: HTMLElementEventMap["input"]) {
-    let term = (e.target as HTMLInputElement).value
-    container?.classList.toggle("active", term !== "")
-    let searchResults =
-      (await index?.searchAsync({
-        query: term,
-        limit: numSearchResults,
-        index: ["title", "snippet", "topics"],
-      })) ?? []
-
-    const getByField = (field: string): number[] => {
-      const results = searchResults.filter((x) => x.field === field)
-      return results.length === 0 ? [] : ([...results[0].result] as number[])
-    }
-
-    const allIds: Set<number> = new Set([
-      ...getByField("title"),
-      ...getByField("snippet"),
-      ...getByField("topics"),
-    ])
-
-    const finalResults = [...allIds].map((id) => formatLinks(term, id))
-    displayLinks(finalResults)
-  }
-
-  const formatLinks = (term: string, id: number): Link => {
-    const L = linksData[id]
-    return {
-      ...L,
-      title: highlight(term, L.title),
-      snippet: highlight(term, L.snippet, true),
-    }
-  }
-
-  function displayLinks(links: Link[]) {
-    if (!container) return
-    removeAllChildren(container)
-
-    if (links.length === 0) {
-      container.innerHTML = `<a class="curius-search-link"><span class="curius-search-title">No results found.</span><p class="curius-search-snippet">Try another search term?</p></a>`
-    } else {
-      container?.append(...links.map(createSearchLinks))
-    }
-  }
-
-  function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if (e.key === "k" && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault()
-      const searchBarOpen = container?.classList.contains("active")
-      searchBarOpen ? hideLinks() : showLinks(sampleLinks)
-      return
-    }
-
-    if (!container?.classList.contains("active")) return
-    if (e.key === "Enter") {
-      if (container?.contains(document.activeElement)) {
-        const active = document.activeElement as HTMLInputElement
-        active.click()
-      } else {
-        const anchor = document.getElementsByClassName(
-          "curius-search-link",
-        )[0] as HTMLInputElement | null
-        anchor?.click()
-      }
-    } else if (e.key === "ArrowUp" || (e.shiftKey && e.key === "Tab")) {
-      e.preventDefault()
-      // When first pressing ArrowDown, results wont contain the active element, so focus first element
-      if (container?.contains(document.activeElement)) {
-        const prevResult = document.activeElement?.previousElementSibling as HTMLInputElement | null
-        prevResult?.focus()
-      }
-    } else if (e.key === "ArrowDown" || e.key === "Tab") {
-      e.preventDefault()
-
-      // When first pressing ArrowDown, results wont contain the active element, so focus first element
-      if (!container?.contains(document.activeElement)) {
-        const firstResult = document.getElementsByClassName(
-          "curius-search-link",
-        )[0] as HTMLInputElement | null
-        firstResult?.focus()
-      } else {
-        // If an element in results-container already has focus, focus next one
-        const nextResult = document.activeElement?.nextElementSibling as HTMLInputElement | null
-        nextResult?.focus()
-      }
-    }
-  }
-
-  function onClick(e: HTMLElementEventMap["click"]) {
-    if (bar?.classList.contains("active")) return
-    const searchBarOpen = container?.classList.contains("active")
-    searchBarOpen ? hideLinks() : showLinks(sampleLinks)
-  }
-
-  function showLinks(links: Link[]) {
-    if (!container) return
-    container?.classList.add("active")
-    bar?.focus()
-    displayLinks(links)
-  }
-
-  function hideLinks() {
-    if (container) container.classList.remove("active")
-    if (bar) bar.value = ""
-  }
-
-  function createSearchLinks(link: Link): HTMLAnchorElement {
-    const curiusLink = document.createElement("a")
-    curiusLink.classList.add("curius-search-link")
-    curiusLink.target = "_blank"
-    curiusLink.href = link.link
-    curiusLink.innerHTML = `<span class="curius-search-title">${link.title}</span><p class="curius-search-snippet">${link.snippet}</div>`
-
-    const onClick = (e: MouseEvent) => {
-      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
-      hideLinks()
-    }
-
-    curiusLink.addEventListener("click", onClick)
-    window.addCleanup(() => curiusLink.removeEventListener("click", onClick))
-
-    return curiusLink
-  }
-
-  document.addEventListener("keydown", shortcutHandler)
-  window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
-  bar?.addEventListener("input", onType)
-  window.addCleanup(() => bar?.removeEventListener("input", onType))
-  bar?.addEventListener("click", onClick)
-  window.addCleanup(() => bar?.removeEventListener("click", onClick))
-
-  registerEscapeHandler(container, hideLinks)
-
-  await fillIndex(linksData)
-})
-
-async function fillIndex(links: Link[]) {
-  let id = 0
-  const promises: Array<Promise<unknown>> = []
-  for (const link of links) {
-    promises.push(index.addAsync(id++, { ...link }))
-  }
-  return await Promise.all(promises)
-}

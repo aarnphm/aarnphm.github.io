@@ -151,10 +151,10 @@ document.addEventListener("nav", () => {
     }
   }
 
-  const mapping = [
+  registerEvents(
+    document,
     ["keydown", darkModeShortcutHandler],
     ["keydown", graphShortcutHandler],
     ["keydown", shortcutHandler],
-  ] as [keyof HTMLElementEventMap, EventListenerOrEventListenerObject][]
-  registerEvents(document, ...mapping)
+  )
 })

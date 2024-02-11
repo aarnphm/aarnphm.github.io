@@ -1,7 +1,6 @@
 import Content from "./pages/Content"
 import TagContent from "./pages/TagContent"
 import FolderContent from "./pages/FolderContent"
-import CuriusContent from "./pages/CuriusContent"
 import NotFound from "./pages/404"
 import ArticleTitle from "./ArticleTitle"
 import Darkmode from "./Darkmode"
@@ -25,6 +24,9 @@ import Meta from "./Meta"
 import Navigation from "./Navigation"
 import MinimalFooter from "./MinimalFooter"
 import Keybind from "./Keybind"
+import CuriusContent from "./pages/CuriusContent"
+import CuriusNotes from "./CuriusNotes"
+import CuriusHeader from "./CuriusHeader"
 
 export {
   ArticleTitle,
@@ -52,6 +54,8 @@ export {
   Meta,
   Navigation,
   CuriusContent,
+  CuriusNotes,
+  CuriusHeader,
   MinimalFooter,
   Keybind,
 }

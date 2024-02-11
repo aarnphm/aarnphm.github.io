@@ -16,6 +16,7 @@ import { QuartzComponentProps } from "../../components/types"
 import { ArticleTitle, Content } from "../../components"
 import chalk from "chalk"
 import { defaultProcessedContent } from "../vfile"
+import DepGraph from "../../depgraph"
 
 interface Options {
   slug: string[]
@@ -59,6 +60,13 @@ export const ZenPage: QuartzEmitterPlugin<Partial<Options>> = (opts?: Partial<Op
         ...left,
         ...right,
       ]
+    },
+    async getDependencyGraph(ctx, content, _resources) {
+      // Example graph:
+      // nested/file.md --> nested/file.html
+      //          \-------> nested/index.html
+      // TODO implement
+      return new DepGraph<FilePath>()
     },
     async emit(ctx, content, resources): Promise<FilePath[]> {
       const fps: FilePath[] = []

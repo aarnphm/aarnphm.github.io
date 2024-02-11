@@ -6,3 +6,12 @@ $topSpacing: 6rem;
 $fullPageWidth: $pageWidth + 2 * $sidePanelWidth;
 $boldWeight: 700;
 $normalWeight: 400;
+
+@mixin iconStyles {
+  margin-left: auto;
+  white-space: nowrap;
+  color: var(--lightgray);
+  padding: 2px 0px;
+  fill: lightgray;
+  opacity: 0;
+}
