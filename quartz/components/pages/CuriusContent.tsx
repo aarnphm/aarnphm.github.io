@@ -2,10 +2,10 @@ import { QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import MetaConstructor from "../Meta"
 import NavigationConstructor from "../Navigation"
 
-import curiusStyle from "../styles/curiusPage.scss"
+import style from "../styles/curiusPage.scss"
 
 //@ts-ignore
-import curiusScript from "../scripts/curius.inline"
+import script from "../scripts/curius.inline"
 import { i18n } from "../../i18n"
 
 const Title = () => (
@@ -71,13 +71,36 @@ function CuriusContent(componentData: QuartzComponentProps) {
       <div id="curius">
         <Title />
         <CuriusContainer {...componentData} />
+        <div id="curius-notes">
+          <div class="curius-note-title">
+            <a id="note-link"></a>
+            <div class="icon-container">
+              <svg
+                id="note-close"
+                aria-labelledby="close"
+                data-tooltip="close"
+                data-id="close"
+                height="15"
+                type="button"
+                viewBox="0 0 24 24"
+                width="15"
+                fill="rgba(170, 170, 170, 0.5)"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="curius-note-snippet"></div>
+          <div class="curius-note-highlights"></div>
+        </div>
       </div>
       <Navigation {...componentData} />
     </div>
   )
 }
 
-CuriusContent.css = curiusStyle
-CuriusContent.afterDOMLoaded = curiusScript
+CuriusContent.css = style
+CuriusContent.afterDOMLoaded = script
 
 export default (() => CuriusContent) satisfies QuartzComponentConstructor

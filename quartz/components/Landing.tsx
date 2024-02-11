@@ -95,17 +95,9 @@ const NotesConstructor = ((userOpts?: Options) => {
       .filter((f: Data) => {
         if (f.slug!.startsWith(opts.slug)) {
           return (
-            ![
-              "university",
-              "tags",
-              "index",
-              "influence",
-              "uses",
-              "curius",
-              "music",
-              "quotes",
-              ...cfg.ignorePatterns,
-            ].some((it) => (f.slug as FullSlug).includes(it)) &&
+            !["university", "tags", "index", ...cfg.ignorePatterns].some((it) =>
+              (f.slug as FullSlug).includes(it),
+            ) &&
             !f.frontmatter?.noindex &&
             !f.frontmatter?.construction
           )

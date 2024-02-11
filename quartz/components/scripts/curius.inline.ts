@@ -61,28 +61,59 @@ interface Response {
   user?: User
 }
 
+interface Trail {
+  id: number
+  trailName: string
+  ownerId: number
+  description: string
+  colorHex: string
+  emojiUnicode: string
+  flipped: any
+  hash: string
+  slug: string
+  createdDate: string
+}
+
 interface Link extends Entity {
   link: string
   title: string
   favorite: boolean
   snippet: string
   toRead: any
+  createdBy: number
+  metadata: {
+    full_text: string
+    author: string
+    page_type: string
+  }
   lastCrawled: any
+  trails: Trail[]
+  comments: string[]
+  mentions: string[]
   topics: Topic[]
   highlights: Highlight[]
   userIds?: number[]
 }
 
-const _Link: Link = {
+const _SENTINEL: Link = {
   id: 0,
   link: "",
   title: "",
   favorite: false,
   snippet: "",
   toRead: null,
+  createdBy: 0,
+  metadata: {
+    full_text: "",
+    author: "",
+    page_type: "",
+  },
   createdDate: "",
   modifiedDate: "",
   lastCrawled: null,
+  trails: [],
+  comments: [],
+  mentions: [],
   topics: [],
   highlights: [],
   userIds: [],
@@ -103,7 +134,7 @@ let index: FlexSearch.Document<Link> = new FlexSearch.Document({
   document: {
     id: "id",
     index: [
-      ...Object.keys(_Link).map(
+      ...Object.keys(_SENTINEL).map(
         (key) =>
           ({ field: key, tokenize: "forward" }) as IndexOptions<Link, false> & {
             field: string
@@ -112,6 +143,14 @@ let index: FlexSearch.Document<Link> = new FlexSearch.Document({
     ],
   },
 })
+
+const _IconMapping = {
+  favourite: `<svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" data-tip="Unfavorite" data-for="links" style="vertical-align: unset;"><g><path d="m5.2 18.8l6 5.5-1.7 7.7c-0.2 1 0.2 2 1 2.5 0.3 0.3 0.8 0.5 1.3 0.5 0.4 0 0.7 0 1-0.2 0 0 0.2 0 0.2-0.1l6.8-3.9 6.9 3.9s0.1 0 0.1 0.1c0.9 0.4 1.9 0.4 2.5-0.1 0.9-0.5 1.2-1.5 1-2.5l-1.6-7.7c0.6-0.5 1.6-1.5 2.6-2.5l3.2-2.8 0.2-0.2c0.6-0.7 0.8-1.7 0.5-2.5s-1-1.5-2-1.7h-0.2l-7.8-0.8-3.2-7.2s0-0.1-0.2-0.1c-0.1-1.2-1-1.7-1.8-1.7s-1.7 0.5-2.2 1.3c0 0 0 0.2-0.1 0.2l-3.2 7.2-7.8 0.8h-0.2c-0.8 0.2-1.7 0.8-2 1.7-0.2 1 0 2 0.7 2.6z"></path></g></svg>`,
+}
+
+type Keys = keyof typeof _IconMapping
+
+const Icons = (name: Keys) => _IconMapping[name] ?? null
 
 function timeSince(date: Date | string) {
   const now = new Date()
@@ -190,6 +229,8 @@ async function fetchLinks(refetch: boolean = false): Promise<Response> {
   return { links: newLinks, user }
 }
 
+let currentActive: HTMLLIElement | null = null
+
 function createLinkEl(Link: Link): HTMLLIElement {
   const curiusItem = document.createElement("li")
   curiusItem.id = `curius-item-${Link.id}`
@@ -214,7 +255,16 @@ function createLinkEl(Link: Link): HTMLLIElement {
     address.classList.add("curius-item-address")
     address.textContent = extractApexDomain(Link.link)
 
-    item.append(header, address)
+    const icons = document.createElement("div")
+    icons.classList.add("curius-item-icons")
+    if (Link.favorite) {
+      const icon = document.createElement("span")
+      icon.classList.add("curius-favourite")
+      icon.innerHTML = Icons("favourite")
+      icons.appendChild(icon)
+    }
+
+    item.append(header, address, icons)
     return item
   }
 
@@ -222,14 +272,14 @@ function createLinkEl(Link: Link): HTMLLIElement {
     const item = document.createElement("div")
     item.classList.add("curius-item-metadata")
 
-    const tags = document.createElement("div")
+    const tags = document.createElement("ul")
     tags.classList.add("curius-item-tags")
     tags.innerHTML =
       Link.topics.length > 0
         ? `${Link.topics
             .map((topic) =>
               topic.public
-                ? `<ul><a href="https://curius.app/aaron-pham/${topic.slug}" target="_blank">${topic.topic}</a></ul>`
+                ? `<li><a href="https://curius.app/aaron-pham/${topic.slug}" target="_blank">${topic.topic}</a></li>`
                 : ``,
             )
             .join("")}`
@@ -308,10 +358,29 @@ function createLinkEl(Link: Link): HTMLLIElement {
 
   const onMouseLeave = () => curiusItem.classList.remove("focus")
 
+  const onClick = (e: HTMLElementEventMap["click"]) => {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
+    const note = document.querySelector("#curius-notes") as HTMLDivElement | null
+    if (!note) return
+
+    if (currentActive) {
+      currentActive.classList.remove("active")
+    }
+    note.classList.add("active")
+    curiusItem.classList.add("active")
+    currentActive = curiusItem
+    updateNotePanel(Link, note, curiusItem)
+  }
+
   function onKeydown(e: HTMLElementEventMap["keydown"]) {
+    const note = document.querySelector("#curius-notes") as HTMLDivElement | null
+    if (!note) return
+
     if (e.key === "Escape") {
       e.preventDefault()
-      curiusItem.classList.remove("active")
+      note.classList.remove("active")
+      if (currentActive) currentActive.classList.remove("active")
+      else curiusItem.classList.remove("active")
       return
     }
   }
@@ -322,11 +391,49 @@ function createLinkEl(Link: Link): HTMLLIElement {
   const events = [
     ["mouseenter", onMouseEnter],
     ["mouseleave", onMouseLeave],
+    ["click", onClick],
   ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
 
   registerEvents(curiusItem, ...events)
 
   return curiusItem
+}
+
+function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement) {
+  const titleNode = note.querySelector("#note-link") as HTMLAnchorElement
+  const snippetNode = note.querySelector(".curius-note-snippet") as HTMLDivElement
+  const highlightsNode = note.querySelector(".curius-note-highlights") as HTMLDivElement
+
+  titleNode.innerHTML = `<span class="curius-item-span">${Link.title}</span>`
+  titleNode.href = Link.link
+  titleNode.target = "_blank"
+  titleNode.rel = "noopener noreferrer"
+
+  const close = document.querySelector(".icon-container")
+  const cleanUp = () => {
+    note.style.visibility = "hidden"
+    note.classList.remove("active")
+    parent.classList.remove("active")
+  }
+  close?.addEventListener("click", cleanUp)
+  window.addCleanup(() => close?.removeEventListener("click", cleanUp))
+
+  removeAllChildren(snippetNode)
+  snippetNode.textContent = Link.snippet
+
+  removeAllChildren(highlightsNode)
+  if (Link.highlights.length === 0) return
+  for (const hl of Link.highlights) {
+    const highlightItem = document.createElement("li")
+    const hlLink = document.createElement("a")
+    hlLink.dataset.highlight = hl.id.toString()
+    hlLink.href = `${Link.link}?curius=${hl.userId}`
+    hlLink.target = "_blank"
+    hlLink.rel = "noopener noreferrer"
+    hlLink.textContent = hl.highlight
+    highlightItem.appendChild(hlLink)
+    highlightsNode.appendChild(highlightItem)
+  }
 }
 
 const contextWindowWords = 30
