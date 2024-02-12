@@ -138,6 +138,10 @@ body[data-slug="projects"] {
     span[class="description"] {
       font-size: 14px;
       color: var(--gray);
+
+      @media all and (max-width: $mobileBreakpoint) {
+        display: none;
+      }
     }
 
     .divider {

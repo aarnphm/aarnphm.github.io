@@ -45,9 +45,39 @@ body[data-slug="index"] {
   }
 }
 
+.notes-outer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 1px solid var(--lightgray);
+  border-bottom: 1px solid var(--lightgray);
+  padding: 0 1rem;
+  gap: 1rem;
+
+  #note-item {
+    border-right: 1px solid var(--lightgray);
+  }
+
+  #note-item:last-child {
+    border-right: none;
+  }
+
+  @media all and (max-width: $fullPageWidth) {
+    display: flex !important;
+    flex-direction: column;
+    #note-item {
+      border-right: none;
+      border-bottom: 1px solid var(--lightgray);
+    }
+
+    #note-item:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
 .notes-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
 .landing-notes {
@@ -96,13 +126,12 @@ a.min-links {
 }
 
 .content-container {
-  margin: $topSpacing auto;
+  margin: 2rem auto;
 
   @media all and (max-width: $fullPageWidth) {
     width: initial;
     margin-left: 0;
     margin-right: 0;
-    margin-bottom: 1rem;
   }
 
   hr {

@@ -179,7 +179,9 @@ function concatZenStyles(zenMap: string[]): string {
     const style = `
       body[data-slug="${slug}"] {
         .page > #quartz-body > .center {
-          margin-top: 6rem;
+          @media all and (min-width: 1510px) {
+            margin-top: 6rem;
+          }
 
           & > .page-header > .popover-hint {
             display: flex;

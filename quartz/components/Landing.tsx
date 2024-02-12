@@ -70,15 +70,9 @@ const AliasLink = (props: AliasLinkProp) => {
 
 type ContentType = keyof typeof ContentAlias
 
-const getContentAlias = (name: string) => {
-  return (
-    <AliasLink
-      name={name}
-      url={ContentAlias[name as ContentType] ?? "/"}
-      isInternal={!name.includes("projects")}
-    />
-  )
-}
+const getContentAlias = (name: string) => (
+  <AliasLink name={name} url={ContentAlias[name as ContentType] ?? "/"} isInternal />
+)
 
 interface Options {
   slug: SimpleSlug
@@ -89,7 +83,7 @@ interface Options {
 const defaultOptions: Options = {
   header: "récentes",
   slug: "thoughts/" as SimpleSlug,
-  numLimits: 15,
+  numLimits: 8,
 }
 
 const NotesConstructor = ((userOpts?: Options) => {
@@ -97,7 +91,7 @@ const NotesConstructor = ((userOpts?: Options) => {
 
   const opts = { ...defaultOptions, ...userOpts }
 
-  function Notes({ allFiles, fileData, displayClass, cfg }: QuartzComponentProps) {
+  function Notes({ allFiles, fileData, cfg }: QuartzComponentProps) {
     const pages = allFiles
       .filter((f: Data) => {
         if (f.slug!.startsWith(opts.slug)) {
@@ -116,43 +110,40 @@ const NotesConstructor = ((userOpts?: Options) => {
     const remaining = Math.max(0, pages.length - opts.numLimits!)
     const classes = ["min-links", "internal"].join(" ")
     return (
-      <>
+      <div id="note-item">
         <h2>{opts.header}.</h2>
         <div class="notes-container">
-          <div>
-            <ul class="landing-notes">
-              {pages.slice(0, opts.numLimits).map((page) => {
-                const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
+          <ul class="landing-notes">
+            {pages.slice(0, opts.numLimits).map((page) => {
+              const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
 
-                return (
-                  <li>
-                    <a href={resolveRelative(fileData.slug!, page.slug!)} class={classes}>
-                      <div class="landing-meta">
-                        <span class="landing-mspan">
-                          {formatDate(getDate(cfg, page)!, cfg.locale)}
-                        </span>
-                        <u>{title}</u>
-                      </div>
-                    </a>
-                  </li>
-                )
-              })}
-            </ul>
-            {remaining > 0 && (
-              <p>
-                <u>
-                  <a href={resolveRelative(fileData.slug!, opts.slug)} class={classes}>
-                    {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
-                      remaining,
-                    })}
+              return (
+                <li>
+                  <a href={resolveRelative(fileData.slug!, page.slug!)} class={classes}>
+                    <div class="landing-meta">
+                      <span class="landing-mspan">
+                        {formatDate(getDate(cfg, page)!, cfg.locale)}
+                      </span>
+                      <u>{title}</u>
+                    </div>
                   </a>
-                </u>
-              </p>
-            )}
-          </div>
-          <Spacer {...({ allFiles, fileData, displayClass, cfg: cfg } as QuartzComponentProps)} />
+                </li>
+              )
+            })}
+          </ul>
+          {remaining > 0 && (
+            <p>
+              <u>
+                <a href={resolveRelative(fileData.slug!, opts.slug)} class={classes}>
+                  {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
+                    remaining,
+                  })}
+                </a>
+              </u>
+            </p>
+          )}
         </div>
-      </>
+      </div>
     )
   }
   return Notes
@@ -188,26 +179,18 @@ const ContentConstructor = (() => {
         </p>
         <p>
           Currently, I'm building{" "}
-          <a
-            href="https://bentoml.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="landing-links"
-          >
-            serving infrastructure
-          </a>{" "}
-          and explore our interaction with {getContentAlias("large language models")}.
+          <AliasLink name="serving infrastructure" url="https://bentoml.com" newTab /> and explore
+          our interaction with {getContentAlias("large language models")}.
         </p>
         <p>
           You are currently at the <em>index</em> of my {getContentAlias("hypertext")}{" "}
           {getContentAlias("digital garden")}. Feel free to explore around. Please don't hesitate to
           reach out if you have any questions or just want to chat.
         </p>
-        <hr />
-        <RecentPosts {...componentData} />
-        <hr />
-        <RecentNotes {...componentData} />
-        <hr />
+        <div class="notes-outer">
+          <RecentNotes {...componentData} />
+          <RecentPosts {...componentData} />
+        </div>
         <div class="hyperlinks">
           <h2>jardin:</h2>
           <div class="clickable-container">
