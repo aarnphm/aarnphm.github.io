@@ -21,6 +21,8 @@ Computer is a bicycle for the mind. -- [Steve Jobs](https://www.youtube.com/watc
 
 All I can say to the young is close your eyes. -- Ted Nelson
 
+An expert is a man who has made all the mistakes, which can be made, in a very narrow field. -- Niels Bohr
+
 ## On perspectives.
 
 Our capacity to deal with [[thoughts/Language|language]] is a complex, genetically-determined part of our biological endowment. It's a product of evolution, part of our nature. -- Noam Chomsky

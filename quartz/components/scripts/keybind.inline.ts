@@ -29,7 +29,6 @@ document.addEventListener("nav", async () => {
   const shortcutKey = document.getElementById("shortcut-key")
   const keybind = document.getElementsByClassName("keybind")[0] as HTMLDivElement | null
 
-  console.log(document.getElementsByClassName("keybind"))
   const showContainer = () => container?.classList.add("active")
 
   const hideContainer = () => container?.classList.remove("active")
