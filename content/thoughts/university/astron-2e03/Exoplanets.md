@@ -6,9 +6,9 @@ date: "2024-02-02"
 title: Expolanets
 ---
 
-<div style="text-align: right">
-  Aaron Pham - 400232791
-</div>
+<!-- <div style="text-align: right"> -->
+<!--   Aaron Pham - 400232791 -->
+<!-- </div> -->
 
 ### Q1)
 
