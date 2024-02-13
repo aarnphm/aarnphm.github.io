@@ -27,6 +27,8 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] Dallas Buyers Club (2013)
 - [ ] Paterson (2016)
 - [ ] Manchester by the Sea (2016)
+- [ ] Killing of the Sacred Deer (2017)
+- [ ] The Favorite (2018)
 - [ ] Under The Silver Lake (2018)
 - [ ] The Father (2020)
 - [ ] Poor Things (2023)
