@@ -48,6 +48,8 @@ See also: [All the better to see you with](https://www.kernelmag.io/2/all-the-be
 See [this](https://twitter.com/jachiam0/status/1598448668537155586) and [this](https://twitter.com/gordonbrander/status/1600469469419036675)
 This only occurs if you only need a "good-enough" item where value outweighs the process.
 
+However, one should always consider to put in the work, rather than being "ok" with good enough. In the process of working through a problem, one will learn about bottleneck and problems to be solved, which in turn gain invaluable experience otherwise would not achieved if one fully relies on the interaction with the models alone.
+
 ### as [[thoughts/Search|search]]
 
 These models are incredibly useful for summarization and information gathering. With the [[thoughts/taxonomy]] of [[thoughts/RAG]] or any other CoT tooling, you can pretty much augment and produce and improve search-efficiency bu quite a lot.
@@ -72,4 +74,4 @@ Overall should be a net positive, but it's a double-edged sword.
 
 Tool that lower of barrier of entry is always a good thing, but it often will lead to probably even higher discrepancies in quality of software
 
-Increased in productivity, but also increased in technical debt, as these generated code are mostly "bad" code, and often we have to nudge and do a lot of **prompt engineering**.
+Increased in productivity, but also increased in technical debt, as these generated code are mostly "bad" code, and often we have to nudge and do a lot of **[[thoughts/prompt engineering|prompt engineering]]**.

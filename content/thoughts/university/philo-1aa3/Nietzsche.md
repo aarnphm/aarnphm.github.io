@@ -3,8 +3,8 @@ id: Nietzsche
 tags:
   - philosophy
   - philos1aa3
-title: Nietzsche
-date: 2023-11-30
+date: "2023-11-30"
+title: Nietzsche's Life
 ---
 
 _1844-1900_

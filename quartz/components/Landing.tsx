@@ -157,7 +157,6 @@ const ContentConstructor = (() => {
   const RecentPosts = NotesConstructor({
     header: "écriture",
     slug: "posts/" as SimpleSlug,
-    numLimits: 3,
   })
 
   function Content(componentData: QuartzComponentProps) {

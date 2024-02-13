@@ -495,6 +495,16 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
         })
       }
 
+      plugins.push(() => {
+        return (tree: Root, file) => {
+          if (file.data.frontmatter?.poem) {
+            visit(tree, "paragraph", (node) => {
+              console.log(node)
+            })
+          }
+        }
+      })
+
       if (opts.construction) {
         plugins.push(() => {
           return (tree: Root, file) => {

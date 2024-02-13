@@ -73,10 +73,6 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
           containsIndex = true
         }
 
-        if (file.data.frontmatter?.zen === true) {
-          continue
-        }
-
         const externalResources = pageResources(pathToRoot(slug), resources)
         const componentData: QuartzComponentProps = {
           fileData: file.data,

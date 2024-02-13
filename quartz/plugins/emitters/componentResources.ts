@@ -189,11 +189,6 @@ function concatZenStyles(zenMap: string[]): string {
           }
         }
 
-        & > * {
-          margin: 2rem 0 0;
-          line-height: 1;
-        }
-
         .page-header {
           display: none;
         }

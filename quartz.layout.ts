@@ -66,6 +66,8 @@ const left = (userOpts?: Partial<Options>) => {
       }),
     )
 
+  desktopOnly.push(Component.DesktopOnly(Component.TableOfContents()))
+
   if (opts.enableExplorer)
     desktopOnly.push(
       Component.Explorer({
@@ -88,7 +90,6 @@ const right = () => {
         localGraph: { repelForce: 0.79, centerForce: 0.2, scale: 1.04, linkDistance: 40 },
       }),
       Component.Backlinks(),
-      Component.DesktopOnly(Component.TableOfContents()),
     ],
   }
 }
