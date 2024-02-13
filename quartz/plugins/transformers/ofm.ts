@@ -18,6 +18,7 @@ import { PhrasingContent } from "mdast-util-find-and-replace/lib"
 import { capitalize } from "../../util/lang"
 import { PluggableList } from "unified"
 import { ValidCallout, i18n } from "../../i18n"
+import remarkBreaks from "remark-breaks"
 
 export interface Options {
   construction: boolean
@@ -498,9 +499,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
       plugins.push(() => {
         return (tree: Root, file) => {
           if (file.data.frontmatter?.poem) {
-            visit(tree, "paragraph", (node) => {
-              console.log(node)
-            })
+            return remarkBreaks()(tree)
           }
         }
       })

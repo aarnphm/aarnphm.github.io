@@ -83,6 +83,7 @@ const config: QuartzConfig = {
       Plugin.TagPage(),
       Plugin.CuriusPage(),
       Plugin.ZenPage(),
+      Plugin.PoetryPage(),
       // Plugin.Embeddings(),
       Plugin.ContentIndex({ rssLimit: 40 }),
       Plugin.Assets(),

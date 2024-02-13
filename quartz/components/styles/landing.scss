@@ -46,32 +46,18 @@ body[data-slug="index"] {
 }
 
 .notes-outer {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   border-top: 1px solid var(--lightgray);
   border-bottom: 1px solid var(--lightgray);
-  padding: 0 1rem;
-  gap: 1rem;
 
   #note-item {
-    border-right: 1px solid var(--lightgray);
-  }
-
-  #note-item:last-child {
-    border-right: none;
+    border-bottom: 1px solid var(--lightgray);
   }
 
   @media all and (max-width: $fullPageWidth) {
     display: flex !important;
     flex-direction: column;
-    #note-item {
-      border-right: none;
-      border-bottom: 1px solid var(--lightgray);
-    }
-
-    #note-item:last-child {
-      border-bottom: none;
-    }
   }
 }
 
