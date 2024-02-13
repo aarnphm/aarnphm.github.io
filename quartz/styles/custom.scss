@@ -27,6 +27,22 @@
   src: url("/static/GT-Sectra-Book.woff") format("woff");
 }
 
+@font-face {
+  font-family: "EditorialNew_Ultralight";
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url("/static/EditorialNew-Ultralight.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Cardo";
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url("/static/Cardo-Regular.ttf") format("truetype");
+}
+
 [role="article"]:hover {
   border: 1px solid var(--highlight);
   background: var(--highlight);
@@ -58,6 +74,15 @@ figure[data-rehype-pretty-code-figure] {
 
 code {
   font-size: 0.8em;
+}
+
+pre.poetry {
+  margin-top: 4rem;
+  border: none;
+  padding: 0;
+  position: unset;
+  font-size: 1.2rem;
+  font-family: Cardo, var(--bodyFont);
 }
 
 body[data-slug="projects"] {

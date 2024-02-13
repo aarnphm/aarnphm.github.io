@@ -9,7 +9,7 @@ import { FullPageLayout } from "../../cfg"
 import { FilePath, pathToRoot } from "../../util/path"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { QuartzComponentProps } from "../../components/types"
-import { ArticleTitle, Content, Spacer } from "../../components"
+import { ArticleTitle, Content, ContentMeta, Spacer } from "../../components"
 import DepGraph from "../../depgraph"
 
 export const PoetryPage: QuartzEmitterPlugin = () => {
@@ -18,7 +18,7 @@ export const PoetryPage: QuartzEmitterPlugin = () => {
   const opts: FullPageLayout = {
     head: HeadConstructor(),
     header: [],
-    beforeBody: [ArticleTitle()],
+    beforeBody: [ArticleTitle(), ContentMeta({ showReadingTime: false, showReturnHome: true })],
     pageBody: Content(),
     left: [Meta],
     right: [],

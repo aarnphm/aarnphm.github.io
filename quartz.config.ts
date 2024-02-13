@@ -73,6 +73,7 @@ const config: QuartzConfig = {
         },
       }),
       Plugin.Description(),
+      Plugin.Poetry(),
     ],
     filters: [Plugin.RemoveDrafts()],
     emitters: [
