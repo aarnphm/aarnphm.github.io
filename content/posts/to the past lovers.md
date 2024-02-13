@@ -40,5 +40,5 @@ Yet, here I stand,
   lost in the labyrinth of time.
   a prisoner of the heart,
   and a slave to the mind,
-    misses  the  idea  of  you.
+    that misses  the  idea  of  you.
 ```
