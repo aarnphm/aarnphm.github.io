@@ -53,17 +53,21 @@ body[data-slug="index"] {
 
   #note-item {
     border-bottom: 1px solid var(--lightgray);
+
+    .recent-links,
+    .notes-container {
+      display: flex;
+    }
+
+    .recent-links {
+      flex-direction: column;
+    }
   }
 
   @media all and (max-width: $fullPageWidth) {
     display: flex !important;
     flex-direction: column;
   }
-}
-
-.notes-container {
-  display: flex;
-  flex-direction: column;
 }
 
 .landing-notes {

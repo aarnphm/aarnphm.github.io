@@ -91,12 +91,12 @@ const NotesConstructor = ((userOpts?: Options) => {
 
   const opts = { ...defaultOptions, ...userOpts }
 
-  function Notes({ allFiles, fileData, cfg }: QuartzComponentProps) {
-    const pages = allFiles
+  function Notes(componentData: QuartzComponentProps) {
+    const pages = componentData.allFiles
       .filter((f: Data) => {
         if (f.slug!.startsWith(opts.slug)) {
           return (
-            !["university", "tags", "index", ...cfg.ignorePatterns].some((it) =>
+            !["university", "tags", "index", ...componentData.cfg.ignorePatterns].some((it) =>
               (f.slug as FullSlug).includes(it),
             ) &&
             !f.frontmatter?.noindex &&
@@ -105,7 +105,7 @@ const NotesConstructor = ((userOpts?: Options) => {
         }
         return false
       })
-      .sort(byDateAndAlphabetical(cfg))
+      .sort(byDateAndAlphabetical(componentData.cfg))
 
     const remaining = Math.max(0, pages.length - opts.numLimits!)
     const classes = ["min-links", "internal"].join(" ")
@@ -113,35 +113,45 @@ const NotesConstructor = ((userOpts?: Options) => {
       <div id="note-item">
         <h2>{opts.header}.</h2>
         <div class="notes-container">
-          <ul class="landing-notes">
-            {pages.slice(0, opts.numLimits).map((page) => {
-              const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
+          <div class="recent-links">
+            <ul class="landing-notes">
+              {pages.slice(0, opts.numLimits).map((page) => {
+                const title =
+                  page.frontmatter?.title ?? i18n(componentData.cfg.locale).propertyDefaults.title
 
-              return (
-                <li>
-                  <a href={resolveRelative(fileData.slug!, page.slug!)} class={classes}>
-                    <div class="landing-meta">
-                      <span class="landing-mspan">
-                        {formatDate(getDate(cfg, page)!, cfg.locale)}
-                      </span>
-                      <u>{title}</u>
-                    </div>
+                return (
+                  <li>
+                    <a
+                      href={resolveRelative(componentData.fileData.slug!, page.slug!)}
+                      class={classes}
+                    >
+                      <div class="landing-meta">
+                        <span class="landing-mspan">
+                          {formatDate(getDate(componentData.cfg, page)!, componentData.cfg.locale)}
+                        </span>
+                        <u>{title}</u>
+                      </div>
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
+            {remaining > 0 && (
+              <p>
+                <u>
+                  <a
+                    href={resolveRelative(componentData.fileData.slug!, opts.slug)}
+                    class={classes}
+                  >
+                    {i18n(componentData.cfg.locale).components.recentNotes.seeRemainingMore({
+                      remaining,
+                    })}
                   </a>
-                </li>
-              )
-            })}
-          </ul>
-          {remaining > 0 && (
-            <p>
-              <u>
-                <a href={resolveRelative(fileData.slug!, opts.slug)} class={classes}>
-                  {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
-                    remaining,
-                  })}
-                </a>
-              </u>
-            </p>
-          )}
+                </u>
+              </p>
+            )}
+          </div>
+          <Spacer {...componentData} />
         </div>
       </div>
     )
