@@ -83,7 +83,7 @@ interface Options {
 const defaultOptions: Options = {
   header: "récentes",
   slug: "thoughts/" as SimpleSlug,
-  numLimits: 8,
+  numLimits: 6,
 }
 
 const NotesConstructor = ((userOpts?: Options) => {

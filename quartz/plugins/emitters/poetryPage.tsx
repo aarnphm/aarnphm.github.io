@@ -7,10 +7,20 @@ import NavigationConstructor from "../../components/Navigation"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
 import { FilePath, pathToRoot } from "../../util/path"
+import { classNames } from "../../util/lang"
 import { pageResources, renderPage } from "../../components/renderPage"
-import { QuartzComponentProps } from "../../components/types"
+import { QuartzComponentConstructor, QuartzComponentProps } from "../../components/types"
 import { ArticleTitle, Content, ContentMeta, Spacer } from "../../components"
 import DepGraph from "../../depgraph"
+import { Date, getDate } from "../../components/Date"
+
+function PoetryFooter({ allFiles, fileData, displayClass, cfg }: QuartzComponentProps) {
+  return (
+    <footer class={classNames(displayClass, "poetry-footer")}>
+      <Date date={getDate(cfg, fileData)!} locale={cfg.locale} />
+    </footer>
+  )
+}
 
 export const PoetryPage: QuartzEmitterPlugin = () => {
   const Meta = MetaConstructor()
@@ -22,7 +32,7 @@ export const PoetryPage: QuartzEmitterPlugin = () => {
     pageBody: Content(),
     left: [Meta],
     right: [],
-    footer: Spacer(),
+    footer: PoetryFooter,
   }
 
   const { head: Head, header, beforeBody, pageBody, left, right, footer: Footer } = opts

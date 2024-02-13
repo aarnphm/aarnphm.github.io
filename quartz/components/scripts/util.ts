@@ -39,3 +39,35 @@ export function registerEvents<
     window.addCleanup(() => element.removeEventListener(event, listener))
   })
 }
+
+export function decodeString(el: HTMLSpanElement, targetString: string, duration: number = 1000) {
+  const start = performance.now()
+  const end = start + duration
+
+  function update() {
+    const current = performance.now()
+    const progress = (current - start) / duration
+    const currentIndex = Math.floor(progress * targetString.length)
+
+    if (current < end) {
+      let decodingString =
+        targetString.substring(0, currentIndex) +
+        getRandomString(targetString.length - currentIndex)
+      el.textContent = decodingString
+      requestAnimationFrame(update)
+    } else {
+      el.textContent = targetString
+    }
+  }
+
+  requestAnimationFrame(update)
+}
+
+export function getRandomString(length: number) {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  let result = ""
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length))
+  }
+  return result
+}
