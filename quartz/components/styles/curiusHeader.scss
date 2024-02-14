@@ -8,11 +8,6 @@
     align-items: center;
     background-color: var(--light);
     gap: 0.5rem;
-
-    & > .total-links {
-      font-style: italic;
-      fill: lightgray;
-    }
   }
 
   #curius-icons {
@@ -54,6 +49,7 @@
       white-space: nowrap;
       font-family: var(--bodyFont);
       box-sizing: border-box;
+      border-radius: 2px;
       color: var(--dark);
       padding: 0.4rem 0.5rem;
       border: 1px solid var(--lightgray);
