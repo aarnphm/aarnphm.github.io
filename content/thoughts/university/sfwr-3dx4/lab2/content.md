@@ -19,4 +19,6 @@ See [[thoughts/university/sfwr-3dx4/lab2/lab2.pdf|lab notes]]
 - [ ] Check to change the TCP address of the model URI from `QUARC > Settings > Preferences > Model`
 
 
-
+$$
+G(w) = \frac{1.867468}{0.027947 * s + 1}
+$$
