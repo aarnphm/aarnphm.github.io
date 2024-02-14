@@ -1,6 +1,5 @@
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import MetaConstructor from "./Meta"
-
 import style from "./styles/landing.scss"
 import { byDateAndAlphabetical } from "./PageList"
 import { i18n } from "../i18n"
@@ -91,12 +90,13 @@ const NotesConstructor = ((userOpts?: Options) => {
 
   const opts = { ...defaultOptions, ...userOpts }
 
-  function Notes(componentData: QuartzComponentProps) {
-    const pages = componentData.allFiles
+  const Notes: QuartzComponent = (componentData: QuartzComponentProps) => {
+    const { allFiles, fileData, cfg } = componentData
+    const pages = allFiles
       .filter((f: Data) => {
         if (f.slug!.startsWith(opts.slug)) {
           return (
-            !["university", "tags", "index", ...componentData.cfg.ignorePatterns].some((it) =>
+            !["university", "tags", "index", ...cfg.ignorePatterns].some((it) =>
               (f.slug as FullSlug).includes(it),
             ) &&
             !f.frontmatter?.noindex &&
@@ -105,7 +105,7 @@ const NotesConstructor = ((userOpts?: Options) => {
         }
         return false
       })
-      .sort(byDateAndAlphabetical(componentData.cfg))
+      .sort(byDateAndAlphabetical(cfg))
 
     const remaining = Math.max(0, pages.length - opts.numLimits!)
     const classes = ["min-links", "internal"].join(" ")
@@ -116,18 +116,14 @@ const NotesConstructor = ((userOpts?: Options) => {
           <div class="recent-links">
             <ul class="landing-notes">
               {pages.slice(0, opts.numLimits).map((page) => {
-                const title =
-                  page.frontmatter?.title ?? i18n(componentData.cfg.locale).propertyDefaults.title
+                const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
 
                 return (
                   <li>
-                    <a
-                      href={resolveRelative(componentData.fileData.slug!, page.slug!)}
-                      class={classes}
-                    >
+                    <a href={resolveRelative(fileData.slug!, page.slug!)} class={classes}>
                       <div class="landing-meta">
                         <span class="landing-mspan">
-                          {formatDate(getDate(componentData.cfg, page)!, componentData.cfg.locale)}
+                          {formatDate(getDate(cfg, page)!, cfg.locale)}
                         </span>
                         <u>{title}</u>
                       </div>
@@ -139,11 +135,8 @@ const NotesConstructor = ((userOpts?: Options) => {
             {remaining > 0 && (
               <p>
                 <u>
-                  <a
-                    href={resolveRelative(componentData.fileData.slug!, opts.slug)}
-                    class={classes}
-                  >
-                    {i18n(componentData.cfg.locale).components.recentNotes.seeRemainingMore({
+                  <a href={resolveRelative(fileData.slug!, opts.slug)} class={classes}>
+                    {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
                       remaining,
                     })}
                   </a>
@@ -170,7 +163,7 @@ const ContentConstructor = (() => {
     numLimits: 3,
   })
 
-  function Content(componentData: QuartzComponentProps) {
+  const Content = (componentData: QuartzComponentProps) => {
     return (
       <div class="content-container">
         <Header {...componentData}>
@@ -224,6 +217,7 @@ const ContentConstructor = (() => {
       </div>
     )
   }
+
   return Content
 }) satisfies QuartzComponentConstructor
 
@@ -232,7 +226,7 @@ export default (() => {
   const Content = ContentConstructor()
   const Spacer = SpacerConstructor()
 
-  function LandingComponent(componentData: QuartzComponentProps) {
+  const LandingComponent: QuartzComponent = (componentData: QuartzComponentProps) => {
     return (
       <div id="quartz-root" class="page">
         <div id="quartz-body">

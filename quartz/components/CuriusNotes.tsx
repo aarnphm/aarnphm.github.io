@@ -1,10 +1,10 @@
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import style from "./styles/curiusNotes.scss"
 import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
 
 export default (() => {
-  function CuriusNotes({ displayClass }: QuartzComponentProps) {
+  const CuriusNotes: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
     return (
       <div class={classNames(displayClass, "curius-notes")}>
         <div class="curius-note-title">

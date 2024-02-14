@@ -1,4 +1,4 @@
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import style from "./styles/minimal.scss"
 import { i18n } from "../i18n"
 import { version } from "../../package.json"
@@ -38,12 +38,10 @@ const iconMapping: Record<string, JSX.Element> = {
   ),
 }
 
-const getIcon = (name: string) => {
-  return iconMapping[name] ?? <>{name}</>
-}
+const getIcon = (name: string) => iconMapping[name] ?? <>{name}</>
 
 export default ((opts?: Options) => {
-  function Footer({ displayClass, cfg }: QuartzComponentProps) {
+  const Footer: QuartzComponent = ({ displayClass, cfg }: QuartzComponentProps) => {
     const year = new Date().getFullYear()
     const links = opts?.links ?? []
 

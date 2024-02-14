@@ -1,4 +1,4 @@
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import navigationCss from "./styles/navigation.scss"
 import { FullSlug, TransformOptions, transformLink } from "../util/path"
 
@@ -13,7 +13,7 @@ const defaultOptions: Options = {
 }
 
 export default ((userOpts?: Partial<Options>) => {
-  function Navigation({ fileData, allFiles }: QuartzComponentProps) {
+  const Navigation: QuartzComponent = ({ fileData, allFiles }: QuartzComponentProps) => {
     const transformOpts: TransformOptions = {
       strategy: "absolute",
       allSlugs: allFiles.map((f) => f.slug as FullSlug),

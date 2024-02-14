@@ -1,4 +1,4 @@
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
 import style from "./styles/keybind.scss"
 // @ts-ignore
@@ -44,7 +44,7 @@ export default ((userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }
   const defaultKey = opts.default![0]
 
-  function Keybind({ displayClass }: QuartzComponentProps) {
+  const Keybind: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
     return (
       <div class={classNames(displayClass, "keybind")} lang={"fr"}>
         <kbd id="shortcut-key" data-mapping={JSON.stringify(opts.default?.map(revert))}>

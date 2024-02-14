@@ -1,4 +1,4 @@
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import style from "./styles/curiusHeader.scss"
 //@ts-ignore
 import script from "./scripts/curius-search.inline"
@@ -6,7 +6,7 @@ import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
 
 export default (() => {
-  function CuriusHeader({ cfg, displayClass }: QuartzComponentProps) {
+  const CuriusHeader: QuartzComponent = ({ cfg, displayClass }: QuartzComponentProps) => {
     const searchPlaceholder = i18n(cfg.locale).components.search.searchBarPlaceholder
     return (
       <div class={classNames(displayClass, "curius-header")}>

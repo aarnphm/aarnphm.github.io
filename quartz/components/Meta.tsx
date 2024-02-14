@@ -1,6 +1,6 @@
 import { i18n } from "../i18n"
 import Darkmode from "./Darkmode"
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
 const globalGraph = {
   drag: true,
@@ -17,7 +17,7 @@ const globalGraph = {
 }
 
 export const SearchConstructor = (() => {
-  function Search({ cfg }: QuartzComponentProps) {
+  const Search: QuartzComponent = ({ cfg }: QuartzComponentProps) => {
     const searchPlaceholder = i18n(cfg.locale).components.search.searchBarPlaceholder
     return (
       <div class="search">
@@ -41,7 +41,7 @@ export const SearchConstructor = (() => {
 }) satisfies QuartzComponentConstructor
 
 export const GraphConstructor = (() => {
-  function Graph(componentData: QuartzComponentProps) {
+  const Graph: QuartzComponent = (componentData: QuartzComponentProps) => {
     return (
       <div class="graph">
         <div id="global-graph-icon"></div>
@@ -55,7 +55,7 @@ export const GraphConstructor = (() => {
 }) satisfies QuartzComponentConstructor
 
 export const DarkmodeConstructor = (() => {
-  function Darkmode(componentData: QuartzComponentProps) {
+  const Darkmode: QuartzComponent = (componentData: QuartzComponentProps) => {
     return (
       <div class="darkmode">
         <input class="toggle" id="darkmode-toggle" type="checkbox" tabIndex={-1} />
@@ -83,7 +83,7 @@ export default ((userOpts?: Partial<Options>) => {
   const Graph = GraphConstructor()
   const Darkmode = DarkmodeConstructor()
 
-  function Meta(componentData: QuartzComponentProps) {
+  const Meta: QuartzComponent = (componentData: QuartzComponentProps) => {
     return (
       <>
         {opts.enableSearch ? <Search {...componentData} /> : <></>}

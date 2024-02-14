@@ -21,7 +21,7 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
   // Merge options with defaults
   const options: ContentMetaOptions = { ...defaultOptions, ...opts }
 
-  function ContentMetadata({ cfg, fileData, displayClass }: QuartzComponentProps) {
+  const ContentMetadata = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
     const text = fileData.text
 
     if (!text) return null
