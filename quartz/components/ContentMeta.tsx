@@ -45,11 +45,11 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
 
     return (
       <p class={classNames(displayClass, "content-meta")}>
-        {options.showReturnHome ? (
+        {options.showReadingTime ? (
           <>
             {created !== undefined && `c: ${created}, `}
-            {modified !== undefined && <em>`m: ${modified}, `</em>}
-            {reading !== undefined && `r: ${reading}`}
+            {modified !== undefined ? <em>m: {modified}, </em> : <></>}
+            {reading !== undefined && `${reading}`}
           </>
         ) : (
           <></>
