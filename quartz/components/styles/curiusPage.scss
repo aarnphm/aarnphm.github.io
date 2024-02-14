@@ -17,6 +17,25 @@
   }
 }
 
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .curius,
+  .curius-trail {
+    animation-duration: 300ms;
+    animation-delay: 0s;
+    animation-name: appear;
+    animation-fill-mode: backwards;
+  }
+}
+
 body {
   &[data-slug="curius"] {
     .navigation-container {

@@ -229,8 +229,12 @@ document.addEventListener("nav", async () => {
       refetchIcon.style.opacity = "0.5"
 
       const trail = document.getElementById("trail-list") as HTMLUListElement | null
+      const note = document.getElementsByClassName("curius-notes")[0] as HTMLDivElement | null
+
       removeAllChildren(fragment)
       removeAllChildren(trail!)
+
+      if (note) note.classList.remove("active")
       nav.classList.toggle("active", false)
 
       fetchText.classList.toggle("active", true)
