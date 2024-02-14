@@ -301,28 +301,16 @@ audio::-webkit-media-controls-panel {
     grid-area: 1 / 3 / 2 / 4;
   }
 
-  .graph {
+  .explorer {
+    grid-area: 2 / 1 / 2 / 4;
+  }
+
+  .recent-notes {
     grid-area: 2 / 1 / 2 / 4;
   }
 
   .toc {
-    grid-area: 2 / 1 / 2 / 4;
-  }
-
-  .backlinks {
-    grid-area: 4 / 1 / 4 / 4;
-  }
-
-  .recent-notes:nth-last-child(1) {
-    grid-area: 4 / 1 / 4 / 4;
-  }
-
-  .recent-notes:nth-last-child(2) {
     grid-area: 3 / 1 / 3 / 4;
-  }
-
-  .explorer {
-    grid-area: 2 / 1 / 2 / 4;
   }
 }
 

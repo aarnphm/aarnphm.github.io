@@ -167,16 +167,8 @@ export async function fetchTrails() {
   for (const [trail_name, links] of curiusTrails.entries()) {
     const info = trailMetadata.get(trail_name)
     if (info === undefined) continue
-    const remaining = links.length - limits
-    trail.appendChild(
-      createTrailEl(
-        trail_name,
-        links.slice(0, limits),
-        info,
-        remaining > 0 ? remaining : 0,
-        locale,
-      ),
-    )
+    const remaining = Math.max(0, links.length - limits)
+    trail.appendChild(createTrailEl(trail_name, links.slice(0, limits), info, remaining, locale))
   }
 }
 

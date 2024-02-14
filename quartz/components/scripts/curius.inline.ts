@@ -193,7 +193,7 @@ document.addEventListener("nav", async () => {
   if (linksData.length === 0) return
 
   fragment.append(...linksData.map(createLinkEl))
-  total.textContent = `${resp.links!.length} éléments`
+  total.textContent = `${linksData.length} éléments`
   nav.classList.toggle("active", true)
 
   const refetchIcon = document.getElementById("curius-refetch")
@@ -242,7 +242,7 @@ document.addEventListener("nav", async () => {
       if (newData.length === 0) return
 
       fragment.append(...newData.map(createLinkEl))
-      total.textContent = `${refetched.links!.length} éléments`
+      total.textContent = `${newData.length} éléments`
       nav.classList.toggle("active", true)
 
       await fetchTrails()

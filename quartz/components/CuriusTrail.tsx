@@ -5,7 +5,7 @@ import script from "./scripts/curius-trail.inline"
 import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
 
-const trailLimits = 10
+const trailLimits = 7
 
 export default (() => {
   const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {
