@@ -1,0 +1,68 @@
+@use "../../styles/variables.scss" as *;
+
+.curius-trail {
+  font-size: 11px;
+  width: inherit;
+  cursor: pointer;
+  max-width: $sidePanelWidth;
+
+  .curius-trail-header {
+    font-size: initial;
+  }
+
+  .curius-item-address,
+  .trail-description {
+    font-size: 11px;
+    color: var(--gray);
+    font-style: italic;
+  }
+}
+
+#trail-list {
+  margin-top: 0;
+}
+
+.trails-li {
+  margin-bottom: 1rem;
+  border-bottom-style: none !important;
+}
+
+.trail-ul {
+  padding-inline-start: 5px;
+  list-style: none;
+  border-left: 1px solid rgb(238, 238, 238);
+  margin-left: 1rem;
+  padding: 0 0 0 1.2rem;
+  margin-top: 5px;
+
+  & li {
+    gap: 1rem;
+
+    &:last-child {
+      gap: 0;
+    }
+
+    &[class~="focus"] {
+      background: var(--lightgray);
+    }
+  }
+
+  li.curius-item-title {
+    align-items: center;
+
+    & .curius-item-link {
+      white-space: nowrap;
+      width: 50%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .curius-item-span {
+      max-width: 100%;
+    }
+  }
+
+  .curius-item-icons {
+    margin-left: auto;
+    padding: 0;
+  }
+}

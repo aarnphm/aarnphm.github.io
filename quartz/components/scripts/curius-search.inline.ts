@@ -2,7 +2,7 @@ import FlexSearch, { IndexOptions } from "flexsearch"
 import { sample } from "../../util/helpers"
 import { Link } from "../types"
 import { registerEscapeHandler, removeAllChildren } from "./util"
-import { fetchCuriusLinks } from "./curius-data.inline"
+import { fetchCuriusLinks } from "./curius"
 
 const _SENTINEL: Link = {
   id: 0,
@@ -103,7 +103,7 @@ function highlight(searchTerm: string, text: string, trim?: boolean) {
   }`
 }
 
-document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
+document.addEventListener("nav", async () => {
   const bar = document.getElementById("curius-bar") as HTMLInputElement | null
   const container = document.getElementById("curius-search-container") as HTMLDivElement | null
 
@@ -203,7 +203,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     }
   }
 
-  function onClick(e: HTMLElementEventMap["click"]) {
+  function onClick() {
     if (bar?.classList.contains("active")) return
     if (notes?.classList.contains("active")) notes.classList.remove("active")
     const searchBarOpen = container?.classList.contains("active")

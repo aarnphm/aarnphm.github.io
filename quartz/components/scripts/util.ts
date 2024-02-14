@@ -24,6 +24,13 @@ export function removeAllChildren(node: HTMLElement) {
   }
 }
 
+export function registerMouseHover(el: HTMLElement, ...classList: string[]) {
+  const onMouseEnter = () => el.classList.add(...classList)
+  const onMouseLeave = () => el.classList.remove(...classList)
+
+  registerEvents(el, ["mouseenter", onMouseEnter], ["mouseleave", onMouseLeave])
+}
+
 type EventType = HTMLElementEventMap[keyof HTMLElementEventMap]
 type EventHandlers<E extends EventType> = (evt: E) => any
 

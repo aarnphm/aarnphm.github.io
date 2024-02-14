@@ -1,87 +1,20 @@
-import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util"
-import { computePosition, arrow as arrowFloating, inline, offset } from "@floating-ui/dom"
+import {
+  registerEscapeHandler,
+  removeAllChildren,
+  registerEvents,
+  registerMouseHover,
+} from "./util"
 import { Link } from "../types"
-import { fetchCuriusLinks } from "./curius-data.inline"
+import { fetchCuriusLinks, fetchTrails, createTitle, timeSince, CURIUS } from "./curius"
+import { joinSegments } from "../../util/path"
 
 const refetchTimeout = 2 * 60 * 1000 // 2 minutes
-const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
-
-const _IconMapping = {
-  favourite: `<svg fill="currentColor" preserveAspectRatio="xMidYMid meet" height="1em" width="1em" viewBox="0 0 40 40" data-tip="Unfavorite" data-for="links" style="vertical-align: unset;"><g><path d="m5.2 18.8l6 5.5-1.7 7.7c-0.2 1 0.2 2 1 2.5 0.3 0.3 0.8 0.5 1.3 0.5 0.4 0 0.7 0 1-0.2 0 0 0.2 0 0.2-0.1l6.8-3.9 6.9 3.9s0.1 0 0.1 0.1c0.9 0.4 1.9 0.4 2.5-0.1 0.9-0.5 1.2-1.5 1-2.5l-1.6-7.7c0.6-0.5 1.6-1.5 2.6-2.5l3.2-2.8 0.2-0.2c0.6-0.7 0.8-1.7 0.5-2.5s-1-1.5-2-1.7h-0.2l-7.8-0.8-3.2-7.2s0-0.1-0.2-0.1c-0.1-1.2-1-1.7-1.8-1.7s-1.7 0.5-2.2 1.3c0 0 0 0.2-0.1 0.2l-3.2 7.2-7.8 0.8h-0.2c-0.8 0.2-1.7 0.8-2 1.7-0.2 1 0 2 0.7 2.6z"></path></g></svg>`,
-}
-
-type Keys = keyof typeof _IconMapping
-
-const Icons = (name: Keys) => _IconMapping[name] ?? null
-
-function timeSince(date: Date | string) {
-  const now = new Date()
-  const dateObject = date instanceof Date ? date : new Date(date)
-  const diff = Math.floor((now.getTime() - dateObject.getTime()) / 1000)
-  const days = Math.floor(diff / (3600 * 24))
-  const hours = Math.floor((diff % (3600 * 24)) / 3600)
-  const minutes = Math.floor((diff % 3600) / 60)
-
-  if (days > 1) {
-    return `${days} days ago`
-  } else if (days === 1) {
-    return `1 day ago`
-  } else if (hours > 1) {
-    return `${hours} hours ago`
-  } else if (hours === 1) {
-    return `1 hour ago`
-  } else if (minutes > 1) {
-    return `${minutes} minutes ago`
-  } else if (minutes === 1) {
-    return `1 minute ago`
-  } else {
-    return `just now`
-  }
-}
-
-function extractApexDomain(url: string) {
-  const match = url.match(externalLinkRegex)
-  return match ? match[1] : ""
-}
 
 let currentActive: HTMLLIElement | null = null
 function createLinkEl(Link: Link): HTMLLIElement {
   const curiusItem = document.createElement("li")
   curiusItem.id = `curius-item-${Link.id}`
   curiusItem.classList.add("curius-item")
-
-  const createTitle = (Link: Link): HTMLDivElement => {
-    const item = document.createElement("div")
-    item.classList.add("curius-item-title")
-
-    const header = document.createElement("div")
-    header.classList.add("curius-item-link")
-
-    const link = document.createElement("a")
-    Object.assign(link, {
-      href: Link.link,
-      target: "_blank",
-      rel: "noopener noreferrer",
-      innerHTML: `<span class="curius-item-span">${Link.title}</span>`,
-    })
-    header.appendChild(link)
-
-    const address = document.createElement("div")
-    address.classList.add("curius-item-address")
-    address.textContent = extractApexDomain(Link.link)
-
-    const icons = document.createElement("div")
-    icons.classList.add("curius-item-icons")
-    if (Link.favorite) {
-      const icon = document.createElement("span")
-      icon.classList.add("curius-favourite")
-      icon.innerHTML = Icons("favourite")
-      icons.appendChild(icon)
-    }
-
-    item.append(header, address, icons)
-    return item
-  }
 
   const createMetadata = (Link: Link): HTMLDivElement => {
     const item = document.createElement("div")
@@ -94,7 +27,7 @@ function createLinkEl(Link: Link): HTMLLIElement {
         ? `${Link.topics
             .map((topic) =>
               topic.public
-                ? `<li><a href="https://curius.app/aaron-pham/${topic.slug}" target="_blank">${topic.topic}</a></li>`
+                ? `<li><a href="${joinSegments(CURIUS, topic.slug)}" target="_blank">${topic.topic}</a></li>`
                 : ``,
             )
             .join("")}`
@@ -113,7 +46,7 @@ function createLinkEl(Link: Link): HTMLLIElement {
     if (Link.highlights.length > 0) {
       const highlights = document.createElement("div")
       highlights.id = `curius-highlights-${Link.id}`
-      highlights.innerHTML = `${Link.highlights.length} highlight`
+      highlights.innerHTML = `${Link.highlights.length} ${Link.highlights.length > 0 ? "highlights" : "highlight"}`
       misc.appendChild(highlights)
 
       const modal = document.getElementById("highlight-modal")
@@ -168,14 +101,6 @@ function createLinkEl(Link: Link): HTMLLIElement {
   curiusItem.append(createTitle(Link), createMetadata(Link))
   curiusItem.dataset.items = JSON.stringify(true)
 
-  const onMouseEnter = () => {
-    curiusItem.classList.add("focus")
-  }
-
-  const onMouseLeave = () => {
-    curiusItem.classList.remove("focus")
-  }
-
   const onClick = (e: HTMLElementEventMap["click"]) => {
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
     if (currentActive) currentActive.classList.remove("active")
@@ -190,12 +115,10 @@ function createLinkEl(Link: Link): HTMLLIElement {
   }
 
   registerEscapeHandler(curiusItem, () => curiusItem.classList.remove("active"))
-  registerEvents(
-    curiusItem,
-    ["mouseenter", onMouseEnter],
-    ["mouseleave", onMouseLeave],
-    ["click", onClick],
-  )
+  registerMouseHover(curiusItem, "focus")
+
+  curiusItem.addEventListener("click", onClick)
+  window.addCleanup(() => curiusItem.removeEventListener("click", onClick))
 
   return curiusItem
 }
@@ -239,7 +162,7 @@ function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement
   }
 }
 
-document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
+document.addEventListener("nav", async () => {
   const elements = [
     "#curius-container",
     "#curius-fetching-text",
@@ -257,18 +180,20 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const resp = await fetchCuriusLinks()
   fetchText.classList.toggle("active", false)
 
-  const linksData = resp.links ?? []
-
   const callIfEmpty = (data: Link[]) => {
     if (data.length === 0) {
       container.innerHTML = `<p>Échec de la récupération des liens.</p>`
-      return
+      return []
     }
+    return data.filter((link) => link.trails.length === 0)
   }
 
-  callIfEmpty(linksData)
+  // show trails separately
+  const linksData = callIfEmpty(resp.links!)
+  if (linksData.length === 0) return
+
   fragment.append(...linksData.map(createLinkEl))
-  total.textContent = `${linksData.length} éléments`
+  total.textContent = `${resp.links!.length} éléments`
   nav.classList.toggle("active", true)
 
   const refetchIcon = document.getElementById("curius-refetch")
@@ -303,7 +228,9 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       refetchIcon.classList.add("disabled")
       refetchIcon.style.opacity = "0.5"
 
+      const trail = document.getElementById("trail-list") as HTMLUListElement | null
       removeAllChildren(fragment)
+      removeAllChildren(trail!)
       nav.classList.toggle("active", false)
 
       fetchText.classList.toggle("active", true)
@@ -311,11 +238,14 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       const refetched = await fetchCuriusLinks(true)
       fetchText.classList.toggle("active", false)
 
-      const newData = refetched.links ?? []
-      callIfEmpty(newData)
+      const newData = callIfEmpty(refetched.links!)
+      if (newData.length === 0) return
+
       fragment.append(...newData.map(createLinkEl))
-      total.textContent = `${newData.length} éléments`
+      total.textContent = `${refetched.links!.length} éléments`
       nav.classList.toggle("active", true)
+
+      await fetchTrails()
 
       isTimeout = true
       setTimeout(() => {

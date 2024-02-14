@@ -62,7 +62,7 @@ export interface Trail {
   id: number
   trailName: string
   ownerId: number
-  description: string
+  description?: string
   colorHex: string
   emojiUnicode: string
   flipped: any

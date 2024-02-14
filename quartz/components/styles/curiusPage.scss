@@ -40,10 +40,6 @@ body {
       border-style: solid;
       border-color: transparent transparent var(--lightgray);
       border-image: initial;
-
-      :first-child {
-        border-top: 1px solid transparent;
-      }
     }
 
     .darkmode {
@@ -118,12 +114,12 @@ body {
       margin-top: 1rem;
     }
 
+    &[class~="active"],
     &[class~="focus"] {
       background: var(--lightgray);
     }
 
     &[class~="active"] {
-      background: var(--lightgray);
       border: 1px solid rgba(108, 133, 199, 0.33);
     }
 

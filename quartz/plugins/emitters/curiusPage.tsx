@@ -9,6 +9,7 @@ import {
   CuriusHeader,
   CuriusTrail,
   Head,
+  DesktopOnly,
 } from "../../components"
 import BodyConstructor from "../../components/Body"
 import HeaderConstructor from "../../components/Header"
@@ -21,6 +22,7 @@ import { QuartzComponentProps } from "../../components/types"
 import chalk from "chalk"
 import { defaultProcessedContent } from "../vfile"
 import DepGraph from "../../depgraph"
+import { CURIUS } from "../../components/scripts/curius"
 
 export const CuriusPage: QuartzEmitterPlugin = () => {
   const Meta = MetaConstructor({ enableSearch: false })
@@ -30,7 +32,7 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
     header: [],
     beforeBody: [CuriusHeader(), Meta],
     left: [CuriusNotes()],
-    right: [CuriusTrail()],
+    right: [DesktopOnly(CuriusTrail())],
     pageBody: CuriusContent(),
     footer: NavigationConstructor({ prev: "/quotes", next: "/books" }),
   }
@@ -44,7 +46,6 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
       return [head, ...header, Body, ...beforeBody, pageBody, ...left, ...right, Footer]
     },
     async getDependencyGraph(ctx, content, _resources) {
-      // TODO implement
       return new DepGraph<FilePath>()
     },
     async emit(ctx, content, resources): Promise<FilePath[]> {
@@ -59,7 +60,7 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
         description: "curius.app",
         frontmatter: {
           title: "Curius",
-          description: "curius.app/aaron-pham",
+          description: CURIUS,
           tags: ["evergreen", "hyperlinks"],
           preview: false,
         },

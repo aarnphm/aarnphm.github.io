@@ -6,12 +6,7 @@
   box-shadow: none;
   border: 1px solid var(--dark);
   max-height: 50vh;
-
   overflow-y: auto;
-
-  @media all and (max-width: $fullPageWidth) {
-    max-height: 10vh;
-  }
 
   & > * {
     margin: 0 8px;
