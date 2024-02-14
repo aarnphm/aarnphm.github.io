@@ -1,20 +1,9 @@
 import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util"
 import { computePosition, arrow as arrowFloating, inline, offset } from "@floating-ui/dom"
-import type { Coords } from "@floating-ui/dom"
-import { Link, User } from "../types"
+import { Link } from "../types"
+import { fetchCuriusLinks } from "./curius-data.inline"
 
-interface Response {
-  links?: Link[]
-  user?: User
-}
-
-const localFetchKey = "curiusLinks"
-const localTimeKey = "curiusLastFetch"
 const refetchTimeout = 2 * 60 * 1000 // 2 minutes
-const fetchLinksHeaders: RequestInit = {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-}
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
 
 const _IconMapping = {
@@ -50,56 +39,9 @@ function timeSince(date: Date | string) {
   }
 }
 
-function getLocalItem(key: "curiusLinks" | "curiusLastFetch", value: any) {
-  return localStorage.getItem(key) ?? value
-}
-
 function extractApexDomain(url: string) {
   const match = url.match(externalLinkRegex)
   return match ? match[1] : ""
-}
-
-export async function fetchLinks(refetch: boolean = false): Promise<Response> {
-  // user metadata
-  const user = await fetch("https://raw.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
-    .then((res): Promise<Response> => res.json())
-    .then((data) => {
-      if (data === undefined || data.user === undefined) {
-        throw new Error("Failed to fetch user")
-      }
-      return data.user
-    })
-
-  const currentTime = new Date()
-  const lastFetched = new Date(getLocalItem(localTimeKey, 0))
-  // set fetched period to 5 minutes
-  const periods = 5 * 60 * 1000
-
-  const getCachedLinks = () => JSON.parse(getLocalItem(localFetchKey, "[]"))
-
-  if (!refetch && currentTime.getTime() - lastFetched.getTime() < periods) {
-    return { links: getCachedLinks(), user }
-  }
-
-  localStorage.setItem(localTimeKey, currentTime.toString())
-
-  // fetch new links
-  const newLinks: Link[] = await fetch(
-    "https://raw.aarnphm.xyz/api/curius?query=links",
-    fetchLinksHeaders,
-  )
-    .then((res) => res.json())
-    .then((data: Response) => {
-      if (data === undefined || data.links === undefined) {
-        throw new Error("Failed to fetch links")
-      }
-      return data.links
-    })
-
-  if (JSON.stringify(getCachedLinks()) !== JSON.stringify(newLinks)) {
-    localStorage.setItem(localFetchKey, JSON.stringify(newLinks))
-  }
-  return { links: newLinks, user }
 }
 
 let currentActive: HTMLLIElement | null = null
@@ -312,7 +254,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
   fetchText.textContent = "Récupération des liens curius"
   fetchText.classList.toggle("active", true)
-  const resp = await fetchLinks()
+  const resp = await fetchCuriusLinks()
   fetchText.classList.toggle("active", false)
 
   const linksData = resp.links ?? []
@@ -366,7 +308,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
       fetchText.classList.toggle("active", true)
       fetchText.textContent = "Rafraîchissement des liens curius"
-      const refetched = await fetchLinks(true)
+      const refetched = await fetchCuriusLinks(true)
       fetchText.classList.toggle("active", false)
 
       const newData = refetched.links ?? []

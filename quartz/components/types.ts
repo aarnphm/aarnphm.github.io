@@ -111,3 +111,8 @@ export interface Link extends Entity {
   highlights: Highlight[]
   userIds?: number[]
 }
+
+export interface CuriusResponse {
+  links?: Link[]
+  user?: User
+}

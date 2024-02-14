@@ -1,12 +1,9 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "../types"
-import MetaConstructor from "../Meta"
-import NavigationConstructor from "../Navigation"
-
 import style from "../styles/curiusPage.scss"
-
 //@ts-ignore
-import script from "../scripts/curius.inline"
-import { i18n } from "../../i18n"
+import curiusScript from "../scripts/curius.inline"
+//@ts-ignore
+import dataScript from "../scripts/curius-data.inline"
 import { classNames } from "../../util/lang"
 
 export default (() => {
@@ -25,7 +22,8 @@ export default (() => {
   }
 
   CuriusContent.css = style
-  CuriusContent.afterDOMLoaded = script
+  CuriusContent.beforeDOMLoaded = dataScript
+  CuriusContent.afterDOMLoaded = curiusScript
 
   return CuriusContent
 }) satisfies QuartzComponentConstructor

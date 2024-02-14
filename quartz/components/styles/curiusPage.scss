@@ -51,9 +51,17 @@ body {
     }
 
     .page > #quartz-body {
-      .sidebar {
+      .sidebar.right,
+      .sidebar.left {
         padding: 0;
+      }
+
+      .sidebar.left {
         padding-right: 1rem;
+      }
+
+      .sidebar.right {
+        padding-left: 1rem;
       }
 
       & .center > .page-header {
@@ -256,7 +264,7 @@ body {
       align-items: center;
       margin-right: 5px;
       text-transform: uppercase;
-      border-radius: 6px;
+      border-radius: 2px;
       padding: 2px 4px;
       display: inline;
       cursor: pointer;

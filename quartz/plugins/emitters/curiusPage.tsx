@@ -7,6 +7,7 @@ import {
   Meta as MetaConstructor,
   Spacer,
   CuriusHeader,
+  CuriusTrail,
   Head,
 } from "../../components"
 import BodyConstructor from "../../components/Body"
@@ -27,9 +28,9 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
   const opts: FullPageLayout = {
     head: Head(),
     header: [],
-    beforeBody: [CuriusHeader()],
+    beforeBody: [CuriusHeader(), Meta],
     left: [CuriusNotes()],
-    right: [Meta],
+    right: [CuriusTrail()],
     pageBody: CuriusContent(),
     footer: NavigationConstructor({ prev: "/quotes", next: "/books" }),
   }

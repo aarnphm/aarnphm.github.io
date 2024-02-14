@@ -1,8 +1,8 @@
 import FlexSearch, { IndexOptions } from "flexsearch"
 import { sample } from "../../util/helpers"
-import { fetchLinks } from "./curius.inline"
 import { Link } from "../types"
 import { registerEscapeHandler, removeAllChildren } from "./util"
+import { fetchCuriusLinks } from "./curius-data.inline"
 
 const _SENTINEL: Link = {
   id: 0,
@@ -107,7 +107,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const bar = document.getElementById("curius-bar") as HTMLInputElement | null
   const container = document.getElementById("curius-search-container") as HTMLDivElement | null
 
-  const resp = await fetchLinks()
+  const resp = await fetchCuriusLinks()
   const linksData = resp.links ?? []
   const sampleLinks = sample(linksData, 20)
 
