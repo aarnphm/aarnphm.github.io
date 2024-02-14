@@ -7,7 +7,7 @@ date: "2024-01-24"
 title: PID Controller
 ---
 
-See [[thoughts/university/sfwr-3dx4/lab1/lab1.pdf|labs]]
+See [[thoughts/university/sfwr-3dx4/lab1/lab1.pdf|lab notes]]
 
 ### prelab.
 
