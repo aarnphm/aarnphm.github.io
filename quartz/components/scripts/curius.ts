@@ -194,7 +194,7 @@ function createTrailEl(
   headers.classList.add("curius-trail-header")
   headers.style.display = "flex"
   headers.style.gap = "0.5rem"
-  headers.innerHTML = `<span class="trail-title">Trail: ${trail_name}</span><span class="trail-description">${info.description!}</span>`
+  headers.innerHTML = `<span class="trail-title">sentier: ${trail_name}</span><span class="trail-description">${info.description!}</span>`
 
   const links = document.createElement("ul")
   links.classList.add("trail-ul")

@@ -56,7 +56,7 @@ async function mouseEnterHandler(
   let elts: Element[]
   if (html.body.dataset.enablePreview === "false") {
     const noPreview = document.createElement("div")
-    noPreview.innerHTML = `<p>Preview is disabled for this page.</p>`
+    noPreview.innerHTML = `<p>L'aperçu est désactivé sur cette page.</p>`
     elts = [noPreview]
   } else elts = [...html.getElementsByClassName("popover-hint")]
 

@@ -373,7 +373,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
         const html = p.parseFromString(contents ?? "", "text/html")
         if (html.body.dataset.enablePreview === "false") {
           const noPreview = document.createElement("div")
-          noPreview.innerHTML = `<p>Preview is disabled for this page.</p>`
+          noPreview.innerHTML = `<p>L'aperçu est désactivé sur cette page.</p>`
           return [noPreview]
         }
         normalizeRelativeURLs(html, targetUrl)
