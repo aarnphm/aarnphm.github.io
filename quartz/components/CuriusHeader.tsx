@@ -4,7 +4,6 @@ import style from "./styles/curiusHeader.scss"
 import script from "./scripts/curius-search.inline"
 import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
-import { CURIUS } from "./scripts/curius"
 
 export default (() => {
   const CuriusHeader: QuartzComponent = ({ cfg, displayClass }: QuartzComponentProps) => {
@@ -14,7 +13,7 @@ export default (() => {
         <div class="curius-title">
           <span>
             Voir plus sur{" "}
-            <a href={CURIUS} target="_blank">
+            <a href="https://curius.app/aaron-pham" target="_blank">
               curius.app/aaron-pham
             </a>
           </span>

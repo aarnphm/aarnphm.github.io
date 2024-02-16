@@ -27,7 +27,7 @@ function createLinkEl(Link: Link): HTMLLIElement {
         ? `${Link.topics
             .map((topic) =>
               topic.public
-                ? `<li><a href="${joinSegments(CURIUS, topic.slug)}" target="_blank">${topic.topic}</a></li>`
+                ? `<li><a href="https://curius.app/aaron-pham/${topic.slug}" target="_blank">${topic.topic}</a></li>`
                 : ``,
             )
             .join("")}`
