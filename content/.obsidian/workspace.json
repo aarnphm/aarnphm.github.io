@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "a7b532ebdc2b683e",
+        "id": "b574fff43910060d",
         "type": "tabs",
         "children": [
           {
-            "id": "810a3fdf2529fc6d",
+            "id": "a7088898ec5d1ece",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a3/A3.md",
+                "file": "thoughts/university/sfwr-2fa3/A1.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a3/A3.md",
+                "file": "thoughts/university/sfwr-2fa3/A1.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a3/A3.md",
+                "file": "thoughts/university/sfwr-2fa3/A1.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a3/A3.md"
+                "file": "thoughts/university/sfwr-2fa3/A1.md"
               }
             }
           },
@@ -156,7 +156,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a3/A3.md"
+                "file": "thoughts/university/sfwr-2fa3/A1.md"
               }
             }
           }
@@ -180,29 +180,44 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "810a3fdf2529fc6d",
+  "active": "59fd19f001b80287",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-2fa3/a1/dfa_44.svg",
+    "thoughts/university/sfwr-2fa3/a1/dfa_44.png",
+    "thoughts/university/sfwr-2fa3/a1/dfa_44",
+    "thoughts/university/sfwr-2fa3/a1/dfa_23.svg",
+    "thoughts/university/sfwr-2fa3/a1/dfa_23.png",
+    "thoughts/university/sfwr-2fa3/a1/dfa_23",
+    "thoughts/university/sfwr-2fa3/a1/dfa_4nfa.svg",
+    "thoughts/university/sfwr-2fa3/a1/dfa_4nfa.png",
+    "thoughts/university/sfwr-2fa3/a1/dfa_4nfa",
+    "thoughts/university/sfwr-2fa3/a1/dfa_3b.svg",
+    "thoughts/university/sfwr-2fa3/a1/dfa_3b.png",
+    "thoughts/university/sfwr-2fa3/a1/dfa_3b",
+    "thoughts/university/sfwr-2fa3/a1/dfa_3a.svg",
+    "thoughts/university/sfwr-2fa3/a1/dfa_3a.png",
+    "thoughts/university/sfwr-2fa3/a1/dfa_3a",
+    "thoughts/university/sfwr-2fa3/a1/dfa_2c.svg",
+    "thoughts/university/sfwr-2fa3/a1/dfa_2c",
+    "thoughts/university/sfwr-2fa3/a1/dfa_2b",
+    "thoughts/university/sfwr-2fa3/a1/dfa_2a",
+    "thoughts/university/sfwr-2fa3/a1",
+    "thoughts/university/sfwr-2fa3/dfa_44.pdf",
+    "thoughts/university/sfwr-2fa3/A1.md",
+    "thoughts/university/sfwr-2c03/a3/A3.md",
     "thoughts/university/eng-3px3/Reflection.md",
     "posts/to the past lovers.md",
     "thoughts/Dysregulation.md",
     "thoughts/zero-shot learning.md",
     "thoughts/linguistic.md",
     "thoughts/prompt engineering.md",
-    "thoughts/university/sfwr-2c03/a3/Aaron_Pham_400232791_phama10_assignment_3.pdf",
     "thoughts/university/sfwr-3dx4/assignment1.md",
-    "private/nox/Aaron Contractor Agreement-signed.pdf",
-    "private/nox/Aaron Contractor Agreement.pdf",
-    "private/nox/Aaron Contractor Agreement.pdf.crdownload",
-    "private/nox",
-    "thoughts/university/sfwr-3dx4/assignment1.pdf",
-    "thoughts/university/sfwr-3dx4/assignment-1-circuit.png",
     "thoughts/university/philo-1aa3/tut/Being qua being.md",
     "thoughts/Metaphysics.md",
     "books.md",
     "uses.md",
     "_index.md",
     "thoughts/Hypertext.md",
-    "thoughts/images/hypertext.png",
     "thoughts/Digital garden.md",
     "thoughts/Database.md",
     "thoughts/Networked Thoughts.md",
@@ -213,21 +228,6 @@
     "private/podcast.md",
     "private/Nox.md",
     "private/Meetup.md",
-    "private/Hack The North.md",
-    "private/bentoml/interview questions.md",
-    "private/bentoml/Runner interface.md",
-    "thoughts/Philosophy and Nietzsche.md",
-    "thoughts/university/sfwr-3dx4/time_response.pdf",
-    "thoughts/university/sfwr-3dx4/state_space.pdf",
-    "thoughts/university/sfwr-3dx4/stability.pdf",
-    "thoughts/university/sfwr-3dx4/second-order-system.png",
-    "thoughts/university/sfwr-3dx4/lab1/lab1.slx",
-    "thoughts/university/sfwr-3dx4/lab1/5.2-graph.png",
-    "thoughts/university/sfwr-3dx4/lab1/5.1-graph.png",
-    "thoughts/university/sfwr-3bb4/00 Concurrent System Design/pixar-processors.jpg",
-    "thoughts/university/sfwr-3bb4/00 Concurrent System Design/pathfinder-concept.jpg",
-    "thoughts/university/sfwr-2fa3/yxx-nfa.png",
-    "thoughts/university/sfwr-2fa3/yxx-nfa-4s.png",
-    "thoughts/university/sfwr-2fa3/eps-nfa.png"
+    "private/Hack The North.md"
   ]
 }
