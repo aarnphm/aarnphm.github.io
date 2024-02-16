@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/A1.md",
+                "file": "thoughts/university/sfwr-3dx4/lab2/content.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/A1.md",
+                "file": "thoughts/university/sfwr-3dx4/lab2/content.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/A1.md",
+                "file": "thoughts/university/sfwr-3dx4/lab2/content.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/A1.md"
+                "file": "thoughts/university/sfwr-3dx4/lab2/content.md"
               }
             }
           },
@@ -156,7 +156,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/A1.md"
+                "file": "thoughts/university/sfwr-3dx4/lab2/content.md"
               }
             }
           }
@@ -180,8 +180,12 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "a7088898ec5d1ece",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-3dx4/lab2/Aaron_Pham_400232791_phama10_prelab_2.pdf",
+    "thoughts/university/sfwr-3dx4/Norman S. Nise - Control System Engineering-Wiley (2019).pdf",
+    "thoughts/university/sfwr-2fa3/A1.md",
+    "thoughts/university/sfwr-2fa3/a1/Aaron_Pham_400232791_phama10_assignment1.pdf",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.png",
     "thoughts/university/sfwr-2fa3/a1/dfa_44",
@@ -197,13 +201,9 @@
     "thoughts/university/sfwr-2fa3/a1/dfa_3a.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_3a.png",
     "thoughts/university/sfwr-2fa3/a1/dfa_3a",
-    "thoughts/university/sfwr-2fa3/a1/dfa_2c.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_2c",
     "thoughts/university/sfwr-2fa3/a1/dfa_2b",
     "thoughts/university/sfwr-2fa3/a1/dfa_2a",
-    "thoughts/university/sfwr-2fa3/a1",
-    "thoughts/university/sfwr-2fa3/dfa_44.pdf",
-    "thoughts/university/sfwr-2fa3/A1.md",
     "thoughts/university/sfwr-2c03/a3/A3.md",
     "thoughts/university/eng-3px3/Reflection.md",
     "posts/to the past lovers.md",
