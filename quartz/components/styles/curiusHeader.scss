@@ -2,12 +2,18 @@
 
 .curius-header {
   .curius-title {
-    display: flex;
+    display: none;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     background-color: var(--light);
     gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 11px;
+
+    &.active {
+      display: flex;
+    }
   }
 
   #curius-icons {

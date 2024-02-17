@@ -20,12 +20,6 @@ I have pretty much live by myself for more than a third of my life, (migrated to
 
 This untamed curious inner child, still clung to my being, propels me forward. Such that it is this inner chaos that encourage me to embark on this journey of understanding.
 
-Let's begin this discussion of chaos through a Socratic dialect:
-
-Who is Q?
-
-Who is A?
-
 
 ## Q: who are you trying to become?
 

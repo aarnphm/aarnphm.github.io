@@ -168,11 +168,12 @@ document.addEventListener("nav", async () => {
     "#curius-fetching-text",
     "#curius-fragments",
     ".navigation-container",
+    ".curius-title",
   ].map((id) => document.querySelector(id))
 
   if (elements.some((el) => el === null)) return
 
-  const [container, fetchText, fragment, nav] = elements as HTMLElement[]
+  const [container, fetchText, fragment, nav, title] = elements as HTMLElement[]
 
   fetchText.textContent = "Récupération des liens curius"
   fetchText.classList.toggle("active", true)
@@ -193,6 +194,7 @@ document.addEventListener("nav", async () => {
 
   fragment.append(...linksData.map(createLinkEl))
   nav.classList.toggle("active", true)
+  title.classList.toggle("active", true)
 
   const refetchIcon = document.getElementById("curius-refetch")
 
@@ -234,6 +236,7 @@ document.addEventListener("nav", async () => {
 
       if (note) note.classList.remove("active")
       nav.classList.toggle("active", false)
+      title.classList.toggle("active", false)
 
       fetchText.classList.toggle("active", true)
       fetchText.textContent = "Rafraîchissement des liens curius"
@@ -245,6 +248,7 @@ document.addEventListener("nav", async () => {
 
       fragment.append(...newData.map(createLinkEl))
       nav.classList.toggle("active", true)
+      title.classList.toggle("active", true)
 
       await fetchTrails()
 
