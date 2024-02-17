@@ -84,8 +84,11 @@ pre.poetry {
   border: none;
   padding: 0;
   position: unset;
-  font-size: 1.2rem;
   font-family: Cardo, var(--bodyFont);
+
+  @media all and (min-width: $fullPageWidth) {
+    font-size: 1.2rem;
+  }
 }
 
 body[data-slug="projects"] {

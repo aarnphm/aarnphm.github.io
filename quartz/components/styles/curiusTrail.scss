@@ -4,7 +4,7 @@
   font-size: 11px;
   width: inherit;
   cursor: pointer;
-  max-width: $sidePanelWidth;
+  max-width: calc($sidePanelWidth - 1rem);
 
   .curius-trail-header {
     font-size: initial;
