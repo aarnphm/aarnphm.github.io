@@ -50,7 +50,10 @@
 }
 
 html {
-  font-size: 0.875rem;
+  font-size: 0.9125rem;
+  @media all and (max-width: $fullPageWidth) {
+    font-size: 0.875rem;
+  }
 }
 
 #preview-container {

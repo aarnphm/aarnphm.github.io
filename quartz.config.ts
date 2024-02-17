@@ -60,7 +60,7 @@ const config: QuartzConfig = {
           light: "rose-pine-dawn",
           dark: "rose-pine",
         },
-        keepBackground: false,
+        keepBackground: true,
       }),
       Plugin.ObsidianFlavoredMarkdown({
         construction: true,
