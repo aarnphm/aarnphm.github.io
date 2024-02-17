@@ -12,3 +12,5 @@ title: Routh-Hurwitz criterion
 > All coefficients in the first column complete Routh array are the same sign
 
 For a system with transfer function $\hat{G}(s) =  \frac{\mathcal{n}(s)}{\mathcal{d}(s)}$
+
+Input-output stability imples that all root of $\mathcal{d}(s)$ are in the Left Half Plane (LHP)
