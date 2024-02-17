@@ -55,7 +55,13 @@ const config: QuartzConfig = {
       }),
       Plugin.Pseudocode(),
       Plugin.Latex({ renderEngine: "katex" }),
-      Plugin.SyntaxHighlighting(),
+      Plugin.SyntaxHighlighting({
+        theme: {
+          light: "rose-pine-dawn",
+          dark: "rose-pine",
+        },
+        keepBackground: false,
+      }),
       Plugin.ObsidianFlavoredMarkdown({
         construction: true,
         enableInHtmlEmbed: false,
