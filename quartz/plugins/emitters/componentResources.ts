@@ -238,10 +238,6 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
       const cfg = ctx.cfg.configuration
       // component specific scripts and styles
       const componentResources = getComponentResources(ctx)
-      // important that this goes *after* component scripts
-      // as the "nav" event gets triggered here and we should make sure
-      // that everyone else had the chance to register a listener for it
-
       let googleFontsStyleSheet = ""
       if (fontOrigin === "local") {
         // let the user do it themselves in css
@@ -298,6 +294,9 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
 
       const zenStyle = concatZenStyles(zenMap)
 
+      // important that this goes *after* component scripts
+      // as the "nav" event gets triggered here and we should make sure
+      // that everyone else had the chance to register a listener for it
       addGlobalPageResources(ctx, resources, componentResources)
 
       const stylesheet = joinStyles(
@@ -305,6 +304,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         ...componentResources.css,
         googleFontsStyleSheet,
         zenStyle,
+        ...componentResources.css,
         styles,
       )
       const [prescript, postscript] = await Promise.all([
