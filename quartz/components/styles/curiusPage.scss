@@ -231,6 +231,15 @@ body {
     margin-bottom: 0.5rem;
   }
 
+  .curius-item-fa {
+    margin-right: 2px;
+    justify-content: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    max-width: 1.25rem;
+    color: rgb(68, 68, 68);
+  }
+
   .curius-item-icons {
     display: flex;
     margin-left: auto;

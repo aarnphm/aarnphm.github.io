@@ -2,31 +2,7 @@ import FlexSearch, { IndexOptions } from "flexsearch"
 import { sample } from "../../util/helpers"
 import { Link } from "../types"
 import { registerEscapeHandler, removeAllChildren } from "./util"
-import { fetchCuriusLinks } from "./curius"
-
-const _SENTINEL: Link = {
-  id: 0,
-  link: "",
-  title: "",
-  favorite: false,
-  snippet: "",
-  toRead: false,
-  createdBy: 0,
-  metadata: {
-    full_text: "",
-    author: "",
-    page_type: "",
-  },
-  createdDate: "",
-  modifiedDate: "",
-  lastCrawled: null,
-  trails: [],
-  comments: [],
-  mentions: [],
-  topics: [],
-  highlights: [],
-  userIds: [],
-}
+import { fetchCuriusLinks, _SENTINEL } from "./curius"
 
 let index: FlexSearch.Document<Link> = new FlexSearch.Document({
   charset: "latin:advanced",

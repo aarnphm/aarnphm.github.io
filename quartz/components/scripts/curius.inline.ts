@@ -98,7 +98,7 @@ function createLinkEl(Link: Link): HTMLLIElement {
     return item
   }
 
-  curiusItem.append(createTitle(Link), createMetadata(Link))
+  curiusItem.append(createTitle({ Link, addFaIcon: true }), createMetadata(Link))
   curiusItem.dataset.items = JSON.stringify(true)
 
   const onClick = (e: HTMLElementEventMap["click"]) => {
@@ -168,12 +168,11 @@ document.addEventListener("nav", async () => {
     "#curius-fetching-text",
     "#curius-fragments",
     ".navigation-container",
-    ".curius-title",
   ].map((id) => document.querySelector(id))
 
   if (elements.some((el) => el === null)) return
 
-  const [container, fetchText, fragment, nav, title] = elements as HTMLElement[]
+  const [container, fetchText, fragment, nav] = elements as HTMLElement[]
 
   fetchText.textContent = "Récupération des liens curius"
   fetchText.classList.toggle("active", true)
@@ -194,7 +193,6 @@ document.addEventListener("nav", async () => {
 
   fragment.append(...linksData.map(createLinkEl))
   nav.classList.toggle("active", true)
-  title.classList.toggle("active", true)
 
   const refetchIcon = document.getElementById("curius-refetch")
 
@@ -236,7 +234,6 @@ document.addEventListener("nav", async () => {
 
       if (note) note.classList.remove("active")
       nav.classList.toggle("active", false)
-      title.classList.toggle("active", false)
 
       fetchText.classList.toggle("active", true)
       fetchText.textContent = "Rafraîchissement des liens curius"
@@ -248,14 +245,12 @@ document.addEventListener("nav", async () => {
 
       fragment.append(...newData.map(createLinkEl))
       nav.classList.toggle("active", true)
-      title.classList.toggle("active", true)
 
       await fetchTrails()
 
       isTimeout = true
       setTimeout(() => {
         refetchIcon.classList.remove("disabled")
-        refetchIcon.style.opacity = "0"
         isTimeout = false
       }, refetchTimeout)
     }
@@ -273,7 +268,7 @@ document.addEventListener("nav", async () => {
       [
         "mouseleave",
         () =>
-          (refetchIcon.style.opacity = refetchIcon.classList.contains("disabled") ? "0.5" : "0"),
+          (refetchIcon.style.opacity = refetchIcon.classList.contains("disabled") ? "0.5" : "1"),
       ],
     )
   }

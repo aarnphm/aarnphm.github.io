@@ -21,7 +21,7 @@ export default (() => {
         </div>
         <div class="curius-title">
           <em>
-            Voir plus sur{" "}
+            Voir de plus{" "}
             <a href="https://curius.app/aaron-pham" target="_blank">
               curius.app/aaron-pham
             </a>

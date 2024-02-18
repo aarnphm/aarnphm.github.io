@@ -1,6 +1,7 @@
 ---
 id: The Will To Believe
-tags: []
+tags:
+  - seed
 date: "2024-02-08"
 title: The Will To Believe
 ---
