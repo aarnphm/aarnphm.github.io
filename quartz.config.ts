@@ -72,6 +72,7 @@ const config: QuartzConfig = {
       Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",
+        externalLinkIcon: false,
         enableRawEmbed: {
           enable: true,
           extensions: [".py", ".m", ".go", ".c", ".java", ".cpp", ".h", ".hpp", ".cu"],

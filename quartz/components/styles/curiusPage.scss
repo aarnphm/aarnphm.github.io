@@ -183,6 +183,22 @@ body {
   }
 }
 
+.curius-item-icons {
+  display: flex;
+  margin-left: auto;
+  white-space: nowrap;
+  color: rgb(236, 180, 19);
+  fill: rgb(236, 180, 19);
+
+  & > svg {
+    transition: all 200ms ease 0s;
+    // width: fit-content;
+    // height: fit-content;
+    // clip-path: circle(18% at 50%, 40%);
+    color: rgb(236, 180, 19);
+  }
+}
+
 .curius {
   & > * {
     text-align: left;
@@ -232,28 +248,14 @@ body {
   }
 
   .curius-item-fa {
+    display: flex;
     margin-right: 2px;
     justify-content: center;
     align-items: center;
     -webkit-box-pack: center;
     max-width: 1.25rem;
     color: rgb(68, 68, 68);
-  }
-
-  .curius-item-icons {
-    display: flex;
-    margin-left: auto;
-    white-space: nowrap;
-    color: var(--lightgray);
-    fill: var(--lightgray);
-
-    svg {
-      transition: all 200ms ease 0s;
-      width: fit-content;
-      height: fit-content;
-      clip-path: circle(18% at 50%, 40%);
-      color: var(--secondary);
-    }
+    padding: 0 0 2px;
   }
 
   .curius-item-address {
@@ -268,7 +270,7 @@ body {
     overflow: hidden;
     max-width: 30%;
     @media all and (min-width: $fullPageWidth) {
-      max-width: unset;
+      max-width: 75%;
     }
   }
 

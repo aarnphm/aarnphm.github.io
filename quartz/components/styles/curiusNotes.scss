@@ -1,7 +1,7 @@
 @use "../../styles/variables.scss" as *;
 
 .curius-notes {
-  display: none;
+  display: none !important;
   overflow-y: auto;
   box-shadow: none;
   border: 1px solid var(--dark);
@@ -14,9 +14,12 @@
   }
 
   &.active {
-    display: block;
     box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 12px;
     flex-wrap: wrap;
+
+    @media all and (min-width: $fullPageWidth) {
+      display: block !important;
+    }
 
     .icon-container {
       @include iconStyles;

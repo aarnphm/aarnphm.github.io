@@ -87,7 +87,7 @@ const right = () => {
     right: [
       Component.Graph({
         globalGraph: { linkDistance: 50 },
-        localGraph: { repelForce: 0.8, centerForce: 0.5, scale: 1, linkDistance: 20 },
+        localGraph: { scale: 1, linkDistance: 20 },
       }),
       Component.Backlinks(),
     ],

@@ -28,6 +28,7 @@ import CuriusContent from "./pages/CuriusContent"
 import CuriusNotes from "./CuriusNotes"
 import CuriusHeader from "./CuriusHeader"
 import CuriusTrail from "./CuriusTrail"
+import CuriusFriends from "./CuriusFriends"
 
 export {
   ArticleTitle,
@@ -58,6 +59,7 @@ export {
   CuriusNotes,
   CuriusHeader,
   CuriusTrail,
+  CuriusFriends,
   MinimalFooter,
   Keybind,
 }

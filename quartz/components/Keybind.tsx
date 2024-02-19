@@ -16,6 +16,8 @@ export const KeybindAlias = {
   "cmd+o": "mode sombre",
   "cmd+\\": "page d'accueil",
   "cmd+.": "curseur de chat",
+  "cmd+l": "projets",
+  "cmd+j": "curius",
 }
 
 const defaultOptions: Options = {

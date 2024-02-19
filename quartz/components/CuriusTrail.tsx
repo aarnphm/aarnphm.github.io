@@ -2,7 +2,6 @@ import { QuartzComponentConstructor, QuartzComponentProps, QuartzComponent } fro
 import style from "./styles/curiusTrail.scss"
 //@ts-ignore
 import script from "./scripts/curius-trail.inline"
-import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
 
 const trailLimits = 6

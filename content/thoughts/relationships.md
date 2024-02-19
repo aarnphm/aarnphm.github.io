@@ -10,7 +10,7 @@ title: relationships
 
 ## Friendship
 
-See also [this tweet](https://twitter.com/patriciamou_/status/1758354933521478126)
+See also: [this tweet](https://twitter.com/patriciamou_/status/1758354933521478126)
 
 ## The neuroendocrinology of love
 

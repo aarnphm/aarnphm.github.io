@@ -7,6 +7,8 @@ date: "2024-02-07"
 title: education
 ---
 
+See more on [[posts/education|the extension]]
+
 ## system
 
 current[^1] education system is not designed to inspire curiosity, and it would keep being this way unless the definition quality of success and quality moves to a more holistic measures.

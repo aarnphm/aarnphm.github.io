@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/lab2/content.md",
+                "file": "thoughts/university/sfwr-2c03/a4/A4.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -70,7 +70,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 349.50390243530273
+    "width": 626.5
   },
   "right": {
     "id": "5221182814b155cf",
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/lab2/content.md",
+                "file": "thoughts/university/sfwr-2c03/a4/A4.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/lab2/content.md",
+                "file": "thoughts/university/sfwr-2c03/a4/A4.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/lab2/content.md"
+                "file": "thoughts/university/sfwr-2c03/a4/A4.md"
               }
             }
           },
@@ -156,7 +156,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/lab2/content.md"
+                "file": "thoughts/university/sfwr-2c03/a4/A4.md"
               }
             }
           }
@@ -182,28 +182,30 @@
   },
   "active": "a7088898ec5d1ece",
   "lastOpenFiles": [
-    "thoughts/university/sfwr-3dx4/lab2/Aaron_Pham_400232791_phama10_prelab_2.pdf",
-    "thoughts/university/sfwr-3dx4/Norman S. Nise - Control System Engineering-Wiley (2019).pdf",
+    "thoughts/university/sfwr-2c03/a4/Aaron_Pham_400232791_phama10_assignment_4.pdf",
+    "thoughts/university/sfwr-2c03/a4/A4.md",
+    "thoughts/quantization.md",
+    "thoughts/university/sfwr-2c03/balanced-search-tree-hash.pdf",
+    "thoughts/university/sfwr-2c03/balanced-search-tree-hash.pdf.crdownload",
+    "thoughts/university/sfwr-2c03/search-intro-binary-search.pdf",
+    "thoughts/university/sfwr-2c03/search-intro-binary-search.pdf.crdownload",
+    "thoughts/university/sfwr-2c03/heap-sort-intro-sort.pdf",
+    "thoughts/university/sfwr-2c03/heap-sort-intro-sort.pdf.crdownload",
+    "thoughts/university/sfwr-2c03/a4/sortings.pdf",
+    "thoughts/university/sfwr-2c03/a4/assignment_4.pdf",
+    "thoughts/university/sfwr-2c03/a4/assignment_4.pdf.crdownload",
+    "thoughts/university/sfwr-3dx4/lab2/content.md",
     "thoughts/university/sfwr-2fa3/A1.md",
-    "thoughts/university/sfwr-2fa3/a1/Aaron_Pham_400232791_phama10_assignment1.pdf",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.png",
-    "thoughts/university/sfwr-2fa3/a1/dfa_44",
     "thoughts/university/sfwr-2fa3/a1/dfa_23.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_23.png",
-    "thoughts/university/sfwr-2fa3/a1/dfa_23",
     "thoughts/university/sfwr-2fa3/a1/dfa_4nfa.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_4nfa.png",
-    "thoughts/university/sfwr-2fa3/a1/dfa_4nfa",
     "thoughts/university/sfwr-2fa3/a1/dfa_3b.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_3b.png",
-    "thoughts/university/sfwr-2fa3/a1/dfa_3b",
     "thoughts/university/sfwr-2fa3/a1/dfa_3a.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_3a.png",
-    "thoughts/university/sfwr-2fa3/a1/dfa_3a",
-    "thoughts/university/sfwr-2fa3/a1/dfa_2c",
-    "thoughts/university/sfwr-2fa3/a1/dfa_2b",
-    "thoughts/university/sfwr-2fa3/a1/dfa_2a",
     "thoughts/university/sfwr-2c03/a3/A3.md",
     "thoughts/university/eng-3px3/Reflection.md",
     "posts/to the past lovers.md",
@@ -225,9 +227,6 @@
     "private/Term of Reference.md",
     "Untitled.canvas",
     "private/Reservation list.md",
-    "private/podcast.md",
-    "private/Nox.md",
-    "private/Meetup.md",
-    "private/Hack The North.md"
+    "private/podcast.md"
   ]
 }

@@ -108,7 +108,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **Out of Love** by Hazel Hayes
 - **In Emergency, Break Glass: What Nietzsche Can Teach Us About Joyful Living in a Tech-Saturated World** by Nate Anderson
 - **The Subtle Art of Not Giving a Fuck** by Mark Manson
-- **Pretentiousness: Why it Matters** by Dan Fox
+- **[[thoughts/fashion#pretentious.|Pretentiousness: Why it Matters]]** by Dan Fox
 - **The Republic** by Plato
 - **Apology** by Plato
 - **Symposium** by Plato

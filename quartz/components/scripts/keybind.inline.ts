@@ -109,6 +109,12 @@ document.addEventListener("nav", async () => {
   registerEvents(keybind, ...events)
 })
 
+const _mapping = new Map([
+  ["\\", "/"],
+  ["l", "/projects"],
+  ["j", "/curius"],
+])
+
 document.addEventListener("nav", () => {
   const darkModeSwitch = document.querySelector("#darkmode-toggle") as HTMLInputElement
   const graphContainer = document.getElementById("global-graph-outer")
@@ -143,11 +149,12 @@ document.addEventListener("nav", () => {
   }
 
   function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if (e.key === "\\" && (e.ctrlKey || e.metaKey)) {
+    if (_mapping.get(e.key) !== undefined && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
+      const loc = _mapping.get(e.key) as string
       container?.classList.toggle("active", false)
-      if (window.location.pathname === "/") return
-      window.location.href = "/"
+      if (window.location.pathname === loc) return
+      window.location.href = loc
     }
   }
 

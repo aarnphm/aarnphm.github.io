@@ -30,7 +30,7 @@ How would we assess thinking?
 
 Similar to calculator, it _simplifies_ and increase accessibility to the masses, but in doing so _lost_ the value in the _action of doing_ math.
 
-We do math to internalize the concept, and practice to thinking coherently. Similarly, we [[thoughts/writing|write]] to help
+We do math to internalize the concept, and practice to thinking coherently. Similarly, we [[thoughts/writing|write]] to help crystalised our ideas, and in the process improve through the act of putting it down.
 
 The process of rephrasing and arranging sentences poses a challenges for the writer, and in doing so, teach you how to think coherently. Writing essays is an exercise for students to articulate their thoughts, rather than testing the understanding of the materials.
 

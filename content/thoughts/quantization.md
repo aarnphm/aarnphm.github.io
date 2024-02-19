@@ -11,7 +11,7 @@ See also: [[thoughts/images/htn-openllm.pdf|this talk]] I gave at Hack the North
 
 > reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
 
-- `int16` - half precision
+- `int16` - [[thoughts/quantization#`fp32` to `fp16`|half precision]]
 - `bfloat16`
 - `int8`
 
@@ -29,6 +29,7 @@ See also: [[thoughts/images/htn-openllm.pdf|this talk]] I gave at Hack the North
 For example `epsilon` in `LayerNormalization` usually is very small $1e^{-12}$, but smallest value in `fp16` is $\approx 6e^{-5}$, which cause `NaN` issues.
 
 ## `fp32` to `int8`
+
 
 Consider a float `x` in `[a, b]`, such that _affine quantization scheme_:
 

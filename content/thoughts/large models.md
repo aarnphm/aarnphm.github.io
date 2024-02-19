@@ -17,4 +17,10 @@ Initial [work](https://arxiv.org/abs/2001.08361) from OpenAI
 
 Distributed serving of large models requires cost-efficient methods[^1]
 
+## large world models
+
+See [github](https://github.com/LargeWorldModel/LWM)
+
+## visions
+
 [^1]: [Distributed Inference and Fine-tuning of Large Language Models over the Internet](https://arxiv.org/abs/2312.08361)

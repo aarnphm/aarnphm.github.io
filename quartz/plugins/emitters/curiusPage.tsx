@@ -8,6 +8,7 @@ import {
   Spacer,
   CuriusHeader,
   CuriusTrail,
+  CuriusFriends,
   Head,
   DesktopOnly,
 } from "../../components"
@@ -31,7 +32,7 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
     head: Head(),
     header: [],
     beforeBody: [CuriusHeader(), Meta],
-    left: [CuriusNotes()],
+    left: [CuriusFriends(), DesktopOnly(CuriusNotes())],
     right: [DesktopOnly(CuriusTrail())],
     pageBody: CuriusContent(),
     footer: NavigationConstructor({ prev: "/quotes", next: "/books" }),
