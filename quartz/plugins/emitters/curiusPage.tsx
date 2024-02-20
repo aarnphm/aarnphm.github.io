@@ -32,7 +32,7 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
     head: Head(),
     header: [],
     beforeBody: [CuriusHeader(), Meta],
-    left: [CuriusFriends(), DesktopOnly(CuriusNotes())],
+    left: [CuriusFriends()],
     right: [DesktopOnly(CuriusTrail())],
     pageBody: CuriusContent(),
     footer: NavigationConstructor({ prev: "/quotes", next: "/books" }),

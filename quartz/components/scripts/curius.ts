@@ -1,4 +1,4 @@
-import { Link, User, CuriusResponse, Trail } from "../types"
+import { Link, User, CuriusResponse, Trail, Following } from "../types"
 import { registerMouseHover, removeAllChildren } from "./util"
 import { joinSegments } from "../../util/path"
 import { ValidLocale, i18n } from "../../i18n"
@@ -9,7 +9,7 @@ const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
 const localFetchKey = "curiusLinks"
 const localTimeKey = "curiusLastFetch"
 
-const fetchLinksHeaders: RequestInit = {
+export const fetchLinksHeaders: RequestInit = {
   method: "POST",
   headers: { "Content-Type": "application/json" },
 }
@@ -170,6 +170,17 @@ function getLocalItem(key: "curiusLinks" | "curiusLastFetch", value: any) {
   return localStorage.getItem(key) ?? value
 }
 
+export async function fetchFollowing(): Promise<Following[]> {
+  return fetch("https://raw.aarnphm.xyz/api/curius?query=following", fetchLinksHeaders)
+    .then((res): Promise<CuriusResponse> => res.json())
+    .then((data) => {
+      if (data === undefined || data.following === undefined) {
+        throw new Error("No following data")
+      }
+      return data.following
+    })
+}
+
 export async function fetchCuriusLinks(refetch: boolean = false): Promise<CuriusResponse> {
   // user metadata
   const user = await fetch("https://raw.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
@@ -188,8 +199,10 @@ export async function fetchCuriusLinks(refetch: boolean = false): Promise<Curius
 
   const getCachedLinks = () => JSON.parse(getLocalItem(localFetchKey, "[]"))
 
+  const following = await fetchFollowing()
+
   if (!refetch && currentTime.getTime() - lastFetched.getTime() < periods) {
-    return { links: getCachedLinks(), user }
+    return { links: getCachedLinks(), user, following }
   }
 
   localStorage.setItem(localTimeKey, currentTime.toString())
@@ -210,7 +223,7 @@ export async function fetchCuriusLinks(refetch: boolean = false): Promise<Curius
   if (JSON.stringify(getCachedLinks()) !== JSON.stringify(newLinks)) {
     localStorage.setItem(localFetchKey, JSON.stringify(newLinks))
   }
-  return { links: newLinks, user }
+  return { links: newLinks, user, following: await fetchFollowing() }
 }
 
 interface TrailInfo {

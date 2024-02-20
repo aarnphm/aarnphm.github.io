@@ -50,7 +50,7 @@ interface Topic extends Entity {
   public: boolean
 }
 
-interface Following {
+interface FollowingUser {
   id: number
   firstName: string
   lastName: string
@@ -88,7 +88,7 @@ export interface User extends Entity {
   followed?: boolean
   followingMe?: boolean
   recentUsers: any[]
-  followingUsers: Following[]
+  followingUsers: FollowingUser[]
 }
 
 export interface Link extends Entity {
@@ -112,7 +112,13 @@ export interface Link extends Entity {
   userIds?: number[]
 }
 
+export interface Following {
+  link: Link
+  user: FollowingUser
+}
+
 export interface CuriusResponse {
   links?: Link[]
   user?: User
+  following?: Following[]
 }

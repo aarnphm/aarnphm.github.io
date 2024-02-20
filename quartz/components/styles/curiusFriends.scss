@@ -1,0 +1,59 @@
+@use "../../styles/variables.scss" as *;
+
+.curius-friends {
+  display: none;
+  max-width: calc($sidePanelWidth - 1rem);
+
+  a,
+  span {
+    color: inherit !important;
+    font-weight: normal !important;
+    text-decoration: none;
+
+    &:hover:not([data-highlight]) {
+      transition: none;
+      text-decoration: underline;
+    }
+  }
+
+  &.active {
+    display: block;
+  }
+
+  .friend-li {
+    display: none;
+
+    &[class~="focus"] {
+      background: var(--lightgray);
+    }
+
+    &.active {
+      display: block;
+    }
+
+    & > .friend-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .friend-shortcut {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 75%;
+  }
+
+  #see-more-friends {
+    cursor: pointer;
+
+    svg {
+      transition: transform 0.3s ease;
+    }
+
+    .fold {
+      transform: rotateZ(-180deg);
+    }
+  }
+}
