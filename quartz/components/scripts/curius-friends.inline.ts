@@ -49,7 +49,7 @@ document.addEventListener("nav", async () => {
     // description div
     const descriptionDiv = document.createElement("div")
     descriptionDiv.classList.add("friend-shortcut")
-    descriptionDiv.innerHTML = `in <a target="_blank" href=${Link.link} style="color: var(--gray) !important">${Link.title}</a>`
+    descriptionDiv.innerHTML = `in <span style="color: var(--gray) !important">${Link.title}</span>`
 
     li.append(titleDiv, descriptionDiv)
 
