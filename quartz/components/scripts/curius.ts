@@ -5,7 +5,7 @@ import { ValidLocale, i18n } from "../../i18n"
 import path from "node:path"
 
 const curiusBase = "https://curius.app"
-export const CURIUS = joinSegments(curiusBase, "aaron-pham")
+export const CURIUS = `${curiusBase}/aaron-pham`
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
 const localFetchKey = "curiusLinks"
 const localTimeKey = "curiusLastFetch"
@@ -112,7 +112,7 @@ export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => 
     href: Link.link,
     target: "_blank",
     rel: "noopener noreferrer",
-    innerHTML: `<span class="curius-item-span">${Link.title}</span>`,
+    innerHTML: Link.title,
   })
   header.appendChild(link)
 
@@ -277,10 +277,13 @@ function createTrailEl(
       const el = createTitle({ Link: link, elementType: "li" })
       registerMouseHover(el, "focus")
 
-      const openLink = () => window.open(trailLink, "_blank")
+      const openLink = (e: MouseEvent) => {
+        if (e.target instanceof HTMLAnchorElement) return
+        window.open(trailLink, "_blank")
+      }
 
-      el.addEventListener("click", openLink)
-      window.addCleanup(() => el.removeEventListener("click", openLink))
+      el.addEventListener("click", openLink as EventListener)
+      window.addCleanup(() => el.removeEventListener("click", openLink as EventListener))
 
       return el
     }),
