@@ -3,6 +3,7 @@
 .curius-friends {
   display: none;
   max-width: calc($sidePanelWidth - 1rem);
+  cursor: pointer;
 
   a,
   span {
