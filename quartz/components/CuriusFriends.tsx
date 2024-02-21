@@ -13,7 +13,7 @@ export default (() => {
           mes amis.
         </h4>
         <ul class="section-ul" id="friends-list" style="margin-top: unset"></ul>
-        <div class="desktop-only" id="see-more-friends">
+        <div id="see-more-friends">
           Void{" "}
           <span id="more" style="text-decoration: none !important">
             de plus

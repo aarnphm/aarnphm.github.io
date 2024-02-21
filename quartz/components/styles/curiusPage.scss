@@ -85,24 +85,6 @@ body {
         z-index: 100;
         background-color: var(--light);
       }
-
-      @media all and (max-width: $fullPageWidth) {
-        & .sidebar.left {
-          position: sticky;
-          z-index: 100;
-          width: 100%;
-          max-height: 50vh;
-          padding-right: 0;
-          margin-left: auto;
-          margin-right: auto;
-          inset: 0;
-
-          & > * {
-            width: 100%;
-            background: var(--light);
-          }
-        }
-      }
     }
   }
 }
@@ -187,17 +169,12 @@ body {
 .curius-item-icons {
   display: flex;
   margin-left: auto;
-  white-space: nowrap;
   color: rgb(236, 180, 19);
-  fill: rgb(236, 180, 19);
+  cursor: pointer;
 
-  & > svg {
-    transition: all 200ms ease 0s;
-    // width: fit-content;
-    // height: fit-content;
-    // clip-path: circle(18% at 50%, 40%);
-    color: rgb(236, 180, 19);
-  }
+  transition: all 200ms ease 0s;
+  width: fit-content;
+  height: fit-content;
 }
 
 .curius {
@@ -269,9 +246,10 @@ body {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    max-width: 30%;
-    @media all and (min-width: $fullPageWidth) {
-      max-width: 75%;
+    max-width: 70%;
+
+    @media all and (max-width: $fullPageWidth) {
+      max-width: 30%;
     }
   }
 
