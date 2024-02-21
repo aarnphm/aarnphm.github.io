@@ -101,6 +101,14 @@ function createLinkEl(Link: Link): HTMLLIElement {
   curiusItem.append(createTitle({ Link, addFaIcon: true }), createMetadata(Link))
   curiusItem.dataset.items = JSON.stringify(true)
 
+  const onClickLinks = (e: HTMLElementEventMap["click"]) => {
+    if (e.target instanceof HTMLAnchorElement) return
+    window.open(Link.link, "_blank")
+  }
+
+  curiusItem.addEventListener("click", onClickLinks)
+  window.addCleanup(() => curiusItem.removeEventListener("click", onClickLinks))
+
   const onClick = (e: HTMLElementEventMap["click"]) => {
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
     if (currentActive) currentActive.classList.remove("active")

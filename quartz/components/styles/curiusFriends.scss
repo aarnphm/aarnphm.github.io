@@ -5,6 +5,11 @@
   max-width: calc($sidePanelWidth - 1rem);
   cursor: pointer;
 
+  @media all and (max-width: $fullPageWidth) {
+    max-width: unset;
+    width: 100%;
+  }
+
   a,
   span {
     color: inherit !important;

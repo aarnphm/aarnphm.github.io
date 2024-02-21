@@ -85,6 +85,12 @@ body {
         z-index: 100;
         background-color: var(--light);
       }
+
+      @media all and (max-width: $fullPageWidth) {
+        & .sidebar.left {
+          padding-right: 0;
+        }
+      }
     }
   }
 }

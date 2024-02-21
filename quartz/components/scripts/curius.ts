@@ -277,7 +277,7 @@ function createTrailEl(
       const el = createTitle({ Link: link, elementType: "li" })
       registerMouseHover(el, "focus")
 
-      const openLink = (e: MouseEvent) => {
+      const openLink = (e: HTMLElementEventMap["click"]) => {
         if (e.target instanceof HTMLAnchorElement) return
         window.open(trailLink, "_blank")
       }
