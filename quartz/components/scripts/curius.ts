@@ -2,6 +2,7 @@ import { Link, User, CuriusResponse, Trail, Following } from "../types"
 import { registerMouseHover, removeAllChildren } from "./util"
 import { joinSegments } from "../../util/path"
 import { ValidLocale, i18n } from "../../i18n"
+import path from "node:path"
 
 const curiusBase = "https://curius.app"
 export const CURIUS = joinSegments(curiusBase, "aaron-pham")
@@ -267,7 +268,7 @@ function createTrailEl(
   headers.classList.add("curius-trail-header")
   headers.innerHTML = `<span class="trail-title">sentier: ${trail_name}</span><span class="trail-description">${info.description!}</span>`
 
-  const trailLink = joinSegments(curiusBase, "trail", info.slug)
+  const trailLink = `${curiusBase}/trail/${info.slug}`
 
   const links = document.createElement("ul")
   links.classList.add("trail-ul")
