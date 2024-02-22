@@ -34,12 +34,14 @@ interface Options {
   enableRecentNotes: boolean
   enableExplorer: boolean
   enableMeta: boolean
+  enableDarkmode: boolean
 }
 
 const defaultOptions: Options = {
   enableRecentNotes: false,
   enableExplorer: false,
   enableMeta: false,
+  enableDarkmode: false,
 }
 
 const left = (userOpts?: Partial<Options>) => {
@@ -48,9 +50,10 @@ const left = (userOpts?: Partial<Options>) => {
   const left: QuartzComponent[] = [
     Component.Search(),
     Component.MobileOnly(Component.Spacer()),
-    Component.Darkmode(),
     Component.Keybind({ enableTooltip: false }),
   ]
+
+  if (opts.enableDarkmode) left.push(Component.Darkmode())
 
   const desktopOnly: QuartzComponent[] = []
 

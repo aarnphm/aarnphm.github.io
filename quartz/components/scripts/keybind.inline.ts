@@ -116,11 +116,12 @@ const _mapping = new Map([
 ])
 
 document.addEventListener("nav", () => {
-  const darkModeSwitch = document.querySelector("#darkmode-toggle") as HTMLInputElement
+  const darkModeSwitch = document.querySelector("#darkmode-toggle") as HTMLInputElement | null
   const graphContainer = document.getElementById("global-graph-outer")
   const container = document.getElementById("shortcut-container")
 
   function darkModeShortcutHandler(e: HTMLElementEventMap["keydown"]) {
+    if (!darkModeSwitch) return
     if (e.key === "o" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       container?.classList.toggle("active", false)

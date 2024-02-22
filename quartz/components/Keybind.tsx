@@ -13,7 +13,7 @@ interface Options {
 export const KeybindAlias = {
   "cmd+k": "recherche",
   "cmd+g": "graphique",
-  "cmd+o": "mode sombre",
+  // "cmd+o": "mode sombre",
   "cmd+\\": "page d'accueil",
   "cmd+.": "curseur de chat",
   "cmd+l": "projets",

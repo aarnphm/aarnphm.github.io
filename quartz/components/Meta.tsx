@@ -74,7 +74,7 @@ interface Options {
 const defaultOptions: Options = {
   enableSearch: true,
   enableGraph: true,
-  enableDarkMode: true,
+  enableDarkMode: false,
 }
 
 export default ((userOpts?: Partial<Options>) => {

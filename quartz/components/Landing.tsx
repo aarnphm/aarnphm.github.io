@@ -6,7 +6,6 @@ import { i18n } from "../i18n"
 import { FullSlug, SimpleSlug, stripSlashes, resolveRelative } from "../util/path"
 import { Data } from "vfile"
 import { getDate, formatDate } from "./Date"
-import DarkmodeConstructor from "./Darkmode"
 import SpacerConstructor from "./Spacer"
 import KeybindConstructor from "./Keybind"
 import HeaderConstructor from "./Header"
@@ -154,7 +153,6 @@ const NotesConstructor = ((userOpts?: Options) => {
 
 const ContentConstructor = (() => {
   const Header = HeaderConstructor()
-  const Darkmode = DarkmodeConstructor()
   const Keybind = KeybindConstructor()
   const RecentNotes = NotesConstructor()
   const RecentPosts = NotesConstructor({
@@ -169,7 +167,6 @@ const ContentConstructor = (() => {
         <Header {...componentData}>
           <h1 lang={"en"}>Bonjour, je suis Aaron.</h1>
           <Keybind {...componentData} />
-          <Darkmode {...componentData} />
         </Header>
         <p lang="en">
           Beige and <span class="rose">rosé</span> are my two favorite colours.{" "}
@@ -183,7 +180,7 @@ const ContentConstructor = (() => {
         <p>
           Currently, I'm building{" "}
           <AliasLink name="serving infrastructure" url="https://bentoml.com" newTab /> and explore
-          our interaction with {getContentAlias("large language models")}.
+          our interaction with {getContentAlias("large language models")}, and more...
         </p>
         <p>
           You are currently at the <em>index</em> of my {getContentAlias("hypertext")}{" "}
@@ -222,7 +219,7 @@ const ContentConstructor = (() => {
 }) satisfies QuartzComponentConstructor
 
 export default (() => {
-  const Meta = MetaConstructor({ enableDarkMode: false })
+  const Meta = MetaConstructor()
   const Content = ContentConstructor()
   const Spacer = SpacerConstructor()
 
