@@ -7,6 +7,7 @@ const config: QuartzConfig = {
     enableSPA: true,
     enablePopovers: true,
     enableCursorChat: true,
+    generateSocialImages: true,
     analytics: {
       provider: "plausible",
     },

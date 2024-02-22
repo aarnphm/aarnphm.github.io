@@ -73,6 +73,7 @@ export const PoetryPage: QuartzEmitterPlugin = () => {
           const externalResources = pageResources(pathToRoot(slug), resources)
 
           const componentData: QuartzComponentProps = {
+            ctx,
             fileData: file.data,
             externalResources,
             cfg: cfg,

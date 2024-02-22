@@ -88,6 +88,7 @@ declare module "vfile" {
         tags: string[]
         aliases: string[]
         description: string
+        socialDescription: string
         publish: boolean
         draft: boolean
         enableToc: string

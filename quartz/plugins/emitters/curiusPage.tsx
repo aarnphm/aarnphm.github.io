@@ -67,6 +67,7 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
         },
       })
       const componentData: QuartzComponentProps = {
+        ctx,
         fileData: vfile.data,
         externalResources,
         cfg: cfg,
