@@ -60,7 +60,7 @@ export default (() => {
     return (
       <head>
         <title>{title}</title>
-        <meta charSet="utf-8" />
+        <meta charset="utf-8" />
         {cfg.theme.cdnCaching && (
           <>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -69,7 +69,8 @@ export default (() => {
         )}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {/* OG/jwitter meta tags */}
-        <meta name="og:site_name" content={cfg.pageTitle}></meta>
+        <meta name="og:site_name" content={cfg.pageTitle} />
+        <meta property="og:locale" content={cfg.locale} />
         <meta property="og:title" content={title} />
         <meta property="og:type" content="website" />
         <meta name="twitter:site" content="@aarnphm_" />
@@ -88,10 +89,10 @@ export default (() => {
             <meta property="og:height" content={imageOptions.height.toString()} />
           </>
         )}
-        <meta property="og:image:url" content={ogImagePath} />
+        <meta property="og:image" content={ogImagePath} />
         {cfg.baseUrl && (
           <>
-            <meta name="twitter:image" content={ogImagePath} />
+            <meta name="twitter:image:src" content={ogImagePath} />
             <meta property="og:image" content={ogImagePath} />
             <meta property="twitter:domain" content={url.toString()}></meta>
             <meta property="og:url" content={socialUrl} />
@@ -99,6 +100,7 @@ export default (() => {
           </>
         )}
         <link rel="icon" href={iconPath} />
+        <link rel="canonical" href={socialUrl} />
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
         {css.map((href) => (
