@@ -175,12 +175,20 @@ body {
 .curius-item-icons {
   display: flex;
   margin-left: auto;
-  color: rgb(236, 180, 19);
   cursor: pointer;
+}
+
+.curius-item-favorite {
+  clip-path: circle(18% at 50% 35%);
+  color: rgb(236, 180, 19);
 
   transition: all 200ms ease 0s;
   width: fit-content;
   height: fit-content;
+
+  &.focus {
+    clip-path: circle(100% at 50% 40%);
+  }
 }
 
 .curius {
@@ -270,14 +278,19 @@ body {
       font-family: var(--codeFont);
       color: rgb(119, 119, 119);
       background-color: rgb(241, 241, 241);
-      line-height: 0.9;
+      line-height: 1.2;
       align-items: center;
       margin-right: 5px;
       text-transform: uppercase;
-      border-radius: 2px;
+      border-radius: 6px;
       padding: 2px 4px;
       display: inline;
       cursor: pointer;
+      font-size: 10px;
+
+      &:hover {
+        background-color: rgb(222, 222, 222);
+      }
 
       [saved-theme="dark"] & {
         background-color: var(--highlight);
@@ -289,8 +302,8 @@ body {
         font-weight: inherit;
         transition: color 0.2s;
 
-        :hover {
-          color: var(--primaryColor);
+        &:hover {
+          color: inherit !important;
         }
       }
     }

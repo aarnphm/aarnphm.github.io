@@ -1,12 +1,6 @@
-import {
-  registerEscapeHandler,
-  removeAllChildren,
-  registerEvents,
-  registerMouseHover,
-} from "./util"
+import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util"
 import { Link } from "../types"
 import { fetchCuriusLinks, fetchTrails, createTitle, timeSince, CURIUS } from "./curius"
-import { joinSegments } from "../../util/path"
 
 const refetchTimeout = 2 * 60 * 1000 // 2 minutes
 
@@ -101,17 +95,12 @@ function createLinkEl(Link: Link): HTMLLIElement {
   curiusItem.append(createTitle({ Link, addFaIcon: true }), createMetadata(Link))
   curiusItem.dataset.items = JSON.stringify(true)
 
-  const onClickLinks = (e: HTMLElementEventMap["click"]) => {
-    if (e.target instanceof HTMLAnchorElement) return
-    window.open(Link.link, "_blank")
-  }
-
-  curiusItem.addEventListener("click", onClickLinks)
-  window.addCleanup(() => curiusItem.removeEventListener("click", onClickLinks))
-
   const onClick = (e: HTMLElementEventMap["click"]) => {
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
     if (currentActive) currentActive.classList.remove("active")
+
+    if (e.target instanceof HTMLAnchorElement) return
+    window.open(Link.link, "_blank")
 
     const note = document.getElementsByClassName("curius-notes")[0] as HTMLDivElement | null
     if (!note) return
@@ -123,10 +112,27 @@ function createLinkEl(Link: Link): HTMLLIElement {
   }
 
   registerEscapeHandler(curiusItem, () => curiusItem.classList.remove("active"))
-  registerMouseHover(curiusItem, "focus")
 
-  curiusItem.addEventListener("click", onClick)
-  window.addCleanup(() => curiusItem.removeEventListener("click", onClick))
+  const onMouseEnter = () => {
+    const favoriteDiv = curiusItem.querySelector(".curius-item-favorite") as HTMLDivElement | null
+
+    if (favoriteDiv) favoriteDiv.classList.add("focus")
+    curiusItem.classList.add("focus")
+  }
+
+  const onMouseLeave = () => {
+    const favoriteDiv = curiusItem.querySelector(".curius-item-favorite") as HTMLDivElement | null
+
+    if (favoriteDiv) favoriteDiv.classList.remove("focus")
+    curiusItem.classList.remove("focus")
+  }
+
+  registerEvents(
+    curiusItem,
+    ["click", onClick],
+    ["mouseenter", onMouseEnter],
+    ["mouseleave", onMouseLeave],
+  )
 
   return curiusItem
 }

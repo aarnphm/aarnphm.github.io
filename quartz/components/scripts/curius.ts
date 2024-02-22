@@ -1,8 +1,6 @@
-import { Link, User, CuriusResponse, Trail, Following } from "../types"
-import { registerMouseHover, removeAllChildren } from "./util"
-import { joinSegments } from "../../util/path"
+import { Link, CuriusResponse, Trail, Following } from "../types"
+import { registerEvents, removeAllChildren } from "./util"
 import { ValidLocale, i18n } from "../../i18n"
-import path from "node:path"
 
 const curiusBase = "https://curius.app"
 export const CURIUS = `${curiusBase}/aaron-pham`
@@ -148,7 +146,8 @@ export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => 
   itemIcon.classList.add("curius-item-icons")
 
   if (Link.favorite) {
-    const icon = document.createElement("span")
+    const icon = document.createElement("div")
+    icon.classList.add("curius-item-favorite")
     icon.innerHTML = getIconSvg("favourite")!
     itemIcon.appendChild(icon)
   }
@@ -275,15 +274,32 @@ function createTrailEl(
   links.append(
     ...trails.map((link) => {
       const el = createTitle({ Link: link, elementType: "li" })
-      registerMouseHover(el, "focus")
+
+      const onMouseEnter = () => {
+        const favoriteDiv = el.querySelector(".curius-item-favorite") as HTMLDivElement | null
+
+        if (favoriteDiv) favoriteDiv.classList.add("focus")
+        el.classList.add("focus")
+      }
+
+      const onMouseLeave = () => {
+        const favoriteDiv = el.querySelector(".curius-item-favorite") as HTMLDivElement | null
+
+        if (favoriteDiv) favoriteDiv.classList.remove("focus")
+        el.classList.remove("focus")
+      }
 
       const openLink = (e: HTMLElementEventMap["click"]) => {
         if (e.target instanceof HTMLAnchorElement) return
         window.open(trailLink, "_blank")
       }
 
-      el.addEventListener("click", openLink as EventListener)
-      window.addCleanup(() => el.removeEventListener("click", openLink as EventListener))
+      registerEvents(
+        el,
+        ["mouseenter", onMouseEnter],
+        ["mouseleave", onMouseLeave],
+        ["click", openLink],
+      )
 
       return el
     }),
