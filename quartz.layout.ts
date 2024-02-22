@@ -47,11 +47,7 @@ const defaultOptions: Options = {
 const left = (userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }
 
-  const left: QuartzComponent[] = [
-    Component.Search(),
-    Component.MobileOnly(Component.Spacer()),
-    Component.Keybind({ enableTooltip: false }),
-  ]
+  const left: QuartzComponent[] = [Component.Search(), Component.MobileOnly(Component.Spacer())]
 
   if (opts.enableDarkmode) left.push(Component.Darkmode())
 
@@ -81,6 +77,8 @@ const left = (userOpts?: Partial<Options>) => {
     )
 
   left.push(...desktopOnly.flatMap(Component.DesktopOnly))
+
+  left.push(Component.Keybind({ enableTooltip: false }))
 
   return { left }
 }

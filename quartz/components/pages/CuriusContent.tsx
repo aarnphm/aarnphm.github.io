@@ -10,7 +10,7 @@ export default (() => {
   function CuriusContent({ displayClass }: QuartzComponentProps) {
     return (
       <div class={classNames(displayClass, "curius", "popover-hint")}>
-        <div id="curius-container">
+        <div class="curius-container">
           <div id="curius-fetching-text"></div>
           <div id="curius-fragments"></div>
           <div class="highlight-modal" id="highlight-modal">

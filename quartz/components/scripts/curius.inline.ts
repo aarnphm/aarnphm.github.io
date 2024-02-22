@@ -178,7 +178,7 @@ function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement
 
 document.addEventListener("nav", async () => {
   const elements = [
-    "#curius-container",
+    ".curius-container",
     "#curius-fetching-text",
     "#curius-fragments",
     ".navigation-container",

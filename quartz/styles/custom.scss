@@ -83,6 +83,11 @@ code {
   font-size: 0.8em;
 }
 
+body {
+  background-image: url("/static/bg.webp");
+  margin: 0;
+}
+
 pre.poetry {
   border: none;
   padding: 0;
@@ -277,6 +282,10 @@ hr {
 
 audio::-webkit-media-controls-panel {
   background-color: var(--lightgray);
+}
+
+#graph-container {
+  background-color: var(--light);
 }
 
 .left,

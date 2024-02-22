@@ -2,6 +2,8 @@ import { pathToRoot, slugTag } from "../util/path"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
 
+const minimal = true
+
 const TagList: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
   const tags = fileData.frontmatter?.tags
   const baseDir = pathToRoot(fileData.slug!)
@@ -9,7 +11,7 @@ const TagList: QuartzComponent = ({ fileData, displayClass }: QuartzComponentPro
     return (
       <ul class={classNames(displayClass, "tags")}>
         {tags.map((tag) => {
-          const display = `#${tag}`
+          const display = minimal ? `${tag}` : `#${tag}`
           const linkDest = baseDir + `/tags/${slugTag(tag)}`
           return (
             <li>
@@ -49,6 +51,7 @@ TagList.css = `
 }
 
 a.internal.tag-link {
+  color: inherit;
   border-radius: 8px;
   background-color: var(--highlight);
   padding: 0.2rem 0.4rem;
