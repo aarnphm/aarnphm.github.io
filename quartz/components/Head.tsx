@@ -92,10 +92,10 @@ export default (() => {
         <meta property="og:image" content={ogImagePath} />
         {cfg.baseUrl && (
           <>
-            <meta name="twitter:image:src" content={ogImagePath} />
-            <meta property="og:image" content={ogImagePath} />
-            <meta property="twitter:domain" content={url.toString()}></meta>
             <meta property="og:url" content={socialUrl} />
+            <meta property="og:image" content={ogImagePath} />
+            <meta name="twitter:image" content={ogImagePath} />
+            <meta property="twitter:domain" content={url.toString()}></meta>
             <meta property="twitter:url" content={socialUrl}></meta>
           </>
         )}
