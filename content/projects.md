@@ -7,7 +7,7 @@ tags:
   - evergreen
   - technical
 date: "2021-12-22"
-description: A list of projects I'm currently [maintaining](https://github.com/aarnphm). A pdf version of this is available [here](https://aarnphm.xyz/thoughts/images/2023-resume.pdf).
+description: A list of projects I'm currently maintaining.
 navigation:
   - "[[thoughts/Chaos]]"
   - "[[thoughts/LLMs]]"

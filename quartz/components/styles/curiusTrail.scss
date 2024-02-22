@@ -43,10 +43,6 @@
   & li {
     gap: 1rem;
 
-    &:last-child {
-      gap: 0;
-    }
-
     &[class~="focus"] {
       background: var(--lightgray);
       border: 1px solid var(--dark);
