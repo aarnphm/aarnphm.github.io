@@ -31,6 +31,7 @@
 
     &[class~="focus"] {
       background: var(--lightgray);
+      border: 1px solid var(--dark);
     }
 
     &.active {

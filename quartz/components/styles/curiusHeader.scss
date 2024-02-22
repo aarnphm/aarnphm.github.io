@@ -1,19 +1,15 @@
 @use "../../styles/variables.scss" as *;
 
 .curius-header {
+  background-color: unset !important;
+
   .curius-title {
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: var(--light);
     gap: 0.5rem;
     margin-top: 1rem;
     font-size: 11px;
-  }
-
-  #curius-icons {
-    @include iconStyles;
-    display: flex;
   }
 
   #curius-refetch {

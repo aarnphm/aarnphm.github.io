@@ -14,9 +14,12 @@
 
   .curius-item-address,
   .trail-description {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--gray);
     font-style: italic;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 }
 
@@ -46,6 +49,7 @@
 
     &[class~="focus"] {
       background: var(--lightgray);
+      border: 1px solid var(--dark);
     }
   }
 

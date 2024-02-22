@@ -62,10 +62,6 @@ body {
       border-image: initial;
     }
 
-    .darkmode {
-      display: none;
-    }
-
     .page > #quartz-body {
       .sidebar.right,
       .sidebar.left {
@@ -124,10 +120,7 @@ body {
     &[class~="active"],
     &[class~="focus"] {
       background: var(--lightgray);
-    }
-
-    &[class~="active"] {
-      border: 1px solid rgba(108, 133, 199, 0.33);
+      border: 1px solid var(--dark);
     }
 
     & > * {

@@ -246,7 +246,9 @@ export async function fetchTrails() {
   const locale = total.dataset.locale! as ValidLocale
 
   removeAllChildren(trail)
-  for (const [trail_name, { trail: Trail, links: linksMap }] of curiusTrails.entries()) {
+  for (const [trail_name, { trail: Trail, links: linksMap }] of Array.from(
+    curiusTrails.entries(),
+  ).slice(0, 4)) {
     const links = Array.from(linksMap.values())
     const remaining = Math.max(0, links.length - limits)
     trail.appendChild(createTrailEl(trail_name, links.slice(0, limits), Trail, remaining, locale))

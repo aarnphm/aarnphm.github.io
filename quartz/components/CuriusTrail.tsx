@@ -4,7 +4,7 @@ import style from "./styles/curiusTrail.scss"
 import script from "./scripts/curius-trail.inline"
 import { classNames } from "../util/lang"
 
-const trailLimits = 6
+const trailLimits = 3
 
 export default (() => {
   const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {

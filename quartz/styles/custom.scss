@@ -87,6 +87,13 @@ code {
   font-size: 0.8em;
 }
 
+ul.overflow,
+ol.overflow {
+  &:after {
+    background: unset;
+  }
+}
+
 body {
   background-image: url("/static/bg.webp");
   margin: 0;
