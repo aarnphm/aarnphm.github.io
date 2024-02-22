@@ -56,6 +56,10 @@ html {
   }
 }
 
+section[data-footnotes] {
+  background-color: unset !important;
+}
+
 #preview-container {
   flex-grow: 1;
 }
