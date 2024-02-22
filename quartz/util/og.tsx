@@ -217,3 +217,10 @@ export const og: SocialImageOptions["imageStructure"] = (
     </div>
   )
 }
+
+export const defaultImageOptions: SocialImageOptions = {
+  colorScheme: "lightMode",
+  height: 630,
+  width: 1200,
+  imageStructure: og,
+}

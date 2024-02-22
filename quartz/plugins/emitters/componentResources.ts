@@ -1,5 +1,6 @@
 import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
+import fs from "fs"
 
 // @ts-ignore
 import spaRouterScript from "../../components/scripts/spa.inline"
@@ -15,6 +16,12 @@ import { Features, transform } from "lightningcss"
 import { transform as transpile } from "esbuild"
 import { write } from "./helpers"
 import DepGraph from "../../depgraph"
+import { ImageOptions, SocialImageOptions, getSatoriFont, defaultImageOptions } from "../../util/og"
+import satori, { SatoriOptions } from "satori"
+import { QuartzPluginData } from "../vfile"
+import sharp from "sharp"
+import { unescapeHTML } from "../../util/escape"
+import { i18n } from "../../i18n"
 
 type ComponentResources = {
   css: string[]
@@ -200,6 +207,36 @@ function concatZenStyles(zenMap: string[]): string {
   return styles.join("\n")
 }
 
+async function generateOg(
+  ctx: BuildCtx,
+  fileData: QuartzPluginData,
+  { cfg, description, fileDir, fileName, extension, fonts, title }: ImageOptions,
+  userOpts: SocialImageOptions,
+) {
+  const fontBuffer = await fonts
+
+  const svg = await satori(
+    userOpts.imageStructure(cfg, fileData, userOpts, title, description, fontBuffer),
+    {
+      height: userOpts.height,
+      width: userOpts.width,
+      fonts: fontBuffer,
+      graphemeImages: {
+        "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
+      },
+    },
+  )
+
+  const content = await sharp(Buffer.from(svg)).webp().toBuffer()
+
+  return await write({
+    ctx,
+    slug: joinSegments("static", fileDir, fileName) as FullSlug,
+    ext: `.${extension}`,
+    content,
+  })
+}
+
 interface Options {
   fontOrigin: "googleFonts" | "local"
 }
@@ -209,6 +246,9 @@ const defaultOptions: Options = {
 }
 
 export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<Options>) => {
+  let fonts: Promise<SatoriOptions["fonts"]>
+  let imageOptions: SocialImageOptions
+
   const { fontOrigin } = { ...defaultOptions, ...opts }
   return {
     name: "ComponentResources",
@@ -285,8 +325,50 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         }
       }
 
+      if (cfg.generateSocialImages) {
+        for (const [_, file] of content) {
+          const slug = file.data.slug!
+          const fileName = slug.replaceAll("/", "-")
+
+          const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
+          const description = unescapeHTML(
+            file.data.frontmatter?.socialDescription ??
+              file.data.frontmatter?.description ??
+              file.data.description?.trim() ??
+              i18n(cfg.locale).propertyDefaults.description,
+          )
+
+          if (!imageOptions) {
+            if (typeof cfg.generateSocialImages !== "boolean") {
+              imageOptions = { ...defaultImageOptions, ...cfg.generateSocialImages }
+            } else {
+              imageOptions = defaultImageOptions
+            }
+          }
+
+          if (!fonts) fonts = getSatoriFont(cfg)
+
+          promises.push(
+            generateOg(
+              ctx,
+              file.data,
+              {
+                title,
+                description,
+                fileName,
+                fileDir: "social-images",
+                extension: "webp",
+                fonts,
+                cfg,
+              },
+              imageOptions,
+            ),
+          )
+        }
+      }
+
       const zenMap: string[] = []
-      for (const [tree, file] of content) {
+      for (const [_, file] of content) {
         const slug = file.data.slug!
         const zen = file.data.frontmatter?.zen
         if (zen) zenMap.push(slug)

@@ -3,6 +3,7 @@ id: Fisher-Yates
 tags:
   - seed
 date: "2024-01-30"
+description: Fisher-Yates shuffle algorithm
 title: Fisher-Yates
 ---
 

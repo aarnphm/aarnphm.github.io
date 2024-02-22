@@ -2,66 +2,15 @@ import { i18n } from "../i18n"
 import { FullSlug, joinSegments, pathToRoot } from "../util/path"
 import { JSResourceToScriptElement } from "../util/resources"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
-import satori, { SatoriOptions } from "satori"
-import fs from "fs"
-import { ImageOptions, SocialImageOptions, getSatoriFont, og } from "../util/og"
-import sharp from "sharp"
-import { BuildCtx } from "../util/ctx"
+import { SocialImageOptions, defaultImageOptions } from "../util/og"
 import { unescapeHTML } from "../util/escape"
-import { QuartzPluginData } from "../plugins/vfile"
-
-async function generateOg(
-  ctx: BuildCtx,
-  fileData: QuartzPluginData,
-  { cfg, description, fileDir, fileName, extension, fonts, title }: ImageOptions,
-  userOpts: SocialImageOptions,
-) {
-  const fontBuffer = await fonts
-
-  const imageElement = userOpts.imageStructure(
-    cfg,
-    fileData,
-    userOpts,
-    title,
-    description,
-    fontBuffer,
-  )
-
-  const svg = await satori(imageElement, {
-    height: userOpts.height,
-    width: userOpts.width,
-    fonts: fontBuffer,
-  })
-
-  const compressed = await sharp(Buffer.from(svg)).webp().toBuffer()
-
-  fs.writeFileSync(
-    joinSegments(ctx.argv.output, "static", fileDir, `${fileName}.${extension}`),
-    compressed,
-  )
-}
-const defaultOptions: SocialImageOptions = {
-  colorScheme: "lightMode",
-  height: 630,
-  width: 1200,
-  imageStructure: og,
-}
 
 export default (() => {
-  let fonts: Promise<SatoriOptions["fonts"]>
   let imageOptions: SocialImageOptions
-
   const socialImageDir = "social-images"
   const extension = "webp"
 
-  const Head: QuartzComponent = ({
-    ctx,
-    cfg,
-    fileData,
-    externalResources,
-  }: QuartzComponentProps) => {
-    const imgDir = joinSegments(ctx.argv.output, "static", socialImageDir)
-
+  const Head: QuartzComponent = ({ cfg, fileData, externalResources }: QuartzComponentProps) => {
     const slug = fileData.filePath
     // since "/" is not a valid character in file names, replace with "-"
     const fileName = slug?.replaceAll("/", "-")
@@ -78,25 +27,10 @@ export default (() => {
     if (cfg.generateSocialImages) {
       if (!imageOptions) {
         if (typeof cfg.generateSocialImages !== "boolean") {
-          imageOptions = { ...defaultOptions, ...cfg.generateSocialImages }
+          imageOptions = { ...defaultImageOptions, ...cfg.generateSocialImages }
         } else {
-          imageOptions = defaultOptions
+          imageOptions = defaultImageOptions
         }
-      }
-
-      if (!fonts) fonts = getSatoriFont(cfg)
-
-      if (!fs.existsSync(imgDir)) {
-        fs.mkdirSync(imgDir, { recursive: true })
-      }
-
-      if (fileName) {
-        generateOg(
-          ctx,
-          fileData,
-          { title, description, fileName, fileDir: socialImageDir, extension, fonts, cfg },
-          imageOptions,
-        )
       }
     }
 
