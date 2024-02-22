@@ -2,6 +2,10 @@ import satori, { FontWeight, SatoriOptions } from "satori/wasm"
 import { GlobalConfiguration } from "../cfg"
 import { JSXInternal } from "preact/src/jsx"
 import { joinSegments } from "./path"
+import { QuartzPluginData } from "../plugins/vfile"
+import { formatDate, getDate } from "../components/Date"
+import readingTime from "reading-time"
+import { i18n } from "../i18n"
 
 const headerFont = joinSegments("static", "GT-Sectra-Display-Regular.woff")
 const bodyFont = joinSegments("static", "GT-Sectra-Book.woff")
@@ -52,6 +56,7 @@ export type SocialImageOptions = {
    */
   imageStructure: (
     cfg: GlobalConfiguration,
+    fileData: QuartzPluginData,
     opts: Options,
     title: string,
     description: string,
@@ -94,59 +99,115 @@ export type ImageOptions = {
 
 export const og: SocialImageOptions["imageStructure"] = (
   cfg: GlobalConfiguration,
+  fileData: QuartzPluginData,
   { colorScheme }: Options,
   title: string,
   description: string,
   fonts: SatoriOptions["fonts"],
 ) => {
-  const fontBreakpoint = 22
-  const useSmallerFont = title.length > fontBreakpoint
+  let created: string | undefined
+  let reading: string | undefined
+  if (fileData.dates) {
+    created = formatDate(getDate(cfg, fileData)!, cfg.locale)
+  }
+  const { minutes, text: timeTaken, words: _words } = readingTime(fileData.text!)
+  reading = i18n(cfg.locale).components.contentMeta.readingTime({
+    minutes: Math.ceil(minutes),
+  })
+
+  const Li = [created, reading]
 
   return (
     <div
       style={{
+        position: "relative",
         display: "flex",
         flexDirection: "row",
-        justifyContent: "flex-start",
-        alignItems: "center",
+        alignItems: "flex-start",
         height: "100%",
         width: "100%",
         backgroundImage: `url("https://${cfg.baseUrl}/static/og-image.png")`,
+        backgroundSize: "100% 100%",
       }}
     >
       <div
         style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "radial-gradient(circle at center, transparent, rgba(0, 0, 0, 0.4) 70%)",
+        }}
+      />
+      <div
+        style={{
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
           height: "100%",
           width: "100%",
-          backgroundColor: cfg.theme.colors[colorScheme].light,
           flexDirection: "column",
-          gap: "2.5rem",
-          paddingTop: "2rem",
-          paddingBottom: "2rem",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+          gap: "1.5rem",
+          paddingTop: "4rem",
+          paddingBottom: "4rem",
+          marginLeft: "4rem",
         }}
       >
-        <p
+        <img
+          src={`"https://${cfg.baseUrl}/static/icon.png"`}
           style={{
-            color: cfg.theme.colors[colorScheme].dark,
-            fontSize: useSmallerFont ? 70 : 82,
-            marginLeft: "4rem",
-            textAlign: "center",
-            marginRight: "4rem",
+            position: "relative",
+            backgroundClip: "border-box",
+            borderRadius: "6rem",
+          }}
+          width={80}
+        />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "left",
             fontFamily: fonts[0].name,
           }}
         >
-          {title}
-        </p>
+          <h2
+            style={{
+              color: cfg.theme.colors[colorScheme].light,
+              fontSize: "3rem",
+              fontWeight: 700,
+              marginRight: "4rem",
+              fontFamily: fonts[0].name,
+            }}
+          >
+            {title}
+          </h2>
+          <ul
+            style={{
+              color: cfg.theme.colors[colorScheme].gray,
+              gap: "1rem",
+              fontSize: "1.5rem",
+              fontFamily: fonts[1].name,
+            }}
+          >
+            {Li.map((item, index) => {
+              if (item) {
+                return <li key={index}>{item}</li>
+              }
+            })}
+          </ul>
+        </div>
         <p
           style={{
-            color: cfg.theme.colors[colorScheme].dark,
-            fontSize: 44,
-            marginLeft: "8rem",
+            color: cfg.theme.colors[colorScheme].light,
+            fontSize: "1.5rem",
+            overflow: "hidden",
             marginRight: "8rem",
-            lineClamp: 3,
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 7,
+            WebkitBoxOrient: "vertical",
+            lineClamp: 7,
             fontFamily: fonts[1].name,
           }}
         >

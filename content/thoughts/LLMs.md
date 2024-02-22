@@ -8,19 +8,19 @@ date: "2024-02-07"
 title: LLMs
 ---
 
-See also: [[thoughts/images/htn-openllm.pdf|this talk]]
-
 [[thoughts/Autoregressive models|autoregressive]] foundational [[thoughts/Machine learning|machine learning]] models that have "capabilities" to understand [[thoughts/NLP|natural language]].
 
-Exhibits [[thoughts/emergent behaviour]] of [[thoughts/intelligence]], but probably not [[thoughts/AGI]] due to [[thoughts/observer-expectancy effect]]
+Exhibits [[thoughts/emergent behaviour]] of [[thoughts/intelligence]], but probably not [[thoughts/AGI]] due to [[thoughts/observer-expectancy effect]].
 
-One way or another is a form of [[thoughts/Behavirourism]], through [[thoughts/Machine learning|reinforcement learning]]. It is being "told" what is good or bad, and thus act accordingly towards the users. However, this induces [[thoughts/confirmation bias]] where one aligns and contains his/her prejudices towards the problem
+One way or another is a form of [[thoughts/Behavirourism]], through [[thoughts/Machine learning|reinforcement learning]]. It is being "told" what is good or bad, and thus act accordingly towards the users. However, this induces [[thoughts/confirmation bias]] where one aligns and contains his/her prejudices towards the problem.
 
 ### Scalability
 
 Incredibly hard to scale, mainly due to their [[thoughts/large models|large]] memory footprint and tokens memory allocation.
 
 ### Optimization
+
+See also: [[thoughts/images/htn-openllm.pdf|this talk]]
 
 - [[thoughts/quantization|Quantization]]: reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
 - [[thoughts/Continuous batching]]: Implementing [[thoughts/Attention#Paged Attention]] with custom scheduler to manage swapping kv-cache for better resource utilisation

@@ -8,15 +8,24 @@ import { ImageOptions, SocialImageOptions, getSatoriFont, og } from "../util/og"
 import sharp from "sharp"
 import { BuildCtx } from "../util/ctx"
 import { unescapeHTML } from "../util/escape"
+import { QuartzPluginData } from "../plugins/vfile"
 
 async function generateOg(
   ctx: BuildCtx,
+  fileData: QuartzPluginData,
   { cfg, description, fileDir, fileName, extension, fonts, title }: ImageOptions,
   userOpts: SocialImageOptions,
 ) {
   const fontBuffer = await fonts
 
-  const imageElement = userOpts.imageStructure(cfg, userOpts, title, description, fontBuffer)
+  const imageElement = userOpts.imageStructure(
+    cfg,
+    fileData,
+    userOpts,
+    title,
+    description,
+    fontBuffer,
+  )
 
   const svg = await satori(imageElement, {
     height: userOpts.height,
@@ -24,7 +33,7 @@ async function generateOg(
     fonts: fontBuffer,
   })
 
-  const compressed = await sharp(Buffer.from(svg)).webp({ quality: 40 }).toBuffer()
+  const compressed = await sharp(Buffer.from(svg)).webp().toBuffer()
 
   fs.writeFileSync(
     joinSegments(ctx.argv.output, "static", fileDir, `${fileName}.${extension}`),
@@ -84,6 +93,7 @@ export default (() => {
       if (fileName) {
         generateOg(
           ctx,
+          fileData,
           { title, description, fileName, fileDir: socialImageDir, extension, fonts, cfg },
           imageOptions,
         )
@@ -95,7 +105,6 @@ export default (() => {
     const baseDir = fileData.slug === "404" ? path : pathToRoot(fileData.slug!)
 
     const iconPath = joinSegments(baseDir, "static/icon.webp")
-    // const ogImagePath = `https://${cfg.baseUrl}/static/og-image.webp`
 
     const useDefaultOgImage = fileData === undefined || !cfg.generateSocialImages
     const frontmatterImgUrl =
