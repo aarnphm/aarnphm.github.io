@@ -185,6 +185,8 @@ function concatZenStyles(zenMap: string[]): string {
   for (const slug of zenMap) {
     const style = `
       body[data-slug="${slug}"] {
+        background-image: unset;
+
         .page > #quartz-body > .center {
           @media all and (min-width: 1510px) {
             margin-top: 6rem;
