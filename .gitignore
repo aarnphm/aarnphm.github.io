@@ -12,3 +12,4 @@ replit.nix
 quartz.git
 *.autosave
 .vercel
+__pycache__

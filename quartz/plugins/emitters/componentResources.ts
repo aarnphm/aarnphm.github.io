@@ -327,48 +327,6 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         }
       }
 
-      if (cfg.generateSocialImages) {
-        for (const [_, file] of content) {
-          const slug = file.data.slug!
-          const fileName = slug.replaceAll("/", "-")
-
-          const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
-          const description = unescapeHTML(
-            file.data.frontmatter?.socialDescription ??
-              file.data.frontmatter?.description ??
-              file.data.description?.trim() ??
-              i18n(cfg.locale).propertyDefaults.description,
-          )
-
-          if (!imageOptions) {
-            if (typeof cfg.generateSocialImages !== "boolean") {
-              imageOptions = { ...defaultImageOptions, ...cfg.generateSocialImages }
-            } else {
-              imageOptions = defaultImageOptions
-            }
-          }
-
-          if (!fonts) fonts = getSatoriFont(cfg)
-
-          promises.push(
-            generateOg(
-              ctx,
-              file.data,
-              {
-                title,
-                description,
-                fileName,
-                fileDir: "social-images",
-                extension: "webp",
-                fonts,
-                cfg,
-              },
-              imageOptions,
-            ),
-          )
-        }
-      }
-
       const zenMap: string[] = []
       for (const [_, file] of content) {
         const slug = file.data.slug!
@@ -428,6 +386,48 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
           content: postscript,
         }),
       )
+
+      if (cfg.generateSocialImages && !ctx.argv.serve) {
+        if (!imageOptions) {
+          if (typeof cfg.generateSocialImages !== "boolean") {
+            imageOptions = { ...defaultImageOptions, ...cfg.generateSocialImages }
+          } else {
+            imageOptions = defaultImageOptions
+          }
+        }
+
+        if (!fonts) fonts = getSatoriFont(cfg)
+
+        promises.push(
+          ...Array.from(content).map(([_, file]) => {
+            const slug = file.data.slug!
+            const fileName = slug.replaceAll("/", "-")
+
+            const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
+            const description = unescapeHTML(
+              file.data.frontmatter?.socialDescription ??
+                file.data.frontmatter?.description ??
+                file.data.description?.trim() ??
+                i18n(cfg.locale).propertyDefaults.description,
+            )
+
+            return generateOg(
+              ctx,
+              file.data,
+              {
+                title,
+                description,
+                fileName,
+                fileDir: "social-images",
+                extension: "webp",
+                fonts,
+                cfg,
+              },
+              imageOptions,
+            )
+          }),
+        )
+      }
 
       return await Promise.all(promises)
     },
