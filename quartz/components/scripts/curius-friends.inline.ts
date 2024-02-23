@@ -16,7 +16,8 @@ document.addEventListener("nav", async () => {
     const li = document.createElement("li")
     li.classList.add("friend-li")
 
-    const onClick = () => {
+    const onClick = (e: HTMLElementEventMap["click"]) => {
+      if (e.target instanceof HTMLAnchorElement) return
       window.open(Link.link, "_blank")
     }
     li.addEventListener("click", onClick)
