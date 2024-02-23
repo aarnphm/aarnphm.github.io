@@ -35,7 +35,7 @@
 .trail-ul {
   padding-inline-start: 5px;
   list-style: none;
-  border-left: 1px solid rgb(238, 238, 238);
+  border-left: 1px solid var(--lightgray);
   margin-left: 1rem;
   padding: 0 0 0 1.2rem;
   margin-top: 5px;
@@ -51,6 +51,7 @@
 
   li.curius-item-title {
     align-items: center;
+    padding: 0 8px;
 
     & .curius-item-link {
       white-space: nowrap;
@@ -58,13 +59,9 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .curius-item-span {
       max-width: 100%;
     }
-  }
-
-  .curius-item-icons {
-    margin-left: auto;
-    padding: 0;
   }
 }

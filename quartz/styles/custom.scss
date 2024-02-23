@@ -56,10 +56,6 @@ html {
   }
 }
 
-section[data-footnotes] {
-  background-color: unset !important;
-}
-
 #preview-container {
   flex-grow: 1;
 }
@@ -92,11 +88,6 @@ ol.overflow {
   &:after {
     background: unset;
   }
-}
-
-body {
-  background-image: url("/static/bg.webp");
-  margin: 0;
 }
 
 pre.poetry {
