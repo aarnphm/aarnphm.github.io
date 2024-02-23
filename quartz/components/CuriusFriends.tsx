@@ -35,7 +35,7 @@ export default (() => {
   }
 
   CuriusFriends.css = style
-  CuriusFriends.beforeDOMLoaded = script
+  CuriusFriends.afterDOMLoaded = script
 
   return CuriusFriends
 }) satisfies QuartzComponentConstructor

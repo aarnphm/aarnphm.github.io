@@ -1,7 +1,5 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import style from "./styles/curiusHeader.scss"
-//@ts-ignore
-import script from "./scripts/curius-search.inline"
 import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
 
@@ -46,7 +44,6 @@ export default (() => {
   }
 
   CuriusHeader.css = style
-  CuriusHeader.afterDOMLoaded = script
 
   return CuriusHeader
 }) satisfies QuartzComponentConstructor

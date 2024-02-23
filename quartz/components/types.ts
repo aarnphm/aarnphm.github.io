@@ -73,6 +73,11 @@ export interface Trail {
   createdDate: string
 }
 
+export interface TrailInfo {
+  trail: Trail
+  links: Map<number, Link>
+}
+
 export interface User extends Entity {
   firstName: string
   lastName: string

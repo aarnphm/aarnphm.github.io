@@ -1,12 +1,12 @@
-import { Link, CuriusResponse, Trail, Following } from "../types"
-import { registerEvents, removeAllChildren } from "./util"
+import { Link, CuriusResponse, Trail, Following, User, TrailInfo } from "../types"
+import { registerEscapeHandler, registerEvents, removeAllChildren } from "./util"
 import { ValidLocale, i18n } from "../../i18n"
+import FlexSearch, { IndexOptions } from "flexsearch"
+import { sample } from "../../util/helpers"
 
 const curiusBase = "https://curius.app"
 export const CURIUS = `${curiusBase}/aaron-pham`
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
-const localFetchKey = "curiusLinks"
-const localTimeKey = "curiusLastFetch"
 
 export const fetchLinksHeaders: RequestInit = {
   method: "POST",
@@ -157,10 +157,6 @@ export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => 
   return item
 }
 
-function getLocalItem(key: "curiusLinks" | "curiusLastFetch", value: any) {
-  return localStorage.getItem(key) ?? value
-}
-
 export async function fetchFollowing(): Promise<Following[]> {
   return fetch("https://raw.aarnphm.xyz/api/curius?query=following", fetchLinksHeaders)
     .then((res): Promise<CuriusResponse> => res.json())
@@ -172,7 +168,18 @@ export async function fetchFollowing(): Promise<Following[]> {
     })
 }
 
-export async function fetchCuriusLinks(refetch: boolean = false): Promise<CuriusResponse> {
+export async function fetchUsers(): Promise<User> {
+  return fetch("https://raw.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
+    .then((res): Promise<CuriusResponse> => res.json())
+    .then((data) => {
+      if (data === undefined || data.user === undefined) {
+        throw new Error("Failed to fetch user")
+      }
+      return data.user
+    })
+}
+
+export async function fetchCuriusLinks(): Promise<CuriusResponse> {
   // user metadata
   const user = await fetch("https://raw.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
     .then((res): Promise<CuriusResponse> => res.json())
@@ -183,23 +190,10 @@ export async function fetchCuriusLinks(refetch: boolean = false): Promise<Curius
       return data.user
     })
 
-  const currentTime = new Date()
-  const lastFetched = new Date(getLocalItem(localTimeKey, 0))
-  // set fetched period to 5 minutes
-  const periods = 5 * 60 * 1000
-
-  const getCachedLinks = () => JSON.parse(getLocalItem(localFetchKey, "[]"))
-
   const following = await fetchFollowing()
 
-  if (!refetch && currentTime.getTime() - lastFetched.getTime() < periods) {
-    return { links: getCachedLinks(), user, following }
-  }
-
-  localStorage.setItem(localTimeKey, currentTime.toString())
-
   // fetch new links
-  const newLinks: Link[] = await fetch(
+  const links: Link[] = await fetch(
     "https://raw.aarnphm.xyz/api/curius?query=links",
     fetchLinksHeaders,
   )
@@ -211,33 +205,25 @@ export async function fetchCuriusLinks(refetch: boolean = false): Promise<Curius
       return data.links
     })
 
-  if (JSON.stringify(getCachedLinks()) !== JSON.stringify(newLinks)) {
-    localStorage.setItem(localFetchKey, JSON.stringify(newLinks))
-  }
-  return { links: newLinks, user, following: await fetchFollowing() }
+  return { links, user, following }
 }
 
-interface TrailInfo {
-  trail: Trail
-  links: Map<number, Link>
-}
-
-const trailMetadata: Map<string, TrailInfo> = new Map()
-export async function fetchTrails() {
-  const curiusTrails = await fetchCuriusLinks().then((res) => {
-    const links = res.links ?? []
-    links
-      .filter((link) => link.trails.length > 0)
-      .map((link) => {
-        link.trails.map((trail) => {
-          if (!trailMetadata.has(trail.trailName))
-            trailMetadata.set(trail.trailName, { trail, links: new Map() })
-          trailMetadata.get(trail.trailName)!.links.set(link.id, link)
-        })
+export function createTrailMetadata(res: CuriusResponse) {
+  const trailMetadata: Map<string, TrailInfo> = new Map()
+  const links = res.links ?? []
+  links
+    .filter((link) => link.trails.length > 0)
+    .map((link) => {
+      link.trails.map((trail) => {
+        if (!trailMetadata.has(trail.trailName))
+          trailMetadata.set(trail.trailName, { trail, links: new Map() })
+        trailMetadata.get(trail.trailName)!.links.set(link.id, link)
       })
-    return trailMetadata
-  })
+    })
+  return trailMetadata
+}
 
+export const createTrailList = (trails: Map<string, TrailInfo>) => {
   const trail = document.getElementById("trail-list") as HTMLUListElement | null
   const total = document.getElementsByClassName("curius-trail")[0] as HTMLDivElement | null
   if (!trail || !total) return
@@ -246,9 +232,10 @@ export async function fetchTrails() {
   const locale = total.dataset.locale! as ValidLocale
 
   removeAllChildren(trail)
-  for (const [trail_name, { trail: Trail, links: linksMap }] of Array.from(
-    curiusTrails.entries(),
-  ).slice(0, 4)) {
+  for (const [trail_name, { trail: Trail, links: linksMap }] of Array.from(trails.entries()).slice(
+    0,
+    4,
+  )) {
     const links = Array.from(linksMap.values())
     const remaining = Math.max(0, links.length - limits)
     trail.appendChild(createTrailEl(trail_name, links.slice(0, limits), Trail, remaining, locale))
@@ -314,4 +301,236 @@ function createTrailEl(
   container.append(headers, links, seeMore)
 
   return container
+}
+
+let index: FlexSearch.Document<Link> = new FlexSearch.Document({
+  charset: "latin:advanced",
+  document: {
+    id: "id",
+    index: [
+      ...Object.keys(_SENTINEL).map(
+        (key) =>
+          ({ field: key, tokenize: "forward" }) as IndexOptions<Link, false> & {
+            field: string
+          },
+      ),
+    ],
+  },
+})
+
+const numSearchResults = 20
+const contextWindowWords = 30
+
+const tokenizeTerm = (term: string) => {
+  const tokens = term.split(/\s+/).filter((t) => t.trim() !== "")
+  const tokenLen = tokens.length
+  if (tokenLen > 1) {
+    for (let i = 1; i < tokenLen; i++) {
+      tokens.push(tokens.slice(0, i + 1).join(" "))
+    }
+  }
+
+  return tokens.sort((a, b) => b.length - a.length) // always highlight longest terms first
+}
+
+function highlight(searchTerm: string, text: string, trim?: boolean) {
+  const tokenizedTerms = tokenizeTerm(searchTerm)
+  let tokenizedText = text.split(/\s+/).filter((t) => t !== "")
+
+  let startIndex = 0
+  let endIndex = tokenizedText.length - 1
+  if (trim) {
+    const includesCheck = (tok: string) =>
+      tokenizedTerms.some((term) => tok.toLowerCase().startsWith(term.toLowerCase()))
+    const occurrencesIndices = tokenizedText.map(includesCheck)
+
+    let bestSum = 0
+    let bestIndex = 0
+    for (let i = 0; i < Math.max(tokenizedText.length - contextWindowWords, 0); i++) {
+      const window = occurrencesIndices.slice(i, i + contextWindowWords)
+      const windowSum = window.reduce((total, cur) => total + (cur ? 1 : 0), 0)
+      if (windowSum >= bestSum) {
+        bestSum = windowSum
+        bestIndex = i
+      }
+    }
+
+    startIndex = Math.max(bestIndex - contextWindowWords, 0)
+    endIndex = Math.min(startIndex + 2 * contextWindowWords, tokenizedText.length - 1)
+    tokenizedText = tokenizedText.slice(startIndex, endIndex)
+  }
+
+  const slice = tokenizedText
+    .map((tok) => {
+      // see if this tok is prefixed by any search terms
+      for (const searchTok of tokenizedTerms) {
+        if (tok.toLowerCase().includes(searchTok.toLowerCase())) {
+          const regex = new RegExp(searchTok.toLowerCase(), "gi")
+          return tok.replace(regex, `<span class="highlight">$&</span>`)
+        }
+      }
+      return tok
+    })
+    .join(" ")
+
+  return `${startIndex === 0 ? "" : "..."}${slice}${
+    endIndex === tokenizedText.length - 1 ? "" : "..."
+  }`
+}
+
+export async function curiusSearch(linksData: Link[]) {
+  const sampleLinks = sample(linksData, 20)
+
+  const bar = document.getElementById("curius-bar") as HTMLInputElement | null
+  const container = document.getElementById("curius-search-container") as HTMLDivElement | null
+
+  // Search functionality
+  async function onType(e: HTMLElementEventMap["input"]) {
+    let term = (e.target as HTMLInputElement).value
+    container?.classList.toggle("active", term !== "")
+    let searchResults =
+      (await index?.searchAsync({
+        query: term,
+        limit: numSearchResults,
+        index: ["title", "snippet", "topics"],
+      })) ?? []
+
+    const getByField = (field: string): number[] => {
+      const results = searchResults.filter((x) => x.field === field)
+      return results.length === 0 ? [] : ([...results[0].result] as number[])
+    }
+
+    const allIds: Set<number> = new Set([
+      ...getByField("title"),
+      ...getByField("snippet"),
+      ...getByField("topics"),
+    ])
+
+    const finalResults = [...allIds].map((id) => formatLinks(term, id))
+    displayLinks(finalResults)
+  }
+
+  const formatLinks = (term: string, id: number): Link => {
+    const L = linksData[id]
+    return {
+      ...L,
+      title: highlight(term, L.title),
+      snippet: highlight(term, L.snippet, true),
+    }
+  }
+
+  const notes = document.getElementsByClassName("curius-notes")[0] as HTMLDivElement | null
+
+  function displayLinks(links: Link[]) {
+    if (!container) return
+    removeAllChildren(container)
+
+    if (links.length === 0) {
+      container.innerHTML = `<a class="curius-search-link"><span class="curius-search-title">No results found.</span><p class="curius-search-snippet">Try another search term?</p></a>`
+    } else {
+      container?.append(...links.map(createSearchLinks))
+    }
+  }
+
+  function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
+    if (e.key === "k" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+      if (notes?.classList.contains("active")) notes.classList.remove("active")
+      const searchBarOpen = container?.classList.contains("active")
+      searchBarOpen ? hideLinks() : showLinks(sampleLinks)
+      return
+    }
+
+    if (!container?.classList.contains("active")) return
+    if (e.key === "Enter") {
+      if (container?.contains(document.activeElement)) {
+        const active = document.activeElement as HTMLInputElement
+        active.click()
+      } else {
+        const anchor = document.getElementsByClassName(
+          "curius-search-link",
+        )[0] as HTMLInputElement | null
+        anchor?.click()
+      }
+    } else if (e.key === "ArrowUp" || (e.shiftKey && e.key === "Tab")) {
+      e.preventDefault()
+      // When first pressing ArrowDown, results wont contain the active element, so focus first element
+      if (container?.contains(document.activeElement)) {
+        const prevResult = document.activeElement?.previousElementSibling as HTMLInputElement | null
+        prevResult?.focus()
+      }
+    } else if (e.key === "ArrowDown" || e.key === "Tab") {
+      e.preventDefault()
+
+      // When first pressing ArrowDown, results wont contain the active element, so focus first element
+      if (!container?.contains(document.activeElement)) {
+        const firstResult = document.getElementsByClassName(
+          "curius-search-link",
+        )[0] as HTMLInputElement | null
+        firstResult?.focus()
+      } else {
+        // If an element in results-container already has focus, focus next one
+        const nextResult = document.activeElement?.nextElementSibling as HTMLInputElement | null
+        nextResult?.focus()
+      }
+    }
+  }
+
+  function onClick() {
+    if (bar?.classList.contains("active")) return
+    if (notes?.classList.contains("active")) notes.classList.remove("active")
+    const searchBarOpen = container?.classList.contains("active")
+    searchBarOpen ? hideLinks() : showLinks(sampleLinks)
+  }
+
+  function showLinks(links: Link[]) {
+    if (!container) return
+    container?.classList.add("active")
+    bar?.focus()
+    bar?.scrollIntoView({ behavior: "smooth" })
+    displayLinks(links)
+  }
+
+  function hideLinks() {
+    if (container) container.classList.remove("active")
+    if (bar) bar.value = ""
+  }
+
+  function createSearchLinks(link: Link): HTMLAnchorElement {
+    const curiusLink = document.createElement("a")
+    curiusLink.classList.add("curius-search-link")
+    curiusLink.target = "_blank"
+    curiusLink.href = link.link
+    curiusLink.innerHTML = `<span class="curius-search-title">${link.title}</span><p class="curius-search-snippet">${link.snippet}</div>`
+
+    const onClick = (e: MouseEvent) => {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
+      hideLinks()
+    }
+
+    curiusLink.addEventListener("click", onClick)
+    window.addCleanup(() => curiusLink.removeEventListener("click", onClick))
+
+    return curiusLink
+  }
+
+  document.addEventListener("keydown", shortcutHandler)
+  window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
+  bar?.addEventListener("input", onType)
+  window.addCleanup(() => bar?.removeEventListener("input", onType))
+  bar?.addEventListener("click", onClick)
+  window.addCleanup(() => bar?.removeEventListener("click", onClick))
+
+  registerEscapeHandler(container, hideLinks)
+
+  await fillIndex(linksData)
+}
+
+async function fillIndex(links: Link[]) {
+  let id = 0
+  const promises: Array<Promise<unknown>> = []
+  for (const link of links) {
+    promises.push(index.addAsync(id++, { ...link }))
+  }
+  return await Promise.all(promises)
 }

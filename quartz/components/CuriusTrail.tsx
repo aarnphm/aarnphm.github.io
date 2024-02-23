@@ -1,7 +1,5 @@
 import { QuartzComponentConstructor, QuartzComponentProps, QuartzComponent } from "./types"
 import style from "./styles/curiusTrail.scss"
-//@ts-ignore
-import script from "./scripts/curius-trail.inline"
 import { classNames } from "../util/lang"
 
 const trailLimits = 3
@@ -21,7 +19,6 @@ export default (() => {
   }
 
   CuriusTrail.css = style
-  CuriusTrail.afterDOMLoaded = script
 
   return CuriusTrail
 }) satisfies QuartzComponentConstructor

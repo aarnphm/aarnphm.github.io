@@ -5,6 +5,11 @@
   width: inherit;
   cursor: pointer;
   max-width: calc($sidePanelWidth - 1rem);
+  display: none;
+
+  &.active {
+    display: block;
+  }
 
   .curius-trail-header {
     display: flex;

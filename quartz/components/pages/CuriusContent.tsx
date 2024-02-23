@@ -1,15 +1,13 @@
-import { QuartzComponentConstructor, QuartzComponentProps } from "../types"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import style from "../styles/curiusPage.scss"
 //@ts-ignore
 import curiusScript from "../scripts/curius.inline"
-//@ts-ignore
-import dataScript from "../scripts/curius-data.inline"
 import { classNames } from "../../util/lang"
 
 export default (() => {
-  function CuriusContent({ displayClass }: QuartzComponentProps) {
+  const CuriusContent: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
     return (
-      <div class={classNames(displayClass, "curius", "popover-hint")}>
+      <div class={classNames(displayClass, "curius", "popover-hint")} id="curius">
         <div class="curius-container">
           <div id="curius-fetching-text"></div>
           <div id="curius-fragments"></div>
@@ -22,7 +20,6 @@ export default (() => {
   }
 
   CuriusContent.css = style
-  CuriusContent.beforeDOMLoaded = dataScript
   CuriusContent.afterDOMLoaded = curiusScript
 
   return CuriusContent

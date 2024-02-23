@@ -1,6 +1,15 @@
 import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util"
-import { Link } from "../types"
-import { fetchCuriusLinks, fetchTrails, createTitle, timeSince, CURIUS } from "./curius"
+import { Link, TrailInfo } from "../types"
+import {
+  fetchCuriusLinks,
+  fetchTrails,
+  createTitle,
+  timeSince,
+  CURIUS,
+  createTrailMetadata,
+  createTrailList,
+  curiusSearch,
+} from "./curius"
 
 const refetchTimeout = 2 * 60 * 1000 // 2 minutes
 
@@ -189,6 +198,7 @@ document.addEventListener("nav", async () => {
   const [container, fetchText, fragment, nav] = elements as HTMLElement[]
 
   const friends = document.querySelector(".curius-friends") as HTMLUListElement | null
+  const trails = document.getElementsByClassName("curius-trail")[0] as HTMLDivElement | null
 
   fetchText.textContent = "Récupération des liens curius"
   fetchText.classList.toggle("active", true)
@@ -207,9 +217,14 @@ document.addEventListener("nav", async () => {
   const linksData = callIfEmpty(resp.links!)
   if (linksData.length === 0) return
 
+  createTrailList(createTrailMetadata(resp))
+
+  await curiusSearch(linksData)
+
   fragment.append(...linksData.map(createLinkEl))
   nav.classList.toggle("active", true)
   if (friends) friends.classList.toggle("active", true)
+  if (trails) trails.classList.toggle("active", true)
 
   const refetchIcon = document.getElementById("curius-refetch")
 
@@ -249,23 +264,27 @@ document.addEventListener("nav", async () => {
       removeAllChildren(fragment)
       removeAllChildren(trail!)
 
-      if (note) note.classList.remove("active")
+      note?.classList.toggle("active", false)
       nav.classList.toggle("active", false)
       friends?.classList.toggle("active", false)
+      trails?.classList.toggle("active", false)
 
       fetchText.classList.toggle("active", true)
       fetchText.textContent = "Rafraîchissement des liens curius"
-      const refetched = await fetchCuriusLinks(true)
+      const refetched = await fetchCuriusLinks()
       fetchText.classList.toggle("active", false)
+
+      createTrailList(createTrailMetadata(refetched))
 
       const newData = callIfEmpty(refetched.links!)
       if (newData.length === 0) return
 
+      await curiusSearch(refetched.links!)
+
       fragment.append(...newData.map(createLinkEl))
       nav.classList.toggle("active", true)
       friends?.classList.toggle("active", true)
-
-      await fetchTrails()
+      trails?.classList.toggle("active", true)
 
       isTimeout = true
       setTimeout(() => {
