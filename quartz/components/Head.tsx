@@ -81,13 +81,15 @@ export default (() => {
         <meta property="og:description" content={description} />
         <meta property="og:image:type" content={`image/${extension}`} />
         <meta property="og:image:alt" content={description} />
-        {!frontmatterImgUrl && (
+        {!frontmatterImgUrl && cfg.generateSocialImages ? (
           <>
             <meta property="og:image:width" content={imageOptions.width.toString()} />
             <meta property="og:image:height" content={imageOptions.height.toString()} />
             <meta property="og:width" content={imageOptions.width.toString()} />
             <meta property="og:height" content={imageOptions.height.toString()} />
           </>
+        ) : (
+          <></>
         )}
         <meta property="og:image" content={ogImagePath} />
         {cfg.baseUrl && (

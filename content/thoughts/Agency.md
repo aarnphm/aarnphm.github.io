@@ -3,9 +3,12 @@ id: Agency
 tags:
   - seed
   - philosophy
-construction: true
 date: "2024-02-07"
 title: Agency
 ---
+
+> The ability and freedom to act in their immediate environment.
+
+Considered to be a study of [[thoughts/action theory.md|action theory]]
 
 
