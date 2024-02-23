@@ -213,21 +213,18 @@ async function generateOg(
   ctx: BuildCtx,
   fileData: QuartzPluginData,
   { cfg, description, fileDir, fileName, extension, fonts, title }: ImageOptions,
-  userOpts: SocialImageOptions,
+  opts: SocialImageOptions,
 ) {
   const fontBuffer = await fonts
 
-  const svg = await satori(
-    userOpts.imageStructure(cfg, fileData, userOpts, title, description, fontBuffer),
-    {
-      height: userOpts.height,
-      width: userOpts.width,
-      fonts: fontBuffer,
-      graphemeImages: {
-        "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
-      },
+  const svg = await satori(opts.Component(cfg, fileData, opts, title, description, fontBuffer), {
+    height: opts.height,
+    width: opts.width,
+    fonts: fontBuffer,
+    graphemeImages: {
+      "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
     },
-  )
+  })
 
   const content = await sharp(Buffer.from(svg)).webp().toBuffer()
 

@@ -16,19 +16,15 @@ export async function getSatoriFont(cfg: GlobalConfiguration): Promise<SatoriOpt
 
   const url = new URL(`https://${cfg.baseUrl ?? "example.com"}`)
 
-  const headerBuffer = await fetch(`${url.toString()}/${headerFont}`).then((res) =>
-    res.arrayBuffer(),
+  const [header, body] = await Promise.all(
+    [headerFont, bodyFont].map((font) =>
+      fetch(`${url.toString()}/${font}`).then((res) => res.arrayBuffer()),
+    ),
   )
-  const bodyBuffer = await fetch(`${url.toString()}/${bodyFont}`).then((res) => res.arrayBuffer())
 
   return [
-    {
-      name: cfg.theme.typography.header,
-      data: headerBuffer,
-      weight: headerWeight,
-      style: "normal",
-    },
-    { name: cfg.theme.typography.body, data: bodyBuffer, weight: bodyWeight, style: "normal" },
+    { name: cfg.theme.typography.header, data: header, weight: headerWeight, style: "normal" },
+    { name: cfg.theme.typography.body, data: body, weight: bodyWeight, style: "normal" },
   ]
 }
 
@@ -54,7 +50,7 @@ export type SocialImageOptions = {
    * @param fonts global font that can be used for styling
    * @returns prepared jsx to be used for generating image
    */
-  imageStructure: (
+  Component: (
     cfg: GlobalConfiguration,
     fileData: QuartzPluginData,
     opts: Options,
@@ -64,7 +60,7 @@ export type SocialImageOptions = {
   ) => JSXInternal.Element
 }
 
-export type Options = Omit<SocialImageOptions, "imageStructure">
+export type Options = Omit<SocialImageOptions, "Component">
 
 export type ImageOptions = {
   /**
@@ -97,7 +93,7 @@ export type ImageOptions = {
   cfg: GlobalConfiguration
 }
 
-export const og: SocialImageOptions["imageStructure"] = (
+export const og: SocialImageOptions["Component"] = (
   cfg: GlobalConfiguration,
   fileData: QuartzPluginData,
   { colorScheme }: Options,
@@ -222,5 +218,5 @@ export const defaultImageOptions: SocialImageOptions = {
   colorScheme: "lightMode",
   height: 630,
   width: 1200,
-  imageStructure: og,
+  Component: og,
 }
