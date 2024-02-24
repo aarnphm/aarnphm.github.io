@@ -42,7 +42,7 @@ _extracted from Z V, Death of The God_
 
 Chaos is the essence of one existence. Such that the world is not governed by fixed rules and predetermined order. Nietzsche rejects [[thoughts/Transcendentals|transcendentals chaos]], such construct reality beyond sensory understanding. These truths are [[thoughts/Philosophy and Nietzsche#Prejudices of Philosophers|philosophers' prejudices]] that deny one's will to [[thoughts/Will#as power.|power]], such that all truth are just one's perception and experience.
 
-- "eternal recurrence" - a litmus test for an individual's capacity to affirm life <- Actively mentioned throughout [[thoughts/Philosophy and Nietzsche#Thus Spoke Zarathustra|Thus Spoke Zarathustra]].
+- "eternal recurrence" [^1] - a litmus test for an individual's capacity to affirm life <- Actively mentioned throughout [[thoughts/Philosophy and Nietzsche#Thus Spoke Zarathustra|Thus Spoke Zarathustra]].
   - implies the possibility of composite [[thoughts/papers/Nietzsche the Kantian Self and Eternal Recurrence.pdf|self]], that the individual remains the same for eternity of life.
   - allows chaos to remain the force of life, and will to power to be a configuration of chaos.
     > The self, for Nietzsche, is not just a radically unstable postmodern self.  It is such a self, but it is not simply such a self.  It also has a stability, sameness, and unity that goes far beyond anything Kant ever imagined in his wildest dreams
@@ -57,3 +57,5 @@ The Übermensch must find his footing, create his own values through labyrinth o
 Money doesn't have any power intrinsically in itself. You can't simply throw more money into a system, as well as chaos into a system.
 
 Chaos is also an information system for growth. It manifests itself through different decisions. From chaos one can derive order through the learning of chaos.
+
+[^1]: See also [[thoughts/Giles Deleuze#Nietzsche and Philosophy|Giles Deleuze's]] intepretation.

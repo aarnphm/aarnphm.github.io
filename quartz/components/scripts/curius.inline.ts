@@ -1,11 +1,9 @@
 import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util"
-import { Link, TrailInfo } from "../types"
+import { Link } from "../types"
 import {
   fetchCuriusLinks,
-  fetchTrails,
   createTitle,
   timeSince,
-  CURIUS,
   createTrailMetadata,
   createTrailList,
   curiusSearch,

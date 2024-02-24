@@ -11,11 +11,7 @@ See also: Nietzsche's [[thoughts/university/philo-1aa3/Nietzsche|Life]] and over
 
 ## Nietzsche and Philosophy
 
-_Giles Deleuze_
-
-Multiplicity, being and affirmation
-
-Critical philosophy and  the study of sense and value
+by _[[thoughts/Giles Deleuze|Giles Deleuze]]_
 
 The decadence of modern philosophy is the theory of value imposes conformism and a new form of submission
 
@@ -30,6 +26,7 @@ Notion of [[thoughts/aesthetic value|aesthetic value]] implies critical reversal
 Critical philosophy has two inseparable moments: the referring back of all things and any kind of origin to values, but also the referring back of these values to something which is, as it were, the origin and determines their value.
 
 This is Nietzsche's twofold struggle:
+
 - against those who remove values from criticism, contenting themselves with producing inventories of existing values or we criticising things in the name of established values (the "philosophy labourers", Kant and Schopenhauer, [BGE ](#anatomy-of-beyond-good-and-evil) 211)
 - against those who criticise, or respect, values by deriving them from simple facts, from so-called "objective facts" (the utilitarians, the "scholars", BGE Part 6).
 
@@ -42,7 +39,7 @@ Genealogy: substitute pathos of difference or distance for both Kantian principl
 - there are no def of sense
 - We don’t know where the force come from
 - Philosophy is symptomatology, not semeiology
-To interpret and to evaluate is to weigh causal and effects.
+- To interpret and to evaluate is to weigh causal and effects.
 
 Force is not a cause, but a symptom.
 
@@ -64,28 +61,32 @@ In its essential relation with the "other" a will makes its difference an object
 
 ### Tragedy
 
-The linking among contradictions, negatives, and opposition
+> [!important] Tragic
+> The linking among contradictions, negatives, and opposition
+
 Tragedy has three ways of dying:
+
 - Socrates’ dialectics, or Euripidean death
 - Christianity
 - Modern dialectics and Wagner
 
-Concepts of tragic:
 1. BT emphasizes the contradiction is between primitive unity and individuality
 2. Reflected in the opposition of Dionysus and Apollo
-    * Apollo overcomes the suffering of the individual by the radiant glorification of the eternity of the phenomenon: construct appearances of appearance, thus freed from suffering
-    * Dionysus shatters the individual, absorbing him into original being => reproduces contradictions as pain of individual and introduces into higher pleasure
-* Two antithesis ways of solving tragedy
-3. Reconciliation dominated by Dionysus
+   - Apollo overcomes the suffering of the individual by the radiant glorification of the eternity of the phenomenon: construct appearances of appearance, thus freed from suffering
+   - Dionysus shatters the individual, absorbing him into original being => reproduces contradictions as pain of individual and introduces into higher pleasure
+3. Two antithesis ways of solving tragedy
+4. Reconciliation dominated by Dionysus
 
 ### Nietzsche’s Evolution
+
 Tragic in totality lies within its contradiction, Dionysus’ resolutions and expressions of such solutions
 
 Characteristic of tragic culture, as seem in Kant, Schopenhauer, Wagner, as in trying to solve it
+
 - wisdom takes the place of science as the highest end.
 
-
 ### Existence and Innocence
+
 There is no whole
 Necessary to disperse the universe, to lose respect for the whole
 
@@ -111,7 +112,6 @@ These two ways of thinking are inseparable, they are the thought of a single ele
 
 Multiplicity is the inseparable manifestation, essential transformation and constant symptom of unity
 
-
 Affirming being of becoming and affirming becoming are two return state
 
 Eternal return is distinct return of outward movement, distinct contemplation of action
@@ -130,13 +130,12 @@ Combination of dice that are thrown is the affirmation of necessity
 
 Necessity is affirmed by chances and chances id being affirmed by the act of necessity
 
-
 ### Nietzsche and Mallermé
 
 1. To think is to send out a dicethrow
 2. Man does not know how to play
-3. To throw a dice is not only irrational, but also constitute to the tragic attempt  and tragic thought par excellence
-Necessity is the abomination of chance
+3. To throw a dice is not only irrational, but also constitute to the tragic attempt and tragic thought par excellence
+   Necessity is the abomination of chance
 
 ### Tragic thoughts
 
@@ -146,9 +145,9 @@ It is a type, but not separable from typology
 The Touchstone
 Relates to other tragic philosopher, but shouldn’t take this at face value
 Tragedy in Nietzsche philosophy one must ask
+
 - How does this other think?
 - How much ressentiment and bad conscience remains in his thoughts?
-
 
 Zarathustra opposes playing to betting, dancing to leaping
 
@@ -161,6 +160,24 @@ Zarathustra opposes playing to betting, dancing to leaping
 [Source](https://www.marxists.org/reference/archive/nietzsche/1886/beyond-good-evil/ch01.htm)
 
 - Begins by critiquing the traditional approaches of [[thoughts/Will to Truth|truth]] and morality, deemed it "hazardous enterprise". From a perspective of a philosophers, who are "deemed to pursue the truth" doesn't seem to fully understand why
+
+### The Free Spirit
+
+[Source](https://www.marxists.org/reference/archive/nietzsche/1886/beyond-good-evil/ch02.htm)
+
+> [!note] Aphorism 24
+>
+> What strange simplification and falsification mankind lives! One can never cease wondering once one has acquired eyes for this marvel! How we have made everything around us clear and free and easy and simple! How we have been able to give our senses a passport to everything superficial, our thoughts a godlike desire for wanton gambolling and false conclusions! - How from the beginning, we have contrived to retain our ignorance as to enjoy an almost inconceivable freedom, frivolity, impetuosity, bravery, cheerfulness of life, so as to enjoy life!
+
+Man lives in blissful ignorance, and it is this ignorance that allows him to enjoy life.
+
+Contains a deliberate overlooking or misunderstanding of complexity and depth of reality, such that one grant one's thoughts the freedom to roam superficially.
+
+> And only on this solidified, granite-like foundation of ignorance could knowledge rear itself hitherto, the will to knowledge on the foundation of a far more powerful will, the will to ignorance, to the uncertain, to the untrue! Not as its opposite, but — as its refinement!
+
+N posits that humans have contrived to retain their ignorance in order to enjoy life with freedom, lack of scruple, heartiness, and gaiety. This foundation of ignorance allows knowledge to rise, but it does so on the foundation of a far more powerful [[thoughts/Will|will]] --- will to ignorance to uncertainty, to the untrue.
+
+Nietzsche juxtaposes a paradox at our existence: a foundation of ignorance is actually built upon our will to knowledge.  Will to knowledge is not opposed to ignorance, rather a refinement. Will to ignorance is actually a strategy of [[thoughts/Will to Power|power]], as it motivates [[thoughts/Giles Deleuze#active and reactive forces.|force]].
 
 ---
 

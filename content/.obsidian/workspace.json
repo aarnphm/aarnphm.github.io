@@ -8,12 +8,59 @@
         "type": "tabs",
         "children": [
           {
-            "id": "a7088898ec5d1ece",
+            "id": "c0a31bb7c0560c0f",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a4/A4.md",
+                "file": "thoughts/Chaos.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "817e3d2cbc3bdf08",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/compsci-4x03/A4.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "9f70888ff449a317",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {}
+            }
+          },
+          {
+            "id": "dbe097331605844c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/education.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "4d2cd6a5b0cce4bd",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/Philosophy and Nietzsche.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -70,7 +117,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 626.5
+    "width": 354.5
   },
   "right": {
     "id": "5221182814b155cf",
@@ -86,7 +133,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a4/A4.md",
+                "file": "thoughts/Chaos.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +150,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a4/A4.md",
+                "file": "thoughts/Chaos.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +173,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a4/A4.md"
+                "file": "thoughts/Chaos.md"
               }
             }
           },
@@ -156,7 +203,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a4/A4.md"
+                "file": "thoughts/Chaos.md"
               }
             }
           }
@@ -180,10 +227,25 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "a7088898ec5d1ece",
+  "active": "c0a31bb7c0560c0f",
   "lastOpenFiles": [
-    "thoughts/university/sfwr-2c03/a4/Aaron_Pham_400232791_phama10_assignment_4.pdf",
+    "posts/broken, but functional.md",
+    "thoughts/Philosophy and Nietzsche.md",
+    "thoughts/Giles Deleuze.md",
+    "thoughts/university/compsci-4x03/A4.md",
+    "thoughts/education.md",
+    "thoughts/Will to Power.md",
+    "thoughts/Will to power.md",
+    "thoughts/power.md",
+    "thoughts/papers/Knowledge as Masculine Heroism or Embodied Perception-1998.pdf",
+    "thoughts/Chaos.md",
+    "thoughts/relationships.md",
+    "posts/Why should you learn philosophy during university.md",
+    "posts/social interactions.md",
+    "posts/to the past lovers.md",
+    "posts/index.md",
     "thoughts/university/sfwr-2c03/a4/A4.md",
+    "thoughts/university/sfwr-2c03/a4/Aaron_Pham_400232791_phama10_assignment_4.pdf",
     "thoughts/quantization.md",
     "thoughts/university/sfwr-2c03/balanced-search-tree-hash.pdf",
     "thoughts/university/sfwr-2c03/balanced-search-tree-hash.pdf.crdownload",
@@ -193,7 +255,6 @@
     "thoughts/university/sfwr-2c03/heap-sort-intro-sort.pdf.crdownload",
     "thoughts/university/sfwr-2c03/a4/sortings.pdf",
     "thoughts/university/sfwr-2c03/a4/assignment_4.pdf",
-    "thoughts/university/sfwr-2c03/a4/assignment_4.pdf.crdownload",
     "thoughts/university/sfwr-3dx4/lab2/content.md",
     "thoughts/university/sfwr-2fa3/A1.md",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.svg",
@@ -208,25 +269,12 @@
     "thoughts/university/sfwr-2fa3/a1/dfa_3a.png",
     "thoughts/university/sfwr-2c03/a3/A3.md",
     "thoughts/university/eng-3px3/Reflection.md",
-    "posts/to the past lovers.md",
     "thoughts/Dysregulation.md",
     "thoughts/zero-shot learning.md",
     "thoughts/linguistic.md",
     "thoughts/prompt engineering.md",
     "thoughts/university/sfwr-3dx4/assignment1.md",
     "thoughts/university/philo-1aa3/tut/Being qua being.md",
-    "thoughts/Metaphysics.md",
-    "books.md",
-    "uses.md",
-    "_index.md",
-    "thoughts/Hypertext.md",
-    "thoughts/Digital garden.md",
-    "thoughts/Database.md",
-    "thoughts/Networked Thoughts.md",
-    "thoughts/networked thoughts.md",
-    "private/Term of Reference.md",
-    "Untitled.canvas",
-    "private/Reservation list.md",
-    "private/podcast.md"
+    "Untitled.canvas"
   ]
 }

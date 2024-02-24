@@ -99,5 +99,14 @@
       ],
       "key": "L"
     }
-  ]
+  ],
+  "file-explorer:open": [
+    {
+      "modifiers": [
+        "Mod"
+      ],
+      "key": "B"
+    }
+  ],
+  "editor:toggle-bold": []
 }

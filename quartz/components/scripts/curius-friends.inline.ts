@@ -1,4 +1,3 @@
-import { CuriusResponse } from "../types"
 import { fetchFollowing, timeSince } from "./curius"
 import { registerMouseHover, removeAllChildren } from "./util"
 
@@ -57,7 +56,7 @@ document.addEventListener("nav", async () => {
     friends.appendChild(li)
   })
 
-  const onClickSeeMore = () => {
+  const onSeeMore = () => {
     const ul = document.getElementById("friends-list") as HTMLUListElement | null
     const svgChev = seeMoreFriends?.querySelectorAll("svg")[0] as SVGSVGElement | null
     const moreText = seeMoreFriends?.querySelectorAll("span")[0] as HTMLSpanElement | null
@@ -83,6 +82,6 @@ document.addEventListener("nav", async () => {
     }
   }
 
-  seeMoreFriends?.addEventListener("click", onClickSeeMore)
-  window.addCleanup(() => seeMoreFriends?.removeEventListener("click", onClickSeeMore))
+  seeMoreFriends?.addEventListener("click", onSeeMore)
+  window.addCleanup(() => seeMoreFriends?.removeEventListener("click", onSeeMore))
 })
