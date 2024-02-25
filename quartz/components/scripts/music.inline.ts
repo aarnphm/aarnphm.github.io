@@ -20,7 +20,6 @@ document.addEventListener("nav", (e) => {
 
     const selected = iframes[idx]
     if (!selected) return
-    console.log(selected, idx)
     position -= (playlist.offsetWidth - selected.offsetWidth) / 2
 
     playlist.scrollTo({ left: position, behavior: "smooth" })

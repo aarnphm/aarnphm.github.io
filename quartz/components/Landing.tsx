@@ -26,9 +26,9 @@ export const HyperAlias = {
 }
 
 export const SocialAlias = {
-  github: "github.aarnphm.xyz",
+  github: "https://github.com/aarnphm",
   twitter: "https://x.com/aarnphm_",
-  substack: "substack.aarnphm.xyz",
+  substack: "https://livingalonealone.com",
   curius: "/curius",
   contact: "mailto:contact@aarnphm.xyz",
 }
