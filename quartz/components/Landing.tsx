@@ -1,16 +1,18 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
-import MetaConstructor from "./Meta"
+import MetaComponent from "./Meta"
 import style from "./styles/landing.scss"
 import { byDateAndAlphabetical } from "./PageList"
 import { i18n } from "../i18n"
-import { FullSlug, SimpleSlug, stripSlashes, resolveRelative } from "../util/path"
+import { FullSlug, SimpleSlug, resolveRelative } from "../util/path"
 import { Data } from "vfile"
 import { getDate, formatDate } from "./Date"
-import SpacerConstructor from "./Spacer"
-import KeybindConstructor from "./Keybind"
-import HeaderConstructor from "./Header"
+import SpacerComponent from "./Spacer"
+import KeybindComponent from "./Keybind"
+import HeaderComponent from "./Header"
+import ContentComponent from "./pages/Content"
+import BodyComponent from "./Body"
 import { classNames } from "../util/lang"
-import { GlobalConfiguration } from "../cfg"
+import { JSX } from "preact"
 
 export const HyperAlias = {
   livres: "/books",
@@ -23,23 +25,6 @@ export const HyperAlias = {
   tunes: "/music",
 }
 
-export const ContentAlias = {
-  Chaos: "/thoughts/Chaos",
-  cooking: "/thoughts/Dishes",
-  writing: "/thoughts/writing",
-  reading: "/books",
-  "open-source projects": "/projects",
-  agency: "/thoughts/Agency",
-  desire: "/thoughts/desire",
-  hypertext: "/thoughts/Hypertext",
-  "large language models": "/thoughts/LLMs",
-  "digital garden": "/thoughts/Digital-garden",
-}
-
-const combined = (...objects: any[]) => objects.flatMap(Object.values).map((a) => stripSlashes(a))
-
-export const LandingLinks = combined(HyperAlias, ContentAlias)
-
 export const SocialAlias = {
   github: "https://github.com/aarnphm",
   twitter: "https://x.com/aarnphm_",
@@ -48,10 +33,10 @@ export const SocialAlias = {
 }
 
 type AliasLinkProp = {
-  name: string
-  url: string
+  name?: string
+  url?: string
   isInternal?: boolean
-  newTab?: boolean
+  newTab?: boolean | ((name: string) => boolean)
   enablePopover?: boolean
 }
 
@@ -66,34 +51,14 @@ const AliasLink = (props: AliasLinkProp) => {
   )
 }
 
-type ContentType = keyof typeof ContentAlias
-
-const getContentAlias = (name: string) => (
-  <AliasLink name={name} url={ContentAlias[name as ContentType] ?? "/"} isInternal />
-)
-
-interface Options {
-  slug: SimpleSlug
-  numLimits?: number
-  header?: string
-}
-
-const defaultOptions: Options = {
-  header: "récentes",
-  slug: "thoughts/" as SimpleSlug,
-  numLimits: 6,
-}
-
-const NotesConstructor = ((userOpts?: Options) => {
-  const Spacer = SpacerConstructor()
-
-  const opts = { ...defaultOptions, ...userOpts }
+const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?: string }) => {
+  const Spacer = SpacerComponent()
 
   const Notes: QuartzComponent = (componentData: QuartzComponentProps) => {
     const { allFiles, fileData, cfg } = componentData
     const pages = allFiles
       .filter((f: Data) => {
-        if (f.slug!.startsWith(opts.slug)) {
+        if (f.slug!.startsWith(opts!.slug)) {
           return (
             !["university", "tags", "index", ...cfg.ignorePatterns].some((it) =>
               (f.slug as FullSlug).includes(it),
@@ -106,15 +71,15 @@ const NotesConstructor = ((userOpts?: Options) => {
       })
       .sort(byDateAndAlphabetical(cfg))
 
-    const remaining = Math.max(0, pages.length - opts.numLimits!)
+    const remaining = Math.max(0, pages.length - opts!.numLimits!)
     const classes = ["min-links", "internal"].join(" ")
     return (
       <div id="note-item">
-        <h2>{opts.header}.</h2>
+        <h2>{opts!.header}.</h2>
         <div class="notes-container">
           <div class="recent-links">
             <ul class="landing-notes">
-              {pages.slice(0, opts.numLimits).map((page) => {
+              {pages.slice(0, opts!.numLimits).map((page) => {
                 const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
 
                 return (
@@ -134,7 +99,7 @@ const NotesConstructor = ((userOpts?: Options) => {
             {remaining > 0 && (
               <p>
                 <u>
-                  <a href={resolveRelative(fileData.slug!, opts.slug)} class={classes}>
+                  <a href={resolveRelative(fileData.slug!, opts!.slug)} class={classes}>
                     {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
                       remaining,
                     })}
@@ -151,91 +116,109 @@ const NotesConstructor = ((userOpts?: Options) => {
   return Notes
 }) satisfies QuartzComponentConstructor
 
-const ContentConstructor = (() => {
-  const Header = HeaderConstructor()
-  const Keybind = KeybindConstructor()
-  const RecentNotes = NotesConstructor()
-  const RecentPosts = NotesConstructor({
+const ClickableContainer = (props: {
+  title: string
+  links: Record<string, string>
+  cfg: AliasLinkProp
+}) => {
+  const { title, links, cfg } = props
+  let newTab: boolean | undefined
+
+  return (
+    <>
+      <h2>{title}:</h2>
+      <div class="clickable-container">
+        {Object.entries(links).map(([name, url]) => {
+          // check if cfg.newTab is a function
+          if (typeof cfg.newTab === "function") {
+            newTab = cfg.newTab(name)
+          } else {
+            newTab = cfg.newTab
+          }
+          return <AliasLink key={name} {...cfg} name={name} url={url} newTab={newTab} />
+        })}
+      </div>
+    </>
+  )
+}
+
+const HyperlinksComponent = ((props?: { children: JSX.Element[] }) => {
+  const { children } = props ?? { children: [] }
+
+  const Hyperlink: QuartzComponent = () => <div class="hyperlinks">{children}</div>
+  return Hyperlink
+}) satisfies QuartzComponentConstructor
+
+const ElementComponent = (() => {
+  const Content = ContentComponent()
+  const RecentNotes = NotesComponent({
+    header: "récentes",
+    slug: "thoughts/" as SimpleSlug,
+    numLimits: 6,
+  })
+  const RecentPosts = NotesComponent({
     header: "écriture",
     slug: "posts/" as SimpleSlug,
     numLimits: 3,
   })
+  const Hyperlink = HyperlinksComponent({
+    children: [
+      ClickableContainer({
+        title: "jardin",
+        links: HyperAlias,
+        cfg: { isInternal: true, newTab: false },
+      }),
+      ClickableContainer({
+        title: "média",
+        links: SocialAlias,
+        cfg: { isInternal: false, newTab: (name) => name !== "curius" },
+      }),
+    ],
+  })
 
-  const Content = (componentData: QuartzComponentProps) => {
+  const Element: QuartzComponent = (componentData: QuartzComponentProps) => {
     return (
       <div class="content-container">
-        <Header {...componentData}>
-          <h1 lang={"en"}>Bonjour, je suis Aaron.</h1>
-          <Keybind {...componentData} />
-        </Header>
-        <p lang="en">
-          Beige and <span class="rose">rosé</span> are my two favorite colours.{" "}
-          {getContentAlias("Chaos")} constructs the id and form the ego. I enjoy treating my friends
-          with {getContentAlias("cooking")}. I spend a lot of time {getContentAlias("writing")}
-          {", "}
-          {getContentAlias("reading")}
-          {", "} and maintaining {getContentAlias("open-source projects")}. I'm pretty bullish on
-          high {getContentAlias("agency")} and fullfil one's {getContentAlias("desire")} in life.
-        </p>
-        <p>
-          Currently, I'm building{" "}
-          <AliasLink name="serving infrastructure" url="https://bentoml.com" newTab /> and explore
-          our interaction with {getContentAlias("large language models")}, and more...
-        </p>
-        <p>
-          You are currently at the <em>index</em> of my {getContentAlias("hypertext")}{" "}
-          {getContentAlias("digital garden")}. Feel free to explore around. Please don't hesitate to
-          reach out if you have any questions or just want to chat.
-        </p>
+        <Content {...componentData} />
         <div class="notes-outer">
           <RecentNotes {...componentData} />
           <RecentPosts {...componentData} />
         </div>
-        <div class="hyperlinks">
-          <h2>jardin:</h2>
-          <div class="clickable-container">
-            {Object.entries(HyperAlias).map(([name, url]) => (
-              <>
-                <AliasLink key={name} name={name} url={url} isInternal />
-              </>
-            ))}
-          </div>
-          <hr />
-          <h2>média:</h2>
-          <div class="clickable-container">
-            {Object.entries(SocialAlias).map(([name, url], index, array) => (
-              <>
-                <AliasLink key={name} name={name} url={url} newTab={name !== "curius"} />
-                {index === array.length - 1 ? "" : <span>{"  "}</span>}
-              </>
-            ))}
-          </div>
-        </div>
+        <Hyperlink {...componentData} />
       </div>
     )
   }
 
-  return Content
+  return Element
 }) satisfies QuartzComponentConstructor
 
 export default (() => {
-  const Meta = MetaConstructor()
-  const Content = ContentConstructor()
-  const Spacer = SpacerConstructor()
+  const Meta = MetaComponent()
+  const Element = ElementComponent()
+  const Body = BodyComponent()
+  const Header = HeaderComponent()
+  const Keybind = KeybindComponent()
 
   const LandingComponent: QuartzComponent = (componentData: QuartzComponentProps) => {
+    const { displayClass } = componentData
     return (
       <div id="quartz-root" class="page">
-        <div id="quartz-body">
-          <div class="center">
-            <article class="popover-hint">
-              <div class={classNames(componentData.displayClass, "landing")}>
-                <Meta {...componentData} />
-                <Content {...componentData} />
-              </div>
-            </article>
+        <Body {...componentData}>
+          <div class="left sidebar">
+            <Meta {...componentData} />
           </div>
-        </div>
+          <div class="center">
+            <div class="page-header">
+              <Header {...componentData}>
+                <h1>Bonjour, je suis Aaron.</h1>
+                <Keybind {...componentData} />
+              </Header>
+            </div>
+            <div class={classNames(displayClass, "landing")}>
+              <Element {...componentData} />
+            </div>
+          </div>
+        </Body>
       </div>
     )
   }

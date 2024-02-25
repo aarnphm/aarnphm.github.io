@@ -3,13 +3,12 @@ id: Chaos
 tags:
   - life
   - evergreen
-date: "2024-01-07"
-description: chaos is a factor of time.
-draft: true
-title: chaos is a factor of time.
+date: "2024-02-18"
+description: Chaos is a byproduct of time.
+title: Chaos is a byproduct of time.
 ---
 
-_This is an extension of [[thoughts/Chaos|Chaos]] that I have been thinking about_
+_an extension of [[thoughts/Chaos|chaos]] that recently occupy my [[thoughts/NLP|chain of thought]]._
 
 ![[posts/images/passage-giorgio-m.jpg]]
 _Passage by Giorgio Morandi_

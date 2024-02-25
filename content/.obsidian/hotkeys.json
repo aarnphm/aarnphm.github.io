@@ -100,7 +100,8 @@
       "key": "L"
     }
   ],
-  "file-explorer:open": [
+  "editor:toggle-bold": [],
+  "app:toggle-left-sidebar": [
     {
       "modifiers": [
         "Mod"
@@ -108,5 +109,12 @@
       "key": "B"
     }
   ],
-  "editor:toggle-bold": []
+  "file-explorer:open": [
+    {
+      "modifiers": [
+        "Mod"
+      ],
+      "key": "."
+    }
+  ]
 }

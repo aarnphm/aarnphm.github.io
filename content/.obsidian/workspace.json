@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/Chaos.md",
+                "file": "music.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -117,7 +117,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 354.5
+    "width": 354.5,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -133,7 +134,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/Chaos.md",
+                "file": "music.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -150,7 +151,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/Chaos.md",
+                "file": "music.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -173,7 +174,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/Chaos.md"
+                "file": "music.md"
               }
             }
           },
@@ -203,7 +204,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/Chaos.md"
+                "file": "music.md"
               }
             }
           }
@@ -229,16 +230,19 @@
   },
   "active": "c0a31bb7c0560c0f",
   "lastOpenFiles": [
-    "posts/broken, but functional.md",
-    "thoughts/Philosophy and Nietzsche.md",
-    "thoughts/Giles Deleuze.md",
+    "thoughts/play.md",
+    "thoughts/Chaos.md",
+    "thoughts/Untitled.md",
     "thoughts/university/compsci-4x03/A4.md",
     "thoughts/education.md",
+    "thoughts/Philosophy and Nietzsche.md",
+    "thoughts/papers/Sampling-Bias-Corrected Neural Modling for Large Corpus Item Recommendations.pdf",
+    "posts/broken, but functional.md",
+    "thoughts/Giles Deleuze.md",
     "thoughts/Will to Power.md",
     "thoughts/Will to power.md",
     "thoughts/power.md",
     "thoughts/papers/Knowledge as Masculine Heroism or Embodied Perception-1998.pdf",
-    "thoughts/Chaos.md",
     "thoughts/relationships.md",
     "posts/Why should you learn philosophy during university.md",
     "posts/social interactions.md",
@@ -254,7 +258,6 @@
     "thoughts/university/sfwr-2c03/heap-sort-intro-sort.pdf",
     "thoughts/university/sfwr-2c03/heap-sort-intro-sort.pdf.crdownload",
     "thoughts/university/sfwr-2c03/a4/sortings.pdf",
-    "thoughts/university/sfwr-2c03/a4/assignment_4.pdf",
     "thoughts/university/sfwr-3dx4/lab2/content.md",
     "thoughts/university/sfwr-2fa3/A1.md",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.svg",
@@ -273,8 +276,6 @@
     "thoughts/zero-shot learning.md",
     "thoughts/linguistic.md",
     "thoughts/prompt engineering.md",
-    "thoughts/university/sfwr-3dx4/assignment1.md",
-    "thoughts/university/philo-1aa3/tut/Being qua being.md",
     "Untitled.canvas"
   ]
 }

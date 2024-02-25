@@ -58,4 +58,4 @@ Money doesn't have any power intrinsically in itself. You can't simply throw mor
 
 Chaos is also an information system for growth. It manifests itself through different decisions. From chaos one can derive order through the learning of chaos.
 
-[^1]: See also [[thoughts/Giles Deleuze#Nietzsche and Philosophy|Giles Deleuze's]] intepretation.
+[^1]: See also [[thoughts/Giles Deleuze#Nietzsche and Philosophy|Giles Deleuze's]] interpretation.

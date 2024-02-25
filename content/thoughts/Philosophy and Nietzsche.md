@@ -116,12 +116,12 @@ Affirming being of becoming and affirming becoming are two return state
 
 Eternal return is distinct return of outward movement, distinct contemplation of action
 
-### The dicethrow
+### The dice-throw
 
 The game as two set of movement
 Earth is where the dice is thrown and sky is when the dice is thrown back
 
-The dicethrow affirm becoming and it affirms the being of becomimg
+The dice-throw affirm becoming and it affirms the being of becoming
 
 Not a large number of throws produce the repetition of combinations but rather the number of combinations which produce the repetition of the dice throw
 
@@ -132,7 +132,7 @@ Necessity is affirmed by chances and chances id being affirmed by the act of nec
 
 ### Nietzsche and Mallermé
 
-1. To think is to send out a dicethrow
+1. To think is to send out a dice-throw
 2. Man does not know how to play
 3. To throw a dice is not only irrational, but also constitute to the tragic attempt and tragic thought par excellence
    Necessity is the abomination of chance
@@ -143,8 +143,9 @@ Spirit of revenge as in different form nihilism takes place
 It is a type, but not separable from typology
 
 The Touchstone
-Relates to other tragic philosopher, but shouldn’t take this at face value
-Tragedy in Nietzsche philosophy one must ask
+Relates to other tragic philosopher, but shan't take this at face value
+
+Tragedy in Nietzsche philosophy, one must ask:
 
 - How does this other think?
 - How much ressentiment and bad conscience remains in his thoughts?

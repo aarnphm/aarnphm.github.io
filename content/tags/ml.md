@@ -1,3 +1,3 @@
 ---
-description: Anything related to machine learning and intelligence system.
+description: Tout ce qui est lié à machine learnin et aux systèmes intelligents.
 ---

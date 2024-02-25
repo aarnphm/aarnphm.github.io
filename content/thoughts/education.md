@@ -3,6 +3,7 @@ id: education
 tags:
   - seed
   - pattern
+  - education
 date: "2024-02-07"
 title: education
 ---

@@ -107,6 +107,10 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> =
                   })
                 }
 
+                if (file.data.slug === "index") {
+                  classes.push("landing-links")
+                }
+
                 // Check if the link has alias text
                 if (
                   node.children.length === 1 &&

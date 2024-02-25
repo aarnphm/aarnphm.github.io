@@ -183,7 +183,9 @@ function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement
   }
 }
 
-document.addEventListener("nav", async () => {
+document.addEventListener("nav", async (e) => {
+  if (e.detail.url !== "curius") return
+
   const elements = [
     ".curius-container",
     "#curius-fetching-text",

@@ -2,6 +2,7 @@
 id: education
 tags:
   - sapling
+  - education
   - pattern
 date: "2024-02-19"
 draft: true

@@ -51,6 +51,8 @@
 
 html {
   font-size: 0.9125rem;
+  scroll-behavior: smooth;
+
   @media all and (max-width: $fullPageWidth) {
     font-size: 0.875rem;
   }
@@ -113,6 +115,44 @@ pre.poetry {
 body[data-slug="projects"] {
   footer {
     visibility: hidden;
+  }
+}
+
+body[data-slug="music"] {
+  iframe {
+    flex: 0 0 auto;
+    height: 450px; // height of Apple Music player
+    width: $pageWidth;
+    max-width: $pageWidth;
+  }
+
+  .playlists {
+    display: flex;
+    overflow-x: hidden;
+    gap: 20px;
+  }
+
+  .nav-playlist {
+    margin: 0.5rem 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    button.previous,
+    button.next {
+      background-color: transparent;
+      border: 1px solid var(--gray);
+      text-align: left;
+      cursor: pointer;
+      padding: 0;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+
+      &:hover {
+        background-color: var(--lightgray);
+      }
+    }
   }
 }
 

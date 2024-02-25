@@ -1,3 +1,3 @@
 ---
-description: everything related to computation theory, intelligence machine.
+description: Computation theory, intelligence machine, cryptograph, and more.
 ---

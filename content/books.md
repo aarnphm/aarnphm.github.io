@@ -81,7 +81,6 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
 - **[[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]]** by Gilles Deleuze
 - **Beyond Good and Evil** by Friedrich Nietzsche
-- **The Ego and the Id** by Sigmund Freud
 - **Beyond The Pleasure Principle** by Sigmund [[thoughts/Freud|Freud]]
 - **The Critique of Pure Reason** by Immanuel Kant
 - **The Metaphysics of Morals** by Immanuel Kant
@@ -97,6 +96,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The metamorphosis** by Franz Kafka
 - **The end of the affair** by Graham Greene
 - **The Little Book of [[thoughts/deep learning|Deep Learning]]** by François Fleuret
+- **[[thoughts/Freud#The Ego and the Id|The Ego and the Id]]** by Sigmund Freud
 
 ### 2023
 

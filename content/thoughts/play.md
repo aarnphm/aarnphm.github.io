@@ -9,17 +9,17 @@ title: Play
 
 ### play?
 
-- intentional activity of doing the thing you want to do
+> intentional activity of doing the thing you want to do
 
 => create share ownership of spaces which competition cannot and have as much fun as we can. Turn life into a canvas, rather a graph with checkpoint.
 
-Throw away your 5-year life plan, yet create a garden of your curiosity
+Throw away your 5-year life plan, to create a garden of your curiosity
 
-Commercial viability vs. creativity endeavour
+Commercial viability vs. creativity endeavour,  [Do thing that don't scale](https://paulgraham.com/ds.html)
 
-### sofware.
+### software.
 
-[Play with Engineering](https://www.youtube.com/watch?v=6Ao8GS488hA&t=579s&ab_channel=StrangeLoopConference)
+see also: [Play with Engineering](https://www.youtube.com/watch?v=6Ao8GS488hA&t=579s&ab_channel=StrangeLoopConference) and this tweet[^1]
 
 Four components
 
@@ -30,11 +30,9 @@ Four components
 
 Involves freedom of choice - social - about the process
 
-See also this tweet[^1]
-
 ### Create spaces not product
 
--> not necessarily meaning you are doing for yourself, but make it possible for others to utilize the space.
+> not necessarily meaning you are doing for yourself, but make it possible for others to utilise the space.
 
 ### Play as a form of tinkering
 
@@ -62,11 +60,15 @@ Graeber on [What's the point of we can't have fun](https://davidgraeber.org/arti
 
 - “Man plays only when he is in the full sense of the word a man” (Friedrich Schiller, 1795)
 
-### Philosophy
+### [[tags/philosophy|Philosophy]]
 
-Philosophy as a form of play = Intellectual playfulness - Involves a form of perspective shifting - trying on or inhabit alternative perspective
+_excerpt from C. Thi Nguyen's [Playfulness vs Epistemic Traps](https://philpapers.org/archive/NGUPVE.pdf)_
 
-C. Thi Nguyen on [Playfulness vs Epistemic Traps](https://philpapers.org/archive/NGUPVE.pdf)
+Philosophy as a form of play.
+
+> [!notes] Philosophy as play
+> 
+> Involves a form of perspective shifting: trying on or inhabit alternative perspective
 
 Intellectual playfulness, loosely, is the disposition to try out new ideas, perspectives and systems of thought (involves perspective shifting) for the sheer joy of it. It is a disposition to explore ideas for the value of exploration itself.
 
