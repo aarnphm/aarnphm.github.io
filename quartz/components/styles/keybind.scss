@@ -17,6 +17,7 @@ kbd {
   .bind.highlight-modal {
     padding: 0.2rem 0.4rem;
     width: fit-content;
+    max-height: unset;
   }
 
   & > #shortcut-container {
