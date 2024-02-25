@@ -8,7 +8,7 @@ description: Chaos a la carte.
 title: Chaos
 ---
 
-Full posts on [chaos of living](posts/Chaos.md).
+Full [post](posts/Chaos) on [chaos of living](livingalonealone.com).
 
 > Chaos: a looseness [collection](https://subconscious.substack.com/p/self-organizing-ideas) of one's [[thoughts/Will|will]] to life.
 

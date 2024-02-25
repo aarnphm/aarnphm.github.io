@@ -5,6 +5,10 @@ body[data-slug="index"] {
   cursor: crosshair;
   overflow-x: hidden;
 
+  .page-header {
+    margin-top: 0;
+  }
+
   & > *,
   h1,
   h2,

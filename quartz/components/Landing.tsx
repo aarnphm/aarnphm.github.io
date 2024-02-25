@@ -26,8 +26,9 @@ export const HyperAlias = {
 }
 
 export const SocialAlias = {
-  github: "https://github.com/aarnphm",
+  github: "github.aarnphm.xyz",
   twitter: "https://x.com/aarnphm_",
+  substack: "substack.aarnphm.xyz",
   curius: "/curius",
   contact: "mailto:contact@aarnphm.xyz",
 }
@@ -45,7 +46,12 @@ const AliasLink = (props: AliasLinkProp) => {
   const className = ["landing-links"]
   if (opts.isInternal && opts.enablePopover) className.push("internal")
   return (
-    <a href={opts.url} target={opts.newTab ? "_blank" : "_self"} className={className.join(" ")}>
+    <a
+      href={opts.url}
+      target={opts.newTab ? "_blank" : "_self"}
+      rel="noopener noreferrer"
+      className={className.join(" ")}
+    >
       {opts.name}
     </a>
   )
@@ -129,7 +135,6 @@ const ClickableContainer = (props: {
       <h2>{title}:</h2>
       <div class="clickable-container">
         {Object.entries(links).map(([name, url]) => {
-          // check if cfg.newTab is a function
           if (typeof cfg.newTab === "function") {
             newTab = cfg.newTab(name)
           } else {
