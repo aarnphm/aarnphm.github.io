@@ -26,6 +26,11 @@
     display: block;
   }
 
+  #friends-list {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
   .friend-li {
     display: none;
 

@@ -176,7 +176,7 @@ Contains a deliberate overlooking or misunderstanding of complexity and depth of
 
 > And only on this solidified, granite-like foundation of ignorance could knowledge rear itself hitherto, the will to knowledge on the foundation of a far more powerful will, the will to ignorance, to the uncertain, to the untrue! Not as its opposite, but — as its refinement!
 
-N posits that humans have contrived to retain their ignorance in order to enjoy life with freedom, lack of scruple, heartiness, and gaiety. This foundation of ignorance allows knowledge to rise, but it does so on the foundation of a far more powerful [[thoughts/Will|will]] --- will to ignorance to uncertainty, to the untrue.
+Nietzsche posits that humans have contrived to retain their ignorance in order to enjoy life with freedom, lack of scruple, heartiness, and gaiety. This foundation of ignorance allows knowledge to rise, but it does so on the foundation of a far more powerful [[thoughts/Will|will]] --- will to ignorance to uncertainty, to the untrue.
 
 Nietzsche juxtaposes a paradox at our existence: a foundation of ignorance is actually built upon our will to knowledge.  Will to knowledge is not opposed to ignorance, rather a refinement. Will to ignorance is actually a strategy of [[thoughts/Will to Power|power]], as it motivates [[thoughts/Giles Deleuze#active and reactive forces.|force]].
 

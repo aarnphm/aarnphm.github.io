@@ -6,7 +6,7 @@ date: "2024-02-07"
 title: Transformers
 ---
 
-See also: [[thoughts/LLMs]]
+See also: [[thoughts/LLMs|LLMs]]
 
 High level, given a sequence of tokens of length $n$, the algorithm can then predict the next tokens at index $n+1$
 
@@ -14,11 +14,11 @@ Most implementations are [[thoughts/Autoregressive models|autoregressive]]. Most
 
 See this amazing [visualisation from Brendan Bycroft](https://bbycroft.net/llm)
 
-Currently, there is a rise for [[thoughts/state-space models]] which shows promise in information-dense [[thoughts/data]]
+Currently, there is a rise for [[thoughts/state-space models|state-space models]] which shows promise in information-dense [[thoughts/data|data]]
 
 ## Inference
 
-### Embeddings
+## [[thoughts/Embedding|Embedding]]
 
 ## Next-token prediction.
 

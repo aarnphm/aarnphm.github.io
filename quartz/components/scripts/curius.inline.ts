@@ -106,15 +106,18 @@ function createLinkEl(Link: Link): HTMLLIElement {
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
     if (currentActive) currentActive.classList.remove("active")
 
-    const note = document.getElementsByClassName("curius-notes")[0] as HTMLDivElement | null
-    if (!note) return
-
     currentActive = curiusItem
     currentActive.classList.add("active")
-    note.classList.add("active")
-    updateNotePanel(Link, note, currentActive)
 
-    if (e.target instanceof HTMLAnchorElement || note.classList.contains("active")) return
+    const note = document.getElementsByClassName("curius-notes")[0] as HTMLDivElement | null
+
+    if (Link.highlights.length > 0) {
+      if (!note) return
+      note.classList.add("active")
+      updateNotePanel(Link, note, currentActive)
+    }
+
+    if (e.target instanceof HTMLAnchorElement || note?.classList.contains("active")) return
     window.open(Link.link, "_blank")
   }
 

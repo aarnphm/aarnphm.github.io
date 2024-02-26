@@ -8,7 +8,7 @@ description: Chaos is a byproduct of time.
 title: Chaos is a byproduct of time.
 ---
 
-_an extension of [[thoughts/Chaos|chaos]] that recently occupy my [[thoughts/NLP|chain of thought]]._
+_an extension of [[thoughts/Chaos|chaos]] that recently occupy my [[thoughts/NLP|chain of thought]]. See this on [substack](https://livingalonealone.com)_
 
 ![[posts/images/passage-giorgio-m.jpg]]
 _Passage by Giorgio Morandi_
@@ -33,3 +33,19 @@ The act of leaving one’s home for foreign shores is akin to such journey - a v
 To return home is to face a poignant paradox: the physical space may be unchanged, the same faces may greet you, the house of your childhood may still nestle in its familiar spot, but your perception of it all has shifted. Gone the person you once was; now you have become the confluence of experiences that mold the "now" you, just as the returning water is forever changed by its journey.
 
 Yet, despite these changes, the essence remains. The being of 'aqua', remains unchanged, as the inner child within us persists. It is this unchanging essence that bridges the gap between the person we have become and the place we once called home. The question, then, is not why you cannot move back home, but rather, how can one reconcile the transformed self with a place that is both intimately familiar and strangely foreign, a place etched in memory, unchanged by time yet estranged by the journey’s passage.
+
+I like this little corner I'm having in this period of life. It start to grow on me. It is nothing grandiose, or anything glamorous. Hamilton as a town?
+It is a steel town. But this one street Locke street, pretty cool.
+
+Settling down, for a person that somewhat travels around for the last seven years of their life.
+
+Changes are hard, and people afraid they will fail when they got out of their comfort zone. It presupposes the boundaries that one deemed as safety, as it requires one to outgrow one’s bounds. The decision of moving into a different domains signals every challenge there are, but it is exciting to explore. I do think one thing that prevents one from chances is also monetary policy. Nowadays there isn't enough capital motives to invoke one to induce self-change.
+
+But chaos despises safety. Safety creates entrapment, which one would fail to grow.
+
+Life
+
+Rhetorical question is why do I have to be so afraid of the world and how do I know that I am not alone? Yet I always know there will always be more people that loved me than I ever know. I want to believe that they would miss me if I disappear from the realm of existence
+The world is a scary place, but I’m living through it. The overman should be looking after me, that overman is a facade we all put on
+
+Just got off a call with a friend from hs, which is a rare occurrence. I think

@@ -12,7 +12,7 @@ export default (() => {
         <h4 style={["font-size: initial", "margin-top: unset", "margin-bottom: 0.5rem"].join(";")}>
           mes amis.
         </h4>
-        <ul class="section-ul" id="friends-list" style="margin-top: unset"></ul>
+        <ul class="overflow section-ul" id="friends-list" style="margin-top: unset"></ul>
         <div id="see-more-friends">
           Void{" "}
           <span id="more" style="text-decoration: none !important">

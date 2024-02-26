@@ -6,8 +6,7 @@ document.addEventListener("nav", async () => {
   const seeMoreFriends = document.getElementById("see-more-friends") as HTMLDivElement | null
   if (!friends) return
 
-  // similar to curius.app, get the first 12
-  const response = await fetchFollowing().then((res) => res.slice(0, 12))
+  const response = await fetchFollowing()
 
   removeAllChildren(friends)
   response.map((user, index) => {

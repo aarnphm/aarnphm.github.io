@@ -3,10 +3,11 @@ import style from "./styles/minimal.scss"
 import { i18n } from "../i18n"
 import { version } from "../../package.json"
 import { classNames } from "../util/lang"
-import type { JSX } from "preact/jsx-runtime"
+import type { JSX } from "preact"
 
 interface Options {
   links: Record<string, string>
+  showInfo?: boolean
 }
 
 const iconMapping: Record<string, JSX.Element> = {
@@ -38,16 +39,16 @@ const iconMapping: Record<string, JSX.Element> = {
   ),
 }
 
-const getIcon = (name: string) => iconMapping[name] ?? <>{name}</>
+const getIcon = (name: string) => iconMapping[name] ?? <span>{name}</span>
 
 export default ((opts?: Options) => {
   const Footer: QuartzComponent = ({ displayClass, cfg }: QuartzComponentProps) => {
     const year = new Date().getFullYear()
     const links = opts?.links ?? []
+    const showInfo = opts?.showInfo ?? false
 
     return (
       <>
-        <br />
         <footer class={classNames(displayClass, "minimal-footer")}>
           <div id="icons">
             <li>
@@ -80,13 +81,15 @@ export default ((opts?: Options) => {
               )
             })}
           </div>
-          <p class="info">
-            {i18n(cfg.locale).components.footer.createdWith}{" "}
-            <a href="https://quartz.jzhao.xyz/" target="_blank" rel="noopener noreferrer">
-              Quartz v{version}
-            </a>{" "}
-            © {year}
-          </p>
+          {showInfo && (
+            <p class="info">
+              {i18n(cfg.locale).components.footer.createdWith}{" "}
+              <a href="https://quartz.jzhao.xyz/" target="_blank" rel="noopener noreferrer">
+                Quartz v{version}
+              </a>{" "}
+              © {year}
+            </p>
+          )}
         </footer>
       </>
     )

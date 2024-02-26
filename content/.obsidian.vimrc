@@ -22,33 +22,50 @@ exmap surround_curly_brackets surround { }
 
 " NOTE: must use 'map' and not 'nmap'
 map [[ :surround_wiki
-vunmap S
-vmap S" :surround_double_quotes
-vmap S' :surround_single_quotes
-vmap Sb :surround_brackets
-vmap S( :surround_brackets
-vmap S) :surround_brackets
-vmap S[ :surround_square_brackets
-vmap S[ :surround_square_brackets
-vmap S{ :surround_curly_brackets
-vmap S} :surround_curly_brackets
+nunmap s
+vunmap s
+vmap sa" :surround_double_quotes
+vmap sa' :surround_single_quotes
+vmap sab :surround_brackets
+vmap sa( :surround_brackets
+vmap sa) :surround_brackets
+vmap sa[ :surround_square_brackets
+vmap sa[ :surround_square_brackets
+vmap sa{ :surround_curly_brackets
+vmap sa} :surround_curly_brackets
 
 " Split Window
-exmap split_vertical obcommand workspace:split-vertical
-nmap vs :split_vertical
-exmap split_horizontal obcommand workspace:split-horizontal
-nmap vh :split_horizontal
+exmap vs obcommand workspace:split-vertical
+exmap sp obcommand workspace:split-vertical
+exmap hs obcommand workspace:split-horizontal
+nmap <C-w>v :vs
+nmap <C-w>s :hs
+
+exmap focusLeft obcommand editor:focus-left
+exmap focusRight obcommand editor:focus-right
+exmap focusBottom obcommand editor:focus-bottom
+exmap focusTop obcommand editor:focus-top
+nmap <C-w>h :focusLeft
+nmap <C-w>l :focusRight
+nmap <C-w>j :focusBottom
+nmap <C-w>k :focusTop
 
 " Quit Buffer
 exmap qq obcommand workspace:close
+nmap <Space>qq :qq
+exmap wa editor:save-file
 
 " Map to Open File
-exmap open_file obcommand switcher:open 
+exmap open_file obcommand switcher:open
 nmap <Space>f :open_file
 
 " Go Into Link
-exmap goto_link obcommand editor:follow-link
-nmap gd :goto_link
+exmap openlink obcommand editor:open-link-in-new-leaf
+nmap go :openlink
+nmap gd :openlink
+" [g]oto [f]ile (= Follow Link under cursor)
+exmap followLinkUnderCursor obcommand editor:follow-link
+nmap gf :followLinkUnderCursor
 
 """""""""""""""""""""""""""""""""""""""""""""""" "
 """""""""""" All Available Commands """""""""""" "

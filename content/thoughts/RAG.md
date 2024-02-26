@@ -15,3 +15,4 @@ The idea of RAG is to combine a pretrained retriever and a seq2seq to do end-to-
 
 Two core components include [[thoughts/Transformers#Embeddings|embeddings]] and vector databases.
 
+

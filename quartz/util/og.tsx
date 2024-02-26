@@ -6,6 +6,7 @@ import { QuartzPluginData } from "../plugins/vfile"
 import { formatDate, getDate } from "../components/Date"
 import readingTime from "reading-time"
 import { i18n } from "../i18n"
+import { ThemeKey } from "./theme"
 
 const headerFont = joinSegments("static", "GT-Sectra-Display-Regular.woff")
 const bodyFont = joinSegments("static", "GT-Sectra-Book.woff")
@@ -32,7 +33,7 @@ export type SocialImageOptions = {
   /**
    * What color scheme to use for image generation (uses colors from config theme)
    */
-  colorScheme: "lightMode" | "darkMode"
+  colorScheme: ThemeKey
   /**
    * Height to generate image with in pixels (should be around 630px)
    */

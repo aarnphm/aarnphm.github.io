@@ -8,7 +8,13 @@ title: Monetary
 
 Karpathy on [AI's 30 under 30](https://twitter.com/karpathy/status/1748816969858720232)
 
-a side effect of generating value
+> [[thoughts/monetary|Money]] is an information system for labor allocation. (this [tweet](https://x.com/elonmusk/status/1349977642708168704?s=20))
 
-Money is **an [[thoughts/Information Theory|information]] system for labor allocation**
+Money doesn't have any intrinsic power. You can't simply throw more money into a system and hope it would fix the problem.
+
+[[thoughts/Chaos]] is produced from the act of generating wealth.
+
+What does it really means by accumulating wealth? If capital gains is a property in the pursuit for [[thoughts/Epistemology|knowledge]], chances are you will enjoy your time.
+
+The problems with curiosity without [[thoughts/Alignment|alignment]] of capitalism is that you will run out of time and money sooner or later.
 

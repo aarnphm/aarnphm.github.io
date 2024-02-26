@@ -38,11 +38,11 @@ The process of rephrasing and arranging sentences poses a challenges for the wri
 
 ### AI generated content
 
-You can probably see a plethora of AI generated content,
-
 Don't shit where you eat, **[[thoughts/Garbage in Garbage out|Garbage in, garbage out]]**. The quality of the content is highly dependent on the quality of the data it was trained on, or model are incredibly sensitive to [[thoughts/data]] variances and biases.
 
-See also: [All the better to see you with](https://www.kernelmag.io/2/all-the-better-to-see-you)
+Bland doublespeak
+
+See also: [All the better to see you with](https://www.kernelmag.io/2/all-the-better-to-see-you) and [this tweet](https://twitter.com/paulg/status/1761801995302662175)
 
 ### Good-enough
 
@@ -57,7 +57,8 @@ These models are incredibly useful for summarization and information gathering. 
 
 notable mentions:
 
-- [perplexity.ai](https://perplexity.ai/)
+- [perplexity.ai](https://perplexity.ai/), A [[thoughts/RAG|RAG]]-first search engine
+- [https://explorer.globe.engineer/](https://explorer.globe.engineer/) demoed a pretty cool concept in terms of tree-based [[thoughts/information retrieval|information retrieval]]
 - [Exa labs](https://twitter.com/ExaAiLabs)
 - [You.com](https://you.com/?chatMode=default)
 

@@ -17,6 +17,8 @@ Throw me some wisdom, and advices? I have none. -- Jesse Camacho
 
 Your life so far is a drawing canvas. You can't change what's already been drawn, but you can always paint a new line. -- paraphrased from [@tommytrxnh](https://twitter.com/tommytrxnh)
 
+20 years from now you will be more disappointed by the things that you didn’t do than by the ones you did do. So throw off the bowlines. Sail away from the safe harbor. Catch the trade winds in your sails. Explore. Dream. Discover. -- Mark Twain
+
 ## On bits and bytes.
 
 Computer is a bicycle for the mind. -- [Steve Jobs](https://www.youtube.com/watch?v=ob_GX50Za6c&ab_channel=MichaelLawrence)
@@ -29,15 +31,17 @@ An expert is a man who has made all the mistakes, which can be made, in a very n
 
 Our capacity to deal with [[thoughts/Language|language]] is a complex, genetically-determined part of our biological endowment. It's a product of evolution, part of our nature. -- Noam Chomsky
 
-The falseness of an opinion is not for us any objection to it: it is here, perhaps, that our new language sounds most strangely. The question is, how far an opinion is life-furthering, life-preserving, species-preserving, perhaps species-rearing, and we are fundamentally inclined to maintain that the falsest opinions — that the renunciation of false opinions would be [a renunciation of life]. -- [[thoughts/Philosophy and Nietzsche|Friedrich Nietzsche]]
+The falseness of an opinion is not for us any objection to it: it is here, perhaps, that our new [[thoughts/Language|language]] sounds most strangely. The question is, how far an opinion is life-furthering, life-preserving, species-preserving, perhaps species-rearing, and we are fundamentally inclined to maintain that the falsest opinions — that the renunciation of false opinions would be [a renunciation of life]. -- [[thoughts/Philosophy and Nietzsche|Friedrich Nietzsche]]
 
 I always feel happy, you know why? Because I don’t expect anything from anyone. Expectations always hurt. Life is short. So love your life. Be Happy. & Keep smiling. Just live for yourself & before you speak, listen. Before you write, think. Before you spend, earn. Before you pray, forgive. Before you hurt, feel. Before you hate, love. Before you quit, try. Before you die, live. -- William Shakespeare
 
 A pessimist sees the difficulty in every opportunity; an optimist sees the opportunity in every difficulty. -- Winston Churchill
 
+People think focus means saying yes to the thing you’ve got to focus on. But that’s not what it means at all. It means saying no to the hundred other good ideas that there are -- Steve Jobs
+
 ## On drive.
 
-Life can be much broader when you discover one simple fact...that everything around you was made up by people no smarter than you. ... Once you learn that, [you'll never be the same again.] -- Steve Jobs
+Life can be much broader when you discover one simple fact...that everything around you was made up by people no smarter than you. ... Once you learn that, [you'll never be the same again.] -- Steve Jobs ^life-jobs-smart
 
 I just wondered how things were put together. -- Claude Shannon
 

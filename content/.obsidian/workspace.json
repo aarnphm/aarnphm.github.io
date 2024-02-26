@@ -8,66 +8,33 @@
         "type": "tabs",
         "children": [
           {
-            "id": "c0a31bb7c0560c0f",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "music.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "817e3d2cbc3bdf08",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/compsci-4x03/A4.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "9f70888ff449a317",
-            "type": "leaf",
-            "state": {
-              "type": "graph",
-              "state": {}
-            }
-          },
-          {
-            "id": "dbe097331605844c",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/education.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
             "id": "4d2cd6a5b0cce4bd",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/Philosophy and Nietzsche.md",
+                "file": "thoughts/Lyapunov time.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "6267a020fc83b82b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-2c03/a5/A5.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -134,7 +101,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "music.md",
+                "file": "thoughts/university/sfwr-2c03/a5/A5.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -151,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "music.md",
+                "file": "thoughts/university/sfwr-2c03/a5/A5.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -174,7 +141,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "music.md"
+                "file": "thoughts/university/sfwr-2c03/a5/A5.md"
               }
             }
           },
@@ -204,7 +171,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "music.md"
+                "file": "thoughts/university/sfwr-2c03/a5/A5.md"
               }
             }
           }
@@ -228,14 +195,33 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "c0a31bb7c0560c0f",
+  "active": "6267a020fc83b82b",
   "lastOpenFiles": [
-    "thoughts/play.md",
-    "thoughts/Chaos.md",
-    "thoughts/Untitled.md",
-    "thoughts/university/compsci-4x03/A4.md",
-    "thoughts/education.md",
+    "thoughts/Lyapunov time.md",
+    "thoughts/university/sfwr-2c03/a5/A5.md",
+    "thoughts/aesthetic value.md",
+    "thoughts/Agency.md",
+    "thoughts/personal computing.md",
+    "thoughts/university/sfwr-2c03/graph-algo.pdf",
+    "thoughts/university/sfwr-2c03/a5/assignment_5.pdf",
+    "thoughts/university/sfwr-2c03/a5/assignment_5.pdf.crdownload",
+    "thoughts/university/sfwr-2c03/a5",
+    "private/Chi.md",
     "thoughts/Philosophy and Nietzsche.md",
+    "templates/post.md",
+    "thoughts/papers/A Novel Measure Inspired by Lyapunov Exponents for the Characterization of Dynamics in State-Transition Networks.pdf",
+    "thoughts/representations.md",
+    "thoughts/Transformers.md",
+    "thoughts/Embedding.md",
+    "thoughts/education.md",
+    "Embeddings.md",
+    "thoughts/play.md",
+    "thoughts/action theory.md",
+    "templates/notes.md",
+    "thoughts/representation..md",
+    "music.md",
+    "thoughts/Chaos.md",
+    "thoughts/university/compsci-4x03/A4.md",
     "thoughts/papers/Sampling-Bias-Corrected Neural Modling for Large Corpus Item Recommendations.pdf",
     "posts/broken, but functional.md",
     "thoughts/Giles Deleuze.md",
@@ -244,22 +230,9 @@
     "thoughts/power.md",
     "thoughts/papers/Knowledge as Masculine Heroism or Embodied Perception-1998.pdf",
     "thoughts/relationships.md",
-    "posts/Why should you learn philosophy during university.md",
-    "posts/social interactions.md",
-    "posts/to the past lovers.md",
-    "posts/index.md",
-    "thoughts/university/sfwr-2c03/a4/A4.md",
     "thoughts/university/sfwr-2c03/a4/Aaron_Pham_400232791_phama10_assignment_4.pdf",
-    "thoughts/quantization.md",
     "thoughts/university/sfwr-2c03/balanced-search-tree-hash.pdf",
     "thoughts/university/sfwr-2c03/balanced-search-tree-hash.pdf.crdownload",
-    "thoughts/university/sfwr-2c03/search-intro-binary-search.pdf",
-    "thoughts/university/sfwr-2c03/search-intro-binary-search.pdf.crdownload",
-    "thoughts/university/sfwr-2c03/heap-sort-intro-sort.pdf",
-    "thoughts/university/sfwr-2c03/heap-sort-intro-sort.pdf.crdownload",
-    "thoughts/university/sfwr-2c03/a4/sortings.pdf",
-    "thoughts/university/sfwr-3dx4/lab2/content.md",
-    "thoughts/university/sfwr-2fa3/A1.md",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.png",
     "thoughts/university/sfwr-2fa3/a1/dfa_23.svg",
@@ -270,12 +243,6 @@
     "thoughts/university/sfwr-2fa3/a1/dfa_3b.png",
     "thoughts/university/sfwr-2fa3/a1/dfa_3a.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_3a.png",
-    "thoughts/university/sfwr-2c03/a3/A3.md",
-    "thoughts/university/eng-3px3/Reflection.md",
-    "thoughts/Dysregulation.md",
-    "thoughts/zero-shot learning.md",
-    "thoughts/linguistic.md",
-    "thoughts/prompt engineering.md",
     "Untitled.canvas"
   ]
 }

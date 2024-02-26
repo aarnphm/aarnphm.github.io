@@ -14,7 +14,8 @@ See more on [[posts/education|the extension]]
 
 current[^1] education system is not designed to inspire curiosity, and it would keep being this way unless the definition quality of success and quality moves to a more holistic measures.
 
-University should be a place for you to think, not to always be right. It should encourage a form of [[thoughts/play|intellectural playfulness]] and [[thoughts/Agency|agency]] for explore.
+University should be a place for you to think, not to always be right. 
+It should encourage a form of [[thoughts/play|intellectual playfulness]] and [[thoughts/Agency|agency]] for explore.
 
 ## teaching
 
