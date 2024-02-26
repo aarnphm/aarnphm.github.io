@@ -26,7 +26,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a5/A5.md",
+                "file": "backburners.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -84,8 +84,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 354.5,
-    "collapsed": true
+    "width": 354.5
   },
   "right": {
     "id": "5221182814b155cf",
@@ -101,7 +100,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a5/A5.md",
+                "file": "backburners.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +117,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a5/A5.md",
+                "file": "backburners.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -141,7 +140,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a5/A5.md"
+                "file": "backburners.md"
               }
             }
           },
@@ -171,7 +170,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a5/A5.md"
+                "file": "backburners.md"
               }
             }
           }
@@ -197,8 +196,8 @@
   },
   "active": "6267a020fc83b82b",
   "lastOpenFiles": [
-    "thoughts/Lyapunov time.md",
     "thoughts/university/sfwr-2c03/a5/A5.md",
+    "thoughts/Lyapunov time.md",
     "thoughts/aesthetic value.md",
     "thoughts/Agency.md",
     "thoughts/personal computing.md",

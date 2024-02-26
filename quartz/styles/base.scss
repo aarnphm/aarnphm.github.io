@@ -488,19 +488,6 @@ ol.overflow {
   & > li:last-of-type {
     margin-bottom: 30px;
   }
-
-  &:after {
-    pointer-events: none;
-    content: "";
-    width: 100%;
-    height: 50px;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-    background: linear-gradient(transparent 0px, var(--light));
-  }
 }
 
 .transclude {

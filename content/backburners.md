@@ -3,21 +3,27 @@ id: backburners
 tags:
   - technical
   - evergreen
+alias:
+  - /ideas
+  - /idea
 date: "2022-01-25"
+description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
+navigation:
+  - "[[thoughts/Philosophy and Nietzsche]]"
+  - "[[thoughts/Transformers]]"
 title: Backburners
+zen: true
 ---
 
-- Markdown latex renderer for Neovim
-
-  - Probably something similar to Obisidian's KateX support
-
-- Terminal-enmulator in Rust
-
-  - Want to stream current running progress and make it click-able?
+### projets.
+- LaTeX codeblock renderer for [[uses#^neovim|neovim]], in editor
+  - Support KaTeX, and probably MathJax
+  - Uses `conceallevel`
+- Terminal-emulator in Rust
+  - Want to stream current running process and make it clickable?
   - Vim and Emacs support
   - multiplexer
-  - stream tty?
-
+  - stream TTY?
   ```mermaid
   flowchart TD
 
@@ -25,7 +31,6 @@ title: Backburners
   1 --> 5[multiplexer]
   2 --> 1
   ```
-
 - A new shell language with Rust-like syntax (rsh)
   - I get fed up with bash
   - Should be cloud-first?
@@ -36,5 +41,7 @@ title: Backburners
   - Since dockerfile frontend are just using [[thoughts/BuildKit]], maybe it can just be an OCI-compliant frontend.
   - Stay away from Docker 😄
   - frontend can be in TOML, YAML
+
+### écriture.
 - bazil: A [Bazel](https://bazel.build/) for the unversed
   - Bazel is hard to get started with

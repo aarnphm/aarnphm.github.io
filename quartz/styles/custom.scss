@@ -81,13 +81,6 @@ code {
   font-size: 0.8em;
 }
 
-ul.overflow,
-ol.overflow {
-  &:after {
-    background: unset;
-  }
-}
-
 body {
   background-image: url("/static/bg.webp");
   margin: 0;
@@ -329,6 +322,11 @@ audio::-webkit-media-controls-panel {
 
 #graph-container {
   background-color: var(--light);
+}
+
+.sidebar,
+.page-header {
+  margin-top: 3rem !important;
 }
 
 .left,
