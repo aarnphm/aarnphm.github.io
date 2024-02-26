@@ -8,8 +8,8 @@ title: NFA
 
 Ex. $\Sigma = {0, 1}$
 
-1. $\mathcal{L}(M) = \{ abxba \space | \space x \in \Sigma^{*}\}$ ![[thoughts/university/sfwr-2fa3/abxba-nfa.png]]
-1. $\mathcal{L}(M) = \{ yx \space | \space x = 00 \lor x =11 \land  y \in \Sigma^{*}\}$ ![[thoughts/university/sfwr-2fa3/yxx-nfa.png]]![[thoughts/university/sfwr-2fa3/yxx-nfa-4s.png]]
+1. $\mathcal{L}(M) = \{ abxba \mid x \in \Sigma^{*}\}$ ![[thoughts/university/sfwr-2fa3/abxba-nfa.png]]
+1. $\mathcal{L}(M) = \{ yx \mid x = 00 \lor x =11 \land  y \in \Sigma^{*}\}$ ![[thoughts/university/sfwr-2fa3/yxx-nfa.png]]![[thoughts/university/sfwr-2fa3/yxx-nfa-4s.png]]
 
 ## $\epsilon$ transition
 ```mermaid
@@ -33,4 +33,4 @@ graph LR
   s3{{s3}} --"1"--> s3{{s3}}
 ```
 
-$\mathcal{L}(M) = \{0^n1^m \space | \space n \geq 0, m \neq 1 \space, x \in \Sigma^{*}\}$
+$\mathcal{L}(M) = \{0^n1^m \mid n \geq 0, m \neq 1 \space, x \in \Sigma^{*}\}$

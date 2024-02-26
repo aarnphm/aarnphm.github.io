@@ -58,6 +58,12 @@ const config: QuartzConfig = {
         priority: ["frontmatter", "git", "filesystem"],
       }),
       Plugin.Pseudocode(),
+      Plugin.ObsidianFlavoredMarkdown({
+        construction: true,
+        enableInHtmlEmbed: false,
+        enableVideoEmbed: true,
+        enableCheckbox: true,
+      }),
       Plugin.Latex({ renderEngine: "katex" }),
       Plugin.SyntaxHighlighting({
         theme: {
@@ -65,12 +71,6 @@ const config: QuartzConfig = {
           dark: "rose-pine",
         },
         keepBackground: true,
-      }),
-      Plugin.ObsidianFlavoredMarkdown({
-        construction: true,
-        enableInHtmlEmbed: false,
-        enableVideoEmbed: true,
-        enableCheckbox: true,
       }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.TableOfContents({ maxDepth: 4 }),

@@ -33,6 +33,7 @@ kbd {
 
     &.active {
       display: inline-block;
+      z-index: unset;
     }
 
     & > #shortcut-space {

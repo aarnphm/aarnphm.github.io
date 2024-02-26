@@ -51,12 +51,15 @@ document.addEventListener("nav", async () => {
   const onClick = () => {
     const containerOpen = container?.classList.contains("active")
     if (modal) hideModal()
-    // NOTE: This is super brittle
-    const search = document.getElementById("search-container")
-    if (search?.classList.contains("active")) {
+    const actives = Array.from(document.querySelectorAll(".active")) as HTMLElement[]
+    const filtered = actives.filter((el) => !el.classList.contains("keybind"))
+
+    if (filtered.length > 0) {
       hideContainer()
       return
-    } else containerOpen ? hideContainer() : showContainer()
+    } else {
+      containerOpen ? hideContainer() : showContainer()
+    }
   }
 
   document.addEventListener("keydown", shortcutHandler)

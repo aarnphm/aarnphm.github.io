@@ -23,7 +23,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Evolution of Modern Metaphysics: Making Sense of Things** by A. W. Moore
 - [[thoughts/papers/Being and Some Philosophers.pdf|Being and Some Philosophers]] by Etienne Gilson
 - **The Phenomenology of Spirit** by G. W. F. Hegel
-- **The World as Will and Representation** by Arthur Schopenhauer
+- **The World as Will and [[thoughts/representations|Representation]]** by Arthur Schopenhauer
 - **The Prince** by Niccolò Machiavelli
 - **Utilitarianism** by John Stuart [[thoughts/university/philo-1aa3/John Stuart Mill|Mill]]
 - **Meditations on First Philosophy** by René [[thoughts/university/philo-1aa3/Descartes|Descartes]], French ed.

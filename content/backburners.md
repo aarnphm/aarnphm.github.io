@@ -19,7 +19,8 @@ zen: true
 - LaTeX codeblock renderer for [[uses#^neovim|neovim]], in editor
   - Support KaTeX, and probably MathJax
   - Uses `conceallevel`
-- Terminal-emulator in Rust
+  - https://github.com/frabjous/knap
+- yet another emulator in Rust
   - Want to stream current running process and make it clickable?
   - Vim and Emacs support
   - multiplexer
@@ -31,16 +32,16 @@ zen: true
   1 --> 5[multiplexer]
   2 --> 1
   ```
-- A new shell language with Rust-like syntax (rsh)
+- rsh: new shell language written with Rust-like syntax
   - I get fed up with bash
   - Should be cloud-first?
   - Nix inspiration for caching and package management?
 - [[thoughts/Rust|Rust]] key-value store
   - Think of it as MongoDB but has Redis capability
-- Simplified Dockerfile
-  - Since dockerfile frontend are just using [[thoughts/BuildKit]], maybe it can just be an OCI-compliant frontend.
+- Dockerfile for LLM
+  - [ollama](https://github.com/ollama/ollama) have something called Modelfile.
+  - Dockerfile frontend are using [[thoughts/BuildKit]],  [[thoughts/OCI|OCI]]-compliant frontend.
   - Stay away from Docker 😄
-  - frontend can be in TOML, YAML
 
 ### écriture.
 - bazil: A [Bazel](https://bazel.build/) for the unversed

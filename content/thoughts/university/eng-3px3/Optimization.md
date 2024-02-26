@@ -8,7 +8,7 @@ title: Optimization
 
 See also [[thoughts/university/eng-3px3/3PX3 07 Optimization Problem Formulation.pdf|slides]]
 
-# Model-based Optimization
+# model-based
 
 - conclusions from the model of the system
 
@@ -36,7 +36,7 @@ $$
 > limited to a fixed or countable set of values
 
 $$
-x_{\mathcal{D}} \space | \space a \in \mathcal{I} = \lbrace 1, 2, 3, 4, 5 \rbrace
+x_{\mathcal{D}} \mid a \in \mathcal{I} = \lbrace 1, 2, 3, 4, 5 \rbrace
 $$
 
 ### continuous.
@@ -57,9 +57,9 @@ $$
 > a decision upper and lower bounds ($x^{\mathcal{U}}$ and $x^{\mathcal{L}}$)
 
 > [!note] Properties
-> - **Active/binding**: $\exists \space x^{*} \space | \space g(x^{*}) = 0$
+> - **Active/binding**: $\exists \space x^{*} \mid g(x^{*}) = 0$
 >
-> - **Inactive**: $\exists \space x^{*} \space | \space g(x^{*}) < 0$
+> - **Inactive**: $\exists \space x^{*} \mid g(x^{*}) < 0$
 
 ### graphing models
 

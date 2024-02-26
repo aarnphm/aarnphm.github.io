@@ -8,7 +8,7 @@ title: Sorting
 
 ### correctness of `BestTwoSum`
 
-Let $\text{TS(start, end)} = {(L[i], L[j]) \space | \space (L[i] + L[j] = w) \land (\text{start} \leq i \leq j \leq end)}$
+Let $\text{TS(start, end)} = {(L[i], L[j]) \mid (L[i] + L[j] = w) \land (\text{start} \leq i \leq j \leq end)}$
 
 ```prolog
 result := empty bag

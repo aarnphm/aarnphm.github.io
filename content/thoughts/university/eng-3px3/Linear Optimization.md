@@ -39,7 +39,7 @@ where:
 - $c \rightarrow j^{\text{th}}$: cost coefficients of the $j^{\text{th}}$ decision variable
 - $a_{i, j}$: constraint coefficient for variable $j$ in constraint $i$
 - $b_i \rightarrow \text{RHS}$: coefficient for constraint $i$
-- $(A_k \space | \space k = \lbrace \mathcal{h}, \mathcal{g} \rbrace)$: matrix of size $\lbrack m_k \times n \rbrack$
+- $(A_k \mid k = \lbrace \mathcal{h}, \mathcal{g} \rbrace)$: matrix of size $\lbrack m_k \times n \rbrack$
 
 
 ## Sensitivity reports
