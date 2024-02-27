@@ -3,9 +3,10 @@ id: Chaos
 tags:
   - life
   - evergreen
-date: "2024-02-18"
+date: 2024-02-18
 description: Chaos is a byproduct of time.
 title: Chaos is a byproduct of time.
+construction: true
 ---
 
 _an extension of [[thoughts/Chaos|chaos]] that recently occupy my [[thoughts/NLP|chain of thought]]. See this on [substack](https://livingalonealone.com)_

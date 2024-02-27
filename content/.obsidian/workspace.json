@@ -26,7 +26,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "ideas.md",
+                "file": "posts/Chaos.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -100,7 +100,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "ideas.md",
+                "file": "posts/Chaos.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -117,7 +117,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "ideas.md",
+                "file": "posts/Chaos.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -140,7 +140,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "ideas.md"
+                "file": "posts/Chaos.md"
               }
             }
           },
@@ -170,7 +170,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "ideas.md"
+                "file": "posts/Chaos.md"
               }
             }
           }
@@ -194,11 +194,11 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "6267a020fc83b82b",
   "lastOpenFiles": [
+    "ideas.md",
     "thoughts/university/sfwr-2c03/a5/A5.md",
     "thoughts/university/sfwr-2c03/a5/Aaron_Pham_400232791_phama10_assignment_5.pdf",
-    "ideas.md",
     "thoughts/Lyapunov time.md",
     "thoughts/aesthetic value.md",
     "thoughts/Agency.md",

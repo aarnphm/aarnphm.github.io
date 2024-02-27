@@ -15,7 +15,7 @@ Writing is an exploration, an excavation of self and the world in this painfully
 
 > The thing I like about writing is that it’s quite literally *thinking*—a way for me access my own interiority and construct something from it. What I write is all mine, it’s a living thing, it’s an extension of me that wanders out into the world. It is desire turned inwards instead of outwards, focused instead of displaced. It’s a way to access self-knowledge and self-respect. (Ava on [how to avoid half-heartedness](https://www.avabear.xyz/p/how-to-avoid-half-heartedness))
 
-The modality of text essentially creates a universal interface that allows individuals from diverse backgrounds and contexts to form intricate networks of thoughts.
+The modality of [[thoughts/Language#as representation.|text]] essentially creates a universal interface that allows individuals from diverse backgrounds and contexts to form intricate networks of thoughts.
 
 > What I am doing right now, writing this essay, is, technically, **a linear walk through the [[thoughts/Networked Thoughts|network]] of my ideas**. That is what writing is: turning a net into a line. But it is also very concretely what I do, since I have _externalised_ my ideas in [a note-taking system](https://obsidian.md/) where the thoughts are linked with [[thoughts/Hypertext|hyperlinks]] (Henrik Karlsson, [Reader-generated Essay](https://www.lesswrong.com/posts/ZtMsyMP5F7zzP8Gvc/reader-generated-essays))
 
@@ -59,6 +59,8 @@ _Excerpt from [A blog post is a very long and complex search query to find fasci
 > The pleasant parts of the internet seemed to be curated by human beings, not algorithms. For my writing to find its way in this netherworld, I needed to have a rough sense of how information flowed down there. The pattern was this: words flowed from the periphery to the centers. This was a surprisingly rapid stream. Then the words cascaded from the center down in a broader but slower stream to the periphery again.
 
 > When writing in public, there is a common idea that you should make it *accessible*. This is a left over from mass media. Words addressed to a large and diverse set of people need to be simple and clear and free of jargon. It is valuable to write clearly of course, to a degree. Clear writing is clear thinking
+
+See also: [this](https://www.youtube.com/watch?v=FGqbUHOTog8&ab_channel=buildspace)
 
 <!-- # as thoughts. -->
 <!-- Chain of thoughts -->
