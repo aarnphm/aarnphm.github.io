@@ -3,10 +3,10 @@ id: backburners
 tags:
   - technical
   - evergreen
-alias:
-  - /ideas
+aliases:
   - /idea
-date: "2022-01-25"
+  - /backburners
+date: 2022-01-25
 description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
 navigation:
   - "[[thoughts/Philosophy and Nietzsche]]"

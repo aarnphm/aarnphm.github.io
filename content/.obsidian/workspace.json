@@ -26,7 +26,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "backburners.md",
+                "file": "ideas.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -100,7 +100,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "backburners.md",
+                "file": "ideas.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -117,7 +117,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "backburners.md",
+                "file": "ideas.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -140,7 +140,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "backburners.md"
+                "file": "ideas.md"
               }
             }
           },
@@ -170,7 +170,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "backburners.md"
+                "file": "ideas.md"
               }
             }
           }
@@ -194,9 +194,11 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "6267a020fc83b82b",
+  "active": "59fd19f001b80287",
   "lastOpenFiles": [
     "thoughts/university/sfwr-2c03/a5/A5.md",
+    "thoughts/university/sfwr-2c03/a5/Aaron_Pham_400232791_phama10_assignment_5.pdf",
+    "ideas.md",
     "thoughts/Lyapunov time.md",
     "thoughts/aesthetic value.md",
     "thoughts/Agency.md",
@@ -226,12 +228,9 @@
     "thoughts/Giles Deleuze.md",
     "thoughts/Will to Power.md",
     "thoughts/Will to power.md",
-    "thoughts/power.md",
     "thoughts/papers/Knowledge as Masculine Heroism or Embodied Perception-1998.pdf",
-    "thoughts/relationships.md",
     "thoughts/university/sfwr-2c03/a4/Aaron_Pham_400232791_phama10_assignment_4.pdf",
     "thoughts/university/sfwr-2c03/balanced-search-tree-hash.pdf",
-    "thoughts/university/sfwr-2c03/balanced-search-tree-hash.pdf.crdownload",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.png",
     "thoughts/university/sfwr-2fa3/a1/dfa_23.svg",
