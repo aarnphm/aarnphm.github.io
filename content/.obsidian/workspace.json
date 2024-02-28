@@ -32,9 +32,58 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "c4b79f45c28ac8d3",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-3dx4/lab3/NI-FundamentalsOfMotionControl.pdf"
+              }
+            }
+          },
+          {
+            "id": "3178ecbe843ffa7c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-3dx4/Root locus control.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 3
+      },
+      {
+        "id": "bde0eafcdd6a9ac1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "342c12f2c35f5df9",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-3dx4/root_locus_control.pdf"
+              }
+            }
+          },
+          {
+            "id": "1e9215befe27b022",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-3dx4/root_locus.pdf"
+              }
+            }
+          }
+        ]
       }
     ],
     "direction": "vertical"
@@ -100,7 +149,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "posts/Chaos.md",
+                "file": "thoughts/university/sfwr-3dx4/Root locus control.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -117,7 +166,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "posts/Chaos.md",
+                "file": "thoughts/university/sfwr-3dx4/Root locus control.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -140,7 +189,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "posts/Chaos.md"
+                "file": "thoughts/university/sfwr-3dx4/Root locus control.md"
               }
             }
           },
@@ -170,7 +219,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "posts/Chaos.md"
+                "file": "thoughts/university/sfwr-3dx4/Root locus control.md"
               }
             }
           }
@@ -194,23 +243,36 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "6267a020fc83b82b",
+  "active": "59fd19f001b80287",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-3dx4/images/idea-integral-compensator-impl.png",
+    "thoughts/university/sfwr-3dx4/assignment1.pdf",
+    "thoughts/university/sfwr-3dx4/Root locus control.md",
+    "thoughts/university/sfwr-3dx4/images",
+    "thoughts/university/sfwr-3dx4/images/zero-add-compensator.png",
+    "thoughts/university/sfwr-3dx4/ideal-integral-compensation.png",
+    "thoughts/university/sfwr-3dx4/root_locus_control.pdf",
+    "thoughts/university/sfwr-3dx4/root_locus.pdf",
+    "thoughts/university/sfwr-3dx4/images/transient-response-root-locus.png",
+    "thoughts/university/sfwr-3dx4/Root locus.md",
+    "thoughts/university/sfwr-3dx4/lab3/lab3.pdf",
+    "thoughts/university/sfwr-3dx4/lab2/lab2.pdf",
+    "thoughts/university/sfwr-3dx4/lab3/NI-FundamentalsOfMotionControl.pdf",
+    "thoughts/university/sfwr-3dx4/root_locus_control.pdf.crdownload",
+    "thoughts/university/sfwr-3dx4/lab3/notes.pdf",
+    "thoughts/university/sfwr-3dx4/rl_example.pdf",
+    "thoughts/university/sfwr-3dx4/lab3/content.md",
+    "thoughts/university/sfwr-3dx4/lab3/Untitled 1.md",
+    "posts/Chaos.md",
     "ideas.md",
     "thoughts/university/sfwr-2c03/a5/A5.md",
-    "thoughts/university/sfwr-2c03/a5/Aaron_Pham_400232791_phama10_assignment_5.pdf",
     "thoughts/Lyapunov time.md",
     "thoughts/aesthetic value.md",
     "thoughts/Agency.md",
     "thoughts/personal computing.md",
-    "thoughts/university/sfwr-2c03/graph-algo.pdf",
-    "thoughts/university/sfwr-2c03/a5/assignment_5.pdf",
-    "thoughts/university/sfwr-2c03/a5/assignment_5.pdf.crdownload",
-    "thoughts/university/sfwr-2c03/a5",
     "private/Chi.md",
     "thoughts/Philosophy and Nietzsche.md",
     "templates/post.md",
-    "thoughts/papers/A Novel Measure Inspired by Lyapunov Exponents for the Characterization of Dynamics in State-Transition Networks.pdf",
     "thoughts/representations.md",
     "thoughts/Transformers.md",
     "thoughts/Embedding.md",
@@ -222,15 +284,6 @@
     "thoughts/representation..md",
     "music.md",
     "thoughts/Chaos.md",
-    "thoughts/university/compsci-4x03/A4.md",
-    "thoughts/papers/Sampling-Bias-Corrected Neural Modling for Large Corpus Item Recommendations.pdf",
-    "posts/broken, but functional.md",
-    "thoughts/Giles Deleuze.md",
-    "thoughts/Will to Power.md",
-    "thoughts/Will to power.md",
-    "thoughts/papers/Knowledge as Masculine Heroism or Embodied Perception-1998.pdf",
-    "thoughts/university/sfwr-2c03/a4/Aaron_Pham_400232791_phama10_assignment_4.pdf",
-    "thoughts/university/sfwr-2c03/balanced-search-tree-hash.pdf",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.png",
     "thoughts/university/sfwr-2fa3/a1/dfa_23.svg",
@@ -238,9 +291,6 @@
     "thoughts/university/sfwr-2fa3/a1/dfa_4nfa.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_4nfa.png",
     "thoughts/university/sfwr-2fa3/a1/dfa_3b.svg",
-    "thoughts/university/sfwr-2fa3/a1/dfa_3b.png",
-    "thoughts/university/sfwr-2fa3/a1/dfa_3a.svg",
-    "thoughts/university/sfwr-2fa3/a1/dfa_3a.png",
     "Untitled.canvas"
   ]
 }

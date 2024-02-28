@@ -103,13 +103,14 @@ function createLinkEl(Link: Link): HTMLLIElement {
   curiusItem.dataset.items = JSON.stringify(true)
 
   const onClick = (e: HTMLElementEventMap["click"]) => {
+    const note = document.getElementsByClassName("curius-notes")[0] as HTMLDivElement | null
+
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
     if (currentActive) currentActive.classList.remove("active")
+    if (note) note.classList.remove("active")
 
     currentActive = curiusItem
     currentActive.classList.add("active")
-
-    const note = document.getElementsByClassName("curius-notes")[0] as HTMLDivElement | null
 
     if (Link.highlights.length > 0) {
       if (!note) return

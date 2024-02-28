@@ -7,7 +7,7 @@ tags:
   - evergreen
   - technical
 date: "2021-12-22"
-description: A list of projects I'm currently maintaining.
+description: A list of projects I'm currently maintaining. A somewhat short description of what I ahve been up to over the year.
 navigation:
   - "[[thoughts/Chaos]]"
   - "[[thoughts/LLMs]]"

@@ -2,6 +2,7 @@
 id: content
 tags:
   - sfwr3dx4
+  - lab
 date: "2024-02-14"
 title: Empirical Estimation of Transfer Functions for First Order Systems
 ---
@@ -27,8 +28,8 @@ Note that $\Omega(s) \coloneqq \mathcal{L}\{\omega(t)\}$
 We will now develop a formula for the motor DC gain constant $A$ in terms of a step input change $\Delta V$ and step output change $\Delta \omega$
 
 > [!question] problem a.
-> Using the final value theorem, find an expression for the steady state value of $\omega(t)$ when a step input of amplitude $V_x$ is applied. 
-> 
+> Using the final value theorem, find an expression for the steady state value of $\omega(t)$ when a step input of amplitude $V_x$ is applied.
+>
 > note: $\tau > 0$ so the pole of  $G_{\omega}(S)$ at $s=-\frac{1}{\tau}$ is in the open Left Half Plane (LHP) so the system is stable.
 
 Given that the final value theorem, the steady state value of $f(t)$ is given by:

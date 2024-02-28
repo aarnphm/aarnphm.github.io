@@ -4,16 +4,25 @@ tags:
   - evergreen
 date: "2022-04-22"
 description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
-navigation:
-  - "[[thoughts/LLMs]]"
-  - "[[thoughts/Digital garden]]"
 title: antilibrary.
-zen: true
 ---
 
 A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading. The [digital](/curius) version.
 
 > In essence, an [antilibrary](https://nesslabs.com/antilibrary) is a collection of unread books. It represents an ode to self that reminds you about topics that one wants to explore.
+
+## current.
+
+- **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
+- **[[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]]** by Gilles Deleuze
+- **Beyond Good and Evil** by Friedrich Nietzsche
+- **Beyond The Pleasure Principle** by Sigmund [[thoughts/Freud|Freud]]
+- **The Critique of Pure Reason** by Immanuel Kant
+- **The Metaphysics of Morals** by Immanuel Kant
+- **Crime and Punishment** by Fyodor Dostoevsky
+- **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
+- **Structure and Interpretation of Computer Programs** by Abelson and Sussman
+- **Meditations** by Marcus Aurelius
 
 ## to read.
 
@@ -76,18 +85,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 - **Dog songs** by Mary Oliver
 
-## current.
-
-- **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
-- **[[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]]** by Gilles Deleuze
-- **Beyond Good and Evil** by Friedrich Nietzsche
-- **Beyond The Pleasure Principle** by Sigmund [[thoughts/Freud|Freud]]
-- **The Critique of Pure Reason** by Immanuel Kant
-- **The Metaphysics of Morals** by Immanuel Kant
-- **Crime and Punishment** by Fyodor Dostoevsky
-- **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
-- **Structure and Interpretation of Computer Programs** by Abelson and Sussman
-- **Meditations** by Marcus Aurelius
+---
 
 ## finished.
 

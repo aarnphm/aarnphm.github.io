@@ -44,6 +44,7 @@ $$
 
 ## as time.
 
+See also [this tweet](https://twitter.com/eshear/status/1760755072571777412)
 
 
 ## fundamentals.

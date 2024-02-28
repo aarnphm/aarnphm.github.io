@@ -10,6 +10,7 @@ import {
   Landing as LandingConstructor,
   Keybind as KeybindConstructor,
   CuriusContent as CuriusConstructor,
+  Navigation as NavigationConstructor,
 } from "../../components"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
@@ -69,7 +70,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
   const Body = BodyConstructor()
   const Landing = LandingConstructor()
   const Keybind = KeybindConstructor()
-  const CuriusContent = CuriusConstructor()
+  const Navigation = NavigationConstructor()
 
   return {
     name: "ContentPage",
@@ -80,7 +81,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         Body,
         Landing,
         Keybind,
-        CuriusContent,
+        Navigation,
         ...header,
         ...beforeBody,
         pageBody,

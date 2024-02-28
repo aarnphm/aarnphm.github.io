@@ -3,11 +3,10 @@ id: index
 tags:
   - university
   - sfwr3bb4
+  - seed
 date: "2023-09-04"
 title: Concurrent System Design
 ---
-
-The following contains all contents for SFWRENG 3BB4 (Concurrent System Design) at McMaster University.
 
 ## Elements of Software Design
 
@@ -20,6 +19,9 @@ The course notes are being constantly revised; comments are welcome. See my [hom
 Most images are cell attachments, which are not rendered by GitHub. Images that are linked files are rendered, but not in the correct size. To view the notebooks properly, follow the instructions below.
 
 -- Emil Sekerinski
+
+
+See also: [[thoughts/university/sfwr-2c03/index|Data Structures and Algorithms]].
 
 ### Installation
 

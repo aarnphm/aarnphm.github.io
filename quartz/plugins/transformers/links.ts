@@ -14,6 +14,7 @@ import path from "path"
 import { visit } from "unist-util-visit"
 import isAbsoluteUrl from "is-absolute-url"
 import { Root } from "hast"
+import { wikilinkRegex } from "./ofm"
 
 interface RawFileOptions {
   enable: boolean
@@ -149,6 +150,19 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> =
                   const simple = simplifySlug(full)
                   outgoing.add(simple)
                   node.properties["data-slug"] = full
+                }
+
+                if (
+                  file.data.frontmatter?.navigation &&
+                  file.data.frontmatter.navigation.length > 0
+                ) {
+                  file.data.frontmatter.navigation.forEach((nav) => {
+                    const src = nav.replace(wikilinkRegex, (value, ...capture) => {
+                      const [rawFp] = capture
+                      return rawFp
+                    })
+                    if (!outgoing.has(src as SimpleSlug)) outgoing.add(src as SimpleSlug)
+                  })
                 }
 
                 // rewrite link internals if prettylinks is on

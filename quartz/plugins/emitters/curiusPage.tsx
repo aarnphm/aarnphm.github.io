@@ -1,11 +1,8 @@
 import { QuartzEmitterPlugin } from "../types"
-import { sharedPageComponents } from "../../../quartz.layout"
 import {
   CuriusContent,
-  CuriusNotes,
   Navigation as NavigationConstructor,
   Meta as MetaConstructor,
-  Spacer,
   CuriusHeader,
   CuriusTrail,
   CuriusFriends,
@@ -13,17 +10,13 @@ import {
   DesktopOnly,
 } from "../../components"
 import BodyConstructor from "../../components/Body"
-import HeaderConstructor from "../../components/Header"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
-import path from "path"
-import { FilePath, FullSlug } from "../../util/path"
+import { FilePath, FullSlug, pathToRoot } from "../../util/path"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { QuartzComponentProps } from "../../components/types"
-import chalk from "chalk"
-import { defaultProcessedContent } from "../vfile"
 import DepGraph from "../../depgraph"
-import { CURIUS } from "../../components/scripts/curius"
+import { StaticResources } from "../../util/resources"
 
 export const CuriusPage: QuartzEmitterPlugin = () => {
   const Meta = MetaConstructor({ enableSearch: false })
@@ -32,7 +25,7 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
     head: Head(),
     header: [],
     beforeBody: [CuriusHeader(), Meta],
-    left: [CuriusFriends(), DesktopOnly(CuriusNotes())],
+    left: [CuriusFriends()],
     right: [DesktopOnly(CuriusTrail())],
     pageBody: CuriusContent(),
     footer: NavigationConstructor({ prev: "/quotes", next: "/books" }),
@@ -46,40 +39,41 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
     getQuartzComponents() {
       return [head, ...header, Body, ...beforeBody, pageBody, ...left, ...right, Footer]
     },
-    async getDependencyGraph(ctx, content, _resources) {
+    async getDependencyGraph(_ctx, _content, _resources) {
       return new DepGraph<FilePath>()
     },
     async emit(ctx, content, resources): Promise<FilePath[]> {
       const cfg = ctx.cfg.configuration
-      const slug = "curius" as FullSlug
-      const url = new URL(`https://${cfg.baseUrl ?? "example.com"}`)
-      const path = url.pathname as FullSlug
-      const externalResources = pageResources(path, resources)
-      const [tree, vfile] = defaultProcessedContent({
-        slug,
-        text: "Curius",
-        description: "curius.app",
-        frontmatter: {
-          title: "Curius",
-          description: CURIUS,
-          tags: ["evergreen", "hyperlinks"],
-          preview: false,
-        },
-      })
-      const componentData: QuartzComponentProps = {
-        ctx,
-        fileData: vfile.data,
-        externalResources,
-        cfg: cfg,
-        children: [],
-        tree,
-        allFiles: [],
+      let componentData: QuartzComponentProps | undefined = undefined
+      let externalResources: StaticResources | undefined = undefined
+      let slug: FullSlug | undefined
+
+      for (const [tree, file] of content) {
+        slug = file.data.slug!
+        if (slug === "curius") {
+          externalResources = pageResources(pathToRoot(slug), resources)
+          componentData = {
+            ctx,
+            fileData: file.data,
+            externalResources,
+            cfg,
+            children: [],
+            tree,
+            allFiles: [],
+          }
+          break
+        }
       }
+
+      if (!componentData || !externalResources || !slug) {
+        throw new Error("CuriusPage: could not find curius file")
+      }
+
       return [
         await write({
           ctx,
           content: renderPage(cfg, slug, componentData, opts, externalResources),
-          slug,
+          slug: slug ?? ("curius" as FullSlug),
           ext: ".html",
         }),
       ]

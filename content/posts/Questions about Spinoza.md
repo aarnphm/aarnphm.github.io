@@ -4,7 +4,7 @@ tags:
   - philosophy
   - fruit
 date: "2023-11-30"
-description: Questions about Spinoza's Ethics
+description: Questions about Spinoza's Ethics. In the Appendix to Ethics Part One (pp. 180-85), Spinoza criticizes the idea “that God directs all things to some definite end” and “that God has made all things for man and has made man to worship God.” (181). Why do people believe such things?
 title: Questions about Spinoza
 ---
 

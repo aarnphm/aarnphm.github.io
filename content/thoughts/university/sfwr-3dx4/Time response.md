@@ -12,7 +12,7 @@ $$
 G(s) = \frac{b}{s^2 + as + b}
 $$
 
-![[thoughts/university/sfwr-3dx4/second-order-system.png]]
+![[thoughts/university/sfwr-3dx4/images/second-order-system.png]]
 
 $$
 C(s) = \frac{9}{s(s^2+9s+9)}
