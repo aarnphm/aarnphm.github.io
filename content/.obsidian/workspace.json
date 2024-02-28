@@ -47,12 +47,9 @@
             "id": "3178ecbe843ffa7c",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/Root locus control.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
+                "file": "thoughts/university/sfwr-2c03/graph-algo.pdf"
               }
             }
           }
@@ -82,8 +79,22 @@
                 "file": "thoughts/university/sfwr-3dx4/root_locus.pdf"
               }
             }
+          },
+          {
+            "id": "185f99c9f36fabb4",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-2c03/Graphs.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -149,7 +160,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/Root locus control.md",
+                "file": "thoughts/university/sfwr-2c03/Graphs.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -166,7 +177,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/Root locus control.md",
+                "file": "thoughts/university/sfwr-2c03/Graphs.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -189,7 +200,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/Root locus control.md"
+                "file": "thoughts/university/sfwr-2c03/Graphs.md"
               }
             }
           },
@@ -219,7 +230,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/Root locus control.md"
+                "file": "thoughts/university/sfwr-2c03/Graphs.md"
               }
             }
           }
@@ -243,15 +254,19 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "185f99c9f36fabb4",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-2c03/images",
+    "thoughts/university/sfwr-2c03/images/example-graph-dfs.png",
+    "thoughts/university/sfwr-2c03/graph-algo.pdf",
+    "thoughts/university/sfwr-2c03/Graphs.md",
+    "thoughts/university/sfwr-3dx4/root_locus_control.pdf",
+    "thoughts/university/sfwr-3dx4/Root locus control.md",
     "thoughts/university/sfwr-3dx4/images/idea-integral-compensator-impl.png",
     "thoughts/university/sfwr-3dx4/assignment1.pdf",
-    "thoughts/university/sfwr-3dx4/Root locus control.md",
     "thoughts/university/sfwr-3dx4/images",
     "thoughts/university/sfwr-3dx4/images/zero-add-compensator.png",
     "thoughts/university/sfwr-3dx4/ideal-integral-compensation.png",
-    "thoughts/university/sfwr-3dx4/root_locus_control.pdf",
     "thoughts/university/sfwr-3dx4/root_locus.pdf",
     "thoughts/university/sfwr-3dx4/images/transient-response-root-locus.png",
     "thoughts/university/sfwr-3dx4/Root locus.md",
@@ -260,7 +275,6 @@
     "thoughts/university/sfwr-3dx4/lab3/NI-FundamentalsOfMotionControl.pdf",
     "thoughts/university/sfwr-3dx4/root_locus_control.pdf.crdownload",
     "thoughts/university/sfwr-3dx4/lab3/notes.pdf",
-    "thoughts/university/sfwr-3dx4/rl_example.pdf",
     "thoughts/university/sfwr-3dx4/lab3/content.md",
     "thoughts/university/sfwr-3dx4/lab3/Untitled 1.md",
     "posts/Chaos.md",
@@ -283,14 +297,11 @@
     "templates/notes.md",
     "thoughts/representation..md",
     "music.md",
-    "thoughts/Chaos.md",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.png",
     "thoughts/university/sfwr-2fa3/a1/dfa_23.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_23.png",
     "thoughts/university/sfwr-2fa3/a1/dfa_4nfa.svg",
-    "thoughts/university/sfwr-2fa3/a1/dfa_4nfa.png",
-    "thoughts/university/sfwr-2fa3/a1/dfa_3b.svg",
     "Untitled.canvas"
   ]
 }
