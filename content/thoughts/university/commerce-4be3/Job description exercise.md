@@ -1,15 +1,14 @@
 ---
-id: Job description exercise
+id: Job Description Exercise
 tags:
   - commerce4be3
-date: "2024-01-31"
+date: 2024-01-31
 title: exercise
 ---
 
 4BE3 Job Description Assignment
 
 <!-- Olivia Santos, Aaron Pham, Marley Hourigan  -->
-
 
 
 Factor 1 – Knowledge/Education/Training

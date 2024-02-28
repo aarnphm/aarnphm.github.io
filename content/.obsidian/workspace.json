@@ -34,27 +34,17 @@
             }
           },
           {
-            "id": "c4b79f45c28ac8d3",
+            "id": "91980b99cfba90f0",
             "type": "leaf",
             "state": {
               "type": "pdf",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/lab3/NI-FundamentalsOfMotionControl.pdf"
-              }
-            }
-          },
-          {
-            "id": "3178ecbe843ffa7c",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/graph-algo.pdf"
+                "file": "thoughts/university/commerce-4be3/Pay Employment Benefits.pdf"
               }
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 2
       },
       {
         "id": "bde0eafcdd6a9ac1",
@@ -92,9 +82,22 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "9dd2b9207cf286f5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -144,7 +147,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 354.5
+    "width": 354.5,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -160,7 +164,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/Graphs.md",
+                "file": "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -177,7 +181,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/Graphs.md",
+                "file": "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -200,7 +204,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/Graphs.md"
+                "file": "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md"
               }
             }
           },
@@ -230,7 +234,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/Graphs.md"
+                "file": "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md"
               }
             }
           }
@@ -254,33 +258,39 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "185f99c9f36fabb4",
+  "active": "9dd2b9207cf286f5",
   "lastOpenFiles": [
-    "thoughts/university/sfwr-2c03/images",
-    "thoughts/university/sfwr-2c03/images/example-graph-dfs.png",
-    "thoughts/university/sfwr-2c03/graph-algo.pdf",
+    "thoughts/university/commerce-4be3/Pay Employment Benefits.pdf",
+    "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md",
+    "thoughts/Camus.md",
+    "thoughts/university/commerce-4be3/Designing Pay Levels, Pay Mix and Pay Structure.pdf",
+    "thoughts/university/commerce-4be3/Job description exercise.md",
+    "thoughts/university/commerce-4be3/survey-data-elements-for-inclusion.png",
+    "posts/Chaos.md",
+    "thoughts/university/commerce-4be3/Designing Pay Levels, Pay Mix and Pay Structure.pdf.crdownload",
+    "thoughts/university/commerce-4be3/index.md",
     "thoughts/university/sfwr-2c03/Graphs.md",
-    "thoughts/university/sfwr-3dx4/root_locus_control.pdf",
+    "thoughts/university/sfwr-3dx4/root_locus.pdf",
+    "thoughts/university/commerce-4be3/Pay for Performance- Appraisal and Plan Design.pdf",
+    "thoughts/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
+    "thoughts/university/sfwr-3dx4/lab3/NI-FundamentalsOfMotionControl.pdf",
+    "thoughts/university/commerce-4be3/Job Description Exercise.md",
+    "thoughts/Lyapunov time.md",
+    "thoughts/university/commerce-4be3/Compensation Budgets and Administration.pdf",
+    "thoughts/university/commerce-4be3/Roles of Governments and Unions in Compensation.pdf",
+    "thoughts/university/commerce-4be3/Roles of Governments and Unions in Compensation.pdf.crdownload",
+    "thoughts/university/commerce-4be3/Pay For Performance Plan.pdf",
+    "thoughts/university/sfwr-2c03/images/example-graph-dfs.png",
     "thoughts/university/sfwr-3dx4/Root locus control.md",
     "thoughts/university/sfwr-3dx4/images/idea-integral-compensator-impl.png",
-    "thoughts/university/sfwr-3dx4/assignment1.pdf",
-    "thoughts/university/sfwr-3dx4/images",
     "thoughts/university/sfwr-3dx4/images/zero-add-compensator.png",
     "thoughts/university/sfwr-3dx4/ideal-integral-compensation.png",
-    "thoughts/university/sfwr-3dx4/root_locus.pdf",
     "thoughts/university/sfwr-3dx4/images/transient-response-root-locus.png",
     "thoughts/university/sfwr-3dx4/Root locus.md",
-    "thoughts/university/sfwr-3dx4/lab3/lab3.pdf",
-    "thoughts/university/sfwr-3dx4/lab2/lab2.pdf",
-    "thoughts/university/sfwr-3dx4/lab3/NI-FundamentalsOfMotionControl.pdf",
-    "thoughts/university/sfwr-3dx4/root_locus_control.pdf.crdownload",
-    "thoughts/university/sfwr-3dx4/lab3/notes.pdf",
     "thoughts/university/sfwr-3dx4/lab3/content.md",
     "thoughts/university/sfwr-3dx4/lab3/Untitled 1.md",
-    "posts/Chaos.md",
     "ideas.md",
     "thoughts/university/sfwr-2c03/a5/A5.md",
-    "thoughts/Lyapunov time.md",
     "thoughts/aesthetic value.md",
     "thoughts/Agency.md",
     "thoughts/personal computing.md",
@@ -292,16 +302,10 @@
     "thoughts/Embedding.md",
     "thoughts/education.md",
     "Embeddings.md",
-    "thoughts/play.md",
-    "thoughts/action theory.md",
-    "templates/notes.md",
-    "thoughts/representation..md",
-    "music.md",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_44.png",
     "thoughts/university/sfwr-2fa3/a1/dfa_23.svg",
     "thoughts/university/sfwr-2fa3/a1/dfa_23.png",
-    "thoughts/university/sfwr-2fa3/a1/dfa_4nfa.svg",
     "Untitled.canvas"
   ]
 }

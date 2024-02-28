@@ -13,7 +13,6 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ## current.
 
-- **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
 - **[[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]]** by Gilles Deleuze
 - **Beyond Good and Evil** by Friedrich Nietzsche
 - **Beyond The Pleasure Principle** by Sigmund [[thoughts/Freud|Freud]]
@@ -23,6 +22,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
 - **Structure and Interpretation of Computer Programs** by Abelson and Sussman
 - **Meditations** by Marcus Aurelius
+- **[[thoughts/Camus#The Myth of Sisyphus|The Myth of Sisyphus]]** by Albert Camus
 
 ## to read.
 
@@ -95,6 +95,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The end of the affair** by Graham Greene
 - **The Little Book of [[thoughts/deep learning|Deep Learning]]** by François Fleuret
 - **[[thoughts/Freud#The Ego and the Id|The Ego and the Id]]** by Sigmund Freud
+- **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
 
 ### 2023
 

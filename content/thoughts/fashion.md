@@ -58,21 +58,21 @@ see also: [source](https://www.youtube.com/watch?v=g0UQgrFNExc&t=765s&ab_channel
 
 Go for quiet luxury, and timeless pieces: The following are few of favourite brands, order from most to least:
 
-| Brand   | Genre of clothing to get |
-|--------------- | --------------- |
-| Brunello Cucinelli   | Cashmere, wool, and linen 🤌 😗   |
-| Manière De Voir   | Probably the best black fit tee I've ever worn.   |
-| Oak + Fort  | Minimalistic, clean, and simple. Also not to be confused with _Frank and Oak_   |
-| Studio Nicholson   | Trousers, and shirts, ong their leroy jacky are amazing.   |
-| COS   | Basics, and essentials.   |
-| [Stoffa](https://stoffa.co/pages/store)   | Custom made, and tailored, wanna know how to style.   |
-| Sefr | Pretty niche, but some of their beige lazaro shirts are nice.  |
-| Ted Baker   | Holy crap that's half of my closets. Trousers, shirts, suits, cargo, etc.   |
-| Ralph Lauren Polo   | Them trench coats are nice, daily driver during winter szn.   |
-| Loro Piana  | If you can afford go for it   |
-| Club Monaco   | Trench coats, overcoats, too based.   |
-| Brooks Brothers   | Suits on special occasions.   |
-| Arcteryx   | Technical wear, performance, gears are awesome.   |
-| Timberland   | Utility, quality, style and worth for money.   |
-| Banana Republic   | Got their cashmere and merino wool sweaters. They are good.   |
-| Abercrombie & Fitch   | Baggy jeans, flannels comfy wear.   |
+| Brand                                   | Genre of clothing to get                                                      |
+| --------------------------------------- | ----------------------------------------------------------------------------- |
+| Brunello Cucinelli                      | Cashmere, wool, and linen 🤌 😗                                               |
+| Manière De Voir                         | Probably the best black fit tee I've ever worn.                               |
+| Oak + Fort                              | Minimalistic, clean, and simple. Also not to be confused with _Frank and Oak_ |
+| Studio Nicholson                        | Trousers, and shirts, ong their leroy jacky are amazing.                      |
+| COS                                     | Basics, and essentials.                                                       |
+| [Stoffa](https://stoffa.co/pages/store) | Custom made, and tailored, wanna know how to style.                           |
+| Sefr                                    | Pretty niche, but some of their beige lazaro shirts are nice.                 |
+| Ted Baker                               | Holy crap that's half of my closets. Trousers, shirts, suits, cargo, etc.     |
+| Ralph Lauren Polo                       | Them trench coats are nice, daily driver during winter szn.                   |
+| Loro Piana                              | If you can afford go for it                                                   |
+| Club Monaco                             | Trench coats, overcoats, too based.                                           |
+| Brooks Brothers                         | Suits on special occasions.                                                   |
+| Arcteryx                                | Technical wear, performance, gears are awesome.                               |
+| Timberland                              | Utility, quality, style and worth for money.                                  |
+| Banana Republic                         | Got their cashmere and merino wool sweaters. They are good.                   |
+| Abercrombie & Fitch                     | Baggy jeans, flannels comfy wear.                                             |

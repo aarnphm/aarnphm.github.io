@@ -113,7 +113,7 @@ Who?
 
 provides a hierarchy of work, or a job structure
 
-[[thoughts/university/commerce-4be3/Job description exercise|exercise]]
+[[thoughts/university/commerce-4be3/Job Description Exercise|exercise]]
 
 ## Skill-based plans
 
