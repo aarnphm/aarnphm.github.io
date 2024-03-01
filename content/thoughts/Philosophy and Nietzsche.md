@@ -55,7 +55,7 @@ The negative is a product of existence itself: the aggression necessarily linked
 
 As for negation as a concept, "it is only a subsequently-invented pale contrasting image in relation to its positive basic concept - filled with life and passion through and through" (GM I 10 p. 37).
 
-For the speculative element of negation, opposition or contradiction Nietzsche substitutes the practical element of differ-ence, the object of affirmation and enjoyment. It is in this sense that there is a Nietzschean empiricism. The question which Nietzsche constantly repeats, "what does a will want, what does this one or that one want?", must not be understood as the search for a goal, a motive or an object for this will. What a will wants is to affirm its difference.
+For the speculative element of negation, opposition or contradiction Nietzsche substitutes the practical element of difference, the object of affirmation and enjoyment. It is in this sense that there is a Nietzschean empiricism. The question which Nietzsche constantly repeats, "what does a will want, what does this one or that one want?", must not be understood as the search for a goal, a motive or an object for this will. What a will wants is to affirm its difference.
 
 In its essential relation with the "other" a will makes its difference an object of affirmation. "The pleasure of knowing oneself different", the enjoyment of difference (BGE 260); this is the new, aggressive and elevated conceptual element that empiricism substitutes for the heavy notions of the dialectic and above all, as the dialectician puts it, for the labour of the negative.
 

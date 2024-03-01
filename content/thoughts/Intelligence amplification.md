@@ -15,4 +15,8 @@ These systems should be built on top of human intelligence, not replace it.
 
 Next-token prediction is primitive to call a system intelligent.
 
-Can a transformers ever be [[thoughts/Turing-complete Transformers|Turing-complete]]?
+Can a [[thoughts/Transformers|transformers]] ever be [[thoughts/Turing-complete Transformers|Turing-complete]]?
+
+## research area.
+
+A lot of alpha in mechanistic analysis of the [[thoughts/representations|representations]] these models exhibit., or "virtual brain analysis".

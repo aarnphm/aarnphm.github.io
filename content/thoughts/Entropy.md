@@ -2,8 +2,8 @@
 id: Entropy
 tags:
   - seed
-  - ml
-construction: true
 date: "2024-01-11"
 title: Entropy
 ---
+
+See this [tweet](https://x.com/karpathy/status/1632800082679705600)

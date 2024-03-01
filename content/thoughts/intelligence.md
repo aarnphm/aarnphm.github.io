@@ -7,3 +7,5 @@ title: Intelligence
 ---
 
 Lecture from [Hinton](https://www.youtube.com/watch?v=rGgGOccMEiY&ab_channel=CSERCambridge)
+
+## neuroscience

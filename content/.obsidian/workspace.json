@@ -13,19 +13,6 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/Lyapunov time.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "6267a020fc83b82b",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
                 "file": "posts/Chaos.md",
                 "mode": "source",
                 "backlinks": true,
@@ -34,70 +21,16 @@
             }
           },
           {
-            "id": "91980b99cfba90f0",
+            "id": "d89b4ec73fd95cda",
             "type": "leaf",
             "state": {
               "type": "pdf",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Pay Employment Benefits.pdf"
+                "file": "thoughts/university/sfwr-3dx4/time_response.pdf"
               }
             }
           }
-        ],
-        "currentTab": 2
-      },
-      {
-        "id": "bde0eafcdd6a9ac1",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "342c12f2c35f5df9",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/sfwr-3dx4/root_locus_control.pdf"
-              }
-            }
-          },
-          {
-            "id": "1e9215befe27b022",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/sfwr-3dx4/root_locus.pdf"
-              }
-            }
-          },
-          {
-            "id": "185f99c9f36fabb4",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/Graphs.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "9dd2b9207cf286f5",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -147,8 +80,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 354.5,
-    "collapsed": true
+    "width": 354.5
   },
   "right": {
     "id": "5221182814b155cf",
@@ -164,7 +96,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md",
+                "file": "posts/Chaos.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -181,7 +113,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md",
+                "file": "posts/Chaos.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -204,7 +136,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md"
+                "file": "posts/Chaos.md"
               }
             }
           },
@@ -234,7 +166,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md"
+                "file": "posts/Chaos.md"
               }
             }
           }
@@ -258,34 +190,41 @@
       "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "9dd2b9207cf286f5",
+  "active": "4d2cd6a5b0cce4bd",
   "lastOpenFiles": [
-    "thoughts/university/commerce-4be3/Pay Employment Benefits.pdf",
+    "posts/images/aaron-younglings.png",
+    "posts/images/fun-happy 1.png",
+    "posts/images/me-kid 1.png",
+    "posts/images/up-to-some-devious-shit 1.png",
+    "posts/images/another-younglings-poggerman 1.png",
+    "posts/images/before-leaving-canada 1.png",
+    "posts/images/dank-aaron 1.png",
+    "posts/images/furama 1.png",
+    "posts/images/kid-aaron-pog 1.png",
+    "posts/images/spidy 1.png",
+    "posts/images/chaotic-place.jpeg",
+    "posts/Chaos.md",
+    "thoughts/university/sfwr-3dx4/a2/content.md",
+    "thoughts/university/sfwr-3dx4/time_response.pdf",
+    "thoughts/university/sfwr-3dx4/a2/phama10_400232791_assignment2.pdf",
+    "thoughts/university/sfwr-3dx4/steady_state_error.pdf",
+    "thoughts/university/sfwr-3dx4/stability.pdf",
+    "thoughts/university/sfwr-3dx4/a2/assignment2.pdf",
+    "thoughts/university/sfwr-3dx4/frequency_domain.pdf",
+    "thoughts/university/sfwr-3dx4/Norman S. Nise - Control System Engineering-Wiley (2019).pdf",
+    "thoughts/university/sfwr-3dx4/a2/p1.py",
+    "thoughts/university/sfwr-3dx4/state_space.pdf",
+    "thoughts/university/sfwr-3dx4/pid-controller.pdf",
+    "thoughts/university/sfwr-3dx4/stability.md",
+    "thoughts/Lyapunov time.md",
+    "thoughts/university/sfwr-3dx4/a1/content.md",
+    "thoughts/university/sfwr-2c03/Graphs.md",
     "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md",
     "thoughts/Camus.md",
-    "thoughts/university/commerce-4be3/Designing Pay Levels, Pay Mix and Pay Structure.pdf",
     "thoughts/university/commerce-4be3/Job description exercise.md",
-    "thoughts/university/commerce-4be3/survey-data-elements-for-inclusion.png",
-    "posts/Chaos.md",
-    "thoughts/university/commerce-4be3/Designing Pay Levels, Pay Mix and Pay Structure.pdf.crdownload",
     "thoughts/university/commerce-4be3/index.md",
-    "thoughts/university/sfwr-2c03/Graphs.md",
-    "thoughts/university/sfwr-3dx4/root_locus.pdf",
-    "thoughts/university/commerce-4be3/Pay for Performance- Appraisal and Plan Design.pdf",
-    "thoughts/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
-    "thoughts/university/sfwr-3dx4/lab3/NI-FundamentalsOfMotionControl.pdf",
     "thoughts/university/commerce-4be3/Job Description Exercise.md",
-    "thoughts/Lyapunov time.md",
-    "thoughts/university/commerce-4be3/Compensation Budgets and Administration.pdf",
-    "thoughts/university/commerce-4be3/Roles of Governments and Unions in Compensation.pdf",
-    "thoughts/university/commerce-4be3/Roles of Governments and Unions in Compensation.pdf.crdownload",
-    "thoughts/university/commerce-4be3/Pay For Performance Plan.pdf",
-    "thoughts/university/sfwr-2c03/images/example-graph-dfs.png",
     "thoughts/university/sfwr-3dx4/Root locus control.md",
-    "thoughts/university/sfwr-3dx4/images/idea-integral-compensator-impl.png",
-    "thoughts/university/sfwr-3dx4/images/zero-add-compensator.png",
-    "thoughts/university/sfwr-3dx4/ideal-integral-compensation.png",
-    "thoughts/university/sfwr-3dx4/images/transient-response-root-locus.png",
     "thoughts/university/sfwr-3dx4/Root locus.md",
     "thoughts/university/sfwr-3dx4/lab3/content.md",
     "thoughts/university/sfwr-3dx4/lab3/Untitled 1.md",
@@ -299,13 +238,6 @@
     "templates/post.md",
     "thoughts/representations.md",
     "thoughts/Transformers.md",
-    "thoughts/Embedding.md",
-    "thoughts/education.md",
-    "Embeddings.md",
-    "thoughts/university/sfwr-2fa3/a1/dfa_44.svg",
-    "thoughts/university/sfwr-2fa3/a1/dfa_44.png",
-    "thoughts/university/sfwr-2fa3/a1/dfa_23.svg",
-    "thoughts/university/sfwr-2fa3/a1/dfa_23.png",
     "Untitled.canvas"
   ]
 }

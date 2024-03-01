@@ -46,7 +46,7 @@ adding PID (compensator) with an integrator ($\frac{1}{s}$) in feed forward path
 ### ideal integral compensation
 _proportional-plus-integral (PI) controller_
 --> causing error to go to zero.
-![[thoughts/university/sfwr-3dx4/ideal-integral-compensation.png]]
+![[thoughts/university/sfwr-3dx4/ideal-integral-compensator.png]]
 > [!important]
 > Add zero! on the pole near the origin at $s=-a$
 

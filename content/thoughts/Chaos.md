@@ -42,10 +42,15 @@ $$
 
 > Chaos: When the present determines the future, but the approximate present does not approximately determine the future.
 
-## as time.
+## as scale.
 
 See also [this tweet](https://twitter.com/eshear/status/1760755072571777412)
 
+Often known as cognitive dissonance, or linked with emotional turmoil.
+
+The personal traits continuum scale, characterised by Carl Jung suggested that the human psyche lies within the spectrum of extroversion and introversion, rather than a definitive single continuum that modern psychology perceive it to be.
+
+_How does Chaos influence the scale of human psyche?_
 
 ## fundamentals.
 
@@ -58,6 +63,7 @@ What [[thoughts/Philosophy and Nietzsche|Nietzsche]] would imply:
 _extracted from Z V, Death of The God_
 
 Chaos is the essence of one existence. Such that the world is not governed by fixed rules and predetermined order.
+
 Nietzsche rejects [[thoughts/Transcendentals|transcendentals chaos]], such construct reality beyond sensory understanding. These truths are [[thoughts/Philosophy and Nietzsche#Prejudices of Philosophers|philosophers' prejudices]] that deny one's will to [[thoughts/Will#as power.|power]], such that all truth are just one's perception and experience.
 
 - "eternal recurrence" [^1] - a litmus test for an individual's capacity to affirm life <- Actively mentioned throughout [[thoughts/Philosophy and Nietzsche#Thus Spoke Zarathustra|Thus Spoke Zarathustra]].
@@ -66,6 +72,8 @@ Nietzsche rejects [[thoughts/Transcendentals|transcendentals chaos]], such const
     > The self, for Nietzsche, is not just a radically unstable postmodern self.  It is such a self, but it is not simply such a self.  It also has a stability, sameness, and unity that goes far beyond anything Kant ever imagined in his wildest dreams
 
 The Übermensch must find his footing, create his own values through labyrinth of life. Chaos is important for the creation of anything that is truly new and valuable.
+
+Chaos, in its many forms, is often seen as a force to be feared or avoided, yet it is also a catalyst for growth, creativity, and transformation. It challenges the boundaries of our comfort zones and compels us to engage with aspects of our lives and selves that we might prefer to ignore.
 
 ## versus equanimity.
 
@@ -76,6 +84,10 @@ The rule of a utilitarian is to maximize desire at all cost, therefore, does it 
 Nietzsche would argue that the motion of chaos invokes entropy, and entropy induces value, and the Übermensch embarks upon the creation of value.
 
 [[thoughts/taste|Taste]] implies multiplicity of being. It is driven by inner chaos to explore and expands on our [[thoughts/Language|representation]] of the world.
-Yet ignorance seems to overload chaos, and prevents the maximum utilization of ones potential. I wonder if chaos is just a collection of different entropic phenomena
+Yet ignorance seems to overload chaos, and prevents the maximum utilization of ones potential. I wonder if chaos is just a collection of different entropic phenomena.
+
+Equanimity, represents a state of calmness and balance, even in the face of adversity. Achieving it is not about denying chaos or the tumult of emotions it can evoke, but rather about finding a way to navigate through it without being overwhelmed. It's about learning to coexist with the chaos, recognizing it as a part of the broader tapestry of life and the self.
+
+Running away from normalcy to seek out "different entropic phenomena" speaks to a deep-seated curiosity and a desire not just for experience, but for understanding the intricate dynamics of life. It's a testament to the strength and resilience of the human spirit in its quest for meaning, even when faced with the seemingly insurmountable.
 
 [^1]: See also [[thoughts/Giles Deleuze#Nietzsche and Philosophy|Giles Deleuze's]] interpretation.
