@@ -24,7 +24,7 @@ interface GraphOptions {
   globalGraph: Partial<D3Config> | undefined
 }
 
-const defaultOptions: GraphOptions = {
+export const defaultOptions: GraphOptions = {
   localGraph: {
     drag: true,
     zoom: true,
@@ -35,7 +35,7 @@ const defaultOptions: GraphOptions = {
     linkDistance: 30,
     fontSize: 0.6,
     opacityScale: 1,
-    showTags: true,
+    showTags: false,
     removeTags: [],
   },
   globalGraph: {
@@ -43,9 +43,9 @@ const defaultOptions: GraphOptions = {
     zoom: true,
     depth: -1,
     scale: 0.9,
-    repelForce: 0.5,
-    centerForce: 0.3,
-    linkDistance: 30,
+    repelForce: 0.18,
+    centerForce: 0.5,
+    linkDistance: 90,
     fontSize: 0.6,
     opacityScale: 1,
     showTags: true,

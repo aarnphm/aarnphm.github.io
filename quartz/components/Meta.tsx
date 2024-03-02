@@ -1,19 +1,6 @@
 import { i18n } from "../i18n"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
-
-const globalGraph = {
-  drag: true,
-  zoom: true,
-  depth: -1,
-  scale: 0.9,
-  repelForce: 0.4,
-  centerForce: 1.5,
-  linkDistance: 50,
-  fontSize: 0.6,
-  opacityScale: 1,
-  showTags: true,
-  removeTags: [],
-}
+import { defaultOptions as graphOptions } from "./Graph"
 
 export const SearchConstructor = (() => {
   const Search: QuartzComponent = ({ cfg }: QuartzComponentProps) => {
@@ -45,7 +32,10 @@ export const GraphConstructor = (() => {
       <div class="graph">
         <div id="global-graph-icon"></div>
         <div id="global-graph-outer">
-          <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)}></div>
+          <div
+            id="global-graph-container"
+            data-cfg={JSON.stringify(graphOptions.globalGraph)}
+          ></div>
         </div>
       </div>
     )

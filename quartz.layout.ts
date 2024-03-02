@@ -84,10 +84,7 @@ const left = (userOpts?: Partial<Options>) => {
 const right = () => {
   return {
     right: [
-      Component.Graph({
-        globalGraph: { linkDistance: 50, centerForce: 1.5 },
-        localGraph: { scale: 1, linkDistance: 20 },
-      }),
+      Component.Graph(),
       Component.DesktopOnly(Component.TableOfContents()),
       Component.Backlinks(),
     ],
