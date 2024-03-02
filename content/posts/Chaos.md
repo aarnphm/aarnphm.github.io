@@ -8,7 +8,7 @@ description: Chaos has, and always be a driven force within life, intuitive yet 
 title: Chaos has, and always be a driven force within life, intuitive yet disheveled.
 ---
 
-And a few things I learned growing up in a foreign land. _This is an extension of [[thoughts/Chaos|chaos]] that recently occupy my [[thoughts/NLP|chain of thought]]. See this on [substack](https://livingalonealone.com)_
+And a few things I learned growing up in a foreign land. _This is an extension of [[thoughts/Chaos|chaos]] that recently occupy my [[thoughts/NLP|chain of thought]]. See this on [substack](https://open.substack.com/pub/livingalone/p/chaos-has-and-always-be-a-driven?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true)_
 
 ![[posts/images/passage-giorgio-m.jpg]]
 _Passage by Giorgio Morandi_
@@ -74,7 +74,7 @@ A: Perhaps it is less about becoming but more about unravelling the complexities
 
 ## Q: why can't you move back home?
 
-Consider the river and the dam. The river, a living artery, courses from its source with a purpose as clear as its waters. It meanders, shaped by the land it traverses, until it reaches the dam. Here, it lies in a deep réservoir, a body of water in waiting, destined to flow through turbines and continue its journey downstream. This cycle is perpetual: the sun draws the water skyward, and it returns as rain, nourishing the earth on its way back to the river. But the droplets that return are transformed, no longer the same entities that once rested in the dam’s embrace.
+A: Consider the river and the dam. The river, a living artery, courses from its source with a purpose as clear as its waters. It meanders, shaped by the land it traverses, until it reaches the dam. Here, it lies in a deep réservoir, a body of water in waiting, destined to flow through turbines and continue its journey downstream. This cycle is perpetual: the sun draws the water skyward, and it returns as rain, nourishing the earth on its way back to the river. But the droplets that return are transformed, no longer the same entities that once rested in the dam’s embrace.
 
 The act of leaving one’s home for foreign shores is akin to such journey - a voyage of transformation, of encountering new landscapes, of merging with unfamiliar currents. When one leaves home, they embark on a trajectory vastly different from those who stay. The familiar becomes distant, and upon return, the once-known world feels alienated. You stand apart, changed in the eyes of those who remember you once were. "Home" remains a static concept, a memory preserved in amber, while you, like the river, have been irrevocably altered by your experiences. _In other words, this is often known as [[thoughts/displacement|the theme of displacement]]_
 
@@ -88,7 +88,7 @@ A: I want to achieve a sense of peace, a balance between the chaos and the still
 
 ## Q: what is next?
 
-Changes are hard, pushes us from the comfort of our well-defined boundaries, daring us to step beyond the familiar. It whispers of growth, of the necessity to stretch our skins beyond the contours of our current selves. This leap, from one domain to another, is fraught with challenge, yet it pulses with the thrill of exploration. Yet, in this era, the drive for transformation often crashes against the shores of economic reality. Monetary values, trickles in sparingly, hardly enough to spark the fires of self-renewal.
+A: Changes are hard, pushes us from the comfort of our well-defined boundaries, daring us to step beyond the familiar. It whispers of growth, of the necessity to stretch our skins beyond the contours of our current selves. This leap, from one domain to another, is fraught with challenge, yet it pulses with the thrill of exploration. Yet, in this era, the drive for transformation often crashes against the shores of economic reality. Monetary values, trickles in sparingly, hardly enough to spark the fires of self-renewal.
 
 Chaos, in its disdain for the stagnant, scoffs at the notion of safety. Safety, a gilded cage, stifles growth, ensuring that within its confines, we remain less than what we might become..
 
