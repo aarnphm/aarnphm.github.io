@@ -85,7 +85,7 @@ const right = () => {
   return {
     right: [
       Component.Graph({
-        globalGraph: { linkDistance: 50 },
+        globalGraph: { linkDistance: 50, centerForce: 1.5 },
         localGraph: { scale: 1, linkDistance: 20 },
       }),
       Component.DesktopOnly(Component.TableOfContents()),

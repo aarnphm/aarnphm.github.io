@@ -5,7 +5,7 @@ tags:
   - evergreen
 date: "2024-02-18"
 description: Chaos has, and always be a driven force within life, intuitive yet disheveled. And a few things I learned growing up in a foreign land.
-title: Chaos has, and always be a driven force within life, intuitive yet disheveled.
+title: Chaos is a force behind life.
 ---
 
 _This is an extension of [[thoughts/Chaos|chaos]] that recently occupy my [[thoughts/NLP|chain of thought]]. See this on [substack](https://open.substack.com/pub/livingalone/p/chaos-has-and-always-be-a-driven?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true)_

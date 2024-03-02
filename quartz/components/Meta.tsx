@@ -1,5 +1,4 @@
 import { i18n } from "../i18n"
-import Darkmode from "./Darkmode"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
 const globalGraph = {
@@ -8,8 +7,8 @@ const globalGraph = {
   depth: -1,
   scale: 0.9,
   repelForce: 0.4,
-  centerForce: 0.2,
-  linkDistance: 20,
+  centerForce: 1.5,
+  linkDistance: 50,
   fontSize: 0.6,
   opacityScale: 1,
   showTags: true,
