@@ -8,7 +8,7 @@ description: Chaos has, and always be a driven force within life, intuitive yet 
 title: Chaos has, and always be a driven force within life, intuitive yet disheveled.
 ---
 
-And a few things I learned growing up in a foreign land. _This is an extension of [[thoughts/Chaos|chaos]] that recently occupy my [[thoughts/NLP|chain of thought]]. See this on [substack](https://open.substack.com/pub/livingalone/p/chaos-has-and-always-be-a-driven?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true)_
+_This is an extension of [[thoughts/Chaos|chaos]] that recently occupy my [[thoughts/NLP|chain of thought]]. See this on [substack](https://open.substack.com/pub/livingalone/p/chaos-has-and-always-be-a-driven?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true)_
 
 ![[posts/images/passage-giorgio-m.jpg]]
 _Passage by Giorgio Morandi_
@@ -100,15 +100,15 @@ An unexpected call from a high school friend, a rarity, blooms like a flower in 
 
 But the immensity of it all can be overwhelming. Life teems with endless possibilities, a ceaseless buzzing that fills the mind with anxiety. The world, too large, our time, too fleeting, and the soul, too eager, finds itself adrift in a sea of potential paths.
 
-In navigating the maze of human expectations, I’ve learned the art of detachment. People, with their inherent unpredictability, often disappoint. By tempering expectations, we shield ourselves from the sting of disillusionment. Camus mused on alienation, a reflection on the distance between the self and the other, a chasm often widened by unmet expectations.
+I’ve learned the art of detachment. People, with their inherent unpredictability, often disappoint. By tempering expectations, we shield ourselves from the sting of disillusionment. Camus mused on alienation, a reflection on the distance between the self and the other, a chasm often widened by unmet expectations.
 
 What lies ahead is a question that perpetually dances on the edges of my thoughts, a melody whose tune is both haunting and invigorating. Perhaps the answer to this enigma doesn't reside in a single destination or outcome but rather in the delicate equilibrium between the facets of my being. On one hand, there's the driven Aaron, fueled by curiosity and a relentless pursuit of excellence. This Aaron is a force, a whirlwind of ambition and determination, always pushing forward, always reaching for the next peak to conquer.
 
 On the other hand, there exists another Aaron, one who carries the weight of past hurts and seeks not just to advance but to heal. This Aaron understands that growth isn't solely about personal achievements but also about nurturing and repairing the web of relationships that envelop him. This version of myself is attuned to the quiet, often overlooked work of mending bridges and soothing wounds, both his own and those of the people around him.
 
-The path forward, then, might not be a straight line but a winding road that requires navigating the complexities of these dual identities. It's about recognizing that the quest for achievement and the journey toward healing are not mutually exclusive but are, in fact, complementary forces. By embracing both the drive to excel and the need to heal, I can forge a way forward that honors the entirety of my experiences and aspirations.
+The path forward, then, might not be a straight line but a winding road that requires navigating the complexities of these dual identities. It's about recognising that the quest for achievement and the journey toward healing are not mutually exclusive but are, in fact, complementary forces. By embracing both the drive to excel and the need to heal, one can forge a way forward that honours the entirety of your aspirations.
 
-In this balance, I might find not just the next step but a deeper understanding of what it means to truly live. It's about making peace with the multifaceted nature of my desires and recognizing that every facet, whether driven by ambition or the need for connection, plays a crucial role in defining who I am and who I aspire to be. The road ahead is one of integration, where the driven and the broken parts of me walk hand in hand, each lending strength to the other as I continue to explore the vast landscape of possibilities that life offers.
+In this balance, You might find not just the next step but a deeper understanding of what it means to truly live. It's about making peace with the multifaceted nature of my desires and recognising that every facet, whether driven by ambition or the need for connection, plays a crucial role in defining who I am and who I aspire to be. The road ahead is one of integration, where the driven and the broken parts of me walk hand in hand, each lending strength to the other as I continue to explore the vast landscape of possibilities that life offers.
 
 <div style="text-align: right;">
   <span>With regards,</span>

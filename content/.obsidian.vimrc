@@ -53,7 +53,6 @@ nmap <C-w>k :focusTop
 " Quit Buffer
 exmap qq obcommand workspace:close
 nmap <Space>qq :qq
-exmap wa editor:save-file
 
 " Map to Open File
 exmap open_file obcommand switcher:open

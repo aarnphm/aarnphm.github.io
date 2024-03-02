@@ -8,7 +8,7 @@
         "type": "tabs",
         "children": [
           {
-            "id": "4d2cd6a5b0cce4bd",
+            "id": "9f1c77aeab0d57f6",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -80,7 +80,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 354.5
+    "width": 354.5,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -171,7 +172,7 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 6
       }
     ],
     "direction": "horizontal",
@@ -186,14 +187,24 @@
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
+      "audio-recorder:Start/stop recording": false,
       "table-editor-obsidian:Advanced Tables Toolbar": false,
-      "audio-recorder:Start/stop recording": false
+      "obsidian-excalidraw-plugin:Create new drawing": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "9f1c77aeab0d57f6",
   "lastOpenFiles": [
-    "posts/images/passage-giorgio-m.jpg",
+    "thoughts/university/sfwr-3dx4/time_response.pdf",
     "posts/Chaos.md",
+    "posts/Why should you learn philosophy during university.md",
+    "posts/recommendation system.md",
+    "posts/social interactions.md",
+    "posts/broken, but functional.md",
+    "thoughts/logic.md",
+    "thoughts/Camus.md",
+    "thoughts/Chaos.md",
+    "thoughts/displacement.md",
+    "posts/images/passage-giorgio-m.jpg",
     "posts/images/aaron-younglings.png",
     "posts/images/fun-happy 1.png",
     "posts/images/me-kid 1.png",
@@ -203,9 +214,7 @@
     "posts/images/dank-aaron 1.png",
     "posts/images/furama 1.png",
     "posts/images/kid-aaron-pog 1.png",
-    "posts/images/spidy 1.png",
     "thoughts/university/sfwr-3dx4/a2/content.md",
-    "thoughts/university/sfwr-3dx4/time_response.pdf",
     "thoughts/university/sfwr-3dx4/a2/phama10_400232791_assignment2.pdf",
     "thoughts/university/sfwr-3dx4/steady_state_error.pdf",
     "thoughts/university/sfwr-3dx4/stability.pdf",
@@ -220,7 +229,6 @@
     "thoughts/university/sfwr-3dx4/a1/content.md",
     "thoughts/university/sfwr-2c03/Graphs.md",
     "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md",
-    "thoughts/Camus.md",
     "thoughts/university/commerce-4be3/Job description exercise.md",
     "thoughts/university/commerce-4be3/index.md",
     "thoughts/university/commerce-4be3/Job Description Exercise.md",
@@ -231,13 +239,6 @@
     "ideas.md",
     "thoughts/university/sfwr-2c03/a5/A5.md",
     "thoughts/aesthetic value.md",
-    "thoughts/Agency.md",
-    "thoughts/personal computing.md",
-    "private/Chi.md",
-    "thoughts/Philosophy and Nietzsche.md",
-    "templates/post.md",
-    "thoughts/representations.md",
-    "thoughts/Transformers.md",
     "Untitled.canvas"
   ]
 }

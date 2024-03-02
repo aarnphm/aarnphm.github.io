@@ -8,7 +8,7 @@ description: Chaos a la carte.
 title: Chaos
 ---
 
-Full post on [chaos of living](posts/Chaos).
+Full [[posts/Chaos|post]].
 
 > Chaos: a looseness [collection](https://subconscious.substack.com/p/self-organizing-ideas) of one's [[thoughts/Will|will]] to life.
 
@@ -71,9 +71,13 @@ Nietzsche rejects [[thoughts/Transcendentals|transcendentals chaos]], such const
   - allows chaos to remain the force of life, and will to power to be a configuration of chaos.
     > The self, for Nietzsche, is not just a radically unstable postmodern self.  It is such a self, but it is not simply such a self.  It also has a stability, sameness, and unity that goes far beyond anything Kant ever imagined in his wildest dreams
 
-The Übermensch must find his footing, create his own values through labyrinth of life. Chaos is important for the creation of anything that is truly new and valuable.
+The Übermensch must find his footing, create his own values through the act of living. Chaos is important for the creation of anything that is truly new and valuable.
 
-Chaos, in its many forms, is often seen as a force to be feared or avoided, yet it is also a catalyst for growth, creativity, and transformation. It challenges the boundaries of our comfort zones and compels us to engage with aspects of our lives and selves that we might prefer to ignore.
+Chaos, in its many forms, is often seen as a force to be feared or avoided, yet it is also a catalyst for growth. It challenges the boundaries of our comfort zones and compels us to engage with aspects of our lives and selves that we might prefer to ignore.
+
+What [[thoughts/Camus|Camus]] would infer:
+
+Alienation and
 
 ## versus equanimity.
 

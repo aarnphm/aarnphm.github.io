@@ -20,5 +20,6 @@
   "readableLineLength": true,
   "strictLineBreaks": true,
   "showInlineTitle": true,
-  "rightToLeft": false
+  "rightToLeft": false,
+  "propertiesInDocument": "visible"
 }
