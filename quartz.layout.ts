@@ -3,6 +3,7 @@ import { PageLayout, SharedLayout } from "./quartz/cfg"
 import * as Component from "./quartz/components"
 import { SimpleSlug } from "./quartz/util/path"
 import { FileNode } from "./quartz/components/ExplorerNode"
+import { globalGraphConfig as globalGraph } from "./quartz/components/Meta"
 import { QuartzComponent } from "./quartz/components/types"
 
 // components shared across all pages
@@ -84,7 +85,7 @@ const left = (userOpts?: Partial<Options>) => {
 const right = () => {
   return {
     right: [
-      Component.Graph(),
+      Component.Graph({ globalGraph, localGraph: { showTags: false } }),
       Component.DesktopOnly(Component.TableOfContents()),
       Component.Backlinks(),
     ],

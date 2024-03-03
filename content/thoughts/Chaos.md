@@ -75,10 +75,6 @@ The Übermensch must find his footing, create his own values through the act of 
 
 Chaos, in its many forms, is often seen as a force to be feared or avoided, yet it is also a catalyst for growth. It challenges the boundaries of our comfort zones and compels us to engage with aspects of our lives and selves that we might prefer to ignore.
 
-What [[thoughts/Camus|Camus]] would infer:
-
-Alienation and
-
 ## versus equanimity.
 
 Equanimity should be one to seek, but yet chaos is all I desire. (moment of chaos, moment of equanimity)

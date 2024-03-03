@@ -8,14 +8,6 @@
         "type": "tabs",
         "children": [
           {
-            "id": "9f1c77aeab0d57f6",
-            "type": "leaf",
-            "state": {
-              "type": "graph",
-              "state": {}
-            }
-          },
-          {
             "id": "d89b4ec73fd95cda",
             "type": "leaf",
             "state": {
@@ -24,8 +16,17 @@
                 "file": "thoughts/university/sfwr-3dx4/time_response.pdf"
               }
             }
+          },
+          {
+            "id": "960bc2e2fcd4eff7",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {}
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -181,17 +182,22 @@
       "obsidian-excalidraw-plugin:Create new drawing": false
     }
   },
-  "active": "9f1c77aeab0d57f6",
+  "active": "960bc2e2fcd4eff7",
   "lastOpenFiles": [
-    "posts/Chaos.md",
+    "thoughts/papers/A Persian Folk Method of Figuring Interest.pdf",
+    "thoughts/papers/Fabricating intimacy, reading the dressing room in Victorian Literature.pdf",
+    "thoughts/papers/Nietzsche's Chaos sive natura.pdf",
+    "thoughts/papers/update.py",
+    "thoughts/papers/Knowledge as Masculine Heroism or Embodied Perception.pdf",
+    "thoughts/Camus.md",
+    "thoughts/Chaos.md",
     "thoughts/university/sfwr-3dx4/time_response.pdf",
+    "posts/Chaos.md",
     "posts/Why should you learn philosophy during university.md",
     "posts/recommendation system.md",
     "posts/social interactions.md",
     "posts/broken, but functional.md",
     "thoughts/logic.md",
-    "thoughts/Camus.md",
-    "thoughts/Chaos.md",
     "thoughts/displacement.md",
     "posts/images/passage-giorgio-m.jpg",
     "posts/images/aaron-younglings.png",
@@ -209,10 +215,6 @@
     "thoughts/university/sfwr-3dx4/stability.pdf",
     "thoughts/university/sfwr-3dx4/a2/assignment2.pdf",
     "thoughts/university/sfwr-3dx4/frequency_domain.pdf",
-    "thoughts/university/sfwr-3dx4/Norman S. Nise - Control System Engineering-Wiley (2019).pdf",
-    "thoughts/university/sfwr-3dx4/a2/p1.py",
-    "thoughts/university/sfwr-3dx4/state_space.pdf",
-    "thoughts/university/sfwr-3dx4/pid-controller.pdf",
     "thoughts/university/sfwr-3dx4/stability.md",
     "thoughts/Lyapunov time.md",
     "thoughts/university/sfwr-3dx4/a1/content.md",

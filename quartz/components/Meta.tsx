@@ -1,6 +1,13 @@
 import { i18n } from "../i18n"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
-import { defaultOptions as graphOptions } from "./Graph"
+import { D3Config, defaultOptions as graphOptions } from "./Graph"
+
+export const globalGraphConfig: Partial<D3Config> = {
+  repelForce: 0.6932,
+  centerForce: 0.598,
+  linkDistance: 50,
+  fontSize: 0.4,
+}
 
 export const SearchConstructor = (() => {
   const Search: QuartzComponent = ({ cfg }: QuartzComponentProps) => {
@@ -28,14 +35,13 @@ export const SearchConstructor = (() => {
 
 export const GraphConstructor = (() => {
   const Graph: QuartzComponent = (componentData: QuartzComponentProps) => {
+    const opts = { ...graphOptions.globalGraph, ...globalGraphConfig }
+
     return (
       <div class="graph">
         <div id="global-graph-icon"></div>
         <div id="global-graph-outer">
-          <div
-            id="global-graph-container"
-            data-cfg={JSON.stringify(graphOptions.globalGraph)}
-          ></div>
+          <div id="global-graph-container" data-cfg={JSON.stringify(opts)}></div>
         </div>
       </div>
     )
