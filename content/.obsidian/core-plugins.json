@@ -16,8 +16,10 @@
   "slash-command",
   "editor-status",
   "bookmarks",
+  "random-note",
   "outline",
   "word-count",
   "audio-recorder",
+  "workspaces",
   "file-recovery"
 ]

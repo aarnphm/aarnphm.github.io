@@ -1,0 +1,64 @@
+.content-meta {
+  margin-top: 0;
+  color: var(--gray);
+  display: flex;
+  flex-flow: wrap;
+  cursor: pointer;
+
+  span {
+    white-space: nowrap;
+  }
+
+  > span::after {
+    content: "\00B7";
+    margin: 0 0.75em;
+  }
+
+  .ref-source {
+    font-style: inherit;
+    color: var(--gray);
+    transition: none;
+
+    margin: 0 0.08em;
+    padding-left: 0.3em;
+    position: relative;
+    z-index: 1;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 1px 1px;
+    background-repeat: repeat-x;
+    background-position: 0% calc(100% - 0.1em);
+  }
+
+  .indicator-hook {
+    position: relative;
+    padding-left: 0.3em;
+    margin-left: -0.3em;
+    z-index: -1;
+
+    &::before {
+      content: " ";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      color: inherit;
+      background-image: linear-gradient(var(--light), var(--light)),
+        linear-gradient(var(--light), var(--light)), linear-gradient(currentColor, currentColor);
+      background-size:
+        1px 0.6em,
+        1px 0.1em,
+        1px 1em;
+      background-position:
+        0 0,
+        0 100%,
+        0 calc(100% - 0.1em);
+      background-repeat: no-repeat;
+    }
+  }
+
+  > span:last-child::after {
+    content: "";
+  }
+}

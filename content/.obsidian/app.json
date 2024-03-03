@@ -13,9 +13,10 @@
     "downscalePercent": 100
   },
   "tabSize": 2,
-  "newFileLocation": "current",
+  "newFileLocation": "folder",
   "newLinkFormat": "absolute",
-  "attachmentFolderPath": "./",
+  "newFileFolderPath": "thoughts",
+  "attachmentFolderPath": "thoughts/images",
   "showLineNumber": false,
   "readableLineLength": true,
   "strictLineBreaks": true,

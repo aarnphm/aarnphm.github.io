@@ -13,11 +13,13 @@ zen: true
 
 ## On life.
 
-Throw me some wisdom, and advices? I have none. -- Jesse Camacho
+Throw me some wisdom, and advices? I have none. -- Jesse
 
 Your life so far is a drawing canvas. You can't change what's already been drawn, but you can always paint a new line. -- paraphrased from [@tommytrxnh](https://twitter.com/tommytrxnh)
 
-20 years from now you will be more disappointed by the things that you didn’t do than by the ones you did do. So throw off the bowlines. Sail away from the safe harbor. Catch the trade winds in your sails. Explore. Dream. Discover. -- Mark Twain
+20 years from now you will be more disappointed by the things that you didn’t do than by the ones you did do. So throw off the bowlines. Sail away from the safe harbour. Catch the trade winds in your sails. Explore. Dream. Discover. -- Mark Twain
+
+Sometimes, we [care] too much about potential, less more on credentials -- Kate
 
 ## On bits and bytes.
 

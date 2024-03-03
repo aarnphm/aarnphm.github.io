@@ -5,7 +5,6 @@ import { D3Config, defaultOptions as graphOptions } from "./Graph"
 export const globalGraphConfig: Partial<D3Config> = {
   repelForce: 0.6932,
   centerForce: 0.598,
-  linkDistance: 50,
   fontSize: 0.4,
 }
 

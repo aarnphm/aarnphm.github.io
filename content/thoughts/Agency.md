@@ -9,6 +9,6 @@ title: Agency
 
 > The ability and freedom to act in their immediate environment.
 
-Considered to be a study of [[thoughts/action theory.md|action theory]]
+Considered to be a study of [[thoughts/action theory|action theory]]
 
 

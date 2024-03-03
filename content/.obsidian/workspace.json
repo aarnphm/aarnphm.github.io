@@ -18,15 +18,59 @@
             }
           },
           {
-            "id": "960bc2e2fcd4eff7",
+            "id": "846138676dbbca5b",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/taste.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "a7ddf020c3857ea5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/aesthetic value.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "622647dc1810701c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/taste.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "968241bdfbdfe208",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "_index.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -93,6 +137,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "_index.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -109,6 +154,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "_index.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -130,7 +176,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "_index.md"
+              }
             }
           },
           {
@@ -158,11 +206,12 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {}
+              "state": {
+                "file": "_index.md"
+              }
             }
           }
-        ],
-        "currentTab": 6
+        ]
       }
     ],
     "direction": "horizontal",
@@ -179,20 +228,29 @@
       "command-palette:Open command palette": false,
       "audio-recorder:Start/stop recording": false,
       "table-editor-obsidian:Advanced Tables Toolbar": false,
-      "obsidian-excalidraw-plugin:Create new drawing": false
+      "obsidian-excalidraw-plugin:Create new drawing": false,
+      "random-note:Open random note": false,
+      "workspaces:Manage workspace layouts": false
     }
   },
-  "active": "960bc2e2fcd4eff7",
+  "active": "968241bdfbdfe208",
   "lastOpenFiles": [
+    "thoughts/Agency.md",
+    "thoughts/action theory.md",
+    "thoughts/taste.md",
+    "thoughts/aesthetic value.md",
+    "thoughts/university/sfwr-3dx4/time_response.pdf",
+    "thoughts/education.md",
+    "posts/Chaos.md",
+    "quotes.md",
+    "thoughts/Chaos.md",
+    "thoughts/papers/index.md",
     "thoughts/papers/A Persian Folk Method of Figuring Interest.pdf",
     "thoughts/papers/Fabricating intimacy, reading the dressing room in Victorian Literature.pdf",
     "thoughts/papers/Nietzsche's Chaos sive natura.pdf",
     "thoughts/papers/update.py",
     "thoughts/papers/Knowledge as Masculine Heroism or Embodied Perception.pdf",
     "thoughts/Camus.md",
-    "thoughts/Chaos.md",
-    "thoughts/university/sfwr-3dx4/time_response.pdf",
-    "posts/Chaos.md",
     "posts/Why should you learn philosophy during university.md",
     "posts/recommendation system.md",
     "posts/social interactions.md",
@@ -214,7 +272,6 @@
     "thoughts/university/sfwr-3dx4/steady_state_error.pdf",
     "thoughts/university/sfwr-3dx4/stability.pdf",
     "thoughts/university/sfwr-3dx4/a2/assignment2.pdf",
-    "thoughts/university/sfwr-3dx4/frequency_domain.pdf",
     "thoughts/university/sfwr-3dx4/stability.md",
     "thoughts/Lyapunov time.md",
     "thoughts/university/sfwr-3dx4/a1/content.md",
@@ -224,12 +281,6 @@
     "thoughts/university/commerce-4be3/index.md",
     "thoughts/university/commerce-4be3/Job Description Exercise.md",
     "thoughts/university/sfwr-3dx4/Root locus control.md",
-    "thoughts/university/sfwr-3dx4/Root locus.md",
-    "thoughts/university/sfwr-3dx4/lab3/content.md",
-    "thoughts/university/sfwr-3dx4/lab3/Untitled 1.md",
-    "ideas.md",
-    "thoughts/university/sfwr-2c03/a5/A5.md",
-    "thoughts/aesthetic value.md",
     "Untitled.canvas"
   ]
 }

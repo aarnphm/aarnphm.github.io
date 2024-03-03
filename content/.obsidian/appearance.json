@@ -1,13 +1,15 @@
 {
-  "accentColor": "#e8a83b",
+  "accentColor": "",
   "cssTheme": "Minimal",
-  "interfaceFontFamily": "Bricolage Grotesque,EB Garamond,Berkeley Mono",
-  "textFontFamily": "EB Garamond,Cardo,Bricolage Grotesque",
+  "interfaceFontFamily": "Charter,Bricolage Grotesque,EB Garamond,Berkeley Mono",
+  "textFontFamily": "Charter,Cardo,EB Garamond,Bricolage Grotesque",
   "monospaceFontFamily": "Berkeley Mono",
-  "baseFontSize": 20,
+  "baseFontSize": 16,
   "translucency": true,
-  "theme": "moonstone",
-  "showViewHeader": true,
-  "enabledCssSnippets": [],
-  "baseFontSizeAction": true
+  "showViewHeader": false,
+  "enabledCssSnippets": [
+    "snippet"
+  ],
+  "baseFontSizeAction": true,
+  "theme": "moonstone"
 }

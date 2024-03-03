@@ -5,6 +5,7 @@ tags:
 date: "2024-01-30"
 title: aesthetic value
 ---
+Also known as [[thoughts/taste|taste]]
 
 [Source](https://plato.stanford.edu/entries/aesthetic-concept/)
 

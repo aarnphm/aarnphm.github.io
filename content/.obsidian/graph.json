@@ -1,12 +1,20 @@
 {
   "collapse-filter": false,
   "search": "",
-  "showTags": false,
-  "showAttachments": false,
-  "hideUnresolved": false,
+  "showTags": true,
+  "showAttachments": true,
+  "hideUnresolved": true,
   "showOrphans": true,
   "collapse-color-groups": false,
-  "colorGroups": [],
+  "colorGroups": [
+    {
+      "query": "tag:#seed",
+      "color": {
+        "a": 1,
+        "rgb": 14048348
+      }
+    }
+  ],
   "collapse-display": false,
   "showArrow": false,
   "textFadeMultiplier": -0.6,
@@ -17,6 +25,6 @@
   "repelStrength": 9.74772135416667,
   "linkStrength": 0,
   "linkDistance": 30,
-  "scale": 0.5679188713077827,
-  "close": false
+  "scale": 0.5640795220249843,
+  "close": true
 }
