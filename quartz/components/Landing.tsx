@@ -7,7 +7,6 @@ import { FullSlug, SimpleSlug, resolveRelative } from "../util/path"
 import { Data } from "vfile"
 import { getDate, formatDate } from "./Date"
 import SpacerComponent from "./Spacer"
-import KeybindComponent from "./Keybind"
 import HeaderComponent from "./Header"
 import ContentComponent from "./pages/Content"
 import BodyComponent from "./Body"
@@ -95,7 +94,7 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
                         <span class="landing-mspan">
                           {formatDate(getDate(cfg, page)!, cfg.locale)}
                         </span>
-                        <u>{title}</u>
+                        {title}
                       </div>
                     </a>
                   </li>
@@ -104,13 +103,13 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
             </ul>
             {remaining > 0 && (
               <p>
-                <u>
+                <em>
                   <a href={resolveRelative(fileData.slug!, opts!.slug)} class={classes}>
                     {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
                       remaining,
                     })}
                   </a>
-                </u>
+                </em>
               </p>
             )}
           </div>
@@ -164,7 +163,7 @@ const ElementComponent = (() => {
   const RecentPosts = NotesComponent({
     header: "écriture",
     slug: "posts/" as SimpleSlug,
-    numLimits: 3,
+    numLimits: 6,
   })
   const Hyperlink = HyperlinksComponent({
     children: [
@@ -202,21 +201,18 @@ export default (() => {
   const Element = ElementComponent()
   const Body = BodyComponent()
   const Header = HeaderComponent()
-  const Keybind = KeybindComponent()
 
   const LandingComponent: QuartzComponent = (componentData: QuartzComponentProps) => {
     const { displayClass } = componentData
     return (
       <div id="quartz-root" class="page">
+        {/* @ts-ignore */}
         <Body {...componentData}>
-          <div class="left sidebar">
-            <Meta {...componentData} />
-          </div>
           <div class="center">
             <div class="page-header">
               <Header {...componentData}>
                 <h1>Bonjour, je suis Aaron.</h1>
-                <Keybind {...componentData} />
+                <Meta {...componentData} />
               </Header>
             </div>
             <div class={classNames(displayClass, "landing")}>

@@ -16,13 +16,13 @@
 
   .ref-source {
     font-style: inherit;
+    font-weight: inherit;
     color: var(--gray);
     transition: none;
 
     margin: 0 0.08em;
     padding-left: 0.3em;
     position: relative;
-    z-index: 1;
     background-image: linear-gradient(currentColor, currentColor);
     background-size: 1px 1px;
     background-repeat: repeat-x;

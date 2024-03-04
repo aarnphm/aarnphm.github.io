@@ -6,12 +6,12 @@ aliases:
 tags:
   - evergreen
   - fruit
-date: 2022-04-22
+date: "2022-04-22"
 description: Aaron's digital garden
 title: Aaron's notes
 ---
 
-Beige and <span class="rose">rosé</span> are my two favourite colours. [[thoughts/Chaos|Chaos]] pushes oneself to maximise their [[thoughts/Value|value]], construct the [[thoughts/Freud#The Ego and The Id|id]] and regulate the ego. I love treating my friends with [[thoughts/Dishes|cooking]]. Most of the time I [[thoughts/writing#motivation.|write]], [[books|read]], and maintain [[projects|open-source project]].
+Beige and <span class="rose">rosé</span> are my two favourite colours. [[thoughts/Chaos|Chaos]] pushes oneself to maximise their [[thoughts/Value|value]], construct the [[thoughts/Freud#The Ego and The Id|id]] and regulate the ego. I love treating my friends with [[thoughts/Dishes|cooking]]. I [[thoughts/writing#motivation.|write]], [[books|read]], and maintain [[projects|open-source projects]].
 
 I'm pretty bullish on high [[thoughts/Agency|agency]] and fulfil one's [[thoughts/desire|desire]] in life.
 

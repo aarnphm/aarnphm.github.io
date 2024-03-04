@@ -3,8 +3,8 @@ id: Plato
 tags:
   - philosophy
   - philos1aa3
+date: "2023-11-08"
 title: Plato
-date: 2023-11-08
 ---
 
 See also [[thoughts/university/philo-1aa3/Socrates]]
@@ -33,11 +33,17 @@ Poisons
 
 > Wisdom can be used both for good and bad
 
+```poetry
     Wisdom is a penetrate into the goods, not the bad
+```
 
 Oracle at Delphi -> reputation for enigma (ironic, play with words)
 
-Oracle could mock humanity (`No one is wiser than Socrates`)
+Oracle could mock humanity
+
+```poetry
+    No one is wiser than Socrates
+```
 
 - He is the wisest
 - No one is wise (Socrates is as wise, and he knows he is not wise -> no hope)
