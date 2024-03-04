@@ -27,14 +27,9 @@ body[data-slug="index"] {
   h3,
   h4 {
     font-family: "ITCGaramondStdLtCond", var(--bodyFont);
-    font-size: 1.875rem;
-    line-height: 2.25rem;
+    // font-size: 1.875rem;
+    // line-height: 2.25rem;
     letter-spacing: -0.0275rem;
-  }
-
-  h1 {
-    font-size: 2.8125rem;
-    line-height: 2.8125rem;
   }
 
   a[class*="landing-links"],
@@ -66,7 +61,6 @@ body[data-slug="index"] {
 .notes-outer {
   display: flex;
   flex-direction: row;
-  // gap: 2.675rem;
   justify-content: space-between;
 
   #note-item {

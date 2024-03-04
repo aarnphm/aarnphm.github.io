@@ -53,6 +53,20 @@ html {
   scroll-behavior: smooth;
 }
 
+// golden ditonic scale
+h1 {
+  font-size: 2.8125rem;
+  line-height: 2.75rem;
+}
+h2 {
+  font-size: 1.618rem;
+  line-height: 2.25rem;
+}
+h3 {
+  font-size: 1.272rem;
+  line-height: 1.75rem;
+}
+
 section[data-footnotes] {
   background-color: unset !important;
 }
@@ -95,43 +109,45 @@ pre.poetry {
   }
 }
 
-a {
-  hyphens: none;
+@media all and (min-width: $fullPageWidth) {
+  a {
+    hyphens: none;
 
-  &.internal {
-    background-color: unset;
-  }
-
-  &.internal.alias {
-    &::before {
-      content: " ";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      top: 0;
-      width: 1px;
-      height: 100%;
-      color: inherit;
-      background-image: linear-gradient(var(--light), var(--light)),
-        linear-gradient(var(--light), var(--light)), linear-gradient(currentColor, currentColor);
-      background-size:
-        1px 0.6em,
-        1px 0.1em,
-        1px 1em;
-      background-position:
-        0 0,
-        0 100%,
-        0 calc(100% - 0.1em);
-      background-repeat: no-repeat;
+    &.internal {
+      background-color: unset;
     }
 
-    margin: 0 0.08em;
-    padding-left: 0.3em;
-    position: relative;
-    background-image: linear-gradient(currentColor, currentColor);
-    background-size: 1px 1px;
-    background-repeat: repeat-x;
-    background-position: 0% calc(100% - 0.1em);
+    &.internal.alias {
+      &::before {
+        content: " ";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        top: 0;
+        width: 1px;
+        height: 100%;
+        color: inherit;
+        background-image: linear-gradient(var(--light), var(--light)),
+          linear-gradient(var(--light), var(--light)), linear-gradient(currentColor, currentColor);
+        background-size:
+          1px 0.6em,
+          1px 0.1em,
+          1px 1em;
+        background-position:
+          0 0,
+          0 100%,
+          0 calc(100% - 0.1em);
+        background-repeat: no-repeat;
+      }
+
+      margin: 0 0.08em;
+      padding-left: 0.3em;
+      position: relative;
+      background-image: linear-gradient(currentColor, currentColor);
+      background-size: 1px 1px;
+      background-repeat: repeat-x;
+      background-position: 0% calc(100% - 0.1em);
+    }
   }
 }
 
@@ -174,6 +190,58 @@ body[data-slug="music"] {
 
       &:hover {
         background-color: var(--lightgray);
+      }
+    }
+  }
+}
+
+// Quote display
+body[data-slug="quotes"] {
+  & blockquote {
+    border-left: none;
+    padding-left: 0;
+    margin: 0;
+  }
+
+  & h1,
+  & h2,
+  & h3,
+  & h4 {
+    font-family: var(--bodyFont) !important;
+    font-weight: 400;
+    font-style: normal;
+    line-height: normal;
+  }
+
+  & h1 {
+    font-weight: 500;
+  }
+
+  & article {
+    & > hr::after {
+      content: "";
+    }
+
+    & > p {
+      padding-top: 1rem;
+      padding-left: 3rem;
+      margin: inherit;
+
+      &:before,
+      &:after {
+        font-size: 2em;
+        line-height: 0.1em;
+        vertical-align: -0.4em;
+      }
+
+      &:before {
+        content: "“";
+        margin-right: 0.25em;
+      }
+
+      &:after {
+        content: "”";
+        margin-left: 0.25em;
       }
     }
   }
@@ -283,58 +351,6 @@ body[data-slug="music"] {
   }
 }
 
-// Quote display
-body[data-slug="quotes"] {
-  & blockquote {
-    border-left: none;
-    padding-left: 0;
-    margin: 0;
-  }
-
-  & h1,
-  & h2,
-  & h3,
-  & h4 {
-    font-family: var(--bodyFont) !important;
-    font-weight: 400;
-    font-style: normal;
-    line-height: normal;
-  }
-
-  & h1 {
-    font-weight: 500;
-  }
-
-  & article {
-    & > hr::after {
-      content: "";
-    }
-
-    & > p {
-      padding-top: 1rem;
-      padding-left: 3rem;
-      margin: inherit;
-
-      &:before,
-      &:after {
-        font-size: 2em;
-        line-height: 0.1em;
-        vertical-align: -0.4em;
-      }
-
-      &:before {
-        content: "“";
-        margin-right: 0.25em;
-      }
-
-      &:after {
-        content: "”";
-        margin-left: 0.25em;
-      }
-    }
-  }
-}
-
 hr {
   overflow: visible;
   padding: 0;
@@ -362,9 +378,22 @@ audio::-webkit-media-controls-panel {
   background-color: var(--light);
 }
 
-.sidebar,
-.page-header {
-  margin-top: 3rem !important;
+.page {
+  & .page-header {
+    margin: 0 auto !important;
+  }
+}
+
+.center {
+  padding: 0 2rem;
+  margin: $topSpacing auto;
+  border: 1px solid var(--darkgray);
+
+  @media all and (max-width: $fullPageWidth) {
+    padding: unset;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 }
 
 .left,
@@ -374,6 +403,7 @@ audio::-webkit-media-controls-panel {
   grid-template-columns: 1fr;
   grid-template-rows: repeat(4, min-content);
   align-items: center;
+  margin-top: $topSpacing !important;
 
   @media all and (max-width: $fullPageWidth) {
     display: flex !important;

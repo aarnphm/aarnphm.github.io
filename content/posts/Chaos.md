@@ -10,6 +10,8 @@ description: Chaos has, and always be a driven force within life, intuitive yet 
 title: Chaos is a force behind life.
 ---
 
+And a few things I learned growing up in a foreign land.
+
 _This is an extension of [[thoughts/Chaos|chaos]] that recently occupy my [[thoughts/NLP|chain of thought]]. See this on [substack](https://open.substack.com/pub/livingalone/p/chaos-has-and-always-be-a-driven?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true)_
 
 ![[posts/images/passage-giorgio-m.jpg]]

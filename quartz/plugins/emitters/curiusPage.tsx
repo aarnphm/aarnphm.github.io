@@ -6,7 +6,6 @@ import {
   CuriusHeader,
   CuriusTrail,
   CuriusFriends,
-  Head,
   DesktopOnly,
 } from "../../components"
 import BodyConstructor from "../../components/Body"
@@ -17,13 +16,13 @@ import { pageResources, renderPage } from "../../components/renderPage"
 import { QuartzComponentProps } from "../../components/types"
 import DepGraph from "../../depgraph"
 import { StaticResources } from "../../util/resources"
+import { sharedPageComponents } from "../../../quartz.layout"
 
 export const CuriusPage: QuartzEmitterPlugin = () => {
   const Meta = MetaConstructor({ enableSearch: false })
 
   const opts: FullPageLayout = {
-    head: Head(),
-    header: [],
+    ...sharedPageComponents,
     beforeBody: [CuriusHeader(), Meta],
     left: [CuriusFriends()],
     right: [DesktopOnly(CuriusTrail())],

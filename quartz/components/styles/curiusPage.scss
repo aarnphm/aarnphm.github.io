@@ -48,6 +48,11 @@ body {
       }
     }
 
+    .center {
+      border: unset !important;
+      margin-bottom: 0;
+    }
+
     & .highlight {
       background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
       border-radius: 5px;

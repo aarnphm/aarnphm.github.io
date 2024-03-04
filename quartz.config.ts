@@ -23,7 +23,7 @@ const config: QuartzConfig = {
     theme: {
       cdnCaching: true,
       typography: {
-        header: "GT Sectra Display",
+        header: "ITCGaramondStdLtCond",
         body: "GT Sectra Book",
         code: "Berkeley Mono",
       },

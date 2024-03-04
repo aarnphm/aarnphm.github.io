@@ -8,23 +8,44 @@ import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
 import { FilePath, pathToRoot } from "../../util/path"
 import { pageResources, renderPage } from "../../components/renderPage"
-import { QuartzComponentProps } from "../../components/types"
-import { ArticleTitle, Content, Keybind as KeybindConstructor } from "../../components"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../../components/types"
+import {
+  ArticleTitle,
+  Content as ContentConstructor,
+  Keybind as KeybindConstructor,
+} from "../../components"
+import { sharedPageComponents } from "../../../quartz.layout"
 import DepGraph from "../../depgraph"
+
+const ZenContent = (() => {
+  const Navigation = NavigationConstructor()
+  const Content = ContentConstructor()
+  const Element: QuartzComponent = (props: QuartzComponentProps) => {
+    return (
+      <>
+        <Content {...props} />
+        <Navigation {...props} />
+      </>
+    )
+  }
+
+  return Element
+}) satisfies QuartzComponentConstructor
 
 export const ZenPage: QuartzEmitterPlugin = () => {
   const Meta = MetaConstructor()
-  const Navigation = NavigationConstructor()
   const Keybind = KeybindConstructor({ enableTooltip: false })
 
   const opts: FullPageLayout = {
-    head: HeadConstructor(),
-    header: [],
+    ...sharedPageComponents,
     beforeBody: [],
-    pageBody: Content(),
+    pageBody: ZenContent(),
     left: [Meta],
     right: [],
-    footer: Navigation,
   }
 
   const { head: Head, header, beforeBody, pageBody, left, right, footer: Footer } = opts
