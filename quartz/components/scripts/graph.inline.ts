@@ -221,7 +221,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       }
 
       // highlight links
-      linkNodes.transition().duration(200).attr("stroke", "var(--gray)").attr("stroke-width", 1)
+      linkNodes.attr("stroke", "var(--gray)").attr("stroke-width", 1)
 
       const bigFont = fontSize * 1.5
 
@@ -230,8 +230,6 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       d3.select<HTMLElement, NodeData>(parent)
         .raise()
         .select("text")
-        .transition()
-        .duration(200)
         .attr("opacityOld", d3.select(parent).select("text").style("opacity"))
         .style("opacity", 1)
         .style("font-size", bigFont + "em")
@@ -246,13 +244,11 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
         .selectAll(".link")
         .filter((d: any) => d.source.id === currentId || d.target.id === currentId)
 
-      linkNodes.transition().duration(200).attr("stroke", "var(--lightgray)")
+      linkNodes.attr("stroke", "var(--lightgray)")
 
       const parent = this.parentNode as HTMLElement
       d3.select<HTMLElement, NodeData>(parent)
         .select("text")
-        .transition()
-        .duration(200)
         .style("opacity", d3.select(parent).select("text").attr("opacityOld"))
         .style("font-size", fontSize + "em")
     })

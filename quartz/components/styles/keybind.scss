@@ -23,17 +23,17 @@ kbd {
   & > #shortcut-container {
     position: fixed;
     contain: layout;
-    z-index: 100;
     left: 0;
     top: 0;
     width: 100vw;
     height: 100vh;
     overflow-y: auto;
     display: none;
+    backdrop-filter: blur(4px);
+    z-index: 999;
 
     &.active {
       display: inline-block;
-      z-index: unset;
     }
 
     & > #shortcut-space {

@@ -29,9 +29,20 @@ document.addEventListener("nav", async () => {
   const shortcutKey = document.getElementById("shortcut-key")
   const keybind = document.getElementsByClassName("keybind")[0] as HTMLDivElement | null
 
-  const showContainer = () => container?.classList.add("active")
+  const center = document.querySelector(".center") as HTMLElement | null
+  const sidebar = document.querySelector(".right.sidebar") as HTMLElement | null
 
-  const hideContainer = () => container?.classList.remove("active")
+  const showContainer = () => {
+    if (center) center.style.zIndex = "-1"
+    if (sidebar) sidebar.style.zIndex = "-1"
+    container?.classList.add("active")
+  }
+
+  const hideContainer = () => {
+    if (center) center.style.zIndex = "unset"
+    if (sidebar) sidebar.style.zIndex = "unset"
+    container?.classList.remove("active")
+  }
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (!shortcutKey) return
