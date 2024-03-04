@@ -161,7 +161,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> =
                       const [rawFp] = capture
                       return rawFp
                     })
-                    if (!outgoing.has(src as SimpleSlug)) outgoing.add(src as SimpleSlug)
+                    outgoing.add(simplifySlug(src as FullSlug))
                   })
                 }
 

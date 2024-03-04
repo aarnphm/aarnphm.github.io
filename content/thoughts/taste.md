@@ -6,7 +6,7 @@ tags:
 date: 2024-02-19
 title: taste
 ---
-### as guide.
+## as guide.
 
 [source](https://jzhao.xyz/posts/aesthetics-and-taste)
 

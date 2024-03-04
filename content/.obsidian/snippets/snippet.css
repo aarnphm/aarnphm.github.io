@@ -4,3 +4,8 @@
   margin: auto -0.1em;
   border-radius: 3px;
 }
+
+span[class*="rose"] {
+  color: rgb(215, 130, 126);
+  border-bottom: none;
+}

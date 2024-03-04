@@ -11,7 +11,7 @@ See also: Nietzsche's [[thoughts/university/philo-1aa3/Nietzsche|Life]] and over
 
 ## Nietzsche and Philosophy
 
-by _[[thoughts/Giles Deleuze|Giles Deleuze]]_
+_by [[thoughts/Giles Deleuze|Giles Deleuze]]_
 
 The decadence of modern philosophy is the theory of value imposes conformism and a new form of submission
 
