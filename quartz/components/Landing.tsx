@@ -211,7 +211,9 @@ export default (() => {
           <div class="center">
             <div class="page-header">
               <Header {...componentData}>
-                <h1>Bonjour, je suis Aaron.</h1>
+                <h1 class="article-title" style="margin-top: 0">
+                  Bonjour, je suis Aaron.
+                </h1>
                 <Meta {...componentData} />
               </Header>
             </div>

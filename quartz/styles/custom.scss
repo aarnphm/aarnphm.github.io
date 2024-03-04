@@ -53,18 +53,22 @@ html {
   scroll-behavior: smooth;
 }
 
+.article-title {
+  font-family: "ITCGaramondStdLtCond", var(--headerFont) !important;
+  font-size: 2.8125rem !important;
+  line-height: 2.8125rem !important;
+}
+
 // golden ditonic scale
 h1 {
-  font-size: 2.8125rem;
-  line-height: 2.75rem;
+  font-size: 2.0582rem;
+  font-weight: normal;
 }
 h2 {
   font-size: 1.618rem;
-  line-height: 2.25rem;
 }
 h3 {
   font-size: 1.272rem;
-  line-height: 1.75rem;
 }
 
 section[data-footnotes] {
@@ -113,10 +117,17 @@ pre.poetry {
   a {
     hyphens: none;
 
-    &.internal {
+    &.internal,
+    &.internal.tag-link {
       background-color: unset;
     }
 
+    &.internal.tag-link {
+      border-radius: unset;
+      padding: 0;
+    }
+
+    &.internal.tag-link,
     &.internal.alias {
       &::before {
         content: " ";
@@ -390,9 +401,7 @@ audio::-webkit-media-controls-panel {
   border: 1px solid var(--darkgray);
 
   @media all and (max-width: $fullPageWidth) {
-    padding: unset;
-    margin-top: 0;
-    margin-bottom: 0;
+    margin: 2rem auto 0;
   }
 }
 

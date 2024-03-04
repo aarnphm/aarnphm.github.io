@@ -3,7 +3,6 @@ id: index
 tags:
   - university
   - sfwr3bb4
-  - seed
 date: "2023-09-04"
 title: Concurrent System Design
 ---
