@@ -20,21 +20,6 @@
     color: var(--gray);
     transition: none;
 
-    margin: 0 0.08em;
-    padding-left: 0.3em;
-    position: relative;
-    background-image: linear-gradient(currentColor, currentColor);
-    background-size: 1px 1px;
-    background-repeat: repeat-x;
-    background-position: 0% calc(100% - 0.1em);
-  }
-
-  .indicator-hook {
-    position: relative;
-    padding-left: 0.3em;
-    margin-left: -0.3em;
-    z-index: -1;
-
     &::before {
       content: " ";
       position: absolute;
@@ -56,6 +41,14 @@
         0 calc(100% - 0.1em);
       background-repeat: no-repeat;
     }
+
+    margin: 0 0.08em;
+    padding-left: 0.3em;
+    position: relative;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 1px 1px;
+    background-repeat: repeat-x;
+    background-position: 0% calc(100% - 0.1em);
   }
 
   > span:last-child::after {

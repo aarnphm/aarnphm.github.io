@@ -11,7 +11,7 @@ French philosopher, known for his work on the concept of multiplicity, being and
 
 Also work on critical philosophy and the study of sense and value.
 
-### [[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]]
+## [[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]]
 
 The common misunderstanding of power is that it is the object of the will. Instead, Deleuze posits Power as subject of the will, such that [[thoughts/Will to Power|Will to Power]] is not a [[thoughts/desire|desire]] for domination, but expressive force that creates values
 
@@ -26,11 +26,11 @@ The analogy of a dice throw[^2]: When we throw the dice, the outcome is the comb
 
 Nietzsche turns chance into an affirmation, identifying it with multiplicity, fragments, parts, and [[thoughts/Chaos|chaos]]. The dice throw affirms becoming, and the combination it forms upon falling is the affirmation of necessity.
 
-### active and reactive forces.
+## active and reactive forces.
 
 See also: [[thoughts/action theory|action theory]]
 
-### Capitalism and Schizophrenia
+## Capitalism and Schizophrenia
 
 [^1]: See [this notes](https://faculty.fordham.edu/tampio/Tampio%20-%20Multiplicity.pdf)
-[^2]: [chances](https://piratesandrevolutionaries.blogspot.com/2009/05/dicethrow-11-in-deleuze-nietzsche.html?m=1), as: "Nietzsche identifie le hasard au multiple, aux fragments, aux membres, au chaos: chaos des dés qu'on choque et qu'on lance."
+[^2]: [chances](https://piratesandrevolutionaries.blogspot.com/2009/05/dicethrow-11-in-deleuze-nietzsche.html?m=1): "Nietzsche identifie le hasard au multiple, aux fragments, aux membres, au chaos: chaos des dés qu'on choque et qu'on lance."

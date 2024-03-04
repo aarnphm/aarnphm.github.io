@@ -61,7 +61,6 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
               {modified !== undefined ? (
                 <span class="page-source">
                   <a class="ref-source">
-                    <span class="indicator-hook"></span>
                     <span class="page-modification" title="Date page contents were modified">
                       <em>{modified}</em>
                     </span>

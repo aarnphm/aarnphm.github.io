@@ -50,12 +50,7 @@
 }
 
 html {
-  font-size: 0.9375rem;
   scroll-behavior: smooth;
-
-  @media all and (max-width: $fullPageWidth) {
-    font-size: 0.875rem;
-  }
 }
 
 section[data-footnotes] {
@@ -113,6 +108,12 @@ pre.poetry {
 }
 
 a {
+  hyphens: none;
+
+  &.internal {
+    background-color: unset;
+  }
+
   &.internal.alias {
     &::before {
       content: " ";
@@ -136,7 +137,6 @@ a {
       background-repeat: no-repeat;
     }
 
-    background-color: unset;
     margin: 0 0.08em;
     padding-left: 0.3em;
     position: relative;

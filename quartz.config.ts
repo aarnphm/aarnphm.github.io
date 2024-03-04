@@ -75,7 +75,7 @@ const config: QuartzConfig = {
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",
-        externalLinkIcon: false,
+        externalLinkIcon: true,
         enableRawEmbed: {
           enable: true,
           extensions: [".py", ".m", ".go", ".c", ".java", ".cpp", ".h", ".hpp", ".cu"],

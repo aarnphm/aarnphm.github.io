@@ -8,11 +8,13 @@ date: "2024-02-07"
 title: LLMs
 ---
 
-[[thoughts/Autoregressive models|autoregressive]] foundational [[thoughts/Machine learning|machine learning]] models that have "capabilities" to understand [[thoughts/NLP|natural language]].
+[[thoughts/Autoregressive models|autoregressive]] foundational [[thoughts/Machine learning|machine learning]] models.
 
-Exhibits [[thoughts/emergent behaviour]] of [[thoughts/intelligence]], but probably not [[thoughts/AGI]] due to [[thoughts/observer-expectancy effect]].
+Have "capabilities" to understand [[thoughts/NLP|natural language]].
 
-One way or another is a form of [[thoughts/Behavirourism]], through [[thoughts/Machine learning|reinforcement learning]]. It is being "told" what is good or bad, and thus act accordingly towards the users. However, this induces [[thoughts/confirmation bias]] where one aligns and contains his/her prejudices towards the problem.
+Exhibits [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]], but probably not [[thoughts/AGI|AGI]] due to [[thoughts/observer-expectancy effect]].
+
+One way or another is a form of [[thoughts/Behavirourism|behaviourism]], through [[thoughts/Machine learning|reinforcement learning]]. It is being "told" what is good or bad, and thus act accordingly towards the users. However, this induces [[thoughts/confirmation bias]] where one aligns and contains his/her prejudices towards the problem.
 
 ### Scalability
 
@@ -38,7 +40,7 @@ The process of rephrasing and arranging sentences poses a challenges for the wri
 
 ### AI generated content
 
-Don't shit where you eat, **[[thoughts/Garbage in Garbage out|Garbage in, garbage out]]**. The quality of the content is highly dependent on the quality of the data it was trained on, or model are incredibly sensitive to [[thoughts/data]] variances and biases.
+Don't shit where you eat, **[[thoughts/Garbage in Garbage out|Garbage in, garbage out]]**. The quality of the content is highly dependent on the quality of the data it was trained on, or model are incredibly sensitive to [[thoughts/data|data]] variances and biases.
 
 Bland doublespeak
 
@@ -57,8 +59,8 @@ These models are incredibly useful for summarization and information gathering. 
 
 notable mentions:
 
-- [perplexity.ai](https://perplexity.ai/), A [[thoughts/RAG|RAG]]-first search engine
-- [https://explorer.globe.engineer/](https://explorer.globe.engineer/) demoed a pretty cool concept in terms of tree-based [[thoughts/information retrieval|information retrieval]]
+- [perplexity.ai](https://perplexity.ai/): [[thoughts/RAG|RAG]]-first search engine
+- [explorer.globe.engineer](https://explorer.globe.engineer/): tree-based [[thoughts/information retrieval]]
 - [Exa labs](https://twitter.com/ExaAiLabs)
 - [You.com](https://you.com/?chatMode=default)
 
