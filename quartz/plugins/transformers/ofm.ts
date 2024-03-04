@@ -35,7 +35,7 @@ export interface Options {
 }
 
 const defaultOptions: Options = {
-  construction: false,
+  construction: true,
   comments: true,
   highlight: true,
   wikilinks: true,

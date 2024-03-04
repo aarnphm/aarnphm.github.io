@@ -5,7 +5,9 @@ dist
 public
 prof
 tsconfig.tsbuildinfo
-.obsidian
+**/.obsidian/types.json
+**/.obsidian/plugins
+**/.obsidian/themes
 .quartz-cache
 .replit
 replit.nix

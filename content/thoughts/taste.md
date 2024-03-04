@@ -8,7 +8,7 @@ title: taste
 ---
 ## as guide.
 
-[source](https://jzhao.xyz/posts/aesthetics-and-taste)
+[Jacky's post](https://jzhao.xyz/posts/aesthetics-and-taste)
 
 > We have built up an instinctive habit of looking things up and seeing how other people have done it before trying it for ourselves. But the downside is that this habit primes our brains to value our work in the context of the taste of others rather than of our own. We have outsourced our [[thoughts/Value|value]] systems for what is good and bad (how we may judge [[thoughts/aesthetic value|aesthetic value]]) to other people.
 

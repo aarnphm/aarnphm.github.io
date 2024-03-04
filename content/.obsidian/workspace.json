@@ -23,7 +23,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/taste.md",
+                "file": "quotes.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -49,7 +49,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/taste.md",
+                "file": "thoughts/Garbage in Garbage out.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -62,7 +62,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_index.md",
+                "file": "thoughts/dialectics.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -137,7 +137,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "_index.md",
+                "file": "thoughts/dialectics.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -154,7 +154,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "_index.md",
+                "file": "thoughts/dialectics.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -177,7 +177,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "_index.md"
+                "file": "thoughts/dialectics.md"
               }
             }
           },
@@ -207,7 +207,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "_index.md"
+                "file": "thoughts/dialectics.md"
               }
             }
           }
@@ -235,17 +235,29 @@
   },
   "active": "968241bdfbdfe208",
   "lastOpenFiles": [
-    "thoughts/taste.md",
-    "_index.md",
+    "thoughts/papers/Group_Theory_and_QFT.pdf",
+    "thoughts/Garbage in Garbage out.md",
+    "thoughts/Alignment.md",
+    "thoughts/monetary.md",
     "thoughts/university/sfwr-3dx4/time_response.pdf",
     "thoughts/aesthetic value.md",
+    "quotes.md",
+    "thoughts/Chaos.md",
+    "thoughts/taste.md",
+    "thoughts/dialectics.md",
+    "posts/Chaos.md",
+    "_index.md",
+    "influence.md",
+    "thoughts/TPU.md",
+    "thoughts/PJRT.md",
+    "thoughts/papers/Probabilistic Robotics.pdf",
+    "thoughts/university/sfwr-3dx4/root_locus_control.pdf.crdownload",
+    "thoughts/university/sfwr-3dx4/root_locus.pdf.crdownload",
+    "thoughts/university/sfwr-3dx4/steady_state_error.pdf.crdownload",
     "thoughts/large models.md",
     "thoughts/Agency.md",
     "thoughts/action theory.md",
     "thoughts/education.md",
-    "posts/Chaos.md",
-    "quotes.md",
-    "thoughts/Chaos.md",
     "thoughts/papers/index.md",
     "thoughts/papers/A Persian Folk Method of Figuring Interest.pdf",
     "thoughts/papers/Fabricating intimacy, reading the dressing room in Victorian Literature.pdf",
@@ -269,17 +281,6 @@
     "posts/images/dank-aaron 1.png",
     "posts/images/furama 1.png",
     "posts/images/kid-aaron-pog 1.png",
-    "thoughts/university/sfwr-3dx4/a2/content.md",
-    "thoughts/university/sfwr-3dx4/a2/phama10_400232791_assignment2.pdf",
-    "thoughts/university/sfwr-3dx4/steady_state_error.pdf",
-    "thoughts/university/sfwr-3dx4/stability.pdf",
-    "thoughts/university/sfwr-3dx4/a2/assignment2.pdf",
-    "thoughts/university/sfwr-3dx4/stability.md",
-    "thoughts/Lyapunov time.md",
-    "thoughts/university/sfwr-3dx4/a1/content.md",
-    "thoughts/university/sfwr-2c03/Graphs.md",
-    "thoughts/university/commerce-4be3/Designing Pay Levels  and Employee Benefits.md",
-    "thoughts/university/commerce-4be3/Job description exercise.md",
     "Untitled.canvas"
   ]
 }

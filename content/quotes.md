@@ -43,7 +43,7 @@ People think focus means saying yes to the thing you’ve got to focus on. But t
 
 ## On drive.
 
-Life can be much broader when you discover one simple fact...that everything around you was made up by people no smarter than you. ... Once you learn that, [you'll never be the same again.] -- Steve Jobs ^life-jobs-smart
+==Life can be much broader when you discover one simple fact...that everything around you was made up by people no smarter than you.... Once you learn that, you'll never be the same again.==-- Steve Jobs ^life-jobs-smart
 
 I just wondered how things were put together. -- Claude Shannon
 
