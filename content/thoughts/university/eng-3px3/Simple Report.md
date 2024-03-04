@@ -9,7 +9,7 @@ title: NVF for affordable housing
 The high-level net value function for which is defined by performance parameters and conversion factors:
 
 $$
-\text{NVF} = \text{HouseSalesRevenue} - \text{LabourCost} - \text{EnergyCost} - \text{MaterialsCost} - \text{R&D} - \text{UpfrontConstructionCost}
+\text{NVF} = \text{HouseSalesRevenue} - \text{LabourCost} - \text{EnergyCost} - \text{MaterialsCost} - \text{R\&D} - \text{UpfrontConstructionCost}
 $$
 
 Where the performance parameters and conversion factors are defined by the following:
