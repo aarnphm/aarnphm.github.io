@@ -68,18 +68,6 @@ section[data-footnotes] {
     serif !important;
 }
 
-span[class^="katex"] > *,
-figure[data-rehype-pretty-code-figure] {
-  z-index: -1 !important;
-}
-
-.preview-inner span[class^="katex"] > *,
-.popover-inner span[class^="katex"] > *,
-.popover-inner figure[data-rehype-pretty-code-figure],
-.preview-inner figure[data-rehype-pretty-code-figure] {
-  z-index: 999 !important;
-}
-
 code {
   font-size: 0.8em;
 }

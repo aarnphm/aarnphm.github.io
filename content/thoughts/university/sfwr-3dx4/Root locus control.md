@@ -57,11 +57,11 @@ $$
 $$
 where $K_p$ is the proportional gain, and $K_i$ is the integral gain.
 
-> [!important] Implementation
+> [!important] Implementation $G_c(s)$
 >
 > $$
 > G_c(s) = K_p + \frac{K_i}{s} = \frac{K_p(s+\frac{K_i}{K_p})}{s}
 > $$
- 
+
 ![[thoughts/university/sfwr-3dx4/images/idea-integral-compensator-impl.png]]
 ### lag compensation
