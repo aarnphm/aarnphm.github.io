@@ -22,6 +22,7 @@ A somewhat local cache of all papers I've read. This is one source of my Zotero 
 - [[thoughts/papers/Nietzsche's Chaos sive natura.pdf|Nietzsche's Chaos sive natura]]
 - [[thoughts/papers/NumericalOptimization.pdf|NumericalOptimization]]
 - [[thoughts/papers/On The Measure of Intelligence.pdf|On The Measure of Intelligence]]
+- [[thoughts/papers/Probabilistic Robotics.pdf|Probabilistic Robotics]]
 - [[thoughts/papers/Sampling-Bias-Corrected Neural Modling for Large Corpus Item Recommendations.pdf|Sampling-Bias-Corrected Neural Modling for Large Corpus Item Recommendations]]
 - [[thoughts/papers/Writing as Art.pdf|Writing as Art]]
 <!-- update: end -->
