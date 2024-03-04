@@ -93,7 +93,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 - **The metamorphosis** by Franz Kafka
 - **The end of the affair** by Graham Greene
-- **The Little Book of [[thoughts/deep learning|Deep Learning]]** by François Fleuret
+- **The Little Book of [[thoughts/deep learning|Deep Learning]]** by [François Fleuret](https://fleuret.org/public/lbdl.pdf)
 - **[[thoughts/Freud#The Ego and the Id|The Ego and the Id]]** by Sigmund Freud
 - **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
 - **[Web Browser Engineering](https://browser.engineering/onepage.html)** by Pavel Panchekha & Chris Harrelson

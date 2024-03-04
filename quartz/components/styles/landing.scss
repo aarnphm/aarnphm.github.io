@@ -66,7 +66,8 @@ body[data-slug="index"] {
 .notes-outer {
   display: flex;
   flex-direction: row;
-  gap: 2.675rem;
+  // gap: 2.675rem;
+  justify-content: space-between;
 
   #note-item {
     .recent-links,
@@ -77,11 +78,6 @@ body[data-slug="index"] {
     .recent-links {
       flex-direction: column;
     }
-  }
-
-  @media all and (max-width: $fullPageWidth) {
-    display: flex !important;
-    flex-direction: column;
   }
 }
 
