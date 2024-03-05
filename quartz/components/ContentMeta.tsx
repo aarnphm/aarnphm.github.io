@@ -50,7 +50,7 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
           <>
             <span class="date-range">
               {created !== undefined ? (
-                <span class="page-creation" title="Date page contents were created">
+                <span class="page-creation" title="Date de création du contenu de la page">
                   <em>{created}</em>
                 </span>
               ) : (
@@ -61,7 +61,10 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
               {modified !== undefined ? (
                 <span class="page-source">
                   <a class="ref-source">
-                    <span class="page-modification" title="Date page contents were modified">
+                    <span
+                      class="page-modification"
+                      title="Date de modification du contenu de la page"
+                    >
                       <em>{modified}</em>
                     </span>
                   </a>
@@ -71,7 +74,7 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
               )}
             </span>
             {reading !== undefined ? (
-              <span class="reading-time" title="Estimated reading time">
+              <span class="reading-time" title="Temps de lecture estimé">
                 {reading}
               </span>
             ) : (

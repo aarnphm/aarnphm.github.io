@@ -48,6 +48,12 @@ body[data-slug="index"] {
     color: rgb(215, 130, 126);
     border-bottom: none;
   }
+
+  @media all and (max-width: $fullPageWidth) {
+    .center {
+      margin-bottom: 2rem;
+    }
+  }
 }
 
 [saved-theme="dark"] body[data-slug="index"] {
@@ -70,6 +76,10 @@ body[data-slug="index"] {
     .recent-links {
       flex-direction: column;
     }
+  }
+
+  @media all and (max-width: $fullPageWidth) {
+    flex-direction: column;
   }
 }
 

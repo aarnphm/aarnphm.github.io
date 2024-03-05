@@ -85,6 +85,7 @@ const config: QuartzConfig = {
       Plugin.AliasRedirects(),
       Plugin.ComponentResources({ fontOrigin: "local" }),
       Plugin.ContentPage(),
+      Plugin.PostPage(),
       Plugin.FolderPage(),
       Plugin.TagPage(),
       Plugin.CuriusPage(),

@@ -408,8 +408,11 @@ audio::-webkit-media-controls-panel {
 .content-meta {
   font-family: "ITCGaramondStdLtCond", var(--bodyFont);
   font-weight: $normalWeight;
-  font-size: 1.272em;
-  line-height: 1.272em;
+
+  @media all and (min-width: $fullPageWidth) {
+    font-size: 1.272em;
+    line-height: 1.272em;
+  }
 }
 
 .left,

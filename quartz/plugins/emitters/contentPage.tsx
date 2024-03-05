@@ -9,7 +9,6 @@ import BodyConstructor from "../../components/Body"
 import {
   Landing as LandingConstructor,
   Keybind as KeybindConstructor,
-  CuriusContent as CuriusConstructor,
   Navigation as NavigationConstructor,
 } from "../../components"
 import { pageResources, renderPage } from "../../components/renderPage"
@@ -24,7 +23,7 @@ import DepGraph from "../../depgraph"
 
 // get all the dependencies for the markdown file
 // eg. images, scripts, stylesheets, transclusions
-const parseDependencies = (argv: Argv, hast: Root, file: VFile): string[] => {
+export const parseDependencies = (argv: Argv, hast: Root, file: VFile): string[] => {
   const dependencies: string[] = []
 
   visit(hast, "element", (elem): void => {
