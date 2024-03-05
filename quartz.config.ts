@@ -69,6 +69,7 @@ const config: QuartzConfig = {
         keepBackground: true,
       }),
       Plugin.GitHubFlavoredMarkdown(),
+      Plugin.TableOfContents(),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",
         externalLinkIcon: true,
