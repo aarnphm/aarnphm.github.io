@@ -11,11 +11,13 @@ interface ContentMetaOptions {
    */
   showReadingTime: boolean
   showReturnHome: boolean
+  addHomeLink: boolean
 }
 
 const defaultOptions: ContentMetaOptions = {
   showReadingTime: true,
   showReturnHome: false,
+  addHomeLink: false,
 }
 
 export default ((opts?: Partial<ContentMetaOptions>) => {
@@ -43,6 +45,18 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
         minutes: Math.ceil(minutes),
       })
     }
+
+    const home = () => (
+      <span class="return-home">
+        <a
+          href={"/"}
+          class="internal alias"
+          style={["color: inherit", "font-weight: inherit"].join(";")}
+        >
+          home
+        </a>
+      </span>
+    )
 
     return (
       <p class={classNames(displayClass, "content-meta")}>
@@ -80,21 +94,12 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
             ) : (
               <></>
             )}
+            {options.addHomeLink ? home() : <></>}
           </>
         ) : (
           <></>
         )}
-        {options.showReturnHome ? (
-          <span class="return-home">
-            <em>
-              <a href={"/"} style={["color: inherit", "font-weight: inherit"].join(";")}>
-                home
-              </a>
-            </em>
-          </span>
-        ) : (
-          <></>
-        )}
+        {options.showReturnHome ? home() : <></>}
       </p>
     )
   }

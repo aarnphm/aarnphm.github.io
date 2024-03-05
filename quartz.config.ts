@@ -1,5 +1,6 @@
 import { QuartzConfig } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
+import * as Component from "./quartz/components"
 
 /**
  * Quartz 4.0 Configuration
@@ -85,7 +86,13 @@ const config: QuartzConfig = {
       Plugin.AliasRedirects(),
       Plugin.ComponentResources({ fontOrigin: "local" }),
       Plugin.ContentPage(),
-      Plugin.PostPage(),
+      Plugin.PostPage({
+        beforeBody: [
+          Component.ArticleTitle(),
+          Component.ContentMeta({ addHomeLink: true }),
+          Component.TagList(),
+        ],
+      }),
       Plugin.FolderPage(),
       Plugin.TagPage(),
       Plugin.CuriusPage(),
