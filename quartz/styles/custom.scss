@@ -119,51 +119,52 @@ pre.poetry {
   }
 }
 
-@media all and (min-width: $fullPageWidth) {
-  a {
-    hyphens: none;
+@mixin links {
+  &::before {
+    content: " ";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    color: inherit;
+    background-image: linear-gradient(var(--light), var(--light)),
+      linear-gradient(var(--light), var(--light)), linear-gradient(currentColor, currentColor);
+    background-size:
+      1px 0.6em,
+      1px 0.1em,
+      1px 1em;
+    background-position:
+      0 0,
+      0 100%,
+      0 calc(100% - 0.1em);
+    background-repeat: no-repeat;
+  }
 
-    &.internal,
-    &.internal.tag-link {
-      background-color: unset;
-    }
+  margin: 0 0.08em;
+  padding-left: 0.3em;
+  position: relative;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 1px 1px;
+  background-repeat: repeat-x;
+  background-position: 0% calc(100% - 0.1em);
+}
 
-    &.internal.tag-link {
-      border-radius: unset;
-      padding: 0;
-    }
+a {
+  &.internal {
+    background-color: unset;
+  }
 
-    &.internal.tag-link,
-    &.internal.alias {
-      &::before {
-        content: " ";
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        top: 0;
-        width: 1px;
-        height: 100%;
-        color: inherit;
-        background-image: linear-gradient(var(--light), var(--light)),
-          linear-gradient(var(--light), var(--light)), linear-gradient(currentColor, currentColor);
-        background-size:
-          1px 0.6em,
-          1px 0.1em,
-          1px 1em;
-        background-position:
-          0 0,
-          0 100%,
-          0 calc(100% - 0.1em);
-        background-repeat: no-repeat;
-      }
+  &.internal.tag-link {
+    @include links;
 
-      margin: 0 0.08em;
-      padding-left: 0.3em;
-      position: relative;
-      background-image: linear-gradient(currentColor, currentColor);
-      background-size: 1px 1px;
-      background-repeat: repeat-x;
-      background-position: 0% calc(100% - 0.1em);
+    border-radius: unset;
+    background-color: unset;
+  }
+  @media all and (min-width: $fullPageWidth) {
+    &.internal.alias:not(.popover):not(.popover *) {
+      @include links;
     }
   }
 }
@@ -393,6 +394,12 @@ audio::-webkit-media-controls-panel {
 
 #graph-container {
   background-color: var(--light);
+}
+
+.popover > .popover-inner,
+.graph > .graph-outer {
+  border-radius: unset;
+  border-color: var(--gray);
 }
 
 .page {
