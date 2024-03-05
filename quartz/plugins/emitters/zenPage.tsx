@@ -44,8 +44,8 @@ export const ZenPage: QuartzEmitterPlugin = () => {
     ...sharedPageComponents,
     beforeBody: [],
     pageBody: ZenContent(),
-    left: [Meta],
-    right: [],
+    left: [],
+    right: [Meta],
   }
 
   const { head: Head, header, beforeBody, pageBody, left, right, footer: Footer } = opts

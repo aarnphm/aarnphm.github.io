@@ -94,7 +94,7 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
                         <span class="landing-mspan">
                           {formatDate(getDate(cfg, page)!, cfg.locale)}
                         </span>
-                        {title}
+                        <span class="landing-mtitle">{title}</span>
                       </div>
                     </a>
                   </li>

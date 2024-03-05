@@ -5,6 +5,14 @@ body[data-slug="index"] {
   cursor: crosshair;
   overflow-x: hidden;
 
+  @media all and (min-width: $fullPageWidth) {
+    .page {
+      .center {
+        width: $pageWidth + calc($sidePanelWidth / 2);
+      }
+    }
+  }
+
   & > * {
     font-family: var(--bodyFont);
   }
@@ -98,6 +106,11 @@ body[data-slug="index"] {
   & > li {
     & .landing-meta {
       display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+
+    & .landing-mtitle {
     }
 
     & .landing-mspan {
@@ -105,6 +118,7 @@ body[data-slug="index"] {
       white-space: nowrap;
       flex-shrink: 1;
       padding-right: 2rem;
+      text-overflow: ellipsis;
     }
   }
 }

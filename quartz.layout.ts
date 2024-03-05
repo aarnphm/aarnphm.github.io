@@ -49,7 +49,7 @@ const defaultOptions: Options = {
 const left = (userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }
 
-  const left: QuartzComponent[] = [Component.Search(), Component.MobileOnly(Component.Spacer())]
+  const left: QuartzComponent[] = [Component.Search()]
 
   if (opts.enableDarkmode) left.push(Component.Darkmode())
 
@@ -76,9 +76,9 @@ const left = (userOpts?: Partial<Options>) => {
       }),
     )
 
-  left.push(...desktopOnly.flatMap(Component.DesktopOnly))
+  desktopOnly.push(Component.Keybind({ enableTooltip: false }))
 
-  left.push(Component.Keybind({ enableTooltip: false }))
+  left.push(...desktopOnly.flatMap(Component.DesktopOnly))
 
   return { left }
 }
@@ -86,6 +86,7 @@ const left = (userOpts?: Partial<Options>) => {
 const right = () => {
   return {
     right: [
+      ...left().left,
       Component.Graph({ globalGraph, localGraph: { showTags: false } }),
       Component.DesktopOnly(Component.TableOfContents()),
       Component.Backlinks(),
@@ -112,8 +113,8 @@ const enableRecentNotes = false
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
   ...beforeBody(),
-  ...left(),
   ...right(),
+  left: [],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)

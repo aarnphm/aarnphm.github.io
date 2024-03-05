@@ -189,13 +189,16 @@ export function renderPage(
   const Body = BodyConstructor()
   const Landing = LandingConstructor()
 
-  const LeftComponent = (
-    <div class="left sidebar">
-      {left.map((BodyComponent) => (
-        <BodyComponent {...componentData} />
-      ))}
-    </div>
-  )
+  const LeftComponent =
+    left.length > 0 ? (
+      <div class="left sidebar">
+        {left.map((BodyComponent) => (
+          <BodyComponent {...componentData} />
+        ))}
+      </div>
+    ) : (
+      <></>
+    )
 
   const RightComponent = (
     <div class="right sidebar">

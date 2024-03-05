@@ -48,9 +48,8 @@ body {
       }
     }
 
-    .center {
-      border: unset !important;
-      margin-bottom: 0;
+    .right {
+      display: flex !important;
     }
 
     & .highlight {

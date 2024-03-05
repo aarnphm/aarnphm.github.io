@@ -30,8 +30,8 @@ export const PoetryPage: QuartzEmitterPlugin = () => {
     header: [],
     beforeBody: [ArticleTitle(), ContentMeta({ showReadingTime: false, showReturnHome: true })],
     pageBody: Content(),
-    left: [Meta],
-    right: [],
+    left: [],
+    right: [Meta],
     footer: PoetryFooter,
   }
 
