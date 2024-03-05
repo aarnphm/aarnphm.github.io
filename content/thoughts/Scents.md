@@ -4,7 +4,11 @@ tags:
   - evergreen
   - self
 date: "2024-01-07"
+navigation:
+  - "[[posts/to the past lovers]]"
+  - "[[thoughts/Jax]]"
 title: Scents
+zen: true
 ---
 
 ### like.

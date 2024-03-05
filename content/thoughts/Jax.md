@@ -7,10 +7,8 @@ date: "2022-11-07"
 title: Jax
 ---
 
-### Jax
-
-- Numpy + [[thoughts/Autograd|Autograd]]. Use [[thoughts/XLA|XLA]] to compile and run NumPy code on accelerators.
-- Asynchronous dispatch, for sync use `block_until_ready()`
+Numpy + [[thoughts/Autograd|Autograd]]. Use [[thoughts/XLA|XLA]] to compile and run NumPy code on accelerators.
+Asynchronous dispatch, for sync use `block_until_ready()`
 
 ```python
 import jax.numpy as jnp
