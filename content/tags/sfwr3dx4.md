@@ -1,8 +1,4 @@
 ---
-id: index
-tags:
-  - university
-  - sfwr3dx4
 date: "2024-01-09"
 title: Dynamic Models and Control of Physical Systems
 ---

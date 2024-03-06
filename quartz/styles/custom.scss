@@ -432,8 +432,7 @@ audio::-webkit-media-controls-panel {
 .right {
   display: grid !important;
   gap: 1.1rem !important;
-  grid-template-columns: 1fr;
-  grid-template-rows: repeat(4, min-content);
+  grid-template-rows: min-content;
   align-items: center;
   margin-top: $topSpacing !important;
 }
@@ -468,17 +467,12 @@ audio::-webkit-media-controls-panel {
 
 .right {
   .search {
-    grid-area: 1 / 1 / 2 / 2;
-  }
-
-  .darkmode {
-    grid-area: 1 / 2 / 2 / 3;
-    height: initial;
-    align-items: last baseline;
+    grid-area: 1 / 1 / 2 / 3;
   }
 
   .keybind {
     grid-area: 1 / 3 / 2 / 4;
+    justify-self: end;
   }
 
   .graph {
@@ -496,12 +490,18 @@ audio::-webkit-media-controls-panel {
   @media all and (max-width: $fullPageWidth) {
     align-items: unset;
 
+    .search {
+      max-width: unset;
+      grid-area: 1 / 1 / 2 / 3;
+    }
+
     .graph {
       grid-area: 2 / 1 / 2 / 1;
+      max-width: 22rem;
     }
 
     .backlinks {
-      grid-area: 2 / 2 / 2 / 4;
+      grid-area: 2 / 2 / 2 / 3;
     }
   }
 }

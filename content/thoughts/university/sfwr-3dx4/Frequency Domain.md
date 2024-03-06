@@ -88,14 +88,17 @@ $$
 \end{aligned}
 $$
 
-> [!important]
-> $C(s)=G(s)R(s)$
+> [!important] Transfer function
+> $$
+> G(s)=\frac{C(s)}{R(s)}
+> $$
 
-> $G(s)$ is the **transfer function**
 
 Q:  $G(s) = \frac{1}{S+2}$. Input: $u(t)$. What is $y(t)$ ?
 
-$$Y(s) = G(s)u(s) \rightarrow Y(s)=\frac{1}{s(s+2)} = \frac{A}{s} + \frac{B}{s+2} = \frac{1}{2\cdot{s}} - \frac{1}{2\cdot{(s+2)}}$$
+$$
+Y(s) = G(s)\cdot u(s) \rightarrow Y(s)=\frac{1}{s(s+2)} = \frac{A}{s} + \frac{B}{s+2} = \frac{1}{2\cdot{s}} - \frac{1}{2\cdot{(s+2)}}
+$$
 $$y(t) = -\frac{1}{2}(1-e^{-2t})u(t)$$
 
 ## Inverse Laplace transform
@@ -132,7 +135,9 @@ $$
 5. **Determine Unknown**
 
 ## Stability analysis using Root of $D(s)$
-> roots of $D(s)$ as **poles**
+
+> [!important] roots of $D(s)$
+roots of $D(s)$ as **poles**
 
 $$
 G(s) = \frac{N(s)}{D(s)} = \frac{N(s)}{\prod_{j=1}^{n}(s+p_j)} = \sum_{j=1}^{n}{\frac{A_j}{s+p_j}}
@@ -144,6 +149,13 @@ $$
 g(t) = \sum_{j=1}^{n}{\mathcal{L}^{-1}\{\frac{A_j}{(s+p_j)}\}} = \sum_{j=1}^{n}{A_je^{-p_jt}}
 $$
 
+### stability analysis
+
+> [!important]
+> If $\sigma_i > 0$ then pole is in the left side of imaginary plane, and system is ==**stable** ==
+
+
+
 ### Complex root
 
 For poles at $s=\sigma_i \pm j\omega$ we get
@@ -153,3 +165,17 @@ $$
 $$
 
 Wants to be on LHP for time-function associated with $s$ plane to be _stable_
+
+## Impedance of Inductor
+
+$$
+Z(s) = \frac{V(s)}{I(s)} = Ls
+$$
+since the voltage-current relation for an inductor is $v(t) = L\frac{di(t)}{dt}$
+
+## Impedance of Capacitor
+
+$$
+Z(s) = \frac{V(s)}{I(s)} = \frac{1}{Cs}
+$$
+since the voltage-current relation for a capacitor is $v(t) = \frac{1}{C} \int_0^{t}{i(\tau) d\tau}$
