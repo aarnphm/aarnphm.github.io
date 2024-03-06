@@ -59,7 +59,6 @@ const config: QuartzConfig = {
         priority: ["frontmatter", "git", "filesystem"],
       }),
       Plugin.Pseudocode(),
-      Plugin.ObsidianFlavoredMarkdown({ enableCheckbox: true }),
       Plugin.Latex({ renderEngine: "katex" }),
       Plugin.SyntaxHighlighting({
         theme: {
@@ -68,6 +67,7 @@ const config: QuartzConfig = {
         },
         keepBackground: true,
       }),
+      Plugin.ObsidianFlavoredMarkdown({ enableCheckbox: true }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.TableOfContents(),
       Plugin.CrawlLinks({

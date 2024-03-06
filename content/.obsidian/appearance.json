@@ -1,8 +1,8 @@
 {
   "accentColor": "",
   "cssTheme": "Minimal",
-  "interfaceFontFamily": "Charter,Bricolage Grotesque,EB Garamond,Berkeley Mono",
-  "textFontFamily": "Charter,Cardo,EB Garamond,Bricolage Grotesque",
+  "interfaceFontFamily": "Cardo,Bricolage Grotesque,Helvetica,Charter,EB Garamond,Berkeley Mono",
+  "textFontFamily": "Cardo,Charter,EB Garamond,Bricolage Grotesque",
   "monospaceFontFamily": "Berkeley Mono",
   "baseFontSize": 16,
   "translucency": true,
@@ -10,6 +10,6 @@
   "enabledCssSnippets": [
     "snippet"
   ],
-  "baseFontSizeAction": true,
+  "baseFontSizeAction": false,
   "theme": "moonstone"
 }

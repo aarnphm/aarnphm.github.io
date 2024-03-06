@@ -16,9 +16,11 @@
   "slash-command",
   "editor-status",
   "bookmarks",
+  "markdown-importer",
   "random-note",
   "outline",
   "word-count",
+  "slides",
   "audio-recorder",
   "workspaces",
   "file-recovery"

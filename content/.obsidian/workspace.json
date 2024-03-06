@@ -62,7 +62,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/lab3/prelab.md",
+                "file": "thoughts/university/sfwr-3dx4/a2/content.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -80,7 +80,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -130,7 +130,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 354.5
+    "width": 354.5,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -146,7 +147,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/Overton Window.md",
+                "file": "thoughts/university/sfwr-3dx4/a2/content.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -163,7 +164,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/Overton Window.md",
+                "file": "thoughts/university/sfwr-3dx4/a2/content.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -186,7 +187,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/Overton Window.md"
+                "file": "thoughts/university/sfwr-3dx4/a2/content.md"
               }
             }
           },
@@ -216,7 +217,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/Overton Window.md"
+                "file": "thoughts/university/sfwr-3dx4/a2/content.md"
               }
             }
           }
@@ -239,17 +240,27 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false,
       "obsidian-excalidraw-plugin:Create new drawing": false,
       "random-note:Open random note": false,
-      "workspaces:Manage workspace layouts": false
+      "workspaces:Manage workspace layouts": false,
+      "markdown-importer:Open format converter": false
     }
   },
-  "active": "968241bdfbdfe208",
+  "active": "59fd19f001b80287",
   "lastOpenFiles": [
-    "thoughts/dialectics.md",
-    "thoughts/university/sfwr-3dx4/lab3/prelab.pdf",
     "thoughts/university/sfwr-3dx4/lab3/prelab.md",
+    "thoughts/university/sfwr-3dx4/midterm-sample-q-soln.pdf",
+    "thoughts/university/sfwr-3dx4/midterm-sample-q-soln.pdf.crdownload",
+    "thoughts/university/sfwr-3dx4/midterm-sample-q.pdf",
+    "thoughts/university/sfwr-3dx4/lab3/phama10_400232791_prelab_3.pdf",
+    "thoughts/university/sfwr-3dx4/images/bode-plot-3.png",
+    "thoughts/university/sfwr-3dx4/images/bode-plot-2.png",
+    "thoughts/university/sfwr-3dx4/images/bode-plot-2a.png",
+    "thoughts/university/sfwr-3dx4/lab3/prelab.pdf",
+    "thoughts/university/sfwr-3dx4/images/sine wave signals.png",
+    "thoughts/university/sfwr-3dx4/images/Saw tooth signal.png",
+    "thoughts/Overton Window.md",
+    "thoughts/dialectics.md",
     "thoughts/university/sfwr-3dx4/lab3/content.md",
     "thoughts/ethics.md",
-    "thoughts/Overton Window.md",
     "thoughts/university/sfwr-3dx4/images/Square wave signal.png",
     "thoughts/Garbage in Garbage out.md",
     "quotes.md",
@@ -268,15 +279,11 @@
     "thoughts/papers/Probabilistic Robotics.pdf",
     "thoughts/university/sfwr-3dx4/root_locus_control.pdf.crdownload",
     "thoughts/university/sfwr-3dx4/root_locus.pdf.crdownload",
-    "thoughts/university/sfwr-3dx4/steady_state_error.pdf.crdownload",
     "thoughts/large models.md",
     "thoughts/Agency.md",
     "thoughts/action theory.md",
     "thoughts/education.md",
     "thoughts/papers/index.md",
-    "thoughts/papers/A Persian Folk Method of Figuring Interest.pdf",
-    "thoughts/papers/Fabricating intimacy, reading the dressing room in Victorian Literature.pdf",
-    "thoughts/papers/Nietzsche's Chaos sive natura.pdf",
     "thoughts/Camus.md",
     "posts/Why should you learn philosophy during university.md",
     "posts/recommendation system.md",
@@ -284,11 +291,6 @@
     "posts/images/aaron-younglings.png",
     "posts/images/fun-happy 1.png",
     "posts/images/me-kid 1.png",
-    "posts/images/up-to-some-devious-shit 1.png",
-    "posts/images/another-younglings-poggerman 1.png",
-    "posts/images/before-leaving-canada 1.png",
-    "posts/images/dank-aaron 1.png",
-    "posts/images/furama 1.png",
     "Untitled.canvas"
   ]
 }
