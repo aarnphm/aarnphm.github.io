@@ -65,7 +65,7 @@ export default ((userOpts?: Partial<Options>) => {
                 <li>
                   <div id="shortcuts">
                     <div>
-                      <kbd id="clickable-kbd" data-keybind={revert(key)}>
+                      <kbd id="clickable-kbd" data-keybind={`${revert(key)}`}>
                         {convert(key)}
                       </kbd>
                     </div>

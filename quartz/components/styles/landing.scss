@@ -79,6 +79,8 @@ body[data-slug="index"] {
     .recent-links,
     .notes-container {
       display: flex;
+
+      font-family: "ITCGaramondStdLtCond", var(--bodyFont);
     }
 
     .recent-links {
@@ -96,6 +98,7 @@ body[data-slug="index"] {
   margin-left: 0;
   font-variant-numeric: tabular-nums;
   margin-top: 0;
+  margin-block-end: 0;
 
   & li {
     list-style: none;
@@ -105,20 +108,21 @@ body[data-slug="index"] {
 
   & > li {
     & .landing-meta {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-    }
+      display: grid;
+      grid-template-columns: 6rem auto;
+      gap: 2rem;
+      font-size: 1.272rem;
 
-    & .landing-mtitle {
+      & > * {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
     }
 
     & .landing-mspan {
       color: var(--gray);
-      white-space: nowrap;
-      flex-shrink: 1;
-      padding-right: 2rem;
-      text-overflow: ellipsis;
+      justify-self: start;
     }
   }
 }

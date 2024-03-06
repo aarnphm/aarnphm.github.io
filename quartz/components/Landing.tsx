@@ -30,6 +30,7 @@ export const SocialAlias = {
   substack: "https://livingalonealone.com",
   curius: "/curius",
   contact: "mailto:contact@aarnphm.xyz",
+  "site source": "https://github.com/aarnphm/sites",
 }
 
 type AliasLinkProp = {

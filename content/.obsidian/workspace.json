@@ -44,12 +44,12 @@
             }
           },
           {
-            "id": "622647dc1810701c",
+            "id": "968241bdfbdfe208",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/Garbage in Garbage out.md",
+                "file": "thoughts/Overton Window.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -57,20 +57,30 @@
             }
           },
           {
-            "id": "968241bdfbdfe208",
+            "id": "622647dc1810701c",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/dialectics.md",
+                "file": "thoughts/university/sfwr-3dx4/lab3/prelab.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
               }
             }
+          },
+          {
+            "id": "fabff4b739aa6187",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-3dx4/lab3/prelab.pdf"
+              }
+            }
           }
         ],
-        "currentTab": 4
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -120,8 +130,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 354.5,
-    "collapsed": true
+    "width": 354.5
   },
   "right": {
     "id": "5221182814b155cf",
@@ -137,7 +146,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/dialectics.md",
+                "file": "thoughts/Overton Window.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -154,7 +163,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/dialectics.md",
+                "file": "thoughts/Overton Window.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -177,7 +186,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/dialectics.md"
+                "file": "thoughts/Overton Window.md"
               }
             }
           },
@@ -207,7 +216,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/dialectics.md"
+                "file": "thoughts/Overton Window.md"
               }
             }
           }
@@ -235,16 +244,22 @@
   },
   "active": "968241bdfbdfe208",
   "lastOpenFiles": [
-    "thoughts/papers/Group_Theory_and_QFT.pdf",
+    "thoughts/dialectics.md",
+    "thoughts/university/sfwr-3dx4/lab3/prelab.pdf",
+    "thoughts/university/sfwr-3dx4/lab3/prelab.md",
+    "thoughts/university/sfwr-3dx4/lab3/content.md",
+    "thoughts/ethics.md",
+    "thoughts/Overton Window.md",
+    "thoughts/university/sfwr-3dx4/images/Square wave signal.png",
     "thoughts/Garbage in Garbage out.md",
+    "quotes.md",
+    "thoughts/university/sfwr-3dx4/time_response.pdf",
+    "thoughts/papers/Group_Theory_and_QFT.pdf",
     "thoughts/Alignment.md",
     "thoughts/monetary.md",
-    "thoughts/university/sfwr-3dx4/time_response.pdf",
     "thoughts/aesthetic value.md",
-    "quotes.md",
     "thoughts/Chaos.md",
     "thoughts/taste.md",
-    "thoughts/dialectics.md",
     "posts/Chaos.md",
     "_index.md",
     "influence.md",
@@ -262,15 +277,9 @@
     "thoughts/papers/A Persian Folk Method of Figuring Interest.pdf",
     "thoughts/papers/Fabricating intimacy, reading the dressing room in Victorian Literature.pdf",
     "thoughts/papers/Nietzsche's Chaos sive natura.pdf",
-    "thoughts/papers/update.py",
-    "thoughts/papers/Knowledge as Masculine Heroism or Embodied Perception.pdf",
     "thoughts/Camus.md",
     "posts/Why should you learn philosophy during university.md",
     "posts/recommendation system.md",
-    "posts/social interactions.md",
-    "posts/broken, but functional.md",
-    "thoughts/logic.md",
-    "thoughts/displacement.md",
     "posts/images/passage-giorgio-m.jpg",
     "posts/images/aaron-younglings.png",
     "posts/images/fun-happy 1.png",
@@ -280,7 +289,6 @@
     "posts/images/before-leaving-canada 1.png",
     "posts/images/dank-aaron 1.png",
     "posts/images/furama 1.png",
-    "posts/images/kid-aaron-pog 1.png",
     "Untitled.canvas"
   ]
 }

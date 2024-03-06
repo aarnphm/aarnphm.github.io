@@ -16,4 +16,4 @@ I'm pretty bullish on high [[thoughts/Agency|agency]] and fulfil one's [[thought
 
 Currently, I'm building [serving infrastructure](https://bentoml.com) for [[thoughts/Machine learning|ml]] systems and explore our interaction with [[thoughts/large models|large models]].
 
-You are currently at the _index_ of my [[thoughts/Hypertext|hypertext]] [[thoughts/Digital garden|digital garden]]. Feel free to explore around and let me know if you have any questions or just want to chat. I'm best reached [here](https://twitter.com/aarnphm_) or [`contact[at]aarnphm[dot]xyz`](mailto:contact@aarnphm.xyz) .
+You are currently at the _index_ of my [[thoughts/Hypertext|hypertext]] [[thoughts/Digital garden|digital garden]]. Feel free to explore around and let me know if you have any questions or just want to chat. I'm best reached [here](https://twitter.com/aarnphm_) or [`contact[at]aarnphm[dot]xyz`](mailto:contact@aarnphm.xyz).
