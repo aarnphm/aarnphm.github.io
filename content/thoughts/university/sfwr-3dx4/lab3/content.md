@@ -7,7 +7,7 @@ date: "2024-02-28"
 title: Voltage-controlled electromechanical systems
 ---
 
-See [[thoughts/university/sfwr-3dx4/lab3/lab3.pdf|lab notes]]
+See [[thoughts/university/sfwr-3dx4/lab3/lab3.pdf|lab notes]] and [[thoughts/university/sfwr-3dx4/lab3/prelab|prelab.]]
 
 
 > [!question]
