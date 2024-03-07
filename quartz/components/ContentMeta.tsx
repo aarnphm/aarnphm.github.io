@@ -47,7 +47,7 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
     }
 
     const home = () => (
-      <span class="return-home">
+      <li class="return-home">
         <a
           href={"/"}
           class="internal alias"
@@ -55,42 +55,47 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
         >
           home
         </a>
-      </span>
+      </li>
     )
 
     return (
-      <p class={classNames(displayClass, "content-meta")}>
+      <ul class={classNames(displayClass, "content-meta")}>
         {options.showReadingTime ? (
           <>
-            <span class="date-range">
-              {created !== undefined ? (
+            {created !== undefined ? (
+              <li>
                 <span class="page-creation" title="Date de création du contenu de la page">
                   <em>{created}</em>
                 </span>
-              ) : (
-                <></>
-              )}
-              {"–"}
-              {/* TODO: Add support for latest markdown revision popover */}
-              {modified !== undefined ? (
-                <span class="page-source">
-                  <a class="ref-source">
-                    <span
-                      class="page-modification"
-                      title="Date de modification du contenu de la page"
-                    >
-                      <em>{modified}</em>
-                    </span>
-                  </a>
-                </span>
-              ) : (
-                <></>
-              )}
-            </span>
+              </li>
+            ) : (
+              <></>
+            )}
+            {modified !== undefined ? (
+              <li>
+                <a class="ref-source internal">
+                  <span
+                    class="page-modification"
+                    title="Date de modification du contenu de la page"
+                  >
+                    <em>{modified}</em>
+                  </span>
+                  <div class="popover">
+                    <div class="popover-inner" data-content-type="text/html">
+                      <pre data-language="markdown">{fileData.markdown}</pre>
+                    </div>
+                  </div>
+                </a>
+              </li>
+            ) : (
+              <></>
+            )}
             {reading !== undefined ? (
-              <span class="reading-time" title="Temps de lecture estimé">
-                {reading}
-              </span>
+              <li>
+                <span class="reading-time" title="Temps de lecture estimé">
+                  {reading}
+                </span>
+              </li>
             ) : (
               <></>
             )}
@@ -100,7 +105,7 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
           <></>
         )}
         {options.showReturnHome ? home() : <></>}
-      </p>
+      </ul>
     )
   }
 
