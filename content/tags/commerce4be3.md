@@ -1,12 +1,12 @@
 ---
-id: index
+date: 2024-01-10
+description: Introduction to Compensation theory.
+title: Compensations
 tags:
   - university
   - commerce4be3
-date: "2024-01-10"
-title: Compensations
+id: commerce4be3
 ---
-
 Prof. [Thanuja Thananayagam](mailto:thananat@mcmaster.ca)
 
 Research interests: Human capital theory
