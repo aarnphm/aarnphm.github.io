@@ -1,9 +1,11 @@
 import { formatDate, getDate } from "./Date"
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import readingTime from "reading-time"
 import contentMetaStyle from "./styles/contentMeta.scss"
 import { classNames } from "../util/lang"
 import { i18n } from "../i18n"
+//@ts-ignore
+import script from "./scripts/content-meta.inline"
 
 interface ContentMetaOptions {
   /**
@@ -24,7 +26,11 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
   // Merge options with defaults
   const options: ContentMetaOptions = { ...defaultOptions, ...opts }
 
-  const ContentMetadata = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
+  const ContentMetadata: QuartzComponent = ({
+    cfg,
+    fileData,
+    displayClass,
+  }: QuartzComponentProps) => {
     const text = fileData.text
 
     if (!text) return null
@@ -73,14 +79,14 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
             )}
             {modified !== undefined ? (
               <li>
-                <a class="ref-source internal">
+                <a class="ref-source">
                   <span
                     class="page-modification"
                     title="Date de modification du contenu de la page"
                   >
                     <em>{modified}</em>
                   </span>
-                  <div class="popover">
+                  <div class="popover" id="content-popover">
                     <div class="popover-inner" data-content-type="text/html">
                       <pre data-language="markdown">{fileData.markdown}</pre>
                     </div>
@@ -110,5 +116,7 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
   }
 
   ContentMetadata.css = contentMetaStyle
+  ContentMetadata.afterDOMLoaded = script
+
   return ContentMetadata
 }) satisfies QuartzComponentConstructor

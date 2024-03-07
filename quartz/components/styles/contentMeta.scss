@@ -13,6 +13,14 @@
     color: var(--darkgray);
   }
 
+  #content-popover {
+    display: none;
+
+    &[data-show] {
+      display: block;
+    }
+  }
+
   .ref-source {
     font-style: inherit;
     font-weight: inherit;
