@@ -331,7 +331,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
                   children: [
                     {
                       type: "text",
-                      value: `#${tag}`,
+                      value: tag,
                     },
                   ],
                 }
