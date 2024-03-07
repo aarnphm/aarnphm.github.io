@@ -28,13 +28,15 @@ Stability and Poles
 
 > to have all roots in open left hand plane is to have all coefficients of polynomial to be present and have same sign.
 
-### [[thoughts/Routh-Hurwitz criterion|Routh-Hurwitz criterion]]
+### [[thoughts/Routh-Hurwitz criterion|Routh-Hurwitz criterion]] ^routh-table
 
 Given
 
 $$
 \frac{N(s)}{a_4s^4 + a_3s^3 + a_2s^2 + a_1s + a_0}
 $$
+
+The characteristic equation is $a_4s^4 + a_3s^3 + a_2s^2 + a_1s + a_0 = 0$
 
 Create a basic Routh table
 
@@ -89,3 +91,6 @@ c_1 & 0 \\
 $$
 
 > states that the number of poles in the right half plane is equal to the number of sign changes in the first coefficient column of the table
+
+> [!important] stability
+> System is deemed **Stable** if there are no sign changes in the first column

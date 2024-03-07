@@ -20,13 +20,13 @@ Suicide is the solution for the absurd:
 
 as a paradox:
 - Suicide is the justification of meaning of life <- the most important question for philosophers
-- From Nietzchean prose, those who say "no" acts as if they said "yes": Schopenhauer
+- From [[thoughts/Philosophy and Nietzsche|Nietzchean]] prose, those who say "no" acts as if they said "yes": Schopenhauer
 
 Fantasise the act of eluding:
 
 > Hope of another life one must "deserve" or trickery those who lives not for life itself but for some great idea that will transcend it, refine it, give it meaning, and betray it.
 
-Logic is easy, but it is impossible to be logical to bitter end. It is considered truth if one decided to die at the hand of self, but does that mean life itself just have no meaning? 
+Logic is easy, but it is impossible to be logical to bitter end. It is considered truth if one decided to die at the hand of self, but does that mean life itself just have no meaning?
 
 > **Absurd reasoning** is based on whether there are [[thoughts/logic|logic]] to reasons for men who died by their "own hands consequently follow to its conclusion of their emotional inclination"
 

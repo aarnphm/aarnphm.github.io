@@ -8,4 +8,7 @@ title: Block Diagrams
 
 See also [[thoughts/university/sfwr-3dx4/block_diagrams.pdf|sides]]
 
-### Reduction via Familiar Forms
+## Moving through summing junction
+
+![[thoughts/university/sfwr-3dx4/images/summing junction.png]]
+## Reduction via Familiar Forms

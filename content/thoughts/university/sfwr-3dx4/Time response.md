@@ -6,6 +6,7 @@ date: "2024-01-31"
 title: Time response
 ---
 ## first order.
+![[thoughts/university/sfwr-3dx4/images/time constant.png]]
 ## second order.
 
 $$

@@ -45,7 +45,7 @@ We then have $\omega_n$ and $\zeta$ to solve for $K_p$ and $K_d$:
 
 $$
 \begin{align*}
-7+K_p &= 2\zeta\omega_n \\\
+7+K_pK_d &= 2\zeta\omega_n \\\
 5+K_d &= \omega_n^2
 \end{align*}
 $$

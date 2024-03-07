@@ -2,7 +2,7 @@
 id: representations
 tags:
   - seed
-  - philophy
+  - philosophy
 date: 2024-02-25
 title: representations.
 ---

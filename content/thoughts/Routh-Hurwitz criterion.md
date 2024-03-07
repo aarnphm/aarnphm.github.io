@@ -6,11 +6,11 @@ date: "2024-02-06"
 title: Routh-Hurwitz criterion
 ---
 
-> Condition for the stability of linear time-invariant (LTI) [[thoughts/university/sfwr-3dx4/index|control system]]
+> Condition for the stability of linear time-invariant (LTI) [[tags/sfwr3dx4|control system]]
 
 > [!important] sufficient condition for Stability
 > All coefficients in the first column complete Routh array are the same sign
 
-For a system with transfer function $\hat{G}(s) =  \frac{\mathcal{n}(s)}{\mathcal{d}(s)}$
+For a system with transfer function $\hat{G}(s) =  \frac{\mathcal{N}(s)}{\mathcal{D}(s)}$
 
-Input-output stability imples that all root of $\mathcal{d}(s)$ are in the Left Half Plane (LHP)
+Input-output stability implies that all root of $\mathcal{d}(s)$ are in the Left Half Plane (LHP)

@@ -61,9 +61,12 @@
             "id": "f4cf7257ec90defc",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/state_space.pdf"
+                "file": "thoughts/university/sfwr-3dx4/Nous.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
               }
             }
           },
@@ -88,7 +91,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -117,7 +120,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:philosophy",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -154,7 +157,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/nous.md",
+                "file": "thoughts/university/sfwr-3dx4/steady-state error.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -171,7 +174,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/nous.md",
+                "file": "thoughts/university/sfwr-3dx4/steady-state error.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -194,7 +197,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/nous.md"
+                "file": "thoughts/university/sfwr-3dx4/steady-state error.md"
               }
             }
           },
@@ -224,7 +227,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/nous.md"
+                "file": "thoughts/university/sfwr-3dx4/steady-state error.md"
               }
             }
           }
@@ -264,6 +267,45 @@
             "type": "tabs",
             "children": [
               {
+                "id": "cce40094d30b78ca",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "thoughts/university/sfwr-3dx4/Nous.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              },
+              {
+                "id": "c6d6d8f263090454",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "thoughts/university/sfwr-3dx4/steady-state error.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              },
+              {
+                "id": "108516c12ab967c7",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "thoughts/university/sfwr-3dx4/stability.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              },
+              {
                 "id": "c0ca41208c501bbd",
                 "type": "leaf",
                 "state": {
@@ -277,12 +319,25 @@
                 }
               },
               {
-                "id": "cce40094d30b78ca",
+                "id": "ba766bf5271cdfb0",
                 "type": "leaf",
                 "state": {
                   "type": "markdown",
                   "state": {
-                    "file": "thoughts/university/sfwr-3dx4/nous.md",
+                    "file": "thoughts/university/sfwr-3dx4/Time response.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              },
+              {
+                "id": "9e6df924e797db0b",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "thoughts/university/sfwr-3dx4/Block Diagrams.md",
                     "mode": "source",
                     "backlinks": true,
                     "source": false
@@ -301,68 +356,81 @@
                     "source": false
                   }
                 }
+              },
+              {
+                "id": "4e07e787b7c2cf56",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "thoughts/university/sfwr-3dx4/a2/content.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
               }
             ],
             "currentTab": 1
           }
         ],
         "direction": "vertical",
-        "x": 3303,
-        "y": 889,
-        "width": 1595,
-        "height": 1769,
+        "x": 103,
+        "y": 108,
+        "width": 1850,
+        "height": 1157,
         "maximize": false,
         "zoom": 0
       }
     ]
   },
-  "active": "cce40094d30b78ca",
+  "active": "c6d6d8f263090454",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-3dx4/a2/content.md",
+    "thoughts/university/sfwr-3dx4/stability.pdf",
+    "thoughts/university/sfwr-3dx4/block_diagrams.pdf",
+    "thoughts/university/sfwr-3dx4/Nous.md",
+    "thoughts/university/sfwr-3dx4/time_response.pdf",
+    "thoughts/university/sfwr-3dx4/state_space.pdf",
+    "thoughts/university/sfwr-3dx4/steady_state_error.pdf",
+    "thoughts/university/sfwr-3dx4/State space representation.md",
+    "thoughts/university/sfwr-3dx4/Norman S. Nise - Control System Engineering-Wiley (2019).pdf",
+    "thoughts/university/sfwr-3dx4/frequency_domain.pdf",
+    "thoughts/university/sfwr-3dx4/midterm-sample-q-soln.pdf",
+    "thoughts/university/sfwr-3dx4/midterm-sample-q.pdf",
+    "thoughts/university/sfwr-3dx4/lab1/lab1.pdf",
+    "thoughts/university/sfwr-3dx4/lab1/content.md",
+    "thoughts/university/sfwr-3dx4/stability.md",
+    "thoughts/university/sfwr-3dx4/steady-state error.md",
+    "thoughts/university/sfwr-3dx4/images/steady-state error table.png",
+    "thoughts/university/sfwr-3dx4/images/stability comparison.png",
+    "thoughts/Routh-Hurwitz criterion.md",
+    "tags/sfwr3dx4.md",
+    "thoughts/university/sfwr-3dx4/index.md",
+    "thoughts/university/sfwr-3dx4/Time response.md",
+    "thoughts/university/sfwr-3dx4/images/time constant.png",
+    "thoughts/university/sfwr-3dx4/Block Diagrams.md",
+    "thoughts/university/sfwr-3dx4/images/summing junction.png",
+    "thoughts/university/sfwr-3dx4/images/block-diagram-algebra.png",
+    "tags/philosophy.md",
+    "thoughts/representations.md",
+    "thoughts/desire.md",
     "thoughts/university/sfwr-3dx4/images/laplace transform table.png",
     "thoughts/university/sfwr-3dx4/images/laplace theorem.png",
     "thoughts/university/sfwr-3dx4/images/electrical system equivalence.png",
-    "tags/sfwr3dx4.md",
-    "tags",
-    "thoughts/university/sfwr-3dx4/index.md",
-    "thoughts/university/sfwr-3dx4/state_space.pdf",
-    "thoughts/university/sfwr-3dx4/block_diagrams.pdf",
-    "thoughts/university/sfwr-3dx4/frequency_domain.pdf",
-    "thoughts/university/sfwr-3dx4/stability.pdf",
-    "thoughts/university/sfwr-3dx4/Block Diagrams.md",
-    "thoughts/university/sfwr-3dx4/steady_state_error.pdf",
-    "thoughts/university/sfwr-3dx4/Norman S. Nise - Control System Engineering-Wiley (2019).pdf",
-    "thoughts/university/sfwr-3dx4/nous.md",
-    "thoughts/university/sfwr-3dx4/State space representation.md",
-    "thoughts/university/sfwr-3dx4/time_response.pdf",
-    "thoughts/university/sfwr-3dx4/Time response.md",
     "thoughts/university/sfwr-3dx4/Frequency Domain.md",
-    "thoughts/university/sfwr-3dx4/a2/content.md",
     "quotes.md",
     "thoughts/university/sfwr-3dx4/notes.md",
     "thoughts/university/sfwr-3dx4/lab3/prelab.md",
-    "thoughts/university/sfwr-3dx4/midterm-sample-q-soln.pdf",
-    "thoughts/university/sfwr-3dx4/midterm-sample-q-soln.pdf.crdownload",
     "thoughts/university/sfwr-3dx4/images/bode-plot-3.png",
     "thoughts/university/sfwr-3dx4/images/bode-plot-2.png",
-    "thoughts/university/sfwr-3dx4/images/bode-plot-2a.png",
-    "thoughts/university/sfwr-3dx4/images/sine wave signals.png",
-    "thoughts/university/sfwr-3dx4/images/Saw tooth signal.png",
     "thoughts/Overton Window.md",
     "thoughts/dialectics.md",
     "thoughts/university/sfwr-3dx4/lab3/content.md",
     "thoughts/ethics.md",
-    "thoughts/university/sfwr-3dx4/images/Square wave signal.png",
     "thoughts/Garbage in Garbage out.md",
     "thoughts/Alignment.md",
     "thoughts/monetary.md",
-    "thoughts/aesthetic value.md",
-    "thoughts/Chaos.md",
-    "thoughts/taste.md",
-    "posts/Chaos.md",
-    "_index.md",
-    "influence.md",
-    "thoughts/TPU.md",
-    "posts/images/passage-giorgio-m.jpg",
     "Untitled.canvas"
   ]
 }
