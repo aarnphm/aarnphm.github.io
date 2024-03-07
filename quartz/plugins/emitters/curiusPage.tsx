@@ -64,14 +64,10 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
         }
       }
 
-      if (!componentData || !externalResources || !slug) {
-        throw new Error("CuriusPage: could not find curius file")
-      }
-
       return [
         await write({
           ctx,
-          content: renderPage(cfg, slug, componentData, opts, externalResources),
+          content: renderPage(cfg, slug!, componentData!, opts, externalResources!),
           slug: slug ?? ("curius" as FullSlug),
           ext: ".html",
         }),

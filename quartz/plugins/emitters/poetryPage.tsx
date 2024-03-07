@@ -28,7 +28,7 @@ export const PoetryPage: QuartzEmitterPlugin = () => {
   const opts: FullPageLayout = {
     head: HeadConstructor(),
     header: [],
-    beforeBody: [ArticleTitle(), ContentMeta({ showReadingTime: false, showReturnHome: true })],
+    beforeBody: [ArticleTitle(), ContentMeta({ showMode: "link" })],
     pageBody: Content(),
     left: [],
     right: [Meta],

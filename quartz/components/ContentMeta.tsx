@@ -6,25 +6,50 @@ import { classNames } from "../util/lang"
 import { i18n } from "../i18n"
 //@ts-ignore
 import script from "./scripts/content-meta.inline"
+import { Metadata } from "sharp"
+
+interface MetadataOptions {
+  showReadingTime?: boolean
+  showModifiedTime?: boolean
+  showReturnLink?: boolean
+}
+
+type LinkOptions = object
+
+type Mode = "metadata" | "link"
+
+type ModeOptions = {
+  metadata?: MetadataOptions
+  link?: LinkOptions
+}
 
 interface ContentMetaOptions {
   /**
    * Whether to display reading time
    */
-  showReadingTime: boolean
-  showReturnHome: boolean
-  addHomeLink: boolean
+  showMode: Mode
+  // TODO: make sure to parse link similar how we transclude options
+  link?: string
+  modeOptions?: ModeOptions
 }
 
 const defaultOptions: ContentMetaOptions = {
-  showReadingTime: true,
-  showReturnHome: false,
-  addHomeLink: false,
+  showMode: "metadata",
+  link: "/",
+  modeOptions: {
+    metadata: {
+      showReadingTime: true,
+      showModifiedTime: true,
+      showReturnLink: false,
+    },
+    link: {},
+  },
 }
 
 export default ((opts?: Partial<ContentMetaOptions>) => {
   // Merge options with defaults
   const options: ContentMetaOptions = { ...defaultOptions, ...opts }
+  const modeOptions = options.modeOptions![options.showMode!]
 
   const ContentMetadata: QuartzComponent = ({
     cfg,
@@ -33,13 +58,13 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
   }: QuartzComponentProps) => {
     const text = fileData.text
 
-    if (!text) return null
+    if (!text || !modeOptions) return null
 
     let created: string | undefined
     let modified: string | undefined
     let reading: string | undefined
 
-    if (options.showReadingTime) {
+    if (options.showMode === "metadata") {
       if (fileData.dates) {
         created = formatDate(getDate(cfg, fileData)!, cfg.locale)
         modified = formatDate(fileData.dates.modified, cfg.locale)
@@ -52,10 +77,10 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
       })
     }
 
-    const home = () => (
+    const home = (link: string) => (
       <li class="return-home">
         <a
-          href={"/"}
+          href={link}
           class="internal alias"
           style={["color: inherit", "font-weight: inherit"].join(";")}
         >
@@ -64,55 +89,51 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
       </li>
     )
 
-    return (
-      <ul class={classNames(displayClass, "content-meta")}>
-        {options.showReadingTime ? (
-          <>
-            {created !== undefined ? (
-              <li>
-                <span class="page-creation" title="Date de création du contenu de la page">
-                  <em>{created}</em>
-                </span>
-              </li>
-            ) : (
-              <></>
-            )}
-            {modified !== undefined ? (
-              <li>
-                <a class="ref-source">
-                  <span
-                    class="page-modification"
-                    title="Date de modification du contenu de la page"
-                  >
-                    <em>{modified}</em>
+    if (options.showMode === "link") {
+      return <ul class={classNames(displayClass, "content-meta")}>{home(options.link!)}</ul>
+    } else {
+      const metadata = modeOptions as MetadataOptions
+      return (
+        <ul class={classNames(displayClass, "content-meta")}>
+          {metadata.showReadingTime && (
+            <>
+              {created !== undefined && (
+                <li>
+                  <span class="page-creation" title="Date de création du contenu de la page">
+                    <em>{created}</em>
                   </span>
-                  <div class="popover" id="content-popover">
-                    <div class="popover-inner" data-content-type="text/html">
-                      <pre data-language="markdown">{fileData.markdown}</pre>
+                </li>
+              )}
+              {metadata.showModifiedTime && modified !== undefined && (
+                <li>
+                  <a class="ref-source">
+                    <span
+                      class="page-modification"
+                      title="Date de modification du contenu de la page"
+                    >
+                      <em>{modified}</em>
+                    </span>
+                    <div class="popover" id="content-popover">
+                      <div class="popover-inner" data-content-type="text/html">
+                        <pre data-language="markdown">{fileData.markdown}</pre>
+                      </div>
                     </div>
-                  </div>
-                </a>
-              </li>
-            ) : (
-              <></>
-            )}
-            {reading !== undefined ? (
-              <li>
-                <span class="reading-time" title="Temps de lecture estimé">
-                  {reading}
-                </span>
-              </li>
-            ) : (
-              <></>
-            )}
-            {options.addHomeLink ? home() : <></>}
-          </>
-        ) : (
-          <></>
-        )}
-        {options.showReturnHome ? home() : <></>}
-      </ul>
-    )
+                  </a>
+                </li>
+              )}
+              {reading !== undefined && (
+                <li>
+                  <span className="reading-time" title="Temps de lecture estimé">
+                    {reading}
+                  </span>
+                </li>
+              )}
+              {metadata.showReturnLink && home(options.link!)}
+            </>
+          )}
+        </ul>
+      )
+    }
   }
 
   ContentMetadata.css = contentMetaStyle

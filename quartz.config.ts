@@ -56,7 +56,7 @@ const config: QuartzConfig = {
     transformers: [
       Plugin.FrontMatter(),
       Plugin.CreatedModifiedDate({
-        priority: ["git", "frontmatter", "filesystem"],
+        priority: ["frontmatter", "git", "filesystem"],
       }),
       Plugin.Pseudocode(),
       Plugin.Latex({ renderEngine: "katex" }),
@@ -88,15 +88,12 @@ const config: QuartzConfig = {
       Plugin.ComponentResources({ fontOrigin: "local" }),
       Plugin.ContentPage(),
       Plugin.PostPage({
-        beforeBody: [
-          Component.ArticleTitle(),
-          Component.ContentMeta({ addHomeLink: true }),
-          Component.TagList(),
-        ],
+        beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],
       }),
       Plugin.FolderPage(),
       Plugin.TagPage(),
       Plugin.CuriusPage(),
+      Plugin.MenuPage(),
       Plugin.ZenPage(),
       Plugin.PoetryPage(),
       // Plugin.Embeddings(),

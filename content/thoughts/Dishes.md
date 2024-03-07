@@ -2,13 +2,25 @@
 id: Dishes
 tags:
   - evergreen
-  - cooking
+  - menu
 date: "2023-10-26"
 title: Menus
 ---
-A collection of courses.
+A collection of courses. See [[thoughts/atelier with friends/index|index]] of past hosting.
 
-### French
+This serves as a ground truth for a collection of dishes throughout.
+
+## italienne.
+
+1. Uovo la Raviolo
+
+### salsa.
+
+1. Marinara
+
+2. Sugo Pomodoro
+
+## le viandier.
 
 1. Soupe à l'Oignon Gratinée
 
