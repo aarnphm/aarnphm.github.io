@@ -64,11 +64,9 @@ export default ((userOpts?: Partial<Options>) => {
               {Object.entries(KeybindAlias).map(([key, value]) => (
                 <li>
                   <div id="shortcuts">
-                    <div>
-                      <kbd id="clickable-kbd" data-keybind={`${revert(key)}`}>
-                        {convert(key)}
-                      </kbd>
-                    </div>
+                    <kbd id="clickable-kbd" data-keybind={`${revert(key)}`}>
+                      {convert(key)}
+                    </kbd>
                     <span>{value}</span>
                   </div>
                 </li>

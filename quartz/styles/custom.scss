@@ -453,6 +453,7 @@ audio::-webkit-media-controls-panel {
 
   .keybind {
     grid-area: 1 / 3 / 2 / 4;
+    justify-self: end;
   }
 
   .explorer {
@@ -464,7 +465,10 @@ audio::-webkit-media-controls-panel {
   }
 
   @media all and (max-width: $fullPageWidth) {
-    display: flex !important;
+    .search {
+      max-width: unset;
+      grid-area: 1 / 1 / 2 / 3;
+    }
   }
 }
 

@@ -59,35 +59,9 @@ document.addEventListener("nav", async () => {
     }
   }
 
-  const onClick = () => {
-    const containerOpen = container?.classList.contains("active")
-    if (modal) hideModal()
-    const actives = Array.from(document.querySelectorAll(".active")) as HTMLElement[]
-    const filtered = actives.filter((el) => !el.classList.contains("keybind"))
-
-    if (filtered.length > 0) {
-      hideContainer()
-      return
-    } else {
-      containerOpen ? hideContainer() : showContainer()
-    }
-  }
-
   document.addEventListener("keydown", shortcutHandler)
   window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
-  keybind?.addEventListener("click", onClick)
-  window.addCleanup(() => keybind?.removeEventListener("click", onClick))
   registerEscapeHandler(keybind, hideContainer)
-
-  for (const kbd of document.querySelectorAll("#clickable-kbd") as NodeListOf<HTMLElement>) {
-    const onSubClick = (ev: MouseEvent) => {
-      ev.preventDefault()
-      hideContainer()
-      handleKeybindClick(ev)
-    }
-    kbd.addEventListener("click", onSubClick)
-    window.addCleanup(() => kbd.removeEventListener("click", onSubClick))
-  }
 
   if (!modal) return
 

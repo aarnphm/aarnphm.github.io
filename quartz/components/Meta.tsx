@@ -3,7 +3,6 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import { D3Config, defaultOptions as graphOptions } from "./Graph"
 
 export const globalGraphConfig: Partial<D3Config> = {
-  drag: false,
   repelForce: 0.3732,
   centerForce: 0.088,
   fontSize: 0.5375,
