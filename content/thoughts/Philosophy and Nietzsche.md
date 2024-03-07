@@ -55,9 +55,13 @@ The negative is a product of existence itself: the aggression necessarily linked
 
 As for negation as a concept, "it is only a subsequently-invented pale contrasting image in relation to its positive basic concept - filled with life and passion through and through" (GM I 10 p. 37).
 
-For the speculative element of negation, opposition or contradiction Nietzsche substitutes the practical element of difference, the object of affirmation and enjoyment. It is in this sense that there is a Nietzschean empiricism. The question which Nietzsche constantly repeats, "what does a will want, what does this one or that one want?", must not be understood as the search for a goal, a motive or an object for this will. What a will wants is to affirm its difference.
+For the speculative element of negation, opposition or contradiction Nietzsche substitutes the practical element of difference, the object of affirmation and enjoyment. It is in this sense that there is a Nietzschean empiricism.
+The question which Nietzsche constantly repeats, "what does a will want, what does this one or that one want?", must not be understood as the search for a goal, a motive or an object for this will. What a will wants is to affirm its difference.
 
-In its essential relation with the "other" a will makes its difference an object of affirmation. "The pleasure of knowing oneself different", the enjoyment of difference (BGE 260); this is the new, aggressive and elevated conceptual element that empiricism substitutes for the heavy notions of the dialectic and above all, as the dialectician puts it, for the labour of the negative.
+In its essential relation with the "other" a will makes its difference an object of affirmation.
+> "The pleasure of knowing oneself different", the enjoyment of difference (BGE 260);
+
+This is the new, aggressive and elevated conceptual element that empiricism substitutes for the heavy notions of the dialectic and above all, as the dialectician puts it, for the labour of the negative.
 
 ### Tragedy
 
@@ -87,7 +91,6 @@ Characteristic of tragic culture, as seem in Kant, Schopenhauer, Wagner, as in t
 
 ### Existence and Innocence
 
-There is no whole
 Necessary to disperse the universe, to lose respect for the whole
 
 > Innocence is the game of existence, of force and will
@@ -96,8 +99,8 @@ Existence affirmed and appreciated, force not separated, the will not divided in
 
 Mentioned Heraclitus = tragic thinker
 
-H understood existence on the basis of an instinct of play
-Existence as an aesthetic phenomenon rather than moral or religious
+H understood existence on the basis of an instinct of [[thoughts/play|play]]
+Existence as an [[thoughts/aesthetic value|aesthetic]] phenomenon rather than moral or religious
 
 Affirmation of being
 

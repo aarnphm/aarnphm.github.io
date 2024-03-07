@@ -35,3 +35,30 @@ The absurd come from the abject at birth, similar to end pages of the books star
 Seemingly the questions of the absurd stems from question "Why". The wearing of a normal life, inaugurates the impulse of consciousness.
 
 Heidegger: "mere anxiety [is] a source of everything."
+
+---
+### definition of absurd
+
+See also P.17, P.20, P.25
+
+I realise that if through science I can seize phenomena and enumerate them, I cannot, for all that, apprehend the world.
+
+
+Absurd is the confrontation of this irrational call for clarity whose call echoes in the human heart
+
+```poetry
+	The absurd is measured by the mans in the world
+```
+
+The attack of [[thoughts/reason|reasons]] and decency are never stronger than our own
+
+Once we recognised the absurd, it becomes passion. How many lives with his passion or not is a different question.
+
+
+Philosophers lives through their lenses of the world such that they ran these experiments and believed so strongly in the results
+
+Jaspers despair any ontology because we have lost naïveté 
+
+Kierkegaard lives the absurd: no truth is absolute and can render satisfactory an existence impossible in itself.
+
+The absurd is born from reasons man making sense of the world and the irreparable silence of the universe echoed back to one.

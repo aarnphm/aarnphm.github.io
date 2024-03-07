@@ -12,6 +12,8 @@ import ContentComponent from "./pages/Content"
 import BodyComponent from "./Body"
 import { classNames } from "../util/lang"
 import { JSX } from "preact"
+import { GlobalConfiguration } from "../cfg"
+import { QuartzPluginData } from "../plugins/vfile"
 
 export const HyperAlias = {
   livres: "/books",
@@ -57,8 +59,36 @@ const AliasLink = (props: AliasLinkProp) => {
   )
 }
 
-const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?: string }) => {
+function byModifiedAndAlphabetical(
+  cfg: GlobalConfiguration,
+): (f1: QuartzPluginData, f2: QuartzPluginData) => number {
+  return (f1, f2) => {
+    if (f1.dates && f2.dates) {
+      // sort descending
+      return f2.dates?.modified.getTime() - f1.dates?.modified.getTime()
+    } else if (f1.dates && !f2.dates) {
+      // prioritize files with dates
+      return -1
+    } else if (!f1.dates && f2.dates) {
+      return 1
+    }
+
+    // otherwise, sort lexographically by title
+    const f1Title = f1.frontmatter?.title.toLowerCase() ?? ""
+    const f2Title = f2.frontmatter?.title.toLowerCase() ?? ""
+    return f1Title.localeCompare(f2Title)
+  }
+}
+
+const NotesComponent = ((opts?: {
+  slug: SimpleSlug
+  numLimits?: number
+  header?: string
+  sortBy?: "modified" | "alphabetical"
+}) => {
   const Spacer = SpacerComponent()
+
+  const sortCaller = opts?.sortBy === "modified" ? byModifiedAndAlphabetical : byDateAndAlphabetical
 
   const Notes: QuartzComponent = (componentData: QuartzComponentProps) => {
     const { allFiles, fileData, cfg } = componentData
@@ -75,7 +105,7 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
         }
         return false
       })
-      .sort(byDateAndAlphabetical(cfg))
+      .sort(sortCaller(cfg))
 
     const remaining = Math.max(0, pages.length - opts!.numLimits!)
     const classes = ["min-links", "internal"].join(" ")
@@ -160,11 +190,13 @@ const ElementComponent = (() => {
     header: "récentes",
     slug: "thoughts/" as SimpleSlug,
     numLimits: 6,
+    sortBy: "modified",
   })
   const RecentPosts = NotesComponent({
     header: "écriture",
     slug: "posts/" as SimpleSlug,
     numLimits: 6,
+    sortBy: "alphabetical",
   })
   const Hyperlink = HyperlinksComponent({
     children: [
