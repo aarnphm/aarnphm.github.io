@@ -91,6 +91,7 @@ declare module "vfile" {
         socialDescription: string
         publish: boolean
         draft: boolean
+        lang: string
         enableToc: string
         cssclasses: string[]
         navigation: string[]
