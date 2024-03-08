@@ -10,6 +10,7 @@
           {
             "id": "b574fff43910060d",
             "type": "tabs",
+            "dimension": 38.908327501749476,
             "children": [
               {
                 "id": "7a307211a1ca85bc",
@@ -77,11 +78,12 @@
                 }
               }
             ],
-            "currentTab": 4
+            "currentTab": 1
           },
           {
             "id": "1547bf2b2abe1f1d",
             "type": "tabs",
+            "dimension": 61.091672498250524,
             "children": [
               {
                 "id": "fe403b2dd8a339e1",
@@ -164,7 +166,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "quotes.md",
+                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -181,7 +183,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "quotes.md",
+                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -204,7 +206,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "quotes.md"
+                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf"
               }
             }
           },
@@ -234,7 +236,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "quotes.md"
+                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf"
               }
             }
           }
@@ -261,13 +263,15 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "1d148bc961cb42aa",
+  "active": "fe403b2dd8a339e1",
   "lastOpenFiles": [
-    "thoughts/university/sfwr-2fa3/NFA.md",
-    "thoughts/university/sfwr-2fa3/a1/a1.py",
+    "thoughts/university/sfwr-2fa3/sheets.pdf",
     "thoughts/university/sfwr-2fa3/Nous.md",
-    "thoughts/university/sfwr-2fa3/DFA.md",
     "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
+    "thoughts/university/sfwr-2fa3/NFA.md",
+    "thoughts/university/sfwr-2fa3/DFA.md",
+    "quotes.md",
+    "thoughts/university/sfwr-2fa3/a1/a1.py",
     "thoughts/!note.md",
     "thoughts/Camus.md",
     "tags/sfwr2fa3.md",
@@ -307,7 +311,6 @@
     "thoughts/university/sfwr-3dx4/images/steady-state error table.png",
     "thoughts/university/sfwr-3dx4/images/stability comparison.png",
     "thoughts/university/sfwr-3dx4/images/sine wave signals.png",
-    "thoughts/university/sfwr-3dx4/a2/content.md",
     "Untitled.canvas"
   ]
 }

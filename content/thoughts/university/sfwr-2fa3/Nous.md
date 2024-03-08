@@ -113,6 +113,7 @@ stateDiagram-v2
 ```
 
 ---
+## product construction
 
 Assume that A, B are regular, there are automata
 
@@ -160,10 +161,178 @@ Trivial machine $\mathcal{L}(M_{1}) = \{\}$, $\mathcal{L}(M_{2}) = \Sigma^*$, $\
 
 ![[thoughts/university/sfwr-2fa3/NFA#definition|NFA]]
 
-### subset construction
+> [!important] transition function
+>
+> $\hat{\Delta}: P(Q) \times \Sigma^* \rightarrow P(Q)$
 
+$$
+\begin{align*}
+\hat{\Delta}(A, a) &= \bigcup_{p \in \hat{\Delta}(A, \varepsilon)} \Delta(p, a) \\\
+& \\\
+&= \bigcup_{p \in A} \Delta(p, a).
+\end{align*}
+$$
 
+## subset construction
 
-## product construction
+> [!important] acceptance
+>
+> $N$ accepts $x \in \Sigma^*$ if
+> $$
+> \hat{\Delta}(s, x) \cap F \neq \emptyset
+> $$
+
+Define $L(N) = \{ x \in \Sigma^* \mid N\text{ accepts } x\}$
+
+> [!important] Theorem 4.3
+>
+> Every DFA $(Q, \Sigma, \delta, s, F)$ is equvalent to an NFA $(Q, \Sigma, \Delta, \{s\}  , F)$ where $\Delta(p, a) = \{ \delta(p, a) \}$
+
+> [!important] Lemma 6.1
+>
+> For any $x, y \in \Sigma^* \land A \subseteq Q$,
+> $$
+> \hat{\Delta}(s, xy) = \hat{\Delta}(\hat{\Delta}(s, x), y)
+> $$
+
+> [!important] Lemma 6.2
+>
+> $\hat{\Delta}$ commutes with set union:
+> $$
+> \hat{\Delta}(\bigcup_i A_i, x) =\bigcup_i \hat{\Delta}(A_i, x)
+> $$
+
+Let $N = (Q_N, \Sigma, \Delta_N, S_N, F_N)$ be arbitrary NFA. Let M be DFA $M = (Q_M, \Sigma, \delta_M, s_M, F_M)$ where:
+
+$$
+\begin{align*}
+Q_M &= P(Q_N) \\\
+\delta_M(A, a) &= \hat{\Delta}_N(A, a) \\\
+s_M &= S_N \\\
+F_M &= \{ A \in Q_N \mid A \cap F_N \neq \emptyset \}
+\end{align*}
+$$
+
+> [!important] Lemma 6.3
+>
+> For any $A \subseteq Q_N \land x \in \Sigma^*$
+> $$
+> \hat{\delta}_M(A, x) = \hat{\Delta}_N(A, x)
+> $$
+
+> [!important] Theorem 6.4
+> The automata M and N accept the same sets.
 
 ## regex
+
+
+_atomic patterns_ are:
+
+- $L(a) = \{a\}$
+- $L(\epsilon) = \{\epsilon\}$
+- $L(\emptyset) = \emptyset$
+- $L(\#) = \Sigma$: matched by any symbols
+- $L(@) = \Sigma^*$: matched by any string
+
+_compound patterns_ are formed by combining ==binary operators== and ==unary operators==.
+
+> [!tip] redundancy
+> $a^+ \equiv aa^*$, $\alpha \cap \beta = \overline{\overline{\alpha} + \overline{\beta}}$
+
+
+> if $\alpha$ and $\beta$ are patterns, then so are $\alpha + \beta, \alpha \cap \beta, \alpha^*, \alpha^+, \overline{\alpha}, \alpha \beta$
+
+> [!important] The following holds for x matches:
+>
+> $L(\alpha + \beta) = L(\alpha) \cup L(\beta)$
+>
+> $L(\alpha \cap \beta) = L(\alpha) \cap L(\beta)$
+>
+> $L(\alpha\beta) = L(\alpha)L(\beta) = \{yz \mid y \in L(\alpha) \land z \in L(\beta)\}$
+>
+> $L(\alpha^*) = L(\alpha)^0 \cup L(\alpha)^1 \cup \dots = L(\alpha)^*$
+>
+> $L(\alpha^+) = L(\alpha)^+$
+
+> [!important] Theorem 7.1
+>
+> $\Sigma^* = L(\#^*) = L(@)$
+>
+> Singleton set $\{x\} = L(x)$
+>
+> Finite set: $\{x_{1},x_{2},\dots,x_m\} = L(x_{1}+x_{2}+\dots+x_m)$
+
+> [!important] Theorem 9
+>
+> $$
+> \begin{array}{ccl}
+> \alpha + (\beta + \gamma) & \equiv & (\alpha + \beta) + \gamma & (9.1) \\
+> \alpha + \beta & \equiv & \beta + \alpha & (9.2) \\
+> \alpha + \phi & \equiv & \alpha & (9.3) \\
+> \alpha + \alpha & \equiv & \alpha & (9.4) \\
+> \alpha(\beta\gamma) & \equiv & (\alpha\beta)\gamma & (9.5) \\
+> \epsilon \alpha & \equiv & \alpha\epsilon \equiv \alpha & (9.6) \\
+> \alpha(\beta + \gamma) & \equiv & \alpha\beta + \alpha\gamma & (9.7) \\
+> (\alpha + \beta)\gamma & \equiv & \alpha\gamma + \beta\gamma & (9.8) \\
+> \phi\alpha & \equiv & \alpha\phi \equiv \phi & (9.9) \\
+> \epsilon + \alpha^* & \equiv & \alpha^* & (9.10) \\
+> \epsilon + \alpha^* & \equiv & \alpha^* & (9.11) \\
+> \beta + \alpha\gamma \leq \gamma & \Rightarrow & \alpha^*\beta \leq \gamma & (9.12) \\
+> \beta + \gamma\alpha \leq \gamma & \Rightarrow & \beta\alpha^* \leq \gamma & (9.13) \\
+> (\alpha\beta)^* & \equiv & \alpha(\beta\alpha)^* & (9.14) \\
+> (\alpha^* \beta)^* \alpha^* & \equiv & (\alpha + \beta)^* & (9.15) \\
+> \alpha^* (\beta\alpha^*)^* & \equiv & (\alpha + \beta)^* & (9.16) \\
+> (\epsilon + \alpha)^* & \equiv & \alpha^* & (9.17) \\
+> \alpha\alpha^* & \equiv & \alpha^* \alpha & (9.18) \\
+> \end{array}
+> $$
+
+## quotient automata
+
+also known as DFA state minimization
+
+> [!important] definition
+> $$
+> p \approx q \equiv [p] = [q]
+> $$
+
+Define
+$$
+M / \approx \space = (Q', \Sigma, \delta', [s], F')
+$$
+
+where (13.1)
+$$
+\begin{align*}
+Q' &= Q / \approx \\\
+\delta'([p], a) &= [\delta(p, a)] \\\
+s' &= [s] \\\
+F' &= \{ [p] \mid p \in F \}
+\end{align*}
+$$
+
+> [!important] Lemma 13.5
+>
+> If $p \approx q$, then $\delta(p, a) \approx \delta(q, a)$
+> equivalently, if $[p] = [q]$, then $[\delta(p, a)] = [\delta(q, a)]$
+
+> [!important] Lemma 13.6
+>
+> $p \in F \iff [p] \in F'$
+
+> [!important] Lemma 13.7
+>
+> $$
+> \forall x \in \Sigma^*, \hat{\delta'}([p], x) = [\hat{\delta}(p, x)]
+> $$
+
+> [!important] Theorem 13.8
+>
+> $L(M / \approx) = L(M)$
+
+> [!important] algorithm
+>
+> 1. Table of all pairs $\{p, q\}$
+> 2. Mark all pairs $\{p, q\}$ if $p \in F \land q \notin F \lor q \in F \land p \notin F$
+> 3. If there exists unmarked pair $\{p, q\}$, such that $\{ \delta(p, a), \delta(q, a) \}$ is marked, then mark $\{p, q\}$
+> 4. $p \approx q \iff \{p, q\}$ is not marked

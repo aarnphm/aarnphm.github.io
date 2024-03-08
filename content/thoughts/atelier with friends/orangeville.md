@@ -13,7 +13,7 @@ title: orangeville.
 
 ### Uovo la Raviolo
 
-uovo, beurre noisette, salvia, parmigiano reggiano, ricotta, noce moscata
+uovo, beurre noisette, salvia, parmigiano reggiano, ricotta ripieno, noce moscata
 
 <!-- sage, brown butter, parmigiano reggiano, ricotta, nutmeg -->
 
