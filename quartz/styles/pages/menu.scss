@@ -3,41 +3,7 @@
 
 body[data-menu="true"] {
   text-align: right;
-
-  h1,
-  h2,
-  h3 {
-    font-family: "ITCGaramondStdLtCond", var(--bodyFont);
-    letter-spacing: -0.0275rem;
-    font-weight: normal;
-  }
-
-  h1,
-  h2 {
-    font-size: 2.0582rem;
-    text-align: left;
-    display: relative;
-  }
-
-  h3 {
-    font-size: 1.618rem;
-  }
-
-  p {
-    font-style: italic;
-  }
-
-  h3,
-  p {
-    padding-right: 3rem;
-  }
-
-  h1,
-  h2 {
-    position: relative;
-    padding-left: 3rem;
-    margin: 3rem 0;
-  }
+  background-image: unset !important;
 
   .text-highlight {
     position: relative;
@@ -59,13 +25,77 @@ body[data-menu="true"] {
     }
   }
 
-  @media all and (max-width: $fullPageWidth) {
-    .center {
-      margin-bottom: 2rem;
+  .center {
+    background-image: url("/static/menu.svg");
+    background-repeat: no-repeat;
+  }
+
+  .menu {
+    padding-top: 6rem;
+  }
+
+  a.internal {
+    font-weight: inherit;
+    color: inherit;
+    font-style: italic;
+    font-size: 1.272rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  footer {
+    font-family: "ITCGaramondStdLtCond", var(--bodyFont);
+    letter-spacing: -0.0275rem;
+    font-weight: normal;
+  }
+
+  h1,
+  h2 {
+    text-align: left;
+    position: relative;
+    margin: 3rem 0;
+  }
+
+  hr {
+    width: 100%;
+    margin: 4rem 0 2rem;
+
+    &::after {
+      content: "";
     }
+  }
+
+  p {
+    font-style: italic;
+  }
+
+  footer {
+    width: unset;
   }
 
   a[role="anchor"] {
     display: none;
+  }
+
+  @media all and (min-width: $fullPageWidth) {
+    .menu {
+      padding: 6rem 3rem;
+    }
+
+    h1,
+    h2 {
+      font-size: 2.0582rem;
+    }
+
+    h3 {
+      font-size: 1.618rem;
+    }
+  }
+
+  @media all and (max-width: $fullPageWidth) {
+    footer {
+      margin-bottom: 3rem;
+    }
   }
 }

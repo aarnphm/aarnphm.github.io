@@ -6,7 +6,7 @@ tags:
 date: "2023-10-26"
 title: Menus
 ---
-A collection of courses. See [[thoughts/atelier with friends/index|index]] of past hosting.
+A collection of courses. See [[thoughts/atelier with friends/index|atelier with friends]] if you are interested to join..
 
 This serves as a ground truth for a collection of dishes throughout.
 

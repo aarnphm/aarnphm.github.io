@@ -19,8 +19,22 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "dae4da09f8c8c069",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/Dishes.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -86,7 +100,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/Camus.md",
+                "file": "thoughts/Dishes.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +117,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/Camus.md",
+                "file": "thoughts/Dishes.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +140,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/Camus.md"
+                "file": "thoughts/Dishes.md"
               }
             }
           },
@@ -156,7 +170,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/Camus.md"
+                "file": "thoughts/Dishes.md"
               }
             }
           }
@@ -183,8 +197,13 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "7a307211a1ca85bc",
+  "active": "dae4da09f8c8c069",
   "lastOpenFiles": [
+    "thoughts/atelier with friends/index.md",
+    "thoughts/atelier with friends/orangeville.md",
+    "thoughts/atelier with friends/background.svg",
+    "thoughts/atelier with friends/Unconfirmed 487284.crdownload",
+    "thoughts/Camus.md",
     "tags/commerce4be3.md",
     "tags/sfwr3dx4.md",
     "uses.md",
@@ -202,7 +221,6 @@
     "thoughts/university/sfwr-3dx4/pid-controller.pdf",
     "thoughts/university/sfwr-3dx4/nous.md",
     "thoughts/university/sfwr-3dx4/midterm-sample-q.pdf",
-    "thoughts/university/sfwr-3dx4/midterm-sample-q-soln.pdf",
     "thoughts/university/sfwr-3dx4/lab3/prelab.md",
     "thoughts/university/sfwr-3dx4/lab3/content.md",
     "thoughts/university/sfwr-3dx4/lab2/content.md",
@@ -216,7 +234,6 @@
     "thoughts/university/sfwr-3dx4/images/steady-state error table.png",
     "thoughts/university/sfwr-3dx4/images/stability comparison.png",
     "thoughts/university/sfwr-3dx4/images/sine wave signals.png",
-    "thoughts/university/sfwr-3dx4/images/second-order-system.png",
     "thoughts/university/sfwr-3dx4/a2/content.md",
     "thoughts/university/sfwr-3dx4/a1/content.md",
     "thoughts/university/sfwr-3dx4/Time response.md",
@@ -228,9 +245,6 @@
     "thoughts/university/sfwr-3bb4/index.md",
     "thoughts/university/sfwr-3bb4/Sequential programming.md",
     "thoughts/university/sfwr-2fa3/index.md",
-    "thoughts/university/sfwr-2fa3/W1.md",
-    "thoughts/university/sfwr-2fa3/NFA.md",
-    "thoughts/university/sfwr-2fa3/A1.md",
     "Untitled.canvas"
   ]
 }

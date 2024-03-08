@@ -4,6 +4,7 @@ import {
   ContentMeta,
   Content as ContentConstructor,
   ArticleTitle,
+  Spacer,
 } from "../../components"
 import BodyConstructor from "../../components/Body"
 import { write } from "./helpers"
@@ -25,14 +26,28 @@ const MenuContent = (() => {
   const Element: QuartzComponent = (props: QuartzComponentProps) => {
     const { displayClass } = props
     return (
-      <div class={classNames(displayClass, "menu")}>
-        <Content {...props} />
-      </div>
+      <>
+        <div class={classNames(displayClass, "menu")}>
+          <Content {...props} />
+          <hr />
+          <MenuFooter {...props} />
+        </div>
+      </>
     )
   }
 
   return Element
 }) satisfies QuartzComponentConstructor
+
+function MenuFooter({ allFiles, fileData, displayClass, cfg }: QuartzComponentProps) {
+  return (
+    <footer class={classNames(displayClass, "menu-footer")}>
+      <a href="../atelier-with-friends" class="internal alias" data-no-popover={true}>
+        atelier with friends.
+      </a>
+    </footer>
+  )
+}
 
 export const MenuPage: QuartzEmitterPlugin = () => {
   const Meta = MetaConstructor()
@@ -43,10 +58,7 @@ export const MenuPage: QuartzEmitterPlugin = () => {
     left: [],
     right: [],
     pageBody: MenuContent(),
-    footer: ContentMeta({
-      link: "/thoughts/atelier-with-friends",
-      modeOptions: { metadata: { showModifiedTime: false, showReturnLink: true } },
-    }),
+    footer: Spacer(),
   }
 
   const { head, header, beforeBody, pageBody, left, right, footer: Footer } = opts
