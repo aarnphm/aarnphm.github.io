@@ -62,9 +62,22 @@
                     "source": false
                   }
                 }
+              },
+              {
+                "id": "1d148bc961cb42aa",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "quotes.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
               }
             ],
-            "currentTab": 3
+            "currentTab": 4
           },
           {
             "id": "1547bf2b2abe1f1d",
@@ -151,7 +164,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/NFA.md",
+                "file": "quotes.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -168,7 +181,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/NFA.md",
+                "file": "quotes.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -191,7 +204,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/NFA.md"
+                "file": "quotes.md"
               }
             }
           },
@@ -221,7 +234,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/NFA.md"
+                "file": "quotes.md"
               }
             }
           }
@@ -248,12 +261,12 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "dae4da09f8c8c069",
+  "active": "1d148bc961cb42aa",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-2fa3/NFA.md",
     "thoughts/university/sfwr-2fa3/a1/a1.py",
     "thoughts/university/sfwr-2fa3/Nous.md",
     "thoughts/university/sfwr-2fa3/DFA.md",
-    "thoughts/university/sfwr-2fa3/NFA.md",
     "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
     "thoughts/!note.md",
     "thoughts/Camus.md",
@@ -279,7 +292,6 @@
     "thoughts/university/sfwr-3dx4/steady_state_error.pdf",
     "thoughts/university/sfwr-3dx4/steady-state error.md",
     "thoughts/university/sfwr-3dx4/state_space.pdf",
-    "thoughts/university/sfwr-3dx4/stability.pdf",
     "thoughts/university/sfwr-3dx4/stability.md",
     "thoughts/university/sfwr-3dx4/nous.md",
     "thoughts/university/sfwr-3dx4/lab3/prelab.md",

@@ -53,6 +53,8 @@ The first principle is that you must not fool yourself, and you are the easiest 
 
 Success consists of going from failure to failure without loss of enthusiasm. -- Winston Churchill
 
+[One] who works with the door open gets all kinds of interruptions, but [they] also occasionally gets clues as to what the world is and what might be important. -- Richard Hamming
+
 ## On randomness and fun.
 
 I have to be successful because I like expensive things. -- some random person on twitter

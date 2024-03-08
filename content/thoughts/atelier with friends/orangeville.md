@@ -3,6 +3,7 @@ id: orangeville
 tags:
   - menu
 date: "2024-03-08"
+description: atelier with friends uno - orangeville
 lang: it
 menu: true
 title: orangeville.
