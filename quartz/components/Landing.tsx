@@ -24,6 +24,7 @@ export const HyperAlias = {
   affecter: "/influence",
   parfum: "/thoughts/Scents",
   tunes: "/music",
+  "atelier with friends": "/thoughts/atelier-with-friends",
 }
 
 export const SocialAlias = {

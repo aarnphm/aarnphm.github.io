@@ -4,60 +4,86 @@
     "type": "split",
     "children": [
       {
-        "id": "b574fff43910060d",
-        "type": "tabs",
+        "id": "9b002289a9974ff9",
+        "type": "split",
         "children": [
           {
-            "id": "7a307211a1ca85bc",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/Camus.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
+            "id": "b574fff43910060d",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "7a307211a1ca85bc",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "thoughts/Camus.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              },
+              {
+                "id": "2be802ddae654f9e",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "thoughts/university/sfwr-2fa3/Nous.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              },
+              {
+                "id": "e699ce2031b9d474",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "thoughts/university/sfwr-2fa3/DFA.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
+              },
+              {
+                "id": "dae4da09f8c8c069",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "thoughts/university/sfwr-2fa3/NFA.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
               }
-            }
+            ],
+            "currentTab": 3
           },
           {
-            "id": "2be802ddae654f9e",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf"
+            "id": "1547bf2b2abe1f1d",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "fe403b2dd8a339e1",
+                "type": "leaf",
+                "state": {
+                  "type": "pdf",
+                  "state": {
+                    "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf"
+                  }
+                }
               }
-            }
-          },
-          {
-            "id": "dae4da09f8c8c069",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/sfwr-2fa3/NFA.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "4ba4dbaf8d280745",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "tags/sfwr3dx4.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
+            ]
           }
         ],
-        "currentTab": 1
+        "direction": "horizontal"
       }
     ],
     "direction": "vertical"
@@ -86,7 +112,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:philosophy",
+                "query": "tag:sfwr2fa3",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -103,11 +129,13 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
-    "width": 354.5
+    "width": 354.5,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -123,7 +151,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
+                "file": "thoughts/university/sfwr-2fa3/NFA.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -140,7 +168,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
+                "file": "thoughts/university/sfwr-2fa3/NFA.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -163,7 +191,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf"
+                "file": "thoughts/university/sfwr-2fa3/NFA.md"
               }
             }
           },
@@ -193,7 +221,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf"
+                "file": "thoughts/university/sfwr-2fa3/NFA.md"
               }
             }
           }
@@ -220,16 +248,21 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "2be802ddae654f9e",
+  "active": "dae4da09f8c8c069",
   "lastOpenFiles": [
-    "thoughts/university/sfwr-2fa3/Peter Linz_ Susan H. Rodger - An Introduction to Formal Languages and Automata-Jones & Bartlett Learning (2023).epub",
+    "thoughts/university/sfwr-2fa3/a1/a1.py",
+    "thoughts/university/sfwr-2fa3/Nous.md",
+    "thoughts/university/sfwr-2fa3/DFA.md",
     "thoughts/university/sfwr-2fa3/NFA.md",
-    "thoughts/university/sfwr-2fa3/index.md",
-    "tags/sfwr2fa3.md",
     "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
+    "thoughts/!note.md",
     "thoughts/Camus.md",
-    "tags/sfwr3dx4.md",
+    "tags/sfwr2fa3.md",
     "thoughts/university/sfwr-2fa3/A1.md",
+    "tags/sfwr3dx4.md",
+    "thoughts/university/sfwr-2fa3/W1.md",
+    "thoughts/university/sfwr-2fa3/Peter Linz_ Susan H. Rodger - An Introduction to Formal Languages and Automata-Jones & Bartlett Learning (2023).epub",
+    "thoughts/university/sfwr-2fa3/index.md",
     "thoughts/Dishes.md",
     "thoughts/university/sfwr-2c03/Algorithms 4th Edition.pdf",
     "thoughts/university/Algorithms 4th Edition.pdf",
@@ -248,7 +281,6 @@
     "thoughts/university/sfwr-3dx4/state_space.pdf",
     "thoughts/university/sfwr-3dx4/stability.pdf",
     "thoughts/university/sfwr-3dx4/stability.md",
-    "thoughts/university/sfwr-3dx4/root_locus_control.pdf",
     "thoughts/university/sfwr-3dx4/nous.md",
     "thoughts/university/sfwr-3dx4/lab3/prelab.md",
     "thoughts/university/sfwr-3dx4/lab3/content.md",
@@ -264,10 +296,6 @@
     "thoughts/university/sfwr-3dx4/images/stability comparison.png",
     "thoughts/university/sfwr-3dx4/images/sine wave signals.png",
     "thoughts/university/sfwr-3dx4/a2/content.md",
-    "thoughts/university/sfwr-3dx4/a1/content.md",
-    "thoughts/university/sfwr-3dx4/Time response.md",
-    "thoughts/university/sfwr-3dx4/State space representation.md",
-    "thoughts/university/sfwr-3dx4/Root locus.md",
     "Untitled.canvas"
   ]
 }

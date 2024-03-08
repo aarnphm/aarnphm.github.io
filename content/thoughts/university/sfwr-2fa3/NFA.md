@@ -5,11 +5,49 @@ tags:
 date: "2024-01-30"
 title: NFA
 ---
+## definition
+$$
+\Sigma^{*}: \text{set of all strings based off }\Sigma
+$$
 
-Ex. $\Sigma = {0, 1}$
+$$
+\begin{align*}
+\text{NFA}\quad M &= (Q, \Sigma, \Delta, S, F)  \\\
+Q &: \text{finite set of states} \\\
+\Sigma &: \text{finite alphabet} \\\
+\Delta &: Q \times \Sigma \rightarrow P(Q) \\\
+S &: \text{Start states},\quad S \subseteq Q \\\
+F &: \text{Final states},\quad F \subseteq Q \\\
+\end{align*}
+$$
 
-1. $\mathcal{L}(M) = \{ abxba \mid x \in \Sigma^{*}\}$ ![[thoughts/university/sfwr-2fa3/abxba-nfa.png]]
-1. $\mathcal{L}(M) = \{ yx \mid x = 00 \lor x =11 \land  y \in \Sigma^{*}\}$ ![[thoughts/university/sfwr-2fa3/yxx-nfa.png]]![[thoughts/university/sfwr-2fa3/yxx-nfa-4s.png]]
+## examples
+
+1. $\mathcal{L}(M) = \{ abxba \mid x \in \Sigma^{*}\}$
+  ```mermaid
+  stateDiagram-v2
+    direction LR
+    [*] --> 0
+    0 --> 1 : a
+    1 --> 2 : b
+    2 --> 2 : a, b
+    2 --> 3 : b
+    3 --> 4 : a
+    4 --> [*]
+  ```
+
+2. $\mathcal{L}(M) = \{ yx \mid x = 00 \lor x =11 \land  y \in \Sigma^{*}\}$
+  ```mermaid
+  stateDiagram-v2
+    direction LR
+    [*] --> 1
+    1 --> 1 : 0,1
+    1 --> 2 : 0
+    2 --> 3 : 0
+    3 --> [*]
+    1 --> 4 : 1
+    4 --> 3 : 1
+  ```
 
 ## $\epsilon$ transition
 ```mermaid
@@ -23,6 +61,7 @@ graph LR
 ![[thoughts/university/sfwr-2fa3/eps-nfa.png]]
 
 ---
+
 Given the following $M$
 ```mermaid
 graph LR
