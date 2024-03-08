@@ -21,12 +21,35 @@
             }
           },
           {
+            "id": "2be802ddae654f9e",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf"
+              }
+            }
+          },
+          {
             "id": "dae4da09f8c8c069",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/Dishes.md",
+                "file": "thoughts/university/sfwr-2fa3/NFA.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "4ba4dbaf8d280745",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "tags/sfwr3dx4.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -100,7 +123,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/Dishes.md",
+                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -117,7 +140,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/Dishes.md",
+                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -140,7 +163,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/Dishes.md"
+                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf"
               }
             }
           },
@@ -170,7 +193,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/Dishes.md"
+                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf"
               }
             }
           }
@@ -197,15 +220,25 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "dae4da09f8c8c069",
+  "active": "2be802ddae654f9e",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-2fa3/Peter Linz_ Susan H. Rodger - An Introduction to Formal Languages and Automata-Jones & Bartlett Learning (2023).epub",
+    "thoughts/university/sfwr-2fa3/NFA.md",
+    "thoughts/university/sfwr-2fa3/index.md",
+    "tags/sfwr2fa3.md",
+    "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
+    "thoughts/Camus.md",
+    "tags/sfwr3dx4.md",
+    "thoughts/university/sfwr-2fa3/A1.md",
+    "thoughts/Dishes.md",
+    "thoughts/university/sfwr-2c03/Algorithms 4th Edition.pdf",
+    "thoughts/university/Algorithms 4th Edition.pdf",
+    "thoughts/university/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
     "thoughts/atelier with friends/index.md",
     "thoughts/atelier with friends/orangeville.md",
     "thoughts/atelier with friends/background.svg",
     "thoughts/atelier with friends/Unconfirmed 487284.crdownload",
-    "thoughts/Camus.md",
     "tags/commerce4be3.md",
-    "tags/sfwr3dx4.md",
     "uses.md",
     "thoughts/zero-shot learning.md",
     "thoughts/writing.md",
@@ -216,11 +249,7 @@
     "thoughts/university/sfwr-3dx4/stability.pdf",
     "thoughts/university/sfwr-3dx4/stability.md",
     "thoughts/university/sfwr-3dx4/root_locus_control.pdf",
-    "thoughts/university/sfwr-3dx4/root_locus.pdf",
-    "thoughts/university/sfwr-3dx4/rl_example.pdf",
-    "thoughts/university/sfwr-3dx4/pid-controller.pdf",
     "thoughts/university/sfwr-3dx4/nous.md",
-    "thoughts/university/sfwr-3dx4/midterm-sample-q.pdf",
     "thoughts/university/sfwr-3dx4/lab3/prelab.md",
     "thoughts/university/sfwr-3dx4/lab3/content.md",
     "thoughts/university/sfwr-3dx4/lab2/content.md",
@@ -239,12 +268,6 @@
     "thoughts/university/sfwr-3dx4/Time response.md",
     "thoughts/university/sfwr-3dx4/State space representation.md",
     "thoughts/university/sfwr-3dx4/Root locus.md",
-    "thoughts/university/sfwr-3dx4/Root locus control.md",
-    "thoughts/university/sfwr-3dx4/Frequency Domain.md",
-    "thoughts/university/sfwr-3dx4/Block Diagrams.md",
-    "thoughts/university/sfwr-3bb4/index.md",
-    "thoughts/university/sfwr-3bb4/Sequential programming.md",
-    "thoughts/university/sfwr-2fa3/index.md",
     "Untitled.canvas"
   ]
 }

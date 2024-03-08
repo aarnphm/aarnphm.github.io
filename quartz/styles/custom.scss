@@ -187,6 +187,10 @@ body[data-slug="music"] {
     max-width: $pageWidth;
   }
 
+  .center {
+    padding-top: 2rem;
+  }
+
   .playlists {
     display: flex;
     overflow-x: hidden;

@@ -37,6 +37,17 @@ We do math to internalize the concept, and practice to thinking coherently. Simi
 
 The process of rephrasing and arranging sentences poses a challenges for the writer, and in doing so, teach you how to think coherently. Writing essays is an exercise for students to articulate their thoughts, rather than testing the understanding of the materials.
 
+### on [[thoughts/ethics|ethics]]
+
+See also [[thoughts/Alignment|Alignment]].
+
+There are ethical concerns with the act of "hallucinating" content, therefore alignment research is crucial to ensure that the model is not producing harmful content.
+
+### as philosophical tool.
+
+To create a better [[thoughts/representations|representations]] of the world for both humans and machines to understand, we can truly have assistive tools to enhance our understanding of the world surround us
+
+Imagine [[thoughts/Philosophy and Nietzsche|Nietzsche]], [[thoughts/Philosophy and Kant|Kant]], [[thoughts/Camus|Camus]] coexists in the same room.
 
 ### AI generated content
 

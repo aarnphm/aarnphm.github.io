@@ -106,7 +106,7 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
               )}
               {metadata.showModifiedTime && modified !== undefined && (
                 <li>
-                  <a class="ref-source">
+                  <a class="ref-source internal">
                     <span
                       class="page-modification"
                       title="Date de modification du contenu de la page"
@@ -114,7 +114,11 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
                       <em>{modified}</em>
                     </span>
                     <div class="popover" id="content-popover">
-                      <div class="popover-inner" data-content-type="text/html">
+                      <div
+                        class="popover-inner"
+                        data-content-type="text/html"
+                        style={["width: 50rem"].join(";")}
+                      >
                         <pre data-language="markdown">{fileData.markdown}</pre>
                       </div>
                     </div>
