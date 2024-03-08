@@ -221,6 +221,7 @@ export function renderPage(
       <body
         data-slug={slug}
         data-enable-preview={componentData.fileData.frontmatter?.preview ?? true}
+        data-menu={componentData.fileData.frontmatter?.menu ?? false}
       >
         {slug === "index" ? (
           <Landing {...componentData} />

@@ -1,9 +1,6 @@
 import { QuartzEmitterPlugin } from "../types"
 import {
-  Navigation as NavigationConstructor,
   Meta as MetaConstructor,
-  CuriusTrail,
-  DesktopOnly,
   ContentMeta,
   Content as ContentConstructor,
   ArticleTitle,
@@ -13,9 +10,12 @@ import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
 import { FilePath, FullSlug, pathToRoot } from "../../util/path"
 import { pageResources, renderPage } from "../../components/renderPage"
-import { QuartzComponentConstructor, QuartzComponentProps } from "../../components/types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../../components/types"
 import DepGraph from "../../depgraph"
-import { StaticResources } from "../../util/resources"
 import { sharedPageComponents } from "../../../quartz.layout"
 import { classNames } from "../../util/lang"
 
@@ -39,17 +39,14 @@ export const MenuPage: QuartzEmitterPlugin = () => {
 
   const opts: FullPageLayout = {
     ...sharedPageComponents,
-    beforeBody: [
-      ArticleTitle(),
-      ContentMeta({
-        link: "/thoughts/atelier-with-friends",
-        modeOptions: { metadata: { showModifiedTime: false, showReturnLink: true } },
-      }),
-      Meta,
-    ],
+    beforeBody: [Meta],
     left: [],
     right: [],
     pageBody: MenuContent(),
+    footer: ContentMeta({
+      link: "/thoughts/atelier-with-friends",
+      modeOptions: { metadata: { showModifiedTime: false, showReturnLink: true } },
+    }),
   }
 
   const { head, header, beforeBody, pageBody, left, right, footer: Footer } = opts

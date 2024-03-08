@@ -1,0 +1,71 @@
+@use "../base.scss";
+@use "../variables.scss" as *;
+
+body[data-menu="true"] {
+  text-align: right;
+
+  h1,
+  h2,
+  h3 {
+    font-family: "ITCGaramondStdLtCond", var(--bodyFont);
+    letter-spacing: -0.0275rem;
+    font-weight: normal;
+  }
+
+  h1,
+  h2 {
+    font-size: 2.0582rem;
+    text-align: left;
+    display: relative;
+  }
+
+  h3 {
+    font-size: 1.618rem;
+  }
+
+  p {
+    font-style: italic;
+  }
+
+  h3,
+  p {
+    padding-right: 3rem;
+  }
+
+  h1,
+  h2 {
+    position: relative;
+    padding-left: 3rem;
+    margin: 3rem 0;
+  }
+
+  .text-highlight {
+    position: relative;
+    background-color: unset;
+
+    &::before {
+      content: "";
+      background-color: var(--tertiary);
+      z-index: -1;
+      width: calc(100% - 25px);
+      height: calc(1em - 15px);
+      margin-top: 0.4em;
+      padding: 0 5px;
+      transition: all 0.2s;
+      position: absolute;
+      left: 0.8rem;
+      top: 2px;
+      opacity: 0.7;
+    }
+  }
+
+  @media all and (max-width: $fullPageWidth) {
+    .center {
+      margin-bottom: 2rem;
+    }
+  }
+
+  a[role="anchor"] {
+    display: none;
+  }
+}
