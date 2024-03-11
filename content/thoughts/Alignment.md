@@ -21,3 +21,7 @@ Often known as a solution to solve "hallucination" in large models token-generat
 The goal is to build a aligned system that help us solve other alignment problems
 
 > Should we build a [[thoughts/ethics|ethical]] aligned systems, or [[thoughts/moral|morally]] aligned systems?
+
+### [[thoughts/design|design]]
+
+See also [[thoughts/Information Theory|Information Theory]]

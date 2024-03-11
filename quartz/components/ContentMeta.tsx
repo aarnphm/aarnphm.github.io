@@ -113,15 +113,6 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
                     >
                       <em>{modified}</em>
                     </span>
-                    <div class="popover" id="content-popover">
-                      <div
-                        class="popover-inner"
-                        data-content-type="text/html"
-                        style={["width: 50rem"].join(";")}
-                      >
-                        <pre data-language="markdown">{fileData.markdown}</pre>
-                      </div>
-                    </div>
                   </a>
                 </li>
               )}

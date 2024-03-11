@@ -5,7 +5,7 @@ tags:
   - self
 date: "2024-02-16"
 draft: true
-title: "love: broken, but functional system"
+title: broken love.
 ---
 
 _This is an extensions of my previous thoughts on [[thoughts/relationships|relationships]] ._
@@ -22,4 +22,4 @@ It seems like the general consensus of dating has changed, or at least morphed i
 
 It seems like people are more afraid of commitment, or they are more afraid of being hurt. Who wouldn't? Given all of the horrible things that are happening in the world, one way or another it manifests into our own interactions, think  It seems like people are more afraid of being vulnerable, or they are more afraid of being judged. It seems like people are more afraid of being alone, or they are more afraid of being with someone.
 
-I don't really understand the mordern schemas of dating.
+I don't really understand the modern schemas of dating.
