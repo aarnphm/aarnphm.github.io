@@ -4,6 +4,7 @@ import { JSResourceToScriptElement } from "../util/resources"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { SocialImageOptions, defaultImageOptions } from "../util/og"
 import { unescapeHTML } from "../util/escape"
+import { googleFontHref } from "../util/theme"
 
 export default (() => {
   let imageOptions: SocialImageOptions
@@ -61,10 +62,11 @@ export default (() => {
       <head>
         <title>{title}</title>
         <meta charset="utf-8" />
-        {cfg.theme.cdnCaching && (
+        {cfg.theme.cdnCaching && cfg.theme.fontOrigin === "googleFonts" && (
           <>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" />
+            <link rel="stylesheet" href={googleFontHref(cfg.theme)} />
           </>
         )}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />

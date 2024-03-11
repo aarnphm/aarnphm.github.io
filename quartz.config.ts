@@ -12,7 +12,6 @@ const config: QuartzConfig = {
     pageTitle: "Aaron's notes",
     enableSPA: true,
     enablePopovers: true,
-    enableCursorChat: true,
     generateSocialImages: true,
     analytics: {
       provider: "plausible",
@@ -23,6 +22,7 @@ const config: QuartzConfig = {
     defaultDateType: "created",
     theme: {
       cdnCaching: true,
+      fontOrigin: "local",
       typography: {
         header: "GT Sectra Display",
         body: "GT Sectra Book",
@@ -85,7 +85,7 @@ const config: QuartzConfig = {
     filters: [Plugin.RemoveDrafts()],
     emitters: [
       Plugin.AliasRedirects(),
-      Plugin.ComponentResources({ fontOrigin: "local" }),
+      Plugin.ComponentResources(),
       Plugin.ContentPage(),
       Plugin.PostPage({
         beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],

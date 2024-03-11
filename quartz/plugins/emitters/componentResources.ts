@@ -76,13 +76,8 @@ async function joinScripts(scripts: string[]): Promise<string> {
   return res.code
 }
 
-function addGlobalPageResources(
-  ctx: BuildCtx,
-  staticResources: StaticResources,
-  componentResources: ComponentResources,
-) {
+function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentResources) {
   const cfg = ctx.cfg.configuration
-  const reloadScript = ctx.argv.serve
 
   // popovers
   if (cfg.enablePopovers) {
@@ -92,12 +87,12 @@ function addGlobalPageResources(
 
   if (cfg.analytics?.provider === "google") {
     const tagId = cfg.analytics.tagId
-    staticResources.js.push({
-      src: `https://www.googletagmanager.com/gtag/js?id=${tagId}`,
-      contentType: "external",
-      loadTime: "afterDOMReady",
-    })
     componentResources.afterDOMLoaded.push(`
+      const gtagScript = document.createElement("script")
+      gtagScript.src = "https://www.googletagmanager.com/gtag/js?id=${tagId}"
+      gtagScript.async = true
+      document.head.appendChild(gtagScript)
+
       window.dataLayer = window.dataLayer || [];
       function gtag() { dataLayer.push(arguments); }
       gtag("js", new Date());
@@ -153,39 +148,6 @@ function addGlobalPageResources(
       const event = new CustomEvent("nav", { detail: { url: document.body.dataset.slug } })
       document.dispatchEvent(event)
     `)
-  }
-
-  if (cfg.enableCursorChat) {
-    staticResources.css.push("https://unpkg.com/cursor-chat/dist/style.css")
-    staticResources.js.push({
-      script: `
-      document.addEventListener('nav', async () => {
-      const chat = await import('https://esm.sh/cursor-chat')
-      chat.initCursorChat(\`cursor-chat-room-\${window.location.host + window.location.pathname}\`, { triggerKey: '.' })
-      })
-    `,
-      loadTime: "afterDOMReady",
-      moduleType: "module",
-      contentType: "inline",
-    })
-  }
-
-  let wsUrl = `ws://localhost:${ctx.argv.wsPort}`
-
-  if (ctx.argv.remoteDevHost) {
-    wsUrl = `wss://${ctx.argv.remoteDevHost}:${ctx.argv.wsPort}`
-  }
-
-  if (reloadScript) {
-    staticResources.js.push({
-      loadTime: "afterDOMReady",
-      contentType: "inline",
-      script: `
-          const socket = new WebSocket('${wsUrl}')
-          // reload(true) ensures resources like images and scripts are fetched again in firefox
-          socket.addEventListener('message', () => document.location.reload(true))
-        `,
-    })
   }
 }
 

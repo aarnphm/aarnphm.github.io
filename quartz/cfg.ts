@@ -33,8 +33,6 @@ export interface GlobalConfiguration {
   enableSPA: boolean
   /** Whether to display Wikipedia-style popovers when hovering over links */
   enablePopovers: boolean
-  /** Whether to enable cursor-chat */
-  enableCursorChat: boolean
   /** Analytics mode */
   analytics: Analytics
   /** Glob patterns to not search */

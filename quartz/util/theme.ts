@@ -24,6 +24,7 @@ export interface Theme {
   }
   cdnCaching: boolean
   colors: Colors
+  fontOrigin: "local" | "googleFonts"
 }
 
 export type ThemeKey = keyof Colors
@@ -40,17 +41,6 @@ export function googleFontHref(theme: Theme) {
 export function joinStyles(cfg: GlobalConfiguration, ...stylesheet: string[]) {
   const theme = cfg.theme
   return `
-${
-  cfg.enableCursorChat &&
-  `
-input#cursor-chat-box {
-  outline: none;
-  background-color: var(--light);
-  font-family: "${cfg.theme.typography.body}", ${DEFAULT_SANS_SERIF} !important;
-}
-`
-}
-
 ${stylesheet.join("\n\n")}
 
 :root {
