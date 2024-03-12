@@ -126,7 +126,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/A6.md",
+                "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -143,7 +143,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/A6.md",
+                "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -166,7 +166,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/A6.md"
+                "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf"
               }
             }
           },
@@ -196,7 +196,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/A6.md"
+                "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf"
               }
             }
           }
@@ -258,13 +258,12 @@
                   }
                 }
               }
-            ],
-            "currentTab": 1
+            ]
           }
         ],
         "direction": "vertical",
-        "x": 1029,
-        "y": 47,
+        "x": 2170,
+        "y": 273,
         "width": 1024,
         "height": 1279,
         "maximize": false,
@@ -272,8 +271,9 @@
       }
     ]
   },
-  "active": "88216d474c924723",
+  "active": "6b686015dea5e87c",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-2c03/a6/A6.md",
     "thoughts/university/sfwr-2c03/a6/Aaron_Pham_400232791_assignment_6.pdf",
     "thoughts/university/sfwr-2c03/a6/Aaaron_Pham_400232791_assignment_6.pdf",
     "thoughts/university/sfwr-2c03/a6/assignment_6.pdf",
@@ -287,7 +287,6 @@
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_4.png",
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_3.png",
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_2.png",
-    "thoughts/university/sfwr-2c03/a6/A6.md",
     "thoughts/university/sfwr-2fa3/Nous.md",
     "thoughts/university/sfwr-2c03/a6/p1.py",
     "thoughts/university/sfwr-2c03/minimal-spanning-tree.pdf",
@@ -303,7 +302,6 @@
     "thoughts/design.md",
     "thoughts/orangeville.md",
     "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
-    "thoughts/university/sfwr-2fa3/sheets.pdf",
     "thoughts/university/sfwr-2fa3/NFA.md",
     "thoughts/university/sfwr-2fa3/DFA.md",
     "quotes.md",
