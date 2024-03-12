@@ -436,6 +436,7 @@ audio::-webkit-media-controls-panel {
   }
 }
 
+header,
 .left,
 .right {
   display: grid !important;
@@ -477,6 +478,7 @@ audio::-webkit-media-controls-panel {
   }
 }
 
+header,
 .right {
   .search {
     grid-area: 1 / 1 / 2 / 3;

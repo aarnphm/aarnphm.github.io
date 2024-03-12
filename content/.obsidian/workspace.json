@@ -126,7 +126,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf",
+                "file": "thoughts/university/sfwr-2c03/a6/A6.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -143,7 +143,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf",
+                "file": "thoughts/university/sfwr-2c03/a6/A6.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -166,7 +166,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf"
+                "file": "thoughts/university/sfwr-2c03/a6/A6.md"
               }
             }
           },
@@ -196,7 +196,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf"
+                "file": "thoughts/university/sfwr-2c03/a6/A6.md"
               }
             }
           }
@@ -262,7 +262,7 @@
           }
         ],
         "direction": "vertical",
-        "x": 2170,
+        "x": 2176,
         "y": 273,
         "width": 1024,
         "height": 1279,
@@ -271,12 +271,12 @@
       }
     ]
   },
-  "active": "6b686015dea5e87c",
+  "active": "2be802ddae654f9e",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-2c03/a6/assignment_6.pdf",
     "thoughts/university/sfwr-2c03/a6/A6.md",
     "thoughts/university/sfwr-2c03/a6/Aaron_Pham_400232791_assignment_6.pdf",
     "thoughts/university/sfwr-2c03/a6/Aaaron_Pham_400232791_assignment_6.pdf",
-    "thoughts/university/sfwr-2c03/a6/assignment_6.pdf",
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_11.png",
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_10.png",
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_9.png",

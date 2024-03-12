@@ -17,6 +17,11 @@ body[data-slug="index"] {
     font-family: var(--bodyFont);
   }
 
+  header {
+    display: flex !important;
+    margin: 2rem 0;
+  }
+
   .page-header {
     margin-top: 0 !important;
     margin-left: 0 !important;

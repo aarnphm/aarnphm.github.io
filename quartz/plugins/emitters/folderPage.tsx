@@ -22,10 +22,14 @@ import { i18n } from "../../i18n"
 import DepGraph from "../../depgraph"
 
 export const FolderPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
+  const newLeft = defaultListPageLayout.left
+
   const opts: FullPageLayout = {
     ...sharedPageComponents,
     ...defaultListPageLayout,
     pageBody: FolderContent(),
+    header: newLeft,
+    left: [],
     ...userOpts,
   }
 
