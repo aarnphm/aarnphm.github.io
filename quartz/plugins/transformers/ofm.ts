@@ -143,7 +143,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
 
   return {
     name: "ObsidianFlavoredMarkdown",
-    textTransform(ctx, src) {
+    textTransform(_ctx, src) {
       // do comments at text level
       if (opts.comments) {
         if (src instanceof Buffer) {
@@ -196,9 +196,8 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
 
       return src
     },
-    markdownPlugins(ctx) {
+    markdownPlugins(_ctx) {
       const plugins: PluggableList = []
-      const cfg = ctx.cfg.configuration
 
       // regex replacements
       plugins.push(() => {
