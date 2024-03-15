@@ -1,5 +1,5 @@
 import { QuartzTransformerPlugin } from "../types"
-import { Root, Html, BlockContent, DefinitionContent, Paragraph, Code } from "mdast"
+import { Root, Html, BlockContent, DefinitionContent, Paragraph, Code, Blockquote } from "mdast"
 import { Element, Literal, Root as HtmlRoot } from "hast"
 import { ReplaceFunction, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import { slug as slugAnchor } from "github-slugger"
