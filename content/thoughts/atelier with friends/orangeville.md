@@ -11,13 +11,13 @@ title: orangeville.
 
 ## ==pasta.==
 
-### Uovo la Raviolo
+### [[thoughts/atelier with friends/images/orangeville-1.jpeg|Uovo la Raviolo]]
 
 uovo, beurre noisette, salvia, parmigiano reggiano, ricotta ripieno, noce moscata
 
 <!-- sage, brown butter, parmigiano reggiano, ricotta, nutmeg -->
 
-### Pomodori alla bucatini
+### [[thoughts/atelier with friends/images/orangeville-2.jpeg|Pomodori alla fetuccine]]
 
 bucatini, marinara, olio oliva
 
