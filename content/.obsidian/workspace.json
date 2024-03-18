@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/A6.md",
+                "file": "thoughts/university/sfwr-2c03/a7/A7.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -56,6 +56,22 @@
                 "mode": "source",
                 "backlinks": true,
                 "source": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "a40adb7c2ef97cb8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1abb8c1f11706ff8",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-2c03/a7/assignment_7.pdf"
               }
             }
           }
@@ -126,7 +142,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf",
+                "file": "thoughts/university/sfwr-2c03/a7/A7.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -143,7 +159,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf",
+                "file": "thoughts/university/sfwr-2c03/a7/A7.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -166,7 +182,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf"
+                "file": "thoughts/university/sfwr-2c03/a7/A7.md"
               }
             }
           },
@@ -196,7 +212,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf"
+                "file": "thoughts/university/sfwr-2c03/a7/A7.md"
               }
             }
           }
@@ -223,56 +239,10 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "floating": {
-    "id": "7a258a1ba2769f07",
-    "type": "floating",
-    "children": [
-      {
-        "id": "877b572b67f36156",
-        "type": "window",
-        "children": [
-          {
-            "id": "59e9d50487ecb895",
-            "type": "tabs",
-            "children": [
-              {
-                "id": "6b686015dea5e87c",
-                "type": "leaf",
-                "state": {
-                  "type": "pdf",
-                  "state": {
-                    "file": "thoughts/university/sfwr-2c03/a6/assignment_6.pdf"
-                  }
-                }
-              },
-              {
-                "id": "88216d474c924723",
-                "type": "leaf",
-                "state": {
-                  "type": "markdown",
-                  "state": {
-                    "file": "thoughts/university/sfwr-2c03/a6/A6.md",
-                    "mode": "source",
-                    "backlinks": true,
-                    "source": false
-                  }
-                }
-              }
-            ]
-          }
-        ],
-        "direction": "vertical",
-        "x": 1032,
-        "y": 273,
-        "width": 1024,
-        "height": 800,
-        "maximize": false,
-        "zoom": 0
-      }
-    ]
-  },
-  "active": "6b686015dea5e87c",
+  "active": "2be802ddae654f9e",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-2c03/a7/assignment_7.pdf",
+    "thoughts/university/sfwr-2c03/a7/A7.md",
     "thoughts/university/sfwr-2c03/a6/A6.md",
     "thoughts/university/sfwr-2c03/a6/assignment_6.pdf",
     "thoughts/university/sfwr-2c03/a6/Aaron_Pham_400232791_assignment_6.pdf",
@@ -317,7 +287,6 @@
     "tags/commerce4be3.md",
     "uses.md",
     "thoughts/zero-shot learning.md",
-    "thoughts/writing.md",
     "Untitled.canvas"
   ]
 }
