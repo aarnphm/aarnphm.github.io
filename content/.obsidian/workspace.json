@@ -8,74 +8,96 @@
         "type": "tabs",
         "children": [
           {
-            "id": "2be802ddae654f9e",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/a7/A7.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "e699ce2031b9d474",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/sfwr-2fa3/DFA.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "dae4da09f8c8c069",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/sfwr-2fa3/NFA.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "1d148bc961cb42aa",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "quotes.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          }
-        ]
-      },
-      {
-        "id": "a40adb7c2ef97cb8",
-        "type": "tabs",
-        "children": [
-          {
             "id": "1abb8c1f11706ff8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-2fa3/Nous.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "d9832cee7d1517ba",
             "type": "leaf",
             "state": {
               "type": "pdf",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a7/assignment_7.pdf"
+                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf"
+              }
+            }
+          },
+          {
+            "id": "a505b52c1c42d500",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-3dx4/lab4/lab4-prelab.pdf"
+              }
+            }
+          },
+          {
+            "id": "9038cdb79b1308a4",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-3dx4/lab4/prelab.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "ca0d44eaab70933d",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-3dx4/root_locus.pdf"
+              }
+            }
+          },
+          {
+            "id": "68e796d5c5602c1a",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-3dx4/root_locus_control.pdf"
+              }
+            }
+          },
+          {
+            "id": "2f62a039a1245919",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-3dx4/freq_response_design.pdf"
+              }
+            }
+          },
+          {
+            "id": "8e3b76fa387e6d00",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-3dx4/a3/A3.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -125,8 +147,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 354.5,
-    "collapsed": true
+    "width": 367.5
   },
   "right": {
     "id": "5221182814b155cf",
@@ -142,7 +163,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a7/A7.md",
+                "file": "thoughts/university/sfwr-3dx4/lab4/prelab.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -159,7 +180,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a7/A7.md",
+                "file": "thoughts/university/sfwr-3dx4/lab4/prelab.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -182,7 +203,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a7/A7.md"
+                "file": "thoughts/university/sfwr-3dx4/lab4/prelab.md"
               }
             }
           },
@@ -212,7 +233,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a7/A7.md"
+                "file": "thoughts/university/sfwr-3dx4/lab4/prelab.md"
               }
             }
           }
@@ -239,54 +260,53 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "2be802ddae654f9e",
+  "active": "9038cdb79b1308a4",
   "lastOpenFiles": [
-    "thoughts/university/sfwr-2c03/a7/assignment_7.pdf",
+    "thoughts/university/sfwr-3dx4/lab4/lab4-prelab.pdf",
+    "thoughts/university/sfwr-3dx4/lab4/p2c.png",
+    "thoughts/university/sfwr-3dx4/lab4/prelab.md",
+    "thoughts/university/sfwr-3dx4/lab4/p2b.png",
+    "thoughts/university/sfwr-3dx4/lab4/p2a.png",
+    "thoughts/university/sfwr-3dx4/lab4/prelab.py",
+    "thoughts/atelier with friends/dundurn.md",
+    "thoughts/university/sfwr-3dx4/a3/assignment3.pdf",
+    "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
+    "thoughts/university/sfwr-2fa3/Nous.md",
+    "thoughts/university/sfwr-3dx4/a3/A3.md",
+    "thoughts/university/sfwr-3dx4/lab4/BallBeamStudentWorkbook.pdf",
+    "thoughts/university/sfwr-3dx4/lab4/BallBeamStudentWorkbook.pdf.crdownload",
+    "thoughts/university/sfwr-3dx4/lab4/BallBeamUserManual.pdf",
+    "thoughts/university/sfwr-3dx4/lab4/BallBeamUserManual.pdf.crdownload",
+    "thoughts/university/sfwr-3dx4/lab4/ballbeam_start.slx",
+    "thoughts/university/sfwr-3dx4/lab4/Unconfirmed 1235.crdownload",
+    "thoughts/university/sfwr-3dx4/a3/p2a.png",
+    "thoughts/university/sfwr-3dx4/a3/p1d.png",
+    "thoughts/university/sfwr-3dx4/a3/p1a.png",
+    "thoughts/university/sfwr-2fa3/a2/A2.md",
+    "thoughts/university/sfwr-2fa3/a1/A1.md",
     "thoughts/university/sfwr-2c03/a7/A7.md",
+    "thoughts/distraction.md",
     "thoughts/university/sfwr-2c03/a6/A6.md",
-    "thoughts/university/sfwr-2c03/a6/assignment_6.pdf",
-    "thoughts/university/sfwr-2c03/a6/Aaron_Pham_400232791_assignment_6.pdf",
-    "thoughts/university/sfwr-2c03/a6/Aaaron_Pham_400232791_assignment_6.pdf",
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_11.png",
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_10.png",
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_9.png",
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_8.png",
-    "thoughts/university/sfwr-2c03/a6/rb_tree_step_7.png",
-    "thoughts/university/sfwr-2c03/a6/rb_tree_step_6.png",
-    "thoughts/university/sfwr-2c03/a6/rb_tree_step_5.png",
-    "thoughts/university/sfwr-2c03/a6/rb_tree_step_4.png",
-    "thoughts/university/sfwr-2c03/a6/rb_tree_step_3.png",
-    "thoughts/university/sfwr-2c03/a6/rb_tree_step_2.png",
-    "thoughts/university/sfwr-2fa3/Nous.md",
-    "thoughts/university/sfwr-2c03/a6/p1.py",
-    "thoughts/university/sfwr-2c03/minimal-spanning-tree.pdf",
-    "thoughts/university/sfwr-2c03/balanced-search-tree-hash.pdf.crdownload",
-    "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf",
     "thoughts/university/sfwr-2c03/a6/content.md",
     "thoughts/Camus.md",
-    "thoughts/university/sfwr-2c03/a6",
     "thoughts/composition.md",
     "thoughts/Gestalt Principles.md",
-    "thoughts/Gestalt Principles",
     "thoughts/Color.md",
     "thoughts/design.md",
     "thoughts/orangeville.md",
-    "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
     "thoughts/university/sfwr-2fa3/NFA.md",
     "thoughts/university/sfwr-2fa3/DFA.md",
     "quotes.md",
     "thoughts/!note.md",
     "tags/sfwr2fa3.md",
-    "thoughts/university/sfwr-2fa3/A1.md",
     "tags/sfwr3dx4.md",
     "thoughts/university/sfwr-2fa3/W1.md",
     "thoughts/university/sfwr-2fa3/index.md",
     "thoughts/Dishes.md",
-    "thoughts/atelier with friends/index.md",
-    "thoughts/atelier with friends/orangeville.md",
-    "tags/commerce4be3.md",
-    "uses.md",
-    "thoughts/zero-shot learning.md",
     "Untitled.canvas"
   ]
 }

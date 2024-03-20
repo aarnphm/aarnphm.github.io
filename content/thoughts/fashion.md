@@ -56,7 +56,7 @@ Don't buy into maximalist brands. Overpriced, and the churn rate is high.
 
 see also: [source](https://www.youtube.com/watch?v=g0UQgrFNExc&t=765s&ab_channel=ALEXANDER) and [this tweet](https://twitter.com/dieworkwear/status/1647662031619895296)
 
-Go for quiet luxury, and timeless pieces: The following are few of favourite brands, order from most to least:
+Go for quiet luxury, and timeless pieces: The following are few of favourite brands, in no particular order:
 
 | Brand   | Genre of clothing to get |
 |--------------- | --------------- |
@@ -69,6 +69,9 @@ Go for quiet luxury, and timeless pieces: The following are few of favourite bra
 | Sefr | Pretty niche, but some of their beige lazaro shirts are nice.  |
 | Ted Baker   | Holy crap that's half of my closets. Trousers, shirts, suits, cargo, etc.   |
 | Ralph Lauren Polo   | Them trench coats are nice, daily driver during winter szn.   |
+| Mansuir Gavriel   | Their bags are my fav.   |
+| Olend Backpacks   | For the love of backpacks.   |
+| Bellroy   | Tote, durable, flexible.   |
 | Loro Piana  | If you can afford go for it   |
 | Club Monaco   | Trench coats, overcoats, too based.   |
 | Brooks Brothers   | Suits on special occasions.   |
@@ -76,3 +79,5 @@ Go for quiet luxury, and timeless pieces: The following are few of favourite bra
 | Timberland   | Utility, quality, style and worth for money.   |
 | Banana Republic   | Got their cashmere and merino wool sweaters. They are good.   |
 | Abercrombie & Fitch   | Baggy jeans, flannels comfy wear.   |
+| Massimo Dutti   | Their leather jackets are nice.   |
+| Sezzane   | Their blouses are nice.   |

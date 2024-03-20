@@ -35,8 +35,8 @@ body[data-menu="true"] {
   }
 
   a.internal {
+    @include links;
     font-weight: inherit;
-    color: inherit;
     font-style: italic;
     font-size: 1.272rem;
   }

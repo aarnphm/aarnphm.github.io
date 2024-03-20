@@ -9,7 +9,7 @@ title: Attention
 
 Paper: [Attention is all you need](https://arxiv.org/abs/1706.03762)
 
-See also [[thoughts/Transformers]]
+See also [[thoughts/Transformers|Transformers]], or [[thoughts/distraction|distraction]]
 
 ### Self-attention
 
