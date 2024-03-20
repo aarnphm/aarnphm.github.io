@@ -4,19 +4,26 @@
     "type": "split",
     "children": [
       {
-        "id": "b574fff43910060d",
+        "id": "d82de36de77d13d7",
         "type": "tabs",
         "children": [
           {
-            "id": "8e3b76fa387e6d00",
+            "id": "f2282d6208ff1c5e",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "thoughts/Embedding.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
+                "file": "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf"
+              }
+            }
+          },
+          {
+            "id": "fa1fe6d76081b50d",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/commerce-4be3/Rubric-4BE3.pdf"
               }
             }
           }
@@ -70,7 +77,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 367.5
+    "width": 367.5,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -86,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/Embedding.md",
+                "file": "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +111,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/Embedding.md",
+                "file": "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +134,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/Embedding.md"
+                "file": "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf"
               }
             }
           },
@@ -156,7 +164,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/Embedding.md"
+                "file": "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf"
               }
             }
           }
@@ -183,20 +191,25 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "f2282d6208ff1c5e",
   "lastOpenFiles": [
+    "thoughts/Gather.md",
+    "thoughts/university/commerce-4be3/Barry Gerhart - Compensation-McGraw Hill (2022).C9s9BofW.epub.part",
+    "thoughts/university/commerce-4be3/Barry Gerhart - Compensation-McGraw Hill (2022).epub",
+    "thoughts/university/commerce-4be3/Final reports.md",
+    "thoughts/university/commerce-4be3/Final report.md",
+    "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf",
+    "thoughts/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
+    "thoughts/university/commerce-4be3/Final Project Instructions.pdf",
+    "thoughts/university/commerce-4be3/Rubric-4BE3.pdf",
+    "thoughts/2024-03-02.md",
+    "thoughts/Embedding.md",
+    "thoughts/university/commerce-4be3/Final Project Instructions .pdf",
     "thoughts/university/sfwr-3dx4/a3/A3.md",
     "thoughts/university/sfwr-3dx4/freq_response_design.pdf",
     "thoughts/university/sfwr-3dx4/root_locus_control.pdf",
     "thoughts/university/sfwr-3dx4/root_locus.pdf",
     "thoughts/university/sfwr-2fa3/Nous.md",
-    "thoughts/university/sfwr-3dx4/Norman S. Nise - Control System Engineering-Wiley (2019).pdf",
-    "thoughts/university/sfwr-3dx4/lab4/lab4-prelab.pdf",
-    "thoughts/university/sfwr-3dx4/lab4/lab4.pdf",
-    "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
-    "thoughts/university/sfwr-3dx4/lab1/lab1.pdf",
-    "thoughts/university/sfwr-3dx4/lab3/lab3.pdf",
-    "thoughts/university/sfwr-3dx4/lab4/bb.py",
     "thoughts/university/sfwr-3dx4/lab4/prelab.md",
     "thoughts/university/sfwr-3dx4/lab4/p2c.png",
     "thoughts/university/sfwr-3dx4/lab4/p2b.png",
@@ -226,10 +239,6 @@
     "quotes.md",
     "thoughts/!note.md",
     "tags/sfwr2fa3.md",
-    "tags/sfwr3dx4.md",
-    "thoughts/university/sfwr-2fa3/W1.md",
-    "thoughts/university/sfwr-2fa3/index.md",
-    "thoughts/Dishes.md",
     "Untitled.canvas"
   ]
 }
