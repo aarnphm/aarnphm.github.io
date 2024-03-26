@@ -16,7 +16,7 @@ oignons caramélisés, bouillon de bœuf, gruyère, baguette.
 
 ## ==plat principal.==
 
-### poissons.
+### [[thoughts/atelier with friends/images/dundurn-1.jpeg|poissons.]]
 
 flétan, sauce au beurre citronné, carottes anciennes rôties, purée de carottes.
 

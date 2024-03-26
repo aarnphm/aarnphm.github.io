@@ -8,16 +8,6 @@
         "type": "tabs",
         "children": [
           {
-            "id": "b19be30c513418b8",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/a9/assignment_9.pdf"
-              }
-            }
-          },
-          {
             "id": "ba5b4ca20354844a",
             "type": "leaf",
             "state": {
@@ -47,13 +37,8 @@
             "id": "c57cddd67f8078e7",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/a9/A9.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -123,7 +108,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a9/A9.md",
+                "file": "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -140,7 +125,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a9/A9.md",
+                "file": "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -163,7 +148,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a9/A9.md"
+                "file": "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf"
               }
             }
           },
@@ -193,7 +178,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a9/A9.md"
+                "file": "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf"
               }
             }
           }
@@ -220,24 +205,27 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "c57cddd67f8078e7",
+  "active": "ba5b4ca20354844a",
   "lastOpenFiles": [
-    "thoughts/university/sfwr-2c03/a9/assignment_9.pdf",
+    "thoughts/atelier with friends/images/dundurn-1.jpeg",
+    "thoughts/atelier with friends/images/IMG_0790.jpeg",
+    "thoughts/atelier with friends/IMG_0790.jpeg",
     "thoughts/university/sfwr-2c03/a9/A9.md",
-    "thoughts/university/sfwr-2c03/a8/assignment_8.pdf",
-    "thoughts/university/sfwr-2c03/a8/A8.md",
-    "thoughts/university/sfwr-2c03/a9",
-    "thoughts/attractor.md",
-    "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf",
-    "thoughts/university/sfwr-2c03/graph-algo.pdf",
-    "thoughts/university/sfwr-2c03/minimal-spanning-tree.pdf",
     "thoughts/university/sfwr-2c03/string.pdf",
+    "thoughts/university/sfwr-2c03/a9/assignment_9.pdf",
+    "thoughts/university/sfwr-2c03/a9",
+    "thoughts/university/sfwr-2c03/a8/A8.md",
+    "thoughts/university/sfwr-2c03/a8/assignment_8.pdf",
+    "thoughts/university/sfwr-2c03/a8",
+    "thoughts/university/astron-2e03/Jack J. Lissauer, Imke de Pater - Fundamental Planetary Science_ Physics, Chemistry and Habitability-Cambridge University Press (2019).pdf",
+    "thoughts/university/astron-2e03/Instructor Solutions.pdf",
+    "thoughts/attractor.md",
     "thoughts/university/commerce-4be3/Rubric-4BE3.pdf",
-    "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf",
-    "thoughts/university/astron-2e03/Jack J.apLS6T64. Lissauer, Imke de Pater - Fundamental Planetary Science_ Physics, Chemistry and Habitability (Suppl. 2 of 3, Tables, High-Res Figures)-Cambridge University Press (2019.7z.part",
-    "thoughts/Gather.md",
-    "thoughts/university/commerce-4be3/Final reports.md",
     "thoughts/university/commerce-4be3/Final report.md",
+    "thoughts/university/commerce-4be3/Barry Gerhart - Compensation-McGraw Hill (2022).epub",
+    "thoughts/Gather.md",
+    "thoughts/university/sfwr-2c03/graph-algo.pdf",
+    "thoughts/university/commerce-4be3/Final reports.md",
     "thoughts/2024-03-02.md",
     "thoughts/Embedding.md",
     "thoughts/university/sfwr-3dx4/a3/A3.md",
@@ -257,8 +245,6 @@
     "thoughts/university/sfwr-2c03/a6/A6.md",
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_11.png",
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_10.png",
-    "thoughts/university/sfwr-2c03/a6/rb_tree_step_9.png",
-    "thoughts/university/sfwr-2c03/a6/rb_tree_step_8.png",
     "thoughts/university/sfwr-2c03/a6/content.md",
     "thoughts/Camus.md",
     "thoughts/composition.md",
