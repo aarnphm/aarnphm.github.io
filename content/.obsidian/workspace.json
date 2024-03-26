@@ -38,6 +38,25 @@
             }
           }
         ]
+      },
+      {
+        "id": "b82c81f518a92864",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c57cddd67f8078e7",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-2c03/a9/A9.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          }
+        ]
       }
     ],
     "direction": "vertical"
@@ -87,7 +106,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 367.5
+    "width": 367.5,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -103,7 +123,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a9/assignment_9.pdf",
+                "file": "thoughts/university/sfwr-2c03/a9/A9.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -120,7 +140,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a9/assignment_9.pdf",
+                "file": "thoughts/university/sfwr-2c03/a9/A9.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -143,7 +163,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a9/assignment_9.pdf"
+                "file": "thoughts/university/sfwr-2c03/a9/A9.md"
               }
             }
           },
@@ -173,7 +193,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/a9/assignment_9.pdf"
+                "file": "thoughts/university/sfwr-2c03/a9/A9.md"
               }
             }
           }
@@ -200,10 +220,11 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "b19be30c513418b8",
+  "active": "c57cddd67f8078e7",
   "lastOpenFiles": [
-    "thoughts/university/sfwr-2c03/a8/assignment_8.pdf",
     "thoughts/university/sfwr-2c03/a9/assignment_9.pdf",
+    "thoughts/university/sfwr-2c03/a9/A9.md",
+    "thoughts/university/sfwr-2c03/a8/assignment_8.pdf",
     "thoughts/university/sfwr-2c03/a8/A8.md",
     "thoughts/university/sfwr-2c03/a9",
     "thoughts/attractor.md",
@@ -246,7 +267,6 @@
     "thoughts/design.md",
     "thoughts/orangeville.md",
     "thoughts/university/sfwr-2fa3/NFA.md",
-    "thoughts/university/sfwr-2fa3/DFA.md",
     "Untitled.canvas"
   ]
 }

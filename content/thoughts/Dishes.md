@@ -35,3 +35,11 @@ This serves as a ground truth for a collection of dishes throughout.
 6. la charcuterie
 
 7. Mousse au chocolat
+
+8. gateau au chocolat
+
+  - espresso buttercream, honey, sea salt, chocolate ganache.
+
+9. choux au craquelin
+
+  - matcha cream, powered sugar, matcha powder.

@@ -12,20 +12,16 @@ title: dundurn.
 
 ### Soupe à l'Oignon Gratinée
 
-caramelized onions, beef broth, gruyère, baguette.
+oignons caramélisés, bouillon de bœuf, gruyère, baguette.
 
 ## ==plat principal.==
 
 ### poissons.
 
-halibut, carrots
+flétan, sauce au beurre citronné, carottes anciennes rôties, purée de carottes.
 
 ## ==dessert.==
 
-### gateau au chocolat
+### tiramisu.
 
-espresso buttercream, honey, sea salt, chocolate ganache.
-
-### choux au craquelin
-
-matcha cream, powered sugar, matcha powder.
+espresso, mascarpone, biscuits à la cuillère, cacao.
