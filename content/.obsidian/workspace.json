@@ -26,8 +26,19 @@
                 "file": "thoughts/university/sfwr-2c03/minimal-spanning-tree.pdf"
               }
             }
+          },
+          {
+            "id": "b072ef320b9911e2",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-2c03/a9/assignment_9.pdf"
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       },
       {
         "id": "b82c81f518a92864",
@@ -37,8 +48,13 @@
             "id": "c57cddd67f8078e7",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-2c03/a9/A9.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
             }
           }
         ]
@@ -108,7 +124,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf",
+                "file": "thoughts/university/sfwr-2c03/a9/A9.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -125,7 +141,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf",
+                "file": "thoughts/university/sfwr-2c03/a9/A9.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -148,7 +164,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf"
+                "file": "thoughts/university/sfwr-2c03/a9/A9.md"
               }
             }
           },
@@ -178,7 +194,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf"
+                "file": "thoughts/university/sfwr-2c03/a9/A9.md"
               }
             }
           }
@@ -205,14 +221,16 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "ba5b4ca20354844a",
+  "active": "c57cddd67f8078e7",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-2c03/a9/Aaron_Pham_400232791_assignment_9.pdf",
+    "thoughts/university/sfwr-2c03/a9/assignment_9.pdf",
+    "thoughts/university/sfwr-2c03/a9/A9.md",
+    "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf",
     "thoughts/atelier with friends/images/dundurn-1.jpeg",
     "thoughts/atelier with friends/images/IMG_0790.jpeg",
     "thoughts/atelier with friends/IMG_0790.jpeg",
-    "thoughts/university/sfwr-2c03/a9/A9.md",
     "thoughts/university/sfwr-2c03/string.pdf",
-    "thoughts/university/sfwr-2c03/a9/assignment_9.pdf",
     "thoughts/university/sfwr-2c03/a9",
     "thoughts/university/sfwr-2c03/a8/A8.md",
     "thoughts/university/sfwr-2c03/a8/assignment_8.pdf",
@@ -224,7 +242,6 @@
     "thoughts/university/commerce-4be3/Final report.md",
     "thoughts/university/commerce-4be3/Barry Gerhart - Compensation-McGraw Hill (2022).epub",
     "thoughts/Gather.md",
-    "thoughts/university/sfwr-2c03/graph-algo.pdf",
     "thoughts/university/commerce-4be3/Final reports.md",
     "thoughts/2024-03-02.md",
     "thoughts/Embedding.md",
@@ -244,7 +261,6 @@
     "thoughts/distraction.md",
     "thoughts/university/sfwr-2c03/a6/A6.md",
     "thoughts/university/sfwr-2c03/a6/rb_tree_step_11.png",
-    "thoughts/university/sfwr-2c03/a6/rb_tree_step_10.png",
     "thoughts/university/sfwr-2c03/a6/content.md",
     "thoughts/Camus.md",
     "thoughts/composition.md",
