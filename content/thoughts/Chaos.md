@@ -30,7 +30,7 @@ We can often see [[thoughts/Entropy|entropy]] as a consequence of chaos. These a
 
 The loss of order induces unpredictability within deterministic systems, or such systems are _sensitive dependent_ on initial condition. Whereas entropy deals with property of how one system can be arranged.
 
-We can observe this through Lorenz attractor:
+We can observe this through Lorenz [[thoughts/attractor|attractor]] system:
 
 $$
 \begin{align*}

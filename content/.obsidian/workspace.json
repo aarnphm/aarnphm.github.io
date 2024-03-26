@@ -4,26 +4,36 @@
     "type": "split",
     "children": [
       {
-        "id": "d82de36de77d13d7",
+        "id": "22de32113a40f307",
         "type": "tabs",
         "children": [
           {
-            "id": "f2282d6208ff1c5e",
+            "id": "b19be30c513418b8",
             "type": "leaf",
             "state": {
               "type": "pdf",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf"
+                "file": "thoughts/university/sfwr-2c03/a9/assignment_9.pdf"
               }
             }
           },
           {
-            "id": "fa1fe6d76081b50d",
+            "id": "ba5b4ca20354844a",
             "type": "leaf",
             "state": {
               "type": "pdf",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Rubric-4BE3.pdf"
+                "file": "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf"
+              }
+            }
+          },
+          {
+            "id": "122e131d97ab03a6",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-2c03/minimal-spanning-tree.pdf"
               }
             }
           }
@@ -77,8 +87,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 367.5,
-    "collapsed": true
+    "width": 367.5
   },
   "right": {
     "id": "5221182814b155cf",
@@ -94,7 +103,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf",
+                "file": "thoughts/university/sfwr-2c03/a9/assignment_9.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -111,7 +120,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf",
+                "file": "thoughts/university/sfwr-2c03/a9/assignment_9.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -134,7 +143,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf"
+                "file": "thoughts/university/sfwr-2c03/a9/assignment_9.pdf"
               }
             }
           },
@@ -164,7 +173,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf"
+                "file": "thoughts/university/sfwr-2c03/a9/assignment_9.pdf"
               }
             }
           }
@@ -191,24 +200,26 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "f2282d6208ff1c5e",
+  "active": "b19be30c513418b8",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-2c03/a8/assignment_8.pdf",
+    "thoughts/university/sfwr-2c03/a9/assignment_9.pdf",
+    "thoughts/university/sfwr-2c03/a8/A8.md",
+    "thoughts/university/sfwr-2c03/a9",
+    "thoughts/attractor.md",
+    "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf",
+    "thoughts/university/sfwr-2c03/graph-algo.pdf",
+    "thoughts/university/sfwr-2c03/minimal-spanning-tree.pdf",
+    "thoughts/university/sfwr-2c03/string.pdf",
+    "thoughts/university/commerce-4be3/Rubric-4BE3.pdf",
+    "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf",
+    "thoughts/university/astron-2e03/Jack J.apLS6T64. Lissauer, Imke de Pater - Fundamental Planetary Science_ Physics, Chemistry and Habitability (Suppl. 2 of 3, Tables, High-Res Figures)-Cambridge University Press (2019.7z.part",
     "thoughts/Gather.md",
-    "thoughts/university/commerce-4be3/Barry Gerhart - Compensation-McGraw Hill (2022).C9s9BofW.epub.part",
-    "thoughts/university/commerce-4be3/Barry Gerhart - Compensation-McGraw Hill (2022).epub",
     "thoughts/university/commerce-4be3/Final reports.md",
     "thoughts/university/commerce-4be3/Final report.md",
-    "thoughts/university/commerce-4be3/Defining Internal Alignment.pdf",
-    "thoughts/university/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf",
-    "thoughts/university/commerce-4be3/Final Project Instructions.pdf",
-    "thoughts/university/commerce-4be3/Rubric-4BE3.pdf",
     "thoughts/2024-03-02.md",
     "thoughts/Embedding.md",
-    "thoughts/university/commerce-4be3/Final Project Instructions .pdf",
     "thoughts/university/sfwr-3dx4/a3/A3.md",
-    "thoughts/university/sfwr-3dx4/freq_response_design.pdf",
-    "thoughts/university/sfwr-3dx4/root_locus_control.pdf",
-    "thoughts/university/sfwr-3dx4/root_locus.pdf",
     "thoughts/university/sfwr-2fa3/Nous.md",
     "thoughts/university/sfwr-3dx4/lab4/prelab.md",
     "thoughts/university/sfwr-3dx4/lab4/p2c.png",
@@ -236,9 +247,6 @@
     "thoughts/orangeville.md",
     "thoughts/university/sfwr-2fa3/NFA.md",
     "thoughts/university/sfwr-2fa3/DFA.md",
-    "quotes.md",
-    "thoughts/!note.md",
-    "tags/sfwr2fa3.md",
     "Untitled.canvas"
   ]
 }
