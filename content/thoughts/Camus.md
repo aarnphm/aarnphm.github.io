@@ -133,15 +133,15 @@ Camus’ argument on the absurd:
 > [!note]
 > What can a meaning outside my condition mean to me. I can understand only in human terms.
 
-Did he mean the world or the human as absurd? No, because as a rational human being we are programmed to create order and put meaning to life in a indifferent and irrational universe
+Did he mean the world or the human as absurd? No, because as rational human being we are programmed to create order and put meaning to life in a indifferent and irrational universe
 
 The why arises, and trying to find rational in an irrational world is absurd. The absurd cannot be negated, meaning we can live either in acceptance or escape from it.
 Religion is a set of pre-made answers for existential and philosophical questions, and use as tools for control.
 
-Philosophical suicide is to elude the absurd and trying to figure out the meaning of life, with a set of man made beliefs
+Philosophical suicide is to elude the absurd and trying to figure out the meaning of life, with a set of man-made beliefs
 
-How to live life in a meaningless world? It is to let loose in all definitions of meaning and live life fruitful.
+How to live life in a meaningless world? It is to let loose in all definitions of meaning and live life fruitfully.
 
-Instead of despairing, see a silver lining, to focus on this life, create value on our own, when our time is limited, with perception of it. One should not accept the absurd, we should revolt around it as we have full control of our own actions and freedom.
+Instead of despairing, see the silver lining, to focus on this life, create [[thoughts/Value|value]] on our own, when our time is limited, with a full perception of it. One should not accept the absurd, we should revolt around it as we have full control of our own actions and freedom.
 
-Rebellion: full of thoughts and actions. Rejection of hope. Is to live solely with what he know, to accommodate with what is and to bring in nothing?
+Rebellion: full of thoughts and actions. as rejection of hope. The goal is to live solely with what he know, to accommodate with what is and to bring in nothing?

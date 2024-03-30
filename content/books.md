@@ -17,6 +17,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 ## current.
 
 - **[[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]]** by Gilles Deleuze
+- **The Lily of the Field and the Bird of the Air** by Søren Kierkegaard
 - **Beyond Good and Evil** by Friedrich Nietzsche
 - **Beyond The Pleasure Principle** by Sigmund [[thoughts/Freud|Freud]]
 - **The Critique of Pure Reason** by Immanuel Kant
@@ -25,7 +26,6 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
 - **Structure and Interpretation of Computer Programs** by Abelson and Sussman
 - **Meditations** by Marcus Aurelius
-- **[[thoughts/Camus#The Myth of Sisyphus|The Myth of Sisyphus]]** by Albert Camus
 
 ## to read.
 
@@ -42,7 +42,6 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **Existentialism in Social [[thoughts/education|Pedagogy]]** by Søren Kierkegaard
 - **[[thoughts/The Will To Believe]]** by William James
 
-
 #### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 
 - **The Birth of Tragedy**
@@ -57,6 +56,13 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 - **The Critique of Practical Reason**
 - **Groundwork of the Metaphysics of Morals**
+
+#### [[thoughts/Camus|Camus]]
+
+- **The Fall**
+- **The Stranger**
+- **The Rebel**
+- **The First Man**
 
 ### non-fiction
 
@@ -94,6 +100,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ### 2024
 
+- **[[thoughts/Camus#The Myth of Sisyphus|The Myth of Sisyphus]]** by Albert Camus
 - **The metamorphosis** by Franz Kafka
 - **The end of the affair** by Graham Greene
 - **The Little Book of [[thoughts/deep learning|Deep Learning]]** by [François Fleuret](https://fleuret.org/public/lbdl.pdf)
