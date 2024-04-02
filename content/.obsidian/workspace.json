@@ -4,70 +4,67 @@
     "type": "split",
     "children": [
       {
-        "id": "22de32113a40f307",
-        "type": "tabs",
+        "id": "ecba9a473c3530ac",
+        "type": "split",
         "children": [
           {
-            "id": "ba5b4ca20354844a",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf"
+            "id": "22de32113a40f307",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "ba5b4ca20354844a",
+                "type": "leaf",
+                "state": {
+                  "type": "pdf",
+                  "state": {
+                    "file": "thoughts/university/sfwr-2c03/elementary-graph-algorithm.pdf"
+                  }
+                }
+              },
+              {
+                "id": "122e131d97ab03a6",
+                "type": "leaf",
+                "state": {
+                  "type": "pdf",
+                  "state": {
+                    "file": "thoughts/university/sfwr-2c03/minimal-spanning-tree.pdf"
+                  }
+                }
+              },
+              {
+                "id": "45744c4ae560cc3b",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "thoughts/university/sfwr-2c03/a10/A10.md",
+                    "mode": "source",
+                    "backlinks": true,
+                    "source": false
+                  }
+                }
               }
-            }
+            ],
+            "currentTab": 2
           },
           {
-            "id": "122e131d97ab03a6",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/minimal-spanning-tree.pdf"
+            "id": "b25698d20bd66f76",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "c57cddd67f8078e7",
+                "type": "leaf",
+                "state": {
+                  "type": "pdf",
+                  "state": {
+                    "file": "thoughts/university/sfwr-2c03/a10/assignment_10.pdf"
+                  }
+                }
               }
-            }
-          },
-          {
-            "id": "b072ef320b9911e2",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/sfwr-2c03/a9/assignment_9.pdf"
-              }
-            }
-          },
-          {
-            "id": "323f770a4c175351",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/sfwr-3dx4/a4/A4.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
+            ]
           }
         ],
-        "currentTab": 3
-      },
-      {
-        "id": "b82c81f518a92864",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "c57cddd67f8078e7",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/sfwr-3dx4/a4/assignment4.pdf"
-              }
-            }
-          }
-        ]
+        "direction": "horizontal"
       }
     ],
     "direction": "vertical"
@@ -134,7 +131,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/a4/A4.md",
+                "file": "thoughts/university/sfwr-2c03/a10/A10.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -151,7 +148,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/a4/A4.md",
+                "file": "thoughts/university/sfwr-2c03/a10/A10.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -174,7 +171,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/a4/A4.md"
+                "file": "thoughts/university/sfwr-2c03/a10/A10.md"
               }
             }
           },
@@ -204,7 +201,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/sfwr-3dx4/a4/A4.md"
+                "file": "thoughts/university/sfwr-2c03/a10/A10.md"
               }
             }
           }
@@ -231,12 +228,16 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "323f770a4c175351",
+  "active": "45744c4ae560cc3b",
   "lastOpenFiles": [
+    "thoughts/university/sfwr-2c03/a10/Aaron_Pham_400232791_assignment_10.pdf",
+    "thoughts/university/sfwr-2c03/a10/assignment_10.pdf",
+    "thoughts/university/sfwr-2c03/a10/A10.md",
+    "thoughts/university/sfwr-3dx4/a4/assignment4.pdf",
+    "thoughts/university/sfwr-2c03/a9/assignment_9.pdf",
+    "thoughts/university/sfwr-3dx4/a4/A4.md",
     "thoughts/university/sfwr-3dx4/a4/Aaron_Pham_400232791_assignment4.pdf",
     "thoughts/university/sfwr-3dx4/a4/p3.m",
-    "thoughts/university/sfwr-3dx4/a4/assignment4.pdf",
-    "thoughts/university/sfwr-3dx4/a4/A4.md",
     "thoughts/university/sfwr-3dx4/a4/p3.py",
     "thoughts/university/sfwr-3dx4/a4/p2.py",
     "thoughts/university/sfwr-3dx4/a4/p1.m",
@@ -244,10 +245,7 @@
     "thoughts/university/sfwr-3dx4/a4/p1a.py",
     "thoughts/university/sfwr-3dx4/a4/p1b.py",
     "thoughts/university/sfwr-3dx4/a4/p1a.png",
-    "thoughts/university/sfwr-3dx4/a4/p1.py",
     "thoughts/university/sfwr-2c03/a9/A9.md",
-    "thoughts/university/sfwr-2c03/a9/Aaron_Pham_400232791_assignment_9.pdf",
-    "thoughts/university/sfwr-2c03/a9/assignment_9.pdf",
     "thoughts/atelier with friends/images/dundurn-1.jpeg",
     "thoughts/atelier with friends/images/IMG_0790.jpeg",
     "thoughts/atelier with friends/IMG_0790.jpeg",
@@ -278,7 +276,6 @@
     "thoughts/Gestalt Principles.md",
     "thoughts/Color.md",
     "thoughts/design.md",
-    "thoughts/orangeville.md",
     "Untitled.canvas"
   ]
 }
