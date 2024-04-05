@@ -41,6 +41,8 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **Meditations on First Philosophy** by René [[thoughts/university/philo-1aa3/Descartes|Descartes]], French ed.
 - **Existentialism in Social [[thoughts/education|Pedagogy]]** by Søren Kierkegaard
 - **[[thoughts/The Will To Believe]]** by William James
+- **The Care of the Self** by Michel Foucault
+- **Metaphysical myths, mathematical Practice: The Ontology and [[thoughts/Epistemology|Epistemology]] of the Exact Science** by Michel Foucault
 
 #### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 
@@ -63,6 +65,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Stranger**
 - **The Rebel**
 - **The First Man**
+- **Resistance, Rebellion, and Death**
 
 ### non-fiction
 
@@ -74,6 +77,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **Mindset** by Dr. Carol S. Dweck
 - **The Pleasure of Finding Things Out** by Richard P. Feynman
 - **Walden and Civil Disobedience** by Henry David Thoreau
+- **Deep Sleep** by Jade Wu
 
 ### fiction
 
