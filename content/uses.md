@@ -37,7 +37,7 @@ zen: true
 - Apple Notes
 - Noteshelf 3
 - [Bitwarden](https://bitwarden.com/)
-- [Arc](https://arc.net/) (chromium-based)
+- Safari
 - [Live 11 Suite](https://www.ableton.com/en/live/)
 - [Raycast](https://www.raycast.com/)
 - Rectangle
