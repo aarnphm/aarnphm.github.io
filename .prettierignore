@@ -4,3 +4,4 @@ node_modules
 .mypy_cache
 content
 .venv
+safari.css
