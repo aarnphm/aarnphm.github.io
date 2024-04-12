@@ -9,7 +9,7 @@ title: Conversion Factors
 See also: [[thoughts/university/eng-3px3/Conversion Factors.pdf|slides]] and [[thoughts/university/eng-3px3/3PX3 04 Conversion Factors.pdf|this one]]
 
 Relevant to economic analysis process must:
-- explicitly incorporated into [[thoughts/university/eng-3px3/W2|NVF]] by giving it _conversion factor_
+- explicitly incorporated into [[thoughts/university/eng-3px3/Net value analysis|NVF]] by giving it _conversion factor_
 - included as a hard constraints
 
 > conversion factor: convert benefit and costs into common units

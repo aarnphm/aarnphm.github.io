@@ -36,7 +36,7 @@ Where the performance parameters and conversion factors are defined by the follo
 - **Upfront construction cost**: This is defined by the initial investment to start the operation, including factory setup and equipment purchases, compliance with building codes, and other considerations.
   The conversion factors is an amortized, one-time cost of the initial investment. This will be reflected as the capital expenditure needed for the project.
 
-Some of the following considerations are made for the aforementioned [[thoughts/university/eng-3px3/W1#Net Value functions|NVF]], as well as the performance parameters and conversion factors:
+Some of the following considerations are made for the aforementioned [[thoughts/university/eng-3px3/Net Value Function#Net Value functions|NVF]], as well as the performance parameters and conversion factors:
 
 - **Environmental**: The focus on material uses should be vital, such that all materials are sustainable and non-toxic, to reduce emissions. Additionally, the energy consumption would also be increased due to utilisation of automation software and robotics. Therefore, The NVF should be reflected where both `EnergyCost` and `MaterialsCost` would be increased from initial assumptions and due diligence.
 

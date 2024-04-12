@@ -1,9 +1,9 @@
 ---
-id: W1
+id: Net Value Function
 tags:
   - eng3px3
-date: "2024-01-09"
-title: Economic & Technical Analysis
+date: 2024-01-09
+title: Net value function
 ---
 
 See [[thoughts/university/eng-3px3/3PX3 Net Value Functions.pdf|slides]]
@@ -40,11 +40,8 @@ $$
 
 Unit matching and conversion
 
-marginal value, quantity-dependent value
-> marginal net value decreases
 
-> _marginal net value_ of buying an appl eis the change in NV from buying one more apple (slope of NVF wrt number of apple bought)
-
-> either subsequent items gives more NV or lower costs.
+> [!notes] marginal value, quantity-dependent value
+> _marginal net value_ of buying an apple is the change in NV from buying one more apple (slope of NVF wrt number of apple bought) either subsequent items gives more NV or lower costs. ^marginal-value
 
 ![[thoughts/university/eng-3px3/marginal-apple-q.jpeg]]

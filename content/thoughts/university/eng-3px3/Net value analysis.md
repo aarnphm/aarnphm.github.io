@@ -1,8 +1,8 @@
 ---
-id: W2
+id: Net value analysis
 tags:
   - eng3px3
-date: "2024-01-16"
+date: 2024-01-16
 title: Net Value Analysis
 ---
 

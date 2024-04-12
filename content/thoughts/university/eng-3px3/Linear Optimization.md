@@ -32,6 +32,7 @@ A_g \mathcal{x} \leq \mathcal{b}g \leq 0 & &\leftarrow &\space \text{Inequality 
 \mathcal{x}_{lb} \leq \mathcal{x} \leq \mathcal{x}_{ub} & &\leftarrow &\space \text{Variable Bounds}
 \end{align*}
 $$
+^linops
 
 where:
 
