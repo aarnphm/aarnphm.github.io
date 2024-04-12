@@ -6,7 +6,7 @@ date: "2024-02-08"
 title: Linear Optimization in Economics Analysis
 ---
 
-See also [[thoughts/university/eng-3px3/3PX3 08 - Linear Optimization.pdf|slides]], [[thoughts/university/eng-3px3/Optimization]]
+See also [[thoughts/university/eng-3px3/3PX3 08 - Linear Optimization.pdf|slides]], [[thoughts/university/eng-3px3/Optimization|optimization]]
 
 Linearization around [[thoughts/university/compsci-4x03/Equations#Taylor series|first order Taylor series]] expansions
 

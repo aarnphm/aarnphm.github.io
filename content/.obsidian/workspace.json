@@ -61,12 +61,15 @@
             }
           },
           {
-            "id": "9d23c54c34c0280d",
+            "id": "3f5f072b8d264d1e",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Final Project Instructions.pdf"
+                "file": "thoughts/university/eng-3px3/Finals.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
               }
             }
           },
@@ -92,6 +95,85 @@
           }
         ],
         "currentTab": 5
+      },
+      {
+        "id": "245717d82d787295",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5ce0467f26fe4be4",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/eng-3px3/Optimization.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "301a4d34a74e60a2",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/eng-3px3/Linear Optimization.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "1c5f251cac907139",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/eng-3px3/3PX3 08 - Linear Optimization.pdf"
+              }
+            }
+          },
+          {
+            "id": "97751ce37df4aa14",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/eng-3px3/Non-linear optimization.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "abe1580db4769c72",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf"
+              }
+            }
+          },
+          {
+            "id": "e9b117f49520eaef",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-2fa3/a2/A2.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          }
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -157,7 +239,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Final Project Instructions.pdf",
+                "file": "thoughts/university/eng-3px3/Finals.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -174,7 +256,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Final Project Instructions.pdf",
+                "file": "thoughts/university/eng-3px3/Finals.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -197,7 +279,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Final Project Instructions.pdf"
+                "file": "thoughts/university/eng-3px3/Finals.md"
               }
             }
           },
@@ -227,7 +309,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/commerce-4be3/Final Project Instructions.pdf"
+                "file": "thoughts/university/eng-3px3/Finals.md"
               }
             }
           }
@@ -254,23 +336,33 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "9d23c54c34c0280d",
+  "active": "3f5f072b8d264d1e",
   "lastOpenFiles": [
-    "thoughts/images/mad2024.pdf",
+    "thoughts/university/eng-3px3/Linear Optimization.md",
+    "thoughts/university/eng-3px3/Finals.md",
+    "thoughts/being.md",
+    "thoughts/becoming.md",
+    "thoughts/university/eng-3px3/3PX3 09 - Nonlinear Optimization.pdf",
+    "thoughts/university/eng-3px3/3PX3 08 - Linear Optimization.pdf",
+    "thoughts/university/eng-3px3/Non-linear optimization.md",
+    "thoughts/university/sfwr-3dx4/a5/assignment5.pdf",
+    "thoughts/university/eng-3px3/Optimization.md",
+    "thoughts/university/sfwr-3dx4/a5/A5.md",
+    "safari.css",
+    "safari.scss",
+    "thoughts/university/sfwr-2c03/a12/assignment_12.pdf",
+    "thoughts/university/sfwr-2c03/a12",
+    "thoughts/university/sfwr-2c03/a11/assignment_11.pdf",
+    "thoughts/university/sfwr-2c03/a11/assignment_11.pdf.crdownload",
+    "thoughts/university/sfwr-2c03/a11",
+    "thoughts/university/sfwr-2fa3/a3/A3.md",
+    "thoughts/images/Screenshot 2024-04-10 at 22.03.22.png",
+    "thoughts/university/sfwr-2fa3/a3/p2.png",
+    "thoughts/university/sfwr-2fa3/a2/A2.md",
     "thoughts/university/commerce-4be3/Final report.md",
-    "thoughts/university/commerce-4be3/Final Project Instructions.pdf",
     "thoughts/latent space.md",
     "thoughts/university/sfwr-3dx4/lab5/prelab.md",
-    "thoughts/university/sfwr-3dx4/lab5/prelab.pdf",
-    "thoughts/university/sfwr-3dx4/lab5/lab5-prelab.pdf",
-    "thoughts/university/sfwr-3dx4/lab5/lab5.pdf",
-    "thoughts/university/sfwr-3dx4/lab4/lab4.pdf",
-    "thoughts/university/sfwr-3dx4/lab5/lab5starter.slx",
-    "thoughts/university/sfwr-3dx4/lab5/Unconfirmed 818122.crdownload",
-    "thoughts/university/sfwr-3dx4/lab5/lab5-prelab.pdf.crdownload",
-    "thoughts/university/sfwr-3dx4/lab5",
     "thoughts/university/sfwr-2c03/a10/A10.md",
-    "thoughts/university/sfwr-2c03/a10/Aaron_Pham_400232791_assignment_10.pdf",
     "thoughts/university/sfwr-3dx4/a4/A4.md",
     "thoughts/university/sfwr-3dx4/a4/p1b.png",
     "thoughts/university/sfwr-3dx4/a4/p1a.png",
@@ -291,17 +383,7 @@
     "thoughts/university/sfwr-3dx4/lab4/p2b.png",
     "thoughts/university/sfwr-3dx4/lab4/p2a.png",
     "thoughts/atelier with friends/dundurn.md",
-    "thoughts/university/sfwr-3dx4/a3/p2a.png",
-    "thoughts/university/sfwr-3dx4/a3/p1d.png",
-    "thoughts/university/sfwr-2fa3/a2/A2.md",
     "thoughts/university/sfwr-2fa3/a1/A1.md",
-    "thoughts/university/sfwr-2c03/a7/A7.md",
-    "thoughts/distraction.md",
-    "thoughts/university/sfwr-2c03/a6/A6.md",
-    "thoughts/university/sfwr-2c03/a6/content.md",
-    "thoughts/Camus.md",
-    "thoughts/composition.md",
-    "thoughts/Gestalt Principles.md",
     "Untitled.canvas"
   ]
 }

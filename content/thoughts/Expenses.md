@@ -20,6 +20,7 @@ title: Expenses
 | Vocabulary | 29.99 | Y | USD | Chase |
 | Discord Nitro | 9.99 | M | USD | Chase |
 | Duolingo Max | 149.99 | Y | USD | Chase |
+| Twitter Premium+ | 210 | Y | USD | Chase |
 | Uber One | 9.99 | M | USD | Chase |
 | Youtube Premium Student | 7.99 | M | USD | Chase |
 | [[thoughts/fashion|fashion]] | recurrent | year | USD | Chase |

@@ -8,7 +8,7 @@ date: "2024-02-17"
 title: relationships
 ---
 
-## Friendship
+## friendship
 
 See also: [this tweet](https://twitter.com/patriciamou_/status/1758354933521478126)
 
@@ -24,4 +24,4 @@ Sexual craving is mediated by testosterone, oestrogen and has the amygdala as an
 
 Attraction is mediated by hormones of stress and reward such as dopamine, norepinephrine cortisol and serotinergic system
 
-## Attachment
+## attachment

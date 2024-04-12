@@ -3,6 +3,7 @@ id: Camus
 tags:
   - philosophy
 date: "2024-02-28"
+description: Camus, a scattered thoughts and notes.
 title: Camus
 ---
 
