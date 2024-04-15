@@ -34,7 +34,8 @@ $$
 > - you pick an $i \geq 0$, and show $xuv^2wz \notin L$
 
 > [!note] context-free grammar
-> $$\begin{align*}
+> $$
+> \begin{align*}
 > \mathbb{G} = (N, \Sigma, P, S) &\quad N: \text{non-terminal symbols} \\\
 > &\quad \Sigma: \text{terminal symbols} \space s.t \space \Sigma \cap N = \emptyset \\\
 > &\quad P: \text{production rules} \space s.t \text{a finite subset of } N \times (N \cup \Sigma)^{*} \\\
