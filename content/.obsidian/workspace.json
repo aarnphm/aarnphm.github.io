@@ -4,76 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "245717d82d787295",
+        "id": "4946b8d40f68b476",
         "type": "tabs",
         "children": [
           {
-            "id": "438369bc0fd0b0ff",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/eng-3px3/Net Value Function.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "ac5f5856117bae26",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/eng-3px3/Optimization.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "5ce0467f26fe4be4",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/eng-3px3/Conversion Factors.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "73cfde04cd0e5da5",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/eng-3px3/Linear Optimization.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "97751ce37df4aa14",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/eng-3px3/Non-linear optimization.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "abe1580db4769c72",
+            "id": "154b3e18e7cff23f",
             "type": "leaf",
             "state": {
               "type": "pdf",
@@ -81,9 +16,68 @@
                 "file": "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf"
               }
             }
+          },
+          {
+            "id": "a53a77c6967ad76d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-2fa3/a3/A3.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "f858757cbbb8247d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-2fa3/a2/A2.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
+      },
+      {
+        "id": "245717d82d787295",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5ce0467f26fe4be4",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-2fa3/NFA.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "be610b30e2b0e77d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/sfwr-2fa3/Nous.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          }
+        ],
+        "currentTab": 1
       },
       {
         "id": "c934355c8bc52922",
@@ -93,9 +87,12 @@
             "id": "8a86f85a3c293f33",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "thoughts/university/eng-3px3/Engineering Economics & Net Value Applications.pdf"
+                "file": "thoughts/university/sfwr-2fa3/Finals.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
               }
             }
           }
@@ -165,7 +162,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/eng-3px3/Engineering Economics & Net Value Applications.pdf",
+                "file": "thoughts/university/sfwr-2fa3/a3/A3.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -182,7 +179,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/eng-3px3/Engineering Economics & Net Value Applications.pdf",
+                "file": "thoughts/university/sfwr-2fa3/a3/A3.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -205,7 +202,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/eng-3px3/Engineering Economics & Net Value Applications.pdf"
+                "file": "thoughts/university/sfwr-2fa3/a3/A3.md"
               }
             }
           },
@@ -235,7 +232,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/eng-3px3/Engineering Economics & Net Value Applications.pdf"
+                "file": "thoughts/university/sfwr-2fa3/a3/A3.md"
               }
             }
           }
@@ -262,13 +259,20 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "8a86f85a3c293f33",
+  "active": "a53a77c6967ad76d",
   "lastOpenFiles": [
-    "thoughts/Untitled.md",
+    "thoughts/university/sfwr-2fa3/crib.pdf",
+    "thoughts/university/sfwr-2fa3/a2/A2.md",
+    "thoughts/university/sfwr-2fa3/a3/A3.md",
+    "thoughts/university/sfwr-2fa3/Finals.md",
+    "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
+    "thoughts/university/sfwr-2fa3/Nous.md",
+    "thoughts/university/sfwr-2fa3/NFA.md",
+    "thoughts/university/eng-3px3/Conversion Factors.md",
     "thoughts/university/eng-3px3/Engineering Economics & Net Value Applications.pdf",
+    "thoughts/Untitled.md",
     "thoughts/university/eng-3px3/sheets.pdf",
     "thoughts/university/eng-3px3/Finals.md",
-    "thoughts/university/eng-3px3/Conversion Factors.md",
     "thoughts/university/eng-3px3/Linear Optimization.md",
     "thoughts/university/eng-3px3/Optimization.md",
     "thoughts/university/eng-3px3/Net Value Function.md",
@@ -280,8 +284,6 @@
     "thoughts/university/eng-3px3/3PX3 Net Value Functions.pdf",
     "thoughts/university/eng-3px3/3PX3 08 - Linear Optimization.pdf",
     "thoughts/university/eng-3px3/Non-linear optimization.md",
-    "thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
-    "thoughts/university/sfwr-2fa3/a2/A2.md",
     "thoughts/university/eng-3px3/marginal-apple-q.jpeg",
     "thoughts/university/eng-3px3/cpm.png",
     "thoughts/Monte-Carlo.md",
@@ -295,20 +297,16 @@
     "thoughts/university/eng-3px3/3PX3 09 - Nonlinear Optimization.pdf",
     "thoughts/university/sfwr-3dx4/a5/assignment5.pdf",
     "thoughts/university/sfwr-3dx4/a5/A5.md",
-    "thoughts/university/sfwr-2fa3/a3/A3.md",
     "thoughts/images/Screenshot 2024-04-10 at 22.03.22.png",
     "thoughts/university/sfwr-2fa3/a3/p2.png",
     "thoughts/university/commerce-4be3/Final report.md",
     "thoughts/latent space.md",
     "thoughts/university/sfwr-3dx4/lab5/prelab.md",
     "thoughts/university/sfwr-2c03/a10/A10.md",
-    "thoughts/university/sfwr-3dx4/a4/A4.md",
     "thoughts/university/sfwr-3dx4/a4/p1b.png",
     "thoughts/university/sfwr-3dx4/a4/p1a.png",
-    "thoughts/university/sfwr-2c03/a9/A9.md",
     "thoughts/atelier with friends/images/dundurn-1.jpeg",
     "thoughts/atelier with friends/images/IMG_0790.jpeg",
-    "thoughts/university/sfwr-2c03/a8/A8.md",
     "Untitled.canvas"
   ]
 }
