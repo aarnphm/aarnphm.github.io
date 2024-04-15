@@ -37,8 +37,8 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Phenomenology of Spirit** by G. W. F. Hegel
 - **The World as Will and [[thoughts/representations|Representation]]** by Arthur Schopenhauer
 - **The Prince** by Niccolò Machiavelli
-- **Utilitarianism** by John Stuart [[thoughts/university/philo-1aa3/John Stuart Mill|Mill]]
-- **Meditations on First Philosophy** by René [[thoughts/university/philo-1aa3/Descartes|Descartes]], French ed.
+- **Utilitarianism** by John Stuart [[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill|Mill]]
+- **Meditations on First Philosophy** by René [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Descartes|Descartes]], French ed.
 - **Existentialism in Social [[thoughts/education|Pedagogy]]** by Søren Kierkegaard
 - **[[thoughts/The Will To Believe]]** by William James
 - **The Care of the Self** by Michel Foucault

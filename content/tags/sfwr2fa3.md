@@ -5,7 +5,7 @@ tags:
   - university
   - sfwr2fa3
 ---
-See [[thoughts/university/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf|books]]
+See [[thoughts/university/twenty-three-twenty-four/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf|books]]
 
 Prof. [Vincent Maccio](mailto:macciov@mcmaster.ca)
 

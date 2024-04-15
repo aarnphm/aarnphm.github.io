@@ -7,7 +7,7 @@ date: "2024-02-08"
 title: Merkle DAG
 ---
 
-It is a directed acyclic [[thoughts/university/sfwr-2c03/Graphs|graph]] where each node is a version of the content and edges represents the change (diffs)
+It is a directed acyclic [[thoughts/university/twenty-three-twenty-four/sfwr-2c03/Graphs|graph]] where each node is a version of the content and edges represents the change (diffs)
 
 Each node has an identifier which is the results of hashing the content.
 

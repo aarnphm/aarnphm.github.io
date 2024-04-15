@@ -14,7 +14,7 @@ Source: [Ask better questions on Kernel](https://www.kernel.community/en/learn/m
 
 ### Socratic method
 
-[[thoughts/university/philo-1aa3/Socrates|Socrates]] are notoriously known for just asking questions and involve in such dialogue.
+[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Socrates|Socrates]] are notoriously known for just asking questions and involve in such dialogue.
 
 A method of hypothesis elimination, in that better hypotheses are found by steadily identifying and eliminating those that lead to contradictions.
 

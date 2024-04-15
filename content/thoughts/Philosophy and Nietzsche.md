@@ -7,7 +7,7 @@ date: "2023-12-04"
 title: Philosophy and Nietzsche
 ---
 
-See also: Nietzsche's [[thoughts/university/philo-1aa3/Nietzsche|Life]] and overall influence
+See also: Nietzsche's [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Nietzsche|Life]] and overall influence
 
 ## Nietzsche and Philosophy
 

@@ -12,7 +12,7 @@ title: Will to Truth
 
 ---
 
-Excerpt from [[thoughts/university/philo-1aa3/Nietzsche|Nietzsche]]'s _Beyond Good and Evil_
+Excerpt from [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Nietzsche|Nietzsche]]'s _Beyond Good and Evil_
 
 > The will to truth, which is still going to tempt us to many a hazardous enterprise; that celebrated veracity of which all philosophers have hitherto spoken with reverence: what questions this will to truth has already set before us! What strange, wicked, questionable questions! It is already a long story — yet does it not seem as if it has only just begun? Is it any wonder we should at last grow distrustful, lose our patience, turn impatiently away? That this sphinx should teach us too to ask questions? Who really is it that here questions us? What really is it in us that wants ‘the truth’?
 
