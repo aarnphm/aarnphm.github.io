@@ -43,6 +43,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **[[thoughts/The Will To Believe]]** by William James
 - **The Care of the Self** by Michel Foucault
 - **Metaphysical myths, mathematical Practice: The Ontology and [[thoughts/Epistemology|Epistemology]] of the Exact Science** by Michel Foucault
+- **Fear and Trembling** by Søren Kierkegaard
 
 #### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 

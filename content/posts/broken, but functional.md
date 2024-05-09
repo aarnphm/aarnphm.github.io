@@ -10,14 +10,6 @@ title: broken love.
 
 _This is an extensions of my previous thoughts on [[thoughts/relationships|relationships]] ._
 
-Tuesday, Feb 13rd,  23:00, I was working on that one assignment and preparing for a system control labs the next morning, when I saw a discord notification popped up:
-
-> "Emergency meeting, now"
-
-My body then mindlessly navigate through that one discord chat with my friends, knowing there has been developments with the current love story. This has been going on for a while, and it seems to occupied J's mind. It was a weird one, one that I yet to have experience. You know, one of those "girl's problem" where they seemed to enjoyed each other company, yet there were attachment issues involved. They are good friends, and they appreciate each others company, feels like they are something more, yet they refrain on moving forward, or putting a "label" to whatever between them.
-
-Reminiscing the past, I was in a similar situation, albeit less dramatics and less fa-zass. The feeling that you felt so strong for this one person is undeniable. The type of feeling that one only experience through those coffee dates, library study-together. It seems like you know so much about this person, yet you barely know about them. Then, that person just simply slip away. Is it because of the way I talked, or how I portray myself? I since then learned people did these inexplicable things largely in favor of their own needs and wants, based on their own paranoias, personal attachment, personal drive. Or sometimes, the relationship  And it is ok, people come and go, no need to invest too much thoughts towards.
-
 It seems like the general consensus of dating has changed, or at least morphed into the socio-dynamics of modern day society.?
 
 It seems like people are more afraid of commitment, or they are more afraid of being hurt. Who wouldn't? Given all of the horrible things that are happening in the world, one way or another it manifests into our own interactions, think  It seems like people are more afraid of being vulnerable, or they are more afraid of being judged. It seems like people are more afraid of being alone, or they are more afraid of being with someone.
@@ -25,3 +17,26 @@ It seems like people are more afraid of commitment, or they are more afraid of b
 I don't really understand the modern schemas of dating.
 
 What do I want to write about love?
+
+Why do we seek for love? Is it to find the internal happiness
+
+Love is [[thoughts/relationships#3 + 1|3+1]], and it would require both partner to be on the same page.
+
+What do we really mean when we say we love someone? Ofc you have maternal connection with your parents, since they are your blood. Love is not necessarily transactional, but rather a conductive conversion of two people feelings toward each other.
+
+In order to love someone, you have to know how to love yourself beforehand. That means self-care, looking after your surrounding, be happy
+
+To love is to be happy with yourself first. I have a hard time internalising the idea of loving myself, simply because
+
+Human are innately selfish,  and only you can look after the self. If you just sit there and thinks someone would help you heal or teach you to change your oil, then idea of life is somewhat naive from your point of view.
+
+To find love is to find a friend, and I have yet to do so simply because I lack the ability to be present and happy with my current state.
+
+As my manager told me recently, having too much opportunity have its drawback, such that you have too much opportunity cost to be calculated. Similar to love?
+
+Today I used one of the many bags I have, and caught off guard with a lil notes in a red envelope:
+- The content is "Love is coming"
+=> This is probably from one of my friend. The detective half of my brain would urge to figure out who send this lovely note to me. The other half wouldn't. There is some bliss in ignorance, such that it makes me happy, not knowing who this is from.
+
+But the fact that someone would send this makes me happy, such that I'm not alone in this world.
+A lot of my friends told me to be more selfish, because at the end of the day this is a mans' world, and every man only look after themselves.

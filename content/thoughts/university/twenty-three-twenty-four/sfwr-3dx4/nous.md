@@ -32,6 +32,11 @@ See [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Frequency Domain|no
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Frequency Domain#Transfer function|transfer function]]
 
+Transfer function with feedback is under form
+
+$$
+\frac{G(s)}{1+G(s)H(s)}
+$$
 ### Equivalent Resistance and Impedance
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/electrical system equivalence.png]]
@@ -90,3 +95,27 @@ E(s) &= R(s) - C(s)
 $$
 
 For $G(s) = K$ we get $\frac{E(s)}{R(s)} = \frac{1}{1+G(s)}$
+
+## state space design
+
+### Pole placement with phase-variable form
+
+Closed-loop system characteristic equation
+$$
+det(SI - (A-BK))
+$$
+
+### Gain and Phase Stability Margins
+
+Closed loop pole exists when
+$$
+1+KG(s)H(s) = 0
+$$
+
+## zero order hold
+
+Nyqust frequency:
+$$
+f_N = \frac{1}{2}f_s
+$$
+Set the third pole to s=-2 to cancel a zero as third pole.

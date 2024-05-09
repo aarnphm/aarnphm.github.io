@@ -25,3 +25,15 @@ Sexual craving is mediated by testosterone, oestrogen and has the amygdala as an
 Attraction is mediated by hormones of stress and reward such as dopamine, norepinephrine cortisol and serotinergic system
 
 ## attachment
+
+The field concerning relationship among humans. This theory suggests that people are born with a need to forge bonds with caregivers at the early age, then
+
+## 3 + 1
+
+The idea of 3 + 1 when we are looking for partner relies in compatibility
+
+- sexual: whether they would satisfy each other sexual needs
+- emotional: whether both can provide a solid foundation for each to grow emotionally
+- intelligence: As sparing partners. The relationship wouldn't work if two doesn't hold the same level of intelligence
+
+And the plus 1? Time: If it is not the correct time, then even if you have all three, the relationship wouldn't work out

@@ -184,6 +184,13 @@ Nietzsche posits that humans have contrived to retain their ignorance in order t
 Nietzsche juxtaposes a paradox at our existence: a foundation of ignorance is actually built upon our will to knowledge.  Will to knowledge is not opposed to ignorance, rather a refinement. Will to ignorance is actually a strategy of [[thoughts/Will to Power|power]], as it motivates [[thoughts/Giles Deleuze#active and reactive forces.|force]].
 
 ---
+## The Gay Science
+
+Mentions the Death of God and start the introduction to the doctrine of eternal occurrence
+
+The original title was "la gayza scienza", and "gay" doesn't necessarily means homosexuality, rather flexible and joyful. If word for word to be transcribed, it would meant The Joyful Science.
+
+---
 
 ## On Genealogy of Morals
 
