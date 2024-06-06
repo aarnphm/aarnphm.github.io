@@ -29,7 +29,7 @@ zen: true
 
 ### software.
 
-- [alacritty](https://alacritty.org/)
+- MacOS Terminal
   - [neovim](https://neovim.io/) and [config](https://github.com/aarnphm/editor) ^neovim
   - patched [Berkeley Mono](https://berkeleygraphics.com/typefaces/berkeley-mono/) with Nerd Fonts.
 - [Obsidian](https://obsidian.md/), hosted with [Quartz](https://quartz.jzhao.xyz) (this site)
