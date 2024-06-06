@@ -22,5 +22,6 @@
   "strictLineBreaks": true,
   "showInlineTitle": true,
   "rightToLeft": false,
-  "propertiesInDocument": "visible"
+  "propertiesInDocument": "visible",
+  "livePreview": true
 }

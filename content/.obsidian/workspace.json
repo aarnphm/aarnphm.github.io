@@ -21,25 +21,12 @@
             }
           },
           {
-            "id": "2e3e984e08a71c37",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/relationships.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
             "id": "c50d5a974f19e6f2",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/broken, but functional.md",
+                "file": "books.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -47,7 +34,8 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 1,
+        "stacked": true
       }
     ],
     "direction": "vertical"
@@ -113,7 +101,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/relationships.md",
+                "file": "books.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -130,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/relationships.md",
+                "file": "books.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -153,7 +141,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/relationships.md"
+                "file": "books.md"
               }
             }
           },
@@ -183,7 +171,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/relationships.md"
+                "file": "books.md"
               }
             }
           }
@@ -210,15 +198,16 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "2e3e984e08a71c37",
+  "active": "59fd19f001b80287",
   "lastOpenFiles": [
     "posts/broken, but functional.md",
     "thoughts/intelligence.md",
+    "private/bentoml/OpenLLM 0.5 releases notes.md",
+    "thoughts/relationships.md",
     "posts/education.md",
     "posts/to the past lovers.md",
     "posts/social interactions.md",
     "posts/recommendation system.md",
-    "thoughts/relationships.md",
     "thoughts/university/bode_as.m",
     "thoughts/university/asym_bode.m",
     "private/cohere.md",
@@ -247,7 +236,6 @@
     "thoughts/university/twenty-three-twenty-four/eng-3px3/Optimization.md",
     "thoughts/university/twenty-three-twenty-four/eng-3px3/Net Value Function.md",
     "thoughts/university/twenty-three-twenty-four/eng-3px3/Sensitivity analysis.md",
-    "thoughts/university/twenty-three-twenty-four/eng-3px3/Net value analysis.md",
     "thoughts/university/twenty-three-twenty-four/eng-3px3/marginal-apple-q.jpeg",
     "thoughts/university/twenty-three-twenty-four/eng-3px3/cpm.png",
     "thoughts/university/twenty-three-twenty-four/eng-3px3/most-critical-risk.png",
