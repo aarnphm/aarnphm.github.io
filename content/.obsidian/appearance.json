@@ -1,8 +1,8 @@
 {
   "accentColor": "",
   "cssTheme": "Minimal",
-  "interfaceFontFamily": "Cardo,Bricolage Grotesque,Helvetica,Charter,EB Garamond,Berkeley Mono",
-  "textFontFamily": "Cardo,Charter,EB Garamond,Bricolage Grotesque",
+  "interfaceFontFamily": "AppleMyungjo,Bricolage Grotesque,Helvetica,Charter,EB Garamond,Berkeley Mono",
+  "textFontFamily": "Apple Braille,Charter,EB Garamond,Bricolage Grotesque,Cardo",
   "monospaceFontFamily": "Berkeley Mono",
   "baseFontSize": 16,
   "translucency": true,

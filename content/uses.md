@@ -29,13 +29,12 @@ zen: true
 
 ### software.
 
-- MacOS Terminal
+- [Alacritty](https://alacritty.org/)
   - [neovim](https://neovim.io/) and [config](https://github.com/aarnphm/editor) ^neovim
   - patched [Berkeley Mono](https://berkeleygraphics.com/typefaces/berkeley-mono/) with Nerd Fonts.
 - [Obsidian](https://obsidian.md/), hosted with [Quartz](https://quartz.jzhao.xyz) (this site)
 - GitHub
 - Apple Notes
-- Noteshelf 3
 - [Bitwarden](https://bitwarden.com/)
 - Safari
 - [Live 11 Suite](https://www.ableton.com/en/live/)
@@ -47,6 +46,7 @@ zen: true
 
 - [Python](https://www.python.org/) for ml work.
 - [Go](https://golang.org/) for infrastructure work.
+- [Rust](https://www.rust-lang.org/) for exploration work.
 
 ### cookware.
 
