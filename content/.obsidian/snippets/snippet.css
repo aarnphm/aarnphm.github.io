@@ -35,3 +35,7 @@ span[class*="rose"] {
   color: rgb(215, 130, 126);
   border-bottom: none;
 }
+
+.workspace-ribbon, .workspace-tab-header-container {
+  display: none;
+}

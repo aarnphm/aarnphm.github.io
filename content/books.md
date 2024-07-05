@@ -63,7 +63,6 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 #### [[thoughts/Camus|Camus]]
 
 - **The Fall**
-- **The Stranger**
 - **The Rebel**
 - **The First Man**
 - **Resistance, Rebellion, and Death**
@@ -106,6 +105,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 ### 2024
 
 - **[[thoughts/Camus#The Myth of Sisyphus|The Myth of Sisyphus]]** by Albert Camus
+- **The Stranger** by [[thoughts/Camus|Albert Camus]]
 - **The metamorphosis** by Franz Kafka
 - **The end of the affair** by Graham Greene
 - **The Little Book of [[thoughts/deep learning|Deep Learning]]** by [François Fleuret](https://fleuret.org/public/lbdl.pdf)

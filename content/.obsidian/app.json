@@ -4,7 +4,7 @@
   "showUnsupportedFiles": true,
   "spellcheck": true,
   "vimMode": true,
-  "promptDelete": false,
+  "promptDelete": true,
   "pdfExportSettings": {
     "includeName": false,
     "pageSize": "A4",
@@ -23,5 +23,12 @@
   "showInlineTitle": true,
   "rightToLeft": false,
   "propertiesInDocument": "visible",
-  "livePreview": true
+  "livePreview": true,
+  "showRibbon": true,
+  "foldHeading": true,
+  "foldIndent": true,
+  "showIndentGuide": true,
+  "autoPairBrackets": true,
+  "smartIndentList": true,
+  "defaultViewMode": "source"
 }

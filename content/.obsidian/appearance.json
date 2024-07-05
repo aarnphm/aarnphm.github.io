@@ -1,7 +1,7 @@
 {
   "accentColor": "",
   "cssTheme": "Minimal",
-  "interfaceFontFamily": "AppleMyungjo,Bricolage Grotesque,Helvetica,Charter,EB Garamond,Berkeley Mono",
+  "interfaceFontFamily": "Apple Braille,AppleMyungjo,Bricolage Grotesque,Helvetica,Charter,EB Garamond,Berkeley Mono",
   "textFontFamily": "Apple Braille,Charter,EB Garamond,Bricolage Grotesque,Cardo",
   "monospaceFontFamily": "Berkeley Mono",
   "baseFontSize": 16,
@@ -11,5 +11,6 @@
     "snippet"
   ],
   "baseFontSizeAction": false,
-  "theme": "moonstone"
+  "theme": "obsidian",
+  "nativeMenus": true
 }
