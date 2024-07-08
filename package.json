@@ -79,7 +79,7 @@
     "remark-rehype": "^11.1.0",
     "remark-smartypants": "^3.0.1",
     "rfdc": "^1.4.1",
-    "rimraf": "^5.0.7",
+    "rimraf": "^5.0.8",
     "satori": "^0.10.14",
     "serve-handler": "^6.1.5",
     "sharp": "^0.33.4",
