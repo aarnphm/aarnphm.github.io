@@ -10,6 +10,7 @@ import { QuartzComponent } from "./quartz/components/types"
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [],
+  afterBody: [],
   footer: Component.Spacer(),
 }
 

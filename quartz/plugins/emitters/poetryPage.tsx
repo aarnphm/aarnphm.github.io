@@ -29,13 +29,14 @@ export const PoetryPage: QuartzEmitterPlugin = () => {
     head: HeadConstructor(),
     header: [],
     beforeBody: [ArticleTitle(), ContentMeta({ showMode: "link" })],
+    afterBody: [],
     pageBody: Content(),
     left: [],
     right: [Meta],
     footer: PoetryFooter,
   }
 
-  const { head: Head, header, beforeBody, pageBody, left, right, footer: Footer } = opts
+  const { head: Head, header, beforeBody, pageBody, afterBody, left, right, footer: Footer } = opts
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
 
@@ -50,6 +51,7 @@ export const PoetryPage: QuartzEmitterPlugin = () => {
         ...header,
         ...beforeBody,
         pageBody,
+        ...afterBody,
         ...left,
         ...right,
         Footer,

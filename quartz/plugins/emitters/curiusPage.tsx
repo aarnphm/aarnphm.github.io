@@ -30,13 +30,23 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
     footer: NavigationConstructor({ prev: "/quotes", next: "/books" }),
   }
 
-  const { head, header, beforeBody, pageBody, left, right, footer: Footer } = opts
+  const { head, header, beforeBody, pageBody, left, right, afterBody, footer: Footer } = opts
   const Body = BodyConstructor()
 
   return {
     name: "CuriusPage",
     getQuartzComponents() {
-      return [head, ...header, Body, ...beforeBody, pageBody, ...left, ...right, Footer]
+      return [
+        head,
+        ...header,
+        Body,
+        ...beforeBody,
+        pageBody,
+        ...afterBody,
+        ...left,
+        ...right,
+        Footer,
+      ]
     },
     async getDependencyGraph(_ctx, _content, _resources) {
       return new DepGraph<FilePath>()

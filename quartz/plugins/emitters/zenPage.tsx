@@ -48,7 +48,7 @@ export const ZenPage: QuartzEmitterPlugin = () => {
     right: [Meta],
   }
 
-  const { head: Head, header, beforeBody, pageBody, left, right, footer: Footer } = opts
+  const { head: Head, header, beforeBody, pageBody, left, right, afterBody, footer: Footer } = opts
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
 
@@ -64,6 +64,7 @@ export const ZenPage: QuartzEmitterPlugin = () => {
         ...header,
         ...beforeBody,
         pageBody,
+        ...afterBody,
         ...left,
         ...right,
         Footer,
