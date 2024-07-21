@@ -1,3 +1,13 @@
+import Landing from "./Landing"
+import Meta from "./Meta"
+import Navigation from "./Navigation"
+import MinimalFooter from "./MinimalFooter"
+import Keybind from "./Keybind"
+import CuriusContent from "./pages/CuriusContent"
+import CuriusNotes from "./CuriusNotes"
+import CuriusHeader from "./CuriusHeader"
+import CuriusTrail from "./CuriusTrail"
+import CuriusFriends from "./CuriusFriends"
 import Content from "./pages/Content"
 import TagContent from "./pages/TagContent"
 import FolderContent from "./pages/FolderContent"
@@ -19,18 +29,19 @@ import DesktopOnly from "./DesktopOnly"
 import MobileOnly from "./MobileOnly"
 import RecentNotes from "./RecentNotes"
 import Breadcrumbs from "./Breadcrumbs"
-import Landing from "./Landing"
-import Meta from "./Meta"
-import Navigation from "./Navigation"
-import MinimalFooter from "./MinimalFooter"
-import Keybind from "./Keybind"
-import CuriusContent from "./pages/CuriusContent"
-import CuriusNotes from "./CuriusNotes"
-import CuriusHeader from "./CuriusHeader"
-import CuriusTrail from "./CuriusTrail"
-import CuriusFriends from "./CuriusFriends"
+import Comments from "./Comments"
 
 export {
+  Landing,
+  Meta,
+  Navigation,
+  CuriusContent,
+  CuriusNotes,
+  CuriusHeader,
+  CuriusTrail,
+  CuriusFriends,
+  MinimalFooter,
+  Keybind,
   ArticleTitle,
   Content,
   TagContent,
@@ -52,14 +63,5 @@ export {
   RecentNotes,
   NotFound,
   Breadcrumbs,
-  Landing,
-  Meta,
-  Navigation,
-  CuriusContent,
-  CuriusNotes,
-  CuriusHeader,
-  CuriusTrail,
-  CuriusFriends,
-  MinimalFooter,
-  Keybind,
+  Comments,
 }
