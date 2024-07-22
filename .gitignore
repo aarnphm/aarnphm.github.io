@@ -15,3 +15,4 @@ quartz.git
 *.autosave
 .vercel
 __pycache__
+sites
