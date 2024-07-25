@@ -17,8 +17,7 @@ current_datetime=$(date +"%Y-%m-%d %H:%M:%S")
 pushd sites &>/dev/null || exit 1
 npx prettier index.css --write
 if [ -n "$(git status --porcelain)" ]; then
-  git add .
-  git commit -Ssvm "chore: build at $current_datetime [generated]"
+  git commit -sva --message "chore: build at $current_datetime [generated]"
   git push origin main
 else
   echo "No changes detected. Skipping commit and push."
