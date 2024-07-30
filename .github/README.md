@@ -7,3 +7,14 @@ garden links: https://aarnphm.xyz
 ```bash
 ln -s $(readlink -f .github/post-commit) .git/hooks/post-commit
 ```
+
+A few frontmatter chore:
+
+- `zen`: layout only concentrate on the main letter format.
+- `navigation`: to be used in conjunction with `zen`. Format with links to actual obsidian vault.
+  ```md
+  navigation:
+    - "[[thoughts]]"
+    - "[[books]]"
+  ```
+- `construction`: opposite of `noindex`, but show with a huge construction emoji.

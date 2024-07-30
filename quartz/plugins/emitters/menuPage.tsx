@@ -1,11 +1,5 @@
 import { QuartzEmitterPlugin } from "../types"
-import {
-  Meta as MetaConstructor,
-  ContentMeta,
-  Content as ContentConstructor,
-  ArticleTitle,
-  Spacer,
-} from "../../components"
+import { Meta as MetaConstructor, Content as ContentConstructor, Spacer } from "../../components"
 import BodyConstructor from "../../components/Body"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"

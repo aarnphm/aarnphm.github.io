@@ -218,6 +218,17 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
         d3.selectAll<HTMLElement, NodeData>(".node")
           .filter((d) => !connectedNodes.includes(d.id))
           .style("opacity", 0.2)
+        d3.selectAll<HTMLElement, NodeData>(".node")
+          .filter((d) => !connectedNodes.includes(d.id))
+          .nodes()
+          .map((it) => d3.select(it.parentNode as HTMLElement).select("text"))
+          .forEach((it) => {
+            let opacity = parseFloat(it.style("opacity"))
+            it.transition()
+              .duration(200)
+              .attr("opacityOld", opacity)
+              .style("opacity", Math.min(opacity, 0.2))
+          })
       }
 
       // highlight links
@@ -238,6 +249,11 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       if (focusOnHover) {
         d3.selectAll<HTMLElement, NodeData>(".link").style("opacity", 1)
         d3.selectAll<HTMLElement, NodeData>(".node").style("opacity", 1)
+        d3.selectAll<HTMLElement, NodeData>(".node")
+          .filter((d) => !connectedNodes.includes(d.id))
+          .nodes()
+          .map((it) => d3.select(it.parentNode as HTMLElement).select("text"))
+          .forEach((it) => it.transition().duration(200).style("opacity", it.attr("opacityOld")))
       }
       const currentId = d.id
       const linkNodes = d3
@@ -254,6 +270,13 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     })
     // @ts-ignore
     .call(drag(simulation))
+
+  // make tags hollow circles
+  node
+    .filter((d) => d.id.startsWith("tags/"))
+    .attr("stroke", color)
+    .attr("stroke-width", 2)
+    .attr("fill", "var(--light)")
 
   // draw labels
   const labels = graphNode

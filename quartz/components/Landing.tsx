@@ -18,12 +18,9 @@ import { QuartzPluginData } from "../plugins/vfile"
 export const HyperAlias = {
   livres: "/books",
   "boîte aux lettres": "/posts/",
-  projets: "/projects",
-  uses: "/uses",
+  projets: "/thoughts/work",
   advices: "/quotes",
-  affecter: "/influence",
   parfum: "/thoughts/Scents",
-  tunes: "/music",
   "atelier with friends": "/thoughts/atelier-with-friends",
 }
 

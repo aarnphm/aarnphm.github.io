@@ -95,8 +95,7 @@ body {
   background-image: url("/static/bg.webp");
   margin: 0;
 
-  &[data-slug="curius"],
-  &[data-slug="projects"] {
+  &[data-slug="curius"] {
     background-image: unset;
 
     .center {
@@ -138,12 +137,6 @@ a {
     &.internal.alias:not(.popover):not(.popover *) {
       @include links;
     }
-  }
-}
-
-body[data-slug="projects"] {
-  footer {
-    visibility: hidden;
   }
 }
 
@@ -264,84 +257,6 @@ body[data-slug="quotes"] {
   100% {
     width: 100%;
     background: var(--lightgray);
-  }
-}
-
-.project-lists {
-  margin-top: 3rem;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  box-sizing: border-box;
-
-  & a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: inherit;
-    font-weight: normal;
-    position: relative;
-    overflow: hidden;
-    padding: 12px;
-    margin: -12px;
-    border-radius: 12px;
-    outline: 0px;
-
-    &:hover {
-      background: hsl(0 0% 95.1%);
-      color: inherit !important;
-    }
-
-    .external-icon {
-      display: none;
-    }
-
-    span {
-      display: inline-block;
-    }
-
-    & > * {
-      line-height: 28px;
-      font-size: 14px;
-    }
-
-    span[class="title"] {
-      font-weight: 700;
-      color: var(--dark);
-    }
-
-    span[class="description"] {
-      font-size: 14px;
-      color: var(--gray);
-
-      @media all and (max-width: $mobileBreakpoint) {
-        display: none;
-      }
-    }
-
-    .divider {
-      flex: 1 1 0%;
-      position: relative;
-
-      &::before {
-        content: "";
-        position: absolute;
-        bottom: -1px;
-        height: 1px;
-        width: 0px;
-        z-index: 3;
-        animation: 1s ease 0s 1 normal forwards running kbefore;
-      }
-
-      &::after {
-        content: "";
-        position: absolute;
-        bottom: -1px;
-        height: 1px;
-        width: 0px;
-        animation: 1s ease 0s 1 normal forwards running kafter;
-      }
-    }
   }
 }
 

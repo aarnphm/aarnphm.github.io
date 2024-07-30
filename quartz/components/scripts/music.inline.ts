@@ -5,7 +5,6 @@ document.addEventListener("nav", (e) => {
   const prev = document.querySelector(".previous") as HTMLButtonElement | null
   const next = document.querySelector(".next") as HTMLButtonElement | null
   const iframes = playlist?.querySelectorAll("iframe")
-  console.log(iframes)
   if (!playlist || !iframes) return
 
   // index

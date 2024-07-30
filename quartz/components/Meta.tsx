@@ -3,9 +3,9 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import { D3Config, defaultOptions as graphOptions } from "./Graph"
 
 export const globalGraphConfig: Partial<D3Config> = {
-  repelForce: 0.3732,
-  centerForce: 0.088,
-  fontSize: 0.5375,
+  repelForce: 0.3,
+  centerForce: 0.09,
+  fontSize: 0.54,
 }
 
 export const SearchConstructor = (() => {

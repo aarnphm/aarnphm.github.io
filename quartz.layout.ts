@@ -96,8 +96,10 @@ const beforeBody = (
   enableContentMeta: boolean = true,
   enableTagList: boolean = true,
   enableArticleTitle: boolean = true,
+  enableBreadcrumbs: boolean = true,
 ) => {
   const beforeBody: QuartzComponent[] = []
+  if (enableBreadcrumbs) beforeBody.push(Component.Breadcrumbs({ rootName: "home." }))
   if (enableArticleTitle) beforeBody.push(Component.ArticleTitle())
   if (enableContentMeta) beforeBody.push(Component.ContentMeta())
   if (enableTagList) beforeBody.push(Component.TagList())
@@ -117,7 +119,7 @@ export const defaultContentPageLayout: PageLayout = {
 
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
-  ...beforeBody(false, false, false),
+  ...beforeBody(false, false, false, false),
   ...left({ enableExplorer, enableMeta, enableRecentNotes }),
   right: [],
 }
