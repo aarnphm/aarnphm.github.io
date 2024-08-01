@@ -37,9 +37,6 @@ Wind cells
 
 Hadley cells
 
-> [!note] [[thoughts/Coriolis Effect|Coriolis Effect]]
+> [!note] Coriolis Effect
 > Winds do not follow a straight trajectory
-
-Winds on Giant Planets
-
 ### Winds on tidally-locked exoplanets

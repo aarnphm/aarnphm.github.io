@@ -13,11 +13,9 @@ zen: true
 
 ### hardware.
 
-- iPad Pro (10.9-inch, 2021, 1TB)
 - Macbook Pro (M1 Max, 16-inch, 32GB RAM, 2021)
 - Apple Trackpad 2
-- Mode Eighty (Signal Tactile, 68g spring, 205g0, Durock V2)
-- Keychron Q8 Pro (Gateron Ink Black, 205g0 + 105g0, Durock V2)
+- Logitech Pro X Superlight 2
 - LG 4K 32UN880-B x 2
 - [beyerdynamic DT 1990 Pro](https://global.beyerdynamic.com/dt-1990-pro.html)
 - Audioengine A2+
@@ -55,3 +53,10 @@ used for [[thoughts/Dishes|hosting]]
 - made-in stainless steel pans and pots sets.
 - 12' All-Clad Saute Pan
 - Stand-mixer
+
+### keebs.
+
+- Mode Eighty: Signal Tactile, 68g spring, 205g0, Durock V2
+- Keychron Q8 Pro: Gateron Ink Black, 205g0 + 105g0, Durock V2, Olivia GMK
+- Keychron Q1 Pro: NK Cream, 105g0, 72g spring, Durock V2
+- Logitech G515 TKL: Gateron Brown Slim, stock everything else.

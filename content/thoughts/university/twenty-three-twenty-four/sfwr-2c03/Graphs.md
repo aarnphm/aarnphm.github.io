@@ -8,7 +8,7 @@ title: Graphs
 
 See also [[thoughts/university/sfwr-2c03/graph-algo.pdf|slides]]
 
-*Node* as [[thoughts/Information Theory|information]] and *edges* as [[thoughts/relationships|relationship]] between [[thoughts/data|data]]
+*Node* as [[thoughts/Information Theory|information]] and *edges* as relationship between [[thoughts/data|data]]
 
 ## Directed acyclic graph (DAG)
 

@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "5a355ba5882b9690",
+        "id": "03796555f29ea2b4",
         "type": "tabs",
         "children": [
           {
-            "id": "67ebc65c9c6ee9ef",
+            "id": "04b75b894efc05a9",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/aesthetic value.md",
+                "file": "thoughts/friendship.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -50,7 +50,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:sfwr2fa3",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -71,8 +71,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 367.5,
-    "collapsed": true
+    "width": 367.5
   },
   "right": {
     "id": "5221182814b155cf",
@@ -88,7 +87,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/aesthetic value.md",
+                "file": "thoughts/friendship.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +104,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/aesthetic value.md",
+                "file": "thoughts/friendship.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -128,7 +127,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/aesthetic value.md"
+                "file": "thoughts/friendship.md"
               }
             }
           },
@@ -158,7 +157,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/aesthetic value.md"
+                "file": "thoughts/friendship.md"
               }
             }
           }
@@ -184,8 +183,25 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "67ebc65c9c6ee9ef",
+  "active": "59fd19f001b80287",
   "lastOpenFiles": [
+    "thoughts/metamorphosis.md",
+    "thoughts/friendship.md",
+    "thoughts/university/twenty-three-twenty-four/astron-2e03/Atmosphere.md",
+    "thoughts/university/twenty-three-twenty-four/astron-2e03/Exoplanets.md",
+    "posts/I don't have a healthy relationship with myself.md",
+    "thoughts/work.md",
+    "thoughts/images/htn-2023-speaks.png",
+    "thoughts/images/openllm.gif",
+    "ideas.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-2c03/Graphs.md",
+    "thoughts/university/twenty-three-twenty-four/commerce-4be3/Pay model.md",
+    "thoughts/merit pay.md",
+    "posts/index.md",
+    "posts/recommendation system.md",
+    "posts/BentoML and Triton Inference Server.md",
+    "tags/love.md",
+    "thoughts/writing.md",
     "thoughts/aesthetic value.md",
     "books.md",
     "thoughts/action theory.md",
@@ -197,31 +213,16 @@
     "thoughts/intelligence.md",
     "posts/education.md",
     "_index.md",
-    "posts/broken, but functional.md",
     "private/bentoml/OpenLLM 0.5 releases notes.md",
-    "thoughts/relationships.md",
-    "posts/to the past lovers.md",
-    "posts/social interactions.md",
-    "posts/recommendation system.md",
     "thoughts/university/bode_as.m",
     "thoughts/university/asym_bode.m",
-    "private/cohere.md",
-    "posts/trois.md",
     "thoughts/university/twenty-three-twenty-four/commerce-4be3/Compensation Budgets and Administration.pdf",
-    "posts/trois..md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/nous.md",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/block_diagrams.pdf",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/code/__pycache__/tests.cpython-311.pyc",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/code/__pycache__",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a5/A5.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-2fa3/Finals.md",
     "thoughts/university/twenty-three-twenty-four",
-    "thoughts/university/twenty-three-twenty-four/sfwr-2fa3/a2/A2.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-2fa3/a3/A3.md",
     "thoughts/university/twenty-three-twenty-four/sfwr-2fa3/crib.pdf",
     "thoughts/university/twenty-three-twenty-four/sfwr-2fa3/(Undergraduate Texts in Computer Science) Dexter C. Kozen - Automata and Computability-Springer (1977).pdf",
-    "thoughts/university/twenty-three-twenty-four/sfwr-2fa3/Nous.md",
     "thoughts/university/twenty-three-twenty-four/eng-3px3/Engineering Economics & Net Value Applications.pdf",
     "thoughts/university/twenty-three-twenty-four/eng-3px3/marginal-apple-q.jpeg",
     "thoughts/university/twenty-three-twenty-four/eng-3px3/cpm.png",
@@ -230,8 +231,6 @@
     "thoughts/images/Screenshot 2024-04-10 at 22.03.22.png",
     "thoughts/university/twenty-three-twenty-four/sfwr-2fa3/a3/p2.png",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a4/p1b.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a4/p1a.png",
-    "thoughts/atelier with friends/images/dundurn-1.jpeg",
-    "thoughts/atelier with friends/images/IMG_0790.jpeg"
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a4/p1a.png"
   ]
 }

@@ -19,7 +19,6 @@ import { capitalize } from "../../util/lang"
 import { PluggableList } from "unified"
 
 export interface Options {
-  construction: boolean
   comments: boolean
   highlight: boolean
   wikilinks: boolean
@@ -35,7 +34,6 @@ export interface Options {
 }
 
 const defaultOptions: Options = {
-  construction: true,
   comments: true,
   highlight: true,
   wikilinks: true,
@@ -520,55 +518,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
                     className: ["mermaid"],
                   },
                 }
-              }
-            })
-          }
-        })
-      }
-
-      if (opts.construction) {
-        plugins.push(() => {
-          return (tree: Root, file) => {
-            visit(tree, "root", (node) => {
-              if (file.data.frontmatter && file.data.frontmatter.construction === true) {
-                const firstBlock = node.children[0]
-                if (!firstBlock) {
-                  return
-                }
-
-                file.data.frontmatter.title = [file.data.frontmatter.title, "🚧"].join(" ")
-                const titleHtml: Html = {
-                  type: "html",
-                  value: `<div
-                  class="callout-title"
-                >
-                  <div class="callout-icon"></div>
-                  <div class="callout-title-inner">${mdastToHtml({
-                    type: "paragraph",
-                    children: [{ type: "text", value: "Avertissement" }],
-                  })}</div>
-                </div>`,
-                }
-                const childrenNode: BlockContent[] = [
-                  titleHtml,
-                  {
-                    type: "paragraph",
-                    children: [{ type: "text", value: "En construction." }],
-                  },
-                ]
-                const construction: Blockquote = {
-                  type: "blockquote",
-                  children: childrenNode,
-                  data: {
-                    hProperties: {
-                      className: "callout warning",
-                      "data-callout": "warning",
-                    },
-                  },
-                }
-
-                // We keep the frontmatter and the construction block here.
-                node.children = [firstBlock, construction]
               }
             })
           }

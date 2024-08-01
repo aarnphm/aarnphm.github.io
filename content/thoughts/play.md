@@ -19,7 +19,7 @@ Commercial viability vs. creativity endeavour,  [Do thing that don't scale](http
 
 ### software.
 
-see also: [Play with Engineering](https://www.youtube.com/watch?v=6Ao8GS488hA&t=579s&ab_channel=StrangeLoopConference) and this tweet[^1]
+see also: [Play with Engineering](https://www.youtube.com/watch?v=6Ao8GS488hA&t=579s&ab_channel=StrangeLoopConference) and playful software[^1]
 
 Four components
 
@@ -35,8 +35,6 @@ Involves freedom of choice - social - about the process
 > not necessarily meaning you are doing for yourself, but make it possible for others to utilise the space.
 
 ### Play as a form of tinkering
-
-See also: [XH's tweet](https://twitter.com/xhfloz/status/1704176399173488823)
 
 Internet [playground](https://woolgather.sh/issue/2)
 
@@ -60,19 +58,13 @@ Graeber on [What's the point of we can't have fun](https://davidgraeber.org/arti
 
 - “Man plays only when he is in the full sense of the word a man” (Friedrich Schiller, 1795)
 
-### [[tags/philosophy|Philosophy]]
-
-_excerpt from C. Thi Nguyen's [Playfulness vs Epistemic Traps](https://philpapers.org/archive/NGUPVE.pdf)_
-
-Philosophy as a form of play.
+### [[tags/philosophy|philosophy]]
 
 > [!notes] Philosophy as play
-> 
+>
 > Involves a form of perspective shifting: trying on or inhabit alternative perspective
 
-Intellectual playfulness, loosely, is the disposition to try out new ideas, perspectives and systems of thought (involves perspective shifting) for the sheer joy of it. It is a disposition to explore ideas for the value of exploration itself.
-
-Intellectual playfulness also has some clear epistemic functionality for us
+Intellectual playfulness[^2], loosely, is the disposition to try out new ideas, perspectives and systems of thought (involves perspective shifting) for the sheer joy of it. It is a disposition to explore ideas for the value of exploration itself.
 
 - intellectually playful exploration sometimes can better serve the goal of finding the truth, than will exploration that is strictly aimed at finding the truth
 - it functions against epistemic traps: belief systems that undermine our epistemic efforts, leaving us stuck inside them
@@ -97,4 +89,7 @@ Necessitates freedom, conditional freedom?
 
 Play often initiate some sort of pressure, such that it expects us to be a part of the construction.
 
-[^1]: https://twitter.com/xhfloz/status/1704176399173488823?s=20
+---
+
+[^1]: [Twitter](https://twitter.com/xhfloz/status/1704176399173488823?s=20)
+[^2]: excerpt from [Playfulness vs Epistemic Traps](https://philpapers.org/archive/NGUPVE.pdf)

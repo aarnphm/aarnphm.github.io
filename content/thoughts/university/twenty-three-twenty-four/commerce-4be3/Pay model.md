@@ -26,7 +26,7 @@ see also: [[thoughts/university/twenty-three-twenty-four/commerce-4be3/The Pay M
   - exchange of good
   - incentive to work a job, and have a reward for having done so.
 
-[[thoughts/merit pay.md|Merit]]: payment
+Merit payment:
 
 > Total Rewards:
 

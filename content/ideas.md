@@ -1,18 +1,14 @@
 ---
 id: backburners
+aliases:
+  - idea
+  - backburners
 tags:
   - technical
   - evergreen
-aliases:
-  - /idea
-  - /backburners
-date: 2022-01-25
+date: "2022-01-25"
 description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
-navigation:
-  - "[[thoughts/Philosophy and Nietzsche]]"
-  - "[[thoughts/Transformers]]"
 title: Backburners
-zen: true
 ---
 
 ### projets.
