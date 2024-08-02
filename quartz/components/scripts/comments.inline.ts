@@ -1,7 +1,3 @@
-function boolToStringBool(b: boolean): string {
-  return b ? "1" : "0"
-}
-
 const changeTheme = (e: CustomEventMap["themechange"]) => {
   const theme = e.detail.theme
   const iframe = document.querySelector("iframe.giscus-frame") as HTMLIFrameElement
@@ -35,6 +31,7 @@ type GiscusElement = Omit<HTMLElement, "dataset"> & {
     strict: string
     reactionsEnabled: string
     inputPosition: "top" | "bottom"
+    theme: string
   }
 }
 
@@ -59,11 +56,7 @@ document.addEventListener("nav", () => {
   giscusScript.setAttribute("data-reactions-enabled", giscusContainer.dataset.reactionsEnabled)
   giscusScript.setAttribute("data-input-position", giscusContainer.dataset.inputPosition)
 
-  const theme = document.documentElement.getAttribute("saved-theme")
-  if (theme) {
-    giscusScript.setAttribute("data-theme", theme)
-  }
-
+  giscusScript.setAttribute("data-theme", giscusContainer.dataset.theme)
   giscusContainer.appendChild(giscusScript)
 
   document.addEventListener("themechange", changeTheme)

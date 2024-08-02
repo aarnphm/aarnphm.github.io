@@ -2,6 +2,7 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import { classNames } from "../util/lang"
 // @ts-ignore
 import script from "./scripts/comments.inline"
+import commentsStyle from "./styles/comments.scss"
 
 type Options = {
   provider: "giscus"
@@ -34,11 +35,13 @@ export default ((opts: Options) => {
         data-strict={boolToStringBool(opts.options.strict ?? true)}
         data-reactions-enabled={boolToStringBool(opts.options.reactionsEnabled ?? true)}
         data-input-position={opts.options.inputPosition ?? "bottom"}
+        data-theme={`https://${cfg.baseUrl}/index.css`}
       ></div>
     )
   }
 
   Comments.afterDOMLoaded = script
+  Comments.css = commentsStyle
 
   return Comments
 }) satisfies QuartzComponentConstructor<Options>
