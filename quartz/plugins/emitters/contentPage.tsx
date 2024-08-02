@@ -15,7 +15,11 @@ import { pageResources, renderPage } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
 import { Argv } from "../../util/ctx"
 import { FilePath, isRelativeURL, joinSegments, pathToRoot } from "../../util/path"
-import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
+import {
+  defaultContentPageLayout,
+  sharedPageComponents,
+  afterBodyComponents,
+} from "../../../quartz.layout"
 import { Content } from "../../components"
 import chalk from "chalk"
 import { write } from "./helpers"
@@ -59,6 +63,7 @@ export const parseDependencies = (argv: Argv, hast: Root, file: VFile): string[]
 export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
+    ...afterBodyComponents,
     ...defaultContentPageLayout,
     pageBody: Content(),
     ...userOpts,

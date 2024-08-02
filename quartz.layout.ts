@@ -6,25 +6,26 @@ import { FileNode } from "./quartz/components/ExplorerNode"
 import { globalGraphConfig as globalGraph } from "./quartz/components/Meta"
 import { QuartzComponent } from "./quartz/components/types"
 
-const enableComments: boolean = false
+export const afterBodyComponents: Partial<SharedLayout> = {
+  afterBody: [
+    Component.Comments({
+      provider: "giscus",
+      options: {
+        repo: "aarnphm/sites",
+        repoId: "R_kgDOLbqALg",
+        category: "Announcements",
+        categoryId: "DIC_kwDOLbqALs4ChE6l",
+        reactionsEnabled: false,
+      },
+    }),
+  ],
+}
 
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [],
-  afterBody: enableComments
-    ? [
-        Component.Comments({
-          provider: "giscus",
-          options: {
-            repo: "aarnphm/sites",
-            repoId: "R_kgDOLbqALg",
-            category: "Announcements",
-            categoryId: "DIC_kwDOLbqALs4ChE6l",
-          },
-        }),
-      ]
-    : [],
+  afterBody: [],
   footer: Component.Spacer(),
 }
 

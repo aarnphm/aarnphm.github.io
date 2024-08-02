@@ -241,7 +241,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
 
       return graph
     },
-    async emit(ctx, content, resources): Promise<FilePath[]> {
+    async emit(ctx, content, _resources): Promise<FilePath[]> {
       const promises: Promise<FilePath>[] = []
       const cfg = ctx.cfg.configuration
       // component specific scripts and styles

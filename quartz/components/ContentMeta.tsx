@@ -6,7 +6,6 @@ import { classNames } from "../util/lang"
 import { i18n } from "../i18n"
 //@ts-ignore
 import script from "./scripts/content-meta.inline"
-import { Metadata } from "sharp"
 
 interface MetadataOptions {
   showReadingTime?: boolean
@@ -71,7 +70,7 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
       }
 
       // Display reading time if enabled
-      const { minutes, text: timeTaken, words: _words } = readingTime(text)
+      const { minutes, text: _timeTaken, words: _words } = readingTime(text)
       reading = i18n(cfg.locale).components.contentMeta.readingTime({
         minutes: Math.ceil(minutes),
       })
