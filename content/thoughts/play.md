@@ -89,7 +89,5 @@ Necessitates freedom, conditional freedom?
 
 Play often initiate some sort of pressure, such that it expects us to be a part of the construction.
 
----
-
 [^1]: [Twitter](https://twitter.com/xhfloz/status/1704176399173488823?s=20)
 [^2]: excerpt from [Playfulness vs Epistemic Traps](https://philpapers.org/archive/NGUPVE.pdf)
