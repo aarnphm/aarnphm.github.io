@@ -1,5 +1,5 @@
 ---
-date: 2024-01-10
+date: "2024-01-10"
 description: Introduction to Compensation theory.
 title: Compensations
 tags:
@@ -17,4 +17,4 @@ Compensation, 6th Edition
 
 Print - ISBN:9781260065886
 
-eBook – ISBN: 9781264159437
+eBook – ISBN:9781264159437
