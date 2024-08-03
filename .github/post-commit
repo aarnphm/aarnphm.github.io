@@ -15,7 +15,7 @@ cp -r public/* sites/
 
 current_datetime=$(date +"%Y-%m-%d %H:%M:%S")
 pushd sites &>/dev/null || exit 1
-npx prettier index.css --write
+npx prettier . -cw
 if [ -n "$(git status --porcelain)" ]; then
   git add -A
   git commit -sv --message "chore: build at $current_datetime [generated]"

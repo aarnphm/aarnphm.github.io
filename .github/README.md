@@ -17,4 +17,3 @@ A few frontmatter chore:
     - "[[thoughts]]"
     - "[[books]]"
   ```
-- `construction`: opposite of `noindex`, but show with a huge construction emoji.

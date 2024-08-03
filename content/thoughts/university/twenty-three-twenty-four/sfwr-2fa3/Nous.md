@@ -6,6 +6,8 @@ date: "2024-03-08"
 title: Automata
 ---
 
+Book: [[thoughts/university/twenty-three-twenty-four/sfwr-2fa3/Automata and Computability.pdf|pdf]]
+
 Q1: T/F, if F explain why.
 Q4: regular expression, 5 separate q
 Q2/Q3: DFAs and NFAs
