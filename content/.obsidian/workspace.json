@@ -13,20 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/friendship.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "a8f575334550af95",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/Will to Truth.md",
+                "file": "_index.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -34,7 +21,6 @@
             }
           }
         ],
-        "currentTab": 1,
         "stacked": true
       }
     ],
@@ -101,7 +87,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/Will to Truth.md",
+                "file": "_index.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +104,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/Will to Truth.md",
+                "file": "_index.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -141,7 +127,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/Will to Truth.md"
+                "file": "_index.md"
               }
             }
           },
@@ -171,7 +157,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/Will to Truth.md"
+                "file": "_index.md"
               }
             }
           }
@@ -197,54 +183,54 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "a8f575334550af95",
+  "active": "04b75b894efc05a9",
   "lastOpenFiles": [
     "thoughts/theme/thoughts/thoughts/m1.md",
     "thoughts/theme/thoughts/thoughts",
     "thoughts/theme/thoughts",
     "thoughts/theme/test.md",
     "thoughts/theme",
-    "thoughts/friendship.md",
-    "thoughts/metamorphosis.md",
-    "thoughts/university/twenty-three-twenty-four/astron-2e03/Atmosphere.md",
-    "thoughts/university/twenty-three-twenty-four/astron-2e03/Exoplanets.md",
-    "posts/I don't have a healthy relationship with myself.md",
-    "thoughts/work.md",
-    "thoughts/images/htn-2023-speaks.png",
-    "thoughts/images/openllm.gif",
-    "ideas.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-2c03/Graphs.md",
-    "thoughts/university/twenty-three-twenty-four/commerce-4be3/Pay model.md",
-    "thoughts/merit pay.md",
-    "posts/index.md",
-    "posts/recommendation system.md",
-    "posts/BentoML and Triton Inference Server.md",
-    "tags/love.md",
+    "uses.md",
+    "thoughts/zero-shot learning.md",
     "thoughts/writing.md",
-    "thoughts/aesthetic value.md",
-    "books.md",
-    "thoughts/action theory.md",
-    "thoughts/Embedding.md",
-    "thoughts/Alignment.md",
-    "thoughts/Agency.md",
-    "thoughts/algebraic geometry.md",
-    "Untitled.canvas",
-    "thoughts/intelligence.md",
-    "posts/education.md",
-    "thoughts/university/bode_as.m",
-    "thoughts/university/asym_bode.m",
-    "thoughts/university/twenty-three-twenty-four/commerce-4be3/Compensation Budgets and Administration.pdf",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/block_diagrams.pdf",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/code/__pycache__/tests.cpython-311.pyc",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/code/__pycache__",
-    "thoughts/university/twenty-three-twenty-four",
-    "thoughts/university/twenty-three-twenty-four/eng-3px3/marginal-apple-q.jpeg",
-    "thoughts/university/twenty-three-twenty-four/eng-3px3/cpm.png",
-    "thoughts/university/twenty-three-twenty-four/eng-3px3/most-critical-risk.png",
-    "thoughts/university/eng-3px3/expected-most-critical-risks.png",
-    "thoughts/images/Screenshot 2024-04-10 at 22.03.22.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-2fa3/a3/p2.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a4/p1b.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a4/p1a.png"
+    "thoughts/work.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/time_response.pdf",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/steady_state_error_specifications.pdf",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/steady_state_error.pdf",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/steady-state error.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/state_space_design.pdf",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/state_space.pdf",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability.pdf",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/root_locus_control.pdf",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/nous.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab5/prelab.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/prelab.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2c.png",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2b.png",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2a.png",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab3/prelab.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab3/content.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab2/content.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab1/content.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab1/5.2-graph.png",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab1/5.1-graph.png",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/zero-add-compensator.png",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/transient-response-root-locus.png",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/time constant.png",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/summing junction.png",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/steady-state error table.png",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a5/A5.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a4/A4.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a3/A3.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/content.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a1/content.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Time response.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/State space representation.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Root locus.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Root locus control.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Frequency Domain.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Block Diagrams.md",
+    "Untitled.canvas"
   ]
 }
