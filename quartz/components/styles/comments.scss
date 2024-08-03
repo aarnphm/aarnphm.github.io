@@ -13,7 +13,7 @@ main {
   .rounded-t,
   .rounded-md,
   .gsc-comment-box-textarea-extras {
-    border-radius: 0rem;
+    border-radius: 0rem !important;
     border-start-end-radius: 0rem !important;
     border-start-start-radius: 0rem !important;
   }
