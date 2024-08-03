@@ -19,8 +19,22 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "a8f575334550af95",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/Will to Truth.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
           }
         ],
+        "currentTab": 1,
         "stacked": true
       }
     ],
@@ -87,7 +101,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/friendship.md",
+                "file": "thoughts/Will to Truth.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/friendship.md",
+                "file": "thoughts/Will to Truth.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -127,7 +141,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/friendship.md"
+                "file": "thoughts/Will to Truth.md"
               }
             }
           },
@@ -157,7 +171,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/friendship.md"
+                "file": "thoughts/Will to Truth.md"
               }
             }
           }
@@ -183,10 +197,10 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "59fd19f001b80287",
+  "active": "a8f575334550af95",
   "lastOpenFiles": [
-    "thoughts/metamorphosis.md",
     "thoughts/friendship.md",
+    "thoughts/metamorphosis.md",
     "thoughts/university/twenty-three-twenty-four/astron-2e03/Atmosphere.md",
     "thoughts/university/twenty-three-twenty-four/astron-2e03/Exoplanets.md",
     "posts/I don't have a healthy relationship with myself.md",
