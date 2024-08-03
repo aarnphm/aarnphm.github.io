@@ -9,7 +9,7 @@ command -v npx >/dev/null 2>&1 || {
   printf >&2 "\nnpx is missing.\n"
   exit 2
 }
-npx quartz build
+npx quartz build --verbose
 
 cp -r public/* sites/
 
