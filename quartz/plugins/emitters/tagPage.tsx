@@ -23,13 +23,14 @@ interface TagPageOptions extends FullPageLayout {
 }
 
 export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) => {
-  const newLeft = defaultListPageLayout.left
   const opts: FullPageLayout = {
     ...sharedPageComponents,
     ...defaultListPageLayout,
     pageBody: TagContent({ sort: userOpts?.sort }),
-    header: newLeft,
+    header: [...defaultListPageLayout.beforeBody, ...defaultListPageLayout.left],
+    beforeBody: [],
     left: [],
+    right: [],
     ...userOpts,
   }
 

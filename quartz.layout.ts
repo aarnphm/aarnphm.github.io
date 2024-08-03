@@ -114,16 +114,20 @@ const beforeBody = (
   enableBreadcrumbs: boolean = true,
 ) => {
   const beforeBody: QuartzComponent[] = []
-  if (enableBreadcrumbs) beforeBody.push(Component.Breadcrumbs({ rootName: "home" }))
+  if (enableBreadcrumbs)
+    beforeBody.push(
+      Component.Breadcrumbs({
+        rootName: "~",
+        style: "unique",
+        spacerSymbol: "/",
+        showCurrentPage: false,
+      }),
+    )
   if (enableArticleTitle) beforeBody.push(Component.ArticleTitle())
   if (enableContentMeta) beforeBody.push(Component.ContentMeta())
   if (enableTagList) beforeBody.push(Component.TagList())
   return { beforeBody }
 }
-
-const enableMeta = true
-const enableExplorer = false
-const enableRecentNotes = false
 
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
@@ -134,7 +138,7 @@ export const defaultContentPageLayout: PageLayout = {
 
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
-  ...beforeBody(false, false, false, false),
-  ...left({ enableExplorer, enableMeta, enableRecentNotes }),
+  ...beforeBody(false, false, false),
+  ...left({ enableMeta: true }),
   right: [],
 }

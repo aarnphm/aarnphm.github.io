@@ -26,13 +26,13 @@ interface FolderPageOptions extends FullPageLayout {
 }
 
 export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (userOpts) => {
-  const newLeft = defaultListPageLayout.left
   const opts: FullPageLayout = {
     ...sharedPageComponents,
-    ...defaultListPageLayout,
     pageBody: FolderContent({ sort: userOpts?.sort }),
-    header: newLeft,
+    header: [...defaultListPageLayout.beforeBody, ...defaultListPageLayout.left],
+    beforeBody: [],
     left: [],
+    right: [],
     ...userOpts,
   }
 
@@ -78,14 +78,13 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
       const cfg = ctx.cfg.configuration
 
       const folders: Set<SimpleSlug> = new Set(
-        allFiles.flatMap((data) => {
-          const slug = data.slug
-          const folderName = path.dirname(slug ?? "") as SimpleSlug
-          if (slug && folderName !== "." && folderName !== "tags") {
-            return [folderName]
-          }
-          return []
-        }),
+        allFiles.flatMap((data) =>
+          data.slug
+            ? getFolders(data.slug).filter(
+                (folderName) => folderName !== "." && folderName !== "tags",
+              )
+            : [],
+        ),
       )
 
       const folderDescriptions: Record<string, ProcessedContent> = Object.fromEntries(
@@ -135,4 +134,15 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
       return fps
     },
   }
+}
+
+function getFolders(slug: FullSlug): SimpleSlug[] {
+  var folderName = path.dirname(slug ?? "") as SimpleSlug
+  const parentFolderNames = [folderName]
+
+  while (folderName !== ".") {
+    folderName = path.dirname(folderName ?? "") as SimpleSlug
+    parentFolderNames.push(folderName)
+  }
+  return parentFolderNames
 }

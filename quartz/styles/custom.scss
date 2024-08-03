@@ -58,6 +58,8 @@ html {
   font-family: "ITCGaramondStdLtCond", var(--headerFont) !important;
   font-size: 2.8125rem !important;
   line-height: 2.8125rem !important;
+  margin-top: 1.75rem;
+  margin-bottom: 1.75rem;
 }
 
 // golden ditonic scale
@@ -133,6 +135,7 @@ a {
     border-radius: unset;
     background-color: unset;
   }
+
   @media all and (min-width: $fullPageWidth) {
     &.internal.alias:not(.popover):not(.popover *) {
       @include links;
@@ -362,7 +365,6 @@ header,
   }
 }
 
-header,
 .right {
   .search {
     grid-area: 1 / 1 / 2 / 3;
@@ -401,5 +403,32 @@ header,
     .backlinks {
       grid-area: 2 / 2 / 2 / 3;
     }
+  }
+}
+
+header {
+  .search {
+    grid-area: 2 / 1 / 2 / 3;
+  }
+  .keybind {
+    grid-area: 2 / 3 / 2 / 4;
+    justify-self: end;
+  }
+
+  .breadcrumb-container {
+    grid-area: 1 / 1 / 1 / 4;
+  }
+}
+
+.breadcrumb-container {
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--darkgray);
+  margin: 0;
+  padding: 0.5rem 0 0.5rem;
+}
+
+.breadcrumb-element {
+  p {
+    margin-left: 0.25rem;
   }
 }

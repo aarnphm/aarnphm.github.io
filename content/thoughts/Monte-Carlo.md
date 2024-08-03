@@ -8,7 +8,7 @@ title: Monte-Carlo methods
 
 ## tree search.
 
-a [[thoughts/Search|Search]] algorithm based on random sampling of the search space.
+a [[thoughts/Search|search]] algorithm based on random sampling of the search space.
 
 - Selection: root $R$ and select successive child nodes until leaf $L$ is reached.
   - The root is current game state and leaf is any node that has a potential child from no simulation
