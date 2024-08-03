@@ -85,6 +85,7 @@ declare module "vfile" {
     frontmatter: { [key: string]: unknown } & {
       title: string
     } & Partial<{
+        navigation: string[]
         tags: string[]
         aliases: string[]
         description: string
@@ -94,8 +95,6 @@ declare module "vfile" {
         lang: string
         enableToc: string
         cssclasses: string[]
-        navigation: string[]
-        construction: boolean
         noindex: boolean
       }>
   }

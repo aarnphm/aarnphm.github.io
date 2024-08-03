@@ -76,9 +76,9 @@ body[data-slug="index"] {
 }
 
 .notes-outer {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
 
   #note-item {
     .recent-links,
@@ -94,7 +94,7 @@ body[data-slug="index"] {
   }
 
   @media all and (max-width: $fullPageWidth) {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 }
 

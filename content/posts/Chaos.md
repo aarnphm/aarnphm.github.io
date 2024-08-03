@@ -6,7 +6,7 @@ tags:
   - self
 date: "2024-02-18"
 description: Chaos has, and always be a driven force within life, intuitive yet disheveled. And a few things I learned growing up in a foreign land.
-title: Chaos is the driven force within life, intuitive yet disheveled.
+title: Chaos is intuitive yet disheveled.
 ---
 
 And a few things I learned growing up in a foreign land.

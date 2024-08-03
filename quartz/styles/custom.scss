@@ -304,7 +304,7 @@ audio::-webkit-media-controls-panel {
 }
 
 .center {
-  padding: 0 2rem;
+  padding: 1rem 2rem;
   margin: $topSpacing auto;
   border: 1px solid var(--darkgray);
 
@@ -417,6 +417,15 @@ header {
 
   .breadcrumb-container {
     grid-area: 1 / 1 / 1 / 4;
+  }
+  @media all and (max-width: $fullPageWidth) {
+    margin-bottom: 0rem;
+
+    .search {
+      max-width: unset;
+      min-width: 140px;
+      grid-area: 2 / 1 / 2 / 4;
+    }
   }
 }
 

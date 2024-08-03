@@ -1,6 +1,5 @@
 import { QuartzEmitterPlugin } from "../types"
 import HeaderConstructor from "../../components/Header"
-import HeadConstructor from "../../components/Head"
 import BodyConstructor from "../../components/Body"
 import MetaConstructor from "../../components/Meta"
 import NavigationConstructor from "../../components/Navigation"
@@ -70,7 +69,7 @@ export const ZenPage: QuartzEmitterPlugin = () => {
         Footer,
       ]
     },
-    async getDependencyGraph(ctx, content, _resources) {
+    async getDependencyGraph(_ctx, _content, _resources) {
       // Example graph:
       // nested/file.md --> nested/file.html
       //          \-------> nested/index.html
