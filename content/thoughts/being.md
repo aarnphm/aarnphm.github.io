@@ -3,7 +3,7 @@ id: being
 tags:
   - seed
   - philosophy
-date: "2024-04-12"
+date: "2024-06-12"
 title: being.
 ---
 

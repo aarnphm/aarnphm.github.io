@@ -1,7 +1,6 @@
 ---
 id: Chaos
 tags:
-  - life
   - sapling
   - growth
   - self

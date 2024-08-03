@@ -115,14 +115,7 @@ const beforeBody = (
 ) => {
   const beforeBody: QuartzComponent[] = []
   if (enableBreadcrumbs)
-    beforeBody.push(
-      Component.Breadcrumbs({
-        rootName: "~",
-        style: "unique",
-        spacerSymbol: "/",
-        showCurrentPage: false,
-      }),
-    )
+    beforeBody.push(Component.Breadcrumbs({ rootName: "~", style: "unique", spacerSymbol: "/" }))
   if (enableArticleTitle) beforeBody.push(Component.ArticleTitle())
   if (enableContentMeta) beforeBody.push(Component.ContentMeta())
   if (enableTagList) beforeBody.push(Component.TagList())
