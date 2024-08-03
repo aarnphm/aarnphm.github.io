@@ -13,7 +13,7 @@ Generally AI $\subset$ ML $\subset$ [[thoughts/deep learning|DL]]
 
 Some main exploration:
 
-- [[thoughts/Transformers]]
+- [[thoughts/Transformers|Transformers]]
 - CNN
 - Optimization
   - Gradient descent
@@ -22,7 +22,7 @@ Some main exploration:
 - Reinforcement learning
   - Q-learning
   - Policy Gradient
-  - Monte-Carlo Tree Search
+  - [[thoughts/Monte-Carlo|Monte-Carlo]] Tree Search
 - Generative Models
   - GAN
   - VAE

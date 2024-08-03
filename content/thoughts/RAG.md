@@ -13,6 +13,6 @@ Since models has finite memory, limited context windows, generations often leads
 
 The idea of RAG is to combine a pretrained retriever and a seq2seq to do end-to-end fine tuning.
 
-Two core components include [[thoughts/Transformers#Embeddings|embeddings]] and vector databases.
+Two core components include [[thoughts/Embedding|embeddings]] and vector databases.
 
 
