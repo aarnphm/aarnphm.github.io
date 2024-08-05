@@ -18,6 +18,14 @@ $normalWeight: 400;
 }
 
 @mixin links {
+  margin: 0 0.08em;
+  padding-left: 0.3em;
+  position: relative;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 1px 1px;
+  background-repeat: repeat-x;
+  background-position: 0% calc(100% - 0.1em);
+
   &::before {
     content: " ";
     position: absolute;
@@ -39,12 +47,4 @@ $normalWeight: 400;
       0 calc(100% - 0.1em);
     background-repeat: no-repeat;
   }
-
-  margin: 0 0.08em;
-  padding-left: 0.3em;
-  position: relative;
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 1px 1px;
-  background-repeat: repeat-x;
-  background-position: 0% calc(100% - 0.1em);
 }

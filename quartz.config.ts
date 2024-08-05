@@ -1,6 +1,5 @@
 import { QuartzConfig } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
-import * as Component from "./quartz/components"
 
 /**
  * Quartz 4.0 Configuration
@@ -61,7 +60,12 @@ const config: QuartzConfig = {
         priority: ["frontmatter", "git", "filesystem"],
       }),
       Plugin.Pseudocode(),
-      Plugin.Latex({ renderEngine: "katex" }),
+      Plugin.Poetry(),
+      // FIXME: implement this
+      Plugin.Recipe(),
+      Plugin.Twitter(),
+      // Plugin.Embeddings(),
+      Plugin.Latex(),
       Plugin.SyntaxHighlighting({
         theme: {
           light: "rose-pine-dawn",
@@ -82,24 +86,17 @@ const config: QuartzConfig = {
         },
       }),
       Plugin.Description(),
-      Plugin.Poetry(),
-      Plugin.Recipe(),
     ],
     filters: [Plugin.RemoveDrafts()],
     emitters: [
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
       Plugin.ContentPage(),
-      Plugin.PostPage({
-        beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],
-      }),
       Plugin.FolderPage(),
       Plugin.TagPage(),
       Plugin.CuriusPage(),
       Plugin.MenuPage(),
-      Plugin.ZenPage(),
       Plugin.PoetryPage(),
-      // Plugin.Embeddings(),
       Plugin.ContentIndex({ rssLimit: 40 }),
       Plugin.Assets(),
       Plugin.Static(),

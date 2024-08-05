@@ -1,5 +1,5 @@
 import { QuartzEmitterPlugin } from "../types"
-import { Meta as MetaConstructor, Content as ContentConstructor, Spacer } from "../../components"
+import { Content as ContentConstructor, Spacer } from "../../components"
 import BodyConstructor from "../../components/Body"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
@@ -33,7 +33,7 @@ const MenuContent = (() => {
   return Element
 }) satisfies QuartzComponentConstructor
 
-function MenuFooter({ allFiles, fileData, displayClass, cfg }: QuartzComponentProps) {
+function MenuFooter({ displayClass }: QuartzComponentProps) {
   return (
     <footer class={classNames(displayClass, "menu-footer")}>
       <a href="../atelier-with-friends" class="internal alias" data-no-popover={true}>
@@ -44,11 +44,9 @@ function MenuFooter({ allFiles, fileData, displayClass, cfg }: QuartzComponentPr
 }
 
 export const MenuPage: QuartzEmitterPlugin = () => {
-  const Meta = MetaConstructor()
-
   const opts: FullPageLayout = {
     ...sharedPageComponents,
-    beforeBody: [Meta],
+    beforeBody: [],
     left: [],
     right: [],
     pageBody: MenuContent(),

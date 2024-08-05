@@ -121,19 +121,30 @@ pre.poetry {
   }
 }
 
+article > a.internal:not([role="anchor"]),
+blockquote.twitter-tweet > a {
+  border-radius: unset;
+  background-color: unset;
+
+  @include links;
+  &::before {
+    content: "";
+  }
+}
+
 a {
   &.internal {
     background-color: unset;
   }
 
   &.internal.tag-link {
+    border-radius: unset;
+    background-color: unset;
+
     @include links;
     &::before {
       content: "";
     }
-
-    border-radius: unset;
-    background-color: unset;
   }
 
   @media all and (min-width: $fullPageWidth) {
@@ -439,5 +450,25 @@ header {
 .breadcrumb-element {
   p {
     margin-left: 0.25rem;
+  }
+}
+
+blockquote.twitter-tweet {
+  border-left: unset;
+  border: 2px solid var(--secondary);
+  padding-bottom: 1rem;
+  position: relative;
+
+  &::before {
+    content: "x.com";
+    position: absolute;
+    top: -12px;
+    left: 12px;
+    background-color: var(--light);
+    color: var(--gray);
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border: 1px solid var(--secondary);
   }
 }

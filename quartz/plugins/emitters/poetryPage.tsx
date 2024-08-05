@@ -1,20 +1,17 @@
 import { QuartzEmitterPlugin } from "../types"
-import HeaderConstructor from "../../components/Header"
-import HeadConstructor from "../../components/Head"
 import BodyConstructor from "../../components/Body"
-import MetaConstructor from "../../components/Meta"
-import NavigationConstructor from "../../components/Navigation"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
 import { FilePath, pathToRoot } from "../../util/path"
 import { classNames } from "../../util/lang"
 import { pageResources, renderPage } from "../../components/renderPage"
-import { QuartzComponentConstructor, QuartzComponentProps } from "../../components/types"
-import { ArticleTitle, Content, ContentMeta, Spacer } from "../../components"
+import { QuartzComponentProps } from "../../components/types"
+import { ArticleTitle, Content, ContentMeta } from "../../components"
 import DepGraph from "../../depgraph"
 import { Date, getDate } from "../../components/Date"
+import { sharedPageComponents, defaultContentPageLayout } from "../../../quartz.layout"
 
-function PoetryFooter({ allFiles, fileData, displayClass, cfg }: QuartzComponentProps) {
+function PoetryDate({ fileData, displayClass, cfg }: QuartzComponentProps) {
   return (
     <footer class={classNames(displayClass, "poetry-footer")}>
       <Date date={getDate(cfg, fileData)!} locale={cfg.locale} />
@@ -22,22 +19,17 @@ function PoetryFooter({ allFiles, fileData, displayClass, cfg }: QuartzComponent
   )
 }
 
-export const PoetryPage: QuartzEmitterPlugin = () => {
-  const Meta = MetaConstructor()
-
+export const PoetryPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
   const opts: FullPageLayout = {
-    head: HeadConstructor(),
-    header: [],
+    ...sharedPageComponents,
+    ...defaultContentPageLayout,
     beforeBody: [ArticleTitle(), ContentMeta({ showMode: "link" })],
-    afterBody: [],
+    afterBody: [PoetryDate],
     pageBody: Content(),
-    left: [],
-    right: [Meta],
-    footer: PoetryFooter,
+    ...userOpts,
   }
 
   const { head: Head, header, beforeBody, pageBody, afterBody, left, right, footer: Footer } = opts
-  const Header = HeaderConstructor()
   const Body = BodyConstructor()
 
   return {
@@ -45,9 +37,7 @@ export const PoetryPage: QuartzEmitterPlugin = () => {
     getQuartzComponents() {
       return [
         Head,
-        Header,
         Body,
-        Meta,
         ...header,
         ...beforeBody,
         pageBody,
@@ -57,7 +47,7 @@ export const PoetryPage: QuartzEmitterPlugin = () => {
         Footer,
       ]
     },
-    async getDependencyGraph(ctx, content, _resources) {
+    async getDependencyGraph(_ctx, _content, _resources) {
       // Example graph:
       // nested/file.md --> nested/file.html
       //          \-------> nested/index.html

@@ -20,7 +20,9 @@ See also: [[thoughts/papers/Fashion and the Homospectatorial Look.pdf|Fashion an
 
 Fuss's arguments suggest that contemporary fashion photography does not simply cater to a heterosexual male gaze but also tacitly produces a gaze that, while regulating homosexual desire, provides opportunities for its expression. She argues that fashion photography often presents women in a manner that is eroticized, which can be seen as catering to a male gaze. However, this same eroticization can also appeal to women, creating a homospectatorial look where women are viewing other women through a lens that is both homoerotic and commodified.
 
-Plays well into spaces that open for more nuanced and subtle expression of [[thoughts/desire]] and [[thoughts/identity]]. [[thoughts/fashion#quiet luxury.|Quiet luxury]]'s emphasis on minimalism, subtle textures mirrors the homospectatorial look.
+Plays well into spaces that open for more nuanced and subtle expression of [[thoughts/desire]] and [[thoughts/identity]].
+
+[[thoughts/fashion#quiet luxury.|Quiet luxury]]'s emphasis on minimalism, subtle textures mirrors the homospectatorial look.
 
 ### why fashion show matters, and why it doesn't.
 
@@ -46,6 +48,8 @@ It is also a matter of [[thoughts/taste|taste]], and [[thoughts/identity|identit
 
 ### quiet luxury.
 
+https://twitter.com/dieworkwear/status/1647662031619895296
+
 Not a huge fan of fast fashion, I'd rather spend a bit more on a good pair of jeans that will last me years, than a cheap pair that will last me a few months.
 
 > Few exceptions include Uniqlo, Muji, but I wouldn't consider them fast fashion, because they are actually high-quality products 😄
@@ -54,30 +58,34 @@ Don't buy into maximalist brands. Overpriced, and the churn rate is high.
 
 > Few exceptions: Tom Ford, Maison Margiela, Saint Laurent
 
-see also: [source](https://www.youtube.com/watch?v=g0UQgrFNExc&t=765s&ab_channel=ALEXANDER) and [this tweet](https://twitter.com/dieworkwear/status/1647662031619895296)
+![[https://www.youtube.com/watch?v=g0UQgrFNExc&t=765s&ab_channel=ALEXANDER]]
 
-Go for quiet luxury, and timeless pieces: The following are few of favourite brands, in no particular order:
+---
 
-| Brand   | Genre of clothing to get |
-|--------------- | --------------- |
-| Brunello Cucinelli   | Cashmere, wool, and linen 🤌 😗   |
-| Manière De Voir   | Probably the best black fit tee I've ever worn.   |
-| Oak + Fort  | Minimalistic, clean, and simple. Also not to be confused with _Frank and Oak_   |
-| Studio Nicholson   | Trousers, and shirts, ong their leroy jacky are amazing.   |
-| COS   | Basics, and essentials.   |
-| [Stoffa](https://stoffa.co/pages/store)   | Custom made, and tailored, wanna know how to style.   |
-| Sefr | Pretty niche, but some of their beige lazaro shirts are nice.  |
-| Ted Baker   | Holy crap that's half of my closets. Trousers, shirts, suits, cargo, etc.   |
-| Ralph Lauren Polo   | Them trench coats are nice, daily driver during winter szn.   |
-| Mansuir Gavriel   | Their bags are my fav.   |
-| Olend Backpacks   | For the love of backpacks.   |
-| Bellroy   | Tote, durable, flexible.   |
-| Loro Piana  | If you can afford go for it   |
-| Club Monaco   | Trench coats, overcoats, too based.   |
-| Brooks Brothers   | Suits on special occasions.   |
-| Arcteryx   | Technical wear, performance, gears are awesome.   |
-| Timberland   | Utility, quality, style and worth for money.   |
-| Banana Republic   | Got their cashmere and merino wool sweaters. They are good.   |
-| Abercrombie & Fitch   | Baggy jeans, flannels comfy wear.   |
-| Massimo Dutti   | Their leather jackets are nice.   |
-| Sezzane   | Their blouses are nice.   |
+> Go for quiet luxury, aka timeless pieces
+
+The following are few of favourite brands, in no particular order:
+
+| Brand                                   | Genre of clothing to get                                                      |
+| --------------------------------------- | ----------------------------------------------------------------------------- |
+| Brunello Cucinelli                      | Cashmere, wool, and linen 🤌 😗                                               |
+| Manière De Voir                         | Probably the best black fit tee I've ever worn.                               |
+| Oak + Fort                              | Minimalistic, clean, and simple. Also not to be confused with _Frank and Oak_ |
+| Studio Nicholson                        | Trousers, and shirts, ong their leroy jacky are amazing.                      |
+| COS                                     | Basics, and essentials.                                                       |
+| [Stoffa](https://stoffa.co/pages/store) | Custom made, and tailored, wanna know how to style.                           |
+| Sefr                                    | Pretty niche, but some of their beige lazaro shirts are nice.                 |
+| Ted Baker                               | Holy crap that's half of my closets. Trousers, shirts, suits, cargo, etc.     |
+| Ralph Lauren Polo                       | Them trench coats are nice, daily driver during winter szn.                   |
+| Mansuir Gavriel                         | Their bags are my fav.                                                        |
+| Olend Backpacks                         | For the love of backpacks.                                                    |
+| Bellroy                                 | Tote, durable, flexible.                                                      |
+| Loro Piana                              | If you can afford go for it                                                   |
+| Club Monaco                             | Trench coats, overcoats, too based.                                           |
+| Brooks Brothers                         | Suits on special occasions.                                                   |
+| Arcteryx                                | Technical wear, performance, gears are awesome.                               |
+| Timberland                              | Utility, quality, style and worth for money.                                  |
+| Banana Republic                         | Got their cashmere and merino wool sweaters. They are good.                   |
+| Abercrombie & Fitch                     | Baggy jeans, flannels comfy wear.                                             |
+| Massimo Dutti                           | Their leather jackets are nice.                                               |
+| Sezzane                                 | Their blouses are nice.                                                       |

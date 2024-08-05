@@ -12,12 +12,12 @@ interface Options {
 
 export const KeybindAlias = {
   "cmd+k": "recherche",
+  "cmd+\\": "page d'accueil",
+  "cmd+j": "curius",
   "cmd+g": "graphique",
   // "cmd+o": "mode sombre",
-  "cmd+\\": "page d'accueil",
   // "cmd+.": "curseur de chat",
-  "cmd+l": "projets",
-  "cmd+j": "curius",
+  // "cmd+l": "projets",
 }
 
 const defaultOptions: Options = {

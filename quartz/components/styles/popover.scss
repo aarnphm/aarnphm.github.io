@@ -19,6 +19,11 @@
   position: absolute;
   overflow: visible;
   padding: 1rem;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease;
 
   & > .popover-inner {
     position: relative;
@@ -63,12 +68,6 @@
   h1 {
     font-size: 1.5rem;
   }
-
-  visibility: hidden;
-  opacity: 0;
-  transition:
-    opacity 0.3s ease,
-    visibility 0.3s ease;
 
   @media all and (max-width: $mobileBreakpoint) {
     display: none !important;

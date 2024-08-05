@@ -1,8 +1,7 @@
 import { QuartzEmitterPlugin } from "../types"
 import {
   CuriusContent,
-  Navigation as NavigationConstructor,
-  Meta as MetaConstructor,
+  Navigation,
   CuriusHeader,
   CuriusTrail,
   CuriusFriends,
@@ -19,15 +18,13 @@ import { StaticResources } from "../../util/resources"
 import { sharedPageComponents } from "../../../quartz.layout"
 
 export const CuriusPage: QuartzEmitterPlugin = () => {
-  const Meta = MetaConstructor({ enableSearch: false })
-
   const opts: FullPageLayout = {
     ...sharedPageComponents,
-    beforeBody: [CuriusHeader(), Meta],
+    beforeBody: [CuriusHeader()],
     left: [CuriusFriends()],
     right: [DesktopOnly(CuriusTrail())],
     pageBody: CuriusContent(),
-    footer: NavigationConstructor({ prev: "/quotes", next: "/books" }),
+    footer: Navigation({ prev: "/quotes", next: "/books" }),
   }
 
   const { head, header, beforeBody, pageBody, left, right, afterBody, footer: Footer } = opts

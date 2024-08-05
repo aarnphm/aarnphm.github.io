@@ -8,12 +8,11 @@ title: friendship
 ---
 ## of pleasure. or utility?
 
-> Friendship is cultivated over many interactions light and deep. Intimacy is earned through trust. [Patricia's on intimacy throughout friendship](https://twitter.com/patriciamou_/status/1758354933521478126)
+https://twitter.com/patriciamou_/status/1758354933521478126
 
-> [!QUESTION] How
-> does one weave that delicate fabric of trust, when so many are ensnared in their own lives, their hearts shuttered against vulnerability?
-
-To cultivate trust, we must first turn inward, nurturing the quiet confidence of self-trust before extending our hands to others. Yet, amidst the hustle and haste, how do we anchor our souls in authenticity and leave room for empathy? Can we create a sanctuary for trust to blossom, even in the most turbulent of seas?
+> [!question]- How does one weave that delicate fabric of trust, when so many are ensnared in their own lives?
+>
+> To cultivate trust, we must first turn inward, nurturing the quiet confidence of self-trust before extending our hands to others. Yet, amidst the hustle and haste, how do we anchor our souls in authenticity and leave room for empathy? Can we create a sanctuary for trust to blossom, even in the most turbulent of seas?
 
 Trust requires vulnerability - the courage to show up as our authentic selves, to share our hopes and fears without guarantee. When we have faith in each other's core intentions, even as we stumble and err, we weave a web of trust that can withstand the tempests of misunderstanding.
 

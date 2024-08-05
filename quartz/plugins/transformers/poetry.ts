@@ -1,7 +1,6 @@
 import { QuartzTransformerPlugin } from "../types"
 import { Root } from "mdast"
 import { visit } from "unist-util-visit"
-import { JSResource } from "../../util/resources"
 
 export const Poetry: QuartzTransformerPlugin = () => ({
   name: "Poetry",

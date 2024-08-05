@@ -1,17 +1,11 @@
 ---
 id: music
-aliases:
-  - music
 tags:
   - evergreen
+comments: false
 date: "2024-01-30"
 description: Music I religiously listen to. Where words fail, music speaks.
-navigation:
-  - "[[thoughts/Attention]]"
-  - "[[movies]]"
-preview: false
 title: playlist.
-zen: true
 ---
 
 <div class="playlists">

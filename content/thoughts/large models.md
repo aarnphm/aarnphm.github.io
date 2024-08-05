@@ -1,7 +1,6 @@
 ---
 id: large models
 tags:
-  - seed
   - ml
 date: "2024-01-08"
 title: Foundational large models
@@ -11,7 +10,7 @@ Popularized through [[thoughts/LLMs]], [GPT-3 paper](https://arxiv.org/abs/2005.
 
 See also: $7.1 of [The Little Book of Deep Learning](/books#2024)
 
-I do think it should be thought as [[thoughts/Intelligence amplification|Intelligence amplification]] rather than "artificial intelligence" system.
+Though, it should be thought as [[thoughts/Intelligence amplification]] rather than "artificial intelligence" system.
 
 ## Scaling laws
 

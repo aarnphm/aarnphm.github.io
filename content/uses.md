@@ -2,13 +2,10 @@
 id: uses
 tags:
   - technical
+comments: false
 date: "2024-01-22"
 description: Includes the tools I use, workflow,  etc. my [submission](https://uses.tech)
-navigation:
-  - "[[thoughts]]"
-  - "[[books]]"
 title: uses.
-zen: true
 ---
 
 ### hardware.

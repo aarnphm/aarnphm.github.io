@@ -2,14 +2,14 @@
 id: Scents
 tags:
   - evergreen
-  - self
+comments: false
 date: "2024-01-07"
-navigation:
-  - "[[posts/to the past lovers]]"
-  - "[[thoughts/Jax]]"
 title: Scents
-zen: true
 ---
+
+A (mostly) up-to-date scents that I use/like/prefer.
+
+See [[books|antilibrary]] for reading list.
 
 ### like.
 

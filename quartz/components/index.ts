@@ -1,5 +1,4 @@
 import Landing from "./Landing"
-import Meta from "./Meta"
 import Navigation from "./Navigation"
 import MinimalFooter from "./MinimalFooter"
 import Keybind from "./Keybind"
@@ -33,7 +32,6 @@ import Comments from "./Comments"
 
 export {
   Landing,
-  Meta,
   Navigation,
   CuriusContent,
   CuriusNotes,

@@ -14,6 +14,4 @@ What we really value is not truth, but survival, he says. He resists “accustom
 
 ## power.
 
-## believe.
-
-See also: [[thoughts/The Will To Believe]]
+![[thoughts/The Will To Believe#rationality|believe]]

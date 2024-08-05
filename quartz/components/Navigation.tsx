@@ -39,7 +39,6 @@ export default ((userOpts?: Partial<Options>) => {
       </a>
     )
 
-    const frontmatter = fileData.frontmatter
     const opts = { ...baseOpts, ...userOpts }
     return (
       <footer class="navigation-container">

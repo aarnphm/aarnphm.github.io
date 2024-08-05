@@ -1,8 +1,7 @@
 ---
 id: logic
 tags:
-  - math
-construction: true
+  - philosophy
 date: "2024-03-02"
 title: logic
 ---

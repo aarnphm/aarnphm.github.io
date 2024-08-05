@@ -8,7 +8,7 @@ tags:
   - evergreen
 date: "2022-01-25"
 description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
-title: Backburners
+title: ideas.
 ---
 
 ### projets.
@@ -35,8 +35,8 @@ title: Backburners
 - [[thoughts/Rust|Rust]] key-value store
   - Think of it as MongoDB but has Redis capability
 - Dockerfile for LLM
-  - [ollama](https://github.com/ollama/ollama) have something called Modelfile.
-  - Dockerfile frontend are using [[thoughts/BuildKit]],  [[thoughts/OCI|OCI]]-compliant frontend.
+  - [ollama](https://github.com/ollama/ollama)'s Modelfile.
+  - Dockerfile frontend, [[thoughts/BuildKit]],  [[thoughts/OCI|OCI]]-compliant frontend.
   - Stay away from Docker 😄
 
 ### écriture.

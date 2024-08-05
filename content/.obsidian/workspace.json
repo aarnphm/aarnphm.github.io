@@ -4,16 +4,29 @@
     "type": "split",
     "children": [
       {
-        "id": "03796555f29ea2b4",
+        "id": "49fad071fc1b9332",
         "type": "tabs",
         "children": [
           {
-            "id": "04b75b894efc05a9",
+            "id": "71eac6866ffb966d",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_index.md",
+                "file": "thoughts/fashion.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "e8d501815d9fa9c6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/friendship.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -21,6 +34,7 @@
             }
           }
         ],
+        "currentTab": 1,
         "stacked": true
       }
     ],
@@ -71,7 +85,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 367.5
+    "width": 367.5,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -87,7 +102,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "_index.md",
+                "file": "thoughts/friendship.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +119,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "_index.md",
+                "file": "thoughts/friendship.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -127,7 +142,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "_index.md"
+                "file": "thoughts/friendship.md"
               }
             }
           },
@@ -157,7 +172,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "_index.md"
+                "file": "thoughts/friendship.md"
               }
             }
           }
@@ -183,13 +198,12 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "04b75b894efc05a9",
+  "active": "e8d501815d9fa9c6",
   "lastOpenFiles": [
-    "thoughts/theme/thoughts/thoughts/m1.md",
-    "thoughts/theme/thoughts/thoughts",
-    "thoughts/theme/thoughts",
-    "thoughts/theme/test.md",
-    "thoughts/theme",
+    "thoughts/fashion.md",
+    "thoughts/Intelligence amplification.md",
+    "thoughts/Untitled.md",
+    "thoughts/university/twenty-four-twenty-five",
     "uses.md",
     "thoughts/zero-shot learning.md",
     "thoughts/writing.md",
@@ -203,6 +217,8 @@
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability.pdf",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability.md",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/root_locus_control.pdf",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/root_locus.pdf",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/rl_example.pdf",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/nous.md",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab5/prelab.md",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/prelab.md",
@@ -230,7 +246,6 @@
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Root locus.md",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Root locus control.md",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Frequency Domain.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Block Diagrams.md",
     "Untitled.canvas"
   ]
 }

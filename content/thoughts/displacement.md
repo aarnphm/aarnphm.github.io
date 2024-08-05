@@ -2,7 +2,6 @@
 id: displacement
 tags:
   - seed
-construction: true
 date: "2024-01-08"
 title: displacement
 ---

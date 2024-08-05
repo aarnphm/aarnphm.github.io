@@ -35,10 +35,11 @@ body[data-menu="true"] {
   }
 
   a.internal {
-    @include links;
     font-weight: inherit;
     font-style: italic;
     font-size: 1.272rem;
+
+    @include links;
   }
 
   h1,

@@ -7,7 +7,7 @@ date: "2024-01-30"
 title: Turing-complete Transformers
 ---
 
-See the [tweet](https://twitter.com/burny_tech/status/1744100637187461455)
+https://twitter.com/burny_tech/status/1744100637187461455
 
 The idea is to combine two small transformers rather than one [[thoughts/large models]]
 

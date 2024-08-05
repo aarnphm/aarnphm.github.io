@@ -2,7 +2,6 @@
 id: TPU
 tags:
   - hardware
-construction: true
 date: "2024-03-04"
 title: TPU
 ---

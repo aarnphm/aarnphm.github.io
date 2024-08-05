@@ -15,6 +15,7 @@ import { visit } from "unist-util-visit"
 import isAbsoluteUrl from "is-absolute-url"
 import { Root } from "hast"
 import { wikilinkRegex } from "./ofm"
+import { filterEmbedTwitter } from "./twitter"
 
 interface RawFileOptions {
   enable: boolean
@@ -72,7 +73,11 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> =
                   opts.enableRawEmbed.enable && opts.enableRawEmbed.extensions?.includes(ext)
                     ? true
                     : isAbsoluteUrl(dest)
-                classes.push(isExternal ? "external" : "internal")
+                const isEmbedTwitter = filterEmbedTwitter(node)
+
+                if (!isEmbedTwitter) {
+                  classes.push(isExternal ? "external" : "internal")
+                }
 
                 // We will need to translate the link to external here
                 if (isExternal && opts.enableRawEmbed.enable) {
@@ -87,7 +92,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> =
                   }
                 }
 
-                if (isExternal && opts.externalLinkIcon) {
+                if (!isEmbedTwitter && isExternal && opts.externalLinkIcon) {
                   node.children.push({
                     type: "element",
                     tagName: "svg",

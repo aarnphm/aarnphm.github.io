@@ -2,12 +2,9 @@
 id: quotes
 tags:
   - evergreen
+comments: false
 date: "2024-01-23"
-navigation:
-  - "[[thoughts/Chaos]]"
-  - "[[thoughts/Philosophy and Nietzsche]]"
-title: Advice
-zen: true
+title: advice.
 ---
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
 
