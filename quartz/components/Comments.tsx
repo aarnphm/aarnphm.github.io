@@ -24,9 +24,14 @@ function boolToStringBool(b: boolean): string {
 }
 
 export default ((opts: Options) => {
-  const Comments: QuartzComponent = ({ displayClass, cfg, fileData }: QuartzComponentProps) => {
+  const Comments: QuartzComponent = ({
+    ctx,
+    displayClass,
+    cfg,
+    fileData,
+  }: QuartzComponentProps) => {
     const enableComments = fileData.frontmatter?.comments ?? true
-    if (!enableComments) {
+    if (!enableComments || ctx.argv.serve) {
       return <></>
     }
     return (
