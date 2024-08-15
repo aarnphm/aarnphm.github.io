@@ -1,37 +1,14 @@
 import { QuartzEmitterPlugin } from "../types"
-import { Content as ContentConstructor, Spacer } from "../../components"
+import { Content, Spacer } from "../../components"
 import BodyConstructor from "../../components/Body"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
 import { FilePath, FullSlug, pathToRoot } from "../../util/path"
 import { pageResources, renderPage } from "../../components/renderPage"
-import {
-  QuartzComponent,
-  QuartzComponentConstructor,
-  QuartzComponentProps,
-} from "../../components/types"
+import { QuartzComponentProps } from "../../components/types"
 import DepGraph from "../../depgraph"
 import { sharedPageComponents } from "../../../quartz.layout"
 import { classNames } from "../../util/lang"
-
-const MenuContent = (() => {
-  const Content = ContentConstructor()
-
-  const Element: QuartzComponent = (props: QuartzComponentProps) => {
-    const { displayClass } = props
-    return (
-      <>
-        <div class={classNames(displayClass, "menu")}>
-          <Content {...props} />
-          <hr />
-          <MenuFooter {...props} />
-        </div>
-      </>
-    )
-  }
-
-  return Element
-}) satisfies QuartzComponentConstructor
 
 function MenuFooter({ displayClass }: QuartzComponentProps) {
   return (
@@ -49,7 +26,8 @@ export const MenuPage: QuartzEmitterPlugin = () => {
     beforeBody: [],
     left: [],
     right: [],
-    pageBody: MenuContent(),
+    pageBody: Content(),
+    afterBody: [MenuFooter],
     footer: Spacer(),
   }
 

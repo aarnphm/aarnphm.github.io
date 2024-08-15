@@ -65,7 +65,6 @@ const config: QuartzConfig = {
       // Plugin.Recipe(),
       // Plugin.Embeddings(),
       Plugin.Twitter(),
-      Plugin.Latex(),
       Plugin.SyntaxHighlighting({
         theme: {
           light: "rose-pine-dawn",
@@ -73,8 +72,9 @@ const config: QuartzConfig = {
         },
         keepBackground: true,
       }),
-      Plugin.ObsidianFlavoredMarkdown({ enableCheckbox: true }),
+      Plugin.ObsidianFlavoredMarkdown(),
       Plugin.GitHubFlavoredMarkdown(),
+      Plugin.Latex(),
       Plugin.TableOfContents(),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",

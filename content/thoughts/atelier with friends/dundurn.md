@@ -2,6 +2,8 @@
 id: dundurn
 tags:
   - menu
+cssclasses:
+  - menu
 date: "2024-03-23"
 description: atelier with friends deux  - orangeville
 menu: true

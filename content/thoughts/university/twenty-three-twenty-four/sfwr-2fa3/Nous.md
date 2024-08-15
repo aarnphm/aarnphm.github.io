@@ -267,7 +267,7 @@ _compound patterns_ are formed by combining ==binary operators== and ==unary ope
 > [!important] Theorem 9
 >
 > $$
-> \begin{array}{ccl}
+> \begin{array}{cccl}
 > \alpha + (\beta + \gamma) & \equiv & (\alpha + \beta) + \gamma & (9.1) \\
 > \alpha + \beta & \equiv & \beta + \alpha & (9.2) \\
 > \alpha + \phi & \equiv & \alpha & (9.3) \\

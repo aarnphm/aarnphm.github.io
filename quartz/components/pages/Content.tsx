@@ -1,7 +1,5 @@
 import { htmlToJsx } from "../../util/jsx"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
-// @ts-ignore
-import musicScript from "../scripts/music.inline"
 
 const Content: QuartzComponent = ({ fileData, tree }: QuartzComponentProps) => {
   const content = htmlToJsx(fileData.filePath!, tree)
@@ -9,7 +7,5 @@ const Content: QuartzComponent = ({ fileData, tree }: QuartzComponentProps) => {
   const classString = ["popover-hint", ...classes].join(" ")
   return <article class={classString}>{content}</article>
 }
-
-Content.afterDOMLoaded = musicScript
 
 export default (() => Content) satisfies QuartzComponentConstructor

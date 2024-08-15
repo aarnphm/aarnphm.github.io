@@ -2,6 +2,8 @@
 id: orangeville
 tags:
   - menu
+cssclasses:
+  - menu
 date: "2024-03-08"
 description: atelier with friends uno - orangeville
 lang: it

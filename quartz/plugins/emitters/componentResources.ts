@@ -172,33 +172,6 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
   }
 }
 
-function concatZenStyles(zenMap: string[]): string {
-  let styles = []
-  for (const slug of zenMap) {
-    const style = `
-      body[data-slug="${slug}"] {
-        .page > #quartz-body > .center {
-          @media all and (min-width: 1510px) {
-            margin-top: 3rem;
-          }
-
-          & > .page-header > .popover-hint {
-            display: flex;
-            flex-direction: row;
-          }
-        }
-
-        .page-header {
-          display: none;
-        }
-      }
-    `
-    styles.push(style)
-  }
-
-  return styles.join("\n")
-}
-
 async function generateOg(
   ctx: BuildCtx,
   fileData: QuartzPluginData,
@@ -310,15 +283,6 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         }
       }
 
-      const zenMap: string[] = []
-      for (const [_, file] of content) {
-        const slug = file.data.slug!
-        const zen = file.data.frontmatter?.zen
-        if (zen) zenMap.push(slug)
-      }
-
-      const zenStyle = concatZenStyles(zenMap)
-
       // important that this goes *after* component scripts
       // as the "nav" event gets triggered here and we should make sure
       // that everyone else had the chance to register a listener for it
@@ -328,7 +292,6 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         ctx.cfg.configuration.theme,
         ...componentResources.css,
         googleFontsStyleSheet,
-        zenStyle,
         ...componentResources.css,
         styles,
       )
