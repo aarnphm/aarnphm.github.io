@@ -3,7 +3,6 @@ import { Root as MdRoot } from "mdast"
 import { Root as HTMLRoot, Literal } from "hast"
 import { visit } from "unist-util-visit"
 import { VFile } from "vfile"
-
 // @ts-ignore
 import Lexer from "pseudocode/src/Lexer.js"
 // @ts-ignore
@@ -26,7 +25,7 @@ interface RendererOptions {
   /**
    * The indent size of inside a control block, e.g. if, for, etc. The unit must be in 'em'. Default value: '1.2em'.
    */
-  identSize?: string
+  indentSize?: string
   /**
    * The delimiters used to start and end a comment region. Note that only line comments are supported. Default value: '//'.
    */
@@ -62,7 +61,7 @@ const defaultOptions: Options = {
   css: "latex-pseudo",
   removeCaptionCount: false,
   renderer: {
-    identSize: "1.2em",
+    indentSize: "0.6em",
     commentDelimiter: "//",
     lineNumberPunc: ":",
     lineNumber: true,
@@ -75,7 +74,8 @@ const defaultOptions: Options = {
 }
 
 function renderToString(input: string, options?: RendererOptions) {
-  if (!input) throw new Error("Input cannot be empty")
+  if (input === null || input === undefined) throw new ReferenceError("Input cannot be empty")
+
   const lexer = new Lexer(input)
   const parser = new Parser(lexer)
   const renderer = new Renderer(parser, options)

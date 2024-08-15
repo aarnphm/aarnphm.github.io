@@ -23,7 +23,9 @@ Joel Hooks puts this better than I can ever do:
 >
 > Like with real gardens, our digital gardens are a constant ebb and flow towards [[thoughts/Entropy|entropy]].
 
-See also [this tweet](https://twitter.com/Mappletons/status/1250532315459194880), [this post from Maggie Appleton](https://maggieappleton.com/garden-history) and [this](https://joelhooks.com/digital-garden)
+https://twitter.com/Mappletons/status/1250532315459194880
+
+See also: [post](https://maggieappleton.com/garden-history) and [introduction](https://joelhooks.com/digital-garden)
 
 
 ## The garden and the stream
