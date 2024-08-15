@@ -62,9 +62,9 @@ const config: QuartzConfig = {
       Plugin.Pseudocode(),
       Plugin.Poetry(),
       // FIXME: implement this
-      Plugin.Recipe(),
-      Plugin.Twitter(),
+      // Plugin.Recipe(),
       // Plugin.Embeddings(),
+      Plugin.Twitter(),
       Plugin.Latex(),
       Plugin.SyntaxHighlighting({
         theme: {
