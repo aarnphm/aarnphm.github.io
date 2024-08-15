@@ -1,9 +1,5 @@
 ---
 id: work
-aliases:
-  - /resume
-  - /resumes
-  - /projects
 tags:
   - evergreen
   - technical
