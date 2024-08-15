@@ -57,7 +57,7 @@ const config: QuartzConfig = {
     transformers: [
       Plugin.FrontMatter(),
       Plugin.CreatedModifiedDate({
-        priority: ["frontmatter", "git", "filesystem"],
+        priority: ["frontmatter", "filesystem"],
       }),
       Plugin.Pseudocode(),
       Plugin.Poetry(),
@@ -72,13 +72,13 @@ const config: QuartzConfig = {
         },
         keepBackground: true,
       }),
-      Plugin.ObsidianFlavoredMarkdown(),
       Plugin.GitHubFlavoredMarkdown(),
-      Plugin.Latex(),
+      Plugin.ObsidianFlavoredMarkdown(),
       Plugin.TableOfContents(),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",
         externalLinkIcon: true,
+        lazyLoad: true,
         enableRawEmbed: {
           enable: true,
           extensions: [".py", ".m", ".go", ".c", ".java", ".cpp", ".h", ".hpp", ".cu"],
@@ -86,6 +86,7 @@ const config: QuartzConfig = {
         },
       }),
       Plugin.Description(),
+      Plugin.Latex({ renderEngine: "katex" }),
     ],
     filters: [Plugin.RemoveDrafts()],
     emitters: [
