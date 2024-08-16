@@ -192,7 +192,6 @@
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
       "audio-recorder:Start/stop recording": false,
-      "table-editor-obsidian:Advanced Tables Toolbar": false,
       "random-note:Open random note": false,
       "workspaces:Manage workspace layouts": false,
       "markdown-importer:Open format converter": false
@@ -201,6 +200,7 @@
   "active": "e8d501815d9fa9c6",
   "lastOpenFiles": [
     "thoughts/fashion.md",
+    "thoughts/friendship.md",
     "thoughts/Intelligence amplification.md",
     "thoughts/Untitled.md",
     "thoughts/university/twenty-four-twenty-five",
@@ -245,7 +245,6 @@
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/State space representation.md",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Root locus.md",
     "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Root locus control.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Frequency Domain.md",
     "Untitled.canvas"
   ]
 }
