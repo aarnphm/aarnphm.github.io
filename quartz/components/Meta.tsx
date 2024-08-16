@@ -1,6 +1,8 @@
 import { i18n } from "../i18n"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
+import { defaultOptions as GraphOptions } from "./Graph"
+
 export const SearchConstructor = (() => {
   const Search: QuartzComponent = ({ cfg }: QuartzComponentProps) => {
     const searchPlaceholder = i18n(cfg.locale).components.search.searchBarPlaceholder
@@ -25,19 +27,32 @@ export const SearchConstructor = (() => {
   return Search
 }) satisfies QuartzComponentConstructor
 
-interface Options {
-  enableSearch?: boolean
-}
+export const GraphConstructor = (() => {
+  const Graph: QuartzComponent = () => {
+    return (
+      <div class="graph">
+        <div id="global-graph-outer">
+          <div
+            id="global-graph-container"
+            data-cfg={JSON.stringify(GraphOptions.globalGraph)}
+          ></div>
+        </div>
+      </div>
+    )
+  }
+  return Graph
+}) satisfies QuartzComponentConstructor
 
-const defaultOptions: Options = {
-  enableSearch: true,
-}
-
-export default ((userOpts?: Partial<Options>) => {
-  const opts = { ...defaultOptions, ...userOpts }
+export default (() => {
   const Search = SearchConstructor()
+  const Graph = GraphConstructor()
   const Meta: QuartzComponent = (componentData: QuartzComponentProps) => {
-    return <>{opts.enableSearch ? <Search {...componentData} /> : <></>}</>
+    return (
+      <>
+        <Search {...componentData} />
+        <Graph {...componentData} />
+      </>
+    )
   }
   return Meta
-}) satisfies QuartzComponentConstructor<Options>
+}) satisfies QuartzComponentConstructor

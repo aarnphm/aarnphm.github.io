@@ -15,6 +15,8 @@ See also [[thoughts/Transformers|Transformers]], or [[thoughts/distraction|distr
 
 ### Muti-head Attention
 
+### RingAttention
+
 ### Paged Attention
 
 [paper](https://arxiv.org/pdf/2309.06180.pdf)
