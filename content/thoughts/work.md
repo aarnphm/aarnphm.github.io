@@ -30,13 +30,20 @@ You can find internal monologue under [[/posts/]] index.
 
 
 - **Quartz** - 🌱 a fast, batteries-included static-site generator that transforms Markdown content into fully functional websites (2023-)
-  - a set of tools that helps you publish your [[thoughts/Digital garden|digital garden]] and notes as a website for free.
+  - A set of tools that helps you publish your [[thoughts/Digital garden|digital garden]] and notes as a website for free.
   - Improved performance of graph interaction with Canvas (https://github.com/jackyzha0/quartz/pull/1328)
   - Added support for PDF in popover modal (https://github.com/jackyzha0/quartz/pull/913)
   - Implemented font-fetching before runtime (https://github.com/jackyzha0/quartz/pull/817)
   - Implemented telescope-style search (https://github.com/jackyzha0/quartz/pull/722, https://github.com/jackyzha0/quartz/pull/774, https://github.com/jackyzha0/quartz/pull/782)
   - Landing page of [[/|this]] website, with custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]]
   - Source: [GitHub](https://github.com/jackyzha0/quartz) and [site](https://quartz.jzhao.xyz/)
+
+
+- **avante.nvim** - A [Cursor](https://www.cursor.com/)-like chat IDE for [[uses^neovim|Neovim]]
+  - Implemented bounding UI popover to improve QOL (https://github.com/yetone/avante.nvim/pull/29)
+  - Added support for lazy setup for better load time improvement (https://github.com/yetone/avante.nvim/pull/14)
+  - Source: [GitHub](https://github.com/yetone/avante.nvim)
+  ![[thoughts/images/avante.mp4]]
 
 
 - **BentoML** - Build Production-grade AI Application (2021-)
