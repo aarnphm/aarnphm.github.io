@@ -16,3 +16,4 @@ quartz.git
 .vercel
 __pycache__
 sites
+.env
