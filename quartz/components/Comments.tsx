@@ -26,7 +26,8 @@ function boolToStringBool(b: boolean): string {
 export default ((opts: Options) => {
   const Comments: QuartzComponent = ({ displayClass, cfg, fileData }: QuartzComponentProps) => {
     const enableComments = fileData.frontmatter?.comments ?? true
-    if (!enableComments) {
+    const isPost = fileData.slug!.startsWith("posts/")
+    if (!enableComments || isPost) {
       return <></>
     }
     return (
