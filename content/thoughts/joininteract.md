@@ -1,7 +1,9 @@
 ---
 id: joininteract
 tags:
+  - seed
   - application
+comments: false
 date: "2024-08-23"
 title: interact cohort 2024
 ---

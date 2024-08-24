@@ -17,7 +17,7 @@ const config: QuartzConfig = {
     },
     locale: "fr-FR",
     baseUrl: "aarnphm.xyz",
-    ignorePatterns: ["private", "templates", ".obsidian"],
+    ignorePatterns: ["private", "templates", ".obsidian", "joininteract"],
     defaultDateType: "created",
     theme: {
       cdnCaching: true,
