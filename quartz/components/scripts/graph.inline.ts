@@ -58,12 +58,16 @@ function animate(time: number) {
 }
 requestAnimationFrame(animate)
 
-async function renderGraph(container: string, fullSlug: FullSlug) {
+async function renderGraph(container: string, fullSlug: FullSlug, global?: boolean) {
   const slug = simplifySlug(fullSlug)
   const visited = getVisited()
   const graph = document.getElementById(container)
   if (!graph) return
-  removeAllChildren(graph)
+
+  global = global ?? false
+  if (!global) {
+    removeAllChildren(graph)
+  }
 
   let {
     drag: enableDrag,
@@ -302,6 +306,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
   await app.init({
     width,
     height,
+    canvas: global ? (graph as HTMLCanvasElement) : undefined,
     antialias: true,
     autoStart: false,
     autoDensity: true,
@@ -310,7 +315,10 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     resolution: window.devicePixelRatio,
     eventMode: "static",
   })
-  graph.appendChild(app.canvas)
+
+  if (!global) {
+    graph.appendChild(app.canvas)
+  }
 
   const stage = app.stage
   stage.interactive = false
@@ -527,7 +535,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       sidebar.style.zIndex = "1"
     }
 
-    renderGraph("global-graph-container", slug)
+    renderGraph("global-graph-container", slug, true)
 
     registerEscapeHandler(container, hideGlobalGraph)
   }
