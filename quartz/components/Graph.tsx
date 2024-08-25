@@ -34,7 +34,7 @@ export const defaultOptions: GraphOptions = {
     repelForce: 0.5,
     centerForce: 0.1,
     linkDistance: 30,
-    fontSize: 8,
+    fontSize: 6,
     opacityScale: 1,
     showTags: true,
     removeTags: [],
@@ -44,10 +44,10 @@ export const defaultOptions: GraphOptions = {
     drag: true,
     zoom: true,
     depth: -1,
-    scale: 1.1,
-    repelForce: 0.5,
-    centerForce: 0.3,
-    linkDistance: 30,
+    scale: 1.25,
+    repelForce: 1,
+    centerForce: 0.1,
+    linkDistance: 50,
     fontSize: 12,
     opacityScale: 1,
     showTags: true,
@@ -64,7 +64,7 @@ export default ((opts?: GraphOptions) => {
       <div class={classNames(displayClass, "graph")}>
         <h3>{i18n(cfg.locale).components.graph.title}</h3>
         <div class="graph-outer">
-          <canvas id="graph-container" data-cfg={JSON.stringify(localGraph)}></canvas>
+          <div id="graph-container" data-cfg={JSON.stringify(localGraph)}></div>
           <svg
             version="1.1"
             id="global-graph-icon"
@@ -92,7 +92,7 @@ export default ((opts?: GraphOptions) => {
           </svg>
         </div>
         <div id="global-graph-outer">
-          <canvas id="global-graph-container" data-cfg={JSON.stringify(globalGraph)}></canvas>
+          <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)}></div>
         </div>
       </div>
     )
