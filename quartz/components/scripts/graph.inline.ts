@@ -2,7 +2,7 @@ import type { ContentDetails } from "../../plugins/emitters/contentIndex"
 import * as d3 from "d3"
 import * as PIXI from "pixi.js"
 import * as TWEEN from "@tweenjs/tween.js"
-import { registerEscapeHandler, removeAllChildren } from "./util"
+import { registerEscapeHandler } from "./util"
 import { FullSlug, SimpleSlug, getFullSlug, resolveRelative, simplifySlug } from "../../util/path"
 
 type NodeData = {
@@ -58,16 +58,12 @@ function animate(time: number) {
 }
 requestAnimationFrame(animate)
 
-async function renderGraph(container: string, fullSlug: FullSlug, global?: boolean) {
+async function renderGraph(container: string, fullSlug: FullSlug) {
+  const canvas = document.getElementById(container) as HTMLCanvasElement | null
+  if (!canvas) return
+
   const slug = simplifySlug(fullSlug)
   const visited = getVisited()
-  const graph = document.getElementById(container)
-  if (!graph) return
-
-  global = global ?? false
-  if (!global) {
-    removeAllChildren(graph)
-  }
 
   let {
     drag: enableDrag,
@@ -82,7 +78,7 @@ async function renderGraph(container: string, fullSlug: FullSlug, global?: boole
     removeTags,
     showTags,
     focusOnHover,
-  } = JSON.parse(graph.dataset["cfg"]!)
+  } = JSON.parse(canvas.dataset["cfg"]!)
 
   const data: Map<SimpleSlug, ContentDetails> = new Map(
     Object.entries<ContentDetails>(await fetchData).map(([k, v]) => [
@@ -137,6 +133,8 @@ async function renderGraph(container: string, fullSlug: FullSlug, global?: boole
     if (showTags) tags.forEach((tag) => neighbourhood.add(tag))
   }
 
+  // XXX: How does links got morphed into LinkNodes here?
+  // links => LinkData[], where as links.filter(l => neighbourhood.has(l.source) && neighbourhood.has(l.target)) => LinkNodes[]
   const graphData: { nodes: NodeData[]; links: LinkNodes[] } = {
     nodes: [...neighbourhood].map((url) => {
       const text = url.startsWith("tags/") ? "#" + url.substring(5) : (data.get(url)?.title ?? url)
@@ -167,8 +165,8 @@ async function renderGraph(container: string, fullSlug: FullSlug, global?: boole
       d3.forceCollide((n) => nodeRadius(n)),
     )
 
-  const width = graph.offsetWidth
-  const height = Math.max(graph.offsetHeight, 250)
+  const width = canvas.offsetWidth
+  const height = Math.max(canvas.offsetHeight, 250)
   const computedStyleMap = new Map<string, string>()
   for (let i of [
     "--secondary",
@@ -180,7 +178,7 @@ async function renderGraph(container: string, fullSlug: FullSlug, global?: boole
     "--darkgray",
     "--bodyFont",
   ]) {
-    computedStyleMap.set(i, getComputedStyle(graph).getPropertyValue(i))
+    computedStyleMap.set(i, getComputedStyle(canvas).getPropertyValue(i))
   }
 
   // calculate color
@@ -306,7 +304,7 @@ async function renderGraph(container: string, fullSlug: FullSlug, global?: boole
   await app.init({
     width,
     height,
-    canvas: global ? (graph as HTMLCanvasElement) : undefined,
+    canvas: canvas,
     antialias: true,
     autoStart: false,
     autoDensity: true,
@@ -315,10 +313,6 @@ async function renderGraph(container: string, fullSlug: FullSlug, global?: boole
     resolution: window.devicePixelRatio,
     eventMode: "static",
   })
-
-  if (!global) {
-    graph.appendChild(app.canvas)
-  }
 
   const stage = app.stage
   stage.interactive = false
@@ -460,16 +454,7 @@ async function renderGraph(container: string, fullSlug: FullSlug, global?: boole
           }
         }),
     )
-  } else {
-    graphData.nodes.forEach((node) => {
-      if (!node.gfx) return
-      node.gfx.on("click", () => {
-        const targ = resolveRelative(fullSlug, node.id)
-        window.spaNavigate(new URL(targ, window.location.toString()))
-      })
-    })
   }
-
   if (enableZoom) {
     d3.select<HTMLCanvasElement, NodeData>(app.canvas).call(
       d3
@@ -535,7 +520,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       sidebar.style.zIndex = "1"
     }
 
-    renderGraph("global-graph-container", slug, true)
+    renderGraph("global-graph-container", slug)
 
     registerEscapeHandler(container, hideGlobalGraph)
   }
