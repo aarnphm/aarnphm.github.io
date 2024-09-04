@@ -13,7 +13,46 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/fashion.md",
+                "file": "thoughts/Database.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "db796d5ac1761075",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/DBMS.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "9bbe393814729f06",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/Search.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "1d4a449bb48aa11f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/data.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -30,6 +69,16 @@
                 "mode": "source",
                 "backlinks": true,
                 "source": false
+              }
+            }
+          },
+          {
+            "id": "7e3e92cd76436119",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/Ramakrishnan - Database Management Systems 3rd Edition.pdf"
               }
             }
           }
@@ -102,7 +151,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/friendship.md",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/DBMS.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -119,7 +168,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/friendship.md",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/DBMS.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -142,7 +191,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/friendship.md"
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/DBMS.md"
               }
             }
           },
@@ -172,7 +221,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/friendship.md"
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/DBMS.md"
               }
             }
           }
@@ -197,54 +246,54 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "e8d501815d9fa9c6",
+  "active": "db796d5ac1761075",
   "lastOpenFiles": [
-    "thoughts/fashion.md",
-    "thoughts/friendship.md",
-    "thoughts/Intelligence amplification.md",
-    "thoughts/Untitled.md",
-    "thoughts/university/twenty-four-twenty-five",
-    "uses.md",
-    "thoughts/zero-shot learning.md",
-    "thoughts/writing.md",
-    "thoughts/work.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/time_response.pdf",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/steady_state_error_specifications.pdf",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/steady_state_error.pdf",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/steady-state error.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/state_space_design.pdf",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/state_space.pdf",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability.pdf",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/root_locus_control.pdf",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/root_locus.pdf",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/rl_example.pdf",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/nous.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab5/prelab.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/prelab.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2c.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2b.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2a.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab3/prelab.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab3/content.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab2/content.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab1/content.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab1/5.2-graph.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab1/5.1-graph.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/zero-add-compensator.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/transient-response-root-locus.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/time constant.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/summing junction.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/steady-state error table.png",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a5/A5.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a4/A4.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a3/A3.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/content.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a1/content.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Time response.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/State space representation.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Root locus.md",
-    "thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Root locus control.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_TeamCommunic/TeamCommunicationsPresentation_rev5.pptx",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_TeamCommunic/README.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_TeamCommunic",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/run-actions.yml",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/WorkflowResults3.png",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/WorkflowResults2.png",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/WorkflowResults1.png",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/SettingsScreen.png",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/README.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/FixedPullRequestDetails.png",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/CICDTutorial.tex",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T01_GitGitHub/src/sources.bib",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T01_GitGitHub/src/git branch.PNG",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T01_GitGitHub/src/Git Tutorial.tex",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/CICDTutorial.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/CICDDevPlanSlides2023.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/BuggedWorkflowStep.png",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/BuggedRun.png",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/BuggedPullRequestDetails.png",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/BuggedPullRequest.png",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T01_GitGitHub/src",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T01_GitGitHub/README.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T01_GitGitHub/Git Tutorial.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T01_GitGitHub/Git Cheatsheet.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/README.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team9_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team8_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team7_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team6_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team5_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team4_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team3_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team2_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team1_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team18_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team17_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team16_ProjectDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team15_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team14_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team13_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team11_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/InformalPresSchedules/VnVReport_Sam.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/InformalPresSchedules/VnVReport_Chris.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/InformalPresSchedules/VnVReport_Anne.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/InformalPresSchedules/VnVPlan_Sam.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/InformalPresSchedules/VnVPlan_Chris.md",
     "Untitled.canvas"
   ]
 }
