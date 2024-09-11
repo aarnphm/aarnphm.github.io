@@ -1,22 +1,42 @@
 extend-include = ["*.ipynb"]
-extend-select = [
-  "E",
+line-length = 119
+indent-width = 2
+target-version = "py39"
+fix = true
+
+[format]
+preview = true
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = true
+
+
+[lint]
+select = [
   "F",
-  "B",
-  "PIE",
   "G",    # flake8-logging-format
-  "W",    # pycodestyle
-  "Q",    # flake8-quotes
-  "FA",   # flake8-future-annotations
-  "TCH",  # flake8-type-checking
-  "PLW",  # pylint-warning
-  "PLR",  # pylint-refactor
-  "PT",   # flake8-pytest-style
   "PERF", # perflint
   "RUF",  # Ruff-specific rules
-  "YTT",  # flake8-2020
+  "W6",
+  "E71",
+  "E72",
+  "E112",
+  "E113",
+  # "E124",
+  "E203",
+  "E272",
+  # "E303",
+  # "E304",
+  # "E501",
+  # "E502",
+  "E702",
+  "E703",
+  "E731",
+  "W191",
+  "W291",
+  "W293",
+  "UP039", # unnecessary-class-parentheses
 ]
-fix = true
 ignore = [
   "PLR0911",
   "PLR0912",
@@ -30,26 +50,13 @@ ignore = [
   "TCH004",  # don't move runtime import out, just warn about it
   "RUF012",  # mutable attributes to be used with ClassVar
   "E701",    # multiple statement on single line
+  "RUF012",
+  "ANN",     # Mypy is better at this
+  "E722",
 ]
-line-length = 119
-indent-width = 2
-target-version = "py38"
-unfixable = ["TCH004"]
 
 [lint.flake8-type-checking]
-exempt-modules = [
-  "typing",
-  "typing_extensions",
-  "openllm_core._typing_compat",
-  "openllm_client._typing_compat",
-]
-runtime-evaluated-base-classes = [
-  "openllm_core._configuration.LLMConfig",
-  "openllm_core._configuration.GenerationConfig",
-  "openllm_core._configuration.SamplingParams",
-  "openllm_core._configuration.ModelSettings",
-  "openllm.LLMConfig",
-]
+exempt-modules = ["typing", "typing_extensions"]
 runtime-evaluated-decorators = [
   "attrs.define",
   "attrs.frozen",
@@ -59,12 +66,6 @@ runtime-evaluated-decorators = [
   '_attr.define',
   'attr.frozen',
 ]
-
-[format]
-preview = true
-quote-style = "single"
-indent-style = "space"
-skip-magic-trailing-comma = true
 
 [lint.pydocstyle]
 convention = "google"

@@ -11,3 +11,5 @@ Representation of information in a formalised manner suitable for communication,
 ## model
 - schema + relational.
 ## theory
+
+See also [[tags/sfwr3db3|database]]

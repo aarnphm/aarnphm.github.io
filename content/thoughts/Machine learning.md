@@ -33,5 +33,5 @@ Related:
 - Linear algebra
 - [[thoughts/Automatic Differentiation]]
 
-
-## Theory
+Supervised machine learning:
+- [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression|linear regression]].

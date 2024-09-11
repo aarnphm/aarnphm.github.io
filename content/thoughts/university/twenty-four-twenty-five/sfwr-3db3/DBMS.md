@@ -1,7 +1,8 @@
 ---
-id: w1
+id: DBMS
 tags:
   - sfwr3db3
+  - university
 date: 2024-09-04
 title: DBMS
 ---
