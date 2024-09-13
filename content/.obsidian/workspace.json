@@ -8,12 +8,15 @@
         "type": "tabs",
         "children": [
           {
-            "id": "db796d5ac1761075",
+            "id": "6d39a354ca3dee92",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/ListOfPotentialProjects/PotentialProjects.pdf"
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme visits.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
               }
             }
           },
@@ -60,19 +63,6 @@
               "type": "pdf",
               "state": {
                 "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/relationalModel_Sept9.pdf"
-              }
-            }
-          },
-          {
-            "id": "c81b874dbf4fa959",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/w1.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
               }
             }
           },
@@ -176,7 +166,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 367.5
+    "width": 367.5,
+    "collapsed": true
   },
   "right": {
     "id": "5221182814b155cf",
@@ -192,7 +183,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/ListOfPotentialProjects/PotentialProjects.pdf",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme visits.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -209,7 +200,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/ListOfPotentialProjects/PotentialProjects.pdf",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme visits.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -232,7 +223,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/ListOfPotentialProjects/PotentialProjects.pdf"
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme visits.md"
               }
             }
           },
@@ -262,7 +253,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/ListOfPotentialProjects/PotentialProjects.pdf"
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme visits.md"
               }
             }
           }
@@ -287,33 +278,40 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "db796d5ac1761075",
+  "active": "6d39a354ca3dee92",
   "lastOpenFiles": [
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/ols_and_kls.",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/README.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme visits.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/ListOfPotentialProjects/PotentialProjects.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/requirements.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/README.md",
+    "thoughts/university/twenty-four-twenty-five/engineer-4a03/WEEK 2 LECTURE Notes.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/index.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/ENT chatbot surgery.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Lecture1.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/index.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Lecture3.pdf",
+    "thoughts/university/twenty-four-twenty-five/engineer-4a03/WEEK 1 LECTURE.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/index.md",
+    "private/Sam Hall.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/plan.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/parts/system/index.adoc",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/parts/system/control.adoc",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/parts/system/S6.adoc",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/parts/system/S5.adoc",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/_style/logo.png",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/_style/license.png",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/Entity-Relationship Models.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/DBMS.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/Keys and Foreign Keys.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/relationalModel_Sept9.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/relationalModel_Sept5.pdf",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/tut1.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/ols_and_kls.cu",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Lecture2.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/ols_and_kls_ops.py",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/ols_and_kls_tinygrad.py",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/ols_and_kls_metal.py",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/ols_and_kls.m",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/ols_and_kls.cpp",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/index.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/w1.md",
     "thoughts/Untitled.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/ols_and_kls.py",
     "thoughts/Machine learning.md",
     "thoughts/data.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/t2.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/_style/logo.png",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/_style/license.png",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/README.md",
     "thoughts/university/twenty-four-twenty-five/engineer-4a03/w2.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/source/models/component_web.svg",
     "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/source/models/domain_model.svg",
@@ -328,13 +326,6 @@
     "thoughts/vllm.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/w1.md",
     "thoughts/Search.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/w1.md",
-    "thoughts/Database.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/w1.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_TeamCommunic/README.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/README.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T01_GitGitHub/README.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/README.md",
     "Untitled.canvas"
   ]
 }

@@ -9,8 +9,9 @@ def solve_ols(
   X_train: npt.NDArray[np.float64], Y_train: npt.NDArray[np.float64],
   X_test: npt.NDArray[np.float64], alpha: float
 ):
+  beta = alpha * np.identity(np.shape(X_train)[1])
   W = np.dot(
-    np.linalg.pinv(np.dot(X_train.T, X_train) + alpha * np.identity(np.shape(X_train)[1])),
+    np.linalg.pinv(np.dot(X_train.T, X_train) + beta),
     np.dot(X_train.T, Y_train)
   )
   # print("Optimal W is ", W.flatten())
@@ -55,23 +56,6 @@ def run_ols(
     Y_LS_train, Y_LS_test = solve_ols(X_train, Y_train, X_test, alpha)
   else:
     Y_LS_train, Y_LS_test = solve_kernel_ls(X_train, Y_train, X_test, alpha)
-
-  fig, ax = plt.subplots(figsize=(12, 12), dpi=50)
-
-  # Plotting the train data
-  # ax.plot(X_train, Y_train, 'rx')
-  # Plotting the prediction of our model on the train data
-  # ax.plot(X_train, Y_LS_train, 'bo')
-
-  # Plotting the actual y values for the test data
-  ax.plot(plot_X_test, Y_test, 'rx', label='The actual y values for test data')
-  # Plotting the prediction of our model on the test data
-  ax.plot(plot_X_test, Y_LS_test, 'bo', label='The predicted y values for test data')
-
-  ax.legend(loc='lower right', prop={'size': 20})
-  ax.set(xlabel='X', ylabel='Y', title=description)
-  ax.grid()
-  plt.show()
 
   print('Mean Squarred Error (MSE) of train data:', np.square(np.linalg.norm(Y_LS_train - Y_train)) / Y_train.size)
   print('Mean Squarred Error (MSE) of test data:', np.square(np.linalg.norm(Y_LS_test - Y_test)) / Y_test.size)

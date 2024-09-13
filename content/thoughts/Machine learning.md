@@ -28,6 +28,7 @@ Some main exploration:
   - VAE
 - Autoencoders
 - Supervised Q-learning
+- [[thoughts/Low-rank adapters]]
 
 Related:
 - Linear algebra
