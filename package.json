@@ -88,7 +88,7 @@
     "satori": "^0.10.14",
     "serve-handler": "^6.1.5",
     "sharp": "^0.33.5",
-    "shiki": "^1.17.0",
+    "shiki": "^1.17.5",
     "source-map-support": "^0.5.21",
     "to-vfile": "^8.0.0",
     "toml": "^3.0.0",
