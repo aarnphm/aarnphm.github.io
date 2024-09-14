@@ -8,16 +8,6 @@
         "type": "tabs",
         "children": [
           {
-            "id": "c12e882c803370b9",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/ListOfPotentialProjects/PotentialProjects.pdf"
-              }
-            }
-          },
-          {
             "id": "d4bed9057ed421da",
             "type": "leaf",
             "state": {
@@ -33,7 +23,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept.md",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -90,7 +80,7 @@
             }
           }
         ],
-        "currentTab": 2,
+        "currentTab": 3,
         "stacked": true
       }
     ],
@@ -120,7 +110,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:sfwr4ml3",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -137,7 +127,8 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -157,7 +148,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept.md",
+                "file": "thoughts/data.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -174,7 +165,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept.md",
+                "file": "thoughts/data.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -197,7 +188,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept.md"
+                "file": "thoughts/data.md"
               }
             }
           },
@@ -227,7 +218,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept.md"
+                "file": "thoughts/data.md"
               }
             }
           }
@@ -252,20 +243,32 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "cc1f15cf9b8b1947",
+  "active": "1d4a449bb48aa11f",
   "lastOpenFiles": [
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team9_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team28_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team27_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team26_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team25_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team19_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team16_ProjDescript.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team15_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Lecture5.pdf",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/CICDDevPlanSlides.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/annotated/Table of Contents.html",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/annotated/Lecture3_annotated.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/annotated/Lecture2_annotated.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/annotated/Lecture1_annotated.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/annotated",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/COMPSCI 4ML3Fundamentals of Machine Learning - 9162024 - 502 PM",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/COMPSCI 4ML3Fundamentals of Machine Learning - 9162024 - 502 PM.zip",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Unconfirmed 854208.crdownload",
+    "thoughts/data.md",
+    "thoughts/Search.md",
+    "thoughts/friendship.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/Ramakrishnan - Database Management Systems 3rd Edition.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Lecture5.pdf",
+    "thoughts/PageRank.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/ListOfPotentialProjects/PotentialProjects.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/relationalModel.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept16.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept16.pdf.crdownload",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept12.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept11.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept11.pdf.crdownload",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/relationalModel_Sept9.pdf.crdownload",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/OLS.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team7_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team3_ProjDescript.md",
@@ -288,17 +291,6 @@
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/BuggedPullRequestDetails.png",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T01_GitGitHub/README.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/README.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team9_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team8_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team6_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team5_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team4_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team2_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team1_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team18_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team16_ProjectDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team15_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team14_ProjDescript.md",
     "Untitled.canvas"
   ]
 }
