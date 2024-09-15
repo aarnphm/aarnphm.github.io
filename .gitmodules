@@ -1,6 +1,6 @@
-[submodule "content/thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source"]
-	path = content/thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source
-	url = git@gitlab.cas.mcmaster.ca:phama10/capstone.git
 [submodule "content/thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme"]
 	path = content/thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme
 	url = git@github.com:3RA3-F24/acme-visit-acme-34.git
+[submodule "content/thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source"]
+  path = content/thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source
+  url =  git@gitlab.cas.mcmaster.ca:phama10/capstone.git

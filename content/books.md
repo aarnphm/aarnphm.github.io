@@ -94,6 +94,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 ### poetry
 
 - **Dog songs** by Mary Oliver
+- **Come Home To Yourself** by Déjà Rae
 
 ---
 
