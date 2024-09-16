@@ -64,7 +64,12 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
     if (options.showMode === "metadata") {
       if (fileData.dates) {
         created = formatDate(getDate(cfg, fileData)!, cfg.locale)
-        modified = formatDate(fileData.dates.modified, cfg.locale)
+        modified = formatDate(
+          fileData.frontmatter!.modified !== undefined
+            ? new Date(fileData.frontmatter!.modified)
+            : fileData.dates.modified,
+          cfg.locale,
+        )
       }
 
       // Display reading time if enabled

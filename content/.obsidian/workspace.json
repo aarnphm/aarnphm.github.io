@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -21,12 +21,12 @@
             }
           },
           {
-            "id": "9bbe393814729f06",
+            "id": "677e286fa1be8bd9",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/university/twenty-three-twenty-four/sfwr-3bb4/Sequential programming.md",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/content.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -34,15 +34,22 @@
             }
           },
           {
-            "id": "1d4a449bb48aa11f",
+            "id": "644fbfa907024c5f",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "thoughts/data.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model.pdf"
+              }
+            }
+          },
+          {
+            "id": "cd451d9cc0a156b6",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ER.pdf"
               }
             }
           },
@@ -82,8 +89,7 @@
               }
             }
           }
-        ],
-        "stacked": true
+        ]
       }
     ],
     "direction": "vertical"
@@ -149,7 +155,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -166,7 +172,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -189,7 +195,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md"
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md"
               }
             }
           },
@@ -219,7 +225,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md"
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md"
               }
             }
           }
@@ -246,25 +252,40 @@
   },
   "active": "cc1f15cf9b8b1947",
   "lastOpenFiles": [
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression.md",
+    "thoughts/images/Pasted image 20240927114553.png",
+    "thoughts/images/Pasted image 20240927114529.png",
+    "thoughts/images/Pasted image 20240927114453.png",
+    "thoughts/images/Pasted image 20240927114437.png",
+    "thoughts/images/Pasted image 20240927114348.png",
+    "thoughts/images/Pasted image 20240927114319.png",
+    "thoughts/images/Pasted image 20240927114304.png",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.c",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/quiz3.c",
+    "thoughts/images/Pasted image 20240927114010.png",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/content.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/drop.sh",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/asg1_v2.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/airline.ddl",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/Unconfirmed 2211.crdownload",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ERDesc.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/asg1_v2.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ER.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ER.svg",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/a1.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/E.svg",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/er.svg",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/Entity-Relationship Models.md",
+    "thoughts/university/twenty-three-twenty-four/sfwr-3bb4/Sequential programming.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression.md",
     "private/Lightspeed.md",
     "thoughts/Agency.md",
     "posts/Oanh.md",
-    "thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/output.csv",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/sort.pl",
-    "thoughts/papers/Randomized low-rank Runge-Kutta methods.pdf",
-    "thoughts/papers/Tools for Conviviality by Ivan Illich.pdf",
-    "thoughts/papers/A Personal Computing for Children of All Ages.pdf",
     "private/vllm contributing.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_DesignThinking/T03DesignThinking.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_DesignThinking/T03DesignThinking.key",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_DesignThinking/DesignThinkingWorksheet.pptx",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_DesignThinking/DesignThinkingWorksheet.pdf",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team6_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team24_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/models/use_case.svg",
     "thoughts/vllm.md",
     "thoughts/Search.md",
     "thoughts/data.md",
@@ -277,21 +298,6 @@
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team16_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team15_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept.md",
-    "thoughts/friendship.md",
-    "thoughts/PageRank.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/OLS.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team7_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team3_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team17_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/quiz-2-56.png",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/WorkflowResults3.png",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/WorkflowResults2.png",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/WorkflowResults1.png",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T01_GitGitHub/src/git branch.PNG",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/SettingsScreen.png",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/FixedPullRequestDetails.png",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/BuggedWorkflowStep.png",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/BuggedRun.png",
     "Untitled.canvas"
   ]
 }

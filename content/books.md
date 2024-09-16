@@ -4,6 +4,7 @@ tags:
   - evergreen
 comments: false
 date: "2022-04-22"
+modified: "2024-09-27"
 title: antilibrary.
 ---
 
@@ -39,7 +40,10 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **[[thoughts/The Will To Believe]]** by William James
 - **The Care of the Self** by Michel Foucault
 - **Metaphysical myths, mathematical Practice: The Ontology and [[thoughts/Epistemology|Epistemology]] of the Exact Science** by Michel Foucault
-- **Fear and Trembling** by Søren Kierkegaard
+- **Repetition** by Kierkegaard
+- **On Certainty** by Ludwig Wittgenstein
+- **[The Conquest of Happiness](https://russell-j.com/beginner/COH-TEXT.HTM)** by Bertrand Russell
+- **Being and Time** by Heidegger
 
 #### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 
@@ -100,6 +104,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ### 2024
 
+- **Fear and Trembling** by Søren Kierkegaard
 - **Either/Or** by Søren Kierkegaard
 - **The Lily of the Field and the Bird of the Air** by Søren Kierkegaard
 - **Meditations** by Marcus Aurelius

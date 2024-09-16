@@ -86,6 +86,7 @@ declare module "vfile" {
       title: string
     } & Partial<{
         navigation: string[]
+        modified: string
         comments: boolean
         tags: string[]
         aliases: string[]

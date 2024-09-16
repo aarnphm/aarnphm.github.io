@@ -61,17 +61,22 @@ function byModifiedAndAlphabetical(
   cfg: GlobalConfiguration,
 ): (f1: QuartzPluginData, f2: QuartzPluginData) => number {
   return (f1, f2) => {
-    if (f1.dates && f2.dates) {
-      // sort descending
-      return f2.dates?.modified.getTime() - f1.dates?.modified.getTime()
-    } else if (f1.dates && !f2.dates) {
+    if (f1.frontmatter?.modified && f2.frontmatter?.modified) {
+      // sort descending based on frontmatter.modified
+      return (
+        new Date(f2.frontmatter.modified).getTime() - new Date(f1.frontmatter.modified).getTime()
+      )
+    } else if (f1.dates && f2.dates) {
+      // sort descending based on dates.modified
+      return f2.dates.modified.getTime() - f1.dates.modified.getTime()
+    } else if ((f1.frontmatter?.modified || f1.dates) && !(f2.frontmatter?.modified || f2.dates)) {
       // prioritize files with dates
       return -1
-    } else if (!f1.dates && f2.dates) {
+    } else if (!(f1.frontmatter?.modified || f1.dates) && (f2.frontmatter?.modified || f2.dates)) {
       return 1
     }
 
-    // otherwise, sort lexographically by title
+    // otherwise, sort lexicographically by title
     const f1Title = f1.frontmatter?.title.toLowerCase() ?? ""
     const f2Title = f2.frontmatter?.title.toLowerCase() ?? ""
     return f1Title.localeCompare(f2Title)
@@ -96,9 +101,7 @@ const NotesComponent = ((opts?: {
           return (
             !["university", "tags", "index", ...cfg.ignorePatterns].some((it) =>
               (f.slug as FullSlug).includes(it),
-            ) &&
-            !f.frontmatter?.noindex &&
-            !f.frontmatter?.construction
+            ) && !f.frontmatter?.noindex
           )
         }
         return false
