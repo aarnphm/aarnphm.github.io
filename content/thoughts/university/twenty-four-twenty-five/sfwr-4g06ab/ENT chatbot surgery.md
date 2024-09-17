@@ -1,7 +1,7 @@
 ---
 id: ENT chatbot surgery
 tags:
-  - sfwr-4g06ab
+  - sfwr4g06ab
 date: "2024-09-12"
 title: ENT chatbot surgery
 ---

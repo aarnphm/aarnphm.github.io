@@ -103,3 +103,45 @@ $$
 > $\min_{W \in \mathbb{R}^{d \times 1}} \|XW - Y\|_2^2$
 
 Thus we can find $W^{\text{LS}} = (X^T X)^{-1}{X^T Y}$
+
+Example:
+
+$$
+\hat{y} = w_{0} + w_{1} \cdot x_{1} + w_{2} \cdot x_{2}
+$$
+
+With $$
+X_{n \times 2} = \begin{pmatrix}
+x^{1}_{1} & x^{1}_{2} \\
+x^{2}_{1} & x^{2}_{2} \\
+x^{3}_{1} & x^{3}_{2}
+\end{pmatrix}
+$$ and $$
+X^{'}_{n \times 3} = \begin{pmatrix}
+x^{1}_{1} & x^{1}_{2} & 1 \\
+x^{2}_{1} & x^{2}_{2} & 1 \\
+x^{3}_{1} & x^{3}_{2} & 1
+\end{pmatrix}
+$$
+
+With $$
+W = \begin{pmatrix}
+w_1 \\
+w_2
+\end{pmatrix}
+$$ and $$
+W^{'} = \begin{pmatrix}
+w_1 \\
+w_2 \\
+w_0
+\end{pmatrix}
+$$ thus
+$$
+X^{'} \times W = \begin{pmatrix}
+w_0 + \sum{w_i \times x_i^{1}} \\
+\vdots \\
+w_0 + \sum{w_i \times x_i^{n}}
+\end{pmatrix}
+$$
+
+See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept]]

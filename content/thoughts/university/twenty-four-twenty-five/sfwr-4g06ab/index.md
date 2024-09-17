@@ -2,7 +2,7 @@
 id: w1
 tags:
   - university
-  - sfwr-4g06ab
+  - sfwr4g06ab
 date: "2024-09-04"
 title: Software Enginering Capstone a la carte.
 ---
