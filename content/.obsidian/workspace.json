@@ -36,7 +36,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/Search.md",
+                "file": "thoughts/university/twenty-three-twenty-four/sfwr-3bb4/Sequential programming.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -80,7 +80,6 @@
             }
           }
         ],
-        "currentTab": 3,
         "stacked": true
       }
     ],
@@ -127,8 +126,7 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -148,7 +146,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/data.md",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Lecture5.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -165,7 +163,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/data.md",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Lecture5.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -188,7 +186,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/data.md"
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Lecture5.pdf"
               }
             }
           },
@@ -218,7 +216,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/data.md"
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Lecture5.pdf"
               }
             }
           }
@@ -243,8 +241,18 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "1d4a449bb48aa11f",
+  "active": "d4bed9057ed421da",
   "lastOpenFiles": [
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/asg1_v2.pdf",
+    "thoughts/Search.md",
+    "thoughts/images/2024-resume.pdf",
+    "thoughts/data.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/relationalModel.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept16.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept12.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept11.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/annotated/Lecture3_annotated.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/annotated/Lecture2_annotated.pdf",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team9_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team28_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team27_ProjDescript.md",
@@ -255,20 +263,11 @@
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team15_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept.md",
-    "thoughts/data.md",
-    "thoughts/Search.md",
     "thoughts/friendship.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/Ramakrishnan - Database Management Systems 3rd Edition.pdf",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Lecture5.pdf",
     "thoughts/PageRank.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/ListOfPotentialProjects/PotentialProjects.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/relationalModel.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept16.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept16.pdf.crdownload",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept12.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept11.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model_Sept11.pdf.crdownload",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/relationalModel_Sept9.pdf.crdownload",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/OLS.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team7_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team3_ProjDescript.md",
@@ -290,7 +289,6 @@
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/BuggedRun.png",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/BuggedPullRequestDetails.png",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T01_GitGitHub/README.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/README.md",
     "Untitled.canvas"
   ]
 }

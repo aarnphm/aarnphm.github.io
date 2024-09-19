@@ -17,3 +17,4 @@ quartz.git
 __pycache__
 sites
 .env
+.ipynb_checkpoints
