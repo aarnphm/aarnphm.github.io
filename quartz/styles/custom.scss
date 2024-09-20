@@ -376,6 +376,31 @@ header,
   }
 }
 
+.content-meta {
+  margin-top: 0.5rem;
+  color: var(--gray);
+  display: flex;
+  flex-flow: wrap;
+  cursor: pointer;
+
+  padding-inline-start: 0;
+  list-style: none;
+  gap: 0.8rem;
+
+  pre {
+    color: var(--darkgray);
+  }
+
+  .ref-source {
+    font-style: inherit;
+    font-weight: inherit;
+    color: var(--gray);
+    transition: none;
+
+    @include links;
+  }
+}
+
 header {
   .search {
     grid-area: 2 / 1 / 2 / 3;

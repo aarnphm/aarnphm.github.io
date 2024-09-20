@@ -57,6 +57,10 @@ Bland doublespeak
 
 See also: [All the better to see you with](https://www.kernelmag.io/2/all-the-better-to-see-you) and [this tweet](https://twitter.com/paulg/status/1761801995302662175)
 
+### machine-assisted writings
+
+_source: [`gwern dot net`](https://gwern.net/gpt-3)_
+
 ### Good-enough
 
 See [this](https://twitter.com/jachiam0/status/1598448668537155586) and [this](https://twitter.com/gordonbrander/status/1600469469419036675)

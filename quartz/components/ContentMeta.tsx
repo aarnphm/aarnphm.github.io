@@ -4,8 +4,6 @@ import readingTime from "reading-time"
 import contentMetaStyle from "./styles/contentMeta.scss"
 import { classNames } from "../util/lang"
 import { i18n } from "../i18n"
-//@ts-ignore
-import script from "./scripts/content-meta.inline"
 
 interface MetadataOptions {
   showReadingTime?: boolean
@@ -131,7 +129,6 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
   }
 
   ContentMetadata.css = contentMetaStyle
-  ContentMetadata.afterDOMLoaded = script
 
   return ContentMetadata
 }) satisfies QuartzComponentConstructor

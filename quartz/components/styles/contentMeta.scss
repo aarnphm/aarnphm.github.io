@@ -1,60 +1,14 @@
 .content-meta {
-  margin-top: 0.5rem;
+  margin-top: 0;
   color: var(--gray);
-  display: flex;
-  flex-flow: wrap;
-  cursor: pointer;
 
-  padding-inline-start: 0;
-  list-style: none;
-  gap: 0.8rem;
+  &[show-comma="true"] {
+    > span:not(:last-child) {
+      margin-right: 8px;
 
-  pre {
-    color: var(--darkgray);
-  }
-
-  #content-popover {
-    display: none;
-
-    &[data-show] {
-      display: block;
-    }
-  }
-
-  .ref-source {
-    font-style: inherit;
-    font-weight: inherit;
-    color: var(--gray);
-    transition: none;
-
-    margin: 0 0.08em;
-    padding-left: 0.3em;
-    position: relative;
-    background-image: linear-gradient(currentColor, currentColor);
-    background-size: 1px 1px;
-    background-repeat: repeat-x;
-    background-position: 0% calc(100% - 0.1em);
-
-    &::before {
-      content: " ";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      top: 0;
-      width: 1px;
-      height: 100%;
-      color: inherit;
-      background-image: linear-gradient(var(--light), var(--light)),
-        linear-gradient(var(--light), var(--light)), linear-gradient(currentColor, currentColor);
-      background-size:
-        1px 0.6em,
-        1px 0.1em,
-        1px 1em;
-      background-position:
-        0 0,
-        0 100%,
-        0 calc(100% - 0.1em);
-      background-repeat: no-repeat;
+      &::after {
+        content: ",";
+      }
     }
   }
 }

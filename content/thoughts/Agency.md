@@ -11,4 +11,6 @@ title: Agency
 
 Considered to be a study of [[thoughts/action theory|action theory]]
 
+## having a shit blog has made me feel abundant
 
+source: [Escaping Flatland](https://www.henrikkarlsson.xyz/p/having-a-shit-blog-has-made-me-feel)
