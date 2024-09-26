@@ -11,6 +11,12 @@ title: Agency
 
 Considered to be a study of [[thoughts/action theory|action theory]]
 
+> Everyone talks about having agency, but when it comes to falling in love, we have none (that's why it is called falling)
+
+## Self-determination theory
+
+[link](https://selfdeterminationtheory.org/theory/)
+
 ## having a shit blog has made me feel abundant
 
 source: [Escaping Flatland](https://www.henrikkarlsson.xyz/p/having-a-shit-blog-has-made-me-feel)

@@ -14,7 +14,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 ## current.
 
 - **[[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]]** by Gilles Deleuze
-- **The Lily of the Field and the Bird of the Air** by Søren Kierkegaard
+- **[[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|The Gay Science]]** by Friedrich Nietzsche
 - **Beyond Good and Evil** by Friedrich Nietzsche
 - **Beyond The Pleasure Principle** by Sigmund [[thoughts/Freud|Freud]]
 - **The Critique of Pure Reason** by Immanuel Kant
@@ -22,7 +22,6 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **Crime and Punishment** by Fyodor Dostoevsky
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
 - **Structure and Interpretation of Computer Programs** by Abelson and Sussman
-- **Meditations** by Marcus Aurelius
 
 ## to read.
 
@@ -46,7 +45,6 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 - **The Birth of Tragedy**
 - **The Will to Power**
-- **The Gay Science**
 - **Thus Spoke Zarathustra**
 - **Twilight of the Idols**
 - **On The Genealogy of Morals**
@@ -102,6 +100,9 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ### 2024
 
+- **Either/Or** by Søren Kierkegaard
+- **The Lily of the Field and the Bird of the Air** by Søren Kierkegaard
+- **Meditations** by Marcus Aurelius
 - **[[thoughts/Camus#The Myth of Sisyphus|The Myth of Sisyphus]]** by Albert Camus
 - **The Stranger** by [[thoughts/Camus|Albert Camus]]
 - **The metamorphosis** by Franz Kafka

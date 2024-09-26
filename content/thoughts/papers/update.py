@@ -1,6 +1,6 @@
 import os
 
-def update_index_md_with_pdfs(directory: str, index_file: str) -> None:
+def update_index_md_with_pdfs(directory,index_file):
   pdf_files = [f for f in os.listdir(directory) if f.endswith('.pdf')]
   pdf_files.sort()
   with open(index_file, 'r', encoding='utf-8') as file: lines = file.readlines()
