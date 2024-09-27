@@ -1,5 +1,6 @@
 @use "../base.scss";
 @use "../variables.scss" as *;
+@use "../mixin.scss" as *;
 
 .ps-root {
   font-family: KaTeX_Main, "Times New Roman", Times, serif;

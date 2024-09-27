@@ -8,25 +8,12 @@
         "type": "tabs",
         "children": [
           {
-            "id": "d4bed9057ed421da",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/Agency.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
             "id": "cc1f15cf9b8b1947",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression.md",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -96,7 +83,6 @@
             }
           }
         ],
-        "currentTab": 6,
         "stacked": true
       }
     ],
@@ -163,7 +149,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "posts/Oanh.md",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -180,7 +166,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "posts/Oanh.md",
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -203,7 +189,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "posts/Oanh.md"
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md"
               }
             }
           },
@@ -233,7 +219,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "posts/Oanh.md"
+                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md"
               }
             }
           }
@@ -258,8 +244,13 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "cde6561f35898bfe",
+  "active": "cc1f15cf9b8b1947",
   "lastOpenFiles": [
+    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md",
+    "private/Lightspeed.md",
+    "thoughts/Agency.md",
+    "posts/Oanh.md",
     "thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/output.csv",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/sort.pl",
@@ -267,17 +258,14 @@
     "thoughts/papers/Tools for Conviviality by Ivan Illich.pdf",
     "thoughts/papers/A Personal Computing for Children of All Ages.pdf",
     "private/vllm contributing.md",
-    "posts/Oanh.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_DesignThinking/T03DesignThinking.pdf",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_DesignThinking/T03DesignThinking.key",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_DesignThinking/DesignThinkingWorksheet.pptx",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_DesignThinking/DesignThinkingWorksheet.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T03_DesignThinking",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team6_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team24_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-3ra3/acme/models/use_case.svg",
     "thoughts/vllm.md",
-    "thoughts/Agency.md",
     "thoughts/Search.md",
     "thoughts/data.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team9_ProjDescript.md",
@@ -288,7 +276,6 @@
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team19_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team16_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team15_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept.md",
     "thoughts/friendship.md",
     "thoughts/PageRank.md",
@@ -296,7 +283,6 @@
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team7_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team3_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team17_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team13_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/quiz-2-56.png",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/WorkflowResults3.png",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Tutorials/T02_CICD/WorkflowResults2.png",

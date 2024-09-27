@@ -1,5 +1,6 @@
 @use "../base.scss";
 @use "../variables.scss" as *;
+@use "../mixin.scss" as *;
 
 body[data-menu="true"] {
   text-align: right;
