@@ -81,7 +81,7 @@ A hackathon should be the infrastructure layer so that everyone can play.
 
 New Build tackled addresses some problems and challenges pretty well, such as the [draft mechanics](https://x.com/aarnphm_/status/1839714935963607405) which introduces some [[thoughts/Entropy|entropy]], but fell short in terms of prizes incentives.
 
-K and I were chatting about how New Build felt like extended [New Office Hours](https://x.com/aarnphm_/status/1775641922029162773), which is a good first step in cultivating spaces for play
+_K and I were chatting about how New Build felt like extended [New Office Hours](https://x.com/aarnphm_/status/1775641922029162773), which is a good first step in cultivating spaces for play_
 
 New Build represents what Toronto has to offer, a first step to solve the "human capital flight" (often refers as "brain drain") in Canada.
 
