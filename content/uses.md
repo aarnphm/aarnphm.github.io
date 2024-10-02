@@ -57,3 +57,7 @@ used for [[thoughts/Dishes|hosting]]
 - Keychron Q8 Pro: Gateron Ink Black, 205g0 + 105g0, Durock V2, Olivia GMK
 - Keychron Q1 Pro: NK Cream, 105g0, 72g spring, Durock V2
 - Logitech G515 TKL: Gateron Brown Slim, stock everything else.
+
+links.
+
+- [toronto coworking spots](https://www.corner.inc/list/02c68af9-8286-474f-91de-0b4e702330e6?sid=49933781-9175-48ae-852b-acb5006e8bca)

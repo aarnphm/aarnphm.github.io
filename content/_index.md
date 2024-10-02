@@ -8,12 +8,19 @@ tags:
   - fruit
 date: "2022-04-22"
 description: Aaron's digital garden
+modified: "2024-09-27"
 title: Aaron's notes
 ---
-Beige and <span class="rose">rosé</span> are my two favourite colours. [[thoughts/Chaos|Chaos]] pushes oneself to maximise their [[thoughts/Value|value]], construct the [[thoughts/Freud#The Ego and The Id|id]] and regulate the ego. I love treating my friends with [[thoughts/Dishes|good food]]. Current side-quests include [[thoughts/writing#motivation.|writing]], [[books|reading]], and maintain [[thoughts/work|open-source projects]].
+Beige and <span class="rose">rosé</span> are my two favourite colours.
+
+[[thoughts/Chaos|Chaos]] induces [[thoughts/Agency|agency]] and satisfies the [[thoughts/Freud#The Ego and The Id|ego]]
+
+My love language is cooking [[thoughts/Dishes|food]] for my friends. I try to be present, but you will find me either [[thoughts/writing#motivation.|writing]], [[books|reading]],
+
+I think [[thoughts/work|open-source projects]] are overall a net positive for everyone, so contribute.
 
 I'm pretty bullish on high [[thoughts/Agency|agency]] and fulfil one's [[thoughts/desire|desire]] in life.
 
 Currently, I'm building [serving infrastructure](https://bentoml.com) for [[thoughts/Machine learning|ml]] systems and explore our interaction  through[[thoughts/large models|large models]].
 
-You are currently at the _index_ of my [[thoughts/Hypertext|hypertext]] [[thoughts/Digital garden|digital garden]]. Feel free to explore around and let me know if you have any questions or just want to chat. I'm best reached [here](https://twitter.com/aarnphm_) or [`contact[at]aarnphm[dot]xyz`](mailto:contact@aarnphm.xyz).
+I'm best reached [here](https://twitter.com/aarnphm_) or [`contact[at]aarnphm[dot]xyz`](mailto:contact@aarnphm.xyz).

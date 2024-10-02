@@ -4,6 +4,7 @@ tags:
   - seed
   - psychology
 date: "2024-02-07"
+modified: "2024-10-02"
 title: emergent behaviour
 ---
 
@@ -17,5 +18,3 @@ We observe this from:
 - mold simulations
 
 In context of single agent within multi-agent systems, is it due to the rules itself ([[thoughts/reductionism|reductionist]]) or additional factors are involved here?
-
-

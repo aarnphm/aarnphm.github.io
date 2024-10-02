@@ -8,52 +8,6 @@
         "type": "tabs",
         "children": [
           {
-            "id": "cc1f15cf9b8b1947",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "677e286fa1be8bd9",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/content.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "644fbfa907024c5f",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model.pdf"
-              }
-            }
-          },
-          {
-            "id": "cd451d9cc0a156b6",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ER.pdf"
-              }
-            }
-          },
-          {
             "id": "e8d501815d9fa9c6",
             "type": "leaf",
             "state": {
@@ -88,8 +42,48 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "7ac04718ae59b54f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "thoughts/work.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "9e6f4ddbdf9d3ae6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "posts/new.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "2f6148df582fc3f0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "uses.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -155,7 +149,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md",
+                "file": "posts/new.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -172,7 +166,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md",
+                "file": "posts/new.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -195,7 +189,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md"
+                "file": "posts/new.md"
               }
             }
           },
@@ -225,7 +219,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md"
+                "file": "posts/new.md"
               }
             }
           }
@@ -250,54 +244,54 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "cc1f15cf9b8b1947",
+  "active": "9e6f4ddbdf9d3ae6",
   "lastOpenFiles": [
+    "thoughts/images/q3-2.png",
+    "thoughts/images/q3-1.png",
+    "thoughts/images/incognito-main.png",
+    "thoughts/images/incognito-logo.png",
+    "posts/images/new-feeling.png",
+    "posts/images/cohere.jpeg",
     "thoughts/images/Pasted image 20240927114553.png",
     "thoughts/images/Pasted image 20240927114529.png",
     "thoughts/images/Pasted image 20240927114453.png",
     "thoughts/images/Pasted image 20240927114437.png",
     "thoughts/images/Pasted image 20240927114348.png",
-    "thoughts/images/Pasted image 20240927114319.png",
-    "thoughts/images/Pasted image 20240927114304.png",
+    "posts/new.md",
+    "thoughts/Orwellian.md",
+    "uses.md",
+    "thoughts/work.md",
+    "quotes.md",
+    "movies.md",
+    "books.md",
+    "posts/Oanh.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/Ramakrishnan - Database Management Systems 3rd Edition.pdf",
+    "thoughts/friendship.md",
+    "posts/Chaos.md",
+    "thoughts/papers/Paradoxes in Probabilities Theory and Mathematical Statistics.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ER.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model.pdf",
+    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/content.md",
+    "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3",
     "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.c",
     "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/quiz3.c",
-    "thoughts/images/Pasted image 20240927114010.png",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/content.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/drop.sh",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/asg1_v2.pdf",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/airline.ddl",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/Unconfirmed 2211.crdownload",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ERDesc.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/asg1_v2.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ER.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ER.svg",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/a1.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/E.svg",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/er.svg",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/Entity-Relationship Models.md",
     "thoughts/university/twenty-three-twenty-four/sfwr-3bb4/Sequential programming.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression.md",
     "private/Lightspeed.md",
     "thoughts/Agency.md",
-    "posts/Oanh.md",
     "private/vllm contributing.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team6_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team24_ProjDescript.md",
     "thoughts/vllm.md",
     "thoughts/Search.md",
     "thoughts/data.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team9_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team28_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team27_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team26_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team25_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team19_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team16_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team15_ProjDescript.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept.md",
     "Untitled.canvas"
   ]
 }
