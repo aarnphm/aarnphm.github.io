@@ -5,6 +5,7 @@ tags:
 comments: false
 date: "2024-01-22"
 description: Includes the tools I use, workflow,  etc. my [submission](https://uses.tech)
+modified: "2024-10-02"
 title: uses.
 ---
 
@@ -58,6 +59,7 @@ used for [[thoughts/Dishes|hosting]]
 - Keychron Q1 Pro: NK Cream, 105g0, 72g spring, Durock V2
 - Logitech G515 TKL: Gateron Brown Slim, stock everything else.
 
-links.
+### links.
 
 - [toronto coworking spots](https://www.corner.inc/list/02c68af9-8286-474f-91de-0b4e702330e6?sid=49933781-9175-48ae-852b-acb5006e8bca)
+- [GNU C Manual Reference](https://www.c-asm.com/gnu-c-manual.html)

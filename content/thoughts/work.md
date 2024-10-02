@@ -29,9 +29,10 @@ You can find internal monologue under [[/posts/]] index.
   - Landing page of [[/|this]] website, with custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]]
   - Source: [GitHub](https://github.com/jackyzha0/quartz) and [site](https://quartz.jzhao.xyz/)
 
-- **avante.nvim** - A [Cursor](https://www.cursor.com/)-like chat IDE for [[uses^neovim|Neovim]] (2024-)
+- **avante.nvim** - A [Cursor](https://www.cursor.com/)-like chat IDE for [[uses#^neovim|Neovim]] (2024-)
   - Implemented bounding UI popover to improve QOL (https://github.com/yetone/avante.nvim/pull/29)
   - Added support for lazy setup for better load time improvement (https://github.com/yetone/avante.nvim/pull/14)
+  - Added Rust crates for `.avanterules` templates (https://github.com/yetone/avante.nvim/pull/466)
   - Source: [GitHub](https://github.com/yetone/avante.nvim)
   ![[thoughts/images/avante.mp4]]
 
