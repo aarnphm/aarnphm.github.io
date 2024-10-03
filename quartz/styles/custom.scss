@@ -150,7 +150,7 @@ a {
   }
 
   @media all and (min-width: $fullPageWidth) {
-    &.internal.alias:not(.popover):not(.popover *) {
+    &.internal.alias:not(.popover):not(.popover *):not([href^="#bib"]) {
       @include links;
     }
   }
@@ -374,6 +374,32 @@ header,
     .backlinks {
       grid-area: 2 / 2 / 2 / 3;
     }
+  }
+}
+
+.csl-entry {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-left: 1rem;
+  padding-right: 0.5rem;
+}
+
+#refs {
+  border-left: unset;
+  border: 2px solid var(--secondary);
+  position: relative;
+
+  &::before {
+    content: "References";
+    position: absolute;
+    top: -12px;
+    left: 12px;
+    background-color: var(--light);
+    color: var(--gray);
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border: 1px solid var(--secondary);
   }
 }
 

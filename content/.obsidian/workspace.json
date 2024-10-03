@@ -70,6 +70,29 @@
             }
           },
           {
+            "id": "53e8f7074b70af50",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "thoughts/university/twenty-four-twenty-five/engineer-4a03/Assignment 1 FA24.pdf"
+              }
+            }
+          },
+          {
+            "id": "7c06da6ac887fb33",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "posts/a1.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
             "id": "2f6148df582fc3f0",
             "type": "leaf",
             "state": {
@@ -83,7 +106,7 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 5
       }
     ],
     "direction": "vertical"
@@ -149,7 +172,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "posts/new.md",
+                "file": "thoughts/university/twenty-four-twenty-five/engineer-4a03/Assignment 1 FA24.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -166,7 +189,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "posts/new.md",
+                "file": "thoughts/university/twenty-four-twenty-five/engineer-4a03/Assignment 1 FA24.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -189,7 +212,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "posts/new.md"
+                "file": "thoughts/university/twenty-four-twenty-five/engineer-4a03/Assignment 1 FA24.pdf"
               }
             }
           },
@@ -219,7 +242,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "posts/new.md"
+                "file": "thoughts/university/twenty-four-twenty-five/engineer-4a03/Assignment 1 FA24.pdf"
               }
             }
           }
@@ -244,8 +267,23 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "9e6f4ddbdf9d3ae6",
+  "active": "53e8f7074b70af50",
   "lastOpenFiles": [
+    "thoughts/papers/Systematic literature review on opportunities, challenges, and future research recommendations of artificial intelligence in education.pdf",
+    "thoughts/papers/On ChatGPT and pedagogical consequences.pdf",
+    "thoughts/papers/Systematic literature review on opportunities, challenges, and future research recommendations of artificial intelligence in education .pdf",
+    "posts/a1.md",
+    "thoughts/university/twenty-four-twenty-five/engineer-4a03/Assignment 1 FA24.pdf",
+    "citations-20241002T174731.bibtex",
+    "Unconfirmed 219807.crdownload",
+    "thoughts/Hidden Markov model.md",
+    "citations-20241002T155714.bibtex",
+    "thoughts/papers/Opinion Paper - So what if ChatGPT wrote it - Multidisciplinary perspectives on opportunities, challenges and implications of generative conversational AI for research, practice and policy.pdf",
+    "thoughts/papers/Opinion Paper- \"So what if ChatGPT wrote it?\" Multidisciplinary perspectives on opportunities, challenges and implications of generative conversational AI for research, practice and policy.pdf",
+    "posts/new.md",
+    "thoughts/university/twenty-four-twenty-five/engineer-4a03/S0268401223000233.bib",
+    "thoughts/university/twenty-four-twenty-five/engineer-4a03/Unconfirmed 62390.crdownload",
+    "thoughts/university/twenty-four-twenty-five/engineer-4a03/a1.md",
     "thoughts/images/q3-2.png",
     "thoughts/images/q3-1.png",
     "thoughts/images/incognito-main.png",
@@ -256,8 +294,6 @@
     "thoughts/images/Pasted image 20240927114529.png",
     "thoughts/images/Pasted image 20240927114453.png",
     "thoughts/images/Pasted image 20240927114437.png",
-    "thoughts/images/Pasted image 20240927114348.png",
-    "posts/new.md",
     "thoughts/Orwellian.md",
     "uses.md",
     "thoughts/work.md",
@@ -265,20 +301,10 @@
     "movies.md",
     "books.md",
     "posts/Oanh.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/Ramakrishnan - Database Management Systems 3rd Edition.pdf",
     "thoughts/friendship.md",
     "posts/Chaos.md",
-    "thoughts/papers/Paradoxes in Probabilities Theory and Mathematical Statistics.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/ER.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/ER_Model.pdf",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/content.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.md",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/q3.c",
-    "thoughts/university/twenty-four-twenty-five/sfwr-4aa4/quiz3.c",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/drop.sh",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/asg1_v2.pdf",
-    "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/airline.ddl",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/a1.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-3db3/Entity-Relationship Models.md",
@@ -289,9 +315,6 @@
     "private/vllm contributing.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team6_ProjDescript.md",
     "thoughts/university/twenty-four-twenty-five/sfwr-4g06ab/source/Teams/ProjectDescription/Team24_ProjDescript.md",
-    "thoughts/vllm.md",
-    "thoughts/Search.md",
-    "thoughts/data.md",
     "Untitled.canvas"
   ]
 }

@@ -1,4 +1,5 @@
 export { Pseudocode } from "./pseudocode"
+export { GitHub } from "./github"
 export { Poetry } from "./poetry"
 export { Recipe } from "./recipe"
 export { Twitter } from "./twitter"
