@@ -4,6 +4,7 @@ tags:
   - philosophy
   - seed
 date: "2024-03-05"
+modified: "2024-10-03"
 title: ethics
 ---
 
@@ -20,5 +21,23 @@ Ethics arguments are based of the principles of "good" versus "evil". What defin
 That's why it's important to understand our [[thoughts/Alignment|alignment]] through anthropology work such that we didn't repeat history.
 
 ## normative.
+
+### consequentialism
+
+- Utilitariansm
+  See also [[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill|John Stuart Mill]]
+
+Locke: Action is acceptable if it respects human rights of everyone involved
+
+- Common good
+
+### deontology
+
+Duty ethics
+
+### virtue
+
+### care
+
 
 ## meta-ethics.

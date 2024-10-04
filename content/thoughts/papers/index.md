@@ -21,6 +21,7 @@ A somewhat local cache of all papers I've read. This is one source of my Zotero 
 - [[thoughts/papers/Fabricating intimacy, reading the dressing room in Victorian Literature.pdf|Fabricating intimacy, reading the dressing room in Victorian Literature]]
 - [[thoughts/papers/Fashion and the Homospectatorial Look.pdf|Fashion and the Homospectatorial Look]]
 - [[thoughts/papers/Knowledge as Masculine Heroism or Embodied Perception.pdf|Knowledge as Masculine Heroism or Embodied Perception]]
+- [[thoughts/papers/Mind over Machine by Dreyfus.pdf|Mind over Machine by Dreyfus]]
 - [[thoughts/papers/Nietzsche the Kantian Self and Eternal Recurrence.pdf|Nietzsche the Kantian Self and Eternal Recurrence]]
 - [[thoughts/papers/Nietzsche's Chaos sive natura.pdf|Nietzsche's Chaos sive natura]]
 - [[thoughts/papers/NumericalOptimization.pdf|NumericalOptimization]]
@@ -36,5 +37,6 @@ A somewhat local cache of all papers I've read. This is one source of my Zotero 
 - [[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|The Gay Science by Friedrich Nietzsche]]
 - [[thoughts/papers/The System Model and The User Mode; Exploring AI Dashboard Design.pdf|The System Model and The User Mode; Exploring AI Dashboard Design]]
 - [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|Tools for Conviviality by Ivan Illich]]
+- [[thoughts/papers/What computers still can't do by Hubert Dreyfus.pdf|What computers still can't do by Hubert Dreyfus]]
 - [[thoughts/papers/Writing as Art.pdf|Writing as Art]]
 <!-- update: end -->

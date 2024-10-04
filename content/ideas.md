@@ -8,8 +8,18 @@ tags:
   - evergreen
 date: "2022-01-25"
 description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
+modified: "2024-10-03"
 title: ideas.
 ---
+
+### lettres
+
+- love (wip)
+  - self-healing and love
+- growth after death
+- education and pedagogical implications on next generations
+- recommendation system and word2vec
+- social interactions a la carte.
 
 ### projets.
 - LaTeX codeblock renderer for [[uses#^neovim|neovim]], in editor

@@ -4,14 +4,14 @@ import { visit } from "unist-util-visit"
 import { QuartzTransformerPlugin } from "../types"
 
 export interface Options {
-  bibliographyFile: string
+  bibliographyFile: string[]
   suppressBibliography: boolean
   linkCitations: boolean
   csl: string
 }
 
 const defaultOptions: Options = {
-  bibliographyFile: "./bibliography.bib",
+  bibliographyFile: ["./bibliography.bib"],
   suppressBibliography: false,
   linkCitations: false,
   csl: "apa",

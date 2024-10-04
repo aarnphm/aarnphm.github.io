@@ -5,6 +5,7 @@ tags:
   - self
 date: "2024-02-16"
 draft: true
+modified: "2024-10-03"
 title: I don't have a healthy relationship with myself.
 ---
 _on [[thoughts/friendship|friendship]]._
@@ -17,7 +18,6 @@ Layout:
 - How should I fix this?
 
 Summer:
-
 
 loneliness epidemic
 

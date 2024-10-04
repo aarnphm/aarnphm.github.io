@@ -73,7 +73,10 @@ const config: QuartzConfig = {
         keepBackground: true,
       }),
       Plugin.Citations({
-        bibliographyFile: "./content/References.bib",
+        bibliographyFile: [
+          "./content/References.bib",
+          "https://raw.githubusercontent.com/bentoml/bentoml/main/CITATION.cff",
+        ],
         suppressBibliography: false,
         linkCitations: true,
       }),

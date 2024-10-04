@@ -116,6 +116,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **[[thoughts/Freud#The Ego and the Id|The Ego and the Id]]** by Sigmund Freud
 - **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
 - **[Web Browser Engineering](https://browser.engineering/onepage.html)** by Pavel Panchekha & Chris Harrelson
+- **1984** by George Orwell
 
 ### 2023
 

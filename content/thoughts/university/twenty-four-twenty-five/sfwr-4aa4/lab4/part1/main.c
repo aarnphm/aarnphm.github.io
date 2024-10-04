@@ -1,18 +1,5 @@
-/* ============================================================================
- Name        : task1RT.c
- Author      : Dr Asghar Bokhari
- Version     : Summer 2016
- Copyright   : Your copyright notice
- Description : This code creates a simple real time task of known priority and
- FIFO scheduling. Generally tasks run in an infinite loop however we use a
- finite loop for convenience in labs.
- ============================================================================*/
-
-// Required for making loop finite
-#if !defined(LoopDuration)
-#define LoopDuration 2 /* How long to output the signal, in seconds */
-#endif
-
+#include "DIO.h"
+#include "MyRio.h"
 #include <pthread.h>
 #include <sched.h>
 #include <stdio.h>
@@ -33,6 +20,11 @@
 
 #define NSEC_PER_SEC (1000000000) /* The number of nsecs per sec. */
 
+// Required for making loop finite
+#if !defined(LoopDuration)
+#define LoopDuration 2 /* How long to output the signal, in seconds */
+#endif
+
 void stack_prefault(void) {
 
   unsigned char dummy[MAX_SAFE_STACK];
@@ -42,6 +34,18 @@ void stack_prefault(void) {
 }
 
 int main(int argc, char *argv[]) {
+  NiFpga_Status status;
+
+  /*
+   * Open the myRIO NiFpga Session.
+   * This function MUST be called before all other functions. After this call
+   * is complete the myRIO target will be ready to be used.
+   */
+  status = MyRio_Open();
+  if (MyRio_IsNotSuccess(status)) {
+    return status;
+  }
+
   struct timespec t;
   struct sched_param param;
   int interval = 50000000; // Determines the time period of the task
@@ -81,8 +85,15 @@ int main(int argc, char *argv[]) {
     /* wait until next shot */
     clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &t, NULL);
 
-    /* do the stuff */
-    printf("Hello\n");
+    // Toggle LED value
+    ledValue = ledValue ? 0 : 0x0F; // Toggle between 0 and 0x0F (all LEDs on)
+
+    // Write to LED register
+    status = NiFpga_WriteU8(myrio_session, DOLED30, ledValue);
+    if (MyRio_IsNotSuccess(status)) {
+      printf("Error writing to LED register\n");
+      break;
+    }
 
     /* calculate next shot */
     t.tv_nsec += interval;
@@ -93,5 +104,12 @@ int main(int argc, char *argv[]) {
     }
     time(&currentTime);
   } // end of while (currentTime)
-  return 0;
+
+  /*
+   * Close the myRIO NiFpga Session.
+   * This function MUST be called after all other functions.
+   */
+  status = MyRio_Close();
+
+  return status;
 }

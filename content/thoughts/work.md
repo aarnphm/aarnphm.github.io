@@ -22,17 +22,17 @@ You can find internal monologue under [[/posts/]] index.
 
 - **Quartz** - 🌱 a fast, batteries-included static-site generator that transforms Markdown content into fully functional websites (2023-)
   - A set of tools that helps you publish your [[thoughts/Digital garden|digital garden]] and notes as a website for free.
-  - Improved performance of graph interaction with Canvas (https://github.com/jackyzha0/quartz/pull/1328)
-  - Added support for PDF in popover modal (https://github.com/jackyzha0/quartz/pull/913)
-  - Implemented font-fetching before runtime (https://github.com/jackyzha0/quartz/pull/817)
-  - Implemented telescope-style search (https://github.com/jackyzha0/quartz/pull/722, https://github.com/jackyzha0/quartz/pull/774, https://github.com/jackyzha0/quartz/pull/782)
+  - Improved performance of graph interaction with Canvas jackyzha0/quartz#1328
+  - Added support for PDF in popover modal jackyzha0/quartz#913
+  - Implemented font-fetching before runtime jackyzha0/quartz#817
+  - Implemented telescope-style search jackyzha0/quartz#722, jackyzha0/quartz#774, jackyzha0/quartz#782
   - Landing page of [[/|this]] website, with custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]]
   - Source: [GitHub](https://github.com/jackyzha0/quartz) and [site](https://quartz.jzhao.xyz/)
 
 - **avante.nvim** - A [Cursor](https://www.cursor.com/)-like chat IDE for [[uses#^neovim|Neovim]] (2024-)
-  - Implemented bounding UI popover to improve QOL (https://github.com/yetone/avante.nvim/pull/29)
-  - Added support for lazy setup for better load time improvement (https://github.com/yetone/avante.nvim/pull/14)
-  - Added Rust crates for `.avanterules` templates (https://github.com/yetone/avante.nvim/pull/466)
+  - Implemented bounding UI popover to improve QOL yetone/avante.nvim#29
+  - Added support for lazy setup for better load time improvement yetone/avante.nvim#14
+  - Added Rust crates for `.avanterules` templates yetone/avante.nvim#466
   - Source: [GitHub](https://github.com/yetone/avante.nvim)
   ![[thoughts/images/avante.mp4]]
 
@@ -51,9 +51,9 @@ You can find internal monologue under [[/posts/]] index.
   - Source: [GitHub](https://github.com/bentoml/bentoml), [Documentation](https://docs.bentoml.com)
 
 - **incogni.to** - a pseudonymous event platform that curates for those yearning to be seen for ==who they are, not what they can "sell"== (2024)
-  - Implemented a [[thoughts/RAG]] pipeline for recommendation system based on users preferences and interests, with [command-r-plus-08-2024](https://huggingface.co/CohereForAI/c4ai-command-r-plus), deployed with [[thoughts/vllm|vLLM]] and BentoML.
+  - Implemented a [[thoughts/RAG]] pipeline for recommendation system based on users preferences and interests, with [command-r-plus-08-2024](https://huggingface.co/CohereForAI/c4ai-command-r-plus), deployed with [[thoughts/vllm|vLLM]] and [@github.com/bentoml/BentoML].
   - Added semantic search to find relevant events based on query with [Cohere Rerank](https://cohere.com/rerank)
-  - General UI implementation with `shadcn/ui` and `Next.js`
+  - General UI implementation with shadcn/ui and vercel/next.js
   - Demoed at [New Build'24](https://x.com/newsystems_/status/1828455648377327976)
   - Source: [stream](https://x.com/i/broadcasts/1OwxWNvzRejJQ), [[posts/new|posts]]
 
@@ -70,3 +70,5 @@ You can find internal monologue under [[/posts/]] index.
 - OpenLLM, and everything about running LLMs in production at Hack The North (2023)
   - Source: [[thoughts/images/htn-openllm.pdf|slides]]
   ![[thoughts/images/htn-2023-speaks.png]]
+
+[^ref]

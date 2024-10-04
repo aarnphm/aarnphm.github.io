@@ -386,8 +386,9 @@ header,
 
 #refs {
   border-left: unset;
-  border: 2px solid var(--secondary);
+  border: 2px solid var(--dark);
   position: relative;
+  background-color: var(--light);
 
   &::before {
     content: "References";
@@ -399,7 +400,19 @@ header,
     font-size: 12px;
     font-weight: bold;
     padding: 4px 8px;
-    border: 1px solid var(--secondary);
+    border: 1px solid var(--dark);
+  }
+
+  &::after {
+    content: "";
+    background-image: url("/static/dotted.svg");
+    background-repeat: repeat;
+    z-index: -10;
+    top: 0.5rem;
+    left: 0.5rem;
+    right: -0.5rem;
+    bottom: -0.5rem;
+    position: absolute;
   }
 }
 

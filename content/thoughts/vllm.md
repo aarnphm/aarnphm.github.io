@@ -4,10 +4,11 @@ tags:
   - seed
   - ml
 date: "2024-09-09"
+modified: "2024-10-03"
 title: vLLM
 ---
 
-See also [[thoughts/Attention#Paged Attention]]
+See also [[thoughts/Attention#Paged Attention]] [@kwon2023efficient]
 
 ## speculative decoding
 
@@ -25,4 +26,6 @@ https://x.com/karpathy/status/1697318534555336961
 
 ## constrained decoding.
 
-See https://github.com/vllm-project/vllm/issues/5423
+See vllm-project/vllm#5423
+
+[^ref]
