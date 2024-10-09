@@ -44,6 +44,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **On Certainty** by Ludwig Wittgenstein
 - **[The Conquest of Happiness](https://russell-j.com/beginner/COH-TEXT.HTM)** by Bertrand Russell
 - **Being and Time** by Heidegger
+- [**Pensees**](https://www.gutenberg.org/files/18269/18269-h/18269-h.htm) by Pascal
 
 #### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 

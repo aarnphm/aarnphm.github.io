@@ -4,6 +4,7 @@ tags:
   - seed
   - philosophy
 date: "2024-02-07"
+modified: "2024-10-05"
 title: Agency
 ---
 

@@ -15,7 +15,7 @@ Writing is an exploration, an excavation of self and the world in this painfully
 
 > The thing I like about writing is that it’s quite literally *thinking*—a way for me access my own interiority and construct something from it. What I write is all mine, it’s a living thing, it’s an extension of me that wanders out into the world. It is desire turned inwards instead of outwards, focused instead of displaced. It’s a way to access self-knowledge and self-respect. (Ava on [how to avoid half-heartedness](https://www.avabear.xyz/p/how-to-avoid-half-heartedness))
 
-The modality of [[thoughts/Language#as representation.|text]] essentially creates a universal interface that allows individuals from diverse backgrounds and contexts to form intricate networks of thoughts.
+The modality of [[thoughts/Language#representation.|text]] essentially creates a universal interface that allows individuals from diverse backgrounds and contexts to form intricate networks of thoughts.
 
 Andy Matuschak's on [[books|books]] and writing:
 
@@ -75,3 +75,7 @@ _Excerpt from [A blog post is a very long and complex search query to find fasci
 > When writing in public, there is a common idea that you should make it *accessible*. This is a left over from mass media. Words addressed to a large and diverse set of people need to be simple and clear and free of jargon. It is valuable to write clearly of course, to a degree. Clear writing is clear thinking
 
 See also: [this](https://www.youtube.com/watch?v=FGqbUHOTog8&ab_channel=buildspace)
+
+## protocol.
+
+> Why do you build software for writing over protocol such as file?

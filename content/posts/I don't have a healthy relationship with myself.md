@@ -6,9 +6,13 @@ tags:
 date: "2024-02-16"
 draft: true
 modified: "2024-10-03"
-title: I don't have a healthy relationship with myself.
+socialDescription: On spatial love.
+title: I spent half an hour benchmarking logits decoding.
 ---
-_on [[thoughts/friendship|friendship]]._
+
+_on spatial love._
+
+![[posts/images/helenebailly-maurice-denis-environs-du-cap-mis-ne-1904.webp]]
 
 Layout:
 - What happened? why do I feel this way?

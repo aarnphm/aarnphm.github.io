@@ -57,41 +57,8 @@ const AliasLink = (props: AliasLinkProp) => {
   )
 }
 
-function byModifiedAndAlphabetical(
-  cfg: GlobalConfiguration,
-): (f1: QuartzPluginData, f2: QuartzPluginData) => number {
-  return (f1, f2) => {
-    if (f1.frontmatter?.modified && f2.frontmatter?.modified) {
-      // sort descending based on frontmatter.modified
-      return (
-        new Date(f2.frontmatter.modified).getTime() - new Date(f1.frontmatter.modified).getTime()
-      )
-    } else if (f1.dates && f2.dates) {
-      // sort descending based on dates.modified
-      return f2.dates.modified.getTime() - f1.dates.modified.getTime()
-    } else if ((f1.frontmatter?.modified || f1.dates) && !(f2.frontmatter?.modified || f2.dates)) {
-      // prioritize files with dates
-      return -1
-    } else if (!(f1.frontmatter?.modified || f1.dates) && (f2.frontmatter?.modified || f2.dates)) {
-      return 1
-    }
-
-    // otherwise, sort lexicographically by title
-    const f1Title = f1.frontmatter?.title.toLowerCase() ?? ""
-    const f2Title = f2.frontmatter?.title.toLowerCase() ?? ""
-    return f1Title.localeCompare(f2Title)
-  }
-}
-
-const NotesComponent = ((opts?: {
-  slug: SimpleSlug
-  numLimits?: number
-  header?: string
-  sortBy?: "modified" | "alphabetical"
-}) => {
+const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?: string }) => {
   const Spacer = SpacerComponent()
-
-  const sortCaller = opts?.sortBy === "modified" ? byModifiedAndAlphabetical : byDateAndAlphabetical
 
   const Notes: QuartzComponent = (componentData: QuartzComponentProps) => {
     const { allFiles, fileData, cfg } = componentData
@@ -106,7 +73,7 @@ const NotesComponent = ((opts?: {
         }
         return false
       })
-      .sort(sortCaller(cfg))
+      .sort(byDateAndAlphabetical(cfg))
 
     const remaining = Math.max(0, pages.length - opts!.numLimits!)
     const classes = ["min-links", "internal"].join(" ")
@@ -191,13 +158,11 @@ const ElementComponent = (() => {
     header: "récentes",
     slug: "thoughts/" as SimpleSlug,
     numLimits: 6,
-    sortBy: "modified",
   })
   const RecentPosts = NotesComponent({
     header: "écriture",
     slug: "posts/" as SimpleSlug,
     numLimits: 6,
-    sortBy: "alphabetical",
   })
   const Hyperlink = HyperlinksComponent({
     children: [

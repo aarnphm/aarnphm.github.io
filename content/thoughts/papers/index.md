@@ -3,6 +3,7 @@ id: index
 tags:
   - seed
 date: "2024-01-20"
+modified: "2024-10-08"
 noindex: true
 title: papers.
 ---
@@ -14,9 +15,12 @@ A somewhat local cache of all papers I've read. This is one source of my Zotero 
 - [[thoughts/papers/A Persian Folk Method of Figuring Interest.pdf|A Persian Folk Method of Figuring Interest]]
 - [[thoughts/papers/A Personal Computing for Children of All Ages.pdf|A Personal Computing for Children of All Ages]]
 - [[thoughts/papers/A large-scale audit of dataset licensing and attribution in AI.pdf|A large-scale audit of dataset licensing and attribution in AI]]
+- [[thoughts/papers/Aristotle's Ethics.pdf|Aristotle's Ethics]]
+- [[thoughts/papers/Artificial Intelligence Illuminated.pdf|Artificial Intelligence Illuminated]]
 - [[thoughts/papers/Backtracking Improves Generation Safety.pdf|Backtracking Improves Generation Safety]]
 - [[thoughts/papers/Being and Some Philosophers.pdf|Being and Some Philosophers]]
 - [[thoughts/papers/Chaos as an intermittently forced linear system.pdf|Chaos as an intermittently forced linear system]]
+- [[thoughts/papers/Desires and Human Nature in Mills by Joyce L Jenkin.pdf|Desires and Human Nature in Mills by Joyce L Jenkin]]
 - [[thoughts/papers/Evolution of Modern Metaphysics 2012.pdf|Evolution of Modern Metaphysics 2012]]
 - [[thoughts/papers/Fabricating intimacy, reading the dressing room in Victorian Literature.pdf|Fabricating intimacy, reading the dressing room in Victorian Literature]]
 - [[thoughts/papers/Fashion and the Homospectatorial Look.pdf|Fashion and the Homospectatorial Look]]
@@ -26,6 +30,7 @@ A somewhat local cache of all papers I've read. This is one source of my Zotero 
 - [[thoughts/papers/Nietzsche's Chaos sive natura.pdf|Nietzsche's Chaos sive natura]]
 - [[thoughts/papers/NumericalOptimization.pdf|NumericalOptimization]]
 - [[thoughts/papers/On Beauty and Being Just.pdf|On Beauty and Being Just]]
+- [[thoughts/papers/On Some Contested Suppositions of Generative Linguistics about the Scientific Study of Language, Terry Winograd.pdf|On Some Contested Suppositions of Generative Linguistics about the Scientific Study of Language, Terry Winograd]]
 - [[thoughts/papers/On The Measure of Intelligence.pdf|On The Measure of Intelligence]]
 - [[thoughts/papers/Opinion Paper - So what if ChatGPT wrote it - Multidisciplinary perspectives on opportunities, challenges and implications of generative conversational AI for research, practice and policy.pdf|Opinion Paper - So what if ChatGPT wrote it - Multidisciplinary perspectives on opportunities, challenges and implications of generative conversational AI for research, practice and policy]]
 - [[thoughts/papers/Paradoxes in Probabilities Theory and Mathematical Statistics.pdf|Paradoxes in Probabilities Theory and Mathematical Statistics]]
@@ -39,4 +44,5 @@ A somewhat local cache of all papers I've read. This is one source of my Zotero 
 - [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|Tools for Conviviality by Ivan Illich]]
 - [[thoughts/papers/What computers still can't do by Hubert Dreyfus.pdf|What computers still can't do by Hubert Dreyfus]]
 - [[thoughts/papers/Writing as Art.pdf|Writing as Art]]
+- [[thoughts/papers/You and Your Research by Richard Hamming.pdf|You and Your Research by Richard Hamming]]
 <!-- update: end -->

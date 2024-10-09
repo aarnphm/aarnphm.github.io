@@ -36,6 +36,10 @@ You can find internal monologue under [[/posts/]] index.
   - Source: [GitHub](https://github.com/yetone/avante.nvim)
   ![[thoughts/images/avante.mp4]]
 
+- **tinymorph** - An exploration into how we build interfaces for machine-assisted writing tool (2024-)
+  - **WARNING**: Currently in research phase.
+  - Trained sparse autoencoders to interpret Llama 3.2 features [@templeton2024scaling]
+
 - **OpenLLM** - Run any open-source [[thoughts/LLMs|LLMs]] as OpenAI compatible API endpoint in the cloud. (2023-)
   - 🔬 Build for fast and production usages
   - 🚂 Support Llama, Qwen, Gemma, etc, and **[[thoughts/quantization|quantized]]** versions

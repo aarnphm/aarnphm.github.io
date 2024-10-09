@@ -2,6 +2,7 @@
 #include "MyRio.h"
 #include <pthread.h>
 #include <sched.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,6 +25,8 @@
 #if !defined(LoopDuration)
 #define LoopDuration 2 /* How long to output the signal, in seconds */
 #endif
+
+extern NiFpga_Session myrio_session;
 
 void stack_prefault(void) {
 
@@ -81,12 +84,14 @@ int main(int argc, char *argv[]) {
   time(&currentTime);
   finalTime = currentTime + LoopDuration;
 
+  uint8_t ledValue = 0;
+
   while (currentTime < finalTime) {
     /* wait until next shot */
     clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &t, NULL);
 
     // Toggle LED value
-    ledValue = ledValue ? 0 : 0x0F; // Toggle between 0 and 0x0F (all LEDs on)
+    ledValue = ledValue ? 0 : 1; // Toggle between 0 and 0x0F (all LEDs on)
 
     // Write to LED register
     status = NiFpga_WriteU8(myrio_session, DOLED30, ledValue);

@@ -5,6 +5,8 @@ tags:
   - fruit
 date: "2023-11-16"
 description: Questions about Aristotle's Metaphysics
+modified: "2024-10-07"
+socialDescription: On Aristotle's Metaphysics.
 title: Questions about Metaphysics
 ---
 

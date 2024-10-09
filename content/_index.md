@@ -15,7 +15,7 @@ Beige and <span class="rose">rosé</span> are my two favourite colours.
 
 [[thoughts/Chaos|Chaos]] induces [[thoughts/Agency|agency]] and satisfies the [[thoughts/Freud#The Ego and The Id|ego]]
 
-My love language is cooking [[thoughts/Dishes|food]] for my friends. I try to be present, but you will find me either [[thoughts/writing#motivation.|writing]], [[books|reading]],
+My love language is cooking [[thoughts/Dishes|food]] for my friends. I try to be present, but you will find me either [[thoughts/writing#motivation.|writing]], [[books|reading]]
 
 I think [[thoughts/work|open-source projects]] are overall a net positive for everyone, so contribute.
 

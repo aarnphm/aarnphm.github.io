@@ -26,7 +26,7 @@ void *led_blink_task(void *arg) {
   struct sched_param param;
   int interval = 500000000; // 500ms
   int num_runs = 20;        // 10 seconds of blinking
-  uint8_t led_value = 0;
+  uint8_t led_value = 0x01;
 
   param.sched_priority = MY_PRIORITY;
   if (sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
@@ -47,11 +47,14 @@ void *led_blink_task(void *arg) {
   while (num_runs > 0) {
     clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &t, NULL);
 
-    led_value = led_value ? 0 : 0x0F; // Toggle between 0 and 0x0F (all LEDs on)
     NiFpga_Status status = NiFpga_WriteU8(myrio_session, DOLED30, led_value);
     if (MyRio_IsNotSuccess(status)) {
       printf("Error writing to LED register\n");
       break;
+    }
+    led_value = (led_value << 1);
+    if (led_value == 0x08) {
+      led_value = 0x01;
     }
 
     printf("LED state: %s\n", led_value ? "ON" : "OFF");

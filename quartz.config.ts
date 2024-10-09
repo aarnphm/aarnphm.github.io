@@ -17,7 +17,15 @@ const config: QuartzConfig = {
     },
     locale: "fr-FR",
     baseUrl: "aarnphm.xyz",
-    ignorePatterns: ["private", "templates", ".obsidian", "joininteract", "**/sfwr-4g06ab/source"],
+    ignorePatterns: [
+      "private",
+      "templates",
+      ".obsidian",
+      "joininteract",
+      "**/sfwr-4g06ab/source",
+      "**.adoc",
+      "**/lab*/**",
+    ],
     defaultDateType: "created",
     theme: {
       cdnCaching: true,
@@ -95,7 +103,13 @@ const config: QuartzConfig = {
         },
       }),
       Plugin.Description(),
-      Plugin.Latex({ renderEngine: "katex" }),
+      Plugin.Latex({
+        renderEngine: "katex",
+        customMacros: {
+          "\\argmin": "\\mathop{\\operatorname{arg\\,min}}\\limits",
+          "\\argmax": "\\mathop{\\operatorname{arg\\,max}}\\limits",
+        },
+      }),
     ],
     filters: [Plugin.RemoveDrafts()],
     emitters: [

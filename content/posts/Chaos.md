@@ -6,6 +6,8 @@ tags:
   - self
 date: "2024-02-18"
 description: Chaos has, and always be a driven force within life, intuitive yet disheveled. And a few things I learned growing up in a foreign land.
+modified: "2024-10-07"
+socialDescription: on a new age.
 title: Chaos is intuitive yet disheveled.
 ---
 

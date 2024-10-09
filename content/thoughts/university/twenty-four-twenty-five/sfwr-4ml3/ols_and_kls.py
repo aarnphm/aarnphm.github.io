@@ -6,14 +6,10 @@ import matplotlib.pyplot as plt, numpy as np, numpy.typing as npt
 # alpha is the regularization coefficient
 # Output is the estimated y for both X and X_all
 def solve_ols(
-  X_train: npt.NDArray[np.float64], Y_train: npt.NDArray[np.float64],
-  X_test: npt.NDArray[np.float64], alpha: float
+  X_train: npt.NDArray[np.float64], Y_train: npt.NDArray[np.float64], X_test: npt.NDArray[np.float64], alpha: float
 ):
   beta = alpha * np.identity(np.shape(X_train)[1])
-  W = np.dot(
-    np.linalg.pinv(np.dot(X_train.T, X_train) + beta),
-    np.dot(X_train.T, Y_train)
-  )
+  W = np.dot(np.linalg.pinv(np.dot(X_train.T, X_train) + beta), np.dot(X_train.T, Y_train))
   # print("Optimal W is ", W.flatten())
   return np.dot(X_train, W), np.dot(X_test, W)
 
@@ -25,8 +21,7 @@ def solve_ols(
 # alpha is the regularization coefficient
 # Output is the estimated y for both X and X_all
 def solve_kernel_ls(
-  K_train: npt.NDArray[np.float64], Y_train: npt.NDArray[np.float64],
-  K_test: npt.NDArray[np.float64], alpha: float
+  K_train: npt.NDArray[np.float64], Y_train: npt.NDArray[np.float64], K_test: npt.NDArray[np.float64], alpha: float
 ):
   a = np.dot(np.linalg.pinv(K_train + alpha * np.identity(np.shape(X_train)[0])), Y_train)
   return np.dot(K, a), np.dot(K_test.T, a)
@@ -45,10 +40,13 @@ def gaussian_kernel(X1: npt.NDArray[np.float64], X2: npt.NDArray[np.float64], si
 
 
 def run_ols(
-  X_train: npt.NDArray[np.float64], Y_train: npt.NDArray[np.float64],
-  X_test: npt.NDArray[np.float64], Y_test: npt.NDArray[np.float64],
+  X_train: npt.NDArray[np.float64],
+  Y_train: npt.NDArray[np.float64],
+  X_test: npt.NDArray[np.float64],
+  Y_test: npt.NDArray[np.float64],
   alpha: float,
-  plot_X_train: npt.NDArray[np.float64], plot_X_test: npt.NDArray[np.float64],
+  plot_X_train: npt.NDArray[np.float64],
+  plot_X_test: npt.NDArray[np.float64],
   description: str,
   kernel: bool = False,
 ):

@@ -5,6 +5,8 @@ tags:
   - fruit
 date: "2023-11-09"
 description: Questions about Plato's Apology
+modified: "2024-10-07"
+socialDescription: On Plato's Apology.
 title: Questions about Apology
 ---
 

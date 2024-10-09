@@ -76,10 +76,6 @@ h3 {
   font-size: 1.272rem;
 }
 
-section[data-footnotes] {
-  background-color: unset !important;
-}
-
 #preview-container {
   flex-grow: 1;
 }
@@ -494,5 +490,28 @@ blockquote.twitter-tweet {
     font-weight: bold;
     padding: 4px 8px;
     border: 1px solid var(--secondary);
+  }
+}
+
+p.quotes {
+  padding-top: 1rem;
+  padding-left: 3rem;
+  margin: inherit;
+
+  &:before,
+  &:after {
+    font-size: 2em;
+    line-height: 0.1em;
+    vertical-align: -0.4em;
+  }
+
+  &:before {
+    content: "“";
+    margin-right: 0.25em;
+  }
+
+  &:after {
+    content: "”";
+    margin-left: 0.25em;
   }
 }
