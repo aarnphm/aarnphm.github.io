@@ -78,6 +78,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Pleasure of Finding Things Out** by Richard P. Feynman
 - **Walden and Civil Disobedience** by Henry David Thoreau
 - **Deep Sleep** by Jade Wu
+- **[Are We Spiritual Machines?](https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=olbp56055)** by Ray Kurzweil
 
 ### fiction
 
@@ -93,6 +94,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Three-Body Problem** by Liu Cixin
 - **Robinson Crusoe** by Daniel Defoe
 - **The Overstory** by Richard Powers
+- **Rejection** by Tony Tulathimutte
 
 ### poetry
 

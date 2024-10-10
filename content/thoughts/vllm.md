@@ -10,6 +10,10 @@ title: vLLM
 
 See also [[thoughts/Attention#Paged Attention]] [@kwon2023efficient]
 
+## structure.
+
+## KV compress
+
 ## speculative decoding
 
 See [slides](https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN5XaULO3AnCWWoRe4/edit#slide=id.p)
