@@ -4,6 +4,7 @@ tags:
   - seed
   - technical
 date: "2024-02-07"
+modified: "2024-10-10"
 title: Search
 ---
 ## Engine
@@ -17,3 +18,5 @@ Some search engines also mine [[thoughts/data]] available in databases or open d
 ## query
 
 See also [[thoughts/PageRank|PageRank]]
+
+### HITS algorithm

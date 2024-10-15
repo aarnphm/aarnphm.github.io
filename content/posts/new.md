@@ -122,6 +122,6 @@ Everything else – the jobs, the networking, the sponsorships – that all foll
 
 [^2]: [Hackathons as Co-optation Ritual: Socializing Workers and Instituionalising Innovation in the "New" Economy](https://academicworks.cuny.edu/cgi/viewcontent.cgi?article=1575&context=gc_pubs) by _Sharon Zukin and Max Papadantonakis_
 
-[^3]: One team built AI agents to solve public policies. Per the demo, it seemed to recommend building "more police stations" to solve Moss Park's challenges. However, it is not as simple as just "building more police stations"
+[^3]: One team built AI agents to solve public policies. Per the demo, it seemed to recommend building "more police stations" to solve Moss Park's challenges. However, it is not as simple as just "building more police stations". The judge was pretty firm on this, but the idea was there.
 
 [^4]: Honestly, I only do this one because of [Tommy](https://tommytrinh.me/), tyfe.

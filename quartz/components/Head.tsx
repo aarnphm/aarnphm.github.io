@@ -12,10 +12,9 @@ export default (() => {
   const extension = "webp"
 
   const Head: QuartzComponent = ({ cfg, fileData, externalResources }: QuartzComponentProps) => {
-    // since "/" is not a valid character in file names, replace with "-"
-    const fileName = fileData.slug?.replaceAll("/", "-")
-
-    const title = fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
+    const titleSuffix = cfg.pageTitleSuffix ?? ""
+    const title =
+      (fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title) + titleSuffix
     const description = unescapeHTML(
       fileData.frontmatter?.socialDescription ??
         fileData.frontmatter?.description ??
@@ -52,7 +51,7 @@ export default (() => {
     } else {
       ogImagePath = useDefaultOgImage
         ? `https://${cfg.baseUrl}/static/og-image.webp`
-        : `https://${cfg.baseUrl}/static/${socialImageDir}/${fileName}.${extension}`
+        : `https://${cfg.baseUrl}/static/${socialImageDir}/${fileData.slug?.replaceAll("/", "-")}.${extension}`
     }
 
     const socialUrl =

@@ -9,6 +9,7 @@ import * as Plugin from "./quartz/plugins"
 const config: QuartzConfig = {
   configuration: {
     pageTitle: "Aaron's notes",
+    pageTitleSuffix: " | Aaron's notes",
     enableSPA: true,
     enablePopovers: true,
     generateSocialImages: true,
@@ -121,6 +122,7 @@ const config: QuartzConfig = {
       Plugin.CuriusPage(),
       Plugin.MenuPage(),
       Plugin.PoetryPage(),
+      // Plugin.InfinitePoemPage(),
       Plugin.ContentIndex({ rssLimit: 40 }),
       Plugin.Assets(),
       Plugin.Static(),
