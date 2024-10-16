@@ -6,11 +6,7 @@ import path from "node:path"
 import { BuildUrlValues, defaultBuildUrl } from "remark-github"
 import { RepositoryInfo, UrlInfo } from "remark-github/lib"
 import { Root, Link } from "mdast"
-import {
-  RegExpMatchObject,
-  ReplaceFunction,
-  findAndReplace as mdastFindReplace,
-} from "mdast-util-find-and-replace"
+import { RegExpMatchObject, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import { toString } from "mdast-util-to-string"
 import { QuartzTransformerPlugin } from "../types"
 import { visit } from "unist-util-visit"

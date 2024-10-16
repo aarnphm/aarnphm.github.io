@@ -47,7 +47,7 @@ idea: adapt PagedAttention to page out cache on a *per-head, per-layer–as well
 > [!note]- explanation
 >
 > A simplified example with two KV heads and a block size of two:
-> - KV metrics are visualized for a given cache state, highlighting blocks of a particular sequence in the decoding batch that is scheduled to evict two blocks. 
+> - KV metrics are visualized for a given cache state, highlighting blocks of a particular sequence in the decoding batch that is scheduled to evict two blocks.
 > - Logical indices are displayed under the corresponding metrics slot.
 
 #### Evict from Paged KV cache
@@ -63,7 +63,7 @@ _excerpt from [github](https://github.com/vllm-project/vllm/blob/main/docs/sourc
 see also: [v2](https://github.com/vllm-project/vllm/blob/main/vllm/core/block_manager_v2.py) and [v1](https://github.com/vllm-project/vllm/blob/main/vllm/core/block_manager_v1.py), [benchmark](https://docs.google.com/document/d/1XxYUFai07ta5rE7OdtCVhLJ5J0oAxEqrGgarFdjv0Zc/edit?tab=t.0)
 
 
-reasoning for v2: 
+reasoning for v2:
 - support sliding windows attention
 - lookahead slot for [[thoughts/vllm#speculative decoding|speculative decoding]]
 

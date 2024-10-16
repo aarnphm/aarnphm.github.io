@@ -21,11 +21,11 @@ They are in their early 30s, I invited them over for dinner a couple times, and 
 
 I was just finished up my half-mugged coffee, finishing up Kant's Groundwork to Metaphysics of Morals.
 
-It was a slow sunday. I didn't do much, even though I have a few proposal to finish for that project, as well as cleaning up my place. I went to bed earlier last night, after visiting toronto and met H. H was filled with sunshine, and there is something mesmerising about her aura that makes me feel, full.
+It was a slow Sunday. I didn't do much, even though I have a few proposal to finish for that project, as well as cleaning up my place. I went to bed earlier last night, after visiting toronto and met H. H was filled with sunshine, and there is something mesmerising about her aura that makes me feel, full.
 Not per say, I feel that the reason why I go to toronto so much is that I felt that was my home there. Recently broke up with this girl I met in Montreal during a summer visit. It felt like there was something there, but then the distance between us does make it harder.
 (I travelled up there two-three weeks ago to hang with her, but seems like we just have two different lifestyles and intention in mind. She's doing her thing, and I guess I'm too.)
 
-It is now 23:41, Oct  6th.
+It is now 18:41, Oct  14th.
 
 I did have a few assignments to finish. I tend to do a solid two hours of focus deep work, and followed by 30 mins of just randomly doing stuff (such as finishing this essay).
 I often turn to book to find a balance or establish a state of tranquility.

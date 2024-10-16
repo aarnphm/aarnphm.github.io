@@ -4,6 +4,7 @@ tags:
   - seed
   - pattern
 date: "2024-02-07"
+modified: "2024-10-15"
 title: data
 ---
 
@@ -11,7 +12,7 @@ Representation of information in a formalised manner suitable for communication,
 
 => semanticity
 
-Logistic regression: 
+Logistic regression:
 
 $$
 \frac{1}{1 + e^{-(x - \mu)/s}}

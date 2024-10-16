@@ -86,12 +86,11 @@ const config: QuartzConfig = {
           "./content/References.bib",
           "https://raw.githubusercontent.com/bentoml/bentoml/main/CITATION.cff",
         ],
-        suppressBibliography: false,
         linkCitations: true,
       }),
+      Plugin.ObsidianFlavoredMarkdown(),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.GitHub(),
-      Plugin.ObsidianFlavoredMarkdown(),
       Plugin.TableOfContents(),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",

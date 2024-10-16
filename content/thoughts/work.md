@@ -55,7 +55,7 @@ You can find internal monologue under [[/posts/]] index.
   - Source: [GitHub](https://github.com/bentoml/bentoml), [Documentation](https://docs.bentoml.com)
 
 - **incogni.to** - a pseudonymous event platform that curates for those yearning to be seen for ==who they are, not what they can "sell"== (2024)
-  - Implemented a [[thoughts/RAG]] pipeline for recommendation system based on users preferences and interests, with [command-r-plus-08-2024](https://huggingface.co/CohereForAI/c4ai-command-r-plus), deployed with [[thoughts/vllm|vLLM]] and [@github.com/bentoml/BentoML].
+  - Implemented a [[thoughts/RAG]] pipeline for recommendation system based on users preferences and interests, with [command-r-plus-08-2024](https://huggingface.co/CohereForAI/c4ai-command-r-plus), deployed with [[thoughts/vllm|vLLM]] and BentoML [@github.com/bentoml/BentoML]
   - Added semantic search to find relevant events based on query with [Cohere Rerank](https://cohere.com/rerank)
   - General UI implementation with shadcn/ui and vercel/next.js
   - Demoed at [New Build'24](https://x.com/newsystems_/status/1828455648377327976)
