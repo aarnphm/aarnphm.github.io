@@ -60,7 +60,7 @@ _excerpt from [github](https://github.com/vllm-project/vllm/blob/main/docs/sourc
 
 ## block manager and evictor
 
-see also: [v2](https://github.com/vllm-project/vllm/blob/main/vllm/core/block_manager_v2.py) and [v1](https://github.com/vllm-project/vllm/blob/main/vllm/core/block_manager_v1.py), [benchmark](https://docs.google.com/document/d/1XxYUFai07ta5rE7OdtCVhLJ5J0oAxEqrGgarFdjv0Zc/edit?tab=t.0)
+see also: [v2](https://github.com/vllm-project/vllm/blob/main/vllm/core/block_manager.py) and [v1](https://github.com/vllm-project/vllm/blob/5eda21e773447d81ffc661ac094716420dc7b7cb/vllm/core/block_manager_v1.py), [benchmark](https://docs.google.com/document/d/1XxYUFai07ta5rE7OdtCVhLJ5J0oAxEqrGgarFdjv0Zc/edit?tab=t.0)
 
 
 reasoning for v2:
@@ -84,5 +84,9 @@ https://x.com/karpathy/status/1697318534555336961
 ## constrained decoding.
 
 See vllm-project/vllm#5423
+
+- not supported from `SamplingParams`
+- requires support batch/async logit processing
+- engine will die if failed
 
 [^ref]

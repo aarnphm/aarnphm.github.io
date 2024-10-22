@@ -14,6 +14,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ## current.
 
+- **Essay on Love** by Alain de Botton
 - **[[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]]** by Gilles Deleuze
 - **[[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|The Gay Science]]** by Friedrich Nietzsche
 - **Beyond Good and Evil** by Friedrich Nietzsche
@@ -45,6 +46,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **[The Conquest of Happiness](https://russell-j.com/beginner/COH-TEXT.HTM)** by Bertrand Russell
 - **Being and Time** by Heidegger
 - [**Pensees**](https://www.gutenberg.org/files/18269/18269-h/18269-h.htm) by Pascal
+- **Being and Nothingness** by Jean-Paul Sartre
 
 #### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 

@@ -75,4 +75,8 @@ You can find internal monologue under [[/posts/]] index.
   - Source: [[thoughts/images/htn-openllm.pdf|slides]]
   ![[thoughts/images/htn-2023-speaks.png]]
 
+## companies.
+
+https://x.com/aarnphm_/status/1844775079286120682
+
 [^ref]

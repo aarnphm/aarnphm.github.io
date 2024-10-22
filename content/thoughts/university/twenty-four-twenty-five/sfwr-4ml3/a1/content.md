@@ -6,7 +6,7 @@ date: "2024-10-07"
 modified: "2024-10-07"
 title: Least Squared Regression
 ---
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/phama10.ipynb|jupyter notebook]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/assignment.pdf|assignment]]
+See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/LSR.ipynb|jupyter notebook]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/assignment.pdf|pdf]]
 
 ## question 1.
 
@@ -89,7 +89,7 @@ In this case, we will choose `n_coeffs=100`
 > [!question]- part 2
 > implement your preprocessing approach.
 
-See the [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/phama10.ipynb|jupyter notebook]] for more information
+See the [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/LSR.ipynb|jupyter notebook]] for more information
 
 > [!question] part 3
 > Report the MSE on the training and validation sets for different values of lambda and plot it. **As mentioned, it should perform better for getting points.** choose the best value of lambda, apply your preprocessing approach to the test set, and then report the MSE after running RLS.

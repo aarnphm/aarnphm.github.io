@@ -27,7 +27,8 @@ export default ((opts: Options) => {
   const Comments: QuartzComponent = ({ displayClass, cfg, fileData }: QuartzComponentProps) => {
     const enableComments = fileData.frontmatter?.comments ?? true
     const isPost = fileData.slug!.startsWith("posts/")
-    if (!enableComments || isPost) {
+    const isUniversity = fileData.slug!.includes("university")
+    if (!enableComments || isPost || isUniversity) {
       return <></>
     }
     return (
@@ -41,7 +42,7 @@ export default ((opts: Options) => {
         data-strict={boolToStringBool(opts.options.strict ?? true)}
         data-reactions-enabled={boolToStringBool(opts.options.reactionsEnabled ?? true)}
         data-input-position={opts.options.inputPosition ?? "bottom"}
-        data-theme={`https://${cfg.baseUrl}/index.css`}
+        data-theme={`https://${cfg.baseUrl ?? "example.com"}/index.css`}
         data-lang={opts.options.lang ?? cfg.locale.split("-")[0]}
       ></div>
     )

@@ -4,7 +4,7 @@ import { visit } from "unist-util-visit"
 import { QuartzTransformerPlugin } from "../types"
 
 export interface Options {
-  bibliographyFile: string[]
+  bibliographyFile: string[] | string
   suppressBibliography: boolean
   linkCitations: boolean
   csl: string

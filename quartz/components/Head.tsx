@@ -12,7 +12,7 @@ export default (() => {
   const extension = "webp"
 
   const Head: QuartzComponent = ({ cfg, fileData, externalResources }: QuartzComponentProps) => {
-    const titleSuffix = cfg.pageTitleSuffix ?? ""
+    const titleSuffix = fileData.slug !== "index" ? (cfg.pageTitleSuffix ?? "") : ""
     const title =
       (fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title) + titleSuffix
     const description = unescapeHTML(
