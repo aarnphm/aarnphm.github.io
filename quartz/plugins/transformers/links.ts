@@ -113,6 +113,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   })
                 }
 
+                // special cases for parsing landing-links
                 if (file.data.slug === "index") {
                   classes.push("landing-links")
                 }
@@ -128,7 +129,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 }
                 node.properties.className = classes
 
-                if (isExternal && opts.openLinksInNewTab) {
+                if ((isExternal && opts.openLinksInNewTab) || [".ipynb", ".qmd"].includes(ext)) {
                   node.properties.target = "_blank"
                 }
 
