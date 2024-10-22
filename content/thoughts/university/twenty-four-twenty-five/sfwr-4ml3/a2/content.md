@@ -16,8 +16,13 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA.ipynb|ju
 implementation of `centeralize_data()` and `pca_components()`
 
 ```python
-def centeralize_data(data):return data-(data_mean:=np.mean(data, axis=0).reshape(1,-1)), data_mean
-def pca_components(Vt, n_components):return Vt[:n_components]
+def centeralize_data(data):
+  return data - (data_mean := np.mean(data, axis=0).reshape(1, -1)), data_mean
+
+
+# fmt: off
+def pca_components(Vt, n_components): return Vt[:n_components]
+# fmt: on
 ```
 
 Yields the following when running `plot_class_representatives`: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t1.png|result]]
@@ -30,7 +35,7 @@ Yields the following when running `plot_class_representatives`: [[thoughts/unive
 
 ```python
 def pca_transform(X, n_components):
-  U,s,*result=normalized_svd(X)
+  U, s, *result = normalized_svd(X)
   return U[:, :n_components] * s[:n_components], *result
 ```
 
@@ -39,7 +44,8 @@ def pca_transform(X, n_components):
 > Implement `pca_inverse_transform`
 
 ```python
-def pca_inverse_transform(transformed_data, Vt, n_components, data_mean): return transformed_data @ pca_components(Vt, n_components) + data_mean
+def pca_inverse_transform(transformed_data, Vt, n_components, data_mean):
+  return transformed_data @ pca_components(Vt, n_components) + data_mean
 ```
 
 Which yields the following for TNC visualisation:
@@ -77,8 +83,11 @@ SEED = 42
 
 X_train, X_test = train_test_split(X_bush, train_size=400, random_state=SEED)
 
+
 # \text{error}=\frac{1}{n}\sum_{i=1}^n||x_i-\text{reconstruct}(pca(x_i))||^2_2
-def mse(train_data, reconstructed):return np.mean(np.sum((train_data - reconstructed)**2, axis=1))
+def mse(train_data, reconstructed):
+  return np.mean(np.sum((train_data - reconstructed) ** 2, axis=1))
+
 
 # Loop through each specified number of components for PCA
 for n_components in c_components:
@@ -86,17 +95,16 @@ for n_components in c_components:
   transformed_train, Vt_train, mean_train = pca_transform(X_train, n_components)
 
   # Calculate the Mean Squared Error (MSE) as the reconstruction error for the training set
-  train_errors.append(mse(X_train,
-                          pca_inverse_transform(transformed_train,
-                                                Vt_train, n_components, mean_train)))
+  train_errors.append(mse(X_train, pca_inverse_transform(transformed_train, Vt_train, n_components, mean_train)))
   # Normalize the test data. Transform the test data using the train data's PCA components # and reconstruct the test data.
   # Calculate the Mean Squared Error (MSE) as the reconstruction error for the test set
   test_errors.append(mse(X_test,
                          pca_inverse_transform((X_test - mean_train) @ pca_components(Vt_train, n_components).T,
-                                               Vt_train, n_components, mean_train)))
+                                               Vt_train, n_components, mean_train)))  # fmt: skip
 
 # Print the average reconstruction errors for each number of components
-for i,n_components in enumerate(c_components):print(f"Components: {n_components}\n\tTrain Error: {train_errors[i]:.4f}\n\tTest Error: {test_errors[i]:.4f}")
+for i, n_components in enumerate(c_components):
+  print(f'Components: {n_components}\n\tTrain Error: {train_errors[i]:.4f}\n\tTest Error: {test_errors[i]:.4f}')
 ```
 
 yields the following observation

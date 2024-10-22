@@ -1,2 +1,4 @@
 [languages]
-python = ["ruff format -"]
+python = ['ruff format -']
+rust = ['rustfmt']
+lua = ["stylua -s -"]

@@ -1,7 +1,7 @@
 extend-include = ["*.ipynb"]
 line-length = 119
 indent-width = 2
-target-version = "py39"
+target-version = "py312"
 fix = true
 
 [format]
