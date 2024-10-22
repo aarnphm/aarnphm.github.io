@@ -2,3 +2,4 @@
 python = ['ruff format -']
 rust = ['rustfmt']
 lua = ["stylua -s -"]
+c = ['clang-format -style=Google']

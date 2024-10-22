@@ -21,16 +21,18 @@ title: ideas.
 - recommendation system and word2vec
 - social interactions a la carte.
 
-### projets.
+### projets
+
 - LaTeX codeblock renderer for [[uses#^neovim|neovim]], in editor
   - Support KaTeX, and probably MathJax
   - Uses `conceallevel`
-  - https://github.com/frabjous/knap
+  - <https://github.com/frabjous/knap>
 - yet another emulator in Rust
   - Want to stream current running process and make it clickable?
   - Vim and Emacs support
   - multiplexer
   - stream TTY?
+
   ```mermaid
   flowchart TD
 
@@ -38,6 +40,7 @@ title: ideas.
   1 --> 5[multiplexer]
   2 --> 1
   ```
+
 - rsh: new shell language written with Rust-like syntax
   - I get fed up with bash
   - Should be cloud-first?
@@ -49,6 +52,9 @@ title: ideas.
   - Dockerfile frontend, [[thoughts/BuildKit]],  [[thoughts/OCI|OCI]]-compliant frontend.
   - Stay away from Docker 😄
 
-### écriture.
+<https://x.com/aarnphm_/status/1844775079286120682>
+
+### écriture
+
 - bazil: A [Bazel](https://bazel.build/) for the unversed
   - Bazel is hard to get started with

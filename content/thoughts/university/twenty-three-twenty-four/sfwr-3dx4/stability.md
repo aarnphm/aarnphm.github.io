@@ -3,11 +3,11 @@ id: stability
 tags:
   - sfwr3dx4
 date: "2024-02-06"
+modified: "2024-10-22"
 title: Stability and natural responses.
 ---
 
 See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability.pdf|slides]]
-
 
 > **Stable** if natural response tend to zero as $t \to \infty$.
 
