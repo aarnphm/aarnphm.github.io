@@ -26,7 +26,7 @@ You can find internal monologue under [[/posts/]] index.
   - Added support for PDF in popover modal jackyzha0/quartz#913
   - Implemented font-fetching before runtime jackyzha0/quartz#817
   - Implemented telescope-style search jackyzha0/quartz#722, jackyzha0/quartz#774, jackyzha0/quartz#782
-  - Landing page of [[/|this]] website, with custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]]
+  - Landing page of [[/|this]] website, with custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing jupyter notebooks
   - Source: [GitHub](https://github.com/jackyzha0/quartz) and [site](https://quartz.jzhao.xyz/)
 
 - **avante.nvim** - A [Cursor](https://www.cursor.com/)-like chat IDE for [[uses#^neovim|Neovim]] (2024-)

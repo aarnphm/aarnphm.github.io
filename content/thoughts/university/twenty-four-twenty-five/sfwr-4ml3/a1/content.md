@@ -19,12 +19,19 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/LSR.ipynb|ju
 > 3. Do you observe significant overfitting in any of the cases?
 
 1. For homogeneous model, the MSE on training data is 26.1649 and on validation data is 77.0800
+
    ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p1-1.png]]
+
    Whereas with non-homogeneous model, the MSE on training data is 2.5900 and on validation data is 8.8059
+
    ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p1-12.png]]
+
 2. We can observe that non-homogeneous model clearly performs better than the homogeneous models, given a significantly lower MSE (indicates that predictions are closer to the actual value). We can also see the difference between training and validation sets for non-homogeneous models shows better consistency, or better generalisation.
+
    Test set MSE for non-homogeneous model is 2.5900
+
    ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p1-2.png]]
+
 3. We observe in both cases that the training MSE is significantly lower than the validation MSE, indicating overfitting.
    The non-homogeneous model shows a lower difference between training and validation MSE, which suggest there were some overfitting.
    The homogeneous models show more severe overfitting due to its constraints (forcing intercept to zero).
@@ -35,8 +42,11 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/LSR.ipynb|ju
 > 2. Compare these results with those from the previous part. Do you observe less overfitting or more overfitting? How did you arrive at this conclusion?
 
 1. For homogeneous model, the MSE on training data is 0.000 and on validation data is 151.2655
+
    ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p2-1.png]]
+
    Whereas with non-homogeneous model, the MSE on training data is 0.000 and on validation data is 15.8158
+
    ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p2-nhom.png]]
 
 2. We observe an increased in overfitting, given the perfit fit in training data versus validation MSE for both model.
@@ -71,6 +81,7 @@ The following is the graph for Training and Validation MSE as functions of lambd
    it is the one that minimizes the validation MSE. From the graph, we observe it is around $\lambda \approx 7.3891$
 
 2. Using $\lambda \approx 7.3891$, we get the following Test MSE around 1.3947
+
    ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p2-rls-test.png]]
 
 ### problem 3.
