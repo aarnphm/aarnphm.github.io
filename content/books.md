@@ -23,7 +23,7 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 - **The Metaphysics of Morals** by Immanuel Kant
 - **Crime and Punishment** by Fyodor Dostoevsky
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
-- **Structure and Interpretation of Computer Programs** by Abelson and Sussman
+- **Structure and Interpretation of Computer Programs** by Abelson and Sussman ([pdf](https://web.mit.edu/6.001/6.037/sicp.pdf))
 
 ## to read.
 
