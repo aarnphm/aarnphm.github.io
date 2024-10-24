@@ -10,15 +10,15 @@ title: databases internals
 ## Practice
 
 Q1.
-a. F
-b. F (wrong: Must be T)
+- a. F
+- b. F (wrong: Must be T)
   - A relation R(A,B,C) **may** have at most three minimal keys (not superkey)
-c. T
-d. T
-e. T (any ops involving a null is a null)
-f. F (DML: data manipulation, not management)
-g. F (a weak entity set has one or more many-many relationship)
-h. F
+- c. T
+- d. T
+- e. T (any ops involving a null is a null)
+- f. F (DML: data manipulation, not management)
+- g. F (a weak entity set has one or more many-many relationship)
+- h. F
 
 Q3.
 
