@@ -10,3 +10,5 @@ title: /xeets/
 ---
 
 https://x.com/kepano/status/1844491841787273467
+
+https://x.com/davidbessis/status/1849442615176950202
