@@ -53,13 +53,18 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     })
 
     allPagesInSubfolders.forEach((files, subfolderSlug) => {
-      const subfolderDates = files.sort(byDateAndAlphabetical(cfg))[0].dates
-      const subfolderTitle = subfolderSlug.split(path.posix.sep).at(-1)!
-      allPagesInFolder.push({
-        slug: subfolderSlug,
-        dates: subfolderDates,
-        frontmatter: { title: subfolderTitle, tags: ["folder"] },
-      })
+      const hasIndex = allPagesInFolder.some(
+        (file) => subfolderSlug === stripSlashes(simplifySlug(file.slug!)),
+      )
+      if (!hasIndex) {
+        const subfolderDates = files.sort(byDateAndAlphabetical(cfg))[0].dates
+        const subfolderTitle = subfolderSlug.split(path.posix.sep).at(-1)!
+        allPagesInFolder.push({
+          slug: subfolderSlug,
+          dates: subfolderDates,
+          frontmatter: { title: subfolderTitle, tags: ["folder"] },
+        })
+      }
     })
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
     const classes = ["popover-hint", ...cssClasses].join(" ")
