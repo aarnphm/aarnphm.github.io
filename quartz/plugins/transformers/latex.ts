@@ -1,6 +1,5 @@
 import remarkMath from "remark-math"
 import rehypeKatex from "rehype-katex"
-import rehypeMathjax from "rehype-mathjax/svg"
 import { QuartzTransformerPlugin } from "../types"
 
 interface Options {
@@ -23,8 +22,6 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = (opts) => {
     htmlPlugins() {
       if (engine === "katex") {
         return [[rehypeKatex, { output: "html", macros }]]
-      } else {
-        return [[rehypeMathjax, { macros }]]
       }
     },
     externalResources() {
