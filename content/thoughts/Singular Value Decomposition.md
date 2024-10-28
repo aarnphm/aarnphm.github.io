@@ -7,9 +7,8 @@ date: "2024-10-21"
 modified: "2024-10-21"
 title: Singular Value Decomposition
 ---
-See also
 
-https://www.youtube.com/watch?v=nbBvuuNVfco&ab_channel=SteveBrunton
+![[https://www.youtube.com/watch?v=nbBvuuNVfco&ab_channel=SteveBrunton]]
 
 $$
 \begin{aligned}

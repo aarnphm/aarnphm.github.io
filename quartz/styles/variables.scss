@@ -1,3 +1,10 @@
+:root {
+  // See https://github.com/gwern/gwern.net/blob/9250d886d5470ca434be94f7189af76446ec5ccc/css/initial.css#L1771
+  --link-underline-background-color: var(--light);
+  --link-underline-gradient-line-color: currentColor;
+  --link-underline-background-image: url(data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIEBCSGBQA7);
+}
+
 $pageWidth: 760px;
 $mobileBreakpoint: 600px;
 $tabletBreakpoint: 1000px;

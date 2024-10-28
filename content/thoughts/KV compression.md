@@ -9,9 +9,9 @@ title: KV compression
 ---
 see also: [github](https://github.com/October2001/Awesome-KV-Cache-Compression)
 
-TLDR: Most algorithm determine importance through aggregating attentions over observed queries [@zhang2023h2oheavyhitteroracleefficient]  [@liu2023scissorhandsexploitingpersistenceimportance]
+TLDR: Most algorithm determine importance through aggregating attentions over observed queries [@zhang2023h2oheavyhitteroracleefficient; @liu2023scissorhandsexploitingpersistenceimportance]
 
-More recent work aggregated attention from _limited observation windows_ [@li2024snapkvllmknowslooking]  [@cai2024pyramidkvdynamickvcache]
+More recent work aggregated attention from _limited observation windows_ [@li2024snapkvllmknowslooking; @cai2024pyramidkvdynamickvcache]
 
 uses top_k to find $k$-indices of attentions per head to preserve, and evict the not-so-important ones.
 
@@ -96,6 +96,10 @@ _built on-top of PyramidKV and SnapKV_
 > With Ada-SnapKV, each attention layers are still assigned with a fixed compression rate (refer to the image example)
 
 See also [paper](https://arxiv.org/abs/2407.11550) [@feng2024adakvoptimizingkvcache]
+
+## KIVI
+
+link: [github](https://github.com/jy-yuan/KIVI)
 
 ---
 

@@ -1,3 +1,5 @@
+@use "./variables.scss" as *;
+
 @mixin iconStyles {
   margin-left: auto;
   white-space: nowrap;
@@ -7,15 +9,7 @@
   opacity: 0;
 }
 
-@mixin links {
-  margin: 0 0.08em;
-  padding-left: 0.3em;
-  position: relative;
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 1px 1px;
-  background-repeat: repeat-x;
-  background-position: 0% calc(100% - 0.1em);
-
+@mixin indicatorHook {
   &::before {
     content: " ";
     position: absolute;
@@ -25,8 +19,18 @@
     width: 1px;
     height: 100%;
     color: inherit;
-    background-image: linear-gradient(var(--light), var(--light)),
-      linear-gradient(var(--light), var(--light)), linear-gradient(currentColor, currentColor);
+    background-image: linear-gradient(
+        var(--link-underline-background-color),
+        var(--link-underline-background-color)
+      ),
+      linear-gradient(
+        var(--link-underline-background-color),
+        var(--link-underline-background-color)
+      ),
+      linear-gradient(
+        var(--link-underline-gradient-line-color),
+        var(--link-underline-gradient-line-color)
+      );
     background-size:
       1px 0.6em,
       1px 0.1em,
@@ -36,5 +40,46 @@
       0 100%,
       0 calc(100% - 0.1em);
     background-repeat: no-repeat;
+  }
+}
+
+@mixin links {
+  background-image: linear-gradient(
+    var(--link-underline-gradient-line-color),
+    var(--link-underline-gradient-line-color)
+  );
+  background-size: 1px 1px;
+  background-repeat: repeat-x;
+  background-position: 0% calc(100% - 0.1em);
+  font-variant-numeric: lining-nums;
+
+  text-shadow:
+    0 0.05em var(--link-underline-background-color),
+    0.05em 0.05em var(--link-underline-background-color),
+    -0.05em 0.05em var(--link-underline-background-color),
+    0.17em 0.05em var(--link-underline-background-color),
+    -0.17em 0.05em var(--link-underline-background-color),
+    0.17em 0 var(--link-underline-background-color),
+    -0.17em 0 var(--link-underline-background-color);
+
+  & > .indicator-hook {
+    position: relative;
+    padding-left: 0.3em;
+
+    @include indicatorHook;
+  }
+}
+
+@mixin steps {
+  &::after {
+    content: "";
+    background-image: url("/static/dotted.svg");
+    background-repeat: repeat;
+    z-index: -10;
+    top: 0.5rem;
+    left: 0.5rem;
+    right: -0.5rem;
+    bottom: -0.5rem;
+    position: absolute;
   }
 }

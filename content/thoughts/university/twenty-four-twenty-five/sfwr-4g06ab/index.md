@@ -4,11 +4,12 @@ tags:
   - university
   - sfwr4g06ab
 date: "2024-09-04"
+modified: "2024-10-25"
 title: Software Enginering Capstone a la carte.
 ---
+
 ## statement and goals.
 
-Administrative Details
 1. natural-language driven terminal
 	Possible prof: [Emil Sekerinski](https://www.cas.mcmaster.ca/~emil/) or [Richard Paige](https://www.google.com/search?q=Richard+Paige&sourceid=chrome&ie=UTF-8)
 	- [warp](https://www.warp.dev) as an example, but closed source
@@ -18,8 +19,7 @@ Administrative Details
 		- natural language -> commands
 	- Configuration, maybe in Lua
 	- stretch goal: new shell based on rust syntax and borrowing concept of variables.
-2. WYSIWYG editor
-	Possible prof: [Christopher Anand](https://www.cas.mcmaster.ca/~anand/#research) or [Martin von Mohrenschildt](https://www.cas.mcmaster.ca/~mohrens/)(maybe he is interested in this idk) or [Frantisek (Franya) FRANEK](https://www.cas.mcmaster.ca/~franek/)
+2. WYSIWYG editor  (choosen, see [docs](https://tinymorph.aarnphm.xyz))
 	- Markdown renderer
 	- train [SAE](https://transformer-circuits.pub/2023/monosemantic-features/index.html) for specific type of writing tonality => manual steering for text generation on creative writing
 	- exploration of internals writing features based on text

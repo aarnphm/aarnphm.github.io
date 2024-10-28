@@ -82,7 +82,7 @@ h3 {
 
 .katex {
   font:
-    normal 1em KaTeX_Main,
+    normal 1.2em KaTeX_Main,
     var(--bodyFont),
     serif !important;
 }
@@ -125,30 +125,41 @@ blockquote.twitter-tweet > a {
   background-color: unset;
 
   @include links;
-  &::before {
-    content: "";
-  }
 }
 
 a {
   &.internal {
-    background-color: unset;
+    @include links;
+
+    & {
+      background-color: unset;
+      background-image: linear-gradient(
+        var(--link-underline-gradient-line-color),
+        var(--link-underline-background-image)
+      );
+      background-size: 2px 1px;
+
+      &:not(.alias) {
+        & > .indicator-hook {
+          display: none;
+        }
+      }
+    }
   }
 
   &.internal.tag-link {
     border-radius: unset;
     background-color: unset;
 
+    position: relative;
+    padding-left: 0.3em;
+
     @include links;
-    &::before {
-      content: "";
-    }
+    @include indicatorHook;
   }
 
-  @media all and (min-width: $fullPageWidth) {
-    &.internal.alias:not(.popover):not(.popover *):not([href^="#bib"]) {
-      @include links;
-    }
+  &.internal.alias {
+    @include links;
   }
 }
 
@@ -478,6 +489,7 @@ blockquote.twitter-tweet {
   border: 2px solid var(--secondary);
   padding-bottom: 1rem;
   position: relative;
+  background-color: var(--light);
 
   &::before {
     content: "x.com";
@@ -491,6 +503,8 @@ blockquote.twitter-tweet {
     padding: 4px 8px;
     border: 1px solid var(--secondary);
   }
+
+  @include steps;
 }
 
 p.quotes {
@@ -514,4 +528,25 @@ p.quotes {
     content: "”";
     margin-left: 0.25em;
   }
+}
+
+section[data-footnotes] {
+  background-color: var(--light);
+  border: 2px solid var(--tertiary);
+  position: relative;
+
+  & > * {
+    margin: 0 1.25rem;
+  }
+
+  // disable footnotes headers
+  & > #footnote-label.sr-only {
+    margin-top: 1rem;
+  }
+
+  & > ol {
+    margin-bottom: 2rem;
+  }
+
+  @include steps;
 }

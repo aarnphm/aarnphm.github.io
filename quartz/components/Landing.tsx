@@ -12,8 +12,6 @@ import ContentComponent from "./pages/Content"
 import BodyComponent from "./Body"
 import { classNames } from "../util/lang"
 import { JSX } from "preact"
-import { GlobalConfiguration } from "../cfg"
-import { QuartzPluginData } from "../plugins/vfile"
 
 export const HyperAlias = {
   livres: "/books",

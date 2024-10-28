@@ -9,7 +9,7 @@ import * as Plugin from "./quartz/plugins"
 const config: QuartzConfig = {
   configuration: {
     pageTitle: "Aaron's notes",
-    pageTitleSuffix: " | Aaron's notes",
+    pageTitleSuffix: " -- de lecture",
     enableSPA: true,
     enablePopovers: true,
     generateSocialImages: true,
@@ -33,7 +33,7 @@ const config: QuartzConfig = {
       fontOrigin: "local",
       typography: {
         header: "GT Sectra Display",
-        body: "GT Sectra Book",
+        body: "Cardo",
         code: "Berkeley Mono",
       },
       colors: {
@@ -87,7 +87,7 @@ const config: QuartzConfig = {
       }),
       Plugin.ObsidianFlavoredMarkdown(),
       Plugin.GitHubFlavoredMarkdown(),
-      Plugin.GitHub(),
+      // Plugin.GitHub(),
       Plugin.TableOfContents(),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",

@@ -12,8 +12,9 @@ import {
 import path from "path"
 import { visit } from "unist-util-visit"
 import isAbsoluteUrl from "is-absolute-url"
-import { Root } from "hast"
+import { Root, ElementContent } from "hast"
 import { filterEmbedTwitter } from "./twitter"
+import { VFile } from "vfile"
 
 interface RawFileOptions {
   enable: boolean
@@ -48,7 +49,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
     htmlPlugins(ctx) {
       return [
         () => {
-          return (tree: Root, file) => {
+          return (tree: Root, file: VFile) => {
             const curSlug = simplifySlug(file.data.slug!)
             const outgoing: Set<SimpleSlug> = new Set()
 
@@ -64,6 +65,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 node.properties &&
                 typeof node.properties.href === "string"
               ) {
+                // insert a span element into node.children
                 let dest = node.properties.href as RelativeURL
                 const ext: string = path.extname(dest).toLowerCase()
                 const classes = (node.properties.className ?? []) as string[]
@@ -168,6 +170,15 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 ) {
                   node.children[0].value = path.basename(node.children[0].value)
                 }
+
+                // add indicator spanContent after handling all prettyLinks
+                const spanContent: ElementContent = {
+                  properties: { className: "indicator-hook" },
+                  type: "element",
+                  tagName: "span",
+                  children: [],
+                }
+                node.children = [spanContent, ...node.children]
               }
 
               // transform all other resources that may use links
