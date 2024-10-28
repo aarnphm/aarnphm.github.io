@@ -4,6 +4,7 @@ tags:
   - sapling
   - evergreen
 date: "2023-07-29"
+modified: "2024-10-28"
 title: Writing
 ---
 
@@ -65,6 +66,11 @@ Political purpose
 
 Orwell is often known for his democratic socialism, and opposed for totalitarianism. But his [[thoughts/Will to Truth|will to truth]] is fundamental to his writing, a true [[thoughts/representations|representation]] of intellectual honesty. In the context of totalitarianism, Orwell pointed out that such regimes demand the continuous alteration of the past and probably a disbelief in the very existence of [objective truth](https://www.goodreads.com/book/show/35610790-orwell-on-truth). He saw the danger in a society that drifts from the truth, stating that it will hate those who speak it.
 
+> If you're thinking without writing, you only think you're thinking.
+>
+> So a world divided into writes and write-nots is more dangerous than it sounds. It will be a world of thinks and think-nots. I know which half I want to be in, and I bet you do too.
+>
+> -- [Write and write-not](https://paulgraham.com/writes.html)
 
 ## query.
 

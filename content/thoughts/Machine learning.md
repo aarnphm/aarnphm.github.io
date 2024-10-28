@@ -4,6 +4,7 @@ tags:
   - ml
   - sapling
 date: "2024-02-07"
+modified: "2024-10-28"
 title: Machine learning
 ---
 
@@ -31,8 +32,6 @@ Some main exploration:
 - [[thoughts/Low-rank adapters]]
 
 Related:
-- Linear algebra
-- [[thoughts/Automatic Differentiation]]
-
-Supervised machine learning:
-- [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression|linear regression]].
+- [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm#linear algebra review.|linear algebra]].
+- [[thoughts/Automatic Differentiation|autograd]]
+- [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm|supervised machine learning]].

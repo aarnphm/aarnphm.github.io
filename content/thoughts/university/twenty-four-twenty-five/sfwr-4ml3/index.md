@@ -8,7 +8,7 @@ date: "2024-09-10"
 modified: "2024-10-07"
 title: Introduction to Machine Learning
 ---
-See also [[thoughts/Machine learning|machine learning]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Lecture0.pdf|slides]]
+See also [[thoughts/Machine learning|machine learning]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture0.pdf|slides]]
 
 For annotated slides check out [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/annotated|slides]]
 
