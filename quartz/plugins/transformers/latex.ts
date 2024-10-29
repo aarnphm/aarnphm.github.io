@@ -25,10 +25,10 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = (opts) => {
       return [remarkMath]
     },
     htmlPlugins() {
-      if (engine === "katex") {
-        return [[rehypeKatex, { output: "html", macros, ...katexOptions }]]
+      switch (engine) {
+        default:
+          return [[rehypeKatex, { output: "html", macros, ...katexOptions }]]
       }
-      return []
     },
     externalResources() {
       return {

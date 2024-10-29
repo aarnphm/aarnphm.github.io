@@ -64,11 +64,25 @@ solution to $y^* = \argmin_{\hat{y}} E_{X,Y}(Y-\hat{y}(X))^2$ is $E[Y | X=x]$
 
 Instead we have $Z = \{(x^i, y^i)\}^n_{i=1}$
 
-### decomposition
+### error decomposition
 
 $$
 \begin{aligned}
 &E_{x,y}(y-\hat{y_Z}(x))^2 \\
-&= E_{xy}(y-y^{*}(x))^2 + E_x(y^{*}(x) - \hat{y_Z}(x))^2
+&= E_{xy}(y-y^{*}(x))^2 + E_x(y^{*}(x) - \hat{y_Z}(x))^2 \\
+&= \text{noise} + \text{estimation error}
+\end{aligned}
+$$
+
+### bias-variance decompositions
+
+For linear estimator:
+
+$$
+\begin{aligned}
+E_Z&E_{x,y}(y-(\hat{y}_Z(x)\coloneqq W^T_Zx))^2 \\
+=& E_{x,y}(y-y^{*}(x))^2 \quad \text{noise} \\
+&+ E_x(y^{*}(x) - E_Z(\hat{y_Z}(x)))^2 \quad \text{bias} \\
+&+ E_xE_Z(\hat{y_Z}(x) - E_Z(\hat{y_Z}(x)))^2 \quad \text{variance}
 \end{aligned}
 $$

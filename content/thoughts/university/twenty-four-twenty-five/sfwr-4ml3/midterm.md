@@ -202,7 +202,6 @@ Given any square matrix $A \in \mathbb{R}^{n \times n}$, the matrix $A + A^T$ is
 > - It is denoted by $A \succ 0$.
 > - The set of all positive definite matrices is denoted by $\mathbb{S}^n_{++}$
 
-
 > [!important] positive semi-definite
 >
 > $A$ is positive semi-definite if $x^TAx \geq 0 \forall x \in \mathbb{R}^n$.
@@ -383,7 +382,7 @@ $$
 
 ### continuous random variables
 
-uniform distribution: $X \sim \text{Unif}(a,b), a \le b$
+Uniform distribution: $X \sim \text{Unif}(a,b), a \le b$
 
 $$
 \begin{aligned}
@@ -394,7 +393,7 @@ f_X(x) &= \begin{cases} \frac{1}{b-a} & \text{if } a \le x \le b \\ 0 & \text{ot
 \end{aligned}
 $$
 
-exponential distribution: $X \sim \text{Exp}(\lambda), \lambda > 0$
+Exponential distribution: $X \sim \text{Exp}(\lambda), \lambda > 0$
 
 $$
 \begin{aligned}
@@ -405,7 +404,7 @@ f_X(x) = \lambda e^{-\lambda x} \\
 \end{aligned}
 $$
 
-gaussian distribution: $X \sim \mathcal{N}(\mu, \sigma^2), -\infty < \mu < \infty, \sigma^2 > 0$
+Gaussian distribution: $X \sim \mathcal{N}(\mu, \sigma^2), -\infty < \mu < \infty, \sigma^2 > 0$
 
 $$
 \begin{aligned}

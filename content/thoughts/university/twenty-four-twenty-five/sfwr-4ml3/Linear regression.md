@@ -111,7 +111,7 @@ $$
 > [!question] minimize $w$
 >
 > $$
-> \min\limits{W \in \mathbb{R}^{d \times 1}} \|XW - Y\|_2^2
+> \min\limits_{W \in \mathbb{R}^{d \times 1}} \|XW - Y\|_2^2
 > $$
 
 > [!abstract] OLS solution
