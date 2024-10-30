@@ -2,15 +2,35 @@
 @use "../../styles/mixin.scss" as *;
 
 .sidenotes {
+  counter-reset: sidenote-counter;
+
   & > ol {
     padding-inline-start: 0;
+    list-style: none;
   }
 
   & .sidenote-element {
-    transition: opacity 0.2s ease;
+    transition: all 0.2s ease-in-out;
     opacity: 0;
     margin-bottom: 1rem;
     margin-right: $topSpacing;
+    border: 1px solid var(--gray);
+    padding: 0.2rem 1rem;
+    counter-increment: sidenote-counter;
+    background-color: var(--light);
+
+    &::before {
+      content: counter(sidenote-counter);
+      background-color: var(--light);
+      font-size: 0.8em;
+      font-weight: bold;
+      margin-right: 0.5rem;
+      position: absolute;
+      top: -12px;
+      left: 12px;
+      padding: 1px 8px;
+      border: 1px solid var(--tertiary);
+    }
 
     &.in-view {
       opacity: 1;

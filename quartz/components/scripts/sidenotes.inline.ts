@@ -31,11 +31,10 @@ function getSidenoteBounds(
 ): { min: number; max: number } {
   const containerRect = sideContainer.getBoundingClientRect()
   const sidenoteRect = sidenote.getBoundingClientRect()
-  const parentRect = sideContainer.offsetParent?.getBoundingClientRect() || containerRect
 
   return {
-    min: 0, // Minimum is top of container
-    max: containerRect.height - sidenoteRect.height, // Maximum keeps footnote within container
+    min: 0,
+    max: containerRect.height - sidenoteRect.height,
   }
 }
 
@@ -44,8 +43,6 @@ function updateSidenotes(
   sideContainer: HTMLElement,
   footnoteElements: NodeListOf<HTMLElement>,
 ) {
-  const containerRect = sideContainer.getBoundingClientRect()
-
   footnoteElements.forEach((sidenote) => {
     const sideId = sidenote.id.replace("sidebar-", "")
     const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
@@ -70,15 +67,6 @@ function updateSidenotes(
     } else {
       sidenote.classList.remove("in-view")
       intextLink.classList.remove("active")
-    }
-
-    // Add class if note is at bounds
-    if (referencePosition === bounds.min) {
-      sidenote.classList.add("at-top-bound")
-    } else if (referencePosition === bounds.max) {
-      sidenote.classList.add("at-bottom-bound")
-    } else {
-      sidenote.classList.remove("at-top-bound", "at-bottom-bound")
     }
   })
 }
@@ -123,6 +111,8 @@ document.addEventListener("nav", () => {
     sidenote.style.position = "absolute"
     sidenote.id = `sidebar-${footnoteId}`
     const cloned = footnote.cloneNode(true) as HTMLElement
+    const backref = cloned.querySelector("a[data-footnote-backref]")
+    backref?.remove()
     sidenote.append(...cloned.children)
     ol.appendChild(sidenote)
   })
