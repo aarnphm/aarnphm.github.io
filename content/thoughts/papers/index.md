@@ -1,7 +1,7 @@
 ---
 id: index
 tags:
-  - seed
+  - folder
 date: "2024-01-20"
 modified: "2024-10-08"
 noindex: true
@@ -11,6 +11,7 @@ title: papers.
 A somewhat local cache of all papers I've read. This is one source of my Zotero library.
 
 <!-- update: start -->
+
 - [[thoughts/papers/A Novel Measure Inspired by Lyapunov Exponents for the Characterization of Dynamics in State-Transition Networks.pdf|A Novel Measure Inspired by Lyapunov Exponents for the Characterization of Dynamics in State-Transition Networks]]
 - [[thoughts/papers/A Persian Folk Method of Figuring Interest.pdf|A Persian Folk Method of Figuring Interest]]
 - [[thoughts/papers/A Personal Computing for Children of All Ages.pdf|A Personal Computing for Children of All Ages]]

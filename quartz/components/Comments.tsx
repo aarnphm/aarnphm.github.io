@@ -24,11 +24,16 @@ function boolToStringBool(b: boolean): string {
 }
 
 export default ((opts: Options) => {
-  const Comments: QuartzComponent = ({ displayClass, cfg, fileData }: QuartzComponentProps) => {
+  const Comments: QuartzComponent = ({
+    ctx,
+    displayClass,
+    cfg,
+    fileData,
+  }: QuartzComponentProps) => {
     const enableComments = fileData.frontmatter?.comments ?? true
     const isPost = fileData.slug!.startsWith("posts/")
     const isUniversity = fileData.slug!.includes("university")
-    if (!enableComments || isPost || isUniversity) {
+    if (!enableComments || isPost || isUniversity || ctx.argv.serve) {
       return <></>
     }
     return (

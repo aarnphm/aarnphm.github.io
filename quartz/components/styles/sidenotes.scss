@@ -1,0 +1,19 @@
+@use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
+
+.sidenotes {
+  & > ol {
+    padding-inline-start: 0;
+  }
+
+  & .sidenote-element {
+    transition: opacity 0.2s ease;
+    opacity: 0;
+    margin-bottom: 1rem;
+    margin-right: $topSpacing;
+
+    &.in-view {
+      opacity: 1;
+    }
+  }
+}

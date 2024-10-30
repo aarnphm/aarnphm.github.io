@@ -3,6 +3,7 @@ id: Transformers
 tags:
   - ml
 date: "2024-02-07"
+modified: "2024-10-30"
 title: Transformers
 ---
 
@@ -20,7 +21,9 @@ See also [[thoughts/Embedding|embedding]]
 
 ## memory limitations.
 
-Excerpt from https://arxiv.org/html/2403.14123v1 and [](https://x.com/karpathy/status/1691571869051445433)
+https://x.com/karpathy/status/1691571869051445433
+
+Excerpt from https://arxiv.org/html/2403.14123v1
 
 ## inference.
 
@@ -31,4 +34,3 @@ Either compute-bound (batch inference, saturated usage) or memory-bound (latency
 ### next-token prediction.
 
 Sampling: we essentially look forward K-tokens, and then we sample from the distribution of the next token.
-

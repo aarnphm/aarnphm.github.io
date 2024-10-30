@@ -1,5 +1,7 @@
-import { QuartzConfig } from "./quartz/cfg"
+import { GlobalConfiguration, QuartzConfig } from "./quartz/cfg"
+import { byDateAndAlphabetical } from "./quartz/components/PageList"
 import * as Plugin from "./quartz/plugins"
+import { QuartzPluginData } from "./quartz/plugins/vfile"
 
 /**
  * Quartz 4.0 Configuration
@@ -113,7 +115,23 @@ const config: QuartzConfig = {
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
       Plugin.ContentPage(),
-      Plugin.FolderPage(),
+      Plugin.FolderPage({
+        sort: (a: QuartzPluginData, b: QuartzPluginData): number => {
+          // Check if either file has a folder tag
+          const aHasFolder = a.frontmatter?.tags?.includes("folder") ?? false
+          const bHasFolder = b.frontmatter?.tags?.includes("folder") ?? false
+
+          // If one has folder tag and other doesn't, prioritize the one with folder tag
+          if (aHasFolder && !bHasFolder) return -1
+          else if (!aHasFolder && bHasFolder) return 1
+          else {
+            return byDateAndAlphabetical({ defaultDateType: "created" } as GlobalConfiguration)(
+              a,
+              b,
+            )
+          }
+        },
+      }),
       Plugin.TagPage(),
       Plugin.CuriusPage(),
       Plugin.MenuPage(),

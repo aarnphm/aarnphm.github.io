@@ -504,6 +504,14 @@ blockquote.twitter-tweet {
     border: 1px solid var(--secondary);
   }
 
+  &:first-child {
+    margin-top: 2rem;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+
   @include steps;
 }
 

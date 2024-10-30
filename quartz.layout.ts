@@ -43,8 +43,8 @@ export const defaultContentPageLayout: PageLayout = {
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Backlinks(),
   ],
-  // left: [Component.InlineFootnotes()],
-  left: [],
+  left: [Component.DesktopOnly(Component.Sidenotes())],
+  // left: [],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)

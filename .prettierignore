@@ -2,6 +2,6 @@ public
 node_modules
 .quartz-cache
 .mypy_cache
-content
+# content
 .venv
 safari.css

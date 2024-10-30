@@ -1,4 +1,4 @@
-import InlineFootnotes from "./InlineFootnotes"
+import Sidenotes from "./Sidenotes"
 import Landing from "./Landing"
 import Navigation from "./Navigation"
 import MinimalFooter from "./MinimalFooter"
@@ -32,7 +32,7 @@ import Breadcrumbs from "./Breadcrumbs"
 import Comments from "./Comments"
 
 export {
-  InlineFootnotes,
+  Sidenotes,
   Landing,
   Navigation,
   CuriusContent,

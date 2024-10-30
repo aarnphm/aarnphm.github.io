@@ -87,10 +87,10 @@ See [slides](https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN
 
 ## constrained decoding
 
-See vllm-project/vllm#5423
+See [vllm-project/vllm#5423](https://github.com/vllm-project/vllm/issues/5423)
 
 - not supported from `SamplingParams`
-- requires support batch/async logit processing
+- requires support batch/async logits processing
 - engine will die if failed
 
 [^ref]

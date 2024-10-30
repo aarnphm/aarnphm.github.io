@@ -14,39 +14,43 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ## current.
 
-- **Essay on Love** by Alain de Botton
-- **[[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]]** by Gilles Deleuze
-- **[[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|The Gay Science]]** by Friedrich Nietzsche
-- **Beyond Good and Evil** by Friedrich Nietzsche
-- **Beyond The Pleasure Principle** by Sigmund [[thoughts/Freud|Freud]]
-- **The Critique of Pure Reason** by Immanuel Kant
-- **The Metaphysics of Morals** by Immanuel Kant
-- **Crime and Punishment** by Fyodor Dostoevsky
-- **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
-- **Structure and Interpretation of Computer Programs** by Abelson and Sussman ([pdf](https://web.mit.edu/6.001/6.037/sicp.pdf))
+| title                                                                           | author                            | notes                                           |
+| ------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------- |
+| Essay on Love                                                                   | Alain de Botton                   |                                                 |
+| [[thoughts/Philosophy and Nietzsche\|Nietzsche and Philosophy]]                 | Gilles Deleuze                    |                                                 |
+| [[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf\|The Gay Science]] | Friedrich Nietzsche               |                                                 |
+| Beyond Good and Evil                                                            | Friedrich Nietzsche               |                                                 |
+| Beyond The Pleasure Principle                                                   | Sigmund [[thoughts/Freud\|Freud]] |                                                 |
+| The Critique of Pure Reason                                                     | Immanuel Kant                     |                                                 |
+| The Metaphysics of Morals                                                       | Immanuel Kant                     |                                                 |
+| Crime and Punishment                                                            | Fyodor Dostoevsky                 |                                                 |
+| The Triple Helix: Gene, Organism, and Environment                               | Richard Lewontin                  |                                                 |
+| Structure and Interpretation of Computer Programs                               | Abelson and Sussman               | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf) |
 
 ## to read.
 
 ### [[tags/philosophy|philosophy]]
 
-- **A Treatise of Human Nature** by David Hume
-- **The Evolution of Modern Metaphysics: Making Sense of Things** by A. W. Moore
-- [[thoughts/papers/Being and Some Philosophers.pdf|Being and Some Philosophers]] by Etienne Gilson
-- **The Phenomenology of Spirit** by G. W. F. Hegel
-- **The World as Will and [[thoughts/representations|Representation]]** by Arthur Schopenhauer
-- **The Prince** by Niccolò Machiavelli
-- **Utilitarianism** by John Stuart [[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill|Mill]]
-- **Meditations on First Philosophy** by René [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Descartes|Descartes]], French ed.
-- **Existentialism in Social [[thoughts/education|Pedagogy]]** by Søren Kierkegaard
-- **[[thoughts/The Will To Believe]]** by William James
-- **The Care of the Self** by Michel Foucault
-- **Metaphysical myths, mathematical Practice: The Ontology and [[thoughts/Epistemology|Epistemology]] of the Exact Science** by Michel Foucault
-- **Repetition** by Kierkegaard
-- **On Certainty** by Ludwig Wittgenstein
-- **[The Conquest of Happiness](https://russell-j.com/beginner/COH-TEXT.HTM)** by Bertrand Russell
-- **Being and Time** by Heidegger
-- [**Pensees**](https://www.gutenberg.org/files/18269/18269-h/18269-h.htm) by Pascal
-- **Being and Nothingness** by Jean-Paul Sartre
+| title                                                                                                                    | author                                                                                            | notes                                                             |
+| ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| A Treatise of Human Nature                                                                                               | David Hume                                                                                        |                                                                   |
+| The Evolution of Modern Metaphysics: Making Sense of Things                                                              | A. W. Moore                                                                                       |                                                                   |
+| [[thoughts/papers/Being and Some Philosophers.pdf\|Being and Some Philosophers]]                                         | Etienne Gilson                                                                                    |                                                                   |
+| The Phenomenology of Spirit                                                                                              | G. W. F. Hegel                                                                                    |                                                                   |
+| The World as Will and [[thoughts/representations\|Representation]]                                                       | Arthur Schopenhauer                                                                               |                                                                   |
+| The Prince                                                                                                               | Niccolò Machiavelli                                                                               |                                                                   |
+| Utilitarianism                                                                                                           | John Stuart [[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill\|Mill]]    |                                                                   |
+| Meditations on First Philosophy                                                                                          | René [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Descartes\|Descartes]], French ed. |                                                                   |
+| Existentialism in Social [[thoughts/education\|Pedagogy]]                                                                | Søren Kierkegaard                                                                                 |                                                                   |
+| [[thoughts/The Will To Believe\|The Will To Believe]]                                                                    | William James                                                                                     |                                                                   |
+| The Care of the Self                                                                                                     | Michel Foucault                                                                                   |                                                                   |
+| Metaphysical myths, mathematical Practice: The Ontology and [[thoughts/Epistemology\|Epistemology]] of the Exact Science | Michel Foucault                                                                                   |                                                                   |
+| Repetition                                                                                                               | Kierkegaard                                                                                       |                                                                   |
+| On Certainty                                                                                                             | Ludwig Wittgenstein                                                                               |                                                                   |
+| The Conquest of Happiness                                                                                                | Bertrand Russell                                                                                  | [html](https://russell-j.com/beginner/COH-TEXT.HTM)               |
+| Being and Time                                                                                                           | Heidegger                                                                                         |                                                                   |
+| Pensees                                                                                                                  | Pascal                                                                                            | [html](https://www.gutenberg.org/files/18269/18269-h/18269-h.htm) |
+| Being and Nothingness                                                                                                    | Jean-Paul Sartre                                                                                  |                                                                   |
 
 #### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 
@@ -71,37 +75,43 @@ A (mostly) up-to-date book lists that I read, wanting, am reading, or finished r
 
 ### non-fiction
 
-- **Deep Work** by Cal Newport
-- **Digital Minimalism** by Cal Newport
-- **Playing Software: Homo Ludens in Computational Culture** by Miguel Sicart
-- **Reimagining Capitalism in a World on Fire** by Rebecca Henderson
-- **Principles** by Ray Dalio
-- **Mindset** by Dr. Carol S. Dweck
-- **The Pleasure of Finding Things Out** by Richard P. Feynman
-- **Walden and Civil Disobedience** by Henry David Thoreau
-- **Deep Sleep** by Jade Wu
-- **[Are We Spiritual Machines?](https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=olbp56055)** by Ray Kurzweil
+| title                                                  | author              | notes                                                                            |
+| ------------------------------------------------------ | ------------------- | -------------------------------------------------------------------------------- |
+| Deep Work                                              | Cal Newport         |                                                                                  |
+| Digital Minimalism                                     | Cal Newport         |                                                                                  |
+| Playing Software: Homo Ludens in Computational Culture | Miguel Sicart       |                                                                                  |
+| Reimagining Capitalism in a World on Fire              | Rebecca Henderson   |                                                                                  |
+| Principles                                             | Ray Dalio           |                                                                                  |
+| Mindset                                                | Dr. Carol S. Dweck  |                                                                                  |
+| The Pleasure of Finding Things Out                     | Richard P. Feynman  |                                                                                  |
+| Walden and Civil Disobedience                          | Henry David Thoreau |                                                                                  |
+| Deep Sleep                                             | Jade Wu             |                                                                                  |
+| Are We Spiritual Machines?                             | Ray Kurzweil        | [html](https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=olbp56055) |
 
 ### fiction
 
-- **Recursion** by Blake Crouch
-- **The Trial** by Franz Kafka
-- **Sea of Tranquility** by Emily St. John Mandel
-- **Oblivion** by David Foster Wallace
-- **The Uninhabitable Earth** by Wallace-Weels
-- **The Idiot** by Fyodor Dostoevsky
-- **The Brothers Karamazov** by Fyodor Dostoevsky
-- **Fall On Your Knees** by Ann-Marie MacDonald
-- **Foundation** series by Isaac Asimov
-- **The Three-Body Problem** by Liu Cixin
-- **Robinson Crusoe** by Daniel Defoe
-- **The Overstory** by Richard Powers
-- **Rejection** by Tony Tulathimutte
+| title                   | author                |
+| ----------------------- | --------------------- |
+| Recursion               | Blake Crouch          |
+| The Trial               | Franz Kafka           |
+| Sea of Tranquility      | Emily St. John Mandel |
+| Oblivion                | David Foster Wallace  |
+| The Uninhabitable Earth | Wallace-Weels         |
+| The Idiot               | Fyodor Dostoevsky     |
+| The Brothers Karamazov  | Fyodor Dostoevsky     |
+| Fall On Your Knees      | Ann-Marie MacDonald   |
+| Foundation series       | Isaac Asimov          |
+| The Three-Body Problem  | Liu Cixin             |
+| Robinson Crusoe         | Daniel Defoe          |
+| The Overstory           | Richard Powers        |
+| Rejection               | Tony Tulathimutte     |
 
 ### poetry
 
-- **Dog songs** by Mary Oliver
-- **Come Home To Yourself** by Déjà Rae
+| title                 | author      |
+| --------------------- | ----------- |
+| Dog songs             | Mary Oliver |
+| Come Home To Yourself | Déjà Rae    |
 
 ---
 
