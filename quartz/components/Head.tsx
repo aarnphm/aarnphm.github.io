@@ -1,6 +1,6 @@
 import { i18n } from "../i18n"
 import { FullSlug, joinSegments, pathToRoot } from "../util/path"
-import { JSResourceToScriptElement } from "../util/resources"
+import { CSSResourceToStyleElement, JSResourceToScriptElement } from "../util/resources"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { SocialImageOptions, defaultImageOptions } from "../util/og"
 import { unescapeHTML } from "../util/escape"
@@ -106,9 +106,7 @@ export default (() => {
         <link rel="canonical" href={socialUrl} />
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
-        {css.map((href) => (
-          <link key={href} href={href} rel="stylesheet" type="text/css" spa-preserve />
-        ))}
+        {css.map((resource) => CSSResourceToStyleElement(resource, true))}
         {js
           .filter((resource) => resource.loadTime === "beforeDOMReady")
           .map((res) => JSResourceToScriptElement(res, true))}
