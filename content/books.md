@@ -8,7 +8,9 @@ modified: "2024-09-27"
 title: antilibrary.
 ---
 
-A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading. The [digital](/curius) version.
+A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
+
+See also: [[/curius|digital version]]
 
 > In essence, an [antilibrary](https://nesslabs.com/antilibrary) is a collection of unread books. It represents an ode to self that reminds you about topics that one wants to explore.
 

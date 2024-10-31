@@ -4,7 +4,7 @@
   "interfaceFontFamily": "AppleMyungjo,Apple Braille,Bricolage Grotesque,Charter,EB Garamond,Berkeley Mono",
   "textFontFamily": "Charter,ZedMono Nerd Font,BerkeleyMono Nerd Font Mono,Apple Braille,EB Garamond,Bricolage Grotesque,Cardo",
   "monospaceFontFamily": "0xProto Nerd Font,Berkeley Mono",
-  "baseFontSize": 17,
+  "baseFontSize": 21,
   "translucency": true,
   "showViewHeader": false,
   "enabledCssSnippets": [

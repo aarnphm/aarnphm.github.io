@@ -11,7 +11,7 @@ title: papers.
 A somewhat local cache of all papers I've read. This is one source of my Zotero library.
 
 <!-- update: start -->
-
+- [[thoughts/papers/(Real-Time Systems Series 24) Giorgio C. Buttazzo (auth.) - Hard Real-Time Computing Systems_ Predictable Scheduling Algorithms and Applications-Springer US (2011).pdf|(Real-Time Systems Series 24) Giorgio C. Buttazzo (auth.) - Hard Real-Time Computing Systems_ Predictable Scheduling Algorithms and Applications-Springer US (2011)]]
 - [[thoughts/papers/A Novel Measure Inspired by Lyapunov Exponents for the Characterization of Dynamics in State-Transition Networks.pdf|A Novel Measure Inspired by Lyapunov Exponents for the Characterization of Dynamics in State-Transition Networks]]
 - [[thoughts/papers/A Persian Folk Method of Figuring Interest.pdf|A Persian Folk Method of Figuring Interest]]
 - [[thoughts/papers/A Personal Computing for Children of All Ages.pdf|A Personal Computing for Children of All Ages]]
@@ -37,11 +37,13 @@ A somewhat local cache of all papers I've read. This is one source of my Zotero 
 - [[thoughts/papers/Opinion Paper - So what if ChatGPT wrote it - Multidisciplinary perspectives on opportunities, challenges and implications of generative conversational AI for research, practice and policy.pdf|Opinion Paper - So what if ChatGPT wrote it - Multidisciplinary perspectives on opportunities, challenges and implications of generative conversational AI for research, practice and policy]]
 - [[thoughts/papers/Paradoxes in Probabilities Theory and Mathematical Statistics.pdf|Paradoxes in Probabilities Theory and Mathematical Statistics]]
 - [[thoughts/papers/Probabilistic Robotics.pdf|Probabilistic Robotics]]
+- [[thoughts/papers/Programming Massively Parallel Processors.pdf|Programming Massively Parallel Processors]]
 - [[thoughts/papers/Randomized low-rank Runge-Kutta methods.pdf|Randomized low-rank Runge-Kutta methods]]
 - [[thoughts/papers/Sampling-Bias-Corrected Neural Modling for Large Corpus Item Recommendations.pdf|Sampling-Bias-Corrected Neural Modling for Large Corpus Item Recommendations]]
 - [[thoughts/papers/Steering Llama 2 via Contrastive Activation Addition.pdf|Steering Llama 2 via Contrastive Activation Addition]]
 - [[thoughts/papers/Systematic literature review on opportunities, challenges, and future research recommendations of artificial intelligence in education.pdf|Systematic literature review on opportunities, challenges, and future research recommendations of artificial intelligence in education]]
 - [[thoughts/papers/The Atlas of AI - Power, Politics by Kate Crawford.pdf|The Atlas of AI - Power, Politics by Kate Crawford]]
+- [[thoughts/papers/The Bitter Lesson by Rich Sutton.pdf|The Bitter Lesson by Rich Sutton]]
 - [[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|The Gay Science by Friedrich Nietzsche]]
 - [[thoughts/papers/The System Model and The User Mode; Exploring AI Dashboard Design.pdf|The System Model and The User Mode; Exploring AI Dashboard Design]]
 - [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|Tools for Conviviality by Ivan Illich]]

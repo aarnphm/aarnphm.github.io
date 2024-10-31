@@ -5,6 +5,7 @@ tags:
   - ml
   - llm
 date: "2024-02-07"
+modified: "2024-10-30"
 title: LLMs
 ---
 
@@ -55,15 +56,18 @@ Don't shit where you eat, **[[thoughts/Garbage in Garbage out|Garbage in, garbag
 
 Bland doublespeak
 
-See also: [All the better to see you with](https://www.kernelmag.io/2/all-the-better-to-see-you) and [this tweet](https://twitter.com/paulg/status/1761801995302662175)
+See also: [All the better to see you with](https://www.kernelmag.io/2/all-the-better-to-see-you)
+
+https://twitter.com/paulg/status/1761801995302662175
 
 ### machine-assisted writings
 
-_source: [`gwern dot net`](https://gwern.net/gpt-3)_
+_source: [`gwern[dot]net`](https://gwern.net/gpt-3)_
 
 ### Good-enough
 
-See [this](https://twitter.com/jachiam0/status/1598448668537155586) and [this](https://twitter.com/gordonbrander/status/1600469469419036675)
+https://twitter.com/jachiam0/status/1598448668537155586
+
 This only occurs if you only need a "good-enough" item where value outweighs the process.
 
 However, one should always consider to put in the work, rather than being "ok" with good enough. In the process of working through a problem, one will learn about bottleneck and problems to be solved, which in turn gain invaluable experience otherwise would not achieved if one fully relies on the interaction with the models alone.

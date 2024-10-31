@@ -74,18 +74,19 @@ $$
 ## euclidean norm
 
 $L_{2}$ norm:
+
 $$
 \| x \|_{2} = \sqrt{\sum_{i=1}^{n}{x_i^2}} = X^TX
 $$
 
-L1 norm: $\| x \|_{1} = \sum_{i=1}^{n}{|x_i|}$
+L1 norm: $\| x \|_{1} = \sum_{i=1}^{n}{|x_i|}$ ^l1norm
 
 $L_{\infty}$ norm: $\| x \|_{\infty} = \max_{i}{|x_i|}$
 
 p-norm: $\| x \|_{p} = (\sum_{i=1}^{n}{|x_i|^p})^{1/p}$
 
 > [!important] Comparison
-> $ \|x\|_{\infty} \leq \|x\|_{2} \leq \|x\|_{1}$
+> $ \|x\|_{\infty} \leq \|x\|_{2} \leq \|x\|\_{1}$
 
 > One can prove this with Cauchy-Schwarz inequality
 
@@ -99,8 +100,8 @@ $$
 
 ## Span
 
-
 > Given a set of vectors $\{x_1, x_2, \ldots, x_n\} \subseteq \mathbb{R}^d$, the span of the set is the set of all possible linear combinations of the vectors.
+>
 > $$
 > \text{span}(\{x_1, x_2, \ldots, x_n\}) = \{ y: y =  \sum_{i=1}^{n}{\alpha_i x_i} \mid \alpha_i \in \mathbb{R} \}
 > $$
@@ -117,9 +118,9 @@ For a matrix $A \in \mathbb{R}^{m \times n}$:
 If $\text{rank}(A) \leq m$, then the rows are linearly independent. If $\text{rank}(A) \leq n$, then the columns are linearly independent.
 
 > rank of a matrix $A$ is the number of linearly independent columns of $A$:
+>
 > - if $A$ is full rank, then $\text{rank}(A) = \min(m, n)$ ($\text{rank}(A) \leq \min(m, n)$)
 > - $\text{rank}(A) = \text{rank}(A^T)$
-
 
 ## solving linear system of equations
 

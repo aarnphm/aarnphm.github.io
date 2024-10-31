@@ -31,7 +31,12 @@ Some main exploration:
 - Supervised Q-learning
 - [[thoughts/Low-rank adapters]]
 
+Fields
+
+- [[thoughts/mechanistic interpretability]]
+
 Related:
+
 - [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm#linear algebra review.|linear algebra]].
 - [[thoughts/Automatic Differentiation|autograd]]
 - [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm|supervised machine learning]].

@@ -4,6 +4,7 @@ tags:
   - seed
   - philosophy
 date: "2023-10-18"
+modified: "2024-10-30"
 title: Play
 ---
 
@@ -15,7 +16,7 @@ title: Play
 
 Throw away your 5-year life plan, to create a garden of your curiosity
 
-Commercial viability vs. creativity endeavour,  [Do thing that don't scale](https://paulgraham.com/ds.html)
+Commercial viability vs. creativity endeavour, [Do thing that don't scale](https://paulgraham.com/ds.html)
 
 ### software.
 
@@ -42,7 +43,7 @@ Internet [playground](https://woolgather.sh/issue/2)
 
 Can we shift [[thoughts/education#system|education system]] away from assessing students to let them explore their own interests?
 
-[Magic Circle](https://subconscious.substack.com/p/magic-circles)
+[Magic Circle](https://subconscious.substack.com/p/magic-circles) or [from squishy\[dot\]computer](https://newsletter.squishy.computer/p/magic-circles)
 
 - is a space which a game takes place. Once we step into it, we suspend the rules of life, allow the rules of the game to take over our interactions
 

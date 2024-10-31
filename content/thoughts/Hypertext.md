@@ -3,6 +3,7 @@ id: Hypertext
 tags:
   - seed
 date: "2024-02-09"
+modified: "2024-10-30"
 title: Hypertext
 ---
 
@@ -20,3 +21,9 @@ He envisioned an utopia, a global hypertext system (Xanadu) where all data was s
 and everyone would be paid fairly for their work.
 
 [^1]: [Interview with Ted Nelson](https://ics.uci.edu/~ejw/csr/nelson_pg.html)
+
+## fiction
+
+See also: [url](http://fictionaut.com/blog/2010/02/12/checking-in-with-hypertext-fiction/)
+
+non-linear space that use hypertext to explore narrative possibilities
