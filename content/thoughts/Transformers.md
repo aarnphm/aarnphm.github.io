@@ -7,23 +7,21 @@ modified: "2024-10-30"
 title: Transformers
 ---
 
-See also: [[thoughts/LLMs|LLMs]]
+See also: [[thoughts/LLMs|LLMs]], [[thoughts/Embedding|embedding]], [visualisation from Brendan Bycroft](https://bbycroft.net/llm)
+
+> A multi-layer perception (MLP) architecture built on top of a multi-head attention mechanism [@vaswani2023attentionneed] to signal high entropy tokens to be amplified and less important tokens to be diminished.
 
 ELI5: Mom often creates a food list consists of $n$ of items to buy. Your job is to guess what the last item on this list would be.
 
 Most implementations are [[thoughts/Autoregressive models|autoregressive]]. Most major SOTA are decoder-only, as encoder-decoder models has lack behind due to their expensive encoding phase.
 
-See this amazing [visualisation from Brendan Bycroft](https://bbycroft.net/llm)
-
 [[thoughts/state-space models|state-space models]] which address transformers' [efficiency issues](https://arxiv.org/pdf/2009.06732) in attention layers within information-dense [[thoughts/data|data]]
-
-See also [[thoughts/Embedding|embedding]]
 
 ## memory limitations.
 
-https://x.com/karpathy/status/1691571869051445433
+_excerpt from [arxiv](https://arxiv.org/html/2403.14123)_
 
-Excerpt from https://arxiv.org/html/2403.14123v1
+https://x.com/karpathy/status/1691571869051445433
 
 ## inference.
 

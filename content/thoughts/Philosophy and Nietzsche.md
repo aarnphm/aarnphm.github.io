@@ -4,6 +4,7 @@ tags:
   - philosophy
   - seed
 date: "2023-12-04"
+modified: "2024-10-31"
 title: Philosophy and Nietzsche
 ---
 
@@ -59,6 +60,7 @@ For the speculative element of negation, opposition or contradiction Nietzsche s
 The question which Nietzsche constantly repeats, "what does a will want, what does this one or that one want?", must not be understood as the search for a goal, a motive or an object for this will. What a will wants is to affirm its difference.
 
 In its essential relation with the "other" a will makes its difference an object of affirmation.
+
 > "The pleasure of knowing oneself different", the enjoyment of difference (BGE 260);
 
 This is the new, aggressive and elevated conceptual element that empiricism substitutes for the heavy notions of the dialectic and above all, as the dialectician puts it, for the labour of the negative.
@@ -181,14 +183,18 @@ Contains a deliberate overlooking or misunderstanding of complexity and depth of
 
 Nietzsche posits that humans have contrived to retain their ignorance in order to enjoy life with freedom, lack of scruple, heartiness, and gaiety. This foundation of ignorance allows knowledge to rise, but it does so on the foundation of a far more powerful [[thoughts/Will|will]] --- will to ignorance to uncertainty, to the untrue.
 
-Nietzsche juxtaposes a paradox at our existence: a foundation of ignorance is actually built upon our will to knowledge.  Will to knowledge is not opposed to ignorance, rather a refinement. Will to ignorance is actually a strategy of [[thoughts/Will to Power|power]], as it motivates [[thoughts/Giles Deleuze#active and reactive forces.|force]].
+Nietzsche juxtaposes a paradox at our existence: a foundation of ignorance is actually built upon our will to knowledge. Will to knowledge is not opposed to ignorance, rather a refinement. Will to ignorance is actually a strategy of [[thoughts/Will to Power|power]], as it motivates [[thoughts/Giles Deleuze#active and reactive forces.|force]].
 
 ---
+
 ## The Gay Science
 
 Mentions the Death of God and start the introduction to the doctrine of eternal occurrence
 
-The original title was "la gayza scienza", and "gay" doesn't necessarily means homosexuality, rather flexible and joyful. If word for word to be transcribed, it would meant The Joyful Science.
+> [!note] The connotation of "gay" in Nietzsche's dialectics
+>
+> The original title was "la gayza scienza", and "gay" doesn't necessarily means homosexuality, rather flexible and joyful.
+> If word for word to be transcribed, it would meant The Joyful Science.
 
 ---
 
@@ -197,3 +203,6 @@ The original title was "la gayza scienza", and "gay" doesn't necessarily means h
 ---
 
 ## Thus Spoke Zarathustra
+
+Consciousness is what you make of it. The values you gather through experience are curated largely based on your environment, and Zarathustra guides you on acting morally.
+People are innately good, but circumstances make them act a certain way.

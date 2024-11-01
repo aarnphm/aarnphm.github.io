@@ -1,3 +1,12 @@
+---
+id: Sam Hall
+tags:
+  - seed
+date: "2024-10-31"
+modified: "2024-10-31"
+title: Sam Hall
+---
+
 Met from Zach
 
 problem: interaction with UI (infrastructure and optimization)
@@ -13,3 +22,4 @@ Android => binder
 AndroidControl: https://arxiv.org/abs/2406.03679
 
 phone: 715-642-5555
+

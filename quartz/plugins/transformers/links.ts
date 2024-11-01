@@ -73,6 +73,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   opts.enableRawEmbed.enable && opts.enableRawEmbed.extensions?.includes(ext)
                     ? true
                     : isAbsoluteUrl(dest)
+                const isCslNode = classes.includes("csl-external-link")
                 const isEmbedTwitter = filterEmbedTwitter(node)
 
                 if (!isEmbedTwitter) {
@@ -92,7 +93,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   }
                 }
 
-                if (!isEmbedTwitter && isExternal && opts.externalLinkIcon) {
+                if (!isEmbedTwitter && !isCslNode && isExternal && opts.externalLinkIcon) {
                   node.children.push({
                     type: "element",
                     tagName: "svg",

@@ -51,6 +51,7 @@ function processTextNode(node: Text): (Element | Text)[] {
         href: url,
         target: "_blank",
         rel: "noopener noreferrer",
+        className: ["csl-external-link"],
       },
       children: [{ type: "text", value: url }],
     })

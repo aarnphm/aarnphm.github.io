@@ -3,6 +3,8 @@ import path from "path"
 import esbuild from "esbuild"
 import chalk from "chalk"
 import { sassPlugin } from "esbuild-sass-plugin"
+import { getContext, modulesPaths } from "esbuild-sass-plugin/lib/utils.js"
+import { createRenderer } from "esbuild-sass-plugin/lib/render.js"
 import fs from "fs"
 import { intro, outro, select, text } from "@clack/prompts"
 import { rimraf } from "rimraf"
@@ -231,6 +233,11 @@ export async function handleBuild(argv) {
     plugins: [
       sassPlugin({
         type: "css-text",
+        cssImports: true,
+      }),
+      sassPlugin({
+        filter: /\.inline\.scss$/,
+        type: "css",
         cssImports: true,
       }),
       {

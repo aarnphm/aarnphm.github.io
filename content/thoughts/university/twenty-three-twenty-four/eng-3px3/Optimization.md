@@ -3,7 +3,8 @@ id: Optimization
 tags:
   - eng3px3
 date: "2024-02-01"
-title: Optimization
+modified: "2024-10-31"
+title: Economic Optimization
 ---
 
 See also [[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 07 Optimization Problem Formulation.pdf|slides]]
@@ -13,6 +14,7 @@ See also [[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 07 Optimiz
 - conclusions from the model of the system
 
 Components:
+
 - decision variables
 - constraints
 - objectives
@@ -27,7 +29,6 @@ g(x) \leq 0 & &\leftarrow &\space \text{Inequality constraints} \\\
 x_{lb} \leq x \leq x_{ub} & &\leftarrow &\space \text{Bounds}
 \end{align*}
 $$
-
 
 ## decision variables
 
@@ -57,14 +58,15 @@ $$
 > a decision upper and lower bounds ($x^{\mathcal{U}}$ and $x^{\mathcal{L}}$)
 
 > [!note] Properties
-> - **Active/binding**: $\exists \space x^{*} \mid g(x^{*}) = 0$
 >
+> - **Active/binding**: $\exists \space x^{*} \mid g(x^{*}) = 0$
 > - **Inactive**: $\exists \space x^{*} \mid g(x^{*}) < 0$
 
 ### graphing models
 
 > [!note] feasible set of an optimization model
 > The collection of decision variables that satisfy all constraints
+>
 > $$
 > \mathcal{S} \triangleq \lbrace x : g(x) \leq 0, h(x) = 0, x^L \leq x \leq x^U \rbrace
 > $$
@@ -73,6 +75,7 @@ $$
 
 > [!important] optimal value
 > the optimal value $\phi^{*}$ is the value of the objective at the optimum(s)
+>
 > $$
 > \phi^{*} \triangleq \phi(x^{*})
 > $$

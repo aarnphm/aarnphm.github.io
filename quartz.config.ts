@@ -90,7 +90,7 @@ const config: QuartzConfig = {
       Plugin.ObsidianFlavoredMarkdown(),
       Plugin.GitHubFlavoredMarkdown(),
       // Plugin.GitHub(),
-      Plugin.TableOfContents(),
+      Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",
         externalLinkIcon: true,

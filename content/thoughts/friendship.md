@@ -7,6 +7,11 @@ date: "2024-06-22"
 modified: "2024-10-08"
 title: friendship
 ---
+
+> Heartbreaks are also what you make of them.
+> Relationships teach you how to gently treat someone as one of your own; they also bash and crush your heart, as if the world is crumbling in front of your eyes.
+> But it is okay; relationships are what we deem worth giving meaning to the absurdity of life.
+
 ## of pleasure. or utility?
 
 https://twitter.com/patriciamou_/status/1758354933521478126

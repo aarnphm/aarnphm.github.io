@@ -1,9 +1,9 @@
 {
   "accentColor": "#e67f7f",
   "cssTheme": "Minimal",
-  "interfaceFontFamily": "AppleMyungjo,Apple Braille,Bricolage Grotesque,Charter,EB Garamond,Berkeley Mono",
-  "textFontFamily": "Charter,ZedMono Nerd Font,BerkeleyMono Nerd Font Mono,Apple Braille,EB Garamond,Bricolage Grotesque,Cardo",
-  "monospaceFontFamily": "0xProto Nerd Font,Berkeley Mono",
+  "interfaceFontFamily": "Apple Braille,Berkeley Mono,Charter,EB Garamond",
+  "textFontFamily": "BerkeleyMono Nerd Font Mono,ZedMono Nerd Font,Apple Braille,EB Garamond,Cardo",
+  "monospaceFontFamily": "ZedMono Nerd Font,0xProto Nerd Font,Berkeley Mono",
   "baseFontSize": 21,
   "translucency": true,
   "showViewHeader": false,

@@ -4,12 +4,17 @@ tags:
   - sapling
   - ml
   - llm
+author: ""
 date: "2024-02-07"
 modified: "2024-10-30"
 title: LLMs
 ---
 
-[[thoughts/Autoregressive models|autoregressive]] foundational [[thoughts/Machine learning|machine learning]] models.
+[[thoughts/Machine learning|large language]] models, often implemented as [[thoughts/Autoregressive models|autoregressive]] [[thoughts/Transformers|transformers]] models.
+
+> [!note] GPTs and friends
+>
+> Most variants of LLMs are decoder-only
 
 Have "capabilities" to understand [[thoughts/NLP|natural language]].
 
@@ -48,8 +53,6 @@ There are ethical concerns with the act of "hallucinating" content, therefore al
 
 To create a better [[thoughts/representations|representations]] of the world for both humans and machines to understand, we can truly have assistive tools to enhance our understanding of the world surround us
 
-Imagine [[thoughts/Philosophy and Nietzsche|Nietzsche]], [[thoughts/Philosophy and Kant|Kant]], [[thoughts/Camus|Camus]] coexists in the same room.
-
 ### AI generated content
 
 Don't shit where you eat, **[[thoughts/Garbage in Garbage out|Garbage in, garbage out]]**. The quality of the content is highly dependent on the quality of the data it was trained on, or model are incredibly sensitive to [[thoughts/data|data]] variances and biases.
@@ -63,6 +66,8 @@ https://twitter.com/paulg/status/1761801995302662175
 ### machine-assisted writings
 
 _source: [`gwern[dot]net`](https://gwern.net/gpt-3)_
+
+Idea: use [[thoughts/mechanistic interpretability#sparse autoencoders]] to guide ideas generations
 
 ### Good-enough
 

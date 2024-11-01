@@ -8,6 +8,11 @@ modified: "2024-10-31"
 title: Autoregressive models
 ---
 
-Statistical models that generate/predict the future based on past values.
+A statistical model is autoregressive if it predicts future values based on past values. For example,
+an autoregressive model might seek to predict a stock’s future prices based on its past performance.
 
-i.e: GPT-3, or stock market prediction models.
+In context of LLMs, generative pre-trained [[thoughts/Transformers|transformers]] (GPTs) are derivations of
+auto-regressive models where it takes an input sequence of tokens length $n$ and predicting the next token at index
+$n+1$.
+
+Auto-regressive models are often considered a more correct terminology when describing text-generation models.

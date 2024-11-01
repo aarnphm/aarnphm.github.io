@@ -71,6 +71,9 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses", "cssclass"]))
             if (cssclasses) data.cssclasses = cssclasses
 
+            const permalinks = coerceToArray(coalesceAliases(data, ["permalink", "permalinks"]))
+            if (permalinks) data.permalinks = permalinks
+
             // fill in frontmatter
             file.data.frontmatter = data as QuartzPluginData["frontmatter"]
           }
@@ -87,6 +90,7 @@ declare module "vfile" {
     } & Partial<{
         navigation: string[]
         modified: string
+        permalinks: string[]
         comments: boolean
         tags: string[]
         aliases: string[]

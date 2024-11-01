@@ -1,7 +1,6 @@
 ---
 id: mechanistic interpretability
 aliases:
-  - mech interp
   - mechinterp
 tags:
   - ml
@@ -9,6 +8,9 @@ tags:
 date: "2024-10-30"
 description: all things mech interp
 modified: "2024-10-30"
+permalink:
+  - /mechinterp
+  - /mechanistic-interpretability
 title: mechanistic interpretability
 ---
 
@@ -68,7 +70,7 @@ Often contains one layers of MLP with few linear ReLU that is trained on a subse
 > \\
 > \because \begin{aligned}
 >  d_i M \gg n&:\text{ latent unit-norm feature direction} \\
-> f_i(x) \ge 0&: \text{ coresponding feature activation for }x
+> f_i(x) \ge 0&: \text{ corresponding feature activation for }x
 > \end{aligned}
 > $$
 
@@ -93,9 +95,11 @@ $$
 
 > [!important] intuition
 >
-> We need to reconstruction fidelity at a given sparsity level, as measured by L0 via a mixture of reconstruction fidelity and L1 regularization.
+> We need to reconstruction fidelity at a given sparsity level, as measured by
+> L0 via a mixture of reconstruction fidelity and L1 regularization.
 
-We can reduce sparsity loss term without affecting reconstruction by scaling up norm of decoder weights, or constraining norms of columns $W_\text{dec}$ durin training
+We can reduce sparsity loss term without affecting reconstruction by scaling up norm of
+decoder weights, or constraining norms of columns $W_\text{dec}$ during training
 
 Ideas: output of decoder $f(x)$ has two roles
 
@@ -203,7 +207,7 @@ reasoning: “noisy simulation”, where small neural networks exploit feature s
 When we talk about features [@elhage2022superposition{see "Empirical Phenomena"}], the theory building around
 several observed empirical phenomena:
 
-1. Word Embeddings: have direction which coresponding to semantic properties [@mikolov-etal-2013-linguistic]. For
+1. Word Embeddings: have direction which corresponding to semantic properties [@mikolov-etal-2013-linguistic]. For
    example:
    ```prolog
    V(king) - V(man) = V(monarch)
@@ -249,7 +253,7 @@ $$
 
 ## grokking
 
-See also: [writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mechanistic-interpretability-analysis-of-grokking) and [code](https://colab.research.google.com/drive/1F6_1_cWXE5M7WocUcpQWp3v8z4b1jL20), [In-context Learning and Induction Heads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html)
+See also: [writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mechanistic-interpretability-analysis-of-grokking), [code](https://colab.research.google.com/drive/1F6_1_cWXE5M7WocUcpQWp3v8z4b1jL20), [circuit threads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html)
 
 > A phenomena discovered by [@power2022grokkinggeneralizationoverfittingsmall] where small algorithmic tasks like modular addition will initially memorise training data, but after a long time ti will suddenly learn to generalise to unseen data
 
