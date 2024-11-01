@@ -3,8 +3,6 @@ import path from "path"
 import esbuild from "esbuild"
 import chalk from "chalk"
 import { sassPlugin } from "esbuild-sass-plugin"
-import { getContext, modulesPaths } from "esbuild-sass-plugin/lib/utils.js"
-import { createRenderer } from "esbuild-sass-plugin/lib/render.js"
 import fs from "fs"
 import { intro, outro, select, text } from "@clack/prompts"
 import { rimraf } from "rimraf"
@@ -46,7 +44,7 @@ export async function handleCreate(argv) {
   let linkResolutionStrategy = argv.links?.toLowerCase()
   const sourceDirectory = argv.source
 
-  // If all cmd arguments were provided, check if theyre valid
+  // If all cmd arguments were provided, check if they're valid
   if (setupStrategy && linkResolutionStrategy) {
     // If setup isn't, "new", source argument is required
     if (setupStrategy !== "new") {
@@ -242,7 +240,7 @@ export async function handleBuild(argv) {
       }),
       {
         name: "inline-script-loader",
-        setup(build) {
+        async setup(build) {
           build.onLoad({ filter: /\.inline\.(ts|js)$/ }, async (args) => {
             let text = await promises.readFile(args.path, "utf8")
 

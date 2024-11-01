@@ -1,0 +1,74 @@
+.collapsible-header {
+  position: relative;
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+
+  // Indentation based on header level
+  &[data-level="2"] {
+    margin-left: 1rem;
+  }
+  &[data-level="3"] {
+    margin-left: 1.3rem;
+  }
+  &[data-level="4"] {
+    margin-left: 1.6rem;
+  }
+  &[data-level="5"] {
+    margin-left: 2rem;
+  }
+  &[data-level="6"] {
+    margin-left: 2.2rem;
+  }
+
+  & .header-button {
+    background-color: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    padding: 0;
+    color: var(--dark);
+    display: inline-flex;
+    align-items: center;
+
+    & .fold {
+      // margin-left: 0.5rem;
+      transition: transform 0.3s ease;
+      opacity: 0.8;
+    }
+
+    &.collapsed .fold {
+      transform: rotateZ(-90deg);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin: 0;
+      flex: 1;
+    }
+  }
+
+  // The SVG icon has width 18px, meaning the outer would take padding 9px
+  // and content border-left can be centered
+  & .collapsible-header-content-outer {
+    padding-left: 9px;
+
+    & > .collapsible-header-content {
+      border-left: 1px dashed var(--gray);
+      overflow: hidden;
+      transition: max-height 0.2s ease-in-out;
+      padding-left: 9px;
+      max-height: none;
+
+      &.collapsed {
+        max-height: 0 !important;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+    }
+  }
+}

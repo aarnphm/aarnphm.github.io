@@ -79,3 +79,43 @@ export function getRandomString(length: number) {
   }
   return result
 }
+
+export function isInViewport(element: HTMLElement, buffer: number = 100) {
+  const rect = element.getBoundingClientRect()
+  return (
+    rect.top >= -buffer &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) + buffer
+  )
+}
+
+// Computes an offset such that setting `top` on elemToAlign will put it
+// in vertical alignment with targetAlignment.
+function computeOffsetForAlignment(elemToAlign: HTMLElement, targetAlignment: HTMLElement) {
+  const offsetParentTop = elemToAlign.offsetParent!.getBoundingClientRect().top
+  return targetAlignment.getBoundingClientRect().top - offsetParentTop
+}
+
+// Get bounds for the sidenote positioning
+function getBounds(parent: HTMLElement, child: HTMLElement): { min: number; max: number } {
+  const containerRect = parent.getBoundingClientRect()
+  const sidenoteRect = child.getBoundingClientRect()
+
+  return {
+    min: 0,
+    max: containerRect.height - sidenoteRect.height,
+  }
+}
+
+export function updatePosition(ref: HTMLElement, child: HTMLElement, parent: HTMLElement) {
+  // Calculate ideal position
+  let referencePosition = computeOffsetForAlignment(child, ref)
+
+  // Get bounds for this sidenote
+  const bounds = getBounds(parent, child)
+
+  // Clamp the position within bounds
+  referencePosition = Math.max(referencePosition, Math.min(bounds.min, bounds.max))
+
+  // Apply position
+  child.style.top = `${referencePosition}px`
+}

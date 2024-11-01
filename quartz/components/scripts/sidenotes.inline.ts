@@ -1,74 +1,31 @@
-import { removeAllChildren } from "./util"
+import { removeAllChildren, isInViewport, updatePosition } from "./util"
 
 const ARTICLE_CONTENT_SELECTOR = ".center"
 const FOOTNOTE_SECTION_SELECTOR = "section[data-footnotes] > ol"
 const INDIVIDUAL_FOOTNOTE_SELECTOR = "li[id^='user-content-fn-']"
 
-// Computes an offset such that setting `top` on elemToAlign will put it
-// in vertical alignment with targetAlignment.
-function computeOffsetForAlignment(elemToAlign: HTMLElement, targetAlignment: HTMLElement) {
-  const offsetParentTop = elemToAlign.offsetParent!.getBoundingClientRect().top
-  return targetAlignment.getBoundingClientRect().top - offsetParentTop
-}
+function updateSidenotes() {
+  const articleContent = document.querySelector(ARTICLE_CONTENT_SELECTOR) as HTMLElement
+  const sideContainer = document.querySelector(".sidenotes") as HTMLElement
+  if (!articleContent || !sideContainer) return
 
-// Clamp value between min and max
-function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(value, max))
-}
-
-function isInViewport(element: HTMLElement, buffer: number = 100) {
-  const rect = element.getBoundingClientRect()
-  return (
-    rect.top >= -buffer &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) + buffer
-  )
-}
-
-// Get bounds for the sidenote positioning
-function getSidenoteBounds(
-  sideContainer: HTMLElement,
-  sidenote: HTMLElement,
-): { min: number; max: number } {
-  const containerRect = sideContainer.getBoundingClientRect()
-  const sidenoteRect = sidenote.getBoundingClientRect()
-
-  return {
-    min: 0,
-    max: containerRect.height - sidenoteRect.height,
-  }
-}
-
-function updateSidenotes(
-  articleContent: HTMLElement,
-  sideContainer: HTMLElement,
-  footnoteElements: NodeListOf<HTMLElement>,
-) {
-  footnoteElements.forEach((sidenote) => {
+  const sidenotes = sideContainer.querySelectorAll(".sidenote-element") as NodeListOf<HTMLElement>
+  for (const sidenote of sidenotes) {
     const sideId = sidenote.id.replace("sidebar-", "")
     const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
     if (!intextLink) return
 
-    // Calculate ideal position
-    let referencePosition = computeOffsetForAlignment(sidenote, intextLink)
+    if (sidenote.classList.contains("collapsed")) continue
 
-    // Get bounds for this sidenote
-    const bounds = getSidenoteBounds(sideContainer, sidenote)
-
-    // Clamp the position within bounds
-    referencePosition = clamp(referencePosition, bounds.min, bounds.max)
-
-    // Apply position
-    sidenote.style.top = `${referencePosition}px`
-
-    // Update visibility state
     if (isInViewport(intextLink)) {
       sidenote.classList.add("in-view")
       intextLink.classList.add("active")
+      updatePosition(intextLink, sidenote, sideContainer)
     } else {
       sidenote.classList.remove("in-view")
       intextLink.classList.remove("active")
     }
-  })
+  }
 }
 
 function debounce(fn: Function, delay: number) {
@@ -117,22 +74,12 @@ document.addEventListener("nav", () => {
     ol.appendChild(sidenote)
   })
 
-  // Get all sidenotes for updates
-  const sidenotes = sideContainer.querySelectorAll(".sidenote-element") as NodeListOf<HTMLElement>
-
-  // Initial position update
-  updateSidenotes(articleContent, sideContainer, sidenotes)
+  updateSidenotes()
 
   // Update on scroll with debouncing
-  const debouncedUpdate = debounce(
-    () => updateSidenotes(articleContent, sideContainer, sidenotes),
-    16, // ~60fps
-  )
+  const debouncedUpdate = debounce(updateSidenotes, 2)
 
-  // Add scroll listener
   document.addEventListener("scroll", debouncedUpdate, { passive: true })
-
-  // Add resize listener
   window.addEventListener("resize", debouncedUpdate, { passive: true })
 
   // Cleanup

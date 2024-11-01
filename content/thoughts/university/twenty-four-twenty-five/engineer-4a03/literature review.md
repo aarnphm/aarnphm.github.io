@@ -5,8 +5,10 @@ tags:
 date: "2024-10-07"
 modified: "2024-10-08"
 noindex: true
+sidenotes: false
 title: literature review
 ---
+
 See also [[posts/a1|essays on ChatGPT]]
 
 ## introduction.
@@ -26,11 +28,13 @@ companies that build AI systems to amplify our abilities to create and improve e
 This literature review aims to provide a comprehensive overview of the current state of AI, through its history and current adoption. It will also include investigations into certain concerns for diversity, equity, and inclusion (DEI) within the field,
 as well as the ethical implications of AI systems. It will then conclude and posit questions about where we go from here.
 
-[^1]: [@jordan2015machine] described the emerging trends within classical machine learning systems, focusing on recommendation systems. From a recent McKinsey's reports of outlook trend of 2024, they
+[^1]:
+    [@jordan2015machine] described the emerging trends within classical machine learning systems, focusing on recommendation systems. From a recent McKinsey's reports of outlook trend of 2024, they
     reported around 570bn dollars equity investment in the adoption of generative AI, notably the integration of LLMs into enterprises usecase [@mckinsey2024techtrends]
 
-[^framing]: An intelligent being learns from its experience, then applies such intuition to predict future events. How does one select appropriate context (frame) for a given situation?<br />
-          Dreyfus’ argument is that machines are yet able to represent human’s reliance on many unconscious and subconscious processes [@dreyfus1972what]. A Heideggerian AI would exhibit Dasein (being in the world).
+[^framing]:
+    An intelligent being learns from its experience, then applies such intuition to predict future events. How does one select appropriate context (frame) for a given situation?<br />
+    Dreyfus’ argument is that machines are yet able to represent human’s reliance on many unconscious and subconscious processes [@dreyfus1972what]. A Heideggerian AI would exhibit Dasein (being in the world).
 
 [^ssi]: Their goals are to build “artificial super intelligence” (ASI) systems. This target is largely due to certain observer-expectancy effect we observe in the current AI system.
 
@@ -58,12 +62,17 @@ Given the rise of Moore's Law and the exponential amount of computing and data a
 where the majority of research are focused on developing artificial neural networks that optimizes around loss functions [@vaswani2023attentionneed] [@srivastava_dropout_2014]. One notable example that combines both GOFAI and NFAI
 systems is AlphaZero, a connectionist network based Go playing systems, that uses a deep neural networks to assess new positions and Monte-Carlo Tree Search (a GOFAI algorithm) to determine its next move [@silver2017masteringchessshogiselfplay].
 
-[^2]: According to Plato, Socrates asked Euthyphro, a fellow Athenian who is about to turn in his own father for murder in the name of piety: "I want to know what is characteristic of piety which makes all actions pious. [...] that I may have it to turn to, and to use as a standard whereby to judge your actions and those of other men."
+[^2]:
+    According to Plato, Socrates asked Euthyphro, a fellow Athenian who is about to turn in his own father for murder in the name of piety: "I want to know what is characteristic of piety which makes all actions pious. [...] that I may have it to turn to, and to use as a standard whereby to judge your actions and those of other men."
     This is Socrates' version of [[thoughts/effective procedure]] for modern-day computer scientists.
-[^3]: According to Plato, all knowledge must be universally applicable with explicit definitions, in other words, intuition, feeling would not constitute as the definition of knowing
+
+[^3]:
+    According to Plato, all knowledge must be universally applicable with explicit definitions, in other words, intuition, feeling would not constitute as the definition of knowing
     Aristotle differed from Plato where intuition was necessary to applying theory into practice [@aristotle_nicomachean_ethics{pp.8, book VI}].
     For Plato, cooks, who proceed by taste and intuition does not involve understanding because they have no knowledge. Intuition is considered as a mere belief.
+
 [^4]: Allen Newell and Herbert Simon's work at RAND initially showed that computers can simulate important aspects of intelligence.
+
 [^5]: Notable figures include John Hopfield, Hinton's "A Learning Algorithm for Boltzmann Machines" [@ackley_learning_1985] that introduces the concept of Boltzmann's distributions in training neural networks, as well as Hinton's later work on backpropagation algorithm.
 
 ## adoption.
@@ -77,8 +86,10 @@ of this phenomenon since statistical methods often predict certain pattern from 
 Supervised learning methods including Naive Bayes, Decision tree, and other Bayesian models have been well integrated into industries to solve forecasting and classification problems [@zhang2020labelingmethod]
 
 [^6]: Some notable quotes:
-     - "Unlike financial derivatives, which they in some ways resemble, these new data derivatives draw their value, parasite-like, from human experience.".
-     - "[Facebook's algorithm fine-tuning and data wrangling] is aimed at solving one problem: how and when to intervene in the state of play that is your daily life in order to modify your behavior and thus sharply increase the predictability of your actions now, soon, and later."
+
+    - "Unlike financial derivatives, which they in some ways resemble, these new data derivatives draw their value, parasite-like, from human experience.".
+    - "[Facebook's algorithm fine-tuning and data wrangling] is aimed at solving one problem: how and when to intervene in the state of play that is your daily life in order to modify your behavior and thus sharply increase the predictability of your actions now, soon, and later."
+
 [^7]: This is a mere simplification of the field. ML researchers also investigate in specific sub-fields
 
 ## fairness

@@ -5,9 +5,12 @@ import style from "./styles/sidenotes.scss"
 import { classNames } from "../util/lang"
 
 export default (() => {
-  const Sidenotes: QuartzComponent = ({ displayClass }: QuartzComponentProps) => (
-    <div class={classNames(displayClass, "sidenotes")}></div>
-  )
+  const Sidenotes: QuartzComponent = ({ displayClass, fileData }: QuartzComponentProps) => {
+    if (fileData.frontmatter?.sidenotes === false) {
+      return <></>
+    }
+    return <div class={classNames(displayClass, "sidenotes")}></div>
+  }
 
   Sidenotes.css = style
   Sidenotes.afterDOMLoaded = script
