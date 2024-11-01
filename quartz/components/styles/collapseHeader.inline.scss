@@ -9,16 +9,16 @@
     margin-left: 1rem;
   }
   &[data-level="3"] {
-    margin-left: 1.3rem;
+    margin-left: 1.5rem;
   }
   &[data-level="4"] {
-    margin-left: 1.6rem;
+    margin-left: 1.9rem;
   }
   &[data-level="5"] {
-    margin-left: 2rem;
+    margin-left: 2.2rem;
   }
   &[data-level="6"] {
-    margin-left: 2.2rem;
+    margin-left: 2.4rem;
   }
 
   & .header-button {
@@ -31,14 +31,28 @@
     display: inline-flex;
     align-items: center;
 
-    & .fold {
-      // margin-left: 0.5rem;
-      transition: transform 0.3s ease;
-      opacity: 0.8;
+    & .expand-icon,
+    & .collapse-icon {
+      opacity: 0.85;
+      margin-right: 0.5rem;
     }
 
-    &.collapsed .fold {
-      transform: rotateZ(-90deg);
+    &[aria-expanded="true"] {
+      .expand-icon {
+        display: none;
+      }
+      .collapse-icon {
+        display: block;
+      }
+    }
+
+    &[aria-expanded="false"] {
+      .expand-icon {
+        display: block;
+      }
+      .collapse-icon {
+        display: none;
+      }
     }
 
     h1,
