@@ -1,6 +1,6 @@
 .collapsible-header {
   position: relative;
-  margin: 1rem 0;
+  margin-top: 0.5rem;
   border-radius: 0.5rem;
   transition: all 0.2s ease-in-out;
 
@@ -19,6 +19,10 @@
   }
   &[data-level="6"] {
     margin-left: 2.4rem;
+  }
+
+  &.collapsed {
+    margin-bottom: 1rem;
   }
 
   & .header-button {

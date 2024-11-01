@@ -20,6 +20,12 @@ const defaultOptions: Options = {
 
 const URL_PATTERN = /https?:\/\/[^\s<>)"]+/g
 
+function extractArxivId(url: string): string {
+  // Match patterns like 1234.56789 or hep-th/9912345
+  const match = url.match(/(?:arxiv.org\/abs\/|arxiv.org\/pdf\/)([\w.-]+)/i)
+  return match ? match[1] : ""
+}
+
 function processTextNode(node: Text): (Element | Text)[] {
   const text = node.value
   const matches = Array.from(text.matchAll(URL_PATTERN))
@@ -43,6 +49,21 @@ function processTextNode(node: Text): (Element | Text)[] {
       })
     }
 
+    const isArxiv = url.toLowerCase().includes("arxiv.org")
+    const isTransformerCircuit = url.toLowerCase().includes("transformer-circuits.pub")
+    const isAF = url.toLowerCase().includes("alignmentforum.org")
+
+    if (isArxiv) {
+      // Extract arXiv ID
+      const arxivId = extractArxivId(url)
+
+      // Add the formatted text
+      result.push({
+        type: "text",
+        value: `arXiv preprint arXiv:${arxivId} `,
+      })
+    }
+
     // Add anchor element for URL
     result.push({
       type: "element",
@@ -53,7 +74,12 @@ function processTextNode(node: Text): (Element | Text)[] {
         rel: "noopener noreferrer",
         className: ["csl-external-link"],
       },
-      children: [{ type: "text", value: url }],
+      children: [
+        {
+          type: "text",
+          value: isArxiv ? "[arXiv]" : isTransformerCircuit ? "[link]" : isAF ? "[post]" : url,
+        },
+      ],
     })
     lastIndex = startIndex + url.length
   })

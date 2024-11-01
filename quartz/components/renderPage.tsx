@@ -9,6 +9,9 @@ import { visit } from "unist-util-visit"
 import { Root, Element, ElementContent } from "hast"
 import { GlobalConfiguration } from "../cfg"
 import { i18n } from "../i18n"
+// @ts-ignore
+import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
+import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -21,6 +24,158 @@ interface RenderComponents {
   footer: QuartzComponent
 }
 
+function headerElement(node: Element, content: Element[], idx: number): Element {
+  const buttonId = `collapsible-header-${node.properties?.id ?? idx}`
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["collapsible-header"],
+      "data-level": node.tagName[1],
+    },
+    children: [
+      {
+        type: "element",
+        tagName: "button",
+        properties: {
+          id: buttonId,
+          ariaLabel: "Toggle content visibility",
+          ariaExpanded: true,
+          className: ["header-button"],
+        },
+        children: [
+          {
+            type: "element",
+            tagName: "svg",
+            properties: {
+              xmlns: "http://www.w3.org/2000/svg",
+              width: 18,
+              height: 18,
+              viewBox: "0 0 24 24",
+              fill: "var(--tertiary)",
+              stroke: "var(--tertiary)",
+              "stroke-width": "2",
+              "stroke-linecap": "round",
+              "stroke-linejoin": "round",
+              className: ["expand-icon"],
+            },
+            children: [
+              {
+                type: "element",
+                tagName: "line",
+                properties: {
+                  x1: "12",
+                  y1: "5",
+                  x2: "12",
+                  y2: "19",
+                },
+                children: [],
+              },
+              {
+                type: "element",
+                tagName: "line",
+                properties: {
+                  x1: "5",
+                  y1: "12",
+                  x2: "19",
+                  y2: "12",
+                },
+                children: [],
+              },
+            ],
+          },
+          {
+            type: "element",
+            tagName: "svg",
+            properties: {
+              xmlns: "http://www.w3.org/2000/svg",
+              width: 18,
+              height: 18,
+              viewBox: "0 0 24 24",
+              fill: "none",
+              stroke: "currentColor",
+              "stroke-width": "2",
+              "stroke-linecap": "round",
+              "stroke-linejoin": "round",
+              className: ["collapse-icon"],
+            },
+            children: [
+              {
+                type: "element",
+                tagName: "line",
+                properties: {
+                  x1: "5",
+                  y1: "12",
+                  x2: "19",
+                  y2: "12",
+                },
+                children: [],
+              },
+            ],
+          },
+          node,
+        ],
+      },
+      {
+        type: "element",
+        tagName: "div",
+        properties: {
+          className: ["collapsible-header-content-outer"],
+        },
+        children: [
+          {
+            type: "element",
+            tagName: "div",
+            properties: {
+              className: ["collapsible-header-content"],
+              ["data-references"]: buttonId,
+            },
+            children: content,
+          },
+        ],
+      },
+    ],
+  }
+}
+
+function processHeaders(node: Element, idx: number | undefined, parent: Element) {
+  idx = idx ?? parent.children.indexOf(node)
+  const currentLevel = parseInt(node.tagName[1])
+  const contentNodes: Element[] = []
+  let i = idx + 1
+
+  // Collect all content until next header of same or higher level
+  while (i < parent.children.length) {
+    const nextNode = parent.children[i] as Element
+    if (
+      (["div"].includes(nextNode.tagName) && nextNode.properties.id == "refs") ||
+      (nextNode?.type === "element" &&
+        nextNode.tagName?.match(/^h[1-6]$/) &&
+        nextNode.properties["data-footnotes"])
+    ) {
+      break
+    }
+
+    if (nextNode?.type === "element" && nextNode.tagName?.match(/^h[1-6]$/)) {
+      const nextLevel = parseInt(nextNode.tagName[1])
+      if (nextLevel <= currentLevel) {
+        break
+      }
+      // Process nested header recursively
+      processHeaders(nextNode, i, parent)
+
+      // After processing, the next node at index i will be the wrapper
+      contentNodes.push(parent.children[i] as Element)
+      parent.children.splice(i, 1)
+    } else {
+      contentNodes.push(nextNode)
+      parent.children.splice(i, 1)
+    }
+  }
+
+  parent.children.splice(idx, 1, headerElement(node, contentNodes, idx))
+}
+
 const headerRegex = new RegExp(/h[1-6]/)
 export function pageResources(
   baseDir: FullSlug | RelativeURL,
@@ -30,7 +185,14 @@ export function pageResources(
   const contentIndexScript = `const fetchData = fetch("${contentIndexPath}").then(data => data.json())`
 
   return {
-    css: [{ content: joinSegments(baseDir, "index.css") }, ...staticResources.css],
+    css: [
+      { content: joinSegments(baseDir, "index.css") },
+      {
+        content: collapseHeaderStyle,
+        inline: true,
+      },
+      ...staticResources.css,
+    ],
     js: [
       {
         src: joinSegments(baseDir, "prescript.js"),
@@ -49,6 +211,11 @@ export function pageResources(
         loadTime: "afterDOMReady",
         moduleType: "module",
         contentType: "external",
+      },
+      {
+        script: collapseHeaderScript,
+        loadTime: "afterDOMReady",
+        contentType: "inline",
       },
     ],
   }
@@ -115,7 +282,7 @@ export function renderPage(
             if (!(el.type === "element" && el.tagName.match(headerRegex))) continue
             const depth = Number(el.tagName.substring(1))
 
-            // lookin for our blockref
+            // looking for our blockref
             if (startIdx === undefined || startDepth === undefined) {
               // skip until we find the blockref that matches
               if (el.properties?.id === blockRef) {
@@ -180,6 +347,19 @@ export function renderPage(
           ]
         }
       }
+    }
+  })
+
+  visit(root, "element", (node: Element, idx, parent) => {
+    if (
+      node.tagName.match(headerRegex) &&
+      parent &&
+      node.properties.id !== "footnote-label" &&
+      slug !== "index" &&
+      !(componentData.fileData.frontmatter?.menu ?? false)
+    ) {
+      // then do the process headers and its children here
+      processHeaders(node, idx, parent as Element)
     }
   })
 
