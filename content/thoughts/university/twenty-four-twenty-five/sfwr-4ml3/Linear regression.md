@@ -127,6 +127,7 @@ $$
 $$
 
 With
+
 $$
 X_{n \times 2} = \begin{pmatrix}
 x^{1}_{1} & x^{1}_{2} \\
@@ -134,7 +135,9 @@ x^{2}_{1} & x^{2}_{2} \\
 x^{3}_{1} & x^{3}_{2}
 \end{pmatrix}
 $$
+
 and
+
 $$
 X^{'}_{n \times 3} = \begin{pmatrix}
 x^{1}_{1} & x^{1}_{2} & 1 \\
@@ -144,13 +147,16 @@ x^{3}_{1} & x^{3}_{2} & 1
 $$
 
 With
+
 $$
 W = \begin{pmatrix}
 w_1 \\
 w_2
 \end{pmatrix}
 $$
+
 and
+
 $$
 W^{'} = \begin{pmatrix}
 w_1 \\
@@ -158,7 +164,9 @@ w_2 \\
 w_0
 \end{pmatrix}
 $$
+
 thus
+
 $$
 X^{'} \times W = \begin{pmatrix}
 w_0 + \sum{w_i \times x_i^{1}} \\

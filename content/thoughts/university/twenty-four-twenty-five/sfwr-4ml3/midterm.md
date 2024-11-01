@@ -18,7 +18,7 @@ $$
 P(a \leq X \leq b) = \int_{a}^{b} f(x) dx
 $$
 
-if distribution of $X$ is unform over $[a,b]$, then $f(x) = \frac{1}{b-a}$
+if distribution of $X$ is uniform over $[a,b]$, then $f(x) = \frac{1}{b-a}$
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression#curve-fitting]]
 
@@ -179,11 +179,11 @@ $$
 ### norms
 
 A function $f : \mathbb{R}^n \Rightarrow \mathbb{R}$ is a norm if it satisfies the following properties:
+
 - non-negativity: $\forall x \in \mathbb{R}^n, f(x) > 0$
 - definiteness: $f(x) = 0 \iff x=0$
 - Homogeneity: $\forall x \in \mathbb{R}^n, t\in \mathbb{R}, f(tx) \leq \mid t\mid f(x)$
 - triangle inequality: $\forall x, y \in \mathbb{R}^n, f(x+y) \leq f(x) + f(y)$
-
 
 ### symmetry
 
@@ -280,7 +280,6 @@ $$
 > P(A) = \sum_{i=1}^{n} P(A|B_i)P(B_i)
 > $$
 
-
 ### cumulative distribution function
 
 For a random variable X, a CDF $F_X(x): \mathbb{R} \rightarrow [0,1]$ is defined as:
@@ -292,10 +291,9 @@ $$
 - $0<F_X(x)<1$
 - $P(a \leq X \leq b) =F_X(b) -F_X(a)$
 
-
 ### probability mass function
 
-for a *discrete* random variable X, the probability mass function $p_X(x) : \mathbb{R} \rightarrow [0,1$ is defined as:
+for a _discrete_ random variable X, the probability mass function $p_X(x) : \mathbb{R} \rightarrow [0,1$ is defined as:
 
 $$
 p_X(x) \coloneqq P(X=x)
@@ -307,7 +305,7 @@ $$
 
 ### probability density function
 
-for a *continuous* random variable X, the probability density function $f_X(x) : \mathbb{R} \rightarrow [0, \infty)$ is defined as:
+for a _continuous_ random variable X, the probability density function $f_X(x) : \mathbb{R} \rightarrow [0, \infty)$ is defined as:
 
 $$
 f_X(x) \coloneqq  \frac{d F_X(x)}{dx}
@@ -318,13 +316,13 @@ $$
 
 ### Expectation
 
-for a *discrete* random variable with PMF $p_X(x)$ and $g(x): \mathbb{R} \rightarrow \mathbb{R}$, the expectation of $g(x)$ is:
+for a _discrete_ random variable with PMF $p_X(x)$ and $g(x): \mathbb{R} \rightarrow \mathbb{R}$, the expectation of $g(x)$ is:
 
 $$
 \mathbb{E}[g(X)] = \sum_{x \in \mathbb{D}} g(x) p_X(x)
 $$
 
-for a *continuous* random variable with PDF $f_X(x)$, the expectation of $g(x)$ is:
+for a _continuous_ random variable with PDF $f_X(x)$, the expectation of $g(x)$ is:
 
 $$
 \mathbb{E}[g(X)] = \int_{-\infty}^{\infty} g(x) f_X(x) dx
