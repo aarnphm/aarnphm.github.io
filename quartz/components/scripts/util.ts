@@ -91,8 +91,10 @@ export function isInViewport(element: HTMLElement, buffer: number = 100) {
 // Computes an offset such that setting `top` on elemToAlign will put it
 // in vertical alignment with targetAlignment.
 function computeOffsetForAlignment(elemToAlign: HTMLElement, targetAlignment: HTMLElement) {
-  const offsetParentTop = elemToAlign.offsetParent!.getBoundingClientRect().top
-  return targetAlignment.getBoundingClientRect().top - offsetParentTop
+  const elemRect = elemToAlign.getBoundingClientRect()
+  const targetRect = targetAlignment.getBoundingClientRect()
+  const parentRect = elemToAlign.parentElement?.getBoundingClientRect() || elemRect
+  return targetRect.top - parentRect.top
 }
 
 // Get bounds for the sidenote positioning

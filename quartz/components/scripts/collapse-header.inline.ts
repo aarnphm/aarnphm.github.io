@@ -9,15 +9,20 @@ type MaybeHTMLElement = HTMLElement | undefined
 let currentHeaderState: HeaderState[] = []
 
 function toggleHeader(evt: Event) {
-  evt.stopPropagation()
   const target = evt.target as MaybeHTMLElement
   if (!target) return
 
-  const button = target.closest("button") as MaybeHTMLElement
+  // Only proceed if we clicked on the button or its direct children (svg, lines)
+  const button = target.closest(".header-button") as MaybeHTMLElement
   if (!button) return
+
+  // Check if we're inside a callout - if so, don't handle the event
+  if (target.parentElement!.classList.contains("callout")) return
 
   const wrapper = button.closest(".collapsible-header") as MaybeHTMLElement
   if (!wrapper) return
+
+  evt.stopPropagation()
 
   // Find content by data-references
   const content = document.querySelector(
@@ -30,6 +35,7 @@ function toggleHeader(evt: Event) {
   // Toggle current header
   button.setAttribute("aria-expanded", isCollapsed ? "false" : "true")
   content.style.maxHeight = isCollapsed ? "0px" : `${content.scrollHeight}px`
+  content.classList.toggle("collapsed", isCollapsed)
   wrapper.classList.toggle("collapsed", isCollapsed)
   button.classList.toggle("collapsed", isCollapsed)
 
@@ -48,16 +54,20 @@ function updateSidenoteState(content: HTMLElement, isCollapsed: boolean) {
   if (!sideContainer) return
   for (const ref of sidenoteRefs) {
     const sideId = ref.getAttribute("href")?.replace("#", "sidebar-")
-    const sidenote = document.getElementById(sideId!)
+    const sidenote = document.querySelector(
+      `.sidenote-element[id="${sideId}"]`,
+    ) as HTMLElement | null
+    if (!sidenote) continue
+
     if (isCollapsed) {
-      sidenote?.classList.remove("in-view")
+      sidenote.classList.remove("in-view")
       ref.classList.remove("active")
-      sidenote?.classList.add("collapsed")
+      sidenote.classList.add("collapsed")
     } else if (isInViewport(ref)) {
-      sidenote?.classList.add("in-view")
+      sidenote.classList.add("in-view")
       ref.classList.add("active")
-      sidenote?.classList.remove("collapsed")
-      updatePosition(ref, sidenote!, sideContainer!)
+      sidenote.classList.remove("collapsed")
+      updatePosition(ref, sidenote, sideContainer!)
     }
   }
 }
@@ -84,6 +94,7 @@ function setHeaderState(button: HTMLElement, content: HTMLElement, collapsed: bo
   button.setAttribute("aria-expanded", collapsed ? "false" : "true")
   button.classList.toggle("collapsed", collapsed)
   content.style.maxHeight = collapsed ? "0px" : `${content.scrollHeight}px`
+  content.classList.toggle("collapsed", collapsed)
   button.closest(".collapsible-header")?.classList.toggle("collapsed", collapsed)
   updateSidenoteState(content, collapsed)
 }
@@ -93,8 +104,8 @@ function setupHeaders() {
   currentHeaderState = loadHeaderState()
 
   // Set up click handlers
-  const buttons = document.querySelectorAll(".header-button")
-  buttons.forEach((button) => {
+  const buttons = document.querySelectorAll(".collapsible-header > .header-button")
+  for (const button of buttons) {
     button.addEventListener("click", toggleHeader)
     window.addCleanup(() => button.removeEventListener("click", toggleHeader))
 
@@ -108,7 +119,7 @@ function setupHeaders() {
         setHeaderState(button as HTMLElement, content, savedState.collapsed)
       }
     }
-  })
+  }
 }
 
 // Set up initial state and handle navigation

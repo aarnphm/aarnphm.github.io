@@ -24,6 +24,8 @@ interface RenderComponents {
   footer: QuartzComponent
 }
 
+const headerRegex = new RegExp(/h[1-6]/)
+
 function headerElement(node: Element, content: Element[], idx: number): Element {
   const buttonId = `collapsible-header-${node.properties?.id ?? idx}`
   return {
@@ -44,6 +46,34 @@ function headerElement(node: Element, content: Element[], idx: number): Element 
           className: ["header-button"],
         },
         children: [
+          {
+            type: "element",
+            tagName: "svg",
+            properties: {
+              xmlns: "http://www.w3.org/2000/svg",
+              width: 18,
+              height: 18,
+              viewBox: "0 0 24 24",
+              fill: "var(--dark)",
+              stroke: "var(--dark)",
+              "stroke-width": "2",
+              "stroke-linecap": "round",
+              "stroke-linejoin": "round",
+              className: ["circle-icon"],
+            },
+            children: [
+              {
+                type: "element",
+                tagName: "circle",
+                properties: {
+                  cx: "12",
+                  cy: "12",
+                  r: "3",
+                },
+                children: [],
+              },
+            ],
+          },
           {
             type: "element",
             tagName: "svg",
@@ -139,6 +169,7 @@ function headerElement(node: Element, content: Element[], idx: number): Element 
 }
 
 function processHeaders(node: Element, idx: number | undefined, parent: Element) {
+  if (node.properties.id === "footnote-label") return
   idx = idx ?? parent.children.indexOf(node)
   const currentLevel = parseInt(node.tagName[1])
   const contentNodes: Element[] = []
@@ -150,13 +181,13 @@ function processHeaders(node: Element, idx: number | undefined, parent: Element)
     if (
       (["div"].includes(nextNode.tagName) && nextNode.properties.id == "refs") ||
       (nextNode?.type === "element" &&
-        nextNode.tagName?.match(/^h[1-6]$/) &&
+        nextNode.tagName?.match(headerRegex) &&
         nextNode.properties["data-footnotes"])
     ) {
       break
     }
 
-    if (nextNode?.type === "element" && nextNode.tagName?.match(/^h[1-6]$/)) {
+    if (nextNode?.type === "element" && nextNode.tagName?.match(headerRegex)) {
       const nextLevel = parseInt(nextNode.tagName[1])
       if (nextLevel <= currentLevel) {
         break
@@ -176,7 +207,6 @@ function processHeaders(node: Element, idx: number | undefined, parent: Element)
   parent.children.splice(idx, 1, headerElement(node, contentNodes, idx))
 }
 
-const headerRegex = new RegExp(/h[1-6]/)
 export function pageResources(
   baseDir: FullSlug | RelativeURL,
   staticResources: StaticResources,
@@ -205,17 +235,17 @@ export function pageResources(
         spaPreserve: true,
         script: contentIndexScript,
       },
+      {
+        script: collapseHeaderScript,
+        loadTime: "beforeDOMReady",
+        contentType: "inline",
+      },
       ...staticResources.js,
       {
         src: joinSegments(baseDir, "postscript.js"),
         loadTime: "afterDOMReady",
         moduleType: "module",
         contentType: "external",
-      },
-      {
-        script: collapseHeaderScript,
-        loadTime: "afterDOMReady",
-        contentType: "inline",
       },
     ],
   }
@@ -352,11 +382,10 @@ export function renderPage(
 
   visit(root, "element", (node: Element, idx, parent) => {
     if (
-      node.tagName.match(headerRegex) &&
-      parent &&
-      node.properties.id !== "footnote-label" &&
       slug !== "index" &&
-      !(componentData.fileData.frontmatter?.menu ?? false)
+      node.tagName.match(headerRegex) &&
+      !(componentData.fileData.frontmatter?.menu ?? false) &&
+      (componentData.fileData.frontmatter?.collapsible ?? true)
     ) {
       // then do the process headers and its children here
       processHeaders(node, idx, parent as Element)

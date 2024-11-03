@@ -1,6 +1,7 @@
 .collapsible-header {
   position: relative;
   margin-top: 0.5rem;
+  margin-bottom: 1rem;
   border-radius: 0.5rem;
   transition: all 0.2s ease-in-out;
 
@@ -35,38 +36,49 @@
     display: inline-flex;
     align-items: center;
 
+    & .circle-icon,
     & .expand-icon,
     & .collapse-icon {
       opacity: 0.85;
       margin-right: 0.5rem;
     }
 
-    &[aria-expanded="true"] {
-      .expand-icon {
+    // default state: circle default, :hover expanded minus, collapse plus
+    & .circle-icon {
+      display: block;
+    }
+
+    & .expand-icon,
+    & .collapse-icon {
+      display: none;
+    }
+
+    &:hover {
+      & .circle-icon {
         display: none;
       }
-      .collapse-icon {
-        display: block;
+
+      &[aria-expanded="true"] {
+        .expand-icon {
+          display: none;
+        }
+        .collapse-icon {
+          display: block;
+        }
+      }
+
+      &[aria-expanded="false"] {
+        .expand-icon {
+          display: block;
+        }
+        .collapse-icon {
+          display: none;
+        }
       }
     }
 
-    &[aria-expanded="false"] {
-      .expand-icon {
-        display: block;
-      }
-      .collapse-icon {
-        display: none;
-      }
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
+    :where(h1, h2, h3, h4, h5, h6):not(.popover *) {
       margin: 0;
-      flex: 1;
     }
   }
 
@@ -77,12 +89,14 @@
 
     & > .collapsible-header-content {
       border-left: 1px dashed var(--gray);
+      border-bottom: 1px dotted var(--gray);
       overflow: hidden;
       transition: max-height 0.2s ease-in-out;
       padding-left: 9px;
       max-height: none;
 
       &.collapsed {
+        border-bottom: unset;
         max-height: 0 !important;
         padding-top: 0;
         padding-bottom: 0;
