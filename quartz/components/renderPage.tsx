@@ -12,6 +12,7 @@ import { i18n } from "../i18n"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
 import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
+import { String } from "lightningcss"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -192,7 +193,6 @@ function headerElement(node: Element, content: Element[], idx: number): Element 
 }
 
 function processHeaders(node: Element, idx: number | undefined, parent: Element) {
-  if (node.properties.id === "footnote-label") return
   idx = idx ?? parent.children.indexOf(node)
   const currentLevel = parseInt(node.tagName[1])
   const contentNodes: Element[] = []
@@ -203,9 +203,7 @@ function processHeaders(node: Element, idx: number | undefined, parent: Element)
     const nextNode = parent.children[i] as Element
     if (
       (["div"].includes(nextNode.tagName) && nextNode.properties.id == "refs") ||
-      (nextNode?.type === "element" &&
-        nextNode.tagName?.match(headerRegex) &&
-        nextNode.properties["data-footnotes"])
+      (nextNode?.type === "element" && nextNode.properties.dataFootnotes == "")
     ) {
       break
     }
@@ -407,6 +405,7 @@ export function renderPage(
     if (
       slug !== "index" &&
       node.tagName.match(headerRegex) &&
+      node.properties.id !== "footnote-label" &&
       !(componentData.fileData.frontmatter?.menu ?? false) &&
       (componentData.fileData.frontmatter?.collapsible ?? true)
     ) {

@@ -488,8 +488,10 @@ blockquote.twitter-tweet {
   border-left: unset;
   border: 2px solid var(--secondary);
   padding-bottom: 1rem;
+  padding-right: 0.2rem;
   position: relative;
   background-color: var(--light);
+  margin-right: 0.5rem !important;
 
   &::before {
     content: "x.com";
