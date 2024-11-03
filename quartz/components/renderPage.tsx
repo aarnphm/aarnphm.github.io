@@ -203,7 +203,8 @@ function processHeaders(node: Element, idx: number | undefined, parent: Element)
     const nextNode = parent.children[i] as Element
     if (
       (["div"].includes(nextNode.tagName) && nextNode.properties.id == "refs") ||
-      (nextNode?.type === "element" && nextNode.properties.dataFootnotes == "")
+      (nextNode?.type === "element" && nextNode.properties.dataFootnotes == "") ||
+      (nextNode?.type === "element" && ["hr"].includes(nextNode.tagName))
     ) {
       break
     }

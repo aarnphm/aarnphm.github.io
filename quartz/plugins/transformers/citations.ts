@@ -54,6 +54,7 @@ function processTextNode(node: Text, prettyLinks: boolean): (Element | Text)[] {
     const isArxiv = url.toLowerCase().includes("arxiv.org")
     const isTransformerCircuit = url.toLowerCase().includes("transformer-circuits.pub")
     const isAF = url.toLowerCase().includes("alignmentforum.org")
+    const isGitHub = url.toLowerCase().includes("github.com")
 
     if (prettyLinks) {
       if (isArxiv) {
@@ -84,11 +85,13 @@ function processTextNode(node: Text, prettyLinks: boolean): (Element | Text)[] {
           value: prettyLinks
             ? isArxiv
               ? "[arXiv]"
-              : isTransformerCircuit
-                ? "[link]"
-                : isAF
-                  ? "[post]"
-                  : url
+              : isGitHub
+                ? "[GitHub]"
+                : isTransformerCircuit
+                  ? "[link]"
+                  : isAF
+                    ? "[post]"
+                    : url
             : url,
         },
       ],
