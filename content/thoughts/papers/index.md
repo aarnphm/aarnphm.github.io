@@ -8,9 +8,10 @@ noindex: true
 title: papers.
 ---
 
-A somewhat local cache of all papers I've read. This is one source of my Zotero library.
+A somewhat local cache of all papers I've read. This is one source of my Zotero [[/books|library]].
 
 <!-- update: start -->
+
 - [[thoughts/papers/(Real-Time Systems Series 24) Giorgio C. Buttazzo (auth.) - Hard Real-Time Computing Systems_ Predictable Scheduling Algorithms and Applications-Springer US (2011).pdf|(Real-Time Systems Series 24) Giorgio C. Buttazzo (auth.) - Hard Real-Time Computing Systems_ Predictable Scheduling Algorithms and Applications-Springer US (2011)]]
 - [[thoughts/papers/A Novel Measure Inspired by Lyapunov Exponents for the Characterization of Dynamics in State-Transition Networks.pdf|A Novel Measure Inspired by Lyapunov Exponents for the Characterization of Dynamics in State-Transition Networks]]
 - [[thoughts/papers/A Persian Folk Method of Figuring Interest.pdf|A Persian Folk Method of Figuring Interest]]

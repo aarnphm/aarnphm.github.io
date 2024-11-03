@@ -3,7 +3,6 @@ id: mechanistic interpretability
 aliases:
   - mechinterp
 tags:
-  - ml
   - interp
 date: "2024-10-30"
 description: all things mech interp
@@ -38,7 +37,7 @@ To steer to model, we modify $H_2$ layers with certain features amplifier with s
 [^1]: An example steering function can be:
 
     $$
-    H_{3} = H_{2} + \text{steering\_strength} * \text{SAE}.W_{\text{dec}}[20] * \text{max activation}
+    H_{3} = H_{2} + \text{steering\_strength} * \text{SAE}.W_{\text{dec}}[20] * \text{max\_activation}
     $$
 
 ```mermaid
@@ -220,7 +219,7 @@ In a sense, superposition is a form of **lossy [[thoughts/Compression|compressio
 
 _reasoning for the set of $n$ directions [^direction]_
 
-[^direction]: Even though features still correspond to directions, the set of intepretable direction is larger than the number of dimensions
+[^direction]: Even though features still correspond to directions, the set of interpretable direction is larger than the number of dimensions
 
 ## features
 

@@ -1,12 +1,12 @@
 ---
 id: KV compression
 tags:
-  - seed
   - ml
 date: "2024-10-10"
 modified: "2024-10-10"
 title: KV compression
 ---
+
 see also: [github](https://github.com/October2001/Awesome-KV-Cache-Compression)
 
 TLDR: Most algorithm determine importance through aggregating attentions over observed queries [@zhang2023h2oheavyhitteroracleefficient; @liu2023scissorhandsexploitingpersistenceimportance]
@@ -27,13 +27,11 @@ Think of LFU (least frequency used) cache management policy
 the KV cache for each sequence in a particular layer is allocated on the GPU as a _# attention heads $X$ sequence length_ tensor.
 
 > [!important]
-> total memory allocation scales with the _maximum_ sequence length for all attention heads of the KV cache
-
+> total memory allocation scales with the *maximum* sequence length for all attention heads of the KV cache
 
 ## Adaptive KV-cache compression
 
 See also [paper](https://arxiv.org/abs/2310.01801) [@ge2024modeltellsdiscardadaptive]
-
 
 ## Streaming LLM
 
@@ -61,6 +59,7 @@ C = &\sum_{i=0}^{L_{\text{obs}}} W_{\text{obs}} [:,i,:] \\
 I &= \text{Top}_{k}(C, k)
 \end{aligned}
 $$
+
 _[hijack for llama_hijack_4_37.py](https://github.com/FasterDecoding/SnapKV/blob/82135ce2cc60f212a9ba918467f3d9c8134e163f/snapkv/monkeypatch/llama_hijack_4_37.py#L19)_
 
 > [!important]
@@ -81,7 +80,6 @@ The idea is to have two stages:
                       padding=kernel_size//2,
                       stride=1)
   ```
-
 
 ## Ada-KV
 

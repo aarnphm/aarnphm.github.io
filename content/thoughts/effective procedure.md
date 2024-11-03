@@ -1,7 +1,6 @@
 ---
 id: effective procedure
 tags:
-  - seed
   - math
 date: "2024-10-08"
 modified: "2024-10-08"

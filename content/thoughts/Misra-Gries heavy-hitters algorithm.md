@@ -1,13 +1,13 @@
 ---
 id: Misra-Gries heavy-hitters algorithm
 tags:
-  - seed
   - algorithm
 date: "2024-10-11"
 description: extends Boyer-Moore finding algorithm
 modified: "2024-10-11"
 title: Misra-Gries heavy-hitters algorithm
 ---
+
 one of the earliest [[thoughts/data]] streaming algorithm.
 
 ## problem.
@@ -16,7 +16,7 @@ one of the earliest [[thoughts/data]] streaming algorithm.
 
 idea: two passes over the values in $b$, while storing at most $k$ values from $b$ and their number of occurrences.
 
-Assume the bag is available in array $b[0:n-1]$ of $n$ elements, then a *==heavy-hitter==* of bag $b$ is a value
+Assume the bag is available in array $b[0:n-1]$ of $n$ elements, then a _==heavy-hitter==_ of bag $b$ is a value
 that occurs more than $n/k$ times in $b$ for some integer $k \geq 2$
 
 ## pseudocode.

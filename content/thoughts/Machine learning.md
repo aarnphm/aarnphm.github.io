@@ -16,7 +16,7 @@ Some main exploration:
 
 - [[thoughts/Transformers|Transformers]]
 - CNN
-- Optimization
+- [[thoughts/optimization|Optimization]]
   - Gradient descent
   - hyperparameter tuning
 - Recommender systems
@@ -27,7 +27,7 @@ Some main exploration:
 - Generative Models
   - GAN
   - VAE
-- Autoencoders
+- Autoencoder
 - Supervised Q-learning
 - [[thoughts/Low-rank adapters]]
 

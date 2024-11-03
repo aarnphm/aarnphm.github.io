@@ -5,7 +5,6 @@ tags:
 date: "2024-10-12"
 draft: true
 modified: "2024-10-12"
-title: being ok with myself
+socialDescription: on living fruitfully.
+title: I went out to celebrate an early birthday and now we ended up in a swing bar.
 ---
-
-

@@ -1,7 +1,6 @@
 ---
 id: Singular Value Decomposition
 tags:
-  - seed
   - ml
 date: "2024-10-21"
 modified: "2024-10-21"

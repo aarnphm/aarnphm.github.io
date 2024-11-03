@@ -1,7 +1,6 @@
 ---
 id: Cholesky decomposition
 tags:
-  - seed
   - math
 date: "2024-10-28"
 modified: "2024-10-28"

@@ -1,10 +1,9 @@
 ---
 id: Group theory
 tags:
-  - seed
   - math
-  - theory
 date: "2024-02-26"
+modified: "2024-11-03"
 title: group theory
 ---
 
