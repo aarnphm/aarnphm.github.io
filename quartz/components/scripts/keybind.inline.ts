@@ -7,17 +7,20 @@ document.addEventListener("nav", async () => {
   const keybind = document.getElementsByClassName("keybind")[0] as HTMLDivElement | null
 
   const center = document.querySelector(".center") as HTMLElement | null
-  const sidebar = document.querySelector(".right.sidebar") as HTMLElement | null
+  const right = document.querySelector(".right.sidebar") as HTMLElement | null
+  const left = document.querySelector(".left.sidebar") as HTMLElement | null
 
   const showContainer = () => {
     if (center) center.style.zIndex = "-1"
-    if (sidebar) sidebar.style.zIndex = "-1"
+    if (right) right.style.zIndex = "-1"
+    if (left) left.style.zIndex = "-1"
     container?.classList.add("active")
   }
 
   const hideContainer = () => {
     if (center) center.style.zIndex = "unset"
-    if (sidebar) sidebar.style.zIndex = "unset"
+    if (right) right.style.zIndex = "unset"
+    if (left) left.style.zIndex = "unset"
     container?.classList.remove("active")
   }
 

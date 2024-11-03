@@ -87,6 +87,12 @@ h3 {
     serif !important;
 }
 
+li.section-li {
+  & > .section {
+    grid-template-columns: 7em 3fr 1fr;
+  }
+}
+
 code {
   font-size: 0.8em;
 }

@@ -9,6 +9,7 @@ export interface Options {
   suppressBibliography: boolean
   linkCitations: boolean
   csl: string
+  prettyLinks?: boolean
 }
 
 const defaultOptions: Options = {
@@ -16,6 +17,7 @@ const defaultOptions: Options = {
   suppressBibliography: false,
   linkCitations: false,
   csl: "apa",
+  prettyLinks: true,
 }
 
 const URL_PATTERN = /https?:\/\/[^\s<>)"]+/g
@@ -26,7 +28,7 @@ function extractArxivId(url: string): string {
   return match ? match[1] : ""
 }
 
-function processTextNode(node: Text): (Element | Text)[] {
+function processTextNode(node: Text, prettyLinks: boolean): (Element | Text)[] {
   const text = node.value
   const matches = Array.from(text.matchAll(URL_PATTERN))
 
@@ -53,15 +55,17 @@ function processTextNode(node: Text): (Element | Text)[] {
     const isTransformerCircuit = url.toLowerCase().includes("transformer-circuits.pub")
     const isAF = url.toLowerCase().includes("alignmentforum.org")
 
-    if (isArxiv) {
-      // Extract arXiv ID
-      const arxivId = extractArxivId(url)
+    if (prettyLinks) {
+      if (isArxiv) {
+        // Extract arXiv ID
+        const arxivId = extractArxivId(url)
 
-      // Add the formatted text
-      result.push({
-        type: "text",
-        value: `arXiv preprint arXiv:${arxivId} `,
-      })
+        // Add the formatted text
+        result.push({
+          type: "text",
+          value: `arXiv preprint arXiv:${arxivId} `,
+        })
+      }
     }
 
     // Add anchor element for URL
@@ -77,7 +81,15 @@ function processTextNode(node: Text): (Element | Text)[] {
       children: [
         {
           type: "text",
-          value: isArxiv ? "[arXiv]" : isTransformerCircuit ? "[link]" : isAF ? "[post]" : url,
+          value: prettyLinks
+            ? isArxiv
+              ? "[arXiv]"
+              : isTransformerCircuit
+                ? "[link]"
+                : isAF
+                  ? "[post]"
+                  : url
+            : url,
         },
       ],
     })
@@ -96,15 +108,15 @@ function processTextNode(node: Text): (Element | Text)[] {
 }
 
 // Function to process a list of nodes
-function processNodes(nodes: (Element | Text)[]): (Element | Text)[] {
+function processNodes(nodes: (Element | Text)[], prettyLinks: boolean): (Element | Text)[] {
   return nodes.flatMap((node) => {
     if (node.type === "text") {
-      return processTextNode(node)
+      return processTextNode(node, prettyLinks)
     }
     if (node.type === "element") {
       return {
         ...node,
-        children: processNodes(node.children as (Element | Text)[]),
+        children: processNodes(node.children as (Element | Text)[], prettyLinks),
       }
     }
     return [node]
@@ -148,7 +160,10 @@ export const Citations: QuartzTransformerPlugin<Partial<Options>> = (userOpts) =
             if ((node.properties?.className as string[])?.includes("references")) {
               visit(node, "element", (entry) => {
                 if ((entry.properties?.className as string[])?.includes("csl-entry")) {
-                  entry.children = processNodes(entry.children as (Element | Text)[])
+                  entry.children = processNodes(
+                    entry.children as (Element | Text)[],
+                    opts.prettyLinks!,
+                  )
                 }
               })
             }
