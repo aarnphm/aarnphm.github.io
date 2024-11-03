@@ -26,7 +26,7 @@ a large space, without an exponential amount of time?==
 refers to the process of manually modifying certain activations and hidden state of the neural net to influence its
 outputs
 
-For example, the following is a toy example of how GPT2 generate text given the prompt "The weather in California is"
+For example, the following is a toy example of how a decoder-only transformers (i.e: GPT-2) generate text given the prompt "The weather in California is"
 
 ```mermaid
 flowchart LR
@@ -35,7 +35,11 @@ flowchart LR
 
 To steer to model, we modify $H_2$ layers with certain features amplifier with scale 20 (called it $H_{3}$)[^1]
 
-[^1]: This is a toy representation of hidden layers in MLP, in practice, these models contain ~ 96 layers of MLP or more.
+[^1]: An example steering function can be:
+
+    $$
+    H_{3} = H_{2} + \text{steering_strength} * \text{SAE}.W_{\text{dec}}\[20\] * \text{max activation}
+    $$
 
 ```mermaid
 flowchart LR
@@ -191,6 +195,10 @@ $$
 
 ## superposition hypothesis
 
+> [!abstract]- ELI5
+>
+> phenomena when a neural network represents _more_ than $n$ features in a $n$-dimensional space
+
 > Linear representation of neurons can represent more features than dimensions. As sparsity increases, model use
 > superposition to represent more [[thoughts/mechanistic interpretability#features]] than dimensions.
 >
@@ -199,6 +207,12 @@ $$
 When features are sparsed, superposition allows compression beyond what linear model can do, at a cost of interference that requires non-linear filtering.
 
 reasoning: “noisy simulation”, where small neural networks exploit feature sparsity and properties of high-dimensional spaces to approximately simulate much larger much sparser neural networks
+
+### overcomplete basis
+
+_reasoning for the set of $n$ directions [^direction]_
+
+[^direction]: Even though features still correspond to directions, the set of intepretable direction is larger than the number of dimensions
 
 ## features
 

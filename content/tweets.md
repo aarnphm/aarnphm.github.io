@@ -24,3 +24,5 @@ https://x.com/twaniimals/status/1836560827756740626 <!-- moo deng go brr -->
 https://x.com/Griveau/status/1851937688988889514 <!-- time machine rent free -->
 
 https://x.com/CherrilynnZ/status/1836881535154409629 <!-- visualising emotions -->
+
+https://x.com/CanadaKaz/status/1851653777633247673 <!-- say the thing, ask more -->
