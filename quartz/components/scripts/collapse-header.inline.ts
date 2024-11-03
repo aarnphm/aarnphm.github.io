@@ -12,37 +12,37 @@ function toggleHeader(evt: Event) {
   const target = evt.target as MaybeHTMLElement
   if (!target) return
 
-  // Only proceed if we clicked on the button or its direct children (svg, lines)
-  const button = target.closest(".header-button") as MaybeHTMLElement
-  if (!button) return
+  // Only proceed if we clicked on the toggle button or its children (svg, lines)
+  const toggleButton = target.closest(".toggle-button") as MaybeHTMLElement
+  if (!toggleButton) return
 
   // Check if we're inside a callout - if so, don't handle the event
   if (target.parentElement!.classList.contains("callout")) return
 
-  const wrapper = button.closest(".collapsible-header") as MaybeHTMLElement
+  const wrapper = toggleButton.closest(".collapsible-header") as MaybeHTMLElement
   if (!wrapper) return
 
   evt.stopPropagation()
 
   // Find content by data-references
   const content = document.querySelector(
-    `.collapsible-header-content[data-references="${button.id}"]`,
+    `.collapsible-header-content[data-references="${toggleButton.id}"]`,
   ) as MaybeHTMLElement
   if (!content) return
 
-  const isCollapsed = button.getAttribute("aria-expanded") === "true"
+  const isCollapsed = toggleButton.getAttribute("aria-expanded") === "true"
 
   // Toggle current header
-  button.setAttribute("aria-expanded", isCollapsed ? "false" : "true")
-  content.style.maxHeight = isCollapsed ? "0px" : `${content.scrollHeight}px`
+  toggleButton.setAttribute("aria-expanded", isCollapsed ? "false" : "true")
+  content.style.maxHeight = isCollapsed ? "0px" : "inherit"
   content.classList.toggle("collapsed", isCollapsed)
   wrapper.classList.toggle("collapsed", isCollapsed)
-  button.classList.toggle("collapsed", isCollapsed)
+  toggleButton.classList.toggle("collapsed", isCollapsed)
 
   updateSidenoteState(content, isCollapsed)
 
   // Update state
-  const headerId = button.id
+  const headerId = toggleButton.id
   toggleCollapsedById(currentHeaderState, headerId)
   saveHeaderState()
 }
@@ -93,7 +93,7 @@ function loadHeaderState(): HeaderState[] {
 function setHeaderState(button: HTMLElement, content: HTMLElement, collapsed: boolean) {
   button.setAttribute("aria-expanded", collapsed ? "false" : "true")
   button.classList.toggle("collapsed", collapsed)
-  content.style.maxHeight = collapsed ? "0px" : `${content.scrollHeight}px`
+  content.style.maxHeight = collapsed ? "0px" : "inherit"
   content.classList.toggle("collapsed", collapsed)
   button.closest(".collapsible-header")?.classList.toggle("collapsed", collapsed)
   updateSidenoteState(content, collapsed)
@@ -103,8 +103,7 @@ function setupHeaders() {
   // Load saved state
   currentHeaderState = loadHeaderState()
 
-  // Set up click handlers
-  const buttons = document.querySelectorAll(".collapsible-header > .header-button")
+  const buttons = document.querySelectorAll(".collapsible-header .toggle-button")
   for (const button of buttons) {
     button.addEventListener("click", toggleHeader)
     window.addCleanup(() => button.removeEventListener("click", toggleHeader))
@@ -112,7 +111,7 @@ function setupHeaders() {
     // Apply saved state
     const savedState = currentHeaderState.find((state) => state.id === button.id)
     if (savedState) {
-      const content = button.querySelector(
+      const content = document.querySelector(
         `.collapsible-header-content[data-references="${button.id}"]`,
       ) as HTMLElement
       if (content) {

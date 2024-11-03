@@ -66,6 +66,8 @@ document.addEventListener("nav", () => {
     const sidenote = document.createElement("li")
     sidenote.classList.add("sidenote-element")
     sidenote.style.position = "absolute"
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
+    sidenote.style.maxWidth = `${sideContainer.offsetWidth - rootFontSize}px`
     sidenote.id = `sidebar-${footnoteId}`
     const cloned = footnote.cloneNode(true) as HTMLElement
     const backref = cloned.querySelector("a[data-footnote-backref]")

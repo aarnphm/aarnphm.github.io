@@ -13,7 +13,6 @@ permalink:
   - /mechanistic-interpretability
 title: mechanistic interpretability
 ---
-
 [whirlwind tour](https://www.youtube.com/watch?v=veT2VI4vHyU&ab_channel=FAR%E2%80%A4AI), [[thoughts/pdfs/tinymorph exploration.pdf|initial exploration]], [glossary](https://dynalist.io/d/n2ZWtnoYHrU1s4vnFSAQ519J)
 
 > The subfield of alignment that delves into reverse engineering of a neural network, especially [[thoughts/LLMs]]
@@ -38,7 +37,7 @@ To steer to model, we modify $H_2$ layers with certain features amplifier with s
 [^1]: An example steering function can be:
 
     $$
-    H_{3} = H_{2} + \text{steering_strength} * \text{SAE}.W_{\text{dec}}\[20\] * \text{max activation}
+    H_{3} = H_{2} + \text{steering\_strength} * \text{SAE}.W_{\text{dec}}[20] * \text{max activation}
     $$
 
 ```mermaid
@@ -195,7 +194,7 @@ $$
 
 ## superposition hypothesis
 
-> [!abstract]- ELI5
+> [!abstract]+ tl/dr
 >
 > phenomena when a neural network represents _more_ than $n$ features in a $n$-dimensional space
 
@@ -207,6 +206,14 @@ $$
 When features are sparsed, superposition allows compression beyond what linear model can do, at a cost of interference that requires non-linear filtering.
 
 reasoning: “noisy simulation”, where small neural networks exploit feature sparsity and properties of high-dimensional spaces to approximately simulate much larger much sparser neural networks
+
+In a sense, superposition is a form of **lossy [[thoughts/Compression|compression]]**
+
+### importance
+
+- sparsity: how _frequently_ is it in the input?
+
+- importance: how useful is it for lowering loss?
 
 ### overcomplete basis
 

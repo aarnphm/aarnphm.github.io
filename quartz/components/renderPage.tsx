@@ -34,112 +34,135 @@ function headerElement(node: Element, content: Element[], idx: number): Element 
     properties: {
       className: ["collapsible-header"],
       "data-level": node.tagName[1],
+      id: node.properties?.id ?? idx,
     },
     children: [
       {
         type: "element",
-        tagName: "button",
+        tagName: "div",
         properties: {
-          id: buttonId,
-          ariaLabel: "Toggle content visibility",
-          ariaExpanded: true,
-          className: ["header-button"],
+          className: ["header-controls"],
         },
         children: [
+          // Toggle button
           {
             type: "element",
-            tagName: "svg",
+            tagName: "button",
             properties: {
-              xmlns: "http://www.w3.org/2000/svg",
-              width: 18,
-              height: 18,
-              viewBox: "0 0 24 24",
-              fill: "var(--dark)",
-              stroke: "var(--dark)",
-              "stroke-width": "2",
-              "stroke-linecap": "round",
-              "stroke-linejoin": "round",
-              className: ["circle-icon"],
+              id: `${buttonId}-toggle`,
+              ariaLabel: "Toggle content visibility",
+              ariaExpanded: true,
+              className: ["toggle-button"],
             },
             children: [
               {
                 type: "element",
-                tagName: "circle",
+                tagName: "div",
                 properties: {
-                  cx: "12",
-                  cy: "12",
-                  r: "3",
+                  className: ["toggle-icons"],
                 },
-                children: [],
-              },
-            ],
-          },
-          {
-            type: "element",
-            tagName: "svg",
-            properties: {
-              xmlns: "http://www.w3.org/2000/svg",
-              width: 18,
-              height: 18,
-              viewBox: "0 0 24 24",
-              fill: "var(--tertiary)",
-              stroke: "var(--tertiary)",
-              "stroke-width": "2",
-              "stroke-linecap": "round",
-              "stroke-linejoin": "round",
-              className: ["expand-icon"],
-            },
-            children: [
-              {
-                type: "element",
-                tagName: "line",
-                properties: {
-                  x1: "12",
-                  y1: "5",
-                  x2: "12",
-                  y2: "19",
-                },
-                children: [],
-              },
-              {
-                type: "element",
-                tagName: "line",
-                properties: {
-                  x1: "5",
-                  y1: "12",
-                  x2: "19",
-                  y2: "12",
-                },
-                children: [],
-              },
-            ],
-          },
-          {
-            type: "element",
-            tagName: "svg",
-            properties: {
-              xmlns: "http://www.w3.org/2000/svg",
-              width: 18,
-              height: 18,
-              viewBox: "0 0 24 24",
-              fill: "none",
-              stroke: "currentColor",
-              "stroke-width": "2",
-              "stroke-linecap": "round",
-              "stroke-linejoin": "round",
-              className: ["collapse-icon"],
-            },
-            children: [
-              {
-                type: "element",
-                tagName: "line",
-                properties: {
-                  x1: "5",
-                  y1: "12",
-                  x2: "19",
-                  y2: "12",
-                },
-                children: [],
+                children: [
+                  // default circle icon
+                  {
+                    type: "element",
+                    tagName: "svg",
+                    properties: {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      width: 18,
+                      height: 18,
+                      viewBox: "0 0 24 24",
+                      fill: "var(--dark)",
+                      stroke: "var(--dark)",
+                      "stroke-width": "2",
+                      "stroke-linecap": "round",
+                      "stroke-linejoin": "round",
+                      className: ["circle-icon"],
+                    },
+                    children: [
+                      {
+                        type: "element",
+                        tagName: "circle",
+                        properties: {
+                          cx: "12",
+                          cy: "12",
+                          r: "3",
+                        },
+                        children: [],
+                      },
+                    ],
+                  },
+                  // expand icon
+                  {
+                    type: "element",
+                    tagName: "svg",
+                    properties: {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      width: 18,
+                      height: 18,
+                      viewBox: "0 0 24 24",
+                      fill: "var(--tertiary)",
+                      stroke: "var(--tertiary)",
+                      "stroke-width": "2",
+                      "stroke-linecap": "round",
+                      "stroke-linejoin": "round",
+                      className: ["expand-icon"],
+                    },
+                    children: [
+                      {
+                        type: "element",
+                        tagName: "line",
+                        properties: {
+                          x1: "12",
+                          y1: "5",
+                          x2: "12",
+                          y2: "19",
+                        },
+                        children: [],
+                      },
+                      {
+                        type: "element",
+                        tagName: "line",
+                        properties: {
+                          x1: "5",
+                          y1: "12",
+                          x2: "19",
+                          y2: "12",
+                        },
+                        children: [],
+                      },
+                    ],
+                  },
+                  // collapse icon
+                  {
+                    type: "element",
+                    tagName: "svg",
+                    properties: {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      width: 18,
+                      height: 18,
+                      viewBox: "0 0 24 24",
+                      fill: "none",
+                      stroke: "currentColor",
+                      "stroke-width": "2",
+                      "stroke-linecap": "round",
+                      "stroke-linejoin": "round",
+                      className: ["collapse-icon"],
+                    },
+                    children: [
+                      {
+                        type: "element",
+                        tagName: "line",
+                        properties: {
+                          x1: "5",
+                          y1: "12",
+                          x2: "19",
+                          y2: "12",
+                        },
+                        children: [],
+                      },
+                    ],
+                  },
+                ],
               },
             ],
           },
@@ -158,7 +181,7 @@ function headerElement(node: Element, content: Element[], idx: number): Element 
             tagName: "div",
             properties: {
               className: ["collapsible-header-content"],
-              ["data-references"]: buttonId,
+              ["data-references"]: `${buttonId}-toggle`,
             },
             children: content,
           },

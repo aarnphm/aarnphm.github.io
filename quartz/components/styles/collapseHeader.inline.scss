@@ -26,7 +26,13 @@
     margin-bottom: 1rem;
   }
 
-  & .header-button {
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .toggle-button {
     background-color: transparent;
     border: none;
     text-align: left;
@@ -35,35 +41,42 @@
     color: var(--dark);
     display: inline-flex;
     align-items: center;
+  }
 
-    & .circle-icon,
-    & .expand-icon,
-    & .collapse-icon {
+  & .toggle-icons {
+    display: grid;
+    grid-template-columns: 1fr;
+
+    .circle-icon,
+    .expand-icon,
+    .collapse-icon {
       opacity: 0.85;
-      margin-right: 0.5rem;
+      grid-column: 1;
+      grid-row: 1;
     }
 
-    // default state: circle default, :hover expanded minus, collapse plus
-    & .circle-icon {
+    // Default state shows circle
+    .circle-icon {
       display: block;
     }
-
-    & .expand-icon,
-    & .collapse-icon {
+    .expand-icon,
+    .collapse-icon {
       display: none;
     }
+  }
 
+  .toggle-button {
     &:hover {
-      & .circle-icon {
+      .circle-icon {
         display: none;
       }
 
       &[aria-expanded="true"] {
-        .expand-icon {
-          display: none;
-        }
         .collapse-icon {
           display: block;
+        }
+        .expand-icon {
+          display: none;
         }
       }
 
@@ -76,20 +89,18 @@
         }
       }
     }
-
-    :where(h1, h2, h3, h4, h5, h6):not(.popover *) {
-      margin: 0;
-    }
   }
 
-  // The SVG icon has width 18px, meaning the outer would take padding 9px
-  // and content border-left can be centered
-  & .collapsible-header-content-outer {
+  :where(h1, h2, h3, h4, h5, h6):not(.popover *) {
+    margin: 0;
+  }
+
+  // Content styles
+  .collapsible-header-content-outer {
     padding-left: 9px;
 
-    & > .collapsible-header-content {
+    .collapsible-header-content {
       border-left: 1px dashed var(--gray);
-      border-bottom: 1px dotted var(--gray);
       overflow: hidden;
       transition: max-height 0.2s ease-in-out;
       padding-left: 9px;
