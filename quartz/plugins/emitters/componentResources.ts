@@ -344,20 +344,20 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
 
         if (!fonts) fonts = getSatoriFont(cfg)
 
-        promises.push(
-          ...Array.from(content).map(([_, file]) => {
-            const slug = file.data.slug!
-            const fileName = slug.replaceAll("/", "-")
+        for (const [_, file] of content) {
+          const slug = file.data.slug!
+          const fileName = slug.replaceAll("/", "-")
 
-            const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
-            const description = unescapeHTML(
-              file.data.frontmatter?.socialDescription ??
-                file.data.frontmatter?.description ??
-                file.data.description?.trim() ??
-                i18n(cfg.locale).propertyDefaults.description,
-            )
+          const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
+          const description = unescapeHTML(
+            file.data.frontmatter?.socialDescription ??
+              file.data.frontmatter?.description ??
+              file.data.description?.trim() ??
+              i18n(cfg.locale).propertyDefaults.description,
+          )
 
-            return generateOg(
+          promises.push(
+            generateOg(
               ctx,
               file.data,
               {
@@ -370,9 +370,9 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
                 cfg,
               },
               imageOptions,
-            )
-          }),
-        )
+            ),
+          )
+        }
       }
 
       return await Promise.all(promises)

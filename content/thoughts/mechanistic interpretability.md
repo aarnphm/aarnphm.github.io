@@ -13,6 +13,7 @@ permalink:
   - /mechanistic-interpretability
 title: mechanistic interpretability
 ---
+
 [whirlwind tour](https://www.youtube.com/watch?v=veT2VI4vHyU&ab_channel=FAR%E2%80%A4AI), [[thoughts/pdfs/tinymorph exploration.pdf|initial exploration]], [glossary](https://dynalist.io/d/n2ZWtnoYHrU1s4vnFSAQ519J)
 
 > The subfield of alignment that delves into reverse engineering of a neural network, especially [[thoughts/LLMs]]
