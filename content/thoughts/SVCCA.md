@@ -3,7 +3,6 @@ id: SVCCA
 tags:
   - ml
 date: "2024-11-04"
-disableFootnotes: true
 modified: "2024-11-04"
 title: SVCCA
 ---

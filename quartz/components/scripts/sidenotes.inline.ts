@@ -15,8 +15,6 @@ function updateSidenotes() {
     const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
     if (!intextLink) return
 
-    if (sidenote.classList.contains("collapsed")) continue
-
     if (isInViewport(intextLink)) {
       sidenote.classList.add("in-view")
       intextLink.classList.add("active")
@@ -38,8 +36,12 @@ function debounce(fn: Function, delay: number) {
 
 document.addEventListener("nav", () => {
   const articleContent = document.querySelector(ARTICLE_CONTENT_SELECTOR) as HTMLElement
-  const footnoteSection = document.querySelector(FOOTNOTE_SECTION_SELECTOR)
-  if (!footnoteSection || !articleContent) return
+  const footnoteSections = Array.from(document.querySelectorAll(FOOTNOTE_SECTION_SELECTOR))
+  if (footnoteSections.length == 0 || !articleContent) return
+
+  const lastIdx = footnoteSections.length - 1
+  const footnoteSection = footnoteSections[lastIdx] as HTMLElement
+  console.log(footnoteSection)
 
   const sideContainer = document.querySelector(".sidenotes") as HTMLElement
   if (!sideContainer) return
@@ -73,6 +75,17 @@ document.addEventListener("nav", () => {
     const backref = cloned.querySelector("a[data-footnote-backref]")
     backref?.remove()
     sidenote.append(...cloned.children)
+    // create inner child container
+    let innerContainer = sidenote.querySelector(".sidenote-inner")
+    if (!innerContainer) {
+      innerContainer = document.createElement("div") as HTMLDivElement
+      innerContainer.className = "sidenote-inner"
+      while (sidenote.firstChild) {
+        innerContainer.appendChild(sidenote.firstChild)
+      }
+      sidenote.appendChild(innerContainer)
+    }
+
     ol.appendChild(sidenote)
   })
 

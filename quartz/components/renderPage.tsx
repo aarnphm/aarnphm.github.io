@@ -441,6 +441,7 @@ export function renderPage(
             ...(page.htmlAst.children as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
             ),
+            { type: "element", tagName: "br", properties: {}, children: [] },
             {
               type: "element",
               tagName: "a",
@@ -512,7 +513,6 @@ export function renderPage(
         data-slug={slug}
         data-enable-preview={componentData.fileData.frontmatter?.preview ?? true}
         data-menu={componentData.fileData.frontmatter?.menu ?? false}
-        data-disable-footnotes={componentData.fileData.frontmatter?.disableFootnotes ?? false}
       >
         {slug === "index" ? (
           <Landing {...componentData} />

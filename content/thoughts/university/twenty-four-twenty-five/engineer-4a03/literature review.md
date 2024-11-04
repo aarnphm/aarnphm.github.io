@@ -17,10 +17,10 @@ See also [[posts/a1|essays on ChatGPT]]
   To understand how AI is fundamentally political, we need to go beyond neural nets and statistical pattern recognition to instead ask <i>what</i> is being optimized, and <i>for whom</i>, and <i>who</i> gets to decide. Then we can trace the implications of those choices. -- Kate Crawford, <i>The Atlas of AI</i>
 </p>
 
-1979's "Star-Trek: the Motion Picture" centered around the antagonist, V'Ger, an artificial entity that have outgrown its original programs, seeked annihilation upon planet Earth. At the core,
+1979's "Star-Trek: the Motion Picture" centered around the antagonist, V'Ger, an artificial entity that have outgrown its original programs, sought annihilation upon planet Earth. At the core,
 the movie is mostly fictional, yet its prevalence to our current state of affairs is uncanny. Much in Artificial intelligence (AI) has changed since 1960s, including a shift in symbolic
 systems to more recent hype about deep connectionist networks. AI has expanded rapidly as a academia field and as a industry[^1]. Yet, the belief of formalising human intelligence and reproduced
-by machine has always been the core disputes in the history of AI. There has always been two narratives discussed within academia and industry practioners on how we should approach such systems:
+by machine has always been the core disputes in the history of AI. There has always been two narratives discussed within academia and industry practitioners on how we should approach such systems:
 The likes of Marvin Minsky claiming "machine can think" [@atlasofai{pp. 5-9}]; while Dreyfus [@dreyfus2008why] believed in a Heideggerian AI system would dissolve the framing problem[^framing].
 Nowadays, this narrative morphs into two verticals: Entities that seek to build systems capable of outperforming at tasks that a human can do at a greater degree of accuracy and efficiency (OpenAI, Anthropic, SSI, many AI labs, etc.[^ssi]), and
 companies that build AI systems to amplify our abilities to create and improve efficiency for our work (Runway, Cohere, etc.).

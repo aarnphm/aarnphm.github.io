@@ -43,7 +43,7 @@ You can find internal monologue under [[/posts/]] index.
 - **tinymorph** - An exploration into how we build interfaces for machine-assisted writing tool (2024-)
 
   - **WARNING**: Currently in research phase.
-  - Trained sparse autoencoders to interpret Llama 3.2 features [@templeton2024scaling]
+  - Trained [[thoughts/sparse autoencoder]] to interpret Llama 3.2 features [@templeton2024scaling]
 
 - **OpenLLM** - Run any open-source [[thoughts/LLMs|LLMs]] as OpenAI compatible API endpoint in the cloud. (2023-)
 

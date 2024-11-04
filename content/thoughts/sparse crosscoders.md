@@ -13,7 +13,7 @@ title: sparse crosscoders
 
 see also [reproduction on Gemma 2B](https://colab.research.google.com/drive/124ODki4dUjfi21nuZPHRySALx9I74YHj?usp=sharing) and [github](https://github.com/ckkissane/crosscoder-model-diff-replication)
 
-A variant of [[thoughts/mechanistic interpretability#sparse autoencoders]] where it reads and writes to multiple layers [@lindsey2024sparsecrosscoders]
+A variant of [[thoughts/sparse autoencoder]] where it reads and writes to multiple layers [@lindsey2024sparsecrosscoders]
 
 Crosscoders produces ==shared features across layers and even models==
 
@@ -94,7 +94,7 @@ _weight of L1 regularization penalty by L1 norm of per-layer decoder weight norm
 [^l2weightnorm]:
     $\|W_\text{dec,i}^l\|$ is the L2 norm of a single feature's decoder vector at a given layer.
 
-    In principe, one might ahve expected to use L2 norm of per-layer norm $\sqrt{\sum_{l \in L} \|W_\text{dec,i}^l\|^2}$
+    In principe, one might have expected to use L2 norm of per-layer norm $\sqrt{\sum_{l \in L} \|W_\text{dec,i}^l\|^2}$
 
 We use L1 due to
 
@@ -125,4 +125,3 @@ see also: [[thoughts/model stiching]] and [[thoughts/SVCCA]]
 > How do features change over model training? When do they form?
 
 > As we make a model wider, do we get more features? or they are largely the same, packed less densely?
-

@@ -10,6 +10,7 @@
   }
 
   & .sidenote-element {
+    position: absolute;
     transition: opacity 0.2s ease-in-out;
     opacity: 0;
     margin-bottom: 1rem;
@@ -34,6 +35,13 @@
 
     &.in-view {
       opacity: 1;
+    }
+
+    & .sidenote-inner {
+      max-height: 200px;
+      overflow-y: auto;
+      width: 100%;
+      box-sizing: border-box;
     }
   }
 }
