@@ -257,6 +257,14 @@ audio::-webkit-media-controls-panel {
   }
 }
 
+@media all and (min-width: $fullPageWidth) {
+  body[data-disable-footnotes="true"] {
+    section[data-footnotes] {
+      display: none;
+    }
+  }
+}
+
 .center {
   margin: $topSpacing auto;
   padding: 1rem 2rem;

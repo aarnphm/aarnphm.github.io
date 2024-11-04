@@ -41,7 +41,7 @@ export const GitHubFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> =
                 properties: {
                   width: 18,
                   height: 18,
-                  viewBox: "0 0 24 24",
+                  viewBox: "0 -4 30 30",
                   fill: "none",
                   stroke: "currentColor",
                   "stroke-width": "2",

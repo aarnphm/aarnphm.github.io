@@ -11,7 +11,7 @@ title: sparse crosscoders
 >
 > a research preview from Anthroppic and this is pretty much still a work in progress
 
-see also [open source reproduction on Gemma 2B](https://colab.research.google.com/drive/124ODki4dUjfi21nuZPHRySALx9I74YHj?usp=sharing) and github.com/ckkissane/crosscoder-model-diff-replication
+see also [reproduction on Gemma 2B](https://colab.research.google.com/drive/124ODki4dUjfi21nuZPHRySALx9I74YHj?usp=sharing) and [github](https://github.com/ckkissane/crosscoder-model-diff-replication)
 
 A variant of [[thoughts/mechanistic interpretability#sparse autoencoders]] where it reads and writes to multiple layers [@lindsey2024sparsecrosscoders]
 
@@ -32,7 +32,7 @@ Resolve:
 ![[thoughts/images/additive-residual-stream-llm.png]]
 _given the additive properties of transformers' residual stream, **adjacent layers** in larger transformers can be thought as "almost parallel"_
 
-> [!important] intuition
+> [!important]- intuition
 >
 > In basis of superposition hypothesis, a feature is a linear combinations of neurons at any given layers.
 >
@@ -86,15 +86,43 @@ $$
 and regularization can be rewritten as:
 
 $$
-\sum_{l\in L}\sum_{i} f_i(x_j) \|W^l_{\text{dec,i}}\| = \sum_{i} f_i(x_j)(\sum_{l \in L} \|W^l_\text{dec,i}\|)
+\sum_{l\in L}\sum_{i} f_i(x_j) \|W^l_{\text{dec,i}}\| = \sum_{i} f_i(x_j)(\displaystyle\sum_{l \in L} \|W^l_\text{dec,i}\|)
 $$
 
-_weight of L1 regularization penalty by L1 norm of per-layer decoder weight norms_ $\sum_{l\in L}\|W^l\*\text{dec,i}\|$ [^l2weightnorm]
+_weight of L1 regularization penalty by L1 norm of per-layer decoder weight norms_ $\sum\limits{l\in L} \|W^l_\text{dec,i}\|$ [^l2weightnorm]
 
-[^l2weightnorm]: $\|W_\text{dec,i}^l\|$ is the L2 norm of a single feature's decoder vector at a given layer
+[^l2weightnorm]:
+    $\|W_\text{dec,i}^l\|$ is the L2 norm of a single feature's decoder vector at a given layer.
+
+    In principe, one might ahve expected to use L2 norm of per-layer norm $\sqrt{\sum_{l \in L} \|W_\text{dec,i}^l\|^2}$
 
 We use L1 due to
 
 - baseline loss comparison: L2 exhibits lower loss than sum of per-layer SAE losses, as they would effectively obtain a loss "bonus" by spreading features across layers
 
-- ==layer-wise sparsity surfaces layer-specific features==: based on empirical results of _model diffing_, that L1 uncovers a mix of shared and model-specific features, whereas L2 tends to uncover only shared features.
+- ==layer-wise sparsity surfaces layer-specific features==: based on empirical results of [[thoughts/sparse crosscoders#model diffing]], that L1 uncovers a mix of shared and model-specific features, whereas L2 tends to uncover only shared features.
+
+## variants
+
+![[thoughts/images/crosscoders-variants.png]]
+
+good to explore:
+
+1. strictly causal crosscoders to capture MLP computation and treat computation performed by attention layers as linear
+2. combine strictly causal crosscoders for MLP outputs without weakly causal crosscoders for attention outputs
+3. interpretable attention replacement layers that could be used in combination with strictly causal crosscoders for a "replacement model"
+
+## model diffing
+
+see also: [[thoughts/model stiching]] and [[thoughts/SVCCA]]
+
+> [@doi:10.1080/09515080050002726] proposes compare [[thoughts/representations]] by transforming into representations of distances between data points. [^sne]
+
+[^sne]: Chris Colah's [blog post](https://colah.github.io/posts/2015-01-Visualizing-Representations/) explains how t-SNE can be used to visualize collections of networks in a function space.
+
+## questions
+
+> How do features change over model training? When do they form?
+
+> As we make a model wider, do we get more features? or they are largely the same, packed less densely?
+

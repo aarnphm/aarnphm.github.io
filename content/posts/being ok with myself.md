@@ -4,6 +4,8 @@ tags:
   - growth
 date: "2024-11-02"
 modified: "2024-11-02"
+permalink:
+  - /living
 socialDescription: on living fruitfully.
 title: I went out to celebrate N's birthday and now we ended up in a swing bar.
 ---

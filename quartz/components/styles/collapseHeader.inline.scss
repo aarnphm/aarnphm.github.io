@@ -22,8 +22,16 @@
     margin-left: 2.4rem;
   }
 
+  & .collapsed-dots {
+    display: none;
+  }
+
   &.collapsed {
     margin-bottom: 1rem;
+
+    & .collapsed-dots {
+      display: block;
+    }
   }
 
   .header-controls {
@@ -96,6 +104,8 @@
 
   :where(h1, h2, h3, h4, h5, h6):not(.popover *) {
     margin: 0;
+    display: inline-flex;
+    align-items: center;
   }
 
   // Content styles

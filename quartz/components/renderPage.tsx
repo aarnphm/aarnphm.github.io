@@ -29,6 +29,59 @@ const headerRegex = new RegExp(/h[1-6]/)
 
 function headerElement(node: Element, content: Element[], idx: number): Element {
   const buttonId = `collapsible-header-${node.properties?.id ?? idx}`
+
+  // indicate whether the header is collapsed or not
+  node.children.splice(1, 0, {
+    type: "element",
+    tagName: "svg",
+    properties: {
+      "aria-hidden": "true",
+      xmlns: "http://www.w3.org/2000/svg",
+      width: 18,
+      height: 18,
+      viewBox: "0 0 24 24",
+      fill: "currentColor",
+      stroke: "currentColor",
+      "stroke-width": "0",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round",
+      style: "padding-left: 0.2rem;",
+      className: ["collapsed-dots"],
+    },
+    children: [
+      {
+        type: "element",
+        tagName: "circle",
+        properties: {
+          cx: "6",
+          cy: "12",
+          r: "2",
+        },
+        children: [],
+      },
+      {
+        type: "element",
+        tagName: "circle",
+        properties: {
+          cx: "12",
+          cy: "12",
+          r: "2",
+        },
+        children: [],
+      },
+      {
+        type: "element",
+        tagName: "circle",
+        properties: {
+          cx: "18",
+          cy: "12",
+          r: "2",
+        },
+        children: [],
+      },
+    ],
+  })
+
   return {
     type: "element",
     tagName: "div",
@@ -459,6 +512,7 @@ export function renderPage(
         data-slug={slug}
         data-enable-preview={componentData.fileData.frontmatter?.preview ?? true}
         data-menu={componentData.fileData.frontmatter?.menu ?? false}
+        data-disable-footnotes={componentData.fileData.frontmatter?.disableFootnotes ?? false}
       >
         {slug === "index" ? (
           <Landing {...componentData} />
