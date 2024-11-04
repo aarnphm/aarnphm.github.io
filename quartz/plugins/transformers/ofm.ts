@@ -16,6 +16,7 @@ import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
 import { PhrasingContent } from "mdast-util-find-and-replace/lib"
 import { capitalize } from "../../util/lang"
+import { DEFAULT_MONO, getColor } from "../../util/theme"
 import { PluggableList } from "unified"
 
 export interface Options {
@@ -680,6 +681,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       }
 
       if (opts.mermaid) {
+        const theme = ctx.cfg.configuration.theme
         js.push({
           script: `
           let mermaidImport = undefined
@@ -691,15 +693,15 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               mermaid.initialize({
                 startOnLoad: false,
                 securityLevel: 'loose',
-                theme: 'base',
+                theme: darkMode ? 'dark' : 'base',
                 themeVariables: {
-                  fontFamily: 'Berkeley Mono, serif',
-                  primaryColor: '${ctx.cfg.configuration.theme.colors.lightMode.light}',
-                  primaryTextColor: '${ctx.cfg.configuration.theme.colors.lightMode.darkgray}',
-                  primaryBorderColor: '${ctx.cfg.configuration.theme.colors.lightMode.tertiary}',
-                  lineColor: '${ctx.cfg.configuration.theme.colors.lightMode.gray}',
-                  secondaryColor: '${ctx.cfg.configuration.theme.colors.lightMode.secondary}',
-                  tertiaryColor: '${ctx.cfg.configuration.theme.colors.lightMode.tertiary}',
+                  fontFamily: '${theme.typography.code}, ${DEFAULT_MONO}',
+                  primaryColor: '${getColor(theme, "light")}',
+                  primaryTextColor: '${getColor(theme, "darkgray")}',
+                  primaryBorderColor: '${getColor(theme, "tertiary")}',
+                  lineColor: '${getColor(theme, "gray")}',
+                  secondaryColor: '${getColor(theme, "secondary")}',
+                  tertiaryColor: '${getColor(theme, "tertiary")}',
                 }
               })
 

@@ -4,6 +4,7 @@
 body[data-slug="index"] {
   cursor: crosshair;
   overflow-x: hidden;
+  background-image: url("/static/bg.webp");
 
   @media all and (min-width: $fullPageWidth) {
     .page {

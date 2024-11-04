@@ -22,8 +22,6 @@ Andy Matuschak's on [[books|books]] and writing:
 
 > Writing is perhaps the greatest of human inventions, binding together people who never knew each other, citizens of distant epochs. Books break the shackles of time. A book is proof that humans are capable of working magic.
 
----
-
 > What I am doing right now, writing this essay, is, technically, **a linear walk through the [[thoughts/Networked Thoughts|network]] of my ideas**. That is what writing is: turning a net into a line. But it is also very concretely what I do, since I have _externalised_ my ideas in a [note-taking system](https://obsidian.md/) where the thoughts are linked with [[thoughts/Hypertext|hyperlinks]] (Henrik Karlsson, [Reader-generated Essay](https://www.lesswrong.com/posts/ZtMsyMP5F7zzP8Gvc/reader-generated-essays))
 
 At its core, writing endeavours to transmute the [[thoughts/Chaos|chaos]] of [[thoughts/Existentialism|existence]] into discernible narratives, offering a conduit for shared understanding amidst the inherent disarray of life. Such a form of [looseness in mutation](https://subconscious.substack.com/p/hypertext-montage)
@@ -51,18 +49,22 @@ In this paradox lies the profound beauty and torment of writing. It’s a ceasel
 Excerpt from _George Orwell's Why I Write_
 
 Sheer egoism:
-  > But there is also the minority of gifted, willful people who are determined to live their own lives to the end, and writers belong in this class. Serious writers, I should say, are on the whole more vain and self-centered than journalists, though less interested in money.
+
+> But there is also the minority of gifted, willful people who are determined to live their own lives to the end, and writers belong in this class. Serious writers, I should say, are on the whole more vain and self-centered than journalists, though less interested in money.
 
 Aesthetic enthusiasm:
-  - Perception of beauty in the external world, or, on the other hand, in words and their right arrangement
-  - Pleasure in the impact of one sound on another, in the firmness of good prose or the rhythm of a good story
-  - Desire to share an experience which one feels is valuable and ought not to be missed.
+
+- Perception of beauty in the external world, or, on the other hand, in words and their right arrangement
+- Pleasure in the impact of one sound on another, in the firmness of good prose or the rhythm of a good story
+- Desire to share an experience which one feels is valuable and ought not to be missed.
 
 Historical impulse
-  - Seeing things as they are, to find out true facts and store them up for the use of posterity.
+
+- Seeing things as they are, to find out true facts and store them up for the use of posterity.
 
 Political purpose
-  - Desire to push the world in a certain direction, to alter other peoples' idea of the kind of society that they should strive after.
+
+- Desire to push the world in a certain direction, to alter other peoples' idea of the kind of society that they should strive after.
 
 Orwell is often known for his democratic socialism, and opposed for totalitarianism. But his [[thoughts/Will to Truth|will to truth]] is fundamental to his writing, a true [[thoughts/representations|representation]] of intellectual honesty. In the context of totalitarianism, Orwell pointed out that such regimes demand the continuous alteration of the past and probably a disbelief in the very existence of [objective truth](https://www.goodreads.com/book/show/35610790-orwell-on-truth). He saw the danger in a society that drifts from the truth, stating that it will hate those who speak it.
 

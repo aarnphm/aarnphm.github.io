@@ -2,6 +2,7 @@
 @use "./variables.scss" as *;
 @use "./mixin.scss" as *;
 @use "./pages/menu.scss";
+@use "./pages/quotes.scss";
 @use "./pages/pseudocode.scss";
 
 @font-face {
@@ -39,6 +40,14 @@
 }
 
 @font-face {
+  font-family: "Newsreader";
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url("/static/Newsreader.woff2") format("woff2");
+}
+
+@font-face {
   font-family: "Cardo";
   font-style: normal;
   font-weight: normal;
@@ -66,7 +75,7 @@ html {
 
 .article-title {
   font-family: "ITCGaramondStdLtCond", var(--headerFont) !important;
-  font-size: 2.8125rem !important;
+  font-size: 3rem !important;
   line-height: 2.8125rem !important;
   margin-top: 1.75rem;
   margin-bottom: 1.75rem;
@@ -106,7 +115,6 @@ code {
 }
 
 body {
-  // background-image: url("/static/bg.webp");
   margin: 0;
 
   &[data-slug="curius"] {
@@ -174,58 +182,6 @@ a {
 
   &.internal.alias {
     @include links;
-  }
-}
-
-// Quote display
-body[data-slug="quotes"] {
-  & blockquote {
-    border-left: none;
-    padding-left: 0;
-    margin: 0;
-  }
-
-  & h1,
-  & h2,
-  & h3,
-  & h4 {
-    font-family: var(--bodyFont) !important;
-    font-weight: 400;
-    font-style: normal;
-    line-height: normal;
-  }
-
-  & h1 {
-    font-weight: 500;
-  }
-
-  & article {
-    & > hr::after {
-      content: "";
-    }
-
-    & > p {
-      padding-top: 1rem;
-      padding-left: 3rem;
-      margin: inherit;
-
-      &:before,
-      &:after {
-        font-size: 2em;
-        line-height: 0.1em;
-        vertical-align: -0.4em;
-      }
-
-      &:before {
-        content: "“";
-        margin-right: 0.25em;
-      }
-
-      &:after {
-        content: "”";
-        margin-left: 0.25em;
-      }
-    }
   }
 }
 
@@ -302,8 +258,8 @@ audio::-webkit-media-controls-panel {
 }
 
 .center {
-  padding: 1rem 2rem;
   margin: $topSpacing auto;
+  padding: 1rem 2rem;
   border: 1px solid var(--darkgray);
 
   @media all and (max-width: $fullPageWidth) {
