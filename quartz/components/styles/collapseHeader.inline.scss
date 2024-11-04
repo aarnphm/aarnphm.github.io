@@ -27,12 +27,17 @@
   }
 
   .header-controls {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr;
     align-items: center;
     gap: 0.5rem;
+
+    & .toggle-button {
+      grid-column: 1;
+    }
   }
 
-  .toggle-button {
+  & .toggle-button {
     background-color: transparent;
     border: none;
     text-align: left;
@@ -41,31 +46,7 @@
     color: var(--dark);
     display: inline-flex;
     align-items: center;
-  }
 
-  & .toggle-icons {
-    display: grid;
-    grid-template-columns: 1fr;
-
-    .circle-icon,
-    .expand-icon,
-    .collapse-icon {
-      opacity: 0.85;
-      grid-column: 1;
-      grid-row: 1;
-    }
-
-    // Default state shows circle
-    .circle-icon {
-      display: block;
-    }
-    .expand-icon,
-    .collapse-icon {
-      display: none;
-    }
-  }
-
-  .toggle-button {
     &:hover {
       .circle-icon {
         display: none;
@@ -88,6 +69,28 @@
           display: none;
         }
       }
+    }
+  }
+
+  & .toggle-icons {
+    display: grid;
+    grid-template-columns: 1fr;
+
+    .circle-icon,
+    .expand-icon,
+    .collapse-icon {
+      opacity: 0.85;
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    // Default state shows circle
+    .circle-icon {
+      display: block;
+    }
+    .expand-icon,
+    .collapse-icon {
+      display: none;
     }
   }
 

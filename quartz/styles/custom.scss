@@ -267,6 +267,12 @@ hr {
   }
 }
 
+.popover > .popover-inner[data-content-type*="pdf"] {
+  iframe {
+    min-height: 500px;
+  }
+}
+
 audio::-webkit-media-controls-panel {
   background-color: var(--lightgray);
 }

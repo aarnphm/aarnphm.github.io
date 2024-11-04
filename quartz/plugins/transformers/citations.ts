@@ -3,6 +3,7 @@ import { PluggableList } from "unified"
 import { visit } from "unist-util-visit"
 import { QuartzTransformerPlugin } from "../types"
 import { Element, Text, Root as HtmlRoot } from "hast"
+import { extractArxivId } from "./links"
 
 export interface Options {
   bibliographyFile: string[] | string
@@ -21,12 +22,6 @@ const defaultOptions: Options = {
 }
 
 const URL_PATTERN = /https?:\/\/[^\s<>)"]+/g
-
-function extractArxivId(url: string): string {
-  // Match patterns like 1234.56789 or hep-th/9912345
-  const match = url.match(/(?:arxiv.org\/abs\/|arxiv.org\/pdf\/)([\w.-]+)/i)
-  return match ? match[1] : ""
-}
 
 function processTextNode(node: Text, prettyLinks: boolean): (Element | Text)[] {
   const text = node.value
@@ -51,20 +46,17 @@ function processTextNode(node: Text, prettyLinks: boolean): (Element | Text)[] {
       })
     }
 
-    const isArxiv = url.toLowerCase().includes("arxiv.org")
+    const isArxiv = extractArxivId(url)
     const isTransformerCircuit = url.toLowerCase().includes("transformer-circuits.pub")
     const isAF = url.toLowerCase().includes("alignmentforum.org")
     const isGitHub = url.toLowerCase().includes("github.com")
 
     if (prettyLinks) {
-      if (isArxiv) {
-        // Extract arXiv ID
-        const arxivId = extractArxivId(url)
-
+      if (isArxiv !== null) {
         // Add the formatted text
         result.push({
           type: "text",
-          value: `arXiv preprint arXiv:${arxivId} `,
+          value: `arXiv preprint arXiv:${isArxiv} `,
         })
       }
     }
@@ -84,7 +76,7 @@ function processTextNode(node: Text, prettyLinks: boolean): (Element | Text)[] {
           type: "text",
           value: prettyLinks
             ? isArxiv
-              ? "[arXiv]"
+              ? "arxiv"
               : isGitHub
                 ? "[GitHub]"
                 : isTransformerCircuit

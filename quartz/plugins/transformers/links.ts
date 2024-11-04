@@ -31,6 +31,7 @@ interface Options {
   lazyLoad: boolean
   externalLinkIcon: boolean
   enableRawEmbed: RawFileOptions
+  enableArxivEmbed: boolean
 }
 
 const defaultOptions: Options = {
@@ -40,6 +41,30 @@ const defaultOptions: Options = {
   lazyLoad: false,
   externalLinkIcon: true,
   enableRawEmbed: { enable: false, cdn: "", extensions: [] },
+  enableArxivEmbed: true,
+}
+
+export function extractArxivId(url: string): string | null {
+  try {
+    const urlObj = new URL(url)
+    if (!urlObj.hostname.includes("arxiv.org")) return null
+
+    // Match different arXiv URL patterns
+    const patterns = [
+      /arxiv.org\/abs\/(\d+\.\d+)/,
+      /arxiv.org\/pdf\/(\d+\.\d+)(\.pdf)?/,
+      /arxiv.org\/\w+\/(\d+\.\d+)/,
+    ]
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern)
+      if (match) return match[1]
+    }
+
+    return null
+  } catch (e) {
+    return null
+  }
 }
 
 export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
@@ -75,8 +100,12 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     : isAbsoluteUrl(dest)
                 const isCslNode = classes.includes("csl-external-link")
                 const isEmbedTwitter = filterEmbedTwitter(node)
+                const isArxiv = node.properties.href.includes("arxiv.org")
 
-                if (!isEmbedTwitter) {
+                if (opts.enableArxivEmbed && isArxiv) {
+                  classes.push("internal")
+                  node.properties.dataArxivId = extractArxivId(node.properties.href)
+                } else if (!isEmbedTwitter) {
                   classes.push(isExternal ? "external" : "internal")
                 }
 

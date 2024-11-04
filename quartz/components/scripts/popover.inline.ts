@@ -39,9 +39,17 @@ async function mouseEnterHandler(
   // prevent hover of the same page
   if (thisUrl.toString() === targetUrl.toString()) return
 
-  const response = await fetch(`${targetUrl}`).catch((err) => {
-    console.error(err)
-  })
+  let response: Response | void
+  if (link.dataset.arxivId) {
+    const url = new URL(`https://raw.aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
+    response = await fetch(url).catch((err) => {
+      console.error(err)
+    })
+  } else {
+    response = await fetch(`${targetUrl}`).catch((err) => {
+      console.error(err)
+    })
+  }
 
   // bailout if another popover exists
   if (hasAlreadyBeenFetched()) {
@@ -72,7 +80,15 @@ async function mouseEnterHandler(
       switch (typeInfo) {
         case "pdf":
           const pdf = document.createElement("iframe")
-          pdf.src = targetUrl.toString()
+
+          if (link.dataset.arxivId) {
+            const blob = await response.blob()
+            const blobUrl = URL.createObjectURL(blob)
+            pdf.src = blobUrl
+          } else {
+            pdf.src = targetUrl.toString()
+          }
+
           popoverInner.appendChild(pdf)
           break
         default:
@@ -88,7 +104,9 @@ async function mouseEnterHandler(
         const noPreview = document.createElement("div")
         noPreview.innerHTML = `<p>L'aperçu est désactivé sur cette page.</p>`
         elts = [noPreview]
-      } else elts = [...html.getElementsByClassName("popover-hint")]
+      } else {
+        elts = [...html.getElementsByClassName("popover-hint")]
+      }
       if (elts.length === 0) return
 
       elts.forEach((elt) => popoverInner.appendChild(elt))
