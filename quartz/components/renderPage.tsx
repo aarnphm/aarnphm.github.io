@@ -12,7 +12,6 @@ import { i18n } from "../i18n"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
 import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
-import { String } from "lightningcss"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -31,7 +30,8 @@ function headerElement(node: Element, content: Element[], idx: number): Element 
   const buttonId = `collapsible-header-${node.properties?.id ?? idx}`
 
   // indicate whether the header is collapsed or not
-  node.children.splice(1, 0, {
+  const lastIdx = node.children.length > 0 ? node.children.length - 1 : 0
+  node.children.splice(lastIdx, 0, {
     type: "element",
     tagName: "svg",
     properties: {
