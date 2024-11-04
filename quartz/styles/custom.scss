@@ -46,6 +46,14 @@
   src: url("/static/Cardo-Regular.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "EB Garamond";
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url("/static/EBGaramond-VariableFont_wght.ttf") format("truetype");
+}
+
 [role="article"]:hover {
   border: 1px solid var(--highlight);
   background: var(--highlight);
@@ -98,7 +106,7 @@ code {
 }
 
 body {
-  background-image: url("/static/bg.webp");
+  // background-image: url("/static/bg.webp");
   margin: 0;
 
   &[data-slug="curius"] {

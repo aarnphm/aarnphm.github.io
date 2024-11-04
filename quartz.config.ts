@@ -35,7 +35,7 @@ const config: QuartzConfig = {
       fontOrigin: "local",
       typography: {
         header: "GT Sectra Display",
-        body: "Cardo",
+        body: "GT Sectra Book",
         code: "Berkeley Mono",
       },
       colors: {

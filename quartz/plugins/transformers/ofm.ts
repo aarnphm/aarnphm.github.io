@@ -660,7 +660,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       return plugins
     },
-    externalResources() {
+    externalResources(ctx) {
       const js: JSResource[] = []
 
       if (opts.enableCheckbox) {
@@ -691,12 +691,19 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               mermaid.initialize({
                 startOnLoad: false,
                 securityLevel: 'loose',
-                theme: darkMode ? 'dark' : 'default'
+                theme: 'base',
+                themeVariables: {
+                  fontFamily: 'Berkeley Mono, serif',
+                  primaryColor: '${ctx.cfg.configuration.theme.colors.lightMode.light}',
+                  primaryTextColor: '${ctx.cfg.configuration.theme.colors.lightMode.darkgray}',
+                  primaryBorderColor: '${ctx.cfg.configuration.theme.colors.lightMode.tertiary}',
+                  lineColor: '${ctx.cfg.configuration.theme.colors.lightMode.gray}',
+                  secondaryColor: '${ctx.cfg.configuration.theme.colors.lightMode.secondary}',
+                  tertiaryColor: '${ctx.cfg.configuration.theme.colors.lightMode.tertiary}',
+                }
               })
 
-              await mermaid.run({
-                querySelector: '.mermaid'
-              })
+              await mermaid.run({ querySelector: '.mermaid' })
             }
           });
           `,
