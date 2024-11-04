@@ -7,6 +7,12 @@ modified: "2024-11-03"
 title: sparse crosscoders
 ---
 
+> [!important] maturity
+>
+> a research preview from Anthroppic and this is pretty much still a work in progress
+
+see also [open source reproduction on Gemma 2B](https://colab.research.google.com/drive/124ODki4dUjfi21nuZPHRySALx9I74YHj?usp=sharing) and github.com/ckkissane/crosscoder-model-diff-replication
+
 A variant of [[thoughts/mechanistic interpretability#sparse autoencoders]] where it reads and writes to multiple layers [@lindsey2024sparsecrosscoders]
 
 Crosscoders produces ==shared features across layers and even models==
@@ -19,4 +25,76 @@ Resolve:
 
 - model diffing: produce shared sets of features across models. This also introduce one model across training, and also completely independent models with different architectures.
 
-## cross-layer [[thoughts/mechanistic interpretability#superposition hypothesis|superposition]]
+## motivations
+
+### cross-layer [[thoughts/mechanistic interpretability#superposition hypothesis|superposition]]
+
+![[thoughts/images/additive-residual-stream-llm.png]]
+_given the additive properties of transformers' residual stream, **adjacent layers** in larger transformers can be thought as "almost parallel"_
+
+> [!important] intuition
+>
+> In basis of superposition hypothesis, a feature is a linear combinations of neurons at any given layers.
+>
+> ![[thoughts/images/feature-neurons.png]]
+
+![[thoughts/images/one-step-circuit.png]]
+
+![[thoughts/images/parallel-joint-branch.png]]
+_if we think of adjacent layers as being "almost parallel branches that potentially have superposition between them", then we can apply dictionary learning jointly [^jointlysae]_
+
+[^jointlysae]: [@gorton2024missingcurvedetectorsinceptionv1] applies SAEs to study InceptionV1, where cross-branch superposition is significant in interpreting models with parallel branches
+
+### persistent features and complexity
+
+Current drawbacks of sparse autoencoders is that we have to train it against certain activations layers to extract features. In terms of the residual
+stream per layers, we end up having lots of duplicate features across layers.
+
+> Crosscoders can simplify the circuit _given that we use an appropriate architecture_ [^risks]
+
+[^risks]: causal description it provides likely differs from that of the underlying model.
+
+## setup.
+
+> Autoencoders and transcoders as special cases of crosscoders.
+>
+> - autoencoders: reads and predict the same layers
+> - transcoders: read from layer $n$ and predict layer $n+1$
+
+Crosscoder read/write to many layers, subject to causality constraints.
+
+> [!abstract]+ definition
+>
+> Let one compute the vector of feature activation $f_(x_j)$ on datapoint $x_j$ by summing over contributions of activations of different layers $a^l(x_j)$ for layers $l \in L$:
+>
+> $$
+> \begin{aligned}
+> f(x_j) &= \text{ReLU}(\sum_{l\in L}W_{\text{enc}}^l a^l(x_j) + b_{\text{enc}}) \\
+> \\
+> &\because W^l_{\text{enc}} : \text{ encoder weights at layer } l \\
+> \\
+> &\because a^l(x_j) : \text{ activation on datapoint } x_j \text{ at layer } l \\
+> \end{aligned}
+> $$
+
+We have loss
+
+$$
+L = \sum_{l\in L} \|a^l(x_j) - a^{l^{'}}(x_j)\|^2 + \sum_{l\in L}\sum_i f_i(x_j) \|W^l_{\text{dec,i}}\|
+$$
+
+and regularization can be rewritten as:
+
+$$
+\sum_{l\in L}\sum_{i} f_i(x_j) \|W^l_{\text{dec,i}}\| = \sum_{i} f_i(x_j)(\sum_{l \in L} \|W^l_\text{dec,i}\|)
+$$
+
+_weight of L1 regularization penalty by L1 norm of per-layer decoder weight norms_ $\sum_{l\in L}\|W^l\*\text{dec,i}\|$ [^l2weightnorm]
+
+[^l2weightnorm]: $\|W_\text{dec,i}^l\|$ is the L2 norm of a single feature's decoder vector at a given layer
+
+We use L1 due to
+
+- baseline loss comparison: L2 exhibits lower loss than sum of per-layer SAE losses, as they would effectively obtain a loss "bonus" by spreading features across layers
+
+- ==layer-wise sparsity surfaces layer-specific features==: based on empirical results of _model diffing_, that L1 uncovers a mix of shared and model-specific features, whereas L2 tends to uncover only shared features.

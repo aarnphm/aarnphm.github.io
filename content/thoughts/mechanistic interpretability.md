@@ -18,7 +18,9 @@ title: mechanistic interpretability
 > The subfield of alignment that delves into reverse engineering of a neural network, especially [[thoughts/LLMs]]
 
 To attack the _curse of dimensionality_, the question remains: ==How do we hope to understand a function over such
-a large space, without an exponential amount of time?==
+a large space, without an exponential amount of time?== [^lesswrongarc]
+
+[^lesswrongarc]: good read from [Lawrence C](https://www.lesswrong.com/posts/6FkWnktH3mjMAxdRT/what-i-would-do-if-i-wasn-t-at-arc-evals#Ambitious_mechanistic_interpretability) for ambitious mech interp.
 
 ## steering
 
@@ -50,6 +52,24 @@ interpretable features.
 
 For feature [[thoughts/mechanistic interpretability#ablation]], we observe that manipulation of features activation can be strengthened or weakened
 to directly influence the model's outputs
+
+A few examples where [@panickssery2024steeringllama2contrastive] uses contrastive activation additions to steer Llama 2
+
+### contrastive activation additions
+
+intuition: using a contrast pair for steering vector additions at certain activations layers
+
+Uses _mean difference_ which produce difference vector similar to PCA:
+
+Given a dataset $\mathcal{D}$ of prompt $p$ with positive completion $c_p$ and negative completion $c_n$, we calculate mean-difference $v_\text{MD}$ at layer $L$ as follow:
+
+$$
+v_\text{MD} = \frac{1}{\abs{\mathcal{D}}} \sum_{p,c_p,c_n \in \mathcal{D}} a_L(p,c_p) - a_L(p, c_n)
+$$
+
+> [!important] implication
+>
+> by steering existing learned representations of behaviors, CAA results in better out-of-distribution generalization than basic supervised finetuning of the entire model.
 
 ## sparse autoencoders
 
