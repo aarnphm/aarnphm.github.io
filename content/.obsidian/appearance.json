@@ -1,8 +1,8 @@
 {
   "accentColor": "#e67f7f",
   "cssTheme": "Minimal",
-  "interfaceFontFamily": "Apple Braille,Berkeley Mono,Charter,EB Garamond",
-  "textFontFamily": "BerkeleyMono Nerd Font Mono,ZedMono Nerd Font,Apple Braille,EB Garamond,Cardo",
+  "interfaceFontFamily": "Charter,Apple Braille,Berkeley Mono,EB Garamond",
+  "textFontFamily": "Cardo Nerd Font,ZedMono Nerd Font,BerkeleyMono Nerd Font Mono,Apple Braille,EB Garamond",
   "monospaceFontFamily": "ZedMono Nerd Font,0xProto Nerd Font,Berkeley Mono",
   "baseFontSize": 21,
   "translucency": true,
