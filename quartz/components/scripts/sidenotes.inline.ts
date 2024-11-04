@@ -41,7 +41,6 @@ document.addEventListener("nav", () => {
 
   const lastIdx = footnoteSections.length - 1
   const footnoteSection = footnoteSections[lastIdx] as HTMLElement
-  console.log(footnoteSection)
 
   const sideContainer = document.querySelector(".sidenotes") as HTMLElement
   if (!sideContainer) return

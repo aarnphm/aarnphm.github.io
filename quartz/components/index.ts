@@ -1,4 +1,5 @@
 import Sidenotes from "./Sidenotes"
+import ImagePopup from "./Image"
 import Landing from "./Landing"
 import Navigation from "./Navigation"
 import MinimalFooter from "./MinimalFooter"
@@ -33,6 +34,7 @@ import Comments from "./Comments"
 
 export {
   Sidenotes,
+  ImagePopup,
   Landing,
   Navigation,
   CuriusContent,

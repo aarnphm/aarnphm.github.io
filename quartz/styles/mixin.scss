@@ -9,6 +9,16 @@
   opacity: 0;
 }
 
+@mixin font-face($family, $filename, $format, $style: normal, $weight: normal) {
+  @font-face {
+    font-family: $family;
+    font-style: $style;
+    font-weight: $weight;
+    font-display: swap;
+    src: url("/static/#{$filename}") format($format);
+  }
+}
+
 @mixin indicatorHook {
   &::before {
     content: " ";

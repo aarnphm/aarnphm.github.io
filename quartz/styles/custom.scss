@@ -5,63 +5,13 @@
 @use "./pages/quotes.scss";
 @use "./pages/pseudocode.scss";
 
-@font-face {
-  font-family: "Berkeley Mono";
-  font-style: monospace;
-  font-weight: normal;
-  font-display: swap;
-  src:
-    url("/static/BerkeleyMono-Regular.woff2") format("woff2"),
-    url("/static/BerkeleyMono-Regular.woff") format("woff");
-}
-
-@font-face {
-  font-family: "ITCGaramondStdLtCond";
-  font-style: normal;
-  font-weight: normal;
-  font-display: swap;
-  src: url("/static/ITCGaramondStdLtCond.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "GT Sectra Display";
-  font-style: normal;
-  font-weight: normal;
-  font-display: swap;
-  src: url("/static/GT-Sectra-Display-Regular.woff") format("woff");
-}
-
-@font-face {
-  font-family: "GT Sectra Book";
-  font-style: normal;
-  font-weight: normal;
-  font-display: swap;
-  src: url("/static/GT-Sectra-Book.woff") format("woff");
-}
-
-@font-face {
-  font-family: "Newsreader";
-  font-style: normal;
-  font-weight: normal;
-  font-display: swap;
-  src: url("/static/Newsreader.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Cardo";
-  font-style: normal;
-  font-weight: normal;
-  font-display: swap;
-  src: url("/static/Cardo-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "EB Garamond";
-  font-style: normal;
-  font-weight: normal;
-  font-display: swap;
-  src: url("/static/EBGaramond-VariableFont_wght.ttf") format("truetype");
-}
+@include font-face("Berkeley Mono", "BerkeleyMono-Regular.woff2", "woff2");
+@include font-face("ITCGaramondStdLtCond", "ITCGaramondStdLtCond.woff2", "woff2");
+@include font-face("GT Sectra Display", "GT-Sectra-Display-Regular.woff", "woff");
+@include font-face("GT Sectra Book", "GT-Sectra-Book.woff", "woff");
+@include font-face("Newsreader", "Newsreader.woff2", "woff2");
+@include font-face("Cardo", "Cardo-Regular.ttf", "truetype");
+@include font-face("EB Garamond", "EBGaramond-VariableFont_wght.ttf", "truetype");
 
 [role="article"]:hover {
   border: 1px solid var(--highlight);
@@ -69,16 +19,10 @@
   border-radius: 5px;
 }
 
+// ----- DOM customization -----
+
 html {
   scroll-behavior: smooth;
-}
-
-.article-title {
-  font-family: "ITCGaramondStdLtCond", var(--headerFont) !important;
-  font-size: 3rem !important;
-  line-height: 2.8125rem !important;
-  margin-top: 1.75rem;
-  margin-bottom: 1.75rem;
 }
 
 // golden ditonic scale
@@ -91,17 +35,6 @@ h2 {
 }
 h3 {
   font-size: 1.272rem;
-}
-
-#preview-container {
-  flex-grow: 1;
-}
-
-.katex {
-  font:
-    normal 1.2em KaTeX_Main,
-    var(--bodyFont),
-    serif !important;
 }
 
 li.section-li {
@@ -118,8 +51,6 @@ body {
   margin: 0;
 
   &[data-slug="curius"] {
-    background-image: unset;
-
     .center {
       border: unset !important;
       margin-bottom: 0;
@@ -185,32 +116,6 @@ a {
   }
 }
 
-@keyframes kbefore {
-  0% {
-    background: transparent;
-  }
-  50% {
-    background: var(--highlight);
-  }
-  100% {
-    width: 100%;
-    background: transparent;
-  }
-}
-
-@keyframes kafter {
-  0% {
-    background: transparent;
-  }
-  50% {
-    background: var(--gray);
-  }
-  100% {
-    width: 100%;
-    background: var(--lightgray);
-  }
-}
-
 hr {
   overflow: visible;
   padding: 0;
@@ -231,18 +136,198 @@ hr {
   }
 }
 
-.popover > .popover-inner[data-content-type*="pdf"] {
-  iframe {
-    min-height: 500px;
-  }
-}
-
 audio::-webkit-media-controls-panel {
   background-color: var(--lightgray);
 }
 
+header {
+  .search {
+    grid-area: 2 / 1 / 2 / 3;
+  }
+  .keybind {
+    grid-area: 2 / 3 / 2 / 4;
+    justify-self: end;
+  }
+
+  .breadcrumb-container {
+    grid-area: 1 / 1 / 1 / 4;
+  }
+  @media all and (max-width: $fullPageWidth) {
+    margin-bottom: 0rem;
+
+    .search {
+      max-width: unset;
+      min-width: 140px;
+      grid-area: 2 / 1 / 2 / 4;
+    }
+  }
+}
+
+blockquote.twitter-tweet {
+  border-left: unset;
+  border: 2px solid var(--secondary);
+  padding-bottom: 1rem;
+  padding-right: 0.2rem;
+  position: relative;
+  background-color: var(--light);
+  margin-right: 0.5rem !important;
+
+  &::before {
+    content: "x.com";
+    position: absolute;
+    top: -12px;
+    left: 12px;
+    background-color: var(--light);
+    color: var(--gray);
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border: 1px solid var(--secondary);
+  }
+
+  &:first-child {
+    margin-top: 2rem;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+
+  @include steps;
+}
+
+p.quotes {
+  padding-top: 1rem;
+  padding-left: 3rem;
+  margin: inherit;
+
+  &:before,
+  &:after {
+    font-size: 2em;
+    line-height: 0.1em;
+    vertical-align: -0.4em;
+  }
+
+  &:before {
+    content: "“";
+    margin-right: 0.25em;
+  }
+
+  &:after {
+    content: "”";
+    margin-left: 0.25em;
+  }
+}
+
+section[data-footnotes] {
+  background-color: var(--light);
+  border: 2px solid var(--tertiary);
+  position: relative;
+
+  & > * {
+    margin: 0 1.25rem;
+  }
+
+  // disable footnotes headers
+  & > #footnote-label.sr-only {
+    margin-top: 1rem;
+  }
+
+  & > ol {
+    margin-bottom: 2rem;
+  }
+
+  @include steps;
+}
+
+blockquote.transclude {
+  #refs {
+    margin-right: 0.5rem;
+  }
+
+  section[data-footnotes] {
+    margin-right: 0.5rem;
+    & > * {
+      margin: 0 1.25rem;
+    }
+
+    // disable footnotes headers
+    & > #footnote-label.sr-only {
+      margin-top: 1rem;
+    }
+
+    & > ol {
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+// ----- id customization -----
+
+#preview-container {
+  flex-grow: 1;
+}
+
 #graph-container {
   background-color: var(--light);
+}
+
+#refs {
+  border-left: unset;
+  border: 2px solid var(--dark);
+  position: relative;
+  background-color: var(--light);
+
+  &::before {
+    content: "References";
+    position: absolute;
+    top: -12px;
+    left: 12px;
+    background-color: var(--light);
+    color: var(--gray);
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border: 1px solid var(--dark);
+  }
+
+  &::after {
+    content: "";
+    background-image: url("/static/dotted.svg");
+    background-repeat: repeat;
+    z-index: -10;
+    top: 0.5rem;
+    left: 0.5rem;
+    right: -0.5rem;
+    bottom: -0.5rem;
+    position: absolute;
+  }
+}
+
+// ----- class customization -----
+
+.article-title {
+  font-family: "ITCGaramondStdLtCond", var(--headerFont) !important;
+  font-size: 3rem !important;
+  line-height: 2.8125rem !important;
+  margin: 1.75rem 0;
+}
+
+.callout {
+  border-radius: 0px;
+}
+
+.katex {
+  font:
+    normal 1.2em KaTeX_Main,
+    var(--bodyFont),
+    serif !important;
+}
+
+.popover > .popover-inner[data-content-type*="pdf"] {
+  iframe {
+    min-height: 500px;
+  }
 }
 
 .popover > .popover-inner,
@@ -277,14 +362,19 @@ audio::-webkit-media-controls-panel {
   }
 }
 
-header,
-.left,
-.right {
+// grid layout
+%sidebar-grid {
   display: grid !important;
   gap: 1.1rem !important;
   grid-template-rows: min-content;
   align-items: center;
   margin-top: $topSpacing !important;
+}
+
+header,
+.left,
+.right {
+  @extend %sidebar-grid;
 }
 
 .left {
@@ -367,38 +457,6 @@ header,
   padding-right: 0.5rem;
 }
 
-#refs {
-  border-left: unset;
-  border: 2px solid var(--dark);
-  position: relative;
-  background-color: var(--light);
-
-  &::before {
-    content: "References";
-    position: absolute;
-    top: -12px;
-    left: 12px;
-    background-color: var(--light);
-    color: var(--gray);
-    font-size: 12px;
-    font-weight: bold;
-    padding: 4px 8px;
-    border: 1px solid var(--dark);
-  }
-
-  &::after {
-    content: "";
-    background-image: url("/static/dotted.svg");
-    background-repeat: repeat;
-    z-index: -10;
-    top: 0.5rem;
-    left: 0.5rem;
-    right: -0.5rem;
-    bottom: -0.5rem;
-    position: absolute;
-  }
-}
-
 .content-meta {
   margin-top: 0.5rem;
   color: var(--gray);
@@ -424,29 +482,6 @@ header,
   }
 }
 
-header {
-  .search {
-    grid-area: 2 / 1 / 2 / 3;
-  }
-  .keybind {
-    grid-area: 2 / 3 / 2 / 4;
-    justify-self: end;
-  }
-
-  .breadcrumb-container {
-    grid-area: 1 / 1 / 1 / 4;
-  }
-  @media all and (max-width: $fullPageWidth) {
-    margin-bottom: 0rem;
-
-    .search {
-      max-width: unset;
-      min-width: 140px;
-      grid-area: 2 / 1 / 2 / 4;
-    }
-  }
-}
-
 .breadcrumb-container {
   gap: 0.25rem;
   border-bottom: 1px solid var(--darkgray);
@@ -457,99 +492,5 @@ header {
 .breadcrumb-element {
   p {
     margin-left: 0.25rem;
-  }
-}
-
-blockquote.twitter-tweet {
-  border-left: unset;
-  border: 2px solid var(--secondary);
-  padding-bottom: 1rem;
-  padding-right: 0.2rem;
-  position: relative;
-  background-color: var(--light);
-  margin-right: 0.5rem !important;
-
-  &::before {
-    content: "x.com";
-    position: absolute;
-    top: -12px;
-    left: 12px;
-    background-color: var(--light);
-    color: var(--gray);
-    font-size: 12px;
-    font-weight: bold;
-    padding: 4px 8px;
-    border: 1px solid var(--secondary);
-  }
-
-  &:first-child {
-    margin-top: 2rem;
-  }
-
-  &:not(:last-child) {
-    margin-bottom: 2rem;
-  }
-
-  @include steps;
-}
-
-p.quotes {
-  padding-top: 1rem;
-  padding-left: 3rem;
-  margin: inherit;
-
-  &:before,
-  &:after {
-    font-size: 2em;
-    line-height: 0.1em;
-    vertical-align: -0.4em;
-  }
-
-  &:before {
-    content: "“";
-    margin-right: 0.25em;
-  }
-
-  &:after {
-    content: "”";
-    margin-left: 0.25em;
-  }
-}
-
-section[data-footnotes] {
-  background-color: var(--light);
-  border: 2px solid var(--tertiary);
-  position: relative;
-
-  & > * {
-    margin: 0 1.25rem;
-  }
-
-  // disable footnotes headers
-  & > #footnote-label.sr-only {
-    margin-top: 1rem;
-  }
-
-  & > ol {
-    margin-bottom: 2rem;
-  }
-
-  @include steps;
-}
-
-blockquote.transclude {
-  section[data-footnotes] {
-    & > * {
-      margin: 0 1.25rem;
-    }
-
-    // disable footnotes headers
-    & > #footnote-label.sr-only {
-      margin-top: 1rem;
-    }
-
-    & > ol {
-      margin-bottom: 2rem;
-    }
   }
 }

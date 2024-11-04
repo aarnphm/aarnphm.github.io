@@ -3,6 +3,7 @@ import * as Component from "./quartz/components"
 
 export const afterBodyComponents: Partial<SharedLayout> = {
   afterBody: [
+    Component.ImagePopup(),
     Component.Comments({
       provider: "giscus",
       options: {
