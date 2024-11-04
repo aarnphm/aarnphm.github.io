@@ -119,20 +119,42 @@ a {
 hr {
   overflow: visible;
   padding: 0;
-  margin: 4em auto;
+  margin: 2em auto;
   border: none;
-  color: var(--gray);
-  text-align: center;
-  width: 70%;
-  border-color: var(--gray);
+  position: relative;
+  display: flex;
+  height: inherit;
+  background-color: inherit;
+
+  &:before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    background-color: var(--light);
+    box-shadow:
+      0 1px 0 0 var(--hr-highlighted-border-color) inset,
+      0 -1px 0 0 var(--hr-highlighted-border-color) inset;
+    height: 3px;
+  }
+
   &:after {
-    content: "* * *";
-    display: inline-block;
-    margin: -1em 0 0.5em;
-    font-size: 1.5em;
-    padding: 0.5em 1em;
-    background: transparent;
-    color: var(--gray);
+    content: "";
+    border: 1px solid var(--hr-highlighted-border-color);
+    width: 2em;
+    height: 2em;
+    background-image: none;
+    z-index: 1;
+    margin: auto;
+    box-sizing: border-box;
+    background-color: var(--light);
+    box-shadow:
+      0 0 0 1px var(--light) inset,
+      0 0 0 2px var(--hr-highlighted-border-color) inset,
+      0 0 0 calc(0.5em - 1px) var(--light) inset,
+      0 0 0 0.5em var(--hr-highlighted-border-color) inset,
+      0 0 0 calc(0.5em + 1px) var(--light) inset,
+      0 0 0 calc(0.5em + 2px) var(--hr-highlighted-border-color) inset;
   }
 }
 
@@ -221,7 +243,7 @@ p.quotes {
 
 section[data-footnotes] {
   background-color: var(--light);
-  border: 2px solid var(--tertiary);
+  border: 2px solid var(--gold);
   position: relative;
 
   & > * {
@@ -274,7 +296,7 @@ blockquote.transclude {
 
 #refs {
   border-left: unset;
-  border: 2px solid var(--dark);
+  border: 2px solid var(--iris);
   position: relative;
   background-color: var(--light);
 
@@ -315,6 +337,52 @@ blockquote.transclude {
 
 .callout {
   border-radius: 0px;
+
+  &[data-callout] {
+    --color: #9ccfd8;
+    --border: #9ccfd844;
+    --bg: #9ccfd810;
+  }
+  &[data-callout="abstract"] {
+    --color: var(--pine);
+    --border: #28698344;
+    --bg: #28698310;
+  }
+  &[data-callout="info"],
+  &[data-callout="todo"] {
+    --color: #c4a7e7;
+    --border: #c4a7e744;
+    --bg: #c4a7e710;
+  }
+  &[data-callout="tip"] {
+    --color: #3e8fb0;
+    --border: #3e8fb044;
+    --bg: #3e8fb010;
+  }
+  &[data-callout="success"] {
+    --color: var(--foam);
+    --border: #56949f44;
+    --bg: #56949f10;
+  }
+  &[data-callout="question"] {
+    --color: #f6c177;
+    --border: #f6c17744;
+    --bg: #f6c17710;
+  }
+
+  &[data-callout="warning"] {
+    --color: var(--gold);
+    --border: #ea9d3444;
+    --bg: #ea9d3410;
+  }
+
+  &[data-callout="failure"],
+  &[data-callout="danger"],
+  &[data-callout="bug"] {
+    --color: var(--tertiary);
+    --border: #b4637a44;
+    --bg: #b4637a10;
+  }
 }
 
 .katex {

@@ -3,6 +3,21 @@
   --link-underline-background-color: var(--light);
   --link-underline-gradient-line-color: currentColor;
   --link-underline-background-image: url(data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIEBCSGBQA7);
+  --hr-highlighted-border-color: var(--gray);
+
+  // rose-pine-dawn
+  --base: #faf4ed;
+  --surface: var(--light);
+  --overlay: var(--lightgray);
+  --muted: var(--gray);
+  --subtle: var(--darkgray);
+  --text: var(--dark);
+  --rose: var(--secondary);
+  --love: var(--tertiary);
+  --gold: #ea9d34;
+  --pine: #286983;
+  --foam: #56949f;
+  --iris: #907aa9;
 }
 
 $pageWidth: 780px;
