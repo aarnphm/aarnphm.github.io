@@ -69,7 +69,7 @@
       margin-top: 3rem;
       overflow: hidden auto;
 
-      @media all and (max-width: $mobileBreakpoint) {
+      @media all and ($mobile) {
         width: initial;
         right: 1rem;
         left: 1rem;

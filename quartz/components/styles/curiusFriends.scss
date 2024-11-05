@@ -2,13 +2,17 @@
 @use "../../styles/mixin.scss" as *;
 
 .curius-friends {
-  display: none;
+  display: none !important;
   max-width: calc($sidePanelWidth - 1rem);
   cursor: pointer;
 
-  @media all and (max-width: $fullPageWidth) {
+  @media all and ($desktop) {
     max-width: unset;
     width: 100%;
+  }
+
+  @media all and not ($desktop) {
+    margin-top: $topSpacing;
   }
 
   a,
@@ -24,7 +28,7 @@
   }
 
   &.active {
-    display: block;
+    display: block !important;
   }
 
   #friends-list {

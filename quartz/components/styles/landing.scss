@@ -1,3 +1,4 @@
+@use "sass:map";
 @use "../../styles/base.scss";
 @use "../../styles/variables.scss" as *;
 
@@ -6,10 +7,18 @@ body[data-slug="index"] {
   overflow-x: hidden;
   background-image: url("/static/bg.webp");
 
-  @media all and (min-width: $fullPageWidth) {
-    .page {
-      .center {
-        width: $pageWidth + calc($sidePanelWidth / 2);
+  & .page > #quartz-body {
+    display: flex;
+
+    & .center {
+      width: #{$pageWidth};
+      max-width: unset !important;
+      min-width: unset !important;
+
+      @media all and (max-width: #{map.get($breakpoints, desktop)}) {
+        width: initial;
+        margin-left: 0;
+        margin-right: 0;
       }
     }
   }
@@ -49,7 +58,7 @@ body[data-slug="index"] {
     border-bottom: none;
   }
 
-  @media all and (max-width: $fullPageWidth) {
+  @media all and ($desktop) {
     .center {
       margin-bottom: 2rem;
     }
@@ -71,17 +80,12 @@ body[data-slug="index"] {
     .recent-links,
     .notes-container {
       display: flex;
-
       font-family: "ITCGaramondStdLtCond", var(--bodyFont);
     }
 
     .recent-links {
       flex-direction: column;
     }
-  }
-
-  @media all and (max-width: $fullPageWidth) {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -141,7 +145,7 @@ a.min-links {
 .content-container {
   margin: 2rem auto;
 
-  @media all and (max-width: $fullPageWidth) {
+  @media all and ($desktop) {
     width: initial;
     margin-left: 0;
     margin-right: 0;

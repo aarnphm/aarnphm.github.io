@@ -24,8 +24,8 @@ export const MenuPage: QuartzEmitterPlugin = () => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
     beforeBody: [],
-    left: [],
-    right: [],
+    left: [Spacer()],
+    right: [Spacer()],
     pageBody: Content(),
     afterBody: [MenuFooter],
     footer: Spacer(),

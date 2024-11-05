@@ -1,6 +1,7 @@
 import { GlobalConfiguration, QuartzConfig } from "./quartz/cfg"
 import { byDateAndAlphabetical } from "./quartz/components/PageList"
 import * as Plugin from "./quartz/plugins"
+import * as Component from "./quartz/components"
 import { QuartzPluginData } from "./quartz/plugins/vfile"
 
 /**

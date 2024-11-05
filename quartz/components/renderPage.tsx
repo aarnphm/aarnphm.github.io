@@ -534,7 +534,7 @@ export function renderPage(
                   </div>
                 </div>
                 <Content {...componentData} />
-                <hr />
+                {slug !== "curius" ? <hr /> : <></>}
                 <div class="page-footer">
                   {afterBody.map((BodyComponent) => (
                     <BodyComponent {...componentData} />
@@ -542,8 +542,8 @@ export function renderPage(
                 </div>
               </div>
               {RightComponent}
+              <Footer {...componentData} />
             </Body>
-            <Footer {...componentData} />
           </div>
         )}
       </body>

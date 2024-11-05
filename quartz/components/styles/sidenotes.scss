@@ -13,10 +13,9 @@
     position: absolute;
     transition: opacity 0.2s ease-in-out;
     opacity: 0;
+    display: block;
     margin-bottom: 1rem;
-    margin-right: $topSpacing;
     border: 1px solid var(--gray);
-    padding: 0.2rem 1rem;
     counter-increment: sidenote-counter;
     background-color: var(--light);
 
@@ -37,11 +36,16 @@
       opacity: 1;
     }
 
+    &.collapsed {
+      display: none;
+    }
+
     & .sidenote-inner {
       max-height: 200px;
       overflow-y: auto;
       width: 100%;
       box-sizing: border-box;
+      padding: 0.2rem 1rem;
     }
   }
 }

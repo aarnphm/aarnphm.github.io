@@ -2,6 +2,7 @@ import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import HeaderConstructor from "../../components/Header"
 import BodyConstructor from "../../components/Body"
+import { Spacer } from "../../components"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { ProcessedContent, QuartzPluginData, defaultProcessedContent } from "../vfile"
 import { FullPageLayout } from "../../cfg"
@@ -31,8 +32,8 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
     pageBody: FolderContent({ sort: userOpts?.sort }),
     header: [...defaultListPageLayout.beforeBody, ...defaultListPageLayout.left],
     beforeBody: [],
-    left: [],
-    right: [],
+    left: [Spacer()],
+    right: [Spacer()],
     ...userOpts,
   }
 

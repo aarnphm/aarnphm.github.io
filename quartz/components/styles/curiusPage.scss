@@ -87,7 +87,7 @@ body {
         background-color: var(--light);
       }
 
-      @media all and (max-width: $fullPageWidth) {
+      @media all and ($desktop) {
         & .sidebar.left {
           padding-right: 0;
         }
@@ -261,7 +261,7 @@ body {
     overflow: hidden;
     max-width: 70%;
 
-    @media all and (max-width: $fullPageWidth) {
+    @media all and ($desktop) {
       max-width: 30%;
     }
   }
