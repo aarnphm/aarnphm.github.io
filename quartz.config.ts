@@ -48,7 +48,7 @@ const config: QuartzConfig = {
           secondary: "#d7827e",
           tertiary: "#b4637a",
           highlight: "rgba(143, 159, 169, 0.15)",
-          textHighlight: "#fff23688",
+          textHighlight: "rgba(246, 193, 119, 0.28)",
         },
         darkMode: {
           light: "#1f1d30",
@@ -93,7 +93,7 @@ const config: QuartzConfig = {
       Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",
-        externalLinkIcon: true,
+        externalLinkIcon: false,
         lazyLoad: true,
         enableRawEmbed: {
           enable: true,

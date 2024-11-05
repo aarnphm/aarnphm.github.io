@@ -1,5 +1,3 @@
-import { registerEscapeHandler } from "./util"
-
 document.addEventListener("nav", () => {
   const modal = document.getElementById("image-popup-modal")
   const modalImg = modal?.querySelector(".image-popup-img") as HTMLImageElement

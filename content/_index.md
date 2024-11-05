@@ -30,4 +30,4 @@ Understanding the [[thoughts/mechanistic interpretability|inner working]] of lar
 Currently, I'm building [serving infrastructure](https://bentoml.com) for [[thoughts/Machine learning|ml]] systems and explore our interaction
 through [[thoughts/LLMs|large language models]].
 
-I'm best reached [here](https://twitter.com/aarnphm_) or contact@aarnphm.xyz.
+I'm best reached [here](https://twitter.com/aarnphm_) or contact@aarnphm.xyz

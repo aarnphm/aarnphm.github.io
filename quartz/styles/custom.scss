@@ -81,6 +81,19 @@ blockquote.twitter-tweet > a {
 }
 
 a {
+  &.external {
+    &:after {
+      content: "↗";
+      padding-left: 0.2ch;
+      font-size: 80%;
+      font-weight: 600;
+
+      &:hover {
+        color: var(--gold);
+      }
+    }
+  }
+
   &.internal {
     @include links;
 
@@ -113,6 +126,18 @@ a {
 
   &.internal.alias {
     @include links;
+  }
+
+  &[class~="landing-links"],
+  &.internal[class~="landing-links"] {
+    font-weight: inherit;
+    transition: none;
+    background-color: inherit;
+  }
+
+  &.internal[class~="landing-links"] {
+    font-style: inherit;
+    cursor: pointer;
   }
 }
 

@@ -4,21 +4,19 @@ aliases:
   - mechinterp
 tags:
   - interp
-date: "2024-10-30"
+date: 2024-10-30
 description: all things mech interp
-modified: "2024-10-30"
+modified: 2024-10-30
 permalink:
   - /mechinterp
   - /mechanistic-interpretability
 title: mechanistic interpretability
 ---
-
 [whirlwind tour](https://www.youtube.com/watch?v=veT2VI4vHyU&ab_channel=FAR%E2%80%A4AI), [[thoughts/pdfs/tinymorph exploration.pdf|initial exploration]], [glossary](https://dynalist.io/d/n2ZWtnoYHrU1s4vnFSAQ519J)
 
 > The subfield of alignment that delves into reverse engineering of a neural network, especially [[thoughts/LLMs]]
 
-To attack the _curse of dimensionality_, the question remains: ==How do we hope to understand a function over such
-a large space, without an exponential amount of time?== [^lesswrongarc]
+To attack the _curse of dimensionality_, the question remains: *==how do we hope to understand a function over such a large space, without an exponential amount of time?==* [^lesswrongarc]
 
 [^lesswrongarc]: good read from [Lawrence C](https://www.lesswrong.com/posts/6FkWnktH3mjMAxdRT/what-i-would-do-if-i-wasn-t-at-arc-evals#Ambitious_mechanistic_interpretability) for ambitious mech interp.
 

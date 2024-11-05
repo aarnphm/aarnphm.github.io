@@ -44,20 +44,6 @@ body[data-slug="index"] {
     letter-spacing: -0.0275rem;
   }
 
-  a[class*="landing-links"],
-  a.internal[class*="landing-links"] {
-    text-decoration: inherit;
-    font-weight: inherit;
-    transition: none;
-    border-radius: 0;
-    background-color: inherit;
-  }
-
-  a.internal[class*="landing-links"] {
-    font-style: inherit;
-    cursor: pointer;
-  }
-
   span[class*="rose"] {
     color: rgb(215, 130, 126);
     border-bottom: none;
