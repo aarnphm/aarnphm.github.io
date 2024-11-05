@@ -35,7 +35,7 @@ const config: QuartzConfig = {
       cdnCaching: true,
       fontOrigin: "local",
       typography: {
-        header: "GT Sectra Display",
+        header: "GT Sectra Book",
         body: "GT Sectra Book",
         code: "Berkeley Mono",
       },

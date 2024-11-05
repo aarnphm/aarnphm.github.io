@@ -440,6 +440,10 @@ blockquote.transclude {
 
   & .page-header {
     margin: 0 auto !important;
+
+    @media all and ($mobile) {
+      margin-bottom: 0;
+    }
   }
 
   header,

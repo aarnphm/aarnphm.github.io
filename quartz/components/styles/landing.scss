@@ -141,24 +141,3 @@ a.min-links {
   flex-direction: row;
   align-items: center;
 }
-
-.content-container {
-  margin: 2rem auto;
-
-  @media all and ($desktop) {
-    width: initial;
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  hr {
-    width: 100%;
-    margin: 2rem;
-    margin-left: auto;
-    margin-right: auto;
-
-    &:after {
-      content: none;
-    }
-  }
-}
