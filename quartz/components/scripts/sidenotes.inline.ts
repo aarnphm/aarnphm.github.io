@@ -59,7 +59,7 @@ document.addEventListener("nav", () => {
     INDIVIDUAL_FOOTNOTE_SELECTOR,
   ) as NodeListOf<HTMLLIElement>
 
-  footnotes.forEach((footnote) => {
+  for (const footnote of footnotes) {
     const footnoteId = footnote.id
     const intextLink = articleContent.querySelector(`a[href="#${footnoteId}"]`) as HTMLElement
     if (!intextLink) return
@@ -86,7 +86,7 @@ document.addEventListener("nav", () => {
     }
 
     ol.appendChild(sidenote)
-  })
+  }
 
   updateSidenotes()
 

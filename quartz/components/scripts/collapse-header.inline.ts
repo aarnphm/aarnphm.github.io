@@ -6,7 +6,7 @@ interface HeaderState {
 }
 
 type MaybeHTMLElement = HTMLElement | undefined
-let currentHeaderState: HeaderState[] = []
+let currentHeaderState: HeaderState[]
 
 function toggleHeader(evt: Event) {
   const target = evt.target as MaybeHTMLElement
