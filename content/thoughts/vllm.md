@@ -7,6 +7,7 @@ date: "2024-09-09"
 modified: "2024-10-03"
 title: vLLM
 ---
+
 See also [[thoughts/Attention#Paged Attention]] [@kwon2023efficient]
 
 ## KV-Compress
@@ -27,6 +28,7 @@ idea:
 - Modified PagedAttention that compute _against_ KV-cache (contains variable numbers of KVs per head)
 
 ![[thoughts/images/kv-compress-vllm.png]]
+
 > For vLLM, each cache block stores KV for every attention head of every layer
 >
 > For KV-Compress, each block only holds KVs for a single head.
@@ -46,6 +48,7 @@ KV compression algorithm doesn't have GQA design in mind.
 idea: adapt PagedAttention to page out cache on a _per-head, per-layer–as well as per sequence–basis_
 
 ![[thoughts/images/paged-attention-block-kv-compress.png]]
+
 > [!note]- explanation
 >
 > A simplified example with two KV heads and a block size of two:
@@ -65,7 +68,7 @@ _excerpt from [github](https://github.com/vllm-project/vllm/blob/main/docs/sourc
 
 see also: [v2](https://github.com/vllm-project/vllm/blob/main/vllm/core/block_manager.py) and [v1](https://github.com/vllm-project/vllm/blob/5eda21e773447d81ffc661ac094716420dc7b7cb/vllm/core/block_manager_v1.py), [benchmark](https://docs.google.com/document/d/1XxYUFai07ta5rE7OdtCVhLJ5J0oAxEqrGgarFdjv0Zc/edit?tab=t.0)
 
-reasoning for v2:
+Reasoning for v2:
 
 - support sliding windows attention
 - lookahead slot for [[thoughts/vllm#speculative decoding|speculative decoding]]
@@ -85,12 +88,14 @@ See [slides](https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN
 >
 > - have a sort of sampling logics to get the probability of the next token, then forward passing for all later tokens.
 
-## constrained decoding
+## guided decoding
 
 See [vllm-project/vllm#5423](https://github.com/vllm-project/vllm/issues/5423)
 
 - not supported from `SamplingParams`
 - requires support batch/async logits processing
 - engine will die if failed
+
+Benchmark script: [vllm-project/vllm#10046](https://github.com/vllm-project/vllm/pull/10046)
 
 [^ref]

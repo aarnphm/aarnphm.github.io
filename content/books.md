@@ -26,8 +26,8 @@ See also: [[/curius|digital version]]
 | The Critique of Pure Reason                                                     | Immanuel Kant                     |                                                 |
 | The Metaphysics of Morals                                                       | Immanuel Kant                     |                                                 |
 | Crime and Punishment                                                            | Fyodor Dostoevsky                 |                                                 |
-| The Triple Helix: Gene, Organism, and Environment                               | Richard Lewontin                  |                                                 |
 | Structure and Interpretation of Computer Programs                               | Abelson and Sussman               | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf) |
+| Man and His Symbols                                                             | Carl G. Jung                      |                                                 |
 
 ## to read.
 
@@ -121,6 +121,7 @@ See also: [[/curius|digital version]]
 
 ### 2024
 
+- **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
 - **Fear and Trembling** by Søren Kierkegaard
 - **Either/Or** by Søren Kierkegaard
 - **The Lily of the Field and the Bird of the Air** by Søren Kierkegaard
