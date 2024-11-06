@@ -1,7 +1,6 @@
 import { GlobalConfiguration, QuartzConfig } from "./quartz/cfg"
 import { byDateAndAlphabetical } from "./quartz/components/PageList"
 import * as Plugin from "./quartz/plugins"
-import * as Component from "./quartz/components"
 import { QuartzPluginData } from "./quartz/plugins/vfile"
 
 /**
@@ -90,7 +89,6 @@ const config: QuartzConfig = {
       }),
       Plugin.ObsidianFlavoredMarkdown(),
       Plugin.GitHubFlavoredMarkdown(),
-      // Plugin.GitHub(),
       Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",

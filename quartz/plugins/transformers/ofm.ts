@@ -688,7 +688,8 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           script: `
           let mermaidImport = undefined
           document.addEventListener('nav', async () => {
-            if (document.querySelector("code.mermaid")) {
+            const nodes = document.querySelectorAll("code.mermaid")
+            if (nodes.length > 0) {
               mermaidImport ||= await import('https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.esm.min.mjs')
               const mermaid = mermaidImport.default
               const darkMode = document.documentElement.getAttribute('saved-theme') === 'dark'
@@ -706,8 +707,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                   tertiaryColor: '${getColor(theme, "tertiary")}',
                 }
               })
-
-              await mermaid.run({ querySelector: '.mermaid' })
+              await mermaid.run({ nodes })
             }
           });
           `,
