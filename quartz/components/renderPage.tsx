@@ -534,7 +534,7 @@ export function renderPage(
                   </div>
                 </div>
                 <Content {...componentData} />
-                {slug !== "curius" ? <hr /> : <></>}
+                {["404", "curius"].includes(slug) ? <></> : <hr />}
                 <div class="page-footer">
                   {afterBody.map((BodyComponent) => (
                     <BodyComponent {...componentData} />

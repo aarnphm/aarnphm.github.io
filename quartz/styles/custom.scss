@@ -51,11 +51,107 @@ code {
 body {
   margin: 0;
 
+  &[data-slug="404"],
   &[data-slug="curius"] {
     .center {
       border: unset !important;
       margin-bottom: 0;
       padding: 0;
+    }
+  }
+
+  &[data-slug="404"] {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    filter: brightness(0.8);
+
+    &:before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("/static/404.webp");
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      transform: scale(1.1);
+      animation: fade-background 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes fade-background {
+      0% {
+        opacity: 0;
+        transform: scale(1.1);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    .home-tooltip {
+      position: fixed;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      pointer-events: none; // Prevent tooltip from interfering with clicks
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      z-index: 1000;
+      font-family: var(--bodyFont);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      white-space: nowrap;
+
+      &.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      &:before {
+        content: "";
+        position: absolute;
+        top: -4px;
+        left: 10px;
+        width: 8px;
+        height: 8px;
+        background: rgba(0, 0, 0, 0.8);
+        transform: rotate(45deg);
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    // Add subtle pulsing animation to suggest clickability
+    @keyframes subtle-pulse {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.95;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    h1,
+    p {
+      visibility: hidden;
     }
   }
 }
