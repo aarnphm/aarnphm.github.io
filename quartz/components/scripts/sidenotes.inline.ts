@@ -10,6 +10,14 @@ function updateSidenotes() {
   if (!articleContent || !sideContainer) return
 
   const sidenotes = sideContainer.querySelectorAll(".sidenote-element") as NodeListOf<HTMLElement>
+
+  // If no sidenotes, ensure the container still has proper height for dashed line
+  if (sidenotes.length === 0) {
+    const articleRect = articleContent.getBoundingClientRect()
+    sideContainer.style.height = `${articleRect.height}px`
+    return
+  }
+
   for (const sidenote of sidenotes) {
     const sideId = sidenote.id.replace("sidebar-", "")
     const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
@@ -37,10 +45,7 @@ function debounce(fn: Function, delay: number) {
 document.addEventListener("nav", () => {
   const articleContent = document.querySelector(ARTICLE_CONTENT_SELECTOR) as HTMLElement
   const footnoteSections = Array.from(document.querySelectorAll(FOOTNOTE_SECTION_SELECTOR))
-  if (footnoteSections.length == 0 || !articleContent) return
-
-  const lastIdx = footnoteSections.length - 1
-  const footnoteSection = footnoteSections[lastIdx] as HTMLElement
+  if (!articleContent) return
 
   const sideContainer = document.querySelector(".sidenotes") as HTMLElement
   if (!sideContainer) return
@@ -55,6 +60,15 @@ document.addEventListener("nav", () => {
   const ol = document.createElement("ol")
   sideContainer.appendChild(ol)
 
+  // If no footnote sections or we disable sidenotes in frontmatter, we still want the dashed lines
+  if (footnoteSections.length === 0 || sideContainer.dataset.disableNotes === "true") {
+    updateSidenotes()
+    return
+  }
+
+  const lastIdx = footnoteSections.length - 1
+  const footnoteSection = footnoteSections[lastIdx] as HTMLElement
+
   const footnotes = footnoteSection.querySelectorAll(
     INDIVIDUAL_FOOTNOTE_SELECTOR,
   ) as NodeListOf<HTMLLIElement>
@@ -62,7 +76,7 @@ document.addEventListener("nav", () => {
   for (const footnote of footnotes) {
     const footnoteId = footnote.id
     const intextLink = articleContent.querySelector(`a[href="#${footnoteId}"]`) as HTMLElement
-    if (!intextLink) return
+    if (!intextLink) continue
 
     const sidenote = document.createElement("li")
     sidenote.classList.add("sidenote-element")
@@ -74,6 +88,7 @@ document.addEventListener("nav", () => {
     const backref = cloned.querySelector("a[data-footnote-backref]")
     backref?.remove()
     sidenote.append(...cloned.children)
+
     // create inner child container
     let innerContainer = sidenote.querySelector(".sidenote-inner")
     if (!innerContainer) {

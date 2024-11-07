@@ -6,10 +6,12 @@ import { classNames } from "../util/lang"
 
 export default (() => {
   const Sidenotes: QuartzComponent = ({ displayClass, fileData }: QuartzComponentProps) => {
-    if (fileData.frontmatter?.sidenotes === false) {
-      return <></>
-    }
-    return <div class={classNames(displayClass, "sidenotes")}></div>
+    return (
+      <div
+        class={classNames(displayClass, "sidenotes")}
+        data-disable-notes={fileData.frontmatter?.sidenotes === false}
+      />
+    )
   }
 
   Sidenotes.css = style

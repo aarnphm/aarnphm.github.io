@@ -1,12 +1,35 @@
-@use "../../styles/variables.scss" as *;
-@use "../../styles/mixin.scss" as *;
-
 .sidenotes {
   counter-reset: sidenote-counter;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    border-left: 1px dashed var(--gray);
+    transform: translateX(-50%);
+    opacity: 1;
+    z-index: 0;
+  }
 
   & > ol {
     padding-inline-start: 0;
     list-style: none;
+    position: relative;
+    margin: 0;
+    z-index: 1;
+
+    // Only show the dashed line when there are no items
+    &:empty + .sidenotes::before {
+      display: block;
+    }
+
+    &:not(:empty) + .sidenotes::before {
+      display: none;
+    }
   }
 
   & .sidenote-element {
@@ -18,6 +41,7 @@
     border: 1px solid var(--gray);
     counter-increment: sidenote-counter;
     background-color: var(--light);
+    z-index: 2;
 
     &::before {
       content: counter(sidenote-counter);

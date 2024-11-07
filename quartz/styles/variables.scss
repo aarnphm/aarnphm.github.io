@@ -47,7 +47,7 @@ $normalWeight: 400;
 
 $mobileGrid: (
   templateRows: "auto auto auto auto auto",
-  templateColumns: "auto",
+  templateColumns: "minmax(auto, #{$pageWidth})",
   rowGap: "5px",
   columnGap: "5px",
   templateAreas:
@@ -59,7 +59,7 @@ $mobileGrid: (
 );
 $tabletGrid: (
   templateRows: "auto auto auto auto",
-  templateColumns: "#{$sidePanelWidth} auto",
+  templateColumns: "#{$sidePanelWidth} minmax(auto, #{$pageWidth})",
   rowGap: "5px",
   columnGap: "5px",
   templateAreas:
@@ -70,7 +70,7 @@ $tabletGrid: (
 );
 $desktopGrid: (
   templateRows: "auto auto auto",
-  templateColumns: "#{$sidePanelWidth} auto #{$sidePanelWidth}",
+  templateColumns: "#{$sidePanelWidth} minmax(auto, #{$pageWidth}) #{$sidePanelWidth}",
   rowGap: "5px",
   columnGap: "5px",
   templateAreas:

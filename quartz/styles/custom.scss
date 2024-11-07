@@ -221,7 +221,7 @@ blockquote.twitter-tweet {
   background-color: var(--light);
   margin-right: 0.5rem !important;
 
-  &::before {
+  &:before {
     content: "x.com";
     position: absolute;
     top: -12px;
@@ -327,7 +327,7 @@ blockquote.transclude {
   position: relative;
   background-color: var(--light);
 
-  &::before {
+  &:before {
     content: "References";
     position: absolute;
     top: -12px;
@@ -426,7 +426,8 @@ blockquote.transclude {
 }
 
 .popover > .popover-inner,
-.graph > .graph-outer {
+.graph > .graph-outer,
+.graph > .graph-outer > #global-graph-container {
   border-radius: unset;
   border-color: var(--gray);
 }
@@ -434,7 +435,7 @@ blockquote.transclude {
 .page {
   & > #quartz-body {
     @media all and ($desktop) {
-      gap: 2rem;
+      column-gap: 2rem;
     }
   }
 
@@ -446,6 +447,12 @@ blockquote.transclude {
     }
   }
 
+  @media all and not ($desktop) {
+    .sidebar.right {
+      margin-top: 2rem !important;
+    }
+  }
+
   header,
   & .sidebar.left,
   & .sidebar.right {
@@ -454,10 +461,6 @@ blockquote.transclude {
     padding: 0 !important;
     grid-template-rows: repeat(4, min-content);
     align-items: baseline;
-
-    @media all and not ($desktop) {
-      margin-top: 0 !important;
-    }
 
     & .search {
       grid-area: 1 / 1 / 2 / 3;
