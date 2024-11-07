@@ -82,6 +82,7 @@ document.addEventListener("nav", () => {
     sidenote.classList.add("sidenote-element")
     sidenote.style.position = "absolute"
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
+    sidenote.style.minWidth = `${sideContainer.offsetWidth - rootFontSize}px`
     sidenote.style.maxWidth = `${sideContainer.offsetWidth - rootFontSize}px`
     sidenote.id = `sidebar-${footnoteId}`
     const cloned = footnote.cloneNode(true) as HTMLElement

@@ -29,6 +29,7 @@ You can find internal monologue under [[/posts/]] index.
   - Added support for PDF in popover modal [jackyzha0/quartz#913](https://github.com/jackyzha0/quartz/pull/913)
   - Implemented font-fetching before runtime [jackyzha0/quartz#817](https://github.com/jackyzha0/quartz/pull/817)
   - Implemented telescope-style search [jackyzha0/quartz#722](https://github.com/jackyzha0/quartz/pull/722), [jackyzha0/quartz#774](https://github.com/jackyzha0/quartz/pull/774), [jackyzha0/quartz#782](https://github.com/jackyzha0/quartz/pull/782)
+  - Added sidenotes components, inspired by [Tuffe's CSS](https://edwardtufte.github.io/tufte-css/) [jackyzha0/quartz#1555](https://github.com/jackyzha0/quartz/pull/1555), [[thoughts/mechanistic interpretability|examples]]
   - Landing page of [[/|this]] website, with custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [jupyter notebooks](https://aarnphm.xyz/thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA)
   - Source: [GitHub](https://github.com/jackyzha0/quartz) and [site](https://quartz.jzhao.xyz/)
 

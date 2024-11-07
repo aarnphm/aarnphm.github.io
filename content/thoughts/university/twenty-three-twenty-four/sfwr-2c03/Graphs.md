@@ -3,12 +3,13 @@ id: Graphs
 tags:
   - sfwr2c03
 date: "2024-02-26"
+modified: "2024-11-07"
 title: Graphs
 ---
 
 See also [[thoughts/university/sfwr-2c03/graph-algo.pdf|slides]]
 
-*Node* as [[thoughts/Information Theory|information]] and *edges* as relationship between [[thoughts/data|data]]
+_Node_ as [[thoughts/Information Theory|information]] and _edges_ as relationship between [[thoughts/data|data]]
 
 ## Directed acyclic graph (DAG)
 
@@ -17,6 +18,7 @@ Application: [[thoughts/Merkle DAG|Merkle DAG]]
 ## undirected.
 
 > [!note] $(\mathcal{N}, \mathcal{E})$
+>
 > - $\mathcal{N}$: set of vertices
 > - $\mathcal{E}$: set of _undirected_ edges: $\mathcal{E} \subseteq \mathcal{N} \times \mathcal{N}$
 
@@ -31,6 +33,7 @@ See also [[thoughts/Group theory#Graph isomorphism|Graph isomorphism]]
 ## directed.
 
 > [!note] $(\mathcal{N}, \mathcal{E})$
+>
 > - $\mathcal{N}$: set of vertices
 > - $\mathcal{E}$: set of edges containing node pairs: $\mathcal{E} \subseteq \mathcal{N} \times \mathcal{N}$
 
@@ -56,25 +59,25 @@ Let $M = | \mathcal{N} | \times | \mathcal{N} |$ matrix
 > Let $A \lbrack 0 \dots |\mathcal{N}|$ be an array of _bags_
 > For every edge $(m, n \in \mathcal{E})$ add $n$ to $(m,n)$ to bag $A \lbrack id(m) \rbrack$
 
-| ops   | complexity    |
-|--------------- | --------------- |
-| add/remove nodes | $\Theta(\|\mathcal{N}\|)$ (copy array)   |
-| add/remove edges $(n, m)$  | $\Theta(\|out(n)\|)$  (adding to bag)  |
-| check an edge $(n, m)$ exists  | $\Theta(\|out(n)\|)$  (searching bags)  |
-| iterate over all _incoming_ edges of $n$ | $\Theta(\|\mathcal{E}\|)$  (scan all bags)  |
-| iterate over all _outgoing_ edges of $n$ | $\Theta(\|out(n)\|)$  (scan a bag)  |
-| Check or change the weight of $(n, m)$ | $\Theta(1)$  |
+| ops                                      | complexity                                |
+| ---------------------------------------- | ----------------------------------------- |
+| add/remove nodes                         | $\Theta(\|\mathcal{N}\|)$ (copy array)    |
+| add/remove edges $(n, m)$                | $\Theta(\|out(n)\|)$ (adding to bag)      |
+| check an edge $(n, m)$ exists            | $\Theta(\|out(n)\|)$ (searching bags)     |
+| iterate over all _incoming_ edges of $n$ | $\Theta(\|\mathcal{E}\|)$ (scan all bags) |
+| iterate over all _outgoing_ edges of $n$ | $\Theta(\|out(n)\|)$ (scan a bag)         |
+| Check or change the weight of $(n, m)$   | $\Theta(1)$                               |
 
 ## comparison.
 
-> **Dense** graph: $|\mathcal{E}| \approx \Theta(|\mathcal{N}|^2)$
-> **Sparse** graph: $|\mathcal{E}| \approx \Theta(|\mathcal{N}|)$
+> **Dense** graph: $|\mathcal{E}| \approx \Theta(|\mathcal{N}|^2)$ > **Sparse** graph: $|\mathcal{E}| \approx \Theta(|\mathcal{N}|)$
 
 ## Traversing undirected graph.
 
 ### Depth-first search (DFS)
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-2c03/images/example-graph-dfs.png]]
+
 ```pseudo
 \begin{algorithm}
 \caption{DFS-R(G, marked, n)}
@@ -90,8 +93,7 @@ Let $M = | \mathcal{N} | \times | \mathcal{N} |$ matrix
 \end{algorithm}
 ```
 
-$marked \coloneqq \lbrace n \longmapsto (n \neq s) \mid n \in \mathcal{N} \rbrace$
-
+$\text{marked} \coloneqq \lbrace n \longmapsto (n \neq s) \mid n \in \mathcal{N} \rbrace$
 
 > [!important] Conclusion
 >
@@ -105,6 +107,7 @@ $marked \coloneqq \lbrace n \longmapsto (n \neq s) \mid n \in \mathcal{N} \rbrac
 - inspect each node at-most once and traverse each edge once: $\Theta(|\mathcal{N}| + |\mathcal{E}|)$
 
 #### Connected-components
+
 ```pseudo
 \begin{algorithm}
 \caption{DFS-CC-R(G, cc, n)}
@@ -119,6 +122,7 @@ $marked \coloneqq \lbrace n \longmapsto (n \neq s) \mid n \in \mathcal{N} \rbrac
 \end{algorithmic}
 \end{algorithm}
 ```
+
 ```pseudo
 \begin{algorithm}
 \caption{COMPONENTS(G, s)}
@@ -198,7 +202,7 @@ $marked \coloneqq \lbrace n \longmapsto (n \neq s) \mid n \in \mathcal{N} \rbrac
 
 #### Single-source shortest path
 
-> Given an undirected graph *without weight* and node $s \in \mathcal{N}$, find a shortest path from node $s$ to all nodes $s$ can reach.
+> Given an undirected graph _without weight_ and node $s \in \mathcal{N}$, find a shortest path from node $s$ to all nodes $s$ can reach.
 
 ```pseudo
 \begin{algorithm}
