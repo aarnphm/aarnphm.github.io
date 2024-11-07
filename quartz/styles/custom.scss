@@ -337,14 +337,14 @@ blockquote.transclude {
     font-size: 12px;
     font-weight: bold;
     padding: 4px 8px;
-    border: 1px solid var(--dark);
+    border: 1px solid var(--iris);
   }
 
   &::after {
     content: "";
     background-image: url("/static/dotted.svg");
     background-repeat: repeat;
-    z-index: -10;
+    z-index: -24;
     top: 0.5rem;
     left: 0.5rem;
     right: -0.5rem;
@@ -366,49 +366,48 @@ blockquote.transclude {
   border-radius: 0px;
 
   &[data-callout] {
-    --color: #9ccfd8;
-    --border: #9ccfd844;
-    --bg: #9ccfd810;
+    --color: rgba(156, 207, 216, 1);
+    --border: rgba(156, 207, 216, 0.46);
+    --bg: rgba(156, 207, 216, 0.14);
   }
   &[data-callout="abstract"] {
     --color: var(--pine);
-    --border: #28698344;
-    --bg: #28698310;
+    --border: rgba(40, 105, 131, 0.46);
+    --bg: rgba(40, 105, 131, 0.14);
   }
   &[data-callout="info"],
   &[data-callout="todo"] {
-    --color: #c4a7e7;
-    --border: #c4a7e744;
-    --bg: #c4a7e710;
+    --color: rgba(196, 167, 231, 1);
+    --border: rgba(196, 167, 231, 0.46);
+    --bg: rgba(196, 167, 231, 0.14);
   }
   &[data-callout="tip"] {
-    --color: #3e8fb0;
-    --border: #3e8fb044;
-    --bg: #3e8fb010;
+    --color: rgba(62, 143, 176, 1);
+    --border: rgba(62, 143, 176, 0.46);
+    --bg: rgba(62, 143, 176, 0.14);
   }
   &[data-callout="success"] {
     --color: var(--foam);
-    --border: #56949f44;
-    --bg: #56949f10;
+    --border: rgba(86, 148, 159, 0.46);
+    --bg: rgba(86, 148, 159, 0.14);
   }
   &[data-callout="question"] {
-    --color: #f6c177;
-    --border: #f6c17744;
-    --bg: #f6c17710;
+    --color: rgba(246, 193, 119, 1);
+    --border: rgba(246, 193, 119, 0.46);
+    --bg: rgba(246, 193, 119, 0.14);
   }
 
   &[data-callout="warning"] {
     --color: var(--gold);
-    --border: #ea9d3444;
-    --bg: #ea9d3410;
+    --border: rgba(234, 157, 52, 0.39);
+    --bg: rgba(234, 157, 52, 0.14);
   }
-
   &[data-callout="failure"],
   &[data-callout="danger"],
   &[data-callout="bug"] {
     --color: var(--tertiary);
-    --border: #b4637a44;
-    --bg: #b4637a10;
+    --border: rgba(180, 99, 122, 0.46);
+    --bg: rgba(180, 99, 122, 0.14);
   }
 }
 
@@ -460,43 +459,45 @@ blockquote.transclude {
     gap: 1.1rem !important;
     padding: 0 !important;
     grid-template-rows: repeat(4, min-content);
+    grid-template-columns: auto;
     align-items: baseline;
 
     & .search {
-      grid-area: 1 / 1 / 2 / 3;
+      grid-area: 1 / 1 / 1 / 1;
       @media all and not ($desktop) {
-        grid-area: 1 / 1 / 1 / 3;
+        grid-area: 1 / 1 / 1 / 2;
       }
     }
 
     & .keybind {
-      grid-area: 1 / 3 / 1 / 3;
+      grid-area: 1 / 2 / 1 / 1;
       justify-self: end;
 
       @media all and not ($desktop) {
-        grid-area: 1 / 2 / 1 / 3;
+        grid-area: 1 / 2 / 1 / 2;
         justify-self: start;
       }
     }
 
     & .graph {
-      grid-area: 2 / 1 / 2 / 4;
+      grid-area: 2 / 1 / 2 / 2;
 
       @media all and not ($desktop) {
-        grid-area: 2 / 1 / 2 / 2;
+        grid-area: 2 / 1 / 2 / 1;
+        max-width: $sidePanelWidth;
       }
     }
 
     & .backlinks {
-      grid-area: 3 / 1 / 3 / 4;
+      grid-area: 3 / 1 / 3 / 2;
 
       @media all and not ($desktop) {
-        grid-area: 2 / 2 / 2 / 3;
+        grid-area: 2 / 2 / 2 / 2;
       }
     }
 
     & .toc {
-      grid-area: 4 / 1 / 4 / 4;
+      grid-area: 4 / 1 / 4 / 2;
     }
   }
 
