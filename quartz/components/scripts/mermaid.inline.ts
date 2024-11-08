@@ -3,6 +3,137 @@ import { removeAllChildren } from "./util"
 const svgExpand =
   '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M3.72 3.72a.75.75 0 011.06 1.06L2.56 7h10.88l-2.22-2.22a.75.75 0 011.06-1.06l3.5 3.5a.75.75 0 010 1.06l-3.5 3.5a.75.75 0 11-1.06-1.06l2.22-2.22H2.56l2.22 2.22a.75.75 0 11-1.06 1.06l-3.5-3.5a.75.75 0 010-1.06l3.5-3.5z"></path></svg>'
 
+interface Position {
+  x: number
+  y: number
+}
+
+class DiagramPanZoom {
+  private isDragging = false
+  private startPan: Position = { x: 0, y: 0 }
+  private currentPan: Position = { x: 0, y: 0 }
+  private scale = 1
+  private readonly MIN_SCALE = 0.5
+  private readonly MAX_SCALE = 3
+  private readonly ZOOM_SENSITIVITY = 0.001
+
+  constructor(
+    private container: HTMLElement,
+    private content: HTMLElement,
+    private mermaidSvg: SVGElement,
+  ) {
+    this.setupEventListeners()
+    this.setupNavigationControls()
+  }
+
+  private setupEventListeners() {
+    // Mouse drag events
+    this.container.addEventListener("mousedown", this.onMouseDown.bind(this))
+    document.addEventListener("mousemove", this.onMouseMove.bind(this))
+    document.addEventListener("mouseup", this.onMouseUp.bind(this))
+
+    // Wheel zoom events
+    this.container.addEventListener("wheel", this.onWheel.bind(this), { passive: false })
+
+    // Reset on window resize
+    window.addEventListener("resize", this.resetTransform.bind(this))
+  }
+
+  private setupNavigationControls() {
+    const controls = document.createElement("div")
+    controls.className = "mermaid-controls"
+
+    // Zoom controls
+    const zoomIn = this.createButton("+", () => this.zoom(0.1))
+    const zoomOut = this.createButton("-", () => this.zoom(-0.1))
+    const resetBtn = this.createButton("Reset", () => this.resetTransform())
+
+    controls.appendChild(zoomOut)
+    controls.appendChild(resetBtn)
+    controls.appendChild(zoomIn)
+
+    this.container.appendChild(controls)
+  }
+
+  private createButton(text: string, onClick: () => void): HTMLButtonElement {
+    const button = document.createElement("button")
+    button.textContent = text
+    button.className = "mermaid-control-button"
+    button.addEventListener("click", onClick)
+    return button
+  }
+
+  private onMouseDown(e: MouseEvent) {
+    if (e.button !== 0) return // Only handle left click
+    this.isDragging = true
+    this.startPan = { x: e.clientX - this.currentPan.x, y: e.clientY - this.currentPan.y }
+    this.container.style.cursor = "grabbing"
+  }
+
+  private onMouseMove(e: MouseEvent) {
+    if (!this.isDragging) return
+    e.preventDefault()
+
+    this.currentPan = {
+      x: e.clientX - this.startPan.x,
+      y: e.clientY - this.startPan.y,
+    }
+
+    this.updateTransform()
+  }
+
+  private onMouseUp() {
+    this.isDragging = false
+    this.container.style.cursor = "grab"
+  }
+
+  private onWheel(e: WheelEvent) {
+    e.preventDefault()
+
+    const delta = -e.deltaY * this.ZOOM_SENSITIVITY
+    const newScale = Math.min(Math.max(this.scale + delta, this.MIN_SCALE), this.MAX_SCALE)
+
+    // Calculate mouse position relative to content
+    const rect = this.content.getBoundingClientRect()
+    const mouseX = e.clientX - rect.left
+    const mouseY = e.clientY - rect.top
+
+    // Adjust pan to zoom around mouse position
+    const scaleDiff = newScale - this.scale
+    this.currentPan.x -= mouseX * scaleDiff
+    this.currentPan.y -= mouseY * scaleDiff
+
+    this.scale = newScale
+    this.updateTransform()
+  }
+
+  private zoom(delta: number) {
+    const newScale = Math.min(Math.max(this.scale + delta, this.MIN_SCALE), this.MAX_SCALE)
+
+    // Zoom around center
+    const rect = this.content.getBoundingClientRect()
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+
+    const scaleDiff = newScale - this.scale
+    this.currentPan.x -= centerX * scaleDiff
+    this.currentPan.y -= centerY * scaleDiff
+
+    this.scale = newScale
+    this.updateTransform()
+  }
+
+  private updateTransform() {
+    this.content.style.transform = `translate(${this.currentPan.x}px, ${this.currentPan.y}px) scale(${this.scale})`
+  }
+
+  private resetTransform() {
+    this.scale = 1
+    this.currentPan = { x: 0, y: 0 }
+    this.updateTransform()
+  }
+}
+
 for (let i = 0; i < nodes.length; i++) {
   const codeBlock = nodes[i] as HTMLElement
   const pre = codeBlock.parentElement as HTMLPreElement
@@ -41,21 +172,29 @@ for (let i = 0; i < nodes.length; i++) {
   `
   pre.appendChild(popupContainer)
 
+  let panZoom: DiagramPanZoom | null = null
+
   function showMermaid() {
+    const container = popupContainer.querySelector("#mermaid-space") as HTMLElement
     const content = popupContainer.querySelector(".mermaid-content") as HTMLElement
     if (!content) return
     removeAllChildren(content)
 
     // Clone the mermaid content
-    const mermaidContent = codeBlock.querySelector("svg")!.cloneNode(true)
+    const mermaidContent = codeBlock.querySelector("svg")!.cloneNode(true) as SVGElement
     content.appendChild(mermaidContent)
 
     // Show container
     popupContainer.classList.add("active")
+    container.style.cursor = "grab"
+
+    // Initialize pan-zoom after showing the popup
+    panZoom = new DiagramPanZoom(container, content, mermaidContent)
   }
 
   function hideMermaid() {
     popupContainer.classList.remove("active")
+    panZoom = null
   }
 
   function handleEscape(e: any) {
