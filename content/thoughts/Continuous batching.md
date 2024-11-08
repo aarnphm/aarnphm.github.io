@@ -12,4 +12,4 @@ titleTransclude: false
 
 [^paper]: the [paper](https://www.usenix.org/conference/osdi22/presentation/yu) and [presentation](https://www.youtube.com/watch?v=Ob9PPLxETYU&ab_channel=USENIX) for the paper. Most notable open source implementation is [[thoughts/vllm|vLLM]]
 
-![[thoughts/images/continuous-batching.png]]
+![[thoughts/images/vllm/continuous-batching.png]]

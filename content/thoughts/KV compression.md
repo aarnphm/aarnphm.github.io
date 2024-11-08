@@ -27,7 +27,8 @@ Think of LFU (least frequency used) cache management policy
 the KV cache for each sequence in a particular layer is allocated on the GPU as a _# attention heads $X$ sequence length_ tensor.
 
 > [!important]
-> total memory allocation scales with the *maximum* sequence length for all attention heads of the KV cache
+>
+> total memory allocation scales with the _maximum_ sequence length for all attention heads of the KV cache
 
 ## Adaptive KV-cache compression
 
@@ -87,7 +88,7 @@ ideas: instead of uniform eviction for KV cache hit, allocate a certain budget $
 
 _built on-top of PyramidKV and SnapKV_
 
-![[thoughts/images/ada-kv.png]]
+![[thoughts/images/vllm/ada-kv.png]]
 
 > [!note]
 >

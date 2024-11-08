@@ -10,3 +10,4 @@ interface CustomEventMap {
 }
 
 declare const fetchData: Promise<ContentIndex>
+declare const nodes: NodeListOf<HTMLPreElement> // mermaid notes, see mermaid.inline.ts

@@ -6,11 +6,14 @@ import rehypeRaw from "rehype-raw"
 import { SKIP, visit } from "unist-util-visit"
 import path from "path"
 import { splitAnchor } from "../../util/path"
-import { JSResource } from "../../util/resources"
+import { CSSResource, JSResource } from "../../util/resources"
 // @ts-ignore
 import calloutScript from "../../components/scripts/callout.inline.ts"
 // @ts-ignore
 import checkboxScript from "../../components/scripts/checkbox.inline.ts"
+// @ts-ignore
+import mermaidExtensionScript from "../../components/scripts/mermaid.inline.ts"
+import mermaidStyle from "../../components/styles/mermaid.inline.scss"
 import { FilePath, pathToRoot, slugTag, slugifyFilePath } from "../../util/path"
 import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
@@ -665,6 +668,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
     },
     externalResources(ctx) {
       const js: JSResource[] = []
+      const css: CSSResource[] = []
 
       if (opts.enableCheckbox) {
         js.push({
@@ -689,37 +693,42 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           let mermaidImport = undefined
           document.addEventListener('nav', async () => {
             const nodes = document.querySelectorAll("code.mermaid")
-            if (nodes.length > 0) {
-              mermaidImport ||= await import('https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.esm.min.mjs')
-              const mermaid = mermaidImport.default
-              const darkMode = document.documentElement.getAttribute('saved-theme') === 'dark'
-              mermaid.initialize({
-                startOnLoad: false,
-                securityLevel: 'loose',
-                theme: darkMode ? 'dark' : 'base',
-                themeVariables: {
-                  fontFamily: '${theme.typography.code}, ${DEFAULT_MONO}',
-                  primaryColor: '${getColor(theme, "light")}',
-                  primaryTextColor: '${getColor(theme, "darkgray")}',
-                  primaryBorderColor: '${getColor(theme, "tertiary")}',
-                  lineColor: '${getColor(theme, "darkgray")}',
-                  secondaryColor: '${getColor(theme, "secondary")}',
-                  tertiaryColor: '${getColor(theme, "tertiary")}',
-                  clusterBkg: '${getColor(theme, "light")}',
-                  edgeLabelBackground: '${getColor(theme, "highlight")}',
-                }
-              })
-              await mermaid.run({ nodes })
-            }
+            if (nodes.length === 0) return
+            mermaidImport ||= await import('https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.esm.min.mjs')
+            const mermaid = mermaidImport.default
+            const darkMode = document.documentElement.getAttribute('saved-theme') === 'dark'
+            mermaid.initialize({
+              startOnLoad: false,
+              securityLevel: 'loose',
+              theme: darkMode ? 'dark' : 'base',
+              themeVariables: {
+                fontFamily: '${theme.typography.code}, ${DEFAULT_MONO}',
+                primaryColor: '${getColor(theme, "light")}',
+                primaryTextColor: '${getColor(theme, "darkgray")}',
+                primaryBorderColor: '${getColor(theme, "tertiary")}',
+                lineColor: '${getColor(theme, "darkgray")}',
+                secondaryColor: '${getColor(theme, "secondary")}',
+                tertiaryColor: '${getColor(theme, "tertiary")}',
+                clusterBkg: '${getColor(theme, "light")}',
+                edgeLabelBackground: '${getColor(theme, "highlight")}',
+              }
+            })
+            await mermaid.run({ nodes })
+
+            ${mermaidExtensionScript}
           });
           `,
           loadTime: "afterDOMReady",
           moduleType: "module",
           contentType: "inline",
         })
+        css.push({
+          content: mermaidStyle,
+          inline: true,
+        })
       }
 
-      return { js }
+      return { js, css }
     },
   }
 }
