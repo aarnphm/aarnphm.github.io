@@ -14,6 +14,7 @@ export const afterBodyComponents: Partial<SharedLayout> = {
         reactionsEnabled: false,
       },
     }),
+    Component.Toolbar(),
     Component.MinimalFooter({
       links: { github: "https://github.com/aarnphm", twitter: "https://twitter.com/aarnphm_" },
       showInfo: true,

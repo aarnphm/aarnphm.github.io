@@ -106,10 +106,7 @@ function createSidenote(
   sidenote.style.minWidth = `${sideContainer.offsetWidth - rootFontSize}px`
   sidenote.style.maxWidth = `${sideContainer.offsetWidth - rootFontSize}px`
   sidenote.id = `sidebar-${footnoteId}`
-  const cloned = footnote.cloneNode(true) as HTMLElement
-  const backref = cloned.querySelector("a[data-footnote-backref]")
-  backref?.remove()
-  sidenote.append(...cloned.children)
+  sidenote.append(...(footnote.cloneNode(true) as HTMLElement).children)
 
   // create inner child container
   let innerContainer = sidenote.querySelector(".sidenote-inner")

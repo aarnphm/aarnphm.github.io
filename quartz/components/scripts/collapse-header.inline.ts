@@ -1,9 +1,4 @@
-import { isInViewport, updatePosition } from "./util"
-
-interface HeaderState {
-  id: string
-  collapsed: boolean
-}
+import { updateSidenoteState, toggleCollapsedById, saveHeaderState, HeaderState } from "./util"
 
 type MaybeHTMLElement = HTMLElement | undefined
 let currentHeaderState: HeaderState[]
@@ -45,44 +40,6 @@ function toggleHeader(evt: Event) {
   const headerId = toggleButton.id
   toggleCollapsedById(currentHeaderState, headerId)
   saveHeaderState()
-}
-
-function updateSidenoteState(content: HTMLElement, isCollapsed: boolean) {
-  // handle sidenotes state
-  const sidenoteRefs = content.querySelectorAll("a[data-footnote-ref]") as NodeListOf<HTMLElement>
-  const sideContainer = document.querySelector(".sidenotes") as HTMLElement | null
-  if (!sideContainer) return
-  for (const ref of sidenoteRefs) {
-    const sideId = ref.getAttribute("href")?.replace("#", "sidebar-")
-    const sidenote = document.querySelector(
-      `.sidenote-element[id="${sideId}"]`,
-    ) as HTMLElement | null
-    if (!sidenote) continue
-
-    if (isCollapsed) {
-      sidenote.classList.remove("in-view")
-      ref.classList.remove("active")
-      sidenote.classList.add("collapsed")
-    } else if (isInViewport(ref)) {
-      sidenote.classList.add("in-view")
-      ref.classList.add("active")
-      sidenote.classList.remove("collapsed")
-      updatePosition(ref, sidenote, sideContainer!)
-    }
-  }
-}
-
-function toggleCollapsedById(array: HeaderState[], id: string) {
-  const entry = array.find((item) => item.id === id)
-  if (entry) {
-    entry.collapsed = !entry.collapsed
-  } else {
-    array.push({ id, collapsed: true })
-  }
-}
-
-function saveHeaderState() {
-  localStorage.setItem("headerState", JSON.stringify(currentHeaderState))
 }
 
 function loadHeaderState(): HeaderState[] {

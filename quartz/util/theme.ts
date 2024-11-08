@@ -28,18 +28,13 @@ export interface Theme {
 
 export type ThemeKey = keyof Colors
 
-export const DEFAULT_SANS_SERIF =
+const DEFAULT_SANS_SERIF =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif'
-export const DEFAULT_MONO = 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace'
+const DEFAULT_MONO = 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace'
 
 export function googleFontHref(theme: Theme) {
   const { code, header, body } = theme.typography
   return `https://fonts.googleapis.com/css2?family=${code}&family=${header}:wght@400;700&family=${body}:ital,wght@0,400;0,600;1,400;1,600&display=swap`
-}
-
-export function getColor(theme: Theme, scheme: keyof ColorScheme, mode?: ThemeKey | undefined) {
-  mode = mode || "lightMode"
-  return theme.colors[mode][scheme]
 }
 
 export function joinStyles(theme: Theme, ...stylesheet: string[]) {

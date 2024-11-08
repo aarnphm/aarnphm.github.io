@@ -1,5 +1,6 @@
 import Sidenotes from "./Sidenotes"
 import ImagePopup from "./Image"
+import Toolbar from "./Toolbar"
 import Landing from "./Landing"
 import Navigation from "./Navigation"
 import MinimalFooter from "./MinimalFooter"
@@ -34,6 +35,7 @@ import Comments from "./Comments"
 
 export {
   Sidenotes,
+  Toolbar,
   ImagePopup,
   Landing,
   Navigation,

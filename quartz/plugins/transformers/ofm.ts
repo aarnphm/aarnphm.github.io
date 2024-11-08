@@ -19,7 +19,6 @@ import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
 import { PhrasingContent } from "mdast-util-find-and-replace/lib"
 import { capitalize } from "../../util/lang"
-import { DEFAULT_MONO, getColor } from "../../util/theme"
 import { PluggableList } from "unified"
 
 export interface Options {
@@ -666,7 +665,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       return plugins
     },
-    externalResources(ctx) {
+    externalResources() {
       const js: JSResource[] = []
       const css: CSSResource[] = []
 
@@ -687,37 +686,8 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       }
 
       if (opts.mermaid) {
-        const theme = ctx.cfg.configuration.theme
         js.push({
-          script: `
-          let mermaidImport = undefined
-          document.addEventListener('nav', async () => {
-            const nodes = document.querySelectorAll("code.mermaid")
-            if (nodes.length === 0) return
-            mermaidImport ||= await import('https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.esm.min.mjs')
-            const mermaid = mermaidImport.default
-            const darkMode = document.documentElement.getAttribute('saved-theme') === 'dark'
-            mermaid.initialize({
-              startOnLoad: false,
-              securityLevel: 'loose',
-              theme: darkMode ? 'dark' : 'base',
-              themeVariables: {
-                fontFamily: '${theme.typography.code}, ${DEFAULT_MONO}',
-                primaryColor: '${getColor(theme, "light")}',
-                primaryTextColor: '${getColor(theme, "darkgray")}',
-                primaryBorderColor: '${getColor(theme, "tertiary")}',
-                lineColor: '${getColor(theme, "darkgray")}',
-                secondaryColor: '${getColor(theme, "secondary")}',
-                tertiaryColor: '${getColor(theme, "tertiary")}',
-                clusterBkg: '${getColor(theme, "light")}',
-                edgeLabelBackground: '${getColor(theme, "highlight")}',
-              }
-            })
-            await mermaid.run({ nodes })
-
-            ${mermaidExtensionScript}
-          });
-          `,
+          script: mermaidExtensionScript,
           loadTime: "afterDOMReady",
           moduleType: "module",
           contentType: "inline",
