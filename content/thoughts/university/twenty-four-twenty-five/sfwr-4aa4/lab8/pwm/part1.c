@@ -1,25 +1,21 @@
-/*
- * Servo motor control program implementing lab 8 part 1
- * Controls servo position from 0-180 degrees using PWM
- */
-
 #include "MyRio.h"
 #include "PWM.h"
 #include <stdio.h>
 
 extern NiFpga_Session myrio_session;
 
-// Convert angle in degrees to PWM compare value
+// Function to map angle (0-180) to PWM compare value (499-4999)
 uint16_t angleToPWM(int angle) {
-  // Map 0-180 degrees to 500-5000 PWM compare values
-  // 500 = 0.2ms pulse (0 degrees)
-  // 2750 = 1.1ms pulse (90 degrees)
-  // 5000 = 2.0ms pulse (180 degrees)
+  // Constrain angle to 0-180 range
   if (angle < 0)
     angle = 0;
   if (angle > 180)
     angle = 180;
-  return 500 + (int)((4500.0 * angle) / 180.0);
+
+  // Map angle to PWM value
+  // 0° = 0.2ms = 500 ticks
+  // 180° = 2.0ms = 5000 ticks
+  return 499 + (angle * 4500) / 180;
 }
 
 int main(int argc, char **argv) {
@@ -28,80 +24,52 @@ int main(int argc, char **argv) {
   uint8_t selectReg;
   int angle;
 
-  printf("Servo Motor Control\n");
-  printf("Enter angle (0-180 degrees): ");
-  scanf("%d", &angle);
+  printf("Servo Motor Position Control\n");
 
-  // Coerce input to valid range
-  if (angle < 0)
-    angle = 0;
-  if (angle > 180)
-    angle = 180;
-
-  /*
-   * Initialize PWM0 on MXP connector A
-   */
+  // Initialize PWM struct with registers
   pwmA0.cnfg = PWMA_0CNFG;
   pwmA0.cs = PWMA_0CS;
   pwmA0.max = PWMA_0MAX;
   pwmA0.cmp = PWMA_0CMP;
   pwmA0.cntr = PWMA_0CNTR;
 
-  /*
-   * Open the myRIO NiFpga Session
-   */
+  // Open the myRIO NiFpga Session
   status = MyRio_Open();
   if (MyRio_IsNotSuccess(status)) {
     return status;
   }
 
-  /*
-   * Configure PWM output:
-   * - Not inverted
-   * - PWM generation enabled
-   */
+  // Configure PWM
   Pwm_Configure(&pwmA0, Pwm_Invert | Pwm_Mode, Pwm_NotInverted | Pwm_Enabled);
 
-  /*
-   * Set clock divider to 16x
-   * Base clock = 40MHz
-   * PWM clock = 40MHz/16 = 2.5MHz
-   */
+  // Set clock divider to 16x to get slower clock
+  // 40MHz / 16 = 2.5MHz
   Pwm_ClockSelect(&pwmA0, Pwm_16x);
 
-  /*
-   * Set counter maximum to 49,999
-   * PWM frequency = 2.5MHz/50000 = 50Hz (20ms period)
-   */
+  // Set maximum count for 50Hz (20ms) period
+  // 2.5MHz / 50Hz = 50,000 counts
   Pwm_CounterMaximum(&pwmA0, 49999);
 
-  /*
-   * Set compare value based on desired angle
-   */
-  Pwm_CounterCompare(&pwmA0, angleToPWM(angle));
-
-  /*
-   * Enable PWM0 output on connector A
-   */
+  // Enable PWM0 on connector A by setting bit 2
   status = NiFpga_ReadU8(myrio_session, SYSSELECTA, &selectReg);
-  MyRio_ReturnValueIfNotSuccess(status, status,
-                                "Could not read from SYSSELECTA register!");
-
-  selectReg = selectReg | (1 << 2); // Set bit 2 to enable PWM0
-
+  selectReg |= (1 << 2);
   status = NiFpga_WriteU8(myrio_session, SYSSELECTA, selectReg);
-  MyRio_ReturnValueIfNotSuccess(status, status,
-                                "Could not write to SYSSELECTA register!");
 
-  printf("Moving servo to %d degrees\n", angle);
-  printf("Press Enter to exit...\n");
-  getchar(); // Clear previous newline
-  getchar(); // Wait for enter
+  while (1) {
+    printf("\nEnter desired angle (0-180 degrees): ");
+    scanf("%d", &angle);
 
-  /*
-   * Close the myRIO NiFpga Session
-   */
+    // Constrain angle and convert to PWM value
+    uint16_t pwmValue = angleToPWM(angle);
+
+    // Set PWM compare value
+    Pwm_CounterCompare(&pwmA0, pwmValue);
+
+    printf("Set angle to %d degrees (PWM value: %d)\n",
+           angle < 0 ? 0 : (angle > 180 ? 180 : angle), pwmValue);
+  }
+
+  // Cleanup (this won't be reached due to infinite loop)
   status = MyRio_Close();
-
   return status;
 }

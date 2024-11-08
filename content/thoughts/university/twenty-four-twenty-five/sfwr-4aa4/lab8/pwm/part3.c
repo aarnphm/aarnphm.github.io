@@ -1,8 +1,3 @@
-/*
- * Motor control application for lab 8 part 3
- * Uses shared memory to receive servo angles
- */
-
 #include "MyRio.h"
 #include "PWM.h"
 #include <stdio.h>
@@ -14,65 +9,65 @@
 
 extern NiFpga_Session myrio_session;
 
-#define NOT_READY -1
-#define READY 0
-#define TAKEN 1
-
 // Shared memory structure
-struct ServoData {
-  int status; // Communication status
-  int angle;  // Desired servo angle
+struct SharedData {
+  int angle;  // Desired angle
+  int status; // Status flag: -1=not ready, 0=ready for new angle, 1=new angle
+              // available
 };
 
-// Convert angle in degrees to PWM compare value
+// Function to map angle (0-180) to PWM compare value (499-4999)
 uint16_t angleToPWM(int angle) {
-  // Map 0-180 degrees to 500-5000 PWM compare values
+  // Constrain angle to 0-180 range
   if (angle < 0)
     angle = 0;
   if (angle > 180)
     angle = 180;
-  return 500 + (int)((4500.0 * angle) / 180.0);
+
+  // Map angle to PWM value
+  // 0° = 0.2ms = 500 ticks
+  // 180° = 2.0ms = 5000 ticks
+  return 499 + (angle * 4500) / 180;
 }
 
 int main(int argc, char **argv) {
   NiFpga_Status status;
   MyRio_Pwm pwmA0;
   uint8_t selectReg;
-  int prev_angle = -1; // Track previous angle to avoid unnecessary updates
 
   // Shared memory variables
-  key_t shmKey;
-  int shmID;
-  struct ServoData *shmPTR;
+  key_t key;
+  int shmid;
+  struct SharedData *shared_data;
 
-  printf("Motor Control Application (Shared Memory)\n");
+  printf("Motor Control Server Starting...\n");
 
-  // Create shared memory key
-  shmKey = ftok("./", 'h');
-  if (shmKey == -1) {
-    printf("Error: Failed to create shared memory key\n");
-    return 1;
+  // Create key for shared memory
+  key = ftok(".", 'S');
+  if (key == -1) {
+    perror("ftok failed");
+    exit(1);
   }
 
   // Create shared memory segment
-  shmID = shmget(shmKey, sizeof(struct ServoData), IPC_CREAT | 0666);
-  if (shmID == -1) {
-    printf("Error: Failed to create shared memory segment\n");
-    return 1;
+  shmid = shmget(key, sizeof(struct SharedData), IPC_CREAT | 0666);
+  if (shmid == -1) {
+    perror("shmget failed");
+    exit(1);
   }
 
   // Attach shared memory segment
-  shmPTR = (struct ServoData *)shmat(shmID, NULL, 0);
-  if ((int)shmPTR == -1) {
-    printf("Error: Failed to attach shared memory segment\n");
-    return 1;
+  shared_data = (struct SharedData *)shmat(shmid, NULL, 0);
+  if ((int)shared_data == -1) {
+    perror("shmat failed");
+    exit(1);
   }
 
   // Initialize shared memory
-  shmPTR->status = NOT_READY;
-  shmPTR->angle = 0;
+  shared_data->status = -1; // Not ready
+  shared_data->angle = 0;
 
-  // Initialize PWM0 on MXP connector A
+  // Initialize PWM struct with registers
   pwmA0.cnfg = PWMA_0CNFG;
   pwmA0.cs = PWMA_0CS;
   pwmA0.max = PWMA_0MAX;
@@ -82,64 +77,53 @@ int main(int argc, char **argv) {
   // Open the myRIO NiFpga Session
   status = MyRio_Open();
   if (MyRio_IsNotSuccess(status)) {
-    shmdt((void *)shmPTR);
-    shmctl(shmID, IPC_RMID, NULL);
+    printf("Failed to open myRIO session\n");
     return status;
   }
 
-  // Configure PWM output
+  // Configure PWM
   Pwm_Configure(&pwmA0, Pwm_Invert | Pwm_Mode, Pwm_NotInverted | Pwm_Enabled);
+
+  // Set clock divider to 16x to get slower clock
+  // 40MHz / 16 = 2.5MHz
   Pwm_ClockSelect(&pwmA0, Pwm_16x);
+
+  // Set maximum count for 50Hz (20ms) period
+  // 2.5MHz / 50Hz = 50,000 counts
   Pwm_CounterMaximum(&pwmA0, 49999);
 
-  // Enable PWM0 output on connector A
+  // Enable PWM0 on connector A by setting bit 2
   status = NiFpga_ReadU8(myrio_session, SYSSELECTA, &selectReg);
-  if (MyRio_IsNotSuccess(status)) {
-    shmdt((void *)shmPTR);
-    shmctl(shmID, IPC_RMID, NULL);
-    return status;
-  }
-
-  selectReg = selectReg | (1 << 2); // Set bit 2 to enable PWM0
-
+  selectReg |= (1 << 2);
   status = NiFpga_WriteU8(myrio_session, SYSSELECTA, selectReg);
-  if (MyRio_IsNotSuccess(status)) {
-    shmdt((void *)shmPTR);
-    shmctl(shmID, IPC_RMID, NULL);
-    return status;
-  }
 
-  printf("Ready to receive angle inputs...\n");
-  shmPTR->status = READY; // Signal ready for communication
+  // Signal that we're ready to receive commands
+  shared_data->status = 0;
+  printf("Motor Control Server Ready - Waiting for commands...\n");
 
-  // Main control loop
   while (1) {
-    // Check if there's a new angle to process
-    if (shmPTR->status == READY && shmPTR->angle != prev_angle) {
-      int angle = shmPTR->angle;
+    // Check if new angle is available
+    if (shared_data->status == 1) {
+      int angle = shared_data->angle;
 
-      // Validate angle range
-      if (angle < 0)
-        angle = 0;
-      if (angle > 180)
-        angle = 180;
+      // Constrain angle and convert to PWM value
+      uint16_t pwmValue = angleToPWM(angle);
 
-      // Update servo position
-      Pwm_CounterCompare(&pwmA0, angleToPWM(angle));
-      printf("Moving servo to %d degrees\n", angle);
+      // Set PWM compare value
+      Pwm_CounterCompare(&pwmA0, pwmValue);
 
-      prev_angle = angle;
-      shmPTR->status = TAKEN; // Signal that we've processed the angle
+      printf("Received command: Set angle to %d degrees (PWM value: %d)\n",
+             angle < 0 ? 0 : (angle > 180 ? 180 : angle), pwmValue);
+
+      // Signal that we're ready for next command
+      shared_data->status = 0;
     }
-
-    // Small delay to prevent CPU hogging
-    usleep(10000); // 10ms delay
+    usleep(10000); // Sleep for 10ms to prevent busy waiting
   }
 
-  // Cleanup (this code won't be reached in this version)
+  // Cleanup (this won't be reached due to infinite loop)
+  shmdt(shared_data);
+  shmctl(shmid, IPC_RMID, NULL);
   status = MyRio_Close();
-  shmdt((void *)shmPTR);
-  shmctl(shmID, IPC_RMID, NULL);
-
   return status;
 }

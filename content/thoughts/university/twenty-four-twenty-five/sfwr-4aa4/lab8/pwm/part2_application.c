@@ -1,8 +1,3 @@
-/*
- * User application for lab 8 part 2
- * Gets angle input from user and sends to motor control via FIFO
- */
-
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,40 +11,39 @@
 
 int main(int argc, char **argv) {
   int fd;
-  char buffer[BUFFER_SIZE];
+  char buf[BUFFER_SIZE];
   int angle;
 
-  printf("User Application\n");
+  printf("Servo Control Client\n");
+  printf("Opening FIFO for writing...\n");
 
-  // Open FIFO for writing
   fd = open(FIFO_NAME, O_WRONLY);
   if (fd == -1) {
-    printf("Error: Motor control application must be running first!\n");
+    printf("Failed to open FIFO - Make sure motor control server is running\n");
     return 1;
   }
 
-  // Main input loop
+  printf("Connected to motor control server!\n");
+
   while (1) {
-    // Get angle from user
-    printf("\nEnter angle (0-180 degrees) or -1 to exit: ");
-    scanf("%d", &angle);
+    printf("\nEnter desired angle (0-180 degrees, or -1 to quit): ");
+    if (scanf("%d", &angle) != 1) {
+      // Clear input buffer if invalid input
+      while (getchar() != '\n')
+        ;
+      continue;
+    }
 
     if (angle == -1) {
       break;
     }
 
-    // Validate input
-    if (angle < 0)
-      angle = 0;
-    if (angle > 180)
-      angle = 180;
-
-    // Convert angle to string and write to FIFO
-    snprintf(buffer, BUFFER_SIZE, "%d", angle);
-    write(fd, buffer, strlen(buffer));
+    // Convert angle to string and send through FIFO
+    snprintf(buf, BUFFER_SIZE, "%d", angle);
+    write(fd, buf, strlen(buf));
+    printf("Sent command to set angle to %d degrees\n", angle);
   }
 
-  // Cleanup
   close(fd);
   return 0;
 }

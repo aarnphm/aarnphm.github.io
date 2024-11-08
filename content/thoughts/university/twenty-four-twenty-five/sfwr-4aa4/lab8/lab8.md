@@ -4,7 +4,7 @@ tags:
   - sfwr4aa4
 date: "2024-11-08"
 modified: "2024-11-08"
-title: lab8
+title: PWM and Shared Memory
 ---
 
 $$

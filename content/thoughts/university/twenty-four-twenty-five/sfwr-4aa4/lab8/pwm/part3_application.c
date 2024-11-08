@@ -1,8 +1,3 @@
-/*
- * User application for lab 8 part 3
- * Uses shared memory to send angles to motor control
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/ipc.h>
@@ -10,90 +5,78 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define NOT_READY -1
-#define READY 0
-#define TAKEN 1
-
-// Shared memory structure
-struct ServoData {
-  int status; // Communication status
-  int angle;  // Desired servo angle
+// Shared memory structure - must match server
+struct SharedData {
+  int angle;  // Desired angle
+  int status; // Status flag: -1=not ready, 0=ready for new angle, 1=new angle
+              // available
 };
 
 int main(int argc, char **argv) {
   // Shared memory variables
-  key_t shmKey;
-  int shmID;
-  struct ServoData *shmPTR;
-  int angle;
+  key_t key;
+  int shmid;
+  struct SharedData *shared_data;
 
-  printf("User Application (Shared Memory)\n");
+  printf("Servo Control Client\n");
 
-  // Get shared memory key
-  shmKey = ftok("./", 'h');
-  if (shmKey == -1) {
-    printf("Error: Failed to get shared memory key\n");
-    printf("Make sure motor control application is running first!\n");
-    return 1;
+  // Get key for shared memory
+  key = ftok(".", 'S');
+  if (key == -1) {
+    perror("ftok failed");
+    exit(1);
   }
 
-  // Connect to shared memory segment
-  shmID = shmget(shmKey, sizeof(struct ServoData), 0666);
-  if (shmID == -1) {
-    printf("Error: Failed to connect to shared memory segment\n");
-    printf("Make sure motor control application is running first!\n");
-    return 1;
+  // Get shared memory segment
+  shmid = shmget(key, sizeof(struct SharedData), 0666);
+  if (shmid == -1) {
+    perror("shmget failed - Make sure motor control server is running");
+    exit(1);
   }
 
   // Attach shared memory segment
-  shmPTR = (struct ServoData *)shmat(shmID, NULL, 0);
-  if ((int)shmPTR == -1) {
-    printf("Error: Failed to attach shared memory segment\n");
-    return 1;
+  shared_data = (struct SharedData *)shmat(shmid, NULL, 0);
+  if ((int)shared_data == -1) {
+    perror("shmat failed");
+    exit(1);
   }
 
-  // Wait for motor control to be ready
-  while (shmPTR->status == NOT_READY) {
-    printf("Waiting for motor control to be ready...\n");
+  printf("Connected to motor control server!\n");
+
+  // Wait for server to be ready
+  while (shared_data->status == -1) {
+    printf("Waiting for server to be ready...\n");
     sleep(1);
   }
 
-  printf("Connected to motor control application!\n");
-
-  // Main input loop
   while (1) {
-    // Get angle from user
-    printf("\nEnter angle (0-180 degrees) or -1 to exit: ");
-    scanf("%d", &angle);
+    int angle;
+
+    printf("\nEnter desired angle (0-180 degrees, or -1 to quit): ");
+    if (scanf("%d", &angle) != 1) {
+      // Clear input buffer if invalid input
+      while (getchar() != '\n')
+        ;
+      continue;
+    }
 
     if (angle == -1) {
       break;
     }
 
-    // Validate input
-    if (angle < 0)
-      angle = 0;
-    if (angle > 180)
-      angle = 180;
-
-    // Wait for previous command to be processed
-    while (shmPTR->status != READY) {
-      usleep(1000); // 1ms delay
+    // Wait for server to be ready for next command
+    while (shared_data->status != 0) {
+      usleep(10000); // Sleep for 10ms
     }
 
     // Send new angle
-    shmPTR->angle = angle;
-    shmPTR->status = READY;
+    shared_data->angle = angle;
+    shared_data->status = 1; // Signal new angle available
 
-    // Wait for acknowledgment
-    while (shmPTR->status != TAKEN) {
-      usleep(1000); // 1ms delay
-    }
+    printf("Sent command to set angle to %d degrees\n", angle);
   }
 
-  // Cleanup
-  shmPTR->status = NOT_READY; // Signal that we're done
-  shmdt((void *)shmPTR);
-
+  // Detach from shared memory
+  shmdt(shared_data);
   return 0;
 }

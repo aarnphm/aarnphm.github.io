@@ -1,31 +1,28 @@
-/*
- * Motor control application for lab 8 part 2
- * Creates FIFO and controls servo based on received angles
- */
-
 #include "MyRio.h"
 #include "PWM.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 extern NiFpga_Session myrio_session;
-
 #define FIFO_NAME "/tmp/servo_fifo"
 #define BUFFER_SIZE 80
 
-// Convert angle in degrees to PWM compare value
+// Function to map angle (0-180) to PWM compare value (499-4999)
 uint16_t angleToPWM(int angle) {
-  // Map 0-180 degrees to 500-5000 PWM compare values
+  // Constrain angle to 0-180 range
   if (angle < 0)
     angle = 0;
   if (angle > 180)
     angle = 180;
-  return 500 + (int)((4500.0 * angle) / 180.0);
+
+  // Map angle to PWM value
+  // 0° = 0.2ms = 500 ticks
+  // 180° = 2.0ms = 5000 ticks
+  return 499 + (angle * 4500) / 180;
 }
 
 int main(int argc, char **argv) {
@@ -33,16 +30,18 @@ int main(int argc, char **argv) {
   MyRio_Pwm pwmA0;
   uint8_t selectReg;
   int fd;
-  char buffer[BUFFER_SIZE];
+  char buf[BUFFER_SIZE];
   int angle;
 
-  printf("Motor Control Application\n");
+  printf("Motor Control Server Starting...\n");
 
-  // Create the FIFO if it doesn't exist
+  // Create FIFO if it doesn't exist
   umask(0);
-  mknod(FIFO_NAME, S_IFIFO | 0666, 0);
+  if (mknod(FIFO_NAME, S_IFIFO | 0666, 0) == -1) {
+    printf("FIFO already exists - continuing...\n");
+  }
 
-  // Initialize PWM0 on MXP connector A
+  // Initialize PWM struct with registers
   pwmA0.cnfg = PWMA_0CNFG;
   pwmA0.cs = PWMA_0CS;
   pwmA0.max = PWMA_0MAX;
@@ -52,53 +51,54 @@ int main(int argc, char **argv) {
   // Open the myRIO NiFpga Session
   status = MyRio_Open();
   if (MyRio_IsNotSuccess(status)) {
+    printf("Failed to open myRIO session\n");
     return status;
   }
 
-  // Configure PWM output
+  // Configure PWM
   Pwm_Configure(&pwmA0, Pwm_Invert | Pwm_Mode, Pwm_NotInverted | Pwm_Enabled);
+
+  // Set clock divider to 16x to get slower clock
+  // 40MHz / 16 = 2.5MHz
   Pwm_ClockSelect(&pwmA0, Pwm_16x);
+
+  // Set maximum count for 50Hz (20ms) period
+  // 2.5MHz / 50Hz = 50,000 counts
   Pwm_CounterMaximum(&pwmA0, 49999);
 
-  // Enable PWM0 output on connector A
+  // Enable PWM0 on connector A by setting bit 2
   status = NiFpga_ReadU8(myrio_session, SYSSELECTA, &selectReg);
-  MyRio_ReturnValueIfNotSuccess(status, status,
-                                "Could not read from SYSSELECTA register!");
-
-  selectReg = selectReg | (1 << 2); // Set bit 2 to enable PWM0
-
+  selectReg |= (1 << 2);
   status = NiFpga_WriteU8(myrio_session, SYSSELECTA, selectReg);
-  MyRio_ReturnValueIfNotSuccess(status, status,
-                                "Could not write to SYSSELECTA register!");
 
-  printf("Waiting for angle inputs from user application...\n");
-
-  // Open FIFO for reading
+  printf("Opening FIFO for reading...\n");
   fd = open(FIFO_NAME, O_RDONLY);
+  if (fd == -1) {
+    printf("Failed to open FIFO\n");
+    return 1;
+  }
 
-  // Main control loop - read angles from FIFO and update servo
+  printf("Motor Control Server Ready - Waiting for commands...\n");
+
   while (1) {
     // Read angle from FIFO
-    int bytes_read = read(fd, buffer, BUFFER_SIZE);
-    if (bytes_read > 0) {
-      buffer[bytes_read] = '\0';
+    int n = read(fd, buf, BUFFER_SIZE);
+    if (n > 0) {
+      buf[n] = '\0'; // Null terminate string
+      angle = atoi(buf);
 
-      // Convert string to integer
-      angle = atoi(buffer);
+      // Constrain angle and convert to PWM value
+      uint16_t pwmValue = angleToPWM(angle);
 
-      // Validate angle range
-      if (angle < 0)
-        angle = 0;
-      if (angle > 180)
-        angle = 180;
+      // Set PWM compare value
+      Pwm_CounterCompare(&pwmA0, pwmValue);
 
-      // Update servo position
-      Pwm_CounterCompare(&pwmA0, angleToPWM(angle));
-      printf("Moving servo to %d degrees\n", angle);
+      printf("Received command: Set angle to %d degrees (PWM value: %d)\n",
+             angle < 0 ? 0 : (angle > 180 ? 180 : angle), pwmValue);
     }
   }
 
-  // Cleanup (note: this code won't be reached in this version)
+  // Cleanup (this won't be reached due to infinite loop)
   close(fd);
   unlink(FIFO_NAME);
   status = MyRio_Close();
