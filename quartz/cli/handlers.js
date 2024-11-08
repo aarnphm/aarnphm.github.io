@@ -15,6 +15,7 @@ import { WebSocketServer } from "ws"
 import { randomUUID } from "crypto"
 import { Mutex } from "async-mutex"
 import { CreateArgv } from "./args.js"
+import { globby } from "globby"
 import {
   exitIfCancel,
   escapePath,
@@ -287,8 +288,8 @@ export async function handleBuild(argv) {
     }
 
     if (cleanupBuild) {
-      await cleanupBuild()
       console.log(chalk.yellow("Detected a source code change, doing a hard rebuild..."))
+      await cleanupBuild()
     }
 
     const result = await ctx.rebuild().catch((err) => {
@@ -429,13 +430,12 @@ export async function handleBuild(argv) {
       ),
     )
     console.log("hint: exit with ctrl+c")
+    const paths = await globby(["**/*.ts", "**/*.tsx", "**/*.scss", "package.json"])
     chokidar
-      .watch(["**/*.ts", "**/*.tsx", "**/*.scss", "package.json"], {
-        ignoreInitial: true,
-      })
-      .on("all", async () => {
-        build(clientRefresh)
-      })
+      .watch(paths, { ignoreInitial: true })
+      .on("add", () => build(clientRefresh))
+      .on("change", () => build(clientRefresh))
+      .on("unlink", () => build(clientRefresh))
   } else {
     await build(() => {})
     ctx.dispose()
