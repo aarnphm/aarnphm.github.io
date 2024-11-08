@@ -153,9 +153,7 @@ document.addEventListener("nav", () => {
   }
 
   const footnoteItems = footnoteSectionList.flatMap((ol) =>
-    Array.from(ol.querySelectorAll(INDIVIDUAL_FOOTNOTE_SELECTOR)).map(
-      (li) => li.cloneNode(true) as HTMLLIElement,
-    ),
+    Array.from(ol.querySelectorAll(INDIVIDUAL_FOOTNOTE_SELECTOR)),
   ) as HTMLLIElement[]
 
   // Create array of sidenote entries with position information
@@ -186,12 +184,14 @@ document.addEventListener("nav", () => {
     ol.appendChild(entry.sidenote)
   }
 
-  const lastSection = sections.pop()
-  sections.map((section) => section.remove())
-  const olList = lastSection?.getElementsByTagName("ol")[0] as HTMLOListElement
-  removeAllChildren(olList)
-  for (const entry of sidenoteEntries) {
-    olList.appendChild(entry.footnote)
+  if (sections.length !== 1) {
+    const lastSection = sections.pop()
+    sections.map((section) => section.remove())
+    const olList = lastSection?.getElementsByTagName("ol")[0] as HTMLOListElement
+    removeAllChildren(olList)
+    for (const entry of sidenoteEntries) {
+      olList.appendChild(entry.footnote)
+    }
   }
 
   updateSidenotes()

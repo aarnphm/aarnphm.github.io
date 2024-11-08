@@ -19,7 +19,7 @@ document.addEventListener("nav", () => {
   }
 
   // Add click handlers to all images in content
-  const contentImages = document.querySelectorAll(".popover-hint img:not(.external-icon)")
+  const contentImages = document.querySelectorAll(".popover-hint img")
   for (const img of contentImages) {
     if (img instanceof HTMLImageElement) {
       img.style.cursor = "pointer"
