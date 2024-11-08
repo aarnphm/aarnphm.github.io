@@ -2,6 +2,7 @@
 id: lab8
 tags:
   - sfwr4aa4
+  - lab
 date: "2024-11-08"
 modified: "2024-11-08"
 title: PWM and Shared Memory

@@ -9,7 +9,8 @@ const GROUP_MAX_HEIGHT = 1000 // pixels
 interface SidenoteEntry {
   footnoteId: string
   intextLink: HTMLElement
-  element: HTMLLIElement
+  sidenote: HTMLLIElement
+  footnote: HTMLLIElement
   verticalPosition: number
 }
 
@@ -43,12 +44,8 @@ function checkSidenoteSpacing(current: HTMLElement, allSidenotes: NodeListOf<HTM
   const spacing = nextRect.top - currentBottom
 
   const inner = current.querySelector(".sidenote-inner") as HTMLElement
-  if (inner) {
-    if (spacing > SPACING_THRESHOLD) {
-      inner.style.maxHeight = "unset"
-    } else {
-      inner.style.maxHeight = "200px" // Reset to default
-    }
+  if (inner && spacing > SPACING_THRESHOLD) {
+    inner.style.maxHeight = "unset"
   }
 }
 
@@ -130,7 +127,8 @@ function createSidenote(
 
 document.addEventListener("nav", () => {
   const articleContent = document.querySelector(ARTICLE_CONTENT_SELECTOR) as HTMLElement
-  const footnoteSections = Array.from(
+  const sections = Array.from(document.querySelectorAll("section[data-footnotes]")) as HTMLElement[]
+  const footnoteSectionList = Array.from(
     document.querySelectorAll(FOOTNOTE_SECTION_SELECTOR),
   ) as HTMLOListElement[]
   if (!articleContent) return
@@ -149,26 +147,28 @@ document.addEventListener("nav", () => {
   sideContainer.appendChild(ol)
 
   // If no footnote sections or we disable sidenotes in frontmatter, we still want the dashed lines
-  if (footnoteSections.length === 0 || sideContainer.dataset.disableNotes === "true") {
+  if (footnoteSectionList.length === 0 || sideContainer.dataset.disableNotes === "true") {
     updateSidenotes()
     return
   }
 
-  const footnotes = footnoteSections.flatMap((ol) =>
-    Array.from(ol.querySelectorAll(INDIVIDUAL_FOOTNOTE_SELECTOR)),
+  const footnoteItems = footnoteSectionList.flatMap((ol) =>
+    Array.from(ol.querySelectorAll(INDIVIDUAL_FOOTNOTE_SELECTOR)).map(
+      (li) => li.cloneNode(true) as HTMLLIElement,
+    ),
   ) as HTMLLIElement[]
 
   // Create array of sidenote entries with position information
   const sidenoteEntries: SidenoteEntry[] = []
 
-  for (const footnote of footnotes) {
+  for (const footnote of footnoteItems) {
     const footnoteId = footnote.id
     const intextLink = articleContent.querySelector(`a[href="#${footnoteId}"]`) as HTMLElement
     if (!intextLink) continue
 
     const sidenote = createSidenote(footnote, footnoteId, sideContainer)
     const verticalPosition = getVerticalPosition(intextLink)
-    sidenoteEntries.push({ footnoteId, intextLink, element: sidenote, verticalPosition })
+    sidenoteEntries.push({ footnoteId, intextLink, sidenote, footnote, verticalPosition })
   }
 
   sidenoteEntries.sort((a, b) => a.verticalPosition - b.verticalPosition)
@@ -176,14 +176,22 @@ document.addEventListener("nav", () => {
   // update the index accordingly with transclude in consideration
   for (const [index, entry] of sidenoteEntries.entries()) {
     const counter = index + 1
-    entry.element.dataset.count = `${counter}`
+    entry.sidenote.dataset.count = `${counter}`
     const linkContent = Array.from(entry.intextLink.childNodes)
     const textNode = linkContent.find((node) => node.nodeType === Node.TEXT_NODE)
     if (textNode) {
       textNode.textContent = `${counter}`
     }
 
-    ol.appendChild(entry.element)
+    ol.appendChild(entry.sidenote)
+  }
+
+  const lastSection = sections.pop()
+  sections.map((section) => section.remove())
+  const olList = lastSection?.getElementsByTagName("ol")[0] as HTMLOListElement
+  removeAllChildren(olList)
+  for (const entry of sidenoteEntries) {
+    olList.appendChild(entry.footnote)
   }
 
   updateSidenotes()
