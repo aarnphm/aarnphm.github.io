@@ -4,21 +4,36 @@ aliases:
   - mechinterp
 tags:
   - interp
-date: 2024-10-30
+date: "2024-10-30"
 description: all things mech interp
-modified: 2024-10-30
+modified: "2024-10-30"
 permalink:
   - /mechinterp
   - /mechanistic-interpretability
 title: mechanistic interpretability
 ---
+
 [whirlwind tour](https://www.youtube.com/watch?v=veT2VI4vHyU&ab_channel=FAR%E2%80%A4AI), [[thoughts/pdfs/tinymorph exploration.pdf|initial exploration]], [glossary](https://dynalist.io/d/n2ZWtnoYHrU1s4vnFSAQ519J)
 
 > The subfield of alignment that delves into reverse engineering of a neural network, especially [[thoughts/LLMs]]
 
-To attack the _curse of dimensionality_, the question remains: *==how do we hope to understand a function over such a large space, without an exponential amount of time?==* [^lesswrongarc]
+To attack the _curse of dimensionality_, the question remains: _==how do we hope to understand a function over such a large space, without an exponential amount of time?==_ [^lesswrongarc]
 
 [^lesswrongarc]: good read from [Lawrence C](https://www.lesswrong.com/posts/6FkWnktH3mjMAxdRT/what-i-would-do-if-i-wasn-t-at-arc-evals#Ambitious_mechanistic_interpretability) for ambitious mech interp.
+
+## inference
+
+application in the wild: [Goodfire](https://goodfire.ai/) and [Transluce](https://transluce.org/)
+
+> [!question]+ How we would do inference with SAE?
+>
+> https://x.com/aarnphm_/status/1839016131321016380
+
+idea: treat SAEs as a `logit_processor`, though there are currently some bottleneck with `logit_processor` in [[thoughts/vllm|vLLM]], similar to [[thoughts/vllm#guided decoding]]
+
+Currently, before v1, logit_processor are row-wise, meaning logits are currently being processed before passing down to scheduling group [^vllm-caveats]
+
+[^vllm-caveats]: [the benchmark](https://github.com/vllm-project/vllm/pull/10046) was run against `vllm#0.6.3.dev236+g48138a84`, with all configuration specified in the pull request.
 
 ## steering
 
@@ -164,3 +179,4 @@ See also: [writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mec
 > related to phase change
 
 [^ref]
+

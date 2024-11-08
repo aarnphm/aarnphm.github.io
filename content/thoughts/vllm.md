@@ -88,6 +88,10 @@ See [slides](https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN
 >
 > - have a sort of sampling logics to get the probability of the next token, then forward passing for all later tokens.
 
+## continuous batching
+
+![[thoughts/Continuous batching]]
+
 ## guided decoding
 
 See [vllm-project/vllm#5423](https://github.com/vllm-project/vllm/issues/5423)
@@ -97,5 +101,100 @@ See [vllm-project/vllm#5423](https://github.com/vllm-project/vllm/issues/5423)
 - engine will die if failed
 
 Benchmark script: [vllm-project/vllm#10046](https://github.com/vllm-project/vllm/pull/10046)
+
+> [!important] overhead
+>
+> Currently logit_processor are happening in frontend, so we should move this to model_executor layers
+
+### waterfall
+
+see also [introduction slides](https://docs.google.com/presentation/d/1QL-XPFXiFpDBh86DbEegFXBXFXjix4v032GhShbKf3s/edit)
+
+#### initialization flow:
+
+```mermaid
+graph TB
+  subgraph Engine
+    AsyncLLMEngine[AsyncLLMEngine]
+  end
+
+  subgraph Executors
+    GPU[GPUExecutorAsync]
+    TPU[TPUExecutorAsync]
+    XPU[XPUExecutorAsync]
+  end
+
+  subgraph Workers
+    GPUWorker[GPUWorker]
+  end
+
+  subgraph Model Runners
+    EmbeddingModelRunner[EmbeddingModelRunner]
+    GPUModelRunner[GPUModelRunner]
+  end
+
+  subgraph Control Plane
+    Scheduling[Scheduling]
+    SequenceGroup[SequenceGroup]
+    KVCache[KVCache]
+    Executors
+  end
+
+  AsyncLLMEngine --> |init| C[init]
+  C --> |device_type=gpu| GPU
+  C --> |device_type=tpu| TPU
+  C --> |device_type=xpu| XPU
+  GPU --> Workers
+  Workers --> |model_type=decoder| GPUModelRunner
+  Workers --> |model_type=embeddings| EmbeddingModelRunner
+  GPUModelRunner --> ModelClassImpl[LlamaModelForCausalLM]
+```
+
+#### Request flow:
+
+```mermaid
+graph TB
+  subgraph Engine
+    AsyncLLMEngine[AsyncLLMEngine]
+  end
+
+  subgraph Executors
+    GPU[GPUExecutorAsync]
+    TPU[TPUExecutorAsync]
+    XPU[XPUExecutorAsync]
+  end
+
+  subgraph Workers
+    GPUWorker[GPUWorker]
+  end
+
+  subgraph Model Runners
+    EmbeddingModelRunner[EmbeddingModelRunner]
+    GPUModelRunner[GPUModelRunner]
+  end
+
+  subgraph control plane
+    Scheduling[Scheduling]
+  end
+
+  Request[prompt, sampling_params] --> AsyncLLMEngine
+  AsyncLLMEngine --> |add_request_async| AsyncLogitProcessor[AsyncLogitProcessorList]
+  AsyncLogitProcessor --> Scheduling --> Executors
+  GPU --> GPUWorker --> GPUModelRunner --> |.execute_model| ModelClassImpl[LlamaModelForCausalLM]
+```
+
+Bottleneck at `AsyncLogitProcessor` and `Scheduling` layer, given that this is row-wise operations [^row-wise]
+
+[^row-wise]: See current implementation [here](https://github.com/vllm-project/vllm/blob/246598a6b1e22616630b7f1bf11bd9bcb31dc860/vllm/model_executor/layers/logits_processor.py#L112)
+
+> [!note]- some related items
+>
+> Worker base: vllm/worker/worker_base.py
+>
+> Initialize GPU cache and sequence group in ModelRunner step
+>
+> Executor will handle all KVCache, block manager, and evictor layer here during model execution
+>
+> broadcast with SPMD with sequence groups
 
 [^ref]

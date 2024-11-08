@@ -702,9 +702,11 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                   primaryColor: '${getColor(theme, "light")}',
                   primaryTextColor: '${getColor(theme, "darkgray")}',
                   primaryBorderColor: '${getColor(theme, "tertiary")}',
-                  lineColor: '${getColor(theme, "gray")}',
+                  lineColor: '${getColor(theme, "darkgray")}',
                   secondaryColor: '${getColor(theme, "secondary")}',
                   tertiaryColor: '${getColor(theme, "tertiary")}',
+                  clusterBkg: '${getColor(theme, "light")}',
+                  edgeLabelBackground: '${getColor(theme, "highlight")}',
                 }
               })
               await mermaid.run({ nodes })
