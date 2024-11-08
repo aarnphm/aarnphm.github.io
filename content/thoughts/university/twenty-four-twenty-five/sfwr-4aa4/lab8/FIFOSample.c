@@ -44,5 +44,5 @@ int main(int argc, char * argv[]) {
 /*
 This is a very bare-bones example of the FIFO buffer, but it should be
 enough to get started. Consider using loops to improve the functionality
-of the program. 
+of the program.
 */
