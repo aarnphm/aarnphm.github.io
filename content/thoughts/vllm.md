@@ -110,9 +110,10 @@ Benchmark script: [vllm-project/vllm#10046](https://github.com/vllm-project/vllm
 
 see also [introduction slides](https://docs.google.com/presentation/d/1QL-XPFXiFpDBh86DbEegFXBXFXjix4v032GhShbKf3s/edit)
 
-#### initialization flow:
-
 ```mermaid
+---
+title: Initialization flow
+---
 graph TB
   subgraph Engine
     AsyncLLMEngine[AsyncLLMEngine]
@@ -150,9 +151,10 @@ graph TB
   GPUModelRunner --> ModelClassImpl[LlamaModelForCausalLM]
 ```
 
-#### Request flow:
-
 ```mermaid
+---
+title: Request flow
+---
 graph TB
   subgraph Engine
     AsyncLLMEngine[AsyncLLMEngine]
@@ -196,5 +198,7 @@ Bottleneck at `AsyncLogitProcessor` and `Scheduling` layer, given that this is r
 > Executor will handle all KVCache, block manager, and evictor layer here during model execution
 >
 > broadcast with SPMD with sequence groups
+
+### proposal
 
 [^ref]
