@@ -27,7 +27,6 @@ const config: QuartzConfig = {
       "joininteract",
       "**/sfwr-4g06ab/source",
       "**.adoc",
-      "**/lab*/**",
     ],
     defaultDateType: "created",
     theme: {
