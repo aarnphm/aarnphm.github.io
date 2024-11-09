@@ -29,7 +29,7 @@ find sites -type f -name "*.pdf" -print0 | xargs -0 rm -f
 
 current_datetime=$(date +"%Y-%m-%d %H:%M:%S")
 pushd sites &>/dev/null || exit 1
-npx prettier . -cw
+npx prettier index.css -cw
 if [ -n "$(git status --porcelain)" ]; then
   git add -A
   git commit -sv --message "chore: build at $current_datetime [generated]"

@@ -180,6 +180,9 @@ async function generateOg(
 ) {
   const fontBuffer = await fonts
 
+  if (ctx.argv.verbose) {
+    console.log(`[emit:ComponentResources] Generating social image for ${fileName}.${extension}`)
+  }
   const svg = await satori(opts.Component(cfg, fileData, opts, title, description, fontBuffer), {
     height: opts.height,
     width: opts.width,
