@@ -45,14 +45,6 @@ function cleanupBlobUrl(blobUrl: string, timeoutId: NodeJS.Timeout): void {
 // Set a longer default timeout since we're not cleaning up on popover close
 const DEFAULT_BLOB_TIMEOUT = 30 * 60 * 1000 // 30 minutes
 
-// Cleanup all remaining blob URLs when the page unloads
-window.addEventListener("unload", () => {
-  for (const [blobUrl, timeoutId] of blobCleanupMap.entries()) {
-    cleanupBlobUrl(blobUrl, timeoutId)
-  }
-  blobCleanupMap.clear()
-})
-
 const p = new DOMParser()
 async function mouseEnterHandler(
   this: HTMLLinkElement,
@@ -180,6 +172,13 @@ document.addEventListener("nav", () => {
   const links = [...document.getElementsByClassName("internal")] as HTMLLinkElement[]
   for (const link of links) {
     link.addEventListener("mouseenter", mouseEnterHandler)
-    window.addCleanup(() => link.removeEventListener("mouseenter", mouseEnterHandler))
+    window.addCleanup(() => {
+      link.removeEventListener("mouseenter", mouseEnterHandler)
+
+      for (const [blobUrl, timeoutId] of blobCleanupMap.entries()) {
+        cleanupBlobUrl(blobUrl, timeoutId)
+      }
+      blobCleanupMap.clear()
+    })
   }
 })

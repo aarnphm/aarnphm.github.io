@@ -23,6 +23,27 @@
     flex-direction: row;
     line-height: 0;
     margin-top: 0.25rem;
+
+    & > ul {
+      padding-inline-start: 0;
+
+      & > li {
+        font-size: 0.8rem;
+        list-style: none;
+        margin-right: 0.8rem;
+        display: flex;
+        flex-direction: row;
+
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+
+        & > * {
+          color: inherit;
+        }
+      }
+    }
   }
 
   & > a {
@@ -33,22 +54,5 @@
     border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
     border-radius: 0;
     background-color: inherit;
-  }
-
-  & li {
-    font-size: 0.8rem;
-    list-style: none;
-    margin-right: 0.8rem;
-    display: flex;
-    flex-direction: row;
-
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-
-    & > * {
-      color: inherit;
-    }
   }
 }

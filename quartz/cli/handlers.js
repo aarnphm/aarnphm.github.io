@@ -7,6 +7,7 @@ import fs from "fs"
 import { intro, outro, select, text } from "@clack/prompts"
 import { rimraf } from "rimraf"
 import chokidar from "chokidar"
+import { Features, transform as lightningTransform } from "lightningcss"
 import prettyBytes from "pretty-bytes"
 import { execSync, spawnSync } from "child_process"
 import http from "http"
@@ -230,14 +231,13 @@ export async function handleBuild(argv) {
     sourcemap: true,
     sourcesContent: false,
     plugins: [
-      sassPlugin({
-        type: "css-text",
-        cssImports: true,
-      }),
+      sassPlugin({ type: "css-text", cssImports: true, embedded: true, sourceMap: false }),
       sassPlugin({
         filter: /\.inline\.scss$/,
         type: "css",
         cssImports: true,
+        embedded: true,
+        sourceMap: false,
       }),
       {
         name: "inline-script-loader",
