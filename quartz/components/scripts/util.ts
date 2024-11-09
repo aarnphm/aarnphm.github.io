@@ -163,6 +163,6 @@ export function toggleCollapsedById(array: HeaderState[], id: string) {
   }
 }
 
-export function saveHeaderState(currentHeaderState) {
+export function saveHeaderState(currentHeaderState: HeaderState[]) {
   localStorage.setItem("headerState", JSON.stringify(currentHeaderState))
 }

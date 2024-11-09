@@ -108,7 +108,7 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
               )}
               {metadata.showModifiedTime && modified !== undefined && (
                 <li>
-                  <a class="ref-source">
+                  <div class="ref-source">
                     <span class="indicator-hook" />
                     <span
                       class="page-modification"
@@ -116,7 +116,7 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
                     >
                       <em>{modified}</em>
                     </span>
-                  </a>
+                  </div>
                 </li>
               )}
               {reading !== undefined && (
