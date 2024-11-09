@@ -41,7 +41,7 @@ function toggleCollapse(button: HTMLButtonElement, forceState?: boolean) {
   }
 
   // Save the final state
-  saveHeaderState()
+  saveHeaderState(currentHeaderState)
 
   // Use requestAnimationFrame to wait for DOM updates to complete
   requestAnimationFrame(() => {

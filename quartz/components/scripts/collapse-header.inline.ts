@@ -40,7 +40,7 @@ function toggleHeader(evt: Event) {
   // Update state
   const headerId = toggleButton.id
   toggleCollapsedById(currentHeaderState, headerId)
-  saveHeaderState()
+  saveHeaderState(currentHeaderState)
 }
 
 function loadHeaderState(): HeaderState[] {
