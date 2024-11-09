@@ -108,7 +108,7 @@
           flex: 0 0 min(30%, 450px);
         }
 
-        @media all and ($tablet) {
+        @media all and ($mobile) {
           &[data-preview] {
             & .result-card > p.preview {
               display: none;
@@ -134,7 +134,7 @@
           border-radius: 5px;
         }
 
-        @media all and ($tablet) {
+        @media all and ($mobile) {
           & > #preview-container {
             display: none !important;
           }

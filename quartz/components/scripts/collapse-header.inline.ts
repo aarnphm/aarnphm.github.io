@@ -1,7 +1,6 @@
 import { updateSidenoteState, toggleCollapsedById, saveHeaderState, HeaderState } from "./util"
 
 type MaybeHTMLElement = HTMLElement | undefined
-let currentHeaderState: HeaderState[]
 
 function toggleHeader(evt: Event) {
   const target = evt.target as MaybeHTMLElement
@@ -16,6 +15,8 @@ function toggleHeader(evt: Event) {
 
   const wrapper = toggleButton.closest(".collapsible-header") as MaybeHTMLElement
   if (!wrapper) return
+
+  const currentHeaderState = loadHeaderState()
 
   evt.stopPropagation()
 
@@ -58,7 +59,7 @@ function setHeaderState(button: HTMLElement, content: HTMLElement, collapsed: bo
 
 function setupHeaders() {
   // Load saved state
-  currentHeaderState = loadHeaderState()
+  const currentHeaderState = loadHeaderState()
 
   const buttons = document.querySelectorAll(".collapsible-header .toggle-button")
   for (const button of buttons) {

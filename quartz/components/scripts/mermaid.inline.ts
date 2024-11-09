@@ -1,7 +1,5 @@
 import { removeAllChildren } from "./util"
-
-const svgExpand =
-  '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M3.72 3.72a.75.75 0 011.06 1.06L2.56 7h10.88l-2.22-2.22a.75.75 0 011.06-1.06l3.5 3.5a.75.75 0 010 1.06l-3.5 3.5a.75.75 0 11-1.06-1.06l2.22-2.22H2.56l2.22 2.22a.75.75 0 11-1.06 1.06l-3.5-3.5a.75.75 0 010-1.06l3.5-3.5z"></path></svg>'
+import mermaid from "mermaid"
 
 interface Position {
   x: number
@@ -59,6 +57,7 @@ class DiagramPanZoom {
     button.textContent = text
     button.className = "mermaid-control-button"
     button.addEventListener("click", onClick)
+    window.addCleanup(() => button.removeEventListener("click", onClick))
     return button
   }
 
@@ -145,9 +144,8 @@ const cssVars = [
   "--codeFont",
 ] as const
 
-let mermaidImport = undefined
 document.addEventListener("nav", async () => {
-  const nodes = document.querySelectorAll("code.mermaid")
+  const nodes = document.querySelectorAll("code.mermaid") as NodeListOf<HTMLElement>
   if (nodes.length === 0) return
 
   const computedStyleMap = cssVars.reduce(
@@ -158,11 +156,6 @@ document.addEventListener("nav", async () => {
     {} as Record<(typeof cssVars)[number], string>,
   )
 
-  mermaidImport ||= await import(
-    // @ts-ignore
-    "https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.esm.min.mjs"
-  )
-  const mermaid = mermaidImport.default
   const darkMode = document.documentElement.getAttribute("saved-theme") === "dark"
   mermaid.initialize({
     startOnLoad: false,
@@ -186,12 +179,8 @@ document.addEventListener("nav", async () => {
     const codeBlock = nodes[i] as HTMLElement
     const pre = codeBlock.parentElement as HTMLPreElement
     const clipboardBtn = pre.querySelector(".clipboard-button") as HTMLButtonElement
+    const expandBtn = pre.querySelector(".expand-button") as HTMLButtonElement
 
-    const expandBtn = document.createElement("button")
-    expandBtn.className = "expand-button"
-    expandBtn.type = "button"
-    expandBtn.innerHTML = svgExpand
-    expandBtn.ariaLabel = "Expand mermaid diagram"
     const clipboardStyle = window.getComputedStyle(clipboardBtn)
     const clipboardWidth =
       clipboardBtn.offsetWidth +
@@ -202,23 +191,9 @@ document.addEventListener("nav", async () => {
     expandBtn.style.right = `calc(${clipboardWidth}px + 0.3rem)`
     pre.prepend(expandBtn)
 
-    // Create popup container
-    const popupContainer = document.createElement("div")
-    popupContainer.id = "mermaid-container"
-    popupContainer.innerHTML = `
-  <div id="mermaid-space">
-    <div class="mermaid-header">
-      <button class="close-button" aria-label="Close">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-    </div>
-    <div class="mermaid-content"></div>
-  </div>
-  `
-    pre.appendChild(popupContainer)
+    // query popup container
+    const popupContainer = document.querySelector("#mermaid-container") as HTMLElement
+    if (!popupContainer) return
 
     let panZoom: DiagramPanZoom | null = null
 
