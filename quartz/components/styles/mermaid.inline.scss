@@ -73,7 +73,7 @@ pre {
       border-bottom: 1px solid var(--lightgray);
       background: var(--light);
       z-index: 2;
-      max-height: fit-content;
+      max-height: 32px;
 
       & > .close-button {
         display: flex;
