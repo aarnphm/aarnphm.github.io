@@ -25,7 +25,7 @@ def pca_components(Vt, n_components): return Vt[:n_components]
 # fmt: on
 ```
 
-Yields the following when running `plot_class_representatives`: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t1.png|result]]
+Yields the following when running `plot_class_representatives`: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t1.jpeg|result]]
 
 ### task 2: PCA transformation and reconstructing
 
@@ -50,14 +50,14 @@ def pca_inverse_transform(transformed_data, Vt, n_components, data_mean):
 
 Which yields the following for TNC visualisation:
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-tnc-viz.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-tnc-viz.jpeg]]
 
 and LFW visualisation:
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-lfw-viz.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-lfw-viz.jpeg]]
 
 
 We also expect some loss in information while reconstructing:
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-bush-loss-info.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-bush-loss-info.jpeg]]
 
 ### task 3: average reconstruction error for LFW
 
@@ -129,7 +129,7 @@ Components: 100
 
 The eval results graph:
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t3-eval.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t3-eval.jpeg]]
 
 > [!question] part B
 >
@@ -142,7 +142,7 @@ The eval results graph:
   - As `n_components` increases, we see a decreases in bias (improving reconstruction for both train and test data). However, test error decreases more slowly given later components are less effective in reconstructing features for unseen data
 
 2. Error for average reconstruction error for TNC is shown below:
-  ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t3-tnc-reconstruct-error.png]]
+  ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t3-tnc-reconstruct-error.jpeg]]
 
 ### task 4: Kernel PCA
 
@@ -198,7 +198,7 @@ plt.show()
 
 Yield the following graph:
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t4-kernel-pca-n-2.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t4-kernel-pca-n-2.jpeg]]
 
 
 > [!question] part B
@@ -232,7 +232,7 @@ Yield the following graph:
 
 training loop yields the following:
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t4-part-b-opt-kernel.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t4-part-b-opt-kernel.jpeg]]
 
 > [!question] part D
 >
@@ -242,7 +242,7 @@ training loop yields the following:
 
 Reconstruction Error from kernel PCA as well as linear PCA:
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t4-reconstruct-err-pca-kernels.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t4-reconstruct-err-pca-kernels.jpeg]]
 
 **Performance**:
 

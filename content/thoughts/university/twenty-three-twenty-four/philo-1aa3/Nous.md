@@ -51,7 +51,7 @@ _See [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Plato#Republic|Re
 - Belief does not bring understanding, knowledge does.
 - True belief, right opinion, is still essentially belief or opinion, and cannot be knowledge since its truth is accidental.
 - Opinion is shameful because it is not a passive thing that innocently occurs to a person.
-  ![[thoughts/university/twenty-three-twenty-four/philo-1aa3/knowledge-map-thoughts.png]]
+  ![[thoughts/university/twenty-three-twenty-four/philo-1aa3/knowledge-map-thoughts.jpeg]]
 
 _Allegory of the Cave_
 
@@ -65,7 +65,7 @@ The cosmos is organized by goodness. By gasping that we understand the world we 
 
 [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Aristotle|Aristotle]]
 
-![[thoughts/university/twenty-three-twenty-four/philo-1aa3/aristotle-metaphysics.png]]![[thoughts/university/twenty-three-twenty-four/philo-1aa3/aristotle-form.png]]
+![[thoughts/university/twenty-three-twenty-four/philo-1aa3/aristotle-metaphysics.jpeg]]![[thoughts/university/twenty-three-twenty-four/philo-1aa3/aristotle-form.jpeg]]
 
 _What is Truth?_
 
@@ -100,7 +100,7 @@ Cynic principles
 
 Materialism without atomism
 Matter is continuous and without void. No empty space.
-![[thoughts/university/twenty-three-twenty-four/philo-1aa3/epistemology.png]]
+![[thoughts/university/twenty-three-twenty-four/philo-1aa3/epistemology.jpeg]]
 
 _Free will and determinism_
 
@@ -136,7 +136,7 @@ The essence of body, what makes a body corporeal or material, is spatial extensi
 _Impliciations_
 
 1. primary and secondary qualities
-   ![[thoughts/university/twenty-three-twenty-four/philo-1aa3/descartes-qualities.png]]
+   ![[thoughts/university/twenty-three-twenty-four/philo-1aa3/descartes-qualities.jpeg]]
 2. Plenum
 
    > space is identical with matter, then the idea of “empty space” becomes impossible. The physical universe is therefore “filled up,” a plenum, with no empty space.
@@ -163,4 +163,4 @@ Spinoza: A human being cannot be a substance.
 2. No human being is a necessary, self-caused being.
 3. Therefore no human being is a substance. Even less can a human being be what Descartes said—a composite of two substances.
 
-![[thoughts/university/twenty-three-twenty-four/philo-1aa3/spinoza-knowledge.png]]
+![[thoughts/university/twenty-three-twenty-four/philo-1aa3/spinoza-knowledge.jpeg]]

@@ -17,7 +17,7 @@ $$
 
 Monotonicity: $\forall t_{2} > t_{1}: C(t_{2}) > C(t_{1})$
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/rt-sys-failure.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/rt-sys-failure.jpeg]]
 
 ## kernels
 
@@ -129,9 +129,9 @@ int main(int argc, char** argv) {
 > - Needs synchronisation (global variables are shared between threads)
 > - lack robustness (one thread can crash the whole program)
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/mem-layout-threaded.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/mem-layout-threaded.jpeg]]
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/single-vs-multithreaded.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/single-vs-multithreaded.jpeg]]
 
 ```c
 #include <pthread.h>
@@ -204,7 +204,7 @@ set scheduling policy: `sched_setscheduler(pid, SCHED_FIFO | SCHED_RR | SCHED_DE
 
 1. Priority-based preemptive scheduling
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/pbps.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/pbps.jpeg]]
 
 Temporal parameters:
 
@@ -219,11 +219,11 @@ Let the following be the scheduling parameters:
 | execution time       | $e_i$                 |
 | response time        | $R_i$                 |
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/abs-rel-deadline.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/abs-rel-deadline.jpeg]]
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/resp-time-exec-time.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/resp-time-exec-time.jpeg]]
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/resp-time-preempted-exec.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/resp-time-preempted-exec.jpeg]]
 *response time when execution is preempted*
 
 > Period $p_i$ of a periodic task $T_i$ is **min length** of all time intervales between release times of consecutive tasks.
@@ -298,7 +298,7 @@ $T_3=(20, 5)$ becomes $T_{3_{1}}=(20,1)$ and $T_{3_{2}}=(20,3)$ and $T_{3_{3}}=(
   - $(f, \text{sink})$ with capacity $f$
     - encodes limited computational capacity in each frame
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/flow-graph-hyperperiod.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/flow-graph-hyperperiod.jpeg]]
 
 ## static priority assignment
 

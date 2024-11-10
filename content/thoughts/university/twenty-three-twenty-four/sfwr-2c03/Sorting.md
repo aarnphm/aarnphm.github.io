@@ -50,7 +50,7 @@ For pos := 1 to N-1 do
 
 Comparison: $\leq \text{pos} = \sum_{\text{pos}=1}^{N-1} pos = \frac{N(N-1)}{2}$, changes $\leq \text{pos} = \sum_{\text{pos}=1}^{N-1}(1+pos) = \frac{N(N-1)}{2} + N - 1$
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-2c03/images/sumary-sorting.png]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-2c03/images/sumary-sorting.jpeg]]
 
 ### merge sort.
 - divide-and-conquer

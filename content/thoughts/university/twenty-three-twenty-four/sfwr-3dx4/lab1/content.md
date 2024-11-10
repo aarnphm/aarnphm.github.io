@@ -80,7 +80,7 @@ $$
 G(s) & = \frac{K}{JLs^{3} + s^{2}(bL+JR) + (K^2+bR)s}
 \end{align}
 $$
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab1/5.1-graph.png]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab1/5.1-graph.jpeg]]
 1. What does the graph represents? What does the first derivative of the graph represent and look like?
 	- Angular position of the motor. The first derivate would be the angular velocity, or the rate of change. It would start at zero (as the first part is flatten) then will keep increasing since the slope is positive.
 2. What is represented by non-linear section?
@@ -91,4 +91,4 @@ $$
 6. is the response stable with respect to angular position?
 
 #### 5.2
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab1/5.2-graph.png]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab1/5.2-graph.jpeg]]

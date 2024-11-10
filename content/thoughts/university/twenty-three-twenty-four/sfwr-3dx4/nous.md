@@ -27,10 +27,10 @@ Book: [ISBN: 978-1-119-47422-7](https://www.wiley.com/en-us/Control+Systems+Engi
 See [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Frequency Domain|notes]]
 
 > [!important] Common Laplace transform
-> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/laplace transform table.png]]
+> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/laplace transform table.jpeg]]
 
 > [!important] Laplace Theorem
-> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/laplace theorem.png]]
+> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/laplace theorem.jpeg]]
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Frequency Domain#Transfer function|transfer function]]
 
@@ -41,11 +41,11 @@ $$
 $$
 ### Equivalent Resistance and Impedance
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/electrical system equivalence.png]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/electrical system equivalence.jpeg]]
 
 ## [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Block Diagrams|Block Diagrams]]
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/block-diagram-algebra.png]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/block-diagram-algebra.jpeg]]
 
 ## [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/State space representation|State space representation]]
 
@@ -66,7 +66,7 @@ See [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/content|this]] f
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability#Necessary and sufficient condition for stability|conditions]]
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/stability comparison.png]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/stability comparison.jpeg]]
 
 [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability#^routh-table|Routh table]]
 

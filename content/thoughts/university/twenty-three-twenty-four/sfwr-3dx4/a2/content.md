@@ -8,7 +8,7 @@ title: Second-order systems
 ### problem 1.
 
 Consider the following system:
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/a1-system.png]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/a1-system.jpeg]]
 > [!question]
 > Using the properties of second-order systems, determine $K_p$ and $K_d$ such that the overshoot is 10 percent and the settling time is 1 second. Confirm that your design meets the requirements by plotting the step response.
 
@@ -54,7 +54,7 @@ Thus, $K_p = 40.784365358764106$ and $K_d = 0.9999999999999991$.
 
 The following is the [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/p1.py|code]] snippet for generating the graphs and results:
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/p1.png]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/p1.jpeg]]
 ```python title="p1.py"
 from scipy.optimize import fsolve
 import numpy as np
@@ -98,7 +98,7 @@ plt.show()
 ### problem 2.
 
 Consider the following system:
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/p2.png]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/p2.jpeg]]
 
 > [!question] set a.
 > If $K_d=K_p=K_i = 1$, is the system stable? (Please determine this by explicitly finding the poles of the closed-loop system and reasoning about stability based on the pole locations.)

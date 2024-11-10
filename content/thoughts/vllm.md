@@ -29,7 +29,7 @@ idea:
 - _group-query-compression_: compress KV-cache of GQA without repeating it into the dimension of $\sum$ query heads.
 - Modified PagedAttention that compute _against_ KV-cache (contains variable numbers of KVs per head)
 
-![[thoughts/images/vllm/kv-compress-vllm.png]]
+![[thoughts/images/vllm/kv-compress-vllm.jpeg]]
 
 > For vLLM, each cache block stores KV for every attention head of every layer
 >
@@ -49,7 +49,7 @@ KV compression algorithm doesn't have GQA design in mind.
 
 idea: adapt PagedAttention to page out cache on a _per-head, per-layer–as well as per sequence–basis_
 
-![[thoughts/images/vllm/paged-attention-block-kv-compress.png]]
+![[thoughts/images/vllm/paged-attention-block-kv-compress.jpeg]]
 
 > [!note]- explanation
 >
@@ -104,7 +104,7 @@ See [vllm-project/vllm#5423](https://github.com/vllm-project/vllm/issues/5423)
 
 Benchmark script: [vllm-project/vllm#10046](https://github.com/vllm-project/vllm/pull/10046)
 
-![[thoughts/images/vllm/benchmark-guided-before-optimization.png]]
+![[thoughts/images/vllm/benchmark-guided-before-optimization.jpeg]]
 
 > [!important] overhead
 >
@@ -194,7 +194,7 @@ Bottleneck at `AsyncLogitProcessor` and `Scheduling` layer, given that this is r
 [^row-wise]:
     Current implementation [here](https://github.com/vllm-project/vllm/blob/246598a6b1e22616630b7f1bf11bd9bcb31dc860/vllm/model_executor/layers/logits_processor.py#L112) mandates that we gather all logits from hidden state, scale if needed then apply the processors.
 
-    ![[thoughts/images/vllm/pre-optimized-logit-processor-handling.png|flow]]
+    ![[thoughts/images/vllm/pre-optimized-logit-processor-handling.jpeg|flow]]
     _reference: [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)_
 
     Note that there is also [vllm-project/vllm#5006](https://github.com/vllm-project/vllm/pull/5006) that improves vLLM's own Outlines implementations of the FSM where it halves memory transition from Python list to Tensors

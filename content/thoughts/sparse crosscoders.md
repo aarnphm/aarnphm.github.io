@@ -29,18 +29,18 @@ Resolve:
 
 ### cross-layer [[thoughts/mechanistic interpretability#superposition hypothesis|superposition]]
 
-![[thoughts/images/additive-residual-stream-llm.png]]
+![[thoughts/images/additive-residual-stream-llm.jpeg]]
 _given the additive properties of transformers' residual stream, **adjacent layers** in larger transformers can be thought as "almost parallel"_
 
 > [!important]- intuition
 >
 > In basis of superposition hypothesis, a feature is a linear combinations of neurons at any given layers.
 >
-> ![[thoughts/images/feature-neurons.png]]
+> ![[thoughts/images/feature-neurons.jpeg]]
 
-![[thoughts/images/one-step-circuit.png]]
+![[thoughts/images/one-step-circuit.jpeg]]
 
-![[thoughts/images/parallel-joint-branch.png]]
+![[thoughts/images/parallel-joint-branch.jpeg]]
 _if we think of adjacent layers as being "almost parallel branches that potentially have superposition between them", then we can apply dictionary learning jointly [^jointlysae]_
 
 [^jointlysae]: [@gorton2024missingcurvedetectorsinceptionv1] applies SAEs to study InceptionV1, where cross-branch superposition is significant in interpreting models with parallel branches
@@ -104,7 +104,7 @@ We use L1 due to
 
 ## variants
 
-![[thoughts/images/crosscoders-variants.png]]
+![[thoughts/images/crosscoders-variants.jpeg]]
 
 good to explore:
 

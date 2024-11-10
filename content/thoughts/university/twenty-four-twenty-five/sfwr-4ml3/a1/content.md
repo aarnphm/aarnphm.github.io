@@ -20,17 +20,17 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/LSR.ipynb|ju
 
 1. For homogeneous model, the MSE on training data is 26.1649 and on validation data is 77.0800
 
-   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p1-1.png]]
+   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p1-1.jpeg]]
 
    Whereas with non-homogeneous model, the MSE on training data is 2.5900 and on validation data is 8.8059
 
-   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p1-12.png]]
+   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p1-12.jpeg]]
 
 2. We can observe that non-homogeneous model clearly performs better than the homogeneous models, given a significantly lower MSE (indicates that predictions are closer to the actual value). We can also see the difference between training and validation sets for non-homogeneous models shows better consistency, or better generalisation.
 
    Test set MSE for non-homogeneous model is 2.5900
 
-   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p1-2.png]]
+   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p1-2.jpeg]]
 
 3. We observe in both cases that the training MSE is significantly lower than the validation MSE, indicating overfitting.
    The non-homogeneous model shows a lower difference between training and validation MSE, which suggest there were some overfitting.
@@ -43,11 +43,11 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/LSR.ipynb|ju
 
 1. For homogeneous model, the MSE on training data is 0.000 and on validation data is 151.2655
 
-   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p2-1.png]]
+   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p2-1.jpeg]]
 
    Whereas with non-homogeneous model, the MSE on training data is 0.000 and on validation data is 15.8158
 
-   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p2-nhom.png]]
+   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p2-nhom.jpeg]]
 
 2. We observe an increased in overfitting, given the perfit fit in training data versus validation MSE for both model.
    We can still see that non-homogeneous models outperform homogeneous models, but the difference between training and validation MSE is significantly higher than the previous case.
@@ -69,7 +69,7 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/LSR.ipynb|ju
 
 The following is the graph for Training and Validation MSE as functions of lambda.
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q2-p2-g.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q2-p2-g.jpeg]]
 
 > [!question]- part 2
 >
@@ -82,7 +82,7 @@ The following is the graph for Training and Validation MSE as functions of lambd
 
 2. Using $\lambda \approx 7.3891$, we get the following Test MSE around 1.3947
 
-   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p2-rls-test.png]]
+   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-p2-rls-test.jpeg]]
 
 ### problem 3.
 
@@ -107,11 +107,11 @@ See the [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/LSR.ipynb|jup
 
 The following graph shows the Training and Validation MSE as functions of $\lambda$. The optimal alpha is found to be $\lambda \approx 4.4817$
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-dct-preprocess.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-dct-preprocess.jpeg]]
 
 The given Test MSE is found to be around 3.2911
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-test-dct.png]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/q1-test-dct.jpeg]]
 
 ---
 

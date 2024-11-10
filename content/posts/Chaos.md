@@ -120,4 +120,4 @@ In this balance, You might find not just the next step but a deeper understandin
   <span>Anh P.</span>
 </div>
 
-![[posts/images/aaron-younglings.png]]
+![[posts/images/aaron-younglings.jpeg]]

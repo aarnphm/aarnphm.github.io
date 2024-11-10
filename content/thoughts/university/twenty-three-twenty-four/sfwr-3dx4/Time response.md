@@ -6,14 +6,14 @@ date: "2024-01-31"
 title: Time response
 ---
 ## first order.
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/time constant.png]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/time constant.jpeg]]
 ## second order.
 
 $$
 G(s) = \frac{b}{s^2 + as + b}
 $$
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/second-order-system.png]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/second-order-system.jpeg]]
 
 $$
 C(s) = \frac{9}{s(s^2+9s+9)}

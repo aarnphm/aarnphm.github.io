@@ -15,4 +15,4 @@ titleTransclude: false
 
     p/s: Actually, I think first implemented in [huggingface/tgi](https://github.com/huggingface/text-generation-inference)
 
-![[thoughts/images/vllm/continuous-batching.png]]
+![[thoughts/images/vllm/continuous-batching.jpeg]]

@@ -34,7 +34,7 @@ Which job to include?
 
 Verify anomalies, accuracy of match, validation to other trends.
 
-![[thoughts/university/twenty-three-twenty-four/commerce-4be3/survey-data-elements-for-inclusion.png]]
+![[thoughts/university/twenty-three-twenty-four/commerce-4be3/survey-data-elements-for-inclusion.jpeg]]
 
 ## select relevant market competitors
 

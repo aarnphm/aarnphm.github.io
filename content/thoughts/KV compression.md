@@ -46,7 +46,7 @@ Ablate attentions among layers that deemed to be less valuable to current genera
 
 See also [paper](https://arxiv.org/abs/2406.02069) [@cai2024pyramidkvdynamickvcache]
 
-![[thoughts/images/pyramid-kv.png]]
+![[thoughts/images/pyramid-kv.jpeg]]
 
 ## Snap-KV
 
@@ -88,7 +88,7 @@ ideas: instead of uniform eviction for KV cache hit, allocate a certain budget $
 
 _built on-top of PyramidKV and SnapKV_
 
-![[thoughts/images/vllm/ada-kv.png]]
+![[thoughts/images/vllm/ada-kv.jpeg]]
 
 > [!note]
 >

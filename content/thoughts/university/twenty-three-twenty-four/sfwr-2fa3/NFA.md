@@ -58,7 +58,7 @@ graph LR
   s1{{s1}} --"0"--> s1{{s1}}
   s3{{s3}} --"1"--> s3{{s3}}
 ```
-![[thoughts/university/twenty-three-twenty-four/sfwr-2fa3/eps-nfa.png]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-2fa3/eps-nfa.jpeg]]
 
 ---
 
