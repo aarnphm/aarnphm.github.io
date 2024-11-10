@@ -18,7 +18,8 @@
     "format": "npx prettier . --write",
     "test": "tsx ./quartz/util/path.test.ts && tsx ./quartz/depgraph.test.ts",
     "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1",
-    "serve": "npx quartz build --bundleInfo --concurrency 4 --serve --verbose"
+    "serve": "npx quartz build --bundleInfo --concurrency 4 --serve --verbose",
+    "convert-images": "ts-node quartz/scripts/convert-images.ts"
   },
   "engines": {
     "npm": ">=9.3.1",
