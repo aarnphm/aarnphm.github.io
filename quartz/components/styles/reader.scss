@@ -1,0 +1,77 @@
+@use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
+
+.reader {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  z-index: 999;
+
+  &.active {
+    display: inline-block;
+
+    // Hide hr decorations
+    & ~ #quartz-root hr {
+      &:before,
+      &:after {
+        display: none;
+      }
+    }
+  }
+
+  .reader-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(var(--light), 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  .reader-container {
+    display: flex;
+    width: 90%;
+    height: 90vh;
+    margin: 5vh auto;
+    background: var(--light);
+    box-shadow:
+      0 14px 50px rgba(27, 33, 48, 0.12),
+      0 10px 30px rgba(27, 33, 48, 0.16);
+    position: relative;
+    overflow-y: auto;
+    flex-direction: column;
+
+    .reader-header {
+      position: sticky;
+      top: 0;
+      background: var(--light);
+      display: flex;
+      padding: 1rem;
+      z-index: 2;
+
+      .reader-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+
+        @include closeButton;
+      }
+    }
+
+    .reader-content {
+      flex: 1;
+      margin: 0 auto;
+      padding: 2rem;
+      font-family: var(--bodyFont);
+      line-height: 1.6;
+      color: var(--darkgray);
+      width: 100%;
+      max-width: #{$pageWidth};
+    }
+  }
+}

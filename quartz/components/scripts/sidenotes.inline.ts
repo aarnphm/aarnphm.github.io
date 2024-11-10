@@ -134,13 +134,15 @@ function createSidenote(
 
 document.addEventListener("nav", () => {
   const articleContent = document.querySelector(ARTICLE_CONTENT_SELECTOR) as HTMLElement
-  const sections = Array.from(document.querySelectorAll("section[data-footnotes]")) as HTMLElement[]
+  const sections = Array.from(
+    articleContent.querySelectorAll("section[data-footnotes]"),
+  ) as HTMLElement[]
   const footnoteSectionList = Array.from(
-    document.querySelectorAll(FOOTNOTE_SECTION_SELECTOR),
+    articleContent.querySelectorAll(FOOTNOTE_SECTION_SELECTOR),
   ) as HTMLOListElement[]
   if (!articleContent) return
 
-  const sideContainer = document.querySelector(".sidenotes") as HTMLElement
+  const sideContainer = document.querySelector(".left .sidenotes") as HTMLElement
   if (!sideContainer) return
 
   removeAllChildren(sideContainer)

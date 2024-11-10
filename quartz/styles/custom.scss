@@ -365,6 +365,28 @@ p.quotes {
   }
 }
 
+section[data-references] {
+  background-color: var(--light);
+  border: 2px solid var(--iris);
+  position: relative;
+
+  & > * {
+    margin: 0 1.25rem;
+  }
+
+  // disable footnotes headers
+  & > #reference-label {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  & > ol {
+    margin-bottom: 2rem;
+  }
+
+  @include steps;
+}
+
 section[data-footnotes] {
   background-color: var(--light);
   border: 2px solid var(--gold);
@@ -377,6 +399,7 @@ section[data-footnotes] {
   // disable footnotes headers
   & > #footnote-label.sr-only {
     margin-top: 1rem;
+    margin-bottom: 0.5rem;
   }
 
   & > ol {
@@ -387,18 +410,14 @@ section[data-footnotes] {
 }
 
 blockquote.transclude {
-  #refs {
-    margin-right: 0.5rem;
-  }
-
-  section[data-footnotes] {
+  section[data-references] {
     margin-right: 0.5rem;
     & > * {
       margin: 0 1.25rem;
     }
 
     // disable footnotes headers
-    & > #footnote-label.sr-only {
+    & > #reference-label {
       margin-top: 1rem;
     }
 
@@ -416,38 +435,6 @@ blockquote.transclude {
 
 #graph-container {
   background-color: var(--light);
-}
-
-#refs {
-  border-left: unset;
-  border: 2px solid var(--iris);
-  position: relative;
-  background-color: var(--light);
-
-  &:before {
-    content: "References";
-    position: absolute;
-    top: -12px;
-    left: 12px;
-    background-color: var(--light);
-    color: var(--gray);
-    font-size: 12px;
-    font-weight: bold;
-    padding: 4px 8px;
-    border: 1px solid var(--iris);
-  }
-
-  &::after {
-    content: "";
-    background-image: url("/static/dotted.svg");
-    background-repeat: repeat;
-    z-index: -24;
-    top: 0.5rem;
-    left: 0.5rem;
-    right: -0.5rem;
-    bottom: -0.5rem;
-    position: absolute;
-  }
 }
 
 // ----- class customization -----
@@ -647,13 +634,6 @@ blockquote.transclude {
     font-size: 1.272em;
     line-height: 1.272em;
   }
-}
-
-.csl-entry {
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
-  padding-left: 1rem;
-  padding-right: 0.5rem;
 }
 
 .content-meta {

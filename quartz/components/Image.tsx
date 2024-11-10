@@ -4,7 +4,7 @@ import style from "./styles/image.scss"
 import script from "./scripts/image.inline"
 import { classNames } from "../util/lang"
 
-const ImagePopup: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
+const Image: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
   return (
     <div class={classNames(displayClass, "image-popup-modal")} id="image-popup-modal">
       <div class="image-popup-backdrop"></div>
@@ -31,7 +31,7 @@ const ImagePopup: QuartzComponent = ({ displayClass }: QuartzComponentProps) => 
   )
 }
 
-ImagePopup.css = style
-ImagePopup.afterDOMLoaded = script
+Image.css = style
+Image.afterDOMLoaded = script
 
-export default (() => ImagePopup) satisfies QuartzComponentConstructor
+export default (() => Image) satisfies QuartzComponentConstructor

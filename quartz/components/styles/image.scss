@@ -1,3 +1,5 @@
+@use "../../styles/mixin.scss" as *;
+
 .image-popup-modal {
   display: none;
   position: fixed;
@@ -42,15 +44,13 @@
     position: absolute;
     top: -2rem;
     right: -2rem;
-    background: transparent;
-    border: none;
-    color: var(--light);
-    padding: 0.5rem;
-    cursor: pointer;
-    transition: transform 0.2s ease;
 
+    @include closeButton;
+
+    &,
     &:hover {
-      transform: scale(1.1);
+      color: var(--light);
+      background: var(--gray);
     }
   }
 }

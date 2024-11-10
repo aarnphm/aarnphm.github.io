@@ -74,6 +74,11 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             const permalinks = coerceToArray(coalesceAliases(data, ["permalink", "permalinks"]))
             if (permalinks) data.permalinks = permalinks
 
+            const socialImage = coerceToArray(
+              coalesceAliases(data, ["socialImage", "image", "cover"]),
+            )
+            if (socialImage) data.socialImage = socialImage
+
             // fill in frontmatter
             file.data.frontmatter = data as QuartzPluginData["frontmatter"]
           }
@@ -101,6 +106,7 @@ declare module "vfile" {
         lang: string
         enableToc: string
         cssclasses: string[]
+        socialImage: string
         noindex: boolean
       }>
   }

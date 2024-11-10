@@ -145,7 +145,8 @@ const cssVars = [
 ] as const
 
 document.addEventListener("nav", async () => {
-  const nodes = document.querySelectorAll("code.mermaid") as NodeListOf<HTMLElement>
+  const center = document.querySelector(".center") as HTMLElement
+  const nodes = center.querySelectorAll("code.mermaid") as NodeListOf<HTMLElement>
   if (nodes.length === 0) return
 
   const computedStyleMap = cssVars.reduce(
@@ -192,7 +193,7 @@ document.addEventListener("nav", async () => {
     pre.prepend(expandBtn)
 
     // query popup container
-    const popupContainer = document.querySelector("#mermaid-container") as HTMLElement
+    const popupContainer = pre.querySelector("#mermaid-container") as HTMLElement
     if (!popupContainer) return
 
     let panZoom: DiagramPanZoom | null = null

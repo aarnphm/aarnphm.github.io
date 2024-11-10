@@ -1,5 +1,6 @@
 import Sidenotes from "./Sidenotes"
-import ImagePopup from "./Image"
+import Image from "./Image"
+import Reader from "./Reader"
 import Toolbar from "./Toolbar"
 import Landing from "./Landing"
 import Navigation from "./Navigation"
@@ -36,7 +37,8 @@ import Comments from "./Comments"
 export {
   Sidenotes,
   Toolbar,
-  ImagePopup,
+  Image,
+  Reader,
   Landing,
   Navigation,
   CuriusContent,

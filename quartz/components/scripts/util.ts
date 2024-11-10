@@ -170,3 +170,19 @@ export function saveHeaderState(currentHeaderState: HeaderState[]) {
 export function loadHeaderState(): HeaderState[] {
   return JSON.parse(localStorage.getItem("headerState") ?? "[]")
 }
+
+export function closeReader(readerView: HTMLElement | null) {
+  if (!readerView) return
+  readerView.classList.remove("active")
+  const toolbar = document.querySelector(".toolbar") as HTMLElement
+  const allHr = document.querySelectorAll("hr")
+  const quartz = document.getElementById("quartz-root")
+  if (!toolbar) return
+  if (!allHr) return
+  if (!quartz) return
+  const readerButton = toolbar.querySelector("#reader-button")
+  readerButton?.setAttribute("data-active", "false")
+  allHr.forEach((hr) => (hr.style.visibility = "show"))
+  quartz.style.overflow = ""
+  quartz.style.maxHeight = ""
+}

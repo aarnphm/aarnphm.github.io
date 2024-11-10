@@ -3,7 +3,6 @@ import * as Component from "./quartz/components"
 
 export const afterBodyComponents: Partial<SharedLayout> = {
   afterBody: [
-    Component.ImagePopup(),
     Component.Comments({
       provider: "giscus",
       options: {
@@ -15,6 +14,7 @@ export const afterBodyComponents: Partial<SharedLayout> = {
       },
     }),
     Component.Toolbar(),
+    Component.Image(),
     Component.MinimalFooter({
       links: { github: "https://github.com/aarnphm", twitter: "https://twitter.com/aarnphm_" },
       showInfo: true,
@@ -45,7 +45,7 @@ export const defaultContentPageLayout: PageLayout = {
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Backlinks(),
   ],
-  left: [Component.DesktopOnly(Component.Sidenotes())],
+  left: [Component.Reader(), Component.DesktopOnly(Component.Sidenotes())],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)

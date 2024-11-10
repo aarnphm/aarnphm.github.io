@@ -58,7 +58,7 @@
     & #curius-search-container {
       position: absolute;
       box-sizing: border-box;
-      width: $pageWidth;
+      width: #{$pageWidth};
       z-index: unset;
       box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
       display: none;

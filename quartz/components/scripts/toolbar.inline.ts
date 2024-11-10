@@ -1,8 +1,14 @@
-import { updateSidenoteState, toggleCollapsedById, saveHeaderState, loadHeaderState } from "./util"
+import {
+  updateSidenoteState,
+  toggleCollapsedById,
+  saveHeaderState,
+  loadHeaderState,
+  closeReader,
+} from "./util"
 
 const TOGGLE_STATE = "toggleAllState"
 
-function toggleCollapse(button: HTMLButtonElement, forceState?: boolean) {
+function toggleCollapse(button: HTMLButtonElement) {
   const currentHeaderState = loadHeaderState()
 
   const allToggle = document.querySelectorAll(
@@ -11,8 +17,7 @@ function toggleCollapse(button: HTMLButtonElement, forceState?: boolean) {
   if (!allToggle.length) return
 
   const isExpanded = (localStorage.getItem(TOGGLE_STATE) ?? "collapsed") === "expanded"
-  const targetState = forceState !== undefined ? forceState : isExpanded
-  const buttonState = targetState ? "collapsed" : "expanded"
+  const buttonState = isExpanded ? "collapsed" : "expanded"
   button.setAttribute("data-state", buttonState)
 
   const tooltip = button.querySelector(".tooltip") as HTMLElement
@@ -29,13 +34,13 @@ function toggleCollapse(button: HTMLButtonElement, forceState?: boolean) {
     if (!content) return
 
     // Set the expanded/collapsed state
-    button.setAttribute("aria-expanded", targetState.toString())
-    content.style.maxHeight = targetState ? "0px" : "inherit"
-    content.classList.toggle("collapsed", targetState)
-    wrapper.classList.toggle("collapsed", targetState)
-    button.classList.toggle("collapsed", targetState)
+    button.setAttribute("aria-expanded", isExpanded.toString())
+    content.style.maxHeight = isExpanded ? "0px" : "inherit"
+    content.classList.toggle("collapsed", isExpanded)
+    wrapper.classList.toggle("collapsed", isExpanded)
+    button.classList.toggle("collapsed", isExpanded)
 
-    updateSidenoteState(content, targetState)
+    updateSidenoteState(content, isExpanded)
     toggleCollapsedById(currentHeaderState, button.id)
   }
 
@@ -58,6 +63,24 @@ function updateContainerHeights() {
     // Set sidenotes container height to match article content
     const articleRect = articleContent.getBoundingClientRect()
     sideContainer.style.height = `${articleRect.height}px`
+  }
+}
+
+function toggleReader(button: HTMLButtonElement) {
+  const isActive = button.getAttribute("data-active") === "true"
+  const readerView = document.querySelector(".reader") as HTMLElement
+  if (!readerView) return
+  const allHr = document.querySelectorAll("hr")
+  const quartz = document.getElementById("quartz-root") as HTMLDivElement
+
+  if (!isActive) {
+    readerView.classList.add("active")
+    button.setAttribute("data-active", "true")
+    allHr.forEach((hr) => (hr.style.visibility = "hidden"))
+    quartz.style.overflow = "hidden"
+    quartz.style.maxHeight = "300px"
+  } else {
+    closeReader(readerView)
   }
 }
 
@@ -86,4 +109,10 @@ document.addEventListener("nav", () => {
   const collapsible = () => toggleCollapse(collapsibleButton)
   collapsibleButton.addEventListener("click", collapsible)
   window.addCleanup(() => collapsibleButton.removeEventListener("click", collapsible))
+
+  // reader section
+  const readerButton = toolbarContent.querySelector("#reader-button") as HTMLButtonElement
+  const reader = () => toggleReader(readerButton)
+  readerButton.addEventListener("click", reader)
+  window.addCleanup(() => readerButton.removeEventListener("click", reader))
 })

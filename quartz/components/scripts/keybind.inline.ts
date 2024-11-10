@@ -1,4 +1,4 @@
-import { registerEscapeHandler, removeAllChildren, registerEvents } from "./util"
+import { registerEscapeHandler, registerEvents } from "./util"
 
 document.addEventListener("nav", async () => {
   const modal = document.getElementById("highlight-modal")
@@ -18,9 +18,9 @@ document.addEventListener("nav", async () => {
   }
 
   const hideContainer = () => {
-    if (center) center.style.zIndex = "unset"
-    if (right) right.style.zIndex = "unset"
-    if (left) left.style.zIndex = "unset"
+    if (center) center.style.zIndex = ""
+    if (right) right.style.zIndex = ""
+    if (left) left.style.zIndex = ""
     container?.classList.remove("active")
   }
 
