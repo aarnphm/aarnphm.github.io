@@ -21,7 +21,7 @@ document.addEventListener("nav", () => {
     const quartz = document.getElementById("quartz-root") as HTMLDivElement
     allHr.forEach((hr) => (hr.style.visibility = "hidden"))
     quartz.style.overflow = "hidden"
-    quartz.style.maxHeight = "300px"
+    quartz.style.maxHeight = "0px"
   }
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {

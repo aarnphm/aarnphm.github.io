@@ -151,15 +151,41 @@ export const Citations: QuartzTransformerPlugin<Partial<Options>> = (userOpts) =
       // Format external links correctly
       plugins.push(() => {
         return (tree: HtmlRoot, _file) => {
-          visit(tree, "element", (node) => {
+          visit(tree, "element", (node, index, parent) => {
             if ((node.properties?.className as string[])?.includes("references")) {
+              const sectionChildren: Element[] = []
               visit(node, "element", (entry) => {
                 if ((entry.properties?.className as string[])?.includes("csl-entry")) {
-                  entry.children = processNodes(
-                    entry.children as (Element | Text)[],
-                    opts.prettyLinks!,
-                  )
+                  sectionChildren.push({
+                    type: "element",
+                    tagName: "li",
+                    properties: {
+                      ...entry.properties,
+                    },
+                    children: processNodes(entry.children as (Element | Text)[], opts.prettyLinks!),
+                  })
                 }
+              })
+              parent!.children.splice(index as number, 1, {
+                type: "element",
+                tagName: "section",
+                properties: {
+                  "data-references": true,
+                },
+                children: [
+                  {
+                    type: "element",
+                    tagName: "h2",
+                    properties: { id: "reference-label" },
+                    children: [{ type: "text", value: "References" }],
+                  },
+                  {
+                    type: "element",
+                    tagName: "ul",
+                    properties: {},
+                    children: sectionChildren,
+                  },
+                ],
               })
             }
           })

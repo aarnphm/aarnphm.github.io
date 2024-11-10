@@ -370,6 +370,11 @@ section[data-references] {
   border: 2px solid var(--iris);
   position: relative;
 
+  ul,
+  ol {
+    list-style-type: none;
+  }
+
   & > * {
     margin: 0 1.25rem;
   }
@@ -380,7 +385,7 @@ section[data-references] {
     margin-bottom: 0.5rem;
   }
 
-  & > ol {
+  & > ul {
     margin-bottom: 2rem;
   }
 
@@ -407,24 +412,6 @@ section[data-footnotes] {
   }
 
   @include steps;
-}
-
-blockquote.transclude {
-  section[data-references] {
-    margin-right: 0.5rem;
-    & > * {
-      margin: 0 1.25rem;
-    }
-
-    // disable footnotes headers
-    & > #reference-label {
-      margin-top: 1rem;
-    }
-
-    & > ol {
-      margin-bottom: 2rem;
-    }
-  }
 }
 
 // ----- id customization -----

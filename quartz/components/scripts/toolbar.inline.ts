@@ -78,7 +78,7 @@ function toggleReader(button: HTMLButtonElement) {
     button.setAttribute("data-active", "true")
     allHr.forEach((hr) => (hr.style.visibility = "hidden"))
     quartz.style.overflow = "hidden"
-    quartz.style.maxHeight = "300px"
+    quartz.style.maxHeight = "0px"
   } else {
     closeReader(readerView)
   }

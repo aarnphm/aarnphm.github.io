@@ -201,7 +201,7 @@ Bottleneck at `AsyncLogitProcessor` and `Scheduling` layer, given that this is r
 
 > [!note]- some related items
 >
-> Worker base: vllm/worker/worker_base.py
+> Worker base: `vllm/worker/worker_base.py`
 >
 > Initialize GPU cache and sequence group in ModelRunner step
 >

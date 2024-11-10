@@ -6,7 +6,7 @@ import LandingConstructor from "./Landing"
 import { JSResourceToScriptElement, StaticResources } from "../util/resources"
 import { clone, FullSlug, RelativeURL, joinSegments, normalizeHastElement } from "../util/path"
 import { visit } from "unist-util-visit"
-import { Root, Element, ElementContent } from "hast"
+import { Root, Element, ElementContent, Node } from "hast"
 import { GlobalConfiguration } from "../cfg"
 import { i18n } from "../i18n"
 // @ts-ignore
@@ -255,7 +255,7 @@ function processHeaders(node: Element, idx: number | undefined, parent: Element)
   while (i < parent.children.length) {
     const nextNode = parent.children[i] as Element
     if (
-      (["div"].includes(nextNode.tagName) && nextNode.properties.id == "refs") ||
+      (nextNode?.type === "element" && nextNode.properties.dataReferences == "") ||
       (nextNode?.type === "element" && nextNode.properties.dataFootnotes == "") ||
       (nextNode?.type === "element" && ["hr"].includes(nextNode.tagName))
     ) {
@@ -280,6 +280,146 @@ function processHeaders(node: Element, idx: number | undefined, parent: Element)
   }
 
   parent.children.splice(idx, 1, headerElement(node, contentNodes, idx))
+}
+
+function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
+  const finalRefs: Element[] = []
+  const toRemove: Element[] = []
+
+  // visit all references with bib to update suffix
+  visit(root, "element", (node: Element) => {
+    if (node.tagName === "a" && (node.properties?.href as string)?.startsWith("#bib")) {
+      node.properties.href = `${node.properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
+    }
+  })
+
+  // Find all reference divs and collect their entries
+  visit(root, "element", (node: Element) => {
+    if (
+      node.type === "element" &&
+      node.tagName === "section" &&
+      node.properties.dataReferences == ""
+    ) {
+      toRemove.push(node)
+      const items = (node.children as Element[]).filter((val) => val.tagName === "ul")[0] // The ul is in here
+      finalRefs.push(
+        ...(items.children as Element[]).map((li) => {
+          li.properties.id = `${li.properties?.id}${appendSuffix ? "-" + appendSuffix : ""}`
+          return li
+        }),
+      )
+    }
+  })
+
+  // we don't want to remove the last nodes
+  toRemove.pop()
+  if (toRemove.length === 0) return
+
+  // Remove all reference divs except the last one
+  visit(root, "element", (node: Element, index, parent) => {
+    if (toRemove.includes(node)) {
+      parent!.children.splice(index as number, 1)
+    }
+  })
+
+  // finally, update the final position
+  visit(root, "element", (node: Element, index, parent) => {
+    if (
+      node.type === "element" &&
+      node.tagName === "section" &&
+      node.properties.dataReferences == ""
+    ) {
+      // @ts-ignore
+      node.children[1].children = finalRefs
+      parent!.children.splice(index as number, 1, node)
+    }
+  })
+}
+
+interface Note {
+  href: string
+  id: string
+}
+
+function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
+  const orderNotes: Note[] = []
+  const finalRefs: Element[] = []
+  const toRemove: Element[] = []
+
+  visit(root, "element", (node: Element) => {
+    if (node.type === "element" && node.tagName === "a" && node.properties.dataFootnoteRef === "") {
+      orderNotes.push({ href: node.properties.href as string, id: node.properties.id as string })
+      node.properties.href = `${node.properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
+      node.properties.id =
+        node.properties.id + `${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
+    }
+  })
+
+  visit(root, "element", (node: Element) => {
+    if (
+      node.type === "element" &&
+      node.tagName === "section" &&
+      node.properties.dataFootnotes == ""
+    ) {
+      toRemove.push(node)
+      const items = (node.children as Element[]).filter((val) => val.tagName === "ol")[0] // The ol is in here
+      finalRefs.push(...(items.children as Element[]))
+    }
+  })
+
+  // we don't want to remove the last nodes
+  toRemove.pop()
+  if (orderNotes.length === 0) return
+
+  // Remove all reference divs except the last one
+  visit(root, "element", (node: Element, index, parent) => {
+    if (toRemove.includes(node)) {
+      parent!.children.splice(index as number, 1)
+    }
+  })
+
+  // Sort finalRefs based on orderNotes
+  const sortedRefs = (
+    orderNotes
+      .map(({ href }: Note) => {
+        // Remove the '#' from the href to match with footnote IDs
+        const noteId = href.replace("#", "")
+        return finalRefs.find((ref) => {
+          return ref.properties?.id === noteId
+        })
+      })
+      .filter(Boolean) as Element[]
+  ).map((ref) => {
+    const transclude = ref.properties?.id
+    ref.properties!.id = `${transclude}${appendSuffix ? "-" + appendSuffix : ""}`
+    visit(ref, "element", (c) => {
+      if (c.tagName === "a" && c.properties.dataFootnoteBackref == "") {
+        c.properties.href = `${c.properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
+      }
+    })
+    return ref
+  })
+
+  // finally, update the final position
+  visit(root, "element", (node: Element) => {
+    if (
+      node.type === "element" &&
+      node.tagName === "section" &&
+      node.properties.dataFootnotes == ""
+    ) {
+      visit(node, "element", (entry, index, parent) => {
+        if (entry.tagName === "ol") {
+          entry.children = sortedRefs
+          parent!.children.splice(index as number, 1, entry)
+        }
+      })
+    }
+  })
+}
+
+export function mergeIsomorphic(ast: Node, suffix?: string) {
+  mergeReferences(ast as Root, suffix)
+  mergeFootnotes(ast as Root, suffix)
 }
 
 export function pageResources(
@@ -337,7 +477,7 @@ export function renderPage(
   // for the file cached in contentMap in build.ts
   const root = clone(componentData.tree) as Root
 
-  // process transcludes in componentData
+  // NOTE: process transcludes in componentData
   visit(root, "element", (node, _index, _parent) => {
     if (node.tagName === "blockquote") {
       const classNames = (node.properties?.className ?? []) as string[]
@@ -455,12 +595,13 @@ export function renderPage(
       }
     }
   })
-
+  // NOTE: handling collapsible nodes
   visit(root, "element", (node: Element, idx, parent) => {
+    const denyIds = new Set(["footnote-label", "reference-label"])
     if (
       slug !== "index" &&
       node.tagName.match(headerRegex) &&
-      node.properties.id !== "footnote-label" &&
+      !denyIds.has(node.properties.id as string) &&
       !(componentData.fileData.frontmatter?.menu ?? false) &&
       (componentData.fileData.frontmatter?.collapsible ?? true)
     ) {
@@ -468,8 +609,10 @@ export function renderPage(
       processHeaders(node, idx, parent as Element)
     }
   })
+  // NOTE: We then merge all references and footnotes to final items
+  mergeIsomorphic(root)
 
-  // set componentData.tree to the edited html that has transclusions rendered
+  // NOTE: set componentData.tree to the edited html that has transclusions rendered
   componentData.tree = root
 
   const {

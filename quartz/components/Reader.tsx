@@ -2,7 +2,8 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import { clone, FullSlug, normalizeHastElement, FilePath } from "../util/path"
 import { classNames } from "../util/lang"
 import { visit } from "unist-util-visit"
-import { Node, Element, ElementContent } from "hast"
+import { Node, Element, ElementContent, Root } from "hast"
+import { mergeIsomorphic } from "./renderPage"
 import { htmlToJsx } from "../util/jsx"
 import style from "./styles/reader.scss"
 // @ts-ignore
@@ -105,10 +106,105 @@ export default (() => {
           }
         }
 
+        // here we simplify the callout
         if (classNames.includes("is-collapsible")) {
           // We need to unparse collapsible callout
           node.properties.className = ["callout", node.properties["data-callout"] as string]
           node.properties.style = ""
+        }
+        if (classNames.includes("callout")) {
+          visit(node, "element", (descendant) => {
+            if (descendant.tagName === "div") {
+              const classNames = (descendant.properties?.className ?? []) as string[]
+              if (classNames.includes("callout-title")) {
+                // Filter out callout-icon and fold-callout-icon divs
+                descendant.children = descendant.children.filter((children) => {
+                  if (children.type === "element") {
+                    const childClassNames = (children.properties?.className ?? []) as string[]
+                    return !(
+                      childClassNames.includes("callout-icon") ||
+                      childClassNames.includes("fold-callout-icon")
+                    )
+                  }
+                  return true
+                })
+              }
+            }
+          })
+        }
+      }
+    })
+    // keep the same references and footnotes parsing, but append reader for isomorphic ID
+    mergeIsomorphic(ast as Root, "reader")
+    // remove all alias and popover in modified AST for better reading
+    visit(ast, "element", (node: Element) => {
+      if (node.tagName === "a") {
+        const classNames = (node.properties?.className ?? []) as string[]
+        if (classNames.includes("internal")) {
+          node.properties.className = ["internal"]
+          node.properties["data-no-popover"] = true
+        }
+      }
+    })
+    // remove expand button for mermaid block
+    visit(ast, "element", (node: Element, _index, parent: Element) => {
+      if (
+        node.tagName === "code" &&
+        ((node.properties?.className ?? []) as string[]).includes("mermaid")
+      ) {
+        // Filter out the expand-button that appears before the code block
+        parent.children = parent.children.filter((child) => {
+          if (child.type === "element") {
+            return (
+              !((child.properties?.className ?? []) as string[]).includes("expand-button") &&
+              child.properties.id !== "mermaid-container"
+            )
+          }
+          return true
+        })
+      }
+    })
+    // cleanup colorscheme, we just need monotone for reader mode
+    visit(ast, "element", (node: Element) => {
+      // Handle code block with data-language
+      if (node.tagName === "code" && node.properties.dataLanguage) {
+        // Remove data-theme attribute if it exists
+        if (node.properties.dataTheme) {
+          delete node.properties.dataTheme
+        }
+
+        // Clean up shiki styles
+        if (node.properties?.style) {
+          const style = node.properties.style as string
+          // Split style into individual properties
+          const styles = style.split(";").filter((s) => s.trim())
+          // Filter out any styles containing --shiki
+          const cleanedStyles = styles.filter((s) => !s.includes("--shiki"))
+
+          if (cleanedStyles.length > 0) {
+            node.properties.style = cleanedStyles.join(";")
+          } else {
+            delete node.properties.style
+          }
+        }
+      }
+
+      // Also check pre tags as they sometimes contain the theme data
+      if (node.tagName === "pre") {
+        if (node.properties.dataTheme) {
+          delete node.properties.dataTheme
+        }
+
+        if (node.properties?.style) {
+          const style = node.properties.style as string
+          const styles = style.split(";").filter((s) => s.trim())
+          const cleanedStyles = styles.filter((s) => !s.includes("--shiki"))
+
+          if (cleanedStyles.length > 0) {
+            node.properties.style = cleanedStyles.join(";")
+          } else {
+            delete node.properties.style
+          }
         }
       }
     })

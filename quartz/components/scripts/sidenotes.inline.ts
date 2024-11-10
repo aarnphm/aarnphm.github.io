@@ -5,14 +5,6 @@ const FOOTNOTE_SECTION_SELECTOR = "section[data-footnotes] > ol"
 const INDIVIDUAL_FOOTNOTE_SELECTOR = "li[id^='user-content-fn-']"
 const SPACING_THRESHOLD = 30 // pixels
 
-interface SidenoteEntry {
-  footnoteId: string
-  intextLink: HTMLElement
-  sidenote: HTMLLIElement
-  footnote: HTMLLIElement
-  verticalPosition: number
-}
-
 function checkSidenoteSpacing(current: HTMLElement, allSidenotes: NodeListOf<HTMLElement>) {
   const currentRect = current.getBoundingClientRect()
   const currentBottom = currentRect.top + currentRect.height
@@ -40,12 +32,6 @@ function checkSidenoteSpacing(current: HTMLElement, allSidenotes: NodeListOf<HTM
   if (inner && spacing > SPACING_THRESHOLD) {
     inner.style.maxHeight = "unset"
   }
-}
-
-function getVerticalPosition(element: HTMLElement): number {
-  const rect = element.getBoundingClientRect()
-  const scrollTop = window.scrollY || document.documentElement.scrollTop
-  return rect.top + scrollTop
 }
 
 function updateSidenotes() {
@@ -134,9 +120,6 @@ function createSidenote(
 
 document.addEventListener("nav", () => {
   const articleContent = document.querySelector(ARTICLE_CONTENT_SELECTOR) as HTMLElement
-  const sections = Array.from(
-    articleContent.querySelectorAll("section[data-footnotes]"),
-  ) as HTMLElement[]
   const footnoteSectionList = Array.from(
     articleContent.querySelectorAll(FOOTNOTE_SECTION_SELECTOR),
   ) as HTMLOListElement[]
@@ -165,42 +148,12 @@ document.addEventListener("nav", () => {
     Array.from(ol.querySelectorAll(INDIVIDUAL_FOOTNOTE_SELECTOR)),
   ) as HTMLLIElement[]
 
-  // Create array of sidenote entries with position information
-  const sidenoteEntries: SidenoteEntry[] = []
-
   for (const footnote of footnoteItems) {
     const footnoteId = footnote.id
     const intextLink = articleContent.querySelector(`a[href="#${footnoteId}"]`) as HTMLElement
     if (!intextLink) continue
-
     const sidenote = createSidenote(footnote, footnoteId, sideContainer)
-    const verticalPosition = getVerticalPosition(intextLink)
-    sidenoteEntries.push({ footnoteId, intextLink, sidenote, footnote, verticalPosition })
-  }
-
-  sidenoteEntries.sort((a, b) => a.verticalPosition - b.verticalPosition)
-
-  // update the index accordingly with transclude in consideration
-  for (const [index, entry] of sidenoteEntries.entries()) {
-    const counter = index + 1
-    entry.sidenote.dataset.count = `${counter}`
-    const linkContent = Array.from(entry.intextLink.childNodes)
-    const textNode = linkContent.find((node) => node.nodeType === Node.TEXT_NODE)
-    if (textNode) {
-      textNode.textContent = `${counter}`
-    }
-
-    ol.appendChild(entry.sidenote)
-  }
-
-  if (sections.length !== 1) {
-    const lastSection = sections.pop()
-    sections.map((section) => section.remove())
-    const olList = lastSection?.getElementsByTagName("ol")[0] as HTMLOListElement
-    removeAllChildren(olList)
-    for (const entry of sidenoteEntries) {
-      olList.appendChild(entry.footnote)
-    }
+    ol.appendChild(sidenote)
   }
 
   updateSidenotes()

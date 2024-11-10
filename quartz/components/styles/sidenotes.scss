@@ -1,4 +1,5 @@
 .sidenotes {
+  counter-reset: sidenote-counter;
   position: relative;
 
   &::before {
@@ -37,9 +38,11 @@
     margin-bottom: 1rem;
     border: 1px solid var(--gray);
     background-color: var(--light);
+    counter-increment: sidenote-counter;
 
     &::before {
       content: attr(data-count);
+      content: counter(sidenote-counter);
       background-color: var(--light);
       font-size: 0.8em;
       font-weight: bold;

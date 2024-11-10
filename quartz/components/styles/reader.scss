@@ -13,14 +13,6 @@
 
   &.active {
     display: inline-block;
-
-    // Hide hr decorations
-    & ~ #quartz-root hr {
-      &:before,
-      &:after {
-        display: none;
-      }
-    }
   }
 
   .reader-backdrop {
@@ -35,9 +27,8 @@
 
   .reader-container {
     display: flex;
-    width: 90%;
-    height: 90vh;
-    margin: 5vh auto;
+    max-width: #{$pageWidth};
+    margin: 0 auto;
     background: var(--light);
     box-shadow:
       0 14px 50px rgba(27, 33, 48, 0.12),
@@ -66,12 +57,42 @@
     .reader-content {
       flex: 1;
       margin: 0 auto;
-      padding: 2rem;
       font-family: var(--bodyFont);
       line-height: 1.6;
       color: var(--darkgray);
       width: 100%;
-      max-width: #{$pageWidth};
+
+      & > * {
+        margin-left: 1.5rem;
+        margin-right: 1.5rem;
+      }
+
+      // remove colorful border, no need in reader mode
+      section[data-references],
+      section[data-footnotes] {
+        border: unset;
+
+        & > * {
+          margin: initial;
+        }
+      }
+
+      // normalize all italic
+      em {
+        font-style: normal;
+      }
+
+      // remove distracting highlight background of text
+      .text-highlight {
+        background-color: unset;
+      }
+
+      .callout[data-callout] {
+        --color: inherit !important;
+        --border: inherit !important;
+        --bg: inherit !important;
+        border-left: 3px solid var(--tertiary);
+      }
     }
   }
 }

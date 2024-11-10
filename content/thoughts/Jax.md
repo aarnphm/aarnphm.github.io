@@ -69,7 +69,7 @@ print(g(jnp.array([1., 2., 3.])))
 > @jit
 > def fail(x):
 >   if x < 3: return 3. * x ** 2
->   else:       return -4 * x
+>   else    : return -4 * x
 >
 > # This will fail!
 > fail(2)
