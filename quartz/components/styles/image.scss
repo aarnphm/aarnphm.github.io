@@ -53,7 +53,8 @@
     }
 
     &:hover {
-      background: var(--gray);
+      background: transparent;
+      transform: scale(1.1);
     }
   }
 }

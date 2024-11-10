@@ -71,6 +71,11 @@ export const BuildArgv = {
     default: false,
     describe: "run a local server to live-preview your Quartz",
   },
+  socialImage: {
+    boolean: true,
+    default: false,
+    describe: "Whether to generate social images",
+  },
   fastRebuild: {
     boolean: true,
     default: false,

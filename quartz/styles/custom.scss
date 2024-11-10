@@ -310,26 +310,11 @@ header {
 }
 
 blockquote.twitter-tweet {
-  border-left: unset;
-  border: 2px solid var(--secondary);
+  border-left: 1px dashed var(--secondary);
   padding-bottom: 1rem;
   padding-right: 0.2rem;
   position: relative;
-  background-color: var(--light);
   margin-right: 0.5rem !important;
-
-  &:before {
-    content: "x.com";
-    position: absolute;
-    top: -12px;
-    left: 12px;
-    background-color: var(--light);
-    color: var(--gray);
-    font-size: 12px;
-    font-weight: bold;
-    padding: 4px 8px;
-    border: 1px solid var(--secondary);
-  }
 
   &:first-child {
     margin-top: 2rem;
@@ -338,8 +323,6 @@ blockquote.twitter-tweet {
   &:not(:last-child) {
     margin-bottom: 2rem;
   }
-
-  @include steps;
 }
 
 p.quotes {

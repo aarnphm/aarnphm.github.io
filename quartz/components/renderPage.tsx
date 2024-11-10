@@ -29,6 +29,8 @@ const headerRegex = new RegExp(/h[1-6]/)
 function headerElement(node: Element, content: Element[], idx: number): Element {
   const buttonId = `collapsible-header-${node.properties?.id ?? idx}`
 
+  const id = node.properties?.id ?? idx
+  node.properties.id = `${id}-head`
   // indicate whether the header is collapsed or not
   const lastIdx = node.children.length > 0 ? node.children.length - 1 : 0
   node.children.splice(lastIdx, 0, {
@@ -88,7 +90,7 @@ function headerElement(node: Element, content: Element[], idx: number): Element 
     properties: {
       className: ["collapsible-header"],
       "data-level": node.tagName[1],
-      id: node.properties?.id ?? idx,
+      id: id,
     },
     children: [
       {

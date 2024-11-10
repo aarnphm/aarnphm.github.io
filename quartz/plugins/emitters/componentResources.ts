@@ -364,7 +364,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         }),
       )
 
-      if (cfg.generateSocialImages) {
+      if (cfg.generateSocialImages && ctx.argv.socialImage) {
         if (!imageOptions) {
           if (typeof cfg.generateSocialImages !== "boolean") {
             imageOptions = { ...defaultImageOptions, ...cfg.generateSocialImages }

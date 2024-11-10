@@ -21,8 +21,10 @@
     margin-left: 2.4rem;
   }
 
-  &:last-of-type {
-    border-bottom: 1px dashed var(--gray);
+  &:not(.collapsed) {
+    &:last-of-type > * > .collapsible-header-content {
+      border-bottom: 1px dashed var(--gray);
+    }
   }
 
   & .collapsed-dots {
@@ -41,7 +43,6 @@
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
-    gap: 0.5rem;
 
     & .toggle-button {
       grid-column: 1;

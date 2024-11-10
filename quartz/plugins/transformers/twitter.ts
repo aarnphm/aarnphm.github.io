@@ -29,9 +29,6 @@ export const Twitter: QuartzTransformerPlugin = () => ({
   name: "Twitter",
   markdownPlugins(ctx) {
     const locale = ctx.cfg.configuration.locale.split("-")[0] ?? "en"
-    if (ctx.argv.serve) {
-      return []
-    }
     return [
       () => async (tree: Root, _file) => {
         const promises: Promise<void>[] = []

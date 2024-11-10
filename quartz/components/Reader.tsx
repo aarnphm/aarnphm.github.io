@@ -208,6 +208,27 @@ export default (() => {
         }
       }
     })
+    // Append suffix to header nodes
+    visit(ast, "element", (node: Element) => {
+      const suffix = "-reader"
+
+      // Check if it's a header element using the existing headerRegex
+      if (node.tagName.match(headerRegex)) {
+        // Only modify if the header has an id
+        if (node.properties?.id) {
+          // Append the suffix to the existing id
+          node.properties.id = `${node.properties.id}${suffix}`
+
+          // Also update any anchor links within the header that reference the old id
+          visit(node, "element", (child: Element) => {
+            if (child.tagName === "a" && (child.properties?.href as string)?.startsWith("#")) {
+              const href = child.properties.href as string
+              child.properties.href = `${href}${suffix}`
+            }
+          })
+        }
+      }
+    })
 
     return (
       <div class={classNames(displayClass, "reader")} id="reader-view">
