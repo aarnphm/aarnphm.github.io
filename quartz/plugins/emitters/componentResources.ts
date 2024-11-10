@@ -1,6 +1,6 @@
 import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
-
+import { version } from "../../../package.json"
 // @ts-ignore
 import spaRouterScript from "../../components/scripts/spa.inline"
 // @ts-ignore
@@ -69,6 +69,7 @@ async function joinScripts(scripts: string[]): Promise<string> {
   // minify with esbuild
   const res = await transpile(script, {
     minify: true,
+    sourcemap: true,
   })
 
   return res.code

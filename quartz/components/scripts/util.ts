@@ -129,7 +129,7 @@ export function updateSidenoteState(content: HTMLElement, isCollapsed: boolean) 
   if (!sideContainer) return
   for (const ref of sidenoteRefs) {
     const sideId = ref.getAttribute("href")?.replace("#", "sidebar-")
-    const sidenote = document.querySelector(
+    const sidenote = sideContainer.querySelector(
       `.sidenote-element[id="${sideId}"]`,
     ) as HTMLElement | null
     if (!sidenote) continue
@@ -149,7 +149,7 @@ export function updateSidenoteState(content: HTMLElement, isCollapsed: boolean) 
   }
 }
 
-export interface HeaderState {
+interface HeaderState {
   id: string
   collapsed: boolean
 }
@@ -165,4 +165,8 @@ export function toggleCollapsedById(array: HeaderState[], id: string) {
 
 export function saveHeaderState(currentHeaderState: HeaderState[]) {
   localStorage.setItem("headerState", JSON.stringify(currentHeaderState))
+}
+
+export function loadHeaderState(): HeaderState[] {
+  return JSON.parse(localStorage.getItem("headerState") ?? "[]")
 }

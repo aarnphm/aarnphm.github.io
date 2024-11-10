@@ -1,4 +1,4 @@
-import { updateSidenoteState, toggleCollapsedById, saveHeaderState, HeaderState } from "./util"
+import { updateSidenoteState, toggleCollapsedById, saveHeaderState, loadHeaderState } from "./util"
 
 type MaybeHTMLElement = HTMLElement | undefined
 
@@ -11,7 +11,7 @@ function toggleHeader(evt: Event) {
   if (!toggleButton) return
 
   // Check if we're inside a callout - if so, don't handle the event
-  if (target.parentElement!.classList.contains("callout")) return
+  if (target.parentElement && target.parentElement.classList.contains("callout")) return
 
   const wrapper = toggleButton.closest(".collapsible-header") as MaybeHTMLElement
   if (!wrapper) return
@@ -27,25 +27,12 @@ function toggleHeader(evt: Event) {
   if (!content) return
 
   const isCollapsed = toggleButton.getAttribute("aria-expanded") === "true"
-
-  // Toggle current header
-  toggleButton.setAttribute("aria-expanded", isCollapsed ? "false" : "true")
-  content.style.maxHeight = isCollapsed ? "0px" : "inherit"
-  content.classList.toggle("collapsed", isCollapsed)
-  wrapper.classList.toggle("collapsed", isCollapsed)
-  toggleButton.classList.toggle("collapsed", isCollapsed)
-
-  updateSidenoteState(content, isCollapsed)
+  setHeaderState(toggleButton, content, isCollapsed)
 
   // Update state
   const headerId = toggleButton.id
   toggleCollapsedById(currentHeaderState, headerId)
   saveHeaderState(currentHeaderState)
-}
-
-function loadHeaderState(): HeaderState[] {
-  const saved = localStorage.getItem("headerState")
-  return saved ? JSON.parse(saved) : []
 }
 
 function setHeaderState(button: HTMLElement, content: HTMLElement, collapsed: boolean) {
@@ -66,6 +53,7 @@ function setupHeaders() {
     button.addEventListener("click", toggleHeader)
     window.addCleanup(() => button.removeEventListener("click", toggleHeader))
 
+    if (currentHeaderState === undefined) continue
     // Apply saved state
     const savedState = currentHeaderState.find((state) => state.id === button.id)
     if (savedState) {

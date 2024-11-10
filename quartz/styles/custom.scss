@@ -633,10 +633,8 @@ blockquote.transclude {
   }
 
   @media all and ($mobile) {
-    margin-top: 2rem;
-
     & > .page-header {
-      padding: 1rem 2rem !important;
+      padding-left: 2rem !important;
     }
   }
 }

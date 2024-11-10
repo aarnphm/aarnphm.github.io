@@ -1,47 +1,47 @@
-import { updateSidenoteState, toggleCollapsedById, saveHeaderState, HeaderState } from "./util"
+import { updateSidenoteState, toggleCollapsedById, saveHeaderState, loadHeaderState } from "./util"
+
+const TOGGLE_STATE = "toggleAllState"
 
 function toggleCollapse(button: HTMLButtonElement, forceState?: boolean) {
-  const currentHeaderState: HeaderState[] = JSON.parse(localStorage.getItem("headerState") ?? "[]")
+  const currentHeaderState = loadHeaderState()
 
-  const allToggleButtons = document.querySelectorAll(
+  const allToggle = document.querySelectorAll(
     ".collapsible-header .toggle-button",
   ) as NodeListOf<HTMLElement>
-  if (!allToggleButtons.length) return
+  if (!allToggle.length) return
 
-  const isExpanded = button.getAttribute("data-state") === "expanded"
+  const isExpanded = (localStorage.getItem(TOGGLE_STATE) ?? "collapsed") === "expanded"
   const targetState = forceState !== undefined ? forceState : isExpanded
-  button.setAttribute("data-state", targetState ? "collapsed" : "expanded")
+  const buttonState = targetState ? "collapsed" : "expanded"
+  button.setAttribute("data-state", buttonState)
 
   const tooltip = button.querySelector(".tooltip") as HTMLElement
-  tooltip.textContent = isExpanded ? "Collapse all sections" : "Expand all sections"
+  tooltip.textContent = isExpanded ? "Expand all sections" : "Collapse all sections"
 
   // Process each collapsible header
-  for (const toggleButton of allToggleButtons) {
-    const wrapper = toggleButton.closest(".collapsible-header") as HTMLElement
+  for (const button of allToggle) {
+    const wrapper = button.closest(".collapsible-header") as HTMLElement
     if (!wrapper) return
 
     const content = document.querySelector(
-      `.collapsible-header-content[data-references="${toggleButton.id}"]`,
+      `.collapsible-header-content[data-references="${button.id}"]`,
     ) as HTMLElement
     if (!content) return
 
     // Set the expanded/collapsed state
-    toggleButton.setAttribute("aria-expanded", (!targetState).toString())
+    button.setAttribute("aria-expanded", targetState.toString())
     content.style.maxHeight = targetState ? "0px" : "inherit"
     content.classList.toggle("collapsed", targetState)
     wrapper.classList.toggle("collapsed", targetState)
-    toggleButton.classList.toggle("collapsed", targetState)
+    button.classList.toggle("collapsed", targetState)
 
-    // Update sidenotes
     updateSidenoteState(content, targetState)
-
-    // Update state in localStorage
-    const headerId = toggleButton.id
-    toggleCollapsedById(currentHeaderState, headerId)
+    toggleCollapsedById(currentHeaderState, button.id)
   }
 
   // Save the final state
   saveHeaderState(currentHeaderState)
+  localStorage.setItem(TOGGLE_STATE, buttonState)
 
   // Use requestAnimationFrame to wait for DOM updates to complete
   requestAnimationFrame(() => {
@@ -75,7 +75,9 @@ document.addEventListener("nav", () => {
     resizeObserver.observe(articleContent)
   }
 
+  // collapsible section
   const collapsibleButton = toolbarContent.querySelector("#collapsible-button") as HTMLButtonElement
+  collapsibleButton.dataset.state = localStorage.getItem(TOGGLE_STATE) ?? "collapsed"
   const collapsibleTooltip = collapsibleButton.querySelector(".tooltip") as HTMLElement
   collapsibleTooltip.textContent =
     collapsibleButton.getAttribute("data-state") === "expanded"

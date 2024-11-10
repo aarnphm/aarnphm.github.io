@@ -1,4 +1,3 @@
-@use "sass:map";
 @use "../../styles/base.scss";
 @use "../../styles/variables.scss" as *;
 
@@ -15,10 +14,14 @@ body[data-slug="index"] {
       max-width: unset !important;
       min-width: unset !important;
 
-      @media all and (max-width: #{map.get($breakpoints, desktop)}) {
+      @media all and ($tablet) {
+        margin-right: auto !important;
+      }
+
+      @media all and ($mobile) {
         width: initial;
-        margin-left: 0;
-        margin-right: 0;
+        margin-left: auto !important;
+        margin-right: auto !important;
       }
     }
   }
@@ -30,11 +33,6 @@ body[data-slug="index"] {
   header {
     display: flex !important;
     margin: 2rem 0;
-  }
-
-  .page-header {
-    margin-top: 1rem !important;
-    margin-left: 0 !important;
   }
 
   & > *,
@@ -61,6 +59,14 @@ body[data-slug="index"] {
   @media all and ($desktop) {
     .center {
       margin-bottom: 2rem;
+    }
+  }
+
+  .center {
+    & > *:not(hr) {
+      &:last-child {
+        padding-bottom: 2rem;
+      }
     }
   }
 }

@@ -90,7 +90,7 @@ document.addEventListener("nav", () => {
       const loc = _mapping.get(e.key) as string
       container?.classList.toggle("active", false)
       if (window.location.pathname === loc) return
-      window.location.href = loc
+      window.spaNavigate(new URL(loc, window.location.toString()))
     }
   }
 

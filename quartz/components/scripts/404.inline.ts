@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const handleClick = (e: MouseEvent) => {
       e.preventDefault()
-      window.location.href = "/"
+      window.spaNavigate(new URL("/", window.location.toString()))
     }
 
     document.body.addEventListener("click", handleClick)

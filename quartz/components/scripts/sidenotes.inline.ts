@@ -4,7 +4,6 @@ const ARTICLE_CONTENT_SELECTOR = ".center"
 const FOOTNOTE_SECTION_SELECTOR = "section[data-footnotes] > ol"
 const INDIVIDUAL_FOOTNOTE_SELECTOR = "li[id^='user-content-fn-']"
 const SPACING_THRESHOLD = 30 // pixels
-const GROUP_MAX_HEIGHT = 1000 // pixels
 
 interface SidenoteEntry {
   footnoteId: string
@@ -12,12 +11,6 @@ interface SidenoteEntry {
   sidenote: HTMLLIElement
   footnote: HTMLLIElement
   verticalPosition: number
-}
-
-interface SidenoteGroup {
-  elements: SidenoteEntry[]
-  top: number
-  bottom: number
 }
 
 function checkSidenoteSpacing(current: HTMLElement, allSidenotes: NodeListOf<HTMLElement>) {
@@ -74,14 +67,31 @@ function updateSidenotes() {
     const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
     if (!intextLink) return
 
-    if (isInViewport(intextLink)) {
+    let currentElement: HTMLElement | null = intextLink
+    let collapsedContent = null
+    while (currentElement && !collapsedContent) {
+      if (currentElement.classList.contains("collapsible-header-content")) {
+        collapsedContent = currentElement
+      } else if (
+        currentElement.tagName === "article" &&
+        currentElement.classList.contains("popover-hint")
+      ) {
+        break
+      }
+      currentElement = currentElement.parentElement
+    }
+
+    if (
+      (collapsedContent && collapsedContent.classList.contains("collapsed")) ||
+      !isInViewport(intextLink)
+    ) {
+      sidenote.classList.remove("in-view")
+      intextLink.classList.remove("active")
+    } else {
       sidenote.classList.add("in-view")
       intextLink.classList.add("active")
       updatePosition(intextLink, sidenote, sideContainer)
       checkSidenoteSpacing(sidenote, sidenotes)
-    } else {
-      sidenote.classList.remove("in-view")
-      intextLink.classList.remove("active")
     }
   }
 }
