@@ -17,9 +17,7 @@ document.addEventListener("nav", () => {
 
   function showReader() {
     readerView.classList.add("active")
-    const allHr = document.querySelectorAll("hr") as NodeListOf<HTMLHRElement>
     const quartz = document.getElementById("quartz-root") as HTMLDivElement
-    allHr.forEach((hr) => (hr.style.visibility = "hidden"))
     quartz.style.overflow = "hidden"
     quartz.style.maxHeight = "0px"
   }

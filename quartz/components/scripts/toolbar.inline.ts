@@ -70,13 +70,11 @@ function toggleReader(button: HTMLButtonElement) {
   const isActive = button.getAttribute("data-active") === "true"
   const readerView = document.querySelector(".reader") as HTMLElement
   if (!readerView) return
-  const allHr = document.querySelectorAll("hr")
   const quartz = document.getElementById("quartz-root") as HTMLDivElement
 
   if (!isActive) {
     readerView.classList.add("active")
     button.setAttribute("data-active", "true")
-    allHr.forEach((hr) => (hr.style.visibility = "hidden"))
     quartz.style.overflow = "hidden"
     quartz.style.maxHeight = "0px"
   } else {

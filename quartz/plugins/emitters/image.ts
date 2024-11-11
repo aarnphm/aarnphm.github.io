@@ -123,7 +123,7 @@ export const Image: QuartzEmitterPlugin<Partial<Options>> = (userOpts) => {
       const total = tasks.length
       const updateProgress = (completed: number, total: number) => {
         const percent = Math.round((completed / total) * 100)
-        progressBar = `Converting images: ${completed}/${total} (${percent}%)`
+        progressBar = `[emit:${NAME}] Converting images: ${completed}/${total} (${percent}%)`
         process.stdout.write(`\r${progressBar}`)
       }
 

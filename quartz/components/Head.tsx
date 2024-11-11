@@ -67,6 +67,8 @@ export default (() => {
             <link rel="stylesheet" href={googleFontHref(cfg.theme)} />
           </>
         )}
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin={true} />
+        <link rel="preconnect" href="https://plausible.io" crossOrigin={true} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {/* OG/jwitter meta tags */}
         <meta name="og:site_name" content={cfg.pageTitle} />

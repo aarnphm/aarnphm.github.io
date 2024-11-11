@@ -1,6 +1,5 @@
 import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
-import { version } from "../../../package.json"
 // @ts-ignore
 import spaRouterScript from "../../components/scripts/spa.inline"
 // @ts-ignore
@@ -70,35 +69,7 @@ async function joinScripts(scripts: string[]): Promise<string> {
   const script = scripts.map((script) => `(function () {${script}})();`).join("\n")
 
   // minify with esbuild
-  const res = await transpile(script, {
-    minify: true,
-    banner: `/*
-Generated with Quartz v${version}
-If you see any components that you like, contact @aarnphm on Discord.
-
-MIT License
-
-Copyright (c) 2021 jackyzha0
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/`,
-  })
+  const res = await transpile(script, { minify: true, sourcemap: true })
 
   return res.code
 }
@@ -216,49 +187,49 @@ async function generateOgs(
   fonts: SatoriOptions["fonts"],
   opts: SocialImageOptions,
   onProgress?: (completed: number, total: number) => void,
-): Promise<FilePath[]> {
-  const fps: FilePath[] = []
+) {
+  const fps: Promise<FilePath>[] = []
   let completed = 0
   const total = tasks.length
 
-  // Process in batches of 5 to avoid memory issues
-  const batchSize = 5
+  const batchSize = ctx.argv.concurrency ?? 4
   for (let i = 0; i < tasks.length; i += batchSize) {
     const batch = tasks.slice(i, i + batchSize)
-    const batchPromises = batch.map(async (task) => {
-      const { title, description, fileData, fileDir, fileName, extension } = task
-      try {
-        const svg = await satori(
-          opts.Component(ctx.cfg.configuration, fileData, opts, title, description, fonts),
-          {
-            width: opts.width,
-            height: opts.height,
-            fonts,
-            graphemeImages: {
-              "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
+    const batchPromises = batch.map(
+      async ({ title, description, fileData, fileDir, fileName, extension }) => {
+        try {
+          const svg = await satori(
+            opts.Component(ctx.cfg.configuration, fileData, opts, title, description, fonts),
+            {
+              width: opts.width,
+              height: opts.height,
+              fonts,
+              graphemeImages: {
+                "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
+              },
             },
-          },
-        )
+          )
 
-        const content = await sharp(Buffer.from(svg)).webp().toBuffer()
+          const content = await sharp(Buffer.from(svg)).webp({ quality: 75 }).toBuffer()
 
-        const fp = await write({
-          ctx,
-          slug: joinSegments("static", fileDir, fileName) as FullSlug,
-          ext: `.${extension}`,
-          content,
-        })
-        fps.push(fp)
+          fps.push(
+            write({
+              ctx,
+              slug: joinSegments("static", fileDir, fileName) as FullSlug,
+              ext: `.${extension}`,
+              content,
+            }),
+          )
 
-        completed++
-        onProgress?.(completed, total)
-      } catch (error) {
-        console.error(
-          chalk.red(`[emit:${NAME}] Failed to generate social image for "${title}":`, error),
-        )
-      }
-    })
-
+          completed++
+          onProgress?.(completed, total)
+        } catch (error) {
+          console.error(
+            chalk.red(`[emit:${NAME}] Failed to generate social image for "${title}":`, error),
+          )
+        }
+      },
+    )
     await Promise.all(batchPromises)
   }
 
@@ -399,8 +370,6 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         }),
       )
 
-      let fps: FilePath[] = await Promise.all(promises)
-
       if (cfg.generateSocialImages) {
         if (!imageOptions) {
           if (typeof cfg.generateSocialImages !== "boolean") {
@@ -441,7 +410,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         let progressBar = ""
         const updateProgress = (completed: number, total: number) => {
           const percent = Math.round((completed / total) * 100)
-          progressBar = `Generating OG images: ${completed}/${total} (${percent}%)`
+          progressBar = `[emit:${NAME}] Generating OG images: ${completed}/${total} (${percent}%)`
           process.stdout.write(`\r${progressBar}`)
         }
 
@@ -462,11 +431,11 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
           console.log(
             chalk.green(`[emit:${NAME}] Successfully generated ${generatedFiles.length} images`),
           )
-          fps = [...fps, ...generatedFiles]
+          promises.push(...generatedFiles)
         }
       }
 
-      return fps
+      return await Promise.all(promises)
     },
   }
 }

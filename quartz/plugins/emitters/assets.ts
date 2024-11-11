@@ -11,7 +11,8 @@ const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
   // glob all non MD, images files in content folder and copy it over
   return await glob("**", argv.directory, [
     "**/*.md",
-    "**/*.{jpg,jpeg,png}",
+    "**/*.{jpg,jpeg,png}", // we use Image to convert to webp
+    "**/*.ipynb", // we already use NotebookPage to transclude
     ...cfg.configuration.ignorePatterns,
   ])
 }
