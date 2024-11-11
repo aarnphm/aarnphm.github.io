@@ -2,8 +2,8 @@
 id: Continuous batching
 tags:
   - ml
-date: "2024-02-08"
-modified: "2024-11-07"
+date: 2024-02-08
+modified: 2024-11-07
 title: Continuous batching
 titleTransclude: false
 ---

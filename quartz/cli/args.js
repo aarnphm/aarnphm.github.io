@@ -8,7 +8,7 @@ export const CommonArgv = {
   verbose: {
     boolean: true,
     alias: ["v"],
-    default: false,
+    default: true,
     describe: "print out extra logging information",
   },
 }
