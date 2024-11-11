@@ -11,7 +11,7 @@ A list of cheatsheet of whatever that fits with my workflow
 
 $$
 \begin{aligned}
-\text{Big O(micron)} &: O or \mathcal{O} \\
+\text{Big O(micron)} &: O \text{ or } \mathcal{O} \\
 \text{Big Omega} &: \Omega \\
 \text{Big Theta} &: \Theta \\
 \text{Small O(micron)} &: o \\

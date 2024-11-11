@@ -74,3 +74,11 @@ $$
 $$
 
 _note: reduce number of hidden units $d_\text{ff}$ (second dimension of $W$ and $V$ and the first dimension of $W_{2}$) by a factor of $\frac{2}{3}$ when comparing these layers
+
+## momentum
+
+See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Stochastic gradient descent]]
+
+![[thoughts/Nesterov momentum]]
+
+### Polyak's Momentum

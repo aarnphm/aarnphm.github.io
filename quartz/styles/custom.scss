@@ -193,9 +193,12 @@ a {
   }
 
   &.internal {
+    margin-right: 0.05rem;
+
     @include links;
 
     & {
+      line-height: 1.6rem;
       background-color: unset;
       background-image: linear-gradient(
         var(--link-underline-gradient-line-color),
