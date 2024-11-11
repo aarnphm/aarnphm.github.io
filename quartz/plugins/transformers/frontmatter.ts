@@ -95,6 +95,7 @@ declare module "vfile" {
     } & Partial<{
         navigation: string[]
         modified: string
+        priority: number | undefined
         permalinks: string[]
         comments: boolean
         tags: string[]

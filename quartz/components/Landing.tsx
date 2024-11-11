@@ -12,6 +12,7 @@ import ContentComponent from "./pages/Content"
 import BodyComponent from "./Body"
 import { classNames } from "../util/lang"
 import { JSX } from "preact"
+import { QuartzPluginData } from "../plugins/vfile"
 
 export const HyperAlias = {
   livres: "/books",
@@ -71,7 +72,18 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
         }
         return false
       })
-      .sort(byDateAndAlphabetical(cfg))
+      .sort((a: QuartzPluginData, b: QuartzPluginData): number => {
+        const afm = a.frontmatter!
+        const bfm = b.frontmatter!
+        if (afm.priority && bfm.priority) {
+          return afm.priority - bfm.priority
+        } else if (afm.priority && !bfm.priority) {
+          return -1
+        } else if (!afm.priority && bfm.priority) {
+          return 1
+        }
+        return byDateAndAlphabetical(cfg)(a, b)
+      })
 
     const remaining = Math.max(0, pages.length - opts!.numLimits!)
     const classes = ["min-links", "internal"].join(" ")
