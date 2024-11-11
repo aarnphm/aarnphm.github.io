@@ -1,3 +1,0 @@
-Every Eclipse project must have a unique name (directory).
-
-You should rename this project so that it is specific to your application.
