@@ -13,5 +13,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "monday"
-      time: "09:00"
+    groups:
+      actions-dependencies:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
