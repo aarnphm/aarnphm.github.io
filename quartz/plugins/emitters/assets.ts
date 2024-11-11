@@ -8,8 +8,12 @@ import { Argv } from "../../util/ctx"
 import { QuartzConfig } from "../../cfg"
 
 const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
-  // glob all non MD files in content folder and copy it over
-  return await glob("**", argv.directory, ["**/*.md", ...cfg.configuration.ignorePatterns])
+  // glob all non MD, images files in content folder and copy it over
+  return await glob("**", argv.directory, [
+    "**/*.md",
+    "**/*.{jpg,jpeg,png}",
+    ...cfg.configuration.ignorePatterns,
+  ])
 }
 
 export const Assets: QuartzEmitterPlugin = () => {

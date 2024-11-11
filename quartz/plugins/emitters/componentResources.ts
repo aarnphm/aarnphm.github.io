@@ -14,12 +14,15 @@ import { Features, transform } from "lightningcss"
 import { transform as transpile } from "esbuild"
 import { write } from "./helpers"
 import DepGraph from "../../depgraph"
-import { ImageOptions, SocialImageOptions, getSatoriFont, defaultImageOptions } from "../../util/og"
+import { SocialImageOptions, getSatoriFont, defaultImageOptions } from "../../util/og"
 import satori, { SatoriOptions } from "satori"
 import { QuartzPluginData } from "../vfile"
 import sharp from "sharp"
 import { unescapeHTML } from "../../util/escape"
 import { i18n } from "../../i18n"
+import chalk from "chalk"
+
+const NAME = "ComponentResources"
 
 type ComponentResources = {
   css: string[]
@@ -69,8 +72,8 @@ async function joinScripts(scripts: string[]): Promise<string> {
   // minify with esbuild
   const res = await transpile(script, {
     minify: true,
-    banner: `
-/* Generated with Quartz v${version}
+    banner: `/*
+Generated with Quartz v${version}
 If you see any components that you like, contact @aarnphm on Discord.
 
 MIT License
@@ -198,36 +201,68 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
   }
 }
 
-async function generateOg(
+interface OgTask {
+  title: string
+  description: string
+  fileData: QuartzPluginData
+  fileDir: string
+  fileName: string
+  extension: string
+}
+
+async function generateOgs(
   ctx: BuildCtx,
-  fileData: QuartzPluginData,
-  { cfg, description, fileDir, fileName, extension, fonts, title }: ImageOptions,
+  tasks: OgTask[],
+  fonts: SatoriOptions["fonts"],
   opts: SocialImageOptions,
-) {
-  const fontBuffer = await fonts
+  onProgress?: (completed: number, total: number) => void,
+): Promise<FilePath[]> {
+  const fps: FilePath[] = []
+  let completed = 0
+  const total = tasks.length
 
-  if (ctx.argv.verbose) {
-    console.log(
-      `[emit:ComponentResources] Generating social image at static/${fileDir}/${fileName}.${extension}`,
-    )
+  // Process in batches of 5 to avoid memory issues
+  const batchSize = 5
+  for (let i = 0; i < tasks.length; i += batchSize) {
+    const batch = tasks.slice(i, i + batchSize)
+    const batchPromises = batch.map(async (task) => {
+      const { title, description, fileData, fileDir, fileName, extension } = task
+      try {
+        const svg = await satori(
+          opts.Component(ctx.cfg.configuration, fileData, opts, title, description, fonts),
+          {
+            width: opts.width,
+            height: opts.height,
+            fonts,
+            graphemeImages: {
+              "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
+            },
+          },
+        )
+
+        const content = await sharp(Buffer.from(svg)).webp().toBuffer()
+
+        const fp = await write({
+          ctx,
+          slug: joinSegments("static", fileDir, fileName) as FullSlug,
+          ext: `.${extension}`,
+          content,
+        })
+        fps.push(fp)
+
+        completed++
+        onProgress?.(completed, total)
+      } catch (error) {
+        console.error(
+          chalk.red(`[emit:${NAME}] Failed to generate social image for "${title}":`, error),
+        )
+      }
+    })
+
+    await Promise.all(batchPromises)
   }
-  const svg = await satori(opts.Component(cfg, fileData, opts, title, description, fontBuffer), {
-    height: opts.height,
-    width: opts.width,
-    fonts: fontBuffer,
-    graphemeImages: {
-      "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
-    },
-  })
 
-  const content = await sharp(Buffer.from(svg)).webp().toBuffer()
-
-  return await write({
-    ctx,
-    slug: joinSegments("static", fileDir, fileName) as FullSlug,
-    ext: `.${extension}`,
-    content,
-  })
+  return fps
 }
 
 interface Options {
@@ -244,7 +279,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
 
   const { fontOrigin } = { ...defaultOptions, ...opts }
   return {
-    name: "ComponentResources",
+    name: NAME,
     getQuartzComponents() {
       return []
     },
@@ -364,7 +399,9 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         }),
       )
 
-      if (cfg.generateSocialImages && ctx.argv.socialImage) {
+      let fps: FilePath[] = await Promise.all(promises)
+
+      if (cfg.generateSocialImages) {
         if (!imageOptions) {
           if (typeof cfg.generateSocialImages !== "boolean") {
             imageOptions = { ...defaultImageOptions, ...cfg.generateSocialImages }
@@ -374,7 +411,10 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         }
 
         if (!fonts) fonts = getSatoriFont(cfg)
+        const fontData = await fonts
 
+        // Create tasks for OG image generation
+        const tasks: OgTask[] = []
         for (const [_, file] of content) {
           const slug = file.data.slug!
           const fileName = slug.replaceAll("/", "-")
@@ -387,26 +427,46 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
               i18n(cfg.locale).propertyDefaults.description,
           )
 
-          promises.push(
-            generateOg(
-              ctx,
-              file.data,
-              {
-                title,
-                description,
-                fileName,
-                fileDir: "social-images",
-                extension: "webp",
-                fonts,
-                cfg,
-              },
-              imageOptions,
-            ),
+          tasks.push({
+            title,
+            description,
+            fileData: file.data,
+            fileDir: "social-images",
+            fileName,
+            extension: "webp",
+          })
+        }
+
+        // Progress tracking
+        let progressBar = ""
+        const updateProgress = (completed: number, total: number) => {
+          const percent = Math.round((completed / total) * 100)
+          progressBar = `Generating OG images: ${completed}/${total} (${percent}%)`
+          process.stdout.write(`\r${progressBar}`)
+        }
+
+        if (tasks.length > 0) {
+          console.log(
+            chalk.blue(`[emit:${NAME}] Generating ${tasks.length} social preview images...`),
           )
+          const generatedFiles = await generateOgs(
+            ctx,
+            tasks,
+            fontData,
+            imageOptions,
+            updateProgress,
+          )
+          if (progressBar) {
+            process.stdout.write("\n") // New line after progress bar
+          }
+          console.log(
+            chalk.green(`[emit:${NAME}] Successfully generated ${generatedFiles.length} images`),
+          )
+          fps = [...fps, ...generatedFiles]
         }
       }
 
-      return await Promise.all(promises)
+      return fps
     },
   }
 }

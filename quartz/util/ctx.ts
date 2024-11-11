@@ -7,7 +7,6 @@ export interface Argv {
   output: string
   serve: boolean
   fastRebuild: boolean
-  socialImage: boolean
   port: number
   wsPort: number
   remoteDevHost?: string

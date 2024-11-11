@@ -27,6 +27,8 @@ const config: QuartzConfig = {
       "joininteract",
       "**/sfwr-4g06ab/source",
       "**.adoc",
+      "**.zip",
+      "**.lvbitx",
     ],
     defaultDateType: "created",
     theme: {
@@ -93,11 +95,13 @@ const config: QuartzConfig = {
         markdownLinkResolution: "absolute",
         externalLinkIcon: false,
         lazyLoad: true,
+        compressedImage: true,
         enableRawEmbed: {
           enable: true,
           extensions: [".py", ".m", ".go", ".c", ".java", ".cpp", ".h", ".hpp", ".cu"],
           cdn: "https://raw.aarnphm.xyz/",
         },
+        enableArxivEmbed: true,
       }),
       Plugin.Description(),
       Plugin.Latex({
@@ -140,6 +144,7 @@ const config: QuartzConfig = {
       Plugin.Assets(),
       Plugin.Static(),
       Plugin.NotFoundPage(),
+      Plugin.Image({ extensions: [".jpg", ".jpeg", ".png"] }),
     ],
   },
 }

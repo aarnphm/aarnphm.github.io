@@ -29,6 +29,7 @@ interface Options {
   prettyLinks: boolean
   openLinksInNewTab: boolean
   lazyLoad: boolean
+  compressedImage: boolean
   externalLinkIcon: boolean
   enableRawEmbed: RawFileOptions
   enableArxivEmbed: boolean
@@ -39,9 +40,10 @@ const defaultOptions: Options = {
   prettyLinks: true,
   openLinksInNewTab: false,
   lazyLoad: false,
+  compressedImage: false,
   externalLinkIcon: true,
   enableRawEmbed: { enable: false, cdn: "", extensions: [] },
-  enableArxivEmbed: true,
+  enableArxivEmbed: false,
 }
 
 export function extractArxivId(url: string): string | null {
@@ -228,6 +230,10 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     dest,
                     transformOptions,
                   )
+                  if (opts.compressedImage) {
+                    const ext = path.extname(dest).toLowerCase()
+                    dest = dest.replace(ext, ".webp") as RelativeURL
+                  }
                   node.properties.src = dest
                 }
               }
