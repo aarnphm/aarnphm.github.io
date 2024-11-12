@@ -21,6 +21,7 @@ import { FolderContent } from "../../components"
 import { write } from "./helpers"
 import { i18n } from "../../i18n"
 import DepGraph from "../../depgraph"
+import { byDateAndAlphabetical } from "../../components/PageList"
 
 interface FolderPageOptions extends FullPageLayout {
   sort?: (f1: QuartzPluginData, f2: QuartzPluginData) => number
@@ -58,17 +59,20 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
       ]
     },
     async getDependencyGraph(_ctx, content, _resources) {
-      // Example graph:
-      // nested/file.md --> nested/index.html
-      // nested/file2.md ------^
       const graph = new DepGraph<FilePath>()
+      const folders = getFolders(_ctx.allSlugs)
 
       content.map(([_tree, vfile]) => {
         const slug = vfile.data.slug
-        const folderName = path.dirname(slug ?? "") as SimpleSlug
-        if (slug && folderName !== "." && folderName !== "tags") {
-          graph.addEdge(vfile.data.filePath!, joinSegments(folderName, "index.html") as FilePath)
-        }
+        if (!slug) return
+
+        // Add dependencies for containing folders
+        const containingFolders = getAllFoldersFromPath(path.dirname(slug as string) as SimpleSlug)
+        containingFolders.forEach((folder) => {
+          if (folders.has(folder)) {
+            graph.addEdge(vfile.data.filePath!, joinSegments(folder, "index.html") as FilePath)
+          }
+        })
       })
 
       return graph
@@ -78,15 +82,8 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
       const allFiles = content.map((c) => c[1].data)
       const cfg = ctx.cfg.configuration
 
-      const folders: Set<SimpleSlug> = new Set(
-        allFiles.flatMap((data) =>
-          data.slug
-            ? getFolders(data.slug).filter(
-                (folderName) => folderName !== "." && folderName !== "tags",
-              )
-            : [],
-        ),
-      )
+      // Use allSlugs to get all folders, including those without markdown files
+      const folders = getFolders(ctx.allSlugs)
 
       const folderDescriptions: Record<string, ProcessedContent> = Object.fromEntries(
         [...folders].map((folder) => [
@@ -95,8 +92,15 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
             slug: joinSegments(folder, "index") as FullSlug,
             frontmatter: {
               title: `${i18n(cfg.locale).pages.folderContent.folder}: ${folder}`,
-              tags: [],
+              tags: ["folder"],
             },
+            dates: allFiles
+              .filter((f) => {
+                const fileSlug = stripSlashes(simplifySlug(f.slug!))
+                return fileSlug.startsWith(folder) && fileSlug !== folder
+              })
+              .sort(byDateAndAlphabetical(cfg))
+              .at(1)?.dates,
           }),
         ]),
       )
@@ -137,13 +141,33 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
   }
 }
 
-function getFolders(slug: FullSlug): SimpleSlug[] {
-  var folderName = path.dirname(slug ?? "") as SimpleSlug
-  const parentFolderNames = [folderName]
+function getAllFoldersFromPath(slug: SimpleSlug): SimpleSlug[] {
+  const folders = new Set<SimpleSlug>()
+  let currentPath = slug
 
-  while (folderName !== ".") {
-    folderName = path.dirname(folderName ?? "") as SimpleSlug
-    parentFolderNames.push(folderName)
+  while (currentPath !== "." && currentPath !== "") {
+    folders.add(currentPath)
+    currentPath = path.dirname(currentPath) as SimpleSlug
   }
-  return parentFolderNames
+
+  return [...folders]
+}
+
+function getFolders(allSlugs: FullSlug[]): Set<SimpleSlug> {
+  const folders = new Set<SimpleSlug>()
+
+  // Add all folders from all file paths (both md and non-md)
+  for (const slug of allSlugs) {
+    const dirPath = path.dirname(slug)
+    const containingFolders = getAllFoldersFromPath(dirPath as SimpleSlug)
+    containingFolders.forEach((folder) => folders.add(folder))
+  }
+
+  // Filter out special folders and empty string
+  return new Set(
+    [...folders].filter(
+      (folder) =>
+        folder !== "." && folder !== "" && folder !== "tags" && !folder.startsWith("tags/"),
+    ),
+  )
 }

@@ -16,34 +16,26 @@ import { Root, ElementContent } from "hast"
 import { filterEmbedTwitter } from "./twitter"
 import { VFile } from "vfile"
 
-interface RawFileOptions {
-  enable: boolean
-  cdn: string
-  extensions?: string[]
-}
-
 interface Options {
+  enableArxivEmbed: boolean
+  compressedImage: boolean
   /** How to resolve Markdown paths */
   markdownLinkResolution: TransformOptions["strategy"]
   /** Strips folders from a link so that it looks nice */
   prettyLinks: boolean
   openLinksInNewTab: boolean
   lazyLoad: boolean
-  compressedImage: boolean
   externalLinkIcon: boolean
-  enableRawEmbed: RawFileOptions
-  enableArxivEmbed: boolean
 }
 
 const defaultOptions: Options = {
+  enableArxivEmbed: false,
+  compressedImage: false,
   markdownLinkResolution: "absolute",
   prettyLinks: true,
   openLinksInNewTab: false,
   lazyLoad: false,
-  compressedImage: false,
   externalLinkIcon: true,
-  enableRawEmbed: { enable: false, cdn: "", extensions: [] },
-  enableArxivEmbed: false,
 }
 
 export function extractArxivId(url: string): string | null {
@@ -86,6 +78,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
             }
 
             visit(tree, "element", (node, _index, _parent) => {
+              const classes = (node.properties.className ?? []) as string[]
+
               // rewrite all links
               if (
                 node.tagName === "a" &&
@@ -95,11 +89,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 // insert a span element into node.children
                 let dest = node.properties.href as RelativeURL
                 const ext: string = path.extname(dest).toLowerCase()
-                const classes = (node.properties.className ?? []) as string[]
-                const isExternal =
-                  opts.enableRawEmbed.enable && opts.enableRawEmbed.extensions?.includes(ext)
-                    ? true
-                    : isAbsoluteUrl(dest)
+                const isExternal = isAbsoluteUrl(dest)
+
                 const isCslNode = classes.includes("csl-external-link")
                 const isEmbedTwitter = filterEmbedTwitter(node)
                 const isArxiv = node.properties.href.includes("arxiv.org")
@@ -111,20 +102,13 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   classes.push(isExternal ? "external" : "internal")
                 }
 
-                // We will need to translate the link to external here
-                if (isExternal && opts.enableRawEmbed.enable) {
-                  const extensions = opts.enableRawEmbed.extensions ?? []
-                  const constructUrl = (cdn: string, fp: string) =>
-                    cdn.endsWith("/") ? cdn + fp : [cdn, fp].join("/")
-                  if (extensions.includes(ext)) {
-                    dest = node.properties.href = constructUrl(
-                      opts.enableRawEmbed.cdn,
-                      dest,
-                    ) as RelativeURL
-                  }
-                }
-
-                if (!isEmbedTwitter && !isCslNode && isExternal && opts.externalLinkIcon) {
+                if (
+                  !isEmbedTwitter &&
+                  !isCslNode &&
+                  !isArxiv &&
+                  isExternal &&
+                  opts.externalLinkIcon
+                ) {
                   node.children.push({
                     type: "element",
                     tagName: "svg",
@@ -163,7 +147,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 }
                 node.properties.className = classes
 
-                if ((isExternal && opts.openLinksInNewTab) || [".ipynb", ".qmd"].includes(ext)) {
+                if (isExternal && opts.openLinksInNewTab) {
                   node.properties.target = "_blank"
                 }
 

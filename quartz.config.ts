@@ -1,6 +1,7 @@
 import { GlobalConfiguration, QuartzConfig } from "./quartz/cfg"
 import { byDateAndAlphabetical } from "./quartz/components/PageList"
 import * as Plugin from "./quartz/plugins"
+import * as Component from "./quartz/components/"
 import { QuartzPluginData } from "./quartz/plugins/vfile"
 
 /**
@@ -25,10 +26,10 @@ const config: QuartzConfig = {
       "templates",
       ".obsidian",
       "joininteract",
-      "**/sfwr-4g06ab/source",
       "**.adoc",
       "**.zip",
       "**.lvbitx",
+      "**.so",
     ],
     defaultDateType: "created",
     theme: {
@@ -90,17 +91,11 @@ const config: QuartzConfig = {
       }),
       Plugin.ObsidianFlavoredMarkdown(),
       Plugin.GitHubFlavoredMarkdown(),
-      Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",
         externalLinkIcon: false,
         lazyLoad: true,
         compressedImage: true,
-        enableRawEmbed: {
-          enable: true,
-          extensions: [".py", ".m", ".go", ".c", ".java", ".cpp", ".h", ".hpp", ".cu"],
-          cdn: "https://raw.aarnphm.xyz/",
-        },
         enableArxivEmbed: true,
       }),
       Plugin.Description(),
@@ -110,7 +105,9 @@ const config: QuartzConfig = {
           "\\argmin": "\\mathop{\\operatorname{arg\\,min}}\\limits",
           "\\argmax": "\\mathop{\\operatorname{arg\\,max}}\\limits",
         },
+        katexOptions: { strict: true },
       }),
+      Plugin.TableOfContents({ maxDepth: 4 }),
     ],
     filters: [Plugin.RemoveDrafts()],
     emitters: [
@@ -118,27 +115,32 @@ const config: QuartzConfig = {
       Plugin.ComponentResources(),
       Plugin.ContentPage(),
       Plugin.FolderPage({
-        sort: (a: QuartzPluginData, b: QuartzPluginData): number => {
-          // Check if either file has a folder tag
-          const aHasFolder = a.frontmatter?.tags?.includes("folder") ?? false
-          const bHasFolder = b.frontmatter?.tags?.includes("folder") ?? false
+        pageBody: Component.FolderContent({
+          sort: (a: QuartzPluginData, b: QuartzPluginData): number => {
+            // Check if either file has a folder tag
+            const aHasFolder = a.frontmatter?.tags?.includes("folder") ?? false
+            const bHasFolder = b.frontmatter?.tags?.includes("folder") ?? false
 
-          // If one has folder tag and other doesn't, prioritize the one with folder tag
-          if (aHasFolder && !bHasFolder) return -1
-          else if (!aHasFolder && bHasFolder) return 1
-          else {
-            return byDateAndAlphabetical({ defaultDateType: "created" } as GlobalConfiguration)(
-              a,
-              b,
-            )
-          }
-        },
+            // If one has folder tag and other doesn't, prioritize the one with folder tag
+            if (aHasFolder && !bHasFolder) return -1
+            else if (!aHasFolder && bHasFolder) return 1
+            else {
+              return byDateAndAlphabetical({ defaultDateType: "created" } as GlobalConfiguration)(
+                a,
+                b,
+              )
+            }
+          },
+          include: [".pdf", ".py", ".go", ".c", ".m", ".cu"],
+          exclude: [/\.(ignore\.pdf)$/],
+        }),
       }),
       Plugin.TagPage(),
       Plugin.CuriusPage(),
       Plugin.MenuPage(),
       Plugin.PoetryPage(),
-      Plugin.NotebookPage(),
+      Plugin.CodeViewer(),
+      Plugin.NotebookViewer(),
       // Plugin.InfinitePoemPage(),
       Plugin.ContentIndex({ rssLimit: 40 }),
       Plugin.Assets(),

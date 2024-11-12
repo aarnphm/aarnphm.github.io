@@ -10,7 +10,6 @@ modified: "2024-10-30"
 permalink:
   - /mechinterp
   - /mechanistic-interpretability
-priority: 1000
 title: mechanistic interpretability
 ---
 

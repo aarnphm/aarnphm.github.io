@@ -24,7 +24,7 @@ export const CuriusPage: QuartzEmitterPlugin = () => {
     left: [CuriusFriends()],
     right: [DesktopOnly(CuriusTrail())],
     pageBody: CuriusContent(),
-    footer: Navigation({ prev: "/quotes", next: "/books" }),
+    afterBody: [Navigation({ prev: "/mechinterp", next: "/books" })],
   }
 
   const { head, header, beforeBody, pageBody, left, right, afterBody, footer: Footer } = opts

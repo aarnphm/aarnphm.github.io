@@ -151,7 +151,7 @@ export const Citations: QuartzTransformerPlugin<Partial<Options>> = (userOpts) =
       // Format external links correctly
       plugins.push(() => {
         return (tree: HtmlRoot, _file) => {
-          visit(tree, "element", (node, index, parent) => {
+          visit(tree, "element", (node: Element, index, parent) => {
             if ((node.properties?.className as string[])?.includes("references")) {
               const sectionChildren: Element[] = []
               visit(node, "element", (entry) => {

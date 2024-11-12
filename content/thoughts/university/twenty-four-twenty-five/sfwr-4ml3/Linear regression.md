@@ -9,7 +9,7 @@ title: Linear regression
 
 See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture1.pdf|slides for curve fitting]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture2.pdf|regression]], [colab link](https://colab.research.google.com/drive/1eljHSwYJSR5ox6bB9zopalZmMSJoNl4v?usp=sharing)
 
-python: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/ols_and_kls.py|ols_and_kls.py]]
+python: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/code/ols_and_kls.py|ols_and_kls.py]]
 
 ## curve fitting.
 

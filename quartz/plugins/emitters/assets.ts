@@ -15,7 +15,6 @@ const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
   return await glob("**", argv.directory, [
     "**/*.md",
     "**/*.{jpg,jpeg,png}", // we use Image to convert to webp
-    "**/*.ipynb", // we already use NotebookPage to transclude
     ...cfg.configuration.ignorePatterns,
   ])
 }
@@ -164,6 +163,8 @@ export const Assets: QuartzEmitterPlugin = () => {
         const src = joinSegments(argv.directory, fp) as FilePath
         const name = (slugifyFilePath(fp as FilePath, true) + ext) as FilePath
         const dest = joinSegments(assetsPath, name) as FilePath
+        // check if file exists, then continue
+        if (fs.existsSync(dest)) continue
         if (await copyFileWithRetry(src, dest)) {
           res.push(dest)
           succeeded++

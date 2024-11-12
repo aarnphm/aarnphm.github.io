@@ -562,7 +562,7 @@ export function renderPage(
         } else if (page.htmlAst) {
           // page transclude
           node.children = [
-            (page.frontmatter?.titleTransclude ?? true)
+            (page.frontmatter?.transclude?.title ?? true)
               ? {
                   type: "element",
                   tagName: "h1",
@@ -653,11 +653,7 @@ export function renderPage(
   const doc = (
     <html lang={lang}>
       <Head {...componentData} />
-      <body
-        data-slug={slug}
-        data-enable-preview={componentData.fileData.frontmatter?.preview ?? true}
-        data-menu={componentData.fileData.frontmatter?.menu ?? false}
-      >
+      <body data-slug={slug} data-menu={componentData.fileData.frontmatter?.menu ?? false}>
         {slug === "index" ? (
           <Landing {...componentData} />
         ) : (

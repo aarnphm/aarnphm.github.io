@@ -5,7 +5,8 @@ tags:
 date: "2024-09-11"
 modified: "2024-10-28"
 title: linalg review
-titleTransclude: false
+transclude:
+  title: false
 ---
 
 ## matrix representation of a system of linear equations

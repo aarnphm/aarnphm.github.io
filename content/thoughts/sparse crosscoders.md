@@ -69,10 +69,8 @@ Crosscoder read/write to many layers, subject to causality constraints.
 >
 > $$
 > \begin{aligned}
-> f(x_j) &= \text{ReLU}(\sum_{l\in L}W_{\text{enc}}^l a^l(x_j) + b_{\text{enc}}) \\
-> \\
-> &\because W^l_{\text{enc}} : \text{ encoder weights at layer } l \\
-> \\
+> f(x_j) &= \text{ReLU}(\sum_{l\in L}W_{\text{enc}}^l a^l(x_j) + b_{\text{enc}}) \\[8pt]
+> &\because W^l_{\text{enc}} : \text{ encoder weights at layer } l \\[8pt]
 > &\because a^l(x_j) : \text{ activation on datapoint } x_j \text{ at layer } l \\
 > \end{aligned}
 > $$

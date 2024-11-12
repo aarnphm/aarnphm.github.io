@@ -13,6 +13,17 @@ body[data-slug="index"] {
       width: #{$pageWidth};
       max-width: unset !important;
       min-width: unset !important;
+      margin-top: 2rem !important;
+
+      & > *:not(hr) {
+        &:last-child {
+          padding-bottom: 2rem;
+        }
+      }
+
+      @media all and ($desktop) {
+        margin-bottom: 2rem;
+      }
 
       @media all and ($tablet) {
         margin-right: auto !important;
@@ -54,20 +65,6 @@ body[data-slug="index"] {
   span[class*="rose"] {
     color: rgb(215, 130, 126);
     border-bottom: none;
-  }
-
-  @media all and ($desktop) {
-    .center {
-      margin-bottom: 2rem;
-    }
-  }
-
-  .center {
-    & > *:not(hr) {
-      &:last-child {
-        padding-bottom: 2rem;
-      }
-    }
   }
 }
 

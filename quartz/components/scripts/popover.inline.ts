@@ -1,5 +1,6 @@
 import { computePosition, flip, inline, shift } from "@floating-ui/dom"
 import { normalizeRelativeURLs } from "../../util/path"
+import { getContentType } from "../../util/mime"
 
 // Helper to manage blob URL cleanup
 const blobCleanupMap = new Map<string, NodeJS.Timeout>()
@@ -47,7 +48,7 @@ const DEFAULT_BLOB_TIMEOUT = 30 * 60 * 1000 // 30 minutes
 
 const p = new DOMParser()
 async function mouseEnterHandler(
-  this: HTMLLinkElement,
+  this: HTMLAnchorElement,
   { clientX, clientY }: { clientX: number; clientY: number },
 ) {
   const link = this
@@ -77,7 +78,7 @@ async function mouseEnterHandler(
   thisUrl.hash = ""
   thisUrl.search = ""
   const targetUrl = new URL(link.href)
-  const hash = targetUrl.hash
+  const hash = decodeURIComponent(targetUrl.hash)
   targetUrl.hash = ""
   targetUrl.search = ""
   // prevent hover of the same page
@@ -86,13 +87,9 @@ async function mouseEnterHandler(
   let response: Response | void
   if (link.dataset.arxivId) {
     const url = new URL(`https://raw.aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
-    response = await fetch(url).catch((err) => {
-      console.error(err)
-    })
+    response = await fetch(url).catch(console.error)
   } else {
-    response = await fetch(`${targetUrl}`).catch((err) => {
-      console.error(err)
-    })
+    response = await fetch(`${targetUrl}`).catch(console.error)
   }
 
   // bailout if another popover exists
@@ -101,7 +98,9 @@ async function mouseEnterHandler(
   }
 
   if (!response) return
-  const [contentType] = response.headers.get("Content-Type")!.split(";")
+  const contentType = response.headers.get("Content-Type")
+    ? response.headers.get("Content-Type")!.split(";")[0]
+    : getContentType(targetUrl)
   const [contentTypeCategory, typeInfo] = contentType.split("/")
 
   const popoverElement = document.createElement("div")
@@ -143,17 +142,9 @@ async function mouseEnterHandler(
       const contents = await response.text()
       const html = p.parseFromString(contents, "text/html")
       normalizeRelativeURLs(html, targetUrl)
-      let elts: Element[]
-      if (html.body.dataset.enablePreview === "false") {
-        const noPreview = document.createElement("div")
-        noPreview.innerHTML = `<p>L'aperçu est désactivé sur cette page.</p>`
-        elts = [noPreview]
-      } else {
-        elts = [...html.getElementsByClassName("popover-hint")]
-      }
+      const elts = [...html.getElementsByClassName("popover-hint")]
       if (elts.length === 0) return
-
-      elts.forEach((elt) => popoverInner.appendChild(elt))
+      popoverInner.append(...elts)
   }
 
   setPosition(popoverElement)
@@ -169,7 +160,7 @@ async function mouseEnterHandler(
 }
 
 document.addEventListener("nav", () => {
-  const links = [...document.getElementsByClassName("internal")] as HTMLLinkElement[]
+  const links = [...document.getElementsByClassName("internal")] as HTMLAnchorElement[]
   for (const link of links) {
     link.addEventListener("mouseenter", mouseEnterHandler)
     window.addCleanup(() => {

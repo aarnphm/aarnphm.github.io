@@ -2,10 +2,11 @@
 id: Continuous batching
 tags:
   - ml
-date: 2024-02-08
-modified: 2024-11-07
+date: "2024-02-08"
+modified: "2024-11-07"
 title: Continuous batching
-titleTransclude: false
+transclude:
+  title: false
 ---
 
 [@280922] solves the static batching to reduce cost and improve throughput by appending requests continuously into existing KV cache [^paper]

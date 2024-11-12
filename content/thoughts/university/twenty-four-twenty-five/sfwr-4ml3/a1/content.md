@@ -6,7 +6,7 @@ date: "2024-10-07"
 modified: "2024-10-07"
 title: Least Squared Regression
 ---
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/LSR.ipynb|jupyter notebook]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/assignment.pdf|pdf]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/F24_4ML3_A1_Solution.pdf|solutions]]
+See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/LSR.ipynb|jupyter notebook]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/assignment.pdf|pdf]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/solution.pdf|solutions]]
 
 ## question 1.
 

@@ -16,30 +16,22 @@ interface MacroType {
 }
 
 export const Latex: QuartzTransformerPlugin<Partial<Options>> = (opts) => {
-  const engine = opts?.renderEngine ?? "katex"
   const macros = opts?.customMacros ?? {}
-  const katexOptions = opts?.katexOptions ?? {}
   return {
     name: "Latex",
     markdownPlugins() {
       return [remarkMath]
     },
     htmlPlugins() {
-      switch (engine) {
-        default:
-          return [[rehypeKatex, { output: "html", macros, ...katexOptions }]]
-      }
+      return [[rehypeKatex, { output: "htmlAndMathml", macros, ...(opts?.katexOptions ?? {}) }]]
     },
     externalResources() {
       return {
-        css: [
-          // base css
-          { content: "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" },
-        ],
+        css: [{ content: "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" }],
         js: [
           {
             // fix copy behaviour: https://github.com/KaTeX/KaTeX/blob/main/contrib/copy-tex/README.md
-            src: "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/copy-tex.min.js",
+            src: "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js",
             loadTime: "afterDOMReady",
             contentType: "external",
           },

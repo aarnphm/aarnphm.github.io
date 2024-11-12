@@ -302,7 +302,7 @@ ORDER BY c.Name, a1.Name;
 ### Q1
 
 $$
-\begin{aligned}
+\begin{align}
 & R_1 = \text{Person} \bowtie_{\text{Person.PersonID} = \text{Passenger.PersonID}} \text{Passenger} \\[6pt]
 & R_2 = \sigma_{\substack{
     \text{Age} \geq 20 \\
@@ -311,7 +311,7 @@ $$
     \phantom{\wedge \,} \vee \, \text{DietaryPref} = \text{'Vegetarian'}\big)
 }} (R_1) \\[6pt]
 & \text{Result} = \pi_{\text{PersonID}, \, \text{Name}, \, \text{Age}} (R_2)
-\end{aligned}
+\end{align}
 $$
 
 ### Q2
@@ -325,7 +325,7 @@ $$
 b.
 
 $$
-\begin{aligned}
+\begin{align}
 & R_1 = \text{Airplane} \bowtie_{\text{AirlineAlias = Alias}} \text{Airline} \\[6pt]
 & R_2 = \sigma_{\substack{
     \text{Name} = \text{'Air Canada'} \\
@@ -336,7 +336,7 @@ $$
     \text{Name}, \text{Model}, \\
     \text{count}(*) \rightarrow \text{NumAirplanes}
 }} (R_2)
-\end{aligned}
+\end{align}
 $$
 
 ### Q3
@@ -344,25 +344,27 @@ $$
 a.
 
 $$
-\begin{aligned}
+\begin{align}
 & R_1 = \text{Ticket} \bowtie_{
     \substack{
         \text{FlightNo = FlightNo} \\
         \wedge \, \text{FlightDepDate = DepDate}
     }} \text{ScheduledFlight} \\[6pt]
 & R_2 = R_1 \bowtie_{\text{AirlineAlias = Alias}} \text{Airline} \\[6pt]
-& R_3 = R_2 ⟕_{\text{Ticket.TicketNo = Baggage.TicketNo}} \text{Baggage} \\[6pt]
+& R_3 = R_2 \Join_{\text{Ticket.TicketNo = Baggage.TicketNo}} \text{Baggage} \\[6pt]
 & R_4 = \sigma_{\text{Name} = \text{'Air Canada'}} (R_3) \\[6pt]
 & R_5 = \pi_{\text{TicketNo}, \text{TotalWeight}} (R_4) \\[6pt]
 & \text{Result} = \\
 & \quad \gamma_{\text{TicketNo}, \, \text{avg}(\text{TotalWeight}) \rightarrow \text{AverageBaggageWeight}} (R_5)
-\end{aligned}
+\end{align}
 $$
+
+_NOTE_: R2 should "\leftouterjoin" instead (but current limitation of LaTeX renderer)
 
 b.
 
 $$
-\begin{aligned}
+\begin{align}
 & R_1 = \text{Ticket} \bowtie_{
     \substack{
         \text{FlightNo = FlightNo} \\
@@ -378,7 +380,7 @@ $$
     \wedge \, \text{DepDate} \leq \text{'2024-01-03'}
 }} (R_2) \\[6pt]
 & \text{Result} = \pi_{\text{TicketNo, TotalWeight}} (R_3)
-\end{aligned}
+\end{align}
 $$
 
 ### Q4
@@ -423,7 +425,7 @@ b.
 
 $$
 \begin{align}
-R_1 &= \text{Route} \: ⟕_{\text{Route.RouteID = Use.RouteID}} \: \text{Use} \\[6pt]
+R_1 &= \text{Route} \: \Join_{\text{Route.RouteID = Use.RouteID}} \: \text{Use} \\[6pt]
 R_2 &= \sigma_{\text{AirlineAlias} \: \text{IS} \: \text{NULL}} (R_1) \\[6pt]
 \text{Result} &= \\
 & \quad \Pi_{\text{RouteID}, \,
@@ -433,6 +435,8 @@ R_2 &= \sigma_{\text{AirlineAlias} \: \text{IS} \: \text{NULL}} (R_1) \\[6pt]
     }} (R_2)
 \end{align}
 $$
+
+_NOTE_: Route should "\leftouterjoin" instead (but current limitation of LaTeX renderer)
 
 ### Q6
 

@@ -71,13 +71,14 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses", "cssclass"]))
             if (cssclasses) data.cssclasses = cssclasses
 
-            const permalinks = coerceToArray(coalesceAliases(data, ["permalink", "permalinks"]))
+            const permalinks = coerceToArray(coalesceAliases(data, ["permalinks", "permalink"]))
             if (permalinks) data.permalinks = permalinks
 
-            const socialImage = coerceToArray(
-              coalesceAliases(data, ["socialImage", "image", "cover"]),
-            )
+            const socialImage = coalesceAliases(data, ["socialImage", "image", "cover"])
             if (socialImage) data.socialImage = socialImage
+
+            const description = coalesceAliases(data, ["description", "socialDescription"])
+            if (description) data.description = description
 
             // fill in frontmatter
             file.data.frontmatter = data as QuartzPluginData["frontmatter"]
@@ -93,15 +94,12 @@ declare module "vfile" {
     frontmatter: { [key: string]: unknown } & {
       title: string
     } & Partial<{
-        navigation: string[]
         modified: string
         priority: number | undefined
         permalinks: string[]
-        comments: boolean
         tags: string[]
         aliases: string[]
         description: string
-        socialDescription: string
         publish: boolean
         draft: boolean
         lang: string
@@ -109,6 +107,8 @@ declare module "vfile" {
         cssclasses: string[]
         socialImage: string
         noindex: boolean
+        comments: boolean
+        transclude: Partial<{ title: boolean }>
       }>
   }
 }

@@ -390,8 +390,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
 
           const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
           const description = unescapeHTML(
-            file.data.frontmatter?.socialDescription ??
-              file.data.frontmatter?.description ??
+            file.data.frontmatter?.description ??
               file.data.description?.trim() ??
               i18n(cfg.locale).propertyDefaults.description,
           )

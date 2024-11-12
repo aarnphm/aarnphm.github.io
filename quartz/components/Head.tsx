@@ -16,8 +16,7 @@ export default (() => {
     const title =
       (fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title) + titleSuffix
     const description = unescapeHTML(
-      fileData.frontmatter?.socialDescription ??
-        fileData.frontmatter?.description ??
+      fileData.frontmatter?.description ??
         fileData.description?.trim() ??
         i18n(cfg.locale).propertyDefaults.description,
     )

@@ -3,18 +3,17 @@ id: In-memory representation
 tags:
   - technical
   - seed
+date: "2022-10-01"
+modified: "2024-11-12"
 title: In memory representation
-date: 2022-10-01
 ---
 
-### Flatbuffer
+## flatbuffer
 
-- difference with Protobuf: no unpacking/parsing
+_difference_ with protobuf: no unpacking/parsing
 
-[Benchmark][#benchmark]: zero-mem copy with slightly larger wire format
-
-- runner dispatcher optimization params via metadata
-
----
+[Benchmark][#benchmark] zero-mem copy with slightly larger wire format
 
 [#benchmark]: https://google.github.io/flatbuffers/flatbuffers_benchmarks.html
+
+## protobuf

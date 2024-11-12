@@ -26,10 +26,16 @@ html {
   scroll-behavior: smooth;
 }
 
+h1,
+h2,
+h3,
+h4 {
+  font-weight: normal;
+}
+
 // golden ditonic scale
 h1 {
   font-size: 2.0582rem;
-  font-weight: normal;
 }
 h2 {
   font-size: 1.618rem;
@@ -473,12 +479,23 @@ section[data-footnotes] {
     serif !important;
 }
 
-.popover > .popover-inner[data-content-type*="pdf"] {
-  iframe {
-    min-height: 500px;
+.popover {
+  & > .popover-inner {
+    &[data-content-type*="pdf"] {
+      iframe {
+        min-height: 700px;
+        min-width: 700px;
+      }
+    }
+
+    pre {
+      border: 0;
+      padding: 0;
+      color: initial;
+      font-size: small;
+    }
   }
 }
-
 .popover > .popover-inner,
 .graph > .graph-outer,
 .graph > .graph-outer > #global-graph-container {
@@ -490,6 +507,10 @@ section[data-footnotes] {
   & > #quartz-body {
     @media all and ($desktop) {
       column-gap: 2rem;
+    }
+
+    footer {
+      margin-bottom: 2rem;
     }
   }
 

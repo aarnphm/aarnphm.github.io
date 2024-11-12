@@ -4,11 +4,13 @@ tags:
   - sfwr3db3
   - assignment
 date: "2024-09-26"
+description: some notes about entity-relationship models and foreign keys
 modified: "2024-09-27"
 title: E/R models and keys
 ---
 
 **Problem 1**: Consider the relations `PLAYERS` and `PLAYS` given by the schemas below.
+
 - `PLAYERS (playerID, firstName, lastName, gender, DOB, height, weight, drafted)`
 - `PLAYS (playerID, teamID, teamName, number, position, startYear)`
 
@@ -26,28 +28,34 @@ For example, playerID 5 plays with teamID 1, the Toronto Raptors, with the numbe
 Candidate keys:
 
 1. $\text{playerID}$ in `PLAYERS` relation:
-  - description: playerID contains a sole attribute, so it is minimal superkey. Given that each player will have unique `playerID`
-  - assumption: each players has unique playerID
+
+- description: playerID contains a sole attribute, so it is minimal superkey. Given that each player will have unique `playerID`
+- assumption: each players has unique playerID
 
 2. $\{\text{playerID}, \text{teamID}, \text{number}\}$ in `PLAYS` relation:
-  - description: $\{\text{playerID}, \text{teamID}, \text{number}\}$ is minimal superkey given assumption.
-  - assumption: A player uses the same number for their duration at a given team.
+
+- description: $\{\text{playerID}, \text{teamID}, \text{number}\}$ is minimal superkey given assumption.
+- assumption: A player uses the same number for their duration at a given team.
 
 3. $\{\text{playerID}, \text{teamID}, \text{startYear}\}$ in `PLAYS` relation:
-  - description: $\{\text{playerID}, \text{teamID}, \text{startYear}\}$ identifies the assumption, making it a minimal superkey.
-  - assumption: A player can only be associated with a team at a given period in time.
+
+- description: $\{\text{playerID}, \text{teamID}, \text{startYear}\}$ identifies the assumption, making it a minimal superkey.
+- assumption: A player can only be associated with a team at a given period in time.
 
 > [!question] 1.b (6 marks)
 > List three integrity constraints that should hold over these relations. For each constraint, describe in one sentence why your constraint is necessary.
 
 1. `playerID` in `PLAYS` references `playerID` in `PLAYERS`:
-  - reason: foreign key constraint is necessary to ensure referential integrity, in other word, every player in `PLAY` must exist in `PLAYERS`
+
+- reason: foreign key constraint is necessary to ensure referential integrity, in other word, every player in `PLAY` must exist in `PLAYERS`
 
 2. `drafted` in `PLAYERS` must be less than or equal to `startYear` in `PLAYS`:
-  - reason: temporal integrity constraint, i.e., a player cannot start playing for a team before they were drafted into the league
+
+- reason: temporal integrity constraint, i.e., a player cannot start playing for a team before they were drafted into the league
 
 3. $\{\text{teamID}, \text{number}\}$ in `PLAYS` table must be unique per `playerID`
-  - reason: uniqueness constraint, i.e., no two players on the same team have the same number at any point in time
+
+- reason: uniqueness constraint, i.e., no two players on the same team have the same number at any point in time
 
 ---
 
@@ -57,6 +65,7 @@ MacAir Aviation manages flight operations, passenger services, fleet maintenance
 MacAir wants to store information about people, where a person is represented with a person ID, name, age, and phone number.
 
 There are four types of persons: passenger, pilot, cabin crew, and ground staff:
+
 - A passenger has a dietary preference (e.g., ‘Vegan’, ‘Gluten-Free’, ‘Lactose- Free’, etc.).
 - A pilot, and a cabin crew both have a position (e.g., ‘Captain’, ‘First Officer’, etc.) and a salary.
 - Ground staff have attributes for salary and department (e.g. Billing and invoicing, Information Technology, etc.).
@@ -117,31 +126,31 @@ A ticket is associated to many (types of) bags.
 > [!question] 2.b
 > Give a brief (one sentence) description of each of your entities and relationships, and any constraints that exist. For example, $X$ is a weak entity with attributes $(a, b, c)$, and has a many-one relationship with $Y$
 
-*Person*: denotes the meta definition of a person with attributes $(\text{id [PK], name, age, phone\_number})$
+_Person_: denotes the meta definition of a person with attributes $(\text{id [PK], name, age, phone\_number})$
 
-*Baggage*: is an entity with attributes $(\text{type}, \text{quantity}, \text{weight}, \text{is\_fragile})$, has a many-to-one relationship with *Ticket*
+_Baggage_: is an entity with attributes $(\text{type}, \text{quantity}, \text{weight}, \text{is\_fragile})$, has a many-to-one relationship with _Ticket_
 
-*Passenger*: is a subclass of *Person*, with attributes $(\text{dietary\_preference})$, has a one-many relationship with *Ticket*
+_Passenger_: is a subclass of _Person_, with attributes $(\text{dietary\_preference})$, has a one-many relationship with _Ticket_
 
-*Ticket*: is a strong entity with atributes $(\text{ticket\_number [PK]}, \text{seat\_number, class, price, travel\_website})$, having one-to-many relationship with *Baggage*
+_Ticket_: is a strong entity with atributes $(\text{ticket\_number [PK]}, \text{seat\_number, class, price, travel\_website})$, having one-to-many relationship with _Baggage_
 
-*Pilot*: is a subclass of *Person*, with attributes $(\text{position},\text{salary})$, has a "fly" one-to-many relationship with *airplane*
+_Pilot_: is a subclass of _Person_, with attributes $(\text{position},\text{salary})$, has a "fly" one-to-many relationship with _airplane_
 
-*Cabin Crew*: is a subclass of *Person*, with attributes $(\text{position},\text{salary})$, has a "work" many-to-one relationship with *airline*
+_Cabin Crew_: is a subclass of _Person_, with attributes $(\text{position},\text{salary})$, has a "work" many-to-one relationship with _airline_
 
-*Ground Staff*: is a subclass of *Person*, with attributes $(\text{department},\text{salary})$, has a "work" many-to-one relationship with *airport*
+_Ground Staff_: is a subclass of _Person_, with attributes $(\text{department},\text{salary})$, has a "work" many-to-one relationship with _airport_
 
-*airport*: is a strong entity with attributes $(\text{iata\_code [PK, FK]}, \text{name [PK]}, \text{city})$, has "has" one-to-many relationship with *Ground Staff* and many-to-one with *country*
+_airport_: is a strong entity with attributes $(\text{iata\_code [PK, FK]}, \text{name [PK]}, \text{city})$, has "has" one-to-many relationship with _Ground Staff_ and many-to-one with _country_
 
-*country*: is a strong entity with attributes $(\text{code [PK]}, \text{name}, \text{continent})$, has one-to-many relationship with *airline*
+_country_: is a strong entity with attributes $(\text{code [PK]}, \text{name}, \text{continent})$, has one-to-many relationship with _airline_
 
-*airline*: is a strong entity with attributes $(\text{name}, \text{alias [PK]})$, has one-to-many relationship with *scheduled_flight*, and one-to-many with *airplane*
+_airline_: is a strong entity with attributes $(\text{name}, \text{alias [PK]})$, has one-to-many relationship with _scheduled_flight_, and one-to-many with _airplane_
 
-*airplane*: is a strong entity with attributes $(\text{serial\_number [PK]}, \text{manufacturer}, \text{model})$, has many-to-one relationship with *pilot*
+_airplane_: is a strong entity with attributes $(\text{serial\_number [PK]}, \text{manufacturer}, \text{model})$, has many-to-one relationship with _pilot_
 
-*flight_route*: is a strong entity with attributes $(\text{id [PK]}, \text{stop, duration})$, has one-to-many relationship with *scheduled_flight* and one-to-one with *airport* through relationship `source` and `dest`
+_flight_route_: is a strong entity with attributes $(\text{id [PK]}, \text{stop, duration})$, has one-to-many relationship with _scheduled_flight_ and one-to-one with _airport_ through relationship `source` and `dest`
 
-*scheduled_flight*: is a strong entity with attributes:
+_scheduled_flight_: is a strong entity with attributes:
 
 $$
 \begin{aligned}
@@ -151,8 +160,7 @@ $$
 \end{aligned}
 $$
 
-
-has one-to-many relationship with *flight_route* and one-to-many with *airport* through relationship `source`
+has one-to-many relationship with _flight_route_ and one-to-many with _airport_ through relationship `source`
 
 Constraints:
 
@@ -169,7 +177,7 @@ Constraints:
 
 > [!question] 2.c
 > Provide the corresponding DB2 `CREATE TABLE`` statements describing the relational schema.
-> Please include all your statements in an executable script `airline.ddl` that can be run on the DB2 command line, in a single command.
+Please include all your statements in an executable script `airline.ddl` that can be run on the DB2 command line, in a single command.
 > Ensure that your script runs on the CAS DB2 server.
 
 See also: [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/a1/airline.ddl]]

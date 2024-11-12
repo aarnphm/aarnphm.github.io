@@ -2,7 +2,6 @@
 id: work
 tags:
   - evergreen
-  - technical
 comments: false
 date: "2021-12-22"
 description: A list of work that I have been doing for the past while.
