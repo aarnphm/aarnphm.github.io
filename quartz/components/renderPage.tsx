@@ -693,5 +693,18 @@ export function renderPage(
     </html>
   )
 
-  return "<!DOCTYPE html>\n" + render(doc)
+  return (
+    "<!DOCTYPE html>\n" +
+    `<!--
+/*************************************************************************
+* Boop got your nose !!!
+*
+* Hehe
+*
+* Anw if you see a component you like ping @aarnphm on Discord I can try
+* to send it your way. Have a wonderful day!
+**************************************************************************/
+-->` +
+    render(doc)
+  )
 }
