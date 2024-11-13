@@ -1,7 +1,7 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { clone, FullSlug, normalizeHastElement, FilePath } from "../util/path"
 import { classNames } from "../util/lang"
-import { visit } from "unist-util-visit"
+import { SKIP, visit } from "unist-util-visit"
 import { Node, Element, ElementContent, Root } from "hast"
 import { mergeIsomorphic } from "./renderPage"
 import { htmlToJsx } from "../util/jsx"
@@ -227,6 +227,12 @@ export default (() => {
             }
           })
         }
+      }
+    })
+    // remove all hr
+    visit(ast, "element", (node: Element, index: number, parent: Element) => {
+      if (node.tagName === "hr") {
+        parent.children.splice(index, 1)
       }
     })
 

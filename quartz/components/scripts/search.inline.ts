@@ -61,6 +61,24 @@ function highlight(searchTerm: string, text: string, trim?: boolean) {
   const tokenizedTerms = tokenizeTerm(searchTerm)
   let tokenizedText = text.split(/\s+/).filter((t) => t !== "")
 
+  // First pass: remove terms that are within KaTeX blocks
+  tokenizedText = tokenizedText
+    .map((tok) => {
+      // Simple check for KaTeX delimiters
+      if (
+        tok.includes("\\(") ||
+        tok.includes("\\)") ||
+        tok.includes("\\[") ||
+        tok.includes("\\]") ||
+        tok.includes("$") ||
+        tok.includes("$$")
+      ) {
+        return "" // Remove KaTeX content from search
+      }
+      return tok
+    })
+    .filter((t) => t !== "")
+
   let startIndex = 0
   let endIndex = tokenizedText.length - 1
   if (trim) {
@@ -86,7 +104,6 @@ function highlight(searchTerm: string, text: string, trim?: boolean) {
 
   const slice = tokenizedText
     .map((tok) => {
-      // see if this tok is prefixed by any search terms
       for (const searchTok of tokenizedTerms) {
         if (tok.toLowerCase().includes(searchTok.toLowerCase())) {
           const regex = new RegExp(searchTok.toLowerCase(), "gi")
@@ -115,6 +132,10 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
   }
 
   const highlightTextNodes = (node: Node, term: string) => {
+    if (insideMathNode(node)) {
+      return
+    }
+
     if (node.nodeType === Node.TEXT_NODE) {
       const nodeText = node.nodeValue ?? ""
       const regex = new RegExp(term.toLowerCase(), "gi")
@@ -141,6 +162,27 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
   }
 
   return html.body
+}
+
+function insideMathNode(node: Node): boolean {
+  let current: Node | null = node
+  while (current) {
+    if (current instanceof HTMLElement) {
+      // Check for both KaTeX display and inline math
+      if (
+        current.classList.contains("katex") ||
+        current.classList.contains("katex-display") ||
+        current.classList.contains("katex-html") ||
+        current.classList.contains("katex-mathml") ||
+        current.classList.contains("math") ||
+        current.classList.contains("math-display")
+      ) {
+        return true
+      }
+    }
+    current = current.parentNode
+  }
+  return false
 }
 
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
@@ -378,11 +420,6 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
           throw new Error(`Could not fetch ${targetUrl}`)
         }
         const html = p.parseFromString(contents ?? "", "text/html")
-        if (html.body.dataset.enablePreview === "false") {
-          const noPreview = document.createElement("div")
-          noPreview.innerHTML = `<p>L'aperçu est désactivé sur cette page.</p>`
-          return [noPreview]
-        }
         normalizeRelativeURLs(html, targetUrl)
         return [...html.getElementsByClassName("popover-hint")]
       })
@@ -406,7 +443,24 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     const highlights = [...preview.querySelectorAll(".highlight")].sort(
       (a, b) => b.innerHTML.length - a.innerHTML.length,
     )
-    highlights[0]?.scrollIntoView({ block: "start" })
+    if (highlights.length > 0) {
+      const highlight = highlights[0]
+      const container = preview
+      if (container && highlight) {
+        // Get the relative positions
+        const containerRect = container.getBoundingClientRect()
+        const highlightRect = highlight.getBoundingClientRect()
+
+        // Calculate the scroll position relative to the container
+        const relativeTop = highlightRect.top - containerRect.top + container.scrollTop - 20 // 20px buffer
+
+        // Smoothly scroll the container
+        container.scrollTo({
+          top: relativeTop,
+          behavior: "smooth",
+        })
+      }
+    }
   }
 
   async function onType(e: HTMLElementEventMap["input"]) {
@@ -433,7 +487,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
         for (let searchResult of searchResults) {
           searchResult.result = searchResult.result.slice(0, numSearchResults)
         }
-        // set search type to basic and remove tag from term for proper highlightning and scroll
+        // set search type to basic and remove tag from term for proper highlighting and scroll
         searchType = "basic"
         currentSearchTerm = query
       } else {

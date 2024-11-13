@@ -58,8 +58,6 @@ function toggleReader(button: HTMLButtonElement) {
   }
 }
 
-// Add resize observer to handle dynamic content changes
-const observer = new ResizeObserver(updateHeights)
 function setupToolbar() {
   const toolbar = document.querySelector(".toolbar")
   if (!toolbar) return
@@ -105,12 +103,4 @@ function setupToolbar() {
 }
 
 window.addEventListener("resize", setupToolbar)
-document.addEventListener("nav", () => {
-  setupToolbar()
-
-  observer.disconnect()
-  const articleContent = document.querySelector(".center")
-  if (articleContent) {
-    observer.observe(articleContent)
-  }
-})
+document.addEventListener("nav", setupToolbar)

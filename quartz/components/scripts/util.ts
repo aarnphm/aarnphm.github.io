@@ -194,15 +194,7 @@ export function updateContainerHeights() {
 
   // Set sidenotes container height to match article content
   const articleRect = articleContent.getBoundingClientRect()
-  const viewportHeight = window.innerHeight
-  const topSpacing = 96 // 6rem
-
-  sideContainer.style.height = "auto"
-  if (articleRect.height > viewportHeight - topSpacing) {
-    sideContainer.style.minHeight = `${articleRect.height}px`
-  } else {
-    sideContainer.style.minHeight = ""
-  }
+  sideContainer.style.height = `${articleRect.height}px`
 
   // Recalculate sidenote positions
   const sidenotes = sideContainer.querySelectorAll(".sidenote-element") as NodeListOf<HTMLElement>
