@@ -105,7 +105,7 @@ const config: QuartzConfig = {
           "\\argmin": "\\mathop{\\operatorname{arg\\,min}}\\limits",
           "\\argmax": "\\mathop{\\operatorname{arg\\,max}}\\limits",
         },
-        katexOptions: { strict: true },
+        katexOptions: { strict: false },
       }),
       Plugin.TableOfContents({ maxDepth: 4 }),
     ],

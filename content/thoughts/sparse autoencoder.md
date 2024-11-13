@@ -110,9 +110,10 @@ See also: [link](https://www.alignmentforum.org/posts/3JuSjTZyMzaSeTxKk/addressi
 Loss function of SAEs combines a MSE reconstruction loss with sparsity term:
 
 $$
-L(x, f(x), y) = \|y-x\|^2/d + c\mid f(x) \mid
-\\
-\because d: \text{ dimensionality of }x
+\begin{aligned}
+L(x, f(x), y) &= \|y-x\|^2/d + c\mid f(x) \mid \\[8pt]
+&\because d: \text{ dimensionality of }x
+\end{aligned}
 $$
 
 > the reconstruction is not perfect, given that only one is reconstruction. **For smaller value of $f(x)$, features will be suppressed**
