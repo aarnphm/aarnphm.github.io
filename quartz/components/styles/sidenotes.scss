@@ -1,6 +1,5 @@
 .sidenotes {
   counter-reset: sidenote-counter;
-  position: relative;
 
   &::before {
     content: "";
@@ -32,7 +31,7 @@
 
   & .sidenote-element {
     position: absolute;
-    transition: opacity 0.2s ease-in-out;
+    transition: opacity 0.3s ease-in-out;
     opacity: 0;
     display: block;
     margin-bottom: 1rem;

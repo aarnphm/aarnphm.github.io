@@ -139,7 +139,7 @@ const config: QuartzConfig = {
       Plugin.CuriusPage(),
       Plugin.MenuPage(),
       Plugin.PoetryPage(),
-      Plugin.CodeViewer(),
+      // Plugin.CodeViewer(),
       Plugin.NotebookViewer(),
       // Plugin.InfinitePoemPage(),
       Plugin.ContentIndex({ rssLimit: 40 }),

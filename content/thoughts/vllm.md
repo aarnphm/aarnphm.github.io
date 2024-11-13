@@ -207,7 +207,7 @@ Bottleneck at `AsyncLogitProcessor` and `Scheduling` layer, given that this is r
 >
 > Executor will handle all KVCache, block manager, and evictor layer here during model execution
 >
-> broadcast with SPMD with sequence groups
+> broadcast SPMD with sequence groups
 
 ### proposal
 

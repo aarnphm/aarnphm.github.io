@@ -1,10 +1,5 @@
 import { removeAllChildren, isInViewport, updatePosition } from "./util"
 
-const ARTICLE_CONTENT_SELECTOR = ".center"
-const FOOTNOTE_SECTION_SELECTOR = "section[data-footnotes] > ol"
-const INDIVIDUAL_FOOTNOTE_SELECTOR = "li[id^='user-content-fn-']"
-const SPACING_THRESHOLD = 30 // pixels
-
 function checkSidenoteSpacing(current: HTMLElement, allSidenotes: NodeListOf<HTMLElement>) {
   const currentRect = current.getBoundingClientRect()
   const currentBottom = currentRect.top + currentRect.height
@@ -29,13 +24,13 @@ function checkSidenoteSpacing(current: HTMLElement, allSidenotes: NodeListOf<HTM
   const spacing = nextRect.top - currentBottom
 
   const inner = current.querySelector(".sidenote-inner") as HTMLElement
-  if (inner && spacing > SPACING_THRESHOLD) {
+  if (inner && spacing > 30) {
     inner.style.maxHeight = "unset"
   }
 }
 
 function updateSidenotes() {
-  const articleContent = document.querySelector(ARTICLE_CONTENT_SELECTOR) as HTMLElement
+  const articleContent = document.querySelector(".center") as HTMLElement
   const sideContainer = document.querySelector(".sidenotes") as HTMLElement
   if (!articleContent || !sideContainer) return
 
@@ -119,9 +114,9 @@ function createSidenote(
 }
 
 document.addEventListener("nav", () => {
-  const articleContent = document.querySelector(ARTICLE_CONTENT_SELECTOR) as HTMLElement
+  const articleContent = document.querySelector(".center") as HTMLElement
   const footnoteSectionList = Array.from(
-    articleContent.querySelectorAll(FOOTNOTE_SECTION_SELECTOR),
+    articleContent.querySelectorAll("section[data-footnotes] > ol"),
   ) as HTMLOListElement[]
   if (!articleContent) return
 
@@ -129,11 +124,6 @@ document.addEventListener("nav", () => {
   if (!sideContainer) return
 
   removeAllChildren(sideContainer)
-
-  // Set container height to match article content
-  const articleRect = articleContent.getBoundingClientRect()
-  sideContainer.style.height = `${articleRect.height}px`
-  sideContainer.style.top = "0px"
 
   const ol = document.createElement("ol")
   sideContainer.appendChild(ol)
@@ -145,7 +135,7 @@ document.addEventListener("nav", () => {
   }
 
   const footnoteItems = footnoteSectionList.flatMap((ol) =>
-    Array.from(ol.querySelectorAll(INDIVIDUAL_FOOTNOTE_SELECTOR)),
+    Array.from(ol.querySelectorAll("li[id^='user-content-fn-']")),
   ) as HTMLLIElement[]
 
   for (const footnote of footnoteItems) {

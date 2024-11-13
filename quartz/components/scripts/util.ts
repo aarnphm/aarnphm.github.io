@@ -1,3 +1,5 @@
+import { getFullSlug } from "../../util/path"
+
 export function registerEscapeHandler(outsideContainer: HTMLElement | null, cb: () => void) {
   if (!outsideContainer) return
   function click(this: HTMLElement, e: HTMLElementEventMap["click"]) {
@@ -122,7 +124,7 @@ export function updatePosition(ref: HTMLElement, child: HTMLElement, parent: HTM
   child.style.top = `${referencePosition}px`
 }
 
-export function updateSidenoteState(content: HTMLElement, isCollapsed: boolean) {
+function updateSidenoteState(content: HTMLElement, isCollapsed: boolean) {
   // handle sidenotes state
   const sidenoteRefs = content.querySelectorAll("a[data-footnote-ref]") as NodeListOf<HTMLElement>
   const sideContainer = document.querySelector(".sidenotes") as HTMLElement | null
@@ -149,26 +151,24 @@ export function updateSidenoteState(content: HTMLElement, isCollapsed: boolean) 
   }
 }
 
-interface HeaderState {
-  id: string
-  collapsed: boolean
+export type CollapsedState = "true" | "false"
+
+const collapseId = (win: Window, id: string): string => `${getFullSlug(win)}-${id}`
+
+export function getCollapsedState(win: Window, id: string): CollapsedState {
+  return (localStorage.getItem(collapseId(win, id)) ?? "false") as CollapsedState
+}
+export function setCollapsedState(win: Window, id: string, state: CollapsedState) {
+  localStorage.setItem(collapseId(win, id), state)
 }
 
-export function toggleCollapsedById(array: HeaderState[], id: string) {
-  const entry = array.find((item) => item.id === id)
-  if (entry) {
-    entry.collapsed = !entry.collapsed
-  } else {
-    array.push({ id, collapsed: true })
-  }
-}
-
-export function saveHeaderState(currentHeaderState: HeaderState[]) {
-  localStorage.setItem("headerState", JSON.stringify(currentHeaderState))
-}
-
-export function loadHeaderState(): HeaderState[] {
-  return JSON.parse(localStorage.getItem("headerState") ?? "[]")
+export function setHeaderState(button: HTMLElement, content: HTMLElement, collapsed: boolean) {
+  button.setAttribute("aria-expanded", collapsed ? "false" : "true")
+  button.classList.toggle("collapsed", collapsed)
+  content.style.maxHeight = collapsed ? "0px" : "inherit"
+  content.classList.toggle("collapsed", collapsed)
+  button.parentElement!.parentElement!.classList.toggle("collapsed", collapsed)
+  updateSidenoteState(content, collapsed)
 }
 
 export function closeReader(readerView: HTMLElement | null) {
@@ -185,4 +185,44 @@ export function closeReader(readerView: HTMLElement | null) {
   allHr.forEach((hr) => (hr.style.visibility = "show"))
   quartz.style.overflow = ""
   quartz.style.maxHeight = ""
+}
+
+export function updateContainerHeights() {
+  const articleContent = document.querySelector(".center") as HTMLElement
+  const sideContainer = document.querySelector(".sidenotes") as HTMLElement
+  if (!articleContent || !sideContainer) return
+
+  // Set sidenotes container height to match article content
+  const articleRect = articleContent.getBoundingClientRect()
+  const viewportHeight = window.innerHeight
+  const topSpacing = 96 // 6rem
+
+  sideContainer.style.height = "auto"
+  if (articleRect.height > viewportHeight - topSpacing) {
+    sideContainer.style.minHeight = `${articleRect.height}px`
+  } else {
+    sideContainer.style.minHeight = ""
+  }
+
+  // Recalculate sidenote positions
+  const sidenotes = sideContainer.querySelectorAll(".sidenote-element") as NodeListOf<HTMLElement>
+  const inViewSidenotes = Array.from(sidenotes).filter((note) => note.classList.contains("in-view"))
+
+  for (const sidenote of inViewSidenotes) {
+    const sideId = sidenote.id.replace("sidebar-", "")
+    const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
+    if (intextLink) {
+      updatePosition(intextLink, sidenote, sideContainer)
+    }
+  }
+}
+
+export function debounceUpdateHeight(delay: number = 150) {
+  let timeoutId: ReturnType<typeof setTimeout>
+  return () => {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => {
+      updateContainerHeights()
+    }, delay)
+  }
 }
