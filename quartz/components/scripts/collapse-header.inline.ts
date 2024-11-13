@@ -40,7 +40,20 @@ function setupHeaders() {
       const content = document.querySelector(
         `.collapsible-header-content[data-references="${button.id}"]`,
       ) as HTMLElement
-      setHeaderState(button, content, savedState === "false")
+      // setup once
+      const isCollapsed = savedState === "true"
+      button.setAttribute("aria-expanded", isCollapsed ? "false" : "true")
+      if (isCollapsed) {
+        button.classList.add("collapsed")
+        content.classList.add("collapsed")
+        content.style.maxHeight = "0px"
+        button.closest(".collapsible-header")?.classList.add("collapsed")
+      } else {
+        button.classList.remove("collapsed")
+        content.classList.remove("collapsed")
+        content.style.maxHeight = ""
+        button.closest(".collapsible-header")?.classList.remove("collapsed")
+      }
     }
   }
 }

@@ -704,7 +704,7 @@ export function renderPage(
     "<!DOCTYPE html>\n" +
     `<!--
 /*************************************************************************
-* Boop got your nose !!!
+* Bop got your nose !!!
 *
 * Hehe
 *
