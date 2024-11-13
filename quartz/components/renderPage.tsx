@@ -12,8 +12,6 @@ import { i18n } from "../i18n"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
 import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
-// @ts-ignore
-import equationScript from "./scripts/equation.inline.ts"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -464,11 +462,6 @@ export function pageResources(
         loadTime: "afterDOMReady",
         moduleType: "module",
         contentType: "external",
-      },
-      {
-        script: equationScript,
-        loadTime: "afterDOMReady",
-        contentType: "inline",
       },
     ],
   }

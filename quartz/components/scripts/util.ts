@@ -124,7 +124,7 @@ export function updatePosition(ref: HTMLElement, child: HTMLElement, parent: HTM
   child.style.top = `${referencePosition}px`
 }
 
-function updateSidenoteState(content: HTMLElement, isCollapsed: boolean) {
+export function updateSidenoteState(content: HTMLElement, isCollapsed: boolean) {
   // handle sidenotes state
   const sidenoteRefs = content.querySelectorAll("a[data-footnote-ref]") as NodeListOf<HTMLElement>
   const sideContainer = document.querySelector(".sidenotes") as HTMLElement | null
@@ -155,19 +155,24 @@ export type CollapsedState = "true" | "false"
 
 const collapseId = (win: Window, id: string): string => `${getFullSlug(win)}-${id}`
 
-export function getCollapsedState(win: Window, id: string): CollapsedState {
-  return (localStorage.getItem(collapseId(win, id)) ?? "false") as CollapsedState
+export function getCollapsedState(win: Window, id: string): CollapsedState | null {
+  return localStorage.getItem(collapseId(win, id)) as CollapsedState | null
 }
 export function setCollapsedState(win: Window, id: string, state: CollapsedState) {
   localStorage.setItem(collapseId(win, id), state)
 }
 
-export function setHeaderState(button: HTMLElement, content: HTMLElement, collapsed: boolean) {
+export function setHeaderState(
+  button: HTMLElement,
+  content: HTMLElement,
+  wrapper: HTMLElement,
+  collapsed: boolean,
+) {
   button.setAttribute("aria-expanded", collapsed ? "false" : "true")
-  button.classList.toggle("collapsed", collapsed)
   content.style.maxHeight = collapsed ? "0px" : "inherit"
+  button.classList.toggle("collapsed", collapsed)
   content.classList.toggle("collapsed", collapsed)
-  button.parentElement!.parentElement!.classList.toggle("collapsed", collapsed)
+  wrapper.classList.toggle("collapsed", collapsed)
   updateSidenoteState(content, collapsed)
 }
 
