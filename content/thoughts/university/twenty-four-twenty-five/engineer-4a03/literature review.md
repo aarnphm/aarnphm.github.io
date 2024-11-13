@@ -3,10 +3,11 @@ id: literature review
 tags:
   - engineer4a03
 date: "2024-10-07"
+description: How we understand machine learning system is how we can move towards a safe futures, yet the road ahead lies many troubles to overcome. A literature review into the inception of the field, as well as where do we go from here.
 modified: "2024-10-08"
 noindex: true
 sidenotes: false
-title: literature review
+title: machine learning, as inception of time, a literature review
 ---
 
 See also [[posts/a1|essays on ChatGPT]]

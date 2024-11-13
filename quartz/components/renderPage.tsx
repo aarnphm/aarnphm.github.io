@@ -596,20 +596,22 @@ export function renderPage(
       }
     }
   })
-  // NOTE: handling collapsible nodes
-  visit(root, "element", (node: Element, idx, parent) => {
-    const denyIds = new Set(["footnote-label", "reference-label"])
-    if (
-      slug !== "index" &&
-      node.tagName.match(headerRegex) &&
-      !denyIds.has(node.properties.id as string) &&
-      !(componentData.fileData.frontmatter?.menu ?? false) &&
-      (componentData.fileData.frontmatter?.collapsible ?? true)
-    ) {
-      // then do the process headers and its children here
-      processHeaders(node, idx, parent as Element)
-    }
-  })
+  if (!slug.includes("posts")) {
+    // NOTE: handling collapsible nodes
+    visit(root, "element", (node: Element, idx, parent) => {
+      const denyIds = new Set(["footnote-label", "reference-label"])
+      if (
+        slug !== "index" &&
+        node.tagName.match(headerRegex) &&
+        !denyIds.has(node.properties.id as string) &&
+        !(componentData.fileData.frontmatter?.menu ?? false) &&
+        (componentData.fileData.frontmatter?.collapsible ?? true)
+      ) {
+        // then do the process headers and its children here
+        processHeaders(node, idx, parent as Element)
+      }
+    })
+  }
   // NOTE: We then merge all references and footnotes to final items
   mergeIsomorphic(root)
 

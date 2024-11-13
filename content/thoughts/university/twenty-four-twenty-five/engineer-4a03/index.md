@@ -8,4 +8,4 @@ modified: "2024-10-29"
 title: Engineering Ethics
 ---
 
-See also [[thoughts/ethics]], [[thoughts/university/twenty-four-twenty-five/engineer-4a03/literature review]]
+See also [[thoughts/ethics]], [[thoughts/university/twenty-four-twenty-five/engineer-4a03/literature review]], [[thoughts/university/twenty-four-twenty-five/engineer-4a03/case study]]
