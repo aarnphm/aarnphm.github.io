@@ -18,7 +18,7 @@
     },
     {
       "source": "/(.*\\.(py|go|java|c|cpp|h|hpp|rs|m|cu|zig|sql|sh))$",
-      "dest": "/api/$1",
+      "destination": "/api/$1",
       "permanent": true
     }
   ]
