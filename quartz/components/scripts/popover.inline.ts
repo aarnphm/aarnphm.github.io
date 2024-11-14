@@ -86,7 +86,7 @@ async function mouseEnterHandler(
 
   let response: Response | void
   if (link.dataset.arxivId) {
-    const url = new URL(`https://raw.aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
+    const url = new URL(`https://cdn.aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
     response = await fetch(url).catch(console.error)
   } else {
     response = await fetch(`${targetUrl}`).catch(console.error)

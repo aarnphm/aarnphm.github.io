@@ -96,6 +96,7 @@ const config: QuartzConfig = {
         lazyLoad: true,
         compressedImage: true,
         enableArxivEmbed: true,
+        enableRawEmbed: true,
       }),
       Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.Description(),

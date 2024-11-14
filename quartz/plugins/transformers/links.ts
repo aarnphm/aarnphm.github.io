@@ -18,6 +18,7 @@ import { VFile } from "vfile"
 
 interface Options {
   enableArxivEmbed: boolean
+  enableRawEmbed: boolean
   compressedImage: boolean
   /** How to resolve Markdown paths */
   markdownLinkResolution: TransformOptions["strategy"]
@@ -30,6 +31,7 @@ interface Options {
 
 const defaultOptions: Options = {
   enableArxivEmbed: false,
+  enableRawEmbed: false,
   compressedImage: false,
   markdownLinkResolution: "absolute",
   prettyLinks: true,
@@ -37,6 +39,28 @@ const defaultOptions: Options = {
   lazyLoad: false,
   externalLinkIcon: true,
 }
+
+const ALLOWED_EXTENSIONS = [
+  ".py",
+  ".go",
+  ".java",
+  ".c",
+  ".cpp",
+  ".cxx",
+  ".cu",
+  ".cuh",
+  ".h",
+  ".hpp",
+  ".ts",
+  ".js",
+  ".yaml",
+  ".yml",
+  ".rs",
+  ".m",
+  ".sql",
+  ".sh",
+  ".txt",
+]
 
 export function extractArxivId(url: string): string | null {
   try {
@@ -89,7 +113,10 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 // insert a span element into node.children
                 let dest = node.properties.href as RelativeURL
                 const ext: string = path.extname(dest).toLowerCase()
-                const isExternal = isAbsoluteUrl(dest)
+                const isExternal =
+                  opts.enableRawEmbed && ALLOWED_EXTENSIONS.includes(ext)
+                    ? true
+                    : isAbsoluteUrl(dest)
 
                 const isCslNode = classes.includes("csl-external-link")
                 const isEmbedTwitter = filterEmbedTwitter(node)
@@ -100,6 +127,17 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   node.properties.dataArxivId = extractArxivId(node.properties.href)
                 } else if (!isEmbedTwitter) {
                   classes.push(isExternal ? "external" : "internal")
+                }
+
+                // We will need to translate the link to external here
+                if (isExternal && opts.enableRawEmbed) {
+                  const constructUrl = (fp: string) => {
+                    const cdn = "https://cdn.aarnphm.xyz/"
+                    return cdn.endsWith("/") ? cdn + fp : [cdn, fp].join("/")
+                  }
+                  if (ALLOWED_EXTENSIONS.includes(ext)) {
+                    dest = node.properties.href = constructUrl(dest) as RelativeURL
+                  }
                 }
 
                 if (

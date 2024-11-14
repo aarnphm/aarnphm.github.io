@@ -158,7 +158,7 @@ export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => 
 }
 
 export async function fetchFollowing(): Promise<Following[]> {
-  return fetch("https://raw.aarnphm.xyz/api/curius?query=following", fetchLinksHeaders)
+  return fetch("https://cdn.aarnphm.xyz/api/curius?query=following", fetchLinksHeaders)
     .then((res): Promise<CuriusResponse> => res.json())
     .then((data) => {
       if (data === undefined || data.following === undefined) {
@@ -169,7 +169,7 @@ export async function fetchFollowing(): Promise<Following[]> {
 }
 
 export async function fetchUsers(): Promise<User> {
-  return fetch("https://raw.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
+  return fetch("https://cdn.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
     .then((res): Promise<CuriusResponse> => res.json())
     .then((data) => {
       if (data === undefined || data.user === undefined) {
@@ -181,7 +181,7 @@ export async function fetchUsers(): Promise<User> {
 
 export async function fetchCuriusLinks(): Promise<CuriusResponse> {
   // user metadata
-  const user = await fetch("https://raw.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
+  const user = await fetch("https://cdn.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
     .then((res): Promise<CuriusResponse> => res.json())
     .then((data) => {
       if (data === undefined || data.user === undefined) {
@@ -194,7 +194,7 @@ export async function fetchCuriusLinks(): Promise<CuriusResponse> {
 
   // fetch new links
   const links: Link[] = await fetch(
-    "https://raw.aarnphm.xyz/api/curius?query=links",
+    "https://cdn.aarnphm.xyz/api/curius?query=links",
     fetchLinksHeaders,
   )
     .then((res) => res.json())

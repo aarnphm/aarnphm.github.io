@@ -5,15 +5,28 @@
   "buildCommand": "sh vercel.sh",
   "outputDirectory": "public",
   "functions": {
-    "api/[...path].ts": {
+    "api/file.ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    },
+    "api/curius.ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    },
+    "api/arxiv.ts": {
       "memory": 1024,
       "maxDuration": 10
     }
   },
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/:path*.:ext(py|go|java|c|cpp|cxx|cu|ts|js|yaml|yml|h|hpp|rs|m|ipynb|sql|sh)",
-      "destination": "/api/:path*.:ext"
+      "source": "/:path*.:ext(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|js|yaml|yml|rs|m|sql|sh|txt)",
+      "destination": "/api/file?path=:path*.:ext",
+      "permanent": true
+    },
+    {
+      "source": "/view-source",
+      "destination": "https://github.com/aarnphm"
     }
   ],
   "headers": [
