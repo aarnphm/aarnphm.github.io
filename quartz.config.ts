@@ -25,7 +25,6 @@ const config: QuartzConfig = {
       "private",
       "templates",
       ".obsidian",
-      "joininteract",
       "**.adoc",
       "**.zip",
       "**.lvbitx",
@@ -98,6 +97,7 @@ const config: QuartzConfig = {
         compressedImage: true,
         enableArxivEmbed: true,
       }),
+      Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.Description(),
       Plugin.Latex({
         renderEngine: "katex",
@@ -107,7 +107,6 @@ const config: QuartzConfig = {
         },
         katexOptions: { strict: false },
       }),
-      Plugin.TableOfContents({ maxDepth: 4 }),
     ],
     filters: [Plugin.RemoveDrafts()],
     emitters: [

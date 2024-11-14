@@ -2,8 +2,14 @@
   "cleanUrls": true,
   "framework": null,
   "installCommand": "npm install",
-  "buildCommand": "",
-  "outputDirectory": "content",
+  "buildCommand": "npx quartz build",
+  "outputDirectory": "public",
+  "functions": {
+    "api/[...path].ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
   "redirects": [
     {
       "source": "/",
@@ -11,13 +17,8 @@
       "permanent": false
     },
     {
-      "source": "/dump",
-      "destination": "https://aarnphm.xyz/thoughts",
-      "permanent": false
-    },
-    {
-      "source": "/dump/(.*)",
-      "destination": "https://aarnphm.xyz/thoughts/$1",
+      "source": "/(.*\\.(py|go|java|c|cpp|h|hpp|rs|m|cu|zig|sql|sh))$",
+      "dest": "/api/$1",
       "permanent": true
     }
   ]
