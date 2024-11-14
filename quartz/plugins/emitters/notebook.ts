@@ -89,7 +89,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
 
       const notebooks = fps.map((fp) => ({
         path: joinSegments(argv.directory, fp) as string,
-        slug: slugifyFilePath(fp as FilePath),
+        slug: slugifyFilePath(fp as FilePath, true),
       }))
 
       const results = await batchConvert(notebooks, ctx.argv.concurrency ?? 4)
@@ -100,7 +100,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
             ctx,
             content,
             slug: slug as FullSlug,
-            ext: "",
+            ext: ".html",
           })
         }),
       )

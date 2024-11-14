@@ -185,7 +185,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 }
                 node.properties.className = classes
 
-                if (isExternal && opts.openLinksInNewTab) {
+                if ((isExternal && opts.openLinksInNewTab) || [".ipynb"].includes(ext)) {
                   node.properties.target = "_blank"
                 }
 
