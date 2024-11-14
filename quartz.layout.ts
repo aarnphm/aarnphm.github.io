@@ -16,7 +16,7 @@ export const sharedPageComponents: SharedLayout = {
         reactionsEnabled: false,
       },
     }),
-    Component.Toolbar(),
+    Component.DesktopOnly(Component.Toolbar()),
     Component.Image(),
   ],
   footer: Component.MinimalFooter({
