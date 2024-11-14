@@ -1,7 +1,7 @@
 import { kv } from "@vercel/kv"
 import { createHash } from "crypto"
 import fs from "fs"
-import type { NextRequest } from "next/server"
+import type { VercelRequest, VercelResponse } from "@vercel/node"
 import { minimatch } from "minimatch"
 
 const MIME_TYPES: Record<string, string> = {
@@ -100,40 +100,43 @@ async function readFileContent(path: string): Promise<string | null> {
 }
 
 export const config = {
-  runtime: "edge",
+  runtime: "nodejs",
 }
 
-export default async function handler(req: NextRequest) {
+export default async function handler(req: VercelRequest, resp: VercelResponse) {
   // Handle OPTIONS for CORS
   if (req.method === "OPTIONS") {
-    return new Response(null, {
-      headers: {
+    resp.status(407).setHeaders(
+      new Headers({
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
         "Access-Control-Max-Age": "86400",
-      },
-    })
+      }),
+    )
   }
 
   // Get and sanitize path
-  const { pathname } = new URL(req.url)
+  const { pathname } = new URL(req.url as string)
   const path = sanitizePath(pathname)
 
   // Check if path is empty
   if (!path) {
-    return new Response("Not Found", { status: 404 })
+    resp.status(404).json({ text: "Not Found" })
   }
 
   // Check if path should be ignored
   if (shouldIgnorePath(path)) {
-    return new Response("Forbidden", {
-      status: 403,
-      headers: {
-        "Content-Type": "text/plain",
-        "X-Denied-Reason": "Path matches ignore pattern",
-      },
-    })
+    resp.status(403)
+    resp
+      .status(403)
+      .setHeaders(
+        new Headers({
+          "Content-Type": "text/plain",
+          "X-Denied-Reason": "Path matches ignore pattern",
+        }),
+      )
+      .json({ text: "Forbidden" })
   }
 
   // Get file info and content type
@@ -162,18 +165,22 @@ export default async function handler(req: NextRequest) {
       await kv.set(cacheKey, cached, { ex: CACHE_DURATIONS.KV })
     }
 
+    console.log(cached.content)
     // Return the response with appropriate headers
-    return new Response(cached.content, {
-      headers: {
-        "Content-Type": cached.contentType,
-        "Cache-Control": `public, s-maxage=${CACHE_DURATIONS.EDGE}`,
-        "Access-Control-Allow-Origin": "*",
-        "Vercel-CDN-Cache-Control": `max-age=${CACHE_DURATIONS.EDGE}`,
-        "X-Content-Type-Options": "nosniff",
-        "X-Frame-Options": "DENY",
-        "X-Source-Path": path,
-      },
-    })
+    resp
+      .status(200)
+      .setHeaders(
+        new Headers({
+          "Content-Type": "text/plain",
+          "Cache-Control": `public, s-maxage=${CACHE_DURATIONS.EDGE}`,
+          "Access-Control-Allow-Origin": "*",
+          "Vercel-CDN-Cache-Control": `max-age=${CACHE_DURATIONS.EDGE}`,
+          "X-Content-Type-Options": "nosniff",
+          "X-Frame-Options": "DENY",
+          "X-Source-Path": path,
+        }),
+      )
+      .send(cached.content)
   } catch (error) {
     console.error("Error handling request:", error)
     return new Response("Internal Server Error", { status: 500 })

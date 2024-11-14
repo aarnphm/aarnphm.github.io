@@ -10,16 +10,37 @@
       "maxDuration": 10
     }
   },
-  "redirects": [
+  "rewrites": [
     {
-      "source": "/",
-      "destination": "https://aarnphm.xyz/",
-      "permanent": false
-    },
+      "source": "/:path*.:ext(py|go|java|c|cpp|cxx|cu|ts|js|yaml|yml|h|hpp|rs|m|ipynb|sql|sh)",
+      "destination": "/api/:path*.:ext"
+    }
+  ],
+  "headers": [
     {
-      "source": "/(.*\\.(py|go|java|c|cpp|h|hpp|rs|m|cu|zig|sql|sh))$",
-      "destination": "/api/$1",
-      "permanent": true
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=300, stale-while-revalidate=59"
+        },
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://aarnphm.xyz"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+        }
+      ]
     }
   ]
 }
