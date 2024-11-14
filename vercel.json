@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "framework": null,
   "installCommand": "npm install",
-  "buildCommand": "npx quartz build",
+  "buildCommand": "sh vercel.sh",
   "outputDirectory": "public",
   "functions": {
     "api/[...path].ts": {

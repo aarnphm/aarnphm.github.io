@@ -2,7 +2,6 @@ import { kv } from "@vercel/kv"
 import { createHash } from "crypto"
 import fs from "fs"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { minimatch } from "minimatch"
 
 const MIME_TYPES: Record<string, string> = {
   ".py": "text/x-python",
@@ -31,18 +30,6 @@ const MIME_TYPES: Record<string, string> = {
   ".sql": "text/x-sql",
 }
 
-// Define ignore patterns - now includes .md files
-const IGNORE_PATTERNS = [
-  "private/**/*",
-  "templates/**/*",
-  ".obsidian/**/*",
-  "**/*.adoc",
-  "**/*.zip",
-  "**/*.lvbitx",
-  "**/*.so",
-  "**/*.md",
-]
-
 const CACHE_DURATIONS = {
   EDGE: 300, // 5 minutes edge cache
   KV: 86400 * 30, // 30 days KV store cache
@@ -52,21 +39,6 @@ interface CachedContent {
   content: string
   contentType: string
   timestamp: number
-}
-
-function shouldIgnorePath(path: string): boolean {
-  // First check exact folder matches for efficiency
-  const pathParts = path.split("/")
-  if (
-    pathParts.includes("private") ||
-    pathParts.includes("templates") ||
-    pathParts.includes(".obsidian")
-  ) {
-    return true
-  }
-
-  // Then check file patterns
-  return IGNORE_PATTERNS.some((pattern) => minimatch(path, pattern, { matchBase: true, dot: true }))
 }
 
 function getFileInfo(path: string) {
@@ -99,10 +71,6 @@ async function readFileContent(path: string): Promise<string | null> {
   }
 }
 
-export const config = {
-  runtime: "nodejs",
-}
-
 export default async function handler(req: VercelRequest, resp: VercelResponse) {
   // Handle OPTIONS for CORS
   if (req.method === "OPTIONS") {
@@ -123,20 +91,6 @@ export default async function handler(req: VercelRequest, resp: VercelResponse) 
   // Check if path is empty
   if (!path) {
     resp.status(404).json({ text: "Not Found" })
-  }
-
-  // Check if path should be ignored
-  if (shouldIgnorePath(path)) {
-    resp.status(403)
-    resp
-      .status(403)
-      .setHeaders(
-        new Headers({
-          "Content-Type": "text/plain",
-          "X-Denied-Reason": "Path matches ignore pattern",
-        }),
-      )
-      .json({ text: "Forbidden" })
   }
 
   // Get file info and content type
