@@ -3,7 +3,7 @@ id: case study
 tags:
   - engineer4a03
 date: "2024-11-08"
-description: a case study into how surveillance capitalism drives one of the most influential controversy in data privacy of the
+description: a case study into how surveillance capitalism drives one of the most influential controversy in data privacy of the 21st century
 modified: "2024-11-08"
 title: Cambridge Analytica, a case study
 ---
@@ -25,6 +25,12 @@ This aligns with the principles of surveillance capitalism, where the commodific
 Cambridge Analytica’s actions further exemplify the perils of surveillance capitalism by demonstrating how personal data can be weaponised to manipulate democratic processes.
 The firm’s use of regression ML algorithm to influence electoral outcomes highlights a significant ethical breach—transforming citizens from participants in a democracy to
 subjects of behavioral manipulation [@susser2019technology]. This not only undermines individual rights but also poses a threat to the integrity of democratic institutions.
+
+In a sense, Chris Wylie assumed significant ethical responsibilities as a whistleblower.
+By exposing the company’s unethical data practices, Wylie upheld a moral imperative to prevent harm to
+society and protect democratic processes. Whistleblowers often face substantial personal and professional risks, but their actions are vital
+in bringing unethical practices to light [@vandekerckhove2012organize]. Wylie’s decision to reveal the inner workings of Cambridge Analytica provided transparency and prompted a global discourse
+on data privacy and the dangers of surveillance capitalism.
 
 Regulators and policymakers share in the ethical responsibility due to their delayed response to the evolving landscape of data privacy.
 The lack of robust legal frameworks allowed surveillance capitalism to flourish unchecked, exposing vulnerabilities in data protection and user rights [@10.1257/jel.54.2.442].

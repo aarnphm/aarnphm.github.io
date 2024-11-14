@@ -93,6 +93,18 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         parseDependencies(ctx.argv, tree as Root, file).forEach((dep) => {
           graph.addEdge(dep as FilePath, sourcePath)
         })
+
+        if (ctx.cfg.configuration.generateSocialImages) {
+          graph.addEdge(
+            sourcePath,
+            joinSegments(
+              ctx.argv.output,
+              "static",
+              "social-images",
+              `${slug.replaceAll("/", "-")}.webp`,
+            ) as FilePath,
+          )
+        }
       }
 
       return graph
