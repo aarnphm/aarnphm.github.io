@@ -31,5 +31,5 @@ Achieves better convergence rates
 
 | function type            | gradient descent                   | Nesterove AG                            |
 | ------------------------ | ---------------------------------- | --------------------------------------- |
-| Smooth                   | $\Omega(\frac{1}{T})$              | $\Omega(\frac{1}{T^{2}})$               |
-| Smooth & Strongly Convex | $\Omega(\exp (-\frac{T}{\kappa}))$ | $\Omega(\exp -\frac{T}{\sqrt{\kappa}})$ |
+| Smooth                   | $\theta(\frac{1}{T})$              | $\theta(\frac{1}{T^{2}})$               |
+| Smooth & Strongly Convex | $\theta(\exp (-\frac{T}{\kappa}))$ | $\theta(\exp -\frac{T}{\sqrt{\kappa}})$ |

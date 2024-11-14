@@ -131,7 +131,7 @@ const config: QuartzConfig = {
               )
             }
           },
-          include: [".pdf", ".py", ".go", ".c", ".m", ".cu"],
+          include: [".pdf", ".py", ".go", ".c", ".m", ".cu", ".java", ".sql", ".js"],
           exclude: [/\.(ignore\.pdf)$/],
         }),
       }),

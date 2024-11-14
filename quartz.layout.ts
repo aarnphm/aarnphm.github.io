@@ -18,12 +18,11 @@ export const sharedPageComponents: SharedLayout = {
     }),
     Component.Toolbar(),
     Component.Image(),
-    Component.MinimalFooter({
-      links: { github: "https://github.com/aarnphm", twitter: "https://twitter.com/aarnphm_" },
-      showInfo: true,
-    }),
   ],
-  footer: Component.Spacer(),
+  footer: Component.MinimalFooter({
+    links: { github: "https://github.com/aarnphm", twitter: "https://twitter.com/aarnphm_" },
+    showInfo: true,
+  }),
 }
 
 // components for pages that display a single page (e.g. a single note)
@@ -36,7 +35,7 @@ export const defaultContentPageLayout: PageLayout = {
   ],
   right: [
     Component.Search(),
-    Component.DesktopOnly(Component.Keybind({ enableTooltip: false })),
+    Component.Keybind({ enableTooltip: false }),
     Component.Graph(),
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Backlinks(),

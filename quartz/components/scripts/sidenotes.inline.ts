@@ -85,17 +85,10 @@ function debounce(fn: Function, delay: number) {
   }
 }
 
-function createSidenote(
-  footnote: HTMLElement,
-  footnoteId: string,
-  sideContainer: HTMLElement,
-): HTMLLIElement {
+function createSidenote(footnote: HTMLElement, footnoteId: string): HTMLLIElement {
   const sidenote = document.createElement("li")
   sidenote.classList.add("sidenote-element")
   sidenote.style.position = "absolute"
-  const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
-  sidenote.style.minWidth = `${sideContainer.offsetWidth - rootFontSize}px`
-  sidenote.style.maxWidth = `${sideContainer.offsetWidth - rootFontSize}px`
   sidenote.id = `sidebar-${footnoteId}`
   sidenote.append(...(footnote.cloneNode(true) as HTMLElement).children)
 
@@ -142,7 +135,7 @@ document.addEventListener("nav", () => {
     const footnoteId = footnote.id
     const intextLink = articleContent.querySelector(`a[href="#${footnoteId}"]`) as HTMLElement
     if (!intextLink) continue
-    const sidenote = createSidenote(footnote, footnoteId, sideContainer)
+    const sidenote = createSidenote(footnote, footnoteId)
     ol.appendChild(sidenote)
   }
 

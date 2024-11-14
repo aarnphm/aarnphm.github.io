@@ -1,3 +1,5 @@
+@use "../../styles/variables.scss" as *;
+
 .sidenotes {
   counter-reset: sidenote-counter;
 
@@ -34,6 +36,7 @@
     transition: opacity 0.3s ease-in-out;
     opacity: 0;
     display: block;
+    max-width: $sidePanelWidth;
     margin-bottom: 1rem;
     border: 1px solid var(--gray);
     background-color: var(--light);
