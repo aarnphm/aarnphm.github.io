@@ -198,19 +198,24 @@ async function generateOgs(
     const batchPromises = batch.map(
       async ({ title, description, fileData, fileDir, fileName, extension }) => {
         try {
-          const svg = await satori(
-            opts.Component(ctx.cfg.configuration, fileData, opts, title, description, fonts),
-            {
-              width: opts.width,
-              height: opts.height,
-              fonts,
-              graphemeImages: {
-                "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
-              },
-            },
+          const component = opts.Component(
+            ctx.cfg.configuration,
+            fileData,
+            opts,
+            title,
+            description,
+            fonts,
           )
+          const svg = await satori(component, {
+            width: opts.width,
+            height: opts.height,
+            fonts,
+            graphemeImages: {
+              "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
+            },
+          })
 
-          const content = await sharp(Buffer.from(svg)).webp({ quality: 75 }).toBuffer()
+          const content = await sharp(Buffer.from(svg)).webp({ quality: 40 }).toBuffer()
 
           fps.push(
             write({

@@ -17,16 +17,51 @@ export async function getSatoriFont(cfg: GlobalConfiguration): Promise<SatoriOpt
 
   const url = new URL(`https://${cfg.baseUrl ?? "example.com"}`)
 
-  const [header, body] = await Promise.all(
-    [headerFont, bodyFont].map((font) =>
-      fetch(`${url.toString()}/${font}`).then((res) => res.arrayBuffer()),
-    ),
-  )
+  const fetchFonts = async (font: string) => {
+    const res = await fetch(`${url.toString()}/${font}`)
+    const data = await res.arrayBuffer()
+    return data
+  }
+
+  const header = await fetchFonts(headerFont)
+  const body = await fetchFonts(bodyFont)
 
   return [
     { name: cfg.theme.typography.header, data: header, weight: headerWeight, style: "normal" },
     { name: cfg.theme.typography.body, data: body, weight: bodyWeight, style: "normal" },
   ]
+}
+
+/**
+ * Get the `.ttf` file of a google font
+ * @param fontName name of google font
+ * @param weight what font weight to fetch font
+ * @returns `.ttf` file of google font
+ */
+async function fetchTtf(fontName: string, weight: FontWeight): Promise<ArrayBuffer> {
+  try {
+    // Get css file from google fonts
+    const cssResponse = await fetch(`https://fonts.googleapis.com/css?family=${fontName}:${weight}`)
+    const css = await cssResponse.text()
+
+    // Extract .ttf url from css file
+    const urlRegex = /url\((https:\/\/fonts.gstatic.com\/s\/.*?.ttf)\)/g
+    const match = urlRegex.exec(css)
+
+    if (!match) {
+      throw new Error("Could not fetch font")
+    }
+
+    // Retrieve font data as ArrayBuffer
+    const fontResponse = await fetch(match[1])
+
+    // fontData is an ArrayBuffer containing the .ttf file data (get match[1] due to google fonts response format, always contains link twice, but second entry is the "raw" link)
+    const fontData = await fontResponse.arrayBuffer()
+
+    return fontData
+  } catch (error) {
+    throw new Error(`Error fetching font: ${error}`)
+  }
 }
 
 export type SocialImageOptions = {
@@ -42,6 +77,10 @@ export type SocialImageOptions = {
    * Width to generate image with in pixels (should be around 1200px)
    */
   width: number
+  /**
+   * Whether to use the auto generated image for the root path ("/", when set to false) or the default og image (when set to true).
+   */
+  excludeRoot: boolean
   /**
    * JSX to use for generating image. See satori docs for more info (https://github.com/vercel/satori)
    * @param cfg global quartz config
@@ -92,6 +131,10 @@ export type ImageOptions = {
    * `GlobalConfiguration` of quartz (used for theme/typography)
    */
   cfg: GlobalConfiguration
+  /**
+   * full file data of current page
+   */
+  fileData: QuartzPluginData
 }
 
 export const og: SocialImageOptions["Component"] = (
@@ -219,5 +262,6 @@ export const defaultImageOptions: SocialImageOptions = {
   colorScheme: "lightMode",
   height: 630,
   width: 1200,
+  excludeRoot: true,
   Component: og,
 }

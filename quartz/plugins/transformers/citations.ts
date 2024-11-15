@@ -171,6 +171,7 @@ export const Citations: QuartzTransformerPlugin<Partial<Options>> = (userOpts) =
                 tagName: "section",
                 properties: {
                   "data-references": true,
+                  className: ["bibliography"],
                 },
                 children: [
                   {

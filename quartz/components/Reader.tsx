@@ -105,7 +105,6 @@ export default (() => {
             )
           }
         }
-
         // here we simplify the callout
         if (classNames.includes("is-collapsible")) {
           // We need to unparse collapsible callout

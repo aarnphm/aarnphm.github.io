@@ -39,8 +39,9 @@ export const defaultContentPageLayout: PageLayout = {
     Component.Graph(),
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Backlinks(),
+    Component.Reader(),
   ],
-  left: [Component.Reader(), Component.DesktopOnly(Component.Sidenotes())],
+  left: [Component.DesktopOnly(Component.Sidenotes())],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)

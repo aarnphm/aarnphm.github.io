@@ -60,4 +60,4 @@ see [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab9/lab9part2.slx|s
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab9/graph-p2.jpeg]]
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab9/pid-setup.jpeg]]
-
+_proportional_ $P = 350 * \frac{\pi}{180}$
