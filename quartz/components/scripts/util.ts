@@ -214,12 +214,10 @@ export function updateContainerHeights() {
   }
 }
 
-export function debounceUpdateHeight(delay: number = 150) {
+export function debounce(fn: Function, delay: number) {
   let timeoutId: ReturnType<typeof setTimeout>
-  return () => {
+  return (...args: any[]) => {
     clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => {
-      updateContainerHeights()
-    }, delay)
+    timeoutId = setTimeout(() => fn(...args), delay)
   }
 }

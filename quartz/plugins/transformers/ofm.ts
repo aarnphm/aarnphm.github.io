@@ -10,6 +10,8 @@ import { CSSResource, JSResource } from "../../util/resources"
 // @ts-ignore
 import calloutScript from "../../components/scripts/callout.inline.ts"
 // @ts-ignore
+import calloutBreakScript from "../../components/scripts/callout-breaks.inline.ts"
+// @ts-ignore
 import checkboxScript from "../../components/scripts/checkbox.inline.ts"
 // @ts-ignore
 import mermaidExtensionScript from "../../components/scripts/mermaid.inline.ts"
@@ -808,6 +810,11 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       if (opts.callouts) {
         js.push({
           script: calloutScript,
+          loadTime: "afterDOMReady",
+          contentType: "inline",
+        })
+        js.push({
+          script: calloutBreakScript,
           loadTime: "afterDOMReady",
           contentType: "inline",
         })

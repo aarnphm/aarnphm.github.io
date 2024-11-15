@@ -1,4 +1,4 @@
-import { removeAllChildren, isInViewport, updatePosition } from "./util"
+import { removeAllChildren, isInViewport, updatePosition, debounce } from "./util"
 
 function checkSidenoteSpacing(current: HTMLElement, allSidenotes: NodeListOf<HTMLElement>) {
   const currentRect = current.getBoundingClientRect()
@@ -74,14 +74,6 @@ function updateSidenotes() {
       updatePosition(intextLink, sidenote, sideContainer)
       checkSidenoteSpacing(sidenote, sidenotes)
     }
-  }
-}
-
-function debounce(fn: Function, delay: number) {
-  let timeoutId: ReturnType<typeof setTimeout>
-  return (...args: any[]) => {
-    clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => fn(...args), delay)
   }
 }
 
