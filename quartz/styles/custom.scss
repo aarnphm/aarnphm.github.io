@@ -592,16 +592,6 @@ section[data-footnotes] {
     }
   }
 
-  @media all and ($desktop) {
-    .sidebar.right {
-      height: calc(100vh - $topSpacing);
-      box-sizing: border-box;
-      overflow-y: auto;
-      position: sticky;
-      top: $topSpacing !important;
-    }
-  }
-
   header,
   & .sidebar.left,
   & .sidebar.right {
