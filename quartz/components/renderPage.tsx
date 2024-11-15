@@ -12,8 +12,6 @@ import { i18n } from "../i18n"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
 import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
-// @ts-ignore
-import vercelScript from "./scripts/speed-insights.inline.ts"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -452,11 +450,6 @@ export function pageResources(
         contentType: "inline",
         spaPreserve: true,
         script: contentIndexScript,
-      },
-      {
-        loadTime: "beforeDOMReady",
-        contentType: "inline",
-        script: vercelScript,
       },
       {
         script: collapseHeaderScript,

@@ -257,7 +257,10 @@ export default (() => {
               </svg>
             </button>
           </div>
-          <div class="reader-content">{htmlToJsx(filePath as FilePath, ast)}</div>
+          <div class="reader-content">
+            <h1 class="reader-title">{fileData.frontmatter?.title}</h1>
+            {htmlToJsx(filePath as FilePath, ast)}
+          </div>
         </div>
       </div>
     )

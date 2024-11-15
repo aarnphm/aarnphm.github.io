@@ -41,14 +41,12 @@
       top: 0;
       background: var(--light);
       display: flex;
+      justify-content: end;
       padding: 1rem;
       z-index: 2;
+      border-bottom: 1px solid var(--lightgray);
 
       .reader-close {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-
         @include closeButton;
       }
     }
@@ -79,6 +77,10 @@
       section {
         font-family: "Newsreader";
         font-weight: normal;
+      }
+
+      h1 {
+        margin-top: unset !important;
       }
 
       // remove colorful border, no need in reader mode

@@ -44,7 +44,6 @@
     "@napi-rs/simple-git": "^0.1.19",
     "@tweenjs/tween.js": "^25.0.0",
     "@vercel/node": "^3.2.24",
-    "@vercel/speed-insights": "^1.1.0",
     "async-mutex": "^0.5.0",
     "chalk": "^5.3.0",
     "chokidar": "^4.0.1",
