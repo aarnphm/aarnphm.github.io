@@ -39,6 +39,8 @@
   .keybind,
   .backlinks,
   .callout-icon,
+  .toggle-button,
+  a[role="anchor"],
   hr,
   footer {
     display: none !important;
@@ -46,6 +48,7 @@
 
   .center {
     border: unset !important;
+    margin-top: 0 !important;
 
     & > * {
       padding: 0 !important;
@@ -67,6 +70,26 @@
     --bg: inherit !important;
     border-left: 3px solid var(--tertiary);
     max-height: unset !important;
+
+    break-inside: avoid;
+    page-break-inside: avoid;
+
+    // For callouts that are forced to break to next page
+    &.force-page-break {
+      break-before: page;
+      page-break-before: always;
+    }
+
+    // Ensure content within callouts doesn't break
+    .callout-title {
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .callout-content {
+      break-before: avoid;
+      page-break-before: avoid;
+    }
   }
 }
 
@@ -566,6 +589,16 @@ section[data-footnotes] {
   @media all and not ($desktop) {
     .sidebar.right {
       margin-top: 2rem !important;
+    }
+  }
+
+  @media all and ($desktop) {
+    .sidebar.right {
+      height: calc(100vh - $topSpacing);
+      box-sizing: border-box;
+      overflow-y: auto;
+      position: sticky;
+      top: $topSpacing !important;
     }
   }
 
