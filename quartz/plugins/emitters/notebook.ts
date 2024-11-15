@@ -66,18 +66,40 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
         slug: slugifyFilePath(fp as FilePath, true),
       }))
 
+      let progressBar = ""
+      const total = notebooks.length
+      const updateProgress = (completed: number, total: number) => {
+        const percent = Math.round((completed / total) * 100)
+        progressBar = `[emit:NotebookViewer] Converting notebooks to HTML: ${completed}/${total} (${percent}%)`
+        process.stdout.write(`\r${progressBar}`)
+      }
+
+      let completed = 0
       for (const [_, item] of notebooks.entries()) {
         const { path, slug } = item
-        const content = await convertNotebook(path)
-        fpaths.push(
-          write({
-            ctx,
-            content: processNotebook(content),
-            slug,
-            ext: ".html",
-          }),
-        )
+        try {
+          const content = await convertNotebook(path)
+          fpaths.push(
+            write({
+              ctx,
+              content: processNotebook(content),
+              slug,
+              ext: ".html",
+            }),
+          )
+          completed++
+          updateProgress(completed, total)
+        } catch (err: any) {
+          console.error(chalk.red(`Error processing ${path}: ${err.message}`))
+          continue
+        }
       }
+      if (progressBar) {
+        process.stdout.write("\n") // New line after progress bar
+      }
+      console.log(
+        chalk.green(`[emit:NotebookViewer] Successfully converted ${completed} notebooks.`),
+      )
       return await Promise.all(fpaths)
     },
   }
