@@ -10,7 +10,7 @@ sidenotes: false
 title: machine learning, as inception of time, a literature review
 ---
 
-See also [[posts/a1|essays on ChatGPT]]
+See also [[posts/a1|essays on ChatGPT]], [[thoughts/university/twenty-four-twenty-five/engineer-4a03/case study|case study on Cambridge Analytica]]
 
 ## introduction.
 
