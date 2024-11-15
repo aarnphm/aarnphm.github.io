@@ -64,8 +64,6 @@ Ideas: output of decoder $f(x)$ has two roles
 
 ### Gated SAE
 
-see also: [paper](https://arxiv.org/abs/2404.16014)
-
 _uses Pareto improvement over training to reduce L1 penalty_ [@rajamanoharan2024improvingdictionarylearninggated]
 
 Clear consequence of the bias during training is _shrinkage_ [@sharkey2024feature] [^shrinkage]
