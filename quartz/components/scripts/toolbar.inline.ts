@@ -1,4 +1,19 @@
+import { getFullSlug } from "../../util/path"
 import { closeReader } from "./util"
+
+async function toggleExportPdf(ev: MouseEvent) {
+  try {
+    window.print()
+  } catch (error) {
+    console.error("Failed to export PDF:", error)
+    // Show error to user
+    const toast = document.createElement("div")
+    toast.className = "pdf-toast"
+    toast.textContent = "Failed to export PDF. Please try again."
+    document.body.appendChild(toast)
+    setTimeout(() => toast.remove(), 3000)
+  }
+}
 
 function toggleReader(button: HTMLButtonElement) {
   const isActive = button.getAttribute("data-active") === "true"
@@ -28,6 +43,11 @@ function setupToolbar() {
   const reader = () => toggleReader(readerButton)
   readerButton.addEventListener("click", reader)
   window.addCleanup(() => readerButton.removeEventListener("click", reader))
+
+  // reader section
+  const pdfButton = toolbarContent.querySelector("#pdf-button") as HTMLButtonElement
+  pdfButton.addEventListener("click", toggleExportPdf)
+  window.addCleanup(() => pdfButton.removeEventListener("click", toggleExportPdf))
 }
 
 window.addEventListener("resize", setupToolbar)

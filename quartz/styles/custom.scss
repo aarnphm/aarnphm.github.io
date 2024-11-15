@@ -20,6 +20,56 @@
   border-radius: 5px;
 }
 
+// ----- print stuff -----
+
+@media print {
+  @page {
+    margin: 1in;
+    size: A4;
+  }
+
+  .sidebar,
+  .breadcrumb-container,
+  .content-meta,
+  .page-footer,
+  .toolbar,
+  .tags,
+  .search,
+  .graph,
+  .keybind,
+  .backlinks,
+  .callout-icon,
+  hr,
+  footer {
+    display: none !important;
+  }
+
+  .center {
+    border: unset !important;
+
+    & > * {
+      padding: 0 !important;
+    }
+  }
+
+  .collapsible-header-content-outer {
+    padding-left: 0 !important;
+
+    & > .collapsible-header-content {
+      padding-left: 0 !important;
+      border-left: unset !important;
+    }
+  }
+
+  .callout[data-callout] {
+    --color: inherit !important;
+    --border: inherit !important;
+    --bg: inherit !important;
+    border-left: 3px solid var(--tertiary);
+    max-height: unset !important;
+  }
+}
+
 // ----- DOM customization -----
 
 html {
