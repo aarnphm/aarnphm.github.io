@@ -1,7 +1,7 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { clone, FullSlug, normalizeHastElement, FilePath } from "../util/path"
 import { classNames } from "../util/lang"
-import { SKIP, visit } from "unist-util-visit"
+import { visit } from "unist-util-visit"
 import { Node, Element, ElementContent, Root } from "hast"
 import { mergeIsomorphic } from "./renderPage"
 import { htmlToJsx } from "../util/jsx"

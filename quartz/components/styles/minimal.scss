@@ -13,16 +13,10 @@
   font-size: 0.8rem;
   font-style: normal;
 
-  & > * {
-    margin: 0;
-    padding: 0;
-  }
-
   #icons {
     display: flex;
     flex-direction: row;
     line-height: 0;
-    margin-top: 0.25rem;
 
     & > ul {
       padding-inline-start: 0;

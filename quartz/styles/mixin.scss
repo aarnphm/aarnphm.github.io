@@ -82,15 +82,6 @@
   background-position: 0% calc(100% - 0.1em);
   font-variant-numeric: lining-nums;
 
-  text-shadow:
-    0 0.05em var(--link-underline-background-color),
-    0.05em 0.05em var(--link-underline-background-color),
-    -0.05em 0.05em var(--link-underline-background-color),
-    0.17em 0.05em var(--link-underline-background-color),
-    -0.17em 0.05em var(--link-underline-background-color),
-    0.17em 0 var(--link-underline-background-color),
-    -0.17em 0 var(--link-underline-background-color);
-
   & > .indicator-hook {
     position: relative;
     padding-left: 0.3em;

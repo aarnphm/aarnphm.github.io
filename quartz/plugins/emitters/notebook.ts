@@ -2,7 +2,7 @@ import { QuartzConfig } from "../../cfg"
 import { QuartzEmitterPlugin } from "../types"
 import DepGraph from "../../depgraph"
 import { glob } from "../../util/glob"
-import { FilePath, FullSlug, joinSegments, slugifyFilePath } from "../../util/path"
+import { FilePath, joinSegments, slugifyFilePath } from "../../util/path"
 import { Argv } from "../../util/ctx"
 import { execFile } from "child_process"
 import { write } from "./helpers"
@@ -45,32 +45,6 @@ const processNotebook = (content: string): string => {
   return content
 }
 
-async function batchConvert(
-  notebooks: { path: string; slug: string }[],
-  concurrency: number = 4,
-): Promise<{ slug: string; content: string }[]> {
-  const results: { slug: string; content: string }[] = []
-
-  // Process notebooks in chunks to control concurrency
-  for (let i = 0; i < notebooks.length; i += concurrency) {
-    const chunk = notebooks.slice(i, i + concurrency)
-    const chunkPromises = chunk.map(async ({ path, slug }) => {
-      try {
-        const content = await convertNotebook(path)
-        return { slug, content: processNotebook(content) }
-      } catch (err) {
-        console.error(chalk.red(`Error processing ${path}: ${(err as Error).message}`))
-        return null
-      }
-    })
-
-    const chunkResults = await Promise.all(chunkPromises)
-    results.push(...chunkResults.filter((r): r is { slug: string; content: string } => r !== null))
-  }
-
-  return results
-}
-
 export const NotebookViewer: QuartzEmitterPlugin = () => {
   return {
     name: "NotebookViewer",
@@ -84,6 +58,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
       const { argv, cfg } = ctx
       const fps = await notebookFiles(argv, cfg)
       if (fps.length === 0) return []
+      const fpaths: Promise<FilePath>[] = []
 
       console.log(chalk.blue(`[emit:NotebookViewer] Processing ${fps.length} notebooks...`))
 
@@ -92,23 +67,19 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
         slug: slugifyFilePath(fp as FilePath, true),
       }))
 
-      const results = await batchConvert(notebooks, ctx.argv.concurrency ?? 4)
-
-      const res = await Promise.all(
-        results.map(async ({ slug, content }) => {
-          return await write({
+      for (const [_, item] of notebooks.entries()) {
+        const { path, slug } = item
+        const content = await convertNotebook(path)
+        fpaths.push(
+          write({
             ctx,
-            content,
-            slug: slug as FullSlug,
+            content: processNotebook(content),
+            slug,
             ext: ".html",
-          })
-        }),
-      )
-
-      console.log(
-        chalk.green(`[emit:NotebookViewer] Successfully processed ${res.length} notebooks`),
-      )
-      return res
+          }),
+        )
+      }
+      return await Promise.all(fpaths)
     },
   }
 }

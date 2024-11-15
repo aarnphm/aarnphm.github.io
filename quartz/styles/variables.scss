@@ -46,35 +46,32 @@ $semiBoldWeight: 600;
 $normalWeight: 400;
 
 $mobileGrid: (
-  templateRows: "auto auto auto auto auto",
+  templateRows: "auto auto auto",
   templateColumns: "minmax(auto, #{$pageWidth})",
   rowGap: "5px",
   columnGap: "5px",
   templateAreas:
     '"grid-sidebar-left"\
       "grid-header"\
-      "grid-center"\
       "grid-sidebar-right"\
       "grid-footer"',
 );
 $tabletGrid: (
-  templateRows: "auto auto auto auto",
+  templateRows: "auto auto auto",
   templateColumns: "#{$sidePanelWidth} minmax(auto, #{$pageWidth})",
   rowGap: "5px",
   columnGap: "5px",
   templateAreas:
     '"grid-sidebar-left grid-header"\
-      "grid-sidebar-left grid-center"\
       "grid-sidebar-left grid-sidebar-right"\
       "grid-sidebar-left grid-footer"',
 );
 $desktopGrid: (
-  templateRows: "auto auto auto",
+  templateRows: "auto auto",
   templateColumns: "#{$sidePanelWidth} minmax(auto, #{$pageWidth}) #{$sidePanelWidth}",
   rowGap: "5px",
   columnGap: "5px",
   templateAreas:
     '"grid-sidebar-left grid-header grid-sidebar-right"\
-      "grid-sidebar-left grid-center grid-sidebar-right"\
       "grid-sidebar-left grid-footer grid-sidebar-right"',
 );

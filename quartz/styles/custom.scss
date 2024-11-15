@@ -175,7 +175,6 @@ pre.poetry {
   }
 }
 
-article > a.internal:not([role="anchor"]),
 blockquote.twitter-tweet > a {
   border-radius: unset;
   background-color: unset;
@@ -207,7 +206,6 @@ a {
         var(--link-underline-gradient-line-color),
         var(--link-underline-background-image)
       );
-      background-size: 2px 1px;
 
       &:not(.alias) {
         & > .indicator-hook {
@@ -601,6 +599,7 @@ section[data-footnotes] {
 .center {
   margin: $topSpacing auto 0;
   border: 1px solid var(--darkgray);
+  height: fit-content;
 
   & > *:not(hr) {
     padding: 0 1rem;
@@ -648,7 +647,11 @@ section[data-footnotes] {
     color: var(--gray);
     transition: none;
 
+    position: relative;
+    padding-left: 0.3em;
+
     @include links;
+    @include indicatorHook;
   }
 }
 

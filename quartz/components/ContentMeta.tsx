@@ -109,7 +109,6 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
               {metadata.showModifiedTime && modified !== undefined && (
                 <li>
                   <div class="ref-source">
-                    <span class="indicator-hook" />
                     <span
                       class="page-modification"
                       title="Date de modification du contenu de la page"
