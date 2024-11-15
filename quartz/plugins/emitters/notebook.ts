@@ -57,7 +57,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
       const { argv, cfg } = ctx
       const fps = await notebookFiles(argv, cfg)
       if (fps.length === 0) return []
-      const fpaths: Promise<FilePath>[] = []
+      const fpaths: FilePath[] = []
 
       console.log(chalk.blue(`[emit:NotebookViewer] Processing ${fps.length} notebooks...`))
 
@@ -80,7 +80,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
         try {
           const content = await convertNotebook(path)
           fpaths.push(
-            write({
+            await write({
               ctx,
               content: processNotebook(content),
               slug,
@@ -100,7 +100,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
       console.log(
         chalk.green(`[emit:NotebookViewer] Successfully converted ${completed} notebooks.`),
       )
-      return await Promise.all(fpaths)
+      return fpaths
     },
   }
 }

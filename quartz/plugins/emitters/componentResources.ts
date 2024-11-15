@@ -192,7 +192,7 @@ async function generateOgs(
   let completed = 0
   const total = tasks.length
 
-  const batchSize = ctx.argv.concurrency ?? 4
+  const batchSize = ctx.argv.concurrency ?? 10
   for (let i = 0; i < tasks.length; i += batchSize) {
     const batch = tasks.slice(i, i + batchSize)
     const batchPromises = batch.map(
@@ -375,7 +375,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         }),
       )
 
-      if (cfg.generateSocialImages) {
+      if (cfg.generateSocialImages && !ctx.argv.serve) {
         if (!imageOptions) {
           if (typeof cfg.generateSocialImages !== "boolean") {
             imageOptions = { ...defaultImageOptions, ...cfg.generateSocialImages }
