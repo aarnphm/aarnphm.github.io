@@ -8,7 +8,6 @@ import { execFile } from "child_process"
 import { write } from "./helpers"
 import chalk from "chalk"
 import { promisify } from "util"
-import { homedir } from "os"
 
 const notebookFiles = async (argv: Argv, cfg: QuartzConfig) => {
   return await glob("**/*.ipynb", argv.directory, [...cfg.configuration.ignorePatterns])
@@ -34,7 +33,7 @@ async function convertNotebook(nbPath: string) {
     nbPath,
   ]
 
-  const { stdout } = await execFileAsync(`${homedir()}/.local/bin/uvx`, args, {
+  const { stdout } = await execFileAsync("uvx", args, {
     maxBuffer: 1024 * 1024 * 128,
   })
   return stdout
