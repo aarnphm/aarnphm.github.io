@@ -6,16 +6,16 @@ export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [],
   afterBody: [
-    Component.Comments({
-      provider: "giscus",
-      options: {
-        repo: "aarnphm/sites",
-        repoId: "R_kgDOLbqALg",
-        category: "Announcements",
-        categoryId: "DIC_kwDOLbqALs4ChE6l",
-        reactionsEnabled: false,
-      },
-    }),
+    // Component.Comments({
+    //   provider: "giscus",
+    //   options: {
+    //     repo: "aarnphm/sites",
+    //     repoId: "R_kgDOLbqALg",
+    //     category: "Announcements",
+    //     categoryId: "DIC_kwDOLbqALs4ChE6l",
+    //     reactionsEnabled: false,
+    //   },
+    // }),
     Component.DesktopOnly(Component.Toolbar()),
     Component.Image(),
   ],

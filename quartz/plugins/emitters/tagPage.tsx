@@ -30,7 +30,7 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
     pageBody: TagContent({ sort: userOpts?.sort }),
     header: [...defaultListPageLayout.beforeBody, ...defaultListPageLayout.left],
     beforeBody: [],
-    afterBody: [...sharedPageComponents.afterBody.slice(1)],
+    // afterBody: [...sharedPageComponents.afterBody.slice(1)],
     left: [Spacer()],
     right: [Spacer()],
     ...userOpts,
