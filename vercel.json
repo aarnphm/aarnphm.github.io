@@ -1,7 +1,7 @@
 {
   "cleanUrls": true,
   "framework": null,
-  "installCommand": "npm install",
+  "installCommand": "npm ci",
   "buildCommand": "npx quartz build",
   "outputDirectory": "public",
   "functions": {
