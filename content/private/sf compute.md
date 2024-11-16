@@ -1,7 +1,7 @@
 ---
 id: sf compute
 tags:
-  - seed
+  - company
 date: "2024-10-12"
 modified: "2024-10-12"
 title: sf compute
@@ -14,6 +14,7 @@ Sorta trading platform for GPU renting
 pitch: cloud provider
 
 (Evan and Alex)
+
 - run AI grant =>
 - nobody sells for week/week (couldn't buy < year)
 - GPU cloud => lenders => (business models) => year-long contract

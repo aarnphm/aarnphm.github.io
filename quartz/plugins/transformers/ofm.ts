@@ -10,8 +10,6 @@ import { CSSResource, JSResource } from "../../util/resources"
 // @ts-ignore
 import calloutScript from "../../components/scripts/callout.inline.ts"
 // @ts-ignore
-import calloutBreakScript from "../../components/scripts/callout-breaks.inline.ts"
-// @ts-ignore
 import checkboxScript from "../../components/scripts/checkbox.inline.ts"
 // @ts-ignore
 import mermaidExtensionScript from "../../components/scripts/mermaid.inline.ts"

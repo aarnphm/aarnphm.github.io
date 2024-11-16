@@ -52,6 +52,11 @@ export const parseDependencies = (argv: Argv, hast: Root, file: VFile): string[]
   return dependencies
 }
 
+function stripFrontmatter(content: string): string {
+  const frontmatterRegex = /^---\s*\n(.*?)\n\s*---\s*\n/s
+  return content.replace(frontmatterRegex, "").trim()
+}
+
 export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
@@ -139,8 +144,14 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
           slug,
           ext: ".html",
         })
+        const dottxt = await write({
+          ctx,
+          content: stripFrontmatter(file.data.markdown!),
+          slug,
+          ext: ".html.md",
+        })
 
-        fps.push(fp)
+        fps.push(fp, dottxt)
       }
 
       if (!containsIndex && !ctx.argv.fastRebuild) {

@@ -25,8 +25,6 @@ I believe in [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|tools]]
 
 Understanding the [[thoughts/mechanistic interpretability|inner working]] of large language models would help us to do better science.
 
-<!-- I care a lot about what I work on, and fortunately, I got to work at what I care about most: formalising knowledge (software as a catalyst to achieve this dream). -->
-
 Currently, I'm building [serving infrastructure](https://bentoml.com) for [[thoughts/Machine learning|ml]] systems and explore our interaction
 through [[thoughts/LLMs|large language models]].
 

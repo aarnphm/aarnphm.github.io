@@ -1,4 +1,5 @@
 import katex from "katex"
+import { getFullSlug } from "../../util/path"
 
 const equations = [
   {
@@ -208,39 +209,42 @@ function logEquation(equation: {
       `%cLatex: ${equation.latex}\n`,
     styles.title,
     styles.name,
+    styles.equation,
     styles.description,
     styles.latex,
   )
 
-  // Also insert a visible copy on the page for reference
-  const referenceContainer = document.createElement("div")
-  referenceContainer.className = "equation-reference"
-  referenceContainer.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    max-width: 400px;
-    background: var(--light);
-    padding: 15px;
-    animation: slideIn 0.3s ease-out;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    z-index: 1000;
-    font-family: var(--bodyFont);
-    animation: slideIn 0.3s ease-out;
-  `
+  if (!getFullSlug(window).includes("404")) {
+    // Also insert a visible copy on the page for reference
+    const referenceContainer = document.createElement("div")
+    referenceContainer.className = "equation-reference"
+    referenceContainer.style.cssText = `
+position: fixed;
+top: 20px;
+right: 20px;
+max-width: 400px;
+background: var(--light);
+padding: 15px;
+animation: slideIn 0.3s ease-out;
+box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+z-index: 1000;
+font-family: var(--bodyFont);
+animation: slideIn 0.3s ease-out;
+`
 
-  referenceContainer.innerHTML = `
-    <div style="margin-bottom: 10px; font-weight: bold;">${equation.name}</div>
-    ${renderedLatex}
-    <div style="margin-top: 10px; font-style: italic; font-size: 0.9em;">${equation.description}</div>
-  `
+    referenceContainer.innerHTML = `
+<div style="margin-bottom: 10px; font-weight: bold;">${equation.name}</div>
+${renderedLatex}
+<div style="margin-top: 10px; font-style: italic; font-size: 0.9em;">${equation.description}</div>
+`
 
-  document.body.appendChild(referenceContainer)
+    document.body.appendChild(referenceContainer)
 
-  // Remove the reference container after 5 seconds
-  setTimeout(() => {
-    referenceContainer.remove()
-  }, 5000)
+    // Remove the reference container after 5 seconds
+    setTimeout(() => {
+      referenceContainer.remove()
+    }, 5000)
+  }
 }
 
 let hasShownEquation = false

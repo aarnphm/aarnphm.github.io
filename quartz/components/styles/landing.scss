@@ -14,8 +14,11 @@ body[data-slug="index"] {
       max-width: unset !important;
       min-width: unset !important;
       margin-top: 2rem !important;
+      border: 1px solid var(--darkgray);
 
       & > *:not(hr) {
+        padding: 0 1rem;
+
         &:last-child {
           padding-bottom: 2rem;
         }

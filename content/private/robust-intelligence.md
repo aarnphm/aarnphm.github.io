@@ -1,6 +1,10 @@
 ---
-id: "robust-intelligence"
-tags: []
+id: robust-intelligence
+tags:
+  - company
+date: "2024-11-16"
+modified: "2024-11-16"
+title: robust-intelligence
 ---
 
 ML integrity

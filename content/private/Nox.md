@@ -1,8 +1,9 @@
 ---
 id: Nox
 tags:
-  - ml
+  - company
 date: "2024-02-06"
+modified: "2024-11-16"
 title: Nox
 ---
 
@@ -32,14 +33,15 @@ widgets?
 
 Swift devs (building apps)
 
-
 unstructured + structured data
 
 bottleneck?
+
 - vector database (gcp) (too much downtime)
 - conversations (10 ppl => 10 voices)
 
 - xtts models
+
   - diaritize (voice embeddings) (caroline) (threshold for friend indication)
   - identify people. (transcript) <--
 
@@ -47,4 +49,3 @@ bottleneck?
   - predict next desire?
   - predict mood?
   - sentiment embeddings
-
