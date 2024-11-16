@@ -1,0 +1,9 @@
+{%- extends 'lab/index.html.j2' -%}
+{%- block body_header -%}
+{% if resources.theme == 'dark' %}
+<body class="popover-hint jp-Notebook" data-jp-theme-light="false" data-jp-theme-name="JupyterLab Dark">
+{% else %}
+<body class="popover-hint jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
+{% endif %}
+<main>
+{%- endblock body_header -%}

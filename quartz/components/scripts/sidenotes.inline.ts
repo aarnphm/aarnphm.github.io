@@ -36,13 +36,6 @@ function updateSidenotes() {
 
   const sidenotes = sideContainer.querySelectorAll(".sidenote-element") as NodeListOf<HTMLElement>
 
-  // If no sidenotes, ensure the container still has proper height for dashed line
-  if (sidenotes.length === 0) {
-    const articleRect = articleContent.getBoundingClientRect()
-    sideContainer.style.height = `${articleRect.height}px`
-    return
-  }
-
   for (const sidenote of sidenotes) {
     const sideId = sidenote.id.replace("sidebar-", "")
     const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
@@ -123,11 +116,14 @@ document.addEventListener("nav", () => {
     Array.from(ol.querySelectorAll("li[id^='user-content-fn-']")),
   ) as HTMLLIElement[]
 
-  for (const footnote of footnoteItems) {
+  for (const [i, footnote] of footnoteItems.entries()) {
     const footnoteId = footnote.id
     const intextLink = articleContent.querySelector(`a[href="#${footnoteId}"]`) as HTMLElement
     if (!intextLink) continue
     const sidenote = createSidenote(footnote, footnoteId)
+    sidenote.style.position = "absolute"
+    sidenote.dataset.count = `${i + 1}`
+    intextLink.innerHTML = `<span class="indicator-hook"></span>${i + 1}`
     ol.appendChild(sidenote)
   }
 
