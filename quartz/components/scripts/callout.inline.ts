@@ -22,6 +22,19 @@ function toggleCallout(this: HTMLElement) {
   }
 }
 
+function wouldBreakAcrossPages(element: HTMLElement): boolean {
+  const rect = element.getBoundingClientRect()
+  const pageHeight = 1056 // Standard US Letter size in pixels (11 inches * 96 DPI)
+  const elementHeight = rect.height
+  const elementTop = rect.top
+
+  // Calculate the position relative to the page
+  const positionOnPage = elementTop % pageHeight
+
+  // Check if element would cross page boundary
+  return positionOnPage + elementHeight > pageHeight
+}
+
 function setupCallout() {
   const collapsible = document.getElementsByClassName(
     `callout is-collapsible`,
@@ -36,6 +49,15 @@ function setupCallout() {
       const collapsed = div.classList.contains("is-collapsed")
       const height = collapsed ? title.scrollHeight : div.scrollHeight
       div.style.maxHeight = height + "px"
+    }
+  }
+
+  const callouts = document.getElementsByClassName("callout") as HTMLCollectionOf<HTMLElement>
+  for (const element of callouts) {
+    if (wouldBreakAcrossPages(element)) {
+      element.style.pageBreakBefore = "always"
+      // Also add CSS class for stylesheet handling
+      element.classList.add("force-page-break")
     }
   }
 }

@@ -1,3 +1,5 @@
+import katex from "katex"
+
 const equations = [
   {
     name: "Cross Entropy Loss",
@@ -100,6 +102,21 @@ theta_(t+1) = theta_t + v_(t+1)`,
   },
 ]
 
+function renderString(latex: string): string {
+  try {
+    const div = document.createElement("div")
+    katex.render(latex, div, {
+      throwOnError: false,
+      output: "html",
+      displayMode: true,
+    })
+    return div.innerHTML
+  } catch (e) {
+    console.error("KaTeX rendering error:", e)
+    return latex
+  }
+}
+
 function pseudoRandom(seed: number): number {
   const x = Math.sin(seed) * 10000
   return x - Math.floor(x)
@@ -138,14 +155,14 @@ function createBox(text: string | undefined | null, width: number = 80): string 
   const boxWidth = Math.max(maxLineLength, 20) // Minimum width of 20
 
   // Create box elements
-  const horizontalLine = "─".repeat(boxWidth + 4) // +4 for consistent side margins
-  const top = `╭${horizontalLine}╮`
-  const bottom = `╰${horizontalLine}╯`
+  const horizontalLine = "-".repeat(boxWidth + 4) // +4 for consistent side margins
+  const top = `-${horizontalLine}+`
+  const bottom = `+${horizontalLine}+`
 
   // Create padded lines with consistent margins
   const paddedLines = lines.map((line) => {
     const padding = " ".repeat(boxWidth - line.length + 2) // +2 to match right margin
-    return `│  ${line}${padding}│` // Two spaces after │ for consistent left margin
+    return `|  ${line}${padding}|` // Two spaces after | for consistent left margin
   })
 
   return [top, ...paddedLines, bottom].join("\n")
@@ -165,18 +182,65 @@ function logEquation(equation: {
     day: "numeric",
   })
 
+  // Render LaTeX using KaTeX
+  const renderedLatex = renderString(equation.latex)
+
+  // Create a temporary container for the rendered equation
+  const container = document.createElement("div")
+  container.style.cssText = "background: white; padding: 10px; margin: 5px 0;"
+  container.innerHTML = renderedLatex
+
+  // Common styles for console output
+  const styles = {
+    title: "font-size: 14px; font-weight: bold; color: #059669;",
+    name: "font-size: 12px; font-weight: bold; color: #6366f1;",
+    equation: "font-family: monospace; color: #2563eb;",
+    description: "color: #4b5563; font-style: italic;",
+    latex: "font-family: monospace; color: #2563eb;",
+  }
+
+  // Log the formatted output
   console.log(
-    `\n%c🧮 equation of the day - ${dateStr}\n\n` +
-      `%c ${equation.name}\n\n` +
-      `%c ${createBox(equation.asciimath)}\n` +
-      `%c ${equation.description}\n\n` +
-      `%c Latex for copy: ${equation.latex}\n`,
-    "font-size: 14px; font-weight: bold; color: #059669;",
-    "font-size: 10px; font-weight: bold; color: #6366f1;",
-    "font-family: monospace; color: #2563eb; white-space: pre;",
-    "color: #4b5563; font-style: italic;",
-    "color: #4b5563; font-style: italic;",
+    `\n%c🧮 Equation of the Day - ${dateStr}\n\n` +
+      `%c${equation.name}\n\n` +
+      `%c${createBox(equation.asciimath)}\n\n` +
+      `%c${equation.description}\n\n` +
+      `%cLatex: ${equation.latex}\n`,
+    styles.title,
+    styles.name,
+    styles.description,
+    styles.latex,
   )
+
+  // Also insert a visible copy on the page for reference
+  const referenceContainer = document.createElement("div")
+  referenceContainer.className = "equation-reference"
+  referenceContainer.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    max-width: 400px;
+    background: var(--light);
+    padding: 15px;
+    animation: slideIn 0.3s ease-out;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    font-family: var(--bodyFont);
+    animation: slideIn 0.3s ease-out;
+  `
+
+  referenceContainer.innerHTML = `
+    <div style="margin-bottom: 10px; font-weight: bold;">${equation.name}</div>
+    ${renderedLatex}
+    <div style="margin-top: 10px; font-style: italic; font-size: 0.9em;">${equation.description}</div>
+  `
+
+  document.body.appendChild(referenceContainer)
+
+  // Remove the reference container after 5 seconds
+  setTimeout(() => {
+    referenceContainer.remove()
+  }, 5000)
 }
 
 let hasShownEquation = false

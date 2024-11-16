@@ -1,21 +1,25 @@
 import { QuartzConfig } from "../../cfg"
 import { QuartzEmitterPlugin } from "../types"
 import DepGraph from "../../depgraph"
+import path from "path"
+import fs from "node:fs"
 import { glob } from "../../util/glob"
 import { FilePath, joinSegments, slugifyFilePath } from "../../util/path"
 import { Argv } from "../../util/ctx"
-import { execFile } from "child_process"
-import { write } from "./helpers"
+import { spawn } from "child_process"
 import chalk from "chalk"
-import { promisify } from "util"
 
 const notebookFiles = async (argv: Argv, cfg: QuartzConfig) => {
   return await glob("**/*.ipynb", argv.directory, [...cfg.configuration.ignorePatterns])
 }
 
-const execFileAsync = promisify(execFile)
-
-async function convertNotebook(nbPath: string) {
+const runConvertCommand = async (
+  argv: Argv,
+  nbPath: string,
+  targetSlug: string,
+  outputDir: string,
+) => {
+  const command = "uvx"
   const args = [
     "--with",
     "jupyter-contrib-nbextensions",
@@ -23,25 +27,19 @@ async function convertNotebook(nbPath: string) {
     "notebook<7",
     "jupyter",
     "nbconvert",
+    `--TemplateExporter.extra_template_basedirs=${joinSegments(process.cwd(), argv.directory, "templates")}`,
     "--to",
     "html",
-    "--template",
-    "lab",
-    "--stdout",
+    "--template=quartz-notebooks",
+    nbPath,
     "--log-level",
     "50",
-    nbPath,
+    "--output",
+    targetSlug,
+    "--output-dir",
+    outputDir,
   ]
-
-  const { stdout } = await execFileAsync("uvx", args, {
-    maxBuffer: 1024 * 1024 * 128,
-  })
-  return stdout
-}
-
-const processNotebook = (content: string): string => {
-  content = content.replace('<body class="', '<body class="popover-hint ')
-  return content
+  return spawn(command, args)
 }
 
 export const NotebookViewer: QuartzEmitterPlugin = () => {
@@ -53,54 +51,55 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
     async getDependencyGraph() {
       return new DepGraph<FilePath>()
     },
-    async emit(ctx, _content, _resources): Promise<FilePath[]> {
-      const { argv, cfg } = ctx
+    async emit({ argv, cfg }, _content, _resources): Promise<FilePath[]> {
+      const outputDir = argv.output
       const fps = await notebookFiles(argv, cfg)
-      if (fps.length === 0) return []
-      const fpaths: FilePath[] = []
+      const res: FilePath[] = []
+
+      if (fps.length === 0) return res
 
       console.log(chalk.blue(`[emit:NotebookViewer] Processing ${fps.length} notebooks...`))
 
-      const notebooks = fps.map((fp) => ({
-        path: joinSegments(argv.directory, fp) as string,
-        slug: slugifyFilePath(fp as FilePath, true),
-      }))
-
-      let progressBar = ""
-      const total = notebooks.length
-      const updateProgress = (completed: number, total: number) => {
-        const percent = Math.round((completed / total) * 100)
-        progressBar = `[emit:NotebookViewer] Converting notebooks to HTML: ${completed}/${total} (${percent}%)`
-        process.stdout.write(`\r${progressBar}`)
+      let completed = 0
+      let errors = 0
+      const updateProgress = () => {
+        const percent = Math.round((completed / fps.length) * 100)
+        process.stdout.write(
+          `\r[emit:NotebookViewer] Converting notebooks: ${completed}/${fps.length} (${percent}%)` +
+            (errors > 0 ? chalk.yellow(` (${errors} errors)`) : ""),
+        )
       }
 
-      let completed = 0
-      for (const [_, item] of notebooks.entries()) {
-        const { path, slug } = item
+      for (const fp of fps) {
+        const src = joinSegments(argv.directory, fp) as FilePath
+        const outputName = (slugifyFilePath(fp as FilePath, true) + ".html") as FilePath
+        const dest = joinSegments(outputDir, outputName) as FilePath
+        const dir = path.dirname(dest) as FilePath
+
         try {
-          const content = await convertNotebook(path)
-          fpaths.push(
-            await write({
-              ctx,
-              content: processNotebook(content),
-              slug,
-              ext: ".html",
-            }),
-          )
+          await fs.promises.mkdir(dir, { recursive: true })
+          await runConvertCommand(argv, src, outputName, outputDir)
+          res.push(dest)
           completed++
-          updateProgress(completed, total)
-        } catch (err: any) {
-          console.error(chalk.red(`Error processing ${path}: ${err.message}`))
+          updateProgress()
+        } catch (err) {
+          console.error(chalk.red(`\nError processing ${fp}:`), err)
+          errors++
+          updateProgress()
           continue
         }
       }
-      if (progressBar) {
-        process.stdout.write("\n") // New line after progress bar
-      }
+
+      console.log() // New line after progress
+      const summaryColor = errors > 0 ? chalk.yellow : chalk.green
       console.log(
-        chalk.green(`[emit:NotebookViewer] Successfully converted ${completed} notebooks.`),
+        summaryColor(
+          `[emit:NotebookViewer] Completed conversion of ${completed} notebooks` +
+            (errors > 0 ? ` (${errors} errors)` : ""),
+        ),
       )
-      return fpaths
+
+      return res
     },
   }
 }

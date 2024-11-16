@@ -582,7 +582,6 @@ export function renderPage(
             ...(page.htmlAst.children as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
             ),
-            { type: "element", tagName: "br", properties: {}, children: [] },
             {
               type: "element",
               tagName: "a",
@@ -676,7 +675,6 @@ export function renderPage(
                   </div>
                 </div>
                 <Content {...componentData} />
-                {["404", "curius"].includes(slug) ? <></> : <hr />}
                 <div class="page-footer">
                   {afterBody.map((BodyComponent) => (
                     <BodyComponent {...componentData} />

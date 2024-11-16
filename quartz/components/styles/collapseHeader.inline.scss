@@ -1,8 +1,13 @@
 .collapsible-header {
   position: relative;
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
-  transition: all 0.2s ease-in-out;
+
+  &:first-child {
+    margin-top: 1rem;
+  }
+
+  &:last-child {
+    margin-bottom: 1rem;
+  }
 
   // Indentation based on header level
   &[data-level="2"] {
@@ -119,7 +124,6 @@
     .collapsible-header-content {
       border-left: 1px dashed var(--gray);
       overflow: hidden;
-      transition: max-height 0.2s ease-in-out;
       padding-left: 9px;
       max-height: none;
 

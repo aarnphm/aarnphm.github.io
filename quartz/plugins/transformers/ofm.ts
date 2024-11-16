@@ -813,11 +813,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           loadTime: "afterDOMReady",
           contentType: "inline",
         })
-        js.push({
-          script: calloutBreakScript,
-          loadTime: "afterDOMReady",
-          contentType: "inline",
-        })
       }
 
       if (opts.mermaid) {
