@@ -7,7 +7,8 @@
   "functions": {
     "api/file.ts": {
       "memory": 1024,
-      "maxDuration": 10
+      "maxDuration": 10,
+      "includeFiles": "public/**/*"
     },
     "api/curius.ts": {
       "memory": 1024,

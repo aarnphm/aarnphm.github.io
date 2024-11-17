@@ -54,7 +54,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(403).json({ text: "File type not allowed" })
     }
 
-    const content = await fs.readFile(fullPath, "utf-8")
+    const content = await fs.readFile(joinSegments(baseDir, fullPath), "utf-8")
 
     // Set the appropriate headers and return the file content
     res.setHeader("Content-Type", "text/plain")
