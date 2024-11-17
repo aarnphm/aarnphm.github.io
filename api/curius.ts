@@ -1,15 +1,11 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node"
+import type { VercelRequest, VercelResponse } from "."
+import type { Following, Link, User } from "../quartz/components/types"
 
 const Headers: RequestInit = { headers: { "Content-Type": "application/json" } }
 
-interface Following {
-  link: any
-  user: any
-}
-
 interface Response {
-  user?: any
-  links?: any[]
+  user?: User
+  links?: Link[]
   following?: Following[]
 }
 
@@ -47,7 +43,7 @@ async function queryFollowing() {
     if (!response.ok) {
       throw new Error("Network response was not ok")
     }
-    const data = await response.json()
+    const data: { users: Following[] } = await response.json()
     return { following: data.users.filter((user) => user.user.userLink !== "aaron-pham") }
   } catch (err) {
     console.error(err)

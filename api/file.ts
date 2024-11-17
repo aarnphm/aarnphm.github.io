@@ -1,6 +1,6 @@
 import path from "path"
 import fs from "fs/promises"
-import type { VercelRequest, VercelResponse } from "@vercel/node"
+import type { VercelRequest, VercelResponse } from "."
 
 // NOTE: make sure to also update vercel.json{redirects[0].source}
 const ALLOWED_EXTENSIONS = [

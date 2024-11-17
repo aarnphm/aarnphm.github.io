@@ -210,18 +210,20 @@ class OgImageQueue extends EventEmitter {
     const batchSize = this.ctx.argv.concurrency ?? 10
 
     // Add event listener for progress
-    this.on("progress", (completed, total) => {
-      const percent = Math.round((completed / total) * 100)
-      this.progressBar = `[emit:${NAME}] Generating OG images: ${completed}/${total} (${percent}%)`
+    if (this.ctx.argv.verbose) {
+      this.on("progress", (completed, total) => {
+        const percent = Math.round((completed / total) * 100)
+        this.progressBar = `[emit:${NAME}] Generating OG images: ${completed}/${total} (${percent}%)`
 
-      // Only write newline before first progress message
-      process.stdout.write(`\r${this.progressBar}`)
+        // Only write newline before first progress message
+        process.stdout.write(`\r${this.progressBar}`)
 
-      // Write newline when complete
-      if (completed === total) {
-        process.stdout.write("\n")
-      }
-    })
+        // Write newline when complete
+        if (completed === total) {
+          process.stdout.write("\n")
+        }
+      })
+    }
 
     while (this.queue.length > 0) {
       const batch = this.queue.splice(0, batchSize)
@@ -256,7 +258,9 @@ class OgImageQueue extends EventEmitter {
           )
 
           this.completed++
-          this.emit("progress", this.completed, this.total)
+          if (this.ctx.argv.verbose) {
+            this.emit("progress", this.completed, this.total)
+          }
         } catch (error) {
           console.error(
             chalk.red(`\n[emit:${NAME}] Failed to generate social image for "${title}":`, error),
@@ -437,7 +441,11 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
           })
         }
         // Start processing in background
-        console.log(chalk.blue(`[emit:${NAME}] Starting social image generation in background...`))
+        if (ctx.argv.verbose) {
+          console.log(
+            chalk.blue(`[emit:${NAME}] Starting social image generation in background...`),
+          )
+        }
         promises.push(...queue.process())
       }
 

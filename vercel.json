@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "framework": null,
   "installCommand": "npm ci",
-  "buildCommand": "npx quartz build",
+  "buildCommand": "npx quartz build --bundleInfo --verbose",
   "outputDirectory": "public",
   "functions": {
     "api/file.ts": {

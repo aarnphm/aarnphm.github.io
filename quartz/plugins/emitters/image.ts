@@ -127,13 +127,17 @@ export const Image: QuartzEmitterPlugin<Partial<Options>> = (userOpts) => {
         process.stdout.write(`\r${progressBar}`)
       }
 
-      console.log(chalk.blue(`[emit:${NAME}] Converting ${total} images to webp format...`))
+      if (argv.verbose) {
+        console.log(chalk.blue(`[emit:${NAME}] Converting ${total} images to webp format...`))
+      }
       const res = await processBatch(ctx, tasks, opts, updateProgress)
 
-      if (progressBar) {
-        process.stdout.write("\n") // New line after progress bar
+      if (argv.verbose) {
+        if (progressBar) {
+          process.stdout.write("\n") // New line after progress bar
+        }
+        console.log(chalk.green(`[emit:${NAME}] Successfully converted ${fps.length} images`))
       }
-      console.log(chalk.green(`[emit:${NAME}] Successfully converted ${fps.length} images`))
 
       return res
     },

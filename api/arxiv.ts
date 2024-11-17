@@ -1,4 +1,4 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node"
+import type { VercelRequest, VercelResponse } from "."
 import { XMLParser } from "fast-xml-parser"
 import { Readable } from "stream"
 
@@ -72,7 +72,7 @@ async function getArxivMetadata(identifier: string) {
       category: result.feed.entry["arxiv:primary_category"]["@_term"],
       pdfUrl: pdfLink["@_href"],
     }
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Failed to fetch arXiv metadata: ${error.message}`)
   }
 }

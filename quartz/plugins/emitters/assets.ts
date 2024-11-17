@@ -174,14 +174,16 @@ export const Assets: QuartzEmitterPlugin = () => {
         }
       }
       // Log summary
-      console.log(
-        chalk.blue(`[emit:${NAME}] Assets copied: ${succeeded} succeeded, ${failed} failed`),
-      )
-      if (failed > 0) {
-        console.log(chalk.yellow(`\n[emit:${NAME}] Failed files:`))
-        failedFiles.forEach((file) => {
-          console.log(chalk.gray(`\t- ${file}`))
-        })
+      if (argv.verbose) {
+        console.log(
+          chalk.blue(`[emit:${NAME}] Assets copied: ${succeeded} succeeded, ${failed} failed`),
+        )
+        if (failed > 0) {
+          console.log(chalk.yellow(`\n[emit:${NAME}] Failed files:`))
+          failedFiles.forEach((file) => {
+            console.log(chalk.gray(`\t- ${file}`))
+          })
+        }
       }
 
       return res
