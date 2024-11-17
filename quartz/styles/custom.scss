@@ -430,6 +430,8 @@ p.quotes {
 }
 
 section[data-references] {
+  border-top: 1px solid var(--lightgray);
+  margin-top: 2rem;
   margin-left: 0.5rem;
 
   ul,
@@ -562,12 +564,14 @@ section[data-footnotes] {
   & > #quartz-body {
     @media all and ($desktop) {
       column-gap: 2rem;
+      row-gap: 0;
       margin: 0 2rem;
 
       .sidebar.right {
         position: sticky;
         top: $topSpacing;
-        height: 100vh;
+        height: fit-content;
+        max-height: 50vh;
         overflow-y: auto;
         padding-top: 0;
       }
@@ -575,10 +579,6 @@ section[data-footnotes] {
 
     @media all and ($tablet) {
       column-gap: 2rem;
-    }
-
-    footer {
-      margin-bottom: 2rem;
     }
   }
 
@@ -672,12 +672,7 @@ section[data-footnotes] {
 .center {
   margin: $topSpacing auto 0;
   height: fit-content;
-
-  @media all and ($mobile) {
-    & > .page-header {
-      padding-left: 2rem !important;
-    }
-  }
+  grid-area: grid-header;
 }
 
 .content-meta {

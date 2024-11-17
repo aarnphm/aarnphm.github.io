@@ -234,20 +234,11 @@ a {
     }
 
     & .page-header {
-      grid-area: grid-header;
       margin: $topSpacing 0 0 0;
       @media all and ($mobile) {
         margin-top: 0;
         padding: 0;
       }
-    }
-
-    & .center > article {
-      grid-area: grid-center;
-    }
-
-    & footer {
-      grid-area: grid-footer;
     }
 
     & .center,
