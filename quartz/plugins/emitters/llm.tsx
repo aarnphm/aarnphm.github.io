@@ -1,22 +1,45 @@
 import { visit } from "unist-util-visit"
-import { Root, Element, Node, Text } from "hast"
-import { Blockquote, Code } from "mdast"
+import { Element, Node, Text, Root as hastRoot } from "hast"
+import { Blockquote, Code, DefinitionContent, Paragraph, Root } from "mdast"
 import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import HeaderConstructor from "../../components/Header"
 import BodyConstructor from "../../components/Body"
 import { Landing as LandingConstructor } from "../../components"
-import { pageResources, transcludeFinal } from "../../components/renderPage"
+import { pageResources, transcludeFinal, headerRegex } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
 import { clone, FilePath, pathToRoot } from "../../util/path"
 import { write } from "./helpers"
-import { toMdast, defaultHandlers as hastToMdastHandlers } from "hast-util-to-mdast"
+import { toMdast, defaultHandlers as hastToMdastHandlers, State } from "hast-util-to-mdast"
 import { toMarkdown, defaultHandlers as mdastToTextHandlers } from "mdast-util-to-markdown"
 import { gfmToMarkdown } from "mdast-util-gfm"
 import { InlineMath, Math, mathToMarkdown } from "mdast-util-math"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { Content } from "../../components"
 import DepGraph from "../../depgraph"
+import { Heading } from "mdast"
+import { FootnoteDefinition } from "mdast"
+
+const heading = (h: State, node: Element): Heading => {
+  // NOTE: for all heading, we append the links in hast syntax tree. For markdown, we don't need to do this.
+  node.children.pop()
+  switch (node.tagName.match(headerRegex)![0]) {
+    case "h1":
+      return hastToMdastHandlers.h1(h, node)
+    case "h2":
+      return hastToMdastHandlers.h2(h, node)
+    case "h3":
+      return hastToMdastHandlers.h3(h, node)
+    case "h4":
+      return hastToMdastHandlers.h4(h, node)
+    case "h5":
+      return hastToMdastHandlers.h5(h, node)
+    case "h6":
+      return hastToMdastHandlers.h6(h, node)
+    default:
+      throw new Error("Failed to parse correct headers")
+  }
+}
 
 export const LLMText: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
   const opts: FullPageLayout = {
@@ -70,7 +93,7 @@ export const LLMText: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) 
           allFiles,
         }
 
-        const root = transcludeFinal(clone(tree) as Root, componentData, { dynalist: false })
+        const root = transcludeFinal(clone(tree) as hastRoot, componentData, { dynalist: false })
         const mdast = toMdast(root, {
           handlers: {
             // handle ast parsed by rehype-pretty-code
@@ -204,6 +227,11 @@ export const LLMText: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) 
                 return hastToMdastHandlers.span(h, node)
               }
             },
+            h2: heading,
+            h3: heading,
+            h4: heading,
+            h5: heading,
+            h6: heading,
             // handle mermaid
             pre(h, node) {
               let codeEl: Element | undefined
@@ -228,60 +256,117 @@ export const LLMText: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) 
             // handle callout correctly
             blockquote(h, node) {
               const classNames = (node.properties?.className ?? []) as string[]
-              if (!classNames.includes("callout")) {
-                return hastToMdastHandlers.blockquote(h, node)
-              }
+              if (classNames.includes("callout")) {
+                // Get callout type
+                const type = node.properties?.dataCallout as string
 
-              // Get callout type
-              const type = node.properties?.dataCallout as string
-
-              // Get title from callout-title-inner
-              let title = ""
-              let titleNode: Element | undefined
-              visit(node, "element", (el: Element) => {
-                if ((el.properties?.className as string[])?.includes("callout-title-inner")) {
-                  titleNode = el
-                  return false
+                // Get title from callout-title-inner
+                let title = ""
+                let titleNode: Element | undefined
+                visit(node, "element", (el: Element) => {
+                  if ((el.properties?.className as string[])?.includes("callout-title-inner")) {
+                    titleNode = el
+                    return false
+                  }
+                })
+                if (titleNode) {
+                  title = ((titleNode.children[0] as Element)?.children[0] as Text)?.value
                 }
-              })
-              if (titleNode) {
-                title = ((titleNode.children[0] as Element)?.children[0] as Text)?.value
-              }
 
-              // Check collapse state
-              const isCollapsible = classNames.includes("is-collapsible")
-              const isCollapsed = classNames.includes("is-collapsed")
-              const collapseChar = isCollapsible ? (isCollapsed ? "-" : "+") : ""
+                // Check collapse state
+                const isCollapsible = classNames.includes("is-collapsible")
+                const isCollapsed = classNames.includes("is-collapsed")
+                const collapseChar = isCollapsible ? (isCollapsed ? "-" : "+") : ""
 
-              // Get remaining content
-              let content: any[] = []
-              visit(node, "element", (el: Element) => {
-                if ((el.properties?.className as string[])?.includes("callout-content")) {
-                  // Convert children using default blockquote handler to maintain parsing
-                  content = h.all(el)
-                  return false
+                // Get remaining content
+                let content: any[] = []
+                visit(node, "element", (el: Element) => {
+                  if ((el.properties?.className as string[])?.includes("callout-content")) {
+                    // Convert children using default blockquote handler to maintain parsing
+                    content = h.all(el)
+                    return false
+                  }
+                })
+
+                const result: Blockquote = {
+                  type: "blockquote",
+                  children: [
+                    {
+                      type: "paragraph",
+                      children: [
+                        {
+                          type: "text",
+                          value: `[!${type}]${collapseChar}${title ? ` ${title.trim()}` : ""}`,
+                          data: { unescaped: true },
+                        },
+                      ],
+                    },
+                    ...content,
+                  ],
                 }
-              })
 
-              const result: Blockquote = {
-                type: "blockquote",
-                children: [
-                  {
-                    type: "paragraph",
-                    children: [
-                      {
-                        type: "text",
-                        value: `[!${type}]${collapseChar}${title ? ` ${title.trim()}` : ""}`,
-                        data: { unescaped: true },
-                      },
-                    ],
-                  },
-                  ...content,
-                ],
+                h.patch(node, result)
+                return result
+              } else if (classNames.includes("transclude")) {
+                // we will also flatten transclude
+                const unfold: Element = {
+                  type: "element",
+                  tagName: "div",
+                  properties: node.properties,
+                  children: node.children,
+                }
+                const result = hastToMdastHandlers.div(h, unfold)
+                h.patch(node, result)
+                return result
               }
-
-              h.patch(node, result)
-              return result
+              return hastToMdastHandlers.blockquote(h, node)
+            },
+            a(h, node) {
+              if (node.properties.dataFootnoteRef === "") {
+                const identifier = (node.properties?.id as string).replace(
+                  "user-content-fnref-",
+                  "",
+                )
+                const result: Paragraph = {
+                  type: "paragraph",
+                  children: [{ type: "footnoteReference", identifier, label: identifier }],
+                }
+                h.patch(node, result)
+                return result
+              } else if (node.properties.dataFootnoteBackref === "") {
+                // FIXME: Right now, we patch the backref with a empty string, probably not good, should just remove it.
+                const result: Paragraph = {
+                  type: "paragraph",
+                  children: [{ type: "text", value: "" }],
+                }
+                h.patch(node, result)
+                return result
+              }
+              return hastToMdastHandlers.a(h, node)
+            },
+            // handle footnotes correctly
+            section(h, node) {
+              if (node.properties.dataFootnotes == "") {
+                const ol = node.children.pop() as Element
+                const defs: FootnoteDefinition[] = []
+                for (const li of ol.children as Element[]) {
+                  const identifier = (li.properties?.id as string).replace("user-content-fn-", "")
+                  const children = h.all(li) as DefinitionContent[]
+                  defs.push({
+                    type: "footnoteDefinition",
+                    identifier,
+                    label: identifier,
+                    children,
+                  })
+                }
+                const results: Root = {
+                  type: "root",
+                  children: defs,
+                }
+                h.patch(node, results)
+                return results
+              }
+              return hastToMdastHandlers.section(h, node)
             },
           },
         })

@@ -1,5 +1,5 @@
 import katex from "katex"
-import { getFullSlug } from "../../util/path"
+import { LCG } from "../../util/helpers"
 
 const equations = [
   {
@@ -118,20 +118,18 @@ function renderString(latex: string): string {
   }
 }
 
-function pseudoRandom(seed: number): number {
-  const x = Math.sin(seed) * 10000
-  return x - Math.floor(x)
-}
-
 function getEquationOfDay(): {
   name: string
   latex: string
   asciimath: string
   description: string
 } {
-  const seed = 420690
-  const randomIndex = Math.floor(pseudoRandom(seed) * equations.length)
-  return equations[randomIndex]
+  // Use current date as seed to get same equation for whole day
+  const now = new Date()
+  const seed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate()
+  const rng = new LCG(seed)
+
+  return rng.choice(equations)
 }
 
 function createBox(text: string | undefined | null, width: number = 80): string {
@@ -213,38 +211,6 @@ function logEquation(equation: {
     styles.description,
     styles.latex,
   )
-
-  if (!getFullSlug(window).includes("404")) {
-    // Also insert a visible copy on the page for reference
-    const referenceContainer = document.createElement("div")
-    referenceContainer.className = "equation-reference"
-    referenceContainer.style.cssText = `
-position: fixed;
-top: 20px;
-right: 20px;
-max-width: 400px;
-background: var(--light);
-padding: 15px;
-animation: slideIn 0.3s ease-out;
-box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-z-index: 1000;
-font-family: var(--bodyFont);
-animation: slideIn 0.3s ease-out;
-`
-
-    referenceContainer.innerHTML = `
-<div style="margin-bottom: 10px; font-weight: bold;">${equation.name}</div>
-${renderedLatex}
-<div style="margin-top: 10px; font-style: italic; font-size: 0.9em;">${equation.description}</div>
-`
-
-    document.body.appendChild(referenceContainer)
-
-    // Remove the reference container after 5 seconds
-    setTimeout(() => {
-      referenceContainer.remove()
-    }, 5000)
-  }
 }
 
 let hasShownEquation = false

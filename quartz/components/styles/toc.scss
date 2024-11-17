@@ -3,10 +3,6 @@
 .toc {
   display: flex;
   flex-direction: column;
-
-  &.desktop-only {
-    max-height: 40%;
-  }
 }
 
 @media all and not ($mobile) {
@@ -30,16 +26,6 @@ button#toc {
     display: inline-block;
     margin: 0;
   }
-
-  & .fold {
-    margin-left: 0.5rem;
-    transition: transform 0.3s ease;
-    opacity: 0.8;
-  }
-
-  &.collapsed .fold {
-    transform: rotateZ(-90deg);
-  }
 }
 
 #toc-content {
@@ -52,18 +38,6 @@ button#toc {
     visibility 0s linear 0s;
   position: relative;
   visibility: visible;
-
-  &.collapsed {
-    max-height: 0;
-    transition:
-      max-height 0.35s ease,
-      visibility 0s linear 0.35s;
-    visibility: hidden;
-  }
-
-  &.collapsed > .overflow::after {
-    opacity: 0;
-  }
 
   & ul {
     list-style: none;
@@ -88,6 +62,21 @@ button#toc {
   @for $i from 0 through 6 {
     & .depth-#{$i} {
       padding-left: calc(1rem * #{$i});
+
+      @if $i > 0 {
+        position: relative;
+        &::before {
+          content: "";
+          position: absolute;
+          left: calc(1rem * #{$i - 1} + 0.4rem);
+          top: 50%;
+          transform: translateY(-50%);
+          width: 1px;
+          height: 1rem;
+          background-color: var(--dark);
+          opacity: 0.35;
+        }
+      }
     }
   }
 }

@@ -24,7 +24,7 @@ interface RenderComponents {
   footer: QuartzComponent
 }
 
-const headerRegex = new RegExp(/h[1-6]/)
+export const headerRegex = new RegExp(/h[1-6]/)
 
 function headerElement(node: Element, content: Element[], idx: number): Element {
   const buttonId = `collapsible-header-${node.properties?.id ?? idx}`

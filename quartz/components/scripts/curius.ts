@@ -177,41 +177,39 @@ export async function fetchFollowing() {
 }
 
 export async function fetchUsers() {
-  return fetch("https://cdn.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
-    .then((res): Promise<CuriusResponse> => res.json())
-    .then((data) => {
-      if (data === undefined || data.user === undefined) {
-        throw new Error("Failed to fetch user")
-      }
-      return data.user
-    })
+  try {
+    const resp = await fetch("https://cdn.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
+    if (!resp.ok) {
+      throw new Error("Failed to get users from curius")
+    }
+    const data: CuriusResponse = await resp.json()
+    if (data === undefined || data.user === undefined) {
+      throw new Error("Failed to fetch user")
+    }
+    return data.user
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+async function fetchLinks() {
+  try {
+    const resp = await fetch("https://cdn.aarnphm.xyz/api/curius?query=links", fetchLinksHeaders)
+    if (!resp.ok) {
+      throw new Error("Failed to get links from curius")
+    }
+    const data: CuriusResponse = await resp.json()
+    if (data === undefined || data.links === undefined) {
+      throw new Error("Failed to fetch links")
+    }
+    return data.links
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 export async function fetchCuriusLinks(): Promise<CuriusResponse> {
-  // user metadata
-  const user = await fetch("https://cdn.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
-    .then((res): Promise<CuriusResponse> => res.json())
-    .then((data) => {
-      if (data === undefined || data.user === undefined) {
-        throw new Error("Failed to fetch user")
-      }
-      return data.user
-    })
-
-  const following = await fetchFollowing()
-
-  // fetch new links
-  const links: Link[] = await fetch(
-    "https://cdn.aarnphm.xyz/api/curius?query=links",
-    fetchLinksHeaders,
-  )
-    .then((res) => res.json())
-    .then((data: CuriusResponse) => {
-      if (data === undefined || data.links === undefined) {
-        throw new Error("Failed to fetch links")
-      }
-      return data.links
-    })
+  const [user, following, links] = await Promise.all([fetchUsers(), fetchFollowing(), fetchLinks()])
 
   return { links, user, following }
 }

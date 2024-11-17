@@ -8,14 +8,12 @@ export interface Options {
   maxDepth: 1 | 2 | 3 | 4 | 5 | 6
   minEntries: number
   showByDefault: boolean
-  collapseByDefault: boolean
 }
 
 const defaultOptions: Options = {
   maxDepth: 3,
   minEntries: 1,
   showByDefault: true,
-  collapseByDefault: false,
 }
 
 interface TocEntry {
@@ -55,7 +53,6 @@ export const TableOfContents: QuartzTransformerPlugin<Partial<Options>> = (userO
                   ...entry,
                   depth: entry.depth - highestDepth,
                 }))
-                file.data.collapseToc = opts.collapseByDefault
               }
             }
           }
@@ -68,6 +65,5 @@ export const TableOfContents: QuartzTransformerPlugin<Partial<Options>> = (userO
 declare module "vfile" {
   interface DataMap {
     toc: TocEntry[]
-    collapseToc: boolean
   }
 }

@@ -3,13 +3,11 @@ import { clone, FullSlug, normalizeHastElement, FilePath } from "../util/path"
 import { classNames } from "../util/lang"
 import { visit } from "unist-util-visit"
 import { Node, Element, ElementContent, Root } from "hast"
-import { mergeIsomorphic } from "./renderPage"
+import { mergeIsomorphic, headerRegex } from "./renderPage"
 import { htmlToJsx } from "../util/jsx"
 import style from "./styles/reader.scss"
 // @ts-ignore
 import readerScript from "./scripts/reader.inline"
-
-const headerRegex = new RegExp(/h[1-6]/)
 
 export default (() => {
   const Reader: QuartzComponent = ({ displayClass, fileData, allFiles }: QuartzComponentProps) => {

@@ -7,6 +7,7 @@ document.addEventListener("nav", async () => {
   if (!friends) return
 
   const response = await fetchFollowing()
+  if (!response) return
 
   removeAllChildren(friends)
   response.map((user, index) => {

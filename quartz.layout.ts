@@ -5,20 +5,7 @@ import * as Component from "./quartz/components"
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [],
-  afterBody: [
-    // Component.Comments({
-    //   provider: "giscus",
-    //   options: {
-    //     repo: "aarnphm/sites",
-    //     repoId: "R_kgDOLbqALg",
-    //     category: "Announcements",
-    //     categoryId: "DIC_kwDOLbqALs4ChE6l",
-    //     reactionsEnabled: false,
-    //   },
-    // }),
-    Component.DesktopOnly(Component.Toolbar()),
-    Component.Image(),
-  ],
+  afterBody: [Component.DesktopOnly(Component.Toolbar()), Component.Image()],
   footer: Component.MinimalFooter({
     links: { github: "https://github.com/aarnphm", twitter: "https://twitter.com/aarnphm_" },
     showInfo: true,
@@ -36,7 +23,6 @@ export const defaultContentPageLayout: PageLayout = {
   right: [
     Component.Search(),
     Component.Keybind({ enableTooltip: false }),
-    Component.Graph(),
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Backlinks(),
     Component.Reader(),
