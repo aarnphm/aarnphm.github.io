@@ -39,7 +39,12 @@ const runConvertCommand = async (
     "--output-dir",
     outputDir,
   ]
-  return spawn(command, args)
+  try {
+    return spawn(command, args)
+  } catch (err) {
+    console.error(`[emit:NotebookViewer] Error while running conversion to HTML: ${err}`)
+    return
+  }
 }
 
 export const NotebookViewer: QuartzEmitterPlugin = () => {
