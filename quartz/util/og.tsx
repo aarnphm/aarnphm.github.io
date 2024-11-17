@@ -150,7 +150,7 @@ export const og: SocialImageOptions["Component"] = (
   if (fileData.dates) {
     created = formatDate(getDate(cfg, fileData)!, cfg.locale)
   }
-  const { minutes, text: _timeTaken, words: _words } = readingTime(fileData.text!)
+  const { minutes, text: _timeTaken, words: _words } = readingTime(fileData.text ?? "")
   reading = i18n(cfg.locale).components.contentMeta.readingTime({
     minutes: Math.ceil(minutes),
   })

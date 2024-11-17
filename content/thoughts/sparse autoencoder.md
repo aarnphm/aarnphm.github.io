@@ -69,8 +69,10 @@ _uses Pareto improvement over training to reduce L1 penalty_ [@rajamanoharan2024
 Clear consequence of the bias during training is _shrinkage_ [@sharkey2024feature] [^shrinkage]
 
 [^shrinkage]:
-    If we hold $\hat{x}(\bullet)$ fixed, thus L1 pushes $f(x) \to 0$, while reconstruction loss pushes $f(x)$ high enough to produce accurate reconstruction.<br>
-    An optimal value is somewhere between.<br>
+    If we hold $\hat{x}(\bullet)$ fixed, thus L1 pushes $f(x) \to 0$, while reconstruction loss pushes $f(x)$ high enough to produce accurate reconstruction.
+
+    An optimal value is somewhere between.
+
     However, rescaling the [[thoughts/mechanistic interpretability#feature suppression|shrink]] feature activations [@sharkey2024feature] is not necessarily enough to overcome bias induced by L1: a SAE might learnt sub-optimal encoder and decoder directions that is not improved by the fixed.
 
 Idea is to use [[thoughts/optimization#Gated Linear Units and Variants|gated ReLU]] encoder [@shazeer2020gluvariantsimprovetransformer; @dauphin2017languagemodelinggatedconvolutional]:

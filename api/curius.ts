@@ -25,7 +25,7 @@ async function queryUsers() {
 
 async function queryLinks() {
   try {
-    const response = await fetch("https://curius.app/api/users/3584/links?page=0", Headers)
+    const response = await fetch("https://curius.app/api/users/3584/links", Headers)
     if (!response.ok) {
       throw new Error("Network response was not ok")
     }

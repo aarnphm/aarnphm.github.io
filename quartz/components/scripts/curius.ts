@@ -2,7 +2,7 @@ import { Link, CuriusResponse, Trail, Following, User, TrailInfo } from "../type
 import { registerEscapeHandler, registerEvents, removeAllChildren } from "./util"
 import { ValidLocale, i18n } from "../../i18n"
 import FlexSearch, { IndexOptions } from "flexsearch"
-import { sample } from "../../util/helpers"
+import { LCG } from "../../util/helpers"
 
 const curiusBase = "https://curius.app"
 export const CURIUS = `${curiusBase}/aaron-pham`
@@ -157,18 +157,26 @@ export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => 
   return item
 }
 
-export async function fetchFollowing(): Promise<Following[]> {
-  return fetch("https://cdn.aarnphm.xyz/api/curius?query=following", fetchLinksHeaders)
-    .then((res): Promise<CuriusResponse> => res.json())
-    .then((data) => {
-      if (data === undefined || data.following === undefined) {
-        throw new Error("No following data")
-      }
-      return data.following
-    })
+export async function fetchFollowing() {
+  try {
+    const resp = await fetch(
+      "https://cdn.aarnphm.xyz/api/curius?query=following",
+      fetchLinksHeaders,
+    )
+    if (!resp.ok) {
+      throw new Error("Failed to get followings from curius")
+    }
+    const data: CuriusResponse = await resp.json()
+    if (data === undefined || data.following === undefined) {
+      throw new Error("No following data")
+    }
+    return data.following
+  } catch (err) {
+    console.error(err)
+  }
 }
 
-export async function fetchUsers(): Promise<User> {
+export async function fetchUsers() {
   return fetch("https://cdn.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
     .then((res): Promise<CuriusResponse> => res.json())
     .then((data) => {
@@ -378,8 +386,13 @@ function highlight(searchTerm: string, text: string, trim?: boolean) {
   }`
 }
 
+// Use current date as seed to get same equation for whole day
+const now = new Date()
+const seed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate()
+const rng = new LCG(seed)
+
 export async function curiusSearch(linksData: Link[]) {
-  const sampleLinks = sample(linksData, 20)
+  const sampleLinks = rng.shuffle(linksData).splice(0, 20)
 
   const bar = document.getElementById("curius-bar") as HTMLInputElement | null
   const container = document.getElementById("curius-search-container") as HTMLDivElement | null
