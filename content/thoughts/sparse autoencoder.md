@@ -24,10 +24,10 @@ Often contains one layers of MLP with few linear ReLU that is trained on a subse
 > We wish to decompose a models' activitation $x \in \mathbb{R}^n$ into sparse, linear combination of feature directions:
 >
 > $$
-> x \sim x_{0} + \sum_{i=1}^{M} f_i(x) d_i \\[8pt]
-> \because \begin{aligned}
-> d_i M \gg n&:\text{ latent unit-norm feature direction} \\
-> f_i(x) \ge 0&: \text{ corresponding feature activation for }x
+> \begin{aligned}
+> x \sim x_{0} + &\sum_{i=1}^{M} f_i(x) d_i \\[8pt]
+> \because \quad &d_i M \gg n:\text{ latent unit-norm feature direction} \\
+> &f_i(x) \ge 0: \text{ corresponding feature activation for }x
 > \end{aligned}
 > $$
 
@@ -45,8 +45,10 @@ $$
 [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/tut/tut1#^l1norm|L1 norm]] with coefficient $\lambda$ to construct loss during training:
 
 $$
-\mathcal{L}(x) \coloneqq \| x-\hat{x}(f(x)) \|_2^2 + \lambda \| f(x) \|_1 \\[8pt]
-\because \|x-\hat{x}(f(x)) \|_2^2 : \text{ reconstruction loss}
+\begin{aligned}
+\mathcal{L}(x) &\coloneqq \| x-\hat{x}(f(x)) \|_2^2 + \lambda \| f(x) \|_1 \\[8pt]
+&\because \|x-\hat{x}(f(x)) \|_2^2 : \text{ reconstruction loss}
+\end{aligned}
 $$
 
 > [!important] intuition
@@ -81,7 +83,7 @@ $$
 \tilde{f}(\mathbf{x}) \coloneqq \underbrace{\mathbb{1}[\underbrace{(\mathbf{W}_{\text{gate}}(\mathbf{x} - \mathbf{b}_{\text{dec}}) + \mathbf{b}_{\text{gate}}) > 0}_{\pi_{\text{gate}}(\mathbf{x})}]}_{f_{\text{gate}}(\mathbf{x})} \odot \underbrace{\text{ReLU}(\mathbf{W}_{\text{mag}}(\mathbf{x} - \mathbf{b}_{\text{dec}}) + \mathbf{b}_{\text{mag}})}_{f_{\text{mag}}(\mathbf{x})}
 $$
 
-where $\mathbb{1}[\bullet > 0]$ is the (pointwise) Heaviside step function and $\odot$ denotes elementwise multiplication.
+where $\mathbb{1}[\bullet > 0]$ is the (point-wise) Heaviside step function and $\odot$ denotes element-wise multiplication.
 
 | term                 | annotations                                                                     |
 | -------------------- | ------------------------------------------------------------------------------- |
@@ -98,10 +100,12 @@ $$
 $$
 
 ![[thoughts/images/gated-sae-architecture.jpeg]]
-Figure 3: Gated SAE with weight sharing between gating and magnitude paths
+
+_Figure 3: Gated SAE with weight sharing between gating and magnitude paths_
 
 ![[thoughts/images/jump_relu.jpeg]]
-Figure 4: A gated encoder become a single layer linear encoder with Jump ReLU [@erichson2019jumpreluretrofitdefensestrategy] activation function $\sigma_\theta$
+
+_Figure 4: A gated encoder become a single layer linear encoder with Jump ReLU_ [@erichson2019jumpreluretrofitdefensestrategy] _activation function_ $\sigma_\theta$
 
 ### feature suppression
 
@@ -129,7 +133,7 @@ $$
 > a &= \argmin p * L(1,a,a) + (1-p) * L(0,0,0) \\
 > &= \argmin (1-a)^2 + \mid a \mid * c  \\
 > &= \argmin a^2 + (c-2) *a +1
-> \end{aligned} \\[8pt]
+> \end{aligned}
 > \Longrightarrow \boxed{a = 1-\frac{c}{2}}
 > $$
 
