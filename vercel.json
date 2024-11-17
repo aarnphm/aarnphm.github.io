@@ -8,7 +8,7 @@
     "api/file.ts": {
       "memory": 1024,
       "maxDuration": 10,
-      "includeFiles": "public/**/*.:ext(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|js|yaml|yml|rs|m|sql|sh|txt)"
+      "includeFiles": "public/**/*.:ext(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|yaml|yml|rs|m|sql|sh|txt)"
     },
     "api/curius.ts": {
       "memory": 1024,
@@ -21,7 +21,7 @@
   },
   "redirects": [
     {
-      "source": "/:path*.:ext(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|js|yaml|yml|rs|m|sql|sh|txt)",
+      "source": "/:path*.:ext(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|yaml|yml|rs|m|sql|sh|txt)",
       "destination": "/api/file?path=:path*.:ext",
       "permanent": true
     },

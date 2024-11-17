@@ -20,16 +20,14 @@ command -v npx >/dev/null 2>&1 || {
   printf >&2 "\nnpx is missing.\n"
   exit 2
 }
-npx quartz build --verbose
-
-cp -r public/* sites/
+npx quartz build --verbose -o sites
 
 # find all pdf files and remove them
 find sites -type f -name "*.pdf" -print0 | xargs -0 rm -f
+npx prettier sites/index.css -cw
 
 current_datetime=$(date +"%Y-%m-%d %H:%M:%S")
 pushd sites &>/dev/null || exit 1
-npx prettier index.css -cw
 if [ -n "$(git status --porcelain)" ]; then
   git add -A
   git commit -sv --message "chore: build at $current_datetime [generated]"
