@@ -52,11 +52,6 @@ export const parseDependencies = (argv: Argv, hast: Root, file: VFile): string[]
   return dependencies
 }
 
-function stripFrontmatter(content: string): string {
-  const frontmatterRegex = /^---\s*\n(.*?)\n\s*---\s*\n/s
-  return content.replace(frontmatterRegex, "").trim()
-}
-
 export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
@@ -116,7 +111,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
     },
     async emit(ctx, content, resources): Promise<FilePath[]> {
       const cfg = ctx.cfg.configuration
-      const fps: FilePath[] = []
+      const fps: Promise<FilePath>[] = []
       const allFiles = content.map((c) => c[1].data)
 
       let containsIndex = false
@@ -138,20 +133,13 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         }
 
         const content = renderPage(cfg, slug, componentData, opts, externalResources)
-        const fp = await write({
+        const fp = write({
           ctx,
           content,
           slug,
           ext: ".html",
         })
-        const dottxt = await write({
-          ctx,
-          content: stripFrontmatter(file.data.markdown!),
-          slug,
-          ext: ".html.md",
-        })
-
-        fps.push(fp, dottxt)
+        fps.push(fp)
       }
 
       if (!containsIndex && !ctx.argv.fastRebuild) {
@@ -162,7 +150,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         )
       }
 
-      return fps
+      return await Promise.all(fps)
     },
   }
 }

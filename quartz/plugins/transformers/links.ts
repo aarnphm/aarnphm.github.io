@@ -135,7 +135,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     const cdn = "https://cdn.aarnphm.xyz/"
                     return cdn.endsWith("/") ? cdn + fp : [cdn, fp].join("/")
                   }
-                  if (ALLOWED_EXTENSIONS.includes(ext)) {
+                  if (ALLOWED_EXTENSIONS.includes(ext) && !isAbsoluteUrl(dest)) {
                     dest = node.properties.href = constructUrl(dest) as RelativeURL
                   }
                 }

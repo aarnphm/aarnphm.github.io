@@ -709,6 +709,11 @@ section[data-footnotes] {
     @include links;
     @include indicatorHook;
   }
+
+  .llm-source {
+    @include links;
+    @include indicatorHook;
+  }
 }
 
 .breadcrumb-container {

@@ -467,16 +467,25 @@ export function pageResources(
   }
 }
 
-export function renderPage(
-  cfg: GlobalConfiguration,
-  slug: FullSlug,
-  componentData: QuartzComponentProps,
-  components: RenderComponents,
-  pageResources: StaticResources,
-): string {
-  // make a deep copy of the tree so we don't remove the transclusion references
-  // for the file cached in contentMap in build.ts
-  const root = clone(componentData.tree) as Root
+type TranscludeOptions = {
+  dynalist: boolean
+}
+
+const defaultTranscludeOptions = { dynalist: true }
+
+export function transcludeFinal(
+  root: Root,
+  { cfg, allFiles, fileData }: QuartzComponentProps,
+  userOpts?: TranscludeOptions,
+): Root {
+  const slug = fileData.slug as FullSlug
+  let opts: TranscludeOptions
+  if (userOpts) {
+    opts = { ...defaultTranscludeOptions, ...userOpts }
+  } else {
+    opts = defaultTranscludeOptions
+  }
+  const { dynalist } = opts
 
   // NOTE: process transcludes in componentData
   visit(root, "element", (node, _index, _parent) => {
@@ -485,7 +494,7 @@ export function renderPage(
       if (classNames.includes("transclude")) {
         const inner = node.children[0] as Element
         const transcludeTarget = inner.properties["data-slug"] as FullSlug
-        const page = componentData.allFiles.find((f) => f.slug === transcludeTarget)
+        const page = allFiles.find((f) => f.slug === transcludeTarget)
         if (!page) {
           return
         }
@@ -595,7 +604,7 @@ export function renderPage(
       }
     }
   })
-  if (!slug.includes("posts")) {
+  if (dynalist && !slug.includes("posts")) {
     // NOTE: handling collapsible nodes
     visit(root, "element", (node: Element, idx, parent) => {
       const denyIds = new Set(["footnote-label", "reference-label"])
@@ -603,8 +612,8 @@ export function renderPage(
         slug !== "index" &&
         node.tagName.match(headerRegex) &&
         !denyIds.has(node.properties.id as string) &&
-        !(componentData.fileData.frontmatter?.menu ?? false) &&
-        (componentData.fileData.frontmatter?.collapsible ?? true)
+        !(fileData.frontmatter?.menu ?? false) &&
+        (fileData.frontmatter?.collapsible ?? true)
       ) {
         // then do the process headers and its children here
         processHeaders(node, idx, parent as Element)
@@ -613,9 +622,21 @@ export function renderPage(
   }
   // NOTE: We then merge all references and footnotes to final items
   mergeIsomorphic(root)
+  return root
+}
 
+export function renderPage(
+  cfg: GlobalConfiguration,
+  slug: FullSlug,
+  componentData: QuartzComponentProps,
+  components: RenderComponents,
+  pageResources: StaticResources,
+): string {
+  // make a deep copy of the tree so we don't remove the transclusion references
+  // for the file cached in contentMap in build.ts
+  const root = clone(componentData.tree) as Root
   // NOTE: set componentData.tree to the edited html that has transclusions rendered
-  componentData.tree = root
+  componentData.tree = transcludeFinal(root, componentData)
 
   const {
     head: Head,

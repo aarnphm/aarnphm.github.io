@@ -4,6 +4,7 @@ import readingTime from "reading-time"
 import contentMetaStyle from "./styles/contentMeta.scss"
 import { classNames } from "../util/lang"
 import { i18n } from "../i18n"
+import { FullSlug, resolveRelative } from "../util/path"
 
 interface MetadataOptions {
   showReadingTime?: boolean
@@ -125,6 +126,15 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
                   </span>
                 </li>
               )}
+              <li>
+                <a
+                  href={resolveRelative(fileData.slug!, (fileData.slug! + ".html.md") as FullSlug)}
+                  class="llm-source"
+                  style={["color: inherit", "font-weight: inherit"].join(";")}
+                >
+                  <span title="voir https://github.com/AnswerDotAI/llms-txt">llm.txt</span>
+                </a>
+              </li>
               {metadata.showReturnLink && home(options.link!)}
             </>
           )}

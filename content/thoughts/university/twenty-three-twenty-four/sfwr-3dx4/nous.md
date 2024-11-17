@@ -3,6 +3,7 @@ id: nous
 tags:
   - sfwr3dx4
 date: "2024-02-17"
+modified: "2024-11-16"
 title: Tout ce qu'il faut savoir sur la conception des systèmes de contrôle
 ---
 
@@ -11,9 +12,11 @@ See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/code/tests.py|
 Book: [ISBN: 978-1-119-47422-7](https://www.wiley.com/en-us/Control+Systems+Engineering%2C+8th+Edition-p-9781119474227) and [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Norman S. Nise - Control System Engineering-Wiley (2019).pdf|pdf]]
 
 > [!note]
+>
 > `sp.Heaviside(t)` is $u(t)$
 
 > [!tip] snippets
+>
 > ```python
 > import sympy
 > import sympy as sp
@@ -21,15 +24,16 @@ Book: [ISBN: 978-1-119-47422-7](https://www.wiley.com/en-us/Control+Systems+Engi
 > from sympy.abc import s, t
 > ```
 
-
 ## [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/frequency_domain.pdf|Frequency domain]]
 
 See [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Frequency Domain|notes]]
 
 > [!important] Common Laplace transform
+>
 > ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/laplace transform table.jpeg]]
 
 > [!important] Laplace Theorem
+>
 > ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/laplace theorem.jpeg]]
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Frequency Domain#Transfer function|transfer function]]
@@ -39,6 +43,7 @@ Transfer function with feedback is under form
 $$
 \frac{G(s)}{1+G(s)H(s)}
 $$
+
 ### Equivalent Resistance and Impedance
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/electrical system equivalence.jpeg]]
@@ -70,14 +75,16 @@ See [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/content|this]] f
 
 [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability#^routh-table|Routh table]]
 
-
 ---
+
 ## [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Time response|Time response]]
 
 > [!tip]
-> To find transfer function for a system given a step response graph, *look for time over around 63% of the final value$
+>
+> To find transfer function for a system given a step response graph, \*look for time over around 63% of the final value$
 
 > [!important] Closed-loop transfer function
+>
 > $$
 > T(s) = \frac{G(s)}{1+G(s)}
 > $$
@@ -85,7 +92,6 @@ See [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/content|this]] f
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Time response#%OS (percent overshoot)|percent overshoot]]
 
 ## [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/steady-state error|steady-state error]]
-
 
 If a unity feedback system has a feedforward transfer function $G(s)$ then transfer function $\frac{E(s)}{R(s)}$ can be derived as:
 
@@ -103,6 +109,7 @@ For $G(s) = K$ we get $\frac{E(s)}{R(s)} = \frac{1}{1+G(s)}$
 ### Pole placement with phase-variable form
 
 Closed-loop system characteristic equation
+
 $$
 det(SI - (A-BK))
 $$
@@ -110,6 +117,7 @@ $$
 ### Gain and Phase Stability Margins
 
 Closed loop pole exists when
+
 $$
 1+KG(s)H(s) = 0
 $$
@@ -117,7 +125,9 @@ $$
 ## zero order hold
 
 Nyqust frequency:
+
 $$
 f_N = \frac{1}{2}f_s
 $$
+
 Set the third pole to s=-2 to cancel a zero as third pole.
