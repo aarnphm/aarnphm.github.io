@@ -1,5 +1,5 @@
 export { CodeViewer } from "./code-viewer"
-export { LLMText } from "./llm"
+export { LLM } from "./llm"
 export { ContentPage } from "./contentPage"
 export { TagPage } from "./tagPage"
 export { FolderPage } from "./folderPage"

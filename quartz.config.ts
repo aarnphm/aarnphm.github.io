@@ -114,7 +114,7 @@ const config: QuartzConfig = {
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
       Plugin.ContentPage(),
-      Plugin.LLMText(),
+      Plugin.LLM(),
       Plugin.FolderPage({
         pageBody: Component.FolderContent({
           sort: (a: QuartzPluginData, b: QuartzPluginData): number => {
