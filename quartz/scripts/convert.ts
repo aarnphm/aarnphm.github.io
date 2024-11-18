@@ -58,16 +58,11 @@ async function convertMedia(contentDir: string) {
       let content = await fs.readFile(mdFile, "utf-8")
       const originalContent = content
 
-      content = content.replace(/\.(png|mp4)([^\w]|$)/g, (_match, ext) => {
-        return ext === "png" ? ".jpeg$2" : ".avif$2"
+      // Replace both standard markdown image syntax and wikilink image syntax
+      content = content.replace(/\.(png)([^\w]|$)/g, ".jpeg$2")
+      content = content.replace(/\[\[([^\]]+\.png)(\|[^\]]+)?\]\]/g, (match, p1, p2) => {
+        return `[[${p1.replace(".png", ".jpeg")}${p2 || ""}]]`
       })
-      content = content.replace(
-        /\[\[([^\]]+\.(png|mp4))(\|[^\]]+)?\]\]/g,
-        (_match, p1, ext, p3) => {
-          const newExt = ext === "png" ? "jpeg" : "avif"
-          return `[[${p1.replace(`.${ext}`, `.${newExt}`)}${p3 || ""}]]`
-        },
-      )
 
       if (content !== originalContent) {
         await fs.writeFile(mdFile, content, "utf-8")

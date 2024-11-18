@@ -1,8 +1,8 @@
 ---
 id: vllm
 tags:
-  - seed
   - ml
+  - serving
 date: "2024-09-09"
 modified: "2024-10-03"
 permalink:
@@ -114,6 +114,8 @@ Benchmark script: [vllm-project/vllm#10046](https://github.com/vllm-project/vllm
 
 see also [introduction slides](https://docs.google.com/presentation/d/1QL-XPFXiFpDBh86DbEegFXBXFXjix4v032GhShbKf3s/edit)
 
+tldr: Bottleneck at `AsyncLogitProcessor` and `Scheduling` layer, given that this is row-wise operations [^row-wise]
+
 ```mermaid
 ---
 title: Initialization flow
@@ -189,8 +191,6 @@ graph TB
   GPU --> GPUWorker --> GPUModelRunner --> |.execute_model| ModelClassImpl[LlamaModelForCausalLM]
 ```
 
-Bottleneck at `AsyncLogitProcessor` and `Scheduling` layer, given that this is row-wise operations [^row-wise]
-
 [^row-wise]:
     Current implementation [here](https://github.com/vllm-project/vllm/blob/246598a6b1e22616630b7f1bf11bd9bcb31dc860/vllm/model_executor/layers/logits_processor.py#L112) mandates that we gather all logits from hidden state, scale if needed then apply the processors.
 
@@ -199,7 +199,7 @@ Bottleneck at `AsyncLogitProcessor` and `Scheduling` layer, given that this is r
 
     Note that there is also [vllm-project/vllm#5006](https://github.com/vllm-project/vllm/pull/5006) that improves vLLM's own Outlines implementations of the FSM where it halves memory transition from Python list to Tensors
 
-> [!note]- some related items
+> [!note]+ some related items
 >
 > Worker base: `vllm/worker/worker_base.py`
 >
@@ -210,5 +210,7 @@ Bottleneck at `AsyncLogitProcessor` and `Scheduling` layer, given that this is r
 > broadcast SPMD with sequence groups
 
 ### proposal
+
+![[thoughts/constrained decoding]]
 
 [^ref]

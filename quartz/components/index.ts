@@ -1,4 +1,5 @@
 import Sidenotes from "./Sidenotes"
+import Pseudocode from "./Pseudocode"
 import Image from "./Image"
 import Reader from "./Reader"
 import Toolbar from "./Toolbar"
@@ -35,6 +36,7 @@ import Breadcrumbs from "./Breadcrumbs"
 import Comments from "./Comments"
 
 export {
+  Pseudocode,
   Sidenotes,
   Toolbar,
   Image,

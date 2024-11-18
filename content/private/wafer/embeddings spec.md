@@ -100,7 +100,7 @@ from HF: https://github.com/huggingface/text-embeddings-inference
 
 [fastrpc](https://github.com/quic/fastrpc)
 
-```pseudo
+```python
 def query(prompt,
           vec_db):
   result = vec_db.query(prompt)

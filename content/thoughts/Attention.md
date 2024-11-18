@@ -34,6 +34,79 @@ by [@ainslie2023gqatraininggeneralizedmultiquery]
 
 idea: reduce number of KV heads $n_k$ to a fraction $n_k^{'} = \frac{n_q}{k}$ of number of query heads $n_q$ (evenly dividing the query heads into $n_k$ groups with $r$ heads)
 
+## RadixAttention
+
+Implemented in [@zheng2024sglangefficientexecutionstructured] where they maintain a LRU eviction policy to maintain relevant [[thoughts/KV compression|KV cache]] for all requests within a [[thoughts/Radix tree|radix tree]]
+
+radix tree setup:
+
+- key: sequence of tokens
+- value: KV cache tensor (stored in GPU in a paged layout)
+
+![[thoughts/images/vllm/radix-attention.jpeg]]
+
+_dynamic evolution of the radix tree in response to various requests._
+
+> [!abstract]- explanation of RadixAttention with LRU eviction policy
+>
+> These requests include two chat sessions, a batch of few-shot learning inquiries, and a self-consistency sampling. Each tree edge carries a label denoting a substring or a sequence of tokens. The nodes are color-coded to reflect different states: green for newly added nodes, blue for cached nodes accessed during the time point, and red for nodes that have been evicted.
+>
+> [full explanation](https://lmsys.org/blog/2024-01-17-sglang/#backend-automatic-kv-cache-reuse-with-radixattention)
+
+### cache-aware scheduling
+
+define the hit rate as
+
+$$
+\text{hit rate} = \frac{\text{number of cached prompt tokens}}{\text{number of prompt tokens}}
+$$
+
+_in batch settings: sort requests by matching prefix length and prioritise one with longer matched prefixes instead of FIFO schedule._
+
+```pseudo
+\begin{algorithm}
+\caption{Cache-Aware Scheduling for RadixAttention with Continuous Batching}
+\begin{algorithmic}
+\State \textbf{Input:} The radix tree $T$, the memory pool $P$, the current running batch $B$, the waiting queue $Q$.
+\State \textbf{Output:} Finished requests and updated system state.
+\State $requests \gets Q.\text{get\_all\_requests}()$
+\For{$req \in requests$}
+    \State $req.\text{prefix\_node}, req.\text{prefix\_len} \gets T.\text{match\_prefix}(req.\text{input\_tokens})$
+\EndFor
+\State $requests.\text{sort}()$
+\State // Select requests for the next batch
+\State $available\_size \gets T.\text{evictable\_size}() + P.\text{available\_size}()$
+\State $current\_size \gets 0$
+\State $new\_batch \gets []$
+\For{$req \in requests$}
+    \If{$req.\text{size}() + current\_size < available\_size$}
+        \State $new\_batch.\text{append}(req)$
+        \State $\delta \gets T.\text{increase\_ref\_counter}(req.\text{prefix\_node})$
+        \State $available\_size \gets available\_size + \delta$
+    \EndIf
+\EndFor
+\State $Q.\text{remove\_requests}(new\_batch)$
+\State // Insert requests into the current running batch
+\State $B.\text{merge}(new\_batch)$
+\State // Allocate new memory and do eviction if necessary
+\State $needed\_size \gets B.\text{needed\_size}()$
+\State $success, buffer \gets P.\text{alloc}(needed\_size)$
+\If{\textbf{not} success}
+    \State $T.\text{evict}(needed\_size)$
+    \State $success, buffer \gets P.\text{alloc}(needed\_size)$
+\EndIf
+\State $B.\text{run}(buffer)$
+\State // Process finished requests
+\State $finished\_requests \gets B.\text{drop\_finished\_requests}()$
+\For{$req \in finished\_requests$}
+    \State $T.\text{decrease\_ref\_counter}(req.\text{prefix\_node})$
+    \State $T.\text{insert}(req)$
+\EndFor
+\State \Return $finished\_requests$
+\end{algorithmic}
+\end{algorithm}
+```
+
 ## RingAttention
 
 ## RazorAttention

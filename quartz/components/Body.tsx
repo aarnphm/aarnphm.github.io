@@ -4,9 +4,17 @@ import clipboardStyle from "./styles/clipboard.scss"
 // @ts-ignore
 import equationScript from "./scripts/equation.inline"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import Pseudocode from "./Pseudocode"
 
-const Body: QuartzComponent = ({ children }: QuartzComponentProps) => {
-  return <div id="quartz-body">{children}</div>
+const Body: QuartzComponent = (props: QuartzComponentProps) => {
+  const { children } = props
+  const Pseudo = Pseudocode()
+  return (
+    <div id="quartz-body">
+      <>{children}</>
+      <Pseudo {...props} />
+    </div>
+  )
 }
 
 Body.beforeDOMLoaded = equationScript

@@ -4,7 +4,6 @@
 @use "./mixin.scss" as *;
 @use "./pages/menu.scss";
 @use "./pages/quotes.scss";
-@use "./pages/pseudocode.scss";
 
 @include font-face("Berkeley Mono", "BerkeleyMono-Regular.woff2", "woff2");
 @include font-face("ITCGaramondStdLtCond", "ITCGaramondStdLtCond.woff2", "woff2");
