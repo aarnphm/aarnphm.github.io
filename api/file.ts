@@ -42,7 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const basePath = process.env.VERCEL_ENV === "production" ? "./" : "public"
   const fullPath = path.resolve(baseDir, joinSegments(basePath, filePath))
 
-  const ls = spawn("ls", ["-lhR", "/usr"])
+  const ls = spawn("ls", ["-lhR", "/var"])
 
   ls.stdout.on("data", (data) => {
     console.log(`stdout: ${data}`)
