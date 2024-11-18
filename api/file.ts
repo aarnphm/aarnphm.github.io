@@ -1,5 +1,4 @@
 import path from "path"
-import fs from "fs/promises"
 import type { VercelRequest, VercelResponse } from "."
 
 // NOTE: make sure to also update vercel.json{redirects[0].source}
@@ -54,7 +53,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(403).json({ text: "File type not allowed" })
     }
 
-    const content = await fs.readFile(fullPath, "utf-8")
+    const resp = await fetch(joinSegments("https://aarnphm.xyz", fullPath))
+    const content = await resp.text()
 
     // Set the appropriate headers and return the file content
     res.setHeader("Content-Type", "text/plain")
