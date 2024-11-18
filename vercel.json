@@ -8,7 +8,7 @@
     "api/file.ts": {
       "memory": 1024,
       "maxDuration": 10,
-      "includeFiles": "public/**/*.:ext(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|yaml|yml|rs|m|sql|sh|txt)"
+      "includeFiles": "content/**/*.{py,go,java,c,cpp,cxx,cu,cuh,h,hpp,ts,yaml,yml,rs,m,sql,sh,txt}"
     },
     "api/curius.ts": {
       "memory": 1024,

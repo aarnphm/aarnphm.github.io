@@ -1,6 +1,6 @@
 import path from "path"
+import fs from "fs/promises"
 import type { VercelRequest, VercelResponse } from "."
-import { spawn } from "child_process"
 
 // NOTE: make sure to also update vercel.json{redirects[0].source}
 const ALLOWED_EXTENSIONS = [
@@ -36,27 +36,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { query } = req
   const filePath = decodeURIComponent(query.path as string)
 
-  const baseDir = process.cwd() // Root directory of the project
+  const baseDir = process.cwd()
 
   // Resolve the full file path safely to prevent directory traversal attacks
   const basePath = process.env.VERCEL_ENV === "production" ? "./" : "public"
   const fullPath = path.resolve(baseDir, joinSegments(basePath, filePath))
 
-  const ls = spawn("ls", ["-lhR", "/var"])
-
-  ls.stdout.on("data", (data) => {
-    console.log(`stdout: ${data}`)
-  })
-
-  ls.stderr.on("data", (data) => {
-    console.error(`stderr: ${data}`)
-  })
-
-  ls.on("close", (code) => {
-    console.log(`child process exited with code ${code}`)
-  })
-
-  console.log(fullPath)
+  console.log("Accessing file: %s", fullPath)
 
   try {
     // Ensure the requested file is within the base directory
@@ -70,9 +56,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(403).json({ text: "File type not allowed" })
     }
 
-    const resp = await fetch(joinSegments("https://aarnphm.xyz", fullPath))
-    const content = await resp.text()
-
+    const content = await fs.readFile(fullPath, "utf-8")
     // Set the appropriate headers and return the file content
     res.setHeader("Content-Type", "text/plain")
     res.send(content)

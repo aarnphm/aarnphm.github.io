@@ -19,7 +19,7 @@ const denyMention = new Set(["mention", "mentions"])
 // Denylist of SHAs that are also valid words.
 //
 // GitHub allows abbreviating SHAs up to 7 characters.
-// These cases are ignored in text because they might just be ment as normal
+// These cases are ignored in text because they might just be meant as normal
 // words.
 // If you’d like these to link to their SHAs, use more than 7 characters.
 //
@@ -52,7 +52,8 @@ const referenceRegex = new RegExp(
   "(" + userGroup + ")(?:\\/(" + projectGroup + "))?(?:#([1-9]\\d*)|@([a-f\\d]{7,40}))",
   "gi",
 )
-const mentionRegex = new RegExp("(?<!\\[)@(" + userGroup + "(?:\\/" + userGroup + ")?)", "gi")
+// FIXME: To make it work with citation, we have to catch the mention somehow.
+// const mentionRegex = new RegExp("(?<!\\[)@(" + userGroup + "(?:\\/" + userGroup + ")?)", "gi")
 
 function getRepoFromPackage(cwd: string) {
   let pkg
@@ -114,11 +115,11 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
               project: repositoryMatch[2],
               user: repositoryMatch[1],
             }
+            // TODO: add support for mentions back here.
             mdastFindReplace(
               tree,
               [
                 [referenceRegex, replaceReference],
-                [mentionRegex, replaceMention],
                 [/(?:#|\bgh-)([1-9]\d*)/gi, replaceIssue],
                 [/\b([a-f\d]{7,40})\.{3}([a-f\d]{7,40})\b/gi, replaceHashRange],
                 [/\b[a-f\d]{7,40}\b/gi, replaceHash],
@@ -173,6 +174,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
             /**
              * @type {ReplaceFunction}
+             * TODO: FIX HERE FOR MENTIONS TO WORK WITH rehype-citations
              */
             function replaceMention(value: string, username: string, match: RegExpMatchObject) {
               if (match === undefined) return false

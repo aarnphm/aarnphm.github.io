@@ -252,8 +252,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     dest,
                     transformOptions,
                   )
-                  if (opts.compressedImage) {
-                    const ext = path.extname(dest).toLowerCase()
+                  const ext = path.extname(dest).toLowerCase()
+                  if (opts.compressedImage && [".jpeg", ".jpg"].includes(ext)) {
                     dest = dest.replace(ext, ".webp") as RelativeURL
                   }
                   node.properties.src = dest

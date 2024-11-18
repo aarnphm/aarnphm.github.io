@@ -108,6 +108,7 @@ const config: QuartzConfig = {
         },
         katexOptions: { strict: false },
       }),
+      Plugin.GitHub(),
     ],
     filters: [Plugin.RemoveDrafts()],
     emitters: [
