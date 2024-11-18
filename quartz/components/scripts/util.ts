@@ -197,21 +197,44 @@ export function updateContainerHeights() {
   const sideContainer = document.querySelector(".sidenotes") as HTMLElement
   if (!articleContent || !sideContainer) return
 
-  // Set sidenotes container height to match article content
-  const articleRect = articleContent.getBoundingClientRect()
-  sideContainer.style.height = `${articleRect.height}px`
+  // First ensure article content height includes all elements
+  let totalHeight = 0
+  const contentElements = articleContent.children
+  Array.from(contentElements).forEach((element) => {
+    const rect = (element as HTMLElement).getBoundingClientRect()
+    totalHeight += rect.height
+  })
 
-  // Recalculate sidenote positions
-  const sidenotes = sideContainer.querySelectorAll(".sidenote-element") as NodeListOf<HTMLElement>
-  const inViewSidenotes = Array.from(sidenotes).filter((note) => note.classList.contains("in-view"))
+  // Account for margins and padding
+  const style = window.getComputedStyle(articleContent)
+  totalHeight +=
+    parseFloat(style.paddingTop) +
+    parseFloat(style.paddingBottom) +
+    parseFloat(style.marginTop) +
+    parseFloat(style.marginBottom)
 
-  for (const sidenote of inViewSidenotes) {
-    const sideId = sidenote.id.replace("sidebar-", "")
-    const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
-    if (intextLink) {
-      updatePosition(intextLink, sidenote, sideContainer)
+  // Set heights
+  articleContent.style.minHeight = `${totalHeight}px`
+  sideContainer.style.height = `${totalHeight}px`
+
+  // Force a reflow to ensure scrollHeight is updated
+  void sideContainer.offsetHeight
+
+  // Recalculate sidenote positions with slight delay to ensure DOM updates
+  requestAnimationFrame(() => {
+    const sidenotes = sideContainer.querySelectorAll(".sidenote-element") as NodeListOf<HTMLElement>
+    const inViewSidenotes = Array.from(sidenotes).filter((note) =>
+      note.classList.contains("in-view"),
+    )
+
+    for (const sidenote of inViewSidenotes) {
+      const sideId = sidenote.id.replace("sidebar-", "")
+      const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
+      if (intextLink) {
+        updatePosition(intextLink, sidenote, sideContainer)
+      }
     }
-  }
+  })
 }
 
 export function debounce(fn: Function, delay: number) {

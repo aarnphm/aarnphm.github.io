@@ -1,5 +1,6 @@
 import path from "path"
 import type { VercelRequest, VercelResponse } from "."
+import { spawn } from "child_process"
 
 // NOTE: make sure to also update vercel.json{redirects[0].source}
 const ALLOWED_EXTENSIONS = [
@@ -33,13 +34,29 @@ function joinSegments(...args: string[]): string {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { query } = req
-  const filePath = query.path as string
+  const filePath = decodeURIComponent(query.path as string)
 
   const baseDir = process.cwd() // Root directory of the project
 
   // Resolve the full file path safely to prevent directory traversal attacks
   const basePath = process.env.VERCEL_ENV === "production" ? "./" : "public"
   const fullPath = path.resolve(baseDir, joinSegments(basePath, filePath))
+
+  const ls = spawn("ls", ["-lhR", "/usr"])
+
+  ls.stdout.on("data", (data) => {
+    console.log(`stdout: ${data}`)
+  })
+
+  ls.stderr.on("data", (data) => {
+    console.error(`stderr: ${data}`)
+  })
+
+  ls.on("close", (code) => {
+    console.log(`child process exited with code ${code}`)
+  })
+
+  console.log(fullPath)
 
   try {
     // Ensure the requested file is within the base directory

@@ -4,9 +4,13 @@ import {
   CollapsedState,
   setCollapsedState,
   setHeaderState,
+  updateContainerHeights,
+  debounce,
 } from "./util"
 
 type MaybeHTMLElement = HTMLElement | undefined
+
+const debouncedHeights = debounce(updateContainerHeights, 150)
 
 function toggleHeader(evt: Event) {
   const target = evt.target as MaybeHTMLElement
@@ -45,6 +49,11 @@ function toggleHeader(evt: Event) {
 
   updateSidenoteState(content, isCollapsed)
   setCollapsedState(window, toggleButton.id, isCollapsed ? "false" : ("true" as CollapsedState))
+
+  requestAnimationFrame(() => {
+    updateContainerHeights()
+    debouncedHeights()
+  })
 }
 
 function setupHeaders() {
