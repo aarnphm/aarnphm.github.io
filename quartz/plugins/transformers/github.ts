@@ -6,11 +6,12 @@ import path from "node:path"
 import { BuildUrlValues, defaultBuildUrl } from "remark-github"
 import { RepositoryInfo, UrlInfo } from "remark-github/lib"
 import { Root, Link } from "mdast"
+import { Root as hastRoot } from "hast"
 import { RegExpMatchObject, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import { toString } from "mdast-util-to-string"
 import { QuartzTransformerPlugin } from "../types"
 import { visit } from "unist-util-visit"
-import { PhrasingContent } from "mdast-util-find-and-replace/lib"
+import { PhrasingContent } from "mdast"
 
 // Previously, GitHub linked `@mention` and `@mentions` to their blog post about
 // mentions (<https://github.com/blog/821>).
@@ -324,6 +325,29 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
               return { type: "link", title: null, url, children: nodes }
             }
+          }
+        },
+      ]
+    },
+    htmlPlugins() {
+      // automatically add dir https://github.com/rehypejs/rehype-github/blob/main/packages/dir/lib/index.j
+      // It is simple enough and I don't want to add a whole deps for it.
+      const include = new Set(["div", "h1", "h2", "h3", "h4", "h5", "h6", "ol", "p", "ul"])
+      return [
+        () => {
+          return (tree: hastRoot, _file) => {
+            visit(tree, "element", function (node) {
+              if (node.type === "element" && include.has(node.tagName) && node.properties) {
+                // Do not add them to `:is(ol, ul).contains-task-list`.
+                if (
+                  Array.isArray(node.properties.className) &&
+                  node.properties.className.includes("contains-task-list")
+                ) {
+                  return
+                }
+                node.properties.dir = "auto"
+              }
+            })
           }
         },
       ]

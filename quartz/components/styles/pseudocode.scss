@@ -1,12 +1,52 @@
-@use "../base.scss";
-@use "../variables.scss" as *;
-@use "../mixin.scss" as *;
+@use "../../styles/base.scss";
+@use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
 
 .ps-root {
   font-family: KaTeX_Main, "Times New Roman", Times, serif;
   font-size: 1em;
   font-weight: 100;
   -webkit-font-smoothing: antialiased !important;
+  position: relative;
+
+  .ps-mathml {
+    clip: rect(1px, 1px, 1px, 1px);
+    border: 0;
+    height: 1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+
+  & > .clipboard-button {
+    top: 2rem;
+  }
+
+  &:hover > .clipboard-button {
+    opacity: 1;
+    transition: 0.2s;
+  }
+
+  .ps-clipboard {
+    .copy-icon {
+      display: inline;
+    }
+
+    .check-icon {
+      display: none;
+    }
+
+    &.check {
+      .copy-icon {
+        display: none;
+      }
+
+      .check-icon {
+        display: inline;
+      }
+    }
+  }
 
   .ps-algorithm {
     margin: 0.8em 0;

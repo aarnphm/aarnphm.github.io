@@ -1,9 +1,7 @@
 import path from "path"
-import fs from "fs/promises"
 import type { VercelRequest, VercelResponse } from "."
 
-// NOTE: make sure to also update vercel.json{redirects[0].source}
-const ALLOWED_EXTENSIONS = [
+const ALLOWED_EXTENSIONS = new Set([
   ".py",
   ".go",
   ".java",
@@ -23,45 +21,99 @@ const ALLOWED_EXTENSIONS = [
   ".sql",
   ".sh",
   ".txt",
-]
+])
 
-function joinSegments(...args: string[]): string {
-  return args
-    .filter((segment) => segment !== "")
+function sanitizePath(filePath: string): string {
+  // Remove any leading/trailing whitespace
+  let cleaned = filePath.trim()
+
+  // Normalize path separators
+  cleaned = path.normalize(cleaned).replace(/\\/g, "/")
+
+  // Remove any attempts at path traversal
+  cleaned = cleaned
+    .split("/")
+    .filter((segment) => {
+      return (
+        segment !== ".." &&
+        segment !== "." &&
+        !segment.includes("%2e") && // URL encoded dots
+        !segment.includes("%2E")
+      )
+    })
     .join("/")
-    .replace(/\/\/+/g, "/")
+
+  // Remove any double slashes and leading/trailing slashes
+  return cleaned.replace(/\/+/g, "/").replace(/^\/+|\/+$/g, "")
+}
+
+function isValidPath(filePath: string): boolean {
+  // Check for null bytes
+  if (filePath.includes("\0")) return false
+
+  // Check extension is allowed
+  const ext = path.extname(filePath).toLowerCase()
+  if (!ALLOWED_EXTENSIONS.has(ext)) return false
+
+  // Basic path validation
+  if (!filePath || filePath.includes("..")) return false
+
+  // Check for any sneaky encoded characters
+  try {
+    decodeURIComponent(filePath)
+  } catch {
+    return false
+  }
+
+  return true
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const { query } = req
-  const filePath = decodeURIComponent(query.path as string)
-
-  const baseDir = process.cwd()
-
-  // Resolve the full file path safely to prevent directory traversal attacks
-  const basePath = process.env.VERCEL_ENV === "production" ? "./" : "public"
-  const fullPath = path.resolve(baseDir, joinSegments(basePath, filePath))
-
-  console.log("Accessing file: %s", fullPath)
-
   try {
-    // Ensure the requested file is within the base directory
-    if (!fullPath.startsWith(baseDir)) {
-      res.status(400).send("Invalid file path")
-      return
+    // Only allow GET requests
+    if (req.method !== "GET") {
+      return res.status(405).json({ error: "Method not allowed" })
     }
 
-    const ext = path.extname(fullPath).toLowerCase()
-    if (!ALLOWED_EXTENSIONS.includes(ext)) {
-      return res.status(403).json({ text: "File type not allowed" })
+    const { query } = req
+    if (!query.path || typeof query.path !== "string") {
+      return res.status(400).json({ error: "Invalid file path" })
     }
 
-    const content = await fs.readFile(fullPath, "utf-8")
-    // Set the appropriate headers and return the file content
-    res.setHeader("Content-Type", "text/plain")
-    res.send(content)
+    // Decode and sanitize the path
+    const rawPath = decodeURIComponent(query.path)
+    const cleanPath = sanitizePath(rawPath)
+
+    // Validate the path
+    if (!isValidPath(cleanPath)) {
+      console.warn("Invalid path detected:", rawPath)
+      return res.status(403).json({ error: "Invalid file path" })
+    }
+
+    console.log("Accessing file:", cleanPath)
+
+    const response = await fetch(`https://cdn.aarnphm.xyz/${cleanPath}`, {
+      headers: {
+        Accept: "text/plain",
+        "User-Agent": "Vercel Serverless Function",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const content = await response.text()
+
+    // Set security headers
+    res.setHeader("X-Content-Type-Options", "nosniff")
+    res.setHeader("Content-Security-Policy", "default-src 'none'; script-src 'none';")
+    res.setHeader("X-Frame-Options", "DENY")
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate")
+    res.setHeader("Content-Type", "text/plain; charset=utf-8")
+    return res.send(content)
   } catch (error) {
-    console.error(error)
-    res.status(404).send("File not found")
+    console.error("Error:", error instanceof Error ? error.message : "Unknown error")
+    return res.status(500).json({ error: "Internal server error" })
   }
 }

@@ -72,7 +72,6 @@ $$
 
 idea: maximizes margin and more robus to "perturbations"
 
-
 Eucledian distance between two points $x$ and the hyperplan parametrized by $W$ is:
 
 $$
@@ -84,6 +83,7 @@ $$
 ### maximum margin hyperplane
 
 $W$ has $\gamma$ margin if
+
 - $W^T x + b \ge \gamma \forall \text{ blue x}$
 - $W^T x +b \le - \gamma \forall \text{ red x}$
 

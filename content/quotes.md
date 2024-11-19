@@ -4,12 +4,13 @@ aliases:
   - advice
 tags:
   - evergreen
-collapsible: false
 comments: false
 date: "2024-01-23"
 modified: "2024-09-27"
 socialDescription: A collection of quotes, wisdom, and advice.
 title: advice.
+transclude:
+  dynalist: false
 ---
 
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
@@ -45,6 +46,8 @@ A pessimist sees the difficulty in every opportunity; an optimist sees the oppor
 People think focus means saying yes to the thing you’ve got to focus on. But that’s not what it means at all. It means saying no to the hundred other good ideas that there are -- Steve Jobs
 
 _The moral thing that should wish to say is very simple. I should say: ==Love is wise, hatred is foolish==_ -- [Bertrand Russell](https://www.youtube.com/watch?v=ihaB8AFOhZo&ab_channel=PhilosophieKanal)
+
+Craftsman is knowing how to work, Art is knowing when to stop. -- Ben Affleck
 
 ## On drive.
 
