@@ -477,7 +477,7 @@ const defaultTranscludeOptions = { dynalist: true, title: true }
 export function transcludeFinal(
   root: Root,
   { cfg, allFiles, fileData }: QuartzComponentProps,
-  userOpts?: TranscludeOptions,
+  userOpts?: Partial<TranscludeOptions>,
 ): Root {
   // hierarchy of transclusion: frontmatter > userOpts > defaultOpts
   const slug = fileData.slug as FullSlug
@@ -487,11 +487,12 @@ export function transcludeFinal(
   } else {
     opts = defaultTranscludeOptions
   }
+
   if (fileData.frontmatter?.transclude) {
     opts = { ...opts, ...fileData.frontmatter?.transclude }
   }
 
-  const { dynalist, title } = opts
+  const { dynalist } = opts
 
   // NOTE: process transcludes in componentData
   visit(root, "element", (node, _index, _parent) => {
@@ -504,6 +505,14 @@ export function transcludeFinal(
         if (!page) {
           return
         }
+        let transcludePageOpts: TranscludeOptions
+        if (page.frontmatter?.transclude) {
+          transcludePageOpts = { ...opts, ...page.frontmatter?.transclude }
+        } else {
+          transcludePageOpts = opts
+        }
+
+        const { title } = transcludePageOpts
 
         let blockRef = node.properties.dataBlock as string | undefined
         if (blockRef?.startsWith("#^")) {

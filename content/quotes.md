@@ -47,6 +47,8 @@ People think focus means saying yes to the thing you’ve got to focus on. But t
 
 _The moral thing that should wish to say is very simple. I should say: ==Love is wise, hatred is foolish==_ -- [Bertrand Russell](https://www.youtube.com/watch?v=ihaB8AFOhZo&ab_channel=PhilosophieKanal)
 
+Craftsman is knowing how to work, Art is knowing when to stop. -- Ben Affleck
+
 ## On drive.
 
 ==Life can be much broader when you discover one simple fact...that everything around you was made up by people no smarter than you.... Once you learn that, you'll never be the same again.==-- Steve Jobs ^life-jobs-smart

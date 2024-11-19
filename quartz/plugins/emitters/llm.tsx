@@ -432,7 +432,7 @@ export const LLM: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
           },
           {
             type: "html",
-            value: `<!-- llm system_prompt=${JSON.stringify(systemPrompt)}-->`,
+            value: `<!-- llm system_prompt_json=${JSON.stringify(systemPrompt)}-->`,
           },
           { type: "thematicBreak" },
           ...mdast.children,
