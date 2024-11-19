@@ -11,7 +11,7 @@ interface Options {
 }
 
 export const KeybindAlias = {
-  "cmd+k": "recherche",
+  "cmd+/": "recherche",
   "cmd+\\": "page d'accueil",
   "cmd+j": "curius",
   "cmd+b": "lecteur",
@@ -22,7 +22,7 @@ export const KeybindAlias = {
 }
 
 const defaultOptions: Options = {
-  default: ["⌘ /", "⌃ /"],
+  default: ["⌘ '", "⌃ '"],
   enableTooltip: true,
 }
 

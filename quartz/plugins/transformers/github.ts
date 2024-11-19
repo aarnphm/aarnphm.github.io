@@ -5,13 +5,12 @@ import path from "node:path"
 
 import { BuildUrlValues, defaultBuildUrl } from "remark-github"
 import { RepositoryInfo, UrlInfo } from "remark-github/lib"
-import { Root, Link } from "mdast"
+import { Root, Link, PhrasingContent } from "mdast"
 import { Root as hastRoot } from "hast"
 import { RegExpMatchObject, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import { toString } from "mdast-util-to-string"
 import { QuartzTransformerPlugin } from "../types"
 import { visit } from "unist-util-visit"
-import { PhrasingContent } from "mdast"
 
 // Previously, GitHub linked `@mention` and `@mentions` to their blog post about
 // mentions (<https://github.com/blog/821>).
@@ -53,8 +52,8 @@ const referenceRegex = new RegExp(
   "(" + userGroup + ")(?:\\/(" + projectGroup + "))?(?:#([1-9]\\d*)|@([a-f\\d]{7,40}))",
   "gi",
 )
-// FIXME: To make it work with citation, we have to catch the mention somehow.
-// const mentionRegex = new RegExp("(?<!\\[)@(" + userGroup + "(?:\\/" + userGroup + ")?)", "gi")
+// Update the mentionRegex to use negative lookbehind and lookahead to avoid matches inside brackets
+const mentionRegex = new RegExp(`(?<![\\[])@(${userGroup}(?:\\/${userGroup})?)(?![^\\[]*\\])`, "gi")
 
 function getRepoFromPackage(cwd: string) {
   let pkg
@@ -121,6 +120,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
               tree,
               [
                 [referenceRegex, replaceReference],
+                [mentionRegex, replaceMention],
                 [/(?:#|\bgh-)([1-9]\d*)/gi, replaceIssue],
                 [/\b([a-f\d]{7,40})\.{3}([a-f\d]{7,40})\b/gi, replaceHashRange],
                 [/\b[a-f\d]{7,40}\b/gi, replaceHash],

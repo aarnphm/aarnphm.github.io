@@ -347,12 +347,17 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   const finalRefs: Element[] = []
   const toRemove: Element[] = []
 
+  let idx = 0
   visit(root, "element", (node: Element) => {
     if (node.type === "element" && node.tagName === "a" && node.properties.dataFootnoteRef === "") {
       orderNotes.push({ href: node.properties.href as string, id: node.properties.id as string })
       node.properties.href = `${node.properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
       node.properties.id =
         node.properties.id + `${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
+      visit(node, "text", (node) => {
+        node.value = `${idx + 1}`
+        idx++
+      })
     }
   })
 
@@ -531,6 +536,7 @@ export function transcludeFinal(
 
             node.children = [
               normalizeHastElement(blockNode, slug, transcludeTarget),
+              { type: "raw", value: "<br />" },
               {
                 type: "element",
                 tagName: "a",
@@ -574,6 +580,7 @@ export function transcludeFinal(
             ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
             ),
+            { type: "raw", value: "<br />" },
             {
               type: "element",
               tagName: "a",
@@ -606,6 +613,7 @@ export function transcludeFinal(
             ...(page.htmlAst.children as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
             ),
+            { type: "raw", value: "<br />" },
             {
               type: "element",
               tagName: "a",
