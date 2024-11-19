@@ -111,7 +111,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader("X-Frame-Options", "DENY")
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate")
     res.setHeader("Content-Type", "text/plain; charset=utf-8")
-
     return res.send(content)
   } catch (error) {
     console.error("Error:", error instanceof Error ? error.message : "Unknown error")

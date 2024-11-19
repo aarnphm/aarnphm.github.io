@@ -134,10 +134,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 if (isExternal && opts.enableRawEmbed) {
                   if (ALLOWED_EXTENSIONS.includes(ext) && !isAbsoluteUrl(dest)) {
                     classes.push("cdn-links")
-                    dest = node.properties.href = joinSegments(
-                      "https://cdn.aarnphm.xyz/assets/",
-                      dest,
-                    ) as RelativeURL
+                    dest = node.properties.href =
+                      `https://cdn.aarnphm.xyz/assets/${dest}` as RelativeURL
                   }
                 }
 
