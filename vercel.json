@@ -21,14 +21,12 @@
   },
   "redirects": [
     {
-      "source": "/:path*.:ext(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|yaml|yml|rs|m|sql|sh|txt)",
+      "source": "/assets/:path*.:ext(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|yaml|yml|rs|m|sql|sh|txt)",
       "destination": "/api/file?path=:path*.:ext",
       "permanent": true
     },
-    {
-      "source": "/view-source",
-      "destination": "https://github.com/aarnphm"
-    }
+    { "source": "/view-source", "destination": "https://github.com/aarnphm" },
+    { "source": "/view-profile", "destination": "https://twitter.com/aarnphm_" }
   ],
   "headers": [
     {

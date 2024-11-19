@@ -8,6 +8,7 @@ import {
   simplifySlug,
   splitAnchor,
   transformLink,
+  joinSegments,
 } from "../../util/path"
 import path from "path"
 import { visit } from "unist-util-visit"
@@ -131,12 +132,12 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
 
                 // We will need to translate the link to external here
                 if (isExternal && opts.enableRawEmbed) {
-                  const constructUrl = (fp: string) => {
-                    const cdn = "https://cdn.aarnphm.xyz/"
-                    return cdn.endsWith("/") ? cdn + fp : [cdn, fp].join("/")
-                  }
                   if (ALLOWED_EXTENSIONS.includes(ext) && !isAbsoluteUrl(dest)) {
-                    dest = node.properties.href = constructUrl(dest) as RelativeURL
+                    classes.push("cdn-links")
+                    dest = node.properties.href = joinSegments(
+                      "https://cdn.aarnphm.xyz/assets/",
+                      dest,
+                    ) as RelativeURL
                   }
                 }
 
