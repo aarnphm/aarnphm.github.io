@@ -108,6 +108,18 @@ function removeCaptionCount(renderedMarkup: string, captionValue: string): strin
   return renderedMarkup.replace(regex, `<span class="ps-keyword">${captionValue} </span>`)
 }
 
+function parseMeta(meta: string | null, opts: Options) {
+  if (!meta) meta = ""
+
+  const lineNumberMatch = meta.match(/lineNumber=(false|true|0|1)/i)
+  const lnum = lineNumberMatch?.[1] ?? null
+  const enableLineNumber =
+    typeof lnum === "string" ? lnum === "true" || lnum === "1" : opts.renderer?.lineNumber
+  meta = meta.replace(lineNumberMatch?.[0] ?? "", "")
+
+  return { enableLineNumber, meta }
+}
+
 export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
   /**
@@ -122,12 +134,12 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
       return [
         () => (tree: MdRoot, file) => {
           visit(tree, "code", (node) => {
-            // TODO: parse meta
-            const { lang, value } = node
+            let { lang, meta, value } = node
             if (lang === opts.code) {
+              const { enableLineNumber } = parseMeta(meta!, opts)
               latexBlock.push(value)
               node.type = "html" as "code"
-              node.value = `<pre class="${opts.css}"></pre>`
+              node.value = `<pre class="${opts.css}" data-line-number=${enableLineNumber}></pre>`
             }
           })
           file.data.pseudocode = latexBlock.length !== 0
@@ -138,9 +150,12 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
       return [
         () => (tree: HTMLRoot, _file) => {
           visit(tree, "raw", (node: Literal, index, parent) => {
-            if (node.value !== `<pre class="${opts.css}"></pre>`) {
+            const lineNoMatch = node.value.match(/data-line-number=([^>\s]+)/)
+            if (!lineNoMatch || !node.value.includes(`class="${opts.css}"`)) {
               return
             }
+            const lineNo = lineNoMatch[1].toLowerCase()
+            const enableLineNumber = lineNo === "true"
 
             // PERF: we are currently doing one round trip from text -> html -> hast
             // pseudocode (katex backend) --|renderToString|--> html string --|fromHtml|--> hast
@@ -154,7 +169,10 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               return `$${inlineMacros}${p1}$`
             })
 
-            const markup = renderToString(algoWithPreamble!, opts?.renderer)
+            const markup = renderToString(algoWithPreamble!, {
+              ...opts?.renderer,
+              lineNumber: enableLineNumber,
+            })
             if (opts.removeCaptionCount) {
               node.value = removeCaptionCount(markup, opts?.renderer?.titlePrefix ?? "Algorithm")
             } else {
@@ -280,5 +298,11 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
 declare module "vfile" {
   interface DataMap {
     pseudocode: boolean
+  }
+}
+
+declare module "mdast" {
+  interface CodeData {
+    pseudocode?: boolean | undefined
   }
 }
