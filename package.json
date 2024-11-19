@@ -20,6 +20,7 @@
     "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1",
     "serve": "npx quartz build --bundleInfo --concurrency 4 --serve --verbose",
     "functions": "npx vercel dev",
+    "vendorred": "go run quartz/scripts/format.go -dir=sites",
     "convert": "tsx quartz/scripts/convert.ts"
   },
   "engines": {

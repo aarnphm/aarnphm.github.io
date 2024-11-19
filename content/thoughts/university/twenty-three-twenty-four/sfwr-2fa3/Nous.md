@@ -11,6 +11,7 @@ Book: [[thoughts/university/twenty-three-twenty-four/sfwr-2fa3/Automata and Comp
 Q1: T/F, if F explain why.
 Q4: regular expression, 5 separate q
 Q2/Q3: DFAs and NFAs
+
 - Product construction: $\cap$ $\cup$ of DFAs
 - Subset construction: NFA to DFA
 - Quotient construction: State minimization
@@ -18,11 +19,13 @@ Q2/Q3: DFAs and NFAs
 ### Set theory
 
 Complement in $\Sigma^{*}$:
+
 $$
 \overline{L} = \Sigma^{*} - L
 $$
 
 associative:
+
 $$
 \begin{align*}
 (A \cup B) \cup C &= A \cup (B \cup C), \\
@@ -32,6 +35,7 @@ $$
 $$
 
 commutative:
+
 $$
 \begin{align*}
 A \cup B &= B \cup A \\
@@ -44,7 +48,7 @@ $$
 >
 > $A \cup \emptyset = A$ and $A \emptyset = \emptyset A = \emptyset$
 
-set $\{\epsilon\}$ is an identity for set concatenation   $\{\epsilon\}A = A\{\epsilon\} = A$
+set $\{\epsilon\}$ is an identity for set concatenation $\{\epsilon\}A = A\{\epsilon\} = A$
 
 Set union and intersection are distributive over set concatenation
 
@@ -63,7 +67,6 @@ A(B \cup C) &= AB \cup AC \\\
 (A \cup B)C &= AC \cup BC
 \end{align*}
 $$
-
 
 ## DFA
 
@@ -91,7 +94,6 @@ $\delta(q, c) \rightarrow p$ therefore $\hat{\delta}(q, w) \rightarrow p$
 >
 > All finite languages are regular, ==but not all regular languages are finite==
 
-
 #### examples
 
 Show $L$ is regular where $L = \{ x \mid x \% 3 = 0 \cup x = \epsilon \}$, with $\Sigma = \{0, 1\}$
@@ -115,6 +117,7 @@ stateDiagram-v2
 ```
 
 ---
+
 ## product construction
 
 Assume that A, B are regular, there are automata
@@ -124,6 +127,7 @@ M_1 = (Q_1, \Sigma, \delta_1, s_1, F_1) \quad M_2 = (Q_2, \Sigma, \delta_2, s_2,
 $$
 
 Thus
+
 $$
 M_{3} = (Q_{3}, \Sigma, \delta_3, s_{3}, F_{3})
 $$
@@ -133,21 +137,23 @@ where $Q_{3}=Q_{1} \times Q_{2}$, $s_{3} = (s_{1}, s_{2})$, $F_{3} = F_{1} \time
 with $L(M_{1}) = A$ and $L(M_{2}) = B$, then **$A \cap B$** is regular.
 
 > [!important] Lemma 4.1
+>
 > $$
 > \delta_3((p, q), x) = (\delta_1(p, x), \delta_2(q, x)) \space \forall x \in \Sigma^*
 > $$
 
-
-Complement set:  $Q - F \in Q$
+Complement set: $Q - F \in Q$
 
 Trivial machine $\mathcal{L}(M_{1}) = \{\}$, $\mathcal{L}(M_{2}) = \Sigma^*$, $\mathcal{L}(M_{3})=\{ \epsilon \}$
 
 > [!note] De Morgan laws
+>
 > $$
 > A \cup B = \overline{\overline{A} \cap \overline{B}}
 > $$
 
 > [!important] Theorem 4.2
+>
 > $$
 > L(M_3) = L(M_1) \cap L(M_2)
 > $$
@@ -159,6 +165,7 @@ Trivial machine $\mathcal{L}(M_{1}) = \{\}$, $\mathcal{L}(M_{2}) = \Sigma^*$, $\
 > $L_{1} \cup L_{2}$ is regular
 
 ---
+
 ## NFA
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-2fa3/NFA#definition|NFA]]
@@ -180,6 +187,7 @@ $$
 > [!important] acceptance
 >
 > $N$ accepts $x \in \Sigma^*$ if
+>
 > $$
 > \hat{\Delta}(s, x) \cap F \neq \emptyset
 > $$
@@ -193,6 +201,7 @@ Define $L(N) = \{ x \in \Sigma^* \mid N\text{ accepts } x\}$
 > [!important] Lemma 6.1
 >
 > For any $x, y \in \Sigma^* \land A \subseteq Q$,
+>
 > $$
 > \hat{\Delta}(s, xy) = \hat{\Delta}(\hat{\Delta}(s, x), y)
 > $$
@@ -200,6 +209,7 @@ Define $L(N) = \{ x \in \Sigma^* \mid N\text{ accepts } x\}$
 > [!important] Lemma 6.2
 >
 > $\hat{\Delta}$ commutes with set union:
+>
 > $$
 > \hat{\Delta}(\bigcup_i A_i, x) =\bigcup_i \hat{\Delta}(A_i, x)
 > $$
@@ -218,6 +228,7 @@ $$
 > [!important] Lemma 6.3
 >
 > For any $A \subseteq Q_N \land x \in \Sigma^*$
+>
 > $$
 > \hat{\delta}_M(A, x) = \hat{\Delta}_N(A, x)
 > $$
@@ -226,7 +237,6 @@ $$
 > The automata M and N accept the same sets.
 
 ## regex
-
 
 _atomic patterns_ are:
 
@@ -240,7 +250,6 @@ _compound patterns_ are formed by combining ==binary operators== and ==unary ope
 
 > [!tip] redundancy
 > $a^+ \equiv aa^*$, $\alpha \cap \beta = \overline{\overline{\alpha} + \overline{\beta}}$
-
 
 > if $\alpha$ and $\beta$ are patterns, then so are $\alpha + \beta, \alpha \cap \beta, \alpha^*, \alpha^+, \overline{\alpha}, \alpha \beta$
 
@@ -294,16 +303,19 @@ _compound patterns_ are formed by combining ==binary operators== and ==unary ope
 also known as DFA state minimization
 
 > [!important] definition
+>
 > $$
 > p \approx q \equiv [p] = [q]
 > $$
 
 Define
+
 $$
 M / \approx \space = (Q', \Sigma, \delta', [s], F')
 $$
 
 where (13.1)
+
 $$
 \begin{align*}
 Q' &= Q / \approx \\\

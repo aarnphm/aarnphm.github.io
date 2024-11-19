@@ -36,6 +36,7 @@ A root locus plot depicts locations of the closed-loop poles of a system in the 
 K represents the variable loop gain in feedback control system. Since root locus starts at open-loop poles when $K=0$ and ends at open-loop zeros as $K \to \infty$, thus K determines the trajectory of closed-loop poles.
 
 The stability and transient response characteristics of the closed-loop system depend on pole locations, which is determined by K. For example:
+
 - If poles are in the right-half plane for a certain K, the system is unstable.
 - Poles further from the origin (higher K) give faster response.
 - Poles with larger imaginary parts (higher K) produce more oscillations.
@@ -55,20 +56,24 @@ Finally, K can be selected to achieve target spec like damping ratio, settling t
 > Imagine we have a partially finished root locus plot where only the pole and zero locations have been plotted. What are the rules for completing the root locus plot using pencil and paper?
 
 1. Number of branches:
-    - Number of branches of the root locus is equal to the number of poles minus the number of zeros.
-    - Branches start at poles and end at the zeros
+
+   - Number of branches of the root locus is equal to the number of poles minus the number of zeros.
+   - Branches start at poles and end at the zeros
 
 2. Symmetry:
-    - Root locus is symmetrical about the real axis
+
+   - Root locus is symmetrical about the real axis
 
 3. Real axis segments:
-    - Portions of the real axis are part of the root locus if the number of real poles and zeros to the right is odd
+
+   - Portions of the real axis are part of the root locus if the number of real poles and zeros to the right is odd
 
 4. Asymptotes as $K \to \infty$:
-    - Asymptotes intersect at the centroid of the poles and zeros, and the angles are given by $(2q+1)*\frac{180}{P-Z}$ where $q=0,1,2,\dots$
+
+   - Asymptotes intersect at the centroid of the poles and zeros, and the angles are given by $(2q+1)*\frac{180}{P-Z}$ where $q=0,1,2,\dots$
 
 5. Breakaway and break-in points:
-    - Breakaway and break-in points where the locus departs from or arrives on the real axis can be found by solving for. They are found by solving $\frac{dK}{ds} = 0$.
+   - Breakaway and break-in points where the locus departs from or arrives on the real axis can be found by solving for. They are found by solving $\frac{dK}{ds} = 0$.
 
 ---
 
@@ -77,6 +82,7 @@ Finally, K can be selected to achieve target spec like damping ratio, settling t
 For each of the following transfer functions, sketch a root locus plot using the pencil-and-paper method you outlined above:
 
 > [!question] 2.a
+>
 > $$
 > G(s) = \frac{1}{(s+5)(s+9)}
 > $$
@@ -96,7 +102,9 @@ breakaway, angle of departure/arrival: not applicable since no complex zeros
 locus is symmetrical about the real axis
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2a.jpeg]]
+
 > [!question] 2.b
+>
 > $$
 > G(s) = \frac{(s-4)(s-7)}{(s+2)(s+5)(s+12)}
 > $$
@@ -115,6 +123,7 @@ breakways/break-in points: solve for $s=\frac{dK}{ds}=0$, There are around two b
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2b.jpeg]]
 
 > [!question] 2.c
+>
 > $$
 > G(s) = \frac{(s+7)}{(s+8)(s+9)(s+3)^2}
 > $$

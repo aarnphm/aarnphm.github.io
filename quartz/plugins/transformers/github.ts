@@ -330,7 +330,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
       ]
     },
     htmlPlugins() {
-      // automatically add dir https://github.com/rehypejs/rehype-github/blob/main/packages/dir/lib/index.j
+      // automatically add dir https://github.com/rehypejs/rehype-github/blob/main/packages/dir/lib/index.js
       // It is simple enough and I don't want to add a whole deps for it.
       const include = new Set(["div", "h1", "h2", "h3", "h4", "h5", "h6", "ol", "p", "ul"])
       return [

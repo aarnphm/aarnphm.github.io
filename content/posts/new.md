@@ -21,7 +21,7 @@ The train station loomed, a grey monolith against the ever-darkening sky. It was
 Exhaustion clung to me like a second skin after 48 hours of sleep deprivation and intense focus on hacking on a project. Our team had already finished the demo, yet something gnawed at the corner of my mind. A vague unease, shapeless as the fog, settled over me. I couldn't shake the feeling of [[thoughts/displacement|displacement]] that slipped through my fingers, leaving the aftertaste of a half-remembered dream.
 
 ![[posts/images/new-feeling.jpeg]]
-I have done a fair shares of [hackathons](https://jzhao.xyz/posts/hackathons) in the past, yet New Build stood apart from most hackathons I have attended. New Build is **the** definition of "unc cracked tpot club"  that build projects during the weekend. It was the distilled essence of Toronto's raw talents that represents the ever-fast-growing tech scene in Canada. New Build was a multidisciplinary hackathon that combines intensive project development with team formation inspired by NBA Draft[^1]. One major feature that differentiated New from other hackathons is the draft mechanics. We knew who the team captains were. Lo and behold, yours truly was one of them.
+I have done a fair shares of [hackathons](https://jzhao.xyz/posts/hackathons) in the past, yet New Build stood apart from most hackathons I have attended. New Build is **the** definition of "unc cracked tpot club" that build projects during the weekend. It was the distilled essence of Toronto's raw talents that represents the ever-fast-growing tech scene in Canada. New Build was a multidisciplinary hackathon that combines intensive project development with team formation inspired by NBA Draft[^1]. One major feature that differentiated New from other hackathons is the draft mechanics. We knew who the team captains were. Lo and behold, yours truly was one of them.
 
 Given the crowd of cracked and brilliant minds participating in this event, the weight of self-imposed expectations hung heavy. I felt compelled to match their prowess, not for their sake but to prove something to myself.
 Yet beneath it all, a voice whispered a simple desire lingering at the back of my mind - to savour the experience and craft something genuine and [quaint](https://maggieappleton.com/folk-interfaces). I had an idea in mind infused with warmth, a reflection of my inner child, free from the cold glare of corporatism.
@@ -82,7 +82,7 @@ A hackathon should be the infrastructure layer so that everyone can play.
 
 New Build tackled addresses some problems and challenges pretty well, such as the [draft mechanics](https://x.com/aarnphm_/status/1839714935963607405) which introduces some [[thoughts/Entropy|entropy]], but fell short in terms of prizes incentives.
 
-_K and I were chatting about how New Build felt like extended [New Office Hours](https://x.com/aarnphm_/status/1775641922029162773), which is a good first step in cultivating spaces for play_
+_K and I were chatting about how New Build felt like extended [New Office Hours](https://x.com/aarnphm_/status/1775641922029162773), which is a good first step in cultivating spaces for play\_
 
 New Build represents what Toronto has to offer, a first step to solve the "human capital flight" (often refers as "brain drain") in Canada.
 

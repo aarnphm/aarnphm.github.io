@@ -13,10 +13,9 @@ Content-addressed storage is a mechanism to store information such that it can b
 >
 > By contrast, if I use location-addressing to identify the book, say, "the book on the second shelf of the third row in the library", it would be difficult to find the book if the library is reorganized.
 
-| Content-addressed | Location-addressed |
-|--------------- | --------------- |
-| use cryptographic hash functions[^1] to generate unique keys to retrieved based on contents | e.g: [[thoughts/HTTP]], look up content by its location (URI). Thus contents is controlled by the owner of the location   |
-
+| Content-addressed                                                                           | Location-addressed                                                                                                      |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| use cryptographic hash functions[^1] to generate unique keys to retrieved based on contents | e.g: [[thoughts/HTTP]], look up content by its location (URI). Thus contents is controlled by the owner of the location |
 
 ## Immutable Objects, Mutable References
 

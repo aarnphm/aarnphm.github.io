@@ -25,6 +25,7 @@ return result /* result = TS(L, 0, N-1) */
 ```
 
 ### selection sort.
+
 ```prolog
 Input: L[0...N) of N values
 For pos := 0 to N-2 do
@@ -34,9 +35,11 @@ For pos := 0 to N-2 do
       min := i
   swap L[pos] and L[min]
 ```
+
 Comparison: $\sum_{\text{pos}=0}^{N-2}(N-1-pos) = \Theta(N^2)$, changes $2(N-1) = \Theta(N)$
 
 ### insertion sort.
+
 ```prolog
 Input: L[0...N) of N values
 For pos := 1 to N-1 do
@@ -53,9 +56,11 @@ Comparison: $\leq \text{pos} = \sum_{\text{pos}=1}^{N-1} pos = \frac{N(N-1)}{2}$
 ![[thoughts/university/twenty-three-twenty-four/sfwr-2c03/images/sumary-sorting.jpeg]]
 
 ### merge sort.
+
 - divide-and-conquer
 
 ### A lower bound for general-purpose sorting
+
 _assume we have a list of $L \lbrack 0 \dots N)$ of $N$ distinct values_
 
 $S$: All possible lists $L$ that are treated the same by A such that $C: L[i] < L[j]$

@@ -7,9 +7,8 @@ description: a Uber compensation policies case study
 title: Uber compensation analysis
 ---
 
-
-
 ---
+
 ## meeting minutes
 
 ### 2024-03-20
@@ -20,7 +19,7 @@ Part 1: Company introduction (Evan)
 
 Part 2: Identification of issues/problem statement (Vanessa, Josh)
 
-Part 3: Analysis of the current compensation system 
+Part 3: Analysis of the current compensation system
 
 Part 4: Proposals for compensation package and performance criteria (Aaron, Imran)
 

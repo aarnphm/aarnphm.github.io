@@ -12,7 +12,7 @@ See [[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 Net Value Funct
 
 > Relocation of resources
 
-> everything *has* a cost
+> everything _has_ a cost
 
 Cost-benefit analysis
 _Jules Dupuit_ See [Economics evolving: a history of economic thought by _Agnar Sandmo_](https://press.princeton.edu/books/paperback/9780691148427/economics-evolving)
@@ -39,7 +39,6 @@ $$
 $$
 
 Unit matching and conversion
-
 
 > [!notes] marginal value, quantity-dependent value
 > _marginal net value_ of buying an apple is the change in NV from buying one more apple (slope of NVF wrt number of apple bought) either subsequent items gives more NV or lower costs. ^marginal-value

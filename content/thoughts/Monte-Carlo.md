@@ -18,5 +18,4 @@ a [[thoughts/Search|search]] algorithm based on random sampling of the search sp
 - Simulation: Complete **one** random playout from node $C$.
 - Backpropgation: Result of playout to update information in nodes on path from $C$ to $R$.
 
-
 ## simulations

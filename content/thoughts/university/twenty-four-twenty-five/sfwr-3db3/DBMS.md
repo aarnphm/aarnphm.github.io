@@ -20,7 +20,8 @@ ssh se3db3
 
 Relational Model, E-R Model, Views, Indexes, Constraints, Relational Algebra
 
- - 2.5 exabytes of [[thoughts/data|data]] per day.
+- 2.5 exabytes of [[thoughts/data|data]] per day.
+
 ## [[thoughts/Search|search]] vs. query
 
 - indexed keyword
@@ -32,5 +33,6 @@ Relational Model, E-R Model, Views, Indexes, Constraints, Relational Algebra
 - reliable storage to maintain semantics
 
 ## independence
+
 - logical: protection from changes in _logical_ structure
 - physical: protection from changes in _physical_ structure

@@ -17,27 +17,34 @@ Logistic regression:
 $$
 \frac{1}{1 + e^{-(x - \mu)/s}}
 $$
+
 - schema + relational.
+
 ## theory
 
 See also [[tags/sfwr3db3|database]]
+
 ## types.
 
 nominal data
+
 - qualitative data
 - mutually exclusive
 - cannot be ranked
--  $= \neq \in \notin$
+- $= \neq \in \notin$
 
 ordinal data
+
 - represents categories
--  $= \neq \in \notin > <$
+- $= \neq \in \notin > <$
 
 time-series data (interval)
+
 - no true zero
--  $= \neq > < + -$
+- $= \neq > < + -$
 
 ratio data
--  $= \neq > < + - \times \%$
+
+- $= \neq > < + - \times \%$
 
 ## dimensionality

@@ -5,7 +5,9 @@ tags:
 date: "2024-01-30"
 title: NFA
 ---
+
 ## definition
+
 $$
 \Sigma^{*}: \text{set of all strings based off }\Sigma
 $$
@@ -24,32 +26,35 @@ $$
 ## examples
 
 1. $\mathcal{L}(M) = \{ abxba \mid x \in \Sigma^{*}\}$
-  ```mermaid
-  stateDiagram-v2
-    direction LR
-    [*] --> 0
-    0 --> 1 : a
-    1 --> 2 : b
-    2 --> 2 : a, b
-    2 --> 3 : b
-    3 --> 4 : a
-    4 --> [*]
-  ```
+
+```mermaid
+stateDiagram-v2
+  direction LR
+  [*] --> 0
+  0 --> 1 : a
+  1 --> 2 : b
+  2 --> 2 : a, b
+  2 --> 3 : b
+  3 --> 4 : a
+  4 --> [*]
+```
 
 2. $\mathcal{L}(M) = \{ yx \mid x = 00 \lor x =11 \land  y \in \Sigma^{*}\}$
-  ```mermaid
-  stateDiagram-v2
-    direction LR
-    [*] --> 1
-    1 --> 1 : 0,1
-    1 --> 2 : 0
-    2 --> 3 : 0
-    3 --> [*]
-    1 --> 4 : 1
-    4 --> 3 : 1
-  ```
+
+```mermaid
+stateDiagram-v2
+  direction LR
+  [*] --> 1
+  1 --> 1 : 0,1
+  1 --> 2 : 0
+  2 --> 3 : 0
+  3 --> [*]
+  1 --> 4 : 1
+  4 --> 3 : 1
+```
 
 ## $\epsilon$ transition
+
 ```mermaid
 graph LR
 
@@ -58,11 +63,13 @@ graph LR
   s1{{s1}} --"0"--> s1{{s1}}
   s3{{s3}} --"1"--> s3{{s3}}
 ```
+
 ![[thoughts/university/twenty-three-twenty-four/sfwr-2fa3/eps-nfa.jpeg]]
 
 ---
 
 Given the following $M$
+
 ```mermaid
 graph LR
 

@@ -18,7 +18,9 @@ x_1^{1} & \cdots & x_1^{d} & 1 \\
 x_n^{1} & \cdots & x_n^{d} & 1
 \end{pmatrix}
 $$
+
 and
+
 $$
 W_{(d+1) \times 1} = \begin{pmatrix}
 w_1 \\
@@ -70,7 +72,6 @@ $$
 > W^{\text{LS}} = (X^T X)^{-1} X^T Y
 > $$
 
-
 ## non-linear data
 
 Idea is to include adding an additional padding
@@ -78,6 +79,7 @@ Idea is to include adding an additional padding
 ## multivariate polynomials.
 
 > question the case of multivariate polynomials
+>
 > - Assume $M >> d$
 > - Number of terms (monomials): $\approx (\frac{M}{d})^d$
 > - `#` of training samples $\approx$ `#` parameters
@@ -87,6 +89,7 @@ An example of `Curse of dimensionality`
 ## overfitting.
 
 strategies to avoid:
+
 - add more training data
 - L1 (Lasso) or L2 (Ridge) regularization
   - add a penalty term to the objective function
@@ -117,6 +120,7 @@ $$
 > [!important] Solving $W^{\text{RLS}}$
 >
 > Solve that
+>
 > $$
 > W^{\text{RLS}} = (X^T X + \lambda I)^{-1} X^T Y
 > $$
@@ -128,10 +132,12 @@ $$
 feature map: $\phi{(x)}: R^{d_1} \rightarrow R^{d_2}$ where $d_{2} >> d_{1}$
 
 training:
+
 - $W^{*} = \min\limits{W} \| \phi W - Y \|^{2}_{2} + \lambda \| W \|_{2}^{2}$
 - $W^{*} = (\phi^T \phi  + \lambda I)^{-1} \phi^T Y$
 
 prediction:
+
 - $\hat{y} = \langle{W^{*}, \phi{(x)}} \rangle = {W^{*}}^T \phi(x)$
 
 > [!abstract] choices of $\phi(x)$
@@ -145,11 +151,13 @@ prediction:
 calculate $W^{\text{RLS}} = (\phi^T \phi  + \lambda I)^{-1} \phi^T Y$
 
 matmul:
+
 - Native: $O(d^3)$
 - Strassen's algorithm: $O(d^{2.81})$
 - Copper-Smith-Winograd: $O(d^{2.376})$
 
 matrix inversion:
+
 - Gaussian elimination: $O(d^3)$
 - [[thoughts/Cholesky decomposition]]: $O(d^3)$ (involved around $\frac{1}{3}n^3$ FLOPs)
 
@@ -177,4 +185,5 @@ $$
 > $$
 
 How many operations?
+
 - improved: $d + \log M$ ops

@@ -29,7 +29,7 @@ Solution:
 
 - $B = A^T$
 - $\min\limits_{A} \sum_i \| x^i - A^T A x^i \|^2$ is subjected to $A A^T = I_{q \times q}$
-- assuming data is centered, or $\frac{1}{n} \sum_{i} x^i = \begin{bmatrix} 0 & \cdots & 0 \end{bmatrix}^T $
+- assuming data is centered, or $\frac{1}{n} \sum\_{i} x^i = \begin{bmatrix} 0 & \cdots & 0 \end{bmatrix}^T $
 
 ## eigenvalue decomposition
 

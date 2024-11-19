@@ -20,6 +20,7 @@ Suicide is the solution for the absurd:
   - Life is not worth living therefore I took the easy way out
 
 as a paradox:
+
 - Suicide is the justification of meaning of life <- the most important question for philosophers
 - From [[thoughts/Philosophy and Nietzsche|Nietzchean]] prose, those who say "no" acts as if they said "yes": Schopenhauer
 
@@ -38,12 +39,12 @@ Seemingly the questions of the absurd stems from question "Why". The wearing of 
 Heidegger: "mere anxiety [is] a source of everything."
 
 ---
+
 ### definition of absurd
 
 See also P.17, P.20, P.25
 
 I realise that if through science I can seize phenomena and enumerate them, I cannot, for all that, apprehend the world.
-
 
 Absurd is the confrontation of this irrational call for clarity whose call echoes in the human heart
 
@@ -55,15 +56,13 @@ The attack of [[thoughts/reason|reasons]] and decency are never stronger than ou
 
 Once we recognised the absurd, it becomes passion. How many lives with his passion or not is a different question.
 
-
 Philosophers lives through their lenses of the world such that they ran these experiments and believed so strongly in the results
 
-Jaspers despair any ontology because we have lost naïveté 
+Jaspers despair any ontology because we have lost naïveté
 
 Kierkegaard lives the absurd: no truth is absolute and can render satisfactory an existence impossible in itself.
 
 The absurd is born from reasons man making sense of the world and the irreparable silence of the universe echoed back to one.
-
 
 > [!note] P.30
 > In all these cases, from the simplest to the most complex, the magnitude of the absurdity will be in direct ratio to the distance between the two terms of my comparison. There are absurd marriages, challenges, rancors, silences, wars, and even peace treaties. For each of them the absurdity springs from a comparison. I am thus justified in saying that the feeling of absurdity does not spring from the mere scrutiny of a fact or an impression, but that it bursts from the comparison between a bare fact and a certain reality, between an action and the world that transcends it.
@@ -96,7 +95,7 @@ I then realize that merely the order of the procession has been changed. This wo
 
 If I were a tree among trees, a cat among animals, this life would have a meaning, or rather this problem would not arise, for I should belong to this world. I should be this world to which I am now opposed by my whole consciousness and my whole insistence upon familiarity. This ridiculous reason is what sets me in opposition to all creation. I cannot cross it out with a stroke of pen. What I believe to be true I must therefore preserve.
 
-The absurd is simultaneously the awareness  and rejection of death. Suicide as a solution for the absurd, the absolute, such that man’s cannot seem to live with his dreadful future, that he choose suicide as a solution.
+The absurd is simultaneously the awareness and rejection of death. Suicide as a solution for the absurd, the absolute, such that man’s cannot seem to live with his dreadful future, that he choose suicide as a solution.
 
 - Consciousness and revolt as rejections are contrary of renunciation
 
@@ -118,8 +117,8 @@ Such new independence has a definite time limit, like any freedom of action.
 
 The actor trains himself to feed only on appearances.
 
-
 ---
+
 ### Analysis
 
 Camus’ argument on the absurd:

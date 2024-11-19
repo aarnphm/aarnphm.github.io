@@ -8,7 +8,6 @@ title: Atmospheric properties for exoplanets
 
 Ref: [[thoughts/university/twenty-three-twenty-four/astron-2e03/06_Atmospheres_2024.pdf|slides]]
 
-
 ### features.
 
 $$
@@ -39,4 +38,5 @@ Hadley cells
 
 > [!note] Coriolis Effect
 > Winds do not follow a straight trajectory
+
 ### Winds on tidally-locked exoplanets

@@ -5,10 +5,12 @@ tags:
 date: "2024-03-01"
 title: Second-order systems
 ---
+
 ### problem 1.
 
 Consider the following system:
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/a1-system.jpeg]]
+
 > [!question]
 > Using the properties of second-order systems, determine $K_p$ and $K_d$ such that the overshoot is 10 percent and the settling time is 1 second. Confirm that your design meets the requirements by plotting the step response.
 
@@ -25,6 +27,7 @@ For 10% overshoot, we can solve for $\zeta$: $\zeta = \frac{-\ln(\%{OS}/100)}{\s
 For 1 second settling time, we can solve for $\omega_n$: $\omega_n = \frac{4}{\zeta T_s} \approx 6.76 \space rad \space s$.
 
 Given second-order systems' transfer function:
+
 $$
 G(s) = \frac{\omega_n^2}{s^2 + 2\zeta\omega_n s + \omega_n^2}
 $$
@@ -55,6 +58,7 @@ Thus, $K_p = 40.784365358764106$ and $K_d = 0.9999999999999991$.
 The following is the [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/p1.py|code]] snippet for generating the graphs and results:
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/p1.jpeg]]
+
 ```python title="p1.py"
 from scipy.optimize import fsolve
 import numpy as np
@@ -193,17 +197,23 @@ The open-loop transfer function is given by:
 $$
 G(s)H(s) = (K_p + K_d s)\frac{1}{s^2+7s+5}
 $$
+
 The transfer function for closed-loop is given by:
+
 $$
 T(s) = \frac{G(s)H(s)}{1+G(s)H(s)}
 $$
+
 From final value theorem, the steady-state error is given by
+
 $$
 \lim_{s\to0}s\cdot R(s) \cdot (1-T(s))
 $$
+
 For step input $R(s) =\frac{1}{s}$ we got
 
 $$
 SSE = 0.1 = \lim_{s\to0} s \cdot \frac{1}{s} \cdot (1 - \frac{K_p + K_d s}{s^2+7s +5 + K_p + K_d s})
 $$
-$K_p = \frac{5}{8}$ 
+
+$K_p = \frac{5}{8}$

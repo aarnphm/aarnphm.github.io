@@ -25,6 +25,7 @@ $$
 ### controller form
 
 Given
+
 $$
 G(s) = \frac{\sum_{i=1}^{n-1}b_is^i + b_{0}}{s^n + \sum_{i=1}^{n-1}a_is^{i} + a_{0}} = \frac{Y(s)}{U(s)}
 $$

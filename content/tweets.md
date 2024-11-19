@@ -28,4 +28,3 @@ https://x.com/CherrilynnZ/status/1836881535154409629 <!-- visualising emotions -
 https://x.com/CanadaKaz/status/1851653777633247673 <!-- say the thing, ask more -->
 
 https://x.com/NeelNanda5/status/1850656772002120009 <!-- Neel's take on Anthropic crosscoders -->
-

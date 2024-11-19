@@ -32,20 +32,24 @@ title: Economics for engineer, a guide.
 30.a
 
 ---
+
 ## [[thoughts/university/twenty-three-twenty-four/eng-3px3/Net Value Function|net value function]]
 
 $$
 \text{NVF} = \text{benefit} - \text{cost}
 $$
+
 ## conversion factors
 
 ![[thoughts/university/twenty-three-twenty-four/eng-3px3/Conversion Factors#marginal value change.|Conversion Factors]]
+
 ## optimisation
 
 ![[thoughts/university/twenty-three-twenty-four/eng-3px3/Optimization#model-based|Optimization]]
 
 Linear optimization:
 ![[thoughts/university/twenty-three-twenty-four/eng-3px3/Linear Optimization#^linops|Linear Optimization]]
+
 ## time value of money
 
 ### interest
@@ -84,7 +88,6 @@ $$
 
 where $\text{CF}_0$ is the initial cash flow, $\text{CF}_n$ is the cash flow at the end of the $n^{th}$ period, $i$ is the _effective interest rate_
 
-
 > [!important] discount rate
 > Present value $PV = \frac{\text{CF}_t}{(1+r_d)^t}$, where $\text{CF}_t$ is cash flow happening in $t$ years in the future, and $r_d$ is the discount rate.
 >
@@ -95,6 +98,7 @@ regular deposit: Future value $FV = A \sum_{k=0}^{n-1}(1+i)^k = A \frac{(1+i)^n 
 fraction of last payment that was interest was $\frac{i}{1+i}$, principal of the last payment is $A = F_{\text{last}}(1+i)$
 
 > [!important] geometric series
+>
 > $$
 > \sum_{k=0}^{n-1}r^k = \frac{1-r^n}{1-r}
 > $$
@@ -108,6 +112,7 @@ fraction of last payment that was interest was $\frac{i}{1+i}$, principal of the
 
 > [!important] internal rate of return
 > the discount rate that results in a NPV of zero (break-even scenario)
+>
 > $$
 > \text{CF}_0 + \sum_{n=1}^{N}{\frac{\text{CF}_n}{(1+r_{\text{IRR}})^n}} = 0
 > $$
@@ -118,8 +123,6 @@ fraction of last payment that was interest was $\frac{i}{1+i}$, principal of the
 > real vs. nominal MARR: real MARR is MARR if returns are calculated using real dollars, whereas nominal MARR is MARR if returns are calculated using nominal dollars.
 >
 > $\text{MARR}_{\text{real}} = \frac{1+\text{MARR}}{1+f} - 1$ where $f$ is the inflation rate
-
-
 
 ## risk management and stochastic modelling
 
@@ -182,12 +185,13 @@ market equilibrium: where supply and demand curves intersect, quantity demanded 
 shift to right: greater demand, higher price, higher quantity. shift to left: lower demand, lower price, lower quantity.
 factors of production: land, labour, capital, entrepreneurship
 determinants of demand:
-  - price: quantity demanded $Q_d$ falls when price $P$ rises and vice versa
-  - prices of related goods: substitutes and complements
+
+- price: quantity demanded $Q_d$ falls when price $P$ rises and vice versa
+- prices of related goods: substitutes and complements
   determinants of supply:
-  - price: quantity supplied $Q_s$ rises when price $P$ rises and vice versa
-  - factors of productions
-  - fiscal policies, taxes, regulation
+- price: quantity supplied $Q_s$ rises when price $P$ rises and vice versa
+- factors of productions
+- fiscal policies, taxes, regulation
 
 > [!important] elasticity: how responsive quantity demanded or supplied is to a change in price.
 > Surplus when $Q_s > Q_d$, shortage when $Q_s < Q_d$.
@@ -205,14 +209,14 @@ Demand elasticity: $E_D <1$ means if price increases by 5% then demand will decr
 >
 > price seen by consumers vs. suppliers changes depends on relative elasticities of demand and supply: more price change will end up on consumer side
 >
-> quantities change depends on total elasticities of demand and supply:  more elastic means more quantity change.
+> quantities change depends on total elasticities of demand and supply: more elastic means more quantity change.
 
 > [!important] subsidies
 > arbitrary increase the equilibrium quantity,
 >
 > price seen by consumers vs. suppliers changes depends on relative elasticities of demand and supply: more price change will end up on consumer side
 >
-> quantities change depends on total elasticities of demand and supply:  more elastic means more quantity change.
+> quantities change depends on total elasticities of demand and supply: more elastic means more quantity change.
 
 ## behavioural economics
 

@@ -45,6 +45,7 @@ Evaluation
 Analysis
 • What past experiences helped equip you for this experience?
 • Regarding the Intended Learning Outcomes (ILO) of the course, how did this experience bring you closer to achieving these outcomes?
+
 - Is there an ILO that this experience helped to achieve? Which one? Why or why not?
 - Is there a particular ILO that this experience did not help as much as you expected? Which one? Why or why not?
 

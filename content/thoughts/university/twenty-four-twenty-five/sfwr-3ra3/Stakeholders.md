@@ -24,6 +24,7 @@ are V.A.R.I.E.D
 ex: Personal Floation Device (PFD)
 
 Which Personas could be relevant?
+
 - Cabin Crew
 - Frequent traveller
 - Traveller with small children

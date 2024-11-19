@@ -9,7 +9,7 @@ title: Planetary Astronomy
 
 Dr. [Ryan Cloutier](mailto:ryan.cloutier@mcmaster.ca) or [link](https://avenue.cllmcmaster.ca/d2l/home/598689)
 
-Book (optional): [*Fundamental Planetary Science: Physics, Chemistry, and Habitability by Lissauer, J.J. & de Pater, I. (ISBN 9781108411981)*](https://www.cambridge.org/highereducation/books/fundamental-planetary-science/8FD11659BE64C35A172DF0432D7FCFA4#overview)
+Book (optional): [_Fundamental Planetary Science: Physics, Chemistry, and Habitability by Lissauer, J.J. & de Pater, I. (ISBN 9781108411981)_](https://www.cambridge.org/highereducation/books/fundamental-planetary-science/8FD11659BE64C35A172DF0432D7FCFA4#overview)
 
 - warm-up quizzes b4 classes, post-lecture quizzes
   - Participation marks for pre, post will be graded

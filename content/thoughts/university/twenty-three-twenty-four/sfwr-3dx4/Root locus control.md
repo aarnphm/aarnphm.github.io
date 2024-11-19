@@ -5,6 +5,7 @@ tags:
 date: "2024-02-28"
 title: Root locus control
 ---
+
 See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/root_locus_control.pdf|slides]] and [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Root locus|Root locus]]
 
 closed-loop properties of the function of $K_1 G(s)$
@@ -33,8 +34,10 @@ closed-loop properties of the function of $K_1 G(s)$
 ## improving transient response
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/transient-response-root-locus.jpeg]]
+
 > [!question]
 > How to calculate K?
+
 - Product of distances from open-loop pole to point in question
 
 > Second-order poles for the second-order system.
@@ -44,9 +47,11 @@ closed-loop properties of the function of $K_1 G(s)$
 adding PID (compensator) with an integrator ($\frac{1}{s}$) in feed forward path.
 
 ### ideal integral compensation
+
 _proportional-plus-integral (PI) controller_
 --> causing error to go to zero.
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/ideal-integral-compensator.jpeg]]
+
 > [!important]
 > Add zero! on the pole near the origin at $s=-a$
 
@@ -55,6 +60,7 @@ _proportional-plus-integral (PI) controller_
 $$
 \frac{K}{s}(s+a) = K_p + \frac{K_i}{s}
 $$
+
 where $K_p$ is the proportional gain, and $K_i$ is the integral gain.
 
 > [!important] Implementation $G_c(s)$
@@ -64,4 +70,5 @@ where $K_p$ is the proportional gain, and $K_i$ is the integral gain.
 > $$
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/idea-integral-compensator-impl.jpeg]]
+
 ### lag compensation

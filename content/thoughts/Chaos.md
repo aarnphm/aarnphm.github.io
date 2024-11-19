@@ -68,7 +68,7 @@ Nietzsche rejects [[thoughts/Transcendentals|transcendentals chaos]], such const
 - "eternal recurrence" [^1] - a litmus test for an individual's capacity to affirm life <- Actively mentioned throughout [[thoughts/Philosophy and Nietzsche#Thus Spoke Zarathustra|Thus Spoke Zarathustra]].
   - implies the possibility of composite [[thoughts/papers/Nietzsche the Kantian Self and Eternal Recurrence.pdf|self]], that the individual remains the same for eternity of life.
   - allows chaos to remain the force of life, and will to power to be a configuration of chaos.
-    > The self, for Nietzsche, is not just a radically unstable postmodern self.  It is such a self, but it is not simply such a self.  It also has a stability, sameness, and unity that goes far beyond anything Kant ever imagined in his wildest dreams
+    > The self, for Nietzsche, is not just a radically unstable postmodern self. It is such a self, but it is not simply such a self. It also has a stability, sameness, and unity that goes far beyond anything Kant ever imagined in his wildest dreams
 
 The Übermensch must find his footing, create his own values through the act of living. Chaos is important for the creation of anything that is truly new and valuable.
 

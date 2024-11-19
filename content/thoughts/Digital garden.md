@@ -27,7 +27,6 @@ https://twitter.com/Mappletons/status/1250532315459194880
 
 See also: [post](https://maggieappleton.com/garden-history) and [introduction](https://joelhooks.com/digital-garden)
 
-
 ## The garden and the stream
 
 [Source](https://hapgood.us/2015/10/17/the-garden-and-the-stream-a-technopastoral/)

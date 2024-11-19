@@ -33,44 +33,44 @@ C --> B --> A
 
 > [!important]
 >
-> a user process becomes kernel process when *execute syscall*
+> a user process becomes kernel process when _execute syscall_
 
 Scheduling ensures fairness, min response time, max throughput
 
-|  | OS | RTOS |
-| --------------- | --------------- | --------------- |
-| philos | time-sharing | event-driven |
-| requirements | high-throughput | schedulablity (meet all hard deadlines) |
-| metrics | fast avg-response | ensureed worst-case response |
-| overload | fairness | meet critical deadlines |
+|              | OS                | RTOS                                    |
+| ------------ | ----------------- | --------------------------------------- |
+| philos       | time-sharing      | event-driven                            |
+| requirements | high-throughput   | schedulablity (meet all hard deadlines) |
+| metrics      | fast avg-response | ensureed worst-case response            |
+| overload     | fairness          | meet critical deadlines                 |
 
 > Kernel programs can always preempt user-space programs
 
 Kernel program example:
 
- ```c
- #include <linux/init.h>   /* Required by macros*/
- #include <linux/kernel.h> /*KERN_INFO needs it*/
- #include <linux/module.h>
+```c
+#include <linux/init.h>   /* Required by macros*/
+#include <linux/kernel.h> /*KERN_INFO needs it*/
+#include <linux/module.h>
 
- static char *my_string __initdata = "dummy";
- static int my_int __initdata = 4;
+static char *my_string __initdata = "dummy";
+static int my_int __initdata = 4;
 
- /* Init function with user defined name*/
- static int __init hello_4_init(void) {
-   printk(KERN_INFO "Hello %s world, number %d\n", my_string, my_int);
-   return 0;
- }
+/* Init function with user defined name*/
+static int __init hello_4_init(void) {
+  printk(KERN_INFO "Hello %s world, number %d\n", my_string, my_int);
+  return 0;
+}
 
- /* Exit function with user defined name*/
- static void __exit hello_4_exit(void) {
-   printf(KERN_INFO "Goodbye cruel world 4\n");
- }
+/* Exit function with user defined name*/
+static void __exit hello_4_exit(void) {
+  printf(KERN_INFO "Goodbye cruel world 4\n");
+}
 
- /*Macros to be used after defining init and exit functions*/
- module_init(hello_4_init);
- module_exit(hello_4_exit)
- ```
+/*Macros to be used after defining init and exit functions*/
+module_init(hello_4_init);
+module_exit(hello_4_exit)
+```
 
 ## **preemption** && `syscall`
 
@@ -88,13 +88,13 @@ Kernel program example:
   - Data segment: init data (global & static variables)
   - text: RO region containing program instructions
 
-|  | stack | heap |
-| --------------- | --------------- | --------------- |
-| creation | `Member m` | `Member*m = new Member()` |
-| lifetime | function runs to completion | delete, free is called |
-| grow | fixed | dyn added by OS |
-| err | stack overflow | heap fragmentation |
-| when | size of memory is known, data size is small | large scale dyn mem |
+|          | stack                                       | heap                      |
+| -------- | ------------------------------------------- | ------------------------- |
+| creation | `Member m`                                  | `Member*m = new Member()` |
+| lifetime | function runs to completion                 | delete, free is called    |
+| grow     | fixed                                       | dyn added by OS           |
+| err      | stack overflow                              | heap fragmentation        |
+| when     | size of memory is known, data size is small | large scale dyn mem       |
 
 ## `fork()`
 
@@ -149,6 +149,7 @@ To solve race condition, uses semaphores.
 ## polling and interrupt
 
 - polling: reading memloc to receive update of an event
+
   - think of
 
     ```prolog
@@ -161,6 +162,7 @@ To solve race condition, uses semaphores.
     ```
 
 - interrupt: receieve interrupt signal
+
   - think of
 
     ```prolog
@@ -224,13 +226,13 @@ Let the following be the scheduling parameters:
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/resp-time-exec-time.jpeg]]
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/resp-time-preempted-exec.jpeg]]
-*response time when execution is preempted*
+_response time when execution is preempted_
 
 > Period $p_i$ of a periodic task $T_i$ is **min length** of all time intervales between release times of consecutive tasks.
 
 > Phase of a Task $\phi_i$ is the release time $r_{i,1}$ of a task $T_i$, or $\phi_i = r_{i,1}$
 
-> *in phase* are first instances of several tasks that are released simultaneously
+> _in phase_ are first instances of several tasks that are released simultaneously
 
 > [!important] Representation
 >
@@ -257,7 +259,7 @@ assume tasks are non-preemptive, jobs parameters with hard deadlines known.
 - no race condition, no deadlock, just function call
 - however, very brittle, number of frame $F$ can be large, release times of tasks must be fixed
 
-### *hyperperiod*
+### _hyperperiod_
 
 > is the least common multiple (lcm) of the periods.
 
@@ -316,13 +318,13 @@ For higher priority:
 > [!important] schedulability test for RM (Test 1)
 >
 > Given $n$ periodic processes, independent and preemptable, $D_i \geq p_i$ for all processes,
-> **periods of all tasks are *integer* multiples of each other**
+> **periods of all tasks are _integer_ multiples of each other**
 >
 > a sufficient condition for tasks to be scheduled on uniprocessor: $U = \sum_{i=1}^{n}\frac{e_i}{p_i} \leq 1$
 
 > [!important] schedulability test for RM (Test 2)
 >
-> A *sufficient* but not necessary condition is $U \leq n \cdot (2^{\frac{1}{n}} - 1)$ for $n$ periodic tasks
+> A _sufficient_ but not necessary condition is $U \leq n \cdot (2^{\frac{1}{n}} - 1)$ for $n$ periodic tasks
 >
 > for $n \to \infty$, we have $U < \ln(2) \approx 0.693$
 
@@ -365,7 +367,7 @@ idea: find $k$ such that time $t = k \times p_1 \geq k * e_1 + e_2$ and $k\times
 
 ### earliest-deadline first (EDF)
 
-*depends on closeness of absolute deadlines*
+_depends on closeness of absolute deadlines_
 
 > [!important] EDF schedulability test 1
 >
@@ -375,6 +377,7 @@ idea: find $k$ such that time $t = k \times p_1 \geq k * e_1 + e_2$ and $k\times
 > [!important] EDF schedulability test 2
 >
 > relative deadlines are not equal to or greater than their periods
+>
 > $$
 > \sum_{i=1}^{n}(\frac{e_i}{\text{min}(D_i, p_i)}) \leq 1
 > $$
@@ -407,8 +410,9 @@ idea: schedule all critical sections non-preemptively
 **a higher priority task is blocked only when some lower priority job is in critical section**
 
 pros:
+
 - zk about resource requirements of tasks
-cons:
+  cons:
 - task can be blocked by a lower priority task for a long time even without resource conflict
 
 ### Priority Inheritance Protocol (PIP)
@@ -422,6 +426,7 @@ would still run into deadlock (think of RR task resource access)
 ### Priority Ceiling Protocol (PCP)
 
 idea: extends PIP to prevent deadlocks
+
 - assigned priorities are fixed
 - resource requirements of all the tasks that will request a resource $R$ is known
 

@@ -6,6 +6,7 @@ Work with CloudProvider for structure (engineer attending weekly sync) => bring 
 collaboration channels with development
 
 Track:
+
 - Contribute code (to become more active) => vllm contributor (redirect to answer questions) <=
 - Operating vLLM for usage
 

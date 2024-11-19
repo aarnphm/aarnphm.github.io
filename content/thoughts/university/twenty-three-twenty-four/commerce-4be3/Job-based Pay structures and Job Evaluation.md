@@ -9,7 +9,6 @@ title: Job-based Pay structures and Job Evaluation
 
 See [[thoughts/university/twenty-three-twenty-four/commerce-4be3/Job-based Pay Structures and Job Evaluation.pdf|slides]]
 
-
 ## Speakers
 
 - ask better questions
@@ -33,8 +32,8 @@ See [[thoughts/university/twenty-three-twenty-four/commerce-4be3/Job-based Pay S
 
 > based on combination of job content, skills, values, organisation culture, external market
 
-
 Decision:
+
 - purpose
 - single or multiple plans
 - among alternative approaches
@@ -44,6 +43,7 @@ Decision:
 ## establish purpose
 
 aligned if
+
 - supports organisation strategy
 - supports workflow
 - fair to employees
@@ -52,7 +52,7 @@ aligned if
 ## single vs. multiple plans
 
 - evaluation plans for different types of workflow
-- number of job evaluation plans  _depends_ on how detailed it needs to be to make pay decisions
+- number of job evaluation plans _depends_ on how detailed it needs to be to make pay decisions
 
 ## choices of job evaluation
 
@@ -65,11 +65,10 @@ aligned if
   - evaluators must be knowledgeable about all jobs
   - results are difficult to defend and costly solutions maybe be required.
 
-| alternatives methods   | description    |
-|--------------- | --------------- |
-| Alternation   | order descriptions alternately at each extreme, evaluators agree on which jobs are the most valuable  |
-| Paired comparison | compare each job with every other job, number of comparisons = n(n-1)/2 |
-
+| alternatives methods | description                                                                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------------- |
+| Alternation          | order descriptions alternately at each extreme, evaluators agree on which jobs are the most valuable |
+| Paired comparison    | compare each job with every other job, number of comparisons = n(n-1)/2                              |
 
 ### classification
 
@@ -81,24 +80,27 @@ aligned if
 - assignment of numeric score
 - procedure results in a relative ordering of jobs based on the number of points that each job "scores".
 
-
 ### 1. Job Analysis
+
 - representative benchmark jobs is drawn for analysis
 
-
 ### 2. Determine Compensable Factors
+
 - based on strategy and values of organisation
 - based on the work performed
 - acceptable to stakeholders affected by the resulting pay structure
 
 challenges:
+
 - small numbers
 - unique criteria
 
 ### 3. Scale the Factors
+
 - 4 to 8 degrees
 
 ### 4. Weigh the Factors
+
 - of important
 - weights reflect the relative importance of each Factors
 - determined through an advisory committee (a priori judgement approach)
@@ -106,6 +108,7 @@ challenges:
 ### 5 & 6. Communicate.
 
 Who?
+
 - employees
 - consultants
 - union representatives
@@ -122,12 +125,15 @@ provides a hierarchy of work, or a job structure
 - link pay to the depth or breath of skills
 - pay individuals for all relevant skills -> wage attach to person
 
-###  types.
+### types.
 
 1. depth
-  - based on knowledge of the person
+
+- based on knowledge of the person
+
 2. generalist/breadth
-  - increased by acquiring new knowledge
+
+- increased by acquiring new knowledge
 
 > [!important] Purpose of skill-based
 > supports organisation's strategy, workflow, fair to employees, and motivates behaviour
@@ -149,6 +155,7 @@ provides a hierarchy of work, or a job structure
 - indicators are observable behaviour
 
 ### Analysis
+
 - core competencies are not unique for each company
 - differs applies their competencies
 - verify their possession of that competency
@@ -166,12 +173,14 @@ provides a hierarchy of work, or a job structure
 - validity refers to degree the evaluation assesses relative job worth.
 
 ## Acceptability
+
 - formal appeals process -> request and re-analysis or skills re-evaluation.
 - employee attitude surveys assess perceptions of how useful evaluation is as a management tools.
 
 ## bias.
 
 To ensure bias-free evaluation:
+
 - compensable factors and scales to include the content of jobs
 - factor weights are consistently biased against jobs
 - apply the plan as bias free a manner as feasible.

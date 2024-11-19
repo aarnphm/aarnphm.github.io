@@ -9,6 +9,7 @@ modified: "2024-10-06"
 socialDescription: on being at ease with myself.
 title: tranquility
 ---
+
 ![[posts/images/Shade_by_Frank_Brangwyn_960x640_large_white_background.jpg]]
 _Shade, oil on canvas - Frank Brangwyn, 1893_
 
@@ -25,7 +26,7 @@ It was a slow Sunday. I didn't do much, even though I have a few proposal to fin
 Not per say, I feel that the reason why I go to toronto so much is that I felt that was my home there. Recently broke up with this girl I met in Montreal during a summer visit. It felt like there was something there, but then the distance between us does make it harder.
 (I travelled up there two-three weeks ago to hang with her, but seems like we just have two different lifestyles and intention in mind. She's doing her thing, and I guess I'm too.)
 
-It is now 18:41, Oct  14th. Thanksgiving, Canadian version.
+It is now 18:41, Oct 14th. Thanksgiving, Canadian version.
 
 _oh, time just passed by, seemed like reality distilled from the realm of time_
 

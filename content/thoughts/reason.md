@@ -9,5 +9,4 @@ title: reason
 
 ### inductive.
 
-
 ### deductive.

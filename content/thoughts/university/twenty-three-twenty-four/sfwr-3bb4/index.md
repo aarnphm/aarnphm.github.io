@@ -19,7 +19,6 @@ Most images are cell attachments, which are not rendered by GitHub. Images that 
 
 -- Emil Sekerinski
 
-
 See also: [[thoughts/university/twenty-three-twenty-four/sfwr-2c03/index|Data Structures and Algorithms]].
 
 ### Installation

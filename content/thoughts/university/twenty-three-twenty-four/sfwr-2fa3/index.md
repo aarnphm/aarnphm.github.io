@@ -9,4 +9,3 @@ title: Discrete Mathematics
 ---
 
 Ok second try.
-

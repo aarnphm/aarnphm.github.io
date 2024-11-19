@@ -9,10 +9,12 @@ title: Civilisation and its Discontents
 See also: [[thoughts/Freud|Freud]]
 
 C1: ego and sense of self within the societal context
+
 - Oceanic feeling - ignorance for the existence of others
 - Cant seem to separate himself from the sense of reality
 
 C2: the meaning of happiness?
+
 - his discontent against personal freedom and societal restrictions
 - The sense of guilt? Guilty for not following societal norms
 - Eros and Thanatos

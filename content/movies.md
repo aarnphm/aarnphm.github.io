@@ -106,7 +106,6 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - Skyfall (2012)
 - Spectre (2015)
 
-
 ### wes anderson.
 
 - Rushmore (1998)

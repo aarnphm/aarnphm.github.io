@@ -30,7 +30,6 @@ $$
 \end{aligned}
 $$
 
-
 $$
 \begin{aligned}
 \argmax_{W} P(x | \alpha) P (\alpha) &= \argmax_{W} [\log  P(\alpha) + \sum_{i} \log (x^i, y^i | W)] \\

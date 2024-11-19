@@ -6,6 +6,7 @@ date: "2024-10-07"
 modified: "2024-10-07"
 title: Least Squared Regression
 ---
+
 See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/LSR.ipynb|jupyter notebook]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/assignment.pdf|pdf]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/solution.pdf|solutions]]
 
 ## question 1.
@@ -59,12 +60,12 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a1/LSR.ipynb|ju
 > [!question]- part 1
 >
 > 1. Divide the Dataset into Three Parts:
+>
 > - **Training Data**: Select **200 data points**.
 > - **Validation Data**: Assign **1800 data points**.
 > - **Testing Data**: Set aside the **remaining 200 data points** for testing.
 >
 > 2. Run Regularized Least Squares (non-homogeneous) using 200 training data points. Choose various values of lambda within the range `{exp(-2), exp(-1.5), exp(-1), …, exp(3.5), exp(4)}`. This corresponds to $\lambda$ values ranging from exp(-2) to exp(4) with a step size of 0.5. For each value of $\lambda$, Run Regularized Least Squares (non-homogeneous) using 200 training data points. Compute the Training MSE and Validation MSE.
->
 > 3. Plot the Training MSE and Validation MSE as functions of lambda.
 
 The following is the graph for Training and Validation MSE as functions of lambda.
@@ -74,7 +75,6 @@ The following is the graph for Training and Validation MSE as functions of lambd
 > [!question]- part 2
 >
 > 1. What is the best value for lambda? Why?
->
 > 2. Use the best value of lambda to report the results on the test set.
 
 1. Best $\lambda$ would be the one corresponding to lowest point on the validation MSE curve, as
@@ -92,6 +92,7 @@ The following is the graph for Training and Validation MSE as functions of lambd
 We will use 2D Discrete Cosine Transform (DCT) to transform our data, followed by feature selection to reduce dimensionality by selecting a top-k coefficient.
 
 Reason:
+
 1. DCT is mostly used in image compression (think of JPEG). Transform image from spatial to frequency domain.
 2. Reduce dimensionality to help with overfitting, given we will only use 200 samples for training.
 
@@ -174,6 +175,7 @@ Thus, the best-fitting line is $\hat{y} = ax + b = \frac{11}{10}x - \frac{4}{5}$
 >
 > In this question, we would like to fit a line with zero y-intercept ($\hat{y} = ax$) to the curve $y=x^2$. However, instead of minimising the sume of squares of errors,
 > we want to minimise the folowing objective function:
+>
 > $$
 > \sum_{i} [\log {\frac{\hat{y}^i}{y^i}}]^2
 > $$

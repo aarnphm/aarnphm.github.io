@@ -7,6 +7,7 @@ description: implementation of PCA on LFW and TNC datasets
 modified: "2024-10-21"
 title: PCA and Kernels, from scratch
 ---
+
 See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA.ipynb|jupyter notebook]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/assignment.pdf|pdf]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/solution.pdf|solutions]]
 
 ## question 1.
@@ -54,7 +55,6 @@ Which yields the following for TNC visualisation:
 
 and LFW visualisation:
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-lfw-viz.jpeg]]
-
 
 We also expect some loss in information while reconstructing:
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-bush-loss-info.jpeg]]
@@ -137,12 +137,13 @@ The eval results graph:
 > 2. What would the error be if we compute it for the TNC dataset while using two components and 2000 samples?
 
 1. The following observation can be made:
-  - Both decreases as the number of components increases (lower means better reconstruction quality). However, we observe test error line (red) is higher than train error (blue). This shows some overfitting given smaller training data size (400) against LFW dataset (which includes 1288 entries)
-  - Both show diminishing returns, yet this effect is more pronounced on test error
-  - As `n_components` increases, we see a decreases in bias (improving reconstruction for both train and test data). However, test error decreases more slowly given later components are less effective in reconstructing features for unseen data
+
+- Both decreases as the number of components increases (lower means better reconstruction quality). However, we observe test error line (red) is higher than train error (blue). This shows some overfitting given smaller training data size (400) against LFW dataset (which includes 1288 entries)
+- Both show diminishing returns, yet this effect is more pronounced on test error
+- As `n_components` increases, we see a decreases in bias (improving reconstruction for both train and test data). However, test error decreases more slowly given later components are less effective in reconstructing features for unseen data
 
 2. Error for average reconstruction error for TNC is shown below:
-  ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t3-tnc-reconstruct-error.jpeg]]
+   ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t3-tnc-reconstruct-error.jpeg]]
 
 ### task 4: Kernel PCA
 
@@ -200,7 +201,6 @@ Yield the following graph:
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/q1-t4-kernel-pca-n-2.jpeg]]
 
-
 > [!question] part B
 >
 > Based on your observations, how does Kernel PCA compare to Linear PCA on this dataset with red and blue labels? In what ways does Kernel PCA affect the distribution of the data points, particularly in terms of how well the red and blue points are organized? Choose the best value(s) for `gamma` and report it (them). What criteria did you use to determine the optimal `gamma` value?
@@ -217,7 +217,7 @@ Yield the following graph:
 - For gamma $[0.1, 0.2]$ , we start to see similar features from original data entries, albeit scaled down given RBF kernels.
 - At gamma $[0.5, 1]$, we notice datasets to spread out, forming elongated features.
 
-> For gamma $[ 0.1, 0.2 ]$  seems to provide best representation of the original data
+> For gamma $[ 0.1, 0.2 ]$ seems to provide best representation of the original data
 
 **Criteria**:
 
@@ -237,7 +237,6 @@ training loop yields the following:
 > [!question] part D
 >
 > 1. Visualisation of Reconstruction Error
->
 > 2. How does kernel PCA compare to Linear PCA on this dataset? If Kernel PCA shows improved performance, please justify your answer. If Linear PCA performs better, explain the reasons for its effectiveness.
 
 Reconstruction Error from kernel PCA as well as linear PCA:
@@ -376,6 +375,7 @@ $$
 > [!question] part 4
 >
 > What will be the maximum likelikhood estimate of $\alpha$ for the special cases of
+>
 > - $(i) \beta_{1} = \beta_{2} = 0$
 > - $(i) \beta_{1} = \beta_{2} = 0.5$
 > - $(i) \beta_{1} = 0.2, \beta_{2} = 0.3$

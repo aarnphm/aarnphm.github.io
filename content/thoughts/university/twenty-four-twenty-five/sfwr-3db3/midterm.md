@@ -10,6 +10,7 @@ title: databases internals
 ## Practice
 
 Q1.
+
 - a. F
 - b. F (wrong: Must be T)
   - A relation R(A,B,C) **may** have at most three minimal keys (not superkey)
@@ -27,12 +28,12 @@ Product(maker, model, price)
 PC(model, speed)
 Printer(model, type)
 ```
+
 - model is PK for all relations
 - `type` are "laser" and "ink-jet"
 - every PC model and every printer model is a Product model (every PC/printer must be referenced in relation to Product)
 - price of a product should not be more than 10% higher than the average price of all product (average price of all product is given value avgPrice)
 - model and price are int, all other attributes of type char(20)
-
 
 ```sql {title="create schema"}
 create table Product(
@@ -74,7 +75,6 @@ Q4.
 
 a. (1,3)
 b. cartesian products
-
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/Keys and Foreign Keys|Keys and Foreign Keys]]
 
@@ -152,13 +152,14 @@ TIME("hh:mm:ss")
 **enforcing** constraints from relation $R$ to relation $S$, the following violation are possible:
 
 1. insert/update $R$ introduces values not found in $S$
-2. deletion/update to $S$ causes tuple of $R$  to "dangle"
+2. deletion/update to $S$ causes tuple of $R$ to "dangle"
 
 ex: suppose $R=\text{Sell} \cap S=\text{Beer}$
 
 _delete or update to $S$ that removes a beer value found in some tuples of $R$_
 
 actions:
+
 1. _Default_: reject modification
 2. `CASCADE`: make the same changes in Sells
    - Delete beer: delete Sells tuple
@@ -226,6 +227,7 @@ WHERE beer = 'Bud';
 > [!note] patterns
 >
 > `%` is any string, and `_` is any character
+>
 > ```sql
 > SELECT name FROM Drinkers
 > WHERE phone LIKE '%555-_ _ _ _';
@@ -241,6 +243,7 @@ WHERE beer = 'Bud';
 > [!important] `IN` operator
 >
 > `IN` is concise
+>
 > ```sql
 > SELECT * FROM Cartoons WHERE LastName IN ('Simpsons', 'Smurfs', 'Flintstones')
 > ```
@@ -280,7 +283,6 @@ WHERE R.b = S.b;
 - Force results to be a bag with `UNION ALL`
 
 `ORDER BY` ops followed with `desc`
-
 
 ### insert, update, delete
 
@@ -380,10 +382,12 @@ GROUP BY drinker;
 > [!important] restriction on `SELECT` with aggregation
 >
 > each element of `SELECT` must be either:
+>
 > 1. Aggregated
 > 2. An attribute on `GROUP BY` list
 >
 > > [!attention]- illegal example
+> >
 > > ```sql
 > > SELECT bar,beer,AVG(price) FROM Sells GROUP BY bar
 > > -- only one tuple out for each bar, no unique way to select which beer to output
@@ -404,6 +408,7 @@ HAVING COUNT(bar) >= 3 OR
 ```
 
 requirements on `HAVING`:
+
 - Anything goes in a subquery
 - Outside subqueries they may refer to attributes only if they are either:
   - A grouping attribute
@@ -430,14 +435,11 @@ Outer join preserves dangling tuples by padding with `NULL`
 ![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/left-outer-join.jpeg]]
 _Left outer join_
 
-
 ![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/right-outer-join.jpeg]]
 _Right outer join_
 
-
 ![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/full-outer-join.jpeg]]
 _full outer join_
-
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/inner-join.jpeg]]
 _inner join_
@@ -448,11 +450,11 @@ R [NATURAL] [LEFT|RIGHT|FULL] OUTERJOIN [ON<condition>] S
 -- example
 R NATURAL FULL OUTERJOIN S
 ```
+
 - natural: check equality on all common attributes && no two attributes with same name
 - left: padding dangling tuples of R only
 - right: padding dangling tuples of S only
 - full: padding both (default)
-
 
 ## views
 
@@ -496,7 +498,6 @@ note: each node are at least 50% full
 >
 > min 50% occupancy, each node contains $d \leq m \leq 2d$ entries, where $d$ is the _order or the tree_
 
-
 #### insert a data entry
 
 - find correct leaf $L$
@@ -528,9 +529,8 @@ Insert: if bucket is full => `split`
 
 ### Alternatives for data entries
 
-|  | How |
-| --------------- | --------------- |
-| By Value | record contents are stored in index file (no need to follow pointers) |
-| By Reference | <k, rid of matching data record> |
-| By List of References | <k, [rid of matching data record, ...]> |
-
+|                       | How                                                                   |
+| --------------------- | --------------------------------------------------------------------- |
+| By Value              | record contents are stored in index file (no need to follow pointers) |
+| By Reference          | <k, rid of matching data record>                                      |
+| By List of References | <k, [rid of matching data record, ...]>                               |

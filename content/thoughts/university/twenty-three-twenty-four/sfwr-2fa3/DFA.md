@@ -5,7 +5,9 @@ tags:
 date: "2024-01-12"
 title: Deterministic Finite Automata
 ---
+
 ## definition
+
 $$
 \Sigma^{*}: \text{set of all strings based off }\Sigma
 $$
@@ -20,7 +22,9 @@ s &: \text{start state},\quad s\in{Q} \\\
 F &: \text{set of final states},\quad F\subseteq{Q} \\\
 \end{align*}
 $$
+
 ### examples
+
 Ex: $\Sigma = \{a, b\}$. Creates a DFA $M$ that accepts all strings that contains at least three a's.
 
 $$
@@ -46,6 +50,7 @@ $$
 $$
 
 [[thoughts/representations|representation]]:
+
 ```mermaid
 stateDiagram-v2
   direction LR
@@ -66,6 +71,7 @@ stateDiagram-v2
 ## language.
 
 [[thoughts/Language|Language]] of machine $\mathcal{L}(M)$ is the set of strings M accepts, such that $\mathcal{L}(M) \in \Sigma^{*}$
+
 $$
 \mathcal{L}(M) = \{w \in \Sigma^{*} | \delta(s, w) \in F\}
 $$
@@ -76,6 +82,7 @@ $$
 ### examples
 
 Find DFA $M$ such that $\mathcal{L}(M)=$
+
 1. $\{ xab \mid x \in \Sigma^{*} \}$
 2. $\{ x \mid |x| \% 2 = 0 \}$
 3. $\{ x \mid x = 2^n\space ,\space n \in \mathbb{N} \}$, $\Sigma = \{0, 1\}$
@@ -87,6 +94,7 @@ Find DFA $M$ such that $\mathcal{L}(M)=$
 Ans:
 
 1.
+
 ```mermaid
 stateDiagram-v2
 	direction LR
@@ -101,6 +109,7 @@ stateDiagram-v2
 ```
 
 2.
+
 ```mermaid
 stateDiagram-v2
 	direction LR
@@ -111,6 +120,7 @@ stateDiagram-v2
 ```
 
 4.
+
 ```mermaid
 stateDiagram-v2
   direction LR
@@ -128,6 +138,7 @@ stateDiagram-v2
 ```
 
 5.
+
 ```mermaid
 stateDiagram-v2
   direction LR

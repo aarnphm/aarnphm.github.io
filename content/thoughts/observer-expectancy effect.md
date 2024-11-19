@@ -18,4 +18,3 @@ paper: **The effect of experimenter bias on the performance of the albino rat**
 
 Where behaviours are modified through the associations of stimuli with reinforcement or punishment.
 Thus, operants, or behaviours affected by the environment, are conditioned to happen more or less often based on the environmental consequence of the behaviour.
-

@@ -39,7 +39,6 @@ pomodori, cipolla, basilico, aglio confit, fiocchi di peperoncino, origano, acet
 
 <!-- san marzano tomatoes, onion, basil, garlic confit, chilli flakes, oregano, white wine vinegar -->
 
-
 ### Pesto
 
 basilico, olio extra vergine di oliva, pinoli tostati, parmigiano reggiano, aglio tritato.

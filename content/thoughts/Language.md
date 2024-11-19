@@ -15,12 +15,12 @@ important to our self-knowledge => emphasise through reading books.
 ## communication.
 
 Notably through the work of "Philosophical Investigations" by Ludwig Wittgenstein
+
 - Concept of "language-game"
 - The idea that each of us construct a pictures that we see the world through language.
 - Conflict arose when pictures are not aligned, often lead to context collapse.
 
 Possibly the most salient feature of [[thoughts/LLMs|LLMs]] is that the system is surprising patient per each interactions with humans.
-
 
 ## [[thoughts/representations]].
 

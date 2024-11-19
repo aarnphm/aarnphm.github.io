@@ -5,6 +5,7 @@ tags:
 date: "2024-09-09"
 title: Foreign Keys and Relational Models
 ---
+
 See also [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/relationalModel_Sept5.pdf|slides]]
 
 > A relation is a table
@@ -12,6 +13,7 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/relationalModel
 Relations are **unordered** => ==relations are sets==
 
 ## tuple and domain constraints
+
 - tuple: expresses conditions on the values of each tuple
 - domain constraint: tuple constrain that involves a single attributes
 
@@ -43,6 +45,7 @@ handles `null` value
 > [!note] Remark
 >
 > A set of fields is a _key_ for a relation if:
+>
 > 1. No two distinct tuples can have same values in all key fields
 > 2. This is not true for any subset of the key (minimal)
 >
@@ -50,10 +53,10 @@ handles `null` value
 >
 > If there's > 1 key for a relation, one of the keys is chosen to be _primary key_
 
-
 Example:
 
 requirements:
+
 - For a given student and course, there is a single grade.
 
 ```sql
@@ -85,9 +88,9 @@ CREATE TABLE Enrolled (
 Referential integrity constraints _are imposed in order to guarantee **values** refer to existing tuples_
 
 > [!note] Definition
-> A _foreign key_ requires that the values on a set $X$ of attributes of a relation $R_1$ **must appear as values** for the *primary key* of another relation $R_2$
+> A _foreign key_ requires that the values on a set $X$ of attributes of a relation $R_1$ **must appear as values** for the _primary key_ of another relation $R_2$
 
-Ex: *sid* is a _foreign key_ referring to _Students_
+Ex: _sid_ is a _foreign key_ referring to _Students_
 
 > If al foreign key constraints are enforced => referential integrity is enforced
 

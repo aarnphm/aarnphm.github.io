@@ -121,12 +121,15 @@ importance because:
 > pay disparity among candidates.
 
 1. Internal pressures
-  - recognize performance pay difference with pay
-  - expectations pay over time
+
+- recognize performance pay difference with pay
+- expectations pay over time
+
 2. External pressures
-  - difference in quality among individuals
-  - difference in productivity or value variations
-  - mix of pay forms
+
+- difference in quality among individuals
+- difference in productivity or value variations
+- mix of pay forms
 
 #### range overlap
 
@@ -136,8 +139,8 @@ Overlap ought to be large enough to induce employees to seek promotions.
 
 > collapse salary grades into a few broad bands, each with a minimum and maximum
 
-+ flexibility
-+ career growth
+- flexibility
+- career growth
 
 ---
 
@@ -151,6 +154,7 @@ Overlap ought to be large enough to induce employees to seek promotions.
 > part of compensation package, other than pay for time worked.
 
 Growth in Employee Benefits
+
 - Cost effectiveness of Benefits
 - Union
 - Employer impetus

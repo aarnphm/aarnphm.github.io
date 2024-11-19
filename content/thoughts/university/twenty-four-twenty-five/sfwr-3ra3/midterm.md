@@ -10,26 +10,28 @@ title: requirements notes
 > People do not buy products, they buy solutions to their problems.
 
 A good requirements is
+
 - necessary
 - verifiable
 - attainable
 
 Goals: desired results for target organisation
-  - obstacles: property to be overcome
-Behaviour:
- - functional: outcome produced by _system_
- - non-functional: property of how system achieves outcomes
-Constraints:
- - imposed by environment
+
+- obstacles: property to be overcome
+  Behaviour:
+- functional: outcome produced by _system_
+- non-functional: property of how system achieves outcomes
+  Constraints:
+- imposed by environment
 
 VARIED framework:
 
-  Vivid: actually meet the persona
-  Actionable: it should ==help the team== to build the product
-  Real: where user are, observe and interact
-  Identifiable: dog-food
-  Exact: Be specific
-  Detailed: Good personas are substantials
+Vivid: actually meet the persona
+Actionable: it should ==help the team== to build the product
+Real: where user are, observe and interact
+Identifiable: dog-food
+Exact: Be specific
+Detailed: Good personas are substantials
 
 > [!tldr] Requirement Engineering
 >
@@ -45,7 +47,7 @@ VARIED framework:
 
 > convey **intention/rationale/objective** of stakholders
 
-- support *elicitation, analysis, and provide inputs for specification*
+- support _elicitation, analysis, and provide inputs for specification_
 
 Actor: act within a system to achieve the goal
 Agent: act on behalf of other actors
@@ -139,7 +141,6 @@ Bias in data
 1. Center the margins, or increase more diversity
 2. social conflict?
 3. Human-centric
-
 
 ## [[thoughts/tacit knowledge]]
 

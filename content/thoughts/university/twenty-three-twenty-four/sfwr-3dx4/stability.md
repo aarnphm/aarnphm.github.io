@@ -17,9 +17,9 @@ A system is BIBO stable if the output is bounded for any bounded input.
 
 Stability and Poles
 
-> stable if *all poles* are strictly in the left side of the complex plane.
+> stable if _all poles_ are strictly in the left side of the complex plane.
 
-> unstable if *any pole* is in the right side of the complex plane.
+> unstable if _any pole_ is in the right side of the complex plane.
 
 > marginally stable e if no pole is on the right hand
 > side, and its poles on the imaginary axis are of multiplicity one

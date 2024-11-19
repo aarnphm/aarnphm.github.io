@@ -6,6 +6,7 @@ tags:
 date: "2023-10-26"
 title: Menus
 ---
+
 A collection of courses. See [[thoughts/atelier with friends/index|atelier with friends]] if you are interested to join..
 
 This serves as a ground truth for a collection of dishes throughout.
@@ -38,8 +39,8 @@ This serves as a ground truth for a collection of dishes throughout.
 
 8. gateau au chocolat
 
-  - espresso buttercream, honey, sea salt, chocolate ganache.
+- espresso buttercream, honey, sea salt, chocolate ganache.
 
 9. choux au craquelin
 
-  - matcha cream, powered sugar, matcha powder.
+- matcha cream, powered sugar, matcha powder.

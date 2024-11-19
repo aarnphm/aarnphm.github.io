@@ -7,6 +7,7 @@ date: "2024-02-07"
 modified: "2024-10-10"
 title: Search
 ---
+
 ## Engine
 
 A search engine is essentially query processing. It is a form of [[thoughts/information retrieval]] that helps one to answer [[thoughts/questions]]

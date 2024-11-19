@@ -90,7 +90,6 @@ cd `<target-dir>` as a bento project
 - learn bento project
 - to serve it, do `bentoml serve .`
 
-
 ## P2 (scope creep)
 
 ### `openllm run -f model.yaml`
@@ -114,6 +113,7 @@ cd `<target-dir>` as a bento project
 - create the bento -> openllm run
 
 - where to save the bento?
+
   - `openllm-models/custom-models/.gitkeep`
 
 - options to create a PR automatically to `openllm-models`?

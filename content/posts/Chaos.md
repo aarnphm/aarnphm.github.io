@@ -56,6 +56,7 @@ Seemingly, this untamed curious inner child, still clung to my being, propels me
 > The world is a scary place, but I’m learning to cope through it. The [[thoughts/Philosophy and Nietzsche|Übermensch]] crossed over the bridge and guided me through the trenches of life.
 
 ---
+
 ![[posts/images/cima.jpeg]]
 
 > I'm not sure where I want to go from here.

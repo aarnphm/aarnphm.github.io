@@ -6,6 +6,7 @@ tags:
 date: "2023-10-24"
 title: Will to Truth
 ---
+
 See also: [[thoughts/Philosophy and Nietzsche|Philosophy and Nietzche]]
 
 _excerpt from [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Nietzsche|Nietzsche]]'s Beyond Good and Evil_

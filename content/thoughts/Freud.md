@@ -11,7 +11,7 @@ title: Sigmund Freud
 
 ## The Ego and The Id
 
-> The state of consciousness is very transitory 
+> The state of consciousness is very transitory
 
 - [ ] P.16-18
 - [ ] The relationship between Pcts and Cs.
@@ -28,9 +28,7 @@ Both are equally unimaginable. There must be a third alternative.
 
 In itself something unconscious become preconscious such that how can we make something that is repressed (pre)conscious would be answered:
 
-
 Internal perception yields sensation of processes arising in the most diverse strata of the mental apparatus.
-
 
 These sensations are my views about their idea for this. These sensations are multilocular, like external perceptions; they may come from different places simultaneously and may thus have different or even opposite qualities.
 
@@ -42,7 +40,6 @@ Clinical experience decides for the latter. It shows us that this something' beh
 
 > [!important] The Ego
 > The ego is the id modified by influence of perceptual system
-
 
 object-cathexis and Oedipus complex to describe the form of ego
 

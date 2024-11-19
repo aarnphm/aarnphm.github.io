@@ -13,5 +13,3 @@ Samuel Chen (Toronto)
 Nicole
 
 Mandy (Toronto)
-
-

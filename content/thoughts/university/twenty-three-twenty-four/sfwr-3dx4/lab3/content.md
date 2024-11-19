@@ -9,7 +9,6 @@ title: Voltage-controlled electromechanical systems
 
 See [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab3/lab3.pdf|lab notes]] and [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab3/prelab|prelab.]]
 
-
 > [!question]
 > Do you notice a pattern in the DC gain values you calculated? If so, what is that pattern?
 

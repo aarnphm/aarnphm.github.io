@@ -18,4 +18,3 @@ So what shapes languages?
 Grammars do.
 
 ## context-free grammars
-

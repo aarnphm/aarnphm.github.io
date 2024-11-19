@@ -17,4 +17,3 @@ Money doesn't have any intrinsic power. You can't simply throw more money into a
 What does it really means by accumulating wealth? If capital gains is a property in the pursuit for [[thoughts/Epistemology|knowledge]], chances are you will enjoy your time.
 
 The problems with curiosity without [[thoughts/Alignment|alignment]] of capitalism is that you will run out of time and money sooner or later.
-

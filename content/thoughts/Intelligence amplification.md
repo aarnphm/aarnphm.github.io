@@ -6,6 +6,7 @@ tags:
 date: "2024-01-07"
 title: Intelligence amplification
 ---
+
 https://twitter.com/karpathy/status/1744062845426532473
 
 Intelligence should be thought as a tool for thought, not an independent agent

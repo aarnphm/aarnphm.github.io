@@ -18,6 +18,7 @@ G_{\omega}(s) = \frac{\Omega(s)}{V(s)} = \frac{A}{\tau s + 1}
 $$
 
 Where
+
 - $A$ and $\tau$ are positive, real-valued constants
 - $V(s)$ and $\Omega(s)$ are voltage and angular velocity as function of $s$ in the Laplace domain.
 
@@ -30,7 +31,7 @@ We will now develop a formula for the motor DC gain constant $A$ in terms of a s
 > [!question] problem a.
 > Using the final value theorem, find an expression for the steady state value of $\omega(t)$ when a step input of amplitude $V_x$ is applied.
 >
-> note: $\tau > 0$ so the pole of  $G_{\omega}(S)$ at $s=-\frac{1}{\tau}$ is in the open Left Half Plane (LHP) so the system is stable.
+> note: $\tau > 0$ so the pole of $G_{\omega}(S)$ at $s=-\frac{1}{\tau}$ is in the open Left Half Plane (LHP) so the system is stable.
 
 Given that the final value theorem, the steady state value of $f(t)$ is given by:
 
@@ -97,6 +98,7 @@ $$
 
 > [!question] problem d.
 > Now assume that you run the motor with an initial step input of $V_{\text{min}}$ until time $t_0$. At time $t_0$, assume that the system has reached steady state and the step input is changed to $V_{\text{max}}$ at time $t_0$. In other words, the system input will take the form
+>
 > $$
 > v(t) =
 > \begin{cases}
@@ -104,12 +106,15 @@ $$
 >  v_{\text{max}} & \text{if } t \geq t_0
 > \end{cases}
 > $$
-> where $t_0 \gg \tau$ and $V_{\text{max}}$ and $ V_{\text{min}}$ may be non-zero.
+>
+> where $t_0 \gg \tau$ and $V_{\text{max}}$ and $ V\_{\text{min}}$ may be non-zero.
 >
 > Use the results above to show that:
+>
 > $$
 > A = \frac{\Delta \omega}{\Delta V}
 > $$
+>
 > where $\Delta V = V_{\text{max}} - V_{\text{min}}$ and $\Delta \omega = \omega_{ss} - \omega_0$ where $\omega_0$ is the steady-state response to a constant input $V_\text{min}$ and $\omega_{ss}$ is the steady-state response to the input $V_\text{max}$
 
 For input $V_{\text{min}}$, the steady-state response is $\omega_0 = A \cdot V_{\text{min}}$
@@ -117,6 +122,7 @@ For input $V_{\text{min}}$, the steady-state response is $\omega_0 = A \cdot V_{
 Similarly, for input $V_{\text{max}}$, the steady-state response is $\omega_{ss} = A \cdot V_{\text{max}}$
 
 Thus, the change in steady-state response is
+
 $$
 \Delta \omega = \omega_{ss} - \omega = A \cdot V_{\text{max}} - A \cdot V_{\text{min}} = A \cdot \Delta V
 $$

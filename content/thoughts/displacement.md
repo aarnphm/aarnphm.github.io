@@ -7,4 +7,3 @@ title: displacement
 ---
 
 Often explored through Graham Greene's works.
-

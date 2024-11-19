@@ -13,6 +13,7 @@ title: emergent behaviour
 Or how can complex properties emerge from simple rules.
 
 We observe this from:
+
 - [[thoughts/LLMs]], speculations at most
 - Ants colonies
 - mold simulations

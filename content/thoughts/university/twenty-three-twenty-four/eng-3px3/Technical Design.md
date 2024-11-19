@@ -13,6 +13,7 @@ See also: [[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 05 Tech D
 - Licensing is not discipline-specific
 
 > engineering design:
+>
 > - making decisions: _on the basis of engineering principles_
 > - create plans: _for someone to create/modify something_
 > - benefit of humans
@@ -20,8 +21,11 @@ See also: [[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 05 Tech D
 ### terms.
 
 1. Decision variables:
+
 - could change about the design
+
 2. Performance parameters
+
 - describes how well the realised design works that is relevant to the end users
 - can't control performance parameters directly
 
@@ -30,10 +34,11 @@ See also: [[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 05 Tech D
 1. use **technical analysis** to determine decision variables
 2. write **NVF** in terms of _decision variables_
 3. use **optimisation methods** to determine
-  - optimum set of decision variables
-  - corresponding value of NVF
-  - sensitive the optimum set and resulting NVF are to changes in decision variables and other parameters
 
+- optimum set of decision variables
+- corresponding value of NVF
+- sensitive the optimum set and resulting NVF are to changes in decision variables and other parameters
 
 ### validity and assumptions:
+
 - push to one extreme

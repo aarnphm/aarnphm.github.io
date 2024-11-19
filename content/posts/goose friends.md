@@ -10,6 +10,7 @@ poem: true
 socialDescription: on making friendship.
 title: goose friends.
 ---
+
 ![[posts/images/goose-friends-frank-brangwyn.jpg]]
 _The Swans, oil on canvas - Frank Brangwyn, 1921_
 

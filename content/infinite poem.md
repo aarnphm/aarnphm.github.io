@@ -23,13 +23,13 @@ const rules = {
   human_verb: "contemplate | ponder | appreciate | cherish | admire",
   adj: "simple | joyful | precious | fleeting | eternal",
   noun: "moment | bond | connection | friendship | companionship",
-  emotion: "love | happiness | wonder | gratitude | peace"
-};
+  emotion: "love | happiness | wonder | gratitude | peace",
+}
 
 // Generate and print the poem 5 times
 for (let i = 0; i < 10; i++) {
-  console.log(`Poem ${i + 1}:`);
-  console.log(RiTa.grammar(rules).expand());
-  console.log(); // Add a blank line between poems
+  console.log(`Poem ${i + 1}:`)
+  console.log(RiTa.grammar(rules).expand())
+  console.log() // Add a blank line between poems
 }
 ```

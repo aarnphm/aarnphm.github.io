@@ -216,7 +216,6 @@ influence: cinematech, sf => phonetic energy in the film.
 
 - simulacra: synthetic data
 
-
 - 3 things you learned/that struck you
   - reminds of Paul Graham's [writes and write-nots](https://paulgraham.com/writes.html), in a sense that how we write is showing how we think
   - reminds me of [Ted Chiang's blog for LLMs](https://www.newyorker.com/tech/annals-of-technology/chatgpt-is-a-blurry-jpeg-of-the-web), in a sense that LLMs have innate corruption policy: Source of truth becomes blurry

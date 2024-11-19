@@ -14,6 +14,7 @@ Each node has an identifier which is the results of hashing the content.
 Merkle DAG nodes are _immutable_ and _[[thoughts/Content-addressable storage|content-addressable]]_. Any changes in the node would alter its identifier thus affect all ascendants, which create a different DAG.
 
 Examples of the DAG in action:
+
 - [[thoughts/IPFS]]
 - [[thoughts/Containers]]
 - [[thoughts/git]]

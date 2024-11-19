@@ -9,12 +9,14 @@ title: Conversion Factors
 See also: [[thoughts/university/twenty-three-twenty-four/eng-3px3/Conversion Factors.pdf|slides]] and [[thoughts/university/twenty-three-twenty-four/eng-3px3/3PX3 04 Conversion Factors.pdf|this one]]
 
 Relevant to economic analysis process must:
+
 - explicitly incorporated into [[thoughts/university/twenty-three-twenty-four/eng-3px3/Net value analysis|NVF]] by giving it _conversion factor_
 - included as a hard constraints
 
 > conversion factor: convert benefit and costs into common units
 
 Determinants:
+
 - time, cost of labour, opportunity cost
 - marginal NV and quantity-dependent conversion Factors
 
@@ -23,7 +25,6 @@ Determinants:
 - wages
 - materials
 - overhead: HR, tools/equipment
-
 
 ### cost of time.
 
@@ -36,7 +37,6 @@ Determinants:
 
 > [!important]
 > Should always consider this when going forward with a project.
-
 
 - cost of those forgone alternatives in _conversion units_
 - costs for not solving other problems
@@ -67,22 +67,25 @@ $$
 > externalities doesn't have the same weight to benefits and costs. (failure of incentives)
 
 Correct this failure with policies:
+
 - taxes: carbon emission
 - subsidies
 
 ### economic of GHG emission.
+
 - changes overtime and relatively hard to calculate accurately.
 - 2022 study in Nature estimates at $\$\frac{185}{\text{tonne}}$
 
 ### health costs.
+
 - difficult to answer this, but most common pollutants: $PM_{2.5}$ (fine particulate matter) and $NO$ (Nitrogen oxides)
-![[thoughts/university/twenty-three-twenty-four/eng-3px3/table-health-costs.jpeg]]
+  ![[thoughts/university/twenty-three-twenty-four/eng-3px3/table-health-costs.jpeg]]
+
 ### ethical consideration
 
->[!question] ethical
+> [!question] ethical
 >
 > - What is the cost of negative societal/ethical/equality impact?
->
 > - Can you put the price on safety?
 
 F-N graph

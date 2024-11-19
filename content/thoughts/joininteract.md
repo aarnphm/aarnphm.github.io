@@ -65,8 +65,7 @@ Underpinning this approach is a fundamental belief in [[Agency|agency]] and self
 resonates deeply with me. It encourages a program of intellectual self-liberation through reason, a path I strive to follow.
 I believe that with sufficient determination, ingenuity, and grit, we can achieve remarkable things. In this context, neuroticism, often viewed as a liability, becomes a gift when transmuted into dogged persistence. Combined with the humility to recognize the scope of ignorance, it propels a restless journey of discovery, chasing the light of knowledge into the unknown. Through this alchemical process, vices are transformed into virtues in the relentless pursuit of truth.
 
-
-> [!question] Who (between 18 and 23) would you be the most excited to find out was in your Fellowship class? Why? *
+> [!question] Who (between 18 and 23) would you be the most excited to find out was in your Fellowship class? Why? \*
 
 I would be thrilled to meet individuals who are bridging the understanding gap between foundational models and humans through innovative interfaces and interactions.
 Language models perceive the world differently than we do, and developing rich interfaces to connect these distinct worldviews could lead to profound insights and a deeper understanding of our world.

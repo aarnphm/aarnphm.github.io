@@ -6,7 +6,9 @@ tags:
 date: "2024-03-05"
 title: Root mean square
 ---
+
 See also: [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab3/prelab.pdf|pdf]]
+
 ### problème 1.
 
 > The Root Mean Square (RMS) value of a signal $f(t)$ that is periodic with period $T$ is given by the equation $\sqrt{\frac{1}{T} \int_0^T{(f(t))^2dt}}$
@@ -24,6 +26,7 @@ f(t) = \begin{cases}
 0 & \text{if } \frac{T}{2} \leq t < T
 \end{cases}
 $$
+
 ```python
 import sympy as sp
 
@@ -35,7 +38,6 @@ RMS = sp.sqrt(1/T * sp.integrate(1, (t, 0, T/2)))
 
 > RMS = $\frac{1}{\sqrt{2}}$
 
-
 > [!question] 1.b
 > Sawtooth wave
 > ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/Saw tooth signal.jpeg]]
@@ -45,6 +47,7 @@ A sawtooth wave function is defined as:
 $$
 f(t) = \frac{2A}{T}(t - \frac{T}{2})
 $$
+
 ```python
 import sympy as sp
 
@@ -59,12 +62,12 @@ RMS = sp.sqrt(1/T * sp.integrate(f_t**2, (t, 0, T)))
 
 > RMS = $\frac{\sqrt{3}}{6}$
 
-
 > [!question] 1.c
 > sine wave
 > ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/sine wave signals.jpeg]]
 
 A general form of the sine wave can be written as
+
 $$
 f(t) = A \sin(\omega t + \phi)
 $$
@@ -83,7 +86,6 @@ Cutoff frequency of low-pass filters, the frequency at which the amplitude falls
 
 > [!question] 2.a
 > ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/bode-plot-2a.jpeg]]
->
 
 > 0.05Hz
 

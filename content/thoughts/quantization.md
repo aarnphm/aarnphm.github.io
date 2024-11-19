@@ -30,7 +30,6 @@ For example `epsilon` in `LayerNormalization` usually is very small $1e^{-12}$, 
 
 ## `fp32` to `int8`
 
-
 Consider a float `x` in `[a, b]`, such that _affine quantization scheme_:
 
 $$
@@ -68,4 +67,3 @@ See also: [paper](https://arxiv.org/abs/1712.05877)
 ## Methods and libraries
 
 [bitsandbytes](https://github.com/TimDettmers/bitsandbytes) and [GPTQ](https://arxiv.org/abs/2210.17323)
-

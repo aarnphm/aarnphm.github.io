@@ -218,4 +218,3 @@ The steady-state error to step input $R(s) = \frac{A}{s}$ is zero:
 $$
 e_{ss}(R) = \lim_{s\to 0} \frac{A}{s}(\frac{1}{1+L(s)}) = \lim_{s\to 0} \frac{A}{s}(\frac{1}{1+\frac{0.419K_Ds^2 + 0.419K_Ps + 0.419K_I}{s^3}}) = 0
 $$
-
