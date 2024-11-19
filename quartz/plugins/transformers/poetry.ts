@@ -4,13 +4,15 @@ import { visit } from "unist-util-visit"
 
 export const Poetry: QuartzTransformerPlugin = () => ({
   name: "Poetry",
-  markdownPlugins() {
+  markdownPlugins(ctx) {
     return [
-      () => (tree: Root, _file) => {
+      () => (tree: Root, file) => {
+        const cfg = ctx.cfg.configuration
+        const lang = file.data.frontmatter?.lang ?? cfg.locale.split("-")[0]
         visit(tree, "code", (node) => {
           if (node.lang === "poetry") {
             node.type = "html" as "code"
-            node.value = `<pre class="poetry">${node.value}</pre>`
+            node.value = `<pre class="poetry" data-language="${lang}">${node.value}</pre>`
           }
         })
       },

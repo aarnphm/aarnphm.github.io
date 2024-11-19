@@ -6,7 +6,7 @@ tags:
   - seed
   - poem
 date: "2024-11-18"
-description: A list of Vietnamese poems
+description: dedicated to my roots, Vietnamese born.
 lang: vi
 modified: "2024-11-18"
 permalinks:
@@ -20,6 +20,7 @@ Nguyễn Kim Thành (alias: Tố Hữu) was born in Phù Lai Village, near cố 
 
 ### Vú em
 
+```poetry
 Nàng gửi con về nương xóm cũ
 Nghẹn ngào trở lại đẩy xe nôi
 Rồi từ hôm ấy, ôm con chủ
@@ -46,3 +47,4 @@ Bạn ơi, nguồn thảm sầu kia bởi
 Số phận hay do chế độ này?
 
 Huế, tháng 5-1938
+```

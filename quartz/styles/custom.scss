@@ -5,13 +5,23 @@
 @use "./pages/menu.scss";
 @use "./pages/quotes.scss";
 
-@include font-face("Berkeley Mono", "BerkeleyMono-Regular.woff2", "woff2");
+@include font-face(
+  "Berkeley Mono",
+  ("BerkeleyMono-Regular.woff2", "BerkeleyMono-Regular.woff"),
+  ("woff2", "woff")
+);
 @include font-face("ITCGaramondStdLtCond", "ITCGaramondStdLtCond.woff2", "woff2");
 @include font-face("GT Sectra Display", "GT-Sectra-Display-Regular.woff", "woff");
 @include font-face("GT Sectra Book", "GT-Sectra-Book.woff", "woff");
+@include font-face("EditorialNew Ultralight", "EditorialNew-Ultralight.woff2", "woff2");
 @include font-face("Newsreader", "Newsreader.woff2", "woff2");
-@include font-face("Cardo", "Cardo-Regular.ttf", "truetype");
-@include font-face("EB Garamond", "EBGaramond-VariableFont_wght.ttf", "truetype");
+@include font-face(
+  "Playfair Display",
+  ("PlayfairDisplay.woff2", "PlayfairDisplay.woff"),
+  ("woff2", "woff")
+);
+@include font-face("Cardo", ("Cardo-Regular.woff2", "Cardo-Regular.woff"), ("woff2", "woff"));
+@include font-face("EB Garamond", ("EBGaramond.woff2", "EBGaramond.woff"), ("woff2", "woff"));
 
 [role="article"]:hover {
   border: 1px solid var(--highlight);
@@ -93,6 +103,12 @@
 }
 
 // ----- DOM customization -----
+
+:root:lang(vi) {
+  --headerFont: "Playfair Display", var(--headerFont);
+  --bodyFont: "Playfair Display", var(--bodyFont);
+  --codeFont: "Playfair Display", var(--codeFont);
+}
 
 html {
   scroll-behavior: smooth;
@@ -239,6 +255,10 @@ pre.poetry {
   padding: 0;
   position: unset;
   font-family: ITCGaramondStdLtCond, var(--bodyFont);
+
+  &[data-lang="vi"] {
+    font-family: "Playfair Display", var(--bodyFont);
+  }
 
   @media all and ($desktop) {
     font-size: 1.675rem;

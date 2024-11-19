@@ -604,7 +604,7 @@ export function transcludeFinal(
       }
     }
   })
-  if (dynalist && !slug.includes("posts")) {
+  if (dynalist && !slug.includes("posts") && !fileData.frontmatter?.poem) {
     // NOTE: handling collapsible nodes
     visit(root, "element", (node: Element, idx, parent) => {
       const denyIds = new Set(["footnote-label", "reference-label"])

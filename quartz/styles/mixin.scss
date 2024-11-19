@@ -1,3 +1,5 @@
+@use "sass:list";
+@use "sass:meta";
 @use "./variables.scss" as *;
 
 @mixin iconStyles {
@@ -34,7 +36,15 @@
     font-style: $style;
     font-weight: $weight;
     font-display: swap;
-    src: url("/static/#{$filename}") format($format);
+    @if meta.type-of($filename) == "list" and meta.type-of($format) == "list" {
+      $src: ();
+      @for $i from 1 through list.length($filename) {
+        $src: list.append($src, url("/static/#{list.nth($filename, $i)}") format(#{list.nth($format, $i)}), comma);
+      }
+      src: $src;
+    } @else {
+      src: url("/static/#{$filename}") format($format);
+    }
   }
 }
 
