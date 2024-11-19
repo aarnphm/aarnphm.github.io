@@ -53,20 +53,14 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
 
       if (fps.length === 0 || process.env.VERCEL_ENV === "production") return res
 
-      if (argv.verbose) {
-        console.log(chalk.blue(`[emit:NotebookViewer] Processing ${fps.length} notebooks...`))
-      }
-
       let completed = 0
       let errors = 0
       const updateProgress = () => {
         const percent = Math.round((completed / fps.length) * 100)
-        if (argv.verbose) {
-          process.stdout.write(
-            `\r[emit:NotebookViewer] Converting notebooks: ${completed}/${fps.length} (${percent}%)` +
-              (errors > 0 ? chalk.yellow(` (${errors} errors)`) : ""),
-          )
-        }
+        process.stdout.write(
+          `\r[emit:NotebookViewer] Converting notebooks: ${completed}/${fps.length} (${percent}%)` +
+            (errors > 0 ? chalk.yellow(` (${errors} errors)`) : ""),
+        )
       }
 
       for (const fp of fps) {
@@ -77,12 +71,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
 
         try {
           await fs.promises.mkdir(dir, { recursive: true })
-          const uvx = runConvertCommand(argv, src, outputName, outputDir)
-          if (argv.verbose) {
-            uvx.on("close", (code) => {
-              console.log(`[emit:NotebookViewer] exited with code ${code} (processing ${dest})`)
-            })
-          }
+          runConvertCommand(argv, src, outputName, outputDir)
           res.push(dest)
           completed++
           updateProgress()

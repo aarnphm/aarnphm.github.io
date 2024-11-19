@@ -536,7 +536,6 @@ export function transcludeFinal(
 
             node.children = [
               normalizeHastElement(blockNode, slug, transcludeTarget),
-              { type: "raw", value: "<br />" },
               {
                 type: "element",
                 tagName: "a",
@@ -580,7 +579,6 @@ export function transcludeFinal(
             ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
             ),
-            { type: "raw", value: "<br />" },
             {
               type: "element",
               tagName: "a",
@@ -613,7 +611,6 @@ export function transcludeFinal(
             ...(page.htmlAst.children as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
             ),
-            { type: "raw", value: "<br />" },
             {
               type: "element",
               tagName: "a",
@@ -694,6 +691,7 @@ export function renderPage(
     </div>
   )
 
+  // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
   const lang = componentData.fileData.frontmatter?.lang ?? cfg.locale?.split("-")[0] ?? "en"
   const doc = (
     <html lang={lang}>

@@ -66,7 +66,7 @@ const defaultOptions: Options = {
   removeCaptionCount: false,
   renderer: {
     indentSize: "0.6em",
-    commentDelimiter: "//",
+    commentDelimiter: "  ▷",
     lineNumberPunc: ":",
     lineNumber: true,
     noEnd: false,
@@ -113,8 +113,12 @@ function parseMeta(meta: string | null, opts: Options) {
 
   const lineNumberMatch = meta.match(/lineNumber=(false|true|0|1)/i)
   const lnum = lineNumberMatch?.[1] ?? null
-  const enableLineNumber =
-    typeof lnum === "string" ? lnum === "true" || lnum === "1" : opts.renderer?.lineNumber
+  let enableLineNumber: boolean
+  if (lnum) {
+    enableLineNumber = lnum === "true" || lnum === "1"
+  } else {
+    enableLineNumber = opts.renderer?.lineNumber
+  }
   meta = meta.replace(lineNumberMatch?.[0] ?? "", "")
 
   return { enableLineNumber, meta }

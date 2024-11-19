@@ -1,3 +1,5 @@
+import { isInViewport, updatePosition } from "./util"
+
 function toggleCallout(this: HTMLElement) {
   const outerBlock = this.parentElement!
   outerBlock.classList.toggle("is-collapsed")
@@ -19,6 +21,27 @@ function toggleCallout(this: HTMLElement) {
 
     current = parent
     parent = parent.parentElement
+  }
+
+  const articleContent = document.querySelector(".center") as HTMLElement
+  const sideContainer = document.querySelector(".sidenotes") as HTMLElement
+  if (!articleContent || !sideContainer) return
+
+  const sidenotes = sideContainer.querySelectorAll(".sidenote-element") as NodeListOf<HTMLElement>
+
+  for (const sidenote of sidenotes) {
+    const sideId = sidenote.id.replace("sidebar-", "")
+    const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
+    if (!intextLink) continue
+
+    if (!isInViewport(intextLink)) {
+      sidenote.classList.remove("in-view")
+      intextLink.classList.remove("active")
+    } else {
+      sidenote.classList.add("in-view")
+      intextLink.classList.add("active")
+    }
+    updatePosition(intextLink, sidenote, sideContainer)
   }
 }
 

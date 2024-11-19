@@ -9,6 +9,7 @@ date: "2024-11-18"
 description: dedicated to my roots, Vietnamese born.
 lang: vi
 modified: "2024-11-18"
+noindex: true
 permalinks:
   - /vietnam
 title: Vietnamese poem

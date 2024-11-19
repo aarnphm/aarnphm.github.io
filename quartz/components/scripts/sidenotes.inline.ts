@@ -39,7 +39,7 @@ function updateSidenotes() {
   for (const sidenote of sidenotes) {
     const sideId = sidenote.id.replace("sidebar-", "")
     const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
-    if (!intextLink) return
+    if (!intextLink) continue
 
     let currentElement: HTMLElement | null = intextLink
     let collapsedContent = null

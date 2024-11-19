@@ -98,7 +98,6 @@ const config: QuartzConfig = {
         enableArxivEmbed: true,
         enableRawEmbed: true,
       }),
-      Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.Description(),
       Plugin.Latex({
         renderEngine: "katex",
@@ -108,6 +107,7 @@ const config: QuartzConfig = {
         },
         katexOptions: { strict: false },
       }),
+      Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.GitHub(),
     ],
     filters: [Plugin.RemoveDrafts()],
@@ -134,7 +134,7 @@ const config: QuartzConfig = {
             }
           },
           include: [".pdf", ".py", ".go", ".c", ".m", ".cu", ".java", ".sql", ".js"],
-          exclude: [/\.(ignore\.pdf)$/],
+          exclude: [/\.(ignore\.pdf)$/, /400232791/],
         }),
       }),
       Plugin.TagPage(),

@@ -211,6 +211,6 @@ graph TB
 
 ### proposal
 
-![[thoughts/constrained decoding]]
+![[thoughts/constrained decoding|guided decoding]]
 
 [^ref]

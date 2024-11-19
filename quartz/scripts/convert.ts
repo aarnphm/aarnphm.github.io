@@ -8,6 +8,7 @@ async function convertMedia(contentDir: string) {
   try {
     const mediaFiles = await globby(["**/*.png"], {
       cwd: contentDir,
+      ignore: ["**/*.ignore.png"],
       absolute: true,
     })
 
@@ -26,7 +27,7 @@ async function convertMedia(contentDir: string) {
       switch (ext) {
         case ".png":
           outputFile = mediaFile.replace(/\.png$/, ".jpeg")
-          ffmpegCmd = `ffmpeg -i "${mediaFile}" -quality 100 -compression_level 9 "${outputFile}"`
+          ffmpegCmd = `ffmpeg -i "${mediaFile}" -quality 70 -compression_level 9 "${outputFile}"`
           break
         case ".mp4":
           outputFile = mediaFile.replace(/\.mp4$/, ".avif")
@@ -58,11 +59,14 @@ async function convertMedia(contentDir: string) {
       let content = await fs.readFile(mdFile, "utf-8")
       const originalContent = content
 
-      // Replace both standard markdown image syntax and wikilink image syntax
-      content = content.replace(/\.(png)([^\w]|$)/g, ".jpeg$2")
-      content = content.replace(/\[\[([^\]]+\.png)(\|[^\]]+)?\]\]/g, (match, p1, p2) => {
-        return `[[${p1.replace(".png", ".jpeg")}${p2 || ""}]]`
-      })
+      // Replace while skipping .ignore.png
+      content = content.replace(/(?<!\.ignore)\.(png)([^\w]|$)/g, ".jpeg$2")
+      content = content.replace(
+        /\[\[([^\]]+(?<!\.ignore)\.png)(\|[^\]]+)?\]\]/g,
+        (_match, p1, p2) => {
+          return `[[${p1.replace(".png", ".jpeg")}${p2 || ""}]]`
+        },
+      )
 
       if (content !== originalContent) {
         await fs.writeFile(mdFile, content, "utf-8")

@@ -4,6 +4,8 @@ import { classNames } from "../util/lang"
 // @ts-ignore
 import script from "./scripts/toc.inline"
 import { i18n } from "../i18n"
+import { fromHtml } from "hast-util-from-html"
+import { htmlToJsx } from "../util/jsx"
 
 const TableOfContents: QuartzComponent = ({
   fileData,
@@ -12,6 +14,11 @@ const TableOfContents: QuartzComponent = ({
 }: QuartzComponentProps) => {
   if (!fileData.toc) {
     return null
+  }
+
+  const convertFromText = (text: string) => {
+    const tocAst = fromHtml(text, { fragment: true })
+    return htmlToJsx(fileData.filePath!, tocAst)
   }
 
   return (
@@ -24,7 +31,7 @@ const TableOfContents: QuartzComponent = ({
           {fileData.toc.map((tocEntry) => (
             <li key={tocEntry.slug} class={`depth-${tocEntry.depth}`}>
               <a href={`#${tocEntry.slug}`} data-for={tocEntry.slug}>
-                {tocEntry.text}
+                {convertFromText(tocEntry.text)}
               </a>
             </li>
           ))}

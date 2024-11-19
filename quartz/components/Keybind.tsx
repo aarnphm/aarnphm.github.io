@@ -15,7 +15,7 @@ export const KeybindAlias = {
   "cmd+\\": "page d'accueil",
   "cmd+j": "curius",
   "cmd+b": "lecteur",
-  // "cmd+g": "graphique",
+  "cmd+g": "graphique",
   // "cmd+o": "mode sombre",
   // "cmd+.": "curseur de chat",
   // "cmd+l": "projets",

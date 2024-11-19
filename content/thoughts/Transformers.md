@@ -32,3 +32,63 @@ Either compute-bound (batch inference, saturated usage) or memory-bound (latency
 ### next-token prediction.
 
 Sampling: we essentially look forward K-tokens, and then we sample from the distribution of the next token.
+
+## Feynman-Kac
+
+Let $\mathcal{V}$ be the vocab of given transformers model, and $\mathcal{S} = \mathcal{V}^{*}$ the set of multi-token strings. Assume $\mathcal{V}$ contains token `EOS` and write $\mathcal{F} \subseteq \mathcal{S}$ for the set of `EOS`-terminated strings.
+
+> [!definition] _Feynman-Kac Transformer model_
+>
+> is a tuple $(s_{0}, \{M_t\}_{t\ge 1}, \{G_t\}_{t\ge 1})$ where:
+>
+> - $s_{0} \in \mathcal{S}$ is an _initial state_, which will take as empty string $\epsilon$
+> - $M_t(s_t \mid s_{t-1}, f_\theta)$ is a _Markov kernel_ from $s_{t-1} \in \mathcal{F}^c$ to $s_t \in \mathcal{S}$, parameterised by a transformer network $f_\theta: \mathcal{F}^c \to \mathbb{R}^{\mid \mathcal{V} \mid}$ mapping non-`EOS`-terminated strings to vectors of logits
+> - $G_t(s_{t-1}, s_t, f_\theta)$ is a _potential function_, mapping a pair $(s_{t-1}, s_t) \in \mathcal{F}^c \times \mathcal{S}$ to a real-valued non-negative score.
+
+Goal: generate from distribution $\mathbb{P}$ that reweights Markove chain $\mathbb{M}$ by potential functions $G_t$. We define ==_step-t filtering posteriors_==:
+
+$$
+P_t(s_t) = \frac{\mathbb{E}_\mathbb{M} \left[ \prod_{i=1}^{t \wedge T} G_i(S_{i-1}, S_i, f_\theta) \cdot [S_t = s_t] \right]}{\mathbb{E}_\mathbb{M} \left[ \prod_{i=1}^{t \wedge T} G_i(S_{i-1}, S_i, f_\theta) \right]}
+$$
+
+_Given that $T$ is mostly finite_ we can then define _overall posterior_ $\mathbb{P}(s) = \lim_{t \to \infty} \mathbb{P}_t(s)$ [@lew2023sequentialmontecarlosteering{see 2.2 for examples}]
+
+```pseudo lineNumber=false
+\begin{algorithm}
+\caption{Sequential Monte Carlo Transformer Steering}
+\begin{algorithmic}
+\State \textbf{Input:} $N$ (\# particles), $K$ (factor), Feynman-Kac Transformer model $\{s_0, \{M_t\}_{t \geq 1}, \{G_t\}_{t \geq 1}\}$
+\State \textbf{Output:} Weighted particle approximation $\{(x_i, w_i)\}_{i=1,\ldots,N}$ of the posterior $\mathbb{P}$ \\
+\State \textbf{Output:} Unbiased estimate $\hat{Z}$ of the partition function $Z = \mathbb{E}_\mathbb{M}[\prod_{t=1}^T G_t(s_t, s_{t-1}, f_\theta)]$ \\
+\State Initialize $f_\theta \gets \texttt{CachedTransformer}()$
+\State Initialize $(x_i, w_i) \gets (s_0, 1)$ for $i = 1, \ldots, N$
+\State Initialize $t \gets 1$
+\While{$x_i \not\in \mathcal{F}$ for some $i \in \{1, \ldots, N\}$}
+    \State $K_i \gets K (1 - \mathbb{1}_{\mathcal{F}}(x_i)) + \mathbb{1}_{\mathcal{F}}(x_i)$ for $i = 1, \ldots, N$
+    \State $N' \gets \sum_{i=1}^N K_i$
+    \For{$i \in \{1, \ldots, N\}$}
+        \If{$x_i \in \mathcal{F}$}
+            \State Set $(x_{i,1}, w_{i,1}) \gets (x_i, w_i \cdot \frac{N'}{N})$
+        \Else
+            \State Generate $x_{i,k} \sim M_t(\cdot \mid x_i, f_\theta)$ for $k = 1, \ldots, K$
+            \State Set $w_{i,k} \gets w_i \cdot G_t(x_i, x_{i,k}, f_\theta) \cdot \frac{N'}{K N}$ for $k = 1, \ldots, K$
+        \EndIf
+    \EndFor
+    \State Set normalized weights $\hat{w}_{i,k} \gets \frac{w_{(i,k)}}{\sum_{j=1}^N \sum_{l=1}^{K_j} w_{(j,l)}}$ for $i = 1, \ldots, N$ and $k = 1, \ldots, K_i$
+    \State Set $c^* \gets \inf\{c \in \mathbb{R}_{> 0} \mid \sum_{i=1}^N \sum_{k=1}^{K_i} (\mathbb{1} \wedge c \hat{w}_{(i,k)}) > N\}$
+    \State Set $(I_\text{det}, I_\text{stoch}, I_\text{strat}) \gets (\{(i,k) \mid c^{*} \hat{w}_{i,k} \geq 1\}, \{(i,k) \mid c^{*} \cdot \hat{w}_{i,k} < 1\}, \{\})$
+    \State Set $\alpha \gets \frac{\sum_{i \in I_\text{stoch}} \hat{w}_i}{|I_\text{det}|}$ and generate $U \sim \text{Uniform}([0, \alpha])$
+    \For{$i \in I_\text{stoch}$}
+        \State Set $U \gets U - \hat{w}_i$
+        \If{$U < 0$}
+            \State Set $I_\text{strat} \gets I_\text{strat} \cup \{i\}$
+            \State Set $U \gets U + \alpha$
+        \EndIf
+    \EndFor
+    \State Set particles $\{(x_i, w_i)\}_{i=1,\ldots,|I_\text{det}|} \gets \{(x_j, w_j \cdot \frac{N}{N'}) \mid j \in I_\text{det}\}$
+    \State Set particles $\{(x_i, w_i)\}_{i=|I_\text{det}|+1,\ldots,N} \gets \{(x_j, \frac{N}{c^* N'} \sum_{l=1}^{N} \sum_{k=1}^{K_l} w_{(j,k)}) \mid j \in I_\text{strat}\}$
+\EndWhile
+\State \Return $\left((x_i, w_i)_{i=1,\ldots,N}, \hat{Z} = \frac{1}{N} \sum_{i=1}^N w_i \right)$
+\end{algorithmic}
+\end{algorithm}
+```

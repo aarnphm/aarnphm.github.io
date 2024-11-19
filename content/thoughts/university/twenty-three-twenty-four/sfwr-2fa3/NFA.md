@@ -3,6 +3,7 @@ id: NFA
 tags:
   - sfwr2fa3
 date: "2024-01-30"
+modified: "2024-11-19"
 title: NFA
 ---
 
@@ -56,12 +57,15 @@ stateDiagram-v2
 ## $\epsilon$ transition
 
 ```mermaid
-graph LR
-
-  s((*)) --> s1{{s1}} --"1"--> s2{{s2}} --"1"--> s3{{s3}} --"e"--> s4{{s4}}
-  s1{{s1}} --"e"--> s4{{s4}}
-  s1{{s1}} --"0"--> s1{{s1}}
-  s3{{s3}} --"1"--> s3{{s3}}
+stateDiagram-v2
+  direction LR
+  [*] --> s1
+  s1 --> s2: 1
+  s2 --> s3: 1
+  s3 --> s4: ε
+  s1 --> s4: ε
+  s1 --> s1: 0
+  s3 --> s3: 1
 ```
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-2fa3/eps-nfa.jpeg]]
@@ -71,12 +75,15 @@ graph LR
 Given the following $M$
 
 ```mermaid
-graph LR
-
-  s((*)) --> s1{{s1}} --"1"--> s2{{s2}} --"1"--> s3{{s3}} --"e"--> s4{{s4}}
-  s1{{s1}} --"e"--> s4{{s4}}
-  s1{{s1}} --"0"--> s1{{s1}}
-  s3{{s3}} --"1"--> s3{{s3}}
+stateDiagram-v2
+  direction LR
+  [*] --> s1
+  s1 --> s2: 1
+  s2 --> s3: 1
+  s3 --> s4: ε
+  s1 --> s4: ε
+  s1 --> s1: 0
+  s3 --> s3: 1
 ```
 
 $\mathcal{L}(M) = \{0^n1^m \mid n \geq 0, m \neq 1 \space, x \in \Sigma^{*}\}$
