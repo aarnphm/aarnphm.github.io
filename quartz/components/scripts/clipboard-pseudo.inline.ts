@@ -11,11 +11,9 @@ document.addEventListener("nav", () => {
     if (psBlock.dataset.inlineMacros && psBlock.dataset.inlineMacros !== "") {
       inlineMacros = JSON.parse(psBlock.dataset.inlineMacros as string)
     }
-    console.log(inlineMacros)
     const mathML = psBlock.querySelector(".ps-mathml")
     if (!mathML) continue
 
-    console.log(mathML.querySelector("annotation")!.textContent)
     const blockContent = JSON.parse(mathML.querySelector("annotation")!.textContent ?? "")
     const source =
       "\\documentclass{article}\n" +

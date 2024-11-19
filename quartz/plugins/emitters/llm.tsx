@@ -25,6 +25,7 @@ import { InlineMath, Math, mathToMarkdown } from "mdast-util-math"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { Content } from "../../components"
 import DepGraph from "../../depgraph"
+import { toText } from "hast-util-to-text"
 
 const heading = (h: State, node: Element): Heading => {
   // NOTE: for all heading, we append the links in hast syntax tree. For markdown, we don't need to do this.
@@ -238,9 +239,23 @@ export const LLM: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
             h4: heading,
             h5: heading,
             h6: heading,
-            // handle mermaid
             pre(h, node) {
+              const classNames = (node.properties?.className ?? []) as string[]
+              // handle poetry correctly
+              if (classNames.includes("poetry")) {
+                const lang = node.properties.dataLanguage
+                const results: Code = {
+                  type: "code",
+                  lang: "poetry",
+                  meta: `language=${lang}`.trim(),
+                  value: toText(node),
+                }
+                h.patch(node, results)
+                return results
+              }
+
               let codeEl: Element | undefined
+              // handle mermaid
               visit(node, "element", (el) => {
                 if (
                   el.tagName === "code" &&
@@ -250,14 +265,16 @@ export const LLM: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
                   return false
                 }
               })
-              if (!codeEl) return hastToMdastHandlers.pre(h, node)
-              const results: Code = {
-                type: "code",
-                lang: "mermaid",
-                value: JSON.parse(codeEl.properties?.dataClipboard as string),
+              if (codeEl) {
+                const results: Code = {
+                  type: "code",
+                  lang: "mermaid",
+                  value: JSON.parse(codeEl.properties?.dataClipboard as string),
+                }
+                h.patch(node, results)
+                return results
               }
-              h.patch(node, results)
-              return results
+              return hastToMdastHandlers.pre(h, node)
             },
             // handle callout correctly
             blockquote(h, node) {

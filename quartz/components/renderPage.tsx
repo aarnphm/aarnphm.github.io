@@ -469,15 +469,17 @@ export function pageResources(
 
 type TranscludeOptions = {
   dynalist: boolean
+  title: boolean
 }
 
-const defaultTranscludeOptions = { dynalist: true }
+const defaultTranscludeOptions = { dynalist: true, title: true }
 
 export function transcludeFinal(
   root: Root,
   { cfg, allFiles, fileData }: QuartzComponentProps,
   userOpts?: TranscludeOptions,
 ): Root {
+  // hierarchy of transclusion: frontmatter > userOpts > defaultOpts
   const slug = fileData.slug as FullSlug
   let opts: TranscludeOptions
   if (userOpts) {
@@ -485,7 +487,11 @@ export function transcludeFinal(
   } else {
     opts = defaultTranscludeOptions
   }
-  const { dynalist } = opts
+  if (fileData.frontmatter?.transclude) {
+    opts = { ...opts, ...fileData.frontmatter?.transclude }
+  }
+
+  const { dynalist, title } = opts
 
   // NOTE: process transcludes in componentData
   visit(root, "element", (node, _index, _parent) => {
@@ -571,7 +577,7 @@ export function transcludeFinal(
         } else if (page.htmlAst) {
           // page transclude
           node.children = [
-            (page.frontmatter?.transclude?.title ?? true)
+            title
               ? {
                   type: "element",
                   tagName: "h1",
@@ -604,17 +610,17 @@ export function transcludeFinal(
       }
     }
   })
-  if (dynalist && !slug.includes("posts") && !fileData.frontmatter?.poem) {
+  if (
+    dynalist &&
+    !slug.includes("posts") &&
+    slug !== "index" &&
+    !fileData.frontmatter?.poem &&
+    !fileData.frontmatter?.menu
+  ) {
     // NOTE: handling collapsible nodes
     visit(root, "element", (node: Element, idx, parent) => {
       const denyIds = new Set(["footnote-label", "reference-label"])
-      if (
-        slug !== "index" &&
-        node.tagName.match(headerRegex) &&
-        !denyIds.has(node.properties.id as string) &&
-        !(fileData.frontmatter?.menu ?? false) &&
-        (fileData.frontmatter?.collapsible ?? true)
-      ) {
+      if (node.tagName.match(headerRegex) && !denyIds.has(node.properties.id as string)) {
         // then do the process headers and its children here
         processHeaders(node, idx, parent as Element)
       }
@@ -675,7 +681,11 @@ export function renderPage(
   const doc = (
     <html lang={lang}>
       <Head {...componentData} />
-      <body data-slug={slug} data-menu={componentData.fileData.frontmatter?.menu ?? false}>
+      <body
+        data-slug={slug}
+        data-language={lang}
+        data-menu={componentData.fileData.frontmatter?.menu ?? false}
+      >
         {slug === "index" ? (
           <Landing {...componentData} />
         ) : (

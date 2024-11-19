@@ -4,12 +4,13 @@ aliases:
   - advice
 tags:
   - evergreen
-collapsible: false
 comments: false
 date: "2024-01-23"
 modified: "2024-09-27"
 socialDescription: A collection of quotes, wisdom, and advice.
 title: advice.
+transclude:
+  dynalist: false
 ---
 
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->

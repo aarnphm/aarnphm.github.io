@@ -104,12 +104,6 @@
 
 // ----- DOM customization -----
 
-:root:lang(vi) {
-  --headerFont: "Playfair Display", var(--headerFont);
-  --bodyFont: "Playfair Display", var(--bodyFont);
-  --codeFont: "Playfair Display", var(--codeFont);
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -256,8 +250,12 @@ pre.poetry {
   position: unset;
   font-family: ITCGaramondStdLtCond, var(--bodyFont);
 
-  &[data-lang="vi"] {
-    font-family: "Playfair Display", var(--bodyFont);
+  &[data-language="vi"] {
+    font-family: "Playfair Display", var(--bodyFont) !important;
+
+    @media all and ($desktop) {
+      font-size: 1.275rem;
+    }
   }
 
   @media all and ($desktop) {

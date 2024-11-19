@@ -108,7 +108,7 @@ declare module "vfile" {
         socialImage: string
         noindex: boolean
         comments: boolean
-        transclude: Partial<{ title: boolean }>
+        transclude: Partial<{ title: boolean; dynalist: boolean }>
       }>
   }
 }

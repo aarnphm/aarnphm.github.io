@@ -12,6 +12,8 @@ modified: "2024-11-18"
 permalinks:
   - /vietnam
 title: Vietnamese poem
+transclude:
+  dynalist: false
 ---
 
 ## Tố Hữu
