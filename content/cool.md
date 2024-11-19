@@ -16,6 +16,7 @@ title: website inspiration
 - Jacky's website ([link](https://jzhao.xyz/))
   - daylightcomputer's inspired but in pure CSS and [HTML](https://github.com/jackyzha0/sunlit)
 - Daylight Computer ([link](https://daylightcomputer.com/))
+- https://walzr.com/IMG_0001
 
 ## protocol
 
