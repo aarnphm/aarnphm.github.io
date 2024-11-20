@@ -7,6 +7,7 @@ tags:
   - ml
   - proposal
 date: "2024-11-18"
+description: structured generations in vLLM a la carte
 modified: "2024-11-18"
 title: constrained decoding
 transclude:

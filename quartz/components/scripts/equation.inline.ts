@@ -1,4 +1,3 @@
-import katex from "katex"
 import { LCG } from "../../util/helpers"
 
 const equations = [
@@ -103,21 +102,6 @@ theta_(t+1) = theta_t + v_(t+1)`,
   },
 ]
 
-function renderString(latex: string): string {
-  try {
-    const div = document.createElement("div")
-    katex.render(latex, div, {
-      throwOnError: false,
-      output: "html",
-      displayMode: true,
-    })
-    return div.innerHTML
-  } catch (e) {
-    console.error("KaTeX rendering error:", e)
-    return latex
-  }
-}
-
 function getEquationOfDay(): {
   name: string
   latex: string
@@ -180,14 +164,6 @@ function logEquation(equation: {
     month: "long",
     day: "numeric",
   })
-
-  // Render LaTeX using KaTeX
-  const renderedLatex = renderString(equation.latex)
-
-  // Create a temporary container for the rendered equation
-  const container = document.createElement("div")
-  container.style.cssText = "background: white; padding: 10px; margin: 5px 0;"
-  container.innerHTML = renderedLatex
 
   // Common styles for console output
   const styles = {
