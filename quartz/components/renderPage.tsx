@@ -12,7 +12,6 @@ import { i18n } from "../i18n"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
 import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
-import { headingRank } from "hast-util-heading-rank"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -33,7 +32,7 @@ function headerElement(node: Element, content: Element[], idx: number): Element 
   const id = node.properties?.id ?? idx
   // indicate whether the header is collapsed or not
   const lastIdx = node.children.length > 0 ? node.children.length - 1 : 0
-  node.children.splice(lastIdx, 0, {
+  const icons: Element = {
     type: "element",
     tagName: "svg",
     properties: {
@@ -82,7 +81,8 @@ function headerElement(node: Element, content: Element[], idx: number): Element 
         children: [],
       },
     ],
-  })
+  }
+  node.children.splice(lastIdx, 0, icons)
 
   return {
     type: "element",
@@ -414,12 +414,9 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
       node.tagName === "section" &&
       node.properties.dataFootnotes == ""
     ) {
-      visit(node, "element", (entry, index, parent) => {
-        if (entry.tagName === "ol") {
-          entry.children = sortedRefs
-          parent!.children.splice(index as number, 1, entry)
-        }
-      })
+      // HACK: The node.children will have length 4, and ol is the 3rd items
+      const ol = node.children[2] as Element
+      ol.children = sortedRefs
     }
   })
 }
@@ -485,6 +482,9 @@ export function transcludeFinal(
   { cfg, allFiles, fileData }: QuartzComponentProps,
   userOpts?: Partial<TranscludeOptions>,
 ): Root {
+  // NOTE: return early these cases, we probably don't want to transclude them anw
+  if (fileData.frontmatter?.poem || fileData.frontmatter?.menu) return root
+
   // hierarchy of transclusion: frontmatter > userOpts > defaultOpts
   const slug = fileData.slug as FullSlug
   let opts: TranscludeOptions
@@ -625,13 +625,7 @@ export function transcludeFinal(
       }
     }
   })
-  if (
-    dynalist &&
-    !slug.includes("posts") &&
-    slug !== "index" &&
-    !fileData.frontmatter?.poem &&
-    !fileData.frontmatter?.menu
-  ) {
+  if (dynalist && !slug.includes("posts")) {
     // NOTE: handling collapsible nodes
     visit(root, "element", (node: Element, idx, parent) => {
       const denyIds = new Set(["footnote-label", "reference-label"])
@@ -701,6 +695,7 @@ export function renderPage(
         data-slug={slug}
         data-language={lang}
         data-menu={componentData.fileData.frontmatter?.menu ?? false}
+        data-poem={componentData.fileData.frontmatter?.poem ?? false}
       >
         {slug === "index" ? (
           <Landing {...componentData} />

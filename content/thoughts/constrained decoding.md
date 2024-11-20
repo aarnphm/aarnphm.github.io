@@ -249,7 +249,7 @@ That's at least a 5x speedup over structured generations, given that out of the 
 
 _assumption: we are building against [[thoughts/Autoregressive models|autoregressive transformers models]]_
 
-- Let $\mathcal{F} \subset \mathcal{P}(\mathcal{V})$, where $\mathcal{P}$ is the powerset operator, be subset of multi-token string that ends with tokens $\text{EOS} \in \mathcal{V}$.
+- Let $\mathcal{F} \subset \mathcal{P}(\mathcal{V})$, where $\mathcal{P}$ is the power set operator, be subset of multi-token string that ends with tokens $\text{EOS} \in \mathcal{V}$.
 - Text generation tasks is to draw samples from $\mathcal{F}$
 
 Notable ==sampling== methods include greedy decoding (generate tokens recursively with highest probability tokens), beam search (but using heuristic to find the mode of distribution) [^smc]
@@ -291,7 +291,7 @@ $$
 \end{aligned}
 $$
 
-> [!abstract] augmentation upon sampling algorithm
+> [!math] augmentation upon sampling algorithm
 >
 > ```pseudo
 > \begin{algorithm}

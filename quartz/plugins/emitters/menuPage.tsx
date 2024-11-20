@@ -3,7 +3,7 @@ import { Content, Spacer } from "../../components"
 import BodyConstructor from "../../components/Body"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
-import { FilePath, FullSlug, pathToRoot } from "../../util/path"
+import { FilePath, pathToRoot } from "../../util/path"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { QuartzComponentProps } from "../../components/types"
 import DepGraph from "../../depgraph"
@@ -57,10 +57,8 @@ export const MenuPage: QuartzEmitterPlugin = () => {
       const cfg = ctx.cfg.configuration
       const allFiles = content.map((c) => c[1].data)
 
-      let slug: FullSlug | undefined
-
       for (const [tree, file] of content) {
-        slug = file.data.slug!
+        const slug = file.data.slug!
         if (file.data.frontmatter?.menu === true) {
           const externalResources = pageResources(pathToRoot(slug), resources)
 

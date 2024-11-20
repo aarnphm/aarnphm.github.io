@@ -4,10 +4,10 @@ import { i18n } from "../i18n"
 import { version } from "../../package.json"
 import { classNames } from "../util/lang"
 import type { JSX } from "preact"
+import { Date as DateComponent, getDate } from "./Date"
 
 interface Options {
   links: Record<string, string>
-  showInfo?: boolean
 }
 
 const iconMapping: Record<string, JSX.Element> = {
@@ -42,10 +42,17 @@ const iconMapping: Record<string, JSX.Element> = {
 const getIcon = (name: string) => iconMapping[name] ?? <span>{name}</span>
 
 export default ((opts?: Options) => {
-  const Footer: QuartzComponent = ({ displayClass, cfg }: QuartzComponentProps) => {
+  const Footer: QuartzComponent = ({ displayClass, cfg, fileData }: QuartzComponentProps) => {
     const year = new Date().getFullYear()
     const links = opts?.links ?? []
-    const showInfo = opts?.showInfo ?? false
+
+    if (fileData.frontmatter?.poem) {
+      return (
+        <footer class={classNames(displayClass, "poetry-footer")}>
+          <DateComponent date={getDate(cfg, fileData)!} locale={cfg.locale} />
+        </footer>
+      )
+    }
 
     return (
       <>
@@ -83,15 +90,13 @@ export default ((opts?: Options) => {
               })}
             </ul>
           </div>
-          {showInfo && (
-            <p class="info">
-              {i18n(cfg.locale).components.footer.createdWith}{" "}
-              <a href="https://quartz.jzhao.xyz/" target="_blank" rel="noopener noreferrer">
-                Quartz v{version}
-              </a>{" "}
-              © {year}
-            </p>
-          )}
+          <p class="info">
+            {i18n(cfg.locale).components.footer.createdWith}{" "}
+            <a href="https://quartz.jzhao.xyz/" target="_blank" rel="noopener noreferrer">
+              Quartz v{version}
+            </a>{" "}
+            © {year}
+          </p>
         </footer>
       </>
     )

@@ -63,9 +63,9 @@ stream per layers, we end up having lots of duplicate features across layers.
 
 Crosscoder read/write to many layers, subject to causality constraints.
 
-> [!abstract]+ definition
+> [!math]+ crosscoders
 >
-> Let one compute the vector of feature activation $f_(x_j)$ on datapoint $x_j$ by summing over contributions of activations of different layers $a^l(x_j)$ for layers $l \in L$:
+> Let one compute the vector of feature activation $f_(x_j)$ on data point $x_j$ by summing over contributions of activations of different layers $a^l(x_j)$ for layers $l \in L$:
 >
 > $$
 > \begin{aligned}

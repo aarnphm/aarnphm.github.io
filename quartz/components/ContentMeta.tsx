@@ -6,144 +6,71 @@ import { classNames } from "../util/lang"
 import { i18n } from "../i18n"
 import { FullSlug, resolveRelative } from "../util/path"
 
-interface MetadataOptions {
-  showReadingTime?: boolean
-  showModifiedTime?: boolean
-  showReturnLink?: boolean
-}
+export default (() => {
+  const ContentMeta: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
+    const { text } = fileData
 
-type LinkOptions = object
-
-type Mode = "metadata" | "link"
-
-type ModeOptions = {
-  metadata?: MetadataOptions
-  link?: LinkOptions
-}
-
-interface ContentMetaOptions {
-  /**
-   * Whether to display reading time
-   */
-  showMode: Mode
-  // TODO: make sure to parse link similar how we transclude options
-  link?: string
-  modeOptions?: ModeOptions
-}
-
-const defaultOptions: ContentMetaOptions = {
-  showMode: "metadata",
-  link: "/",
-  modeOptions: {
-    metadata: {
-      showReadingTime: true,
-      showModifiedTime: true,
-      showReturnLink: false,
-    },
-    link: {},
-  },
-}
-
-export default ((opts?: Partial<ContentMetaOptions>) => {
-  // Merge options with defaults
-  const options: ContentMetaOptions = { ...defaultOptions, ...opts }
-  const modeOptions = options.modeOptions![options.showMode!]
-
-  const ContentMetadata: QuartzComponent = ({
-    cfg,
-    fileData,
-    displayClass,
-  }: QuartzComponentProps) => {
-    const text = fileData.text
-
-    if (!text || !modeOptions) return null
+    if (!text) return <></>
 
     let created: string | undefined
     let modified: string | undefined
     let reading: string | undefined
 
-    if (options.showMode === "metadata") {
-      if (fileData.dates) {
-        created = formatDate(getDate(cfg, fileData)!, cfg.locale)
-        modified = formatDate(
-          fileData.frontmatter!.modified !== undefined
-            ? new Date(fileData.frontmatter!.modified)
-            : fileData.dates.modified,
-          cfg.locale,
-        )
-      }
-
-      // Display reading time if enabled
-      const { minutes, text: _timeTaken, words: _words } = readingTime(text)
-      reading = i18n(cfg.locale).components.contentMeta.readingTime({
-        minutes: Math.ceil(minutes),
-      })
-    }
-
-    const home = (link: string) => (
-      <li class="return-home">
-        <a
-          href={link}
-          class="internal alias"
-          style={["color: inherit", "font-weight: inherit"].join(";")}
-        >
-          home
-        </a>
-      </li>
-    )
-
-    if (options.showMode === "link") {
-      return <ul class={classNames(displayClass, "content-meta")}>{home(options.link!)}</ul>
-    } else {
-      const metadata = modeOptions as MetadataOptions
-      return (
-        <ul class={classNames(displayClass, "content-meta")}>
-          {metadata.showReadingTime && (
-            <>
-              {created !== undefined && (
-                <li>
-                  <span class="page-creation" title="Date de création du contenu de la page">
-                    <em>{created}</em>
-                  </span>
-                </li>
-              )}
-              {metadata.showModifiedTime && modified !== undefined && (
-                <li>
-                  <div class="ref-source">
-                    <span
-                      class="page-modification"
-                      title="Date de modification du contenu de la page"
-                    >
-                      <em>{modified}</em>
-                    </span>
-                  </div>
-                </li>
-              )}
-              {reading !== undefined && (
-                <li>
-                  <span className="reading-time" title="Temps de lecture estimé">
-                    {reading}
-                  </span>
-                </li>
-              )}
-              <li>
-                <a
-                  href={resolveRelative(fileData.slug!, (fileData.slug! + ".html.md") as FullSlug)}
-                  class="llm-source"
-                  style={["color: inherit", "font-weight: inherit"].join(";")}
-                >
-                  <span title="voir https://github.com/AnswerDotAI/llms-txt">llm.txt</span>
-                </a>
-              </li>
-              {metadata.showReturnLink && home(options.link!)}
-            </>
-          )}
-        </ul>
+    if (fileData.dates) {
+      created = formatDate(getDate(cfg, fileData)!, cfg.locale)
+      modified = formatDate(
+        fileData.frontmatter!.modified !== undefined
+          ? new Date(fileData.frontmatter!.modified)
+          : fileData.dates.modified,
+        cfg.locale,
       )
     }
+
+    // Display reading time if enabled
+    const { minutes, text: _timeTaken, words: _words } = readingTime(text)
+    reading = i18n(cfg.locale).components.contentMeta.readingTime({
+      minutes: Math.ceil(minutes),
+    })
+
+    return (
+      <ul class={classNames(displayClass, "content-meta")}>
+        {created !== undefined && (
+          <li>
+            <span class="page-creation" title="Date de création du contenu de la page">
+              <em>{created}</em>
+            </span>
+          </li>
+        )}
+        {modified !== undefined && (
+          <li>
+            <div class="ref-source">
+              <span class="page-modification" title="Date de modification du contenu de la page">
+                <em>{modified}</em>
+              </span>
+            </div>
+          </li>
+        )}
+        {reading !== undefined && (
+          <li>
+            <span className="reading-time" title="Temps de lecture estimé">
+              {reading}
+            </span>
+          </li>
+        )}
+        <li>
+          <a
+            href={resolveRelative(fileData.slug!, (fileData.slug! + ".html.md") as FullSlug)}
+            class="llm-source"
+            style={["color: inherit", "font-weight: inherit"].join(";")}
+          >
+            <span title="voir https://github.com/AnswerDotAI/llms-txt">llm.txt</span>
+          </a>
+        </li>
+      </ul>
+    )
   }
 
-  ContentMetadata.css = contentMetaStyle
+  ContentMeta.css = contentMetaStyle
 
-  return ContentMetadata
+  return ContentMeta
 }) satisfies QuartzComponentConstructor

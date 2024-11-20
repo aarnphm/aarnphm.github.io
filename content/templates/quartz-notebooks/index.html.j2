@@ -1,4 +1,11 @@
 {%- extends 'lab/index.html.j2' -%}
+{%- block html_head -%}
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="true" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="true" />
+<link rel="icon" href="/static/icon.webp" />
+<meta name="generator" content="Quartz" />
+{{super()}}
+{%- endblock html_head -%}
 {%- block body_header -%}
 {% if resources.theme == 'dark' %}
 <body class="popover-hint jp-Notebook" data-jp-theme-light="false" data-jp-theme-name="JupyterLab Dark">

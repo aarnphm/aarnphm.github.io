@@ -106,7 +106,7 @@ Benchmark script: [vllm-project/vllm#10046](https://github.com/vllm-project/vllm
 
 ![[thoughts/images/vllm/benchmark-guided-before-optimization.webp]]
 
-> [!important] overhead
+> [!quote] overhead
 >
 > Currently logit_processor are happening in frontend, so we should move this to model_executor layers
 
@@ -192,7 +192,7 @@ graph TB
 ```
 
 [^row-wise]:
-    Current implementation [here](https://github.com/vllm-project/vllm/blob/246598a6b1e22616630b7f1bf11bd9bcb31dc860/vllm/model_executor/layers/logits_processor.py#L112) mandates that we gather all logits from hidden state, scale if needed then apply the processors.
+    Current implementation [of logits processor](https://github.com/vllm-project/vllm/blob/246598a6b1e22616630b7f1bf11bd9bcb31dc860/vllm/model_executor/layers/logits_processor.py#L112) mandates that we gather all logits from hidden state, scale if needed then apply the processors.
 
     ![[thoughts/images/vllm/pre-optimized-logit-processor-handling.webp|flow]]
     _reference: [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)_

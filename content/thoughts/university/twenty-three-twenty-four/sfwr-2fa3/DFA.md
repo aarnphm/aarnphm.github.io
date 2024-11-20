@@ -3,6 +3,7 @@ id: DFA
 tags:
   - sfwr2fa3
 date: "2024-01-12"
+modified: "2024-11-19"
 title: Deterministic Finite Automata
 ---
 
@@ -53,17 +54,29 @@ $$
 
 ```mermaid
 stateDiagram-v2
-  direction LR
+    direction LR
+    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
+    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
 
-  [*] --> 1
-  1 --> 1 : b
-  1 --> 2 : a
-  2 --> 2 : b
-  2 --> 3 : a
-  3 --> 3 : b
-  3 --> 4 : a
-  4 --> 4 : a, b
-  4 --> [*]
+    s1: s1
+    s2: s2
+    s3: s3
+    s4: s4
+
+    [*] --> s1
+    s1 --> s1: b
+    s1 --> s2: a
+
+    s2 --> s2: b
+    s2 --> s3: a
+
+    s3 --> s3: b
+    s3 --> s4: a
+
+    s4 --> s4: a,b
+
+    class s4 accepting
+    class s1 start
 ```
 
 > if in final string then accept, otherwise reject the string
@@ -76,80 +89,188 @@ $$
 \mathcal{L}(M) = \{w \in \Sigma^{*} | \delta(s, w) \in F\}
 $$
 
-> [!important]
 > Assumption: $\Sigma = \{a, b\}$
 
-### examples
-
-Find DFA $M$ such that $\mathcal{L}(M)=$
-
-1. $\{ xab \mid x \in \Sigma^{*} \}$
-2. $\{ x \mid |x| \% 2 = 0 \}$
-3. $\{ x \mid x = 2^n\space ,\space n \in \mathbb{N} \}$, $\Sigma = \{0, 1\}$
-4. $\{ x \mid "abc" \in x \}$, $\Sigma = \{a, b, c\}$
-5. $\{ x \mid \text{a is the second last char of x} \}$
-6. $\{ a^n \cdot b^n \mid n \ge 0 \}$
-7. $\{ x \mid \text{a is the fifth last char of x} \}$
-
-Ans:
+> [!math] Questions
+>
+> Find DFA $M$ such that $\mathcal{L}(M)=$ the following
+>
+> 1. $\{ xab \mid x \in \Sigma^{*} \}$
+> 2. $\{ x \mid |x| \% 2 = 0 \}$
+> 3. $\{ x \mid x = 2^n\space ,\space n \in \mathbb{N} \}$, $\Sigma = \{0, 1\}$
+> 4. $\{ x \mid "abc" \in x \}$, $\Sigma = \{a, b, c\}$
+> 5. $\{ x \mid \text{a is the second last char of x} \}$
+> 6. $\{ a^n \cdot b^n \mid n \ge 0 \}$
+> 7. $\{ x \mid \text{a is the fifth last char of x} \}$
 
 1.
 
 ```mermaid
 stateDiagram-v2
-	direction LR
-  [*] --> 1
-  1 --> 2 : a
-  1 --> 1 : b
-  2 --> 2 : a
-  2 --> 3 : b
-  3 --> 1 : b
-  3 --> 2 : a
-  3 --> [*]
+    direction LR
+    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
+    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
+
+    s0: q0
+    s1: q1
+    s2: q2
+
+    [*] --> s0
+    s0 --> s0: b
+    s0 --> s1: a
+    s1 --> s0: a
+    s1 --> s2: b
+    s2 --> s0: a
+    s2 --> s1: b
+
+    class s2 accepting
+    class s0 start
 ```
 
 2.
 
 ```mermaid
 stateDiagram-v2
-	direction LR
-  [*] --> 1
-  1 --> [*]
-  1 --> 2 : a,b
-  2 --> 1 : a, b
+    direction LR
+    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
+    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
+
+    s0: q0
+    s1: q1
+
+    [*] --> s0
+    s0 --> s1: a,b
+    s1 --> s0: a,b
+
+    class s0 accepting
+    class s0 start
+```
+
+3.
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
+    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
+    classDef dead fill:#ff6b6b,stroke:#333,stroke-width:2px
+
+    s0: q0
+    s1: q1
+    s2: q2
+    s3: dead
+
+    [*] --> s0
+    s0 --> s3: 0
+    s0 --> s1: 1
+
+    s1 --> s2: 0
+    s1 --> s3: 1
+
+    s2 --> s2: 0
+    s2 --> s3: 1
+
+    s3 --> s3: 0,1
+
+    class s1 accepting
+    class s0 start
+    class s3 dead
 ```
 
 4.
 
 ```mermaid
 stateDiagram-v2
-  direction LR
-  [*] --> 1
-  1 --> 2:  a
-  2 --> 3:  b
-  3 --> 4:  c
-  4 --> [*]
-  1 --> 1: b,c
-  2 --> 2: a
-  4 --> 4: a,b,c
-  3 --> 2: a
-  3 --> 1: b
-  2 --> 1: c
+    direction LR
+    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
+    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
+    
+    s0: q0
+    s1: q1
+    s2: q2
+    s3: q3
+    
+    [*] --> s0
+    
+    s0 --> s0: b,c
+    s0 --> s1: a
+    
+    s1 --> s0: a,c
+    s1 --> s2: b
+    
+    s2 --> s0: a,b
+    s2 --> s3: c
+    
+    s3 --> s3: a,b,c
+    
+    class s3 accepting
+    class s0 start
 ```
 
 5.
 
 ```mermaid
 stateDiagram-v2
-  direction LR
-  [*] --> 1
-  1 --> 2: a
-  2 --> 3: a
-  3 --> 4: b
-  1 --> 1: b
-  3 --> 3: a
-  4 --> 2: a
-  4 --> 1: b
-  3 --> [*]
-  4 --> [*]
+    direction LR
+    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
+    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
+    
+    s0: q0
+    s1: q1
+    s2: q2
+    s3: q3
+    
+    [*] --> s0
+    
+    s0 --> s0: a,b
+    s0 --> s1: a
+    
+    s1 --> s2: b
+    s1 --> s3: a
+    
+    s2 --> s0: a,b
+    s3 --> s0: a,b
+    
+    class s2 accepting
+    class s0 start
+```
+6.
+
+non-regular.
+
+_proof using Pumping Lemma_
+- assume the language is regular, let $p$ be the pumping length.
+- Consider string $s = a^n \cdot b^n$
+- any way of diving $s=xyz$ where $\mid xy \mid \le p$ and $\mid y \mid \ge 0$ will results y contains only a'
+- pumped wouldn't be in the language
+q.e.d
+
+7.
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
+    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
+    
+    s0: q0
+    s1: q1
+    s2: q2
+    s3: q3
+    s4: q4
+    s5: q5
+    
+    [*] --> s0
+    
+    s0 --> s0: a,b
+    s0 --> s1: a
+    
+    s1 --> s2: a,b
+    s2 --> s3: a,b
+    s3 --> s4: a,b
+    s4 --> s5: a,b
+    s5 --> s0: a,b
+    
+    class s5 accepting
+    class s0 start
 ```

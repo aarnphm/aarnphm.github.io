@@ -10,7 +10,6 @@ export const sharedPageComponents: SharedLayout = {
     Component.Image(),
     Component.MinimalFooter({
       links: { github: "https://github.com/aarnphm", twitter: "https://twitter.com/aarnphm_" },
-      showInfo: true,
     }),
   ],
   footer: Component.Spacer(),

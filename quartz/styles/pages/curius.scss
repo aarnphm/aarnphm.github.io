@@ -1,5 +1,5 @@
-@use "../../styles/variables.scss" as *;
-@use "../../styles/mixin.scss" as *;
+@use "../variables.scss" as *;
+@use "../mixin.scss" as *;
 
 @keyframes dots {
   0%,
@@ -305,6 +305,254 @@ body {
           color: inherit !important;
         }
       }
+    }
+  }
+}
+
+.curius-header {
+  background-color: unset !important;
+
+  .curius-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 11px;
+  }
+
+  #curius-refetch {
+    @include iconStyles;
+    margin-left: unset;
+    opacity: 1;
+    padding: 0;
+    outline: none;
+  }
+
+  .curius-search-snippet {
+    color: rgb(170, 170, 170);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+    margin: 0 auto 0;
+  }
+
+  .curius-search {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+
+    & #curius-bar {
+      flex: 1;
+      outline: none;
+      background-color: var(--lightgray);
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: var(--bodyFont);
+      box-sizing: border-box;
+      border-radius: 2px;
+      color: var(--dark);
+      padding: 0.4rem 0.5rem;
+      border: 1px solid var(--lightgray);
+      width: 100%;
+    }
+
+    & #curius-search-container {
+      position: absolute;
+      box-sizing: border-box;
+      width: #{$pageWidth};
+      z-index: unset;
+      box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
+      display: none;
+      box-sizing: border-box;
+      background-color: var(--light);
+      max-height: 50vh;
+      // #curius-bar height + padding
+      margin-top: 3rem;
+      overflow: hidden auto;
+
+      @media all and ($mobile) {
+        width: initial;
+        right: 1rem;
+        left: 1rem;
+      }
+
+      &.active {
+        z-index: 999;
+        display: inline-block;
+      }
+
+      a.curius-search-link {
+        padding: 10px;
+        margin: auto;
+        display: block;
+        border-color: var(--lightgray);
+        border-width: 0px 0px 1px;
+        border-style: solid;
+        text-decoration: inherit;
+        color: inherit;
+        outline: none;
+        cursor: pointer;
+        font-weight: inherit;
+        transition: background 0.2s ease;
+        &:hover,
+        &:focus {
+          background-color: var(--lightgray);
+          border-radius: 5px;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+.curius-friends {
+  display: none !important;
+  max-width: calc($sidePanelWidth - 1rem);
+  cursor: pointer;
+
+  @media all and ($desktop) {
+    max-width: unset;
+    width: 100%;
+  }
+
+  @media all and not ($desktop) {
+    margin-top: $topSpacing;
+  }
+
+  a,
+  span {
+    color: inherit !important;
+    font-weight: normal !important;
+    text-decoration: none;
+
+    &:hover:not([data-highlight]) {
+      transition: none;
+      text-decoration: underline;
+    }
+  }
+
+  &.active {
+    display: block !important;
+  }
+
+  #friends-list {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .friend-li {
+    display: none;
+
+    &[class~="focus"] {
+      background: var(--lightgray);
+      border: 1px solid var(--dark);
+    }
+
+    &.active {
+      display: block;
+    }
+
+    & > .friend-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .friend-shortcut {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 75%;
+  }
+
+  #see-more-friends {
+    cursor: pointer;
+
+    svg {
+      transition: transform 0.3s ease;
+    }
+
+    .fold {
+      transform: rotateZ(-180deg);
+    }
+  }
+}
+
+.curius-trail {
+  font-size: 11px;
+  width: inherit;
+  cursor: pointer;
+  max-width: calc($sidePanelWidth - 1rem);
+  display: none;
+
+  &.active {
+    display: block;
+  }
+
+  .curius-trail-header {
+    display: flex;
+    gap: 0.5rem;
+    font-size: initial;
+  }
+
+  .curius-item-address,
+  .trail-description {
+    font-size: 10px;
+    color: var(--gray);
+    font-style: italic;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
+
+#trail-list {
+  margin-top: 0;
+}
+
+.trails-li {
+  margin-bottom: 1rem;
+  border-bottom-style: none !important;
+}
+
+.trail-ul {
+  padding-inline-start: 5px;
+  list-style: none;
+  border-left: 1px solid var(--lightgray);
+  margin-left: 1rem;
+  padding: 0 0 0 1.2rem;
+  margin-top: 5px;
+
+  & li {
+    gap: 1rem;
+
+    &[class~="focus"] {
+      background: var(--lightgray);
+      border: 1px solid var(--dark);
+    }
+  }
+
+  li.curius-item-title {
+    align-items: center;
+    padding: 0 8px;
+
+    & .curius-item-link {
+      white-space: nowrap;
+      width: 50%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .curius-item-span {
+      max-width: 100%;
     }
   }
 }

@@ -7,11 +7,6 @@ import Landing from "./Landing"
 import Navigation from "./Navigation"
 import MinimalFooter from "./MinimalFooter"
 import Keybind from "./Keybind"
-import CuriusContent from "./pages/CuriusContent"
-import CuriusNotes from "./CuriusNotes"
-import CuriusHeader from "./CuriusHeader"
-import CuriusTrail from "./CuriusTrail"
-import CuriusFriends from "./CuriusFriends"
 import Content from "./pages/Content"
 import TagContent from "./pages/TagContent"
 import FolderContent from "./pages/FolderContent"
@@ -43,11 +38,6 @@ export {
   Reader,
   Landing,
   Navigation,
-  CuriusContent,
-  CuriusNotes,
-  CuriusHeader,
-  CuriusTrail,
-  CuriusFriends,
   MinimalFooter,
   Keybind,
   ArticleTitle,

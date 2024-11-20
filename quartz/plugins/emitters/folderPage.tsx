@@ -33,7 +33,6 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
     pageBody: FolderContent({ sort: userOpts?.sort }),
     header: [...defaultListPageLayout.beforeBody, ...defaultListPageLayout.left],
     beforeBody: [],
-    // afterBody: [...sharedPageComponents.afterBody.slice(1)],
     left: [Spacer()],
     right: [Spacer()],
     ...userOpts,
