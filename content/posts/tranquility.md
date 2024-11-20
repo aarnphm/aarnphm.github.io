@@ -10,7 +10,7 @@ socialDescription: on being at ease with myself.
 title: tranquility
 ---
 
-![[posts/images/Shade_by_Frank_Brangwyn_960x640_large_white_background.jpg]]
+![[posts/images/Shade_by_Frank_Brangwyn_960x640_large_white_background.webp]]
 _Shade, oil on canvas - Frank Brangwyn, 1893_
 
 It is 21:41, Oct 6th.

@@ -145,7 +145,7 @@ idea: deletes one activation of the network to see how performance on a task cha
 - mean ablation: Deletion by setting activations to the mean of the dataset
 - random ablation or _resampling_
 
-## residual stream $\mathbb{R}$
+## residual stream
 
 ```mermaid
 flowchart LR

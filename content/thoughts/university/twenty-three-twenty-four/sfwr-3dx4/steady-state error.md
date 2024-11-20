@@ -11,4 +11,4 @@ See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/steady_state_e
 > [!important]
 > ==System type== is the number of integrators in the forward path, thus value of $n$
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/steady-state error table.jpeg]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/steady-state error table.webp]]

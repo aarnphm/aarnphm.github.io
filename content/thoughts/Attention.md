@@ -43,7 +43,7 @@ radix tree setup:
 - key: sequence of tokens
 - value: KV cache tensor (stored in GPU in a paged layout)
 
-![[thoughts/images/vllm/radix-attention.jpeg]]
+![[thoughts/images/vllm/radix-attention.webp]]
 
 _dynamic evolution of the radix tree in response to various requests._
 

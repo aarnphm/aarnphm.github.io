@@ -76,7 +76,7 @@ Let $M = | \mathcal{N} | \times | \mathcal{N} |$ matrix
 
 ### Depth-first search (DFS)
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-2c03/images/example-graph-dfs.jpeg]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-2c03/images/example-graph-dfs.webp]]
 
 ```pseudo
 \begin{algorithm}

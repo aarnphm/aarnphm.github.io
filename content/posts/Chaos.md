@@ -15,7 +15,7 @@ And a few things I learned growing up in a foreign land.
 
 _This is an extension of [[thoughts/Chaos|chaos]] that recently occupy my [[thoughts/NLP|chain of thought]]. See this on [substack](https://open.substack.com/pub/livingalone/p/chaos-has-and-always-be-a-driven?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true)_
 
-![[posts/images/passage-giorgio-m.jpg]]
+![[posts/images/passage-giorgio-m.webp]]
 _Passage by Giorgio Morandi_
 
 Chaos isn't merely an undercurrent of life; it's a pervasive force, ever-present, often simmering just beneath the surface, ready to erupt and manifest in myriad forms.
@@ -57,7 +57,7 @@ Seemingly, this untamed curious inner child, still clung to my being, propels me
 
 ---
 
-![[posts/images/cima.jpeg]]
+![[posts/images/cima.webp]]
 
 > I'm not sure where I want to go from here.
 
@@ -121,4 +121,4 @@ In this balance, You might find not just the next step but a deeper understandin
   <span>Anh P.</span>
 </div>
 
-![[posts/images/aaron-younglings.jpeg]]
+![[posts/images/aaron-younglings.webp]]

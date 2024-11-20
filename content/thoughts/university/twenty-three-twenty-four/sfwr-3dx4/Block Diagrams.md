@@ -10,6 +10,6 @@ See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/block_diagrams
 
 ## Moving through summing junction
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/summing junction.jpeg]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/summing junction.webp]]
 
 ## Reduction via Familiar Forms

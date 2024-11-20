@@ -12,6 +12,7 @@ import { i18n } from "../i18n"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
 import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
+import { headingRank } from "hast-util-heading-rank"
 
 interface RenderComponents {
   head: QuartzComponent

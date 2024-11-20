@@ -6,9 +6,9 @@ import chalk from "chalk"
 
 async function convertMedia(contentDir: string) {
   try {
-    const mediaFiles = await globby(["**/*.png"], {
+    const mediaFiles = await globby(["**/*.{png,jpeg,jpg}"], {
       cwd: contentDir,
-      ignore: ["**/*.ignore.png"],
+      ignore: ["**/*.ignore.{png,jpeg,jpg}"],
       absolute: true,
     })
 
@@ -20,14 +20,16 @@ async function convertMedia(contentDir: string) {
     console.log(chalk.blue(`Found ${mediaFiles.length} media files to convert.`))
 
     for (const mediaFile of mediaFiles) {
-      const ext = path.extname(mediaFile)
+      const ext = path.extname(mediaFile).toLowerCase()
       let outputFile: string
       let ffmpegCmd: string
 
       switch (ext) {
         case ".png":
-          outputFile = mediaFile.replace(/\.png$/, ".jpeg")
-          ffmpegCmd = `ffmpeg -i "${mediaFile}" -quality 70 -compression_level 9 "${outputFile}"`
+        case ".jpeg":
+        case ".jpg":
+          outputFile = mediaFile.replace(/\.(png|jpe?g)$/i, ".webp")
+          ffmpegCmd = `ffmpeg -i "${mediaFile}" -c:v libwebp -quality 90 -compression_level 6 "${outputFile}"`
           break
         case ".mp4":
           outputFile = mediaFile.replace(/\.mp4$/, ".avif")
@@ -59,12 +61,14 @@ async function convertMedia(contentDir: string) {
       let content = await fs.readFile(mdFile, "utf-8")
       const originalContent = content
 
-      // Replace while skipping .ignore.png
-      content = content.replace(/(?<!\.ignore)\.(png)([^\w]|$)/g, ".jpeg$2")
+      // Replace both png and jpeg/jpg references, skipping ignored files
+      content = content.replace(/(?<!\.ignore)\.(png|jpe?g)([^\w]|$)/gi, ".webp$2")
+
+      // Handle both file types in wikilinks
       content = content.replace(
-        /\[\[([^\]]+(?<!\.ignore)\.png)(\|[^\]]+)?\]\]/g,
-        (_match, p1, p2) => {
-          return `[[${p1.replace(".png", ".jpeg")}${p2 || ""}]]`
+        /\[\[([^\]]+(?<!\.ignore)\.(png|jpe?g))(\|[^\]]+)?\]\]/gi,
+        (_match, p1, _ext, p2) => {
+          return `[[${p1.replace(/\.(png|jpe?g)$/i, ".webp")}${p2 || ""}]]`
         },
       )
 

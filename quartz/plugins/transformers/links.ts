@@ -19,7 +19,6 @@ import { VFile } from "vfile"
 interface Options {
   enableArxivEmbed: boolean
   enableRawEmbed: boolean
-  compressedImage: boolean
   /** How to resolve Markdown paths */
   markdownLinkResolution: TransformOptions["strategy"]
   /** Strips folders from a link so that it looks nice */
@@ -32,7 +31,6 @@ interface Options {
 const defaultOptions: Options = {
   enableArxivEmbed: false,
   enableRawEmbed: false,
-  compressedImage: false,
   markdownLinkResolution: "absolute",
   prettyLinks: true,
   openLinksInNewTab: false,
@@ -251,9 +249,6 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     transformOptions,
                   )
                   const ext = path.extname(dest).toLowerCase()
-                  if (opts.compressedImage && [".jpeg", ".jpg"].includes(ext)) {
-                    dest = dest.replace(ext, ".webp") as RelativeURL
-                  }
                   node.properties.src = dest
                 }
               }

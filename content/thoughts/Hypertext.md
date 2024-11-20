@@ -13,7 +13,7 @@ Coined by Ted Nelson around 1965, non-sequential text with free user movement, c
 
 Hypertext can also be interpreted as a [[thoughts/Database|database]] format in which information related to that on a display can be accessed directly from the display
 
-![[thoughts/images/hypertext.jpeg]]
+![[thoughts/images/hypertext.webp]]
 
 He also brought up the concept of transclusion, which include parts of documents within other documents by reference.
 

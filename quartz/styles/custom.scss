@@ -111,8 +111,16 @@ html {
 h1,
 h2,
 h3,
-h4 {
+h4,
+h5,
+h6 {
   font-weight: normal;
+
+  .katex {
+    font-size: 1em;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+  }
 }
 
 // golden ditonic scale
@@ -554,7 +562,7 @@ section[data-footnotes] {
 
 .katex {
   font:
-    normal 1.2em KaTeX_Main,
+    normal 1.1em KaTeX_Main,
     var(--bodyFont),
     serif !important;
 }

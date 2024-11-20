@@ -129,7 +129,7 @@ fraction of last payment that was interest was $\frac{i}{1+i}$, principal of the
 > Convert to dollar/wk to base calculation on same unit
 
 uncertainty, evaluating likeliness and potential impact, organize to risk matrix, determine expected impact, then propose mitigation strategies
-![[thoughts/university/twenty-three-twenty-four/eng-3px3/most-critical-risk.jpeg]]
+![[thoughts/university/twenty-three-twenty-four/eng-3px3/most-critical-risk.webp]]
 
 > [!important] expected impact
 > the chance it happens multiplied by the impact it will have if it happens.
@@ -175,7 +175,7 @@ Dealing with 12 months per year: saying outcomes over a year should be **normall
 WBS (work breakdown structure): hierarchical decomposition of the total scope of work
 
 CPM (critical path method): determine the longest path through the network, the critical path, and the shortest time to complete the project
-![[thoughts/university/twenty-three-twenty-four/eng-3px3/cpm.jpeg|cpm.jpeg]]
+![[thoughts/university/twenty-three-twenty-four/eng-3px3/cpm.webp|cpm.webp]]
 
 crashing a project means using additional resources to shorten a specific task
 

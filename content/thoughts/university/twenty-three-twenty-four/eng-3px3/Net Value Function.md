@@ -43,4 +43,4 @@ Unit matching and conversion
 > [!notes] marginal value, quantity-dependent value
 > _marginal net value_ of buying an apple is the change in NV from buying one more apple (slope of NVF wrt number of apple bought) either subsequent items gives more NV or lower costs. ^marginal-value
 
-![[thoughts/university/twenty-three-twenty-four/eng-3px3/marginal-apple-q.jpeg]]
+![[thoughts/university/twenty-three-twenty-four/eng-3px3/marginal-apple-q.webp]]

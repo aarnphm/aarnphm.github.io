@@ -47,7 +47,7 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/svm.ipynb|ju
 
 The following includes graph for both accuracy and loss on train/test sets after 100 epochs
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t1-partb.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t1-partb.webp]]
 
 Last epoch results for both train and test sets:
 
@@ -108,7 +108,7 @@ Epoch 100 - Train loss: 0.0422, Train accuracy: 99.33%
 -------------------------------------------------------------
 ```
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t1-partc-wd-point1.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t1-partc-wd-point1.webp]]
 
 ```text
 Training with weight decay = 1
@@ -130,7 +130,7 @@ Epoch 100 - Train loss: 0.2366, Train accuracy: 90.67%
 -------------------------------------------------------------
 ```
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t1-partc-wd-1.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t1-partc-wd-1.webp]]
 
 ```text
 Training with weight decay = 10
@@ -152,7 +152,7 @@ Epoch 100 - Train loss: 0.7415, Train accuracy: 24.00%
 -------------------------------------------------------------
 ```
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t1-partc-wd-10.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t1-partc-wd-10.webp]]
 
 ```text
 final results comparison:
@@ -207,7 +207,7 @@ _context_:
 
 The following is the graph entails both accuracy and loss on train/test dataset:
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t2-partb.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t2-partb.webp]]
 
 ```text
 -------------------------------------------------------------
@@ -260,7 +260,7 @@ class ModifiedModel(nn.Module):
 
 With training/test accuracy and loss graph:
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t3-parta.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t3-parta.webp]]
 Final epoch result:
 
 ```text
@@ -290,7 +290,7 @@ class ModifiedLogisticModel(nn.Module):
 
 With training/test accuracy and loss graph:
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t3-partb-lr.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t3-partb-lr.webp]]
 Final epoch result:
 
 ```text
@@ -383,4 +383,4 @@ Epoch 100 - Train loss: 0.015159, Train accuracy: 99.33%
 
 With graphs:
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t4-highest.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/t4-highest.webp]]

@@ -9,7 +9,7 @@ title: Time response
 
 ## first order.
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/time constant.jpeg]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/time constant.webp]]
 
 ## second order.
 
@@ -17,7 +17,7 @@ $$
 G(s) = \frac{b}{s^2 + as + b}
 $$
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/second-order-system.jpeg]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/second-order-system.webp]]
 
 $$
 C(s) = \frac{9}{s(s^2+9s+9)}

@@ -41,7 +41,7 @@ Scope: `logit_processor`, sampling controller interface
 
 ## background
 
-![[thoughts/images/vllm/pre-optimized-logit-processor-handling.jpeg|flow]]
+![[thoughts/images/vllm/pre-optimized-logit-processor-handling.webp|flow]]
 
 _reference: [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)_
 
@@ -71,12 +71,12 @@ The following includes background information about guided generations.
 
 ### compressed FSM for jump-ahead tokens.
 
-implemented in [@zheng2024sglangefficientexecutionstructured]
+Implemented in [@zheng2024sglangefficientexecutionstructured]
 
 #### Method 1: [[thoughts/constrained decoding#Guided generations with FSM.|FSM]]-based decoding
 
 - intuition: Using FSM [@willard2023efficientguidedgenerationlarge] to guide generations by increasing logit bias for tokens that conform to given JSON schema. This allows us to track the current state during decoding and filter out invalid tokens by applying logit bias to the output.
-  ![[thoughts/images/vllm/constrained-json-fsm.jpeg]]
+  ![[thoughts/images/vllm/constrained-json-fsm.webp]]
 
 - limitation: we can see that given construction of FSM requires token-level access, it can only transition the state by only _one_ token at a time, resulting in slow decoding.
 
@@ -94,7 +94,7 @@ implemented in [@zheng2024sglangefficientexecutionstructured]
 
 #### **==Method 3: Jump-Forward Decoding with compressed FSM==**
 
-![[thoughts/images/vllm/jump-forward-decoding-fsm.ignore.png]]
+![[thoughts/images/vllm/jump-forward-decoding-fsm.webp]]
 
 > [!important] tokenization boundary handling
 >
@@ -115,10 +115,10 @@ Fix:
 
 intuition: Instead of expanding to $n$ state, we can compress certain chunks into one state to reduce the size of said FSM.
 
-![[thoughts/images/vllm/part-of-json-fsm.jpeg]]
+![[thoughts/images/vllm/part-of-json-fsm.webp]]
 _figure 1: initial FSM state_
 
-![[thoughts/images/vllm/compressed-fsm-json.jpeg]]
+![[thoughts/images/vllm/compressed-fsm-json.webp]]
 _figure 2: compressed FSM state_
 
 A way to adapt character regex to work with tokens in `outlines`:
@@ -240,7 +240,7 @@ That's at least a 5x speedup over structured generations, given that out of the 
 >
 > All these paths lead to the same string and the same speedup, however they lead to potentially very different states for the LLM when it reaches state 6. That is, the strings are the same, but each path leads to a different conditional probability distribution in stage 6.
 >
-> ![[thoughts/images/vllm/json-difference-in-sampling-distribution.jpeg]]
+> ![[thoughts/images/vllm/json-difference-in-sampling-distribution.webp]]
 
 ### Guided generations with FSM.
 
@@ -319,7 +319,7 @@ $$
 > We define a _finite-state machine_, given by $(Q, \Sigma , \delta, q_0, F)$ [^automaton-definition]
 > where character comprising the strings in $\mathcal{V}$ are drawn from $\Sigma$, i.e: $\mathcal{V} \in \mathcal{P}(\Sigma)$
 >
-> ![[thoughts/images/vllm/fsm-iterative-generations.jpeg]]
+> ![[thoughts/images/vllm/fsm-iterative-generations.webp]]
 
 [^automaton-definition]:
     [[thoughts/university/twenty-three-twenty-four/sfwr-2fa3/DFA|finite state machine]]

@@ -16,7 +16,7 @@ See also: [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab3/prelab.p
 
 > [!question] 1.a
 > Square wave
-> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/Square wave signal.jpeg]]
+> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/Square wave signal.webp]]
 
 The square wave function is defined as:
 
@@ -40,7 +40,7 @@ RMS = sp.sqrt(1/T * sp.integrate(1, (t, 0, T/2)))
 
 > [!question] 1.b
 > Sawtooth wave
-> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/Saw tooth signal.jpeg]]
+> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/Saw tooth signal.webp]]
 
 A sawtooth wave function is defined as:
 
@@ -64,7 +64,7 @@ RMS = sp.sqrt(1/T * sp.integrate(f_t**2, (t, 0, T)))
 
 > [!question] 1.c
 > sine wave
-> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/sine wave signals.jpeg]]
+> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/sine wave signals.webp]]
 
 A general form of the sine wave can be written as
 
@@ -85,16 +85,16 @@ Find the cutoff frequency of the following low-pass filters.
 Cutoff frequency of low-pass filters, the frequency at which the amplitude falls to $\frac{1}{\sqrt{2}} \approx 0.707$
 
 > [!question] 2.a
-> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/bode-plot-2a.jpeg]]
+> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/bode-plot-2a.webp]]
 
 > 0.05Hz
 
 > [!question] 2.b
-> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/bode-plot-2.jpeg]]
+> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/bode-plot-2.webp]]
 
 > approx. 1.1e05 Hz
 
 > [!question] 2.c
-> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/bode-plot-3.jpeg]]
+> ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/bode-plot-3.webp]]
 
 > approx 1.1Hz

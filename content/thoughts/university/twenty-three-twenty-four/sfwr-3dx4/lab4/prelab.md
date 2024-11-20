@@ -101,7 +101,7 @@ breakaway, angle of departure/arrival: not applicable since no complex zeros
 
 locus is symmetrical about the real axis
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2a.jpeg]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2a.webp]]
 
 > [!question] 2.b
 >
@@ -120,7 +120,7 @@ centroid: $\omega = \frac{-2-5-12-4-7}{3-2} = -30$
 root locus on real axis: on the axis from 7 to 4, and from -2 to -5, and from -12 to $-\infty$.
 
 breakways/break-in points: solve for $s=\frac{dK}{ds}=0$, There are around two breakaways point, at $s=5.18, -3.13$
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2b.jpeg]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2b.webp]]
 
 > [!question] 2.c
 >
@@ -140,4 +140,4 @@ root locus on real axis: on the axis from -3 to -3, and from -7 to -8, and from 
 
 breakaways/break-in points: at $s=3$, which solves for $\frac{dK}{ds}=0$
 
-![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2c.jpeg]]
+![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/lab4/p2c.webp]]

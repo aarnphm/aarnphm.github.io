@@ -79,7 +79,7 @@ Correct this failure with policies:
 ### health costs.
 
 - difficult to answer this, but most common pollutants: $PM_{2.5}$ (fine particulate matter) and $NO$ (Nitrogen oxides)
-  ![[thoughts/university/twenty-three-twenty-four/eng-3px3/table-health-costs.jpeg]]
+  ![[thoughts/university/twenty-three-twenty-four/eng-3px3/table-health-costs.webp]]
 
 ### ethical consideration
 

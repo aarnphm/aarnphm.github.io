@@ -40,4 +40,4 @@ The form?
 
 See also: [[thoughts/university/twenty-three-twenty-four/philo-1aa3/tut/Symposium#Symposium pp. 105-106|Symposium]] Ladders' of beauty
 
-![[thoughts/university/twenty-three-twenty-four/philo-1aa3/tut/IMG_0308.jpg]]
+![[thoughts/university/twenty-three-twenty-four/philo-1aa3/tut/IMG_0308.webp]]

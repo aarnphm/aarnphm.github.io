@@ -11,7 +11,7 @@ title: I saw a disstrack dropped at a hackathon.
 
 _And on perplexity of hackathon. See this on [substack](https://open.substack.com/pub/livingalone/p/i-saw-a-disstrack-dropped-at-a-hackathon?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true)_
 
-![[posts/images/cohere.jpeg]]
+![[posts/images/cohere.webp]]
 _Cohere Toronto Office_
 
 ## feels and results.
@@ -20,7 +20,7 @@ The train station loomed, a grey monolith against the ever-darkening sky. It was
 
 Exhaustion clung to me like a second skin after 48 hours of sleep deprivation and intense focus on hacking on a project. Our team had already finished the demo, yet something gnawed at the corner of my mind. A vague unease, shapeless as the fog, settled over me. I couldn't shake the feeling of [[thoughts/displacement|displacement]] that slipped through my fingers, leaving the aftertaste of a half-remembered dream.
 
-![[posts/images/new-feeling.jpeg]]
+![[posts/images/new-feeling.webp]]
 I have done a fair shares of [hackathons](https://jzhao.xyz/posts/hackathons) in the past, yet New Build stood apart from most hackathons I have attended. New Build is **the** definition of "unc cracked tpot club" that build projects during the weekend. It was the distilled essence of Toronto's raw talents that represents the ever-fast-growing tech scene in Canada. New Build was a multidisciplinary hackathon that combines intensive project development with team formation inspired by NBA Draft[^1]. One major feature that differentiated New from other hackathons is the draft mechanics. We knew who the team captains were. Lo and behold, yours truly was one of them.
 
 Given the crowd of cracked and brilliant minds participating in this event, the weight of self-imposed expectations hung heavy. I felt compelled to match their prowess, not for their sake but to prove something to myself.
@@ -32,7 +32,7 @@ Yet, on Saturday morning, as soon as the clock struck 08:30, my corporate-wired 
 
 > **We have fallen into the trap of corporatisation of hackathons**.
 
-![[posts/images/new-question.jpeg]]
+![[posts/images/new-question.webp]]
 
 This mindset got to me, and it showed during the demo. The panel said nothing. No questions, no grilling. Defeat washed over me, heavy as the silence. I felt small, like one of those shuttered storefronts dotting the neighbourhood.
 

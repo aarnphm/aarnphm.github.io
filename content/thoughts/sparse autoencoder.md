@@ -99,11 +99,11 @@ $$
 (W_\text{mag})_{ij} \coloneqq (\exp (r_\text{mag}))_i \cdot (W_\text{gate})_{ij}
 $$
 
-![[thoughts/images/gated-sae-architecture.jpeg]]
+![[thoughts/images/gated-sae-architecture.webp]]
 
 _Figure 3: Gated SAE with weight sharing between gating and magnitude paths_
 
-![[thoughts/images/jump_relu.jpeg]]
+![[thoughts/images/jump_relu.webp]]
 
 _Figure 4: A gated encoder become a single layer linear encoder with Jump ReLU_ [@erichson2019jumpreluretrofitdefensestrategy] _activation function_ $\sigma_\theta$
 

@@ -11,7 +11,7 @@ socialDescription: on making friendship.
 title: goose friends.
 ---
 
-![[posts/images/goose-friends-frank-brangwyn.jpg]]
+![[posts/images/goose-friends-frank-brangwyn.webp]]
 _The Swans, oil on canvas - Frank Brangwyn, 1921_
 
 ```poetry

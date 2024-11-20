@@ -86,7 +86,7 @@ b. cartesian products
 >
 > ==weak== identity we need one (or more) many-to-one (==supporting==) relationship(s) to other (supporting) entity sets
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/weak-entity.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/weak-entity.webp]]
 
 Role
 
@@ -432,16 +432,16 @@ Outer join preserves dangling tuples by padding with `NULL`
 
 > A tuple of $R$ that has no tuple of $S$ which it joins is said to be `dangling`
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/left-outer-join.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/left-outer-join.webp]]
 _Left outer join_
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/right-outer-join.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/right-outer-join.webp]]
 _Right outer join_
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/full-outer-join.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/full-outer-join.webp]]
 _full outer join_
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/inner-join.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/inner-join.webp]]
 _inner join_
 
 ```sql
@@ -460,7 +460,7 @@ R NATURAL FULL OUTERJOIN S
 
 - many views (how users see data), single _logical schema (logical structure)_ and _physical schema (files and indexes used)_
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/view-abstraction.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/view-abstraction.webp]]
 
 ==virtual== views _does not stored in database_ (think of query for constructing relations)
 
@@ -488,7 +488,7 @@ DS: B+ Tree Index or Hash-based Index
 
 note: each node are at least 50% full
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/b-plus-tree.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/b-plus-tree.webp]]
 
 > [!important] cost
 >

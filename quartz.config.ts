@@ -94,10 +94,10 @@ const config: QuartzConfig = {
         markdownLinkResolution: "absolute",
         externalLinkIcon: false,
         lazyLoad: true,
-        compressedImage: true,
         enableArxivEmbed: true,
         enableRawEmbed: true,
       }),
+      Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.Description(),
       Plugin.Latex({
         renderEngine: "katex",
@@ -107,7 +107,6 @@ const config: QuartzConfig = {
         },
         katexOptions: { strict: false },
       }),
-      Plugin.TableOfContents({ maxDepth: 4 }),
       Plugin.GitHub(),
     ],
     filters: [Plugin.RemoveDrafts()],
@@ -147,7 +146,6 @@ const config: QuartzConfig = {
       Plugin.Assets(),
       Plugin.Static(),
       Plugin.NotFoundPage(),
-      Plugin.Image({ extensions: [".jpg", ".jpeg", ".png"] }),
     ],
   },
 }

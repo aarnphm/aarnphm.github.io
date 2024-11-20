@@ -7,7 +7,7 @@ modified: "2024-10-19"
 title: embeddings spec
 ---
 
-![[private/wafer/embedding-contract.jpeg]]
+![[private/wafer/embedding-contract.webp]]
 
 ## contract
 

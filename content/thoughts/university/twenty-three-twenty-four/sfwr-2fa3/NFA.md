@@ -30,31 +30,57 @@ $$
 
 ```mermaid
 stateDiagram-v2
-  direction LR
-  [*] --> 0
-  0 --> 1 : a
-  1 --> 2 : b
-  2 --> 2 : a, b
-  2 --> 3 : b
-  3 --> 4 : a
-  4 --> [*]
+    direction LR
+    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
+    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
+
+    s0: q0
+    s1: q1
+    s2: q2
+    s3: q3
+    s4: q4
+    s5: q5
+
+    [*] --> s0
+    s0 --> s1: a
+    s1 --> s2: b
+    s2 --> s2: Σ
+    s2 --> s3: b
+    s3 --> s4: a
+    s4 --> [*]
+
+    class s4 accepting
+    class s0 start
 ```
 
 2. $\mathcal{L}(M) = \{ yx \mid x = 00 \lor x =11 \land  y \in \Sigma^{*}\}$
 
 ```mermaid
 stateDiagram-v2
-  direction LR
-  [*] --> 1
-  1 --> 1 : 0,1
-  1 --> 2 : 0
-  2 --> 3 : 0
-  3 --> [*]
-  1 --> 4 : 1
-  4 --> 3 : 1
+    direction LR
+    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
+    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
+
+    s0: q0
+    s1: q1
+    s2: q2
+    s3: q3
+    s4: q4
+
+    [*] --> s0
+    s0 --> s0: 0,1
+    s0 --> s1: 0
+    s0 --> s3: 1
+    s1 --> s2: 0
+    s3 --> s4: 1
+    s2 --> [*]
+    s4 --> [*]
+
+    class s2,s4 accepting
+    class s0 start
 ```
 
-## $\epsilon$ transition
+## epsilon transition
 
 ```mermaid
 stateDiagram-v2
@@ -67,10 +93,6 @@ stateDiagram-v2
   s1 --> s1: 0
   s3 --> s3: 1
 ```
-
-![[thoughts/university/twenty-three-twenty-four/sfwr-2fa3/eps-nfa.jpeg]]
-
----
 
 Given the following $M$
 
@@ -87,3 +109,4 @@ stateDiagram-v2
 ```
 
 $\mathcal{L}(M) = \{0^n1^m \mid n \geq 0, m \neq 1 \space, x \in \Sigma^{*}\}$
+

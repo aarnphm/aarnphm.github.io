@@ -30,8 +30,11 @@ Control objects:
 ## Block diagram representation of a system
 
 ```mermaid
-graph LR
-    * -- "r(t)" --> System{{System}} -- "c(t)" --> End{{end}}
+stateDiagram-v2
+  direction LR
+
+  [*] --> System: r(t)
+  System --> End: c(t)
 ```
 
 _System as linear differential equation_

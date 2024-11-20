@@ -39,7 +39,7 @@ $$
 
 ## find the transfer function
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab9/first-graph.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab9/first-graph.webp]]
 
 $$
 \begin{align*}
@@ -57,7 +57,7 @@ _note: reach it at around 5.029 sec_
 
 see [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab9/lab9part2.slx|simulink file]]
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab9/graph-p2.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab9/graph-p2.webp]]
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab9/pid-setup.jpeg]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/lab9/pid-setup.webp]]
 _proportional_ $P = 350 * \frac{\pi}{180}$

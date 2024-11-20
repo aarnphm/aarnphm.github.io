@@ -16,4 +16,4 @@ transclude:
 
     p/s: Actually, I think first implemented in [huggingface/tgi](https://github.com/huggingface/text-generation-inference)
 
-![[thoughts/images/vllm/continuous-batching.jpeg]]
+![[thoughts/images/vllm/continuous-batching.webp]]
