@@ -12,7 +12,15 @@
     width: 1px;
     border-left: 1px dashed var(--gray);
     transform: translateX(-50%);
-    opacity: 1;
+    opacity: 0;
+    mask: linear-gradient(
+      to bottom,
+      black var(--mask-percent, 0%),
+      transparent var(--mask-percent, 0%)
+    );
+    animation: reveal-sidenote-line var(--animation-duration) cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    // sync with the first column of the first row in #quartz-body
+    animation-delay: #{$col-delay + $row-delay}s;
   }
 
   & > ol {
@@ -71,5 +79,19 @@
       box-sizing: border-box;
       padding: 0.2rem 1rem;
     }
+  }
+}
+
+@keyframes reveal-sidenote-line {
+  0% {
+    --mask-percent: 0%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    --mask-percent: 100%;
+    opacity: 1;
   }
 }

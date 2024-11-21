@@ -114,10 +114,6 @@ const config: QuartzConfig = {
     emitters: [
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
-      Plugin.CuriusPage(),
-      Plugin.MenuPage(),
-      Plugin.NotebookViewer(),
-      // Plugin.InfinitePoemPage(),
       Plugin.ContentPage(),
       Plugin.LLM(),
       Plugin.FolderPage({
@@ -142,6 +138,10 @@ const config: QuartzConfig = {
         }),
       }),
       Plugin.TagPage(),
+      Plugin.CuriusPage(),
+      Plugin.MenuPage(),
+      Plugin.NotebookViewer(),
+      // Plugin.InfinitePoemPage(),
       Plugin.ContentIndex({ rssLimit: 40 }),
       Plugin.Assets(),
       Plugin.Static(),

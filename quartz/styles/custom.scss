@@ -6,6 +6,7 @@
 @use "./pages/quotes.scss";
 @use "./pages/poetry.scss";
 @use "./pages/curius.scss";
+@use "./pages/landing.scss";
 
 @include font-face(
   "Berkeley Mono",
@@ -337,49 +338,6 @@ a {
   }
 }
 
-hr {
-  overflow: visible;
-  padding: 0;
-  margin: 2em auto;
-  border: none;
-  position: relative;
-  display: flex;
-  height: inherit;
-  background-color: inherit;
-
-  &:before {
-    content: "";
-    position: absolute;
-    width: calc(100% - 4rem);
-    top: 50%;
-    left: 2rem;
-    background-color: var(--light);
-    box-shadow:
-      0 1px 0 0 var(--hr-highlighted-border-color) inset,
-      0 -1px 0 0 var(--hr-highlighted-border-color) inset;
-    height: 3px;
-  }
-
-  &:after {
-    content: "";
-    border: 1px solid var(--hr-highlighted-border-color);
-    width: 2em;
-    height: 2em;
-    background-image: none;
-    z-index: 1;
-    margin: auto;
-    box-sizing: border-box;
-    background-color: var(--light);
-    box-shadow:
-      0 0 0 1px var(--light) inset,
-      0 0 0 2px var(--hr-highlighted-border-color) inset,
-      0 0 0 calc(0.5em - 1px) var(--light) inset,
-      0 0 0 0.5em var(--hr-highlighted-border-color) inset,
-      0 0 0 calc(0.5em + 1px) var(--light) inset,
-      0 0 0 calc(0.5em + 2px) var(--hr-highlighted-border-color) inset;
-  }
-}
-
 audio::-webkit-media-controls-panel {
   background-color: var(--lightgray);
 }
@@ -496,6 +454,74 @@ section[data-footnotes] {
 
 // ----- id customization -----
 
+#quartz-root {
+  isolation: isolate;
+}
+
+// fade-in elements
+#quartz-body {
+  & {
+    --animation-name: fade;
+    --animation-duration: #{$base-duration}s;
+    --max-animation-duration: #{$base-duration + $max-delay}s;
+  }
+
+  @for $i from 1 through $rows {
+    @for $j from 1 through $cols {
+      & > *:nth-child(#{$i}) > *:nth-child(#{$j}) {
+        &:not(.reader) {
+          animation: var(--animation-name) var(--animation-duration) ease 1 normal backwards;
+          animation-delay: #{$col-delay * $j + $row-delay * $i}s;
+        }
+      }
+    }
+  }
+
+  body[data-slug="index"] & {
+    & .center {
+      --index-border-width: 1px;
+      position: relative;
+      border: none;
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        border: var(--index-border-width) solid var(--darkgray);
+        pointer-events: none;
+        z-index: -1;
+        animation: reveal-border var(--max-animation-duration) cubic-bezier(0.65, 0, 0.35, 1)
+          forwards;
+      }
+    }
+  }
+}
+
+@keyframes reveal-border {
+  0% {
+    --mask-percent: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    --mask-percent: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 #preview-container {
   flex-grow: 1;
 }
@@ -591,8 +617,7 @@ section[data-footnotes] {
   }
 }
 .popover > .popover-inner,
-.graph > .graph-outer,
-.graph > .graph-outer > #global-graph-container {
+.graph > #global-graph-container {
   border-radius: unset;
   border-color: var(--gray);
 }
@@ -661,15 +686,9 @@ section[data-footnotes] {
     }
 
     & .graph {
-      display: none;
       grid-area: 4 / 1 / 4 / 2;
 
-      &.active {
-        display: block;
-      }
-
       @media all and not ($desktop) {
-        display: block;
         grid-area: 2 / 1 / 2 / 1;
         max-width: $sidePanelWidth;
       }

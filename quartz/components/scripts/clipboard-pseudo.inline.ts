@@ -1,8 +1,7 @@
 document.addEventListener("nav", () => {
-  const hasPseudo = document.getElementsByClassName("has-pseudocode")
-  if (hasPseudo.length == 0) return
-
   const els = document.getElementsByClassName("ps-root") as HTMLCollectionOf<HTMLElement>
+  if (els.length == 0) return
+
   for (let i = 0; i < els.length; i++) {
     const psBlock = els[i]
     const button = psBlock.getElementsByClassName("ps-clipboard")[0] as HTMLButtonElement

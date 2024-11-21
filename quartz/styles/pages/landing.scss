@@ -1,5 +1,5 @@
-@use "../../styles/base.scss";
-@use "../../styles/variables.scss" as *;
+@use "../base.scss";
+@use "../variables.scss" as *;
 
 body[data-slug="index"] {
   cursor: crosshair;
@@ -7,14 +7,11 @@ body[data-slug="index"] {
   background-image: url("/static/bg.webp");
 
   & .page > #quartz-body {
-    display: flex;
-
     & .center {
       width: #{$pageWidth};
       max-width: unset !important;
       min-width: unset !important;
       margin-top: 2rem !important;
-      border: 1px solid var(--darkgray);
 
       & > *:not(hr) {
         padding: 0 1rem;

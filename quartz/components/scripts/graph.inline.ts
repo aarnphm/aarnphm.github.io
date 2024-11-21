@@ -548,20 +548,6 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const slug = e.detail.url
   addToVisited(simplifySlug(slug))
-  await renderGraph("graph-container", slug)
-
-  // Function to re-render the graph when the theme changes
-  const handleThemeChange = () => {
-    renderGraph("graph-container", slug)
-  }
-
-  // event listener for theme change
-  document.addEventListener("themechange", handleThemeChange)
-
-  // cleanup for the event listener
-  window.addCleanup(() => {
-    document.removeEventListener("themechange", handleThemeChange)
-  })
 
   const container = document.getElementById("global-graph-outer")
   const sidebar = container?.closest(".sidebar") as HTMLElement
@@ -588,16 +574,22 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   }
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if (e.key === "g" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+    if ((e.key === ";" || e.key === "g") && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       e.preventDefault()
       const globalGraphOpen = container?.classList.contains("active")
       globalGraphOpen ? hideGlobalGraph() : renderGlobalGraph()
     }
   }
 
-  const containerIcon = document.getElementById("global-graph-icon")
-  containerIcon?.addEventListener("click", renderGlobalGraph)
-  window.addCleanup(() => containerIcon?.removeEventListener("click", renderGlobalGraph))
+  const onClick = (ev: MouseEvent) => {
+    ev.preventDefault()
+    const globalGraphOpen = container?.classList.contains("active")
+    globalGraphOpen ? hideGlobalGraph() : renderGlobalGraph()
+  }
+
+  const containerIcon = document.getElementById("graph-button")
+  containerIcon?.addEventListener("click", onClick)
+  window.addCleanup(() => containerIcon?.removeEventListener("click", onClick))
 
   document.addEventListener("keydown", shortcutHandler)
   window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))

@@ -227,3 +227,18 @@ influence: cinematech, sf => phonetic energy in the film.
   - machine consciousness, why context for why we write?
   - highlight knowledges difference and representations in these models
   - immediate influence in our life, to determine vibes (context, uniqueness)
+
+---
+
+## nov 20
+
+### Carly
+
+poem 1:
+
+- House of Dust reconstruction from [Nick Montfort](https://nickm.com/memslam/the_house_of_dust.html)
+- Self-Portrait _after Yuji Agematsu_
+
+poem 2:
+
+- Langston Hughes, after the election

@@ -60,10 +60,12 @@ export default (() => {
         <li>
           <a
             href={resolveRelative(fileData.slug!, (fileData.slug! + ".html.md") as FullSlug)}
+            target="_blank"
+            rel="noopener noreferrer"
             class="llm-source"
             style={["color: inherit", "font-weight: inherit"].join(";")}
           >
-            <span title="voir https://github.com/AnswerDotAI/llms-txt">llm.txt</span>
+            <span title="voir https://github.com/AnswerDotAI/llms-txt">llms.txt</span>
           </a>
         </li>
       </ul>

@@ -5,12 +5,6 @@
   flex-direction: column;
 }
 
-@media all and not ($mobile) {
-  .toc {
-    display: flex;
-  }
-}
-
 button#toc {
   background-color: transparent;
   border: none;
@@ -57,24 +51,56 @@ button#toc {
   > ul.overflow {
     max-height: none;
     width: 100%;
+    position: relative;
   }
 
   @for $i from 0 through 6 {
-    & .depth-#{$i} {
-      padding-left: calc(1rem * #{$i});
+    .depth-#{$i} {
+      margin-left: calc(#{$i} * 1rem);
+      transition:
+        0.5s ease opacity,
+        0.3s ease color;
 
+      // Vertical line for depth > 0
       @if $i > 0 {
         position: relative;
+        --pseudo-opacity: 0.35;
+        --pseudo-bg: var(--gray);
+
+        &.in-view {
+          --pseudo-opacity: 0.75;
+        }
+
         &::before {
           content: "";
           position: absolute;
-          left: calc(1rem * #{$i - 1} + 0.4rem);
-          top: 50%;
-          transform: translateY(-50%);
+          left: -0.8rem;
+          top: 0;
+          bottom: 0;
           width: 1px;
-          height: 1rem;
-          background-color: var(--dark);
-          opacity: 0.35;
+          background-color: var(--pseudo-bg);
+          opacity: var(--pseudo-opacity);
+        }
+
+        & ~ .depth-#{$i - 1} {
+          &:first-of-type {
+            margin-top: 0.2rem;
+          }
+        }
+
+        &:last-of-type,
+        &:has(+ .depth-#{$i - 1}),
+        &:has(+ .depth-#{$i + 1}) {
+          &::after {
+            content: "";
+            position: absolute;
+            left: -0.8rem;
+            bottom: 0;
+            width: calc(#{$i+1} * 0.8rem);
+            height: 1px;
+            background-color: var(--pseudo-bg);
+            opacity: var(--pseudo-opacity);
+          }
         }
       }
     }

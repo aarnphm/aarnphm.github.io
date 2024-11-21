@@ -25,8 +25,9 @@ export const defaultContentPageLayout: PageLayout = {
   ],
   right: [
     Component.Search(),
-    Component.Keybind({ enableTooltip: false }),
+    Component.Keybind(),
     Component.DesktopOnly(Component.TableOfContents()),
+    Component.Graph(),
     Component.Backlinks(),
     Component.Reader(),
   ],

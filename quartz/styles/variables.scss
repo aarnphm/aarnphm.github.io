@@ -23,6 +23,16 @@
 }
 
 /**
+ * Animation-related
+ */
+$base-duration: 1;
+$row-delay: 0.4;
+$col-delay: 0.2;
+$rows: 4;
+$cols: 8;
+$max-delay: ($col-delay * $cols + $row-delay * $rows);
+
+/**
  * Layout breakpoints
  * $mobile: screen width below this value will use mobile styles
  * $desktop: screen width above this value will use desktop styles

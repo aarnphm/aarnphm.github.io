@@ -1,14 +1,30 @@
 import { render } from "preact-render-to-string"
-import { QuartzComponent, QuartzComponentProps } from "./types"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import HeaderConstructor from "./Header"
 import BodyConstructor from "./Body"
-import LandingConstructor from "./Landing"
+import ContentConstructor from "./pages/Content"
+import MetaConstructor from "./Meta"
+import SpacerConstructor from "./Spacer"
+import { byDateAndAlphabetical } from "./PageList"
+import { getDate, formatDate } from "./Date"
+import { classNames } from "../util/lang"
 import { JSResourceToScriptElement, StaticResources } from "../util/resources"
-import { clone, FullSlug, RelativeURL, joinSegments, normalizeHastElement } from "../util/path"
+import {
+  clone,
+  FullSlug,
+  SimpleSlug,
+  RelativeURL,
+  joinSegments,
+  normalizeHastElement,
+  resolveRelative,
+} from "../util/path"
 import { visit } from "unist-util-visit"
 import { Root, Element, ElementContent, Node } from "hast"
 import { GlobalConfiguration } from "../cfg"
 import { i18n } from "../i18n"
+import { JSX } from "preact"
+import { headingRank } from "hast-util-heading-rank"
+import { QuartzPluginData } from "../plugins/vfile"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
 import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
@@ -26,7 +42,12 @@ interface RenderComponents {
 
 export const headerRegex = new RegExp(/h[1-6]/)
 
-function headerElement(node: Element, content: Element[], idx: number): Element {
+function headerElement(
+  node: Element,
+  content: ElementContent[],
+  idx: number,
+  endHr: boolean,
+): Element {
   const buttonId = `collapsible-header-${node.properties?.id ?? idx}`
 
   const id = node.properties?.id ?? idx
@@ -84,12 +105,17 @@ function headerElement(node: Element, content: Element[], idx: number): Element 
   }
   node.children.splice(lastIdx, 0, icons)
 
+  let className = ["collapsible-header"]
+  if (endHr) {
+    className.push("end-hr")
+  }
+
   return {
     type: "element",
     tagName: "div",
     properties: {
-      className: ["collapsible-header"],
-      "data-level": node.tagName[1],
+      className,
+      "data-level": `${headingRank(node)}`,
       id,
     },
     children: [
@@ -247,41 +273,96 @@ function headerElement(node: Element, content: Element[], idx: number): Element 
   }
 }
 
-function processHeaders(node: Element, idx: number | undefined, parent: Element) {
-  idx = idx ?? parent.children.indexOf(node)
-  const currentLevel = parseInt(node.tagName[1])
-  const contentNodes: Element[] = []
-  let i = idx + 1
-
-  // Collect all content until next header of same or higher level
-  while (i < parent.children.length) {
-    const nextNode = parent.children[i] as Element
-    if (
-      (nextNode?.type === "element" && nextNode.properties.dataReferences == "") ||
-      (nextNode?.type === "element" && nextNode.properties.dataFootnotes == "") ||
-      (nextNode?.type === "element" && ["hr"].includes(nextNode.tagName))
-    ) {
-      break
+function shouldStopWrapping(node: ElementContent) {
+  if (node.type === "element") {
+    if (node.properties?.dataReferences === "" || node.properties?.dataFootnotes === "") {
+      return true
     }
+    if (node.tagName === "hr") {
+      return true
+    }
+  }
+  return false
+}
 
-    if (nextNode?.type === "element" && nextNode.tagName?.match(headerRegex)) {
-      const nextLevel = parseInt(nextNode.tagName[1])
-      if (nextLevel <= currentLevel) {
-        break
+interface StackElement {
+  level: number
+  element: Element
+  content: ElementContent[]
+}
+
+function processHeaders(nodes: ElementContent[]): ElementContent[] {
+  let result: ElementContent[] = []
+
+  let stack: StackElement[] = []
+  for (const node of nodes) {
+    if (shouldStopWrapping(node)) {
+      const endHr = (node as Element).tagName === "hr"
+      // Close any open sections
+      while (stack.length > 0) {
+        const completedSection = stack.pop()!
+        const wrappedElement = headerElement(
+          completedSection.element,
+          completedSection.content,
+          0,
+          endHr,
+        )
+        if (stack.length > 0) {
+          stack[stack.length - 1].content.push(wrappedElement)
+        } else {
+          result.push(wrappedElement)
+        }
       }
-      // Process nested header recursively
-      processHeaders(nextNode, i, parent)
+      // Add the node to the result
+      result.push(node)
+    } else if (node.type === "element" && headingRank(node)) {
+      const level = headingRank(node) as number
 
-      // After processing, the next node at index i will be the wrapper
-      contentNodes.push(parent.children[i] as Element)
-      parent.children.splice(i, 1)
+      // Pop from stack until the top has level less than current
+      while (stack.length > 0 && stack[stack.length - 1].level >= level) {
+        const completedSection = stack.pop()!
+        const wrappedElement = headerElement(
+          completedSection.element,
+          completedSection.content,
+          0,
+          false,
+        )
+        if (stack.length > 0) {
+          stack[stack.length - 1].content.push(wrappedElement)
+        } else {
+          result.push(wrappedElement)
+        }
+      }
+
+      // Start a new section
+      stack.push({ level, element: node as Element, content: [] })
     } else {
-      contentNodes.push(nextNode)
-      parent.children.splice(i, 1)
+      // Content node
+      if (stack.length > 0) {
+        stack[stack.length - 1].content.push(node)
+      } else {
+        result.push(node)
+      }
     }
   }
 
-  parent.children.splice(idx, 1, headerElement(node, contentNodes, idx))
+  // Close any remaining sections
+  while (stack.length > 0) {
+    const completedSection = stack.pop()!
+    const wrappedElement = headerElement(
+      completedSection.element,
+      completedSection.content,
+      0,
+      false,
+    )
+    if (stack.length > 0) {
+      stack[stack.length - 1].content.push(wrappedElement)
+    } else {
+      result.push(wrappedElement)
+    }
+  }
+
+  return result
 }
 
 function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
@@ -625,20 +706,209 @@ export function transcludeFinal(
       }
     }
   })
+
+  // NOTE: handling collapsible nodes
   if (dynalist && !slug.includes("posts")) {
-    // NOTE: handling collapsible nodes
-    visit(root, "element", (node: Element, idx, parent) => {
-      const denyIds = new Set(["footnote-label", "reference-label"])
-      if (node.tagName.match(headerRegex) && !denyIds.has(node.properties.id as string)) {
-        // then do the process headers and its children here
-        processHeaders(node, idx, parent as Element)
-      }
-    })
+    root.children = processHeaders(root.children as ElementContent[])
   }
+
   // NOTE: We then merge all references and footnotes to final items
   mergeIsomorphic(root)
   return root
 }
+
+export const HyperAlias = {
+  livres: "/books",
+  "boîte aux lettres": "/posts/",
+  projets: "/thoughts/work",
+  advices: "/quotes",
+  parfum: "/thoughts/Scents",
+  "atelier with friends": "/thoughts/atelier-with-friends",
+}
+
+export const SocialAlias = {
+  github: "https://github.com/aarnphm",
+  twitter: "https://x.com/aarnphm_",
+  substack: "https://livingalonealone.com",
+  curius: "/curius",
+  contact: "mailto:contact@aarnphm.xyz",
+  "site source": "https://github.com/aarnphm/sites",
+  "llms.txt": "/llms.txt",
+  "llms-full.txt": "/llms-full.txt",
+}
+
+type AliasLinkProp = {
+  name?: string
+  url?: string
+  isInternal?: boolean
+  newTab?: boolean | ((name: string) => boolean)
+  enablePopover?: boolean
+}
+
+const AliasLink = (props: AliasLinkProp) => {
+  const opts = { isInternal: false, newTab: false, enablePopover: true, ...props }
+  const className = ["landing-links"]
+  if (opts.isInternal && opts.enablePopover) className.push("internal")
+  return (
+    <a
+      href={opts.url}
+      target={opts.newTab ? "_blank" : "_self"}
+      rel="noopener noreferrer"
+      className={className.join(" ")}
+    >
+      {opts.name}
+    </a>
+  )
+}
+
+const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?: string }) => {
+  const Spacer = SpacerConstructor()
+
+  const Notes: QuartzComponent = (componentData: QuartzComponentProps) => {
+    const { allFiles, fileData, cfg } = componentData
+    const pages = allFiles
+      .filter((f: QuartzPluginData) => {
+        if (f.slug!.startsWith(opts!.slug)) {
+          return (
+            !["university", "tags", "index", ...cfg.ignorePatterns].some((it) =>
+              (f.slug as FullSlug).includes(it),
+            ) && !f.frontmatter?.noindex
+          )
+        }
+        return false
+      })
+      .sort((a: QuartzPluginData, b: QuartzPluginData): number => {
+        const afm = a.frontmatter!
+        const bfm = b.frontmatter!
+        if (afm.priority && bfm.priority) {
+          return afm.priority - bfm.priority
+        } else if (afm.priority && !bfm.priority) {
+          return -1
+        } else if (!afm.priority && bfm.priority) {
+          return 1
+        }
+        return byDateAndAlphabetical(cfg)(a, b)
+      })
+
+    const remaining = Math.max(0, pages.length - opts!.numLimits!)
+    const classes = ["min-links", "internal"].join(" ")
+    return (
+      <div id="note-item">
+        <h2>{opts!.header}.</h2>
+        <div class="notes-container">
+          <div class="recent-links">
+            <ul class="landing-notes">
+              {pages.slice(0, opts!.numLimits).map((page) => {
+                const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
+
+                return (
+                  <li>
+                    <a href={resolveRelative(fileData.slug!, page.slug!)} class={classes}>
+                      <div class="landing-meta">
+                        <span class="landing-mspan">
+                          {formatDate(getDate(cfg, page)!, cfg.locale)}
+                        </span>
+                        <span class="landing-mtitle">{title}</span>
+                      </div>
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
+            {remaining > 0 && (
+              <p>
+                <em>
+                  <a href={resolveRelative(fileData.slug!, opts!.slug)} class={classes}>
+                    {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
+                      remaining,
+                    })}
+                  </a>
+                </em>
+              </p>
+            )}
+          </div>
+          <Spacer {...componentData} />
+        </div>
+      </div>
+    )
+  }
+  return Notes
+}) satisfies QuartzComponentConstructor
+
+const ClickableContainer = (props: {
+  title: string
+  links: Record<string, string>
+  cfg: AliasLinkProp
+}) => {
+  const { title, links, cfg } = props
+  let newTab: boolean | undefined
+
+  return (
+    <>
+      <h2>{title}:</h2>
+      <div class="clickable-container">
+        {Object.entries(links).map(([name, url]) => {
+          if (typeof cfg.newTab === "function") {
+            newTab = cfg.newTab(name)
+          } else {
+            newTab = cfg.newTab
+          }
+          return <AliasLink key={name} {...cfg} name={name} url={url} newTab={newTab} />
+        })}
+      </div>
+    </>
+  )
+}
+
+const HyperlinksComponent = ((props?: { children: JSX.Element[] }) => {
+  const { children } = props ?? { children: [] }
+
+  const Hyperlink: QuartzComponent = () => <div class="hyperlinks">{children}</div>
+  return Hyperlink
+}) satisfies QuartzComponentConstructor
+
+const ElementComponent = (() => {
+  const Content = ContentConstructor()
+  const RecentNotes = NotesComponent({
+    header: "récentes",
+    slug: "thoughts/" as SimpleSlug,
+    numLimits: 12,
+  })
+  const RecentPosts = NotesComponent({
+    header: "écriture",
+    slug: "posts/" as SimpleSlug,
+    numLimits: 6,
+  })
+  const Hyperlink = HyperlinksComponent({
+    children: [
+      ClickableContainer({
+        title: "jardin",
+        links: HyperAlias,
+        cfg: { isInternal: true, newTab: false },
+      }),
+      ClickableContainer({
+        title: "média",
+        links: SocialAlias,
+        cfg: { isInternal: false, newTab: (name) => name !== "curius" },
+      }),
+    ],
+  })
+
+  const Element: QuartzComponent = (componentData: QuartzComponentProps) => {
+    return (
+      <div class="content-container">
+        <Content {...componentData} />
+        <div class="notes-outer">
+          <RecentNotes {...componentData} />
+          <RecentPosts {...componentData} />
+        </div>
+        <Hyperlink {...componentData} />
+      </div>
+    )
+  }
+
+  return Element
+}) satisfies QuartzComponentConstructor
 
 export function renderPage(
   cfg: GlobalConfiguration,
@@ -653,6 +923,33 @@ export function renderPage(
   // NOTE: set componentData.tree to the edited html that has transclusions rendered
   componentData.tree = transcludeFinal(root, componentData)
 
+  if (slug === "index") {
+    components = {
+      ...components,
+      header: [
+        () => (
+          <h1 class="article-title" style="margin-top: 0" lang="fr">
+            Bonjour, je suis Aaron.
+          </h1>
+        ),
+        MetaConstructor(),
+      ],
+      left: [SpacerConstructor()],
+      right: [SpacerConstructor()],
+      afterBody: [],
+      beforeBody: [],
+      pageBody: ({ displayClass }: QuartzComponentProps) => {
+        const Element = ElementComponent()
+
+        return (
+          <div class={classNames(displayClass, "landing")}>
+            <Element {...componentData} />
+          </div>
+        )
+      },
+    }
+  }
+
   const {
     head: Head,
     header,
@@ -665,7 +962,6 @@ export function renderPage(
   } = components
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
-  const Landing = LandingConstructor()
 
   const LeftComponent =
     left.length > 0 ? (
@@ -697,37 +993,33 @@ export function renderPage(
         data-menu={componentData.fileData.frontmatter?.menu ?? false}
         data-poem={componentData.fileData.frontmatter?.poem ?? false}
       >
-        {slug === "index" ? (
-          <Landing {...componentData} />
-        ) : (
-          <div id="quartz-root" class="page">
-            <Body {...componentData}>
-              {LeftComponent}
-              <div class="center">
-                <div class="page-header">
-                  <Header {...componentData}>
-                    {header.map((HeaderComponent) => (
-                      <HeaderComponent {...componentData} />
-                    ))}
-                  </Header>
-                  <div class="popover-hint">
-                    {beforeBody.map((BodyComponent) => (
-                      <BodyComponent {...componentData} />
-                    ))}
-                  </div>
-                </div>
-                <Content {...componentData} />
-                <div class="page-footer">
-                  {afterBody.map((BodyComponent) => (
+        <main id="quartz-root" class="page">
+          <Body {...componentData}>
+            {LeftComponent}
+            <div class="center">
+              <div class="page-header">
+                <Header {...componentData}>
+                  {header.map((HeaderComponent) => (
+                    <HeaderComponent {...componentData} />
+                  ))}
+                </Header>
+                <div class="popover-hint">
+                  {beforeBody.map((BodyComponent) => (
                     <BodyComponent {...componentData} />
                   ))}
                 </div>
               </div>
-              {RightComponent}
-              <Footer {...componentData} />
-            </Body>
-          </div>
-        )}
+              <Content {...componentData} />
+              <div class="page-footer">
+                {afterBody.map((BodyComponent) => (
+                  <BodyComponent {...componentData} />
+                ))}
+              </div>
+            </div>
+            {RightComponent}
+            <Footer {...componentData} />
+          </Body>
+        </main>
       </body>
       {pageResources.js
         .filter((resource) => resource.loadTime === "afterDOMReady")

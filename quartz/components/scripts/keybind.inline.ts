@@ -1,5 +1,28 @@
 import { registerEscapeHandler, registerEvents } from "./util"
 
+type Browser = "Safari" | "Chrome" | "Firefox" | "Edge" | "Opera" | "Other"
+
+const detectBrowser = (): Browser => {
+  const userAgent = window.navigator.userAgent.toLowerCase()
+
+  if (userAgent.includes("safari") && !userAgent.includes("chrome")) {
+    return "Safari"
+  } else if (userAgent.includes("edg")) {
+    return "Edge"
+  } else if (userAgent.includes("firefox")) {
+    return "Firefox"
+  } else if (userAgent.includes("opr") || userAgent.includes("opera")) {
+    return "Opera"
+  } else if (userAgent.includes("chrome")) {
+    return "Chrome"
+  }
+  return "Other"
+}
+
+const isMacOS = (): boolean => {
+  return window.navigator.userAgent.toLowerCase().includes("mac")
+}
+
 document.addEventListener("nav", async () => {
   const modal = document.getElementById("highlight-modal")
   const container = document.getElementById("shortcut-container")
@@ -82,8 +105,35 @@ const _mapping = new Map([
   ["j", "/curius"],
 ])
 
+const aliases: Record<string, { mac: string; def: string }> = {
+  recherche: { mac: "/", def: "k" },
+  graphique: { mac: ";", def: "g" },
+}
+
 document.addEventListener("nav", () => {
   const container = document.getElementById("shortcut-container")
+  if (!container) return
+
+  const shortcuts = container.querySelectorAll(
+    'ul[id="shortcut-list"] > li > div[id="shortcuts"]',
+  ) as NodeListOf<HTMLElement>
+  for (const short of shortcuts) {
+    const binding = short.dataset.key as string
+    const span = short.dataset.value as string
+    let [prefix, key] = binding.split("--")
+    const spanAliases = aliases[span]
+    prefix = isMacOS() ? "⌘" : "⌃"
+    const browser = detectBrowser()
+    if (spanAliases) {
+      const { mac, def } = spanAliases
+      key = browser === "Safari" ? mac : def
+    }
+    short.innerHTML = `
+<kbd id="clickable-kbd">${prefix} ${key}</kbd>
+<span>${span}</span>
+`
+  }
+
   function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (_mapping.get(e.key) !== undefined && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()

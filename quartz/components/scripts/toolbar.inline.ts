@@ -1,6 +1,7 @@
 import { getFullSlug } from "../../util/path"
 import { closeReader } from "./util"
 
+// TODO: Export directly to PDF and skip this step
 async function toggleExportPdf(ev: MouseEvent) {
   try {
     window.print()

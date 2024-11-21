@@ -1,9 +1,7 @@
 import Sidenotes from "./Sidenotes"
-import Pseudocode from "./Pseudocode"
 import Image from "./Image"
 import Reader from "./Reader"
 import Toolbar from "./Toolbar"
-import Landing from "./Landing"
 import Navigation from "./Navigation"
 import MinimalFooter from "./MinimalFooter"
 import Keybind from "./Keybind"
@@ -31,12 +29,10 @@ import Breadcrumbs from "./Breadcrumbs"
 import Comments from "./Comments"
 
 export {
-  Pseudocode,
   Sidenotes,
   Toolbar,
   Image,
   Reader,
-  Landing,
   Navigation,
   MinimalFooter,
   Keybind,

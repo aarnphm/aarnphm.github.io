@@ -27,6 +27,7 @@
   }
 
   &:not(.collapsed) {
+    &.end-hr > * > .collapsible-header-content,
     &:last-of-type > * > .collapsible-header-content {
       border-bottom: 1px dashed var(--gray);
     }

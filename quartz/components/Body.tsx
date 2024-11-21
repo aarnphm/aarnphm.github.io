@@ -3,22 +3,17 @@ import clipboardScript from "./scripts/clipboard.inline"
 import clipboardStyle from "./styles/clipboard.scss"
 // @ts-ignore
 import equationScript from "./scripts/equation.inline"
+// @ts-ignore
+import pseudoScript from "./scripts/clipboard-pseudo.inline"
+import pseudoStyle from "./styles/pseudocode.scss"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
-import Pseudocode from "./Pseudocode"
 
-const Body: QuartzComponent = (props: QuartzComponentProps) => {
-  const { children } = props
-  const Pseudo = Pseudocode()
-  return (
-    <div id="quartz-body">
-      <>{children}</>
-      <Pseudo {...props} />
-    </div>
-  )
-}
+const Body: QuartzComponent = ({ children }: QuartzComponentProps) => (
+  <div id="quartz-body">{children}</div>
+)
 
 Body.beforeDOMLoaded = equationScript
-Body.afterDOMLoaded = clipboardScript
-Body.css = clipboardStyle
+Body.afterDOMLoaded = clipboardScript + pseudoScript
+Body.css = clipboardStyle + pseudoStyle
 
 export default (() => Body) satisfies QuartzComponentConstructor

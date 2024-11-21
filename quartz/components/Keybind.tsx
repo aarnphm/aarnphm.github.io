@@ -15,7 +15,7 @@ export const KeybindAlias = {
   "cmd+\\": "page d'accueil",
   "cmd+j": "curius",
   "cmd+b": "lecteur",
-  // "cmd+g": "graphique",
+  "cmd+g": "graphique",
   // "cmd+o": "mode sombre",
   // "cmd+.": "curseur de chat",
   // "cmd+l": "projets",
@@ -61,15 +61,14 @@ export default ((userOpts?: Partial<Options>) => {
         <div id="shortcut-container">
           <div id="shortcut-space">
             <div id="title">raccourcis clavier</div>
-            <ul>
+            <ul id="shortcut-list">
               {Object.entries(KeybindAlias).map(([key, value]) => (
                 <li>
-                  <div id="shortcuts">
-                    <kbd id="clickable-kbd" data-keybind={`${revert(key)}`}>
-                      {convert(key)}
-                    </kbd>
-                    <span>{value}</span>
-                  </div>
+                  <div
+                    id="shortcuts"
+                    data-key={convert(key).replace(" ", "--")}
+                    data-value={value}
+                  ></div>
                 </li>
               ))}
             </ul>
