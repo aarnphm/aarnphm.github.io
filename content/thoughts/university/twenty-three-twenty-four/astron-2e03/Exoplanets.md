@@ -3,12 +3,9 @@ id: Exoplanets
 tags:
   - astron2e03
 date: "2024-02-02"
+modified: "2024-11-20"
 title: Expolanets
 ---
-
-<!-- <div style="text-align: right"> -->
-<!--   Aaron Pham - 400232791 -->
-<!-- </div> -->
 
 ### Q1)
 
@@ -138,7 +135,7 @@ $$
 
 Therefore $\frac{L_{\text{orb}}}{L_{\text{rot}}} = \frac{5 a^2 P_{\text{rot}}}{2 R^2 P}$
 
-b. _It is a common misconception that the planets in our solar system orbit the Sun. In reality, the planets and the Sun all orbit their common center of mass. As such, the Sun has a non-zero semimajor axis $a_{\odot}$. Let us approximate the solar system as a 1-planet system that contains the Sun and Jupiter. In this scenario, what is the expression for $a_{\odot}$ in terms of Jupiter’s semimajor axis $a_J$ and both objects’ masses?_
+b. _It is a common misconception that the planets in our solar system orbit the Sun. In reality, the planets and the Sun all orbit their common center of mass. As such, the Sun has a non-zero semimajor axis $a_{\odot}$. Let us approximate the solar system as a 1-planet system that contains the Sun and Jupiter. In this scenario, what is the expression for $a_{\odot}$ in terms of Jupiter’s semimajor axis $a_J$ and both objects’ masses?\_
 
 In a two-body system, the formula to derive the distance of the Sun from the barycenter is given by:
 
@@ -164,7 +161,7 @@ $$
 a_{\odot} = \frac{5.2 \times 1.898 \times 10^{27}}{1.898 \times 10^{27} + 1.989 \times 10^{30}} \approx 0.00496 \text{AU}
 $$
 
-d. _Given your value of $a_\odot$, calculate the ratio of the Sun’s orbital angular momentum to its rotation angular momentum. Is most of the Sun’s angular momentum manifested as orbital or rotational?_
+d. _Given your value of $a_\odot$, calculate the ratio of the Sun’s orbital angular momentum to its rotation angular momentum. Is most of the Sun’s angular momentum manifested as orbital or rotational?\_
 
 Using the formula derived in part a, we have
 
@@ -184,7 +181,7 @@ $$
 
 This indicates that most of Jupiter's angular momentum is manifested as orbital.
 
-f. _In parts d) and e) above, you should have found that the total angular momenta of both the Sun and Jupiter are heavily dominated by either their own $Li_{\text{orb}}$ or $L_{\text{rot}}$. Using the dominant forms of angular momenta for each body, calculate the ratio $\frac{L_J}{L_\odot}$_
+f. _In parts d) and e) above, you should have found that the total angular momenta of both the Sun and Jupiter are heavily dominated by either their own $Li_{\text{orb}}$ or $L_{\text{rot}}$. Using the dominant forms of angular momenta for each body, calculate the ratio $\frac{L_J}{L_\odot}$\_
 
 For Jupyter's orbital angular momentum $L_{\text{orb}, J}$, we have $L_{\text{orb}, J} = M_J \sqrt{G M_{\odot} a_J}$, and for the Sun's rotational angular momentum $L_{\text{rot}, \odot} = I_{\odot} \omega_{\odot}$, we have $L_{\text{rot}, \odot} = \frac{2}{5} M_{\odot} R_{\odot}^2 \omega_{\odot} = \frac{2}{5} M_{\odot} R_{\odot}^2 \frac{2 \pi}{P_{\text{rot,} \odot}}$
 

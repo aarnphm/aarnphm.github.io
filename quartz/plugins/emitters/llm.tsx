@@ -449,7 +449,6 @@ export const LLM: QuartzEmitterPlugin = () => {
                 },
                 image(node, parent, context, info) {
                   if (isRelativeURL(node.url)) {
-                    console.log(node, resolveRelative(slug, node.url))
                     node.url = `https://${baseUrl}/${slug}/${resolveRelative(slug, node.url)}`
                   }
                   return mdastToTextHandlers.image(node, parent, context, info)
