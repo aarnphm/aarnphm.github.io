@@ -88,6 +88,10 @@ $$
 
 ![[thoughts/sparse autoencoder]]
 
+## sparse crosscoders
+
+![[thoughts/sparse crosscoders]]
+
 ## superposition hypothesis
 
 > [!abstract]+ tl/dr

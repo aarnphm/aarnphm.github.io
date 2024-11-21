@@ -7,7 +7,6 @@ tags:
   - fruit
 date: "2024-10-02"
 modified: "2024-10-02"
-noindex: true
 permalinks:
   - /chatgpt
 socialDescription: And its implication on how we assess learning. an overview.

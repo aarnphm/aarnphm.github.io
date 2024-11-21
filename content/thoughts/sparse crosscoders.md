@@ -5,6 +5,8 @@ tags:
 date: "2024-11-03"
 modified: "2024-11-03"
 title: sparse crosscoders
+transclude:
+  title: false
 ---
 
 > [!important] maturity
