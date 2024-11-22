@@ -57,12 +57,17 @@ Thus comparing to sglang, vLLM v0 is currently not up to par.
 - Implement [jump-ahead decoding](https://lmsys.org/blog/2024-02-05-compressed-fsm/#method-1-finite-state-machine-based) through a JSONWorker, we can then extend this to CFGWorker
 - similar to how spec decode is currently implemented in V0
 
-echo from @cadedaniel: "tree scoring in [spec decode] could use the same API as multi-path jump decoding."
+@cadedaniel: "tree scoring in [spec decode] could use the same API as multi-path jump decoding."
 
 > [!question] How should we handle FSM per requests?
 >
 > - Currently, users can specify different schemas per request, which means the FSM will be compiled per request. This is suboptimal because it slows down general TTFT.
 > - For most use cases, we should assume JSON schema similar to how the system prompt is currently being handled (pass during server init)
+
+> [!question] Why should we follow the plugins system?
+>
+> - If going with the best options, then what is the reasoning behind supporting different backends?
+> - Agree for extensibility, but seems to add additional overhead.
 
 ---
 

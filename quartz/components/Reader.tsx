@@ -3,8 +3,9 @@ import { clone, FullSlug, normalizeHastElement, FilePath } from "../util/path"
 import { classNames } from "../util/lang"
 import { visit } from "unist-util-visit"
 import { Node, Element, ElementContent, Root } from "hast"
-import { mergeIsomorphic, headerRegex } from "./renderPage"
+import { mergeIsomorphic } from "./renderPage"
 import { htmlToJsx } from "../util/jsx"
+import { headingRank } from "hast-util-heading-rank"
 import style from "./styles/reader.scss"
 // @ts-ignore
 import readerScript from "./scripts/reader.inline"
@@ -59,8 +60,8 @@ export default (() => {
             let endIdx = undefined
             for (const [i, el] of page.htmlAst.children.entries()) {
               // skip non-headers
-              if (!(el.type === "element" && el.tagName.match(headerRegex))) continue
-              const depth = Number(el.tagName.substring(1))
+              if (!(el.type === "element" && headingRank(el))) continue
+              const depth = headingRank(el) as number
 
               // looking for our blockref
               if (startIdx === undefined || startDepth === undefined) {
@@ -149,16 +150,14 @@ export default (() => {
         node.tagName === "code" &&
         ((node.properties?.className ?? []) as string[]).includes("mermaid")
       ) {
+        node.children = [
+          {
+            type: "text",
+            value: node.properties.dataClipboard as string,
+          },
+        ]
         // Filter out the expand-button that appears before the code block
-        parent.children = parent.children.filter((child) => {
-          if (child.type === "element") {
-            return (
-              !((child.properties?.className ?? []) as string[]).includes("expand-button") &&
-              child.properties.id !== "mermaid-container"
-            )
-          }
-          return true
-        })
+        parent.children = [node]
       }
     })
     // cleanup colorscheme, we just need monotone for reader mode
@@ -205,31 +204,23 @@ export default (() => {
         }
       }
     })
-    // Append suffix to header nodes
+    // Append suffix to header nodes to avoid conflicts
     visit(ast, "element", (node: Element) => {
       const suffix = "-reader"
 
       // Check if it's a header element using the existing headerRegex
-      if (node.tagName.match(headerRegex)) {
-        // Only modify if the header has an id
-        if (node.properties?.id) {
-          // Append the suffix to the existing id
-          node.properties.id = `${node.properties.id}${suffix}`
+      // and only modify if the header has an id
+      if (headingRank(node) && node.properties?.id) {
+        // Append the suffix to the existing id
+        node.properties.id = `${node.properties.id}${suffix}`
 
-          // Also update any anchor links within the header that reference the old id
-          visit(node, "element", (child: Element) => {
-            if (child.tagName === "a" && (child.properties?.href as string)?.startsWith("#")) {
-              const href = child.properties.href as string
-              child.properties.href = `${href}${suffix}`
-            }
-          })
-        }
-      }
-    })
-    // remove all hr
-    visit(ast, "element", (node: Element, index: number, parent: Element) => {
-      if (node.tagName === "hr") {
-        parent.children.splice(index, 1)
+        // Also update any anchor links within the header that reference the old id
+        visit(node, "element", (child: Element) => {
+          if (child.tagName === "a" && (child.properties?.href as string)?.startsWith("#")) {
+            const href = child.properties.href as string
+            child.properties.href = `${href}${suffix}`
+          }
+        })
       }
     })
 

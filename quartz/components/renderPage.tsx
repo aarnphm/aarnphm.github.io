@@ -24,6 +24,7 @@ import { GlobalConfiguration } from "../cfg"
 import { i18n } from "../i18n"
 import { JSX } from "preact"
 import { headingRank } from "hast-util-heading-rank"
+import type { TranscludeOptions } from "../plugins/transformers/frontmatter"
 import { QuartzPluginData } from "../plugins/vfile"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
@@ -39,8 +40,6 @@ interface RenderComponents {
   right: QuartzComponent[]
   footer: QuartzComponent
 }
-
-export const headerRegex = new RegExp(/h[1-6]/)
 
 function headerElement(
   node: Element,
@@ -110,14 +109,12 @@ function headerElement(
     className.push("end-hr")
   }
 
+  const rank = headingRank(node) as number
+
   return {
     type: "element",
     tagName: "div",
-    properties: {
-      className,
-      "data-level": `${headingRank(node)}`,
-      id,
-    },
+    properties: { className, id, "data-level": `${rank}` },
     children: [
       {
         type: "element",
@@ -254,9 +251,7 @@ function headerElement(
       {
         type: "element",
         tagName: "div",
-        properties: {
-          className: ["collapsible-header-content-outer"],
-        },
+        properties: { className: ["collapsible-header-content-outer"] },
         children: [
           {
             type: "element",
@@ -264,6 +259,8 @@ function headerElement(
             properties: {
               className: ["collapsible-header-content"],
               ["data-references"]: `${buttonId}-toggle`,
+              ["data-level"]: `${rank}`,
+              ["data-heading-id"]: node.properties.id, // HACK: This assumes that rehype-slug already runs this target
             },
             children: content,
           },
@@ -275,7 +272,11 @@ function headerElement(
 
 function shouldStopWrapping(node: ElementContent) {
   if (node.type === "element") {
-    if (node.properties?.dataReferences === "" || node.properties?.dataFootnotes === "") {
+    if (
+      node.properties?.dataReferences === "" ||
+      node.properties?.dataFootnotes === "" ||
+      node.properties?.dataBacklinks === ""
+    ) {
       return true
     }
     if (node.tagName === "hr") {
@@ -551,12 +552,7 @@ export function pageResources(
   }
 }
 
-type TranscludeOptions = {
-  dynalist: boolean
-  title: boolean
-}
-
-const defaultTranscludeOptions = { dynalist: true, title: true }
+const defaultTranscludeOptions: TranscludeOptions = { dynalist: true, title: true }
 
 export function transcludeFinal(
   root: Root,
@@ -582,7 +578,7 @@ export function transcludeFinal(
   const { dynalist } = opts
 
   // NOTE: process transcludes in componentData
-  visit(root, "element", (node, _index, _parent) => {
+  visit(root, "element", (node) => {
     if (node.tagName === "blockquote") {
       const classNames = (node.properties?.className ?? []) as string[]
       if (classNames.includes("transclude")) {
@@ -636,8 +632,8 @@ export function transcludeFinal(
           let endIdx = undefined
           for (const [i, el] of page.htmlAst.children.entries()) {
             // skip non-headers
-            if (!(el.type === "element" && el.tagName.match(headerRegex))) continue
-            const depth = Number(el.tagName.substring(1))
+            if (!(el.type === "element" && headingRank(el))) continue
+            const depth = headingRank(el) as number
 
             // looking for our blockref
             if (startIdx === undefined || startDepth === undefined) {

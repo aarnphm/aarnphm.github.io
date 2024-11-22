@@ -98,7 +98,7 @@ const config: QuartzConfig = {
         enableArxivEmbed: true,
         enableRawEmbed: true,
       }),
-      Plugin.TableOfContents({ maxDepth: 4 }),
+      Plugin.TableOfContents({ maxDepth: 5 }),
       Plugin.Description(),
       Plugin.Latex({
         renderEngine: "katex",

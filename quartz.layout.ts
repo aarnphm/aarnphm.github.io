@@ -4,10 +4,14 @@ import * as Component from "./quartz/components"
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
-  header: [],
+  header: [
+    Component.Search(),
+    Component.Keybind(),
+    Component.Breadcrumbs({ rootName: "~", style: "unique", spacerSymbol: "/" }),
+  ],
   afterBody: [
     Component.DesktopOnly(Component.Toolbar()),
-    Component.Image(),
+    Component.Backlinks(),
     Component.MinimalFooter({
       links: { github: "https://github.com/aarnphm", twitter: "https://twitter.com/aarnphm_" },
     }),
@@ -17,26 +21,23 @@ export const sharedPageComponents: SharedLayout = {
 
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
-  beforeBody: [
-    Component.Breadcrumbs({ rootName: "~", style: "unique", spacerSymbol: "/" }),
-    Component.ArticleTitle(),
-    Component.ContentMeta(),
-    Component.TagList(),
-  ],
+  beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],
   right: [
-    Component.Search(),
-    Component.Keybind(),
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Graph(),
-    Component.Backlinks(),
     Component.Reader(),
+    Component.Image(),
   ],
   left: [Component.DesktopOnly(Component.Sidenotes())],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
-  beforeBody: [Component.Breadcrumbs({ rootName: "~", style: "full", spacerSymbol: "/" })],
-  left: [Component.Search(), Component.DesktopOnly(Component.Keybind({ enableTooltip: false }))],
+  beforeBody: [
+    Component.Search(),
+    Component.Keybind(),
+    Component.Breadcrumbs({ rootName: "~", style: "full", spacerSymbol: "/" }),
+  ],
+  left: [],
   right: [],
 }

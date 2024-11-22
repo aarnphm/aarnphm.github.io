@@ -64,7 +64,7 @@ where the majority of research are focused on developing artificial neural netwo
 systems is AlphaZero, a connectionist network based Go playing systems, that uses a deep neural networks to assess new positions and Monte-Carlo Tree Search (a GOFAI algorithm) to determine its next move [@silver2017masteringchessshogiselfplay].
 
 [^2]:
-    According to Plato, Socrates asked Euthyphro, a fellow Athenian who is about to turn in his own father for murder in the name of piety: "I want to know what is characteristic of piety which makes all actions pious. [...] that I may have it to turn to, and to use as a standard whereby to judge your actions and those of other men."
+    According to [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Plato]], Socrates asked Euthyphro, a fellow Athenian who is about to turn in his own father for murder in the name of piety: "I want to know what is characteristic of piety which makes all actions pious. [...] that I may have it to turn to, and to use as a standard whereby to judge your actions and those of other men."
     This is Socrates' version of [[thoughts/effective procedure]] for modern-day computer scientists.
 
 [^3]:

@@ -5,6 +5,59 @@
   flex-direction: column;
 }
 
+nav#toc-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  position: fixed;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+
+  @media all and ($tablet) {
+    left: 1rem;
+    right: unset;
+    align-items: flex-start;
+  }
+
+  // Create a cubic-bezier function for width scaling
+  @function scale-width($i) {
+    @return 2rem * (1 - $i * 0.35);
+  }
+
+  @for $i from 0 through 5 {
+    & > .depth-#{$i} {
+      background-color: var(--dark);
+      height: 2px;
+      margin-top: 0.45rem;
+      margin-bottom: 0.45rem;
+
+      box-shadow: none;
+      border-radius: 2px;
+      margin-left: 0px;
+
+      width: scale-width($i);
+      opacity: 0.35;
+      transition:
+        0.5s ease opacity,
+        0.3s ease color,
+        0.3s ease background,
+        0.2s ease width;
+      &.in-view {
+        opacity: 0.75;
+      }
+
+      &:hover {
+        background-color: var(--secondary);
+        box-shadow: 0 0 2px var(--secondary);
+        width: scale-width($i) * 1.35;
+      }
+    }
+  }
+}
+
 button#toc {
   background-color: transparent;
   border: none;
@@ -49,7 +102,6 @@ button#toc {
   }
 
   > ul.overflow {
-    max-height: none;
     width: 100%;
     position: relative;
   }

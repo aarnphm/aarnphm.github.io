@@ -92,6 +92,11 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
   }
 }
 
+export type TranscludeOptions = {
+  dynalist: boolean
+  title: boolean
+}
+
 declare module "vfile" {
   interface DataMap {
     frontmatter: { [key: string]: unknown } & {
@@ -111,7 +116,7 @@ declare module "vfile" {
         socialImage: string
         noindex: boolean
         comments: boolean
-        transclude: Partial<{ title: boolean; dynalist: boolean }>
+        transclude: Partial<TranscludeOptions>
       }>
   }
 }

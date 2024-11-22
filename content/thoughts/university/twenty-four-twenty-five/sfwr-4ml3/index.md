@@ -19,3 +19,5 @@ Books:
 - [Understanding Machine Learning](https://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/understanding-machine-learning-theory-algorithms.pdf) by Shai Shalev-Shwartz and Shai Ben-David.
 
 Generative-adversarial networks: [github](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)
+
+similar courses offered by [Cornell](https://www.cs.cornell.edu/courses/cs4780/2024sp/)

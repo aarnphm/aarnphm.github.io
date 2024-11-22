@@ -103,5 +103,3 @@ link: [github](https://github.com/jy-yuan/KIVI)
 ---
 
 ![[thoughts/vllm#KV-Compress|KV-Compress]]
-
----

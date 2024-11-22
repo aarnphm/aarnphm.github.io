@@ -23,6 +23,7 @@ function MenuFooter({ displayClass }: QuartzComponentProps) {
 export const MenuPage: QuartzEmitterPlugin = () => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
+    header: [],
     beforeBody: [],
     left: [Spacer()],
     right: [Spacer()],

@@ -182,19 +182,21 @@ document.addEventListener("nav", async () => {
     const clipboardBtn = pre.querySelector(".clipboard-button") as HTMLButtonElement
     const expandBtn = pre.querySelector(".expand-button") as HTMLButtonElement
 
-    const clipboardStyle = window.getComputedStyle(clipboardBtn)
-    const clipboardWidth =
-      clipboardBtn.offsetWidth +
-      parseFloat(clipboardStyle.marginLeft || "0") +
-      parseFloat(clipboardStyle.marginRight || "0")
+    if (expandBtn) {
+      const clipboardStyle = window.getComputedStyle(clipboardBtn)
+      const clipboardWidth =
+        clipboardBtn.offsetWidth +
+        parseFloat(clipboardStyle.marginLeft || "0") +
+        parseFloat(clipboardStyle.marginRight || "0")
 
-    // Set expand button position
-    expandBtn.style.right = `calc(${clipboardWidth}px + 0.3rem)`
-    pre.prepend(expandBtn)
+      // Set expand button position
+      expandBtn.style.right = `calc(${clipboardWidth}px + 0.3rem)`
+      pre.prepend(expandBtn)
+    }
 
     // query popup container
     const popupContainer = pre.querySelector("#mermaid-container") as HTMLElement
-    if (!popupContainer) return
+    if (!popupContainer) continue
 
     let panZoom: DiagramPanZoom | null = null
 

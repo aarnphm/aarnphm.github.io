@@ -6,41 +6,165 @@ import script from "./scripts/toc.inline"
 import { i18n } from "../i18n"
 import { fromHtml } from "hast-util-from-html"
 import { htmlToJsx } from "../util/jsx"
+import { SKIP, visit } from "unist-util-visit"
+import { clone, FullSlug } from "../util/path"
+import { Root, Element, ElementContent, Text } from "hast"
+import { headingRank } from "hast-util-heading-rank"
+import { TocEntry } from "../plugins/transformers/toc"
+import Slugger from "github-slugger"
+import { QuartzPluginData } from "../plugins/vfile"
+import { toString } from "hast-util-to-string"
 
-const TableOfContents: QuartzComponent = ({
-  fileData,
-  displayClass,
-  cfg,
-}: QuartzComponentProps) => {
-  if (!fileData.toc) {
-    return null
-  }
+const ghSlugger = new Slugger()
 
-  const convertFromText = (text: string) => {
-    const tocAst = fromHtml(text, { fragment: true })
-    return htmlToJsx(fileData.filePath!, tocAst)
-  }
+function extractTransclude(
+  root: Root,
+  allFiles: QuartzPluginData[],
+  slug: FullSlug,
+  maxDepth: number,
+): TocEntry[] {
+  const entries: TocEntry[] = []
 
-  return (
-    <div class={classNames(displayClass, "toc")}>
-      <button type="button" id="toc" aria-controls="toc-content">
-        <h3>{i18n(cfg.locale).components.tableOfContents.title}</h3>
-      </button>
-      <div id="toc-content">
-        <ul class="overflow">
-          {fileData.toc.map((tocEntry) => (
-            <li key={tocEntry.slug} class={`depth-${tocEntry.depth}`}>
-              <a href={`#${tocEntry.slug}`} data-for={tocEntry.slug}>
-                {convertFromText(tocEntry.text)}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  )
+  visit(root, "element", (node, _index, _parent) => {
+    const classNames = (node.properties?.className ?? []) as string[]
+    if (node.tagName === "blockquote") {
+      if (classNames.includes("transclude")) {
+        const transcludeTarget = node.properties.dataUrl as FullSlug
+        const page = allFiles.find((f) => f.slug === transcludeTarget)
+
+        if (!page?.htmlAst || !page?.toc) return SKIP
+
+        let blockRef = node.properties.dataBlock as string | undefined
+        if (blockRef?.startsWith("#^")) {
+          // Handle block transcludes
+          blockRef = blockRef.slice("#^".length)
+          const blockNode = page.blocks?.[blockRef]
+          if (blockNode) {
+            visit(blockNode, "element", (node) => {
+              if (headingRank(node)) {
+                const text = (node.children[0] as Text).value
+                const toc = page.toc!.find((it) => it.slug === text) as TocEntry
+                entries.push(toc)
+              }
+            })
+          }
+        } else if (blockRef?.startsWith("#") && page.htmlAst) {
+          // Handle header transcludes
+          blockRef = blockRef.slice(1)
+          let startIdx = undefined
+          let startDepth = undefined
+          let endIdx = undefined
+
+          for (const [i, el] of page.htmlAst.children.entries()) {
+            const depth = headingRank(el)
+            if (!(el.type === "element" && depth)) continue
+
+            if (!startIdx && !startDepth) {
+              if (el.properties?.id === blockRef) {
+                startIdx = i
+                startDepth = depth
+              }
+            } else if (depth <= startDepth!) {
+              endIdx = i
+              break
+            }
+          }
+
+          if (startIdx !== undefined) {
+            const contentSlice = (page.htmlAst.children.slice(startIdx, endIdx) as Element[])
+              .filter((s) => headingRank(s))
+              .map((h) => {
+                h.children = (h as Element).children.splice(0, 1)
+                return h
+              })
+            console.log(contentSlice, page, node)
+          }
+        } else if (page.htmlAst) {
+          // Handle full page transcludes
+          visit(page.htmlAst, "element", (node) => {
+            if (headingRank(node)) {
+              const depth = headingRank(node) as number
+              if (depth <= maxDepth) {
+                const text = (node.children[0] as Text).value
+                const toc = page.toc!.find((it) => it.slug === text) as TocEntry
+                entries.push(toc)
+              }
+            }
+          })
+        }
+      }
+    }
+  })
+
+  return entries
 }
-TableOfContents.css = modernStyle
-TableOfContents.afterDOMLoaded = script
 
-export default (() => TableOfContents) satisfies QuartzComponentConstructor
+interface Options {
+  layout: "minimal" | "default"
+}
+
+const defaultOptions: Options = {
+  layout: "minimal",
+}
+
+export default ((userOpts?: Partial<Options>) => {
+  const opts = { ...defaultOptions, ...userOpts }
+
+  const TableOfContents: QuartzComponent = ({
+    fileData,
+    displayClass,
+    cfg,
+    tree,
+    allFiles,
+  }: QuartzComponentProps) => {
+    if (!fileData.toc) {
+      return null
+    }
+    ghSlugger.reset()
+
+    const convertFromText = (text: string) => {
+      const tocAst = fromHtml(text, { fragment: true })
+      return htmlToJsx(fileData.filePath!, tocAst)
+    }
+
+    // const entries = extractTransclude(clone(tree) as Root, allFiles, fileData.slug as FullSlug, 6)
+    // console.log(entries)
+    return (
+      <div class={classNames(displayClass, "toc")} data-layout={opts.layout}>
+        {opts.layout === "minimal" ? (
+          <nav id="toc-vertical">
+            {fileData.toc.map((entry) => (
+              <a
+                key={entry.slug}
+                class={`depth-${entry.depth}`}
+                href={`#${entry.slug}`}
+                data-for={entry.slug}
+              />
+            ))}
+          </nav>
+        ) : (
+          <>
+            <button type="button" id="toc" aria-controls="toc-content">
+              <h3>{i18n(cfg.locale).components.tableOfContents.title}</h3>
+            </button>
+            <div id="toc-content">
+              <ul class="overflow">
+                {fileData.toc.map((tocEntry) => (
+                  <li key={tocEntry.slug} class={`depth-${tocEntry.depth}`}>
+                    <a href={`#${tocEntry.slug}`} data-for={tocEntry.slug}>
+                      {convertFromText(tocEntry.text)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        )}
+      </div>
+    )
+  }
+
+  TableOfContents.css = modernStyle
+  TableOfContents.afterDOMLoaded = script
+  return TableOfContents
+}) satisfies QuartzComponentConstructor

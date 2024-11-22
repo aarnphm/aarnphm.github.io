@@ -350,6 +350,7 @@ header {
   .search {
     grid-area: 2 / 1 / 2 / 3;
   }
+
   .keybind {
     grid-area: 2 / 3 / 2 / 4;
     justify-self: end;
@@ -358,6 +359,7 @@ header {
   .breadcrumb-container {
     grid-area: 1 / 1 / 1 / 4;
   }
+
   @media all and ($desktop) {
     margin-bottom: 0rem;
 
@@ -629,13 +631,11 @@ section[data-footnotes] {
       row-gap: 0;
       margin: 0 2rem;
 
-      .sidebar.right {
-        position: sticky;
-        top: $topSpacing;
-        height: fit-content;
-        max-height: 50vh;
-        padding-top: 0;
-      }
+      grid-template-columns: #{$sidePanelWidth} minmax(auto, #{$pageWidth});
+      grid-template-rows: #{map.get($desktopGrid, templateRow)};
+      grid-template-areas:
+        "grid-sidebar-left grid-header"
+        "grid-sidebar-left grid-sidebar-right";
     }
 
     @media all and ($tablet) {
@@ -643,17 +643,12 @@ section[data-footnotes] {
     }
   }
 
+  header,
   & .page-header {
     margin: 0 auto !important;
 
     @media all and ($mobile) {
       margin-bottom: 0;
-    }
-  }
-
-  @media all and not ($desktop) {
-    .sidebar.right {
-      margin-top: 2rem !important;
     }
   }
 
@@ -667,6 +662,23 @@ section[data-footnotes] {
     grid-template-rows: repeat(4, min-content);
     grid-template-columns: auto;
     align-items: baseline;
+  }
+
+  header {
+    grid-template-rows: min-content;
+  }
+
+  & .sidebar.right {
+    margin: 0 !important;
+    grid-template-rows: auto;
+    height: 0 !important;
+
+    // NOTE: prevent scrolling on right
+    // position: sticky;
+    // height: fit-content;
+    // top: $topSpacing;
+    // max-height: 50vh;
+    // padding-top: 0;
 
     & .search {
       grid-area: 1 / 1 / 1 / 1;

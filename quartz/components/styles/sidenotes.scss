@@ -1,8 +1,6 @@
 @use "../../styles/variables.scss" as *;
 
 .sidenotes {
-  counter-reset: sidenote-counter;
-
   &::before {
     content: "";
     position: absolute;
@@ -48,11 +46,14 @@
     margin-bottom: 1rem;
     border: 1px solid var(--gray);
     background-color: var(--light);
-    counter-increment: sidenote-counter;
+
+    @media all and ($tablet) {
+      left: 4rem; // width of toc + column-gap
+      max-width: calc(#{$sidePanelWidth} - 4rem);
+    }
 
     &::before {
-      // content: attr(data-count);
-      content: counter(sidenote-counter);
+      content: attr(data-count);
       background-color: var(--light);
       font-size: 0.8em;
       font-weight: bold;

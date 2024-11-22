@@ -1,8 +1,8 @@
-import { getFullSlug } from "../../util/path"
+import { getFullSlug, joinSegments } from "../../util/path"
 import { closeReader } from "./util"
 
 // TODO: Export directly to PDF and skip this step
-async function toggleExportPdf(ev: MouseEvent) {
+async function toggleExportPdf() {
   try {
     window.print()
   } catch (error) {
@@ -32,7 +32,9 @@ function toggleReader(button: HTMLButtonElement) {
   }
 }
 
+const layoutId = () => `${getFullSlug(window)}-layout`
 function setupToolbar() {
+  const body = document.getElementById("quartz-body") as HTMLDivElement
   const toolbar = document.querySelector(".toolbar")
   if (!toolbar) return
 
@@ -41,14 +43,41 @@ function setupToolbar() {
 
   // reader section
   const readerButton = toolbarContent.querySelector("#reader-button") as HTMLButtonElement
-  const reader = () => toggleReader(readerButton)
-  readerButton.addEventListener("click", reader)
-  window.addCleanup(() => readerButton.removeEventListener("click", reader))
+  if (readerButton) {
+    const reader = () => toggleReader(readerButton)
+    readerButton.addEventListener("click", reader)
+    window.addCleanup(() => readerButton.removeEventListener("click", reader))
+  }
 
   // reader section
   const pdfButton = toolbarContent.querySelector("#pdf-button") as HTMLButtonElement
-  pdfButton.addEventListener("click", toggleExportPdf)
-  window.addCleanup(() => pdfButton.removeEventListener("click", toggleExportPdf))
+  if (pdfButton) {
+    pdfButton.addEventListener("click", toggleExportPdf)
+    window.addCleanup(() => pdfButton.removeEventListener("click", toggleExportPdf))
+  }
+
+  // switchLayout
+  const layoutButton = toolbarContent.querySelector("#two-three-button") as HTMLButtonElement
+  if (layoutButton) {
+    const elId = layoutId()
+
+    const switchLayoutState = (ev: Event) => {
+      const button = ev.target as HTMLButtonElement
+      ev.preventDefault()
+
+      const isTwoLayout = body.classList.contains("two-layout")
+      isTwoLayout ? body.classList.remove("two-layout") : body.classList.add("two-layout")
+
+      button.dataset.active = isTwoLayout.toString()
+      localStorage.setItem(elId, isTwoLayout.toString())
+    }
+    layoutButton.addEventListener("click", switchLayoutState)
+    window.addCleanup(() => layoutButton.removeEventListener("click", switchLayoutState))
+    if (localStorage.getItem(elId) === "true") {
+      layoutButton.dataset.active = "true"
+      body.classList.add("two-layout")
+    }
+  }
 }
 
 window.addEventListener("resize", setupToolbar)

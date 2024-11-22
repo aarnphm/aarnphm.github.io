@@ -21,7 +21,7 @@ const defaultOptions: Options = {
   showByDefault: true,
 }
 
-interface TocEntry {
+export interface TocEntry {
   depth: number
   text: string
   slug: string // this is just the anchor (#some-slug), not the canonical slug

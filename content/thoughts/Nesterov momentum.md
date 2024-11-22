@@ -8,7 +8,7 @@ modified: "2024-11-11"
 title: Nesterov momentum
 ---
 
-See also [paper](http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf)
+See also [paper](http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf), [[thoughts/optimization#momentum]]
 
 idea:
 
@@ -33,3 +33,9 @@ Achieves better convergence rates
 | ------------------------ | ---------------------------------- | --------------------------------------- |
 | Smooth                   | $\theta(\frac{1}{T})$              | $\theta(\frac{1}{T^{2}})$               |
 | Smooth & Strongly Convex | $\theta(\exp (-\frac{T}{\kappa}))$ | $\theta(\exp -\frac{T}{\sqrt{\kappa}})$ |
+
+> [!math] optimal assignments for parameters
+>
+> $$
+> \alpha = \frac{1}{\lambda_{\text{max}}}, \beta = \frac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1}
+> $$

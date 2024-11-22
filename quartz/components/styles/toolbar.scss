@@ -1,3 +1,6 @@
+@use "sass:map";
+@use "../../styles/variables.scss" as *;
+
 .toolbar {
   position: fixed;
   bottom: 1rem;

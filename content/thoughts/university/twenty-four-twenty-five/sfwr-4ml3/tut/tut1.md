@@ -9,6 +9,8 @@ transclude:
   title: false
 ---
 
+See also [matrix cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf)
+
 ## matrix representation of a system of linear equations
 
 $$

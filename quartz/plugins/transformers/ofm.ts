@@ -17,6 +17,7 @@ import mermaidStyle from "../../components/styles/mermaid.inline.scss"
 import { FilePath, pathToRoot, slugTag, slugifyFilePath } from "../../util/path"
 import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
+import { toString } from "mdast-util-to-string"
 import { PhrasingContent } from "mdast-util-find-and-replace/lib"
 import { capitalize } from "../../util/lang"
 import { PluggableList } from "unified"
@@ -519,7 +520,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 node.data = {
                   hProperties: {
                     className: ["mermaid"],
-                    "data-clipboard": JSON.stringify(node.value),
+                    "data-clipboard": toString(node),
                   },
                 }
               }

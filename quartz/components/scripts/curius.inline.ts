@@ -191,7 +191,7 @@ document.addEventListener("nav", async (e) => {
   if (e.detail.url !== "curius") return
 
   const elements = [
-    ".curius-container",
+    ".curius-page-container",
     "#curius-fetching-text",
     "#curius-fragments",
     ".navigation-container",

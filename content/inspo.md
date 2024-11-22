@@ -34,3 +34,4 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 ## resources
 
 - https://fontsource.org/
+- https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf

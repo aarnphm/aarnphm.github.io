@@ -18,7 +18,7 @@ import curiusFriendScript from "../../components/scripts/curius-friends.inline"
 const CuriusContent: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
   return (
     <div class={classNames(displayClass, "curius", "popover-hint")} id="curius">
-      <div class="curius-container">
+      <div class="curius-page-container">
         <div id="curius-fetching-text"></div>
         <div id="curius-fragments"></div>
         <div class="highlight-modal" id="highlight-modal">
@@ -111,6 +111,7 @@ const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {
 export const CuriusPage: QuartzEmitterPlugin = () => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
+    header: [],
     beforeBody: [CuriusHeader],
     left: [CuriusFriends],
     right: [DesktopOnly(CuriusTrail)],

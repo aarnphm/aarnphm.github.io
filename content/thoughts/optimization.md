@@ -3,12 +3,30 @@ id: optimization
 tags:
   - ml
 date: "2024-10-31"
+description: A list of optimization functions that can be used in ML training to reduce loss, and more.
 modified: "2024-10-31"
 noindex: true
 title: ml optimization
 ---
 
-A list of optimization functions that can be used in ML training to reduce loss.
+## `exp()`
+
+see also [@abdelkhalik2022demystifyingnvidiaamperearchitecture], [RDNA3 instruction sets of V_LDEXP_F32](https://www.amd.com/content/dam/amd/en/documents/radeon-tech-docs/instruction-set-architectures/rdna3-shader-instruction-set-architecture-feb-2023_0.pdf)
+
+Usually a lot better comparing to `2**t` simply for [[thoughts/university/twenty-three-twenty-four/compsci-4x03/Equations|numerical stability]] reasons
+
+For ARM the design specially [instructions](https://developer.arm.com/documentation/ddi0602/2024-09/SVE-Instructions/FEXPA--Floating-point-exponential-accelerator-) set for it!
+
+![[thoughts/images/pseudo-exp-fexpa.svg|pseudo implementation of exp in ARM]]
+
+Advantages of FEXPA:
+
+- single instruction latency for initial approximation
+- vectorized ops for batch processing
+
+On GPU we can utilise bit-shift `1<<x` or CUDA's exp2
+
+Optimization in `llama.cpp`: https://github.com/ggerganov/llama.cpp/pull/7154
 
 ## sigmoid
 
@@ -81,8 +99,123 @@ _note: reduce number of hidden units $d_\text{ff}$ (second dimension of $W$ and 
 
 ## momentum
 
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Stochastic gradient descent]]
+See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Stochastic gradient descent]], [Cornell's CS6787](https://www.cs.cornell.edu/courses/cs6787/2017fa/Lecture3.pdf)
+
+_recap:_ gradient descent
+
+$$
+x_{t+1} = x_t - \alpha \nabla f(x_t)
+$$
+
+In the case of quadratic function: $f(x) = \frac{1}{2} x^2$, then $x_{t+1} = x_t - \alpha x_t = (1-\alpha)x_t$
+
+Think of convergence rate
+
+$$
+\mid x_{t+1} - 0 \mid = \mid  1 - \alpha \mid \mid  x_t - 0 \mid
+$$
+
+![[thoughts/images/convergence-vs-step-side-momentum.webp]]
+
+If we set different curvature ($f(x) = 2x^2$) thus $x_{t+1} = x_t - 4 \alpha x_t = (1-4 \alpha)x_t$
+
+> [!IMPORTANT]
+>
+> step size depends on curvature for one-dimensional quadratics
+>
+> more curvature means smaller ideal step size
+
+_how would this play for general quadratics?_
+
+for PSD symmetric $A$
+
+$$
+f(x) = \frac{1}{2} x^T Ax
+$$
+
+with gradient descent has update step
+
+$$
+x_{t+1} = x_t - \alpha  A x_t = (I - \alpha A)x_t
+$$
+
+convergence rate would be
+
+$$
+\begin{aligned}
+\max_{x} \frac{\|(I - \alpha A)x\|}{\|x\|} &= \max_{x} \frac{1}{\|x\|} \left\| \left( I - \alpha \sum_{i=1}^{n} \lambda_i u_i u_i^T \right) x \right\| \\[8pt]
+&= \max_{x} \frac{\|\sum_{i=1}^{n} (1- \alpha \lambda_i) u_i u_i^T x\|}{\|\sum_{i=1}^{n} u_i u_i^T x\|} \\
+&= max_i \mid 1- \alpha \lambda_i \mid  \\
+&=max(1-\alpha \lambda_{\text{min}}, \alpha \lambda_{\text{max}} - 1)
+\end{aligned}
+$$
+
+> [!math] optimal convergence rate
+>
+> optimal value occurs when
+>
+> $$
+> 1 - \alpha \lambda_{\text{min}} = \alpha \lambda_{\text{max}} - 1 \Rightarrow \alpha = \frac{2}{\lambda_{\text{max}} + \lambda_{\text{min}}}
+> $$
+>
+> with rate
+>
+> $$
+> \frac{\lambda_{\text{max}} - \lambda_{\text{min}}}{\lambda_{\text{max}} + \lambda_{\text{min}}}
+> $$
+
+We denote $\kappa = \frac{\lambda_{\text{max}}}{\lambda_{\text{min}}}$ as **condition number** of matrix A
+
+> [!abstract] poorly conditioned
+>
+> Problems with larger condition numbers converge slower.
+>
+> Intuitively these are problems that are ==highly curved in some directions, but flat others==
+
+### Polyak's Momentum
+
+abbreviation: "heavy ball method"
+
+idea: add an extra momentum term to gradient descent
+
+$$
+x_{t+1} = x_t - \alpha \nabla f(x_t) + \beta (x_t - x_{t-1})
+$$
+
+tl/dr: if current gradient step is in same direction as previous step, then move a little further in the same direction
+
+> [!math]- momentun for 1D quadratics
+>
+> $$
+> f(x) = \frac{\lambda}{2} x^{2}
+> $$
+>
+> momentum GD gives
+>
+> $$
+> \begin{aligned}
+> x_{t+1} &= x_t - \alpha \lambda x_t + \beta (x_t - x_{t-1}) \\
+> &= (1+\beta - \alpha \lambda) x_t - \beta x_{t-1}
+> \end{aligned}
+> $$
+>
+> characterizing momentum:
+>
+> - start with $x_{t+1} = (1+\beta -\alpha \lambda) x_t - \beta x_{t-1}$
+> - trick: let $x_t = \beta^{t/2}z_t$
+>
+> $$
+> z_{t+1} = \frac{1 + \beta - \alpha \lambda}{\sqrt{\beta}} z_t - z_{t-1}
+> $$
+>
+> let $u = \frac{1+\beta -\alpha \lambda}{2 \sqrt{\beta}}$, then
+>
+> $$
+> z_{t+1} = 2 u z_t - z_{t-1}
+> $$
+>
+> _degree-$\textbf{t}$ polynomial in $\textbf{u}$_
 
 ![[thoughts/Nesterov momentum]]
 
-### Polyak's Momentum
+[^ref]
