@@ -20,6 +20,8 @@ A variant of [[thoughts/sparse autoencoder]] where it reads and writes to multip
 
 Crosscoders produces ==shared features across layers and even models==
 
+## motivations
+
 Resolve:
 
 - cross-layer features: resolve cross-layer superposition
@@ -27,8 +29,6 @@ Resolve:
 - circuit simplification: remove redundant features from analysis and enable jumping across training many uninteresting identity circuit connections
 
 - model diffing: produce shared sets of features across models. This also introduce one model across training, and also completely independent models with different architectures.
-
-## motivations
 
 ### cross-layer [[thoughts/mechanistic interpretability#superposition hypothesis|superposition]]
 
