@@ -46,7 +46,7 @@ _given the additive properties of transformers' residual stream, **adjacent laye
 ![[thoughts/images/parallel-joint-branch.webp]]
 _if we think of adjacent layers as being "almost parallel branches that potentially have superposition between them", then we can apply dictionary learning jointly [^jointlysae]_
 
-[^jointlysae]: [@gorton2024missingcurvedetectorsinceptionv1] applies SAEs to study InceptionV1, where cross-branch superposition is significant in interpreting models with parallel branches
+[^jointlysae]: [@gorton2024missingcurvedetectorsinceptionv1] denotes that cross-branch superposition is significant in interpreting models with parallel branches (InceptionV1)
 
 ### persistent features and complexity
 

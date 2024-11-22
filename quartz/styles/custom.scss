@@ -461,7 +461,7 @@ section[data-footnotes] {
   @for $i from 1 through $rows {
     @for $j from 1 through $cols {
       & > *:nth-child(#{$i}) > *:nth-child(#{$j}) {
-        &:not(.reader) {
+        &:not(.reader):not(.image-popup-modal) {
           animation: var(--animation-name) var(--animation-duration) ease 1 normal backwards;
           animation-delay: #{$col-delay * $j + $row-delay * $i}s;
         }
