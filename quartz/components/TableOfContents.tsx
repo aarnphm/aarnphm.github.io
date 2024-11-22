@@ -17,12 +17,7 @@ import { toString } from "hast-util-to-string"
 
 const ghSlugger = new Slugger()
 
-function extractTransclude(
-  root: Root,
-  allFiles: QuartzPluginData[],
-  slug: FullSlug,
-  maxDepth: number,
-): TocEntry[] {
+function extractTransclude(root: Root, allFiles: QuartzPluginData[]): TocEntry[] {
   const entries: TocEntry[] = []
 
   visit(root, "element", (node, _index, _parent) => {
@@ -74,23 +69,16 @@ function extractTransclude(
             const contentSlice = (page.htmlAst.children.slice(startIdx, endIdx) as Element[])
               .filter((s) => headingRank(s))
               .map((h) => {
-                h.children = (h as Element).children.splice(0, 1)
-                return h
+                const refs = h.children[0] as Element
+                console.log(refs, page.toc)
+                return page.toc!.find((it) => it.slug === refs.properties.id)
               })
             console.log(contentSlice, page, node)
+            entries.push(...contentSlice)
           }
         } else if (page.htmlAst) {
           // Handle full page transcludes
-          visit(page.htmlAst, "element", (node) => {
-            if (headingRank(node)) {
-              const depth = headingRank(node) as number
-              if (depth <= maxDepth) {
-                const text = (node.children[0] as Text).value
-                const toc = page.toc!.find((it) => it.slug === text) as TocEntry
-                entries.push(toc)
-              }
-            }
-          })
+          entries.push(...page.toc)
         }
       }
     }
@@ -127,8 +115,9 @@ export default ((userOpts?: Partial<Options>) => {
       return htmlToJsx(fileData.filePath!, tocAst)
     }
 
-    // const entries = extractTransclude(clone(tree) as Root, allFiles, fileData.slug as FullSlug, 6)
+    // const entries = extractTransclude(clone(tree) as Root, allFiles)
     // console.log(entries)
+
     return (
       <div class={classNames(displayClass, "toc")} data-layout={opts.layout}>
         {opts.layout === "minimal" ? (
@@ -139,6 +128,7 @@ export default ((userOpts?: Partial<Options>) => {
                 class={`depth-${entry.depth}`}
                 href={`#${entry.slug}`}
                 data-for={entry.slug}
+                data-hover={entry.text}
               />
             ))}
           </nav>
@@ -149,10 +139,10 @@ export default ((userOpts?: Partial<Options>) => {
             </button>
             <div id="toc-content">
               <ul class="overflow">
-                {fileData.toc.map((tocEntry) => (
-                  <li key={tocEntry.slug} class={`depth-${tocEntry.depth}`}>
-                    <a href={`#${tocEntry.slug}`} data-for={tocEntry.slug}>
-                      {convertFromText(tocEntry.text)}
+                {fileData.toc.map((entry) => (
+                  <li key={entry.slug} class={`depth-${entry.depth}`}>
+                    <a href={`#${entry.slug}`} data-for={entry.slug}>
+                      {convertFromText(entry.text)}
                     </a>
                   </li>
                 ))}

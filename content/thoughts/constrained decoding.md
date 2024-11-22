@@ -75,6 +75,65 @@ Thus comparing to sglang, vLLM v0 is currently not up to par.
 
 The following includes background information about guided generations.
 
+### batched constrained decoding for CFG and PDA
+
+Implemented in [mlc-ai/xgrammar](https://github.com/mlc-ai/xgrammar)
+
+> [!quote]
+>
+> Combine bitmask in CB to send to GPU
+
+> [!IMPORTANT]
+>
+> operating on string level, not `token_id`
+
+`GrammarMatcher` => FSM in xgrammar
+
+#### questions
+
+- byte-level automaton
+
+overhead of token_id => string
+
+Token for context-independent tokens vs dependent tokens within the generation masks
+
+async pre-compile
+
+synchronize apply mask for CPU -> GPU?
+
+How do we apply said masks to GPU block? Zero-overhead generations?
+
+> [!question] worst-case scenario for grammar compilation?
+>
+> mask gen overhead: 36 $\mu s$
+
+> [!question] time linearly increase for batch size?
+>
+> parallelize for compilation.
+
+> [!question] do we need to parallelize on vLLM?
+>
+> no, xgrammar parallelize it, with `pthread`
+
+> [!question] shape of masks?
+>
+> bitmask, tensors of vocab size => concat with recast => GPU
+
+> [!question] supported tokenizers?
+>
+> GLM yet to be supported (Nov 22nd)
+
+> [!question] Given that detokenizer is in a separate process with vLLM, then can we stops duplicating this process?
+>
+> Currently with `xgrammar`: detokenizer included in mask generations.
+>
+> token_id => tokens
+
+#### future plans
+
+- Function calling support
+- Support more grammar (CFG, Python grammar)
+
 ### compressed FSM for jump-ahead tokens.
 
 Implemented in [@zheng2024sglangefficientexecutionstructured]
