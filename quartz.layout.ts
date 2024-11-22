@@ -6,7 +6,6 @@ export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [
     Component.Search(),
-    Component.Keybind(),
     Component.Breadcrumbs({ rootName: "~", style: "unique", spacerSymbol: "/" }),
   ],
   afterBody: [
@@ -21,7 +20,12 @@ export const sharedPageComponents: SharedLayout = {
 
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
-  beforeBody: [Component.ArticleTitle(), Component.ContentMeta(), Component.TagList()],
+  beforeBody: [
+    Component.ArticleTitle(),
+    Component.ContentMeta(),
+    Component.TagList(),
+    Component.Spacer(),
+  ],
   right: [
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Graph(),
