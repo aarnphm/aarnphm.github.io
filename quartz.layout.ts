@@ -39,7 +39,6 @@ export const defaultContentPageLayout: PageLayout = {
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [
     Component.Search(),
-    Component.Keybind(),
     Component.Breadcrumbs({ rootName: "~", style: "full", spacerSymbol: "/" }),
   ],
   left: [],

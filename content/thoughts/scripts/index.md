@@ -1,7 +1,7 @@
 ---
 id: index
 tags:
-  - seed
+  - folder
 date: "2024-10-30"
 modified: "2024-10-30"
 title: scripts.
