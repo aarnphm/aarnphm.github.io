@@ -358,7 +358,7 @@ tinycss2==1.3.0
     # via nbconvert
 torch==2.5.0
     # via garden (pyproject.toml)
-tornado==6.4.1
+tornado==6.4.2
     # via
     #   ipykernel
     #   jupyter-client
