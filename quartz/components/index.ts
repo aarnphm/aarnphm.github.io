@@ -3,7 +3,6 @@ import Image from "./Image"
 import Reader from "./Reader"
 import Toolbar from "./Toolbar"
 import Navigation from "./Navigation"
-import MinimalFooter from "./MinimalFooter"
 import Keybind from "./Keybind"
 import Content from "./pages/Content"
 import TagContent from "./pages/TagContent"
@@ -34,7 +33,6 @@ export {
   Image,
   Reader,
   Navigation,
-  MinimalFooter,
   Keybind,
   ArticleTitle,
   Content,

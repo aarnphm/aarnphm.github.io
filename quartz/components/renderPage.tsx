@@ -813,6 +813,7 @@ export const SocialAlias = {
   github: "https://github.com/aarnphm",
   twitter: "https://x.com/aarnphm_",
   substack: "https://livingalonealone.com",
+  bluesky: "https://bsky.app/profile/aarnphm.xyz",
   curius: "/curius",
   contact: "mailto:contact@aarnphm.xyz",
   "site source": "https://github.com/aarnphm/sites",

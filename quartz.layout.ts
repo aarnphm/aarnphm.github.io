@@ -11,8 +11,12 @@ export const sharedPageComponents: SharedLayout = {
   afterBody: [
     Component.DesktopOnly(Component.Toolbar()),
     Component.Backlinks(),
-    Component.MinimalFooter({
-      links: { github: "https://github.com/aarnphm", twitter: "https://twitter.com/aarnphm_" },
+    Component.Footer({
+      links: {
+        github: "https://github.com/aarnphm",
+        twitter: "https://twitter.com/aarnphm_",
+        bsky: "https://bsky.app/profile/aarnphm.xyz",
+      },
     }),
   ],
   footer: Component.Spacer(),

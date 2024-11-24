@@ -89,6 +89,7 @@ See also: [[/curius|digital version]]
 | Walden and Civil Disobedience                          | Henry David Thoreau |                                                                                  |
 | Deep Sleep                                             | Jade Wu             |                                                                                  |
 | Are We Spiritual Machines?                             | Ray Kurzweil        | [html](https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=olbp56055) |
+| Free to Choose                                         | Milton Friedman     |                                                                                  |
 
 ### fiction
 

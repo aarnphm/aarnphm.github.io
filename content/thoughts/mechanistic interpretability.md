@@ -29,9 +29,12 @@ application in the wild: [Goodfire](https://goodfire.ai/) and [Transluce](https:
 >
 > https://x.com/aarnphm_/status/1839016131321016380
 
-idea: treat SAEs as a `logit_processor`, though there are currently some bottleneck with `logit_processor` in [[thoughts/vllm|vLLM]], similar to [[thoughts/vllm#guided decoding]]
+idea: treat SAEs as a `logit_processor`, similar to [[thoughts/vllm#guided decoding]]
 
-Currently, before v1, `logit_processor` are row-wise, meaning logits are currently being processed before passing down to scheduling group [^vllm-caveats]
+Current known bottleneck in vLLM:
+
+- `logit_processor` are row-wise, or logits are processed synchronously and blocking [^vllm-caveats]
+- no SPMD currently implemented
 
 [^vllm-caveats]: [the benchmark](https://github.com/vllm-project/vllm/pull/10046) was run against `vllm#0.6.3.dev236+g48138a84`, with all configuration specified in the pull request.
 

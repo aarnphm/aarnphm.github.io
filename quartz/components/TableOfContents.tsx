@@ -156,12 +156,14 @@ export default ((userOpts?: Partial<Options>) => {
       <div class={classNames(displayClass, "toc")} id="toc" data-layout={opts.layout}>
         {opts.layout === "minimal" ? (
           <nav id="toc-vertical">
-            {fileData.toc.map((entry) => (
+            {fileData.toc.map((entry, idx) => (
               <button
                 key={entry.slug}
-                class={`depth-${entry.depth} toc-item`}
+                class="toc-item"
+                data-depth={entry.depth}
                 data-href={`#${entry.slug}`}
                 data-for={entry.slug}
+                style={{ "--animation-order": idx + 1 }}
               >
                 <div class="fill" />
                 <div class="indicator">{convertFromText(entry.text)}</div>

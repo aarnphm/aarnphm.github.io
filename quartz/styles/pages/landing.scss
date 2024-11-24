@@ -131,6 +131,7 @@ body[data-slug="index"] {
 a.min-links {
   color: inherit;
   font-weight: inherit;
+  margin-left: unset !important;
 
   &.internal {
     background-color: inherit;

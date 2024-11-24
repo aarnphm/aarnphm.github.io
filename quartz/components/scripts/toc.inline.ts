@@ -66,10 +66,6 @@ function scrollToElement(hash: string) {
   const rect = element.getBoundingClientRect()
   const absoluteTop = window.scrollY + rect.top
 
-  // Add temporary highlight
-  element.classList.add("anchor-highlight")
-  setTimeout(() => element.classList.remove("anchor-highlight"), 2000)
-
   // Scroll with offset for header
   window.scrollTo({
     top: absoluteTop - 100, // Offset for fixed header
@@ -82,19 +78,53 @@ function scrollToElement(hash: string) {
 
 function setupToc() {
   const toc = document.getElementById("toc")
-  if (!toc) return
+  const body = document.getElementById("quartz-body")
+
+  if (!toc || !body) return
+
   if (toc.dataset.layout === "minimal") {
+    const nav = toc.querySelector("#toc-vertical") as HTMLElement
+    if (!nav) return
+
     const buttons = toc?.querySelectorAll("button[data-for]") as NodeListOf<HTMLButtonElement>
     for (const button of buttons) {
+      function onAnimation(e: AnimationEvent) {
+        if (e.animationName === "fillExpand") {
+          button.classList.add("animation-complete")
+        }
+      }
+
       button.addEventListener("click", onClick)
-      window.addCleanup(() => button.removeEventListener("click", onClick))
+      button.addEventListener("animationend", onAnimation, { once: true })
+
+      window.addCleanup(() => {
+        button.removeEventListener("click", onClick)
+        button.removeEventListener("animationend", onAnimation)
+      })
     }
+    const onMouseEnter = () => {
+      body.classList.add("toc-hover")
+    }
+
+    const onMouseLeave = () => {
+      body.classList.remove("toc-hover")
+      resetFill()
+    }
+
+    toc.addEventListener("mouseenter", onMouseEnter)
+    toc.addEventListener("mouseleave", onMouseLeave)
+
+    window.addCleanup(() => {
+      toc.removeEventListener("mouseenter", onMouseEnter)
+      toc.removeEventListener("mouseleave", onMouseLeave)
+    })
   }
 }
 
 window.addEventListener("resize", setupToc)
 document.addEventListener("nav", () => {
   setupToc()
+
   // update toc entry highlighting
   observer.disconnect()
   const headers = document.querySelectorAll("h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]")
