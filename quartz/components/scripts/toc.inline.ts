@@ -88,36 +88,12 @@ function setupToc() {
 
     const buttons = toc?.querySelectorAll("button[data-for]") as NodeListOf<HTMLButtonElement>
     for (const button of buttons) {
-      function onAnimation(e: AnimationEvent) {
-        if (e.animationName === "fillExpand") {
-          button.classList.add("animation-complete")
-        }
-      }
-
       button.addEventListener("click", onClick)
-      button.addEventListener("animationend", onAnimation, { once: true })
 
       window.addCleanup(() => {
         button.removeEventListener("click", onClick)
-        button.removeEventListener("animationend", onAnimation)
       })
     }
-    const onMouseEnter = () => {
-      body.classList.add("toc-hover")
-    }
-
-    const onMouseLeave = () => {
-      body.classList.remove("toc-hover")
-      resetFill()
-    }
-
-    toc.addEventListener("mouseenter", onMouseEnter)
-    toc.addEventListener("mouseleave", onMouseLeave)
-
-    window.addCleanup(() => {
-      toc.removeEventListener("mouseenter", onMouseEnter)
-      toc.removeEventListener("mouseleave", onMouseLeave)
-    })
   }
 }
 
