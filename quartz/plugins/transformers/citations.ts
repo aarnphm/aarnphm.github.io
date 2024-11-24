@@ -143,6 +143,7 @@ export const Citations: QuartzTransformerPlugin<Partial<Options>> = (userOpts) =
           visit(tree, "element", (node, _index, _parent) => {
             if (node.tagName === "a" && node.properties?.href?.startsWith("#bib")) {
               node.properties["data-no-popover"] = true
+              node.properties["data-bib"] = true
             }
           })
         }

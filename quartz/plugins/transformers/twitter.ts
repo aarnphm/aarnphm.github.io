@@ -1,7 +1,8 @@
 import { QuartzTransformerPlugin } from "../types"
 import { Element } from "hast"
-import { Root } from "mdast"
-import { visit } from "unist-util-visit"
+import { Html, Root } from "mdast"
+import { SKIP, visit } from "unist-util-visit"
+import { unescapeHTML } from "../../util/escape"
 
 export const twitterUrlRegex = /^.*(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/(status)\/(\d{19}).*/
 
@@ -25,6 +26,8 @@ type TwitterEmbed = {
   version: "1.0"
 }
 
+const cache = new Map()
+
 export const Twitter: QuartzTransformerPlugin = () => ({
   name: "Twitter",
   markdownPlugins(ctx) {
@@ -33,31 +36,38 @@ export const Twitter: QuartzTransformerPlugin = () => ({
       () => async (tree: Root, _file) => {
         const promises: Promise<void>[] = []
 
+        const fetchEmbedded = async (parent: Root, index: number, url: string, locale: string) => {
+          let value: string
+
+          const cacheKey = `twitter:${url}`
+          let htmlString = cache.get(cacheKey)
+          if (!htmlString) {
+            try {
+              const data: TwitterEmbed = await fetch(
+                `https://publish.twitter.com/oembed?url=${url}&dnt=false&omit_script=true&lang=${locale}`,
+              ).then((res) => res.json())
+              value = unescapeHTML(data.html)
+              cache.set(cacheKey, value)
+            } catch (error) {
+              value = `<p>Link to original <a href="${url}">tweet</a>.</p>`
+            }
+          }
+
+          const node: Html = { type: "html", value }
+          parent!.children.splice(index, 1, node)
+        }
+
         visit(tree, "paragraph", (node, index, parent) => {
-          if (node.children.length === 0) return
+          if (node.children.length === 0) return SKIP
 
           // find first line and callout content
           const [firstChild] = node.children
-          if (firstChild.type !== "link" || !twitterUrlRegex.test(firstChild.url)) return
+          if (firstChild.type !== "link" || !twitterUrlRegex.test(firstChild.url)) return SKIP
 
-          promises.push(
-            fetch(
-              `https://publish.twitter.com/oembed?url=${firstChild.url}&dnt=false&omit_script=true&lang=${locale}`,
-            )
-              .then((res) => res.json())
-              .then((data: TwitterEmbed) => {
-                parent!.children.splice(index!, 1, {
-                  type: "html",
-                  value: data.html
-                    .replace(/\?ref_src=twsrc.*?fw/g, "")
-                    .replace(/<br>/g, "<br />")
-                    .trim(),
-                })
-              }),
-          )
+          promises.push(fetchEmbedded(parent as Root, index!, firstChild.url, locale))
         })
 
-        await Promise.all(promises)
+        if (promises.length > 0) await Promise.all(promises)
       },
     ]
   },

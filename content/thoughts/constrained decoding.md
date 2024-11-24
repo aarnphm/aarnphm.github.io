@@ -16,9 +16,9 @@ transclude:
 
 The following document describes and summarizes existing works in vLLM to improve general guided decoding performance. [^performance]
 
-[^performance]:
-    Benchmark script can be found at https://github.com/vllm-project/vllm/pull/10046. Current RFC https://github.com/vllm-project/vllm/issues/5423
-    Note that `lm-format-enforcer` failed to compile the test schema.
+[^performance]: Benchmark script can be found at https://github.com/vllm-project/vllm/pull/10046.
+
+    Current RFC https://github.com/vllm-project/vllm/issues/5423
 
 This design will largely affect how `logit_processor` are currently being handle within the vLLM architecture.
 
@@ -36,9 +36,9 @@ Orthogonal, but still goals:
 
 - https://github.com/vllm-project/vllm/pull/5006
 - Logit processor plugins, similar to how vLLM plugins are handled. https://github.com/vllm-project/vllm/pull/4769
-- xgrammar: https://github.com/mlc-ai/xgrammar
+- https://github.com/mlc-ai/xgrammar
 
-Scope: `logit_processor`, sampling controller interface
+Scope: `logit_processor`, `sampling controller interface`
 
 ## background
 

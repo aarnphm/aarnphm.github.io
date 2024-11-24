@@ -13,6 +13,7 @@
   ("BerkeleyMono-Regular.woff2", "BerkeleyMono-Regular.woff"),
   ("woff2", "woff")
 );
+@include font-face("ABC Diatype Light", "ABCDiatype-Light.woff2", "woff2");
 @include font-face("ITCGaramondStdLtCond", "ITCGaramondStdLtCond.woff2", "woff2");
 @include font-face("GT Sectra Display", "GT-Sectra-Display-Regular.woff", "woff");
 @include font-face("GT Sectra Book", "GT-Sectra-Book.woff", "woff");
@@ -146,6 +147,10 @@ li.section-li {
 code {
   font-size: 0.8em;
   border-radius: 0px;
+}
+
+p {
+  margin: 0.5rem 0;
 }
 
 body {
@@ -291,22 +296,23 @@ a {
     }
   }
 
-  &.internal {
+  &[data-bib] {
+    background-color: initial;
+  }
+
+  &[role="anchor"] {
+    background-image: unset;
+    background-color: unset;
+    margin-top: 0.2em;
+  }
+
+  &.internal:not([role="anchor"]):not([data-bib]) {
     @include links;
 
     & {
-      line-height: 1.6rem;
+      line-height: unset;
       background-color: unset;
-      background-image: linear-gradient(
-        var(--link-underline-gradient-line-color),
-        var(--link-underline-background-image)
-      );
-
-      &:not(.alias) {
-        & > .indicator-hook {
-          display: none;
-        }
-      }
+      margin-left: 0.1em;
     }
   }
 
@@ -315,25 +321,19 @@ a {
     background-color: unset;
 
     position: relative;
-    padding-left: 0.3em;
+    padding-left: 0.1em;
 
     @include links;
     @include indicatorHook;
-  }
 
-  &.internal.alias {
-    @include links;
+    &::before {
+      border-left-color: inherit;
+    }
   }
 
   &[class~="landing-links"],
   &.internal[class~="landing-links"] {
     font-weight: inherit;
-    transition: none;
-    background-color: inherit;
-  }
-
-  &.internal[class~="landing-links"] {
-    font-style: inherit;
     cursor: pointer;
   }
 }
@@ -344,6 +344,39 @@ audio::-webkit-media-controls-panel {
 
 blockquote[class="transclude"] {
   border-left-color: var(--tertiary);
+  position: relative;
+
+  .transclude-ref {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    border: 0px solid var(--lightgray);
+    border-bottom-width: 1px;
+    align-items: baseline;
+    justify-content: space-between;
+
+    & > ul.metadata {
+      list-style: none;
+      padding-left: 0;
+      display: flex;
+      gap: 0.5rem;
+      margin: 0;
+    }
+
+    & > .blockquote-link {
+      opacity: 0.35;
+      transition: opacity 0.2s ease;
+      color: var(--gray);
+    }
+  }
+
+  &:hover {
+    .transclude-ref > .blockquote-link {
+      opacity: 1;
+      cursor: pointer;
+    }
+  }
 }
 
 header {
@@ -648,7 +681,6 @@ section[data-footnotes] {
     display: grid !important;
     row-gap: 0.8rem !important;
     column-gap: 1.4rem !important;
-    padding: 0 !important;
     grid-template-rows: repeat(4, min-content);
     grid-template-columns: auto;
     align-items: baseline;
@@ -659,6 +691,7 @@ section[data-footnotes] {
     border-bottom: 1px solid var(--darkgray);
     align-items: center;
     column-gap: 0.6rem;
+    padding-bottom: 0.2rem;
   }
 
   & .sidebar.right {
@@ -768,11 +801,19 @@ section[data-footnotes] {
 
     @include links;
     @include indicatorHook;
+
+    &::before {
+      border-left-color: inherit;
+    }
   }
 
   .llm-source {
     @include links;
     @include indicatorHook;
+
+    &::before {
+      border-left-color: inherit;
+    }
   }
 }
 

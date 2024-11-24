@@ -34,11 +34,11 @@ const config: QuartzConfig = {
     defaultDateType: "created",
     theme: {
       cdnCaching: true,
-      fontOrigin: "local",
+      fontOrigin: "googleFonts",
       typography: {
-        header: "GT Sectra Book",
-        body: "GT Sectra Book",
-        code: "Berkeley Mono",
+        header: "Newsreader",
+        body: "Newsreader",
+        code: "JetBrains Mono",
       },
       colors: {
         lightMode: {

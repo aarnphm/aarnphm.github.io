@@ -577,10 +577,94 @@ export function transcludeFinal(
 
   const { dynalist } = opts
 
+  const anchor = (href: string, url: string, description: string): Element => {
+    const metadata: Element[] = [
+      {
+        type: "element",
+        tagName: "li",
+        properties: {
+          style: {
+            "font-style": "italic",
+            color: "var(--gray)",
+          },
+        },
+        children: [{ type: "text", value: `url: ${url}` }],
+      },
+    ]
+
+    if (description !== "undefined") {
+      metadata.push({
+        type: "element",
+        tagName: "li",
+        properties: {},
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: {
+              style: { "text-decoration": "underline" },
+            },
+            children: [{ type: "text", value: `description` }],
+          },
+          { type: "text", value: `: ${description}` },
+        ],
+      })
+    }
+
+    return {
+      type: "element",
+      tagName: "div",
+      properties: { className: ["transclude-ref"], "data-href": href },
+      children: [
+        {
+          type: "element",
+          tagName: "ul",
+          properties: { className: ["metadata"] },
+          children: metadata,
+        },
+        {
+          type: "element",
+          tagName: "svg",
+          properties: {
+            className: ["blockquote-link"],
+            width: 16,
+            height: 16,
+            viewBox: "0 0 24 24",
+            fill: "none",
+            stroke: "currentColor",
+            "stroke-width": "2",
+            "stroke-linecap": "round",
+            "stroke-linejoin": "round",
+          },
+          children: [
+            {
+              type: "element",
+              tagName: "path",
+              properties: {
+                d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71",
+              },
+              children: [],
+            },
+            {
+              type: "element",
+              tagName: "path",
+              properties: {
+                d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71",
+              },
+              children: [],
+            },
+          ],
+        },
+      ],
+    }
+  }
+
   // NOTE: process transcludes in componentData
   visit(root, "element", (node) => {
     if (node.tagName === "blockquote") {
       const classNames = (node.properties?.className ?? []) as string[]
+      const url = node.properties.dataUrl as string
+      const alias = node.properties?.dataEmbedAlias
       if (classNames.includes("transclude")) {
         const inner = node.children[0] as Element
         const transcludeTarget = inner.properties["data-slug"] as FullSlug
@@ -613,6 +697,7 @@ export function transcludeFinal(
             }
 
             node.children = [
+              anchor(inner.properties?.href as string, url, alias),
               normalizeHastElement(blockNode, slug, transcludeTarget),
               {
                 type: "element",
@@ -654,6 +739,7 @@ export function transcludeFinal(
           }
 
           node.children = [
+            anchor(inner.properties?.href as string, url, alias),
             ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
             ),
@@ -669,6 +755,7 @@ export function transcludeFinal(
         } else if (page.htmlAst) {
           // page transclude
           node.children = [
+            anchor(inner.properties?.href as string, url, alias),
             title
               ? {
                   type: "element",

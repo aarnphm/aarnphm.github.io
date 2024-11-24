@@ -5,54 +5,101 @@
   flex-direction: column;
 }
 
+.anchor-highlight {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: -1rem;
+    right: -1rem;
+    top: -0.5rem;
+    bottom: -0.5rem;
+    background-color: var(--highlight);
+    opacity: 0;
+    border-radius: 4px;
+    z-index: -1;
+    animation: anchorHighlight 2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@keyframes anchorHighlight {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.5) scaleY(0.5);
+  }
+  20% {
+    opacity: 0.2;
+    transform: scaleX(1) scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1.2) scaleY(1.05);
+  }
+}
+
 nav#toc-vertical {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
 
   position: fixed;
   top: 50%;
-  right: 1rem;
+  left: 0;
   transform: translateY(-100%);
   cursor: pointer;
 
-  @media all and ($tablet) {
-    left: 1rem;
-    right: unset;
-    align-items: flex-start;
-  }
-
-  // Create a cubic-bezier function for width scaling
-  @function scale-width($i) {
-    @return 2rem * (1 - $i * 0.35);
+  .toc-item {
+    display: grid;
+    row-gap: 0;
+    column-gap: 0.4rem;
+    grid-template-rows: auto;
+    grid-template-columns: 1rem auto;
+    grid-template-areas: "grid-fill grid-indicator";
   }
 
   @for $i from 0 through 5 {
     & > .depth-#{$i} {
-      background-color: var(--dark);
-      height: 2px;
-      margin-top: 0.45rem;
-      margin-bottom: 0.45rem;
-
-      box-shadow: none;
-      border-radius: 2px;
-      margin-left: 0px;
-
-      width: scale-width($i);
       opacity: 0.35;
-      transition:
-        0.5s ease opacity,
-        0.3s ease color,
-        0.3s ease background,
-        0.2s ease width;
+      transition: 1.5s ease all;
+      border: none;
+      background: inherit;
+      height: 0.5rem;
+      position: relative;
+      align-items: center;
+
       &.in-view {
         opacity: 0.75;
       }
 
+      & > .fill {
+        grid-area: grid-fill;
+        background-color: var(--dark);
+        height: 2px;
+        margin-top: 0.45rem;
+        margin-bottom: 0.45rem;
+
+        box-shadow: none;
+        border-radius: 2px;
+        margin-left: 0px;
+        width: 1rem;
+      }
+
+      & > .indicator {
+        display: none;
+        grid-area: grid-indicator;
+        font-family: var(--bodyFont);
+      }
+
       &:hover {
-        background-color: var(--secondary);
-        box-shadow: 0 0 2px var(--secondary);
-        width: scale-width($i) * 1.35;
+        & > .fill {
+          background-color: var(--secondary);
+          box-shadow: 0 0 2px var(--secondary);
+          transform: scaleX(1.1);
+        }
+
+        & > .indicator {
+          display: block;
+        }
       }
     }
   }
@@ -95,6 +142,7 @@ button#toc {
       transition:
         0.5s ease opacity,
         0.3s ease color;
+
       &.in-view {
         opacity: 0.75;
       }

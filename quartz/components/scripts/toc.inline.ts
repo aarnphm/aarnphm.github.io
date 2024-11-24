@@ -2,7 +2,7 @@ const bufferPx = 150
 const observer = new IntersectionObserver((entries) => {
   for (const entry of entries) {
     const slug = entry.target.id
-    const tocEntryElement = document.querySelector(`a[data-for="${slug}"]`)
+    const tocEntryElement = document.querySelector(`button[data-for="${slug}"]`)
     const layout = (document.querySelector(".toc") as HTMLDivElement).dataset.layout
     const windowHeight = entry.rootBounds?.height
     if (windowHeight && tocEntryElement) {
@@ -26,7 +26,75 @@ const observer = new IntersectionObserver((entries) => {
   }
 })
 
+function onClick(evt: MouseEvent) {
+  const button = evt.target as HTMLButtonElement
+  if (!button) return
+
+  const href = button.dataset.href
+  if (!href?.startsWith("#")) return
+
+  evt.preventDefault()
+  scrollToElement(href)
+
+  // Handle initial load with hash
+  if (window.location.hash) {
+    // Delay to ensure page is fully loaded
+    setTimeout(() => {
+      scrollToElement(window.location.hash)
+    }, 10)
+  }
+}
+
+function scrollToElement(hash: string) {
+  const elementId = hash.slice(1)
+  const element = document.getElementById(elementId)
+  if (!element) return
+
+  // Check if element is inside a collapsible section
+  const collapsibleParent = element.closest(".collapsible-header-content")
+  if (collapsibleParent) {
+    // Expand the collapsible section first
+    const wrapper = collapsibleParent.closest(".collapsible-header")
+    if (wrapper) {
+      const button = wrapper.querySelector(".toggle-button") as HTMLButtonElement
+      if (button && button.getAttribute("aria-expanded") === "false") {
+        button.click()
+      }
+    }
+  }
+
+  const rect = element.getBoundingClientRect()
+  const absoluteTop = window.scrollY + rect.top
+
+  // Add temporary highlight
+  element.classList.add("anchor-highlight")
+  setTimeout(() => element.classList.remove("anchor-highlight"), 2000)
+
+  // Scroll with offset for header
+  window.scrollTo({
+    top: absoluteTop - 100, // Offset for fixed header
+    behavior: "smooth",
+  })
+
+  // Update URL without triggering scroll
+  history.pushState(null, "", hash)
+}
+
+function setupToc() {
+  const toc = document.getElementById("toc")
+  if (!toc) return
+  if (toc.dataset.layout === "minimal") {
+    const buttons = toc?.querySelectorAll("button[data-for]") as NodeListOf<HTMLButtonElement>
+    for (const button of buttons) {
+      button.addEventListener("click", onClick)
+      window.addCleanup(() => button.removeEventListener("click", onClick))
+    }
+  }
+}
+
+window.addEventListener("resize", setupToc)
 document.addEventListener("nav", () => {
+  setupToc()
   // update toc entry highlighting
   observer.disconnect()
   const headers = document.querySelectorAll("h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]")

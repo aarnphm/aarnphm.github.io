@@ -25,6 +25,7 @@
       & > .description {
         overflow: hidden;
         text-overflow: ellipsis;
+        font-weight: normal;
 
         display: -webkit-box;
         -webkit-line-clamp: 3;

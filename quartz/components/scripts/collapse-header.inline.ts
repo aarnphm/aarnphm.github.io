@@ -83,6 +83,19 @@ function setupHeaders() {
       }
     }
   }
+
+  const links = document.querySelectorAll("svg.blockquote-link") as NodeListOf<SVGElement>
+  for (const link of links) {
+    const parentEl = link.parentElement as HTMLElement
+    const href = parentEl.dataset.href as string
+
+    function onClick() {
+      window.spaNavigate(new URL(href, window.location.toString()))
+    }
+
+    link.addEventListener("click", onClick)
+    window.addCleanup(() => link.removeEventListener("click", onClick))
+  }
 }
 
 // Set up initial state and handle navigation
