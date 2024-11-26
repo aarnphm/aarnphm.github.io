@@ -26,7 +26,7 @@ function toggleHeader(evt: Event) {
   const headerId = toggleButton.id.replace("collapsible-header-", "").replace("-toggle", "")
 
   const wrapper = document.querySelector(
-    `div.collapsible-header[id="${headerId}"]`,
+    `section.collapsible-header[id="${headerId}"]`,
   ) as MaybeHTMLElement
   if (!wrapper) return
 

@@ -164,6 +164,7 @@ export default ((userOpts?: Partial<Options>) => {
                 data-href={`#${entry.slug}`}
                 data-for={entry.slug}
                 style={{ "--animation-order": idx + 1 }}
+                aria-label={`${entry.text}`}
               >
                 <div class="fill" />
                 <div class="indicator">{convertFromText(entry.text)}</div>

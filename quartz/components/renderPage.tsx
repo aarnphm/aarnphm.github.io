@@ -113,7 +113,7 @@ function headerElement(
 
   return {
     type: "element",
-    tagName: "div",
+    tagName: "section",
     properties: { className, id, "data-level": `${rank}` },
     children: [
       {
@@ -1058,21 +1058,21 @@ export function renderPage(
 
   const LeftComponent =
     left.length > 0 ? (
-      <div class="left sidebar">
+      <aside class="left sidebar">
         {left.map((BodyComponent) => (
           <BodyComponent {...componentData} />
         ))}
-      </div>
+      </aside>
     ) : (
       <></>
     )
 
   const RightComponent = (
-    <div class="right sidebar">
+    <section class="right sidebar">
       {right.map((BodyComponent) => (
         <BodyComponent {...componentData} />
       ))}
-    </div>
+    </section>
   )
 
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
