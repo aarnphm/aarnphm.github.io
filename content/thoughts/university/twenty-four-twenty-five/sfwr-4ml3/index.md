@@ -11,7 +11,7 @@ title: Introduction to Machine Learning
 
 See also [[thoughts/Machine learning|machine learning]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture0.pdf|introduction]]
 
-For annotated slides check out [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/annotated|annotated folders]]
+For annotated slides check out [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec|annotated folders]]
 
 Books:
 

@@ -26,21 +26,40 @@ const observer = new IntersectionObserver((entries) => {
   }
 })
 
+// HACK: ugh we have to target the indicator class given that we fixed the padding
 function onClick(evt: MouseEvent) {
-  const button = evt.target as HTMLButtonElement
-  if (!button) return
+  const indicator = evt.target as HTMLDivElement
+  const button = indicator.parentElement as HTMLButtonElement
 
   const href = button.dataset.href
   if (!href?.startsWith("#")) return
 
+  const body = document.getElementById("quartz-body")
+  const toc = document.getElementById("toc")
+  const afterClick = () => {
+    if (body?.classList.contains("toc-hover")) {
+      body.classList.remove("toc-hover")
+    }
+    const buttons = toc?.querySelectorAll("button[data-for]") as NodeListOf<HTMLButtonElement>
+    buttons.forEach((button) => {
+      const fill = button.querySelector(".fill") as HTMLElement
+      if (fill) {
+        fill.style.transform = "scaleX(1)"
+        fill.style.opacity = "" // We need to reset this
+      }
+    })
+  }
+
   evt.preventDefault()
   scrollToElement(href)
+  afterClick()
 
   // Handle initial load with hash
   if (window.location.hash) {
     // Delay to ensure page is fully loaded
     setTimeout(() => {
       scrollToElement(window.location.hash)
+      afterClick()
     }, 10)
   }
 }
@@ -94,6 +113,57 @@ function setupToc() {
         button.removeEventListener("click", onClick)
       })
     }
+
+    const onMouseEnter = () => {
+      body.classList.add("toc-hover")
+    }
+
+    const onMouseLeave = () => {
+      body.classList.remove("toc-hover")
+
+      // Reset fill transformations when mouse leaves
+      buttons.forEach((button) => {
+        const fill = button.querySelector(".fill") as HTMLElement
+        if (fill) {
+          fill.style.transform = "scaleX(1)"
+          fill.style.opacity = "" // We need to reset this
+        }
+      })
+    }
+
+    // Add mousemove handler for dynamic fill animation
+    const onMouseMove = (evt: MouseEvent) => {
+      const navRect = nav.getBoundingClientRect()
+      const mouseY = evt.clientY - navRect.top
+
+      buttons.forEach((button) => {
+        const buttonRect = button.getBoundingClientRect()
+        const buttonY = buttonRect.top + buttonRect.height / 2 - navRect.top
+
+        const distance = mouseY - buttonY
+        const sigma = 42
+        const maxScale = 4.5
+        const isButton = Math.abs(distance) < buttonRect.height / 2
+
+        const fill = button.querySelector(".fill") as HTMLElement
+        fill.style.animation = "unset !important"
+
+        fill.style.opacity = isButton ? "1" : "0.35"
+        // If the button is under the cursor, set the scale to the maximum value
+        // Otherwise, apply Gaussian scaling based on distance
+        fill.style.transform = `scaleX(${isButton ? maxScale : 1 + (maxScale - 1) * Math.exp(-Math.pow(distance, 2) / (2 * Math.pow(sigma, 2)))})`
+      })
+    }
+
+    toc.addEventListener("mouseenter", onMouseEnter)
+    toc.addEventListener("mouseleave", onMouseLeave)
+    nav.addEventListener("mousemove", onMouseMove)
+
+    window.addCleanup(() => {
+      toc.removeEventListener("mouseenter", onMouseEnter)
+      toc.removeEventListener("mouseleave", onMouseLeave)
+      nav.removeEventListener("mousemove", onMouseMove)
+    })
   }
 }
 

@@ -100,7 +100,7 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
                 return fileSlug.startsWith(folder) && fileSlug !== folder
               })
               .sort(byDateAndAlphabetical(cfg))
-              .at(1)?.dates,
+              .at(0)?.dates,
           }),
         ]),
       )

@@ -127,17 +127,6 @@ h6 {
   }
 }
 
-// golden ditonic scale
-h1 {
-  font-size: 2.0582rem;
-}
-h2 {
-  font-size: 1.618rem;
-}
-h3 {
-  font-size: 1.272rem;
-}
-
 li.section-li {
   & > .section {
     grid-template-columns: 7em 3fr 1fr;
@@ -306,7 +295,7 @@ a {
     margin-top: 0.2em;
   }
 
-  &.internal:not([role="anchor"]):not([data-bib]) {
+  &.internal:not([role="anchor"]):not([data-bib]):not([data-list]) {
     @include links;
 
     & {
@@ -446,7 +435,6 @@ section {
 
 section[data-references] {
   border-top: 1px solid var(--lightgray);
-  margin-top: 2rem;
   margin-left: 0.5rem;
 
   ul,
@@ -468,7 +456,6 @@ section[data-footnotes] {
   margin-left: 0.5rem;
 
   & > #footnote-label.sr-only {
-    margin-top: 1rem;
     margin-bottom: 0.5rem;
   }
 
@@ -800,15 +787,6 @@ section[data-footnotes] {
     position: relative;
     padding-left: 0.3em;
 
-    @include links;
-    @include indicatorHook;
-
-    &::before {
-      border-left-color: inherit;
-    }
-  }
-
-  .llm-source {
     @include links;
     @include indicatorHook;
 

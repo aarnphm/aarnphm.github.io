@@ -105,6 +105,10 @@ const config: QuartzConfig = {
         customMacros: {
           "\\argmin": "\\mathop{\\operatorname{arg\\,min}}\\limits",
           "\\argmax": "\\mathop{\\operatorname{arg\\,max}}\\limits",
+          "\\upgamma": "\\mathit{\\gamma}",
+          "\\upbeta": "\\mathit{\\beta}",
+          "\\upalpha": "\\mathit{\\alpha}",
+          "\\uptheta": "\\mathit{\\theta}",
         },
         katexOptions: { strict: false },
       }),

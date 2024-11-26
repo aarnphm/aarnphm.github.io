@@ -577,7 +577,11 @@ export function transcludeFinal(
 
   const { dynalist } = opts
 
-  const anchor = (href: string, url: string, description: string): Element => {
+  const anchor = (href: string, url: string, description: string, title: boolean): Element => {
+    if (!title) return {} as Element
+
+    const [parent, ...children] = url.split("/")
+    const truncated = children.length > 2 ? `${parent}/.../${children[children.length - 1]}` : url
     const metadata: Element[] = [
       {
         type: "element",
@@ -588,11 +592,11 @@ export function transcludeFinal(
             color: "var(--gray)",
           },
         },
-        children: [{ type: "text", value: `url: ${url}` }],
+        children: [{ type: "text", value: `url: ${truncated}` }],
       },
     ]
 
-    if (description !== "undefined") {
+    if (description) {
       metadata.push({
         type: "element",
         tagName: "li",
@@ -664,7 +668,12 @@ export function transcludeFinal(
     if (node.tagName === "blockquote") {
       const classNames = (node.properties?.className ?? []) as string[]
       const url = node.properties.dataUrl as string
-      const alias = node.properties?.dataEmbedAlias
+      const alias = (
+        node.properties?.dataEmbedAlias !== "undefined"
+          ? node.properties?.dataEmbedAlias
+          : node.properties?.dataBlock
+      ) as string
+
       if (classNames.includes("transclude")) {
         const inner = node.children[0] as Element
         const transcludeTarget = inner.properties["data-slug"] as FullSlug
@@ -697,7 +706,7 @@ export function transcludeFinal(
             }
 
             node.children = [
-              anchor(inner.properties?.href as string, url, alias),
+              anchor(inner.properties?.href as string, url, alias, title),
               normalizeHastElement(blockNode, slug, transcludeTarget),
               {
                 type: "element",
@@ -739,7 +748,7 @@ export function transcludeFinal(
           }
 
           node.children = [
-            anchor(inner.properties?.href as string, url, alias),
+            anchor(inner.properties?.href as string, url, alias, title),
             ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
             ),
@@ -755,7 +764,7 @@ export function transcludeFinal(
         } else if (page.htmlAst) {
           // page transclude
           node.children = [
-            anchor(inner.properties?.href as string, url, alias),
+            anchor(inner.properties?.href as string, url, alias, title),
             title
               ? {
                   type: "element",

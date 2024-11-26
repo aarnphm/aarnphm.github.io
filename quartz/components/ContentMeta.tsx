@@ -63,7 +63,9 @@ export default (() => {
             target="_blank"
             rel="noopener noreferrer"
             class="llm-source"
-            style={["color: inherit", "font-weight: inherit"].join(";")}
+            style={["color: inherit", "font-weight: inherit", "text-decoration: underline"].join(
+              ";",
+            )}
           >
             <span title="voir https://github.com/AnswerDotAI/llms-txt">llms.txt</span>
           </a>

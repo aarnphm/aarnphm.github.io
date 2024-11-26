@@ -46,5 +46,3 @@ See also [[thoughts/university/twenty-three-twenty-four/compsci-4x03/A4|SGD and 
 \end{algorithmic}
 \end{algorithm}
 ```
-
-![[thoughts/Nesterov momentum]]

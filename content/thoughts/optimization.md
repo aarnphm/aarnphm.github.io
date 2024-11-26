@@ -17,7 +17,26 @@ Usually a lot better comparing to `2**t` simply for [[thoughts/university/twenty
 
 For ARM the design specially [instructions](https://developer.arm.com/documentation/ddi0602/2024-09/SVE-Instructions/FEXPA--Floating-point-exponential-accelerator-) set for it!
 
-![[thoughts/images/pseudo-exp-fexpa.svg|pseudo implementation of exp in ARM]]
+```cpp title="pseudocode-exp-fexpa.cpp"
+// Pseudocode representing the computation flow:
+float32x4_t exp_sve2(float32x4_t x) {
+    // Step 1: Range reduction
+    // N = round(x * log2(e))
+    // r = x - N * ln(2)    [reduced argument]
+
+    // Step 2: FEXPA instruction provides 2^N approximation
+    // In hardware: FEXPA Z0.S, Z1.S
+    float32x4_t exp_approx; // Result of FEXPA
+
+    // Step 3: Polynomial evaluation for exp(r)
+    // Typically uses Horner's method with reduced precision
+    // coefficients since we're starting with a good approximation
+    float32x4_t exp_r = evaluate_polynomial(r);
+
+    // Step 4: Combine results
+    return exp_approx * exp_r;
+}
+```
 
 Advantages of FEXPA:
 
@@ -91,11 +110,19 @@ $$
 \end{aligned}
 $$
 
-_note: reduce number of hidden units $d_\text{ff}$ (second dimension of $W$ and $V$ and the first dimension of $W_{2}$) by a factor of $\frac{2}{3}$ when comparing these layers
+_note_: reduce number of hidden units $d_\text{ff}$ (second dimension of $W$ and $V$ and the first dimension of $W_{2}$) by a factor of $\frac{2}{3}$ when comparing these layers
 
 ## JumpReLU
 
-[@rajamanoharan2024jumpingaheadimprovingreconstruction]
+[@erichson2019jumpreluretrofitdefensestrategy]
+
+application: [[thoughts/sparse autoencoder#Gated SAE]] [@rajamanoharan2024jumpingaheadimprovingreconstruction]
+
+$$
+J(z) \coloneqq z H(z - \kappa) = \begin{cases} 0 & \text{if } z \leq \kappa \\ z & \text{if } z > \kappa \end{cases}
+$$
+
+![[thoughts/images/JumpReLU.mp4]]
 
 ## momentum
 
@@ -119,7 +146,7 @@ $$
 
 If we set different curvature ($f(x) = 2x^2$) thus $x_{t+1} = x_t - 4 \alpha x_t = (1-4 \alpha)x_t$
 
-> [!IMPORTANT]
+> [!IMPORTANT] step size
 >
 > step size depends on curvature for one-dimensional quadratics
 >
@@ -172,7 +199,7 @@ We denote $\kappa = \frac{\lambda_{\text{max}}}{\lambda_{\text{min}}}$ as **cond
 >
 > Intuitively these are problems that are ==highly curved in some directions, but flat others==
 
-### Polyak's Momentum
+### Polyak
 
 abbreviation: "heavy ball method"
 
@@ -215,6 +242,8 @@ tl/dr: if current gradient step is in same direction as previous step, then move
 > $$
 >
 > _degree-$\textbf{t}$ polynomial in $\textbf{u}$_
+
+### Nesterov
 
 ![[thoughts/Nesterov momentum]]
 

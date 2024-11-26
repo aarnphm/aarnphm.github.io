@@ -1,5 +1,6 @@
 .collapsible-header {
   position: relative;
+  margin-left: -9px;
 
   &:first-child {
     margin-top: 1rem;
@@ -24,13 +25,6 @@
   }
   &[data-level="6"] {
     margin-left: 2.4rem;
-  }
-
-  &:not(.collapsed) {
-    &.end-hr > * > .collapsible-header-content,
-    &:last-of-type > * > .collapsible-header-content {
-      border-bottom: 1px dashed var(--gray);
-    }
   }
 
   & .collapsed-dots {
@@ -112,18 +106,24 @@
     }
   }
 
+  &.collapsed {
+    :where(h1, h2, h3, h4, h5, h6):not(.popover *) {
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+
   :where(h1, h2, h3, h4, h5, h6):not(.popover *) {
     margin: 0;
-    display: inline-flex;
-    align-items: center;
   }
 
   // Content styles
   .collapsible-header-content-outer {
     padding-left: 9px;
+    padding-bottom: 9px;
 
     .collapsible-header-content {
-      border-left: 1px dashed var(--gray);
+      border-left: 1px solid var(--lightgray);
       overflow: hidden;
       padding-left: 9px;
       max-height: none;

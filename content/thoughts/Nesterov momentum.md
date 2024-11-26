@@ -6,6 +6,8 @@ tags:
 date: "2024-11-11"
 modified: "2024-11-11"
 title: Nesterov momentum
+transclude:
+  title: false
 ---
 
 See also [paper](http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf), [[thoughts/optimization#momentum]]

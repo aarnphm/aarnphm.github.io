@@ -20,9 +20,9 @@ $$
 
 if distribution of $X$ is uniform over $[a,b]$, then $f(x) = \frac{1}{b-a}$
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression#curve-fitting]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression#curve-fitting|curve fitting]]
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression#^1dols]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression#^1dols|1D OLS]]
 
 > [!question]+ minimize $f(a, b) = \sum^{n}_{i=1}{(ax^i + b - y^i)^2}$
 >

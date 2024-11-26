@@ -4,6 +4,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-02-07"
+modified: "2024-11-25"
 title: movies.
 ---
 
@@ -30,7 +31,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] The Father (2020)
 - [ ] Poor Things (2023)
 - [ ] Maestro (2023)
-- [ ] Dune: Part Two (2024)
+- [ ] Paris, Texas (1984)
 
 ## recurring.
 
@@ -65,6 +66,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - Hackshaw Ridge (2016)
 - Joker (2019)
 - The Banshees of Inisherin (2022)
+- Dune: Part Two (2024)
 
 ### comedy.
 

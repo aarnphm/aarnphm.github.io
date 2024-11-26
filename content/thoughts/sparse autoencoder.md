@@ -103,9 +103,9 @@ $$
 
 _Figure 3: Gated SAE with weight sharing between gating and magnitude paths_
 
-![[thoughts/images/jump_relu.webp]]
+![[thoughts/images/gated_jump_relu.webp]]
 
-_Figure 4: A gated encoder become a single layer linear encoder with Jump ReLU_ [@erichson2019jumpreluretrofitdefensestrategy] _activation function_ $\sigma_\theta$
+_Figure 4: A gated encoder become a single layer linear encoder with [[thoughts/optimization#JumpReLU]]_ [@erichson2019jumpreluretrofitdefensestrategy] _activation function_ $\sigma_\theta$
 
 ### feature suppression
 

@@ -119,16 +119,27 @@ class DiagramPanZoom {
 
     this.scale = newScale
     this.updateTransform()
+    return this
   }
 
   private updateTransform() {
     this.content.style.transform = `translate(${this.currentPan.x}px, ${this.currentPan.y}px) scale(${this.scale})`
+    return this
+  }
+
+  public setInitialPan(pan: Position) {
+    this.currentPan = pan
+    this.startPan = { x: 0, y: 0 }
+    return this
   }
 
   private resetTransform() {
     this.scale = 1
-    this.currentPan = { x: 0, y: 0 }
+    // Reset to center instead of origin
+    const containerRect = this.container.getBoundingClientRect()
+    this.currentPan = { x: containerRect.width / 2, y: 0 }
     this.updateTransform()
+    return this
   }
 }
 
@@ -214,8 +225,14 @@ document.addEventListener("nav", async () => {
       popupContainer.classList.add("active")
       container.style.cursor = "grab"
 
+      // Center the content initially by calculating center offset
+      const containerRect = container.getBoundingClientRect()
+      const initialPan = { x: containerRect.width / 2, y: 0 }
+      content.style.transform = `translate(${initialPan.x}px, ${initialPan.y}px) scale(1)`
+
       // Initialize pan-zoom after showing the popup
       panZoom = new DiagramPanZoom(container, content)
+      panZoom.setInitialPan(initialPan)
     }
 
     function hideMermaid() {

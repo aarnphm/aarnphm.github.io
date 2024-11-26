@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("nav", () => {
   const slug = document.body.dataset.slug
   if (slug === "404") {
     const tooltip = document.querySelector(".home-tooltip") as HTMLElement

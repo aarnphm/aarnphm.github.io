@@ -113,7 +113,11 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
         // Sort associated files to get the most recent dates
         const sortedFiles = associatedFiles.sort(byDateAndAlphabetical(cfg))
-        const primaryFile = sortedFiles.length > 0 ? sortedFiles[0] : fileData
+        const defaultDate = { created: new Date(0), modified: new Date(0), published: new Date(0) }
+        const dates =
+          sortedFiles.length > 0
+            ? sortedFiles[0].dates || fileData.dates || defaultDate
+            : fileData.dates || defaultDate
 
         entries.push({
           slug: joinSegments(folderSlug, filePath) as FullSlug,
@@ -121,7 +125,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
             title: baseFileName,
             tags: [ext.split(".").at(-1) as string],
           },
-          dates: primaryFile.dates,
+          dates,
         })
       }
     }
