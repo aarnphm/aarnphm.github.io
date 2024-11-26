@@ -41,7 +41,7 @@
   "dependencies": {
     "@clack/prompts": "^0.8.2",
     "@floating-ui/dom": "^1.6.12",
-    "@myriaddreamin/rehype-typst": "^0.5.0-rc7",
+    "@myriaddreamin/rehype-typst": "^0.5.0-rc9",
     "@napi-rs/simple-git": "^0.1.19",
     "@tweenjs/tween.js": "^25.0.0",
     "async-mutex": "^0.5.0",
@@ -74,7 +74,7 @@
     "mdast-util-to-string": "^4.0.0",
     "mermaid": "^11.4.0",
     "micromorph": "^0.4.5",
-    "pixi.js": "^8.5.2",
+    "pixi.js": "^8.6.0",
     "preact": "^10.25.0",
     "preact-render-to-string": "^6.5.11",
     "pretty-bytes": "^6.1.1",
@@ -119,13 +119,13 @@
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.9.3",
+    "@types/node": "^22.10.0",
     "@types/pretty-time": "^1.1.5",
     "@types/source-map-support": "^0.5.10",
     "@types/ws": "^8.5.13",
     "@types/yargs": "^17.0.33",
     "esbuild": "^0.24.0",
-    "prettier": "^3.3.3",
+    "prettier": "^3.4.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }
