@@ -384,7 +384,15 @@ $$
 > We define a _finite-state machine_, given by $(Q, \Sigma , \delta, q_0, F)$ [^automaton-definition]
 > where character comprising the strings in $\mathcal{V}$ are drawn from $\Sigma$, i.e: $\mathcal{V} \in \mathcal{P}(\Sigma)$
 >
-> ![[thoughts/images/vllm/fsm-iterative-generations.webp]]
+> ![[thoughts/images/vllm/fsm-iterative-generations.webp]] > _FSM making for regular expression `([0-9]*)?\.?[0-9]*`_
+>
+> > [!note]- example illustration
+> >
+> > For simplicity, let the vocabulary $\mathcal{V}$ consists of strings $\{A, ., 42, .2, 1\}$
+> >
+> > - generations start: FSM in state 0, so it masks "A", since it wouldn't accepted by the FSM. Then we only sample ".", "42", ".2", "1" in this case
+> > - if we sample ".2" then we advance the FSM to state 3. In this case. only "42" and "1" are valid completions, so we mask other values before sampling.
+> >   If we sample "1" instead, then we advance FSM to state 1, in which case ".", ".42", ".2", and "1" are valid completions
 
 [^automaton-definition]:
     [[thoughts/university/twenty-three-twenty-four/sfwr-2fa3/DFA|finite state machine]]
@@ -394,6 +402,11 @@ $$
     - $\delta: Q \times \Sigma \to Q$ is the transition function
     - $q_0 \in Q$ is the start state
     - $F \subseteq Q$ is the set of all accepted states.
+
+> [!important] determinism
+>
+> Looping through the vocabulary is still the biggest issue. For that, we preprocess the vocabulary using Regex's FSM and build a index.
+> Thus a proceeding for producing matches starting at any point in the FSM is required.
 
 We define finding sub-sequences of FSM $M$ that accept string $v$ as follow:
 

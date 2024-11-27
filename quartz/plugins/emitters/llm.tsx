@@ -459,7 +459,7 @@ export const LLM: QuartzEmitterPlugin = () => {
         const content = `---
 slug: ${slug}
 tags:
-${(file.data.frontmatter?.tags!.map((t, idx, arr) => (idx != arr.length - 1 ? `  - ${t}\n` : `  - ${t}`)) as string[]).join("")}
+${((file.data.frontmatter?.tags ?? []).map((t, idx, arr) => (idx != arr.length - 1 ? `  - ${t}\n` : `  - ${t}`)) as string[]).join("")}
 description: ${file.data.frontmatter?.description ?? `resconstructed source of "https://${baseUrl}/${slug}"`}
 title: ${file.data.frontmatter?.title}
 date: ${file.data.frontmatter?.date}

@@ -179,6 +179,14 @@ body {
       animation: fade-background 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
 
+    .page > #quartz-body {
+      .center {
+        & > .page-header {
+          display: none;
+        }
+      }
+    }
+
     @keyframes fade-background {
       0% {
         opacity: 0;
@@ -801,5 +809,15 @@ section[data-footnotes] {
 .breadcrumb-element {
   p {
     margin-left: 0.25rem;
+  }
+}
+
+.tikz {
+  display: block;
+  margin: 1.5em 0;
+  text-align: center;
+
+  & > svg {
+    transform: scale(1.5);
   }
 }

@@ -159,7 +159,7 @@ export default ((userOpts?: Partial<Options>) => {
             {fileData.toc.map((entry, idx) => (
               <button
                 key={entry.slug}
-                class="toc-item"
+                class={`depth-${entry.depth} toc-item`}
                 data-depth={entry.depth}
                 data-href={`#${entry.slug}`}
                 data-for={entry.slug}
