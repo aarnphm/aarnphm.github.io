@@ -126,7 +126,71 @@ See also [@novikoff1962convergence]
 >
 > Then ==perceptron makes at most $\frac{R^2}{\upgamma^2}$ errors==
 
-Assume that
+_proof by induction_
+
+> [!abstract] definition of $\underline{\theta^k}$
+>
+> to be parameter vector where algorithm makes $k^{\text{th}}$ error.
+
+_Note_ that we have $\underline{\theta^{1}}=\underline{0}$
+
+Assume that $k^{\text{th}}$ error is made on example $t$, or
+
+$$
+\begin{align}
+\underline{\theta^{k+1}} \cdot \underline{\theta^{*}} &= (\underline{\theta^k} + y_t \underline{x_t}) \cdot \underline{\theta^{*}} \\
+&= \underline{\theta^k} \cdot \underline{\theta^{*}} + y_t \underline{x^t} \cdot \underline{\theta^{*}} \\
+&\ge \underline{\theta^k} \cdot \underline{\theta^{*}} + \upgamma \\[12pt]
+&\because \text{ Assumption: } y_t \underline{x_t} \cdot \underline{\theta^{*}} \ge \upgamma
+\end{align}
+$$
+
+Follows up by induction on $k$ that
+
+$$
+\underline{\theta^{k+1}} \cdot \underline{\theta^{*}} \ge k \upgamma
+$$
+
+Using [[thoughts/Cauchy-Schwarz]] we have $\|\underline{\theta^{k+1}}\| \times \|\underline{\theta^{*}}\| \ge \underline{\theta^{k+1}} \cdot \underline{\theta^{*}}$
+
+$$
+\begin{align}
+\|\underline{\theta^{k+1}}\| &\ge k \upgamma \\[16pt]
+&\because \|\underline{\theta^{*}}\| = 1
+\end{align}
+$$
+
+In the second part, we will find upper bound for (5):
+
+$$
+\begin{align}
+\|\underline{\theta^{k+1}}\|^2 &= \|\underline{\theta^k} + y_t \underline{x_t}\|^2 \\
+&= \|\underline{\theta^k}\|^2 + y_t^2 \|\underline{x_t}\|^2 + 2 y_t \underline{x_t} \cdot \underline{\theta^k} \\
+&\le \|\underline{\theta^k}\|^2 + R^2
+\end{align}
+$$
+
+(9) is due to:
+
+- $y_t^2 \|\underline{x_t}^2\|^2  = \|\underline{x_t}^2\| \le R^2$ by assumption of theorem
+- $y_t \underline{x_t} \cdot \underline{\theta^k} \le 0$ given parameter vector $\underline{\theta^k}$ gave error at $t^{\text{th}}$ example.
+
+Follows with induction on $k$ that
+
+$$
+\begin{align}
+\|\underline{\theta^{k+1}}\|^2 \le kR^2
+\end{align}
+$$
+
+from (5) and (10) gives us
+
+$$
+\begin{aligned}
+k^2 \upgamma^2 &\le \|\underline{\theta^{k+1}}\|^2 \le kR^2 \\
+k &\le \frac{R^2}{\upgamma^2}
+\end{aligned}
+$$
 
 ---
 
