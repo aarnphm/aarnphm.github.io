@@ -68,3 +68,5 @@ Success consists of going from failure to failure without loss of enthusiasm. --
 I have to be successful because I like expensive things. -- some random person on twitter
 
 People like you think I get lucky. Here's the thing, I make my own luck. -- Harvey Specter
+
+Sticks and stones may breaks my bone, but there will be always something that offend a feminist -- Some random British reporter

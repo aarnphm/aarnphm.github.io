@@ -48,7 +48,7 @@ $$
 \end{bmatrix}
 $$
 
-Jacobian for $g: \mathbb{R}^m \rightarrow \mathbb{R}^n$
+[[thoughts/Vector calculus#Jacobian matrix|Jacobian]] for $g: \mathbb{R}^m \rightarrow \mathbb{R}^n$
 
 $$
 \begin{aligned}

@@ -73,6 +73,7 @@ const config: QuartzConfig = {
         priority: ["frontmatter", "filesystem"],
       }),
       Plugin.Pseudocode(),
+      Plugin.TikzJax(),
       Plugin.Poetry(),
       // FIXME: implement this
       // Plugin.Recipe(),

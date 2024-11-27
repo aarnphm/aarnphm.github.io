@@ -3,7 +3,9 @@ const observer = new IntersectionObserver((entries) => {
   for (const entry of entries) {
     const slug = entry.target.id
     const tocEntryElement = document.querySelector(`button[data-for="${slug}"]`)
-    const layout = (document.querySelector(".toc") as HTMLDivElement).dataset.layout
+    const toc = document.querySelector(".toc") as HTMLDivElement
+    if (!toc) continue
+    const layout = toc.dataset.layout
     const windowHeight = entry.rootBounds?.height
     if (windowHeight && tocEntryElement) {
       if (layout === "minimal") {
@@ -146,12 +148,13 @@ function setupToc() {
         const isButton = Math.abs(distance) < buttonRect.height / 2
 
         const fill = button.querySelector(".fill") as HTMLElement
+        const minScale = parseInt(getComputedStyle(fill).getPropertyValue("min-width")) / 16
         fill.style.animation = "unset !important"
 
         fill.style.opacity = isButton ? "1" : "0.35"
         // If the button is under the cursor, set the scale to the maximum value
         // Otherwise, apply Gaussian scaling based on distance
-        fill.style.transform = `scaleX(${isButton ? maxScale : 1 + (maxScale - 1) * Math.exp(-Math.pow(distance, 2) / (2 * Math.pow(sigma, 2)))})`
+        fill.style.transform = `scaleX(${isButton ? maxScale : minScale + (maxScale - minScale) * Math.exp(-Math.pow(distance, 2) / (2 * Math.pow(sigma, 2)))})`
       })
     }
 

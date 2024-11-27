@@ -74,6 +74,7 @@
     "mdast-util-to-string": "^4.0.0",
     "mermaid": "^11.4.0",
     "micromorph": "^0.4.5",
+    "node-tikzjax": "^1.0.3",
     "pixi.js": "^8.6.0",
     "preact": "^10.25.0",
     "preact-render-to-string": "^6.5.11",

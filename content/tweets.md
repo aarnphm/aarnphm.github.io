@@ -32,3 +32,5 @@ https://x.com/NeelNanda5/status/1850656772002120009 <!-- Neel's take on Anthropi
 https://x.com/stephen_wolfram/status/1826692234554875979 <!-- Explanation into ML -->
 
 https://x.com/spikedoanz/status/1856505412167839925/ <!-- FEXPA op in ARM -->
+
+https://x.com/noampomsky/status/1860856607607050633 <!-- Ava on Iain McGilchrist of attention being a moral act -->

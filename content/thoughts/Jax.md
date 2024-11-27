@@ -22,7 +22,7 @@ jnp.dot(x, x.T).block_until_ready()
 
 - notable function:
   - `jit()` for compilation of multiple computations
-  - `grad()` for performing transformation (autodiff, Jacobian-vector product)
+  - `grad()` for performing transformation (autodiff, [[thoughts/Vector calculus#Jacobian matrix|Jacobian]]-vector product)
   - `vmap()` for auto-vectorisation
 
 > Arrays are **immutable** in Jax

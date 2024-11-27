@@ -77,26 +77,26 @@ See also: [[/curius|digital version]]
 
 ### non-fiction
 
-| title                                                  | author              | notes                                                                            |
-| ------------------------------------------------------ | ------------------- | -------------------------------------------------------------------------------- |
-| Deep Work                                              | Cal Newport         |                                                                                  |
-| Digital Minimalism                                     | Cal Newport         |                                                                                  |
-| Playing Software: Homo Ludens in Computational Culture | Miguel Sicart       |                                                                                  |
-| Reimagining Capitalism in a World on Fire              | Rebecca Henderson   |                                                                                  |
-| Principles                                             | Ray Dalio           |                                                                                  |
-| Mindset                                                | Dr. Carol S. Dweck  |                                                                                  |
-| The Pleasure of Finding Things Out                     | Richard P. Feynman  |                                                                                  |
-| Walden and Civil Disobedience                          | Henry David Thoreau |                                                                                  |
-| Deep Sleep                                             | Jade Wu             |                                                                                  |
-| Are We Spiritual Machines?                             | Ray Kurzweil        | [html](https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=olbp56055) |
-| Free to Choose                                         | Milton Friedman     |                                                                                  |
+| title                                                  | author              | notes                                                                                                                                         |
+| ------------------------------------------------------ | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Deep Work                                              | Cal Newport         |                                                                                                                                               |
+| Digital Minimalism                                     | Cal Newport         |                                                                                                                                               |
+| Playing Software: Homo Ludens in Computational Culture | Miguel Sicart       |                                                                                                                                               |
+| Reimagining Capitalism in a World on Fire              | Rebecca Henderson   |                                                                                                                                               |
+| Principles                                             | Ray Dalio           |                                                                                                                                               |
+| Mindset                                                | Dr. Carol S. Dweck  |                                                                                                                                               |
+| The Pleasure of Finding Things Out                     | Richard P. Feynman  |                                                                                                                                               |
+| Walden and Civil Disobedience                          | Henry David Thoreau |                                                                                                                                               |
+| Deep Sleep                                             | Jade Wu             |                                                                                                                                               |
+| Are We Spiritual Machines?                             | Ray Kurzweil        | [html](https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=olbp56055)                                                              |
+| Free to Choose                                         | Milton Friedman     |                                                                                                                                               |
+| Seduction and Betrayal                                 | Elizabeth Hardwick  | [link](https://www.penguinrandomhouse.ca/books/643010/seduction-and-betrayal-by-elizabeth-hardwick-introduction-by-joan-didion/9780940322783) |
 
 ### fiction
 
 | title                   | author                |
 | ----------------------- | --------------------- |
 | Recursion               | Blake Crouch          |
-| The Trial               | Franz Kafka           |
 | Sea of Tranquility      | Emily St. John Mandel |
 | Oblivion                | David Foster Wallace  |
 | The Uninhabitable Earth | Wallace-Weels         |
@@ -108,6 +108,7 @@ See also: [[/curius|digital version]]
 | Robinson Crusoe         | Daniel Defoe          |
 | The Overstory           | Richard Powers        |
 | Rejection               | Tony Tulathimutte     |
+| Play It as It Lays      | Joan Didion           |
 
 ### poetry
 
@@ -122,6 +123,7 @@ See also: [[/curius|digital version]]
 
 ### 2024
 
+- **The Trial** by Frank Kafka
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
 - **Fear and Trembling** by Søren Kierkegaard
 - **Either/Or** by Søren Kierkegaard
