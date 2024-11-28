@@ -146,6 +146,8 @@
   }
 
   & > .center {
+    position: relative;
+
     &.skewed {
       transform: skew(var(--skew-default), var(--skew-default));
       transform-origin: center;

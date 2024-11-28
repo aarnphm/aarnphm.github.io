@@ -60,10 +60,9 @@ function setupToolbar() {
   const skewBtn = document.getElementById("skew-button") as HTMLButtonElement
   if (skewBtn) {
     const skew = skewId()
-    let previousSkewState = localStorage.getItem(skew) === "true"
-
     // Initialize from localStorage if exists
-    if (previousSkewState) {
+    const isSkewed = localStorage.getItem(skew)
+    if (isSkewed === "true") {
       page.classList.add("skewed")
       skewBtn.setAttribute("data-active", "true")
     }
@@ -71,7 +70,6 @@ function setupToolbar() {
     async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
       if (e.key === "u" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
         e.preventDefault()
-        previousSkewState = !previousSkewState
         const isActive = page.classList.toggle("skewed")
         skewBtn.setAttribute("data-active", isActive.toString())
         localStorage.setItem(skew, isActive.toString())
@@ -80,7 +78,6 @@ function setupToolbar() {
 
     function toggleSkew(e: Event) {
       e.stopPropagation()
-      previousSkewState = !previousSkewState
       const isActive = page.classList.toggle("skewed")
       skewBtn.setAttribute("data-active", isActive.toString())
       localStorage.setItem(skew, isActive.toString())
