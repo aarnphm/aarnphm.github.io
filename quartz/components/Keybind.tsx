@@ -16,9 +16,7 @@ export const KeybindAlias = {
   "cmd+j": "curius",
   "cmd+b": "lecteur",
   "cmd+g": "graphique",
-  // "cmd+o": "mode sombre",
-  // "cmd+.": "curseur de chat",
-  // "cmd+l": "projets",
+  "cmd+u": "fausser",
 }
 
 const defaultOptions: Options = {

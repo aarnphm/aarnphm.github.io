@@ -11,9 +11,6 @@ import { CSSResource, JSResource } from "../../util/resources"
 import calloutScript from "../../components/scripts/callout.inline.ts"
 // @ts-ignore
 import checkboxScript from "../../components/scripts/checkbox.inline.ts"
-// @ts-ignore
-import mermaidExtensionScript from "../../components/scripts/mermaid.inline.ts"
-import mermaidStyle from "../../components/styles/mermaid.inline.scss"
 import { FilePath, pathToRoot, slugTag, slugifyFilePath } from "../../util/path"
 import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
@@ -766,83 +763,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     ],
                   },
                   node,
-                  {
-                    type: "element",
-                    tagName: "div",
-                    properties: { id: "mermaid-container" },
-                    children: [
-                      {
-                        type: "element",
-                        tagName: "div",
-                        properties: { id: "mermaid-space" },
-                        children: [
-                          {
-                            type: "element",
-                            tagName: "div",
-                            properties: { className: ["mermaid-header"] },
-                            children: [
-                              {
-                                type: "element",
-                                tagName: "button",
-                                properties: {
-                                  className: ["close-button"],
-                                  "aria-label": "close button",
-                                },
-                                children: [
-                                  {
-                                    type: "element",
-                                    tagName: "svg",
-                                    properties: {
-                                      "aria-hidden": "true",
-                                      xmlns: "http://www.w3.org/2000/svg",
-                                      width: 24,
-                                      height: 24,
-                                      viewBox: "0 0 24 24",
-                                      fill: "none",
-                                      stroke: "currentColor",
-                                      "stroke-width": "2",
-                                      "stroke-linecap": "round",
-                                      "stroke-linejoin": "round",
-                                    },
-                                    children: [
-                                      {
-                                        type: "element",
-                                        tagName: "line",
-                                        properties: {
-                                          x1: 18,
-                                          y1: 6,
-                                          x2: 6,
-                                          y2: 18,
-                                        },
-                                        children: [],
-                                      },
-                                      {
-                                        type: "element",
-                                        tagName: "line",
-                                        properties: {
-                                          x1: 6,
-                                          y1: 6,
-                                          x2: 18,
-                                          y2: 18,
-                                        },
-                                        children: [],
-                                      },
-                                    ],
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                          {
-                            type: "element",
-                            tagName: "div",
-                            properties: { className: ["mermaid-content"] },
-                            children: [],
-                          },
-                        ],
-                      },
-                    ],
-                  },
                 ]
               }
             })
@@ -869,19 +789,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           script: calloutScript,
           loadTime: "afterDOMReady",
           contentType: "inline",
-        })
-      }
-
-      if (opts.mermaid) {
-        js.push({
-          script: mermaidExtensionScript,
-          loadTime: "afterDOMReady",
-          moduleType: "module",
-          contentType: "inline",
-        })
-        css.push({
-          content: mermaidStyle,
-          inline: true,
         })
       }
 

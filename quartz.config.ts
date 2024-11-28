@@ -99,7 +99,6 @@ const config: QuartzConfig = {
         enableArxivEmbed: true,
         enableRawEmbed: true,
       }),
-      Plugin.TableOfContents({ maxDepth: 5 }),
       Plugin.Description(),
       Plugin.Latex({
         renderEngine: "katex",
@@ -114,6 +113,7 @@ const config: QuartzConfig = {
         katexOptions: { strict: false },
       }),
       Plugin.GitHub(),
+      Plugin.TableOfContents({ maxDepth: 5 }),
     ],
     filters: [Plugin.RemoveDrafts()],
     emitters: [

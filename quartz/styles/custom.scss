@@ -7,6 +7,7 @@
 @use "./pages/poetry.scss";
 @use "./pages/curius.scss";
 @use "./pages/landing.scss";
+@use "./pages/notfound.scss";
 
 @include font-face(
   "Berkeley Mono",
@@ -158,108 +159,6 @@ body {
       border: unset !important;
       margin-bottom: 0;
       padding: 0;
-    }
-  }
-
-  &[data-slug="404"] {
-    position: relative;
-    height: 100vh;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    filter: brightness(0.8);
-
-    &:before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url("/static/404.webp");
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
-      opacity: 0;
-      transform: scale(1.1);
-      animation: fade-background 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
-    .page > #quartz-body {
-      .center {
-        & > .page-header {
-          display: none;
-        }
-      }
-    }
-
-    @keyframes fade-background {
-      0% {
-        opacity: 0;
-        transform: scale(1.1);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    &:active {
-      transform: scale(0.98);
-    }
-
-    .home-tooltip {
-      position: fixed;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      pointer-events: none; // Prevent tooltip from interfering with clicks
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.2s ease;
-      z-index: 1000;
-      font-family: var(--bodyFont);
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      white-space: nowrap;
-
-      &.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      &:before {
-        content: "";
-        position: absolute;
-        top: -4px;
-        left: 10px;
-        width: 8px;
-        height: 8px;
-        background: rgba(0, 0, 0, 0.8);
-        transform: rotate(45deg);
-        border-left: 1px solid rgba(255, 255, 255, 0.1);
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-      }
-    }
-
-    // Add subtle pulsing animation to suggest clickability
-    @keyframes subtle-pulse {
-      0% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.95;
-      }
-      100% {
-        opacity: 1;
-      }
-    }
-
-    h1,
-    p {
-      visibility: hidden;
     }
   }
 }
@@ -480,7 +379,7 @@ section[data-footnotes] {
   @for $i from 1 through $rows {
     @for $j from 1 through $cols {
       & > *:nth-child(#{$i}) > *:nth-child(#{$j}) {
-        &:not(.reader):not(.image-popup-modal) {
+        &:not(.reader):not(.image-popup-modal):not(#mermaid-container) {
           animation: var(--animation-name) var(--animation-duration) ease 1 normal backwards;
           animation-delay: #{$col-delay * $j + $row-delay * $i}s;
         }
@@ -626,6 +525,7 @@ section[data-footnotes] {
     }
   }
 }
+
 .popover > .popover-inner,
 .graph > #global-graph-container {
   border-radius: unset;
@@ -638,6 +538,7 @@ section[data-footnotes] {
       column-gap: 2rem;
       row-gap: 0;
       margin: 0 2rem;
+      height: 100vh;
 
       grid-template-columns: #{$sidePanelWidth} minmax(auto, #{$pageWidth});
       grid-template-rows: #{map.get($desktopGrid, templateRow)};
@@ -660,16 +561,6 @@ section[data-footnotes] {
     }
   }
 
-  & .sidebar.left,
-  & .sidebar.right {
-    display: grid !important;
-    row-gap: 0.8rem !important;
-    column-gap: 1.4rem !important;
-    grid-template-rows: repeat(4, min-content);
-    grid-template-columns: auto;
-    align-items: baseline;
-  }
-
   header {
     border-bottom: 1px solid var(--darkgray);
     align-items: center;
@@ -678,56 +569,23 @@ section[data-footnotes] {
     display: flex !important;
   }
 
+  .sidebar {
+    padding: 0 !important;
+  }
+
+  & .sidebar.left,
+  & .sidebar.right {
+    display: grid !important;
+    row-gap: 0.8rem !important;
+    column-gap: 1.4rem !important;
+    grid-template-columns: auto;
+    grid-template-rows: auto;
+    align-items: baseline;
+  }
+
   & .sidebar.right {
     margin: 0 !important;
-    grid-template-rows: auto;
     height: 0 !important;
-    padding: 0 !important;
-
-    // NOTE: prevent scrolling on right
-    // position: sticky;
-    // height: fit-content;
-    // top: $topSpacing;
-    // max-height: 50vh;
-    // padding-top: 0;
-
-    & .search {
-      grid-area: 1 / 1 / 1 / 1;
-      @media all and not ($desktop) {
-        grid-area: 1 / 1 / 1 / 2;
-      }
-    }
-
-    & .keybind {
-      grid-area: 1 / 2 / 1 / 1;
-      justify-self: end;
-
-      @media all and not ($desktop) {
-        grid-area: 1 / 2 / 1 / 2;
-        justify-self: start;
-      }
-    }
-
-    & .graph {
-      grid-area: 4 / 1 / 4 / 2;
-
-      @media all and not ($desktop) {
-        grid-area: 2 / 1 / 2 / 1;
-        max-width: $sidePanelWidth;
-      }
-    }
-
-    & .toc {
-      grid-area: 2 / 1 / 2 / 2;
-    }
-
-    & .backlinks {
-      grid-area: 3 / 1 / 3 / 2;
-
-      @media all and not ($desktop) {
-        grid-area: 2 / 2 / 2 / 2;
-      }
-    }
   }
 
   @media all and ($mobile) {
@@ -746,9 +604,16 @@ section[data-footnotes] {
 }
 
 .center {
-  margin: $topSpacing auto 0;
+  margin: $topSpacing auto;
   height: fit-content;
   grid-area: grid-header;
+  position: relative;
+
+  border: 1px solid var(--gray);
+
+  & > * {
+    padding: 0 1rem;
+  }
 }
 
 .content-meta {
@@ -813,7 +678,6 @@ section[data-footnotes] {
   display: block;
   margin: 2rem 0;
   text-align: center;
-  padding-top: 2rem;
 
   & > svg {
     transform: scale(1.5);

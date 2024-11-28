@@ -13,7 +13,6 @@
   border: 1px solid;
   border-radius: 5px;
   opacity: 0;
-  transition: 0.2s;
 
   & > svg {
     fill: var(--light);
@@ -33,32 +32,36 @@
 pre {
   &:hover > .expand-button {
     opacity: 1;
-    transition: 0.2s;
   }
 }
 
 #mermaid-container {
   position: fixed;
-  contain: layout;
-  z-index: 999;
+  z-index: 1000;
   left: 0;
   top: 0;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
   display: none;
-  backdrop-filter: blur(4px);
-  background: rgba(0, 0, 0, 0.5);
 
   &.active {
-    display: inline-block;
+    display: flex;
+  }
+
+  & > .mermaid-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(4px);
   }
 
   & > #mermaid-space {
     display: grid;
     width: 90%;
-    height: 90vh;
-    margin: 5vh auto;
+    margin: 5rem auto;
+    z-index: 1001;
     background: var(--light);
     box-shadow:
       0 14px 50px rgba(27, 33, 48, 0.12),
@@ -91,7 +94,6 @@ pre {
       padding: 2rem;
       position: relative;
       transform-origin: 0 0;
-      transition: transform 0.1s ease;
       overflow: visible;
       min-height: 200px;
       min-width: 200px;
@@ -134,7 +136,6 @@ pre {
         cursor: pointer;
         font-size: 16px;
         font-family: var(--bodyFont);
-        transition: all 0.2s ease;
 
         &:hover {
           background: var(--lightgray);

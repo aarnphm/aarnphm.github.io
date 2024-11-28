@@ -6,118 +6,150 @@ import script from "./scripts/toc.inline"
 import { i18n } from "../i18n"
 import { fromHtml } from "hast-util-from-html"
 import { htmlToJsx } from "../util/jsx"
-import { SKIP, visit } from "unist-util-visit"
-import { clone, FullSlug } from "../util/path"
-import { Root, Element, ElementContent, Text } from "hast"
+import { visit } from "unist-util-visit"
+import { clone, FullSlug, simplifySlug } from "../util/path"
+import { Root, Element } from "hast"
 import { headingRank } from "hast-util-heading-rank"
 import { TocEntry } from "../plugins/transformers/toc"
 import Slugger from "github-slugger"
 import { QuartzPluginData } from "../plugins/vfile"
-import { toString } from "hast-util-to-string"
+import { toText } from "hast-util-to-text"
 
 const ghSlugger = new Slugger()
 
 // NOTE: We will mutate fileData.toc here.
-function extractTransclude(
+function mutateTransclude(
   root: Root,
   allFiles: QuartzPluginData[],
   fileData: QuartzPluginData,
-  toc: TocEntry[],
 ): TocEntry[] {
   const entries: TocEntry[] = []
-  let insertIdx: number
 
-  visit(root, "element", (node, index, parent) => {
+  // Helper to find nearest header in parent chain
+  function findNearestHeader(node: Element): string | undefined {
+    let current = node
+    while (current) {
+      if (current.properties?.["data-level"]) {
+        return current.properties?.["data-heading-id"] as string
+      }
+      current = current.parent as Element
+    }
+    return undefined
+  }
+
+  // Helper to find nearest TOC index
+  function findTocIndex(headingId: string | undefined): number {
+    if (!headingId) return -1
+    return fileData.toc!.findIndex((entry) => entry.slug === headingId)
+  }
+
+  const tree = clone(root)
+  visit(tree, "element", (node, index, parent) => {
+    if (!parent || index === undefined) return
+
     const classNames = (node.properties?.className ?? []) as string[]
     if (node.tagName === "blockquote" && classNames.includes("transclude")) {
-      // TODO: extract the nearest headers from given root and extract the position from toc
-      if (parent!.type === "root") {
-        // Find the nearest preceding TOC entry to determine where to insert
+      // Case 1: Inside collapsible-header-content
+      const isInCollapsible = ((parent as Element).properties?.className as string[])?.includes(
+        "collapsible-header-content",
+      )
+      let insertIdx: number
+
+      if (isInCollapsible) {
+        // Use the parent collapsible header ID
+        const headerId = findNearestHeader(parent as Element)
+        insertIdx = findTocIndex(headerId)
+      } else {
+        // Case 2: Find nearest preceding header
         let nearestTocIndex = -1
-        for (let i = index! - 1; i >= 0; i--) {
-          const prevSibling = parent!.children[i] as Element
-          if (prevSibling.properties["data-level"]) {
+        for (let i = index - 1; i >= 0; i--) {
+          const prevSibling = parent.children[i] as Element
+          if (prevSibling.properties?.["data-level"]) {
             const headingId = prevSibling.properties["data-heading-id"]
-            nearestTocIndex = toc.findIndex((entry) => entry.id === headingId)
+            nearestTocIndex = findTocIndex(headingId as string)
             if (nearestTocIndex !== -1) break
           }
         }
-        // If no preceding header found, append to end, otherwise insert after nearest header
-        insertIdx = nearestTocIndex === -1 ? toc.length : nearestTocIndex
-      } else {
-        insertIdx = fileData.toc.find(
-          (h) => h.id === (parent as Element).properties["data-heading-id"],
-        )
+        insertIdx = nearestTocIndex === -1 ? fileData.toc!.length : nearestTocIndex + 1
       }
 
-      const transcludeTarget = node.properties.dataUrl as FullSlug
+      // TODO: Process nested transclude inside transclude
+      const processTransclude = (
+        transcludeTarget: FullSlug,
+        parentDepth: number = 0,
+      ): TocEntry[] => {
+        const page = clone(allFiles.find((f) => f.slug === transcludeTarget))
+        if (!page?.toc) return []
+
+        // Create new root to handle nested transcludes
+        const nestedRoot = clone(page.htmlAst) as Root
+        mutateTransclude(nestedRoot, allFiles, page)
+
+        // Adjust depths for nested entries
+        return page.toc.map((entry) => ({
+          ...entry,
+          depth: entry.depth + parentDepth,
+        }))
+      }
+
+      const transcludeTarget = node.properties?.dataUrl as FullSlug
       const page = allFiles.find((f) => f.slug === transcludeTarget)
+      if (!page?.toc) return
 
-      if (!page?.htmlAst || !page?.toc) return SKIP
+      // Track depth for nested transcludes
+      let currentDepth = 0
+      const parentHeaderEl = findNearestHeader(parent as Element)
+      if (parentHeaderEl) {
+        currentDepth = parseInt((parent as Element).properties?.["data-level"] as string) || 0
+      }
 
-      let blockRef = node.properties.dataBlock as string | undefined
+      // Handle block references
+      const blockRef = node.properties?.dataBlock as string | undefined
       if (blockRef?.startsWith("#^")) {
-        // Handle block transcludes
-        blockRef = blockRef.slice("#^".length)
-        const blockNode = page.blocks?.[blockRef]
-        if (blockNode) {
-          visit(blockNode, "element", (node) => {
-            if (headingRank(node)) {
-              const text = (node.children[0] as Text).value
-              const toc = page.toc!.find((it) => it.slug === text) as TocEntry
-              entries.push(toc)
+        // Block transclude - extract headers from the block
+        const blockContent = page.blocks?.[blockRef.slice(2)]
+        if (blockContent) {
+          visit(blockContent, "element", (el) => {
+            if (headingRank(el)) {
+              const id = el.properties?.id as string
+              const entry = page.toc!.find((e) => e.slug === id)
+              if (entry) entries.push({ ...entry, depth: entry.depth + 1 })
             }
           })
         }
-      } else if (blockRef?.startsWith("#") && page.htmlAst) {
-        // Handle header transcludes
-        blockRef = blockRef.slice(1)
-        let startIdx = undefined
-        let startDepth = undefined
-        let endIdx = undefined
-
-        for (const [i, el] of page.htmlAst.children.entries()) {
-          const depth = headingRank(el)
-          if (!(el.type === "element" && depth)) continue
-
-          if (!startIdx && !startDepth) {
-            if (el.properties?.id === blockRef) {
-              startIdx = i
-              startDepth = depth
-            }
-          } else if (depth <= startDepth!) {
-            endIdx = i
-            break
+      } else if (blockRef?.startsWith("#")) {
+        // Header transclude - extract subsection
+        const targetHeader = blockRef.slice(1)
+        const startIdx = page.toc!.findIndex((e) => e.slug === targetHeader)
+        if (startIdx !== -1) {
+          const baseDepth = page.toc[startIdx].depth
+          let endIdx = startIdx + 1
+          while (endIdx < page.toc.length && page.toc[endIdx].depth > baseDepth) {
+            endIdx++
           }
+          entries.push(...page.toc.slice(startIdx, endIdx))
         }
-
-        if (startIdx !== undefined) {
-          const contentSlice = (page.htmlAst.children.slice(startIdx, endIdx) as Element[])
-            .filter((s) => headingRank(s))
-            .map((h) => {
-              const startToc = page.toc!.find((it) => it.slug === h.properties.id) as TocEntry
-              const startTocIdx = page.toc!.indexOf(startToc)
-              let endTocIdx: number = page.toc?.length!
-              for (let i = startTocIdx; i <= page.toc?.length! - 1; i++) {
-                const maybeNextLevel = page.toc![i] as TocEntry
-                if (maybeNextLevel.depth === startToc?.depth) {
-                  endTocIdx = i
-                  break
-                }
-              }
-              return page.toc!.slice(startTocIdx, endTocIdx)
-            })
-            .flat()
-          entries.push(...contentSlice)
-        }
-      } else if (page.htmlAst) {
-        // Handle full page transcludes
+      } else {
+        // Full page transclude
         entries.push(...page.toc)
+      }
+
+      // Deduplicate before splicing
+      const uniqueEntries = entries.filter((entry) => {
+        return !fileData.toc!.some(
+          (existing) =>
+            existing.depth === entry.depth &&
+            existing.slug === entry.slug &&
+            existing.text === entry.text,
+        )
+      })
+
+      // Splice unique entries into main TOC
+      if (uniqueEntries.length > 0) {
+        fileData.toc!.splice(insertIdx + 1, 0, ...uniqueEntries)
       }
     }
   })
-
-  console.log(entries, insertIdx)
 
   return entries
 }
@@ -141,16 +173,44 @@ export default ((userOpts?: Partial<Options>) => {
     allFiles,
   }: QuartzComponentProps) => {
     if (!fileData.toc) {
-      return null
+      return <></>
     }
+
     ghSlugger.reset()
+    const slug = simplifySlug(fileData.slug!)
+    const backlinkFiles = allFiles.filter((file) => file.links?.includes(slug))
 
     const convertFromText = (text: string) => {
       const tocAst = fromHtml(text, { fragment: true })
       return htmlToJsx(fileData.filePath!, tocAst)
     }
 
+    mutateTransclude(tree as Root, allFiles, fileData)
+
     // const entries = extractTransclude(clone(tree) as Root, allFiles, fileData.toc)
+    const sectionToc: TocEntry[] = []
+    visit(tree, "element", (node: Element) => {
+      if (
+        node.tagName === "section" &&
+        (node.properties?.dataReferences === "" || node.properties?.dataFootnotes === "")
+      ) {
+        const heading = node.children[0] as Element
+        sectionToc.push({
+          depth: (headingRank(heading) as number) - 1,
+          text: toText(heading),
+          slug: heading.properties?.id as string,
+        })
+      }
+    })
+    fileData.toc.push(...sectionToc)
+
+    if (backlinkFiles.length > 0) {
+      fileData.toc.push({
+        depth: 1,
+        text: i18n(cfg.locale).components.backlinks.title,
+        slug: "backlinks-label",
+      })
+    }
 
     return (
       <div class={classNames(displayClass, "toc")} id="toc" data-layout={opts.layout}>

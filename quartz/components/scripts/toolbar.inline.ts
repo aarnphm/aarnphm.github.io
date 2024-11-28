@@ -1,4 +1,4 @@
-import { getFullSlug, joinSegments } from "../../util/path"
+import { getFullSlug } from "../../util/path"
 import { closeReader } from "./util"
 
 // TODO: Export directly to PDF and skip this step
@@ -32,10 +32,10 @@ function toggleReader(button: HTMLButtonElement) {
   }
 }
 
-const layoutId = () => `${getFullSlug(window)}-layout`
+const skewId = () => `${getFullSlug(window)}-skew-angle`
 function setupToolbar() {
-  const body = document.getElementById("quartz-body") as HTMLDivElement
   const toolbar = document.querySelector(".toolbar")
+  const page = document.querySelector(".center") as HTMLElement
   if (!toolbar) return
 
   const toolbarContent = toolbar.querySelector(".toolbar-content")
@@ -56,27 +56,40 @@ function setupToolbar() {
     window.addCleanup(() => pdfButton.removeEventListener("click", toggleExportPdf))
   }
 
-  // switchLayout
-  const layoutButton = toolbarContent.querySelector("#two-three-button") as HTMLButtonElement
-  if (layoutButton) {
-    const elId = layoutId()
-
-    const switchLayoutState = (ev: Event) => {
-      const button = ev.target as HTMLButtonElement
-      ev.preventDefault()
-
-      const isTwoLayout = body.classList.contains("two-layout")
-      isTwoLayout ? body.classList.remove("two-layout") : body.classList.add("two-layout")
-
-      button.dataset.active = isTwoLayout.toString()
-      localStorage.setItem(elId, isTwoLayout.toString())
+  // skew funkyness
+  const skewBtn = document.getElementById("skew-button") as HTMLButtonElement
+  if (skewBtn) {
+    const skew = skewId()
+    // Initialize from localStorage if exists
+    const isSkewed = localStorage.getItem(skew)
+    if (isSkewed === "true") {
+      page.classList.add("skewed")
+      skewBtn.setAttribute("data-active", "true")
     }
-    layoutButton.addEventListener("click", switchLayoutState)
-    window.addCleanup(() => layoutButton.removeEventListener("click", switchLayoutState))
-    if (localStorage.getItem(elId) === "true") {
-      layoutButton.dataset.active = "true"
-      body.classList.add("two-layout")
+
+    async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
+      if (e.key === "u" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+        e.preventDefault()
+        const isActive = page.classList.toggle("skewed")
+        skewBtn.setAttribute("data-active", isActive.toString())
+        localStorage.setItem(skew, isActive.toString())
+      }
     }
+
+    function toggleSkew(e: Event) {
+      e.stopPropagation()
+      const isActive = page.classList.toggle("skewed")
+      skewBtn.setAttribute("data-active", isActive.toString())
+      localStorage.setItem(skew, isActive.toString())
+    }
+
+    skewBtn.addEventListener("click", toggleSkew)
+    document.addEventListener("keydown", shortcutHandler)
+
+    window.addCleanup(() => {
+      skewBtn.removeEventListener("click", toggleSkew)
+      document.removeEventListener("keydown", shortcutHandler)
+    })
   }
 }
 

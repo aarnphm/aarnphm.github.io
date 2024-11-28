@@ -10,7 +10,6 @@ export const sharedPageComponents: SharedLayout = {
     Component.Search(),
   ],
   afterBody: [
-    Component.DesktopOnly(Component.Toolbar()),
     Component.Backlinks(),
     Component.Footer({
       links: {
@@ -31,8 +30,11 @@ export const defaultContentPageLayout: PageLayout = {
     Component.TagList(),
     Component.Spacer(),
   ],
-  right: [Component.Graph(), Component.Reader(), Component.Image()],
-  left: [Component.DesktopOnly(Component.TableOfContents())],
+  right: [Component.Graph(), Component.Reader(), Component.Image(), Component.Mermaid()],
+  left: [
+    Component.DesktopOnly(Component.TableOfContents()),
+    Component.DesktopOnly(Component.Toolbar()),
+  ],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)

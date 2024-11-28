@@ -187,6 +187,65 @@ document.addEventListener("nav", async () => {
   })
   await mermaid.run({ nodes })
 
+  // query popup container
+  const popupContainer = document.getElementById("mermaid-container") as HTMLElement
+  if (!popupContainer) return
+
+  let panZoom: DiagramPanZoom | null = null
+
+  function showMermaid(e: MouseEvent) {
+    const expandBtn = e.target as HTMLButtonElement
+    if (!expandBtn) return
+
+    const container = popupContainer.querySelector("#mermaid-space") as HTMLElement
+    const content = popupContainer.querySelector(".mermaid-content") as HTMLElement
+    if (!content) return
+    removeAllChildren(content)
+
+    // Clone the mermaid content
+    const preBlock = expandBtn.closest("pre") as HTMLPreElement
+    if (!preBlock) return
+    const mermaidContent = preBlock
+      .querySelector("code.mermaid > svg")!
+      .cloneNode(true) as SVGElement
+    content.appendChild(mermaidContent)
+
+    // Show container
+    popupContainer.classList.add("active")
+    container.style.cursor = "grab"
+
+    // Center the content initially by calculating center offset
+    const containerRect = container.getBoundingClientRect()
+    const initialPan = { x: containerRect.width - container.offsetWidth / 2, y: 0 }
+    content.style.transform = `translate(${initialPan.x}px, ${initialPan.y}px) scale(1)`
+
+    // Initialize pan-zoom after showing the popup
+    panZoom = new DiagramPanZoom(container, content)
+    panZoom.setInitialPan(initialPan)
+  }
+
+  function hideMermaid() {
+    popupContainer.classList.remove("active")
+    panZoom = null
+  }
+
+  function handleEscape(e: KeyboardEvent) {
+    if (e.key === "Escape" && popupContainer.classList.contains("active")) {
+      e.stopPropagation()
+      hideMermaid()
+    }
+  }
+
+  const closeBtn = popupContainer.querySelector(".close-button") as HTMLButtonElement
+
+  closeBtn.addEventListener("click", hideMermaid)
+  document.addEventListener("keydown", handleEscape)
+
+  window.addCleanup(() => {
+    closeBtn.removeEventListener("click", hideMermaid)
+    document.removeEventListener("keydown", handleEscape)
+  })
+
   for (let i = 0; i < nodes.length; i++) {
     const codeBlock = nodes[i] as HTMLElement
     const pre = codeBlock.parentElement as HTMLPreElement
@@ -203,59 +262,9 @@ document.addEventListener("nav", async () => {
       // Set expand button position
       expandBtn.style.right = `calc(${clipboardWidth}px + 0.3rem)`
       pre.prepend(expandBtn)
+
+      expandBtn.addEventListener("click", showMermaid)
+      window.addCleanup(() => expandBtn.removeEventListener("click", showMermaid))
     }
-
-    // query popup container
-    const popupContainer = pre.querySelector("#mermaid-container") as HTMLElement
-    if (!popupContainer) continue
-
-    let panZoom: DiagramPanZoom | null = null
-
-    function showMermaid() {
-      const container = popupContainer.querySelector("#mermaid-space") as HTMLElement
-      const content = popupContainer.querySelector(".mermaid-content") as HTMLElement
-      if (!content) return
-      removeAllChildren(content)
-
-      // Clone the mermaid content
-      const mermaidContent = codeBlock.querySelector("svg")!.cloneNode(true) as SVGElement
-      content.appendChild(mermaidContent)
-
-      // Show container
-      popupContainer.classList.add("active")
-      container.style.cursor = "grab"
-
-      // Center the content initially by calculating center offset
-      const containerRect = container.getBoundingClientRect()
-      const initialPan = { x: containerRect.width / 2, y: 0 }
-      content.style.transform = `translate(${initialPan.x}px, ${initialPan.y}px) scale(1)`
-
-      // Initialize pan-zoom after showing the popup
-      panZoom = new DiagramPanZoom(container, content)
-      panZoom.setInitialPan(initialPan)
-    }
-
-    function hideMermaid() {
-      popupContainer.classList.remove("active")
-      panZoom = null
-    }
-
-    function handleEscape(e: any) {
-      if (e.key === "Escape") {
-        hideMermaid()
-      }
-    }
-
-    const closeBtn = popupContainer.querySelector(".close-button") as HTMLButtonElement
-
-    closeBtn.addEventListener("click", hideMermaid)
-    expandBtn.addEventListener("click", showMermaid)
-    document.addEventListener("keydown", handleEscape)
-
-    window.addCleanup(() => {
-      closeBtn.removeEventListener("click", hideMermaid)
-      expandBtn.removeEventListener("click", showMermaid)
-      document.removeEventListener("keydown", handleEscape)
-    })
   }
 })

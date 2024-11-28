@@ -965,7 +965,7 @@ const ElementComponent = (() => {
   const RecentNotes = NotesComponent({
     header: "récentes",
     slug: "thoughts/" as SimpleSlug,
-    numLimits: 12,
+    numLimits: 9,
   })
   const RecentPosts = NotesComponent({
     header: "écriture",
@@ -1043,16 +1043,7 @@ export function renderPage(
     }
   }
 
-  const {
-    head: Head,
-    header,
-    beforeBody,
-    pageBody: Content,
-    afterBody,
-    left,
-    right,
-    footer: Footer,
-  } = components
+  const { head: Head, header, beforeBody, pageBody: Content, afterBody, left, right } = components
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
 
@@ -1075,6 +1066,29 @@ export function renderPage(
     </section>
   )
 
+  const Article = () => (
+    <section class="center">
+      <div class="page-header">
+        <Header {...componentData}>
+          {header.map((HeaderComponent) => (
+            <HeaderComponent {...componentData} />
+          ))}
+        </Header>
+        <div class="popover-hint">
+          {beforeBody.map((BodyComponent) => (
+            <BodyComponent {...componentData} />
+          ))}
+        </div>
+      </div>
+      <Content {...componentData} />
+      <div class="page-footer">
+        {afterBody.map((BodyComponent) => (
+          <BodyComponent {...componentData} />
+        ))}
+      </div>
+    </section>
+  )
+
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
   const lang = componentData.fileData.frontmatter?.lang ?? cfg.locale?.split("-")[0] ?? "en"
   const doc = (
@@ -1089,28 +1103,8 @@ export function renderPage(
         <main id="quartz-root" class="page">
           <Body {...componentData}>
             {LeftComponent}
-            <div class="center">
-              <div class="page-header">
-                <Header {...componentData}>
-                  {header.map((HeaderComponent) => (
-                    <HeaderComponent {...componentData} />
-                  ))}
-                </Header>
-                <div class="popover-hint">
-                  {beforeBody.map((BodyComponent) => (
-                    <BodyComponent {...componentData} />
-                  ))}
-                </div>
-              </div>
-              <Content {...componentData} />
-              <div class="page-footer">
-                {afterBody.map((BodyComponent) => (
-                  <BodyComponent {...componentData} />
-                ))}
-              </div>
-            </div>
+            <Article />
             {RightComponent}
-            <Footer {...componentData} />
           </Body>
         </main>
       </body>
