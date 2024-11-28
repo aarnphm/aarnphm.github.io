@@ -22,6 +22,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://shapefarm.net/ - clean aesthetics with nice hierarchical components
 - https://jacobleech.com/ - warm, graphics, animation smooth
 - https://ertdfgcvb.xyz/ - cool ascii animations
+- https://typicalmitul.com/montreal-in-motion
 
 ## essay
 
