@@ -30,7 +30,7 @@ export const defaultContentPageLayout: PageLayout = {
     Component.TagList(),
     Component.Spacer(),
   ],
-  right: [Component.Graph(), Component.Reader(), Component.Image()],
+  right: [Component.Graph(), Component.Reader(), Component.Image(), Component.Mermaid()],
   left: [
     Component.DesktopOnly(Component.TableOfContents()),
     Component.DesktopOnly(Component.Toolbar()),

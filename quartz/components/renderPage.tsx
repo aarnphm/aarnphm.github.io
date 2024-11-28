@@ -1075,6 +1075,7 @@ export function renderPage(
     </section>
   )
 
+  const enableSkewed = componentData.fileData.frontmatter?.skew ?? true
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
   const lang = componentData.fileData.frontmatter?.lang ?? cfg.locale?.split("-")[0] ?? "en"
   const doc = (
@@ -1089,7 +1090,7 @@ export function renderPage(
         <main id="quartz-root" class="page">
           <Body {...componentData}>
             {LeftComponent}
-            <div class="center">
+            <div class={classNames(undefined, "center", enableSkewed ? "skewed" : "")}>
               <div class="page-header">
                 <Header {...componentData}>
                   {header.map((HeaderComponent) => (
