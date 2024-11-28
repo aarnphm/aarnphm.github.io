@@ -22,6 +22,12 @@ interface TikzNode {
   parent: MdRoot
 }
 
+function parseStyle(meta: string | null): string {
+  if (!meta) return ""
+  const styleMatch = meta.match(/style\s*=\s*["']([^"']+)["']/)
+  return styleMatch ? styleMatch[1] : ""
+}
+
 export const TikzJax: QuartzTransformerPlugin = () => {
   return {
     name: "TikzJax",
@@ -46,10 +52,11 @@ export const TikzJax: QuartzTransformerPlugin = () => {
           for (let i = 0; i < nodes.length; i++) {
             const { index, parent, value } = nodes[i]
             const svg = await tex2svg(value, argv)
+            const style = parseStyle((parent.children[index] as Code)?.meta as string)
 
             parent.children.splice(index, 1, {
               type: "html",
-              value: `<div class="tikz">${svg}</div>`,
+              value: `<div class="tikz"${style ? ` style="${style}"` : ""}>${svg}</div>`,
             })
           }
         },

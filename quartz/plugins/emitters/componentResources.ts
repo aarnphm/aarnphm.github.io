@@ -72,7 +72,7 @@ async function joinScripts(scripts: string[]): Promise<string> {
   const script = scripts.map((script) => `(function () {${script}})();`).join("\n")
 
   // minify with esbuild
-  const res = await transpile(script, { minify: true, sourcemap: true })
+  const res = await transpile(script, { minify: true })
 
   return res.code
 }

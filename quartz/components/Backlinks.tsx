@@ -19,7 +19,31 @@ const Backlinks: QuartzComponent = ({
 
   return (
     <section data-backlinks={true} class={classNames(displayClass, "backlinks")}>
-      <h2>{i18n(cfg.locale).components.backlinks.title}</h2>
+      <h2 id="backlinks-label">
+        {i18n(cfg.locale).components.backlinks.title}
+        <a
+          role="anchor"
+          aria-hidden="true"
+          tabindex="-1"
+          data-no-popover="true"
+          href="#backlinks-label"
+          class="internal"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+        </a>
+      </h2>
       <div class="overflow">
         {backlinkFiles.map((f) => (
           <a href={resolveRelative(fileData.slug!, f.slug!)} data-backlink={f.slug!}>

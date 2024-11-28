@@ -58,6 +58,24 @@ const Globe = () => (
   </svg>
 )
 
+const Skew = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M3 4l18 16" />
+    <path d="M21 4H3" />
+    <path d="M21 20H3" />
+  </svg>
+)
+
 const Reader = () => (
   <svg
     class="reader-icon"
@@ -146,6 +164,12 @@ const buttons: ToolbarProps[] = [
     label: "Toggle global graph",
     tooltip: "Global graph",
     Icon: Graph,
+  },
+  {
+    id: "skew-button",
+    label: "add a tiny bit of skew, cuz why not",
+    tooltip: "Skew page",
+    Icon: Skew,
   },
 ]
 

@@ -638,6 +638,7 @@ section[data-footnotes] {
       column-gap: 2rem;
       row-gap: 0;
       margin: 0 2rem;
+      height: 100vh;
 
       grid-template-columns: #{$sidePanelWidth} minmax(auto, #{$pageWidth});
       grid-template-rows: #{map.get($desktopGrid, templateRow)};
@@ -746,9 +747,15 @@ section[data-footnotes] {
 }
 
 .center {
-  margin: $topSpacing auto 0;
+  margin: $topSpacing auto;
   height: fit-content;
   grid-area: grid-header;
+
+  border: 1px solid var(--gray);
+
+  & > * {
+    padding: 0 1rem;
+  }
 }
 
 .content-meta {
@@ -813,7 +820,6 @@ section[data-footnotes] {
   display: block;
   margin: 2rem 0;
   text-align: center;
-  padding-top: 2rem;
 
   & > svg {
     transform: scale(1.5);
