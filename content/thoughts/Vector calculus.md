@@ -82,8 +82,61 @@ where $df$ is the infinitesimal change in $f$ for an infinitesimal displacement 
 
 > [!math] definition
 >
-> the gradient of $f$ (`grad(f)` or $\nabla f$) is defined as the unique vector field whose dot product with any vector $\mathbf{v}$ at each point $x$ is the directional derivative of $f$ along $\mathbf{v}$, such that:
+> the gradient of $f$ $\nabla f$ is defined as the unique vector field whose dot product with any vector $\mathbf{v}$ at each point $x$ is the directional derivative of $f$ along $\mathbf{v}$, such that: [^grad-annotation]
 >
 > $$
 > (\nabla f(x)) \cdot \mathbf{v} = D_v f(x)
 > $$
+
+<!-- We need to remove this graph for now, given the rendering is not currently working -->
+
+```tikz ablate=true
+\usepackage{pgfplots}
+\usepackage{tikz-3dplot}
+\pgfplotsset{compat=1.16}
+
+\begin{document}
+\begin{tikzpicture}
+
+\begin{axis}[
+    view={25}{30},
+    xlabel=$x$,
+    ylabel=$y$,
+    zlabel=$z$,
+    xmin=-80, xmax=80,
+    ymin=-80, ymax=80,
+    zmin=-4, zmax=0,
+    grid=major
+]
+\addplot3[
+    surf,
+    domain=-80:80,
+    y domain=-80:80,
+    samples=40,
+    samples y=40,
+    faceted color=orange,
+    fill opacity=0.7,
+    mesh/interior colormap={autumn}{color=(yellow) color=(orange)},
+    shader=flat
+] {-(cos(x)^2 + cos(y)^2)^2};
+
+\addplot3[
+    ->,
+    blue,
+    quiver={
+        u={4*cos(x)*sin(x)*(cos(x)^2 + cos(y)^2)},
+        v={4*cos(y)*sin(y)*(cos(x)^2 + cos(y)^2)},
+        w=0
+    },
+    samples=15,
+    samples y=15,
+    domain=-80:80,
+    y domain=-80:80,
+] {-4};
+
+\end{axis}
+\end{tikzpicture}
+\end{document}
+```
+
+[^grad-annotation]: another annotation often used in [[thoughts/Machine learning]] is `grad(f)`. See also [[thoughts/Automatic Differentiation|autograd]]

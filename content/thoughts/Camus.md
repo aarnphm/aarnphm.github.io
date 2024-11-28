@@ -4,6 +4,7 @@ tags:
   - philosophy
 date: "2024-02-28"
 description: Camus, a scattered thoughts and notes.
+modified: "2024-11-27"
 title: Camus
 ---
 
@@ -93,7 +94,7 @@ I then realize that merely the order of the procession has been changed. This wo
 
 ### absurd freedom
 
-If I were a tree among trees, a cat among animals, this life would have a meaning, or rather this problem would not arise, for I should belong to this world. I should be this world to which I am now opposed by my whole consciousness and my whole insistence upon familiarity. This ridiculous reason is what sets me in opposition to all creation. I cannot cross it out with a stroke of pen. What I believe to be true I must therefore preserve.
+Iindividual f I were a tree among trees, a cat among animals, this life would have a meaning, or rather this problem would not arise, for I should belong to this world. I should be this world to which I am now opposed by my whole consciousness and my whole insistence upon familiarity. This ridiculous reason is what sets me in opposition to all creation. I cannot cross it out with a stroke of pen. What I believe to be true I must therefore preserve.
 
 The absurd is simultaneously the awareness and rejection of death. Suicide as a solution for the absurd, the absolute, such that man’s cannot seem to live with his dreadful future, that he choose suicide as a solution.
 

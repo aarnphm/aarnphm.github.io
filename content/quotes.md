@@ -49,6 +49,8 @@ _The moral thing that should wish to say is very simple. I should say: ==Love is
 
 Craftsman is knowing how to work, Art is knowing when to stop. -- Ben Affleck
 
+Ask not what your country can do for you - ask what you can do for your country. -- J.F.Kennedy
+
 ## On drive.
 
 ==Life can be much broader when you discover one simple fact...that everything around you was made up by people no smarter than you.... Once you learn that, you'll never be the same again.==-- Steve Jobs ^life-jobs-smart

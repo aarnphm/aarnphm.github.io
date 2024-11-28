@@ -6,7 +6,12 @@ import { Argv } from "../../util/ctx"
 
 async function tex2svg(input: string, argv: Argv) {
   await load()
-  const dvi = await tex(input, { showConsole: argv.verbose })
+  const dvi = await tex(input, {
+    showConsole: argv.verbose,
+    texPackages: { pgfplots: "", amsmath: "intlimits" },
+    tikzLibraries: "arrows.meta,calc",
+    addToPreamble: "% comment",
+  })
   const svg = await dvi2svg(dvi)
   return svg
 }
@@ -25,8 +30,16 @@ export const TikzJax: QuartzTransformerPlugin = () => {
         () => async (tree: MdRoot, _file) => {
           const nodes: TikzNode[] = []
           visit(tree, "code", (node: Code, index, parent) => {
-            if (node.lang === "tikz") {
-              nodes.push({ index: index as number, parent: parent as MdRoot, value: node.value })
+            const { lang, meta, value } = node
+            if (lang === "tikz") {
+              const ablateMatch = meta?.match(/ablate\s*=\s*true/)
+              if (ablateMatch) {
+                // Remove the node
+                parent!.children.splice(index!, 1)
+                return
+              } else {
+                nodes.push({ index: index as number, parent: parent as MdRoot, value })
+              }
             }
           })
 
