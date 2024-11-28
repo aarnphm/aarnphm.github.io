@@ -134,7 +134,7 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Stochastic grad
 > x_{t+1} = x_t - \alpha \nabla f(x_t)
 > $$
 >
-> ```tikz
+> ```tikz style="padding-top:2rem;"
 > \usepackage{pgfplots}
 > \pgfplotsset{compat=1.16}
 >
@@ -242,7 +242,7 @@ $$
 
 tl/dr: if current gradient step is in same direction as previous step, then move a little further in the same direction
 
-> [!math]- momentun for 1D quadratics
+> [!math]- momentum for 1D quadratics
 >
 > $$
 > f(x) = \frac{\lambda}{2} x^{2}

@@ -7,12 +7,18 @@
   right: 1rem;
   z-index: 3;
 
+  display: flex;
+  flex-direction: column-reverse;
+
+  & > * {
+    padding: 0.25rem;
+  }
+
   .toolbar-content {
     display: flex;
     flex-direction: column-reverse;
     align-items: flex-end;
     gap: 0.5rem;
-    padding: 0.25rem;
 
     // Hide all buttons except pen button by default
     .toolbar-item:not(.pen-button) {
@@ -63,6 +69,11 @@
           opacity: 1;
           transform: translateX(0);
         }
+      }
+
+      &.skew-button[data-active="true"] {
+        color: var(--secondary);
+        border-color: var(--secondary);
       }
 
       // Active state for toggle button
@@ -123,28 +134,27 @@
   }
 }
 
-.pdf-toast {
-  position: fixed;
-  bottom: 5rem;
-  right: 1rem;
-  background-color: var(--light);
-  color: var(--tertiary);
-  padding: 1rem;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  animation: slideIn 0.3s ease-out;
-  border: 1px solid var(--tertiary);
-  font-family: var(--bodyFont);
-}
+.page > #quartz-body {
+  --skew-default: var(--skew);
 
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
+  @media all and not ($desktop) {
+    --skew-default: var(--skew-mobile);
   }
-  to {
-    transform: translateX(0);
-    opacity: 1;
+
+  & > * {
+    transition: transform 0.3s ease;
+  }
+
+  & > .center {
+    &.skewed {
+      transform: skew(var(--skew-default), var(--skew-default));
+      transform-origin: center;
+
+      .search > #search-container,
+      .keybind > #shortcut-container {
+        width: 100% !important;
+        height: 100% !important;
+      }
+    }
   }
 }
