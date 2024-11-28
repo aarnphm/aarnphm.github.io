@@ -16,11 +16,11 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/svm.ipynb|ju
 >
 > Is the implementation of the multi-class linear SVM similar to the end-to-end multi-class SVM that we learned in the class? Are there any significant differences?
 
-| Differences        | multi-class linear SVM                                                                                                | end-to-end multi-class SVM                                                                             |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| Loss function      | Uses `MultiMarginLoss`, which creates a criterion that optimises a multi-class classification hinge loss [^multiloss] | multi-vector encoding where<br> $h(x) = \arg\max_{y} <w, \Psi(x,y)>$                                   |
-| Architecture       | Through a single linear layers based on given input_size and `num_classes`                                            | optimized over pairs of class scores with multi-vector encoding                                        |
-| Parameter Learning | Uses [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/SGD\|SGD]] with minibatches to optimize MML              | Whereas we show a theoretical formulation of optimizing over multi-vector encoded space [^theoretical] |
+| Differences        | multi-class linear SVM                                                                                                           | end-to-end multi-class SVM                                                                             |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Loss function      | Uses `MultiMarginLoss`, which creates a criterion that optimises a multi-class classification hinge loss [^multiloss]            | multi-vector encoding where<br> $h(x) = \arg\max_{y} <w, \Psi(x,y)>$                                   |
+| Architecture       | Through a single linear layers based on given input_size and `num_classes`                                                       | optimized over pairs of class scores with multi-vector encoding                                        |
+| Parameter Learning | Uses [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Stochastic gradient descent\|SGD]] with minibatches to optimize MML | Whereas we show a theoretical formulation of optimizing over multi-vector encoded space [^theoretical] |
 
 [^multiloss]: [[thoughts/PyTorch#MultiMarginLoss|Loss]] is defined as: $\text{loss}(x,y) = \frac{\sum_{i} \max{0, \text{margin} - x[y] + x[i]}^p}{x.\text{size}(0)}$
 

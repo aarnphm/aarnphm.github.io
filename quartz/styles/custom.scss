@@ -10,8 +10,14 @@
 
 @include font-face(
   "Berkeley Mono",
-  ("BerkeleyMono-Regular.woff2", "BerkeleyMono-Regular.woff"),
+  ("BerkeleyMonoVariable-Regular.woff2", "BerkeleyMonoVariable-Regular.woff"),
   ("woff2", "woff")
+);
+@include font-face(
+  "Berkeley Mono Italic",
+  ("BerkeleyMonoVariable-Italic.woff2", "BerkeleyMonoVariable-Italic.woff"),
+  ("woff2", "woff"),
+  italic
 );
 @include font-face("ABC Diatype Light", "ABCDiatype-Light.woff2", "woff2");
 @include font-face("ITCGaramondStdLtCond", "ITCGaramondStdLtCond.woff2", "woff2");
@@ -376,17 +382,6 @@ blockquote[class="transclude"] {
   }
 }
 
-header {
-  .search {
-    grid-area: 1 / 3 / 1 / 4;
-    justify-self: end;
-  }
-
-  .breadcrumb-container {
-    grid-area: 1 / 1 / 1 / 3;
-  }
-}
-
 blockquote.twitter-tweet {
   border-left: 1px dashed var(--secondary);
   padding-bottom: 1rem;
@@ -665,7 +660,6 @@ section[data-footnotes] {
     }
   }
 
-  header,
   & .sidebar.left,
   & .sidebar.right {
     display: grid !important;
@@ -677,11 +671,11 @@ section[data-footnotes] {
   }
 
   header {
-    grid-template-rows: min-content;
     border-bottom: 1px solid var(--darkgray);
     align-items: center;
     column-gap: 0.6rem;
     padding-bottom: 0.2rem;
+    display: flex !important;
   }
 
   & .sidebar.right {
@@ -744,7 +738,8 @@ section[data-footnotes] {
 }
 
 .search {
-  max-width: unset;
+  flex-grow: 0 !important;
+
   & > .search-button {
     border-radius: 0px;
   }
@@ -804,6 +799,8 @@ section[data-footnotes] {
   margin: 0;
   margin-top: 0.5rem;
   padding: 0.5rem 0;
+
+  flex-grow: 1;
 }
 
 .breadcrumb-element {
@@ -814,8 +811,9 @@ section[data-footnotes] {
 
 .tikz {
   display: block;
-  margin: 1.5em 0;
+  margin: 2rem 0;
   text-align: center;
+  padding-top: 2rem;
 
   & > svg {
     transform: scale(1.5);
