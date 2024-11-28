@@ -71,7 +71,7 @@
         }
       }
 
-      &.skew-button[data-active="true"] {
+      #skew-button[data-active="true"] {
         color: var(--secondary);
         border-color: var(--secondary);
       }
