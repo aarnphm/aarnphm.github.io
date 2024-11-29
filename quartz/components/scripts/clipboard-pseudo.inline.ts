@@ -1,3 +1,40 @@
+const onClickGenerator = (button: HTMLButtonElement, source: string) => {
+  return function onClick() {
+    navigator.clipboard.writeText(source).then(
+      () => {
+        button.blur()
+        button.classList.add("check")
+        setTimeout(() => {
+          button.style.borderColor = ""
+          button.classList.remove("check")
+        }, 2000)
+      },
+      (error) => console.error(error),
+    )
+  }
+}
+
+document.addEventListener("nav", () => {
+  const els = document.getElementsByClassName("tikz") as HTMLCollectionOf<HTMLElement>
+  if (els.length == 0) return
+  for (let i = 0; i < els.length; i++) {
+    const tikzBlock = els[i]
+
+    const button = tikzBlock.querySelector(
+      "figcaption > button.source-code-button",
+    ) as HTMLButtonElement
+    if (!button) continue
+
+    const mathML = tikzBlock.querySelector(".tikz-mathml")
+    if (!mathML) continue
+    const source = JSON.parse(mathML.querySelector("annotation")!.textContent ?? "")
+
+    const onClick = onClickGenerator(button, source)
+    button.addEventListener("click", onClick)
+    window.addCleanup(() => button.removeEventListener("click", onClick))
+  }
+})
+
 document.addEventListener("nav", () => {
   const els = document.getElementsByClassName("ps-root") as HTMLCollectionOf<HTMLElement>
   if (els.length == 0) return
@@ -21,19 +58,8 @@ document.addEventListener("nav", () => {
       "\\begin{document}\n" +
       processing(settings, blockContent) +
       "\n\\end{document}"
-    function onClick() {
-      navigator.clipboard.writeText(source).then(
-        () => {
-          button.blur()
-          button.classList.add("check")
-          setTimeout(() => {
-            button.style.borderColor = ""
-            button.classList.remove("check")
-          }, 2000)
-        },
-        (error) => console.error(error),
-      )
-    }
+
+    const onClick = onClickGenerator(button, source)
     button.addEventListener("click", onClick)
     window.addCleanup(() => button.removeEventListener("click", onClick))
     psBlock.prepend(button)

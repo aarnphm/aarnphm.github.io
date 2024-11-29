@@ -672,18 +672,69 @@ section[data-footnotes] {
   }
 }
 
-.tikz {
-  display: block;
-  margin: 2rem 0;
-  text-align: center;
-
-  & > svg {
-    transform: scale(1.5);
-  }
-}
-
 .emoji {
   background-color: transparent;
   box-sizing: content-box;
   vertical-align: text-top;
+}
+
+@mixin spanRec {
+  clip: rect(1px, 1px, 1px, 1px);
+  border: 0;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+}
+
+figure.tikz {
+  margin: 2rem 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 1rem;
+
+  & > svg {
+    transform: scale(1.5);
+  }
+
+  & > figcaption {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  & > .tikz-mathml {
+    @include spanRec;
+  }
+
+  .source-code-button {
+    color: inherit;
+    border-width: 0px;
+    display: flex;
+    float: right;
+    background-color: inherit;
+    border: 0px;
+    padding-block: 0px;
+    cursor: pointer;
+
+    .source-icon {
+      display: inline;
+    }
+
+    .check-icon {
+      display: none;
+    }
+
+    &.check {
+      .source-icon {
+        display: none;
+      }
+
+      .check-icon {
+        display: inline;
+      }
+    }
+  }
 }
