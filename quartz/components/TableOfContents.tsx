@@ -127,11 +127,19 @@ function mutateTransclude(
           while (endIdx < page.toc.length && page.toc[endIdx].depth > baseDepth) {
             endIdx++
           }
-          entries.push(...page.toc.slice(startIdx, endIdx))
+          entries.push(...page.toc.slice(startIdx, endIdx).reverse())
         }
       } else {
         // Full page transclude
-        entries.push(...page.toc)
+        entries.push(
+          ...page.toc
+            .filter((entry) => {
+              return !["backlinks-label", "footnote-label", "reference-label"].some(
+                (slug) => entry.slug === slug,
+              )
+            })
+            .reverse(),
+        )
       }
 
       // Deduplicate before splicing
@@ -196,7 +204,7 @@ export default ((userOpts?: Partial<Options>) => {
       ) {
         const heading = node.children[0] as Element
         sectionToc.push({
-          depth: (headingRank(heading) as number) - 1,
+          depth: 0,
           text: toText(heading),
           slug: heading.properties?.id as string,
         })
@@ -206,7 +214,7 @@ export default ((userOpts?: Partial<Options>) => {
 
     if (backlinkFiles.length > 0) {
       fileData.toc.push({
-        depth: 1,
+        depth: 0,
         text: i18n(cfg.locale).components.backlinks.title,
         slug: "backlinks-label",
       })
