@@ -75,7 +75,7 @@
     "mermaid": "^11.4.1",
     "micromorph": "^0.4.5",
     "node-tikzjax": "^1.0.3",
-    "pixi.js": "^8.6.1",
+    "pixi.js": "^8.6.2",
     "preact": "^10.25.0",
     "preact-render-to-string": "^6.5.11",
     "pretty-bytes": "^6.1.1",
