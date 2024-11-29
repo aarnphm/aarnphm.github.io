@@ -6,21 +6,10 @@ import { FullSlug, resolveRelative } from "../util/path"
 
 export default (() => {
   const ContentMeta: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
-    const { text } = fileData
-
-    if (!text) return <></>
-
     let created: string | undefined
-    let modified: string | undefined
 
     if (fileData.dates) {
       created = formatDate(getDate(cfg, fileData)!, cfg.locale)
-      modified = formatDate(
-        fileData.frontmatter!.modified !== undefined
-          ? new Date(fileData.frontmatter!.modified)
-          : fileData.dates.modified,
-        cfg.locale,
-      )
     }
 
     return (
@@ -30,15 +19,6 @@ export default (() => {
             <span class="page-creation" title="Date de création du contenu de la page">
               <em>{created}</em>
             </span>
-          </li>
-        )}
-        {modified !== undefined && (
-          <li>
-            <div class="ref-source">
-              <span class="page-modification" title="Date de modification du contenu de la page">
-                <em>{modified}</em>
-              </span>
-            </div>
           </li>
         )}
         <li>

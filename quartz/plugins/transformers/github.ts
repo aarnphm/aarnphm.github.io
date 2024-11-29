@@ -11,6 +11,7 @@ import { RegExpMatchObject, findAndReplace as mdastFindReplace } from "mdast-uti
 import { toString } from "mdast-util-to-string"
 import { QuartzTransformerPlugin } from "../types"
 import { visit } from "unist-util-visit"
+import rehypeGithubEmoji from "rehype-github-emoji"
 
 // Previously, GitHub linked `@mention` and `@mentions` to their blog post about
 // mentions (<https://github.com/blog/821>).
@@ -350,6 +351,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
             })
           }
         },
+        rehypeGithubEmoji,
       ]
     },
   }

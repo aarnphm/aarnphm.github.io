@@ -4,7 +4,7 @@ tags:
   - technical
 comments: false
 date: "2024-01-22"
-description: Includes the tools I use, workflow,  etc. my [submission](https://uses.tech)
+description: Includes the tools I use, workflow,  etc.
 modified: "2024-10-02"
 title: uses.
 ---

@@ -302,7 +302,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 const [inner] = capture
                 return {
                   type: "html",
-                  value: `<span class="text-highlight">${inner}</span>`,
+                  value: `<mark>${inner}</mark>`,
                 }
               },
             ])
@@ -651,8 +651,8 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 for (const [start, end] of highlights.reverse()) {
                   const highlightSpan: Element = {
                     type: "element",
-                    tagName: "span",
-                    properties: { className: ["text-highlight"] },
+                    tagName: "mark",
+                    properties: {},
                     children: children.slice(start, end + 1),
                   }
                   children.splice(start, end - start + 1, highlightSpan)

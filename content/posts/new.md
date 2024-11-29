@@ -3,7 +3,7 @@ id: new
 tags:
   - fruit
 date: "2024-09-30"
-description: I saw a disstrack dropped at a hackathon demo for the first time. And on perplexity of hackathon.
+description: And on perplexity of hackathon.
 modified: "2024-09-30"
 socialDescription: On perplexity of hackathon.
 title: I saw a disstrack dropped at a hackathon.

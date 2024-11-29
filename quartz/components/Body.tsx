@@ -9,7 +9,7 @@ import pseudoStyle from "./styles/pseudocode.scss"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
 const Body: QuartzComponent = ({ children }: QuartzComponentProps) => (
-  <div id="quartz-body">{children}</div>
+  <section id="quartz-body">{children}</section>
 )
 
 Body.beforeDOMLoaded = equationScript

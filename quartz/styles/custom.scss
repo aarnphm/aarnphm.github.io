@@ -617,16 +617,6 @@ section[data-footnotes] {
 }
 
 .content-meta {
-  font-family: "ITCGaramondStdLtCond", var(--bodyFont);
-  font-weight: $normalWeight;
-
-  @media all and ($desktop) {
-    font-size: 1.272em;
-    line-height: 1.272em;
-  }
-}
-
-.content-meta {
   margin-top: 0.5rem;
   color: var(--gray);
   display: flex;
@@ -636,6 +626,14 @@ section[data-footnotes] {
   padding-inline-start: 0;
   list-style: none;
   gap: 0.8rem;
+
+  font-family: "ITCGaramondStdLtCond", var(--bodyFont);
+  font-weight: $normalWeight;
+
+  @media all and ($desktop) {
+    font-size: 1.272em;
+    line-height: 1.272em;
+  }
 
   pre {
     color: var(--darkgray);
@@ -682,4 +680,10 @@ section[data-footnotes] {
   & > svg {
     transform: scale(1.5);
   }
+}
+
+.emoji {
+  background-color: transparent;
+  box-sizing: content-box;
+  vertical-align: text-top;
 }

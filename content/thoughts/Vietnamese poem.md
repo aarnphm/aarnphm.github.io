@@ -1,7 +1,7 @@
 ---
 id: Vietnamese poem
 aliases:
-  - viet poem
+  - viet-poem
 tags:
   - seed
   - poem
