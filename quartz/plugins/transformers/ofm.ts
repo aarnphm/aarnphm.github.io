@@ -737,6 +737,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                       "aria-label": "Expand mermaid diagram",
                       "aria-hidden": "true",
                       "data-view-component": true,
+                      tabindex: "-1",
                     },
                     children: [
                       {
