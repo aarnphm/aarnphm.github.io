@@ -38,6 +38,9 @@ nav#toc-vertical {
   z-index: 1000;
 
   button.toc-item {
+    --indicator-position: 4.5rem;
+    --fill-width: 1rem;
+
     display: inline-flex;
     border: none;
     background: inherit;
@@ -45,6 +48,8 @@ nav#toc-vertical {
     position: relative;
     align-items: center;
     cursor: pointer;
+    padding-inline: 0.5rem;
+    text-indent: 1rem;
 
     transform-origin: center;
     transition: transform 0.3s ease;
@@ -60,7 +65,7 @@ nav#toc-vertical {
       background-color: var(--dark);
       height: 3px;
       width: 100%;
-      min-width: 1rem;
+      min-width: var(--fill-width);
 
       transform: scaleX(0);
       transform-origin: 0 0;
@@ -72,7 +77,7 @@ nav#toc-vertical {
       display: none;
       font-family: var(--bodyFont);
       position: absolute;
-      padding-left: 90px;
+      padding-left: var(--indicator-position);
       white-space: nowrap;
       left: 0;
       top: -3px;
