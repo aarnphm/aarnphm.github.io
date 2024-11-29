@@ -86,98 +86,111 @@ export const LLM: QuartzEmitterPlugin = () => {
           handlers: {
             // handle ast parsed by rehype-pretty-code
             figure(h, node) {
-              if (node.properties?.dataRehypePrettyCodeFigure !== "")
-                return hastToMdastHandlers.figure(h, node)
+              if (node.properties?.dataRehypePrettyCodeFigure === "") {
+                let pre: Element | undefined
+                let code: Element | undefined
+                let figcaption: Element | undefined
 
-              let pre: Element | undefined
-              let code: Element | undefined
-              let figcaption: Element | undefined
-
-              visit(node, "element", (el: Element) => {
-                if (
-                  el.tagName === "figcaption" &&
-                  el.properties?.dataRehypePrettyCodeTitle === ""
-                ) {
-                  figcaption = el
-                  return false
-                }
-              })
-              visit(node, "element", (el: Element) => {
-                if (el.tagName === "pre") {
-                  pre = el
-                  return false
-                }
-              })
-              // Find pre, code, and figcaption elements
-              visit(pre as Node, "element", (el: Element) => {
-                if (el.tagName === "code") {
-                  code = el
-                  return false
-                }
-              })
-
-              if (!code || !pre) return hastToMdastHandlers.figure(h, node)
-
-              // Get language
-              const lang = pre.properties?.dataLanguage
-
-              // Get title from figcaption
-              let title = ""
-              if (figcaption) {
-                title = (figcaption.children[0] as Text)?.value
-              }
-
-              // Get highlighted lines
-              // FIX: CORRECT THE CHAIN, not work very well for now
-              const highlightedLines: number[] = []
-              // Get highlighted words
-              const highlightedWords: string[] = []
-              for (const [i, span] of code.children.entries()) {
-                if ((span as Element).properties?.dataHighlightedLine == "") {
-                  highlightedLines.push(i)
-                }
-
-                // FIX: THIS ALSO DOESN'T WORK YET
-                visit(span, "element", (el: Element) => {
-                  if (el.tagName === "mark" && el.properties?.dataHighlightedCharsMark) {
-                    let word = ""
-                    el.children.map((span) => {
-                      word += ((span as Element).children[0] as Text)?.value
-                    })
-                    highlightedWords.push(word)
+                visit(node, "element", (el: Element) => {
+                  if (
+                    el.tagName === "figcaption" &&
+                    el.properties?.dataRehypePrettyCodeTitle === ""
+                  ) {
+                    figcaption = el
+                    return false
                   }
                 })
-              }
+                visit(node, "element", (el: Element) => {
+                  if (el.tagName === "pre") {
+                    pre = el
+                    return false
+                  }
+                })
+                // Find pre, code, and figcaption elements
+                visit(pre as Node, "element", (el: Element) => {
+                  if (el.tagName === "code") {
+                    code = el
+                    return false
+                  }
+                })
 
-              // Build code content from spans
-              let codeContent = ""
-              visit(code, "element", (span: Element) => {
-                if (span.properties?.dataLine !== undefined) {
-                  visit(span, "text", (text: Text) => {
-                    codeContent += text.value
-                  })
-                  codeContent += "\n"
+                if (!code || !pre) return hastToMdastHandlers.figure(h, node)
+
+                // Get language
+                const lang = pre.properties?.dataLanguage
+
+                // Get title from figcaption
+                let title = ""
+                if (figcaption) {
+                  title = (figcaption.children[0] as Text)?.value
                 }
-              })
 
-              // Build meta string
-              const meta = [
-                title ? `title="${title}"` : "",
-                highlightedLines.length ? `{${highlightedLines.join(",")}}` : "",
-                highlightedWords.length ? `/${highlightedWords.join("/")}/` : "",
-              ]
-                .filter(Boolean)
-                .join(" ")
+                // Get highlighted lines
+                // FIX: CORRECT THE CHAIN, not work very well for now
+                const highlightedLines: number[] = []
+                // Get highlighted words
+                const highlightedWords: string[] = []
+                for (const [i, span] of code.children.entries()) {
+                  if ((span as Element).properties?.dataHighlightedLine == "") {
+                    highlightedLines.push(i)
+                  }
 
-              const result: Code = {
-                type: "code",
-                lang: (lang as string | null) ?? null,
-                meta: meta || null,
-                value: codeContent.trimEnd(),
+                  // FIX: THIS ALSO DOESN'T WORK YET
+                  visit(span, "element", (el: Element) => {
+                    if (el.tagName === "mark" && el.properties?.dataHighlightedCharsMark) {
+                      let word = ""
+                      el.children.map((span) => {
+                        word += ((span as Element).children[0] as Text)?.value
+                      })
+                      highlightedWords.push(word)
+                    }
+                  })
+                }
+
+                // Build code content from spans
+                let codeContent = ""
+                visit(code, "element", (span: Element) => {
+                  if (span.properties?.dataLine !== undefined) {
+                    visit(span, "text", (text: Text) => {
+                      codeContent += text.value
+                    })
+                    codeContent += "\n"
+                  }
+                })
+
+                // Build meta string
+                const meta = [
+                  title ? `title="${title}"` : "",
+                  highlightedLines.length ? `{${highlightedLines.join(",")}}` : "",
+                  highlightedWords.length ? `/${highlightedWords.join("/")}/` : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")
+
+                const result: Code = {
+                  type: "code",
+                  lang: (lang as string | null) ?? null,
+                  meta: meta || null,
+                  value: codeContent.trimEnd(),
+                }
+
+                h.patch(node, result)
+                return result
+              } else if (node.properties?.dataRemarkTikz === "") {
+                let value: string | undefined = undefined
+                visit(node, "element", (node) => {
+                  if (node.tagName === "annotation") {
+                    value = JSON.parse((node.children[0] as Text).value)
+                    return false
+                  }
+                })
+                if (value === undefined) return hastToMdastHandlers.figure(h, node)
+
+                const results: Code = { type: "code", lang: "tikz", value }
+                h.patch(node, results)
+                return results
               }
-
-              h.patch(node, result)
-              return result
+              return hastToMdastHandlers.figure(h, node)
             },
             // handle math node correctly
             span(h, node) {
