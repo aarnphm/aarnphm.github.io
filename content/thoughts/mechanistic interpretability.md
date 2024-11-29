@@ -5,7 +5,7 @@ aliases:
 tags:
   - interp
 date: "2024-10-30"
-description: all things mech interp
+description: and reverse engineering neural networks.
 modified: "2024-10-30"
 permalink:
   - /mechinterp

@@ -4,7 +4,7 @@ tags:
   - evergreen
 comments: false
 date: "2021-12-22"
-description: A list of work that I have been doing for the past while.
+description: Crafts that I have been brewing for the past while.
 modified: "2024-09-24"
 title: work.
 ---
@@ -21,7 +21,7 @@ You can find internal monologue under [[/posts/]] index.
 
 ## open source.
 
-- **Quartz** - 🌱 a fast, batteries-included static-site generator that transforms Markdown content into fully functional websites (2023-)
+- **Quartz** - :seedling: a fast, batteries-included static-site generator that transforms Markdown content into fully functional websites (2023-)
 
   - A set of tools that helps you publish your [[thoughts/Digital garden|digital garden]] and notes as a website for free.
   - Improved performance of graph interaction with Canvas https://github.com/jackyzha0/quartz/pull/1328
@@ -32,7 +32,7 @@ You can find internal monologue under [[/posts/]] index.
   - Landing page of [[/|this]] website, with custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [jupyter notebooks](https://aarnphm.xyz/thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA)
   - Source: <https://github.com/jackyzha0/quartz> and [site](https://quartz.jzhao.xyz/)
 
-- **avante.nvim** - A [Cursor](https://www.cursor.com/)-like chat IDE for [[uses#^neovim|Neovim]] (2024-)
+- **avante.nvim** - :mortar_board: A [Cursor](https://www.cursor.com/)-like chat IDE for [[uses#^neovim|Neovim]] (2024-)
 
   - Implemented bounding UI popover to improve QOL https://github.com/yetone/avante.nvim/pull/29
   - Added support for lazy setup for better load time improvement https://github.com/yetone/avante.nvim/pull/14
@@ -40,12 +40,12 @@ You can find internal monologue under [[/posts/]] index.
   - Source: <https://github.com/yetone/avante.nvim>
     ![[thoughts/images/avante.mp4]]
 
-- **tinymorph** - An exploration into how we build interfaces for machine-assisted writing tool (2024-)
+- **tinymorph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-)
 
   - **WARNING**: Currently in research phase.
   - Trained [[thoughts/sparse autoencoder]] to interpret Llama 3.2 features [@templeton2024scaling]
 
-- **OpenLLM** - Run any open-source [[thoughts/LLMs|LLMs]] as OpenAI compatible API endpoint in the cloud. (2023-)
+- **OpenLLM** - :gear: Run any open-source [[thoughts/LLMs|LLMs]] as OpenAI compatible API endpoint in the cloud. (2023-)
 
   - 🔬 Build for fast and production usages
   - 🚂 Support Llama, Qwen, Gemma, etc, and **[[thoughts/quantization|quantized]]** versions
@@ -55,13 +55,13 @@ You can find internal monologue under [[/posts/]] index.
   - Source: <https://github.com/bentoml/openllm>
     ![[thoughts/images/openllm.gif]]
 
-- **BentoML** - Build Production-grade AI Application (2021-) [@yangbentoml2022]
+- **BentoML** - :bento: Build Production-grade AI Application (2021-) [@yangbentoml2022]
 
   - a framework that simplifies [[thoughts/Machine learning|machine learning]] model deployment and provides a faster way to ship your model to production. Supports a variety of use cases, from classical ML to [[thoughts/LLMs]], diffusions models.
   - Built using Python, [[thoughts/BuildKit|BuildKit]], gRPC
   - Source: <https://github.com/bentoml/bentoml>, [Documentation](https://docs.bentoml.com)
 
-- **incogni.to** - a pseudonymous event platform that curates for those yearning to be seen for ==who they are, not what they can "sell"== (2024)
+- **incogni.to** - :last_quarter_moon: a pseudonymous event platform that curates for those yearning to be seen for ==who they are, not what they can "sell"== (2024)
 
   - Implemented a [[thoughts/RAG]] pipeline for recommendation system based on users preferences and interests, with [command-r-plus-08-2024](https://huggingface.co/CohereForAI/c4ai-command-r-plus), deployed with [[thoughts/vllm|vLLM]] and BentoML [@yangbentoml2022]
   - Added semantic search to find relevant events based on query with [Cohere Rerank](https://cohere.com/rerank)

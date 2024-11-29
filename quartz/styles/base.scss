@@ -19,7 +19,20 @@ section {
   color: var(--darkgray);
 }
 
-.text-highlight {
+hgroup {
+  & > .description {
+    font-style: italic;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+}
+
+mark {
   background-color: var(--textHighlight);
   padding: 0 0.1rem;
   border-radius: 5px;

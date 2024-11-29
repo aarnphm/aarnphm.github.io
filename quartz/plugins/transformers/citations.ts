@@ -140,10 +140,12 @@ export const Citations: QuartzTransformerPlugin<Partial<Options>> = (userOpts) =
       // using https://github.com/syntax-tree/unist-util-visit as they're just anochor links
       plugins.push(() => {
         return (tree, _file) => {
-          visit(tree, "element", (node, _index, _parent) => {
+          visit(tree, "element", (node, _index, parent) => {
             if (node.tagName === "a" && node.properties?.href?.startsWith("#bib")) {
               node.properties["data-no-popover"] = true
               node.properties["data-bib"] = true
+              // update citation to be semantically correct
+              parent.tagName = "cite"
             }
           })
         }

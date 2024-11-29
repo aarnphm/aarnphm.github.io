@@ -7,7 +7,6 @@ import { classNames } from "../util/lang"
 
 interface Options {
   default?: string[]
-  enableTooltip?: boolean
 }
 
 export const KeybindAlias = {
@@ -21,7 +20,6 @@ export const KeybindAlias = {
 
 const defaultOptions: Options = {
   default: ["⌘ '", "⌃ '"],
-  enableTooltip: true,
 }
 
 const convert = (key: string) =>
@@ -51,11 +49,6 @@ export default ((userOpts?: Partial<Options>) => {
         <kbd id="shortcut-key" data-mapping={JSON.stringify(opts.default?.map(revert))}>
           {defaultKey}
         </kbd>
-        {opts.enableTooltip && (
-          <div class="highlight-modal bind" id="highlight-modal">
-            <span>afficher les raccourcis clavier</span>
-          </div>
-        )}
         <div id="shortcut-container">
           <div id="shortcut-space">
             <div id="title">raccourcis clavier</div>

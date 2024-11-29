@@ -90,7 +90,7 @@ where $df$ is the infinitesimal change in $f$ for an infinitesimal displacement 
 
 <!-- We need to remove this graph for now, given the rendering is not currently working -->
 
-```tikz ablate=true
+```tikz ablate=true description="gradient of -(\cos^2 x + \cos^2 y)^2"
 \usepackage{pgfplots}
 \usepackage{tikz-3dplot}
 \pgfplotsset{compat=1.16}

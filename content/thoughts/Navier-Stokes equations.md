@@ -4,15 +4,12 @@ tags:
   - physics
   - fluid dynamics
 date: "2024-11-27"
+description: partial differential equations describing the motion of fluid substances. One of seven $1M problems in mathematics
 modified: "2024-11-27"
 title: Navier-Stokes equations
 ---
 
-_partial differential equations describing the motion of fluid substances_
-
 Express momentum balance for Newtonian fluids making use of conversation of mass.
-
-_==One of the seven most important problems in mathematics==_
 
 ## derivations
 

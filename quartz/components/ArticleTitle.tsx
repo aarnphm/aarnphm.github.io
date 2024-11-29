@@ -1,12 +1,20 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
+import { i18n } from "../i18n"
 
-const ArticleTitle: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
+const ArticleTitle: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
   const title = fileData.frontmatter?.title
   if (title) {
-    return <h1 class={classNames(displayClass, "article-title")}>{title}</h1>
+    return (
+      <hgroup>
+        <h1 class={classNames(displayClass, "article-title")}>{title}</h1>
+        <p class="description">
+          {fileData.description ?? i18n(cfg.locale).propertyDefaults.description}
+        </p>
+      </hgroup>
+    )
   } else {
-    return null
+    return <></>
   }
 }
 

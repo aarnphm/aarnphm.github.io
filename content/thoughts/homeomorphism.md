@@ -4,6 +4,7 @@ tags:
   - math
   - topology
 date: "2024-11-27"
+description: or topological isomorphism.
 modified: "2024-11-27"
 title: homeomorphism
 ---

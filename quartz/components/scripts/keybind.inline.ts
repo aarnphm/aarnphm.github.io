@@ -24,10 +24,11 @@ const isMacOS = (): boolean => {
 }
 
 document.addEventListener("nav", async () => {
-  const modal = document.getElementById("highlight-modal")
-  const container = document.getElementById("shortcut-container")
-  const shortcutKey = document.getElementById("shortcut-key")
   const keybind = document.getElementsByClassName("keybind")[0] as HTMLDivElement | null
+  if (!keybind) return
+
+  const container = keybind.querySelector("#shortcut-container")
+  const shortcutKey = keybind.querySelector("#shortcut-key") as HTMLElement
 
   const center = document.querySelector(".center") as HTMLElement | null
   const right = document.querySelector(".right.sidebar") as HTMLElement | null
@@ -51,7 +52,6 @@ document.addEventListener("nav", async () => {
     if (!shortcutKey) return
     for (const binding of JSON.parse(shortcutKey.dataset.mapping as string)) {
       const [, key] = binding.split("--")
-      if (modal) hideModal()
 
       if (e.key === key && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
@@ -65,39 +65,6 @@ document.addEventListener("nav", async () => {
   document.addEventListener("keydown", shortcutHandler)
   window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
   registerEscapeHandler(keybind, hideContainer)
-
-  if (!modal) return
-
-  const onMouseEnter = () => {
-    if (container?.classList.contains("active")) return
-    modal.classList.add("active")
-    modal.style.visibility = "visible"
-  }
-
-  const hideModal = () => {
-    modal.classList.remove("active")
-    modal.style.visibility = "hidden"
-  }
-
-  const onMouseLeave = () => {
-    if (container?.classList.contains("active")) return
-    hideModal()
-  }
-
-  const onMouseMove = ({ pageX, pageY }: MouseEvent) => {
-    if (container?.classList.contains("active")) return
-    modal.classList.add("active")
-    Object.assign(modal.style, {
-      left: `${pageX + 10}px`,
-      top: `${pageY + 10}px`,
-    })
-  }
-  const events = [
-    ["mouseenter", onMouseEnter],
-    ["mouseleave", onMouseLeave],
-    ["mousemove", onMouseMove],
-  ] as [keyof HTMLElementEventMap, (this: HTMLElement) => void][]
-  registerEvents(keybind, ...events)
 })
 
 const _mapping = new Map([
