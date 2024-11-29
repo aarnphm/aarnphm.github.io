@@ -142,13 +142,15 @@ function setupToc() {
         const buttonRect = button.getBoundingClientRect()
         const buttonY = buttonRect.top + buttonRect.height / 2 - navRect.top
 
+        const styles = getComputedStyle(button)
+
         const distance = mouseY - buttonY
         const sigma = 42
-        const maxScale = 4.5
+        const maxScale = parseFloat(styles.getPropertyValue("--indicator-position"))
         const isButton = Math.abs(distance) < buttonRect.height / 2
 
         const fill = button.querySelector(".fill") as HTMLElement
-        const minScale = parseInt(getComputedStyle(fill).getPropertyValue("min-width")) / 16
+        const minScale = parseInt(styles.getPropertyValue("--fill-width"))
         fill.style.animation = "unset !important"
 
         fill.style.opacity = isButton ? "1" : "0.35"

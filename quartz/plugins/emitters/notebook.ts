@@ -51,7 +51,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
       const fps = await notebookFiles(argv, cfg)
       const res: FilePath[] = []
 
-      if (fps.length === 0 || process.env.VERCEL_ENV === "production") return res
+      if (fps.length === 0 || process.env.VERCEL_ENV) return res
 
       let completed = 0
       let errors = 0
