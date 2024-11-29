@@ -134,7 +134,7 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Stochastic grad
 > x_{t+1} = x_t - \alpha \nabla f(x_t)
 > $$
 >
-> ```tikz style="padding-top:2rem;"
+> ```tikz style="padding-top:2rem;row-gap:4rem;"
 > \usepackage{pgfplots}
 > \pgfplotsset{compat=1.16}
 >
