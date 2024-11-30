@@ -1,19 +1,26 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import path from "path"
-
 import style from "../styles/listPage.scss"
-import { byDateAndAlphabetical, PageList, SortFn } from "../PageList"
-import { stripSlashes, simplifySlug, joinSegments, FullSlug } from "../../util/path"
+import PageListConstructor, { byDateAndAlphabetical, SortFn } from "../PageList"
+import {
+  stripSlashes,
+  simplifySlug,
+  joinSegments,
+  FullSlug,
+  slugifyFilePath,
+  FilePath,
+  SimpleSlug,
+  sluggify,
+} from "../../util/path"
 import { Root } from "hast"
 import { htmlToJsx } from "../../util/jsx"
-import { i18n } from "../../i18n"
 import { QuartzPluginData } from "../../plugins/vfile"
+import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from "../Evergreen"
+import { i18n } from "../../i18n"
+import { FileTrieNode } from "../../util/fileTrie"
+import { parseWikilink } from "../../util/wikilinks"
 
 interface FolderContentOptions {
-  /**
-   * Whether to display number of folders
-   */
-  showFolderCount: boolean
   /**
    * Sort function for the pages
    */
@@ -28,6 +35,9 @@ interface FolderContentOptions {
    * If not provided, no extensions are excluded
    */
   exclude?: (string | RegExp)[]
+  lg: string[]
+  sm: string[]
+  tags: string[]
 }
 
 function extensionFilterFn(opts: FolderContentOptions): (filePath: string) => boolean {
@@ -51,161 +61,346 @@ function extensionFilterFn(opts: FolderContentOptions): (filePath: string) => bo
 }
 
 const defaultOptions: FolderContentOptions = {
-  showFolderCount: true,
   include: undefined,
   exclude: undefined,
+  lg: [],
+  sm: [],
+  tags: [],
+}
+
+const Layout = {
+  defn: "L->EAT",
+  etas: "L->ET|A",
+  alsp: "A|L",
+} as const
+
+type FolderLayout = (typeof Layout)[keyof typeof Layout]
+
+const parseFolderLayout = (input: unknown): FolderLayout => {
+  if (Array.isArray(input)) {
+    for (const candidate of input) {
+      const parsed = parseFolderLayout(candidate)
+      if (parsed !== Layout.defn) {
+        return parsed
+      }
+    }
+    return Layout.defn
+  }
+
+  if (typeof input !== "string") {
+    return Layout.defn
+  }
+
+  const normalized = input.trim().toUpperCase()
+  switch (normalized) {
+    case Layout.etas:
+      return Layout.etas
+    case Layout.alsp:
+      return Layout.alsp
+    default:
+      return Layout.defn
+  }
+}
+
+/**
+ * Normalize path entries to slugs, supporting both plain paths and wikilink syntax
+ * Examples:
+ *   - "thoughts/love" -> "thoughts/love"
+ *   - "thoughts/mechanistic interpretability" -> "thoughts/mechanistic-interpretability"
+ *   - "[[thoughts/love]]" -> "thoughts/love"
+ *   - "[[thoughts/love|Love]]" -> "thoughts/love"
+ *   - "[[thoughts/love#section]]" -> "thoughts/love"
+ */
+const normalizePath = (pathEntry: string): SimpleSlug => {
+  const trimmed = pathEntry.trim()
+
+  // Try parsing as wikilink first
+  const parsed = parseWikilink(trimmed)
+  if (parsed && parsed.target) {
+    // Use the target, ignore anchor and alias
+    // Slugify to convert spaces to dashes
+    const slugified = sluggify(parsed.target)
+    return simplifySlug(stripSlashes(slugified) as FullSlug)
+  }
+
+  // Fall back to treating as plain path
+  // Slugify to convert spaces to dashes (e.g., "mechanistic interpretability" -> "mechanistic-interpretability")
+  const slugified = sluggify(trimmed)
+  return simplifySlug(stripSlashes(slugified) as FullSlug)
 }
 
 export default ((opts?: Partial<FolderContentOptions>) => {
   const options: FolderContentOptions = { ...defaultOptions, ...opts }
 
+  // Trie covering ALL files in content (any extension), built from ctx
+  let fullTrie: FileTrieNode<{
+    slug: string
+    title: string
+    filePath: string
+  }>
+
   const shouldIncludeFile = extensionFilterFn(options)
+
+  // NOTE: we will always add the generated tags "folder" for better distinction
+  // Normalize lg/sm paths to support both plain paths and wikilink syntax
+  const { tags } = options
+  const lg = options.lg.map(normalizePath)
+  const sm = options.sm.map(normalizePath)
+
+  const PageList = PageListConstructor({ highlightTags: [...tags, "folder"] })
+  const Evergreen = EvergreenConstructor({ lg, sm, tags })
+  const PermanentNotes = EvergreenPermanentNotes({ lg, sm, tags })
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props
+    // Map markdown/pdf plugin data by slug for metadata lookups
+    const mdBySlug = new Map<string, QuartzPluginData>()
+    for (const f of allFiles) {
+      if (f.slug) mdBySlug.set(stripSlashes(f.slug), f)
+    }
+
+    // Initialize a trie with ALL files from the vault (ctx)
+    if (!fullTrie) {
+      fullTrie = new FileTrieNode([])
+      for (const fp of ctx.allFiles) {
+        const slug = slugifyFilePath(fp as FilePath)
+        const fileSlug = stripSlashes(slug)
+        const ext = path.extname(fp)
+        const base = path.basename(fp, ext)
+        const md = mdBySlug.get(fileSlug)
+        fullTrie.add({
+          slug: fileSlug,
+          title: md?.frontmatter?.title ?? base,
+          filePath: fp,
+        })
+      }
+    }
+
     const folderSlug = stripSlashes(simplifySlug(fileData.slug!))
     const entries: QuartzPluginData[] = []
-    const processedPaths = new Set<string>()
+    const processed = new Set<string>()
 
-    // Find immediate children and subfolders from ctx.allSlugs
-    const folderParts = folderSlug.split(path.posix.sep)
-    const subfolders = new Set<string>()
+    const folderNode = fullTrie.findNode(folderSlug.split(path.posix.sep))
+    const isImagesPath = (slug: string) => slug.split("/").includes("images")
 
-    // Process all slugs to find files and folders
-    for (const slug of ctx.allSlugs) {
-      const slugParts = stripSlashes(simplifySlug(slug)).split(path.posix.sep)
+    // Compute a sensible date for the current folder (used as fallback for children)
+    const folderIndexMd = allFiles.find((f) => stripSlashes(simplifySlug(f.slug!)) === folderSlug)
+    const filesUnderCurrent = allFiles.filter((f) =>
+      stripSlashes(simplifySlug(f.slug!)).startsWith(`${folderSlug}/`),
+    )
+    const defaultDate = { created: new Date(0), modified: new Date(0), published: new Date(0) }
+    const currentFolderDates =
+      filesUnderCurrent.length > 0
+        ? filesUnderCurrent.sort(byDateAndAlphabetical(cfg))[0].dates
+        : (folderIndexMd?.dates ?? fileData?.dates)
 
-      // Check if this slug is under our current folder
-      if (!slug.startsWith(folderSlug) || slug === folderSlug) {
-        continue
-      }
+    const pushFileEntry = (fileSlug: string, filePathStr: string) => {
+      if (processed.has(fileSlug)) return
+      const ext = path.extname(filePathStr)
+      const baseFileName = path.basename(filePathStr, ext)
+      if (!shouldIncludeFile(filePathStr)) return
+      if (isImagesPath(fileSlug)) return
 
-      // Get relative path from the current folder
-      const relativeParts = slugParts.slice(folderParts.length)
-
-      // Only process immediate children
-      if (relativeParts.length === 0) continue
-
-      // If it's a deeper path, track the immediate subfolder
-      if (relativeParts.length > 1) {
-        const immediateSubfolder = relativeParts[0]
-        if (!processedPaths.has(immediateSubfolder)) {
-          subfolders.add(immediateSubfolder)
-          processedPaths.add(immediateSubfolder)
+      // If this slug corresponds to a markdown page we know about, just use it directly
+      const md = mdBySlug.get(fileSlug)
+      if (md) {
+        // Augment missing dates so PageList can render consistently
+        const folderFallback = currentFolderDates || fileData.dates
+        const augmentedDates = {
+          created: md.dates?.created ?? folderFallback?.created ?? defaultDate.created,
+          modified: md.dates?.modified ?? folderFallback?.modified ?? defaultDate.modified,
+          published: md.dates?.published ?? folderFallback?.published ?? defaultDate.published,
         }
-        continue
+        entries.push({ ...md, dates: augmentedDates })
+        processed.add(fileSlug)
+        return
       }
 
-      // Process immediate files
-      const filePath = relativeParts[0]
-      if (!processedPaths.has(filePath) && shouldIncludeFile(filePath)) {
-        processedPaths.add(filePath)
-        const ext = path.extname(filePath)
-        const baseFileName = path.basename(filePath, ext)
-
-        // Find all associated files with the same base name
-        const associatedFiles = allFiles.filter((f) => {
-          const fileSlug = stripSlashes(simplifySlug(f.slug!))
-          const fileBase = path.basename(fileSlug, path.extname(fileSlug))
-          const fileInFolder = fileSlug.startsWith(folderSlug)
-          return fileInFolder && fileBase === baseFileName
-        })
-
-        // Sort associated files to get the most recent dates
-        const sortedFiles = associatedFiles.sort(byDateAndAlphabetical(cfg))
-        const defaultDate = { created: new Date(0), modified: new Date(0), published: new Date(0) }
-        const dates =
-          sortedFiles.length > 0
-            ? sortedFiles[0].dates || fileData.dates || defaultDate
-            : fileData.dates || defaultDate
-
-        entries.push({
-          slug: joinSegments(folderSlug, filePath) as FullSlug,
-          frontmatter: {
-            title: baseFileName,
-            tags: [ext.split(".").at(-1) as string],
-          },
-          dates,
-        })
-      }
-    }
-
-    // Add subfolders as entries
-    for (const subfolder of subfolders) {
-      const subfolderSlug = joinSegments(folderSlug, subfolder)
-
-      // Find any markdown file that represents this folder
-      const folderIndex = allFiles.find((f) => {
-        const fileSlug = stripSlashes(simplifySlug(f.slug!))
-        return fileSlug === subfolderSlug
+      // Pull dates (prefer markdown companion if present), else fallback to current folder date
+      const associatedFiles = allFiles.filter((f) => {
+        const fSlug = stripSlashes(simplifySlug(f.slug!))
+        const fBase = path.basename(fSlug, path.extname(fSlug))
+        const inFolder = fSlug.startsWith(`${folderSlug}/`)
+        return inFolder && fBase === baseFileName
       })
 
-      // Get all files within this subfolder to determine its dates
-      const filesInSubfolder = allFiles.filter((file) => {
-        const fileSlug = stripSlashes(simplifySlug(file.slug!))
-        return fileSlug.startsWith(subfolderSlug) && fileSlug !== subfolderSlug
-      })
-
-      // Sort files by date and take the first one's dates
-      const subfolderDates =
-        filesInSubfolder.length > 0
-          ? filesInSubfolder.sort(byDateAndAlphabetical(cfg))[0].dates
-          : (folderIndex?.dates ?? fileData?.dates)
+      const sortedFiles = associatedFiles.sort(byDateAndAlphabetical(cfg))
+      const dates =
+        sortedFiles.length > 0
+          ? sortedFiles[0].dates || currentFolderDates || fileData.dates || defaultDate
+          : currentFolderDates || fileData.dates || defaultDate
 
       entries.push({
-        slug: subfolderSlug as FullSlug,
-        frontmatter: folderIndex?.frontmatter ?? { title: subfolder, tags: ["folder"] },
-        dates: subfolderDates,
+        slug: (fileSlug as FullSlug) ?? (joinSegments(folderSlug, baseFileName) as FullSlug),
+        frontmatter: {
+          title: mdBySlug.get(fileSlug)?.frontmatter?.title ?? baseFileName,
+          tags: [ext.replace(".", "") || "file"],
+          pageLayout: "default",
+        },
+        dates,
       })
+      processed.add(fileSlug)
     }
 
-    // Add any markdown-only entries that might not exist as files
-    for (const file of allFiles) {
-      const fileSlug = stripSlashes(simplifySlug(file.slug!))
-      if (fileSlug.startsWith(folderSlug) && fileSlug !== folderSlug) {
-        const relativePath = fileSlug.slice(folderSlug.length + 1)
-        if (!relativePath.includes("/") && !processedPaths.has(relativePath)) {
+    if (folderNode) {
+      // Immediate children only: files and subfolders
+      const subfolders: FileTrieNode<any>[] = []
+      for (const child of folderNode.children) {
+        if (child.isFolder) {
+          subfolders.push(child)
+          continue
+        }
+        if (!child.data) continue
+        const fileSlug = stripSlashes(child.slug)
+        const isAlias = allFiles.some((f) =>
+          f.aliases?.some(
+            (alias) => simplifySlug(alias) === stripSlashes(simplifySlug(fileSlug as FullSlug)),
+          ),
+        )
+        if (isAlias) continue
+        pushFileEntry(fileSlug, child.data.filePath)
+      }
+
+      // Add subfolders
+      for (const sub of subfolders) {
+        // Trie folder slug includes `index` (e.g., a/b/index)
+        const subfolderSlugWithIndex = stripSlashes(sub.slug)
+        const subfolderSimple = stripSlashes(simplifySlug(sub.slug as FullSlug))
+        if (isImagesPath(subfolderSimple) || isImagesPath(subfolderSlugWithIndex)) continue
+
+        // If there is a markdown index for this folder, rely on that page (avoid duplicate)
+        const folderIndex = allFiles.find((f) => {
+          const s = stripSlashes(simplifySlug(f.slug!))
+          return s === subfolderSimple
+        })
+
+        // Determine dates from files under the subfolder
+        const filesInSubfolder = allFiles.filter((file) => {
+          const s = stripSlashes(simplifySlug(file.slug!))
+          return s.startsWith(`${subfolderSimple}/`)
+        })
+
+        const subfolderDates =
+          filesInSubfolder.length > 0
+            ? filesInSubfolder.sort(byDateAndAlphabetical(cfg))[0].dates
+            : (folderIndex?.dates ?? fileData?.dates)
+
+        // Only generate a synthetic folder entry if no explicit folder index exists
+        if (!folderIndex) {
           entries.push({
-            slug: fileSlug as FullSlug,
-            frontmatter: file.frontmatter,
-            dates: file.dates,
+            // keep `.../index` so it?s treated as a folder in sorting
+            slug: subfolderSlugWithIndex as FullSlug,
+            frontmatter: {
+              title: sub.displayName || sub.slugSegment,
+              tags: ["folder"],
+              pageLayout: "default",
+            },
+            dates: subfolderDates,
           })
+          // Mark both forms as processed to prevent any fallback duplication
+          processed.add(subfolderSlugWithIndex)
+          processed.add(subfolderSimple)
         }
       }
     }
 
-    const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
-    const classes = ["popover-hint", ...cssClasses].join(" ")
-    const listProps = {
-      ...props,
-      sort: options.sort,
-      allFiles: entries,
+    // Fallback: ensure immediate markdown children are present
+    for (const file of allFiles) {
+      const fileSlug = stripSlashes(simplifySlug(file.slug!))
+      if (fileSlug.startsWith(`${folderSlug}/`)) {
+        const relativePath = fileSlug.slice(folderSlug.length + 1)
+        if (!relativePath.includes("/")) {
+          if (!processed.has(fileSlug)) {
+            const folderFallback = currentFolderDates || fileData.dates
+            const augmentedDates = {
+              created: file.dates?.created ?? folderFallback?.created ?? defaultDate.created,
+              modified: file.dates?.modified ?? folderFallback?.modified ?? defaultDate.modified,
+              published:
+                file.dates?.published ?? folderFallback?.published ?? defaultDate.published,
+            }
+            entries.push({ ...file, dates: augmentedDates })
+            processed.add(fileSlug)
+          }
+        }
+      }
     }
 
+    const rawLayout = fileData.frontmatter?.["folderLayout"] ?? fileData.frontmatter?.["pageLayout"]
+    const layout = parseFolderLayout(rawLayout)
+
+    const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
+    const baseClassList = ["popover-hint", "notes-list", "side-col", ...cssClasses]
+    const baseListClass = baseClassList.join(" ")
+    const listClassName =
+      layout === Layout.etas ? `${baseListClass} folder-layout--list` : baseListClass
     const content =
       (tree as Root).children.length === 0
         ? fileData.description
         : htmlToJsx(fileData.filePath!, tree)
 
-    return (
-      <div class={classes}>
-        <article>{content}</article>
-        <div class="page-listing">
-          {options.showFolderCount && (
-            <p>
-              {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({
-                count: entries.length,
-              })}
-            </p>
-          )}
-          <div>
-            <PageList {...listProps} />
+    const listProps = {
+      ...props,
+      sort: options.sort,
+      content,
+      allFiles: entries,
+      vaults: allFiles,
+    }
+
+    switch (layout) {
+      case Layout.etas:
+        return (
+          <div class="folder-layout folder-layout--et-a">
+            <section class={listClassName}>
+              <PageList {...listProps} />
+            </section>
+            <div class="notes-evergreen folder-layout--evergreen">
+              <PermanentNotes {...listProps} />
+              <AllTags {...listProps} opts />
+            </div>
+            <article class="folder-layout--article">
+              {content}
+              <p>
+                {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({
+                  count: listProps.allFiles.length,
+                })}
+              </p>
+            </article>
           </div>
-        </div>
-      </div>
-    )
+        )
+
+      case Layout.alsp:
+        return (
+          <div class="folder-layout folder-layout--a-l">
+            <article class="folder-layout--article">
+              {content}
+              <p>
+                {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({
+                  count: listProps.allFiles.length,
+                })}
+              </p>
+            </article>
+            <section class={listClassName}>
+              <PageList {...listProps} />
+            </section>
+          </div>
+        )
+
+      default:
+        return (
+          <>
+            <section class={baseListClass}>
+              <PageList {...listProps} />
+            </section>
+            <aside class="notes-evergreen">
+              <Evergreen {...listProps} />
+            </aside>
+          </>
+        )
+    }
   }
 
-  FolderContent.css = style + PageList.css
+  FolderContent.css = style + Evergreen.css
+  FolderContent.afterDOMLoaded = Evergreen.afterDOMLoaded
+
   return FolderContent
 }) satisfies QuartzComponentConstructor

@@ -1,10 +1,11 @@
 ---
+date: "2023-09-09"
 id: Presocratics
+modified: 2025-10-29 02:16:16 GMT-04:00
 tags:
   - philos1aa3
   - philosophy
 title: Presocratics philosophers
-date: 2023-09-09
 ---
 
 ### Anaximander

@@ -1,9 +1,13 @@
 @use "../../styles/variables.scss" as *;
 
 .toc {
+  --indicator-position: 4.5rem;
+  --fill-width: 1rem;
+
   display: flex;
   flex-direction: column;
   position: relative;
+  min-width: var(--indicator-position);
 }
 
 body.toc-hover {
@@ -11,7 +15,7 @@ body.toc-hover {
   footer,
   .page-header,
   .page-footer,
-  .center {
+  .page-content > article {
     filter: blur(4px);
     opacity: 0.2;
     transition:
@@ -31,28 +35,25 @@ body.toc-hover {
 }
 
 nav#toc-vertical {
+  --button-height: 0.6rem;
+
   display: flex;
   flex-direction: column;
 
-  position: sticky;
-  inset: 50% 0 0;
-  margin-bottom: 400%;
-  transform: translateY(-50%);
+  position: fixed;
+  inset: 30% 0 0;
   cursor: pointer;
-  z-index: 1000;
+  z-index: 999;
+  max-width: calc(var(--indicator-position) * 0.8);
 
   button.toc-item {
-    --indicator-position: 4.5rem;
-    --fill-width: 1rem;
-
     display: inline-flex;
     border: none;
     background: inherit;
-    height: 0.6rem;
+    height: var(--button-height);
+    max-width: var(--fill-width);
     position: relative;
     align-items: center;
-    cursor: pointer;
-    padding-inline: 0.5rem;
     text-indent: 1rem;
 
     transform-origin: center;
@@ -118,7 +119,7 @@ button#toc {
   list-style: none;
   overflow: hidden;
   overflow-y: auto;
-  max-height: 100%;
+  max-height: 80vh;
   transition:
     max-height 0.35s ease,
     visibility 0s linear 0s;

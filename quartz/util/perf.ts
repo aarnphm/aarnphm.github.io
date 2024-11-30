@@ -1,4 +1,4 @@
-import chalk from "chalk"
+import { styleText } from "node:util"
 import pretty from "pretty-time"
 
 export class PerfTimer {
@@ -14,6 +14,6 @@ export class PerfTimer {
   }
 
   timeSince(evtName?: string): string {
-    return chalk.yellow(pretty(process.hrtime(this.evts[evtName ?? "start"])))
+    return styleText("yellow", pretty(process.hrtime(this.evts[evtName ?? "start"])))
   }
 }

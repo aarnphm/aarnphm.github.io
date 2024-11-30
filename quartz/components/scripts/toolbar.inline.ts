@@ -33,7 +33,6 @@ function toggleReader(button: HTMLButtonElement) {
 
 function setupToolbar() {
   const toolbar = document.querySelector(".toolbar")
-  const page = document.querySelector(".center") as HTMLElement
   if (!toolbar) return
 
   const toolbarContent = toolbar.querySelector(".toolbar-content")

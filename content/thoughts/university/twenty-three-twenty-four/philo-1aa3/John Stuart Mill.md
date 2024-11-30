@@ -1,8 +1,9 @@
 ---
+date: "2023-11-30"
 id: John Stuart Mill
+modified: 2025-10-29 02:16:16 GMT-04:00
 tags:
   - philos1aa3
-date: "2023-11-30"
 title: John Stuart Mill
 ---
 

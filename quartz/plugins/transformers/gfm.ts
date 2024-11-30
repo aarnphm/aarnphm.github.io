@@ -5,94 +5,55 @@ import rehypeSlug from "rehype-slug"
 import rehypeAutolinkHeadings from "rehype-autolink-headings"
 import { visit } from "unist-util-visit"
 import { headingRank } from "hast-util-heading-rank"
+import { h, s } from "hastscript"
+import { Element } from "hast"
+import { svgOptions } from "../../components/svg"
 
-export interface Options {
-  enableSmartyPants: boolean
-  linkHeadings: boolean
-}
+export const checkFootnoteRef = ({ type, tagName, properties }: Element) =>
+  type === "element" && tagName === "a" && Boolean(properties) && properties.dataFootnoteRef === ""
 
-const defaultOptions: Options = {
-  enableSmartyPants: true,
-  linkHeadings: true,
-}
+export const checkFootnoteSection = ({ type, tagName, properties }: Element) =>
+  type === "element" && tagName === "section" && properties.dataFootnotes == ""
 
-export const GitHubFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
-  const opts = { ...defaultOptions, ...userOpts }
-  return {
-    name: "GitHubFlavoredMarkdown",
-    markdownPlugins() {
-      return opts.enableSmartyPants ? [remarkGfm, smartypants] : [remarkGfm]
+export const GitHubFlavoredMarkdown: QuartzTransformerPlugin = () => ({
+  name: "GitHubFlavoredMarkdown",
+  markdownPlugins: () => [remarkGfm, smartypants],
+  htmlPlugins: () => [
+    rehypeSlug,
+    () => (tree) => {
+      visit(tree, (node) => {
+        if (headingRank(node) !== undefined) {
+          if (node.properties.id === "footnote-label") {
+            node.children = [{ type: "text", value: "Remarque" }]
+          }
+          node.children = [h("span.highlight-span", node.children)]
+        }
+      })
     },
-    htmlPlugins() {
-      if (opts.linkHeadings) {
-        return [
-          rehypeSlug,
-          () => {
-            return (tree, _file) => {
-              visit(tree, "element", function (node) {
-                if (headingRank(node)) {
-                  node.children = [
-                    {
-                      type: "element",
-                      tagName: "span",
-                      properties: {
-                        className: ["highlight-span"],
-                      },
-                      children: [...node.children],
-                    },
-                  ]
-                }
-              })
-            }
-          },
-          [
-            rehypeAutolinkHeadings,
-            {
-              behavior: "append",
-              properties: {
-                role: "anchor",
-                ariaHidden: true,
-                tabIndex: -1,
-                "data-no-popover": true,
-              },
-              content: {
-                type: "element",
-                tagName: "svg",
-                properties: {
-                  width: 12,
-                  height: 12,
-                  viewBox: "0 0 24 24",
-                  fill: "none",
-                  stroke: "currentColor",
-                  "stroke-width": "2",
-                  "stroke-linecap": "round",
-                  "stroke-linejoin": "round",
-                },
-                children: [
-                  {
-                    type: "element",
-                    tagName: "path",
-                    properties: {
-                      d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71",
-                    },
-                    children: [],
-                  },
-                  {
-                    type: "element",
-                    tagName: "path",
-                    properties: {
-                      d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71",
-                    },
-                    children: [],
-                  },
-                ],
-              },
-            },
-          ],
-        ]
-      } else {
-        return []
-      }
+    () => (tree) => {
+      visit(tree, (node) => {
+        if (checkFootnoteSection(node as Element)) {
+          const className = Array.isArray(node.properties.className)
+            ? node.properties.className
+            : (node.properties.className = [])
+          className.push("main-col")
+        }
+      })
     },
-  }
-}
+    [
+      rehypeAutolinkHeadings,
+      {
+        behavior: "append",
+        properties: {
+          "data-role": "anchor",
+          "data-no-popover": true,
+        },
+        content: s(
+          "svg",
+          { ...svgOptions, fill: "none", stroke: "currentColor", strokewidth: "2" },
+          [s("use", { href: "#github-anchor" })],
+        ),
+      },
+    ],
+  ],
+})

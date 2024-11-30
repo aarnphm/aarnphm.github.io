@@ -1,103 +1,100 @@
-import {
-  updateSidenoteState,
-  getCollapsedState,
-  CollapsedState,
-  setCollapsedState,
-  setHeaderState,
-  updateContainerHeights,
-  debounce,
-} from "./util"
+function handleToggleClick(event: Event) {
+  const toggle = event.currentTarget as HTMLElement | null
+  if (!toggle) return
 
-type MaybeHTMLElement = HTMLElement | undefined
+  const anchor = (event.target as HTMLElement | null)?.closest('a[data-role="anchor"]')
+  if (anchor) return
 
-const debouncedHeights = debounce(updateContainerHeights, 150)
+  event.stopPropagation()
 
-function toggleHeader(evt: Event) {
-  const target = evt.target as MaybeHTMLElement
-  if (!target) return
+  const section = toggle.closest<HTMLElement>("section.collapsible-header")
+  if (!section) return
 
-  // Only proceed if we clicked on the toggle button or its children (svg, lines)
-  const toggleButton = target.closest(".toggle-button") as MaybeHTMLElement
-  if (!toggleButton) return
+  const shell = section.querySelector<HTMLElement>("[data-collapse-shell]")
+  if (!shell) return
 
-  // Check if we're inside a callout - if so, don't handle the event
-  if (target.parentElement!.classList.contains("callout")) return
+  shell.classList.toggle("is-open")
+  const isOpen = shell.classList.contains("is-open")
 
-  const headerId = toggleButton.id.replace("collapsible-header-", "").replace("-toggle", "")
+  toggle.setAttribute("aria-expanded", isOpen ? "true" : "false")
 
-  const wrapper = document.querySelector(
-    `section.collapsible-header[id="${headerId}"]`,
-  ) as MaybeHTMLElement
-  if (!wrapper) return
+  localStorage.setItem(
+    `${window.document.body.dataset.slug!.replace(/\//g, "--")}-${toggle.id}`,
+    isOpen ? "true" : "false",
+  )
+}
 
-  evt.stopPropagation()
+function handleToggleKeydown(event: KeyboardEvent) {
+  const key = event.key
+  if (key !== "Enter" && key !== " " && key !== "Spacebar") return
 
-  // Find content by data-references
-  const content = document.querySelector(
-    `.collapsible-header-content[data-references="${toggleButton.id}"]`,
-  ) as MaybeHTMLElement
-  if (!content) return
+  const toggle = event.currentTarget as HTMLElement | null
+  if (!toggle) return
 
-  const isCollapsed = toggleButton.getAttribute("aria-expanded") === "true"
+  event.preventDefault()
+  toggle.click()
+}
 
-  // Toggle current header
-  toggleButton.setAttribute("aria-expanded", isCollapsed ? "false" : "true")
-  content.style.maxHeight = isCollapsed ? "0px" : "inherit"
-  content.classList.toggle("collapsed", isCollapsed)
-  wrapper.classList.toggle("collapsed", isCollapsed)
-  toggleButton.classList.toggle("collapsed", isCollapsed)
+function hydrateCollapsibleHeaders() {
+  document.querySelectorAll<HTMLElement>("section.collapsible-header").forEach((section) => {
+    const shell = section.querySelector<HTMLElement>("[data-collapse-shell]")
+    if (!shell) return
 
-  updateSidenoteState(content, isCollapsed)
-  setCollapsedState(window, toggleButton.id, isCollapsed ? "false" : ("true" as CollapsedState))
+    const toggle = section.querySelector<HTMLElement>("[data-collapse-toggle]")
+    if (!toggle) return
 
-  requestAnimationFrame(() => {
-    updateContainerHeights()
-    debouncedHeights()
+    const initialOpen = shell.dataset.initialOpen !== "false"
+    const stored = localStorage.getItem(
+      `${window.document.body.dataset.slug!.replace(/\//g, "--")}-${toggle.id}`,
+    )
+    const isOpen = stored ? stored === "true" : initialOpen
+
+    if (isOpen) {
+      shell.classList.add("is-open")
+    } else {
+      shell.classList.remove("is-open")
+    }
+    toggle.setAttribute("aria-expanded", isOpen ? "true" : "false")
+
+    if (toggle.tabIndex === -1) {
+      toggle.tabIndex = 0
+    }
+
+    toggle.addEventListener("click", handleToggleClick)
+    toggle.addEventListener("keydown", handleToggleKeydown)
+    window.addCleanup?.(() => {
+      toggle.removeEventListener("click", handleToggleClick)
+      toggle.removeEventListener("keydown", handleToggleKeydown)
+    })
   })
-}
 
-function setupHeaders() {
-  const collapsibleHeaders = document.querySelectorAll(".collapsible-header")
+  const transcludeButtons = document.querySelectorAll("button.transclude-title-link")
+  for (const button of transcludeButtons) {
+    const parent = button.parentElement as HTMLElement | null
+    if (!parent || !parent.dataset.href) continue
 
-  for (const header of collapsibleHeaders) {
-    const button = header.querySelector("button.toggle-button") as HTMLButtonElement
-    if (button) {
-      button.addEventListener("click", toggleHeader)
-      window.addCleanup(() => button.removeEventListener("click", toggleHeader))
-
-      // Apply saved state
-      const content = document.querySelector(
-        `.collapsible-header-content[data-references="${button.id}"]`,
-      ) as HTMLElement
-      // setup once
-      if (content) {
-        const savedState = getCollapsedState(window, button.id)
-        if (savedState) {
-          setHeaderState(
-            button as HTMLElement,
-            content,
-            header as HTMLElement,
-            savedState === "false",
-          )
-        }
+    const navigate = () => {
+      const href = parent.dataset.href
+      if (!href) return
+      let targetUrl: URL
+      try {
+        targetUrl = new URL(href, window.location.toString())
+      } catch {
+        return
       }
-    }
-  }
 
-  const links = document.querySelectorAll("svg.blockquote-link") as NodeListOf<SVGElement>
-  for (const link of links) {
-    const parentEl = link.parentElement as HTMLElement
-    const href = parentEl.dataset.href as string
+      if (targetUrl.origin !== window.location.origin) {
+        window.location.assign(targetUrl.toString())
+        return
+      }
 
-    function onClick() {
-      window.spaNavigate(new URL(href, window.location.toString()))
+      window.spaNavigate(targetUrl)
     }
 
-    link.addEventListener("click", onClick)
-    window.addCleanup(() => link.removeEventListener("click", onClick))
+    button.addEventListener("click", navigate)
+    window.addCleanup?.(() => button.removeEventListener("click", navigate))
   }
 }
 
-// Set up initial state and handle navigation
-document.addEventListener("nav", setupHeaders)
-window.addEventListener("resize", setupHeaders)
+document.addEventListener("nav", hydrateCollapsibleHeaders)
+window.addEventListener("resize", hydrateCollapsibleHeaders)

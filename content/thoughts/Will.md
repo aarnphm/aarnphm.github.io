@@ -1,8 +1,10 @@
 ---
-id: Will
-tags:
-  - seed
 date: "2024-01-14"
+description: locust of controls towards certain actions.
+id: Will
+modified: 2025-10-29 02:15:38 GMT-04:00
+tags:
+  - philosophy
 title: Will
 ---
 

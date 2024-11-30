@@ -1,9 +1,10 @@
 ---
+date: "2023-10-26"
 id: Dishes
+modified: 2025-10-29 02:15:21 GMT-04:00
 tags:
   - evergreen
   - menu
-date: "2023-10-26"
 title: Menus
 ---
 

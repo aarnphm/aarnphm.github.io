@@ -1,22 +1,21 @@
 ---
+date: "2024-02-18"
 id: Chaos
+modified: 2025-11-09 01:36:44 GMT-05:00
+signature: from twenty three aaron
+socialDescription: on growing one year older. And a few things I learned growing up in a foreign land.
+socials:
+  substack: https://open.substack.com/pub/livingalone/p/chaos-has-and-always-be-a-driven?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
+  twitter: https://x.com/aarnphm_/status/1763686849782907196
 tags:
   - sapling
   - growth
-  - self
-date: "2024-02-18"
-description: Chaos has, and always be a driven force within life, intuitive yet disheveled. And a few things I learned growing up in a foreign land.
-modified: "2024-10-07"
-socialDescription: on a new age.
 title: Chaos is intuitive yet disheveled.
 ---
 
-And a few things I learned growing up in a foreign land.
+_This is an extension of my notes on [[thoughts/Chaos|chaos]]_
 
-_This is an extension of [[thoughts/Chaos|chaos]] that recently occupy my [[thoughts/NLP|chain of thought]]. See this on [substack](https://open.substack.com/pub/livingalone/p/chaos-has-and-always-be-a-driven?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true)_
-
-![[posts/images/passage-giorgio-m.webp]]
-_Passage by Giorgio Morandi_
+![[posts/images/passage-giorgio-m.webp|Passage by Giorgio Morandi]]
 
 Chaos isn't merely an undercurrent of life; it's a pervasive force, ever-present, often simmering just beneath the surface, ready to erupt and manifest in myriad forms.
 It serves not only as a backdrop in the narratives of storytellers and the musings of philosophers but also a distinct entity with the power to challenge those brave enough to embrace its unpredictability. To move abroad, to step into the unknown, is to court chaos – to acknowledge and accept the inevitability of change and the sharp tang of constant motion.
@@ -57,7 +56,7 @@ Seemingly, this untamed curious inner child, still clung to my being, propels me
 
 ---
 
-![[posts/images/cima.webp]]
+![[posts/images/cima.webp|that one bar that I visit too often]]
 
 > I'm not sure where I want to go from here.
 
@@ -116,9 +115,6 @@ The path forward, then, might not be a straight line but a winding road that req
 
 In this balance, You might find not just the next step but a deeper understanding of what it means to truly live. It's about making peace with the multifaceted nature of my desires and recognising that every facet, whether driven by ambition or the need for connection, plays a crucial role in defining who I am and who I aspire to be. The road ahead is one of integration, where the driven and the broken parts of me walk hand in hand, each lending strength to the other as I continue to explore the vast landscape of possibilities that life offers.
 
-<div style="text-align: right;">
-  <span>With regards,</span>
-  <span>Anh P.</span>
-</div>
+[^sign]
 
-![[posts/images/aaron-younglings.webp]]
+![[posts/images/23-aaron-younglings.webp|young Aaron through time]]

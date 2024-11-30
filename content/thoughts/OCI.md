@@ -1,9 +1,10 @@
 ---
+date: "2023-08-10"
 id: OCI
+modified: 2025-10-29 02:15:30 GMT-04:00
 tags:
   - seed
   - container
-date: "2023-08-10"
 title: OCI Format
 ---
 

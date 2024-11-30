@@ -1,8 +1,9 @@
 ---
+date: "2023-09-11"
 id: Sequential programming
+modified: 2025-10-29 02:16:20 GMT-04:00
 tags:
   - sfwr3bb4
-date: "2023-09-11"
 title: Sequential programming
 ---
 

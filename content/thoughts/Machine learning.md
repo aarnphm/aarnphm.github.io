@@ -1,24 +1,30 @@
 ---
+date: "2024-02-07"
+description: and learning machine
 id: Machine learning
+modified: 2025-11-04 22:01:40 GMT-05:00
 tags:
   - ml
   - sapling
-date: "2024-02-07"
-modified: "2024-10-28"
 title: Machine learning
 ---
 
-Detects pattern within data and use it to make useful prediction.
+Learn patterns from distributions and make useful predictions based on assigned-objectives.
 
-Generally AI $\subset$ ML $\subset$ [[thoughts/deep learning|DL]]
+Generally [[thoughts/AGI|AI]] $\subset$ #ml $\subset$ [[thoughts/deep learning|DL]]
 
 Some main exploration:
 
 - [[thoughts/Transformers|Transformers]]
-- CNN
+  - [[thoughts/LLMs|Large language models]]
+- [[thoughts/NLP]]
+- [[thoughts/Bayesian Neural Network]]
+- [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Convolutional Neural Network|CNN]]
+- [[thoughts/Logistic regression]]
 - [[thoughts/optimization|Optimization]]
-  - Gradient descent
+  - [[thoughts/gradient descent]]
   - hyperparameter tuning
+- [[thoughts/ensemble learning]]
 - Recommender systems
 - Reinforcement learning
   - Q-learning
@@ -27,9 +33,13 @@ Some main exploration:
 - Generative Models
   - GAN
   - VAE
-- Autoencoder
+- [[thoughts/autoencoders|Autoencoder]]
+  - [[thoughts/sparse autoencoder]]
+  - [[thoughts/sparse crosscoders]]
 - Supervised Q-learning
 - [[thoughts/Low-rank adapters]]
+- Transfer learning
+  - [[thoughts/knowledge distillation]]
 
 Fields
 
@@ -37,6 +47,6 @@ Fields
 
 Related:
 
-- [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm#linear algebra review.|linear algebra]].
+- [[tags/linalg]].
 - [[thoughts/Automatic Differentiation|autograd]]
 - [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm|supervised machine learning]].

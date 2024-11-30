@@ -1,0 +1,55 @@
+@use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
+
+ul.tags,
+menu.tags,
+menu.tags > li > ul {
+  list-style: none;
+  display: flex;
+  padding-left: 0;
+  gap: 0.4rem;
+  margin: 0;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+ul.tags {
+  margin: 1rem 0;
+}
+
+menu.tags {
+  grid-column: 5/6;
+
+  @media all and ($tablet) {
+    grid-column: 3/6;
+  }
+
+  @media all and ($mobile) {
+    grid-column: 3/6;
+  }
+}
+
+li.socials {
+  address {
+    font-style: normal;
+  }
+}
+
+.section-li > .section > .tags {
+  justify-content: flex-end;
+}
+
+ul.tags > li {
+  display: inline-block;
+  white-space: nowrap;
+  margin: 0;
+  overflow-wrap: normal;
+}
+
+section[class~="byline"] {
+  ul.tags,
+  menu.tags,
+  menu.tags > li > ul {
+    max-width: 12rem;
+  }
+}

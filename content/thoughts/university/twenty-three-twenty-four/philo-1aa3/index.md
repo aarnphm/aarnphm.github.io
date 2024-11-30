@@ -1,9 +1,10 @@
 ---
+date: "2023-09-04"
 id: index
+modified: 2025-10-29 02:16:17 GMT-04:00
 tags:
   - philos1aa3
   - university
-date: "2023-09-04"
 title: Philosophical Text
 ---
 

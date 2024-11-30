@@ -1,10 +1,11 @@
 ---
+date: "2023-10-11"
 id: Arguments regards to Sphinoza
+modified: 2025-10-29 02:16:18 GMT-04:00
 tags:
   - philos1aa3
   - philosophy
 title: Arguments regards to Sphinoza
-date: 2023-10-11
 ---
 
 Substance = God = Nature

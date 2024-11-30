@@ -1,25 +1,26 @@
 ---
-id: orangeville
-tags:
-  - menu
 cssclasses:
   - menu
 date: "2024-03-08"
 description: atelier with friends uno - orangeville
-lang: it
+id: orangeville
+lang: it-IT
 menu: true
+modified: 2025-10-29 02:15:40 GMT-04:00
+tags:
+  - menu
 title: orangeville.
 ---
 
 ## ==pasta.==
 
-### [[thoughts/atelier with friends/images/orangeville-1.webp|Uovo la Raviolo]]
+### Uovo la Raviolo
 
 uovo, beurre noisette, salvia, parmigiano reggiano, ricotta ripieno, noce moscata
 
 <!-- sage, brown butter, parmigiano reggiano, ricotta, nutmeg -->
 
-### [[thoughts/atelier with friends/images/orangeville-2.webp|Pomodori alla fetuccine]]
+### Pomodori alla fetuccine
 
 bucatini, marinara, olio oliva
 

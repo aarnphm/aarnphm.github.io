@@ -1,8 +1,9 @@
 ---
+date: "2024-02-26"
 id: Heating Cooling GH effect
+modified: 2025-10-29 02:16:11 GMT-04:00
 tags:
   - astron2e03
-date: "2024-02-26"
 title: Heating, Cooling, and the Greenhouse Effect
 ---
 

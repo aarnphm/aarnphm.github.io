@@ -1,6 +1,6 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import style from "../styles/listPage.scss"
-import { PageList, SortFn } from "../PageList"
+import PageListConstructor, { SortFn } from "../PageList"
 import { FullSlug, getAllSegmentPrefixes, simplifySlug } from "../../util/path"
 import { QuartzPluginData } from "../../plugins/vfile"
 import { Root } from "hast"
@@ -18,6 +18,8 @@ const defaultOptions: TagContentOptions = {
 
 export default ((opts?: Partial<TagContentOptions>) => {
   const options: TagContentOptions = { ...defaultOptions, ...opts }
+
+  const PageList = PageListConstructor()
 
   const TagContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, cfg } = props
@@ -38,7 +40,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
         ? fileData.description
         : htmlToJsx(fileData.filePath!, tree)
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
-    const classes = ["popover-hint", ...cssClasses].join(" ")
+    const classes = ["popover-hint", "full-col", ...cssClasses].join(" ")
     if (tag === "/") {
       const tags = [
         ...new Set(
@@ -74,7 +76,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
               return (
                 <div>
                   <h2>
-                    <a class="internal tag-link" href={`../tags/${tag}`}>
+                    <a class="internal tag-link" data-no-popover href={`../tags/${tag}`}>
                       {tag}
                     </a>
                   </h2>
@@ -109,12 +111,12 @@ export default ((opts?: Partial<TagContentOptions>) => {
       }
 
       return (
-        <div class={classes}>
+        <div class={classes} data-pagelist>
           <article>{content}</article>
           <div class="page-listing">
             <p>{i18n(cfg.locale).pages.tagContent.itemsUnderTag({ count: pages.length })}</p>
             <div>
-              <PageList {...listProps} />
+              <PageList {...listProps} sort={opts?.sort} />
             </div>
           </div>
         </div>
@@ -122,6 +124,6 @@ export default ((opts?: Partial<TagContentOptions>) => {
     }
   }
 
-  TagContent.css = style + PageList.css
+  TagContent.css = style
   return TagContent
 }) satisfies QuartzComponentConstructor

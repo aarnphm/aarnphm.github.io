@@ -1,17 +1,17 @@
 ---
+date: "2024-09-10"
 id: Linear regression
+modified: 2025-10-29 02:16:08 GMT-04:00
 tags:
   - sfwr4ml3
-date: "2024-09-10"
-modified: "2024-10-28"
 title: Linear regression
 ---
 
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture1.pdf|slides for curve fitting]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture2.pdf|regression]], [colab link](https://colab.research.google.com/drive/1eljHSwYJSR5ox6bB9zopalZmMSJoNl4v?usp=sharing)
+See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture1.pdf|slides for curve fitting]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture2.pdf|regression]], [colab link](https://colab.research.google.com/drive/1eljHSwYJSR5ox6bB9zopalZmMSJoNl4v?usp=sharing), [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept|bias and intercept]]
 
 python: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/code/ols_and_kls.py|ols_and_kls.py]]
 
-## curve fitting.
+## curve fitting
 
 > [!question] how do we fit a distribution of data over a curve?
 > Given a set of $n$ data points $S=\set{(x^i, y^i)}^{n}_{n=1}$
@@ -42,9 +42,10 @@ where $\overline{x} = \frac{1}{N} \sum{x^i}$, $\overline{y} = \frac{1}{N} \sum{y
 > [!abstract] Hyperplane equation
 >
 > $$
-> \hat{y} = w_{0} + \sum_{j=1}^{d}{w_j x_j}
-> \\
-> \because w_0: \text{the y-intercept (bias)}
+> \begin{aligned}
+> \hat{y} &= w_{0} + \sum_{j=1}^{d}{w_j x_j}\\[12pt]
+> &\because w_0: \text{the y-intercept (bias)}
+> \end{aligned}
 > $$
 
 Homogeneous hyperplane:
@@ -174,5 +175,3 @@ w_0 + \sum{w_i \times x_i^{1}} \\
 w_0 + \sum{w_i \times x_i^{n}}
 \end{pmatrix}
 $$
-
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept]]

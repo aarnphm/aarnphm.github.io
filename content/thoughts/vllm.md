@@ -1,16 +1,18 @@
 ---
+date: "2024-09-09"
+description: efficient LLM serving engine.
 id: vllm
+modified: 2025-11-03 05:03:10 GMT-05:00
+permalinks:
+  - /vllm
 tags:
   - ml
-  - serving
-date: "2024-09-09"
-modified: "2024-10-03"
-permalink:
-  - /vllm
+  - inference
+  - technical
 title: vLLM
 ---
 
-See also [[thoughts/Attention#Paged Attention]] [@kwon2023efficient]
+see also: [[thoughts/Attention#paged attention|paged attention]], [[thoughts/PD disaggregated serving|pd disaggregation]], [2024 in review](https://docs.google.com/presentation/d/1Z78ljqPIg7_KZ7ZAqKO4VDjKG-ytbkbZ/edit#slide=id.p1) [@kwon2023efficient]
 
 ## KV-Compress
 
@@ -73,144 +75,14 @@ see also: [v2](https://github.com/vllm-project/vllm/blob/main/vllm/core/block_ma
 Reasoning for v2:
 
 - support sliding windows attention
-- lookahead slot for [[thoughts/vllm#speculative decoding|speculative decoding]]
+- lookahead slot for [[thoughts/Speculative decoding]]
 
-## speculative decoding
-
-See [slides](https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN5XaULO3AnCWWoRe4/edit#slide=id.p)
-
-<https://x.com/karpathy/status/1697318534555336961>
-
-- not all parameters are required for generations tokens
-- constraints tokens with low information-density
-
-> [!note] Ideas
->
-> Uses a small cheap "draft model" to generate candidate K tokens => feed back to the large models in a batch
->
-> - have a sort of sampling logics to get the probability of the next token, then forward passing for all later tokens.
+![[thoughts/Speculative decoding]]
 
 ## continuous batching
 
 ![[thoughts/Continuous batching]]
 
-## guided decoding
-
-See [vllm-project/vllm#5423](https://github.com/vllm-project/vllm/issues/5423)
-
-- not supported from `SamplingParams`
-- requires support batch/async logits processing
-- engine will die if failed
-
-Benchmark script: [vllm-project/vllm#10046](https://github.com/vllm-project/vllm/pull/10046)
-
-![[thoughts/images/vllm/benchmark-guided-before-optimization.webp]]
-
-> [!quote] overhead
->
-> Currently logit_processor are happening in frontend, so we should move this to model_executor layers
-
-### waterfall
-
-see also [introduction slides](https://docs.google.com/presentation/d/1QL-XPFXiFpDBh86DbEegFXBXFXjix4v032GhShbKf3s/edit)
-
-tldr: Bottleneck at `AsyncLogitProcessor` and `Scheduling` layer, given that this is row-wise operations [^row-wise]
-
-```mermaid
----
-title: Initialization flow
----
-graph TB
-  subgraph Engine
-    AsyncLLMEngine[AsyncLLMEngine]
-  end
-
-  subgraph Executors
-    GPU[GPUExecutorAsync]
-    TPU[TPUExecutorAsync]
-    XPU[XPUExecutorAsync]
-  end
-
-  subgraph Workers
-    GPUWorker[GPUWorker]
-  end
-
-  subgraph Model Runners
-    EmbeddingModelRunner[EmbeddingModelRunner]
-    GPUModelRunner[GPUModelRunner]
-  end
-
-  subgraph Control Plane
-    Scheduling[Scheduling]
-    SequenceGroup[SequenceGroup]
-    KVCache[KVCache]
-    Executors
-  end
-
-  AsyncLLMEngine --> |init| C[init]
-  C --> |device_type=gpu| GPU
-  C --> |device_type=tpu| TPU
-  C --> |device_type=xpu| XPU
-  GPU --> Workers
-  Workers --> |model_type=decoder| GPUModelRunner
-  Workers --> |model_type=embeddings| EmbeddingModelRunner
-  GPUModelRunner --> ModelClassImpl[LlamaModelForCausalLM]
-```
-
-```mermaid
----
-title: Request flow
----
-graph TB
-  subgraph Engine
-    AsyncLLMEngine[AsyncLLMEngine]
-  end
-
-  subgraph Executors
-    GPU[GPUExecutorAsync]
-    TPU[TPUExecutorAsync]
-    XPU[XPUExecutorAsync]
-  end
-
-  subgraph Workers
-    GPUWorker[GPUWorker]
-  end
-
-  subgraph Model Runners
-    EmbeddingModelRunner[EmbeddingModelRunner]
-    GPUModelRunner[GPUModelRunner]
-  end
-
-  subgraph control plane
-    Scheduling[Scheduling]
-  end
-
-  Request[prompt, sampling_params] --> AsyncLLMEngine
-  AsyncLLMEngine --> |add_request_async| AsyncLogitProcessor[AsyncLogitProcessorList]
-  AsyncLogitProcessor --> Scheduling --> Executors
-  GPU --> GPUWorker --> GPUModelRunner --> |.execute_model| ModelClassImpl[LlamaModelForCausalLM]
-```
-
-[^row-wise]:
-    Current implementation [of logits processor](https://github.com/vllm-project/vllm/blob/246598a6b1e22616630b7f1bf11bd9bcb31dc860/vllm/model_executor/layers/logits_processor.py#L112) mandates that we gather all logits from hidden state, scale if needed then apply the processors.
-
-    ![[thoughts/images/vllm/pre-optimized-logit-processor-handling.webp|flow]]
-    _reference: [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)_
-
-    Note that there is also [vllm-project/vllm#5006](https://github.com/vllm-project/vllm/pull/5006) that improves vLLM's own Outlines implementations of the FSM where it halves memory transition from Python list to Tensors
-
-> [!note]+ some related items
->
-> Worker base: `vllm/worker/worker_base.py`
->
-> Initialize GPU cache and sequence group in ModelRunner step
->
-> Executor will handle all KVCache, block manager, and evictor layer here during model execution
->
-> broadcast SPMD with sequence groups
-
-### proposal
-
-![[thoughts/constrained decoding|guided decoding]]
+![[thoughts/structured outputs|structured outputs v1]]
 
 [^ref]

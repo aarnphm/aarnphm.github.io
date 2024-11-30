@@ -1,16 +1,16 @@
 ---
-id: w1
+date: "2024-09-04"
+id: index
+modified: 2025-10-29 02:16:08 GMT-04:00
 tags:
   - university
   - sfwr4g06ab
-date: "2024-09-04"
-modified: "2024-10-25"
 title: Software Enginering Capstone a la carte.
 ---
 
 ## projects
 
-See [tinymorph](https://tinymorph.aarnphm.xyz)
+See [morph](https://engineering.morph-editor.app/)
 
 ## statement and goals.
 
@@ -23,7 +23,7 @@ See [tinymorph](https://tinymorph.aarnphm.xyz)
      - natural language -> commands
    - Configuration, maybe in Lua
    - stretch goal: new shell based on rust syntax and borrowing concept of variables.
-2. WYSIWYG editor (choosen, see [docs](https://tinymorph.aarnphm.xyz))
+2. WYSIWYG editor (choosen, see [docs](https://engineering.morph-editor.app/))
    - Markdown renderer
    - train [SAE](https://transformer-circuits.pub/2023/monosemantic-features/index.html) for specific type of writing tonality => manual steering for text generation on creative writing
    - exploration of internals writing features based on text

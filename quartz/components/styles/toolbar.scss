@@ -40,12 +40,10 @@
       padding: 0.5rem;
       width: 2rem;
       height: 2rem;
-      display: flex;
       align-items: center;
       justify-content: center;
       background-color: var(--light);
       border: 1px solid var(--lightgray);
-      cursor: pointer;
       white-space: nowrap;
       color: var(--darkgray);
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -71,12 +69,6 @@
         }
       }
 
-      #skew-button[data-active="true"] {
-        color: var(--secondary);
-        border-color: var(--secondary);
-      }
-
-      // Active state for toggle button
       &[data-state="collapsed"] {
         .expand-icon {
           display: inline;
@@ -129,33 +121,6 @@
         border-width: 0.25rem 0 0.25rem 0.25rem;
         border-style: solid;
         border-color: transparent transparent transparent var(--dark);
-      }
-    }
-  }
-}
-
-.page > #quartz-body {
-  --skew-default: var(--skew);
-
-  @media all and not ($desktop) {
-    --skew-default: var(--skew-mobile);
-  }
-
-  & > * {
-    transition: transform 0.3s ease;
-  }
-
-  & > .center {
-    position: relative;
-
-    &.skewed {
-      transform: skew(var(--skew-default), var(--skew-default));
-      transform-origin: center;
-
-      .search > #search-container,
-      .keybind > #shortcut-container {
-        width: 100% !important;
-        height: 100% !important;
       }
     }
   }

@@ -1,10 +1,10 @@
 ---
-id: Misra-Gries heavy-hitters algorithm
-tags:
-  - algorithm
 date: "2024-10-11"
 description: extends Boyer-Moore finding algorithm
-modified: "2024-10-11"
+id: Misra-Gries heavy-hitters algorithm
+modified: 2025-10-29 02:15:28 GMT-04:00
+tags:
+  - algorithm
 title: Misra-Gries heavy-hitters algorithm
 ---
 

@@ -1,0 +1,100 @@
+@use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
+
+@mixin tinyCodeFonts {
+  @include tinyFonts;
+  font-family: var(--codeFont);
+}
+
+.evergreen-content {
+  position: sticky;
+  top: calc(var(--kern) * 4);
+}
+
+.note-tags {
+  .notes-list {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 0.5rem;
+  }
+}
+
+.note-tag {
+  @include tinyCodeFonts;
+  cursor: pointer;
+  transition: color 0.3s;
+
+  &.fade-out {
+    color: var(--gray-200);
+  }
+}
+
+a[data-list] {
+  &.perma {
+    & > .description {
+      font-size: 11.1px;
+    }
+
+    &[data-tag] {
+      &:hover {
+        color: var(--dag-highlights) !important;
+      }
+      & > .title {
+        @include tinyCodeFonts;
+      }
+    }
+  }
+}
+
+.permanent-grid {
+  margin-top: 1em;
+}
+
+.perma,
+.permanent-grid {
+  &::after {
+    content: "";
+    border: 1px solid var(--dark);
+    bottom: -0.5px;
+    left: -0.5px;
+    pointer-events: none;
+    position: absolute;
+    right: -0.5px;
+    top: -0.5px;
+  }
+}
+
+.perma {
+  display: block;
+  padding: calc(var(--kern) * 1) calc(var(--kern) * 1.2);
+  position: relative;
+  text-decoration: none;
+  font-weight: $normalWeight;
+  color: inherit !important;
+
+  &:hover {
+    text-decoration: underline;
+    background: inherit;
+  }
+}
+
+.permanent-grid {
+  .grid-line {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(12, 1fr);
+  }
+
+  .large > * {
+    grid-column: span 6;
+    padding-bottom: calc(var(--kern) * 2);
+  }
+
+  .mid > * {
+    grid-column: span 4;
+  }
+
+  .small > * {
+    grid-column: span 3;
+  }
+}

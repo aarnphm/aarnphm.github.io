@@ -1,0 +1,159 @@
+@use "../../styles/variables.scss" as *;
+
+// Prevent body scroll when password prompt is visible
+body:has(.password-prompt-overlay[style*="display: flex"]) {
+  overflow: hidden;
+}
+
+.protected-content-wrapper {
+  position: relative;
+  min-height: 50vh;
+
+  &:not(:has(.decrypted-content)) {
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    z-index: 99999;
+  }
+
+  .password-prompt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--light) 95%, transparent);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+  }
+
+  .password-prompt-container {
+    width: 35vw;
+    min-width: 250px;
+    padding: 2rem;
+    border: 1px solid var(--lightgray);
+    border-radius: var(--border-radius);
+    background-color: var(--light);
+    box-shadow:
+      0 4px 6px rgba(0, 0, 0, 0.05),
+      0 2px 4px rgba(0, 0, 0, 0.08);
+
+    & > p {
+      margin: 0 0 1rem;
+      color: var(--gray);
+    }
+  }
+
+  .password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .password-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 1rem;
+      font-family: var(--bodyFont);
+      color: var(--dark);
+      background-color: var(--light);
+      font-size: 1.1em;
+      border: 1px solid var(--lightgray);
+      border-radius: 0;
+      transition: border-color 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border-color: var(--secondary);
+      }
+
+      &::placeholder {
+        color: var(--gray);
+      }
+    }
+
+    .password-submit {
+      padding: 0.75rem 1rem;
+      background: transparent;
+      color: var(--dark);
+      border: 1px solid var(--lightgray);
+      border-radius: 0;
+      cursor: pointer;
+      font-family: var(--bodyFont);
+      font-size: 1em;
+      transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+
+      &:hover {
+        background: var(--tertiary);
+        border-color: var(--darkgray);
+      }
+
+      &:focus {
+        outline: 2px solid var(--secondary);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .password-error {
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+    color: var(--rose);
+  }
+}
+
+.decrypted-content {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// protected stacked note styles
+.protected-stacked-note {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  .protected-overlay {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--light) 98%, transparent);
+    backdrop-filter: blur(12px);
+    padding: 2rem;
+    text-align: center;
+
+    .protected-message {
+      p {
+        margin: 0;
+        padding: 0.5rem 0;
+        color: var(--gray);
+        font-size: 1rem;
+        font-weight: 500;
+
+        &.protected-hint {
+          font-size: 0.875rem;
+          font-weight: 400;
+          opacity: 0.75;
+        }
+      }
+    }
+  }
+}

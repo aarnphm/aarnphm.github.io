@@ -1,5 +1,5 @@
-import chalk from "chalk"
 import process from "process"
+import { styleText } from "node:util"
 import { isMainThread } from "workerpool"
 
 const rootFile = /.*at file:/
@@ -11,9 +11,9 @@ export function trace(msg: string, err: Error) {
   lines.push("")
   lines.push(
     "\n" +
-      chalk.bgRed.black.bold(" ERROR ") +
+      styleText(["bgRed", "black", "bold"], " ERROR ") +
       "\n\n" +
-      chalk.red(` ${msg}`) +
+      styleText("red", ` ${msg}`) +
       (err.message.length > 0 ? `: ${err.message}` : ""),
   )
 

@@ -1,14 +1,114 @@
+[build-system]
+requires = ["hatchling", "hatch-nodejs-version"]
+build-backend = "hatchling.build"
+
 [project]
 name = "garden"
-version = "0.1.0"
-description = "Add your description here"
+description = "Aaron's notes"
+readme = { file = ".github/README.md", content-type = "text/markdown" }
 authors = [{ name = "Aaron Pham", email = "contact@aarnphm.xyz" }]
-requires-python = ">=3.12"
-dependencies = [
+requires-python = ">=3.11"
+dependencies = ["numpy>=2.1.2", "scipy>=1.14.1", "bytecode>=0.17.0"]
+dynamic = ["version"]
+
+[tool.uv.sources]
+minibpe = { path = "content/thoughts/tsfm/lecture-2-exercise" }
+minigpt = { path = "content/thoughts/tsfm/lecture-3-exercise" }
+
+[tool.uv.workspace]
+members = ["content/hinterland/nanovllm"]
+
+[tool.hatch.version]
+source = "nodejs"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+[tool.hatch.build.targets.sdist]
+only-include = ["content"]
+[tool.hatch.build.targets.wheel]
+packages = ["content"]
+
+[tool.pyright]
+pythonVersion = "3.11"
+typeCheckingMode = "strict"
+verboseOutput = true
+useLibraryCodeForTypes = true
+strictListInference = true
+strictDictionaryInference = true
+strictSetInference = true
+strictParameterNoneValue = true
+enableTypeIgnoreComments = true
+reportMissingImports = 'warning'
+reportMissingTypeStubs = false
+deprecateTypingAliases = true
+enableReachabilityAnalysis = true
+enableExperimentalFeatures = true
+
+[tool.pyright.defineConstant]
+MYPY = true
+
+[tool.mypy]
+pretty = true
+python_version = "3.11"
+show_error_codes = true
+strict = true
+ignore_missing_imports = true
+explicit_package_bases = true
+warn_unreachable = true
+plugins = ["numpy.typing.mypy_plugin"]
+
+[tool.ruff]
+extend-include = ["*.ipynb"]
+preview = true
+line-length = 79
+indent-width = 2
+
+[tool.ruff.format]
+preview = true
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = true
+docstring-code-format = true
+
+[tool.ruff.lint]
+ignore = ["RUF012", "ANN", "E722"]
+select = [
+  "F",
+  "G",
+  "PERF",
+  "RUF",
+  "W6",
+  "E71",
+  "E72",
+  "E112",
+  "E113",
+  "E203",
+  "E272",
+  "E502",
+  "E702",
+  "E703",
+  "E731",
+  "W191",
+  "W291",
+  "W293",
+  "UP039",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ty.src]
+respect-ignore-files = true
+root = "./"
+
+[tool.ty.environment]
+python = "./.venv"
+python-version = "3.11"
+
+[dependency-groups]
+dev = [
   "matplotlib>=3.9.2",
-  "numpy>=2.1.2",
-  "scipy>=1.14.1",
-  "torch>=2.5.0",
+  "numba>=0.62.1",
   "jupyter>=1.1.1",
   "jupyter-client>=8.6.3",
   "jupytext>=1.16.4",
@@ -21,6 +121,12 @@ dependencies = [
   "scikit-learn>=1.5.2",
   "pandas>=2.2.3",
   "jupyterlab-vim>=4.1.4",
-  "manimgl>=1.7.1",
-  "moderngl-window>=2.4.6",
+  "pytest>=8.4.2",
+  "huggingface-hub[cli]>=0.35.3",
+  "bentoml>=1.4.25",
+  "pyupgrade>=3.20.0",
+  "ruff>=0.13.3",
+  "ty>=0.0.1a21",
+  "tiktoken>=0.11.0",
+  "langchain-text-splitters>=0.3.11",
 ]

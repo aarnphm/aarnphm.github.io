@@ -1,17 +1,55 @@
 ---
-id: optimization
-tags:
-  - ml
 date: "2024-10-31"
 description: A list of optimization functions that can be used in ML training to reduce loss, and more.
-modified: "2024-10-31"
-noindex: true
+id: optimization
+modified: 2025-10-29 02:15:51 GMT-04:00
+tags:
+  - ml
 title: ml optimization
 ---
 
+## softmax
+
+$$
+\text{softmax(y)}_i = \frac{e^{y_i}}{\sum_{i} e^{y_i}}
+$$
+
+where $y \in \mathbb{R}^k$
+
+> [!tip] numerical stability (log‑sum‑exp)
+> Always subtract the max logit: with $m = \max_j y_j$,
+>
+> $$
+> p_i = \frac{e^{y_i - m}}{\sum_j e^{y_j - m}}, \qquad
+> \log p_i = y_i - \operatorname{LSE}(y),\quad \operatorname{LSE}(y)=\log\sum_j e^{y_j}.
+> $$
+
+see also: https://leimao.github.io/blog/Online-Safe-Softmax/ [@milakov2018onlinenormalizercalculationsoftmax], used with [[thoughts/Attention|Flash Attention]]
+
+### Jacobian and gradients
+
+Jacobian of softmax $p=\text{softmax}(y)$:
+
+$$
+\frac{\partial p_i}{\partial y_j} = p_i(\delta_{ij} - p_j) \;\equiv\; \operatorname{diag}(p) - pp^\top.
+$$
+
+Cross‑entropy with hard label $y^*$: $L=-\log p_{y^*}$. Gradient w.r.t. logits:
+
+$$
+\frac{\partial L}{\partial y} = p - \operatorname{one\_hot}(y^*).
+$$
+
+For soft targets $t \in \Delta^k$, $L=-\sum_i t_i \log p_i$ gives $\partial L/\partial y = p - t$.
+
+> [!see-also] links
+>
+> - Binary special case: [[thoughts/Logistic regression#MLE derivation and gradients]].
+> - Training view: [[thoughts/Maximum likelihood estimation#training statistical models (derivation sketch)]].
+
 ## `exp()`
 
-see also [@abdelkhalik2022demystifyingnvidiaamperearchitecture], [RDNA3 instruction sets of V_LDEXP_F32](https://www.amd.com/content/dam/amd/en/documents/radeon-tech-docs/instruction-set-architectures/rdna3-shader-instruction-set-architecture-feb-2023_0.pdf)
+@abdelkhalik2022demystifyingnvidiaamperearchitecture, [RDNA3 instruction sets of V_LDEXP_F32](https://www.amd.com/content/dam/amd/en/documents/radeon-tech-docs/instruction-set-architectures/rdna3-shader-instruction-set-architecture-feb-2023_0.pdf)
 
 Usually a lot better comparing to `2**t` simply for [[thoughts/university/twenty-three-twenty-four/compsci-4x03/Equations|numerical stability]] reasons
 
@@ -47,6 +85,10 @@ On GPU we can utilise bit-shift `1<<x` or CUDA's exp2
 
 Optimization in `llama.cpp`: https://github.com/ggerganov/llama.cpp/pull/7154
 
+## RoPE
+
+[@su2023roformerenhancedtransformerrotary{pg.V}]
+
 ## sigmoid
 
 $$
@@ -67,7 +109,7 @@ $$
 
 ## Swish
 
-[@ramachandran2017searchingactivationfunctions] introduces an alternative to ReLU that works better on deeper models across different tasks.
+@ramachandran2017searchingactivationfunctions introduces an alternative to ReLU that works better on deeper models across different tasks.
 
 $$
 f(x) = x \cdotp \text{sigmoid}(\beta x)
@@ -79,7 +121,7 @@ $$
 
 > component-wise product of two linear transformations of the inputs, one of which is sigmoid-activated.
 
-[@shazeer2020gluvariantsimprovetransformer] introduces a few GELU activations to yield improvements in [[thoughts/Transformers]] architecture.
+@shazeer2020gluvariantsimprovetransformer introduces a few GELU activations to yield improvements in [[thoughts/Transformers]] architecture.
 
 $$
 \begin{aligned}
@@ -114,9 +156,9 @@ _note_: reduce number of hidden units $d_\text{ff}$ (second dimension of $W$ and
 
 ## JumpReLU
 
-[@erichson2019jumpreluretrofitdefensestrategy]
+@erichson2019jumpreluretrofitdefensestrategy proposes JumpRELU to address robustness through adversarial examples.
 
-application: [[thoughts/sparse autoencoder#Gated SAE]] [@rajamanoharan2024jumpingaheadimprovingreconstruction]
+@rajamanoharan2024jumpingaheadimprovingreconstruction then apply this to improves construction fielity as [[thoughts/sparse autoencoder#Gated SAE]]
 
 $$
 J(z) \coloneqq z H(z - \kappa) = \begin{cases} 0 & \text{if } z \leq \kappa \\ z & \text{if } z > \kappa \end{cases}
@@ -124,46 +166,20 @@ $$
 
 ![[thoughts/images/JumpReLU.mp4]]
 
+## Newton methods
+
+Second‑order step with gradient $g=\nabla f(\theta)$ and Hessian $H=\nabla^2 f(\theta)$:
+
+$$
+\theta_{t+1} = \theta_t - H(\theta_t)^{-1} g(\theta_t).
+$$
+
+- For convex $f$, converges quadratically near optimum.
+- In practice use approximations: L‑BFGS, conjugate gradients, or Fisher‐scoring/natural‑gradient with Fisher $F \approx H$.
+
 ## momentum
 
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Stochastic gradient descent]], [Cornell's CS6787](https://www.cs.cornell.edu/courses/cs6787/2017fa/Lecture3.pdf)
-
-> [!math] gradient descent
->
-> $$
-> x_{t+1} = x_t - \alpha \nabla f(x_t)
-> $$
->
-> ```tikz style="padding-top:2rem;row-gap:4rem;"
-> \usepackage{pgfplots}
-> \pgfplotsset{compat=1.16}
->
-> \begin{document}
-> \begin{tikzpicture}
->   \begin{scope}
->     \clip(-4,-1) rectangle (4,4);
->     \draw plot[domain=0:360] ({cos(\x)*sqrt(20/(sin(2*\x)+2))},{sin(\x)*sqrt(20/(sin(2*\x)+2))});
->     \draw plot[domain=0:360] ({cos(\x)*sqrt(16/(sin(2*\x)+2))},{sin(\x)*sqrt(16/(sin(2*\x)+2))});
->     \draw plot[domain=0:360] ({cos(\x)*sqrt(12/(sin(2*\x)+2))},{sin(\x)*sqrt(12/(sin(2*\x)+2))});
->     \draw plot[domain=0:360] ({cos(\x)*sqrt(8/(sin(2*\x)+2))},{sin(\x)*sqrt(8/(sin(2*\x)+2))});
->     \draw plot[domain=0:360] ({cos(\x)*sqrt(4/(sin(2*\x)+2))},{sin(\x)*sqrt(4/(sin(2*\x)+2))});
->     \draw plot[domain=0:360] ({cos(\x)*sqrt(1/(sin(2*\x)+2))},{sin(\x)*sqrt(1/(sin(2*\x)+2))});
->     \draw plot[domain=0:360] ({cos(\x)*sqrt(0.0625/(sin(2*\x)+2))},{sin(\x)*sqrt(0.0625/(sin(2*\x)+2))});
->
->     \draw[->,blue,ultra thick] (-2,3.65) to (-1.93,3);
->     \draw[->,blue,ultra thick] (-1.93,3) to (-1.75,2.4);
->     \draw[->,blue,ultra thick] (-1.75,2.4) to (-1.5,1.8);
->     \draw[->,blue,ultra thick] (-1.5,1.8) to (-1.15,1.3);
->
->     \node at (-1.4,3.8){\scriptsize $w[0]$};
->     \node at (-1.2,3.2){\scriptsize $w[1]$};
->     \node at (-1.05,2.6){\scriptsize $w[2]$};
->     \node at (-0.8,2){\scriptsize $w[3]$};
->     \node at (-0.6,1.4){\scriptsize $w[4]$};
->   \end{scope}
-> \end{tikzpicture}
-> \end{document}
-> ```
+See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Stochastic gradient descent|SGD]], [Cornell's CS6787](https://www.cs.cornell.edu/courses/cs6787/2017fa/Lecture3.pdf), [[thoughts/gradient descent]]
 
 In the case of quadratic function: $f(x) = \frac{1}{2} x^2$, then $x_{t+1} = x_t - \alpha x_t = (1-\alpha)x_t$
 
@@ -274,8 +290,30 @@ tl/dr: if current gradient step is in same direction as previous step, then move
 >
 > _degree-$\textbf{t}$ polynomial in $\textbf{u}$_
 
-### Nesterov
+### nesterov
 
 ![[thoughts/Nesterov momentum]]
+
+### RMSNorm
+
+see also [@zhang2019rootmeansquarelayer]
+
+motivation: LayerNorm helps stabilize training
+
+implementations in PyTorch:
+
+$$
+y_{i} = \frac{x_{i}}{\text{RMS}(x)} \times \gamma_{i} \text{ where } \text{RMS}(x) = \sqrt{\epsilon + \frac{1}{n} \sum_{i=1}^{n} x_i^2}
+$$
+
+### modular duality
+
+@bernstein2024modulardualitydeeplearning
+
+https://docs.modula.systems/algorithms/newton-schulz/
+
+### muon
+
+![[thoughts/muon]]
 
 [^ref]

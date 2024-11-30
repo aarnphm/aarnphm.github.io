@@ -1,20 +1,22 @@
 ---
+date: "2024-02-19"
+description: a hobby, and definition of personal taste.
 id: fashion
+modified: 2025-10-29 02:15:45 GMT-04:00
 tags:
   - seed
-date: "2024-02-19"
 title: fashion.
 ---
 
-Fashion, rather a hobby than a need (prob. why [[thoughts/Expenses|expsense]] are high, but worth it). It is an art, a form of self-expression and self-care, for one to exert themselves to the world.
+_Fashion is an art, a form of self-expression and self-care, for one to exert themselves to the world_
 
 > My mantra: "Quality over quantity." Get a few good pieces that will last you a long time.
 
-I do follow trends, and fashion shows. A mix of smart casual, and street wear are my comfort zone.
+What fashion shows are to trends is the same as what NeurIPS is to [[thoughts/Machine learning|AI]] conference.
 
 Keep it simple, and minimalistic. **Less is always more**.
 
-### gender dynamics.
+## gender dynamics.
 
 See also: [[thoughts/papers/Fashion and the Homospectatorial Look.pdf|Fashion and the Homospectatorial Look]] and [this video](https://www.youtube.com/watch?v=DA2PqBAyGqI&t=454s&ab_channel=oliSUNvia)
 
@@ -24,7 +26,7 @@ Plays well into spaces that open for more nuanced and subtle expression of [[tho
 
 [[thoughts/fashion#quiet luxury.|Quiet luxury]]'s emphasis on minimalism, subtle textures mirrors the homospectatorial look.
 
-### why fashion show matters, and why it doesn't.
+## why fashion show matters, and why it doesn't.
 
 Similar to math, AI conference, it is a place for people to show off their work and get inspired. Legendary designers, with the likes of Ralph Lauren, Dean and Dan Caten, over the years has pretty much shaped and influenced how our jeans and causal style look like. Just look down to their pair of jeans, or slim-fit trousers you wear. Some of the crest or folded textures are inspired by probably one of these designers.
 
@@ -32,7 +34,7 @@ It matters in the sense it drives the industry, but also it doesn't matter becau
 
 I do care about fashion shows simply I appreciate the art and the work that goes into it.
 
-### pretentious.
+## pretentious.
 
 Extensions from the book _Pretentiousness: Why It Matters_ by Dan Fox.
 
@@ -46,7 +48,7 @@ One shouldn't get judged by the clothes they wear, but rather the character they
 
 It is also a matter of [[thoughts/taste|taste]], and [[thoughts/identity|identity]].
 
-### quiet luxury.
+## quiet luxury.
 
 https://twitter.com/dieworkwear/status/1647662031619895296
 
@@ -66,26 +68,57 @@ Don't buy into maximalist brands. Overpriced, and the churn rate is high.
 
 The following are few of favourite brands, in no particular order:
 
-| Brand                                   | Genre of clothing to get                                                      |
-| --------------------------------------- | ----------------------------------------------------------------------------- |
-| Brunello Cucinelli                      | Cashmere, wool, and linen 🤌 😗                                               |
-| Manière De Voir                         | Probably the best black fit tee I've ever worn.                               |
-| Oak + Fort                              | Minimalistic, clean, and simple. Also not to be confused with _Frank and Oak_ |
-| Studio Nicholson                        | Trousers, and shirts, ong their leroy jacky are amazing.                      |
-| COS                                     | Basics, and essentials.                                                       |
-| [Stoffa](https://stoffa.co/pages/store) | Custom made, and tailored, wanna know how to style.                           |
-| Sefr                                    | Pretty niche, but some of their beige lazaro shirts are nice.                 |
-| Ted Baker                               | Holy crap that's half of my closets. Trousers, shirts, suits, cargo, etc.     |
-| Ralph Lauren Polo                       | Them trench coats are nice, daily driver during winter szn.                   |
-| Mansuir Gavriel                         | Their bags are my fav.                                                        |
-| Olend Backpacks                         | For the love of backpacks.                                                    |
-| Bellroy                                 | Tote, durable, flexible.                                                      |
-| Loro Piana                              | If you can afford go for it                                                   |
-| Club Monaco                             | Trench coats, overcoats, too based.                                           |
-| Brooks Brothers                         | Suits on special occasions.                                                   |
-| Arcteryx                                | Technical wear, performance, gears are awesome.                               |
-| Timberland                              | Utility, quality, style and worth for money.                                  |
-| Banana Republic                         | Got their cashmere and merino wool sweaters. They are good.                   |
-| Abercrombie & Fitch                     | Baggy jeans, flannels comfy wear.                                             |
-| Massimo Dutti                           | Their leather jackets are nice.                                               |
-| Sezzane                                 | Their blouses are nice.                                                       |
+| Brand                                                  | Genre of clothing to get                                                       |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| Brunello Cucinelli                                     | Cashmere, wool, and linen :kissing: :pinched_fingers:                          |
+| Manière De Voir                                        | Probably the best black fit tee I've ever worn.                                |
+| Oak + Fort                                             | Minimalistic, clean, and simple. Also not to be confused with _Frank and Oak_  |
+| Studio Nicholson                                       | Trousers, and shirts, ong their leroy jacky are amazing.                       |
+| COS                                                    | Basics, and essentials.                                                        |
+| [Stoffa](https://stoffa.co/pages/store)                | Custom made, and tailored, wanna know how to style.                            |
+| Sefr                                                   | Pretty niche, but some of their beige lazaro shirts are nice.                  |
+| Ted Baker                                              | Holy crap that's half of my closets. Trousers, shirts, suits, cargo, etc.      |
+| Ralph Lauren Polo                                      | Them trench coats are nice, daily driver during winter szn.                    |
+| Mansuir Gavriel                                        | Their bags are my fav.                                                         |
+| Olend Backpacks                                        | For the love of backpacks.                                                     |
+| Bellroy                                                | Tote, durable, flexible.                                                       |
+| Loro Piana                                             | If you can afford go for it                                                    |
+| Club Monaco                                            | Trench coats, overcoats, too based.                                            |
+| Brooks Brothers                                        | Suits on special occasions.                                                    |
+| Suitsupply                                             | Suits, and I like their tailor                                                 |
+| Arcteryx                                               | Technical wear, performance, gears are awesome.                                |
+| Timberland                                             | Utility, quality, style and worth for money.                                   |
+| Banana Republic                                        | Got their cashmere and merino wool sweaters. They are good.                    |
+| Abercrombie & Fitch                                    | Baggy jeans, flannels comfy wear.                                              |
+| Massimo Dutti                                          | Their leather jackets are nice.                                                |
+| Sezzane                                                | Their blouses are nice.                                                        |
+| [Kapital](https://www.kapital.jp/)                     | baggy, also this [tweet](https://x.com/dieworkwear/status/1875991529095106660) |
+| [Jan Jan Van Essche](https://www.janjanvanessche.com/) | Project 12-Beyond :kissing: :pinched_fingers:                                  |
+
+Wish list brand:
+
+| Brand                                                          | Reasoning                           |
+| -------------------------------------------------------------- | ----------------------------------- |
+| from Yukio Akamine                                             | Emm I wanna a blouse                |
+| Lemaire                                                        | Uhm hello have you seen them boots? |
+| [Paloma Wool](https://palomawool.com/en-dz/collections/new-in) | cute silhouette                     |
+
+## inspiration
+
+_some related bookmarks I found pretty nice to start with_
+
+https://x.com/dieworkwear/status/1870951477285687777 <!-- Some thread on Derek's recommendation -->
+
+https://x.com/dieworkwear/status/1878635785731403880 <!-- Cream/yellowish suits -->
+
+## fit
+
+_A few items that I love_
+
+- Maxi Candy Hobo from [Mansur Gavriel](https://www.mansurgavriel.com/products/maxi-candy-bag-black)
+- Alden Cordovan Tassel [Loafers](https://www.aldenshop.com/collections/cordovan-loafers)
+- ![[thoughts/Scents#current|current scents that are on rotation]]
+
+## show
+
+- Pitti Uomo -- Italian menswear fashion

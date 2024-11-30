@@ -1,22 +1,14 @@
+import { classNames } from "../util/lang"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
-const Header: QuartzComponent = ({ children }: QuartzComponentProps) => {
-  return children.length > 0 ? <header>{children}</header> : null
-}
+export default (() => {
+  const Header: QuartzComponent = ({ children }: QuartzComponentProps) => {
+    return children.length > 0 ? (
+      <section class={classNames(undefined, "header", "grid", "all-col")}>
+        <header class={classNames(undefined, "header-content")}>{children}</header>
+      </section>
+    ) : null
+  }
 
-Header.css = `
-header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin: 2rem 0;
-  gap: 1.5rem;
-}
-
-header h1 {
-  margin: 0;
-  flex: auto;
-}
-`
-
-export default (() => Header) satisfies QuartzComponentConstructor
+  return Header
+}) satisfies QuartzComponentConstructor

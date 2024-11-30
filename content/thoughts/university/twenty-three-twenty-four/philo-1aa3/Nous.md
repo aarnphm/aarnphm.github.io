@@ -1,8 +1,9 @@
 ---
+date: "2023-12-07"
 id: Nous
+modified: 2025-10-29 02:16:16 GMT-04:00
 tags:
   - philos1aa3
-date: "2023-12-07"
 title: Nous
 ---
 
@@ -21,7 +22,7 @@ Reference: [[thoughts/university/twenty-three-twenty-four/philo-1aa3/1A3Reader(2
 
 In [[thoughts/university/twenty-three-twenty-four/philo-1aa3/tut/Phaedo and Apology|Phaedo]]: `The body confuses the soul and does not allow it to acquire truth and wisdom`
 
-_See [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Plato#Apology|Apology]] for more information_
+_See [[thoughts/Plato#Apology|Apology]] for more information_
 
 _Arguments for Survival_
 
@@ -44,7 +45,7 @@ _Against soul scattering_
 - Soul brings life to a body -> death changes the body, but the souls live on.
 - Idea of the Even cannot become odd, Hot cannot become cold, soul, makes a body alive cannot die.
 
-_See [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Plato#Republic|Republic]]_
+_See [[thoughts/Plato#Republic|Republic]]_
 
 - Belief is liable to error, knowledge is not.
 - Belief can be changed by persuasion, knowledge cannot be.
@@ -63,9 +64,9 @@ The cosmos is organized by goodness. By gasping that we understand the world we 
 
 > And we can understand that, the idea of the good. At least some of us can. They are the philosophers, masters of the dialectic, and they should govern the rest.
 
-[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Aristotle|Aristotle]]
+[[thoughts/Aristotle|Aristotle]]
 
-![[thoughts/university/twenty-three-twenty-four/philo-1aa3/aristotle-metaphysics.webp]]![[thoughts/university/twenty-three-twenty-four/philo-1aa3/aristotle-form.webp]]
+![[thoughts/images/aristotle-metaphysics.webp]]![[thoughts/images/aristotle-form.webp]]
 
 _What is Truth?_
 

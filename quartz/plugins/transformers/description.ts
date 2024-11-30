@@ -2,14 +2,26 @@ import { Root as HTMLRoot } from "hast"
 import { toString } from "hast-util-to-string"
 import { QuartzTransformerPlugin } from "../types"
 import { escapeHTML } from "../../util/escape"
+import readingTime, { ReadTimeResults } from "reading-time"
+import { i18n } from "../../i18n"
+import {
+  stripWikilinkFormatting,
+  extractWikilinks,
+  resolveWikilinkTarget,
+} from "../../util/wikilinks"
+import { simplifySlug, type FullSlug, type SimpleSlug } from "../../util/path"
+import katex from "katex"
+import type { KatexOptions } from "katex"
 
 export interface Options {
   descriptionLength: number
+  maxDescriptionLength: number
   replaceExternalLinks: boolean
 }
 
 const defaultOptions: Options = {
   descriptionLength: 150,
+  maxDescriptionLength: 300,
   replaceExternalLinks: true,
 }
 
@@ -18,15 +30,85 @@ const urlRegex = new RegExp(
   "g",
 )
 
+const defaultKatexOptions: Omit<KatexOptions, "output"> = {
+  strict: true,
+  throwOnError: true,
+}
+
+function renderLatexInString(
+  text: string,
+  options: Omit<KatexOptions, "output"> = defaultKatexOptions,
+): string {
+  let result = text
+
+  const blockMathRegex = /\$\$([\s\S]*?)\$\$/g
+  result = result.replace(blockMathRegex, (match, math) => {
+    try {
+      return katex.renderToString(math.trim(), {
+        ...options,
+        displayMode: true,
+      })
+    } catch (error) {
+      return match
+    }
+  })
+
+  const inlineMathRegex = /(?<!\$)\$([^$\n]+?)\$(?!\$)/g
+  result = result.replace(inlineMathRegex, (match, math) => {
+    try {
+      return katex.renderToString(math.trim(), {
+        ...options,
+        displayMode: false,
+      })
+    } catch (error) {
+      return match
+    }
+  })
+
+  return result
+}
+
+function processWikilinksToHtml(text: string, currentSlug: FullSlug): string {
+  const wikilinks = extractWikilinks(text)
+  let result = text
+
+  for (const link of wikilinks) {
+    const resolved = resolveWikilinkTarget(link, currentSlug)
+    if (resolved) {
+      const displayText = link.alias || link.target
+      const href = `/${resolved.slug}${resolved.anchor || ""}`
+      const htmlLink = `<a href="${href}" class="internal">${displayText}</a>`
+      result = result.replace(link.raw, htmlLink)
+    }
+  }
+
+  return result
+}
+
 export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
   return {
     name: "Description",
-    htmlPlugins() {
+    htmlPlugins({ cfg }) {
       return [
         () => {
           return async (tree: HTMLRoot, file) => {
+            const currentSlug = file.data.slug as FullSlug
+            const descriptionLinks: Set<SimpleSlug> = new Set()
+
             let frontMatterDescription = file.data.frontmatter?.description
+
+            // Extract and track wikilinks from frontmatter description
+            if (typeof frontMatterDescription === "string") {
+              const wikilinks = extractWikilinks(frontMatterDescription)
+              for (const link of wikilinks) {
+                const resolved = resolveWikilinkTarget(link, currentSlug)
+                if (resolved) {
+                  descriptionLinks.add(simplifySlug(resolved.slug))
+                }
+              }
+            }
+
             let text = escapeHTML(toString(tree))
 
             if (opts.replaceExternalLinks) {
@@ -37,36 +119,83 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
               text = text.replace(urlRegex, "$<domain>" + "$<path>")
             }
 
-            const desc = frontMatterDescription ?? text
-            const sentences = desc.replace(/\s+/g, " ").split(/\.\s/)
-            const finalDesc: string[] = []
-            const len = opts.descriptionLength
-            let sentenceIdx = 0
-            let currentDescriptionLength = 0
+            const processDescription = (desc: string): string => {
+              const sentences = desc.replace(/\s+/g, " ").split(/\.\s/)
+              let finalDesc = ""
+              let sentenceIdx = 0
 
-            if (sentences[0] !== undefined && sentences[0].length >= len) {
-              const firstSentence = sentences[0].split(" ")
-              while (currentDescriptionLength < len) {
-                const sentence = firstSentence[sentenceIdx]
-                if (!sentence) break
-                finalDesc.push(sentence)
-                currentDescriptionLength += sentence.length
-                sentenceIdx++
-              }
-              finalDesc.push("...")
-            } else {
-              while (currentDescriptionLength < len) {
+              // Add full sentences until we exceed the guideline length
+              while (sentenceIdx < sentences.length) {
                 const sentence = sentences[sentenceIdx]
                 if (!sentence) break
+
                 const currentSentence = sentence.endsWith(".") ? sentence : sentence + "."
-                finalDesc.push(currentSentence)
-                currentDescriptionLength += currentSentence.length
-                sentenceIdx++
+                const nextLength = finalDesc.length + currentSentence.length + (finalDesc ? 1 : 0)
+
+                // Add the sentence if we're under the guideline length
+                // or if this is the first sentence (always include at least one)
+                if (nextLength <= opts.descriptionLength || sentenceIdx === 0) {
+                  finalDesc += (finalDesc ? " " : "") + currentSentence
+                  sentenceIdx++
+                } else {
+                  break
+                }
               }
+              return finalDesc.length > opts.maxDescriptionLength
+                ? finalDesc.slice(0, opts.maxDescriptionLength) + "..."
+                : finalDesc
             }
 
-            file.data.description = finalDesc.join(" ")
+            // Process frontmatter description with wikilinks converted to HTML and LaTeX rendered
+            let processedFrontMatterDesc = frontMatterDescription
+              ? renderLatexInString(processWikilinksToHtml(frontMatterDescription, currentSlug))
+              : undefined
+
+            // For length calculation and truncation, use plain text
+            const plainTextForProcessing = frontMatterDescription
+              ? stripWikilinkFormatting(frontMatterDescription)
+              : text
+
+            const processedPlainDesc = processDescription(plainTextForProcessing)
+
+            // If we had a frontmatter description, truncate the HTML version to match processed length
+            if (
+              processedFrontMatterDesc &&
+              processedPlainDesc.length < plainTextForProcessing.length
+            ) {
+              // Description was truncated, apply same truncation to HTML version
+              processedFrontMatterDesc = processDescription(processedFrontMatterDesc)
+            }
+
+            file.data.description =
+              processedFrontMatterDesc ||
+              processedPlainDesc ||
+              i18n(cfg.configuration.locale).propertyDefaults.description
+
+            // Process abstract with wikilinks support
+            let abstractText = file.data.frontmatter?.abstract
+            if (abstractText) {
+              // Extract and track wikilinks from abstract
+              const abstractWikilinks = extractWikilinks(abstractText)
+              for (const link of abstractWikilinks) {
+                const resolved = resolveWikilinkTarget(link, currentSlug)
+                if (resolved) {
+                  descriptionLinks.add(simplifySlug(resolved.slug))
+                }
+              }
+              // Convert wikilinks to HTML and render LaTeX in abstract
+              abstractText = renderLatexInString(processWikilinksToHtml(abstractText, currentSlug))
+            }
+
+            file.data.abstract = abstractText ?? processDescription(text)
             file.data.text = text
+            file.data.readingTime = readingTime(file.data.text!)
+
+            // Merge description links with existing links
+            if (descriptionLinks.size > 0) {
+              const existingLinks = file.data.links || []
+              file.data.links = [...new Set([...existingLinks, ...descriptionLinks])]
+            }
           }
         },
       ]
@@ -77,6 +206,8 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
 declare module "vfile" {
   interface DataMap {
     description: string
+    abstract: string
     text: string
+    readingTime: ReadTimeResults
   }
 }

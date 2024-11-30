@@ -1,8 +1,9 @@
 ---
+date: "2024-02-06"
 id: Routh-Hurwitz criterion
+modified: 2025-10-29 02:15:34 GMT-04:00
 tags:
   - seed
-date: "2024-02-06"
 title: Routh-Hurwitz criterion
 ---
 

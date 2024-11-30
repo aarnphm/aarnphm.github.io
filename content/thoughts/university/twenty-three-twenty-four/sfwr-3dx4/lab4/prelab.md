@@ -1,8 +1,9 @@
 ---
+date: "2024-03-20"
 id: prelab
+modified: 2025-10-29 02:16:23 GMT-04:00
 tags:
   - sfwr3dx4
-date: "2024-03-20"
 title: Root locus and graphical analysis
 ---
 
@@ -56,20 +57,16 @@ Finally, K can be selected to achieve target spec like damping ratio, settling t
 > Imagine we have a partially finished root locus plot where only the pole and zero locations have been plotted. What are the rules for completing the root locus plot using pencil and paper?
 
 1. Number of branches:
-
    - Number of branches of the root locus is equal to the number of poles minus the number of zeros.
    - Branches start at poles and end at the zeros
 
 2. Symmetry:
-
    - Root locus is symmetrical about the real axis
 
 3. Real axis segments:
-
    - Portions of the real axis are part of the root locus if the number of real poles and zeros to the right is odd
 
 4. Asymptotes as $K \to \infty$:
-
    - Asymptotes intersect at the centroid of the poles and zeros, and the angles are given by $(2q+1)*\frac{180}{P-Z}$ where $q=0,1,2,\dots$
 
 5. Breakaway and break-in points:

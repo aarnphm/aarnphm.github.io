@@ -1,4 +1,8 @@
+import { getFullSlug } from "../../util/path"
+
 document.addEventListener("nav", () => {
+  if (getFullSlug(window) === "lyd") return
+
   const modal = document.getElementById("image-popup-modal")
   const modalImg = modal?.querySelector(".image-popup-img") as HTMLImageElement
   const closeBtn = modal?.querySelector(".image-popup-close")
@@ -19,7 +23,7 @@ document.addEventListener("nav", () => {
   }
 
   // Add click handlers to all images in content
-  const contentImages = document.querySelectorAll(".popover-hint img")
+  const contentImages = document.querySelectorAll("img")
   for (const img of contentImages) {
     if (img instanceof HTMLImageElement) {
       img.style.cursor = "pointer"
@@ -29,13 +33,16 @@ document.addEventListener("nav", () => {
     }
   }
 
+  function keyboardHandler(e: any) {
+    if (e.key === "Escape" && modal!.classList.contains("active")) closeModal()
+  }
+
   closeBtn.addEventListener("click", closeModal)
   backdrop.addEventListener("click", closeModal)
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeModal()
-  })
+  document.addEventListener("keydown", keyboardHandler)
   window.addCleanup(() => {
     closeBtn.removeEventListener("click", closeModal)
     backdrop.removeEventListener("click", closeModal)
+    document.removeEventListener("keydown", keyboardHandler)
   })
 })

@@ -1,10 +1,11 @@
 ---
+date: "2024-10-28"
 id: midterm
+modified: 2025-10-29 02:16:09 GMT-04:00
 tags:
   - sfwr4ml3
   - ml
-date: "2024-10-28"
-modified: "2024-10-28"
+  - linalg
 title: Supervised machine learning
 ---
 
@@ -20,7 +21,7 @@ $$
 
 if distribution of $X$ is uniform over $[a,b]$, then $f(x) = \frac{1}{b-a}$
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression#curve-fitting|curve fitting]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression#curve fitting|curve fitting]]
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression#^1dols|1D OLS]]
 
@@ -44,7 +45,7 @@ if distribution of $X$ is uniform over $[a,b]$, then $f(x) = \frac{1}{b-a}$
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression#hyperplane]]
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept#adding-bias-in-d-dimensions-ols]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept#adding bias in D-dimensions OLS]]
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept#overfitting]]
 
@@ -96,7 +97,7 @@ $$
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/principal component analysis#minimising reconstruction error]]
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/principal component analysis#eigenvalue decomposition]]
-
+l
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/principal component analysis#pca]]
 
 ## bayes rules and chain rules
@@ -107,7 +108,23 @@ Conditional distribution of $X$ given $Y$: $P(X|Y) = \frac{P(X,Y)}{P(Y)}$
 
 Bayes rule: $P(X|Y) = \frac{P(Y|X)P(X)}{P(Y)}$
 
-Chain rule: $P(X_1, X_2, \ldots , X_k) = P(X_1)P(X_2|X_1)P(X_3|X_2,X_1)\ldots P(X_k|X_1,X_2,\ldots,X_{k-1})$
+Chain rule:
+
+_for two events:_
+
+$$
+P(A, B) = P(B \mid A)P(A)
+$$
+
+_generalised:_
+
+$$
+\begin{aligned}
+&P(X_1, X_2, \ldots , X_k) \\
+&= P(X_1) \prod_{j=2}^{n} P(X_j \mid X_1,\dots,X_{j-1}) \\[12pt]
+&\because \text{expansion: }P(X_1)P(X_2|X_1)\ldots P(X_k|X_1,X_2,\ldots,X_{k-1})
+\end{aligned}
+$$
 
 > [!note] i.i.d assumption
 >
@@ -118,6 +135,8 @@ Example: flip a coin
 Outcome $H=0$ or $T=1$ with $P(H) = p$ and $P(T) = 1-p$, or $x \in \{0,1\}$, $x$ is the Bernoulli random variable.
 
 $P(x=0)=\alpha$ and $P(x=1)=1-\alpha$
+
+## a priori and posterior distribution
 
 Would be [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/likelihood|maximum likelihood estimate]]
 
@@ -130,6 +149,8 @@ $$
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/likelihood#expected error minimisation]]
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/nearest neighbour]]
+
+---
 
 ## linear algebra review.
 

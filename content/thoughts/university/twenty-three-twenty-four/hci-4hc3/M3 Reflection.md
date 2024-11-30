@@ -1,6 +1,11 @@
 ---
-id: M3 Reflection
+date: "2025-10-29"
 draft: true
+id: M3 Reflection
+modified: 2025-10-29 02:16:15 GMT-04:00
+tags:
+  - seed
+title: M3 Reflection
 ---
 
 Reflecting on the recent work with the Mosaic school portal project, the primary experience that stands out to me was the collaborative effort in generating user requirements from our study. We conducted interviews and surveys, collected and analyzed data, and eventually synthesized this into actionable requirements. This process was intensive and required meticulous attention to detail and close communication with my team.

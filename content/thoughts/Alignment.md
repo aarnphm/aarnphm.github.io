@@ -1,14 +1,14 @@
 ---
-id: Alignment
-tags:
-  - seed
-  - ml
 date: "2024-03-05"
-modified: "2024-10-30"
+description: and safety-related topics
+id: Alignment
+modified: 2025-10-29 02:15:15 GMT-04:00
+tags:
+  - ml
 title: Alignment
 ---
 
-See also: [[thoughts/Overton Window|Overton Window]] and this [blog on alignment research](https://openai.com/blog/our-approach-to-alignment-research)
+resources: [[thoughts/Overton Window|frame-context collapse]] and [OpenAI's on alignment research (before all the safety disband)](https://openai.com/blog/our-approach-to-alignment-research)
 
 The act of aligning oneself with a particular group or ideology. This can be done for a variety of reasons, including:
 
@@ -16,7 +16,15 @@ The act of aligning oneself with a particular group or ideology. This can be don
 - To gain power
 - To gain resources
 
-Often known as a solution to solve "hallucination" in large models token-generation.
+> [!abstract]- thoughts
+>
+> The real challenge isn't preventing some hypothetical super-intelligence takeover, rather figuring out how to make AI systems that genuinely
+> enhance human capability while remaining accountable to human values. I'm optimistic about this because it's fundamentally an engineering problem,
+> not an [[thoughts/Existentialism|existential]] one.
+
+Often known as a solution to solve "hallucination" in [[thoughts/LLMs|large language models]] token-generation. [^enterprise]
+
+[^enterprise]: In production use cases, systems solutions such as [[thoughts/RAG]] are more relevant where there are multiple components, or "sensors" involved to be factually correct with internal databases.
 
 > To align a model is simply teaching it to generate tokens that is within the bound of the Overton Window.
 
@@ -24,8 +32,12 @@ The goal is to build a aligned system that help us solve other alignment problem
 
 > Should we build a [[thoughts/ethics|ethical]] aligned systems, or [[thoughts/moral|morally]] aligned systems?
 
-One of [[thoughts/mechanistic interpretability]]'s goal is to [[thoughts/mechanistic interpretability#ablation|ablate]] harmful features
+One of [[thoughts/mechanistic interpretability]]'s goal is to [[thoughts/mechanistic interpretability#ablation|ablate]] harmful features.
 
-### [[thoughts/design|design]]
+## RSP
 
-See also [[thoughts/Information Theory|Information Theory]]
+_published by [Anthropic](https://assets.anthropic.com/m/24a47b00f10301cd/original/Anthropic-Responsible-Scaling-Policy-2024-10-15.pdf)_
+
+The idea is to create a standard for risk mitigation strategy when AI system advances. Essentially create a scale to judge "how capable a system can cause harm"
+
+![[thoughts/images/alignment-asl-scale.webp]]

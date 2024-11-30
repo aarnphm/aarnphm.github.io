@@ -1,0 +1,776 @@
+@use "../variables.scss" as *;
+@use "../mixin.scss" as *;
+@use "./lydia-frame-decorations.scss";
+
+body[data-slug="lyd"] {
+  display: flow-root;
+  position: relative;
+  min-height: 100vh;
+  --mask-opacity: 1;
+  background-color: #fffaf3;
+  isolation: isolate;
+  padding-bottom: clamp(6rem, 12vh, 12rem);
+
+  .figure-caption,
+  a[data-role="anchor"],
+  .header-content,
+  .page-footer {
+    display: none;
+  }
+
+  h2,
+  h3 {
+    margin: 0;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("/thoughts/images/cn.ignore.jpg");
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    z-index: -2;
+    opacity: 0.75;
+    filter: saturate(0.82) brightness(1.05) contrast(0.95);
+  }
+
+  // Scrolling mask overlay that reveals the image
+  &::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 50% 50%, transparent 40%, rgba(255, 200, 160, 0.15) 100%),
+      radial-gradient(circle at 18% 15%, rgba(255, 221, 197, 0.7), transparent 60%),
+      radial-gradient(circle at 82% 5%, rgba(210, 225, 255, 0.55), transparent 65%),
+      linear-gradient(
+        to bottom,
+        rgba(255, 250, 244, 0.95) 0%,
+        rgba(255, 244, 229, 0.78) 25%,
+        rgba(250, 236, 225, 0.65) 55%,
+        rgba(244, 229, 214, 0.45) 80%,
+        rgba(240, 222, 210, 0.35) 100%
+      ),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23noise)' opacity='0.2'/%3E%3C/svg%3E");
+    background-size:
+      100% 100%,
+      140% 140%,
+      150% 150%,
+      100% 100%,
+      220px 220px;
+    background-position:
+      center,
+      20% 10%,
+      82% 5%,
+      center,
+      0 0;
+    background-blend-mode: soft-light, screen, color-dodge, normal, multiply;
+    z-index: 0;
+    opacity: var(--mask-opacity, 0.95);
+    transition: opacity 0.3s ease-in-out;
+    mix-blend-mode: soft-light;
+    pointer-events: none;
+  }
+
+  // Content container
+  .page-content {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+  }
+
+  article {
+    grid-column: 2/8;
+    background: linear-gradient(135deg, rgba(255, 249, 237, 0.9), rgba(255, 233, 218, 0.85));
+    border: 1px solid rgba(255, 214, 189, 0.4);
+    backdrop-filter: blur(14px);
+    padding: 0 3rem;
+    border-radius: 0px;
+    box-shadow:
+      0 20px 60px rgba(255, 173, 134, 0.25),
+      0 10px 30px rgba(232, 164, 120, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    margin: 6rem auto;
+    max-width: 800px;
+    transition:
+      background 0.5s ease-in-out,
+      box-shadow 0.5s ease-in-out,
+      transform 0.3s ease-in-out;
+
+    @media all and ($tablet) {
+      grid-column: 1/-1;
+    }
+
+    @media all and ($mobile) {
+      padding: 1.5rem;
+      margin: 1rem;
+      border-radius: 0px;
+      background: rgba(255, 249, 240, 0.92);
+      grid-column: 1/-1;
+    }
+
+    // Title styling
+    h1 {
+      font-size: 3.25rem;
+      font-weight: 800;
+      margin: 0 0 0.5rem 0;
+      text-transform: lowercase;
+      color: #4a3a2c;
+
+      @media all and ($mobile) {
+        font-size: 2rem;
+      }
+    }
+
+    // Subtitle
+    > p:first-of-type {
+      font-size: 1.2rem;
+      font-style: italic;
+      color: #7c6a58;
+      margin-bottom: 2.5rem;
+
+      @media all and ($mobile) {
+        font-size: 1.1rem;
+        grid-column: 1/-1;
+      }
+    }
+
+    h2 {
+      text-transform: lowercase;
+    }
+
+    h3 {
+      text-transform: lowercase;
+      color: var(--secondary);
+    }
+  }
+
+  // Timeline styling
+  .timeline-container {
+    position: relative;
+    padding: 3rem 0 7rem 0;
+
+    // Timeline center line
+    &::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgba(195, 176, 155, 0.4);
+      transform: translateX(-50%);
+
+      @media all and ($mobile) {
+        left: 20px;
+      }
+    }
+
+    // Container for character
+    .lydia-character {
+      position: absolute;
+      top: 2rem;
+      right: -6rem;
+      width: 100px;
+      height: 100px;
+      z-index: 100;
+      opacity: 0.85;
+      filter: drop-shadow(0 4px 8px rgba(255, 180, 140, 0.3));
+      animation: characterFloat 6s ease-in-out infinite alternate;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+
+      @media all and ($mobile) {
+        width: 70px;
+        height: 70px;
+        top: 1rem;
+        right: -4rem;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+        transition: transform 0.2s ease-out;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+
+        .alien-eye {
+          transition: transform 0.15s ease-out;
+        }
+      }
+    }
+  }
+
+  .timeline-item {
+    position: relative;
+    margin: 6rem 0;
+    display: flex;
+    align-items: center;
+
+    @media all and ($mobile) {
+      margin-left: 40px;
+    }
+
+    // Default: right side (history items)
+    flex-direction: row;
+
+    .timeline-content {
+      margin-left: 2rem;
+      text-align: left;
+
+      @media all and ($mobile) {
+        margin-left: 0;
+      }
+    }
+
+    // Left side items (places & food)
+    &.timeline-left {
+      flex-direction: row-reverse;
+
+      .timeline-content {
+        margin-left: 0;
+        margin-right: 2rem;
+        text-align: right;
+
+        @media all and ($mobile) {
+          text-align: left;
+          margin-right: 0;
+        }
+      }
+
+      @media all and ($mobile) {
+        flex-direction: row;
+      }
+
+      // Hide year label for left items
+      &::before {
+        display: none;
+      }
+    }
+
+    // Year label for history items only
+    &[data-type="history"]::before {
+      content: attr(data-year);
+      position: absolute;
+      left: calc(60% + 2rem);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--gray);
+      white-space: nowrap;
+      font-family: var(--codeFont);
+
+      @media all and ($mobile) {
+        display: none;
+      }
+    }
+  }
+
+  .timeline-marker {
+    position: relative;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    background: var(--light);
+    border: 2px solid var(--secondary);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    @media all and ($mobile) {
+      position: absolute;
+      left: -30px;
+      width: 18px;
+      height: 18px;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+      color: var(--secondary);
+      transition: all 0.3s ease;
+
+      @media all and ($mobile) {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  .timeline-item[data-type="place"] .timeline-marker {
+    border-color: var(--foam);
+
+    svg {
+      color: var(--foam);
+    }
+  }
+
+  .timeline-item[data-type="food"] .timeline-marker {
+    border-color: var(--gold);
+
+    svg {
+      color: var(--gold);
+    }
+  }
+
+  .timeline-content {
+    flex: 1;
+    max-width: 45%;
+    background: linear-gradient(135deg, rgba(255, 251, 244, 0.96), rgba(255, 236, 224, 0.92));
+    backdrop-filter: blur(8px);
+    padding: 1.75rem;
+    border-radius: 0px;
+    border: 1px solid rgba(255, 206, 194, 0.4);
+    box-shadow:
+      0 10px 30px rgba(255, 200, 160, 0.22),
+      0 4px 12px rgba(232, 164, 120, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    cursor: pointer;
+
+    @media all and ($mobile) {
+      max-width: 100%;
+      margin-left: 0 !important;
+    }
+
+    h3 {
+      font-size: 1.3rem;
+      color: #4f3f31;
+      text-transform: lowercase;
+      margin-bottom: 0.85rem;
+    }
+
+    p {
+      line-height: 1.65;
+      color: #6c5b4a;
+      margin: 0;
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 0px;
+      display: block;
+      object-fit: cover;
+      max-height: 300px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      @media all and ($mobile) {
+        max-height: 200px;
+      }
+    }
+
+    &:hover {
+      border-color: rgba(255, 189, 156, 0.8);
+      box-shadow:
+        0 18px 40px rgba(255, 182, 146, 0.35),
+        0 6px 20px rgba(232, 164, 120, 0.25),
+        inset 0 0 40px rgba(255, 220, 180, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      transform: translateY(-4px);
+
+      img {
+        box-shadow:
+          0 4px 12px rgba(255, 160, 100, 0.25),
+          0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+
+  // Decorative flowers on timeline items
+  .timeline-item:nth-child(1) .timeline-content::before {
+    content: "";
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 40px;
+    height: 40px;
+    background-image: url("/thoughts/images/flowers-1762546860297.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(15deg);
+    opacity: 0.9;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 30px;
+      height: 30px;
+      top: -10px;
+      right: -10px;
+    }
+  }
+
+  .timeline-item:nth-child(3) .timeline-content::after {
+    content: "";
+    position: absolute;
+    bottom: -14px;
+    left: -14px;
+    width: 36px;
+    height: 36px;
+    background-image: url("/thoughts/images/flowers-1762553547674.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(-20deg);
+    opacity: 0.88;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 28px;
+      height: 28px;
+      bottom: -10px;
+      left: -10px;
+    }
+  }
+
+  .timeline-item:nth-child(5) .timeline-content::before {
+    content: "";
+    position: absolute;
+    top: -16px;
+    left: -16px;
+    width: 38px;
+    height: 38px;
+    background-image: url("/thoughts/images/flowers-1762567287860.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(25deg);
+    opacity: 0.87;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 30px;
+      height: 30px;
+      top: -11px;
+      left: -11px;
+    }
+  }
+
+  .timeline-item:nth-child(7) .timeline-content::after {
+    content: "";
+    position: absolute;
+    bottom: -13px;
+    right: -13px;
+    width: 41px;
+    height: 41px;
+    background-image: url("/thoughts/images/flowers-1762574749363.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(-30deg);
+    opacity: 0.86;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 31px;
+      height: 31px;
+      bottom: -9px;
+      right: -9px;
+    }
+  }
+
+  .timeline-item:nth-child(9) .timeline-content::before {
+    content: "";
+    position: absolute;
+    top: -17px;
+    right: -17px;
+    width: 44px;
+    height: 44px;
+    background-image: url("/thoughts/images/flowers-1762577418149.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(35deg);
+    opacity: 0.9;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 32px;
+      height: 32px;
+      top: -12px;
+      right: -12px;
+    }
+  }
+
+  .timeline-item:nth-child(11) .timeline-content::after {
+    content: "";
+    position: absolute;
+    bottom: -11px;
+    left: -11px;
+    width: 37px;
+    height: 37px;
+    background-image: url("/thoughts/images/flowers-1762589996181.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(-18deg);
+    opacity: 0.89;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 29px;
+      height: 29px;
+      bottom: -8px;
+      left: -8px;
+    }
+  }
+
+  .timeline-item:nth-child(13) .timeline-content::before {
+    content: "";
+    position: absolute;
+    top: -18px;
+    left: -18px;
+    width: 45px;
+    height: 45px;
+    background-image: url("/thoughts/images/flowers-1762546860297.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(42deg);
+    opacity: 0.91;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 33px;
+      height: 33px;
+      top: -12px;
+      left: -12px;
+    }
+  }
+
+  .timeline-item:nth-child(15) .timeline-content::after {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    right: -12px;
+    width: 39px;
+    height: 39px;
+    background-image: url("/thoughts/images/flowers-1762553547674.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(-22deg);
+    opacity: 0.88;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 30px;
+      height: 30px;
+      bottom: -8px;
+      right: -8px;
+    }
+  }
+
+  .timeline-item:nth-child(17) .timeline-content::before {
+    content: "";
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 40px;
+    height: 40px;
+    background-image: url("/thoughts/images/flowers-1762567287860.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(28deg);
+    opacity: 0.87;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 30px;
+      height: 30px;
+      top: -10px;
+      right: -10px;
+    }
+  }
+
+  .timeline-item[data-type="place"] .timeline-content {
+    border-color: rgba(134, 189, 182, 0.55);
+
+    &:hover {
+      border-color: rgba(134, 189, 182, 0.9);
+      box-shadow:
+        0 18px 40px rgba(134, 189, 182, 0.35),
+        0 6px 20px rgba(87, 62, 44, 0.12);
+    }
+  }
+
+  .timeline-item[data-type="food"] .timeline-content {
+    border-color: rgba(255, 209, 150, 0.55);
+
+    &:hover {
+      border-color: rgba(255, 209, 150, 0.85);
+      box-shadow:
+        0 18px 40px rgba(255, 209, 150, 0.35),
+        0 6px 20px rgba(87, 62, 44, 0.12);
+    }
+  }
+
+  .lydia-map-tooltip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 240px;
+    max-width: 320px;
+    padding: 1rem 1.25rem 1.1rem;
+    background: rgba(255, 247, 236, 0.97);
+    border: 1px solid rgba(255, 214, 189, 0.7);
+    box-shadow:
+      0 20px 40px rgba(255, 182, 146, 0.28),
+      0 8px 20px rgba(74, 58, 44, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border-radius: 0px;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.16s ease,
+      visibility 0.16s ease;
+    z-index: 40;
+  }
+
+  .lydia-map-tooltip.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .lydia-map-title {
+    margin: 0 0 0.35rem 0;
+    font-weight: 700;
+    text-transform: lowercase;
+    color: #4a3a2c;
+  }
+
+  .lydia-map-meta {
+    display: flex;
+    gap: 1.25rem;
+    font-family: var(--codeFont);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #7c6a58;
+  }
+
+  .lydia-map-label strong {
+    font-weight: 600;
+    margin-left: 0.35rem;
+    color: #4a3a2c;
+  }
+
+  .lydia-map-status {
+    margin: 0.4rem 0 0.6rem 0;
+    font-size: 0.85rem;
+    color: #6c5b4a;
+  }
+
+  .lydia-map-canvas {
+    width: 100%;
+    height: 160px;
+    border: 1px solid rgba(74, 58, 44, 0.25);
+    border-radius: 0px;
+    overflow: hidden;
+    background: linear-gradient(120deg, rgba(255, 249, 240, 0.8), rgba(255, 236, 224, 0.65));
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .lydia-map-canvas canvas,
+  .lydia-map-canvas .mapboxgl-canvas {
+    filter: grayscale(1) contrast(1.1) saturate(0.2);
+  }
+
+  @media all and ($mobile) {
+    .lydia-map-tooltip {
+      max-width: min(92vw, 320px);
+      min-width: 220px;
+      padding: 0.85rem 1rem 1rem;
+    }
+
+    .lydia-map-meta {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .lydia-map-canvas {
+      height: 140px;
+    }
+  }
+
+  .lydia-modal {
+    position: absolute;
+    background: rgba(255, 247, 236, 0.95);
+    color: #4a3a2c;
+    padding: 1rem 1.5rem;
+    border-radius: 0px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    max-width: 400px;
+    box-shadow:
+      0 20px 40px rgba(255, 189, 156, 0.35),
+      0 6px 18px rgba(77, 56, 40, 0.15);
+    z-index: 1000;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    @media all and ($mobile) {
+      max-width: 280px;
+      font-size: 0.85rem;
+      padding: 0.75rem 1rem;
+    }
+
+    &.active {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes characterFloat {
+  0% {
+    transform: translateY(0) rotate(-2deg);
+  }
+
+  100% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+}
+
+@keyframes particleFall {
+  0% {
+    transform: translateY(0) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateY(10px) scale(1) rotate(45deg);
+  }
+
+  90% {
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translateY(100vh) scale(0.5) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+body[data-layout="lydia"] {
+  background-color: #fff7ef;
+  background-image: radial-gradient(circle at top, rgba(255, 224, 196, 0.25), transparent 60%);
+  transition: background-color 1s ease-in-out;
+}

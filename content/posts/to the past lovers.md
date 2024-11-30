@@ -1,14 +1,14 @@
 ---
+date: "2024-02-12"
 id: to the past lovers
+lang: en-US
+modified: 2025-10-29 02:15:13 GMT-04:00
+poem: true
+socialDescription: on past love.
 tags:
   - sapling
   - poetry
   - love
-date: "2024-02-12"
-lang: en
-modified: "2024-10-07"
-poem: true
-socialDescription: on past love.
 title: un ancien amour.
 ---
 

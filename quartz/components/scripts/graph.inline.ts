@@ -8,6 +8,7 @@ import {
   forceCenter,
   forceLink,
   forceCollide,
+  forceRadial,
   zoomIdentity,
   select,
   drag,
@@ -67,11 +68,33 @@ type TweenNode = {
   stop: () => void
 }
 
-async function renderGraph(container: string, fullSlug: FullSlug) {
+// workaround for pixijs webgpu issue: https://github.com/pixijs/pixijs/issues/11389
+async function determineGraphicsAPI(): Promise<"webgpu" | "webgl"> {
+  const adapter = await navigator.gpu?.requestAdapter().catch(() => null)
+  const device = adapter && (await adapter.requestDevice().catch(() => null))
+  if (!device) {
+    return "webgl"
+  }
+
+  const canvas = document.createElement("canvas")
+  const gl =
+    (canvas.getContext("webgl2") as WebGL2RenderingContext | null) ??
+    (canvas.getContext("webgl") as WebGLRenderingContext | null)
+
+  // we have to return webgl so pixijs automatically falls back to canvas
+  if (!gl) {
+    return "webgl"
+  }
+
+  const webglMaxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)
+  const webgpuMaxTextures = device.limits.maxSampledTexturesPerShaderStage
+
+  return webglMaxTextures === webgpuMaxTextures ? "webgpu" : "webgl"
+}
+
+async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   const slug = simplifySlug(fullSlug)
   const visited = getVisited()
-  const graph = document.getElementById(container)
-  if (!graph) return
   removeAllChildren(graph)
 
   let {
@@ -83,10 +106,10 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     centerForce,
     linkDistance,
     fontSize,
-    opacityScale,
     removeTags,
     showTags,
     focusOnHover,
+    enableRadial,
   } = JSON.parse(graph.dataset["cfg"]!) as D3Config
 
   const data: Map<SimpleSlug, ContentDetails> = new Map(
@@ -161,15 +184,17 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       })),
   }
 
-  // we virtualize the simulation and use pixi to actually render it
+  const width = graph.offsetWidth
+  const height = Math.max(graph.offsetHeight, 250)
+
   const simulation: Simulation<NodeData, LinkData> = forceSimulation<NodeData>(graphData.nodes)
     .force("charge", forceManyBody().strength(-100 * repelForce))
     .force("center", forceCenter().strength(centerForce))
     .force("link", forceLink(graphData.links).distance(linkDistance))
     .force("collide", forceCollide<NodeData>((n) => nodeRadius(n)).iterations(3))
 
-  const width = graph.offsetWidth
-  const height = Math.max(graph.offsetHeight, 250)
+  const radius = (Math.min(width, height) / 2) * 0.8
+  if (enableRadial) simulation.force("radial", forceRadial(radius).strength(0.2))
 
   // precompute style prop strings as pixi doesn't support css variables
   const cssVars = [
@@ -181,6 +206,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     "--dark",
     "--darkgray",
     "--bodyFont",
+    "--foam",
   ] as const
   const computedStyleMap = cssVars.reduce(
     (acc, key) => {
@@ -206,7 +232,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     const numLinks = graphData.links.filter(
       (l) => l.source.id === d.id || l.target.id === d.id,
     ).length
-    return 2 + Math.sqrt(numLinks)
+    return 4 + Math.log(numLinks + 1) * 2
   }
 
   let hoveredNodeId: string | null = null
@@ -259,7 +285,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
         alpha = l.active ? 1 : 0.2
       }
 
-      l.color = l.active ? computedStyleMap["--gray"] : computedStyleMap["--lightgray"]
+      l.color = l.active ? computedStyleMap["--secondary"] : computedStyleMap["--lightgray"]
       tweenGroup.add(new Tweened<LinkRenderData>(l).to({ alpha }, 200))
     }
 
@@ -280,28 +306,17 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     const activeScale = defaultScale * 1.1
     for (const n of nodeRenderData) {
       const nodeId = n.simulationData.id
+      const isCurrentlyHover = hoveredNodeId === nodeId
+      const isConnected = hoveredNeighbours.has(nodeId)
+      const scale =
+        isCurrentlyHover || isConnected
+          ? { x: activeScale, y: activeScale }
+          : { x: defaultScale, y: defaultScale }
 
-      if (hoveredNodeId === nodeId) {
-        tweenGroup.add(
-          new Tweened<Text>(n.label).to(
-            {
-              alpha: 1,
-              scale: { x: activeScale, y: activeScale },
-            },
-            100,
-          ),
-        )
-      } else {
-        tweenGroup.add(
-          new Tweened<Text>(n.label).to(
-            {
-              alpha: n.label.alpha,
-              scale: { x: defaultScale, y: defaultScale },
-            },
-            100,
-          ),
-        )
-      }
+      // Show labels for hovered node and its connections
+      const targetAlpha = isCurrentlyHover ? 1 : isConnected ? 0.8 : 0
+
+      tweenGroup.add(new Tweened<Text>(n.label).to({ alpha: targetAlpha, scale }, 100))
     }
 
     tweenGroup.getAll().forEach((tw) => tw.start())
@@ -346,6 +361,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
   tweens.forEach((tween) => tween.stop())
   tweens.clear()
 
+  const pixiPreference = await determineGraphicsAPI()
   const app = new Application()
   await app.init({
     width,
@@ -354,7 +370,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     autoStart: false,
     autoDensity: true,
     backgroundAlpha: 0,
-    preference: "webgpu",
+    preference: pixiPreference,
     resolution: window.devicePixelRatio,
     eventMode: "static",
   })
@@ -363,18 +379,18 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
   const stage = app.stage
   stage.interactive = false
 
-  const labelsContainer = new Container<Text>({ zIndex: 3 })
-  const nodesContainer = new Container<Graphics>({ zIndex: 2 })
-  const linkContainer = new Container<Graphics>({ zIndex: 1 })
+  const labelsContainer = new Container<Text>({ zIndex: 3, isRenderGroup: true })
+  const nodesContainer = new Container<Graphics>({ zIndex: 2, isRenderGroup: true })
+  const linkContainer = new Container<Graphics>({ zIndex: 1, isRenderGroup: true })
   stage.addChild(nodesContainer, labelsContainer, linkContainer)
 
-  for (const n of graphData.nodes) {
-    const nodeId = n.id
+  for (const simulationData of graphData.nodes) {
+    const { text, id: nodeId } = simulationData
 
     const label = new Text({
       interactive: false,
       eventMode: "none",
-      text: n.text,
+      text,
       alpha: 0,
       anchor: { x: 0.5, y: 1.2 },
       style: {
@@ -386,41 +402,37 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     })
     label.scale.set(1 / scale)
 
-    let oldLabelOpacity = 0
     const isTagNode = nodeId.startsWith("tags/")
     const gfx = new Graphics({
       interactive: true,
       label: nodeId,
       eventMode: "static",
-      hitArea: new Circle(0, 0, nodeRadius(n)),
+      hitArea: new Circle(0, 0, nodeRadius(simulationData)),
       cursor: "pointer",
     })
-      .circle(0, 0, nodeRadius(n))
-      .fill({ color: isTagNode ? computedStyleMap["--light"] : color(n) })
-      .stroke({ width: isTagNode ? 2 : 0, color: color(n) })
+      .circle(0, 0, nodeRadius(simulationData))
+      .fill({ color: isTagNode ? computedStyleMap["--foam"] : color(simulationData) })
       .on("pointerover", (e) => {
         updateHoverInfo(e.target.label)
-        oldLabelOpacity = label.alpha
-        if (!dragging) {
-          renderPixiFromD3()
-        }
+        if (!dragging) renderPixiFromD3()
       })
       .on("pointerleave", () => {
         updateHoverInfo(null)
-        label.alpha = oldLabelOpacity
-        if (!dragging) {
-          renderPixiFromD3()
-        }
+        if (!dragging) renderPixiFromD3()
       })
+
+    if (isTagNode) {
+      gfx.stroke({ width: 2, color: computedStyleMap["--tertiary"] })
+    }
 
     nodesContainer.addChild(gfx)
     labelsContainer.addChild(label)
 
     const nodeRenderDatum: NodeRenderData = {
-      simulationData: n,
+      simulationData,
       gfx,
       label,
-      color: color(n),
+      color: color(simulationData),
       alpha: 1,
       active: false,
     }
@@ -486,6 +498,9 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       node.gfx.on("click", () => {
         const targ = resolveRelative(fullSlug, node.simulationData.id)
         window.spaNavigate(new URL(targ, window.location.toString()))
+        if (graph.classList.contains("active")) {
+          graph.classList.remove("active")
+        }
       })
     }
   }
@@ -502,22 +517,13 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
           currentTransform = transform
           stage.scale.set(transform.k, transform.k)
           stage.position.set(transform.x, transform.y)
-
-          // zoom adjusts opacity of labels too
-          const scale = transform.k * opacityScale
-          let scaleOpacity = Math.max((scale - 1) / 3.75, 0)
-          const activeNodes = nodeRenderData.filter((n) => n.active).flatMap((n) => n.label)
-
-          for (const label of labelsContainer.children) {
-            if (!activeNodes.includes(label)) {
-              label.alpha = scaleOpacity
-            }
-          }
         }),
     )
   }
 
+  let stopAnimation = false
   function animate(time: number) {
+    if (stopAnimation) return
     for (const n of nodeRenderData) {
       const { x, y } = n.simulationData
       if (!x || !y) continue
@@ -541,56 +547,71 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     requestAnimationFrame(animate)
   }
 
-  const graphAnimationFrameHandle = requestAnimationFrame(animate)
-  window.addCleanup(() => cancelAnimationFrame(graphAnimationFrameHandle))
+  requestAnimationFrame(animate)
+  return () => {
+    stopAnimation = true
+    app.destroy()
+  }
+}
+
+let globalGraphCleanups: (() => void)[] = []
+
+function cleanupGlobalGraphs() {
+  for (const cleanup of globalGraphCleanups) {
+    cleanup()
+  }
+  globalGraphCleanups = []
 }
 
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
+  const notes = document.getElementById("stacked-notes-container")
+  if (notes?.classList.contains("active")) return
+
   const slug = e.detail.url
+
   addToVisited(simplifySlug(slug))
 
-  const container = document.getElementById("global-graph-outer")
-  const sidebar = container?.closest(".sidebar") as HTMLElement
-  const graph = document.querySelector(".graph")
+  const containers = [...document.getElementsByClassName("global-graph-outer")] as HTMLElement[]
 
-  function renderGlobalGraph() {
+  async function renderGlobalGraph() {
     const slug = getFullSlug(window)
-    container?.classList.add("active")
-    graph?.classList.add("active")
-    if (sidebar) {
-      sidebar.style.zIndex = "1"
-    }
 
-    renderGraph("global-graph-container", slug)
-    registerEscapeHandler(container, hideGlobalGraph)
+    for (const container of containers) {
+      container.classList.add("active")
+      const graphContainer = container.querySelector(".global-graph-container") as HTMLElement
+      registerEscapeHandler(container, hideGlobalGraph)
+      if (graphContainer) {
+        globalGraphCleanups.push(await renderGraph(graphContainer, slug))
+      }
+    }
   }
 
   function hideGlobalGraph() {
-    container?.classList.remove("active")
-    graph?.classList.remove("active")
-    if (sidebar) {
-      sidebar.style.zIndex = ""
+    cleanupGlobalGraphs()
+    for (const container of containers) {
+      container.classList.remove("active")
     }
   }
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if ((e.key === ";" || e.key === "g") && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       e.preventDefault()
-      const globalGraphOpen = container?.classList.contains("active")
-      globalGraphOpen ? hideGlobalGraph() : renderGlobalGraph()
+      const anyGlobalGraphOpen = containers.some((container) =>
+        container.classList.contains("active"),
+      )
+      anyGlobalGraphOpen ? hideGlobalGraph() : renderGlobalGraph()
     }
   }
 
-  const onClick = (ev: MouseEvent) => {
-    ev.preventDefault()
-    const globalGraphOpen = container?.classList.contains("active")
-    globalGraphOpen ? hideGlobalGraph() : renderGlobalGraph()
-  }
-
-  const containerIcon = document.getElementById("graph-button")
-  containerIcon?.addEventListener("click", onClick)
-  window.addCleanup(() => containerIcon?.removeEventListener("click", onClick))
+  const containerIcons = document.getElementsByClassName("global-graph-icon")
+  Array.from(containerIcons).forEach((icon) => {
+    icon.addEventListener("click", renderGlobalGraph)
+    window.addCleanup(() => icon.removeEventListener("click", renderGlobalGraph))
+  })
 
   document.addEventListener("keydown", shortcutHandler)
-  window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
+  window.addCleanup(() => {
+    document.removeEventListener("keydown", shortcutHandler)
+    cleanupGlobalGraphs()
+  })
 })

@@ -1,9 +1,10 @@
 ---
+date: "2023-09-11"
 id: Cinematography
+modified: 2025-10-29 02:15:18 GMT-04:00
 tags:
   - film
   - evergreen
-date: "2023-09-11"
 title: Cinematography
 ---
 

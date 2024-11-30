@@ -1,9 +1,10 @@
 ---
+date: "2024-11-04"
 id: SVCCA
+modified: 2025-10-29 02:15:34 GMT-04:00
 tags:
   - ml
-date: "2024-11-04"
-modified: "2024-11-04"
+  - interpretability
 title: SVCCA
 ---
 

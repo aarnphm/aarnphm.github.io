@@ -5,17 +5,23 @@ import * as Component from "./quartz/components"
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [
-    Component.PageTitle(),
-    Component.Breadcrumbs({ rootName: "~", style: "unique", spacerSymbol: "/" }),
+    Component.Breadcrumbs({ rootName: "~", spacerSymbol: "/", trailingWindow: 1 }),
+    Component.StackedNotes(),
+    Component.Image(),
+    Component.Graph(),
+    Component.Palette(),
     Component.Keybind(),
     Component.Search(),
+    Component.Darkmode(),
+    Component.CodeCopy(),
   ],
-  afterBody: [Component.Backlinks()],
+  afterBody: [Component.Recommendations(), Component.Backlinks()],
   footer: Component.Footer({
+    layout: "minimal",
     links: {
       github: "https://github.com/aarnphm",
       twitter: "https://twitter.com/aarnphm_",
-      bsky: "https://bsky.app/profile/aarnphm.xyz",
+      feed: "/index.xml",
     },
   }),
 }
@@ -26,23 +32,21 @@ export const defaultContentPageLayout: PageLayout = {
     Component.ArticleTitle(),
     Component.Byline(Component.TagList(), Component.ContentMeta()),
   ],
-  left: [Component.DesktopOnly(Component.TableOfContents())],
-  right: [
-    Component.Graph(),
-    Component.Reader(),
-    Component.Image(),
-    Component.Mermaid(),
-    Component.DesktopOnly(Component.Toolbar()),
-  ],
+  sidebar: [Component.DesktopOnly(Component.TableOfContents()), Component.Reader()],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [
-    Component.Breadcrumbs({ rootName: "~", style: "full", spacerSymbol: "/" }),
+    Component.Breadcrumbs({ rootName: "~", spacerSymbol: "/", trailingWindow: 1 }),
+    Component.StackedNotes(),
+    Component.Image(),
+    Component.Graph(),
+    Component.Palette(),
     Component.Keybind(),
     Component.Search(),
+    Component.Darkmode(),
+    Component.CodeCopy(),
   ],
-  left: [],
-  right: [],
+  sidebar: [],
 }

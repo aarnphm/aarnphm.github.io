@@ -1,9 +1,11 @@
 ---
-id: education
-tags:
-  - pattern
 date: "2024-02-07"
-modified: "2024-11-03"
+description: and how we learn.
+id: education
+modified: 2025-11-09 03:13:40 GMT-05:00
+tags:
+  - seed
+  - r/pedagogy
 title: education
 ---
 

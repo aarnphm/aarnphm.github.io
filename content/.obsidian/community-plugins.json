@@ -2,11 +2,10 @@
   "table-editor-obsidian",
   "obsidian-vimrc-support",
   "obsidian-minimal-settings",
-  "dataview",
   "pseudocode-in-obs",
+  "obsidian-tikzjax",
+  "obsidian-latex-suite",
+  "maps",
   "obsidian-citation-plugin",
-  "obsidian42-brat",
-  "quartz-syncer",
-  "templater-obsidian",
-  "obsidian-tikzjax"
+  "obsidian-importer"
 ]

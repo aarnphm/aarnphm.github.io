@@ -2,7 +2,6 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 // @ts-ignore
 import script from "./scripts/graph.inline"
 import style from "./styles/graph.scss"
-import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
 
 export interface D3Config {
@@ -18,55 +17,34 @@ export interface D3Config {
   removeTags: string[]
   showTags: boolean
   focusOnHover?: boolean
+  enableRadial?: boolean
 }
 
-interface GraphOptions {
-  localGraph: Partial<D3Config> | undefined
-  globalGraph: Partial<D3Config> | undefined
+export const defaultOptions: Partial<D3Config> | undefined = {
+  drag: true,
+  zoom: true,
+  depth: -1,
+  scale: 0.8,
+  repelForce: 0.9,
+  centerForce: 0.2,
+  linkDistance: 60,
+  fontSize: 0.5,
+  opacityScale: 1,
+  showTags: true,
+  removeTags: [],
+  focusOnHover: true,
+  enableRadial: true,
 }
 
-export const defaultOptions: GraphOptions = {
-  localGraph: {
-    drag: true,
-    zoom: true,
-    depth: 1,
-    scale: 1.1,
-    repelForce: 0.5,
-    centerForce: 0.3,
-    linkDistance: 30,
-    fontSize: 0.6,
-    opacityScale: 1,
-    showTags: true,
-    removeTags: [],
-    focusOnHover: false,
-  },
-  globalGraph: {
-    drag: true,
-    zoom: true,
-    depth: -1,
-    scale: 0.9,
-    repelForce: 0.5,
-    centerForce: 0.3,
-    linkDistance: 30,
-    fontSize: 0.6,
-    opacityScale: 1,
-    showTags: true,
-    removeTags: [],
-    focusOnHover: true,
-  },
-}
-
-export default ((opts?: GraphOptions) => {
-  const Graph: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
-    const globalGraph = { ...defaultOptions.globalGraph, ...opts?.globalGraph }
-    return (
-      <div class={classNames(displayClass, "graph")}>
-        <div id="global-graph-outer">
-          <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)} />
-        </div>
+export default ((opts?: Partial<D3Config>) => {
+  const cfg = JSON.stringify({ ...defaultOptions, ...opts })
+  const Graph: QuartzComponent = ({ displayClass }: QuartzComponentProps) => (
+    <div class={classNames(displayClass, "graph")}>
+      <div class="global-graph-outer">
+        <div class="global-graph-container" data-cfg={cfg} />
       </div>
-    )
-  }
+    </div>
+  )
 
   Graph.css = style
   Graph.afterDOMLoaded = script

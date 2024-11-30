@@ -39,60 +39,68 @@
   }
 }
 
-body {
-  &[data-slug="curius"] {
-    .navigation-container {
+body[data-slug="curius"] {
+  .navigation-container {
+    display: none;
+    margin-top: 1em;
+
+    &.active {
+      display: block;
+    }
+  }
+
+  .left-col {
+    grid-column: 3/5;
+  }
+
+  .aside-container {
+    margin-top: 2rem;
+    position: sticky;
+    top: 2rem;
+    align-self: flex-start;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+
+    @media all and ($mobile) {
       display: none;
-      margin-top: 1em;
-
-      &.active {
-        display: block;
-      }
     }
-
-    & .highlight {
-      background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
-      border-radius: 5px;
-      scroll-margin-top: 2rem;
+    @media all and ($tablet) {
+      display: none;
     }
+  }
 
-    & li {
-      padding: 0;
-      border-width: 1px;
-      border-style: solid;
-      border-color: transparent transparent var(--lightgray);
-      border-image: initial;
+  .curius-col {
+    grid-column: 5/9;
+    padding-left: 24px;
+
+    @media all and ($tablet) {
+      grid-column: 3/-3;
+      padding-left: 0;
     }
-
-    .page > #quartz-body {
-      gap: 1rem;
-      margin: 0 2rem;
-
-      .sidebar {
-        top: 2rem;
-        position: relative;
-      }
-
-      .right.sidebar,
-      .left.sidebar {
-        padding: 0;
-        width: $sidePanelWidth;
-      }
-
-      .center {
-        min-width: unset;
-        max-width: $pageWidth;
-      }
+    @media all and ($mobile) {
+      grid-column: 3/-3;
+      padding-left: 0;
     }
+  }
 
-    .page > .page-header {
-      top: 0;
-      z-index: 100;
-      background-color: var(--light);
-      display: grid;
-      grid-template-columns: #{map.get($desktopGrid, templateColumns)};
-      grid-template-rows: #{map.get($desktopGrid, templateRows)};
-      grid-template-areas: #{map.get($desktopGrid, templateAreas)};
+  & .highlight {
+    background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
+    border-radius: 5px;
+    scroll-margin-top: 2rem;
+  }
+
+  & li {
+    padding: 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent transparent var(--lightgray);
+    border-image: initial;
+  }
+
+  a {
+    &:hover {
+      color: var(--tertiary) !important;
+      background-color: transparent !important;
     }
   }
 }
@@ -116,14 +124,16 @@ body {
 }
 
 .curius-header {
-  max-width: $pageWidth;
   margin: 2rem auto 1rem;
-  grid-area: grid-center;
 }
 
 .curius-page-container {
   & li[id|="curius-item"] {
     background-color: inherit;
+
+    & > * {
+      margin-left: 0.25rem;
+    }
 
     &[class~="focus"]:first-child,
     &[class~="active"]:first-child,
@@ -135,10 +145,6 @@ body {
     &[class~="focus"] {
       background: var(--lightgray);
       border: 1px solid var(--dark);
-    }
-
-    & > * {
-      padding: 0 8px;
     }
   }
 }
@@ -159,12 +165,7 @@ body {
 
 .curius-item-title {
   display: flex;
-  padding: 0 5px;
   align-items: center;
-
-  & > * {
-    padding: 5px 0;
-  }
 
   a,
   span {
@@ -185,8 +186,8 @@ body {
   cursor: pointer;
 }
 
-.curius-item-favorite {
-  clip-path: circle(18% at 50% 35%);
+svg.favorite-icon {
+  clip-path: circle(20% at 50% 50%);
   color: rgb(236, 180, 19);
   transition: all 200ms ease 0s;
   width: fit-content;
@@ -246,61 +247,42 @@ body {
   }
 
   .curius-item-fa {
-    display: flex;
     margin-right: 2px;
-    justify-content: center;
     align-items: center;
     -webkit-box-pack: center;
-    max-width: 1.25rem;
+    width: 12px;
     color: rgb(68, 68, 68);
-    padding: 0 0 2px;
   }
 
   .curius-item-address {
     color: rgb(170, 170, 170);
-    white-space: no-wrap;
+    white-space: nowrap;
     padding-left: 5px;
   }
 
   .curius-item-link {
+    max-width: 80%;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    max-width: 70%;
 
-    @media all and ($desktop) {
-      max-width: 30%;
+    & > * {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 50%;
     }
   }
 
   ul[class="curius-item-tags"] {
     display: flex;
     padding-inline-start: 0px;
-    line-height: 1;
-    font-size: 0.5rem;
     margin-block-start: 0;
 
     & > li {
-      font-family: var(--codeFont);
-      color: rgb(119, 119, 119);
-      background-color: rgb(241, 241, 241);
-      line-height: 1.2;
-      align-items: center;
+      @include badgeCapsule();
+      margin-bottom: 0;
       margin-right: 5px;
-      text-transform: uppercase;
-      border-radius: 6px;
-      padding: 2px 4px;
-      display: inline;
-      cursor: pointer;
-      font-size: 10px;
-
-      &:hover {
-        background-color: rgb(222, 222, 222);
-      }
-
-      [saved-theme="dark"] & {
-        background-color: var(--highlight);
-      }
 
       & > a {
         color: inherit;
@@ -328,14 +310,6 @@ body {
     font-size: 11px;
   }
 
-  #curius-refetch {
-    @include iconStyles;
-    margin-left: unset;
-    opacity: 1;
-    padding: 0;
-    outline: none;
-  }
-
   .curius-search-snippet {
     color: rgb(170, 170, 170);
     text-overflow: ellipsis;
@@ -351,6 +325,7 @@ body {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    position: relative;
 
     & #curius-bar {
       flex: 1;
@@ -373,13 +348,14 @@ body {
     & #curius-search-container {
       position: absolute;
       box-sizing: border-box;
-      width: #{$pageWidth};
       z-index: unset;
       box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
       display: none;
       box-sizing: border-box;
       background-color: var(--light);
       max-height: 50vh;
+      // var(curius-col * 7) - padding
+      max-width: calc(var(--grid-col-width) * 7 - 24px);
       // #curius-bar height + padding
       margin-top: 3rem;
       overflow: hidden auto;
@@ -393,6 +369,7 @@ body {
       &.active {
         z-index: 999;
         display: inline-block;
+        width: 100%;
       }
 
       a.curius-search-link {
@@ -419,19 +396,15 @@ body {
   }
 }
 
+.curius-friends,
+.curius-trail {
+  border: 1px solid var(--gray);
+  padding: 8px;
+  cursor: pointer;
+}
+
 .curius-friends {
   display: none !important;
-  max-width: calc($sidePanelWidth - 1rem);
-  cursor: pointer;
-
-  @media all and ($desktop) {
-    max-width: unset;
-    width: 100%;
-  }
-
-  @media all and not ($desktop) {
-    margin-top: $topSpacing;
-  }
 
   a,
   span {
@@ -450,17 +423,13 @@ body {
   }
 
   #friends-list {
-    max-height: 400px;
+    max-height: 49vh;
     overflow-y: auto;
   }
 
   .friend-li {
     display: none;
-
-    &[class~="focus"] {
-      background: var(--lightgray);
-      border: 1px solid var(--dark);
-    }
+    padding: 2px;
 
     &.active {
       display: block;
@@ -470,6 +439,25 @@ body {
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    &.friend-pinned {
+      .friend-name {
+        display: inline;
+        padding: 0 3px;
+        margin: -1px;
+
+        box-shadow:
+          0px 1px 0px 1px var(--light) inset,
+          0px 1px 0px 2px var(--pine) inset;
+
+        &:hover {
+          box-shadow:
+            0px 1px 0px 0px var(--light) inset,
+            0px 1px 0px 1px var(--pine) inset;
+          border-bottom: 1px solid var(--pine);
+        }
+      }
     }
   }
 
@@ -496,8 +484,9 @@ body {
 .curius-trail {
   font-size: 11px;
   width: inherit;
+  margin-top: 1rem;
+  padding-top: 1rem;
   cursor: pointer;
-  max-width: calc($sidePanelWidth - 1rem);
   display: none;
 
   &.active {
@@ -506,8 +495,8 @@ body {
 
   .curius-trail-header {
     display: flex;
-    gap: 0.5rem;
     font-size: initial;
+    flex-direction: column;
   }
 
   .curius-item-address,
@@ -543,7 +532,9 @@ body {
 
     &[class~="focus"] {
       background: var(--lightgray);
-      border: 1px solid var(--dark);
+      border: 0px solid var(--dark);
+      border-top-width: 1px;
+      border-bottom-width: 1px;
     }
   }
 
@@ -560,6 +551,31 @@ body {
 
     .curius-item-span {
       max-width: 100%;
+    }
+  }
+}
+
+.curius-pagination {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2rem;
+  align-items: center;
+  margin-top: 2rem;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+
+  span {
+    cursor: pointer;
+    color: var(--dark);
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--tertiary);
+    }
+
+    &[style*="hidden"] {
+      color: var(--gray);
+      cursor: default;
     }
   }
 }

@@ -1,15 +1,15 @@
 ---
+date: "2024-09-10"
 id: index
+modified: 2025-10-29 02:16:09 GMT-04:00
 tags:
   - university
   - sfwr4ml3
   - ml
-date: "2024-09-10"
-modified: "2024-10-07"
 title: Introduction to Machine Learning
 ---
 
-See also [[thoughts/Machine learning|machine learning]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture0.pdf|introduction]]
+See also [[thoughts/Machine learning|machine learning]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture1.pdf|introduction]]
 
 For annotated slides check out [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec|annotated folders]]
 

@@ -1,20 +1,16 @@
 ---
-id: Freud
-tags:
-  - seed
-  - philosophy
 date: "2023-10-10"
+description: Austrian neurologist and founder of psychoanalysis
+id: Freud
+modified: 2025-10-29 02:15:23 GMT-04:00
+tags:
+  - philosophy
 title: Sigmund Freud
 ---
-
-## Beyond the Pleasure Principle
 
 ## The Ego and The Id
 
 > The state of consciousness is very transitory
-
-- [ ] P.16-18
-- [ ] The relationship between Pcts and Cs.
 
 ### Cs, Pcs, Ucs.
 
@@ -32,20 +28,23 @@ Internal perception yields sensation of processes arising in the most diverse st
 
 These sensations are my views about their idea for this. These sensations are multilocular, like external perceptions; they may come from different places simultaneously and may thus have different or even opposite qualities.
 
+```quotes
 Sensations of a pleasurable nature have not anything inherently impelling about them, whereas unpleasurable ones have it in the highest degree. The latter impel towards change, towards discharge, and that is why we interpret un-pleasure as implying a heightening and pleasure a lowering of energic cathexis.' Let us call what becomes conscious as pleasure and unpleasure a quantitative and qualitative
+```
 
 'something' in the course of mental events; the question then is whether this 'something' can become conscious in the place where it is, or whether it must first be transmitted to the system Pept.
 
 Clinical experience decides for the latter. It shows us that this something' behaves like a repressed impulse. It can exert driving force without the ego noticing the compulsion.
 
 > [!important] The Ego
+>
 > The ego is the id modified by influence of perceptual system
 
 object-cathexis and Oedipus complex to describe the form of ego
 
 ### Object-choices and identification
 
-```poetry
+```quotes
 At this point we must widen our range a little. We succeeded in explaining the painful disorder of melancholia by supposing that [in those suffering from it] an object which was lost has been set up again inside the ego-that is, that an object-cathexis has been replaced by an identification.
 ```
 

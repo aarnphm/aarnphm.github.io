@@ -1,9 +1,9 @@
 ---
+date: "2024-02-17"
 id: nous
+modified: 2025-10-29 02:16:23 GMT-04:00
 tags:
   - sfwr3dx4
-date: "2024-02-17"
-modified: "2024-11-16"
 title: Tout ce qu'il faut savoir sur la conception des systèmes de contrôle
 ---
 
@@ -73,7 +73,7 @@ See [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/a2/content|this]] f
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/stability comparison.webp]]
 
-[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability#^routh-table|Routh table]]
+[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/stability#Routh-Hurwitz criterion|Routh table]]
 
 ---
 

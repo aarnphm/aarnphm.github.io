@@ -1,9 +1,9 @@
 ---
+date: "2024-11-18"
 id: Radix tree
+modified: 2025-10-29 02:15:33 GMT-04:00
 tags:
   - technical
-date: "2024-11-18"
-modified: "2024-11-18"
 title: Radix tree
 ---
 

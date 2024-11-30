@@ -14,6 +14,19 @@ const onClickGenerator = (button: HTMLButtonElement, source: string) => {
   }
 }
 
+const renderer = {
+  indentSize: "0.6em",
+  commentDelimiter: "  ▷",
+  lineNumberPunc: ":",
+  lineNumber: true,
+  noEnd: false,
+  scopeLines: false,
+  captionCount: undefined,
+  titlePrefix: "Algorithm",
+  mathEngine: "katex",
+  mathRenderer: undefined,
+}
+
 document.addEventListener("nav", () => {
   const els = document.getElementsByClassName("tikz") as HTMLCollectionOf<HTMLElement>
   if (els.length == 0) return
@@ -42,7 +55,6 @@ document.addEventListener("nav", () => {
   for (let i = 0; i < els.length; i++) {
     const psBlock = els[i]
     const button = psBlock.getElementsByClassName("ps-clipboard")[0] as HTMLButtonElement
-    const settings = JSON.parse(psBlock.dataset.settings ?? "{}")
     let inlineMacros: string | undefined = undefined
     if (psBlock.dataset.inlineMacros && psBlock.dataset.inlineMacros !== "") {
       inlineMacros = JSON.parse(psBlock.dataset.inlineMacros as string)
@@ -53,30 +65,26 @@ document.addEventListener("nav", () => {
     const blockContent = JSON.parse(mathML.querySelector("annotation")!.textContent ?? "")
     const source =
       "\\documentclass{article}\n" +
-      macros(settings, inlineMacros) +
+      macros(inlineMacros) +
       "\n" +
       "\\begin{document}\n" +
-      processing(settings, blockContent) +
+      processing(blockContent) +
       "\n\\end{document}"
 
     const onClick = onClickGenerator(button, source)
     button.addEventListener("click", onClick)
     window.addCleanup(() => button.removeEventListener("click", onClick))
-    psBlock.prepend(button)
   }
 })
 
-const macros = (settings: any, inlineMacros: string | undefined): string => {
-  const noEnd = settings.renderer.noEnd
-  const scopeLines = settings.renderer.scopeLines
-
+const macros = (inlineMacros: string | undefined): string => {
   // Split inline macros into lines and remove heading or trailing spaces
   const inlineMacrosLine =
     inlineMacros !== undefined ? inlineMacros.split("\n").map((line) => line.trim()) : ""
 
   return `
 \\usepackage{algorithm}
-\\usepackage[noEnd=${noEnd},indLines=${scopeLines}]{algpseudocodex}
+\\usepackage[noEnd=${renderer.noEnd},indLines=${renderer.noEnd}]{algpseudocodex}
 
 \\newcommand{\\And}{\\textbf{and~}}
 \\newcommand{\\Or}{\\textbf{or~}}
@@ -96,8 +104,8 @@ ${inlineMacrosLine}
 `
 }
 
-const processing = (settings: any, block: string): string => {
-  if (settings.renderer.lineNumber)
+const processing = (block: string): string => {
+  if (renderer.lineNumber)
     // Replace "\begin{algorithmic}" with "\begin{algorithmic}[1]"
     block = block.replace("\\begin{algorithmic}", "\\begin{algorithmic}[1]")
   else;

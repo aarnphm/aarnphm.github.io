@@ -1,10 +1,10 @@
 ---
+date: "2024-10-28"
 id: nearest neighbor
+modified: 2025-10-29 02:16:10 GMT-04:00
 tags:
   - sfwr4ml3
   - ml
-date: "2024-10-28"
-modified: "2024-10-28"
 title: nearest neighbour
 ---
 
@@ -191,7 +191,3 @@ k^2 \upgamma^2 &\le \|\underline{\theta^{k+1}}\|^2 \le kR^2 \\
 k &\le \frac{R^2}{\upgamma^2}
 \end{aligned}
 $$
-
----
-
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Support Vector Machine|SVM]]

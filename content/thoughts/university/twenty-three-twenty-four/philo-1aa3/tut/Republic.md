@@ -1,10 +1,11 @@
 ---
+date: "2023-09-13"
 id: Republic
+modified: 2025-10-29 02:16:17 GMT-04:00
 tags:
   - philosophy
   - philos1aa3
 title: Allegory of the cave, Republic
-date: 2023-09-13
 ---
 
 Allegory of the cave:

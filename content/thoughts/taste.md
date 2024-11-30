@@ -1,9 +1,10 @@
 ---
+date: "2024-02-19"
 id: taste
+modified: 2025-10-29 02:15:54 GMT-04:00
 tags:
   - seed
   - pattern
-date: 2024-02-19
 title: taste
 ---
 

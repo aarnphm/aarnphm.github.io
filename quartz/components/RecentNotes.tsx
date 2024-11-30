@@ -40,7 +40,6 @@ export default ((userOpts?: Partial<Options>) => {
         <ul class="recent-ul">
           {pages.slice(0, opts.limit).map((page) => {
             const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
-            const tags = page.frontmatter?.tags ?? []
 
             return (
               <li class="recent-li">

@@ -1,11 +1,10 @@
 ---
-id: curius
-tags:
-  - evergreen
-  - hyperlinks
 date: "2024-01-26"
 description: curius dot app slash aaron dash pham
-modified: "2024-11-11"
+id: curius
+modified: 2025-11-09 01:46:35 GMT-05:00
+tags:
+  - evergreen
 title: curius.
 ---
 

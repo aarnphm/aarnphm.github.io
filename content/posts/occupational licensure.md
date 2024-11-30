@@ -1,15 +1,13 @@
 ---
+date: "2024-11-27"
+description: and what it meant to be an engineer
 id: occupational licensure
+modified: 2025-10-29 02:15:12 GMT-04:00
 tags:
   - engineer4a03
   - fruit
-date: "2024-11-27"
-description: and what it meant to be an engineer
-modified: "2024-11-27"
 title: On occupational licensure
 ---
-
-_The following in an excerpt of a paper I wrote for my coursework._
 
 > [!question]-
 >
@@ -25,9 +23,9 @@ _The following in an excerpt of a paper I wrote for my coursework._
 
 [^links]: See also [Professional Engineers Act](https://www.ontario.ca/laws/statute/90p28) and [PEO Procedure](https://www.peo.on.ca/apply/licensing-changes#:~:text=applicants%20%E2%80%93%20PEO%20has%20launched%20an,Limited%20Licence%20in%20the%20future)
 
-<p class="quotes">
-  The overthrow of the medieval guild system was an indispensable early step in the rise of freedom in the Western world. -- Milton Friedman
-</p>
+```quotes
+The overthrow of the medieval guild system was an indispensable early step in the rise of freedom in the Western world. -- Milton Friedman
+```
 
 According to [@friedman1962capitalism], while necessary to protect consumers from fraudulent activities, occupational licensure inevitably becomes “a tool in the hand of a special producer group” to obtain monopolistic practices at the cost of public welfare. While the Act mandates that the practice of professional engineers must be upheld by provincial regulators so that “the public interest may be served and protected”, the PEO’s May 15 update may inadvertently restrict new entries into the field, particularly affecting those whose educational backgrounds do not align with traditional pathways, and exacerbate Canada’s current engineering shortage. This essay will draw arguments from history and argue why these changes seem to undermine the general ethos of the Professional Engineers Act.
 
@@ -41,7 +39,7 @@ By narrowing the definition of "qualified", PEO risks excluding individuals who 
 From an economic standpoint, licensing requirements often restrict competition more than protect public safety [@friedman1962capitalism].
 Friedman posited that requiring an individual to obtain permission from the state or a governing body to work in his chosen occupation inherently infringed on [[thoughts/Camus#absurd freedom|individual freedom]]. When applied to engineering, excessive barriers to entry can drive talented professionals to jurisdictions with more reasonable requirements, particularly the United States, where many engineering roles don’t require formal licensing, as one should be recruited based on one's occupational competency rather than being infringed upon by licensure. In the case of engineering in Ontario, the new licensing changes may create an artificial scarcity of engineers, which could lead to higher costs for engineering projects, reduced innovation, and delays in critical infrastructure development.
 
-Friedman also emphasised the importance of [[thoughts/montary#free market|free markets]] and removing unnecessary barriers to economic participation [@friedman1962capitalism{chap. V}]. By imposing stricter licensing requirements, PEO effectively creates a barrier that prevents otherwise capable individuals from contributing to the field. In a sense, this promotes the phenomenon of brain drain, referring to the emigration of talented aliens to countries with more favourable professional opportunities. By imposing stricter requirements,
+Friedman also emphasised the importance of [[thoughts/monetary#free market|free markets]] and removing unnecessary barriers to economic participation [@friedman1962capitalism{chap. V}]. By imposing stricter licensing requirements, PEO effectively creates a barrier that prevents otherwise capable individuals from contributing to the field. In a sense, this promotes the phenomenon of brain drain, referring to the emigration of talented aliens to countries with more favourable professional opportunities. By imposing stricter requirements,
 PEO may encourage talented individuals to leave Ontario in favour of jurisdictions where they can more easily practice their profession. This results in a loss of talent and weakens Ontario’s competitiveness in attracting and retaining highly skilled professionals.
 
 In conclusion, while maintaining high professional standards is essential, it is equally important to ensure that licensing procedures do not inadvertently exclude capable engineers. From Friednmanite’s perspective, alternative approaches that maintain professional standards while avoiding these market distortions should be considered. He advocated for certification systems that would allow consumers to identify qualified practitioners while not preventing others from practising. In engineering, this could mean competency-based assessments rather than rigid credential requirements, recognition of diverse educational and professional pathways, and a tiered certification system recognising different levels of expertise.

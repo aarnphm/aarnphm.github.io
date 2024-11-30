@@ -18,46 +18,42 @@
 #include "MyRio1950.h"
 
 #else
-#   error "Target Not Defined"
+#error "Target Not Defined"
 #endif
 
 #if NiFpga_Cpp
 extern "C" {
 #endif
 
+/*
+ * Simple error handling for the cases where the function returns on error.
+ */
+#define MyRio_ReturnIfNotSuccess(status, message)                              \
+  if (MyRio_IsNotSuccess((status))) {                                          \
+    MyRio_PrintStatus((status));                                               \
+    printf((message));                                                         \
+    return;                                                                    \
+  }
 
 /*
  * Simple error handling for the cases where the function returns on error.
  */
-#define MyRio_ReturnIfNotSuccess(status, message)\
-if (MyRio_IsNotSuccess((status))){\
-    MyRio_PrintStatus((status));\
-    printf((message));\
-    return;\
-}
-
-
-/*
- * Simple error handling for the cases where the function returns on error.
- */
-#define MyRio_ReturnValueIfNotSuccess(status, value, message)\
-if (MyRio_IsNotSuccess((status))){\
-    MyRio_PrintStatus((status));\
-    printf((message));\
-    return (value);\
-}
-
+#define MyRio_ReturnValueIfNotSuccess(status, value, message)                  \
+  if (MyRio_IsNotSuccess((status))) {                                          \
+    MyRio_PrintStatus((status));                                               \
+    printf((message));                                                         \
+    return (value);                                                            \
+  }
 
 /*
  * Simple error handling for the cases where the function returns on error.
  */
-#define MyRio_ReturnStatusIfNotSuccess(status, message)\
-if (MyRio_IsNotSuccess((status))){\
-    MyRio_PrintStatus((status));\
-    printf((message));\
-    return (status);\
-}
-
+#define MyRio_ReturnStatusIfNotSuccess(status, message)                        \
+  if (MyRio_IsNotSuccess((status))) {                                          \
+    MyRio_PrintStatus((status));                                               \
+    printf((message));                                                         \
+    return (status);                                                           \
+  }
 
 /**
  * Tests whether a status is not equal to NiFpga_Status_Success.
@@ -69,23 +65,19 @@ if (MyRio_IsNotSuccess((status))){\
  * @return  NiFpga_Bool which indicates if the status is an error or warning
  * @see NiFpga_IsNotError
  */
-static NiFpga_Inline NiFpga_Bool MyRio_IsNotSuccess(NiFpga_Status status)
-{
-    return (status != NiFpga_Status_Success);
+static NiFpga_Inline NiFpga_Bool MyRio_IsNotSuccess(NiFpga_Status status) {
+  return (status != NiFpga_Status_Success);
 }
-
 
 /**
  * Print the value of status if there is an error or warning.
  */
 void MyRio_PrintStatus(NiFpga_Status status);
 
-
 /**
  * Opens a session to the myRIO FPGA Personality.
  */
 NiFpga_Status MyRio_Open();
-
 
 /**
  * Closes the session to the myRIO FPGA Personality.

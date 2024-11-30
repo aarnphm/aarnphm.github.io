@@ -1,10 +1,12 @@
 ---
+date: "2023-09-22"
+description: Phaedo and Apology
 id: Phaedo and Apology
+modified: 2025-10-29 02:16:17 GMT-04:00
 tags:
   - philosophy
   - philos1aa3
-description: Phaedo and Apology
-date: 2023-09-22
+title: Phaedo and Apology
 ---
 
 ## Structure
@@ -22,7 +24,6 @@ Problem --> Thesis --> Structure
 > Athenians are harming themselves since Socrates is the only one who concerns the truth and what truly good is.
 
 - "Ancient" / Recent accusation
-
   - Bad association with pre/post
   - Ancient:
     - Physicist -> enquire things in heaven and under the earth

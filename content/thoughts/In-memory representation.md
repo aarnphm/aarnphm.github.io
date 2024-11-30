@@ -1,10 +1,10 @@
 ---
+date: "2022-10-01"
 id: In-memory representation
+modified: 2025-10-29 02:15:24 GMT-04:00
 tags:
   - technical
   - seed
-date: "2022-10-01"
-modified: "2024-11-12"
 title: In memory representation
 ---
 

@@ -1,10 +1,11 @@
 ---
-id: relationships
-tags:
-  - seed
 comments: true
 date: "2024-06-22"
-modified: "2024-10-08"
+id: friendship
+modified: 2025-11-09 03:42:02 GMT-05:00
+tags:
+  - love
+  - pattern
 title: friendship
 ---
 
@@ -12,11 +13,13 @@ title: friendship
 > Relationships teach you how to gently treat someone as one of your own; they also bash and crush your heart, as if the world is crumbling in front of your eyes.
 > But it is okay; relationships are what we deem worth giving meaning to the absurdity of life.
 
-## of pleasure. or utility?
+## of pleasure, or utility?
 
 https://twitter.com/patriciamou_/status/1758354933521478126
 
-> [!question]- How does one weave that delicate fabric of trust, when so many are ensnared in their own lives?
+> [!question]- How does one weave that delicate fabric of trust?
+>
+> _When so many are ensnared in their own lives?_
 >
 > To cultivate trust, we must first turn inward, nurturing the quiet confidence of self-trust before extending our hands to others. Yet, amidst the hustle and haste, how do we anchor our souls in authenticity and leave room for empathy? Can we create a sanctuary for trust to blossom, even in the most turbulent of seas?
 
@@ -26,7 +29,7 @@ Trust requires vulnerability - the courage to show up as our authentic selves, t
 
 reaching out feels... weird. In this age of tally, being genuine, would be the ONLY metrics that is important to maintaining relationship.
 
-But, can love so alloyed be counted as love at all? If each act of kindness conceals a grasping need, each smile a silent plea, then perhaps the better part of friendship has been lost. We trade in a base currency, a barter of pleasure and utility. The sacred alchemy of selfless affection feels beyond our ken.
+But, can #love so alloyed be counted as love at all? If each act of kindness conceals a grasping need, each smile a silent plea, then perhaps the better part of friendship has been lost. We trade in a base currency, a barter of pleasure and utility. The sacred alchemy of selfless affection feels beyond our ken.
 
 I yearn for something higher, a way of relating that does not reduce us to mere instruments of the other's satisfaction. But the way is unclear, the path grown over from neglect.
 

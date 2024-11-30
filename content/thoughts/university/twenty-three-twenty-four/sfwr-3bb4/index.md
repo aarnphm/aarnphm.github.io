@@ -1,17 +1,14 @@
 ---
+date: "2023-09-04"
 id: index
+modified: 2025-10-29 02:16:20 GMT-04:00
 tags:
   - university
   - sfwr3bb4
-date: "2023-09-04"
 title: Concurrent System Design
 ---
 
-## Elements of Software Design
-
-This is a series of interactive notebooks that are used for teaching software design and more specifically concurrent system design at McMaster University. The accompanying assignments and tests are not part of this repository. A novel aspect is the use of state diagrams for teaching concurrency, including non-interference, see:
-
-[Teaching Concurrency with the Disappearing Formal Method](http://doi.org/10.1007/978-3-030-32441-4_9). Sekerinski, E. In Dongol, B.; Petre, L.; and Smith, G., editor(s), Formal Methods Teaching, volume 11758 of Lecture Notes in Computer Science, pages 135–149, 2019. Springer, Cham.
+book: [Teaching Concurrency with the Disappearing Formal Method](http://doi.org/10.1007/978-3-030-32441-4_9). Sekerinski, E. In Dongol, B.; Petre, L.; and Smith, G., editor(s), Formal Methods Teaching, volume 11758 of Lecture Notes in Computer Science, pages 135–149, 2019. Springer, Cham.
 
 The course notes are being constantly revised; comments are welcome. See my [home page](http://www.cas.mcmaster.ca/~emil/) for the latest installments of the courses using these notes. Of course, I would love to hear if you plan to use these notes for courses or otherwise.
 
@@ -21,7 +18,20 @@ Most images are cell attachments, which are not rendered by GitHub. Images that 
 
 See also: [[thoughts/university/twenty-three-twenty-four/sfwr-2c03/index|Data Structures and Algorithms]].
 
-### Installation
+## Lectures
+
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/00 Concurrent System Design/Concurrent System Design.ipynb|Concurrent System Design]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/01 Sequential Programming/SequentialProgramming.ipynb|Sequential Programming]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/02 Concurrency and Synchronization/Concurrency.ipynb|Concurrency]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/03 Semaphores/Semaphores.ipynb|Semaphores]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/04 Classes/Classes.ipynb|Classes]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/05 Robustness/Robustness.ipynb|Robustness]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/06 Monitors/Monitors.ipynb|Monitors]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/07 Message Passing/MessagePassing.ipynb|Message Passing]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/08 Remote Procedure Calls/RemoteProcedureCalls.ipynb|Remote Procedure Calls]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/09 Coroutines and Futures/CoroutinesAndFutures.ipynb|Coroutines and Futures]]
+
+## Installation
 
 You need [Python 3](https://www.python.org/downloads/). Update `pip3` or `pip`, depending on your installation:
 

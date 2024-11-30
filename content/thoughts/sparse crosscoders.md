@@ -1,10 +1,14 @@
 ---
-id: sparse crosscoders
-tags:
-  - interp
+claude:
+  session:
+    - 74bc2295-a1bb-44e8-9036-8de8aba14dc1
 date: "2024-11-03"
-description: and how we observe multiple activation layers. SAE is a special case of sparse crosscoders.
-modified: "2024-11-03"
+description: and cross-layers observations. SAE is a special case of sparse crosscoders.
+id: sparse crosscoders
+modified: 2025-11-04 18:25:15 GMT-05:00
+tags:
+  - ml
+  - interpretability
 title: sparse crosscoders
 transclude:
   title: false
@@ -32,8 +36,7 @@ Resolve:
 
 ### cross-layer [[thoughts/mechanistic interpretability#superposition hypothesis|superposition]]
 
-![[thoughts/images/additive-residual-stream-llm.webp]]
-_given the additive properties of transformers' residual stream, **adjacent layers** in larger transformers can be thought as "almost parallel"_
+![[thoughts/images/additive-residual-stream-llm.webp|given the additive properties of transformers' residual stream, adjacent layers in larger transformers can be thought as "almost parallel"]]
 
 > [!important]- intuition
 >
@@ -44,11 +47,14 @@ _given the additive properties of transformers' residual stream, **adjacent laye
 ![[thoughts/images/one-step-circuit.webp]]
 
 ![[thoughts/images/parallel-joint-branch.webp]]
+
 _if we think of adjacent layers as being "almost parallel branches that potentially have superposition between them", then we can apply dictionary learning jointly [^jointlysae]_
 
 [^jointlysae]: [@gorton2024missingcurvedetectorsinceptionv1] denotes that cross-branch superposition is significant in interpreting models with parallel branches (InceptionV1)
 
 ### persistent features and complexity
+
+![[thoughts/images/proposal-formed-by-cross-layers-superposition.webp]]
 
 Current drawbacks of sparse autoencoders is that we have to train it against certain activations layers to extract features. In terms of the residual
 stream per layers, we end up having lots of duplicate features across layers.
@@ -57,14 +63,20 @@ stream per layers, we end up having lots of duplicate features across layers.
 
 [^risks]: causal description it provides likely differs from that of the underlying model.
 
+> The motivation is that some features are persistent across residual stream, which means there will be duplication where the SAEs learn it multiple times
+>
+> ![[thoughts/images/dedup-features-persistent.webp]]
+
 ## setup.
 
-> Autoencoders and transcoders as special cases of crosscoders.
+> Autoencoders and [[thoughts/mechanistic interpretability#transcoders]] as special cases of crosscoders.
 >
 > - autoencoders: reads and predict the same layers
 > - transcoders: read from layer $n$ and predict layer $n+1$
 
 Crosscoder read/write to many layers, subject to causality constraints.
+
+![[thoughts/images/crosscoder-setup.webp]]
 
 > [!math]+ crosscoders
 >
@@ -113,6 +125,17 @@ good to explore:
 2. combine strictly causal crosscoders for MLP outputs without weakly causal crosscoders for attention outputs
 3. interpretable attention replacement layers that could be used in combination with strictly causal crosscoders for a "replacement model"
 
+## Cross-layer Features
+
+> How can we discover cross-layer structure?
+
+- trained a global, acausal crosscoder on residual stream activations of 18-layer models
+- versus 18 SAEs trained on each residual stream layers
+- fixed L1 coefficient for sparsity penalty
+- MSE + decoder norm-weighed L1 norm
+
+![[thoughts/images/all-layer-crosscoder-vs-per-layer-sae.webp]]
+
 ## model diffing
 
 see also: [[thoughts/model stiching]] and [[thoughts/SVCCA]]
@@ -121,8 +144,52 @@ see also: [[thoughts/model stiching]] and [[thoughts/SVCCA]]
 
 [^sne]: Chris Colah's [blog post](https://colah.github.io/posts/2015-01-Visualizing-Representations/) explains how t-SNE can be used to visualize collections of networks in a function space.
 
+Crosscoders learn shared dictionaries of interpretable concepts represented as latent directions in both base and fine-tuned models, allowing tracking of how concepts shift or emerge during fine-tuning.
+
+### challenges with model diffing
+
+**Exclusive feature polysemanticity**: Features exclusive to one model (not shared) tend to be more polysemantic and dense in their activations, making them difficult to interpret. This emerges from competition for limited feature capacity - since shared features can explain neuron activation patterns in both models, exclusive features must encode more information to justify their allocation [@minder2025overcoming].
+
+**L1 sparsity artifacts**: Standard crosscoders with L1 training loss can misattribute concepts as unique to the fine-tuned model when they actually exist in both models. Two specific issues:
+
+1. Features may appear exclusive when they're actually shared but represented differently
+2. Latent directions may be incorrectly identified as model-specific due to optimization dynamics
+
+**Latent scaling** provides more accurate measurement of each latent's presence across models to flag these issues.
+
+### BatchTopK loss for improved model diffing
+
+@minder2025overcoming shows that training crosscoders with BatchTopK loss (instead of L1) substantially mitigates polysemanticity and misattribution issues:
+
+- Finds more genuinely model-specific and highly interpretable concepts
+- Reduces false attribution of shared concepts as exclusive
+- Identifies chat-specific latents that are both interpretable and causally effective
+- Represents concepts like "false information" and "personal question" with nuanced preferences
+
+BatchTopK also discovers multiple refusal-related latents showing different refusal trigger patterns, advancing best practices for crosscoder-based model diffing.
+
+### model diff amplification
+
+Goodfire's approach for discovering rare, undesired behaviors: given logits before and after post-training, compute amplified logits as:
+
+$$
+\text{logits}_{\text{amplified}} = \text{logits}_{\text{after}} + \alpha(\text{logits}_{\text{after}} - \text{logits}_{\text{before}})
+$$
+
+where $\alpha > 0$. Sampling from amplified logits magnifies differences between models, surfacing rare failure modes that standard evaluations miss.
+
+## open-source implementations
+
+- [Anthropic's circuit tracer](https://github.com/safety-research/circuit-tracer): Full pipeline for training crosscoders and generating attribution graphs
+- [Neuronpedia interface](https://www.neuronpedia.org/gemma-2-2b/graph): Interactive exploration of crosscoder features
+- [Model diffing library](https://github.com/model-diffing/model-diffing): Tools for crosscoder-based model comparison
+
+see [[thoughts/circuit tracing]] for comprehensive tooling overview
+
 ## questions
 
 > How do features change over model training? When do they form?
 
 > As we make a model wider, do we get more features? or they are largely the same, packed less densely?
+
+> How can we detect when crosscoders are learning spurious exclusive features versus genuine model-specific concepts?

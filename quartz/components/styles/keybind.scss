@@ -1,70 +1,58 @@
 @use "../../styles/variables.scss" as *;
 
-kbd {
-  font-family: var(--codeFont);
-  padding: 0.2rem 0.4rem;
-  border: 1px solid var(--gray);
-  border-radius: 0px;
-  line-height: 1rem;
-  width: fit-content;
-}
-
 .keybind {
   flex-grow: 0 !important;
   font-size: 0.8rem !important;
   min-width: fit-content;
   cursor: pointer;
+  visibility: hidden;
+  width: 0;
 
-  .bind.highlight-modal {
-    padding: 0.2rem 0.4rem;
-    width: fit-content;
-    max-height: unset;
+  @media all and ($mobile) {
+    display: none;
   }
 
   & > #shortcut-container {
     position: fixed;
-    contain: layout;
-    left: 0;
-    top: 0;
-    width: 100vw;
-    height: 100vh;
+    bottom: 1rem;
+    right: 1rem;
+    max-width: 28rem;
+    max-height: 80vh;
     overflow-y: auto;
     display: none;
-    backdrop-filter: blur(4px);
     z-index: 999;
+    visibility: hidden;
+    border: 1px solid var(--lightgray);
+    border-radius: 8px;
 
     &.active {
-      display: inline-block;
+      display: block;
+      visibility: visible;
     }
 
     & > #shortcut-space {
-      width: 18rem;
-      margin: 20% auto auto;
-
       background: var(--light);
-      border: 1px solid rgb(170, 170, 170);
-      border-radius: 0px;
       box-shadow:
         0 14px 50px rgba(27, 33, 48, 0.12),
-        0 10px 30px rgba(27, 33, 48, 0.16);
+        0 10px 30px rgba(27, 33, 48, 0.16),
+        0 0 0 1px rgba(0, 0, 0, 0.05);
 
       & #title {
-        width: initial;
-        padding: 0.5rem 1rem;
-        font-size: 1.4rem;
-        border: 0px solid rgb(170, 170, 170);
-        border-bottom-width: 1px;
+        padding: 0.75rem 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-bottom: 1px solid var(--lightgray);
+        color: var(--dark);
       }
 
       & ul {
-        padding-inline-start: 1rem;
-        padding-inline-end: 1rem;
+        padding: 0.5rem 1rem 0.75rem;
         list-style: none;
-        margin-bottom: 0.5rem;
-        width: initial;
+        margin: 0;
 
         & span {
-          font-size: 1rem;
+          font-size: 0.85rem;
+          color: var(--darkgray);
         }
 
         & > li {
@@ -73,12 +61,51 @@ kbd {
 
           & > #shortcuts {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            margin: 1rem 0;
-            gap: 1.5rem;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            margin: 0.5rem 0;
+            gap: 1rem;
+
+            & kbd {
+              white-space: nowrap;
+            }
           }
         }
       }
     }
   }
+
+  // Dark mode support
+  :global([saved-theme="dark"]) & > #shortcut-container > #shortcut-space {
+    background: var(--dark);
+    border-color: var(--darkgray);
+
+    & #title {
+      color: var(--light);
+      border-bottom-color: var(--darkgray);
+    }
+
+    & ul span {
+      color: var(--lightgray);
+    }
+  }
+}
+
+.link-hint-marker {
+  position: fixed;
+  background: var(--pine);
+  color: var(--light);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: bold;
+  font-family: var(--codeFont);
+  z-index: 10000;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  text-transform: uppercase;
+}
+
+kbd.clickable {
+  padding: 0.2rem 0.4rem;
 }

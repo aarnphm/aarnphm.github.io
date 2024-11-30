@@ -1,9 +1,9 @@
 ---
+date: "2024-02-06"
 id: stability
+modified: 2025-10-29 02:16:23 GMT-04:00
 tags:
   - sfwr3dx4
-date: "2024-02-06"
-modified: "2024-10-22"
 title: Stability and natural responses.
 ---
 
@@ -28,7 +28,7 @@ Stability and Poles
 
 > to have all roots in open left hand plane is to have all coefficients of polynomial to be present and have same sign.
 
-### [[thoughts/Routh-Hurwitz criterion|Routh-Hurwitz criterion]] ^routh-table
+### [[thoughts/Routh-Hurwitz criterion|Routh-Hurwitz criterion]]
 
 Given
 

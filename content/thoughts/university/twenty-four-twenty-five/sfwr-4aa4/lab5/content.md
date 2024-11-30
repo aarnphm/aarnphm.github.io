@@ -1,10 +1,10 @@
 ---
+date: "2024-10-04"
 id: content
+modified: 2025-10-29 02:16:06 GMT-04:00
 tags:
   - lab
   - sfwr4aa4
-date: "2024-10-04"
-modified: "2024-10-04"
 title: external LED
 ---
 

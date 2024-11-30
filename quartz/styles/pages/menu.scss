@@ -1,10 +1,21 @@
+@use "sass:map";
 @use "../base.scss";
 @use "../variables.scss" as *;
 @use "../mixin.scss" as *;
 
+@mixin menuBorder {
+  border: 0px solid var(--lightgray);
+  border-left-width: 1px;
+  border-right-width: 1px;
+}
+
 body[data-menu="true"] {
   text-align: right;
   background-image: unset !important;
+
+  a {
+    text-decoration: none;
+  }
 
   mark {
     position: relative;
@@ -26,22 +37,15 @@ body[data-menu="true"] {
     }
   }
 
-  .center {
-    background-image: url("/static/menu.svg");
-    background-repeat: no-repeat;
-  }
-
-  @media all and not ($desktop) {
-    .page > #quartz-body {
-      & .sidebar.left,
-      & .sidebar.right {
-        display: none;
-      }
-    }
-  }
-
   .menu {
     padding-top: 6rem;
+  }
+
+  article.menu {
+    background-image: url("/static/menu.svg");
+    background-repeat: no-repeat;
+
+    @include menuBorder;
   }
 
   a.internal {
@@ -55,7 +59,7 @@ body[data-menu="true"] {
   h1,
   h2,
   h3,
-  footer {
+  section[data-function] {
     font-family: "ITCGaramondStdLtCond", var(--bodyFont);
     letter-spacing: -0.0275rem;
     font-weight: normal;
@@ -81,18 +85,22 @@ body[data-menu="true"] {
     font-style: italic;
   }
 
-  footer {
-    width: unset;
-    grid-area: grid-center;
+  a[data-role="anchor"] {
+    display: none;
   }
 
-  a[role="anchor"] {
-    display: none;
+  .page-footer {
+    margin-bottom: 0;
+    margin-top: 0;
   }
 
   @media all and ($desktop) {
     .menu {
       padding: 6rem 3rem;
+    }
+
+    footer {
+      padding: 0 !important;
     }
 
     h1,

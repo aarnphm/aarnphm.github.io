@@ -4,16 +4,15 @@ export default ((...components: QuartzComponent[]) => {
   const Components = Array.from(components)
   const Byline: QuartzComponent = (props: QuartzComponentProps) => {
     return (
-      <section class="byline">
-        <div class="container">
-          {Components.map((Inner) => (
-            <Inner {...props} />
-          ))}
-        </div>
+      <section class="byline all-col grid">
+        {Components.map((Inner) => (
+          <Inner {...props} />
+        ))}
       </section>
     )
   }
 
+  Byline.displayName = "Byline"
   Byline.css = Components.map((Inner) => Inner.css ?? "").join("\n")
   Byline.beforeDOMLoaded = Components.map((Inner) => Inner.beforeDOMLoaded ?? "").join("\n")
   Byline.afterDOMLoaded = Components.map((Inner) => Inner.afterDOMLoaded ?? "").join("\n")

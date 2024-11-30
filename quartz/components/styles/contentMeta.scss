@@ -1,44 +1,45 @@
 @use "../../styles/variables.scss" as *;
 @use "../../styles/mixin.scss" as *;
 
-.content-meta {
+ul.content-meta {
   color: var(--gray);
   display: flex;
   flex-flow: wrap;
   flex-direction: column;
   cursor: pointer;
   margin: 0;
+  grid-column: 6/8;
 
   padding-inline-start: 0;
   list-style: none;
-  gap: 0.8rem;
+  gap: 0.3rem;
+  font-weight: 300;
 
-  font-family: "ITCGaramondStdLtCond", var(--bodyFont);
-  font-weight: $normalWeight;
+  @media all and ($tablet) {
+    grid-column: 6/-4;
+  }
 
-  @media all and ($desktop) {
-    font-size: 1.272em;
-    line-height: 1.272em;
+  @media all and ($mobile) {
+    grid-column: 6/-4;
   }
 
   pre {
     color: var(--darkgray);
   }
 
-  .ref-source {
-    font-style: inherit;
-    font-weight: inherit;
-    color: var(--gray);
-    transition: none;
-
-    position: relative;
-    padding-left: 0.3em;
-
-    @include links;
-    @include indicatorHook;
-
-    &::before {
-      border-left-color: inherit;
-    }
+  li > .container {
+    display: flex;
+    gap: 0.5em;
+    align-items: baseline;
   }
+
+  .clipboard-button {
+    position: relative;
+  }
+}
+
+.llm-source {
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: underline;
 }

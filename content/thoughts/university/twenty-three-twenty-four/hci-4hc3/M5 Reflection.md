@@ -1,7 +1,10 @@
 ---
-id: M5 Reflection
-tags: []
+date: "2025-10-29"
 draft: true
+id: M5 Reflection
+modified: 2025-10-29 02:16:15 GMT-04:00
+tags: []
+title: M5 Reflection
 ---
 
 Reflecting on the recent final High Fidelity prototype and project reports for the Mosaic project, the standout experience was the collaboration within our team to create the Figma mock-up. Amid the hectic finals period and clashing schedules, we managed to agree on a minimal design. The asynchronous nature of our communication posed significant challenges; however, we pulled through successfully

@@ -1,9 +1,10 @@
 ---
+date: "2024-02-09"
 id: Digital garden
+modified: 2025-10-29 02:15:20 GMT-04:00
 tags:
   - seed
   - pattern
-date: "2024-02-09"
 title: Digital garden
 ---
 
@@ -25,7 +26,7 @@ Joel Hooks puts this better than I can ever do:
 
 https://twitter.com/Mappletons/status/1250532315459194880
 
-See also: [post](https://maggieappleton.com/garden-history) and [introduction](https://joelhooks.com/digital-garden)
+See also: [post](https://maggieappleton.com/garden-history) and [introduction](https://joelhooks.com/digital-garden), and https://tomcritchlow.com/2019/02/17/building-digital-garden/
 
 ## The garden and the stream
 

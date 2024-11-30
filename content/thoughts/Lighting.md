@@ -1,10 +1,11 @@
 ---
+date: "2023-11-11"
 id: Lighting
+modified: 2025-10-29 02:15:27 GMT-04:00
 tags:
   - seed
   - film
 title: Lighting
-date: 2023-11-11
 ---
 
 ### Key light

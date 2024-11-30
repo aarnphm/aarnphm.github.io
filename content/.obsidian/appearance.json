@@ -1,16 +1,17 @@
 {
-  "accentColor": "#e67f7f",
+  "accentColor": "",
   "cssTheme": "Minimal",
-  "interfaceFontFamily": "Charter,Apple Braille,Berkeley Mono,EB Garamond",
-  "textFontFamily": "Cardo Nerd Font,ZedMono Nerd Font,BerkeleyMono Nerd Font Mono,Apple Braille,EB Garamond",
-  "monospaceFontFamily": "ZedMono Nerd Font,0xProto Nerd Font,Berkeley Mono",
-  "baseFontSize": 21,
-  "translucency": true,
-  "showViewHeader": false,
+  "interfaceFontFamily": "PP Neue Montreal,Berkeley Mono",
+  "textFontFamily": "Berkeley Mono,PP Neue Montreal",
+  "monospaceFontFamily": "Berkeley Mono",
+  "baseFontSize": 16,
+  "translucency": false,
+  "showViewHeader": true,
   "enabledCssSnippets": [
     "snippet"
   ],
   "baseFontSizeAction": true,
-  "theme": "moonstone",
-  "nativeMenus": true
+  "theme": "system",
+  "nativeMenus": true,
+  "showRibbon": false
 }

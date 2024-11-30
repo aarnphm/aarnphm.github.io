@@ -10,8 +10,22 @@ export declare global {
     ): void
     dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K] | UIEvent): void
   }
+
   interface Window {
     spaNavigate(url: URL, isBack: boolean = false)
+    notifyNav(url: FullSlug)
     addCleanup(fn: (...args: any[]) => void)
+    stacked: import("./quartz/plugins/types").Notes
+    stackedNotes?: URL[]
+    quartzToast: import("./quartz/components/scripts/toast").Toast
+    plausible: {
+      (eventName: string, options: { props: { path: string } }): void
+    }
+    twttr: {
+      ready(f: (twttr: any) => void): void
+    }
+    mermaid: typeof import("mermaid/dist/mermaid").default
+    mapboxgl: any
+    pdfjsLib: any
   }
 }

@@ -1,8 +1,9 @@
 ---
+date: "2023-10-10"
 id: Civilisation and its Discontents
+modified: 2025-10-29 02:15:18 GMT-04:00
 tags:
   - philosophy
-date: "2023-10-10"
 title: Civilisation and its Discontents
 ---
 

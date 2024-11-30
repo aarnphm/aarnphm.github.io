@@ -1,16 +1,16 @@
 ---
-id: social interactions
-tags:
-  - evergreen
 date: "2024-02-05"
 description: and on ways we focus on others.
 draft: true
-modified: "2024-10-08"
+id: social interactions
+modified: 2025-11-04 18:25:22 GMT-05:00
 socialDescription: and on how we seek energy.
+tags:
+  - evergreen
 title: interactions.
 ---
 
-https://maxlangenkamp.substack.com/p/on-social-energy?curius=1294
+https://maxlangenkamp.substack.com/p/on-social-energy
 
 depends on previous context when you name drop them
 
@@ -27,7 +27,7 @@ towards either a net positive work.
 
 Maybe the general consensus of tagging is that sometimes we associated it with the notion of something bad happens. (notably about cancel culture)
 
-I like a [[thoughts/friendship]] where I can be unapologetically myself, and I see myself in this with Nicky. We don't judge each others, even though
+I like a [[thoughts/friendship]] where I can be unapologetically myself, and I see myself in this with N. We don't judge each others, even though
 sometimes we observe each others' life from afar. I enjoy having these relationship in a sense that whenever we see each other, it felt like time have never left the station.
 
 Open-source policies <--

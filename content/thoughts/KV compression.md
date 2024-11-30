@@ -1,9 +1,11 @@
 ---
+date: "2024-10-10"
+description: "[[thoughts/Compression|compression]] of key-value in [[thoughts/Transformers]] model"
 id: KV compression
+modified: 2025-11-05 02:52:12 GMT-05:00
 tags:
   - ml
-date: "2024-10-10"
-modified: "2024-10-10"
+  - llm
 title: KV compression
 ---
 
@@ -11,9 +13,18 @@ see also: [github](https://github.com/October2001/Awesome-KV-Cache-Compression)
 
 TLDR: Most algorithm determine importance through aggregating attentions over observed queries [@zhang2023h2oheavyhitteroracleefficient; @liu2023scissorhandsexploitingpersistenceimportance]
 
-More recent work aggregated attention from _limited observation windows_ [@li2024snapkvllmknowslooking; @cai2024pyramidkvdynamickvcache]
+More recent work aggregated attention from _limited observation windows_ [@li2024snapkvllmknowslooking; @cai2025pyramidkvdynamickvcache]
 
 uses top_k to find $k$-indices of attentions per head to preserve, and evict the not-so-important ones.
+
+Another techniques to work with KV is to offload to a central storage, to then reuse in other context.
+
+## KV-cache layout
+
+NHD/HND
+
+- `NHD` -> `(seq_len, num_heads, head_dim)`
+- `HND` -> `(num_heads, seq_len, head_dim)`
 
 ## idea.
 
@@ -32,25 +43,29 @@ the KV cache for each sequence in a particular layer is allocated on the GPU as 
 
 ## Adaptive KV-cache compression
 
-See also [paper](https://arxiv.org/abs/2310.01801) [@ge2024modeltellsdiscardadaptive]
+https://arxiv.org/abs/2310.01801
 
 ## Streaming LLM
 
-_Using attention sink_
+https://arxiv.org/abs/2309.17453
 
-see also [paper](https://arxiv.org/abs/2309.17453) [@xiao2024efficientstreaminglanguagemodels]
+_Using attention sink_
 
 Ablate attentions among layers that deemed to be less valuable to current generations.
 
+## RocketKV
+
 ## Pyramid-KV
 
-See also [paper](https://arxiv.org/abs/2406.02069) [@cai2024pyramidkvdynamickvcache]
+https://arxiv.org/abs/2406.02069
 
 ![[thoughts/images/pyramid-kv.webp]]
 
 ## Snap-KV
 
-See also [paper](https://arxiv.org/abs/2404.14469), [github](https://github.com/FasterDecoding/SnapKV) [@li2024snapkvllmknowslooking]
+https://github.com/FasterDecoding/SnapKV
+
+https://arxiv.org/abs/2404.14469
 
 Voting: calculating attention weights for each query within observation windows across all attention heads, then aggregate to highlight prefix positions. Formally for a single batch:
 
@@ -76,10 +91,9 @@ The idea is to have two stages:
 
 - clustering via pooling => frequent hit-rate attention
   ```python
-  attn_cache = pool1d(attn_weights_sum,
-                      kernel_size=kernel_size,
-                      padding=kernel_size//2,
-                      stride=1)
+  attn_cache = pool1d(
+    attn_weights_sum, kernel_size=kernel_size, padding=kernel_size // 2, stride=1
+  )
   ```
 
 ## Ada-KV
@@ -94,7 +108,7 @@ _built on-top of PyramidKV and SnapKV_
 >
 > With Ada-SnapKV, each attention layers are still assigned with a fixed compression rate (refer to the image example)
 
-See also [paper](https://arxiv.org/abs/2407.11550) [@feng2024adakvoptimizingkvcache]
+https://arxiv.org/abs/2407.11550
 
 ## KIVI
 

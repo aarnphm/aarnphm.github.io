@@ -1,9 +1,9 @@
 ---
+date: "2024-11-27"
 id: manifold
+modified: 2025-10-29 02:15:49 GMT-04:00
 tags:
   - math
-date: "2024-11-27"
-modified: "2024-11-27"
 title: manifold
 ---
 
@@ -11,7 +11,7 @@ a topological space that locally resembles Euclidean space near each point.
 
 > an $n$-dimensional manifold is a topological space with the property that each point has a [[thoughts/manifold#neighborhood|neighbourhood]] that is [[thoughts/homeomorphism|homeomorphic]] to an open subset of $n$-dimensional Euclidean space.
 
-Formally,a topological manifold is a ==second countable Hausdorff space== that is _locally homeomorphic_ to a Euclidean space.
+Formally, a topological manifold is a ==second countable Hausdorff space== that is _locally homeomorphic_ to a Euclidean space.
 
 > [!abstract] Locally homeomorphic to a Euclidean space
 >

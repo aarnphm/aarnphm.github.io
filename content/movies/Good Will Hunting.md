@@ -1,0 +1,16 @@
+---
+category: vintage
+date: "2024-02-07"
+description: southie genius mopping floors at mit—van sant filming trauma as the thing that makes brilliance refuse itself, robin williams asking what it smells like in the sistine chapel because books can't teach you how to live.
+director: Gus Van Sant
+id: good-will-hunting
+modified: 2025-10-29 02:14:50 GMT-04:00
+posters: "[[movies/posters/good-will-hunting.jpg]]"
+status: recurring
+studio: general
+tags:
+  - movies
+  - vintage
+title: Good Will Hunting
+year: 1997
+---

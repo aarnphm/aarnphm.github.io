@@ -1,10 +1,10 @@
 ---
-id: content
-tags:
-  - sfwr4ml3
 date: "2024-11-11"
 description: implementation in pure PyTorch
-modified: "2024-11-11"
+id: content
+modified: 2025-10-29 02:16:09 GMT-04:00
+tags:
+  - sfwr4ml3
 title: SVM and Logistic Regression
 ---
 

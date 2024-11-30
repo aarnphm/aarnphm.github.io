@@ -1,9 +1,10 @@
 ---
+date: "2024-01-08"
 id: index
+modified: 2025-10-29 02:16:20 GMT-04:00
 tags:
   - university
   - sfwr2c03
-date: "2024-01-08"
 title: Data Structures and Algorithm
 ---
 

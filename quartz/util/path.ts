@@ -1,10 +1,11 @@
 import { slug as slugAnchor } from "github-slugger"
 import type { Element as HastElement } from "hast"
-import rfdc from "rfdc"
-
-export const clone = rfdc()
+import { clone } from "./clone"
 
 // this file must be isomorphic so it can't use node libs (e.g. path)
+
+// re-export github-slugger for use in other utilities
+export { slugAnchor }
 
 export const QUARTZ = "quartz"
 
@@ -39,7 +40,7 @@ export type RelativeURL = SlugLike<"relative">
 export function isRelativeURL(s: string): s is RelativeURL {
   const validStart = /^\.{1,2}/.test(s)
   const validEnding = !endsWith(s, "index")
-  return validStart && validEnding && ![".md", ".html"].includes(_getFileExtension(s) ?? "")
+  return validStart && validEnding && ![".md", ".html"].includes(getFileExtension(s) ?? "")
 }
 
 export function getFullSlug(window: Window): FullSlug {
@@ -47,7 +48,7 @@ export function getFullSlug(window: Window): FullSlug {
   return res
 }
 
-function sluggify(s: string): string {
+export function sluggify(s: string): string {
   return s
     .split("/")
     .map((segment) =>
@@ -58,15 +59,15 @@ function sluggify(s: string): string {
         .replace(/\?/g, "")
         .replace(/#/g, ""),
     )
-    .join("/") // always use / as sep
+    .join("/")
     .replace(/\/$/, "")
 }
 
 export function slugifyFilePath(fp: FilePath, excludeExt?: boolean): FullSlug {
   fp = stripSlashes(fp) as FilePath
-  let ext = _getFileExtension(fp)
+  let ext = getFileExtension(fp)
   const withoutFileExt = fp.replace(new RegExp(ext + "$"), "")
-  if (excludeExt || [".md", ".ipynb", ".html", undefined].includes(ext)) {
+  if (excludeExt || [".md", ".html", ".base", undefined].includes(ext)) {
     ext = ""
   }
 
@@ -108,10 +109,10 @@ const _rebaseHtmlElement = (el: Element, attr: string, newBase: string | URL) =>
   el.setAttribute(attr, rebased.pathname + rebased.hash)
 }
 export function normalizeRelativeURLs(el: Element | Document, destination: string | URL) {
-  el.querySelectorAll('[href^="./"], [href^="../"]').forEach((item) =>
+  el.querySelectorAll('[href=""], [href^="./"], [href^="../"]').forEach((item) =>
     _rebaseHtmlElement(item, "href", destination),
   )
-  el.querySelectorAll('[src^="./"], [src^="../"]').forEach((item) =>
+  el.querySelectorAll('[src=""], [src^="./"], [src^="../"]').forEach((item) =>
     _rebaseHtmlElement(item, "src", destination),
   )
 }
@@ -136,6 +137,7 @@ export function normalizeHastElement(rawEl: HastElement, curBase: FullSlug, newB
   const el = clone(rawEl) // clone so we dont modify the original page
   _rebaseHastElement(el, "src", curBase, newBase)
   _rebaseHastElement(el, "href", curBase, newBase)
+  _rebaseHastElement(el, "dataCanvasFile", curBase, newBase)
   if (el.children) {
     el.children = el.children.map((child) =>
       normalizeHastElement(child as HastElement, curBase, newBase),
@@ -183,10 +185,26 @@ export function slugTag(tag: string) {
 }
 
 export function joinSegments(...args: string[]): string {
-  return args
-    .filter((segment) => segment !== "")
+  if (args.length === 0) {
+    return ""
+  }
+
+  let joined = args
+    .filter((segment) => segment !== "" && segment !== "/")
+    .map((segment) => stripSlashes(segment))
     .join("/")
-    .replace(/\/\/+/g, "/")
+
+  // if the first segment starts with a slash, add it back
+  if (args[0].startsWith("/")) {
+    joined = "/" + joined
+  }
+
+  // if the last segment is a folder, add a trailing slash
+  if (args[args.length - 1].endsWith("/")) {
+    joined = joined + "/"
+  }
+
+  return joined
 }
 
 export function getAllSegmentPrefixes(tags: string): string[] {
@@ -233,8 +251,17 @@ export function transformLink(src: FullSlug, target: string, opts: TransformOpti
   }
 }
 
+export function isAbsoluteURL(s: string): boolean {
+  try {
+    new URL(s)
+  } catch {
+    return false
+  }
+  return true
+}
+
 // path helpers
-function isFolderPath(fplike: string): boolean {
+export function isFolderPath(fplike: string): boolean {
   return (
     fplike.endsWith("/") ||
     endsWith(fplike, "index") ||
@@ -259,10 +286,10 @@ function containsForbiddenCharacters(s: string): boolean {
 }
 
 function _hasFileExtension(s: string): boolean {
-  return _getFileExtension(s) !== undefined
+  return getFileExtension(s) !== undefined
 }
 
-function _getFileExtension(s: string): string | undefined {
+export function getFileExtension(s: string): string | undefined {
   return s.match(/\.[A-Za-z0-9]+$/)?.[0]
 }
 

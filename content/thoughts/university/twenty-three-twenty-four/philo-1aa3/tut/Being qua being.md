@@ -1,10 +1,11 @@
 ---
+date: "2023-09-15"
 id: Being qua being
-title: Being qua being
+modified: 2025-10-29 02:16:17 GMT-04:00
 tags:
   - philosophy
   - philos1aa3
-date: 2023-09-15
+title: Being qua being
 ---
 
 # Wisdom

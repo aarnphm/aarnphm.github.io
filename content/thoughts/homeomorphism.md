@@ -1,11 +1,11 @@
 ---
+date: "2024-11-27"
+description: or topological isomorphism.
 id: homeomorphism
+modified: 2025-10-29 02:15:46 GMT-04:00
 tags:
   - math
   - topology
-date: "2024-11-27"
-description: or topological isomorphism.
-modified: "2024-11-27"
 title: homeomorphism
 ---
 

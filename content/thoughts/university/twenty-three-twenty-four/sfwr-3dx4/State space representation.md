@@ -1,8 +1,9 @@
 ---
+date: "2024-01-24"
 id: State space representation
+modified: 2025-10-29 02:16:21 GMT-04:00
 tags:
   - sfwr3dx4
-date: "2024-01-24"
 title: State space representation
 ---
 
@@ -17,7 +18,7 @@ y &= Cx + Du
 \end{align}
 $$
 
-- _Linearly independent_
+- _[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/tut/tut1#linear dependence of vectors|linearly]] ==independent==_
 - _State vector_: $x = [x_{1},x_{2},\ldots, x_{n}]^{T}$
 
 ## transfer function to a state space representation

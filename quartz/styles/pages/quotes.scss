@@ -1,36 +1,39 @@
-// Quote display
-body[data-slug="quotes"] {
-  & blockquote {
-    border-left: none;
-    padding-left: 0;
-    margin: 0;
-  }
-
+[data-slug="quotes"] {
   & article {
     & > hr::after {
       content: "";
     }
 
-    & > p {
+    & > blockquote:not(.twitter-tweet) {
+      border-left: none;
       padding-top: 1rem;
-      padding-left: 3rem;
+      padding-left: 1.8rem;
       margin: inherit;
 
-      &:before,
-      &:after {
-        font-size: 2em;
-        line-height: 0.1em;
-        vertical-align: -0.4em;
-      }
+      & > p {
+        &:first-of-type {
+          &:before,
+          &:after {
+            font-size: 2em;
+            line-height: 0.1em;
+            vertical-align: -0.4em;
+          }
 
-      &:before {
-        content: "“";
-        margin-right: 0.25em;
-      }
+          &:before {
+            content: "“";
+            margin-right: 0.25em;
+          }
 
-      &:after {
-        content: "”";
-        margin-left: 0.25em;
+          &:after {
+            content: "”";
+            margin-left: 0.25em;
+          }
+        }
+
+        &:last-of-type {
+          margin-top: 0.8rem;
+          margin-bottom: 0;
+        }
       }
     }
   }

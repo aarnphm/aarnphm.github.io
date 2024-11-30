@@ -1,10 +1,11 @@
 ---
+date: "2023-10-18"
+description: the state of being.
 id: play
+modified: 2025-10-29 02:15:51 GMT-04:00
 tags:
   - seed
   - philosophy
-date: "2023-10-18"
-modified: "2024-10-30"
 title: Play
 ---
 
@@ -48,7 +49,6 @@ Can we shift [[thoughts/education#system|education system]] away from assessing 
 - is a space which a game takes place. Once we step into it, we suspend the rules of life, allow the rules of the game to take over our interactions
 
 - boundaries of magic circle often via ceremonies:
-
   - National Anthem before olympics game
   - Gong before yoga class
   - Walking down the aisle at a wedding

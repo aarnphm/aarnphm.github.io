@@ -1,15 +1,13 @@
 import { getFullSlug } from "../../util/path"
 
-const checkboxId = (index: number) => `${getFullSlug(window)}-checkbox-${index}`
-
-document.addEventListener("nav", () => {
+function setupCheckbox() {
   const checkboxes = document.querySelectorAll(
     "input.checkbox-toggle",
   ) as NodeListOf<HTMLInputElement>
   checkboxes.forEach((el, index) => {
-    const elId = checkboxId(index)
+    const elId = `${getFullSlug(window)}-checkbox-${index}`
 
-    const switchState = (e: Event) => {
+    function switchState(e: Event) {
       const newCheckboxState = (e.target as HTMLInputElement)?.checked ? "true" : "false"
       localStorage.setItem(elId, newCheckboxState)
     }
@@ -20,4 +18,7 @@ document.addEventListener("nav", () => {
       el.checked = true
     }
   })
-})
+}
+
+document.addEventListener("nav", setupCheckbox)
+document.addEventListener("content-decrypted", setupCheckbox)

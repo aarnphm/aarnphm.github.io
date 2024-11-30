@@ -1,10 +1,10 @@
 ---
+date: "2024-01-08"
 id: Determinism
+modified: 2025-10-29 02:15:21 GMT-04:00
 tags:
   - seed
   - computing
-date: "2024-01-08"
-modified: "2024-10-08"
 title: Determinism
 ---
 

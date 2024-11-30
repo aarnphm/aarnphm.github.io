@@ -1,14 +1,15 @@
 ---
+date: "2022-11-07"
 id: Jax
+modified: 2025-10-29 02:15:25 GMT-04:00
 tags:
   - seed
   - ml
-date: "2022-11-07"
-modified: "2024-11-07"
 title: Jax
 ---
 
 Numpy + [[thoughts/Autograd|Autograd]]. Use [[thoughts/XLA|XLA]] to compile and run NumPy code on accelerators.
+
 Asynchronous dispatch, for sync use `block_until_ready()`
 
 ```python
