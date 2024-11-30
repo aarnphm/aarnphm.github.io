@@ -47,15 +47,11 @@
     size: A4;
   }
 
+  video,
   .sidebar,
-  .breadcrumb-container,
-  .content-meta,
   .page-footer,
   .toolbar,
-  .tags,
-  .search,
   .graph,
-  .keybind,
   .backlinks,
   .callout-icon,
   .toggle-button,
@@ -63,6 +59,10 @@
   hr,
   footer {
     display: none !important;
+  }
+
+  .collapsible-header {
+    margin-left: 9px;
   }
 
   .center {
@@ -450,12 +450,10 @@ body {
 }
 
 .byline {
-  & > :not(.popover *) {
-    font-size: 0.8rem;
-    line-height: 1.8em;
-  }
+  font-size: 0.8rem;
+  line-height: 1.8em;
 
-  h3:not(.popover *) {
+  h3 {
     margin: 0;
     font-size: 0.6rem;
     font-weight: 400;
