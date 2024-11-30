@@ -97,7 +97,7 @@ $$
 \frac{\partial}{\partial{t}}(\rho \mathbf{u}) + \nabla \cdot (\rho \mathbf{u} \otimes \mathbf{u}) = - \nabla p + \nabla \cdot \tau + \rho \mathbf{a}
 $$
 
-where $otimes$ is the outer product of the flow velocity $\mathbf{u}$: $\mathbf{u} \otimes \mathbf{u} = \mathbf{u} \mathbf{u}^T$
+where $\otimes$ is the outer product of the flow velocity $\mathbf{u}$: $\mathbf{u} \otimes \mathbf{u} = \mathbf{u} \mathbf{u}^T$
 
 ## convective form
 

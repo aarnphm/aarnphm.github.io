@@ -141,7 +141,6 @@ a.min-links {
 .clickable-container {
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-items: center;
+  flex-flow: wrap;
+  align-items: baseline;
 }

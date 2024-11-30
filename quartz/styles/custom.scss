@@ -608,12 +608,6 @@ section[data-footnotes] {
   height: fit-content;
   grid-area: grid-header;
   position: relative;
-
-  border: 1px solid var(--gray);
-
-  & > * {
-    padding: 0 1rem;
-  }
 }
 
 .content-meta {
