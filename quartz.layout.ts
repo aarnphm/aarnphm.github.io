@@ -5,34 +5,33 @@ import * as Component from "./quartz/components"
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [
+    Component.PageTitle(),
     Component.Breadcrumbs({ rootName: "~", style: "unique", spacerSymbol: "/" }),
     Component.Keybind(),
     Component.Search(),
   ],
-  afterBody: [
-    Component.Backlinks(),
-    Component.Footer({
-      links: {
-        github: "https://github.com/aarnphm",
-        twitter: "https://twitter.com/aarnphm_",
-        bsky: "https://bsky.app/profile/aarnphm.xyz",
-      },
-    }),
-  ],
-  footer: Component.Spacer(),
+  afterBody: [Component.Backlinks()],
+  footer: Component.Footer({
+    links: {
+      github: "https://github.com/aarnphm",
+      twitter: "https://twitter.com/aarnphm_",
+      bsky: "https://bsky.app/profile/aarnphm.xyz",
+    },
+  }),
 }
 
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
   beforeBody: [
     Component.ArticleTitle(),
-    Component.ContentMeta(),
-    Component.TagList(),
-    Component.Spacer(),
+    Component.Byline(Component.TagList(), Component.ContentMeta()),
   ],
-  right: [Component.Graph(), Component.Reader(), Component.Image(), Component.Mermaid()],
-  left: [
-    Component.DesktopOnly(Component.TableOfContents()),
+  left: [Component.DesktopOnly(Component.TableOfContents())],
+  right: [
+    Component.Graph(),
+    Component.Reader(),
+    Component.Image(),
+    Component.Mermaid(),
     Component.DesktopOnly(Component.Toolbar()),
   ],
 }

@@ -15,10 +15,6 @@ body[data-slug="index"] {
 
       & > *:not(hr) {
         padding: 0 1rem;
-
-        &:last-child {
-          padding-bottom: 2rem;
-        }
       }
 
       @media all and ($desktop) {
@@ -48,18 +44,20 @@ body[data-slug="index"] {
     border: none;
   }
 
-  & > *,
-  h1,
-  h2,
-  h3,
-  h4 {
-    font-weight: normal;
-  }
+  &:not(.popover *) {
+    & > *,
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-weight: normal;
+    }
 
-  h1,
-  h2 {
-    font-family: "ITCGaramondStdLtCond", var(--bodyFont);
-    letter-spacing: -0.0275rem;
+    h1,
+    h2 {
+      font-family: "ITCGaramondStdLtCond", var(--bodyFont);
+      letter-spacing: -0.0275rem;
+    }
   }
 
   span[class*="rose"] {
@@ -90,6 +88,10 @@ body[data-slug="index"] {
       flex-direction: column;
     }
   }
+}
+
+.hyperlinks {
+  margin-bottom: 1rem;
 }
 
 .landing-notes {

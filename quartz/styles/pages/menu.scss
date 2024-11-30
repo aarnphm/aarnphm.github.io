@@ -83,6 +83,7 @@ body[data-menu="true"] {
 
   footer {
     width: unset;
+    grid-area: grid-center;
   }
 
   a[role="anchor"] {
@@ -101,12 +102,6 @@ body[data-menu="true"] {
 
     h3 {
       font-size: 1.618rem;
-    }
-  }
-
-  @media all and ($desktop) {
-    footer {
-      margin-bottom: 3rem;
     }
   }
 }

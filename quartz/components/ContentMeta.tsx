@@ -16,12 +16,14 @@ export default (() => {
       <ul class={classNames(displayClass, "content-meta")}>
         {created !== undefined && (
           <li>
+            <h3>published</h3>
             <span class="page-creation" title="Date de création du contenu de la page">
               <em>{created}</em>
             </span>
           </li>
         )}
         <li>
+          <h3>source</h3>
           <a
             href={resolveRelative(fileData.slug!, (fileData.slug! + ".html.md") as FullSlug)}
             target="_blank"

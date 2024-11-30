@@ -165,12 +165,6 @@ const buttons: ToolbarProps[] = [
     tooltip: "Global graph",
     Icon: Graph,
   },
-  {
-    id: "skew-button",
-    label: "add a tiny bit of skew, cuz why not",
-    tooltip: "Skew page",
-    Icon: Skew,
-  },
 ]
 
 export default (() => {

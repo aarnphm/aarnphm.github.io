@@ -24,6 +24,10 @@ body[data-slug="404"] {
 
   .page > #quartz-body {
     .center {
+      border: unset !important;
+      margin-bottom: 0;
+      padding: 0;
+
       & > .page-header {
         display: none;
       }

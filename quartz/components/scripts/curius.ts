@@ -1,4 +1,4 @@
-import { Link, CuriusResponse, Trail, Following, User, TrailInfo } from "../types"
+import { Link, CuriusResponse, Trail, TrailInfo } from "../types"
 import { registerEscapeHandler, registerEvents, removeAllChildren } from "./util"
 import { ValidLocale, i18n } from "../../i18n"
 import FlexSearch, { IndexOptions } from "flexsearch"

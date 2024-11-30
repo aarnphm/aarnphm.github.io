@@ -75,13 +75,13 @@ Thus comparing to sglang, vLLM v0 is currently not up to par.
 
 The following includes background information about guided generations.
 
-### batched constrained decoding for CFG and PDA
+### batched constrained decoding using pushdown automaton
 
 Implemented in [mlc-ai/xgrammar](https://github.com/mlc-ai/xgrammar)
 
 > [!quote]
 >
-> Combine bitmask in CB to send to GPU
+> calculate adaptive token bit-mask per batch
 
 > [!IMPORTANT]
 >

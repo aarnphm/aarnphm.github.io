@@ -5,6 +5,7 @@ import BodyConstructor from "./Body"
 import ContentConstructor from "./pages/Content"
 import MetaConstructor from "./Meta"
 import SpacerConstructor from "./Spacer"
+import FooterConstructor from "./Footer"
 import { byDateAndAlphabetical } from "./PageList"
 import { getDate, formatDate } from "./Date"
 import { classNames } from "../util/lang"
@@ -917,31 +918,6 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
   return Notes
 }) satisfies QuartzComponentConstructor
 
-const ClickableContainer = (props: {
-  title: string
-  links: Record<string, string>
-  cfg: AliasLinkProp
-}) => {
-  const { title, links, cfg } = props
-  let newTab: boolean | undefined
-
-  return (
-    <section>
-      <h2>{title}:</h2>
-      <div class="clickable-container">
-        {Object.entries(links).map(([name, url]) => {
-          if (typeof cfg.newTab === "function") {
-            newTab = cfg.newTab(name)
-          } else {
-            newTab = cfg.newTab
-          }
-          return <AliasLink key={name} {...cfg} name={name} url={url} newTab={newTab} />
-        })}
-      </div>
-    </section>
-  )
-}
-
 const HyperlinksComponent = ((props?: { children: JSX.Element[] }) => {
   const { children } = props ?? { children: [] }
 
@@ -963,7 +939,14 @@ const ElementComponent = (() => {
   })
   const Hyperlink = HyperlinksComponent({
     children: [
-      ClickableContainer({ title: "jardin", links, cfg: { isInternal: true, newTab: false } }),
+      <section>
+        <h2>jardin:</h2>
+        <div class="clickable-container">
+          {Object.entries(links).map(([name, url]) => (
+            <AliasLink key={name} isInternal name={name} url={url} />
+          ))}
+        </div>
+      </section>,
       <section>
         <h2>média:</h2>
         <address class="clickable-container">
@@ -1011,75 +994,69 @@ export function renderPage(
   if (slug === "index") {
     components = {
       ...components,
-      header: [
-        () => (
-          <h1 class="article-title" style="margin-top: 0" lang="fr">
-            Bonjour, je suis Aaron.
-          </h1>
-        ),
-        MetaConstructor(),
-      ],
+      header: [],
+      footer: SpacerConstructor(),
       left: [SpacerConstructor()],
       right: [SpacerConstructor()],
       afterBody: [],
       beforeBody: [],
-      pageBody: ({ displayClass }: QuartzComponentProps) => {
+      pageBody: (props: QuartzComponentProps) => {
+        const { displayClass } = props
         const Element = ElementComponent()
+        const Meta = MetaConstructor()
 
         return (
-          <div class={classNames(displayClass, "landing")}>
-            <Element {...componentData} />
-          </div>
+          <>
+            <Meta {...props} />
+            <h1 class="article-title" style="margin-top: 1rem" lang="fr">
+              Bonjour, je suis Aaron.
+            </h1>
+            <div class={classNames(displayClass, "landing")}>
+              <Element {...componentData} />
+            </div>
+          </>
         )
       },
     }
   }
 
-  const { head: Head, header, beforeBody, pageBody: Content, afterBody, left, right } = components
-  const Header = HeaderConstructor()
-  const Body = BodyConstructor()
+  if (componentData.fileData.frontmatter?.poem) {
+    components = {
+      ...components,
+      footer: FooterConstructor({ layout: "poetry" }),
+    }
+  }
 
-  const LeftComponent =
-    left.length > 0 ? (
-      <aside class="left sidebar">
-        {left.map((BodyComponent) => (
-          <BodyComponent {...componentData} />
-        ))}
-      </aside>
-    ) : (
-      <></>
-    )
-
-  const RightComponent = (
-    <section class="right sidebar">
-      {right.map((BodyComponent) => (
-        <BodyComponent {...componentData} />
-      ))}
-    </section>
-  )
-
-  const Article = () => (
-    <section class="center">
-      <div class="page-header">
-        <Header {...componentData}>
-          {header.map((HeaderComponent) => (
-            <HeaderComponent {...componentData} />
-          ))}
-        </Header>
-        <div class="popover-hint">
-          {beforeBody.map((BodyComponent) => (
+  const PageFooter = () => {
+    const Filter = afterBody.filter(Boolean)
+    if (Filter.length > 0) {
+      return (
+        <div class="page-footer">
+          {Filter.map((BodyComponent) => (
             <BodyComponent {...componentData} />
           ))}
         </div>
-      </div>
-      <Content {...componentData} />
-      <div class="page-footer">
-        {afterBody.map((BodyComponent) => (
-          <BodyComponent {...componentData} />
-        ))}
-      </div>
-    </section>
-  )
+      )
+    }
+
+    return <></>
+  }
+
+  const disablePageFooter =
+    componentData.fileData.frontmatter?.poem || componentData.fileData.slug === "curius"
+
+  const {
+    head: Head,
+    header,
+    beforeBody,
+    pageBody: Content,
+    afterBody,
+    left,
+    right,
+    footer: Footer,
+  } = components
+  const Header = HeaderConstructor()
+  const Body = BodyConstructor()
 
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
   const lang = componentData.fileData.frontmatter?.lang ?? cfg.locale?.split("-")[0] ?? "en"
@@ -1090,15 +1067,36 @@ export function renderPage(
         data-slug={slug}
         data-language={lang}
         data-menu={componentData.fileData.frontmatter?.menu ?? false}
-        data-poem={componentData.fileData.frontmatter?.poem ?? false}
       >
+        <Header {...componentData}>
+          {header.map((HeaderComponent) => (
+            <HeaderComponent {...componentData} />
+          ))}
+        </Header>
         <main id="quartz-root" class="page">
+          <div class="page-header popover-hint">
+            {beforeBody.map((BodyComponent) => (
+              <BodyComponent {...componentData} />
+            ))}
+          </div>
           <Body {...componentData}>
-            {LeftComponent}
-            <Article />
-            {RightComponent}
+            <aside class="left sidebar">
+              {left.map((BodyComponent) => (
+                <BodyComponent {...componentData} />
+              ))}
+            </aside>
+            <section class="center">
+              <Content {...componentData} />
+            </section>
+            <section class="right sidebar">
+              {right.map((BodyComponent) => (
+                <BodyComponent {...componentData} />
+              ))}
+            </section>
           </Body>
+          {disablePageFooter ? <></> : <PageFooter />}
         </main>
+        <Footer {...componentData} />
       </body>
       {pageResources.js
         .filter((resource) => resource.loadTime === "afterDOMReady")
@@ -1107,8 +1105,8 @@ export function renderPage(
   )
 
   return (
-    "<!DOCTYPE html>\n" +
-    `<!--
+    `<!DOCTYPE html>
+<!--
 /*************************************************************************
 * Bop got your nose !!!
 *
@@ -1117,7 +1115,7 @@ export function renderPage(
 * Anw if you see a component you like ping @aarnphm on Discord I can try
 * to send it your way. Have a wonderful day!
 **************************************************************************/
--->` +
-    render(doc)
+-->
+` + render(doc)
   )
 }
