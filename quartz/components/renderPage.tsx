@@ -809,25 +809,14 @@ export function transcludeFinal(
   return root
 }
 
-export const HyperAlias = {
+export const links = {
   livres: "/books",
   "boîte aux lettres": "/posts/",
   projets: "/thoughts/work",
+  curius: "/curius",
   advices: "/quotes",
   parfum: "/thoughts/Scents",
   "atelier with friends": "/thoughts/atelier-with-friends",
-}
-
-export const SocialAlias = {
-  github: "https://github.com/aarnphm",
-  twitter: "https://x.com/aarnphm_",
-  substack: "https://livingalonealone.com",
-  bluesky: "https://bsky.app/profile/aarnphm.xyz",
-  curius: "/curius",
-  contact: "mailto:contact@aarnphm.xyz",
-  "site source": "https://github.com/aarnphm/sites",
-  "llms.txt": "/llms.txt",
-  "llms-full.txt": "/llms-full.txt",
 }
 
 type AliasLinkProp = {
@@ -937,7 +926,7 @@ const ClickableContainer = (props: {
   let newTab: boolean | undefined
 
   return (
-    <>
+    <section>
       <h2>{title}:</h2>
       <div class="clickable-container">
         {Object.entries(links).map(([name, url]) => {
@@ -949,14 +938,14 @@ const ClickableContainer = (props: {
           return <AliasLink key={name} {...cfg} name={name} url={url} newTab={newTab} />
         })}
       </div>
-    </>
+    </section>
   )
 }
 
 const HyperlinksComponent = ((props?: { children: JSX.Element[] }) => {
   const { children } = props ?? { children: [] }
 
-  const Hyperlink: QuartzComponent = () => <div class="hyperlinks">{children}</div>
+  const Hyperlink: QuartzComponent = () => <section class="hyperlinks">{children}</section>
   return Hyperlink
 }) satisfies QuartzComponentConstructor
 
@@ -974,16 +963,19 @@ const ElementComponent = (() => {
   })
   const Hyperlink = HyperlinksComponent({
     children: [
-      ClickableContainer({
-        title: "jardin",
-        links: HyperAlias,
-        cfg: { isInternal: true, newTab: false },
-      }),
-      ClickableContainer({
-        title: "média",
-        links: SocialAlias,
-        cfg: { isInternal: false, newTab: (name) => name !== "curius" },
-      }),
+      ClickableContainer({ title: "jardin", links, cfg: { isInternal: true, newTab: false } }),
+      <section>
+        <h2>média:</h2>
+        <address class="clickable-container">
+          <AliasLink newTab name="github" url="https://github.com/aarnphm" />
+          <AliasLink newTab name="twitter" url="https://x.com/aarnphm_" />
+          <AliasLink newTab name="substack" url="https://livingalonealone.com" />
+          <AliasLink newTab name="bluesky" url="https://bsky.app/profile/aarnphm.xyz" />
+          <AliasLink name="contact" url="mailto:contact@aarnphm.xyz" />
+          <AliasLink newTab name="llms.txt" url="/llms.txt" />
+          <AliasLink newTab name="llms-full.txt" url="/llms-full.txt" />
+        </address>
+      </section>,
     ],
   })
 
@@ -991,10 +983,10 @@ const ElementComponent = (() => {
     return (
       <div class="content-container">
         <Content {...componentData} />
-        <div class="notes-outer">
+        <section class="notes-outer">
           <RecentNotes {...componentData} />
           <RecentPosts {...componentData} />
-        </div>
+        </section>
         <Hyperlink {...componentData} />
       </div>
     )

@@ -101,6 +101,7 @@
     "remark-smartypants": "^3.0.2",
     "rfdc": "^1.4.1",
     "rimraf": "^6.0.1",
+    "rough-notation": "^0.5.1",
     "sass-embedded": "^1.81.0",
     "satori": "^0.12.0",
     "serve-handler": "^6.1.6",
