@@ -50,25 +50,6 @@ body {
       }
     }
 
-    .page > #quartz-body {
-      @media all and ($desktop) {
-        column-gap: 2rem;
-        row-gap: 0;
-        margin: 0 2rem;
-        height: 100vh;
-
-        grid-template-columns: #{map.get($desktopGrid, templateColumns)};
-        grid-template-rows: #{map.get($desktopGrid, templateRows)};
-        column-gap: #{map.get($desktopGrid, columnGap)};
-        row-gap: #{map.get($desktopGrid, rowGap)};
-        grid-template-areas: #{map.get($desktopGrid, templateAreas)};
-      }
-    }
-
-    .right {
-      display: flex !important;
-    }
-
     & .highlight {
       background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
       border-radius: 5px;
@@ -84,30 +65,34 @@ body {
     }
 
     .page > #quartz-body {
-      .sidebar.right,
-      .sidebar.left {
+      gap: 1rem;
+      margin: 0 2rem;
+
+      .sidebar {
+        top: 2rem;
+        position: relative;
+      }
+
+      .right.sidebar,
+      .left.sidebar {
         padding: 0;
+        width: $sidePanelWidth;
       }
 
-      .sidebar.left {
-        padding-right: 1rem;
+      .center {
+        min-width: unset;
+        max-width: $pageWidth;
       }
+    }
 
-      .sidebar.right {
-        padding-left: 1rem;
-      }
-
-      & .center > .page-header {
-        top: 0;
-        z-index: 100;
-        background-color: var(--light);
-      }
-
-      @media all and ($desktop) {
-        & .sidebar.left {
-          padding-right: 0;
-        }
-      }
+    .page > .page-header {
+      top: 0;
+      z-index: 100;
+      background-color: var(--light);
+      display: grid;
+      grid-template-columns: #{map.get($desktopGrid, templateColumns)};
+      grid-template-rows: #{map.get($desktopGrid, templateRows)};
+      grid-template-areas: #{map.get($desktopGrid, templateAreas)};
     }
   }
 }
@@ -128,6 +113,12 @@ body {
     list-style-type: none;
     padding: 0;
   }
+}
+
+.curius-header {
+  max-width: $pageWidth;
+  margin: 2rem auto 1rem;
+  grid-area: grid-center;
 }
 
 .curius-page-container {

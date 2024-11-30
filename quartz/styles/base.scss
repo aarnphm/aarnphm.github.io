@@ -7,7 +7,6 @@ html {
   scroll-behavior: smooth;
   text-size-adjust: none;
   overflow-x: hidden;
-  width: 100vw;
 }
 
 body,
@@ -17,19 +16,6 @@ section {
   background-color: var(--light);
   font-family: var(--bodyFont);
   color: var(--darkgray);
-}
-
-hgroup {
-  & > .description {
-    font-style: italic;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-  }
 }
 
 mark {
@@ -52,8 +38,7 @@ td,
 li,
 ol,
 ul,
-.katex,
-.math {
+.katex {
   color: var(--darkgray);
   fill: var(--darkgray);
   hyphens: auto;
@@ -66,16 +51,9 @@ a,
 li,
 ol,
 ul,
-.katex,
-.math {
+.katex {
   overflow-wrap: anywhere;
   /* tr and td removed from list of selectors for overflow-wrap, allowing them to use default 'normal' property value */
-}
-
-.math {
-  &.math-display {
-    text-align: center;
-  }
 }
 
 strong {
@@ -121,160 +99,26 @@ a {
   }
 }
 
-.desktop-only {
-  display: initial;
-  @media all and ($mobile) {
-    display: none;
-  }
-}
-
-.mobile-only {
-  display: none;
-  @media all and ($mobile) {
-    display: initial;
-  }
-}
-
-.page {
-  max-width: calc(#{map.get($breakpoints, desktop)} + 300px);
+hgroup,
+header,
+footer {
+  max-width: $pageWidth;
+  border: 0px solid var(--darkgray);
   margin: 0 auto;
-  & article {
-    & > h1 {
-      font-size: 2rem;
-    }
-
-    & li:has(> input[type="checkbox"]) {
-      list-style-type: none;
-      padding-left: 0;
-    }
-
-    & li:has(> input[type="checkbox"]:checked) {
-      text-decoration: line-through;
-      text-decoration-color: var(--gray);
-      color: var(--gray);
-    }
-
-    & li > * {
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-
-    p > strong {
-      color: var(--dark);
-    }
-  }
-
-  & > #quartz-body {
-    display: grid;
-    grid-template-columns: #{map.get($desktopGrid, templateColumns)};
-    grid-template-rows: #{map.get($desktopGrid, templateRows)};
-    column-gap: #{map.get($desktopGrid, columnGap)};
-    row-gap: #{map.get($desktopGrid, rowGap)};
-    grid-template-areas: #{map.get($desktopGrid, templateAreas)};
-    @media all and ($tablet) {
-      grid-template-columns: #{map.get($tabletGrid, templateColumns)};
-      grid-template-rows: #{map.get($tabletGrid, templateRows)};
-      column-gap: #{map.get($tabletGrid, columnGap)};
-      row-gap: #{map.get($tabletGrid, rowGap)};
-      grid-template-areas: #{map.get($tabletGrid, templateAreas)};
-    }
-    @media all and ($mobile) {
-      grid-template-columns: #{map.get($mobileGrid, templateColumns)};
-      grid-template-rows: #{map.get($mobileGrid, templateRows)};
-      column-gap: #{map.get($mobileGrid, columnGap)};
-      row-gap: #{map.get($mobileGrid, rowGap)};
-      grid-template-areas: #{map.get($mobileGrid, templateAreas)};
-    }
-
-    @media all and not ($desktop) {
-      padding: 0 1rem;
-    }
-    @media all and ($mobile) {
-      margin: 0 auto;
-    }
-
-    & .sidebar {
-      gap: 2rem;
-      top: 0;
-      width: $sidePanelWidth;
-      margin-top: $topSpacing;
-      box-sizing: border-box;
-      padding: $topSpacing 2rem 2rem 2rem;
-      display: flex;
-      position: sticky;
-    }
-
-    & .sidebar.left {
-      z-index: 1;
-      grid-area: grid-sidebar-left;
-      flex-direction: column;
-      @media all and ($mobile) {
-        gap: 0;
-        align-items: center;
-        position: initial;
-        display: flex;
-        height: unset;
-        flex-direction: row;
-        padding: 0;
-        padding-top: 2rem;
-      }
-    }
-
-    & .sidebar.right {
-      grid-area: grid-sidebar-right;
-      margin-right: 0;
-      flex-direction: column;
-      @media all and ($mobile) {
-        margin-left: inherit;
-        margin-right: inherit;
-      }
-      @media all and not ($desktop) {
-        position: initial;
-        height: unset;
-        width: 100%;
-        flex-direction: row;
-        padding: 0;
-        & > * {
-          flex: 1;
-        }
-      }
-    }
-    & .page-header,
-    & .page-footer {
-      margin-top: 1rem;
-    }
-
-    & .page-header {
-      margin: $topSpacing 0 0 0;
-      @media all and ($mobile) {
-        margin-top: 0;
-        padding: 0;
-      }
-    }
-
-    & .center,
-    & footer {
-      max-width: 100%;
-      min-width: 100%;
-      margin-left: auto;
-      margin-right: auto;
-      @media all and ($tablet) {
-        margin-right: 0;
-      }
-      @media all and ($mobile) {
-        margin-right: 0;
-        margin-left: 0;
-      }
-    }
-    & footer {
-      margin-left: 0;
-    }
-  }
 }
 
-.footnotes {
+header {
+  border-bottom-width: 1px;
   margin-top: 2rem;
-  border-top: 1px solid var(--lightgray);
+
+  align-items: center;
+  column-gap: 0.6rem;
+  padding-bottom: 0.2rem;
+  display: flex;
+}
+
+footer {
+  margin-bottom: 2rem;
 }
 
 input[type="checkbox"] {
@@ -555,6 +399,95 @@ ol.overflow {
   // clearfix
   content: "";
   clear: both;
+}
+
+.desktop-only {
+  display: initial;
+
+  @media all and ($mobile) {
+    display: none;
+  }
+}
+
+.mobile-only {
+  display: none;
+
+  @media all and ($mobile) {
+    display: initial;
+  }
+}
+
+.page {
+  & article {
+    & li:has(> input[type="checkbox"]) {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    & li:has(> input[type="checkbox"]:checked) {
+      text-decoration: line-through;
+      text-decoration-color: var(--gray);
+      color: var(--gray);
+    }
+
+    & li > * {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    p > strong {
+      color: var(--dark);
+    }
+  }
+
+  & > #quartz-body {
+    display: grid;
+    grid-template-columns: #{map.get($desktopGrid, templateColumns)};
+    grid-template-rows: #{map.get($desktopGrid, templateRows)};
+    grid-template-areas: #{map.get($desktopGrid, templateAreas)};
+
+    @media all and ($tablet) {
+      &.left.sidebar,
+      &.right.sidebar {
+        display: none;
+      }
+    }
+
+    & .sidebar {
+      gap: 2rem;
+      top: 0;
+      box-sizing: border-box;
+      display: flex;
+    }
+
+    & .left.sidebar {
+      grid-area: grid-sidebar-left;
+      width: 0;
+    }
+
+    & .right.sidebar {
+      grid-area: grid-sidebar-right;
+      margin-right: 0;
+      flex-direction: column;
+
+      @media all and ($mobile) {
+        display: none;
+      }
+    }
+
+    & .center {
+      max-width: 100%;
+      min-width: 100%;
+      height: fit-content;
+      grid-area: grid-center;
+      position: relative;
+    }
+  }
+}
+
+.footnotes {
+  margin-top: 2rem;
+  border-top: 1px solid var(--lightgray);
 }
 
 .transclude {

@@ -42,7 +42,7 @@ $max-delay: ($col-delay * $cols + $row-delay * $rows);
  * assuming mobile < desktop
  */
 $breakpoints: (
-  mobile: 780px,
+  mobile: 800px,
   desktop: 1200px,
 );
 
@@ -58,26 +58,13 @@ $semiBoldWeight: 600;
 $normalWeight: 400;
 
 $mobileGrid: (
-  templateRows: "auto auto auto",
+  templateRows: "auto",
   templateColumns: "minmax(auto, #{$pageWidth})",
-  rowGap: "5px",
-  columnGap: "5px",
-  templateAreas: '"grid-sidebar-left"\
-      "grid-header"\
-      "grid-sidebar-right"',
+  templateAreas: '"grid-center"',
 );
-$tabletGrid: (
-  templateRows: "auto auto",
-  templateColumns: "#{$sidePanelWidth} minmax(auto, #{$pageWidth})",
-  rowGap: "5px",
-  columnGap: "5px",
-  templateAreas: '"grid-sidebar-left grid-header"\
-      "grid-sidebar-left grid-sidebar-right"',
-);
+
 $desktopGrid: (
   templateRows: "auto",
-  templateColumns: "#{$sidePanelWidth} minmax(auto, #{$pageWidth}) #{$sidePanelWidth}",
-  rowGap: "5px",
-  columnGap: "5px",
-  templateAreas: '"grid-sidebar-left grid-header grid-sidebar-right"',
+  templateColumns: "auto minmax(auto, #{$pageWidth}) auto",
+  templateAreas: '"grid-sidebar-left grid-center grid-sidebar-right"',
 );

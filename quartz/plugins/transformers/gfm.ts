@@ -59,8 +59,8 @@ export const GitHubFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> =
                 type: "element",
                 tagName: "svg",
                 properties: {
-                  width: 16,
-                  height: 16,
+                  width: 12,
+                  height: 12,
                   viewBox: "0 0 24 24",
                   fill: "none",
                   stroke: "currentColor",

@@ -1,8 +1,18 @@
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
 
-function Spacer({ displayClass }: QuartzComponentProps) {
-  return <div class={classNames(displayClass, "spacer")}></div>
+interface Options {
+  classNames?: string[]
 }
 
-export default (() => Spacer) satisfies QuartzComponentConstructor
+const defaultOptions = { classNames: [] }
+
+export default ((userOpts?: Options) => {
+  const opts = { ...defaultOptions, ...userOpts }
+
+  const Spacer: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
+    return <div class={classNames(displayClass, "spacer", ...opts.classNames)}></div>
+  }
+
+  return Spacer
+}) satisfies QuartzComponentConstructor

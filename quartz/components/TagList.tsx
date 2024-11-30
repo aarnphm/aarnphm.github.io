@@ -7,18 +7,21 @@ const TagList: QuartzComponent = ({ fileData, displayClass }: QuartzComponentPro
   const baseDir = pathToRoot(fileData.slug!)
   if (tags && tags.length > 0) {
     return (
-      <ul class={classNames(displayClass, "tags")}>
-        {tags.map((tag) => {
-          const linkDest = baseDir + `/tags/${slugTag(tag)}`
-          return (
-            <li>
-              <a href={linkDest} class="internal tag-link">
-                {tag}
-              </a>
-            </li>
-          )
-        })}
-      </ul>
+      <div class={classNames(displayClass, "tags")}>
+        <h3>tags</h3>
+        <ul>
+          {tags.map((tag) => {
+            const linkDest = baseDir + `/tags/${slugTag(tag)}`
+            return (
+              <li>
+                <a href={linkDest} class="internal tag-link">
+                  {tag}
+                </a>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
     )
   } else {
     return null
@@ -26,32 +29,29 @@ const TagList: QuartzComponent = ({ fileData, displayClass }: QuartzComponentPro
 }
 
 TagList.css = `
-.tags {
+ul.tags,
+.tags > ul {
   list-style: none;
   display: flex;
   padding-left: 0;
   gap: 0.4rem;
-  margin: 1rem 0;
+  margin: 0;
   flex-wrap: wrap;
+}
+
+ul.tags {
+  margin: 1rem 0;
 }
 
 .section-li > .section > .tags {
   justify-content: flex-end;
 }
 
-.tags > li {
+ul.tags > li {
   display: inline-block;
   white-space: nowrap;
   margin: 0;
   overflow-wrap: normal;
-}
-
-a.internal.tag-link {
-  color: inherit;
-  border-radius: 8px;
-  background-color: var(--highlight);
-  padding: 0.2rem 0.4rem;
-  margin: 0 0.1rem;
 }
 `
 

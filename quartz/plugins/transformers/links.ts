@@ -248,7 +248,6 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     dest,
                     transformOptions,
                   )
-                  const ext = path.extname(dest).toLowerCase()
                   node.properties.src = dest
                 }
               }

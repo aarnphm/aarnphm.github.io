@@ -1,4 +1,3 @@
-import { getFullSlug } from "../../util/path"
 import { closeReader } from "./util"
 
 // TODO: Export directly to PDF and skip this step
@@ -32,7 +31,6 @@ function toggleReader(button: HTMLButtonElement) {
   }
 }
 
-const skewId = () => `${getFullSlug(window)}-skew-angle`
 function setupToolbar() {
   const toolbar = document.querySelector(".toolbar")
   const page = document.querySelector(".center") as HTMLElement
@@ -54,42 +52,6 @@ function setupToolbar() {
   if (pdfButton) {
     pdfButton.addEventListener("click", toggleExportPdf)
     window.addCleanup(() => pdfButton.removeEventListener("click", toggleExportPdf))
-  }
-
-  // skew funkyness
-  const skewBtn = document.getElementById("skew-button") as HTMLButtonElement
-  if (skewBtn) {
-    const skew = skewId()
-    // Initialize from localStorage if exists
-    const isSkewed = localStorage.getItem(skew)
-    if (isSkewed === "true") {
-      page.classList.add("skewed")
-      skewBtn.setAttribute("data-active", "true")
-    }
-
-    async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-      if (e.key === "u" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
-        e.preventDefault()
-        const isActive = page.classList.toggle("skewed")
-        skewBtn.setAttribute("data-active", isActive.toString())
-        localStorage.setItem(skew, isActive.toString())
-      }
-    }
-
-    function toggleSkew(e: Event) {
-      e.stopPropagation()
-      const isActive = page.classList.toggle("skewed")
-      skewBtn.setAttribute("data-active", isActive.toString())
-      localStorage.setItem(skew, isActive.toString())
-    }
-
-    skewBtn.addEventListener("click", toggleSkew)
-    document.addEventListener("keydown", shortcutHandler)
-
-    window.addCleanup(() => {
-      skewBtn.removeEventListener("click", toggleSkew)
-      document.removeEventListener("keydown", shortcutHandler)
-    })
   }
 }
 

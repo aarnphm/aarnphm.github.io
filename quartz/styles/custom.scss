@@ -4,7 +4,6 @@
 @use "./mixin.scss" as *;
 @use "./pages/menu.scss";
 @use "./pages/quotes.scss";
-@use "./pages/poetry.scss";
 @use "./pages/curius.scss";
 @use "./pages/landing.scss";
 @use "./pages/notfound.scss";
@@ -115,8 +114,17 @@
 
 // ----- DOM customization -----
 
-html {
-  scroll-behavior: smooth;
+hgroup {
+  & > .description {
+    font-style: italic;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
 }
 
 h1,
@@ -145,22 +153,8 @@ code {
   border-radius: 0px;
 }
 
-p {
-  margin: 0.5rem 0;
-}
-
 body {
-  margin: 0;
   font-synthesis: style;
-
-  &[data-slug="404"],
-  &[data-slug="curius"] {
-    .center {
-      border: unset !important;
-      margin-bottom: 0;
-      padding: 0;
-    }
-  }
 }
 
 pre.poetry {
@@ -333,7 +327,6 @@ section {
 
 section[data-references] {
   border-top: 1px solid var(--lightgray);
-  margin-left: 0.5rem;
 
   ul,
   ol {
@@ -351,8 +344,6 @@ section[data-references] {
 }
 
 section[data-footnotes] {
-  margin-left: 0.5rem;
-
   & > #footnote-label.sr-only {
     margin-bottom: 0.5rem;
   }
@@ -369,7 +360,7 @@ section[data-footnotes] {
 }
 
 // fade-in elements
-#quartz-body {
+body {
   & {
     --animation-name: fade;
     --animation-duration: #{$base-duration}s;
@@ -387,8 +378,8 @@ section[data-footnotes] {
     }
   }
 
-  body[data-slug="index"] & {
-    & .center {
+  &[data-slug="index"] {
+    .center {
       --index-border-width: 1px;
       position: relative;
       border: none;
@@ -439,9 +430,74 @@ section[data-footnotes] {
 // ----- class customization -----
 
 .article-title {
-  font-family: "ITCGaramondStdLtCond", var(--headerFont) !important;
-  font-size: 3rem !important;
-  line-height: 2.8125rem !important;
+  font-family: "ITCGaramondStdLtCond", var(--headerFont);
+  font-size: 3rem;
+  line-height: 2.8125rem;
+}
+
+.page-footer,
+.byline {
+  border: 0px solid var(--lightgray);
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+
+  padding: 1.25rem 0;
+  margin-bottom: 2.5rem;
+  display: grid;
+  grid-template-columns: #{map.get($desktopGrid, templateColumns)};
+  grid-template-rows: #{map.get($desktopGrid, templateRows)};
+  grid-template-areas: "grid-start grid-center grid-end";
+}
+
+.byline {
+  & > :not(.popover *) {
+    font-size: 0.8rem;
+    line-height: 1.8em;
+  }
+
+  h3:not(.popover *) {
+    margin: 0;
+    font-size: 0.6rem;
+    font-weight: 400;
+
+    color: rgba(var(--darkgray), 0.15);
+    font-family: var(--bodyFont);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  & > .container {
+    display: flex;
+    flex-direction: row;
+    grid-area: grid-center;
+
+    & > * {
+      border-right: 1px solid var(--lightgray);
+      padding-right: 1rem;
+      padding-left: 1rem;
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        border-right: none;
+        padding-right: 0;
+      }
+    }
+
+    .tags {
+      flex-grow: 1;
+    }
+
+    .content-meta {
+      flex-grow: 0.3;
+    }
+  }
+}
+
+.backlinks {
+  grid-area: grid-center;
 }
 
 .callout {
@@ -532,137 +588,11 @@ section[data-footnotes] {
   border-color: var(--gray);
 }
 
-.page {
-  & > #quartz-body {
-    @media all and ($desktop) {
-      column-gap: 2rem;
-      row-gap: 0;
-      margin: 0 2rem;
-      height: 100vh;
-
-      grid-template-columns: #{$sidePanelWidth} minmax(auto, #{$pageWidth});
-      grid-template-rows: #{map.get($desktopGrid, templateRow)};
-      grid-template-areas:
-        "grid-sidebar-left grid-header"
-        "grid-sidebar-left grid-sidebar-right";
-    }
-
-    @media all and ($tablet) {
-      column-gap: 2rem;
-    }
-  }
-
-  header,
-  & .page-header {
-    margin: 0 auto !important;
-
-    @media all and ($mobile) {
-      margin-bottom: 0;
-    }
-  }
-
-  header {
-    border-bottom: 1px solid var(--darkgray);
-    align-items: center;
-    column-gap: 0.6rem;
-    padding-bottom: 0.2rem;
-    display: flex !important;
-  }
-
-  .sidebar {
-    padding: 0 !important;
-  }
-
-  & .sidebar.left,
-  & .sidebar.right {
-    display: grid !important;
-    row-gap: 0.8rem !important;
-    column-gap: 1.4rem !important;
-    grid-template-columns: auto;
-    grid-template-rows: auto;
-    align-items: baseline;
-  }
-
-  & .sidebar.right {
-    margin: 0 !important;
-    height: 0 !important;
-  }
-
-  @media all and ($mobile) {
-    & .sidebar.left {
-      display: none !important;
-    }
-  }
-}
-
 .search {
   flex-grow: 0 !important;
 
   & > .search-button {
     border-radius: 0px;
-  }
-}
-
-.center {
-  margin: $topSpacing auto;
-  height: fit-content;
-  grid-area: grid-header;
-  position: relative;
-}
-
-.content-meta {
-  margin-top: 0.5rem;
-  color: var(--gray);
-  display: flex;
-  flex-flow: wrap;
-  cursor: pointer;
-
-  padding-inline-start: 0;
-  list-style: none;
-  gap: 0.8rem;
-
-  font-family: "ITCGaramondStdLtCond", var(--bodyFont);
-  font-weight: $normalWeight;
-
-  @media all and ($desktop) {
-    font-size: 1.272em;
-    line-height: 1.272em;
-  }
-
-  pre {
-    color: var(--darkgray);
-  }
-
-  .ref-source {
-    font-style: inherit;
-    font-weight: inherit;
-    color: var(--gray);
-    transition: none;
-
-    position: relative;
-    padding-left: 0.3em;
-
-    @include links;
-    @include indicatorHook;
-
-    &::before {
-      border-left-color: inherit;
-    }
-  }
-}
-
-.breadcrumb-container {
-  gap: 0.25rem;
-  margin: 0;
-  margin-top: 0.5rem;
-  padding: 0.5rem 0;
-
-  flex-grow: 1;
-}
-
-.breadcrumb-element {
-  p {
-    margin-left: 0.25rem;
   }
 }
 

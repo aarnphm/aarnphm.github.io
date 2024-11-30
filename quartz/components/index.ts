@@ -1,4 +1,5 @@
 import Sidenotes from "./Sidenotes"
+import Byline from "./Byline"
 import Mermaid from "./Mermaid"
 import Image from "./Image"
 import Reader from "./Reader"
@@ -30,6 +31,7 @@ import Comments from "./Comments"
 
 export {
   Sidenotes,
+  Byline,
   Mermaid,
   Toolbar,
   Image,

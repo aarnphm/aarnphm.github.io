@@ -14,7 +14,7 @@ const Backlinks: QuartzComponent = ({
   const slug = simplifySlug(fileData.slug!)
   const backlinkFiles = allFiles.filter((file) => file.links?.includes(slug))
   if (backlinkFiles.length === 0) {
-    return <></>
+    return null
   }
 
   return (

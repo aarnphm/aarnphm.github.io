@@ -1,6 +1,6 @@
 import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponent, QuartzComponentProps } from "../../components/types"
-import { Navigation, DesktopOnly } from "../../components"
+import { Navigation, DesktopOnly, Spacer } from "../../components"
 import BodyConstructor from "../../components/Body"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
@@ -15,17 +15,23 @@ import curiusScript from "../../components/scripts/curius.inline"
 //@ts-ignore
 import curiusFriendScript from "../../components/scripts/curius-friends.inline"
 
-const CuriusContent: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
+const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
+  const { displayClass } = props
+  const Footer = Navigation({ prev: "/mechinterp", next: "/books" })
   return (
-    <div class={classNames(displayClass, "curius", "popover-hint")} id="curius">
-      <div class="curius-page-container">
-        <div id="curius-fetching-text"></div>
-        <div id="curius-fragments"></div>
-        <div class="highlight-modal" id="highlight-modal">
-          <ul id="highlight-modal-list"></ul>
+    <>
+      <CuriusHeader {...props} />
+      <div class={classNames(displayClass, "curius", "popover-hint")} id="curius">
+        <div class="curius-page-container">
+          <div id="curius-fetching-text"></div>
+          <div id="curius-fragments"></div>
+          <div class="highlight-modal" id="highlight-modal">
+            <ul id="highlight-modal-list"></ul>
+          </div>
         </div>
       </div>
-    </div>
+      <Footer {...props} />
+    </>
   )
 }
 CuriusContent.afterDOMLoaded = curiusScript
@@ -111,12 +117,13 @@ const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {
 export const CuriusPage: QuartzEmitterPlugin = () => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
-    header: [],
-    beforeBody: [CuriusHeader],
+    beforeBody: [],
     left: [CuriusFriends],
     right: [DesktopOnly(CuriusTrail)],
     pageBody: CuriusContent,
-    afterBody: [Navigation({ prev: "/mechinterp", next: "/books" })],
+    afterBody: [],
+    header: [],
+    footer: Spacer(),
   }
 
   const { head, header, beforeBody, pageBody, left, right, afterBody, footer: Footer } = opts

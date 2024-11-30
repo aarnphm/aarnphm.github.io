@@ -36,8 +36,9 @@ function onClick(evt: MouseEvent) {
   const href = button.dataset.href
   if (!href?.startsWith("#")) return
 
-  const body = document.getElementById("quartz-body")
+  const body = document.body
   const toc = document.getElementById("toc")
+
   const afterClick = () => {
     if (body?.classList.contains("toc-hover")) {
       body.classList.remove("toc-hover")
@@ -99,9 +100,9 @@ function scrollToElement(hash: string) {
 
 function setupToc() {
   const toc = document.getElementById("toc")
-  const body = document.getElementById("quartz-body")
+  const body = document.body
 
-  if (!toc || !body) return
+  if (!toc) return
 
   if (toc.dataset.layout === "minimal") {
     const nav = toc.querySelector("#toc-vertical") as HTMLElement
