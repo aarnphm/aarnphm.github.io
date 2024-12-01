@@ -31,6 +31,9 @@ export const GitHubFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> =
             return (tree, _file) => {
               visit(tree, "element", function (node) {
                 if (headingRank(node)) {
+                  if (node.properties.id === "footnote-label") {
+                    node.children = [{ type: "text", value: "Remarque" }]
+                  }
                   node.children = [
                     {
                       type: "element",
@@ -59,8 +62,8 @@ export const GitHubFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> =
                 type: "element",
                 tagName: "svg",
                 properties: {
-                  width: 12,
-                  height: 12,
+                  width: 16,
+                  height: 16,
                   viewBox: "0 0 24 24",
                   fill: "none",
                   stroke: "currentColor",

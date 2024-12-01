@@ -9,13 +9,16 @@ export const sharedPageComponents: SharedLayout = {
     Component.Breadcrumbs({ rootName: "~", style: "unique", spacerSymbol: "/" }),
     Component.Keybind(),
     Component.Search(),
+    Component.ReaderView(),
   ],
-  afterBody: [Component.Backlinks()],
+  afterBody: [Component.Recommendations(), Component.Backlinks()],
   footer: Component.Footer({
+    layout: "minimal",
     links: {
       github: "https://github.com/aarnphm",
       twitter: "https://twitter.com/aarnphm_",
       bsky: "https://bsky.app/profile/aarnphm.xyz",
+      rss: "/index.xml",
     },
   }),
 }

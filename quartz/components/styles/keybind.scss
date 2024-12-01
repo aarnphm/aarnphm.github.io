@@ -1,14 +1,5 @@
 @use "../../styles/variables.scss" as *;
 
-kbd {
-  font-family: var(--codeFont);
-  padding: 0.2rem 0.4rem;
-  border: 1px solid var(--gray);
-  border-radius: 0px;
-  line-height: 1rem;
-  width: fit-content;
-}
-
 .keybind {
   flex-grow: 0 !important;
   font-size: 0.8rem !important;
@@ -81,4 +72,8 @@ kbd {
       }
     }
   }
+}
+
+kbd.clickable {
+  padding: 0.2rem 0.4rem;
 }

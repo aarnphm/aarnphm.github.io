@@ -1,4 +1,7 @@
-const bufferPx = 150
+import { annotate } from "rough-notation"
+import type { RoughAnnotation } from "rough-notation/lib/model"
+
+let ag: RoughAnnotation | null = null
 const observer = new IntersectionObserver((entries) => {
   for (const entry of entries) {
     const slug = entry.target.id
@@ -85,6 +88,23 @@ function scrollToElement(hash: string) {
     }
   }
 
+  if (ag) ag.hide()
+
+  const shareOpts = {
+    color: "rgba(234, 157, 52, 0.45)",
+    iterations: 4,
+    animationDuration: 800,
+    strokeWidth: 2,
+  }
+
+  const highlight = element.querySelector("span.highlight-span") as HTMLElement
+  ag = annotate(highlight, { type: "highlight", ...shareOpts })
+
+  setTimeout(() => ag!.show(), 50)
+  window.setTimeout(() => {
+    if (ag) ag.hide()
+  }, 2500)
+
   const rect = element.getBoundingClientRect()
   const absoluteTop = window.scrollY + rect.top
 
@@ -97,6 +117,16 @@ function scrollToElement(hash: string) {
   // Update URL without triggering scroll
   history.pushState(null, "", hash)
 }
+
+document.addEventListener("nav", (ev: CustomEventMap["nav"]) => {
+  if (ev.detail.url) {
+    const url = new URL(ev.detail.url, window.location.origin)
+    if (url.hash) {
+      const elHash = decodeURIComponent(url.hash)
+      scrollToElement(elHash)
+    }
+  }
+})
 
 function setupToc() {
   const toc = document.getElementById("toc")

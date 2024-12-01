@@ -36,6 +36,7 @@ nav#toc-vertical {
 
   position: sticky;
   inset: 50% 0 0;
+  margin-top: 300%;
   margin-bottom: 400%;
   transform: translateY(-50%);
   cursor: pointer;
@@ -51,7 +52,6 @@ nav#toc-vertical {
     height: 0.6rem;
     position: relative;
     align-items: center;
-    cursor: pointer;
     padding-inline: 0.5rem;
     text-indent: 1rem;
 

@@ -181,7 +181,7 @@ export const Citations: QuartzTransformerPlugin<Partial<Options>> = (userOpts) =
                     type: "element",
                     tagName: "h2",
                     properties: { id: "reference-label" },
-                    children: [{ type: "text", value: "References" }],
+                    children: [{ type: "text", value: "Bibliographie" }],
                   },
                   {
                     type: "element",

@@ -1,6 +1,5 @@
 .collapsible-header {
   position: relative;
-  margin-left: -9px;
 
   &:first-child {
     margin-top: 1rem;
@@ -40,20 +39,14 @@
   }
 
   .header-controls {
-    display: grid;
-    grid-template-columns: auto 1fr;
+    display: flex;
+    flex-direction: row;
     align-items: center;
-
-    & .toggle-button {
-      grid-column: 1;
-    }
   }
 
   & .toggle-button {
     background-color: transparent;
-    border: none;
     text-align: left;
-    cursor: pointer;
     padding: 0;
     color: var(--dark);
     display: inline-flex;
@@ -119,13 +112,14 @@
 
   // Content styles
   .collapsible-header-content-outer {
-    padding-left: 9px;
-    padding-bottom: 9px;
+    padding-left: 8px;
+    padding-bottom: 0.5rem;
+    position: relative;
 
     .collapsible-header-content {
       border-left: 1px solid var(--lightgray);
       overflow: hidden;
-      padding-left: 9px;
+      padding-left: 8px;
       max-height: none;
 
       &.collapsed {

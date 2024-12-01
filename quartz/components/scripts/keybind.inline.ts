@@ -96,7 +96,7 @@ document.addEventListener("nav", () => {
       key = browser === "Safari" ? mac : def
     }
     short.innerHTML = `
-<kbd id="clickable-kbd">${prefix} ${key}</kbd>
+<kbd class="clickable">${prefix} ${key}</kbd>
 <span>${span}</span>
 `
   }

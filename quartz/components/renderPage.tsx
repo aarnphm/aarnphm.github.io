@@ -59,8 +59,8 @@ function headerElement(
     properties: {
       "aria-hidden": "true",
       xmlns: "http://www.w3.org/2000/svg",
-      width: 18,
-      height: 18,
+      width: 16,
+      height: 16,
       viewBox: "0 0 24 24",
       fill: "currentColor",
       stroke: "currentColor",
@@ -148,8 +148,8 @@ function headerElement(
                     tagName: "svg",
                     properties: {
                       xmlns: "http://www.w3.org/2000/svg",
-                      width: 18,
-                      height: 18,
+                      width: 16,
+                      height: 16,
                       viewBox: "0 0 24 24",
                       fill: "var(--dark)",
                       stroke: "var(--dark)",
@@ -177,8 +177,8 @@ function headerElement(
                     tagName: "svg",
                     properties: {
                       xmlns: "http://www.w3.org/2000/svg",
-                      width: 18,
-                      height: 18,
+                      width: 16,
+                      height: 16,
                       viewBox: "0 0 24 24",
                       fill: "var(--tertiary)",
                       stroke: "var(--tertiary)",
@@ -218,8 +218,8 @@ function headerElement(
                     tagName: "svg",
                     properties: {
                       xmlns: "http://www.w3.org/2000/svg",
-                      width: 18,
-                      height: 18,
+                      width: 16,
+                      height: 16,
                       viewBox: "0 0 24 24",
                       fill: "none",
                       stroke: "currentColor",
@@ -935,7 +935,7 @@ const ElementComponent = (() => {
   const RecentPosts = NotesComponent({
     header: "écriture",
     slug: "posts/" as SimpleSlug,
-    numLimits: 6,
+    numLimits: 9,
   })
   const Hyperlink = HyperlinksComponent({
     children: [
@@ -1088,11 +1088,11 @@ export function renderPage(
             <section class="center">
               <Content {...componentData} />
             </section>
-            <section class="right sidebar">
+            <aside class="right sidebar">
               {right.map((BodyComponent) => (
                 <BodyComponent {...componentData} />
               ))}
-            </section>
+            </aside>
           </Body>
           {disablePageFooter ? <></> : <PageFooter />}
         </main>

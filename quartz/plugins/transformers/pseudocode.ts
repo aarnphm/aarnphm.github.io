@@ -195,6 +195,7 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 className: ["clipboard-button", "ps-clipboard"],
                 "aria-label": "Copy pseudocode to clipboard",
                 tabindex: "-1",
+                type: "button",
               },
               children: [
                 {
@@ -207,7 +208,6 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     height: 16,
                     version: "1.1",
                     viewBox: "0 0 16 16",
-                    "data-view-component": true,
                   },
                   children: [
                     {
@@ -240,7 +240,6 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     width: 16,
                     height: 16,
                     viewBox: "0 0 16 16",
-                    "data-view-component": true,
                   },
                   children: [
                     {

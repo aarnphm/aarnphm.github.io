@@ -47,6 +47,12 @@ function cleanupBlobUrl(blobUrl: string, timeoutId: NodeJS.Timeout): void {
 const DEFAULT_BLOB_TIMEOUT = 30 * 60 * 1000 // 30 minutes
 
 const p = new DOMParser()
+function cleanAbsoluteElement(element: HTMLElement): HTMLElement {
+  const refsAndNotes = element.querySelectorAll("section[data-references], section[data-footnotes]")
+  refsAndNotes.forEach((section) => section.remove())
+  return element
+}
+
 async function mouseEnterHandler(
   this: HTMLAnchorElement,
   { clientX, clientY }: { clientX: number; clientY: number },
@@ -142,7 +148,7 @@ async function mouseEnterHandler(
       const contents = await response.text()
       const html = p.parseFromString(contents, "text/html")
       normalizeRelativeURLs(html, targetUrl)
-      const elts = [...html.getElementsByClassName("popover-hint")]
+      const elts = [...html.getElementsByClassName("popover-hint")].map(cleanAbsoluteElement)
       if (elts.length === 0) return
       popoverInner.append(...elts)
   }

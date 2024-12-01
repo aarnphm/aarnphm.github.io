@@ -11,7 +11,7 @@ title: Cauchy momentum equation
 In convective or Lagrangian form:
 
 $$
-\begin{align}
+\begin{aligned}
 \frac{Du}{Dt} = &\frac{1}{\rho} \nabla \cdot \sigma + \mathbf{f}\\[12pt]
 \because \space u&: \text{flow velocity} \quad (\text{unit: } m/s) \\
 t &: \text{time} \quad (\text{unit: } s) \\
@@ -29,7 +29,7 @@ f_z
 \frac{\partial \sigma_{xy}}{\partial x} + \frac{\partial \sigma_{yy}}{\partial y} + \frac{\partial \sigma_{zy}}{\partial z} \\
 \frac{\partial \sigma_{xz}}{\partial x} + \frac{\partial \sigma_{yz}}{\partial y} + \frac{\partial \sigma_{zz}}{\partial z}
 \end{bmatrix} \quad (\text{unit: Pa}/m) \\
-\end{align}
+\end{aligned}
 $$
 
 NOTE: $\mathbf{f}$ is the _vector containing all accelerations caused by body force_ and $\nabla \cdot \boldsymbol{\sigma}$ is ==the [[thoughts/Vector calculus#divergence]]== of _stress tensor_.

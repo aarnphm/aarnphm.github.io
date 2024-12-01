@@ -181,7 +181,7 @@ export default ((userOpts?: Partial<Options>) => {
     allFiles,
   }: QuartzComponentProps) => {
     if (!fileData.toc) {
-      return <></>
+      return null
     }
 
     ghSlugger.reset()
@@ -220,43 +220,47 @@ export default ((userOpts?: Partial<Options>) => {
       })
     }
 
+    const MinimalToc = () => (
+      <nav id="toc-vertical">
+        {fileData.toc!.map((entry, idx) => (
+          <button
+            key={entry.slug}
+            class={`depth-${entry.depth} toc-item`}
+            data-depth={entry.depth}
+            data-href={`#${entry.slug}`}
+            data-for={entry.slug}
+            style={{ "--animation-order": idx + 1 }}
+            aria-label={`${entry.text}`}
+          >
+            <div class="fill" />
+            <div class="indicator">{convertFromText(entry.text)}</div>
+          </button>
+        ))}
+      </nav>
+    )
+
+    const DefaultToc = () => (
+      <nav>
+        <button type="button" id="toc" aria-controls="toc-content">
+          <h3>{i18n(cfg.locale).components.tableOfContents.title}</h3>
+        </button>
+        <div id="toc-content">
+          <ul class="overflow">
+            {fileData.toc!.map((entry) => (
+              <li key={entry.slug} class={`depth-${entry.depth}`}>
+                <a href={`#${entry.slug}`} data-for={entry.slug}>
+                  {convertFromText(entry.text)}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+    )
+
     return (
       <div class={classNames(displayClass, "toc")} id="toc" data-layout={opts.layout}>
-        {opts.layout === "minimal" ? (
-          <nav id="toc-vertical">
-            {fileData.toc.map((entry, idx) => (
-              <button
-                key={entry.slug}
-                class={`depth-${entry.depth} toc-item`}
-                data-depth={entry.depth}
-                data-href={`#${entry.slug}`}
-                data-for={entry.slug}
-                style={{ "--animation-order": idx + 1 }}
-                aria-label={`${entry.text}`}
-              >
-                <div class="fill" />
-                <div class="indicator">{convertFromText(entry.text)}</div>
-              </button>
-            ))}
-          </nav>
-        ) : (
-          <>
-            <button type="button" id="toc" aria-controls="toc-content">
-              <h3>{i18n(cfg.locale).components.tableOfContents.title}</h3>
-            </button>
-            <div id="toc-content">
-              <ul class="overflow">
-                {fileData.toc.map((entry) => (
-                  <li key={entry.slug} class={`depth-${entry.depth}`}>
-                    <a href={`#${entry.slug}`} data-for={entry.slug}>
-                      {convertFromText(entry.text)}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </>
-        )}
+        {opts.layout === "minimal" ? <MinimalToc /> : <DefaultToc />}
       </div>
     )
   }

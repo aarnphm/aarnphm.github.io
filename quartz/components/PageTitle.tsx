@@ -11,6 +11,10 @@ const PageTitle: QuartzComponent = ({ fileData }: QuartzComponentProps) => {
 }
 
 PageTitle.css = `
+.page-title {
+  transform: scale(0.8);
+}
+
 .page-title img {
   border-radius: 999px;
   display: inline-block;

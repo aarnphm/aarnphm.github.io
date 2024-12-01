@@ -734,9 +734,9 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     tagName: "button",
                     properties: {
                       className: ["expand-button"],
+                      type: "button",
                       "aria-label": "Expand mermaid diagram",
                       "aria-hidden": "true",
-                      "data-view-component": true,
                       tabindex: "-1",
                     },
                     children: [

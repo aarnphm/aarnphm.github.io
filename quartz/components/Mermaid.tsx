@@ -36,6 +36,7 @@ const Mermaid: QuartzComponent = ({ fileData }) => {
                     properties: {
                       className: ["close-button"],
                       "aria-label": "close button",
+                      title: "close button",
                     },
                     children: [
                       {

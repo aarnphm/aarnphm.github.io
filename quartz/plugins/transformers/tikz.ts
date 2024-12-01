@@ -28,9 +28,7 @@ function parseStyle(meta: string | null | undefined): string {
   return styleMatch ? styleMatch[1] : ""
 }
 
-const docs = (node: Code): string =>
-  JSON.stringify(`\\documentclass{standalone}
-${node.value}`)
+const docs = (node: Code): string => JSON.stringify(node.value)
 
 // mainly for reparse from HTML back to MD
 const mathMl = (code: Code): string => {

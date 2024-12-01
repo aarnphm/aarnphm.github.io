@@ -45,18 +45,22 @@ const Backlinks: QuartzComponent = ({
         </a>
       </h2>
       <div class="overflow">
-        {backlinkFiles.map((f) => (
-          <a href={resolveRelative(fileData.slug!, f.slug!)} data-backlink={f.slug!}>
-            <div class="small">{f.frontmatter?.title}</div>
-            <div class="description">
-              {unescapeHTML(
-                f.frontmatter?.description ??
-                  f.description?.trim() ??
-                  i18n(cfg.locale).propertyDefaults.description,
-              )}
-            </div>
-          </a>
-        ))}
+        {backlinkFiles.length > 0 ? (
+          backlinkFiles.map((f) => (
+            <a href={resolveRelative(fileData.slug!, f.slug!)} data-backlink={f.slug!}>
+              <div class="small">{f.frontmatter?.title}</div>
+              <div class="description">
+                {unescapeHTML(
+                  f.frontmatter?.description ??
+                    f.description?.trim() ??
+                    i18n(cfg.locale).propertyDefaults.description,
+                )}
+              </div>
+            </a>
+          ))
+        ) : (
+          <div>{i18n(cfg.locale).components.backlinks.noBacklinksFound}</div>
+        )}
       </div>
     </section>
   )

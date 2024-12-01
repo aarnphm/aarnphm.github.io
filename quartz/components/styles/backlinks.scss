@@ -1,8 +1,9 @@
 @use "../../styles/variables.scss" as *;
 
 .backlinks {
-  flex-direction: column;
   margin-bottom: 1.9rem;
+  grid-area: grid-center-two;
+  border-top: 1px solid var(--lightgray);
 
   & > .overflow {
     height: auto;

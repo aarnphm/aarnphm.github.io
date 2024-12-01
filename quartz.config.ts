@@ -36,8 +36,8 @@ const config: QuartzConfig = {
       cdnCaching: true,
       fontOrigin: "googleFonts",
       typography: {
-        header: "Newsreader",
-        body: "Newsreader",
+        header: "Cardo",
+        body: "EB Garamond",
         code: "JetBrains Mono",
       },
       colors: {
@@ -94,7 +94,7 @@ const config: QuartzConfig = {
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",
-        externalLinkIcon: false,
+        externalLinkIcon: true,
         lazyLoad: true,
         enableArxivEmbed: true,
         enableRawEmbed: true,
