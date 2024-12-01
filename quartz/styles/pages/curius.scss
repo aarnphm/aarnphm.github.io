@@ -65,10 +65,9 @@ body {
     }
 
     .page > #quartz-body {
-      gap: 1rem;
-      margin: 0 2rem;
-
-      .sidebar {
+      gap: 1.5rem;
+      margin: 0 auto;
+      max-width: calc($sidePanelWidth * 2 + $pageWidth) .sidebar {
         top: 2rem;
         position: relative;
       }
@@ -83,16 +82,6 @@ body {
         min-width: unset;
         max-width: $pageWidth;
       }
-    }
-
-    .page > .page-header {
-      top: 0;
-      z-index: 100;
-      background-color: var(--light);
-      display: grid;
-      grid-template-columns: #{map.get($desktopGrid, templateColumns)};
-      grid-template-rows: #{map.get($desktopGrid, templateRows)};
-      grid-template-areas: #{map.get($desktopGrid, templateAreas)};
     }
   }
 }
@@ -423,15 +412,6 @@ body {
   display: none !important;
   max-width: calc($sidePanelWidth - 1rem);
   cursor: pointer;
-
-  @media all and ($desktop) {
-    max-width: unset;
-    width: 100%;
-  }
-
-  @media all and not ($desktop) {
-    margin-top: $topSpacing;
-  }
 
   a,
   span {

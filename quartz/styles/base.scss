@@ -7,6 +7,7 @@ html {
   scroll-behavior: smooth;
   text-size-adjust: none;
   overflow-x: hidden;
+  font-size: 1.0625em;
 }
 
 body,
@@ -27,6 +28,27 @@ mark {
 ::selection {
   background: color-mix(in srgb, var(--gold) 40%, rgba(255, 255, 255, 0));
   color: var(--darkgray);
+}
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+  background-color: inherit;
+  cursor: pointer;
+  border: 0;
+  padding-block: 0;
+  display: flex;
+}
+
+kbd {
+  font-family: var(--codeFont);
+  padding: 0 0.2rem;
+  border: 1px solid var(--gray);
+  border-radius: 0px;
+  line-height: 1rem;
+  width: fit-content;
 }
 
 p,
@@ -90,12 +112,8 @@ a {
   }
 
   &.external .external-icon {
-    height: 1ex;
-    margin: 0 0.15em;
-
-    > path {
-      fill: var(--dark);
-    }
+    height: 2ex;
+    margin: 0;
   }
 }
 
@@ -113,8 +131,39 @@ header {
 
   align-items: center;
   column-gap: 0.6rem;
-  padding-bottom: 0.2rem;
+  padding-bottom: 0.5rem;
   display: flex;
+  position: relative;
+  border-bottom: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--darkgray);
+    transform: scaleX(0);
+    transform-origin: left;
+    opacity: 0;
+    animation: reveal-header-border var(--animation-duration) cubic-bezier(0.4, 0, 0.2, 1);
+
+    // Sync with the first column/row animation, given that we have four items in headers
+    animation-delay: 1.2s;
+    animation-fill-mode: forwards;
+  }
+}
+
+@keyframes reveal-header-border {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
 }
 
 footer {
@@ -199,20 +248,21 @@ h6 {
 }
 
 // typography improvements
+// https://type-scale.spencermortensen.com/
 h1 {
-  font-size: 1.75rem;
+  font-size: 1.5em;
   margin-top: 2.25rem;
   margin-bottom: 1rem;
 }
 
 h2 {
-  font-size: 1.4rem;
+  font-size: 1.402em;
   margin-top: 1.9rem;
   margin-bottom: 1rem;
 }
 
 h3 {
-  font-size: 1.12rem;
+  font-size: 1.3104em;
   margin-top: 1.62rem;
   margin-bottom: 1rem;
 }
@@ -220,9 +270,24 @@ h3 {
 h4,
 h5,
 h6 {
-  font-size: 1rem;
   margin-top: 1.5rem;
   margin-bottom: 1rem;
+}
+
+h4 {
+  font-size: 1.2247em;
+}
+
+h5 {
+  font-size: 1.1447em;
+}
+
+h6 {
+  font-size: 1.0699em;
+}
+
+small {
+  font-size: 0.9347em;
 }
 
 figure[data-rehype-pretty-code-figure] {
@@ -445,6 +510,7 @@ ol.overflow {
     grid-template-columns: #{map.get($desktopGrid, templateColumns)};
     grid-template-rows: #{map.get($desktopGrid, templateRows)};
     grid-template-areas: #{map.get($desktopGrid, templateAreas)};
+    margin-bottom: 1.5rem;
 
     @media all and ($tablet) {
       &.left.sidebar,

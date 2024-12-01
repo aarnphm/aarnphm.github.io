@@ -10,7 +10,7 @@
 
 @include font-face(
   "Berkeley Mono",
-  ("BerkeleyMonoVariable-Regular.woff2", "BerkeleyMonoVariable-Regular.woff"),
+  ("BerkeleyMono-Regular.woff2", "BerkeleyMono-Regular.woff"),
   ("woff2", "woff")
 );
 @include font-face(
@@ -30,7 +30,6 @@
   ("PlayfairDisplay.woff2", "PlayfairDisplay.woff"),
   ("woff2", "woff")
 );
-@include font-face("Cardo", ("Cardo-Regular.woff2", "Cardo-Regular.woff"), ("woff2", "woff"));
 @include font-face("EB Garamond", ("EBGaramond.woff2", "EBGaramond.woff"), ("woff2", "woff"));
 
 [role="article"]:hover {
@@ -56,13 +55,15 @@
   .callout-icon,
   .toggle-button,
   a[role="anchor"],
+  a[data-footnote-backref],
   hr,
   footer {
     display: none !important;
   }
 
-  .collapsible-header {
-    margin-left: 9px;
+  section[data-footnotes],
+  section[data-references] {
+    page-break-inside: avoid;
   }
 
   .center {
@@ -179,19 +180,6 @@ pre.poetry {
 }
 
 a {
-  &.external {
-    &:after {
-      content: "↗";
-      padding-left: 0.2ch;
-      font-size: 80%;
-      font-weight: 600;
-
-      &:hover {
-        color: var(--gold);
-      }
-    }
-  }
-
   &[data-bib] {
     background-color: initial;
   }
@@ -287,6 +275,10 @@ blockquote.twitter-tweet {
     background-color: unset;
 
     @include links;
+
+    &[class="alias"] {
+      margin-left: 0.2625em;
+    }
   }
 
   &:first-child {
@@ -350,6 +342,30 @@ section[data-footnotes] {
 
   & > ol {
     margin-bottom: 2rem;
+  }
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  margin: 2rem auto;
+  margin-top: calc(2em + 2vh);
+  margin-bottom: calc(2em + 2vh);
+  display: block;
+  border: 0;
+  background: none;
+  text-align: center;
+  overflow: visible;
+
+  &::before {
+    content: "\2022\2022\2022";
+    display: inline-block;
+    font-size: calc(0.8em + 0.2vw);
+    margin-left: 0.6em;
+    letter-spacing: 1.25em;
+    color: var(--gray);
+    position: relative;
+    top: -0.75em;
   }
 }
 
@@ -449,6 +465,13 @@ body {
   grid-template-areas: "grid-start grid-center grid-end";
 }
 
+.page-footer {
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "grid-start grid-center-one grid-end"
+    "grid-start grid-center-two grid-end";
+}
+
 .byline {
   font-size: 0.8rem;
   line-height: 1.8em;
@@ -492,10 +515,6 @@ body {
       flex-grow: 0.3;
     }
   }
-}
-
-.backlinks {
-  grid-area: grid-center;
 }
 
 .callout {
@@ -633,13 +652,7 @@ figure.tikz {
 
   .source-code-button {
     color: inherit;
-    border-width: 0px;
-    display: flex;
     float: right;
-    background-color: inherit;
-    border: 0px;
-    padding-block: 0px;
-    cursor: pointer;
 
     .source-icon {
       display: inline;
