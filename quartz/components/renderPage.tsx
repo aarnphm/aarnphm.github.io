@@ -1073,6 +1073,11 @@ export function renderPage(
             <HeaderComponent {...componentData} />
           ))}
         </Header>
+        <section id="stacked-notes-container">
+          <div id="stacked-notes-main">
+            <div class="stacked-notes-column" />
+          </div>
+        </section>
         <main id="quartz-root" class="page">
           <div class="page-header popover-hint">
             {beforeBody.map((BodyComponent) => (

@@ -1,0 +1,144 @@
+@use "sass:map";
+@use "../../styles/variables" as *;
+
+#reader-view-toggle {
+  height: 20px;
+  width: 36px;
+  display: block;
+  position: relative;
+  border: none;
+  cursor: pointer;
+  float: right;
+}
+
+.view-toggle-slide {
+  height: 20px;
+  border: 1px solid var(--lightgray);
+  border-radius: 24px;
+  width: 100%;
+  line-height: 1rem;
+  position: absolute;
+}
+
+.view-toggle-switch {
+  position: absolute;
+  z-index: 9;
+  top: 1px;
+  left: 1px;
+  right: auto;
+  width: 18px;
+  height: 18px;
+  position: relative;
+  transition: left 0.1s linear;
+
+  & svg {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: calc(50% - 10px);
+    transition: opacity 0.1s ease;
+  }
+
+  .single-view-icon {
+    display: inline-block;
+  }
+  .stacked-view-icon {
+    display: none;
+  }
+
+  span[aria-checked="true"] & {
+    .single-view-icon {
+      display: none;
+    }
+    .stacked-view-icon {
+      display: inline-block;
+      left: 16px;
+    }
+  }
+}
+
+header {
+  &.stack-mode {
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+
+    & > .header-content {
+      margin: 0 auto;
+    }
+
+    &::after {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
+}
+
+#quartz-root,
+footer {
+  &.stack-mode {
+    display: none;
+  }
+}
+
+#stacked-notes-container {
+  background: var(--light);
+  z-index: 999;
+  display: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: calc(96vh + 0.2em);
+
+  &.active {
+    display: flex;
+    flex-direction: row;
+  }
+
+  & > #stacked-notes-main {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-box-flex: 1;
+    flex-grow: 1;
+
+    & > .stacked-notes-column {
+      display: flex;
+      -webkit-box-flex: 1;
+      -webkit-flex-grow: 1;
+      -ms-flex-positive: 1;
+      flex-grow: 1;
+      -webkit-transition: width 100ms cubic-bezier(0.19, 1, 0.22, 1);
+      transition: width 100ms cubic-bezier(0.19, 1, 0.22, 1);
+      height: 100%;
+
+      & .stacked-note {
+        width: 625px;
+        max-width: 625px;
+        height: 100%;
+        flex-shrink: 0;
+        top: 0;
+        position: sticky;
+        -webkit-box-flex: 1;
+        flex-grow: 1;
+        overflow-y: auto;
+        border-right: 1px solid var(--lightgray);
+        background: var(--light);
+        overflow-y: auto;
+        position: relative;
+        transition: transform 0.3s cubic-bezier(0.3, 0, 0, 1);
+
+        &:not(:last-child) {
+          border-right: 1px solid var(--lightgray);
+        }
+
+        .stacked-content {
+          padding: 0.5rem 2rem;
+          max-width: 100%;
+          margin: 0 auto;
+        }
+      }
+    }
+  }
+}

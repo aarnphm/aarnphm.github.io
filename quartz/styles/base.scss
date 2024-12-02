@@ -126,15 +126,18 @@ footer {
 }
 
 header {
-  border-bottom-width: 1px;
-  margin-top: 2rem;
-
-  align-items: center;
-  column-gap: 0.6rem;
-  padding-bottom: 0.5rem;
+  padding: 0.5rem 0;
   display: flex;
   position: relative;
-  border-bottom: none;
+
+  & > .header-content {
+    max-width: $pageWidth;
+    width: 100%;
+    align-items: center;
+    column-gap: 0.6rem;
+    display: flex;
+    position: relative;
+  }
 
   &::after {
     content: "";
@@ -145,7 +148,7 @@ header {
     height: 1px;
     background-color: var(--darkgray);
     transform: scaleX(0);
-    transform-origin: left;
+    transform-origin: center;
     opacity: 0;
     animation: reveal-header-border var(--animation-duration) cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -218,7 +221,7 @@ h6,
 thead {
   font-family: var(--headerFont);
   color: var(--dark);
-  font-weight: revert;
+  font-weight: normal;
   margin-bottom: 0;
 
   article > & > a[role="anchor"] {
@@ -528,7 +531,6 @@ ol.overflow {
 
     & .left.sidebar {
       grid-area: grid-sidebar-left;
-      width: 0;
     }
 
     & .right.sidebar {

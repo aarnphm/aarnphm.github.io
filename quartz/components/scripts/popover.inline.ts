@@ -148,7 +148,9 @@ async function mouseEnterHandler(
       const contents = await response.text()
       const html = p.parseFromString(contents, "text/html")
       normalizeRelativeURLs(html, targetUrl)
-      const elts = [...html.getElementsByClassName("popover-hint")].map(cleanAbsoluteElement)
+      const elts = [
+        ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>),
+      ].map(cleanAbsoluteElement)
       if (elts.length === 0) return
       popoverInner.append(...elts)
   }

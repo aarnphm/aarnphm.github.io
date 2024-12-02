@@ -36,3 +36,5 @@ https://x.com/spikedoanz/status/1856505412167839925/ <!-- FEXPA op in ARM -->
 https://x.com/noampomsky/status/1860856607607050633 <!-- Ava on Iain McGilchrist of attention being a moral act -->
 
 https://x.com/JustinLin610/status/1861847752835248381 <!-- QwQ reasoning models outperform o1 -->
+
+https://x.com/elzr/status/1274209005557211138 <!-- threads for reading as tree representations -->

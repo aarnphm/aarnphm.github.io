@@ -55,11 +55,7 @@ export default ((userOpts?: Options) => {
   grid-area: grid-center-one;
 
   & > .overflow {
-    display: flex;
-    flex-direction: column;
     padding-inline-start: 1rem;
-    gap: 0.5em;
-    padding-inline-start: 0;
   }
 }`
 

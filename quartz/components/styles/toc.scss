@@ -4,6 +4,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
+  width: 0;
 }
 
 body.toc-hover {
@@ -31,6 +32,8 @@ body.toc-hover {
 }
 
 nav#toc-vertical {
+  --button-height: 0.6rem;
+
   display: flex;
   flex-direction: column;
 
@@ -49,7 +52,7 @@ nav#toc-vertical {
     display: inline-flex;
     border: none;
     background: inherit;
-    height: 0.6rem;
+    height: var(--button-height);
     position: relative;
     align-items: center;
     padding-inline: 0.5rem;

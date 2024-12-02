@@ -8,8 +8,8 @@ export const SearchConstructor = (() => {
     const searchPlaceholder = i18n(cfg.locale).components.search.searchBarPlaceholder
     return (
       <div class="search">
-        <div id="search-container">
-          <div id="search-space">
+        <search id="search-container">
+          <form id="search-space">
             <input
               autocomplete="off"
               id="search-bar"
@@ -18,9 +18,9 @@ export const SearchConstructor = (() => {
               aria-label={searchPlaceholder}
               placeholder={searchPlaceholder}
             />
-            <div id="search-layout" data-preview={true}></div>
-          </div>
-        </div>
+          </form>
+          <output id="search-layout" data-preview={true}></output>
+        </search>
       </div>
     )
   }

@@ -61,6 +61,9 @@
       margin-left: auto;
       margin-right: auto;
 
+      background: var(--light);
+      border-radius: 0px;
+
       @media all and ($desktop) {
         width: 90%;
       }
@@ -71,7 +74,6 @@
 
       & > * {
         width: 100%;
-        border-radius: 7px;
         background: var(--light);
         box-shadow:
           0 14px 50px rgba(27, 33, 48, 0.12),
@@ -95,7 +97,6 @@
 
     & > #search-layout {
       display: none;
-      background: var(--light);
       flex-direction: row;
       border: 1px solid var(--lightgray);
       flex: 0 0 100%;
@@ -103,6 +104,9 @@
 
       &.display-results {
         display: flex;
+        box-shadow:
+          0 14px 50px rgba(27, 33, 48, 0.12),
+          0 10px 30px rgba(27, 33, 48, 0.16);
       }
 
       &[data-preview] > #results-container {
@@ -166,6 +170,10 @@
         & .preview-inner {
           margin: 0 auto;
           width: min($pageWidth, 100%);
+
+          hgroup {
+            margin-top: 2rem;
+          }
         }
 
         a[role="anchor"] {

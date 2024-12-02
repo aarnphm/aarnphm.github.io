@@ -1,7 +1,7 @@
 import { QuartzComponent, QuartzComponentConstructor } from "./types"
-import style from "./styles/readerview.scss"
 // @ts-ignore
-import script from "./scripts/readerview.inline"
+import script from "./scripts/matuschak.inline"
+import style from "./styles/matuschak.scss"
 
 export default (() => {
   const ReaderView: QuartzComponent = () => {
@@ -14,7 +14,7 @@ export default (() => {
         role="switch"
         aria-checked="false"
       >
-        <div class="view-toggle-slide"></div>
+        <div class="view-toggle-slide" />
         <div class="view-toggle-switch">
           <svg
             class="single-view-icon"
@@ -26,7 +26,7 @@ export default (() => {
             stroke="currentColor"
             stroke-width="2"
           >
-            <circle cx="12" cy="12" r="8" />
+            <circle cx="12" cy="12" r="6" />
           </svg>
           <svg
             class="stacked-view-icon"

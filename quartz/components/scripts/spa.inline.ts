@@ -1,5 +1,12 @@
 import micromorph from "micromorph"
-import { FullSlug, RelativeURL, getFullSlug, normalizeRelativeURLs } from "../../util/path"
+import {
+  FullSlug,
+  RelativeURL,
+  getFullSlug,
+  normalizeRelativeURLs,
+  resolveRelative,
+} from "../../util/path"
+import { removeAllChildren } from "./util"
 
 // adapted from `micromorph`
 // https://github.com/natemoo-re/micromorph
@@ -42,8 +49,245 @@ function notifyNav(url: FullSlug) {
 const cleanupFns: Set<(...args: any[]) => void> = new Set()
 window.addCleanup = (fn) => cleanupFns.add(fn)
 
+interface StackedNote {
+  slug: string
+  contents: HTMLElement[]
+  hash?: string
+}
+
 let p: DOMParser
+class StackedNoteManager {
+  private stack: StackedNote[]
+
+  private container: HTMLElement
+  private column: HTMLElement
+  private main: HTMLElement
+  private focusIdx: number = -1
+
+  private isActive: boolean = false
+  private baseSlug: FullSlug
+
+  constructor() {
+    this.stack = []
+    this.container = document.getElementById("stacked-notes-container") as HTMLDivElement
+    this.main = this.container.querySelector("#stacked-notes-main") as HTMLDivElement
+    this.column = this.main.querySelector(".stacked-notes-column") as HTMLDivElement
+
+    this.baseSlug = getFullSlug(window)
+
+    window.addEventListener("popstate", async (e) => {
+      if (e.state?.stackState) {
+        await this.restore(e.state.stackState)
+      } else {
+        this.destroy()
+      }
+    })
+  }
+
+  private createNote(elts: HTMLElement[], slug: string): HTMLElement {
+    const note = document.createElement("div")
+    note.className = "stacked-note"
+    note.dataset.slug = slug
+
+    const noteContent = document.createElement("div")
+    noteContent.className = "stacked-content"
+    noteContent.append(...elts)
+
+    note.appendChild(noteContent)
+
+    const links = [...noteContent.getElementsByClassName("internal")] as HTMLAnchorElement[]
+
+    for (const link of links) {
+      const href = link.href
+      const traverseLink = async (e: MouseEvent) => {
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
+        e.preventDefault()
+
+        if (!this.isActive) {
+          await this.open()
+        } else {
+          await this.add(new URL(href))
+        }
+      }
+
+      link.addEventListener("click", traverseLink)
+      window.addCleanup(() => link.removeEventListener("click", traverseLink))
+    }
+
+    return note
+  }
+
+  private setFocus(index: number) {
+    const notes = this.column.querySelectorAll(".stacked-note")
+    notes.forEach((note, idx) => {
+      note.classList.toggle("active", idx === index)
+    })
+
+    if (index >= 0 && index < notes.length) {
+      const activeNote = notes[index] as HTMLElement
+      this.main.scrollTo({
+        left: activeNote.offsetLeft - 20,
+        behavior: "smooth",
+      })
+    }
+
+    this.focusIdx = index
+  }
+
+  private resolveRelative(targetSlug: FullSlug): URL {
+    return new URL(resolveRelative(this.baseSlug, targetSlug), location.toString())
+  }
+
+  private async fetchContent(slug: FullSlug | URL, isUrl: boolean = false) {
+    p = p || new DOMParser()
+
+    const url = isUrl ? new URL(slug) : new URL(this.resolveRelative(slug as FullSlug))
+    const hash = decodeURIComponent(url.hash)
+    url.hash = ""
+    url.search = ""
+
+    // TODO: prevent fetching the same page
+
+    const response = await fetch(url.toString()).catch(console.error)
+    if (!response) return
+
+    const txt = await response.text()
+    const html = p.parseFromString(txt, "text/html")
+    normalizeRelativeURLs(html, url)
+    const contents = [...html.getElementsByClassName("popover-hint")] as HTMLElement[]
+    if (contents.length === 0) return
+
+    return { hash, contents }
+  }
+
+  // TODO: FIX THIS RIGHT NOW BREOKEN
+  private hashed() {
+    const stackState = this.stack.map((note) => note.slug)
+    const url = new URL(window.location.toString())
+    if (stackState.length > 0) {
+      url.hash = `stack=${stackState.join(",")}`
+    } else {
+      url.hash = ""
+    }
+    history.pushState({ stackState }, "", url)
+  }
+
+  private render() {
+    removeAllChildren(this.column)
+
+    for (const { hash, slug, contents } of this.stack) {
+      const note = this.createNote(contents, slug)
+      this.column.appendChild(note)
+
+      if (hash) {
+        const heading = note.querySelector(hash) as HTMLElement | null
+        if (heading) {
+          note.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
+        }
+      }
+    }
+    this.container.classList.toggle("active", this.isActive)
+
+    if (this.active) {
+      if (this.stack.length > 0) this.setFocus(this.stack.length - 1)
+
+      const keydown = (e: KeyboardEvent) => {
+        if (e.key === "ArrowLeft" && this.focusIdx > 0) {
+          this.setFocus(this.focusIdx - 1)
+        } else if (e.key === "ArrowRight" && this.focusIdx < this.stack.length - 1) {
+          this.setFocus(this.focusIdx + 1)
+        }
+      }
+
+      document.addEventListener("keydown", keydown)
+      window.addCleanup(() => document.removeEventListener("keydown", keydown))
+    }
+  }
+
+  async open() {
+    const res = await this.fetchContent(this.baseSlug)
+    if (!res) return
+
+    this.stack = [{ slug: this.baseSlug, ...res }]
+    this.isActive = true
+    this.render()
+    this.hashed()
+  }
+
+  async add(href: URL) {
+    const res = await this.fetchContent(href, true)
+    const slug = href.pathname.slice(1)
+    if (!res) return
+
+    // Remove any notes after the current one if we're branching
+    const existing = this.stack.findIndex((note) => note.slug === slug)
+    if (existing !== -1) {
+      this.stack = this.stack.slice(0, existing)
+    }
+
+    this.baseSlug = slug as FullSlug
+
+    this.stack.push({ slug, ...res })
+  }
+
+  close(slug: string) {
+    const idx = this.stack.findIndex((note) => note.slug === slug)
+    if (idx !== -1) {
+      this.stack = this.stack.slice(0, idx)
+      if (this.stack.length === 0) {
+        this.destroy()
+      } else {
+        // FIXME: OK this is not ideal, we should just remove the diff of the slice instead of re-rendering everything
+        this.render()
+        this.hashed()
+      }
+    }
+  }
+
+  destroy() {
+    this.stack = []
+    this.isActive = false
+    this.focusIdx = -1
+    removeAllChildren(this.column)
+  }
+
+  async restore(slugs: string[]) {
+    this.stack = []
+    for (const slug of slugs) {
+      const res = await this.fetchContent(slug as FullSlug)
+      if (!res) continue
+
+      this.stack.push({ slug, ...res })
+    }
+    this.isActive = this.stack.length > 0
+    this.render()
+  }
+
+  async navigate(url: URL) {
+    if (!this.active) {
+      await this.open()
+    } else {
+      await this.add(url)
+    }
+    this.render()
+    return true
+  }
+
+  get active() {
+    return this.isActive
+  }
+}
+
+const stacked = new StackedNoteManager()
+window.stacked = stacked
+
 async function navigate(url: URL, isBack: boolean = false) {
+  const stackedContainer = document.getElementById("stacked-notes-container") as HTMLButtonElement
+  if (stackedContainer.classList.contains("active")) {
+    stacked.navigate(url)
+    return
+  }
+
   p = p || new DOMParser()
   const contents = await fetch(`${url}`)
     .then((res) => {

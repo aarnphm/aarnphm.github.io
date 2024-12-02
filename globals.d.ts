@@ -1,3 +1,13 @@
+interface StackedManager {
+  active: boolean
+  async open(): Promise<void>
+  async add(href: URL): Promise<void>
+  async restore(slugs: string[]): Promise<void>
+
+  close(slug: string): void
+  destroy(): void
+}
+
 export declare global {
   interface Document {
     addEventListener<K extends keyof CustomEventMap>(
@@ -13,5 +23,6 @@ export declare global {
   interface Window {
     spaNavigate(url: URL, isBack: boolean = false)
     addCleanup(fn: (...args: any[]) => void)
+    stacked: StackedManager
   }
 }
