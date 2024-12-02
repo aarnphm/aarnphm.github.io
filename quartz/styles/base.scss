@@ -527,6 +527,7 @@ ol.overflow {
       top: 0;
       box-sizing: border-box;
       display: flex;
+      width: $sidePanelWidth;
     }
 
     & .left.sidebar {

@@ -58,6 +58,7 @@ interface StackedNote {
 let p: DOMParser
 class StackedNoteManager {
   private stack: StackedNote[]
+  private cache: Map<string, { element: HTMLElement; index: number }>
 
   private container: HTMLElement
   private column: HTMLElement
@@ -69,6 +70,8 @@ class StackedNoteManager {
 
   constructor() {
     this.stack = []
+    this.cache = new Map()
+
     this.container = document.getElementById("stacked-notes-container") as HTMLDivElement
     this.main = this.container.querySelector("#stacked-notes-main") as HTMLDivElement
     this.column = this.main.querySelector(".stacked-notes-column") as HTMLDivElement
@@ -85,6 +88,9 @@ class StackedNoteManager {
   }
 
   private createNote(elts: HTMLElement[], slug: string): HTMLElement {
+    const cached = this.cache.get(slug)
+    if (cached) return cached.element
+
     const note = document.createElement("div")
     note.className = "stacked-note"
     note.dataset.slug = slug
@@ -113,6 +119,11 @@ class StackedNoteManager {
       link.addEventListener("click", traverseLink)
       window.addCleanup(() => link.removeEventListener("click", traverseLink))
     }
+
+    this.cache.set(slug, {
+      element: note,
+      index: this.stack.length,
+    })
 
     return note
   }
@@ -146,7 +157,14 @@ class StackedNoteManager {
     url.hash = ""
     url.search = ""
 
-    // TODO: prevent fetching the same page
+    // const targetSlug = url.pathname.slice(1)
+    // const currentSlugs = new Set(this.stack.map((n) => n.slug))
+    // const alreadyFetched = () => {
+    //   return currentSlugs.has(targetSlug)
+    // }
+    //
+    // // TODO: prevent fetching the same page
+    // if (alreadyFetched()) return
 
     const response = await fetch(url.toString()).catch(console.error)
     if (!response) return
@@ -189,7 +207,8 @@ class StackedNoteManager {
     this.container.classList.toggle("active", this.isActive)
 
     if (this.active) {
-      if (this.stack.length > 0) this.setFocus(this.stack.length - 1)
+      // Always focus the last note in the new stack
+      this.setFocus(this.stack.length - 1)
 
       const keydown = (e: KeyboardEvent) => {
         if (e.key === "ArrowLeft" && this.focusIdx > 0) {
@@ -215,18 +234,34 @@ class StackedNoteManager {
   }
 
   async add(href: URL) {
-    const res = await this.fetchContent(href, true)
     const slug = href.pathname.slice(1)
-    if (!res) return
 
-    // Remove any notes after the current one if we're branching
-    const existing = this.stack.findIndex((note) => note.slug === slug)
-    if (existing !== -1) {
-      this.stack = this.stack.slice(0, existing)
+    // Check if clicked inside a stacked note
+    const clickedNote = document.activeElement?.closest(".stacked-note") as HTMLDivElement
+    if (clickedNote) {
+      const clickedIdx = Array.from(this.column.children).indexOf(clickedNote)
+
+      // If we clicked a link to a note that's already in our stack...
+      const existingIdx = this.stack.findIndex((note) => note.slug === slug)
+      if (existingIdx !== -1) {
+        // If we clicked from a note earlier in the stack than the target,
+        // just focus the existing note
+        if (clickedIdx < existingIdx) {
+          this.setFocus(existingIdx)
+          return false
+        }
+        // Otherwise, truncate the stack at clicked position and add new note
+        this.stack = this.stack.slice(0, existingIdx + 1)
+      } else if (clickedIdx !== -1) {
+        // New note, truncate at click position
+        this.stack = this.stack.slice(0, clickedIdx + 1)
+      }
     }
 
-    this.baseSlug = slug as FullSlug
+    const res = await this.fetchContent(href, true)
+    if (!res) return
 
+    this.baseSlug = slug as FullSlug
     this.stack.push({ slug, ...res })
   }
 
@@ -248,7 +283,13 @@ class StackedNoteManager {
     this.stack = []
     this.isActive = false
     this.focusIdx = -1
+    this.cache.clear()
     removeAllChildren(this.column)
+
+    // cleanup old
+    cleanupFns.forEach((fn) => fn())
+    cleanupFns.clear()
+    notifyNav(getFullSlug(window))
   }
 
   async restore(slugs: string[]) {
@@ -270,6 +311,8 @@ class StackedNoteManager {
       await this.add(url)
     }
     this.render()
+    notifyNav(url.pathname.slice(1) as FullSlug)
+
     return true
   }
 

@@ -1,10 +1,13 @@
 @use "../../styles/variables.scss" as *;
 
 .toc {
+  --indicator-position: 4.5rem;
+  --fill-width: 1rem;
+
   display: flex;
   flex-direction: column;
   position: relative;
-  width: 0;
+  min-width: var(--indicator-position);
 }
 
 body.toc-hover {
@@ -46,13 +49,11 @@ nav#toc-vertical {
   z-index: 1000;
 
   button.toc-item {
-    --indicator-position: 4.5rem;
-    --fill-width: 1rem;
-
     display: inline-flex;
     border: none;
     background: inherit;
     height: var(--button-height);
+    max-width: var(--fill-width);
     position: relative;
     align-items: center;
     padding-inline: 0.5rem;
