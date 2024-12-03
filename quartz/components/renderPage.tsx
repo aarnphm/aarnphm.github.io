@@ -127,11 +127,12 @@ function headerElement(
           // Toggle button
           {
             type: "element",
-            tagName: "button",
+            tagName: "span",
             properties: {
               id: `${buttonId}-toggle`,
               ariaLabel: "Toggle content visibility",
               ariaExpanded: true,
+              type: "button",
               className: ["toggle-button"],
             },
             children: [
@@ -539,7 +540,7 @@ export function pageResources(
       },
       {
         script: collapseHeaderScript,
-        loadTime: "beforeDOMReady",
+        loadTime: "afterDOMReady",
         contentType: "inline",
       },
       ...staticResources.js,

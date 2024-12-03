@@ -109,6 +109,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
         if (opts?.enableRSS) {
           graph.addEdge(sourcePath, joinSegments(ctx.argv.output, "index.xml") as FilePath)
         }
+        graph.addEdge(sourcePath, joinSegments(ctx.argv.output, "robots.txt") as FilePath)
       }
 
       return graph
@@ -139,6 +140,19 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
           })
         }
       }
+
+      emitted.push(
+        await write({
+          ctx,
+          content: `User-agent: *
+Disallow: /
+Host: https://${cfg.baseUrl}
+Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.xml")}
+`,
+          slug: "robots" as FullSlug,
+          ext: ".txt",
+        }),
+      )
 
       if (opts?.enableSiteMap) {
         emitted.push(

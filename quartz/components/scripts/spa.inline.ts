@@ -92,8 +92,6 @@ class StackedNoteManager {
 
     const titleWidth = parseInt(this.styled.getPropertyValue("--note-title-width"))
 
-    const topCached = new Map()
-
     const updateNoteStates = () => {
       const notes = [...this.column.children] as HTMLElement[]
 
@@ -113,10 +111,7 @@ class StackedNoteManager {
         // Check collapse - when next note fully overlaps (leaving title space)
         const shouldCollapsed = nextRect.left <= rect.left + titleWidth
         if (shouldCollapsed) {
-          topCached.set(note.dataset.slug, rect.top)
           note.scrollTo({ top: 0 })
-        } else {
-          note.scrollTo({ top: topCached.get(note.dataset.slug) ?? 0 })
         }
         note.classList.toggle("collapsed", shouldCollapsed)
       })

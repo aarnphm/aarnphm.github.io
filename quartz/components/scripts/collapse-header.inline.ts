@@ -60,10 +60,12 @@ function setupHeaders() {
   const collapsibleHeaders = document.querySelectorAll(".collapsible-header")
 
   for (const header of collapsibleHeaders) {
-    const button = header.querySelector("button.toggle-button") as HTMLButtonElement
+    const button = header.querySelector("span.toggle-button") as HTMLButtonElement
     if (button) {
       button.addEventListener("click", toggleHeader)
-      window.addCleanup(() => button.removeEventListener("click", toggleHeader))
+      if (window.addCleanup) {
+        window.addCleanup(() => button.removeEventListener("click", toggleHeader))
+      }
 
       // Apply saved state
       const content = document.querySelector(
@@ -94,7 +96,9 @@ function setupHeaders() {
     }
 
     link.addEventListener("click", onClick)
-    window.addCleanup(() => link.removeEventListener("click", onClick))
+    if (window.addCleanup) {
+      window.addCleanup(() => link.removeEventListener("click", onClick))
+    }
   }
 }
 
