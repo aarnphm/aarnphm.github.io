@@ -8,11 +8,7 @@ modified: "2024-12-03"
 title: Concurrent System Design
 ---
 
-## Elements of Software Design
-
-This is a series of interactive notebooks that are used for teaching software design and more specifically concurrent system design at McMaster University. The accompanying assignments and tests are not part of this repository. A novel aspect is the use of state diagrams for teaching concurrency, including non-interference, see:
-
-[Teaching Concurrency with the Disappearing Formal Method](http://doi.org/10.1007/978-3-030-32441-4_9). Sekerinski, E. In Dongol, B.; Petre, L.; and Smith, G., editor(s), Formal Methods Teaching, volume 11758 of Lecture Notes in Computer Science, pages 135–149, 2019. Springer, Cham.
+book: [Teaching Concurrency with the Disappearing Formal Method](http://doi.org/10.1007/978-3-030-32441-4_9). Sekerinski, E. In Dongol, B.; Petre, L.; and Smith, G., editor(s), Formal Methods Teaching, volume 11758 of Lecture Notes in Computer Science, pages 135–149, 2019. Springer, Cham.
 
 The course notes are being constantly revised; comments are welcome. See my [home page](http://www.cas.mcmaster.ca/~emil/) for the latest installments of the courses using these notes. Of course, I would love to hear if you plan to use these notes for courses or otherwise.
 
