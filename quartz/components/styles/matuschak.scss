@@ -142,7 +142,6 @@ a {
         width: var(--note-content-width);
         max-width: var(--note-content-width);
         height: 100%;
-        flex-shrink: 0;
         top: 0;
         position: sticky;
         flex-grow: 1;
@@ -181,14 +180,15 @@ a {
         .stacked-title {
           writing-mode: vertical-rl;
           background: var(--light);
-          margin: 0;
+          margin: 36px 0 0 0;
           overflow: hidden;
           line-height: 40px;
           font-size: 17px;
           letter-spacing: 0.03em;
           font-weight: 500;
           color: initial;
-          position: sticky;
+          inset: 0;
+          position: absolute;
           bottom: 0;
           width: var(--note-title-width);
           opacity: 0;

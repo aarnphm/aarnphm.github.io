@@ -311,7 +311,7 @@ class StackedNoteManager {
     noteTitle.textContent = title
 
     const elView = () => {
-      this.main.scrollTo({ left: note.getBoundingClientRect().left, behavior: "smooth" })
+      this.main.scrollTo({ left: note.getBoundingClientRect().left - i * left, behavior: "smooth" })
     }
     noteTitle.addEventListener("click", elView)
     window.addCleanup(() => noteTitle.removeEventListener("click", elView))
@@ -319,8 +319,10 @@ class StackedNoteManager {
     const noteContent = document.createElement("div")
     noteContent.className = "stacked-content"
     noteContent.append(...contents)
-    const backlinks = await this.createBacklinks(slug)
-    noteContent.append(backlinks)
+    if (!["tags"].some((v) => slug.includes(v))) {
+      const backlinks = await this.createBacklinks(slug)
+      noteContent.append(backlinks)
+    }
 
     note.append(noteContent, noteTitle)
 
@@ -352,10 +354,6 @@ class StackedNoteManager {
     const width = parseInt(this.styled.getPropertyValue("--note-content-width"))
     const currentChildren = Array.from(this.column.children) as HTMLElement[]
 
-    // Track if we have new notes to trigger scroll
-    let hasNewNotes = false
-    let lastNewNote: HTMLElement | undefined
-
     // Remove notes not in DAG
     currentChildren.forEach((child) => {
       const slug = child.dataset.slug!
@@ -373,8 +371,6 @@ class StackedNoteManager {
           contents: node.contents,
         })
         this.column.appendChild(node.note)
-        hasNewNotes = true
-        lastNewNote = node.note
 
         if (node.hash) {
           const heading = node.note.querySelector(node.hash) as HTMLElement | null
@@ -389,11 +385,12 @@ class StackedNoteManager {
     this.column.style.width = `${this.column.children.length * width}px`
     this.container.classList.toggle("active", this.isActive)
 
-    // Scroll to newest note if we added any
-    if (hasNewNotes && lastNewNote) {
+    // Always scroll to rightmost note
+    if (this.column.lastElementChild) {
       requestAnimationFrame(() => {
-        const left = lastNewNote!.getBoundingClientRect().left
-        this.main.scrollTo({ left, behavior: "smooth" })
+        // Calculate full scroll width
+        const scrollWidth = this.column.scrollWidth - this.main.clientWidth
+        this.main.scrollTo({ left: scrollWidth, behavior: "smooth" })
       })
     }
   }
@@ -403,11 +400,7 @@ class StackedNoteManager {
     const note = notes.find((note) => note.dataset.slug === slug)
     if (!note) return
 
-    this.main.scrollTo({
-      left: (this.column.children.item(notes.indexOf(note)) as HTMLElement).getBoundingClientRect()
-        .left,
-      behavior: "smooth",
-    })
+    this.main.scrollTo({ left: note.getBoundingClientRect().left, behavior: "smooth" })
   }
 
   async add(href: URL, anchor?: HTMLElement) {
