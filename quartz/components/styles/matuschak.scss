@@ -85,6 +85,21 @@ body.stack-mode {
   .breadcrumb-container {
     visibility: hidden;
   }
+
+  .collapsible-header {
+    & .toggle-button {
+      display: none;
+    }
+
+    .collapsible-header-content-outer {
+      padding-left: 0;
+
+      .collapsible-header-content {
+        padding-left: 0;
+        border-left-width: 0px;
+      }
+    }
+  }
 }
 
 a {
