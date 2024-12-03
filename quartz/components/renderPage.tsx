@@ -3,7 +3,7 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import HeaderConstructor from "./Header"
 import BodyConstructor from "./Body"
 import ContentConstructor from "./pages/Content"
-import MetaConstructor from "./Meta"
+import GraphConstructor from "./Graph"
 import SpacerConstructor from "./Spacer"
 import FooterConstructor from "./Footer"
 import { byDateAndAlphabetical } from "./PageList"
@@ -813,17 +813,17 @@ export function renderPage(
       pageBody: (props: QuartzComponentProps) => {
         const { displayClass } = props
         const Element = ElementComponent()
-        const Meta = MetaConstructor()
+        const Graph = GraphConstructor()
 
         return (
           <>
-            <Meta {...props} />
             <h1 class="article-title" style="margin-top: 1rem" lang="fr">
               Bonjour, je suis Aaron.
             </h1>
             <div class={classNames(displayClass, "landing")}>
               <Element {...componentData} />
             </div>
+            <Graph {...props} />
           </>
         )
       },
