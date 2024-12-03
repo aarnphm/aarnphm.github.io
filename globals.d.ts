@@ -1,8 +1,8 @@
 interface StackedManager {
   active: boolean
   destroy(): void
-  async open(): Promise<void>
-  async add(href: URL): Promise<void>
+  async open(): Promise<boolean>
+  async add(href: URL): Promise<boolean>
 }
 
 export declare global {

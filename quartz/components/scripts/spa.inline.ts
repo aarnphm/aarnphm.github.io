@@ -255,7 +255,18 @@ class StackedNoteManager {
         if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
 
         e.preventDefault()
-        await this.add(new URL(href), link)
+        const res = await this.add(new URL(href), link)
+        if (res) {
+          const children = [...this.column.children] as HTMLElement[]
+          this.main.scrollTo({
+            left: (
+              this.column.children.item(
+                children.findIndex((node) => node.dataset.slug === href),
+              ) as HTMLElement
+            ).getBoundingClientRect().left,
+            behavior: "smooth",
+          })
+        }
       }
 
       link.addEventListener("click", traverseLink)
@@ -295,12 +306,16 @@ class StackedNoteManager {
   }
 
   private focus(slug: string) {
-    const node = this.dag.get(slug)
-    if (!node) return
+    const notes = [...this.column.children] as HTMLElement[]
+    const note = notes.find((note) => note.dataset.slug === slug)
+    if (!note) return
 
-    node.note.scrollIntoView({ behavior: "smooth" })
+    this.main.scrollTo({
+      left: (this.column.children.item(notes.indexOf(note)) as HTMLElement).getBoundingClientRect()
+        .left,
+      behavior: "smooth",
+    })
   }
-
   async add(href: URL, anchor?: HTMLElement) {
     const slug = this.getSlug(href)
     if (!anchor) anchor = document.activeElement as HTMLAnchorElement
@@ -314,7 +329,7 @@ class StackedNoteManager {
     // If note exists in DAG
     if (this.dag.has(slug)) {
       this.focus(slug)
-      return
+      return true
     }
 
     // Get clicked note's slug
@@ -326,23 +341,34 @@ class StackedNoteManager {
     }
 
     const res = await this.fetchContent(href)
-    if (!res) return
+    if (!res) return false
 
+    const { hash } = res
     // Add new note to DAG
     const note = this.createNote(this.dag.getOrderedNodes().length, {
       slug,
       ...res,
     })
 
+    if (hash) {
+      const heading = note.querySelector(hash) as HTMLElement | null
+      if (heading) {
+        // leave ~12px of buffer when scrolling to a heading
+        note.scroll({ top: heading.offsetTop - 12, behavior: "smooth" })
+      }
+    }
+
     this.dag.addNode({ slug, title: res.title, anchor, note, contents: res.contents })
     this.focus(slug)
     this.updateURL()
+    return true
   }
 
   async open() {
     const res = await this.fetchContent(new URL(`/${this.baseSlug}`, window.location.toString()))
-    if (!res) return
+    if (!res) return false
 
+    const { hash } = res
     const note = this.createNote(0, { slug: this.baseSlug, ...res })
     this.dag.addNode({
       slug: this.baseSlug,
@@ -352,9 +378,18 @@ class StackedNoteManager {
       contents: res.contents,
     })
 
+    if (hash) {
+      const heading = note.querySelector(hash) as HTMLElement | null
+      if (heading) {
+        // leave ~12px of buffer when scrolling to a heading
+        note.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
+      }
+    }
+
     this.isActive = true
     this.render()
     this.updateURL()
+    return true
   }
 
   destroy() {
@@ -412,6 +447,7 @@ async function navigate(url: URL, isBack: boolean = false) {
       document.body.classList.add("stack-mode")
 
       // Let stacked notes manager handle the navigation
+      notifyNav(getFullSlug(window))
       return stacked.navigate(url)
     }
   }
