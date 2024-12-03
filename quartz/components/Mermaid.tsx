@@ -4,95 +4,48 @@ import { Root } from "hast"
 // @ts-ignore
 import script from "./scripts/mermaid.inline"
 import style from "./styles/mermaid.scss"
+import { h, s } from "hastscript"
 
 const Mermaid: QuartzComponent = ({ fileData }) => {
   return htmlToJsx(fileData.filePath!, {
     type: "root",
     children: [
-      {
-        type: "element",
-        tagName: "div",
-        properties: { id: "mermaid-container" },
-        children: [
-          {
-            type: "element",
-            tagName: "div",
-            properties: { className: ["mermaid-backdrop"] },
-            children: [],
-          },
-          {
-            type: "element",
-            tagName: "div",
-            properties: { id: "mermaid-space" },
-            children: [
-              {
-                type: "element",
-                tagName: "div",
-                properties: { className: ["mermaid-header"] },
-                children: [
+      h(
+        "#mermaid-container",
+        h(".mermaid-backdrop"),
+        h(
+          "#mermaid-space",
+          h(
+            ".mermaid-header",
+            h(
+              "button.close-button",
+              { arialabel: "close button", title: "close button", type: "button" },
+              [
+                s(
+                  "svg",
                   {
-                    type: "element",
-                    tagName: "button",
-                    properties: {
-                      className: ["close-button"],
-                      "aria-label": "close button",
-                      title: "close button",
-                    },
-                    children: [
-                      {
-                        type: "element",
-                        tagName: "svg",
-                        properties: {
-                          "aria-hidden": "true",
-                          xmlns: "http://www.w3.org/2000/svg",
-                          width: 24,
-                          height: 24,
-                          viewBox: "0 0 24 24",
-                          fill: "none",
-                          stroke: "currentColor",
-                          "stroke-width": "2",
-                          "stroke-linecap": "round",
-                          "stroke-linejoin": "round",
-                        },
-                        children: [
-                          {
-                            type: "element",
-                            tagName: "line",
-                            properties: {
-                              x1: 18,
-                              y1: 6,
-                              x2: 6,
-                              y2: 18,
-                            },
-                            children: [],
-                          },
-                          {
-                            type: "element",
-                            tagName: "line",
-                            properties: {
-                              x1: 6,
-                              y1: 6,
-                              x2: 18,
-                              y2: 18,
-                            },
-                            children: [],
-                          },
-                        ],
-                      },
-                    ],
+                    ariahidden: true,
+                    xmlns: "http://www.w3.org/2000/svg",
+                    width: 24,
+                    height: 24,
+                    viewbox: "0 0 24 24",
+                    fill: "none",
+                    stroke: "currentColor",
+                    strokewidth: 2,
+                    strokelinecap: "round",
+                    strokelinejoin: "round",
                   },
-                ],
-              },
-              {
-                type: "element",
-                tagName: "div",
-                properties: { className: ["mermaid-content"] },
-                children: [],
-              },
-            ],
-          },
-        ],
-      },
+                  [
+                    s("line", { x1: 18, y1: 6, x2: 6, y2: 18 }),
+                    s("line", { x1: 6, y1: 6, x2: 18, y2: 18 }),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          h(".mermaid-content"),
+        ),
+      ),
     ],
   } as Root)
 }

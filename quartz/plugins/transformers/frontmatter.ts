@@ -83,6 +83,9 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             const transclude = coalesceAliases(data, ["transclude", "transclusion"])
             if (transclude) data.transclude = transclude
 
+            const socials = coalesceAliases(data, ["social", "socials"])
+            if (socials) data.socials = socials
+
             // fill in frontmatter
             file.data.frontmatter = data as QuartzPluginData["frontmatter"]
           }
@@ -117,6 +120,7 @@ declare module "vfile" {
         noindex: boolean
         comments: boolean
         transclude: Partial<TranscludeOptions>
+        socials: Record<string, string>
       }>
   }
 }

@@ -7,21 +7,41 @@ const TagList: QuartzComponent = ({ fileData, displayClass }: QuartzComponentPro
   const baseDir = pathToRoot(fileData.slug!)
   if (tags && tags.length > 0) {
     return (
-      <div class={classNames(displayClass, "tags")}>
-        <h3>étiquette</h3>
-        <ul>
-          {tags.map((tag) => {
-            const linkDest = baseDir + `/tags/${slugTag(tag)}`
-            return (
-              <li>
-                <a href={linkDest} class="internal tag-link">
-                  {tag}
-                </a>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
+      <menu class={classNames(displayClass, "tags")}>
+        <li>
+          <h3>étiquette</h3>
+          <ul>
+            {tags.map((tag) => {
+              const linkDest = baseDir + `/tags/${slugTag(tag)}`
+              return (
+                <li>
+                  <a href={linkDest} class="internal tag-link">
+                    {tag}
+                  </a>
+                </li>
+              )
+            })}
+          </ul>
+        </li>
+        {fileData.frontmatter?.socials && (
+          <li class="socials">
+            <h3>média</h3>
+            <ul>
+              {Object.entries(fileData.frontmatter?.socials).map(([social, link]) => {
+                return (
+                  <li>
+                    <address>
+                      <a href={link} target="_blank" rel="noopener noreferrer" class="external">
+                        {social}
+                      </a>
+                    </address>
+                  </li>
+                )
+              })}
+            </ul>
+          </li>
+        )}
+      </menu>
     )
   } else {
     return null
@@ -30,7 +50,8 @@ const TagList: QuartzComponent = ({ fileData, displayClass }: QuartzComponentPro
 
 TagList.css = `
 ul.tags,
-.tags > ul {
+menu.tags,
+menu.tags > li > ul {
   list-style: none;
   display: flex;
   padding-left: 0;
@@ -41,6 +62,15 @@ ul.tags,
 
 ul.tags {
   margin: 1rem 0;
+}
+
+li.socials > ul {
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+li.socials > ul > li > address {
+  font-style: normal
 }
 
 .section-li > .section > .tags {

@@ -1,6 +1,6 @@
 import { QuartzTransformerPlugin } from "../types"
 import { Root, Html, BlockContent, DefinitionContent, Paragraph, Code } from "mdast"
-import { Element, Literal, Root as HtmlRoot } from "hast"
+import { Node, Element, Literal, Root as HtmlRoot } from "hast"
 import { ReplaceFunction, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import rehypeRaw from "rehype-raw"
 import { SKIP, visit } from "unist-util-visit"
@@ -18,6 +18,9 @@ import { toString } from "mdast-util-to-string"
 import { PhrasingContent } from "mdast-util-find-and-replace/lib"
 import { capitalize } from "../../util/lang"
 import { PluggableList } from "unified"
+import { h, s } from "hastscript"
+import { whitespace } from "hast-util-whitespace"
+import { remove } from "unist-util-remove"
 
 export interface Options {
   comments: boolean
@@ -729,40 +732,36 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 ((node.properties?.className ?? []) as string[])?.includes("mermaid")
               ) {
                 parent!.children = [
-                  {
-                    type: "element",
-                    tagName: "button",
-                    properties: {
-                      className: ["expand-button"],
+                  h(
+                    "button",
+                    {
+                      class: "expand-button",
                       type: "button",
-                      "aria-label": "Expand mermaid diagram",
-                      "aria-hidden": "true",
-                      tabindex: "-1",
+                      arialabel: "Expand mermaid diagram",
+                      ariahidden: true,
+                      tabindex: -1,
                     },
-                    children: [
-                      {
-                        type: "element",
-                        tagName: "svg",
-                        properties: {
+                    [
+                      s(
+                        "svg",
+                        {
                           width: 16,
                           height: 16,
-                          viewBox: "0 0 16 16",
+                          viewbox: "0 0 16 16",
                           fill: "currentColor",
+                          xmlns: "http://www.w3.org/2000/svg",
+                          ariahidden: true,
+                          tabindex: -1,
                         },
-                        children: [
-                          {
-                            type: "element",
-                            tagName: "path",
-                            properties: {
-                              fillRule: "evenodd",
-                              d: "M3.72 3.72a.75.75 0 011.06 1.06L2.56 7h10.88l-2.22-2.22a.75.75 0 011.06-1.06l3.5 3.5a.75.75 0 010 1.06l-3.5 3.5a.75.75 0 11-1.06-1.06l2.22-2.22H2.56l2.22 2.22a.75.75 0 11-1.06 1.06l-3.5-3.5a.75.75 0 010-1.06l3.5-3.5z",
-                            },
-                            children: [],
-                          },
+                        [
+                          s("path", {
+                            fillrule: "evenodd",
+                            d: "M3.72 3.72a.75.75 0 011.06 1.06L2.56 7h10.88l-2.22-2.22a.75.75 0 011.06-1.06l3.5 3.5a.75.75 0 010 1.06l-3.5 3.5a.75.75 0 11-1.06-1.06l2.22-2.22H2.56l2.22 2.22a.75.75 0 11-1.06 1.06l-3.5-3.5a.75.75 0 010-1.06l3.5-3.5z",
+                          }),
                         ],
-                      },
+                      ),
                     ],
-                  },
+                  ),
                   node,
                 ]
               }
@@ -770,6 +769,48 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           }
         })
       }
+
+      plugins.push(() => {
+        return (tree: HtmlRoot, _file) => {
+          const onlyImage = ({ children }: Element) =>
+            children.every((child) => (child as Element).tagName === "img" || whitespace(child))
+          const withAlt = ({ tagName, properties }: Element) =>
+            tagName === "img" && Boolean(properties.alt) && Boolean(properties.src)
+          const withCaption = ({ tagName, children }: Element) => {
+            return (
+              tagName === "figure" &&
+              children.some((child) => (child as Element).tagName === "figcaption")
+            )
+          }
+
+          // support better image captions
+          visit(tree, { tagName: "p" }, (node, idx, parent) => {
+            if (!onlyImage(node)) return
+            remove(node, "text")
+            parent?.children.splice(idx!, 1, ...node.children)
+            return idx
+          })
+
+          visit(
+            tree,
+            (node) => withAlt(node as Element),
+            (node, idx, parent) => {
+              if (withCaption(parent as Element) || (parent as Element)!.tagName === "a") {
+                return
+              }
+
+              parent?.children.splice(
+                idx!,
+                1,
+                h("figure", { "data-img-w-caption": "data-img-w-caption" }, [
+                  h("img", { ...(node as Element).properties, style: "margin: 1rem 0 0 0" }),
+                  h("figcaption", (node as Element).properties.alt as string),
+                ]),
+              )
+            },
+          )
+        }
+      })
 
       return plugins
     },

@@ -517,6 +517,8 @@ body {
 
     .tags {
       flex-grow: 1;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .content-meta {

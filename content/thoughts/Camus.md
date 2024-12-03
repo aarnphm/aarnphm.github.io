@@ -12,6 +12,8 @@ Of the absurd [[thoughts/reason|reasoning]] and [[thoughts/Existentialism|existe
 
 ## The Myth of Sisyphus
 
+> Influenced by [[thoughts/Philosophy and Nietzsche|Nietzsche]], Camus argued that life is inherently meaningless, while human continues to impose order on existence and to look for answers to unanswerable questions
+
 ### Absurd and suicide
 
 Suicide is the solution for the absurd:

@@ -413,7 +413,7 @@ class StackedNoteManager {
     const clickedNote = document.activeElement?.closest(".stacked-note") as HTMLDivElement
 
     Array.from(clickedNote.getElementsByClassName("dag")).forEach((anchor) =>
-      anchor.classList.toggle("dag", false),
+      anchor.classList.toggle("dag", this.dag.has((anchor as HTMLAnchorElement).href)),
     )
     anchor.classList.add("dag")
 

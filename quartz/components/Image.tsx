@@ -7,7 +7,7 @@ import { classNames } from "../util/lang"
 const Image: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
   return (
     <div class={classNames(displayClass, "image-popup-modal")} id="image-popup-modal">
-      <div class="image-popup-backdrop"></div>
+      <div class="image-popup-backdrop" />
       <div class="image-popup-content">
         <button class="image-popup-close" aria-label="Close popup">
           <svg

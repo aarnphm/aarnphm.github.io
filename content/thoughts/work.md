@@ -29,8 +29,11 @@ You can find internal monologue under [[/posts/]] index.
   - Implemented font-fetching before runtime https://github.com/jackyzha0/quartz/pull/817
   - Implemented telescope-style search https://github.com/jackyzha0/quartz/pull/722, https://github.com/jackyzha0/quartz/pull/774, https://github.com/jackyzha0/quartz/pull/782
   - Added sidenotes components, inspired by [Tuffe's CSS](https://edwardtufte.github.io/tufte-css/) <https://github.com/jackyzha0/quartz/pull/1555>, [[thoughts/mechanistic interpretability|examples]]
-  - Landing page of [[/|this]] website, with custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [jupyter notebooks](https://aarnphm.xyz/thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA)
-  - Source: <https://github.com/jackyzha0/quartz> and [site](https://quartz.jzhao.xyz/)
+  - Added [LLM-readable source](https://x.com/aarnphm_/status/1857955302110376342)
+  - Landing page of [[/|this]] website, with custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA|jupyter notebook]]
+  - Source: <https://github.com/jackyzha0/quartz>, [site](https://quartz.jzhao.xyz/)
+
+    <https://x.com/aarnphm_/status/1861550609834402129>
 
 - **avante.nvim** - :mortar_board: A [Cursor](https://www.cursor.com/)-like chat IDE for [[uses#^neovim|Neovim]] (2024-)
 

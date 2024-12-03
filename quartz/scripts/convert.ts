@@ -6,7 +6,7 @@ import chalk from "chalk"
 
 async function convertMedia(contentDir: string) {
   try {
-    const mediaFiles = await globby(["**/*.{png,jpeg,jpg}"], {
+    const mediaFiles = await globby(["content/**/*.{png,jpeg,jpg}"], {
       cwd: contentDir,
       ignore: ["**/*.ignore.{png,jpeg,jpg}"],
       absolute: true,

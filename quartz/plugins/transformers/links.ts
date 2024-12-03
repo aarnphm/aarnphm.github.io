@@ -15,6 +15,7 @@ import isAbsoluteUrl from "is-absolute-url"
 import { Root, ElementContent } from "hast"
 import { filterEmbedTwitter } from "./twitter"
 import { VFile } from "vfile"
+import { s } from "hastscript"
 
 interface Options {
   enableArxivEmbed: boolean
@@ -143,38 +144,22 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isExternal &&
                   opts.externalLinkIcon
                 ) {
-                  node.children.push({
-                    type: "element",
-                    tagName: "svg",
-                    properties: {
-                      "aria-hidden": "true",
-                      class: "external-icon",
-                      viewBox: "0 -3 16 16",
-                      fill: "none",
-                      stroke: "currentColor",
-                      "stroke-width": "1.5",
-                      "stroke-linecap": "round",
-                      "stroke-linejoin": "round",
-                    },
-                    children: [
+                  node.children.push(
+                    s(
+                      "svg",
                       {
-                        type: "element",
-                        tagName: "path",
-                        properties: {
-                          d: "M4.5 11.5l7-7",
-                        },
-                        children: [],
+                        ariahidden: true,
+                        class: "external-icon",
+                        viewbox: "0 -3 16 16",
+                        fill: "none",
+                        stroke: "currentColor",
+                        strokewidth: 1.5,
+                        strokelinecap: "round",
+                        strokelinejoin: "round",
                       },
-                      {
-                        type: "element",
-                        tagName: "path",
-                        properties: {
-                          d: "M6.5 4.5h5v5",
-                        },
-                        children: [],
-                      },
-                    ],
-                  })
+                      [s("path", { d: "M4.5 11.5l7-7" }), s("path", { d: "M6.5 4.5h5v5" })],
+                    ),
+                  )
                 }
 
                 // special cases for parsing landing-links

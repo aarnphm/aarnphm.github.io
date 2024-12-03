@@ -27,6 +27,7 @@ import { JSX } from "preact"
 import { headingRank } from "hast-util-heading-rank"
 import type { TranscludeOptions } from "../plugins/transformers/frontmatter"
 import { QuartzPluginData } from "../plugins/vfile"
+import { h, s } from "hastscript"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
 import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
@@ -42,6 +43,19 @@ interface RenderComponents {
   footer: QuartzComponent
 }
 
+const svgOptions = {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: 16,
+  height: 16,
+  viewbox: "0 0 24 24",
+  ariahidden: true,
+  fill: "currentColor",
+  stroke: "currentColor",
+  strokewidth: 0,
+  strokelinecap: "round",
+  strokelinejoin: "round",
+}
+
 function headerElement(
   node: Element,
   content: ElementContent[],
@@ -53,56 +67,16 @@ function headerElement(
   const id = node.properties?.id ?? idx
   // indicate whether the header is collapsed or not
   const lastIdx = node.children.length > 0 ? node.children.length - 1 : 0
-  const icons: Element = {
-    type: "element",
-    tagName: "svg",
-    properties: {
-      "aria-hidden": "true",
-      xmlns: "http://www.w3.org/2000/svg",
-      width: 16,
-      height: 16,
-      viewBox: "0 0 24 24",
-      fill: "currentColor",
-      stroke: "currentColor",
-      "stroke-width": "0",
-      "stroke-linecap": "round",
-      "stroke-linejoin": "round",
-      style: "padding-left: 0.2rem;",
-      className: ["collapsed-dots"],
-    },
-    children: [
-      {
-        type: "element",
-        tagName: "circle",
-        properties: {
-          cx: "6",
-          cy: "12",
-          r: "2",
-        },
-        children: [],
-      },
-      {
-        type: "element",
-        tagName: "circle",
-        properties: {
-          cx: "12",
-          cy: "12",
-          r: "2",
-        },
-        children: [],
-      },
-      {
-        type: "element",
-        tagName: "circle",
-        properties: {
-          cx: "18",
-          cy: "12",
-          r: "2",
-        },
-        children: [],
-      },
+
+  const icons = s(
+    "svg",
+    { ...svgOptions, class: "collapsed-dots", style: "padding-left: 0.2rem;" },
+    [
+      s("circle", { cx: 6, cy: 12, r: 2 }),
+      s("circle", { cx: 12, cy: 12, r: 2 }),
+      s("circle", { cx: 18, cy: 12, r: 2 }),
     ],
-  }
+  )
   node.children.splice(lastIdx, 0, icons)
 
   let className = ["collapsible-header"]
@@ -112,164 +86,70 @@ function headerElement(
 
   const rank = headingRank(node) as number
 
-  return {
-    type: "element",
-    tagName: "section",
-    properties: { className, id, "data-level": `${rank}` },
-    children: [
-      {
-        type: "element",
-        tagName: "div",
-        properties: {
-          className: ["header-controls"],
+  return h(`section.${className.join(".")}#${id}`, { "data-level": rank }, [
+    h(".header-controls", [
+      h(
+        `span.toggle-button#${buttonId}-toggle`,
+        {
+          arialabel: "Toggle content visibility",
+          ariaexpanded: true,
+          type: "button",
         },
-        children: [
-          // Toggle button
-          {
-            type: "element",
-            tagName: "span",
-            properties: {
-              id: `${buttonId}-toggle`,
-              ariaLabel: "Toggle content visibility",
-              ariaExpanded: true,
-              type: "button",
-              className: ["toggle-button"],
-            },
-            children: [
+        [
+          h(".toggle-icons", [
+            s(
+              "svg",
               {
-                type: "element",
-                tagName: "div",
-                properties: {
-                  className: ["toggle-icons"],
-                },
-                children: [
-                  // default circle icon
-                  {
-                    type: "element",
-                    tagName: "svg",
-                    properties: {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      width: 16,
-                      height: 16,
-                      viewBox: "0 0 24 24",
-                      fill: "var(--dark)",
-                      stroke: "var(--dark)",
-                      "stroke-width": "2",
-                      "stroke-linecap": "round",
-                      "stroke-linejoin": "round",
-                      className: ["circle-icon"],
-                    },
-                    children: [
-                      {
-                        type: "element",
-                        tagName: "circle",
-                        properties: {
-                          cx: "12",
-                          cy: "12",
-                          r: "3",
-                        },
-                        children: [],
-                      },
-                    ],
-                  },
-                  // expand icon
-                  {
-                    type: "element",
-                    tagName: "svg",
-                    properties: {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      width: 16,
-                      height: 16,
-                      viewBox: "0 0 24 24",
-                      fill: "var(--tertiary)",
-                      stroke: "var(--tertiary)",
-                      "stroke-width": "2",
-                      "stroke-linecap": "round",
-                      "stroke-linejoin": "round",
-                      className: ["expand-icon"],
-                    },
-                    children: [
-                      {
-                        type: "element",
-                        tagName: "line",
-                        properties: {
-                          x1: "12",
-                          y1: "5",
-                          x2: "12",
-                          y2: "19",
-                        },
-                        children: [],
-                      },
-                      {
-                        type: "element",
-                        tagName: "line",
-                        properties: {
-                          x1: "5",
-                          y1: "12",
-                          x2: "19",
-                          y2: "12",
-                        },
-                        children: [],
-                      },
-                    ],
-                  },
-                  // collapse icon
-                  {
-                    type: "element",
-                    tagName: "svg",
-                    properties: {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      width: 16,
-                      height: 16,
-                      viewBox: "0 0 24 24",
-                      fill: "none",
-                      stroke: "currentColor",
-                      "stroke-width": "2",
-                      "stroke-linecap": "round",
-                      "stroke-linejoin": "round",
-                      className: ["collapse-icon"],
-                    },
-                    children: [
-                      {
-                        type: "element",
-                        tagName: "line",
-                        properties: {
-                          x1: "5",
-                          y1: "12",
-                          x2: "19",
-                          y2: "12",
-                        },
-                        children: [],
-                      },
-                    ],
-                  },
-                ],
+                ...svgOptions,
+                fill: "var(--dark)",
+                stroke: "var(--dark)",
+                strokewidth: "2",
+                class: "circle-icon",
               },
-            ],
-          },
-          node,
+              [s("circle", { cx: 12, cy: 12, r: 3 })],
+            ),
+            s(
+              "svg",
+              {
+                ...svgOptions,
+                fill: "var(--tertiary)",
+                stroke: "var(--tertiary)",
+                strokewidth: "2",
+                class: "expand-icon",
+              },
+              [
+                s("line", { x1: 12, y1: 5, x2: 12, y2: 19 }),
+                s("line", { x1: 5, y1: 12, x2: 19, y2: 12 }),
+              ],
+            ),
+            s(
+              "svg",
+              {
+                ...svgOptions,
+                fill: "none",
+                stroke: "currentColor",
+                strokewidth: "2",
+                class: "collapse-icon",
+              },
+              [s("line", { x1: 5, y1: 12, x2: 19, y2: 12 })],
+            ),
+          ]),
         ],
-      },
-      {
-        type: "element",
-        tagName: "div",
-        properties: { className: ["collapsible-header-content-outer"] },
-        children: [
-          {
-            type: "element",
-            tagName: "div",
-            properties: {
-              className: ["collapsible-header-content"],
-              ["data-references"]: `${buttonId}-toggle`,
-              ["data-level"]: `${rank}`,
-              ["data-heading-id"]: node.properties.id, // HACK: This assumes that rehype-slug already runs this target
-            },
-            children: content,
-          },
-        ],
-      },
-    ],
-  }
+      ),
+      node,
+    ]),
+    h(".collapsible-header-content-outer", [
+      h(
+        ".collapsible-header-content",
+        {
+          ["data-references"]: `${buttonId}-toggle`,
+          ["data-level"]: `${rank}`,
+          ["data-heading-id"]: node.properties.id, // HACK: This assumes that rehype-slug already runs this target
+        },
+        content,
+      ),
+    ]),
+  ])
 }
 
 function shouldStopWrapping(node: ElementContent) {
@@ -585,84 +465,39 @@ export function transcludeFinal(
     const [parent, ...children] = url.split("/")
     const truncated = children.length > 2 ? `${parent}/.../${children[children.length - 1]}` : url
     const metadata: Element[] = [
-      {
-        type: "element",
-        tagName: "li",
-        properties: {
-          style: {
-            "font-style": "italic",
-            color: "var(--gray)",
-          },
-        },
-        children: [{ type: "text", value: `url: ${truncated}` }],
-      },
+      h("li", { style: "font-style: italic; color: var(--gray);" }, [
+        { type: "text", value: `url: ${truncated}` },
+      ]),
     ]
 
     if (description) {
-      metadata.push({
-        type: "element",
-        tagName: "li",
-        properties: {},
-        children: [
-          {
-            type: "element",
-            tagName: "span",
-            properties: {
-              style: { "text-decoration": "underline" },
-            },
-            children: [{ type: "text", value: `description` }],
-          },
+      metadata.push(
+        h("li", [
+          h("span", { style: "text-decoration: underline;" }, [
+            { type: "text", value: `description` },
+          ]),
           { type: "text", value: `: ${description}` },
-        ],
-      })
+        ]),
+      )
     }
 
-    return {
-      type: "element",
-      tagName: "div",
-      properties: { className: ["transclude-ref"], "data-href": href },
-      children: [
+    return h(".transclude-ref", { "data-href": href }, [
+      h("ul.metadata", metadata),
+      s(
+        "svg",
         {
-          type: "element",
-          tagName: "ul",
-          properties: { className: ["metadata"] },
-          children: metadata,
+          ...svgOptions,
+          fill: "none",
+          stroke: "currentColor",
+          strokewidth: "2",
+          class: "blockquote-link",
         },
-        {
-          type: "element",
-          tagName: "svg",
-          properties: {
-            className: ["blockquote-link"],
-            width: 16,
-            height: 16,
-            viewBox: "0 0 24 24",
-            fill: "none",
-            stroke: "currentColor",
-            "stroke-width": "2",
-            "stroke-linecap": "round",
-            "stroke-linejoin": "round",
-          },
-          children: [
-            {
-              type: "element",
-              tagName: "path",
-              properties: {
-                d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71",
-              },
-              children: [],
-            },
-            {
-              type: "element",
-              tagName: "path",
-              properties: {
-                d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71",
-              },
-              children: [],
-            },
-          ],
-        },
-      ],
-    }
+        [
+          s("path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" }),
+          s("path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" }),
+        ],
+      ),
+    ])
   }
 
   // NOTE: process transcludes in componentData
@@ -698,26 +533,15 @@ export function transcludeFinal(
           blockRef = blockRef.slice("#^".length)
           let blockNode = page.blocks?.[blockRef]
           if (blockNode) {
-            if (blockNode.tagName === "li") {
-              blockNode = {
-                type: "element",
-                tagName: "ul",
-                properties: {},
-                children: [blockNode],
-              }
-            }
+            if (blockNode.tagName === "li") blockNode = h("ul", blockNode)
 
             node.children = [
               anchor(inner.properties?.href as string, url, alias, title),
               normalizeHastElement(blockNode, slug, transcludeTarget),
-              {
-                type: "element",
-                tagName: "a",
-                properties: { href: inner.properties?.href, class: ["internal", "transclude-src"] },
-                children: [
-                  { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
-                ],
-              },
+
+              h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
+                { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+              ]),
             ]
           }
         } else if (blockRef?.startsWith("#") && page.htmlAst) {
@@ -754,47 +578,32 @@ export function transcludeFinal(
             ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
             ),
-            {
-              type: "element",
-              tagName: "a",
-              properties: { href: inner.properties?.href, class: ["internal", "transclude-src"] },
-              children: [
-                { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
-              ],
-            },
+            h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
+              { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+            ]),
           ]
         } else if (page.htmlAst) {
           // page transclude
           node.children = [
             anchor(inner.properties?.href as string, url, alias, title),
             title
-              ? {
-                  type: "element",
-                  tagName: "h1",
-                  properties: {},
-                  children: [
-                    {
-                      type: "text",
-                      value:
-                        page.frontmatter?.title ??
-                        i18n(cfg.locale).components.transcludes.transcludeOf({
-                          targetSlug: page.slug!,
-                        }),
-                    },
-                  ],
-                }
+              ? h("h1", [
+                  {
+                    type: "text",
+                    value:
+                      page.frontmatter?.title ??
+                      i18n(cfg.locale).components.transcludes.transcludeOf({
+                        targetSlug: page.slug!,
+                      }),
+                  },
+                ])
               : ({} as ElementContent),
             ...(page.htmlAst.children as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
             ),
-            {
-              type: "element",
-              tagName: "a",
-              properties: { href: inner.properties?.href, class: ["internal", "transclude-src"] },
-              children: [
-                { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
-              ],
-            },
+            h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
+              { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+            ]),
           ]
         }
       }

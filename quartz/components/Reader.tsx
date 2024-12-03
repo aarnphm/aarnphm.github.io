@@ -6,6 +6,7 @@ import { Node, Element, ElementContent, Root } from "hast"
 import { mergeIsomorphic } from "./renderPage"
 import { htmlToJsx } from "../util/jsx"
 import { headingRank } from "hast-util-heading-rank"
+import { h } from "hastscript"
 import style from "./styles/reader.scss"
 // @ts-ignore
 import readerScript from "./scripts/reader.inline"
@@ -37,14 +38,7 @@ export default (() => {
             blockRef = blockRef.slice("#^".length)
             let blockNode = page.blocks?.[blockRef]
             if (blockNode) {
-              if (blockNode.tagName === "li") {
-                blockNode = {
-                  type: "element",
-                  tagName: "ul",
-                  properties: {},
-                  children: [blockNode],
-                }
-              }
+              if (blockNode.tagName === "li") blockNode = h("ul", blockNode)
 
               parent.children.splice(
                 idx,
