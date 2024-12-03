@@ -7,21 +7,21 @@ export const SearchConstructor = (() => {
   const Search: QuartzComponent = ({ cfg }: QuartzComponentProps) => {
     const searchPlaceholder = i18n(cfg.locale).components.search.searchBarPlaceholder
     return (
-      <div class="search">
-        <search id="search-container">
+      <search class="search">
+        <section id="search-container">
           <form id="search-space">
             <input
               autocomplete="off"
               id="search-bar"
               name="search"
-              type="text"
+              type="search"
               aria-label={searchPlaceholder}
               placeholder={searchPlaceholder}
             />
           </form>
           <output id="search-layout" data-preview={true}></output>
-        </search>
-      </div>
+        </section>
+      </search>
     )
   }
   return Search

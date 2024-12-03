@@ -142,6 +142,7 @@ a {
         width: var(--note-content-width);
         max-width: var(--note-content-width);
         height: 100%;
+        flex-shrink: 0;
         top: 0;
         position: sticky;
         flex-grow: 1;

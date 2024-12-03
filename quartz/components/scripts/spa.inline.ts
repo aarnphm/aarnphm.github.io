@@ -92,6 +92,8 @@ class StackedNoteManager {
 
     const titleWidth = parseInt(this.styled.getPropertyValue("--note-title-width"))
 
+    const topCached = new Map()
+
     const updateNoteStates = () => {
       const notes = [...this.column.children] as HTMLElement[]
 
@@ -109,7 +111,14 @@ class StackedNoteManager {
         nextNote.classList.toggle("overlay", nextRect.left < rect.right)
 
         // Check collapse - when next note fully overlaps (leaving title space)
-        note.classList.toggle("collapsed", nextRect.left <= rect.left + titleWidth)
+        const shouldCollapsed = nextRect.left <= rect.left + titleWidth
+        if (shouldCollapsed) {
+          topCached.set(note.dataset.slug, rect.top)
+          note.scrollTo({ top: 0 })
+        } else {
+          note.scrollTo({ top: topCached.get(note.dataset.slug) ?? 0 })
+        }
+        note.classList.toggle("collapsed", shouldCollapsed)
       })
     }
 
@@ -517,14 +526,10 @@ async function navigate(url: URL, isBack: boolean = false) {
     // Enable stacked notes view
     const container = document.getElementById("stacked-notes-container")
     const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
-    if (container && button) {
-      button.setAttribute("aria-checked", "true")
-      container.classList.add("active")
-      document.body.classList.add("stack-mode")
-
-      // Let stacked notes manager handle the navigation
-      return stacked.navigate(url)
+    if (container && button && button.getAttribute("aria-checked") === "false") {
+      button.click()
     }
+    return stacked.navigate(url)
   }
 
   const stackedContainer = document.getElementById("stacked-notes-container")
