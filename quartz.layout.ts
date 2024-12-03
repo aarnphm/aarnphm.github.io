@@ -9,7 +9,7 @@ export const sharedPageComponents: SharedLayout = {
     Component.Breadcrumbs({ rootName: "~", style: "unique", spacerSymbol: "/" }),
     Component.Keybind(),
     Component.Search(),
-    Component.ReaderView(),
+    Component.StackedNotes(),
   ],
   afterBody: [Component.Recommendations(), Component.Backlinks()],
   footer: Component.Footer({

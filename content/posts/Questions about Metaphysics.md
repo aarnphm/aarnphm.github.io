@@ -3,6 +3,7 @@ id: Questions about Metaphysics
 tags:
   - philosophy
   - fruit
+  - philos1aa3
 date: "2023-11-16"
 description: Questions about Aristotle's Metaphysics
 modified: "2024-10-07"

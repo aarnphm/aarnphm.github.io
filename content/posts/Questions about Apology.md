@@ -3,6 +3,7 @@ id: Questions about Apology
 tags:
   - philosophy
   - fruit
+  - philos1aa3
 date: "2023-11-09"
 description: Questions about Plato's Apology
 modified: "2024-10-07"

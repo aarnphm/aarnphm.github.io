@@ -30,21 +30,11 @@ document.addEventListener("nav", async () => {
   const container = keybind.querySelector("#shortcut-container")
   const shortcutKey = keybind.querySelector("#shortcut-key") as HTMLElement
 
-  const center = document.querySelector(".center") as HTMLElement | null
-  const right = document.querySelector(".right.sidebar") as HTMLElement | null
-  const left = document.querySelector(".left.sidebar") as HTMLElement | null
-
   const showContainer = () => {
-    if (center) center.style.zIndex = "-1"
-    if (right) right.style.zIndex = "-1"
-    if (left) left.style.zIndex = "-1"
     container?.classList.add("active")
   }
 
   const hideContainer = () => {
-    if (center) center.style.zIndex = ""
-    if (right) right.style.zIndex = ""
-    if (left) left.style.zIndex = ""
     container?.classList.remove("active")
   }
 

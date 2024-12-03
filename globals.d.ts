@@ -1,11 +1,8 @@
 interface StackedManager {
   active: boolean
+  destroy(): void
   async open(): Promise<void>
   async add(href: URL): Promise<void>
-  async restore(slugs: string[]): Promise<void>
-
-  close(slug: string): void
-  destroy(): void
 }
 
 export declare global {

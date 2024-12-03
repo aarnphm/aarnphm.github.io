@@ -2,42 +2,36 @@
 // given that we will need to hijack the router
 // We will only setup buttons here
 // see ./spa.inline.ts
-document.addEventListener("nav", async () => {
-  const readerView = document.getElementById("reader-view-toggle") as HTMLButtonElement
-  if (!readerView) return
+document.addEventListener("nav", async (ev) => {
+  const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
+  const container = document.getElementById("stacked-notes-container")
+  if (!button || !container) return
 
   const switchCheckState = async () => {
-    const isChecked = readerView.getAttribute("aria-checked") === "true"
-    const header = document.getElementsByTagName("header")[0]
-    const footer = document.getElementsByTagName("footer")[0]
-    const main = document.getElementById("quartz-root") as HTMLElement
-    const stackedContainer = document.getElementById("stacked-notes-container")
+    const isChecked = button.getAttribute("aria-checked") === "true"
+    const body = document.body
+    const currentUrl = window.location.href
 
     if (!isChecked) {
-      readerView.setAttribute("aria-checked", "true")
-      header?.classList.add("stack-mode")
-      footer?.classList.add("stack-mode")
-      main?.classList.add("stack-mode")
-      stackedContainer?.classList.add("active")
+      button.setAttribute("aria-checked", "true")
+      container.classList.add("active")
+      body.classList.add("stack-mode")
 
-      const url = new URL(window.location.toString())
-      const stackParam = url.hash.match(/stack=([^&]+)/)
-      if (stackParam) {
-        await window.stacked.restore(stackParam[1].split(","))
-      } else {
-        await window.stacked.open()
+      if (window.location.hash) {
+        window.history.pushState("", document.title, currentUrl.split("#")[0])
       }
+      await window.stacked.open()
     } else {
-      readerView.setAttribute("aria-checked", "false")
-      header?.classList.remove("stack-mode")
-      footer?.classList.remove("stack-mode")
-      main?.classList.remove("stack-mode")
-      stackedContainer?.classList.remove("active")
-
+      button.setAttribute("aria-checked", "false")
+      container.classList.remove("active")
+      body.classList.remove("stack-mode")
       window.stacked.destroy()
+      window.spaNavigate(ev.detail.url)
     }
   }
 
-  readerView.addEventListener("click", switchCheckState)
-  window.addCleanup(() => readerView.removeEventListener("click", switchCheckState))
+  button.addEventListener("click", switchCheckState)
+  window.addCleanup(() => {
+    button.removeEventListener("click", switchCheckState)
+  })
 })

@@ -8,6 +8,9 @@ document.addEventListener("nav", () => {
   for (let i = 0; i < els.length; i++) {
     const codeBlock = els[i].getElementsByTagName("code")[0]
     if (codeBlock) {
+      const previousBtn = codeBlock.querySelector("button.clipboard-button")
+      if (previousBtn) continue
+
       const source = (
         codeBlock.dataset.clipboard ? codeBlock.dataset.clipboard : codeBlock.innerText
       ).replace(/\n\n/g, "\n")
@@ -16,7 +19,7 @@ document.addEventListener("nav", () => {
       button.type = "button"
       button.innerHTML = svgCopy
       button.ariaLabel = "Copy source"
-      button.tabIndex = "-1"
+      button.tabIndex = -1
       function onClick() {
         navigator.clipboard.writeText(source).then(
           () => {

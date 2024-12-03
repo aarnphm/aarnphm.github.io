@@ -102,3 +102,7 @@ Overall should be a net positive, but it's a double-edged sword.
 Tool that lower of barrier of entry is always a good thing, but it often will lead to probably even higher discrepancies in quality of software
 
 Increased in productivity, but also increased in technical debt, as these generated code are mostly "bad" code, and often we have to nudge and do a lot of **[[thoughts/prompt engineering|prompt engineering]]**.
+
+---
+
+![[thoughts/mechanistic interpretability]]

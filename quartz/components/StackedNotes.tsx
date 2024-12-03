@@ -4,12 +4,12 @@ import script from "./scripts/matuschak.inline"
 import style from "./styles/matuschak.scss"
 
 export default (() => {
-  const ReaderView: QuartzComponent = () => {
+  const StackedNotes: QuartzComponent = () => {
     return (
       <span
-        id="reader-view-toggle"
-        title="Toggle reader view"
-        aria-label="Toggle reader view"
+        id="stacked-note-toggle"
+        title="Toggle stacked notes"
+        aria-label="Toggle stacked notes"
         type="button"
         role="switch"
         aria-checked="false"
@@ -46,8 +46,8 @@ export default (() => {
     )
   }
 
-  ReaderView.css = style
-  ReaderView.afterDOMLoaded = script
+  StackedNotes.css = style
+  StackedNotes.afterDOMLoaded = script
 
-  return ReaderView
+  return StackedNotes
 }) satisfies QuartzComponentConstructor

@@ -1,5 +1,5 @@
 import Sidenotes from "./Sidenotes"
-import ReaderView from "./ReaderView"
+import StackedNotes from "./StackedNotes"
 import Recommendations from "./Recommendations"
 import Byline from "./Byline"
 import Mermaid from "./Mermaid"
@@ -34,7 +34,7 @@ import Comments from "./Comments"
 export {
   Sidenotes,
   Recommendations,
-  ReaderView,
+  StackedNotes,
   Byline,
   Mermaid,
   Toolbar,

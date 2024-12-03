@@ -244,3 +244,61 @@ export function debounce(fn: Function, delay: number) {
     timeoutId = setTimeout(() => fn(...args), delay)
   }
 }
+
+interface DagNode {
+  slug: string
+  title: string
+  contents: HTMLElement[]
+  anchor?: HTMLElement | null
+  note: HTMLElement
+}
+
+export class Dag {
+  private nodes: Map<string, DagNode>
+  private order: string[] // Maintain order of nodes
+
+  constructor() {
+    this.nodes = new Map()
+    this.order = []
+  }
+
+  addNode(node: DagNode) {
+    const { slug } = node
+    if (!this.nodes.has(slug)) {
+      this.nodes.set(slug, node)
+      this.order.push(slug)
+    }
+    return this.nodes.get(slug)!
+  }
+
+  getOrderedNodes(): DagNode[] {
+    return this.order.map((slug) => this.nodes.get(slug)!).filter(Boolean)
+  }
+
+  truncateAfter(slug: string) {
+    const idx = this.order.indexOf(slug)
+    if (idx === -1) return
+
+    // Remove all nodes after idx from both order and nodes map
+    const removed = this.order.splice(idx + 1)
+    removed.forEach((slug) => this.nodes.delete(slug))
+  }
+
+  clear() {
+    this.nodes.clear()
+    this.order = []
+  }
+
+  has(slug: string): boolean {
+    return this.nodes.has(slug)
+  }
+
+  get(slug: string): DagNode | undefined {
+    return this.nodes.get(slug)
+  }
+
+  getTail(): DagNode | undefined {
+    const lastSlug = this.order[this.order.length - 1]
+    return lastSlug ? this.nodes.get(lastSlug) : undefined
+  }
+}

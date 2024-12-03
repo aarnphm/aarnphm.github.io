@@ -1,12 +1,6 @@
 import micromorph from "micromorph"
-import {
-  FullSlug,
-  RelativeURL,
-  getFullSlug,
-  normalizeRelativeURLs,
-  resolveRelative,
-} from "../../util/path"
-import { removeAllChildren } from "./util"
+import { FullSlug, RelativeURL, getFullSlug, normalizeRelativeURLs } from "../../util/path"
+import { removeAllChildren, Dag } from "./util"
 
 // adapted from `micromorph`
 // https://github.com/natemoo-re/micromorph
@@ -49,122 +43,168 @@ function notifyNav(url: FullSlug) {
 const cleanupFns: Set<(...args: any[]) => void> = new Set()
 window.addCleanup = (fn) => cleanupFns.add(fn)
 
+// Additional interfaces and types
+
 interface StackedNote {
   slug: string
   contents: HTMLElement[]
+  title: string
   hash?: string
 }
 
 let p: DOMParser
 class StackedNoteManager {
-  private stack: StackedNote[]
-  private cache: Map<string, { element: HTMLElement; index: number }>
+  private dag: Dag = new Dag()
 
   private container: HTMLElement
   private column: HTMLElement
   private main: HTMLElement
-  private focusIdx: number = -1
+  private styled: CSSStyleDeclaration
 
-  private isActive: boolean = false
+  private scrollHandler: (() => void) | null = null
+
   private baseSlug: FullSlug
+  private isActive: boolean = false
 
   constructor() {
-    this.stack = []
-    this.cache = new Map()
-
     this.container = document.getElementById("stacked-notes-container") as HTMLDivElement
     this.main = this.container.querySelector("#stacked-notes-main") as HTMLDivElement
     this.column = this.main.querySelector(".stacked-notes-column") as HTMLDivElement
 
+    this.styled = getComputedStyle(this.main)
+
     this.baseSlug = getFullSlug(window)
 
-    window.addEventListener("popstate", async (e) => {
-      if (e.state?.stackState) {
-        await this.restore(e.state.stackState)
-      } else {
-        this.destroy()
-      }
-    })
+    this.setupScrollHandlers()
   }
 
-  private createNote(elts: HTMLElement[], slug: string): HTMLElement {
-    const cached = this.cache.get(slug)
-    if (cached) return cached.element
+  private setupScrollHandlers() {
+    if (!this.column) return
 
-    const note = document.createElement("div")
-    note.className = "stacked-note"
-    note.dataset.slug = slug
+    const titleWidth = parseInt(this.styled.getPropertyValue("--note-title-width"))
 
-    const noteContent = document.createElement("div")
-    noteContent.className = "stacked-content"
-    noteContent.append(...elts)
+    const updateNoteStates = () => {
+      const notes = [...this.column.children] as HTMLElement[]
 
-    note.appendChild(noteContent)
+      notes.forEach((note, idx) => {
+        // Skip last note
+        if (idx === notes.length - 1) return
 
-    const links = [...noteContent.getElementsByClassName("internal")] as HTMLAnchorElement[]
+        const nextNote = notes[idx + 1]
+        if (!nextNote) return
 
-    for (const link of links) {
-      const href = link.href
-      const traverseLink = async (e: MouseEvent) => {
-        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
-        e.preventDefault()
+        const rect = note.getBoundingClientRect()
+        const nextRect = nextNote.getBoundingClientRect()
 
-        if (!this.isActive) {
-          await this.open()
-        } else {
-          await this.add(new URL(href))
-        }
-      }
+        // Check overlay - when next note starts overlapping current note
+        note.classList.toggle("overlay", nextRect.left < rect.right)
 
-      link.addEventListener("click", traverseLink)
-      window.addCleanup(() => link.removeEventListener("click", traverseLink))
-    }
-
-    this.cache.set(slug, {
-      element: note,
-      index: this.stack.length,
-    })
-
-    return note
-  }
-
-  private setFocus(index: number) {
-    const notes = this.column.querySelectorAll(".stacked-note")
-    notes.forEach((note, idx) => {
-      note.classList.toggle("active", idx === index)
-    })
-
-    if (index >= 0 && index < notes.length) {
-      const activeNote = notes[index] as HTMLElement
-      this.main.scrollTo({
-        left: activeNote.offsetLeft - 20,
-        behavior: "smooth",
+        // Check collapse - when next note fully overlaps (leaving title space)
+        note.classList.toggle("collapsed", nextRect.left <= rect.left + titleWidth)
       })
     }
 
-    this.focusIdx = index
+    this.scrollHandler = () => {
+      requestAnimationFrame(updateNoteStates)
+    }
+
+    this.main.addEventListener("scroll", this.scrollHandler)
+    window.addEventListener("resize", this.scrollHandler)
+    this.scrollHandler()
+
+    window.addCleanup(() => {
+      if (this.scrollHandler) {
+        this.main.removeEventListener("scroll", this.scrollHandler)
+        window.removeEventListener("resize", this.scrollHandler)
+      }
+    })
   }
 
-  private resolveRelative(targetSlug: FullSlug): URL {
-    return new URL(resolveRelative(this.baseSlug, targetSlug), location.toString())
+  private async initFromParams() {
+    const url = new URL(window.location.toString())
+    const stackedNotes = url.searchParams.getAll("stackedNotes")
+
+    if (stackedNotes.length > 0) {
+      // Enable stacked mode
+      const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
+      const container = document.getElementById("stacked-notes-container")
+      if (button && container) {
+        button.setAttribute("aria-checked", "true")
+        container.classList.add("active")
+        document.body.classList.add("stack-mode")
+      }
+
+      // Load each stacked note
+      for (const noteHash of stackedNotes) {
+        const slug = this.getSlugFromHash(noteHash)
+        if (slug) {
+          await this.add(new URL(`/${slug}`, window.location.toString()))
+        }
+      }
+    }
+  }
+  private updateURL() {
+    const url = new URL(window.location.toString())
+
+    // Clear existing stackednotes params
+    url.searchParams.delete("stackedNotes")
+
+    // Add current stack state
+    this.dag.getOrderedNodes().forEach((node) => {
+      url.searchParams.append("stackedNotes", this.hashSlug(node.slug))
+    })
+
+    // Update URL without reloading
+    window.history.replaceState({}, "", url)
   }
 
-  private async fetchContent(slug: FullSlug | URL, isUrl: boolean = false) {
+  /** Generates URL-safe hash for a slug */
+  private generateHash(slug: string): string {
+    const str = slug.toString()
+    let h1 = 0xdeadbeef ^ 0
+    for (let i = 0; i < str.length; i++) {
+      h1 = Math.imul(h1 ^ str.charCodeAt(i), 2654435761)
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507)
+
+    // Convert to base62 (use shorter 8-char hashes)
+    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    let result = ""
+    let n = h1 >>> 0
+    while (result.length < 8) {
+      result = chars[n % 62] + result
+      n = Math.floor(n / 62)
+    }
+    return result
+  }
+
+  // Map to store hash -> slug mappings
+  private hashes: Map<string, string> = new Map()
+  private slugs: Map<string, string> = new Map()
+
+  private hashSlug(slug: string): string {
+    // Check if we already have a hash for this slug
+    if (this.slugs.has(slug)) {
+      return this.slugs.get(slug)!
+    }
+
+    // Generate new hash
+    const hash = this.generateHash(slug)
+    this.hashes.set(hash, slug)
+    this.slugs.set(slug, hash)
+    return hash
+  }
+
+  private getSlugFromHash(hash: string): string | undefined {
+    return this.hashes.get(hash)
+  }
+
+  private async fetchContent(url: URL): Promise<Omit<StackedNote, "slug"> | undefined> {
     p = p || new DOMParser()
 
-    const url = isUrl ? new URL(slug) : new URL(this.resolveRelative(slug as FullSlug))
     const hash = decodeURIComponent(url.hash)
     url.hash = ""
     url.search = ""
-
-    // const targetSlug = url.pathname.slice(1)
-    // const currentSlugs = new Set(this.stack.map((n) => n.slug))
-    // const alreadyFetched = () => {
-    //   return currentSlugs.has(targetSlug)
-    // }
-    //
-    // // TODO: prevent fetching the same page
-    // if (alreadyFetched()) return
 
     const response = await fetch(url.toString()).catch(console.error)
     if (!response) return
@@ -175,145 +215,179 @@ class StackedNoteManager {
     const contents = [...html.getElementsByClassName("popover-hint")] as HTMLElement[]
     if (contents.length === 0) return
 
-    return { hash, contents }
+    const h1 = html.querySelector("h1")
+    const title =
+      h1?.innerText ??
+      h1?.textContent ??
+      this.getSlug(url) ??
+      html.querySelector("title")?.textContent
+
+    return { hash, contents, title }
   }
 
-  // TODO: FIX THIS RIGHT NOW BREOKEN
-  private hashed() {
-    const stackState = this.stack.map((note) => note.slug)
-    const url = new URL(window.location.toString())
-    if (stackState.length > 0) {
-      url.hash = `stack=${stackState.join(",")}`
-    } else {
-      url.hash = ""
+  private createNote(i: number, { contents, title, slug }: StackedNote): HTMLElement {
+    const width = parseInt(this.styled.getPropertyValue("--note-content-width"))
+    const left = parseInt(this.styled.getPropertyValue("--note-title-width"))
+    const right = width - left
+
+    const note = document.createElement("div")
+    note.className = "stacked-note"
+    note.style.left = `${i * left}px`
+    note.style.right = `-${right}px`
+    note.dataset.slug = slug
+
+    // Create note contents...
+    const noteTitle = document.createElement("div")
+    noteTitle.classList.add("stacked-title")
+    noteTitle.textContent = title
+
+    const noteContent = document.createElement("div")
+    noteContent.className = "stacked-content"
+    noteContent.append(...contents)
+
+    note.append(noteContent, noteTitle)
+
+    const links = [...noteContent.getElementsByClassName("internal")] as HTMLAnchorElement[]
+
+    for (const link of links) {
+      const href = link.href
+      const traverseLink = async (e: MouseEvent) => {
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
+
+        e.preventDefault()
+        await this.add(new URL(href), link)
+      }
+
+      link.addEventListener("click", traverseLink)
+      window.addCleanup(() => link.removeEventListener("click", traverseLink))
     }
-    history.pushState({ stackState }, "", url)
+
+    queueMicrotask(() => this.scrollHandler?.())
+    return note
   }
 
   private render() {
-    removeAllChildren(this.column)
+    const width = parseInt(this.styled.getPropertyValue("--note-content-width"))
+    const currentChildren = Array.from(this.column.children) as HTMLElement[]
 
-    for (const { hash, slug, contents } of this.stack) {
-      const note = this.createNote(contents, slug)
-      this.column.appendChild(note)
-
-      if (hash) {
-        const heading = note.querySelector(hash) as HTMLElement | null
-        if (heading) {
-          note.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
-        }
+    // Remove notes not in DAG
+    currentChildren.forEach((child) => {
+      const slug = child.dataset.slug!
+      if (!this.dag.has(slug)) {
+        this.column.removeChild(child)
       }
-    }
+    })
+
+    // Add missing notes from DAG path
+    this.dag.getOrderedNodes().forEach((node, i) => {
+      if (!currentChildren.some((child) => child.dataset.slug === node.slug)) {
+        node.note = this.createNote(i, {
+          slug: node.slug,
+          title: node.title,
+          contents: node.contents,
+        })
+        this.column.appendChild(node.note)
+      }
+    })
+
+    this.column.style.width = `${this.column.children.length * width}px`
     this.container.classList.toggle("active", this.isActive)
+  }
 
-    if (this.active) {
-      // Always focus the last note in the new stack
-      this.setFocus(this.stack.length - 1)
+  private focus(slug: string) {
+    const node = this.dag.get(slug)
+    if (!node) return
 
-      const keydown = (e: KeyboardEvent) => {
-        if (e.key === "ArrowLeft" && this.focusIdx > 0) {
-          this.setFocus(this.focusIdx - 1)
-        } else if (e.key === "ArrowRight" && this.focusIdx < this.stack.length - 1) {
-          this.setFocus(this.focusIdx + 1)
-        }
-      }
+    node.note.scrollIntoView({ behavior: "smooth" })
+  }
 
-      document.addEventListener("keydown", keydown)
-      window.addCleanup(() => document.removeEventListener("keydown", keydown))
+  async add(href: URL, anchor?: HTMLElement) {
+    const slug = this.getSlug(href)
+    if (!anchor) anchor = document.activeElement as HTMLAnchorElement
+    const clickedNote = document.activeElement?.closest(".stacked-note") as HTMLDivElement
+
+    Array.from(clickedNote.getElementsByClassName("dag")).forEach((anchor) =>
+      anchor.classList.toggle("dag", false),
+    )
+    anchor.classList.add("dag")
+
+    // If note exists in DAG
+    if (this.dag.has(slug)) {
+      this.focus(slug)
+      return
     }
+
+    // Get clicked note's slug
+    const clickedSlug = clickedNote?.dataset.slug
+
+    // If we clicked from a note in the DAG, truncate after it
+    if (clickedSlug && this.dag.has(clickedSlug)) {
+      this.dag.truncateAfter(clickedSlug)
+    }
+
+    const res = await this.fetchContent(href)
+    if (!res) return
+
+    // Add new note to DAG
+    const note = this.createNote(this.dag.getOrderedNodes().length, {
+      slug,
+      ...res,
+    })
+
+    this.dag.addNode({ slug, title: res.title, anchor, note, contents: res.contents })
+    this.focus(slug)
+    this.updateURL()
   }
 
   async open() {
-    const res = await this.fetchContent(this.baseSlug)
+    const res = await this.fetchContent(new URL(`/${this.baseSlug}`, window.location.toString()))
     if (!res) return
 
-    this.stack = [{ slug: this.baseSlug, ...res }]
+    const note = this.createNote(0, { slug: this.baseSlug, ...res })
+    this.dag.addNode({
+      slug: this.baseSlug,
+      title: res.title,
+      anchor: null,
+      note,
+      contents: res.contents,
+    })
+
     this.isActive = true
     this.render()
-    this.hashed()
-  }
-
-  async add(href: URL) {
-    const slug = href.pathname.slice(1)
-
-    // Check if clicked inside a stacked note
-    const clickedNote = document.activeElement?.closest(".stacked-note") as HTMLDivElement
-    if (clickedNote) {
-      const clickedIdx = Array.from(this.column.children).indexOf(clickedNote)
-
-      // If we clicked a link to a note that's already in our stack...
-      const existingIdx = this.stack.findIndex((note) => note.slug === slug)
-      if (existingIdx !== -1) {
-        // If we clicked from a note earlier in the stack than the target,
-        // just focus the existing note
-        if (clickedIdx < existingIdx) {
-          this.setFocus(existingIdx)
-          return false
-        }
-        // Otherwise, truncate the stack at clicked position and add new note
-        this.stack = this.stack.slice(0, existingIdx + 1)
-      } else if (clickedIdx !== -1) {
-        // New note, truncate at click position
-        this.stack = this.stack.slice(0, clickedIdx + 1)
-      }
-    }
-
-    const res = await this.fetchContent(href, true)
-    if (!res) return
-
-    this.baseSlug = slug as FullSlug
-    this.stack.push({ slug, ...res })
-  }
-
-  close(slug: string) {
-    const idx = this.stack.findIndex((note) => note.slug === slug)
-    if (idx !== -1) {
-      this.stack = this.stack.slice(0, idx)
-      if (this.stack.length === 0) {
-        this.destroy()
-      } else {
-        // FIXME: OK this is not ideal, we should just remove the diff of the slice instead of re-rendering everything
-        this.render()
-        this.hashed()
-      }
-    }
+    this.updateURL()
   }
 
   destroy() {
-    this.stack = []
     this.isActive = false
-    this.focusIdx = -1
-    this.cache.clear()
+
+    this.dag.clear()
     removeAllChildren(this.column)
 
-    // cleanup old
+    // Clear stackednotes from URL
+    const url = new URL(window.location.toString())
+    url.searchParams.delete("stackedNotes")
+    window.history.replaceState({}, "", url)
+
     cleanupFns.forEach((fn) => fn())
     cleanupFns.clear()
     notifyNav(getFullSlug(window))
   }
 
-  async restore(slugs: string[]) {
-    this.stack = []
-    for (const slug of slugs) {
-      const res = await this.fetchContent(slug as FullSlug)
-      if (!res) continue
-
-      this.stack.push({ slug, ...res })
-    }
-    this.isActive = this.stack.length > 0
-    this.render()
-  }
-
   async navigate(url: URL) {
     if (!this.active) {
       await this.open()
+      await this.initFromParams()
     } else {
       await this.add(url)
     }
     this.render()
-    notifyNav(url.pathname.slice(1) as FullSlug)
+    notifyNav(this.getSlug(url))
 
     return true
+  }
+
+  private getSlug(url: URL): FullSlug {
+    return url.pathname.slice(1) as FullSlug
   }
 
   get active() {
@@ -325,10 +399,26 @@ const stacked = new StackedNoteManager()
 window.stacked = stacked
 
 async function navigate(url: URL, isBack: boolean = false) {
-  const stackedContainer = document.getElementById("stacked-notes-container") as HTMLButtonElement
-  if (stackedContainer.classList.contains("active")) {
-    stacked.navigate(url)
-    return
+  // Check for stackednotes parameter
+  const hasStackedNotes = url.searchParams.has("stackedNotes")
+
+  if (hasStackedNotes) {
+    // Enable stacked notes view
+    const container = document.getElementById("stacked-notes-container")
+    const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
+    if (container && button) {
+      button.setAttribute("aria-checked", "true")
+      container.classList.add("active")
+      document.body.classList.add("stack-mode")
+
+      // Let stacked notes manager handle the navigation
+      return stacked.navigate(url)
+    }
+  }
+
+  const stackedContainer = document.getElementById("stacked-notes-container")
+  if (stackedContainer?.classList.contains("active")) {
+    return stacked.navigate(url)
   }
 
   p = p || new DOMParser()
@@ -410,6 +500,15 @@ function createRouter() {
         el?.scrollIntoView()
         history.pushState({}, "", url)
         return
+      }
+
+      // Preserve stackednotes params when navigating
+      const currentParams = new URL(window.location.toString()).searchParams
+      const stackedNotes = currentParams.getAll("stackedNotes")
+      if (stackedNotes.length > 0) {
+        stackedNotes.forEach((note) => {
+          url.searchParams.append("stackedNotes", note)
+        })
       }
 
       try {
