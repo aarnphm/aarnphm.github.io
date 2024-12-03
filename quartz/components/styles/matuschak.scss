@@ -181,18 +181,19 @@ a {
         .stacked-title {
           writing-mode: vertical-rl;
           background: var(--light);
-          margin: 36px 0 0 0;
-          inset: 0;
+          margin: 0;
           overflow: hidden;
           line-height: 40px;
           font-size: 17px;
           letter-spacing: 0.03em;
           font-weight: 500;
           color: initial;
-          position: absolute;
+          position: sticky;
+          bottom: 50vh;
           width: var(--note-title-width);
           overflow: hidden;
           opacity: 0;
+          cursor: pointer;
         }
 
         &.collapsed {

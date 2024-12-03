@@ -1,6 +1,17 @@
 import micromorph from "micromorph"
-import { FullSlug, RelativeURL, getFullSlug, normalizeRelativeURLs } from "../../util/path"
+import {
+  SimpleSlug,
+  FullSlug,
+  RelativeURL,
+  getFullSlug,
+  normalizeRelativeURLs,
+  simplifySlug,
+  resolveRelative,
+} from "../../util/path"
 import { removeAllChildren, Dag } from "./util"
+import { ContentIndex, ContentDetails } from "../../plugins"
+import { resolve } from "path"
+import { unescapeHTML } from "../../util/escape"
 
 // adapted from `micromorph`
 // https://github.com/natemoo-re/micromorph
@@ -225,7 +236,67 @@ class StackedNoteManager {
     return { hash, contents, title }
   }
 
-  private createNote(i: number, { contents, title, slug }: StackedNote): HTMLElement {
+  private allFiles: ContentIndex | null = null
+  private async getBacklinks(slug: string) {
+    if (!this.allFiles) {
+      this.allFiles = await fetchData
+    }
+
+    // Return empty array if no files loaded
+    if (!this.allFiles) return []
+
+    // Find all keys where the slug appears in their links array
+    return Object.entries(this.allFiles).filter(([_, value]) => value.links.includes(slug)) as [
+      FullSlug,
+      ContentDetails,
+    ][]
+  }
+
+  private async createBacklinks(slug: string) {
+    const noteBacklinks = document.createElement("section")
+    noteBacklinks.dataset.backlinks = "true"
+    noteBacklinks.classList.add("backlinks")
+
+    const data = await this.getBacklinks(slug)
+    const hasBacklinks = data.length > 0
+
+    const title = document.createElement("h2")
+    title.textContent = "Liens retour"
+    const overflow = document.createElement("div")
+    overflow.classList.add("overflow")
+    if (hasBacklinks) {
+      for (const [fullSlug, details] of data) {
+        const anchor = document.createElement("a")
+        anchor.classList.add("internal")
+        anchor.dataset.backlink = fullSlug
+        anchor.href = resolveRelative(slug as FullSlug, fullSlug)
+
+        const title = document.createElement("div")
+        title.classList.add("small")
+        title.textContent = details.title
+
+        const description = document.createElement("div")
+        description.classList.add("description")
+        description.textContent = unescapeHTML(details.description ?? "...")
+
+        anchor.append(title, description)
+        overflow.appendChild(anchor)
+      }
+    } else {
+      const nonce = document.createElement("div")
+      nonce.textContent = "Aucun lien retour trouvé"
+      overflow.appendChild(nonce)
+    }
+
+    noteBacklinks.append(title, overflow)
+
+    return noteBacklinks
+  }
+
+  private async createNote(
+    i: number,
+    { contents, title, slug }: StackedNote,
+  ): Promise<HTMLElement> {
     const width = parseInt(this.styled.getPropertyValue("--note-content-width"))
     const left = parseInt(this.styled.getPropertyValue("--note-title-width"))
     const right = width - left
@@ -241,9 +312,17 @@ class StackedNoteManager {
     noteTitle.classList.add("stacked-title")
     noteTitle.textContent = title
 
+    const elView = () => {
+      this.main.scrollTo({ left: note.getBoundingClientRect().left, behavior: "smooth" })
+    }
+    noteTitle.addEventListener("click", elView)
+    window.addCleanup(() => noteTitle.removeEventListener("click", elView))
+
     const noteContent = document.createElement("div")
     noteContent.className = "stacked-content"
     noteContent.append(...contents)
+    const backlinks = await this.createBacklinks(slug)
+    noteContent.append(backlinks)
 
     note.append(noteContent, noteTitle)
 
@@ -255,18 +334,7 @@ class StackedNoteManager {
         if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
 
         e.preventDefault()
-        const res = await this.add(new URL(href), link)
-        if (res) {
-          const children = [...this.column.children] as HTMLElement[]
-          this.main.scrollTo({
-            left: (
-              this.column.children.item(
-                children.findIndex((node) => node.dataset.slug === href),
-              ) as HTMLElement
-            ).getBoundingClientRect().left,
-            behavior: "smooth",
-          })
-        }
+        await this.add(new URL(href), link)
       }
 
       link.addEventListener("click", traverseLink)
@@ -277,7 +345,7 @@ class StackedNoteManager {
     return note
   }
 
-  private render() {
+  private async render() {
     const width = parseInt(this.styled.getPropertyValue("--note-content-width"))
     const currentChildren = Array.from(this.column.children) as HTMLElement[]
 
@@ -290,16 +358,16 @@ class StackedNoteManager {
     })
 
     // Add missing notes from DAG path
-    this.dag.getOrderedNodes().forEach((node, i) => {
+    for (const [i, node] of this.dag.getOrderedNodes().entries()) {
       if (!currentChildren.some((child) => child.dataset.slug === node.slug)) {
-        node.note = this.createNote(i, {
+        node.note = await this.createNote(i, {
           slug: node.slug,
           title: node.title,
           contents: node.contents,
         })
         this.column.appendChild(node.note)
       }
-    })
+    }
 
     this.column.style.width = `${this.column.children.length * width}px`
     this.container.classList.toggle("active", this.isActive)
@@ -345,7 +413,7 @@ class StackedNoteManager {
 
     const { hash } = res
     // Add new note to DAG
-    const note = this.createNote(this.dag.getOrderedNodes().length, {
+    const note = await this.createNote(this.dag.getOrderedNodes().length, {
       slug,
       ...res,
     })
@@ -369,7 +437,7 @@ class StackedNoteManager {
     if (!res) return false
 
     const { hash } = res
-    const note = this.createNote(0, { slug: this.baseSlug, ...res })
+    const note = await this.createNote(0, { slug: this.baseSlug, ...res })
     this.dag.addNode({
       slug: this.baseSlug,
       title: res.title,
@@ -387,7 +455,7 @@ class StackedNoteManager {
     }
 
     this.isActive = true
-    this.render()
+    await this.render()
     this.updateURL()
     return true
   }
@@ -415,7 +483,7 @@ class StackedNoteManager {
     } else {
       await this.add(url)
     }
-    this.render()
+    await this.render()
     notifyNav(this.getSlug(url))
 
     return true
@@ -447,7 +515,6 @@ async function navigate(url: URL, isBack: boolean = false) {
       document.body.classList.add("stack-mode")
 
       // Let stacked notes manager handle the navigation
-      notifyNav(getFullSlug(window))
       return stacked.navigate(url)
     }
   }

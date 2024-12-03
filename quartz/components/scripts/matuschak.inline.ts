@@ -2,7 +2,7 @@
 // given that we will need to hijack the router
 // We will only setup buttons here
 // see ./spa.inline.ts
-document.addEventListener("nav", async (ev) => {
+document.addEventListener("nav", async () => {
   const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
   const container = document.getElementById("stacked-notes-container")
   if (!button || !container) return
@@ -26,7 +26,6 @@ document.addEventListener("nav", async (ev) => {
       container.classList.remove("active")
       body.classList.remove("stack-mode")
       window.stacked.destroy()
-      window.spaNavigate(ev.detail.url)
     }
   }
 
