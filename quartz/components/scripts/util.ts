@@ -249,8 +249,9 @@ interface DagNode {
   slug: string
   title: string
   contents: HTMLElement[]
-  anchor?: HTMLElement | null
   note: HTMLElement
+  anchor?: HTMLElement | null
+  hash?: string
 }
 
 export class Dag {

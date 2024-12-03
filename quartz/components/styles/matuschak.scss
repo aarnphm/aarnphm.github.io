@@ -189,9 +189,8 @@ a {
           font-weight: 500;
           color: initial;
           position: sticky;
-          bottom: 50vh;
+          bottom: 0;
           width: var(--note-title-width);
-          overflow: hidden;
           opacity: 0;
           cursor: pointer;
         }

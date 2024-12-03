@@ -1,4 +1,8 @@
 interface StackedManager {
+  container: HTMLElement
+  main: HTMLElement // the scrollable div
+  column: HTMLElement // the actual container for all stacks
+
   active: boolean
   destroy(): void
   async open(): Promise<boolean>
