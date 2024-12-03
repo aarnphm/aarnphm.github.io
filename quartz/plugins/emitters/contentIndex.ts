@@ -145,7 +145,8 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
         await write({
           ctx,
           content: `User-agent: *
-Disallow: /
+Allow: /
+Disallow: /thoughts/university/
 Host: https://${cfg.baseUrl}
 Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.xml")}
 `,

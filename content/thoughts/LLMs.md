@@ -13,7 +13,7 @@ title: LLMs
 
 > [!note] GPTs and friends
 >
-> Most variants of LLMs are decoder-only
+> Most variants of LLMs are decoder-only [@radford2019language]
 
 Have "capabilities" to understand [[thoughts/NLP|natural language]].
 
@@ -106,3 +106,5 @@ Increased in productivity, but also increased in technical debt, as these genera
 ---
 
 ![[thoughts/mechanistic interpretability]]
+
+[^ref]

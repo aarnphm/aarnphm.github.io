@@ -229,8 +229,11 @@ export default ((userOpts?: Partial<Options>) => {
             data-depth={entry.depth}
             data-href={`#${entry.slug}`}
             data-for={entry.slug}
+            tabindex={-1}
+            type="button"
             style={{ "--animation-order": idx + 1 }}
             aria-label={`${entry.text}`}
+            title={`${entry.text}`}
           >
             <div class="fill" />
             <div class="indicator">{convertFromText(entry.text)}</div>
