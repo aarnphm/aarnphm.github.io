@@ -108,7 +108,7 @@ class StackedNoteManager {
         const nextRect = nextNote.getBoundingClientRect()
 
         // Check overlay - when next note starts overlapping current note
-        note.classList.toggle("overlay", nextRect.left < rect.right)
+        nextNote.classList.toggle("overlay", nextRect.left < rect.right)
 
         // Check collapse - when next note fully overlaps (leaving title space)
         note.classList.toggle("collapsed", nextRect.left <= rect.left + titleWidth)
@@ -378,11 +378,15 @@ class StackedNoteManager {
     const note = notes.find((note) => note.dataset.slug === slug)
     if (!note) return
 
-    this.main.scrollTo({
-      left: (this.column.children.item(notes.indexOf(note)) as HTMLElement).getBoundingClientRect()
-        .left,
-      behavior: "smooth",
-    })
+    // set some delay to scroll
+    setTimeout(() => {
+      this.main.scrollTo({
+        left: (
+          this.column.children.item(notes.indexOf(note)) as HTMLElement
+        ).getBoundingClientRect().left,
+        behavior: "smooth",
+      })
+    }, 240)
   }
   async add(href: URL, anchor?: HTMLElement) {
     const slug = this.getSlug(href)
@@ -394,6 +398,7 @@ class StackedNoteManager {
     )
     anchor.classList.add("dag")
 
+    this.baseSlug = slug
     // If note exists in DAG
     if (this.dag.has(slug)) {
       this.focus(slug)
