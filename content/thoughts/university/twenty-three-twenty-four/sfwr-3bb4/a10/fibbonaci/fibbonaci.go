@@ -1,4 +1,4 @@
-package main
+package fibbonaci
 
 import (
 	"reflect"
@@ -12,9 +12,11 @@ type IntPair = struct {
 	f int
 }
 
-var r chan IntPair
-var c [N]chan int
-var wg sync.WaitGroup
+var (
+	r  chan IntPair
+	c  [N]chan int
+	wg sync.WaitGroup
+)
 
 func fib(i int) {
 	defer wg.Done()

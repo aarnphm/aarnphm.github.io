@@ -1,9 +1,11 @@
-package main
+package incdec
 
 const N = 20
 
-var inc, dec, done chan bool
-var val chan int
+var (
+	inc, dec, done chan bool
+	val            chan int
+)
 
 func counter() {
 	x := 0
@@ -32,6 +34,7 @@ func decN() {
 	}
 	done <- true
 }
+
 func main() {
 	done = make(chan bool)
 	inc, dec, val = make(chan bool), make(chan bool), make(chan int)

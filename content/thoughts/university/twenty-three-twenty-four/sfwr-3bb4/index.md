@@ -4,6 +4,7 @@ tags:
   - university
   - sfwr3bb4
 date: "2023-09-04"
+modified: "2024-12-03"
 title: Concurrent System Design
 ---
 
@@ -21,7 +22,20 @@ Most images are cell attachments, which are not rendered by GitHub. Images that 
 
 See also: [[thoughts/university/twenty-three-twenty-four/sfwr-2c03/index|Data Structures and Algorithms]].
 
-### Installation
+## Lectures
+
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/00 Concurrent System Design/Concurrent System Design.ipynb|Concurrent System Design]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/01 Sequential Programming/SequentialProgramming.ipynb|Sequential Programming]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/02 Concurrency and Synchronization/Concurrency.ipynb|Concurrency]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/03 Semaphores/Semaphores.ipynb|Semaphores]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/04 Classes/Classes.ipynb|Classes]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/05 Robustness/Robustness.ipynb|Robustness]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/06 Monitors/Monitors.ipynb|Monitors]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/07 Message Passing/MessagePassing.ipynb|Message Passing]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/08 Remote Procedure Calls/RemoteProcedureCalls.ipynb|Remote Procedure Calls]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/09 Coroutines and Futures/CoroutinesAndFutures.ipynb|Coroutines and Futures]]
+
+## Installation
 
 You need [Python 3](https://www.python.org/downloads/). Update `pip3` or `pip`, depending on your installation:
 

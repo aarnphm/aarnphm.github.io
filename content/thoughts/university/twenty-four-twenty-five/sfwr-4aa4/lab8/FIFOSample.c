@@ -8,9 +8,10 @@ MOST PART - YOU SHOULD FIGURE OUT HOW TO USE THE FUNCTIONS PROPERLY!
 */
 
 // User Application
-int main(int argc, char * argv[]) {
-  FILE * fd;  // Can also use int * fd;
-  char * myFIFO = "FIFO DIRECTORY" // Consider using a custom directory in /tmp/.. for example
+int main(int argc, char *argv[]) {
+  FILE *fd;                       // Can also use int * fd;
+  char *myFIFO = "FIFO DIRECTORY" // Consider using a custom directory in
+                                  // /tmp/.. for example
 
   /*
   At this point you want to open the buffer using the
@@ -23,10 +24,11 @@ int main(int argc, char * argv[]) {
 }
 
 // Motor Control Application
-int main(int argc, char * argv[]) {
-  FILE * fd;  // Can also use int * fd;
-  char * myFIFO = "FIFO DIRECTORY" // Consider using a custom directory in /tmp/.. for example
-  char buf[BufferSize];
+int main(int argc, char *argv[]) {
+  FILE *fd;                       // Can also use int * fd;
+  char *myFIFO = "FIFO DIRECTORY" // Consider using a custom directory in
+                                  // /tmp/.. for example
+      char buf[BufferSize];
 
   /*
   First creat the FIFO using this series of function:
