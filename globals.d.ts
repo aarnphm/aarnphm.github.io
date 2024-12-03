@@ -7,6 +7,7 @@ interface StackedManager {
   destroy(): void
   async open(): Promise<boolean>
   async add(href: URL): Promise<boolean>
+  async navigate(url: URL): Promise<boolean>
 }
 
 export declare global {

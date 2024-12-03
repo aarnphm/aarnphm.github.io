@@ -141,21 +141,36 @@ class StackedNoteManager {
       // Enable stacked mode
       const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
       const container = document.getElementById("stacked-notes-container")
-      if (button && container) {
+      if (button && container && button.getAttribute("aria-checked") === "false") {
         button.setAttribute("aria-checked", "true")
-        container.classList.add("active")
-        document.body.classList.add("stack-mode")
+        container.classList.toggle("active", true)
+        document.body.classList.toggle("stack-mode", true)
       }
 
       // Load each stacked note
       for (const noteHash of stackedNotes) {
-        const slug = this.getSlugFromHash(noteHash)
+        const slug = this.decodeHash(noteHash)
         if (slug) {
-          await this.add(new URL(`/${slug}`, window.location.toString()))
+          if (this.dag.has(slug)) continue
+          const href = new URL(`/${slug}`, window.location.toString())
+          const res = await this.fetchContent(href)
+          if (!res) continue
+
+          const dagNode = this.dag.addNode({
+            ...res,
+            slug,
+            anchor: null,
+            note: undefined!,
+          })
+          dagNode.note = await this.createNote(this.dag.getOrderedNodes().length, {
+            slug,
+            ...res,
+          })
         }
       }
     }
   }
+
   private updateURL() {
     const url = new URL(window.location.toString())
 
@@ -171,24 +186,13 @@ class StackedNoteManager {
     window.history.replaceState({}, "", url)
   }
 
-  /** Generates URL-safe hash for a slug */
+  /** Generates URL-safe hash for a slug. Probably use base64 for easier reconstruction */
   private generateHash(slug: string): string {
-    const str = slug.toString()
-    let h1 = 0xdeadbeef ^ 0
-    for (let i = 0; i < str.length; i++) {
-      h1 = Math.imul(h1 ^ str.charCodeAt(i), 2654435761)
-    }
-    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507)
+    return btoa(slug.toString()).replace(/=+$/, "")
+  }
 
-    // Convert to base62 (use shorter 8-char hashes)
-    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    let result = ""
-    let n = h1 >>> 0
-    while (result.length < 8) {
-      result = chars[n % 62] + result
-      n = Math.floor(n / 62)
-    }
-    return result
+  private decodeHash(hash: string): string {
+    return atob(hash).match(/^[a-zA-Z0-9/-]+$/)![0]
   }
 
   // Map to store hash -> slug mappings
@@ -206,10 +210,6 @@ class StackedNoteManager {
     this.hashes.set(hash, slug)
     this.slugs.set(slug, hash)
     return hash
-  }
-
-  private getSlugFromHash(hash: string): string | undefined {
-    return this.hashes.get(hash)
   }
 
   private async fetchContent(url: URL): Promise<Omit<StackedNote, "slug"> | undefined> {
@@ -339,15 +339,46 @@ class StackedNoteManager {
         link.classList.add("dag")
       }
 
-      const traverseLink = async (e: MouseEvent) => {
+      const onClick = async (e: MouseEvent) => {
         if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
 
         e.preventDefault()
+
+        if (this.dag.has(slug)) {
+          return await this.focus(slug)
+        }
         await this.add(new URL(href), link)
       }
 
-      link.addEventListener("click", traverseLink)
-      window.addCleanup(() => link.removeEventListener("click", traverseLink))
+      const onMouseEnter = (ev: MouseEvent) => {
+        const link = ev.target as HTMLAnchorElement
+        if (this.dag.has(link.dataset.slug!)) {
+          const note = this.dag.get(link.dataset.slug!)?.note
+          const header = note!.querySelector("h1") as HTMLHeadElement
+          const stackedTitle = note!.querySelector(".stacked-title") as HTMLDivElement
+          header.classList.toggle("dag", true)
+          stackedTitle.classList.toggle("dag", true)
+        }
+      }
+      const onMouseLeave = (ev: MouseEvent) => {
+        const link = ev.target as HTMLAnchorElement
+        if (this.dag.has(link.dataset.slug!)) {
+          const note = this.dag.get(link.dataset.slug!)?.note
+          const header = note!.querySelector("h1") as HTMLHeadElement
+          const stackedTitle = note!.querySelector(".stacked-title") as HTMLDivElement
+          header.classList.toggle("dag", false)
+          stackedTitle.classList.toggle("dag", false)
+        }
+      }
+
+      link.addEventListener("click", onClick)
+      link.addEventListener("mouseenter", onMouseEnter)
+      link.addEventListener("mouseleave", onMouseLeave)
+      window.addCleanup(() => {
+        link.removeEventListener("click", onClick)
+        link.removeEventListener("mouseenter", onMouseEnter)
+        link.removeEventListener("mouseleave", onMouseLeave)
+      })
     }
 
     queueMicrotask(() => this.scrollHandler?.())
@@ -399,12 +430,17 @@ class StackedNoteManager {
     }
   }
 
-  private focus(slug: string) {
+  private async focus(slug: string) {
     const notes = [...this.column.children] as HTMLElement[]
     const note = notes.find((note) => note.dataset.slug === slug)
-    if (!note) return
+    if (!note) return false
 
     this.main.scrollTo({ left: note.getBoundingClientRect().left, behavior: "smooth" })
+    note.classList.add("highlights")
+    setTimeout(() => {
+      note.classList.remove("highlights")
+    }, 500)
+    return true
   }
 
   async add(href: URL, anchor?: HTMLElement) {
@@ -412,7 +448,7 @@ class StackedNoteManager {
     if (!anchor) anchor = document.activeElement as HTMLAnchorElement
     const clickedNote = document.activeElement?.closest(".stacked-note") as HTMLDivElement
 
-    Array.from(clickedNote.getElementsByClassName("dag")).forEach((anchor) =>
+    Array.from(clickedNote.getElementsByClassName("internal")).forEach((anchor) =>
       anchor.classList.toggle("dag", this.dag.has((anchor as HTMLAnchorElement).href)),
     )
     anchor.classList.add("dag")
@@ -420,8 +456,7 @@ class StackedNoteManager {
     this.baseSlug = slug
     // If note exists in DAG
     if (this.dag.has(slug)) {
-      this.focus(slug)
-      return true
+      return await this.focus(slug)
     }
 
     // Get clicked note's slug
@@ -436,14 +471,8 @@ class StackedNoteManager {
     if (!res) return false
 
     // Add new note to DAG before creating DOM element
-    const dagNode = this.dag.addNode({
-      slug,
-      title: res.title,
-      anchor,
-      note: undefined!, // Will be set after creation
-      contents: res.contents,
-      hash: res.hash,
-    })
+    // note will be set after creation
+    const dagNode = this.dag.addNode({ ...res, slug, anchor, note: undefined! })
     // Add new note to DAG
     dagNode.note = await this.createNote(this.dag.getOrderedNodes().length, {
       slug,
@@ -458,17 +487,10 @@ class StackedNoteManager {
     if (!res) return false
 
     const note = await this.createNote(0, { slug: this.baseSlug, ...res })
-    this.dag.addNode({
-      slug: this.baseSlug,
-      title: res.title,
-      anchor: null,
-      note,
-      contents: res.contents,
-      hash: res.hash,
-    })
+    this.dag.addNode({ ...res, slug: this.baseSlug, anchor: null, note })
 
     this.isActive = true
-    await this.render()
+    await this.initFromParams()
     this.updateURL()
     return true
   }
@@ -492,7 +514,6 @@ class StackedNoteManager {
   async navigate(url: URL) {
     if (!this.active) {
       await this.open()
-      await this.initFromParams()
     } else {
       await this.add(url)
     }
@@ -514,19 +535,7 @@ const stacked = new StackedNoteManager()
 window.stacked = stacked
 
 async function navigate(url: URL, isBack: boolean = false) {
-  // Check for stackednotes parameter
-  const hasStackedNotes = url.searchParams.has("stackedNotes")
-
-  if (hasStackedNotes) {
-    // Enable stacked notes view
-    const container = document.getElementById("stacked-notes-container")
-    const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
-    if (container && button && button.getAttribute("aria-checked") === "false") {
-      button.click()
-    }
-    return stacked.navigate(url)
-  }
-
+  // TODO: Check for stackednotes parameter
   const stackedContainer = document.getElementById("stacked-notes-container")
   if (stackedContainer?.classList.contains("active")) {
     return stacked.navigate(url)
