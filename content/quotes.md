@@ -33,6 +33,8 @@ All I can say to the young is close your eyes. -- Ted Nelson
 
 An expert is a man who has made all the mistakes, which can be made, in a very narrow field. -- Niels Bohr
 
+Effective system design requires insights drawn from serious [contexts of use](https://notes.andymatuschak.org/z51q8prEJzs5Jqa5WPThYoV?stackedNotes=z7EQ2nVGus5B1rS9CqT18g6) -- Andy Matuschak
+
 ## On perspectives.
 
 Our capacity to deal with [[thoughts/Language|language]] is a complex, genetically-determined part of our biological endowment. It's a product of evolution, part of our nature. -- Noam Chomsky

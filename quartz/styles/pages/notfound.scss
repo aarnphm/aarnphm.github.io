@@ -22,6 +22,11 @@ body[data-slug="404"] {
     animation: fade-background 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
+  header,
+  footer {
+    display: none;
+  }
+
   .page > #quartz-body {
     .center {
       border: unset !important;
