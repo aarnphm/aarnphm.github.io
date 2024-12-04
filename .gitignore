@@ -17,3 +17,5 @@ sites
 .env
 .ipynb_checkpoints
 **/partial_movie_files/**
+data/
+model/
