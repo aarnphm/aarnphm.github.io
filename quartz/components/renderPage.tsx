@@ -4,6 +4,7 @@ import HeaderConstructor from "./Header"
 import BodyConstructor from "./Body"
 import ContentConstructor from "./pages/Content"
 import GraphConstructor from "./Graph"
+import SearchConstructor from "./Search"
 import SpacerConstructor from "./Spacer"
 import FooterConstructor from "./Footer"
 import { byDateAndAlphabetical } from "./PageList"
@@ -805,7 +806,6 @@ export function renderPage(
     components = {
       ...components,
       header: [],
-      footer: SpacerConstructor(),
       left: [SpacerConstructor()],
       right: [SpacerConstructor()],
       afterBody: [],
@@ -814,6 +814,7 @@ export function renderPage(
         const { displayClass } = props
         const Element = ElementComponent()
         const Graph = GraphConstructor()
+        const Search = SearchConstructor({ includeButton: false })
 
         return (
           <>
@@ -824,6 +825,7 @@ export function renderPage(
               <Element {...componentData} />
             </div>
             <Graph {...props} />
+            <Search {...props} />
           </>
         )
       },
@@ -852,8 +854,7 @@ export function renderPage(
     return <></>
   }
 
-  const disablePageFooter =
-    componentData.fileData.frontmatter?.poem || componentData.fileData.slug === "curius"
+  const disablePageFooter = componentData.fileData.frontmatter?.poem || slug === "curius"
 
   const {
     head: Head,
@@ -911,7 +912,7 @@ export function renderPage(
           </Body>
           {disablePageFooter ? <></> : <PageFooter />}
         </main>
-        <Footer {...componentData} />
+        {slug !== "index" && <Footer {...componentData} />}
       </body>
       {pageResources.js
         .filter((resource) => resource.loadTime === "afterDOMReady")

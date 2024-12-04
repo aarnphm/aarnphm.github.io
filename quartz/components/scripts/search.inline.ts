@@ -1,5 +1,5 @@
 import FlexSearch from "flexsearch"
-import { ContentDetails } from "../../plugins/emitters/contentIndex"
+import type { ContentDetails } from "../../plugins"
 import { registerEscapeHandler, removeAllChildren } from "./util"
 import { FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
 
@@ -191,7 +191,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const container = document.getElementById("search-container")
   const sidebar = container?.closest(".sidebar") as HTMLElement
   const searchButton = document.getElementById("search-button")
-  const searchBar = document.getElementById("search-bar") as HTMLInputElement | null
+  const searchBar = document.getElementById("search-bar") as HTMLInputElement
   const searchLayout = document.getElementById("search-layout")
   const idDataMap = Object.keys(data) as FullSlug[]
 
@@ -521,12 +521,18 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     await displayResults(finalResults)
   }
 
+  const basicSearch = () => {
+    showSearch("basic")
+  }
+
   document.addEventListener("keydown", shortcutHandler)
-  window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
-  searchButton?.addEventListener("click", () => showSearch("basic"))
-  window.addCleanup(() => searchButton?.removeEventListener("click", () => showSearch("basic")))
+  searchButton?.addEventListener("click", basicSearch)
   searchBar?.addEventListener("input", onType)
-  window.addCleanup(() => searchBar?.removeEventListener("input", onType))
+  window.addCleanup(() => {
+    document.removeEventListener("keydown", shortcutHandler)
+    searchButton?.removeEventListener("click", basicSearch)
+    searchBar?.removeEventListener("input", onType)
+  })
 
   registerEscapeHandler(container, hideSearch)
   await fillDocument(data)
