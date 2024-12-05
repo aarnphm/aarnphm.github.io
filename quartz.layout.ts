@@ -45,6 +45,7 @@ export const defaultListPageLayout: PageLayout = {
     Component.Breadcrumbs({ rootName: "~", style: "full", spacerSymbol: "/" }),
     Component.Keybind(),
     Component.Search(),
+    Component.StackedNotes(),
   ],
   left: [],
   right: [],

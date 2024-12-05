@@ -91,19 +91,30 @@ class StackedNoteManager {
     if (!this.column) return
 
     const titleWidth = parseInt(this.styled.getPropertyValue("--note-title-width"))
+    const contentWidth = parseInt(this.styled.getPropertyValue("--note-content-width"))
 
     const updateNoteStates = () => {
       const notes = [...this.column.children] as HTMLElement[]
+      const clientWidth = document.documentElement.clientWidth
 
-      notes.forEach((note, idx) => {
-        // Skip last note
-        if (idx === notes.length - 1) return
+      notes.forEach((note, idx, arr) => {
+        const rect = note.getBoundingClientRect()
+
+        if (idx === notes.length - 1) {
+          note.classList.toggle("collapsed", clientWidth - rect.left <= 50) // 40px + padding
+          return
+        }
 
         const nextNote = notes[idx + 1]
         if (!nextNote) return
 
-        const rect = note.getBoundingClientRect()
         const nextRect = nextNote.getBoundingClientRect()
+
+        // Calculate right position based on client width and buffer
+        const fromRightPosition = clientWidth - rect.left < titleWidth * (arr.length - idx + 1)
+        if (fromRightPosition) {
+          note.style.right = `-${contentWidth - titleWidth - (arr.length - idx - 1) * titleWidth}px`
+        }
 
         // Check overlay - when next note starts overlapping current note
         nextNote.classList.toggle("overlay", nextRect.left < rect.right)
@@ -435,7 +446,9 @@ class StackedNoteManager {
     const note = notes.find((note) => note.dataset.slug === slug)
     if (!note) return false
 
-    this.main.scrollTo({ left: note.getBoundingClientRect().left, behavior: "smooth" })
+    requestAnimationFrame(() => {
+      this.main.scrollTo({ left: note.getBoundingClientRect().left, behavior: "smooth" })
+    })
     note.classList.add("highlights")
     setTimeout(() => {
       note.classList.remove("highlights")
@@ -448,9 +461,6 @@ class StackedNoteManager {
     if (!anchor) anchor = document.activeElement as HTMLAnchorElement
     const clickedNote = document.activeElement?.closest(".stacked-note") as HTMLDivElement
 
-    Array.from(clickedNote.getElementsByClassName("internal")).forEach((anchor) =>
-      anchor.classList.toggle("dag", this.dag.has((anchor as HTMLAnchorElement).href)),
-    )
     anchor.classList.add("dag")
 
     this.baseSlug = slug

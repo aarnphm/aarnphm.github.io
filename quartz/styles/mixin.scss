@@ -11,6 +11,12 @@
   opacity: 0;
 }
 
+@mixin dagHighlights {
+  color: var(--foam);
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+}
+
 @mixin closeButton {
   align-items: center;
   justify-content: center;

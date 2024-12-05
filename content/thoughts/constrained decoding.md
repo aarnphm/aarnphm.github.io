@@ -54,10 +54,11 @@ Thus comparing to sglang, vLLM v0 is currently not up to par.
 
 ## plan
 
-- Implement [jump-ahead decoding](https://lmsys.org/blog/2024-02-05-compressed-fsm/#method-1-finite-state-machine-based) through a JSONWorker, we can then extend this to CFGWorker
-- similar to how spec decode is currently implemented in V0
+Implement structured decoding from scheduler, given that we can compute token bitmask and broadcast towards GPU workers
 
-@cadedaniel: "tree scoring in [spec decode] could use the same API as multi-path jump decoding."
+- p1: Implement [jump-ahead decoding](https://lmsys.org/blog/2024-02-05-compressed-fsm/#method-1-finite-state-machine-based)
+
+> @cadedaniel: "tree scoring in [spec decode] could use the same API as multi-path jump decoding."
 
 > [!question] How should we handle FSM per requests?
 >

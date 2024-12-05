@@ -5,6 +5,12 @@ import { classNames } from "../util/lang"
 import { FullSlug, resolveRelative } from "../util/path"
 import readingTime from "reading-time"
 import { i18n } from "../i18n"
+import { JSX, h } from "preact"
+
+type MetaProp = {
+  title: string
+  item: JSX.Element
+}
 
 export default (() => {
   const ContentMeta: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
@@ -18,39 +24,54 @@ export default (() => {
       minutes: Math.ceil(minutes),
     })
 
+    const Li = ({ title, item }: MetaProp) => {
+      return (
+        <li>
+          <h3>{title}</h3>
+          {item}
+        </li>
+      )
+    }
+
+    const meta = []
+    if (created !== undefined) {
+      meta.push({
+        title: "publié à",
+        item: h(
+          "span",
+          {
+            class: "page-creation",
+            title: `Date de création du contenu de la page (${created})`,
+          },
+          [h("em", {}, [<Date date={getDate(cfg, fileData)!} locale={cfg.locale} />])],
+        ),
+      })
+    }
+    meta.push(
+      { title: "durée", item: h("span", {}, [displayedTime]) },
+      {
+        title: "source",
+        item: h(
+          "a",
+          {
+            href: resolveRelative(fileData.slug!, (fileData.slug! + ".html.md") as FullSlug),
+            target: "_blank",
+            rel: "noopener noreferrer",
+            class: "llm-source",
+            style: ["color: inherit", "font-weight: inherit", "text-decoration: underline"].join(
+              ";",
+            ),
+          },
+          [h("span", { title: "voir https://github.com/AnswerDotAI/llms-txt" }, ["llms.txt"])],
+        ),
+      },
+    )
+
     return (
       <ul class={classNames(displayClass, "content-meta")}>
-        {created !== undefined && (
-          <li>
-            <h3>publié à</h3>
-            <span
-              class="page-creation"
-              title={`Date de création du contenu de la page (${created})`}
-            >
-              <em>
-                <Date date={getDate(cfg, fileData)!} locale={cfg.locale} />
-              </em>
-            </span>
-          </li>
-        )}
-        <li>
-          <h3>durée</h3>
-          <span>{displayedTime}</span>
-        </li>
-        <li>
-          <h3>source</h3>
-          <a
-            href={resolveRelative(fileData.slug!, (fileData.slug! + ".html.md") as FullSlug)}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="llm-source"
-            style={["color: inherit", "font-weight: inherit", "text-decoration: underline"].join(
-              ";",
-            )}
-          >
-            <span title="voir https://github.com/AnswerDotAI/llms-txt">llms.txt</span>
-          </a>
-        </li>
+        {meta.map((el) => (
+          <Li {...el} />
+        ))}
       </ul>
     )
   }

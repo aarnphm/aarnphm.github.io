@@ -134,7 +134,7 @@ a.min-links {
   margin-left: unset !important;
 
   &.internal {
-    background-color: inherit;
+    background-color: unset;
     border-radius: 0;
     padding: 0;
   }

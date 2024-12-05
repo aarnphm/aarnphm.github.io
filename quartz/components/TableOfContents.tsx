@@ -74,23 +74,6 @@ function mutateTransclude(
       }
 
       // TODO: Process nested transclude inside transclude
-      const processTransclude = (
-        transcludeTarget: FullSlug,
-        parentDepth: number = 0,
-      ): TocEntry[] => {
-        const page = clone(allFiles.find((f) => f.slug === transcludeTarget))
-        if (!page?.toc) return []
-
-        // Create new root to handle nested transcludes
-        const nestedRoot = clone(page.htmlAst) as Root
-        mutateTransclude(nestedRoot, allFiles, page)
-
-        // Adjust depths for nested entries
-        return page.toc.map((entry) => ({
-          ...entry,
-          depth: entry.depth + parentDepth,
-        }))
-      }
 
       const transcludeTarget = node.properties?.dataUrl as FullSlug
       const page = allFiles.find((f) => f.slug === transcludeTarget)
@@ -106,17 +89,6 @@ function mutateTransclude(
       // Handle block references
       const blockRef = node.properties?.dataBlock as string | undefined
       if (blockRef?.startsWith("#^")) {
-        // Block transclude - extract headers from the block
-        const blockContent = page.blocks?.[blockRef.slice(2)]
-        if (blockContent) {
-          visit(blockContent, "element", (el) => {
-            if (headingRank(el)) {
-              const id = el.properties?.id as string
-              const entry = page.toc!.find((e) => e.slug === id)
-              if (entry) entries.push({ ...entry, depth: entry.depth + 1 })
-            }
-          })
-        }
       } else if (blockRef?.startsWith("#")) {
         // Header transclude - extract subsection
         const targetHeader = blockRef.slice(1)
@@ -127,18 +99,16 @@ function mutateTransclude(
           while (endIdx < page.toc.length && page.toc[endIdx].depth > baseDepth) {
             endIdx++
           }
-          entries.push(...page.toc.slice(startIdx, endIdx).reverse())
+          entries.push(...page.toc.slice(startIdx, endIdx))
         }
       } else {
         // Full page transclude
         entries.push(
-          ...page.toc
-            .filter((entry) => {
-              return !["backlinks-label", "footnote-label", "reference-label"].some(
-                (slug) => entry.slug === slug,
-              )
-            })
-            .reverse(),
+          ...page.toc.filter((entry) => {
+            return !["backlinks-label", "footnote-label", "reference-label"].some(
+              (slug) => entry.slug === slug,
+            )
+          }),
         )
       }
 

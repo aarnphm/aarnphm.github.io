@@ -144,7 +144,17 @@ h6 {
 
 li.section-li {
   & > .section {
-    grid-template-columns: 7em 3fr 1fr;
+    grid-template-columns: 7em 3fr minmax(auto, 1fr);
+    align-items: baseline;
+
+    & > .desc {
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+    }
   }
 }
 
@@ -189,18 +199,15 @@ a {
     margin-top: 0.2em;
   }
 
-  &.internal:not([role="anchor"]):not([data-bib]):not([data-list]) {
-    @include links;
-
-    & {
-      line-height: unset;
-      background-color: unset;
-      margin-left: 0.1em;
+  &:hover {
+    &:not([data-backlink]):not(.llm-source) {
+      background-color: var(--secondary) !important;
+      color: var(--light) !important;
     }
-  }
 
-  &[data-backlink] {
-    background-image: none !important;
+    &[data-backlink] > .small {
+      @include dagHighlights;
+    }
   }
 
   &.internal.tag-link {

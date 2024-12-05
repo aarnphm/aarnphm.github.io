@@ -1,5 +1,6 @@
 @use "sass:map";
 @use "../../styles/variables" as *;
+@use "../../styles/mixin" as *;
 
 #stacked-note-toggle {
   height: 20px;
@@ -56,12 +57,6 @@
   }
 }
 
-@mixin dagHighlights {
-  color: var(--foam);
-  text-decoration: underline;
-  text-decoration-thickness: 3px;
-}
-
 body.stack-mode {
   header {
     max-width: 100%;
@@ -115,7 +110,6 @@ body.stack-mode {
 a {
   &.dag {
     background-color: color-mix(in srgb, var(--gold) 34%, rgba(255, 255, 255, 0)) !important;
-    border-radius: 5px;
   }
 }
 
@@ -133,7 +127,7 @@ a {
   }
 
   & > #stacked-notes-main {
-    --note-content-width: 625px;
+    --note-content-width: 620px;
     --note-title-width: 40px;
 
     display: flex;
@@ -174,6 +168,9 @@ a {
 
         &.highlights {
           animation: noteHighlight 0.5s ease;
+          animation: dropin 0.3s ease;
+          animation-fill-mode: forwards;
+          animation-delay: 0.2s;
         }
 
         &:last-child {
@@ -229,6 +226,7 @@ a {
 
 @keyframes noteHighlight {
   0% {
+    border: 0px;
     border-image: linear-gradient(
         135deg,
         var(--secondary) 0%,
@@ -238,7 +236,8 @@ a {
       )
       1;
   }
-  50% {
+  1% {
+    border: 2px;
     border-image: linear-gradient(
         135deg,
         var(--secondary) 0%,
@@ -249,6 +248,7 @@ a {
       1;
   }
   100% {
+    border: 2px;
     border-image: linear-gradient(
         135deg,
         var(--secondary) 0%,

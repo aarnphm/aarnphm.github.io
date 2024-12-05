@@ -23,6 +23,8 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://jacobleech.com/ - warm, graphics, animation smooth
 - https://ertdfgcvb.xyz/ - cool ascii animations
 - https://typicalmitul.com/montreal-in-motion
+- http://pressanykey.today/ - cool visualisation of typing process
+- https://langworth.com/ - wait terminal go brrr
 
 ## essay
 

@@ -12,7 +12,6 @@ import { QuartzPluginData } from "./quartz/plugins/vfile"
 const config: QuartzConfig = {
   configuration: {
     pageTitle: "Aaron's notes",
-    pageTitleSuffix: " - Aaron's notes",
     enableSPA: true,
     enablePopovers: true,
     generateSocialImages: true,

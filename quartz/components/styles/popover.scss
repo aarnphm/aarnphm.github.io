@@ -81,7 +81,6 @@
 
 a:hover .popover,
 .popover:hover {
-  animation: dropin 0.3s ease;
-  animation-fill-mode: forwards;
-  animation-delay: 0.2s;
+  opacity: 1;
+  visibility: visible;
 }

@@ -85,7 +85,6 @@ strong {
 a {
   font-weight: $semiBoldWeight;
   text-decoration: none;
-  transition: color 0.2s ease;
   color: var(--secondary);
 
   &:hover {
@@ -94,9 +93,6 @@ a {
 
   &.internal {
     text-decoration: none;
-    background-color: var(--highlight);
-    padding: 0 0.1rem;
-    border-radius: 5px;
     line-height: 1.4rem;
 
     &:has(> img) {
@@ -111,9 +107,13 @@ a {
     }
   }
 
-  &.external .external-icon {
-    height: 2ex;
-    margin: 0;
+  &.external {
+    text-decoration: underline;
+
+    & .external-icon {
+      height: 2ex;
+      margin: 0;
+    }
   }
 }
 
