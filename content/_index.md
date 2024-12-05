@@ -9,7 +9,6 @@ tags:
 date: "2022-04-22"
 description: Aaron's digital garden
 modified: "2024-09-27"
-skew: false
 title: Aaron's notes
 ---
 
@@ -29,4 +28,4 @@ Understanding the [[thoughts/mechanistic interpretability|inner working]] of lar
 Currently, I'm building [serving infrastructure](https://bentoml.com) for [[thoughts/Machine learning|ml]] systems and explore our interaction
 through [[thoughts/LLMs|large language models]].
 
-I'm best reached [here](https://twitter.com/aarnphm_) or contact@aarnphm.xyz
+I'm best reached [on twitter](https://twitter.com/aarnphm_) or contact@aarnphm.xyz

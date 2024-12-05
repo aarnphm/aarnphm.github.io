@@ -77,7 +77,7 @@ body[data-slug="index"] {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
 
-  #note-item {
+  section[data-note] {
     .recent-links,
     .notes-container {
       display: flex;
@@ -131,7 +131,6 @@ body[data-slug="index"] {
 a.min-links {
   color: inherit;
   font-weight: inherit;
-  margin-left: unset !important;
 
   &.internal {
     background-color: unset;

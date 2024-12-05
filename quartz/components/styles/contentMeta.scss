@@ -1,7 +1,7 @@
 @use "../../styles/variables.scss" as *;
 @use "../../styles/mixin.scss" as *;
 
-.content-meta {
+ul.content-meta {
   color: var(--gray);
   display: flex;
   flex-flow: wrap;
@@ -25,20 +25,40 @@
     color: var(--darkgray);
   }
 
-  .ref-source {
-    font-style: inherit;
-    font-weight: inherit;
-    color: var(--gray);
-    transition: none;
+  li > .container {
+    display: flex;
+    gap: 0.2em;
+    align-items: baseline;
+  }
 
+  .clipboard-button {
     position: relative;
-    padding-left: 0.3em;
 
-    @include links;
-    @include indicatorHook;
+    .copy-icon {
+      display: block;
+    }
+    .check-icon {
+      display: none;
+    }
 
-    &::before {
-      border-left-color: inherit;
+    &.check {
+      .check-icon {
+        display: block;
+      }
+      .copy-icon {
+        display: none;
+      }
+    }
+
+    &:hover {
+      opacity: 1;
+      transition: 0.2s;
     }
   }
+}
+
+.llm-source {
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: underline;
 }

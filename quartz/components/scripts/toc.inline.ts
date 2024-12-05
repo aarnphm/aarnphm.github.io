@@ -209,6 +209,8 @@ document.addEventListener("nav", () => {
 
   // update toc entry highlighting
   observer.disconnect()
-  const headers = document.querySelectorAll("h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]")
+  const headers = document.querySelectorAll(
+    [1, 2, 3, 4, 5, 6].map((n) => `h${n}[id]:not([data-reader])`).join(", "),
+  )
   headers.forEach((header) => observer.observe(header))
 })

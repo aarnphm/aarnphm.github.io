@@ -514,17 +514,18 @@ ol.overflow {
   }
 
   & > #quartz-body {
-    display: grid;
-    grid-template-columns: #{map.get($desktopGrid, templateColumns)};
-    grid-template-rows: #{map.get($desktopGrid, templateRows)};
-    grid-template-areas: #{map.get($desktopGrid, templateAreas)};
+    display: flex;
     margin-bottom: 1.5rem;
 
-    @media all and ($tablet) {
-      &.left.sidebar,
-      &.right.sidebar {
+    @media all and not ($desktop) {
+      & .left.sidebar,
+      & .right.sidebar {
         display: none;
       }
+    }
+
+    @media all and ($mobile) {
+      display: block;
     }
 
     & .sidebar {
@@ -535,12 +536,7 @@ ol.overflow {
       width: $sidePanelWidth;
     }
 
-    & .left.sidebar {
-      grid-area: grid-sidebar-left;
-    }
-
     & .right.sidebar {
-      grid-area: grid-sidebar-right;
       margin-right: 0;
       flex-direction: column;
 
@@ -550,11 +546,11 @@ ol.overflow {
     }
 
     & .center {
-      max-width: 100%;
-      min-width: 100%;
+      max-width: $pageWidth;
+      min-width: auto;
       height: fit-content;
-      grid-area: grid-center;
       position: relative;
+      margin: 0 auto;
     }
   }
 }

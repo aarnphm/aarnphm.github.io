@@ -137,19 +137,17 @@ pre {
         font-size: 16px;
         font-family: var(--bodyFont);
 
+        & > svg {
+          fill: var(--light);
+          filter: contrast(0.3);
+        }
+
         &:hover {
           background: var(--lightgray);
         }
 
         &:active {
           transform: translateY(1px);
-        }
-
-        // Style the reset button differently
-        &:nth-child(2) {
-          width: auto;
-          padding: 0 12px;
-          font-size: 14px;
         }
       }
     }

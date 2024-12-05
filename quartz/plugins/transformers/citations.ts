@@ -76,7 +76,7 @@ function processTextNode(node: Text, prettyLinks: boolean): (Element | Text)[] {
           type: "text",
           value: prettyLinks
             ? isArxiv
-              ? "arxiv"
+              ? "[arxiv]"
               : isGitHub
                 ? "[GitHub]"
                 : isTransformerCircuit

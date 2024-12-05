@@ -154,6 +154,12 @@ export default (() => {
         parent.children = [node]
       }
     })
+    // remove all items with singleton tag
+    visit(ast, "element", (node: Element, idx, parent: Element) => {
+      if (node.properties.dataSingleton) {
+        parent.children.splice(idx!, 1)
+      }
+    })
     // cleanup colorscheme, we just need monotone for reader mode
     visit(ast, "element", (node: Element) => {
       // Handle code block with data-language
@@ -207,6 +213,7 @@ export default (() => {
       if (headingRank(node) && node.properties?.id) {
         // Append the suffix to the existing id
         node.properties.id = `${node.properties.id}${suffix}`
+        node.properties["data-reader"] = true
 
         // Also update any anchor links within the header that reference the old id
         visit(node, "element", (child: Element) => {

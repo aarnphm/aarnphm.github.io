@@ -200,13 +200,32 @@ a {
   }
 
   &:hover {
-    &:not([data-backlink]):not(.llm-source) {
+    &:not([data-backlink]):not(.llm-source):not(.min-links):not([role="anchor"]):not(.result-card) {
       background-color: var(--secondary) !important;
       color: var(--light) !important;
     }
 
+    .min-links,
     &[data-backlink] > .small {
       @include dagHighlights;
+    }
+  }
+
+  &.internal {
+    &[data-footnote-backref],
+    sup & {
+      margin-left: 0.3em;
+
+      @include links;
+    }
+  }
+
+  &.result-card {
+    ul > li > p {
+      background-color: initial !important;
+      border-radius: 0px !important;
+
+      @include links;
     }
   }
 
@@ -627,6 +646,13 @@ body {
 
   & > .search-button {
     border-radius: 0px;
+  }
+
+  & > #search-container > #search-layout {
+    & .highlight {
+      border-radius: 0px;
+      background: color-mix(in srgb, var(--iris) 60%, rgba(255, 255, 255, 0));
+    }
   }
 }
 

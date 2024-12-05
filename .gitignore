@@ -19,3 +19,4 @@ sites
 **/partial_movie_files/**
 data/
 model/
+content/thoughts/university/**/*.csv

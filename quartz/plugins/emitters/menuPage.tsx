@@ -10,12 +10,20 @@ import DepGraph from "../../depgraph"
 import { sharedPageComponents } from "../../../quartz.layout"
 import { classNames } from "../../util/lang"
 
-function MenuFooter({ displayClass }: QuartzComponentProps) {
+function FunctionLink({ displayClass }: QuartzComponentProps) {
   return (
-    <footer class={classNames(displayClass, "menu-footer")}>
+    <section class={classNames(displayClass, "menu-ref")} data-function={true}>
       <a href="../atelier-with-friends" class="internal alias" data-no-popover={true}>
         atelier with friends.
       </a>
+    </section>
+  )
+}
+
+function FunctionFooter() {
+  return (
+    <footer class="menu-footer">
+      <div class="with-border"></div>
     </footer>
   )
 }
@@ -28,8 +36,8 @@ export const MenuPage: QuartzEmitterPlugin = () => {
     left: [Spacer()],
     right: [Spacer()],
     pageBody: Content(),
-    afterBody: [MenuFooter],
-    footer: Spacer(),
+    afterBody: [FunctionLink],
+    footer: FunctionFooter,
   }
 
   const { head, header, beforeBody, pageBody, afterBody, left, right, footer: Footer } = opts

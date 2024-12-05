@@ -41,9 +41,18 @@ class DiagramPanZoom {
     controls.className = "mermaid-controls"
 
     // Zoom controls
-    const zoomIn = this.createButton("+", () => this.zoom(0.1))
-    const zoomOut = this.createButton("-", () => this.zoom(-0.1))
-    const resetBtn = this.createButton("reset", () => this.resetTransform())
+    const zoomIn = this.createButton(
+      `<svg width="24" height="24" strokewidth="0" stroke="none"><use href="#zoom-in"/></svg>`,
+      () => this.zoom(0.1),
+    )
+    const zoomOut = this.createButton(
+      `<svg width="24" height="24" strokewidth="0" stroke="none"><use href="#zoom-out"/></svg>`,
+      () => this.zoom(-0.1),
+    )
+    const resetBtn = this.createButton(
+      `<svg width="24" height="24" strokewidth="0" stroke="none"><use href="#expand-sw-ne"/></svg>`,
+      () => this.resetTransform(),
+    )
 
     controls.appendChild(zoomOut)
     controls.appendChild(resetBtn)
@@ -54,7 +63,7 @@ class DiagramPanZoom {
 
   private createButton(text: string, onClick: () => void): HTMLButtonElement {
     const button = document.createElement("button")
-    button.textContent = text
+    button.innerHTML = text
     button.className = "mermaid-control-button"
     button.addEventListener("click", onClick)
     window.addCleanup(() => button.removeEventListener("click", onClick))

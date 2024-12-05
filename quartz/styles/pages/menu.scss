@@ -2,6 +2,12 @@
 @use "../variables.scss" as *;
 @use "../mixin.scss" as *;
 
+@mixin menuBorder {
+  border: 0px solid var(--lightgray);
+  border-left-width: 1px;
+  border-right-width: 1px;
+}
+
 body[data-menu="true"] {
   text-align: right;
   background-image: unset !important;
@@ -29,10 +35,13 @@ body[data-menu="true"] {
   .center {
     background-image: url("/static/menu.svg");
     background-repeat: no-repeat;
+
+    @include menuBorder;
   }
 
-  @media all and not ($desktop) {
-    .page > #quartz-body {
+  .page > #quartz-body {
+    margin-bottom: 0;
+    @media all and not ($desktop) {
       & .sidebar.left,
       & .sidebar.right {
         display: none;
@@ -55,7 +64,7 @@ body[data-menu="true"] {
   h1,
   h2,
   h3,
-  footer {
+  section[data-function] {
     font-family: "ITCGaramondStdLtCond", var(--bodyFont);
     letter-spacing: -0.0275rem;
     font-weight: normal;
@@ -81,13 +90,36 @@ body[data-menu="true"] {
     font-style: italic;
   }
 
-  footer {
-    width: unset;
-    grid-area: grid-center;
+  section[data-function] {
+    min-width: auto;
+    max-width: $pageWidth;
+    grid-area: grid-center-one;
   }
 
   a[role="anchor"] {
     display: none;
+  }
+
+  footer {
+    position: relative;
+
+    .with-border {
+      min-width: auto;
+      max-width: $pageWidth;
+      height: 100%;
+      margin: 0 auto;
+      position: relative;
+
+      @include menuBorder;
+
+      &::after {
+        content: "";
+      }
+    }
+  }
+
+  .page-footer {
+    margin-bottom: 0;
   }
 
   @media all and ($desktop) {

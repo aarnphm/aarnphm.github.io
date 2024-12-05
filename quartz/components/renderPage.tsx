@@ -8,7 +8,7 @@ import SearchConstructor from "./Search"
 import SpacerConstructor from "./Spacer"
 import FooterConstructor from "./Footer"
 import { byDateAndAlphabetical } from "./PageList"
-import { getDate, formatDate } from "./Date"
+import { getDate, Date } from "./Date"
 import { classNames } from "../util/lang"
 import { JSResourceToScriptElement, StaticResources } from "../util/resources"
 import {
@@ -44,14 +44,14 @@ interface RenderComponents {
   footer: QuartzComponent
 }
 
-const svgOptions = {
+export const svgOptions = {
   xmlns: "http://www.w3.org/2000/svg",
   width: 16,
   height: 16,
   viewbox: "0 0 24 24",
   ariahidden: true,
   fill: "currentColor",
-  stroke: "currentColor",
+  stroke: "none",
   strokewidth: 0,
   strokelinecap: "round",
   strokelinejoin: "round",
@@ -93,7 +93,9 @@ function headerElement(
         `span.toggle-button#${buttonId}-toggle`,
         {
           arialabel: "Toggle content visibility",
+          role: "button",
           ariaexpanded: true,
+          ariacontrols: `${buttonId}-content`,
           type: "button",
         },
         [
@@ -104,52 +106,53 @@ function headerElement(
                 ...svgOptions,
                 fill: "var(--dark)",
                 stroke: "var(--dark)",
-                strokewidth: "2",
                 class: "circle-icon",
               },
-              [s("circle", { cx: 12, cy: 12, r: 3 })],
+              [s("use", { href: "#circle-icon" })],
             ),
             s(
               "svg",
               {
                 ...svgOptions,
-                fill: "var(--tertiary)",
-                stroke: "var(--tertiary)",
-                strokewidth: "2",
+                fill: "var(--iris)",
+                stroke: "var(--iris)",
                 class: "expand-icon",
               },
-              [
-                s("line", { x1: 12, y1: 5, x2: 12, y2: 19 }),
-                s("line", { x1: 5, y1: 12, x2: 19, y2: 12 }),
-              ],
+              [s("use", { href: "#arrow-down" })],
             ),
             s(
               "svg",
               {
                 ...svgOptions,
-                fill: "none",
-                stroke: "currentColor",
-                strokewidth: "2",
+                fill: "var(--foam)",
+                stroke: "var(--foam)",
                 class: "collapse-icon",
               },
-              [s("line", { x1: 5, y1: 12, x2: 19, y2: 12 })],
+              [s("use", { href: "#arrow-up" })],
             ),
           ]),
         ],
       ),
       node,
     ]),
-    h(".collapsible-header-content-outer", [
-      h(
-        ".collapsible-header-content",
-        {
-          ["data-references"]: `${buttonId}-toggle`,
-          ["data-level"]: `${rank}`,
-          ["data-heading-id"]: node.properties.id, // HACK: This assumes that rehype-slug already runs this target
-        },
-        content,
-      ),
-    ]),
+    h(
+      ".collapsible-header-content-outer",
+      {
+        id: `${buttonId}-content`,
+        arialabelledby: buttonId,
+      },
+      [
+        h(
+          ".collapsible-header-content",
+          {
+            ["data-references"]: `${buttonId}-toggle`,
+            ["data-level"]: `${rank}`,
+            ["data-heading-id"]: node.properties.id, // HACK: This assumes that rehype-slug already runs this target
+          },
+          content,
+        ),
+      ],
+    ),
   ])
 }
 
@@ -613,7 +616,60 @@ export function transcludeFinal(
 
   // NOTE: handling collapsible nodes
   if (dynalist && !slug.includes("posts")) {
-    root.children = processHeaders(root.children as ElementContent[])
+    root.children = [
+      ...processHeaders(root.children as ElementContent[]),
+      s(
+        "svg.quartz-icons",
+        {
+          xmlns: "http://www.w3.org/2000/svg",
+          viewbox: "0 0 24 24",
+          style: "height: 0;",
+          "data-singleton": true,
+        },
+        [
+          s("symbol", { id: "arrow-up", viewbox: "0 0 24 24" }, [
+            s("path", {
+              d: "M12 3l7 7-1.4 1.4L13 6.8V21h-2V6.8L6.4 11.4 5 10l7-7z",
+              fill: "currentColor",
+            }),
+          ]),
+          s("symbol", { id: "arrow-down", viewbox: "0 0 24 24" }, [
+            s("path", {
+              d: "M12 21l-7-7 1.4-1.4L11 17.2V3h2v14.2l4.6-4.6L19 14l-7 7z",
+              fill: "currentColor",
+            }),
+          ]),
+          s("symbol", { id: "plus-icon", viewbox: "0 0 24 24" }, [
+            s("line", { x1: 12, y1: 5, x2: 12, y2: 19 }),
+            s("line", { x1: 5, y1: 12, x2: 19, y2: 12 }),
+          ]),
+          s("symbol", { id: "minus-icon", viewbox: "0 0 24 24" }, [
+            s("line", { x1: 5, y1: 12, x2: 19, y2: 12 }),
+          ]),
+          s("symbol", { id: "circle-icon", viewbox: "0 0 24 24" }, [
+            s("circle", { cx: 12, cy: 12, r: 3 }),
+          ]),
+          s("symbol", { id: "zoom-in", viewbox: "0 0 24 24" }, [
+            s("path", {
+              d: "M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm.5-7H9v2H7v1h2v2h1v-2h2V9h-2z",
+              fill: "currentColor",
+            }),
+          ]),
+          s("symbol", { id: "zoom-out", viewbox: "0 0 24 24" }, [
+            s("path", {
+              d: "M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM7 9h5v1H7z",
+              fill: "currentColor",
+            }),
+          ]),
+          s("symbol", { id: "expand-sw-ne", viewbox: "0 0 24 24" }, [
+            s("path", {
+              d: "M4 20v-5h2v2.17L17.17 6H15V4h5v5h-2V6.83L6.83 18H9v2z",
+              fill: "currentColor",
+            }),
+          ]),
+        ],
+      ),
+    ]
   }
 
   // NOTE: We then merge all references and footnotes to final items
@@ -656,8 +712,6 @@ const AliasLink = (props: AliasLinkProp) => {
 }
 
 const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?: string }) => {
-  const Spacer = SpacerConstructor()
-
   const Notes: QuartzComponent = (componentData: QuartzComponentProps) => {
     const { allFiles, fileData, cfg } = componentData
     const pages = allFiles
@@ -687,20 +741,19 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
     const remaining = Math.max(0, pages.length - opts!.numLimits!)
     const classes = ["min-links", "internal"].join(" ")
     return (
-      <div id="note-item">
+      <section id={`note-item-${opts!.header}`} data-note>
         <h2>{opts!.header}.</h2>
         <div class="notes-container">
           <div class="recent-links">
             <ul class="landing-notes">
               {pages.slice(0, opts!.numLimits).map((page) => {
                 const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
-
                 return (
                   <li>
                     <a href={resolveRelative(fileData.slug!, page.slug!)} class={classes}>
                       <div class="landing-meta">
                         <span class="landing-mspan">
-                          {formatDate(getDate(cfg, page)!, cfg.locale)}
+                          <Date date={getDate(cfg, fileData)!} locale={cfg.locale} />
                         </span>
                         <span class="landing-mtitle">{title}</span>
                       </div>
@@ -721,9 +774,8 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
               </p>
             )}
           </div>
-          <Spacer {...componentData} />
         </div>
-      </div>
+      </section>
     )
   }
   return Notes

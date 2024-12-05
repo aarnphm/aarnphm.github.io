@@ -337,7 +337,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     return tags
       .map((tag) => {
         if (tag.toLowerCase().includes(term.toLowerCase())) {
-          return `<li><p class="match-tag">#${tag}</p></li>`
+          return `<li><p class="match-tag"><span class="indicator-hook"></span>#${tag}</p></li>`
         } else {
           return `<li><p>#${tag}</p></li>`
         }
