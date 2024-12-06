@@ -23,3 +23,14 @@ Considered to be a study of [[thoughts/action theory|action theory]]
 ## having a shit blog has made me feel abundant
 
 source: [Escaping Flatland](https://www.henrikkarlsson.xyz/p/having-a-shit-blog-has-made-me-feel)
+
+## agency as machine
+
+see [Direct Manipulation vs Interface Agents](https://dl.acm.org/doi/10.1145/267505.267514)
+
+Agency as an extension of end-users rather than the systems itself
+
+![[thoughts/images/complex-takes-away-agency.png]]
+
+> Instruments of _superagency_
+

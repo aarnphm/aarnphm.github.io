@@ -84,8 +84,7 @@ function setupHeaders() {
         }
       }
       const collapsed = content.classList.contains("collapsed")
-      const height = collapsed ? 0 : content.parentElement!.scrollHeight
-      content.style.maxHeight = `${height}px`
+      content.style.maxHeight = collapsed ? `0px` : `inherit`
     }
   }
 

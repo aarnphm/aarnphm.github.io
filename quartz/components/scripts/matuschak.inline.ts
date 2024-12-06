@@ -18,8 +18,8 @@ document.addEventListener("nav", async () => {
       button.setAttribute("aria-checked", "true")
       container.classList.add("active")
       body.classList.add("stack-mode")
-      header.classList.remove("main-col")
       header.classList.add("grid", "all-col")
+      header.classList.remove("full-col")
 
       if (window.location.hash) {
         window.history.pushState("", document.title, currentUrl.split("#")[0])
@@ -29,8 +29,8 @@ document.addEventListener("nav", async () => {
       button.setAttribute("aria-checked", "false")
       container.classList.remove("active")
       body.classList.remove("stack-mode")
-      header.classList.add("main-col")
       header.classList.remove("grid", "all-col")
+      header.classList.add("full-col")
       window.stacked.destroy()
     }
   }
