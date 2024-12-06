@@ -165,8 +165,7 @@ const cssVars = [
 ] as const
 
 document.addEventListener("nav", async () => {
-  const center = document.querySelector(".center") as HTMLElement
-  const nodes = center.querySelectorAll("code.mermaid") as NodeListOf<HTMLElement>
+  const nodes = document.querySelectorAll("code.mermaid") as NodeListOf<HTMLElement>
   if (nodes.length === 0) return
 
   const computedStyleMap = cssVars.reduce(

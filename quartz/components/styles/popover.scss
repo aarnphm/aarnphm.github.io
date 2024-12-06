@@ -25,11 +25,25 @@
     opacity 0.3s ease,
     visibility 0.3s ease;
 
+  .grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .byline {
+    menu.tags {
+      grid-column: 1 / 1 !important;
+    }
+
+    .content-meta {
+      grid-column: 2 / 2 !important;
+    }
+  }
+
   & > .popover-inner {
     position: relative;
     width: 30rem;
     max-height: 20rem;
-    padding: 0 1rem 1rem 1rem;
+    padding: 0 1rem;
     font-weight: initial;
     font-style: initial;
     line-height: normal;

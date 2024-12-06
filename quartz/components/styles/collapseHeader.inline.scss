@@ -116,12 +116,11 @@
 
     .collapsible-header-content {
       border-left: 1px solid var(--lightgray);
-      overflow: hidden;
       padding-left: 8px;
-      max-height: none;
+      transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
       &.collapsed {
-        max-height: 0 !important;
+        overflow: hidden;
         padding-top: 0;
         padding-bottom: 0;
       }

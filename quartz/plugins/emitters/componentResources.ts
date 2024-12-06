@@ -8,6 +8,14 @@ import popoverScript from "../../components/scripts/popover.inline"
 import fontsScript from "../../components/scripts/fonts.inline"
 import styles from "../../styles/custom.scss"
 import popoverStyle from "../../components/styles/popover.scss"
+// @ts-ignore
+import clipboardScript from "../../components/scripts/clipboard.inline"
+import clipboardStyle from "../../components/styles/clipboard.scss"
+// @ts-ignore
+import equationScript from "../../components/scripts/equation.inline"
+// @ts-ignore
+import pseudoScript from "../../components/scripts/clipboard-pseudo.inline"
+import pseudoStyle from "../../components/styles/pseudocode.scss"
 import { BuildCtx } from "../../util/ctx"
 import { QuartzComponent } from "../../components/types"
 import { googleFontHref, joinStyles } from "../../util/theme"
@@ -86,7 +94,9 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     componentResources.css.push(popoverStyle)
   }
 
-  componentResources.beforeDOMLoaded.push(fontsScript)
+  componentResources.css.push(clipboardStyle, pseudoStyle)
+  componentResources.beforeDOMLoaded.push(fontsScript, equationScript)
+  componentResources.afterDOMLoaded.push(clipboardScript, pseudoScript)
 
   if (cfg.analytics?.provider === "plausible") {
     const plausibleHost = cfg.analytics.host ?? "https://plausible.io"

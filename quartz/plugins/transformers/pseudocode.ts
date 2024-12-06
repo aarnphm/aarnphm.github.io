@@ -8,6 +8,7 @@ import Lexer from "pseudocode/src/Lexer.js"
 import Parser from "pseudocode/src/Parser.js"
 // @ts-ignore
 import Renderer from "pseudocode/src/Renderer.js"
+import { s, h } from "hastscript"
 import { fromHtml } from "hast-util-from-html"
 import { extractInlineMacros } from "../../util/latex"
 
@@ -188,107 +189,37 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
             renderedContainer.properties.dataInlineMacros = inlineMacros
             renderedContainer.properties.dataSettings = JSON.stringify(opts)
 
-            const button: Element = {
-              type: "element",
-              tagName: "button",
-              properties: {
-                className: ["clipboard-button", "ps-clipboard"],
-                "aria-label": "Copy pseudocode to clipboard",
-                tabindex: "-1",
+            const button: Element = h(
+              "span",
+              {
                 type: "button",
+                class: "clipboard-button ps-clipboard",
+                arialabel: "Copy pseudocode to clipboard",
+                ariahidden: true,
+                tabindex: -1,
               },
-              children: [
-                {
-                  type: "element",
-                  tagName: "svg",
-                  properties: {
-                    "aria-hidden": "true",
-                    className: ["copy-icon"],
-                    width: 16,
-                    height: 16,
-                    version: "1.1",
-                    viewBox: "0 0 16 16",
-                  },
-                  children: [
-                    {
-                      type: "element",
-                      tagName: "path",
-                      properties: {
-                        fillRule: "evenodd",
-                        d: "M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z",
-                      },
-                      children: [],
-                    },
-                    {
-                      type: "element",
-                      tagName: "path",
-                      properties: {
-                        fillRule: "evenodd",
-                        d: "M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z",
-                      },
-                      children: [],
-                    },
-                  ],
-                },
-                {
-                  type: "element",
-                  tagName: "svg",
-                  properties: {
-                    "aria-hidden": "true",
-                    className: ["check-icon"],
-                    version: "1.1",
-                    width: 16,
-                    height: 16,
-                    viewBox: "0 0 16 16",
-                  },
-                  children: [
-                    {
-                      type: "element",
-                      tagName: "path",
-                      properties: {
-                        fillRule: "evenodd",
-                        fill: "rgb(63, 185, 80)",
-                        d: "M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z",
-                      },
-                      children: [],
-                    },
-                  ],
-                },
+              [
+                s("svg", { width: 16, height: 16, viewbox: "0 0 16 16", class: "copy-icon" }, [
+                  s("use", { href: "#github-copy" }),
+                ]),
+                s("svg", { width: 16, height: 16, viewbox: "0 0 16 16", class: "check-icon" }, [
+                  s("use", {
+                    href: "#github-check",
+                    fillRule: "evenodd",
+                    fill: "rgb(63, 185, 80)",
+                  }),
+                ]),
               ],
-            }
-            const mathML: Element = {
-              type: "element",
-              tagName: "span",
-              properties: {
-                className: ["ps-mathml"],
-              },
-              children: [
-                {
-                  type: "element",
-                  tagName: "math",
-                  properties: {
-                    xmlns: "http://www.w3.org/1998/Math/MathML",
-                  },
-                  children: [
-                    {
-                      type: "element",
-                      tagName: "semantics",
-                      properties: {},
-                      children: [
-                        {
-                          type: "element",
-                          tagName: "annotation",
-                          properties: {
-                            encoding: "application/x-tex",
-                          },
-                          children: [{ type: "text", value: JSON.stringify(algoWithPreamble) }],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            }
+            )
+            const mathML: Element = h("span", { class: "ps-mathml" }, [
+              h("math", { xmlns: "http://www.w3.org/1998/Math/MathML" }, [
+                h("semantics", [
+                  h("annotation", { encoding: "application/x-tex" }, [
+                    { type: "text", value: JSON.stringify(algoWithPreamble) },
+                  ]),
+                ]),
+              ]),
+            ])
 
             renderedContainer.children = [button, mathML, ...renderedContainer.children]
             parent!.children.splice(index!, 1, renderedContainer)

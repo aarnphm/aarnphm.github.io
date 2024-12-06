@@ -6,42 +6,18 @@ body[data-slug="index"] {
   overflow-x: hidden;
   background-image: url("/static/bg.webp");
 
-  & .page > #quartz-body {
-    & .center {
-      width: #{$pageWidth};
-      max-width: unset !important;
-      min-width: unset !important;
-      margin-top: 2rem !important;
-
-      & > *:not(hr) {
-        padding: 0 1rem;
-      }
-
-      @media all and ($desktop) {
-        margin-bottom: 2rem;
-      }
-
-      @media all and ($tablet) {
-        margin-right: auto !important;
-      }
-
-      @media all and ($mobile) {
-        width: initial;
-        margin-left: auto !important;
-        margin-right: auto !important;
-      }
-    }
+  .main-col:not(.popover *) {
+    grid-column: 4/-4;
   }
 
   & > * {
     font-family: var(--bodyFont);
   }
 
-  header {
-    display: flex !important;
-    margin-top: 1rem !important;
-    margin-bottom: 0.5rem !important;
-    border: none;
+  .page-content {
+    margin-top: 2rem;
+    border: 1px solid var(--gray);
+    padding: 0 2rem;
   }
 
   &:not(.popover *) {

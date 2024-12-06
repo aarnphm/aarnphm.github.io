@@ -29,8 +29,8 @@ export const defaultContentPageLayout: PageLayout = {
     Component.ArticleTitle(),
     Component.Byline(Component.TagList(), Component.ContentMeta()),
   ],
-  left: [Component.DesktopOnly(Component.TableOfContents())],
-  right: [
+  sidebar: [
+    Component.DesktopOnly(Component.TableOfContents()),
     Component.Graph(),
     Component.Reader(),
     Component.Image(),
@@ -48,6 +48,5 @@ export const defaultListPageLayout: PageLayout = {
     Component.Search(),
     Component.StackedNotes(),
   ],
-  left: [],
-  right: [],
+  sidebar: [],
 }

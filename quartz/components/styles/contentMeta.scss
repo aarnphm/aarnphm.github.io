@@ -8,6 +8,7 @@ ul.content-meta {
   flex-direction: column;
   cursor: pointer;
   margin: 0;
+  grid-column: 9/10;
 
   padding-inline-start: 0;
   list-style: none;
@@ -21,13 +22,21 @@ ul.content-meta {
     line-height: 1.272em;
   }
 
+  @media all and ($tablet) {
+    grid-column: 9 / -3;
+  }
+
+  @media all and ($mobile) {
+    grid-column: 9 / -3;
+  }
+
   pre {
     color: var(--darkgray);
   }
 
   li > .container {
     display: flex;
-    gap: 0.2em;
+    gap: 0.5em;
     align-items: baseline;
   }
 

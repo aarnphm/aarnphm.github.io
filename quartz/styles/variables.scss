@@ -1,11 +1,7 @@
 @use "sass:map";
 
 :root {
-  // See https://github.com/gwern/gwern.net/blob/9250d886d5470ca434be94f7189af76446ec5ccc/css/initial.css#L1771
-  --link-underline-background-color: var(--light);
   --link-underline-gradient-line-color: currentColor;
-  --link-underline-background-image: url(data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIEBCSGBQA7);
-  --hr-highlighted-border-color: var(--gray);
 
   // rose-pine-dawn
   --base: #faf4ed;
@@ -22,6 +18,7 @@
   --iris: rgba(144, 122, 169, 1);
   --skew: 1.5deg;
   --skew-mobile: 0.75deg;
+  --ken: 12px;
 }
 
 /**
@@ -52,19 +49,6 @@ $desktop: "(min-width: #{map.get($breakpoints, desktop)})";
 
 $pageWidth: #{map.get($breakpoints, mobile)};
 $sidePanelWidth: 320px; // 320px - 380px;
-$topSpacing: 3rem;
 $boldWeight: 700;
 $semiBoldWeight: 600;
 $normalWeight: 400;
-
-$mobileGrid: (
-  templateRows: "auto",
-  templateColumns: "minmax(auto, #{$pageWidth})",
-  templateAreas: '"grid-center"',
-);
-
-$desktopGrid: (
-  templateRows: "auto",
-  templateColumns: "auto minmax(auto, #{$pageWidth}) auto",
-  templateAreas: '"grid-sidebar-left grid-center grid-sidebar-right"',
-);

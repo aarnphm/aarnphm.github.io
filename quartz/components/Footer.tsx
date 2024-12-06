@@ -5,7 +5,7 @@ import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
 import { Date as DateComponent, getDate } from "./Date"
 
-type FooterLayout = "default" | "minimal" | "poetry"
+type FooterLayout = "default" | "minimal" | "poetry" | "menu"
 
 interface Options {
   layout?: FooterLayout
@@ -25,7 +25,7 @@ export default ((userOpts?: Options) => {
     const year = new Date().getFullYear()
     const links = opts?.links ?? []
 
-    const PoetryFooter = () => <DateComponent date={getDate(cfg, fileData)!} locale={cfg.locale} />
+    const DateFooter = () => <DateComponent date={getDate(cfg, fileData)!} locale={cfg.locale} />
 
     const MinimalFooter = () => (
       <>
@@ -79,14 +79,16 @@ export default ((userOpts?: Options) => {
         case "minimal":
           return <MinimalFooter />
         case "poetry":
-          return <PoetryFooter />
+          return <DateFooter />
+        case "menu":
+          return <DateFooter />
         default:
           return <DefaultFooter />
       }
     }
 
     return (
-      <footer class={classNames(displayClass, opts.layout!)}>
+      <footer class={classNames(displayClass, opts.layout!, "main-col")}>
         {FooterConstructor(opts.layout!)}
       </footer>
     )

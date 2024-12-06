@@ -1,3 +1,4 @@
+@use "sass:map";
 @use "../../styles/variables.scss" as *;
 
 .search {
@@ -169,7 +170,21 @@
 
         & .preview-inner {
           margin: 0 auto;
-          width: min($pageWidth, 100%);
+          width: min(#{map.get($breakpoints, mobile)}, 100%);
+
+          .grid {
+            grid-template-columns: 1fr auto 1fr;
+          }
+
+          .byline {
+            menu.tags {
+              grid-column: 1 / 1;
+            }
+
+            .content-meta {
+              grid-column: 2 / 2;
+            }
+          }
 
           hgroup {
             margin-top: 2rem;
@@ -223,10 +238,8 @@
           & > ul > li > p {
             border-radius: 8px;
             background-color: var(--highlight);
-            padding: 0.2rem 0.4rem;
             margin: 0 0.1rem;
             line-height: 1.4rem;
-            font-weight: $boldWeight;
             color: var(--secondary);
 
             &.match-tag {

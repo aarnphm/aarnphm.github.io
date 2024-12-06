@@ -1,3 +1,4 @@
+@use "sass:map";
 @use "../base.scss";
 @use "../variables.scss" as *;
 @use "../mixin.scss" as *;
@@ -32,21 +33,11 @@ body[data-menu="true"] {
     }
   }
 
-  .center {
+  .page-content {
     background-image: url("/static/menu.svg");
     background-repeat: no-repeat;
 
     @include menuBorder;
-  }
-
-  .page > #quartz-body {
-    margin-bottom: 0;
-    @media all and not ($desktop) {
-      & .sidebar.left,
-      & .sidebar.right {
-        display: none;
-      }
-    }
   }
 
   .menu {
@@ -90,12 +81,6 @@ body[data-menu="true"] {
     font-style: italic;
   }
 
-  section[data-function] {
-    min-width: auto;
-    max-width: $pageWidth;
-    grid-area: grid-center-one;
-  }
-
   a[role="anchor"] {
     display: none;
   }
@@ -105,7 +90,7 @@ body[data-menu="true"] {
 
     .with-border {
       min-width: auto;
-      max-width: $pageWidth;
+      max-width: #{map.get($breakpoints, mobile)};
       height: 100%;
       margin: 0 auto;
       position: relative;

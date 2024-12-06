@@ -5,7 +5,9 @@
 document.addEventListener("nav", async () => {
   const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
   const container = document.getElementById("stacked-notes-container")
-  if (!button || !container) return
+  const header = document.getElementsByClassName("header")[0] as HTMLElement
+
+  if (!button || !container || !header) return
 
   const switchCheckState = async () => {
     const isChecked = button.getAttribute("aria-checked") === "true"
@@ -16,6 +18,8 @@ document.addEventListener("nav", async () => {
       button.setAttribute("aria-checked", "true")
       container.classList.add("active")
       body.classList.add("stack-mode")
+      header.classList.remove("main-col")
+      header.classList.add("grid", "all-col")
 
       if (window.location.hash) {
         window.history.pushState("", document.title, currentUrl.split("#")[0])
@@ -25,6 +29,8 @@ document.addEventListener("nav", async () => {
       button.setAttribute("aria-checked", "false")
       container.classList.remove("active")
       body.classList.remove("stack-mode")
+      header.classList.add("main-col")
+      header.classList.remove("grid", "all-col")
       window.stacked.destroy()
     }
   }

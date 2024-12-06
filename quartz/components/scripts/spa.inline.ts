@@ -101,7 +101,11 @@ class StackedNoteManager {
         const rect = note.getBoundingClientRect()
 
         if (idx === notes.length - 1) {
-          note.classList.toggle("collapsed", clientWidth - rect.left <= 50) // 40px + padding
+          const shouldCollapsed = clientWidth - rect.left <= 50 // 40px + padding
+          note.classList.toggle("collapsed", shouldCollapsed)
+          if (shouldCollapsed) {
+            note.scrollTo({ top: 0 })
+          }
           return
         }
 
@@ -630,15 +634,6 @@ function createRouter() {
         el?.scrollIntoView()
         history.pushState({}, "", url)
         return
-      }
-
-      // Preserve stackednotes params when navigating
-      const currentParams = new URL(window.location.toString()).searchParams
-      const stackedNotes = currentParams.getAll("stackedNotes")
-      if (stackedNotes.length > 0) {
-        stackedNotes.forEach((note) => {
-          url.searchParams.append("stackedNotes", note)
-        })
       }
 
       try {

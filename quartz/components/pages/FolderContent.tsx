@@ -175,7 +175,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     }
 
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
-    const classes = ["popover-hint", ...cssClasses].join(" ")
+    const classes = ["popover-hint", ...cssClasses, "main-col"].join(" ")
     const listProps = {
       ...props,
       sort: options.sort,

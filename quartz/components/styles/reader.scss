@@ -26,7 +26,7 @@
 
   .reader-container {
     display: flex;
-    max-width: #{$pageWidth};
+    max-width: #{$mobile};
     margin: 0 auto;
     background: var(--light);
     box-shadow:

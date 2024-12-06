@@ -125,30 +125,3 @@
     }
   }
 }
-
-.page > #quartz-body {
-  --skew-default: var(--skew);
-
-  @media all and not ($desktop) {
-    --skew-default: var(--skew-mobile);
-  }
-
-  & > * {
-    transition: transform 0.3s ease;
-  }
-
-  & > .center {
-    position: relative;
-
-    &.skewed {
-      transform: skew(var(--skew-default), var(--skew-default));
-      transform-origin: center;
-
-      .search > #search-container,
-      .keybind > #shortcut-container {
-        width: 100% !important;
-        height: 100% !important;
-      }
-    }
-  }
-}

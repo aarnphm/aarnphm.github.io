@@ -98,6 +98,7 @@ async function mouseEnterHandler(
     response = await fetch(url).catch(console.error)
   } else {
     response = await fetch(`${targetUrl}`).catch(console.error)
+    document.dispatchEvent(new CustomEvent("nav", { detail: { url: link.href } }))
   }
 
   // bailout if another popover exists
@@ -147,6 +148,8 @@ async function mouseEnterHandler(
       }
       break
     default:
+      popoverInner.classList.add("grid")
+
       const contents = await response.text()
       const html = p.parseFromString(contents, "text/html")
       normalizeRelativeURLs(html, targetUrl)

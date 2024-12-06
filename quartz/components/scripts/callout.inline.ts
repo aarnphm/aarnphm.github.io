@@ -1,5 +1,3 @@
-import { isInViewport, updatePosition } from "./util"
-
 function toggleCallout(this: HTMLElement) {
   const outerBlock = this.parentElement!
   outerBlock.classList.toggle("is-collapsed")

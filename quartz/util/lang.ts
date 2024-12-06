@@ -9,5 +9,5 @@ export function classNames(
   if (displayClass) {
     classes.push(displayClass)
   }
-  return classes.join(" ")
+  return classes.filter(Boolean).join(" ")
 }

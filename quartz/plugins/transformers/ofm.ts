@@ -733,7 +733,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               ) {
                 parent!.children = [
                   h(
-                    "button",
+                    "span",
                     {
                       class: "expand-button",
                       type: "button",
@@ -753,12 +753,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                           ariahidden: true,
                           tabindex: -1,
                         },
-                        [
-                          s("path", {
-                            fillrule: "evenodd",
-                            d: "M3.72 3.72a.75.75 0 011.06 1.06L2.56 7h10.88l-2.22-2.22a.75.75 0 011.06-1.06l3.5 3.5a.75.75 0 010 1.06l-3.5 3.5a.75.75 0 11-1.06-1.06l2.22-2.22H2.56l2.22 2.22a.75.75 0 11-1.06 1.06l-3.5-3.5a.75.75 0 010-1.06l3.5-3.5z",
-                          }),
-                        ],
+                        [s("use", { href: "#expand-e-w" })],
                       ),
                     ],
                   ),

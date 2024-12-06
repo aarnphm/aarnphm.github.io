@@ -169,7 +169,6 @@ export function setHeaderState(
   collapsed: boolean,
 ) {
   button.setAttribute("aria-expanded", collapsed ? "false" : "true")
-  content.style.maxHeight = collapsed ? "0px" : "inherit"
   button.classList.toggle("collapsed", collapsed)
   content.classList.toggle("collapsed", collapsed)
   wrapper.classList.toggle("collapsed", collapsed)

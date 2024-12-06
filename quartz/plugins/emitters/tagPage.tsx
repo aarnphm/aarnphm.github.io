@@ -1,8 +1,6 @@
 import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import HeaderConstructor from "../../components/Header"
-import BodyConstructor from "../../components/Body"
-import { Spacer } from "../../components"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { ProcessedContent, QuartzPluginData, defaultProcessedContent } from "../vfile"
 import { FullPageLayout } from "../../cfg"
@@ -29,32 +27,17 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
     pageBody: TagContent({ sort: userOpts?.sort }),
     header: [...defaultListPageLayout.beforeBody],
     beforeBody: [],
-    afterBody: [],
-    footer: Spacer(),
-    left: [Spacer()],
-    right: [Spacer()],
+    sidebar: [],
     ...userOpts,
   }
 
-  const { head: Head, header, beforeBody, pageBody, afterBody, left, right, footer: Footer } = opts
+  const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts
   const Header = HeaderConstructor()
-  const Body = BodyConstructor()
 
   return {
     name: "TagPage",
     getQuartzComponents() {
-      return [
-        Head,
-        Header,
-        Body,
-        ...header,
-        ...beforeBody,
-        pageBody,
-        ...afterBody,
-        ...left,
-        ...right,
-        Footer,
-      ]
+      return [Head, Header, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async getDependencyGraph(ctx, content, _resources) {
       const graph = new DepGraph<FilePath>()

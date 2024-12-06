@@ -150,14 +150,14 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                       {
                         ariahidden: true,
                         class: "external-icon",
-                        viewbox: "0 -3 16 16",
+                        viewbox: "0 -12 24 24",
                         fill: "none",
                         stroke: "currentColor",
                         strokewidth: 1.5,
                         strokelinecap: "round",
                         strokelinejoin: "round",
                       },
-                      [s("path", { d: "M4.5 11.5l7-7" }), s("path", { d: "M6.5 4.5h5v5" })],
+                      [s("use", { href: "#arrow-ne" })],
                     ),
                   )
                 }

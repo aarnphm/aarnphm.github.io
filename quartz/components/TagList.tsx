@@ -9,7 +9,7 @@ const TagList: QuartzComponent = ({ fileData, displayClass }: QuartzComponentPro
     return (
       <menu class={classNames(displayClass, "tags")}>
         <li>
-          <h3>étiquette</h3>
+          <h2>étiquette</h2>
           <ul>
             {tags.map((tag) => {
               const linkDest = baseDir + `/tags/${slugTag(tag)}`
@@ -25,7 +25,7 @@ const TagList: QuartzComponent = ({ fileData, displayClass }: QuartzComponentPro
         </li>
         {fileData.frontmatter?.socials && (
           <li class="socials">
-            <h3>média</h3>
+            <h2>média</h2>
             <ul>
               {Object.entries(fileData.frontmatter?.socials).map(([social, link]) => {
                 return (
@@ -62,6 +62,10 @@ menu.tags > li > ul {
 
 ul.tags {
   margin: 1rem 0;
+}
+
+menu.tags {
+  grid-column: 5/5;
 }
 
 li.socials > ul {

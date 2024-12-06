@@ -1,6 +1,6 @@
 import { LCG } from "../util/helpers"
 import { classNames } from "../util/lang"
-import { resolveRelative, slugifyFilePath } from "../util/path"
+import { FilePath, resolveRelative, slugifyFilePath } from "../util/path"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
 interface Options {
@@ -19,8 +19,10 @@ export default ((userOpts?: Options) => {
     allFiles,
     displayClass,
   }: QuartzComponentProps) => {
+    let p = fileData.slug as string
+    if (fileData.filePath) p = fileData.filePath
     const seed =
-      slugifyFilePath(fileData.filePath!)
+      slugifyFilePath(p as FilePath)
         .split("")
         .reduce((acc, char) => acc + char.charCodeAt(0), 0) ?? 0
     const rng = new LCG(seed)
@@ -29,7 +31,7 @@ export default ((userOpts?: Options) => {
     const recs = rng.shuffle(distributions).slice(0, opts.topChoices)
 
     return (
-      <section data-recs={true} class={classNames(displayClass, "recommendations")}>
+      <section data-recs={true} class={classNames(displayClass, "recommendations", "main-col")}>
         <h2 id="label" lang="fr">
           Vous pourriez aimer ce qui suit
         </h2>

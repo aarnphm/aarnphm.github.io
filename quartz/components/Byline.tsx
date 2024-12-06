@@ -4,12 +4,10 @@ export default ((...components: QuartzComponent[]) => {
   const Components = Array.from(components)
   const Byline: QuartzComponent = (props: QuartzComponentProps) => {
     return (
-      <section class="byline">
-        <div class="container">
-          {Components.map((Inner) => (
-            <Inner {...props} />
-          ))}
-        </div>
+      <section class="byline all-col grid">
+        {Components.map((Inner) => (
+          <Inner {...props} />
+        ))}
       </section>
     )
   }

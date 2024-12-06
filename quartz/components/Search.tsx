@@ -43,7 +43,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
               placeholder={searchPlaceholder}
             />
           </form>
-          <output id="search-layout" data-preview={opts.enablePreview}></output>
+          <output id="search-layout" data-preview={opts.enablePreview} />
         </search>
       </div>
     )

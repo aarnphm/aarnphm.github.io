@@ -1,5 +1,4 @@
 import { QuartzEmitterPlugin } from "../types"
-import BodyConstructor from "../../components/Body"
 import { write } from "./helpers"
 import { FullPageLayout } from "../../cfg"
 import { FilePath, FullSlug, pathToRoot } from "../../util/path"
@@ -41,31 +40,19 @@ export const InfinitePoemPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (u
   const opts: FullPageLayout = {
     ...sharedPageComponents,
     ...defaultContentPageLayout,
-    left: [],
-    right: [],
-    beforeBody: [ArticleTitle(), ContentMeta({ showMode: "link" })],
+    sidebar: [],
+    beforeBody: [ArticleTitle(), ContentMeta()],
     afterBody: [InfiniteDate],
     pageBody: InfiniteContent(),
     ...userOpts,
   }
 
-  const { head: Head, header, beforeBody, pageBody, afterBody, left, right, footer: Footer } = opts
-  const Body = BodyConstructor()
+  const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts
 
   return {
     name: "InfinitePage",
     getQuartzComponents() {
-      return [
-        Head,
-        Body,
-        ...header,
-        ...beforeBody,
-        pageBody,
-        ...afterBody,
-        ...left,
-        ...right,
-        Footer,
-      ]
+      return [Head, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async getDependencyGraph(_ctx, _content, _resources) {
       // Example graph:

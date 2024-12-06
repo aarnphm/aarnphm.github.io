@@ -1,11 +1,10 @@
 import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
-import BodyConstructor from "../../components/Body"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
 import { FilePath, FullSlug } from "../../util/path"
 import { sharedPageComponents } from "../../../quartz.layout"
-import { NotFound, Spacer } from "../../components"
+import { NotFound } from "../../components"
 import { defaultProcessedContent } from "../vfile"
 import { write } from "./helpers"
 import { i18n } from "../../i18n"
@@ -16,18 +15,15 @@ export const NotFoundPage: QuartzEmitterPlugin = () => {
     ...sharedPageComponents,
     pageBody: NotFound(),
     beforeBody: [],
-    left: [Spacer()],
-    right: [Spacer()],
+    sidebar: [],
     afterBody: [],
   }
 
   const { head: Head, pageBody, footer: Footer } = opts
-  const Body = BodyConstructor()
-
   return {
     name: "404Page",
     getQuartzComponents() {
-      return [Head, Body, pageBody, Footer]
+      return [Head, pageBody, Footer]
     },
     async getDependencyGraph(_ctx, _content, _resources) {
       return new DepGraph<FilePath>()

@@ -277,11 +277,13 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
         const active = document.activeElement as HTMLInputElement
         if (active.classList.contains("no-match")) return
         await displayPreview(active)
+        e.preventDefault()
         active.click()
       } else {
         const anchor = document.getElementsByClassName("result-card")[0] as HTMLInputElement | null
         if (!anchor || anchor?.classList.contains("no-match")) return
         await displayPreview(anchor)
+        e.preventDefault()
         anchor.click()
       }
     } else if (
@@ -337,7 +339,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     return tags
       .map((tag) => {
         if (tag.toLowerCase().includes(term.toLowerCase())) {
-          return `<li><p class="match-tag"><span class="indicator-hook"></span>#${tag}</p></li>`
+          return `<li><p class="match-tag">#${tag}</p></li>`
         } else {
           return `<li><p>#${tag}</p></li>`
         }

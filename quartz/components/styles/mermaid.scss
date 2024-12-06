@@ -1,40 +1,5 @@
 @use "../../styles/mixin.scss" as *;
 
-.expand-button {
-  position: absolute;
-  display: flex;
-  float: right;
-  padding: 0.4rem;
-  margin: 0.3rem;
-  right: 0; // NOTE: right will be set in mermaid.inline.ts
-  color: var(--gray);
-  border-color: var(--dark);
-  background-color: inherit;
-  border: 1px solid;
-  border-radius: 5px;
-  opacity: 0;
-
-  & > svg {
-    fill: var(--light);
-    filter: contrast(0.3);
-  }
-
-  &:hover {
-    cursor: pointer;
-    border-color: var(--secondary);
-  }
-
-  &:focus {
-    outline: 0;
-  }
-}
-
-pre {
-  &:hover > .expand-button {
-    opacity: 1;
-  }
-}
-
 #mermaid-container {
   position: fixed;
   z-index: 1000;

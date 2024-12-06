@@ -16,7 +16,7 @@ Beige and <span class="rose">rosé</span> are my two favourite colours.
 
 I try to be present, but you will find me either [[thoughts/writing#motivation.|writing]] or [[books|reading]].
 
-I like to take long walks, host [[thoughts/atelier with friends|functions]], and people watching. Cooking is my love language, which is how my mom expresses her love for me.
+I like to take long walks, host [[thoughts/atelier with friends|functions]], and people watching. Cooking is my [[/tags/love]] language, which is how my mom expresses her love for me.
 How one cooks their eggs tells a lot about how they treat others.
 
 [[thoughts/work|open-source projects]] are overall net positive for everyone, so contribute.

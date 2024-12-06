@@ -1,15 +1,12 @@
+.expand-button,
 .clipboard-button {
   position: absolute;
   display: flex;
   float: right;
   right: 0;
-  padding: 0.4rem;
   margin: 0.3rem;
   color: var(--gray);
-  border-color: var(--dark);
   background-color: var(--light);
-  border: 1px solid;
-  border-radius: 5px;
   opacity: 0;
   transition: 0.2s;
 
@@ -28,8 +25,9 @@
   }
 }
 
-pre {
-  &:hover > .clipboard-button {
+pre:hover {
+  & > .expand-button,
+  & > .clipboard-button {
     opacity: 1;
     transition: 0.2s;
   }

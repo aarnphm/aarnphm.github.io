@@ -30,7 +30,7 @@ function checkSidenoteSpacing(current: HTMLElement, allSidenotes: NodeListOf<HTM
 }
 
 function updateSidenotes() {
-  const articleContent = document.querySelector(".center") as HTMLElement
+  const articleContent = document.querySelector(".page-content") as HTMLElement
   const sideContainer = document.querySelector(".sidenotes") as HTMLElement
   if (!articleContent || !sideContainer) return
 
@@ -92,13 +92,13 @@ function createSidenote(footnote: HTMLElement, footnoteId: string): HTMLLIElemen
 }
 
 document.addEventListener("nav", () => {
-  const articleContent = document.querySelector(".center") as HTMLElement
+  const articleContent = document.querySelector(".page-content") as HTMLElement
   const footnoteSectionList = Array.from(
     articleContent.querySelectorAll("section[data-footnotes] > ol"),
   ) as HTMLOListElement[]
   if (!articleContent) return
 
-  const sideContainer = document.querySelector(".left .sidenotes") as HTMLElement
+  const sideContainer = document.querySelector(".sidenotes") as HTMLElement
   if (!sideContainer) return
 
   removeAllChildren(sideContainer)

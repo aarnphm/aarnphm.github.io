@@ -42,7 +42,7 @@ function toggleHeader(evt: Event) {
 
   // Toggle current header
   toggleButton.setAttribute("aria-expanded", isCollapsed ? "false" : "true")
-  content.style.maxHeight = isCollapsed ? "0px" : "inherit"
+  content.style.maxHeight = isCollapsed ? "0px" : `${content.scrollHeight}px`
   content.classList.toggle("collapsed", isCollapsed)
   wrapper.classList.toggle("collapsed", isCollapsed)
   toggleButton.classList.toggle("collapsed", isCollapsed)
@@ -83,6 +83,9 @@ function setupHeaders() {
           )
         }
       }
+      const collapsed = content.classList.contains("collapsed")
+      const height = collapsed ? 0 : content.parentElement!.scrollHeight
+      content.style.maxHeight = `${height}px`
     }
   }
 

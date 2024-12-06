@@ -57,17 +57,13 @@
   }
 }
 
-body.stack-mode {
-  header {
+body.stack-mode > #quartz-root {
+  section[class~="header"] {
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
     transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
-
-    & > .header-content {
-      margin: 0 auto;
-    }
 
     &::after {
       transform: scaleX(1);
@@ -75,8 +71,11 @@ body.stack-mode {
     }
   }
 
-  button.expand-button,
-  #quartz-root,
+  .expand-button,
+  .aside-container,
+  .page-footer,
+  .page-content,
+  .page-header:not(#stacked-notes-container .page-header),
   footer {
     display: none;
   }
@@ -187,6 +186,20 @@ a {
           max-width: 100%;
           margin: 0 auto;
           opacity: 1;
+
+          .grid {
+            grid-template-columns: 1fr auto 1fr;
+          }
+
+          .byline {
+            menu.tags {
+              grid-column: 1 / 1;
+            }
+
+            .content-meta {
+              grid-column: 2 / 2;
+            }
+          }
         }
 
         .stacked-title {

@@ -1,12 +1,12 @@
 import { render } from "preact-render-to-string"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import HeaderConstructor from "./Header"
-import BodyConstructor from "./Body"
 import ContentConstructor from "./pages/Content"
 import GraphConstructor from "./Graph"
 import SearchConstructor from "./Search"
 import SpacerConstructor from "./Spacer"
 import FooterConstructor from "./Footer"
+import Navigation from "./Navigation"
 import { byDateAndAlphabetical } from "./PageList"
 import { getDate, Date } from "./Date"
 import { classNames } from "../util/lang"
@@ -32,6 +32,13 @@ import { h, s } from "hastscript"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
 import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
+//@ts-ignore
+import curiusScript from "./scripts/curius.inline"
+//@ts-ignore
+import curiusFriendScript from "./scripts/curius-friends.inline"
+import DesktopOnly from "./DesktopOnly"
+import Spacer from "./Spacer"
+import { htmlToJsx } from "../util/jsx"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -39,8 +46,7 @@ interface RenderComponents {
   beforeBody: QuartzComponent[]
   pageBody: QuartzComponent
   afterBody: QuartzComponent[]
-  left: QuartzComponent[]
-  right: QuartzComponent[]
+  sidebar: QuartzComponent[]
   footer: QuartzComponent
 }
 
@@ -49,7 +55,6 @@ export const svgOptions = {
   width: 16,
   height: 16,
   viewbox: "0 0 24 24",
-  ariahidden: true,
   fill: "currentColor",
   stroke: "none",
   strokewidth: 0,
@@ -72,11 +77,7 @@ function headerElement(
   const icons = s(
     "svg",
     { ...svgOptions, class: "collapsed-dots", style: "padding-left: 0.2rem;" },
-    [
-      s("circle", { cx: 6, cy: 12, r: 2 }),
-      s("circle", { cx: 12, cy: 12, r: 2 }),
-      s("circle", { cx: 18, cy: 12, r: 2 }),
-    ],
+    [s("use", { href: "#triple-dots" })],
   )
   node.children.splice(lastIdx, 0, icons)
 
@@ -616,60 +617,7 @@ export function transcludeFinal(
 
   // NOTE: handling collapsible nodes
   if (dynalist && !slug.includes("posts")) {
-    root.children = [
-      ...processHeaders(root.children as ElementContent[]),
-      s(
-        "svg.quartz-icons",
-        {
-          xmlns: "http://www.w3.org/2000/svg",
-          viewbox: "0 0 24 24",
-          style: "height: 0;",
-          "data-singleton": true,
-        },
-        [
-          s("symbol", { id: "arrow-up", viewbox: "0 0 24 24" }, [
-            s("path", {
-              d: "M12 3l7 7-1.4 1.4L13 6.8V21h-2V6.8L6.4 11.4 5 10l7-7z",
-              fill: "currentColor",
-            }),
-          ]),
-          s("symbol", { id: "arrow-down", viewbox: "0 0 24 24" }, [
-            s("path", {
-              d: "M12 21l-7-7 1.4-1.4L11 17.2V3h2v14.2l4.6-4.6L19 14l-7 7z",
-              fill: "currentColor",
-            }),
-          ]),
-          s("symbol", { id: "plus-icon", viewbox: "0 0 24 24" }, [
-            s("line", { x1: 12, y1: 5, x2: 12, y2: 19 }),
-            s("line", { x1: 5, y1: 12, x2: 19, y2: 12 }),
-          ]),
-          s("symbol", { id: "minus-icon", viewbox: "0 0 24 24" }, [
-            s("line", { x1: 5, y1: 12, x2: 19, y2: 12 }),
-          ]),
-          s("symbol", { id: "circle-icon", viewbox: "0 0 24 24" }, [
-            s("circle", { cx: 12, cy: 12, r: 3 }),
-          ]),
-          s("symbol", { id: "zoom-in", viewbox: "0 0 24 24" }, [
-            s("path", {
-              d: "M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm.5-7H9v2H7v1h2v2h1v-2h2V9h-2z",
-              fill: "currentColor",
-            }),
-          ]),
-          s("symbol", { id: "zoom-out", viewbox: "0 0 24 24" }, [
-            s("path", {
-              d: "M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM7 9h5v1H7z",
-              fill: "currentColor",
-            }),
-          ]),
-          s("symbol", { id: "expand-sw-ne", viewbox: "0 0 24 24" }, [
-            s("path", {
-              d: "M4 20v-5h2v2.17L17.17 6H15V4h5v5h-2V6.83L6.83 18H9v2z",
-              fill: "currentColor",
-            }),
-          ]),
-        ],
-      ),
-    ]
+    root.children = processHeaders(root.children as ElementContent[])
   }
 
   // NOTE: We then merge all references and footnotes to final items
@@ -841,6 +789,114 @@ const ElementComponent = (() => {
   return Element
 }) satisfies QuartzComponentConstructor
 
+// Menu components
+
+function Functions({ displayClass }: QuartzComponentProps) {
+  return (
+    <section class={classNames(displayClass, "menu")} data-function={true}>
+      <a href="../atelier-with-friends" class="internal alias" data-no-popover={true}>
+        atelier with friends.
+      </a>
+    </section>
+  )
+}
+
+// Curius components
+
+const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
+  const { cfg, displayClass } = props
+  const searchPlaceholder = i18n(cfg.locale).components.search.searchBarPlaceholder
+  const Footer = Navigation({ prev: "/mechinterp", next: "/books" })
+
+  return (
+    <>
+      <div class={classNames(displayClass, "curius-header")}>
+        <div class="curius-search">
+          <input
+            id="curius-bar"
+            type="text"
+            aria-label={searchPlaceholder}
+            placeholder={searchPlaceholder}
+          />
+          <div id="curius-search-container"></div>
+        </div>
+        <div class="curius-title">
+          <em>
+            Voir de plus{" "}
+            <a href="https://curius.app/aaron-pham" target="_blank">
+              curius.app/aaron-pham
+            </a>
+          </em>
+          <svg
+            id="curius-refetch"
+            aria-labelledby="refetch"
+            data-tooltip="refresh"
+            data-id="refetch"
+            height="12"
+            type="button"
+            viewBox="0 0 24 24"
+            width="12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M17.65 6.35c-1.63-1.63-3.94-2.57-6.48-2.31-3.67.37-6.69 3.35-7.1 7.02C3.52 15.91 7.27 20 12 20c3.19 0 5.93-1.87 7.21-4.56.32-.67-.16-1.44-.9-1.44-.37 0-.72.2-.88.53-1.13 2.43-3.84 3.97-6.8 3.31-2.22-.49-4.01-2.3-4.48-4.52C5.31 9.44 8.26 6 12 6c1.66 0 3.14.69 4.22 1.78l-1.51 1.51c-.63.63-.19 1.71.7 1.71H19c.55 0 1-.45 1-1V6.41c0-.89-1.08-1.34-1.71-.71z"></path>
+          </svg>
+        </div>
+      </div>
+      <div class={classNames(displayClass, "curius", "popover-hint")} id="curius">
+        <div class="curius-page-container">
+          <div id="curius-fetching-text" />
+          <div id="curius-fragments" />
+          <div class="highlight-modal" id="highlight-modal">
+            <ul id="highlight-modal-list" />
+          </div>
+        </div>
+      </div>
+      <Footer {...props} />
+    </>
+  )
+}
+CuriusContent.afterDOMLoaded = curiusScript
+
+const CuriusFriends: QuartzComponent = (props: QuartzComponentProps) => {
+  const { displayClass } = props
+  return (
+    <div class={classNames(displayClass, "curius-friends")}>
+      <h4 style={["font-size: initial", "margin-top: unset", "margin-bottom: 0.5rem"].join(";")}>
+        mes amis.
+      </h4>
+      <ul class="overflow section-ul" id="friends-list" style="margin-top: unset"></ul>
+      <div id="see-more-friends">
+        Void{" "}
+        <span id="more" style="text-decoration: none !important">
+          de plus
+        </span>
+        <svg
+          fill="currentColor"
+          preserveAspectRatio="xMidYMid meet"
+          height="1rem"
+          width="1rem"
+          viewBox="0 -10 40 40"
+        >
+          <g>
+            <path d="m31 12.5l1.5 1.6-12.5 13.4-12.5-13.4 1.5-1.6 11 11.7z" />
+          </g>
+        </svg>
+      </div>
+    </div>
+  )
+}
+CuriusFriends.afterDOMLoaded = curiusFriendScript
+
+const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {
+  const { cfg, displayClass } = props
+  return (
+    <div class={classNames(displayClass, "curius-trail")} data-limits={3} data-locale={cfg.locale}>
+      <ul class="section-ul" id="trail-list" />
+    </div>
+  )
+}
+
 export function renderPage(
   cfg: GlobalConfiguration,
   slug: FullSlug,
@@ -858,8 +914,7 @@ export function renderPage(
     components = {
       ...components,
       header: [],
-      left: [SpacerConstructor()],
-      right: [SpacerConstructor()],
+      sidebar: [],
       afterBody: [],
       beforeBody: [],
       pageBody: (props: QuartzComponentProps) => {
@@ -882,6 +937,16 @@ export function renderPage(
         )
       },
     }
+  } else if (slug === "curius") {
+    components = {
+      ...components,
+      header: [],
+      beforeBody: [],
+      sidebar: [CuriusTrail, CuriusFriends],
+      pageBody: CuriusContent,
+      afterBody: [],
+      footer: Spacer(),
+    }
   }
 
   if (componentData.fileData.frontmatter?.poem) {
@@ -891,19 +956,17 @@ export function renderPage(
     }
   }
 
-  const PageFooter = () => {
-    const Filter = afterBody.filter(Boolean)
-    if (Filter.length > 0) {
-      return (
-        <div class="page-footer">
-          {Filter.map((BodyComponent) => (
-            <BodyComponent {...componentData} />
-          ))}
-        </div>
-      )
+  let isMenu = false
+  if (componentData.fileData.frontmatter?.menu) {
+    isMenu = true
+    components = {
+      ...components,
+      header: [],
+      beforeBody: [],
+      sidebar: [],
+      afterBody: [Functions],
+      footer: FooterConstructor({ layout: "menu" }),
     }
-
-    return <></>
   }
 
   const disablePageFooter = componentData.fileData.frontmatter?.poem || slug === "curius"
@@ -914,57 +977,153 @@ export function renderPage(
     beforeBody,
     pageBody: Content,
     afterBody,
-    left,
-    right,
+    sidebar,
     footer: Footer,
   } = components
   const Header = HeaderConstructor()
-  const Body = BodyConstructor()
 
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
   const lang = componentData.fileData.frontmatter?.lang ?? cfg.locale?.split("-")[0] ?? "en"
   const doc = (
     <html lang={lang}>
       <Head {...componentData} />
-      <body
-        data-slug={slug}
-        data-language={lang}
-        data-menu={componentData.fileData.frontmatter?.menu ?? false}
-      >
-        <Header {...componentData}>
-          {header.map((HeaderComponent) => (
-            <HeaderComponent {...componentData} />
-          ))}
-        </Header>
-        <section id="stacked-notes-container">
-          <div id="stacked-notes-main">
-            <div class="stacked-notes-column" />
-          </div>
-        </section>
-        <main id="quartz-root" class="page">
-          <div class="page-header popover-hint">
+      <body data-slug={slug} data-language={lang} data-menu={isMenu}>
+        <main id="quartz-root" class="page grid" style={{ gridTemplateRows: "repeat(5, auto)" }}>
+          <Header {...componentData}>
+            {header.map((HeaderComponent) => (
+              <HeaderComponent {...componentData} />
+            ))}
+          </Header>
+          <section id="stacked-notes-container" class="all-col">
+            <div id="stacked-notes-main">
+              <div class="stacked-notes-column" />
+            </div>
+          </section>
+          <section class="page-header popover-hint grid all-col">
             {beforeBody.map((BodyComponent) => (
               <BodyComponent {...componentData} />
             ))}
-          </div>
-          <Body {...componentData}>
-            <aside class="left sidebar">
-              {left.map((BodyComponent) => (
+          </section>
+          <section class="page-content grid all-col">
+            {sidebar.length > 0 ? (
+              <aside class="aside-container left-col">
+                {sidebar.map((BodyComponent) => (
+                  <BodyComponent {...componentData} />
+                ))}
+              </aside>
+            ) : (
+              <></>
+            )}
+            <Content {...componentData} />
+          </section>
+          {disablePageFooter ? (
+            <></>
+          ) : afterBody.length > 0 ? (
+            <section class={classNames(undefined, "page-footer", "all-col", !isMenu ? "grid" : "")}>
+              {afterBody.map((BodyComponent) => (
                 <BodyComponent {...componentData} />
               ))}
-            </aside>
-            <section class="center">
-              <Content {...componentData} />
             </section>
-            <aside class="right sidebar">
-              {right.map((BodyComponent) => (
-                <BodyComponent {...componentData} />
-              ))}
-            </aside>
-          </Body>
-          {disablePageFooter ? <></> : <PageFooter />}
+          ) : (
+            <></>
+          )}
+          {slug !== "index" && <Footer {...componentData} />}
+          {htmlToJsx(
+            componentData.fileData.filePath!,
+            s(
+              "svg.quartz-icons",
+              {
+                xmlns: "http://www.w3.org/2000/svg",
+                viewbox: "0 0 24 24",
+                style: "height: 0;",
+                "data-singleton": true,
+              },
+              [
+                s("symbol", { id: "arrow-up", viewbox: "0 0 24 24" }, [
+                  s("path", {
+                    d: "M12 3l7 7-1.4 1.4L13 6.8V21h-2V6.8L6.4 11.4 5 10l7-7z",
+                    fill: "currentColor",
+                  }),
+                ]),
+                s("symbol", { id: "arrow-down", viewbox: "0 0 24 24" }, [
+                  s("path", {
+                    d: "M12 21l-7-7 1.4-1.4L11 17.2V3h2v14.2l4.6-4.6L19 14l-7 7z",
+                    fill: "currentColor",
+                  }),
+                ]),
+                s("symbol", { id: "plus-icon", viewbox: "0 0 24 24" }, [
+                  s("line", { x1: 12, y1: 5, x2: 12, y2: 19 }),
+                  s("line", { x1: 5, y1: 12, x2: 19, y2: 12 }),
+                ]),
+                s("symbol", { id: "minus-icon", viewbox: "0 0 24 24" }, [
+                  s("line", { x1: 5, y1: 12, x2: 19, y2: 12 }),
+                ]),
+                s("symbol", { id: "circle-icon", viewbox: "0 0 24 24" }, [
+                  s("circle", { cx: 12, cy: 12, r: 3 }),
+                ]),
+                s("symbol", { id: "zoom-in", viewbox: "0 0 24 24" }, [
+                  s("path", {
+                    d: "M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm.5-7H9v2H7v1h2v2h1v-2h2V9h-2z",
+                    fill: "currentColor",
+                  }),
+                ]),
+                s("symbol", { id: "zoom-out", viewbox: "0 0 24 24" }, [
+                  s("path", {
+                    d: "M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM7 9h5v1H7z",
+                    fill: "currentColor",
+                  }),
+                ]),
+                s("symbol", { id: "expand-sw-ne", viewbox: "0 0 24 24" }, [
+                  s("path", {
+                    d: "M4 20v-5h2v2.17L17.17 6H15V4h5v5h-2V6.83L6.83 18H9v2z",
+                    fill: "currentColor",
+                  }),
+                ]),
+                s("symbol", { id: "expand-e-w", viewbox: "0 0 24 24" }, [
+                  s("path", {
+                    d: "M3.72 3.72a.75.75 0 011.06 1.06L2.56 7h10.88l-2.22-2.22a.75.75 0 011.06-1.06l3.5 3.5a.75.75 0 010 1.06l-3.5 3.5a.75.75 0 11-1.06-1.06l2.22-2.22H2.56l2.22 2.22a.75.75 0 11-1.06 1.06l-3.5-3.5a.75.75 0 010-1.06l3.5-3.5z",
+                    fillrule: "evenodd",
+                  }),
+                ]),
+                s("symbol", { id: "triple-dots", viewbox: "0 0 24 24" }, [
+                  s("circle", { cx: 6, cy: 12, r: 2 }),
+                  s("circle", { cx: 12, cy: 12, r: 2 }),
+                  s("circle", { cx: 18, cy: 12, r: 2 }),
+                ]),
+                s("symbol", { id: "github-copy", viewbox: "0 0 24 24" }, [
+                  s("path", {
+                    fillrule: "evenodd",
+                    d: "M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z",
+                  }),
+                  s("path", {
+                    fillrule: "evenodd",
+                    d: "M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z",
+                  }),
+                ]),
+                s("symbol", { id: "github-check", viewbox: "0 0 24 24" }, [
+                  s("path", {
+                    fillrule: "evenodd",
+                    fill: "rgb(63, 185, 80)",
+                    d: "M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z",
+                  }),
+                ]),
+                s("symbol", { id: "github-anchor", viewbox: "0 0 24 24" }, [
+                  s("path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" }),
+                  s("path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" }),
+                ]),
+                s("symbol", { id: "arrow-ne", viewbox: "0 0 24 24" }, [
+                  s("path", { d: "M4.5 11.5l7-7" }),
+                  s("path", { d: "M6.5 4.5h5v5" }),
+                ]),
+                s("symbol", { id: "code-icon", viewbox: "0 0 24 24" }, [
+                  s("path", { d: "m18 16 4-4-4-4" }),
+                  s("path", { d: "m6 8-4 4 4 4" }),
+                  s("path", { d: "m14.5 4-5 16" }),
+                ]),
+              ],
+            ),
+          )}
         </main>
-        {slug !== "index" && <Footer {...componentData} />}
       </body>
       {pageResources.js
         .filter((resource) => resource.loadTime === "afterDOMReady")

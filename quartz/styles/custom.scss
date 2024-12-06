@@ -1,4 +1,5 @@
 @use "sass:map";
+@use "sass:list";
 @use "./base.scss";
 @use "./variables.scss" as *;
 @use "./mixin.scss" as *;
@@ -163,10 +164,6 @@ code {
   border-radius: 0px;
 }
 
-body {
-  font-synthesis: style;
-}
-
 pre.poetry {
   border: none;
   padding: 0;
@@ -188,6 +185,21 @@ pre.poetry {
   }
 }
 
+$excluded-hover-classes: (
+  "[data-backlink]",
+  ".llm-source",
+  ".min-links",
+  "[role='anchor']",
+  ".result-card",
+  ".page-title",
+  "[data-breadcrumbs]"
+);
+
+$selector: "&:not(#{list.nth($excluded-hover-classes, 1)})";
+@for $i from 2 through list.length($excluded-hover-classes) {
+  $selector: $selector + ":not(#{list.nth($excluded-hover-classes, $i)})";
+}
+
 a {
   &[data-bib] {
     background-color: initial;
@@ -200,7 +212,7 @@ a {
   }
 
   &:hover {
-    &:not([data-backlink]):not(.llm-source):not(.min-links):not([role="anchor"]):not(.result-card) {
+    #{$selector} {
       background-color: var(--secondary) !important;
       color: var(--light) !important;
     }
@@ -488,13 +500,11 @@ body {
 
   padding: 1.25rem 0;
   margin-bottom: 2.5rem;
-  display: grid;
-  grid-template-columns: #{map.get($desktopGrid, templateColumns)};
-  grid-template-rows: #{map.get($desktopGrid, templateRows)};
-  grid-template-areas: "grid-start grid-center grid-end";
 }
 
 .page-footer {
+  padding-top: 0;
+
   grid-template-rows: auto auto;
   grid-template-areas:
     "grid-start grid-center-one grid-end"
@@ -505,12 +515,7 @@ body {
   font-size: 0.8rem;
   line-height: 1.8em;
 
-  .popover > * {
-    font-size: initial;
-    line-height: initial;
-  }
-
-  h3 {
+  h2 {
     margin: 0;
     font-size: 0.6rem;
     font-weight: 400;
@@ -521,35 +526,31 @@ body {
     margin-bottom: 4px;
   }
 
-  & > .container {
-    display: flex;
-    flex-direction: row;
-    grid-area: grid-center;
+  & > * {
+    padding-right: 1rem;
+    padding-left: 1rem;
 
-    & > * {
-      border-right: 1px solid var(--lightgray);
-      padding-right: 1rem;
+    &:last-child {
+      border-left: 1px solid var(--lightgray);
       padding-left: 1rem;
-
-      &:first-child {
-        padding-left: 0;
-      }
-
-      &:last-child {
-        border-right: none;
-        padding-right: 0;
-      }
     }
+  }
 
-    .tags {
-      flex-grow: 1;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+  .tags {
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
 
-    .content-meta {
-      flex-grow: 0.3;
-    }
+@media all and ($tablet) {
+  menu.tags {
+    grid-column: 3/5;
+  }
+}
+@media all and ($mobile) {
+  menu.tags {
+    grid-column: 3/5;
   }
 }
 
@@ -626,6 +627,10 @@ body {
       }
     }
 
+    article {
+      grid-column: 3 / -3;
+    }
+
     pre {
       border: 0;
       padding: 0;
@@ -637,7 +642,7 @@ body {
 
 .popover > .popover-inner,
 .graph > #global-graph-container {
-  border-radius: unset;
+  border-radius: 0px;
   border-color: var(--gray);
 }
 

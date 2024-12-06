@@ -39,52 +39,28 @@
   }
 }
 
-body {
-  &[data-slug="curius"] {
-    .navigation-container {
-      display: none;
-      margin-top: 1em;
+body[data-slug="curius"] {
+  .navigation-container {
+    display: none;
+    margin-top: 1em;
 
-      &.active {
-        display: block;
-      }
+    &.active {
+      display: block;
     }
+  }
 
-    & .highlight {
-      background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
-      border-radius: 5px;
-      scroll-margin-top: 2rem;
-    }
+  & .highlight {
+    background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
+    border-radius: 5px;
+    scroll-margin-top: 2rem;
+  }
 
-    & li {
-      padding: 0;
-      border-width: 1px;
-      border-style: solid;
-      border-color: transparent transparent var(--lightgray);
-      border-image: initial;
-    }
-
-    .page > #quartz-body {
-      gap: 1.5rem;
-      margin: 0 auto;
-      max-width: calc($sidePanelWidth * 2 + $pageWidth);
-
-      & .sidebar {
-        top: 2rem;
-        position: relative;
-      }
-
-      & .right.sidebar,
-      & .left.sidebar {
-        padding: 0;
-        width: $sidePanelWidth;
-      }
-
-      .center {
-        min-width: initial;
-        max-width: $pageWidth;
-      }
-    }
+  & li {
+    padding: 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent transparent var(--lightgray);
+    border-image: initial;
   }
 }
 
@@ -107,9 +83,7 @@ body {
 }
 
 .curius-header {
-  max-width: $pageWidth;
   margin: 2rem auto 1rem;
-  grid-area: grid-center;
 }
 
 .curius-page-container {
@@ -364,7 +338,6 @@ body {
     & #curius-search-container {
       position: absolute;
       box-sizing: border-box;
-      width: #{$pageWidth};
       z-index: unset;
       box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
       display: none;
