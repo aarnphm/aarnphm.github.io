@@ -143,22 +143,6 @@ h6 {
   }
 }
 
-li.section-li {
-  & > .section {
-    grid-template-columns: 7em 3fr minmax(auto, 1fr);
-    align-items: baseline;
-
-    & > .desc {
-      overflow: hidden;
-      text-overflow: ellipsis;
-
-      display: -webkit-box;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-    }
-  }
-}
-
 code {
   font-size: 0.8em;
   border-radius: 0px;
@@ -192,7 +176,8 @@ $excluded-hover-classes: (
   "[role='anchor']",
   ".result-card",
   ".page-title",
-  "[data-breadcrumbs]"
+  "[data-breadcrumbs]",
+  "[data-list]"
 );
 
 $selector: "&:not(#{list.nth($excluded-hover-classes, 1)})";

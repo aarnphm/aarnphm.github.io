@@ -15,7 +15,7 @@ body.toc-hover {
   footer,
   .page-header,
   .page-footer,
-  .page-content {
+  .page-content > article {
     filter: blur(4px);
     opacity: 0.2;
     transition:

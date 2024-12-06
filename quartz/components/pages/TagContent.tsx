@@ -38,7 +38,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
         ? fileData.description
         : htmlToJsx(fileData.filePath!, tree)
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
-    const classes = ["popover-hint", ...cssClasses].join(" ")
+    const classes = ["popover-hint", "full-col", ...cssClasses].join(" ")
     if (tag === "/") {
       const tags = [
         ...new Set(

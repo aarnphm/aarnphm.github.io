@@ -4,6 +4,7 @@ tags:
   - ml
   - serving
 date: "2024-09-09"
+description: efficient LLM serving engine.
 modified: "2024-10-03"
 permalink:
   - /vllm

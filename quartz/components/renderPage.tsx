@@ -4,7 +4,6 @@ import HeaderConstructor from "./Header"
 import ContentConstructor from "./pages/Content"
 import GraphConstructor from "./Graph"
 import SearchConstructor from "./Search"
-import SpacerConstructor from "./Spacer"
 import FooterConstructor from "./Footer"
 import Navigation from "./Navigation"
 import { byDateAndAlphabetical } from "./PageList"
@@ -36,7 +35,6 @@ import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
 import curiusScript from "./scripts/curius.inline"
 //@ts-ignore
 import curiusFriendScript from "./scripts/curius-friends.inline"
-import DesktopOnly from "./DesktopOnly"
 import Spacer from "./Spacer"
 import { htmlToJsx } from "../util/jsx"
 
@@ -497,10 +495,7 @@ export function transcludeFinal(
           strokewidth: "2",
           class: "blockquote-link",
         },
-        [
-          s("path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" }),
-          s("path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" }),
-        ],
+        [s("use", { href: "#github-anchor" })],
       ),
     ])
   }
@@ -793,7 +788,7 @@ const ElementComponent = (() => {
 
 function Functions({ displayClass }: QuartzComponentProps) {
   return (
-    <section class={classNames(displayClass, "menu")} data-function={true}>
+    <section class={classNames(displayClass, "menu", "main-col")} data-function={true}>
       <a href="../atelier-with-friends" class="internal alias" data-no-popover={true}>
         atelier with friends.
       </a>
@@ -999,12 +994,22 @@ export function renderPage(
               <div class="stacked-notes-column" />
             </div>
           </section>
-          <section class="page-header popover-hint grid all-col">
-            {beforeBody.map((BodyComponent) => (
-              <BodyComponent {...componentData} />
-            ))}
-          </section>
-          <section class="page-content grid all-col">
+          {beforeBody.length > 0 ? (
+            <section class="page-header popover-hint grid all-col">
+              {beforeBody.map((BodyComponent) => (
+                <BodyComponent {...componentData} />
+              ))}
+            </section>
+          ) : (
+            <></>
+          )}
+          <section
+            class={classNames(
+              undefined,
+              "page-content",
+              slug === "index" ? "main-col" : "grid all-col",
+            )}
+          >
             {sidebar.length > 0 ? (
               <aside class="aside-container left-col">
                 {sidebar.map((BodyComponent) => (
@@ -1019,7 +1024,7 @@ export function renderPage(
           {disablePageFooter ? (
             <></>
           ) : afterBody.length > 0 ? (
-            <section class={classNames(undefined, "page-footer", "all-col", !isMenu ? "grid" : "")}>
+            <section class={classNames(undefined, "page-footer", "all-col", "grid")}>
               {afterBody.map((BodyComponent) => (
                 <BodyComponent {...componentData} />
               ))}

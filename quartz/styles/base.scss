@@ -6,8 +6,8 @@
 html,
 body {
   scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--ken) * 3);
   text-size-adjust: none;
-  overflow-x: hidden;
   font-synthesis: style;
   font-kerning: normal;
   font-style: normal;

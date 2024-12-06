@@ -17,6 +17,17 @@
   text-decoration-thickness: 3px;
 }
 
+@mixin tinyFonts {
+  font-size: 11.1px;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  font-weight: $normalWeight;
+  letter-spacing: 0;
+  letter-spacing: 0.4px;
+  line-height: 15px;
+  text-transform: uppercase;
+}
+
 @mixin closeButton {
   align-items: center;
   justify-content: center;

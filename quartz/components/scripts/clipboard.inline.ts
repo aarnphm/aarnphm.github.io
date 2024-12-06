@@ -8,7 +8,7 @@ document.addEventListener("nav", () => {
   for (let i = 0; i < els.length; i++) {
     const codeBlock = els[i].getElementsByTagName("code")[0]
     if (codeBlock) {
-      const previousBtn = codeBlock.querySelector(".clipboard-button")
+      const previousBtn = codeBlock.querySelector("span.clipboard-button")
       if (previousBtn) continue
 
       const source = (

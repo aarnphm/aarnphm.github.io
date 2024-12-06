@@ -1,15 +1,16 @@
 import { pathToRoot, slugTag } from "../util/path"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
+import { i18n } from "../i18n"
 
-const TagList: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
+const TagList: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
   const tags = fileData.frontmatter?.tags
   const baseDir = pathToRoot(fileData.slug!)
   if (tags && tags.length > 0) {
     return (
       <menu class={classNames(displayClass, "tags")}>
         <li>
-          <h2>étiquette</h2>
+          <h2>{i18n(cfg.locale).pages.tagContent.tag}</h2>
           <ul>
             {tags.map((tag) => {
               const linkDest = baseDir + `/tags/${slugTag(tag)}`

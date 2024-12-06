@@ -1,4 +1,4 @@
-import { FullSlug, resolveRelative } from "../util/path"
+import { resolveRelative } from "../util/path"
 import { QuartzPluginData } from "../plugins/vfile"
 import { Date, getDate } from "./Date"
 import { QuartzComponent, QuartzComponentProps } from "./types"
@@ -39,44 +39,27 @@ export const PageList: QuartzComponent = ({ cfg, fileData, allFiles, limit, sort
 
   return (
     <ul class="section-ul">
-      {list.map((page) => {
+      {list.map((page, idx) => {
         const title = page.frontmatter?.title
         const tags = page.frontmatter?.tags ?? []
 
         return (
-          <li class="section-li">
-            <div class="section">
-              <div>
+          <li class="section-li" data-index={idx}>
+            <a
+              class="note-link"
+              href={resolveRelative(fileData.slug!, page.slug!)}
+              data-list={true}
+              data-tags={tags.join(",")}
+            >
+              <div class="note-grid">
                 {page.dates && (
-                  <p class="meta">
+                  <div class="meta">
                     <Date date={getDate(cfg, page)!} locale={cfg.locale} />
-                  </p>
+                  </div>
                 )}
+                <div class="desc">{title}</div>
               </div>
-              <div class="desc">
-                <h3>
-                  <a
-                    href={resolveRelative(fileData.slug!, page.slug!)}
-                    data-list={true}
-                    class="internal"
-                  >
-                    {title}
-                  </a>
-                </h3>
-              </div>
-              <ul class="tags">
-                {tags.map((tag) => (
-                  <li>
-                    <a
-                      class="internal tag-link"
-                      href={resolveRelative(fileData.slug!, `tags/${tag}` as FullSlug)}
-                    >
-                      {tag}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            </a>
           </li>
         )
       })}

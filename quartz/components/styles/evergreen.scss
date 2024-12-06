@@ -1,0 +1,80 @@
+@use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
+
+.evergreen-content {
+  margin-bottom: calc(var(--ken) * 10);
+  position: sticky;
+  top: var(--ken);
+}
+
+.note-subtitle {
+  @include tinyFonts;
+  font-size: 14px;
+}
+
+.note-tags {
+  .notes-list {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 0.5rem;
+  }
+}
+
+.note-tag {
+  @include tinyFonts;
+  font-family: var(--codeFont);
+  cursor: pointer;
+  transition: color 0.3s;
+
+  &.fade-out {
+    color: var(--gray-200);
+  }
+}
+
+a[data-list] {
+  &.perma {
+    & > .description {
+      font-size: 14px;
+    }
+  }
+}
+
+.perma,
+.permanent-grid {
+  &::after {
+    content: "";
+    border: 1px solid var(--dark);
+    bottom: -0.5px;
+    left: -0.5px;
+    pointer-events: none;
+    position: absolute;
+    right: -0.5px;
+    top: -0.5px;
+  }
+}
+
+.perma {
+  display: block;
+  padding: calc(var(--ken) * 1) calc(var(--ken) * 1.2);
+  position: relative;
+  text-decoration: none;
+  font-weight: $normalWeight;
+  color: inherit !important;
+}
+
+.permanent-grid {
+  .grid-line {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .large > * {
+    grid-column: span 3;
+    padding-bottom: calc(var(--ken) * 2);
+  }
+
+  .small > * {
+    grid-column: span 2;
+  }
+}

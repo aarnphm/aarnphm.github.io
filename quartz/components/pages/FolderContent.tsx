@@ -1,6 +1,5 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import path from "path"
-
 import style from "../styles/listPage.scss"
 import { byDateAndAlphabetical, PageList, SortFn } from "../PageList"
 import { stripSlashes, simplifySlug, joinSegments, FullSlug } from "../../util/path"
@@ -8,12 +7,9 @@ import { Root } from "hast"
 import { htmlToJsx } from "../../util/jsx"
 import { i18n } from "../../i18n"
 import { QuartzPluginData } from "../../plugins/vfile"
+import { Evergreen } from "../Evergreen"
 
 interface FolderContentOptions {
-  /**
-   * Whether to display number of folders
-   */
-  showFolderCount: boolean
   /**
    * Sort function for the pages
    */
@@ -51,7 +47,6 @@ function extensionFilterFn(opts: FolderContentOptions): (filePath: string) => bo
 }
 
 const defaultOptions: FolderContentOptions = {
-  showFolderCount: true,
   include: undefined,
   exclude: undefined,
 }
@@ -175,37 +170,35 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     }
 
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
-    const classes = ["popover-hint", ...cssClasses, "main-col"].join(" ")
-    const listProps = {
-      ...props,
-      sort: options.sort,
-      allFiles: entries,
-    }
-
+    const classes = ["popover-hint", "notes-list", ...cssClasses].join(" ")
     const content =
       (tree as Root).children.length === 0
         ? fileData.description
         : htmlToJsx(fileData.filePath!, tree)
 
+    const listProps = {
+      ...props,
+      sort: options.sort,
+      content,
+      allFiles: entries,
+      vaults: allFiles,
+    }
+
     return (
-      <div class={classes}>
-        <article>{content}</article>
-        <div class="page-listing">
-          {options.showFolderCount && (
-            <p>
-              {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({
-                count: entries.length,
-              })}
-            </p>
-          )}
-          <div>
-            <PageList {...listProps} />
-          </div>
-        </div>
-      </div>
+      <>
+        <section class={classes}>
+          <h3 class="note-subtitle">écriture</h3>
+          <PageList {...listProps} />
+        </section>
+        <aside class="notes-evergreen">
+          <Evergreen {...listProps} />
+        </aside>
+      </>
     )
   }
 
-  FolderContent.css = style + PageList.css
+  FolderContent.css = style + PageList.css + Evergreen.css
+  FolderContent.afterDOMLoaded = Evergreen.afterDOMLoaded
+
   return FolderContent
 }) satisfies QuartzComponentConstructor

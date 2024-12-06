@@ -2,8 +2,8 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 
 const Header: QuartzComponent = ({ children }: QuartzComponentProps) => {
   return children.length > 0 ? (
-    <section class="header main-col">
-      <header class="header-content main-col">{children}</header>
+    <section class="header full-col">
+      <header class="header-content">{children}</header>
     </section>
   ) : null
 }

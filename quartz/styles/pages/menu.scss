@@ -33,15 +33,15 @@ body[data-menu="true"] {
     }
   }
 
-  .page-content {
+  .menu {
+    padding-top: 6rem;
+  }
+
+  article.menu {
     background-image: url("/static/menu.svg");
     background-repeat: no-repeat;
 
     @include menuBorder;
-  }
-
-  .menu {
-    padding-top: 6rem;
   }
 
   a.internal {
@@ -83,24 +83,6 @@ body[data-menu="true"] {
 
   a[role="anchor"] {
     display: none;
-  }
-
-  footer {
-    position: relative;
-
-    .with-border {
-      min-width: auto;
-      max-width: #{map.get($breakpoints, mobile)};
-      height: 100%;
-      margin: 0 auto;
-      position: relative;
-
-      @include menuBorder;
-
-      &::after {
-        content: "";
-      }
-    }
   }
 
   .page-footer {
