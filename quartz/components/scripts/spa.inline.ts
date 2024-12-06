@@ -531,8 +531,8 @@ class StackedNoteManager {
     } else {
       await this.add(url)
     }
-    await this.render()
     notifyNav(this.getSlug(url))
+    await this.render()
     return true
   }
 
@@ -552,7 +552,7 @@ async function navigate(url: URL, isBack: boolean = false) {
   // TODO: Check for stackednotes parameter
   const stackedContainer = document.getElementById("stacked-notes-container")
   if (stackedContainer?.classList.contains("active")) {
-    return stacked.navigate(url)
+    return await stacked.navigate(url)
   }
 
   p = p || new DOMParser()

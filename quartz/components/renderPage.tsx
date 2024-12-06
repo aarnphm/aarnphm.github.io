@@ -805,7 +805,7 @@ const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
 
   return (
     <>
-      <div class={classNames(displayClass, "curius-header")}>
+      <div class={classNames(displayClass, "curius-header", "full-col")}>
         <div class="curius-search">
           <input
             id="curius-bar"
@@ -838,7 +838,7 @@ const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
           </svg>
         </div>
       </div>
-      <div class={classNames(displayClass, "curius", "popover-hint")} id="curius">
+      <div class={classNames(displayClass, "curius", "full-col")} id="curius">
         <div class="curius-page-container">
           <div id="curius-fetching-text" />
           <div id="curius-fragments" />

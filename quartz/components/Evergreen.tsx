@@ -37,6 +37,10 @@ const EvergreenNotes = ({ cfg, fileData, vaults }: Props) => {
     "thoughts/LLMs",
     "thoughts/Transformers",
     "thoughts/Philosophy-and-Nietzsche",
+    "thoughts/Camus",
+    "thoughts/atelier-with-friends",
+    "thoughts/Attention",
+    "thoughts/representations",
   ]
 
   const largeFiles = vaults!.filter((file) => larges.includes(simplifySlug(file.slug!)))
