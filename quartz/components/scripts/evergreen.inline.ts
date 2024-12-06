@@ -11,7 +11,7 @@ document.addEventListener("nav", () => {
     // Store and remove non-matching notes
     const notes = [...notesList.children] as HTMLElement[]
     notes.forEach((li) => {
-      const link = li.querySelector(".note-link")
+      const link = li.querySelector(".note-link") as HTMLAnchorElement
       const tags = link?.dataset.tags?.split(",") ?? []
       if (!tags.includes(tagValue)) {
         hiddenNotes.push(li)
@@ -105,11 +105,19 @@ document.addEventListener("nav", () => {
 
   function fadeOutNonMatchingNotes(tag: string) {
     const notes = [...notesList.children] as HTMLElement[]
+    let firstMatchFound = false
+
     notes.forEach((li) => {
-      const link = li.querySelector(".note-link")
+      const link = li.querySelector(".note-link") as HTMLAnchorElement
       const tags = link?.dataset.tags?.split(",") ?? []
       if (!tags.includes(tag)) {
         li.classList.add("fade-out")
+      } else if (!firstMatchFound) {
+        // Scroll first matching item into view
+        firstMatchFound = true
+        requestAnimationFrame(() => {
+          li.scrollIntoView({ behavior: "smooth", block: "start" })
+        })
       }
     })
   }
