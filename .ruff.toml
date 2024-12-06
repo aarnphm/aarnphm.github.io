@@ -18,6 +18,7 @@ select = [
   "PERF", # perflint
   "RUF",  # Ruff-specific rules
   "W6",
+  "I",
   "E71",
   "E72",
   "E112",
@@ -47,7 +48,6 @@ ignore = [
   "E501",    # ignore line length violation
   "E401",    # ignore multiple line import
   "E702",
-  "TCH004",  # don't move runtime import out, just warn about it
   "RUF012",  # mutable attributes to be used with ClassVar
   "E701",    # multiple statement on single line
   "RUF012",
