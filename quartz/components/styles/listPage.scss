@@ -65,10 +65,26 @@ li.section-li {
   padding-right: calc(var(--ken) * 2);
 }
 
+@media all and ($mobile) {
+  .notes-list {
+    grid-column: 3/-3;
+    padding-right: 0;
+  }
+
+  .notes-evergreen {
+    display: none;
+  }
+}
+
 .notes-evergreen {
   grid-column: 8/-3;
   display: flex;
   flex-direction: column;
   padding-left: calc(var(--ken) * 2);
   justify-content: space-between;
+
+  h2 {
+    @include tinyFonts;
+    font-size: 14px;
+  }
 }

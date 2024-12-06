@@ -12,7 +12,7 @@ import {
   pathToRoot,
 } from "../../util/path"
 import { defaultListPageLayout, sharedPageComponents } from "../../../quartz.layout"
-import { TagContent } from "../../components"
+import { Spacer, TagContent } from "../../components"
 import { write } from "./helpers"
 import { i18n } from "../../i18n"
 import DepGraph from "../../depgraph"
@@ -28,6 +28,8 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
     header: [...defaultListPageLayout.beforeBody],
     beforeBody: [],
     sidebar: [],
+    afterBody: [],
+    footer: Spacer(),
     ...userOpts,
   }
 

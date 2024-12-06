@@ -54,10 +54,11 @@ export default ((userOpts?: Options) => {
   Recommendations.css = `
 .recommendations {
   margin-bottom: 1.9rem;
-  grid-area: grid-center-one;
 
   & > .overflow {
-    padding-inline-start: 1rem;
+    padding-inline-start: 12px;
+    list-style: square;
+    margin-block: 0;
   }
 }`
 

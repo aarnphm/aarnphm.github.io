@@ -5,7 +5,7 @@ import { byDateAndAlphabetical, PageList, SortFn } from "../PageList"
 import { stripSlashes, simplifySlug, joinSegments, FullSlug } from "../../util/path"
 import { Root } from "hast"
 import { htmlToJsx } from "../../util/jsx"
-import { i18n } from "../../i18n"
+import Recommendations from "../Recommendations"
 import { QuartzPluginData } from "../../plugins/vfile"
 import { Evergreen } from "../Evergreen"
 
@@ -53,6 +53,8 @@ const defaultOptions: FolderContentOptions = {
 
 export default ((opts?: Partial<FolderContentOptions>) => {
   const options: FolderContentOptions = { ...defaultOptions, ...opts }
+
+  const Recs = Recommendations({ topChoices: 3 })
 
   const shouldIncludeFile = extensionFilterFn(options)
 
@@ -192,6 +194,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         </section>
         <aside class="notes-evergreen">
           <Evergreen {...listProps} />
+          <Recs {...listProps} allFiles={allFiles} />
         </aside>
       </>
     )

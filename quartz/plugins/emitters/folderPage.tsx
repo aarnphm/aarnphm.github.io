@@ -15,7 +15,7 @@ import {
   simplifySlug,
 } from "../../util/path"
 import { defaultListPageLayout, sharedPageComponents } from "../../../quartz.layout"
-import { FolderContent } from "../../components"
+import { FolderContent, Spacer } from "../../components"
 import { write } from "./helpers"
 import { i18n } from "../../i18n"
 import DepGraph from "../../depgraph"
@@ -32,6 +32,8 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
     header: [...defaultListPageLayout.beforeBody],
     beforeBody: [],
     sidebar: [],
+    afterBody: [],
+    footer: Spacer(),
     ...userOpts,
   }
 
