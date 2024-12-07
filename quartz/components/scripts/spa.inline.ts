@@ -522,7 +522,6 @@ class StackedNoteManager {
 
     cleanupFns.forEach((fn) => fn())
     cleanupFns.clear()
-    notifyNav(getFullSlug(window))
   }
 
   async navigate(url: URL) {
