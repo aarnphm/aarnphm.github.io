@@ -55,6 +55,9 @@ ignore = [
   "E722",
 ]
 
+[lint.isort]
+split-on-trailing-comma = false
+
 [lint.flake8-type-checking]
 exempt-modules = ["typing", "typing_extensions"]
 runtime-evaluated-decorators = [
