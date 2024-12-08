@@ -5,6 +5,8 @@ interface StackedManager {
 
   active: boolean
   destroy(): void
+  getChain(): string
+
   async open(): Promise<boolean>
   async add(href: URL): Promise<boolean>
   async navigate(url: URL): Promise<boolean>

@@ -2,6 +2,10 @@
 @use "../../styles/variables" as *;
 @use "../../styles/mixin" as *;
 
+.stacked-copy {
+  display: none !important;
+}
+
 #stacked-note-toggle {
   height: 20px;
   width: 36px;
@@ -88,6 +92,10 @@ body.stack-mode > #quartz-root {
   .search,
   .breadcrumb-container {
     visibility: hidden;
+  }
+
+  .stacked-copy {
+    display: inline-block !important;
   }
 
   .collapsible-header {
@@ -186,6 +194,15 @@ a {
           max-width: 100%;
           margin: 0 auto;
           opacity: 1;
+
+          .published {
+            span {
+              font-size: 12px;
+              line-height: 15px;
+              font-weight: 500;
+              color: #aaa;
+            }
+          }
 
           .grid {
             grid-template-columns: 1fr auto 1fr;

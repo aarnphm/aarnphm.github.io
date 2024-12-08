@@ -979,7 +979,7 @@ export function renderPage(
   const Header = HeaderConstructor()
 
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
-  const lang = componentData.fileData.frontmatter?.lang ?? cfg.locale?.split("-")[0] ?? "en"
+  const lang = (componentData.fileData.frontmatter?.lang ?? cfg.locale)?.split("-")[0] ?? "en"
   const doc = (
     <html lang={lang}>
       <Head {...componentData} />

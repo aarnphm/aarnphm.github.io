@@ -8,7 +8,7 @@ export const Poetry: QuartzTransformerPlugin = () => ({
     return [
       () => (tree: Root, file) => {
         const cfg = ctx.cfg.configuration
-        const lang = file.data.frontmatter?.lang ?? cfg.locale.split("-")[0]
+        const lang = (file.data.frontmatter?.lang ?? cfg.locale)?.split("-")[0] ?? "en"
         visit(tree, "code", (node) => {
           if (node.lang === "poetry") {
             node.type = "html" as "code"

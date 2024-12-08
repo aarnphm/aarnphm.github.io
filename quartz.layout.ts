@@ -19,6 +19,7 @@ export const sharedPageComponents: SharedLayout = {
       twitter: "https://twitter.com/aarnphm_",
       bsky: "https://bsky.app/profile/aarnphm.xyz",
       rss: "/index.xml",
+      atom: "/feed.xml",
     },
   }),
 }

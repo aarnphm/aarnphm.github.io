@@ -1,6 +1,7 @@
 import { computePosition, flip, inline, shift } from "@floating-ui/dom"
 import { normalizeRelativeURLs } from "../../util/path"
 import { getContentType } from "../../util/mime"
+import xmlFormat from "xml-formatter"
 
 // Helper to manage blob URL cleanup
 const blobCleanupMap = new Map<string, NodeJS.Timeout>()
@@ -142,6 +143,13 @@ async function mouseEnterHandler(
           }
 
           popoverInner.appendChild(pdf)
+          break
+        case "xml":
+          const contents = await response.text()
+          const rss = document.createElement("pre")
+          rss.classList.add("rss-viewer")
+          rss.append(xmlFormat(contents, { indentation: "  ", lineSeparator: "\n" }))
+          popoverInner.append(rss)
           break
         default:
           break

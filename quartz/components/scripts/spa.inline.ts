@@ -9,6 +9,7 @@ import {
 import { removeAllChildren, Dag } from "./util"
 import { ContentIndex, ContentDetails } from "../../plugins"
 import { unescapeHTML } from "../../util/escape"
+import { formatDate } from "../Date"
 
 // adapted from `micromorph`
 // https://github.com/natemoo-re/micromorph
@@ -153,21 +154,18 @@ class StackedNoteManager {
     const stackedNotes = url.searchParams.getAll("stackedNotes")
 
     if (stackedNotes.length > 0) {
-      // Enable stacked mode
-      const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
-      const container = document.getElementById("stacked-notes-container")
-      if (button && container && button.getAttribute("aria-checked") === "false") {
-        button.setAttribute("aria-checked", "true")
-        container.classList.toggle("active", true)
-        document.body.classList.toggle("stack-mode", true)
-      }
-
       // Load each stacked note
       for (const noteHash of stackedNotes) {
         const slug = this.decodeHash(noteHash)
         if (slug) {
-          if (this.dag.has(slug)) continue
           const href = new URL(`/${slug}`, window.location.toString())
+
+          if (this.dag.has(slug)) {
+            // NOTE: we still have to notifyNav to register events correctly if we initialized from searchParams
+            notifyNav(href.pathname as FullSlug)
+            continue
+          }
+
           const res = await this.fetchContent(href)
           if (!res) continue
 
@@ -181,6 +179,7 @@ class StackedNoteManager {
             slug,
             ...res,
           })
+          notifyNav(href.pathname as FullSlug)
         }
       }
     }
@@ -199,6 +198,14 @@ class StackedNoteManager {
 
     // Update URL without reloading
     window.history.replaceState({}, "", url)
+    this.updateAnchorHighlights()
+  }
+
+  getChain() {
+    return this.dag
+      .getOrderedNodes()
+      .map((el) => `stackedNotes=${this.hashSlug(el.slug)}`)
+      .join("&")
   }
 
   /** Generates URL-safe hash for a slug. Probably use base64 for easier reconstruction */
@@ -254,11 +261,15 @@ class StackedNoteManager {
   }
 
   private allFiles: ContentIndex | null = null
-  private async getBacklinks(slug: string) {
+  private async loadData() {
     if (!this.allFiles) {
-      this.allFiles = await fetchData
+      const data = await fetchData
+      this.allFiles = new Map(Object.entries(data) as [FullSlug, ContentDetails][])
     }
+  }
 
+  private async getBacklinks(slug: string) {
+    await this.loadData()
     // Return empty array if no files loaded
     if (!this.allFiles) return []
 
@@ -341,6 +352,23 @@ class StackedNoteManager {
     if (!["tags"].some((v) => slug.includes(v))) {
       const backlinks = await this.createBacklinks(slug)
       noteContent.append(backlinks)
+    }
+
+    await this.loadData()
+    // NOTE: some pages are auto-generated, so we don't have access here in allFiles
+    const el = this.allFiles!.get(slug as FullSlug)
+    if (el) {
+      const date = el.fileData
+        ? new Date(el.fileData.dates!.modified)
+        : el.date
+          ? new Date(el.date)
+          : new Date()
+      if (date) {
+        const dateContent = document.createElement("div")
+        dateContent.classList.add("published")
+        dateContent.innerHTML = `<span lang="fr" class="metadata" dir="auto">dernière modification par <time datetime=${date.toISOString()}>${formatDate(date)}</time></span>`
+        noteContent.append(dateContent)
+      }
     }
 
     note.append(noteContent, noteTitle)
@@ -461,11 +489,28 @@ class StackedNoteManager {
     return true
   }
 
+  private async updateAnchorHighlights() {
+    for (const el of this.dag.getOrderedNodes()) {
+      Array.from(el.note.getElementsByClassName("internal")).forEach((el) =>
+        el.classList.toggle("dag", this.dag.has((el as HTMLAnchorElement).href)),
+      )
+    }
+  }
+
   async add(href: URL, anchor?: HTMLElement) {
-    const slug = this.getSlug(href)
+    let slug = this.getSlug(href)
+
+    // handle default url by appending index for uniqueness
+    if (href.pathname === "/") {
+      if (slug === "") {
+        slug = "index" as FullSlug
+      } else {
+        slug = `${slug}/index` as FullSlug
+      }
+    }
+
     if (!anchor) anchor = document.activeElement as HTMLAnchorElement
     const clickedNote = document.activeElement?.closest(".stacked-note") as HTMLDivElement
-
     anchor.classList.add("dag")
 
     this.baseSlug = slug
@@ -498,8 +543,21 @@ class StackedNoteManager {
   }
 
   async open() {
-    const res = await this.fetchContent(new URL(`/${this.baseSlug}`, window.location.toString()))
-    if (!res) return false
+    // We will need to construct the results from the current page, so no need to fetch here.
+    const contents = [
+      ...Array.from(document.getElementsByClassName("popover-hint")).map((el) =>
+        el.cloneNode(true),
+      ),
+    ] as HTMLElement[]
+    const h1 = document.querySelector("h1")
+    const title =
+      h1?.innerText ??
+      h1?.textContent ??
+      getFullSlug(window) ??
+      document.querySelector("title")?.textContent
+    const hash = decodeURIComponent(window.location.hash)
+    window.location.hash = ""
+    const res = { contents, title, hash }
 
     const note = await this.createNote(0, { slug: this.baseSlug, ...res })
     this.dag.addNode({ ...res, slug: this.baseSlug, anchor: null, note })
@@ -551,7 +609,6 @@ const stacked = new StackedNoteManager()
 window.stacked = stacked
 
 async function navigate(url: URL, isBack: boolean = false) {
-  // TODO: Check for stackednotes parameter
   const stackedContainer = document.getElementById("stacked-notes-container")
   if (stackedContainer?.classList.contains("active")) {
     return await stacked.navigate(url)
@@ -697,4 +754,26 @@ if (!customElements.get("route-announcer")) {
       }
     },
   )
+}
+
+// NOTE: navigate first if there are stackedNotes
+const baseUrl = new URL(document.location.toString())
+const stackedNotes = baseUrl.searchParams.get("stackedNotes")
+const container = document.getElementById("stacked-notes-container")
+
+// If there's a stackedNotes parameter and stacked mode isn't active, activate it
+if (stackedNotes && !container?.classList.contains("active")) {
+  const button = document.getElementById("stacked-note-toggle") as HTMLSpanElement
+  const header = document.getElementsByClassName("header")[0] as HTMLElement
+
+  button.setAttribute("aria-checked", "true")
+  container?.classList.add("active")
+  document.body.classList.add("stack-mode")
+  header.classList.add("grid", "all-col")
+  header.classList.remove(header.dataset.column!)
+
+  if (window.location.hash) {
+    window.history.pushState("", document.title, baseUrl.toString().split("#")[0])
+  }
+  stacked.navigate(baseUrl)
 }

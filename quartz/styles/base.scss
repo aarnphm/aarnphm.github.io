@@ -170,7 +170,7 @@ section[class~="header"] {
     animation: reveal-header-border var(--animation-duration) cubic-bezier(0.4, 0, 0.2, 1);
 
     // Sync with the first column/row animation, given that we have four items in headers
-    animation-delay: 1.2s;
+    animation-delay: 0.8s;
     animation-fill-mode: forwards;
   }
 }

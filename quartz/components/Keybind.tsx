@@ -15,7 +15,6 @@ export const KeybindAlias = {
   "cmd+j": "curius",
   "cmd+b": "lecteur",
   "cmd+g": "graphique",
-  "cmd+u": "fausser",
 }
 
 const defaultOptions: Options = {

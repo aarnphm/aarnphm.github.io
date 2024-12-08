@@ -8,6 +8,8 @@ import { toHtml } from "hast-util-to-html"
 import { write } from "./helpers"
 import { i18n } from "../../i18n"
 import DepGraph from "../../depgraph"
+import { QuartzPluginData } from "../vfile"
+import { version } from "../../../package.json"
 
 export type ContentIndex = Map<FullSlug, ContentDetails>
 export type ContentDetails = {
@@ -15,7 +17,8 @@ export type ContentDetails = {
   links: SimpleSlug[]
   tags: string[]
   content: string
-  richContent?: string
+  richContent: string
+  fileData?: QuartzPluginData
   date?: Date
   description?: string
 }
@@ -23,25 +26,32 @@ export type ContentDetails = {
 interface Options {
   enableSiteMap: boolean
   enableRSS: boolean
+  enableAtom: boolean
   rssLimit?: number
-  rssFullHtml: boolean
   includeEmptyFiles: boolean
 }
 
 const defaultOptions: Options = {
   enableSiteMap: true,
   enableRSS: true,
+  enableAtom: true,
   rssLimit: 10,
-  rssFullHtml: false,
   includeEmptyFiles: true,
 }
 
 function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndex): string {
   const base = cfg.baseUrl ?? ""
-  const createURLEntry = (slug: SimpleSlug, content: ContentDetails): string => `<url>
+  const createURLEntry = (slug: SimpleSlug, content: ContentDetails): string => {
+    let modifiedDate = content.date
+    if (!modifiedDate && content.fileData!.frontmatter?.modified) {
+      modifiedDate = new Date(content.fileData!.frontmatter.modified)
+    }
+    return `<url>
     <loc>https://${joinSegments(base, encodeURI(slug))}</loc>
-    ${content.date && `<lastmod>${content.date.toISOString()}</lastmod>`}
+    <lastmod>${modifiedDate?.toISOString()}</lastmod>
   </url>`
+  }
+
   const urls = Array.from(idx)
     .map(([slug, content]) => createURLEntry(simplifySlug(slug), content))
     .join("")
@@ -49,15 +59,19 @@ function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndex): string {
 }
 
 function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: number): string {
-  const base = cfg.baseUrl ?? ""
+  const base = cfg.baseUrl ?? "example.com"
 
-  const createURLEntry = (slug: SimpleSlug, content: ContentDetails): string => `<item>
+  const createURLEntry = (slug: SimpleSlug, content: ContentDetails): string => {
+    return `<item>
     <title>${escapeHTML(content.title)}</title>
     <link>https://${joinSegments(base, encodeURI(slug))}</link>
     <guid>https://${joinSegments(base, encodeURI(slug))}</guid>
-    <description>${content.richContent ?? content.description}</description>
+    <description>${content.description}</description>
+    <author>contact@aarnphm.xyz</author>
     <pubDate>${content.date?.toUTCString()}</pubDate>
+    <category>${content.tags.join(".")}</category>
   </item>`
+  }
 
   const items = Array.from(idx)
     .sort(([_, f1], [__, f2]) => {
@@ -77,16 +91,76 @@ function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: nu
 
   return `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
-    <channel>
-      <title>${escapeHTML(cfg.pageTitle)}</title>
-      <link>https://${base}</link>
-      <description>${!!limit ? i18n(cfg.locale).pages.rss.lastFewNotes({ count: limit }) : i18n(cfg.locale).pages.rss.recentNotes} on ${escapeHTML(
-        cfg.pageTitle,
-      )}</description>
-      <generator>Quartz -- quartz.jzhao.xyz</generator>
-      ${items}
-    </channel>
-  </rss>`
+  <channel>
+    <title>${escapeHTML(cfg.pageTitle)}</title>
+    <link>https://${base}</link>
+    <description>${!!limit ? i18n(cfg.locale).pages.rss.lastFewNotes({ count: limit }) : i18n(cfg.locale).pages.rss.recentNotes} on ${escapeHTML(
+      cfg.pageTitle,
+    )}</description>
+    <generator>Quartz v${version} -- quartz.jzhao.xyz</generator>
+    <managingEditor>contact@aarnphm.xyz (Aaron Pham)</managingEditor>
+    <webMaster>contact@aarnphm.xyz (Aaron Pham)</webMaster>
+    ${items}
+  </channel>
+</rss>`
+}
+
+function generateAtomFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: number): string {
+  const base = cfg.baseUrl ?? "example.com"
+  const createURLEntry = (slug: SimpleSlug, content: ContentDetails): string => {
+    let modifiedDate = content.date
+    if (!modifiedDate && content.fileData!.frontmatter?.modified) {
+      modifiedDate = new Date(content.fileData!.frontmatter.modified)
+    }
+    return `<entry>
+    <title>${escapeHTML(content.title)}</title>
+    <link href="https://${joinSegments(base, encodeURI(slug))}" />
+    <link rel="alternate" type="text/markdown" href="https://${joinSegments(base, encodeURI(slug))}.html.md" />
+    <summary>${content.description}</summary>
+    <published>${content.date?.toISOString()}</published>
+    <updated>${modifiedDate?.toISOString()}</updated>
+    <author>
+      <name>Aaron Pham</name>
+      <email>contact@aarnphm.xyz</email>
+    </author>
+    <content type="html">${content.richContent}</content>
+  </entry>`
+  }
+
+  const items = Array.from(idx)
+    .sort(([_, f1], [__, f2]) => {
+      if (f1.date && f2.date) {
+        return f2.date.getTime() - f1.date.getTime()
+      } else if (f1.date && !f2.date) {
+        return -1
+      } else if (!f1.date && f2.date) {
+        return 1
+      }
+
+      return f1.title.localeCompare(f2.title)
+    })
+    .map(([slug, content]) => createURLEntry(simplifySlug(slug), content))
+    .slice(0, limit ?? idx.size)
+    .join("")
+
+  return `<?xml version="1.0" encoding="UTF-8" ?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>${escapeHTML(cfg.pageTitle)}</title>
+  <subtitle>${escapeHTML("Aaron's digital garden")}</subtitle>
+  <link href="https://${base}" />
+  <link rel="self" href="/feed.xml" />
+  <id>https://${base}</id>
+  <updated>${idx.get("index" as FullSlug)!.date?.toISOString()}</updated>
+  <contributor>
+    <name>Aaron Pham</name>
+    <email>contact@aarnphm.xyz</email>
+  </contributor>
+  <logo>https://${base}/icon.png</logo>
+  <icon>https://${base}/icon.png</icon>
+  <generator>Quartz v${version} -- quartz.jzhao.xyz</generator>
+  <rights type="html">${escapeHTML(`&amp;copy; ${new Date().getFullYear()} Aaron Pham`)}</rights>
+  ${items}
+</feed>`
 }
 
 export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
@@ -132,11 +206,10 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
             links,
             tags: file.data.frontmatter?.tags ?? [],
             content: file.data.text ?? "",
-            richContent: opts?.rssFullHtml
-              ? escapeHTML(toHtml(tree as Root, { allowDangerousHtml: true }))
-              : undefined,
+            richContent: escapeHTML(toHtml(tree as Root, { allowDangerousHtml: true })),
             date: date,
-            description: file.data.description ?? "",
+            fileData: file.data,
+            description: file.data.description ?? i18n(cfg.locale).propertyDefaults.description,
           })
         }
       }
@@ -176,13 +249,24 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
         )
       }
 
+      if (opts?.enableAtom) {
+        emitted.push(
+          await write({
+            ctx,
+            content: generateAtomFeed(cfg, linkIndex, opts.rssLimit),
+            slug: "feed" as FullSlug,
+            ext: ".xml",
+          }),
+        )
+      }
+
       const fp = joinSegments("static", "contentIndex") as FullSlug
       const simplifiedIndex = Object.fromEntries(
         Array.from(linkIndex).map(([slug, content]) => {
           // remove description and from content index as nothing downstream
           // actually uses it. we only keep it in the index as we need it
           // for the RSS feed
-          delete content.date
+          delete content.fileData
           return [slug, content]
         }),
       )

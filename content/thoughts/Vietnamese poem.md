@@ -7,7 +7,7 @@ tags:
   - poem
 date: "2024-11-18"
 description: dedicated to my roots, Vietnamese born.
-lang: vi
+lang: vi-VN
 modified: "2024-11-18"
 noindex: true
 permalinks:

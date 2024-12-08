@@ -6,12 +6,10 @@ document.addEventListener("nav", async () => {
     const button = els[i].querySelector("span.clipboard-button") as HTMLSpanElement
     if (!button) continue
 
-    const href = button.dataset.href as string
-    const text = (await fetch(href)
-      .then((res) => res.text())
-      .catch(console.error)) as string
-
-    function onClick() {
+    async function onClick() {
+      const href = button.dataset.href as string
+      const res = await fetch(href)
+      const text = await res.text()
       navigator.clipboard.writeText(text).then(
         () => {
           button?.classList.add("check")
