@@ -4,11 +4,11 @@ tags:
   - philosophy
   - seed
 date: "2024-03-05"
-modified: "2024-10-03"
+modified: 2024-12-08 05:55:04 GMT-05:00
 title: ethics
 ---
 
-Closely connected to [[thoughts/Value|value]] theory, or [[thoughts/moral|moral]] philosophy.
+Closely connected to [[thoughts/Value|value]] theory, or rather a systematic analysis of [[thoughts/moral|morality]].
 
 [[thoughts/Philosophy and Kant|Kantian]] ethics presupposes that there is a universal moral law that applies to all rational beings, or his deontological ethics framework that based on "categorical imperative".
 

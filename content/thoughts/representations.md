@@ -4,17 +4,17 @@ tags:
   - seed
   - philosophy
 date: "2024-02-25"
-modified: "2024-10-08"
+modified: 2024-12-08 04:30:25 GMT-05:00
 title: representations.
 ---
 
-See also: Edward Tuffe's [The Visual Display of Quantitative Information], ISBN-13: 978-1930824133
+See also: Edward Tuffe's [The Visual Display of Quantitative Information](https://www.edwardtufte.com/book/the-visual-display-of-quantitative-information/) - ISBN-13: 978-1930824133
 
 > [!question]
 >
-> How do we represent [[thoughts/data|information]] when we interact with different mediums, esp text?
+> How do we represent [[thoughts/data|information flow]] when we interact with different mediums, esp. text?
 
-> Maps shape how we see and understand the world, which in turn shapes how we act within it.
+Maps shape _==how we see and understand the world==_, which in turn shapes how we act within it.
 
 ## maps
 

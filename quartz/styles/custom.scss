@@ -56,7 +56,7 @@
   .backlinks,
   .callout-icon,
   .toggle-button,
-  a[role="anchor"],
+  a[data-role="anchor"],
   a[data-footnote-backref],
   hr,
   footer {
@@ -174,12 +174,13 @@ $excluded-hover-classes: (
   "[data-backlink]",
   ".llm-source",
   ".min-links",
-  "[role='anchor']",
+  "[data-role='anchor']",
   ".result-card",
   ".page-title",
   "[data-breadcrumbs]",
   "[data-list]",
-  "[data-tag]"
+  "[data-tag]",
+  "[data-footnote-backref]"
 );
 
 $selector: "&:not(#{list.nth($excluded-hover-classes, 1)})";
@@ -192,7 +193,7 @@ a {
     background-color: initial;
   }
 
-  &[role="anchor"] {
+  &[data-role="anchor"] {
     background-image: unset;
     background-color: unset;
     margin-top: 0.2em;
@@ -573,6 +574,10 @@ body {
     normal 1.1em KaTeX_Main,
     var(--bodyFont),
     serif !important;
+}
+
+svg.rss-icon {
+  margin-left: 0.1em;
 }
 
 .popover {

@@ -241,7 +241,7 @@ thead {
   font-weight: normal;
   margin-bottom: 0;
 
-  article > & > a[role="anchor"] {
+  article > & > a[data-role="anchor"] {
     color: var(--dark);
     background-color: transparent;
   }

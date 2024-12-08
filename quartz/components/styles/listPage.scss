@@ -66,7 +66,7 @@ li.section-li {
       grid-template-columns: calc(var(--kern) * var(--grid-multiplier)) 1fr;
       align-items: baseline;
 
-      &:has(.tag-highlights):not(.stacked-content *) {
+      &:has(.tag-highlights):not(.stacked-content *):not(.popover *) {
         grid-template-columns: calc(var(--kern) * var(--grid-multiplier)) calc(var(--kern) * 30) 1fr;
       }
 
@@ -82,6 +82,7 @@ li.section-li {
         padding-right: 0;
         vertical-align: 0.15em;
 
+        .popover &,
         .stacked-content & {
           display: none;
         }

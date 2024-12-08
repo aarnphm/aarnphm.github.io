@@ -100,7 +100,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               allSlugs: ctx.allSlugs,
             }
 
-            visit(tree, "element", (node, _index, _parent) => {
+            visit(tree, "element", (node, index, parent) => {
               const classes = (node.properties.className ?? []) as string[]
 
               // rewrite all links
@@ -117,6 +117,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     ? true
                     : isAbsoluteUrl(dest)
 
+                // supports for rss feed and atom feed
+                const isRSS = dest.includes("index.xml") || dest.includes("feed.xml")
                 const isCslNode = classes.includes("csl-external-link")
                 const isEmbedTwitter = filterEmbedTwitter(node)
                 const isArxiv = node.properties.href.includes("arxiv.org")
@@ -160,6 +162,10 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                       [s("use", { href: "#arrow-ne" })],
                     ),
                   )
+                }
+
+                if (isRSS) {
+                  classes.push("rss-link")
                 }
 
                 // special cases for parsing landing-links
@@ -226,6 +232,36 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   children: [],
                 }
                 node.children = [spanContent, ...node.children]
+
+                if (isRSS) {
+                  parent!.children.splice(
+                    index!,
+                    1,
+                    node,
+                    s(
+                      "svg",
+                      {
+                        class: "rss-icon",
+                        version: "1.1",
+                        xmlns: "http://www.w3.org/2000/svg",
+                        viewbox: "0 0 8 8",
+                        width: 8,
+                        height: 8,
+                        stroke: "none",
+                      },
+                      s("rect", { width: 8, height: 8, rx: 1.5, style: "fill:#F78422;" }),
+                      s("circle", { cx: 2, cy: 6, r: 1, style: "fill:#FFFFFF;" }),
+                      s("path", {
+                        d: "m 1,4 a 3,3 0 0 1 3,3 h 1 a 4,4 0 0 0 -4,-4 z",
+                        style: "fill:#FFFFFF;",
+                      }),
+                      s("path", {
+                        d: "m 1,2 a 5,5 0 0 1 5,5 h 1 a 6,6 0 0 0 -6,-6 z",
+                        style: "fill:#FFFFFF;",
+                      }),
+                    ),
+                  )
+                }
               }
 
               // transform all other resources that may use links

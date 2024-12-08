@@ -22,9 +22,9 @@ const Backlinks: QuartzComponent = ({
       <h2 id="backlinks-label">
         {i18n(cfg.locale).components.backlinks.title}
         <a
-          role="anchor"
+          data-role="anchor"
           aria-hidden="true"
-          tabindex="-1"
+          tabindex={-1}
           data-no-popover="true"
           href="#backlinks-label"
           class="internal"

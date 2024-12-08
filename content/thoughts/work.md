@@ -5,13 +5,13 @@ tags:
 comments: false
 date: "2021-12-22"
 description: Crafts that I have been brewing for the past while.
-modified: "2024-09-24"
+modified: 2024-12-08 04:20:15 GMT-05:00
 title: work.
 ---
 
 A collection of work I have done for the past while that I'm proud of.
 
-A backlog of unfinished ideas can be found [[ideas|here]].
+There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one day.
 
 ---
 

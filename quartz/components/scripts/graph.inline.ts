@@ -486,6 +486,9 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       node.gfx.on("click", () => {
         const targ = resolveRelative(fullSlug, node.simulationData.id)
         window.spaNavigate(new URL(targ, window.location.toString()))
+        if (graph.classList.contains("active")) {
+          graph.classList.remove("active")
+        }
       })
     }
   }
@@ -554,16 +557,12 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   addToVisited(simplifySlug(slug))
 
   const container = document.getElementById("global-graph-outer")
-  const sidebar = container?.closest(".sidebar") as HTMLElement
   const graph = document.querySelector(".graph")
 
   function renderGlobalGraph() {
     const slug = getFullSlug(window)
     container?.classList.add("active")
     graph?.classList.add("active")
-    if (sidebar) {
-      sidebar.style.zIndex = "1"
-    }
 
     renderGraph("global-graph-container", slug)
     registerEscapeHandler(container, hideGlobalGraph)
@@ -572,9 +571,6 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   function hideGlobalGraph() {
     container?.classList.remove("active")
     graph?.classList.remove("active")
-    if (sidebar) {
-      sidebar.style.zIndex = ""
-    }
   }
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {

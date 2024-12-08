@@ -4,6 +4,7 @@
 
 .stacked-copy {
   display: none !important;
+  margin-left: 0.2em;
 }
 
 #stacked-note-toggle {
@@ -89,7 +90,6 @@ body.stack-mode > #quartz-root {
   }
 
   .keybind,
-  .search,
   .breadcrumb-container {
     visibility: hidden;
   }

@@ -3,7 +3,7 @@ id: moral
 tags:
   - philosophy
 date: "2024-02-07"
-modified: "2024-12-01"
+modified: 2024-12-08 06:28:19 GMT-05:00
 title: Moral
 ---
 
@@ -15,4 +15,6 @@ See also: [[thoughts/Value|Value]]
 
 Most notable are Kant's [[thoughts/Philosophy and Kant|deontological ethics]], utilitarianism, and virtue ethics.
 
-Considering what is right? or provides the account of wrongness, permissibility.
+Considering what is right, which provides the account of wrongness, permissibility.important
+
+One can think moral as the compass encapsulates the "range" of what people ought to or ought not to do, when one's actions can either cause harm or invoke benefits to other [[thoughts/being]]

@@ -8,8 +8,10 @@ export const sharedPageComponents: SharedLayout = {
     Component.PageTitle(),
     Component.Breadcrumbs({ rootName: "~", style: "unique", spacerSymbol: "/" }),
     Component.Keybind(),
-    Component.Search(),
     Component.StackedNotes(),
+    Component.Search(),
+    Component.Graph(),
+    Component.Image(),
   ],
   afterBody: [Component.Recommendations(), Component.Backlinks()],
   footer: Component.Footer({
@@ -32,9 +34,7 @@ export const defaultContentPageLayout: PageLayout = {
   ],
   sidebar: [
     Component.DesktopOnly(Component.TableOfContents()),
-    Component.Graph(),
     Component.Reader(),
-    Component.Image(),
     Component.Mermaid(),
     Component.DesktopOnly(Component.Toolbar()),
   ],
@@ -46,8 +46,10 @@ export const defaultListPageLayout: PageLayout = {
     Component.PageTitle(),
     Component.Breadcrumbs({ rootName: "~", style: "full", spacerSymbol: "/" }),
     Component.Keybind(),
-    Component.Search(),
     Component.StackedNotes(),
+    Component.Search(),
+    Component.Graph(),
+    Component.Image(),
   ],
   sidebar: [],
 }

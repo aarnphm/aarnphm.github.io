@@ -4,6 +4,7 @@ tags:
   - seed
   - philosophy
 date: "2024-06-12"
+modified: 2024-12-08 05:54:58 GMT-05:00
 title: being.
 ---
 

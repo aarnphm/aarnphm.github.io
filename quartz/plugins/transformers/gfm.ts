@@ -45,7 +45,7 @@ export const GitHubFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> =
             {
               behavior: "append",
               properties: {
-                role: "anchor",
+                "data-role": "anchor",
                 "data-no-popover": true,
               },
               content: s(

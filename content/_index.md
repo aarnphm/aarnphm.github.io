@@ -8,7 +8,7 @@ tags:
   - fruit
 date: "2022-04-22"
 description: Aaron's digital garden
-modified: 2024-12-08 00:49:41 GMT-05:00
+modified: 2024-12-08 04:20:15 GMT-05:00
 title: Aaron's notes
 ---
 
@@ -30,4 +30,4 @@ through [[thoughts/LLMs|large language models]].
 
 I'm best reached [on twitter](https://twitter.com/aarnphm_) or contact@aarnphm.xyz
 
-There are also [rss](/index.xml) or/and [atom](/feed.xml) feed for those who use it.
+Here is the [rss](/index.xml) and [atom](/feed.xml) feed for those who use it.

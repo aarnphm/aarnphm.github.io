@@ -2,6 +2,7 @@ import micromorph from "micromorph"
 import {
   FullSlug,
   RelativeURL,
+  SimpleSlug,
   getFullSlug,
   normalizeRelativeURLs,
   resolveRelative,
@@ -274,10 +275,9 @@ class StackedNoteManager {
     if (!this.allFiles) return []
 
     // Find all keys where the slug appears in their links array
-    return Object.entries(this.allFiles).filter(([_, value]) => value.links.includes(slug)) as [
-      FullSlug,
-      ContentDetails,
-    ][]
+    return Array.from(this.allFiles.entries()).filter(([_, value]) =>
+      value.links.includes(slug as SimpleSlug),
+    ) as [FullSlug, ContentDetails][]
   }
 
   private async createBacklinks(slug: string) {
@@ -776,4 +776,15 @@ if (stackedNotes && !container?.classList.contains("active")) {
     window.history.pushState("", document.title, baseUrl.toString().split("#")[0])
   }
   stacked.navigate(baseUrl)
+  // NOTE: we need to call this once more to register all existing handler
+  notifyNav(getFullSlug(window))
+}
+
+// remove elements on notes.aarnphm.xyz
+if (window.location.host === "notes.aarnphm.xyz") {
+  document
+    .querySelectorAll(
+      'section[class~="page-header"], section[class~="page-content"], section[class~="page-footer"], footer, span#stacked-note-toggle',
+    )
+    .forEach((el) => el.remove())
 }
