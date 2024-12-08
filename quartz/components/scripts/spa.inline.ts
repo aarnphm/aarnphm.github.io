@@ -730,6 +730,20 @@ function createRouter() {
   })()
 }
 
+function pruneNotesElement() {
+  document
+    .querySelectorAll(
+      'section[class~="page-footer"], footer, span#stacked-note-toggle, nav.breadcrumb-container, .keybind',
+    )
+    .forEach((el) => el.remove())
+}
+
+document.addEventListener("nav", () => {
+  if (window.location.hostname.startsWith("notes.aarnphm.xyz")) {
+    pruneNotesElement()
+  }
+})
+
 createRouter()
 notifyNav(getFullSlug(window))
 
@@ -781,10 +795,11 @@ if (stackedNotes && !container?.classList.contains("active")) {
 }
 
 // remove elements on notes.aarnphm.xyz
-if (window.location.host === "notes.aarnphm.xyz") {
-  document
-    .querySelectorAll(
-      'section[class~="page-header"], section[class~="page-content"], section[class~="page-footer"], footer, span#stacked-note-toggle, nav.breadcrumb-container, .keybind',
-    )
-    .forEach((el) => el.remove())
+if (window.location.hostname.startsWith("notes.aarnphm.xyz")) {
+  if (!stackedNotes || stackedNotes.length === 0) {
+    const slug = "notes"
+    baseUrl.searchParams.set("stackedNotes", btoa(slug.toString()).replace(/=+$/, ""))
+    baseUrl.pathname = `/${slug}`
+    stacked.navigate(baseUrl)
+  }
 }

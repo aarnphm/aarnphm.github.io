@@ -10,5 +10,6 @@ export default function middleware(request: Request) {
   if (url.hostname !== "notes.aarnphm.xyz" || url.pathname !== "/") {
     return next()
   }
-  return rewrite(new URL("/notes?stackedNotes=bm90ZXM", request.url))
+  url.pathname = "/notes?stackedNotes=bm90ZXM"
+  return rewrite(url)
 }
