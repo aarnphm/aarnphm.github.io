@@ -1,7 +1,7 @@
 import { rewrite, next } from "@vercel/edge"
 
 export const config = {
-  matcher: ["/((?!api|static).*)"],
+  matcher: ["/:path*"],
 }
 
 export function middleware(request: Request) {
