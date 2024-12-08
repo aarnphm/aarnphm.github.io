@@ -1,14 +1,10 @@
-import { rewrite, next } from "@vercel/edge"
-
-export const config = {
-  matcher: ["/:path*"],
-}
+import { rewrite } from "@vercel/edge"
 
 export function middleware(request: Request) {
   const url = new URL(request.url)
   // Only proceed if we're on notes.aarnphm.xyz
-  if (!url.hostname.startsWith("notes.aarnphm.xyz")) {
-    return next()
+  console.log(url)
+  if (url.hostname.startsWith("notes.aarnphm.xyz")) {
+    return rewrite(new URL("/notes?stackedNotes=bm90ZXM", request.url))
   }
-  return rewrite(new URL("/notes?stackedNotes=bm90ZXM", request.url))
 }
