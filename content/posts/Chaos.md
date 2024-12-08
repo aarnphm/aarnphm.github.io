@@ -115,9 +115,6 @@ The path forward, then, might not be a straight line but a winding road that req
 
 In this balance, You might find not just the next step but a deeper understanding of what it means to truly live. It's about making peace with the multifaceted nature of my desires and recognising that every facet, whether driven by ambition or the need for connection, plays a crucial role in defining who I am and who I aspire to be. The road ahead is one of integration, where the driven and the broken parts of me walk hand in hand, each lending strength to the other as I continue to explore the vast landscape of possibilities that life offers.
 
-<div style="text-align: right;">
-  <span>With regards,</span>
-  <span>Anh P.</span>
-</div>
+[^sign]
 
 ![[posts/images/23-aaron-younglings.jpeg|young Aaron through time]]

@@ -74,6 +74,7 @@ const config: QuartzConfig = {
       Plugin.Pseudocode(),
       Plugin.TikzJax(),
       Plugin.Poetry(),
+      Plugin.Signature(),
       // FIXME: implement this
       // Plugin.Recipe(),
       // Plugin.Embeddings(),

@@ -45,6 +45,7 @@ nav#toc-vertical {
   transform: translateY(-50%);
   cursor: pointer;
   z-index: 1000;
+  max-width: calc(var(--indicator-position) * 1.2);
 
   button.toc-item {
     display: inline-flex;

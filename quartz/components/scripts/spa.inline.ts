@@ -363,6 +363,7 @@ class StackedNoteManager {
           return await this.focus(slug)
         }
         await this.add(new URL(href), link)
+        notifyNav(slug as FullSlug)
       }
 
       const onMouseEnter = (ev: MouseEvent) => {
@@ -506,6 +507,7 @@ class StackedNoteManager {
     this.isActive = true
     await this.initFromParams()
     this.updateURL()
+    await this.render()
     return true
   }
 
@@ -522,11 +524,12 @@ class StackedNoteManager {
 
     cleanupFns.forEach((fn) => fn())
     cleanupFns.clear()
+    notifyNav(getFullSlug(window))
   }
 
   async navigate(url: URL) {
     if (!this.active) {
-      await this.open()
+      return await this.open()
     } else {
       await this.add(url)
     }

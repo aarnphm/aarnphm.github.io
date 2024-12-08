@@ -1,7 +1,7 @@
 import { resolveRelative } from "../util/path"
 import { QuartzPluginData } from "../plugins/vfile"
 import { Date, getDate } from "./Date"
-import { QuartzComponent, QuartzComponentProps } from "./types"
+import { QuartzComponent, QuartzComponentProps, QuartzComponentConstructor } from "./types"
 import { GlobalConfiguration } from "../cfg"
 
 export type SortFn = (f1: QuartzPluginData, f2: QuartzPluginData) => number
@@ -30,49 +30,63 @@ type Props = {
   sort?: SortFn
 } & QuartzComponentProps
 
-export const PageList: QuartzComponent = ({ cfg, fileData, allFiles, limit, sort }: Props) => {
-  const sorter = sort ?? byDateAndAlphabetical(cfg)
-  let list = allFiles.sort(sorter)
-  if (limit) {
-    list = list.slice(0, limit)
+interface Options {
+  highlightTags: string[]
+}
+
+const defaultOptions: Options = { highlightTags: [] }
+
+export default ((userOpts?: Options) => {
+  const opts = { ...defaultOptions, ...userOpts }
+
+  const PageList: QuartzComponent = ({ cfg, fileData, allFiles, limit, sort }: Props) => {
+    const sorter = sort ?? byDateAndAlphabetical(cfg)
+    let list = allFiles.sort(sorter)
+    if (limit) {
+      list = list.slice(0, limit)
+    }
+
+    return (
+      <ul class="section-ul">
+        {list.map((page, idx) => {
+          const title = page.frontmatter?.title
+          const tags = page.frontmatter?.tags ?? []
+          const hiTags = opts.highlightTags.filter((v) => tags.includes(v))
+
+          return (
+            <li class="section-li" data-index={idx}>
+              <a
+                class="note-link"
+                href={resolveRelative(fileData.slug!, page.slug!)}
+                data-list={true}
+                data-tags={tags.join(",")}
+              >
+                <div class="note-grid">
+                  {page.dates && (
+                    <div class="meta">
+                      <Date date={getDate(cfg, page)!} locale={cfg.locale} />
+                    </div>
+                  )}
+                  <div class="desc">{title}</div>
+                  {hiTags.length > 0 ? (
+                    <menu class="tag-highlights">
+                      {hiTags.map((el) => (
+                        <li class="tag" data-tag={el}>
+                          {el}
+                        </li>
+                      ))}
+                    </menu>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    )
   }
 
-  return (
-    <ul class="section-ul">
-      {list.map((page, idx) => {
-        const title = page.frontmatter?.title
-        const tags = page.frontmatter?.tags ?? []
-
-        return (
-          <li class="section-li" data-index={idx}>
-            <a
-              class="note-link"
-              href={resolveRelative(fileData.slug!, page.slug!)}
-              data-list={true}
-              data-tags={tags.join(",")}
-            >
-              <div class="note-grid">
-                {page.dates && (
-                  <div class="meta">
-                    <Date date={getDate(cfg, page)!} locale={cfg.locale} />
-                  </div>
-                )}
-                <div class="desc">{title}</div>
-              </div>
-            </a>
-          </li>
-        )
-      })}
-    </ul>
-  )
-}
-
-PageList.css = `
-.section h3 {
-  margin: 0;
-}
-
-.section > .tags {
-  margin: 0;
-}
-`
+  return PageList
+}) satisfies QuartzComponentConstructor

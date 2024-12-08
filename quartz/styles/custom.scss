@@ -26,12 +26,13 @@
 @include font-face("GT Sectra Book", "GT-Sectra-Book.woff", "woff");
 @include font-face("EditorialNew Ultralight", "EditorialNew-Ultralight.woff2", "woff2");
 @include font-face("Newsreader", "Newsreader.woff2", "woff2");
+@include font-face("Suisse Intl", ("SuisseIntl-Regular.otf"), ("opentype"));
+@include font-face("Nan", ("nan-medium.woff2"), ("woff2"));
 @include font-face(
   "Playfair Display",
   ("PlayfairDisplay.woff2", "PlayfairDisplay.woff"),
   ("woff2", "woff")
 );
-@include font-face("EB Garamond", ("EBGaramond.woff2", "EBGaramond.woff"), ("woff2", "woff"));
 
 [role="article"]:hover {
   border: 1px solid var(--highlight);
@@ -155,7 +156,7 @@ pre.poetry {
   font-family: ITCGaramondStdLtCond, var(--bodyFont);
 
   &[data-language="vi"] {
-    font-family: "Playfair Display", var(--bodyFont) !important;
+    font-family: "Playfair Display" !important;
 
     @media all and ($desktop) {
       font-size: 1.275rem;
@@ -177,7 +178,8 @@ $excluded-hover-classes: (
   ".result-card",
   ".page-title",
   "[data-breadcrumbs]",
-  "[data-list]"
+  "[data-list]",
+  "[data-tag]"
 );
 
 $selector: "&:not(#{list.nth($excluded-hover-classes, 1)})";
@@ -203,6 +205,7 @@ a {
     }
 
     .min-links,
+    &[data-tag] > .title,
     &[data-backlink] > .small {
       @include dagHighlights;
     }
@@ -404,20 +407,14 @@ hr {
 // fade-in elements
 body {
   & {
-    --animation-name: fade;
     --animation-duration: #{$base-duration}s;
     --max-animation-duration: #{$base-duration + $max-delay}s;
   }
 
-  @for $i from 1 through $rows {
-    @for $j from 1 through $cols {
-      & > *:nth-child(#{$i}) > *:nth-child(#{$j}) {
-        &:not(.reader):not(.image-popup-modal):not(#mermaid-container) {
-          animation: var(--animation-name) var(--animation-duration) ease 1 normal backwards;
-          animation-delay: #{$col-delay * $j + $row-delay * $i}s;
-        }
-      }
-    }
+  &[data-language="vi"] {
+    --headerFont: "Playfair Display", var(--headerFont);
+    --bodyFont: "Playfair Display", var(--bodyFont);
+    --codeFont: "Playfair Display", var(--codeFont);
   }
 
   &[data-slug="index"] {
@@ -434,34 +431,8 @@ body {
         border: var(--index-border-width) solid var(--darkgray);
         pointer-events: none;
         z-index: -1;
-        animation: reveal-border var(--max-animation-duration) cubic-bezier(0.65, 0, 0.35, 1)
-          forwards;
       }
     }
-  }
-}
-
-@keyframes reveal-border {
-  0% {
-    --mask-percent: 0%;
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    --mask-percent: 100%;
-    opacity: 1;
-  }
-}
-
-@keyframes fade {
-  0% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
   }
 }
 
@@ -650,6 +621,38 @@ body {
   background-color: transparent;
   box-sizing: content-box;
   vertical-align: text-top;
+}
+
+.signature {
+  --sign-height: 51px;
+
+  display: flex;
+  min-height: var(--sign-height);
+  flex-flow: wrap;
+  justify-content: end;
+
+  svg {
+    & > path {
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      stroke-width: 1;
+      stroke: var(--dark);
+      transition: 0.2s stroke-dashoffset;
+      will-change: stroke-dashoffset;
+    }
+  }
+
+  .glyph,
+  .up,
+  .lo {
+    max-height: var(--sign-height);
+  }
+}
+
+@keyframes drawPath {
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 @mixin spanRec {

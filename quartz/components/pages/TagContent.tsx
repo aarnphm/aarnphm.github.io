@@ -1,6 +1,6 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import style from "../styles/listPage.scss"
-import { PageList, SortFn } from "../PageList"
+import PageListConstructor, { SortFn } from "../PageList"
 import { FullSlug, getAllSegmentPrefixes, simplifySlug } from "../../util/path"
 import { QuartzPluginData } from "../../plugins/vfile"
 import { Root } from "hast"
@@ -18,6 +18,8 @@ const defaultOptions: TagContentOptions = {
 
 export default ((opts?: Partial<TagContentOptions>) => {
   const options: TagContentOptions = { ...defaultOptions, ...opts }
+
+  const PageList = PageListConstructor()
 
   const TagContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, cfg } = props
@@ -122,6 +124,6 @@ export default ((opts?: Partial<TagContentOptions>) => {
     }
   }
 
-  TagContent.css = style + PageList.css
+  TagContent.css = style
   return TagContent
 }) satisfies QuartzComponentConstructor

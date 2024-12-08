@@ -12,7 +12,7 @@
 }
 
 @mixin dagHighlights {
-  color: var(--foam);
+  color: var(--dag-highlights);
   text-decoration: underline;
   text-decoration-thickness: 3px;
 }

@@ -8,7 +8,7 @@ async function convertMedia(contentDir: string) {
   try {
     const mediaFiles = await globby(["**/*.{png,jpeg,jpg}"], {
       cwd: contentDir,
-      ignore: ["**/*.ignore.{png,jpeg,jpg}"],
+      ignore: ["**/*.ignore.{png,jpeg,jpg}", "**/[0-9]*"],
       absolute: true,
     })
 

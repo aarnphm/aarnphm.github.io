@@ -120,6 +120,7 @@ declare module "vfile" {
         noindex: boolean
         comments: boolean
         transclude: Partial<TranscludeOptions>
+        signature: string
         socials: Record<string, string>
       }>
   }

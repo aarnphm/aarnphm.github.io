@@ -9,7 +9,7 @@ ul.section-ul {
 
 li.section-li {
   border-top: 1px solid;
-  padding: calc(var(--ken) * 1.5) 0;
+  padding: calc(var(--kern) * 1.5) 0;
   transition: border-color 0.3s;
 
   &:first-child {
@@ -25,8 +25,22 @@ li.section-li {
     border-top-color: var(--gray-200);
   }
 
-  &.fade-out > .note-link {
-    color: var(--gray-200);
+  &.fade-out {
+    & > .note-link {
+      color: var(--gray-200);
+    }
+
+    & .tag-highlights {
+      color: var(--gray-200);
+
+      li {
+        color: var(--gray-200);
+
+        &::after {
+          border-color: var(--gray-200);
+        }
+      }
+    }
   }
 
   .note-link {
@@ -45,10 +59,46 @@ li.section-li {
     }
 
     & > .note-grid {
-      column-gap: calc(var(--ken) * 2.5);
+      column-gap: calc(var(--kern) * 2.5);
       display: grid;
-      grid-template-columns: calc(var(--ken) * 11.5) 1fr;
+      grid-template-columns: calc(var(--kern) * 11.5) 1fr;
       align-items: baseline;
+
+      &:has(.tag-highlights) {
+        grid-template-columns: calc(var(--kern) * 11.5) calc(var(--kern) * 30) 1fr;
+      }
+
+      & > .tag-highlights {
+        display: flex;
+        transition: color 0.3s;
+        gap: calc(var(--kern) * 1);
+        flex-direction: row;
+        margin-block: 0;
+        padding-inline: 0;
+        list-style: none;
+        justify-content: flex-end;
+        padding-right: 0;
+        vertical-align: 0.15em;
+
+        li {
+          transform-origin: center left;
+          padding: 0 0.7em;
+          position: relative;
+
+          @include tinyFonts;
+          font-family: var(--codeFont);
+
+          &::after {
+            content: "";
+            border: 1px solid;
+            border-radius: 0;
+            transition: border-color 0.3s;
+            inset: 0 0 -0.12em;
+            pointer-events: none;
+            position: absolute;
+          }
+        }
+      }
 
       & > .meta {
         --align-cap-height: -3.5px;
@@ -62,7 +112,7 @@ li.section-li {
 
 .notes-list {
   grid-column: 3/8;
-  padding-right: calc(var(--ken) * 2);
+  padding-right: calc(var(--kern) * 2);
 }
 
 @media all and ($mobile) {
@@ -80,7 +130,7 @@ li.section-li {
   grid-column: 8/-3;
   display: flex;
   flex-direction: column;
-  padding-left: calc(var(--ken) * 2);
+  padding-left: calc(var(--kern) * 2);
   justify-content: space-between;
 
   h2 {

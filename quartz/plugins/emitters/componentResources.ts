@@ -4,8 +4,6 @@ import { QuartzEmitterPlugin } from "../types"
 import spaRouterScript from "../../components/scripts/spa.inline"
 // @ts-ignore
 import popoverScript from "../../components/scripts/popover.inline"
-// @ts-ignore
-import fontsScript from "../../components/scripts/fonts.inline"
 import styles from "../../styles/custom.scss"
 import popoverStyle from "../../components/styles/popover.scss"
 // @ts-ignore
@@ -95,7 +93,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
   }
 
   componentResources.css.push(clipboardStyle, pseudoStyle)
-  componentResources.beforeDOMLoaded.push(fontsScript, equationScript)
+  componentResources.beforeDOMLoaded.push(equationScript)
   componentResources.afterDOMLoaded.push(clipboardScript, pseudoScript)
 
   if (cfg.analytics?.provider === "plausible") {

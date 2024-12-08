@@ -1,5 +1,5 @@
-import { QuartzComponent, QuartzComponentProps } from "./types"
-import { getAllSegmentPrefixes, resolveRelative, simplifySlug } from "../util/path"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { getAllSegmentPrefixes, resolveRelative, SimpleSlug, simplifySlug } from "../util/path"
 import { h, VNode } from "preact"
 import { i18n } from "../i18n"
 //@ts-ignore
@@ -11,9 +11,10 @@ import { QuartzPluginData } from "../plugins/vfile"
 type Props = {
   vaults?: QuartzPluginData[]
   content?: VNode
+  opts?: EvergreenNotes
 } & QuartzComponentProps
 
-export const AllTags: QuartzComponent = ({ cfg, allFiles }: Props) => {
+export const AllTags: QuartzComponent = ({ cfg, allFiles, opts }: Props) => {
   const tags = [
     ...new Set(
       allFiles.flatMap((data) => data.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes),
@@ -21,7 +22,7 @@ export const AllTags: QuartzComponent = ({ cfg, allFiles }: Props) => {
   ].sort((a, b) => a.localeCompare(b))
 
   return h("section", { class: "note-tags" }, [
-    h("h3", { class: "note-subtitle" }, [i18n(cfg.locale).pages.tagContent.tag]),
+    h("h3", { class: "note-title" }, [i18n(cfg.locale).pages.tagContent.tag]),
     h(
       "div",
       { class: "notes-list" },
@@ -30,72 +31,114 @@ export const AllTags: QuartzComponent = ({ cfg, allFiles }: Props) => {
   ])
 }
 
-const EvergreenNotes = ({ cfg, fileData, vaults }: Props) => {
-  const larges = ["thoughts/mechanistic-interpretability", "thoughts/vllm"]
-  const smalls = [
-    "thoughts/constrained-decoding",
-    "thoughts/LLMs",
-    "thoughts/Transformers",
-    "thoughts/Philosophy-and-Nietzsche",
-    "thoughts/Camus",
-    "thoughts/atelier-with-friends",
-    "thoughts/Attention",
-    "thoughts/representations",
-  ]
-
-  const largeFiles = vaults!.filter((file) => larges.includes(simplifySlug(file.slug!)))
-  const smallFiles = vaults!.filter((file) => smalls.includes(simplifySlug(file.slug!)))
-
-  return h("section", { class: "note-permanent" }, [
-    h("h3", { class: "note-subtitle" }, ["persistantes"]),
-    h("div", { class: "permanent-grid", style: "position: relative;" }, [
-      h(
-        "div",
-        { class: "large grid-line" },
-        largeFiles.map((f) => (
-          <a href={resolveRelative(fileData.slug!, f.slug!)} data-list class="perma">
-            <div class="title">{f.frontmatter?.title}</div>
-            <div class="description">
-              {unescapeHTML(
-                f.frontmatter?.description ??
-                  f.description?.trim() ??
-                  i18n(cfg.locale).propertyDefaults.description,
-              )}
-            </div>
-          </a>
-        )),
-      ),
-      h(
-        "div",
-        { class: "small grid-line" },
-        smallFiles.map((f) => (
-          <a href={resolveRelative(fileData.slug!, f.slug!)} data-list class="perma">
-            <div class="title">{f.frontmatter?.title}</div>
-          </a>
-        )),
-      ),
-    ]),
-  ])
+interface EvergreenNotes {
+  larges: string[]
+  smalls: string[]
+  tags: string[]
 }
 
-export const Evergreen: QuartzComponent = (props: Props) => {
-  const { cfg, allFiles, content } = props
-  return (
-    <div class="evergreen-content">
-      <EvergreenNotes {...props} />
-      <AllTags {...props} />
-      <article>
-        <h3 class="note-subtitle">description</h3>
-        {content}
-        <p>
-          {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({
-            count: allFiles.length,
-          })}
-        </p>
-      </article>
-    </div>
-  )
-}
+const defaultOpts: EvergreenNotes = { larges: [], smalls: [], tags: [] }
 
-Evergreen.css = style
-Evergreen.afterDOMLoaded = script
+const Notes = ((userOpts?: EvergreenNotes) => {
+  const opts = { ...defaultOpts, ...userOpts }
+
+  const Notes = ({ cfg, fileData, vaults }: Props) => {
+    const largeFiles = vaults!.filter((file) => opts.larges.includes(simplifySlug(file.slug!)))
+    const smallFiles = vaults!.filter((file) => opts.smalls.includes(simplifySlug(file.slug!)))
+
+    const tagItemMap: Map<string, QuartzPluginData[]> = new Map()
+    for (const tag of opts.tags) {
+      tagItemMap.set(
+        tag,
+        vaults!.filter((file) =>
+          (file.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes).includes(tag),
+        ),
+      )
+    }
+
+    return h("section", { class: "note-permanent" }, [
+      h("h3", { class: "note-title" }, ["persistantes"]),
+      h("div", { class: "permanent-grid", style: "position: relative;" }, [
+        h(
+          "div",
+          { class: "large grid-line" },
+          largeFiles.map((f) =>
+            h(
+              "a",
+              { href: resolveRelative(fileData.slug!, f.slug!), "data-list": true, class: "perma" },
+              [
+                h("div", { class: "title" }, [f.frontmatter?.title]),
+                h("div", { class: "description" }, [
+                  unescapeHTML(
+                    f.frontmatter?.description ??
+                      f.description?.trim() ??
+                      i18n(cfg.locale).propertyDefaults.description,
+                  ),
+                ]),
+              ],
+            ),
+          ),
+        ),
+        h(
+          "div",
+          { class: "mid grid-line" },
+          smallFiles.map((f) =>
+            h(
+              "a",
+              { href: resolveRelative(fileData.slug!, f.slug!), "data-list": true, class: "perma" },
+              [h("div", { class: "title" }, [f.frontmatter?.title])],
+            ),
+          ),
+        ),
+        h(
+          "div",
+          { class: "small grid-line" },
+          Array.from(tagItemMap.entries()).map(([key, pages]) =>
+            h(
+              "a",
+              {
+                href: resolveRelative(fileData.slug!, `tags/${key}` as SimpleSlug),
+                "data-list": true,
+                "data-tag": key,
+                class: "perma",
+              },
+              [
+                h("div", { class: "title" }, [key]),
+                h("div", { class: "description" }, [
+                  pages.length === 1 ? "1 élément" : `${pages.length} éléments`,
+                ]),
+              ],
+            ),
+          ),
+        ),
+      ]),
+    ])
+  }
+  return Notes
+}) satisfies QuartzComponentConstructor
+
+export default ((opts?: EvergreenNotes & any) => {
+  const Evergreen: QuartzComponent = (props: Props) => {
+    const Permanent = Notes(opts)
+    const { cfg, allFiles, content } = props
+    return (
+      <div class="evergreen-content">
+        <Permanent {...props} />
+        <AllTags {...props} opts />
+        <article style={{ marginBottom: 0 }}>
+          <h3 class="note-title">description</h3>
+          {content}
+          <p>
+            {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({
+              count: allFiles.length,
+            })}
+          </p>
+        </article>
+      </div>
+    )
+  }
+
+  Evergreen.css = style
+  Evergreen.afterDOMLoaded = script
+  return Evergreen
+}) satisfies QuartzComponentConstructor

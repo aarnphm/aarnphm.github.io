@@ -797,7 +797,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               parent?.children.splice(
                 idx!,
                 1,
-                h("figure", { "data-img-w-caption": "data-img-w-caption" }, [
+                h("figure", { "data-img-w-caption": true }, [
                   h("img", { ...(node as Element).properties, style: "margin: 1rem 0 0 0" }),
                   h("figcaption", (node as Element).properties.alt as string),
                 ]),

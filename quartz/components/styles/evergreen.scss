@@ -1,15 +1,21 @@
 @use "../../styles/variables.scss" as *;
 @use "../../styles/mixin.scss" as *;
 
-.evergreen-content {
-  margin-bottom: calc(var(--ken) * 10);
-  position: sticky;
-  top: var(--ken);
+@mixin tinyCodeFonts {
+  @include tinyFonts;
+  font-family: var(--codeFont);
 }
 
-.note-subtitle {
+.evergreen-content {
+  margin-bottom: calc(var(--kern) * 10);
+  position: sticky;
+  top: calc(var(--kern) * 3);
+}
+
+.note-title {
   @include tinyFonts;
-  font-size: 14px;
+  font-size: 18px;
+  text-transform: lowercase;
 }
 
 .note-tags {
@@ -21,8 +27,7 @@
 }
 
 .note-tag {
-  @include tinyFonts;
-  font-family: var(--codeFont);
+  @include tinyCodeFonts;
   cursor: pointer;
   transition: color 0.3s;
 
@@ -35,6 +40,15 @@ a[data-list] {
   &.perma {
     & > .description {
       font-size: 14px;
+    }
+
+    &[data-tag] {
+      &:hover {
+        color: var(--dag-highlights) !important;
+      }
+      & > .title {
+        @include tinyCodeFonts;
+      }
     }
   }
 }
@@ -55,7 +69,7 @@ a[data-list] {
 
 .perma {
   display: block;
-  padding: calc(var(--ken) * 1) calc(var(--ken) * 1.2);
+  padding: calc(var(--kern) * 1) calc(var(--kern) * 1.2);
   position: relative;
   text-decoration: none;
   font-weight: $normalWeight;
@@ -66,15 +80,19 @@ a[data-list] {
   .grid-line {
     display: grid;
     width: 100%;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(12, 1fr);
   }
 
   .large > * {
-    grid-column: span 3;
-    padding-bottom: calc(var(--ken) * 2);
+    grid-column: span 6;
+    padding-bottom: calc(var(--kern) * 2);
+  }
+
+  .mid > * {
+    grid-column: span 4;
   }
 
   .small > * {
-    grid-column: span 2;
+    grid-column: span 3;
   }
 }

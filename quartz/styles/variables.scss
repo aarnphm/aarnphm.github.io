@@ -16,10 +16,12 @@
   --pine: rgba(40, 105, 131, 1);
   --foam: rgba(86, 148, 159, 1);
   --iris: rgba(144, 122, 169, 1);
-  --ken: 12px;
+  --kern: 12px;
   --align-cap-height: -6px;
   --align-baseline: -6px;
   --gray-200: rgba(0, 0, 0, 0.2);
+  --dag-highlights: var(--foam);
+  --font-size: clamp(1em, 0.2083vw + 0.9437em, 1.0625em);
 }
 
 /**

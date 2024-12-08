@@ -1,13 +1,12 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import path from "path"
 import style from "../styles/listPage.scss"
-import { byDateAndAlphabetical, PageList, SortFn } from "../PageList"
+import PageListConstructor, { byDateAndAlphabetical, SortFn } from "../PageList"
 import { stripSlashes, simplifySlug, joinSegments, FullSlug } from "../../util/path"
 import { Root } from "hast"
 import { htmlToJsx } from "../../util/jsx"
-import Recommendations from "../Recommendations"
 import { QuartzPluginData } from "../../plugins/vfile"
-import { Evergreen } from "../Evergreen"
+import EvergreenConstructor from "../Evergreen"
 
 interface FolderContentOptions {
   /**
@@ -54,9 +53,26 @@ const defaultOptions: FolderContentOptions = {
 export default ((opts?: Partial<FolderContentOptions>) => {
   const options: FolderContentOptions = { ...defaultOptions, ...opts }
 
-  const Recs = Recommendations({ topChoices: 3 })
-
   const shouldIncludeFile = extensionFilterFn(options)
+
+  const tags = ["ml", "interp", "philosophy", "serving"]
+  const PageList = PageListConstructor({ highlightTags: tags })
+  const Evergreen = EvergreenConstructor({
+    larges: ["thoughts/mechanistic-interpretability", "thoughts/vllm"],
+    smalls: [
+      "thoughts/constrained-decoding",
+      "thoughts/LLMs",
+      "thoughts/Transformers",
+      "thoughts/Camus",
+      "thoughts/atelier-with-friends",
+      "thoughts/Attention",
+      "thoughts/representations",
+      "thoughts/Philosophy-and-Nietzsche",
+      "thoughts/ethics",
+      "thoughts/Existentialism",
+    ],
+    tags,
+  })
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props
@@ -189,18 +205,17 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     return (
       <>
         <section class={classes}>
-          <h3 class="note-subtitle">écriture</h3>
+          <h3 class="note-title">écriture</h3>
           <PageList {...listProps} />
         </section>
         <aside class="notes-evergreen">
           <Evergreen {...listProps} />
-          <Recs {...listProps} allFiles={allFiles} />
         </aside>
       </>
     )
   }
 
-  FolderContent.css = style + PageList.css + Evergreen.css
+  FolderContent.css = style + Evergreen.css
   FolderContent.afterDOMLoaded = Evergreen.afterDOMLoaded
 
   return FolderContent
