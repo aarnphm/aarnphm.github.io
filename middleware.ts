@@ -1,17 +1,7 @@
 import { rewrite, next } from "@vercel/edge"
 
 export const config = {
-  matcher: [
-    {
-      source: "notes.aarnphm.xyz/:path*",
-      has: [
-        {
-          type: "host",
-          value: "notes.aarnphm.xyz",
-        },
-      ],
-    },
-  ],
+  matcher: ["/((?!api|static).*)"],
 }
 
 export function middleware(request: Request) {
