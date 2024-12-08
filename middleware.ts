@@ -6,9 +6,8 @@ export const config = {
 
 export default function middleware(request: Request) {
   const url = new URL(request.url)
-  console.log(url)
-  // Only proceed if we're on notes.aarnphm.xyz
-  if (!url.hostname.startsWith("notes.aarnphm.xyz")) {
+  // Only apply logic for notes.aarnphm.xyz
+  if (url.hostname !== "notes.aarnphm.xyz" || url.pathname !== "/") {
     return next()
   }
   return rewrite(new URL("/notes?stackedNotes=bm90ZXM", request.url))

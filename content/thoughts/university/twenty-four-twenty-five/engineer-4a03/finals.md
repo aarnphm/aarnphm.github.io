@@ -4,7 +4,7 @@ tags:
   - engineer4a03
 date: "2024-12-08"
 description: and exercise.
-modified: 2024-12-08 17:01:27 GMT-05:00
+modified: 2024-12-08 17:32:10 GMT-05:00
 title: Scenarios for development.
 ---
 
@@ -19,5 +19,7 @@ title: Scenarios for development.
 1. Foundational principles
 
 The Hippocratic Oath [@Edelstein1943EDETHO] emphasizes confidentiality as a sacred trust between physician and patient. Contemporary reiterations, such as the World Medical Association’s Declaration of Geneva, echo these sentiments, framing patient privacy as non-negotiable.
+
+Implements Ann Cavoukian's Privacy by Design, putting emphasis on [@cavoukian2009privacy]
 
 [^ref]

@@ -784,7 +784,7 @@ if (stackedNotes && !container?.classList.contains("active")) {
 if (window.location.host === "notes.aarnphm.xyz") {
   document
     .querySelectorAll(
-      'section[class~="page-header"], section[class~="page-content"], section[class~="page-footer"], footer, span#stacked-note-toggle',
+      'section[class~="page-header"], section[class~="page-content"], section[class~="page-footer"], footer, span#stacked-note-toggle, nav.breadcrumb-container, .keybind',
     )
     .forEach((el) => el.remove())
 }

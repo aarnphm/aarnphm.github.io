@@ -4,7 +4,7 @@ tags:
   - seed
 date: "2024-12-08"
 description: and how one should use this.
-modified: 2024-12-08 16:24:06 GMT-05:00
+modified: 2024-12-08 17:19:15 GMT-05:00
 noindex: true
 title: procedural notes.
 ---
@@ -16,7 +16,7 @@ If any of these doesn't make sense for you, it is probably because I didn't writ
 
 My only ask for https://notes.aarnphm.xyz is to treat the sites as it. Most of other Quartz functionalities you can find on [main site](https://aarnphm.xyz)
 
-You can start from some related [[/thoughts|topics]] that has been on my [[thoughs/Attention|mind]] these days,
+You can start from some related [[/thoughts|topics]] that has been on my [[thoughts/Attention|mind]] these days,
 or check out some [[thoughts/work|crafts]] I've been working on for the past while.
 
 If you are into machine learning, you might be interested in some [[thoughts/mechanistic interpretability|introduction in interpretability]].
