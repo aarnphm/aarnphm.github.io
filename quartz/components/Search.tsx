@@ -29,7 +29,13 @@ export default ((userOpts?: Partial<SearchOptions>) => {
             type="button"
             tabindex={-1}
           >
-            <svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7">
+            <svg
+              role="img"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 -1 19.9 19.7"
+              width={18}
+              height={18}
+            >
               <title>Search</title>
               <g class="search-path" fill="none">
                 <path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4" />

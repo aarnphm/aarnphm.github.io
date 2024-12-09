@@ -2,6 +2,8 @@ import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
 // @ts-ignore
 import spaRouterScript from "../../components/scripts/spa.inline"
+//@ts-ignore
+import insightsScript from "../../components/scripts/insights.inline"
 // @ts-ignore
 import popoverScript from "../../components/scripts/popover.inline"
 import styles from "../../styles/custom.scss"
@@ -113,7 +115,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     `)
   }
 
-  componentResources.afterDOMLoaded.push(spaRouterScript)
+  componentResources.afterDOMLoaded.push(insightsScript, spaRouterScript)
 }
 
 interface OgTask {
