@@ -732,7 +732,9 @@ function createRouter() {
 
 function pruneNotesElement() {
   document
-    .querySelectorAll('section[class~="page-footer"], footer, nav.breadcrumb-container, .keybind')
+    .querySelectorAll(
+      'section[class~="page-footer"], footer, nav.breadcrumb-container, .keybind, .search, .graph',
+    )
     .forEach((el) => el.remove())
 }
 
