@@ -409,8 +409,8 @@ class StackedNoteManager {
           const note = this.dag.get(link.dataset.slug!)?.note
           const header = note!.querySelector("h1") as HTMLHeadElement
           const stackedTitle = note!.querySelector(".stacked-title") as HTMLDivElement
-          header.classList.toggle("dag", true)
-          stackedTitle.classList.toggle("dag", true)
+          if (header) header.classList.toggle("dag", true)
+          if (stackedTitle) stackedTitle.classList.toggle("dag", true)
         }
       }
       const onMouseLeave = (ev: MouseEvent) => {
