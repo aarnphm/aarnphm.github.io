@@ -824,12 +824,6 @@ if (window.location.hostname.startsWith("notes.aarnphm.xyz")) {
     baseUrl.searchParams.set("stackedNotes", btoa(slug.toString()).replace(/=+$/, ""))
     baseUrl.pathname = `/${slug}`
     stacked.navigate(baseUrl)
-    window.location.reload()
-  }
-}
-
-document.addEventListener("nav", () => {
-  if (window.location.hostname.startsWith("notes.aarnphm.xyz")) {
     pruneNotesElement()
   }
-})
+}
