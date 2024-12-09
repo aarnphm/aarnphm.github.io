@@ -66,8 +66,12 @@ li.section-li {
       grid-template-columns: calc(var(--kern) * var(--grid-multiplier)) 1fr;
       align-items: baseline;
 
-      &:has(.tag-highlights):not(.stacked-content *):not(.popover *) {
-        grid-template-columns: calc(var(--kern) * var(--grid-multiplier)) calc(var(--kern) * 30) 1fr;
+      @media all and ($desktop) {
+        &:has(.tag-highlights):not(.stacked-content *):not(.popover *) {
+          grid-template-columns:
+            calc(var(--kern) * var(--grid-multiplier)) calc(var(--kern) * 30)
+            1fr;
+        }
       }
 
       & > .tag-highlights {
@@ -84,6 +88,10 @@ li.section-li {
 
         .popover &,
         .stacked-content & {
+          display: none;
+        }
+
+        @media all and ($tablet) {
           display: none;
         }
 

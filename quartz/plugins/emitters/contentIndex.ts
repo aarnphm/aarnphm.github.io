@@ -1,6 +1,6 @@
 import { Root } from "hast"
 import { GlobalConfiguration } from "../../cfg"
-import { getDate } from "../../components/Date"
+import { formatDate, getDate } from "../../components/Date"
 import { escapeHTML } from "../../util/escape"
 import { FilePath, FullSlug, SimpleSlug, joinSegments, simplifySlug } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
@@ -69,7 +69,7 @@ function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: nu
     <description>${content.description}</description>
     <author>contact@aarnphm.xyz</author>
     <pubDate>${content.date?.toUTCString()}</pubDate>
-    <category>${content.tags.join(".")}</category>
+    ${content.tags.map((el) => `<category domain="https://${joinSegments(base, "tags", el)}">${el}</category>`).join("\n")}
   </item>`
   }
 
@@ -119,6 +119,9 @@ function generateAtomFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: n
     <summary>${content.description}</summary>
     <published>${content.date?.toISOString()}</published>
     <updated>${modifiedDate?.toISOString()}</updated>
+    <publishedTime>${formatDate(content.date!, cfg.locale)}</publishedTime>
+    <updatedTime>${formatDate(new Date(modifiedDate!), cfg.locale)}</updatedTime>
+    ${content.tags.map((el) => `<category term="${el}" label="${el}" />`).join("\n")}
     <author>
       <name>Aaron Pham</name>
       <email>contact@aarnphm.xyz</email>
@@ -144,11 +147,13 @@ function generateAtomFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: n
     .join("")
 
   return `<?xml version="1.0" encoding="UTF-8" ?>
+<?xml-stylesheet href="/static/feed.xsl" type="text/xsl" ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>${escapeHTML(cfg.pageTitle)}</title>
   <subtitle>${escapeHTML("Aaron's digital garden")}</subtitle>
   <link href="https://${base}" />
-  <link rel="self" href="/feed.xml" />
+  <link rel="alternate" type="text/html" href="https://${base}" />
+  <category term="evergreen" />
   <id>https://${base}</id>
   <updated>${idx.get("index" as FullSlug)!.date?.toISOString()}</updated>
   <contributor>
@@ -182,6 +187,9 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
         }
         if (opts?.enableRSS) {
           graph.addEdge(sourcePath, joinSegments(ctx.argv.output, "index.xml") as FilePath)
+        }
+        if (opts?.enableAtom) {
+          graph.addEdge(sourcePath, joinSegments(ctx.argv.output, "feed.xml") as FilePath)
         }
         graph.addEdge(sourcePath, joinSegments(ctx.argv.output, "robots.txt") as FilePath)
       }

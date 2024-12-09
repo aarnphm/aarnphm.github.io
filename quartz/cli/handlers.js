@@ -429,7 +429,14 @@ export async function handleBuild(argv) {
       ),
     )
     console.log("hint: exit with ctrl+c")
-    const paths = await globby(["**/*.ts", "**/*.tsx", "**/*.scss", "package.json", "**/*.bib"])
+    const paths = await globby([
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.scss",
+      "package.json",
+      "**/*.bib",
+      "**/*.xsl",
+    ])
     chokidar
       .watch(paths, { ignoreInitial: true })
       .on("add", () => build(clientRefresh))

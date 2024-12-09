@@ -397,6 +397,7 @@ class StackedNoteManager {
         e.preventDefault()
 
         if (this.dag.has(slug)) {
+          notifyNav(slug as FullSlug)
           return await this.focus(slug)
         }
         await this.add(new URL(href), link)
