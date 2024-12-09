@@ -5,7 +5,7 @@ tags:
   - ml
   - llm
 date: "2024-02-07"
-modified: "2024-10-30"
+modified: 2024-12-08 19:28:51 GMT-05:00
 title: LLMs
 ---
 
@@ -47,6 +47,8 @@ The process of rephrasing and arranging sentences poses a challenges for the wri
 See also [[thoughts/Alignment|Alignment]].
 
 There are ethical concerns with the act of "hallucinating" content, therefore alignment research is crucial to ensure that the model is not producing harmful content.
+
+For [[thoughts/university/twenty-four-twenty-five/engineer-4a03/finals|medicare]], ethical implications requires us to develop better [[thoughts/mechanistic interpretability|interpretable models]]
 
 ### as philosophical tool.
 

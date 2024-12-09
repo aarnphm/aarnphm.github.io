@@ -3,6 +3,8 @@
 // We will only setup buttons here
 // see ./spa.inline.ts
 document.addEventListener("nav", async (ev) => {
+  if (window.location.hostname.startsWith("notes.aarnphm.xyz")) return
+
   const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
   const container = document.getElementById("stacked-notes-container")
   const header = document.getElementsByClassName("header")[0] as HTMLElement
@@ -35,7 +37,6 @@ document.addEventListener("nav", async (ev) => {
       window.stacked.destroy()
     }
   }
-
   if (copyStacked) {
     function onClick() {
       const stackedNotes = window.stacked.getChain()
@@ -56,7 +57,6 @@ document.addEventListener("nav", async (ev) => {
     copyStacked.addEventListener("click", onClick)
     window.addCleanup(() => copyStacked.removeEventListener("click", onClick))
   }
-
   button.addEventListener("click", switchCheckState)
   window.addCleanup(() => {
     button.removeEventListener("click", switchCheckState)

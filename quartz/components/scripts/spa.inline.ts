@@ -732,17 +732,9 @@ function createRouter() {
 
 function pruneNotesElement() {
   document
-    .querySelectorAll(
-      'section[class~="page-footer"], footer, span#stacked-note-toggle, nav.breadcrumb-container, .keybind',
-    )
+    .querySelectorAll('section[class~="page-footer"], footer, nav.breadcrumb-container, .keybind')
     .forEach((el) => el.remove())
 }
-
-document.addEventListener("nav", () => {
-  if (window.location.hostname.startsWith("notes.aarnphm.xyz")) {
-    pruneNotesElement()
-  }
-})
 
 createRouter()
 notifyNav(getFullSlug(window))
@@ -803,3 +795,9 @@ if (window.location.hostname.startsWith("notes.aarnphm.xyz")) {
     stacked.navigate(baseUrl)
   }
 }
+
+document.addEventListener("nav", () => {
+  if (window.location.hostname.startsWith("notes.aarnphm.xyz")) {
+    pruneNotesElement()
+  }
+})

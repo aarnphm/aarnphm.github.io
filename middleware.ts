@@ -10,6 +10,8 @@ export default function middleware(request: Request) {
   if (url.hostname !== "notes.aarnphm.xyz" || url.pathname !== "/") {
     return next()
   }
-  url.pathname = "/notes?stackedNotes=bm90ZXM"
+  const slug = "notes"
+  url.pathname = `/${slug}`
+  url.searchParams.set("stackedNotes", btoa(slug.toString()).replace(/=+$/, ""))
   return rewrite(url)
 }
