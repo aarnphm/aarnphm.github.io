@@ -7,7 +7,7 @@ import {
   normalizeRelativeURLs,
   resolveRelative,
 } from "../../util/path"
-import { removeAllChildren, Dag } from "./util"
+import { removeAllChildren, Dag, DagNode } from "./util"
 import { ContentIndex, ContentDetails } from "../../plugins"
 import { unescapeHTML } from "../../util/escape"
 import { formatDate } from "../Date"
@@ -89,8 +89,17 @@ class StackedNoteManager {
     this.setupScrollHandlers()
   }
 
+  private mobile() {
+    return window.innerWidth <= 800
+  }
+
   private setupScrollHandlers() {
     if (!this.column) return
+
+    if (this.mobile()) {
+      this.scrollHandler = () => {}
+      return
+    }
 
     const titleWidth = parseInt(this.styled.getPropertyValue("--note-title-width"))
     const contentWidth = parseInt(this.styled.getPropertyValue("--note-content-width"))
@@ -430,8 +439,28 @@ class StackedNoteManager {
   }
 
   private async render() {
-    const width = parseInt(this.styled.getPropertyValue("--note-content-width"))
     const currentChildren = Array.from(this.column.children) as HTMLElement[]
+
+    if (this.mobile()) {
+      const node = this.dag.getTail() as DagNode
+      currentChildren.forEach((child) => {
+        if (child.dataset.slug !== node!.slug) this.column.removeChild(child)
+      })
+
+      // Create last node if needed
+      if (!this.column.children.length) {
+        node.note = await this.createNote(0, {
+          slug: node.slug,
+          title: node.title,
+          contents: node.contents,
+        })
+        this.column.appendChild(node.note)
+      }
+      this.container.classList.toggle("active", this.isActive)
+      return
+    }
+
+    const width = parseInt(this.styled.getPropertyValue("--note-content-width"))
 
     // Remove notes not in DAG
     currentChildren.forEach((child) => {

@@ -244,7 +244,7 @@ export function debounce(fn: Function, delay: number) {
   }
 }
 
-interface DagNode {
+export interface DagNode {
   slug: string
   title: string
   contents: HTMLElement[]
