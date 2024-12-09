@@ -39,7 +39,11 @@ document.addEventListener("nav", async (ev) => {
   if (copyStacked) {
     function onClick() {
       const stackedNotes = window.stacked.getChain()
-      navigator.clipboard.writeText(stackedNotes).then(
+      let source = stackedNotes
+      if (window.location.hostname.startsWith("notes.aarnphm.xyz"))
+        source = `https://notes.aarnphm.xyz/?${stackedNotes}`
+
+      navigator.clipboard.writeText(source).then(
         () => {
           copyStacked.blur()
           const use = copyStacked?.querySelector("svg") as SVGElement
