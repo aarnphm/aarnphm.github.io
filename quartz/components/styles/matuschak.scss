@@ -81,6 +81,7 @@ body.stack-mode > #quartz-root {
   .page-footer,
   .page-content,
   .page-header:not(#stacked-notes-container .page-header),
+  ul.content-meta > li.readable-source,
   footer {
     display: none;
   }

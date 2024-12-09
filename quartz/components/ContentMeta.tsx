@@ -12,6 +12,7 @@ import { svgOptions } from "./renderPage"
 
 type MetaProp = {
   title: string
+  classes: string[]
   item: JSX.Element | JSX.Element[]
 }
 
@@ -27,19 +28,20 @@ export default (() => {
       minutes: Math.ceil(minutes),
     })
 
-    const Li = ({ title, item }: MetaProp) => {
+    const Li = ({ title, item, classes }: MetaProp) => {
       return (
-        <li>
+        <li class={classNames(undefined, ...classes)}>
           <h2>{title}</h2>
           <div class="container">{item}</div>
         </li>
       )
     }
 
-    const meta = []
+    const meta: MetaProp[] = []
     if (created !== undefined) {
       meta.push({
         title: "publié à",
+        classes: ["published-time"],
         item: h(
           "span",
           {
@@ -51,9 +53,10 @@ export default (() => {
       })
     }
     meta.push(
-      { title: "durée", item: h("span", {}, [displayedTime]) },
+      { title: "durée", classes: ["reading-time"], item: h("span", {}, [displayedTime]) },
       {
         title: "source",
+        classes: ["readable-source"],
         item: [
           h(
             "a",

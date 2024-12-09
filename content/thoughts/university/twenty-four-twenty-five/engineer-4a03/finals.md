@@ -4,8 +4,8 @@ tags:
   - engineer4a03
 date: "2024-12-08"
 description: and exercise.
-modified: 2024-12-08 18:59:42 GMT-05:00
-title: Scenarios for development.
+modified: 2024-12-08 23:19:30 GMT-05:00
+title: Ethics template a la carte
 ---
 
 <p class="quotes">
