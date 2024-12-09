@@ -4,7 +4,7 @@ tags:
   - seed
 date: "2024-12-08"
 description: and how one should use this.
-modified: 2024-12-08 17:19:15 GMT-05:00
+modified: 2024-12-08 19:48:09 GMT-05:00
 noindex: true
 title: procedural notes.
 ---
@@ -19,6 +19,8 @@ My only ask for https://notes.aarnphm.xyz is to treat the sites as it. Most of o
 You can start from some related [[/thoughts|topics]] that has been on my [[thoughts/Attention|mind]] these days,
 or check out some [[thoughts/work|crafts]] I've been working on for the past while.
 
-If you are into machine learning, you might be interested in some [[thoughts/mechanistic interpretability|introduction in interpretability]].
+If you are into machine learning, you might be interested in some [[thoughts/mechanistic interpretability|introduction in interpretability]], or high performance [[thoughts/vllm|inference]] [[thoughts/LLMs|LLM engine]].
 
-:wave: you can reach out to me on [twitter](https://twitter.com/aarnphm_) or checkout my [[/index|introduction blurb]]
+There are some [[/tags/philosophy|philosophical notes]] that I think about [[thoughts/Philosophy and Nietzsche|on a daily basis]].
+
+:wave: you can reach out to me on [twitter](https://twitter.com/aarnphm_)
