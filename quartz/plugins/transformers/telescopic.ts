@@ -175,11 +175,6 @@ function mdToContent(mdContent: string, separator: string = " "): Content {
   return outputToContent(output, separator)
 }
 
-const opts: Config = {
-  separator: " ",
-  shouldExpandOnMouseOver: false,
-}
-
 function contentToHast(content: Content, opts: Config) {
   function hastFromHtml(value: string) {
     return fromHtml(value, { fragment: true }) as unknown as Element
@@ -246,7 +241,14 @@ function contentToHast(content: Content, opts: Config) {
   )
 }
 
-export const TelescopicText: QuartzTransformerPlugin = () => {
+const defaultOpts: Config = {
+  separator: " ",
+  shouldExpandOnMouseOver: false,
+}
+
+export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpts) => {
+  const opts = { ...defaultOpts, ...userOpts }
+
   return {
     name: "TelescopicText",
     markdownPlugins() {

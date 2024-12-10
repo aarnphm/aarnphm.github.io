@@ -78,6 +78,8 @@
   & .toggle-icons {
     display: grid;
     grid-template-columns: 1fr;
+    position: relative;
+    inset: 3px 0 0;
 
     .circle-icon,
     .expand-icon,

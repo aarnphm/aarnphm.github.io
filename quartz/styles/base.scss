@@ -75,8 +75,8 @@ li,
 ol,
 ul,
 .katex {
-  color: var(--darkgray);
-  fill: var(--darkgray);
+  color: var(--dark);
+  fill: var(--dark);
   hyphens: auto;
 }
 
@@ -97,20 +97,15 @@ strong {
 }
 
 a {
-  text-decoration: none;
-  color: var(--main-base);
+  text-decoration: underline;
+  color: var(--darkgray);
 
   &:hover {
     color: var(--tertiary) !important;
   }
 
   &.internal {
-    text-decoration: none;
     line-height: 1.4rem;
-
-    &:not(.stacked-content *) {
-      font-style: italic;
-    }
 
     &:has(> img) {
       background-color: transparent;
@@ -125,8 +120,6 @@ a {
   }
 
   &.external {
-    text-decoration: underline;
-
     & .external-icon {
       height: 2ex;
       margin: 0;
@@ -282,19 +275,19 @@ h6 {
 // typography improvements
 // https://type-scale.spencermortensen.com/
 h1 {
-  font-size: 1.5em;
+  font-size: 25.5px;
   margin-top: 2.25rem;
   margin-bottom: 1rem;
 }
 
 h2 {
-  font-size: 1.402em;
+  font-size: 23.8337px;
   margin-top: 1.9rem;
   margin-bottom: 1rem;
 }
 
 h3 {
-  font-size: 1.3104em;
+  font-size: 22.2763px;
   margin-top: 1.62rem;
   margin-bottom: 1rem;
 }
@@ -307,19 +300,19 @@ h6 {
 }
 
 h4 {
-  font-size: 1.2247em;
+  font-size: 20.8207px;
 }
 
 h5 {
-  font-size: 1.1447em;
+  font-size: 19.4601px;
 }
 
 h6 {
-  font-size: 1.0699em;
+  font-size: 18.1885px;
 }
 
 small {
-  font-size: 0.9347em;
+  font-size: 15.8891px;
 }
 
 figure {
@@ -334,7 +327,7 @@ figure {
   &[data-rehype-pretty-code-figure] {
     & > [data-rehype-pretty-code-title] {
       font-family: var(--codeFont);
-      font-size: 0.9rem;
+      font-size: 14px;
       padding: 0.1rem 0.5rem;
       border: 1px solid var(--lightgray);
       width: max-content;
@@ -364,7 +357,7 @@ pre {
   & > code {
     background: none;
     padding: 0;
-    font-size: 0.85rem;
+    font-size: 13px;
     counter-reset: line;
     counter-increment: line 0;
     display: grid;
@@ -412,10 +405,9 @@ pre {
 }
 
 code {
-  font-size: 0.9em;
+  font-size: 15px;
   color: var(--dark);
   font-family: var(--codeFont);
-  border-radius: 5px;
   padding: 0.1rem 0.2rem;
   background: var(--lightgray);
 }

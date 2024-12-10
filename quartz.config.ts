@@ -35,7 +35,7 @@ const config: QuartzConfig = {
       cdnCaching: true,
       fontOrigin: "googleFonts",
       typography: {
-        header: "Cardo",
+        header: "EB Garamond",
         body: "EB Garamond",
         code: "JetBrains Mono",
       },

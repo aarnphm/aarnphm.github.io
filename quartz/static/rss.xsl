@@ -9,10 +9,8 @@
         <link rel="icon" href="./static/icon.webp" />
         <link href="/index.css" rel="stylesheet" type="text/css" />
         <style type="text/css">
-          body{max-width:768px;margin:0 auto;font-size:16px;line-height:1.5em}section{margin:30px
-          15px}h1{font-size:2em;margin:.67em
-          0;line-height:1.125em}article{padding-bottom:1rem;border-bottom:1px solid
-          var(--lightgray)}hgroup{margin-bottom:2rem}
+          body{max-width:768px;margin:0 auto}section{margin:30px
+          15px}hgroup{margin-bottom:2rem}a{text-decoration:none}
         </style>
       </head>
       <body>

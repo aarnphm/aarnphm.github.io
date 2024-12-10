@@ -4,7 +4,6 @@
 body[data-slug="index"] {
   cursor: crosshair;
   overflow-x: hidden;
-  background-image: url("/static/bg.webp");
 
   .main-col:not(.popover *) {
     grid-column: 4/-4;
@@ -57,7 +56,6 @@ body[data-slug="index"] {
     .recent-links,
     .notes-container {
       display: flex;
-      font-family: "ITCGaramondStdLtCond", var(--bodyFont);
     }
 
     .recent-links {
@@ -88,7 +86,6 @@ body[data-slug="index"] {
       display: grid;
       grid-template-columns: 6rem auto;
       gap: 2rem;
-      font-size: 1.272rem;
 
       & > * {
         overflow: hidden;
@@ -108,6 +105,7 @@ body[data-slug="index"] {
 a.min-links {
   color: inherit;
   font-weight: inherit;
+  text-decoration: none;
 
   &.internal {
     background-color: unset;
@@ -121,9 +119,4 @@ a.min-links {
   gap: 1rem;
   flex-flow: wrap;
   align-items: baseline;
-
-  & > a {
-    font-style: normal;
-    text-decoration: underline;
-  }
 }

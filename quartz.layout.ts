@@ -20,8 +20,7 @@ export const sharedPageComponents: SharedLayout = {
       github: "https://github.com/aarnphm",
       twitter: "https://twitter.com/aarnphm_",
       bsky: "https://bsky.app/profile/aarnphm.xyz",
-      rss: "/index.xml",
-      atom: "/feed.xml",
+      feed: "/feed.xml",
     },
   }),
 }

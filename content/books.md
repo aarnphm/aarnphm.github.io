@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2022-04-22"
 description: the one with all the books I should read.
-modified: "2024-09-27"
+modified: 2024-12-10 08:40:41 GMT-05:00
 title: antilibrary.
 ---
 

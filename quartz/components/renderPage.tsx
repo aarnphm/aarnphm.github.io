@@ -621,13 +621,10 @@ export function transcludeFinal(
 }
 
 export const links = {
+  colophon: "/colophon",
   livres: "/books",
-  "boîte aux lettres": "/posts/",
-  projets: "/thoughts/work",
-  curius: "/curius",
   advices: "/quotes",
   parfum: "/thoughts/Scents",
-  "atelier with friends": "/thoughts/atelier-with-friends",
 }
 
 type AliasLinkProp = {
@@ -636,12 +633,14 @@ type AliasLinkProp = {
   isInternal?: boolean
   newTab?: boolean | ((name: string) => boolean)
   enablePopover?: boolean
+  classes?: string[]
 }
 
 const AliasLink = (props: AliasLinkProp) => {
   const opts = { isInternal: false, newTab: false, enablePopover: true, ...props }
   const className = ["landing-links"]
   if (opts.isInternal && opts.enablePopover) className.push("internal")
+  if (opts.classes) className.push(...opts.classes)
   return (
     <a
       href={opts.url}
@@ -756,11 +755,20 @@ const ElementComponent = (() => {
       <section>
         <h2>média:</h2>
         <address class="clickable-container">
-          <AliasLink newTab name="github" url="https://github.com/aarnphm" />
-          <AliasLink newTab name="twitter" url="https://x.com/aarnphm_" />
-          <AliasLink newTab name="substack" url="https://livingalonealone.com" />
-          <AliasLink newTab name="bluesky" url="https://bsky.app/profile/aarnphm.xyz" />
-          <AliasLink name="contact" url="mailto:contact@aarnphm.xyz" />
+          <AliasLink newTab classes={["external"]} name="github" url="https://github.com/aarnphm" />
+          <AliasLink newTab classes={["external"]} name="twitter" url="https://x.com/aarnphm_" />
+          <AliasLink
+            newTab
+            classes={["external"]}
+            name="substack"
+            url="https://livingalonealone.com"
+          />
+          <AliasLink
+            newTab
+            classes={["external"]}
+            name="bluesky"
+            url="https://bsky.app/profile/aarnphm.xyz"
+          />
           <AliasLink newTab name="llms.txt" url="/llms.txt" />
           <AliasLink newTab name="llms-full.txt" url="/llms-full.txt" />
         </address>
