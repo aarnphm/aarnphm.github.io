@@ -8,7 +8,7 @@ tags:
   - fruit
 date: "2022-04-22"
 description: Aaron's digital garden
-modified: 2024-12-10 05:54:50 GMT-05:00
+modified: 2024-12-10 06:22:51 GMT-05:00
 title: Aaron's notes
 ---
 
@@ -61,7 +61,7 @@ Beige and <span class="rose">rosé</span> are my two favourite colours.
     *  and [[thoughts/Machine learning|ML]] system (serving, evaluation, throughput, [[thoughts/optimization|optimization]]).
 ```
 
-Currently, I'm building [serving infrastructure](https://bentoml.com) for [[/tags/ml]] systems, focusing on [[thoughts/LLMs|LLM]]'s [[thoughts/vllm|serving engine]].
+Currently, I'm building [serving infrastructure](https://bentoml.com) for [[/tags/ml]] systems, focusing on [[thoughts/LLMs|LLM]] [[thoughts/vllm|serving engine]].
 
 I'm best reached [on twitter](https://twitter.com/aarnphm_) or [contact\[at\]aarnphm.xyz](mailto:contact@aarnphm.xyz)
 

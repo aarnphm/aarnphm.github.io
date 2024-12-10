@@ -121,4 +121,9 @@ a.min-links {
   gap: 1rem;
   flex-flow: wrap;
   align-items: baseline;
+
+  & > a {
+    font-style: normal;
+    text-decoration: underline;
+  }
 }

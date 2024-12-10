@@ -151,7 +151,9 @@ function generateAtomFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: n
 <?xml-stylesheet href="/static/feed.xsl" type="text/xsl" ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>${escapeHTML(cfg.pageTitle)}</title>
-  <subtitle>${escapeHTML("Aaron's digital garden")}</subtitle>
+  <subtitle>${!!limit ? i18n(cfg.locale).pages.rss.lastFewNotes({ count: limit }) : i18n(cfg.locale).pages.rss.recentNotes} on ${escapeHTML(
+    cfg.pageTitle,
+  )}</subtitle>
   <link href="https://${base}" />
   <link rel="alternate" type="text/html" href="https://${base}" />
   <category term="evergreen" />

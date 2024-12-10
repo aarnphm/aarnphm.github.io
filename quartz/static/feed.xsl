@@ -12,28 +12,30 @@
         <link href="/index.css" rel="stylesheet" type="text/css" />
         <style type="text/css">
           body{max-width:768px;margin:0 auto;font-size:16px;line-height:1.5em}section{margin:30px
-          15px}h1{font-size:2em;margin:.67em 0;line-height:1.125em}h2{border-bottom:1px solid
-          var(--lightgray);padding-bottom:.3em}a{text-decoration:none}
+          15px}h1{font-size:2em;margin:.67em
+          0;line-height:1.125em}hgroup{margin-bottom:2rem}a{text-decoration:none}
         </style>
       </head>
       <body>
-        <main>
-          <section>
-            <xsl:apply-templates select="atom:feed" />
-          </section>
-          <section>
+        <xsl:apply-templates select="atom:feed" />
+        <hr />
+        <main xmlns="http://www.w3.org/1999/xhtml">
+          <hgroup style="border-bottom:1px solid var(--lightgray);">
             <h2>Recent Items</h2>
-            <ul class="section-ul" xmlns="http://www.w3.org/1999/xhtml">
-              <xsl:apply-templates select="atom:feed/atom:entry" />
-            </ul>
-          </section>
+            <p>
+              <xsl:value-of select="atom:feed/atom:subtitle" />
+            </p>
+          </hgroup>
+          <ul class="section-ul" xmlns="http://www.w3.org/1999/xhtml">
+            <xsl:apply-templates select="atom:feed/atom:entry" />
+          </ul>
         </main>
       </body>
     </html>
   </xsl:template>
 
   <xsl:template match="atom:feed">
-    <nav xmlns="http://www.w3.org/1999/xhtml">
+    <header class="rss" xmlns="http://www.w3.org/1999/xhtml">
       <h1 class="article-title">
         <xsl:value-of select="atom:title" />
       </h1>
@@ -73,7 +75,7 @@
             subscribe <xsl:value-of select="atom:link[@rel='alternate']/@href" />/index.xml</code></p>
         </div>
       </blockquote>
-    </nav>
+    </header>
   </xsl:template>
 
   <xsl:template match="atom:entry">

@@ -12,19 +12,27 @@
           body{max-width:768px;margin:0 auto;font-size:16px;line-height:1.5em}section{margin:30px
           15px}h1{font-size:2em;margin:.67em
           0;line-height:1.125em}article{padding-bottom:1rem;border-bottom:1px solid
-          var(--lightgray)}h2{margin-bottom:0}
+          var(--lightgray)}hgroup{margin-bottom:2rem}
         </style>
       </head>
       <body>
         <header class="rss">
-          <hgroup>
-            <h1 class="article-title">
-              <xsl:value-of select="/rss/channel/title" />
-            </h1>
-            <p>
-              <xsl:value-of select="/rss/channel/description" />
-            </p>
-          </hgroup>
+          <h1 class="article-title">
+            <xsl:value-of select="/rss/channel/title" />
+          </h1>
+          <p>You have stumbled upon the <a href="https://www.ietf.org/rfc/rfc4287.txt"
+              target="_blank"
+              class="anchor-like"><span class="indicator-hook" />atom feed</a> of my working notes,
+            as do to all paths of this digital garden. Much of these notes/writings are written for
+            my own consumption, a sort of <a target="_blank"
+              href="https://aarnphm.xyz/tags/evergreen">
+              <span>evergreen</span>
+            </a> notes. <br />If any of these doesn't make sense
+            for you, it is probably because I didn't write it for you. <br /> 👋 you can reach out
+            to me on <a
+              href="https://twitter.com/aarnphm_" target="_blank">twitter</a> (Yep, I refused to
+            call it X) </p>
+
           <a target="_blank">
             <xsl:attribute name="href">
               <xsl:value-of select="/rss/channel/link" />
@@ -34,6 +42,9 @@
           <p>There is also a <a href="/feed.xml">Atom feed</a> of the site. They are <a
               href="https://news.ycombinator.com/item?id=26168493" target="_blank">semantically
             different but achieve the same thing.</a></p>
+
+          <p>Visit <a href="https://aboutfeeds.com/">About Feeds</a> to get started with newsreaders
+            and subscribing. It’s free. </p>
 
           <blockquote class="callout tip" data-callout="tip">
             <div class="callout-title" dir="auto">
@@ -50,6 +61,12 @@
         </header>
         <hr />
         <main class="rss">
+          <hgroup style="border-bottom:1px solid var(--lightgray);">
+            <h2>Recent Items</h2>
+            <p>
+              <xsl:value-of select="/rss/channel/description" />
+            </p>
+          </hgroup>
           <xsl:apply-templates select="/rss/channel/item" />
         </main>
       </body>
