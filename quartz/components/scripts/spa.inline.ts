@@ -84,8 +84,6 @@ class StackedNoteManager {
 
     this.styled = getComputedStyle(this.main)
 
-    this.baseSlug = getFullSlug(window)
-
     this.setupScrollHandlers()
   }
 
@@ -306,7 +304,7 @@ class StackedNoteManager {
         const anchor = document.createElement("a")
         anchor.classList.add("internal")
         anchor.dataset.backlink = fullSlug
-        anchor.href = resolveRelative(slug as FullSlug, fullSlug)
+        anchor.href = resolveRelative(getFullSlug(window), fullSlug)
 
         const title = document.createElement("div")
         title.classList.add("small")
@@ -588,8 +586,8 @@ class StackedNoteManager {
     window.location.hash = ""
     const res = { contents, title, hash }
 
-    const note = await this.createNote(0, { slug: this.baseSlug, ...res })
-    this.dag.addNode({ ...res, slug: this.baseSlug, anchor: null, note })
+    const note = await this.createNote(0, { slug: getFullSlug(window), ...res })
+    this.dag.addNode({ ...res, slug: getFullSlug(window), anchor: null, note })
 
     this.isActive = true
     await this.initFromParams()
@@ -823,7 +821,9 @@ if (window.location.hostname.startsWith("notes.aarnphm.xyz")) {
     const slug = "notes"
     baseUrl.searchParams.set("stackedNotes", btoa(slug.toString()).replace(/=+$/, ""))
     baseUrl.pathname = `/${slug}`
-    stacked.navigate(baseUrl)
     pruneNotesElement()
+    const content = document.querySelector('section[class~="page-content"]') as HTMLElement | null
+    if (content) content.style.display = "none"
+    stacked.navigate(baseUrl)
   }
 }

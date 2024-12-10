@@ -5,7 +5,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: cool stuff on the internet
-modified: 2024-12-09 22:33:16 GMT-05:00
+modified: 2024-12-09 23:10:09 GMT-05:00
 noindex: true
 title: website inspiration
 ---
@@ -34,6 +34,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 
 - https://thesolarmonk.com/posts/a-spacebar-for-the-web - vintage, letter type
 - https://handwritten.blog/2022-10-01-hyperlinks-in-handwriting.html
+- https://retool.com/visual-basic - ascii effects and procedural arrangement
 
 ## protocol
 

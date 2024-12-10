@@ -73,18 +73,8 @@ export default (() => {
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin={"anonymous"} />
         {cfg.baseUrl && (
           <>
-            <link
-              rel="alternate"
-              type="application/rss+xml"
-              title="rss feed"
-              href={`https://${cfg.baseUrl}/index.xml`}
-            />
-            <link
-              rel="alternate"
-              type="application/atom+xml"
-              title="atom feed"
-              href={`https://${cfg.baseUrl}/feed.xml`}
-            />
+            <link rel="alternate" type="application/rss+xml" title="rss feed" href="/index.xml" />
+            <link rel="alternate" type="application/atom+xml" title="atom feed" href="/feed.xml" />
           </>
         )}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -122,6 +112,7 @@ export default (() => {
           </>
         )}
         <link rel="icon" href={iconPath} />
+        <link rel="apple-touch-icon" href={iconPath} />
         <link rel="canonical" href={socialUrl} />
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
