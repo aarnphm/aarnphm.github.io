@@ -760,7 +760,7 @@ function createRouter() {
 function pruneNotesElement() {
   document
     .querySelectorAll(
-      'section[class~="page-footer"], footer, nav.breadcrumb-container, .keybind, .search, .graph',
+      'main > section[class~="page-footer"], footer, nav.breadcrumb-container, .keybind, .search, .graph',
     )
     .forEach((el) => el.remove())
 }
@@ -822,8 +822,13 @@ if (window.location.hostname.startsWith("notes.aarnphm.xyz")) {
     baseUrl.searchParams.set("stackedNotes", btoa(slug.toString()).replace(/=+$/, ""))
     baseUrl.pathname = `/${slug}`
     pruneNotesElement()
-    const content = document.querySelector('section[class~="page-content"]') as HTMLElement | null
-    if (content) content.style.display = "none"
+
+    const displays = document.querySelectorAll(
+      'main > section[class~="page-content"], main > section[class~="page-header"]',
+    ) as NodeListOf<HTMLElement>
+    displays.forEach((el) => {
+      el.style.display = "none"
+    })
     stacked.navigate(baseUrl)
   }
 }

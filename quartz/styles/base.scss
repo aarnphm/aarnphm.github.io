@@ -135,6 +135,14 @@ a {
   }
 }
 
+cite {
+  font-style: normal;
+
+  & > a {
+    color: var(--dark);
+  }
+}
+
 hgroup,
 header,
 footer {
