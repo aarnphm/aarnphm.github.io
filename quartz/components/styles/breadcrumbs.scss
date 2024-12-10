@@ -16,6 +16,8 @@
   justify-content: center;
 
   & > a {
+    text-decoration: none;
+
     &:hover {
       background-image: linear-gradient(
         var(--link-underline-gradient-line-color),
