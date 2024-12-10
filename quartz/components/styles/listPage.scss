@@ -128,6 +128,10 @@ li.section-li {
 .notes-list {
   grid-column: 3/8;
   padding-right: calc(var(--kern) * 2);
+
+  .popover-inner & {
+    grid-column: -3/3;
+  }
 }
 
 @media all and ($mobile) {

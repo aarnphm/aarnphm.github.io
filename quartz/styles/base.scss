@@ -581,6 +581,15 @@ ol.overflow {
   }
 }
 
+.side-col {
+  grid-column: 3/9;
+}
+@media all and ($mobile) {
+  .side-col {
+    grid-column: 3 / -3;
+  }
+}
+
 .full-col {
   grid-column: 3 / -3;
 }
@@ -615,8 +624,6 @@ ol.overflow {
 
 .page-content {
   & article {
-    margin-bottom: 2.5rem;
-
     & li:has(> input[type="checkbox"]) {
       list-style-type: none;
       padding-left: 0;

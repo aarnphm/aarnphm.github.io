@@ -4,7 +4,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded
-modified: "2024-10-24"
+modified: 2024-12-10 06:02:39 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -38,3 +38,5 @@ https://x.com/noampomsky/status/1860856607607050633 <!-- Ava on Iain McGilchrist
 https://x.com/JustinLin610/status/1861847752835248381 <!-- QwQ reasoning models outperform o1 -->
 
 https://x.com/elzr/status/1274209005557211138 <!-- threads for reading as tree representations -->
+
+https://x.com/JungleSilicon/status/1866352582349750555 <!-- embedding visualisation from Midjourney -->

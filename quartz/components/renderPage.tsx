@@ -696,7 +696,7 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
                     <a href={resolveRelative(fileData.slug!, page.slug!)} class={classes}>
                       <div class="landing-meta">
                         <span class="landing-mspan">
-                          <Date date={getDate(cfg, fileData)!} locale={cfg.locale} />
+                          <Date date={getDate(cfg, page)!} locale={cfg.locale} />
                         </span>
                         <span class="landing-mtitle">{title}</span>
                       </div>
@@ -1008,7 +1008,7 @@ export function renderPage(
             class={classNames(
               undefined,
               "page-content",
-              slug === "index" ? "main-col" : "grid all-col",
+              slug === "index" ? "side-col" : "grid all-col",
             )}
           >
             {sidebar.length > 0 ? (

@@ -1,6 +1,6 @@
 import { QuartzTransformerPlugin } from "../types"
 import { Root, Html, BlockContent, DefinitionContent, Paragraph, Code } from "mdast"
-import { Node, Element, Literal, Root as HtmlRoot } from "hast"
+import { Element, Literal, Root as HtmlRoot } from "hast"
 import { ReplaceFunction, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import rehypeRaw from "rehype-raw"
 import { SKIP, visit } from "unist-util-visit"

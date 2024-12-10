@@ -1,0 +1,51 @@
+:root {
+  --telescope-highlight: #fcc16d55;
+  --telescope-highlight-hover: var(--gold);
+  --telescope-text-color: var(--dark);
+  --telescope-border: #888;
+}
+
+#telescope {
+  color: var(--telescope-text-color);
+
+  &#telescope {
+    blockquote {
+      margin-left: 0;
+      padding-left: 1rem;
+      border-left: 3px solid var(--telescope-text-color);
+      display: block;
+    }
+
+    hr {
+      border: 1px solid var(--telescope-text-color);
+      margin: 1em 0;
+      display: block;
+    }
+  }
+
+  .details {
+    display: inline;
+    border-radius: 3px;
+    background-color: var(--telescope-highlight);
+    transition: background-color 0.5s ease;
+    cursor: pointer;
+
+    &.open {
+      background-color: transparent;
+      cursor: initial;
+    }
+
+    &.close:hover {
+      background-color: var(--telescope-highlight-hover);
+    }
+
+    &.open > .summary,
+    &.close > .expanded {
+      display: none;
+    }
+  }
+}
+
+.telescopic-container {
+  margin: 1rem 0;
+}

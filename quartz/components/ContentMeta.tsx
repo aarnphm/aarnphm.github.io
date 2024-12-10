@@ -1,4 +1,4 @@
-import { Date, formatDate, getDate } from "./Date"
+import { Date as DateComponent, formatDate, getDate } from "./Date"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 //@ts-ignore
 import script from "./scripts/content-meta.inline"
@@ -18,10 +18,14 @@ type MetaProp = {
 
 export default (() => {
   const ContentMeta: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
-    let created: string | undefined
+    let created: Date | undefined
+    let modified: Date | undefined
 
     if (fileData.dates) {
-      created = formatDate(getDate(cfg, fileData)!, cfg.locale)
+      created = getDate(cfg, fileData)
+    }
+    if (fileData.dates?.modified) {
+      modified = fileData.dates?.["modified"]
     }
     const { minutes, words: _words } = readingTime(fileData.text!)
     const displayedTime = i18n(cfg.locale).components.contentMeta.readingTime({
@@ -48,8 +52,17 @@ export default (() => {
             class: "page-creation",
             title: `Date de création du contenu de la page (${created})`,
           },
-          [h("em", {}, [<Date date={getDate(cfg, fileData)!} locale={cfg.locale} />])],
+          [h("em", {}, [<DateComponent date={created} locale={cfg.locale} />])],
         ),
+      })
+    }
+    if (modified !== undefined) {
+      meta.push({
+        title: "modifié à",
+        classes: ["modified-time"],
+        item: h("span", { class: "page-modification" }, [
+          h("em", {}, [<DateComponent date={modified} locale={cfg.locale} />]),
+        ]),
       })
     }
     meta.push(
