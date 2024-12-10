@@ -71,14 +71,13 @@
   &::before {
     content: "";
     position: absolute;
-    left: 0;
-    bottom: 0;
-    top: 0;
+    inset: 0;
     width: 2px;
     height: calc(100% - 0.1em);
     color: inherit;
-    border-left: 1px solid var(--secondary);
-    transform: translateX(-50%);
+    border-left: 1px solid;
+    border-color: inherit;
+    transform: translate(-40%);
   }
 }
 

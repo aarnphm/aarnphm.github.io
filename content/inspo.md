@@ -5,7 +5,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: cool stuff on the internet
-modified: "2024-10-24"
+modified: 2024-12-09 22:33:16 GMT-05:00
 noindex: true
 title: website inspiration
 ---
@@ -25,6 +25,10 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://typicalmitul.com/montreal-in-motion
 - http://pressanykey.today/ - cool visualisation of typing process
 - https://langworth.com/ - wait terminal go brrr
+
+## portfolio
+
+- https://chia.design/
 
 ## essay
 

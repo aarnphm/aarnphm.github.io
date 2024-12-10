@@ -4,7 +4,6 @@
 
 .stacked-copy {
   display: none !important;
-  margin-left: 0.2em;
 }
 
 #stacked-note-toggle {
@@ -60,6 +59,13 @@
       left: 16px;
     }
   }
+}
+
+.stacked-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
 }
 
 body.stack-mode > #quartz-root {

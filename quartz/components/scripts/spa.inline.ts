@@ -827,4 +827,5 @@ if (window.location.hostname.startsWith("notes.aarnphm.xyz")) {
     stacked.navigate(baseUrl)
     pruneNotesElement()
   }
+  window.location.reload()
 }

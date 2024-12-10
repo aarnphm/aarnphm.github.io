@@ -4,18 +4,20 @@ tags:
   - ml
   - sapling
 date: "2024-02-07"
-modified: "2024-10-28"
+modified: 2024-12-09 22:14:42 GMT-05:00
 title: Machine learning
 ---
 
-Detects pattern within data and use it to make useful prediction.
+Detects pattern within [[thoughts/data]] and use it to make useful prediction.
 
-Generally AI $\subset$ ML $\subset$ [[thoughts/deep learning|DL]]
+Generally [[thoughts/AGI|AI]] $\subset$ [[/tags/ml|ML]] $\subset$ [[thoughts/deep learning|DL]]
 
 Some main exploration:
 
 - [[thoughts/Transformers|Transformers]]
-- CNN
+  - [[thoughts/LLMs|Large language models]]
+- [[thoughts/NLP]]
+- [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Convolutional Neural Network|CNN]]
 - [[thoughts/optimization|Optimization]]
   - Gradient descent
   - hyperparameter tuning
@@ -28,6 +30,8 @@ Some main exploration:
   - GAN
   - VAE
 - Autoencoder
+  - [[thoughts/sparse autoencoder]]
+  - [[thoughts/sparse crosscoders]]
 - Supervised Q-learning
 - [[thoughts/Low-rank adapters]]
 

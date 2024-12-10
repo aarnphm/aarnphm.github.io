@@ -8,7 +8,21 @@ import { svgOptions } from "./renderPage"
 export default (() => {
   const StackedNotes: QuartzComponent = () => {
     return (
-      <>
+      <div class="stacked-buttons">
+        {h(
+          "span",
+          {
+            type: "button",
+            class: "stacked-copy",
+            tabindex: -1,
+            "aria-hidden": "true",
+            "aria-label": "copy stacked notes URL",
+            title: "copy stacked notes URL",
+          },
+          h("svg", { ...svgOptions, viewbox: "0 -8 24 24", width: 16, height: 16 }, [
+            h("use", { href: "#github-copy" }),
+          ]),
+        )}
         <span
           id="stacked-note-toggle"
           title="Toggle stacked notes"
@@ -46,21 +60,7 @@ export default (() => {
             </svg>
           </div>
         </span>
-        {h(
-          "span",
-          {
-            type: "button",
-            class: "stacked-copy",
-            tabindex: -1,
-            "aria-hidden": "true",
-            "aria-label": "copy stacked notes URL",
-            title: "copy stacked notes URL",
-          },
-          h("svg", { ...svgOptions, viewbox: "0 -8 24 24", width: 16, height: 16 }, [
-            h("use", { href: "#github-copy" }),
-          ]),
-        )}
-      </>
+      </div>
     )
   }
 

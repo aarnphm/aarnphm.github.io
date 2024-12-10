@@ -36,6 +36,7 @@ mark {
   background-color: var(--textHighlight);
   padding: 0 0.1rem;
   border-radius: 5px;
+  color: inherit;
 }
 
 ::selection {
@@ -96,9 +97,8 @@ strong {
 }
 
 a {
-  font-weight: $semiBoldWeight;
   text-decoration: none;
-  color: var(--secondary);
+  color: var(--main-base);
 
   &:hover {
     color: var(--tertiary) !important;
@@ -107,6 +107,10 @@ a {
   &.internal {
     text-decoration: none;
     line-height: 1.4rem;
+
+    &:not(.stacked-content *) {
+      font-style: italic;
+    }
 
     &:has(> img) {
       background-color: transparent;
