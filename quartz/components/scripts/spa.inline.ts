@@ -543,7 +543,6 @@ class StackedNoteManager {
     const clickedNote = document.activeElement?.closest(".stacked-note") as HTMLDivElement
     anchor.classList.add("dag")
 
-    this.baseSlug = slug
     // If note exists in DAG
     if (this.dag.has(slug)) {
       return await this.focus(slug)
@@ -827,5 +826,4 @@ if (window.location.hostname.startsWith("notes.aarnphm.xyz")) {
     stacked.navigate(baseUrl)
     pruneNotesElement()
   }
-  window.location.reload()
 }
