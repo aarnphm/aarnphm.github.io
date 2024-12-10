@@ -245,6 +245,10 @@ a {
     }
   }
 
+  &.anchor-like {
+    @include links;
+  }
+
   &[class~="landing-links"],
   &.internal[class~="landing-links"] {
     font-weight: inherit;
@@ -709,6 +713,59 @@ figure.tikz {
 
       .check-icon {
         display: inline;
+      }
+    }
+  }
+}
+
+header.rss {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+main.rss {
+  menu.tags {
+    transition: color 0.3s;
+    gap: calc(var(--kern) * 1);
+    flex-direction: row;
+    padding-right: 0;
+    vertical-align: 0.15em;
+
+    li {
+      transform-origin: center left;
+      padding: 0 0.7em;
+      position: relative;
+
+      @include tinyFonts;
+      font-family: var(--codeFont);
+
+      &::after {
+        content: "";
+        border: 1px solid;
+        border-radius: 0;
+        transition: border-color 0.3s;
+        inset: 0 0 -0.12em;
+        pointer-events: none;
+        position: absolute;
+      }
+    }
+  }
+
+  hgroup {
+    p {
+      margin-top: 0;
+    }
+  }
+
+  article {
+    .published {
+      margin-top: 0.8rem;
+
+      & > span {
+        color: #aaa;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 15px;
       }
     }
   }

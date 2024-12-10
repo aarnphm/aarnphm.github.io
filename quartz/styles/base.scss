@@ -369,6 +369,10 @@ pre {
       box-sizing: border-box;
       border-left: 3px solid transparent;
 
+      &:hover:not([data-highlighted-line]) {
+        background-color: var(--lightgray);
+      }
+
       &[data-highlighted-line] {
         background-color: var(--highlight);
         border-left: 3px solid var(--secondary);
