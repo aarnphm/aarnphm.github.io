@@ -310,6 +310,7 @@ blockquote.twitter-tweet {
   & > a {
     border-radius: unset;
     background-color: unset;
+    text-decoration: none;
 
     @include links;
 

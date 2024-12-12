@@ -194,8 +194,8 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               {
                 type: "button",
                 class: "clipboard-button ps-clipboard",
-                arialabel: "Copy pseudocode to clipboard",
-                ariahidden: true,
+                ariaLabel: "Copy pseudocode to clipboard",
+                ariaHidden: true,
                 tabindex: -1,
               },
               [

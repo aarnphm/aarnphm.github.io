@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2022-04-22"
 description: the one with all the books I should read.
-modified: 2024-12-10 08:40:41 GMT-05:00
+modified: 2024-12-12 07:34:52 GMT-05:00
 title: antilibrary.
 ---
 
@@ -79,20 +79,21 @@ See also: [[/curius|digital version]]
 
 ### non-fiction
 
-| title                                                  | author              | notes                                                                                                                                         |
-| ------------------------------------------------------ | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Deep Work                                              | Cal Newport         |                                                                                                                                               |
-| Digital Minimalism                                     | Cal Newport         |                                                                                                                                               |
-| Playing Software: Homo Ludens in Computational Culture | Miguel Sicart       |                                                                                                                                               |
-| Reimagining Capitalism in a World on Fire              | Rebecca Henderson   |                                                                                                                                               |
-| Principles                                             | Ray Dalio           |                                                                                                                                               |
-| Mindset                                                | Dr. Carol S. Dweck  |                                                                                                                                               |
-| The Pleasure of Finding Things Out                     | Richard P. Feynman  |                                                                                                                                               |
-| Walden and Civil Disobedience                          | Henry David Thoreau |                                                                                                                                               |
-| Deep Sleep                                             | Jade Wu             |                                                                                                                                               |
-| Are We Spiritual Machines?                             | Ray Kurzweil        | [html](https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=olbp56055)                                                              |
-| Free to Choose                                         | Milton Friedman     |                                                                                                                                               |
-| Seduction and Betrayal                                 | Elizabeth Hardwick  | [link](https://www.penguinrandomhouse.ca/books/643010/seduction-and-betrayal-by-elizabeth-hardwick-introduction-by-joan-didion/9780940322783) |
+| title                                                  | author                                                                                                               | notes                                                                                                                                         |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Deep Work                                              | Cal Newport                                                                                                          |                                                                                                                                               |
+| Digital Minimalism                                     | Cal Newport                                                                                                          |                                                                                                                                               |
+| Playing Software: Homo Ludens in Computational Culture | Miguel Sicart                                                                                                        |                                                                                                                                               |
+| Reimagining Capitalism in a World on Fire              | Rebecca Henderson                                                                                                    |                                                                                                                                               |
+| Principles                                             | Ray Dalio                                                                                                            |                                                                                                                                               |
+| Mindset                                                | Dr. Carol S. Dweck                                                                                                   |                                                                                                                                               |
+| The Pleasure of Finding Things Out                     | Richard P. Feynman                                                                                                   |                                                                                                                                               |
+| Walden and Civil Disobedience                          | Henry David Thoreau                                                                                                  |                                                                                                                                               |
+| Deep Sleep                                             | Jade Wu                                                                                                              |                                                                                                                                               |
+| Are We Spiritual Machines?                             | Ray Kurzweil                                                                                                         | [html](https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=olbp56055)                                                              |
+| Free to Choose                                         | Milton Friedman                                                                                                      |                                                                                                                                               |
+| Seduction and Betrayal                                 | Elizabeth Hardwick                                                                                                   | [link](https://www.penguinrandomhouse.ca/books/643010/seduction-and-betrayal-by-elizabeth-hardwick-introduction-by-joan-didion/9780940322783) |
+| A Pattern Language: Towns, Building, Construction      | Christopher Alexander, Sara Ishikawa and Murray Silverstein with Max Jacobson, Ingrid Fiksdahl-King and Shlomo Angel | [quartz](https://patternlanguage.cc/)                                                                                                         |
 
 ### fiction
 

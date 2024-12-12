@@ -149,7 +149,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     s(
                       "svg",
                       {
-                        ariahidden: true,
+                        ariaHidden: true,
                         class: "external-icon",
                         viewbox: "0 -12 24 24",
                         fill: "none",

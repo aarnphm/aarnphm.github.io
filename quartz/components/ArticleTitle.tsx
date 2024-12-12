@@ -5,7 +5,7 @@ const ArticleTitle: QuartzComponent = ({ fileData, displayClass }: QuartzCompone
   const title = fileData.frontmatter?.title
   if (title) {
     return (
-      <hgroup class="side-col">
+      <hgroup class="main-col">
         <h1 class={classNames(displayClass, "article-title")}>{title}</h1>
         <p class="description">{fileData.frontmatter?.description && fileData.description}</p>
       </hgroup>

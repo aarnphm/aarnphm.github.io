@@ -4,7 +4,7 @@ tags:
   - sfwr3db3
   - assignment
 date: "2024-11-24"
-modified: "2024-11-24"
+modified: 2024-12-12 07:43:26 GMT-05:00
 title: DB design, concurrency and transaction
 ---
 
@@ -75,7 +75,7 @@ $A \rightarrow BC$ gives $(CD)^+ = \{C, D, E, A, B, C\} \text{Transitivity and D
 
 > $CD$ is a candidate key
 
-\*\*Closure of $BC$
+**Closure of $BC$**
 
 Initial $BC$ gives $(BC)^+ = \{B, C\}$
 

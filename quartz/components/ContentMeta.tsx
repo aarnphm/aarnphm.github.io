@@ -87,7 +87,7 @@ export default (() => {
               type: "button",
               arialabel: "copy source",
               tabindex: -1,
-              ariahidden: true,
+              ariaHidden: true,
               class: "clipboard-button",
               "data-href": resolveRelative(
                 fileData.slug!,

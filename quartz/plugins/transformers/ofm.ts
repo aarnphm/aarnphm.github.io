@@ -737,8 +737,8 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     {
                       class: "expand-button",
                       type: "button",
-                      arialabel: "Expand mermaid diagram",
-                      ariahidden: true,
+                      ariaLabel: "Expand mermaid diagram",
+                      ariaHidden: true,
                       tabindex: -1,
                     },
                     [
@@ -750,7 +750,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                           viewbox: "0 0 16 16",
                           fill: "currentColor",
                           xmlns: "http://www.w3.org/2000/svg",
-                          ariahidden: true,
+                          ariaHidden: true,
                           tabindex: -1,
                         },
                         [s("use", { href: "#expand-e-w" })],

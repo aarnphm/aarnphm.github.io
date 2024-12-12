@@ -3,7 +3,8 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import HeaderConstructor from "./Header"
 import ContentConstructor from "./pages/Content"
 import FooterConstructor from "./Footer"
-import Navigation from "./Navigation"
+import SearchConstructor from "./Search"
+import GraphConstructor from "./Graph"
 import { byDateAndAlphabetical } from "./PageList"
 import { getDate, Date } from "./Date"
 import { classNames } from "../util/lang"
@@ -1027,7 +1028,7 @@ export function renderPage(
   componentData: QuartzComponentProps,
   components: RenderComponents,
   pageResources: StaticResources,
-  headerStyle: "main-col" | "full-col" = "full-col",
+  headerStyle: "main-col" | "full-col" = "main-col",
 ): string {
   // make a deep copy of the tree so we don't remove the transclusion references
   // for the file cached in contentMap in build.ts
@@ -1038,12 +1039,15 @@ export function renderPage(
   if (slug === "index") {
     components = {
       ...components,
+      header: [],
       sidebar: [],
       afterBody: [],
       beforeBody: [],
       pageBody: (props: QuartzComponentProps) => {
         const { displayClass } = props
         const Element = ElementComponent()
+        const Search = SearchConstructor({ includeButton: false })
+        const Graph = GraphConstructor()
 
         return (
           <>
@@ -1052,6 +1056,8 @@ export function renderPage(
             </h1>
             <div class={classNames(displayClass, "landing")}>
               <Element {...componentData} />
+              <Search {...componentData} />
+              <Graph {...componentData} />
             </div>
           </>
         )

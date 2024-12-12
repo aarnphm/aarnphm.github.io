@@ -94,7 +94,7 @@ export default ((userOpts?: Options) => {
         class={classNames(
           displayClass,
           opts.layout!,
-          opts.layout !== "curius" ? "full-col" : "curius-col",
+          opts.layout !== "curius" ? "main-col" : "curius-col",
         )}
       >
         {FooterConstructor(opts.layout!)}
