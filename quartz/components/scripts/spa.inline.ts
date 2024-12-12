@@ -816,7 +816,7 @@ if (stackedNotes && !container?.classList.contains("active")) {
 }
 
 // remove elements on notes.aarnphm.xyz
-if (window.location.hostname.startsWith("notes.aarnphm.xyz")) {
+if (getFullSlug(window) === "notes") {
   if (!stackedNotes || stackedNotes.length === 0) {
     const slug = "notes"
     baseUrl.searchParams.set("stackedNotes", btoa(slug.toString()).replace(/=+$/, ""))

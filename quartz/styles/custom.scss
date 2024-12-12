@@ -176,7 +176,9 @@ $excluded-hover-classes: (
   "[data-breadcrumbs]",
   "[data-list]",
   "[data-tag]",
-  "[data-footnote-backref]"
+  "[data-footnote-backref]",
+  "[data-slug='curius']",
+  '[class~="landing-links"]'
 );
 
 $selector: "&:not(#{list.nth($excluded-hover-classes, 1)})";
@@ -193,6 +195,7 @@ a {
     background-image: unset;
     background-color: unset;
     margin-top: 0.2em;
+    margin: 0 0.3em;
   }
 
   &:hover {
@@ -212,12 +215,15 @@ a {
     &[data-footnote-backref],
     sup & {
       margin-left: 0.3em;
+      text-decoration: none;
 
       @include links;
     }
   }
 
   &.result-card {
+    text-decoration: none;
+
     ul > li > p {
       background-color: initial !important;
       border-radius: 0px !important;
@@ -576,8 +582,12 @@ body {
     serif !important;
 }
 
-svg.rss-icon {
-  margin-left: 0.1em;
+svg[data-icon] {
+  margin-left: 3px;
+  position: relative;
+  bottom: 2px;
+  width: 8;
+  height: 8;
 }
 
 .popover {
@@ -652,6 +662,10 @@ svg.rss-icon {
   .lo {
     max-height: var(--sign-height);
   }
+}
+
+.hide {
+  visibility: hidden;
 }
 
 @keyframes drawPath {

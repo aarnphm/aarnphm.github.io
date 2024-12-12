@@ -190,16 +190,13 @@ function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement
 document.addEventListener("nav", async (e) => {
   if (e.detail.url !== "curius") return
 
-  const elements = [
-    ".curius-page-container",
-    "#curius-fetching-text",
-    "#curius-fragments",
-    ".navigation-container",
-  ].map((id) => document.querySelector(id))
+  const elements = [".curius-page-container", "#curius-fetching-text", "#curius-fragments"].map(
+    (id) => document.querySelector(id),
+  )
 
   if (elements.some((el) => el === null)) return
 
-  const [container, fetchText, fragment, nav] = elements as HTMLElement[]
+  const [container, fetchText, fragment] = elements as HTMLElement[]
 
   const friends = document.querySelector(".curius-friends") as HTMLUListElement | null
   const trails = document.getElementsByClassName("curius-trail")[0] as HTMLDivElement | null
@@ -226,7 +223,6 @@ document.addEventListener("nav", async (e) => {
   await curiusSearch(linksData)
 
   fragment.append(...linksData.map(createLinkEl))
-  nav.classList.toggle("active", true)
   if (friends) friends.classList.toggle("active", true)
   if (trails) trails.classList.toggle("active", true)
 
@@ -286,7 +282,6 @@ document.addEventListener("nav", async (e) => {
       await curiusSearch(refetched.links!)
 
       fragment.append(...newData.map(createLinkEl))
-      nav.classList.toggle("active", true)
       friends?.classList.toggle("active", true)
       trails?.classList.toggle("active", true)
 

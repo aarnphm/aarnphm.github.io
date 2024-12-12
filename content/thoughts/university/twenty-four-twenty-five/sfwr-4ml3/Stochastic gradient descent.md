@@ -2,8 +2,9 @@
 id: Stochastic gradient descent
 tags:
   - sfwr4ml3
+  - ml
 date: "2024-11-11"
-modified: "2024-11-11"
+modified: 2024-12-10 23:12:52 GMT-05:00
 permalinks:
   - /SGD
 title: Stochastic gradient descent

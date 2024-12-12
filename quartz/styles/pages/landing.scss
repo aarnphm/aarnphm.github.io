@@ -5,18 +5,14 @@ body[data-slug="index"] {
   cursor: crosshair;
   overflow-x: hidden;
 
-  .main-col:not(.popover *) {
-    grid-column: 4/-4;
+  .popover-inner {
+    .side-col {
+      grid-column: 1/-1;
+    }
   }
 
   & > * {
     font-family: var(--bodyFont);
-  }
-
-  .page-content {
-    margin: 2rem 0;
-    border: 1px solid var(--gray);
-    padding: 0 2rem;
   }
 
   &:not(.popover *) {
@@ -50,7 +46,10 @@ body[data-slug="index"] {
 .notes-outer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+
+  border: 0px solid var(--lightgray);
+  border-top-width: 1px;
+  border-bottom-width: 1px;
 
   section[data-note] {
     .recent-links,
@@ -116,7 +115,7 @@ a.min-links {
 
 .clickable-container {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   flex-flow: wrap;
   align-items: baseline;
 }

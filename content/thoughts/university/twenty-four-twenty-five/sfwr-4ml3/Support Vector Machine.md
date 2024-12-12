@@ -1,15 +1,15 @@
 ---
-id: SVM
+id: Support Vector Machine
 tags:
   - sfwr4ml3
 date: "2024-11-11"
-modified: "2024-11-11"
+modified: 2024-12-10 22:33:17 GMT-05:00
 title: Support Vector Machine
 ---
 
-idea: maximizes margin and more robust to "perturbations"
+idea: maximises margin and more robust to "perturbations"
 
-Euclidean distance between two points $x$ and the hyperplane parametrized by $W$ is:
+Euclidean distance between two points $x$ and the hyperplane parametrised by $W$ is:
 
 $$
 \frac{\mid W^T x + b \mid }{\|W\|_2}
@@ -47,7 +47,7 @@ $$
 \end{algorithm}
 ```
 
-note that this version is sensitive to outliers
+Note that this version is sensitive to outliers
 
 ## soft-margin SVM
 

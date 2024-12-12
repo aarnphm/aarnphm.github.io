@@ -5,6 +5,7 @@ import { VFile } from "vfile"
 import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import HeaderConstructor from "../../components/Header"
+import { CuriusContent, CuriusFriends } from "../../components/renderPage"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
 import { Argv } from "../../util/ctx"
@@ -64,7 +65,18 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
   return {
     name: "ContentPage",
     getQuartzComponents() {
-      return [Head, Header, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
+      return [
+        Head,
+        Header,
+        CuriusFriends,
+        CuriusContent,
+        ...header,
+        ...beforeBody,
+        pageBody,
+        ...afterBody,
+        ...sidebar,
+        Footer,
+      ]
     },
     async getDependencyGraph(ctx, content, _resources) {
       const graph = new DepGraph<FilePath>()

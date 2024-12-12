@@ -31,7 +31,7 @@ export default ((userOpts?: Options) => {
     const recs = rng.shuffle(distributions).slice(0, opts.topChoices)
 
     return (
-      <section data-recs={true} class={classNames(displayClass, "recommendations", "main-col")}>
+      <section data-recs={true} class={classNames(displayClass, "recommendations", "side-col")}>
         <h2 id="label" lang="fr">
           Vous pourriez aimer ce qui suit
         </h2>

@@ -5,6 +5,20 @@
   --telescope-border: #888;
 }
 
+.telescopic-container {
+  --refresh-width: 12px;
+  --gap-width: 1.4px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  position: relative;
+  left: -13.4px;
+  gap: var(--gap-width);
+
+  margin: 1rem 0;
+}
+
 #telescope {
   color: var(--telescope-text-color);
 
@@ -20,6 +34,16 @@
       border: 0.5px solid var(--telescope-text-color);
       margin: 3px 0;
       display: block;
+    }
+  }
+
+  .replay {
+    width: var(--refresh-width);
+
+    &:hover {
+      & > svg {
+        fill: var(--gray) !important;
+      }
     }
   }
 
@@ -44,8 +68,4 @@
       display: none;
     }
   }
-}
-
-.telescopic-container {
-  margin: 1rem 0;
 }

@@ -8,61 +8,87 @@ tags:
   - fruit
 date: "2022-04-22"
 description: Aaron's digital garden
-modified: 2024-12-10 09:32:31 GMT-05:00
+modified: 2024-12-12 05:24:13 GMT-05:00
 title: Aaron's notes
 ---
 
-Beige and <span class="rose">rosé</span> are my two favourite colours.
+Currently, I'm working at a [infrastructure startup](https://bentoml.com) building [[/tags/ml]] serving systems, where I mainly work on [[thoughts/LLMs|LLM]] [[thoughts/vllm|serving engine]].
 
-```telescopic id="intro"
+```telescopic id="thoughts"
 * I try to be
 * present.
   * present, but you will find
   *  me
-    * me either [[thoughts/writing#motivation.|writing]] or [[books|reading]].
+    * either writing
+      * or [[books|reading]]
+        * or committing to the bit
+          * or working on [[thoughts/work|open-source projects]]
+            * spending too much time on fixing the [site you are on](https://github.com/aarnphm/aarnphm.github.io).
     * I enjoy
     * to
       * to take long walks
-        * nerd-snipping on [[/tags/math|math-related]] topics
+        * nerd-snipping on [[/tags/math|math-related]] topics,
           * libraries
-            * people watching
+            * watching people
               * yuzu
-                * host [[thoughts/atelier with friends|functions]].
-                * Cooking is my [[/tags/love]]
-                * language
-                  * language, which I learn from my
-                  * mom.
-                    * mom. How one cooks their eggs
-                    * tells me a lot
-                    * about
-                      * about how they treat others
-                        * about their cadence
-                          * about their internal [[thoughts/Agency|drive]].
-```
-
-```telescopic id="work"
-* [[thoughts/work|open-source projects]] are overall net positive for
-* everyone
-  * everyone, so
-  * contribute.
-    * contribute. I believe
-    * in
-      * in
-      * [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|tools]] that
-      * extend
-        * extend our [[thoughts/Agency|agency]].
+                * onion
+                  * watches, esp horology
+                    * folktronica
+                      * Miles David and the Quintet
+                        * Focault and Wittgenstein,
+                        * <em>my 3 qt stainless clad [saucier](https://madeincookware.com/products/saucier/3-quart) that I use for </em>
+                        * everything,
+                          * everything,
+                          * from searing
+                            * to making broth!
+                              * and confit
+                                * making Velouté,
+                        * italian cuisine
+                          * julienne
+                            * allumette,
+                              * this [playlist](https://music.youtube.com/playlist?list=PLsRPzRsbp3lCxe4gXH4S4Zf38X_45Oj6N&si=Od99WbOnJlbB9NYJ) on
+                              * repeats
+                                * repeats, [[thoughts/atelier with friends|hosting]]
+                                * functions.
+                                * <br /><br />Beige
+                                  * <br /><br />Beige and
+                                  * rosé
+                                    * <span class="rose">rosé</span> are my two favourite colours.<br /><br />
+                                    * Cooking
+                                      * Cooking is my [[/tags/love]]
+                                      * language
+                                        * language, which I learn from my
+                                        * mom.
+                                          * mom. How one cooks their eggs
+                                          * tells me a lot
+                                          * about
+                                            * about how they treat others
+                                              * about their cadence
+                                                * about their intrinsic [[thoughts/Agency|drive]].
 ```
 
 ```telescopic id="research"
 * My research interests lie in
-* interpretability
+* interpretability.
   * interpretability ([[thoughts/mechanistic interpretability|inner working]] of a neural network),
-  * and ML system
-    * and [[thoughts/Machine learning|ML]] system (serving, evaluation, numerical optimization, [[thoughts/optimization|optimization]]).
+  * and ML system.
+    * and [[thoughts/Machine learning|ML]] system (serving system, and kernel [[thoughts/optimization|optimization]]).
+  * <br /><br />On a higher level, I care
+  * about
+    * about building
+    * tools that
+      * [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|tools]] that
+      * extend
+        * extend our [[thoughts/Agency|agency]]: agency
+        * to
+          * to follow what one is drawn towards
+            * as a medium of [[thoughts/representations|expression]]
+              * to fullfil one's [[thoughts/desire]] in life. In general, sofware should
+              * be
+                * be [[/uses|minimal]].
+                  * be intuitive
+                    * be [malleable](https://www.geoffreylitt.com/2023/03/25/llm-end-user-programming.html)
+
 ```
 
-Currently, I'm working at a [infrastructure startup](https://bentoml.com) building [[/tags/ml]] serving systems, where I mainly work on [[thoughts/LLMs|LLM]] [[thoughts/vllm|serving engine]].
-
 I'm best reached [on twitter](https://twitter.com/aarnphm_) or [contact\[at\]aarnphm.xyz](mailto:contact@aarnphm.xyz)
-
-Here is the [rss](/index.xml) and [atom](/feed.xml) feed for those who use it.

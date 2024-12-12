@@ -3,7 +3,7 @@ id: Cauchy-Schwarz
 tags:
   - math
 date: "2024-11-05"
-modified: "2024-11-05"
+modified: 2024-12-10 23:25:57 GMT-05:00
 title: Cauchy-Schwarz
 ---
 
@@ -55,6 +55,7 @@ $$
 \end{aligned}
 $$
 
-Follows $\|z\|^{2}=0 \implies z=0$, which estabilishes linear dependences between $u$ and $v$.
+Follows $\|z\|^{2}=0 \implies z=0$, which establishes
+linear dependences between $u$ and $v$.
 
 q.e.d

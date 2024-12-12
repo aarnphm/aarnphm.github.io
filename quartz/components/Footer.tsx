@@ -5,7 +5,7 @@ import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
 import { Date as DateComponent, getDate } from "./Date"
 
-type FooterLayout = "default" | "minimal" | "poetry" | "menu"
+type FooterLayout = "default" | "minimal" | "poetry" | "menu" | "curius"
 
 interface Options {
   layout?: FooterLayout
@@ -82,13 +82,21 @@ export default ((userOpts?: Options) => {
           return <DateFooter />
         case "menu":
           return <DateFooter />
+        case "curius":
+          return <MinimalFooter />
         default:
           return <DefaultFooter />
       }
     }
 
     return (
-      <footer class={classNames(displayClass, opts.layout!, "main-col")}>
+      <footer
+        class={classNames(
+          displayClass,
+          opts.layout!,
+          opts.layout !== "curius" ? "full-col" : "curius-col",
+        )}
+      >
         {FooterConstructor(opts.layout!)}
       </footer>
     )

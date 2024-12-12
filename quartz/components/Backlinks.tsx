@@ -18,7 +18,7 @@ const Backlinks: QuartzComponent = ({
   }
 
   return (
-    <section data-backlinks={true} class={classNames(displayClass, "backlinks", "main-col")}>
+    <section data-backlinks={true} class={classNames(displayClass, "backlinks", "side-col")}>
       <h2 id="backlinks-label">
         {i18n(cfg.locale).components.backlinks.title}
         <a

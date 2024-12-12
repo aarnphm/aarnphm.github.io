@@ -479,6 +479,7 @@ description: "${file.data.frontmatter?.description ?? `resconstructed source of 
 title: "${file.data.frontmatter?.title}"
 date: ${file.data.frontmatter?.date}
 permalink: https://${baseUrl}/${refs}
+full: https://${baseUrl}/llms-full.txt
 ---
 ${contentBase}`
         resconstructed.push(content)

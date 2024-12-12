@@ -1,5 +1,16 @@
 .collapsible-header {
   position: relative;
+  --translate-position: 0px;
+  --padding-width: 8px;
+
+  h3 {
+    --translate-position: 3px;
+  }
+  h4,
+  h5,
+  h6 {
+    --translate-position: 4px;
+  }
 
   &:first-child {
     margin-top: 1rem;
@@ -28,18 +39,13 @@
 
   & .collapsed-dots {
     display: none;
+    transform: translateY(var(--translate-position));
   }
 
   &.collapsed {
     & .collapsed-dots {
       display: block;
     }
-  }
-
-  .header-controls {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
   }
 
   & .toggle-button {
@@ -49,6 +55,7 @@
     color: var(--dark);
     display: inline-flex;
     align-items: center;
+    transform: translateY(var(--translate-position));
 
     &:hover {
       .circle-icon {
@@ -78,8 +85,6 @@
   & .toggle-icons {
     display: grid;
     grid-template-columns: 1fr;
-    position: relative;
-    inset: 3px 0 0;
 
     .circle-icon,
     .expand-icon,
@@ -102,7 +107,8 @@
   &.collapsed {
     :where(h1, h2, h3, h4, h5, h6):not(.popover *) {
       display: inline-flex;
-      align-items: center;
+      align-items: baseline;
+      gap: 3px;
     }
   }
 
@@ -112,13 +118,13 @@
 
   // Content styles
   .collapsible-header-content-outer {
-    padding-left: 8px;
+    padding-left: var(--padding-width);
     padding-bottom: 0.5rem;
     position: relative;
 
     .collapsible-header-content {
       border-left: 1px solid var(--lightgray);
-      padding-left: 8px;
+      padding-left: var(--padding-width);
       transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
       &.collapsed {

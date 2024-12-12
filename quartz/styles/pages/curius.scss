@@ -49,6 +49,27 @@ body[data-slug="curius"] {
     }
   }
 
+  .left-col {
+    grid-column: 3/5;
+  }
+
+  .aside-container {
+    margin-top: 2rem;
+    @media all and ($tablet) {
+      display: none;
+    }
+  }
+
+  .curius-col {
+    grid-column: 5/-3;
+    padding-left: 24px;
+
+    @media all and ($tablet) {
+      grid-column: 1/-1;
+      padding-left: 0;
+    }
+  }
+
   & .highlight {
     background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
     border-radius: 5px;

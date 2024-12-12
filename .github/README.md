@@ -1,12 +1,25 @@
 garden v2, on top of [quartz](https://quartz.jzhao.xyz/) v4.
 
-garden links: https://aarnphm.xyz
-
 > “[One] who works with the door open gets all kinds of interruptions, but [they] also occasionally gets clues as to what the world is and what might be important.” — Richard Hamming
 
 ## features
 
 A modified/personal enhancement from bare Quartz
+
+### [telescopic-text](https://github.com/jackyzha0/telescopic-text)
+
+Support a small subsets of the features, with wikilinks parsing
+
+````
+```telescopic
+* reading
+  * reading a lot of Nietzsche,
+  * hosting functions,
+    * go on longs walks,
+    * building [[thoughts/work|open-source project]],
+    * this [pan](https://example.com)
+```
+````
 
 ### TikZ support
 
@@ -24,10 +37,10 @@ U &
 ```
 ````
 
-Currently, there is a few pgfplots bug upstream in node port, so to remove the graph from target rendering add `ablate=true`:
+Currently, there is a few pgfplots bug upstream in node port, so to remove the graph from target rendering add `alt` as the URI svg:
 
 ````
-```tikz ablate=true
+```tikz alt="data:image/svg+xml..."
 ```
 ````
 
@@ -64,3 +77,7 @@ inspired by dynalist
 ### Gaussian-scaling TOC
 
 inspired by press.stripe.com
+
+### reader view
+
+_press cmd/ctrl+b_

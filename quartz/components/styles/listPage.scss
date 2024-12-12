@@ -126,7 +126,6 @@ li.section-li {
 }
 
 .notes-list {
-  grid-column: 3/8;
   padding-right: calc(var(--kern) * 2);
 
   .popover-inner & {
@@ -136,17 +135,17 @@ li.section-li {
 
 @media all and ($mobile) {
   .notes-list {
-    grid-column: 3/-3;
     padding-right: 0;
   }
 
+  .tag-highlights,
   .notes-evergreen {
     display: none;
   }
 }
 
 .notes-evergreen {
-  grid-column: 8/-3;
+  grid-column: 9/-3;
   display: flex;
   flex-direction: column;
   padding-left: calc(var(--kern) * 2);

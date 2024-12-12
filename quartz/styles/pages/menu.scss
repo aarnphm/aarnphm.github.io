@@ -13,6 +13,10 @@ body[data-menu="true"] {
   text-align: right;
   background-image: unset !important;
 
+  a {
+    text-decoration: none;
+  }
+
   mark {
     position: relative;
     background-color: unset;

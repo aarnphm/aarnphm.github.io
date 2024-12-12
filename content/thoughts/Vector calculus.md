@@ -4,7 +4,7 @@ tags:
   - math
 date: "2024-11-27"
 description: just enough vector calculus to be dangerous
-modified: "2024-11-27"
+modified: 2024-12-10 23:21:05 GMT-05:00
 title: Vector calculus
 ---
 
@@ -69,6 +69,8 @@ When $m=1$, or $f: \mathbf{R}^n \to \mathbf{R}$ is a scalar-valued function, the
 [^conjecture]: See also [Jacobian conjecture](https://en.wikipedia.org/wiki/Jacobian_conjecture)
 
 ## gradient
+
+see also [[thoughts/gradient descent]]
 
 a vector field $\nabla f$ whose value at a point $p$ gives the direction and the rate of fastest increase.
 
@@ -138,3 +140,19 @@ where $df$ is the infinitesimal change in $f$ for an infinitesimal displacement 
 ```
 
 [^grad-annotation]: another annotation often used in [[thoughts/Machine learning]] is `grad(f)`. See also [[thoughts/Automatic Differentiation|autograd]]
+
+## vector field
+
+> an assignment of vector to each point in a space, most commonly Euclidean space $\mathbb{R}^n$
+
+> [!math] vector fields on subsets of Euclidean space
+>
+> Given a subset of $S$ of $\mathbb{R}^n$, a vector field $V: S \to \mathbb{R}^n$ in standard Cartesian coordinates $(x_{1},\ldots,x_{n})$.
+>
+> For every smooth vector field $V$ in an open subset $S$ of $\mathbb{R}^n$ can be written as:
+>
+> $$
+> \sum_{i=1}^{n} V_i (x_{1},\ldots,x_{n}) \frac{\partial}{\partial x_i}
+> $$
+>
+> For some smooth functions $V_{1},\ldots,V_{n}$ on $S$

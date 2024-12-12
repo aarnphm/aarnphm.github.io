@@ -56,7 +56,8 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const shouldIncludeFile = extensionFilterFn(options)
 
   const tags = ["ml", "interp", "philosophy", "serving"]
-  const PageList = PageListConstructor({ highlightTags: tags })
+  // NOTE: we will always add the generated tags "folder" for better distinction
+  const PageList = PageListConstructor({ highlightTags: [...tags, "folder"] })
   const Evergreen = EvergreenConstructor({
     larges: ["thoughts/mechanistic-interpretability", "thoughts/vllm"],
     smalls: [
@@ -188,7 +189,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     }
 
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
-    const classes = ["popover-hint", "notes-list", ...cssClasses].join(" ")
+    const classes = ["popover-hint", "notes-list", "side-col", ...cssClasses].join(" ")
     const content =
       (tree as Root).children.length === 0
         ? fileData.description

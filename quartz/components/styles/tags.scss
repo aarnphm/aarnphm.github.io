@@ -1,0 +1,40 @@
+ul.tags,
+menu.tags,
+menu.tags > li > ul {
+  list-style: none;
+  display: flex;
+  padding-left: 0;
+  gap: 0.4rem;
+  margin: 0;
+  flex-wrap: wrap;
+}
+
+ul.tags {
+  margin: 1rem 0;
+}
+
+menu.tags {
+  grid-column: 3/6;
+}
+
+li.socials {
+  address {
+    font-style: normal;
+  }
+
+  & > ul {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+}
+
+.section-li > .section > .tags {
+  justify-content: flex-end;
+}
+
+ul.tags > li {
+  display: inline-block;
+  white-space: nowrap;
+  margin: 0;
+  overflow-wrap: normal;
+}

@@ -3,7 +3,7 @@
 //
 // Usage:
 // ````
-// ```telescopic
+// ```telescopic id="unique-block"
 // * reading
 //   * reading a lot of Nietzsche,
 //   * hosting functions,
@@ -19,9 +19,9 @@ import { QuartzTransformerPlugin } from "../types"
 import { Root, Element } from "hast"
 import { Root as MdastRoot, Code } from "mdast"
 import { toHtml } from "hast-util-to-html"
-import { visit } from "unist-util-visit"
+import { SKIP, visit } from "unist-util-visit"
 import { toString } from "hast-util-to-string"
-import { h } from "hastscript"
+import { h, s } from "hastscript"
 import { wikilinkRegex } from "./ofm"
 import { findAndReplace as hastFindReplace } from "hast-util-find-and-replace"
 import isAbsoluteUrl from "is-absolute-url"
@@ -32,6 +32,7 @@ import { fromHtml } from "hast-util-from-html"
 // @ts-ignore
 import script from "../../components/scripts/telescopic.inline.ts"
 import content from "../../components/styles/telescopic.inline.scss"
+import { svgOptions } from "../../components/renderPage"
 
 interface Line {
   og: string // the original string to replace
@@ -227,6 +228,7 @@ function contentToHast(content: Content, opts: Config) {
     }
 
     // Add remaining text
+    // and a smoll refresh button
     if (lastIndex < lineText.length) {
       nodes.push(hastFromHtml(lineText.slice(lastIndex)))
     }
@@ -246,6 +248,8 @@ const defaultOpts: Config = {
   shouldExpandOnMouseOver: false,
 }
 
+const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
+
 export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpts) => {
   const opts = { ...defaultOpts, ...userOpts }
 
@@ -253,16 +257,20 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
     name: "TelescopicText",
     markdownPlugins() {
       return [
-        () => (tree: MdastRoot) => {
+        () => (tree: MdastRoot, file) => {
           visit(tree, "code", (node: Code) => {
             let { lang, meta } = node
             if (lang === "telescopic" && meta) {
               // Parse the meta string to extract ID
               const idMatch = meta!.match(/id=["']?([^"'\s]+)["']?/)
-              if (idMatch) {
-                node.data = node.data || {}
-                node.data.hProperties = { id: idMatch[1] + "-container" }
+              if (!idMatch) {
+                console.error(
+                  `Missing id for targeted telescopic node ${node.position}, skipping instead (${file.data.filePath!})`,
+                )
+                return SKIP
               }
+              node.data = node.data || {}
+              node.data.hProperties = { id: idMatch[1] + "-container" }
             }
           })
         },
@@ -324,6 +332,21 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
                       )
                     },
                   ],
+                  [
+                    linkRegex,
+                    (_match, value, href) => {
+                      return toHtml(
+                        h(
+                          "a",
+                          {
+                            href,
+                            class: "external",
+                          },
+                          { type: "text", value },
+                        ),
+                      )
+                    },
+                  ],
                 ]
                 hastFindReplace(code, replacements)
 
@@ -334,6 +357,22 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
                   h(
                     "div.telescopic-container",
                     { id: code.properties.id },
+                    h(
+                      "span",
+                      { class: "replay", type: "button" },
+                      s(
+                        "svg",
+                        {
+                          ...svgOptions,
+                          height: 12,
+                          width: 12,
+                          fill: "var(--lightgray)",
+                          arialabelledby: "refetch",
+                          title: "click me to refresh the telescopic text",
+                        },
+                        s("use", { href: "#refetch-icon" }),
+                      ),
+                    ),
                     contentToHast(content, opts),
                   ),
                 )

@@ -2,6 +2,7 @@ import { pathToRoot, slugTag } from "../util/path"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
 import { i18n } from "../i18n"
+import style from "./styles/tags.scss"
 
 const TagList: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
   const tags = fileData.frontmatter?.tags
@@ -49,45 +50,6 @@ const TagList: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzCompone
   }
 }
 
-TagList.css = `
-ul.tags,
-menu.tags,
-menu.tags > li > ul {
-  list-style: none;
-  display: flex;
-  padding-left: 0;
-  gap: 0.4rem;
-  margin: 0;
-  flex-wrap: wrap;
-}
-
-ul.tags {
-  margin: 1rem 0;
-}
-
-menu.tags {
-  grid-column: 5/5;
-}
-
-li.socials > ul {
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
-li.socials > ul > li > address {
-  font-style: normal
-}
-
-.section-li > .section > .tags {
-  justify-content: flex-end;
-}
-
-ul.tags > li {
-  display: inline-block;
-  white-space: nowrap;
-  margin: 0;
-  overflow-wrap: normal;
-}
-`
+TagList.css = style
 
 export default (() => TagList) satisfies QuartzComponentConstructor

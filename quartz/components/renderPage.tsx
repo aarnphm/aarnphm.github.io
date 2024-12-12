@@ -2,8 +2,6 @@ import { render } from "preact-render-to-string"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import HeaderConstructor from "./Header"
 import ContentConstructor from "./pages/Content"
-import GraphConstructor from "./Graph"
-import SearchConstructor from "./Search"
 import FooterConstructor from "./Footer"
 import Navigation from "./Navigation"
 import { byDateAndAlphabetical } from "./PageList"
@@ -35,8 +33,8 @@ import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
 import curiusScript from "./scripts/curius.inline"
 //@ts-ignore
 import curiusFriendScript from "./scripts/curius-friends.inline"
-import Spacer from "./Spacer"
 import { htmlToJsx } from "../util/jsx"
+import Content from "./pages/Content"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -72,11 +70,9 @@ function headerElement(
   // indicate whether the header is collapsed or not
   const lastIdx = node.children.length > 0 ? node.children.length - 1 : 0
 
-  const icons = s(
-    "svg",
-    { ...svgOptions, class: "collapsed-dots", style: "padding-left: 0.2rem;" },
-    [s("use", { href: "#triple-dots" })],
-  )
+  const icons = s("svg", { ...svgOptions, class: "collapsed-dots" }, [
+    s("use", { href: "#triple-dots" }),
+  ])
   node.children.splice(lastIdx, 0, icons)
 
   let className = ["collapsible-header"]
@@ -84,56 +80,58 @@ function headerElement(
     className.push("end-hr")
   }
 
+  node.children = [
+    h(
+      `span.toggle-button#${buttonId}-toggle`,
+      {
+        arialabel: "Toggle content visibility",
+        role: "button",
+        ariaexpanded: true,
+        ariacontrols: `${buttonId}-content`,
+        type: "button",
+      },
+      [
+        h(".toggle-icons", [
+          s(
+            "svg",
+            {
+              ...svgOptions,
+              fill: "var(--dark)",
+              stroke: "var(--dark)",
+              class: "circle-icon",
+            },
+            [s("use", { href: "#circle-icon" })],
+          ),
+          s(
+            "svg",
+            {
+              ...svgOptions,
+              fill: "var(--iris)",
+              stroke: "var(--iris)",
+              class: "expand-icon",
+            },
+            [s("use", { href: "#arrow-down" })],
+          ),
+          s(
+            "svg",
+            {
+              ...svgOptions,
+              fill: "var(--foam)",
+              stroke: "var(--foam)",
+              class: "collapse-icon",
+            },
+            [s("use", { href: "#arrow-up" })],
+          ),
+        ]),
+      ],
+    ),
+    ...node.children,
+  ]
+
   const rank = headingRank(node) as number
 
   return h(`section.${className.join(".")}#${id}`, { "data-level": rank }, [
-    h(".header-controls", [
-      h(
-        `span.toggle-button#${buttonId}-toggle`,
-        {
-          arialabel: "Toggle content visibility",
-          role: "button",
-          ariaexpanded: true,
-          ariacontrols: `${buttonId}-content`,
-          type: "button",
-        },
-        [
-          h(".toggle-icons", [
-            s(
-              "svg",
-              {
-                ...svgOptions,
-                fill: "var(--dark)",
-                stroke: "var(--dark)",
-                class: "circle-icon",
-              },
-              [s("use", { href: "#circle-icon" })],
-            ),
-            s(
-              "svg",
-              {
-                ...svgOptions,
-                fill: "var(--iris)",
-                stroke: "var(--iris)",
-                class: "expand-icon",
-              },
-              [s("use", { href: "#arrow-down" })],
-            ),
-            s(
-              "svg",
-              {
-                ...svgOptions,
-                fill: "var(--foam)",
-                stroke: "var(--foam)",
-                class: "collapse-icon",
-              },
-              [s("use", { href: "#arrow-up" })],
-            ),
-          ]),
-        ],
-      ),
-      node,
-    ]),
+    node,
     h(
       ".collapsible-header-content-outer",
       {
@@ -625,6 +623,7 @@ export const links = {
   livres: "/books",
   advices: "/quotes",
   parfum: "/thoughts/Scents",
+  curius: "/curius",
 }
 
 type AliasLinkProp = {
@@ -634,6 +633,7 @@ type AliasLinkProp = {
   newTab?: boolean | ((name: string) => boolean)
   enablePopover?: boolean
   classes?: string[]
+  children?: JSX.Element | JSX.Element[]
 }
 
 const AliasLink = (props: AliasLinkProp) => {
@@ -649,6 +649,7 @@ const AliasLink = (props: AliasLinkProp) => {
       className={className.join(" ")}
     >
       {opts.name}
+      {opts.children}
     </a>
   )
 }
@@ -742,41 +743,163 @@ const ElementComponent = (() => {
     slug: "posts/" as SimpleSlug,
     numLimits: 9,
   })
-  const Hyperlink = HyperlinksComponent({
-    children: [
-      <section>
-        <h2>jardin:</h2>
-        <div class="clickable-container">
-          {Object.entries(links).map(([name, url]) => (
-            <AliasLink key={name} isInternal name={name} url={url} />
-          ))}
-        </div>
-      </section>,
-      <section>
-        <h2>média:</h2>
-        <address class="clickable-container">
-          <AliasLink newTab classes={["external"]} name="github" url="https://github.com/aarnphm" />
-          <AliasLink newTab classes={["external"]} name="twitter" url="https://x.com/aarnphm_" />
-          <AliasLink
-            newTab
-            classes={["external"]}
-            name="substack"
-            url="https://livingalonealone.com"
-          />
-          <AliasLink
-            newTab
-            classes={["external"]}
-            name="bluesky"
-            url="https://bsky.app/profile/aarnphm.xyz"
-          />
-          <AliasLink newTab name="llms.txt" url="/llms.txt" />
-          <AliasLink newTab name="llms-full.txt" url="/llms-full.txt" />
-        </address>
-      </section>,
-    ],
-  })
 
   const Element: QuartzComponent = (componentData: QuartzComponentProps) => {
+    const svgToJsx = (hast: Element): JSX.Element =>
+      htmlToJsx(componentData.fileData.filePath!, hast)
+
+    const rssIcon = svgToJsx(
+      s(
+        "svg",
+        {
+          version: "1.1",
+          xmlns: "http://www.w3.org/2000/svg",
+          viewbox: "0 0 8 8",
+          width: 8,
+          height: 8,
+          role: "img",
+          stroke: "none",
+          "data-icon": "rss",
+        },
+        s("rect", { width: 8, height: 8, rx: 1.5, style: "fill:#F78422;" }),
+        s("circle", { cx: 2, cy: 6, r: 1, style: "fill:#FFFFFF;" }),
+        s("path", {
+          d: "m 1,4 a 3,3 0 0 1 3,3 h 1 a 4,4 0 0 0 -4,-4 z",
+          style: "fill:#FFFFFF;",
+        }),
+        s("path", {
+          d: "m 1,2 a 5,5 0 0 1 5,5 h 1 a 6,6 0 0 0 -6,-6 z",
+          style: "fill:#FFFFFF;",
+        }),
+      ),
+    )
+    const githubIcon = svgToJsx(
+      s(
+        "svg",
+        {
+          viewBox: "64 64 896 896",
+          focusable: "false",
+          version: "1.1",
+          xmlns: "http://www.w3.org/2000/svg",
+          "data-icon": "github",
+          width: "1em",
+          height: "1em",
+          fill: "var(--gray)",
+          role: "img",
+          ariaLabel: "true",
+        },
+        s("path", {
+          d: "M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9a127.5 127.5 0 0138.1 91v112.5c.8 9 0 17.9 15 17.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z",
+        }),
+      ),
+    )
+    const twitterIcon = svgToJsx(
+      s(
+        "svg",
+        {
+          viewBox: "64 64 896 896",
+          focusable: "false",
+          version: "1.1",
+          xmlns: "http://www.w3.org/2000/svg",
+          "data-icon": "twitter",
+          width: "1em",
+          height: "1em",
+          fill: "var(--gray)",
+          role: "img",
+          ariaLabel: "true",
+        },
+        s("path", {
+          d: "M928 254.3c-30.6 13.2-63.9 22.7-98.2 26.4a170.1 170.1 0 0075-94 336.64 336.64 0 01-108.2 41.2A170.1 170.1 0 00672 174c-94.5 0-170.5 76.6-170.5 170.6 0 13.2 1.6 26.4 4.2 39.1-141.5-7.4-267.7-75-351.6-178.5a169.32 169.32 0 00-23.2 86.1c0 59.2 30.1 111.4 76 142.1a172 172 0 01-77.1-21.7v2.1c0 82.9 58.6 151.6 136.7 167.4a180.6 180.6 0 01-44.9 5.8c-11.1 0-21.6-1.1-32.2-2.6C211 652 273.9 701.1 348.8 702.7c-58.6 45.9-132 72.9-211.7 72.9-14.3 0-27.5-.5-41.2-2.1C171.5 822 261.2 850 357.8 850 671.4 850 843 590.2 843 364.7c0-7.4 0-14.8-.5-22.2 33.2-24.3 62.3-54.4 85.5-88.2z",
+        }),
+      ),
+    )
+    const bskyIcon = svgToJsx(
+      s(
+        "svg",
+        {
+          viewBox: "0 0 512 512",
+          focusable: "false",
+          version: "1.1",
+          xmlns: "http://www.w3.org/2000/svg",
+          "data-icon": "bsky",
+          width: "1em",
+          height: "1em",
+          role: "img",
+          ariaLabel: "true",
+        },
+        s("path", {
+          d: "M111.8 62.2C170.2 105.9 233 194.7 256 242.4c23-47.6 85.8-136.4 144.2-180.2c42.1-31.6 110.3-56 110.3 21.8c0 15.5-8.9 130.5-14.1 149.2C478.2 298 412 314.6 353.1 304.5c102.9 17.5 129.1 75.5 72.5 133.5c-107.4 110.2-154.3-27.6-166.3-62.9l0 0c-1.7-4.9-2.6-7.8-3.3-7.8s-1.6 3-3.3 7.8l0 0c-12 35.3-59 173.1-166.3 62.9c-56.5-58-30.4-116 72.5-133.5C100 314.6 33.8 298 15.7 233.1C10.4 214.4 1.5 99.4 1.5 83.9c0-77.8 68.2-53.4 110.3-21.8z",
+          fill: "#1185fe",
+        }),
+      ),
+    )
+    const substackIcon = svgToJsx(
+      s(
+        "svg",
+        {
+          width: 21,
+          height: 24,
+          viewBox: "0 0 21 24",
+          fill: "#FF6719",
+          role: "img",
+          "data-icon": "substack",
+          strokeWidth: "1.8",
+          stroke: "none",
+          xmlns: "http://www.w3.org/2000/svg",
+          version: "1.1",
+        },
+        s(
+          "g",
+          s("path", { d: "M20.9991 5.40625H0V8.24275H20.9991V5.40625Z" }),
+          s("path", { d: "M0 10.8125V24.0004L10.4991 18.1107L21 24.0004V10.8125H0Z" }),
+          s("path", { d: "M20.9991 0H0V2.83603H20.9991V0Z" }),
+        ),
+      ),
+    )
+
+    const Hyperlink = HyperlinksComponent({
+      children: [
+        <section>
+          <h2>jardin:</h2>
+          <div class="clickable-container">
+            {Object.entries(links).map(([name, url]) => (
+              <AliasLink key={name} name={name} url={url} />
+            ))}
+          </div>
+        </section>,
+        <section>
+          <h2>média:</h2>
+          <address class="clickable-container">
+            <AliasLink newTab classes={["external"]} name="github" url="https://github.com/aarnphm">
+              {githubIcon}
+            </AliasLink>
+            <AliasLink newTab classes={["external"]} name="twitter" url="https://x.com/aarnphm_">
+              {twitterIcon}
+            </AliasLink>
+            <AliasLink
+              newTab
+              classes={["external"]}
+              name="substack"
+              url="https://livingalonealone.com"
+            >
+              {substackIcon}
+            </AliasLink>
+            <AliasLink
+              newTab
+              classes={["external"]}
+              name="bluesky"
+              url="https://bsky.app/profile/aarnphm.xyz"
+            >
+              {bskyIcon}
+            </AliasLink>
+            <AliasLink newTab name="rss" url="/feed.xml">
+              {rssIcon}
+            </AliasLink>
+          </address>
+        </section>,
+      ],
+    })
+
     return (
       <div class="content-container">
         <Content {...componentData} />
@@ -796,7 +919,7 @@ const ElementComponent = (() => {
 
 function Functions({ displayClass }: QuartzComponentProps) {
   return (
-    <section class={classNames(displayClass, "menu", "main-col")} data-function={true}>
+    <section class={classNames(displayClass, "menu", "side-col")} data-function={true}>
       <a href="../atelier-with-friends" class="internal alias" data-no-popover={true}>
         atelier with friends.
       </a>
@@ -805,49 +928,47 @@ function Functions({ displayClass }: QuartzComponentProps) {
 }
 
 // Curius components
-
-const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
+export const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
   const { cfg, displayClass } = props
   const searchPlaceholder = i18n(cfg.locale).components.search.searchBarPlaceholder
-  const Footer = Navigation({ prev: "/mechinterp", next: "/books" })
 
   return (
     <>
-      <div class={classNames(displayClass, "curius-header", "full-col")}>
-        <div class="curius-search">
-          <input
-            id="curius-bar"
-            type="text"
-            aria-label={searchPlaceholder}
-            placeholder={searchPlaceholder}
-          />
-          <div id="curius-search-container"></div>
-        </div>
-        <div class="curius-title">
-          <em>
-            Voir de plus{" "}
-            <a href="https://curius.app/aaron-pham" target="_blank">
-              curius.app/aaron-pham
-            </a>
-          </em>
-          <svg
-            id="curius-refetch"
-            aria-labelledby="refetch"
-            data-tooltip="refresh"
-            data-id="refetch"
-            height="12"
-            type="button"
-            viewBox="0 0 24 24"
-            width="12"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M17.65 6.35c-1.63-1.63-3.94-2.57-6.48-2.31-3.67.37-6.69 3.35-7.1 7.02C3.52 15.91 7.27 20 12 20c3.19 0 5.93-1.87 7.21-4.56.32-.67-.16-1.44-.9-1.44-.37 0-.72.2-.88.53-1.13 2.43-3.84 3.97-6.8 3.31-2.22-.49-4.01-2.3-4.48-4.52C5.31 9.44 8.26 6 12 6c1.66 0 3.14.69 4.22 1.78l-1.51 1.51c-.63.63-.19 1.71.7 1.71H19c.55 0 1-.45 1-1V6.41c0-.89-1.08-1.34-1.71-.71z"></path>
-          </svg>
-        </div>
-      </div>
-      <div class={classNames(displayClass, "curius", "full-col")} id="curius">
+      <div class={classNames(displayClass, "curius", "curius-col")} id="curius">
         <div class="curius-page-container">
+          <div class={classNames(displayClass, "curius-header")}>
+            <div class="curius-search">
+              <input
+                id="curius-bar"
+                type="text"
+                aria-label={searchPlaceholder}
+                placeholder={searchPlaceholder}
+              />
+              <div id="curius-search-container" />
+            </div>
+            <div class="curius-title">
+              <em>
+                Voir de plus{" "}
+                <a href="https://curius.app/aaron-pham" target="_blank">
+                  curius.app/aaron-pham
+                </a>
+              </em>
+              <svg
+                id="curius-refetch"
+                aria-labelledby="refetch"
+                data-tooltip="refresh"
+                data-id="refetch"
+                height="12"
+                type="button"
+                viewBox="0 0 24 24"
+                width="12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <use href="#refetch-icon" />
+              </svg>
+            </div>
+          </div>
           <div id="curius-fetching-text" />
           <div id="curius-fragments" />
           <div class="highlight-modal" id="highlight-modal">
@@ -855,13 +976,13 @@ const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
           </div>
         </div>
       </div>
-      <Footer {...props} />
+      <Content {...props} />
     </>
   )
 }
 CuriusContent.afterDOMLoaded = curiusScript
 
-const CuriusFriends: QuartzComponent = (props: QuartzComponentProps) => {
+export const CuriusFriends: QuartzComponent = (props: QuartzComponentProps) => {
   const { displayClass } = props
   return (
     <div class={classNames(displayClass, "curius-friends")}>
@@ -906,7 +1027,7 @@ export function renderPage(
   componentData: QuartzComponentProps,
   components: RenderComponents,
   pageResources: StaticResources,
-  headerStyle: "main-col" | "full-col" = "main-col",
+  headerStyle: "main-col" | "full-col" = "full-col",
 ): string {
   // make a deep copy of the tree so we don't remove the transclusion references
   // for the file cached in contentMap in build.ts
@@ -917,26 +1038,21 @@ export function renderPage(
   if (slug === "index") {
     components = {
       ...components,
-      header: [],
       sidebar: [],
       afterBody: [],
       beforeBody: [],
       pageBody: (props: QuartzComponentProps) => {
         const { displayClass } = props
         const Element = ElementComponent()
-        const Graph = GraphConstructor()
-        const Search = SearchConstructor({ includeButton: false })
 
         return (
           <>
-            <h1 class="article-title" style="margin-top: 1rem" lang="fr">
+            <h1 class="article-title" style="margin-top: 2rem" lang="fr">
               Bonjour, je suis Aaron.
             </h1>
             <div class={classNames(displayClass, "landing")}>
               <Element {...componentData} />
             </div>
-            <Graph {...props} />
-            <Search {...props} />
           </>
         )
       },
@@ -949,7 +1065,7 @@ export function renderPage(
       sidebar: [CuriusTrail, CuriusFriends],
       pageBody: CuriusContent,
       afterBody: [],
-      footer: Spacer(),
+      footer: FooterConstructor({ layout: "curius" }),
     }
   }
 
@@ -992,7 +1108,12 @@ export function renderPage(
     <html lang={lang}>
       <Head {...componentData} />
       <body data-slug={slug} data-language={lang} data-menu={isMenu}>
-        <main id="quartz-root" class="page grid" style={{ gridTemplateRows: "repeat(5, auto)" }}>
+        <main
+          data-scroll-container
+          id="quartz-root"
+          class="page grid"
+          style={{ gridTemplateRows: "repeat(5, auto)" }}
+        >
           <Header {...componentData} headerStyle={headerStyle}>
             {header.map((HeaderComponent) => (
               <HeaderComponent {...componentData} />
@@ -1133,6 +1254,11 @@ export function renderPage(
                   s("path", { d: "m18 16 4-4-4-4" }),
                   s("path", { d: "m6 8-4 4 4 4" }),
                   s("path", { d: "m14.5 4-5 16" }),
+                ]),
+                s("symbol", { id: "refetch-icon", viewbox: "0 0 24 24" }, [
+                  s("path", {
+                    d: "M17.65 6.35c-1.63-1.63-3.94-2.57-6.48-2.31-3.67.37-6.69 3.35-7.1 7.02C3.52 15.91 7.27 20 12 20c3.19 0 5.93-1.87 7.21-4.56.32-.67-.16-1.44-.9-1.44-.37 0-.72.2-.88.53-1.13 2.43-3.84 3.97-6.8 3.31-2.22-.49-4.01-2.3-4.48-4.52C5.31 9.44 8.26 6 12 6c1.66 0 3.14.69 4.22 1.78l-1.51 1.51c-.63.63-.19 1.71.7 1.71H19c.55 0 1-.45 1-1V6.41c0-.89-1.08-1.34-1.71-.71z",
+                  }),
                 ]),
               ],
             ),
