@@ -3,6 +3,7 @@ id: Keys and Foreign Keys
 tags:
   - sfwr3db3
 date: "2024-09-09"
+modified: 2024-12-13 04:15:37 GMT-05:00
 title: Foreign Keys and Relational Models
 ---
 
@@ -36,6 +37,7 @@ handles `null` value
 > Presence of nulls in keys
 
 > [!important] definition
+>
 > Each relation must have a **primary key** on which nulls are not allowed.
 >
 > notation: the attributes of the primary keys are _underlined_
@@ -88,6 +90,7 @@ CREATE TABLE Enrolled (
 Referential integrity constraints _are imposed in order to guarantee **values** refer to existing tuples_
 
 > [!note] Definition
+>
 > A _foreign key_ requires that the values on a set $X$ of attributes of a relation $R_1$ **must appear as values** for the _primary key_ of another relation $R_2$
 
 Ex: _sid_ is a _foreign key_ referring to _Students_

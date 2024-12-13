@@ -4,6 +4,7 @@ tags:
   - seed
   - ml
 date: "2024-02-05"
+modified: 2024-12-13 05:58:55 GMT-05:00
 title: Quantization
 ---
 
@@ -14,9 +15,18 @@ See also: [[thoughts/images/htn-openllm.pdf|this talk]] I gave at Hack the North
 - `int16` - [[thoughts/quantization#`fp32` to `fp16`|half precision]]
 - `bfloat16`
 - `int8`
+- `fp8`
 
 > [!note]
 > This also applies to post-training quantization, where the methodology is applied after the model has been trained, instead of during load-time.
+
+![[thoughts/images/quantisation-format.webp|from baseten introduction into quantization format]]
+
+## metrics for calibration
+
+the idea is to compare the difference between two probability distribution when scaling, for example from `int16` to `int8`
+
+### [[thoughts/Kullback-Leibler divergence|KL calibration]]
 
 ## `fp32` to `fp16`
 

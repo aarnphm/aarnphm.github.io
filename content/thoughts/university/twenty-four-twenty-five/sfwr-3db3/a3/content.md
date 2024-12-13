@@ -29,11 +29,11 @@ title: DB design, concurrency and transaction
 
 **Closure of $A$**
 
-$A \rightarrow BC$ means $A^{+} = \{A, B, C\} \text{Decomposition}$
+$A \rightarrow BC$ means $A^{+} = \{A, B, C\} (\text{Decomposition})$
 
-$B \rightarrow D$ means $A^+ \{A,B,C,D\} \text{(Transitivity)}$
+$B \rightarrow D$ means $A^+ =\{A,B,C,D\} \text{(Transitivity)}$
 
-$CD \rightarrow E$ means $A^+ \{A,B,C,D,E\} \text{(Transitivity)}$ ($CD \in A$)
+$CD \rightarrow E$ means $A^+ =\{A,B,C,D,E\} \text{(Transitivity)}$ ($CD \in A$)
 
 > $A$ is a candidate key
 

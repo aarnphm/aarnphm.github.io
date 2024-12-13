@@ -69,7 +69,6 @@
     "js-yaml": "^4.1.0",
     "katex": "^0.16.15",
     "lightningcss": "^1.28.2",
-    "locomotive-scroll": "^4.1.4",
     "mdast-util-find-and-replace": "^3.0.1",
     "mdast-util-gfm": "^3.0.0",
     "mdast-util-math": "^3.0.0",

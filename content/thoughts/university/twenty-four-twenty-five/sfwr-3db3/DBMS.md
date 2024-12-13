@@ -3,11 +3,12 @@ id: DBMS
 tags:
   - sfwr3db3
   - university
-date: 2024-09-04
+date: "2024-09-04"
+modified: 2024-12-13 04:08:33 GMT-05:00
 title: DBMS
 ---
 
-Book: Database Management System [ISBN-13:978-0072465631](https://www.amazon.ca/Database-Management-Systems-Raghu-Ramakrishnan/dp/0072465638)
+Book: Database Management System [ISBN-13:978-0072465631](https://www.amazon.ca/Database-Management-Systems-Raghu-Ramakrishnan/dp/0072465638), or [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/Ramakrishnan - Database Management Systems 3rd Edition.pdf|pdf]]
 
 > [!important] Midterm
 > Thurs Oct.24 2024 (during lecture time)
