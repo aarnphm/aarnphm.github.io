@@ -4,11 +4,11 @@ tags:
   - sfwr3db3
 date: "2024-12-13"
 deescription: and what is database design anw?
-modified: 2024-12-13 04:58:54 GMT-05:00
+modified: 2024-12-13 07:27:33 GMT-05:00
 title: introduction to databases
 ---
 
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/midterm|refresh on SQL and indexes with views]], or this [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/SQL.pdf|slides on SQL DSL]]
+See also [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/midterm|refresh on SQL and indexes with views]], or this [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/SQL.pdf|slides on SQL DSL]], and [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/final-review.pdf|final review]]
 
 > [!important] closure of $F$
 >
