@@ -3,7 +3,7 @@ id: Relational Algebra
 tags:
   - sfwr3db3
 date: "2024-12-13"
-modified: 2024-12-13 04:29:28 GMT-05:00
+modified: 2024-12-13 07:22:23 GMT-05:00
 title: Relational Algebra
 ---
 
@@ -87,6 +87,7 @@ $$
 - projecting out one copy of each pair of equated attributes
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/natural-join.webp]]
+
 ## renaming
 
 $$
@@ -134,18 +135,18 @@ $$
 
 ## extended algebra
 
-$\updelta$: eliminate duplication from bags
+$\delta$: eliminate duplication from bags
 
 $\tau$: sort tuples
 
-$\Upupsilon_{L}(R)$ grouping and aggregation
+$\gamma_{L}(R)$ grouping and aggregation
 
 outerjoin: avoid dangling tuples
 
 ### duplicate elimination
 
 $$
-\updelta(R)
+\delta(R)
 $$
 
 Think of it as converting it to set
@@ -162,7 +163,7 @@ basically for ascending order, for descending order then use $\tau_{L, \text{DES
 
 ### applying aggregation
 
-or $\Upupsilon_{L}(R)$
+or $\gamma_{L}(R)$
 
 - group $R$ accordingly to all grouping attributes on $L$
 
@@ -187,4 +188,3 @@ bag union: $\{1,2,1\} \cup \{1,1,2,3,1\} = \{1,1,1,1,1,2,2,3\}$
 bag intersection: $\{1,2,1,1\} \cap \{1,2,1,3\} = \{1,1,2\}$
 
 bag difference: $\{1,2,1,1\} - \{1,2,3\} = \{1,1\}$
-

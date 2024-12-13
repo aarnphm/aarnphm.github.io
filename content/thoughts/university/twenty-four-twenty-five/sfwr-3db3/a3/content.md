@@ -266,11 +266,11 @@ Candidate key: $\text{cityID}$ and $\text{cityName, country}$
 
 Note that for both Company and City tables, it satisifies BCNF. however, for Department table:
 
-For FD3, $\text{deptID}$ is a candidiate key, thus satisfies BCNF
+For FD3, $\text{deptID}$ is a candidate key, thus satisfies BCNF
 
-For FD4, $\text{companyID, depthName}$ is a candidiate key, thus satisfies BCNF
+For FD4, $\text{companyID, depthName}$ is a candidate key, thus satisfies BCNF
 
-But for FD5 given that $deptMgrID$ is not a candidate key, thus violate BCNF
+But for FD5 given that $\text{deptMgrID}$ is not a candidate key, thus violate BCNF
 
 **Improvement**
 
