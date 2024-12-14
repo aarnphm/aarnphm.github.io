@@ -44,7 +44,7 @@ if distribution of $X$ is uniform over $[a,b]$, then $f(x) = \frac{1}{b-a}$
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Linear regression#hyperplane]]
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept#adding-bias-in-d-dimensions-ols]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept#adding bias in D-dimensions OLS]]
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept#overfitting]]
 
