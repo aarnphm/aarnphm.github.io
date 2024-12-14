@@ -106,7 +106,7 @@ precision is $\frac{\text{TP}}{\text{TP}+\text{FP}^{'}}$
 
 recall is $\frac{\text{TP}}{\text{TP + FN}}$
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/probabilitic modeling]]
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/probabilitics modeling]]
 
 ![[thoughts/Logistic regression]]
 
