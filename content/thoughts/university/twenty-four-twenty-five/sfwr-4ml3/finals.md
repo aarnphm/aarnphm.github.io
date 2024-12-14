@@ -9,7 +9,7 @@ modified: 2024-12-14 09:26:05 GMT-05:00
 title: Connectionist networks
 ---
 
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm#probability theory|some satistical theory]]
+See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm#probability theory|some statistical theory]]
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm#bayes rules and chain rules]]
 
