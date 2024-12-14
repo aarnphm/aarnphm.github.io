@@ -11,7 +11,7 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture1.pd
 
 python: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/code/ols_and_kls.py|ols_and_kls.py]]
 
-## curve fitting.
+## curve fitting
 
 > [!question] how do we fit a distribution of data over a curve?
 > Given a set of $n$ data points $S=\set{(x^i, y^i)}^{n}_{n=1}$
