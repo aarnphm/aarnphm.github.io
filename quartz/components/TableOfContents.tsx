@@ -164,7 +164,7 @@ export default ((userOpts?: Partial<Options>) => {
       return htmlToJsx(fileData.filePath!, tocAst)
     }
 
-    mutateTransclude(tree as Root, allFiles, fileData)
+    // mutateTransclude(tree as Root, allFiles, fileData)
 
     // const entries = extractTransclude(clone(tree) as Root, allFiles, fileData.toc)
     const sectionToc: TocEntry[] = []

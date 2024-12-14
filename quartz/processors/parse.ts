@@ -103,7 +103,8 @@ export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
           console.log(`[process] ${fp} -> ${file.data.slug} (${perf.timeSince()})`)
         }
       } catch (err) {
-        trace(`\nFailed to process \`${fp}\``, err as Error)
+        // FIXME: wtf went wrong, check pseudocode and toc parsing
+        // trace(`\nFailed to process \`${fp}\``, err as Error)
       }
     }
 

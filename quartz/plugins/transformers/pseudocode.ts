@@ -153,77 +153,79 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
     },
     htmlPlugins() {
       return [
-        () => (tree: HTMLRoot, _file) => {
-          visit(tree, "raw", (node: Literal, index, parent) => {
-            const lineNoMatch = node.value.match(/data-line-number=([^>\s]+)/)
-            if (!lineNoMatch || !node.value.includes(`class="${opts.css}"`)) {
-              return
-            }
-            const lineNo = lineNoMatch[1].toLowerCase()
-            const enableLineNumber = lineNo === "true"
+        () => (tree: HTMLRoot, file) => {
+          if (file.data.pseudocode) {
+            visit(tree, "raw", (node: Literal, index, parent) => {
+              const lineNoMatch = node.value.match(/data-line-number=([^>\s]+)/)
+              if (!lineNoMatch || !node.value.includes(`class="${opts.css}"`)) {
+                return
+              }
+              const lineNo = lineNoMatch[1].toLowerCase()
+              const enableLineNumber = lineNo === "true"
 
-            // PERF: we are currently doing one round trip from text -> html -> hast
-            // pseudocode (katex backend) --|renderToString|--> html string --|fromHtml|--> hast
-            // ideally, we should cut this down to render directly to hast
-            const value = latexBlock.shift()
-            const [inlineMacros, algo] = extractInlineMacros(value ?? "")
-            // TODO: Might be able to optimize.
-            // find all $ enclosements in source, and add the preamble.
-            const mathRegex = /\$(.*?)\$/g
-            const algoWithPreamble = algo.replace(mathRegex, (_, p1) => {
-              return `$${inlineMacros}${p1}$`
-            })
+              // PERF: we are currently doing one round trip from text -> html -> hast
+              // pseudocode (katex backend) --|renderToString|--> html string --|fromHtml|--> hast
+              // ideally, we should cut this down to render directly to hast
+              const value = latexBlock.shift()
+              const [inlineMacros, algo] = extractInlineMacros(value ?? "")
+              // TODO: Might be able to optimize.
+              // find all $ enclosements in source, and add the preamble.
+              const mathRegex = /\$(.*?)\$/g
+              const algoWithPreamble = algo.replace(mathRegex, (_, p1) => {
+                return `$${inlineMacros}${p1}$`
+              })
 
-            const markup = renderToString(algoWithPreamble!, {
-              ...opts?.renderer,
-              lineNumber: enableLineNumber,
-            })
-            if (opts.removeCaptionCount) {
-              node.value = removeCaptionCount(markup, opts?.renderer?.titlePrefix ?? "Algorithm")
-            } else {
-              node.value = markup
-            }
+              const markup = renderToString(algoWithPreamble!, {
+                ...opts?.renderer,
+                lineNumber: enableLineNumber,
+              })
+              if (opts.removeCaptionCount) {
+                node.value = removeCaptionCount(markup, opts?.renderer?.titlePrefix ?? "Algorithm")
+              } else {
+                node.value = markup
+              }
 
-            const htmlNode = fromHtml(node.value, { fragment: true })
-            const renderedContainer = htmlNode.children[0] as Element
-            renderedContainer.properties.dataInlineMacros = inlineMacros
-            renderedContainer.properties.dataSettings = JSON.stringify(opts)
+              const htmlNode = fromHtml(node.value, { fragment: true })
+              const renderedContainer = htmlNode.children[0] as Element
+              renderedContainer.properties.dataInlineMacros = inlineMacros
+              renderedContainer.properties.dataSettings = JSON.stringify(opts)
 
-            const button: Element = h(
-              "span",
-              {
-                type: "button",
-                class: "clipboard-button ps-clipboard",
-                ariaLabel: "Copy pseudocode to clipboard",
-                ariaHidden: true,
-                tabindex: -1,
-              },
-              [
-                s("svg", { width: 16, height: 16, viewbox: "0 0 16 16", class: "copy-icon" }, [
-                  s("use", { href: "#github-copy" }),
-                ]),
-                s("svg", { width: 16, height: 16, viewbox: "0 0 16 16", class: "check-icon" }, [
-                  s("use", {
-                    href: "#github-check",
-                    fillRule: "evenodd",
-                    fill: "rgb(63, 185, 80)",
-                  }),
-                ]),
-              ],
-            )
-            const mathML: Element = h("span", { class: "ps-mathml" }, [
-              h("math", { xmlns: "http://www.w3.org/1998/Math/MathML" }, [
-                h("semantics", [
-                  h("annotation", { encoding: "application/x-tex" }, [
-                    { type: "text", value: JSON.stringify(algoWithPreamble) },
+              const button: Element = h(
+                "span",
+                {
+                  type: "button",
+                  class: "clipboard-button ps-clipboard",
+                  ariaLabel: "Copy pseudocode to clipboard",
+                  ariaHidden: true,
+                  tabindex: -1,
+                },
+                [
+                  s("svg", { width: 16, height: 16, viewbox: "0 0 16 16", class: "copy-icon" }, [
+                    s("use", { href: "#github-copy" }),
+                  ]),
+                  s("svg", { width: 16, height: 16, viewbox: "0 0 16 16", class: "check-icon" }, [
+                    s("use", {
+                      href: "#github-check",
+                      fillRule: "evenodd",
+                      fill: "rgb(63, 185, 80)",
+                    }),
+                  ]),
+                ],
+              )
+              const mathML: Element = h("span", { class: "ps-mathml" }, [
+                h("math", { xmlns: "http://www.w3.org/1998/Math/MathML" }, [
+                  h("semantics", [
+                    h("annotation", { encoding: "application/x-tex" }, [
+                      { type: "text", value: JSON.stringify(algoWithPreamble) },
+                    ]),
                   ]),
                 ]),
-              ]),
-            ])
+              ])
 
-            renderedContainer.children = [button, mathML, ...renderedContainer.children]
-            parent!.children.splice(index!, 1, renderedContainer)
-          })
+              renderedContainer.children = [button, mathML, ...renderedContainer.children]
+              parent!.children.splice(index!, 1, renderedContainer)
+            })
+          }
         },
       ]
     },
