@@ -4,7 +4,7 @@ tags:
   - math
   - ml
 date: "2024-12-14"
-modified: 2024-12-14 08:24:22 GMT-05:00
+modified: 2024-12-14 09:45:08 GMT-05:00
 title: Vapnik-Chrvonenkis dimension
 ---
 
@@ -21,7 +21,7 @@ fancy name for the measure of size, or the cardinality of the largest sets of po
 > We say that set $C$ is ==shattered== by $H$ if $H \cap C$ contains all the subsets of C, or:
 >
 > $$
-> |H \cap C| = 2^{|C|}k
+> |H \cap C| = 2^{|C|}
 > $$
 >
 > Thus, the VC dimension $D$ of $H$ is the cardinality of the largest set that is shattered by $H$.
