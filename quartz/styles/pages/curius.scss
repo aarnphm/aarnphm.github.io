@@ -83,6 +83,13 @@ body[data-slug="curius"] {
     border-color: transparent transparent var(--lightgray);
     border-image: initial;
   }
+
+  a {
+    &:hover {
+      color: var(--tertiary) !important;
+      background-color: transparent !important;
+    }
+  }
 }
 
 .highlight-modal {

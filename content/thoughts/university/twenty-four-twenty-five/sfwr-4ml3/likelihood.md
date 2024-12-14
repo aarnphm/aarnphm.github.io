@@ -3,7 +3,7 @@ id: likelihood
 tags:
   - sfwr4ml3
 date: "2024-10-07"
-modified: "2024-10-07"
+modified: 2024-12-14 04:33:12 GMT-05:00
 title: likelihood
 ---
 
@@ -56,6 +56,8 @@ P(y | x, W) = \frac{1}{\gamma} e^{-\frac{(x^T W-y)^2}{2 \sigma^2}}
 $$
 
 ## expected error minimisation
+
+think of it as bias-variance tradeoff
 
 Squared loss: $l(\hat{y},y)=(y-\hat{y})^2$
 

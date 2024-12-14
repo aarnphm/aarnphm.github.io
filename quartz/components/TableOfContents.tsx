@@ -13,6 +13,7 @@ import { TocEntry } from "../plugins/transformers/toc"
 import Slugger from "github-slugger"
 import { QuartzPluginData } from "../plugins/vfile"
 import { toText } from "hast-util-to-text"
+import { headingRank } from "hast-util-heading-rank"
 
 const ghSlugger = new Slugger()
 
@@ -45,6 +46,7 @@ function mutateTransclude(
   const tree = clone(root)
   visit(tree, "element", (node, index, parent) => {
     if (!parent || index === undefined) return
+    if (headingRank(node) && node.properties.dataReader !== "") return
 
     const classNames = (node.properties?.className ?? []) as string[]
     if (node.tagName === "blockquote" && classNames.includes("transclude")) {

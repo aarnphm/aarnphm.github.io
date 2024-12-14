@@ -4,10 +4,18 @@ tags:
   - ml
 date: "2024-10-31"
 description: A list of optimization functions that can be used in ML training to reduce loss, and more.
-modified: 2024-12-11 00:16:06 GMT-05:00
+modified: 2024-12-14 06:26:53 GMT-05:00
 noindex: true
 title: ml optimization
 ---
+
+## softmax
+
+$$
+\text{softmax(y)}_i = \frac{e^{y_i}}{\sum_{i} e^{y_i}}
+$$
+
+where $y \in \mathbb{R}^k$
 
 ## `exp()`
 

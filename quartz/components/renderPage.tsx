@@ -1071,7 +1071,6 @@ export function renderPage(
       sidebar: [CuriusTrail, CuriusFriends],
       pageBody: CuriusContent,
       afterBody: [],
-      footer: FooterConstructor({ layout: "curius" }),
     }
   }
 

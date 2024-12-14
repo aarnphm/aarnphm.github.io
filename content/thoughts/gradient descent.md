@@ -4,13 +4,19 @@ tags:
   - ml
 date: "2024-12-10"
 description: and what is she descending from, really?
-modified: 2024-12-11 00:16:06 GMT-05:00
+modified: 2024-12-14 02:34:14 GMT-05:00
 title: gradient descent
 ---
 
-Let us define the standard gradient descent approach for minimizing a differentiable [[thoughts/Convex function|convex function]]
+Let us define the standard [[thoughts/Vector calculus#gradient|gradient]] descent approach for minimizing a differentiable [[thoughts/Convex function|convex function]]
 
-> [!math] gradient descent
+In a sense, gradient of a differential function $f : \mathbb{R}^d \to \mathbb{R}$ at $w$ is the vector of partial derivatives:
+
+$$
+\nabla f(w) = (\frac{\partial f(w)}{\partial w[1]},\ldots,\frac{\partial f(w)}{\partial w[d]})
+$$
+
+> [!math] intuition
 >
 > $$
 > x_{t+1} = x_t - \alpha \nabla f(x_t)
@@ -46,3 +52,38 @@ Let us define the standard gradient descent approach for minimizing a differenti
 > \end{tikzpicture}
 > \end{document}
 > ```
+
+## idea
+
+- initialize $w^0$
+- iteratively for each t=1:
+  - $w^{t+1} = w^t - \alpha \nabla f(w^{(t)})$
+
+intuition: It should convert to a local minimum depending on learning rate $\alpha$
+
+> not necessarily global minimum
+
+But guaranteed global minimum for [[thoughts/Convex function|convex functions]]
+
+## calculate the gradient
+
+$$
+\begin{aligned}
+E(w) &= L(w) + \lambda \text{Reg}(w) \\[8pt]
+L(w) &= \sum_{i} l(f_w(x^i), y^i) \\[8pt]
+\nabla_w (L(w)) &= \sum_{i} \nabla_w (l(f_w(x^i), y^i))
+\end{aligned}
+$$
+
+trick: split into mini-batch of gradient
+
+$$
+\begin{aligned}
+\nabla_w^j &= \sum_{(x,y) \in S_j} \nabla_W (l(f_W(x), y))\\[8pt]
+&= \sum_{j} \nabla_W^j
+\end{aligned}
+$$
+
+![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Stochastic gradient descent|SGD]]
+
+## analysis of GD for Convex-Lipschitz Functions

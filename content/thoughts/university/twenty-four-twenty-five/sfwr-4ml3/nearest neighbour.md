@@ -191,7 +191,3 @@ k^2 \upgamma^2 &\le \|\underline{\theta^{k+1}}\|^2 \le kR^2 \\
 k &\le \frac{R^2}{\upgamma^2}
 \end{aligned}
 $$
-
----
-
-![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Support Vector Machine|SVM]]

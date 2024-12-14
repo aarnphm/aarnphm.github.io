@@ -4,7 +4,7 @@ tags:
   - math
 date: "2024-11-27"
 description: just enough vector calculus to be dangerous
-modified: 2024-12-10 23:21:05 GMT-05:00
+modified: 2024-12-14 01:26:26 GMT-05:00
 title: Vector calculus
 ---
 

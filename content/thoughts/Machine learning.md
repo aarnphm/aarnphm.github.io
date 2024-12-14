@@ -4,7 +4,7 @@ tags:
   - ml
   - sapling
 date: "2024-02-07"
-modified: 2024-12-09 22:14:42 GMT-05:00
+modified: 2024-12-14 08:13:13 GMT-05:00
 title: Machine learning
 ---
 
@@ -18,9 +18,11 @@ Some main exploration:
   - [[thoughts/LLMs|Large language models]]
 - [[thoughts/NLP]]
 - [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Convolutional Neural Network|CNN]]
+- [[thoughts/Logistic regression]]
 - [[thoughts/optimization|Optimization]]
-  - Gradient descent
+  - [[thoughts/gradient descent]]
   - hyperparameter tuning
+- [[thoughts/ensemble learning]]
 - Recommender systems
 - Reinforcement learning
   - Q-learning
@@ -29,7 +31,7 @@ Some main exploration:
 - Generative Models
   - GAN
   - VAE
-- Autoencoder
+- [[thoughts/autoencoders|Autoencoder]]
   - [[thoughts/sparse autoencoder]]
   - [[thoughts/sparse crosscoders]]
 - Supervised Q-learning

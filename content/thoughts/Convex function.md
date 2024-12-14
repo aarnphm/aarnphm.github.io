@@ -4,7 +4,7 @@ tags:
   - math
 date: "2024-12-10"
 description: a real-valued function is convex if its epigraph is a convex set
-modified: 2024-12-10 23:37:38 GMT-05:00
+modified: 2024-12-14 01:42:51 GMT-05:00
 title: Convex function
 ---
 
@@ -46,5 +46,5 @@ $$
 > > Given $X$ is a random variable with $\varphi$ a convex function, then
 > >
 > > $$
-> >   \varphi(E[X]) \le E[\varphi{(X)}]
+> > \varphi(E[X]) \le E[\varphi{(X)}]
 > > $$
