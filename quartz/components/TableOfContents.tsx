@@ -6,7 +6,7 @@ import script from "./scripts/toc.inline"
 import { i18n } from "../i18n"
 import { fromHtml } from "hast-util-from-html"
 import { htmlToJsx } from "../util/jsx"
-import { visit } from "unist-util-visit"
+import { SKIP, visit } from "unist-util-visit"
 import { clone, FullSlug, simplifySlug } from "../util/path"
 import { Root, Element } from "hast"
 import { TocEntry } from "../plugins/transformers/toc"
@@ -46,7 +46,7 @@ function mutateTransclude(
   const tree = clone(root)
   visit(tree, "element", (node, index, parent) => {
     if (!parent || index === undefined) return
-    if (headingRank(node) && node.properties.dataReader !== "") return
+    if (headingRank(node) && node.properties.dataReader !== "") return SKIP
 
     const classNames = (node.properties?.className ?? []) as string[]
     if (node.tagName === "blockquote" && classNames.includes("transclude")) {
