@@ -37,7 +37,7 @@ export const Twitter: QuartzTransformerPlugin = () => ({
         const promises: Promise<void>[] = []
 
         const fetchEmbedded = async (parent: Root, index: number, url: string, locale: string) => {
-          let value: string
+          let value = `<p>Link to original <a href="${url}">tweet</a>.</p>`
 
           const cacheKey = `twitter:${url}`
           let htmlString = cache.get(cacheKey)
@@ -49,22 +49,18 @@ export const Twitter: QuartzTransformerPlugin = () => ({
               value = unescapeHTML(data.html)
               cache.set(cacheKey, value)
             } catch (error) {
-              value = `<p>Link to original <a href="${url}">tweet</a>.</p>`
+              console.log(error)
             }
           }
-
-          const node: Html = { type: "html", value }
-          parent!.children.splice(index, 1, node)
+          parent!.children.splice(index, 1, { type: "html", value })
         }
 
         visit(tree, "paragraph", (node, index, parent) => {
-          if (node.children.length === 0) return SKIP
-
           // find first line and callout content
           const [firstChild] = node.children
-          if (firstChild.type !== "link" || !twitterUrlRegex.test(firstChild.url)) return SKIP
-
-          promises.push(fetchEmbedded(parent as Root, index!, firstChild.url, locale))
+          if (firstChild.type === "link" && twitterUrlRegex.test(firstChild.url)) {
+            promises.push(fetchEmbedded(parent as Root, index!, firstChild.url, locale))
+          }
         })
 
         if (promises.length > 0) await Promise.all(promises)

@@ -5,7 +5,7 @@ tags:
   - ml
   - llm
 date: "2024-02-07"
-modified: 2024-12-08 19:28:51 GMT-05:00
+modified: 2024-12-16 05:36:45 GMT-05:00
 title: LLMs
 ---
 
@@ -25,12 +25,15 @@ One way or another is a form of [[thoughts/Behavirourism|behaviourism]], through
 
 Incredibly hard to scale, mainly due to their [[thoughts/large models|large]] memory footprint and tokens memory allocation.
 
-### Optimization
+### [[thoughts/optimization|Optimization]]
 
 See also: [[thoughts/images/htn-openllm.pdf|this talk]]
 
 - [[thoughts/quantization|Quantization]]: reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
 - [[thoughts/Continuous batching]]: Implementing [[thoughts/Attention#Paged Attention]] with custom scheduler to manage swapping kv-cache for better resource utilisation
+- [[thoughts/Transformers#Byte-Latent Transformer]]: idea to use entropy-based sampling to choose next tokens instead of token-level decoding. [^blt]
+
+[^blt]: Think of decoding each text into dynamic patches, and thus actually improving inference efficiency. See also [link](https://ai.meta.com/research/publications/byte-latent-transformer-patches-scale-better-than-tokens/)
 
 ### on how we are being [[thoughts/education#teaching|taught]].
 

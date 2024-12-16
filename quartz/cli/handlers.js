@@ -425,10 +425,10 @@ export async function handleBuild(argv) {
     wss.on("connection", (ws) => connections.push(ws))
     console.log(
       chalk.cyan(
-        `Started a Quartz server listening at http://localhost:${argv.port}${argv.baseDir}`,
+        `[serve] Started a Quartz server listening at http://localhost:${argv.port}${argv.baseDir}`,
       ),
     )
-    console.log("hint: exit with ctrl+c")
+    console.log("[serve] hint: exit with ctrl+c")
     const paths = await globby([
       "**/*.ts",
       "**/*.tsx",

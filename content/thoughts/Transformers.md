@@ -3,7 +3,7 @@ id: Transformers
 tags:
   - ml
 date: "2024-02-07"
-modified: "2024-10-30"
+modified: 2024-12-16 05:37:16 GMT-05:00
 title: Transformers
 ---
 
@@ -32,6 +32,10 @@ Either compute-bound (batch inference, saturated usage) or memory-bound (latency
 ### next-token prediction.
 
 Sampling: we essentially look forward K-tokens, and then we sample from the distribution of the next token.
+
+## Byte-Latent Transformer
+
+idea: learn from raw-bytes and skip tokenizer/detokenizer protocol.
 
 ## Feynman-Kac
 

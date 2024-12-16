@@ -57,22 +57,22 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
   const pluginNames = (key: "transformers" | "filters" | "emitters") =>
     cfg.plugins[key].map((plugin) => plugin.name)
   if (argv.verbose) {
-    console.log(`Loaded ${pluginCount} plugins`)
-    console.log(`  Transformers: ${pluginNames("transformers").join(", ")}`)
-    console.log(`  Filters: ${pluginNames("filters").join(", ")}`)
-    console.log(`  Emitters: ${pluginNames("emitters").join(", ")}`)
+    console.log(`[preprocess] Loaded ${pluginCount} plugins`)
+    console.log(`[preprocess]  ├── Transformers: ${pluginNames("transformers").join(", ")}`)
+    console.log(`[preprocess]  ├── Filters: ${pluginNames("filters").join(", ")}`)
+    console.log(`[preprocess]  └── Emitters: ${pluginNames("emitters").join(", ")}`)
   }
 
   const release = await mut.acquire()
   perf.addEvent("clean")
   await rimraf(path.join(output, "*"), { glob: true })
-  console.log(`Cleaned output directory \`${output}\` in ${perf.timeSince("clean")}`)
+  console.log(`[preprocess] Cleaned output directory \`${output}\` in ${perf.timeSince("clean")}`)
 
   perf.addEvent("glob")
   const allFiles = await glob("**/*.*", argv.directory, cfg.configuration.ignorePatterns)
   const fps = allFiles.filter((fp) => fp.endsWith(".md")).sort()
   console.log(
-    `Found ${fps.length} input files from \`${argv.directory}\` in ${perf.timeSince("glob")}`,
+    `[preprocess] Found ${fps.length} input files from \`${argv.directory}\` in ${perf.timeSince("glob")}`,
   )
 
   const filePaths = fps.map((fp) => joinSegments(argv.directory, fp) as FilePath)
@@ -93,7 +93,7 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
   }
 
   await emitContent(ctx, filteredContent)
-  console.log(chalk.green(`Done processing ${fps.length} files in ${perf.timeSince()}`))
+  console.log(chalk.green(`[build] Done processing ${fps.length} files in ${perf.timeSince()}`))
   release()
 
   if (argv.serve) {
@@ -317,7 +317,7 @@ async function partialRebuildFromEntrypoint(
   }
   await rimraf([...destinationsToDelete])
 
-  console.log(chalk.green(`Done rebuilding in ${perf.timeSince()}`))
+  console.log(chalk.green(`[build] Done rebuilding in ${perf.timeSince()}`))
 
   toRemove.clear()
   release()
@@ -399,7 +399,7 @@ async function rebuildFromEntrypoint(
     // instead of just deleting everything
     await rimraf(path.join(argv.output, ".*"), { glob: true })
     await emitContent(ctx, filteredContent)
-    console.log(chalk.green(`Done rebuilding in ${perf.timeSince()}`))
+    console.log(chalk.green(`[build] Done rebuilding in ${perf.timeSince()}`))
   } catch (err) {
     console.log(chalk.yellow(`Rebuild failed. Waiting on a change to fix the error...`))
     if (argv.verbose) {

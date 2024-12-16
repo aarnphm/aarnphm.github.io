@@ -1,6 +1,6 @@
 import { QuartzTransformerPlugin } from "../types"
 import { Root as MdRoot } from "mdast"
-import { Root as HTMLRoot, Literal, Element } from "hast"
+import { Root as HTMLRoot, Element } from "hast"
 import { visit } from "unist-util-visit"
 // @ts-ignore
 import Lexer from "pseudocode/src/Lexer.js"
@@ -9,13 +9,13 @@ import Parser from "pseudocode/src/Parser.js"
 // @ts-ignore
 import Renderer from "pseudocode/src/Renderer.js"
 import { s, h } from "hastscript"
-import { fromHtml } from "hast-util-from-html"
 import { extractInlineMacros } from "../../util/latex"
+import { toHtml } from "hast-util-to-html"
+import { fromHtml } from "hast-util-from-html"
 
 export interface Options {
   code: string
   css: string
-  removeCaptionCount?: boolean
   renderer?: RendererOptions
 }
 
@@ -64,7 +64,6 @@ interface RendererOptions {
 const defaultOptions: Options = {
   code: "pseudo",
   css: "latex-pseudo",
-  removeCaptionCount: false,
   renderer: {
     indentSize: "0.6em",
     commentDelimiter: "  ▷",
@@ -94,21 +93,6 @@ function renderToString(input: string, options?: RendererOptions) {
   return renderer.toMarkup()
 }
 
-/**
- * Experimental feature to remove the caption count from the title of the rendered pseudocode using a RegEx.
- *
- * @param renderedMarkup The HTML markup that was generated from LaTex by pseudocode.js
- * @param captionValue The value used for the title of the rendered pseudocode (by default 'Algorithm')
- * @returns The HTML markup without the caption count
- */
-function removeCaptionCount(renderedMarkup: string, captionValue: string): string {
-  // Escape potential special regex characters in the custom caption
-  const escapedCaption = captionValue.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-
-  const regex = new RegExp(`<span class="ps-keyword">${escapedCaption} [-]?\\d+[ ]?<\\/span>`, "g")
-  return renderedMarkup.replace(regex, `<span class="ps-keyword">${captionValue} </span>`)
-}
-
 function parseMeta(meta: string | null, opts: Options) {
   if (!meta) meta = ""
 
@@ -118,7 +102,7 @@ function parseMeta(meta: string | null, opts: Options) {
   if (lnum) {
     enableLineNumber = lnum === "true" || lnum === "1"
   } else {
-    enableLineNumber = opts.renderer?.lineNumber
+    enableLineNumber = opts.renderer?.lineNumber as boolean
   }
   meta = meta.replace(lineNumberMatch?.[0] ?? "", "")
 
@@ -131,42 +115,20 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
    * Used to store the LaTeX raw string content in order as they are found in the markdown file.
    * They will be processed in the same order later on to be converted to HTML.
    */
-  const latexBlock: string[] = []
 
   return {
     name: "Pseudocode",
     markdownPlugins() {
       return [
-        () => (tree: MdRoot, file) => {
+        () => (tree: MdRoot, _file) => {
           visit(tree, "code", (node) => {
             let { lang, meta, value } = node
             if (lang === opts.code) {
-              const { enableLineNumber } = parseMeta(meta!, opts)
-              latexBlock.push(value)
-              node.type = "html" as "code"
-              node.value = `<pre class="${opts.css}" data-line-number=${enableLineNumber}></pre>`
-            }
-          })
-          file.data.pseudocode = latexBlock.length !== 0
-        },
-      ]
-    },
-    htmlPlugins() {
-      return [
-        () => (tree: HTMLRoot, file) => {
-          if (file.data.pseudocode) {
-            visit(tree, "raw", (node: Literal, index, parent) => {
-              const lineNoMatch = node.value.match(/data-line-number=([^>\s]+)/)
-              if (!lineNoMatch || !node.value.includes(`class="${opts.css}"`)) {
-                return
-              }
-              const lineNo = lineNoMatch[1].toLowerCase()
-              const enableLineNumber = lineNo === "true"
+              const { enableLineNumber: lineNumber } = parseMeta(meta!, opts)
 
               // PERF: we are currently doing one round trip from text -> html -> hast
               // pseudocode (katex backend) --|renderToString|--> html string --|fromHtml|--> hast
               // ideally, we should cut this down to render directly to hast
-              const value = latexBlock.shift()
               const [inlineMacros, algo] = extractInlineMacros(value ?? "")
               // TODO: Might be able to optimize.
               // find all $ enclosements in source, and add the preamble.
@@ -175,71 +137,53 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 return `$${inlineMacros}${p1}$`
               })
 
-              const markup = renderToString(algoWithPreamble!, {
-                ...opts?.renderer,
-                lineNumber: enableLineNumber,
-              })
-              if (opts.removeCaptionCount) {
-                node.value = removeCaptionCount(markup, opts?.renderer?.titlePrefix ?? "Algorithm")
-              } else {
-                node.value = markup
-              }
+              const rendered = fromHtml(
+                renderToString(algoWithPreamble!, { ...opts?.renderer, lineNumber }),
+                { fragment: true },
+              ).children[0] as Element
 
-              const htmlNode = fromHtml(node.value, { fragment: true })
-              const renderedContainer = htmlNode.children[0] as Element
-              renderedContainer.properties.dataInlineMacros = inlineMacros
-              renderedContainer.properties.dataSettings = JSON.stringify(opts)
-
-              const button: Element = h(
-                "span",
-                {
-                  type: "button",
-                  class: "clipboard-button ps-clipboard",
-                  ariaLabel: "Copy pseudocode to clipboard",
-                  ariaHidden: true,
-                  tabindex: -1,
-                },
-                [
-                  s("svg", { width: 16, height: 16, viewbox: "0 0 16 16", class: "copy-icon" }, [
-                    s("use", { href: "#github-copy" }),
-                  ]),
-                  s("svg", { width: 16, height: 16, viewbox: "0 0 16 16", class: "check-icon" }, [
-                    s("use", {
-                      href: "#github-check",
-                      fillRule: "evenodd",
-                      fill: "rgb(63, 185, 80)",
-                    }),
-                  ]),
-                ],
-              )
-              const mathML: Element = h("span", { class: "ps-mathml" }, [
-                h("math", { xmlns: "http://www.w3.org/1998/Math/MathML" }, [
-                  h("semantics", [
-                    h("annotation", { encoding: "application/x-tex" }, [
-                      { type: "text", value: JSON.stringify(algoWithPreamble) },
+              rendered.children = [
+                h(
+                  "span",
+                  {
+                    type: "button",
+                    class: "clipboard-button ps-clipboard",
+                    ariaLabel: "Copy pseudocode to clipboard",
+                    ariaHidden: "true",
+                    tabindex: -1,
+                  },
+                  [
+                    s("svg", { width: 16, height: 16, viewbox: "0 0 16 16", class: "copy-icon" }, [
+                      s("use", { href: "#github-copy" }),
+                    ]),
+                    s("svg", { width: 16, height: 16, viewbox: "0 0 16 16", class: "check-icon" }, [
+                      s("use", {
+                        href: "#github-check",
+                        fillRule: "evenodd",
+                        fill: "rgb(63, 185, 80)",
+                      }),
+                    ]),
+                  ],
+                ),
+                h("span", { class: "ps-mathml" }, [
+                  h("math", { xmlns: "http://www.w3.org/1998/Math/MathML" }, [
+                    h("semantics", [
+                      h("annotation", { encoding: "application/x-tex" }, [
+                        { type: "text", value: JSON.stringify(algoWithPreamble) },
+                      ]),
                     ]),
                   ]),
                 ]),
-              ])
+                ...rendered.children,
+              ]
+              rendered.properties["data-inline-macros"] = inlineMacros ?? ""
 
-              renderedContainer.children = [button, mathML, ...renderedContainer.children]
-              parent!.children.splice(index!, 1, renderedContainer)
-            })
-          }
+              node.type = "html" as "code"
+              node.value = toHtml(rendered, { allowDangerousHtml: true })
+            }
+          })
         },
       ]
     },
-  }
-}
-
-declare module "vfile" {
-  interface DataMap {
-    pseudocode: boolean
-  }
-}
-
-declare module "mdast" {
-  interface CodeData {
-    pseudocode?: boolean | undefined
   }
 }

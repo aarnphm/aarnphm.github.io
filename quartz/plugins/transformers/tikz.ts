@@ -2,12 +2,10 @@ import { Code, Root as MdRoot } from "mdast"
 import { QuartzTransformerPlugin } from "../types"
 import { visit } from "unist-util-visit"
 import { load, tex, dvi2svg } from "node-tikzjax"
-import { Argv } from "../../util/ctx"
 
-async function tex2svg(input: string, argv: Argv) {
+async function tex2svg(input: string) {
   await load()
   const dvi = await tex(input, {
-    showConsole: argv.verbose,
     texPackages: { pgfplots: "", amsmath: "intlimits" },
     tikzLibraries: "arrows.meta,calc",
     addToPreamble: "% comment",
@@ -48,7 +46,7 @@ const sourceCodeCopy = (): string => {
 export const TikzJax: QuartzTransformerPlugin = () => {
   return {
     name: "TikzJax",
-    markdownPlugins({ argv }) {
+    markdownPlugins() {
       return [
         () => async (tree: MdRoot, _file) => {
           const nodes: TikzNode[] = []
@@ -63,7 +61,6 @@ export const TikzJax: QuartzTransformerPlugin = () => {
                   type: "html",
                   value: `<figure class="tikz"${style ? ` style="${style}"` : ""} data-remark-tikz>${mathMl(node)}${svgContent}${sourceCodeCopy()}</figure>`,
                 })
-                return
               } else {
                 nodes.push({ index: index as number, parent: parent as MdRoot, value })
               }
@@ -72,7 +69,7 @@ export const TikzJax: QuartzTransformerPlugin = () => {
 
           for (let i = 0; i < nodes.length; i++) {
             const { index, parent, value } = nodes[i]
-            const svg = await tex2svg(value, argv)
+            const svg = await tex2svg(value)
             const node = parent.children[index] as Code
             const style = parseStyle(node?.meta)
 

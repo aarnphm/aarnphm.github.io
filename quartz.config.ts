@@ -68,9 +68,7 @@ const config: QuartzConfig = {
   plugins: {
     transformers: [
       Plugin.FrontMatter(),
-      Plugin.CreatedModifiedDate({
-        priority: ["frontmatter", "filesystem"],
-      }),
+      Plugin.CreatedModifiedDate({ priority: ["frontmatter", "filesystem"] }),
       Plugin.Pseudocode(),
       Plugin.TikzJax(),
       Plugin.Poetry(),
@@ -107,6 +105,7 @@ const config: QuartzConfig = {
           "\\argmin": "\\mathop{\\operatorname{arg\\,min}}\\limits",
           "\\argmax": "\\mathop{\\operatorname{arg\\,max}}\\limits",
           "\\upgamma": "\\mathit{\\gamma}",
+          "\\upphi": "\\mathit{\\phi}",
           "\\upbeta": "\\mathit{\\beta}",
           "\\upalpha": "\\mathit{\\alpha}",
           "\\uptheta": "\\mathit{\\theta}",

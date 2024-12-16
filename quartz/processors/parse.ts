@@ -100,11 +100,15 @@ export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
         res.push([newAst, file])
 
         if (argv.verbose) {
-          console.log(`[process] ${fp} -> ${file.data.slug} (${perf.timeSince()})`)
+          console.log(`[process] ${fp}`)
+          console.log(`[process] ├─ filesize: ${file.value.length} bytes`)
+          console.log(`[process] ├─ slug: ${file.data.slug}`)
+          console.log(`[process] └─ time: ${perf.timeSince()}`)
         }
       } catch (err) {
         // FIXME: wtf went wrong, check pseudocode and toc parsing
-        // trace(`\nFailed to process \`${fp}\``, err as Error)
+        console.error(err)
+        trace(`\nFailed to process \`${fp}\``, err as Error)
       }
     }
 
@@ -124,7 +128,7 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Pro
   const concurrency = ctx.argv.concurrency ?? clamp(fps.length / CHUNK_SIZE, 1, 4)
 
   let res: ProcessedContent[] = []
-  log.start(`Parsing input files using ${concurrency} threads`)
+  log.start(`[process] Parsing input files using ${concurrency} threads`)
   if (concurrency === 1) {
     try {
       const processor = createProcessor(ctx)
@@ -156,6 +160,6 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Pro
     await pool.terminate()
   }
 
-  log.end(`Parsed ${res.length} Markdown files in ${perf.timeSince()}`)
+  log.end(`[process] Parsed ${res.length} Markdown files in ${perf.timeSince()}`)
   return res
 }

@@ -45,7 +45,7 @@ $max-delay: ($col-delay * $cols + $row-delay * $rows);
  */
 $breakpoints: (
   mobile: 800px,
-  desktop: 1400px,
+  desktop: 1200px,
 );
 
 $mobile: "(max-width: #{map.get($breakpoints, mobile)})";

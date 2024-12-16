@@ -1,5 +1,5 @@
 ---
-id: backburners
+id: ideas
 aliases:
   - idea
   - backburners
@@ -8,11 +8,11 @@ tags:
   - evergreen
 date: "2022-01-25"
 description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
-modified: "2024-10-03"
+modified: 2024-12-16 06:25:03 GMT-05:00
 title: ideas.
 ---
 
-### lettres
+## lettres
 
 - love (wip)
   - self-healing and love
@@ -21,7 +21,7 @@ title: ideas.
 - recommendation system and word2vec
 - social interactions a la carte.
 
-### projets
+## projets
 
 - LaTeX codeblock renderer for [[uses#^neovim|neovim]], in editor
   - Support KaTeX, and probably MathJax
@@ -59,7 +59,7 @@ title: ideas.
 
 <https://x.com/aarnphm_/status/1844775079286120682>
 
-### écriture
+## écriture
 
 - bazil: A [Bazel](https://bazel.build/) for the unversed
   - Bazel is hard to get started with

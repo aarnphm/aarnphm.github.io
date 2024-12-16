@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2021-12-22"
 description: Crafts that I have been brewing for the past while.
-modified: 2024-12-08 04:20:15 GMT-05:00
+modified: 2024-12-16 04:15:39 GMT-05:00
 title: work.
 ---
 
@@ -64,7 +64,7 @@ You can find internal monologue under [[/posts/]] index.
   - Built using Python, [[thoughts/BuildKit|BuildKit]], gRPC
   - Source: <https://github.com/bentoml/bentoml>, [Documentation](https://docs.bentoml.com)
 
-- **incogni.to** - :last_quarter_moon: a pseudonymous event platform that curates for those yearning to be seen for ==who they are, not what they can "sell"== (2024)
+- **incogni.to** - :last_quarter_moon: an event platform that curates for those yearning to be seen for ==who they are, not what they can "sell"== (2024)
 
   - Implemented a [[thoughts/RAG]] pipeline for recommendation system based on users preferences and interests, with [command-r-plus-08-2024](https://huggingface.co/CohereForAI/c4ai-command-r-plus), deployed with [[thoughts/vllm|vLLM]] and BentoML [@yangbentoml2022]
   - Added semantic search to find relevant events based on query with [Cohere Rerank](https://cohere.com/rerank)

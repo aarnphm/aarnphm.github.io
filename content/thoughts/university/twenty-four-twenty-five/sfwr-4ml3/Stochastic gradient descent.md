@@ -4,7 +4,7 @@ tags:
   - sfwr4ml3
   - ml
 date: "2024-11-11"
-modified: 2024-12-14 02:44:17 GMT-05:00
+modified: 2024-12-16 06:15:12 GMT-05:00
 permalinks:
   - /SGD
 title: Stochastic gradient descent

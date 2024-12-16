@@ -6,7 +6,7 @@ tags:
   - interp
 date: "2024-10-30"
 description: and reverse engineering neural networks.
-modified: "2024-10-30"
+modified: 2024-12-16 05:32:01 GMT-05:00
 permalink:
   - /mechinterp
   - /mechanistic-interpretability
@@ -71,7 +71,7 @@ to directly influence the model's outputs
 
 A few examples where [@panickssery2024steeringllama2contrastive] uses contrastive activation additions to steer Llama 2
 
-### contrastive activation additions
+### [[thoughts/contrastive representation learning|contrastive]] activation additions
 
 intuition: using a contrast pair for steering vector additions at certain activations layers
 

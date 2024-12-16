@@ -1,7 +1,10 @@
 .collapsible-header {
-  position: relative;
   --translate-position: 0px;
   --padding-width: 8px;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
 
   h3 {
     --translate-position: 3px;
@@ -119,13 +122,18 @@
   // Content styles
   .collapsible-header-content-outer {
     padding-left: var(--padding-width);
-    padding-bottom: 0.5rem;
     position: relative;
 
     .collapsible-header-content {
       border-left: 1px solid var(--lightgray);
       padding-left: var(--padding-width);
       transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      blockquote {
+        &:first-child {
+          margin-top: 0 !important;
+        }
+      }
 
       &.collapsed {
         overflow: hidden;

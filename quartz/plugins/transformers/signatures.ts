@@ -298,8 +298,13 @@ export const Signature: QuartzTransformerPlugin<Partial<Options>> = (userOpts) =
         () => {
           return (tree: Root, file) => {
             const text = file.data.frontmatter?.signature ?? opts.text
-            visit(tree, "text", (node, index, parent) => {
-              if (node.value.includes("[^sign]")) {
+            visit(tree, "element", (node, index, parent) => {
+              if (
+                (node.tagName === "p" || node.tagName === "div") &&
+                node.children.length >= 1 &&
+                node.children[0].type === "text" &&
+                node.children[0].value === "[^sign]"
+              ) {
                 parent!.children.splice(index!, 1, h(`p.${opts.class}`, maps(text)))
               }
             })

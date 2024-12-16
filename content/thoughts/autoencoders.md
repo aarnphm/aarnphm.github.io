@@ -4,7 +4,7 @@ tags:
   - ml
 date: "2024-12-14"
 description: feature extraction from neural network
-modified: 2024-12-14 08:10:04 GMT-05:00
+modified: 2024-12-16 06:07:36 GMT-05:00
 title: autoencoders
 ---
 

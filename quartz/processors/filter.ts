@@ -19,6 +19,8 @@ export function filterContent(ctx: BuildCtx, content: ProcessedContent[]): Proce
     content = updatedContent
   }
 
-  console.log(`Filtered out ${initialLength - content.length} files in ${perf.timeSince()}`)
+  console.log(
+    `[filter] Filtered out ${initialLength - content.length} files in ${perf.timeSince()}`,
+  )
   return content
 }
