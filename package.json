@@ -67,7 +67,7 @@
     "hastscript": "^9.0.0",
     "is-absolute-url": "^4.0.1",
     "js-yaml": "^4.1.0",
-    "katex": "^0.16.15",
+    "katex": "^0.16.17",
     "lightningcss": "^1.28.2",
     "mdast-util-find-and-replace": "^3.0.1",
     "mdast-util-gfm": "^3.0.0",
