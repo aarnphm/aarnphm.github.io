@@ -35,8 +35,6 @@ body[data-slug="404"] {
     font-size: 14px;
     pointer-events: none; // Prevent tooltip from interfering with clicks
     opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.2s ease;
     z-index: 1000;
     font-family: var(--bodyFont);
     backdrop-filter: blur(4px);
@@ -45,20 +43,6 @@ body[data-slug="404"] {
 
     &.visible {
       opacity: 1;
-      transform: translateY(0);
-    }
-
-    &:before {
-      content: "";
-      position: absolute;
-      top: -4px;
-      left: 10px;
-      width: 8px;
-      height: 8px;
-      background: rgba(0, 0, 0, 0.8);
-      transform: rotate(45deg);
-      border-left: 1px solid rgba(255, 255, 255, 0.1);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
   }
 

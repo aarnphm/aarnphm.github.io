@@ -3,8 +3,8 @@ id: midterm
 tags:
   - sfwr4aa4
 date: "2024-10-22"
-modified: "2024-10-22"
-title: rt_system items
+modified: 2024-12-16 11:27:43 GMT-05:00
+title: OS as real-time system
 ---
 
 correctness: $|C(t) - Cs(t)| < \epsilon$

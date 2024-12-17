@@ -4,7 +4,7 @@ tags:
   - fruit
 date: "2024-09-30"
 description: And on perplexity of hackathon.
-modified: "2024-09-30"
+modified: 2024-12-16 10:14:46 GMT-05:00
 socialDescription: On perplexity of hackathon.
 socials:
   substack: https://open.substack.com/pub/livingalone/p/i-saw-a-disstrack-dropped-at-a-hackathon?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
@@ -115,9 +115,9 @@ Everything else – the jobs, the networking, the sponsorships – that all foll
     Even though we didn't win, I'm glad that we did work on something together.
 
     I do hope that we would cross path again in the future.
-
-    regards, aaron.
 ```
+
+[^sign]
 
 [^1]: At a conventional hackathon, one can form teams beforehand with friends or pick one team at the event for the unversed.
 

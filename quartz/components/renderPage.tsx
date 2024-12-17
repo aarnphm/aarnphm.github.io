@@ -866,6 +866,7 @@ const ElementComponent = (() => {
             {Object.entries(links).map(([name, url]) => (
               <AliasLink key={name} name={name} url={url} />
             ))}
+            <AliasLink newTab classes={["external"]} name="notes" url="https://notes.aarnphm.xyz" />
           </div>
         </section>,
         <section>
@@ -1071,6 +1072,7 @@ export function renderPage(
       sidebar: [CuriusTrail, CuriusFriends],
       pageBody: CuriusContent,
       afterBody: [],
+      footer: FooterConstructor({ layout: "curius" }),
     }
   }
 
