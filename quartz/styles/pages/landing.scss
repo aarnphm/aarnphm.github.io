@@ -15,6 +15,10 @@ body[data-slug="index"] {
     grid-column: 4/-4;
   }
 
+  .side-col:not(.popover *) {
+    grid-column: 3/7;
+  }
+
   & > * {
     font-family: var(--bodyFont);
   }

@@ -2,12 +2,12 @@
 id: finals
 tags:
   - sfwr4aa4
-date: "2024-12-16"
-modified: 2024-12-17 13:22:56 GMT-05:00
-title: Control systems, and scheduling
+date: 2024-12-16
+modified: 2024-12-18 04:34:05 GMT-05:00
+title: Real-time control systems, and scheduling
 ---
 
-see also [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/midterm|some OS-related for real-time system]], [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4|Control systems]]
+see also [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/midterm|some OS-related for real-time system]], [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4|Control systems]], or [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Frequency Domain]]
 
 ## time domain versus frequency domain
 
@@ -41,11 +41,11 @@ For higher derivatives we have $\mathcal{L}[f^{''}(t)] = s^{2} F(s) - sf(0) - f^
 
 we can replace $s$ with $jw$
 
-ex: $G(jw) = \frac{1}{1+jw \text{RC}}$, so $\|G(jw)\| = \|\frac{1}{1+jw \text{RC}}\| = \frac{1}{\sqrt{1+(w \text{RC}^2)}}$
+ex: $G(jw) = \frac{1}{1+jw \text{RC}}$, so $|G(jw)| = |\frac{1}{1+jw \text{RC}}| = \frac{1}{\sqrt{1+(w \text{RC}^2)}}$
 
 reasoning: we substitute Laplace transform with [[thoughts/Fourier transform]] with $s=jw$
 
-## first-order systems
+example for a first-order system
 
 $$
 \begin{aligned}
@@ -76,3 +76,72 @@ $s=0,-5$ are poles and $s=-2$ are zeros
 >
 > - at origin, generated **==step function==**
 > - at -5 generate transient response $e^{-5t}$
+
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response]]
+
+![[thoughts/Root locus]]
+
+| Control Type     | Transfer function $T(s)$                  | Key Characteristics        | Effects                                                                      |
+| ---------------- | ----------------------------------------- | -------------------------- | ---------------------------------------------------------------------------- |
+| Proportional (P) | $\frac{K_p G_p}{1 + K_p G_p}$             | Basic control action       | - Affects speed of response<br>- Cannot eliminate steady-state error         |
+| Integral (I)     | $\frac{K_I}{s^2 + s + K_I}$               | Integrates error over time | - Eliminates steady-state error<br>- Output reaches 1 at steady state        |
+| PI               | $\frac{K_I + sK_p}{s^2 + (1+K_p)s + K_I}$ | Combines P and I           | - P impacts response speed<br>- I forces zero steady-state error             |
+| Derivative (D)   | $\frac{K_D s}{(1+K_D)s + 1}$              | Based on rate of change    | - Adds open-loop zero<br>- Can affect stability<br>- Provides damping effect |
+
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/PID controller#PID control]]
+
+## S and Z-transform table
+
+$$
+\begin{array}{|c|c|c|}
+\hline
+\textbf{x(t)} & \textbf{X(s)} & \textbf{X(z)} \\
+\hline
+\delta(t) =
+\begin{cases}
+1 & t = 0, \\
+0 & t = kT, \, k \neq 0
+\end{cases} & 1 & 1 \\
+\hline
+\delta(t - kT) =
+\begin{cases}
+1 & t = kT, \\
+0 & t \neq kT
+\end{cases} & e^{-kTs} & z^{-k} \\
+\hline
+u(t), \, \text{unit step} & \frac{1}{s} & \frac{z}{z - 1} \\
+\hline
+t & \frac{1}{s^2} & \frac{Tz}{(z - 1)^2} \\
+\hline
+t^2 & \frac{2}{s^3} & \frac{T^2 z(z + 1)}{(z - 1)^3} \\
+\hline
+e^{-at} & \frac{1}{s + a} & \frac{z}{z - e^{-aT}} \\
+\hline
+1 - e^{-at} & \frac{a}{s(s + a)} & \frac{(1 - e^{-aT})z}{(z - 1)(z - e^{-aT})} \\
+\hline
+te^{-at} & \frac{1}{(s + a)^2} & \frac{Tz e^{-aT}}{(z - e^{-aT})^2} \\
+\hline
+t^2 e^{-at} & \frac{2}{(s + a)^3} & \frac{T^2 e^{-aT} z(z + e^{-aT})}{(z - e^{-aT})^3} \\
+\hline
+b e^{-bt} - a e^{-at} & \frac{(b - a)s}{(s + a)(s + b)} & \frac{z \left[ z(b - a) - (b e^{-aT} - a e^{-bT}) \right]}{(z - e^{-aT})(z - e^{-bT})} \\
+\hline
+\sin \omega t & \frac{\omega}{s^2 + \omega^2} & \frac{z \sin \omega T}{z^2 - 2z \cos \omega T + 1} \\
+\hline
+\cos \omega t & \frac{s}{s^2 + \omega^2} & \frac{z(z - \cos \omega T)}{z^2 - 2z \cos \omega T + 1} \\
+\hline
+e^{-at} \sin \omega t & \frac{\omega}{(s + a)^2 + \omega^2} & \frac{(z e^{-aT} \sin \omega T)}{z^2 - 2z e^{-aT} \cos \omega T + e^{-2aT}} \\
+\hline
+\end{array}
+$$
+
+![[thoughts/Z-transform]]
+
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed loop system]]
+
+| System Type               | Transfer Function                                                        | Diagram                                                                                           |
+| ------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| Basis                     | $\frac{C(z)}{R(z)} = \frac{G(z)}{1+Z[G(s)H(s)]}$                         | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-sampled-data-system.webp]]   |
+| w/ digital sensing device | $C(z) = \frac{Z[G(s)R(s)]}{1+Z(G(s)H(s))}$                               | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-tf-sensing-device.webp]]     |
+| w/ digital controller     | $\frac{C(z)}{R(z)} = \frac{G_{1}(z)G_{1}(z)}{1+G_{1}(z)Z(G_{2}(s)H(s))}$ | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-tf-digital-controller.webp]] |
+
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/CCS to DCS]]

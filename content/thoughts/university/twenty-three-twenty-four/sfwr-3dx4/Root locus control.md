@@ -3,11 +3,11 @@ id: Root locus control
 tags:
   - sfwr3dx4
 date: "2024-02-28"
-modified: 2024-12-17 12:55:29 GMT-05:00
+modified: 2024-12-17 17:45:48 GMT-05:00
 title: Root locus control
 ---
 
-See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/root_locus_control.pdf|slides]] and [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/Root locus|Root locus]]
+See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/root_locus_control.pdf|slides]] and [[thoughts/Root locus]]
 
 closed-loop properties of the function of $K_1 G(s)$
 

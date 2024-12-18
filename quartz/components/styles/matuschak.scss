@@ -159,6 +159,7 @@ a {
         position: sticky;
         flex-grow: 1;
         overflow-y: auto;
+        overflow-x: hidden;
         background: var(--light);
         border-left: 1px solid var(--lightgray);
         transition:

@@ -22,7 +22,7 @@ $$
 > x_{t+1} = x_t - \alpha \nabla f(x_t)
 > $$
 >
-> ```tikz style="padding-top:2rem;row-gap:4rem;"
+> ```tikz
 > \usepackage{pgfplots}
 > \pgfplotsset{compat=1.16}
 >

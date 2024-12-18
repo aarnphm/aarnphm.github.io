@@ -8,7 +8,7 @@ ul.content-meta {
   flex-direction: column;
   cursor: pointer;
   margin: 0;
-  grid-column: 8/9;
+  grid-column: 6/7;
 
   padding-inline-start: 0;
   list-style: none;
@@ -20,10 +20,6 @@ ul.content-meta {
   @media all and ($desktop) {
     font-size: 1.272em;
     line-height: 1.272em;
-  }
-
-  @media all and ($tablet) {
-    grid-column: 9 / -3;
   }
 
   @media all and ($mobile) {

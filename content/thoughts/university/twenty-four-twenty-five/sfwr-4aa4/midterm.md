@@ -72,7 +72,7 @@ module_init(hello_4_init);
 module_exit(hello_4_exit)
 ```
 
-## **preemption** && `syscall`
+## **preemption** & `syscall`
 
 > The act of temporarily interrupting a currently scheduled task for higher priority tasks.
 
@@ -224,9 +224,6 @@ Let the following be the scheduling parameters:
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/abs-rel-deadline.webp]]
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/resp-time-exec-time.webp]]
-
-![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/resp-time-preempted-exec.webp]]
-_response time when execution is preempted_
 
 > Period $p_i$ of a periodic task $T_i$ is **min length** of all time intervales between release times of consecutive tasks.
 
@@ -415,19 +412,4 @@ pros:
   cons:
 - task can be blocked by a lower priority task for a long time even without resource conflict
 
-### Priority Inheritance Protocol (PIP)
-
-idea: increase the priorites only upon resource contention
-
-avoid NPCS drawback
-
-would still run into deadlock (think of RR task resource access)
-
-### Priority Ceiling Protocol (PCP)
-
-idea: extends PIP to prevent deadlocks
-
-- assigned priorities are fixed
-- resource requirements of all the tasks that will request a resource $R$ is known
-
-`ceiling(R)`: highest priority. Each resource has fixed priority ceiling
+![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/PIP and PCP|PIP and PCP]]

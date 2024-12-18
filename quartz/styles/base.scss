@@ -534,7 +534,7 @@ ol.overflow {
 .main-col {
   --main-col-padding-left: calc(var(--kern) * 4);
   --main-col-padding-right: 0px;
-  grid-column: 3/9;
+  grid-column: 3/7;
 
   .popover &,
   .stacked-content & {
@@ -545,7 +545,7 @@ ol.overflow {
   .main-col {
     --main-col-padding-left: 0px;
     --main-col-padding-right: calc(var(--kern) * 2);
-    grid-column: 3 / -3;
+    grid-column: 3/7;
   }
 }
 @media all and ($mobile) {

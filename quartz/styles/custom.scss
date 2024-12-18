@@ -174,6 +174,8 @@ $excluded-hover-classes: (
   "[data-breadcrumbs]",
   "[data-list]",
   "[data-tag]",
+  "[data-bib]",
+  "[data-no-popover]",
   "[data-footnote-backref]",
   '[class~="landing-links"]'
 );
@@ -209,7 +211,6 @@ a {
   }
 
   &.internal {
-    &[data-footnote-backref],
     sup & {
       margin-left: 0.3em;
       text-decoration: none;
@@ -464,6 +465,7 @@ body {
 
 .page-footer {
   padding-top: 0;
+  margin-top: 2rem;
 
   grid-template-rows: auto auto;
   grid-template-areas:
@@ -688,10 +690,6 @@ figure.tikz {
   flex-direction: column;
   align-items: center;
   row-gap: 1rem;
-
-  & > svg {
-    transform: scale(1.5);
-  }
 
   & > figcaption {
     display: inline-flex;

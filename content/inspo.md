@@ -5,7 +5,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: cool stuff on the internet
-modified: 2024-12-09 23:10:09 GMT-05:00
+modified: 2024-12-17 16:59:56 GMT-05:00
 noindex: true
 title: website inspiration
 ---
@@ -25,16 +25,20 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://typicalmitul.com/montreal-in-motion
 - http://pressanykey.today/ - cool visualisation of typing process
 - https://langworth.com/ - wait terminal go brrr
+- https://perfume-area.com/reviews/page:2 - arena for perfume
 
 ## portfolio
 
 - https://chia.design/
+- https://tinnei.com/
+- https://www.tylerxhobbs.com/works/categories/digital - utilitarian design
 
 ## essay
 
 - https://thesolarmonk.com/posts/a-spacebar-for-the-web - vintage, letter type
 - https://handwritten.blog/2022-10-01-hyperlinks-in-handwriting.html
 - https://retool.com/visual-basic - ascii effects and procedural arrangement
+- https://www.tylerxhobbs.com/words/flow-fields - flow feel
 
 ## protocol
 
@@ -44,3 +48,4 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 
 - https://fontsource.org/
 - https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
+- https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig - The GPA you need to care about
