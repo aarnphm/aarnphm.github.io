@@ -44,7 +44,10 @@ z-transform is $\frac{U(z)}{E(z)}=\frac{aT z^{-1}}{1+(aT -1)z^{-1}}=\frac{aT}{z+
 Consider the example
 
 $$
-D(s) = \frac{U(s)}{E(s)} = \frac{a}{s+a} \to U(s)s = aE(s) - aU(s) \to u^{'}(t) = -au(t) + ae(t)
+\begin{aligned}
+D(s) &= \frac{U(s)}{E(s)} = \frac{a}{s+a} \to U(s)s = aE(s) - aU(s) \\
+&\to u^{'}(t) = -au(t) + ae(t)
+\end{aligned}
 $$
 
 $$

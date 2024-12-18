@@ -35,7 +35,7 @@ $$
 \begin{aligned}
 Z[x(t)] &= X(z) \\
 x(k-n) &= z^{-n}X(z) \\
-x(k-1) &= z^{-1}X(z)
+x(k+n) &= z^{n}X(z)
 \end{aligned}
 $$
 
@@ -51,7 +51,7 @@ $$
 \text{error} = \frac{M}{2^{n+1}}
 $$
 
-where $n$ is number of bits used for digitaisation
+where $n$ is number of bits used for digitalisation
 
 > [!note] resolution of A/D converter
 >
@@ -154,3 +154,11 @@ thus, $g(kT) = 2^k-1$
 > $$
 > \lim_{k \to \infty} x(k) = \lim_{z \to 1} (z-1) X(z)
 > $$
+
+
+## [[thoughts/Root locus|root locus]] on z-plane
+
+- derive open loop function $K \bar{GH}$
+- Factor numerator and denominator to get open loop zeros and poles
+- Plot roots of $1+K \bar{GH}=0$ in z-plane as k varies
+$\bar{GH(z)} = \frac{N(z)}{D(z)}$
