@@ -3,7 +3,7 @@ id: system response
 tags:
   - sfwr4aa4
 date: "2024-12-16"
-modified: 2024-12-18 03:20:17 GMT-05:00
+modified: 2024-12-18 06:08:41 GMT-05:00
 title: System response
 ---
 
@@ -111,12 +111,12 @@ $$
 
 ### observations
 
-| Condition        | Poles                     | pole type | Damping Ratio ($\zeta$) | Natural Response $c(t)$                                                              |
-| ---------------- | ------------------------- | --------- | ----------------------- | ------------------------------------------------------------------------------------ |
-| Undamped         | $\pm j \omega_n$          | imaginary | $\zeta = 0$             | $A \cos (\omega_n t - \varphi)$                                                      |
-| Underdamped      | $\omega_d \pm j \omega_d$ | complex   | $0 < \zeta < 1$         | $A e^{(-\sigma_d)t} \cos (\omega_d t - \varphi)$ where $w_d = w_n \sqrt{1- \zeta^2}$ |
-| critcally damped | $\sigma_1$                | real      | $\zeta = 1$             | $K t e^{\sigma_1 t}$                                                                 |
-| overdamped       | $\sigma_1 \quad \sigma_2$ | real      | $\zeta > 1$             | $K (e^{\sigma_1 t} + e^{\sigma_2 t})$                                                |
+| Condition         | Poles                     | pole type | Damping Ratio ($\zeta$) | Natural Response $c(t)$                                                              |
+| ----------------- | ------------------------- | --------- | ----------------------- | ------------------------------------------------------------------------------------ |
+| Undamped          | $\pm j \omega_n$          | imaginary | $\zeta = 0$             | $A \cos (\omega_n t - \varphi)$                                                      |
+| Underdamped       | $\omega_d \pm j \omega_d$ | complex   | $0 < \zeta < 1$         | $A e^{(-\sigma_d)t} \cos (\omega_d t - \varphi)$ where $w_d = w_n \sqrt{1- \zeta^2}$ |
+| critically damped | $\sigma_1$                | real      | $\zeta = 1$             | $K t e^{\sigma_1 t}$                                                                 |
+| overdamped        | $\sigma_1 \quad \sigma_2$ | real      | $\zeta > 1$             | $K (e^{\sigma_1 t} + e^{\sigma_2 t})$                                                |
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/sec-order-impulse-response.webp]]
 
@@ -171,9 +171,9 @@ $$
 
 | location of poles | response                                                                       | examples                                                                                 |
 | ----------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| Same envelope     | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/same-envelope.webp]]   | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same envelope]]  |
-| Same frequency    | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/same-frequency.webp]]  | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same frequency]] |
-| Same overshoot    | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/same-overshoot.webp]]] | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same overshoot]] |
+| Same envelope     | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/same-envelope.webp]]  | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same envelope]]  |
+| Same frequency    | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/same-frequency.webp]] | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same frequency]] |
+| Same overshoot    | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/same-overshoot.webp]] | [[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/system response#same overshoot]] |
 
 #### same envelope
 
