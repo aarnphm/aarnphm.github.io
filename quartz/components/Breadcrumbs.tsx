@@ -21,6 +21,11 @@ interface BreadcrumbOptions {
    */
   rootName: string
   /**
+   * Maximum number of breadcrumbs to show before collapsing the middle ones
+   * Set to 0 or negative to show all breadcrumbs
+   */
+  maxItems: number
+  /**
    * Whether to look up frontmatter title for folders (could cause performance problems with big vaults)
    */
   resolveFrontmatterTitle: boolean
@@ -52,6 +57,7 @@ const defaultOptions: BreadcrumbOptions = {
   hideOnRoot: false,
   showCurrentPage: true,
   style: "full",
+  maxItems: 3,
 }
 
 function formatCrumb(displayName: string, baseSlug: FullSlug, currentSlug: SimpleSlug): CrumbData {
@@ -162,14 +168,24 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
       }
     }
 
+    let displayCrumbs = [...crumbs]
+    if (options.maxItems > 0 && crumbs.length > options.maxItems) {
+      const first = displayCrumbs[0]
+      const last = displayCrumbs.slice(
+        displayCrumbs.length - options.maxItems! + 1,
+        displayCrumbs.length,
+      )
+      displayCrumbs = [first, { displayName: "...", path: "" }, ...last]
+    }
+
     return (
       <nav class={classNames(displayClass, "breadcrumb-container")} aria-label="breadcrumbs">
-        {crumbs.map((crumb, index) => (
+        {displayCrumbs.map((crumb, index) => (
           <div class="breadcrumb-element">
             <a href={crumb.path} data-breadcrumbs>
               {crumb.displayName}
             </a>
-            {index !== crumbs.length - 1 && <p>{` ${options.spacerSymbol} `}</p>}
+            {index !== displayCrumbs.length - 1 && <p>{` ${options.spacerSymbol} `}</p>}
           </div>
         ))}
       </nav>

@@ -4,7 +4,7 @@ tags:
   - philosophy
   - seed
 date: "2023-12-04"
-modified: "2024-10-31"
+modified: 2024-12-18 15:00:07 GMT-05:00
 title: Philosophy and Nietzsche
 ---
 
@@ -161,6 +161,8 @@ Zarathustra opposes playing to betting, dancing to leaping
 
 ## _Anatomy_ of Beyond Good and Evil
 
+from _Beyond Good and Evil_
+
 ### Prejudices of Philosophers
 
 [Source](https://www.marxists.org/reference/archive/nietzsche/1886/beyond-good-evil/ch01.htm)
@@ -189,12 +191,16 @@ Nietzsche juxtaposes a paradox at our existence: a foundation of ignorance is ac
 
 ## The Gay Science
 
+_I wouldn't say I fully understand what Nietzsche have to convey, but some of the aphorism I do think about_
+
 Mentions the Death of God and start the introduction to the doctrine of eternal occurrence
 
 > [!note] The connotation of "gay" in Nietzsche's dialectics
 >
 > The original title was "la gayza scienza", and "gay" doesn't necessarily means homosexuality, rather flexible and joyful.
 > If word for word to be transcribed, it would meant The Joyful Science.
+
+> [!note] aphorism 24
 
 ---
 

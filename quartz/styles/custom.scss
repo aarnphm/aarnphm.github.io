@@ -507,12 +507,12 @@ body {
 
 @media all and ($tablet) {
   menu.tags {
-    grid-column: 3/5;
+    grid-column: 3/8;
   }
 }
 @media all and ($mobile) {
   menu.tags {
-    grid-column: 3/5;
+    grid-column: 3/8;
   }
 }
 
@@ -690,6 +690,14 @@ figure.tikz {
   flex-direction: column;
   align-items: center;
   row-gap: 1rem;
+
+  @media all and ($mobile) {
+    margin: 0;
+
+    & > svg {
+      transform: scale(0.7);
+    }
+  }
 
   & > figcaption {
     display: inline-flex;

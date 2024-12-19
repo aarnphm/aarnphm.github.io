@@ -3,7 +3,7 @@ id: midterm
 tags:
   - sfwr3ra3
 date: "2024-10-21"
-modified: "2024-10-21"
+modified: 2024-12-19 04:04:10 GMT-05:00
 title: requirements notes
 ---
 
@@ -31,7 +31,7 @@ Actionable: it should ==help the team== to build the product
 Real: where user are, observe and interact
 Identifiable: dog-food
 Exact: Be specific
-Detailed: Good personas are substantials
+Detailed: Good personas are substantial
 
 > [!tldr] Requirement Engineering
 >
@@ -141,8 +141,6 @@ Bias in data
 1. Center the margins, or increase more diversity
 2. social conflict?
 3. Human-centric
-
-## [[thoughts/tacit knowledge]]
 
 ## modelling
 

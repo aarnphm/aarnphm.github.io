@@ -11,12 +11,14 @@ body[data-slug="index"] {
     }
   }
 
-  .main-col:not(.popover *) {
-    grid-column: 4/-4;
-  }
+  @media all and ($desktop) {
+    .main-col:not(.popover *) {
+      grid-column: 4/-4;
+    }
 
-  .side-col:not(.popover *) {
-    grid-column: 3/7;
+    .side-col:not(.popover *) {
+      grid-column: 3/7;
+    }
   }
 
   & > * {

@@ -1,3 +1,6 @@
+@use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
+
 .breadcrumb-container {
   margin: 0;
   padding: 0;
@@ -35,5 +38,11 @@
     margin-left: 0.25rem;
     padding: 0;
     line-height: normal;
+  }
+}
+
+@media all and ($mobile) {
+  .breadcrumb-container {
+    display: none;
   }
 }

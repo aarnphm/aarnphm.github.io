@@ -2,8 +2,8 @@
 id: finals
 tags:
   - sfwr4aa4
-date: 2024-12-16
-modified: 2024-12-18 04:34:05 GMT-05:00
+date: "2024-12-16"
+modified: 2024-12-18 16:52:50 GMT-05:00
 title: Real-time control systems, and scheduling
 ---
 
@@ -92,47 +92,21 @@ $s=0,-5$ are poles and $s=-2$ are zeros
 
 ## S and Z-transform table
 
-$$
-\begin{array}{|c|c|c|}
-\hline
-\textbf{x(t)} & \textbf{X(s)} & \textbf{X(z)} \\
-\hline
-\delta(t) =
-\begin{cases}
-1 & t = 0, \\
-0 & t = kT, \, k \neq 0
-\end{cases} & 1 & 1 \\
-\hline
-\delta(t - kT) =
-\begin{cases}
-1 & t = kT, \\
-0 & t \neq kT
-\end{cases} & e^{-kTs} & z^{-k} \\
-\hline
-u(t), \, \text{unit step} & \frac{1}{s} & \frac{z}{z - 1} \\
-\hline
-t & \frac{1}{s^2} & \frac{Tz}{(z - 1)^2} \\
-\hline
-t^2 & \frac{2}{s^3} & \frac{T^2 z(z + 1)}{(z - 1)^3} \\
-\hline
-e^{-at} & \frac{1}{s + a} & \frac{z}{z - e^{-aT}} \\
-\hline
-1 - e^{-at} & \frac{a}{s(s + a)} & \frac{(1 - e^{-aT})z}{(z - 1)(z - e^{-aT})} \\
-\hline
-te^{-at} & \frac{1}{(s + a)^2} & \frac{Tz e^{-aT}}{(z - e^{-aT})^2} \\
-\hline
-t^2 e^{-at} & \frac{2}{(s + a)^3} & \frac{T^2 e^{-aT} z(z + e^{-aT})}{(z - e^{-aT})^3} \\
-\hline
-b e^{-bt} - a e^{-at} & \frac{(b - a)s}{(s + a)(s + b)} & \frac{z \left[ z(b - a) - (b e^{-aT} - a e^{-bT}) \right]}{(z - e^{-aT})(z - e^{-bT})} \\
-\hline
-\sin \omega t & \frac{\omega}{s^2 + \omega^2} & \frac{z \sin \omega T}{z^2 - 2z \cos \omega T + 1} \\
-\hline
-\cos \omega t & \frac{s}{s^2 + \omega^2} & \frac{z(z - \cos \omega T)}{z^2 - 2z \cos \omega T + 1} \\
-\hline
-e^{-at} \sin \omega t & \frac{\omega}{(s + a)^2 + \omega^2} & \frac{(z e^{-aT} \sin \omega T)}{z^2 - 2z e^{-aT} \cos \omega T + e^{-2aT}} \\
-\hline
-\end{array}
-$$
+| Time Domain $x(t)$                                                        | Laplace Transform $X(s)$              | Z Transform $X(z)$                                                            |
+| ------------------------------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------- |
+| $\delta(t) = \begin{cases} 1 & t = 0 \\ 0 & t = kT, k \neq 0 \end{cases}$ | $1$                                   | $1$                                                                           |
+| $\delta(t - kT) = \begin{cases} 1 & t = kT \\ 0 & t \neq kT \end{cases}$  | $e^{-kTs}$                            | $z^{-k}$                                                                      |
+| $u(t)$ (unit step)                                                        | $\frac{1}{s}$                         | $\frac{z}{z - 1}$                                                             |
+| $t$                                                                       | $\frac{1}{s^2}$                       | $\frac{Tz}{(z - 1)^2}$                                                        |
+| $t^2$                                                                     | $\frac{2}{s^3}$                       | $\frac{T^2 z(z + 1)}{(z - 1)^3}$                                              |
+| $e^{-at}$                                                                 | $\frac{1}{s + a}$                     | $\frac{z}{z - e^{-aT}}$                                                       |
+| $1 - e^{-at}$                                                             | $\frac{a}{s(s + a)}$                  | $\frac{(1 - e^{-aT})z}{(z - 1)(z - e^{-aT})}$                                 |
+| $te^{-at}$                                                                | $\frac{1}{(s + a)^2}$                 | $\frac{Tz e^{-aT}}{(z - e^{-aT})^2}$                                          |
+| $t^2 e^{-at}$                                                             | $\frac{2}{(s + a)^3}$                 | $\frac{T^2 e^{-aT} z(z + e^{-aT})}{(z - e^{-aT})^3}$                          |
+| $b e^{-bt} - a e^{-at}$                                                   | $\frac{(b - a)s}{(s + a)(s + b)}$     | $\frac{z [ z(b - a) - (b e^{-aT} - a e^{-bT}) ]}{(z - e^{-aT})(z - e^{-bT})}$ |
+| $\sin \omega t$                                                           | $\frac{\omega}{s^2 + \omega^2}$       | $\frac{z \sin \omega T}{z^2 - 2z \cos \omega T + 1}$                          |
+| $\cos \omega t$                                                           | $\frac{s}{s^2 + \omega^2}$            | $\frac{z(z - \cos \omega T)}{z^2 - 2z \cos \omega T + 1}$                     |
+| $e^{-at} \sin \omega t$                                                   | $\frac{\omega}{(s + a)^2 + \omega^2}$ | $\frac{z e^{-aT} \sin \omega T}{z^2 - 2z e^{-aT} \cos \omega T + e^{-2aT}}$   |
 
 ![[thoughts/Z-transform]]
 

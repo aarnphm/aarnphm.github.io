@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2022-04-22"
 description: the one with all the books I should read.
-modified: 2024-12-12 07:34:52 GMT-05:00
+modified: 2024-12-18 11:17:59 GMT-05:00
 title: antilibrary.
 ---
 
@@ -17,18 +17,17 @@ See also: [[/curius|digital version]]
 
 ## current.
 
-| title                                                                           | author                            | notes                                           |
-| ------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------- |
-| Essay on Love                                                                   | Alain de Botton                   |                                                 |
-| [[thoughts/Philosophy and Nietzsche\|Nietzsche and Philosophy]]                 | Gilles Deleuze                    |                                                 |
-| [[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf\|The Gay Science]] | Friedrich Nietzsche               |                                                 |
-| Beyond Good and Evil                                                            | Friedrich Nietzsche               |                                                 |
-| Beyond The Pleasure Principle                                                   | Sigmund [[thoughts/Freud\|Freud]] |                                                 |
-| The Critique of Pure Reason                                                     | Immanuel Kant                     |                                                 |
-| The Metaphysics of Morals                                                       | Immanuel Kant                     |                                                 |
-| Crime and Punishment                                                            | Fyodor Dostoevsky                 |                                                 |
-| Structure and Interpretation of Computer Programs                               | Abelson and Sussman               | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf) |
-| Man and His Symbols                                                             | Carl G. Jung                      |                                                 |
+| title                                                           | author                            | notes                                           |
+| --------------------------------------------------------------- | --------------------------------- | ----------------------------------------------- |
+| Essay on Love                                                   | Alain de Botton                   |                                                 |
+| [[thoughts/Philosophy and Nietzsche\|Nietzsche and Philosophy]] | Gilles Deleuze                    |                                                 |
+| Beyond Good and Evil                                            | Friedrich Nietzsche               |                                                 |
+| Beyond The Pleasure Principle                                   | Sigmund [[thoughts/Freud\|Freud]] |                                                 |
+| The Critique of Pure Reason                                     | Immanuel Kant                     |                                                 |
+| The Metaphysics of Morals                                       | Immanuel Kant                     |                                                 |
+| Crime and Punishment                                            | Fyodor Dostoevsky                 |                                                 |
+| Structure and Interpretation of Computer Programs               | Abelson and Sussman               | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf) |
+| Man and His Symbols                                             | Carl G. Jung                      |                                                 |
 
 ## to read.
 
@@ -141,6 +140,7 @@ See also: [[/curius|digital version]]
 - **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
 - **[Web Browser Engineering](https://browser.engineering/onepage.html)** by Pavel Panchekha & Chris Harrelson
 - **1984** by George Orwell
+- The **[[thoughts/Philosophy and Nietzsche#The Gay Science|Gay]] [[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|Science]]** by Friedrich Nietzsche
 
 ### 2023
 

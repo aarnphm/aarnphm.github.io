@@ -3,9 +3,11 @@ id: closed loop system
 tags:
   - sfwr4aa4
 date: "2024-12-18"
-modified: 2024-12-18 04:13:59 GMT-05:00
+modified: 2024-12-18 16:56:55 GMT-05:00
 title: closed loop system
 ---
+
+For determine discrete systems and vice versa.
 
 ## $G(z)$ with a Zero-Order hold
 
@@ -77,4 +79,3 @@ $$
 $$
 T(z) = \frac{G(z)}{1+G(z)}
 $$
-
