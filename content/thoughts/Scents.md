@@ -4,10 +4,10 @@ tags:
   - evergreen
 comments: false
 date: "2024-01-07"
+description: A (mostly) up-to-date scents that I use/like/prefer.
+modified: 2024-12-23 09:00:46 GMT-05:00
 title: Scents
 ---
-
-A (mostly) up-to-date scents that I use/like/prefer.
 
 See [[books|antilibrary]] for reading list.
 
@@ -19,12 +19,36 @@ See [[books|antilibrary]] for reading list.
 
 ### current.
 
-#### [Le Labo's Rose 31](https://www.lelabofragrances.ca/rose-31.html?bypass=true&region=CA&locale=EN&gad_source=1)
+#### Monocle Scent Two Laurel
+
+_from [COMME des GARCONS](https://comme-des-garcons-parfum.com/products/monocle-scent-two-laurel)_
+
+- felt like you are in the Middle East
+- Oaky
+- Light, ambery, musty
+
+#### Rose and White Musk Absolut
+
+_from [Jo Malone](https://www.jomalone.ca/product/25946/58474/colognes/rose-white-musk-absolu?size=100ml)_
+
+- Ask you can tell, I love rose, floral
+- I think anyone can wear this in a winter day
+
+#### Rose 31
+
+_from [Le Labo](https://www.lelabofragrances.ca/rose-31.html?bypass=true&region=CA&locale=EN&gad_source=1)_
 
 - Definitely a winter/spring scent.
 - If you like the smell of roses. Alternatives are Matcha 26, or Fleurs d'Oranger 27.
 
-#### [Le Labo's Labdanum 18](https://www.lelabofragrances.ca/labdanum-18.html?bypass=true&region=CA&locale=EN&gad_source=1)
+#### Lavande 31
+
+_from [Le Labo](https://www.lelabofragrances.ca/lavande-31-eau-de-parfum.html?size=50ml)_
+
+- Lavender, sweet scent, ambery, dirty, pleasant.
+
+#### Labdanum 18
+
+_from [Le Labo](https://www.lelabofragrances.ca/labdanum-18.html?bypass=true&region=CA&locale=EN&gad_source=1)_
 
 - warm and sweet scent, good for a summer, fall night.
-- definitely stays a lot longer comparing to rose.

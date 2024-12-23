@@ -274,6 +274,11 @@ const glyphs = {
     opts: { viewBox: "0 4 1 51", width: "13", height: "51" },
     name: "dot",
   },
+  "-": {
+    d: "M1 32.5h10",
+    opts: { viewBox: "0 4 12 51", width: "13", height: "51" },
+    name: "dash",
+  },
 } as const
 
 interface Options {

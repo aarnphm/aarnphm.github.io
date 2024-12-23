@@ -4,6 +4,7 @@ tags:
   - philosophy
   - seed
 date: "2024-02-24"
+modified: 2024-12-23 09:30:30 GMT-05:00
 title: Giles Deleuze
 ---
 
@@ -11,9 +12,13 @@ French philosopher, known for his work on the concept of multiplicity, being and
 
 Also work on critical philosophy and the study of sense and value.
 
-## [[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]]
+## forces.
 
-The common misunderstanding of power is that it is the object of the will. Instead, Deleuze posits Power as subject of the will, such that [[thoughts/Will to Power|Will to Power]] is not a [[thoughts/desire|desire]] for domination, but expressive force that creates values
+regarding active and reactive nature of forces.
+
+See also: [[thoughts/action theory|action theory]]
+
+First introduced through [[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]], the common misunderstanding of power is that it is the object of the will. Instead, Deleuze posits Power as subject of the will, such that [[thoughts/Will to Power|Will to Power]] is not a [[thoughts/desire|desire]] for domination, but expressive force that creates values
 
 Nietzsche's genealogy work on [[thoughts/Philosophy and Nietzsche#On Genealogy of Morals|moral]] makes nihilism the presupposition of all metaphysics rather than a particular metaphysics, which allows nihilism to be overcome via the active negation of reactive forces.
 
@@ -25,9 +30,9 @@ The analogy of a dice throw[^2]: When we throw the dice, the outcome is the comb
 
 Nietzsche turns chance into an affirmation, identifying it with multiplicity, fragments, parts, and [[thoughts/Chaos|chaos]]. The dice throw affirms becoming, and the combination it forms upon falling is the affirmation of necessity.
 
-## active and reactive forces.
+Deleuze introduces his concepts of active and reactive forces through Nietzschian view of _[[thoughts/Will|will]]_.
 
-See also: [[thoughts/action theory|action theory]]
+The idea of forces comprises of quantity and quality differentiate whether a force is active or reactive.
 
 ## Capitalism and Schizophrenia
 

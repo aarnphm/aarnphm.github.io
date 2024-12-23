@@ -29,6 +29,7 @@ const config: QuartzConfig = {
       "**.lvbitx",
       "**.so",
       "400232791",
+      "__pycache__",
     ],
     defaultDateType: "created",
     theme: {

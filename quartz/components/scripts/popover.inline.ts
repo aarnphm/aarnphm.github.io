@@ -68,7 +68,7 @@ async function mouseEnterHandler(
   async function setPosition(popoverElement: HTMLElement) {
     const { x, y } = await computePosition(link, popoverElement, {
       placement: "left-start",
-      middleware: [inline({ x: clientX, y: clientY }), offset(5), shift(), flip()],
+      middleware: [inline({ x: clientX, y: clientY }), offset(15), shift(), flip()],
     })
     Object.assign(popoverElement.style, { left: `${x}px`, top: `${y}px` })
   }

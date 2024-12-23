@@ -8,7 +8,7 @@ tags:
   - fruit
 date: "2022-04-22"
 description: Aaron's digital garden
-modified: 2024-12-13 03:46:22 GMT-05:00
+modified: 2024-12-22 14:08:42 GMT-05:00
 title: Aaron's notes
 ---
 
@@ -33,7 +33,7 @@ Currently, I'm working at a [infrastructure startup](https://bentoml.com) buildi
             * watching people
               * yuzu-related dishes
                 * anything [[thoughts/images/onionnnnnnnnnn.webp|onion]] or garlic or beets (i heckin love onion)
-                  * watches, esp horology
+                  * watches (horology)
                     * folktronica
                       * Miles David and the Quintet
                         * Focault and Wittgenstein's writing,
@@ -54,8 +54,8 @@ Currently, I'm working at a [infrastructure startup](https://bentoml.com) buildi
                                 * <br /><br />Beige
                                   * <br /><br />Beige and
                                   * rosé
-                                    * <span class="rose">rosé</span> are my two favourite colours.<br /><br />
-                                    * Cooking
+                                    * <span class="rose">rosé</span> are my two favourite colours.
+                                    * <br /><br />Cooking
                                       * Cooking is my [[/tags/love]]
                                       * language
                                         * language, which I learn from my

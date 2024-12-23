@@ -129,6 +129,7 @@ li.section-li {
   padding-right: calc(var(--kern) * 2);
 
   .popover-inner & {
+    padding-right: 0;
     grid-column: -3/3;
   }
 }

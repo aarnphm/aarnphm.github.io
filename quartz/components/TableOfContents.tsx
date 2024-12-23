@@ -4,7 +4,7 @@ import { classNames } from "../util/lang"
 // @ts-ignore
 import script from "./scripts/toc.inline"
 import { i18n } from "../i18n"
-import { fromHtml } from "hast-util-from-html"
+import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 import { htmlToJsx } from "../util/jsx"
 import { SKIP, visit } from "unist-util-visit"
 import { clone, FullSlug, simplifySlug } from "../util/path"
@@ -160,7 +160,7 @@ export default ((userOpts?: Partial<Options>) => {
     const backlinkFiles = allFiles.filter((file) => file.links?.includes(slug))
 
     const convertFromText = (text: string) => {
-      const tocAst = fromHtml(text, { fragment: true })
+      const tocAst = fromHtmlIsomorphic(text, { fragment: true })
       return htmlToJsx(fileData.filePath!, tocAst)
     }
 

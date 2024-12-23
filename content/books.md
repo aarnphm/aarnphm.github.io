@@ -4,34 +4,41 @@ tags:
   - evergreen
 comments: false
 date: "2022-04-22"
-description: the one with all the books I should read.
-modified: 2024-12-18 11:17:59 GMT-05:00
+description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
+modified: 2024-12-23 09:02:03 GMT-05:00
 title: antilibrary.
 ---
-
-A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
 
 See also: [[/curius|digital version]]
 
 > In essence, an [antilibrary](https://nesslabs.com/antilibrary) is a collection of unread books. It represents an ode to self that reminds you about topics that one wants to explore.
 
+## [[/tags/evergreen]] books
+
+_A list of book that remains forever in my bag_
+
+- Beyond Good and Evil by Friedrich Nietzsche
+- [[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]] by Gilles Deleuze
+
 ## current.
 
-| title                                                           | author                            | notes                                           |
-| --------------------------------------------------------------- | --------------------------------- | ----------------------------------------------- |
-| Essay on Love                                                   | Alain de Botton                   |                                                 |
-| [[thoughts/Philosophy and Nietzsche\|Nietzsche and Philosophy]] | Gilles Deleuze                    |                                                 |
-| Beyond Good and Evil                                            | Friedrich Nietzsche               |                                                 |
-| Beyond The Pleasure Principle                                   | Sigmund [[thoughts/Freud\|Freud]] |                                                 |
-| The Critique of Pure Reason                                     | Immanuel Kant                     |                                                 |
-| The Metaphysics of Morals                                       | Immanuel Kant                     |                                                 |
-| Crime and Punishment                                            | Fyodor Dostoevsky                 |                                                 |
-| Structure and Interpretation of Computer Programs               | Abelson and Sussman               | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf) |
-| Man and His Symbols                                             | Carl G. Jung                      |                                                 |
+| title                                             | author              | notes                                           |
+| ------------------------------------------------- | ------------------- | ----------------------------------------------- |
+| Essay on Love                                     | Alain de Botton     |                                                 |
+| The Critique of Pure Reason                       | Immanuel Kant       |                                                 |
+| The Metaphysics of Morals                         | Immanuel Kant       |                                                 |
+| Crime and Punishment                              | Fyodor Dostoevsky   |                                                 |
+| Structure and Interpretation of Computer Programs | Abelson and Sussman | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf) |
+| Man and His Symbols                               | Carl G. Jung        |                                                 |
+| The Second Sex                                    | Simone de Beauvoir  |                                                 |
 
 ## to read.
 
-### [[tags/philosophy|philosophy]]
+### [[tags/philosophy|philosophy]] and psychology
+
+_reason: I have a few collections of books whose authors are somewhat related [^related-authors]._
+
+[^related-authors]: For example, [[thoughts/Freud|Freud]] and Jung are not necessarily philosophers, but their work often sparks philosophical debates regarding to human psyche and social interactions.
 
 | title                                                                                                                    | author                                                                                            | notes                                                                                                                                                                  |
 | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -46,7 +53,7 @@ See also: [[/curius|digital version]]
 | Existentialism in Social [[thoughts/education\|Pedagogy]]                                                                | Søren Kierkegaard                                                                                 |                                                                                                                                                                        |
 | [[thoughts/The Will To Believe\|The Will To Believe]]                                                                    | William James                                                                                     |                                                                                                                                                                        |
 | The Care of the Self                                                                                                     | Michel Foucault                                                                                   |                                                                                                                                                                        |
-| Metaphysical myths, mathematical Practice: The Ontology and [[thoughts/Epistemology\|Epistemology]] of the Exact Science | Michel Foucault                                                                                   |                                                                                                                                                                        |
+| Metaphysical myths, mathematical Practice: The Ontology and [[thoughts/Epistemology\|Epistemology]] of the Exact Science | Jody Azzouni                                                                                      |                                                                                                                                                                        |
 | Repetition                                                                                                               | Kierkegaard                                                                                       |                                                                                                                                                                        |
 | On Certainty                                                                                                             | Ludwig Wittgenstein                                                                               |                                                                                                                                                                        |
 | The Conquest of Happiness                                                                                                | Bertrand Russell                                                                                  | [html](https://russell-j.com/beginner/COH-TEXT.HTM)                                                                                                                    |
@@ -54,6 +61,9 @@ See also: [[/curius|digital version]]
 | Pensees                                                                                                                  | Pascal                                                                                            | [html](https://www.gutenberg.org/files/18269/18269-h/18269-h.htm)                                                                                                      |
 | Being and Nothingness                                                                                                    | Jean-Paul Sartre                                                                                  |                                                                                                                                                                        |
 | Philosophical Investigations                                                                                             | Ludwig Wittgenstein                                                                               | [pdf](https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf) |
+| [[thoughts/Freud#The Ego and the Id]]                                                                                    | Sigmund Freud                                                                                     |                                                                                                                                                                        |
+| A Thousand Plateaus                                                                                                      | [[thoughts/Giles Deleuze]] and Félix Guattari                                                     |                                                                                                                                                                        |
+| Anti-Oedipus                                                                                                             | [[thoughts/Giles Deleuze]] and Félix Guattari                                                     |                                                                                                                                                                        |
 
 #### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 
@@ -78,21 +88,27 @@ See also: [[/curius|digital version]]
 
 ### non-fiction
 
-| title                                                  | author                                                                                                               | notes                                                                                                                                         |
-| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Deep Work                                              | Cal Newport                                                                                                          |                                                                                                                                               |
-| Digital Minimalism                                     | Cal Newport                                                                                                          |                                                                                                                                               |
-| Playing Software: Homo Ludens in Computational Culture | Miguel Sicart                                                                                                        |                                                                                                                                               |
-| Reimagining Capitalism in a World on Fire              | Rebecca Henderson                                                                                                    |                                                                                                                                               |
-| Principles                                             | Ray Dalio                                                                                                            |                                                                                                                                               |
-| Mindset                                                | Dr. Carol S. Dweck                                                                                                   |                                                                                                                                               |
-| The Pleasure of Finding Things Out                     | Richard P. Feynman                                                                                                   |                                                                                                                                               |
-| Walden and Civil Disobedience                          | Henry David Thoreau                                                                                                  |                                                                                                                                               |
-| Deep Sleep                                             | Jade Wu                                                                                                              |                                                                                                                                               |
-| Are We Spiritual Machines?                             | Ray Kurzweil                                                                                                         | [html](https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=olbp56055)                                                              |
-| Free to Choose                                         | Milton Friedman                                                                                                      |                                                                                                                                               |
-| Seduction and Betrayal                                 | Elizabeth Hardwick                                                                                                   | [link](https://www.penguinrandomhouse.ca/books/643010/seduction-and-betrayal-by-elizabeth-hardwick-introduction-by-joan-didion/9780940322783) |
-| A Pattern Language: Towns, Building, Construction      | Christopher Alexander, Sara Ishikawa and Murray Silverstein with Max Jacobson, Ingrid Fiksdahl-King and Shlomo Angel | [quartz](https://patternlanguage.cc/)                                                                                                         |
+| title                                                                          | author                                                                                                               | notes                                                                                                                                         |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Deep Work                                                                      | Cal Newport                                                                                                          |                                                                                                                                               |
+| Digital Minimalism                                                             | Cal Newport                                                                                                          |                                                                                                                                               |
+| Playing Software: Homo Ludens in Computational Culture                         | Miguel Sicart                                                                                                        |                                                                                                                                               |
+| Reimagining Capitalism in a World on Fire                                      | Rebecca Henderson                                                                                                    |                                                                                                                                               |
+| Principles                                                                     | Ray Dalio                                                                                                            |                                                                                                                                               |
+| Mindset                                                                        | Dr. Carol S. Dweck                                                                                                   |                                                                                                                                               |
+| The Pleasure of Finding Things Out                                             | Richard P. Feynman                                                                                                   |                                                                                                                                               |
+| Walden and Civil Disobedience                                                  | Henry David Thoreau                                                                                                  |                                                                                                                                               |
+| Deep Sleep                                                                     | Jade Wu                                                                                                              |                                                                                                                                               |
+| Are We Spiritual Machines?                                                     | Ray Kurzweil                                                                                                         | [html](https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=olbp56055)                                                              |
+| Free to Choose                                                                 | Milton Friedman                                                                                                      |                                                                                                                                               |
+| Seduction and Betrayal                                                         | Elizabeth Hardwick                                                                                                   | [link](https://www.penguinrandomhouse.ca/books/643010/seduction-and-betrayal-by-elizabeth-hardwick-introduction-by-joan-didion/9780940322783) |
+| A Pattern Language: Towns, Building, Construction                              | Christopher Alexander, Sara Ishikawa and Murray Silverstein with Max Jacobson, Ingrid Fiksdahl-King and Shlomo Angel | [quartz](https://patternlanguage.cc/)                                                                                                         |
+| The Art of Doing Science and Engineering: Learning to Learn                    | Richard Hamming                                                                                                      |                                                                                                                                               |
+| Scientific Freedom: The Elixir of Civilization                                 | Donald W.Braben                                                                                                      |                                                                                                                                               |
+| Mediocracy: The Politics of the Extreme Centre                                 | Alain Deneault                                                                                                       |                                                                                                                                               |
+| The Creative Act: A Way of Being                                               | Rick Rubin                                                                                                           |                                                                                                                                               |
+| The Notebook: A History of Thinking on Paper                                   | Roland Allen                                                                                                         |                                                                                                                                               |
+| Trillion Dollar Baby: How Norway Beat the Oil Giants and Won a Lasting Fortune | Paul Cleary                                                                                                          |                                                                                                                                               |
 
 ### fiction
 
@@ -105,12 +121,13 @@ See also: [[/curius|digital version]]
 | The Idiot               | Fyodor Dostoevsky     |
 | The Brothers Karamazov  | Fyodor Dostoevsky     |
 | Fall On Your Knees      | Ann-Marie MacDonald   |
-| Foundation series       | Isaac Asimov          |
-| The Three-Body Problem  | Liu Cixin             |
+| Foundation              | Isaac Asimov          |
 | Robinson Crusoe         | Daniel Defoe          |
 | The Overstory           | Richard Powers        |
 | Rejection               | Tony Tulathimutte     |
 | Play It as It Lays      | Joan Didion           |
+| Slaughterhouse-Five     | Kurt Vonnegut         |
+| Homage to Catalonia     | George Orwell         |
 
 ### poetry
 
@@ -136,11 +153,12 @@ See also: [[/curius|digital version]]
 - **The metamorphosis** by Franz Kafka
 - **The end of the affair** by Graham Greene
 - **The Little Book of [[thoughts/deep learning|Deep Learning]]** by [François Fleuret](https://fleuret.org/public/lbdl.pdf)
-- **[[thoughts/Freud#The Ego and the Id|The Ego and the Id]]** by Sigmund Freud
 - **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
 - **[Web Browser Engineering](https://browser.engineering/onepage.html)** by Pavel Panchekha & Chris Harrelson
-- **1984** by George Orwell
 - The **[[thoughts/Philosophy and Nietzsche#The Gay Science|Gay]] [[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|Science]]** by Friedrich Nietzsche
+- **The Three-Body Problem** by Liu Cixin
+- **Beyond The Pleasure Principle** by [[thoughts/Freud|Sigmund Freud]]
+- **Essays in Love** by Alain de Botton
 
 ### 2023
 

@@ -1,6 +1,6 @@
 import { QuartzTransformerPlugin } from "../types"
 import { Root as MdRoot } from "mdast"
-import { Root as HTMLRoot, Element } from "hast"
+import { Element } from "hast"
 import { visit } from "unist-util-visit"
 // @ts-ignore
 import Lexer from "pseudocode/src/Lexer.js"
@@ -11,7 +11,7 @@ import Renderer from "pseudocode/src/Renderer.js"
 import { s, h } from "hastscript"
 import { extractInlineMacros } from "../../util/latex"
 import { toHtml } from "hast-util-to-html"
-import { fromHtml } from "hast-util-from-html"
+import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 
 export interface Options {
   code: string
@@ -137,7 +137,7 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 return `$${inlineMacros}${p1}$`
               })
 
-              const rendered = fromHtml(
+              const rendered = fromHtmlIsomorphic(
                 renderToString(algoWithPreamble!, { ...opts?.renderer, lineNumber }),
                 { fragment: true },
               ).children[0] as Element

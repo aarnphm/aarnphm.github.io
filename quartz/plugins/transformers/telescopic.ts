@@ -28,7 +28,7 @@ import isAbsoluteUrl from "is-absolute-url"
 import { FullSlug, simplifySlug, splitAnchor, stripSlashes, transformLink } from "../../util/path"
 import path from "path"
 import { FindAndReplaceList } from "hast-util-find-and-replace"
-import { fromHtml } from "hast-util-from-html"
+import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 // @ts-ignore
 import script from "../../components/scripts/telescopic.inline.ts"
 import content from "../../components/styles/telescopic.inline.scss"
@@ -177,9 +177,8 @@ function mdToContent(mdContent: string, separator: string = " "): Content {
 }
 
 function contentToHast(content: Content, opts: Config) {
-  function hastFromHtml(value: string) {
-    return fromHtml(value, { fragment: true }) as unknown as Element
-  }
+  const hastFromHtmlFragment = (value: string): Element =>
+    fromHtmlIsomorphic(value, { fragment: true }) as unknown as Element
 
   function processContent(line: Content) {
     let lastIndex = 0
@@ -194,34 +193,19 @@ function contentToHast(content: Content, opts: Config) {
       lineText = after.join(replacement.og)
 
       // Add text before replacement
-      nodes.push(hastFromHtml(before))
+      nodes.push(hastFromHtmlFragment(before))
 
       // Create telescopic node
-      const detail: Element = {
-        type: "element",
-        tagName: "span",
-        properties: { className: ["details", "close"] },
-        // TODO: have to add addEventListener for click here to toggle class
-        children: [
-          // Original text
-          {
-            type: "element",
-            tagName: "span",
-            properties: { className: ["summary"] },
-            children: [hastFromHtml(replacement.og)],
-          },
-          // Expanded content
-          {
-            type: "element",
-            tagName: "span",
-            properties: { className: ["expanded"] },
-            children: processContent({
-              text: replacement.new,
-              replacements: replacement.replacements,
-            }),
-          },
-        ],
-      }
+      const detail: Element = h("span", { class: "details close" }, [
+        // Original text
+        h("span", { class: "summary" }, [hastFromHtmlFragment(replacement.og)]),
+        // Expanded content
+        h(
+          "span",
+          { class: "expanded" },
+          processContent({ text: replacement.new, replacements: replacement.replacements }),
+        ),
+      ])
 
       nodes.push(detail)
       lastIndex = index + replacement.og.length
@@ -230,15 +214,31 @@ function contentToHast(content: Content, opts: Config) {
     // Add remaining text
     // and a smoll refresh button
     if (lastIndex < lineText.length) {
-      nodes.push(hastFromHtml(lineText.slice(lastIndex)))
+      nodes.push(hastFromHtmlFragment(lineText.slice(lastIndex)))
     }
 
     return nodes
   }
 
+  // Helper to get fully expanded text
+  function getFullText(line: Content): string {
+    let text = line.text
+    for (const replacement of line.replacements) {
+      text = text.replace(replacement.og, replacement.new)
+      // Recursively expand nested replacements
+      const nestedContent = {
+        text: replacement.new,
+        replacements: replacement.replacements,
+      }
+      text = text.replace(replacement.new, getFullText(nestedContent))
+    }
+    return text
+  }
+
   return h(
     "div#telescope",
     { "data-expand": opts.shouldExpandOnMouseOver ? "hover" : "click" },
+    h("div", { id: "fulltext" }, fromHtmlIsomorphic(getFullText(content), { fragment: true })),
     processContent(content),
   )
 }
@@ -284,14 +284,14 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
           const wikilinksReplace = (
             _value: string,
             ...capture: string[]
-          ): { full: string; alias: string } => {
+          ): { dest: string; alias: string; dataSlug: string } => {
             let [rawFp, rawHeader, rawAlias] = capture
             const fp = rawFp?.trim() ?? ""
             const anchor = rawHeader?.trim() ?? ""
             const alias = rawAlias?.slice(1).trim()
 
             let dest = fp + anchor
-            if (isAbsoluteUrl(dest)) return { full: dest, alias: dest }
+            if (isAbsoluteUrl(dest)) return { dest, alias: dest, dataSlug: dest }
 
             dest = transformLink(file.data.slug!, dest, {
               allSlugs: ctx.allSlugs,
@@ -309,7 +309,7 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
 
             // need to decodeURIComponent here as WHATWG URL percent-encodes everything
             const full = decodeURIComponent(stripSlashes(destCanonical, true)) as FullSlug
-            return { full, alias: alias ?? path.basename(fp) }
+            return { dest, alias: alias ?? path.basename(fp), dataSlug: full }
           }
 
           visit(tree, "element", (node, index, parent) => {
@@ -321,30 +321,15 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
                   [
                     wikilinkRegex,
                     (match, ...link) => {
-                      const { full, alias } = wikilinksReplace(match, ...link)
+                      const { dest, alias, dataSlug } = wikilinksReplace(match, ...link)
 
-                      return toHtml(
-                        h(
-                          "a",
-                          { href: full, "data-slug": full, class: "internal" },
-                          { type: "text", value: alias },
-                        ),
-                      )
+                      return toHtml(h("a", { href: dest }, { type: "text", value: alias }))
                     },
                   ],
                   [
                     linkRegex,
                     (_match, value, href) => {
-                      return toHtml(
-                        h(
-                          "a",
-                          {
-                            href,
-                            class: "external",
-                          },
-                          { type: "text", value },
-                        ),
-                      )
+                      return toHtml(h("a", { href }, { type: "text", value }))
                     },
                   ],
                 ]

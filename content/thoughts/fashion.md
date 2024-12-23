@@ -3,6 +3,7 @@ id: fashion
 tags:
   - seed
 date: "2024-02-19"
+modified: 2024-12-23 08:54:29 GMT-05:00
 title: fashion.
 ---
 
@@ -89,3 +90,10 @@ The following are few of favourite brands, in no particular order:
 | Abercrombie & Fitch                     | Baggy jeans, flannels comfy wear.                                             |
 | Massimo Dutti                           | Their leather jackets are nice.                                               |
 | Sezzane                                 | Their blouses are nice.                                                       |
+
+### fit
+
+_A few items that I love_
+
+- Maxi Candy Hobo from [Mansur Gavriel](https://www.mansurgavriel.com/products/maxi-candy-bag-black)
+-

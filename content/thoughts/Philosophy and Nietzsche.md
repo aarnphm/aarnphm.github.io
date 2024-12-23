@@ -4,7 +4,7 @@ tags:
   - philosophy
   - seed
 date: "2023-12-04"
-modified: 2024-12-18 15:00:07 GMT-05:00
+modified: 2024-12-23 09:17:02 GMT-05:00
 title: Philosophy and Nietzsche
 ---
 
@@ -46,10 +46,7 @@ Force is not a cause, but a symptom.
 
 ### Against [[thoughts/dialectics]]
 
-Theory of force
-Life struggles with another form of life
-
-it affirms its own difference and enjoys this difference.
+Life struggles with another form of life as it affirms its own difference and enjoys this difference.
 
 The negative is not present in the essence as that from which force draws its activity: on the contrary it is a result of activity, of the existence of an active force and the affirmation of its difference.
 The negative is a product of existence itself: the aggression necessarily linked to an active existence, the aggression of an affirmation.
@@ -68,6 +65,7 @@ This is the new, aggressive and elevated conceptual element that empiricism subs
 ### Tragedy
 
 > [!important] Tragic
+>
 > The linking among contradictions, negatives, and opposition
 
 Tragedy has three ways of dying:
@@ -104,7 +102,7 @@ Mentioned Heraclitus = tragic thinker
 H understood existence on the basis of an instinct of [[thoughts/play|play]]
 Existence as an [[thoughts/aesthetic value|aesthetic]] phenomenon rather than moral or religious
 
-Affirmation of being
+#### Affirmation of [[thoughts/being]]
 
 Heraclitus denied the duality of worlds, "he denied being itself'. Moreover he made an affirmation of becoming. We have to reflect for a long time to understand what it means to make an affirmation of becoming.
 
@@ -147,7 +145,8 @@ Necessity is affirmed by chances and chances id being affirmed by the act of nec
 Spirit of revenge as in different form nihilism takes place
 It is a type, but not separable from typology
 
-The Touchstone
+### The Touchstone
+
 Relates to other tragic philosopher, but shan't take this at face value
 
 Tragedy in Nietzsche philosophy, one must ask:
@@ -155,7 +154,33 @@ Tragedy in Nietzsche philosophy, one must ask:
 - How does this other think?
 - How much ressentiment and bad conscience remains in his thoughts?
 
-Zarathustra opposes playing to betting, dancing to leaping
+Zarathustra opposes playing to betting, dancing to leaping.
+
+### What is the [[thoughts/Will to Power|will to power]]?
+
+The will to power is the element from which derive both the quantitative difference of related forces and the quality that devolves into each force in this relations
+
+Mixed with eternal return, centered around the concept of force and internal will
+
+Deleuze brought up the argument that Nietzsche belongs to neo-Kantian not because his philosophy follows deontological framework, but because of the way he handles these Kantian demands
+
+> [!important] synthesis
+>
+> Established the principle of synthesis, the will to power and determined this as the differential and genetic element of force in which directly confronts one another.
+
+He turned synthesis into synthesis of sheer force
+
+The will in power is the synthesis itself, and in the synthesis in relation to time, forces pass through the same difference again and results in diversity
+
+- synthesis is one of the force
+- The difference and reproduction is one of the force
+- The _eternal return_ is the synthesis in which its principle is the same ipl to power
+
+N oppose will to power to Schopenhauerian will to live, only because of the extreme generality of the latter. (P.51)
+
+> _What does this distinction mean? The passage quoted above invites comment on every word. The concept of force is, by nature, victorious because the relation of force to force, understood conceptually, is one of domination: when two forces are related one is dominant and the other is dominated. (Even God and the universe are caught in a relation of domination, however debatable the interpretation of such a relation may be in this case.)_
+
+> Nevertheless, this victorious concept of force needs a complement and this complement is internal, an internal will. It would not be victorious without such an addition. This is because relations of forces remain indeterminate unless an element which is capable of determining them from a double point of view is added to force itself. Forces in relation reflect a simultaneous double genesis: the reciprocal genesis of their difference in quantity and the absolute genesis of their respective qualities. The will to power is thus added to force, but as the differential and genetic element, as the internal element of its production. It is in no way anthropomorphic. More precisely, it is added to force as the internal principle of the determination of its quality in a relation (x + dx) and as the internal principle of the quantitative determination of this relation itself (dy/dx). The will to power must be described as the genealogical element of force and of forces. Thus it is always through the will to power that one force prevails over others and dominates or commands them. Moreover it is also the will to power (dy) which makes a force obey within a relation; it is through will to power that it obeys."
 
 ---
 

@@ -568,9 +568,7 @@ export function transcludeFinal(
             }
           }
 
-          if (startIdx === undefined) {
-            return
-          }
+          if (startIdx === undefined) return
 
           node.children = [
             anchor(inner.properties?.href as string, url, alias, title),

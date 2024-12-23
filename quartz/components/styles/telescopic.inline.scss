@@ -22,6 +22,10 @@
 #telescope {
   color: var(--telescope-text-color);
 
+  div#fulltext {
+    display: none;
+  }
+
   &#telescope {
     blockquote {
       margin-left: 0;
