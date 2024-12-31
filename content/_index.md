@@ -8,7 +8,7 @@ tags:
   - fruit
 date: "2022-04-22"
 description: Aaron's digital garden
-modified: 2024-12-22 14:08:42 GMT-05:00
+modified: 2024-12-28 00:21:48 GMT-05:00
 title: Aaron's notes
 ---
 
@@ -56,7 +56,7 @@ Currently, I'm working at a [infrastructure startup](https://bentoml.com) buildi
                                   * rosé
                                     * <span class="rose">rosé</span> are my two favourite colours.
                                     * <br /><br />Cooking
-                                      * Cooking is my [[/tags/love]]
+                                      * <br /><br />Cooking is my [[/tags/love]]
                                       * language
                                         * language, which I learn from my
                                         * mom.
@@ -83,7 +83,7 @@ Currently, I'm working at a [infrastructure startup](https://bentoml.com) buildi
                                                             * as a medium of [[thoughts/representations|expression]]
                                                               * to fullfil one's [[thoughts/desire]] in life. In general, sofware should
                                                               * be
-                                                                * be [[/uses|minimal]].
+                                                                * be minimal.
                                                                   * be intuitive
-                                                                    * be [malleable](https://www.geoffreylitt.com/2023/03/25/llm-end-user-programming.html)
+                                                                    * be [malleable](https://www.geoffreylitt.com/2023/03/25/llm-end-user-programming.html).
 ```

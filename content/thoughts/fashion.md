@@ -3,7 +3,7 @@ id: fashion
 tags:
   - seed
 date: "2024-02-19"
-modified: 2024-12-23 08:54:29 GMT-05:00
+modified: 2024-12-23 19:58:00 GMT-05:00
 title: fashion.
 ---
 
@@ -90,6 +90,17 @@ The following are few of favourite brands, in no particular order:
 | Abercrombie & Fitch                     | Baggy jeans, flannels comfy wear.                                             |
 | Massimo Dutti                           | Their leather jackets are nice.                                               |
 | Sezzane                                 | Their blouses are nice.                                                       |
+
+Wish list brand:
+
+| Brand              | Reasoning                           |
+| ------------------ | ----------------------------------- |
+| from Yukio Akamine | Emm I wanna a blouse                |
+| Lemaire            | Uhm hello have you seen them boots? |
+
+Inspo list:
+
+https://x.com/dieworkwear/status/1870951477285687777
 
 ### fit
 

@@ -2,6 +2,7 @@ import { computePosition, flip, inline, offset, shift } from "@floating-ui/dom"
 import { normalizeRelativeURLs } from "../../util/path"
 import { getContentType } from "../../util/mime"
 import xmlFormat from "xml-formatter"
+import { fetchCanonical } from "./util"
 
 // Helper to manage blob URL cleanup
 const blobCleanupMap = new Map<string, NodeJS.Timeout>()
@@ -94,9 +95,9 @@ async function mouseEnterHandler(
   let response: Response | void
   if (link.dataset.arxivId) {
     const url = new URL(`https://cdn.aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
-    response = await fetch(url).catch(console.error)
+    response = await fetchCanonical(url).catch(console.error)
   } else {
-    response = await fetch(`${targetUrl}`).catch(console.error)
+    response = await fetchCanonical(`${targetUrl}`).catch(console.error)
     document.dispatchEvent(new CustomEvent("nav", { detail: { url: link.href } }))
   }
 

@@ -11,6 +11,7 @@ import { removeAllChildren, Dag, DagNode } from "./util"
 import { ContentIndex, ContentDetails } from "../../plugins"
 import { unescapeHTML } from "../../util/escape"
 import { formatDate } from "../Date"
+import { fetchCanonical } from "./util"
 
 // adapted from `micromorph`
 // https://github.com/natemoo-re/micromorph
@@ -52,6 +53,19 @@ function notifyNav(url: FullSlug) {
 
 const cleanupFns: Set<(...args: any[]) => void> = new Set()
 window.addCleanup = (fn) => cleanupFns.add(fn)
+
+function startLoading() {
+  const loadingBar = document.createElement("div")
+  loadingBar.className = "navigation-progress"
+  loadingBar.style.width = "0"
+  if (!document.body.contains(loadingBar)) {
+    document.body.appendChild(loadingBar)
+  }
+
+  setTimeout(() => {
+    loadingBar.style.width = "100%"
+  }, 100)
+}
 
 // Additional interfaces and types
 
@@ -249,7 +263,7 @@ class StackedNoteManager {
     url.hash = ""
     url.search = ""
 
-    const response = await fetch(url.toString()).catch(console.error)
+    const response = await fetchCanonical(url.toString()).catch(console.error)
     if (!response) return
 
     const txt = await response.text()
@@ -641,8 +655,10 @@ async function navigate(url: URL, isBack: boolean = false) {
     return await stacked.navigate(url)
   }
 
+  startLoading()
+
   p = p || new DOMParser()
-  const contents = await fetch(`${url}`)
+  const contents = await fetchCanonical(`${url}`)
     .then((res) => {
       const contentType = res.headers.get("content-type")
       if (contentType?.startsWith("text/html")) {

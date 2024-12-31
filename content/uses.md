@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2024-01-22"
 description: Includes the tools I use, workflow,  etc.
-modified: "2024-10-02"
+modified: 2024-12-26 17:55:39 GMT-05:00
 title: uses.
 ---
 
@@ -25,7 +25,7 @@ title: uses.
 
 ### software.
 
-- [Alacritty](https://alacritty.org/)
+- [Ghostty](https://ghostty.org/)
   - [neovim](https://neovim.io/) and [config](https://github.com/aarnphm/editor) ^neovim
   - patched [Berkeley Mono](https://berkeleygraphics.com/typefaces/berkeley-mono/) with Nerd Fonts.
 - [Obsidian](https://obsidian.md/), hosted with [Quartz](https://quartz.jzhao.xyz) (this site)

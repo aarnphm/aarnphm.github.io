@@ -1,0 +1,16 @@
+@use "../base.scss";
+@use "../variables.scss" as *;
+
+body[data-layout="letter"] {
+  .header,
+  .byline,
+  .page-footer {
+    display: none;
+  }
+
+  @media all and ($desktop) {
+    .main-col {
+      grid-column: 4/9;
+    }
+  }
+}

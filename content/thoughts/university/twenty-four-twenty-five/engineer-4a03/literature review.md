@@ -4,10 +4,10 @@ tags:
   - engineer4a03
 date: "2024-10-07"
 description: How we understand machine learning system is how we can move towards a safe futures, yet the road ahead lies many troubles to overcome. A literature review into the inception of the field, as well as where do we go from here.
-modified: 2024-12-08 04:50:38 GMT-05:00
+modified: 2024-12-23 17:58:35 GMT-05:00
 noindex: true
 sidenotes: false
-title: machine learning, as inception of time, a literature review
+title: machine learning, from the inception of time, a literature review
 ---
 
 See also [[posts/chatgpt|essays on ChatGPT]], [[thoughts/university/twenty-four-twenty-five/engineer-4a03/case study|case study on Cambridge Analytica]]
@@ -60,11 +60,11 @@ In retrospect, GOFAI are [[thoughts/Determinism|deterministic]] in a sense that 
 Connectionist networks, on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
 Unlike GOFAI, its internal representation is determined by the state of the entire network rather than any single unit.
 Given the rise of Moore's Law and the exponential amount of computing and data available, we are currently witnessing the dominance of connectionist networks, especially with the injection of LLMs into the mainstream [@kaplan2020scalinglawsneurallanguage],
-where the majority of research are focused on developing artificial neural networks that optimizes around loss functions [@vaswani2023attentionneed] [@srivastava_dropout_2014]. One notable example that combines both GOFAI and NFAI
+where the majority of research are focused on developing artificial neural networks that optimizes around loss functions [@vaswani2023attentionneed; @srivastava_dropout_2014]. One notable example that combines both GOFAI and NFAI
 systems is AlphaZero, a connectionist network based Go playing systems, that uses a deep neural networks to assess new positions and Monte-Carlo Tree Search (a GOFAI algorithm) to determine its next move [@silver2017masteringchessshogiselfplay].
 
 [^2]:
-    According to [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Plato]], Socrates asked Euthyphro, a fellow Athenian who is about to turn in his own father for murder in the name of piety: "I want to know what is characteristic of piety which makes all actions pious. [...] that I may have it to turn to, and to use as a standard whereby to judge your actions and those of other men."
+    According to [[thoughts/Plato]], Socrates asked Euthyphro, a fellow Athenian who is about to turn in his own father for murder in the name of piety: "I want to know what is characteristic of piety which makes all actions pious. [...] that I may have it to turn to, and to use as a standard whereby to judge your actions and those of other men."
     This is Socrates' version of [[thoughts/effective procedure]] for modern-day computer scientists.
 
 [^3]:

@@ -83,7 +83,7 @@ You can find internal monologue under [[/posts/]] index.
 
 - OpenLLM, and everything about running LLMs in production at Hack The North (2023)
   - Source: [[thoughts/images/htn-openllm.pdf|slides]]
-    ![[thoughts/images/htn-2023-speaks.webp]]
+    ![[posts/htn-2023-speaks.webp]]
 
 ## companies.
 

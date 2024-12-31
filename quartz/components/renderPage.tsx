@@ -1109,10 +1109,11 @@ export function renderPage(
 
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
   const lang = (componentData.fileData.frontmatter?.lang ?? cfg.locale)?.split("-")[0] ?? "en"
+  const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? "default"
   const doc = (
     <html lang={lang}>
       <Head {...componentData} />
-      <body data-slug={slug} data-language={lang} data-menu={isMenu}>
+      <body data-slug={slug} data-language={lang} data-menu={isMenu} data-layout={pageLayout}>
         <main
           data-scroll-container
           id="quartz-root"

@@ -14,7 +14,7 @@ E. dialogue shows [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Socr
 
 E. definition of piety and S's objection for it. --> discussion in Apology about relation between philosophy and good life
 
-[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Plato#Phaedo|Phaedo]]'s philosophy for the soul
+[[thoughts/Plato#Phaedo|Phaedo]]'s philosophy for the soul
 
 ### Q2.
 

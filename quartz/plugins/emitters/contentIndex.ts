@@ -85,6 +85,7 @@ function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: nu
 
       return f1.title.localeCompare(f2.title)
     })
+    .filter(([_, content]) => content.fileData?.frontmatter?.noindex !== true)
     .map(([slug, content]) => createURLEntry(simplifySlug(slug), content))
     .slice(0, limit ?? idx.size)
     .join("")
@@ -143,6 +144,7 @@ function generateAtomFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: n
 
       return f1.title.localeCompare(f2.title)
     })
+    .filter(([_, content]) => content.fileData?.frontmatter?.noindex !== true)
     .map(([slug, content]) => createURLEntry(simplifySlug(slug), content))
     .slice(0, limit ?? idx.size)
     .join("")

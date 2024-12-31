@@ -21,7 +21,7 @@ Reference: [[thoughts/university/twenty-three-twenty-four/philo-1aa3/1A3Reader(2
 
 In [[thoughts/university/twenty-three-twenty-four/philo-1aa3/tut/Phaedo and Apology|Phaedo]]: `The body confuses the soul and does not allow it to acquire truth and wisdom`
 
-_See [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Plato#Apology|Apology]] for more information_
+_See [[thoughts/Plato#Apology|Apology]] for more information_
 
 _Arguments for Survival_
 
@@ -44,7 +44,7 @@ _Against soul scattering_
 - Soul brings life to a body -> death changes the body, but the souls live on.
 - Idea of the Even cannot become odd, Hot cannot become cold, soul, makes a body alive cannot die.
 
-_See [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Plato#Republic|Republic]]_
+_See [[thoughts/Plato#Republic|Republic]]_
 
 - Belief is liable to error, knowledge is not.
 - Belief can be changed by persuasion, knowledge cannot be.

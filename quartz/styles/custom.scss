@@ -8,6 +8,7 @@
 @use "./pages/curius.scss";
 @use "./pages/landing.scss";
 @use "./pages/notfound.scss";
+@use "./pages/letters.scss";
 
 @include font-face(
   "Berkeley Mono",
@@ -188,6 +189,11 @@ $selector: "&:not(#{list.nth($excluded-hover-classes, 1)})";
 a {
   &[data-bib] {
     background-color: initial;
+    text-decoration: none;
+  }
+
+  &[data-footnote-backref] {
+    text-decoration: none;
   }
 
   &[data-role="anchor"] {

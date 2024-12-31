@@ -2,7 +2,6 @@
 @use "../variables.scss" as *;
 
 body[data-slug="index"] {
-  cursor: crosshair;
   overflow-x: hidden;
 
   .popover-inner {

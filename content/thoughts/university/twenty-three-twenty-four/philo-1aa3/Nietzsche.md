@@ -118,7 +118,7 @@ Greek tragic drama
 
 > "Art is worth more than truth."
 
-Shares' [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Plato|Plato]]'s view of democracy. Values life of creativity, to invent new values.
+Shares' [[thoughts/Plato|Plato]]'s view of democracy. Values life of creativity, to invent new values.
 
 Acknowledges death, suffering, tragedy. Not defects, or overcome by science.
 

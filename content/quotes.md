@@ -6,7 +6,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-01-23"
-modified: "2024-09-27"
+modified: 2024-12-31 05:28:16 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 title: advice.
 transclude:
@@ -24,6 +24,8 @@ Your life so far is a drawing canvas. You can't change what's already been drawn
 20 years from now you will be more disappointed by the things that you didn’t do than by the ones you did do. So throw off the bowlines. Sail away from the safe harbour. Catch the trade winds in your sails. Explore. Dream. Discover. -- Mark Twain
 
 Sometimes, we [care] too much about potential, less on credentials -- Kate
+
+But no matter the medicinal virtues of being a true friend or sustaining a long close relationship with another, the ultimate touchstone of friendship is not improvement, neither of the self nor of the other, the ultimate touchstone is witness, the privilege of having been seen by someone and the equal privilege of being granted the sight of the essence of another, to have walked with them and to have believed in them, and sometimes just to have accompanied them for however brief a span, on a journey impossible to accomplish alone. —- David Whyte
 
 ## On bits and bytes.
 
@@ -66,6 +68,8 @@ The first principle is that you must not fool yourself, and you are the easiest 
 Success consists of going from failure to failure without loss of enthusiasm. -- Winston Churchill
 
 [One] who works with the door open gets all kinds of interruptions, but [they] also occasionally gets clues as to what the world is and what might be important. -- Richard Hamming
+
+An old friend of mine, a journalist, once said that paradise on earth was to work all day alone in anticipation of an evening in interesting company. -- Ian McEwan
 
 ## On randomness and fun.
 

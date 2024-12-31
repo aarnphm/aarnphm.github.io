@@ -307,7 +307,7 @@ figure {
       font-size: 14px;
       padding: 0.1rem 0.5rem;
       border: 1px solid var(--lightgray);
-      width: max-content;
+      width: fit-content;
       border-radius: 5px;
       margin-bottom: -0.5rem;
       color: var(--darkgray);
@@ -656,4 +656,15 @@ iframe.pdf {
   height: 100%;
   width: 100%;
   border-radius: 5px;
+}
+
+.navigation-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: var(--secondary);
+  transition: width 0.2s ease;
+  z-index: 9999;
 }
