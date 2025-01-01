@@ -4,7 +4,7 @@ tags:
   - friend
 date: "2024-12-26"
 description: and there are certain peculiar about capturing my thoughts/emotions about 2024, with you.
-modified: 2024-12-31 16:50:43 GMT-05:00
+modified: 2024-12-31 16:54:36 GMT-05:00
 noindex: true
 pageLayout: letter
 signature: with abundance of love and joy - Aaron
@@ -77,9 +77,7 @@ that it fit into any predetermined shape.
 > millions of attractive people in the world whose faces and bodies mean nothing to me,
 > whom I can walk by, talk to, marvel at their build or dress or gaze without the impact of it ever seeping
 > beyond the surface. It’s only when someone becomes truly precious that their appearance suddenly means something to you.
-> Their freckles. Lower lip. Asymmetrical eyebrows. Bike tan. You stop appraising, start studying. You stop looking, keep finding.
->
-> - Ava from bookbear
+> Their freckles. Lower lip. Asymmetrical eyebrows. Bike tan. You stop appraising, start studying. You stop looking, keep finding. -- Ava from bookbear
 
 Appiah writes that "in life, the challenge is not so much to figure out how best to play the game; the challenge is to figure out what game you're playing." For the longest time, I thought I was playing the game of careful distance, of rational friendship, of controlled affection. But maybe I've been playing a different game altogether - one where sincerity trumps strategy, where paying attention is more important than keeping score. One where beauty isn't about the initial appraisal but about the continuous discovery of someone's essence through their smallest gestures.
 
