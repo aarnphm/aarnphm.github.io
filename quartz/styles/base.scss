@@ -563,11 +563,7 @@ ol.overflow {
     grid-column: 1/-1;
   }
 }
-@media all and ($tablet) {
-  .side-col {
-    grid-column: 3 / -3;
-  }
-}
+
 @media all and ($mobile) {
   .side-col {
     grid-column: 3 / -3;
