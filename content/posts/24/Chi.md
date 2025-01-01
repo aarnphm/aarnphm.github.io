@@ -4,7 +4,7 @@ tags:
   - friend
 date: "2024-12-27"
 description: an unexpected turn of events.
-modified: 2024-12-31 06:44:16 GMT-05:00
+modified: 2024-12-31 16:11:04 GMT-05:00
 noindex: true
 pageLayout: letter
 signature: with love and prosperity - Aaron
@@ -24,7 +24,7 @@ I remember typing back "same." We never used to talk like this before. Now here 
 every small disaster, every tiny victory. The kind of stuff that seems meaningless but isn't.
 
 Maybe one day we'll be old, sitting on a ranch somewhere, telling our kids stories about this year. About how we found each other again through the dumbest things - Formula 1, social media, late-night texts.
-Like Simone Weil once said: "attention is the rarest form of generosity". That's what we did, I guess. Paid attention. :happy:
+Like Simone Weil once said: "attention is the rarest form of generosity". That's what we did, I guess. Paid attention. :smile:
 
 Not exactly the way we planned it, but here we are. Still standing. Still watching those cars go in circles. Still sending each other stupid memes. Maybe that's what matters in the end.
 

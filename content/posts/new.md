@@ -4,8 +4,7 @@ tags:
   - fruit
 date: "2024-09-30"
 description: And on perplexity of hackathon.
-modified: 2024-12-16 10:14:46 GMT-05:00
-socialDescription: On perplexity of hackathon.
+modified: 2024-12-31 08:52:54 GMT-05:00
 socials:
   substack: https://open.substack.com/pub/livingalone/p/i-saw-a-disstrack-dropped-at-a-hackathon?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
   twitter: https://x.com/aarnphm_/status/1841401912815464735

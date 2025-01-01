@@ -623,7 +623,6 @@ class StackedNoteManager {
 
     cleanupFns.forEach((fn) => fn())
     cleanupFns.clear()
-    notifyNav(getFullSlug(window))
   }
 
   async navigate(url: URL) {
@@ -827,8 +826,6 @@ if (stackedNotes && !container?.classList.contains("active")) {
     window.history.pushState("", document.title, baseUrl.toString().split("#")[0])
   }
   stacked.navigate(baseUrl)
-  // NOTE: we need to call this once more to register all existing handler
-  notifyNav(getFullSlug(window))
 }
 
 // remove elements on notes.aarnphm.xyz

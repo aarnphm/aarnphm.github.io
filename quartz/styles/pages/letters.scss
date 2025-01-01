@@ -9,7 +9,7 @@ body[data-layout="letter"] {
   }
 
   @media all and ($desktop) {
-    .main-col {
+    .main-col:not(.popover *) {
       grid-column: 4/9;
     }
   }
