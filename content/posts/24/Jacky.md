@@ -4,7 +4,7 @@ tags:
   - friend
 date: "2024-12-27"
 description: and a lens from a distant friend.
-modified: 2024-12-31 06:10:06 GMT-05:00
+modified: 2024-12-31 18:11:37 GMT-05:00
 noindex: true
 pageLayout: letter
 signature: with care and appreciation - Aaron
@@ -19,7 +19,7 @@ title: to jacky
 
 Hope you are enjoying your break and having some time off.
 
-There's something about watching someone work at their life with such care. Simone Weil in "First and Last Notebook" once said "attention is the purest form of generosity". I think about that when I see your posts pop up, even if they're fewer these days.
+There's something about watching someone work at their life with such care. Simone Weil in "First and Last Notebook" once said "[[thoughts/Attention|attention]] is the purest form of generosity". I think about that when I see your posts pop up, even if they're fewer these days.
 
 You've built something real out there in San Francisco. Not the big, showy kind of real. The quiet kind. The kind that comes from showing up to the same place,
 same time, week after week. Making those cups and bowls. Running those streets before dawn. It reminds me of that Carver story, "Cathedral," where the real connection happens not in some big moment,

@@ -4,7 +4,7 @@ tags:
   - friend
 date: "2024-12-26"
 description: and there are certain peculiar difficulties about capturing my emotions for 2024, with you.
-modified: 2024-12-31 17:37:34 GMT-05:00
+modified: 2024-12-31 18:20:47 GMT-05:00
 noindex: true
 pageLayout: letter
 signature: with abundance of love and joy - Aaron
@@ -85,7 +85,7 @@ This isn't about winning or losing anymore. It's about learning to see, really s
 how you become more themselves in certain lights, at certain hours, in certain moods. If this is a game, it's one where the rules keep changing, where every move reveals new possibilities,
 and where victory might just be the courage to keep playing with an open heart.
 
-_I know this has been all over the place, but I felt the need to write these down, as a way to crystalised thoughts that I have_
+_I know this has been all over the place, but I felt the need to write these down, as a way to crystalise thoughts that I have._
 
 > My friend once asked, "Why do you call her your closest friend on the Dunbar's number? What makes her so special?"
 >
