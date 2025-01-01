@@ -4,7 +4,7 @@ tags:
   - friend
 date: "2024-12-26"
 description: and there are certain peculiar about capturing my thoughts/emotions about 2024, with you.
-modified: 2024-12-31 16:54:36 GMT-05:00
+modified: 2024-12-31 17:07:06 GMT-05:00
 noindex: true
 pageLayout: letter
 signature: with abundance of love and joy - Aaron
@@ -81,11 +81,13 @@ that it fit into any predetermined shape.
 
 Appiah writes that "in life, the challenge is not so much to figure out how best to play the game; the challenge is to figure out what game you're playing." For the longest time, I thought I was playing the game of careful distance, of rational friendship, of controlled affection. But maybe I've been playing a different game altogether - one where sincerity trumps strategy, where paying attention is more important than keeping score. One where beauty isn't about the initial appraisal but about the continuous discovery of someone's essence through their smallest gestures.
 
-This isn't about winning or losing anymore. It's about learning to see, really see, another person. To notice how they move through the world, how they carry their joys and sorrows, how they become more themselves in certain lights, at certain hours, in certain moods. If this is a game, it's one where the rules keep changing, where every move reveals new possibilities, and where victory might just be the courage to keep playing with an open heart.
+This isn't about winning or losing anymore. It's about learning to see, really see, another person. To notice how you move through the world, how you carry your joys and sorrows,
+how you become more themselves in certain lights, at certain hours, in certain moods. If this is a game, it's one where the rules keep changing, where every move reveals new possibilities,
+and where victory might just be the courage to keep playing with an open heart.
 
 _I know this has been all over the place, but I felt the need to write these down, as a way to crystalised thoughts that I have_
 
-> My friend once asked, "Why do you call her your closed friend? What makes her so special?"
+> My friend once asked, "Why do you call her your close friend on the Dunbar's number? What makes her so special?"
 >
 > I smiled softly and said, "Because she's the one who stayed when the rest of the world walked away."
 >
