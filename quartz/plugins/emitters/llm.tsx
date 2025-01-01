@@ -70,7 +70,7 @@ export const LLM: QuartzEmitterPlugin = () => {
       for (const [tree, file] of content) {
         const slug = file.data.slug!
 
-        const externalResources = pageResources(pathToRoot(slug), resources)
+        const externalResources = pageResources(pathToRoot(slug), file.data, resources)
         const componentData: QuartzComponentProps = {
           ctx,
           fileData: file.data,

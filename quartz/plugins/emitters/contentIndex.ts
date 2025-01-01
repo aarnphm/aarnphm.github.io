@@ -16,6 +16,7 @@ export type ContentDetails = {
   title: string
   links: SimpleSlug[]
   tags: string[]
+  layout: "letter" | "default"
   content: string
   richContent: string
   fileData?: QuartzPluginData
@@ -210,7 +211,17 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
         const date = getDate(ctx.cfg.configuration, file.data) ?? new Date()
 
         if (opts?.includeEmptyFiles || (file.data.text && file.data.text !== "")) {
-          const links = file.data.links ?? []
+          // Filter out PDF links and links to noindex pages
+          const links = (file.data.links ?? []).filter((link) => {
+            // Skip PDFs
+            if (link.endsWith(".pdf")) return false
+
+            // Skip links to pages with noindex: true
+            const targetFile = content.find(([_, f]) => f.data.slug === link)?.[1]
+            if (targetFile?.data.frontmatter?.noindex === true) return false
+
+            return true
+          })
 
           file.data.links = links
 
@@ -222,6 +233,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
             richContent: escapeHTML(toHtml(tree as Root, { allowDangerousHtml: true })),
             date: date,
             fileData: file.data,
+            layout: file.data.frontmatter.pageLayout ?? "default",
             description: file.data.description ?? i18n(cfg.locale).propertyDefaults.description,
           })
         }

@@ -4,11 +4,11 @@ tags:
   - ml
 date: "2024-12-23"
 description: excerpt from the papers by Meta Research.
-modified: 2024-12-23 21:00:00 GMT-05:00
+modified: 2025-01-01 07:04:51 GMT-05:00
 title: The Llama 3  Herd of Model
 ---
 
-Paper from Meta essentially details step-by-step reproduction from training => scaling => inference [@grattafiori2024llama3herdmodels]
+[[thoughts/papers/2407.21783v3.pdf|details]] step-by-step reproduction from training => scaling => inference [@grattafiori2024llama3herdmodels]
 
 pre-train 405B on 15.6T tokens with 8K context windows.
 

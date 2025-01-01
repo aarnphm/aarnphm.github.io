@@ -73,6 +73,7 @@ const config: QuartzConfig = {
       Plugin.Pseudocode(),
       Plugin.TikzJax(),
       Plugin.Poetry(),
+      Plugin.Quotes(),
       Plugin.Signature(),
       Plugin.TelescopicText(),
       // FIXME: implement this

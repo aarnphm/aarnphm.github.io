@@ -5,7 +5,7 @@ tags:
   - fruit
 date: "2024-11-27"
 description: and what it meant to be an engineer
-modified: "2024-11-27"
+modified: 2025-01-01 07:33:51 GMT-05:00
 title: On occupational licensure
 ---
 
@@ -25,9 +25,9 @@ _The following in an excerpt of a paper I wrote for my coursework._
 
 [^links]: See also [Professional Engineers Act](https://www.ontario.ca/laws/statute/90p28) and [PEO Procedure](https://www.peo.on.ca/apply/licensing-changes#:~:text=applicants%20%E2%80%93%20PEO%20has%20launched%20an,Limited%20Licence%20in%20the%20future)
 
-<p class="quotes">
-  The overthrow of the medieval guild system was an indispensable early step in the rise of freedom in the Western world. -- Milton Friedman
-</p>
+```quotes
+The overthrow of the medieval guild system was an indispensable early step in the rise of freedom in the Western world. -- Milton Friedman
+```
 
 According to [@friedman1962capitalism], while necessary to protect consumers from fraudulent activities, occupational licensure inevitably becomes “a tool in the hand of a special producer group” to obtain monopolistic practices at the cost of public welfare. While the Act mandates that the practice of professional engineers must be upheld by provincial regulators so that “the public interest may be served and protected”, the PEO’s May 15 update may inadvertently restrict new entries into the field, particularly affecting those whose educational backgrounds do not align with traditional pathways, and exacerbate Canada’s current engineering shortage. This essay will draw arguments from history and argue why these changes seem to undermine the general ethos of the Professional Engineers Act.
 

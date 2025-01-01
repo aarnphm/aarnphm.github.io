@@ -34,7 +34,6 @@ export const defaultContentPageLayout: PageLayout = {
   sidebar: [
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Reader(),
-    Component.Mermaid(),
     Component.DesktopOnly(Component.Toolbar()),
   ],
 }

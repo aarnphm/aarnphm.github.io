@@ -26,6 +26,9 @@ import { JSX } from "preact"
 import { headingRank } from "hast-util-heading-rank"
 import type { TranscludeOptions } from "../plugins/transformers/frontmatter"
 import { QuartzPluginData } from "../plugins/vfile"
+// @ts-ignore
+import mermaidScript from "./scripts/mermaid.inline"
+import mermaidStyle from "./styles/mermaid.inline.scss"
 import { h, s } from "hastscript"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
@@ -394,12 +397,13 @@ export function mergeIsomorphic(ast: Node, suffix?: string) {
 
 export function pageResources(
   baseDir: FullSlug | RelativeURL,
+  fileData: QuartzPluginData,
   staticResources: StaticResources,
 ): StaticResources {
   const contentIndexPath = joinSegments(baseDir, "static/contentIndex.json")
   const contentIndexScript = `const fetchData = fetch("${contentIndexPath}").then(data => data.json())`
 
-  return {
+  const resources: StaticResources = {
     css: [
       { content: joinSegments(baseDir, "index.css") },
       {
@@ -426,14 +430,28 @@ export function pageResources(
         contentType: "inline",
       },
       ...staticResources.js,
-      {
-        src: joinSegments(baseDir, "postscript.js"),
-        loadTime: "afterDOMReady",
-        moduleType: "module",
-        contentType: "external",
-      },
     ],
   }
+
+  if (fileData.hasMermaidDiagram) {
+    resources.js.push({
+      script: mermaidScript,
+      loadTime: "afterDOMReady",
+      moduleType: "module",
+      contentType: "inline",
+    })
+    resources.css.push({ content: mermaidStyle, inline: true })
+  }
+
+  // NOTE: we have to put this last to make sure spa.inline.ts is the last item.
+  resources.js.push({
+    src: joinSegments(baseDir, "postscript.js"),
+    loadTime: "afterDOMReady",
+    moduleType: "module",
+    contentType: "external",
+  })
+
+  return resources
 }
 
 const defaultTranscludeOptions: TranscludeOptions = { dynalist: true, title: true }

@@ -1,4 +1,3 @@
-export { CodeViewer } from "./code-viewer"
 export { LLM } from "./llm"
 export { ContentPage } from "./contentPage"
 export { TagPage } from "./tagPage"

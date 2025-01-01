@@ -4,7 +4,7 @@ tags:
   - engineer4a03
 date: "2024-10-07"
 description: How we understand machine learning system is how we can move towards a safe futures, yet the road ahead lies many troubles to overcome. A literature review into the inception of the field, as well as where do we go from here.
-modified: 2024-12-23 17:58:35 GMT-05:00
+modified: 2025-01-01 07:36:12 GMT-05:00
 noindex: true
 sidenotes: false
 title: machine learning, from the inception of time, a literature review
@@ -14,9 +14,9 @@ See also [[posts/chatgpt|essays on ChatGPT]], [[thoughts/university/twenty-four-
 
 ## introduction.
 
-<p class="quotes">
-  To understand how AI is fundamentally political, we need to go beyond neural nets and statistical pattern recognition to instead ask <i>what</i> is being optimized, and <i>for whom</i>, and <i>who</i> gets to decide. Then we can trace the implications of those choices. -- Kate Crawford, <i>The Atlas of AI</i>
-</p>
+```quotes
+To understand how AI is fundamentally political, we need to go beyond neural nets and statistical pattern recognition to instead ask <i>what</i> is being optimized, and <i>for whom</i>, and <i>who</i> gets to decide. Then we can trace the implications of those choices. -- Kate Crawford
+```
 
 1979's "Star-Trek: the Motion Picture" centered around the antagonist, V'Ger, an artificial entity that have outgrown its original programs, sought annihilation upon planet Earth. At the core,
 the movie is mostly fictional, yet its prevalence to our current state of affairs is uncanny. Much in Artificial intelligence (AI) has changed since 1960s, including a shift in symbolic
@@ -41,9 +41,9 @@ as well as the ethical implications of AI systems. It will then conclude and pos
 
 ## growth.
 
-<p class="quotes">
-  <i>Mathematicians wish to treat matters of perception mathematically, and make themselves ridiculous [...] the mind [...] does it tacitly, naturally, and without technical rules.</i> -- Pascal, <i>Pensées</i>
-</p>
+```quotes
+Mathematicians wish to treat matters of perception mathematically, and make themselves ridiculous [...] the mind [...] does it tacitly, naturally, and without technical rules. -- Pascal, Pensées
+```
 
 The inception of [[thoughts/Machine learning|AI]] might well begin when the belief of a total formalisation of knowledge must be possible[^2]. From Plato's
 dichotomy of the rational soul from the body with its skills and intuition[^3], to Leibniz's conception of the binary systems as a "universal characteristics" [@leibniz_selections_1951{pp. 15, 25, 38}] that

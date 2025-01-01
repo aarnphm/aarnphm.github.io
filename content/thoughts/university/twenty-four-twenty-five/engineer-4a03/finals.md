@@ -4,13 +4,13 @@ tags:
   - engineer4a03
 date: "2024-12-08"
 description: and exercise.
-modified: 2024-12-08 23:19:30 GMT-05:00
+modified: 2025-01-01 07:35:17 GMT-05:00
 title: Ethics template a la carte
 ---
 
-<p class="quotes">
-  Tomorrow’s medicine is today’s research. That is why the question of how we allocate resources to research is at least as important as the question of how we allocate resources to health care itself. -- Tony Hope, <i>Medical Ethics</i>
-</p>
+```quotes
+Tomorrow’s medicine is today’s research. That is why the question of how we allocate resources to research is at least as important as the question of how we allocate resources to health care itself. -- Tony Hope
+```
 
 ### Privacy and Confidentiality
 

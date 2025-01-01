@@ -124,6 +124,7 @@ hgroup {
   & > .description {
     overflow: hidden;
     text-overflow: ellipsis;
+    font-style: italic;
 
     display: -webkit-box;
     -webkit-line-clamp: 3;

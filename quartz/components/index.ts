@@ -2,7 +2,6 @@ import Sidenotes from "./Sidenotes"
 import StackedNotes from "./StackedNotes"
 import Recommendations from "./Recommendations"
 import Byline from "./Byline"
-import Mermaid from "./Mermaid"
 import Image from "./Image"
 import Reader from "./Reader"
 import Toolbar from "./Toolbar"
@@ -36,7 +35,6 @@ export {
   Recommendations,
   StackedNotes,
   Byline,
-  Mermaid,
   Toolbar,
   Image,
   Reader,

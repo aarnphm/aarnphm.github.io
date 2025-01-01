@@ -1,5 +1,6 @@
 export { Pseudocode } from "./pseudocode"
 export { TikzJax } from "./tikz"
+export { Quotes } from "./quotes"
 export { Signature } from "./signatures"
 export { TelescopicText } from "./telescopic"
 export { GitHub } from "./github"

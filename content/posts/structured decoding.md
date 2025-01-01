@@ -6,7 +6,7 @@ tags:
 date: "2024-12-10"
 description: and vLLM integration with xgrammar.
 draft: true
-modified: 2024-12-31 05:51:42 GMT-05:00
+modified: 2025-01-01 12:13:28 GMT-05:00
 title: structured decoding, a guide for the impatient
 ---
 
@@ -16,13 +16,13 @@ This post will quickly introduce the history of language model, and posit why on
 
 ## language model, a brief historical context
 
-_if you have read about the history of the field before, feel free to skip this part to [[posts/structured decoding#why do we need structured decoding?|reason for guided decoding]]_
+_If you have read about the history of the field before, feel free to skip this part to [[posts/structured decoding#why do we need structured decoding?|reason for guided decoding]]_
 
 The birth of AI started with birth of reasoning (esp plato, but plato seemingly wants to look for semantic rather than syntactic criteria (Republic examples)) => difference in Aristotle for applying in a Platonic project => leads to "The belief that such a total formalization of knowledge must be possible soon came to dominate Western thought." => Leibniz of universal symbolic language => birth of boolean algebra => babbage invention of analytical machine => Turing article which then splits into two tracks of initial GOFAI for symbolic system building expert system (but then funding dried up given that doubts and not being able to scale to generalized items) == Concurrently the PDP group investigated Rossenblatt's perception => leads to explosion of statistical methods using in prediction models (which is black-box by nature) => leads to IBM systems which further proves that statistical modelings works better than symbolic => then the dominance of neural net/connectionist network here which leads to RNN development for address longer context => Attention/Transformers => Scaling law for systems based on language models (but the idea of symbolic is still there and actually become even more prevalent for structured generations and safety)
 
 The inception of [[thoughts/Machine learning|AI]] might well be traced back to the origin of logics, where men put emphasis on reducing reasoning to some specific sets of calculations (a [[thoughts/reductionism|reductionist]] approach).
-As such, Plato generalised the belief in total formalisation of knowledge, where knowledge must be universally applicable with explicit definitions[^intuition]. However, according to
-Alan Turing's seminal paper "Computing Machinery and Intelligence" where he posited that a high-speed digital computer, programmed with rules, would exhibit [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]] [@10.1093/mind/LIX.236.433],
+As such, Plato generalised the belief in total formalisation of knowledge, where knowledge must be universally applicable with explicit definitions[^intuition]. Alan Turing's seminal paper "Computing Machinery and Intelligence"
+where he posited that a high-speed digital computer, programmed with rules, would exhibit [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]] [@10.1093/mind/LIX.236.433],
 In the 1960s, a paradigm quickly emerged among researchers community that focused on symbolic [[thoughts/reason|reasoning]] was born, referred to as Good Old-Fashioned AI (GOFAI) [@10.7551/mitpress/4626.001.0001].
 The premises of GOFAI being expert systems designed to replicate the decision-making abilities of human specialists [^expert-system], though it quickly ran into funding problems due to its semantic representation not being able to scaled up to generalized tasks (Also known as the "AI Winter").
 
