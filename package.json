@@ -130,7 +130,7 @@
     "@types/mdast": "^4.0.4",
     "@types/unist": "^3.0.3",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.3",
     "@types/pretty-time": "^1.1.5",
     "@types/source-map-support": "^0.5.10",
     "@types/ws": "^8.5.13",
