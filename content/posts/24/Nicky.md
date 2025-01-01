@@ -3,8 +3,8 @@ id: Nicky
 tags:
   - friend
 date: "2024-12-26"
-description: and there are certain peculiar about capturing my thoughts/emotions about 2024, with you.
-modified: 2024-12-31 17:35:07 GMT-05:00
+description: and there are certain peculiar difficulties about capturing my emotions for 2024, with you.
+modified: 2024-12-31 17:37:34 GMT-05:00
 noindex: true
 pageLayout: letter
 signature: with abundance of love and joy - Aaron
