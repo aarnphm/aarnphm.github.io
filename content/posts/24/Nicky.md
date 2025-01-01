@@ -4,7 +4,7 @@ tags:
   - friend
 date: "2024-12-26"
 description: and there are certain peculiar about capturing my thoughts/emotions about 2024, with you.
-modified: 2024-12-31 17:07:06 GMT-05:00
+modified: 2024-12-31 17:35:07 GMT-05:00
 noindex: true
 pageLayout: letter
 signature: with abundance of love and joy - Aaron
@@ -87,7 +87,7 @@ and where victory might just be the courage to keep playing with an open heart.
 
 _I know this has been all over the place, but I felt the need to write these down, as a way to crystalised thoughts that I have_
 
-> My friend once asked, "Why do you call her your close friend on the Dunbar's number? What makes her so special?"
+> My friend once asked, "Why do you call her your closest friend on the Dunbar's number? What makes her so special?"
 >
 > I smiled softly and said, "Because she's the one who stayed when the rest of the world walked away."
 >
