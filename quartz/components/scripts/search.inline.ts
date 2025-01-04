@@ -394,7 +394,22 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     const highlights = [...preview.querySelectorAll(".highlight")].sort(
       (a, b) => b.innerHTML.length - a.innerHTML.length,
     )
-    highlights[0]?.scrollIntoView({ block: "start" })
+    if (highlights.length > 0) {
+      const highlight = highlights[0]
+      const container = preview
+      if (container && highlight) {
+        // Get the relative positions
+        const containerRect = container.getBoundingClientRect()
+        const highlightRect = highlight.getBoundingClientRect()
+        // Calculate the scroll position relative to the container
+        const relativeTop = highlightRect.top - containerRect.top + container.scrollTop - 20 // 20px buffer
+        // Smoothly scroll the container
+        container.scrollTo({
+          top: relativeTop,
+          behavior: "smooth",
+        })
+      }
+    }
   }
 
   async function onType(e: HTMLElementEventMap["input"]) {

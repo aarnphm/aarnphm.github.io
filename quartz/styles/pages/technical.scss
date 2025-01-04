@@ -7,18 +7,16 @@ body[data-layout="technical"] {
   }
 
   @media all and ($desktop) {
-    &:not(.popover *) {
-      .main-col {
-        grid-column: 5/10;
-      }
+    .main-col:not(.popover *) {
+      grid-column: 5/10;
+    }
 
-      menu.tags {
-        grid-column: 5/7;
-      }
+    menu.tags:not(.popover *) {
+      grid-column: 5/7;
+    }
 
-      ul.content-meta {
-        grid-column: 9/10;
-      }
+    ul.content-meta:not(.popover *) {
+      grid-column: 9/10;
     }
 
     .left-col {

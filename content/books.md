@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2022-04-22"
 description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
-modified: 2024-12-23 09:02:03 GMT-05:00
+modified: 2025-01-04 11:35:31 GMT-05:00
 title: antilibrary.
 ---
 
@@ -15,22 +15,23 @@ See also: [[/curius|digital version]]
 
 ## [[/tags/evergreen]] books
 
-_A list of book that remains forever in my bag_
+_A list of book that remains forever in my bag, and I like the idea of reading it in perpetuity_
 
 - Beyond Good and Evil by Friedrich Nietzsche
 - [[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]] by Gilles Deleuze
+- **[Web Browser Engineering](https://browser.engineering/onepage.html)** by Pavel Panchekha & Chris Harrelson
 
 ## current.
 
-| title                                             | author              | notes                                           |
-| ------------------------------------------------- | ------------------- | ----------------------------------------------- |
-| Essay on Love                                     | Alain de Botton     |                                                 |
-| The Critique of Pure Reason                       | Immanuel Kant       |                                                 |
-| The Metaphysics of Morals                         | Immanuel Kant       |                                                 |
-| Crime and Punishment                              | Fyodor Dostoevsky   |                                                 |
-| Structure and Interpretation of Computer Programs | Abelson and Sussman | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf) |
-| Man and His Symbols                               | Carl G. Jung        |                                                 |
-| The Second Sex                                    | Simone de Beauvoir  |                                                 |
+| title                                             | author              | notes                                                  |
+| ------------------------------------------------- | ------------------- | ------------------------------------------------------ |
+| The Critique of Pure Reason                       | Immanuel Kant       |                                                        |
+| The Metaphysics of Morals                         | Immanuel Kant       |                                                        |
+| Crime and Punishment                              | Fyodor Dostoevsky   |                                                        |
+| Structure and Interpretation of Computer Programs | Abelson and Sussman | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf)        |
+| Man and His Symbols                               | Carl G. Jung        |                                                        |
+| The Second Sex                                    | Simone de Beauvoir  |                                                        |
+| Being and Time                                    | Martin Heidegger    | [[thoughts/being#Heidegger's _Being and Time_\|notes]] |
 
 ## to read.
 
@@ -47,7 +48,6 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | [[thoughts/papers/Being and Some Philosophers.pdf\|Being and Some Philosophers]]                                         | Etienne Gilson                                                                                    |                                                                                                                                                                        |
 | The Phenomenology of Spirit                                                                                              | G. W. F. Hegel                                                                                    |                                                                                                                                                                        |
 | The World as Will and [[thoughts/representations\|Representation]]                                                       | Arthur Schopenhauer                                                                               |                                                                                                                                                                        |
-| The Prince                                                                                                               | Niccolò Machiavelli                                                                               |                                                                                                                                                                        |
 | Utilitarianism                                                                                                           | John Stuart [[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill\|Mill]]    |                                                                                                                                                                        |
 | Meditations on First Philosophy                                                                                          | René [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Descartes\|Descartes]], French ed. |                                                                                                                                                                        |
 | Existentialism in Social [[thoughts/education\|Pedagogy]]                                                                | Søren Kierkegaard                                                                                 |                                                                                                                                                                        |
@@ -57,7 +57,6 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | Repetition                                                                                                               | Kierkegaard                                                                                       |                                                                                                                                                                        |
 | On Certainty                                                                                                             | Ludwig Wittgenstein                                                                               |                                                                                                                                                                        |
 | The Conquest of Happiness                                                                                                | Bertrand Russell                                                                                  | [html](https://russell-j.com/beginner/COH-TEXT.HTM)                                                                                                                    |
-| Being and Time                                                                                                           | Heidegger                                                                                         |                                                                                                                                                                        |
 | Pensees                                                                                                                  | Pascal                                                                                            | [html](https://www.gutenberg.org/files/18269/18269-h/18269-h.htm)                                                                                                      |
 | Being and Nothingness                                                                                                    | Jean-Paul Sartre                                                                                  |                                                                                                                                                                        |
 | Philosophical Investigations                                                                                             | Ludwig Wittgenstein                                                                               | [pdf](https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf) |
@@ -140,6 +139,10 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 
 ## finished.
 
+### 2025
+
+- **The Prince** by Niccolò Machiavelli | |
+
 ### 2024
 
 - **The Trial** by Frank Kafka
@@ -154,7 +157,6 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 - **The end of the affair** by Graham Greene
 - **The Little Book of [[thoughts/deep learning|Deep Learning]]** by [François Fleuret](https://fleuret.org/public/lbdl.pdf)
 - **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
-- **[Web Browser Engineering](https://browser.engineering/onepage.html)** by Pavel Panchekha & Chris Harrelson
 - The **[[thoughts/Philosophy and Nietzsche#The Gay Science|Gay]] [[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|Science]]** by Friedrich Nietzsche
 - **The Three-Body Problem** by Liu Cixin
 - **Beyond The Pleasure Principle** by [[thoughts/Freud|Sigmund Freud]]

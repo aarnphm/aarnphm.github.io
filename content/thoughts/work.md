@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2021-12-22"
 description: Crafts that I have been brewing for the past while.
-modified: 2024-12-16 04:15:39 GMT-05:00
+modified: 2025-01-04 11:28:23 GMT-05:00
 title: work.
 ---
 
@@ -43,7 +43,7 @@ You can find internal monologue under [[/posts/]] index.
   - Source: <https://github.com/yetone/avante.nvim>
     ![[thoughts/images/avante.mp4]]
 
-- **tinymorph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-)
+- **tinymorph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-) [^tinymorph]
 
   - **WARNING**: Currently in research phase.
   - Trained [[thoughts/sparse autoencoder]] to interpret Llama 3.2 features [@templeton2024scaling]
