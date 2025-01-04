@@ -5,9 +5,8 @@ tags:
   - growth
 date: "2025-01-03"
 description: and confusion.
-modified: 2025-01-03 21:04:37 GMT-05:00
-socials:
-  substack: https://open.substack.com/pub/livingalone/p/her?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
+modified: 2025-01-03 22:05:52 GMT-05:00
+noindex: true
 title: her.
 ---
 
