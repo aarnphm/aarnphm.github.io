@@ -5,7 +5,9 @@ tags:
   - growth
 date: "2025-01-03"
 description: and confusion.
-modified: 2025-01-03 20:47:12 GMT-05:00
+modified: 2025-01-03 21:04:37 GMT-05:00
+socials:
+  substack: https://open.substack.com/pub/livingalone/p/her?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 title: her.
 ---
 
@@ -28,6 +30,7 @@ A partner is someone you are borrowing time with each other, the duration unknow
 With essence, a partner is someone you choose to keep experimenting with, under whatever conditions possible. When one iteration of the relationship doesn't work, you try another. You adapt and evolve together, knowing that, as "the true shape of things" puts it, "no one, no matter how prescient, can predict all the challenges that will emerge over 20 years of loving someone."
 
 Consider the moment you realize someone has become your partner. Not the formal declarations or ceremonies, but that subtle shift in consciousness when their presence in your life becomes both ordinary and extraordinary. When their particular way of stirring coffee or humming off-key while washing dishes becomes essential to your understanding of the world. The partner is both witness and accomplice to your life's narrative, though they may be writing a completely different story in their own mind. It's this disconnect - this impossible attempt to fully know another consciousness while being trapped in our own - that makes partnership both necessary and perpetually incomplete.
+
 ## what’s rly happening here?
 
 The line between friendship and love isn't a line at all. It's more like water seeping into soil - you never quite know where one ends and the other begins. Since writing that essay, I've noticed something shift, like a photograph slowly developing in darkroom fluid. The image isn't what I expected.
