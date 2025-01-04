@@ -63,9 +63,9 @@ The cosmos is organized by goodness. By gasping that we understand the world we 
 
 > And we can understand that, the idea of the good. At least some of us can. They are the philosophers, masters of the dialectic, and they should govern the rest.
 
-[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Aristotle|Aristotle]]
+[[thoughts/Aristotle|Aristotle]]
 
-![[thoughts/university/twenty-three-twenty-four/philo-1aa3/aristotle-metaphysics.webp]]![[thoughts/university/twenty-three-twenty-four/philo-1aa3/aristotle-form.webp]]
+![[thoughts/images/aristotle-metaphysics.webp]]![[thoughts/images/aristotle-form.webp]]
 
 _What is Truth?_
 

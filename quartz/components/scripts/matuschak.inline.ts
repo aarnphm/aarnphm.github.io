@@ -25,7 +25,11 @@ document.addEventListener("nav", async (ev) => {
       if (window.location.hash) {
         window.history.pushState("", document.title, currentUrl.split("#")[0])
       }
-      await window.stacked.navigate(new URL(`/${ev.detail.url}`, window.location.toString()))
+      window.stacked
+        .navigate(new URL(`/${ev.detail.url}`, window.location.toString()))
+        .then((data) => {
+          if (data) window.location.reload()
+        })
     } else {
       button.setAttribute("aria-checked", "false")
       container.classList.remove("active")

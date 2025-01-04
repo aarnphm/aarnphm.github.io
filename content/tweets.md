@@ -4,7 +4,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded
-modified: 2024-12-18 15:43:16 GMT-05:00
+modified: 2025-01-03 14:30:12 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -46,3 +46,8 @@ https://x.com/m_kaytweets/status/1801627208517140625 <!-- Liking things that are
 https://x.com/kepano/status/1694731713686196526 <!-- Obsidian manifesto -->
 
 https://x.com/carmenleelau/status/1818771532132311200 <!-- People who demand nothing of you -->
+
+https://x.com/RichardMCNgo/status/1875093600612261909 <!-- independent research -->
+
+https://x.com/ch402/status/1874990808539275687 <!-- Chris Olah on state of AI research -->
+

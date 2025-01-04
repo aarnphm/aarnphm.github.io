@@ -4,7 +4,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-02-07"
-modified: 2024-12-09 04:43:29 GMT-05:00
+modified: 2025-01-01 16:43:15 GMT-05:00
 title: movies.
 ---
 
@@ -30,10 +30,11 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] Under The Silver Lake (2018)
 - [ ] The Father (2020)
 - [ ] Poor Things (2023)
-- [ ] Maestro (2023)
+- [x] Maestro (2023)
 - [ ] Paris, Texas (1984)
 - [ ] Before Sunrise (1995)
-- [ ] The Defiant Ones (1958)
+- [x] The Defiant Ones (1958)
+- [ ] The End of The Tour (2015)
 
 ## recurring.
 

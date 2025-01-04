@@ -8,7 +8,7 @@ modified: 2024-12-23 09:17:02 GMT-05:00
 title: Philosophy and Nietzsche
 ---
 
-See also: Nietzsche's [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Nietzsche|Life]] and overall influence
+See also: Nietzsche's [[thoughts/Nietzsche|Life]] and overall influence
 
 ## Nietzsche and Philosophy
 

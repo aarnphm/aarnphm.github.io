@@ -1,7 +1,7 @@
 import { QuartzTransformerPlugin } from "../types"
 import { Element } from "hast"
-import { Html, Root } from "mdast"
-import { SKIP, visit } from "unist-util-visit"
+import { Root } from "mdast"
+import { visit } from "unist-util-visit"
 import { unescapeHTML } from "../../util/escape"
 
 export const twitterUrlRegex = /^.*(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/(status)\/(\d{19}).*/

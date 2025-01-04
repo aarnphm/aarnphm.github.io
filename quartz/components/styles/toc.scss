@@ -42,7 +42,6 @@ nav#toc-vertical {
 
   position: sticky;
   inset: 40% 0 0;
-  transform: translateY(-50%);
   cursor: pointer;
   z-index: 1000;
   max-width: calc(var(--indicator-position) * 1.2);

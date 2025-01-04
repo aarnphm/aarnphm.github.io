@@ -13,14 +13,13 @@ Theology, acquainted with Greek philosophy
 
 _Twilight of the Idols, 1889_
 
-# Problem of Socrates.
+# Problem of [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Socrates|Socrates]].
 
 **Decadent: in decline, decay. "Doing a bad thing carefully."**
 
 > An unexamined life is not worth living. Only Knowledge alone makes life worth living
 
-Importance things in life: goodness, happiness, depends on reasons, arguments
--> bizarre equations.
+Importance things in life: goodness, happiness, depends on reasons, arguments -> bizarre equations.
 
 > Maybe something wrong with this? What drives Socrates from this demands with reasons and knowledge? What are the motives?
 

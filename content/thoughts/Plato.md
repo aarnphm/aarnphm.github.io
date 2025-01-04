@@ -105,7 +105,7 @@ Philosophical rulers ->
 - Crucial to make them wise and knowledgable
 - Establish education -> reason well and follow reasons
 
-[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Nietzsche|Nietzsche]] -> problems with Socrates
+[[thoughts/Nietzsche|Nietzsche]] -> problems with Socrates
 
 - Reasoned and consciously sound
 - Un-examined mind is not worth living?

@@ -85,7 +85,7 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
     }
 
     // Format entry for root element
-    const firstEntry = formatCrumb(options.rootName, fileData.slug!, "/" as SimpleSlug)
+    const firstEntry = formatCrumb(options.rootName, fileData.slug!, "." as SimpleSlug)
     const crumbs: CrumbData[] = [firstEntry]
 
     if (!folderIndex && options.resolveFrontmatterTitle) {

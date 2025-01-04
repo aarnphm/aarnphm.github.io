@@ -4,7 +4,7 @@ tags:
   - ml
   - interp
 date: "2024-11-04"
-modified: "2024-11-04"
+modified: 2025-01-01 16:52:50 GMT-05:00
 title: sparse autoencoder
 transclude:
   title: false
@@ -66,7 +66,7 @@ Ideas: output of decoder $f(x)$ has two roles
 
 ### Gated SAE
 
-_uses Pareto improvement over training to reduce L1 penalty_ [@rajamanoharan2024improvingdictionarylearninggated]
+_uses [[thoughts/Pareto distribution|Pareto]] improvement over training to reduce L1 penalty_ [@rajamanoharan2024improvingdictionarylearninggated]
 
 Clear consequence of the bias during training is _shrinkage_ [@sharkey2024feature] [^shrinkage]
 

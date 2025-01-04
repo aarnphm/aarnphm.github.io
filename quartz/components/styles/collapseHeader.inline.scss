@@ -1,6 +1,5 @@
 .collapsible-header {
   --translate-position: 0px;
-  --padding-width: 8px;
 
   position: relative;
   display: flex;
@@ -9,10 +8,19 @@
   h3 {
     --translate-position: 3px;
   }
+
   h4,
   h5,
   h6 {
     --translate-position: 4px;
+  }
+
+  ol,
+  ul {
+    & > li {
+      list-style-type: "✦";
+      padding-left: 0.5em;
+    }
   }
 
   &:first-child {
@@ -121,6 +129,8 @@
 
   // Content styles
   .collapsible-header-content-outer {
+    --padding-width: 8px;
+
     padding-left: var(--padding-width);
     position: relative;
 

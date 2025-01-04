@@ -641,6 +641,7 @@ export const links = {
   advices: "/quotes",
   parfum: "/thoughts/Scents",
   curius: "/curius",
+  tweets: "/tweets",
 }
 
 type AliasLinkProp = {

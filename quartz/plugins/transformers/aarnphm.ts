@@ -1,6 +1,8 @@
 import { QuartzTransformerPlugin } from "../types"
-import { Root } from "hast"
+import { Root } from "mdast"
+import { PluggableList } from "unified"
 import { visit } from "unist-util-visit"
+import { Root as HtmlRoot } from "hast"
 import svgGenerator from "../../util/signatures"
 import { h } from "hastscript"
 import content from "../../components/styles/signatures.scss"
@@ -281,41 +283,83 @@ const glyphs = {
   },
 } as const
 
-interface Options {
+type Enable<T> = T & { enable: boolean }
+
+type SignatureOptions = Enable<{
   text: string
   class: string
+}>
+
+type CodeOptions = Enable<{
+  poetry: boolean
+  quotes: boolean
+}>
+
+export interface Options {
+  code: CodeOptions
+  signature: SignatureOptions
 }
 
 const defaultOptions: Options = {
-  text: "with love Aaron.",
-  class: "signature",
+  code: { enable: true, poetry: true, quotes: true },
+  signature: { enable: true, text: "with love Aaron.", class: "signature" },
 }
 
-export const Signature: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
+export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
 
   const maps = svgGenerator(banks, glyphs)
 
   return {
-    name: "Signature",
-    htmlPlugins() {
-      return [
-        () => {
+    name: "Aarnphm",
+    markdownPlugins(ctx) {
+      const plugins: PluggableList = []
+
+      if (opts.code.enable) {
+        plugins.push(() => {
           return (tree: Root, file) => {
-            const text = file.data.frontmatter?.signature ?? opts.text
-            visit(tree, "element", (node, index, parent) => {
-              if (
-                (node.tagName === "p" || node.tagName === "div") &&
-                node.children.length >= 1 &&
-                node.children[0].type === "text" &&
-                node.children[0].value === "[^sign]"
-              ) {
-                parent!.children.splice(index!, 1, h(`p.${opts.class}`, maps(text)))
+            const cfg = ctx.cfg.configuration
+            const lang = (file.data.frontmatter?.lang ?? cfg.locale)?.split("-")[0] ?? "en"
+
+            visit(tree, "code", (node) => {
+              if (opts.code.poetry && node.lang === "poetry") {
+                node.type = "html" as "code"
+                node.value = `<pre class="poetry" data-language="${lang}">${node.value}</pre>`
+              } else if (opts.code.quotes && node.lang === "quotes") {
+                node.type = "html" as "code"
+                node.value = `<p class="quotes">${node.value}</p>`
               }
             })
           }
-        },
-      ]
+        })
+      }
+
+      return plugins
+    },
+    htmlPlugins() {
+      const plugins: PluggableList = []
+
+      if (opts.signature.enable) {
+        plugins.push([
+          () => {
+            return (tree: HtmlRoot, file) => {
+              const text = file.data.frontmatter?.signature ?? opts.signature.text
+              visit(tree, "element", (node, index, parent) => {
+                if (
+                  (node.tagName === "p" || node.tagName === "div") &&
+                  node.children.length >= 1 &&
+                  node.children[0].type === "text" &&
+                  node.children[0].value === "[^sign]"
+                ) {
+                  parent!.children.splice(index!, 1, h(`p.${opts.signature.class}`, maps(text)))
+                }
+              })
+            }
+          },
+        ])
+      }
+
+      return plugins
     },
     externalResources() {
       return {

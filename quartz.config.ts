@@ -70,11 +70,9 @@ const config: QuartzConfig = {
     transformers: [
       Plugin.FrontMatter(),
       Plugin.CreatedModifiedDate({ priority: ["frontmatter", "filesystem"] }),
+      Plugin.Aarnphm(),
       Plugin.Pseudocode(),
       Plugin.TikzJax(),
-      Plugin.Poetry(),
-      Plugin.Quotes(),
-      Plugin.Signature(),
       Plugin.TelescopicText(),
       // FIXME: implement this
       // Plugin.Recipe(),

@@ -8,7 +8,7 @@ tags:
   - proposal
 date: "2024-11-18"
 description: structured generations in vLLM a la carte
-modified: "2024-11-18"
+modified: 2025-01-03 13:00:46 GMT-05:00
 title: constrained decoding
 transclude:
   title: false
@@ -382,10 +382,10 @@ $$
 
 > [!important] finite automaton
 >
-> We define a _finite-state machine_, given by $(Q, \Sigma , \delta, q_0, F)$ [^automaton-definition]
-> where character comprising the strings in $\mathcal{V}$ are drawn from $\Sigma$, i.e: $\mathcal{V} \in \mathcal{P}(\Sigma)$
+> We define a _finite-state machine_, given by $(Q, \Sigma , \delta, q_0, F)$ [^automaton-definition] where character comprising the strings in $\mathcal{V}$ are drawn from $\Sigma$, i.e: $\mathcal{V} \in \mathcal{P}(\Sigma)$
 >
-> ![[thoughts/images/vllm/fsm-iterative-generations.webp]] > _FSM making for regular expression `([0-9]*)?\.?[0-9]*`_
+> ![[thoughts/images/vllm/fsm-iterative-generations.webp]]
+> _FSM making for regular expression `([0-9]*)?\.?[0-9]*`_
 >
 > > [!note]- example illustration
 > >
