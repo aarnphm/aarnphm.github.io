@@ -1,12 +1,10 @@
 ---
 id: mechanistic interpretability
-aliases:
-  - mechinterp
 tags:
   - interp
 date: "2024-10-30"
 description: and reverse engineering neural networks.
-modified: 2024-12-16 05:32:01 GMT-05:00
+modified: 2025-01-04 10:44:19 GMT-05:00
 permalink:
   - /mechinterp
   - /mechanistic-interpretability

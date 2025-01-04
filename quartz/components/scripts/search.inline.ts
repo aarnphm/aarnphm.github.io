@@ -41,9 +41,9 @@ let index = new FlexSearch.Document<Item>({
 
 const p = new DOMParser()
 const fetchContentCache: Map<FullSlug, Element[]> = new Map()
-const contextWindowWords = 50
-const numSearchResults = 15
-const numTagResults = 15
+const contextWindowWords = 30
+const numSearchResults = 10
+const numTagResults = 5
 
 const tokenizeTerm = (term: string) => {
   const tokens = term.split(/\s+/).filter((t) => t.trim() !== "")
@@ -60,24 +60,6 @@ const tokenizeTerm = (term: string) => {
 function highlight(searchTerm: string, text: string, trim?: boolean) {
   const tokenizedTerms = tokenizeTerm(searchTerm)
   let tokenizedText = text.split(/\s+/).filter((t) => t !== "")
-
-  // First pass: remove terms that are within KaTeX blocks
-  tokenizedText = tokenizedText
-    .map((tok) => {
-      // Simple check for KaTeX delimiters
-      if (
-        tok.includes("\\(") ||
-        tok.includes("\\)") ||
-        tok.includes("\\[") ||
-        tok.includes("\\]") ||
-        tok.includes("$") ||
-        tok.includes("$$")
-      ) {
-        return "" // Remove KaTeX content from search
-      }
-      return tok
-    })
-    .filter((t) => t !== "")
 
   let startIndex = 0
   let endIndex = tokenizedText.length - 1
@@ -104,6 +86,7 @@ function highlight(searchTerm: string, text: string, trim?: boolean) {
 
   const slice = tokenizedText
     .map((tok) => {
+      // see if this tok is prefixed by any search terms
       for (const searchTok of tokenizedTerms) {
         if (tok.toLowerCase().includes(searchTok.toLowerCase())) {
           const regex = new RegExp(searchTok.toLowerCase(), "gi")
@@ -132,10 +115,6 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
   }
 
   const highlightTextNodes = (node: Node, term: string) => {
-    if (insideMathNode(node)) {
-      return
-    }
-
     if (node.nodeType === Node.TEXT_NODE) {
       const nodeText = node.nodeValue ?? ""
       const regex = new RegExp(term.toLowerCase(), "gi")
@@ -164,33 +143,12 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
   return html.body
 }
 
-function insideMathNode(node: Node): boolean {
-  let current: Node | null = node
-  while (current) {
-    if (current instanceof HTMLElement) {
-      // Check for both KaTeX display and inline math
-      if (
-        current.classList.contains("katex") ||
-        current.classList.contains("katex-display") ||
-        current.classList.contains("katex-html") ||
-        current.classList.contains("katex-mathml") ||
-        current.classList.contains("math") ||
-        current.classList.contains("math-display")
-      ) {
-        return true
-      }
-    }
-    current = current.parentNode
-  }
-  return false
-}
-
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const currentSlug = e.detail.url
   const data = await fetchData
   const container = document.getElementById("search-container")
   const searchButton = document.getElementById("search-button")
-  const searchBar = document.getElementById("search-bar") as HTMLInputElement
+  const searchBar = document.getElementById("search-bar") as HTMLInputElement | null
   const searchLayout = document.getElementById("search-layout")
   const idDataMap = Object.keys(data) as FullSlug[]
 
@@ -229,6 +187,8 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     }
 
     searchType = "basic" // reset search type after closing
+
+    searchButton?.focus()
   }
 
   function showSearch(searchTypeNew: SearchType) {
@@ -268,13 +228,11 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
         const active = document.activeElement as HTMLInputElement
         if (active.classList.contains("no-match")) return
         await displayPreview(active)
-        e.preventDefault()
         active.click()
       } else {
         const anchor = document.getElementsByClassName("result-card")[0] as HTMLInputElement | null
         if (!anchor || anchor?.classList.contains("no-match")) return
         await displayPreview(anchor)
-        e.preventDefault()
         anchor.click()
       }
     } else if (
@@ -313,9 +271,6 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
   const formatForDisplay = (term: string, id: number) => {
     const slug = idDataMap[id]
-    if (data[slug].layout === "letter") {
-      return null
-    }
     return {
       id,
       slug,
@@ -439,24 +394,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     const highlights = [...preview.querySelectorAll(".highlight")].sort(
       (a, b) => b.innerHTML.length - a.innerHTML.length,
     )
-    if (highlights.length > 0) {
-      const highlight = highlights[0]
-      const container = preview
-      if (container && highlight) {
-        // Get the relative positions
-        const containerRect = container.getBoundingClientRect()
-        const highlightRect = highlight.getBoundingClientRect()
-
-        // Calculate the scroll position relative to the container
-        const relativeTop = highlightRect.top - containerRect.top + container.scrollTop - 20 // 20px buffer
-
-        // Smoothly scroll the container
-        container.scrollTo({
-          top: relativeTop,
-          behavior: "smooth",
-        })
-      }
-    }
+    highlights[0]?.scrollIntoView({ block: "start" })
   }
 
   async function onType(e: HTMLElementEventMap["input"]) {
@@ -513,24 +451,16 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       ...getByField("content"),
       ...getByField("tags"),
     ])
-    const finalResults = [...allIds]
-      .map((id) => formatForDisplay(currentSearchTerm, id))
-      .filter((result): result is Item => result !== null) // Filter out null results
+    const finalResults = [...allIds].map((id) => formatForDisplay(currentSearchTerm, id))
     await displayResults(finalResults)
   }
 
-  const basicSearch = () => {
-    showSearch("basic")
-  }
-
   document.addEventListener("keydown", shortcutHandler)
-  searchButton?.addEventListener("click", basicSearch)
+  window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
+  searchButton?.addEventListener("click", () => showSearch("basic"))
+  window.addCleanup(() => searchButton?.removeEventListener("click", () => showSearch("basic")))
   searchBar?.addEventListener("input", onType)
-  window.addCleanup(() => {
-    document.removeEventListener("keydown", shortcutHandler)
-    searchButton?.removeEventListener("click", basicSearch)
-    searchBar?.removeEventListener("input", onType)
-  })
+  window.addCleanup(() => searchBar?.removeEventListener("input", onType))
 
   registerEscapeHandler(container, hideSearch)
   await fillDocument(data)
@@ -545,7 +475,6 @@ async function fillDocument(data: { [key: FullSlug]: ContentDetails }) {
   let id = 0
   const promises = []
   for (const [slug, fileData] of Object.entries<ContentDetails>(data)) {
-    if (fileData.layout === "letter") continue
     promises.push(
       index.addAsync(id++, {
         id,

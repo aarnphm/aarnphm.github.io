@@ -4,7 +4,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded
-modified: 2025-01-03 14:30:12 GMT-05:00
+modified: 2025-01-04 10:35:44 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -51,3 +51,6 @@ https://x.com/RichardMCNgo/status/1875093600612261909 <!-- independent research 
 
 https://x.com/ch402/status/1874990808539275687 <!-- Chris Olah on state of AI research -->
 
+https://x.com/juniperfolly/status/1875270769116377463 <!-- Funny girlfriend tax memes -->
+
+https://x.com/natfriedman/status/1874884925587087434 <!-- Nat Friedman's microplastics effort -->

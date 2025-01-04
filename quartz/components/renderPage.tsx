@@ -657,7 +657,7 @@ type AliasLinkProp = {
 const AliasLink = (props: AliasLinkProp) => {
   const opts = { isInternal: false, newTab: false, enablePopover: true, ...props }
   const className = ["landing-links"]
-  if (opts.isInternal && opts.enablePopover) className.push("internal")
+  if (opts.isInternal) className.push("internal")
   if (opts.classes) className.push(...opts.classes)
   return (
     <a
@@ -665,6 +665,7 @@ const AliasLink = (props: AliasLinkProp) => {
       target={opts.newTab ? "_blank" : "_self"}
       rel="noopener noreferrer"
       className={className.join(" ")}
+      data-no-popover={!opts.enablePopover}
     >
       {opts.name}
       {opts.children}
@@ -881,7 +882,7 @@ const ElementComponent = (() => {
           <h2>jardin:</h2>
           <div class="clickable-container">
             {Object.entries(links).map(([name, url]) => (
-              <AliasLink key={name} name={name} url={url} />
+              <AliasLink isInternal enablePopover={false} key={name} name={name} url={url} />
             ))}
             <AliasLink newTab classes={["external"]} name="notes" url="https://notes.aarnphm.xyz" />
           </div>
