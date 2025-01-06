@@ -3,7 +3,7 @@ id: fashion
 tags:
   - seed
 date: "2024-02-19"
-modified: 2025-01-05 15:27:29 GMT-05:00
+modified: 2025-01-05 23:45:19 GMT-05:00
 title: fashion.
 ---
 
@@ -84,6 +84,7 @@ The following are few of favourite brands, in no particular order:
 | Loro Piana                              | If you can afford go for it                                                    |
 | Club Monaco                             | Trench coats, overcoats, too based.                                            |
 | Brooks Brothers                         | Suits on special occasions.                                                    |
+| Suitsupply                              | Suits, and I like their tailor                                                 |
 | Arcteryx                                | Technical wear, performance, gears are awesome.                                |
 | Timberland                              | Utility, quality, style and worth for money.                                   |
 | Banana Republic                         | Got their cashmere and merino wool sweaters. They are good.                    |
@@ -94,10 +95,11 @@ The following are few of favourite brands, in no particular order:
 
 Wish list brand:
 
-| Brand              | Reasoning                           |
-| ------------------ | ----------------------------------- |
-| from Yukio Akamine | Emm I wanna a blouse                |
-| Lemaire            | Uhm hello have you seen them boots? |
+| Brand                                                          | Reasoning                           |
+| -------------------------------------------------------------- | ----------------------------------- |
+| from Yukio Akamine                                             | Emm I wanna a blouse                |
+| Lemaire                                                        | Uhm hello have you seen them boots? |
+| [Paloma Wool](https://palomawool.com/en-dz/collections/new-in) | cute silhouette                     |
 
 Inspo list:
 
@@ -108,4 +110,3 @@ https://x.com/dieworkwear/status/1870951477285687777
 _A few items that I love_
 
 - Maxi Candy Hobo from [Mansur Gavriel](https://www.mansurgavriel.com/products/maxi-candy-bag-black)
--

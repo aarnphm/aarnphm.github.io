@@ -515,12 +515,12 @@ body {
 
 @media all and ($tablet) {
   menu.tags {
-    grid-column: 3/8;
+    grid-column: 3/6;
   }
 }
 @media all and ($mobile) {
   menu.tags {
-    grid-column: 3/8;
+    grid-column: 3/6;
   }
 }
 
