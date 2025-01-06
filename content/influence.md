@@ -6,7 +6,7 @@ tags:
 comments: false
 date: "2024-01-23"
 description: A list of folks that inspires me a bunch
-modified: 2025-01-05 15:13:54 GMT-05:00
+modified: 2025-01-06 00:16:57 GMT-05:00
 title: affecter.
 ---
 
@@ -32,3 +32,6 @@ The following lists of people who I owed a lot. I would separate from top-to-bot
 
 - [Hank and John](https://www.youtube.com/@vlogbrothers), banger writing and videos
 - [Kieran](https://www.fourtet.net/), folktronica, or just pure vibes
+- Steven Soderbergh
+- Christopher Nolan
+- Steven Spielberg

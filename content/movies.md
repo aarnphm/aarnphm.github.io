@@ -4,7 +4,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-02-07"
-modified: 2025-01-01 16:43:15 GMT-05:00
+modified: 2025-01-06 00:12:36 GMT-05:00
 title: movies.
 ---
 
@@ -30,11 +30,11 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] Under The Silver Lake (2018)
 - [ ] The Father (2020)
 - [ ] Poor Things (2023)
-- [x] Maestro (2023)
 - [ ] Paris, Texas (1984)
 - [ ] Before Sunrise (1995)
-- [x] The Defiant Ones (1958)
 - [ ] The End of The Tour (2015)
+- [x] The Defiant Ones (1958)
+- [x] Maestro (2023)
 
 ## recurring.
 
@@ -154,6 +154,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 
 ### shows.
 
-- Black Mirror
-- Bojack Horseman
+- Black Mirror (2011)
+- Bojack Horseman (2014)
 - True Detective (2014)
+- The Knick (2014)

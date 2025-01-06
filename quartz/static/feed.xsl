@@ -73,7 +73,7 @@
         </div>
         <div class="callout-content" dir="auto">
           <p dir="auto">On most slash-command supported interface, you can use the following <code>/feed
-      subscribe <xsl:value-of select="atom:link[@rel='alternate']/@href" />/index.xml</code></p>
+      subscribe <xsl:value-of select="atom:link[@rel='alternate']/@href" />/feed.xml</code></p>
         </div>
       </blockquote>
     </header>

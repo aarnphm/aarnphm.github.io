@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2024-01-07"
 description: A (mostly) up-to-date scents that I use/like/prefer.
-modified: 2024-12-23 09:00:46 GMT-05:00
+modified: 2025-01-06 00:30:49 GMT-05:00
 title: Scents
 ---
 
@@ -16,6 +16,7 @@ See [[books|antilibrary]] for reading list.
 - Maison Margiela's _Lazy Sunday Morning_
 - Maison Francis Kurkdjian's _OUD satin mood_
 - Tom Ford's _Noir de Noir_
+- Maison Louis Marie's _No. 4_
 
 ### current.
 
