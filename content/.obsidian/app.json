@@ -4,7 +4,7 @@
   "showUnsupportedFiles": true,
   "spellcheck": true,
   "vimMode": true,
-  "promptDelete": false,
+  "promptDelete": true,
   "pdfExportSettings": {
     "includeName": false,
     "pageSize": "A4",
@@ -23,12 +23,14 @@
   "showInlineTitle": false,
   "rightToLeft": false,
   "propertiesInDocument": "visible",
-  "livePreview": true,
-  "showRibbon": true,
+  "livePreview": false,
+  "showRibbon": false,
   "foldHeading": true,
   "foldIndent": true,
   "showIndentGuide": true,
-  "autoPairBrackets": true,
+  "autoPairBrackets": false,
   "smartIndentList": true,
-  "defaultViewMode": "source"
+  "defaultViewMode": "source",
+  "autoPairMarkdown": false,
+  "focusNewTab": false
 }
