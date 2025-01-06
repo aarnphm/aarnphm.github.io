@@ -4,7 +4,7 @@ tags:
   - friend
 date: "2024-12-27"
 description: and a year full of shenanigans and possibilities.
-modified: 2024-12-31 06:24:24 GMT-05:00
+modified: 2025-01-05 14:53:04 GMT-05:00
 noindex: true
 pageLayout: letter
 signature: with love and appreciation - Aaron

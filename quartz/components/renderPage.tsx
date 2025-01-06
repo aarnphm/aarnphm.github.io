@@ -552,14 +552,18 @@ export function transcludeFinal(
           if (blockNode) {
             if (blockNode.tagName === "li") blockNode = h("ul", blockNode)
 
-            node.children = [
+            const children = [
               anchor(inner.properties?.href as string, url, alias, title),
               normalizeHastElement(blockNode, slug, transcludeTarget),
-
-              h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
-                { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
-              ]),
             ]
+            if ((fileData.frontmatter?.pageLayout ?? "default") !== "reflection") {
+              children.push(
+                h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
+                  { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+                ]),
+              )
+            }
+            node.children = children
           }
         } else if (blockRef?.startsWith("#") && page.htmlAst) {
           // header transclude
@@ -588,7 +592,7 @@ export function transcludeFinal(
 
           if (startIdx === undefined) return
 
-          node.children = [
+          const children = [
             anchor(inner.properties?.href as string, url, alias, title),
             ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
@@ -597,9 +601,18 @@ export function transcludeFinal(
               { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
             ]),
           ]
+
+          if ((fileData.frontmatter?.pageLayout ?? "default") !== "reflection") {
+            children.push(
+              h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
+                { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+              ]),
+            )
+          }
+          node.children = children
         } else if (page.htmlAst) {
           // page transclude
-          node.children = [
+          const children = [
             anchor(inner.properties?.href as string, url, alias, title),
             title
               ? h("h1", [
@@ -616,10 +629,17 @@ export function transcludeFinal(
             ...(page.htmlAst.children as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
             ),
-            h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
-              { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
-            ]),
           ]
+
+          if ((fileData.frontmatter?.pageLayout ?? "default") !== "reflection") {
+            children.push(
+              h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
+                { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+              ]),
+            )
+          }
+
+          node.children = children
         }
       }
     }

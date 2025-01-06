@@ -4,7 +4,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded
-modified: 2025-01-04 10:35:44 GMT-05:00
+modified: 2025-01-05 16:00:56 GMT-05:00
 noindex: true
 title: /xeets/
 ---

@@ -3,7 +3,7 @@ id: fashion
 tags:
   - seed
 date: "2024-02-19"
-modified: 2024-12-23 19:58:00 GMT-05:00
+modified: 2025-01-05 15:27:29 GMT-05:00
 title: fashion.
 ---
 
@@ -67,29 +67,30 @@ Don't buy into maximalist brands. Overpriced, and the churn rate is high.
 
 The following are few of favourite brands, in no particular order:
 
-| Brand                                   | Genre of clothing to get                                                      |
-| --------------------------------------- | ----------------------------------------------------------------------------- |
-| Brunello Cucinelli                      | Cashmere, wool, and linen 🤌 😗                                               |
-| Manière De Voir                         | Probably the best black fit tee I've ever worn.                               |
-| Oak + Fort                              | Minimalistic, clean, and simple. Also not to be confused with _Frank and Oak_ |
-| Studio Nicholson                        | Trousers, and shirts, ong their leroy jacky are amazing.                      |
-| COS                                     | Basics, and essentials.                                                       |
-| [Stoffa](https://stoffa.co/pages/store) | Custom made, and tailored, wanna know how to style.                           |
-| Sefr                                    | Pretty niche, but some of their beige lazaro shirts are nice.                 |
-| Ted Baker                               | Holy crap that's half of my closets. Trousers, shirts, suits, cargo, etc.     |
-| Ralph Lauren Polo                       | Them trench coats are nice, daily driver during winter szn.                   |
-| Mansuir Gavriel                         | Their bags are my fav.                                                        |
-| Olend Backpacks                         | For the love of backpacks.                                                    |
-| Bellroy                                 | Tote, durable, flexible.                                                      |
-| Loro Piana                              | If you can afford go for it                                                   |
-| Club Monaco                             | Trench coats, overcoats, too based.                                           |
-| Brooks Brothers                         | Suits on special occasions.                                                   |
-| Arcteryx                                | Technical wear, performance, gears are awesome.                               |
-| Timberland                              | Utility, quality, style and worth for money.                                  |
-| Banana Republic                         | Got their cashmere and merino wool sweaters. They are good.                   |
-| Abercrombie & Fitch                     | Baggy jeans, flannels comfy wear.                                             |
-| Massimo Dutti                           | Their leather jackets are nice.                                               |
-| Sezzane                                 | Their blouses are nice.                                                       |
+| Brand                                   | Genre of clothing to get                                                       |
+| --------------------------------------- | ------------------------------------------------------------------------------ |
+| Brunello Cucinelli                      | Cashmere, wool, and linen 🤌 😗                                                |
+| Manière De Voir                         | Probably the best black fit tee I've ever worn.                                |
+| Oak + Fort                              | Minimalistic, clean, and simple. Also not to be confused with _Frank and Oak_  |
+| Studio Nicholson                        | Trousers, and shirts, ong their leroy jacky are amazing.                       |
+| COS                                     | Basics, and essentials.                                                        |
+| [Stoffa](https://stoffa.co/pages/store) | Custom made, and tailored, wanna know how to style.                            |
+| Sefr                                    | Pretty niche, but some of their beige lazaro shirts are nice.                  |
+| Ted Baker                               | Holy crap that's half of my closets. Trousers, shirts, suits, cargo, etc.      |
+| Ralph Lauren Polo                       | Them trench coats are nice, daily driver during winter szn.                    |
+| Mansuir Gavriel                         | Their bags are my fav.                                                         |
+| Olend Backpacks                         | For the love of backpacks.                                                     |
+| Bellroy                                 | Tote, durable, flexible.                                                       |
+| Loro Piana                              | If you can afford go for it                                                    |
+| Club Monaco                             | Trench coats, overcoats, too based.                                            |
+| Brooks Brothers                         | Suits on special occasions.                                                    |
+| Arcteryx                                | Technical wear, performance, gears are awesome.                                |
+| Timberland                              | Utility, quality, style and worth for money.                                   |
+| Banana Republic                         | Got their cashmere and merino wool sweaters. They are good.                    |
+| Abercrombie & Fitch                     | Baggy jeans, flannels comfy wear.                                              |
+| Massimo Dutti                           | Their leather jackets are nice.                                                |
+| Sezzane                                 | Their blouses are nice.                                                        |
+| [Kapital](https://www.kapital.jp/)      | baggy, also this [tweet](https://x.com/dieworkwear/status/1875991529095106660) |
 
 Wish list brand:
 

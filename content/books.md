@@ -66,10 +66,8 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 
 #### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 
-- **The Birth of Tragedy**
 - **The Will to Power**
 - **Thus Spoke Zarathustra**
-- **Twilight of the Idols**
 - **On The Genealogy of Morals**
 - **Ecce Homo**
 
@@ -141,10 +139,12 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 
 ### 2025
 
-- **The Prince** by Niccolò Machiavelli | |
+- **The Prince** by Niccolò Machiavelli
 
 ### 2024
 
+- **Twilight of the Idols** by Nietzsche
+- **The Birth of Tragedy** by Nietzsche
 - **The Trial** by Frank Kafka
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
 - **Fear and Trembling** by Søren Kierkegaard

@@ -6,7 +6,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-01-23"
-modified: 2025-01-03 20:13:27 GMT-05:00
+modified: 2025-01-05 15:12:25 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 title: advice.
 transclude:
@@ -19,13 +19,13 @@ transclude:
 
 Throw me some wisdom, and advices? I have none. -- Jesse
 
-Your life so far is a drawing canvas. You can't change what's already been drawn, but you can always paint a new line. -- paraphrased from [@tommytrxnh](https://twitter.com/tommytrxnh)
+Your life so far is a drawing canvas. You can't change what's already been drawn, but you can always paint a new line. -- [Tommy](https://twitter.com/tommytrxnh) ^tommy
 
 20 years from now you will be more disappointed by the things that you didn’t do than by the ones you did do. So throw off the bowlines. Sail away from the safe harbour. Catch the trade winds in your sails. Explore. Dream. Discover. -- Mark Twain
 
 Sometimes, we [care] too much about potential, less on credentials -- Kate
 
-But no matter the medicinal virtues of being a true friend or sustaining a long close relationship with another, the ultimate touchstone of friendship is not improvement, neither of the self nor of the other, the ultimate touchstone is witness, the privilege of having been seen by someone and the equal privilege of being granted the sight of the essence of another, to have walked with them and to have believed in them, and sometimes just to have accompanied them for however brief a span, on a journey impossible to accomplish alone. —- David Whyte
+But no matter the medicinal virtues of being a true friend or sustaining a long close relationship with another, the ultimate touchstone of friendship is not improvement, neither of the self nor of the other, the ultimate touchstone is witness, the privilege of having ==been seen== by someone and the _equal privilege of being granted the sight of the essence_ of another, to have walked with them and to have believed in them, and sometimes just to have accompanied them for however brief a span, on a journey impossible to accomplish alone. —- David Whyte
 
 Love is reverence, and worship, and glory, and the upward glance. Not a bandage for dirty sores. But they don't know it. Those who speak of love most promiscuously are the ones who've never felt it. They make some sort of feeble stew out of sympathy, compassion, contempt, and general indifference, and they call it love. Once you've felt what it means to love as you and I know it - total passion for the total height - you're incapable of anything less... -- Ayn Rand
 
@@ -49,6 +49,8 @@ I always feel happy, you know why? Because I don’t expect anything from anyone
 
 A pessimist sees the difficulty in every opportunity; an optimist sees the opportunity in every difficulty. -- Winston Churchill
 
+Finish each day and be done with it. You have done what you could. Some blunders and [[thoughts/Camus#definition of absurd|absurdities]] no doubt crept in; forget them as soon as you can. Tomorrow is a new day; begin it well and serenely and with too high a spirit to be cumbered with your old nonsense. -- Ralph Waldo Emerson
+
 People think focus means saying yes to the thing you’ve got to focus on. But that’s not what it means at all. It means saying no to the hundred other good ideas that there are -- Steve Jobs
 
 _The moral thing that should wish to say is very simple. I should say: ==Love is wise, hatred is foolish==_ -- [Bertrand Russell](https://www.youtube.com/watch?v=ihaB8AFOhZo&ab_channel=PhilosophieKanal)
@@ -59,7 +61,7 @@ Ask not what your country can do for you - ask what you can do for your country.
 
 ## On drive.
 
-==Life can be much broader when you discover one simple fact...that everything around you was made up by people no smarter than you.... Once you learn that, you'll never be the same again.==-- Steve Jobs ^life-jobs-smart
+Life can be much broader when you discover one simple fact...==that everything around you was made up by people no smarter than you....== Once you learn that, you'll never be the same again.-- Steve Jobs ^life-jobs-smart
 
 I just wondered how things were put together. -- Claude Shannon
 
@@ -72,6 +74,8 @@ Success consists of going from failure to failure without loss of enthusiasm. --
 [One] who works with the door open gets all kinds of interruptions, but [they] also occasionally gets clues as to what the world is and what might be important. -- Richard Hamming
 
 An old friend of mine, a journalist, once said that paradise on earth was to work all day alone in anticipation of an evening in interesting company. -- Ian McEwan
+
+Highly focused people do not leave their options open. They select their priorities and are comfortable ignoring the rest. If you commit to nothing, you'll be distracted by everything. -- James Clear
 
 ## On randomness and fun.
 

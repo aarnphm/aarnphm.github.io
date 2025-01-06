@@ -228,11 +228,13 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
         const active = document.activeElement as HTMLInputElement
         if (active.classList.contains("no-match")) return
         await displayPreview(active)
+        e.preventDefault()
         active.click()
       } else {
         const anchor = document.getElementsByClassName("result-card")[0] as HTMLInputElement | null
         if (!anchor || anchor?.classList.contains("no-match")) return
         await displayPreview(anchor)
+        e.preventDefault()
         anchor.click()
       }
     } else if (
@@ -271,6 +273,9 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
   const formatForDisplay = (term: string, id: number) => {
     const slug = idDataMap[id]
+    if (data[slug].layout === "letter") {
+      return null
+    }
     return {
       id,
       slug,
@@ -466,7 +471,9 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       ...getByField("content"),
       ...getByField("tags"),
     ])
-    const finalResults = [...allIds].map((id) => formatForDisplay(currentSearchTerm, id))
+    const finalResults = [...allIds]
+      .map((id) => formatForDisplay(currentSearchTerm, id))
+      .filter((result): result is Item => result !== null)
     await displayResults(finalResults)
   }
 

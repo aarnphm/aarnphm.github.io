@@ -5,7 +5,7 @@ tags:
   - growth
 date: "2025-01-03"
 description: and confusion.
-modified: 2025-01-03 22:05:52 GMT-05:00
+modified: 2025-01-05 14:28:30 GMT-05:00
 noindex: true
 title: her.
 ---
@@ -36,16 +36,20 @@ The line between friendship and love isn't a line at all. It's more like water s
 
 I wrote it to capture gratitude - for how she made 2024 gentler, more navigable. But others saw something else: a confession masked as appreciation. It wasn't until they mentioned it that I recognized the undertow in my own words.
 
-Here's what I know: I love her in a way that defies categorization. It's the kind of love that would cross continents for a single afternoon together. That remembers her peanut allergy with the same vigilance I remember to breathe. That wants to send her pictures of interesting rocks found on morning walks, or screenshots of ridiculous luxury watches I'll never buy. It's love that manifests in tomato soup when she's sick and memes when she's sad.
+Here's what I know: I love her in a way that defies categorisation. It's the kind of love that would cross continents for a single afternoon together. That remembers her nut allergy with the same vigilance I remember to breathe.
+That wants to send her pictures of interesting rocks found on morning walks, or screenshots of ridiculous luxury watches I'll never buy. It's love that manifests in tomato soup when she's sick and memes when she's sad.
 
-What draws me isn't desire but, her mind. The way she dissects problems like a surgeon, precise and purposeful. The way she makes the mundane meaningful just by observing it. I find myself unconsciously adopting her frameworks, seeing the world through her lens. Like water taking the shape of its container, I've begun to see things in her silhouette.
+What draws me isn't desire but, her mind. The way she dissects problems. The way she makes small things meaningful just by observing it. The way she smiles, and tend to others. I find myself unconsciously adopting her frameworks, seeing the world through her lens. Like water taking the shape of its container, I've begun to see things in her silhouette.
 
-By every metric I've constructed for an ideal partner, she fits perfectly - the person I could build a life with, share silence with, grow old beside. But maybe that's the trap. Maybe I'm pattern-matching against the space J left a year ago, trying to fill that particular emptiness with this particular friendship.
+By every metric I've constructed for an ideal partner, she fits perfectly - the person I could build a life with, share silence with, grow old beside.
+But maybe that's the trap. Maybe I'm pattern-matching against the space J left a year ago, trying to fill that particular emptiness with this particular friendship.
 
-The question isn't whether I love her - that's beyond doubt. The question is whether I'm confusing the safety of deep friendship with romantic love. Whether I'm mistaking the comfort of being truly known for something else. As Ava would say, "When you love someone, their beauty acquires a different kind of meaning." But does that meaning have to be romantic?
+The question isn't whether I love her - that's beyond doubt. The question is whether I'm confusing the safety of deep friendship with romantic love.
+Whether I'm mistaking the comfort of being truly known for something else. As Ava would say, "When you love someone, their beauty acquires a different kind of meaning." But does that meaning have to be romantic?
 
-Like those eight-foot [ropes binding](https://www.startingfromnix.com/p/modern-friendship) Montano and Hsieh - romantic love is accepting both the connection and the space between, the togetherness and the separateness, the harmony and the discord. It's choosing to remain tethered while maintaining individual integrity.
-Perhaps what I'm feeling isn't love transforming into something else, but love expanding beyond my ability to categorise it. Something that exists in the space between friendship and romance, in that undefined territory where souls recognise each other without needing to name what they are.
+Like those eight-foot [ropes binding](https://www.startingfromnix.com/p/modern-friendship) Montano and Hsieh - romantic love is accepting both the connection and the space between, the
+togetherness and the separateness, the harmony and the discord. It's choosing to remain tethered while maintaining individual integrity. Perhaps what I'm feeling isn't love transforming into something else,
+but love expanding beyond my ability to categorise it. Something that exists in the space between friendship and romance, in that undefined territory where souls recognise each other without needing to name what they are.
 
 What I know is this: she is the ==first== person I want to tell things to.
 

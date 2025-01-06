@@ -792,3 +792,9 @@ main.rss {
     }
   }
 }
+
+body[data-layout="reflection"] {
+  .transclude-ref {
+    display: none;
+  }
+}

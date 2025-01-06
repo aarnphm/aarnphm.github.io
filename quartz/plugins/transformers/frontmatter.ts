@@ -136,7 +136,7 @@ declare module "vfile" {
         transclude: Partial<TranscludeOptions>
         signature: string
         socials: Record<string, string>
-        pageLayout: "default" | "letters" | "technical"
+        pageLayout: "default" | "letters" | "technical" | "reflection"
       }>
   }
 }
