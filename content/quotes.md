@@ -6,7 +6,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-01-23"
-modified: 2025-01-05 15:12:25 GMT-05:00
+modified: 2025-01-06 01:12:57 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 title: advice.
 transclude:
@@ -38,6 +38,8 @@ All I can say to the young is close your eyes. -- Ted Nelson
 An expert is a man who has made all the mistakes, which can be made, in a very narrow field. -- Niels Bohr
 
 Effective system design requires insights drawn from serious [contexts of use](https://notes.andymatuschak.org/z51q8prEJzs5Jqa5WPThYoV?stackedNotes=z7EQ2nVGus5B1rS9CqT18g6) -- Andy Matuschak
+
+What is [software](https://worrydream.com/MagicInk/) for? People turn to software to learn, to create, and to communicate. -- Bret Victor
 
 ## On perspectives.
 

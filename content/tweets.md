@@ -4,7 +4,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded
-modified: 2025-01-05 16:00:56 GMT-05:00
+modified: 2025-01-06 01:23:48 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -15,9 +15,9 @@ https://x.com/davidbessis/status/1849442615176950202 <!-- finite complex reflect
 
 https://x.com/AIatMeta/status/1851327605716435011 <!-- layer skip in self-speculative decoding -->
 
-https://x.com/sleenyre/status/1851519830375207309 <!-- sae for fluxlens for exploring image embeddings -->
+https://x.com/sleenyre/status/1851519830375207309 <!-- sae for flux-lens for exploring image embeddings -->
 
-https://x.com/jxmnop/status/1851706815244902691 <!-- contextual document embeddings oss -->
+https://x.com/jxmnop/status/1851706815244902691 <!-- contextual document embeddings OSS -->
 
 https://x.com/twaniimals/status/1836560827756740626 <!-- moo deng go brr -->
 
@@ -27,7 +27,7 @@ https://x.com/CherrilynnZ/status/1836881535154409629 <!-- visualising emotions -
 
 https://x.com/CanadaKaz/status/1851653777633247673 <!-- say the thing, ask more -->
 
-https://x.com/NeelNanda5/status/1850656772002120009 <!-- Neel's take on Anthropic crosscoders -->
+https://x.com/NeelNanda5/status/1850656772002120009 <!-- Neel's take on Anthropic's crosscoders -->
 
 https://x.com/stephen_wolfram/status/1826692234554875979 <!-- Explanation into ML -->
 
@@ -53,4 +53,18 @@ https://x.com/ch402/status/1874990808539275687 <!-- Chris Olah on state of AI re
 
 https://x.com/juniperfolly/status/1875270769116377463 <!-- Funny girlfriend tax memes -->
 
-https://x.com/natfriedman/status/1874884925587087434 <!-- Nat Friedman's microplastics effort -->
+https://x.com/natfriedman/status/1874884925587087434 <!-- Nat Friedman's micro-plastics effort -->
+
+https://x.com/MelisaSeah/status/1875931461565693997 <!-- Vietnamese being in frontier art and fashion style -->
+
+https://x.com/kaseyklimes/status/1875927241999204849 <!-- value-creation versus value-extraction capitalism -->
+
+https://x.com/sarahookr/status/1875970084558299402 <!-- Collusion ring in academia -->
+
+https://x.com/giansegato/status/1875944887973183785 <!-- The opportunity is now -->
+
+https://x.com/aidenybai/status/1875683367758541026 <!-- Another ratioed by Aiden Bai, the one who wrote million.js -->
+
+https://x.com/nrehiew_/status/1876091138366652438 <!-- ML with shape suffixes stylistic choice -->
+
+https://x.com/noampomsky/status/1876151263882350630 <!-- Ava on practicality over unreasonable romantic dreamy thing -->
