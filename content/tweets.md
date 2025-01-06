@@ -70,3 +70,5 @@ https://x.com/nrehiew_/status/1876091138366652438 <!-- ML with shape suffixes st
 https://x.com/noampomsky/status/1876151263882350630 <!-- Ava on practicality over unreasonable romantic dreamy thing -->
 
 https://x.com/usgraphics/status/1797331802740408497 <!-- Berkeley Graphics on design process and clientele -->
+
+https://x.com/AlecStapp/status/1875677444528861492 <!-- Only in America, with SpaceX -->
