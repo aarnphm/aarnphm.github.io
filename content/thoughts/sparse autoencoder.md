@@ -4,7 +4,8 @@ tags:
   - ml
   - interp
 date: "2024-11-04"
-modified: 2025-01-01 16:52:50 GMT-05:00
+description: a variations of autoencoders operate on sparsity of features.
+modified: 2025-01-06 02:06:15 GMT-05:00
 title: sparse autoencoder
 transclude:
   title: false
@@ -14,14 +15,14 @@ abbrev: SAE
 
 _see also: [landspace](https://docs.google.com/document/d/1lHvRXJsbi41bNGZ_znGN7DmlLXITXyWyISan7Qx2y6s/edit?tab=t.0#heading=h.j9b3g3x1o1z4)_
 
-Often contains one layers of MLP with few linear ReLU that is trained on a subset of datasets the main LLMs is trained on.
+Often contains one layers of MLP with few linear [[thoughts/optimization#ReLU|ReLU]] that is trained on a subset of datasets the main LLMs is trained on.
 
 > empirical example: if we wish to interpret all features related to the author Camus, we might want to train an SAEs based on all given text of Camus
 > to interpret "similar" features from Llama-3.1
 
 > [!abstract] definition
 >
-> We wish to decompose a models' activitation $x \in \mathbb{R}^n$ into sparse, linear combination of feature directions:
+> We wish to decompose a models' activation $x \in \mathbb{R}^n$ into sparse, linear combination of feature directions:
 >
 > $$
 > \begin{aligned}

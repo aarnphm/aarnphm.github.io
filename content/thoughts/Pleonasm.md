@@ -4,7 +4,9 @@ tags:
   - linguistic
 date: "2025-01-06"
 description: or redundancy in linguistic expression.
-modified: 2025-01-06 01:34:13 GMT-05:00
+modified: 2025-01-06 01:49:51 GMT-05:00
+socials:
+  twitter: https://x.com/wayfaring_tim/status/1875445398959223065
 title: Pleonasm
 ---
 

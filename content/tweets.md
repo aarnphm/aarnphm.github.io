@@ -4,7 +4,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded
-modified: 2025-01-06 01:23:48 GMT-05:00
+modified: 2025-01-06 02:04:03 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -68,3 +68,5 @@ https://x.com/aidenybai/status/1875683367758541026 <!-- Another ratioed by Aiden
 https://x.com/nrehiew_/status/1876091138366652438 <!-- ML with shape suffixes stylistic choice -->
 
 https://x.com/noampomsky/status/1876151263882350630 <!-- Ava on practicality over unreasonable romantic dreamy thing -->
+
+https://x.com/usgraphics/status/1797331802740408497 <!-- Berkeley Graphics on design process and clientele -->

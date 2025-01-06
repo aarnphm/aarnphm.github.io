@@ -10,6 +10,7 @@
 @use "./pages/notfound.scss";
 @use "./pages/letters.scss";
 @use "./pages/technical.scss";
+@use "./pages/reflection.scss";
 
 @include font-face(
   "Berkeley Mono",
@@ -790,11 +791,5 @@ main.rss {
         line-height: 15px;
       }
     }
-  }
-}
-
-body[data-layout="reflection"] {
-  .transclude-ref {
-    display: none;
   }
 }

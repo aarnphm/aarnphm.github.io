@@ -1,5 +1,5 @@
 import { computePosition, flip, inline, offset, shift } from "@floating-ui/dom"
-import { normalizeRelativeURLs } from "../../util/path"
+import { getFullSlug, normalizeRelativeURLs } from "../../util/path"
 import { getContentType } from "../../util/mime"
 import xmlFormat from "xml-formatter"
 import { fetchCanonical } from "./util"
@@ -62,7 +62,7 @@ async function mouseEnterHandler(
   { clientX, clientY }: { clientX: number; clientY: number },
 ) {
   const link = this
-  if (link.dataset.noPopover === "true") {
+  if (link.dataset.noPopover === "true" || getFullSlug(window) === "notes") {
     return
   }
 

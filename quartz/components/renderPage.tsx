@@ -556,7 +556,7 @@ export function transcludeFinal(
               anchor(inner.properties?.href as string, url, alias, title),
               normalizeHastElement(blockNode, slug, transcludeTarget),
             ]
-            if ((fileData.frontmatter?.pageLayout ?? "default") !== "reflection") {
+            if (fileData.frontmatter?.pageLayout !== "reflection") {
               children.push(
                 h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
                   { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
@@ -602,7 +602,7 @@ export function transcludeFinal(
             ]),
           ]
 
-          if ((fileData.frontmatter?.pageLayout ?? "default") !== "reflection") {
+          if (fileData.frontmatter?.pageLayout !== "reflection") {
             children.push(
               h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
                 { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
@@ -631,7 +631,7 @@ export function transcludeFinal(
             ),
           ]
 
-          if ((fileData.frontmatter?.pageLayout ?? "default") !== "reflection") {
+          if (fileData.frontmatter?.pageLayout !== "reflection") {
             children.push(
               h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
                 { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },

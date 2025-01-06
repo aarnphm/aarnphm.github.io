@@ -825,7 +825,7 @@ if (stackedNotes && !container?.classList.contains("active")) {
   if (window.location.hash) {
     window.history.pushState("", document.title, baseUrl.toString().split("#")[0])
   }
-  stacked.navigate(baseUrl)
+  window.stacked.navigate(baseUrl)
 }
 
 // remove elements on notes.aarnphm.xyz
@@ -842,6 +842,8 @@ if (getFullSlug(window) === "notes") {
     displays.forEach((el) => {
       el.style.display = "none"
     })
-    stacked.navigate(baseUrl)
+    window.stacked.navigate(baseUrl).then((data) => {
+      if (data) window.location.reload()
+    })
   }
 }

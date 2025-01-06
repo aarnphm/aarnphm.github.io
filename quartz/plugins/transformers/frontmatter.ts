@@ -6,6 +6,7 @@ import toml from "toml"
 import { slugTag } from "../../util/path"
 import { QuartzPluginData } from "../vfile"
 import { i18n } from "../../i18n"
+import { ContentLayout } from "../emitters/contentIndex"
 
 export interface Options {
   delimiters: string | [string, string]
@@ -98,6 +99,10 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             const published = coalesceAliases(data, ["publishDate", "published", "date"])
             if (published) data.published = published
 
+            let layout = coalesceAliases(data, ["pageLayout", "layout"])
+            layout ||= "default"
+            data.pageLayout = layout
+
             // fill in frontmatter
             file.data.frontmatter = data as QuartzPluginData["frontmatter"]
           }
@@ -116,6 +121,7 @@ declare module "vfile" {
   interface DataMap {
     frontmatter: { [key: string]: unknown } & {
       title: string
+      pageLayout: ContentLayout
     } & Partial<{
         priority: number | undefined
         permalinks: string[]
@@ -136,7 +142,6 @@ declare module "vfile" {
         transclude: Partial<TranscludeOptions>
         signature: string
         socials: Record<string, string>
-        pageLayout: "default" | "letters" | "technical" | "reflection"
       }>
   }
 }

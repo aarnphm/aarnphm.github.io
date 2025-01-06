@@ -12,11 +12,12 @@ import { QuartzPluginData } from "../vfile"
 import { version } from "../../../package.json"
 
 export type ContentIndex = Map<FullSlug, ContentDetails>
+export type ContentLayout = "default" | "letters" | "technical" | "reflection"
 export type ContentDetails = {
   title: string
   links: SimpleSlug[]
   tags: string[]
-  layout: "letter" | "default"
+  layout: ContentLayout
   content: string
   richContent: string
   fileData?: QuartzPluginData
@@ -217,6 +218,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
             if (link.endsWith(".pdf")) return false
 
             // Skip links to pages with noindex: true
+            // @ts-ignore
             const targetFile = content.find(([_, f]) => f.data.slug === link)?.[1]
             if (targetFile?.data.frontmatter?.noindex === true) return false
 
@@ -233,7 +235,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
             richContent: escapeHTML(toHtml(tree as Root, { allowDangerousHtml: true })),
             date: date,
             fileData: file.data,
-            layout: file.data.frontmatter.pageLayout ?? "default",
+            layout: file.data.frontmatter!.pageLayout,
             description: file.data.description ?? i18n(cfg.locale).propertyDefaults.description,
           })
         }
