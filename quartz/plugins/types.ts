@@ -1,6 +1,6 @@
 import { PluggableList } from "unified"
 import { StaticResources } from "../util/resources"
-import { ProcessedContent } from "./vfile"
+import { HtmlContent } from "./vfile"
 import { QuartzComponent } from "../components/types"
 import { FilePath } from "../util/path"
 import { BuildCtx } from "../util/ctx"
@@ -29,7 +29,7 @@ export type QuartzFilterPlugin<Options extends OptionType = undefined> = (
 ) => QuartzFilterPluginInstance
 export type QuartzFilterPluginInstance = {
   name: string
-  shouldPublish(ctx: BuildCtx, content: ProcessedContent): boolean
+  shouldPublish(ctx: BuildCtx, content: HtmlContent): boolean
 }
 
 export type QuartzEmitterPlugin<Options extends OptionType = undefined> = (
@@ -37,11 +37,11 @@ export type QuartzEmitterPlugin<Options extends OptionType = undefined> = (
 ) => QuartzEmitterPluginInstance
 export type QuartzEmitterPluginInstance = {
   name: string
-  emit(ctx: BuildCtx, content: ProcessedContent[], resources: StaticResources): Promise<FilePath[]>
+  emit(ctx: BuildCtx, content: HtmlContent[], resources: StaticResources): Promise<FilePath[]>
   getQuartzComponents(ctx: BuildCtx): QuartzComponent[]
   getDependencyGraph?(
     ctx: BuildCtx,
-    content: ProcessedContent[],
+    content: HtmlContent[],
     resources: StaticResources,
   ): Promise<DepGraph<FilePath>>
 }

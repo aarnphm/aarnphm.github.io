@@ -3,14 +3,36 @@ sourceMapSupport.install(options)
 import cfg from "../quartz.config"
 import { Argv, BuildCtx } from "./util/ctx"
 import { FilePath, FullSlug } from "./util/path"
-import { createFileParser, createProcessor } from "./processors/parse"
+import {
+  createFileParser,
+  createMarkdownParser,
+  createHtmlProcessor,
+  createMarkdownProcessor,
+} from "./processors/parse"
 import { options } from "./util/sourcemap"
+import { MarkdownContent } from "./plugins/vfile"
 
 // only called from worker thread
-export async function parseFiles(
+export async function parseMarkdown(buildId: string, argv: Argv, fps: FilePath[]) {
+  // this is a hack
+  // we assume markdown parsers can add to `allSlugs`,
+  // but don't actually use them
+  const allSlugs: FullSlug[] = []
+  const ctx: BuildCtx = {
+    buildId,
+    cfg,
+    argv,
+    allSlugs,
+  }
+  const processor = createMarkdownProcessor(ctx)
+  const parse = createFileParser(ctx, fps)
+  return [await parse(processor), allSlugs]
+}
+
+export function parseHtml(
   buildId: string,
   argv: Argv,
-  fps: FilePath[],
+  fps: MarkdownContent[],
   allSlugs: FullSlug[],
 ) {
   const ctx: BuildCtx = {
@@ -19,7 +41,7 @@ export async function parseFiles(
     argv,
     allSlugs,
   }
-  const processor = createProcessor(ctx)
-  const parse = createFileParser(ctx, fps)
+  const processor = createHtmlProcessor(ctx)
+  const parse = createMarkdownParser(ctx, fps)
   return parse(processor)
 }

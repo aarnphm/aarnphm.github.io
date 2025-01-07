@@ -2,7 +2,7 @@ import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import HeaderConstructor from "../../components/Header"
 import { pageResources, renderPage } from "../../components/renderPage"
-import { ProcessedContent, QuartzPluginData, defaultProcessedContent } from "../vfile"
+import { HtmlContent, QuartzPluginData, defaultProcessedContent } from "../vfile"
 import { FullPageLayout } from "../../cfg"
 import {
   FilePath,
@@ -74,7 +74,7 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
       // add base tag
       tags.add("index")
 
-      const tagDescriptions: Record<string, ProcessedContent> = Object.fromEntries(
+      const tagDescriptions: Record<string, HtmlContent> = Object.fromEntries(
         [...tags].map((tag) => {
           const title =
             tag === "index"

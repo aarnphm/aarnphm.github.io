@@ -11,7 +11,7 @@ import { emitContent } from "./processors/emit"
 import cfg from "../quartz.config"
 import { FilePath, FullSlug, joinSegments, slugifyFilePath } from "./util/path"
 import chokidar from "chokidar"
-import { ProcessedContent } from "./plugins/vfile"
+import { HtmlContent } from "./plugins/vfile"
 import { Argv, BuildCtx } from "./util/ctx"
 import { glob, toPosixPath } from "./util/glob"
 import { trace } from "./util/trace"
@@ -28,7 +28,7 @@ type BuildData = {
   mut: Mutex
   initialSlugs: FullSlug[]
   // TODO merge contentMap and trackedAssets
-  contentMap: Map<FilePath, ProcessedContent>
+  contentMap: Map<FilePath, HtmlContent>
   trackedAssets: Set<FilePath>
   toRebuild: Set<FilePath>
   toRemove: Set<FilePath>
@@ -105,14 +105,14 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
 async function startServing(
   ctx: BuildCtx,
   mut: Mutex,
-  initialContent: ProcessedContent[],
+  initialContent: HtmlContent[],
   clientRefresh: () => void,
   dependencies: Dependencies, // emitter name: dep graph
 ) {
   const { argv } = ctx
 
   // cache file parse results
-  const contentMap = new Map<FilePath, ProcessedContent>()
+  const contentMap = new Map<FilePath, HtmlContent>()
   for (const content of initialContent) {
     const [_tree, vfile] = content
     contentMap.set(vfile.data.filePath!, content)
@@ -180,7 +180,7 @@ async function partialRebuildFromEntrypoint(
   const fp = joinSegments(argv.directory, toPosixPath(filepath)) as FilePath
 
   const staticResources = getStaticResourcesFromPlugins(ctx)
-  let processedFiles: ProcessedContent[] = []
+  let processedFiles: HtmlContent[] = []
 
   switch (action) {
     case "add":

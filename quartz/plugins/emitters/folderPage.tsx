@@ -2,7 +2,7 @@ import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import HeaderConstructor from "../../components/Header"
 import { pageResources, renderPage } from "../../components/renderPage"
-import { ProcessedContent, QuartzPluginData, defaultProcessedContent } from "../vfile"
+import { HtmlContent, QuartzPluginData, defaultProcessedContent } from "../vfile"
 import { FullPageLayout } from "../../cfg"
 import path from "path"
 import {
@@ -72,7 +72,7 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
       // Use allSlugs to get all folders, including those without markdown files
       const folders = getFolders(ctx.allSlugs)
 
-      const folderDescriptions: Record<string, ProcessedContent> = Object.fromEntries(
+      const folderDescriptions: Record<string, HtmlContent> = Object.fromEntries(
         [...folders].map((folder) => [
           folder,
           defaultProcessedContent({

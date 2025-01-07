@@ -251,7 +251,12 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               }
             })
 
-            file.data.links = [...outgoing]
+            file.data.links = [...outgoing].filter((link) => {
+              // Skip any files with extensions
+              const ext = path.extname(link).toLowerCase()
+              if (ext) return false
+              return true
+            })
           }
         },
       ]
