@@ -17,3 +17,5 @@ title: images
 ![[thoughts/images/rabbit-cozy-minding-own-business.webp|I don't care how other people live in their 20s]]
 
 ![[thoughts/images/america-party-more.webp|America needs to party more]]
+
+![[thoughts/images/quitting-time.webp|john moore, 2015, oil on linen]]

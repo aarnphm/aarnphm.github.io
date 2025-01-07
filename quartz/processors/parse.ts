@@ -110,12 +110,12 @@ export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
         res.push([newAst, file])
 
         if (argv.verbose) {
-          console.log(`[process/markdown] ${fp}`)
-          console.log(`[process/markdown] ├─ slug: ${file.data.slug}`)
-          console.log(`[process/markdown] └─ time: ${perf.timeSince()}`)
+          console.log(`[process:markdown] ${fp}`)
+          console.log(`[process:markdown] ├─ slug: ${file.data.slug}`)
+          console.log(`[process:markdown] └─ time: ${perf.timeSince()}`)
         }
       } catch (err) {
-        trace(`\n[process/markdown] Failed to process \`${fp}\``, err as Error)
+        trace(`\n[process:markdown] Failed to process \`${fp}\``, err as Error)
       }
     }
 
@@ -135,12 +135,12 @@ export function createMarkdownParser(ctx: BuildCtx, mdContent: MarkdownContent[]
         res.push([newAst, file])
 
         if (ctx.argv.verbose) {
-          console.log(`[process/html] ${fp}`)
-          console.log(`[process/html] ├─ slug: ${file.data.slug}`)
-          console.log(`[process/html] └─ time: ${perf.timeSince()}`)
+          console.log(`[process:html] ${fp}`)
+          console.log(`[process:html] ├─ slug: ${file.data.slug}`)
+          console.log(`[process:html] └─ time: ${perf.timeSince()}`)
         }
       } catch (err) {
-        trace(`\n[process/html] Failed to process html \`${fp}\``, err as Error)
+        trace(`\n[process:html] Failed to process html \`${fp}\``, err as Error)
       }
     }
 

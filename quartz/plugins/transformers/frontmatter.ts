@@ -3,10 +3,29 @@ import remarkFrontmatter from "remark-frontmatter"
 import { QuartzTransformerPlugin } from "../types"
 import yaml from "js-yaml"
 import toml from "toml"
-import { slugTag } from "../../util/path"
+import { FilePath, FullSlug, slugifyFilePath, joinSegments, slugTag } from "../../util/path"
 import { QuartzPluginData } from "../vfile"
 import { i18n } from "../../i18n"
 import { ContentLayout } from "../emitters/contentIndex"
+import { Argv } from "../../util/ctx"
+import path from "path"
+import { VFile } from "vfile"
+
+export function getAliasSlugs(aliases: string[], argv: Argv, file: VFile) {
+  const dir = path.posix.relative(argv.directory, path.dirname(file.data.filePath!))
+  const slugs: FullSlug[] = aliases.map(
+    (alias) => path.posix.join(dir, slugifyFilePath(alias as FilePath, false)) as FullSlug,
+  )
+  const permalinks = file.data.frontmatter?.permalinks ?? []
+  if (permalinks.length > 0) {
+    slugs.push(...(permalinks as FullSlug[]))
+  }
+
+  // fix any slugs that have trailing slash
+  return slugs.map((slug) =>
+    slug.endsWith("/") ? (joinSegments(slug, "index") as FullSlug) : slug,
+  )
+}
 
 export interface Options {
   delimiters: string | [string, string]
@@ -45,7 +64,7 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
   const opts = { ...defaultOptions, ...userOpts }
   return {
     name: "FrontMatter",
-    markdownPlugins({ cfg }) {
+    markdownPlugins({ cfg, allSlugs, argv }) {
       return [
         [remarkFrontmatter, ["yaml", "toml"]],
         () => {
@@ -67,13 +86,19 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             const tags = coerceToArray(coalesceAliases(data, ["tags", "tag"]))
             if (tags) data.tags = [...new Set(tags.map((tag: string) => slugTag(tag)))]
 
-            const aliases = coerceToArray(coalesceAliases(data, ["aliases", "alias"]))
-            if (aliases) data.aliases = aliases
-            const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses", "cssclass"]))
-            if (cssclasses) data.cssclasses = cssclasses
-
             const permalinks = coerceToArray(coalesceAliases(data, ["permalinks", "permalink"]))
             if (permalinks) data.permalinks = permalinks
+
+            const aliases = coerceToArray(coalesceAliases(data, ["aliases", "alias"]))
+            if (aliases) {
+              data.aliases = aliases
+              const slugs = getAliasSlugs(aliases, argv, file)
+              file.data.aliases = slugs
+              allSlugs.push(...slugs)
+            }
+
+            const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses", "cssclass"]))
+            if (cssclasses) data.cssclasses = cssclasses
 
             const socialImage = coalesceAliases(data, ["socialImage", "image", "cover"])
             if (socialImage) data.socialImage = socialImage
@@ -119,6 +144,7 @@ export type TranscludeOptions = {
 
 declare module "vfile" {
   interface DataMap {
+    aliases: FullSlug[]
     frontmatter: { [key: string]: unknown } & {
       title: string
       pageLayout: ContentLayout

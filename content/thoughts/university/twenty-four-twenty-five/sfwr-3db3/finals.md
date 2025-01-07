@@ -3,8 +3,8 @@ id: finals
 tags:
   - sfwr3db3
 date: "2024-12-13"
-deescription: and what is database design anw?
-modified: 2024-12-13 07:27:33 GMT-05:00
+description: and what is database design anw?
+modified: 2025-01-07 16:32:41 GMT-05:00
 title: introduction to databases
 ---
 

@@ -75,7 +75,6 @@
     "mdast-util-to-hast": "^13.2.0",
     "mdast-util-to-markdown": "^2.1.2",
     "mdast-util-to-string": "^4.0.0",
-    "mermaid": "^11.4.1",
     "micromorph": "^0.4.5",
     "motion": "^11.16.0",
     "node-tikzjax": "^1.0.3",
