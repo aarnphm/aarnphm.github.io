@@ -4,7 +4,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded
-modified: 2025-01-06 18:04:49 GMT-05:00
+modified: 2025-01-07 10:31:45 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -78,3 +78,6 @@ https://x.com/cremieuxrecueil/status/1826452344881516729 <!-- National Toxicolog
 
 https://x.com/ruzhaoart/status/1876149783997677605 <!-- Jacky's sister on traditional art -->
 
+https://x.com/qiaochuyuan/status/1629333539488690176?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ <!-- QC on attachment theory thread -->
+
+https://x.com/NicoleSHsing/status/1876672940353450369 <!-- existence -->

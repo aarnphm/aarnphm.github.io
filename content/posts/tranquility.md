@@ -3,17 +3,16 @@ id: tranquility
 tags:
   - growth
   - sapling
-date: "2024-10-06"
+date: "2025-01-06"
 draft: true
 modified: "2024-10-06"
 socialDescription: on being at ease with myself.
 title: tranquility
 ---
 
-![[posts/images/Shade_by_Frank_Brangwyn_960x640_large_white_background.webp]]
-_Shade, oil on canvas - Frank Brangwyn, 1893_
+![[posts/images/Shade_by_Frank_Brangwyn_960x640_large_white_background.webp|Shade, oil on canvas - Frank Brangwyn, 1893]]
 
-It is 21:41, Oct 6th.
+It is 21:41, Jan 6th.
 
 The wind is blowing out side, 61 deg felt like 53. The wall can felt the creaking sound of old bed frame moving.
 The couple across the balcony was having sex, without having their shade pulled down. They know it, and sometimes we left each other bottle of wine. Maybe they like the attention.

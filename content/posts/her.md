@@ -5,10 +5,12 @@ tags:
   - growth
 date: "2025-01-03"
 description: and confusion.
-modified: 2025-01-06 22:16:45 GMT-05:00
+modified: 2025-01-07 10:13:19 GMT-05:00
 noindex: true
 socials:
+  bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lf5wpveltc2z
   substack: https://open.substack.com/pub/livingalone/p/her?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
+  twitter: https://x.com/aarnphm_/status/1876647451886584297
 title: her.
 ---
 
