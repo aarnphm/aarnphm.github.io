@@ -40,11 +40,11 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.9.0",
-    "@floating-ui/dom": "^1.6.12",
+    "@floating-ui/dom": "^1.6.13",
     "@myriaddreamin/rehype-typst": "^0.5.4",
     "@napi-rs/simple-git": "^0.1.19",
     "@tweenjs/tween.js": "^25.0.0",
-    "@vercel/edge": "^1.2.0",
+    "@vercel/edge": "^1.2.1",
     "async-mutex": "^0.5.0",
     "chalk": "^5.4.1",
     "chokidar": "^4.0.1",
