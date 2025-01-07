@@ -4,7 +4,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded
-modified: 2025-01-06 02:04:03 GMT-05:00
+modified: 2025-01-06 18:04:49 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -16,7 +16,6 @@ https://x.com/davidbessis/status/1849442615176950202 <!-- finite complex reflect
 https://x.com/AIatMeta/status/1851327605716435011 <!-- layer skip in self-speculative decoding -->
 
 https://x.com/sleenyre/status/1851519830375207309 <!-- sae for flux-lens for exploring image embeddings -->
-
 https://x.com/jxmnop/status/1851706815244902691 <!-- contextual document embeddings OSS -->
 
 https://x.com/twaniimals/status/1836560827756740626 <!-- moo deng go brr -->
@@ -61,7 +60,7 @@ https://x.com/kaseyklimes/status/1875927241999204849 <!-- value-creation versus 
 
 https://x.com/sarahookr/status/1875970084558299402 <!-- Collusion ring in academia -->
 
-https://x.com/giansegato/status/1875944887973183785 <!-- The opportunity is now -->
+https://x.com/giansegato/status/1875944887973183785 <!-- The opportunity is now, don't believe in both extreme wrt to AI -->
 
 https://x.com/aidenybai/status/1875683367758541026 <!-- Another ratioed by Aiden Bai, the one who wrote million.js -->
 
@@ -72,3 +71,10 @@ https://x.com/noampomsky/status/1876151263882350630 <!-- Ava on practicality ove
 https://x.com/usgraphics/status/1797331802740408497 <!-- Berkeley Graphics on design process and clientele -->
 
 https://x.com/AlecStapp/status/1875677444528861492 <!-- Only in America, with SpaceX -->
+
+https://x.com/phokarlsson/status/1876314921765634337 <!-- HK on mirror as apostle -->
+
+https://x.com/cremieuxrecueil/status/1826452344881516729 <!-- National Toxicology Report on fluoride in US -->
+
+https://x.com/ruzhaoart/status/1876149783997677605 <!-- Jacky's sister on traditional art -->
+

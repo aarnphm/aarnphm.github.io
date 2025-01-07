@@ -3,15 +3,16 @@ id: vllm
 tags:
   - ml
   - serving
+  - technical
 date: "2024-09-09"
 description: efficient LLM serving engine.
-modified: "2024-10-03"
+modified: 2025-01-06 14:13:48 GMT-05:00
 permalink:
   - /vllm
 title: vLLM
 ---
 
-See also [[thoughts/Attention#Paged Attention]] [@kwon2023efficient]
+See also: [[thoughts/Attention#Paged Attention|Paged Attention]], [community sync](https://berkeley.zoom.us/j/94039789846?pwd=ItfTzYGQja6FYVL1SugUcHp6NJAOQm.1) [@kwon2023efficient]
 
 ## KV-Compress
 

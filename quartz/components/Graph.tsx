@@ -19,53 +19,32 @@ export interface D3Config {
   focusOnHover?: boolean
 }
 
-interface GraphOptions {
-  localGraph: Partial<D3Config> | undefined
-  globalGraph: Partial<D3Config> | undefined
+export const defaultOptions: Partial<D3Config> | undefined = {
+  drag: true,
+  zoom: true,
+  depth: -1,
+  scale: 0.8,
+  repelForce: 0.9,
+  centerForce: 0.4,
+  linkDistance: 60,
+  fontSize: 0.5,
+  opacityScale: 1,
+  showTags: true,
+  removeTags: [],
+  focusOnHover: true,
 }
 
-export const defaultOptions: GraphOptions = {
-  localGraph: {
-    drag: true,
-    zoom: true,
-    depth: 1,
-    scale: 1.1,
-    repelForce: 0.5,
-    centerForce: 0.3,
-    linkDistance: 30,
-    fontSize: 0.6,
-    opacityScale: 1,
-    showTags: true,
-    removeTags: [],
-    focusOnHover: false,
-  },
-  globalGraph: {
-    drag: true,
-    zoom: true,
-    depth: -1,
-    scale: 0.9,
-    repelForce: 0.5,
-    centerForce: 0.3,
-    linkDistance: 30,
-    fontSize: 0.6,
-    opacityScale: 1,
-    showTags: true,
-    removeTags: [],
-    focusOnHover: true,
-  },
-}
-
-export default ((opts?: GraphOptions) => {
-  const Graph: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
-    const globalGraph = { ...defaultOptions.globalGraph, ...opts?.globalGraph }
-    return (
-      <div class={classNames(displayClass, "graph")}>
-        <div id="global-graph-outer">
-          <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)} />
-        </div>
+export default ((opts?: Partial<D3Config>) => {
+  const Graph: QuartzComponent = ({ displayClass }: QuartzComponentProps) => (
+    <div class={classNames(displayClass, "graph")}>
+      <div id="global-graph-outer">
+        <div
+          id="global-graph-container"
+          data-cfg={JSON.stringify({ ...defaultOptions, ...opts })}
+        />
       </div>
-    )
-  }
+    </div>
+  )
 
   Graph.css = style
   Graph.afterDOMLoaded = script

@@ -9,7 +9,6 @@ modified: 2025-01-03 18:08:15 GMT-05:00
 pageLayout: technical
 title: structured decoding, a guide for the impatient
 ---
-
 See also: [[thoughts/constrained-decoding|notes]]
 
 _[vLLM](https://blog.vllm.ai/2023/06/20/vllm.html) is the high-throughput and efficient inference engine for running **large-language model** ([[thoughts/LLMs|LLM]])_
@@ -77,7 +76,7 @@ Unlike GOFAI, its internal representation is determined by the state of the enti
 
 ## why do we need structured decoding?
 
-![[posts/images/shogoth-gpt.png|Shogoth as GPTs]]
+![[posts/images/shogoth-gpt.png|Shogoth as GPTs. In a sense, RLHF, or any methods for that matter, is an injection of rules (GOFAI system) into post-training]]
 
 [[thoughts/LLMs|LLMs]] excel at the following heuristic: given a blob of text, the model will generate a contiguous piece of text that it predicts as the most probable tokens. For example, if you give it a Wikipedia article, the model should produce text consistent with the remainder of said article.
 

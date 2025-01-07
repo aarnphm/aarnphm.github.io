@@ -2,7 +2,8 @@
 id: Transformers
 tags:
   - ml
-date: "2024-02-07"
+  - technical
+date: 2024-02-07
 modified: 2024-12-16 05:37:16 GMT-05:00
 title: Transformers
 ---

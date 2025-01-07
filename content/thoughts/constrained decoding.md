@@ -6,7 +6,8 @@ aliases:
 tags:
   - ml
   - proposal
-date: "2024-11-18"
+  - technical
+date: 2024-11-18
 description: structured generations in vLLM a la carte
 modified: 2025-01-03 13:00:46 GMT-05:00
 title: constrained decoding
@@ -14,7 +15,7 @@ transclude:
   title: false
 ---
 
-The following document describes and summarizes existing works in vLLM to improve general guided decoding performance. [^performance]
+The following document describes and summarises existing works in vLLM to improve general guided decoding performance. [^performance]
 
 [^performance]: Benchmark script can be found at https://github.com/vllm-project/vllm/pull/10046.
 
@@ -396,7 +397,7 @@ $$
 > >   If we sample "1" instead, then we advance FSM to state 1, in which case ".", ".42", ".2", and "1" are valid completions
 
 [^automaton-definition]:
-    [[thoughts/university/twenty-three-twenty-four/sfwr-2fa3/DFA|finite state machine]]
+    [[thoughts/DFA|finite state machine]]
 
     - $Q$ is a finite set of states
     - $\Sigma$ is a finite alphabet

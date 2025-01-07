@@ -5,7 +5,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: cool stuff on the internet
-modified: 2025-01-06 01:47:33 GMT-05:00
+modified: 2025-01-06 20:27:51 GMT-05:00
 noindex: true
 permalink:
   - website
@@ -41,8 +41,9 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 
 - https://thesolarmonk.com/posts/a-spacebar-for-the-web - vintage, letter type
 - https://handwritten.blog/2022-10-01-hyperlinks-in-handwriting.html
-- https://retool.com/visual-basic - ascii effects and procedural arrangement
+- https://retool.com/visual-basic - ASCII effects and procedural arrangement
 - https://www.tylerxhobbs.com/words/flow-fields - flow feel
+- https://maalvika.substack.com/p/tiktoks-boyfriend-tests-and-the-spectacle - tiktok boyfriend test and spectacle of modern love
 
 ## protocol
 
@@ -53,3 +54,4 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://fontsource.org/
 - https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
 - https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig - The GPA you need to care about
+- https://github.com/xjdr-alt/llmri - LLM varentropy versus. entropy plot
