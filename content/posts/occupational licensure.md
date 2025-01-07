@@ -5,11 +5,9 @@ tags:
   - fruit
 date: "2024-11-27"
 description: and what it meant to be an engineer
-modified: 2025-01-01 07:33:51 GMT-05:00
+modified: 2025-01-07 15:49:51 GMT-05:00
 title: On occupational licensure
 ---
-
-_The following in an excerpt of a paper I wrote for my coursework._
 
 > [!question]-
 >

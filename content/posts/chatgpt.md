@@ -6,14 +6,12 @@ tags:
   - engineer4a03
   - fruit
 date: "2024-10-02"
-modified: "2024-10-02"
+modified: 2025-01-07 15:49:29 GMT-05:00
 permalinks:
   - /chatgpt
 socialDescription: And its implication on how we assess learning. an overview.
 title: On ChatGPT and its pedagogical consequences
 ---
-
-_The following in an excerpt of a paper I wrote for my coursework._
 
 > [!question]-
 >

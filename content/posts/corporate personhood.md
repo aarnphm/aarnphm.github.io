@@ -8,11 +8,9 @@ tags:
 date: "2024-11-19"
 description: and moral responsibilities of corporation.
 lang: en-US
-modified: 2024-12-07 22:11:32 GMT-05:00
+modified: 2025-01-07 15:49:35 GMT-05:00
 title: Of Corporations, Courts, Personhood, and Morality
 ---
-
-The following in an excerpt of a paper I wrote for my coursework.
 
 > [!question]-
 >

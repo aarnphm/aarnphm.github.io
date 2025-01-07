@@ -5,18 +5,18 @@ tags:
   - fruit
   - philos1aa3
 date: "2023-11-16"
-description: Questions about Aristotle's Metaphysics
-modified: "2024-10-07"
-socialDescription: On Aristotle's Metaphysics.
+description: On Aristotle's Metaphysics.
+modified: 2025-01-07 15:57:06 GMT-05:00
 title: Questions about Metaphysics
 ---
 
-<!--
+> [!question]-
+>
 > With a view to action, experience seems in no respect inferior to art [i.e., technical knowledge, e.g., engineering or medicine], and men of experience succeed even better than those who have theory without experience.... But yet we think that knowledge and understanding belong to art [i.e., technical mastery] rather than to experience, and we suppose artists [i.e., technicians, engineers] to be wiser than men of experience.... [W]e do not regard any of the senses as wisdom; yet surely these give the most authoritative knowledge of particulars. (132)
+>
 > Here Aristotle says people with experience only do not have knowledge, do not understand, and are not wise, despite their ability to perform some tasks just as well as the professionals. He also says that people who rely on their senses may have authoritative knowledge of a sort, but not wisdom.
-> Explain why you think Aristotle says these things, and what you understand him to mean by “knowledge” and by “wisdom”—what they are and why they are good. Strive to explain his points in your own terms, but use brief quotations to convince your reader that what you say really might be Aristotle’s idea.
-> Finally, consider whether Aristotle’s ideas of knowledge and wisdom make sense in today’s world. Is there a different idea of knowledge or wisdom that better suits our situation and experience?
--->
+>
+> Explain why you think Aristotle says these things, and what you understand him to mean by "knowledge" and by "wisdom"—what they are and why they are good. Strive to explain his points in your own terms, but use brief quotations to convince your reader that what you say really might be Aristotle’s idea. Finally, consider whether Aristotle’s ideas of knowledge and wisdom make sense in today’s world. Is there a different idea of knowledge or wisdom that better suits our situation and experience?
 
 In reflecting upon [[thoughts/Aristotle]]'s [[thoughts/university/twenty-three-twenty-four/philo-1aa3/tut/Being qua being|Being qua being]], especially his demarcation of wisdom from mere experiential and technical knowledge, it becomes compelling to juxtapose his perspectives with the more fluid conceptions of knowledge for modern days, proposed by [[thoughts/Philosophy and Nietzsche|Nietzsche]] and [[thoughts/Freud]]. Nietzsche's theories, emphasising the subjective nature of knowledge, alongside [[thoughts/Freud]]'s insights into the unconscious dimensions of human comprehension, present a stark contrast to Aristotle's more structured paradigm. Aristotle delineates wisdom as a form of knowledge superior to others, stating, _"For the wise man must not be ordered but must order, and he must not obey another, but the less wise must obey him"_ (Metaphysics, Book 1, Chapter 2). This hierarchical and seemingly rigid distinction appears less pertinent in contemporary discourse, where the boundaries between various domains of knowledge are increasingly permeable and intertwined. My argument posits that while Aristotle's framework offers a valuable basis for understanding wisdom, a modern interpretation of wisdom should not only incorporate a philosophical understanding of universal truths but also embrace the dynamic and ethical application of knowledge in varied contexts. Wisdom, in today's world, goes beyond simple comprehension or command; it encapsulates adaptability, cooperative engagement, and the sophisticated application of knowledge in addressing the complex challenges that define our times.
 
