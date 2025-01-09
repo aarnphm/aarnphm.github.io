@@ -6,7 +6,7 @@ tags:
   - writing
 date: "2025-01-06"
 description: and being shattered into a million pieces, then picking oneself up.
-modified: 2025-01-09 10:46:02 GMT-05:00
+modified: 2025-01-09 12:55:50 GMT-05:00
 socials:
   bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lfcwbep7oc2q
   facebook: https://www.facebook.com/share/19ghibetuE/
@@ -26,9 +26,9 @@ _Thanks JZ, CN, and TA for the editorial notes and feedback_
 
 Dawn broke over the Topanga hills with a pinkish glow, as though the sun itself hesitated. The last of the night clouds clung to the ridge line in ragged strips, pale shadows refusing to yield. The mountains looked half-formed, exhaling faint plumes of fog that caught the earliest hint of rose-gold. If one squinted, one could imagine them breathing, as though the canyons and chaparral were alive with the same uncertainty churning inside him.
 
-The morning's hue hung dry, a hesitant forewarning of what was to come. A silent tension permeated the air, a hush resonating with the fibers of each leaf. The filtered light through the cedar walls stirred an unspoken sadness he thought had been laid to rest. In the stillness, he gazed at the timbered ceiling, listening to the faded song of birds, yet hearing only the echo of his own mind. The letter, now adrift in the digital void, had taken with it a _confession_ that could never be reclaimed, leaving behind a hollow silence that mirrored the irreversibility of time itself.
+The morning's hue hung dry, a hesitant forewarning of what was to come. A silent tension permeated the air, a hush that resonated with the fibers of each leaf. The filtered light through the cedar walls stirred an unspoken sadness he thought had been laid to rest. In the stillness, he gazed at the timbered ceiling, listening to the faded song of birds, yet hearing only the echo of his own mind. The letter, now adrift in the digital void, had taken with it a _confession_ that could never be reclaimed, leaving behind a hollow silence that mirrored the irreversibility of time itself.
 
-Standing at the window, he couldn't discern if the morning's melancholy was originated in the landscape or in his chest. The pastel light trickled over the horizon, a quiet echo of his unresolved sorrow. He'd spent the night awake, staring at the blinking cursor. He'd meant to write an appreciation letter to [[posts/her|her]], a warm recounting of shared moments. But the words evaded him, and his heart, true to its nature, metamorphosed into the feelings he'd long suppressed. Within the networked passage of his consciousness, there emerged repeatedly a series of enigmatic images—a gentle smile, whispered conversations that never found their voice, acts of kindness—that resist any coherent interpretation. It was as if his mind, in its inscrutable way, was endeavoring to align these fragmented visions with the contours of his own expectations, as though they were the shadowy outlines of a reality he could never fully grasp.
+Standing at the window, he couldn't discern if the morning's melancholy was originated in the landscape or in his chest. The pastel light trickled over the horizon, a quiet reverberation of his unresolved sorrow. He'd spent the night awake, staring at the blinking cursor. He'd meant to write an appreciation letter to [[posts/her|her]], a warm recounting of shared moments. But the words evaded him, and his heart, true to its nature, metamorphosed into the feelings he'd long suppressed. Within the networked passage of his consciousness, there emerged repeatedly a series of enigmatic images—a gentle smile, whispered conversations that never found their voice, acts of kindness—that resist any coherent interpretation. It was as if his mind, in its inscrutable way, was endeavoring to align these fragmented visions with the contours of his own expectations, as though they were the shadowy outlines of a reality he could never fully grasp.
 
 ---
 
@@ -50,13 +50,13 @@ I've been thinking about everything you wrote. I want you to know I care for you
 
 Each word was a stone dropped into the deep well of his chest, reverberating with the cold certainty of fate. His heart, once aflutter with the possibility of hope, now lay still, entombed in the icy chambers of reality. She cared, yes, but caring and wanting were two distant stars in the vast cosmos of human emotion. The ache in his chest was a reminder of the bruise time had left, a wound that festered in the shadows.
 
-The room, once a sanctuary, now felt oppressive, suffocated by the warmth of morning light that seemed to mock his despair. The mountains outside, indifferent sentinels of human folly, stood as immutable as the laws of a cruel bureaucracy. They had witnessed countless such moments, where hearts learned and relearned the futility of gravity, where some things fell no matter how carefully one tried to hold them. He sat there, phone in hand, as the third text arrived:
+The room, once a sanctuary, now felt oppressive, suffocated by the warmth of morning light that seemed to mock his despair. The mountains outside, indifferent sentinels of human folly, stood as immutable as the laws of a cruel bureaucracy. They had witnessed countless such moments, where hearts learned and relearned the futility of gravity, where some things fell no matter how carefully one tried to hold them. He sat there, phone in hand, as the second text arrived:
 
 <p class="text">
 I wonder if my presence in your life would hinder your ability to make space for viable romantic connections. I care too much about you to let that happen
 </p>
 
-The paradox was a riddle posed by a world that thrived on contradictions. His confusion reached a crescendo, a symphony of absurdity in which [[thoughts/logic]] was but a distant spectator. How could one care so deeply and yet declare they couldn't be together? The answer lay in the [[thoughts/Camus|absurdity]] nature of existence, where meaning was a fleeting shadow, always just out of reach.
+The paradox was a riddle posed by a world that thrived on contradictions. His confusion reached a crescendo, a symphony of absurdity in which [[thoughts/logic]] was but a distant spectator. How could one care so deeply and yet declare they couldn't be together? The answer lay in the [[thoughts/Camus|absurd]] nature of existence, where meaning was a fleeting shadow, always just out of reach.
 
 He then realised: _How can one expect reciprocation when one couldn't even stand the being of oneself?_
 
