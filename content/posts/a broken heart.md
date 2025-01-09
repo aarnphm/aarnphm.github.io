@@ -7,7 +7,7 @@ tags:
   - writing
 date: "2025-01-04"
 description: and being shattered into a million pieces, then picking oneself up.
-modified: 2025-01-08 19:55:15 GMT-05:00
+modified: 2025-01-08 19:58:45 GMT-05:00
 title: the mountain in Topanga
 ---
 
@@ -61,7 +61,7 @@ Coffee next week?
 
 And there it was – the careful return to normal, the gentle repositioning of boundaries. She was good at this, he realized. Too good. She had probably done it before, had probably been on both sides of this conversation enough times to navigate it with expertise.
 
-He looked out at the mountains, their peaks sharp and cruel in the afternoon light. Everything was defined now, as if the world had finally decided to reveal its true, unforgiving nature. He typed back, "Coffee sounds good," and meant it, mostly. Because what was the alternative? To surrender to the void, to let absence consume what little remained?
+He looked out at the mountains, their peaks sharp and cruel in the afternoon light. Everything was defined now, as if the world had finally decided to reveal its true, unforgiving nature. He typed back, "Coffee sounds good," and meant it, with a smile he usually had. Because what was the alternative? To surrender to the void, to let absence consume what little remained?
 
 The hummingbird, a messenger of a world he no longer understood, hovered at the window, its wings a blur of uncertainty. He watched it disappear, carrying with it the last vestiges of hope, into the remaining light.
 
