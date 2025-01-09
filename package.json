@@ -39,7 +39,7 @@
     "quartz": "./quartz/bootstrap-cli.mjs"
   },
   "dependencies": {
-    "@clack/prompts": "^0.9.0",
+    "@clack/prompts": "^0.9.1",
     "@floating-ui/dom": "^1.6.13",
     "@myriaddreamin/rehype-typst": "^0.5.4",
     "@napi-rs/simple-git": "^0.1.19",
@@ -68,7 +68,7 @@
     "is-absolute-url": "^4.0.1",
     "js-yaml": "^4.1.0",
     "katex": "^0.16.19",
-    "lightningcss": "^1.28.2",
+    "lightningcss": "^1.29.1",
     "mdast-util-find-and-replace": "^3.0.2",
     "mdast-util-gfm": "^3.0.0",
     "mdast-util-math": "^3.0.0",
@@ -76,7 +76,7 @@
     "mdast-util-to-markdown": "^2.1.2",
     "mdast-util-to-string": "^4.0.0",
     "micromorph": "^0.4.5",
-    "motion": "^11.16.1",
+    "motion": "^11.16.4",
     "node-tikzjax": "^1.0.3",
     "pixi.js": "^8.6.6",
     "preact": "^10.25.4",
