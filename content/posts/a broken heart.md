@@ -7,7 +7,7 @@ tags:
   - writing
 date: "2025-01-04"
 description: and being shattered into a million pieces, then picking oneself up.
-modified: 2025-01-08 19:58:45 GMT-05:00
+modified: 2025-01-08 20:06:42 GMT-05:00
 title: the mountain in Topanga
 ---
 
@@ -17,7 +17,7 @@ title: the mountain in Topanga
 
 Dawn broke over the Topanga hills with a pinkish glow, as though the sun itself hesitated. The last of the night clouds clung to the ridge line in ragged strips, pale shadows refusing to yield. The mountains looked half-formed, exhaling faint plumes of fog that caught the earliest hint of rose-gold. If one squinted, one could imagine them breathing, as though the canyons and chaparral were alive with the same uncertainty churning inside him.
 
-The morning's hue hung dry, a hesitant forewarning of what was to come. A silent tension permeated the air, a hush resonating with the fibers of each leaf. The filtered light through the cedar walls stirred an unspoken sadness he thought had been laid to rest. In the stillness, he gazed at the timbered ceiling, listening for the faded song of birds, yet hearing only the echo of his own uncertainty. The letter, now adrift in the digital void, had taken with it a _confession_ that could never be reclaimed, leaving behind a hollow silence that mirrored the irreversibility of time itself.
+The morning's hue hung dry, a hesitant forewarning of what was to come. A silent tension permeated the air, a hush resonating with the fibers of each leaf. The filtered light through the cedar walls stirred an unspoken sadness he thought had been laid to rest. In the stillness, he gazed at the timbered ceiling, listening for the faded song of birds, yet hearing only the echo of his own mind. The letter, now adrift in the digital void, had taken with it a _confession_ that could never be reclaimed, leaving behind a hollow silence that mirrored the irreversibility of time itself.
 
 Standing at the window, he couldn't discern if the morning's melancholy was originated in the landscape or in his chest. The pastel light trickled over the horizon, a quiet echo of his unresolved sorrow. He'd spent the night awake, staring at the blinking cursor. He'd meant to write an appreciation letter to [[posts/her|her]], a warm recounting of shared moments. But the words evaded him, and his heart, true to its nature, metamorphosed into the feelings he'd long suppressed. Within the networked passage of his consciousness, there emerged repeatedly a series of enigmatic images—a gentle smile, whispered conversations that never found their voice, acts of kindness—that resist any coherent interpretation. It was as if his mind, in its inscrutable way, was endeavoring to align these fragmented visions with the contours of his own expectations, as though they were the shadowy outlines of a reality he could never fully grasp.
 
@@ -63,7 +63,7 @@ And there it was – the careful return to normal, the gentle repositioning of b
 
 He looked out at the mountains, their peaks sharp and cruel in the afternoon light. Everything was defined now, as if the world had finally decided to reveal its true, unforgiving nature. He typed back, "Coffee sounds good," and meant it, with a smile he usually had. Because what was the alternative? To surrender to the void, to let absence consume what little remained?
 
-The hummingbird, a messenger of a world he no longer understood, hovered at the window, its wings a blur of uncertainty. He watched it disappear, carrying with it the last vestiges of hope, into the remaining light.
+The hummingbird, a messenger of a world he no longer understood, hovered at the window. He watched it disappear, carrying with it the last vestiges of hope, into the remaining light.
 
 [Life moved on, and he thought to himself: "We will be okay."]
 
