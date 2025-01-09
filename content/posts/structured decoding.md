@@ -5,23 +5,24 @@ tags:
   - serving
 date: "2024-12-10"
 description: and vLLM integration with XGrammar
-modified: 2025-01-08 18:00:14 GMT-05:00
+modified: 2025-01-09 10:57:09 GMT-05:00
 pageLayout: technical
 title: structured decoding, a guide for the impatient
 ---
 
 See also: [[thoughts/constrained-decoding|notes]]
 
-tl/dr:
+TL/DR:
 
 - Structured decoding allows precise control over LLM output formats
 - vLLM now supports both outlines and XGrammar backends for structured decoding
 - Recent XGrammar integration brings up to 5x improvement in tokens generations
 - Upcoming v1 release focuses on enhanced performance and better batch supports
 
-_[vLLM](https://blog.vllm.ai/2023/06/20/vllm.html) is the high-throughput and efficient inference engine for running **large-language models** ([[thoughts/LLMs|LLM]])_
+_[vLLM](https://blog.vllm.ai/2023/06/20/vllm.html) is the high-throughput and efficient inference engine for running **large-language models** ([[thoughts/LLMs|LLM]]). In this post, we will explore the annotated history of language models, describe the current state of [[thoughts/constrained decoding|structured decoding]] in vLLM, as well as the recent integration with [XGrammar](https://github.com/vllm-project/vllm/pull/10785), and share a tentative roadmap for vLLM's [v1](https://github.com/vllm-project/vllm/issues/8779) improvement for structured decoding._
 
-In this post, we will explore the annotated history of language models, describe the current state of [[thoughts/constrained decoding|structured decoding]] in vLLM, as well as the recent integration with [XGrammar](https://github.com/vllm-project/vllm/pull/10785), and share a tentative roadmap for vLLM's [v1](https://github.com/vllm-project/vllm/issues/8779) improvement for structured decoding.
+> We would also invite users to tackle this blog post from a philosophical perspective, and in the process trying to posit that structured decoding represents a
+> fundamental shift in how we think about LLM outputs. It also plays an important role in building complex agentic system
 
 For more information about vLLM, please check out our [documentation](https://docs.vllm.ai/en/latest/).
 
@@ -95,6 +96,8 @@ These models works well given the following assumption: ==the inputs prompt must
 This arises for the need of applying explicit rules and grammar[^gofai-nfai] (an addition of GOFAI system) that allows users to have control over certain aspect of the generations format while keeping the non-deterministic nature of the overall system.
 
 OpenAI then introduced [JSON mode](https://platform.openai.com/docs/guides/structured-outputs#json-mode) to constrain [^structured-decoding] the output format from these models. If you have built with these functionality before (such as [function calling](https://bentoml.com/blog/function-calling-with-open-source-llms), [coding assistant](https://bentoml.com/blog/building-an-ai-coding-assistant-with-tabby-and-bentocloud)), chances are you are using structured decoding under the hood.
+
+> In a sense, structured decoding is to LLMs what validation is to APIs - it acts as a guarantee that what comes out matches what you expect. Structured decoding ensures certain valid tokens will get generates according to specification.
 
 [^gofai-nfai]: Most recent notable example of GOFAI-NFAI hybrid system is AlphaZero. AlphaZero is a connectionist network-based Go playing systems, that uses a deep neural networks to assess new positions (a NFAI algorithm) and Monte-Carlo Tree Search (a GOFAI algorithm) to determine its next move [@silver2017masteringchessshogiselfplay]. DeepMind then applies these techniques to build AlphaFold, a system that predicts a protein’s 3D structure from its amino acid sequence.
 
@@ -191,6 +194,8 @@ In vLLM's v0 architecture, XGrammar is implemented as a [logit processor](https:
 > [!important]
 >
 > vLLM now has a basic support for XGrammar by default. In case where we know XGrammar is insufficient to serve the request, we fall back to outlines.
+>
+> Note that vLLM also includes support for [lm-format-enforcer](https://github.com/noamgat/lm-format-enforcer). However, from our testing we found that in some long context test cases, `lm-format-enforcer` fails to enforce correct outputs, and not up to par with Outlines in terms of both performance and feature parity.
 
 ## tentative plans for v1
 
