@@ -7,9 +7,9 @@ tags:
   - ml
   - proposal
   - technical
-date: 2024-11-18
+date: "2024-11-18"
 description: structured generations in vLLM a la carte
-modified: 2025-01-03 13:00:46 GMT-05:00
+modified: 2025-01-07 20:58:27 GMT-05:00
 title: constrained decoding
 transclude:
   title: false
@@ -17,33 +17,9 @@ transclude:
 
 The following document describes and summarises existing works in vLLM to improve general guided decoding performance. [^performance]
 
-[^performance]: Benchmark script can be found at https://github.com/vllm-project/vllm/pull/10046.
-
-    Current RFC https://github.com/vllm-project/vllm/issues/5423
-
-This design will largely affect how `logit_processor` are currently being handle within the vLLM architecture.
-
-Main mega thread: https://github.com/vllm-project/vllm/issues/5423
-
-Goal:
-
-- Improve general TPS when using guided decoding.
-- Standardize logit processor interface [^samplingpr]
-- separate compute_logits and preparing logits into two separate steps
-
-[^samplingpr]: https://github.com/vllm-project/vllm/pull/6273 proposed a sampling controller interface, but @cadedaniel shares some [concerns](https://github.com/vllm-project/vllm/pull/6273#issuecomment-2243654991) wrt fast-forward tokens
-
-Orthogonal, but still goals:
-
-- https://github.com/vllm-project/vllm/pull/5006
-- Logit processor plugins, similar to how vLLM plugins are handled. https://github.com/vllm-project/vllm/pull/4769
-- https://github.com/mlc-ai/xgrammar
-
-Scope: `logit_processor`, `sampling controller interface`
-
 ## background
 
-![[thoughts/images/vllm/pre-optimized-logit-processor-handling.webp|flow]]
+![[thoughts/images/vllm/pre-optimized-logit-processor-handling.webp|watergraph of current logit processor stack]]
 
 _reference: [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)_
 
@@ -385,8 +361,7 @@ $$
 >
 > We define a _finite-state machine_, given by $(Q, \Sigma , \delta, q_0, F)$ [^automaton-definition] where character comprising the strings in $\mathcal{V}$ are drawn from $\Sigma$, i.e: $\mathcal{V} \in \mathcal{P}(\Sigma)$
 >
-> ![[thoughts/images/vllm/fsm-iterative-generations.webp]]
-> _FSM making for regular expression `([0-9]*)?\.?[0-9]*`_
+> ![[thoughts/images/vllm/fsm-iterative-generations.webp]] > _FSM making for regular expression `([0-9]*)?\.?[0-9]*`_
 >
 > > [!note]- example illustration
 > >
@@ -396,8 +371,7 @@ $$
 > > - if we sample ".2" then we advance the FSM to state 3. In this case. only "42" and "1" are valid completions, so we mask other values before sampling.
 > >   If we sample "1" instead, then we advance FSM to state 1, in which case ".", ".42", ".2", and "1" are valid completions
 
-[^automaton-definition]:
-    [[thoughts/DFA|finite state machine]]
+[^automaton-definition]: [[thoughts/DFA|finite state machine]]
 
     - $Q$ is a finite set of states
     - $\Sigma$ is a finite alphabet

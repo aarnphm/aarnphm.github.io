@@ -5,7 +5,7 @@ tags:
   - sapling
 date: "2025-01-06"
 draft: true
-modified: "2024-10-06"
+modified: 2025-01-08 19:31:07 GMT-05:00
 socialDescription: on being at ease with myself.
 title: tranquility
 ---
@@ -38,3 +38,5 @@ We do seems to treat relationship in general as binary transaction. I don't thin
 I often turn to book to find a balance or establish a state of tranquility.
 
 I felt a rud within my mind. A barrier seemingly hard to escape. A fog covers my veil of existence. It felt like I'm just riding the storm. I let myself go through the feeling I teaed up with how to be present with myself (sorta head down, grind-y summer vibe to cope with the copious amount of feeling I didn't deal with.)
+
+I picked up John Green's _An Abundance of Katherines_

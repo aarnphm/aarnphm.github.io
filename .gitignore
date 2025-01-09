@@ -20,3 +20,4 @@ sites
 data/
 model/
 content/thoughts/university/**/*.csv
+private

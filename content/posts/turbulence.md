@@ -12,3 +12,5 @@ title: turbulence
 ---
 
 ![[posts/images/Time Flies - Acrylics on panel - 18x18 - Carol Aust.png|Time Flies, Acrylics on panel by Carol Aust]]
+
+![[posts/images/love-in-life.webp|Nothing personal, James Baldwin]]

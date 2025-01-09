@@ -5,13 +5,14 @@ tags:
 date: "2024-02-19"
 modified: 2025-01-06 11:20:19 GMT-05:00
 title: fashion.
+description: a hobby, and definition of personal taste.
 ---
 
-Fashion, rather a hobby than a need (prob. why [[thoughts/Expenses|expsense]] are high, but worth it). It is an art, a form of self-expression and self-care, for one to exert themselves to the world.
+_Fashion is an art, a form of self-expression and self-care, for one to exert themselves to the world_
 
 > My mantra: "Quality over quantity." Get a few good pieces that will last you a long time.
 
-I do follow trends, and fashion shows. A mix of smart casual, and street wear are my comfort zone.
+What fashion shows are to trends is the same as what NeurIPS is to [[thoughts/Machine learning|AI]] conference.
 
 Keep it simple, and minimalistic. **Less is always more**.
 
@@ -111,3 +112,4 @@ https://x.com/dieworkwear/status/1870951477285687777
 _A few items that I love_
 
 - Maxi Candy Hobo from [Mansur Gavriel](https://www.mansurgavriel.com/products/maxi-candy-bag-black)
+- ![[thoughts/Scents#current|current scents that are on rotation]]

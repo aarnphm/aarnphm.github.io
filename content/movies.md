@@ -4,7 +4,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-02-07"
-modified: 2025-01-06 00:12:36 GMT-05:00
+modified: 2025-01-08 19:31:10 GMT-05:00
 title: movies.
 ---
 
@@ -33,6 +33,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] Paris, Texas (1984)
 - [ ] Before Sunrise (1995)
 - [ ] The End of The Tour (2015)
+- [ ] Chungking Express (1994)
 - [x] The Defiant Ones (1958)
 - [x] Maestro (2023)
 

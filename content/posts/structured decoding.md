@@ -5,7 +5,7 @@ tags:
   - serving
 date: "2024-12-10"
 description: and vLLM integration with XGrammar
-modified: 2025-01-08 15:43:11 GMT-05:00
+modified: 2025-01-08 18:00:14 GMT-05:00
 pageLayout: technical
 title: structured decoding, a guide for the impatient
 ---
@@ -166,13 +166,9 @@ There are few limitations with current vLLM's support of the Outlines backend:
 
 [^logit-processor]: See this [blog post](https://huggingface.co/blog/logits-processor-zoo) from Transformers for using logit processors to control generations process.
 
-[^sampling]:
-    _The following was excerpt from [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)_:
-    ![[thoughts/images/vllm/pre-optimized-logit-processor-handling.webp|waterfall of sampling process in vLLM v0]]
-
 ### integrations with XGrammar
 
-[XGrammar](https://github.com/mlc-ai/xgrammar) introduces a new technique to batched constrained decoding using pushdown automaton (PDA). You can think of a PDA as a "collection of FSMs, and each FSM represents a context-free grammar (CFG)." One significant advantage of PDA is its recursive nature, allowing us to execute multiple state transitions. They also include additional [optimisation](https://blog.mlc.ai/2024/11/22/achieving-efficient-flexible-portable-structured-generation-with-xgrammar) (for those who are interested) to reduce grammar compilation overhead.
+- [ ] [XGrammar](https://github.com/mlc-ai/xgrammar) introduces a new technique that batch constrained decoding with _pushdown automaton_ (PDA). You can think of a PDA as a "collection of FSMs, and each FSM represents a context-free grammar (CFG)." One significant advantage of PDA is its recursive nature, allowing us to execute multiple state transitions. They also include additional [optimisation](https://blog.mlc.ai/2024/11/22/achieving-efficient-flexible-portable-structured-generation-with-xgrammar) (for those who are interested) to reduce grammar compilation overhead.
 
 This is great because it addresses limitation (1) by moving grammar compilation out of Python into C, utilising `pthread`. Additionally, XGrammar will enable us to implements (4) in future releases. Below includes some numbers comparing XGrammar and Outlines backend:
 
@@ -200,7 +196,7 @@ In vLLM's v0 architecture, XGrammar is implemented as a [logit processor](https:
 
 With the release of [v1](https://github.com/vllm-project/vllm/issues/8779) on the horizon, the following includes a tentative plan for structured decoding:
 
-1. Moving guided decoding towards scheduler-level [^sampling]:
+1. Moving guided decoding towards scheduler-level:
    - Reason: We have more context regarding which requests that use structured decoding at a scheduler-level, therefore
      it shouldn't block other requests within the batch (tentatively addressing limitation (2)). In a sense, this
      moves guided decoding outside of the critical path.
@@ -213,6 +209,11 @@ With the release of [v1](https://github.com/vllm-project/vllm/issues/8779) on th
    - Tree scoring in speculative decoding can then use the same API as jump-forward decoding. (which depends on the integration of guided decoding at the scheduler-level)
 
 _NOTE: if you have any more suggestions we are more than happy to take it into consideration. Consider joining [vLLM slack](slack.vllm.ai) via `#feat-structured-output`_
+
+[^sampling]:
+    _The following was excerpt from [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)_:
+
+    ![[thoughts/images/vllm/pre-optimized-logit-processor-handling.webp|waterfall of sampling process in vLLM]]
 
 ## acknowledgement
 
