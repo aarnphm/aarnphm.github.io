@@ -7,7 +7,7 @@ tags:
   - writing
 date: "2025-01-04"
 description: and being shattered into a million pieces, then picking oneself up.
-modified: 2025-01-08 19:33:00 GMT-05:00
+modified: 2025-01-08 19:55:15 GMT-05:00
 title: the mountain in Topanga
 ---
 
@@ -19,31 +19,33 @@ Dawn broke over the Topanga hills with a pinkish glow, as though the sun itself 
 
 The morning's hue hung dry, a hesitant forewarning of what was to come. A silent tension permeated the air, a hush resonating with the fibers of each leaf. The filtered light through the cedar walls stirred an unspoken sadness he thought had been laid to rest. In the stillness, he gazed at the timbered ceiling, listening for the faded song of birds, yet hearing only the echo of his own uncertainty. The letter, now adrift in the digital void, had taken with it a _confession_ that could never be reclaimed, leaving behind a hollow silence that mirrored the irreversibility of time itself.
 
-Standing at the window, he couldn't discern if the morning's melancholy was originated in the landscape or in his chest. The pastel light seeped over the horizon, a quiet echo of his unresolved sorrow. He'd spent the night awake, staring at the blinking cursor. He'd meant to write an appreciation letter to [[posts/her|her]], a warm recounting of shared moments. But the words evaded him, and his heart, true to its nature, metamorphosed into the feelings he'd long suppressed. Within the networked passage of his consciousness, there emerged repeatedly a series of enigmatic images—a gentle smile, whispered conversations that never found their voice, acts of kindness—that resist any coherent interpretation. It was as if his mind, in its inscrutable way, was endeavoring to align these fragmented visions with the contours of his own expectations, as though they were the shadowy outlines of a reality he could never fully grasp.
+Standing at the window, he couldn't discern if the morning's melancholy was originated in the landscape or in his chest. The pastel light trickled over the horizon, a quiet echo of his unresolved sorrow. He'd spent the night awake, staring at the blinking cursor. He'd meant to write an appreciation letter to [[posts/her|her]], a warm recounting of shared moments. But the words evaded him, and his heart, true to its nature, metamorphosed into the feelings he'd long suppressed. Within the networked passage of his consciousness, there emerged repeatedly a series of enigmatic images—a gentle smile, whispered conversations that never found their voice, acts of kindness—that resist any coherent interpretation. It was as if his mind, in its inscrutable way, was endeavoring to align these fragmented visions with the contours of his own expectations, as though they were the shadowy outlines of a reality he could never fully grasp.
 
 ---
 
-In the dimly lit nook, where the stale aroma of coffee clung to the air like a persistent ghost, he found a peculiar comfort. The light, seeping through the cracks in the wall, cast a warm, almost tender glow upon his skin, reminiscent of her embrace—a fleeting, yet profound connection that now seemed as elusive as the dawn itself. This small corner of the room, with its worn edges and forgotten newspapers, became a sanctuary, a place where time stood still and the world outside faded into irrelevance. Yet, even here, in the midst of this fragile comfort, there lingered a sense of existential unease, as if the very walls were conspiring to remind him of the emptiness that lay beneath the surface. The light, in its quiet persistence, offered a semblance of warmth, a shadow of her presence that he clung to, even as the coldness of solitude crept in around the edges.
+The house smelled of stale coffee, drifting through the wide living room. He shuffled towards a small reading nook by the corner where the light has just started to percolate through. Yesterday's newspaper lay folded, half unread. He founded a peculiar comfort within the boundary of the walls, scanning the headlines he'd ignored: local politics, a possible wildfire risk. The light, in its quiet persistence, offered a semblance of warmth, a shadow of her presence that he clung to, even as the coldness of solitude crept in around the edges. A question floated among many: How many sunsets could we shared on this deck?
 
-The house smelled of stale coffee, drifting through the wide living room. He shuffled towards a small reading nook by the corner where the light has just started to seep in. Yesterday's newspaper lay folded, half unread. He founded a peculiar comfort within the boundary of the walls, scanning the headlines he'd ignored: local politics, a possible wildfire risk. The light, in its quiet persistence, offered a semblance of warmth, a shadow of her presence that he clung to, even as the coldness of solitude crept in around the edges. A question floated among many: How many sunsets could we shared on this deck?
-
-In the quiet morning, he made some new coffee, the steam rising. He thought of Kafka's letter to Milena [^kafka], how words can evaporate into nothingness, consumed by the shadows they cast. He wondered if his own messages had met the same fate, intercepted by unseen hands, each sip draining away the intent until only a faint echo remained.
+In the quiet morning, he made some new coffee. He thought of Kafka's letter to Milena [^kafka], how words can evaporate into nothingness, consumed by the shadows they cast. He wondered if his own messages had met the same fate, intercepted by unseen hands, each sip draining away the intent until only a faint echo remained.
 
 [^kafka]: "Written kisses don't reach their destination, rather they are drunk on the way by the ghosts."
 
-The mountains stood silent witnesses, their massive forms unchanged by the passage of time or the undertone of the morning light. They held no answers, only the stubborn presence of stone and air, a reminder of the enduring mystery that surrounded him. He poured the fresh coffee, the aroma filling the small space, a temporary warmth against the chill of the room. The door creaked slightly, left ajar to the unknown.
+The mountains stood witnesses, their massive forms unchanged by the passage of time or the undertone of the morning light. They held no answers, only the stubborn presence of stone and air, a reminder of the enduring mystery that surrounded him. He poured the fresh coffee, the aroma filling the small space, a temporary warmth against the chill of the room. The door creaked slightly, left ajar to the unknown.
 
 [In the pale light of dawn, the phone emitted a muzzy ping, like a distant echo in a vast, empty hall]
 
 Three bubbles appeared and disappeared, pulsating with the rhythm of a heart that had long ceased to beat. He watched them, as if they held the key to a labyrinth he could never escape.
 
-_I've been thinking about everything you wrote. I want you to know I care for you so much, and I never want you to doubt that. But I don't think I can give you what you're asking for..._
+<p class="text">
+I've been thinking about everything you wrote. I want you to know I care for you so much, and I never want you to doubt that. But I don't think I can give you what you're asking for...
+</p>
 
 Each word was a stone dropped into the deep well of his chest, reverberating with the cold certainty of fate. His heart, once aflutter with the possibility of hope, now lay still, entombed in the icy chambers of reality. She cared, yes, but caring and wanting were two distant stars in the vast cosmos of human emotion. The ache in his chest was a reminder of the bruise time had left, a wound that festered in the shadows.
 
 The room, once a sanctuary, now felt oppressive, suffocated by the warmth of morning light that seemed to mock his despair. The mountains outside, indifferent sentinels of human folly, stood as immutable as the laws of a cruel bureaucracy. They had witnessed countless such moments, where hearts learned and relearned the futility of gravity, where some things fell no matter how carefully one tried to hold them. He sat there, phone in hand, as the third text arrived:
 
-_I wonder if my presence in your life would hinder your ability to make space for viable romantic connections. I care too much about you to let that happen_
+<p class="text">
+I wonder if my presence in your life would hinder your ability to make space for viable romantic connections. I care too much about you to let that happen
+</p>
 
 The paradox was a riddle posed by a world that thrived on contradictions. His confusion reached a crescendo, a symphony of absurdity in which [[thoughts/logic]] was but a distant spectator. How could one care so deeply and yet declare they couldn't be together? The answer lay in the [[thoughts/Camus|absurdity]] nature of existence, where meaning was a fleeting shadow, always just out of reach.
 
@@ -53,7 +55,9 @@ The mountains still showed no sympathy. They had witnessed countless such moment
 
 The phone buzzed once more, offering a lifeline or a noose:
 
-_Coffee next week?_
+<p class="text">
+Coffee next week?
+</p>
 
 And there it was – the careful return to normal, the gentle repositioning of boundaries. She was good at this, he realized. Too good. She had probably done it before, had probably been on both sides of this conversation enough times to navigate it with expertise.
 

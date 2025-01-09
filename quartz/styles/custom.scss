@@ -335,26 +335,15 @@ blockquote.twitter-tweet {
   }
 }
 
-p.quotes {
-  padding-top: 1rem;
-  padding-left: 3rem;
+p.text {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  padding-left: 1rem;
 
-  &:before,
-  &:after {
-    font-size: 2em;
-    line-height: 0.1em;
-    vertical-align: -0.4em;
-  }
-
-  &:before {
-    content: "“";
-    margin-right: 0.25em;
-  }
-
-  &:after {
-    content: "”";
-    margin-left: 0.25em;
-  }
+  font-style: italic;
+  border: 0px solid var(--lightgray);
+  border-top-width: 1px;
+  border-bottom-width: 1px;
 }
 
 section {
