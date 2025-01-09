@@ -6,7 +6,9 @@ tags:
   - writing
 date: "2025-01-06"
 description: and being shattered into a million pieces, then picking oneself up.
-modified: 2025-01-09 08:13:33 GMT-05:00
+modified: 2025-01-09 08:28:17 GMT-05:00
+socials:
+  substack: https://open.substack.com/pub/livingalone/p/the-mountain-in-topanga?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 title: the mountain in Topanga
 ---
 
@@ -34,7 +36,7 @@ In the quiet morning, he made some new coffee. He thought of Kafka's letter to M
 
 The mountains stood witnesses, their massive forms unchanged by the passage of time or the undertone of the morning light. They held no answers, only the stubborn presence of stone and air, a reminder of the enduring mystery that surrounded him. He poured the fresh coffee, the aroma filling the small space, a temporary warmth against the chill of the room. The door creaked slightly, left ajar to the unknown.
 
-[In the pale light of dawn, the phone emitted a muzzy ping, like a distant echo in a vast, empty hall]
+_[In the pale light of dawn, the phone emitted a muzzy ping, like a distant echo in a vast, empty hall]_
 
 Three bubbles appeared and disappeared, pulsating with the rhythm of a heart that had long ceased to beat. He watched them, as if they held the key to a labyrinth he could never escape.
 
@@ -52,7 +54,7 @@ I wonder if my presence in your life would hinder your ability to make space for
 
 The paradox was a riddle posed by a world that thrived on contradictions. His confusion reached a crescendo, a symphony of absurdity in which [[thoughts/logic]] was but a distant spectator. How could one care so deeply and yet declare they couldn't be together? The answer lay in the [[thoughts/Camus|absurdity]] nature of existence, where meaning was a fleeting shadow, always just out of reach.
 
-He then realized: _How can one expect reciprocation when one couldn't even stand the being of oneself?_
+He then realised: _How can one expect reciprocation when one couldn't even stand the being of oneself?_
 
 The mountains still showed no sympathy. They had witnessed countless such moments, he supposed – all these human hearts learning and relearning the same lessons about gravity. About how some things fall no matter how carefully you try to hold them.
 
@@ -62,13 +64,13 @@ The phone buzzed once more, offering a lifeline or a noose:
 Coffee next week?
 </p>
 
-And there it was – the careful return to normal, the gentle repositioning of boundaries. She was good at this, he realized. Too good. She had probably done it before, had probably been on both sides of this conversation enough times to navigate it with expertise.
+And there it was – the careful return to normal, the gentle repositioning of boundaries. She was good at this, he noticed. Too good. She had probably done it before, had probably been on both sides of this conversation enough times to navigate it with expertise.
 
 He looked out at the mountains, their peaks sharp and cruel in the afternoon light. Everything was defined now, as if the world had finally decided to reveal its true, unforgiving nature. He typed back, "Coffee sounds good," and meant it, with a smile he usually had. Because what was the alternative? To surrender to the nothingness, to let absence consume what little remained?
 
 The hummingbird, a messenger of a world he no longer understood, hovered at the window. He watched it disappear, carrying with it the last vestiges of hope, into the remaining light.
 
-[Life moved on, and he thought to himself: "We will be okay."]
+_[Life moved on, and he thought to himself: "We will be okay."]_
 
 ---
 
