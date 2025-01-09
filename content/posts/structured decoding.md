@@ -5,7 +5,7 @@ tags:
   - serving
 date: "2024-12-10"
 description: and vLLM integration with XGrammar
-modified: 2025-01-09 10:57:09 GMT-05:00
+modified: 2025-01-09 11:03:58 GMT-05:00
 pageLayout: technical
 title: structured decoding, a guide for the impatient
 ---
@@ -97,7 +97,7 @@ This arises for the need of applying explicit rules and grammar[^gofai-nfai] (an
 
 OpenAI then introduced [JSON mode](https://platform.openai.com/docs/guides/structured-outputs#json-mode) to constrain [^structured-decoding] the output format from these models. If you have built with these functionality before (such as [function calling](https://bentoml.com/blog/function-calling-with-open-source-llms), [coding assistant](https://bentoml.com/blog/building-an-ai-coding-assistant-with-tabby-and-bentocloud)), chances are you are using structured decoding under the hood.
 
-> In a sense, structured decoding is to LLMs what validation is to APIs - it acts as a guarantee that what comes out matches what you expect. Structured decoding ensures certain valid tokens will get generates according to specification.
+> Guided decoding is to LLMs what validation is to APIs - it acts as a guarantee that what comes out matches what you expect. Guided decoding ensures structure integrity that allows developers to integrate LLMs into their application with ease!
 
 [^gofai-nfai]: Most recent notable example of GOFAI-NFAI hybrid system is AlphaZero. AlphaZero is a connectionist network-based Go playing systems, that uses a deep neural networks to assess new positions (a NFAI algorithm) and Monte-Carlo Tree Search (a GOFAI algorithm) to determine its next move [@silver2017masteringchessshogiselfplay]. DeepMind then applies these techniques to build AlphaFold, a system that predicts a protein’s 3D structure from its amino acid sequence.
 
