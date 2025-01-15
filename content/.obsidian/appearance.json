@@ -4,7 +4,7 @@
   "interfaceFontFamily": "Berkeley Mono,Charter,Apple Braille,EB Garamond",
   "textFontFamily": "BerkeleyMono Nerd Font Mono,Cardo Nerd Font,ZedMono Nerd Font,Apple Braille,EB Garamond",
   "monospaceFontFamily": "Berkeley Mono,ZedMono Nerd Font,0xProto Nerd Font",
-  "baseFontSize": 16,
+  "baseFontSize": 20,
   "translucency": true,
   "showViewHeader": true,
   "enabledCssSnippets": [

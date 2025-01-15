@@ -5,7 +5,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: cool stuff on the internet
-modified: 2025-01-06 20:27:51 GMT-05:00
+modified: 2025-01-13 21:23:00 GMT-05:00
 noindex: true
 permalink:
   - website
@@ -55,3 +55,5 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
 - https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig - The GPA you need to care about
 - https://github.com/xjdr-alt/llmri - LLM varentropy versus. entropy plot
+- https://drmichaellevin.org/resources/otherlabs.html - Labs interests
+- https://www.youtube.com/watch?v=5OaTk5q_CTc&ab_channel=SouthParkCommons - SouthParkCommons meetup for AI interfaces

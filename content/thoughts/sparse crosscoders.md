@@ -5,7 +5,7 @@ tags:
   - interp
 date: "2024-11-03"
 description: and how we observe multiple activation layers. SAE is a special case of sparse crosscoders.
-modified: "2024-11-03"
+modified: 2025-01-15 12:09:30 GMT-05:00
 title: sparse crosscoders
 transclude:
   title: false
@@ -33,8 +33,7 @@ Resolve:
 
 ### cross-layer [[thoughts/mechanistic interpretability#superposition hypothesis|superposition]]
 
-![[thoughts/images/additive-residual-stream-llm.webp]]
-_given the additive properties of transformers' residual stream, **adjacent layers** in larger transformers can be thought as "almost parallel"_
+![[thoughts/images/additive-residual-stream-llm.webp|given the additive properties of transformers' residual stream, adjacent layers in larger transformers can be thought as "almost parallel"]]
 
 > [!important]- intuition
 >
@@ -45,11 +44,14 @@ _given the additive properties of transformers' residual stream, **adjacent laye
 ![[thoughts/images/one-step-circuit.webp]]
 
 ![[thoughts/images/parallel-joint-branch.webp]]
+
 _if we think of adjacent layers as being "almost parallel branches that potentially have superposition between them", then we can apply dictionary learning jointly [^jointlysae]_
 
 [^jointlysae]: [@gorton2024missingcurvedetectorsinceptionv1] denotes that cross-branch superposition is significant in interpreting models with parallel branches (InceptionV1)
 
 ### persistent features and complexity
+
+![[thoughts/images/proposal-formed-by-cross-layers-superposition.webp]]
 
 Current drawbacks of sparse autoencoders is that we have to train it against certain activations layers to extract features. In terms of the residual
 stream per layers, we end up having lots of duplicate features across layers.
@@ -57,6 +59,10 @@ stream per layers, we end up having lots of duplicate features across layers.
 > Crosscoders can simplify the circuit _given that we use an appropriate architecture_ [^risks]
 
 [^risks]: causal description it provides likely differs from that of the underlying model.
+
+> The motivation is that some features are persistent across residual stream, which means there will be duplication where the SAEs learn it multiple times
+>
+> ![[thoughts/images/dedup-features-persistent.webp]]
 
 ## setup.
 
@@ -66,6 +72,8 @@ stream per layers, we end up having lots of duplicate features across layers.
 > - transcoders: read from layer $n$ and predict layer $n+1$
 
 Crosscoder read/write to many layers, subject to causality constraints.
+
+![[thoughts/images/crosscoder-setup.webp]]
 
 > [!math]+ crosscoders
 >
@@ -113,6 +121,17 @@ good to explore:
 1. strictly causal crosscoders to capture MLP computation and treat computation performed by attention layers as linear
 2. combine strictly causal crosscoders for MLP outputs without weakly causal crosscoders for attention outputs
 3. interpretable attention replacement layers that could be used in combination with strictly causal crosscoders for a "replacement model"
+
+## Cross-layer Features
+
+> How can we discover cross-layer structure?
+
+- trained a global, acausal crosscoder on residual stream activations of 18-layer models
+- versus 18 SAEs trained on each residual stream layers
+- fixed L1 coefficient for sparsity penalty
+- MSE + decoder norm-weighed L1 norm
+
+![[thoughts/images/all-layer-crosscoder-vs-per-layer-sae.webp]]
 
 ## model diffing
 

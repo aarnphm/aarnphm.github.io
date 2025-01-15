@@ -5,8 +5,10 @@ tags:
   - serving
 date: "2024-12-10"
 description: and vLLM integration with XGrammar
-modified: 2025-01-09 11:03:58 GMT-05:00
+modified: 2025-01-14 20:07:14 GMT-05:00
 pageLayout: technical
+socials:
+  blog: https://blog.vllm.ai/2025/01/14/struct-decode-intro.html
 title: structured decoding, a guide for the impatient
 ---
 
@@ -15,14 +17,13 @@ See also: [[thoughts/constrained-decoding|notes]]
 TL/DR:
 
 - Structured decoding allows precise control over LLM output formats
-- vLLM now supports both outlines and XGrammar backends for structured decoding
-- Recent XGrammar integration brings up to 5x improvement in tokens generations
-- Upcoming v1 release focuses on enhanced performance and better batch supports
+- vLLM now supports both [outlines](https://github.com/dottxt-ai/outlines) and [XGrammar](https://github.com/mlc-ai/xgrammar) backends for structured decoding
+- Recent XGrammar integration brings up to 5x improvement in time per output token (TPOT) under load
+- Upcoming v1 release focuses on enhanced performance and schedule-level mask broadcasting for mixed-requests batch support
 
 _[vLLM](https://blog.vllm.ai/2023/06/20/vllm.html) is the high-throughput and efficient inference engine for running **large-language models** ([[thoughts/LLMs|LLM]]). In this post, we will explore the annotated history of language models, describe the current state of [[thoughts/constrained decoding|structured decoding]] in vLLM, as well as the recent integration with [XGrammar](https://github.com/vllm-project/vllm/pull/10785), and share a tentative roadmap for vLLM's [v1](https://github.com/vllm-project/vllm/issues/8779) improvement for structured decoding._
 
-> We would also invite users to tackle this blog post from a philosophical perspective, and in the process trying to posit that structured decoding represents a
-> fundamental shift in how we think about LLM outputs. It also plays an important role in building complex agentic system
+> We would also invite users to tackle this blog post from a philosophical perspective, and in the process trying to posit that structured decoding represents a fundamental shift in how we think about LLM outputs. It also plays an important role in building complex agentic system.
 
 For more information about vLLM, please check out our [documentation](https://docs.vllm.ai/en/latest/).
 
@@ -30,7 +31,7 @@ For more information about vLLM, please check out our [documentation](https://do
 
 _If you have read about the history of the field before, feel free to skip this part to [[posts/structured decoding#why do we need structured decoding?|reason for structured decoding]]_
 
-The inception of [[thoughts/Machine learning|AI]] might well be traced back to the origin of logics, where men put emphasis on reducing reasoning to some specific sets of calculations (a [[thoughts/reductionism|reductionist]] approach). As such, Plato generalised the belief in total formalisation of knowledge, where knowledge must be universally applicable with explicit definitions[^intuition].
+The inception of [[thoughts/Machine learning|AI]] might well be traced back to the origin of logics, where men put emphasis on reducing reasoning to some specific sets of calculations (a [[thoughts/reductionism|reductionist]] approach). As such, Plato generalised the belief in total formalisation of knowledge, where knowledge must be universally applicable with explicit definitions [^intuition].
 
 In 1950, Alan Turing posited that a high-speed digital computer, programmed with rules, would exhibit [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]] [@10.1093/mind/LIX.236.433].
 
@@ -85,13 +86,19 @@ In retrospect, GOFAI are [[thoughts/Determinism|deterministic]] in a sense that 
 Connectionist networks, on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
 Unlike GOFAI, its internal representation is determined by the state of the entire network states rather than one singular unit. Although these models exhibit [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]], one should be aware that this is not [[thoughts/AGI|artificial general intelligence]] _yet_, largely due to researchers' [[thoughts/observer-expectancy effect]].
 
+In **summary**:
+
+- GOFAI are deterministic and rule-based, given its intentionality is injected through explicit programming
+- NFAI are often considered as “black-box” models (in: input - out: some output), data-driven given the networked complexity nature of its internal representations
+
 ## why do we need structured decoding?
 
 ![[posts/images/shogoth-gpt.png|Shogoth as GPTs. In a sense, RLHF, or any methods for that matter, is an injection of rules (GOFAI system) into post-training]]
 
 [[thoughts/LLMs|LLMs]] excel at the following heuristic: given a blob of text, the model will generate a contiguous piece of text that it predicts as the most probable tokens. For example, if you give it a Wikipedia article, the model should produce text consistent with the remainder of said article.
 
-These models works well given the following assumption: ==the inputs prompt must be coherent and well-structured surrounding a given problem the users want to achieve==. In other words, generations are often **non-deterministic** if one expect certain formats for said outputs (i.e JSON[^prompting]).
+These models works well given the following assumption: the inputs prompt must be ==coherent and well-structured== surrounding a given problem the users want to achieve.
+In other words, generations are often **non-deterministic** when you need output in specific formats. Think of asking a model to generate JSON - without guidance, it might produce valid text that breaks JSON specification[^prompting].
 
 This arises for the need of applying explicit rules and grammar[^gofai-nfai] (an addition of GOFAI system) that allows users to have control over certain aspect of the generations format while keeping the non-deterministic nature of the overall system.
 
@@ -113,7 +120,7 @@ OpenAI then introduced [JSON mode](https://platform.openai.com/docs/guides/struc
 
 ## structured decoding and vLLM.
 
-In layman term, structured decoding is a process where we give the LLMs a "template" to follow. Users provide a schema that "influences" the model's output, ensuring compliance with the desired structure:
+In layman terms, structured decoding gives LLMs a "template" to follow. Users provide a schema that "influences" the model's output, ensuring compliance with the desired structure:
 
 ```mermaid
 graph LR
@@ -144,6 +151,10 @@ _courtesy of [LMSys, 2024](https://lmsys.org/blog/2024-02-05-compressed-fsm/)_
 
 _in vLLM, you can use this by passing a JSON schema to the sampling params (either through [Python SDK](https://github.com/vllm-project/vllm/blob/80c751e7f68ade3d4c6391a0f3fce9ce970ddad0/benchmarks/benchmark_guided.py#L137) or HTTP requests)_
 
+> [!note]
+>
+> In some cases, it can even [improve](https://blog.dottxt.co/coalescence.html) the native decoding performance for LLM!
+
 [^fsm]:
     We define a _finite-state machine_, given by $(Q, \Sigma , \delta, q_0, F)$ where character comprising the strings in $\mathcal{V}$ are drawn from $\Sigma$, i.e: $\mathcal{V} \in \mathcal{P}(\Sigma)$:
 
@@ -159,27 +170,25 @@ _in vLLM, you can use this by passing a JSON schema to the sampling params (eith
 
 There are few limitations with current vLLM's support of the Outlines backend:
 
-1. FSM has to be constructed at a token-level, meaning it can only transition the state one token per step. Therefore, it can only decode _one_ token at a time, resulting in slow decoding.
-2. Implementation in [vLLM](https://github.com/vllm-project/vllm/blob/80c751e7f68ade3d4c6391a0f3fce9ce970ddad0/vllm/model_executor/guided_decoding/outlines_logits_processors.py)
-   relies on logit processor [^logit-processor]. As such, this is in the critical path of the sampling process [^sampling].
-   In batching use-case, compiling FSM per requests as well as computing the mask synchronous means that **all requests** in any given batches will get blocked, resulting in high time-to-first-tokens (TTFT) and lower throughput.
+1. **Slow decoding**: FSM has to be constructed at a token-level, meaning it can only transition the state one token per step. Therefore, it can only decode _one_ token at a time, resulting in slow decoding.
+2. **Batch processing bottlenecks**: Implementation in [vLLM](https://github.com/vllm-project/vllm/blob/80c751e7f68ade3d4c6391a0f3fce9ce970ddad0/vllm/model_executor/guided_decoding/outlines_logits_processors.py) relies heavily on logit processor[^logit-processor]. As such, this is on the critical path of the sampling process [^sampling]. In batching use-case, compiling FSM per requests as well as computing the mask synchronous means that **all requests** in any given batches will get blocked, resulting in high time-to-first-tokens (TTFT) and lower throughput.
    - We found that compiling FSM is proven to be a relatively expensive task, making it a significant contributor to the increased TTFT.
-3. With outlines integrations, while JSON mode is relatively fast, the CFG mode runs significantly slower, and can occasionally [crashes](https://github.com/vllm-project/vllm/issues/10081) the engine.
-4. Techniques such as [jump-forward decoding](https://lmsys.org/blog/2024-02-05-compressed-fsm/) are currently not possible with logit-processor approach. Reason being it requires prefilling a set of $k$-next tokens, whereas for logit processors we can only deal with the next-token.
+3. **Performance issues with CFG mode**: With outlines integrations, while JSON mode is relatively fast, the CFG mode runs significantly slower, and can occasionally [crashes](https://github.com/vllm-project/vllm/issues/10081) the engine.
+4. **Limited advanced feature support**: Techniques like [jump-forward decoding](https://lmsys.org/blog/2024-02-05-compressed-fsm/) are currently not possible with logit-processor approach. It requires prefilling a set of k-next tokens, whereas for logit processors we can only deal with the next-token.
 
 [^logit-processor]: See this [blog post](https://huggingface.co/blog/logits-processor-zoo) from Transformers for using logit processors to control generations process.
 
 ### integrations with XGrammar
 
-- [ ] [XGrammar](https://github.com/mlc-ai/xgrammar) introduces a new technique that batch constrained decoding with _pushdown automaton_ (PDA). You can think of a PDA as a "collection of FSMs, and each FSM represents a context-free grammar (CFG)." One significant advantage of PDA is its recursive nature, allowing us to execute multiple state transitions. They also include additional [optimisation](https://blog.mlc.ai/2024/11/22/achieving-efficient-flexible-portable-structured-generation-with-xgrammar) (for those who are interested) to reduce grammar compilation overhead.
+[XGrammar](https://github.com/mlc-ai/xgrammar) introduces a new technique that batch constrained decoding with _pushdown automaton_ (PDA). You can think of a PDA as a "collection of FSMs, and each FSM represents a context-free grammar (CFG)." One significant advantage of PDA is its recursive nature, allowing us to execute multiple state transitions. They also include additional [optimisation](https://blog.mlc.ai/2024/11/22/achieving-efficient-flexible-portable-structured-generation-with-xgrammar) (for those who are interested) to reduce grammar compilation overhead.
 
-This is great because it addresses limitation (1) by moving grammar compilation out of Python into C, utilising `pthread`. Additionally, XGrammar will enable us to implements (4) in future releases. Below includes some numbers comparing XGrammar and Outlines backend:
+This is great because it addresses **limitation (1)** by moving grammar compilation out of Python into C, utilising `pthread`. Additionally, XGrammar lays the groundwork for addressing **limitation (4)** in future releases. Below are performance comparisons between the XGrammar and Outlines backends:
 
 ![[posts/images/vllm-new-xgrammar.png]]
 
-![[posts/images/vllm-xgrammar-decode-time-per-output-token.png]]
+![[posts/images/vllm-xgrammar-decode-time-per-output-token.png|courtesy of Michael Goin (Red Hat)]]
 
-In vLLM's v0 architecture, XGrammar is implemented as a [logit processor](https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/guided_decoding/xgrammar_decoding.py) albeit with some optimizations for caching tokenizer data. While overall performance improvement are encouraging, we believe that there's still significant room for optimisation.
+In vLLM’s v0 architecture, we’ve implemented XGrammar as a [logit processor](https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/guided_decoding/xgrammar_decoding.py), optimizing it with caching for tokenizer data. While the performance improvements are encouraging, we believe there’s still significant room for optimisation.
 
 > [!note] integrations with v0
 >
@@ -195,7 +204,7 @@ In vLLM's v0 architecture, XGrammar is implemented as a [logit processor](https:
 >
 > vLLM now has a basic support for XGrammar by default. In case where we know XGrammar is insufficient to serve the request, we fall back to outlines.
 >
-> Note that vLLM also includes support for [lm-format-enforcer](https://github.com/noamgat/lm-format-enforcer). However, from our testing we found that in some long context test cases, `lm-format-enforcer` fails to enforce correct outputs, and not up to par with Outlines in terms of both performance and feature parity.
+> Note that vLLM also includes support for [lm-format-enforcer](https://github.com/noamgat/lm-format-enforcer). However, from our testing we found that in some long context test cases, `lm-format-enforcer` fails to enforce correct outputs, and not up to par with Outlines in terms of performance.
 
 ## tentative plans for v1
 
@@ -203,9 +212,9 @@ With the release of [v1](https://github.com/vllm-project/vllm/issues/8779) on th
 
 1. Moving guided decoding towards scheduler-level:
    - Reason: We have more context regarding which requests that use structured decoding at a scheduler-level, therefore
-     it shouldn't block other requests within the batch (tentatively addressing limitation (2)). In a sense, this
+     it shouldn't block other requests within the batch (tentatively addressing **limitation (2)**). In a sense, this
      moves guided decoding outside of the critical path.
-   - This would allow for more natural vertical integration with jump-forward decoding (address limitation (4))
+   - This would allow for more natural vertical integration with jump-forward decoding (address **limitation (4)**)
 2. Allowing bitmask calculation in one process instead of each GPU workers
    - Reason: We can then broadcast this bitmask to each GPU worker instead of repeating this process per GPU worker.
    - We will look to carefully analyze the bandwidth implication of broadcasting masks for every sample per requests doing guided decoding.
@@ -222,6 +231,6 @@ _NOTE: if you have any more suggestions we are more than happy to take it into c
 
 ## acknowledgement
 
-I want to thank the vLLM team, XGrammar team, Michael Groin (Neural Magic), Chendi Xue (Intel), and Russell Bryant (Red Hat) for their valuable feedback and collaboration on bringing XGrammar to vLLM and the continuous effort to improve structured decoding in vLLM.
+I want to thank the vLLM team, XGrammar team, [Michael Groin (Red Hat)](https://github.com/mgoin), [Chendi Xue (Intel)](https://github.com/xuechendi), and [Russell Bryant (Red Hat)](https://github.com/russellb) for their valuable feedback and collaboration on bringing XGrammar to vLLM and the continuous effort to improve structured decoding in vLLM.
 
 [^ref]

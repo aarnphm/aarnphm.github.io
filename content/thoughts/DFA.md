@@ -4,15 +4,77 @@ tags:
   - sfwr2fa3
   - math
 date: "2024-01-12"
-modified: "2024-11-19"
+modified: 2025-01-14 17:07:41 GMT-05:00
 title: Deterministic Finite Automata
 ---
 
-## definition
+## elements
+
+> [!math] alphabet
+>
+> An alphabet $\Sigma$ is any **finite** set
+>
+> i.e: $\Sigma =\{0,1\}$
+
+> A string is a **finite** sequence of elements from $\Sigma$
+
+i.e: Given $\Sigma = \{0,1\}$ string $011011\ldots$
+
+> [!important] empty string
+>
+> Or also known as $\epsilon$
+
+We get length of a string for given $\Sigma$: $\mid aaba \mid = 4$
+
+or $\mid a^3 \mid \equiv \mid aaa \mid = 3$
+
+### set of string
+
+> the set of all string over $\Sigma$ be $\Sigma^{*}$
+
+implication:
+
+- $\Sigma \neq \emptyset \implies \Sigma^{*} \text{ is infinite}$
+- All elements of $\Sigma^{*}$ is _finite_
 
 $$
-\Sigma^{*}: \text{set of all strings based off }\Sigma
+\begin{aligned}
+\epsilon &\in \Sigma^{*} \\
+\epsilon &\not\in \Sigma \\
+\Sigma &= \emptyset \implies \Sigma^{*} = \{ \epsilon \}
+\end{aligned}
 $$
+
+### concatenation
+
+$x = 101, y=111 \implies xy=101111$
+
+$$
+\begin{align}
+x^n &= x x^{n-1} \\
+x^0 &= \epsilon \\
+xyz &= x(yz) \\
+|xy| &= |x| + |y| \\
+\epsilon x &= x \epsilon = x
+\end{align}
+$$
+
+### language
+
+> A language $L$ is a set of string that conform to a set of rules.
+
+ops: $L_{1} \cup  L_{2}$, $L_{1} \cap L_{2}$ , $\neg L = \{ x \mid x \in \Sigma^{*} \wedge  x \not\in L\}$, $L_{1}L_{2}=\{ xy \mid x \in L \wedge y \in L_{2} \}$
+
+properties:
+
+- $L^0 = \{ \epsilon \}$
+- $L^n = L L^{n-1}$
+
+> [!important]
+>
+> $\Sigma^{*} = \bigcup_{i=0}^{\infty} \Sigma = \Sigma^0 \cup \Sigma^1 \ldots$
+
+## definition
 
 $$
 \begin{align*}
@@ -82,6 +144,26 @@ stateDiagram-v2
 
 > if in final string then accept, otherwise reject the string
 
+The following is the transfer function:
+
+$$
+\begin{aligned}
+\delta (1,a) &= 2 \\
+\delta (2, a) &= 3 \\
+\delta (3,a) &= 4 \\
+\delta (\rho, b) &= \rho (\forall \rho \mid \rho  \in Q \text{ s.t } \delta (\rho,b)=\rho)
+\end{aligned}
+$$
+
+Or displayed as a transition table:
+
+| State | a   | b   |
+| ----- | --- | --- |
+| →1    | 2   | 1   |
+| 2     | 3   | 2   |
+| 3     | 4   | 3   |
+| \*4   | 4   | 4   |
+
 ## language.
 
 [[thoughts/Language|Language]] of machine $\mathcal{L}(M)$ is the set of strings M accepts, such that $\mathcal{L}(M) \in \Sigma^{*}$
@@ -97,12 +179,14 @@ $$
 > Find DFA $M$ such that $\mathcal{L}(M)=$ the following
 >
 > 1. $\{ xab \mid x \in \Sigma^{*} \}$
-> 2. $\{ x \mid |x| \% 2 = 0 \}$
-> 3. $\{ x \mid x = 2^n\space ,\space n \in \mathbb{N} \}$, $\Sigma = \{0, 1\}$
-> 4. $\{ x \mid "abc" \in x \}$, $\Sigma = \{a, b, c\}$
+> 2. $\{ x \mid |x| \space \% \space 2 = 0 \}$
+> 3. $\{ x \mid \text{x is a binary string even number}\}, \Sigma = \{0, 1\}$
+> 4. $\{ x \mid "abc" \in x \}, \Sigma = \{a, b, c\}$
 > 5. $\{ x \mid \text{a is the second last char of x} \}$
 > 6. $\{ a^n \cdot b^n \mid n \ge 0 \}$
 > 7. $\{ x \mid \text{a is the fifth last char of x} \}$
+> 8. $\emptyset$
+> 9. $\Sigma^{*}$
 
 1.
 
@@ -151,127 +235,85 @@ stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
-    direction LR
-    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
-    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
-    classDef dead fill:#ff6b6b,stroke:#333,stroke-width:2px
+  direction LR
+  classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
 
-    s0: q0
-    s1: q1
-    s2: q2
-    s3: dead
+  s0: q0
+  s1: q1
 
-    [*] --> s0
-    s0 --> s3: 0
-    s0 --> s1: 1
+  [*] --> s0
+  s0 --> s1: 0
+  s1 --> s0: 1
+  s0 --> s0: 1
+  s1 --> s1: 0
 
-    s1 --> s2: 0
-    s1 --> s3: 1
-
-    s2 --> s2: 0
-    s2 --> s3: 1
-
-    s3 --> s3: 0,1
-
-    class s1 accepting
-    class s0 start
-    class s3 dead
+  class s1 accepting
 ```
 
-4.
+### transfer function
 
-```mermaid
-stateDiagram-v2
-    direction LR
-    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
-    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
-    
-    s0: q0
-    s1: q1
-    s2: q2
-    s3: q3
-    
-    [*] --> s0
-    
-    s0 --> s0: b,c
-    s0 --> s1: a
-    
-    s1 --> s0: a,c
-    s1 --> s2: b
-    
-    s2 --> s0: a,b
-    s2 --> s3: c
-    
-    s3 --> s3: a,b,c
-    
-    class s3 accepting
-    class s0 start
-```
+$$
+\begin{aligned}
+\delta: Q \times \Sigma  &\to Q \\
+\hat{\delta}: Q \times \Sigma^{*} &\to Q
+\end{aligned}
+$$
 
-5.
+> [!important] properties
+>
+> $$
+> \begin{aligned}
+> \hat{\delta} (\rho, \epsilon) &= \rho \\
+> \hat{\delta} (\rho, xa) &= \delta (\hat{\delta }(\rho, x), a)
+> \end{aligned}
+> $$
 
-```mermaid
-stateDiagram-v2
-    direction LR
-    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
-    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
-    
-    s0: q0
-    s1: q1
-    s2: q2
-    s3: q3
-    
-    [*] --> s0
-    
-    s0 --> s0: a,b
-    s0 --> s1: a
-    
-    s1 --> s2: b
-    s1 --> s3: a
-    
-    s2 --> s0: a,b
-    s3 --> s0: a,b
-    
-    class s2 accepting
-    class s0 start
-```
-6.
+## acceptance
 
-non-regular.
+> [!math] definition
+>
+> $M$ accepts string $x$ iff $\hat{\delta } (s,x) \in F$
+>
+> Or $\mathcal{L}(M) = \{x \mid \hat{\delta}(s,x) \in F \}$
 
-_proof using Pumping Lemma_
-- assume the language is regular, let $p$ be the pumping length.
-- Consider string $s = a^n \cdot b^n$
-- any way of diving $s=xyz$ where $\mid xy \mid \le p$ and $\mid y \mid \ge 0$ will results y contains only a'
-- pumped wouldn't be in the language
-q.e.d
+Q: Create DFA $M$ where $\Sigma = \{0,1\}  $ such that $\mathcal{L}(M) = \{x \mid  \text{x is a binary string representation of a multiple of 3 or x = 6}\}$
 
-7.
+$$
+\begin{align}
+\mathcal{L}(M) &= \{a^n \mid n \ge 0\} \\
+\mathcal{L}(M) &= \{a^nb^m \mid  n,m \ge 0\}  \\
+\mathcal{L}(M) &= \{a^nb^n \mid  0 \le n \le 3\}  \\
+\mathcal{L}(M) &= \{a^nb^n \mid  n\ge 0\}  \\
+\mathcal{L}(M) &= \{x \mid x[-2] = a\}  \\
+\mathcal{L}(M) &= \{x \mid x[-5] = a\}
+\end{align}
+$$
 
-```mermaid
-stateDiagram-v2
-    direction LR
-    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
-    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
-    
-    s0: q0
-    s1: q1
-    s2: q2
-    s3: q3
-    s4: q4
-    s5: q5
-    
-    [*] --> s0
-    
-    s0 --> s0: a,b
-    s0 --> s1: a
-    
-    s1 --> s2: a,b
-    s2 --> s3: a,b
-    s3 --> s4: a,b
-    s4 --> s5: a,b
-    s5 --> s0: a,b
-    
-    class s5 accepting
-    class s0 start
-```
+> [!important]
+>
+> 4 cannot be solved with DFA, or 4 is irregular
+
+## regular
+
+> [!abstract]
+>
+> A language $\mathcal{L}$ is a _regular_ language iff $\exists M \text{ s.t } M \text{ is a DFA and } \mathcal{L}(M)=L$
+
+If $L_{1}$ and $L_{2}$ are regular:
+1. $\neg L$ is _regular_ (closed under comparison)
+2. $L_{1} \cap L_{2}$
+3. $L_{1} \cup L_{2}$
+
+### proof (1)
+
+Let $M = (Q, \Sigma, \nabla ta, s, F)$ and $M^{'} = (Q, \Sigma, \delta, s, Q-F)$
+
+$$
+\mathcal{L}(M^{'}) = \neg \mathcal{L}(M)
+$$
+
+Or $\neg L = \mathcal{L}(M^{'})$
+
+### proof (2)
+
+Let $L_1$ and $L_2$ be regular languages, there $\exists M_{1} \cap M_{2} \text{ s.t } M_{1}=(Q_{1}, \Sigma,\delta_{1}, s_{1},F_{1}) \cap M_{2}=(Q_{2}, \Sigma, \delta_{2}, s_{2}, F_{2})$ and $\mathcal{L}(M_{1})=L \cap \mathcal{L}(M_{2}) = L_{2}$

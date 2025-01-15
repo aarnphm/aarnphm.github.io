@@ -6,7 +6,7 @@ tags:
   - technical
 date: "2024-09-09"
 description: efficient LLM serving engine.
-modified: 2025-01-06 14:13:48 GMT-05:00
+modified: 2025-01-12 20:33:31 GMT-05:00
 permalink:
   - /vllm
 title: vLLM
@@ -81,7 +81,7 @@ Reasoning for v2:
 
 See [slides](https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN5XaULO3AnCWWoRe4/edit#slide=id.p)
 
-<https://x.com/karpathy/status/1697318534555336961>
+https://x.com/karpathy/status/1697318534555336961
 
 - not all parameters are required for generations tokens
 - constraints tokens with low information-density

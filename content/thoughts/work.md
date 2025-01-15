@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2021-12-22"
 description: Crafts that I have been brewing for the past while.
-modified: 2025-01-04 11:28:23 GMT-05:00
+modified: 2025-01-12 20:31:34 GMT-05:00
 title: work.
 ---
 
@@ -33,7 +33,7 @@ You can find internal monologue under [[/posts/]] index.
   - Landing page of [[/|this]] website, with custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA|jupyter notebook]]
   - Source: <https://github.com/jackyzha0/quartz>, [site](https://quartz.jzhao.xyz/)
 
-    <https://x.com/aarnphm_/status/1861550609834402129>
+    https://x.com/aarnphm_/status/1861550609834402129
 
 - **avante.nvim** - :mortar_board: A [Cursor](https://www.cursor.com/)-like chat IDE for [[uses#^neovim|Neovim]] (2024-)
 

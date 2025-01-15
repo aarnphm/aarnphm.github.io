@@ -92,7 +92,7 @@ function createSidenote(footnote: HTMLElement, footnoteId: string): HTMLLIElemen
 }
 
 document.addEventListener("nav", () => {
-  const articleContent = document.querySelector(".page-content") as HTMLElement
+  const articleContent = document.querySelector(".page-content > article") as HTMLElement
   const footnoteSectionList = Array.from(
     articleContent.querySelectorAll("section[data-footnotes] > ol"),
   ) as HTMLOListElement[]

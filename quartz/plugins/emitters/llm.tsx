@@ -29,6 +29,7 @@ import { InlineMath, Math, mathToMarkdown } from "mdast-util-math"
 import DepGraph from "../../depgraph"
 import { toText } from "hast-util-to-text"
 import { headingRank } from "hast-util-heading-rank"
+import { remove } from "unist-util-remove"
 
 const heading = (h: State, node: Element): Heading => {
   // NOTE: for all heading, we append the links in hast syntax tree. For markdown, we don't need to do this.
@@ -423,6 +424,22 @@ export const LLM: QuartzEmitterPlugin = () => {
                 return results
               }
               return hastToMdastHandlers.section(h, node)
+            },
+            p(h, node) {
+              if (
+                node.properties.dataCodeblock === "sms" ||
+                node.properties.dataCodeblock === "quotes"
+              ) {
+                const lang = node.properties.dataCodeblock as string
+                const results: Code = {
+                  type: "code",
+                  lang,
+                  value: toText(node),
+                }
+                h.patch(node, results)
+                return results
+              }
+              return hastToMdastHandlers.p(h, node)
             },
           },
         }) as Root

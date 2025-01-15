@@ -2,6 +2,7 @@
 @use "../variables.scss" as *;
 
 body[data-layout="technical"] {
+  .sidenotes,
   .page-footer {
     display: none;
   }

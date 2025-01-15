@@ -4,7 +4,6 @@ import HeaderConstructor from "./Header"
 import ContentConstructor from "./pages/Content"
 import FooterConstructor from "./Footer"
 import SearchConstructor from "./Search"
-import GraphConstructor from "./Graph"
 import { byDateAndAlphabetical } from "./PageList"
 import { getDate, Date } from "./Date"
 import { classNames } from "../util/lang"
@@ -1086,7 +1085,6 @@ export function renderPage(
         const { displayClass } = props
         const Element = ElementComponent()
         const Search = SearchConstructor({ includeButton: false })
-        const Graph = GraphConstructor()
 
         return (
           <>
@@ -1096,7 +1094,6 @@ export function renderPage(
             <div class={classNames(displayClass, "landing")}>
               <Element {...componentData} />
               <Search {...componentData} />
-              <Graph {...componentData} />
             </div>
           </>
         )

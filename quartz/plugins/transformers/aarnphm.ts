@@ -293,6 +293,7 @@ type SignatureOptions = Enable<{
 type CodeOptions = Enable<{
   poetry: boolean
   quotes: boolean
+  sms: boolean
 }>
 
 export interface Options {
@@ -301,7 +302,7 @@ export interface Options {
 }
 
 const defaultOptions: Options = {
-  code: { enable: true, poetry: true, quotes: true },
+  code: { enable: true, poetry: true, quotes: true, sms: true },
   signature: { enable: true, text: "with love Aaron.", class: "signature" },
 }
 
@@ -327,7 +328,10 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
                 node.value = `<pre class="poetry" data-language="${lang}">${node.value}</pre>`
               } else if (opts.code.quotes && node.lang === "quotes") {
                 node.type = "html" as "code"
-                node.value = `<p class="quotes">${node.value}</p>`
+                node.value = `<p class="quotes" data-codeblock="${node.lang}">${node.value}</p>`
+              } else if (opts.code.sms && node.lang === "sms") {
+                node.type = "html" as "code"
+                node.value = `<p class="text" data-codeblock="${node.lang}">${node.value}</p>`
               }
             })
           }

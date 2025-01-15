@@ -8,7 +8,7 @@ tags:
   - evergreen
 date: "2022-01-25"
 description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
-modified: 2024-12-16 06:25:03 GMT-05:00
+modified: 2025-01-12 20:32:23 GMT-05:00
 title: ideas.
 ---
 
@@ -57,7 +57,7 @@ title: ideas.
 - disappearing text
   - For svg: [codepen](https://codepen.io/Mikhail-Bespalov/pen/yLmpxOG)
 
-<https://x.com/aarnphm_/status/1844775079286120682>
+https://x.com/aarnphm_/status/1844775079286120682
 
 ## écriture
 

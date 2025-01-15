@@ -97,7 +97,7 @@ async function mouseEnterHandler(
     const url = new URL(`https://cdn.aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
     response = await fetchCanonical(url).catch(console.error)
   } else {
-    response = await fetchCanonical(`${targetUrl}`).catch(console.error)
+    response = await fetchCanonical(new URL(`${targetUrl}`)).catch(console.error)
     document.dispatchEvent(new CustomEvent("nav", { detail: { url: link.href } }))
   }
 

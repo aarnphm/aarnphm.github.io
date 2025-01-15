@@ -1,15 +1,14 @@
 @use "../../styles/variables.scss" as *;
 
 .sidenotes {
-  &::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    border-left: 1px dashed var(--gray);
-    transform: translateX(-50%);
+  grid-column: 9/12;
+
+  @media all and ($tablet) {
+    display: none;
+  }
+
+  @media all and ($mobile) {
+    display: none;
   }
 
   & > ol {
@@ -17,15 +16,6 @@
     list-style: none;
     position: relative;
     margin: 0;
-
-    // Only show the dashed line when there are no items
-    &:empty + .sidenotes::before {
-      display: block;
-    }
-
-    &:not(:empty) + .sidenotes::before {
-      display: none;
-    }
   }
 
   & .sidenote-element {

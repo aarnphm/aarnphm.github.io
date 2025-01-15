@@ -6,7 +6,7 @@ tags:
   - writing
 date: "2025-01-06"
 description: and being shattered into a million pieces, then picking oneself up.
-modified: 2025-01-09 12:55:50 GMT-05:00
+modified: 2025-01-11 01:38:50 GMT-05:00
 socials:
   bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lfcwbep7oc2q
   facebook: https://www.facebook.com/share/19ghibetuE/
@@ -44,17 +44,17 @@ _[In the pale light of dawn, the phone emitted a muzzy ping, like a distant echo
 
 Three bubbles appeared and disappeared, pulsating with the rhythm of a heart that had long ceased to beat. He watched them, as if they held the key to a labyrinth he could never escape.
 
-<p class="text">
+```sms
 I've been thinking about everything you wrote. I want you to know I care for you so much, and I never want you to doubt that. But I don't think I can give you what you're asking for...
-</p>
+```
 
 Each word was a stone dropped into the deep well of his chest, reverberating with the cold certainty of fate. His heart, once aflutter with the possibility of hope, now lay still, entombed in the icy chambers of reality. She cared, yes, but caring and wanting were two distant stars in the vast cosmos of human emotion. The ache in his chest was a reminder of the bruise time had left, a wound that festered in the shadows.
 
 The room, once a sanctuary, now felt oppressive, suffocated by the warmth of morning light that seemed to mock his despair. The mountains outside, indifferent sentinels of human folly, stood as immutable as the laws of a cruel bureaucracy. They had witnessed countless such moments, where hearts learned and relearned the futility of gravity, where some things fell no matter how carefully one tried to hold them. He sat there, phone in hand, as the second text arrived:
 
-<p class="text">
+```sms
 I wonder if my presence in your life would hinder your ability to make space for viable romantic connections. I care too much about you to let that happen
-</p>
+```
 
 The paradox was a riddle posed by a world that thrived on contradictions. His confusion reached a crescendo, a symphony of absurdity in which [[thoughts/logic]] was but a distant spectator. How could one care so deeply and yet declare they couldn't be together? The answer lay in the [[thoughts/Camus|absurd]] nature of existence, where meaning was a fleeting shadow, always just out of reach.
 
@@ -64,9 +64,9 @@ The mountains still showed no sympathy. They had witnessed countless such moment
 
 The phone buzzed once more, offering a lifeline or a noose:
 
-<p class="text">
+```sms
 Coffee next week?
-</p>
+```
 
 And there it was – the careful return to normal, the gentle repositioning of boundaries. She was good at this, he noticed. Too good. She had probably done it before, had probably been on both sides of this conversation enough times to navigate it with expertise.
 
