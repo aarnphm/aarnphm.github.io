@@ -5,7 +5,9 @@ tags:
 comments: false
 date: "2021-12-22"
 description: Crafts that I have been brewing for the past while.
-modified: 2025-01-15 16:40:17 GMT-05:00
+modified: 2025-01-15 16:43:33 GMT-05:00
+permalink:
+  - /thoughts/work
 title: craft.
 ---
 
