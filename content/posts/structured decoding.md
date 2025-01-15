@@ -5,10 +5,12 @@ tags:
   - serving
 date: "2024-12-10"
 description: and vLLM integration with XGrammar
-modified: 2025-01-14 20:07:14 GMT-05:00
+modified: 2025-01-15 13:35:31 GMT-05:00
 pageLayout: technical
 socials:
-  blog: https://blog.vllm.ai/2025/01/14/struct-decode-intro.html
+  bentoml blog: https://bentoml.com/blog/structured-decoding-in-vllm-a-gentle-introduction
+  hackernews: https://news.ycombinator.com/item?id=42711051
+  official blog: https://blog.vllm.ai/2025/01/14/struct-decode-intro.html
 title: structured decoding, a guide for the impatient
 ---
 
