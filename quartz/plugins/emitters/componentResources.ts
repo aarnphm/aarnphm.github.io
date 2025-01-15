@@ -30,7 +30,6 @@ import sharp from "sharp"
 import { unescapeHTML } from "../../util/escape"
 import { i18n } from "../../i18n"
 import chalk from "chalk"
-import EventEmitter from "events"
 
 const NAME = "ComponentResources"
 
@@ -118,102 +117,41 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
   componentResources.afterDOMLoaded.push(insightsScript, spaRouterScript)
 }
 
-interface OgTask {
-  title: string
-  description: string
-  fileData: QuartzPluginData
-  fileDir: string
-  fileName: string
-  extension: string
-}
+async function generateOgImage(
+  ctx: BuildCtx,
+  fonts: SatoriOptions["fonts"],
+  opts: SocialImageOptions,
+  title: string,
+  description: string,
+  fileData: QuartzPluginData,
+  fileName: string,
+): Promise<Promise<FilePath>> {
+  try {
+    const svg = await satori(
+      opts.Component(ctx.cfg.configuration, fileData, opts, title, description, fonts),
+      {
+        width: opts.width,
+        height: opts.height,
+        fonts: fonts,
+        graphemeImages: {
+          "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
+        },
+      },
+    )
 
-class OgImageQueue extends EventEmitter {
-  private queue: OgTask[] = []
-  private processing = false
-  private completed = 0
-  private total = 0
-  private progressBar = ""
+    const content = await sharp(Buffer.from(svg)).webp({ quality: 70 }).toBuffer()
 
-  constructor(
-    private ctx: BuildCtx,
-    private fonts: SatoriOptions["fonts"],
-    private opts: SocialImageOptions,
-  ) {
-    super()
-  }
-
-  add(task: OgTask) {
-    this.queue.push(task)
-    this.total++
-  }
-
-  process() {
-    if (this.processing) return []
-    this.processing = true
-
-    const fps: Promise<FilePath>[] = []
-    const batchSize = this.ctx.argv.concurrency ?? 10
-
-    // Add event listener for progress
-    if (this.ctx.argv.verbose) {
-      this.on("progress", (completed, total) => {
-        const percent = Math.round((completed / total) * 100)
-        this.progressBar = `[emit:${NAME}] Generating OG images: ${completed}/${total} (${percent}%)`
-
-        // Only write newline before first progress message
-        process.stdout.write(`\r${this.progressBar}`)
-
-        // Write newline when complete
-        if (completed === total) {
-          process.stdout.write("\n")
-        }
-      })
-    }
-
-    while (this.queue.length > 0) {
-      const batch = this.queue.splice(0, batchSize)
-      batch.map(async ({ title, description, fileData, fileDir, fileName, extension }) => {
-        try {
-          const component = this.opts.Component(
-            this.ctx.cfg.configuration,
-            fileData,
-            this.opts,
-            title,
-            description,
-            this.fonts,
-          )
-          const svg = await satori(component, {
-            width: this.opts.width,
-            height: this.opts.height,
-            fonts: this.fonts,
-            graphemeImages: {
-              "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
-            },
-          })
-
-          const content = await sharp(Buffer.from(svg)).webp({ quality: 40 }).toBuffer()
-
-          fps.push(
-            write({
-              ctx: this.ctx,
-              slug: joinSegments("static", fileDir, fileName) as FullSlug,
-              ext: `.${extension}`,
-              content,
-            }),
-          )
-
-          this.completed++
-          if (this.ctx.argv.verbose) {
-            this.emit("progress", this.completed, this.total)
-          }
-        } catch (error) {
-          console.error(
-            chalk.red(`\n[emit:${NAME}] Failed to generate social image for "${title}":`, error),
-          )
-        }
-      })
-    }
-    return fps
+    return write({
+      ctx,
+      slug: joinSegments("static", "social-images", fileName) as FullSlug,
+      ext: `.webp`,
+      content,
+    })
+  } catch (error) {
+    console.error(
+      chalk.red(`[emit:${NAME}] Failed to generate social image for "${title}":`, error),
+    )
+    return Promise.reject(error)
   }
 }
 
@@ -363,12 +301,9 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         if (!fonts) fonts = getSatoriFont(cfg)
         const fontData = await fonts
 
-        const queue = new OgImageQueue(ctx, fontData, imageOptions)
-
-        for (const [_, file] of content) {
+        const ogPromises = content.map(async ([_, file]) => {
           const slug = file.data.slug!
           const fileName = slug.replaceAll("/", "-")
-
           const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
           const description = unescapeHTML(
             file.data.frontmatter?.description ??
@@ -376,22 +311,22 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
               i18n(cfg.locale).propertyDefaults.description,
           )
 
-          queue.add({
+          return generateOgImage(
+            ctx,
+            fontData,
+            imageOptions,
             title,
             description,
-            fileData: file.data,
-            fileDir: "social-images",
+            file.data,
             fileName,
-            extension: "webp",
-          })
-        }
-        // Start processing in background
-        if (ctx.argv.verbose) {
-          console.log(
-            chalk.blue(`[emit:${NAME}] Starting social image generation in background...`),
           )
+        })
+
+        if (ctx.argv.verbose) {
+          console.log(chalk.blue(`[emit:${NAME}] Generating social images...`))
         }
-        promises.push(...queue.process())
+
+        promises.push(...ogPromises)
       }
 
       return await Promise.all(promises)
