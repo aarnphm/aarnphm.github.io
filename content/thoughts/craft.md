@@ -1,15 +1,15 @@
 ---
-id: work
+id: craft
 tags:
   - evergreen
 comments: false
 date: "2021-12-22"
 description: Crafts that I have been brewing for the past while.
-modified: 2025-01-12 20:31:34 GMT-05:00
-title: work.
+modified: 2025-01-15 16:40:17 GMT-05:00
+title: craft.
 ---
 
-A collection of work I have done for the past while that I'm proud of.
+I would like to think of the work I do as _craft_, a celebration of the act of making itself.
 
 There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one day.
 

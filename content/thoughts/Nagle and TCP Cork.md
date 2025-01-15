@@ -3,11 +3,12 @@ id: Nagle and TCP Cork
 tags:
   - seed
   - networking
+date: "2022-07-01"
+modified: 2025-01-15 14:03:40 GMT-05:00
 title: Nagle's algorithm and TCP_CORK
-date: 2022-07-01
 ---
 
-### Nagle's algorithm and Delay ACK
+## Nagle's algorithm and Delay ACK
 
 - _small packets_ -> not for TCP
   -> Nagle algorithm: `Maximize ratio of packets - data content`
@@ -23,4 +24,4 @@ else
 		send
 ```
 
-### Cork algorithm
+## CORK algorithm
