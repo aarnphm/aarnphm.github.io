@@ -159,6 +159,8 @@ export const og: SocialImageOptions["Component"] = (
 
   const Li = [created, reading]
 
+  const src = `https://${cfg.baseUrl}/static/icon.jpeg`
+
   return (
     <div
       style={{
@@ -197,7 +199,7 @@ export const og: SocialImageOptions["Component"] = (
         }}
       >
         <img
-          src={`"https://${cfg.baseUrl}/static/icon.jpeg"`}
+          src={src}
           style={{
             position: "relative",
             backgroundClip: "border-box",
