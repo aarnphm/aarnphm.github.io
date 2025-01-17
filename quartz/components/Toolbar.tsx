@@ -159,12 +159,6 @@ const buttons: ToolbarProps[] = [
     tooltip: "Export PDF",
     Icon: Pdf,
   },
-  {
-    id: "graph-button",
-    label: "Toggle global graph",
-    tooltip: "Global graph",
-    Icon: Graph,
-  },
 ]
 
 export default (() => {
