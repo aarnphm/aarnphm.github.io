@@ -7,7 +7,7 @@ import { glob } from "../../util/glob"
 import { FilePath, joinSegments, slugifyFilePath } from "../../util/path"
 import { Argv } from "../../util/ctx"
 import { spawn } from "child_process"
-import chalk from "chalk"
+import { styleText } from "node:util"
 
 const notebookFiles = async (argv: Argv, cfg: QuartzConfig) => {
   return await glob("**/*.ipynb", argv.directory, [...cfg.configuration.ignorePatterns])
@@ -37,9 +37,10 @@ function runConvertCommand(argv: Argv, nbPath: string, targetSlug: string, outpu
   return spawn(command, args)
 }
 
+const name = "NotebookViewer"
 export const NotebookViewer: QuartzEmitterPlugin = () => {
   return {
-    name: "NotebookViewer",
+    name,
     getQuartzComponents() {
       return []
     },
@@ -47,6 +48,12 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
       return new DepGraph<FilePath>()
     },
     async emit({ argv, cfg }, _content, _resources): Promise<FilePath[]> {
+      if (argv.serve) {
+        if (argv.verbose) console.log(`[emit:${name}] Skip converting notebook during serve time.`)
+
+        return []
+      }
+
       const outputDir = argv.output
       const fps = await notebookFiles(argv, cfg)
       const res: FilePath[] = []
@@ -59,7 +66,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
         const percent = Math.round((completed / fps.length) * 100)
         process.stdout.write(
           `\r[emit:NotebookViewer] Converting notebooks: ${completed}/${fps.length} (${percent}%)` +
-            (errors > 0 ? chalk.yellow(` (${errors} errors)`) : ""),
+            (errors > 0 ? styleText("yellow", ` (${errors} errors)`) : ""),
         )
       }
 
@@ -76,7 +83,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
           completed++
           updateProgress()
         } catch (err) {
-          console.error(chalk.red(`\n[emit:NotebookViewer] Error processing ${fp}:`), err)
+          console.error(styleText("red", `\n[emit:NotebookViewer] Error processing ${fp}:`), err)
           errors++
           updateProgress()
           continue
@@ -85,9 +92,10 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
 
       if (argv.verbose) {
         console.log() // New line after progress
-        const summaryColor = errors > 0 ? chalk.yellow : chalk.green
+        const summaryColor = errors > 0 ? "yellow" : "green"
         console.log(
-          summaryColor(
+          styleText(
+            summaryColor,
             `[emit:NotebookViewer] Completed conversion of ${completed} notebooks` +
               (errors > 0 ? ` (${errors} errors)` : ""),
           ),

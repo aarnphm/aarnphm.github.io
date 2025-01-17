@@ -4,7 +4,7 @@ tags:
   - technical
   - seed
 date: "2024-02-07"
-modified: 2025-01-17 06:24:38 GMT-05:00
+modified: 2025-01-17 18:00:46 GMT-05:00
 title: Attention
 ---
 

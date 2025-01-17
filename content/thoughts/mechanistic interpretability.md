@@ -4,7 +4,7 @@ tags:
   - interp
 date: "2024-10-30"
 description: and reverse engineering neural networks.
-modified: 2025-01-04 10:44:19 GMT-05:00
+modified: 2025-01-17 18:12:18 GMT-05:00
 permalink:
   - /mechinterp
   - /mechanistic-interpretability
@@ -152,15 +152,14 @@ idea: deletes one activation of the network to see how performance on a task cha
 
 ## residual stream
 
-```mermaid
-flowchart LR
-  A[Token] --> B[Embeddings] --> C[x0]
-  C[x0] --> E[H] --> D[x1]
-  C[x0] --> D
-  D --> F[MLP] --> G[x2]
-  D --> G[x2]
-  G --> I[...] --> J[unembed] --> X[logits]
-```
+![[thoughts/images/residual-stream-illustration.webp|Residual stream illustration]]
+
+intuition: we can think of residual as highway networks, in a sense portrays linearity of the network [^residual-stream]
+
+[^residual-stream]:
+    Constructing models with a residual stream traces back to early work by the Schmidhuber group, such as highway networks [@srivastava2015highwaynetworks]  and LSTMs, which have found significant modern success in the more recent residual network architecture [@he2015deepresiduallearningimage].
+
+    In [[thoughts/Transformers]], the residual stream vectors are often called the "embedding." We prefer the residual stream terminology, both because it emphasizes the residual nature (which we believe to be important) and also because we believe the residual stream often dedicates subspaces to tokens other than the present token, breaking the intuitions the embedding terminology suggests.
 
 residual stream $x_{0}$ has dimension $\mathit{(C,E)}$ where
 
@@ -184,3 +183,4 @@ See also: [writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mec
 > related to phase change
 
 [^ref]
+

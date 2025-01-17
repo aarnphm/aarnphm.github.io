@@ -9,7 +9,7 @@ modified: 2025-01-06 16:27:29 GMT-05:00
 title: Large System Design
 ---
 
-Ridha Khedri [email](mailto:khedri@mcmaster.ca)
+Prof. Ridha Khedri: [email](mailto:khedri@mcmaster.ca)
 
 Book: Software Architecture and Design Illuminated ([[thoughts/university/twenty-four-twenty-five/sfwr-3a04/book.pdf|ISBN: 9780763754204]])
 

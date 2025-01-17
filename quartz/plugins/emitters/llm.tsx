@@ -52,9 +52,11 @@ const heading = (h: State, node: Element): Heading => {
   }
 }
 
+const name = "LLM"
+
 export const LLM: QuartzEmitterPlugin = () => {
   return {
-    name: "LLM",
+    name,
     getQuartzComponents() {
       return []
     },
@@ -65,7 +67,8 @@ export const LLM: QuartzEmitterPlugin = () => {
       // Hmm, we will just disable llm generation during serve for now,
       // since most of the rehype-remark is pretty expensive.
       if (ctx.argv.serve) {
-        console.log("[emit:LLM] Skipping generate LLM source on serve mode.")
+        if (ctx.argv.verbose)
+          console.log(`[emit:${name}] Skipping generate LLM source on serve mode.`)
         return []
       }
 
@@ -569,7 +572,7 @@ ${contentBase}`,
         }),
       )
 
-      return await Promise.all(fps)
+      return Promise.all(fps)
     },
   }
 }

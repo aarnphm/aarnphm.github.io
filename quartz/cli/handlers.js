@@ -1,7 +1,6 @@
 import { promises } from "fs"
 import path from "path"
 import esbuild from "esbuild"
-import chalk from "chalk"
 import { sassPlugin } from "esbuild-sass-plugin"
 import fs from "fs"
 import chokidar from "chokidar"
@@ -13,13 +12,14 @@ import { randomUUID } from "crypto"
 import { Mutex } from "async-mutex"
 import { globby } from "globby"
 import { version, fp, cacheFile } from "./constants.js"
+import { styleText } from "node:util"
 
 /**
  * Handles `npx quartz build`
  * @param {*} argv arguments for `build`
  */
 export async function handleBuild(argv) {
-  console.log(chalk.bgGreen.black(`\n Quartz v${version} \n`))
+  console.log("\n" + styleText(["bgGreen", "black"], `Quartz v${version}`) + "\n")
   const ctx = await esbuild.context({
     entryPoints: [fp],
     outfile: cacheFile,
@@ -93,13 +93,13 @@ export async function handleBuild(argv) {
     }
 
     if (cleanupBuild) {
-      console.log(chalk.yellow("Detected a source code change, doing a hard rebuild..."))
+      console.log(styleText("yellow", "Detected a source code change, doing a hard rebuild..."))
       await cleanupBuild()
     }
 
     const result = await ctx.rebuild().catch((err) => {
-      console.error(`${chalk.red("Couldn't parse Quartz configuration:")} ${fp}`)
-      console.log(`Reason: ${chalk.grey(err)}`)
+      console.error(`${styleText("red", "Couldn't parse Quartz configuration:")} ${fp}`)
+      console.log(`Reason: ${styleText("grey", err)}`)
       process.exit(1)
     })
     release()
@@ -136,7 +136,8 @@ export async function handleBuild(argv) {
     const server = http.createServer(async (req, res) => {
       if (argv.baseDir && !req.url?.startsWith(argv.baseDir)) {
         console.log(
-          chalk.red(
+          styleText(
+            "red",
             `[404] ${req.url} (warning: link outside of site, this is likely a Quartz bug)`,
           ),
         )
@@ -171,8 +172,10 @@ export async function handleBuild(argv) {
         })
         const status = res.statusCode
         const statusString =
-          status >= 200 && status < 300 ? chalk.green(`[${status}]`) : chalk.red(`[${status}]`)
-        console.log(statusString + chalk.grey(` ${argv.baseDir}${req.url}`))
+          status >= 200 && status < 300
+            ? styleText("green", `[${status}]`)
+            : styleText("red", `[${status}]`)
+        console.log(statusString + styleText("grey", ` ${argv.baseDir}${req.url}`))
         release()
       }
 
@@ -181,7 +184,10 @@ export async function handleBuild(argv) {
         res.writeHead(302, {
           Location: newFp,
         })
-        console.log(chalk.yellow("[302]") + chalk.grey(` ${argv.baseDir}${req.url} -> ${newFp}`))
+        console.log(
+          styleText("yellow", "[302]") +
+            styleText("grey", ` ${argv.baseDir}${req.url} -> ${newFp}`),
+        )
         res.end()
       }
 
@@ -230,7 +236,8 @@ export async function handleBuild(argv) {
     const wss = new WebSocketServer({ port: argv.wsPort })
     wss.on("connection", (ws) => connections.push(ws))
     console.log(
-      chalk.cyan(
+      styleText(
+        "cyan",
         `[serve] Started a Quartz server listening at http://localhost:${argv.port}${argv.baseDir}`,
       ),
     )

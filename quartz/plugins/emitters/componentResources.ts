@@ -29,9 +29,9 @@ import { QuartzPluginData } from "../vfile"
 import sharp from "sharp"
 import { unescapeHTML } from "../../util/escape"
 import { i18n } from "../../i18n"
-import chalk from "chalk"
+import { styleText } from "node:util"
 
-const NAME = "ComponentResources"
+const name = "ComponentResources"
 
 type ComponentResources = {
   css: string[]
@@ -162,11 +162,11 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
 
   const { fontOrigin } = { ...defaultOptions, ...opts }
   return {
-    name: NAME,
+    name,
     getQuartzComponents() {
       return []
     },
-    async getDependencyGraph(ctx, content, _resources) {
+    async getDependencyGraph(_ctx, _content, _resources) {
       return new DepGraph<FilePath>()
     },
     async emit(ctx, content, _resources): Promise<FilePath[]> {
@@ -267,9 +267,8 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
       )
 
       if (cfg.generateSocialImages && !ctx.argv.serve) {
-        if (ctx.argv.verbose) {
-          console.log(chalk.blue(`[emit:${NAME}] Generating social images...`))
-        }
+        if (ctx.argv.verbose)
+          console.log(styleText("blue", `[emit:${name}] Generating social images...`))
 
         if (!imageOptions) {
           if (typeof cfg.generateSocialImages !== "boolean") {
@@ -304,10 +303,13 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         })
         promises.push(...ogs)
       } else {
-        console.log(chalk.yellow(`[emit:${NAME}] Skipping OG generations during serve time.`))
+        if (ctx.argv.verbose)
+          console.log(
+            styleText("yellow", `[emit:${name}] Skipping OG generations during serve time.`),
+          )
       }
 
-      return await Promise.all(promises)
+      return Promise.all(promises)
     },
   }
 }

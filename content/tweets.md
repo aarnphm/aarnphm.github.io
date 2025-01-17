@@ -4,7 +4,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded.
-modified: 2025-01-17 03:37:34 GMT-05:00
+modified: 2025-01-17 14:14:42 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -25,8 +25,6 @@ https://x.com/m_kaytweets/status/1801627208517140625 <!-- Liking things that are
 
 https://x.com/kepano/status/1694731713686196526 <!-- Obsidian manifesto -->
 
-https://x.com/carmenleelau/status/1818771532132311200 <!-- People who demand nothing of you -->
-
 https://x.com/juniperfolly/status/1875270769116377463 <!-- Funny girlfriend tax memes -->
 
 https://x.com/noampomsky/status/1876151263882350630 <!-- Ava on practicality over unreasonable romantic dreamy thing -->
@@ -40,6 +38,8 @@ https://x.com/cremieuxrecueil/status/1876097710610338066 <!-- five capacities ty
 https://x.com/ruzhaoart/status/1876149783997677605 <!-- Jacky's sister on traditional art -->
 
 ## life
+
+https://x.com/carmenleelau/status/1818771532132311200 <!-- People who demand nothing of you -->
 
 https://x.com/NicoleSHsing/status/1876672940353450369 <!-- existence -->
 

@@ -2,7 +2,7 @@ import { execSync } from "child_process"
 import { promises as fs } from "fs"
 import path from "path"
 import { globby } from "globby"
-import chalk from "chalk"
+import { styleText } from "node:util"
 
 async function convertMedia(contentDir: string) {
   try {
@@ -13,11 +13,11 @@ async function convertMedia(contentDir: string) {
     })
 
     if (mediaFiles.length === 0) {
-      console.log(chalk.yellow("No media files found to convert."))
+      console.log(styleText("yellow", "No media files found to convert."))
       return
     }
 
-    console.log(chalk.blue(`Found ${mediaFiles.length} media files to convert.`))
+    console.log(styleText("blue", `Found ${mediaFiles.length} media files to convert.`))
 
     for (const mediaFile of mediaFiles) {
       const ext = path.extname(mediaFile).toLowerCase()
@@ -43,10 +43,13 @@ async function convertMedia(contentDir: string) {
         execSync(ffmpegCmd, { stdio: "inherit" })
         await fs.unlink(mediaFile)
         console.log(
-          chalk.green(`Converted: ${path.basename(mediaFile)} -> ${path.basename(outputFile)}`),
+          styleText(
+            "green",
+            `Converted: ${path.basename(mediaFile)} -> ${path.basename(outputFile)}`,
+          ),
         )
       } catch (error) {
-        console.error(chalk.red(`Failed to convert ${mediaFile}:`), error)
+        console.error(styleText("red", `Failed to convert ${mediaFile}:`), error)
       }
     }
 
@@ -56,7 +59,7 @@ async function convertMedia(contentDir: string) {
       ignore: ["**/posts/**/*.md"],
     })
 
-    console.log(chalk.blue(`\nUpdating ${mdFiles.length} markdown files...`))
+    console.log(styleText("blue", `\nUpdating ${mdFiles.length} markdown files...`))
 
     for (const mdFile of mdFiles) {
       let content = await fs.readFile(mdFile, "utf-8")
@@ -75,13 +78,13 @@ async function convertMedia(contentDir: string) {
 
       if (content !== originalContent) {
         await fs.writeFile(mdFile, content, "utf-8")
-        console.log(chalk.green(`Updated references in: ${path.basename(mdFile)}`))
+        console.log(styleText("green", `Updated references in: ${path.basename(mdFile)}`))
       }
     }
 
-    console.log(chalk.green("\nMedia conversion and markdown updates completed!"))
+    console.log(styleText("green", "\nMedia conversion and markdown updates completed!"))
   } catch (error) {
-    console.error(chalk.red("Error during conversion:"), error)
+    console.error(styleText("red", "Error during conversion:"), error)
     process.exit(1)
   }
 }

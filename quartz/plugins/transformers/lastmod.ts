@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 import { Repository } from "@napi-rs/simple-git"
 import { QuartzTransformerPlugin } from "../types"
-import chalk from "chalk"
+import { styleText } from "node:util"
 
 export interface Options {
   priority: ("frontmatter" | "git" | "filesystem")[]
@@ -17,7 +17,8 @@ function coerceDate(fp: string, d: any): Date {
   const invalidDate = isNaN(dt.getTime()) || dt.getTime() === 0
   if (invalidDate && d !== undefined) {
     console.log(
-      chalk.yellow(
+      styleText(
+        "yellow",
         `\nWarning: found invalid date "${d}" in \`${fp}\`. Supported formats: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#date_time_string_format`,
       ),
     )
@@ -63,7 +64,8 @@ export const CreatedModifiedDate: QuartzTransformerPlugin<Partial<Options>> = (u
                   modified ||= await repo.getFileLatestModifiedDateAsync(file.data.filePath!)
                 } catch {
                   console.log(
-                    chalk.yellow(
+                    styleText(
+                      "yellow",
                       `\nWarning: ${file.data
                         .filePath!} isn't yet tracked by git, last modification date is not available for this file`,
                     ),

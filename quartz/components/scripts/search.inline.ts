@@ -9,6 +9,8 @@ interface Item {
   title: string
   content: string
   tags: string[]
+  aliases: string[]
+  target: string | undefined
 }
 
 // Can be expanded with things like "term" in the future
@@ -33,6 +35,10 @@ let index = new FlexSearch.Document<Item>({
       },
       {
         field: "tags",
+        tokenize: "forward",
+      },
+      {
+        field: "aliases",
         tokenize: "forward",
       },
     ],
@@ -276,12 +282,20 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     if (data[slug].layout === "letter") {
       return null
     }
+    const aliases: string[] = data[slug].aliases
+    const target = aliases.find((alias) => alias.toLowerCase().includes(term.toLowerCase()))
+
     return {
       id,
       slug,
-      title: searchType === "tags" ? data[slug].title : highlight(term, data[slug].title ?? ""),
+      title:
+        searchType === "tags" || target
+          ? data[slug].title
+          : highlight(term, data[slug].title ?? ""),
+      target,
       content: highlight(term, data[slug].content ?? "", true),
       tags: highlightTags(term.substring(1), data[slug].tags),
+      aliases: aliases,
     }
   }
 
@@ -305,15 +319,19 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     return new URL(resolveRelative(currentSlug, slug), location.toString())
   }
 
-  const resultToHTML = ({ slug, title, content, tags }: Item) => {
+  const resultToHTML = ({ slug, title, content, tags, target }: Item) => {
     const htmlTags = tags.length > 0 ? `<ul class="tags">${tags.join("")}</ul>` : ``
     const itemTile = document.createElement("a")
+    const titleContent = target || title
+    const subscript = target ? `<b>${slug}</b>` : ``
     itemTile.classList.add("result-card")
     itemTile.id = slug
     itemTile.href = resolveUrl(slug).toString()
-    itemTile.innerHTML = `<h3>${title}</h3>${htmlTags}${
-      enablePreview && window.innerWidth > 600 ? "" : `<p>${content}</p>`
-    }`
+    itemTile.innerHTML = `<hgroup>
+      <h3>${titleContent}</h3>
+      ${subscript}${htmlTags}
+      ${enablePreview && window.innerWidth > 600 ? "" : `<p>${content}</p>`}
+    </hgroup>`
     itemTile.addEventListener("click", (event) => {
       if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
       hideSearch()
@@ -456,7 +474,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       searchResults = await index.searchAsync({
         query: currentSearchTerm,
         limit: numSearchResults,
-        index: ["title", "content"],
+        index: ["title", "content", "aliases"],
       })
     }
 
@@ -504,6 +522,8 @@ async function fillDocument(data: { [key: FullSlug]: ContentDetails }) {
         title: fileData.title,
         content: fileData.content,
         tags: fileData.tags,
+        aliases: fileData.aliases,
+        target: undefined,
       }),
     )
   }

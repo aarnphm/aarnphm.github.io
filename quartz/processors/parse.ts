@@ -13,6 +13,7 @@ import workerpool, { Promise as WorkerPromise } from "workerpool"
 import { QuartzLogger } from "../util/log"
 import { trace } from "../util/trace"
 import { BuildCtx } from "../util/ctx"
+import { styleText } from "node:util"
 
 export type QuartzMarkdownProcessor = Processor<MDRoot, MDRoot, MDRoot>
 export type QuartzHtmlProcessor = Processor<MDRoot, MDRoot, HTMLRoot>
@@ -112,7 +113,7 @@ export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
         if (argv.verbose) {
           console.log(`[process:markdown] ${fp}`)
           console.log(`[process:markdown] ├─ slug: ${file.data.slug}`)
-          console.log(`[process:markdown] └─ time: ${perf.timeSince()}`)
+          console.log(`[process:markdown] └─ time: ` + styleText("yellow", `${perf.timeSince()}`))
         }
       } catch (err) {
         trace(`\n[process:markdown] Failed to process \`${fp}\``, err as Error)
@@ -137,7 +138,7 @@ export function createMarkdownParser(ctx: BuildCtx, mdContent: MarkdownContent[]
         if (ctx.argv.verbose) {
           console.log(`[process:html] ${fp}`)
           console.log(`[process:html] ├─ slug: ${file.data.slug}`)
-          console.log(`[process:html] └─ time: ${perf.timeSince()}`)
+          console.log(`[process:html] └─ time: ` + styleText("yellow", `${perf.timeSince()}`))
         }
       } catch (err) {
         trace(`\n[process:html] Failed to process html \`${fp}\``, err as Error)

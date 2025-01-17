@@ -1,7 +1,7 @@
 import { FilePath, joinSegments, slugifyFilePath } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
 import path from "path"
-import fs from "fs"
+import fs from "node:fs/promises"
 import { glob } from "../../util/glob"
 import DepGraph from "../../depgraph"
 import { Argv } from "../../util/ctx"
@@ -12,29 +12,15 @@ const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
   return await glob("**", argv.directory, ["**/*.md", ...cfg.configuration.ignorePatterns])
 }
 
+const name = "Assets"
 export const Assets: QuartzEmitterPlugin = () => {
   return {
-    name: "Assets",
+    name,
     getQuartzComponents() {
       return []
     },
-    async getDependencyGraph(ctx, _content, _resources) {
-      const { argv, cfg } = ctx
-      const graph = new DepGraph<FilePath>()
-
-      const fps = await filesToCopy(argv, cfg)
-
-      for (const fp of fps) {
-        const ext = path.extname(fp)
-        const src = joinSegments(argv.directory, fp) as FilePath
-        const name = (slugifyFilePath(fp as FilePath, true) + ext) as FilePath
-
-        const dest = joinSegments(argv.output, name) as FilePath
-
-        graph.addEdge(src, dest)
-      }
-
-      return graph
+    async getDependencyGraph(_ctx, _content, _resources) {
+      return new DepGraph<FilePath>()
     },
     async emit({ argv, cfg }, _content, _resources): Promise<FilePath[]> {
       const assetsPath = argv.output
@@ -44,12 +30,32 @@ export const Assets: QuartzEmitterPlugin = () => {
         const ext = path.extname(fp)
         const src = joinSegments(argv.directory, fp) as FilePath
         const name = (slugifyFilePath(fp as FilePath, true) + ext) as FilePath
-
         const dest = joinSegments(assetsPath, name) as FilePath
-        const dir = path.dirname(dest) as FilePath
-        await fs.promises.mkdir(dir, { recursive: true }) // ensure dir exists
-        await fs.promises.copyFile(src, dest)
-        res.push(dest)
+
+        try {
+          // Check if destination exists
+          const srcStat = await fs.stat(src)
+          let shouldCopy = true
+
+          try {
+            const destStat = await fs.stat(dest)
+            // Only copy if source is newer than destination
+            shouldCopy = srcStat.mtimeMs > destStat.mtimeMs
+          } catch {
+            // Destination doesn't exist, should copy
+            shouldCopy = true
+          }
+
+          if (shouldCopy) {
+            const dir = path.dirname(dest) as FilePath
+            await fs.mkdir(dir, { recursive: true })
+            await fs.copyFile(src, dest)
+          }
+
+          res.push(dest)
+        } catch (err) {
+          console.warn(`[emit:${name}] Failed to process asset: ${fp}`, err)
+        }
       }
 
       return res

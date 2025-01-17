@@ -4,17 +4,21 @@ import { HtmlContent } from "../plugins/vfile"
 import { QuartzLogger } from "../util/log"
 import { trace } from "../util/trace"
 import { BuildCtx } from "../util/ctx"
+import { styleText } from "node:util"
 
-export async function emitContent(ctx: BuildCtx, content: HtmlContent[]) {
+export async function emitContent(ctx: BuildCtx, content: HtmlContent[], fastRebuild?: boolean) {
+  fastRebuild ||= false
   const { argv, cfg } = ctx
   const perf = new PerfTimer()
   const log = new QuartzLogger(ctx.argv.verbose)
 
-  log.start(`[emit] Emitting output files`)
+  log.start(styleText("blue", `[emit] Emitting output files`))
 
   let emittedFiles = 0
   const staticResources = getStaticResourcesFromPlugins(ctx)
   for (const emitter of cfg.plugins.emitters) {
+    if (fastRebuild && new Set(["FolderPage", "TagPage"]).has(emitter.name)) continue
+
     const emitterPerf = new PerfTimer()
     try {
       const emitted = await emitter.emit(ctx, content, staticResources)
@@ -25,7 +29,10 @@ export async function emitContent(ctx: BuildCtx, content: HtmlContent[]) {
           console.log(`[emit:${emitter.name}] ${file}`)
         }
         console.log(
-          `[emit:${emitter.name}] Emit ${emitted.length} files in ${emitterPerf.timeSince()}`,
+          styleText(
+            "cyan",
+            `[emit:${emitter.name}] Emit ${emitted.length} files in ${emitterPerf.timeSince()}`,
+          ),
         )
       }
     } catch (err) {
@@ -33,5 +40,10 @@ export async function emitContent(ctx: BuildCtx, content: HtmlContent[]) {
     }
   }
 
-  log.end(`[emit] Emitted ${emittedFiles} files to \`${argv.output}\` in ${perf.timeSince()}`)
+  log.end(
+    styleText(
+      "blue",
+      `[emit] Emitted ${emittedFiles} files to \`${argv.output}\` in ${perf.timeSince()}`,
+    ),
+  )
 }

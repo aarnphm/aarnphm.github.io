@@ -21,6 +21,10 @@
     width: 100%;
     justify-content: space-between;
 
+    &:focus {
+      outline: 0;
+    }
+
     & > p {
       display: inline;
       padding: 0 1rem;
@@ -220,16 +224,16 @@
             background: var(--lightgray);
           }
 
-          & > h3 {
+          h3 {
             margin: 0;
           }
 
-          & > ul.tags {
+          ul.tags {
             margin-top: 0.45rem;
             margin-bottom: 0;
           }
 
-          & > ul > li > p {
+          ul > li > p {
             border-radius: 8px;
             background-color: var(--highlight);
             margin: 0 0.1rem;
@@ -241,7 +245,7 @@
             }
           }
 
-          & > p {
+          p {
             margin-bottom: 0;
           }
         }

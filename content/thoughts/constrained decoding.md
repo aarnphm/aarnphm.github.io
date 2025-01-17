@@ -9,7 +9,7 @@ tags:
   - technical
 date: "2024-11-18"
 description: structured generations in vLLM a la carte
-modified: 2025-01-17 06:25:21 GMT-05:00
+modified: 2025-01-17 15:09:33 GMT-05:00
 title: constrained decoding
 transclude:
   title: false
@@ -35,7 +35,7 @@ The following document describes and summarises existing works in vLLM to improv
 
 ## proposal
 
-![[thoughts/images/constrained-proposal-scheduler.webp|scheduler broadcast bitmask in v1]]
+![[thoughts/images/constrained-proposal-scheduler.webp|scheduler broadcast bitmask]]
 
 Components of structured decoding will be split into two components:
 

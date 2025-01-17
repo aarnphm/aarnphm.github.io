@@ -12,9 +12,9 @@ import { Argv } from "../../util/ctx"
 import { FilePath, isRelativeURL, joinSegments, pathToRoot } from "../../util/path"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { Content } from "../../components"
-import chalk from "chalk"
 import { write } from "./helpers"
 import DepGraph from "../../depgraph"
+import { styleText } from "node:util"
 
 // get all the dependencies for the markdown file
 // eg. images, scripts, stylesheets, transclusions
@@ -138,16 +138,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
           }),
         )
       }
-
-      if (!containsIndex && !ctx.argv.fastRebuild) {
-        console.log(
-          chalk.yellow(
-            `\nWarning: you seem to be missing an \`index.md\` home page file at the root of your \`${ctx.argv.directory}\` folder. This may cause errors when deploying.`,
-          ),
-        )
-      }
-
-      return await Promise.all(fps)
+      return Promise.all(fps)
     },
   }
 }

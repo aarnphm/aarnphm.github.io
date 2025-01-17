@@ -39,7 +39,7 @@ export const NotFoundPage: QuartzEmitterPlugin = () => {
         slug,
         text: notFound,
         description: notFound,
-        frontmatter: { title: notFound, tags: [] },
+        frontmatter: { title: notFound, tags: [], pageLayout: "default" },
       })
       const externalResources = pageResources(path, vfile.data, resources)
       const componentData: QuartzComponentProps = {
@@ -55,7 +55,7 @@ export const NotFoundPage: QuartzEmitterPlugin = () => {
       return [
         await write({
           ctx,
-          content: renderPage(cfg, slug, componentData, opts, externalResources),
+          content: renderPage(ctx, slug, componentData, opts, externalResources),
           slug,
           ext: ".html",
         }),

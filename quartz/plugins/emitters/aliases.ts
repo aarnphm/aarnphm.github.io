@@ -4,8 +4,9 @@ import { write } from "./helpers"
 import DepGraph from "../../depgraph"
 import { getAliasSlugs } from "../transformers/frontmatter"
 
+const name = "AliasRedirects"
 export const AliasRedirects: QuartzEmitterPlugin = () => ({
-  name: "AliasRedirects",
+  name,
   getQuartzComponents() {
     return []
   },
@@ -22,6 +23,11 @@ export const AliasRedirects: QuartzEmitterPlugin = () => ({
     return graph
   },
   async emit(ctx, content, _resources): Promise<FilePath[]> {
+    if (ctx.argv.serve) {
+      if (ctx.argv.verbose) console.log(`[emit:${name}] Skip setting up aliases during serve time.`)
+      return []
+    }
+
     const fps: FilePath[] = []
 
     for (const [_tree, file] of content) {
