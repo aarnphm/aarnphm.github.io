@@ -78,7 +78,7 @@
     "mdast-util-to-markdown": "^2.1.2",
     "mdast-util-to-string": "^4.0.0",
     "micromorph": "^0.4.5",
-    "motion": "^11.18.0",
+    "motion": "^11.18.1",
     "node-tikzjax": "^1.0.3",
     "pixi.js": "^8.6.6",
     "preact": "^10.25.4",
