@@ -5,7 +5,7 @@ tags:
   - self
 date: "2024-02-16"
 draft: true
-modified: "2024-10-03"
+modified: 2025-01-16 17:03:21 GMT-05:00
 socialDescription: On spatial love.
 title: I spent half an hour benchmarking logits decoding.
 ---
@@ -13,6 +13,8 @@ title: I spent half an hour benchmarking logits decoding.
 _on spatial love._
 
 ![[posts/images/helenebailly-maurice-denis-environs-du-cap-mis-ne-1904.webp]]
+
+https://www.youtube.com/watch?v=TUs7QN3bKsw
 
 Layout:
 

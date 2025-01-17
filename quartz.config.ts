@@ -89,7 +89,7 @@ const config: QuartzConfig = {
         bibliographyFile: "./content/References.bib",
         linkCitations: true,
       }),
-      Plugin.ObsidianFlavoredMarkdown(),
+      Plugin.ObsidianFlavoredMarkdown({ parseTags: false }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",

@@ -3,9 +3,9 @@ id: fashion
 tags:
   - seed
 date: "2024-02-19"
-modified: 2025-01-06 11:20:19 GMT-05:00
-title: fashion.
 description: a hobby, and definition of personal taste.
+modified: 2025-01-17 02:03:09 GMT-05:00
+title: fashion.
 ---
 
 _Fashion is an art, a form of self-expression and self-care, for one to exert themselves to the world_
@@ -16,7 +16,7 @@ What fashion shows are to trends is the same as what NeurIPS is to [[thoughts/Ma
 
 Keep it simple, and minimalistic. **Less is always more**.
 
-### gender dynamics.
+## gender dynamics.
 
 See also: [[thoughts/papers/Fashion and the Homospectatorial Look.pdf|Fashion and the Homospectatorial Look]] and [this video](https://www.youtube.com/watch?v=DA2PqBAyGqI&t=454s&ab_channel=oliSUNvia)
 
@@ -26,7 +26,7 @@ Plays well into spaces that open for more nuanced and subtle expression of [[tho
 
 [[thoughts/fashion#quiet luxury.|Quiet luxury]]'s emphasis on minimalism, subtle textures mirrors the homospectatorial look.
 
-### why fashion show matters, and why it doesn't.
+## why fashion show matters, and why it doesn't.
 
 Similar to math, AI conference, it is a place for people to show off their work and get inspired. Legendary designers, with the likes of Ralph Lauren, Dean and Dan Caten, over the years has pretty much shaped and influenced how our jeans and causal style look like. Just look down to their pair of jeans, or slim-fit trousers you wear. Some of the crest or folded textures are inspired by probably one of these designers.
 
@@ -34,7 +34,7 @@ It matters in the sense it drives the industry, but also it doesn't matter becau
 
 I do care about fashion shows simply I appreciate the art and the work that goes into it.
 
-### pretentious.
+## pretentious.
 
 Extensions from the book _Pretentiousness: Why It Matters_ by Dan Fox.
 
@@ -48,7 +48,7 @@ One shouldn't get judged by the clothes they wear, but rather the character they
 
 It is also a matter of [[thoughts/taste|taste]], and [[thoughts/identity|identity]].
 
-### quiet luxury.
+## quiet luxury.
 
 https://twitter.com/dieworkwear/status/1647662031619895296
 
@@ -103,13 +103,18 @@ Wish list brand:
 | Lemaire                                                        | Uhm hello have you seen them boots? |
 | [Paloma Wool](https://palomawool.com/en-dz/collections/new-in) | cute silhouette                     |
 
-Inspo list:
+## inspiration
 
-https://x.com/dieworkwear/status/1870951477285687777
+_some related bookmarks I found pretty nice to start with_
 
-### fit
+https://x.com/dieworkwear/status/1870951477285687777 <!-- Some thread on Derek's recommendation -->
+
+https://x.com/dieworkwear/status/1878635785731403880 <!-- Cream/yellowish suits -->
+
+## fit
 
 _A few items that I love_
 
 - Maxi Candy Hobo from [Mansur Gavriel](https://www.mansurgavriel.com/products/maxi-candy-bag-black)
 - ![[thoughts/Scents#current|current scents that are on rotation]]
+

@@ -24,13 +24,11 @@ export default (() => {
 
     const fileName = fileData.slug?.replaceAll("/", "-") as string
 
-    if (cfg.generateSocialImages) {
-      if (!imageOptions) {
-        if (typeof cfg.generateSocialImages !== "boolean") {
-          imageOptions = { ...defaultImageOptions, ...cfg.generateSocialImages }
-        } else {
-          imageOptions = defaultImageOptions
-        }
+    if (!imageOptions) {
+      if (typeof cfg.generateSocialImages !== "boolean") {
+        imageOptions = { ...defaultImageOptions, ...cfg.generateSocialImages }
+      } else {
+        imageOptions = defaultImageOptions
       }
     }
 
@@ -69,6 +67,7 @@ export default (() => {
           </>
         )}
         <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin={"anonymous"} />
+        <link rel="preconnect" href="https://unpkg.com" crossorigin={"anonymous"} />
         <link rel="preconnect" href="https://plausible.io" crossorigin={"anonymous"} />
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin={"anonymous"} />
         {cfg.baseUrl && (

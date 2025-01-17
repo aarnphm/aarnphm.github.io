@@ -9,13 +9,54 @@ tags:
   - technical
 date: "2024-11-18"
 description: structured generations in vLLM a la carte
-modified: 2025-01-07 20:58:27 GMT-05:00
+modified: 2025-01-17 06:25:21 GMT-05:00
 title: constrained decoding
 transclude:
   title: false
 ---
 
-The following document describes and summarises existing works in vLLM to improve general guided decoding performance. [^performance]
+see also [RFC](https://github.com/vllm-project/vllm/issues/11908)
+
+The following document describes and summarises existing works in vLLM to improve general guided decoding performance.
+
+## requirements
+
+- **V1 Tensor Parallelism** aware
+  - PR: https://github.com/vllm-project/vllm/pull/9856
+  - Difference between TP in v0 and v1:
+    - The executor creates $N$ worker processes rather than $N-1$ processes
+    - All processes run `prepare_inputs`.
+    - All processes run _the sampler_. In other word, all workers **REQUIRE** result logits such that `logits_processor` can perform `all_gather` instead of local `gather` ops.
+    - The executor broadcasts the scheduler output to the workers and one of them sends back the model runner output -- both of these IPCs use shared memory message queues.
+    - The workers sit in a very tight model execution loop where they **only** handle _model execution_ and _process termination_.
+- _==performance==_ over features/alternative backends
+  - Right way versus flexibility of backends
+  - We will choose the fastest backends.
+
+## proposal
+
+![[thoughts/images/constrained-proposal-scheduler.webp|scheduler broadcast bitmask in v1]]
+
+Components of structured decoding will be split into two components:
+
+1. **Scheduler**:
+   - request-aware for which guided decoding requests (in a sense it won't block other requests in the same batch, from [[posts/structured decoding#tentative plans for v1|motivation]]
+   - Add the guided requests to a "waiting" queue, mark them as `UNREADY`, and the scheduler will skip those requests until FSM is ready. This means all requests will have higher priority once FSM is ready
+     - think of the waiting queue as a `deque`
+     - Better TTFT
+   - Advance the FSM after sampler output is received from workers and broadcast updated bitmask from the FSM to GPU workers 
+     - Note that this can be parallel to the next forward pass occurring on the workers
+     - Requires two broadcast
+   - (P1) Jump-forward decoding support (backtrack versus advance accordingly)
+2. **Worker**:
+   - Apply the logit bias from bitmask received from the scheduler.
+
+## alternatives consideration
+
+The following were rejected from WG meeting:
+
+1. Logit Processor Abstraction
+   - We need more information at the scheduler-level for future proof
 
 ## background
 
@@ -29,11 +70,7 @@ Additionally, all outlines logit processors are considered stateful, which slows
 
 Thus comparing to sglang, vLLM v0 is currently not up to par.
 
-## plan
-
-Implement structured decoding from scheduler, given that we can compute token bitmask and broadcast towards GPU workers
-
-- p1: Implement [jump-ahead decoding](https://lmsys.org/blog/2024-02-05-compressed-fsm/#method-1-finite-state-machine-based)
+Doesn't have [jump-ahead decoding](https://lmsys.org/blog/2024-02-05-compressed-fsm/#method-1-finite-state-machine-based) with logit processor approach.
 
 > @cadedaniel: "tree scoring in [spec decode] could use the same API as multi-path jump decoding."
 
@@ -139,7 +176,7 @@ Implemented in [@zheng2024sglangefficientexecutionstructured]
 
 ![[thoughts/images/vllm/jump-forward-decoding-fsm.webp]]
 
-> [!important] tokenization boundary handling
+> [!important]+ tokenization boundary handling
 >
 > During decoding, it is preferred to combine multiple characters into a single tokens.
 >

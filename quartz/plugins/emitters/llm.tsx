@@ -29,7 +29,6 @@ import { InlineMath, Math, mathToMarkdown } from "mdast-util-math"
 import DepGraph from "../../depgraph"
 import { toText } from "hast-util-to-text"
 import { headingRank } from "hast-util-heading-rank"
-import { remove } from "unist-util-remove"
 
 const heading = (h: State, node: Element): Heading => {
   // NOTE: for all heading, we append the links in hast syntax tree. For markdown, we don't need to do this.
@@ -63,6 +62,13 @@ export const LLM: QuartzEmitterPlugin = () => {
       return new DepGraph<FilePath>()
     },
     async emit(ctx, content, resources): Promise<FilePath[]> {
+      // Hmm, we will just disable llm generation during serve for now,
+      // since most of the rehype-remark is pretty expensive.
+      if (ctx.argv.serve) {
+        console.log("[emit:LLM] Skipping generate LLM source on serve mode.")
+        return []
+      }
+
       const cfg = ctx.cfg.configuration
       const fps: Promise<FilePath>[] = []
       const allFiles = content.map((c) => c[1].data)

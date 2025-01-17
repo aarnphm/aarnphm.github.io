@@ -107,7 +107,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
     },
     async emit(ctx, content, resources): Promise<FilePath[]> {
       const cfg = ctx.cfg.configuration
-      const fps: Promise<FilePath>[] = []
+      const fps: FilePath[] = []
       const allFiles = content.map((c) => c[1].data)
 
       let containsIndex = false
@@ -129,7 +129,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         }
 
         const content = renderPage(cfg, slug, componentData, opts, externalResources)
-        const fp = write({
+        const fp = await write({
           ctx,
           content,
           slug,
@@ -146,7 +146,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         )
       }
 
-      return await Promise.all(fps)
+      return fps
     },
   }
 }

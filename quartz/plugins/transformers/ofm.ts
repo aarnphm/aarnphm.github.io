@@ -28,6 +28,7 @@ import { PluggableList } from "unified"
 import { h, s } from "hastscript"
 import { whitespace } from "hast-util-whitespace"
 import { remove } from "unist-util-remove"
+import { svgOptions } from "../../components/renderPage"
 
 export interface Options {
   comments: boolean
@@ -741,33 +742,39 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               ) {
                 parent!.children = [
                   h(
-                    "span",
+                    "span.expand-button",
                     {
-                      class: "expand-button",
                       type: "button",
                       ariaLabel: "Expand mermaid diagram",
-                      ariaHidden: true,
                       tabindex: -1,
                     },
                     [
-                      s(
-                        "svg",
-                        {
-                          width: 16,
-                          height: 16,
-                          viewbox: "0 0 16 16",
-                          fill: "currentColor",
-                          xmlns: "http://www.w3.org/2000/svg",
-                          ariaHidden: true,
-                          tabindex: -1,
-                        },
-                        [s("use", { href: "#expand-e-w" })],
-                      ),
+                      s("svg", { ...svgOptions, viewbox: "0 -8 24 24", tabindex: -1 }, [
+                        s("use", { href: "#expand-e-w" }),
+                      ]),
+                    ],
+                  ),
+                  h(
+                    "span.clipboard-button",
+                    {
+                      type: "button",
+                      ariaLabel: "copy source",
+                      tabindex: -1,
+                      ariaHidden: `${true}`,
+                    },
+                    [
+                      s("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "copy-icon" }, [
+                        s("use", { href: "#github-copy" }),
+                      ]),
+                      s("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "check-icon" }, [
+                        s("use", { href: "#github-check" }),
+                      ]),
                     ],
                   ),
                   node,
                   h(
-                    "#mermaid-container",
+                    ".mermaid-viewer",
+                    { "data-mermaid-container": `${true}` },
                     h(".mermaid-backdrop"),
                     h(
                       "#mermaid-space",

@@ -114,6 +114,7 @@
     "sharp": "^0.33.5",
     "shiki": "^1.27.0",
     "source-map-support": "^0.5.21",
+    "svg2roughjs": "^3.2.1",
     "to-vfile": "^8.0.0",
     "toml": "^3.0.0",
     "unified": "^11.0.5",

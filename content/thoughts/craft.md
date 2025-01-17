@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2021-12-22"
 description: Crafts that I have been brewing for the past while.
-modified: 2025-01-15 16:43:33 GMT-05:00
+modified: 2025-01-17 04:12:09 GMT-05:00
 permalink:
   - /thoughts/work
 title: craft.
@@ -33,7 +33,7 @@ You can find internal monologue under [[/posts/]] index.
   - Added sidenotes components, inspired by [Tuffe's CSS](https://edwardtufte.github.io/tufte-css/) <https://github.com/jackyzha0/quartz/pull/1555>, [[thoughts/mechanistic interpretability|examples]]
   - Added [LLM-readable source](https://x.com/aarnphm_/status/1857955302110376342)
   - Landing page of [[/|this]] website, with custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA|jupyter notebook]]
-  - Source: <https://github.com/jackyzha0/quartz>, [site](https://quartz.jzhao.xyz/)
+  - Source: [github](https://github.com/jackyzha0/quartz), [site](https://quartz.jzhao.xyz/)
 
     https://x.com/aarnphm_/status/1861550609834402129
 
@@ -41,14 +41,15 @@ You can find internal monologue under [[/posts/]] index.
 
   - Implemented bounding UI popover to improve QOL https://github.com/yetone/avante.nvim/pull/29
   - Added support for lazy setup for better load time improvement https://github.com/yetone/avante.nvim/pull/14
-  - Added Rust crates for `.avanterules` templates https://yetone/avante.nvim/pull/466
-  - Source: <https://github.com/yetone/avante.nvim>
+  - Added Rust crates for `.avanterules` templates https://github.com/yetone/avante.nvim/pull/466
+  - Source: [github](https://github.com/yetone/avante.nvim)
     ![[thoughts/images/avante.mp4]]
 
 - **tinymorph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-) [^tinymorph]
 
   - **WARNING**: Currently in research phase.
   - Trained [[thoughts/sparse autoencoder]] to interpret Llama 3.2 features [@templeton2024scaling]
+  - Source: [github](https://github.com/aarnphm/tinymorph), [docs (:construction:)](https://tinymorph.aarnphm.xyz/)
 
 - **OpenLLM** - :gear: Run any open-source [[thoughts/LLMs|LLMs]] as OpenAI compatible API endpoint in the cloud. (2023-)
 
@@ -57,14 +58,14 @@ You can find internal monologue under [[/posts/]] index.
   - ⛓️ OpenAI-compatible API
   - 💬 Built-in ChatGPT like UI
   - 🔥 Accelerated LLM decoding with state-of-the-art [[thoughts/Transformers#Inference|inference]] backends
-  - Source: <https://github.com/bentoml/openllm>
+  - Source: [github](https://github.com/bentoml/openllm)
     ![[thoughts/images/openllm.gif]]
 
 - **BentoML** - :bento: Build Production-grade AI Application (2021-) [@yangbentoml2022]
 
   - a framework that simplifies [[thoughts/Machine learning|machine learning]] model deployment and provides a faster way to ship your model to production. Supports a variety of use cases, from classical ML to [[thoughts/LLMs]], diffusions models.
   - Built using Python, [[thoughts/BuildKit|BuildKit]], gRPC
-  - Source: <https://github.com/bentoml/bentoml>, [Documentation](https://docs.bentoml.com)
+  - Source: [github](https://github.com/bentoml/bentoml), [docs](https://docs.bentoml.com)
 
 - **incogni.to** - :last_quarter_moon: an event platform that curates for those yearning to be seen for ==who they are, not what they can "sell"== (2024)
 
@@ -79,7 +80,7 @@ You can find internal monologue under [[/posts/]] index.
   - Added a heuristic Gaussian Mixture Model to find the safest path between different locations, trained on past assault data provided by Toronto Police Department.
   - Awarded: Finalists at [Hack the North 2021](https://devpost.com/software/twogether).
   - Built using AWS Fargate, React Native, TypeScript, GraphQL, Apache Spark MLlib, Google Maps API
-  - Source: <https://github.com/tiproad/omw>, [devpost](https://devpost.com/software/twogether)
+  - Source: [github](https://github.com/tiproad/omw), [devpost](https://devpost.com/software/twogether)
 
 ## talks.
 

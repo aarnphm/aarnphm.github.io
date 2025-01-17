@@ -42,27 +42,6 @@ ul.content-meta {
 
   .clipboard-button {
     position: relative;
-
-    .copy-icon {
-      display: block;
-    }
-    .check-icon {
-      display: none;
-    }
-
-    &.check {
-      .check-icon {
-        display: block;
-      }
-      .copy-icon {
-        display: none;
-      }
-    }
-
-    &:hover {
-      opacity: 1;
-      transition: 0.2s;
-    }
   }
 }
 

@@ -80,6 +80,7 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
             frontmatter: {
               title: `${i18n(cfg.locale).pages.folderContent.folder}: ${folder}`,
               tags: ["folder"],
+              pageLayout: "default",
             },
             dates: allFiles
               .filter((f) => {

@@ -46,7 +46,13 @@ const sourceCodeCopy = (): string => {
 export const TikzJax: QuartzTransformerPlugin = () => {
   return {
     name: "TikzJax",
-    markdownPlugins() {
+    markdownPlugins(ctx) {
+      // We skip tikz transpilation for now during process (takes too long for a file with a lot of tikz graph)
+      // TODO: maybe we should render client-side instead of server-side? (build-time would increase)
+      if (ctx.argv.serve) {
+        return []
+      }
+
       return [
         () => async (tree: MdRoot, _file) => {
           const nodes: TikzNode[] = []

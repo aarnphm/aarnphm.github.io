@@ -6,6 +6,7 @@ export function getStaticResourcesFromPlugins(ctx: BuildCtx) {
   const staticResources: StaticResources = {
     css: [],
     js: [],
+    metadata: { hasMermaidDiagram: undefined },
   }
 
   for (const transformer of ctx.cfg.plugins.transformers) {

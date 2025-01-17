@@ -62,4 +62,5 @@ export function CSSResourceToStyleElement(resource: CSSResource, preserve?: bool
 export interface StaticResources {
   css: CSSResource[]
   js: JSResource[]
+  metadata: { hasMermaidDiagram: boolean | undefined }
 }

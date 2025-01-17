@@ -84,7 +84,7 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
             tag,
             defaultProcessedContent({
               slug: joinSegments("tags", tag) as FullSlug,
-              frontmatter: { title, tags: [] },
+              frontmatter: { title, tags: [], pageLayout: "default" },
             }),
           ]
         }),

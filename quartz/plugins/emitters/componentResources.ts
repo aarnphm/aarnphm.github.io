@@ -125,34 +125,27 @@ async function generateOgImage(
   description: string,
   fileData: QuartzPluginData,
   fileName: string,
-): Promise<Promise<FilePath>> {
-  try {
-    const svg = await satori(
-      opts.Component(ctx.cfg.configuration, fileData, opts, title, description, fonts),
-      {
-        width: opts.width,
-        height: opts.height,
-        fonts: fonts,
-        graphemeImages: {
-          "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
-        },
+) {
+  const svg = await satori(
+    opts.Component(ctx.cfg.configuration, fileData, opts, title, description, fonts),
+    {
+      width: opts.width,
+      height: opts.height,
+      fonts: fonts,
+      graphemeImages: {
+        "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
       },
-    )
+    },
+  )
 
-    const content = await sharp(Buffer.from(svg)).webp({ quality: 70 }).toBuffer()
+  const content = await sharp(Buffer.from(svg)).webp({ quality: 70 }).toBuffer()
 
-    return write({
-      ctx,
-      slug: joinSegments("static", "social-images", fileName) as FullSlug,
-      ext: `.webp`,
-      content,
-    })
-  } catch (error) {
-    console.error(
-      chalk.red(`[emit:${NAME}] Failed to generate social image for "${title}":`, error),
-    )
-    return Promise.reject(error)
-  }
+  return await write({
+    ctx,
+    slug: joinSegments("static", "social-images", fileName) as FullSlug,
+    ext: `.webp`,
+    content,
+  })
 }
 
 interface Options {
@@ -174,22 +167,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
       return []
     },
     async getDependencyGraph(ctx, content, _resources) {
-      // This emitter adds static resources to the `resources` parameter. One
-      // important resource this emitter adds is the code to start a websocket
-      // connection and listen to rebuild messages, which triggers a page reload.
-      // The resources parameter with the reload logic is later used by the
-      // ContentPage emitter while creating the final html page. In order for
-      // the reload logic to be included, and so for partial rebuilds to work,
-      // we need to run this emitter for all markdown files.
-      const graph = new DepGraph<FilePath>()
-
-      for (const [_tree, file] of content) {
-        const sourcePath = file.data.filePath!
-        const slug = file.data.slug!
-        graph.addEdge(sourcePath, joinSegments(ctx.argv.output, slug + ".html") as FilePath)
-      }
-
-      return graph
+      return new DepGraph<FilePath>()
     },
     async emit(ctx, content, _resources): Promise<FilePath[]> {
       const promises: Promise<FilePath>[] = []
@@ -246,7 +224,6 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
 
       const stylesheet = joinStyles(
         ctx.cfg.configuration.theme,
-        ...componentResources.css,
         googleFontsStyleSheet,
         ...componentResources.css,
         styles,
@@ -289,7 +266,11 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         }),
       )
 
-      if (cfg.generateSocialImages) {
+      if (cfg.generateSocialImages && !ctx.argv.serve) {
+        if (ctx.argv.verbose) {
+          console.log(chalk.blue(`[emit:${NAME}] Generating social images...`))
+        }
+
         if (!imageOptions) {
           if (typeof cfg.generateSocialImages !== "boolean") {
             imageOptions = { ...defaultImageOptions, ...cfg.generateSocialImages }
@@ -301,7 +282,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         if (!fonts) fonts = getSatoriFont(cfg)
         const fontData = await fonts
 
-        const ogPromises = content.map(async ([_, file]) => {
+        const ogs = content.map(([_, file]) => {
           const slug = file.data.slug!
           const fileName = slug.replaceAll("/", "-")
           const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
@@ -321,12 +302,9 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
             fileName,
           )
         })
-
-        if (ctx.argv.verbose) {
-          console.log(chalk.blue(`[emit:${NAME}] Generating social images...`))
-        }
-
-        promises.push(...ogPromises)
+        promises.push(...ogs)
+      } else {
+        console.log(chalk.yellow(`[emit:${NAME}] Skipping OG generations during serve time.`))
       }
 
       return await Promise.all(promises)

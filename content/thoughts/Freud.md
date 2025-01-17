@@ -4,6 +4,7 @@ tags:
   - seed
   - philosophy
 date: "2023-10-10"
+modified: 2025-01-17 05:54:05 GMT-05:00
 title: Sigmund Freud
 ---
 
@@ -39,13 +40,14 @@ Sensations of a pleasurable nature have not anything inherently impelling about 
 Clinical experience decides for the latter. It shows us that this something' behaves like a repressed impulse. It can exert driving force without the ego noticing the compulsion.
 
 > [!important] The Ego
+>
 > The ego is the id modified by influence of perceptual system
 
 object-cathexis and Oedipus complex to describe the form of ego
 
 ### Object-choices and identification
 
-```poetry
+```quotes
 At this point we must widen our range a little. We succeeded in explaining the painful disorder of melancholia by supposing that [in those suffering from it] an object which was lost has been set up again inside the ego-that is, that an object-cathexis has been replaced by an identification.
 ```
 

@@ -1,5 +1,9 @@
 import { QuartzTransformerPlugin } from "../types"
+import { Element, Root } from "hast"
+import { h, s } from "hastscript"
 import rehypePrettyCode, { Options as CodeOptions, Theme as CodeTheme } from "rehype-pretty-code"
+import { visit } from "unist-util-visit"
+import { svgOptions } from "../../components/renderPage"
 
 interface Theme extends Record<string, CodeTheme> {
   light: CodeTheme
@@ -25,7 +29,44 @@ export const SyntaxHighlighting: QuartzTransformerPlugin<Partial<Options>> = (us
   return {
     name: "SyntaxHighlighting",
     htmlPlugins() {
-      return [[rehypePrettyCode, opts]]
+      return [
+        [rehypePrettyCode, opts],
+        () => {
+          return (tree: Root, _file) => {
+            const isCodeblockTranspiled = ({ children, tagName }: Element) => {
+              if (children === undefined || children === null) return false
+              const maybeCodes = children.filter((c) => (c as Element).tagName === "code")
+              return tagName === "pre" && maybeCodes.length != 0 && maybeCodes.length === 1
+            }
+            visit(
+              tree,
+              (node) => isCodeblockTranspiled(node as Element),
+              (node, idx, parent) => {
+                ;(node as Element).children = [
+                  h(
+                    "span.clipboard-button",
+                    {
+                      type: "button",
+                      ariaLabel: "copy source",
+                      tabindex: -1,
+                      ariaHidden: `${true}`,
+                    },
+                    [
+                      s("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "copy-icon" }, [
+                        s("use", { href: "#github-copy" }),
+                      ]),
+                      s("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "check-icon" }, [
+                        s("use", { href: "#github-check" }),
+                      ]),
+                    ],
+                  ),
+                  ...(node as Element).children,
+                ]
+              },
+            )
+          }
+        },
+      ]
     },
   }
 }

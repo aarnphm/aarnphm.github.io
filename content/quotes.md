@@ -6,7 +6,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-01-23"
-modified: 2025-01-06 01:12:57 GMT-05:00
+modified: 2025-01-17 05:15:42 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 title: advice.
 transclude:
@@ -28,6 +28,10 @@ Sometimes, we [care] too much about potential, less on credentials -- Kate
 But no matter the medicinal virtues of being a true friend or sustaining a long close relationship with another, the ultimate touchstone of friendship is not improvement, neither of the self nor of the other, the ultimate touchstone is witness, the privilege of having ==been seen== by someone and the _equal privilege of being granted the sight of the essence_ of another, to have walked with them and to have believed in them, and sometimes just to have accompanied them for however brief a span, on a journey impossible to accomplish alone. —- David Whyte
 
 Love is reverence, and worship, and glory, and the upward glance. Not a bandage for dirty sores. But they don't know it. Those who speak of love most promiscuously are the ones who've never felt it. They make some sort of feeble stew out of sympathy, compassion, contempt, and general indifference, and they call it love. Once you've felt what it means to love as you and I know it - total passion for the total height - you're incapable of anything less... -- Ayn Rand
+
+In another life, I would have really liked just doing laundry and taxes with you -- Ke Huy Quan ([[/movies#^eeao|Everything Everywhere All at Once]])
+
+You don't know about real loss, because it only occurs when you [[posts/her|love]] something more than you love yourself. I doubt you've ever dared to love anybody that much -- Robin Williams ([[/movies#^gwh|Good Will Hunting]])
 
 ## On bits and bytes.
 

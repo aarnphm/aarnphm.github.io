@@ -4,7 +4,7 @@ tags:
   - technical
   - seed
 date: "2024-02-07"
-modified: 2024-12-24 09:22:12 GMT-05:00
+modified: 2025-01-17 06:24:38 GMT-05:00
 title: Attention
 ---
 
@@ -15,6 +15,14 @@ Attention operates on a sequence of query $Q$, key $K$ and value $V$ vector. Att
 $$
 A(Q, K, V) = \text{softmax}(\frac{Q \cdot K^{T}}{\sqrt{d}})V \space \space \text{ for } Q_{L \times d}, K_{L \times d}, V_{L \times d}
 $$
+
+We can probably arrange the attention function (composed of multiple attention-heads) according to [@elhage2021mathematical]:
+
+$$
+\text{Attn}^{\vec{l,h}}(X_{\leq i}^{l-1}) = \sum_{j \leq i}a^{l,h}_{i,j} x^{l-1}_j W^{l,h}_{V} W_{O}^{l,h}
+$$
+
+where the learn-able weight matrices $W_{V}^{l,h} \in \mathbb{R}^{d \times d_h}$ and $W_{O}^{l,h} \in \mathbb{R}^{d_h \times d}$, $d_h$ is the dimension per head, are combined OV matrix
 
 ## Muti-head Attention
 
@@ -49,7 +57,7 @@ _dynamic evolution of the radix tree in response to various requests._
 
 > [!abstract]- explanation of RadixAttention with LRU eviction policy
 >
-> These requests include two chat sessions, a batch of few-shot learning inquiries, and a self-consistency sampling. Each tree edge carries a label denoting a substring or a sequence of tokens. The nodes are color-coded to reflect different states: green for newly added nodes, blue for cached nodes accessed during the time point, and red for nodes that have been evicted.
+> These requests include two chat ses,sions, a batch of few-shot learning inquiries, and a self-consistency sampling. Each tree edge carries a label denoting a substring or a sequence of tokens. The nodes are color-coded to reflect different states: green for newly added nodes, blue for cached nodes accessed during the time point, and red for nodes that have been evicted.
 >
 > [full explanation](https://lmsys.org/blog/2024-01-17-sglang/#backend-automatic-kv-cache-reuse-with-radixattention)
 
@@ -68,9 +76,10 @@ _in batch settings: sort requests by matching prefix length and prioritise one w
 
 ```pseudo lineNumber=false
 \begin{algorithm}
-\caption{Cache-Aware Scheduling for RadixAttention with Continuous Batching}
+\caption{Cache-Aware Scheduling}
 \begin{algorithmic}
-\State \textbf{Input:} The radix tree $T$, the memory pool $P$, the current running batch $B$, the waiting queue $Q$.
+\State \textbf{Input:} Radix tree $T$, Memory pool $P$.
+\State \textbf{Input:} current running batch $B$, waiting queue $Q$.
 \State \textbf{Output:} Finished requests and updated system state.
 \State // Get all requests from the waiting queue
 \State requests $\gets Q.\text{get\_all\_requests}()$

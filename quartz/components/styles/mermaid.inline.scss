@@ -1,6 +1,6 @@
 @use "../../styles/mixin.scss" as *;
 
-#mermaid-container {
+.mermaid-viewer[data-mermaid-container] {
   position: fixed;
   z-index: 1000;
   left: 0;
@@ -71,6 +71,10 @@
       svg {
         max-width: none;
         height: auto;
+
+        p {
+          margin: 0;
+        }
       }
     }
 

@@ -21,3 +21,5 @@ title: images
 ![[thoughts/images/quitting-time.webp|john moore, 2015, oil on linen]]
 
 ![[thoughts/images/investment-dwellings-versus-ip.webp|Canada versus Ireland]]
+
+![[thoughts/images/gated-tensions-circuit.webp]]

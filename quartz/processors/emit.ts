@@ -15,6 +15,7 @@ export async function emitContent(ctx: BuildCtx, content: HtmlContent[]) {
   let emittedFiles = 0
   const staticResources = getStaticResourcesFromPlugins(ctx)
   for (const emitter of cfg.plugins.emitters) {
+    const emitterPerf = new PerfTimer()
     try {
       const emitted = await emitter.emit(ctx, content, staticResources)
       emittedFiles += emitted.length
@@ -23,6 +24,9 @@ export async function emitContent(ctx: BuildCtx, content: HtmlContent[]) {
         for (const file of emitted) {
           console.log(`[emit:${emitter.name}] ${file}`)
         }
+        console.log(
+          `[emit:${emitter.name}] Emit ${emitted.length} files in ${emitterPerf.timeSince()}`,
+        )
       }
     } catch (err) {
       trace(`Failed to emit from plugin \`${emitter.name}\``, err as Error)

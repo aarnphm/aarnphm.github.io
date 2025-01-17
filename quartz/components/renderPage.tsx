@@ -430,6 +430,7 @@ export function pageResources(
       },
       ...staticResources.js,
     ],
+    metadata: { hasMermaidDiagram: fileData.hasMermaidDiagram },
   }
 
   if (fileData.hasMermaidDiagram) {
@@ -457,7 +458,7 @@ const defaultTranscludeOptions: TranscludeOptions = { dynalist: true, title: tru
 
 export function transcludeFinal(
   root: Root,
-  { cfg, allFiles, fileData }: QuartzComponentProps,
+  { cfg, allFiles, fileData, externalResources }: QuartzComponentProps,
   userOpts?: Partial<TranscludeOptions>,
 ): Root {
   // NOTE: return early these cases, we probably don't want to transclude them anw
@@ -596,9 +597,6 @@ export function transcludeFinal(
             ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map((child) =>
               normalizeHastElement(child as Element, slug, transcludeTarget),
             ),
-            h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
-              { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
-            ]),
           ]
 
           if (fileData.frontmatter?.pageLayout !== "reflection") {
@@ -639,6 +637,16 @@ export function transcludeFinal(
           }
 
           node.children = children
+        }
+
+        if (page.hasMermaidDiagram && !externalResources.metadata.hasMermaidDiagram) {
+          externalResources.js.push({
+            script: mermaidScript,
+            loadTime: "afterDOMReady",
+            moduleType: "module",
+            contentType: "inline",
+          })
+          externalResources.css.push({ content: mermaidStyle, inline: true })
         }
       }
     }

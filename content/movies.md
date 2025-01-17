@@ -4,7 +4,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-02-07"
-modified: 2025-01-08 19:31:10 GMT-05:00
+modified: 2025-01-17 05:15:41 GMT-05:00
 title: movies.
 ---
 
@@ -34,6 +34,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] Before Sunrise (1995)
 - [ ] The End of The Tour (2015)
 - [ ] Chungking Express (1994)
+- [ ] Twin Peaks (1990)
 - [x] The Defiant Ones (1958)
 - [x] Maestro (2023)
 
@@ -52,7 +53,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - Schindler's List (1993)
 - Pulp Fiction (1994)
 - Forest Gump (1994)
-- Good Will Hunting (1997)
+- Good Will Hunting (1997) ^gwh
 - Notting Hill (1999)
 - Chicago (2002)
 
@@ -96,7 +97,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - Uncut Gems (2019)
 - The Green Knight (2021)
 - The Tragedy of Macbeth (2021)
-- Everything Everywhere All at Once (2022)
+- Everything Everywhere All at Once (2022) ^eeao
 - Causeway (2023)
 - Past Lives (2023)
 - The Whale (2023)
