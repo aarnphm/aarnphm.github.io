@@ -3,13 +3,12 @@
 
 ul.section-ul {
   list-style: none;
-  margin-top: 0;
   padding-left: 0;
 }
 
 li.section-li {
   border-top: 1px solid;
-  padding: calc(var(--kern) * 1.5) 0;
+  padding: calc(var(--kern) * 1.5) 4px;
   transition: border-color 0.3s;
 
   &:first-child {
@@ -50,6 +49,9 @@ li.section-li {
     transition: color 0.3s;
     font-weight: $normalWeight;
     color: inherit;
+    &:hover {
+      background: transparent;
+    }
 
     &::before {
       content: "";
@@ -61,16 +63,14 @@ li.section-li {
     --grid-multiplier: 8;
 
     & > .note-grid {
-      column-gap: calc(var(--kern) * 2.5);
+      column-gap: calc(var(--kern) * 0.5);
       display: grid;
       grid-template-columns: calc(var(--kern) * var(--grid-multiplier)) 1fr;
       align-items: baseline;
 
       @media all and ($desktop) {
         &:has(.tag-highlights):not(.stacked-content *):not(.popover *) {
-          grid-template-columns:
-            calc(var(--kern) * var(--grid-multiplier)) calc(var(--kern) * 30)
-            1fr;
+          grid-template-columns: calc(var(--kern) * var(--grid-multiplier)) repeat(2, 1fr);
         }
       }
 
@@ -127,6 +127,7 @@ li.section-li {
 
 .notes-list {
   padding-right: calc(var(--kern) * 2);
+  margin-top: calc(var(--kern));
 
   .popover-inner & {
     padding-right: 0;
@@ -146,14 +147,83 @@ li.section-li {
 }
 
 .notes-evergreen {
-  grid-column: 9/-3;
+  grid-column: 7/10;
   display: flex;
   flex-direction: column;
   padding-left: calc(var(--kern) * 2);
-  justify-content: space-between;
+}
 
-  h2 {
-    @include tinyFonts;
-    font-size: 14px;
+.folder-layout {
+  &--et-a,
+  &--a-l {
+    grid-column: 4/10;
+  }
+
+  &--et-a {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "list evergreen"
+      "article article";
+    column-gap: calc(var(--kern) * 3);
+
+    .folder-layout--list {
+      grid-area: list;
+      height: fit-content;
+    }
+
+    .folder-layout--evergreen {
+      grid-area: evergreen;
+      grid-column: auto;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--kern) * 2);
+      height: 100%;
+    }
+
+    .folder-layout--article {
+      grid-area: article;
+      margin: 0;
+    }
+
+    .note-tags {
+      margin-top: calc(var(--kern) * 2);
+    }
+
+    @media all and ($mobile) {
+      display: block;
+
+      .folder-layout--list {
+        padding-right: 0;
+      }
+
+      .folder-layout--evergreen {
+        display: none;
+      }
+    }
+  }
+
+  &--a-l {
+    display: flex;
+    gap: calc(var(--kern) * 3);
+    flex-direction: column;
+
+    .folder-layout--article {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+    }
+
+    section {
+      flex: 1;
+      min-width: 0;
+      padding-right: 0;
+    }
+
+    @media all and ($mobile) {
+      flex-direction: column;
+      gap: calc(var(--kern) * 2);
+    }
   }
 }

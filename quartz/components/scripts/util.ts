@@ -1,4 +1,4 @@
-import { getFullSlug } from "../../util/path"
+import { FullSlug, getFullSlug, resolveRelative } from "../../util/path"
 
 export function registerEscapeHandler(outsideContainer: HTMLElement | null, cb: () => void) {
   if (!outsideContainer) return
@@ -35,7 +35,7 @@ export function registerMouseHover(el: HTMLElement, ...classList: string[]) {
 }
 
 type EventType = HTMLElementEventMap[keyof HTMLElementEventMap]
-type EventHandlers<E extends EventType> = (evt: E) => any
+type EventHandlers<E extends EventType> = (evt: E) => any | void
 
 export function registerEvents<
   T extends Document | HTMLElement | null,
@@ -124,44 +124,6 @@ export function updatePosition(ref: HTMLElement, child: HTMLElement, parent: HTM
   child.style.top = `${referencePosition}px`
 }
 
-export function updateSidenoteState(content: HTMLElement, isCollapsed: boolean) {
-  // handle sidenotes state
-  const sidenoteRefs = content.querySelectorAll("a[data-footnote-ref]") as NodeListOf<HTMLElement>
-  const sideContainer = document.querySelector(".sidenotes") as HTMLElement | null
-  if (!sideContainer) return
-  for (const ref of sidenoteRefs) {
-    const sideId = ref.getAttribute("href")?.replace("#", "sidebar-")
-    const sidenote = sideContainer.querySelector(
-      `.sidenote-element[id="${sideId}"]`,
-    ) as HTMLElement | null
-    if (!sidenote) continue
-
-    if (isCollapsed) {
-      sidenote.classList.remove("in-view")
-      ref.classList.remove("active")
-      sidenote.classList.add("collapsed")
-    } else if (isInViewport(ref)) {
-      sidenote.classList.add("in-view")
-      ref.classList.add("active")
-      sidenote.classList.remove("collapsed")
-      updatePosition(ref, sidenote, sideContainer!)
-    } else {
-      sidenote.classList.remove("collapsed")
-    }
-  }
-}
-
-export type CollapsedState = "true" | "false"
-
-const collapseId = (win: Window, id: string): string => `${getFullSlug(win)}-${id}`
-
-export function getCollapsedState(win: Window, id: string): CollapsedState | null {
-  return localStorage.getItem(collapseId(win, id)) as CollapsedState | null
-}
-export function setCollapsedState(win: Window, id: string, state: CollapsedState) {
-  localStorage.setItem(collapseId(win, id), state)
-}
-
 export function setHeaderState(
   button: HTMLElement,
   content: HTMLElement,
@@ -172,68 +134,17 @@ export function setHeaderState(
   button.classList.toggle("collapsed", collapsed)
   content.classList.toggle("collapsed", collapsed)
   wrapper.classList.toggle("collapsed", collapsed)
-  updateSidenoteState(content, collapsed)
 }
 
 export function closeReader(readerView: HTMLElement | null) {
   if (!readerView) return
   readerView.classList.remove("active")
-  const toolbar = document.querySelector(".toolbar") as HTMLElement
   const allHr = document.querySelectorAll("hr")
   const quartz = document.getElementById("quartz-root")
-  if (!toolbar) return
-  if (!allHr) return
-  if (!quartz) return
-  const readerButton = toolbar.querySelector("#reader-button")
-  readerButton?.setAttribute("data-active", "false")
-  allHr.forEach((hr) => (hr.style.visibility = "show"))
+  if (!allHr || !quartz) return
+  allHr.forEach((hr) => (hr.style.visibility = "visible"))
   quartz.style.overflow = ""
   quartz.style.maxHeight = ""
-}
-
-export function updateContainerHeights() {
-  const articleContent = document.querySelector(".center") as HTMLElement
-  const sideContainer = document.querySelector(".sidenotes") as HTMLElement
-  if (!articleContent || !sideContainer) return
-
-  // First ensure article content height includes all elements
-  let totalHeight = 0
-  const contentElements = articleContent.children
-  Array.from(contentElements).forEach((element) => {
-    const rect = (element as HTMLElement).getBoundingClientRect()
-    totalHeight += rect.height
-  })
-
-  // Account for margins and padding
-  const style = window.getComputedStyle(articleContent)
-  totalHeight +=
-    parseFloat(style.paddingTop) +
-    parseFloat(style.paddingBottom) +
-    parseFloat(style.marginTop) +
-    parseFloat(style.marginBottom)
-
-  // Set heights
-  articleContent.style.minHeight = `${totalHeight}px`
-  sideContainer.style.height = `${totalHeight}px`
-
-  // Force a reflow to ensure scrollHeight is updated
-  void sideContainer.offsetHeight
-
-  // Recalculate sidenote positions with slight delay to ensure DOM updates
-  requestAnimationFrame(() => {
-    const sidenotes = sideContainer.querySelectorAll(".sidenote-element") as NodeListOf<HTMLElement>
-    const inViewSidenotes = Array.from(sidenotes).filter((note) =>
-      note.classList.contains("in-view"),
-    )
-
-    for (const sidenote of inViewSidenotes) {
-      const sideId = sidenote.id.replace("sidebar-", "")
-      const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
-      if (intextLink) {
-        updatePosition(intextLink, sidenote, sideContainer)
-      }
-    }
-  })
 }
 
 export function debounce(fn: Function, delay: number) {
@@ -309,8 +220,8 @@ export class Dag {
 // with a DOMParser effectively twice (here and later in the SPA code), even if
 // way less robust - we only care about our own generated redirects after all.
 const canonicalRegex = /<link rel="canonical" href="([^"]*)">/
-export async function fetchCanonical(url: URL): Promise<Response> {
-  const res = await fetch(`${url}`)
+export async function fetchCanonical(url: URL, init?: RequestInit): Promise<Response> {
+  const res = await fetch(`${url}`, init)
   if (!res.headers.get("content-type")?.startsWith("text/html")) {
     return res
   }
@@ -319,4 +230,187 @@ export async function fetchCanonical(url: URL): Promise<Response> {
   const text = await res.clone().text()
   const [_, redirect] = text.match(canonicalRegex) ?? []
   return redirect ? fetch(`${new URL(redirect, url)}`) : res
+}
+
+export function isBrowser() {
+  return typeof window !== "undefined"
+}
+
+const contextWindowWords = 30
+export const tokenizeTerm = (term: string) => {
+  const tokens = term.split(/\s+/).filter((t) => t.trim() !== "")
+  const tokenLen = tokens.length
+  if (tokenLen > 1) {
+    for (let i = 1; i < tokenLen; i++) {
+      tokens.push(tokens.slice(0, i + 1).join(" "))
+    }
+  }
+
+  return tokens.sort((a, b) => b.length - a.length) // always highlight longest terms first
+}
+
+export function highlight(searchTerm: string, text: string, trim?: boolean) {
+  const tokenizedTerms = tokenizeTerm(searchTerm)
+  let tokenizedText = text.split(/\s+/).filter((t) => t !== "")
+
+  let startIndex = 0
+  let endIndex = tokenizedText.length - 1
+  if (trim) {
+    const includesCheck = (tok: string) =>
+      tokenizedTerms.some((term) => tok.toLowerCase().startsWith(term.toLowerCase()))
+    const occurrencesIndices = tokenizedText.map(includesCheck)
+
+    let bestSum = 0
+    let bestIndex = 0
+    for (let i = 0; i < Math.max(tokenizedText.length - contextWindowWords, 0); i++) {
+      const window = occurrencesIndices.slice(i, i + contextWindowWords)
+      const windowSum = window.reduce((total, cur) => total + (cur ? 1 : 0), 0)
+      if (windowSum >= bestSum) {
+        bestSum = windowSum
+        bestIndex = i
+      }
+    }
+
+    startIndex = Math.max(bestIndex - contextWindowWords, 0)
+    endIndex = Math.min(startIndex + 2 * contextWindowWords, tokenizedText.length - 1)
+    tokenizedText = tokenizedText.slice(startIndex, endIndex)
+  }
+
+  const slice = tokenizedText
+    .map((tok) => {
+      // see if this tok is prefixed by any search terms
+      for (const searchTok of tokenizedTerms) {
+        if (tok.toLowerCase().includes(searchTok.toLowerCase())) {
+          const regex = new RegExp(searchTok.toLowerCase(), "gi")
+          return tok.replace(regex, `<span class="highlight">$&</span>`)
+        }
+      }
+      return tok
+    })
+    .join(" ")
+
+  return `${startIndex === 0 ? "" : "..."}${slice}${
+    endIndex === tokenizedText.length - 1 ? "" : "..."
+  }`
+}
+
+// To be used with search and everything else with flexsearch
+export const encode = (str: string) =>
+  str
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((token) => token.length > 0)
+
+export function getOrCreateSidePanel(): HTMLDivElement {
+  let asidePanel = document.querySelector<HTMLDivElement>(
+    "main > * > aside[class~='sidepanel-container']",
+  )
+
+  if (!asidePanel) {
+    const pageContent = document.querySelector<HTMLDivElement>(
+      'main > div[class~="page-body-grid"]',
+    )
+    if (!pageContent) {
+      throw new Error("page-content section not found")
+    }
+
+    asidePanel = document.createElement("aside") as HTMLDivElement
+    asidePanel.classList.add("sidepanel-container")
+    pageContent.appendChild(asidePanel)
+  }
+
+  return asidePanel
+}
+
+export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElement[]) {
+  const pageHeader = document.querySelector<HTMLDivElement>(
+    "main > * > section[class~='page-header']",
+  )
+  if (!asidePanel || !pageHeader) console.error("asidePanel must not be null")
+
+  asidePanel.classList.add("active")
+  removeAllChildren(asidePanel)
+
+  const updateSidepanelOffset = () => {
+    const headerSection = document.querySelector<HTMLElement>("main > section.header")
+    if (!headerSection) {
+      asidePanel.style.setProperty("--sidepanel-top-offset", "0px")
+      return
+    }
+
+    const headerRect = headerSection.getBoundingClientRect()
+    const stickyTop = parseFloat(getComputedStyle(headerSection).top || "0") || 0
+    const offset = Math.max(0, headerRect.height + stickyTop)
+    asidePanel.style.setProperty("--sidepanel-top-offset", `${offset}px`)
+  }
+
+  updateSidepanelOffset()
+
+  const handleResize = () => updateSidepanelOffset()
+  window.addEventListener("resize", handleResize)
+  window.addCleanup(() => window.removeEventListener("resize", handleResize))
+
+  let resizeObserver: ResizeObserver | null = null
+  if (typeof ResizeObserver !== "undefined") {
+    const headerSection = document.querySelector<HTMLElement>('main > * > section[class~="header"')
+    if (headerSection) {
+      resizeObserver = new ResizeObserver(() => updateSidepanelOffset())
+      resizeObserver.observe(headerSection)
+      window.addCleanup(() => resizeObserver?.disconnect())
+    }
+  }
+
+  const header = document.createElement("div")
+  header.classList.add("sidepanel-header", "all-col")
+
+  const closeButton = document.createElement("button")
+  closeButton.classList.add("close-button")
+  closeButton.ariaLabel = "close button"
+  closeButton.title = "close button"
+  closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width=16 height=16 viewbox="0 0 24 24" fill="currentColor" stroke="currentColor"><use href="#close-button"></svg>`
+  function onCloseClick() {
+    removeAllChildren(asidePanel)
+    asidePanel.classList.remove("active")
+    asidePanel.style.removeProperty("--sidepanel-top-offset")
+    window.removeEventListener("resize", handleResize)
+    resizeObserver?.disconnect()
+    resizeObserver = null
+  }
+  closeButton.addEventListener("click", onCloseClick)
+  window.addCleanup(() => closeButton.removeEventListener("click", onCloseClick))
+
+  const redirectButton = document.createElement("button")
+  redirectButton.classList.add("redirect-button")
+  redirectButton.ariaLabel = "redirect to page"
+  redirectButton.title = "redirect to page"
+  redirectButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width=16 height=16 viewbox="0 0 24 24" fill="var(--gray)" stroke="none"><use href="#triple-dots"></svg>`
+  function onRedirectClick() {
+    window.spaNavigate(
+      new URL(
+        resolveRelative(getFullSlug(window), asidePanel.dataset.slug as FullSlug),
+        window.location.toString(),
+      ),
+    )
+  }
+  redirectButton.addEventListener("click", onRedirectClick)
+  window.addCleanup(() => redirectButton.removeEventListener("click", onRedirectClick))
+
+  header.appendChild(redirectButton)
+  header.appendChild(closeButton)
+
+  const sideInner = document.createElement("div")
+  sideInner.classList.add("sidepanel-inner")
+  sideInner.append(...inner, header)
+  asidePanel.appendChild(sideInner)
+
+  return sideInner
+}
+
+/**
+ * Wraps a DOM update in a View Transition if supported by the browser.
+ * Falls back to immediate execution if the API is unavailable.
+ * @param callback - The function containing DOM updates to animate
+ */
+export function startViewTransition(callback: () => void): void {
+  callback()
 }

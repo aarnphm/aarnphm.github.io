@@ -1,9 +1,9 @@
 ---
+date: "2024-03-09"
 id: Color
+modified: 2025-10-29 02:15:18 GMT-04:00
 tags:
   - seed
-date: "2024-03-09"
-modified: 2025-01-06 01:45:30 GMT-05:00
 title: Color
 ---
 
@@ -15,7 +15,7 @@ Analogous
 
 Triadic
 
-See also [coolors.co](coolors.co)
+See also [coolors.co](https://coolors.co)
 
 contrast, combination, thickness
 

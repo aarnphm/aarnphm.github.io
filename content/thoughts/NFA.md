@@ -1,11 +1,11 @@
 ---
-id: NFA
-tags:
-  - sfwr2fa3
 date: "2024-01-30"
-modified: "2024-11-19"
-title: non-deterministic finite automaton
 description: via subset construction algorithm of DFA
+id: NFA
+modified: 2025-10-29 02:15:29 GMT-04:00
+tags:
+  - math
+title: non-deterministic finite automaton
 ---
 
 see also [[thoughts/DFA|deterministic finite automaton]]
@@ -22,7 +22,7 @@ $$
 Q &: \text{finite set of states} \\\
 \Sigma &: \text{finite alphabet} \\\
 \Delta &: Q \times \Sigma \rightarrow P(Q) \\\
-S &: \text{Start states},\quad S \subseteq Q \\\
+S &: \text{Start states},\quad S \subseteq P(Q) \\\
 F &: \text{Final states},\quad F \subseteq Q \\\
 \end{align*}
 $$
@@ -30,6 +30,8 @@ $$
 ## examples
 
 1. $\mathcal{L}(M) = \{ abxba \mid x \in \Sigma^{*}\}$
+
+<details>
 
 ```mermaid
 stateDiagram-v2
@@ -55,6 +57,8 @@ stateDiagram-v2
     class s4 accepting
     class s0 start
 ```
+
+</details>
 
 2. $\mathcal{L}(M) = \{ yx \mid x = 00 \lor x =11 \land  y \in \Sigma^{*}\}$
 
@@ -112,4 +116,3 @@ stateDiagram-v2
 ```
 
 $\mathcal{L}(M) = \{0^n1^m \mid n \geq 0, m \neq 1 \space, x \in \Sigma^{*}\}$
-

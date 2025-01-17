@@ -1,10 +1,11 @@
 ---
+date: "2024-02-07"
+description: and beyond self.
 id: emergent behaviour
+modified: 2025-10-29 02:15:45 GMT-04:00
 tags:
   - seed
   - psychology
-date: "2024-02-07"
-modified: "2024-10-02"
 title: emergent behaviour
 ---
 
@@ -14,7 +15,7 @@ Or how can complex properties emerge from simple rules.
 
 We observe this from:
 
-- [[thoughts/LLMs]], speculations at most
+- [[thoughts/LLMs]], speculations at most [@wei2022emergentabilitieslargelanguage]
 - Ants colonies
 - mold simulations
 

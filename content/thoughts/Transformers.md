@@ -1,10 +1,11 @@
 ---
+date: "2024-02-07"
+description: and the backbone of the current language models/ai progress.
 id: Transformers
+modified: 2025-10-29 02:15:37 GMT-04:00
 tags:
   - ml
   - technical
-date: 2024-02-07
-modified: 2024-12-16 05:37:16 GMT-05:00
 title: Transformers
 ---
 
@@ -14,25 +15,120 @@ See also: [[thoughts/LLMs|LLMs]], [[thoughts/Embedding|embedding]], [visualisati
 
 ELI5: Mom often creates a food list consists of $n$ of items to buy. Your job is to guess what the last item on this list would be.
 
-Most implementations are [[thoughts/Autoregressive models|autoregressive]]. Most major SOTA are decoder-only, as encoder-decoder models has lack behind due to their expensive encoding phase.
+Most implementations are [[thoughts/Autoregressive models|autoregressive]]. Most major SOTA are decoder-only, given that encoder-decoder are mostly used for machine translation task.
 
-[[thoughts/state-space models|state-space models]] which address transformers' [efficiency issues](https://arxiv.org/pdf/2009.06732) in attention layers within information-dense data
+[[thoughts/state-space models|state-space models]] which address transformers' [efficiency issues](https://arxiv.org/pdf/2009.06732) in attention layers within information-dense data.
+
+## internals
+
+See also: [transformers from scratch](https://e2eml.school/transformers.html), [[thoughts/mechanistic interpretability]], [[thoughts/tsfm|toronto school of foundational modelling]], @geva2021transformerfeedforwardlayerskeyvalue
+
+procedure: tokenization -> positional_embeddings -> input_embeddings -> ffn + attn -> hidden_states -> probability distributions -> sampled (next token)
+
+```mermaid
+flowchart LR
+  A["input_ids (B x T)"] --> B["token + positional embeddings (B x T x d_model)"]
+  B --> C["transformer (×L) {Attn + FFN}"]
+  C --> D["logits (B x T x |V|)"]
+  D --> E["softmax → probs (B x T x |V|)"]
+  E --> F["decode/sample/argmax output_ids (B x T)"]
+```
+
+Objective (next‑token NLL / cross‑entropy): given logits $L \in R^{B\times T\times \mid V\mid}$ and probabilities `p = softmax(L)`, with gold next tokens $y \in V^{B\times T}$, training minimizes the negative log‑likelihood across tokens:
+
+$$
+\mathcal{L}(\theta) = -\frac{1}{B T_\text{eff}} \sum_{b=1}^B \sum_{t\in\mathcal{M}} \log\, p_\theta\big(y_{b,t}\mid x_{b,\le t}\big),
+$$
+
+where $\mathcal{M}$ indexes non‑padded, shift‑right targets.
+
+> [!note] intuition
+>
+> for each position in the batch and sequence (e.g., $5 \times 128$), the model produces a probability distribution over the vocabulary;
+>
+> the loss is the sum of the log probabilities assigned to the correct next tokens, averaged over all supervised positions.
+
+Let number of tokens $N$, embedding dim to $d$, we have embeddings $E \in R^{N\times d}$
+
+### [[thoughts/Embedding]]
+
+The idea of Q,K,V is to project with the embeddings to create $W_q, W_k, W_v$
+
+![[thoughts/Attention]]
 
 ## memory limitations.
 
-_excerpt from [arxiv](https://arxiv.org/html/2403.14123)_
+see also: [arXiv](https://arxiv.org/html/2403.14123)
 
 https://x.com/karpathy/status/1691571869051445433
+
+Arithmetic intensity can be determined with the following:
+
+$$
+\text{Arithmetic Intensity} = \frac{\text{\# FLOPs}}{\text{\# MOPs}}
+$$
 
 ## inference.
 
 Either compute-bound (batch inference, saturated usage) or memory-bound (latency)
 
-[[thoughts/vllm#speculative decoding]] => memory-bound (to saturate FLOPs)
+![[thoughts/PD disaggregated serving#Prefill/Decode]]
+
+![[thoughts/Speculative decoding]]
+
+### sampling
+
+i.e temperature, top-p, top-k
+
+### KV
+
+![[thoughts/KV offloading#motivation]]
+
+The core "retrieval" bags that contains all previous stored key-value pair or newly added items.
+
+[[thoughts/PD disaggregated serving|Prefill disaggregation]] is pretty interesting in a sense that we can separate prefill stage to a separate nodes [@qin2024mooncakekvcachecentricdisaggregatedarchitecture]
+
+![[thoughts/images/mooncake-pd.webp|KV-centric optimization]]
+
+![[lectures/3/notes#kvcache ad-hoc implementation]]
+
+#### napkin math
+
+for calculating memory usage, see also [calculator from LMCache team](https://lmcache.ai/kv_cache_calculator.html)
+
+$$
+\frac{2 \times \text{batch\_size} \times  \text{seq\_len} \times  \text{num\_layers} \times  \text{num\_attn\_heads} \times \text{dim\_attn\_heads} \times (\text{precision} / 8)}{1024^{3}}
+$$
+
+in this case, precision can be FP16, MXFP4, [[thoughts/quantization|FP8]]
 
 ### next-token prediction.
 
 Sampling: we essentially look forward K-tokens, and then we sample from the distribution of the next token.
+
+### multi-token prediction.
+
+@gloeckle2024betterfasterlarge, also used in [[thoughts/Speculative decoding]] for [[thoughts/DeepSeek|DeepSeek-V3 and DeepSeek-R1]]
+
+![[thoughts/images/MTP-deepseek.webp|MTP implementation in DeepSeek, where they keep causal chain for prediction of each token at each depth]]
+
+tl/dr: predict $n$-tokens at once, via shared trunk and ==n dedicated attention heads== [^attention-head]
+
+Note that during inference, we only employ _one attention head_
+
+[^attention-head]:
+    @gloeckle2024betterfasterlarge employs $n=4$. The order of the forward and backward in a n-token prediction model with $n=4$ heads of the shared trunk works as follow:
+
+    ```python
+    z = model.shared(x)
+    d = z.detach()
+    d.requires_grad = False
+
+    for i in range(n):
+      p = model.heads[i](d)
+      loss(p, y[i]).backward()
+    z.backward()
+    ```
 
 ## Byte-Latent Transformer
 
@@ -50,13 +146,17 @@ Let $\mathcal{V}$ be the vocab of given transformers model, and $\mathcal{S} = \
 > - $M_t(s_t \mid s_{t-1}, f_\theta)$ is a _Markov kernel_ from $s_{t-1} \in \mathcal{F}^c$ to $s_t \in \mathcal{S}$, parameterised by a transformer network $f_\theta: \mathcal{F}^c \to \mathbb{R}^{\mid \mathcal{V} \mid}$ mapping non-`EOS`-terminated strings to vectors of logits
 > - $G_t(s_{t-1}, s_t, f_\theta)$ is a _potential function_, mapping a pair $(s_{t-1}, s_t) \in \mathcal{F}^c \times \mathcal{S}$ to a real-valued non-negative score.
 
-Goal: generate from distribution $\mathbb{P}$ that reweights Markove chain $\mathbb{M}$ by potential functions $G_t$. We define ==_step-t filtering posteriors_==:
+Goal: generate from distribution $\mathbb{P}$ that reweights Markov chain $\mathbb{M}$ by potential functions $G_t$. We define ==_step-t filtering posteriors_==:
 
 $$
 P_t(s_t) = \frac{\mathbb{E}_\mathbb{M} \left[ \prod_{i=1}^{t \wedge T} G_i(S_{i-1}, S_i, f_\theta) \cdot [S_t = s_t] \right]}{\mathbb{E}_\mathbb{M} \left[ \prod_{i=1}^{t \wedge T} G_i(S_{i-1}, S_i, f_\theta) \right]}
 $$
 
-_Given that $T$ is mostly finite_ we can then define _overall posterior_ $\mathbb{P}(s) = \lim_{t \to \infty} \mathbb{P}_t(s)$ [@lew2023sequentialmontecarlosteering{see 2.2 for examples}]
+_Given that $T$ is mostly finite_ we can then define _overall posterior_ [@lew2023sequentialmontecarlosteering{see 2.2 for examples}]
+
+$$
+\mathbb{P}(s) = \lim_{t \to \infty} \mathbb{P}_t(s)
+$$
 
 ```pseudo lineNumber=false
 \begin{algorithm}

@@ -1,0 +1,126 @@
+@use "./variables.scss" as *;
+@use "sass:color";
+
+.transclude-collapsible {
+  border: 1px solid var(--lightgray);
+  border-left: 3px solid var(--secondary);
+  background-color: var(--light);
+  padding: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin: 1rem 0;
+
+  --transclude-icon-fold: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpolyline points="6 9 12 15 18 9"%3E%3C/polyline%3E%3C/svg%3E');
+
+  & > .transclude-content {
+    display: grid;
+    transition: grid-template-rows 0.1s cubic-bezier(0.02, 0.01, 0.47, 1);
+    overflow: hidden;
+
+    & > div {
+      min-height: 0;
+      overflow: hidden;
+    }
+  }
+
+  &.is-collapsed {
+    & > .transclude-title > .transclude-fold {
+      transform: rotateZ(-90deg);
+    }
+  }
+}
+
+.transclude-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.75rem 1rem;
+  color: var(--darkgray);
+  cursor: pointer;
+  user-select: none;
+
+  --icon-size: 16px;
+
+  & .transclude-fold {
+    transition: transform 0.15s ease;
+    opacity: 0.8;
+    cursor: pointer;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    flex-shrink: 0;
+    --transclude-icon: var(--transclude-icon-fold);
+
+    // icon support
+    background-size: var(--icon-size) var(--icon-size);
+    background-position: center;
+    background-color: var(--darkgray);
+    mask-image: var(--transclude-icon);
+    mask-size: var(--icon-size) var(--icon-size);
+    mask-position: center;
+    mask-repeat: no-repeat;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .transclude-title-text {
+    font-weight: $semiBoldWeight;
+    font-size: 0.95rem;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.transclude-content {
+  padding: 0 1rem 1rem 1rem;
+  transition: opacity 0.2s cubic-bezier(0.02, 0.01, 0.47, 1);
+  overflow: hidden;
+
+  .is-collapsed & {
+    padding-bottom: 0;
+  }
+
+  & > div > :first-child {
+    margin-top: 0;
+  }
+
+  & > div > :last-child {
+    margin-bottom: 0;
+  }
+
+  // nested transcludes
+  & .transclude-collapsible {
+    margin: 0.5rem 0;
+  }
+}
+
+// non-collapsible transclude styling
+.transclude:not(.transclude-collapsible) {
+  border-left: 3px solid var(--secondary);
+  padding-left: 1rem;
+  margin: 1rem 0;
+
+  & h1 {
+    margin-top: 0;
+  }
+
+  & ul {
+    padding-left: 1rem;
+  }
+
+  & > :first-child {
+    margin-top: 0;
+  }
+
+  & > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+// hide default transclude link
+.transclude-inner {
+  display: none;
+}

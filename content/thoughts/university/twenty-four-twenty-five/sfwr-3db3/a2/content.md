@@ -1,10 +1,10 @@
 ---
+date: "2024-11-11"
 id: a2
+modified: 2025-10-29 02:16:03 GMT-04:00
 tags:
   - sfwr3db3
   - assignment
-date: "2024-11-11"
-modified: "2024-11-11"
 title: SQL and Relational Algebra
 ---
 

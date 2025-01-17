@@ -1,24 +1,10 @@
 import { LCG } from "../util/helpers"
 import { classNames } from "../util/lang"
 import { FilePath, resolveRelative, slugifyFilePath } from "../util/path"
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
-interface Options {
-  topChoices: number
-}
-
-const defaultOptions: Options = {
-  topChoices: 7,
-}
-
-export default ((userOpts?: Options) => {
-  const opts = { ...defaultOptions, ...userOpts }
-
-  const Recommendations: QuartzComponent = ({
-    fileData,
-    allFiles,
-    displayClass,
-  }: QuartzComponentProps) => {
+export default (() =>
+  ({ fileData, allFiles, displayClass }: QuartzComponentProps) => {
     let p = fileData.slug as string
     if (fileData.filePath) p = fileData.filePath
     const seed =
@@ -27,11 +13,15 @@ export default ((userOpts?: Options) => {
         .reduce((acc, char) => acc + char.charCodeAt(0), 0) ?? 0
     const rng = new LCG(seed)
 
-    const distributions = allFiles.filter((f) => f.slug !== fileData.slug)
-    const recs = rng.shuffle(distributions).slice(0, opts.topChoices)
+    const distributions = allFiles.filter(
+      (f) => f.slug !== fileData.slug && !f.slug!.includes("university"),
+    )
+
+    // We will use 7 recs for now
+    const recs = rng.shuffle(distributions).slice(0, 7)
 
     return (
-      <section data-recs={true} class={classNames(displayClass, "recommendations", "main-col")}>
+      <section data-recs class={classNames(displayClass, "recommendations", "main-col")}>
         <h2 id="label" lang="fr">
           Vous pourriez aimer ce qui suit
         </h2>
@@ -39,8 +29,10 @@ export default ((userOpts?: Options) => {
           {recs.map((file) => (
             <li>
               <a
+                class="internal"
+                data-no-popover
                 href={resolveRelative(fileData.slug!, file.slug!)}
-                data-recommendation={file.slug!}
+                data-slug={file.slug!}
               >
                 {file.frontmatter?.title}
               </a>
@@ -49,18 +41,4 @@ export default ((userOpts?: Options) => {
         </menu>
       </section>
     )
-  }
-
-  Recommendations.css = `
-.recommendations {
-  margin-bottom: 1.9rem;
-
-  & > .overflow {
-    padding-inline-start: 12px;
-    list-style: square;
-    margin-block: 0;
-  }
-}`
-
-  return Recommendations
-}) satisfies QuartzComponentConstructor
+  }) satisfies QuartzComponentConstructor

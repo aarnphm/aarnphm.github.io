@@ -1,15 +1,15 @@
 ---
+date: "2025-01-06"
+description: and diagrams
 id: index
+modified: 2025-10-29 02:16:01 GMT-04:00
 tags:
   - university
   - sfwr3a04
-date: "2025-01-06"
-description: and diagrams
-modified: 2025-01-06 16:27:29 GMT-05:00
 title: Large System Design
 ---
 
-Ridha Khedri [email](mailto:khedri@mcmaster.ca)
+Prof. Ridha Khedri: [email](mailto:khedri@mcmaster.ca)
 
 Book: Software Architecture and Design Illuminated ([[thoughts/university/twenty-four-twenty-five/sfwr-3a04/book.pdf|ISBN: 9780763754204]])
 
@@ -34,4 +34,3 @@ $$
 $$
 
 $\text{course grade} = \text{final + quizzes + midterm + deliverables}$
-

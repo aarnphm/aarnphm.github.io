@@ -1,0 +1,32 @@
+// contains all root variables
+// This file should be isomorphic, meaning it should only be imported once.
+:root {
+  --link-underline-gradient-line-color: currentColor;
+
+  // rose-pine-dawn
+  --base: #faf4ed;
+  --surface: var(--light);
+  --overlay: var(--lightgray);
+  --muted: var(--gray);
+  --subtle: var(--darkgray);
+  --text: var(--dark);
+  --rose: rgb(209, 77, 65);
+  --love: rgb(218, 112, 44);
+  --lime: rgb(135, 154, 57);
+  --gold: rgb(208, 162, 21);
+  --pine: rgb(58, 169, 159);
+  --foam: rgb(67, 133, 190);
+  --iris: rgb(139, 126, 200);
+  --dag-highlights: var(--foam);
+  --gray-200: rgba(0, 0, 0, 0.2);
+
+  // fonts
+  --kern: 12px;
+  --border-radius: var(--kern);
+  --align-cap-height: -6px;
+  --align-baseline: -6px;
+  --font-size: 17px;
+  --line-height: 1.4;
+  --line-px: calc(var(--line-height) * var(--font-size));
+  --sidepanel-padding: 14px;
+}

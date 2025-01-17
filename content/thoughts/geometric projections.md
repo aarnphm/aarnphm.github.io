@@ -1,9 +1,9 @@
 ---
+date: "2024-12-13"
 id: geometric projections
+modified: 2025-10-29 02:15:46 GMT-04:00
 tags:
   - math
-date: "2024-12-13"
-modified: 2024-12-13 05:27:33 GMT-05:00
 title: geometric projections
 ---
 

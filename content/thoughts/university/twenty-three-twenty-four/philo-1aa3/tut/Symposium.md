@@ -1,10 +1,11 @@
 ---
+date: "2023-09-29"
 id: Symposium
+modified: 2025-10-29 02:16:17 GMT-04:00
 tags:
   - philosophy
   - philos1aa3
 title: Symposium
-date: 2023-09-29
 ---
 
 ### Q1.

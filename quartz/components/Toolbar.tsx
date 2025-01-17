@@ -2,7 +2,7 @@ import { QuartzComponent, QuartzComponentConstructor } from "./types"
 // @ts-ignore
 import script from "./scripts/toolbar.inline.ts"
 import style from "./styles/toolbar.scss"
-import { JSXInternal } from "preact/src/jsx"
+import { JSX } from "preact"
 import { classNames } from "../util/lang"
 
 interface ToolbarProps {
@@ -11,7 +11,8 @@ interface ToolbarProps {
   tooltip?: string
   active?: boolean
   primary?: boolean
-  Icon: () => JSXInternal.Element
+  Icon: () => JSX.Element
+  key?: string
 }
 
 const ToolbarButton = ({ id, label, tooltip, active, primary, Icon }: ToolbarProps) => (
@@ -27,7 +28,7 @@ const ToolbarButton = ({ id, label, tooltip, active, primary, Icon }: ToolbarPro
   </button>
 )
 
-const Pen = () => (
+export const Pen = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="1em"
@@ -40,7 +41,7 @@ const Pen = () => (
   </svg>
 )
 
-const Globe = () => (
+export const Globe = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="18"
@@ -58,7 +59,7 @@ const Globe = () => (
   </svg>
 )
 
-const Skew = () => (
+export const Skew = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="18"
@@ -76,7 +77,7 @@ const Skew = () => (
   </svg>
 )
 
-const Reader = () => (
+export const Reader = () => (
   <svg
     class="reader-icon"
     xmlns="http://www.w3.org/2000/svg"
@@ -93,7 +94,7 @@ const Reader = () => (
   </svg>
 )
 
-const Pdf = () => (
+export const Pdf = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="18"
@@ -113,7 +114,7 @@ const Pdf = () => (
   </svg>
 )
 
-const Graph = () => (
+export const Graph = () => (
   <svg
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"

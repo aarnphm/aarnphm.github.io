@@ -20,7 +20,6 @@
 @mixin tinyFonts {
   font-size: 11.1px;
   font-style: normal;
-  font-variant-numeric: tabular-nums;
   font-weight: $normalWeight;
   letter-spacing: 0;
   letter-spacing: 0.4px;
@@ -45,7 +44,7 @@
   }
 }
 
-@mixin font-face($family, $filename, $format, $style: normal, $weight: normal) {
+@mixin font-face($family, $filename, $format, $style: normal, $weight: normal, $path: "/fonts/") {
   @font-face {
     font-family: $family;
     font-style: $style;
@@ -56,13 +55,13 @@
       @for $i from 1 through list.length($filename) {
         $src: list.append(
           $src,
-          url("/static/#{list.nth($filename, $i)}") format(#{list.nth($format, $i)}),
+          url("#{$path}#{list.nth($filename, $i)}") format(#{list.nth($format, $i)}),
           comma
         );
       }
       src: $src;
     } @else {
-      src: url("/static/#{$filename}") format($format);
+      src: url("#{$path}#{$filename}") format($format);
     }
   }
 }
@@ -89,7 +88,7 @@
   background-size: 1px 1px;
   background-repeat: repeat-x;
   background-position: 0% calc(100% - 0.1em);
-  font-variant-numeric: lining-nums;
+  font-variant-numeric: oldstyle-nums;
 
   & > .indicator-hook {
     position: relative;
@@ -97,6 +96,65 @@
 
     @include indicatorHook;
   }
+}
+
+@mixin containerPopover {
+  position: fixed;
+  contain: layout;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+
+  &.active {
+    display: flex;
+  }
+}
+
+@mixin inputContainer {
+  .input-container {
+    position: relative;
+    display: flex;
+
+    & > input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 1rem;
+      font-family: var(--bodyFont);
+      color: var(--dark);
+      background-color: var(--light);
+      font-size: 1.1em;
+      border: none;
+      border-radius: 0;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+}
+
+@mixin containerInner {
+  max-height: 80vh;
+  margin-top: 7vh;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80vw;
+  overflow: hidden;
+
+  border: 1px solid var(--lightgray);
+  border-radius: var(--border-radius);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--light);
+  box-sizing: border-box;
+  box-shadow:
+    0 14px 50px rgba(27, 33, 48, 0.12),
+    0 10px 30px rgba(27, 33, 48, 0.16);
 }
 
 @mixin steps {

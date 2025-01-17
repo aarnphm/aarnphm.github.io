@@ -1,8 +1,9 @@
 ---
+date: "2024-02-07"
 id: AGI
+modified: 2025-10-29 02:15:15 GMT-04:00
 tags:
   - seed
-date: "2024-02-07"
 title: AGI
 ---
 
@@ -10,4 +11,4 @@ The proposal is that such an AGI would be able to understand or learn any intell
 
 We saw "some sparks" in [[thoughts/LLMs]] that it can "understand" [[thoughts/NLP|natural language]]
 
-See also [Yann's chat with Lex](https://www.youtube.com/watch?v=5t1vTLU7s40&ab_channel=LexFridman)
+## superintelligence

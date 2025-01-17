@@ -1,12 +1,12 @@
 ---
+date: "2023-11-09"
+description: On Plato's Apology.
 id: Questions about Apology
+modified: 2025-10-29 02:15:10 GMT-04:00
 tags:
   - philosophy
   - fruit
   - philos1aa3
-date: "2023-11-09"
-description: On Plato's Apology.
-modified: 2025-01-07 15:56:51 GMT-05:00
 title: Questions about Apology
 ---
 

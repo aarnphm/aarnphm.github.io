@@ -1,15 +1,25 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import breadcrumbsStyle from "./styles/breadcrumbs.scss"
-import { FullSlug, SimpleSlug, joinSegments, resolveRelative } from "../util/path"
-import { QuartzPluginData } from "../plugins/vfile"
+// @ts-ignore
+import script from "./scripts/breadcrumbs.inline"
+import { FullSlug, SimpleSlug, resolveRelative, simplifySlug } from "../util/path"
 import { classNames } from "../util/lang"
+import { trieFromAllFiles } from "../util/ctx"
 
 type CrumbData = {
   displayName: string
   path: string
 }
 
-type CrumbStyle = "full" | "letter" | "unique"
+type BreadcrumbSegment =
+  | {
+      kind: "crumb"
+      data: CrumbData
+    }
+  | {
+      kind: "overflow"
+      data: CrumbData[]
+    }
 
 interface BreadcrumbOptions {
   /**
@@ -21,43 +31,30 @@ interface BreadcrumbOptions {
    */
   rootName: string
   /**
-   * Maximum number of breadcrumbs to show before collapsing the middle ones
-   * Set to 0 or negative to show all breadcrumbs
-   */
-  maxItems: number
-  /**
    * Whether to look up frontmatter title for folders (could cause performance problems with big vaults)
    */
   resolveFrontmatterTitle: boolean
-  /**
-   * Whether to display breadcrumbs on root `index.md`
-   */
-  hideOnRoot: boolean
   /**
    * Whether to display the current page in the breadcrumbs.
    */
   showCurrentPage: boolean
   /**
-   * Set a style for breadcrumbs. The following are supported:
-   * - full (default): show the full path of the breadcrumb.
-   * - letter: works like full, but will write every folder name using first letter only. The last folder will be displayed in full. For example:
-   *   - `folder` will be shorten to `f`
-   *   - `.config` will be shorten to `.c`
-   * - unique: works like `letter`, but will make sure every folder name is shortest unique value. For example:
-   *   - `path/path/path/to/file.md` with `unique` will set `p/pa/pat/path/to/file.md`.
-   *   - However, uniqueness does not refer different folder at the same level. For example: `path1/file.md` and `path2/file.md` will both show `p/file.md`
+   * Number of leading crumbs shown before overflow bucket
    */
-  style: CrumbStyle
+  leadingWindow: number
+  /**
+   * Number of trailing crumbs shown after overflow bucket
+   */
+  trailingWindow: number
 }
 
 const defaultOptions: BreadcrumbOptions = {
   spacerSymbol: "❯",
   rootName: "Home",
   resolveFrontmatterTitle: true,
-  hideOnRoot: false,
   showCurrentPage: true,
-  style: "full",
-  maxItems: 3,
+  leadingWindow: 2,
+  trailingWindow: 2,
 }
 
 function formatCrumb(displayName: string, baseSlug: FullSlug, currentSlug: SimpleSlug): CrumbData {
@@ -68,130 +65,125 @@ function formatCrumb(displayName: string, baseSlug: FullSlug, currentSlug: Simpl
 }
 
 export default ((opts?: Partial<BreadcrumbOptions>) => {
-  // Merge options with defaults
   const options: BreadcrumbOptions = { ...defaultOptions, ...opts }
-
-  // computed index of folder name to its associated file data
-  let folderIndex: Map<string, QuartzPluginData> | undefined
-
   const Breadcrumbs: QuartzComponent = ({
     fileData,
     allFiles,
     displayClass,
+    ctx,
   }: QuartzComponentProps) => {
-    // Hide crumbs on root if enabled
-    if (options.hideOnRoot && fileData.slug === "index") {
-      return <></>
+    const trie = (ctx.trie ??= trieFromAllFiles(allFiles))
+    const slugParts = fileData.slug!.split("/")
+    const pathNodes = trie.ancestryChain(slugParts)
+
+    if (!pathNodes) {
+      return null
     }
 
-    // Format entry for root element
-    const firstEntry = formatCrumb(options.rootName, fileData.slug!, "/" as SimpleSlug)
-    const crumbs: CrumbData[] = [firstEntry]
-
-    if (!folderIndex && options.resolveFrontmatterTitle) {
-      folderIndex = new Map()
-      // construct the index for the first time
-      for (const file of allFiles) {
-        const folderParts = file.slug?.split("/")
-        if (folderParts?.at(-1) === "index") {
-          folderIndex.set(folderParts.slice(0, -1).join("/"), file)
-        }
+    const crumbs: CrumbData[] = pathNodes.map((node, idx) => {
+      const crumb = formatCrumb(node.displayName, fileData.slug!, simplifySlug(node.slug))
+      if (idx === 0) {
+        crumb.displayName = options.rootName
       }
+
+      // For last node (current page), set empty path
+      if (idx === pathNodes.length - 1) {
+        crumb.path = ""
+      }
+
+      return crumb
+    })
+
+    if (!options.showCurrentPage) {
+      crumbs.pop()
     }
 
-    // Split slug into hierarchy/parts
-    const slugParts = fileData.slug?.split("/")
-    if (slugParts) {
-      // is tag breadcrumb?
-      const isTagPath = slugParts[0] === "tags"
+    const leadingWindow = Math.max(0, options.leadingWindow)
+    const trailingWindow = Math.max(0, options.trailingWindow)
 
-      // full path until current part
-      let currentPath = ""
+    let segments: BreadcrumbSegment[]
+    if (leadingWindow + trailingWindow > 0 && crumbs.length > leadingWindow + trailingWindow) {
+      const leading = leadingWindow > 0 ? crumbs.slice(0, leadingWindow) : []
+      const trailing = trailingWindow > 0 ? crumbs.slice(-trailingWindow) : []
+      const overflow = crumbs.slice(leadingWindow, trailingWindow > 0 ? -trailingWindow : undefined)
 
-      // Map to store the shortened names for each path segment
-      const shortenedNames: Map<string, string> = new Map()
-
-      for (let i = 0; i < slugParts.length - 1; i++) {
-        let curPathSegment = slugParts[i]
-
-        // Try to resolve frontmatter folder title
-        const currentFile = folderIndex?.get(slugParts.slice(0, i + 1).join("/"))
-        if (currentFile) {
-          const title = currentFile.frontmatter!.title
-          if (title !== "index") {
-            curPathSegment = title
-          }
-        }
-
-        // Add current slug to full path
-        currentPath = joinSegments(currentPath, slugParts[i])
-        const includeTrailingSlash = !isTagPath || i < 1
-
-        switch (options.style) {
-          case "letter":
-            if (curPathSegment.startsWith(".")) {
-              curPathSegment = curPathSegment.slice(0, 2)
-            } else {
-              curPathSegment = curPathSegment.charAt(0)
-            }
-            break
-          case "unique":
-            let shortenedName = curPathSegment.charAt(0)
-            let uniqueName = shortenedName
-            let counter = 1
-
-            while (shortenedNames.has(uniqueName)) {
-              uniqueName = curPathSegment.slice(0, counter + 1)
-              counter++
-            }
-
-            shortenedNames.set(uniqueName, currentPath)
-            curPathSegment = uniqueName
-            break
-        }
-
-        // Format and add current crumb
-        const crumb = formatCrumb(
-          curPathSegment,
-          fileData.slug!,
-          (currentPath + (includeTrailingSlash ? "/" : "")) as SimpleSlug,
-        )
-        crumbs.push(crumb)
+      segments = []
+      if (leading.length > 0) {
+        segments.push(...leading.map((crumb) => ({ kind: "crumb" as const, data: crumb })))
       }
-
-      // Add current file to crumb (can directly use frontmatter title)
-      if (options.showCurrentPage && slugParts.at(-1) !== "index") {
-        crumbs.push({
-          displayName: isTagPath ? (slugParts.at(-1) ?? "") : fileData.frontmatter!.title,
-          path: "",
-        })
+      if (overflow.length > 0) {
+        segments.push({ kind: "overflow" as const, data: overflow })
       }
+      if (trailing.length > 0) {
+        segments.push(...trailing.map((crumb) => ({ kind: "crumb" as const, data: crumb })))
+      }
+    } else {
+      segments = crumbs.map((crumb) => ({ kind: "crumb" as const, data: crumb }))
     }
 
-    let displayCrumbs = [...crumbs]
-    if (options.maxItems > 0 && crumbs.length > options.maxItems) {
-      const first = displayCrumbs[0]
-      const last = displayCrumbs.slice(
-        displayCrumbs.length - options.maxItems! + 1,
-        displayCrumbs.length,
-      )
-      displayCrumbs = [first, { displayName: "...", path: "" }, ...last]
+    if (segments.length === 0) {
+      segments = crumbs.map((crumb) => ({ kind: "crumb" as const, data: crumb }))
     }
 
     return (
       <nav class={classNames(displayClass, "breadcrumb-container")} aria-label="breadcrumbs">
-        {displayCrumbs.map((crumb, index) => (
-          <div class="breadcrumb-element">
-            <a href={crumb.path} data-breadcrumbs>
-              {crumb.displayName}
-            </a>
-            {index !== displayCrumbs.length - 1 && <p>{` ${options.spacerSymbol} `}</p>}
-          </div>
-        ))}
+        {segments.map((segment, segmentIndex) => {
+          const showSpacer = segmentIndex !== segments.length - 1
+
+          if (segment.kind === "crumb") {
+            const crumb = segment.data
+            const key = `${crumb.path}-${segmentIndex}`
+
+            return (
+              <div class="breadcrumb-element" key={key}>
+                <a href={crumb.path} data-breadcrumbs>
+                  {crumb.displayName}
+                </a>
+                {showSpacer && <p>{` ${options.spacerSymbol} `}</p>}
+              </div>
+            )
+          }
+
+          const overflowItems = segment.data
+
+          if (overflowItems.length === 0) {
+            return null
+          }
+
+          const overflowLabel = `Show ${overflowItems.length} more breadcrumbs`
+
+          return (
+            <div class="breadcrumb-element breadcrumb-overflow" key={`overflow-${segmentIndex}`}>
+              <button
+                type="button"
+                class="breadcrumb-overflow-trigger"
+                aria-label={overflowLabel}
+                aria-expanded="false"
+                aria-haspopup="true"
+              >
+                …
+              </button>
+              <div class="breadcrumb-overflow-menu" data-overflow-menu hidden>
+                {overflowItems.map((crumb, overflowIndex) => (
+                  <a
+                    key={`${crumb.path}-${overflowIndex}`}
+                    href={crumb.path}
+                    data-breadcrumbs
+                    role="menuitem"
+                  >
+                    {crumb.displayName}
+                  </a>
+                ))}
+              </div>
+              {showSpacer && <p>{` ${options.spacerSymbol} `}</p>}
+            </div>
+          )
+        })}
       </nav>
     )
   }
   Breadcrumbs.css = breadcrumbsStyle
+  Breadcrumbs.afterDOMLoaded = script
 
   return Breadcrumbs
 }) satisfies QuartzComponentConstructor

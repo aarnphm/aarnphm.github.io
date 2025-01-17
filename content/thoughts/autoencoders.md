@@ -1,14 +1,16 @@
 ---
-id: autoencoders
-tags:
-  - ml
 date: "2024-12-14"
 description: feature extraction from neural network
-modified: 2024-12-16 06:07:36 GMT-05:00
+id: autoencoders
+modified: 2025-10-29 02:15:41 GMT-04:00
+tags:
+  - ml
 title: autoencoders
 ---
 
 Think of using autoencoders to extract [[thoughts/representations]].
+
+see also [[thoughts/autoencoder diagrams intuition]]
 
 [[thoughts/sparse autoencoder|sparsity]] allows us to interpret hidden layers and internal representations of [[thoughts/Transformers]] model.
 

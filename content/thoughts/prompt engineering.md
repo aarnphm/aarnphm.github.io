@@ -1,9 +1,10 @@
 ---
+date: "2024-02-12"
 id: prompt engineering
+modified: 2025-10-29 02:15:52 GMT-04:00
 tags:
   - seed
   - ml
-date: "2024-02-12"
 title: Prompt engineering
 ---
 

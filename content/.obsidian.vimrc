@@ -1,16 +1,11 @@
 " Yank to system clipboard
 set clipboard=unnamed
 
-" Go back and forward with Ctrl+O and Ctrl+I
-" (make sure to remove default Obsidian shortcuts for these to work)
-exmap back obcommand app:go-back
-nmap <C-o> :back
-exmap forward obcommand app:go-forward
-nmap <C-i> :forwardv
-
 " Mapping
 nmap ; :
 imap jj <Esc>
+
+map <A-p> :pasteinto
 
 " Here's an example config that implements many of the features from vim-surround:
 exmap surround_wiki surround [[ ]]
@@ -21,50 +16,69 @@ exmap surround_square_brackets surround [ ]
 exmap surround_curly_brackets surround { }
 
 " NOTE: must use 'map' and not 'nmap'
-map [[ :surround_wiki
-nunmap s
-vunmap s
-vmap sa" :surround_double_quotes
-vmap sa' :surround_single_quotes
-vmap sab :surround_brackets
-vmap sa( :surround_brackets
-vmap sa) :surround_brackets
-vmap sa[ :surround_square_brackets
-vmap sa[ :surround_square_brackets
-vmap sa{ :surround_curly_brackets
-vmap sa} :surround_curly_brackets
+map [[ :surround_wiki<CR>
+nunmap g
+vunmap g
+map gsa" :surround_double_quotes<CR>
+map gsa' :surround_single_quotes<CR>
+map gsa( :surround_brackets<CR>
+vmap gsa( :surround_brackets<CR>
+map gsa) :surround_brackets<CR>
+vmap gsa) :surround_brackets<CR>
+map gsa[ :surround_square_brackets<CR>
+vmap gsa[ :surround_square_brackets<CR>
+map gsa] :surround_square_brackets<CR>
+vmap gsa] :surround_square_brackets<CR>
+map gsa{ :surround_curly_brackets<CR>
+vmap gsa{ :surround_curly_brackets<CR>
+map gsa} :surround_curly_brackets<CR>
+vmap gsa} :surround_curly_brackets<CR>
 
 " Split Window
+unmap <Space>
 exmap vs obcommand workspace:split-vertical
-exmap sp obcommand workspace:split-vertical
 exmap hs obcommand workspace:split-horizontal
-nmap <C-w>v :vs
-nmap <C-w>s :hs
+nmap <C-w>v :vs<CR>
+nmap <Space>vs :vs<CR>
+nmap <C-w>s :hs<CR>
+nmap <Space>hs :hs<CR>
 
 exmap focusLeft obcommand editor:focus-left
 exmap focusRight obcommand editor:focus-right
 exmap focusBottom obcommand editor:focus-bottom
 exmap focusTop obcommand editor:focus-top
-nmap <C-w>h :focusLeft
-nmap <C-w>l :focusRight
-nmap <C-w>j :focusBottom
-nmap <C-w>k :focusTop
+nmap <C-w>h :focusLeft<CR>
+nmap <C-w>l :focusRight<CR>
+nmap <C-w>j :focusBottom<CR>
+nmap <C-w>k :focusTop<CR>
 
 " Quit Buffer
 exmap qq obcommand workspace:close
-nmap <Space>qq :qq
+nmap <Space>qq :qq<CR>
 
 " Map to Open File
 exmap open_file obcommand switcher:open
-nmap <Space>f :open_file
+nmap <Space>f :open_file<CR>
+
+" Emulate Folding https://vimhelp.org/fold.txt.html#fold-commands
+exmap togglefold obcommand editor:toggle-fold
+nmap zo :togglefold<CR>
+nmap zc :togglefold<CR>
+nmap za :togglefold<CR>
+
+exmap unfoldall obcommand editor:unfold-all
+nmap zR :unfoldall<CR>
+
+exmap foldall obcommand editor:fold-all
+nmap zM :foldall<CR>
 
 " Go Into Link
 exmap openlink obcommand editor:open-link-in-new-leaf
-nmap go :openlink
-nmap gd :openlink
+nmap go :openlink<CR>
+nmap gd :openlink<CR>
 " [g]oto [f]ile (= Follow Link under cursor)
 exmap followLinkUnderCursor obcommand editor:follow-link
-nmap gf :followLinkUnderCursor
+nmap gf :followLinkUnderCursor<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""" "
 """""""""""" All Available Commands """""""""""" "

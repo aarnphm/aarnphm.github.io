@@ -1,9 +1,9 @@
 ---
+date: "2024-09-11"
 id: Entity-Relationship Models
+modified: 2025-10-29 02:16:02 GMT-04:00
 tags:
   - sfwr3db3
-date: "2024-09-11"
-modified: "2024-09-27"
 title: Entity-Relationship Models
 ---
 

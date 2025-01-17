@@ -1,12 +1,12 @@
 ---
-id: social interactions
-tags:
-  - evergreen
 date: "2024-02-05"
 description: and on ways we focus on others.
 draft: true
-modified: "2024-10-08"
+id: social interactions
+modified: 2025-10-29 02:15:13 GMT-04:00
 socialDescription: and on how we seek energy.
+tags:
+  - evergreen
 title: interactions.
 ---
 

@@ -1,10 +1,10 @@
 ---
+date: "2024-02-28"
+description: and absurdism, create value by revolting against the nothingness of life.
 id: Camus
+modified: 2025-10-29 02:15:17 GMT-04:00
 tags:
   - philosophy
-date: "2024-02-28"
-description: Camus, a scattered thoughts and notes.
-modified: "2024-11-27"
 title: Camus
 ---
 
@@ -148,3 +148,33 @@ How to live life in a meaningless world? It is to let loose in all definitions o
 Instead of despairing, see the silver lining, to focus on this life, create [[thoughts/Value|value]] on our own, when our time is limited, with a full perception of it. One should not accept the absurd, we should revolt around it as we have full control of our own actions and freedom.
 
 Rebellion: full of thoughts and actions. as rejection of hope. The goal is to live solely with what he know, to accommodate with what is and to bring in nothing?
+
+## the rebel
+
+Revolt as an essential dimension of mankind
+
+Revolt in a sense not the normal revolution we think of, but the metaphysical revolt of man against the nature of existence
+
+### Rebellion vs revolution
+
+P.9
+
+P.16: “We see that affirmation implicit in every action of rebellion is extended to something that transcends the individual in so far as it withdraws him fro his supposed solitude and provides him with a reason to act
+
+Two observations:
+
+- Rebel is not an egotistic act - Once he has accepted the motives => preserves nothing but the fact that he risks everything - Rebellion does not necessary arise among the oppressed, but that it can also be caused by mere spectacle of oppression where someone else is the victim
+- In a sense, human solidarity is metaphysical.
+
+### Act of rebellion
+
+> Ivan's drama, on the contrary, arises from the fact that there is too much love without an object. This love finding no outlet and God being denied, it is then decided to lavish it on buman beings as a generous act of complicity.
+
+Nevertheless, in the act of rebellion as we have envisaged it up to now, an abstract ideal is not chosen through lack of feeling and in pursuit of a sterile demand.
+
+We insist that the part of man which cannot be reduced to mere ideas should be taken into consideration-the passionate side of his nature that serves no other purpose than to be part of the act of living. Does this imply that no rebellion is motivated by resentment? No, and we know it only too well in this age of malice. But we must consider the idea of rebellion in its widest sense on pain of betraying it; and in its widest sense rebellion goes far beyond resentment. When Heatheliff, in Wuthering Heights, says that he puts his love above God and would willingly go to hell in order to be reunited with the woman he loves, he is prompted not only by youth and humiliation but by the consuming experience of a whole lifetime. The same emotion causes Eckart, in a surprising fit of heresy, to say that he prefers hell with Jesus to heaven without Him.
+This is the very essence of love. Contrary to Scheler, it would therefore be impossible to overemphasize the passionate afarmation that underlies the act of rebellion and distinguishes it from resentment. Rebellion, though apparently negative, since it creates nothing, is profoundly positive in that it reveals the part of man
+
+P.21: the rebel is a man who is on the point of accepting and rejecting the sacred and determined on laying claim to a human situation in which all the answers are human
+
+### Metaphysical rebellion

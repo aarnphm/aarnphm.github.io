@@ -1,29 +1,28 @@
 ---
-id: structured decoding
-tags:
-  - technical
-  - serving
 date: "2024-12-10"
 description: and vLLM integration with XGrammar
-modified: 2025-01-15 13:35:31 GMT-05:00
+id: structured decoding
+modified: 2025-10-29 02:15:13 GMT-04:00
 pageLayout: technical
 socials:
   bentoml blog: https://bentoml.com/blog/structured-decoding-in-vllm-a-gentle-introduction
   hackernews: https://news.ycombinator.com/item?id=42711051
   official blog: https://blog.vllm.ai/2025/01/14/struct-decode-intro.html
+  twitter: https://x.com/vllm_project/status/1879979185474859303
+tags:
+  - technical
+  - serving
 title: structured decoding, a guide for the impatient
 ---
 
-See also: [[thoughts/constrained-decoding|notes]]
-
-TL/DR:
+[[thoughts/structured outputs|tldr]]:
 
 - Structured decoding allows precise control over LLM output formats
 - vLLM now supports both [outlines](https://github.com/dottxt-ai/outlines) and [XGrammar](https://github.com/mlc-ai/xgrammar) backends for structured decoding
 - Recent XGrammar integration brings up to 5x improvement in time per output token (TPOT) under load
 - Upcoming v1 release focuses on enhanced performance and schedule-level mask broadcasting for mixed-requests batch support
 
-_[vLLM](https://blog.vllm.ai/2023/06/20/vllm.html) is the high-throughput and efficient inference engine for running **large-language models** ([[thoughts/LLMs|LLM]]). In this post, we will explore the annotated history of language models, describe the current state of [[thoughts/constrained decoding|structured decoding]] in vLLM, as well as the recent integration with [XGrammar](https://github.com/vllm-project/vllm/pull/10785), and share a tentative roadmap for vLLM's [v1](https://github.com/vllm-project/vllm/issues/8779) improvement for structured decoding._
+_[vLLM](https://blog.vllm.ai/2023/06/20/vllm.html) is the high-throughput and efficient inference engine for running **large-language models** ([[thoughts/LLMs|LLM]]). In this post, we will explore the annotated history of language models, describe the current state of [[thoughts/structured outputs|structured decoding]] in vLLM, as well as the recent integration with [XGrammar](https://github.com/vllm-project/vllm/pull/10785), and share a tentative roadmap for vLLM's [v1](https://github.com/vllm-project/vllm/issues/8779) improvement for structured decoding._
 
 > We would also invite users to tackle this blog post from a philosophical perspective, and in the process trying to posit that structured decoding represents a fundamental shift in how we think about LLM outputs. It also plays an important role in building complex agentic system.
 
@@ -85,7 +84,7 @@ Concurrently, Donald Norman's Parallel Distributed Processing [@10.7551/mitpress
     One of the many reasons why attention-based transformers works better than LSTM is because transformers are very scalable and hardware-aware (you can’t just arbitrary add more LSTM block and hope for better long-term retention). For more information, please refer back to the original paper.
 
 In retrospect, GOFAI are [[thoughts/Determinism|deterministic]] in a sense that intentionality is injected within symbolic tokens through explicit programming.
-Connectionist networks, on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
+[[thoughts/Connectionist network]], on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
 Unlike GOFAI, its internal representation is determined by the state of the entire network states rather than one singular unit. Although these models exhibit [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]], one should be aware that this is not [[thoughts/AGI|artificial general intelligence]] _yet_, largely due to researchers' [[thoughts/observer-expectancy effect]].
 
 In **summary**:
@@ -95,7 +94,7 @@ In **summary**:
 
 ## why do we need structured decoding?
 
-![[posts/images/shogoth-gpt.png|Shogoth as GPTs. In a sense, RLHF, or any methods for that matter, is an injection of rules (GOFAI system) into post-training]]
+![[posts/images/shogoth-gpt.webp|Shogoth as GPTs. In a sense, RLHF, or any methods for that matter, is an injection of rules (GOFAI system) into post-training]]
 
 [[thoughts/LLMs|LLMs]] excel at the following heuristic: given a blob of text, the model will generate a contiguous piece of text that it predicts as the most probable tokens. For example, if you give it a Wikipedia article, the model should produce text consistent with the remainder of said article.
 
@@ -146,10 +145,11 @@ graph LR
     classDef default fill:#fff,stroke:#333,stroke-width:2px;
 ```
 
-From a technical perspective, an inference engine can modify the probability distribution for next-tokens by applying bias (often via logit masks) for all tokens from any given schemas. To apply these biases, [outlines](https://github.com/dottxt-ai/outlines) was proposed to construct a finite-state machine [^fsm] (FSM) from any given schemas to then guide the generations [@willard2023efficientguidedgenerationlarge]. This allows us to track the current state during decoding and filter out invalid tokens by applying logit bias to the output.
+From a technical perspective, an inference engine can modify the probability distribution for next-tokens by applying bias (often via logit masks) for all tokens from any given schemas. To apply these biases, [outlines](https://github.com/dottxt-ai/outlines) was proposed to construct a finite-state machine [^fsm] (FSM) from any given schemas to then guide the generations [@willard2023efficientguidedgenerationlarge]. This allows us to track the current state during decoding and filter out invalid tokens by applying logit bias to the output [^blogpost].
 
-![[thoughts/images/vllm/constrained-json-fsm.webp]]
-_courtesy of [LMSys, 2024](https://lmsys.org/blog/2024-02-05-compressed-fsm/)_
+[^blogpost]: [LMSys](https://lmsys.org/blog/2024-02-05-compressed-fsm/) goes into their implementation of a compressed FSM via outlines, in SGLang.
+
+![[thoughts/images/vllm/constrained-json-fsm.webp|courtesy of (LMSys, 2024)]]
 
 _in vLLM, you can use this by passing a JSON schema to the sampling params (either through [Python SDK](https://github.com/vllm-project/vllm/blob/80c751e7f68ade3d4c6391a0f3fce9ce970ddad0/benchmarks/benchmark_guided.py#L137) or HTTP requests)_
 
@@ -166,7 +166,7 @@ _in vLLM, you can use this by passing a JSON schema to the sampling params (eith
     - $q_0 \in Q$ is the start state
     - $F \subseteq Q$ is the set of all accepted states.
 
-    Intuitively, we can describe any structured format (JSON, YAML, etc.) using a context-free grammar due to its expressive nature.
+    Intuitively, we can describe any structured format (JSON, YAML, etc.) using a [[thoughts/Context-Free Grammar|context-free grammar]] due to its expressive nature.
 
 ### previous limitation in vLLM.
 
@@ -182,13 +182,13 @@ There are few limitations with current vLLM's support of the Outlines backend:
 
 ### integrations with XGrammar
 
-[XGrammar](https://github.com/mlc-ai/xgrammar) introduces a new technique that batch constrained decoding with _pushdown automaton_ (PDA). You can think of a PDA as a "collection of FSMs, and each FSM represents a context-free grammar (CFG)." One significant advantage of PDA is its recursive nature, allowing us to execute multiple state transitions. They also include additional [optimisation](https://blog.mlc.ai/2024/11/22/achieving-efficient-flexible-portable-structured-generation-with-xgrammar) (for those who are interested) to reduce grammar compilation overhead.
+[XGrammar](https://github.com/mlc-ai/xgrammar) introduces a new technique that batch constrained decoding with _pushdown automaton_ (PDA). You can think of a PDA as a "collection of FSMs, and each FSM represents a [[thoughts/Context-Free Grammar|context-free grammar]] (CFG)." One significant advantage of PDA is its recursive nature, allowing us to execute multiple state transitions. They also include additional [optimisation](https://blog.mlc.ai/2024/11/22/achieving-efficient-flexible-portable-structured-generation-with-xgrammar) (for those who are interested) to reduce grammar compilation overhead.
 
 This is great because it addresses **limitation (1)** by moving grammar compilation out of Python into C, utilising `pthread`. Additionally, XGrammar lays the groundwork for addressing **limitation (4)** in future releases. Below are performance comparisons between the XGrammar and Outlines backends:
 
-![[posts/images/vllm-new-xgrammar.png]]
+![[posts/images/vllm-new-xgrammar.webp]]
 
-![[posts/images/vllm-xgrammar-decode-time-per-output-token.png|courtesy of Michael Goin (Red Hat)]]
+![[posts/images/vllm-xgrammar-decode-time-per-output-token.webp|courtesy of Michael Goin (Red Hat)]]
 
 In vLLM’s v0 architecture, we’ve implemented XGrammar as a [logit processor](https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/guided_decoding/xgrammar_decoding.py), optimizing it with caching for tokenizer data. While the performance improvements are encouraging, we believe there’s still significant room for optimisation.
 

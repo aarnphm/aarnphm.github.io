@@ -1,15 +1,18 @@
 ---
+date: "2024-02-07"
+description: concerns about the goodness of all varieties
 id: Value
+modified: 2025-10-29 02:15:37 GMT-04:00
+socials:
+  sep: https://plato.stanford.edu/entries/value-theory/
 tags:
   - philosophy
-date: "2024-02-07"
 title: Value
 ---
 
-Encapsulates the following branches:
-
-- [[thoughts/moral|Moral]]
-- [[thoughts/aesthetic value|Aesthetic]]
-
 > [!important] Axiology
-> concerns about about the goodness of all varieties, encompasses the nature of value, where it came from.
+> concerns about the goodness of all varieties, encompasses the nature of value, where it came from.
+
+![[thoughts/moral|Moral]]
+
+![[thoughts/aesthetic value|Aesthetic]]

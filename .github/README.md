@@ -2,9 +2,25 @@ garden v2, on top of [quartz](https://quartz.jzhao.xyz/) v4.
 
 > “[One] who works with the door open gets all kinds of interruptions, but [they] also occasionally gets clues as to what the world is and what might be important.” — Richard Hamming
 
+just do:
+
+```bash
+pnpm swarm
+```
+
+_if you don't have pnpm, then install 😃_
+
 ## features
 
 A modified/personal enhancement from bare Quartz
+
+Also to run this with `pnpm exec tsx quartz/scripts/dev.ts > /tmp/quartz-dev.log 2>&1 &`
+
+### parser
+
+some remark parsers for wikilinks, callouts, that supports general OFM compatibility
+
+see [ofm-wikilinks](../quartz/extensions/micromark-extension-ofm-wikilinks/) and [ofm-callouts](../quartz/extensions/micromark-extension-ofm-callouts/) for more information.
 
 ### [telescopic-text](https://github.com/jackyzha0/telescopic-text)
 
@@ -76,7 +92,7 @@ inspired by dynalist
 
 ### Gaussian-scaling TOC
 
-inspired by press.stripe.com
+inspired by https://press.stripe.com
 
 ### reader view
 

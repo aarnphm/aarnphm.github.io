@@ -1,12 +1,12 @@
 ---
+date: "2025-01-06"
+draft: true
 id: tranquility
+modified: 2025-10-29 02:15:13 GMT-04:00
+socialDescription: on being at ease with myself.
 tags:
   - growth
   - sapling
-date: "2025-01-06"
-draft: true
-modified: 2025-01-08 19:31:07 GMT-05:00
-socialDescription: on being at ease with myself.
 title: tranquility
 ---
 

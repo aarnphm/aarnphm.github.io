@@ -5,4 +5,3 @@ title: machine learning
 ---
 
 Everything related to machine learning, or [[/tags/math|math-adjacent]] topics
-

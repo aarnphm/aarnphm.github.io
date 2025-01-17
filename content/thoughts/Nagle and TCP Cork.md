@@ -1,10 +1,10 @@
 ---
+date: "2022-07-01"
 id: Nagle and TCP Cork
+modified: 2025-10-29 02:15:30 GMT-04:00
 tags:
   - seed
   - networking
-date: "2022-07-01"
-modified: 2025-01-15 14:03:40 GMT-05:00
 title: Nagle's algorithm and TCP_CORK
 ---
 

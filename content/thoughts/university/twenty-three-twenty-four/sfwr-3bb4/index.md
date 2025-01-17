@@ -1,10 +1,10 @@
 ---
+date: "2023-09-04"
 id: index
+modified: 2025-10-29 02:16:20 GMT-04:00
 tags:
   - university
   - sfwr3bb4
-date: "2023-09-04"
-modified: "2024-12-03"
 title: Concurrent System Design
 ---
 

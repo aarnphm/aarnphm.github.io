@@ -1,9 +1,9 @@
 ---
+date: "2024-10-08"
 id: effective procedure
+modified: 2025-10-29 02:15:44 GMT-04:00
 tags:
   - math
-date: "2024-10-08"
-modified: "2024-10-08"
 title: effective procedure
 ---
 

@@ -1,9 +1,11 @@
 ---
+date: "2024-02-08"
+description: batching strategy for large scale inference deployment
 id: Continuous batching
+modified: 2025-10-29 02:15:19 GMT-04:00
 tags:
   - ml
-date: "2024-02-08"
-modified: "2024-11-07"
+  - seed
 title: Continuous batching
 transclude:
   title: false

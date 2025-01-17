@@ -1,18 +1,97 @@
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
+import { resolveRelative, FullSlug } from "../util/path"
+import { parseWikilink, resolveWikilinkTarget } from "../util/wikilinks"
+import { ArenaData, ArenaChannel } from "../plugins/transformers/arena"
+import { toArenaHeadingJsx } from "../util/arena"
 
-const ArticleTitle: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
+export default (() => (componentData: QuartzComponentProps) => {
+  const { fileData, displayClass } = componentData
   const title = fileData.frontmatter?.title
-  if (title) {
+  const slug = fileData.slug!
+  const isArenaIndex = slug === "arena"
+  const isArenaChannel = slug.startsWith("arena/") && slug !== "arena"
+
+  const renderDescription = (description: string | undefined) => {
+    if (!description) {
+      return null
+    }
+
+    const parsed = parseWikilink(description)
+    if (!parsed) {
+      return description
+    }
+
+    const resolved = resolveWikilinkTarget(parsed, slug as FullSlug)
+    if (!resolved) {
+      return parsed.alias ?? parsed.target ?? description
+    }
+
+    const hrefBase = resolveRelative(slug as FullSlug, resolved.slug)
+    const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
+
     return (
-      <hgroup class="main-col">
-        <h1 class={classNames(displayClass, "article-title")}>{title}</h1>
-        <p class="description">{fileData.frontmatter?.description && fileData.description}</p>
+      <a href={href} class="internal" data-no-popover data-slug={resolved.slug}>
+        {parsed.alias ?? parsed.target ?? description}
+      </a>
+    )
+  }
+
+  if (isArenaIndex) {
+    const arenaData = fileData.arenaData as ArenaData | undefined
+
+    return (
+      <hgroup class={classNames(displayClass, "title-col", "arena-title-block")} data-article-title>
+        <h1 class="article-title">are.na</h1>
+        <p class="description">
+          {arenaData
+            ? `${arenaData.channels.length} channels · ${arenaData.channels.reduce((sum, ch) => sum + ch.blocks.length, 0)} blocks`
+            : ""}
+        </p>
       </hgroup>
     )
-  } else {
-    return <></>
   }
-}
 
-export default (() => ArticleTitle) satisfies QuartzComponentConstructor
+  if (isArenaChannel) {
+    const channel = fileData.arenaChannel as ArenaChannel | undefined
+    const arenaRootSlug = "arena" as FullSlug
+
+    return (
+      <hgroup class={classNames(displayClass, "title-col", "arena-title-block")} data-article-title>
+        <h1 class="article-title">
+          <a
+            href={resolveRelative(slug, arenaRootSlug)}
+            class="internal"
+            data-no-popover
+            data-slug={arenaRootSlug}
+            style={{ background: "transparent" }}
+          >
+            are.na
+          </a>
+          {" / "}
+          {channel?.titleHtmlNode
+            ? toArenaHeadingJsx(
+                fileData.filePath!,
+                channel.titleHtmlNode,
+                fileData.slug! as FullSlug,
+                `arena/${channel.slug}` as FullSlug,
+                componentData,
+              )
+            : channel?.name || title}
+        </h1>
+        <p class="description">{channel ? `${channel.blocks.length} blocks` : ""}</p>
+      </hgroup>
+    )
+  }
+
+  if (title) {
+    return (
+      <hgroup class={classNames(displayClass, "title-col")} data-article-title>
+        <h1 class="article-title">{title}</h1>
+        <p class="description">{renderDescription(fileData.description)}</p>
+      </hgroup>
+    )
+  }
+
+  return <></>
+}) satisfies QuartzComponentConstructor

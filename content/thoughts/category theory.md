@@ -1,12 +1,14 @@
 ---
-id: category theory
-tags:
-  - math
 date: "2024-12-30"
 description: general theory of mathematical structures and its relations.
-modified: 2024-12-31 02:55:33 GMT-05:00
+id: category theory
+modified: 2025-10-29 02:15:42 GMT-04:00
+tags:
+  - math
 title: category theory
 ---
+
+see also: [Category Theory Illustrated](https://abuseofnotation.github.io/category-theory-illustrated/11_natural_transformations/)
 
 depends on two sorts of _objects_:
 
@@ -27,7 +29,6 @@ depends on two sorts of _objects_:
 >   $$
 >   \circ : \text{hom}(b,c) \times \text{hom}(a,b) \mapsto \text{hom}(a,c)
 >   $$
->
 >   - associativity: if $f: a \to b, g: b \to c$ and $h: c \to d$ then we have
 >
 >     $$
@@ -53,3 +54,10 @@ _structure preserving maps between categories_
     - $\forall f: x \to y, f \in C \space \exists \space \text{mor}(F(f)): F(x) \to F(y) \mid  F(f) \in D$
 
 - **contravariant** functor acts as _covariant_ functors from _opposite category_ $C^{\text{op}}$ to $D$
+
+## isomorphism invariance
+
+> All categorical constructions that we covered (products/coproducts, initial/terminal objects, functional objects in logic) are isomorphism-invariant. Or, equivalently, they define an objects up to an isomorphism.
+
+> [!important]
+> In short, in category theory **isomorphism = equality**

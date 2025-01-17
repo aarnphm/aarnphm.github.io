@@ -1,10 +1,10 @@
 ---
-id: Design theory
-tags:
-  - sfwr3db3
 date: "2024-12-13"
 description: for relational database
-modified: 2024-12-13 06:38:03 GMT-05:00
+id: Design theory
+modified: 2025-10-29 02:16:02 GMT-04:00
+tags:
+  - sfwr3db3
 title: Design theory
 ---
 

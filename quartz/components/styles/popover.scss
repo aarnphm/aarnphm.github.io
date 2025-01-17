@@ -16,9 +16,12 @@
 
 .popover {
   z-index: 999;
-  position: absolute;
+  position: fixed;
   overflow: visible;
   padding: 1rem;
+  left: 0;
+  top: 0;
+  will-change: transform;
   visibility: hidden;
   opacity: 0;
   transition:
@@ -30,6 +33,12 @@
   }
 
   .byline {
+    & > * {
+      &:last-child {
+        border-left: 1px solid var(--lightgray);
+      }
+    }
+
     menu.tags {
       grid-column: 1 / 1 !important;
     }
@@ -43,18 +52,25 @@
     position: relative;
     width: 30rem;
     max-height: 20rem;
-    padding: 0 1rem;
+    padding: 0 1rem 1rem 1rem;
     font-weight: initial;
     font-style: initial;
     line-height: normal;
     font-size: initial;
     font-family: var(--bodyFont);
     border: 1px solid var(--lightgray);
+    border-radius: var(--border-radius);
     background-color: var(--light);
-    border-radius: 5px;
     box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
     overflow: auto;
+    overscroll-behavior: contain;
     white-space: normal;
+    user-select: none;
+    cursor: default;
+
+    footer {
+      display: none;
+    }
   }
 
   & > .popover-inner[data-content-type] {
@@ -79,13 +95,8 @@
     }
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    margin-top: 1rem;
+  h1 {
+    font-size: 1.5rem;
   }
 
   @media all and ($mobile) {
@@ -93,8 +104,18 @@
   }
 }
 
-a:hover .popover,
+.footnote-popover,
+.bib-popover {
+  color: var(--dark);
+
+  & > .popover-inner {
+    padding: 0.5rem 0.5rem 1rem;
+  }
+}
+
+.active-popover,
 .popover:hover {
-  opacity: 1;
-  visibility: visible;
+  animation: dropin 0.3s ease;
+  animation-fill-mode: forwards;
+  animation-delay: 0.2s;
 }

@@ -1,9 +1,10 @@
 ---
-id: Chaos
-tags:
-  - philosophy
 date: "2024-01-08"
 description: Chaos a la carte.
+id: Chaos
+modified: 2025-10-29 02:15:18 GMT-04:00
+tags:
+  - philosophy
 title: Chaos
 ---
 

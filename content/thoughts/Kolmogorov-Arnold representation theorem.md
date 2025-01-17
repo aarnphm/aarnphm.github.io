@@ -1,10 +1,10 @@
 ---
-id: Kolmogorov-Arnold representation theorem
-tags:
-  - math
 date: "2024-12-17"
 description: also known as the superposition theorem.
-modified: 2024-12-18 01:33:54 GMT-05:00
+id: Kolmogorov-Arnold representation theorem
+modified: 2025-10-29 02:15:26 GMT-04:00
+tags:
+  - math
 title: Kolmogorov–Arnold representation theorem
 ---
 

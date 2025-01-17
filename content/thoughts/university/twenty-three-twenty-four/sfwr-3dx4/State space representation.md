@@ -1,9 +1,9 @@
 ---
+date: "2024-01-24"
 id: State space representation
+modified: 2025-10-29 02:16:21 GMT-04:00
 tags:
   - sfwr3dx4
-date: "2024-01-24"
-modified: 2024-12-17 14:48:48 GMT-05:00
 title: State space representation
 ---
 

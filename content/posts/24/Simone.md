@@ -1,17 +1,17 @@
 ---
-id: Simone
-tags:
-  - friend
 date: "2024-12-27"
 description: and a year of reconnection.
-modified: 2024-12-31 06:10:30 GMT-05:00
+id: Simone
+modified: 2025-10-29 02:15:08 GMT-04:00
 noindex: true
 pageLayout: letter
 signature: with warmth and friendship - Aaron.
+tags:
+  - friend
 title: to simone
 ---
 
-![[posts/images/5D8F9FB5-8F82-423F-BB67-7B5CFBD9F7F2.jpeg|eigenvalued by mr. oppenheimer]]
+![[posts/images/5D8F9FB5-8F82-423F-BB67-7B5CFBD9F7F2.webp|eigenvalued by mr. oppenheimer]]
 
 I'm glad that we talked more this year. Given that we are both super busy and seemingly never figured out a time to hang out together,
 it has been great getting to know you a lot more.
@@ -20,7 +20,7 @@ I love that we got to see each other once in a blue moon, just to catch up.
 
 I love that you called me whenever you need someone to talk to.
 
-I'm sure there are many things happening your life, I know that you will eventually get it done (esp. getting a big gurl corporate job this year :happy:)
+I'm sure there are many things happening your life, I know that you will eventually get it done (esp. getting a big gurl corporate job this year :smiley:)
 
 I hope you find moments of peace during the holiday season. May the new year bring you closer to your goals, but more importantly, closer to your own truth.
 

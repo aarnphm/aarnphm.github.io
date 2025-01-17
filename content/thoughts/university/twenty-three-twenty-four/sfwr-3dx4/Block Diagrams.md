@@ -1,9 +1,9 @@
 ---
+date: "2024-01-24"
 id: Block Diagrams
+modified: 2025-10-29 02:16:20 GMT-04:00
 tags:
   - sfwr3dx4
-date: "2024-01-24"
-modified: 2024-12-18 01:49:34 GMT-05:00
 title: Block Diagrams
 ---
 
@@ -110,6 +110,7 @@ See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/block_diagrams
 ## Feedback loop
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/feedback-loop-transfer-function.webp]]
+
 ## Moving through summing junction
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/summing junction.webp]]

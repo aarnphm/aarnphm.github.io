@@ -1,9 +1,9 @@
 ---
+date: "2024-12-16"
 id: finals
+modified: 2025-10-29 02:16:06 GMT-04:00
 tags:
   - sfwr4aa4
-date: "2024-12-16"
-modified: 2024-12-18 16:52:50 GMT-05:00
 title: Real-time control systems, and scheduling
 ---
 

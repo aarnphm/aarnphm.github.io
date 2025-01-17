@@ -1,9 +1,9 @@
 ---
+date: "2024-12-14"
 id: probabilitic modeling
+modified: 2025-10-29 02:16:10 GMT-04:00
 tags:
   - sfwr4ml3
-date: "2024-12-14"
-modified: 2024-12-14 06:17:40 GMT-05:00
 title: probabilitic modeling
 ---
 
@@ -54,3 +54,15 @@ Check $\frac{P(y=0 \mid X, \Theta)}{P(y=1 \mid X, \Theta)} \ge 1$
 idea: comparison between discriminative and generative models
 
 ![[thoughts/Logistic regression]]
+
+## law of total variance
+
+> variance of a random variable $Y$ in terms of its conditional variances and conditional means given another random variable $X$
+
+> [!abstract]
+>
+> Given a $X, Y$ are random variables on the same probability space, and $Y$ as finite _variance_, then
+>
+> $$
+> \text{Var}(Y) = E[\text{Var}(Y\mid X)]  + \text{Var}(E[Y\mid X])
+> $$

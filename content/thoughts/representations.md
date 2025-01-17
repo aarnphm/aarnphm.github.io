@@ -1,14 +1,15 @@
 ---
+date: "2024-02-25"
+description: and the state of being.
 id: representations
+modified: 2025-10-29 02:15:53 GMT-04:00
 tags:
   - seed
   - philosophy
-date: "2024-02-25"
-modified: 2024-12-08 04:30:25 GMT-05:00
 title: representations.
 ---
 
-See also: Edward Tuffe's [The Visual Display of Quantitative Information](https://www.edwardtufte.com/book/the-visual-display-of-quantitative-information/) - ISBN-13: 978-1930824133
+resources: Edward Tuffe's [The Visual Display of Quantitative Information - ISBN-13: 978-1930824133](https://www.edwardtufte.com/book/the-visual-display-of-quantitative-information/)
 
 > [!question]
 >
@@ -18,7 +19,7 @@ Maps shape _==how we see and understand the world==_, which in turn shapes how w
 
 ## maps
 
-[Linus' talk on Representation](https://www.media.mit.edu/events/thinking-with-sand-a-virtual-talk-series-exploring-new-software-interfaces-and-tools-for-augmented-thinking-and-creative-exploration/)
+[Linus' talk on Representation](https://www.youtube.com/watch?v=Tt_hDVN5TZE&list=PL_Kh09CR3iHa1ZPi4EsHeqX-1IB3CRLbA&index=2&ab_channel=CharStiles)
 
 how it shape our _agency_
 
@@ -38,7 +39,7 @@ Tenet:
 
 ## internals grokking
 
-Though [[thoughts/mechanistic interpretability]] to invoke agency
+In the realm of AI, how we [[thoughts/mechanistic interpretability|grok]] these systems to understand its internal representations would help us understand how we think.
 
 ==Seeing clearly== to exercise _[[thoughts/Agency|agency]]_
 
@@ -53,8 +54,8 @@ Engaged use:
 - see clearly from right perspectives. Express intent naturally and precisely.
 - Explore the possible spaces only through engaging with the information
 
-Why don't we do this more?
-
+> [!question] Why don't we do this more?
+>
 > It is a hyperreal produced from a radiating synthesis of combinatory models in a hyperspace without atmosphere.
 
 _Simulacra and Simulation, Jean Baudrillard_

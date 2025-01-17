@@ -1,10 +1,13 @@
 import { randomUUID } from "crypto"
 import { JSX } from "preact/jsx-runtime"
+import { QuartzPluginData } from "../plugins/vfile"
 
 export type JSResource = {
   loadTime: "beforeDOMReady" | "afterDOMReady"
   moduleType?: "module"
   spaPreserve?: boolean
+  async?: boolean
+  crossOrigin?: "anonymous" | "use-credentials"
 } & (
   | {
       src: string
@@ -27,7 +30,14 @@ export function JSResourceToScriptElement(resource: JSResource, preserve?: boole
   const spaPreserve = preserve ?? resource.spaPreserve
   if (resource.contentType === "external") {
     return (
-      <script key={resource.src} src={resource.src} type={scriptType} spa-preserve={spaPreserve} />
+      <script
+        key={resource.src}
+        src={resource.src}
+        type={scriptType}
+        spa-preserve={spaPreserve}
+        async={resource.async}
+        crossOrigin={resource.crossOrigin}
+      />
     )
   } else {
     const content = resource.script
@@ -36,8 +46,9 @@ export function JSResourceToScriptElement(resource: JSResource, preserve?: boole
         key={randomUUID()}
         type={scriptType}
         spa-preserve={spaPreserve}
+        crossOrigin={resource.crossOrigin}
         dangerouslySetInnerHTML={{ __html: content }}
-      ></script>
+      />
     )
   }
 }
@@ -62,4 +73,12 @@ export function CSSResourceToStyleElement(resource: CSSResource, preserve?: bool
 export interface StaticResources {
   css: CSSResource[]
   js: JSResource[]
+  additionalHead: (JSX.Element | ((pageData: QuartzPluginData) => JSX.Element))[]
+}
+
+export type StringResource = string | string[] | undefined
+export function concatenateResources(...resources: StringResource[]): StringResource {
+  return resources
+    .filter((resource): resource is string | string[] => resource !== undefined)
+    .flat()
 }

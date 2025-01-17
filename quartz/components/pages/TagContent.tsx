@@ -111,7 +111,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
       }
 
       return (
-        <div class={classes}>
+        <div class={classes} data-pagelist>
           <article>{content}</article>
           <div class="page-listing">
             <p>{i18n(cfg.locale).pages.tagContent.itemsUnderTag({ count: pages.length })}</p>

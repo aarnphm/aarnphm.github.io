@@ -1,9 +1,10 @@
 ---
+date: "2023-04-15"
 id: Content-addressable storage
+modified: 2025-10-29 02:15:19 GMT-04:00
 tags:
   - seed
   - technical
-date: "2023-04-15"
 title: Content-addressable storage
 ---
 

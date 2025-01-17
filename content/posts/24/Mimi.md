@@ -1,17 +1,17 @@
 ---
-id: Mimi
-tags:
-  - friend
 date: "2024-12-31"
 description: and a beginning of a long friendship
-modified: 2024-12-31 13:45:24 GMT-05:00
+id: Mimi
+modified: 2025-10-29 02:15:08 GMT-04:00
 noindex: true
 pageLayout: letter
 signature: with kinship and comradery - Aaron
+tags:
+  - friend
 title: to mimi and tuong an
 ---
 
-![[posts/images/edward-hopper.png|Soir Bleu, 1914 by Edward Hopper]]
+![[posts/images/edward-hopper.webp|Soir Bleu, 1914 by Edward Hopper]]
 
 I've been thinking lately about how every social media channel demands a different self, as if each platform
 is its own small world. What I’d put on Twitter might be all wrong for Instagram; what I craft on Instagram feels out of place on Facebook.
@@ -35,4 +35,3 @@ I'm using. Maybe that's what home is - the place where you stop counting your wo
 I’m happy you two found each other and that you’re building a beautiful life here. Your companionship offers hope for the season, a small refuge from the noise of other people’s expectations—of what we should post, how we should act, which language we should speak. I wish you peace and comfort for the holidays, and I’m already excited for what 2025 holds. In moments like this, I realize that no matter how many identities we juggle, there’s always one rooted in where we began. And thanks to you, I can still play that language game—and play it well.
 
 [^sign]
-

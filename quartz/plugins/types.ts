@@ -1,10 +1,10 @@
 import { PluggableList } from "unified"
 import { StaticResources } from "../util/resources"
-import { HtmlContent } from "./vfile"
+import { ProcessedContent } from "./vfile"
 import { QuartzComponent } from "../components/types"
 import { FilePath } from "../util/path"
 import { BuildCtx } from "../util/ctx"
-import DepGraph from "../depgraph"
+import { VFile } from "vfile"
 
 export interface PluginTypes {
   transformers: QuartzTransformerPluginInstance[]
@@ -13,15 +13,16 @@ export interface PluginTypes {
 }
 
 type OptionType = object | undefined
+type ExternalResourcesFn = (ctx: BuildCtx) => Partial<StaticResources> | undefined
 export type QuartzTransformerPlugin<Options extends OptionType = undefined> = (
   opts?: Options,
 ) => QuartzTransformerPluginInstance
 export type QuartzTransformerPluginInstance = {
   name: string
-  textTransform?: (ctx: BuildCtx, src: string | Buffer) => string | Buffer
+  textTransform?: (ctx: BuildCtx, src: string) => string
   markdownPlugins?: (ctx: BuildCtx) => PluggableList
   htmlPlugins?: (ctx: BuildCtx) => PluggableList
-  externalResources?: (ctx: BuildCtx) => Partial<StaticResources>
+  externalResources?: ExternalResourcesFn
 }
 
 export type QuartzFilterPlugin<Options extends OptionType = undefined> = (
@@ -29,7 +30,13 @@ export type QuartzFilterPlugin<Options extends OptionType = undefined> = (
 ) => QuartzFilterPluginInstance
 export type QuartzFilterPluginInstance = {
   name: string
-  shouldPublish(ctx: BuildCtx, content: HtmlContent): boolean
+  shouldPublish(ctx: BuildCtx, content: ProcessedContent): boolean
+}
+
+export type ChangeEvent = {
+  type: "add" | "change" | "delete"
+  path: FilePath
+  file?: VFile
 }
 
 export type QuartzEmitterPlugin<Options extends OptionType = undefined> = (
@@ -37,11 +44,36 @@ export type QuartzEmitterPlugin<Options extends OptionType = undefined> = (
 ) => QuartzEmitterPluginInstance
 export type QuartzEmitterPluginInstance = {
   name: string
-  emit(ctx: BuildCtx, content: HtmlContent[], resources: StaticResources): Promise<FilePath[]>
-  getQuartzComponents(ctx: BuildCtx): QuartzComponent[]
-  getDependencyGraph?(
+  emit: (
     ctx: BuildCtx,
-    content: HtmlContent[],
+    content: ProcessedContent[],
     resources: StaticResources,
-  ): Promise<DepGraph<FilePath>>
+  ) => Promise<FilePath[]> | AsyncGenerator<FilePath>
+  partialEmit?: (
+    ctx: BuildCtx,
+    content: ProcessedContent[],
+    resources: StaticResources,
+    changeEvents: ChangeEvent[],
+  ) => Promise<FilePath[]> | AsyncGenerator<FilePath> | null
+  /**
+   * Returns the components (if any) that are used in rendering the page.
+   * This helps Quartz optimize the page by only including necessary resources
+   * for components that are actually used.
+   */
+  getQuartzComponents?: (ctx: BuildCtx) => QuartzComponent[]
+  externalResources?: ExternalResourcesFn
+}
+
+export interface Notes {
+  container: HTMLElement
+  main: HTMLElement // the scrollable div
+  column: HTMLElement // the actual container for all stacks
+
+  active: boolean
+  destroy(): void
+  getChain(): string
+
+  open(): Promise<boolean>
+  add(href: URL): Promise<boolean>
+  navigate(url: URL): Promise<boolean>
 }

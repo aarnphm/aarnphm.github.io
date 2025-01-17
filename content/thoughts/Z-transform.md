@@ -1,12 +1,12 @@
 ---
+date: "2024-12-18"
+description: think of Laplace transform, but for sampled data
 id: Z-transform
+modified: 2025-10-29 02:15:39 GMT-04:00
 tags:
   - math
   - sfwr4aa4
   - sfwr3dx4
-date: "2024-12-18"
-description: think of Laplace transform, but for sampled data
-modified: 2024-12-18 05:37:38 GMT-05:00
 title: Z-transform
 ---
 
@@ -155,10 +155,9 @@ thus, $g(kT) = 2^k-1$
 > \lim_{k \to \infty} x(k) = \lim_{z \to 1} (z-1) X(z)
 > $$
 
-
 ## [[thoughts/Root locus|root locus]] on z-plane
 
 - derive open loop function $K \bar{GH}$
 - Factor numerator and denominator to get open loop zeros and poles
 - Plot roots of $1+K \bar{GH}=0$ in z-plane as k varies
-$\bar{GH(z)} = \frac{N(z)}{D(z)}$
+  $\bar{GH(z)} = \frac{N(z)}{D(z)}$

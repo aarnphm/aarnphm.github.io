@@ -1,10 +1,11 @@
 ---
+date: "2024-10-28"
 id: midterm
+modified: 2025-10-29 02:16:09 GMT-04:00
 tags:
   - sfwr4ml3
   - ml
-date: "2024-10-28"
-modified: 2024-12-14 05:14:15 GMT-05:00
+  - linalg
 title: Supervised machine learning
 ---
 
@@ -107,7 +108,7 @@ Conditional distribution of $X$ given $Y$: $P(X|Y) = \frac{P(X,Y)}{P(Y)}$
 
 Bayes rule: $P(X|Y) = \frac{P(Y|X)P(X)}{P(Y)}$
 
-Chain rule: 
+Chain rule:
 
 _for two events:_
 
@@ -116,6 +117,7 @@ P(A, B) = P(B \mid A)P(A)
 $$
 
 _generalised:_
+
 $$
 \begin{aligned}
 &P(X_1, X_2, \ldots , X_k) \\

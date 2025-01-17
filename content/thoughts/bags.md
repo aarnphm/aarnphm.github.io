@@ -1,11 +1,11 @@
 ---
-id: bags
-tags:
-  - math
 date: "2024-12-13"
 description: also known as multiset.
-modified: 2024-12-14 06:03:46 GMT-05:00
+id: bags
+modified: 2025-10-29 02:15:41 GMT-04:00
 noindex: true
+tags:
+  - math
 title: bags
 ---
 

@@ -1,9 +1,9 @@
 ---
+date: "2024-10-28"
 id: Cholesky decomposition
+modified: 2025-10-29 02:15:18 GMT-04:00
 tags:
   - math
-date: "2024-10-28"
-modified: "2024-10-28"
 title: Cholesky decomposition
 ---
 

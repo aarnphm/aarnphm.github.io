@@ -2,18 +2,18 @@
   "showFrontmatter": true,
   "alwaysUpdateLinks": true,
   "showUnsupportedFiles": true,
-  "spellcheck": true,
+  "spellcheck": false,
   "vimMode": true,
   "promptDelete": false,
   "pdfExportSettings": {
     "includeName": false,
     "pageSize": "A4",
     "landscape": false,
-    "margin": "1",
+    "margin": "0",
     "downscalePercent": 100
   },
   "tabSize": 2,
-  "newFileLocation": "folder",
+  "newFileLocation": "current",
   "newLinkFormat": "absolute",
   "newFileFolderPath": "thoughts",
   "attachmentFolderPath": "thoughts/images",
@@ -22,15 +22,19 @@
   "strictLineBreaks": true,
   "showInlineTitle": false,
   "rightToLeft": false,
-  "propertiesInDocument": "visible",
+  "propertiesInDocument": "source",
   "livePreview": false,
-  "showRibbon": false,
   "foldHeading": true,
   "foldIndent": true,
   "showIndentGuide": true,
   "autoPairBrackets": false,
   "smartIndentList": true,
   "defaultViewMode": "source",
-  "autoPairMarkdown": false,
-  "focusNewTab": false
+  "autoPairMarkdown": true,
+  "focusNewTab": false,
+  "userIgnoreFilters": [
+    "thoughts/scripts/",
+    "thoughts/atelier with friends/images/"
+  ],
+  "uriCallbacks": true
 }

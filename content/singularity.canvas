@@ -1,0 +1,19 @@
+{
+	"nodes":[
+		{"id":"f9cca7281bc244de","x":-1480,"y":-670,"width":250,"height":60,"type":"text","text":"How do we achieve hyperintelligence system?"},
+		{"id":"d0095be0e9ba6523","x":-1052,"y":-803,"width":250,"height":60,"type":"text","text":"modality"},
+		{"id":"3425ea09010406e2","x":-1102,"y":-431,"width":250,"height":60,"type":"text","text":"energy"},
+		{"id":"1a72eebc7d9a411f","x":-1071,"y":11,"width":400,"height":400,"type":"file","file":"thoughts/Kardashev scale.md"},
+		{"id":"946613288e683ff8","x":-1071,"y":-580,"width":250,"height":60,"type":"text","text":"self-recursion"},
+		{"id":"03e035c76b402cea","x":-180,"y":-1011,"width":700,"height":640,"color":"2","type":"file","file":"thoughts/LLMs.md"},
+		{"id":"43eece97dd7c7711","x":-131,"y":-1700,"width":603,"height":395,"type":"file","file":"thoughts/Autoregressive models.md"}
+	],
+	"edges":[
+		{"id":"9419e0b62a6ea25a","fromNode":"f9cca7281bc244de","fromSide":"right","toNode":"d0095be0e9ba6523","toSide":"left"},
+		{"id":"19b75ce86a0fc570","fromNode":"f9cca7281bc244de","fromSide":"right","toNode":"946613288e683ff8","toSide":"left"},
+		{"id":"2ae9af02e378d291","fromNode":"f9cca7281bc244de","fromSide":"right","toNode":"3425ea09010406e2","toSide":"left"},
+		{"id":"f7d15e7934cc372b","fromNode":"3425ea09010406e2","fromSide":"bottom","toNode":"1a72eebc7d9a411f","toSide":"top","label":"at least type I civilization"},
+		{"id":"e87a77bc73f56dc4","fromNode":"43eece97dd7c7711","fromSide":"bottom","toNode":"03e035c76b402cea","toSide":"top","label":"autoregressive objectives"},
+		{"id":"1c25d22cce7afce9","fromNode":"d0095be0e9ba6523","fromSide":"right","toNode":"03e035c76b402cea","toSide":"left","label":"text"}
+	]
+}

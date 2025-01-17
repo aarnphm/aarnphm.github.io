@@ -7,15 +7,8 @@
 }
 
 .evergreen-content {
-  margin-bottom: calc(var(--kern) * 10);
   position: sticky;
-  top: calc(var(--kern) * 3);
-}
-
-.note-title {
-  @include tinyFonts;
-  font-size: 18px;
-  text-transform: lowercase;
+  top: calc(var(--kern) * 4);
 }
 
 .note-tags {
@@ -39,7 +32,7 @@
 a[data-list] {
   &.perma {
     & > .description {
-      font-size: 14px;
+      font-size: 11.1px;
     }
 
     &[data-tag] {
@@ -51,6 +44,10 @@ a[data-list] {
       }
     }
   }
+}
+
+.permanent-grid {
+  margin-top: 1em;
 }
 
 .perma,
@@ -74,6 +71,11 @@ a[data-list] {
   text-decoration: none;
   font-weight: $normalWeight;
   color: inherit !important;
+
+  &:hover {
+    text-decoration: underline;
+    background: inherit;
+  }
 }
 
 .permanent-grid {

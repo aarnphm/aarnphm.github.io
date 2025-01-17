@@ -1,9 +1,9 @@
 ---
+date: "2024-11-27"
 id: Helmholtz decomposition
+modified: 2025-10-29 02:15:24 GMT-04:00
 tags:
   - math
-date: "2024-11-27"
-modified: "2024-11-27"
 title: Helmholtz decomposition
 ---
 

@@ -1,17 +1,17 @@
 ---
+date: "2024-11-11"
+description: tidbits from PyTorch
 id: PyTorch
+modified: 2025-10-29 02:15:33 GMT-04:00
 tags:
   - ml
   - framework
-date: "2024-11-11"
-description: tidbits from PyTorch
-modified: 2024-12-14 02:41:03 GMT-05:00
 title: PyTorch
 ---
 
 see also: [unstable docs](https://pytorch.org/docs/main/)
 
-## MultiMarginLoss
+## `MultiMarginLoss`
 
 Creates a criterion that optimizes a multi-class classification hinge loss (margin-based loss) between input $x$
 (a 2D mini-batch `Tensor`) and output $y$ (which is a 1D tensor of target class indices, $0 \le y \le \text{x}.\text{size}(1) -1$):
@@ -24,7 +24,7 @@ $$
 \because i \in \{0, \ldots x.\text{size}(0)-1\} \text{ and } i \neq y
 $$
 
-## SGD
+## `SGD`
 
 [[thoughts/Nesterov momentum]] is based on [On the importance of initialization and momentum in deep learning](http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf)
 
@@ -61,3 +61,41 @@ $$
 \end{algorithmic}
 \end{algorithm}
 ```
+
+## [[thoughts/knowledge distillation]]
+
+examples on CIFAR
+
+![[thoughts/distill.py]]
+
+### Cosine loss minimisation run
+
+assumption: the teacher network will have a better internal [[thoughts/representations]] comparing to student's weights. Thus we need to artificially push the students' weight to "mimic" the teachers' weights.
+
+We will apply `CosineEmbeddingLoss` such that students' internal representation would be a permutation of the teacher's:
+
+$$
+\text{loss}(x,y) = \begin{cases}
+1 - \cos(x_1, x_2), & \text{if } y = 1 \\
+\max(0, \cos(x_1, x_2) - \text{margin}), & \text{if } y = -1
+\end{cases}
+$$
+
+The updated loops as follow [^internal]:
+
+[^internal]: Naturally, we have to update the hidden representation:
+
+    ```python
+    sample_input = torch.randn(128, 3, 32, 32).to(device) # Batch size: 128, Filters: 3, Image size: 32x32
+    logits, hidden_representation = modified_nn_light(sample_input)
+
+    print("Student logits shape:", logits.shape) # batch_size x total_classes
+    print("Student hidden representation shape:", hidden_representation.shape) # batch_size x hidden_representation_size
+
+    logits, hidden_representation = modified_nn_deep(sample_input)
+
+    print("Teacher logits shape:", logits.shape) # batch_size x total_classes
+    print("Teacher hidden representation shape:", hidden_representation.shape) # batch_size x hidden_representation_size
+    ```
+
+![[thoughts/modified_deep_cosine.py]]

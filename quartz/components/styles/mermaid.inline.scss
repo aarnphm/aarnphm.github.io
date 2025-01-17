@@ -2,63 +2,38 @@
 
 #mermaid-container {
   position: fixed;
-  z-index: 1000;
+  contain: layout;
+  z-index: 999;
   left: 0;
   top: 0;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
   display: none;
+  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.5);
 
   &.active {
-    display: flex;
-  }
-
-  & > .mermaid-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    backdrop-filter: blur(4px);
+    display: inline-block;
   }
 
   & > #mermaid-space {
-    display: grid;
-    width: 90%;
-    margin: 5rem auto;
-    z-index: 1001;
-    background: var(--light);
-    box-shadow:
-      0 14px 50px rgba(27, 33, 48, 0.12),
-      0 10px 30px rgba(27, 33, 48, 0.16);
+    border: 1px solid var(--lightgray);
+    background-color: var(--light);
+    border-radius: 5px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 80vh;
+    width: 80vw;
     overflow: hidden;
-    position: relative;
-
-    & > .mermaid-header {
-      display: flex;
-      justify-content: flex-end;
-      padding: 1rem;
-      border-bottom: 1px solid var(--lightgray);
-      background: var(--light);
-      z-index: 2;
-      max-height: 32px;
-
-      & > .close-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        padding: 0;
-
-        @include closeButton;
-      }
-    }
 
     & > .mermaid-content {
       padding: 2rem;
       position: relative;
       transform-origin: 0 0;
+      transition: transform 0.1s ease;
       overflow: visible;
       min-height: 200px;
       min-width: 200px;
@@ -101,11 +76,7 @@
         cursor: pointer;
         font-size: 16px;
         font-family: var(--bodyFont);
-
-        & > svg {
-          fill: var(--light);
-          filter: contrast(0.3);
-        }
+        transition: all 0.2s ease;
 
         &:hover {
           background: var(--lightgray);
@@ -113,6 +84,13 @@
 
         &:active {
           transform: translateY(1px);
+        }
+
+        // Style the reset button differently
+        &:nth-child(2) {
+          width: auto;
+          padding: 0 12px;
+          font-size: 14px;
         }
       }
     }

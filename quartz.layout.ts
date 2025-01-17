@@ -5,12 +5,20 @@ import * as Component from "./quartz/components"
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [
-    Component.PageTitle(),
-    Component.Breadcrumbs({ rootName: "~", style: "unique", spacerSymbol: "/" }),
-    Component.Keybind(),
+    Component.Breadcrumbs({
+      rootName: "~",
+      spacerSymbol: "/",
+      showCurrentPage: true,
+      trailingWindow: 1,
+    }),
     Component.StackedNotes(),
-    Component.Search(),
     Component.Image(),
+    Component.Graph(),
+    Component.Palette(),
+    Component.Keybind(),
+    Component.Search(),
+    Component.Darkmode(),
+    Component.CodeCopy(),
   ],
   afterBody: [Component.Recommendations(), Component.Backlinks()],
   footer: Component.Footer({
@@ -18,7 +26,6 @@ export const sharedPageComponents: SharedLayout = {
     links: {
       github: "https://github.com/aarnphm",
       twitter: "https://twitter.com/aarnphm_",
-      bsky: "https://bsky.app/profile/aarnphm.xyz",
       feed: "/feed.xml",
     },
   }),
@@ -30,22 +37,21 @@ export const defaultContentPageLayout: PageLayout = {
     Component.ArticleTitle(),
     Component.Byline(Component.TagList(), Component.ContentMeta()),
   ],
-  sidebar: [
-    Component.DesktopOnly(Component.TableOfContents()),
-    Component.Reader(),
-    Component.DesktopOnly(Component.Toolbar()),
-  ],
+  sidebar: [Component.DesktopOnly(Component.TableOfContents()), Component.Reader()],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [
-    Component.PageTitle(),
-    Component.Breadcrumbs({ rootName: "~", style: "full", spacerSymbol: "/" }),
-    Component.Keybind(),
+    Component.Breadcrumbs({ rootName: "~", spacerSymbol: "/", trailingWindow: 1 }),
     Component.StackedNotes(),
-    Component.Search(),
     Component.Image(),
+    Component.Graph(),
+    Component.Palette(),
+    Component.Keybind(),
+    Component.Search(),
+    Component.Darkmode(),
+    Component.CodeCopy(),
   ],
   sidebar: [],
 }

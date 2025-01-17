@@ -1,10 +1,11 @@
 ---
+date: "2023-11-09"
 id: Epicurus
+modified: 2025-10-29 02:16:16 GMT-04:00
 tags:
   - philosophy
   - philos1aa3
 title: Epicurus
-date: 2023-11-09
 ---
 
 [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Socrates|Socrates]] ideas:

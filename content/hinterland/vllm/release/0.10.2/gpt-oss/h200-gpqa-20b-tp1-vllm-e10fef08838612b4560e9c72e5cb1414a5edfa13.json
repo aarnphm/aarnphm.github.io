@@ -1,0 +1,12 @@
+[
+  {
+    "eval_name": "gpqa",
+    "model_name": "openai__gpt-oss-20b-low_temp1.0_20250909_000517",
+    "metric": 0.547979797979798
+  },
+  {
+    "eval_name": "gpqa",
+    "model_name": "openai__gpt-oss-20b-medium_temp1.0_20250909_001121",
+    "metric": 0.6603535353535354
+  }
+]

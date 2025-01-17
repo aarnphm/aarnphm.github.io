@@ -1,10 +1,11 @@
 ---
-id: Aristotle
-tags:
-  - philos1aa3
 date: "2023-09-11"
 description: and aqua be aqua.
-modified: 2025-01-03 20:47:36 GMT-05:00
+id: Aristotle
+modified: 2025-10-29 02:15:16 GMT-04:00
+tags:
+  - philos1aa3
+  - philosophy
 title: Aristotle
 ---
 

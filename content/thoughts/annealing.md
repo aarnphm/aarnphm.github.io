@@ -1,10 +1,10 @@
 ---
-id: annealing
-tags:
-  - math
 date: "2024-12-23"
 description: a numerical optimization technique
-modified: 2024-12-23 17:58:11 GMT-05:00
+id: annealing
+modified: 2025-10-29 02:15:40 GMT-04:00
+tags:
+  - math
 title: annealing
 ---
 

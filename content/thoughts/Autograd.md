@@ -1,15 +1,21 @@
 ---
+date: "2021-10-10"
+description: and XLA. also known as auto differentiation.
 id: Autograd
+modified: 2025-10-29 02:15:16 GMT-04:00
 tags:
   - seed
   - ml
-date: "2021-10-10"
 title: Autograd
 ---
 
-Auto differentiation and [[thoughts/XLA|XLA]]
+see also: [[thoughts/XLA|XLA]]
 
-$f(x) = e^{2x} - x^3 \rightarrow \frac{df}{dx} = 2e^{2x} - 3x^2$ <- manual diff
+$$
+f(x) = e^{2x} - x^3 \rightarrow \frac{df}{dx} = 2e^{2x} - 3x^2
+$$
+
+_This is manual differentiation_
 
 Others:
 
@@ -29,4 +35,4 @@ Forward mode
 Reverse mode
 
 - store values and dependencies of intermediate variables in memory
-- After forward pass, compute partial diff output wrt the intermediate adjoint $\bar{v}$
+- After forward pass, compute partial diff output with regards to the intermediate adjoint $\bar{v}$

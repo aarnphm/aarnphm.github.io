@@ -1,8 +1,9 @@
 ---
+date: "2024-01-24"
 id: Defining Internal Alignment and Job Analysis
+modified: 2025-10-29 02:16:11 GMT-04:00
 tags:
   - commerce4be3
-date: "2024-01-24"
 title: Defining Internal Alignment & Job Analysis
 ---
 

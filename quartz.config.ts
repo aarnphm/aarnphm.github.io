@@ -1,8 +1,89 @@
 import { GlobalConfiguration, QuartzConfig } from "./quartz/cfg"
 import { byDateAndAlphabetical } from "./quartz/components/PageList"
 import * as Plugin from "./quartz/plugins"
-import * as Component from "./quartz/components/"
+import * as Component from "./quartz/components"
 import { QuartzPluginData } from "./quartz/plugins/vfile"
+
+const model = "onnx-community/embeddinggemma-300m-ONNX" // onnx-community/Qwen3-Embedding-0.6B-ONNX, intfloat/multilingual-e5-large
+
+const configuration: GlobalConfiguration = {
+  pageTitle: "Aaron's notes",
+  enableSPA: true,
+  enablePopovers: true,
+  analytics: {
+    provider: "plausible",
+  },
+  locale: "fr-FR",
+  baseUrl: "aarnphm.xyz",
+  ignorePatterns: [
+    "private",
+    "templates",
+    ".obsidian",
+    "**.adoc",
+    "**.zip",
+    "**.epub",
+    "**.docx",
+    "**.lvbitx",
+    "**.pyc",
+    "**.slx",
+    "**.so",
+    "**/*400232791*",
+    "__pycache__",
+    ".mypy_cache",
+    ".ruff_cache",
+    "**.ignore.pdf",
+    "capstone",
+    "**/.conform*",
+    "**/target",
+    "**/data",
+  ],
+  defaultDateType: "created",
+  theme: {
+    cdnCaching: true,
+    fontOrigin: "local",
+    typography: {
+      title: "Parclo Serif",
+      header: "Parclo Serif",
+      body: "PP Neue Montreal",
+      code: "Berkeley Mono",
+    },
+    colors: {
+      lightMode: {
+        light: "rgb(255, 252, 240)",
+        lightgray: "rgb(230, 228, 217)",
+        gray: "rgb(183, 181, 172)",
+        darkgray: "rgb(111, 110, 105)",
+        dark: "rgb(16, 15, 15)",
+        secondary: "rgb(205, 213, 151)",
+        tertiary: "rgb(252, 193, 146)",
+        highlight: "rgb(218, 216, 206)",
+        textHighlight: "rgb(241, 214, 126)",
+      },
+      darkMode: {
+        light: "rgb(16, 15, 15)",
+        lightgray: "rgb(40, 39, 38)",
+        gray: "rgb(87, 86, 83)",
+        darkgray: "rgb(135, 133, 128)",
+        dark: "rgb(206, 205, 195)",
+        secondary: "rgb(205, 213, 151)",
+        tertiary: "rgb(252, 193, 146)",
+        highlight: "rgb(135, 154, 57)",
+        textHighlight: "rgb(241, 214, 126)",
+      },
+    },
+  },
+  semanticSearch: {
+    enable: true,
+    model,
+    aot: true,
+    dims: 768,
+    dtype: "fp32",
+    shardSizeRows: 1024,
+    hnsw: { M: 16, efConstruction: 200 },
+    chunking: { chunkSize: 256, chunkOverlap: 64 },
+    vllm: { concurrency: 16, batchSize: 128 },
+  },
+}
 
 /**
  * Quartz 4.0 Configuration
@@ -10,73 +91,17 @@ import { QuartzPluginData } from "./quartz/plugins/vfile"
  * See https://quartz.jzhao.xyz/configuration for more information.
  */
 const config: QuartzConfig = {
-  configuration: {
-    pageTitle: "Aaron's notes",
-    enableSPA: true,
-    enablePopovers: true,
-    generateSocialImages: true,
-    analytics: {
-      provider: "plausible",
-    },
-    locale: "fr-FR",
-    baseUrl: "aarnphm.xyz",
-    ignorePatterns: [
-      "private",
-      "templates",
-      ".obsidian",
-      "**.adoc",
-      "**.zip",
-      "**.lvbitx",
-      "**.so",
-      "400232791",
-      "__pycache__",
-    ],
-    defaultDateType: "created",
-    theme: {
-      cdnCaching: true,
-      fontOrigin: "googleFonts",
-      typography: {
-        header: "EB Garamond",
-        body: "EB Garamond",
-        code: "JetBrains Mono",
-      },
-      colors: {
-        lightMode: {
-          light: "#fffaf3",
-          lightgray: "#f2e9e1",
-          gray: "#9893a5",
-          darkgray: "#797593",
-          dark: "#575279",
-          secondary: "#d7827e",
-          tertiary: "#b4637a",
-          highlight: "rgba(143, 159, 169, 0.15)",
-          textHighlight: "rgba(246, 193, 119, 0.28)",
-        },
-        darkMode: {
-          light: "#1f1d30",
-          lightgray: "#26233a",
-          gray: "#6e6a86",
-          darkgray: "#908caa",
-          dark: "#e0def4",
-          secondary: "#ebbcba",
-          tertiary: "#eb6f92",
-          highlight: "rgba(143, 159, 169, 0.15)",
-          textHighlight: "#b3aa0288",
-        },
-      },
-    },
-  },
+  configuration,
   plugins: {
     transformers: [
       Plugin.FrontMatter(),
       Plugin.CreatedModifiedDate({ priority: ["frontmatter", "filesystem"] }),
       Plugin.Aarnphm(),
       Plugin.Pseudocode(),
-      Plugin.TikzJax(),
+      Plugin.TikzJax({ showConsole: false }),
       Plugin.TelescopicText(),
-      // FIXME: implement this
-      // Plugin.Recipe(),
-      // Plugin.Embeddings(),
+      // Convert code-file transcludes to code blocks before highlighting
+      Plugin.CodeViewer(),
       Plugin.Twitter(),
       Plugin.SyntaxHighlighting({
         theme: {
@@ -85,11 +110,9 @@ const config: QuartzConfig = {
         },
         keepBackground: true,
       }),
-      Plugin.Citations({
-        bibliographyFile: "./content/References.bib",
-        linkCitations: true,
-      }),
-      Plugin.ObsidianFlavoredMarkdown(),
+      Plugin.Citations({ bibliography: "./content/References.bib" }),
+      Plugin.ObsidianBases(),
+      Plugin.ObsidianFlavoredMarkdown({ parseTags: false }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",
@@ -106,21 +129,42 @@ const config: QuartzConfig = {
           "\\argmax": "\\mathop{\\operatorname{arg\\,max}}\\limits",
           "\\upgamma": "\\mathit{\\gamma}",
           "\\upphi": "\\mathit{\\phi}",
+          "\\upeta": "\\mathit{\\eta}",
           "\\upbeta": "\\mathit{\\beta}",
           "\\upalpha": "\\mathit{\\alpha}",
           "\\uptheta": "\\mathit{\\theta}",
+          // KaTeX does not support tabular/multicolumn. Provide safe fallbacks.
+          // This macro drops alignment specifiers and yields only the cell content.
+          // IMPORTANT: when spanning >1 columns, add explicit '&'s in source rows.
+          "\\multicolumn": "#3",
+          // Text micro symbol compatibility
+          "\\textmu": "\\mu",
         },
-        katexOptions: { strict: false },
+        katexOptions: { strict: true, throwOnError: true },
       }),
-      Plugin.GitHub(),
+      Plugin.GitHub({
+        internalLinks: [
+          "livingalonealone.com",
+          "bentoml.com",
+          "vllm.ai",
+          "obsidian.md",
+          "neovim.io",
+        ],
+      }),
+      Plugin.Sidenotes(),
       Plugin.TableOfContents({ maxDepth: 5 }),
+      Plugin.LLM(),
+      Plugin.Slides(),
+      Plugin.Arena(),
+      Plugin.Stream(),
+      Plugin.Protected(),
     ],
-    filters: [Plugin.RemoveDrafts()],
+    filters: [Plugin.RemoveDrafts(), Plugin.RemovePrivate()],
     emitters: [
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
       Plugin.ContentPage(),
-      Plugin.LLM(),
+      Plugin.LLMText(),
       Plugin.FolderPage({
         pageBody: Component.FolderContent({
           sort: (a: QuartzPluginData, b: QuartzPluginData): number => {
@@ -131,36 +175,75 @@ const config: QuartzConfig = {
             // If one has folder tag and other doesn't, prioritize the one with folder tag
             if (aHasFolder && !bHasFolder) return -1
             else if (!aHasFolder && bHasFolder) return 1
-            else {
-              return byDateAndAlphabetical({ defaultDateType: "created" } as GlobalConfiguration)(
-                a,
-                b,
-              )
-            }
+            else return byDateAndAlphabetical(configuration)(a, b)
           },
           include: [
             ".pdf",
             ".py",
             ".go",
             ".c",
+            ".cpp",
             ".m",
+            ".rs",
+            ".lua",
             ".cu",
             ".java",
             ".sql",
             ".js",
             ".ipynb",
             ".json",
+            ".csv",
+            ".webp",
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".mp4",
+            ".lean",
+            ".svg",
           ],
           exclude: [/\.(ignore\.pdf)$/, /400232791/],
+          tags: [
+            "ml",
+            "interpretability",
+            "philosophy",
+            "serving",
+            "love",
+            "fiction",
+            "math",
+            "evergreen",
+          ],
+          lg: ["thoughts/mechanistic-interpretability", "thoughts/vllm"],
+          sm: [
+            "thoughts/love",
+            "thoughts/LLMs",
+            "thoughts/Connectionist-network",
+            "thoughts/Tractatus",
+            "thoughts/Transformers",
+            "thoughts/Camus",
+            "thoughts/Attention",
+            "thoughts/Philosophy-and-Nietzsche",
+            "thoughts/ethics",
+            "thoughts/Existentialism",
+            "thoughts/reductionism",
+            "thoughts/GPU-programming",
+          ],
         }),
       }),
       Plugin.TagPage(),
       Plugin.NotebookViewer(),
-      // Plugin.InfinitePoemPage(),
-      Plugin.ContentIndex({ rssLimit: 40 }),
+      Plugin.ContentIndex({ atomLimit: 50 }),
+      Plugin.SemanticIndex(configuration.semanticSearch!),
       Plugin.Assets(),
       Plugin.Static(),
+      Plugin.Favicon(),
       Plugin.NotFoundPage(),
+      Plugin.CustomOgImages(),
+      Plugin.PressKit(),
+      Plugin.SlidesPage(),
+      Plugin.ArenaPage(),
+      Plugin.BasePage(),
+      Plugin.StreamPage(),
+      Plugin.StreamIndex(),
     ],
   },
 }

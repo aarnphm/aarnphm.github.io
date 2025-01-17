@@ -17,12 +17,13 @@
 // Some deviation: separator=" ", shouldExpandOnMouseOver=false
 import { QuartzTransformerPlugin } from "../types"
 import { Root, Element } from "hast"
+import type { RootContent, Text } from "hast"
 import { Root as MdastRoot, Code } from "mdast"
 import { toHtml } from "hast-util-to-html"
 import { SKIP, visit } from "unist-util-visit"
 import { toString } from "hast-util-to-string"
 import { h, s } from "hastscript"
-import { wikilinkRegex } from "./ofm"
+import { createWikilinkRegex } from "../../util/wikilinks"
 import { findAndReplace as hastFindReplace } from "hast-util-find-and-replace"
 import isAbsoluteUrl from "is-absolute-url"
 import { FullSlug, simplifySlug, splitAnchor, stripSlashes, transformLink } from "../../util/path"
@@ -32,7 +33,7 @@ import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 // @ts-ignore
 import script from "../../components/scripts/telescopic.inline.ts"
 import content from "../../components/styles/telescopic.inline.scss"
-import { svgOptions } from "../../components/renderPage"
+import { svgOptions } from "../../components/svg"
 
 interface Line {
   og: string // the original string to replace
@@ -69,6 +70,57 @@ interface Config {
   shouldExpandOnMouseOver?: boolean
 }
 
+const createEmptyTextNode = (): Text => ({ type: "text", value: "" })
+const wikilinkRegex = createWikilinkRegex()
+
+function applyInlineFormatting(value: string): string {
+  if (!value) {
+    return value
+  }
+
+  let formatted = value
+
+  // Normalize hard and soft line breaks
+  formatted = formatted.replace(/\\n/g, "<br />")
+  formatted = formatted.replace(/\\(?=\s|$)/g, "<br />")
+  formatted = formatted.replace(/\n\s*\n\s*\n/g, "<hr />")
+  formatted = formatted.replace(/\n\s*\n/g, "<hr />")
+  formatted = formatted.replace(/\r?\n/g, "<br />")
+  formatted = formatted.replace(/<br\s*\/?>/gi, "<br />")
+  formatted = formatted.replace(/&softbreak;/gi, "<wbr />")
+  formatted = formatted.replace(/<softbreak\s*\/?>/gi, "<wbr />")
+
+  // Bold / strong emphasis (**text** or __text__)
+  formatted = formatted.replace(/(?<!\\)\*\*([\s\S]+?)\*\*/g, "<strong>$1</strong>")
+  formatted = formatted.replace(/(?<!\\)__([\s\S]+?)__/g, "<strong>$1</strong>")
+
+  // Italic emphasis (*text* or _text_)
+  formatted = formatted.replace(/(?<!\\)\*(?!\*)([^*\n]+?)\*(?!\*)/g, "<em>$1</em>")
+  formatted = formatted.replace(/(?<!\\)_(?!_)([^_\n]+?)_(?!_)/g, "<em>$1</em>")
+
+  // Strikethrough
+  formatted = formatted.replace(/(?<!\\)~~([\s\S]+?)~~/g, "<del>$1</del>")
+
+  // Restore escaped characters that should remain literal
+  formatted = formatted.replace(/\\\*/g, "*")
+  formatted = formatted.replace(/\\_/g, "_")
+  formatted = formatted.replace(/\\~/g, "~")
+  formatted = formatted.replace(/\\\\/g, "\\")
+
+  return formatted
+}
+
+function inlineFragmentToNodes(value: string): RootContent[] {
+  if (!value) {
+    return []
+  }
+
+  const formatted = applyInlineFormatting(value)
+  const fragment = fromHtmlIsomorphic(formatted, { fragment: true }) as Root
+  const children = (fragment.children ?? []) as RootContent[]
+  return children
+}
+
 /*****************/
 /* PARSING LOGIC */
 /*****************/
@@ -94,6 +146,7 @@ function parseMarkdown(mdContent: string): TelescopicOutput {
   // you are moving onto the next line.
   const firstNonEmptyLine = lines.find((l) => l.trim().length > 0)
   const defaultDepth =
+    // @ts-ignore
     firstNonEmptyLine?.match(`^\\s*(${RegexEscapedBulletSeparators.join("|")})`)?.[0]?.length - 1 ||
     0
   for (const line of lines) {
@@ -177,12 +230,9 @@ function mdToContent(mdContent: string, separator: string = " "): Content {
 }
 
 function contentToHast(content: Content, opts: Config) {
-  const hastFromHtmlFragment = (value: string): Element =>
-    fromHtmlIsomorphic(value, { fragment: true }) as unknown as Element
-
   function processContent(line: Content) {
     let lastIndex = 0
-    const nodes = []
+    const nodes: RootContent[] = []
     let lineText = line.text
 
     for (let i = 0; i < line.replacements.length; i++) {
@@ -193,17 +243,27 @@ function contentToHast(content: Content, opts: Config) {
       lineText = after.join(replacement.og)
 
       // Add text before replacement
-      nodes.push(hastFromHtmlFragment(before))
+      nodes.push(...inlineFragmentToNodes(before))
 
       // Create telescopic node
+      const summaryChildren = inlineFragmentToNodes(replacement.og)
+      const expandedChildren = processContent({
+        text: replacement.new,
+        replacements: replacement.replacements,
+      })
+
       const detail: Element = h("span", { class: "details close" }, [
         // Original text
-        h("span", { class: "summary" }, [hastFromHtmlFragment(replacement.og)]),
+        h(
+          "span",
+          { class: "summary" },
+          summaryChildren.length ? summaryChildren : [createEmptyTextNode()],
+        ),
         // Expanded content
         h(
           "span",
           { class: "expanded" },
-          processContent({ text: replacement.new, replacements: replacement.replacements }),
+          expandedChildren.length ? expandedChildren : [createEmptyTextNode()],
         ),
       ])
 
@@ -214,31 +274,16 @@ function contentToHast(content: Content, opts: Config) {
     // Add remaining text
     // and a smoll refresh button
     if (lastIndex < lineText.length) {
-      nodes.push(hastFromHtmlFragment(lineText.slice(lastIndex)))
+      nodes.push(...inlineFragmentToNodes(lineText.slice(lastIndex)))
     }
 
     return nodes
   }
 
   // Helper to get fully expanded text
-  function getFullText(line: Content): string {
-    let text = line.text
-    for (const replacement of line.replacements) {
-      text = text.replace(replacement.og, replacement.new)
-      // Recursively expand nested replacements
-      const nestedContent = {
-        text: replacement.new,
-        replacements: replacement.replacements,
-      }
-      text = text.replace(replacement.new, getFullText(nestedContent))
-    }
-    return text
-  }
-
   return h(
     "div#telescope",
     { "data-expand": opts.shouldExpandOnMouseOver ? "hover" : "click" },
-    h("div", { id: "fulltext" }, fromHtmlIsomorphic(getFullText(content), { fragment: true })),
     processContent(content),
   )
 }
@@ -291,12 +336,15 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
             const alias = rawAlias?.slice(1).trim()
 
             let dest = fp + anchor
+            const ext: string = path.extname(dest).toLowerCase()
             if (isAbsoluteUrl(dest)) return { dest, alias: dest, dataSlug: dest }
 
-            dest = transformLink(file.data.slug!, dest, {
-              allSlugs: ctx.allSlugs,
-              strategy: "absolute",
-            })
+            if (!ext.includes("pdf")) {
+              dest = transformLink(file.data.slug!, dest, {
+                allSlugs: ctx.allSlugs,
+                strategy: "absolute",
+              })
+            }
 
             // url.resolve is considered legacy
             // WHATWG equivalent https://nodejs.dev/en/api/v18/url/#urlresolvefrom-to
@@ -312,58 +360,90 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
             return { dest, alias: alias ?? path.basename(fp), dataSlug: full }
           }
 
-          visit(tree, "element", (node, index, parent) => {
-            if (node.tagName === "pre" && (node.children[0] as Element).tagName === "code") {
-              const code = node.children[0] as Element
-              const classNames = (code.properties?.className ?? []) as string[]
-              if (classNames.includes("language-telescopic")) {
-                const replacements: FindAndReplaceList = [
-                  [
-                    wikilinkRegex,
-                    (match, ...link) => {
-                      const { dest, alias, dataSlug } = wikilinksReplace(match, ...link)
-
-                      return toHtml(h("a", { href: dest }, { type: "text", value: alias }))
-                    },
-                  ],
-                  [
-                    linkRegex,
-                    (_match, value, href) => {
-                      return toHtml(h("a", { href }, { type: "text", value }))
-                    },
-                  ],
-                ]
-                hastFindReplace(code, replacements)
-
-                const content = mdToContent(toString(code), opts.separator)
-                parent!.children.splice(
-                  index!,
-                  1,
-                  h(
-                    "div.telescopic-container",
-                    { id: code.properties.id },
-                    h(
-                      "span",
-                      { class: "replay", type: "button" },
-                      s(
-                        "svg",
-                        {
-                          ...svgOptions,
-                          height: 12,
-                          width: 12,
-                          fill: "var(--lightgray)",
-                          arialabelledby: "refetch",
-                          title: "click me to refresh the telescopic text",
-                        },
-                        s("use", { href: "#refetch-icon" }),
-                      ),
-                    ),
-                    contentToHast(content, opts),
-                  ),
-                )
-              }
+          const checkParsedCodeblock = ({ tagName, children }: Element): boolean => {
+            if (tagName !== "pre" || !Array.isArray(children) || children.length === 0) {
+              return false
             }
-          })
+
+            const [code] = children as Element[]
+            const { properties, tagName: codeTagName } = code
+            return (
+              codeTagName === "code" &&
+              Boolean(properties.className) &&
+              (properties.className as string[]).includes("language-telescopic")
+            )
+          }
+
+          visit(
+            tree,
+            (node) => checkParsedCodeblock(node as Element),
+            (node, index, parent) => {
+              const code = (node as Element).children[0] as Element
+
+              const replacements: FindAndReplaceList = [
+                [
+                  wikilinkRegex,
+                  (match, ...link) => {
+                    const { dest, alias } = wikilinksReplace(match, ...link)
+
+                    return toHtml(h("a", { href: dest }, { type: "text", value: alias }))
+                  },
+                ],
+                [
+                  linkRegex,
+                  (_match, value, href) => {
+                    return toHtml(h("a", { href }, { type: "text", value }))
+                  },
+                ],
+              ]
+              hastFindReplace(code, replacements)
+
+              const content = mdToContent(toString(code), opts.separator)
+              parent!.children.splice(
+                index!,
+                1,
+                h(
+                  "div.telescopic-container",
+                  { id: code.properties.id },
+                  h(
+                    "span",
+                    { class: "expand", type: "button" },
+                    s(
+                      "svg",
+                      {
+                        ...svgOptions,
+                        height: 12,
+                        width: 12,
+                        strokewidth: 1,
+                        stroke: "currentColor",
+                        fill: "var(--lightgray)",
+                        title: "expand all state",
+                        ariaLabel: "expand all state",
+                      },
+                      s("use", { href: "#plus-icon" }),
+                    ),
+                  ),
+                  h(
+                    "span",
+                    { class: "replay", type: "button" },
+                    s(
+                      "svg",
+                      {
+                        ...svgOptions,
+                        height: 12,
+                        width: 12,
+                        fill: "var(--lightgray)",
+                        title: "refresh telescopic text state",
+                        ariaLabel: "refresh telescopic text state",
+                      },
+                      s("use", { href: "#refetch-icon" }),
+                    ),
+                  ),
+                  contentToHast(content, opts),
+                ),
+              )
+            },
+          )
         },
       ]
     },

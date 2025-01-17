@@ -1,10 +1,10 @@
 ---
-id: Tensor field
-tags:
-  - math
 date: "2024-11-27"
 description: a gentle introduction into tensor analysis
-modified: "2024-11-27"
+id: Tensor field
+modified: 2025-10-29 02:15:36 GMT-04:00
+tags:
+  - math
 title: Tensor field
 ---
 
@@ -31,6 +31,10 @@ See also [@mcconnell2014applications;@schouten1951tensor]
 ## appendix
 
 _a few math definitions_
+
+### tensor product
+
+A tensor product of $V \otimes W$ of two [[thoughts/Vector space]] $V$ and $W$ over the same field is a vector space to which is associated a _bilinear map_ $V \times W \to V \otimes W$ that maps a pair $(v, w), v \in V, w \in W$ to an element of $V \otimes W$ denoted $v \otimes w$
 
 ### metric tensors
 

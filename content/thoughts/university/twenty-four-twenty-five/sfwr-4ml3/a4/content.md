@@ -1,10 +1,10 @@
 ---
-id: content
-tags:
-  - sfwr4ml3
 date: "2024-11-11"
 description: and image processing.
-modified: "2024-11-11"
+id: content
+modified: 2025-10-29 02:16:09 GMT-04:00
+tags:
+  - sfwr4ml3
 title: Application of Convolutional Neural Network
 ---
 

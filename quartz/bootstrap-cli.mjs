@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S node --no-deprecation
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
 import { handleBuild } from "./cli/handlers.js"
@@ -12,7 +12,7 @@ yargs(hideBin(process.argv))
   .command("build", "Build Quartz into a bundle of static HTML files", BuildArgv, async (argv) => {
     await handleBuild(argv)
   })
-  .showHelpOnFail(false)
+  .showHelpOnFail(true)
   .help()
   .strict()
   .demandCommand().argv

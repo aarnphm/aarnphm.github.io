@@ -1,11 +1,17 @@
 import { QuartzTransformerPlugin } from "../types"
-import { Root } from "mdast"
+import { Root, Code } from "mdast"
+import { Element, Text } from "hast"
 import { PluggableList } from "unified"
 import { visit } from "unist-util-visit"
-import { Root as HtmlRoot } from "hast"
+import { Root as HtmlRoot, Element as HtmlElement } from "hast"
 import svgGenerator from "../../util/signatures"
 import { h } from "hastscript"
+import { fromMarkdown } from "mdast-util-from-markdown"
 import content from "../../components/styles/signatures.scss"
+import { toHtml } from "hast-util-to-html"
+import { toHast } from "mdast-util-to-hast"
+// @ts-ignore
+import wcScript from "../../components/scripts/wc.inline.ts"
 
 export const banks = {
   a: {
@@ -313,25 +319,62 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
 
   return {
     name: "Aarnphm",
-    markdownPlugins(ctx) {
+    markdownPlugins({ cfg }) {
       const plugins: PluggableList = []
 
       if (opts.code.enable) {
         plugins.push(() => {
           return (tree: Root, file) => {
-            const cfg = ctx.cfg.configuration
-            const lang = (file.data.frontmatter?.lang ?? cfg.locale)?.split("-")[0] ?? "en"
+            const lang =
+              (file.data.frontmatter?.lang ?? cfg.configuration.locale)?.split("-")[0] ?? "en"
+
+            const createBaseElement = ({ lang, value }: Code): HtmlElement => ({
+              type: "element",
+              tagName: "p",
+              properties: { "data-codeblock": lang },
+              children: [{ type: "text", value }],
+            })
+
+            const transformPoetry = (target: HtmlElement, lang: string) => {
+              target.tagName = "pre"
+              target.properties.className = ["poetry"]
+              target.properties["data-language"] = lang
+              return toHtml(target, { allowDangerousHtml: true })
+            }
+
+            const transformQuotes = (target: HtmlElement) => {
+              const hast = (
+                toHast(fromMarkdown((target.children[0] as Text).value.replace(/--/g, "—")), {
+                  allowDangerousHtml: true,
+                }) as HtmlRoot
+              ).children[0] as HtmlElement
+              target = {
+                ...target,
+                ...hast,
+                properties: { className: ["quotes"] },
+              }
+              return toHtml(target, { allowDangerousHtml: true })
+            }
+
+            const transformSMS = (target: HtmlElement) => {
+              target.properties.className = ["text"]
+              return toHtml(target, { allowDangerousHtml: true })
+            }
+
+            const transformations: Record<"poetry" | "quotes" | "sms", (node: Code) => string> = {
+              poetry: (node: Code) =>
+                opts.code.poetry ? transformPoetry(createBaseElement(node), lang) : node.value,
+              quotes: (node: Code) =>
+                opts.code.quotes ? transformQuotes(createBaseElement(node)) : node.value,
+              sms: (node: Code) =>
+                opts.code.sms ? transformSMS(createBaseElement(node)) : node.value,
+            }
 
             visit(tree, "code", (node) => {
-              if (opts.code.poetry && node.lang === "poetry") {
+              const transform = transformations[node.lang as keyof typeof transformations]
+              if (transform) {
                 node.type = "html" as "code"
-                node.value = `<pre class="poetry" data-language="${lang}">${node.value}</pre>`
-              } else if (opts.code.quotes && node.lang === "quotes") {
-                node.type = "html" as "code"
-                node.value = `<p class="quotes" data-codeblock="${node.lang}">${node.value}</p>`
-              } else if (opts.code.sms && node.lang === "sms") {
-                node.type = "html" as "code"
-                node.value = `<p class="text" data-codeblock="${node.lang}">${node.value}</p>`
+                node.value = transform(node)
               }
             })
           }
@@ -345,28 +388,52 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
 
       if (opts.signature.enable) {
         plugins.push([
-          () => {
-            return (tree: HtmlRoot, file) => {
-              const text = file.data.frontmatter?.signature ?? opts.signature.text
-              visit(tree, "element", (node, index, parent) => {
-                if (
-                  (node.tagName === "p" || node.tagName === "div") &&
-                  node.children.length >= 1 &&
-                  node.children[0].type === "text" &&
-                  node.children[0].value === "[^sign]"
-                ) {
+          () => (tree: HtmlRoot, file) => {
+            const text = file.data.frontmatter?.signature ?? opts.signature.text
+            const filterNodes = ({ tagName, children }: Element) =>
+              (tagName === "p" || tagName === "div") && children.length >= 1
+            visit(
+              tree,
+              (node) => filterNodes(node as Element),
+              (node, index, parent) => {
+                const element = node as Element
+                const isLiteralSignToken =
+                  element.children[0]?.type === "text" &&
+                  (element.children[0] as Text).value.trim() === "[^sign]"
+
+                const containsSignFootnoteRef = (el: Element): boolean => {
+                  const scan = (n: any): boolean => {
+                    if (n && n.type === "element") {
+                      const e = n as Element
+                      if (e.tagName === "sup" && e.children?.length) {
+                        const first = e.children[0] as any
+                        if (first && first.type === "element" && first.tagName === "a") {
+                          const href = (first.properties?.href as string) || ""
+                          const id = (first.properties?.id as string) || ""
+                          if (href.includes("fn-sign") || id.includes("fnref-sign")) return true
+                        }
+                      }
+                      return (e.children || []).some(scan)
+                    }
+                    return false
+                  }
+                  return scan(el)
+                }
+
+                if (isLiteralSignToken || containsSignFootnoteRef(element)) {
                   parent!.children.splice(index!, 1, h(`p.${opts.signature.class}`, maps(text)))
                 }
-              })
-            }
+              },
+            )
           },
         ])
       }
 
       return plugins
     },
-    externalResources() {
+    externalResources: () => {
       return {
+        js: [{ loadTime: "afterDOMReady", contentType: "inline", script: wcScript }],
         css: [{ content, spaPreserve: true, inline: true }],
       }
     },

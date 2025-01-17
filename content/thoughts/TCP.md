@@ -1,9 +1,9 @@
 ---
-id: TCP
-tags:
-  - networking
 date: "2025-01-15"
 description: and internet protocol.
-modified: 2025-01-15 14:05:39 GMT-05:00
+id: TCP
+modified: 2025-10-29 02:15:35 GMT-04:00
+tags:
+  - networking
 title: TCP
 ---

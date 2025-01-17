@@ -8,19 +8,12 @@ ul.content-meta {
   flex-direction: column;
   cursor: pointer;
   margin: 0;
-  grid-column: 6/7;
+  grid-column: 6/8;
 
   padding-inline-start: 0;
   list-style: none;
   gap: 0.3rem;
-
-  font-family: "ITCGaramondStdLtCond", var(--bodyFont);
-  font-weight: $normalWeight;
-
-  @media all and ($desktop) {
-    font-size: 1.272em;
-    line-height: 1.272em;
-  }
+  font-weight: 300;
 
   @media all and ($tablet) {
     grid-column: 6/-4;
@@ -42,27 +35,6 @@ ul.content-meta {
 
   .clipboard-button {
     position: relative;
-
-    .copy-icon {
-      display: block;
-    }
-    .check-icon {
-      display: none;
-    }
-
-    &.check {
-      .check-icon {
-        display: block;
-      }
-      .copy-icon {
-        display: none;
-      }
-    }
-
-    &:hover {
-      opacity: 1;
-      transition: 0.2s;
-    }
   }
 }
 

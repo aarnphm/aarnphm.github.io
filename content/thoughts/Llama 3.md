@@ -1,24 +1,26 @@
 ---
-id: Llama 3
-tags:
-  - ml
 date: "2024-12-23"
 description: excerpt from the papers by Meta Research.
-modified: 2025-01-01 07:04:51 GMT-05:00
+id: Llama 3
+modified: 2025-10-29 02:15:27 GMT-04:00
+tags:
+  - ml
 title: The Llama 3  Herd of Model
 ---
 
-[[thoughts/papers/2407.21783v3.pdf|details]] step-by-step reproduction from training => scaling => inference [@grattafiori2024llama3herdmodels]
+resources: @grattafiori2024llama3herdmodels, [[thoughts/papers/2407.21783v3.pdf]]
+
+> step-by-step reproduction from training => scaling => inference
 
 pre-train 405B on 15.6T tokens with 8K context windows.
 
 The data mix: 50% of tokens corresponding to general knowledge, 25% mathematical and reasoning tokens, 17% code tokens, and 8% multilingual tokens.
 
-The also implement [[thoughts/annealing]] data to improve quality [@blakeney2024doesdatasparkjoy]
+@blakeney2024doesdatasparkjoy also implements [[thoughts/annealing]] data to improve quality
 
 They also run their own scaling law calculations, instead of using Chinchilla constant
 
-Architecture-wise, nothing special, pure [[thoughts/Transformers]] with [[thoughts/Attention#Group-Query Attention]] and FFN
+Architecture-wise, nothing special, but pure [[thoughts/Transformers]] with [[thoughts/Attention#Group-Query Attention]] and [[thoughts/FFN]]
 
 <table>
   <thead>
@@ -110,13 +112,46 @@ Training config:
   - RDMA over Converged Ethernet (RoCE) fabric based on the Arista 7800 and Minipack2 Open Compute Project4 OCP rack.
   - RoCE and Infiniband clusters
   - Topology:
-    - Three layers of Clos network
+    - Three layers of [[thoughts/Clos network]]
 - Training recipe: 4D parallelism with FSDP
   - tensor parallelism: split individual weights tensors to multiple chunks on different devices
   - pipeline parallelism: partition models _vertically_ into stages by layers so different devices can process in parallel different stages of the full model pipeline
   - context parallelism: divides input context into segments; reducing memory bottleneck for long sequence inputs
+  - data parallel iteration looks like this:
+
+    ```mermaid
+    sequenceDiagram
+        participant Loader as dataloader
+        participant Rank0 as gpu0 / rank0
+        participant Rank1 as gpu1 / rank1
+        participant Opt as optimizer state
+
+        Loader->>Rank0: slice minibatch B_t / 2
+        Loader->>Rank1: slice minibatch B_t / 2
+
+        Rank0->>Rank0: forward pass (B_t/2)
+        Rank1->>Rank1: forward pass (B_t/2)
+
+        Rank0->>Rank0: backward pass -> grad W0
+        Rank1->>Rank1: backward pass -> grad W1
+
+        par gradient allreduce
+            Rank0->>Rank1: allreduce(grad W)
+        and
+            Rank1->>Rank0: allreduce(grad W)
+        end
+
+        Opt->>Rank0: apply optimizer step (Adam/Lion)
+        Opt->>Rank1: apply optimizer step (Adam/Lion)
+
+        Rank0->>Loader: request next minibatch B_{t+1}
+        Rank1->>Loader: request next minibatch B_{t+1}
+    ```
+
   - FSDP: shards the model, optimizer, and gradients while implementing data parallelism (process data on multiple GPUs and synchronize per training steps)
-    - They also do some network-aware parallelism configuration, but essentially they do `all-gather`
-    - FSDP in Zero-2 mode, **not** Zero-3 mode. I.e., they keep the weight tensors materialized after the forward pass instead of re-gathering them in backward.
+    - forward pass: per layer `all_gather` the sharded parameters, compute activations, then optionally re-shard; backward pass: use `reduce_scatter` to shard gradients instead of a full allreduce.
+    - optimizer shards (Adam moments) remain distributed — each rank updates only its shard, so post-step weights are already partitioned, avoiding extra communication.
+    - They also do some network-aware parallelism configuration, but essentially FSDP replaces the dense DP allreduce with gather/scatter pairs tuned to NCCLX over Clos fabrics.
+    - FSDP in Zero-2 mode, **not** Zero-3 mode. i.e., they keep the weight tensors materialized after the forward pass instead of re-gathering them during backward, trading a bit of memory for lower communication latency.
 
 [^ref]

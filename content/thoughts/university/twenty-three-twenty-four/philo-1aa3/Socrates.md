@@ -1,9 +1,10 @@
 ---
+date: "2023-09-25"
 id: Socrates
+modified: 2025-10-29 02:16:17 GMT-04:00
 tags:
   - philosophy
   - philos1aa3
-date: "2023-09-25"
 title: Socrates
 ---
 

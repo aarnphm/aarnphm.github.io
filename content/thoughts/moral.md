@@ -1,9 +1,9 @@
 ---
+date: "2024-02-07"
 id: moral
+modified: 2025-10-29 02:15:50 GMT-04:00
 tags:
   - philosophy
-date: "2024-02-07"
-modified: 2024-12-08 06:28:19 GMT-05:00
 title: Moral
 ---
 

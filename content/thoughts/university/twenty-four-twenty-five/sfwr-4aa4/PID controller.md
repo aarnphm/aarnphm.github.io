@@ -1,9 +1,10 @@
 ---
+date: "2024-12-18"
+description: proportional-integral-derivative
 id: PID controller
+modified: 2025-10-29 02:16:05 GMT-04:00
 tags:
   - sfwr4aa4
-date: "2024-12-18"
-modified: 2024-12-18 03:14:17 GMT-05:00
 title: PID controller
 ---
 
@@ -61,7 +62,7 @@ $$
 
 % Plus and Minus signs
 \node at (0.2, 0.5) {$+$};
-\node at (0.2, -0.5) {$-$};
+\node at (0.2, -0.5) {$\textrm{-}$};
 
 \end{tikzpicture}
 \end{document}
@@ -111,7 +112,7 @@ _proportional-integral_
 
 % Plus and Minus signs
 \node at (0.2, 0.5) {$+$};
-\node at (0.2, -0.5) {$-$};
+\node at (0.2, -0.5) {$\textrm{-}$};
 
 \end{tikzpicture}
 \end{document}
@@ -160,7 +161,7 @@ $$
 
 % Plus and Minus signs
 \node at (0.2, 0.5) {$+$};
-\node at (0.2, -0.5) {$-$};
+\node at (0.2, -0.5) {$\textrm{-}$};
 
 \end{tikzpicture}
 \end{document}
@@ -200,4 +201,3 @@ $$
 | Derivative   | $u(k) = \frac{K_D}{T}[e(k) - e(k-1)]$ |
 
 > approximate of PID controller: $u(k) = K_P e(k) + K_I T \sum_{i=1}^{n} e(i) + \frac{K_D}{T}[e(k) - e(k-1)]$
-

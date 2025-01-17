@@ -1,9 +1,9 @@
 ---
+date: "2024-12-14"
 id: regularization
+modified: 2025-10-29 02:15:53 GMT-04:00
 tags:
   - ml
-date: "2024-12-14"
-modified: 2024-12-14 07:07:41 GMT-05:00
 title: regularization
 ---
 

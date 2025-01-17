@@ -1,17 +1,17 @@
 ---
-id: Kelly
-tags:
-  - friend
 date: "2024-12-31"
 description: and a view from a distant friend.
-modified: 2024-12-31 18:48:01 GMT-05:00
+id: Kelly
+modified: 2025-10-29 02:15:08 GMT-04:00
 noindex: true
 pageLayout: letter
 signature: with love and prosperity - Aaron
+tags:
+  - friend
 title: to kelly
 ---
 
-![[posts/images/135551D3-A55F-4EBA-AB54-BF42BC6974EA.jpeg]]
+![[posts/images/135551D3-A55F-4EBA-AB54-BF42BC6974EA.webp]]
 
 There's something about our friendship that reminds me of the word "eudaimonia" - not just happiness, but flourishing.
 We met through the strange alchemy of social media at HTN 2021, and like Montaigne wrote of his dear friend, "we sought one another long before we met."

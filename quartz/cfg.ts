@@ -2,7 +2,6 @@ import { ValidDateType } from "./components/Date"
 import { QuartzComponent } from "./components/types"
 import { ValidLocale } from "./i18n"
 import { PluginTypes } from "./plugins/types"
-import { SocialImageOptions } from "./util/og"
 import { Theme } from "./util/theme"
 
 export type Analytics =
@@ -40,6 +39,55 @@ export type Analytics =
       host?: string
     }
 
+type DType = "fp16" | "fp32"
+
+type SemanticIndexOptions = {
+  /** Enable semantic search (default: true) */
+  enable: boolean
+  /** HuggingFace model ID for embeddings (e.g., "intfloat/multilingual-e5-large") */
+  model: string
+  /**
+   * Ahead-of-time embedding generation (default: false)
+   * - true: expect pre-generated embeddings in public/embeddings/
+   * - false: run embed_build.py during build to generate embeddings
+   * Requires: uv installed (https://docs.astral.sh/uv/)
+   */
+  aot: boolean
+  /** Embedding dimension size (must match model output, e.g., 1024 for Qwen3-Embedding-0.6B) */
+  dims: number
+  /** Precision for stored vectors (fp16: smaller files, fp32: higher precision) */
+  dtype: DType
+  /** Number of vectors per shard file (default: 1024, higher = fewer files but larger downloads) */
+  shardSizeRows: number
+  /**
+   * HNSW (Hierarchical Navigable Small World) graph parameters
+   * - M: max connections per node (default: 16, higher = better recall but larger graph)
+   * - efConstruction: candidate pool size during build (default: 200, higher = better quality but slower build)
+   * - efSearch: search breadth (runtime only, not stored in manifest)
+   */
+  hnsw: { M?: number; efConstruction?: number; efSearch?: number }
+  /**
+   * Document chunking parameters (for long documents)
+   * - chunkSize: max tokens per chunk (default: 512)
+   * - chunkOverlap: overlap tokens between chunks (default: 128)
+   * - noChunking: disable chunking, embed full documents (default: false)
+   */
+  chunking?: { chunkSize?: number; chunkOverlap?: number; noChunking?: boolean }
+  /**
+   * vLLM server configuration (for remote embedding generation)
+   * - useVllm: use vLLM API instead of local sentence-transformers (default: false)
+   * - vllmUrl: vLLM server URL (default: from VLLM_URL env or http://127.0.0.1:8000/v1/embeddings)
+   * - concurrency: concurrent requests to vLLM (default: 8)
+   * - batchSize: batch size per request (default: 64)
+   */
+  vllm?: {
+    useVllm?: boolean
+    vllmUrl?: string
+    concurrency?: number
+    batchSize?: number
+  }
+}
+
 export interface GlobalConfiguration {
   pageTitle: string
   pageTitleSuffix?: string
@@ -57,10 +105,6 @@ export interface GlobalConfiguration {
    *   Quartz will avoid using this as much as possible and use relative URLs most of the time
    */
   baseUrl?: string
-  /**
-   * Whether to generate social images (Open Graph and Twitter standard) for link previews
-   */
-  generateSocialImages?: boolean | Partial<SocialImageOptions>
   theme: Theme
   /**
    * Allow to translate the date in the language of your choice.
@@ -71,6 +115,8 @@ export interface GlobalConfiguration {
    * Region Codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
    */
   locale: ValidLocale
+  /** Semantic search configuration */
+  semanticSearch?: Partial<SemanticIndexOptions>
 }
 
 export interface QuartzConfig {

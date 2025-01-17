@@ -1,9 +1,9 @@
 ---
+date: "2024-02-06"
 id: stability
+modified: 2025-10-29 02:16:23 GMT-04:00
 tags:
   - sfwr3dx4
-date: "2024-02-06"
-modified: 2024-12-17 18:00:31 GMT-05:00
 title: Stability and natural responses.
 ---
 

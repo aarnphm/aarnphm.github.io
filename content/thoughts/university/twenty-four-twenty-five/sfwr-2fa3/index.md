@@ -1,11 +1,11 @@
 ---
+date: "2025-01-06"
+description: third time a charm
 id: index
+modified: 2025-10-29 02:16:00 GMT-04:00
 tags:
   - university
   - sfwr2fa3
-date: "2025-01-06"
-description: third time a charm
-modified: 2025-01-06 13:53:52 GMT-05:00
 title: Discrete Mathematics
 ---
 

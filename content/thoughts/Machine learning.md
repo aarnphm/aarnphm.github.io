@@ -1,14 +1,15 @@
 ---
+date: "2024-02-07"
+description: and learning machine
 id: Machine learning
+modified: 2025-10-29 02:15:28 GMT-04:00
 tags:
   - ml
   - sapling
-date: "2024-02-07"
-modified: 2024-12-14 08:13:13 GMT-05:00
 title: Machine learning
 ---
 
-Detects pattern within [[thoughts/data]] and use it to make useful prediction.
+Learn patterns from distributions and make useful predictions based on assigned-objectives.
 
 Generally [[thoughts/AGI|AI]] $\subset$ [[/tags/ml|ML]] $\subset$ [[thoughts/deep learning|DL]]
 
@@ -17,6 +18,7 @@ Some main exploration:
 - [[thoughts/Transformers|Transformers]]
   - [[thoughts/LLMs|Large language models]]
 - [[thoughts/NLP]]
+- [[thoughts/Bayesian Neural Network]]
 - [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Convolutional Neural Network|CNN]]
 - [[thoughts/Logistic regression]]
 - [[thoughts/optimization|Optimization]]
@@ -36,6 +38,8 @@ Some main exploration:
   - [[thoughts/sparse crosscoders]]
 - Supervised Q-learning
 - [[thoughts/Low-rank adapters]]
+- Transfer learning
+  - [[thoughts/knowledge distillation]]
 
 Fields
 
@@ -43,6 +47,6 @@ Fields
 
 Related:
 
-- [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm#linear algebra review.|linear algebra]].
+- [[tags/linalg]].
 - [[thoughts/Automatic Differentiation|autograd]]
 - [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm|supervised machine learning]].

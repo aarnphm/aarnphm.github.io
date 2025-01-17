@@ -1,9 +1,10 @@
 ---
+date: "2023-11-08"
 id: Plato
+modified: 2025-10-29 02:15:32 GMT-04:00
 tags:
   - philosophy
   - philos1aa3
-date: "2023-11-08"
 title: Plato
 ---
 

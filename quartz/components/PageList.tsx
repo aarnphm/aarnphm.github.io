@@ -1,6 +1,6 @@
-import { resolveRelative } from "../util/path"
+import { isFolderPath, resolveRelative } from "../util/path"
 import { QuartzPluginData } from "../plugins/vfile"
-import { Date, getDate } from "./Date"
+import { Date as DateComponent, getDate } from "./Date"
 import { QuartzComponent, QuartzComponentProps, QuartzComponentConstructor } from "./types"
 import { GlobalConfiguration } from "../cfg"
 
@@ -8,6 +8,12 @@ export type SortFn = (f1: QuartzPluginData, f2: QuartzPluginData) => number
 
 export function byDateAndAlphabetical(cfg: GlobalConfiguration): SortFn {
   return (f1, f2) => {
+    // Sort folders first
+    const f1IsFolder = isFolderPath(f1.slug ?? "")
+    const f2IsFolder = isFolderPath(f2.slug ?? "")
+    if (f1IsFolder && !f2IsFolder) return -1
+    if (!f1IsFolder && f2IsFolder) return 1
+
     if (f1.dates && f2.dates) {
       // sort descending
       return getDate(cfg, f2)!.getTime() - getDate(cfg, f1)!.getTime()
@@ -52,6 +58,7 @@ export default ((userOpts?: Options) => {
           const title = page.frontmatter?.title
           const tags = page.frontmatter?.tags ?? []
           const hiTags = opts.highlightTags.filter((v) => tags.includes(v))
+          const date = new Date(0)
 
           return (
             <li class="section-li" data-index={idx}>
@@ -62,12 +69,19 @@ export default ((userOpts?: Options) => {
                 data-tags={tags.join(",")}
               >
                 <div class="note-grid">
-                  {page.dates && (
+                  {page.dates ? (
                     <div class="meta">
-                      <Date date={getDate(cfg, page)!} locale={cfg.locale} />
+                      <DateComponent date={getDate(cfg, page)!} locale={cfg.locale} />
+                    </div>
+                  ) : (
+                    <div class="meta">
+                      <DateComponent date={date} locale={cfg.locale} />
                     </div>
                   )}
-                  <div class="desc">{title}</div>
+                  <div class="desc">
+                    {title}
+                    {tags.includes("folder") && <span>/</span>}
+                  </div>
                   {hiTags.length > 0 ? (
                     <menu class="tag-highlights">
                       {hiTags.map((el) => (

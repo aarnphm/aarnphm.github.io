@@ -1,13 +1,12 @@
 ---
+date: "2024-03-05"
+description: also known as window of discourse
 id: Overton Window
+modified: 2025-10-29 02:15:31 GMT-04:00
 tags:
   - seed
-date: "2024-03-05"
-modified: 2024-12-31 13:45:23 GMT-05:00
 title: Overton Window
 ---
-
-_also known as window of discourse_
 
 > A window into the ideas that frames ideas that people are prepared to entertain. All ideas outside the window are not seriously considered.
 

@@ -1,13 +1,10 @@
 import { QuartzTransformerPlugin } from "../types"
-import { Root } from "mdast"
+import type { Heading, PhrasingContent, Root } from "mdast"
 import { visit } from "unist-util-visit"
 import { toString } from "mdast-util-to-string"
 import Slugger from "github-slugger"
-import katex from "katex"
-import { toHast } from "mdast-util-to-hast"
-import { toString as hastToString } from "hast-util-to-string"
-import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { ElementContent } from "hast"
+import { isWikilink } from "../../extensions/micromark-extension-ofm-wikilinks"
+import type { Wikilink } from "../../extensions/micromark-extension-ofm-wikilinks"
 
 export interface Options {
   maxDepth: 1 | 2 | 3 | 4 | 5 | 6
@@ -28,6 +25,42 @@ export interface TocEntry {
 }
 
 const slugAnchor = new Slugger()
+
+function normalizeWikilinkText(node: PhrasingContent): string {
+  if (!isWikilink(node)) {
+    return ""
+  }
+
+  const { alias, anchor, target } = (node as Wikilink).data?.wikilink ?? {}
+
+  const trimmedAlias = alias?.trim()
+  if (trimmedAlias) {
+    return trimmedAlias
+  }
+
+  const trimmedAnchor = anchor?.trim().replace(/^#\^?/, "")
+  if (trimmedAnchor) {
+    return trimmedAnchor
+  }
+
+  const trimmedTarget = target?.trim()
+  if (trimmedTarget) {
+    return trimmedTarget
+  }
+
+  return ""
+}
+
+function extractHeadingText(node: Heading): string {
+  const content = node.children
+    .map((child) => (isWikilink(child) ? normalizeWikilinkText(child) : toString(child)))
+    .join("")
+    .replace(/\s+/g, " ")
+    .trim()
+
+  return content
+}
+
 export const TableOfContents: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
   return {
@@ -43,37 +76,13 @@ export const TableOfContents: QuartzTransformerPlugin<Partial<Options>> = (userO
               let highestDepth: number = opts.maxDepth
               visit(tree, "heading", (node) => {
                 if (node.depth <= opts.maxDepth) {
-                  // we need to parse all math in here first
-                  const mathBlock: { index: number; value: string }[] = []
-                  for (const [i, child] of node.children.entries()) {
-                    if (child.type === "inlineMath") {
-                      const value = katex.renderToString(child.value, { strict: true })
-                      mathBlock.push({ index: i, value })
-                      node.children.splice(i, 1, {
-                        type: "html",
-                        value,
-                      })
-                    }
-                  }
-                  const hastNodes = toHast(node, { allowDangerousHtml: true })
-                  // support copy-tex and correct parsing of TOC
-                  visit(hastNodes, "raw", (node, idx, parent) => {
-                    const root = fromHtmlIsomorphic(node.value, { fragment: true })
-                    visit(root, "element", (node, idx, parent) => {
-                      const classNames = (node.properties?.classNames ?? []) as string[]
-                      if (classNames.includes("katex-mathml")) {
-                        parent?.children.splice(idx!, 1)
-                      }
-                    })
-                    parent?.children.splice(idx!, 1, ...(root.children as ElementContent[]))
-                  })
-                  const slug = hastToString(hastNodes)
-                  const text = toString(node)
+                  const normalizedText = extractHeadingText(node)
+                  const text = normalizedText.length > 0 ? normalizedText : toString(node)
                   highestDepth = Math.min(highestDepth, node.depth)
                   toc.push({
                     depth: node.depth,
                     text,
-                    slug: slugAnchor.slug(slug),
+                    slug: slugAnchor.slug(text),
                   })
                 }
               })

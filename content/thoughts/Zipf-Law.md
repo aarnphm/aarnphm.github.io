@@ -1,9 +1,9 @@
 ---
+date: "2024-12-01"
 id: Zipf-Law
+modified: 2025-10-29 02:15:39 GMT-04:00
 tags:
   - seed
-date: "2024-12-01"
-modified: 2024-12-08 04:03:10 GMT-05:00
 title: Zipf's Law
 ---
 

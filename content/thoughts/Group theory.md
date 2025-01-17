@@ -1,9 +1,9 @@
 ---
+date: "2024-02-26"
 id: Group theory
+modified: 2025-10-29 02:15:23 GMT-04:00
 tags:
   - math
-date: "2024-02-26"
-modified: "2024-11-03"
 title: group theory
 ---
 

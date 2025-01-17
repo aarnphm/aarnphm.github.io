@@ -1,8 +1,9 @@
 ---
+date: "2024-02-22"
 id: action theory
+modified: 2025-10-29 02:15:39 GMT-04:00
 tags:
   - philosophy
-date: "2024-02-22"
 title: action theory
 ---
 

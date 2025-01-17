@@ -1,6 +1,7 @@
 // NOTE: We will import Matuschak's note view AFTER spa.inline.ts
 // given that we will need to hijack the router
 // We will only setup buttons here
+
 // see ./spa.inline.ts
 document.addEventListener("nav", async (ev) => {
   const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
@@ -20,23 +21,15 @@ document.addEventListener("nav", async (ev) => {
       container.classList.add("active")
       body.classList.add("stack-mode")
       header.classList.add("grid", "all-col")
-      header.classList.remove(header.dataset.column!)
 
       if (window.location.hash) {
         window.history.pushState("", document.title, currentUrl.split("#")[0])
       }
-      window.stacked
-        .navigate(new URL(`/${ev.detail.url}`, window.location.toString()))
-        .then((data) => {
-          if (data) window.location.reload()
-        })
+      window.stacked.navigate(new URL(`/${ev.detail.url}`, window.location.toString()))
     } else {
-      button.setAttribute("aria-checked", "false")
-      container.classList.remove("active")
-      body.classList.remove("stack-mode")
-      header.classList.remove("grid", "all-col")
-      header.classList.add(header.dataset.column!)
+      // Keep visual state intact until reload to prevent layout jump
       window.stacked.destroy()
+      window.location.reload()
     }
   }
 

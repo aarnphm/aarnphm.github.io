@@ -1,10 +1,9 @@
 ---
+date: "2024-01-08"
 id: Language
+modified: 2025-10-29 02:15:27 GMT-04:00
 tags:
   - seed
-date: "2024-01-08"
-modified: "2024-10-04"
-noindex: true
 title: Language
 ---
 
@@ -24,6 +23,6 @@ Possibly the most salient feature of [[thoughts/LLMs|LLMs]] is that the system i
 
 ## [[thoughts/representations]].
 
-[[thoughts/LLMs|Language models]] is a representation of our knowledge.
+[[thoughts/LLMs|Language models]] is ==one== massive corpus representation of human knowledge.
 
 Techniques such as [[thoughts/deep learning|deep learning]] has risen to prominence due to its ability to learn from data, and in doing so, it has the capability to represent the world in a way that is more similar to how we perceive it.

@@ -1,10 +1,10 @@
 ---
-id: CCS to DCS
-tags:
-  - sfwr4aa4
 date: "2024-12-18"
 description: to find the difference equations and determine the software implementation
-modified: 2024-12-18 05:12:52 GMT-05:00
+id: CCS to DCS
+modified: 2025-10-29 02:16:05 GMT-04:00
+tags:
+  - sfwr4aa4
 title: Continuous Control System to Digital Control System
 ---
 

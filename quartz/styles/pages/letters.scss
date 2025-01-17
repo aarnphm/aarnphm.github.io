@@ -1,16 +1,36 @@
 @use "../base.scss";
 @use "../variables.scss" as *;
 
+body[data-slides="true"],
+body[data-layout="letter-poem"],
 body[data-layout="letter"] {
-  .header,
-  .byline,
-  .page-footer {
+  .darkmode,
+  .stacked-buttons:not(.popover *),
+  .breadcrumb-container:not(.popover *),
+  .byline:not(.popover *),
+  .page-footer:not(.popover *) {
     display: none;
   }
 
-  @media all and ($desktop) {
-    .main-col:not(.popover *) {
-      grid-column: 4/9;
-    }
+  .overlay {
+    box-shadow: none !important;
+  }
+
+  section[class~="header"] {
+    border-bottom-width: 0px;
+  }
+}
+
+body[data-layout="letter-poem"] {
+  background-color: white;
+
+  hgroup {
+    display: none;
+  }
+}
+
+body[data-slides="true"] {
+  section[class~="page-header"]:not(.popover *) {
+    display: none !important;
   }
 }

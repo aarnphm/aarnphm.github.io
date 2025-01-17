@@ -1,10 +1,11 @@
 import { slug as slugAnchor } from "github-slugger"
 import type { Element as HastElement } from "hast"
-import rfdc from "rfdc"
-
-export const clone = rfdc()
+import { clone } from "./clone"
 
 // this file must be isomorphic so it can't use node libs (e.g. path)
+
+// re-export github-slugger for use in other utilities
+export { slugAnchor }
 
 export const QUARTZ = "quartz"
 
@@ -39,7 +40,7 @@ export type RelativeURL = SlugLike<"relative">
 export function isRelativeURL(s: string): s is RelativeURL {
   const validStart = /^\.{1,2}/.test(s)
   const validEnding = !endsWith(s, "index")
-  return validStart && validEnding && ![".md", ".html"].includes(_getFileExtension(s) ?? "")
+  return validStart && validEnding && ![".md", ".html"].includes(getFileExtension(s) ?? "")
 }
 
 export function getFullSlug(window: Window): FullSlug {
@@ -47,7 +48,7 @@ export function getFullSlug(window: Window): FullSlug {
   return res
 }
 
-function sluggify(s: string): string {
+export function sluggify(s: string): string {
   return s
     .split("/")
     .map((segment) =>
@@ -64,9 +65,9 @@ function sluggify(s: string): string {
 
 export function slugifyFilePath(fp: FilePath, excludeExt?: boolean): FullSlug {
   fp = stripSlashes(fp) as FilePath
-  let ext = _getFileExtension(fp)
+  let ext = getFileExtension(fp)
   const withoutFileExt = fp.replace(new RegExp(ext + "$"), "")
-  if (excludeExt || [".md", ".ipynb", ".html", undefined].includes(ext)) {
+  if (excludeExt || [".md", ".ipynb", ".html", ".base", undefined].includes(ext)) {
     ext = ""
   }
 
@@ -249,8 +250,17 @@ export function transformLink(src: FullSlug, target: string, opts: TransformOpti
   }
 }
 
+export function isAbsoluteURL(s: string): boolean {
+  try {
+    new URL(s)
+  } catch {
+    return false
+  }
+  return true
+}
+
 // path helpers
-function isFolderPath(fplike: string): boolean {
+export function isFolderPath(fplike: string): boolean {
   return (
     fplike.endsWith("/") ||
     endsWith(fplike, "index") ||
@@ -275,10 +285,10 @@ function containsForbiddenCharacters(s: string): boolean {
 }
 
 function _hasFileExtension(s: string): boolean {
-  return _getFileExtension(s) !== undefined
+  return getFileExtension(s) !== undefined
 }
 
-function _getFileExtension(s: string): string | undefined {
+export function getFileExtension(s: string): string | undefined {
   return s.match(/\.[A-Za-z0-9]+$/)?.[0]
 }
 

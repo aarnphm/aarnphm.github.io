@@ -1,17 +1,17 @@
 ---
-id: Nicky
-tags:
-  - friend
 date: "2024-12-26"
 description: and there are certain peculiar difficulties about capturing my emotions for 2024, with you.
-modified: 2024-12-31 18:20:47 GMT-05:00
+id: Nicky
+modified: 2025-10-29 02:15:08 GMT-04:00
 noindex: true
 pageLayout: letter
 signature: with abundance of love and joy - Aaron
+tags:
+  - friend
 title: to nicole
 ---
 
-![[posts/images/4516E799-791A-4D68-A592-CD4CE1F1CACA_1_201_a.jpeg|an illustration I found on reddit]]
+![[posts/images/4516E799-791A-4D68-A592-CD4CE1F1CACA_1_201_a.webp|an illustration I found on reddit]]
 
 During the car ride back from Utah the other day, Photos suggested a memory - you in a cream vest, gold catching light at your throat, enjoying food at Cima.
 It was my birthday dinner last year. You were wound tight with thoughts of graduation, of Europe stretching before you like an unanswered question, with unwavering thoughts of post-grad plans. But you came anyway, carved out those hours between the chaos of planning and the weight of decisions.
@@ -107,9 +107,9 @@ Here's to more chapters in this story we're writing together. Looking forward to
 
 _the original link I found on [tumblr](https://therumpus.tumblr.com/post/36880088831/i-think-i-am-in-friend-love-with-you-written-by/amp)_
 
-![[posts/images/n/friend-love-1.jpg]]
-![[posts/images/n/friend-love-2.jpg]]
-![[posts/images/n/friend-love-3.jpg]]
-![[posts/images/n/friend-love-4.jpg]]
-![[posts/images/n/friend-love-5.jpg]]
-![[posts/images/n/friend-love-6.jpg]]
+![[posts/images/n/friend-love-1.webp]]
+![[posts/images/n/friend-love-2.webp]]
+![[posts/images/n/friend-love-3.webp]]
+![[posts/images/n/friend-love-4.webp]]
+![[posts/images/n/friend-love-5.webp]]
+![[posts/images/n/friend-love-6.webp]]

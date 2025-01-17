@@ -1,9 +1,10 @@
 ---
+date: "2024-09-25"
 id: Pavlovian scale
+modified: 2025-10-29 02:15:32 GMT-04:00
+noindex: true
 tags:
   - seed
-date: "2024-09-25"
-noindex: true
 title: Pavlovian scale
 ---
 

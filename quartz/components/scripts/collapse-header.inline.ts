@@ -1,16 +1,7 @@
-import {
-  updateSidenoteState,
-  getCollapsedState,
-  CollapsedState,
-  setCollapsedState,
-  setHeaderState,
-  updateContainerHeights,
-  debounce,
-} from "./util"
+import { setHeaderState } from "./util"
+import { getFullSlug } from "../../util/path"
 
 type MaybeHTMLElement = HTMLElement | undefined
-
-const debouncedHeights = debounce(updateContainerHeights, 150)
 
 function toggleHeader(evt: Event) {
   const target = evt.target as MaybeHTMLElement
@@ -47,33 +38,32 @@ function toggleHeader(evt: Event) {
   wrapper.classList.toggle("collapsed", isCollapsed)
   toggleButton.classList.toggle("collapsed", isCollapsed)
 
-  updateSidenoteState(content, isCollapsed)
-  setCollapsedState(window, toggleButton.id, isCollapsed ? "false" : ("true" as CollapsedState))
+  const slug = String(getFullSlug(window) ?? window.document.body.dataset.slug ?? "")
 
-  requestAnimationFrame(() => {
-    updateContainerHeights()
-    debouncedHeights()
-  })
+  localStorage.setItem(
+    `${slug.replace("/", "--")}-${toggleButton.id}`,
+    isCollapsed ? "false" : "true",
+  )
 }
 
 function setupHeaders() {
-  const collapsibleHeaders = document.querySelectorAll(".collapsible-header")
+  const collapsibleHeaders = document.querySelectorAll("section.collapsible-header")
 
   for (const header of collapsibleHeaders) {
-    const button = header.querySelector("span.toggle-button") as HTMLButtonElement
+    const button = header.querySelector<HTMLButtonElement>("span.toggle-button")
     if (button) {
       button.addEventListener("click", toggleHeader)
-      if (window.addCleanup) {
-        window.addCleanup(() => button.removeEventListener("click", toggleHeader))
-      }
+      window.addCleanup(() => button.removeEventListener("click", toggleHeader))
 
       // Apply saved state
-      const content = document.querySelector(
+      const content = document.querySelector<HTMLElement>(
         `.collapsible-header-content[data-references="${button.id}"]`,
-      ) as HTMLElement
+      )
       // setup once
       if (content) {
-        const savedState = getCollapsedState(window, button.id)
+        const slug = String(getFullSlug(window) ?? window.document.body.dataset.slug ?? "")
+
+        const savedState = localStorage.getItem(`${slug.replace("/", "--")}-${button.id}`)
         if (savedState) {
           setHeaderState(
             button as HTMLElement,
@@ -82,16 +72,18 @@ function setupHeaders() {
             savedState === "false",
           )
         }
+        const collapsed = content.classList.contains("collapsed")
+        content.style.maxHeight = collapsed ? `0px` : `inherit`
       }
-      const collapsed = content.classList.contains("collapsed")
-      content.style.maxHeight = collapsed ? `0px` : `inherit`
     }
   }
 
-  const links = document.querySelectorAll("svg.blockquote-link") as NodeListOf<SVGElement>
+  const links = document.querySelectorAll("button.transclude-title-link") as NodeListOf<SVGElement>
   for (const link of links) {
     const parentEl = link.parentElement as HTMLElement
-    const href = parentEl.dataset.href as string
+    if (!parentEl || !parentEl.dataset.href) continue
+
+    const href = parentEl.dataset.href
 
     function onClick() {
       window.spaNavigate(new URL(href, window.location.toString()))

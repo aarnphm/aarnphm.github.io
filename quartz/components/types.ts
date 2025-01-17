@@ -1,8 +1,9 @@
 import { ComponentType, JSX } from "preact"
-import { StaticResources } from "../util/resources"
+import { StaticResources, StringResource } from "../util/resources"
 import { QuartzPluginData } from "../plugins/vfile"
 import { GlobalConfiguration } from "../cfg"
 import { Node } from "hast"
+import { DocumentData } from "flexsearch"
 import { BuildCtx } from "../util/ctx"
 
 export type QuartzComponentProps = {
@@ -19,16 +20,16 @@ export type QuartzComponentProps = {
   }
 
 export type QuartzComponent = ComponentType<QuartzComponentProps> & {
-  css?: string
-  beforeDOMLoaded?: string
-  afterDOMLoaded?: string
+  css?: StringResource
+  beforeDOMLoaded?: StringResource
+  afterDOMLoaded?: StringResource
 }
 
 export type QuartzComponentConstructor<Options extends object | undefined = undefined> = (
   opts: Options,
 ) => QuartzComponent
 
-interface Entity {
+interface Entity extends DocumentData {
   id: number
   createdDate: string
   modifiedDate: string
@@ -52,7 +53,7 @@ interface Topic extends Entity {
   public: boolean
 }
 
-interface FollowingUser {
+interface FollowingUser extends DocumentData {
   id: number
   firstName: string
   lastName: string
@@ -60,17 +61,18 @@ interface FollowingUser {
   lastOnline: string
 }
 
-export interface Trail {
+export interface Trail extends DocumentData {
   id: number
   trailName: string
   ownerId: number
-  description?: string
+  description: string
   colorHex: string
   emojiUnicode: string
   flipped: any
   hash: string
   slug: string
   createdDate: string
+  users: any[]
 }
 
 export interface TrailInfo {
@@ -78,7 +80,7 @@ export interface TrailInfo {
   links: Map<number, Link>
 }
 
-export interface User extends Entity {
+export interface User extends Partial<Entity> {
   firstName: string
   lastName: string
   major?: string
@@ -98,7 +100,7 @@ export interface User extends Entity {
   followingUsers: FollowingUser[]
 }
 
-export interface Link extends Entity {
+export interface Link extends Partial<Entity> {
   link: string
   title: string
   favorite: boolean
@@ -128,4 +130,7 @@ export interface CuriusResponse {
   links?: Link[]
   user?: User
   following?: Following[]
+  trails?: Trail[]
+  hasMore?: boolean
+  page?: number
 }

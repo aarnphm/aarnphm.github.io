@@ -27,5 +27,16 @@ document.addEventListener("nav", () => {
       rpl.addEventListener("click", onClick)
       window.addCleanup(() => rpl.removeEventListener("click", onClick))
     })
+
+    tel.querySelectorAll(".expand").forEach((exp) => {
+      function onClick() {
+        expandable.forEach((clse) => {
+          clse.classList.toggle("close", false)
+          clse.classList.toggle("open", true)
+        })
+      }
+      exp.addEventListener("click", onClick)
+      window.addCleanup(() => exp.removeEventListener("click", onClick))
+    })
   })
 })

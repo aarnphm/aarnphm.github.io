@@ -1,10 +1,10 @@
 ---
+date: "2024-10-29"
 id: index
+modified: 2025-10-29 02:16:00 GMT-04:00
 tags:
   - university
   - engineer4a03
-date: "2024-10-29"
-modified: 2024-12-23 10:58:01 GMT-05:00
 title: Engineering Ethics
 ---
 

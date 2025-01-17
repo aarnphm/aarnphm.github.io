@@ -6,7 +6,7 @@ import path from "node:path"
 import { BuildUrlValues, defaultBuildUrl } from "remark-github"
 import { RepositoryInfo, UrlInfo } from "remark-github/lib"
 import { Root, Link, PhrasingContent } from "mdast"
-import { Root as hastRoot } from "hast"
+import { Root as HtmlRoot, Element, Text } from "hast"
 import { RegExpMatchObject, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import { toString } from "mdast-util-to-string"
 import { QuartzTransformerPlugin } from "../types"
@@ -53,8 +53,8 @@ const referenceRegex = new RegExp(
   "(" + userGroup + ")(?:\\/(" + projectGroup + "))?(?:#([1-9]\\d*)|@([a-f\\d]{7,40}))",
   "gi",
 )
-// Update the mentionRegex to use negative lookbehind and lookahead to avoid matches inside brackets
-const mentionRegex = new RegExp(`(?<![\\[])@(${userGroup}(?:\\/${userGroup})?)(?![^\\[]*\\])`, "gi")
+// Only match mentions within curly braces: {@username}
+const mentionRegex = new RegExp(`\\{@(${userGroup}(?:\\/${userGroup})?)\\}`, "gi")
 
 function getRepoFromPackage(cwd: string) {
   let pkg
@@ -79,12 +79,16 @@ export interface Options {
   repository?: string
   buildUrl?: (values: BuildUrlValues) => string
   mentionStrong?: boolean
+  internalLinks?: string[]
+  noTranslateBlock?: string[]
 }
 
 const defaultOptions: Options = {
   repository: "https://github.com/aarnphm/aarnphm.github.io",
   buildUrl: defaultBuildUrl,
   mentionStrong: true,
+  internalLinks: ["livingalonealone.com"],
+  noTranslateBlock: ["pre", "code"],
 }
 
 export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
@@ -93,7 +97,8 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
   return {
     name: "GitHub",
-    markdownPlugins() {
+    markdownPlugins({ argv }) {
+      if (argv.watch && !argv.force) return []
       return [
         () => {
           return (tree: Root, file) => {
@@ -120,7 +125,9 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
             mdastFindReplace(
               tree,
               [
+                //@ts-ignore
                 [referenceRegex, replaceReference],
+                //@ts-ignore
                 [mentionRegex, replaceMention],
                 [/(?:#|\bgh-)([1-9]\d*)/gi, replaceIssue],
                 [/\b([a-f\d]{7,40})\.{3}([a-f\d]{7,40})\b/gi, replaceHashRange],
@@ -137,19 +144,9 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
               }
 
               const comment = link.comment ? " (comment)" : ""
-              let base: string
-
-              if (
-                link.project !== repositoryInfo.project ||
-                // Compare page uses full `user/project` for forks.
-                (link.page === "compare" && link.user !== repositoryInfo.user)
-              ) {
-                base = link.user + "/" + link.project
-              } else if (link.user === repositoryInfo.user) {
-                base = ""
-              } else {
-                base = link.user
-              }
+              // NOTE: Deviate from the original implementation where
+              // we always format the base to user/project
+              let base: string = link.user + "/" + link.project
 
               const children: PhrasingContent[] = []
 
@@ -176,7 +173,8 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
             /**
              * @type {ReplaceFunction}
-             * TODO: FIX HERE FOR MENTIONS TO WORK WITH rehype-citations
+             * Note that our implementation is a bit different where we will encapsulate
+             * `{@mentions}` to include users tag.
              */
             function replaceMention(value: string, username: string, match: RegExpMatchObject) {
               if (match === undefined) return false
@@ -192,7 +190,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
               if (!url) return false
 
-              let node: PhrasingContent = { type: "text", value }
+              let node: PhrasingContent = { type: "text", value: "@" + username }
 
               if (opts.mentionStrong !== false) {
                 node = { type: "strong", children: [node] }
@@ -330,25 +328,148 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
         },
       ]
     },
-    htmlPlugins() {
-      // automatically add dir https://github.com/rehypejs/rehype-github/blob/main/packages/dir/lib/index.js
-      // It is simple enough and I don't want to add a whole deps for it.
-      const include = new Set(["div", "h1", "h2", "h3", "h4", "h5", "h6", "ol", "p", "ul"])
+    htmlPlugins({ cfg, argv }) {
+      if (argv.watch && !argv.force) return []
+
       return [
+        // automatically add dir https://github.com/rehypejs/rehype-github/blob/main/packages/dir/lib/index.js
+        // It is simple enough and I don't want to add a whole deps for it.
         () => {
-          return (tree: hastRoot, _file) => {
-            visit(tree, "element", function (node) {
-              if (node.type === "element" && include.has(node.tagName) && node.properties) {
-                // Do not add them to `:is(ol, ul).contains-task-list`.
-                if (
-                  Array.isArray(node.properties.className) &&
-                  node.properties.className.includes("contains-task-list")
-                ) {
-                  return
-                }
+          const include = new Set(["div", "h1", "h2", "h3", "h4", "h5", "h6", "ol", "p", "ul"])
+
+          const checkAddDir = ({ type, tagName, properties }: Element) => {
+            if (type !== "element" || !include.has(tagName) || !properties) return false
+            // Do not add them to `:is(ol, ul).contains-task-list`.
+            if (
+              Array.isArray(properties.className) &&
+              properties.className.includes("contains-task-list")
+            ) {
+              return false
+            }
+            return true
+          }
+          return (tree: HtmlRoot, _file) => {
+            visit(
+              tree,
+              (node) => checkAddDir(node as Element),
+              (node) => {
+                // @ts-ignore
                 node.properties.dir = "auto"
+              },
+            )
+          }
+        },
+        // mark as external links for both GitHub and current domain https://github.com/rehypejs/rehype-github/blob/main/packages/link/lib/index.js
+        () => {
+          const internals = ["github.com", cfg.configuration.baseUrl, ...opts.internalLinks!]
+          const relations = ["nofollow"]
+
+          for (const internal of internals) {
+            try {
+              const url = new URL("https://" + internal)
+              if (url.hostname !== internal) {
+                throw new Error(
+                  "Value `" + internal + "` is parsed as hostname `" + url.hostname + "`",
+                )
+              }
+            } catch (error) {
+              const exception = new Error("Expected valid hostname for URL, not `" + internal + "`")
+              exception.cause = error
+              throw exception
+            }
+          }
+
+          for (const relation of relations) {
+            if (relation.includes(" ")) {
+              throw new Error(
+                "Expected valid `rel` value, without space (note: use arrays to pass multiple values)",
+              )
+            }
+          }
+
+          return function (tree) {
+            visit(tree, "element", function (node, index, parent) {
+              if (
+                node.type === "element" &&
+                node.tagName === "a" &&
+                parent &&
+                typeof index === "number"
+              ) {
+                let url: URL | undefined
+
+                const defaultHostname = internals[0]
+
+                if (defaultHostname) {
+                  try {
+                    url = new URL(String(node.properties.href), "https://" + defaultHostname)
+                  } catch {}
+                }
+
+                let known = false
+
+                if (url) {
+                  const hostname = url.hostname
+
+                  // For `mailto:` and such.
+                  known = !hostname
+
+                  for (const internal of internals) {
+                    if (hostname === internal || hostname.endsWith("." + internal)) {
+                      known = true
+                      break
+                    }
+                  }
+                }
+
+                if (known) {
+                  // Local or known.
+                } else {
+                  const rel = Array.isArray(node.properties.rel)
+                    ? node.properties.rel
+                    : (node.properties.rel = [])
+
+                  for (const relation of relations) {
+                    if (!rel.includes(relation)) rel.push(relation)
+                  }
+                }
               }
             })
+          }
+        },
+        // parsing notranslate block, default to <pre> and <code> https://github.com/rehypejs/rehype-github/blob/main/packages/notranslate/lib/index.js
+        () => {
+          return function (tree) {
+            const toAddBlock = ({ type, tagName, properties }: Element) =>
+              type === "element" && opts.noTranslateBlock!.includes(tagName) && Boolean(properties)
+            visit(
+              tree,
+              "element",
+              toAddBlock,
+              // @ts-ignore
+              (node: Element) => {
+                const className = Array.isArray(node.properties.className)
+                  ? node.properties.className
+                  : (node.properties.className = [])
+                className.push("notranslate")
+              },
+            )
+          }
+        },
+        // Special parsing for https://github.com bare URL from autolink literals of gfm
+        // to only parse user/project
+        () => {
+          return function (tree) {
+            visit(tree, { tagName: "a" }, (node: Element) => {
+              const githubMatch = ((node.properties.href! as string) ?? "").match(
+                /^https:\/\/github\.com\/([^\/]+)\/([^\/\s#]+)/,
+              )
+              if (githubMatch && toString(node) === node.properties.href!) {
+                visit(node, "text", function (el: Text) {
+                  el.value = `${githubMatch[1]}/${githubMatch[2]}`
+                })
+              }
+            })
+            return
           }
         },
         rehypeGithubEmoji,
@@ -359,11 +480,6 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
 /**
  * Abbreviate a SHA.
- *
- * @param {string} sha
- *   SHA.
- * @returns {string}
- *   Abbreivated SHA.
  */
 function abbr(sha: string): string {
   return sha.slice(0, minShaLength)

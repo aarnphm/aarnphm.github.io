@@ -1,9 +1,9 @@
 ---
+date: "2024-12-14"
 id: Ramp loss
+modified: 2025-10-29 02:15:33 GMT-04:00
 tags:
   - ml
-date: "2024-12-14"
-modified: 2024-12-14 03:39:50 GMT-05:00
 title: Ramp loss
 ---
 
@@ -28,4 +28,3 @@ $$
 $$
 
 Note that we use Hinge loss for SVM is due to the fact that ramp-loss is a non-convex functions, meaning it is more computationally efficient to minimise Hinge loss in comparison to ramp loss
-

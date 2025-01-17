@@ -1,10 +1,10 @@
 ---
+date: "2024-02-24"
 id: Giles Deleuze
+modified: 2025-10-29 02:15:23 GMT-04:00
 tags:
   - philosophy
   - seed
-date: "2024-02-24"
-modified: 2024-12-23 09:30:30 GMT-05:00
 title: Giles Deleuze
 ---
 

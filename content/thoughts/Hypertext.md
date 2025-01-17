@@ -1,9 +1,9 @@
 ---
+date: "2024-02-09"
 id: Hypertext
+modified: 2025-10-29 02:15:24 GMT-04:00
 tags:
   - seed
-date: "2024-02-09"
-modified: "2024-10-30"
 title: Hypertext
 ---
 

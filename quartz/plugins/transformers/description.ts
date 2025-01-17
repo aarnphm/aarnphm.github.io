@@ -1,15 +1,20 @@
 import { Root as HTMLRoot } from "hast"
 import { toString } from "hast-util-to-string"
 import { QuartzTransformerPlugin } from "../types"
-import { escapeHTML } from "../../util/escape"
+import { escapeHTML, unescapeHTML } from "../../util/escape"
+import readingTime, { ReadTimeResults } from "reading-time"
+import { i18n } from "../../i18n"
+import { stripWikilinkFormatting } from "../../util/wikilinks"
 
 export interface Options {
   descriptionLength: number
+  maxDescriptionLength: number
   replaceExternalLinks: boolean
 }
 
 const defaultOptions: Options = {
   descriptionLength: 150,
+  maxDescriptionLength: 300,
   replaceExternalLinks: true,
 }
 
@@ -22,11 +27,14 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
   const opts = { ...defaultOptions, ...userOpts }
   return {
     name: "Description",
-    htmlPlugins() {
+    htmlPlugins({ cfg }) {
       return [
         () => {
           return async (tree: HTMLRoot, file) => {
             let frontMatterDescription = file.data.frontmatter?.description
+            if (typeof frontMatterDescription === "string") {
+              frontMatterDescription = stripWikilinkFormatting(frontMatterDescription)
+            }
             let text = escapeHTML(toString(tree))
 
             if (opts.replaceExternalLinks) {
@@ -37,36 +45,47 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
               text = text.replace(urlRegex, "$<domain>" + "$<path>")
             }
 
-            const desc = frontMatterDescription ?? text
-            const sentences = desc.replace(/\s+/g, " ").split(/\.\s/)
-            const finalDesc: string[] = []
-            const len = opts.descriptionLength
-            let sentenceIdx = 0
-            let currentDescriptionLength = 0
+            // truncate to max length if necessary
+            file.data.description = file.data.text = text
+            file.data.readingTime = readingTime(file.data.text!)
 
-            if (sentences[0] !== undefined && sentences[0].length >= len) {
-              const firstSentence = sentences[0].split(" ")
-              while (currentDescriptionLength < len) {
-                const sentence = firstSentence[sentenceIdx]
-                if (!sentence) break
-                finalDesc.push(sentence)
-                currentDescriptionLength += sentence.length
-                sentenceIdx++
-              }
-              finalDesc.push("...")
-            } else {
-              while (currentDescriptionLength < len) {
+            const processDescription = (desc: string): string => {
+              const sentences = desc.replace(/\s+/g, " ").split(/\.\s/)
+              let finalDesc = ""
+              let sentenceIdx = 0
+
+              // Add full sentences until we exceed the guideline length
+              while (sentenceIdx < sentences.length) {
                 const sentence = sentences[sentenceIdx]
                 if (!sentence) break
+
                 const currentSentence = sentence.endsWith(".") ? sentence : sentence + "."
-                finalDesc.push(currentSentence)
-                currentDescriptionLength += currentSentence.length
-                sentenceIdx++
+                const nextLength = finalDesc.length + currentSentence.length + (finalDesc ? 1 : 0)
+
+                // Add the sentence if we're under the guideline length
+                // or if this is the first sentence (always include at least one)
+                if (nextLength <= opts.descriptionLength || sentenceIdx === 0) {
+                  finalDesc += (finalDesc ? " " : "") + currentSentence
+                  sentenceIdx++
+                } else {
+                  break
+                }
               }
+              return finalDesc.length > opts.maxDescriptionLength
+                ? finalDesc.slice(0, opts.maxDescriptionLength) + "..."
+                : finalDesc
             }
 
-            file.data.description = finalDesc.join(" ")
+            const description = processDescription(frontMatterDescription ?? text)
+            file.data.description = unescapeHTML(
+              frontMatterDescription ||
+                description.trim() ||
+                i18n(cfg.configuration.locale).propertyDefaults.description,
+            )
+            file.data.description = description
+            file.data.abstract = file.data.frontmatter?.abstract ?? processDescription(text)
             file.data.text = text
+            file.data.readingTime = readingTime(file.data.text!)
           }
         },
       ]
@@ -77,6 +96,8 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
 declare module "vfile" {
   interface DataMap {
     description: string
+    abstract: string
     text: string
+    readingTime: ReadTimeResults
   }
 }

@@ -1,14 +1,14 @@
 ---
+date: "2024-01-08"
+description: and compression of human knowledge
 id: large models
+modified: 2025-10-29 02:15:48 GMT-04:00
 tags:
   - ml
-date: "2024-01-08"
-title: Foundational large models
+title: Foundational models
 ---
 
-Popularized through [[thoughts/LLMs]], [GPT-3 paper](https://arxiv.org/abs/2005.14165),
-
-See also: 7.1 of [The Little Book of Deep Learning](/books#2024)
+Popularized through [[thoughts/LLMs]], GPT-3 paper [@brown2020languagemodelsfewshotlearners]
 
 Though, it should be thought as [[thoughts/Intelligence amplification]] rather than "artificial intelligence" system.
 
@@ -26,4 +26,4 @@ Distributed serving of large models requires cost-efficient methods[^1]
 
 ## visions
 
-[^1]: [Distributed Inference and Fine-tuning of Large Language Models over the Internet](https://arxiv.org/abs/2312.08361)
+[^1]: https://arxiv.org/abs/2312.08361

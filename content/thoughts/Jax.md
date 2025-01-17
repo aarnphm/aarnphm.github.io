@@ -1,10 +1,10 @@
 ---
+date: "2022-11-07"
 id: Jax
+modified: 2025-10-29 02:15:25 GMT-04:00
 tags:
   - seed
   - ml
-date: "2022-11-07"
-modified: 2024-12-16 09:56:15 GMT-05:00
 title: Jax
 ---
 

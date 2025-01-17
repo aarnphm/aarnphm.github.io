@@ -1,13 +1,15 @@
 ---
-id: new
-tags:
-  - fruit
+aliases:
+  - hackathon
 date: "2024-09-30"
 description: And on perplexity of hackathon.
-modified: 2024-12-31 08:52:54 GMT-05:00
+id: new
+modified: 2025-10-29 02:15:12 GMT-04:00
 socials:
   substack: https://open.substack.com/pub/livingalone/p/i-saw-a-disstrack-dropped-at-a-hackathon?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
   twitter: https://x.com/aarnphm_/status/1841401912815464735
+tags:
+  - fruit
 title: I saw a disstrack dropped at a hackathon.
 ---
 
@@ -99,7 +101,7 @@ But I said that last time too, so who knows? There's something addictive about t
 Here's the thing about hackathons: they don't have to choose between being recruiting events and playgrounds for innovation.
 The best ones are both. But right now, the scales are tipped too far towards recruitment. It's like optimizing for an
 acquisition instead of building something people want. The real magic of hackathons happens when you put hackers first.
-Everything else – the jobs, the networking, the sponsorships – that all follows naturally when you get the core experience right.
+Everything else – the jobs, the networking, the sponsorships – that all follows naturally when you get the core experience right. ^ending
 
 ## to my teammates.
 

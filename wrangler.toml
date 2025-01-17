@@ -1,0 +1,57 @@
+name = "portfolio"
+compatibility_date = "2025-01-21"
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
+main = "./worker/index.ts"
+preview_urls = true
+workers_dev = true
+rules = [{ type = "Text", globs = ["**/*.txt"], fallthrough = true }]
+
+[[durable_objects.bindings]]
+name = "MCP_OBJECT"
+class_name = "Garden"
+
+[[migrations]]
+tag = "mcp-001"
+new_sqlite_classes = ["Garden"]
+
+[[kv_namespaces]]
+binding = "OAUTH_KV"
+id = "c8591d9cecbd4cf4b569a8edadc3302d"
+
+[[kv_namespaces]]
+binding = "SUBSTACK_CACHE"
+id = "03bf87553daf4045beb9c27c95b2e5ae"
+remote = true
+
+[[kv_namespaces]]
+binding = "FONTS"
+id = "aec7fd95ca404e8c9941993b0e65821d"
+remote = true
+
+[[kv_namespaces]]
+binding = "STACKED_CACHE"
+id = "265f7849115a4b1ea8687bc9f8de54d6"
+preview_id = "4c407661817a4e1dbf6779ccdac0b341"
+remote = true
+
+[[r2_buckets]]
+binding = "LFS_BUCKET"
+bucket_name = "sites"
+
+[browser]
+binding = "BROWSER"
+
+[assets]
+directory = "./public/"
+binding = "ASSETS"
+not_found_handling = "404-page"
+run_worker_first = true
+
+[observability.logs]
+enabled = true
+
+[placement]
+mode = "smart"
+
+[dev]
+port = 8787

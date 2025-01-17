@@ -1,9 +1,9 @@
 ---
+date: "2024-11-11"
 id: Support Vector Machine
+modified: 2025-10-29 02:16:08 GMT-04:00
 tags:
   - sfwr4ml3
-date: "2024-11-11"
-modified: 2024-12-14 04:11:53 GMT-05:00
 title: Support Vector Machine
 ---
 

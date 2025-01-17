@@ -1,34 +1,5 @@
 @use "sass:map";
 
-:root {
-  --link-underline-gradient-line-color: currentColor;
-
-  // rose-pine-dawn
-  --base: #faf4ed;
-  --surface: var(--light);
-  --overlay: var(--lightgray);
-  --muted: var(--gray);
-  --subtle: var(--darkgray);
-  --text: var(--dark);
-  --rose: var(--secondary);
-  --love: var(--tertiary);
-  --gold: rgba(234, 157, 52, 1);
-  --pine: rgba(40, 105, 131, 1);
-  --foam: rgba(86, 148, 159, 1);
-  --iris: rgba(144, 122, 169, 1);
-  --kern: 12px;
-  --align-cap-height: -6px;
-  --align-baseline: -6px;
-  --gray-200: rgba(0, 0, 0, 0.2);
-  --dag-highlights: var(--foam);
-  --font-size: 17px;
-  --line-height: 1.4;
-  --line-px: calc(var(--line-height) * var(--font-size));
-}
-
-/**
- * Animation-related
- */
 $base-duration: 1;
 $row-delay: 0.4;
 $col-delay: 0.2;
@@ -36,16 +7,9 @@ $rows: 4;
 $cols: 8;
 $max-delay: ($col-delay * $cols + $row-delay * $rows);
 
-/**
- * Layout breakpoints
- * $mobile: screen width below this value will use mobile styles
- * $desktop: screen width above this value will use desktop styles
- * Screen width between $mobile and $desktop width will use the tablet layout.
- * assuming mobile < desktop
- */
 $breakpoints: (
   mobile: 800px,
-  desktop: 1200px,
+  desktop: 1400px,
 );
 
 $mobile: "(max-width: #{map.get($breakpoints, mobile)})";
@@ -56,3 +20,4 @@ $sidePanelWidth: 320px; // 320px - 380px;
 $boldWeight: 700;
 $semiBoldWeight: 600;
 $normalWeight: 400;
+$baseMargin: 0.5rem;

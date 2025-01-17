@@ -1,10 +1,10 @@
 ---
-id: SAA
-tags:
-  - commerce4pa3
 date: "2025-01-15"
 description: and a general management perspective
-modified: 2025-01-15 05:31:12 GMT-05:00
+id: SAA
+modified: 2025-10-29 02:15:59 GMT-04:00
+tags:
+  - commerce4pa3
 title: Strategic Analysis and Action
 ---
 
@@ -142,4 +142,3 @@ see also: pg.30
   - Related constrained (linked businesses)
   - Related linked (limited business connections)
   - Unrelated diversification (conglomerate)
-

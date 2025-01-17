@@ -17,12 +17,10 @@ body[data-slug="404"] {
     opacity: 1;
   }
 
+  .page-footer,
+  .page-header,
   header,
   footer {
-    display: none;
-  }
-
-  .page-header {
     display: none;
   }
 

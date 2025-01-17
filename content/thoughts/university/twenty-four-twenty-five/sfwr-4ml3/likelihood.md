@@ -1,9 +1,9 @@
 ---
+date: "2024-10-07"
 id: likelihood
+modified: 2025-10-29 02:16:09 GMT-04:00
 tags:
   - sfwr4ml3
-date: "2024-10-07"
-modified: 2024-12-14 04:33:12 GMT-05:00
 title: likelihood
 ---
 

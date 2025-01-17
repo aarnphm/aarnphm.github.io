@@ -1,9 +1,9 @@
 ---
+date: "2024-02-28"
 id: Root locus control
+modified: 2025-10-29 02:16:21 GMT-04:00
 tags:
   - sfwr3dx4
-date: "2024-02-28"
-modified: 2024-12-17 17:45:48 GMT-05:00
 title: Root locus control
 ---
 

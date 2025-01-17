@@ -1,11 +1,15 @@
 ---
+date: "2023-11-30"
+description: the man that was most mistakenly understood
 id: Nietzsche
+modified: 2025-10-29 02:15:30 GMT-04:00
 tags:
   - philosophy
   - philos1aa3
-date: "2023-11-30"
 title: Nietzsche's Life
 ---
+
+see also [[thoughts/Philosophy and Nietzsche|Deleuze intepretation of Nietzche]]
 
 _1844-1900_
 
@@ -13,7 +17,7 @@ Theology, acquainted with Greek philosophy
 
 _Twilight of the Idols, 1889_
 
-# Problem of [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Socrates|Socrates]].
+## Problem of [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Socrates|Socrates]].
 
 **Decadent: in decline, decay. "Doing a bad thing carefully."**
 
@@ -35,7 +39,7 @@ Philosophers: Not joy, serious, engaged in serious business, striving to know th
 
 Life is not a closed books, but evolving still.
 
-# God is Dead
+## God is Dead
 
 _God of the philosophers_
 
@@ -55,7 +59,7 @@ For N, believing god is passing into the past, and have no feature. Science has 
 
 So to die the superior value of truth. Value of Truth is problematic.
 
-## From _Thus Spoke Zarathustra_
+#### From _Thus Spoke Zarathustra_
 
 Contrast between Nobility and goodness
 _noble spirits vs. good_
@@ -63,7 +67,7 @@ nobility > good
 noble people: maintain nobility, might considered by other as setback
 not become "a churl" (churlish, misanthropic, a hater of humanity)
 
-## Morality as Anti-Nature
+#### Morality as Anti-Nature
 
 Critiques in Christianity,
 
@@ -101,7 +105,7 @@ Respect for others is imposed on us => refused to embrace
 
 > Morals compromise creativity, and value more creativity more than morals (beyond good and evil)
 
-### What I Owe the Ancients
+## What I Owe the Ancients
 
 _The Birth of Tragedy, 1872_
 

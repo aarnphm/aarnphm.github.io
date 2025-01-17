@@ -1,16 +1,16 @@
 ---
-id: Chaos
-tags:
-  - sapling
-  - growth
-  - self
 date: "2024-02-18"
-modified: 2024-12-11 07:51:44 GMT-05:00
+id: Chaos
+modified: 2025-10-29 02:15:09 GMT-04:00
 signature: from twenty three aaron
 socialDescription: on growing one year older. And a few things I learned growing up in a foreign land.
 socials:
   substack: https://open.substack.com/pub/livingalone/p/chaos-has-and-always-be-a-driven?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
   twitter: https://x.com/aarnphm_/status/1763686849782907196
+tags:
+  - sapling
+  - growth
+  - self
 title: Chaos is intuitive yet disheveled.
 ---
 
@@ -118,4 +118,4 @@ In this balance, You might find not just the next step but a deeper understandin
 
 [^sign]
 
-![[posts/images/23-aaron-younglings.jpeg|young Aaron through time]]
+![[posts/images/23-aaron-younglings.webp|young Aaron through time]]

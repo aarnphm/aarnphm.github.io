@@ -1,14 +1,13 @@
-import { Date as DateComponent, formatDate, getDate } from "./Date"
+import { Date as DateComponent, getDate } from "./Date"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 //@ts-ignore
 import script from "./scripts/content-meta.inline"
 import style from "./styles/contentMeta.scss"
 import { classNames } from "../util/lang"
 import { FullSlug, resolveRelative } from "../util/path"
-import readingTime from "reading-time"
 import { i18n } from "../i18n"
 import { JSX, h } from "preact"
-import { svgOptions } from "./renderPage"
+import { svgOptions } from "./svg"
 
 type MetaProp = {
   title: string
@@ -20,6 +19,7 @@ export default (() => {
   const ContentMeta: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
     let created: Date | undefined
     let modified: Date | undefined
+    const { locale } = cfg
 
     if (fileData.dates) {
       created = getDate(cfg, fileData)
@@ -27,9 +27,9 @@ export default (() => {
     if (fileData.dates?.modified) {
       modified = fileData.dates?.["modified"]
     }
-    const { minutes, words: _words } = readingTime(fileData.text!)
-    const displayedTime = i18n(cfg.locale).components.contentMeta.readingTime({
-      minutes: Math.ceil(minutes),
+    const displayedTime = i18n(locale).components.contentMeta.readingTime({
+      minutes: Math.ceil(fileData.readingTime?.minutes!),
+      words: Math.ceil(fileData.readingTime?.words!),
     })
 
     const Li = ({ title, item, classes }: MetaProp) => {
@@ -52,7 +52,7 @@ export default (() => {
             class: "page-creation",
             title: `Date de création du contenu de la page (${created})`,
           },
-          [h("em", {}, [<DateComponent date={created} locale={cfg.locale} />])],
+          [h("em", {}, [<DateComponent date={created} locale={locale} />])],
         ),
       })
     }
@@ -60,9 +60,11 @@ export default (() => {
       meta.push({
         title: "modifié à",
         classes: ["modified-time"],
-        item: h("span", { class: "page-modification" }, [
-          h("em", {}, [<DateComponent date={modified} locale={cfg.locale} />]),
-        ]),
+        item: h(
+          "span",
+          { class: "page-modification" },
+          h("em", {}, <DateComponent date={modified} locale={locale} />),
+        ),
       })
     }
     meta.push(
@@ -74,7 +76,10 @@ export default (() => {
           h(
             "a",
             {
-              href: resolveRelative(fileData.slug!, (fileData.slug! + ".html.md") as FullSlug),
+              href: resolveRelative(
+                fileData.slug!,
+                ((fileData.slug === "arena" ? "are.na" : fileData.slug!) + ".md") as FullSlug,
+              ),
               target: "_blank",
               rel: "noopener noreferrer",
               class: "llm-source",
@@ -85,23 +90,20 @@ export default (() => {
             "span",
             {
               type: "button",
-              arialabel: "copy source",
-              tabindex: -1,
-              ariaHidden: true,
+              ariaLabel: "copy source",
               class: "clipboard-button",
               "data-href": resolveRelative(
                 fileData.slug!,
-                (fileData.slug! + ".html.md") as FullSlug,
+                ((fileData.slug === "arena" ? "are.na" : fileData.slug!) + ".md") as FullSlug,
               ),
             },
-            [
-              h("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "copy-icon" }, [
-                h("use", { href: "#github-copy" }),
-              ]),
-              h("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "check-icon" }, [
-                h("use", { href: "#github-check" }),
-              ]),
-            ],
+
+            h("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "copy-icon" }, [
+              h("use", { href: "#github-copy" }),
+            ]),
+            h("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "check-icon" }, [
+              h("use", { href: "#github-check" }),
+            ]),
           ),
         ],
       },

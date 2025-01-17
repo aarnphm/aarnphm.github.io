@@ -1,24 +1,21 @@
 ---
+date: "2024-11-04"
+description: a variations of autoencoders operate on features sparsity, also known as SAEs.
 id: sparse autoencoder
+modified: 2025-10-29 02:15:53 GMT-04:00
 tags:
   - ml
-  - interp
-date: "2024-11-04"
-description: a variations of autoencoders operate on sparsity of features.
-modified: 2025-01-06 02:06:15 GMT-05:00
+  - interpretability
 title: sparse autoencoder
 transclude:
   title: false
 ---
 
-abbrev: SAE
-
-_see also: [landspace](https://docs.google.com/document/d/1lHvRXJsbi41bNGZ_znGN7DmlLXITXyWyISan7Qx2y6s/edit?tab=t.0#heading=h.j9b3g3x1o1z4)_
+see also: [landspace](https://docs.google.com/document/d/1lHvRXJsbi41bNGZ_znGN7DmlLXITXyWyISan7Qx2y6s/edit?tab=t.0#heading=h.j9b3g3x1o1z4)
 
 Often contains one layers of MLP with few linear [[thoughts/optimization#ReLU|ReLU]] that is trained on a subset of datasets the main LLMs is trained on.
 
-> empirical example: if we wish to interpret all features related to the author Camus, we might want to train an SAEs based on all given text of Camus
-> to interpret "similar" features from Llama-3.1
+> empirical example: if we wish to interpret all features related to the author Camus, we might want to train an SAEs based on all given text of Camus to interpret "similar" features from Llama-3.1
 
 > [!abstract] definition
 >
@@ -65,9 +62,9 @@ Ideas: output of decoder $f(x)$ has two roles
 - detects what features acre active <= L1 is crucial to ensure sparsity in decomposition
 - _estimates_ magnitudes of active features <= L1 is unwanted bias
 
-### Gated SAE
+## Gated SAE
 
-_uses [[thoughts/Pareto distribution|Pareto]] improvement over training to reduce L1 penalty_ [@rajamanoharan2024improvingdictionarylearninggated]
+@rajamanoharan2024improvingdictionarylearninggated applies [[thoughts/optimization#JumpReLU|JumpRELU]] and observe [[thoughts/Pareto distribution|Pareto]] improvement over training.
 
 Clear consequence of the bias during training is _shrinkage_ [@sharkey2024feature] [^shrinkage]
 
@@ -108,7 +105,7 @@ _Figure 3: Gated SAE with weight sharing between gating and magnitude paths_
 
 _Figure 4: A gated encoder become a single layer linear encoder with [[thoughts/optimization#JumpReLU]]_ [@erichson2019jumpreluretrofitdefensestrategy] _activation function_ $\sigma_\theta$
 
-### feature suppression
+## feature suppression
 
 See also: [link](https://www.alignmentforum.org/posts/3JuSjTZyMzaSeTxKk/addressing-feature-suppression-in-saes)
 
@@ -149,3 +146,13 @@ $$
 > y &= W_d f_s(x) + b_d
 > \end{aligned}
 > $$
+
+## sparse dictionary learning
+
+_find sparsity representation through linear combination of basic elements_
+
+Assumption based on linear representation hypothesis.
+
+This is useful to describe activations, but doesn't encapsulate "concepts" within a network.
+
+![[thoughts/mechanistic interpretability#^geometry]]

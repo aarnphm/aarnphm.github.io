@@ -7,6 +7,7 @@ import { i18n } from "../i18n"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 import { htmlToJsx } from "../util/jsx"
 import Slugger from "github-slugger"
+import OverflowListFactory from "./OverflowList"
 
 const ghSlugger = new Slugger()
 
@@ -20,6 +21,7 @@ const defaultOptions: Options = {
 
 export default ((userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }
+  const { OverflowList, overflowListAfterDOMLoaded } = OverflowListFactory()
 
   const TableOfContents: QuartzComponent = ({
     fileData,
@@ -63,7 +65,7 @@ export default ((userOpts?: Partial<Options>) => {
           <h3>{i18n(cfg.locale).components.tableOfContents.title}</h3>
         </button>
         <div id="toc-content">
-          <ul class="overflow">
+          <OverflowList id="toc-ul">
             {fileData.toc!.map((entry) => (
               <li key={entry.slug} class={`depth-${entry.depth}`}>
                 <a href={`#${entry.slug}`} data-for={entry.slug}>
@@ -71,7 +73,7 @@ export default ((userOpts?: Partial<Options>) => {
                 </a>
               </li>
             ))}
-          </ul>
+          </OverflowList>
         </div>
       </nav>
     )
@@ -84,6 +86,6 @@ export default ((userOpts?: Partial<Options>) => {
   }
 
   TableOfContents.css = modernStyle
-  TableOfContents.afterDOMLoaded = script
+  TableOfContents.afterDOMLoaded = script + overflowListAfterDOMLoaded
   return TableOfContents
 }) satisfies QuartzComponentConstructor

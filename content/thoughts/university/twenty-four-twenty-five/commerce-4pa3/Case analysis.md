@@ -1,14 +1,14 @@
 ---
-id: Case analysis
-tags:
-  - commerce4pa3
 date: "2025-01-15"
 description: and how to prep effectively
-modified: 2025-01-15 05:35:40 GMT-05:00
+id: Case analysis
+modified: 2025-10-29 02:15:58 GMT-04:00
+tags:
+  - commerce4pa3
 title: Case analysis
 ---
 
-See also [[thoughts/university/twenty-four-twenty-five/commerce-4pa3/Case analysis|pdf]]
+See also [[thoughts/university/twenty-four-twenty-five/commerce-4pa3/guide-case-analysis.pdf|pdf]]
 
 ## Core Purpose of Case Analysis
 

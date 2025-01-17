@@ -1,8 +1,9 @@
 ---
+date: "2024-02-08"
 id: Linear Optimization
+modified: 2025-10-29 02:16:13 GMT-04:00
 tags:
   - eng3px3
-date: "2024-02-08"
 title: Linear Optimization in Economics Analysis
 ---
 

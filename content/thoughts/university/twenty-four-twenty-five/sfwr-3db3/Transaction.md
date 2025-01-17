@@ -1,10 +1,10 @@
 ---
-id: Transaction
-tags:
-  - sfwr3db3
 date: "2024-12-11"
 description: and concurrency control.
-modified: 2024-12-13 06:11:15 GMT-05:00
+id: Transaction
+modified: 2025-10-29 02:16:03 GMT-04:00
+tags:
+  - sfwr3db3
 title: Transaction
 ---
 

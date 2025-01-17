@@ -23,16 +23,14 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = (opts) => {
   const macros = opts?.customMacros ?? {}
   return {
     name: "Latex",
-    markdownPlugins() {
-      return [remarkMath]
-    },
+    markdownPlugins: () => [remarkMath],
     htmlPlugins() {
       switch (engine) {
         case "typst": {
           return [[rehypeTypst, opts?.typstOptions ?? {}]]
         }
         default: {
-          return [[rehypeKatex, { output: "htmlAndMathml", macros, ...(opts?.katexOptions ?? {}) }]]
+          return [[rehypeKatex, { output: "htmlAndMathml", macros, ...opts?.katexOptions }]]
         }
       }
     },
@@ -50,8 +48,6 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = (opts) => {
               },
             ],
           }
-        default:
-          return { css: [], js: [] }
       }
     },
   }

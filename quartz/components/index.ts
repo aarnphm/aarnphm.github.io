@@ -1,15 +1,16 @@
-import Sidenotes from "./Sidenotes"
 import StackedNotes from "./StackedNotes"
 import Recommendations from "./Recommendations"
 import Byline from "./Byline"
 import Image from "./Image"
 import Reader from "./Reader"
 import Toolbar from "./Toolbar"
-import Navigation from "./Navigation"
+import Palette from "./Palette"
 import Keybind from "./Keybind"
 import Content from "./pages/Content"
 import TagContent from "./pages/TagContent"
 import FolderContent from "./pages/FolderContent"
+import ArenaIndex from "./pages/ArenaIndex"
+import ChannelContent from "./pages/ChannelContent"
 import NotFound from "./pages/404"
 import ArticleTitle from "./ArticleTitle"
 import Darkmode from "./Darkmode"
@@ -29,21 +30,29 @@ import MobileOnly from "./MobileOnly"
 import RecentNotes from "./RecentNotes"
 import Breadcrumbs from "./Breadcrumbs"
 import Comments from "./Comments"
+import Flex from "./Flex"
+import Grid from "./Grid"
+import SlidesContent from "./SlidesContent"
+import HeadingsConstructor from "./Headings"
+import CodeCopy from "./CodeCopy"
+import BaseViewSelector from "./BaseViewSelector"
 
 export {
-  Sidenotes,
+  Flex,
+  Palette,
   Recommendations,
   StackedNotes,
   Byline,
   Toolbar,
   Image,
   Reader,
-  Navigation,
   Keybind,
   ArticleTitle,
   Content,
   TagContent,
   FolderContent,
+  ArenaIndex,
+  ChannelContent,
   Darkmode,
   Head,
   PageTitle,
@@ -62,4 +71,9 @@ export {
   NotFound,
   Breadcrumbs,
   Comments,
+  SlidesContent,
+  Grid,
+  HeadingsConstructor,
+  CodeCopy,
+  BaseViewSelector,
 }

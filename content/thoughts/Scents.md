@@ -1,11 +1,11 @@
 ---
-id: Scents
-tags:
-  - evergreen
 comments: false
 date: "2024-01-07"
 description: A (mostly) up-to-date scents that I use/like/prefer.
-modified: 2025-01-06 00:30:49 GMT-05:00
+id: Scents
+modified: 2025-10-29 02:15:34 GMT-04:00
+tags:
+  - evergreen
 title: Scents
 ---
 
@@ -13,8 +13,9 @@ See [[books|antilibrary]] for reading list.
 
 ## current
 
-- LeLabo's Rose 31, Lavande 31, Labdanum 18
+- LeLabo's Rose 31, Lavande 31, Labdanum 18, Santal 31
 - Aesop's Gloam
+- Aesop's Aurner
 
 ## like.
 

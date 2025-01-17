@@ -1,10 +1,10 @@
 ---
+date: "2024-11-15"
 id: content
+modified: 2025-10-29 02:16:06 GMT-04:00
 tags:
   - sfwr4aa4
   - lab
-date: "2024-11-15"
-modified: "2024-11-15"
 title: PID Controller from input signals
 ---
 

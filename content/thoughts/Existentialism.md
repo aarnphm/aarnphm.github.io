@@ -1,8 +1,9 @@
 ---
+date: "2024-02-29"
 id: Existentialism
+modified: 2025-10-29 02:15:22 GMT-04:00
 tags:
   - philosophy
-date: "2024-02-29"
 title: Existentialism
 ---
 

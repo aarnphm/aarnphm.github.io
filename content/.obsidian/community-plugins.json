@@ -2,10 +2,10 @@
   "table-editor-obsidian",
   "obsidian-vimrc-support",
   "obsidian-minimal-settings",
-  "dataview",
   "pseudocode-in-obs",
-  "obsidian-citation-plugin",
-  "templater-obsidian",
   "obsidian-tikzjax",
-  "obsidian-latex-suite"
+  "obsidian-latex-suite",
+  "maps",
+  "obsidian-citation-plugin",
+  "obsidian-importer"
 ]

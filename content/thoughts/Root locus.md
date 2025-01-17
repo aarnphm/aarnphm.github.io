@@ -1,12 +1,12 @@
 ---
+date: "2024-02-28"
+description: method that tells us how the root of a closed-loop system change when parameters vary.
 id: Root locus
+modified: 2025-10-29 02:15:34 GMT-04:00
+noindex: true
 tags:
   - sfwr3dx4
   - sfwr4aa4
-date: "2024-02-28"
-description: method that tells us how the root of a closed-loop system change when parameters vary.
-modified: 2024-12-18 01:15:31 GMT-05:00
-noindex: true
 title: Root locus
 ---
 

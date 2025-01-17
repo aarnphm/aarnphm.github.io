@@ -1,10 +1,10 @@
 ---
+date: "2024-11-11"
 id: Nesterov momentum
+modified: 2025-10-29 02:15:30 GMT-04:00
 tags:
   - ml
   - optimization
-date: "2024-11-11"
-modified: "2024-11-11"
 title: Nesterov momentum
 transclude:
   title: false
