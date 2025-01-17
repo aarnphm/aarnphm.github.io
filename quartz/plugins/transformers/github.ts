@@ -93,7 +93,9 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
   return {
     name: "GitHub",
-    markdownPlugins() {
+    markdownPlugins(ctx) {
+      if (ctx.argv.serve) return []
+
       return [
         () => {
           return (tree: Root, file) => {
@@ -330,7 +332,9 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
         },
       ]
     },
-    htmlPlugins() {
+    htmlPlugins(ctx) {
+      if (ctx.argv.serve) return []
+
       // automatically add dir https://github.com/rehypejs/rehype-github/blob/main/packages/dir/lib/index.js
       // It is simple enough and I don't want to add a whole deps for it.
       const include = new Set(["div", "h1", "h2", "h3", "h4", "h5", "h6", "ol", "p", "ul"])

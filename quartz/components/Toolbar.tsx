@@ -1,4 +1,4 @@
-import { QuartzComponent, QuartzComponentConstructor } from "./types"
+import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 // @ts-ignore
 import script from "./scripts/toolbar.inline.ts"
 import style from "./styles/toolbar.scss"
@@ -168,7 +168,10 @@ const buttons: ToolbarProps[] = [
 ]
 
 export default (() => {
-  const Toolbar: QuartzComponent = () => {
+  const Toolbar: QuartzComponent = ({ ctx }: QuartzComponentProps) => {
+    // if we are serving, we can skip this
+    if (ctx.argv.serve) return null
+
     return (
       <div class="toolbar">
         <div class="toolbar-content">

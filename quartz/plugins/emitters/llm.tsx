@@ -88,7 +88,9 @@ export const LLM: QuartzEmitterPlugin = () => {
           allFiles,
         }
 
-        const root = transcludeFinal(clone(tree) as hastRoot, componentData, { dynalist: false })
+        const root = transcludeFinal(ctx, clone(tree) as hastRoot, componentData, {
+          dynalist: false,
+        })
         const mdast = toMdast(root, {
           handlers: {
             // handle ast parsed by rehype-pretty-code

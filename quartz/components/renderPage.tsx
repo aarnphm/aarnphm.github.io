@@ -19,7 +19,6 @@ import {
 } from "../util/path"
 import { visit } from "unist-util-visit"
 import { Root, Element, ElementContent, Node } from "hast"
-import { GlobalConfiguration } from "../cfg"
 import { i18n } from "../i18n"
 import { JSX } from "preact"
 import { headingRank } from "hast-util-heading-rank"
@@ -38,6 +37,7 @@ import curiusScript from "./scripts/curius.inline"
 import curiusFriendScript from "./scripts/curius-friends.inline"
 import { htmlToJsx } from "../util/jsx"
 import Content from "./pages/Content"
+import { BuildCtx } from "../util/ctx"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -457,6 +457,7 @@ export function pageResources(
 const defaultTranscludeOptions: TranscludeOptions = { dynalist: true, title: true }
 
 export function transcludeFinal(
+  ctx: BuildCtx,
   root: Root,
   { cfg, allFiles, fileData, externalResources }: QuartzComponentProps,
   userOpts?: Partial<TranscludeOptions>,
@@ -475,6 +476,9 @@ export function transcludeFinal(
 
   if (fileData.frontmatter?.transclude) {
     opts = { ...opts, ...fileData.frontmatter?.transclude }
+    if (ctx.argv.serve) {
+      opts = { ...opts, ...{ dynalist: false } }
+    }
   }
 
   const { dynalist } = opts
@@ -1069,7 +1073,7 @@ const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {
 }
 
 export function renderPage(
-  cfg: GlobalConfiguration,
+  ctx: BuildCtx,
   slug: FullSlug,
   componentData: QuartzComponentProps,
   components: RenderComponents,
@@ -1080,7 +1084,7 @@ export function renderPage(
   // for the file cached in contentMap in build.ts
   const root = clone(componentData.tree) as Root
   // NOTE: set componentData.tree to the edited html that has transclusions rendered
-  componentData.tree = transcludeFinal(root, componentData)
+  componentData.tree = transcludeFinal(ctx, root, componentData)
 
   if (slug === "index") {
     components = {
@@ -1153,7 +1157,8 @@ export function renderPage(
   const Header = HeaderConstructor()
 
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
-  const lang = (componentData.fileData.frontmatter?.lang ?? cfg.locale)?.split("-")[0] ?? "en"
+  const lang =
+    (componentData.fileData.frontmatter?.lang ?? componentData.cfg.locale)?.split("-")[0] ?? "en"
   const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? "default"
   const doc = (
     <html lang={lang}>

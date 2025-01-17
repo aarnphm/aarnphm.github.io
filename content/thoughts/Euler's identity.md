@@ -3,12 +3,10 @@ id: Euler's identity
 tags:
   - math
 date: "2024-11-05"
-modified: "2024-11-05"
-noindex: true
+description: probably the most beautiful equation in all mathematics
+modified: 2025-01-17 08:16:16 GMT-05:00
 title: Euler's identity
 ---
-
-Probably the most [[thoughts/aesthetic value#beauty|beautiful]] equation in mathematics:
 
 $$
 \begin{aligned}
@@ -20,7 +18,7 @@ i &: \text{imaginary unit satisfies } i^{2} = -1 \\
 \end{aligned}
 $$
 
-special case of Euler's formula:
+Special case of Euler's formula:
 
 $$
 e^{i \theta} = \cos(\theta) + i \sin(\theta)

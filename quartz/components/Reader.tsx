@@ -12,7 +12,15 @@ import style from "./styles/reader.scss"
 import readerScript from "./scripts/reader.inline"
 
 export default (() => {
-  const Reader: QuartzComponent = ({ displayClass, fileData, allFiles }: QuartzComponentProps) => {
+  const Reader: QuartzComponent = ({
+    ctx,
+    displayClass,
+    fileData,
+    allFiles,
+  }: QuartzComponentProps) => {
+    // if we are serving, we can skip this
+    if (ctx.argv.serve) return null
+
     // do some cleaning ast, so we need to clone not to affect the original nodes
     const { htmlAst, slug, filePath } = fileData
     const ast = clone(htmlAst) as Node
