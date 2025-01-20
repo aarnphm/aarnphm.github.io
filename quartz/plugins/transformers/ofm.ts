@@ -148,6 +148,11 @@ const wikilinkImageEmbedRegex = new RegExp(
   /^(?<alt>(?!^\d*x?\d*$).*?)?(\|?\s*?(?<width>\d+)(x(?<height>\d+))?)?$/,
 )
 
+export const checkMermaidCode = ({ tagName, properties }: Element) =>
+  tagName === "code" &&
+  Boolean(properties.className) &&
+  (properties.className as string[]).includes("mermaid")
+
 export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
 
@@ -158,7 +163,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
   return {
     name: "ObsidianFlavoredMarkdown",
-    textTransform(_ctx, src) {
+    textTransform(_, src) {
       // do comments at text level
       if (opts.comments) {
         if (src instanceof Buffer) {
@@ -174,7 +179,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           src = src.toString()
         }
 
-        src = src.replace(calloutLineRegex, (value) => {
+        src = src.replace(calloutLineRegex, (value: string) => {
           // force newline after title of callout
           return value + "\n> "
         })
@@ -368,7 +373,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           }
 
           if (opts.enableInHtmlEmbed) {
-            visit(tree, "html", (node: Html) => {
+            visit(tree, "html", (node) => {
               for (const [regex, replace] of replacements) {
                 if (typeof replace === "string") {
                   node.value = node.value.replace(regex, replace)
@@ -621,104 +626,123 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       if (opts.highlight) {
         plugins.push(() => {
-          return (tree: HtmlRoot) => {
-            visit(tree, "element", (node) => {
-              if (node.tagName === "p") {
-                const stack: number[] = []
-                const highlights: [number, number][] = []
-                const children = [...node.children]
+          return (tree) => {
+            visit(tree, { tagName: "p" }, (node) => {
+              const stack: number[] = []
+              const highlights: [number, number][] = []
+              const children = [...node.children]
 
-                for (let i = 0; i < children.length; i++) {
-                  const child = children[i]
-                  if (child.type === "text" && child.value.includes("==")) {
-                    // Split text node if it contains == marker
-                    const parts = child.value.split("==")
+              for (let i = 0; i < children.length; i++) {
+                const child = children[i]
+                if (child.type === "text" && child.value.includes("==")) {
+                  // Split text node if it contains == marker
+                  const parts = child.value.split("==")
 
-                    if (parts.length > 1) {
-                      // Replace original node with split parts
-                      const newNodes: (typeof child)[] = []
+                  if (parts.length > 1) {
+                    // Replace original node with split parts
+                    const newNodes: (typeof child)[] = []
 
-                      parts.forEach((part, idx) => {
-                        if (part) {
-                          newNodes.push({ type: "text", value: part })
+                    parts.forEach((part, idx) => {
+                      if (part) {
+                        newNodes.push({ type: "text", value: part })
+                      }
+                      // Add marker position except for last part
+                      if (idx < parts.length - 1) {
+                        if (stack.length === 0) {
+                          stack.push(i + newNodes.length)
+                        } else {
+                          const start = stack.pop()!
+                          highlights.push([start, i + newNodes.length])
                         }
-                        // Add marker position except for last part
-                        if (idx < parts.length - 1) {
-                          if (stack.length === 0) {
-                            stack.push(i + newNodes.length)
-                          } else {
-                            const start = stack.pop()!
-                            highlights.push([start, i + newNodes.length])
-                          }
-                        }
-                      })
+                      }
+                    })
 
-                      children.splice(i, 1, ...newNodes)
-                      i += newNodes.length - 1
-                    }
+                    children.splice(i, 1, ...newNodes)
+                    i += newNodes.length - 1
                   }
                 }
-
-                // Apply highlights in reverse to maintain indices
-                for (const [start, end] of highlights.reverse()) {
-                  const highlightSpan: Element = {
-                    type: "element",
-                    tagName: "mark",
-                    properties: {},
-                    children: children.slice(start, end + 1),
-                  }
-                  children.splice(start, end - start + 1, highlightSpan)
-                }
-
-                node.children = children
               }
+
+              // Apply highlights in reverse to maintain indices
+              for (const [start, end] of highlights.reverse()) {
+                const highlightSpan: Element = {
+                  type: "element",
+                  tagName: "mark",
+                  properties: {},
+                  children: children.slice(start, end + 1),
+                }
+                children.splice(start, end - start + 1, highlightSpan)
+              }
+
+              node.children = children
             })
           }
         })
       }
 
       if (opts.enableYouTubeEmbed) {
+        const checkEmbed = ({ tagName, properties }: Element) =>
+          tagName === "img" && Boolean(properties.src) && typeof properties.src === "string"
+
         plugins.push(() => {
           return (tree: HtmlRoot) => {
-            visit(tree, "element", (node) => {
-              if (node.tagName === "img" && typeof node.properties.src === "string") {
-                const match = node.properties.src.match(ytLinkRegex)
+            visit(
+              tree,
+              (node) => checkEmbed(node as Element),
+              (node) => {
+                const src = (node as Element).properties.src as string
+                const match = src.match(ytLinkRegex)
                 const videoId = match && match[2].length == 11 ? match[2] : null
-                const playlistId = node.properties.src.match(ytPlaylistLinkRegex)?.[1]
-                if (videoId) {
-                  // YouTube video (with optional playlist)
-                  node.tagName = "iframe"
-                  node.properties = {
-                    class: "external-embed youtube",
-                    allow: "fullscreen",
-                    frameborder: 0,
-                    width: "600px",
-                    src: playlistId
-                      ? `https://www.youtube.com/embed/${videoId}?list=${playlistId}`
-                      : `https://www.youtube.com/embed/${videoId}`,
-                  }
-                } else if (playlistId) {
-                  // YouTube playlist only.
-                  node.tagName = "iframe"
-                  node.properties = {
-                    class: "external-embed youtube",
-                    allow: "fullscreen",
-                    frameborder: 0,
-                    width: "600px",
-                    src: `https://www.youtube.com/embed/videoseries?list=${playlistId}`,
-                  }
+                const playlistId = src.match(ytPlaylistLinkRegex)?.[1]
+
+                const baseProperties = {
+                  class: "external-embed youtube",
+                  allow: "fullscreen",
+                  frameborder: 0,
+                  width: "600px",
                 }
-              }
-            })
+
+                switch (true) {
+                  case Boolean(videoId && playlistId):
+                    // Video with playlist
+                    node.tagName = "iframe"
+                    node.properties = {
+                      ...baseProperties,
+                      src: `https://www.youtube.com/embed/${videoId}?list=${playlistId}`,
+                    }
+                    break
+                  case Boolean(videoId):
+                    // Single video
+                    node.tagName = "iframe"
+                    node.properties = {
+                      ...baseProperties,
+                      src: `https://www.youtube.com/embed/${videoId}`,
+                    }
+                    break
+                  case Boolean(playlistId):
+                    // Playlist only
+                    node.tagName = "iframe"
+                    node.properties = {
+                      ...baseProperties,
+                      src: `https://www.youtube.com/embed/videoseries?list=${playlistId}`,
+                    }
+                    break
+                }
+              },
+            )
           }
         })
       }
 
       if (opts.enableCheckbox) {
+        const checkboxType = ({ tagName, properties }: Element) =>
+          tagName === "input" && Boolean(properties.type) && properties.type === "checkbox"
         plugins.push(() => {
-          return (tree: HtmlRoot, _file) => {
-            visit(tree, "element", (node) => {
-              if (node.tagName === "input" && node.properties.type === "checkbox") {
+          return (tree) => {
+            visit(
+              tree,
+              (node) => checkboxType(node as Element),
+              (node) => {
                 const isChecked = node.properties?.checked ?? false
                 node.properties = {
                   type: "checkbox",
@@ -726,21 +750,20 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                   checked: isChecked,
                   class: "checkbox-toggle",
                 }
-              }
-            })
+              },
+            )
           }
         })
       }
 
       if (opts.mermaid) {
         plugins.push(() => {
-          return (tree: HtmlRoot, _file) => {
-            visit(tree, "element", (node: Element, _idx, parent) => {
-              if (
-                node.tagName === "code" &&
-                ((node.properties?.className ?? []) as string[])?.includes("mermaid")
-              ) {
-                parent!.children = [
+          return (tree) => {
+            visit(
+              tree,
+              (node) => checkMermaidCode(node as Element),
+              (node: Element, _, parent: HtmlRoot) => {
+                parent.children = [
                   h(
                     "span.expand-button",
                     {
@@ -782,21 +805,18 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                         ".mermaid-header",
                         h(
                           "button.close-button",
-                          { arialabel: "close button", title: "close button", type: "button" },
+                          { ariaLabel: "close button", title: "close button", type: "button" },
                           [
                             s(
                               "svg",
                               {
+                                ...svgOptions,
                                 ariaHidden: true,
-                                xmlns: "http://www.w3.org/2000/svg",
                                 width: 24,
                                 height: 24,
-                                viewbox: "0 0 24 24",
                                 fill: "none",
                                 stroke: "currentColor",
                                 strokewidth: 2,
-                                strokelinecap: "round",
-                                strokelinejoin: "round",
                               },
                               [
                                 s("line", { x1: 18, y1: 6, x2: 6, y2: 18 }),
@@ -810,8 +830,8 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     ),
                   ),
                 ]
-              }
-            })
+              },
+            )
           }
         })
       }

@@ -6,9 +6,21 @@ import { trace } from "../util/trace"
 import { BuildCtx } from "../util/ctx"
 import { styleText } from "node:util"
 
-export async function emitContent(ctx: BuildCtx, content: HtmlContent[], fastRebuild?: boolean) {
-  fastRebuild ||= false
+type ParsedContents = {
+  all: HtmlContent[]
+  delta?: HtmlContent[]
+}
+
+type EmitOptions = {
+  ctx: BuildCtx
+  contents: ParsedContents
+  incremental?: boolean
+}
+
+export async function emitContent({ ctx, contents, incremental }: EmitOptions) {
+  incremental ||= false
   const { argv, cfg } = ctx
+  const { all, delta } = contents
   const perf = new PerfTimer()
   const log = new QuartzLogger(ctx.argv.verbose)
 
@@ -17,11 +29,21 @@ export async function emitContent(ctx: BuildCtx, content: HtmlContent[], fastReb
   let emittedFiles = 0
   const staticResources = getStaticResourcesFromPlugins(ctx)
   for (const emitter of cfg.plugins.emitters) {
-    if (fastRebuild && new Set(["FolderPage", "TagPage"]).has(emitter.name)) continue
+    if (emitter.skipDuringServe) {
+      if (argv.verbose)
+        console.log(styleText("yellow", `[emit:${emitter.name}] Skip during serve time`))
+      continue
+    }
 
     const emitterPerf = new PerfTimer()
     try {
-      const emitted = await emitter.emit(ctx, content, staticResources)
+      const emitted = await emitter.emit(
+        ctx,
+        incremental && emitter.requiresFullContent !== undefined && emitter.requiresFullContent
+          ? all
+          : (delta ?? all),
+        staticResources,
+      )
       emittedFiles += emitted.length
 
       if (ctx.argv.verbose) {

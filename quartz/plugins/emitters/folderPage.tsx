@@ -42,6 +42,7 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
 
   return {
     name: "FolderPage",
+    requiresFullContent: true,
     getQuartzComponents() {
       return [Head, Header, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
@@ -66,7 +67,7 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
     },
     async emit(ctx, content, resources): Promise<FilePath[]> {
       const fps: FilePath[] = []
-      const allFiles = content.map((c) => c[1].data)
+      const allFiles = ctx.allFiles
       const cfg = ctx.cfg.configuration
 
       // Use allSlugs to get all folders, including those without markdown files

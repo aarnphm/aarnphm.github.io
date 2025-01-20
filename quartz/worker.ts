@@ -4,8 +4,8 @@ import cfg from "../quartz.config"
 import { Argv, BuildCtx } from "./util/ctx"
 import { FilePath, FullSlug } from "./util/path"
 import {
-  createFileParser,
   createMarkdownParser,
+  createHtmlParser,
   createHtmlProcessor,
   createMarkdownProcessor,
 } from "./processors/parse"
@@ -18,14 +18,16 @@ export async function parseMarkdown(buildId: string, argv: Argv, fps: FilePath[]
   // we assume markdown parsers can add to `allSlugs`,
   // but don't actually use them
   const allSlugs: FullSlug[] = []
+  const allAssets: FullSlug[] = []
   const ctx: BuildCtx = {
     buildId,
     cfg,
     argv,
     allSlugs,
+    allAssets,
   }
   const processor = createMarkdownProcessor(ctx)
-  const parse = createFileParser(ctx, fps)
+  const parse = createMarkdownParser(ctx, fps)
   return [await parse(processor), allSlugs]
 }
 
@@ -34,14 +36,16 @@ export function parseHtml(
   argv: Argv,
   fps: MarkdownContent[],
   allSlugs: FullSlug[],
+  allAssets: string[],
 ) {
   const ctx: BuildCtx = {
     buildId,
     cfg,
     argv,
     allSlugs,
+    allAssets,
   }
   const processor = createHtmlProcessor(ctx)
-  const parse = createMarkdownParser(ctx, fps)
+  const parse = createHtmlParser(ctx, fps)
   return parse(processor)
 }

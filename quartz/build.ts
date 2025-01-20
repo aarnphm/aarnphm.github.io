@@ -47,6 +47,7 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
     cfg,
     allSlugs: [],
     allAssets: [],
+    allFiles: [],
   }
 
   const perf = new PerfTimer()
@@ -54,12 +55,12 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
 
   const pluginCount = Object.values(cfg.plugins).flat().length
   const pluginNames = (key: "transformers" | "filters" | "emitters") =>
-    cfg.plugins[key].map((plugin) => plugin.name)
+    cfg.plugins[key].filter((plugin) => !plugin.skipDuringServe).map((plugin) => plugin.name)
   if (argv.verbose) {
     console.log(`[process] Loaded ${pluginCount} plugins`)
-    console.log(`[process] ├── Transformers: [${pluginNames("transformers").join(",")}]`)
-    console.log(`[process] ├── Filters: [${pluginNames("filters").join(",")}]`)
-    console.log(`[process] └── Emitters: [${pluginNames("emitters").join(",")}]`)
+    console.log(`[process] ├── Transformers: ${pluginNames("transformers").join(", ")}`)
+    console.log(`[process] ├── Filters: ${pluginNames("filters").join(", ")}`)
+    console.log(`[process] └── Emitters: ${pluginNames("emitters").join(", ")}`)
   }
 
   const release = await mut.acquire()
@@ -83,8 +84,9 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
 
   const parsedFiles = await parseMarkdown(ctx, filePaths)
   const filteredContent = filterContent(ctx, parsedFiles)
+  ctx.allFiles = filteredContent.map((c) => c[1].data)
 
-  await emitContent(ctx, filteredContent)
+  await emitContent({ ctx, contents: { all: filteredContent } })
   console.log(
     styleText("green", `[build] Done processing ${fps.length} files in ${perf.timeSince()}`),
   )
@@ -232,15 +234,15 @@ async function rebuildFromEntrypoint(
 
     // Filter content to only include changed/rebuilt files
     const changedFiles = new Set([...toRebuild].map((fp) => path.relative(argv.directory, fp)))
-    const contentToEmit = filteredContent.filter(([_tree, vfile]) => {
+    const delta = filteredContent.filter(([_tree, vfile]) => {
       const relativePath = path.relative(argv.directory, vfile.data.filePath!)
       return changedFiles.has(relativePath) || toRemove.has(vfile.data.filePath!)
     })
 
     if (argv.verbose) {
-      console.log(styleText("yellow", `[rebuild] Emitting ${contentToEmit.length} changed files`))
+      console.log(styleText("yellow", `[rebuild] Emitting ${delta.length} changed files`))
     }
-    await emitContent(ctx, contentToEmit, true)
+    await emitContent({ ctx, contents: { delta, all: filteredContent }, incremental: true })
 
     console.log(styleText("green", `[rebuild] Done rebuilding in ${perf.timeSince()}`))
   } catch (err: any) {

@@ -5,7 +5,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: cool stuff on the internet
-modified: 2025-01-17 02:00:14 GMT-05:00
+modified: 2025-01-19 01:24:16 GMT-05:00
 noindex: true
 permalink:
   - website
@@ -25,12 +25,12 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.sholis.com/ -- Clean visual, great contents
 - https://jzhao.xyz/ -- The original Quartz's implementation
   - daylightcomputer's inspired but in pure CSS and [HTML](https://github.com/jackyzha0/sunlit)
-- Daylight Computer ([link](https://daylightcomputer.com/))
-- https://walzr.com/IMG_0001
+- https://daylightcomputer.com/ -- Daylight Computer landing
+- https://walzr.com/IMG_0001 -- Send to YouTube in Photos app
 - https://shapefarm.net/ -- clean aesthetics with nice hierarchical components
 - https://jacobleech.com/ -- warm, graphics, animation smooth
 - https://ertdfgcvb.xyz/ -- cool ascii animations
-- https://typicalmitul.com/montreal-in-motion
+- https://typicalmitul.com/montreal-in-motion -- Montreal in Lens
 - http://pressanykey.today/ -- cool visualisation of typing process
 - https://langworth.com/ -- wait terminal go brrr
 - https://perfume-area.com/reviews/page:2 -- arena for perfume
@@ -51,6 +51,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.tylerxhobbs.com/words/flow-fields -- flow feel
 - https://maalvika.substack.com/p/tiktoks-boyfriend-tests-and-the-spectacle -- tiktok boyfriend test and spectacle of modern love
 - https://handwritten.blog/2022-10-01-hyperlinks-in-handwriting.html -- Handwritten blog
+- https://www.muckrock.com/news/archives/2015/jul/21/nothing-indicate-nothing-indicate-subject-had-any-/ -- Paul Erdős, he is just a mathematician that really [[/tags/love|love]] math
 
 ## protocol
 

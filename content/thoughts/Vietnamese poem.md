@@ -2,6 +2,7 @@
 id: Vietnamese poem
 aliases:
   - viet-poem
+  - vietnam
 tags:
   - seed
   - poem
@@ -16,6 +17,19 @@ title: Vietnamese poem
 transclude:
   dynalist: false
 ---
+
+## Xuân Diệu
+
+excerpt from "Love":
+
+```poetry
+Yêu, là chết ở trong lòng một ít,
+Vì mấy khi yêu mà chắc được yêu?
+Cho rất nhiều, song nhận chẳng bao nhiêu;
+Người ta phụ, hoặc thờ ơ, chẳng biết.
+```
+
+The opening line was paraphrased from Haraucourt: _Partir, c'est mourir n peu_
 
 ## Tố Hữu
 

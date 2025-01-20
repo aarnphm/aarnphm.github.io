@@ -18,6 +18,7 @@ export type QuartzTransformerPlugin<Options extends OptionType = undefined> = (
 ) => QuartzTransformerPluginInstance
 export type QuartzTransformerPluginInstance = {
   name: string
+  skipDuringServe?: boolean
   textTransform?: (ctx: BuildCtx, src: string | Buffer) => string | Buffer
   markdownPlugins?: (ctx: BuildCtx) => PluggableList
   htmlPlugins?: (ctx: BuildCtx) => PluggableList
@@ -29,6 +30,7 @@ export type QuartzFilterPlugin<Options extends OptionType = undefined> = (
 ) => QuartzFilterPluginInstance
 export type QuartzFilterPluginInstance = {
   name: string
+  skipDuringServe?: boolean
   shouldPublish(ctx: BuildCtx, content: HtmlContent): boolean
 }
 
@@ -37,6 +39,8 @@ export type QuartzEmitterPlugin<Options extends OptionType = undefined> = (
 ) => QuartzEmitterPluginInstance
 export type QuartzEmitterPluginInstance = {
   name: string
+  skipDuringServe?: boolean
+  requiresFullContent?: boolean
   emit(ctx: BuildCtx, content: HtmlContent[], resources: StaticResources): Promise<FilePath[]>
   getQuartzComponents(ctx: BuildCtx): QuartzComponent[]
   getDependencyGraph?(

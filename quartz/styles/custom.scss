@@ -415,9 +415,11 @@ body {
   }
 
   &[data-language="vi"] {
-    --headerFont: "Playfair Display", var(--headerFont);
-    --bodyFont: "Playfair Display", var(--bodyFont);
-    --codeFont: "Playfair Display", var(--codeFont);
+    article {
+      --headerFont: "Playfair Display", var(--headerFont);
+      --bodyFont: "Playfair Display", var(--bodyFont);
+      --codeFont: "Playfair Display", var(--codeFont);
+    }
   }
 
   &[data-slug="index"] {
@@ -780,5 +782,27 @@ main.rss {
         line-height: 15px;
       }
     }
+  }
+}
+
+p.quotes {
+  padding-top: 1rem;
+  padding-left: 3rem;
+
+  &:before,
+  &:after {
+    font-size: 2em;
+    line-height: 0.1em;
+    vertical-align: -0.4em;
+  }
+
+  &:before {
+    content: "“";
+    margin-right: 0.25em;
+  }
+
+  &:after {
+    content: "”";
+    margin-left: 0.25em;
   }
 }

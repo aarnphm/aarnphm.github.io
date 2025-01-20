@@ -16,9 +16,7 @@ const name = "Assets"
 export const Assets: QuartzEmitterPlugin = () => {
   return {
     name,
-    getQuartzComponents() {
-      return []
-    },
+    getQuartzComponents: () => [],
     async getDependencyGraph(_ctx, _content, _resources) {
       return new DepGraph<FilePath>()
     },

@@ -30,10 +30,11 @@ const cache = new Map()
 
 export const Twitter: QuartzTransformerPlugin = () => ({
   name: "Twitter",
+  skipDuringServe: true,
   markdownPlugins(ctx) {
     const locale = ctx.cfg.configuration.locale.split("-")[0] ?? "en"
     return [
-      () => async (tree: Root, _file) => {
+      () => async (tree) => {
         const promises: Promise<void>[] = []
 
         const fetchEmbedded = async (parent: Root, index: number, url: string, locale: string) => {
@@ -42,15 +43,19 @@ export const Twitter: QuartzTransformerPlugin = () => ({
           const cacheKey = `twitter:${url}`
           let htmlString = cache.get(cacheKey)
           if (!htmlString) {
-            try {
-              const data: TwitterEmbed = await fetch(
-                `https://publish.twitter.com/oembed?url=${url}&dnt=false&omit_script=true&lang=${locale}`,
-              ).then((res) => res.json())
-              value = unescapeHTML(data.html)
-              cache.set(cacheKey, value)
-            } catch (error) {
-              console.log(error)
-            }
+            await fetch(
+              `https://publish.twitter.com/oembed?url=${url}&dnt=false&omit_script=true&lang=${locale}`,
+            )
+              .then((res) => res.json())
+              .then((data: TwitterEmbed) => {
+                value = unescapeHTML(data.html)
+                cache.set(cacheKey, value)
+                return value
+              })
+              .catch((error) => {
+                console.error(`Failed to fetch Twitter embed for ${url}:`, error)
+                return value
+              })
           }
           parent!.children.splice(index, 1, { type: "html", value })
         }

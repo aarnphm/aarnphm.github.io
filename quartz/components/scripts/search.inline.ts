@@ -492,6 +492,15 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     const finalResults = [...allIds]
       .map((id) => formatForDisplay(currentSearchTerm, id))
       .filter((result): result is Item => result !== null)
+      .sort((a, b) => {
+        // If both have targets or both don't have targets, maintain original order
+        if ((!a?.target && !b?.target) || (a?.target && b?.target)) return 0
+        // If a has target and b doesn't, a comes first
+        if (a?.target && !b?.target) return -1
+        // If b has target and a doesn't, b comes first
+        if (!a?.target && b?.target) return 1
+        return 0
+      })
     await displayResults(finalResults)
   }
 

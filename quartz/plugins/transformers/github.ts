@@ -6,7 +6,7 @@ import path from "node:path"
 import { BuildUrlValues, defaultBuildUrl } from "remark-github"
 import { RepositoryInfo, UrlInfo } from "remark-github/lib"
 import { Root, Link, PhrasingContent } from "mdast"
-import { Root as hastRoot } from "hast"
+import { Root as HtmlRoot, Element } from "hast"
 import { RegExpMatchObject, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import { toString } from "mdast-util-to-string"
 import { QuartzTransformerPlugin } from "../types"
@@ -93,9 +93,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
   return {
     name: "GitHub",
-    markdownPlugins(ctx) {
-      if (ctx.argv.serve) return []
-
+    markdownPlugins() {
       return [
         () => {
           return (tree: Root, file) => {
@@ -332,27 +330,33 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
         },
       ]
     },
-    htmlPlugins(ctx) {
-      if (ctx.argv.serve) return []
-
-      // automatically add dir https://github.com/rehypejs/rehype-github/blob/main/packages/dir/lib/index.js
-      // It is simple enough and I don't want to add a whole deps for it.
-      const include = new Set(["div", "h1", "h2", "h3", "h4", "h5", "h6", "ol", "p", "ul"])
+    htmlPlugins() {
       return [
         () => {
-          return (tree: hastRoot, _file) => {
-            visit(tree, "element", function (node) {
-              if (node.type === "element" && include.has(node.tagName) && node.properties) {
-                // Do not add them to `:is(ol, ul).contains-task-list`.
-                if (
-                  Array.isArray(node.properties.className) &&
-                  node.properties.className.includes("contains-task-list")
-                ) {
-                  return
-                }
+          // automatically add dir https://github.com/rehypejs/rehype-github/blob/main/packages/dir/lib/index.js
+          // It is simple enough and I don't want to add a whole deps for it.
+          const include = new Set(["div", "h1", "h2", "h3", "h4", "h5", "h6", "ol", "p", "ul"])
+
+          const checkAddDir = ({ type, tagName, properties }: Element) => {
+            if (type !== "element" || !include.has(tagName) || !properties) return false
+            // Do not add them to `:is(ol, ul).contains-task-list`.
+            if (
+              Array.isArray(properties.className) &&
+              properties.className.includes("contains-task-list")
+            ) {
+              return false
+            }
+            return true
+          }
+          return (tree: HtmlRoot, _file) => {
+            visit(
+              tree,
+              (node) => checkAddDir(node as Element),
+              (node) => {
+                // @ts-ignore
                 node.properties.dir = "auto"
-              }
-            })
+              },
+            )
           }
         },
         rehypeGithubEmoji,

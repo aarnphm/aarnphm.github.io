@@ -13,6 +13,10 @@ type CrumbStyle = "full" | "letter" | "unique"
 
 interface BreadcrumbOptions {
   /**
+   * Maximum length for each breadcrumb title. Set to 0 or negative to disable truncation
+   */
+  titleLength: number
+  /**
    * Symbol between crumbs
    */
   spacerSymbol: string
@@ -51,6 +55,7 @@ interface BreadcrumbOptions {
 }
 
 const defaultOptions: BreadcrumbOptions = {
+  titleLength: 20,
   spacerSymbol: "❯",
   rootName: "Home",
   resolveFrontmatterTitle: true,
@@ -60,9 +65,18 @@ const defaultOptions: BreadcrumbOptions = {
   maxItems: 3,
 }
 
-function formatCrumb(displayName: string, baseSlug: FullSlug, currentSlug: SimpleSlug): CrumbData {
+function formatCrumb(
+  displayName: string,
+  baseSlug: FullSlug,
+  currentSlug: SimpleSlug,
+  maxLength: number,
+): CrumbData {
+  let title = displayName.replaceAll("-", " ")
+  if (maxLength > 0 && title.length > maxLength) {
+    title = title.slice(0, maxLength) + "..."
+  }
   return {
-    displayName: displayName.replaceAll("-", " "),
+    displayName: title,
     path: resolveRelative(baseSlug, currentSlug),
   }
 }
@@ -161,8 +175,14 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
 
       // Add current file to crumb (can directly use frontmatter title)
       if (options.showCurrentPage && slugParts.at(-1) !== "index") {
+        const formatted = formatCrumb(
+          isTagPath ? (slugParts.at(-1) ?? "") : fileData.frontmatter!.title,
+          fileData.slug!,
+          "" as SimpleSlug,
+          options.titleLength,
+        )
         crumbs.push({
-          displayName: isTagPath ? (slugParts.at(-1) ?? "") : fileData.frontmatter!.title,
+          displayName: formatted.displayName,
           path: "",
         })
       }
@@ -175,7 +195,7 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
         displayCrumbs.length - options.maxItems! + 1,
         displayCrumbs.length,
       )
-      displayCrumbs = [first, { displayName: "...", path: "" }, ...last]
+      displayCrumbs = [first, { displayName: "...", path: crumbs.at(-2)!.path }, ...last]
     }
 
     return (

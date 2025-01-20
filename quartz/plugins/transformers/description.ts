@@ -2,6 +2,7 @@ import { Root as HTMLRoot } from "hast"
 import { toString } from "hast-util-to-string"
 import { QuartzTransformerPlugin } from "../types"
 import { escapeHTML } from "../../util/escape"
+import readingTime, { ReadTimeResults } from "reading-time"
 
 export interface Options {
   descriptionLength: number
@@ -25,7 +26,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
     htmlPlugins() {
       return [
         () => {
-          return async (tree: HTMLRoot, file) => {
+          return (tree: HTMLRoot, file) => {
             let frontMatterDescription = file.data.frontmatter?.description
             let text = escapeHTML(toString(tree))
 
@@ -67,6 +68,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
 
             file.data.description = finalDesc.join(" ")
             file.data.text = text
+            file.data.readingTime = readingTime(file.data.text!)
           }
         },
       ]
@@ -78,5 +80,6 @@ declare module "vfile" {
   interface DataMap {
     description: string
     text: string
+    readingTime: ReadTimeResults
   }
 }

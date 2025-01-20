@@ -29,6 +29,7 @@ import { InlineMath, Math, mathToMarkdown } from "mdast-util-math"
 import DepGraph from "../../depgraph"
 import { toText } from "hast-util-to-text"
 import { headingRank } from "hast-util-heading-rank"
+import { checkMermaidCode } from "../transformers/ofm"
 
 const heading = (h: State, node: Element): Heading => {
   // NOTE: for all heading, we append the links in hast syntax tree. For markdown, we don't need to do this.
@@ -57,24 +58,16 @@ const name = "LLM"
 export const LLM: QuartzEmitterPlugin = () => {
   return {
     name,
-    getQuartzComponents() {
-      return []
-    },
+    skipDuringServe: true,
+    getQuartzComponents: () => [],
     async getDependencyGraph() {
       return new DepGraph<FilePath>()
     },
     async emit(ctx, content, resources): Promise<FilePath[]> {
-      // Hmm, we will just disable llm generation during serve for now,
-      // since most of the rehype-remark is pretty expensive.
-      if (ctx.argv.serve) {
-        if (ctx.argv.verbose)
-          console.log(`[emit:${name}] Skipping generate LLM source on serve mode.`)
-        return []
-      }
-
       const cfg = ctx.cfg.configuration
       const fps: Promise<FilePath>[] = []
-      const allFiles = content.map((c) => c[1].data)
+      const allFiles = ctx.allFiles
+
       let resconstructed: string[] = []
 
       for (const [tree, file] of content) {
@@ -103,27 +96,26 @@ export const LLM: QuartzEmitterPlugin = () => {
                 let code: Element | undefined
                 let figcaption: Element | undefined
 
-                visit(node, "element", (el: Element) => {
-                  if (
-                    el.tagName === "figcaption" &&
-                    el.properties?.dataRehypePrettyCodeTitle === ""
-                  ) {
-                    figcaption = el
+                const checkCaption = ({ tagName, properties }: Element) =>
+                  tagName === "figcaption" &&
+                  Boolean(properties) &&
+                  properties.dataRehypePrettyCodeTitle === ""
+                visit(
+                  node,
+                  (node) => checkCaption(node as Element),
+                  (el) => {
+                    figcaption = el as Element
                     return false
-                  }
-                })
-                visit(node, "element", (el: Element) => {
-                  if (el.tagName === "pre") {
-                    pre = el
-                    return false
-                  }
+                  },
+                )
+                visit(node, { tagName: "pre" }, (el: Element) => {
+                  pre = el
+                  return false
                 })
                 // Find pre, code, and figcaption elements
-                visit(pre as Node, "element", (el: Element) => {
-                  if (el.tagName === "code") {
-                    code = el
-                    return false
-                  }
+                visit(pre as Node, { tagName: "code" }, (el: Element) => {
+                  code = el
+                  return false
                 })
 
                 if (!code || !pre) return hastToMdastHandlers.figure(h, node)
@@ -161,14 +153,18 @@ export const LLM: QuartzEmitterPlugin = () => {
 
                 // Build code content from spans
                 let codeContent = ""
-                visit(code, "element", (span: Element) => {
-                  if (span.properties?.dataLine !== undefined) {
+                const hasLines = ({ properties }: Element) =>
+                  Boolean(properties) && properties.dataLine !== undefined
+                visit(
+                  code,
+                  (node) => hasLines(node as Element),
+                  (span) => {
                     visit(span, "text", (text: Text) => {
                       codeContent += text.value
                     })
                     codeContent += "\n"
-                  }
-                })
+                  },
+                )
 
                 // Build meta string
                 const meta = [
@@ -190,11 +186,9 @@ export const LLM: QuartzEmitterPlugin = () => {
                 return result
               } else if (node.properties?.dataRemarkTikz === "") {
                 let value: string | undefined = undefined
-                visit(node, "element", (node) => {
-                  if (node.tagName === "annotation") {
-                    value = JSON.parse((node.children[0] as Text).value)
-                    return false
-                  }
+                visit(node, { tagName: "annotation" }, (node) => {
+                  value = JSON.parse((node.children[0] as Text).value)
+                  return false
                 })
                 if (value === undefined) return hastToMdastHandlers.figure(h, node)
 
@@ -212,20 +206,26 @@ export const LLM: QuartzEmitterPlugin = () => {
                 const inline = !classNames.includes("katex-display")
                 let source: string | null = null
 
-                visit(node, "element", (node) => {
-                  if (
-                    node.tagName === "annotation" &&
-                    node.properties?.encoding === "application/x-tex"
-                  ) {
-                    if (node.children?.[0]?.type === "text") {
-                      source = node.children[0].value
+                const checkAnnotation = ({ tagName, properties, children }: Element) =>
+                  tagName === "annotation" &&
+                  Boolean(properties.encoding) &&
+                  children.length > 0 &&
+                  properties.encoding === "application/x-tex"
+
+                visit(
+                  node,
+                  (node) => checkAnnotation(node as Element),
+                  (node) => {
+                    const [inner] = (node as Element).children
+                    if (inner.type === "text") {
+                      source = inner.value
                       return false // stop traversal
                     }
-                  }
-                })
+                  },
+                )
                 if (!source) {
                   console.warn(
-                    `[emit:ContentPage] Could not extract LaTeX source from KaTeX node (slug: ${slug})`,
+                    `[emit:${name}] Could not extract LaTeX source from KaTeX node (slug: ${slug})`,
                   )
                   return hastToMdastHandlers.span(h, node)
                 }
@@ -262,15 +262,15 @@ export const LLM: QuartzEmitterPlugin = () => {
 
               let codeEl: Element | undefined
               // handle mermaid
-              visit(node, "element", (el) => {
-                if (
-                  el.tagName === "code" &&
-                  ((el.properties?.className ?? []) as string[]).includes("mermaid")
-                ) {
-                  codeEl = el
+              visit(
+                node,
+                (node) => checkMermaidCode(node as Element),
+                (el) => {
+                  codeEl = el as Element
                   return false
-                }
-              })
+                },
+              )
+
               if (codeEl) {
                 const results: Code = {
                   type: "code",

@@ -14,7 +14,6 @@ import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.
 import { Content } from "../../components"
 import { write } from "./helpers"
 import DepGraph from "../../depgraph"
-import { styleText } from "node:util"
 
 // get all the dependencies for the markdown file
 // eg. images, scripts, stylesheets, transclusions
@@ -108,7 +107,6 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
     async emit(ctx, content, resources): Promise<FilePath[]> {
       const cfg = ctx.cfg.configuration
       const fps: Promise<FilePath>[] = []
-      const allFiles = content.map((c) => c[1].data)
 
       let containsIndex = false
       for (const [tree, file] of content) {
@@ -125,7 +123,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
           cfg,
           children: [],
           tree,
-          allFiles,
+          allFiles: ctx.allFiles,
         }
 
         const content = renderPage(ctx, slug, componentData, opts, externalResources)

@@ -28,7 +28,7 @@ export function createMarkdownProcessor(ctx: BuildCtx): QuartzMarkdownProcessor 
       // MD AST -> MD AST transforms
       .use(
         transformers
-          .filter((p) => p.markdownPlugins)
+          .filter((p) => !p.skipDuringServe && p.markdownPlugins)
           .flatMap((plugin) => plugin.markdownPlugins!(ctx)),
       )
   )
@@ -42,7 +42,11 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
       // MD AST -> HTML AST
       .use(remarkRehype, { allowDangerousHtml: true })
       // HTML AST -> HTML AST transforms
-      .use(transformers.filter((p) => p.htmlPlugins).flatMap((plugin) => plugin.htmlPlugins!(ctx)))
+      .use(
+        transformers
+          .filter((p) => !p.skipDuringServe && p.htmlPlugins)
+          .flatMap((plugin) => plugin.htmlPlugins!(ctx)),
+      )
   )
 }
 
@@ -84,7 +88,7 @@ async function transpileWorkerScript() {
   })
 }
 
-export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
+export function createMarkdownParser(ctx: BuildCtx, fps: FilePath[]) {
   const { argv, cfg } = ctx
   return async (processor: QuartzMarkdownProcessor) => {
     const res: MarkdownContent[] = []
@@ -124,7 +128,7 @@ export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
   }
 }
 
-export function createMarkdownParser(ctx: BuildCtx, mdContent: MarkdownContent[]) {
+export function createHtmlParser(ctx: BuildCtx, mdContent: MarkdownContent[]) {
   return async (processor: QuartzHtmlProcessor) => {
     const res: HtmlContent[] = []
     for (const [ast, file] of mdContent) {
@@ -164,13 +168,13 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Htm
   log.start(`[process] Parsing input files using ${concurrency} threads`)
   if (concurrency === 1) {
     try {
-      const processor = createMarkdownProcessor(ctx)
-      const fileParser = createFileParser(ctx, fps)
-      const markdown = await fileParser(processor)
+      const markdownProcessor = createMarkdownProcessor(ctx)
+      const markdownParser = createMarkdownParser(ctx, fps)
+      const markdown = await markdownParser(markdownProcessor)
 
-      const html = createHtmlProcessor(ctx)
-      const htmlParser = createMarkdownParser(ctx, markdown)
-      res = await htmlParser(html)
+      const htmlProcessor = createHtmlProcessor(ctx)
+      const htmlParser = createHtmlParser(ctx, markdown)
+      res = await htmlParser(htmlProcessor)
     } catch (error) {
       log.end()
       throw error
@@ -199,7 +203,9 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Htm
       ctx.allSlugs.push(...extraSlugs)
     }
     for (const [mdChunk, _] of mdResults) {
-      childPromises.push(pool.exec("parseHtml", [ctx.buildId, argv, mdChunk, ctx.allSlugs]))
+      childPromises.push(
+        pool.exec("parseHtml", [ctx.buildId, argv, mdChunk, ctx.allSlugs, ctx.allAssets]),
+      )
     }
     const results: HtmlContent[][] = await WorkerPromise.all(childPromises).catch(errorHandler)
     res = results.flat()

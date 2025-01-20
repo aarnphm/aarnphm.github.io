@@ -312,58 +312,72 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
             return { dest, alias: alias ?? path.basename(fp), dataSlug: full }
           }
 
-          visit(tree, "element", (node, index, parent) => {
-            if (node.tagName === "pre" && (node.children[0] as Element).tagName === "code") {
-              const code = node.children[0] as Element
-              const classNames = (code.properties?.className ?? []) as string[]
-              if (classNames.includes("language-telescopic")) {
-                const replacements: FindAndReplaceList = [
-                  [
-                    wikilinkRegex,
-                    (match, ...link) => {
-                      const { dest, alias, dataSlug } = wikilinksReplace(match, ...link)
-
-                      return toHtml(h("a", { href: dest }, { type: "text", value: alias }))
-                    },
-                  ],
-                  [
-                    linkRegex,
-                    (_match, value, href) => {
-                      return toHtml(h("a", { href }, { type: "text", value }))
-                    },
-                  ],
-                ]
-                hastFindReplace(code, replacements)
-
-                const content = mdToContent(toString(code), opts.separator)
-                parent!.children.splice(
-                  index!,
-                  1,
-                  h(
-                    "div.telescopic-container",
-                    { id: code.properties.id },
-                    h(
-                      "span",
-                      { class: "replay", type: "button" },
-                      s(
-                        "svg",
-                        {
-                          ...svgOptions,
-                          height: 12,
-                          width: 12,
-                          fill: "var(--lightgray)",
-                          arialabelledby: "refetch",
-                          title: "click me to refresh the telescopic text",
-                        },
-                        s("use", { href: "#refetch-icon" }),
-                      ),
-                    ),
-                    contentToHast(content, opts),
-                  ),
-                )
-              }
+          const checkParsedCodeblock = ({ tagName, children }: Element): boolean => {
+            if (tagName !== "pre" || !Array.isArray(children) || children.length === 0) {
+              return false
             }
-          })
+
+            const code = children[0] as Element
+            const { properties, tagName: codeTagName } = code
+            return (
+              codeTagName === "code" &&
+              Boolean(properties.className) &&
+              (properties.className as string[]).includes("language-telescopic")
+            )
+          }
+
+          visit(
+            tree,
+            (node) => checkParsedCodeblock(node as Element),
+            (node, index, parent) => {
+              const code = (node as Element).children[0] as Element
+
+              const replacements: FindAndReplaceList = [
+                [
+                  wikilinkRegex,
+                  (match, ...link) => {
+                    const { dest, alias } = wikilinksReplace(match, ...link)
+
+                    return toHtml(h("a", { href: dest }, { type: "text", value: alias }))
+                  },
+                ],
+                [
+                  linkRegex,
+                  (_match, value, href) => {
+                    return toHtml(h("a", { href }, { type: "text", value }))
+                  },
+                ],
+              ]
+              hastFindReplace(code, replacements)
+
+              const content = mdToContent(toString(code), opts.separator)
+              parent!.children.splice(
+                index!,
+                1,
+                h(
+                  "div.telescopic-container",
+                  { id: code.properties.id },
+                  h(
+                    "span",
+                    { class: "replay", type: "button" },
+                    s(
+                      "svg",
+                      {
+                        ...svgOptions,
+                        height: 12,
+                        width: 12,
+                        fill: "var(--lightgray)",
+                        arialabelledby: "refetch",
+                        title: "click me to refresh the telescopic text",
+                      },
+                      s("use", { href: "#refetch-icon" }),
+                    ),
+                  ),
+                  contentToHast(content, opts),
+                ),
+              )
+            },
+          )
         },
       ]
     },

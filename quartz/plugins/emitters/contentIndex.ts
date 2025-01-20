@@ -1,5 +1,4 @@
 import { Root } from "hast"
-import fs from "node:fs/promises"
 import { GlobalConfiguration } from "../../cfg"
 import { formatDate, getDate } from "../../components/Date"
 import { escapeHTML } from "../../util/escape"
@@ -11,7 +10,6 @@ import { i18n } from "../../i18n"
 import DepGraph from "../../depgraph"
 import { QuartzPluginData } from "../vfile"
 import { version } from "../../../package.json"
-import path from "node:path"
 
 export type ContentIndex = Map<FullSlug, ContentDetails>
 export type ContentLayout = "default" | "letters" | "technical" | "reflection"
@@ -182,6 +180,8 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
   opts = { ...defaultOptions, ...opts }
   return {
     name: "ContentIndex",
+    requiresFullContent: true,
+    getQuartzComponents: () => [],
     async getDependencyGraph(ctx, content, _resources) {
       const graph = new DepGraph<FilePath>()
 
@@ -208,32 +208,6 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
     },
     async emit(ctx, content, _resources) {
       const cfg = ctx.cfg.configuration
-
-      if (ctx.argv.serve) {
-        const requiredFiles = ["robots.txt"]
-        if (opts.enableSiteMap) requiredFiles.push("sitemap.xml")
-        if (opts.enableRSS) requiredFiles.push("index.xml")
-        if (opts.enableAtom) requiredFiles.push("feed.xml")
-
-        try {
-          // Check if all required files exist in the output directory
-          const hasAllRequired = await Promise.all(
-            requiredFiles.map(async (file) => {
-              const filePath = path.join(ctx.argv.output, file)
-              try {
-                await fs.access(filePath)
-                return true
-              } catch {
-                return false
-              }
-            }),
-          ).then((results) => results.every((exists) => exists))
-
-          if (hasAllRequired) return []
-        } catch {
-          // If there's any error checking files, continue with emission
-        }
-      }
 
       const emitted: FilePath[] = []
       const linkIndex: ContentIndex = new Map()
@@ -338,6 +312,5 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
 
       return emitted
     },
-    getQuartzComponents: () => [],
   }
 }

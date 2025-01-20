@@ -6,6 +6,8 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings"
 import { visit } from "unist-util-visit"
 import { headingRank } from "hast-util-heading-rank"
 import { h, s } from "hastscript"
+import { PluggableList } from "unified"
+import { Element } from "hast"
 
 export interface Options {
   enableSmartyPants: boolean
@@ -25,49 +27,50 @@ export const GitHubFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> =
       return opts.enableSmartyPants ? [remarkGfm, smartypants] : [remarkGfm]
     },
     htmlPlugins() {
+      const plugins: PluggableList = []
+
       if (opts.linkHeadings) {
-        return [
-          rehypeSlug,
-          () => {
-            return (tree, _file) => {
-              visit(tree, "element", function (node) {
-                if (headingRank(node)) {
-                  if (node.properties.id === "footnote-label") {
-                    node.children = [{ type: "text", value: "Remarque" }]
-                  }
-                  node.children = [h("span.highlight-span", node.children)]
+        plugins.push(rehypeSlug, () => {
+          const checkHeading = (node: Element) => headingRank(node) !== undefined
+          return (tree, _) => {
+            visit(
+              tree,
+              (node) => checkHeading(node as Element),
+              (node) => {
+                if (node.properties.id === "footnote-label") {
+                  node.children = [{ type: "text", value: "Remarque" }]
                 }
-              })
-            }
-          },
-          [
-            rehypeAutolinkHeadings,
-            {
-              behavior: "append",
-              properties: {
-                "data-role": "anchor",
-                "data-no-popover": true,
+                node.children = [h("span.highlight-span", node.children)]
               },
-              content: s(
-                "svg",
-                {
-                  width: 16,
-                  height: 16,
-                  viewbox: "0 0 24 24",
-                  fill: "none",
-                  stroke: "currentColor",
-                  strokewidth: "2",
-                  strokelinecap: "round",
-                  strokelinejoin: "round",
-                },
-                [s("use", { href: "#github-anchor" })],
-              ),
+            )
+          }
+        }, [
+          rehypeAutolinkHeadings,
+          {
+            behavior: "append",
+            properties: {
+              "data-role": "anchor",
+              "data-no-popover": true,
             },
-          ],
-        ]
-      } else {
-        return []
+            content: s(
+              "svg",
+              {
+                width: 16,
+                height: 16,
+                viewbox: "0 0 24 24",
+                fill: "none",
+                stroke: "currentColor",
+                strokewidth: "2",
+                strokelinecap: "round",
+                strokelinejoin: "round",
+              },
+              [s("use", { href: "#github-anchor" })],
+            ),
+          },
+        ])
       }
+
+      return plugins
     },
   }
 }

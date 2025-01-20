@@ -90,7 +90,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       const slugParts = stripSlashes(simplifySlug(slug)).split(path.posix.sep)
 
       // Check if this slug is under our current folder
-      if (!slug.startsWith(folderSlug) || slug === folderSlug) {
+      if (!slug.startsWith(folderSlug) || slug === folderSlug || slugParts.includes("images")) {
         continue
       }
 

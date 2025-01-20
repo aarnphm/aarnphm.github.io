@@ -4,10 +4,7 @@ import style from "./styles/image.scss"
 import script from "./scripts/image.inline"
 import { classNames } from "../util/lang"
 
-const Image: QuartzComponent = ({ ctx, displayClass }: QuartzComponentProps) => {
-  // if we are serving, we can skip this
-  if (ctx.argv.serve) return null
-
+const Image: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
   return (
     <div class={classNames(displayClass, "image-popup-modal")} id="image-popup-modal">
       <div class="image-popup-backdrop" />

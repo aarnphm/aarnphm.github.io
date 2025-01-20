@@ -5,10 +5,13 @@ tags:
   - philosophy
 date: "2025-01-11"
 description: and Heideggerian AI.
-draft: true
-modified: 2025-01-12 00:20:30 GMT-05:00
+modified: 2025-01-19 00:19:10 GMT-05:00
 title: I saw a marching band at a hackathon for the first time.
 ---
+
+![[thoughts/images/996D2C94-D27C-4D97-B49D-227AF33B1E04_1_105_c.jpeg|judges at deltahacks XI]]
+
+I attended DeltaHacks XI a week ago from
 
 Tanmay talk about AGI and AI as user interface
 

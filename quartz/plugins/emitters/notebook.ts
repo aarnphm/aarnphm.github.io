@@ -2,7 +2,7 @@ import { QuartzConfig } from "../../cfg"
 import { QuartzEmitterPlugin } from "../types"
 import DepGraph from "../../depgraph"
 import path from "path"
-import fs from "node:fs"
+import fs from "node:fs/promises"
 import { glob } from "../../util/glob"
 import { FilePath, joinSegments, slugifyFilePath } from "../../util/path"
 import { Argv } from "../../util/ctx"
@@ -41,19 +41,12 @@ const name = "NotebookViewer"
 export const NotebookViewer: QuartzEmitterPlugin = () => {
   return {
     name,
-    getQuartzComponents() {
-      return []
-    },
+    skipDuringServe: true,
+    getQuartzComponents: () => [],
     async getDependencyGraph() {
       return new DepGraph<FilePath>()
     },
     async emit({ argv, cfg }, _content, _resources): Promise<FilePath[]> {
-      if (argv.serve) {
-        if (argv.verbose) console.log(`[emit:${name}] Skip converting notebook during serve time.`)
-
-        return []
-      }
-
       const outputDir = argv.output
       const fps = await notebookFiles(argv, cfg)
       const res: FilePath[] = []
@@ -77,7 +70,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
         const dir = path.dirname(dest) as FilePath
 
         try {
-          await fs.promises.mkdir(dir, { recursive: true })
+          await fs.mkdir(dir, { recursive: true })
           runConvertCommand(argv, src, outputName, outputDir)
           res.push(dest)
           completed++

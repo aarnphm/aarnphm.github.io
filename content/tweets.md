@@ -1,15 +1,18 @@
 ---
 id: tweets
+aliases:
+  - twitter
+  - bookmarks
 tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded.
-modified: 2025-01-17 14:14:42 GMT-05:00
+modified: 2025-01-19 01:24:14 GMT-05:00
 noindex: true
 title: /xeets/
 ---
 
-https://x.com/kepano/status/1844491841787273467 <!--static sites versus dynamic sites -->
+https://x.com/sp_monte_carlo/status/1834647902485991519 <!-- Some math papers -->
 
 https://x.com/davidbessis/status/1849442615176950202 <!-- finite complex reflection arrangement are $K(\pi, 1)$ -->
 
@@ -17,13 +20,13 @@ https://x.com/twaniimals/status/1836560827756740626 <!-- moo deng go brr -->
 
 https://x.com/Griveau/status/1851937688988889514 <!-- time machine rent free -->
 
+https://twitter.com/melissa/status/1877951245912334484 <!-- Lies about health -->
+
 https://x.com/CanadaKaz/status/1851653777633247673 <!-- say the thing, ask more -->
 
 https://x.com/noampomsky/status/1860856607607050633 <!-- Ava on Iain McGilchrist of attention being a moral act -->
 
 https://x.com/m_kaytweets/status/1801627208517140625 <!-- Liking things that are "you" thing -->
-
-https://x.com/kepano/status/1694731713686196526 <!-- Obsidian manifesto -->
 
 https://x.com/juniperfolly/status/1875270769116377463 <!-- Funny girlfriend tax memes -->
 
@@ -36,6 +39,8 @@ https://x.com/cremieuxrecueil/status/1826452344881516729 <!-- National Toxicolog
 https://x.com/cremieuxrecueil/status/1876097710610338066 <!-- five capacities type in human psyche -->
 
 https://x.com/ruzhaoart/status/1876149783997677605 <!-- Jacky's sister on traditional art -->
+
+https://x.com/melkuo/status/1835775713410269621 <!-- 2024 Canada's housing market -->
 
 ## life
 
@@ -51,6 +56,8 @@ https://x.com/MelisaSeah/status/1875931461565693997 <!-- Vietnamese being in fro
 
 https://x.com/kasratweets/status/1880147402025582924 <!-- Kasra on loneliness, or emotional insecurity -->
 
+https://x.com/VividVoid_/status/1828461484277461447 <!-- philosophical wisdom -->
+
 ## love
 
 https://x.com/virtualjew/status/1846593528350011539 <!-- You can just make grilled cheese with onions -->
@@ -58,6 +65,14 @@ https://x.com/virtualjew/status/1846593528350011539 <!-- You can just make grill
 https://x.com/qiaochuyuan/status/1629333539488690176?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ <!-- QC on attachment theory thread -->
 
 ## technology
+
+https://x.com/kepano/status/1694731713686196526 <!-- Obsidian manifesto -->
+
+https://x.com/kepano/status/1844491841787273467 <!--static sites versus dynamic sites -->
+
+https://x.com/313formation/status/1828059730998083853 <!-- resources for SWE introduction -->
+
+https://x.com/XorDev/status/1834966384855368108 <!-- visual editor -->
 
 https://x.com/_opencv_/status/1877613841187492189 <!-- Wozniaks behind closed door -->
 
@@ -87,13 +102,23 @@ https://x.com/elzr/status/1274209005557211138 <!-- threads for reading as tree r
 
 https://x.com/eshear/status/1880109350251032637 <!-- Emmett Shear on PG's advice -->
 
+https://x.com/Ananyo/status/1874938019301752922 <!-- the case for von Neumann to be "father of modern computing" -->
+
+https://x.com/pmarca/status/1880845551467634761 <!-- technology hallucinations with TikTok's recent ban in US -->
+
+https://x.com/pmarca/status/1880860012110856566 <!-- Links between EA and sexual obsession lol -->
+
 ## techno-optimist
 
 https://x.com/tobi/status/1878957750576906484 <!-- Tobi replies on Canada's Tech contribution to overall GDP -->
 
 ## [[thoughts/Machine learning|machine learning]]
 
+https://x.com/karpathy/status/1841536804073439268 <!-- Karpathy's at GPU MODE's IRL talk -->
+
 https://x.com/stephen_wolfram/status/1826692234554875979 <!-- Explanation into ML -->
+
+https://x.com/sarahookr/status/1834294208821428571 <!-- inference-time not capture governance guardrails -->
 
 https://x.com/banburismus_/status/1819354340290658725 <!-- Tom McGrath's questions about cross-layer superposition -->
 

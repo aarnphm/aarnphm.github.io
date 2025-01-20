@@ -236,15 +236,11 @@ document.addEventListener("nav", async () => {
         // Show container
         popupContainer?.classList.add("active")
         container.style.cursor = "grab"
-
-        // Center the content initially by calculating center offset
-        const containerRect = container.getBoundingClientRect()
-        const initialPan = { x: containerRect.width - container.offsetWidth / 2, y: 0 }
         content.style.transform = `scale(1)`
 
         // Initialize pan-zoom after showing the popup
         panZoom = new DiagramPanZoom(container, content)
-        panZoom.setInitialPan(initialPan)
+        panZoom.setInitialPan({ x: 0, y: 0 })
       }
 
       function hideMermaid() {

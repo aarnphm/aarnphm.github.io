@@ -56,7 +56,7 @@ export interface Translation {
       title: string
     }
     contentMeta: {
-      readingTime: (variables: { minutes: number }) => string
+      readingTime: (variables: { minutes: number; words: number }) => string
     }
   }
   pages: {

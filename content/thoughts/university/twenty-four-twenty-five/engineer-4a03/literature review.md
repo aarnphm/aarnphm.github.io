@@ -4,7 +4,7 @@ tags:
   - engineer4a03
 date: "2024-10-07"
 description: How we understand machine learning system is how we can move towards a safe futures, yet the road ahead lies many troubles to overcome. A literature review into the inception of the field, as well as where do we go from here.
-modified: 2025-01-01 07:36:12 GMT-05:00
+modified: 2025-01-19 05:10:26 GMT-05:00
 noindex: true
 sidenotes: false
 title: machine learning, from the inception of time, a literature review
@@ -15,14 +15,14 @@ See also [[posts/chatgpt|essays on ChatGPT]], [[thoughts/university/twenty-four-
 ## introduction.
 
 ```quotes
-To understand how AI is fundamentally political, we need to go beyond neural nets and statistical pattern recognition to instead ask <i>what</i> is being optimized, and <i>for whom</i>, and <i>who</i> gets to decide. Then we can trace the implications of those choices. -- Kate Crawford
+To understand how AI is fundamentally political, we need to go beyond neural nets and statistical pattern recognition to instead ask _what_ is being optimized, and _for whom_, and _who_ gets to decide. Then we can trace the implications of those choices. -- Kate Crawford
 ```
 
 1979's "Star-Trek: the Motion Picture" centered around the antagonist, V'Ger, an artificial entity that have outgrown its original programs, sought annihilation upon planet Earth. At the core,
 the movie is mostly fictional, yet its prevalence to our current state of affairs is uncanny. Much in Artificial intelligence (AI) has changed since 1960s, including a shift in symbolic
 systems to more recent hype about deep connectionist networks. AI has expanded rapidly as a academia field and as a industry[^1]. Yet, the belief of formalising human intelligence and reproduced
 by machine has always been the core disputes in the history of AI. There has always been two narratives discussed within academia and industry practitioners on how we should approach such systems:
-The likes of Marvin Minsky claiming "machine can think" [@atlasofai{pp. 5-9}]; while Dreyfus [@dreyfus2008why] believed in a Heideggerian AI system would dissolve the framing problem[^framing].
+The likes of Marvin Minsky claiming "machine can think" [@atlasofai{pp. 5-9}]; while Dreyfus [@dreyfus2008why] believed in a Heideggerian AI system would dissolve the framing problem [^framing].
 Nowadays, this narrative morphs into two verticals: Entities that seek to build systems capable of outperforming at tasks that a human can do at a greater degree of accuracy and efficiency (OpenAI, Anthropic, SSI, many AI labs, etc.[^ssi]), and
 companies that build AI systems to amplify our abilities to create and improve efficiency for our work (Runway, Cohere, etc.).
 

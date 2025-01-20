@@ -1,4 +1,5 @@
 import { QuartzConfig } from "../cfg"
+import { QuartzPluginData } from "../plugins/vfile"
 import { FullSlug } from "./path"
 
 export interface Argv {
@@ -18,4 +19,5 @@ export interface BuildCtx {
   cfg: QuartzConfig
   allSlugs: FullSlug[]
   allAssets: string[]
+  allFiles: QuartzPluginData[]
 }

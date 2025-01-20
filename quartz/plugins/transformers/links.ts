@@ -10,13 +10,12 @@ import {
   transformLink,
 } from "../../util/path"
 import path from "path"
-import { Element } from "hast"
 import { SKIP, visit } from "unist-util-visit"
 import isAbsoluteUrl from "is-absolute-url"
-import { Root, ElementContent } from "hast"
+import { ElementContent, Element } from "hast"
 import { filterEmbedTwitter } from "./twitter"
-import { VFile } from "vfile"
 import { h, s } from "hastscript"
+import { svgOptions } from "../../components/renderPage"
 
 interface Options {
   enableArxivEmbed: boolean
@@ -70,6 +69,7 @@ export function extractArxivId(url: string): string | null {
     // Match different arXiv URL patterns
     const patterns = [
       /arxiv.org\/abs\/(\d+\.\d+)/,
+      /arxiv.org\/html\/(\d+\.\d+)/,
       /arxiv.org\/pdf\/(\d+\.\d+)(\.pdf)?/,
       /arxiv.org\/\w+\/(\d+\.\d+)/,
     ]
@@ -92,7 +92,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
     htmlPlugins(ctx) {
       return [
         () => {
-          return (tree: Root, file: VFile) => {
+          return (tree, file) => {
             const curSlug = simplifySlug(file.data.slug!)
             const outgoing: Set<SimpleSlug> = new Set()
 
@@ -101,15 +101,15 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               allSlugs: ctx.allSlugs,
             }
 
-            visit(tree, "element", (node) => {
-              const classes = (node.properties.className ?? []) as string[]
+            const shouldRewriteLinks = ({ tagName, properties }: Element) =>
+              tagName === "a" && Boolean(properties.href) && typeof properties.href === "string"
 
-              // rewrite all links
-              if (
-                node.tagName === "a" &&
-                node.properties &&
-                typeof node.properties.href === "string"
-              ) {
+            // rewrite all links
+            visit(
+              tree,
+              (node) => shouldRewriteLinks(node as Element),
+              (node) => {
+                const classes = (node.properties.className ?? []) as string[]
                 // insert a span element into node.children
                 let dest = node.properties.href as RelativeURL
                 const ext: string = path.extname(dest).toLowerCase()
@@ -150,14 +150,13 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     s(
                       "svg",
                       {
+                        ...svgOptions,
                         ariaHidden: true,
                         class: "external-icon",
                         viewbox: "0 -12 24 24",
                         fill: "none",
                         stroke: "currentColor",
                         strokewidth: 1.5,
-                        strokelinecap: "round",
-                        strokelinejoin: "round",
                       },
                       [s("use", { href: "#arrow-ne" })],
                     ),
@@ -228,17 +227,20 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   children: [],
                 }
                 node.children = [spanContent, ...node.children]
-              }
+              },
+            )
 
-              // transform all other resources that may use links
-              if (
-                ["img", "video", "audio", "iframe"].includes(node.tagName) &&
-                node.properties &&
-                typeof node.properties.src === "string"
-              ) {
-                if (opts.lazyLoad) {
-                  node.properties.loading = "lazy"
-                }
+            const shouldTransformResources = ({ tagName, properties }: Element) =>
+              ["img", "video", "audio", "iframe"].includes(tagName) &&
+              Boolean(properties.src) &&
+              typeof properties.src === "string"
+
+            // transform all other resources that may use links
+            visit(
+              tree,
+              (node) => shouldTransformResources(node as Element),
+              (node) => {
+                if (opts.lazyLoad) node.properties.loading = "lazy"
 
                 if (!isAbsoluteUrl(node.properties.src)) {
                   let dest = node.properties.src as RelativeURL
@@ -249,15 +251,10 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   )
                   node.properties.src = dest
                 }
-              }
-            })
+              },
+            )
 
-            file.data.links = [...outgoing].filter((link) => {
-              // Skip any files with extensions
-              const ext = path.extname(link).toLowerCase()
-              if (ext) return false
-              return true
-            })
+            file.data.links = [...outgoing]
           }
         },
         // () => {

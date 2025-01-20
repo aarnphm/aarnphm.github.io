@@ -33,7 +33,7 @@ export default (() => {
         const classNames = (node.properties?.className ?? []) as string[]
 
         if (classNames.includes("transclude")) {
-          const inner = node.children[0] as Element
+          const [inner] = node.children as Element[]
           const transcludeTarget = inner.properties["data-slug"] as FullSlug
           const page = allFiles.find((f) => f.slug === transcludeTarget)
           if (!page) {

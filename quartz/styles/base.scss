@@ -90,6 +90,7 @@ ol,
 ul,
 .katex {
   overflow-wrap: anywhere;
+  word-break: auto-phrase;
   /* tr and td removed from list of selectors for overflow-wrap, allowing them to use default 'normal' property value */
 }
 

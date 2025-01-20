@@ -2,9 +2,12 @@
 id: mechanistic interpretability
 tags:
   - interp
+aliases:
+  - mechinterp
+  - reveng neural net
 date: "2024-10-30"
 description: and reverse engineering neural networks.
-modified: 2025-01-17 18:12:18 GMT-05:00
+modified: 2025-01-18 16:32:43 GMT-05:00
 permalink:
   - /mechinterp
   - /mechanistic-interpretability
@@ -183,4 +186,3 @@ See also: [writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mec
 > related to phase change
 
 [^ref]
-

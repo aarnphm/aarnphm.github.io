@@ -38,6 +38,7 @@ import curiusFriendScript from "./scripts/curius-friends.inline"
 import { htmlToJsx } from "../util/jsx"
 import Content from "./pages/Content"
 import { BuildCtx } from "../util/ctx"
+import { checkBib } from "../plugins/transformers/citations"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -257,11 +258,14 @@ function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
   const toRemove: Element[] = []
 
   // visit all references with bib to update suffix
-  visit(root, "element", (node: Element) => {
-    if (node.tagName === "a" && (node.properties?.href as string)?.startsWith("#bib")) {
-      node.properties.href = `${node.properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
-    }
-  })
+  visit(
+    root,
+    //@ts-ignore
+    (node: Element) => checkBib(node as Element),
+    (node: Element) => {
+      node.properties.href = `${(node as Element).properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
+    },
+  )
 
   // Find all reference divs and collect their entries
   visit(root, "element", (node: Element) => {
@@ -288,7 +292,7 @@ function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
   // Remove all reference divs except the last one
   visit(root, "element", (node: Element, index, parent) => {
     if (toRemove.includes(node)) {
-      parent!.children.splice(index as number, 1)
+      parent!.children.splice(index!, 1)
     }
   })
 
@@ -311,14 +315,23 @@ interface Note {
   id: string
 }
 
+const checkFootnoteRef = ({ type, tagName, properties }: Element) =>
+  type === "element" && tagName === "a" && Boolean(properties) && properties.dataFootnoteRef === ""
+
+const checkFootnotes = ({ type, tagName, properties }: Element) =>
+  type === "element" && tagName === "section" && properties.dataFootnotes == ""
+
 function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   const orderNotes: Note[] = []
   const finalRefs: Element[] = []
   const toRemove: Element[] = []
 
   let idx = 0
-  visit(root, "element", (node: Element) => {
-    if (node.type === "element" && node.tagName === "a" && node.properties.dataFootnoteRef === "") {
+  visit(
+    root,
+    //@ts-ignore
+    (node: Element) => checkFootnoteRef(node as Element),
+    (node: Element) => {
       orderNotes.push({ href: node.properties.href as string, id: node.properties.id as string })
       node.properties.href = `${node.properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
       node.properties.id =
@@ -327,20 +340,19 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
         node.value = `${idx + 1}`
         idx++
       })
-    }
-  })
+    },
+  )
 
-  visit(root, "element", (node: Element) => {
-    if (
-      node.type === "element" &&
-      node.tagName === "section" &&
-      node.properties.dataFootnotes == ""
-    ) {
+  visit(
+    root,
+    //@ts-ignore
+    (node: Element) => checkFootnotes(node as Element),
+    (node: Element) => {
       toRemove.push(node)
       const items = (node.children as Element[]).filter((val) => val.tagName === "ol")[0] // The ol is in here
       finalRefs.push(...(items.children as Element[]))
-    }
-  })
+    },
+  )
 
   // we don't want to remove the last nodes
   toRemove.pop()
@@ -367,8 +379,8 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   ).map((ref) => {
     const transclude = ref.properties?.id
     ref.properties!.id = `${transclude}${appendSuffix ? "-" + appendSuffix : ""}`
-    visit(ref, "element", (c) => {
-      if (c.tagName === "a" && c.properties.dataFootnoteBackref == "") {
+    visit(ref, { tagName: "a" }, (c) => {
+      if (c.properties.dataFootnoteBackref == "") {
         c.properties.href = `${c.properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
       }
     })
@@ -456,6 +468,12 @@ export function pageResources(
 
 const defaultTranscludeOptions: TranscludeOptions = { dynalist: true, title: true }
 
+interface TranscludeStats {
+  words: number
+  minutes: number
+  files: Set<string>
+}
+
 export function transcludeFinal(
   ctx: BuildCtx,
   root: Root,
@@ -464,6 +482,13 @@ export function transcludeFinal(
 ): Root {
   // NOTE: return early these cases, we probably don't want to transclude them anw
   if (fileData.frontmatter?.poem || fileData.frontmatter?.menu) return root
+
+  // Track total reading stats including transclusions
+  const stats: TranscludeStats = {
+    words: fileData.readingTime?.words ?? 0,
+    minutes: fileData.readingTime?.minutes ?? 0,
+    files: new Set([fileData.filePath!]),
+  }
 
   // hierarchy of transclusion: frontmatter > userOpts > defaultOpts
   const slug = fileData.slug as FullSlug
@@ -522,87 +547,50 @@ export function transcludeFinal(
   }
 
   // NOTE: process transcludes in componentData
-  visit(root, "element", (node) => {
-    if (node.tagName === "blockquote") {
-      const classNames = (node.properties?.className ?? []) as string[]
-      const url = node.properties.dataUrl as string
-      const alias = (
-        node.properties?.dataEmbedAlias !== "undefined"
-          ? node.properties?.dataEmbedAlias
-          : node.properties?.dataBlock
-      ) as string
+  visit(root, { tagName: "blockquote" }, (node) => {
+    const classNames = (node.properties?.className ?? []) as string[]
+    const url = node.properties.dataUrl as string
+    const alias = (
+      node.properties?.dataEmbedAlias !== "undefined"
+        ? node.properties?.dataEmbedAlias
+        : node.properties?.dataBlock
+    ) as string
 
-      if (classNames.includes("transclude")) {
-        const inner = node.children[0] as Element
-        const transcludeTarget = inner.properties["data-slug"] as FullSlug
-        const page = allFiles.find((f) => f.slug === transcludeTarget)
-        if (!page) {
-          return
-        }
-        let transcludePageOpts: TranscludeOptions
-        if (page.frontmatter?.transclude) {
-          transcludePageOpts = { ...opts, ...page.frontmatter?.transclude }
-        } else {
-          transcludePageOpts = opts
-        }
+    if (classNames.includes("transclude")) {
+      const [inner] = node.children as Element[]
+      const transcludeTarget = inner.properties["data-slug"] as FullSlug
+      const page = allFiles.find((f) => f.slug === transcludeTarget)
+      if (!page) {
+        return
+      }
 
-        const { title } = transcludePageOpts
+      let transcludePageOpts: TranscludeOptions
+      if (page.frontmatter?.transclude) {
+        transcludePageOpts = { ...opts, ...page.frontmatter?.transclude }
+      } else {
+        transcludePageOpts = opts
+      }
 
-        let blockRef = node.properties.dataBlock as string | undefined
-        if (blockRef?.startsWith("#^")) {
-          // block transclude
-          blockRef = blockRef.slice("#^".length)
-          let blockNode = page.blocks?.[blockRef]
-          if (blockNode) {
-            if (blockNode.tagName === "li") blockNode = h("ul", blockNode)
+      if (page?.readingTime && !stats.files.has(page.filePath!)) {
+        stats.words += page.readingTime.words
+        stats.minutes += page.readingTime.minutes
+        stats.files.add(page.filePath!)
+      }
 
-            const children = [
-              anchor(inner.properties?.href as string, url, alias, title),
-              normalizeHastElement(blockNode, slug, transcludeTarget),
-            ]
-            if (fileData.frontmatter?.pageLayout !== "reflection") {
-              children.push(
-                h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
-                  { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
-                ]),
-              )
-            }
-            node.children = children
-          }
-        } else if (blockRef?.startsWith("#") && page.htmlAst) {
-          // header transclude
-          blockRef = blockRef.slice(1)
-          let startIdx = undefined
-          let startDepth = undefined
-          let endIdx = undefined
-          for (const [i, el] of page.htmlAst.children.entries()) {
-            // skip non-headers
-            if (!(el.type === "element" && headingRank(el))) continue
-            const depth = headingRank(el) as number
+      const { title } = transcludePageOpts
 
-            // looking for our blockref
-            if (startIdx === undefined || startDepth === undefined) {
-              // skip until we find the blockref that matches
-              if (el.properties?.id === blockRef) {
-                startIdx = i
-                startDepth = depth
-              }
-            } else if (depth <= startDepth) {
-              // looking for new header that is same level or higher
-              endIdx = i
-              break
-            }
-          }
-
-          if (startIdx === undefined) return
+      let blockRef = node.properties.dataBlock as string | undefined
+      if (blockRef?.startsWith("#^")) {
+        // block transclude
+        blockRef = blockRef.slice("#^".length)
+        let blockNode = page.blocks?.[blockRef]
+        if (blockNode) {
+          if (blockNode.tagName === "li") blockNode = h("ul", blockNode)
 
           const children = [
             anchor(inner.properties?.href as string, url, alias, title),
-            ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map((child) =>
-              normalizeHastElement(child as Element, slug, transcludeTarget),
-            ),
+            normalizeHastElement(blockNode, slug, transcludeTarget),
           ]
-
           if (fileData.frontmatter?.pageLayout !== "reflection") {
             children.push(
               h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
@@ -611,47 +599,89 @@ export function transcludeFinal(
             )
           }
           node.children = children
-        } else if (page.htmlAst) {
-          // page transclude
-          const children = [
-            anchor(inner.properties?.href as string, url, alias, title),
-            title
-              ? h("h1", [
-                  {
-                    type: "text",
-                    value:
-                      page.frontmatter?.title ??
-                      i18n(cfg.locale).components.transcludes.transcludeOf({
-                        targetSlug: page.slug!,
-                      }),
-                  },
-                ])
-              : ({} as ElementContent),
-            ...(page.htmlAst.children as ElementContent[]).map((child) =>
-              normalizeHastElement(child as Element, slug, transcludeTarget),
-            ),
-          ]
+        }
+      } else if (blockRef?.startsWith("#") && page.htmlAst) {
+        // header transclude
+        blockRef = blockRef.slice(1)
+        let startIdx = undefined
+        let startDepth = undefined
+        let endIdx = undefined
+        for (const [i, el] of page.htmlAst.children.entries()) {
+          // skip non-headers
+          if (!(el.type === "element" && headingRank(el))) continue
+          const depth = headingRank(el) as number
 
-          if (fileData.frontmatter?.pageLayout !== "reflection") {
-            children.push(
-              h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
-                { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
-              ]),
-            )
+          // looking for our blockref
+          if (startIdx === undefined || startDepth === undefined) {
+            // skip until we find the blockref that matches
+            if (el.properties?.id === blockRef) {
+              startIdx = i
+              startDepth = depth
+            }
+          } else if (depth <= startDepth) {
+            // looking for new header that is same level or higher
+            endIdx = i
+            break
           }
-
-          node.children = children
         }
 
-        if (page.hasMermaidDiagram && !externalResources.metadata.hasMermaidDiagram) {
-          externalResources.js.push({
-            script: mermaidScript,
-            loadTime: "afterDOMReady",
-            moduleType: "module",
-            contentType: "inline",
-          })
-          externalResources.css.push({ content: mermaidStyle, inline: true })
+        if (startIdx === undefined) return
+
+        const children = [
+          anchor(inner.properties?.href as string, url, alias, title),
+          ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map((child) =>
+            normalizeHastElement(child as Element, slug, transcludeTarget),
+          ),
+        ]
+
+        if (fileData.frontmatter?.pageLayout !== "reflection") {
+          children.push(
+            h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
+              { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+            ]),
+          )
         }
+        node.children = children
+      } else if (page.htmlAst) {
+        // page transclude
+        const children = [
+          anchor(inner.properties?.href as string, url, alias, title),
+          title
+            ? h("h1", [
+                {
+                  type: "text",
+                  value:
+                    page.frontmatter?.title ??
+                    i18n(cfg.locale).components.transcludes.transcludeOf({
+                      targetSlug: page.slug!,
+                    }),
+                },
+              ])
+            : ({} as ElementContent),
+          ...(page.htmlAst.children as ElementContent[]).map((child) =>
+            normalizeHastElement(child as Element, slug, transcludeTarget),
+          ),
+        ]
+
+        if (fileData.frontmatter?.pageLayout !== "reflection") {
+          children.push(
+            h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
+              { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+            ]),
+          )
+        }
+
+        node.children = children
+      }
+
+      if (page.hasMermaidDiagram && !externalResources.metadata.hasMermaidDiagram) {
+        externalResources.js.push({
+          script: mermaidScript,
+          loadTime: "afterDOMReady",
+          moduleType: "module",
+          contentType: "inline",
+        })
+        externalResources.css.push({ content: mermaidStyle, inline: true })
       }
     }
   })
@@ -663,6 +693,12 @@ export function transcludeFinal(
 
   // NOTE: We then merge all references and footnotes to final items
   mergeIsomorphic(root)
+
+  // NOTE: Update the file's reading time with transcluded content
+  if (fileData.readingTime) {
+    fileData.readingTime = { ...fileData.readingTime, words: stats.words, minutes: stats.minutes }
+  }
+
   return root
 }
 

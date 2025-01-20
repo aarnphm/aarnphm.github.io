@@ -118,12 +118,7 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
 
   return {
     name: "Pseudocode",
-    markdownPlugins(ctx) {
-      // We also skip pseudocode for faster serve development time (we can already see the render pseudocode in Obsidian)
-      if (ctx.argv.serve) {
-        return []
-      }
-
+    markdownPlugins() {
       return [
         () => (tree: MdRoot, _file) => {
           visit(tree, "code", (node) => {

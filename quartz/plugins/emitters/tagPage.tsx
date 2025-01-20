@@ -38,6 +38,7 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
 
   return {
     name: "TagPage",
+    requiresFullContent: true,
     getQuartzComponents() {
       return [Head, Header, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
@@ -64,7 +65,7 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
     },
     async emit(ctx, content, resources): Promise<FilePath[]> {
       const fps: FilePath[] = []
-      const allFiles = content.map((c) => c[1].data)
+      const allFiles = ctx.allFiles
       const cfg = ctx.cfg.configuration
 
       const tags: Set<string> = new Set(

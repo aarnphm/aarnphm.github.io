@@ -163,9 +163,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
   const { fontOrigin } = { ...defaultOptions, ...opts }
   return {
     name,
-    getQuartzComponents() {
-      return []
-    },
+    getQuartzComponents: () => [],
     async getDependencyGraph(_ctx, _content, _resources) {
       return new DepGraph<FilePath>()
     },

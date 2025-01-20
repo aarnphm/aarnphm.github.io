@@ -32,7 +32,7 @@ export const SyntaxHighlighting: QuartzTransformerPlugin<Partial<Options>> = (us
       return [
         [rehypePrettyCode, opts],
         () => {
-          return (tree: Root, _file) => {
+          return (tree) => {
             const isCodeblockTranspiled = ({ children, tagName }: Element) => {
               if (children === undefined || children === null) return false
               const maybeCodes = children.filter((c) => (c as Element).tagName === "code")
@@ -41,8 +41,8 @@ export const SyntaxHighlighting: QuartzTransformerPlugin<Partial<Options>> = (us
             visit(
               tree,
               (node) => isCodeblockTranspiled(node as Element),
-              (node, idx, parent) => {
-                ;(node as Element).children = [
+              (node, _idx, _parent) => {
+                node.children = [
                   h(
                     "span.clipboard-button",
                     {
@@ -60,7 +60,7 @@ export const SyntaxHighlighting: QuartzTransformerPlugin<Partial<Options>> = (us
                       ]),
                     ],
                   ),
-                  ...(node as Element).children,
+                  ...node.children,
                 ]
               },
             )
