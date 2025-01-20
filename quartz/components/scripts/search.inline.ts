@@ -332,13 +332,10 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       ${subscript}${htmlTags}
       ${enablePreview && window.innerWidth > 600 ? "" : `<p>${content}</p>`}
     </hgroup>`
-    itemTile.addEventListener("click", (event) => {
-      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
-      hideSearch()
-    })
 
-    const handler = (event: MouseEvent) => {
-      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+    const handler = (evt: MouseEvent) => {
+      if (evt.altKey || evt.ctrlKey || evt.metaKey || evt.shiftKey) return
+      window.spaNavigate(new URL((evt.target as HTMLAnchorElement).href))
       hideSearch()
     }
 

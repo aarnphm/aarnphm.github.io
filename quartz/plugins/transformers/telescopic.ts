@@ -359,6 +359,24 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
                   { id: code.properties.id },
                   h(
                     "span",
+                    { class: "expand", type: "button" },
+                    s(
+                      "svg",
+                      {
+                        ...svgOptions,
+                        height: 12,
+                        width: 12,
+                        strokewidth: 1,
+                        stroke: "currentColor",
+                        fill: "var(--lightgray)",
+                        title: "expand all state",
+                        ariaLabel: "expand all state",
+                      },
+                      s("use", { href: "#plus-icon" }),
+                    ),
+                  ),
+                  h(
+                    "span",
                     { class: "replay", type: "button" },
                     s(
                       "svg",
@@ -367,8 +385,8 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
                         height: 12,
                         width: 12,
                         fill: "var(--lightgray)",
-                        arialabelledby: "refetch",
-                        title: "click me to refresh the telescopic text",
+                        title: "refresh telescopic text state",
+                        ariaLabel: "refresh telescopic text state",
                       },
                       s("use", { href: "#refetch-icon" }),
                     ),

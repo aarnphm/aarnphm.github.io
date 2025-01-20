@@ -636,7 +636,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 const child = children[i]
                 if (child.type === "text" && child.value.includes("==")) {
                   // Split text node if it contains == marker
-                  const parts = child.value.split("==")
+                  const parts: string[] = child.value.split("==")
 
                   if (parts.length > 1) {
                     // Replace original node with split parts
