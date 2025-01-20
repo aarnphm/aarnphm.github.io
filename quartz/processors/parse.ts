@@ -18,35 +18,37 @@ import { styleText } from "node:util"
 export type QuartzMarkdownProcessor = Processor<MDRoot, MDRoot, MDRoot>
 export type QuartzHtmlProcessor = Processor<MDRoot, MDRoot, HTMLRoot>
 
-export function createMarkdownProcessor(ctx: BuildCtx): QuartzMarkdownProcessor {
-  const transformers = ctx.cfg.plugins.transformers
+const filterPlugins = (
+  plugins: typeof ctx.cfg.plugins.transformers,
+  ctx: BuildCtx,
+  pluginType: "markdownPlugins" | "htmlPlugins",
+) => {
+  return plugins
+    .filter((p) => {
+      const hasPlugins = p[pluginType]
+      const shouldInclude = ctx.argv.serve ? !p.skipDuringServe && hasPlugins : hasPlugins
+      return shouldInclude
+    })
+    .flatMap((plugin) => plugin[pluginType]!(ctx))
+}
 
+export function createMarkdownProcessor(ctx: BuildCtx): QuartzMarkdownProcessor {
   return (
     (unified() as unknown as QuartzMarkdownProcessor)
       // base Markdown -> MD AST
       .use(remarkParse)
       // MD AST -> MD AST transforms
-      .use(
-        transformers
-          .filter((p) => !p.skipDuringServe && p.markdownPlugins)
-          .flatMap((plugin) => plugin.markdownPlugins!(ctx)),
-      )
+      .use(filterPlugins(ctx.cfg.plugins.transformers, ctx, "markdownPlugins"))
   )
 }
 
 export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
-  const transformers = ctx.cfg.plugins.transformers
-
   return (
     (unified() as unknown as QuartzHtmlProcessor)
       // MD AST -> HTML AST
       .use(remarkRehype, { allowDangerousHtml: true })
       // HTML AST -> HTML AST transforms
-      .use(
-        transformers
-          .filter((p) => !p.skipDuringServe && p.htmlPlugins)
-          .flatMap((plugin) => plugin.htmlPlugins!(ctx)),
-      )
+      .use(filterPlugins(ctx.cfg.plugins.transformers, ctx, "htmlPlugins"))
   )
 }
 

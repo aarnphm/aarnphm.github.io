@@ -29,7 +29,7 @@ export async function emitContent({ ctx, contents, incremental }: EmitOptions) {
   let emittedFiles = 0
   const staticResources = getStaticResourcesFromPlugins(ctx)
   for (const emitter of cfg.plugins.emitters) {
-    if (emitter.skipDuringServe) {
+    if (ctx.argv.serve && emitter.skipDuringServe) {
       if (argv.verbose)
         console.log(styleText("yellow", `[emit:${emitter.name}] Skip during serve time`))
       continue
