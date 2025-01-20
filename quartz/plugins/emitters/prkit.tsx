@@ -83,7 +83,7 @@ const InstagramPost: SocialImageOptions["Component"] = (
         backgroundImage: `url("https://${cfg.baseUrl}/static/og-vertical.png")`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center center",
-        backgroundSize: "contain",
+        backgroundSize: "100% 100%",
         position: "relative",
         fontSize: "1.1875em",
       }}
