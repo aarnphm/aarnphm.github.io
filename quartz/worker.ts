@@ -10,7 +10,7 @@ import {
   createMarkdownProcessor,
 } from "./processors/parse"
 import { options } from "./util/sourcemap"
-import { MarkdownContent } from "./plugins/vfile"
+import { MarkdownContent, QuartzPluginData } from "./plugins/vfile"
 
 // only called from worker thread
 export async function parseMarkdown(buildId: string, argv: Argv, fps: FilePath[]) {
@@ -19,12 +19,14 @@ export async function parseMarkdown(buildId: string, argv: Argv, fps: FilePath[]
   // but don't actually use them
   const allSlugs: FullSlug[] = []
   const allAssets: FullSlug[] = []
+  const allFiles: QuartzPluginData[] = []
   const ctx: BuildCtx = {
     buildId,
     cfg,
     argv,
     allSlugs,
     allAssets,
+    allFiles,
   }
   const processor = createMarkdownProcessor(ctx)
   const parse = createMarkdownParser(ctx, fps)
@@ -37,6 +39,7 @@ export function parseHtml(
   fps: MarkdownContent[],
   allSlugs: FullSlug[],
   allAssets: string[],
+  allFiles: QuartzPluginData[],
 ) {
   const ctx: BuildCtx = {
     buildId,
@@ -44,6 +47,7 @@ export function parseHtml(
     argv,
     allSlugs,
     allAssets,
+    allFiles,
   }
   const processor = createHtmlProcessor(ctx)
   const parse = createHtmlParser(ctx, fps)

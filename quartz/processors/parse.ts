@@ -153,7 +153,7 @@ export function createHtmlParser(ctx: BuildCtx, mdContent: MarkdownContent[]) {
   }
 }
 
-const clamp = (num: number, min: number, max: number) =>
+export const clamp = (num: number, min: number, max: number) =>
   Math.min(Math.max(Math.round(num), min), max)
 export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<HtmlContent[]> {
   const { argv } = ctx
@@ -204,7 +204,14 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Htm
     }
     for (const [mdChunk, _] of mdResults) {
       childPromises.push(
-        pool.exec("parseHtml", [ctx.buildId, argv, mdChunk, ctx.allSlugs, ctx.allAssets]),
+        pool.exec("parseHtml", [
+          ctx.buildId,
+          argv,
+          mdChunk,
+          ctx.allSlugs,
+          ctx.allAssets,
+          ctx.allFiles,
+        ]),
       )
     }
     const results: HtmlContent[][] = await WorkerPromise.all(childPromises).catch(errorHandler)

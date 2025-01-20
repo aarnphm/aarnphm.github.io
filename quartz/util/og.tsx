@@ -10,7 +10,11 @@ import { ThemeKey } from "./theme"
 const headerFont = joinSegments("static", "GT-Sectra-Display-Regular.woff")
 const bodyFont = joinSegments("static", "GT-Sectra-Book.woff")
 
-export async function getSatoriFont(cfg: GlobalConfiguration): Promise<SatoriOptions["fonts"]> {
+export async function getSatoriFont(
+  cfg: GlobalConfiguration,
+  useGoogleFonts?: boolean,
+): Promise<SatoriOptions["fonts"]> {
+  useGoogleFonts ||= false
   const headerWeight: FontWeight = 700
   const bodyWeight: FontWeight = 400
 
@@ -22,8 +26,15 @@ export async function getSatoriFont(cfg: GlobalConfiguration): Promise<SatoriOpt
     return data
   }
 
-  const header = await fetchFonts(headerFont)
-  const body = await fetchFonts(bodyFont)
+  let header, body
+
+  if (useGoogleFonts) {
+    header = await fetchTtf(cfg.theme.typography.header, headerWeight)
+    body = await fetchTtf(cfg.theme.typography.body, bodyWeight)
+  } else {
+    header = await fetchFonts(headerFont)
+    body = await fetchFonts(bodyFont)
+  }
 
   return [
     { name: cfg.theme.typography.header, data: header, weight: headerWeight, style: "normal" },
@@ -41,7 +52,7 @@ async function fetchTtf(fontName: string, weight: FontWeight): Promise<ArrayBuff
   try {
     // Get css file from google fonts
     const cssResponse = await fetch(
-      `https://fonts.googleapis.com/css2?family=${fontName}:wght@${weight}`,
+      `https://fonts.googleapis.com/css2?family=${fontName.replace(" ", "+")}:wght@${weight}`,
     )
     const css = await cssResponse.text()
 

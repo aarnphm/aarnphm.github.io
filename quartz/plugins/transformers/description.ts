@@ -38,35 +38,38 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
               text = text.replace(urlRegex, "$<domain>" + "$<path>")
             }
 
-            const desc = frontMatterDescription ?? text
-            const sentences = desc.replace(/\s+/g, " ").split(/\.\s/)
-            const finalDesc: string[] = []
-            const len = opts.descriptionLength
-            let sentenceIdx = 0
-            let currentDescriptionLength = 0
+            const processDescription = (desc: string, includeTripleDots: boolean): string => {
+              const sentences = desc.replace(/\s+/g, " ").split(/\.\s/)
+              const finalDesc: string[] = []
+              const len = opts.descriptionLength
+              let sentenceIdx = 0
+              let currentDescriptionLength = 0
 
-            if (sentences[0] !== undefined && sentences[0].length >= len) {
-              const firstSentence = sentences[0].split(" ")
-              while (currentDescriptionLength < len) {
-                const sentence = firstSentence[sentenceIdx]
-                if (!sentence) break
-                finalDesc.push(sentence)
-                currentDescriptionLength += sentence.length
-                sentenceIdx++
+              if (sentences[0] !== undefined && sentences[0].length >= len) {
+                const firstSentence = sentences[0].split(" ")
+                while (currentDescriptionLength < len) {
+                  const sentence = firstSentence[sentenceIdx]
+                  if (!sentence) break
+                  finalDesc.push(sentence)
+                  currentDescriptionLength += sentence.length
+                  sentenceIdx++
+                }
+                if (includeTripleDots) finalDesc.push("...")
+              } else {
+                while (currentDescriptionLength < len) {
+                  const sentence = sentences[sentenceIdx]
+                  if (!sentence) break
+                  const currentSentence = sentence.endsWith(".") ? sentence : sentence + "."
+                  finalDesc.push(currentSentence)
+                  currentDescriptionLength += currentSentence.length
+                  sentenceIdx++
+                }
               }
-              finalDesc.push("...")
-            } else {
-              while (currentDescriptionLength < len) {
-                const sentence = sentences[sentenceIdx]
-                if (!sentence) break
-                const currentSentence = sentence.endsWith(".") ? sentence : sentence + "."
-                finalDesc.push(currentSentence)
-                currentDescriptionLength += currentSentence.length
-                sentenceIdx++
-              }
+              return finalDesc.join(" ")
             }
 
-            file.data.description = finalDesc.join(" ")
+            file.data.description = processDescription(frontMatterDescription ?? text, true)
+            file.data.abstract = file.data.frontmatter?.abstract ?? processDescription(text, false)
             file.data.text = text
             file.data.readingTime = readingTime(file.data.text!)
           }
@@ -79,6 +82,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
 declare module "vfile" {
   interface DataMap {
     description: string
+    abstract: string
     text: string
     readingTime: ReadTimeResults
   }

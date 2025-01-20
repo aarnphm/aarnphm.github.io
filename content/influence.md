@@ -6,16 +6,17 @@ aliases:
 tags:
   - growth
   - love
+abstract: I want to think about my life as being RLHF by the people I surround myself with. As such, we populate our concept of the world around them. This is a list of people that inspire me to be my best-self at all times.
 comments: false
 date: "2024-01-23"
-description: A list of folks that inspires me a bunch
-modified: 2025-01-20 06:14:32 GMT-05:00
+description: a thank you letter.
+modified: 2025-01-20 07:54:13 GMT-05:00
 permalinks:
   - /thanks
 title: affecter.
 ---
 
-I think a lot about this [[quotes#^life-jobs-smart|quote]] from Steve Jobs, and realised that you are who you surrounded yourself with. Whether online, daily, we often populate our minds and time by the people we hang around or work with.
+I think a lot about that one [[quotes#^life-jobs-smart|quote]] from Steve Jobs, and realised that you are who you surrounded yourself with. Whether online, daily, we often populate our minds and time by the people we hang around or work with.
 
 The following lists of people who I owed a lot. I would separate from top-to-bottom a list from "people-i-know-that-makes-me-whole" to "humans-being-in-the-wild-that-reminds-me-how-beautiful-life-really-is" (separated with `**`):
 

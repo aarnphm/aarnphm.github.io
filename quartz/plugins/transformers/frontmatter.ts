@@ -153,6 +153,7 @@ declare module "vfile" {
         permalinks: string[]
         tags: string[]
         aliases: string[]
+        abstract: string
         created: string
         modified: string
         published: string
