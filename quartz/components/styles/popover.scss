@@ -93,6 +93,14 @@
   }
 }
 
+.bib-popover {
+  color: var(--dark);
+
+  & > .popover-inner {
+    padding: 0.5rem;
+  }
+}
+
 a:hover .popover,
 .popover:hover {
   opacity: 1;

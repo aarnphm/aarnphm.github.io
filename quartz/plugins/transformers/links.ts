@@ -13,13 +13,20 @@ import path from "path"
 import { SKIP, visit } from "unist-util-visit"
 import isAbsoluteUrl from "is-absolute-url"
 import { ElementContent, Element } from "hast"
-import { filterEmbedTwitter } from "./twitter"
+import { filterEmbedTwitter, twitterUrlRegex } from "./twitter"
 import { h, s } from "hastscript"
-import { svgOptions } from "../../components/renderPage"
+import {
+  bskySvg,
+  githubSvg,
+  substackSvg,
+  svgOptions,
+  twitterSvg,
+} from "../../components/renderPage"
 
 interface Options {
   enableArxivEmbed: boolean
   enableRawEmbed: boolean
+  enableIndicatorHook: boolean
   /** How to resolve Markdown paths */
   markdownLinkResolution: TransformOptions["strategy"]
   /** Strips folders from a link so that it looks nice */
@@ -32,6 +39,7 @@ interface Options {
 const defaultOptions: Options = {
   enableArxivEmbed: false,
   enableRawEmbed: false,
+  enableIndicatorHook: true,
   markdownLinkResolution: "absolute",
   prettyLinks: true,
   openLinksInNewTab: false,
@@ -85,6 +93,14 @@ export function extractArxivId(url: string): string | null {
   }
 }
 
+interface LinkContext {
+  classes: string[]
+  dest: RelativeURL
+  ext: string
+  isExternal: boolean
+  node: Element
+}
+
 export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
   return {
@@ -105,48 +121,104 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               tagName === "a" && Boolean(properties.href) && typeof properties.href === "string"
 
             // rewrite all links
+            //@ts-ignore
             visit(
               tree,
-              (node) => shouldRewriteLinks(node as Element),
-              (node) => {
+              (node: Element) => shouldRewriteLinks(node as Element),
+              (node: Element) => {
                 const classes = (node.properties.className ?? []) as string[]
                 // insert a span element into node.children
                 let dest = node.properties.href as RelativeURL
                 const ext: string = path.extname(dest).toLowerCase()
-                const isExternal =
-                  opts.enableRawEmbed && ALLOWED_EXTENSIONS.includes(ext)
-                    ? true
-                    : isAbsoluteUrl(dest)
 
-                // supports for rss feed and atom feed
-                const isCslNode = classes.includes("csl-external-link")
-                const isEmbedTwitter = filterEmbedTwitter(node)
-                const isArxiv = node.properties.href.includes("arxiv.org")
-
-                if (opts.enableArxivEmbed && isArxiv) {
-                  classes.push("internal")
-                  node.properties.dataArxivId = extractArxivId(node.properties.href)
-                } else if (!isEmbedTwitter) {
-                  classes.push(isExternal ? "external" : "internal")
+                // Initialize context object
+                const ctx: LinkContext = {
+                  classes,
+                  dest,
+                  ext,
+                  isExternal:
+                    opts.enableRawEmbed && ALLOWED_EXTENSIONS.includes(ext)
+                      ? true
+                      : isAbsoluteUrl(dest),
+                  node,
                 }
 
-                // We will need to translate the link to external here
-                if (isExternal && opts.enableRawEmbed) {
-                  if (ALLOWED_EXTENSIONS.includes(ext) && !isAbsoluteUrl(dest)) {
-                    classes.push("cdn-links")
-                    dest = node.properties.href =
-                      `https://cdn.aarnphm.xyz/assets/${dest}` as RelativeURL
+                // Link type checks
+                const linkTypes = {
+                  isCslNode: classes.includes("csl-external-link"),
+                  isEmbedTwitter: filterEmbedTwitter(node),
+                  isArxiv: dest.includes("arxiv.org"),
+                  isWikipedia: dest.includes("wikipedia.org"),
+                  isLessWrong: dest.includes("lesswrong.com"),
+                  isGithub: dest.includes("github.com"),
+                  isSubstack: dest.includes("substack.com"),
+                  isTwitter: twitterUrlRegex.test(dest),
+                  isBsky: dest.includes("bsky.app"),
+                }
+
+                // Handle special link types
+                const handleArxiv = (ctx: LinkContext) => {
+                  if (opts.enableArxivEmbed && linkTypes.isArxiv) {
+                    ctx.classes.push("internal")
+                    ctx.node.properties.dataArxivId = extractArxivId(ctx.dest)
+                    return true
+                  }
+                  return false
+                }
+
+                const handleCdnLinks = (ctx: LinkContext) => {
+                  if (ctx.isExternal && opts.enableRawEmbed) {
+                    if (ALLOWED_EXTENSIONS.includes(ctx.ext) && !isAbsoluteUrl(ctx.dest)) {
+                      ctx.classes.push("cdn-links")
+                      ctx.dest = ctx.node.properties.href =
+                        `https://cdn.aarnphm.xyz/assets/${ctx.dest}` as RelativeURL
+                    }
                   }
                 }
 
-                if (
-                  !isEmbedTwitter &&
-                  !isCslNode &&
-                  !isArxiv &&
-                  isExternal &&
+                const createIconElement = (src: string, alt: string) =>
+                  h(
+                    "span",
+                    { style: "white-space: nowrap;" },
+                    h("img.inline-icons", {
+                      src,
+                      alt,
+                      style: "height: 1em; margin-left: 0.25em;",
+                    }),
+                  )
+
+                // Add appropriate icons based on link type
+                if (!handleArxiv(ctx) && !linkTypes.isEmbedTwitter) {
+                  ctx.classes.push(ctx.isExternal ? "external" : "internal")
+                }
+
+                handleCdnLinks(ctx)
+
+                // Add appropriate icons
+                if (linkTypes.isWikipedia) {
+                  ctx.node.children.push(
+                    createIconElement("/static/favicons/wikipedia.avif", "Wikipedia"),
+                  )
+                } else if (linkTypes.isLessWrong) {
+                  ctx.node.children.push(
+                    createIconElement("/static/favicons/lesswrong.avif", "LessWrong"),
+                  )
+                } else if (linkTypes.isGithub) {
+                  ctx.node.children.push(githubSvg)
+                } else if (linkTypes.isSubstack) {
+                  ctx.node.children.push(substackSvg)
+                } else if (linkTypes.isTwitter) {
+                  ctx.node.children.push(twitterSvg)
+                } else if (linkTypes.isBsky) {
+                  ctx.node.children.push(bskySvg)
+                } else if (
+                  !linkTypes.isEmbedTwitter &&
+                  !linkTypes.isCslNode &&
+                  !linkTypes.isArxiv &&
+                  ctx.isExternal &&
                   opts.externalLinkIcon
                 ) {
-                  node.children.push(
+                  ctx.node.children.push(
                     s(
                       "svg",
                       {
@@ -163,11 +235,6 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   )
                 }
 
-                // special cases for parsing landing-links
-                if (file.data.slug === "index") {
-                  classes.push("landing-links")
-                }
-
                 // Check if the link has alias text
                 if (
                   node.children.length === 1 &&
@@ -179,7 +246,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 }
                 node.properties.className = classes
 
-                if ((isExternal && opts.openLinksInNewTab) || [".ipynb"].includes(ext)) {
+                if ((ctx.isExternal && opts.openLinksInNewTab) || [".ipynb"].includes(ext)) {
                   node.properties.target = "_blank"
                 }
 
@@ -219,14 +286,10 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   node.children[0].value = path.basename(node.children[0].value)
                 }
 
-                // add indicator spanContent after handling all prettyLinks
-                const spanContent: ElementContent = {
-                  properties: { className: "indicator-hook" },
-                  type: "element",
-                  tagName: "span",
-                  children: [],
+                // add indicator hook after handling all prettyLinks, inspired by gwern
+                if (opts.enableIndicatorHook) {
+                  node.children = [h("span.indicator-hook"), ...node.children]
                 }
-                node.children = [spanContent, ...node.children]
               },
             )
 

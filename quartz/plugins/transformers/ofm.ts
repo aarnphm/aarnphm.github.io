@@ -39,6 +39,7 @@ export interface Options {
   parseTags: boolean
   parseArrows: boolean
   parseBlockReferences: boolean
+  enableMermaidRough: boolean
   enableInHtmlEmbed: boolean
   enableYouTubeEmbed: boolean
   enableVideoEmbed: boolean
@@ -54,6 +55,7 @@ const defaultOptions: Options = {
   parseTags: true,
   parseArrows: true,
   parseBlockReferences: true,
+  enableMermaidRough: false,
   enableInHtmlEmbed: false,
   enableYouTubeEmbed: true,
   enableVideoEmbed: true,
@@ -763,6 +765,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               tree,
               (node) => checkMermaidCode(node as Element),
               (node: Element, _, parent: HtmlRoot) => {
+                node.properties["data-enable-rough"] = opts.enableMermaidRough
                 parent.children = [
                   h(
                     "span.expand-button",

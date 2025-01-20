@@ -4,9 +4,8 @@ aliases:
   - advice
 tags:
   - evergreen
-comments: false
 date: "2024-01-23"
-modified: 2025-01-17 09:30:44 GMT-05:00
+modified: 2025-01-20 03:36:50 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 title: advice.
 transclude:

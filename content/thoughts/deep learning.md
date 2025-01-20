@@ -4,13 +4,17 @@ tags:
   - ml
   - framework
 date: "2024-01-11"
-modified: "2024-11-11"
+modified: 2025-01-20 02:59:01 GMT-05:00
 title: deep learning
 ---
 
-See also: [The Little Book of Deep Learning](/books#2024) ([pdf](https://fleuret.org/public/lbdl.pdf) or [lectures](https://fleuret.org/dlc/))
+See also: [The Little Book of Deep Learning](/books#2024) ([pdf](https://fleuret.org/public/lbdl.pdf) or [lectures](https://fleuret.org/dlc/)), [annotated history of deep learning](https://people.idsia.ch/~juergen/deep-learning-history.html), this [lecture series at CMU](https://dlsyscourse.org/lectures/)
 
-or this [lecture series at CMU](https://dlsyscourse.org/lectures/)
+> [!eli5] deep learning
+>
+> Imagine you're learning to recognize dogs. At first, your parents point to different dogs and say "that's a dog!" After seeing lots of dogs, you start noticing patterns - they have four legs, fur, tails, and make barking sounds. Now you can spot dogs on your own!
+>
+> Deep learning works kind of like that, but for computers. The computer looks at tons of pictures (like thousands and thousands), and slowly figures out what makes a dog look like a dog. It starts with simple things like edges and shapes, then builds up to more complicated stuff like spotting ears, tails, and finally whole dogs.
 
-- [[thoughts/PyTorch|PyTorch]]
-- [[thoughts/Jax|Jax]]: from [autograd](https://github.com/HIPS/autograd) project, by pretty much the same core team
+Deep learning is a superset of [[thoughts/Machine learning]]. [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3|Supervised]] and un-supervised refers to the training objective within machine learning, rather than
+the goal of different algorithms.

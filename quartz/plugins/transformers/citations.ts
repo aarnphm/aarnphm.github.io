@@ -162,7 +162,6 @@ export const Citations: QuartzTransformerPlugin<Partial<Options>> = (userOpts) =
               tree,
               (node) => checkBib(node as Element),
               (node, _index, parent) => {
-                node.properties["data-no-popover"] = true
                 node.properties["data-bib"] = true
                 // update citation to be semantically correct
                 parent.tagName = "cite"

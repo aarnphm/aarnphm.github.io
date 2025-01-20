@@ -1,4 +1,4 @@
-import { computePosition, flip, inline, offset, shift } from "@floating-ui/dom"
+import { computePosition, flip, inline, Placement, shift } from "@floating-ui/dom"
 import { getFullSlug, normalizeRelativeURLs } from "../../util/path"
 import { getContentType } from "../../util/mime"
 import xmlFormat from "xml-formatter"
@@ -62,24 +62,53 @@ async function mouseEnterHandler(
   { clientX, clientY }: { clientX: number; clientY: number },
 ) {
   const link = this
-  if (link.dataset.noPopover === "true" || getFullSlug(window) === "notes") {
+
+  const hasAlreadyBeenFetched = (classname?: string) =>
+    [...link.children].some((child) => child.classList.contains(classname ?? "popover"))
+
+  // check if it has dataset.bib === "", then we fetch the links from href from current documents
+  // then dump it to a popover element with position on top of the links with computePosition alignment
+  // then just add that div within the links (make sure to also check if it is already fetched to avoid infinite addition)
+  if (link.dataset.bib === "") {
+    const href = link.getAttribute("href")!
+
+    // Check if popover already exists
+    if (hasAlreadyBeenFetched("bib-popover")) {
+      return setPosition(link.lastChild as HTMLElement, "top")
+    }
+
+    // Find bibliography entry in current document
+    const bibEntry = document.getElementById(href.replace("#", "")) as HTMLLIElement
+
+    // Create popover
+    const popoverElement = document.createElement("div")
+    popoverElement.classList.add("popover", "bib-popover")
+    const popoverInner = document.createElement("div")
+    popoverInner.classList.add("popover-inner")
+    popoverInner.innerHTML = bibEntry.innerHTML
+    popoverElement.appendChild(popoverInner)
+
+    // Position and append
+    setPosition(popoverElement, "top")
+    link.appendChild(popoverElement)
     return
   }
 
-  async function setPosition(popoverElement: HTMLElement) {
+  if (link.dataset.noPopover === "" || getFullSlug(window) === "notes") {
+    return
+  }
+
+  async function setPosition(popoverElement: HTMLElement, placement: Placement) {
     const { x, y } = await computePosition(link, popoverElement, {
-      placement: "left-start",
-      middleware: [inline({ x: clientX, y: clientY }), offset(15), shift(), flip()],
+      placement,
+      middleware: [inline({ x: clientX, y: clientY }), shift(), flip()],
     })
     Object.assign(popoverElement.style, { left: `${x}px`, top: `${y}px` })
   }
 
-  const hasAlreadyBeenFetched = () =>
-    [...link.children].some((child) => child.classList.contains("popover"))
-
   // dont refetch if there's already a popover
   if (hasAlreadyBeenFetched()) {
-    return setPosition(link.lastChild as HTMLElement)
+    return setPosition(link.lastChild as HTMLElement, "right")
   }
 
   const thisUrl = new URL(document.location.href)
@@ -167,7 +196,7 @@ async function mouseEnterHandler(
       popoverInner.append(...elts)
   }
 
-  setPosition(popoverElement)
+  setPosition(popoverElement, "right")
   link.appendChild(popoverElement)
 
   if (hash !== "") {

@@ -6,7 +6,7 @@ tags:
   - engineer4a03
   - fruit
 date: "2024-10-02"
-modified: 2025-01-07 15:49:29 GMT-05:00
+modified: 2025-01-20 03:16:08 GMT-05:00
 permalinks:
   - /chatgpt
 socialDescription: And its implication on how we assess learning. an overview.
@@ -23,7 +23,7 @@ title: On ChatGPT and its pedagogical consequences
 ## Introduction.
 
 Historically, Alan Turing's seminal work "Computing Machinery and Intelligence" laid the foundation for exploring the possibilities of a thinking machine [@10.1093/mind/LIX.236.433].
-Subsequently, the development of [[thoughts/Machine-learning|AI]] had taken a symbolic approach -- world representations through systems that utilise high-level symbols and manipulate tokens to arrive at a result commonly referred to as Good Old-Fashioned AI (GOFAI) [@10.7551/mitpress/4626.001.0001].
+Subsequently, the development of [[thoughts/Machine learning|AI]] had taken a symbolic approach -- world representations through systems that utilise high-level symbols and manipulate tokens to arrive at a result commonly referred to as Good Old-Fashioned AI (GOFAI) [@10.7551/mitpress/4626.001.0001].
 
 While GOFAI showed promise through decision-tree [[thoughts/reason|reasoning]], its limitations became apparent in the 1980s when the field entered "AI Winter." This was likely due to the cynicism within the AI researchers' community and a reduction in funding, which halted most research and development [@handler2008avoidanotheraiwinter].
 

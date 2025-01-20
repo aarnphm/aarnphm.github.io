@@ -1,22 +1,27 @@
 ---
-id: inspo
+id: are.na
+aliases:
+  - inspiration
 tags:
   - technical
   - seed
+cssclasses:
+  - nolist
 date: "2024-10-24"
-description: cool stuff on the internet
-modified: 2025-01-19 01:24:16 GMT-05:00
-noindex: true
+description: cool stuff on the internet. My run-down version of are[dot]na
+modified: 2025-01-20 05:26:16 GMT-05:00
 permalink:
-  - website
-title: inspiration
+  - /website
+  - /resources
+  - /inspo
+title: are.na
 ---
 
-see also [[tweets|some based tweets on the internet]]
+I also like to collect [[tweets|some based tweets on the internet]], or [[books|reading]]
 
 ## discourse
 
-https://www.lesswrong.com/posts/HiTjDZyWdLEGCDzqu/?commentId=MPNF8uSsi9mvZLxqz -- Gwern on distilling 3.6 instead of releasing Opus 3.5
+- [Gwern](https://www.lesswrong.com/posts/HiTjDZyWdLEGCDzqu/?commentId=MPNF8uSsi9mvZLxqz) on distilling Opus 3.5 into Claude 3.6 instead of releasing Opus 3.5
 
 ## website
 
@@ -37,6 +42,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://clock.vvhuang.com/ -- the graphic for the clock is nice
 - https://handyarrows.com/ -- Arrowssssss
 - https://brand.dropbox.com/ -- Cool brand design from Dropbox, by daybreak studio
+- https://tomcritchlow.com/wiki/ -- Wikitext garden
 
 ## portfolio
 
@@ -52,17 +58,21 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://maalvika.substack.com/p/tiktoks-boyfriend-tests-and-the-spectacle -- tiktok boyfriend test and spectacle of modern love
 - https://handwritten.blog/2022-10-01-hyperlinks-in-handwriting.html -- Handwritten blog
 - https://www.muckrock.com/news/archives/2015/jul/21/nothing-indicate-nothing-indicate-subject-had-any-/ -- Paul Erdős, he is just a mathematician that really [[/tags/love|love]] math
+- https://matthewstrom.com/writing/generative-art-og-images/ -- Generative OG with [Brownian motion](https://en.wikipedia.org/wiki/Brownian_motion)
 
 ## protocol
 
-- Willow: protocol for synchronisable data store ([link](https://willowprotocol.org/specs/index.html#specifications))
+- [Willow](https://willowprotocol.org/specs/index.html#specifications) -- protocol for synchronisable data store
+- [Yjs](https://yjs.dev/) -- CRDT for shared editing
 
 ## resources
 
 - https://fontsource.org/
 - https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
-- https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig -- The GPA you need to care about
+- [ziglang/zig/.../general_purpose_allocator.zig](https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig) -- The GPA you need to care about
 - https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
 - https://drmichaellevin.org/resources/otherlabs.html -- Labs interests
-- https://www.youtube.com/watch?v=5OaTk5q_CTc&ab_channel=SouthParkCommons -- SouthParkCommons meetup for AI interfaces
+- _SouthParkCommons meetup for AI interfaces, [Geoffrey Litt](https://www.geoffreylitt.com/)_
+  ![[https://www.youtube.com/watch?v=5OaTk5q_CTc]]
 - https://www.mrporter.com/en-us/journal/fashion/derek-guy-style-resolutions-25156188 -- Style resolution
+- https://thegenerality.com/agi/ -- The effort for AGI at Microsoft https://github.com/microsoft/unilm

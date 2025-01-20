@@ -3,8 +3,10 @@ id: Sphinoza
 tags:
   - philos1aa3
   - philosophy
+date: "2023-10-10"
+description: and moral philosophy, relationship with God.
+modified: 2025-01-20 05:19:37 GMT-05:00
 title: Sphinoza
-date: 2023-10-10
 ---
 
 ## Ethics (1677)
@@ -23,7 +25,7 @@ European considered Sphinoza as Atheist => but his works mentioned God
 
 Monotheistic
 
-God != nature => God creates nature
+God $\neq$ nature => God creates nature
 
 Spinoza: God = nature
 

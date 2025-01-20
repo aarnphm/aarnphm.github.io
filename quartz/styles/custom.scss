@@ -190,11 +190,6 @@ $selector: "&:not(#{list.nth($excluded-hover-classes, 1)})";
 }
 
 a {
-  &[data-bib] {
-    background-color: initial;
-    text-decoration: none;
-  }
-
   &[data-footnote-backref] {
     text-decoration: none;
   }
@@ -208,8 +203,10 @@ a {
 
   &:hover {
     #{$selector} {
-      background-color: var(--secondary) !important;
-      color: var(--light) !important;
+      // NOTE: If we want to go back to background, but I'm tired of it tbh
+      // background-color: var(--secondary) !important;
+      // color: var(--light) !important;
+      color: var(--foam) !important;
     }
 
     .min-links,
@@ -804,5 +801,17 @@ p.quotes {
   &:after {
     content: "”";
     margin-left: 0.25em;
+  }
+}
+
+img.inline-icons {
+  margin: 0;
+  border-radius: 0;
+}
+
+.nolist {
+  ul,
+  ol {
+    list-style-type: none;
   }
 }

@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded.
-modified: 2025-01-19 01:24:14 GMT-05:00
+modified: 2025-01-20 05:28:30 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -65,6 +65,10 @@ https://x.com/virtualjew/status/1846593528350011539 <!-- You can just make grill
 https://x.com/qiaochuyuan/status/1629333539488690176?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ <!-- QC on attachment theory thread -->
 
 ## technology
+
+https://x.com/Mappletons/status/1250532315459194880 <!-- Digital garden but wikitext go brr -->
+
+https://x.com/VictorPontis/status/1876723918020452809 <!-- Lu.ma team structure -->
 
 https://x.com/kepano/status/1694731713686196526 <!-- Obsidian manifesto -->
 

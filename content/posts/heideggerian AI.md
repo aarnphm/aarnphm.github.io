@@ -5,7 +5,8 @@ tags:
   - philosophy
 date: "2025-01-11"
 description: and Heideggerian AI.
-modified: 2025-01-19 00:19:10 GMT-05:00
+draft: true
+modified: 2025-01-20 05:28:37 GMT-05:00
 title: I saw a marching band at a hackathon for the first time.
 ---
 
