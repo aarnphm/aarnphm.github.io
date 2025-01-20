@@ -815,3 +815,10 @@ img.inline-icons {
     list-style-type: none;
   }
 }
+
+body[data-slug="influence"] {
+  .byline,
+  .page-footer {
+    display: none;
+  }
+}

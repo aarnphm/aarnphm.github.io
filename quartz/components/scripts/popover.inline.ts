@@ -94,7 +94,11 @@ async function mouseEnterHandler(
     return
   }
 
-  if (link.dataset.noPopover === "" || getFullSlug(window) === "notes") {
+  if (
+    link.dataset.noPopover === "" ||
+    link.dataset.noPopover === "true" ||
+    getFullSlug(window) === "notes"
+  ) {
     return
   }
 

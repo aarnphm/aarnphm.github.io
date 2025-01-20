@@ -6,7 +6,7 @@ tags:
 date: "2024-12-10"
 description: nobby designer word for 'the design of the current site'
 lang: en
-modified: 2025-01-20 03:16:45 GMT-05:00
+modified: 2025-01-20 06:06:32 GMT-05:00
 socials:
   twitter: https://x.com/aarnphm_/status/1861550609834402129
 title: colophon
@@ -19,6 +19,8 @@ title: colophon
 **accessibility** -- follow ARIA spec. I tried to modify a few value in rose-pine to add a bit more contrast.
 
 **components** -- I added support for rendering [[thoughts/Vector calculus#gradient|tikz graph]], [[thoughts/Transformers#Feynman-Kac|pseudocode]] support, [dynalist](https://dynalist.io)-inspired [[thoughts/mechanistic interpretability#inference|collapsible header]], a few customised [[posts/new#^ending|signature]], and some tiny [transformers plugins](https://github.com/aarnphm/aarnphm.github.io/blob/main/quartz/plugins/transformers/aarnphm.ts).
+
+**usage** -- Some materialistic items/daily drivers that has found [[uses|its way]] into my life.
 
 Most of it follow [unified](https://unifiedjs.com/) ecosystem and can be exported as a standalone plugin[^plugin].
 

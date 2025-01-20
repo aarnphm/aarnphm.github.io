@@ -16,6 +16,7 @@ import { ElementContent, Element } from "hast"
 import { filterEmbedTwitter, twitterUrlRegex } from "./twitter"
 import { h, s } from "hastscript"
 import {
+  bentomlSvg,
   bskySvg,
   githubSvg,
   substackSvg,
@@ -150,6 +151,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isArxiv: dest.includes("arxiv.org"),
                   isWikipedia: dest.includes("wikipedia.org"),
                   isLessWrong: dest.includes("lesswrong.com"),
+                  isBentoml: dest.includes("bentoml.com"),
                   isGithub: dest.includes("github.com"),
                   isSubstack: dest.includes("substack.com"),
                   isTwitter: twitterUrlRegex.test(dest),
@@ -199,10 +201,14 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   ctx.node.children.push(
                     createIconElement("/static/favicons/wikipedia.avif", "Wikipedia"),
                   )
+                } else if (linkTypes.isArxiv) {
+                  ctx.node.children.push(createIconElement("/static/favicons/arxiv.avif", "arXiv"))
                 } else if (linkTypes.isLessWrong) {
                   ctx.node.children.push(
                     createIconElement("/static/favicons/lesswrong.avif", "LessWrong"),
                   )
+                } else if (linkTypes.isBentoml) {
+                  ctx.node.children.push(bentomlSvg)
                 } else if (linkTypes.isGithub) {
                   ctx.node.children.push(githubSvg)
                 } else if (linkTypes.isSubstack) {

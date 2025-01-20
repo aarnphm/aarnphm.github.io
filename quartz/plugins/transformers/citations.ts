@@ -34,7 +34,7 @@ const LINK_TYPES: LinkType[] = [
   {
     type: "arxiv",
     pattern: extractArxivId,
-    label: "[arxiv]",
+    label: "[arXiv]",
   },
   {
     type: "github",
@@ -44,12 +44,12 @@ const LINK_TYPES: LinkType[] = [
   {
     type: "transformer",
     pattern: (url: string) => url.toLowerCase().includes("transformer-circuits.pub"),
-    label: "[link]",
+    label: "[transformer-circuits]",
   },
   {
     type: "alignment",
     pattern: (url: string) => url.toLowerCase().includes("alignmentforum.org"),
-    label: "[post]",
+    label: "[alignmentforum]",
   },
 ]
 

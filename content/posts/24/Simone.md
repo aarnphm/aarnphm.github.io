@@ -4,7 +4,7 @@ tags:
   - friend
 date: "2024-12-27"
 description: and a year of reconnection.
-modified: 2024-12-31 06:10:30 GMT-05:00
+modified: 2025-01-20 05:57:19 GMT-05:00
 noindex: true
 pageLayout: letter
 signature: with warmth and friendship - Aaron.
@@ -20,7 +20,7 @@ I love that we got to see each other once in a blue moon, just to catch up.
 
 I love that you called me whenever you need someone to talk to.
 
-I'm sure there are many things happening your life, I know that you will eventually get it done (esp. getting a big gurl corporate job this year :happy:)
+I'm sure there are many things happening your life, I know that you will eventually get it done (esp. getting a big gurl corporate job this year :smiley:)
 
 I hope you find moments of peace during the holiday season. May the new year bring you closer to your goals, but more importantly, closer to your own truth.
 
