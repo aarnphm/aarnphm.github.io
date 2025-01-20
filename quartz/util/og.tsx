@@ -4,7 +4,6 @@ import { JSXInternal } from "preact/src/jsx"
 import { joinSegments } from "./path"
 import { QuartzPluginData } from "../plugins/vfile"
 import { formatDate, getDate } from "../components/Date"
-import readingTime from "reading-time"
 import { i18n } from "../i18n"
 import { ThemeKey } from "./theme"
 
@@ -152,9 +151,10 @@ export const og: SocialImageOptions["Component"] = (
   if (fileData.dates) {
     created = formatDate(getDate(cfg, fileData)!, cfg.locale)
   }
-  const { minutes, text: _timeTaken, words: _words } = readingTime(fileData.text ?? "")
-  reading = i18n(cfg.locale).components.contentMeta.readingTime({
-    minutes: Math.ceil(minutes),
+  const { locale } = cfg
+  reading = i18n(locale).components.contentMeta.readingTime({
+    minutes: Math.ceil(fileData.readingTime?.minutes!),
+    words: Math.ceil(fileData.readingTime?.words!),
   })
 
   const Li = [created, reading]
