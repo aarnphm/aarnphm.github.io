@@ -93,6 +93,8 @@ async function handleImageContent(targetUrl: URL, popoverInner: HTMLDivElement) 
   popoverInner.appendChild(img)
 }
 
+// NOTE: Given that we will run this on cloudflare workers, all PDF will be fetched
+// directly from Git LFS server.
 async function handlePdfContent(response: Response, popoverInner: HTMLDivElement) {
   const pdf = document.createElement("iframe")
   const blob = await response.blob()

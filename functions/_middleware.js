@@ -9,7 +9,7 @@
  * }>}
  */
 export async function onRequest(context) {
-  const { env, request } = context
+  const { request } = context
 
   const url = new URL(request.url)
 
@@ -30,7 +30,19 @@ export async function onRequest(context) {
 
   if (url.pathname.endsWith(".pdf")) {
     const githubUrl = `https://media.githubusercontent.com/media/aarnphm/aarnphm.github.io/refs/heads/main/content${url.pathname}`
-    return await fetch(new Request(githubUrl, { method: "GET", headers: request.headers }))
+    return await fetch(new Request(githubUrl, { method: "GET", headers: request.headers })).then(
+      async (resp) => {
+        const headers = new Headers(response.headers)
+        // Force Content-Type to 'application/pdf'
+        headers.set("Content-Type", "application/pdf")
+
+        return new Response(resp.body, {
+          status: resp.status,
+          statusText: resp.statusText,
+          headers,
+        })
+      },
+    )
   }
 
   return response
