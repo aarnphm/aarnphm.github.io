@@ -332,17 +332,19 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
 
       if (ctx.argv.verbose) console.log(styleText("blue", `[emit:${name}] Generating press kit...`))
 
-      // Process chunks in parallel
-      const instagram = await Promise.all(
-        chunks.map((chunk) =>
-          processChunk(chunk, ctx, configuration, instagramOptions, fonts, "instagram"),
+      // Process both platforms and all chunks in parallel
+      const [instagram, twitter] = await Promise.all([
+        Promise.all(
+          chunks.map((chunk) =>
+            processChunk(chunk, ctx, configuration, instagramOptions, fonts, "instagram"),
+          ),
         ),
-      )
-      const twitter = await Promise.all(
-        chunks.map((chunk) =>
-          processChunk(chunk, ctx, configuration, twitterOpts, fonts, "twitter"),
+        Promise.all(
+          chunks.map((chunk) =>
+            processChunk(chunk, ctx, configuration, twitterOpts, fonts, "twitter"),
+          ),
         ),
-      )
+      ])
 
       return [...instagram.flat(), ...twitter.flat()]
     },
