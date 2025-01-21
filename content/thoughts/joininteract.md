@@ -3,10 +3,12 @@ id: joininteract
 tags:
   - seed
   - application
-noindex: false
-date: 2024-08-23
+date: "2024-08-23"
+description: and 24 application.
+modified: 2025-01-20 23:00:06 GMT-05:00
 title: interact cohort
 ---
+
 ## 2024
 
 > [!question] Someone gives you 50,000 dollars for a project that explicitly can’t be a business. What’s the project you work on and why?

@@ -156,7 +156,7 @@ const config: QuartzConfig = {
         }),
       }),
       Plugin.TagPage(),
-      Plugin.NotebookViewer(),
+      // Plugin.NotebookViewer(),
       // Plugin.InfinitePoemPage(),
       Plugin.ContentIndex({ rssLimit: 40 }),
       Plugin.Assets(),
