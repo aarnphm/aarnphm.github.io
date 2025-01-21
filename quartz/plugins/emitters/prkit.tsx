@@ -6,11 +6,15 @@ import { formatDate, getDate } from "../../components/Date"
 import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { write } from "./helpers"
 import sharp from "sharp"
+import { JSX } from "preact/jsx-runtime"
 import { defaultImageOptions, getSatoriFont, SocialImageOptions } from "../../util/og"
 import { HtmlContent, QuartzPluginData } from "../vfile"
 import { unescapeHTML } from "../../util/escape"
 import { BuildCtx } from "../../util/ctx"
 import { styleText } from "node:util"
+import { fromHtml } from "hast-util-from-html"
+import { htmlToJsx } from "../../util/jsx"
+import { RenderableProps } from "preact"
 
 export interface PressReleaseOptions {
   height: number
@@ -86,6 +90,7 @@ const TwitterPost: SocialImageOptions["Component"] = (
   })
 
   const Li = [created, reading]
+
   return (
     <div
       style={{
@@ -164,11 +169,22 @@ const TwitterPost: SocialImageOptions["Component"] = (
             lineClamp: 7,
           }}
         >
-          {fileData.abstract}
+          <Abstract {...getAbstractProps(fileData.abstract!)} />
         </p>
       </div>
     </div>
   )
+}
+
+type Props = {
+  children: JSX.Element
+}
+
+const getAbstractProps = (abstract: string): Props =>
+  htmlToJsx("" as FilePath, fromHtml(abstract, { fragment: true })).props
+
+function Abstract({ children }: Props) {
+  return <span>{children}</span>
 }
 
 const InstagramPost: SocialImageOptions["Component"] = (
@@ -230,7 +246,7 @@ const InstagramPost: SocialImageOptions["Component"] = (
         </h1>
         <p
           style={{
-            color: cfg.theme.colors[colorScheme].gray,
+            color: cfg.theme.colors[colorScheme].light,
             fontFamily: fonts[1].name,
             fontSize: "3em",
             margin: 0,
@@ -249,7 +265,7 @@ const InstagramPost: SocialImageOptions["Component"] = (
             fontSize: "2em",
           }}
         >
-          {fileData.abstract}
+          <Abstract {...getAbstractProps(fileData.abstract!)} />
         </p>
         <p
           style={{
