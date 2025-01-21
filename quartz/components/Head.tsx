@@ -113,6 +113,19 @@ export default (() => {
         <link rel="icon" href={iconPath} />
         <link rel="apple-touch-icon" href={iconPath} />
         <link rel="canonical" href={socialUrl} />
+        <meta name="author" content="Aaron Pham" />
+        {!fileData.slug!.includes("university") && (
+          <>
+            <meta
+              name="pr:twitter"
+              content={`https://${cfg.baseUrl}/static/twitter/${fileName}.png`}
+            />
+            <meta
+              name="pr:instagram"
+              content={`https://${cfg.baseUrl}/static/instagram/${fileName}.png`}
+            />
+          </>
+        )}
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
         {css.map((resource) => CSSResourceToStyleElement(resource, true))}

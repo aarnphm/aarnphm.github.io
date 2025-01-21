@@ -1385,6 +1385,13 @@ export function renderPage(
       {pageResources.js
         .filter((resource) => resource.loadTime === "afterDOMReady")
         .map((res) => JSResourceToScriptElement(res))}
+      {/* Cloudflare Web Analytics */}
+      <script
+        defer
+        src={"https://static.cloudflareinsights.com/beacon.min.js"}
+        data-cf-beacon='{"token": "3b6a9ecda4294f8bb5770c2bfb44078c"}'
+      />
+      {/* End Cloudflare Web Analytics */}
     </html>
   )
 
