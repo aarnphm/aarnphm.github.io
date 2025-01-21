@@ -2,6 +2,7 @@
 @use "./variables.scss" as *;
 @use "./syntax.scss";
 @use "./callouts.scss";
+@use "./mixin.scss" as *;
 
 html,
 body {
@@ -224,6 +225,10 @@ thead {
   color: var(--dark);
   font-weight: normal;
   margin-bottom: 0;
+
+  &.dag {
+    @include dagHighlights;
+  }
 
   article > & > a[data-role="anchor"] {
     color: var(--dark);

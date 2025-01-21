@@ -13,26 +13,11 @@ export async function onRequest(context) {
 
   const url = new URL(request.url)
 
-  if (request.method !== "GET" && request.method !== "HEAD") {
-    return new Response(null, {
-      status: request.method === "OPTIONS" ? 200 : 405,
-      headers: { Allow: "GET, HEAD, OPTIONS" },
-    })
-  }
-
-  const response =
-    request.method === "GET"
-      ? await context.next()
-      : // if we request the HEAD of an LFS pointer, we want to GET the underlying
-        // object's info (including URL) and then return the object's HEAD instead
-        // so that Content-Length, etc. are correct
-        await context.next(context.request, { method: "GET" })
-
   if (url.pathname.endsWith(".pdf")) {
     const githubUrl = `https://media.githubusercontent.com/media/aarnphm/aarnphm.github.io/refs/heads/main/content${url.pathname}`
     return await fetch(new Request(githubUrl, { method: "GET", headers: request.headers })).then(
       async (resp) => {
-        const headers = new Headers(response.headers)
+        const headers = new Headers(resp.headers)
         // Force Content-Type to 'application/pdf'
         headers.set("Content-Type", "application/pdf")
 
@@ -45,5 +30,5 @@ export async function onRequest(context) {
     )
   }
 
-  return response
+  return await context.next()
 }

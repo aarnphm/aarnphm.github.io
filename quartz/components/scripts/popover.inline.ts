@@ -155,10 +155,12 @@ async function handleBibliographyPopover(
   }
 
   const bibEntry = document.getElementById(href.replace("#", "")) as HTMLLIElement
+  if (hasAlreadyBeenFetched("bib-popover")) return
+
   const { popoverElement, popoverInner } = createPopoverElement("bib-popover")
   popoverInner.innerHTML = bibEntry.innerHTML
 
-  await setPosition(link, popoverElement, "top", clientX, clientY)
+  setPosition(link, popoverElement, "top", clientX, clientY)
   link.appendChild(popoverElement)
 }
 
@@ -188,14 +190,30 @@ async function mouseEnterHandler(
   }
 
   const thisUrl = new URL(document.location.href)
-  thisUrl.hash = ""
-  thisUrl.search = ""
   const targetUrl = new URL(link.href)
   const hash = decodeURIComponent(targetUrl.hash)
-  targetUrl.hash = ""
-  targetUrl.search = ""
+
   // prevent hover of the same page
-  if (thisUrl.toString() === targetUrl.toString()) return
+  if (compareUrls(thisUrl, targetUrl)) {
+    // Handle same-page hash links
+    if (hash !== "") {
+      const article = document.querySelector("article")
+      const heading = article?.querySelector(
+        `h1${hash}, h2${hash}, h3${hash}, h4${hash}, h5${hash}, h6${hash}`,
+      ) as HTMLElement | null
+      if (heading) {
+        heading.classList.add("dag")
+        // Add cleanup for mouseleave
+        const cleanup = () => {
+          heading.classList.remove("dag")
+          link.removeEventListener("mouseleave", cleanup)
+        }
+        link.addEventListener("mouseleave", cleanup)
+        window.addCleanup(() => link.removeEventListener("mouseleave", cleanup))
+      }
+    }
+    return
+  }
 
   let response: Response | void
   if (link.dataset.arxivId) {
@@ -203,11 +221,11 @@ async function mouseEnterHandler(
     response = await fetchCanonical(url).catch(console.error)
   } else {
     response = await fetchCanonical(new URL(`${targetUrl}`)).catch(console.error)
-    document.dispatchEvent(new CustomEvent("nav", { detail: { url: link.href } }))
   }
 
-  if (hasAlreadyBeenFetched() || !response) return
+  if (hasAlreadyBeenFetched()) return
 
+  if (!response) return
   const contentType = response.headers.get("Content-Type")
     ? response.headers.get("Content-Type")!.split(";")[0]
     : getContentType(targetUrl)
@@ -230,12 +248,14 @@ async function mouseEnterHandler(
     contentHandlers[`${contentTypeCategory}/${typeInfo}`] ||
     contentHandlers["default"]
 
-  await handler(response, targetUrl, popoverInner)
-  await setPosition(link, popoverElement, "right", clientX, clientY)
+  handler(response, targetUrl, popoverInner)
+  setPosition(link, popoverElement, "right", clientX, clientY)
   link.appendChild(popoverElement)
 
   if (hash !== "") {
-    const heading = popoverInner.querySelector(hash) as HTMLElement | null
+    const heading = popoverInner.querySelector(
+      `h1${hash}, h2${hash}, h3${hash}, h4${hash}, h5${hash}, h6${hash}`,
+    ) as HTMLElement | null
     if (heading) {
       popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
     }
@@ -251,7 +271,9 @@ function mouseClickHandler(evt: MouseEvent) {
   if (compareUrls(thisUrl, targetUrl) && hash !== "") {
     evt.preventDefault()
     const mainContent = document.querySelector("article")
-    const heading = mainContent?.querySelector(hash) as HTMLElement | null
+    const heading = mainContent?.querySelector(
+      `h1${hash}, h2${hash}, h3${hash}, h4${hash}, h5${hash}, h6${hash}`,
+    ) as HTMLElement | null
     if (heading) {
       heading.scrollIntoView({ behavior: "smooth" })
       // Optionally update the URL without a page reload

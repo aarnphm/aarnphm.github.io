@@ -88,7 +88,6 @@ class StackedNoteManager {
 
   private scrollHandler: (() => void) | null = null
 
-  private baseSlug: FullSlug
   private isActive: boolean = false
 
   constructor() {

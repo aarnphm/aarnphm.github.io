@@ -86,10 +86,6 @@ body.stack-mode > #quartz-root {
     display: none;
   }
 
-  h1.dag {
-    @include dagHighlights;
-  }
-
   .keybind,
   .breadcrumb-container {
     visibility: hidden;
