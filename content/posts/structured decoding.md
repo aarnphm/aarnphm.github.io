@@ -96,7 +96,7 @@ In **summary**:
 
 ## why do we need structured decoding?
 
-![[posts/images/shogoth-gpt.png|Shogoth as GPTs. In a sense, RLHF, or any methods for that matter, is an injection of rules (GOFAI system) into post-training]]
+![[posts/images/shogoth-gpt.webp|Shogoth as GPTs. In a sense, RLHF, or any methods for that matter, is an injection of rules (GOFAI system) into post-training]]
 
 [[thoughts/LLMs|LLMs]] excel at the following heuristic: given a blob of text, the model will generate a contiguous piece of text that it predicts as the most probable tokens. For example, if you give it a Wikipedia article, the model should produce text consistent with the remainder of said article.
 
@@ -187,9 +187,9 @@ There are few limitations with current vLLM's support of the Outlines backend:
 
 This is great because it addresses **limitation (1)** by moving grammar compilation out of Python into C, utilising `pthread`. Additionally, XGrammar lays the groundwork for addressing **limitation (4)** in future releases. Below are performance comparisons between the XGrammar and Outlines backends:
 
-![[posts/images/vllm-new-xgrammar.png]]
+![[posts/images/vllm-new-xgrammar.webp]]
 
-![[posts/images/vllm-xgrammar-decode-time-per-output-token.png|courtesy of Michael Goin (Red Hat)]]
+![[posts/images/vllm-xgrammar-decode-time-per-output-token.webp|courtesy of Michael Goin (Red Hat)]]
 
 In vLLM’s v0 architecture, we’ve implemented XGrammar as a [logit processor](https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/guided_decoding/xgrammar_decoding.py), optimizing it with caching for tokenizer data. While the performance improvements are encouraging, we believe there’s still significant room for optimisation.
 

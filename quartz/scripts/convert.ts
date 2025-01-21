@@ -8,7 +8,7 @@ async function convertMedia(contentDir: string) {
   try {
     const mediaFiles = await globby(["**/*.{png,jpeg,jpg}"], {
       cwd: contentDir,
-      ignore: ["**/*.ignore.{png,jpeg,jpg}", "**/[0-9]*", "**/posts/**/*.{png,jpeg,jpg}"],
+      ignore: ["**/*.ignore.{png,jpeg,jpg}"],
       absolute: true,
     })
 
@@ -56,7 +56,6 @@ async function convertMedia(contentDir: string) {
     const mdFiles = await globby(["**/*.md"], {
       cwd: contentDir,
       absolute: true,
-      ignore: ["**/posts/**/*.md"],
     })
 
     console.log(styleText("blue", `\nUpdating ${mdFiles.length} markdown files...`))

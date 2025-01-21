@@ -11,9 +11,9 @@ signature: with love and appreciation - Aaron
 title: to tommy
 ---
 
-![[posts/images/049D7097-9964-4C79-84D4-A59A1E8A8E33.jpeg|Not entirely sure how this image reminds me of you, oh well]]
+![[posts/images/049D7097-9964-4C79-84D4-A59A1E8A8E33.webp|Not entirely sure how this image reminds me of you, oh well]]
 
-![[posts/images/message-with-tommy.png|from tommy]]
+![[posts/images/message-with-tommy.webp|from tommy]]
 
 I'm not sure what plans the universe has for either of us. All I know is we crossed paths this year, and it feels
 like that happened for a reason. I don't remember the first time I tweeted at you, or how exactly you became "Tommy from Twitter," but I do remember our first walk-and-talk,

@@ -118,4 +118,4 @@ In this balance, You might find not just the next step but a deeper understandin
 
 [^sign]
 
-![[posts/images/23-aaron-younglings.jpeg|young Aaron through time]]
+![[posts/images/23-aaron-younglings.webp|young Aaron through time]]

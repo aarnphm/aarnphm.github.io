@@ -11,7 +11,7 @@ signature: from a brother - Aaron
 title: to jesse
 ---
 
-![[posts/images/jesse-emoji.png|iykyk]]
+![[posts/images/jesse-emoji.webp|iykyk]]
 
 What an "uneventful" year it has been. Surely we haven't gone through any major development arc for any given time period at all.
 

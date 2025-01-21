@@ -11,11 +11,11 @@ signature: with love and prosperity - Aaron
 title: to chi
 ---
 
-![[posts/images/658ADAE0-2B38-417A-93F7-FE642CD6EEEF_1_105_c.jpeg|from Peanuts]]
+![[posts/images/658ADAE0-2B38-417A-93F7-FE642CD6EEEF_1_105_c.webp|from Peanuts]]
 
 Strange how things work. You're there in Columbus, or Indiana (depending if you have already left the farm), probably enjoying your time, while I'm here looking at this Snoopy cartoon about a tree too big for his house. Made me laugh. Made me think of you.
 
-![[posts/images/meet-friendship-wrong-to-write.png|by Olivia de Recat]]
+![[posts/images/meet-friendship-wrong-to-write.webp|by Olivia de Recat]]
 
 This year's been something else, hasn't it? You went through hell and back. I watched from my phone screen - those stupid car races we got obsessed with, the dumb reels we kept sending at 2 AM.
 Funny how friendship works now. Two people watching tiny screens, separated by miles, but somehow getting closer.

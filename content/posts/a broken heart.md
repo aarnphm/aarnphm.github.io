@@ -20,7 +20,7 @@ _Thanks JZ, CN, and TA for the editorial notes and feedback_
 
 ---
 
-![[posts/images/topanga.jpg|Some picture I took whilst staying in Topanga, maybe one day :)]]
+![[posts/images/topanga.webp|Some picture I took whilst staying in Topanga, maybe one day :)]]
 
 4:47 AM. The first light was an imperceptible, cold whisper over the ridge. In the valley, a coyote howled—to the gods, or to the void? He sat in the dark room, a canopy of emotions swirling around him like an unseen audience. Trapped in darkness, he watched shadows dance like forgotten marionettes. The ridges silhouetted against the pale sky, shifting in the uncertain light as night yielded to dawn.
 
@@ -82,4 +82,4 @@ _[Life moved on, and he thought to himself: "We will be okay."]_
 
 [^affection]: _I found this passage somewhere on Reddit_, but it also reminds me of this image:
 
-    ![[posts/images/growing-around-your-affection.jpeg|growing around your affection]]
+    ![[posts/images/growing-around-your-affection.webp|growing around your affection]]

@@ -10,7 +10,7 @@ modified: 2025-01-20 05:28:37 GMT-05:00
 title: I saw a marching band at a hackathon for the first time.
 ---
 
-![[thoughts/images/996D2C94-D27C-4D97-B49D-227AF33B1E04_1_105_c.jpeg|judges at deltahacks XI]]
+![[thoughts/images/996D2C94-D27C-4D97-B49D-227AF33B1E04_1_105_c.webp|judges at deltahacks XI]]
 
 I attended DeltaHacks XI a week ago from
 

@@ -11,7 +11,7 @@ signature: with warmth and friendship - Aaron.
 title: to simone
 ---
 
-![[posts/images/5D8F9FB5-8F82-423F-BB67-7B5CFBD9F7F2.jpeg|eigenvalued by mr. oppenheimer]]
+![[posts/images/5D8F9FB5-8F82-423F-BB67-7B5CFBD9F7F2.webp|eigenvalued by mr. oppenheimer]]
 
 I'm glad that we talked more this year. Given that we are both super busy and seemingly never figured out a time to hang out together,
 it has been great getting to know you a lot more.

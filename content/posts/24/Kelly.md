@@ -11,7 +11,7 @@ signature: with love and prosperity - Aaron
 title: to kelly
 ---
 
-![[posts/images/135551D3-A55F-4EBA-AB54-BF42BC6974EA.jpeg]]
+![[posts/images/135551D3-A55F-4EBA-AB54-BF42BC6974EA.webp]]
 
 There's something about our friendship that reminds me of the word "eudaimonia" - not just happiness, but flourishing.
 We met through the strange alchemy of social media at HTN 2021, and like Montaigne wrote of his dear friend, "we sought one another long before we met."

@@ -11,7 +11,7 @@ signature: with kinship and comradery - Aaron
 title: to mimi and tuong an
 ---
 
-![[posts/images/edward-hopper.png|Soir Bleu, 1914 by Edward Hopper]]
+![[posts/images/edward-hopper.webp|Soir Bleu, 1914 by Edward Hopper]]
 
 I've been thinking lately about how every social media channel demands a different self, as if each platform
 is its own small world. What I’d put on Twitter might be all wrong for Instagram; what I craft on Instagram feels out of place on Facebook.

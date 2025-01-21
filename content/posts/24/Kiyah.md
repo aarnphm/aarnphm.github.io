@@ -11,6 +11,6 @@ signature: with prosperity - Aaron
 title: to kiyah and kelly
 ---
 
-![[posts/images/1041A421-3E48-46BE-BE9D-CD94C5C447A1_1_105_c.jpeg|duality of being]]
+![[posts/images/1041A421-3E48-46BE-BE9D-CD94C5C447A1_1_105_c.webp|duality of being]]
 
 This is a bit long overdue, but I want to write this as an appreciation post for you both.
