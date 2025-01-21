@@ -46,7 +46,10 @@ export default (() => {
     let ogImagePath: string
     if (frontmatterImgUrl !== undefined) {
       ogImagePath = `https://${cfg.baseUrl}/static/${frontmatterImgUrl}`
-    } else if (fileData.slug === "index" && imageOptions.excludeRoot) {
+    } else if (
+      (fileData.slug === "index" && imageOptions.excludeRoot) ||
+      fileData.slug!.includes("university")
+    ) {
       ogImagePath = ogImageDefaultPath
     } else {
       ogImagePath = useDefaultOgImage ? ogImageDefaultPath : ogImageGeneratedPath

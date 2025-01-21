@@ -25,3 +25,5 @@ title: images
 ![[thoughts/images/gated-tensions-circuit.webp]]
 
 ![[thoughts/images/amare-love-latin.webp|Amare]]
+
+![[thoughts/images/essays-that-resonate.webp|HK when essay that resonates]]

@@ -279,26 +279,28 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         if (!fonts) fonts = getSatoriFont(cfg)
         const fontData = await fonts
 
-        const ogs = content.map(([_, file]) => {
-          const slug = file.data.slug!
-          const fileName = slug.replaceAll("/", "-")
-          const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
-          const description = unescapeHTML(
-            file.data.frontmatter?.description ??
-              file.data.description?.trim() ??
-              i18n(cfg.locale).propertyDefaults.description,
-          )
+        const ogs = [...content]
+          .filter(([_, file]) => !file.data.slug!.includes("university"))
+          .map(([_, file]) => {
+            const slug = file.data.slug!
+            const fileName = slug.replaceAll("/", "-")
+            const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
+            const description = unescapeHTML(
+              file.data.frontmatter?.description ??
+                file.data.description?.trim() ??
+                i18n(cfg.locale).propertyDefaults.description,
+            )
 
-          return generateOgImage(
-            ctx,
-            fontData,
-            imageOptions,
-            title,
-            description,
-            file.data,
-            fileName,
-          )
-        })
+            return generateOgImage(
+              ctx,
+              fontData,
+              imageOptions,
+              title,
+              description,
+              file.data,
+              fileName,
+            )
+          })
         promises.push(...ogs)
       } else {
         if (ctx.argv.verbose)

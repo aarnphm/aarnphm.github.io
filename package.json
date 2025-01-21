@@ -19,7 +19,8 @@
     "test": "tsx ./quartz/util/path.test.ts && tsx ./quartz/depgraph.test.ts",
     "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1",
     "serve": "NODE_ENV=development npx quartz build --concurrency 4 --serve --verbose",
-    "functions": "npx vercel dev",
+    "cf": "npx wrangler pages dev",
+    "vercel": "npx vercel dev",
     "vendorred": "go run quartz/scripts/format.go -dir=sites",
     "convert": "tsx quartz/scripts/convert.ts"
   },
