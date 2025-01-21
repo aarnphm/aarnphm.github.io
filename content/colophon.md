@@ -6,13 +6,13 @@ tags:
 date: "2024-12-10"
 description: nobby designer word for 'the design of the current site'
 lang: en
-modified: 2025-01-20 06:06:32 GMT-05:00
+modified: 2025-01-21 01:20:14 GMT-05:00
 socials:
   twitter: https://x.com/aarnphm_/status/1861550609834402129
 title: colophon
 ---
 
-**[[/tags/technical|technical]]** -- a very heavily modified version of [Quartz](https://quartz.jzhao.xyz/), hosted on GitHub pages, Vercel serverless functions with support for arxiv file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[/index|text]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), more extensive grid layout support, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, some QOL for [[/feed.xml|rss]] feed, sidenotes, [rose-pine-dawn](https://rosepinetheme.com/).
+**[[/tags/technical|technical]]** -- a very heavily modified version of [Quartz](https://quartz.jzhao.xyz/), hosted on Cloudflare Pages, (with [notes](https://notes.aarnphm.xyz) on Vercel), Vercel Edge functions with support for arxiv file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[/index|text]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), more extensive grid layout support, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, some QOL for [[/feed.xml|rss]] feed, sidenotes, [rose-pine-dawn](https://rosepinetheme.com/).
 
 **typography** -- EB Garamond, [ITC Garamond](https://www.typewolf.com/itc-garamond) and `Berkeley Mono` from [US Graphics Company](https://usgraphics.com/products/berkeley-mono)
 
@@ -25,4 +25,3 @@ title: colophon
 Most of it follow [unified](https://unifiedjs.com/) ecosystem and can be exported as a standalone plugin[^plugin].
 
 [^plugin]: We are working on a few integrations separating out logics and improving general [Quartz ecosystem](https://github.com/quartz-community), stay tuned.
-

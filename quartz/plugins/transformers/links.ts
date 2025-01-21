@@ -107,6 +107,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
   return {
     name: "LinkProcessing",
     htmlPlugins(ctx) {
+      const { cfg } = ctx
       return [
         () => {
           return (tree, file) => {
@@ -146,6 +147,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
 
                 // Link type checks
                 const linkTypes = {
+                  isApexDomain: dest.includes(cfg.configuration.baseUrl!),
                   isCslNode: classes.includes("csl-external-link"),
                   isEmbedTwitter: filterEmbedTwitter(node),
                   isArxiv: dest.includes("arxiv.org"),
@@ -201,6 +203,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   ctx.node.children.push(
                     createIconElement("/static/favicons/wikipedia.avif", "Wikipedia"),
                   )
+                } else if (linkTypes.isApexDomain && file.data.slug! !== "index") {
+                  ctx.node.children.push(createIconElement("/static/icon.webp", "apex"))
                 } else if (linkTypes.isArxiv) {
                   ctx.node.children.push(createIconElement("/static/favicons/arxiv.avif", "arXiv"))
                 } else if (linkTypes.isLessWrong) {
