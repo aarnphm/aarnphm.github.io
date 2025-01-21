@@ -25,6 +25,7 @@ const configuration: GlobalConfiguration = {
     "**.lvbitx",
     "**.slx",
     "**.so",
+    "**.ddl",
     "**/*400232791*",
     "__pycache__",
     "**.ignore.pdf",
