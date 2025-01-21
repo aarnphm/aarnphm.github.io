@@ -14,8 +14,8 @@ const notebookFiles = async (argv: Argv, cfg: QuartzConfig) => {
 }
 
 function runConvertCommand(argv: Argv, nbPath: string, targetSlug: string, outputDir: string) {
-  const command = "uvx"
-  const args = [
+  const command = process.env.CF_PAGES === "1" ? "python" : "uvx"
+  const nbConvertArgs = [
     "--with",
     "jupyter-contrib-nbextensions",
     "--with",
@@ -34,6 +34,10 @@ function runConvertCommand(argv: Argv, nbPath: string, targetSlug: string, outpu
     "--output-dir",
     outputDir,
   ]
+
+  // Special case for Cloudflare Pages
+  const args =
+    process.env.CF_PAGES === "1" ? ["-m", "uv", "tool", "run", ...nbConvertArgs] : nbConvertArgs
   return spawn(command, args)
 }
 

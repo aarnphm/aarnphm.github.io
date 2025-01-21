@@ -276,7 +276,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
           }
         }
 
-        if (!fonts) fonts = getSatoriFont(cfg, true)
+        if (!fonts) fonts = getSatoriFont(cfg)
         const fontData = await fonts
 
         const ogs = content.map(([_, file]) => {

@@ -29,6 +29,7 @@ async function processChunk(
   cfg: GlobalConfiguration,
   opts: PressReleaseOptions,
   fonts: SatoriOptions["fonts"],
+  directory: "instagram" | "twitter",
 ): Promise<FilePath[]> {
   return Promise.all(
     items.map(async ([_, file]) => {
@@ -58,7 +59,7 @@ async function processChunk(
       return await write({
         ctx,
         content: img,
-        slug: joinSegments("static", "instagram", fileName) as FullSlug,
+        slug: joinSegments("static", directory, fileName) as FullSlug,
         ext: ".png",
       })
     }),
@@ -297,7 +298,7 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
       const { configuration } = ctx.cfg
       // Re-use OG image generation infrastructure
       if (!configuration.baseUrl) {
-        console.warn(`[emit:${name}] Instagram image generation requires \`baseUrl\` to be set`)
+        console.warn(`[emit:${name}] Skip PressKit generation ('baseUrl' is missing)`)
         return []
       }
 
@@ -317,10 +318,14 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
 
       // Process chunks in parallel
       const instagram = await Promise.all(
-        chunks.map((chunk) => processChunk(chunk, ctx, configuration, instagramOptions, fonts)),
+        chunks.map((chunk) =>
+          processChunk(chunk, ctx, configuration, instagramOptions, fonts, "instagram"),
+        ),
       )
       const twitter = await Promise.all(
-        chunks.map((chunk) => processChunk(chunk, ctx, configuration, twitterOpts, fonts)),
+        chunks.map((chunk) =>
+          processChunk(chunk, ctx, configuration, twitterOpts, fonts, "twitter"),
+        ),
       )
 
       return [...instagram.flat(), ...twitter.flat()]
