@@ -9,7 +9,14 @@ import { QuartzConfig } from "../../cfg"
 
 const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
   // glob all non MD files in content folder and copy it over
-  return await glob("**", argv.directory, ["**/*.md", ...cfg.configuration.ignorePatterns])
+  const patterns = ["**/*.md", ...cfg.configuration.ignorePatterns]
+
+  // Skip PDFs when running in Cloudflare Pages
+  if (process.env.CF_PAGES === "1") {
+    patterns.push("**/*.pdf")
+  }
+
+  return await glob("**", argv.directory, patterns)
 }
 
 const name = "Assets"

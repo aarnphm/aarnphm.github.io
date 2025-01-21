@@ -4,8 +4,8 @@ tags:
   - seed
   - application
 date: "2024-08-23"
-description: and 24 application.
-modified: 2025-01-20 23:00:06 GMT-05:00
+description: and 2024.
+modified: 2025-01-21 00:11:49 GMT-05:00
 title: interact cohort
 ---
 
