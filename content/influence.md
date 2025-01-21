@@ -10,7 +10,7 @@ abstract: I want to think about my life as being RLHF by the people I surround m
 comments: false
 date: "2024-01-23"
 description: a thank you letter.
-modified: 2025-01-20 07:54:13 GMT-05:00
+modified: 2025-01-20 17:51:13 GMT-05:00
 permalinks:
   - /thanks
 title: affecter.
@@ -29,6 +29,7 @@ The following lists of people who I owed a lot. I would separate from top-to-bot
 - [Wilbur](https://www.wilburzhang.com/), for your thoughts, vulnerability, and trust.
 - [Rabs](https://linktr.ee/rabiasohail), for your trust, kindness and being so damn ==real== :smiley:
 - [Gourob](https://x.com/PodderGourob), for your trust in my abilities.
+- [Parth](https://x.com/thanosthinking), for your trust.
 - Chi, for your care and endless laughter.
 - Nicole, for being the one that stay while the rest of the world walk away.
 - Jesse, for your endurance, for reminding me that I don't have to walk through this dark forest alone.
@@ -42,6 +43,7 @@ The following lists of people who I owed a lot. I would separate from top-to-bot
 
 - [Hank and John](https://www.youtube.com/@vlogbrothers), banger writing and videos
 - [Kieran](https://www.fourtet.net/), folktronica, or just pure vibes
+- [Mylene](https://x.com/mylenesmind), for your relentless pursuit of happiness and drive in life
 - [Ava from bookbear](https://www.avabear.xyz/), for always reminding me that everyone deserves to be [[/tags/love|loved]], even the unfortunate ones.
 - [Anson](https://ansonyu.me/), for being the most driven human being I have come across
 - Albert Camus, infinite charm and writings

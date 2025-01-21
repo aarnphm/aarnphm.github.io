@@ -1,13 +1,14 @@
 ---
 id: mechanistic interpretability
-tags:
-  - interp
 aliases:
   - mechinterp
   - reveng neural net
+tags:
+  - interp
+abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
 date: "2024-10-30"
 description: and reverse engineering neural networks.
-modified: 2025-01-18 16:32:43 GMT-05:00
+modified: 2025-01-20 20:30:19 GMT-05:00
 permalink:
   - /mechinterp
   - /mechanistic-interpretability

@@ -4,6 +4,12 @@ import { getContentType } from "../../util/mime"
 import xmlFormat from "xml-formatter"
 import { fetchCanonical } from "./util"
 
+type ContentHandler = (
+  response: Response,
+  targetUrl: URL,
+  popoverInner: HTMLDivElement,
+) => Promise<void>
+
 // Helper to manage blob URL cleanup
 const blobCleanupMap = new Map<string, NodeJS.Timeout>()
 
@@ -57,6 +63,112 @@ function cleanAbsoluteElement(element: HTMLElement): HTMLElement {
   return element
 }
 
+// Helper functions
+function createPopoverElement(className?: string): {
+  popoverElement: HTMLElement
+  popoverInner: HTMLDivElement
+} {
+  const popoverElement = document.createElement("div")
+  popoverElement.classList.add("popover", ...(className ? [className] : []))
+  const popoverInner = document.createElement("div")
+  popoverInner.classList.add("popover-inner")
+  popoverElement.appendChild(popoverInner)
+  return { popoverElement, popoverInner }
+}
+
+function compareUrls(a: URL, b: URL): boolean {
+  const u1 = new URL(a.toString())
+  const u2 = new URL(b.toString())
+  u1.hash = ""
+  u1.search = ""
+  u2.hash = ""
+  u2.search = ""
+  return u1.toString() === u2.toString()
+}
+
+async function handleImageContent(targetUrl: URL, popoverInner: HTMLDivElement) {
+  const img = document.createElement("img")
+  img.src = targetUrl.toString()
+  img.alt = targetUrl.pathname
+  popoverInner.appendChild(img)
+}
+
+async function handlePdfContent(
+  response: Response,
+  targetUrl: URL,
+  popoverInner: HTMLDivElement,
+  isArxiv: boolean,
+) {
+  const pdf = document.createElement("iframe")
+  if (isArxiv) {
+    const blob = await response.blob()
+    const blobUrl = createManagedBlobUrl(blob, DEFAULT_BLOB_TIMEOUT)
+    pdf.src = blobUrl
+  } else {
+    pdf.src = targetUrl.toString()
+  }
+  popoverInner.appendChild(pdf)
+}
+
+async function handleXmlContent(response: Response, popoverInner: HTMLDivElement) {
+  const contents = await response.text()
+  const rss = document.createElement("pre")
+  rss.classList.add("rss-viewer")
+  rss.append(xmlFormat(contents, { indentation: "  ", lineSeparator: "\n" }))
+  popoverInner.append(rss)
+}
+
+async function handleDefaultContent(
+  response: Response,
+  targetUrl: URL,
+  popoverInner: HTMLDivElement,
+) {
+  popoverInner.classList.add("grid")
+  const contents = await response.text()
+  const html = p.parseFromString(contents, "text/html")
+  normalizeRelativeURLs(html, targetUrl)
+  const elts = [
+    ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>),
+  ].map(cleanAbsoluteElement)
+  if (elts.length === 0) return
+  popoverInner.append(...elts)
+}
+
+async function setPosition(
+  link: HTMLElement,
+  popoverElement: HTMLElement,
+  placement: Placement,
+  clientX: number,
+  clientY: number,
+) {
+  const { x, y } = await computePosition(link, popoverElement, {
+    placement,
+    middleware: [inline({ x: clientX, y: clientY }), shift(), flip()],
+  })
+  Object.assign(popoverElement.style, { left: `${x}px`, top: `${y}px` })
+}
+
+async function handleBibliographyPopover(
+  link: HTMLAnchorElement,
+  clientX: number,
+  clientY: number,
+) {
+  const href = link.getAttribute("href")!
+  const hasAlreadyBeenFetched = (classname?: string) =>
+    [...link.children].some((child) => child.classList.contains(classname ?? "popover"))
+
+  if (hasAlreadyBeenFetched("bib-popover")) {
+    return setPosition(link, link.lastChild as HTMLElement, "top", clientX, clientY)
+  }
+
+  const bibEntry = document.getElementById(href.replace("#", "")) as HTMLLIElement
+  const { popoverElement, popoverInner } = createPopoverElement("bib-popover")
+  popoverInner.innerHTML = bibEntry.innerHTML
+
+  await setPosition(link, popoverElement, "top", clientX, clientY)
+  link.appendChild(popoverElement)
+}
+
 async function mouseEnterHandler(
   this: HTMLAnchorElement,
   { clientX, clientY }: { clientX: number; clientY: number },
@@ -66,32 +178,8 @@ async function mouseEnterHandler(
   const hasAlreadyBeenFetched = (classname?: string) =>
     [...link.children].some((child) => child.classList.contains(classname ?? "popover"))
 
-  // check if it has dataset.bib === "", then we fetch the links from href from current documents
-  // then dump it to a popover element with position on top of the links with computePosition alignment
-  // then just add that div within the links (make sure to also check if it is already fetched to avoid infinite addition)
   if (link.dataset.bib === "") {
-    const href = link.getAttribute("href")!
-
-    // Check if popover already exists
-    if (hasAlreadyBeenFetched("bib-popover")) {
-      return setPosition(link.lastChild as HTMLElement, "top")
-    }
-
-    // Find bibliography entry in current document
-    const bibEntry = document.getElementById(href.replace("#", "")) as HTMLLIElement
-
-    // Create popover
-    const popoverElement = document.createElement("div")
-    popoverElement.classList.add("popover", "bib-popover")
-    const popoverInner = document.createElement("div")
-    popoverInner.classList.add("popover-inner")
-    popoverInner.innerHTML = bibEntry.innerHTML
-    popoverElement.appendChild(popoverInner)
-
-    // Position and append
-    setPosition(popoverElement, "top")
-    link.appendChild(popoverElement)
-    return
+    return handleBibliographyPopover(link, clientX, clientY)
   }
 
   if (
@@ -102,17 +190,8 @@ async function mouseEnterHandler(
     return
   }
 
-  async function setPosition(popoverElement: HTMLElement, placement: Placement) {
-    const { x, y } = await computePosition(link, popoverElement, {
-      placement,
-      middleware: [inline({ x: clientX, y: clientY }), shift(), flip()],
-    })
-    Object.assign(popoverElement.style, { left: `${x}px`, top: `${y}px` })
-  }
-
-  // dont refetch if there's already a popover
   if (hasAlreadyBeenFetched()) {
-    return setPosition(link.lastChild as HTMLElement, "right")
+    return setPosition(link, link.lastChild as HTMLElement, "right", clientX, clientY)
   }
 
   const thisUrl = new URL(document.location.href)
@@ -134,79 +213,37 @@ async function mouseEnterHandler(
     document.dispatchEvent(new CustomEvent("nav", { detail: { url: link.href } }))
   }
 
-  // bailout if another popover exists
-  if (hasAlreadyBeenFetched()) {
-    return
-  }
+  if (hasAlreadyBeenFetched() || !response) return
 
-  if (!response) return
   const contentType = response.headers.get("Content-Type")
     ? response.headers.get("Content-Type")!.split(";")[0]
     : getContentType(targetUrl)
   const [contentTypeCategory, typeInfo] = contentType.split("/")
 
-  const popoverElement = document.createElement("div")
-  popoverElement.classList.add("popover")
-  const popoverInner = document.createElement("div")
-  popoverInner.classList.add("popover-inner")
-  popoverElement.appendChild(popoverInner)
-
+  const { popoverElement, popoverInner } = createPopoverElement()
   popoverInner.dataset.contentType = contentType ?? undefined
 
-  switch (contentTypeCategory) {
-    case "image":
-      const img = document.createElement("img")
-      img.src = targetUrl.toString()
-      img.alt = targetUrl.pathname
-
-      popoverInner.appendChild(img)
-      break
-    case "application":
-      switch (typeInfo) {
-        case "pdf":
-          const pdf = document.createElement("iframe")
-
-          if (link.dataset.arxivId) {
-            const blob = await response.blob()
-            const blobUrl = createManagedBlobUrl(blob, DEFAULT_BLOB_TIMEOUT)
-            pdf.src = blobUrl
-          } else {
-            pdf.src = targetUrl.toString()
-          }
-
-          popoverInner.appendChild(pdf)
-          break
-        case "xml":
-          const contents = await response.text()
-          const rss = document.createElement("pre")
-          rss.classList.add("rss-viewer")
-          rss.append(xmlFormat(contents, { indentation: "  ", lineSeparator: "\n" }))
-          popoverInner.append(rss)
-          break
-        default:
-          break
-      }
-      break
-    default:
-      popoverInner.classList.add("grid")
-
-      const contents = await response.text()
-      const html = p.parseFromString(contents, "text/html")
-      normalizeRelativeURLs(html, targetUrl)
-      const elts = [
-        ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>),
-      ].map(cleanAbsoluteElement)
-      if (elts.length === 0) return
-      popoverInner.append(...elts)
+  const contentHandlers: Record<string, ContentHandler> = {
+    image: async (_, targetUrl, popoverInner) => handleImageContent(targetUrl, popoverInner),
+    "application/pdf": async (response, targetUrl, popoverInner) =>
+      handlePdfContent(response, targetUrl, popoverInner, !!link.dataset.arxivId),
+    "application/xml": async (response, _, popoverInner) =>
+      handleXmlContent(response, popoverInner),
+    default: handleDefaultContent,
   }
 
-  setPosition(popoverElement, "right")
+  const handler =
+    contentHandlers[contentTypeCategory] ||
+    contentHandlers[`${contentTypeCategory}/${typeInfo}`] ||
+    contentHandlers["default"]
+
+  await handler(response, targetUrl, popoverInner)
+  await setPosition(link, popoverElement, "right", clientX, clientY)
   link.appendChild(popoverElement)
 
   if (hash !== "") {
     const heading = popoverInner.querySelector(hash) as HTMLElement | null
     if (heading) {
-      // leave ~12px of buffer when scrolling to a heading
       popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
     }
   }
@@ -215,14 +252,10 @@ async function mouseEnterHandler(
 function mouseClickHandler(evt: MouseEvent) {
   const link = evt.currentTarget as HTMLAnchorElement
   const thisUrl = new URL(document.location.href)
-  thisUrl.hash = ""
-  thisUrl.search = ""
   const targetUrl = new URL(link.href)
   const hash = decodeURIComponent(targetUrl.hash)
-  targetUrl.hash = ""
-  targetUrl.search = ""
 
-  if (thisUrl.toString() === targetUrl.toString() && hash !== "") {
+  if (compareUrls(thisUrl, targetUrl) && hash !== "") {
     evt.preventDefault()
     const mainContent = document.querySelector("article")
     const heading = mainContent?.querySelector(hash) as HTMLElement | null

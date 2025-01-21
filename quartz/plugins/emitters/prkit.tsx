@@ -2,6 +2,7 @@ import satori, { SatoriOptions } from "satori"
 import { GlobalConfiguration } from "../../cfg"
 import { QuartzEmitterPlugin } from "../types"
 import { i18n } from "../../i18n"
+import { formatDate, getDate } from "../../components/Date"
 import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { write } from "./helpers"
 import sharp from "sharp"
@@ -11,7 +12,7 @@ import { unescapeHTML } from "../../util/escape"
 import { BuildCtx } from "../../util/ctx"
 import { styleText } from "node:util"
 
-export interface InstagramOptions {
+export interface PressReleaseOptions {
   height: number
   width: number
   Component: SocialImageOptions["Component"]
@@ -26,7 +27,7 @@ async function processChunk(
   items: HtmlContent[],
   ctx: BuildCtx,
   cfg: GlobalConfiguration,
-  opts: InstagramOptions,
+  opts: PressReleaseOptions,
   fonts: SatoriOptions["fonts"],
 ): Promise<FilePath[]> {
   return Promise.all(
@@ -61,6 +62,111 @@ async function processChunk(
         ext: ".png",
       })
     }),
+  )
+}
+
+const TwitterPost: SocialImageOptions["Component"] = (
+  cfg: GlobalConfiguration,
+  fileData: QuartzPluginData,
+  { colorScheme }: Omit<SocialImageOptions, "Component">,
+  title: string,
+  _description: string,
+  fonts: SatoriOptions["fonts"],
+) => {
+  let created: string | undefined
+  let reading: string | undefined
+  if (fileData.dates) {
+    created = formatDate(getDate(cfg, fileData)!, cfg.locale)
+  }
+  const { locale } = cfg
+  reading = i18n(locale).components.contentMeta.readingTime({
+    minutes: Math.ceil(fileData.readingTime?.minutes!),
+    words: Math.ceil(fileData.readingTime?.words!),
+  })
+
+  const Li = [created, reading]
+  return (
+    <div
+      style={{
+        position: "relative",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-start",
+        height: "100%",
+        width: "100%",
+        background: cfg.theme.colors[colorScheme].light,
+        backgroundSize: "100% 100%",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          height: "100%",
+          width: "100%",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+          gap: "1.5rem",
+          paddingTop: "6rem",
+          paddingBottom: "6rem",
+          marginLeft: "4rem",
+          fontFamily: fonts[0].name,
+          maxWidth: "85%",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "left",
+          }}
+        >
+          <h2
+            style={{
+              color: cfg.theme.colors[colorScheme].dark,
+              fontSize: "3rem",
+              fontWeight: fonts[0].weight,
+            }}
+          >
+            {title}
+          </h2>
+          <ul
+            style={{
+              color: cfg.theme.colors[colorScheme].gray,
+              gap: "1rem",
+              fontSize: "1.5rem",
+              fontFamily: fonts[1].name,
+              fontStyle: "italic",
+            }}
+          >
+            {Li.map((item, index) => {
+              if (item) {
+                return (
+                  <li key={index} style={{ fontStyle: "italic" }}>
+                    {item}
+                  </li>
+                )
+              }
+            })}
+          </ul>
+        </div>
+        <p
+          style={{
+            color: cfg.theme.colors[colorScheme].dark,
+            fontSize: "2rem",
+            overflow: "hidden",
+            marginTop: "4rem",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 7,
+            WebkitBoxOrient: "vertical",
+            lineClamp: 7,
+          }}
+        >
+          {fileData.abstract}
+        </p>
+      </div>
+    </div>
   )
 }
 
@@ -161,15 +267,27 @@ const InstagramPost: SocialImageOptions["Component"] = (
   )
 }
 
-const defaultOptions: InstagramOptions = {
+const defaultInstagramOptions: PressReleaseOptions = {
   height: 1920,
   width: 1080,
   Component: InstagramPost,
 }
 
+const defaultTwitterOptions: PressReleaseOptions = {
+  height: 900,
+  width: 900,
+  Component: TwitterPost,
+}
+
+interface PressKitOptions {
+  twitter: PressReleaseOptions
+  instagram: PressReleaseOptions
+}
+
 const name = "PressKit"
-export const PressKit: QuartzEmitterPlugin<Partial<InstagramOptions>> = (userOpts) => {
-  const opts = { ...defaultOptions, ...userOpts }
+export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts) => {
+  const instagramOptions = { ...defaultInstagramOptions, ...userOpts?.instagram }
+  const twitterOpts = { ...defaultTwitterOptions, ...userOpts?.twitter }
   return {
     skipDuringServe: true,
     requiresFullContent: true,
@@ -196,12 +314,16 @@ export const PressKit: QuartzEmitterPlugin<Partial<InstagramOptions>> = (userOpt
       const chunks = chunk(filteredContents, CHUNK_SIZE)
 
       if (ctx.argv.verbose) console.log(styleText("blue", `[emit:${name}] Generating press kit...`))
+
       // Process chunks in parallel
-      const results = await Promise.all(
-        chunks.map((chunk) => processChunk(chunk, ctx, configuration, opts, fonts)),
+      const instagram = await Promise.all(
+        chunks.map((chunk) => processChunk(chunk, ctx, configuration, instagramOptions, fonts)),
+      )
+      const twitter = await Promise.all(
+        chunks.map((chunk) => processChunk(chunk, ctx, configuration, twitterOpts, fonts)),
       )
 
-      return results.flat()
+      return [...instagram.flat(), ...twitter.flat()]
     },
   }
 }

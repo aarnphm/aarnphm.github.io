@@ -131,7 +131,7 @@ async function generateOgImage(
     {
       width: opts.width,
       height: opts.height,
-      fonts: fonts,
+      fonts,
       graphemeImages: {
         "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
       },

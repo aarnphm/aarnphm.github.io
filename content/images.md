@@ -23,3 +23,5 @@ title: images
 ![[thoughts/images/investment-dwellings-versus-ip.webp|Canada versus Ireland]]
 
 ![[thoughts/images/gated-tensions-circuit.webp]]
+
+![[thoughts/images/amare-love-latin.webp|Amare]]
