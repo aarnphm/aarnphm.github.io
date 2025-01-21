@@ -128,6 +128,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250121.0",
     "@types/cli-spinner": "^0.2.3",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",

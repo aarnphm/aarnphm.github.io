@@ -93,20 +93,11 @@ async function handleImageContent(targetUrl: URL, popoverInner: HTMLDivElement) 
   popoverInner.appendChild(img)
 }
 
-async function handlePdfContent(
-  response: Response,
-  targetUrl: URL,
-  popoverInner: HTMLDivElement,
-  isArxiv: boolean,
-) {
+async function handlePdfContent(response: Response, popoverInner: HTMLDivElement) {
   const pdf = document.createElement("iframe")
-  if (isArxiv) {
-    const blob = await response.blob()
-    const blobUrl = createManagedBlobUrl(blob, DEFAULT_BLOB_TIMEOUT)
-    pdf.src = blobUrl
-  } else {
-    pdf.src = targetUrl.toString()
-  }
+  const blob = await response.blob()
+  const blobUrl = createManagedBlobUrl(blob, DEFAULT_BLOB_TIMEOUT)
+  pdf.src = blobUrl
   popoverInner.appendChild(pdf)
 }
 
@@ -225,8 +216,8 @@ async function mouseEnterHandler(
 
   const contentHandlers: Record<string, ContentHandler> = {
     image: async (_, targetUrl, popoverInner) => handleImageContent(targetUrl, popoverInner),
-    "application/pdf": async (response, targetUrl, popoverInner) =>
-      handlePdfContent(response, targetUrl, popoverInner, !!link.dataset.arxivId),
+    "application/pdf": async (response, _, popoverInner) =>
+      handlePdfContent(response, popoverInner),
     "application/xml": async (response, _, popoverInner) =>
       handleXmlContent(response, popoverInner),
     default: handleDefaultContent,
