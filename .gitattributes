@@ -1,11 +1,10 @@
 content/thoughts/university/**/*.ipynb linguist-vendored
 * text=auto eol=lf
 *.pdf filter=lfs diff=lfs merge=lfs -text
-
 *.md linguist-detectable=true
 *.md linguist-documentation=false
 *.md linguist-language=Markdown
-
 *.markdown linguist-detectable=true
 *.markdown linguist-documentation=false
 *.markdown linguist-language=Markdown
+content/thoughts/university/twenty-four-twenty-five/sfwr-3db3/a2/loadData.ddl filter=lfs diff=lfs merge=lfs -text

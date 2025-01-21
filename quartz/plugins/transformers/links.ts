@@ -263,11 +263,16 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 // don't process external links or intra-document anchors
                 const isInternal = !(isAbsoluteUrl(dest) || dest.startsWith("#"))
                 if (isInternal) {
-                  dest = node.properties.href = transformLink(
-                    file.data.slug!,
-                    dest,
-                    transformOptions,
-                  )
+                  if (ext.includes("pdf")) {
+                    // we use CF middleware for fetch from Git LFS, for now
+                    dest = node.properties.href = `/${dest}` as RelativeURL
+                  } else {
+                    dest = node.properties.href = transformLink(
+                      file.data.slug!,
+                      dest,
+                      transformOptions,
+                    )
+                  }
 
                   // url.resolve is considered legacy
                   // WHATWG equivalent https://nodejs.dev/en/api/v18/url/#urlresolvefrom-to
@@ -281,6 +286,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   // need to decodeURIComponent here as WHATWG URL percent-encodes everything
                   const full = decodeURIComponent(stripSlashes(destCanonical, true)) as FullSlug
                   const simple = simplifySlug(full)
+                  if (ext.includes("pdf")) console.log(url, canonicalDest, full, simple)
                   outgoing.add(simple)
                   node.properties["data-slug"] = full
                 }
