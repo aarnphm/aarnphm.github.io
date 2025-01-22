@@ -1177,7 +1177,7 @@ export function renderPage(
       ...components,
       header: [],
       beforeBody: [],
-      sidebar: [CuriusTrail, CuriusFriends],
+      sidebar: [CuriusFriends, CuriusTrail],
       pageBody: CuriusContent,
       afterBody: [],
       footer: FooterConstructor({ layout: "curius" }),

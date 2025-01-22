@@ -372,6 +372,8 @@ body[data-slug="curius"] {
       box-sizing: border-box;
       background-color: var(--light);
       max-height: 50vh;
+      // var(curius-col * 7) - padding
+      max-width: calc(var(--grid-col-width) * 7 - 24px);
       // #curius-bar height + padding
       margin-top: 3rem;
       overflow: hidden auto;
