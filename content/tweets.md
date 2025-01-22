@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded.
-modified: 2025-01-20 05:28:30 GMT-05:00
+modified: 2025-01-21 19:58:15 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -115,6 +115,8 @@ https://x.com/pmarca/status/1880860012110856566 <!-- Links between EA and sexual
 ## techno-optimist
 
 https://x.com/tobi/status/1878957750576906484 <!-- Tobi replies on Canada's Tech contribution to overall GDP -->
+
+https://x.com/chapman_bliss/status/1881613396359127467 <!-- Last day at Neural Link -->
 
 ## [[thoughts/Machine learning|machine learning]]
 

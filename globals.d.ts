@@ -28,5 +28,9 @@ export declare global {
     spaNavigate(url: URL, isBack: boolean = false)
     addCleanup(fn: (...args: any[]) => void)
     stacked: StackedManager
+    twttr: {
+      ready(f: any): void
+      private _e: any[]
+    }
   }
 }

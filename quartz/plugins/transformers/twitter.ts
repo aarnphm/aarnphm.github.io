@@ -3,6 +3,8 @@ import { Element } from "hast"
 import { Root } from "mdast"
 import { visit } from "unist-util-visit"
 import { unescapeHTML } from "../../util/escape"
+// @ts-ignore
+import script from "../../components/scripts/twitter.inline.ts"
 
 export const twitterUrlRegex = /^.*(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/(status)\/(\d{19}).*/
 
@@ -44,7 +46,7 @@ export const Twitter: QuartzTransformerPlugin = () => ({
           let htmlString = cache.get(cacheKey)
           if (!htmlString) {
             await fetch(
-              `https://publish.twitter.com/oembed?url=${url}&dnt=false&omit_script=true&lang=${locale}`,
+              `https://publish.twitter.com/oembed?url=${url}&dnt=true&omit_script=true&lang=${locale}`,
             )
               .then((res) => res.json())
               .then((data: TwitterEmbed) => {
@@ -71,5 +73,16 @@ export const Twitter: QuartzTransformerPlugin = () => ({
         if (promises.length > 0) await Promise.all(promises)
       },
     ]
+  },
+  externalResources() {
+    return {
+      js: [
+        {
+          script,
+          loadTime: "afterDOMReady",
+          contentType: "inline",
+        },
+      ],
+    }
   },
 })

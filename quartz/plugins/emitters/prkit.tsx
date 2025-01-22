@@ -14,7 +14,6 @@ import { BuildCtx } from "../../util/ctx"
 import { styleText } from "node:util"
 import { fromHtml } from "hast-util-from-html"
 import { htmlToJsx } from "../../util/jsx"
-import { RenderableProps } from "preact"
 
 export interface PressReleaseOptions {
   height: number

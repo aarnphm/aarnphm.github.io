@@ -90,6 +90,11 @@ export default (() => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
+        <meta name="twitter:widgets:theme" content="light" />
+        <meta
+          name="twitter:widgets:border-color"
+          content={cfg.theme.colors["lightMode"].secondary}
+        />
         <meta property="og:description" content={description} />
         <meta property="og:image:type" content={`image/${extension}`} />
         <meta property="og:image:alt" content={description} />
