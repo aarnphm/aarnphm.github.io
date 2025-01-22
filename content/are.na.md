@@ -9,7 +9,7 @@ cssclasses:
   - nolist
 date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-01-21 20:51:20 GMT-05:00
+modified: 2025-01-21 22:31:23 GMT-05:00
 permalink:
   - /website
   - /resources
@@ -63,6 +63,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://handwritten.blog/2022-10-01-hyperlinks-in-handwriting.html -- Handwritten blog
 - https://www.muckrock.com/news/archives/2015/jul/21/nothing-indicate-nothing-indicate-subject-had-any-/ -- Paul Erdős, he is just a mathematician that really [[/tags/love|love]] math
 - https://matthewstrom.com/writing/generative-art-og-images/ -- Generative OG with [Brownian motion](https://en.wikipedia.org/wiki/Brownian_motion)
+- https://wattenberger.com/thoughts/yay-embeddings-math -- creative with embeddings in writing
 
 ## protocol
 
