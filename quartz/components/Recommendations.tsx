@@ -27,7 +27,9 @@ export default ((userOpts?: Options) => {
         .reduce((acc, char) => acc + char.charCodeAt(0), 0) ?? 0
     const rng = new LCG(seed)
 
-    const distributions = allFiles.filter((f) => f.slug !== fileData.slug)
+    const distributions = allFiles.filter(
+      (f) => f.slug !== fileData.slug && !f.slug!.includes("university"),
+    )
     const recs = rng.shuffle(distributions).slice(0, opts.topChoices)
 
     return (

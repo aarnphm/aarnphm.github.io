@@ -27,3 +27,5 @@ title: images
 ![[thoughts/images/amare-love-latin.webp|Amare]]
 
 ![[thoughts/images/essays-that-resonate.webp|HK when essay that resonates]]
+
+![[thoughts/images/black-carrrr.webp|carr]]
