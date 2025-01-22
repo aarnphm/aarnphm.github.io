@@ -1,4 +1,4 @@
-import { computePosition, flip, inline, Placement, shift } from "@floating-ui/dom"
+import { arrow, computePosition, flip, inline, Placement, shift } from "@floating-ui/dom"
 import { getFullSlug, normalizeRelativeURLs } from "../../util/path"
 import { getContentType } from "../../util/mime"
 import xmlFormat from "xml-formatter"
@@ -73,6 +73,9 @@ function createPopoverElement(className?: string): {
   const popoverInner = document.createElement("div")
   popoverInner.classList.add("popover-inner")
   popoverElement.appendChild(popoverInner)
+  const arrowElement = document.createElement("div")
+  arrowElement.id = "arrow"
+  popoverElement.appendChild(arrowElement)
   return { popoverElement, popoverInner }
 }
 
@@ -134,11 +137,37 @@ async function setPosition(
   clientX: number,
   clientY: number,
 ) {
-  const { x, y } = await computePosition(link, popoverElement, {
+  const element = popoverElement.querySelector("#arrow") as HTMLElement
+  const {
+    x,
+    y,
+    middlewareData,
+    placement: finalPlacement,
+  } = await computePosition(link, popoverElement, {
     placement,
-    middleware: [inline({ x: clientX, y: clientY }), shift(), flip()],
+    middleware: [
+      inline({ x: clientX, y: clientY }),
+      shift(),
+      flip(),
+      arrow({ element, padding: 8 }),
+    ],
   })
   Object.assign(popoverElement.style, { left: `${x}px`, top: `${y}px` })
+  if (middlewareData.arrow) {
+    const { x: arrowX, y: arrowY } = middlewareData.arrow
+    const staticSide = {
+      top: "bottom",
+      right: "left",
+      bottom: "top",
+      left: "right",
+    }[finalPlacement.split("-")[0]] as string
+
+    Object.assign(element.style, {
+      left: arrowX != null ? `${arrowX}px` : "",
+      top: arrowY != null ? `${arrowY}px` : "",
+    })
+    element.dataset.placement = staticSide
+  }
 }
 
 async function handleBibliographyPopover(
