@@ -65,7 +65,7 @@ Strategic Implications:
 
 ## Porter's Five Forces Framework
 
-See also: [[thoughts/university/twenty-four-twenty-five/commerce-4pa3/Porter's Five Forces Framework.webp|image]]
+![[thoughts/university/twenty-four-twenty-five/commerce-4pa3/Porter's Five Forces Framework.webp]]
 
 1. Rivalry Among Existing Competitors
 

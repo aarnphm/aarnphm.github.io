@@ -8,3 +8,4 @@ content/thoughts/university/**/*.ipynb linguist-vendored
 *.markdown linguist-documentation=false
 *.markdown linguist-language=Markdown
 content/thoughts/university/twenty-four-twenty-five/sfwr-3db3/a2/loadData.ddl filter=lfs diff=lfs merge=lfs -text
+*.pptx filter=lfs diff=lfs merge=lfs -text
