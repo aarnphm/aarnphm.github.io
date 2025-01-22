@@ -28,8 +28,11 @@ export declare global {
     spaNavigate(url: URL, isBack: boolean = false)
     addCleanup(fn: (...args: any[]) => void)
     stacked: StackedManager
+    plausible: {
+      (eventName: string, options: {props: {path: string}}): void
+    }
     twttr: {
-      ready(f: any): void
+      ready(f: (twttr: any) => void): void
       private _e: any[]
     }
   }

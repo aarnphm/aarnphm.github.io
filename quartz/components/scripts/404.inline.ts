@@ -3,6 +3,7 @@ import { computePosition, shift, flip, offset } from "@floating-ui/dom"
 document.addEventListener("nav", () => {
   const slug = document.body.dataset.slug
   if (slug === "404") {
+    window.plausible("404", { props: { path: slug } })
     const tooltip = document.querySelector(".home-tooltip") as HTMLElement
 
     const handleMouseMove = async ({ clientX, clientY }: MouseEvent) => {

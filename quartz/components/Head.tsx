@@ -80,7 +80,7 @@ export default (() => {
           </>
         )}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        {/* OG/jwitter meta tags */}
+        {/* OG/twitter meta tags */}
         <meta name="og:site_name" content={cfg.pageTitle} />
         <meta property="og:locale" content={cfg.locale} />
         <meta property="og:title" content={title} />
@@ -95,6 +95,8 @@ export default (() => {
           name="twitter:widgets:border-color"
           content={cfg.theme.colors["lightMode"].secondary}
         />
+        {/*We will only load based on "nav" */}
+        <meta name="twitter:widgets:autoload" content="off" />
         <meta property="og:description" content={description} />
         <meta property="og:image:type" content={`image/${extension}`} />
         <meta property="og:image:alt" content={description} />

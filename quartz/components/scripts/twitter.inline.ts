@@ -15,3 +15,14 @@ window.twttr = (function (d: Document, s: "script", id: string) {
 
   return t
 })(document, "script", "twitter-wjs")
+
+document.addEventListener("nav", () => {
+  const els = document.querySelectorAll(
+    "blockquote.twitter-tweet",
+  ) as NodeListOf<HTMLElement> | null
+  if (!els || els?.length === 0) return
+
+  for (const el of els) {
+    window.twttr.ready((twttr) => twttr.widgets.load(el))
+  }
+})
