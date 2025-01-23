@@ -12,7 +12,7 @@ import { QuartzPluginData } from "../vfile"
 import { version } from "../../../package.json"
 
 export type ContentIndex = Map<FullSlug, ContentDetails>
-export type ContentLayout = "default" | "letters" | "technical" | "reflection"
+export type ContentLayout = "default" | "letter" | "technical" | "reflection"
 export type ContentDetails = {
   title: string
   links: SimpleSlug[]

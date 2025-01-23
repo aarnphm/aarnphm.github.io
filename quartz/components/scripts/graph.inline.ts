@@ -8,6 +8,7 @@ import {
   forceCenter,
   forceLink,
   forceCollide,
+  forceRadial,
   zoomIdentity,
   select,
   drag,
@@ -161,15 +162,19 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       })),
   }
 
-  // we virtualize the simulation and use pixi to actually render it
-  const simulation: Simulation<NodeData, LinkData> = forceSimulation<NodeData>(graphData.nodes)
-    .force("charge", forceManyBody().strength(-100 * repelForce))
-    .force("center", forceCenter().strength(centerForce))
-    .force("link", forceLink(graphData.links).distance(linkDistance))
-    .force("collide", forceCollide<NodeData>((n) => nodeRadius(n)).iterations(3))
-
   const width = graph.offsetWidth
   const height = Math.max(graph.offsetHeight, 250)
+
+  // we virtualize the simulation and use pixi to actually render it
+  // Calculate the radius of the container circle
+  const radius = Math.min(width, height) / 2 - 40 // 40px padding
+
+  const simulation: Simulation<NodeData, LinkData> = forceSimulation<NodeData>(graphData.nodes)
+    .force("charge", forceManyBody().strength(-100 * repelForce))
+    .force("center", forceCenter(width / 2, height / 2).strength(centerForce))
+    .force("link", forceLink(graphData.links).distance(linkDistance))
+    .force("collide", forceCollide<NodeData>((n) => nodeRadius(n)).iterations(3))
+    .force("radial", forceRadial(radius / 2, width / 2, height / 2).strength(0.3))
 
   // precompute style prop strings as pixi doesn't support css variables
   const cssVars = [
@@ -181,6 +186,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     "--dark",
     "--darkgray",
     "--bodyFont",
+    "--foam",
   ] as const
   const computedStyleMap = cssVars.reduce(
     (acc, key) => {
@@ -195,7 +201,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     const isCurrent = d.id === slug
     if (isCurrent) {
       return computedStyleMap["--secondary"]
-    } else if (visited.has(d.id) || d.id.startsWith("tags/")) {
+    } else if (visited.has(d.id)) {
       return computedStyleMap["--tertiary"]
     } else {
       return computedStyleMap["--gray"]
@@ -259,13 +265,15 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
         alpha = l.active ? 1 : 0.2
       }
 
-      l.color = l.active ? computedStyleMap["--gray"] : computedStyleMap["--lightgray"]
+      l.color = l.active ? computedStyleMap["--secondary"] : computedStyleMap["--lightgray"]
       tweenGroup.add(new Tweened<LinkRenderData>(l).to({ alpha }, 200))
     }
 
     tweenGroup.getAll().forEach((tw) => tw.start())
     tweens.set("link", {
-      update: tweenGroup.update.bind(tweenGroup),
+      update(time: number) {
+        tweenGroup.update(time)
+      },
       stop() {
         tweenGroup.getAll().forEach((tw) => tw.stop())
       },
@@ -280,33 +288,21 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     const activeScale = defaultScale * 1.1
     for (const n of nodeRenderData) {
       const nodeId = n.simulationData.id
+      const isCurrentlyHover = hoveredNodeId === nodeId
+      const scale = isCurrentlyHover
+        ? { x: activeScale, y: activeScale }
+        : { x: defaultScale, y: defaultScale }
 
-      if (hoveredNodeId === nodeId) {
-        tweenGroup.add(
-          new Tweened<Text>(n.label).to(
-            {
-              alpha: 1,
-              scale: { x: activeScale, y: activeScale },
-            },
-            100,
-          ),
-        )
-      } else {
-        tweenGroup.add(
-          new Tweened<Text>(n.label).to(
-            {
-              alpha: n.label.alpha,
-              scale: { x: defaultScale, y: defaultScale },
-            },
-            100,
-          ),
-        )
-      }
+      tweenGroup.add(
+        new Tweened<Text>(n.label).to({ alpha: isCurrentlyHover ? 1 : n.label.alpha, scale }, 100),
+      )
     }
 
     tweenGroup.getAll().forEach((tw) => tw.start())
     tweens.set("label", {
-      update: tweenGroup.update.bind(tweenGroup),
+      update(time: number) {
+        tweenGroup.update(time)
+      },
       stop() {
         tweenGroup.getAll().forEach((tw) => tw.stop())
       },
@@ -330,7 +326,9 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
 
     tweenGroup.getAll().forEach((tw) => tw.start())
     tweens.set("hover", {
-      update: tweenGroup.update.bind(tweenGroup),
+      update(time: number) {
+        tweenGroup.update(time)
+      },
       stop() {
         tweenGroup.getAll().forEach((tw) => tw.stop())
       },
@@ -363,20 +361,20 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
   const stage = app.stage
   stage.interactive = false
 
-  const labelsContainer = new Container<Text>({ zIndex: 3 })
-  const nodesContainer = new Container<Graphics>({ zIndex: 2 })
-  const linkContainer = new Container<Graphics>({ zIndex: 1 })
+  const labelsContainer = new Container<Text>({ zIndex: 3, isRenderGroup: true })
+  const nodesContainer = new Container<Graphics>({ zIndex: 2, isRenderGroup: true })
+  const linkContainer = new Container<Graphics>({ zIndex: 1, isRenderGroup: true })
   stage.addChild(nodesContainer, labelsContainer, linkContainer)
 
-  for (const n of graphData.nodes) {
-    const nodeId = n.id
+  for (const simulationData of graphData.nodes) {
+    const { text, id: nodeId } = simulationData
 
     const label = new Text({
       interactive: false,
       eventMode: "none",
-      text: n.text,
+      text,
       alpha: 0,
-      anchor: { x: 0.5, y: 1.2 },
+      anchor: { x: 0.5, y: 1.5 },
       style: {
         fontSize: fontSize * 15,
         fill: computedStyleMap["--dark"],
@@ -386,41 +384,36 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     })
     label.scale.set(1 / scale)
 
-    let oldLabelOpacity = 0
+    let prevOpacity = 0
     const isTagNode = nodeId.startsWith("tags/")
     const gfx = new Graphics({
       interactive: true,
       label: nodeId,
       eventMode: "static",
-      hitArea: new Circle(0, 0, nodeRadius(n)),
+      hitArea: new Circle(0, 0, nodeRadius(simulationData)),
       cursor: "pointer",
     })
-      .circle(0, 0, nodeRadius(n))
-      .fill({ color: isTagNode ? computedStyleMap["--light"] : color(n) })
-      .stroke({ width: isTagNode ? 2 : 0, color: color(n) })
+      .circle(0, 0, nodeRadius(simulationData))
+      .fill({ color: isTagNode ? computedStyleMap["--foam"] : color(simulationData) })
       .on("pointerover", (e) => {
         updateHoverInfo(e.target.label)
-        oldLabelOpacity = label.alpha
-        if (!dragging) {
-          renderPixiFromD3()
-        }
+        prevOpacity = label.alpha
+        if (!dragging) renderPixiFromD3()
       })
       .on("pointerleave", () => {
         updateHoverInfo(null)
-        label.alpha = oldLabelOpacity
-        if (!dragging) {
-          renderPixiFromD3()
-        }
+        label.alpha = prevOpacity
+        if (!dragging) renderPixiFromD3()
       })
 
     nodesContainer.addChild(gfx)
     labelsContainer.addChild(label)
 
     const nodeRenderDatum: NodeRenderData = {
-      simulationData: n,
+      simulationData,
       gfx,
       label,
-      color: color(n),
+      color: color(simulationData),
       alpha: 1,
       active: false,
     }
@@ -428,12 +421,12 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     nodeRenderData.push(nodeRenderDatum)
   }
 
-  for (const l of graphData.links) {
-    const gfx = new Graphics({ interactive: false, eventMode: "none" })
+  for (const simulationData of graphData.links) {
+    const gfx = new Graphics()
     linkContainer.addChild(gfx)
 
     const linkRenderDatum: LinkRenderData = {
-      simulationData: l,
+      simulationData,
       gfx,
       color: computedStyleMap["--lightgray"],
       alpha: 1,
@@ -524,18 +517,19 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     for (const n of nodeRenderData) {
       const { x, y } = n.simulationData
       if (!x || !y) continue
-      n.gfx.position.set(x + width / 2, y + height / 2)
+      // No need to add width/2 and height/2 as the force center is already at center
+      n.gfx.position.set(x, y)
       if (n.label) {
-        n.label.position.set(x + width / 2, y + height / 2)
+        n.label.position.set(x, y)
       }
     }
 
     for (const l of linkRenderData) {
       const linkData = l.simulationData
       l.gfx.clear()
-      l.gfx.moveTo(linkData.source.x! + width / 2, linkData.source.y! + height / 2)
+      l.gfx.moveTo(linkData.source.x!, linkData.source.y!)
       l.gfx
-        .lineTo(linkData.target.x! + width / 2, linkData.target.y! + height / 2)
+        .lineTo(linkData.target.x!, linkData.target.y!)
         .stroke({ alpha: l.alpha, width: 1, color: l.color })
     }
 

@@ -159,13 +159,16 @@ const buttons: ToolbarProps[] = [
     tooltip: "Export PDF",
     Icon: Pdf,
   },
+  {
+    id: "graph-button",
+    label: "Toggle global graph",
+    tooltip: "Global graph",
+    Icon: Graph,
+  },
 ]
 
 export default (() => {
-  const Toolbar: QuartzComponent = ({ ctx }: QuartzComponentProps) => {
-    // if we are serving, we can skip this
-    if (ctx.argv.serve) return null
-
+  const Toolbar: QuartzComponent = () => {
     return (
       <div class="toolbar">
         <div class="toolbar-content">

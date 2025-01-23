@@ -89,6 +89,12 @@
     }
   }
 
+  &[data-arrow="false"] {
+    #arrow {
+      display: none;
+    }
+  }
+
   & > .popover-inner {
     position: relative;
     width: 30rem;

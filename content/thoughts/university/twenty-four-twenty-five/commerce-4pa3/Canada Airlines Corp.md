@@ -4,7 +4,7 @@ tags:
   - commerce4pa3
 date: "2025-01-22"
 description: a case study.
-modified: 2025-01-22 08:08:02 GMT-05:00
+modified: 2025-01-22 08:56:34 GMT-05:00
 title: Canada Airlines Corp
 ---
 
@@ -375,7 +375,7 @@ Outcome: A zero-sum rivalry that nearly bankrupted CA and eroded industry profit
 
 2. Employee and Union Synergy
 
-- **Job Preservation**: Plan A avoids layoffs, critical for maintaining morale among 12,060 unionized employees who already invested \$200M via wage-for-equity swaps.
+- **Job Preservation**: Plan A avoids layoffs, critical for maintaining morale among 12,060 unionized employees who already invested 200M via wage-for-equity swaps.
 - **Productivity Gains**: The SPSC’s 78M savings and **Summer Initiative’s** 27M prove labor-management collaboration works. Closing the 66M gap requires CUPE’s inclusion, not downsizing.
 
 3. Competitive Positioning
@@ -385,7 +385,7 @@ Outcome: A zero-sum rivalry that nearly bankrupted CA and eroded industry profit
 
 4. Financial Prudence
 
-- **Debt Management**: Plan A uses operating cash flow (projected \$325M savings) to fund growth, avoiding fire-sale asset disposals (e.g., Wardair’s Airbus fleet sold at a loss).
+- **Debt Management**: Plan A uses operating cash flow (projected 325M savings) to fund growth, avoiding fire-sale asset disposals (e.g., Wardair’s Airbus fleet sold at a loss).
 - **Risk Mitigation**: A hybrid “Plan A+B” allows phased restructuring if savings stall, but committing fully to Plan B forfeits growth opportunities irreversibly.
 
 5. Industry Dynamics

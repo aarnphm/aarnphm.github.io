@@ -4,8 +4,9 @@ import HeaderConstructor from "./Header"
 import ContentConstructor from "./pages/Content"
 import FooterConstructor from "./Footer"
 import SearchConstructor from "./Search"
+import GraphConstructor from "./Graph"
 import { byDateAndAlphabetical } from "./PageList"
-import { getDate, Date } from "./Date"
+import { getDate, Date as DateComponent } from "./Date"
 import { classNames } from "../util/lang"
 import { JSResourceToScriptElement, StaticResources } from "../util/resources"
 import {
@@ -784,7 +785,7 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
                     <a href={resolveRelative(fileData.slug!, page.slug!)} class={classes}>
                       <div class="landing-meta">
                         <span class="landing-mspan">
-                          <Date date={getDate(cfg, page)!} locale={cfg.locale} />
+                          <DateComponent date={getDate(cfg, page)!} locale={cfg.locale} />
                         </span>
                         <span class="landing-mtitle">{title}</span>
                       </div>
@@ -1158,6 +1159,10 @@ export function renderPage(
         const { displayClass } = props
         const Element = ElementComponent()
         const Search = SearchConstructor({ includeButton: false })
+        const Graph = GraphConstructor({
+          repelForce: 2.3385416666667,
+          centerForce: 0.588020833333333,
+        })
 
         return (
           <>
@@ -1167,6 +1172,7 @@ export function renderPage(
             <div class={classNames(displayClass, "landing")}>
               <Element {...componentData} />
               <Search {...componentData} />
+              <Graph {...componentData} />
             </div>
           </>
         )
@@ -1386,11 +1392,14 @@ export function renderPage(
         .filter((resource) => resource.loadTime === "afterDOMReady")
         .map((res) => JSResourceToScriptElement(res))}
       {/* Cloudflare Web Analytics */}
-      <script
-        defer
-        src={"https://static.cloudflareinsights.com/beacon.min.js"}
-        data-cf-beacon='{"token": "3b6a9ecda4294f8bb5770c2bfb44078c"}'
-      />
+      {!ctx.argv.serve && (
+        <script
+          defer
+          src={"https://static.cloudflareinsights.com/beacon.min.js"}
+          data-cf-beacon='{"token": "3b6a9ecda4294f8bb5770c2bfb44078c"}'
+          crossorigin={"anonymous"}
+        />
+      )}
       {/* End Cloudflare Web Analytics */}
     </html>
   )

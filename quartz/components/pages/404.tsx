@@ -5,12 +5,14 @@ import notFoundScript from "../scripts/404.inline"
 
 const NotFound: QuartzComponent = ({ cfg }: QuartzComponentProps) => {
   return (
-    <article class="popover-hint">
+    <>
       <br />
       <div class="home-tooltip">Cliquez pour retourner à l'accueil</div>
-      <h1>404</h1>
-      <p>{i18n(cfg.locale).pages.error.notFound}</p>
-    </article>
+      <article class="popover-hint" data-slug="404">
+        <h1>404</h1>
+        <p>{i18n(cfg.locale).pages.error.notFound}</p>
+      </article>
+    </>
   )
 }
 

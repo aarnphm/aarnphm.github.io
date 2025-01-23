@@ -4,6 +4,7 @@ import { version } from "../../package.json"
 import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
 import { Date as DateComponent, getDate } from "./Date"
+import { ContentLayout } from "../plugins/emitters/contentIndex"
 
 type FooterLayout = "default" | "minimal" | "poetry" | "menu" | "curius"
 
@@ -42,6 +43,15 @@ export default ((userOpts?: Options) => {
               </li>
             )
           })}
+          {fileData.frontmatter?.pageLayout! === "letter" && (
+            <li>
+              <address>
+                <a href={"/"} target="_self" class="internal">
+                  home
+                </a>
+              </address>
+            </li>
+          )}
         </menu>
         <p>
           {i18n(cfg.locale).components.footer.createdWith}{" "}

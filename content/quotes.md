@@ -5,7 +5,7 @@ aliases:
 tags:
   - evergreen
 date: "2024-01-23"
-modified: 2025-01-20 03:36:50 GMT-05:00
+modified: 2025-01-22 23:21:24 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 title: advice.
 transclude:
@@ -31,6 +31,8 @@ Love is reverence, and worship, and glory, and the upward glance. Not a bandage 
 In another life, I would have really liked just doing laundry and taxes with you -- Ke Huy Quan ([[/movies#^eeao|Everything Everywhere All at Once]])
 
 You don't know about real loss, because it only occurs when you [[posts/her|love]] something more than you love yourself. I doubt you've ever dared to love anybody that much -- Robin Williams ([[/movies#^gwh|Good Will Hunting]])
+
+When you do something, do it 100%. When you work, work. When you laugh, laugh. When you eat, eat like it's your last meal -- Tony the valet ([[posts/physical touch|Green Book]])
 
 ## On bits and bytes.
 

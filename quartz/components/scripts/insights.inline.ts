@@ -1,3 +1,5 @@
+import { isBrowser } from "./util"
+
 const SCRIPT_URL = "https://va.vercel-scripts.com/v1/speed-insights"
 const PROD_SCRIPT_URL = `${SCRIPT_URL}/script.js`
 const DEV_SCRIPT_URL = `${SCRIPT_URL}/script.debug.js`
@@ -13,9 +15,6 @@ function detectEnvironment() {
 }
 function isDevelopment() {
   return detectEnvironment() === "development"
-}
-function isBrowser() {
-  return typeof window !== "undefined"
 }
 
 if (isBrowser()) {

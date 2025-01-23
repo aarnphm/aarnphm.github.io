@@ -320,3 +320,7 @@ export async function fetchCanonical(url: URL): Promise<Response> {
   const [_, redirect] = text.match(canonicalRegex) ?? []
   return redirect ? fetch(`${new URL(redirect, url)}`) : res
 }
+
+export function isBrowser() {
+  return typeof window !== "undefined"
+}

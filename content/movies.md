@@ -4,7 +4,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-02-07"
-modified: 2025-01-17 05:15:41 GMT-05:00
+modified: 2025-01-22 21:29:16 GMT-05:00
 title: movies.
 ---
 
@@ -39,6 +39,10 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [x] Maestro (2023)
 
 ## recurring.
+
+### [[/tags/growth|life]]
+
+- Green Book (2018)
 
 ### vintage.
 

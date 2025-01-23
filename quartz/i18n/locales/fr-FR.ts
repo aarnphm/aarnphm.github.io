@@ -64,7 +64,7 @@ export default {
     },
     error: {
       title: "Introuvable",
-      notFound: "Cette page est soit privée, soit elle n'existe pas.",
+      notFound: "à venir",
     },
     folderContent: {
       folder: "Dossier",

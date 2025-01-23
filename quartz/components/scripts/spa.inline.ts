@@ -229,13 +229,27 @@ class StackedNoteManager {
       .join("&")
   }
 
-  /** Generates URL-safe hash for a slug. Probably use base64 for easier reconstruction */
+  /** Generates URL-safe hash for a slug. Uses base64 with special handling for dots */
   private generateHash(slug: string): string {
-    return btoa(slug.toString()).replace(/=+$/, "")
+    // Replace dots with a safe character sequence before encoding
+    const safePath = slug.toString().replace(/\./g, "___DOT___")
+    return btoa(safePath).replace(/=+$/, "")
   }
 
   private decodeHash(hash: string): string {
-    return atob(hash).match(/^[a-zA-Z0-9/-]+$/)![0]
+    try {
+      const decoded = atob(hash)
+      // Restore dots after decoding
+      const restoredPath = decoded.replace(/___DOT___/g, ".")
+      // Validate the path only contains allowed characters
+      if (restoredPath.match(/^[a-zA-Z0-9/.-]+$/)) {
+        return restoredPath
+      }
+      throw new Error("Invalid path characters")
+    } catch (e) {
+      console.error("Failed to decode hash:", e)
+      return ""
+    }
   }
 
   // Map to store hash -> slug mappings

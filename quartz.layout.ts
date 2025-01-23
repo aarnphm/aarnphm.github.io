@@ -11,6 +11,7 @@ export const sharedPageComponents: SharedLayout = {
     Component.StackedNotes(),
     Component.Search(),
     Component.Image(),
+    Component.Graph({ repelForce: 2.3385416666667, centerForce: 0.588020833333333 }),
   ],
   afterBody: [Component.Recommendations(), Component.Backlinks()],
   footer: Component.Footer({

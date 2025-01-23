@@ -1,5 +1,5 @@
 import { arrow, computePosition, flip, inline, Placement, shift } from "@floating-ui/dom"
-import { getFullSlug, normalizeRelativeURLs } from "../../util/path"
+import { FullSlug, getFullSlug, normalizeRelativeURLs, simplifySlug } from "../../util/path"
 import { getContentType } from "../../util/mime"
 import xmlFormat from "xml-formatter"
 import { fetchCanonical } from "./util"
@@ -179,12 +179,9 @@ async function handleBibliographyPopover(
   const hasAlreadyBeenFetched = (classname?: string) =>
     [...link.children].some((child) => child.classList.contains(classname ?? "popover"))
 
-  if (hasAlreadyBeenFetched("bib-popover")) {
-    return setPosition(link, link.lastChild as HTMLElement, "top", clientX, clientY)
-  }
+  if (hasAlreadyBeenFetched("bib-popover")) return
 
   const bibEntry = document.getElementById(href.replace("#", "")) as HTMLLIElement
-  if (hasAlreadyBeenFetched("bib-popover")) return
 
   const { popoverElement, popoverInner } = createPopoverElement("bib-popover")
   popoverInner.innerHTML = bibEntry.innerHTML
@@ -214,9 +211,7 @@ async function mouseEnterHandler(
     return
   }
 
-  if (hasAlreadyBeenFetched()) {
-    return setPosition(link, link.lastChild as HTMLElement, "right", clientX, clientY)
-  }
+  if (hasAlreadyBeenFetched()) return
 
   const thisUrl = new URL(document.location.href)
   const targetUrl = new URL(link.href)
@@ -262,6 +257,7 @@ async function mouseEnterHandler(
 
   const { popoverElement, popoverInner } = createPopoverElement()
   popoverInner.dataset.contentType = contentType ?? undefined
+  popoverElement.dataset.arrow = (contentType! !== "application/pdf").toString()
 
   const contentHandlers: Record<string, ContentHandler> = {
     image: async (_, targetUrl, popoverInner) => handleImageContent(targetUrl, popoverInner),

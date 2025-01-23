@@ -9,7 +9,7 @@ cssclasses:
   - nolist
 date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-01-21 22:31:23 GMT-05:00
+modified: 2025-01-23 03:50:38 GMT-05:00
 permalink:
   - /website
   - /resources
@@ -18,8 +18,6 @@ title: are.na
 ---
 
 I also like to collect [[tweets|some based tweets on the internet]], and [[books]]
-
-<blockquote class="twitter-tweet" data-dnt="true"><p lang="en" dir="ltr">Advice for Food Companies<br><br>Since we launched PlasticList, we’ve been heartened to have quite a few food companies reach out and ask for help interpreting their results and tracking down and eliminating their contamination. I’ve had calls with a bunch of these. <br><br>I am happy to… <a href="https://t.co/J43Rcp0VIa">pic.twitter.com/J43Rcp0VIa</a></p>&mdash; Nat Friedman (@natfriedman) <a href="https://twitter.com/natfriedman/status/1874884925587087434?ref_src=twsrc%5Etfw">January 2, 2025</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 ## discourse
 
