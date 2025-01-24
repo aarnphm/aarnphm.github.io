@@ -1,5 +1,5 @@
 import { arrow, computePosition, flip, inline, Placement, shift } from "@floating-ui/dom"
-import { FullSlug, getFullSlug, normalizeRelativeURLs, simplifySlug } from "../../util/path"
+import { getFullSlug, normalizeRelativeURLs } from "../../util/path"
 import { getContentType } from "../../util/mime"
 import xmlFormat from "xml-formatter"
 import { fetchCanonical } from "./util"
@@ -170,16 +170,17 @@ async function setPosition(
   }
 }
 
+const hasAlreadyBeenFetched = (link: HTMLAnchorElement, classname?: string) =>
+  [...link.children].some((child) => child.classList.contains(classname ?? "popover"))
+
 async function handleBibliographyPopover(
   link: HTMLAnchorElement,
   clientX: number,
   clientY: number,
 ) {
   const href = link.getAttribute("href")!
-  const hasAlreadyBeenFetched = (classname?: string) =>
-    [...link.children].some((child) => child.classList.contains(classname ?? "popover"))
 
-  if (hasAlreadyBeenFetched("bib-popover")) return
+  if (hasAlreadyBeenFetched(link, "bib-popover")) return
 
   const bibEntry = document.getElementById(href.replace("#", "")) as HTMLLIElement
 
@@ -190,17 +191,32 @@ async function handleBibliographyPopover(
   link.appendChild(popoverElement)
 }
 
+async function handleFootnote(link: HTMLAnchorElement, clientX: number, clientY: number) {
+  const href = link.getAttribute("href")!
+
+  if (hasAlreadyBeenFetched(link, "footnote-popover")) return
+
+  const footnoteEntry = document.getElementById(href.replace("#", "")) as HTMLLIElement
+  const { popoverElement, popoverInner } = createPopoverElement("footnote-popover")
+  popoverInner.innerHTML = footnoteEntry.innerHTML
+  popoverInner.querySelectorAll("[data-footnote-backref]").forEach((el) => el.remove())
+
+  setPosition(link, popoverElement, "right", clientX, clientY)
+  link.appendChild(popoverElement)
+}
+
 async function mouseEnterHandler(
   this: HTMLAnchorElement,
   { clientX, clientY }: { clientX: number; clientY: number },
 ) {
   const link = this
 
-  const hasAlreadyBeenFetched = (classname?: string) =>
-    [...link.children].some((child) => child.classList.contains(classname ?? "popover"))
-
   if (link.dataset.bib === "") {
     return handleBibliographyPopover(link, clientX, clientY)
+  }
+
+  if (link.dataset.footnoteRef === "") {
+    return handleFootnote(link, clientX, clientY)
   }
 
   if (
@@ -211,7 +227,7 @@ async function mouseEnterHandler(
     return
   }
 
-  if (hasAlreadyBeenFetched()) return
+  if (hasAlreadyBeenFetched(link)) return
 
   const thisUrl = new URL(document.location.href)
   const targetUrl = new URL(link.href)
@@ -246,8 +262,6 @@ async function mouseEnterHandler(
   } else {
     response = await fetchCanonical(new URL(`${targetUrl}`)).catch(console.error)
   }
-
-  if (hasAlreadyBeenFetched()) return
 
   if (!response) return
   const contentType = response.headers.get("Content-Type")

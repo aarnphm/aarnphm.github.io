@@ -169,12 +169,33 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
   // Calculate the radius of the container circle
   const radius = Math.min(width, height) / 2 - 40 // 40px padding
 
+  // Calculate optimal link distance based on graph size
+  const optimalDistance = Math.sqrt((width * height) / graphData.nodes.length) * 1.5
+
   const simulation: Simulation<NodeData, LinkData> = forceSimulation<NodeData>(graphData.nodes)
-    .force("charge", forceManyBody().strength(-100 * repelForce))
+    .force(
+      "charge",
+      forceManyBody()
+        .strength(-150 * repelForce)
+        .distanceMax(width / 2),
+    )
     .force("center", forceCenter(width / 2, height / 2).strength(centerForce))
-    .force("link", forceLink(graphData.links).distance(linkDistance))
-    .force("collide", forceCollide<NodeData>((n) => nodeRadius(n)).iterations(3))
-    .force("radial", forceRadial(radius / 2, width / 2, height / 2).strength(0.3))
+    .force(
+      "link",
+      forceLink(graphData.links)
+        .distance((d) => {
+          // Longer distances for tag connections
+          const isTagLink = d.source.id.startsWith("tags/") || d.target.id.startsWith("tags/")
+          return isTagLink ? optimalDistance * 1.5 : optimalDistance
+        })
+        .strength((d) => {
+          // Stronger connections for direct links
+          const isTagLink = d.source.id.startsWith("tags/") || d.target.id.startsWith("tags/")
+          return isTagLink ? 0.5 : 1
+        }),
+    )
+    .force("collide", forceCollide<NodeData>((n) => nodeRadius(n) * 2).iterations(4))
+    .force("radial", forceRadial(radius * 0.8, width / 2, height / 2).strength(0.8))
 
   // precompute style prop strings as pixi doesn't support css variables
   const cssVars = [
@@ -212,7 +233,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     const numLinks = graphData.links.filter(
       (l) => l.source.id === d.id || l.target.id === d.id,
     ).length
-    return 2 + Math.sqrt(numLinks)
+    return 4 + Math.log(numLinks + 1) * 2
   }
 
   let hoveredNodeId: string | null = null
@@ -289,13 +310,16 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     for (const n of nodeRenderData) {
       const nodeId = n.simulationData.id
       const isCurrentlyHover = hoveredNodeId === nodeId
-      const scale = isCurrentlyHover
-        ? { x: activeScale, y: activeScale }
-        : { x: defaultScale, y: defaultScale }
+      const isConnected = hoveredNeighbours.has(nodeId)
+      const scale =
+        isCurrentlyHover || isConnected
+          ? { x: activeScale, y: activeScale }
+          : { x: defaultScale, y: defaultScale }
 
-      tweenGroup.add(
-        new Tweened<Text>(n.label).to({ alpha: isCurrentlyHover ? 1 : n.label.alpha, scale }, 100),
-      )
+      // Show labels for hovered node and its connections
+      const targetAlpha = isCurrentlyHover ? 1 : isConnected ? 0.8 : n.label.alpha
+
+      tweenGroup.add(new Tweened<Text>(n.label).to({ alpha: targetAlpha, scale }, 100))
     }
 
     tweenGroup.getAll().forEach((tw) => tw.start())
@@ -402,7 +426,6 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       })
       .on("pointerleave", () => {
         updateHoverInfo(null)
-        label.alpha = prevOpacity
         if (!dragging) renderPixiFromD3()
       })
 
@@ -493,7 +516,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
           [0, 0],
           [width, height],
         ])
-        .scaleExtent([0.25, 4])
+        .scaleExtent([0.2, 8])
         .on("zoom", ({ transform }) => {
           currentTransform = transform
           stage.scale.set(transform.k, transform.k)

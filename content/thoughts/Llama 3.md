@@ -4,11 +4,13 @@ tags:
   - ml
 date: "2024-12-23"
 description: excerpt from the papers by Meta Research.
-modified: 2025-01-01 07:04:51 GMT-05:00
+modified: 2025-01-23 07:02:49 GMT-05:00
 title: The Llama 3  Herd of Model
 ---
 
-[[thoughts/papers/2407.21783v3.pdf|details]] step-by-step reproduction from training => scaling => inference [@grattafiori2024llama3herdmodels]
+[[thoughts/papers/2407.21783v3.pdf|pdf]] [@grattafiori2024llama3herdmodels]
+
+> step-by-step reproduction from training => scaling => inference
 
 pre-train 405B on 15.6T tokens with 8K context windows.
 
@@ -18,7 +20,7 @@ The also implement [[thoughts/annealing]] data to improve quality [@blakeney2024
 
 They also run their own scaling law calculations, instead of using Chinchilla constant
 
-Architecture-wise, nothing special, pure [[thoughts/Transformers]] with [[thoughts/Attention#Group-Query Attention]] and FFN
+Architecture-wise, nothing special, but pure [[thoughts/Transformers]] with [[thoughts/Attention#Group-Query Attention]] and [[thoughts/FFN]]
 
 <table>
   <thead>
@@ -110,13 +112,13 @@ Training config:
   - RDMA over Converged Ethernet (RoCE) fabric based on the Arista 7800 and Minipack2 Open Compute Project4 OCP rack.
   - RoCE and Infiniband clusters
   - Topology:
-    - Three layers of Clos network
+    - Three layers of [[thoughts/Clos network]]
 - Training recipe: 4D parallelism with FSDP
   - tensor parallelism: split individual weights tensors to multiple chunks on different devices
   - pipeline parallelism: partition models _vertically_ into stages by layers so different devices can process in parallel different stages of the full model pipeline
   - context parallelism: divides input context into segments; reducing memory bottleneck for long sequence inputs
   - FSDP: shards the model, optimizer, and gradients while implementing data parallelism (process data on multiple GPUs and synchronize per training steps)
-    - They also do some network-aware parallelism configuration, but essentially they do `all-gather`
+    - They also do some network-aware parallelism configuration, but essentially they do `all_gather{:python}`
     - FSDP in Zero-2 mode, **not** Zero-3 mode. I.e., they keep the weight tensors materialized after the forward pass instead of re-gathering them in backward.
 
 [^ref]

@@ -16,8 +16,10 @@ import { ElementContent, Element } from "hast"
 import { filterEmbedTwitter, twitterUrlRegex } from "./twitter"
 import { h, s } from "hastscript"
 import {
+  anthropicSvg,
   bentomlSvg,
   bskySvg,
+  doiSvg,
   githubSvg,
   substackSvg,
   svgOptions,
@@ -158,6 +160,9 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isSubstack: dest.includes("substack.com"),
                   isTwitter: twitterUrlRegex.test(dest),
                   isBsky: dest.includes("bsky.app"),
+                  isDoi: dest.includes("doi.org"),
+                  isAnthropic:
+                    dest.includes("transformer-circuits.pub") || dest.includes("anthropic.com"),
                 }
 
                 // Handle special link types
@@ -213,6 +218,10 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   )
                 } else if (linkTypes.isBentoml) {
                   ctx.node.children.push(bentomlSvg)
+                } else if (linkTypes.isDoi) {
+                  ctx.node.children.push(doiSvg)
+                } else if (linkTypes.isAnthropic) {
+                  ctx.node.children.push(anthropicSvg)
                 } else if (linkTypes.isGithub) {
                   ctx.node.children.push(githubSvg)
                 } else if (linkTypes.isSubstack) {

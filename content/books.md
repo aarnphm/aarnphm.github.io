@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2022-04-22"
 description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
-modified: 2025-01-17 05:24:00 GMT-05:00
+modified: 2025-01-23 07:06:24 GMT-05:00
 title: antilibrary.
 ---
 
@@ -23,16 +23,16 @@ _A list of book that remains forever in my bag, and I like the idea of reading i
 
 ## current.
 
-| title                                             | author                           | notes                                                  |
-| ------------------------------------------------- | -------------------------------- | ------------------------------------------------------ |
-| The Critique of Pure Reason                       | Immanuel Kant                    |                                                        |
-| The Metaphysics of Morals                         | Immanuel Kant                    |                                                        |
-| Crime and Punishment                              | Fyodor Dostoevsky                |                                                        |
-| Structure and Interpretation of Computer Programs | Abelson and Sussman              | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf)        |
-| Man and His Symbols                               | Carl G. Jung                     |                                                        |
-| The Second Sex                                    | Simone de Beauvoir               |                                                        |
-| Being and Time                                    | Martin Heidegger                 | [[thoughts/being#Heidegger's _Being and Time_\|notes]] |
-| The Rebel                                         | [[thoughts/Camus\|Albert Camus]] |                                                        |
+| title                                             | author                           | notes                                                |
+| ------------------------------------------------- | -------------------------------- | ---------------------------------------------------- |
+| The Critique of Pure Reason                       | Immanuel Kant                    |                                                      |
+| The Metaphysics of Morals                         | Immanuel Kant                    |                                                      |
+| Crime and Punishment                              | Fyodor Dostoevsky                |                                                      |
+| Structure and Interpretation of Computer Programs | Abelson and Sussman              | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf)      |
+| Man and His Symbols                               | Carl G. Jung                     |                                                      |
+| The Second Sex                                    | Simone de Beauvoir               |                                                      |
+| Being and Time                                    | Martin Heidegger                 | [[thoughts/being#Heidegger's Being and Time\|notes]] |
+| The Rebel                                         | [[thoughts/Camus\|Albert Camus]] |                                                      |
 
 ## to read.
 

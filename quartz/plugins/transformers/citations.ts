@@ -44,12 +44,12 @@ const LINK_TYPES: LinkType[] = [
   {
     type: "transformer",
     pattern: (url: string) => url.toLowerCase().includes("transformer-circuits.pub"),
-    label: "[transformer-circuits]",
+    label: "[transformer circuit]",
   },
   {
     type: "alignment",
     pattern: (url: string) => url.toLowerCase().includes("alignmentforum.org"),
-    label: "[alignmentforum]",
+    label: "[alignment forum]",
   },
 ]
 

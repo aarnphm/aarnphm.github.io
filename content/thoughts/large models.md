@@ -3,12 +3,12 @@ id: large models
 tags:
   - ml
 date: "2024-01-08"
-title: Foundational large models
+description: and compression of human knowledge
+modified: 2025-01-23 07:08:16 GMT-05:00
+title: Foundational models
 ---
 
-Popularized through [[thoughts/LLMs]], [GPT-3 paper](https://arxiv.org/abs/2005.14165),
-
-See also: 7.1 of [The Little Book of Deep Learning](/books#2024)
+Popularized through [[thoughts/LLMs]], GPT-3 paper [@brown2020languagemodelsfewshotlearners]
 
 Though, it should be thought as [[thoughts/Intelligence amplification]] rather than "artificial intelligence" system.
 

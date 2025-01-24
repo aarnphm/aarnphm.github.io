@@ -366,12 +366,18 @@ section[data-references] {
 }
 
 section[data-footnotes] {
+  display: none;
+
   & > #footnote-label.sr-only {
     margin-bottom: 0.5rem;
   }
 
   & > ol {
     margin-bottom: 2rem;
+  }
+
+  @media all and ($mobile) {
+    display: block;
   }
 }
 

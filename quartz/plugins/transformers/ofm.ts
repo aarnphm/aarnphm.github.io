@@ -785,8 +785,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     {
                       type: "button",
                       ariaLabel: "copy source",
-                      tabindex: -1,
-                      ariaHidden: `${true}`,
                     },
                     [
                       s("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "copy-icon" }, [

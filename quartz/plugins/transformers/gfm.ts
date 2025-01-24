@@ -8,6 +8,7 @@ import { headingRank } from "hast-util-heading-rank"
 import { h, s } from "hastscript"
 import { PluggableList } from "unified"
 import { Element } from "hast"
+import { svgOptions } from "../../components/renderPage"
 
 export interface Options {
   enableSmartyPants: boolean
@@ -54,16 +55,7 @@ export const GitHubFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> =
             },
             content: s(
               "svg",
-              {
-                width: 16,
-                height: 16,
-                viewbox: "0 0 24 24",
-                fill: "none",
-                stroke: "currentColor",
-                strokewidth: "2",
-                strokelinecap: "round",
-                strokelinejoin: "round",
-              },
+              { ...svgOptions, fill: "none", stroke: "currentColor", strokewidth: "2" },
               [s("use", { href: "#github-anchor" })],
             ),
           },

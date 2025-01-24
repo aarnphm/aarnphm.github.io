@@ -1,5 +1,5 @@
 import { QuartzTransformerPlugin } from "../types"
-import { Element, Root } from "hast"
+import { Element } from "hast"
 import { h, s } from "hastscript"
 import rehypePrettyCode, { Options as CodeOptions, Theme as CodeTheme } from "rehype-pretty-code"
 import { visit } from "unist-util-visit"
@@ -10,7 +10,7 @@ interface Theme extends Record<string, CodeTheme> {
   dark: CodeTheme
 }
 
-interface Options {
+interface Options extends CodeOptions {
   theme?: Theme
   keepBackground?: boolean
 }
@@ -43,23 +43,14 @@ export const SyntaxHighlighting: QuartzTransformerPlugin<Partial<Options>> = (us
               (node) => isCodeblockTranspiled(node as Element),
               (node, _idx, _parent) => {
                 node.children = [
-                  h(
-                    "span.clipboard-button",
-                    {
-                      type: "button",
-                      ariaLabel: "copy source",
-                      tabindex: -1,
-                      ariaHidden: `${true}`,
-                    },
-                    [
-                      s("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "copy-icon" }, [
-                        s("use", { href: "#github-copy" }),
-                      ]),
-                      s("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "check-icon" }, [
-                        s("use", { href: "#github-check" }),
-                      ]),
-                    ],
-                  ),
+                  h("span.clipboard-button", { type: "button", ariaLabel: "copy source" }, [
+                    s("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "copy-icon" }, [
+                      s("use", { href: "#github-copy" }),
+                    ]),
+                    s("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "check-icon" }, [
+                      s("use", { href: "#github-check" }),
+                    ]),
+                  ]),
                   ...node.children,
                 ]
               },

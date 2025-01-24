@@ -88,8 +88,6 @@ export default (() => {
             {
               type: "button",
               ariaLabel: "copy source",
-              tabindex: -1,
-              ariaHidden: true,
               class: "clipboard-button",
               "data-href": resolveRelative(
                 fileData.slug!,
