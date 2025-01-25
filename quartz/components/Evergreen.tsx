@@ -14,7 +14,7 @@ type Props = {
   opts?: EvergreenNotes
 } & QuartzComponentProps
 
-export const AllTags: QuartzComponent = ({ cfg, allFiles, opts }: Props) => {
+export const AllTags: QuartzComponent = ({ cfg, allFiles }: Props) => {
   const tags = [
     ...new Set(
       allFiles.flatMap((data) => data.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes),

@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded.
-modified: 2025-01-21 19:58:15 GMT-05:00
+modified: 2025-01-24 02:30:39 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -112,6 +112,8 @@ https://x.com/pmarca/status/1880845551467634761 <!-- technology hallucinations w
 
 https://x.com/pmarca/status/1880860012110856566 <!-- Links between EA and sexual obsession lol -->
 
+https://x.com/cath_land/status/1881906298817786224 <!-- linktree but open source and for free lmao -->
+
 ## techno-optimist
 
 https://x.com/tobi/status/1878957750576906484 <!-- Tobi replies on Canada's Tech contribution to overall GDP -->
@@ -149,3 +151,5 @@ https://x.com/nrehiew_/status/1876091138366652438 <!-- ML with shape suffixes st
 https://x.com/behrouz_ali/status/1878859086227255347 <!-- Titan, scaling Neural Memory -->
 
 https://x.com/vllm_project/status/1879979185474859303 <!-- By yours truly -->
+
+https://x.com/flowersslop/status/1882241958397067677 <!-- R1 having existential crisis -->

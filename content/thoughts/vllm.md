@@ -6,8 +6,8 @@ tags:
   - technical
 date: "2024-09-09"
 description: efficient LLM serving engine.
-modified: 2025-01-20 02:44:47 GMT-05:00
-permalink:
+modified: 2025-01-24 20:25:22 GMT-05:00
+permalinks:
   - /vllm
 title: vLLM
 ---

@@ -152,58 +152,14 @@ class DiagramPanZoom {
   }
 }
 
-const cssVars = [
-  "--secondary",
-  "--tertiary",
-  "--gray",
-  "--light",
-  "--lightgray",
-  "--highlight",
-  "--dark",
-  "--darkgray",
-  "--codeFont",
-] as const
-
-const mermaidUrl = "https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.esm.min.mjs"
-let mermaidImport = undefined
-
 document.addEventListener("nav", async () => {
-  //@ts-ignore
-  mermaidImport ||= await import(mermaidUrl)
-  const mermaid = mermaidImport.default
-
   const mainContent = document.querySelector("article") as HTMLElement
   if (!mainContent) return
 
   const nodes = mainContent.querySelectorAll<HTMLDivElement>("pre > code.mermaid")
   if (nodes.length === 0) return
 
-  const computedStyleMap = cssVars.reduce(
-    (acc, key) => {
-      acc[key] = getComputedStyle(document.documentElement).getPropertyValue(key)
-      return acc
-    },
-    {} as Record<(typeof cssVars)[number], string>,
-  )
-
-  const darkMode = document.documentElement.getAttribute("saved-theme") === "dark"
-  mermaid.initialize({
-    startOnLoad: false,
-    securityLevel: "loose",
-    theme: darkMode ? "dark" : "base",
-    themeVariables: {
-      fontFamily: computedStyleMap["--codeFont"],
-      primaryColor: computedStyleMap["--light"],
-      primaryTextColor: computedStyleMap["--darkgray"],
-      primaryBorderColor: computedStyleMap["--tertiary"],
-      lineColor: computedStyleMap["--darkgray"],
-      secondaryColor: computedStyleMap["--secondary"],
-      tertiaryColor: computedStyleMap["--tertiary"],
-      clusterBkg: computedStyleMap["--light"],
-      edgeLabelBackground: computedStyleMap["--highlight"],
-    },
-  })
-  await mermaid.run({ nodes })
+  await window.mermaid.run({ nodes })
 
   for (const codeBlock of nodes) {
     // make it rough

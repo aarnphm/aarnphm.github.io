@@ -3,8 +3,10 @@ id: Attention
 tags:
   - technical
   - seed
+abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
 date: "2024-02-07"
-modified: 2025-01-17 18:00:46 GMT-05:00
+description: and mechanism in Transformers with positional encoding.
+modified: 2025-01-23 20:12:04 GMT-05:00
 title: Attention
 ---
 

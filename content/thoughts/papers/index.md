@@ -5,9 +5,9 @@ aliases:
 tags:
   - folder
 date: "2024-01-20"
-modified: 2025-01-20 04:57:05 GMT-05:00
+modified: 2025-01-24 20:24:29 GMT-05:00
 noindex: true
-permalink:
+permalinks:
   - /papers
 title: papers.
 ---

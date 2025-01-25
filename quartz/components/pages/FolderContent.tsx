@@ -112,7 +112,16 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
       // Process immediate files
       const filePath = relativeParts[0]
-      if (!processedPaths.has(filePath) && shouldIncludeFile(filePath)) {
+      // Skip if it's already processed, doesn't match file filter, or is an alias
+      const isAlias = allFiles.some((f) =>
+        f.aliases?.some(
+          (alias) =>
+            simplifySlug(alias) ===
+            stripSlashes(simplifySlug(joinSegments(folderSlug, filePath) as FullSlug)),
+        ),
+      )
+
+      if (!processedPaths.has(filePath) && shouldIncludeFile(filePath) && !isAlias) {
         processedPaths.add(filePath)
         const ext = path.extname(filePath)
         const baseFileName = path.basename(filePath, ext)
@@ -138,6 +147,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
           frontmatter: {
             title: baseFileName,
             tags: [ext.split(".").at(-1) as string],
+            pageLayout: "default",
           },
           dates,
         })
@@ -168,7 +178,11 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
       entries.push({
         slug: subfolderSlug as FullSlug,
-        frontmatter: folderIndex?.frontmatter ?? { title: subfolder, tags: ["folder"] },
+        frontmatter: folderIndex?.frontmatter ?? {
+          title: subfolder,
+          tags: ["folder"],
+          pageLayout: "default",
+        },
         dates: subfolderDates,
       })
     }

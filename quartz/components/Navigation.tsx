@@ -22,7 +22,7 @@ export default ((userOpts?: Partial<Options>) => {
     const transformNav = (nav: string) =>
       transformLink(fileData.slug!, nav.replace(/['"\[\]]+/g, ""), transformOpts)
 
-    const navigation = fileData.frontmatter?.navigation
+    const navigation = fileData.frontmatter?.navigation as [string, string]
     let baseOpts: Options = defaultOptions
     if (navigation) {
       const [next, prev] = navigation

@@ -1,4 +1,4 @@
-// https://media.githubusercontent.com/media/aarnphm/aarnphm.github.io/refs/heads/main/content{url}
+// https://media.githubusercontent.com/media/aarnphm/aarnphm.github.io/refs/heads/main/content/{url}
 // url: thoughts/university/twenty-four-twenty-five/sfwr-2fa3/Automata%20and%20Computability.pdf
 
 /**

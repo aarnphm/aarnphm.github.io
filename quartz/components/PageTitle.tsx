@@ -1,16 +1,17 @@
 import { pathToRoot } from "../util/path"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
-const PageTitle: QuartzComponent = ({ fileData }: QuartzComponentProps) => {
-  const baseDir = pathToRoot(fileData.slug!)
-  return (
-    <a class="page-title" href={baseDir} aria-label="home" title="Return home">
-      <img src="/static/icon.webp" alt="profile pic" />
-    </a>
-  )
-}
+export default (() => {
+  const PageTitle: QuartzComponent = ({ fileData }: QuartzComponentProps) => {
+    const baseDir = pathToRoot(fileData.slug!)
+    return (
+      <a class="page-title" href={baseDir} aria-label="home" title="Return home">
+        <img src="/static/icon.webp" alt="profile pic" />
+      </a>
+    )
+  }
 
-PageTitle.css = `
+  PageTitle.css = `
 .page-title {
   transform: scale(0.8);
 }
@@ -25,4 +26,5 @@ PageTitle.css = `
 }
 `
 
-export default (() => PageTitle) satisfies QuartzComponentConstructor
+  return PageTitle
+}) satisfies QuartzComponentConstructor

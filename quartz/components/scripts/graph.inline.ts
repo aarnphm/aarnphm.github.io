@@ -49,7 +49,7 @@ type LinkRenderData = GraphicsInfo & {
 
 type NodeRenderData = GraphicsInfo & {
   simulationData: NodeData
-  label: Text
+  label: Text & { __previousAlpha?: number }
 }
 
 const localStorageKey = "graph-visited"
@@ -194,8 +194,8 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
           return isTagLink ? 0.5 : 1
         }),
     )
-    .force("collide", forceCollide<NodeData>((n) => nodeRadius(n) * 2).iterations(4))
-    .force("radial", forceRadial(radius * 0.8, width / 2, height / 2).strength(0.8))
+    .force("collide", forceCollide<NodeData>((n) => nodeRadius(n) * 2).iterations(3))
+    .force("radial", forceRadial(radius * 0.8, width / 2, height / 2).strength(0.3))
 
   // precompute style prop strings as pixi doesn't support css variables
   const cssVars = [
@@ -317,7 +317,19 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
           : { x: defaultScale, y: defaultScale }
 
       // Show labels for hovered node and its connections
-      const targetAlpha = isCurrentlyHover ? 1 : isConnected ? 0.8 : n.label.alpha
+      const targetAlpha = isCurrentlyHover
+        ? 1
+        : isConnected
+          ? 0.8
+          : hoveredNodeId === null
+            ? (n.label.__previousAlpha ?? n.label.alpha)
+            : 0
+
+      if (hoveredNodeId === null) {
+        delete n.label.__previousAlpha
+      } else if (!n.label.__previousAlpha) {
+        n.label.__previousAlpha = n.label.alpha
+      }
 
       tweenGroup.add(new Tweened<Text>(n.label).to({ alpha: targetAlpha, scale }, 100))
     }

@@ -1,28 +1,16 @@
-import { FilePath, joinSegments, resolveRelative, simplifySlug } from "../../util/path"
+import { FilePath, resolveRelative, simplifySlug } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
 import { write } from "./helpers"
 import DepGraph from "../../depgraph"
-import { getAliasSlugs } from "../transformers/frontmatter"
 
 export const AliasRedirects: QuartzEmitterPlugin = () => ({
   name: "AliasRedirects",
   getQuartzComponents: () => [],
-  async getDependencyGraph(ctx, content, _resources) {
-    const graph = new DepGraph<FilePath>()
-
-    const { argv } = ctx
-    for (const [_tree, file] of content) {
-      for (let slug of getAliasSlugs(file.data.aliases ?? [], argv, file)) {
-        graph.addEdge(file.data.filePath!, joinSegments(argv.output, slug + ".html") as FilePath)
-      }
-    }
-
-    return graph
-  },
+  getDependencyGraph: async (_ctx, _content, _resource) => new DepGraph<FilePath>(),
   async emit(ctx, content, _resources): Promise<FilePath[]> {
     const fps: FilePath[] = []
 
-    for (const [_tree, file] of content) {
+    for (const [_, file] of content) {
       const ogSlug = simplifySlug(file.data.slug!)
 
       if (file.data.aliases && file.data.aliases?.length > 0) {

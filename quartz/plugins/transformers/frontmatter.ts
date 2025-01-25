@@ -3,7 +3,14 @@ import remarkFrontmatter from "remark-frontmatter"
 import { QuartzTransformerPlugin } from "../types"
 import yaml from "js-yaml"
 import toml from "toml"
-import { FilePath, FullSlug, slugifyFilePath, joinSegments, slugTag } from "../../util/path"
+import {
+  FilePath,
+  FullSlug,
+  slugifyFilePath,
+  joinSegments,
+  slugTag,
+  stripSlashes,
+} from "../../util/path"
 import { QuartzPluginData } from "../vfile"
 import { i18n } from "../../i18n"
 import { ContentLayout } from "../emitters/contentIndex"
@@ -11,14 +18,13 @@ import { Argv } from "../../util/ctx"
 import path from "path"
 import { VFile } from "vfile"
 
-export function getAliasSlugs(aliases: string[], argv: Argv, file: VFile) {
+export function getAliasSlugs(aliases: string[], argv: Argv, file: VFile, permalinks?: string[]) {
   const dir = path.posix.relative(argv.directory, path.dirname(file.data.filePath!))
   const slugs: FullSlug[] = aliases.map(
     (alias) => path.posix.join(dir, slugifyFilePath(alias as FilePath, false)) as FullSlug,
   )
-  const permalinks = file.data.frontmatter?.permalinks ?? []
-  if (permalinks.length > 0) {
-    slugs.push(...(permalinks as FullSlug[]))
+  if (permalinks && permalinks.length > 0) {
+    slugs.push(...(permalinks.map((el) => stripSlashes(el, true)) as FullSlug[]))
   }
 
   // fix any slugs that have trailing slash
@@ -92,7 +98,7 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             const aliases = coerceToArray(coalesceAliases(data, ["aliases", "alias"]))
             if (aliases) {
               data.aliases = aliases
-              const slugs = getAliasSlugs(aliases, argv, file)
+              const slugs = getAliasSlugs(aliases, argv, file, permalinks)
               file.data.aliases = slugs
               allSlugs.push(...slugs)
             }

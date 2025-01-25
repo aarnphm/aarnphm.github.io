@@ -8,8 +8,8 @@ tags:
 comments: false
 date: "2021-12-22"
 description: and celebration of the act of making.
-modified: 2025-01-19 04:01:46 GMT-05:00
-permalink:
+modified: 2025-01-24 20:25:22 GMT-05:00
+permalinks:
   - /thoughts/work
   - /craft
 title: craft.

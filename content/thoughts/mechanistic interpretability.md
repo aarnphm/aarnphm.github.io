@@ -8,10 +8,9 @@ tags:
 abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
 date: "2024-10-30"
 description: and reverse engineering neural networks.
-modified: 2025-01-20 20:30:19 GMT-05:00
-permalink:
+modified: 2025-01-24 20:43:45 GMT-05:00
+permalinks:
   - /mechinterp
-  - /mechanistic-interpretability
 title: mechanistic interpretability
 ---
 
@@ -27,18 +26,11 @@ To attack the _curse of dimensionality_, the question remains: _==how do we hope
 
 application in the wild: [Goodfire](https://goodfire.ai/) and [Transluce](https://transluce.org/)
 
-> [!question]+ How we would do inference with SAE?
+> [!question]- How we would do inference with SAE?
 >
 > https://x.com/aarnphm_/status/1839016131321016380
 
-idea: treat SAEs as a `logit_processor`, similar to [[thoughts/vllm#guided decoding]]
-
-Current known bottleneck in vLLM:
-
-- `logit_processor` are row-wise, or logits are processed synchronously and blocking [^vllm-caveats]
-- no SPMD currently implemented
-
-[^vllm-caveats]: [the benchmark](https://github.com/vllm-project/vllm/pull/10046) was run against `vllm#0.6.3.dev236+g48138a84`, with all configuration specified in the pull request.
+idea: treat SAEs as a logit bias, similar to [[thoughts/vllm#guided decoding]]
 
 ## steering
 

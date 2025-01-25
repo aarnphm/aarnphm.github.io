@@ -9,8 +9,8 @@ cssclasses:
   - nolist
 date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-01-23 03:50:38 GMT-05:00
-permalink:
+modified: 2025-01-24 20:24:40 GMT-05:00
+permalinks:
   - /website
   - /resources
   - /inspo
@@ -45,6 +45,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://tomcritchlow.com/wiki/ -- Wikitext garden
 - https://www.alanagoyal.com/notes -- Apple Notes-inspired portfolio
   - https://github.com/alanagoyal/alanagoyal, mostly just react-markdown and React 19 Server Component.
+- https://pudding.cool/2023/09/invisible-epidemic/ -- cool timeline scaling transition
 
 ## portfolio
 
@@ -70,9 +71,10 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 
 ## resources
 
-- https://fontsource.org/
+- https://fontsource.org/ -- Font search, made easy
 - https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
 - [ziglang/zig/.../general_purpose_allocator.zig](https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig) -- The GPA you need to care about
+- https://lettermatic.com/fonts/parclo-serif -- Parclo I might buy this
 - https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
 - https://drmichaellevin.org/resources/otherlabs.html -- Labs interests
 - _SouthParkCommons meetup for AI interfaces, [Geoffrey Litt](https://www.geoffreylitt.com/)_

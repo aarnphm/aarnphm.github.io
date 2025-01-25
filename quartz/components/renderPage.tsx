@@ -8,7 +8,7 @@ import GraphConstructor from "./Graph"
 import { byDateAndAlphabetical } from "./PageList"
 import { getDate, Date as DateComponent } from "./Date"
 import { classNames } from "../util/lang"
-import { JSResourceToScriptElement, StaticResources } from "../util/resources"
+import { JSResource, JSResourceToScriptElement, StaticResources } from "../util/resources"
 import {
   clone,
   FullSlug,
@@ -27,6 +27,8 @@ import type { TranscludeOptions } from "../plugins/transformers/frontmatter"
 import { QuartzPluginData } from "../plugins/vfile"
 // @ts-ignore
 import mermaidScript from "./scripts/mermaid.inline"
+// @ts-ignore
+import mermaidImportScript from "./scripts/mermaid-import.inline"
 import mermaidStyle from "./styles/mermaid.inline.scss"
 import { h, s } from "hastscript"
 // @ts-ignore
@@ -425,6 +427,14 @@ export function pageResources(
       ...staticResources.css,
     ],
     js: [
+      fileData.hasMermaidDiagram
+        ? {
+            script: mermaidImportScript,
+            loadTime: "beforeDOMReady",
+            moduleType: "module",
+            contentType: "inline",
+          }
+        : ({} as JSResource),
       {
         src: joinSegments(baseDir, "prescript.js"),
         loadTime: "beforeDOMReady",

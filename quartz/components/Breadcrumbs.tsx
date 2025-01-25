@@ -69,10 +69,10 @@ function formatCrumb(
   displayName: string,
   baseSlug: FullSlug,
   currentSlug: SimpleSlug,
-  maxLength: number,
+  maxLength?: number,
 ): CrumbData {
   let title = displayName.replaceAll("-", " ")
-  if (maxLength > 0 && title.length > maxLength) {
+  if (maxLength && maxLength > 0 && title.length > maxLength) {
     title = title.slice(0, maxLength) + "..."
   }
   return {

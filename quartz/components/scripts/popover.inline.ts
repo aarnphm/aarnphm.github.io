@@ -63,6 +63,23 @@ function cleanAbsoluteElement(element: HTMLElement): HTMLElement {
   return element
 }
 
+function hasPositionChanged(link: HTMLElement): boolean {
+  const popover = link.lastChild as HTMLElement
+  if (!popover.classList.contains("popover")) return true
+  const current = link.getBoundingClientRect()
+
+  // Check if we stored previous position
+  const prevTop = popover.dataset.linkTop
+  const prevLeft = popover.dataset.linkLeft
+
+  return (
+    !prevTop ||
+    !prevLeft ||
+    Math.abs(parseFloat(prevTop) - current.top) > 1 ||
+    Math.abs(parseFloat(prevLeft) - current.left) > 1
+  )
+}
+
 // Helper functions
 function createPopoverElement(className?: string): {
   popoverElement: HTMLElement
@@ -168,6 +185,10 @@ async function setPosition(
     })
     element.dataset.placement = staticSide
   }
+
+  const linkRect = link.getBoundingClientRect()
+  popoverElement.dataset.linkTop = linkRect.top.toString()
+  popoverElement.dataset.linkLeft = linkRect.left.toString()
 }
 
 const hasAlreadyBeenFetched = (link: HTMLAnchorElement, classname?: string) =>
@@ -180,7 +201,12 @@ async function handleBibliographyPopover(
 ) {
   const href = link.getAttribute("href")!
 
-  if (hasAlreadyBeenFetched(link, "bib-popover")) return
+  if (hasAlreadyBeenFetched(link, "bib-popover")) {
+    if (hasPositionChanged(link)) {
+      return setPosition(link, link.lastChild as HTMLElement, "top", clientX, clientY)
+    }
+    return
+  }
 
   const bibEntry = document.getElementById(href.replace("#", "")) as HTMLLIElement
 
@@ -194,14 +220,19 @@ async function handleBibliographyPopover(
 async function handleFootnote(link: HTMLAnchorElement, clientX: number, clientY: number) {
   const href = link.getAttribute("href")!
 
-  if (hasAlreadyBeenFetched(link, "footnote-popover")) return
+  if (hasAlreadyBeenFetched(link, "footnote-popover")) {
+    if (hasPositionChanged(link)) {
+      return setPosition(link, link.lastChild as HTMLElement, "top", clientX, clientY)
+    }
+    return
+  }
 
   const footnoteEntry = document.getElementById(href.replace("#", "")) as HTMLLIElement
   const { popoverElement, popoverInner } = createPopoverElement("footnote-popover")
   popoverInner.innerHTML = footnoteEntry.innerHTML
   popoverInner.querySelectorAll("[data-footnote-backref]").forEach((el) => el.remove())
 
-  setPosition(link, popoverElement, "right", clientX, clientY)
+  setPosition(link, popoverElement, "top", clientX, clientY)
   link.appendChild(popoverElement)
 }
 
@@ -227,7 +258,12 @@ async function mouseEnterHandler(
     return
   }
 
-  if (hasAlreadyBeenFetched(link)) return
+  if (hasAlreadyBeenFetched(link)) {
+    if (hasPositionChanged(link)) {
+      return setPosition(link, link.lastChild as HTMLElement, "right", clientX, clientY)
+    }
+    return
+  }
 
   const thisUrl = new URL(document.location.href)
   const targetUrl = new URL(link.href)

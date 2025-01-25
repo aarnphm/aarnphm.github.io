@@ -28,110 +28,107 @@ export default (() => {
     // NOTE: this blockquote logic is similar from renderPage with some slight deviations:
     // - we don't add title, and no backlinks to original transclude, simply just dump the content into the container
     // - for the parent blockquote we dump the children directly
-    visit(ast, "element", (node: Element, idx: number, parent: Element) => {
-      if (node.tagName === "blockquote") {
-        const classNames = (node.properties?.className ?? []) as string[]
+    visit(ast, { tagName: "blockquote" }, (node: Element, idx: number, parent: Element) => {
+      const classNames = (node.properties?.className ?? []) as string[]
 
-        if (classNames.includes("transclude")) {
-          const [inner] = node.children as Element[]
-          const transcludeTarget = inner.properties["data-slug"] as FullSlug
-          const page = allFiles.find((f) => f.slug === transcludeTarget)
-          if (!page) {
+      if (classNames.includes("transclude")) {
+        const [inner] = node.children as Element[]
+        const transcludeTarget = inner.properties["data-slug"] as FullSlug
+        const page = allFiles.find((f) => f.slug === transcludeTarget)
+        if (!page) {
+          return
+        }
+
+        let blockRef = node.properties.dataBlock as string | undefined
+        if (blockRef?.startsWith("#^")) {
+          // block transclude
+          blockRef = blockRef.slice("#^".length)
+          let blockNode = page.blocks?.[blockRef]
+          if (blockNode) {
+            if (blockNode.tagName === "li") blockNode = h("ul", blockNode)
+
+            parent.children.splice(
+              idx,
+              1,
+              normalizeHastElement(blockNode, slug as FullSlug, transcludeTarget),
+            )
+          }
+        } else if (blockRef?.startsWith("#") && page.htmlAst) {
+          // header transclude
+          blockRef = blockRef.slice(1)
+          let startIdx = undefined
+          let startDepth = undefined
+          let endIdx = undefined
+          for (const [i, el] of page.htmlAst.children.entries()) {
+            // skip non-headers
+            if (!(el.type === "element" && headingRank(el))) continue
+            const depth = headingRank(el) as number
+
+            // looking for our blockref
+            if (startIdx === undefined || startDepth === undefined) {
+              // skip until we find the blockref that matches
+              if (el.properties?.id === blockRef) {
+                startIdx = i
+                startDepth = depth
+              }
+            } else if (depth <= startDepth) {
+              // looking for new header that is same level or higher
+              endIdx = i
+              break
+            }
+          }
+
+          if (startIdx === undefined) {
             return
           }
 
-          let blockRef = node.properties.dataBlock as string | undefined
-          if (blockRef?.startsWith("#^")) {
-            // block transclude
-            blockRef = blockRef.slice("#^".length)
-            let blockNode = page.blocks?.[blockRef]
-            if (blockNode) {
-              if (blockNode.tagName === "li") blockNode = h("ul", blockNode)
-
-              parent.children.splice(
-                idx,
-                1,
-                normalizeHastElement(blockNode, slug as FullSlug, transcludeTarget),
-              )
-            }
-          } else if (blockRef?.startsWith("#") && page.htmlAst) {
-            // header transclude
-            blockRef = blockRef.slice(1)
-            let startIdx = undefined
-            let startDepth = undefined
-            let endIdx = undefined
-            for (const [i, el] of page.htmlAst.children.entries()) {
-              // skip non-headers
-              if (!(el.type === "element" && headingRank(el))) continue
-              const depth = headingRank(el) as number
-
-              // looking for our blockref
-              if (startIdx === undefined || startDepth === undefined) {
-                // skip until we find the blockref that matches
-                if (el.properties?.id === blockRef) {
-                  startIdx = i
-                  startDepth = depth
+          parent.children.splice(
+            idx,
+            1,
+            ...[
+              ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map((child) =>
+                normalizeHastElement(child as Element, slug as FullSlug, transcludeTarget),
+              ),
+            ],
+          )
+        } else if (page.htmlAst) {
+          // page transclude
+          parent.children.splice(
+            idx,
+            1,
+            ...[
+              ...(page.htmlAst.children as ElementContent[]).map((child) =>
+                normalizeHastElement(child as Element, slug as FullSlug, transcludeTarget),
+              ),
+            ],
+          )
+        }
+      }
+      // here we simplify the callout
+      if (classNames.includes("is-collapsible")) {
+        // We need to unparse collapsible callout
+        node.properties.className = ["callout", node.properties["data-callout"] as string]
+        node.properties.style = ""
+      }
+      if (classNames.includes("callout")) {
+        visit(node, "element", (descendant) => {
+          if (descendant.tagName === "div") {
+            const classNames = (descendant.properties?.className ?? []) as string[]
+            if (classNames.includes("callout-title")) {
+              // Filter out callout-icon and fold-callout-icon divs
+              descendant.children = descendant.children.filter((children) => {
+                if (children.type === "element") {
+                  const childClassNames = (children.properties?.className ?? []) as string[]
+                  return !(
+                    childClassNames.includes("callout-icon") ||
+                    childClassNames.includes("fold-callout-icon")
+                  )
                 }
-              } else if (depth <= startDepth) {
-                // looking for new header that is same level or higher
-                endIdx = i
-                break
-              }
+                return true
+              })
             }
-
-            if (startIdx === undefined) {
-              return
-            }
-
-            parent.children.splice(
-              idx,
-              1,
-              ...[
-                ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map(
-                  (child) =>
-                    normalizeHastElement(child as Element, slug as FullSlug, transcludeTarget),
-                ),
-              ],
-            )
-          } else if (page.htmlAst) {
-            // page transclude
-            parent.children.splice(
-              idx,
-              1,
-              ...[
-                ...(page.htmlAst.children as ElementContent[]).map((child) =>
-                  normalizeHastElement(child as Element, slug as FullSlug, transcludeTarget),
-                ),
-              ],
-            )
           }
-        }
-        // here we simplify the callout
-        if (classNames.includes("is-collapsible")) {
-          // We need to unparse collapsible callout
-          node.properties.className = ["callout", node.properties["data-callout"] as string]
-          node.properties.style = ""
-        }
-        if (classNames.includes("callout")) {
-          visit(node, "element", (descendant) => {
-            if (descendant.tagName === "div") {
-              const classNames = (descendant.properties?.className ?? []) as string[]
-              if (classNames.includes("callout-title")) {
-                // Filter out callout-icon and fold-callout-icon divs
-                descendant.children = descendant.children.filter((children) => {
-                  if (children.type === "element") {
-                    const childClassNames = (children.properties?.className ?? []) as string[]
-                    return !(
-                      childClassNames.includes("callout-icon") ||
-                      childClassNames.includes("fold-callout-icon")
-                    )
-                  }
-                  return true
-                })
-              }
-            }
-          })
-        }
+        })
       }
     })
     // keep the same references and footnotes parsing, but append reader for isomorphic ID
