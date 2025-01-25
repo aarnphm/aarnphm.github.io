@@ -1,6 +1,9 @@
 // NOTE: We will import Matuschak's note view AFTER spa.inline.ts
 // given that we will need to hijack the router
 // We will only setup buttons here
+
+import { getFullSlug } from "../../util/path"
+
 // see ./spa.inline.ts
 document.addEventListener("nav", async (ev) => {
   const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
@@ -42,12 +45,7 @@ document.addEventListener("nav", async (ev) => {
 
   if (copyStacked) {
     function onClick() {
-      const stackedNotes = window.stacked.getChain()
-      let source = stackedNotes
-      if (window.location.hostname.startsWith("notes.aarnphm.xyz"))
-        source = `https://notes.aarnphm.xyz/?${stackedNotes}`
-
-      navigator.clipboard.writeText(source).then(
+      navigator.clipboard.writeText(`https://aarnphm.xyz/notes?${window.stacked.getChain()}`).then(
         () => {
           copyStacked.blur()
           const use = copyStacked?.querySelector("svg") as SVGElement
@@ -65,7 +63,7 @@ document.addEventListener("nav", async (ev) => {
     window.addCleanup(() => copyStacked.removeEventListener("click", onClick))
   }
 
-  if (window.location.hostname.startsWith("notes.aarnphm.xyz")) return
+  if (getFullSlug(window) === "notes") return
 
   button.addEventListener("click", switchCheckState)
   window.addCleanup(() => {
