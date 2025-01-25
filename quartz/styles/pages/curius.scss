@@ -129,10 +129,6 @@ body[data-slug="curius"] {
       background: var(--lightgray);
       border: 1px solid var(--dark);
     }
-
-    & > * {
-      padding: 0 8px;
-    }
   }
 }
 
@@ -152,12 +148,7 @@ body[data-slug="curius"] {
 
 .curius-item-title {
   display: flex;
-  padding: 0 5px;
   align-items: center;
-
-  & > * {
-    padding: 5px 0;
-  }
 
   a,
   span {
@@ -178,8 +169,8 @@ body[data-slug="curius"] {
   cursor: pointer;
 }
 
-.curius-item-favorite {
-  clip-path: circle(18% at 50% 35%);
+.favorite-icon {
+  clip-path: circle(20% at 50% 50%);
   color: rgb(236, 180, 19);
   transition: all 200ms ease 0s;
   width: fit-content;
