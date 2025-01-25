@@ -794,7 +794,7 @@ function pruneNotesElement() {
 }
 
 createRouter()
-if (getFullSlug(window) !== "notes") notifyNav(getFullSlug(window))
+notifyNav(getFullSlug(window))
 
 if (!customElements.get("route-announcer")) {
   const attrs = {

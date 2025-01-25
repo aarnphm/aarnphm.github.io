@@ -45,7 +45,12 @@ document.addEventListener("nav", async (ev) => {
 
   if (copyStacked) {
     function onClick() {
-      navigator.clipboard.writeText(`https://aarnphm.xyz/notes?${window.stacked.getChain()}`).then(
+      const stackedNotes = window.stacked.getChain()
+      let source = stackedNotes
+      if (window.location.hostname.startsWith("notes.aarnphm.xyz"))
+        source = `https://notes.aarnphm.xyz/?${stackedNotes}`
+
+      navigator.clipboard.writeText(source).then(
         () => {
           copyStacked.blur()
           const use = copyStacked?.querySelector("svg") as SVGElement
@@ -63,7 +68,8 @@ document.addEventListener("nav", async (ev) => {
     window.addCleanup(() => copyStacked.removeEventListener("click", onClick))
   }
 
-  if (getFullSlug(window) === "notes") return
+  if (window.location.hostname.startsWith("notes.aarnphm.xyz") || getFullSlug(window) === "notes")
+    return
 
   button.addEventListener("click", switchCheckState)
   window.addCleanup(() => {

@@ -140,6 +140,7 @@
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.5.14",
     "@types/yargs": "^17.0.33",
+    "@vercel/edge": "^1.2.1",
     "esbuild": "^0.24.2",
     "mermaid": "^11.4.1",
     "prettier": "^3.4.2",
