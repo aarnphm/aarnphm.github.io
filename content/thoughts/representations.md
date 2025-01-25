@@ -4,7 +4,7 @@ tags:
   - seed
   - philosophy
 date: "2024-02-25"
-modified: 2024-12-08 04:30:25 GMT-05:00
+modified: 2025-01-25 01:07:46 GMT-05:00
 title: representations.
 ---
 
@@ -18,7 +18,7 @@ Maps shape _==how we see and understand the world==_, which in turn shapes how w
 
 ## maps
 
-[Linus' talk on Representation](https://www.media.mit.edu/events/thinking-with-sand-a-virtual-talk-series-exploring-new-software-interfaces-and-tools-for-augmented-thinking-and-creative-exploration/)
+[Linus' talk on Representation](https://www.youtube.com/watch?v=Tt_hDVN5TZE&list=PL_Kh09CR3iHa1ZPi4EsHeqX-1IB3CRLbA&index=2&ab_channel=CharStiles)
 
 how it shape our _agency_
 

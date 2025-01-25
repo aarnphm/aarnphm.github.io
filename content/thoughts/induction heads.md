@@ -5,7 +5,7 @@ tags:
   - ml
 date: "2025-01-18"
 description: and mathematical framework of transformers
-modified: 2025-01-18 19:41:25 GMT-05:00
+modified: 2025-01-24 23:47:52 GMT-05:00
 title: induction heads
 ---
 
@@ -28,4 +28,3 @@ One salient property of linear residual stream is that we can think of each expl
 ## priviledged basis
 
 tldr: we can rotate it all matrices interacting with the layers without modifying the models' behaviour.
-

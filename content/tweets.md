@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets I like, since bookmark is getting crowded.
-modified: 2025-01-24 02:30:39 GMT-05:00
+modified: 2025-01-24 21:39:42 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -153,3 +153,5 @@ https://x.com/behrouz_ali/status/1878859086227255347 <!-- Titan, scaling Neural 
 https://x.com/vllm_project/status/1879979185474859303 <!-- By yours truly -->
 
 https://x.com/flowersslop/status/1882241958397067677 <!-- R1 having existential crisis -->
+
+https://x.com/rupspace/status/1877882538859078084 <!-- Highway network -->

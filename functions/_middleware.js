@@ -13,7 +13,15 @@ export async function onRequest(context) {
 
   const url = new URL(request.url)
 
-  if (url.pathname.endsWith(".pdf")) {
+  // Only apply logic for notes.aarnphm.xyz and root path
+  if (url.hostname === "notes.aarnphm.xyz" && url.pathname === "/") {
+    const slug = "notes"
+    const newUrl = new URL(`/${slug}`, request.url)
+    newUrl.searchParams.set("stackedNotes", btoa(slug).replace(/=+$/, ""))
+    // Rewrite the request with the new URL
+    const newRequest = new Request(newUrl, request)
+    return context.next(newRequest)
+  } else if (url.pathname.endsWith(".pdf")) {
     const githubUrl = `https://media.githubusercontent.com/media/aarnphm/aarnphm.github.io/refs/heads/main/content${url.pathname}`
     return await fetch(new Request(githubUrl, { method: "GET", headers: request.headers })).then(
       async (resp) => {
