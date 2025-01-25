@@ -670,7 +670,7 @@ async function navigate(url: URL, isBack: boolean = false) {
   startLoading()
 
   p = p || new DOMParser()
-  const contents = await fetchCanonical(`${url}`)
+  const contents = await fetchCanonical(new URL(`${url}`))
     .then((res) => {
       const contentType = res.headers.get("content-type")
       if (contentType?.startsWith("text/html")) {
@@ -794,7 +794,7 @@ function pruneNotesElement() {
 }
 
 createRouter()
-notifyNav(getFullSlug(window))
+if (getFullSlug(window) !== "notes") notifyNav(getFullSlug(window))
 
 if (!customElements.get("route-announcer")) {
   const attrs = {
