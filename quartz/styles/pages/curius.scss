@@ -169,7 +169,7 @@ body[data-slug="curius"] {
   cursor: pointer;
 }
 
-.favorite-icon {
+svg.favorite-icon {
   clip-path: circle(20% at 50% 50%);
   color: rgb(236, 180, 19);
   transition: all 200ms ease 0s;
@@ -472,6 +472,9 @@ body[data-slug="curius"] {
 .curius-trail {
   font-size: 11px;
   width: inherit;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--lightgray);
   cursor: pointer;
   max-width: calc($sidePanelWidth - 1rem);
   display: none;

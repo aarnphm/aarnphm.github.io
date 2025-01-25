@@ -125,14 +125,14 @@ function createLinkEl(Link: Link): HTMLLIElement {
   registerEscapeHandler(curiusItem, () => curiusItem.classList.remove("active"))
 
   const onMouseEnter = () => {
-    const favoriteDiv = curiusItem.querySelector(".curius-item-favorite") as HTMLDivElement | null
+    const favoriteDiv = curiusItem.querySelector("svg.favorite-icon") as HTMLDivElement | null
 
     if (favoriteDiv) favoriteDiv.classList.add("focus")
     curiusItem.classList.add("focus")
   }
 
   const onMouseLeave = () => {
-    const favoriteDiv = curiusItem.querySelector(".curius-item-favorite") as HTMLDivElement | null
+    const favoriteDiv = curiusItem.querySelector("svg.favorite-icon") as HTMLDivElement | null
 
     if (favoriteDiv) favoriteDiv.classList.remove("focus")
     curiusItem.classList.remove("focus")

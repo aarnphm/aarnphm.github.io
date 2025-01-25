@@ -287,14 +287,14 @@ function createTrailEl(
       const el = createTitle({ Link: link, elementType: "li" })
 
       const onMouseEnter = () => {
-        const favoriteDiv = el.querySelector(".curius-item-favorite") as HTMLDivElement | null
+        const favoriteDiv = el.querySelector("svg.favorite-icon") as HTMLDivElement | null
 
         if (favoriteDiv) favoriteDiv.classList.add("focus")
         el.classList.add("focus")
       }
 
       const onMouseLeave = () => {
-        const favoriteDiv = el.querySelector(".curius-item-favorite") as HTMLDivElement | null
+        const favoriteDiv = el.querySelector("svg.favorite-icon") as HTMLDivElement | null
 
         if (favoriteDiv) favoriteDiv.classList.remove("focus")
         el.classList.remove("focus")
