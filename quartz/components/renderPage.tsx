@@ -324,8 +324,14 @@ const checkFootnoteRef = ({ type, tagName, properties }: Element) =>
 const checkFootnotes = ({ type, tagName, properties }: Element) =>
   type === "element" && tagName === "section" && properties.dataFootnotes == ""
 
+const checkBib = ({ type, tagName, properties }: Element) =>
+  type === "element" && tagName === "section" && properties.dataReferences == ""
+
 const getFootnotesList = (node: Element) =>
   (node.children as Element[]).filter((val) => val.tagName === "ol")[0]
+
+const getBibList = (node: Element) =>
+  (node.children as Element[]).filter((val) => val.tagName === "ul")[0]
 
 function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   const orderNotes: Note[] = []
@@ -663,21 +669,24 @@ export function transcludeFinal(
         }
         node.children = children
 
-        // support transcluding footnote data
-        let hasFootnotes = false
+        // support transcluding footnote and bib data
         let footnoteSection: Element | undefined
+        let bibSection: Element | undefined
         visit(
           root,
           (node) => {
             if (checkFootnotes(node as Element)) {
-              hasFootnotes = true
               footnoteSection = node as Element
+            } else if (checkBib(node as Element)) {
+              bibSection = node as Element
             }
           },
           true,
         )
 
-        let transcludeFootnoteBlock: Element[] = []
+        const transcludeFootnoteBlock: Element[] = []
+        const transcludeBibBlock: Element[] = []
+
         visit(
           node,
           function (node: Element) {
@@ -689,6 +698,20 @@ export function transcludeFinal(
                   transcludeFootnoteBlock.push(
                     getFootnotesList(node).children.find(
                       (ref) => (ref as Element).properties?.id === noteId,
+                    ) as Element,
+                  )
+                }
+              })
+            } else if (node.tagName === "cite" && node.children) {
+              const linkId = (
+                (node.children as Element[]).find((v) => v.tagName === "a")?.properties
+                  .href as string
+              ).replace("#", "")
+              visit(page.htmlAst!, { tagName: "section" }, (node) => {
+                if (node.properties.dataReferences == "") {
+                  transcludeBibBlock.push(
+                    getBibList(node).children.find(
+                      (ref) => (ref as Element).properties?.id === linkId,
                     ) as Element,
                   )
                 }
@@ -725,6 +748,27 @@ export function transcludeFinal(
           } else {
             visit(footnoteSection, { tagName: "ol" }, (node) => {
               node.children.push(...transcludeFootnoteBlock)
+            })
+          }
+        }
+        if (transcludeBibBlock.length !== 0) {
+          if (!bibSection) {
+            bibSection = h(
+              "section.bibliography",
+              { dataReferences: "" },
+              h(
+                "h2#reference-label",
+                { dir: "auto" },
+                h("span.highlight-span", [{ type: "text", value: "Bibliographie" }]),
+              ),
+              { type: "text", value: "\n" },
+              h("ul", { dir: "auto" }, [...transcludeBibBlock]),
+              { type: "text", value: "\n" },
+            )
+            root.children.push(bibSection)
+          } else {
+            visit(bibSection, { tagName: "ul" }, (node) => {
+              node.children.push(...transcludeBibBlock)
             })
           }
         }
