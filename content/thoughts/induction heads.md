@@ -5,11 +5,13 @@ tags:
   - ml
 date: "2025-01-18"
 description: and mathematical framework of transformers
-modified: 2025-01-24 23:47:52 GMT-05:00
+modified: 2025-01-26 07:08:43 GMT-05:00
 title: induction heads
 ---
 
-see also: [[thoughts/Transformers]]. notes from [@elhage2021mathematical] and [@olsson2022context]
+notes from [@elhage2021mathematical; @olsson2022context]
+
+see also: [[thoughts/Transformers]]
 
 ## virtual weights
 

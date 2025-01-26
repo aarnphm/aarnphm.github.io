@@ -5,9 +5,11 @@ export default ((...components: QuartzComponent[]) => {
   const Byline: QuartzComponent = (props: QuartzComponentProps) => {
     return (
       <section class="byline all-col grid">
-        {Components.map((Inner) => (
-          <Inner {...props} />
-        ))}
+        {Components.filter((Inner) => (props.ctx.argv.serve ? !Inner.skipDuringServe : true)).map(
+          (Inner) => (
+            <Inner {...props} />
+          ),
+        )}
       </section>
     )
   }

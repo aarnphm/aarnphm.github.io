@@ -4,7 +4,7 @@ tags:
   - ml
 date: "2024-10-31"
 description: A list of optimization functions that can be used in ML training to reduce loss, and more.
-modified: 2024-12-14 06:26:53 GMT-05:00
+modified: 2025-01-25 18:51:31 GMT-05:00
 noindex: true
 title: ml optimization
 ---
@@ -54,6 +54,10 @@ Advantages of FEXPA:
 On GPU we can utilise bit-shift `1<<x` or CUDA's exp2
 
 Optimization in `llama.cpp`: https://github.com/ggerganov/llama.cpp/pull/7154
+
+## RoPE
+
+[@su2023roformerenhancedtransformerrotary{pg.V}]
 
 ## sigmoid
 

@@ -157,10 +157,11 @@ export const checkMermaidCode = ({ tagName, properties }: Element) =>
 
 export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
+  const allowDangerousHtml = true
 
   const mdastToHtml = (ast: PhrasingContent | Paragraph) => {
-    const hast = toHast(ast, { allowDangerousHtml: true })!
-    return toHtml(hast, { allowDangerousHtml: true })
+    const hast = toHast(ast, { allowDangerousHtml })!
+    return toHtml(hast, { allowDangerousHtml })
   }
 
   return {
@@ -287,9 +288,16 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     return {
                       type: "html",
                       data: { hProperties: { transclude: true } },
-                      value: `<blockquote class="transclude" data-url="${url}" data-block="${block}" data-embed-alias="${alias}"><a href="${
-                        url + anchor
-                      }" class="transclude-inner">Transclude of ${url}${block}</a></blockquote>`,
+                      value: toHtml(
+                        h(
+                          "blockquote.transclude",
+                          { "data-url": url, "data-block": block, "data-embed-alias": alias },
+                          h("a.transclude-inner", { href: url + anchor }, [
+                            { type: "text", value: `Transclude of ${url} ${block}` },
+                          ]),
+                        ),
+                        { allowDangerousHtml },
+                      ),
                     }
                   }
 
@@ -318,10 +326,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               highlightRegex,
               (_value: string, ...capture: string[]) => {
                 const [inner] = capture
-                return {
-                  type: "html",
-                  value: `<mark>${inner}</mark>`,
-                }
+                return { type: "html", value: `<mark>${inner}</mark>` }
               },
             ])
           }
@@ -457,19 +462,15 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     ...restOfTitle,
                   ],
                 }
-                const title = mdastToHtml(titleNode)
-
-                const toggleIcon = `<div class="fold-callout-icon"></div>`
+                const titleChildren = [
+                  h(".callout-icon"),
+                  h(".callout-title-inner", toHast(titleNode, { allowDangerousHtml })),
+                ]
+                if (collapse) titleChildren.push(h(".fold-callout-icon"))
 
                 const titleHtml: Html = {
                   type: "html",
-                  value: `<div
-                  class="callout-title"
-                >
-                  <div class="callout-icon"></div>
-                  <div class="callout-title-inner">${title}</div>
-                  ${collapse ? toggleIcon : ""}
-                </div>`,
+                  value: toHtml(h(".callout-title", titleChildren), { allowDangerousHtml }),
                 }
 
                 const blockquoteContent: (BlockContent | DefinitionContent)[] = [titleHtml]
@@ -687,11 +688,11 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           tagName === "img" && Boolean(properties.src) && typeof properties.src === "string"
 
         plugins.push(() => {
-          return (tree: HtmlRoot) => {
+          return (tree) => {
             visit(
               tree,
-              (node) => checkEmbed(node as Element),
-              (node) => {
+              (node: Element) => checkEmbed(node as Element),
+              (node: Element) => {
                 const src = (node as Element).properties.src as string
                 const match = src.match(ytLinkRegex)
                 const videoId = match && match[2].length == 11 ? match[2] : null

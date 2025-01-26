@@ -24,6 +24,8 @@ import {
   substackSvg,
   svgOptions,
   twitterSvg,
+  openaiSvg,
+  hfSvg,
 } from "../../components/renderPage"
 
 interface Options {
@@ -161,6 +163,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isTwitter: twitterUrlRegex.test(dest),
                   isBsky: dest.includes("bsky.app"),
                   isDoi: dest.includes("doi.org"),
+                  isOpenai: dest.includes("openai.com"),
+                  isHf: dest.includes("huggingface.co"),
                   isAnthropic:
                     dest.includes("transformer-circuits.pub") || dest.includes("anthropic.com"),
                 }
@@ -220,8 +224,12 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   ctx.node.children.push(bentomlSvg)
                 } else if (linkTypes.isDoi) {
                   ctx.node.children.push(doiSvg)
+                } else if (linkTypes.isHf) {
+                  ctx.node.children.push(hfSvg)
                 } else if (linkTypes.isAnthropic) {
                   ctx.node.children.push(anthropicSvg)
+                } else if (linkTypes.isOpenai) {
+                  ctx.node.children.push(openaiSvg)
                 } else if (linkTypes.isGithub) {
                   ctx.node.children.push(githubSvg)
                 } else if (linkTypes.isSubstack) {

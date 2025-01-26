@@ -9,7 +9,7 @@ tags:
   - technical
 date: "2024-11-18"
 description: structured generations in vLLM a la carte
-modified: 2025-01-17 15:09:33 GMT-05:00
+modified: 2025-01-26 05:24:37 GMT-05:00
 title: constrained decoding
 transclude:
   title: false
@@ -72,7 +72,7 @@ Thus comparing to sglang, vLLM v0 is currently not up to par.
 
 Doesn't have [jump-ahead decoding](https://lmsys.org/blog/2024-02-05-compressed-fsm/#method-1-finite-state-machine-based) with logit processor approach.
 
-> @cadedaniel: "tree scoring in [spec decode] could use the same API as multi-path jump decoding."
+> {@cadedaniel}: "tree scoring in [spec decode] could use the same API as multi-path jump decoding."
 
 > [!question] How should we handle FSM per requests?
 >

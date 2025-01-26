@@ -88,7 +88,7 @@ function setupHeaders() {
     }
   }
 
-  const links = document.querySelectorAll("svg.blockquote-link") as NodeListOf<SVGElement>
+  const links = document.querySelectorAll("button.transclude-title-link") as NodeListOf<SVGElement>
   for (const link of links) {
     const parentEl = link.parentElement as HTMLElement
     const href = parentEl.dataset.href as string

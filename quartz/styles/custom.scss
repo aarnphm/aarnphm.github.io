@@ -216,15 +216,6 @@ a {
     }
   }
 
-  &.internal {
-    sup & {
-      margin-left: 0.3em;
-      text-decoration: none;
-
-      @include links;
-    }
-  }
-
   &.result-card {
     text-decoration: none;
 
@@ -289,7 +280,7 @@ blockquote[class="transclude"] {
       margin: 0;
     }
 
-    & > .blockquote-link {
+    svg.blockquote-link {
       opacity: 0.35;
       transition: opacity 0.2s ease;
       color: var(--gray);
@@ -366,8 +357,6 @@ section[data-references] {
 }
 
 section[data-footnotes] {
-  display: none;
-
   & > #footnote-label.sr-only {
     margin-bottom: 0.5rem;
   }
@@ -664,10 +653,6 @@ svg[data-icon] {
   .lo {
     max-height: var(--sign-height);
   }
-}
-
-.hide {
-  visibility: hidden;
 }
 
 @keyframes drawPath {

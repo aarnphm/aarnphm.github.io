@@ -12,15 +12,7 @@ import style from "./styles/reader.scss"
 import readerScript from "./scripts/reader.inline"
 
 export default (() => {
-  const Reader: QuartzComponent = ({
-    ctx,
-    displayClass,
-    fileData,
-    allFiles,
-  }: QuartzComponentProps) => {
-    // if we are serving, we can skip this
-    if (ctx.argv.serve) return null
-
+  const Reader: QuartzComponent = ({ displayClass, fileData, allFiles }: QuartzComponentProps) => {
     // do some cleaning ast, so we need to clone not to affect the original nodes
     const { htmlAst, slug, filePath } = fileData
     const ast = clone(htmlAst) as Node
@@ -262,6 +254,7 @@ export default (() => {
   }
   Reader.css = style
   Reader.afterDOMLoaded = readerScript
+  Reader.skipDuringServe = true
 
   return Reader
 }) satisfies QuartzComponentConstructor

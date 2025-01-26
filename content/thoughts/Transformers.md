@@ -3,8 +3,9 @@ id: Transformers
 tags:
   - ml
   - technical
-date: 2024-02-07
-modified: 2024-12-16 05:37:16 GMT-05:00
+date: "2024-02-07"
+description: and the backbone of the AI progress.
+modified: 2025-01-26 06:56:35 GMT-05:00
 title: Transformers
 ---
 
@@ -20,9 +21,15 @@ Most implementations are [[thoughts/Autoregressive models|autoregressive]]. Most
 
 ## memory limitations.
 
-_excerpt from [arxiv](https://arxiv.org/html/2403.14123)_
+see also: [arXiv](https://arxiv.org/html/2403.14123)
 
 https://x.com/karpathy/status/1691571869051445433
+
+Arithmetic intensity can be determined with the following:
+
+$$
+\text{Arithmetic Intensity} = \frac{\text{\# FLOPs}}{\text{\# MOPs}}
+$$
 
 ## inference.
 
@@ -30,9 +37,43 @@ Either compute-bound (batch inference, saturated usage) or memory-bound (latency
 
 [[thoughts/vllm#speculative decoding]] => memory-bound (to saturate FLOPs)
 
+### KV
+
+The core "retrieval" bags that contains all previous stored key-value pair or newly added items.
+
+Prefill disaggregation is pretty interesting in a sense that we can separate prefill stage to a separate nodes [@qin2024mooncakekvcachecentricdisaggregatedarchitecture]
+
+![[thoughts/images/mooncake-pd.webp|KV-centric optimization]]
+
 ### next-token prediction.
 
 Sampling: we essentially look forward K-tokens, and then we sample from the distribution of the next token.
+
+### multi-token prediction.
+
+[@gloeckle2024betterfasterlarge]
+
+![[thoughts/images/MTP-deepseek.webp|MTP implementation in DeepSeek, where they keep causal chain for prediction of each token at each depth]]
+
+tl/dr: predict $n$-tokens at once, via shared trunk and ==n dedicated attention heads== [^attention-head]
+
+Note that during inference, we only employ _one attention head_
+
+[^attention-head]:
+    @gloeckle2024betterfasterlarge employs $n=4$. The order of the shared trunk works as follow:
+
+    ```python
+    z = model.shared(x)
+    d = z.detach()
+    d.requires_grad = False
+
+    for i in range(n):
+      p = model.heads[i](d)
+      loss(p, y[i]).backward()
+    z.backward()
+    ```
+
+    ![[thoughts/images/forward-pass-mtp-transformers.webp|Order of the forward and backward in a n-token prediction model with n=2 heads]]
 
 ## Byte-Latent Transformer
 
@@ -50,7 +91,7 @@ Let $\mathcal{V}$ be the vocab of given transformers model, and $\mathcal{S} = \
 > - $M_t(s_t \mid s_{t-1}, f_\theta)$ is a _Markov kernel_ from $s_{t-1} \in \mathcal{F}^c$ to $s_t \in \mathcal{S}$, parameterised by a transformer network $f_\theta: \mathcal{F}^c \to \mathbb{R}^{\mid \mathcal{V} \mid}$ mapping non-`EOS`-terminated strings to vectors of logits
 > - $G_t(s_{t-1}, s_t, f_\theta)$ is a _potential function_, mapping a pair $(s_{t-1}, s_t) \in \mathcal{F}^c \times \mathcal{S}$ to a real-valued non-negative score.
 
-Goal: generate from distribution $\mathbb{P}$ that reweights Markove chain $\mathbb{M}$ by potential functions $G_t$. We define ==_step-t filtering posteriors_==:
+Goal: generate from distribution $\mathbb{P}$ that reweights Markov chain $\mathbb{M}$ by potential functions $G_t$. We define ==_step-t filtering posteriors_==:
 
 $$
 P_t(s_t) = \frac{\mathbb{E}_\mathbb{M} \left[ \prod_{i=1}^{t \wedge T} G_i(S_{i-1}, S_i, f_\theta) \cdot [S_t = s_t] \right]}{\mathbb{E}_\mathbb{M} \left[ \prod_{i=1}^{t \wedge T} G_i(S_{i-1}, S_i, f_\theta) \right]}

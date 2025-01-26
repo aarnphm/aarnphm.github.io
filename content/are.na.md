@@ -80,4 +80,5 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - _SouthParkCommons meetup for AI interfaces, [Geoffrey Litt](https://www.geoffreylitt.com/)_
   ![[https://www.youtube.com/watch?v=5OaTk5q_CTc]]
 - https://www.mrporter.com/en-us/journal/fashion/derek-guy-style-resolutions-25156188 -- Style resolution
-- https://thegenerality.com/agi/ -- The effort for AGI at Microsoft https://github.com/microsoft/unilm
+- https://thegenerality.com/agi/ -- The effort for AGI at Microsoft [GitHub](https://github.com/microsoft/unilm)
+- https://katex.org/docs/supported.html

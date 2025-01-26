@@ -8,7 +8,12 @@ async function convertMedia(contentDir: string) {
   try {
     const mediaFiles = await globby(["**/*.{png,jpeg,jpg}"], {
       cwd: contentDir,
-      ignore: ["**/*.ignore.{png,jpeg,jpg}"],
+      ignore: [
+        "**/*.ignore.{png,jpeg,jpg}",
+        "android-chrome-*",
+        "apple-touch-icon.png",
+        "favicon-*",
+      ],
       absolute: true,
     })
 

@@ -5,8 +5,12 @@ import { VFile } from "vfile"
 import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import HeaderConstructor from "../../components/Header"
-import { CuriusContent, CuriusFriends } from "../../components/renderPage"
-import { pageResources, renderPage } from "../../components/renderPage"
+import {
+  pageResources,
+  renderPage,
+  CuriusContent,
+  CuriusFriends,
+} from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
 import { Argv } from "../../util/ctx"
 import { FilePath, isRelativeURL, joinSegments, pathToRoot } from "../../util/path"

@@ -24,16 +24,11 @@ function boolToStringBool(b: boolean): string {
 }
 
 export default ((opts: Partial<Options>) => {
-  const Comments: QuartzComponent = ({
-    ctx,
-    displayClass,
-    cfg,
-    fileData,
-  }: QuartzComponentProps) => {
+  const Comments: QuartzComponent = ({ displayClass, cfg, fileData }: QuartzComponentProps) => {
     const enableComments = fileData.frontmatter?.comments ?? true
     const isPost = fileData.slug!.startsWith("posts/")
     const isUniversity = fileData.slug!.includes("university")
-    if (!enableComments || isPost || isUniversity || ctx.argv.serve) {
+    if (!enableComments || isPost || isUniversity) {
       return <></>
     }
     return (
@@ -55,6 +50,7 @@ export default ((opts: Partial<Options>) => {
 
   Comments.afterDOMLoaded = script
   Comments.css = commentsStyle
+  Comments.skipDuringServe = true
 
   return Comments
 }) satisfies QuartzComponentConstructor<Options>

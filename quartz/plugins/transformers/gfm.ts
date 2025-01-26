@@ -11,12 +11,10 @@ import { Element } from "hast"
 import { svgOptions } from "../../components/renderPage"
 
 export interface Options {
-  enableSmartyPants: boolean
   linkHeadings: boolean
 }
 
 const defaultOptions: Options = {
-  enableSmartyPants: true,
   linkHeadings: true,
 }
 
@@ -24,9 +22,7 @@ export const GitHubFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> =
   const opts = { ...defaultOptions, ...userOpts }
   return {
     name: "GitHubFlavoredMarkdown",
-    markdownPlugins() {
-      return opts.enableSmartyPants ? [remarkGfm, smartypants] : [remarkGfm]
-    },
+    markdownPlugins: () => [remarkGfm, smartypants],
     htmlPlugins() {
       const plugins: PluggableList = []
 

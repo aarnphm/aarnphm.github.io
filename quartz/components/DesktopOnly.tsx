@@ -11,6 +11,7 @@ export default ((component?: QuartzComponent) => {
     DesktopOnly.afterDOMLoaded = component?.afterDOMLoaded
     DesktopOnly.beforeDOMLoaded = component?.beforeDOMLoaded
     DesktopOnly.css = component?.css
+    DesktopOnly.skipDuringServe = component?.skipDuringServe
     return DesktopOnly
   } else {
     return () => <></>

@@ -8,7 +8,7 @@ tags:
 comments: false
 date: "2021-12-22"
 description: and celebration of the act of making.
-modified: 2025-01-24 20:25:22 GMT-05:00
+modified: 2025-01-26 06:27:18 GMT-05:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -39,7 +39,7 @@ You can find internal monologue under [[/posts/]] index.
 
     https://x.com/aarnphm_/status/1861550609834402129
 
-- **avante.nvim** - :mortar_board: A [Cursor](https://www.cursor.com/)-like chat IDE for [[uses#^neovim|Neovim]] (2024-)
+- **avante.nvim** - :mortar_board: [Cursor](https://www.cursor.com/) IDE, but for [[uses#^neovim|Neovim]] (2024-)
 
   - Implemented bounding UI popover to improve QOL https://github.com/yetone/avante.nvim/pull/29
   - Added support for lazy setup for better load time improvement https://github.com/yetone/avante.nvim/pull/14

@@ -317,7 +317,7 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
               return false
             }
 
-            const code = children[0] as Element
+            const [code] = children as Element[]
             const { properties, tagName: codeTagName } = code
             return (
               codeTagName === "code" &&

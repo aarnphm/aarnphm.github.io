@@ -2,29 +2,28 @@
 id: Attention
 tags:
   - technical
-  - seed
 abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
 date: "2024-02-07"
-description: and mechanism in Transformers with positional encoding.
-modified: 2025-01-23 20:12:04 GMT-05:00
+description: and posteriori information retrieval.
+modified: 2025-01-26 05:35:53 GMT-05:00
 title: Attention
 ---
 
-[@vaswani2023attentionneed]
-
-Attention operates on a sequence of query $Q$, key $K$ and value $V$ vector. Attention matrix of a sequence then computed as:
+Attention operates on a sequence of query $Q$, key $K$ and value $V$ vector. Attention matrix of a sequence then computed as [@vaswani2023attentionneed]:
 
 $$
 A(Q, K, V) = \text{softmax}(\frac{Q \cdot K^{T}}{\sqrt{d}})V \space \space \text{ for } Q_{L \times d}, K_{L \times d}, V_{L \times d}
 $$
 
-We can probably arrange the attention function (composed of multiple attention-heads) according to [@elhage2021mathematical]:
-
-$$
-\text{Attn}^{\vec{l,h}}(X_{\leq i}^{l-1}) = \sum_{j \leq i}a^{l,h}_{i,j} x^{l-1}_j W^{l,h}_{V} W_{O}^{l,h}
-$$
-
-where the learn-able weight matrices $W_{V}^{l,h} \in \mathbb{R}^{d \times d_h}$ and $W_{O}^{l,h} \in \mathbb{R}^{d_h \times d}$, $d_h$ is the dimension per head, are combined OV matrix
+> [!note]+ equivalent
+>
+> We can probably arrange the attention function (composed of multiple [[thoughts/induction heads|attention-heads]]) according to @elhage2021mathematical:
+>
+> $$
+> \text{Attn}^{\vec{l,h}}(X_{\leq i}^{l-1}) = \sum_{j \leq i}a^{l,h}_{i,j} x^{l-1}_j W^{l,h}_{V} W_{O}^{l,h}
+> $$
+>
+> where the ==learn-able== weight matrices $W_{V}^{l,h} \in \mathbb{R}^{d \times d_h}$ and $W_{O}^{l,h} \in \mathbb{R}^{d_h \times d}$, $d_h$ is the dimension per head, are combined OV matrix
 
 ## Muti-head Attention
 
@@ -40,13 +39,13 @@ $$
 
 ## Group-Query Attention
 
-by [@ainslie2023gqatraininggeneralizedmultiquery]
+[@ainslie2023gqatraininggeneralizedmultiquery]
 
 idea: reduce number of KV heads $n_k$ to a fraction $n_k^{'} = \frac{n_q}{k}$ of number of query heads $n_q$ (evenly dividing the query heads into $n_k$ groups with $r$ heads)
 
 ## RadixAttention
 
-Implemented in [@zheng2024sglangefficientexecutionstructured] where they maintain a LRU eviction policy to maintain relevant [[thoughts/KV compression|KV cache]] for all requests within a [[thoughts/Radix tree|radix tree]]
+@zheng2024sglangefficientexecutionstructured proposes this to maintain a LRU eviction policy to maintain relevant [[thoughts/KV compression|KV cache]] for all requests within a [[thoughts/Radix tree|radix tree]], Implemented in https://github.com/sgl-project/sglang
 
 radix tree setup:
 
@@ -155,6 +154,63 @@ We can show that longest-shared-prefix-first order is equivalent to DFS order by
 
 ![[thoughts/constrained decoding#compressed FSM for jump-ahead tokens.]]
 
+## Multi-head Latent Attention (MLA)
+
+low-rank joint compression for attention ==keys and values== to reduce KV cache during inference [@deepseekai2025deepseekr1incentivizingreasoningcapability{see 2.1.1}]
+
+- $d$ denote the embedding dimension
+- $n_h$ denotes number of attention heads
+- $d_h$ denotes dimension per heads
+- $h_t \in \mathbb{R}^d$ denotes the attention input for the $t$-th token at a given attention layer
+
+$$
+\begin{align}
+    \boxed{\textcolor{blue}{\mathbf{c}_t^{KV}}} &= W^{DKV} \mathbf{h}_t, \tag{1} \\
+    [\mathbf{k}_{t,1}^{C}; \mathbf{k}_{t,2}^{C}; \dots; \mathbf{k}_{t, n_h}^{C}] &= \mathbf{k}_t^C = W^{UK} \mathbf{c}_t^{KV}, \tag{2} \\
+    \boxed{\textcolor{blue}{\mathbf{k}_t^{R}}} &= \mathrm{RoPE}(W^{KR} \mathbf{h}_t), \tag{3} \\
+    \mathbf{k}_{i,t} &= [\mathbf{k}_{t,i}^{C}; \mathbf{k}_t^{R}], \tag{4} \\
+    [\mathbf{v}_{t,1}^{C}; \mathbf{v}_{t,2}^{C}; \dots; \mathbf{v}_{t,n_h}^{C}] &= \mathbf{v}_t^{C} = W^{UV} \mathbf{c}_t^{KV}. \tag{5}
+\end{align}
+$$
+
+- _where_ $c_{t}^{KV} \in \mathbb{R}^{d_{c}}$ is the compression latent for keys and values
+- $d_c \ll d_h n_h$ indicates KV [[thoughts/Compression|compression]] dimension
+- $W^{DKV} \in  \mathbb{R}^{d_c \times d}$ denotes down-projection matrix
+- $W^{UK}, W^{UV} \in \mathbb{R}^{d_h n_h \times d_c}$ are the up-projection matrices to keys and values, respectively
+- $W^{KR} \in \mathbb{R}^{d^R_h \times d}$ is the matrix used to produced the duplicate key that carries RoPE
+- $\mathrm{RoPE}(.)$ denotes operations for RoPE matrices, and $\mathrm{RoPE}[;]$ denotes ==concatenation==
+
+> [!important] cached generations
+>
+> Both $\textcolor{blue}{\mathbf{c}_t^{KV}}$ and $\textcolor{blue}{\mathbf{k}_t^{R}}$ should be cached to reduce KV cache while maintaining performance with [[thoughts/Attention#Muti-head Attention|MHA]]
+
+For attention ==queries==, we can perform the same operation:
+
+$$
+\begin{align}
+    \mathbf{c}_t^{Q} &= W^{DQ} \mathbf{h}_t, \tag{6} \\
+    [\mathbf{q}_{t,1}^{C}; \mathbf{q}_{t,2}^{C}; \dots; \mathbf{q}_{t, n_h}^{C}] &= \mathbf{q}_t^C = W^{UQ} \mathbf{c}_t^{Q}, \tag{7} \\
+    [\mathbf{q}_{t,1}^{R}; \mathbf{q}_{t,2}^{R}; \dots; \mathbf{q}_{t, n_h}^{R}] &= \mathrm{RoPE}(W^{QR} \mathbf{c}_t^Q), \tag{8} \\
+    \mathbf{q}_{i,t} &= [\mathbf{q}_{t,i}^{C}; \mathbf{q}_t^{R}], \tag{9}
+\end{align}
+$$
+
+- $c_t^Q$ is the compressed latent of queries
+- $d_c \ll d_h n_h$ indicates queries compression dimension
+- $W^{DQ} \in \mathbb{R}^{d^{'}_c \times d}, W^{UQ} \in \mathbb{R}^{d_h n_h \times d^{'}_c}$ are the up and down [[thoughts/geometric projections|projections]] matrices
+- $W^{QR} \in \mathbb{R}^{d_{h}^R n_{h} \times d_{c}^{'}}$ is the matrix that produce _decompiled queries that carry RoPE_
+
+> [!abstract] Attention output
+>
+> The attention output $\mathbf{u}_{t}$ can be calculated with the following:
+>
+> $$
+> \begin{align}
+>     \mathbf{o}_{t,i} &= \sum_{j=1}^{t} \mathrm{Softmax}_j (\frac{q_{t,i}^T k_{j,i}}{\sqrt{d_h + d_h^R}}) v_{j_i}^C, \tag{10} \\
+>     \mathbf{u}_t &= \mathbf{W}^O [o_{t,1}; o_{t,2}; \dots; o_{t, n_h}] \tag{11}
+> \end{align}
+> $$
+
 ## RingAttention
 
 [@liu2023ringattentionblockwisetransformers]
@@ -165,9 +221,9 @@ We can show that longest-shared-prefix-first order is equivalent to DFS order by
 
 ## Paged Attention
 
-by [@kwon2023efficient]
+[@kwon2023efficient]
 
-Used in conjunction with [[thoughts/Continuous batching|continuous batching]], implemented through [[thoughts/vllm|vLLM]]
+In conjunction with [[thoughts/Continuous batching|continuous batching]], implemented in [[thoughts/vllm|vLLM]]
 
 Reduce memory usage of attention mechanism by swapping kv-cache in and out of memory. A block manager is similar to those of _virtual memory_ in OS.
 

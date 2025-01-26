@@ -91,10 +91,10 @@ function headerElement(
     h(
       `span.toggle-button#${buttonId}-toggle`,
       {
-        arialabel: "Toggle content visibility",
         role: "button",
-        ariaexpanded: true,
-        ariacontrols: `${buttonId}-content`,
+        ariaExpanded: true,
+        ariaLabel: "Toggle content visibility",
+        ariaControls: `${buttonId}-content`,
         type: "button",
       },
       [
@@ -324,6 +324,9 @@ const checkFootnoteRef = ({ type, tagName, properties }: Element) =>
 const checkFootnotes = ({ type, tagName, properties }: Element) =>
   type === "element" && tagName === "section" && properties.dataFootnotes == ""
 
+const getFootnotesList = (node: Element) =>
+  (node.children as Element[]).filter((val) => val.tagName === "ol")[0]
+
 function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   const orderNotes: Note[] = []
   const finalRefs: Element[] = []
@@ -332,29 +335,31 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   let idx = 0
   visit(
     root,
-    //@ts-ignore
-    (node: Element) => checkFootnoteRef(node as Element),
+    // @ts-ignore
     (node: Element) => {
-      orderNotes.push({ href: node.properties.href as string, id: node.properties.id as string })
-      node.properties.href = `${node.properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
-      node.properties.id =
-        node.properties.id + `${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
-      visit(node, "text", (node) => {
-        node.value = `${idx + 1}`
-        idx++
-      })
+      if (checkFootnoteRef(node)) {
+        orderNotes.push({ href: node.properties.href as string, id: node.properties.id as string })
+        node.properties.href = `${node.properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
+        node.properties.id =
+          node.properties.id + `${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
+        visit(node, "text", (node) => {
+          node.value = `${idx + 1}`
+          idx++
+        })
+      }
     },
+    false,
   )
 
   visit(
     root,
-    //@ts-ignore
-    (node: Element) => checkFootnotes(node as Element),
-    (node: Element) => {
-      toRemove.push(node)
-      const items = (node.children as Element[]).filter((val) => val.tagName === "ol")[0] // The ol is in here
-      finalRefs.push(...(items.children as Element[]))
+    function (node) {
+      if (checkFootnotes(node as Element)) {
+        toRemove.push(node as Element)
+        finalRefs.push(...(getFootnotesList(node as Element).children as Element[]))
+      }
     },
+    false,
   )
 
   // we don't want to remove the last nodes
@@ -362,7 +367,7 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   if (orderNotes.length === 0) return
 
   // Remove all reference divs except the last one
-  visit(root, "element", (node: Element, index, parent) => {
+  visit(root, { tagName: "section" }, (node: Element, index, parent) => {
     if (toRemove.includes(node)) {
       parent!.children.splice(index as number, 1)
     }
@@ -512,9 +517,6 @@ export function transcludeFinal(
 
   if (fileData.frontmatter?.transclude) {
     opts = { ...opts, ...fileData.frontmatter?.transclude }
-    if (ctx.argv.serve) {
-      opts = { ...opts, ...{ dynalist: false } }
-    }
   }
 
   const { dynalist } = opts
@@ -543,16 +545,23 @@ export function transcludeFinal(
 
     return h(".transclude-ref", { "data-href": href }, [
       h("ul.metadata", metadata),
-      s(
-        "svg",
+      h(
+        "button.transclude-title-link",
         {
-          ...svgOptions,
-          fill: "none",
-          stroke: "currentColor",
-          strokewidth: "2",
-          class: "blockquote-link",
+          type: "button",
+          ariaLabel: "Go to original link",
         },
-        [s("use", { href: "#github-anchor" })],
+        s(
+          "svg",
+          {
+            ...svgOptions,
+            fill: "none",
+            stroke: "currentColor",
+            strokewidth: "2",
+            class: "blockquote-link",
+          },
+          [s("use", { href: "#github-anchor" })],
+        ),
       ),
     ])
   }
@@ -653,6 +662,72 @@ export function transcludeFinal(
           )
         }
         node.children = children
+
+        // support transcluding footnote data
+        let hasFootnotes = false
+        let footnoteSection: Element | undefined
+        visit(
+          root,
+          (node) => {
+            if (checkFootnotes(node as Element)) {
+              hasFootnotes = true
+              footnoteSection = node as Element
+            }
+          },
+          true,
+        )
+
+        let transcludeFootnoteBlock: Element[] = []
+        visit(
+          node,
+          function (node: Element) {
+            const { properties } = node
+            if (checkFootnoteRef(node as Element)) {
+              visit(page.htmlAst!, { tagName: "section" }, (node) => {
+                if (node.properties.dataFootnotes == "") {
+                  const noteId = (properties.href! as string).replace("#", "")
+                  transcludeFootnoteBlock.push(
+                    getFootnotesList(node).children.find(
+                      (ref) => (ref as Element).properties?.id === noteId,
+                    ) as Element,
+                  )
+                }
+              })
+            }
+          },
+          false,
+        )
+
+        if (transcludeFootnoteBlock.length !== 0) {
+          if (!footnoteSection) {
+            footnoteSection = h(
+              "section.footnotes",
+              { dataFootnotes: "" },
+              h(
+                "h2.sr-only#footnote-label",
+                { dir: "auto" },
+                h("span.highlight-span", [{ type: "text", value: "Remarque" }]),
+                h(
+                  "a.internal#footnote-label",
+                  { "data-role": "anchor", "data-no-popover": "true" },
+                  s(
+                    "svg",
+                    { ...svgOptions, fill: "none", stroke: "currentColor", strokeWidth: "2" },
+                    s("use", { href: "#github-anchor" }),
+                  ),
+                ),
+              ),
+              { type: "text", value: "\n" },
+              h("ol", { dir: "auto" }, [...transcludeFootnoteBlock]),
+              { type: "text", value: "\n" },
+            )
+            root.children.push(footnoteSection)
+          } else {
+            visit(footnoteSection, { tagName: "ol" }, (node) => {
+              node.children.push(...transcludeFootnoteBlock)
+            })
+          }
+        }
       } else if (page.htmlAst) {
         // page transclude
         const children = [
@@ -887,6 +962,75 @@ export const substackSvg = s(
     s("path", { d: "M0 10.8125V24.0004L10.4991 18.1107L21 24.0004V10.8125H0Z" }),
     s("path", { d: "M20.9991 0H0V2.83603H20.9991V0Z" }),
   ),
+)
+
+export const hfSvg = s(
+  "svg",
+  {
+    xmlns: "http://www.w3.org/2000/svg",
+    fill: "none",
+    width: "1em",
+    height: "1em",
+    role: "img",
+    "data-icon": "huggingface",
+    viewBox: "0 0 95 88",
+  },
+  s("path", {
+    fill: "#FFD21E",
+    d: "M47.21 76.5a34.75 34.75 0 1 0 0-69.5 34.75 34.75 0 0 0 0 69.5Z",
+  }),
+  s("path", {
+    fill: "#FF9D0B",
+    d: "M81.96 41.75a34.75 34.75 0 1 0-69.5 0 34.75 34.75 0 0 0 69.5 0Zm-73.5 0a38.75 38.75 0 1 1 77.5 0 38.75 38.75 0 0 1-77.5 0Z",
+  }),
+  s("path", {
+    fill: "#3A3B45",
+    d: "M58.5 32.3c1.28.44 1.78 3.06 3.07 2.38a5 5 0 1 0-6.76-2.07c.61 1.15 2.55-.72 3.7-.32ZM34.95 32.3c-1.28.44-1.79 3.06-3.07 2.38a5 5 0 1 1 6.76-2.07c-.61 1.15-2.56-.72-3.7-.32Z",
+  }),
+  s("path", {
+    fill: "#FF323D",
+    d: "M46.96 56.29c9.83 0 13-8.76 13-13.26 0-2.34-1.57-1.6-4.09-.36-2.33 1.15-5.46 2.74-8.9 2.74-7.19 0-13-6.88-13-2.38s3.16 13.26 13 13.26Z",
+  }),
+  s("path", {
+    fill: "#3A3B45",
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M39.43 54a8.7 8.7 0 0 1 5.3-4.49c.4-.12.81.57 1.24 1.28.4.68.82 1.37 1.24 1.37.45 0 .9-.68 1.33-1.35.45-.7.89-1.38 1.32-1.25a8.61 8.61 0 0 1 5 4.17c3.73-2.94 5.1-7.74 5.1-10.7 0-2.34-1.57-1.6-4.09-.36l-.14.07c-2.31 1.15-5.39 2.67-8.77 2.67s-6.45-1.52-8.77-2.67c-2.6-1.29-4.23-2.1-4.23.29 0 3.05 1.46 8.06 5.47 10.97Z",
+  }),
+  s("path", {
+    fill: "#FF9D0B",
+    d: "M70.71 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM24.21 37a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5ZM17.52 48c-1.62 0-3.06.66-4.07 1.87a5.97 5.97 0 0 0-1.33 3.76 7.1 7.1 0 0 0-1.94-.3c-1.55 0-2.95.59-3.94 1.66a5.8 5.8 0 0 0-.8 7 5.3 5.3 0 0 0-1.79 2.82c-.24.9-.48 2.8.8 4.74a5.22 5.22 0 0 0-.37 5.02c1.02 2.32 3.57 4.14 8.52 6.1 3.07 1.22 5.89 2 5.91 2.01a44.33 44.33 0 0 0 10.93 1.6c5.86 0 10.05-1.8 12.46-5.34 3.88-5.69 3.33-10.9-1.7-15.92-2.77-2.78-4.62-6.87-5-7.77-.78-2.66-2.84-5.62-6.25-5.62a5.7 5.7 0 0 0-4.6 2.46c-1-1.26-1.98-2.25-2.86-2.82A7.4 7.4 0 0 0 17.52 48Zm0 4c.51 0 1.14.22 1.82.65 2.14 1.36 6.25 8.43 7.76 11.18.5.92 1.37 1.31 2.14 1.31 1.55 0 2.75-1.53.15-3.48-3.92-2.93-2.55-7.72-.68-8.01.08-.02.17-.02.24-.02 1.7 0 2.45 2.93 2.45 2.93s2.2 5.52 5.98 9.3c3.77 3.77 3.97 6.8 1.22 10.83-1.88 2.75-5.47 3.58-9.16 3.58-3.81 0-7.73-.9-9.92-1.46-.11-.03-13.45-3.8-11.76-7 .28-.54.75-.76 1.34-.76 2.38 0 6.7 3.54 8.57 3.54.41 0 .7-.17.83-.6.79-2.85-12.06-4.05-10.98-8.17.2-.73.71-1.02 1.44-1.02 3.14 0 10.2 5.53 11.68 5.53.11 0 .2-.03.24-.1.74-1.2.33-2.04-4.9-5.2-5.21-3.16-8.88-5.06-6.8-7.33.24-.26.58-.38 1-.38 3.17 0 10.66 6.82 10.66 6.82s2.02 2.1 3.25 2.1c.28 0 .52-.1.68-.38.86-1.46-8.06-8.22-8.56-11.01-.34-1.9.24-2.85 1.31-2.85Z",
+  }),
+  s("path", {
+    fill: "#FFD21E",
+    d: "M38.6 76.69c2.75-4.04 2.55-7.07-1.22-10.84-3.78-3.77-5.98-9.3-5.98-9.3s-.82-3.2-2.69-2.9c-1.87.3-3.24 5.08.68 8.01 3.91 2.93-.78 4.92-2.29 2.17-1.5-2.75-5.62-9.82-7.76-11.18-2.13-1.35-3.63-.6-3.13 2.2.5 2.79 9.43 9.55 8.56 11-.87 1.47-3.93-1.71-3.93-1.71s-9.57-8.71-11.66-6.44c-2.08 2.27 1.59 4.17 6.8 7.33 5.23 3.16 5.64 4 4.9 5.2-.75 1.2-12.28-8.53-13.36-4.4-1.08 4.11 11.77 5.3 10.98 8.15-.8 2.85-9.06-5.38-10.74-2.18-1.7 3.21 11.65 6.98 11.76 7.01 4.3 1.12 15.25 3.49 19.08-2.12Z",
+  }),
+  s("path", {
+    fill: "#FF9D0B",
+    d: "M77.4 48c1.62 0 3.07.66 4.07 1.87a5.97 5.97 0 0 1 1.33 3.76 7.1 7.1 0 0 1 1.95-.3c1.55 0 2.95.59 3.94 1.66a5.8 5.8 0 0 1 .8 7 5.3 5.3 0 0 1 1.78 2.82c.24.9.48 2.8-.8 4.74a5.22 5.22 0 0 1 .37 5.02c-1.02 2.32-3.57 4.14-8.51 6.1-3.08 1.22-5.9 2-5.92 2.01a44.33 44.33 0 0 1-10.93 1.6c-5.86 0-10.05-1.8-12.46-5.34-3.88-5.69-3.33-10.9 1.7-15.92 2.78-2.78 4.63-6.87 5.01-7.77.78-2.66 2.83-5.62 6.24-5.62a5.7 5.7 0 0 1 4.6 2.46c1-1.26 1.98-2.25 2.87-2.82A7.4 7.4 0 0 1 77.4 48Zm0 4c-.51 0-1.13.22-1.82.65-2.13 1.36-6.25 8.43-7.76 11.18a2.43 2.43 0 0 1-2.14 1.31c-1.54 0-2.75-1.53-.14-3.48 3.91-2.93 2.54-7.72.67-8.01a1.54 1.54 0 0 0-.24-.02c-1.7 0-2.45 2.93-2.45 2.93s-2.2 5.52-5.97 9.3c-3.78 3.77-3.98 6.8-1.22 10.83 1.87 2.75 5.47 3.58 9.15 3.58 3.82 0 7.73-.9 9.93-1.46.1-.03 13.45-3.8 11.76-7-.29-.54-.75-.76-1.34-.76-2.38 0-6.71 3.54-8.57 3.54-.42 0-.71-.17-.83-.6-.8-2.85 12.05-4.05 10.97-8.17-.19-.73-.7-1.02-1.44-1.02-3.14 0-10.2 5.53-11.68 5.53-.1 0-.19-.03-.23-.1-.74-1.2-.34-2.04 4.88-5.2 5.23-3.16 8.9-5.06 6.8-7.33-.23-.26-.57-.38-.98-.38-3.18 0-10.67 6.82-10.67 6.82s-2.02 2.1-3.24 2.1a.74.74 0 0 1-.68-.38c-.87-1.46 8.05-8.22 8.55-11.01.34-1.9-.24-2.85-1.31-2.85Z",
+  }),
+  s("path", {
+    fill: "#FFD21E",
+    d: "M56.33 76.69c-2.75-4.04-2.56-7.07 1.22-10.84 3.77-3.77 5.97-9.3 5.97-9.3s.82-3.2 2.7-2.9c1.86.3 3.23 5.08-.68 8.01-3.92 2.93.78 4.92 2.28 2.17 1.51-2.75 5.63-9.82 7.76-11.18 2.13-1.35 3.64-.6 3.13 2.2-.5 2.79-9.42 9.55-8.55 11 .86 1.47 3.92-1.71 3.92-1.71s9.58-8.71 11.66-6.44c2.08 2.27-1.58 4.17-6.8 7.33-5.23 3.16-5.63 4-4.9 5.2.75 1.2 12.28-8.53 13.36-4.4 1.08 4.11-11.76 5.3-10.97 8.15.8 2.85 9.05-5.38 10.74-2.18 1.69 3.21-11.65 6.98-11.76 7.01-4.31 1.12-15.26 3.49-19.08-2.12Z",
+  }),
+)
+
+export const openaiSvg = s(
+  "svg",
+  {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 150 150",
+    fill: "#000000",
+    stroke: "none",
+    "data-icon": "openai",
+    width: "1em",
+    height: "1em",
+    role: "img",
+    "aria-label": "true",
+  },
+  s("path", {
+    d: "M132.17,62.55c3.02-9.09,1.97-19.04-2.87-27.3-7.28-12.67-21.91-19.19-36.19-16.12-12.45-13.85-33.77-14.98-47.62-2.53-4.4,3.95-7.67,8.99-9.51,14.61-9.38,1.92-17.48,7.8-22.23,16.12-7.36,12.65-5.69,28.61,4.13,39.46-3.03,9.09-1.99,19.04,2.84,27.3,7.29,12.67,21.93,19.19,36.22,16.12,6.36,7.16,15.49,11.23,25.07,11.18,14.64,.01,27.62-9.44,32.09-23.38,9.38-1.93,17.48-7.8,22.23-16.12,7.27-12.63,5.59-28.5-4.16-39.33Zm-50.16,70.1c-5.85,0-11.51-2.04-15.99-5.79l.79-.45,26.57-15.34c1.35-.79,2.17-2.23,2.18-3.79v-37.46l11.23,6.5c.11,.06,.19,.16,.21,.29v31.04c-.03,13.79-11.2,24.96-24.99,24.99Zm-53.71-22.94c-2.93-5.06-3.98-10.99-2.97-16.76l.79,.47,26.59,15.34c1.34,.79,3,.79,4.34,0l32.49-18.73v12.97c0,.14-.07,.26-.18,.34l-26.91,15.52c-11.96,6.89-27.24,2.79-34.14-9.15Zm-7-57.87c2.95-5.09,7.61-8.98,13.15-10.97v31.57c-.02,1.55,.81,2.99,2.16,3.76l32.33,18.65-11.23,6.5c-.12,.07-.27,.07-.39,0l-26.86-15.49c-11.93-6.92-16.03-22.18-9.15-34.14v.13Zm92.28,21.44l-32.43-18.83,11.21-6.47c.12-.07,.27-.07,.39,0l26.86,15.52c11.95,6.9,16.05,22.18,9.15,34.13-2.9,5.03-7.47,8.9-12.92,10.93v-31.57c-.05-1.55-.91-2.96-2.26-3.71Zm11.18-16.81l-.79-.47-26.54-15.47c-1.35-.79-3.02-.79-4.37,0l-32.46,18.73v-12.97c-.01-.13,.05-.27,.16-.34l26.86-15.49c11.97-6.9,27.27-2.78,34.16,9.19,2.91,5.06,3.97,10.97,2.98,16.72v.11Zm-70.29,22.99l-11.23-6.47c-.11-.07-.19-.18-.21-.32v-30.96c.02-13.82,11.23-25,25.05-24.98,5.83,0,11.48,2.05,15.96,5.78l-.79,.45-26.57,15.34c-1.35,.79-2.17,2.23-2.18,3.79l-.03,37.38Zm6.1-13.15l14.47-8.34,14.49,8.34v16.68l-14.44,8.34-14.49-8.34-.03-16.68Z",
+  }),
 )
 
 export const bentomlSvg = s(
@@ -1264,6 +1408,20 @@ export function renderPage(
 
   const disablePageFooter = componentData.fileData.frontmatter?.poem || slug === "curius"
 
+  // Filter out components that should be skipped during serve
+  const serve = (components: RenderComponents) => {
+    if (ctx.argv.serve) {
+      for (const [key, comps] of Object.entries(components)) {
+        if (Array.isArray(comps)) {
+          components[key as keyof RenderComponents] = Array.from(
+            comps.filter((comp) => !comp.skipDuringServe),
+          ) as QuartzComponent[] & QuartzComponent
+        }
+      }
+    }
+    return components
+  }
+
   const {
     head: Head,
     header,
@@ -1272,7 +1430,7 @@ export function renderPage(
     afterBody,
     sidebar,
     footer: Footer,
-  } = components
+  } = serve(components)
   const Header = HeaderConstructor()
 
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style

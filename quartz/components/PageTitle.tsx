@@ -6,7 +6,7 @@ export default (() => {
     const baseDir = pathToRoot(fileData.slug!)
     return (
       <a class="page-title" href={baseDir} aria-label="home" title="Return home">
-        <img src="/static/icon.webp" alt="profile pic" />
+        <img src="/static/icon.webp" alt="profile" />
       </a>
     )
   }

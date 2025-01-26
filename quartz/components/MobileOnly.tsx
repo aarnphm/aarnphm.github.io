@@ -11,6 +11,7 @@ export default ((component?: QuartzComponent) => {
     MobileOnly.afterDOMLoaded = component?.afterDOMLoaded
     MobileOnly.beforeDOMLoaded = component?.beforeDOMLoaded
     MobileOnly.css = component?.css
+    MobileOnly.skipDuringServe = component?.skipDuringServe
     return MobileOnly
   } else {
     return () => <></>

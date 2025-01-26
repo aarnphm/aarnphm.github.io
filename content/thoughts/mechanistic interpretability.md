@@ -8,7 +8,7 @@ tags:
 abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
 date: "2024-10-30"
 description: and reverse engineering neural networks.
-modified: 2025-01-24 20:43:45 GMT-05:00
+modified: 2025-01-25 18:16:15 GMT-05:00
 permalinks:
   - /mechinterp
 title: mechanistic interpretability
@@ -24,7 +24,7 @@ To attack the _curse of dimensionality_, the question remains: _==how do we hope
 
 ## inference
 
-application in the wild: [Goodfire](https://goodfire.ai/) and [Transluce](https://transluce.org/)
+Application in the wild: [Goodfire](https://goodfire.ai/) and [Transluce](https://transluce.org/)
 
 > [!question]- How we would do inference with SAE?
 >
