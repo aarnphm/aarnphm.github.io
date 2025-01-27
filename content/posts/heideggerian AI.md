@@ -6,7 +6,7 @@ tags:
 date: "2025-01-11"
 description: and Heideggerian AI.
 draft: true
-modified: 2025-01-20 05:28:37 GMT-05:00
+modified: 2025-01-26 16:02:36 GMT-05:00
 title: I saw a marching band at a hackathon for the first time.
 ---
 

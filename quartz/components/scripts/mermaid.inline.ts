@@ -157,75 +157,75 @@ document.addEventListener("nav", async () => {
   if (!mainContent) return
 
   const nodes = mainContent.querySelectorAll<HTMLDivElement>("pre > code.mermaid")
-  if (nodes.length === 0) return
+  if (nodes.length === 0 || !window.mermaid) return
 
-  await window.mermaid.run({ nodes })
+  await window.mermaid.run({ nodes }).then(async () => {
+    for (const codeBlock of nodes) {
+      // make it rough
+      const originalSvg = codeBlock.getElementsByTagName("svg")[0]
+      let workingSvg = originalSvg
 
-  for (const codeBlock of nodes) {
-    // make it rough
-    const originalSvg = codeBlock.getElementsByTagName("svg")[0]
-    let workingSvg = originalSvg
-
-    // Only apply rough effect if explicitly enabled
-    if (codeBlock.dataset.enableRough === "true") {
-      const svg2roughjs = new Svg2Roughjs(codeBlock)
-      svg2roughjs.svg = originalSvg
-      svg2roughjs.fontFamily = computedStyleMap["--codeFont"]
-      const roughSvg = await svg2roughjs.sketch()
-      if (roughSvg) {
-        workingSvg = roughSvg as SVGSVGElement
-        originalSvg.remove()
+      // Only apply rough effect if explicitly enabled
+      if (codeBlock.dataset.enableRough === "true") {
+        const svg2roughjs = new Svg2Roughjs(codeBlock)
+        svg2roughjs.svg = originalSvg
+        svg2roughjs.fontFamily = computedStyleMap["--codeFont"]
+        const roughSvg = await svg2roughjs.sketch()
+        if (roughSvg) {
+          workingSvg = roughSvg as SVGSVGElement
+          originalSvg.remove()
+        }
       }
-    }
 
-    const pre = codeBlock.parentNode as HTMLPreElement
-    const expandBtn = pre.querySelector<HTMLButtonElement>(".expand-button")
-    const popupContainer = pre.querySelector<HTMLElement>(".mermaid-viewer")
+      const pre = codeBlock.parentNode as HTMLPreElement
+      const expandBtn = pre.querySelector<HTMLButtonElement>(".expand-button")
+      const popupContainer = pre.querySelector<HTMLElement>(".mermaid-viewer")
 
-    let panZoom: DiagramPanZoom | null = null
+      let panZoom: DiagramPanZoom | null = null
 
-    const closeBtn = popupContainer?.querySelector<HTMLButtonElement>(".close-button")
+      const closeBtn = popupContainer?.querySelector<HTMLButtonElement>(".close-button")
 
-    function showMermaid() {
-      const container = popupContainer?.querySelector<HTMLElement>("#mermaid-space")
-      const content = popupContainer?.querySelector<HTMLElement>(".mermaid-content")
-      if (!content || !container) return
-      removeAllChildren(content)
+      function showMermaid() {
+        const container = popupContainer?.querySelector<HTMLElement>("#mermaid-space")
+        const content = popupContainer?.querySelector<HTMLElement>(".mermaid-content")
+        if (!content || !container) return
+        removeAllChildren(content)
 
-      const cloned = workingSvg!.cloneNode(true) as SVGElement
-      cloned.style.transform = ""
-      content.appendChild(cloned)
+        const cloned = workingSvg!.cloneNode(true) as SVGElement
+        cloned.style.transform = ""
+        content.appendChild(cloned)
 
-      // Show container
-      popupContainer?.classList.add("active")
-      container.style.cursor = "grab"
-      content.style.transform = `scale(1)`
+        // Show container
+        popupContainer?.classList.add("active")
+        container.style.cursor = "grab"
+        content.style.transform = `scale(1)`
 
-      // Initialize pan-zoom after showing the popup
-      panZoom = new DiagramPanZoom(container, content)
-      panZoom.setInitialPan({ x: 0, y: 0 })
-    }
-
-    function hideMermaid() {
-      popupContainer?.classList.remove("active")
-      panZoom = null
-    }
-
-    function handleEscape(e: KeyboardEvent) {
-      if (e.key === "Escape" && popupContainer?.classList.contains("active")) {
-        e.stopPropagation()
-        hideMermaid()
+        // Initialize pan-zoom after showing the popup
+        panZoom = new DiagramPanZoom(container, content)
+        panZoom.setInitialPan({ x: 0, y: 0 })
       }
+
+      function hideMermaid() {
+        popupContainer?.classList.remove("active")
+        panZoom = null
+      }
+
+      function handleEscape(e: KeyboardEvent) {
+        if (e.key === "Escape" && popupContainer?.classList.contains("active")) {
+          e.stopPropagation()
+          hideMermaid()
+        }
+      }
+
+      expandBtn?.addEventListener("click", showMermaid)
+      closeBtn?.addEventListener("click", hideMermaid)
+      document.addEventListener("keydown", handleEscape)
+
+      window.addCleanup(() => {
+        expandBtn?.removeEventListener("click", showMermaid)
+        closeBtn?.removeEventListener("click", hideMermaid)
+        document.removeEventListener("keydown", handleEscape)
+      })
     }
-
-    expandBtn?.addEventListener("click", showMermaid)
-    closeBtn?.addEventListener("click", hideMermaid)
-    document.addEventListener("keydown", handleEscape)
-
-    window.addCleanup(() => {
-      expandBtn?.removeEventListener("click", showMermaid)
-      closeBtn?.removeEventListener("click", hideMermaid)
-      document.removeEventListener("keydown", handleEscape)
-    })
-  }
+  })
 })

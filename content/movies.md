@@ -4,7 +4,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-02-07"
-modified: 2025-01-25 17:18:34 GMT-05:00
+modified: 2025-01-26 13:30:40 GMT-05:00
 title: movies.
 ---
 
@@ -35,6 +35,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] The End of The Tour (2015)
 - [ ] Chungking Express (1994)
 - [ ] Twin Peaks (1990)
+- [ ] Call Me By Your Name (2017)
 - [x] The Defiant Ones (1958)
 - [x] Maestro (2023)
 

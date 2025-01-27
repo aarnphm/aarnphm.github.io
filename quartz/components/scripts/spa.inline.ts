@@ -292,6 +292,8 @@ class StackedNoteManager {
       this.getSlug(url) ??
       html.querySelector("title")?.textContent
 
+    html.querySelectorAll<HTMLElement>(".mermaid-viewer").forEach((el) => el.remove())
+
     return { hash, contents, title }
   }
 
@@ -527,6 +529,9 @@ class StackedNoteManager {
         this.main.scrollTo({ left: scrollWidth, behavior: "smooth" })
       })
     }
+
+    if (window.mermaid) await window.mermaid.run({ querySelector: "pre > code.mermaid" })
+    return
   }
 
   private async focus(slug: string) {
@@ -620,6 +625,7 @@ class StackedNoteManager {
     await this.initFromParams()
     this.updateURL()
     await this.render()
+    notifyNav(this.getSlug(new URL("/", window.location.toString())))
     return true
   }
 

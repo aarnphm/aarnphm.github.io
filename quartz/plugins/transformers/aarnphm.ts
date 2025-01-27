@@ -10,6 +10,8 @@ import { fromMarkdown } from "mdast-util-from-markdown"
 import content from "../../components/styles/signatures.scss"
 import { toHtml } from "hast-util-to-html"
 import { toHast } from "mdast-util-to-hast"
+// @ts-ignore
+import wcScript from "../../components/scripts/wc.inline.ts"
 
 export const banks = {
   a: {
@@ -386,22 +388,20 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
 
       if (opts.signature.enable) {
         plugins.push([
-          () => {
-            return (tree: HtmlRoot, file) => {
-              const text = file.data.frontmatter?.signature ?? opts.signature.text
-              const filterNodes = ({ tagName, children }: Element) =>
-                (tagName === "p" || tagName === "div") && children.length >= 1
-              visit(
-                tree,
-                (node) => filterNodes(node as Element),
-                (node, index, parent) => {
-                  const { children } = node as Element
-                  if (children[0].type === "text" && children[0].value === "[^sign]") {
-                    parent!.children.splice(index!, 1, h(`p.${opts.signature.class}`, maps(text)))
-                  }
-                },
-              )
-            }
+          () => (tree: HtmlRoot, file) => {
+            const text = file.data.frontmatter?.signature ?? opts.signature.text
+            const filterNodes = ({ tagName, children }: Element) =>
+              (tagName === "p" || tagName === "div") && children.length >= 1
+            visit(
+              tree,
+              (node) => filterNodes(node as Element),
+              (node, index, parent) => {
+                const { children } = node as Element
+                if (children[0].type === "text" && children[0].value === "[^sign]") {
+                  parent!.children.splice(index!, 1, h(`p.${opts.signature.class}`, maps(text)))
+                }
+              },
+            )
           },
         ])
       }
@@ -409,7 +409,10 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
       return plugins
     },
     externalResources: () => {
-      return { css: [{ content, spaPreserve: true, inline: true }] }
+      return {
+        js: [{ loadTime: "afterDOMReady", contentType: "inline", script: wcScript }],
+        css: [{ content, spaPreserve: true, inline: true }],
+      }
     },
   }
 }

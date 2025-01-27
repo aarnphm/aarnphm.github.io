@@ -813,3 +813,24 @@ body[data-slug="influence"] {
     display: none;
   }
 }
+
+.wc-modal {
+  visibility: hidden;
+  position: absolute;
+  grid: 8/9;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 1000;
+  font-family: var(--codeFont);
+  color: var(--darkgray);
+  transform: translateY(-100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  @media all and ($mobile) {
+    display: none !important;
+  }
+}

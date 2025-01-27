@@ -231,17 +231,17 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     if (e.key === "Enter") {
       // If result has focus, navigate to that one, otherwise pick first result
       if (results?.contains(document.activeElement)) {
-        const active = document.activeElement as HTMLInputElement
+        const active = document.activeElement as HTMLAnchorElement
         if (active.classList.contains("no-match")) return
         await displayPreview(active)
         e.preventDefault()
-        active.click()
+        window.spaNavigate(new URL(new URL(active.href).pathname, window.location.toString()))
       } else {
-        const anchor = document.getElementsByClassName("result-card")[0] as HTMLInputElement | null
+        const anchor = document.getElementsByClassName("result-card")[0] as HTMLAnchorElement | null
         if (!anchor || anchor?.classList.contains("no-match")) return
         await displayPreview(anchor)
         e.preventDefault()
-        anchor.click()
+        window.spaNavigate(new URL(new URL(anchor.href).pathname, window.location.toString()))
       }
     } else if (
       e.key === "ArrowUp" ||

@@ -244,6 +244,7 @@ export async function handleBuild(argv) {
     console.log("[serve] hint: exit with ctrl+c")
     const paths = await globby([
       "**/*.ts",
+      "**/*.js",
       "**/*.tsx",
       "**/*.scss",
       "package.json",

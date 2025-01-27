@@ -35,6 +35,6 @@ export declare global {
       ready(f: (twttr: any) => void): void
       private _e: any[]
     }
-    mermaid: typeof import("mermaid")
+    mermaid: typeof import("mermaid/dist/mermaid").default
   }
 }

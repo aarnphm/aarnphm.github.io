@@ -3,11 +3,10 @@ id: physical touch
 tags:
   - growth
   - love
-  - movie essay
 date: "2025-01-22"
-description: and emboddied experience with delicate care on our work.
+description: and on emboddied experience.
 draft: true
-modified: 2025-01-22 23:47:48 GMT-05:00
+modified: 2025-01-26 16:02:59 GMT-05:00
 title: Green Books makes me want to write physical letters again.
 ---
 

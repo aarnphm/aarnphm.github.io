@@ -4,11 +4,11 @@ tags:
   - ml
 date: "2025-01-25"
 description: and OSS AI ftw.
-modified: 2025-01-25 17:57:57 GMT-05:00
+modified: 2025-01-26 09:36:39 GMT-05:00
 title: DeepSeek R1
 ---
 
-[huggingface](https://github.com/huggingface/open-r1), [model](https://huggingface.co/deepseek-ai/DeepSeek-R1), [[thoughts/papers/2501.12948v1.pdf|pdf]] [@deepseekai2025deepseekr1incentivizingreasoningcapability]
+https://github.com/huggingface/open-r1, [model](https://huggingface.co/deepseek-ai/DeepSeek-R1), [[thoughts/papers/2501.12948v1.pdf|pdf]] [@deepseekai2025deepseekr1incentivizingreasoningcapability]
 
 _reasoning and distill variants trained on high-quality RL data_
 
@@ -31,4 +31,3 @@ uses [[thoughts/Attention#Multi-head Latent Attention (MLA)]], a mixture-of-expe
 ![[thoughts/Transformers#multi-token prediction.|multi-token prediction]]
 
 ---
-

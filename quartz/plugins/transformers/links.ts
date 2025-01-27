@@ -18,6 +18,7 @@ import { h, s } from "hastscript"
 import {
   anthropicSvg,
   bentomlSvg,
+  ycSvg,
   bskySvg,
   doiSvg,
   githubSvg,
@@ -165,6 +166,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isDoi: dest.includes("doi.org"),
                   isOpenai: dest.includes("openai.com"),
                   isHf: dest.includes("huggingface.co"),
+                  isYC: dest.includes("ycombinator.com"),
                   isAnthropic:
                     dest.includes("transformer-circuits.pub") || dest.includes("anthropic.com"),
                 }
@@ -222,6 +224,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   )
                 } else if (linkTypes.isBentoml) {
                   ctx.node.children.push(bentomlSvg)
+                } else if (linkTypes.isYC) {
+                  ctx.node.children.push(ycSvg)
                 } else if (linkTypes.isDoi) {
                   ctx.node.children.push(doiSvg)
                 } else if (linkTypes.isHf) {

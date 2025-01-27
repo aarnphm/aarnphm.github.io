@@ -2,6 +2,8 @@ garden v2, on top of [quartz](https://quartz.jzhao.xyz/) v4.
 
 > “[One] who works with the door open gets all kinds of interruptions, but [they] also occasionally gets clues as to what the world is and what might be important.” — Richard Hamming
 
+fwiw a lot of plugins are disabled during serve given that I have a lot of math notes (KaTeX is pretty expensive to run.)
+
 ## features
 
 A modified/personal enhancement from bare Quartz

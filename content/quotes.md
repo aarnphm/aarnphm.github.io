@@ -5,7 +5,7 @@ aliases:
 tags:
   - evergreen
 date: "2024-01-23"
-modified: 2025-01-22 23:21:24 GMT-05:00
+modified: 2025-01-26 13:44:02 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 title: advice.
 transclude:
@@ -45,6 +45,8 @@ An expert is a man who has made all the mistakes, which can be made, in a very n
 Effective system design requires insights drawn from serious [contexts of use](https://notes.andymatuschak.org/z51q8prEJzs5Jqa5WPThYoV?stackedNotes=z7EQ2nVGus5B1rS9CqT18g6) -- Andy Matuschak
 
 What is [software](https://worrydream.com/MagicInk/) for? People turn to software to learn, to create, and to communicate. -- Bret Victor
+
+Notice that the quality of the AI output is mostly irrelevant for these points. If you have good quality AI outputs then you are still welcome to share it with me, given that you are upfront that it is AI generated. -- [hackernews](https://news.ycombinator.com/item?id=42827532)
 
 ## On perspectives.
 

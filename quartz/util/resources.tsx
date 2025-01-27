@@ -44,7 +44,7 @@ export function JSResourceToScriptElement(resource: JSResource, preserve?: boole
         type={scriptType}
         spa-preserve={spaPreserve}
         dangerouslySetInnerHTML={{ __html: content }}
-      ></script>
+      />
     )
   }
 }
