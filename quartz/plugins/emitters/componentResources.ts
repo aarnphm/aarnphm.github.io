@@ -12,8 +12,6 @@ import popoverStyle from "../../components/styles/popover.scss"
 import clipboardScript from "../../components/scripts/clipboard.inline"
 import clipboardStyle from "../../components/styles/clipboard.scss"
 // @ts-ignore
-import equationScript from "../../components/scripts/equation.inline"
-// @ts-ignore
 import pseudoScript from "../../components/scripts/clipboard-pseudo.inline"
 import pseudoStyle from "../../components/styles/pseudocode.scss"
 import { BuildCtx } from "../../util/ctx"
@@ -94,7 +92,6 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
   }
 
   componentResources.css.push(clipboardStyle, pseudoStyle)
-  componentResources.beforeDOMLoaded.push(equationScript)
   componentResources.afterDOMLoaded.push(clipboardScript, pseudoScript)
 
   if (cfg.analytics?.provider === "plausible") {

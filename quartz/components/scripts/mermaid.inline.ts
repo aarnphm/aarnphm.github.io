@@ -1,5 +1,5 @@
 import { removeAllChildren } from "./util"
-import { Svg2Roughjs } from "svg2roughjs"
+// import { Svg2Roughjs } from "svg2roughjs"
 
 interface Position {
   x: number
@@ -161,21 +161,22 @@ document.addEventListener("nav", async () => {
 
   await window.mermaid.run({ nodes }).then(async () => {
     for (const codeBlock of nodes) {
+      const makeRough = codeBlock.dataset.enableRough === "true"
       // make it rough
       const originalSvg = codeBlock.getElementsByTagName("svg")[0]
       let workingSvg = originalSvg
 
       // Only apply rough effect if explicitly enabled
-      if (codeBlock.dataset.enableRough === "true") {
-        const svg2roughjs = new Svg2Roughjs(codeBlock)
-        svg2roughjs.svg = originalSvg
-        svg2roughjs.fontFamily = computedStyleMap["--codeFont"]
-        const roughSvg = await svg2roughjs.sketch()
-        if (roughSvg) {
-          workingSvg = roughSvg as SVGSVGElement
-          originalSvg.remove()
-        }
-      }
+      // if (codeBlock.dataset.enableRough === "true") {
+      //   const svg2roughjs = new Svg2Roughjs(codeBlock)
+      //   svg2roughjs.svg = originalSvg
+      //   svg2roughjs.fontFamily = computedStyleMap["--codeFont"]
+      //   const roughSvg = await svg2roughjs.sketch()
+      //   if (roughSvg) {
+      //     workingSvg = roughSvg as SVGSVGElement
+      //     originalSvg.remove()
+      //   }
+      // }
 
       const pre = codeBlock.parentNode as HTMLPreElement
       const expandBtn = pre.querySelector<HTMLButtonElement>(".expand-button")
@@ -191,7 +192,7 @@ document.addEventListener("nav", async () => {
         if (!content || !container) return
         removeAllChildren(content)
 
-        const cloned = workingSvg!.cloneNode(true) as SVGElement
+        const cloned = (makeRough ? workingSvg : originalSvg)!.cloneNode(true) as SVGElement
         cloned.style.transform = ""
         content.appendChild(cloned)
 

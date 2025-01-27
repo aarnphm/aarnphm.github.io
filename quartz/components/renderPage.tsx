@@ -8,7 +8,7 @@ import GraphConstructor from "./Graph"
 import { byDateAndAlphabetical } from "./PageList"
 import { getDate, Date as DateComponent } from "./Date"
 import { classNames } from "../util/lang"
-import { JSResource, JSResourceToScriptElement, StaticResources } from "../util/resources"
+import { JSResourceToScriptElement, StaticResources } from "../util/resources"
 import {
   clone,
   FullSlug,
@@ -493,7 +493,7 @@ interface TranscludeStats {
 }
 
 export function transcludeFinal(
-  ctx: BuildCtx,
+  _ctx: BuildCtx,
   root: Root,
   { cfg, allFiles, fileData, externalResources }: QuartzComponentProps,
   userOpts?: Partial<TranscludeOptions>,

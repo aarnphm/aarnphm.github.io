@@ -689,10 +689,8 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
         plugins.push(() => {
           return (tree) => {
-            visit(
-              tree,
-              (node: Element) => checkEmbed(node as Element),
-              (node: Element) => {
+            visit(tree, (node: Element) => {
+              if (checkEmbed(node)) {
                 const src = (node as Element).properties.src as string
                 const match = src.match(ytLinkRegex)
                 const videoId = match && match[2].length == 11 ? match[2] : null
@@ -731,8 +729,8 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     }
                     break
                 }
-              },
-            )
+              }
+            })
           }
         })
       }
