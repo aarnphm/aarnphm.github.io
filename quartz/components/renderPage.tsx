@@ -29,6 +29,8 @@ import { QuartzPluginData } from "../plugins/vfile"
 import mermaidScript from "./scripts/mermaid.inline"
 // @ts-ignore
 import mermaidImportScript from "./scripts/mermaid-import.inline"
+// @ts-ignore
+import renderMermaidScript from "./scripts/mermaid-render.inline"
 import mermaidStyle from "./styles/mermaid.inline.scss"
 import { h, s } from "hastscript"
 // @ts-ignore
@@ -457,12 +459,20 @@ export function pageResources(
   }
 
   // NOTE: we have to put this last to make sure spa.inline.ts is the last item.
-  resources.js.push({
-    src: joinSegments(baseDir, "postscript.js"),
-    loadTime: "afterDOMReady",
-    moduleType: "module",
-    contentType: "external",
-  })
+  resources.js.push(
+    {
+      src: joinSegments(baseDir, "postscript.js"),
+      loadTime: "afterDOMReady",
+      moduleType: "module",
+      contentType: "external",
+    },
+    {
+      script: renderMermaidScript,
+      contentType: "inline",
+      spaPreserve: true,
+      loadTime: "afterDOMReady",
+    },
+  )
 
   return resources
 }
@@ -1302,7 +1312,7 @@ export function renderPage(
           </section>
           {disablePageFooter ? (
             <></>
-          ) : (
+          ) : afterBody.length > 0 ? (
             <section class={classNames(undefined, "page-footer", "all-col", "grid")}>
               {retrieval.length > 0 &&
                 htmlToJsx(componentData.fileData.filePath!, {
@@ -1312,6 +1322,8 @@ export function renderPage(
               {afterBody.length > 0 &&
                 afterBody.map((BodyComponent) => <BodyComponent {...componentData} />)}
             </section>
+          ) : (
+            <></>
           )}
           {slug !== "index" && <Footer {...componentData} />}
           {htmlToJsx(

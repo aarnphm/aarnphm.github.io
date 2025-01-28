@@ -266,12 +266,14 @@ h2 {
   font-size: 23.8337px;
   margin-top: 1.9rem;
   margin-bottom: 1rem;
+  color: var(--rose);
 }
 
 h3 {
   font-size: 22.2763px;
   margin-top: 1.62rem;
   margin-bottom: 1rem;
+  color: var(--gold);
 }
 
 h4,
@@ -279,6 +281,7 @@ h5,
 h6 {
   margin-top: 1.5rem;
   margin-bottom: 1rem;
+  color: var(--foam);
 }
 
 h4 {
@@ -295,6 +298,10 @@ h6 {
 
 small {
   font-size: 15.8891px;
+}
+
+sup {
+  margin-left: 0.2em;
 }
 
 figure {

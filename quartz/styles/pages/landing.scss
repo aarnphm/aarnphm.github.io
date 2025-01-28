@@ -28,7 +28,15 @@ body[data-slug="index"] {
 
   h1:not(.popover *),
   h2:not(.popover *) {
+    color: inherit;
     font-family: "ITCGaramondStdLtCond", var(--bodyFont);
+  }
+
+  h3:not(.popover *),
+  h4:not(.popover *),
+  h5:not(.popover *),
+  h6:not(.popover *) {
+    color: inherit;
   }
 
   span[class*="rose"] {

@@ -3,17 +3,15 @@ id: sparse autoencoder
 tags:
   - ml
   - interp
-date: 2024-11-04
-description: a variations of autoencoders operate on features sparsity.
-modified: 2025-01-27 14:19:07 GMT-05:00
+date: "2024-11-04"
+description: a variations of autoencoders operate on features sparsity, also known as SAEs.
+modified: 2025-01-28 07:54:36 GMT-05:00
 title: sparse autoencoder
 transclude:
   title: false
 ---
 
-abbrev: SAE
-
-_see also: [landspace](https://docs.google.com/document/d/1lHvRXJsbi41bNGZ_znGN7DmlLXITXyWyISan7Qx2y6s/edit?tab=t.0#heading=h.j9b3g3x1o1z4)_
+see also: [landspace](https://docs.google.com/document/d/1lHvRXJsbi41bNGZ_znGN7DmlLXITXyWyISan7Qx2y6s/edit?tab=t.0#heading=h.j9b3g3x1o1z4)
 
 Often contains one layers of MLP with few linear [[thoughts/optimization#ReLU|ReLU]] that is trained on a subset of datasets the main LLMs is trained on.
 
@@ -66,7 +64,7 @@ Ideas: output of decoder $f(x)$ has two roles
 
 ### Gated SAE
 
-_uses [[thoughts/Pareto distribution|Pareto]] improvement over training to reduce L1 penalty_ [@rajamanoharan2024improvingdictionarylearninggated]
+@rajamanoharan2024improvingdictionarylearninggated applies [[thoughts/optimization#JumpReLU|JumpRELU]] and observe [[thoughts/Pareto distribution|Pareto]] improvement over training.
 
 Clear consequence of the bias during training is _shrinkage_ [@sharkey2024feature] [^shrinkage]
 

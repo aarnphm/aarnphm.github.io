@@ -25,6 +25,7 @@ export declare global {
     dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K] | UIEvent): void
   }
   interface Window {
+    __MERMAID_RENDERED__: boolean
     spaNavigate(url: URL, isBack: boolean = false)
     addCleanup(fn: (...args: any[]) => void)
     stacked: StackedManager
