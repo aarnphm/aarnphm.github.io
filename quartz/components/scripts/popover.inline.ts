@@ -250,10 +250,13 @@ async function mouseEnterHandler(
     return handleFootnote(link, clientX, clientY)
   }
 
+  const container = document.getElementById("stacked-notes-container") as HTMLDivElement
+
   if (
     link.dataset.noPopover === "" ||
     link.dataset.noPopover === "true" ||
-    getFullSlug(window) === "notes"
+    getFullSlug(window) === "notes" ||
+    container?.classList.contains("active")
   ) {
     return
   }

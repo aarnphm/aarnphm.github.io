@@ -201,7 +201,7 @@ export const Citations: QuartzTransformerPlugin<Partial<Options>> = (userOpts) =
                   index!,
                   1,
                   h(
-                    "section.bibliography",
+                    "section.bibliography.popover-hint",
                     { "data-references": true },
                     h("h2#reference-label", [{ type: "text", value: "Bibliographie" }]),
                     h("ul", ...entries),

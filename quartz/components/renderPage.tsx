@@ -7,7 +7,7 @@ import SearchConstructor from "./Search"
 import { byDateAndAlphabetical } from "./PageList"
 import { getDate, Date as DateComponent } from "./Date"
 import { classNames } from "../util/lang"
-import { JSResource, JSResourceToScriptElement, StaticResources } from "../util/resources"
+import { JSResourceToScriptElement, StaticResources } from "../util/resources"
 import {
   clone,
   FullSlug,
@@ -283,12 +283,10 @@ function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
   })
 
   // finally, update the final position
-  visit(root, "element", (node: Element, index, parent) => {
-    if (
-      node.type === "element" &&
-      node.tagName === "section" &&
-      node.properties.dataReferences == ""
-    ) {
+  visit(root, { tagName: "section" }, (node: Element, index, parent) => {
+    if (node.properties.dataReferences == "") {
+      // @ts-ignore
+      node.properties.className.push("popover-hint")
       // @ts-ignore
       node.children[1].children = finalRefs
       parent!.children.splice(index as number, 1, node)
@@ -380,12 +378,10 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   })
 
   // finally, update the final position
-  visit(root, "element", (node: Element) => {
-    if (
-      node.type === "element" &&
-      node.tagName === "section" &&
-      node.properties.dataFootnotes == ""
-    ) {
+  visit(root, { tagName: "section" }, (node: Element) => {
+    if (node.properties.dataFootnotes == "") {
+      //@ts-ignore
+      node.properties.className.push("popover-hint")
       // HACK: The node.children will have length 4, and ol is the 3rd items
       const ol = node.children[2] as Element
       ol.children = sortedRefs
