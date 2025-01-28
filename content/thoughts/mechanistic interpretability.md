@@ -113,7 +113,7 @@ They refer to decomposing circuit as _mechanism_ [^alias], or "finding vector wi
 >
 > We can determine which parameters are being used during a forward pass with attribution (given that most of them are redudant!)
 
-![[thoughts/images/apd.png|Decomposition of parameters, or APD]]
+![[thoughts/images/apd.webp|Decomposition of parameters, or APD]]
 
 ## sparse autoencoders
 
