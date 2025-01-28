@@ -1,6 +1,5 @@
 // raw URL: https://raw.githubusercontent.com/aarnphm/aarnphm.github.io/refs/heads/main/content/thoughts/university/twenty-four-twenty-five/sfwr-2fa3/Automata%20and%20Computability.pdf
 
-import { R2Bucket } from "@cloudflare/workers-types"
 import LFS_CONFIG from "./.lfsconfig.txt"
 
 const VERSION = "version https://git-lfs.github.com/spec/v1\n"
@@ -213,9 +212,9 @@ async function getObjectFromLFS(objectInfo, request) {
 
 /**
  * @type {import("@cloudflare/workers-types").PagesFunction<{
- *   LFS_BUCKET?: R2Bucket,
- *   LFS_BUCKET_URL?: string,
- *   KEEP_HEADERS?: string
+ *   LFS_BUCKET: import("@cloudflare/workers-types").R2Bucket,
+ *   LFS_BUCKET_URL: string,
+ *   KEEP_HEADERS?: boolean,
  * }>}
  */
 export async function onRequest(context) {
