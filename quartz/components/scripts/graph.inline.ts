@@ -82,9 +82,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     scale,
     repelForce,
     centerForce,
-    linkDistance,
     fontSize,
-    opacityScale,
     removeTags,
     showTags,
     focusOnHover,
@@ -317,19 +315,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
           : { x: defaultScale, y: defaultScale }
 
       // Show labels for hovered node and its connections
-      const targetAlpha = isCurrentlyHover
-        ? 1
-        : isConnected
-          ? 0.8
-          : hoveredNodeId === null
-            ? (n.label.__previousAlpha ?? n.label.alpha)
-            : 0
-
-      if (hoveredNodeId === null) {
-        delete n.label.__previousAlpha
-      } else if (!n.label.__previousAlpha) {
-        n.label.__previousAlpha = n.label.alpha
-      }
+      const targetAlpha = isCurrentlyHover ? 1 : isConnected ? 0.8 : 0
 
       tweenGroup.add(new Tweened<Text>(n.label).to({ alpha: targetAlpha, scale }, 100))
     }
@@ -420,7 +406,6 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     })
     label.scale.set(1 / scale)
 
-    let prevOpacity = 0
     const isTagNode = nodeId.startsWith("tags/")
     const gfx = new Graphics({
       interactive: true,
@@ -433,7 +418,6 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       .fill({ color: isTagNode ? computedStyleMap["--foam"] : color(simulationData) })
       .on("pointerover", (e) => {
         updateHoverInfo(e.target.label)
-        prevOpacity = label.alpha
         if (!dragging) renderPixiFromD3()
       })
       .on("pointerleave", () => {
@@ -533,17 +517,6 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
           currentTransform = transform
           stage.scale.set(transform.k, transform.k)
           stage.position.set(transform.x, transform.y)
-
-          // zoom adjusts opacity of labels too
-          const scale = transform.k * opacityScale
-          let scaleOpacity = Math.max((scale - 1) / 3.75, 0)
-          const activeNodes = nodeRenderData.filter((n) => n.active).flatMap((n) => n.label)
-
-          for (const label of labelsContainer.children) {
-            if (!activeNodes.includes(label)) {
-              label.alpha = scaleOpacity
-            }
-          }
         }),
     )
   }
