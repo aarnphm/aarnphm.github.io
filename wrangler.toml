@@ -3,5 +3,5 @@ compatibility_date = "2025-01-21"
 pages_build_output_dir = "public"
 
 [[r2_buckets]]
-binding = "sites-blob"
+binding = "LFS_BUCKET"
 bucket_name = "sites"
