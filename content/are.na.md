@@ -7,9 +7,9 @@ tags:
   - seed
 cssclasses:
   - nolist
-date: "2024-10-24"
+date: 2024-10-24
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-01-26 19:41:24 GMT-05:00
+modified: 2025-01-27 14:09:29 GMT-05:00
 permalinks:
   - /website
   - /resources

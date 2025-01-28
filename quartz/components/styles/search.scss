@@ -62,9 +62,6 @@
       width: 90%;
       margin-left: auto;
       margin-right: auto;
-
-      background: var(--light);
-      border-radius: 0px;
     }
 
     & > #search-space {
@@ -96,9 +93,9 @@
     & > #search-layout {
       display: none;
       flex-direction: row;
-      border: 1px solid var(--lightgray);
       flex: 0 0 100%;
       box-sizing: border-box;
+      background: var(--light);
 
       &.display-results {
         display: flex;
@@ -226,6 +223,7 @@
 
           h3 {
             margin: 0;
+            font-weight: 400;
           }
 
           ul.tags {

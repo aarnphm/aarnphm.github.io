@@ -6,7 +6,12 @@ export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [
     Component.PageTitle(),
-    Component.Breadcrumbs({ rootName: "~", style: "unique", spacerSymbol: "/" }),
+    Component.Breadcrumbs({
+      rootName: "~",
+      style: "full",
+      spacerSymbol: "/",
+      showCurrentPage: false,
+    }),
     Component.Keybind(),
     Component.StackedNotes(),
     Component.Search(),

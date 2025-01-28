@@ -5,7 +5,7 @@ tags:
   - sfwr2fa3
 date: "2025-01-06"
 description: third time a charm
-modified: 2025-01-06 13:53:52 GMT-05:00
+modified: 2025-01-27 14:01:36 GMT-05:00
 title: Discrete Mathematics
 ---
 

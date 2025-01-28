@@ -35,21 +35,20 @@ const heading = (h: State, node: Element): Heading => {
   // NOTE: for all heading, we append the links in hast syntax tree. For markdown, we don't need to do this.
   node.children.pop()
   const rank = headingRank(node) as number
-  switch (rank) {
-    case 1:
-      return hastToMdastHandlers.h1(h, node)
-    case 2:
-      return hastToMdastHandlers.h2(h, node)
-    case 3:
-      return hastToMdastHandlers.h3(h, node)
-    case 4:
-      return hastToMdastHandlers.h4(h, node)
-    case 5:
-      return hastToMdastHandlers.h5(h, node)
-    case 6:
-      return hastToMdastHandlers.h6(h, node)
-    default:
-      throw new Error("Failed to parse correct headers")
+  if (rank === 1) {
+    return hastToMdastHandlers.h1(h, node)
+  } else if (rank === 2) {
+    return hastToMdastHandlers.h2(h, node)
+  } else if (rank === 3) {
+    return hastToMdastHandlers.h3(h, node)
+  } else if (rank === 4) {
+    return hastToMdastHandlers.h4(h, node)
+  } else if (rank === 5) {
+    return hastToMdastHandlers.h5(h, node)
+  } else if (rank === 6) {
+    return hastToMdastHandlers.h6(h, node)
+  } else {
+    throw new Error("Failed to parse correct headers")
   }
 }
 

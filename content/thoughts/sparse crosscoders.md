@@ -3,9 +3,9 @@ id: sparse crosscoders
 tags:
   - ml
   - interp
-date: "2024-11-03"
-description: and how we observe multiple activation layers. SAE is a special case of sparse crosscoders.
-modified: 2025-01-15 12:09:30 GMT-05:00
+date: 2024-11-03
+description: and cross-layers observations. SAE is a special case of sparse crosscoders.
+modified: 2025-01-27 13:17:48 GMT-05:00
 title: sparse crosscoders
 transclude:
   title: false

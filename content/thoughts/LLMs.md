@@ -4,9 +4,11 @@ tags:
   - sapling
   - ml
   - llm
-date: "2024-02-07"
+date: 2024-02-07
 modified: 2025-01-08 19:31:08 GMT-05:00
 title: LLMs
+description: a mathematical framework for intelligence
+abstract: large language models will probably be the most important piece of technology in the 21st century
 ---
 
 [[thoughts/Machine learning|large language]] models, often implemented as [[thoughts/Autoregressive models|autoregressive]] [[thoughts/Transformers|transformers]] models.
@@ -27,21 +29,22 @@ Incredibly hard to scale, mainly due to their [[thoughts/large models|large]] me
 
 ### [[thoughts/optimization|Optimization]]
 
-See also: [[thoughts/images/htn-openllm.pdf|this talk]]
+I did a [[thoughts/images/htn-openllm.pdf|talk at HackTheNorth 2023]] on this topic and rationale behind building [[thoughts/craft#open source.|OpenLLM]]
 
 - [[thoughts/quantization|Quantization]]: reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
 - [[thoughts/Continuous batching]]: Implementing [[thoughts/Attention#Paged Attention]] with custom scheduler to manage swapping kv-cache for better resource utilisation
+- Different [[thoughts/Attention|Attention]] variants, for better kernels and hardware optimisation (Think of Flash Attention 3, Radix Attention, TreeAttention, etc.)
 - [[thoughts/Transformers#Byte-Latent Transformer]]: idea to use entropy-based sampling to choose next tokens instead of token-level decoding. [^blt]
 
 [^blt]: Think of decoding each text into dynamic patches, and thus actually improving inference efficiency. See also [link](https://ai.meta.com/research/publications/byte-latent-transformer-patches-scale-better-than-tokens/)
 
 ### on how we are being [[thoughts/education#teaching|taught]].
 
-How would we assess thinking?
+> [!question]  How would we assess thinking?
 
 Similar to calculator, it _simplifies_ and increase accessibility to the masses, but in doing so _lost_ the value in the _action of doing_ math.
 
-We do math to internalize the concept, and practice to thinking coherently. Similarly, we [[thoughts/writing|write]] to help crystalised our ideas, and in the process improve through the act of putting it down.
+We do math to internalise the concept, and practice to thinking coherently. Similarly, we [[thoughts/writing|write]] to help crystalised our ideas, and in the process improve through the act of putting it down.
 
 The process of rephrasing and arranging sentences poses a challenges for the writer, and in doing so, teach you how to think coherently. Writing essays is an exercise for students to articulate their thoughts, rather than testing the understanding of the materials.
 
@@ -90,7 +93,6 @@ notable mentions:
 - [perplexity.ai](https://perplexity.ai/): [[thoughts/RAG|RAG]]-first search engine
 - [explorer.globe.engineer](https://explorer.globe.engineer/): tree-based [[thoughts/information retrieval]]
 - [Exa labs](https://twitter.com/ExaAiLabs)
-- [You.com](https://you.com/?chatMode=default)
 
 ### Programming
 

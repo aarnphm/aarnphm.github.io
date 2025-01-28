@@ -32,7 +32,7 @@ import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 // @ts-ignore
 import script from "../../components/scripts/telescopic.inline.ts"
 import content from "../../components/styles/telescopic.inline.scss"
-import { svgOptions } from "../../components/renderPage"
+import { svgOptions } from "../../components/svg"
 
 interface Line {
   og: string // the original string to replace

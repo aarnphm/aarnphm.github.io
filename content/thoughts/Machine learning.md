@@ -6,6 +6,7 @@ tags:
 date: "2024-02-07"
 modified: 2024-12-14 08:13:13 GMT-05:00
 title: Machine learning
+description: and learning machine
 ---
 
 Detects pattern within [[thoughts/data]] and use it to make useful prediction.

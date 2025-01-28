@@ -8,7 +8,7 @@ import { headingRank } from "hast-util-heading-rank"
 import { h, s } from "hastscript"
 import { PluggableList } from "unified"
 import { Element } from "hast"
-import { svgOptions } from "../../components/renderPage"
+import { svgOptions } from "../../components/svg"
 
 export interface Options {
   linkHeadings: boolean

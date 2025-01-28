@@ -5,9 +5,9 @@ aliases:
   - bookmarks
 tags:
   - seed
-date: "2024-10-24"
+date: 2024-10-24
 description: collections of tweets I like, since bookmark is getting crowded.
-modified: 2025-01-25 15:53:41 GMT-05:00
+modified: 2025-01-28 00:10:27 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -57,6 +57,8 @@ https://x.com/MelisaSeah/status/1875931461565693997 <!-- Vietnamese being in fro
 https://x.com/kasratweets/status/1880147402025582924 <!-- Kasra on loneliness, or emotional insecurity -->
 
 https://x.com/VividVoid_/status/1828461484277461447 <!-- philosophical wisdom -->
+
+https://x.com/melissa/status/1883821342354768109 <!-- Melissa on fairness within marriage -->
 
 ## love
 

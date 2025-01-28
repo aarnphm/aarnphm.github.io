@@ -3,7 +3,7 @@ import { h } from "preact"
 // @ts-ignore
 import script from "./scripts/matuschak.inline"
 import style from "./styles/matuschak.scss"
-import { svgOptions } from "./renderPage"
+import { svgOptions } from "./svg"
 
 export default (() => {
   const StackedNotes: QuartzComponent = () => {

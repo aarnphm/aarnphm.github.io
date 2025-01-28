@@ -10,9 +10,9 @@ import {
   transformLink,
 } from "../../util/path"
 import path from "path"
-import { SKIP, visit } from "unist-util-visit"
+import { visit } from "unist-util-visit"
 import isAbsoluteUrl from "is-absolute-url"
-import { ElementContent, Element } from "hast"
+import { Element } from "hast"
 import { filterEmbedTwitter, twitterUrlRegex } from "./twitter"
 import { h, s } from "hastscript"
 import {
@@ -27,7 +27,8 @@ import {
   twitterSvg,
   openaiSvg,
   hfSvg,
-} from "../../components/renderPage"
+  obsidianSvg,
+} from "../../components/svg"
 
 interface Options {
   enableArxivEmbed: boolean
@@ -159,6 +160,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isWikipedia: dest.includes("wikipedia.org"),
                   isLessWrong: dest.includes("lesswrong.com"),
                   isBentoml: dest.includes("bentoml.com"),
+                  isObsidian: dest.includes("obsidian.md"),
                   isGithub: dest.includes("github.com"),
                   isSubstack: dest.includes("substack.com"),
                   isTwitter: twitterUrlRegex.test(dest),
@@ -198,7 +200,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     h("img.inline-icons", {
                       src,
                       alt,
-                      style: "height: 1em; margin-left: 0.25em;",
+                      style:
+                        "height: 8px; width: 8px; margin-left: 3px; bottom: 2px; position: relative;",
                     }),
                   )
 
@@ -224,6 +227,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   )
                 } else if (linkTypes.isBentoml) {
                   ctx.node.children.push(bentomlSvg)
+                } else if (linkTypes.isObsidian) {
+                  ctx.node.children.push(obsidianSvg)
                 } else if (linkTypes.isYC) {
                   ctx.node.children.push(ycSvg)
                 } else if (linkTypes.isDoi) {

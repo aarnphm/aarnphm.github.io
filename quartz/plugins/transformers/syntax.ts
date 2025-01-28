@@ -3,7 +3,7 @@ import { Element } from "hast"
 import { h, s } from "hastscript"
 import rehypePrettyCode, { Options as CodeOptions, Theme as CodeTheme } from "rehype-pretty-code"
 import { visit } from "unist-util-visit"
-import { svgOptions } from "../../components/renderPage"
+import { svgOptions } from "../../components/svg"
 
 interface Theme extends Record<string, CodeTheme> {
   light: CodeTheme

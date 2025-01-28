@@ -4,7 +4,7 @@ import { visit } from "unist-util-visit"
 import { load, tex, dvi2svg } from "node-tikzjax"
 import { h, s } from "hastscript"
 import { Element, Properties } from "hast"
-import { svgOptions } from "../../components/renderPage"
+import { svgOptions } from "../../components/svg"
 import { toHtml } from "hast-util-to-html"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 

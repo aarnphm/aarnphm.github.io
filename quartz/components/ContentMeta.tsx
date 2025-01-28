@@ -7,7 +7,7 @@ import { classNames } from "../util/lang"
 import { FullSlug, resolveRelative } from "../util/path"
 import { i18n } from "../i18n"
 import { JSX, h } from "preact"
-import { svgOptions } from "./renderPage"
+import { svgOptions } from "./svg"
 
 type MetaProp = {
   title: string

@@ -62,7 +62,7 @@ const defaultOptions: BreadcrumbOptions = {
   hideOnRoot: false,
   showCurrentPage: true,
   style: "full",
-  maxItems: 3,
+  maxItems: 2,
 }
 
 function formatCrumb(

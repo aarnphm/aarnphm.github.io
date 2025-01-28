@@ -3,9 +3,9 @@ id: Transformers
 tags:
   - ml
   - technical
-date: "2024-02-07"
+date: 2024-02-07
 description: and the backbone of the AI progress.
-modified: 2025-01-26 08:55:11 GMT-05:00
+modified: 2025-01-28 01:14:55 GMT-05:00
 title: Transformers
 ---
 
@@ -60,7 +60,7 @@ tl/dr: predict $n$-tokens at once, via shared trunk and ==n dedicated attention 
 Note that during inference, we only employ _one attention head_
 
 [^attention-head]:
-    @gloeckle2024betterfasterlarge employs $n=4$. The [[thoughts/images/forward-pass-mtp-transformers.webp|order of the forward and backward in a n-token prediction model with n=4 heads]] of the shared trunk works as follow:
+    @gloeckle2024betterfasterlarge employs $n=4$. The order of the forward and backward in a n-token prediction model with $n=4$ heads of the shared trunk works as follow:
 
     ```python
     z = model.shared(x)

@@ -20,7 +20,6 @@
 @mixin tinyFonts {
   font-size: 11.1px;
   font-style: normal;
-  font-variant-numeric: tabular-nums;
   font-weight: $normalWeight;
   letter-spacing: 0;
   letter-spacing: 0.4px;
@@ -89,7 +88,7 @@
   background-size: 1px 1px;
   background-repeat: repeat-x;
   background-position: 0% calc(100% - 0.1em);
-  font-variant-numeric: lining-nums;
+  font-variant-numeric: oldstyle-nums;
 
   & > .indicator-hook {
     position: relative;

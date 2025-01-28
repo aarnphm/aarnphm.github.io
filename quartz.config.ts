@@ -28,15 +28,16 @@ const configuration: GlobalConfiguration = {
     "**/*400232791*",
     "__pycache__",
     "**.ignore.pdf",
+    "capstone",
   ],
   defaultDateType: "created",
   theme: {
     cdnCaching: true,
-    fontOrigin: "googleFonts",
+    fontOrigin: "local",
     typography: {
-      header: "EB Garamond",
-      body: "EB Garamond",
-      code: "JetBrains Mono",
+      header: "Parclo Serif",
+      body: "Parclo Serif",
+      code: "Berkeley Mono",
     },
     colors: {
       lightMode: {
@@ -118,7 +119,15 @@ const config: QuartzConfig = {
         },
         katexOptions: { strict: false },
       }),
-      Plugin.GitHub({ internalLinks: ["livingalonealone.com", "bentoml.com", "vllm.ai"] }),
+      Plugin.GitHub({
+        internalLinks: [
+          "livingalonealone.com",
+          "bentoml.com",
+          "vllm.ai",
+          "obsidian.md",
+          "neovim.io",
+        ],
+      }),
       Plugin.TableOfContents({ maxDepth: 5 }),
     ],
     filters: [Plugin.RemoveDrafts()],

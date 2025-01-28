@@ -54,7 +54,7 @@ ${stylesheet.join("\n\n")}
 
   --headerFont: "${theme.typography.header}", ${DEFAULT_SANS_SERIF};
   --bodyFont: "${theme.typography.body}", ${DEFAULT_SANS_SERIF};
-  --codeFont: "Berkeley Mono", "${theme.typography.code}", ${DEFAULT_MONO};
+  --codeFont: "${theme.typography.code}", ${DEFAULT_MONO};
 }
 
 :root[saved-theme="dark"] {

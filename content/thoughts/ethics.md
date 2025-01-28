@@ -4,7 +4,8 @@ tags:
   - philosophy
   - seed
 date: "2024-03-05"
-modified: 2024-12-08 05:55:04 GMT-05:00
+description: we study ethics in order to improve our life, or Aristotelian ethics
+modified: 2025-01-28 02:19:56 GMT-05:00
 title: ethics
 ---
 

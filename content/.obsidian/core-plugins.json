@@ -5,10 +5,10 @@
   "graph": true,
   "backlink": true,
   "canvas": true,
-  "outgoing-link": true,
+  "outgoing-link": false,
   "tag-pane": true,
   "page-preview": true,
-  "daily-notes": true,
+  "daily-notes": false,
   "templates": true,
   "note-composer": true,
   "command-palette": true,
@@ -27,5 +27,6 @@
   "publish": false,
   "sync": false,
   "properties": true,
-  "bookmarks": true
+  "bookmarks": true,
+  "webviewer": true
 }

@@ -32,9 +32,10 @@ You can find internal monologue under [[/posts/]] index.
   - Added support for PDF in popover modal https://github.com/jackyzha0/quartz/pull/913
   - Implemented font-fetching before runtime https://github.com/jackyzha0/quartz/pull/817
   - Implemented telescope-style search https://github.com/jackyzha0/quartz/pull/722, https://github.com/jackyzha0/quartz/pull/774, https://github.com/jackyzha0/quartz/pull/782
-  - Added sidenotes components, inspired by [Tuffe's CSS](https://edwardtufte.github.io/tufte-css/) <https://github.com/jackyzha0/quartz/pull/1555>, [[thoughts/mechanistic interpretability|examples]]
+  - Added sidenotes components, inspired by [Tuffe's CSS](https://edwardtufte.github.io/tufte-css/) https://github.com/jackyzha0/quartz/pull/1555, [[thoughts/mechanistic interpretability|examples]]
   - Added [LLM-readable source](https://x.com/aarnphm_/status/1857955302110376342)
-  - Landing page of [[/|this]] website, with custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA|jupyter notebook]]
+  - Landing page of [[/|this]] website, [tinymorph's documentation](tinymorph.aarnphm.xyz)
+  - Custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA|jupyter notebook]]
   - Source: [github](https://github.com/jackyzha0/quartz), [site](https://quartz.jzhao.xyz/)
 
     https://x.com/aarnphm_/status/1861550609834402129
@@ -48,8 +49,6 @@ You can find internal monologue under [[/posts/]] index.
     ![[thoughts/images/avante.mp4]]
 
 - **tinymorph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-) [^tinymorph]
-
-  - **WARNING**: Currently in research phase.
   - Trained [[thoughts/sparse autoencoder]] to interpret Llama 3.2 features [@templeton2024scaling]
   - Source: [github](https://github.com/aarnphm/tinymorph), [docs :construction:](https://tinymorph.aarnphm.xyz/)
 

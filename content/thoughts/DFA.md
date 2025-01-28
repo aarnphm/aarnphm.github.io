@@ -4,7 +4,7 @@ tags:
   - sfwr2fa3
   - math
 date: "2024-01-12"
-modified: 2025-01-14 17:07:41 GMT-05:00
+modified: 2025-01-27 14:03:34 GMT-05:00
 title: Deterministic Finite Automata
 ---
 
@@ -300,6 +300,7 @@ $$
 > A language $\mathcal{L}$ is a _regular_ language iff $\exists M \text{ s.t } M \text{ is a DFA and } \mathcal{L}(M)=L$
 
 If $L_{1}$ and $L_{2}$ are regular:
+
 1. $\neg L$ is _regular_ (closed under comparison)
 2. $L_{1} \cap L_{2}$
 3. $L_{1} \cup L_{2}$
@@ -317,3 +318,4 @@ Or $\neg L = \mathcal{L}(M^{'})$
 ### proof (2)
 
 Let $L_1$ and $L_2$ be regular languages, there $\exists M_{1} \cap M_{2} \text{ s.t } M_{1}=(Q_{1}, \Sigma,\delta_{1}, s_{1},F_{1}) \cap M_{2}=(Q_{2}, \Sigma, \delta_{2}, s_{2}, F_{2})$ and $\mathcal{L}(M_{1})=L \cap \mathcal{L}(M_{2}) = L_{2}$
+

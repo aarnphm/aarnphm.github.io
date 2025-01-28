@@ -10,6 +10,8 @@
   gap: 0.5rem;
   gap: 0.25rem;
   flex-grow: 1;
+  font-weight: 300;
+  font-style: italic;
 }
 
 .breadcrumb-element {
@@ -29,7 +31,6 @@
       background-size: 1px 1px;
       background-repeat: repeat-x;
       background-position: 0% calc(100% - 0.1em);
-      font-variant-numeric: lining-nums;
     }
   }
 
@@ -38,11 +39,5 @@
     margin-left: 0.25rem;
     padding: 0;
     line-height: normal;
-  }
-}
-
-@media all and ($mobile) {
-  .breadcrumb-container {
-    display: none;
   }
 }

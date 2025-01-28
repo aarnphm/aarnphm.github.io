@@ -6,7 +6,7 @@ export default (() => {
     const title = fileData.frontmatter?.title
     if (title) {
       return (
-        <hgroup class="main-col">
+        <hgroup class="title-col">
           <h1 class={classNames(displayClass, "article-title")}>{title}</h1>
           <p class="description">{fileData.frontmatter?.description && fileData.description}</p>
         </hgroup>

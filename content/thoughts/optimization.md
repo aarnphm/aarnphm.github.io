@@ -4,8 +4,7 @@ tags:
   - ml
 date: "2024-10-31"
 description: A list of optimization functions that can be used in ML training to reduce loss, and more.
-modified: 2025-01-25 18:51:31 GMT-05:00
-noindex: true
+modified: 2025-01-27 09:42:41 GMT-05:00
 title: ml optimization
 ---
 
@@ -19,7 +18,7 @@ where $y \in \mathbb{R}^k$
 
 ## `exp()`
 
-see also [@abdelkhalik2022demystifyingnvidiaamperearchitecture], [RDNA3 instruction sets of V_LDEXP_F32](https://www.amd.com/content/dam/amd/en/documents/radeon-tech-docs/instruction-set-architectures/rdna3-shader-instruction-set-architecture-feb-2023_0.pdf)
+@abdelkhalik2022demystifyingnvidiaamperearchitecture, [RDNA3 instruction sets of V_LDEXP_F32](https://www.amd.com/content/dam/amd/en/documents/radeon-tech-docs/instruction-set-architectures/rdna3-shader-instruction-set-architecture-feb-2023_0.pdf)
 
 Usually a lot better comparing to `2**t` simply for [[thoughts/university/twenty-three-twenty-four/compsci-4x03/Equations|numerical stability]] reasons
 
@@ -79,7 +78,7 @@ $$
 
 ## Swish
 
-[@ramachandran2017searchingactivationfunctions] introduces an alternative to ReLU that works better on deeper models across different tasks.
+@ramachandran2017searchingactivationfunctions introduces an alternative to ReLU that works better on deeper models across different tasks.
 
 $$
 f(x) = x \cdotp \text{sigmoid}(\beta x)
@@ -91,7 +90,7 @@ $$
 
 > component-wise product of two linear transformations of the inputs, one of which is sigmoid-activated.
 
-[@shazeer2020gluvariantsimprovetransformer] introduces a few GELU activations to yield improvements in [[thoughts/Transformers]] architecture.
+@shazeer2020gluvariantsimprovetransformer introduces a few GELU activations to yield improvements in [[thoughts/Transformers]] architecture.
 
 $$
 \begin{aligned}
@@ -126,9 +125,9 @@ _note_: reduce number of hidden units $d_\text{ff}$ (second dimension of $W$ and
 
 ## JumpReLU
 
-[@erichson2019jumpreluretrofitdefensestrategy]
+@erichson2019jumpreluretrofitdefensestrategy address robustness through adversarial examples.
 
-application: [[thoughts/sparse autoencoder#Gated SAE]] [@rajamanoharan2024jumpingaheadimprovingreconstruction]
+application: @rajamanoharan2024jumpingaheadimprovingreconstruction proves that it imroves construction fielity [[thoughts/sparse autoencoder#Gated SAE]]
 
 $$
 J(z) \coloneqq z H(z - \kappa) = \begin{cases} 0 & \text{if } z \leq \kappa \\ z & \text{if } z > \kappa \end{cases}

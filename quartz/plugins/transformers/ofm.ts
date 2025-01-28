@@ -28,7 +28,7 @@ import { PluggableList } from "unified"
 import { h, s } from "hastscript"
 import { whitespace } from "hast-util-whitespace"
 import { remove } from "unist-util-remove"
-import { svgOptions } from "../../components/renderPage"
+import { svgOptions } from "../../components/svg"
 
 export interface Options {
   comments: boolean

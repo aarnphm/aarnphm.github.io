@@ -3,18 +3,18 @@ id: physical touch
 tags:
   - growth
   - love
-date: "2025-01-22"
+date: 2025-01-22
 description: and on emboddied experience.
 draft: true
-modified: 2025-01-26 16:02:59 GMT-05:00
+modified: 2025-01-28 01:09:47 GMT-05:00
 title: Green Books makes me want to write physical letters again.
 ---
 
-I kept seeing the tiktok of this movie, and got intrigued by the scene where the drivers trying to write a letter to his wife, and the protagonist was in a sense rewrite the letters given how rugged this italian man is with his words.
+I kept seeing a TikTok about "Green Book", and got intrigued by the scene where the drivers trying to write a letter to his wife, and the protagonist was in a sense rewrite the letters given how rugged this italian man is with his words.
 
 we are introduced with the Italian driver, back in the 1950, where discrimination are still rampant in the city of new york
 
-in a sense we saw a dynamic verge between this white man and becoming a driver of a black musician, Dr. Shirley
+In essence we observe a conflict between the worker, whose skins were white, versus a person whose  whole identity surround being a talented black musician, (Dr. Shirley)
 
 (28:11): the juxtaposition of the servant where the doctor went through a religious procedure, while the driver Tony just stand there watching.
 

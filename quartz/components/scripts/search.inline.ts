@@ -230,19 +230,22 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     if (!container?.classList.contains("active")) return
     if (e.key === "Enter") {
       // If result has focus, navigate to that one, otherwise pick first result
+      let anchor: HTMLAnchorElement | undefined
       if (results?.contains(document.activeElement)) {
-        const active = document.activeElement as HTMLAnchorElement
-        if (active.classList.contains("no-match")) return
-        await displayPreview(active)
+        anchor = document.activeElement as HTMLAnchorElement
+        if (anchor.classList.contains("no-match")) return
+        await displayPreview(anchor)
         e.preventDefault()
-        window.spaNavigate(new URL(new URL(active.href).pathname, window.location.toString()))
+        anchor.click()
       } else {
-        const anchor = document.getElementsByClassName("result-card")[0] as HTMLAnchorElement | null
+        anchor = document.getElementsByClassName("result-card")[0] as HTMLAnchorElement
         if (!anchor || anchor?.classList.contains("no-match")) return
         await displayPreview(anchor)
         e.preventDefault()
-        window.spaNavigate(new URL(new URL(anchor.href).pathname, window.location.toString()))
+        anchor.click()
       }
+      if (anchor !== undefined)
+        window.spaNavigate(new URL(new URL(anchor.href).pathname, window.location.toString()))
     } else if (
       e.key === "ArrowUp" ||
       (e.shiftKey && e.key === "Tab") ||

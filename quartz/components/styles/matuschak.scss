@@ -193,6 +193,13 @@ a {
           margin: 0 auto;
           opacity: 1;
 
+          .byline {
+            border-top-width: 0px;
+            & > * {
+              display: none;
+            }
+          }
+
           .published {
             span {
               font-size: 12px;

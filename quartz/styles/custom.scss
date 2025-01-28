@@ -29,13 +29,34 @@
 @include font-face("GT Sectra Book", "GT-Sectra-Book.woff", "woff");
 @include font-face("EditorialNew Ultralight", "EditorialNew-Ultralight.woff2", "woff2");
 @include font-face("Newsreader", "Newsreader.woff2", "woff2");
-@include font-face("Suisse Intl", ("SuisseIntl-Regular.otf"), ("opentype"));
-@include font-face("Nan", ("nan-medium.woff2"), ("woff2"));
-@include font-face("Neue Montreal", ("PPNeueMontreal-Book.otf"), ("opentype"));
+@include font-face("Suisse Intl", "SuisseIntl-Regular.otf", ("opentype"));
+@include font-face("Nan", "nan-medium.woff2", ("woff2"));
+@include font-face("Neue Montreal", "PPNeueMontreal-Book.otf", ("opentype"));
+@include font-face("Playfair Display", "PlayfairDisplay.woff2", "woff2");
+@include font-face("Playfair Display", "PlayfairDisplay.woff", "woff");
+@include font-face("Parclo Serif", "ParcloSerifStudent-Thin.woff2", "woff2", normal, 100);
+@include font-face("Parclo Serif", "ParcloSerifStudent-ThinItalic.woff2", "woff2", italic, 100);
+@include font-face("Parclo Serif", "ParcloSerifStudent-Light.woff2", "woff2", normal, 300);
+@include font-face("Parclo Serif", "ParcloSerifStudent-LightItalic.woff2", "woff2", italic, 300);
+@include font-face("Parclo Serif", "ParcloSerifStudent-Regular.woff2", "woff2", normal, 400);
+@include font-face("Parclo Serif", "ParcloSerifStudent-Italic.woff2", "woff2", italic, 400);
+@include font-face("Parclo Serif", "ParcloSerifStudent-Medium.woff2", "woff2", normal, 500);
+@include font-face("Parclo Serif", "ParcloSerifStudent-MediumItalic.woff2", "woff2", italic, 500);
+@include font-face("Parclo Serif", "ParcloSerifStudent-SemiBold.woff2", "woff2", normal, 600);
+@include font-face("Parclo Serif", "ParcloSerifStudent-SemiBoldItalic.woff2", "woff2", italic, 600);
+@include font-face("Parclo Serif", "ParcloSerifStudent-Bold.woff2", "woff2", normal, 700);
+@include font-face("Parclo Serif", "ParcloSerifStudent-BoldItalic.woff2", "woff2", italic, 700);
+@include font-face("Parclo Serif", "ParcloSerifStudent-Black.woff2", "woff2", normal, 800);
+@include font-face("Parclo Serif", "ParcloSerifStudent-BlackItalic.woff2", "woff2", italic, 800);
+@include font-face("Parclo Serif", "ParcloSerifStudent-Ultra.woff2", "woff2", normal, 950);
+@include font-face("Parclo Serif", "ParcloSerifStudent-UltraItalic.woff2", "woff2", italic, 950);
+@include font-face("Parclo Serif", "ParcloSerifStudent-ExtraBlack.woff2", "woff2", normal, 900);
 @include font-face(
-  "Playfair Display",
-  ("PlayfairDisplay.woff2", "PlayfairDisplay.woff"),
-  ("woff2", "woff")
+  "Parclo Serif",
+  "ParcloSerifStudent-ExtraBlackItalic.woff2",
+  "woff2",
+  italic,
+  900
 );
 
 [role="article"]:hover {
@@ -127,10 +148,11 @@ hgroup {
     overflow: hidden;
     text-overflow: ellipsis;
     font-style: italic;
+    font-weight: 300;
 
     display: -webkit-box;
+    line-clamp: 3;
     -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
   }
 }
 
@@ -440,9 +462,8 @@ body {
 // ----- class customization -----
 
 .article-title {
-  font-family: "ITCGaramondStdLtCond", var(--headerFont);
   font-size: 3rem;
-  line-height: 2.8125rem;
+  font-weight: 800;
 }
 
 .page-footer,
@@ -475,9 +496,9 @@ body {
     font-weight: 400;
 
     color: rgba(var(--darkgray), 0.15);
-    font-family: var(--bodyFont);
     text-transform: uppercase;
     margin-bottom: 4px;
+    font-weight: 300;
   }
 
   & > * {
@@ -497,11 +518,6 @@ body {
   }
 }
 
-@media all and ($tablet) {
-  menu.tags {
-    grid-column: 3/6;
-  }
-}
 @media all and ($mobile) {
   menu.tags {
     grid-column: 3/6;
@@ -816,8 +832,9 @@ body[data-slug="influence"] {
 
 .wc-modal {
   visibility: hidden;
-  position: absolute;
-  grid: 8/9;
+  position: fixed;
+  right: 1rem;
+  top: 3rem;
   background: var(--light);
   border: 1px solid var(--lightgray);
   padding: 4px 8px;
@@ -829,8 +846,4 @@ body[data-slug="influence"] {
   color: var(--darkgray);
   transform: translateY(-100%);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-  @media all and ($mobile) {
-    display: none !important;
-  }
 }

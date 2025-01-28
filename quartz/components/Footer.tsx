@@ -52,18 +52,6 @@ export default ((userOpts?: Options) => {
             </li>
           )}
         </menu>
-        <p>
-          {i18n(cfg.locale).components.footer.createdWith}{" "}
-          <a
-            href="https://quartz.jzhao.xyz/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Quartz links"
-          >
-            Quartz v{version}
-          </a>{" "}
-          © {year}
-        </p>
       </>
     )
 
@@ -84,17 +72,12 @@ export default ((userOpts?: Options) => {
     )
 
     const FooterConstructor = (layout: FooterLayout) => {
-      switch (layout) {
-        case "minimal":
-          return <MinimalFooter />
-        case "poetry":
-          return <DateFooter />
-        case "menu":
-          return <DateFooter />
-        case "curius":
-          return <MinimalFooter />
-        default:
-          return <DefaultFooter />
+      if (layout === "minimal" || layout === "curius") {
+        return <MinimalFooter />
+      } else if (layout === "poetry" || layout === "menu") {
+        return <DateFooter />
+      } else {
+        return <DefaultFooter />
       }
     }
 
@@ -103,7 +86,7 @@ export default ((userOpts?: Options) => {
         class={classNames(
           displayClass,
           opts.layout!,
-          opts.layout !== "curius" ? "main-col" : "curius-col",
+          opts.layout !== "curius" ? "title-col" : "curius-col",
         )}
       >
         {FooterConstructor(opts.layout!)}
