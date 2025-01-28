@@ -20,30 +20,15 @@ body[data-slug="index"] {
     }
   }
 
-  & > * {
-    font-family: var(--bodyFont);
-  }
-
   .page-content {
     margin: 2rem 0;
     border: 1px solid var(--gray);
     padding: 0 2rem;
   }
 
-  &:not(.popover *) {
-    & > *,
-    h1,
-    h2,
-    h3,
-    h4 {
-      font-weight: normal;
-    }
-
-    h1,
-    h2 {
-      font-family: "ITCGaramondStdLtCond", var(--bodyFont);
-      letter-spacing: -0.0275rem;
-    }
+  h1:not(.popover *),
+  h2:not(.popover *) {
+    font-family: "ITCGaramondStdLtCond", var(--bodyFont);
   }
 
   span[class*="rose"] {
