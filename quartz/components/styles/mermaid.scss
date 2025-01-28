@@ -1,6 +1,6 @@
 @use "../../styles/mixin.scss" as *;
 
-.mermaid-viewer[data-mermaid-container] {
+.mermaid-viewer {
   position: fixed;
   z-index: 1000;
   left: 0;

@@ -17,8 +17,6 @@ import { splitAnchor } from "../../util/path"
 import { CSSResource, JSResource } from "../../util/resources"
 // @ts-ignore
 import calloutScript from "../../components/scripts/callout.inline.ts"
-// @ts-ignore
-import checkboxScript from "../../components/scripts/checkbox.inline.ts"
 import { FilePath, pathToRoot, slugTag, slugifyFilePath } from "../../util/path"
 import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
@@ -39,11 +37,9 @@ export interface Options {
   parseTags: boolean
   parseArrows: boolean
   parseBlockReferences: boolean
-  enableMermaidRough: boolean
   enableInHtmlEmbed: boolean
   enableYouTubeEmbed: boolean
   enableVideoEmbed: boolean
-  enableCheckbox: boolean
 }
 
 const defaultOptions: Options = {
@@ -55,11 +51,9 @@ const defaultOptions: Options = {
   parseTags: true,
   parseArrows: true,
   parseBlockReferences: true,
-  enableMermaidRough: false,
   enableInHtmlEmbed: false,
   enableYouTubeEmbed: true,
   enableVideoEmbed: true,
-  enableCheckbox: false,
 }
 
 const calloutMapping = {
@@ -530,10 +524,9 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       if (opts.mermaid) {
         plugins.push(() => {
-          return (tree: Root, file) => {
+          return (tree) => {
             visit(tree, "code", (node: Code) => {
               if (node.lang === "mermaid") {
-                file.data.hasMermaidDiagram = true
                 node.data = {
                   hProperties: {
                     className: ["mermaid"],
@@ -735,28 +728,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
         })
       }
 
-      if (opts.enableCheckbox) {
-        const checkboxType = ({ tagName, properties }: Element) =>
-          tagName === "input" && Boolean(properties.type) && properties.type === "checkbox"
-        plugins.push(() => {
-          return (tree) => {
-            visit(
-              tree,
-              (node) => checkboxType(node as Element),
-              (node) => {
-                const isChecked = node.properties?.checked ?? false
-                node.properties = {
-                  type: "checkbox",
-                  disabled: false,
-                  checked: isChecked,
-                  class: "checkbox-toggle",
-                }
-              },
-            )
-          }
-        })
-      }
-
       if (opts.mermaid) {
         plugins.push(() => {
           return (tree) => {
@@ -764,7 +735,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               tree,
               (node) => checkMermaidCode(node as Element),
               (node: Element, _, parent: HtmlRoot) => {
-                node.properties["data-enable-rough"] = opts.enableMermaidRough
                 parent.children = [
                   h(
                     "span.expand-button",
@@ -797,7 +767,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                   node,
                   h(
                     ".mermaid-viewer",
-                    { "data-mermaid-container": `${true}` },
                     h(".mermaid-backdrop"),
                     h(
                       "#mermaid-space",
@@ -884,14 +853,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       const js: JSResource[] = []
       const css: CSSResource[] = []
 
-      if (opts.enableCheckbox) {
-        js.push({
-          script: checkboxScript,
-          loadTime: "afterDOMReady",
-          contentType: "inline",
-        })
-      }
-
       if (opts.callouts) {
         js.push({
           script: calloutScript,
@@ -909,6 +870,5 @@ declare module "vfile" {
   interface DataMap {
     blocks: Record<string, Element>
     htmlAst: HtmlRoot
-    hasMermaidDiagram: boolean | undefined
   }
 }

@@ -318,4 +318,3 @@ Or $\neg L = \mathcal{L}(M^{'})$
 ### proof (2)
 
 Let $L_1$ and $L_2$ be regular languages, there $\exists M_{1} \cap M_{2} \text{ s.t } M_{1}=(Q_{1}, \Sigma,\delta_{1}, s_{1},F_{1}) \cap M_{2}=(Q_{2}, \Sigma, \delta_{2}, s_{2}, F_{2})$ and $\mathcal{L}(M_{1})=L \cap \mathcal{L}(M_{2}) = L_{2}$
-

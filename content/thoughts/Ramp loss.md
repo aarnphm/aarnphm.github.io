@@ -28,4 +28,3 @@ $$
 $$
 
 Note that we use Hinge loss for SVM is due to the fact that ramp-loss is a non-convex functions, meaning it is more computationally efficient to minimise Hinge loss in comparison to ramp loss
-

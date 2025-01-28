@@ -142,4 +142,3 @@ see also: pg.30
   - Related constrained (linked businesses)
   - Related linked (limited business connections)
   - Unrelated diversification (conglomerate)
-

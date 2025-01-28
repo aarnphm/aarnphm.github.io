@@ -36,9 +36,7 @@ function wouldBreakAcrossPages(element: HTMLElement): boolean {
 }
 
 function setupCallout() {
-  const collapsible = document.getElementsByClassName(
-    `callout is-collapsible`,
-  ) as HTMLCollectionOf<HTMLElement>
+  const collapsible = document.getElementsByClassName(`callout is-collapsible`)
   for (const div of collapsible) {
     const title = div.firstElementChild
 

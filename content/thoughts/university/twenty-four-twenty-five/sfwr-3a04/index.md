@@ -34,4 +34,3 @@ $$
 $$
 
 $\text{course grade} = \text{final + quizzes + midterm + deliverables}$
-

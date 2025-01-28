@@ -37,4 +37,3 @@ _published by [Anthropic](https://assets.anthropic.com/m/24a47b00f10301cd/origin
 The idea is to create a standard for risk mitigation strategy when AI system advances. Essentially create a scale to judge "how capable a system can cause harm"
 
 ![[thoughts/images/alignment-asl-scale.webp]]
-

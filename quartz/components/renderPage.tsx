@@ -25,13 +25,6 @@ import { JSX } from "preact"
 import { headingRank } from "hast-util-heading-rank"
 import type { TranscludeOptions } from "../plugins/transformers/frontmatter"
 import { QuartzPluginData } from "../plugins/vfile"
-// @ts-ignore
-import mermaidScript from "./scripts/mermaid.inline"
-// @ts-ignore
-import mermaidImportScript from "./scripts/mermaid-import.inline"
-// @ts-ignore
-import renderMermaidScript from "./scripts/mermaid-render.inline"
-import mermaidStyle from "./styles/mermaid.inline.scss"
 import { h, s } from "hastscript"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
@@ -432,47 +425,21 @@ export function pageResources(
         script: contentIndexScript,
       },
       {
-        script: mermaidImportScript,
-        loadTime: "beforeDOMReady",
-        moduleType: "module",
-        contentType: "inline",
-        spaPreserve: true,
-      },
-      {
         script: collapseHeaderScript,
         loadTime: "afterDOMReady",
         contentType: "inline",
       },
       ...staticResources.js,
     ],
-    metadata: { hasMermaidDiagram: fileData.hasMermaidDiagram },
-  }
-
-  if (fileData.hasMermaidDiagram) {
-    resources.js.push({
-      script: mermaidScript,
-      loadTime: "afterDOMReady",
-      moduleType: "module",
-      contentType: "inline",
-    })
-    resources.css.push({ content: mermaidStyle, inline: true })
   }
 
   // NOTE: we have to put this last to make sure spa.inline.ts is the last item.
-  resources.js.push(
-    {
-      src: joinSegments(baseDir, "postscript.js"),
-      loadTime: "afterDOMReady",
-      moduleType: "module",
-      contentType: "external",
-    },
-    {
-      script: renderMermaidScript,
-      contentType: "inline",
-      spaPreserve: true,
-      loadTime: "afterDOMReady",
-    },
-  )
+  resources.js.push({
+    src: joinSegments(baseDir, "postscript.js"),
+    loadTime: "afterDOMReady",
+    moduleType: "module",
+    contentType: "external",
+  })
 
   return resources
 }
@@ -784,16 +751,6 @@ export function transcludeFinal(
         }
 
         node.children = children
-      }
-
-      if (page.hasMermaidDiagram && !externalResources.metadata.hasMermaidDiagram) {
-        externalResources.js.push({
-          script: mermaidScript,
-          loadTime: "afterDOMReady",
-          moduleType: "module",
-          contentType: "inline",
-        })
-        externalResources.css.push({ content: mermaidStyle, inline: true })
       }
     }
   })

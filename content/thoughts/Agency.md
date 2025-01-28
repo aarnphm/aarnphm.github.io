@@ -33,4 +33,3 @@ Agency as an extension of end-users rather than the systems itself
 ![[thoughts/images/complex-takes-away-agency.webp]]
 
 > Instruments of _superagency_
-

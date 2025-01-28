@@ -112,4 +112,3 @@ stateDiagram-v2
 ```
 
 $\mathcal{L}(M) = \{0^n1^m \mid n \geq 0, m \neq 1 \space, x \in \Sigma^{*}\}$
-

@@ -14,7 +14,7 @@ I kept seeing a TikTok about "Green Book", and got intrigued by the scene where 
 
 we are introduced with the Italian driver, back in the 1950, where discrimination are still rampant in the city of new york
 
-In essence we observe a conflict between the worker, whose skins were white, versus a person whose  whole identity surround being a talented black musician, (Dr. Shirley)
+In essence we observe a conflict between the worker, whose skins were white, versus a person whose whole identity surround being a talented black musician, (Dr. Shirley)
 
 (28:11): the juxtaposition of the servant where the doctor went through a religious procedure, while the driver Tony just stand there watching.
 

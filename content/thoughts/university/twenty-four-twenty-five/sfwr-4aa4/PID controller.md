@@ -200,4 +200,3 @@ $$
 | Derivative   | $u(k) = \frac{K_D}{T}[e(k) - e(k-1)]$ |
 
 > approximate of PID controller: $u(k) = K_P e(k) + K_I T \sum_{i=1}^{n} e(i) + \frac{K_D}{T}[e(k) - e(k-1)]$
-

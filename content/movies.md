@@ -29,7 +29,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] The Favorite (2018)
 - [ ] Under The Silver Lake (2018)
 - [ ] The Father (2020)
-- [ ] Poor Things (2023)
+- [x] Poor Things (2023)
 - [ ] Paris, Texas (1984)
 - [ ] Before Sunrise (1995)
 - [ ] The End of The Tour (2015)

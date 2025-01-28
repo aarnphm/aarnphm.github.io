@@ -155,10 +155,9 @@ thus, $g(kT) = 2^k-1$
 > \lim_{k \to \infty} x(k) = \lim_{z \to 1} (z-1) X(z)
 > $$
 
-
 ## [[thoughts/Root locus|root locus]] on z-plane
 
 - derive open loop function $K \bar{GH}$
 - Factor numerator and denominator to get open loop zeros and poles
 - Plot roots of $1+K \bar{GH}=0$ in z-plane as k varies
-$\bar{GH(z)} = \frac{N(z)}{D(z)}$
+  $\bar{GH(z)} = \frac{N(z)}{D(z)}$

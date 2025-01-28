@@ -6,7 +6,9 @@ date: "2024-12-01"
 modified: "2024-12-01"
 title: Complexity
 ---
+
 papers: [[thoughts/papers/Out of the Tar Pit, Moseley.pdf|Out of the Tar Pit, B. Moseley]]
+
 ## Cyclometric
 
 > A proxy metric for complexity
@@ -26,7 +28,6 @@ Think of it as a structured programs defined with references to control-flow gra
 > &\quad \space \mathbb{P} = \text{number of connected components}
 > \end{aligned}
 > $$
-
 
 ## Law of Software Evolution
 

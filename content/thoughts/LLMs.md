@@ -40,7 +40,7 @@ I did a [[thoughts/images/htn-openllm.pdf|talk at HackTheNorth 2023]] on this to
 
 ### on how we are being [[thoughts/education#teaching|taught]].
 
-> [!question]  How would we assess thinking?
+> [!question] How would we assess thinking?
 
 Similar to calculator, it _simplifies_ and increase accessibility to the masses, but in doing so _lost_ the value in the _action of doing_ math.
 

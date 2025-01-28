@@ -35,4 +35,3 @@ I'm using. Maybe that's what home is - the place where you stop counting your wo
 I’m happy you two found each other and that you’re building a beautiful life here. Your companionship offers hope for the season, a small refuge from the noise of other people’s expectations—of what we should post, how we should act, which language we should speak. I wish you peace and comfort for the holidays, and I’m already excited for what 2025 holds. In moments like this, I realize that no matter how many identities we juggle, there’s always one rooted in where we began. And thanks to you, I can still play that language game—and play it well.
 
 [^sign]
-

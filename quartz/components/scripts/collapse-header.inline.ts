@@ -1,16 +1,6 @@
-import {
-  updateSidenoteState,
-  getCollapsedState,
-  CollapsedState,
-  setCollapsedState,
-  setHeaderState,
-  updateContainerHeights,
-  debounce,
-} from "./util"
+import { getCollapsedState, setCollapsedState, setHeaderState } from "./util"
 
 type MaybeHTMLElement = HTMLElement | undefined
-
-const debouncedHeights = debounce(updateContainerHeights, 150)
 
 function toggleHeader(evt: Event) {
   const target = evt.target as MaybeHTMLElement
@@ -47,17 +37,11 @@ function toggleHeader(evt: Event) {
   wrapper.classList.toggle("collapsed", isCollapsed)
   toggleButton.classList.toggle("collapsed", isCollapsed)
 
-  updateSidenoteState(content, isCollapsed)
-  setCollapsedState(window, toggleButton.id, isCollapsed ? "false" : ("true" as CollapsedState))
-
-  requestAnimationFrame(() => {
-    updateContainerHeights()
-    debouncedHeights()
-  })
+  setCollapsedState(window, toggleButton.id, isCollapsed ? "false" : "true")
 }
 
 function setupHeaders() {
-  const collapsibleHeaders = document.querySelectorAll(".collapsible-header")
+  const collapsibleHeaders = document.querySelectorAll("section.collapsible-header")
 
   for (const header of collapsibleHeaders) {
     const button = header.querySelector("span.toggle-button") as HTMLButtonElement

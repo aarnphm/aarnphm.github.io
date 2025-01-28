@@ -1,4 +1,3 @@
-// import { Svg2Roughjs } from "svg2roughjs"
 import { getFullSlug } from "../../util/path"
 
 export function registerEscapeHandler(outsideContainer: HTMLElement | null, cb: () => void) {
@@ -125,42 +124,16 @@ export function updatePosition(ref: HTMLElement, child: HTMLElement, parent: HTM
   child.style.top = `${referencePosition}px`
 }
 
-export function updateSidenoteState(content: HTMLElement, isCollapsed: boolean) {
-  // handle sidenotes state
-  const sidenoteRefs = content.querySelectorAll("a[data-footnote-ref]") as NodeListOf<HTMLElement>
-  const sideContainer = document.querySelector(".sidenotes") as HTMLElement | null
-  if (!sideContainer) return
-  for (const ref of sidenoteRefs) {
-    const sideId = ref.getAttribute("href")?.replace("#", "sidebar-")
-    const sidenote = sideContainer.querySelector(
-      `.sidenote-element[id="${sideId}"]`,
-    ) as HTMLElement | null
-    if (!sidenote) continue
-
-    if (isCollapsed) {
-      sidenote.classList.remove("in-view")
-      ref.classList.remove("active")
-      sidenote.classList.add("collapsed")
-    } else if (isInViewport(ref)) {
-      sidenote.classList.add("in-view")
-      ref.classList.add("active")
-      sidenote.classList.remove("collapsed")
-      updatePosition(ref, sidenote, sideContainer!)
-    } else {
-      sidenote.classList.remove("collapsed")
-    }
-  }
-}
-
 export type CollapsedState = "true" | "false"
 
-const collapseId = (win: Window, id: string): string => `${getFullSlug(win)}-${id}`
+const collapseId = (window: Window, id: string): string =>
+  `${getFullSlug(window).replace("/", "--")}-${id}`
 
-export function getCollapsedState(win: Window, id: string): CollapsedState | null {
-  return localStorage.getItem(collapseId(win, id)) as CollapsedState | null
+export function getCollapsedState(window: Window, id: string): CollapsedState | null {
+  return localStorage.getItem(collapseId(window, id)) as CollapsedState | null
 }
-export function setCollapsedState(win: Window, id: string, state: CollapsedState) {
-  localStorage.setItem(collapseId(win, id), state)
+export function setCollapsedState(window: Window, id: string, state: CollapsedState) {
+  localStorage.setItem(collapseId(window, id), state)
 }
 
 export function setHeaderState(
@@ -173,7 +146,6 @@ export function setHeaderState(
   button.classList.toggle("collapsed", collapsed)
   content.classList.toggle("collapsed", collapsed)
   wrapper.classList.toggle("collapsed", collapsed)
-  updateSidenoteState(content, collapsed)
 }
 
 export function closeReader(readerView: HTMLElement | null) {
@@ -190,51 +162,6 @@ export function closeReader(readerView: HTMLElement | null) {
   allHr.forEach((hr) => (hr.style.visibility = "show"))
   quartz.style.overflow = ""
   quartz.style.maxHeight = ""
-}
-
-export function updateContainerHeights() {
-  const articleContent = document.querySelector(".center") as HTMLElement
-  const sideContainer = document.querySelector(".sidenotes") as HTMLElement
-  if (!articleContent || !sideContainer) return
-
-  // First ensure article content height includes all elements
-  let totalHeight = 0
-  const contentElements = articleContent.children
-  Array.from(contentElements).forEach((element) => {
-    const rect = (element as HTMLElement).getBoundingClientRect()
-    totalHeight += rect.height
-  })
-
-  // Account for margins and padding
-  const style = window.getComputedStyle(articleContent)
-  totalHeight +=
-    parseFloat(style.paddingTop) +
-    parseFloat(style.paddingBottom) +
-    parseFloat(style.marginTop) +
-    parseFloat(style.marginBottom)
-
-  // Set heights
-  articleContent.style.minHeight = `${totalHeight}px`
-  sideContainer.style.height = `${totalHeight}px`
-
-  // Force a reflow to ensure scrollHeight is updated
-  void sideContainer.offsetHeight
-
-  // Recalculate sidenote positions with slight delay to ensure DOM updates
-  requestAnimationFrame(() => {
-    const sidenotes = sideContainer.querySelectorAll(".sidenote-element") as NodeListOf<HTMLElement>
-    const inViewSidenotes = Array.from(sidenotes).filter((note) =>
-      note.classList.contains("in-view"),
-    )
-
-    for (const sidenote of inViewSidenotes) {
-      const sideId = sidenote.id.replace("sidebar-", "")
-      const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
-      if (intextLink) {
-        updatePosition(intextLink, sidenote, sideContainer)
-      }
-    }
-  })
 }
 
 export function debounce(fn: Function, delay: number) {
@@ -324,226 +251,4 @@ export async function fetchCanonical(url: URL): Promise<Response> {
 
 export function isBrowser() {
   return typeof window !== "undefined"
-}
-
-interface Position {
-  x: number
-  y: number
-}
-
-class DiagramPanZoom {
-  private isDragging = false
-  private startPan: Position = { x: 0, y: 0 }
-  private currentPan: Position = { x: 0, y: 0 }
-  private scale = 1
-  private readonly MIN_SCALE = 0.5
-  private readonly MAX_SCALE = 3
-  private readonly ZOOM_SENSITIVITY = 0.001
-
-  constructor(
-    private container: HTMLElement,
-    private content: HTMLElement,
-  ) {
-    this.setupEventListeners()
-    this.setupNavigationControls()
-  }
-
-  private setupEventListeners() {
-    // Mouse drag events
-    this.container.addEventListener("mousedown", this.onMouseDown.bind(this))
-    document.addEventListener("mousemove", this.onMouseMove.bind(this))
-    document.addEventListener("mouseup", this.onMouseUp.bind(this))
-
-    // Wheel zoom events
-    this.container.addEventListener("wheel", this.onWheel.bind(this), { passive: false })
-
-    // Reset on window resize
-    window.addEventListener("resize", this.resetTransform.bind(this))
-  }
-
-  private setupNavigationControls() {
-    const controls = document.createElement("div")
-    controls.className = "mermaid-controls"
-
-    // Zoom controls
-    const zoomIn = this.createButton(
-      `<svg width="24" height="24" strokewidth="0" stroke="none"><use href="#zoom-in"/></svg>`,
-      () => this.zoom(0.1),
-    )
-    const zoomOut = this.createButton(
-      `<svg width="24" height="24" strokewidth="0" stroke="none"><use href="#zoom-out"/></svg>`,
-      () => this.zoom(-0.1),
-    )
-    const resetBtn = this.createButton(
-      `<svg width="24" height="24" strokewidth="0" stroke="none"><use href="#expand-sw-ne"/></svg>`,
-      () => this.resetTransform(),
-    )
-
-    controls.appendChild(zoomOut)
-    controls.appendChild(resetBtn)
-    controls.appendChild(zoomIn)
-
-    this.container.appendChild(controls)
-  }
-
-  private createButton(text: string, onClick: () => void): HTMLButtonElement {
-    const button = document.createElement("button")
-    button.innerHTML = text
-    button.className = "mermaid-control-button"
-    button.addEventListener("click", onClick)
-    window.addCleanup(() => button.removeEventListener("click", onClick))
-    return button
-  }
-
-  private onMouseDown(e: MouseEvent) {
-    if (e.button !== 0) return // Only handle left click
-    this.isDragging = true
-    this.startPan = { x: e.clientX - this.currentPan.x, y: e.clientY - this.currentPan.y }
-    this.container.style.cursor = "grabbing"
-  }
-
-  private onMouseMove(e: MouseEvent) {
-    if (!this.isDragging) return
-    e.preventDefault()
-
-    this.currentPan = {
-      x: e.clientX - this.startPan.x,
-      y: e.clientY - this.startPan.y,
-    }
-
-    this.updateTransform()
-  }
-
-  private onMouseUp() {
-    this.isDragging = false
-    this.container.style.cursor = "grab"
-  }
-
-  private onWheel(e: WheelEvent) {
-    e.preventDefault()
-
-    const delta = -e.deltaY * this.ZOOM_SENSITIVITY
-    const newScale = Math.min(Math.max(this.scale + delta, this.MIN_SCALE), this.MAX_SCALE)
-
-    // Calculate mouse position relative to content
-    const rect = this.content.getBoundingClientRect()
-    const mouseX = e.clientX - rect.left
-    const mouseY = e.clientY - rect.top
-
-    // Adjust pan to zoom around mouse position
-    const scaleDiff = newScale - this.scale
-    this.currentPan.x -= mouseX * scaleDiff
-    this.currentPan.y -= mouseY * scaleDiff
-
-    this.scale = newScale
-    this.updateTransform()
-  }
-
-  private zoom(delta: number) {
-    const newScale = Math.min(Math.max(this.scale + delta, this.MIN_SCALE), this.MAX_SCALE)
-
-    // Zoom around center
-    const rect = this.content.getBoundingClientRect()
-    const centerX = rect.width / 2
-    const centerY = rect.height / 2
-
-    const scaleDiff = newScale - this.scale
-    this.currentPan.x -= centerX * scaleDiff
-    this.currentPan.y -= centerY * scaleDiff
-
-    this.scale = newScale
-    this.updateTransform()
-    return this
-  }
-
-  private updateTransform() {
-    this.content.style.transform = `translate(${this.currentPan.x}px, ${this.currentPan.y}px) scale(${this.scale})`
-    return this
-  }
-
-  public setInitialPan(pan: Position) {
-    this.currentPan = pan
-    this.startPan = { x: 0, y: 0 }
-    return this
-  }
-
-  private resetTransform() {
-    this.scale = 1
-    // Reset to center instead of origin
-    const containerRect = this.container.getBoundingClientRect()
-    this.currentPan = { x: containerRect.width / 2, y: 0 }
-    this.updateTransform()
-    return this
-  }
-}
-
-export const renderDiagrams = async (nodes: NodeListOf<HTMLDivElement>) => {
-  for (const codeBlock of nodes) {
-    const makeRough = codeBlock.dataset.enableRough === "true"
-    // make it rough
-    const originalSvg = codeBlock.getElementsByTagName("svg")[0]
-    let workingSvg = originalSvg
-
-    // Only apply rough effect if explicitly enabled
-    // if (codeBlock.dataset.enableRough === "true") {
-    //   const svg2roughjs = new Svg2Roughjs(codeBlock)
-    //   svg2roughjs.svg = originalSvg
-    //   svg2roughjs.fontFamily = computedStyleMap["--codeFont"]
-    //   const roughSvg = await svg2roughjs.sketch()
-    //   if (roughSvg) {
-    //     workingSvg = roughSvg as SVGSVGElement
-    //     originalSvg.remove()
-    //   }
-    // }
-
-    const pre = codeBlock.parentNode as HTMLPreElement
-    const expandBtn = pre.querySelector<HTMLButtonElement>(".expand-button")
-    const popupContainer = pre.querySelector<HTMLElement>(".mermaid-viewer")
-
-    let panZoom: DiagramPanZoom | null = null
-
-    const closeBtn = popupContainer?.querySelector<HTMLButtonElement>(".close-button")
-
-    function showMermaid() {
-      const container = popupContainer?.querySelector<HTMLElement>("#mermaid-space")
-      const content = popupContainer?.querySelector<HTMLElement>(".mermaid-content")
-      if (!content || !container) return
-      removeAllChildren(content)
-
-      const cloned = (makeRough ? workingSvg : originalSvg)!.cloneNode(true) as SVGElement
-      cloned.style.transform = ""
-      content.appendChild(cloned)
-
-      // Show container
-      popupContainer?.classList.add("active")
-      container.style.cursor = "grab"
-      content.style.transform = `scale(1)`
-
-      // Initialize pan-zoom after showing the popup
-      panZoom = new DiagramPanZoom(container, content)
-      panZoom.setInitialPan({ x: 0, y: 0 })
-    }
-
-    function hideMermaid() {
-      popupContainer?.classList.remove("active")
-      panZoom = null
-    }
-
-    function handleEscape(e: KeyboardEvent) {
-      if (e.key === "Escape" && popupContainer?.classList.contains("active")) {
-        e.stopPropagation()
-        hideMermaid()
-      }
-    }
-
-    expandBtn?.addEventListener("click", showMermaid)
-    closeBtn?.addEventListener("click", hideMermaid)
-    document.addEventListener("keydown", handleEscape)
-
-    window.addCleanup(() => {
-      expandBtn?.removeEventListener("click", showMermaid)
-      closeBtn?.removeEventListener("click", hideMermaid)
-      document.removeEventListener("keydown", handleEscape)
-    })
-  }
 }

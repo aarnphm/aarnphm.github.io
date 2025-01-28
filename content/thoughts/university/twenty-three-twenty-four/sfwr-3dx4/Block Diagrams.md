@@ -110,6 +110,7 @@ See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/block_diagrams
 ## Feedback loop
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/feedback-loop-transfer-function.webp]]
+
 ## Moving through summing junction
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/summing junction.webp]]

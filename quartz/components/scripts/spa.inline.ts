@@ -737,6 +737,7 @@ async function navigate(url: URL, isBack: boolean = false) {
   }
   notifyNav(getFullSlug(window))
   delete announcer.dataset.persist
+  window.__MERMAID_RENDERED__ && delete window.__MERMAID_RENDERED__
 }
 
 window.spaNavigate = navigate

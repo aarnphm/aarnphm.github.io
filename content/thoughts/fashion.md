@@ -117,4 +117,3 @@ _A few items that I love_
 
 - Maxi Candy Hobo from [Mansur Gavriel](https://www.mansurgavriel.com/products/maxi-candy-bag-black)
 - ![[thoughts/Scents#current|current scents that are on rotation]]
-

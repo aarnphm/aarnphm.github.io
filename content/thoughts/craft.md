@@ -49,6 +49,7 @@ You can find internal monologue under [[/posts/]] index.
     ![[thoughts/images/avante.mp4]]
 
 - **tinymorph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-) [^tinymorph]
+
   - Trained [[thoughts/sparse autoencoder]] to interpret Llama 3.2 features [@templeton2024scaling]
   - Source: [github](https://github.com/aarnphm/tinymorph), [docs :construction:](https://tinymorph.aarnphm.xyz/)
 

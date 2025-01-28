@@ -107,7 +107,7 @@ Conditional distribution of $X$ given $Y$: $P(X|Y) = \frac{P(X,Y)}{P(Y)}$
 
 Bayes rule: $P(X|Y) = \frac{P(Y|X)P(X)}{P(Y)}$
 
-Chain rule: 
+Chain rule:
 
 _for two events:_
 
@@ -116,6 +116,7 @@ P(A, B) = P(B \mid A)P(A)
 $$
 
 _generalised:_
+
 $$
 \begin{aligned}
 &P(X_1, X_2, \ldots , X_k) \\
