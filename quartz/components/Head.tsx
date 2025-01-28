@@ -69,10 +69,9 @@ export default (() => {
             <link rel="stylesheet" href={googleFontHref(cfg.theme)} />
           </>
         )}
-        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin={"anonymous"} />
-        <link rel="preconnect" href="https://unpkg.com" crossorigin={"anonymous"} />
-        <link rel="preconnect" href="https://plausible.io" crossorigin={"anonymous"} />
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin={"anonymous"} />
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin={"anonymous"} />
+        <link rel="preconnect" href="https://plausible.io" crossOrigin={"anonymous"} />
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin={"anonymous"} />
         {cfg.baseUrl && (
           <>
             <link rel="alternate" type="application/rss+xml" title="rss feed" href="/index.xml" />

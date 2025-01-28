@@ -25,7 +25,14 @@ import { h, s } from "hastscript"
 import { wikilinkRegex } from "./ofm"
 import { findAndReplace as hastFindReplace } from "hast-util-find-and-replace"
 import isAbsoluteUrl from "is-absolute-url"
-import { FullSlug, simplifySlug, splitAnchor, stripSlashes, transformLink } from "../../util/path"
+import {
+  FullSlug,
+  RelativeURL,
+  simplifySlug,
+  splitAnchor,
+  stripSlashes,
+  transformLink,
+} from "../../util/path"
 import path from "path"
 import { FindAndReplaceList } from "hast-util-find-and-replace"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
@@ -291,12 +298,15 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
             const alias = rawAlias?.slice(1).trim()
 
             let dest = fp + anchor
+            const ext: string = path.extname(dest).toLowerCase()
             if (isAbsoluteUrl(dest)) return { dest, alias: dest, dataSlug: dest }
 
-            dest = transformLink(file.data.slug!, dest, {
-              allSlugs: ctx.allSlugs,
-              strategy: "absolute",
-            })
+            if (!ext.includes("pdf")) {
+              dest = transformLink(file.data.slug!, dest, {
+                allSlugs: ctx.allSlugs,
+                strategy: "absolute",
+              })
+            }
 
             // url.resolve is considered legacy
             // WHATWG equivalent https://nodejs.dev/en/api/v18/url/#urlresolvefrom-to

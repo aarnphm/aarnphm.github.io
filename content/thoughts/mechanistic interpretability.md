@@ -6,9 +6,9 @@ aliases:
 tags:
   - interp
 abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
-date: 2024-10-30
+date: "2024-10-30"
 description: and reverse engineering neural networks.
-modified: 2025-01-28 05:57:36 GMT-05:00
+modified: 2025-01-28 07:44:36 GMT-05:00
 permalinks:
   - /mechinterp
 title: mechanistic interpretability
@@ -81,7 +81,7 @@ $$
 >
 > by steering existing learned representations of behaviors, CAA results in better out-of-distribution generalization than basic supervised finetuning of the entire model.
 
-## Attribution-based parameter decomposition (APD)
+## Attribution-based parameter decomposition
 
 by [[thoughts/papers/Interpretability in Parameter Space- Minimizing Mechanistic Description Length with Attribution-based Parameter Decomposition.pdf|Apollo Research]], [introduction](https://x.com/leedsharkey/status/1883904940558500282)
 
