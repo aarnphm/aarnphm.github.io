@@ -284,7 +284,7 @@ function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
 
   // finally, update the final position
   visit(root, { tagName: "section" }, (node: Element, index, parent) => {
-    if (node.properties.dataReferences == "") {
+    if (node.properties.dataReferences) {
       // @ts-ignore
       node.properties.className.push("popover-hint")
       // @ts-ignore
@@ -379,7 +379,7 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
 
   // finally, update the final position
   visit(root, { tagName: "section" }, (node: Element) => {
-    if (node.properties.dataFootnotes == "") {
+    if (node.properties.dataFootnotes) {
       //@ts-ignore
       node.properties.className.push("popover-hint")
       // HACK: The node.children will have length 4, and ol is the 3rd items
@@ -657,7 +657,7 @@ export function transcludeFinal(
         if (transcludeFootnoteBlock.length !== 0) {
           if (!footnoteSection) {
             footnoteSection = h(
-              "section.footnotes.main-col",
+              "section.footnotes.main-col.popover-hint",
               { dataFootnotes: "", dataTransclude: "" },
               h(
                 "h2.sr-only#footnote-label",
@@ -687,7 +687,7 @@ export function transcludeFinal(
         if (transcludeBibBlock.length !== 0) {
           if (!bibSection) {
             bibSection = h(
-              "section.bibliography.main-col",
+              "section.bibliography.main-col.popover-hint",
               { dataReferences: "", dataTransclude: "" },
               h(
                 "h2#reference-label",
