@@ -102,6 +102,17 @@ function setupHeaders() {
       window.addCleanup(() => link.removeEventListener("click", onClick))
     }
   }
+
+  const transcludedItem = document.querySelectorAll<HTMLElement>(
+    "article > section[data-footnotes][data-transclude], article > section[data-footnotes][data-transclude]",
+  )
+  if (transcludedItem.length > 0) {
+    const pageFooter = document.querySelector<HTMLElement>('section[class~="page-footer"]')
+
+    Array.from(transcludedItem).forEach((item) => {
+      pageFooter!.insertBefore(item, pageFooter!.firstChild)
+    })
+  }
 }
 
 // Set up initial state and handle navigation

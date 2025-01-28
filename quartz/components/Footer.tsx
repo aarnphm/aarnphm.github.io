@@ -52,6 +52,17 @@ export default ((userOpts?: Options) => {
             </li>
           )}
         </menu>
+        <p>
+          <a
+            href="https://quartz.jzhao.xyz/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Quartz links"
+          >
+            Quartz v{version}
+          </a>{" "}
+          © {year}
+        </p>
       </>
     )
 

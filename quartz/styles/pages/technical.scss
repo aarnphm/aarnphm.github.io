@@ -2,12 +2,21 @@
 @use "../variables.scss" as *;
 
 body[data-layout="technical"] {
-  .sidenotes,
-  .page-footer {
+  .sidenotes {
     display: none;
   }
 
+  .page-footer {
+    padding: 0;
+
+    & > .recommendations,
+    & > .backlinks {
+      display: none;
+    }
+  }
+
   @media all and ($desktop) {
+    .title-col:not(.popover *),
     .main-col:not(.popover *) {
       grid-column: 5/10;
     }

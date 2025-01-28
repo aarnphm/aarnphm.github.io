@@ -18,7 +18,7 @@ import {
   resolveRelative,
 } from "../util/path"
 import { githubSvg, substackSvg, bskySvg, twitterSvg, svgOptions } from "./svg"
-import { visit } from "unist-util-visit"
+import { EXIT, visit } from "unist-util-visit"
 import { Root, Element, ElementContent, Node } from "hast"
 import { i18n } from "../i18n"
 import { JSX } from "preact"
@@ -342,19 +342,14 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
         })
       }
     },
-    false,
   )
 
-  visit(
-    root,
-    function (node) {
-      if (checkFootnoteSection(node as Element)) {
-        toRemove.push(node as Element)
-        finalRefs.push(...(getFootnotesList(node as Element).children as Element[]))
-      }
-    },
-    false,
-  )
+  visit(root, function (node) {
+    if (checkFootnoteSection(node as Element)) {
+      toRemove.push(node as Element)
+      finalRefs.push(...(getFootnotesList(node as Element).children as Element[]))
+    }
+  })
 
   // we don't want to remove the last nodes
   toRemove.pop()
@@ -654,19 +649,17 @@ export function transcludeFinal(
         node.children = children
 
         // support transcluding footnote and bib data
-        let footnoteSection: Element | undefined
-        let bibSection: Element | undefined
-        visit(
-          root,
-          (node) => {
-            if (checkFootnoteSection(node as Element)) {
-              footnoteSection = node as Element
-            } else if (checkBibSection(node as Element)) {
-              bibSection = node as Element
-            }
-          },
-          true,
-        )
+        let footnoteSection: Element | undefined = undefined
+        let bibSection: Element | undefined = undefined
+        visit(root, (node) => {
+          if (checkFootnoteSection(node as Element)) {
+            footnoteSection = node as Element
+            return EXIT
+          } else if (checkBibSection(node as Element)) {
+            bibSection = node as Element
+            return EXIT
+          }
+        })
 
         const transcludeFootnoteBlock: Element[] = []
         const transcludeBibBlock: Element[] = []
@@ -703,8 +696,8 @@ export function transcludeFinal(
         if (transcludeFootnoteBlock.length !== 0) {
           if (!footnoteSection) {
             footnoteSection = h(
-              "section.footnotes",
-              { dataFootnotes: "" },
+              "section.footnotes.main-col",
+              { dataFootnotes: "", dataTransclude: "" },
               h(
                 "h2.sr-only#footnote-label",
                 { dir: "auto" },
@@ -725,7 +718,7 @@ export function transcludeFinal(
             )
             root.children.push(footnoteSection)
           } else {
-            visit(footnoteSection, { tagName: "ol" }, (node) => {
+            visit(footnoteSection, { tagName: "ol" }, (node: Element) => {
               node.children.push(...transcludeFootnoteBlock)
             })
           }
@@ -733,8 +726,8 @@ export function transcludeFinal(
         if (transcludeBibBlock.length !== 0) {
           if (!bibSection) {
             bibSection = h(
-              "section.bibliography",
-              { dataReferences: "" },
+              "section.bibliography.main-col",
+              { dataReferences: "", dataTransclude: "" },
               h(
                 "h2#reference-label",
                 { dir: "auto" },
@@ -746,7 +739,7 @@ export function transcludeFinal(
             )
             root.children.push(bibSection)
           } else {
-            visit(bibSection, { tagName: "ul" }, (node) => {
+            visit(bibSection, { tagName: "ul" }, (node: Element) => {
               node.children.push(...transcludeBibBlock)
             })
           }
@@ -1152,7 +1145,22 @@ export function renderPage(
   // for the file cached in contentMap in build.ts
   const root = clone(componentData.tree) as Root
   // NOTE: set componentData.tree to the edited html that has transclusions rendered
+
   componentData.tree = transcludeFinal(ctx, root, componentData)
+
+  // NOTE: Finally, we dump out the data-references and data-footnotes down to page footer, if exists
+  const retrieval: Element[] = []
+  visit(componentData.tree as Root, { tagName: "section" }, (node, index, parent) => {
+    if (node.properties.dataTransclude) {
+      console.log(node)
+    }
+    if (node.properties?.dataReferences === "" || node.properties?.dataFootnotes === "") {
+      retrieval.push(node)
+      const className = new Set([...((node.properties.className ?? []) as string[]), "main-col"])
+      node.properties.className = [...className]
+      parent?.children.splice(index!, 1)
+    }
+  })
 
   if (slug === "index") {
     components = {
@@ -1294,14 +1302,16 @@ export function renderPage(
           </section>
           {disablePageFooter ? (
             <></>
-          ) : afterBody.length > 0 ? (
-            <section class={classNames(undefined, "page-footer", "all-col", "grid")}>
-              {afterBody.map((BodyComponent) => (
-                <BodyComponent {...componentData} />
-              ))}
-            </section>
           ) : (
-            <></>
+            <section class={classNames(undefined, "page-footer", "all-col", "grid")}>
+              {retrieval.length > 0 &&
+                htmlToJsx(componentData.fileData.filePath!, {
+                  type: "root",
+                  children: retrieval,
+                } as Node)}
+              {afterBody.length > 0 &&
+                afterBody.map((BodyComponent) => <BodyComponent {...componentData} />)}
+            </section>
           )}
           {slug !== "index" && <Footer {...componentData} />}
           {htmlToJsx(

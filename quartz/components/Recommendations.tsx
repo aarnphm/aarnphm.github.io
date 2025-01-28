@@ -56,6 +56,7 @@ export default ((userOpts?: Options) => {
   Recommendations.css = `
 .recommendations {
   margin-bottom: 1.9rem;
+  border-top: 1px solid var(--lightgray);
 
   & > .overflow {
     padding-inline-start: 12px;

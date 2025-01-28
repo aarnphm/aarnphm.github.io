@@ -41,27 +41,26 @@
       <p>You have stumbled upon the <a
           href="https://www.ietf.org/rfc/rfc4287.txt" target="_blank"
           class="anchor-like"><span class="indicator-hook" />atom feed</a> of my working notes, as
-      do to all paths of this digital garden. Much of these notes/writings are written for my own
-      consumption, a sort of <a target="_blank"
+        do to all paths of this digital garden. Much of these notes/writings are written for my own
+        consumption, a sort of <a target="_blank"
           href="https://aarnphm.xyz/tags/evergreen">
           <span>evergreen</span>
         </a> notes. <br />If any of these doesn't make sense for
-      you, it is probably because I didn't write it for you. <br /> 👋 you can reach out to me on <a
+        you, it is probably because I didn't write it for you. <br /> 👋 you can reach out to me on <a
           href="https://twitter.com/aarnphm_" target="_blank">twitter</a> (Yep, I refused to call it
-      call it X) </p> or you can ping me <a
-        href="https://bsky.app/profile/aarnphm.xyz" target="_blank">bluesky</a> to finish an article
-      lol :) <a target="_blank">
+        call it X) </p>
+      <a target="_blank">
         <xsl:attribute name="href">
           <xsl:value-of select="atom:link[@rel='alternate']/@href" />
         </xsl:attribute>main
-      site &#x2192;</a>
+        site &#x2192;</a>
 
       <p>There is also a <a href="/index.xml">RSS feed</a> of the site. They are <a
           href="https://news.ycombinator.com/item?id=26168493" target="_blank">semantically
           different but achieve the same thing.</a></p>
 
       <p>Visit <a href="https://aboutfeeds.com/">About
-      Feeds</a> to get started with newsreaders and subscribing. It’s free. </p>
+          Feeds</a> to get started with newsreaders and subscribing. It’s free. </p>
 
       <blockquote
         class="callout tip" data-callout="tip">
@@ -73,7 +72,7 @@
         </div>
         <div class="callout-content" dir="auto">
           <p dir="auto">On most slash-command supported interface, you can use the following <code>/feed
-      subscribe <xsl:value-of select="atom:link[@rel='alternate']/@href" />/feed.xml</code></p>
+            subscribe <xsl:value-of select="atom:link[@rel='alternate']/@href" />/feed.xml</code></p>
         </div>
       </blockquote>
     </header>

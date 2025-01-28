@@ -4,7 +4,7 @@ tags:
   - ml
 date: "2025-01-25"
 description: and OSS AI ftw.
-modified: 2025-01-26 09:36:39 GMT-05:00
+modified: 2025-01-28 03:33:55 GMT-05:00
 title: DeepSeek R1
 ---
 
@@ -29,5 +29,3 @@ uses [[thoughts/Attention#Multi-head Latent Attention (MLA)]], a mixture-of-expe
 ![[thoughts/images/deepseek-v3-arch.webp|DeepSeek-V3 architecture with MLA and MoE]]
 
 ![[thoughts/Transformers#multi-token prediction.|multi-token prediction]]
-
----
