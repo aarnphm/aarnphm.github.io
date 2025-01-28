@@ -29,8 +29,8 @@ export async function getSatoriFont(
   let header, body
 
   if (useGoogleFonts) {
-    header = await fetchTtf(cfg.theme.typography.header, headerWeight)
-    body = await fetchTtf(cfg.theme.typography.body, bodyWeight)
+    header = await fetchTtf("EB Garamond", headerWeight)
+    body = await fetchTtf("EB Garamond", bodyWeight)
   } else {
     header = await fetchFonts(headerFont)
     body = await fetchFonts(bodyFont)

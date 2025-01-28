@@ -5,7 +5,7 @@ tags:
   - technical
 date: 2024-02-07
 description: and the backbone of the AI progress.
-modified: 2025-01-28 01:14:55 GMT-05:00
+modified: 2025-01-28 04:37:34 GMT-05:00
 title: Transformers
 ---
 

@@ -3,10 +3,10 @@ id: colophon
 tags:
   - evergreen
   - design
-date: "2024-12-10"
+date: 2024-12-10
 description: nobby designer word for "the design of the current site"
 lang: en
-modified: 2025-01-28 01:49:19 GMT-05:00
+modified: 2025-01-28 04:32:10 GMT-05:00
 socials:
   twitter: https://x.com/aarnphm_/status/1861550609834402129
 title: colophon

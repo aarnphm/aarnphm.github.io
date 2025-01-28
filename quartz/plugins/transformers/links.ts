@@ -160,6 +160,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isWikipedia: dest.includes("wikipedia.org"),
                   isLessWrong: dest.includes("lesswrong.com"),
                   isBentoml: dest.includes("bentoml.com"),
+                  isNeovim: dest.includes("neovim.io"),
+                  isQuartz: dest.includes("quartz.jzhao.xyz"),
                   isObsidian: dest.includes("obsidian.md"),
                   isGithub: dest.includes("github.com"),
                   isSubstack: dest.includes("substack.com"),
@@ -225,6 +227,10 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   ctx.node.children.push(
                     createIconElement("/static/favicons/lesswrong.avif", "LessWrong"),
                   )
+                } else if (linkTypes.isQuartz) {
+                  ctx.node.children.push(createIconElement("/static/favicons/quartz.png", "Quartz"))
+                } else if (linkTypes.isNeovim) {
+                  ctx.node.children.push(createIconElement("/static/favicons/neovim.svg", "Neovim"))
                 } else if (linkTypes.isBentoml) {
                   ctx.node.children.push(bentomlSvg)
                 } else if (linkTypes.isObsidian) {
