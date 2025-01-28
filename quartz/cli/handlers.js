@@ -16,7 +16,7 @@ import { styleText } from "node:util"
 
 /**
  * Handles `npx quartz build`
- * @param {*} argv arguments for `build`
+ * @param {import("../util/ctx.ts").Argv} argv arguments for `build`
  */
 export async function handleBuild(argv) {
   console.log("\n" + styleText(["bgGreen", "black"], `Quartz v${version}`) + "\n")
@@ -242,15 +242,10 @@ export async function handleBuild(argv) {
       ),
     )
     console.log("[serve] hint: exit with ctrl+c")
-    const paths = await globby([
-      "**/*.ts",
-      "**/*.js",
-      "**/*.tsx",
-      "**/*.scss",
-      "package.json",
-      "**/*.bib",
-      "**/*.xsl",
-    ])
+    const paths = await globby(
+      ["**/*.ts", "**/*.js", "**/*.tsx", "**/*.scss", "package.json", "**/*.bib", "**/*.xsl"],
+      { gitignore: true },
+    )
     chokidar
       .watch(paths, { ignoreInitial: true })
       .on("add", () => build(clientRefresh))

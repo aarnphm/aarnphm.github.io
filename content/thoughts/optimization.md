@@ -2,9 +2,9 @@
 id: optimization
 tags:
   - ml
-date: "2024-10-31"
+date: 2024-10-31
 description: A list of optimization functions that can be used in ML training to reduce loss, and more.
-modified: 2025-01-27 09:42:41 GMT-05:00
+modified: 2025-01-28 08:43:23 GMT-05:00
 title: ml optimization
 ---
 
@@ -125,9 +125,9 @@ _note_: reduce number of hidden units $d_\text{ff}$ (second dimension of $W$ and
 
 ## JumpReLU
 
-@erichson2019jumpreluretrofitdefensestrategy address robustness through adversarial examples.
+@erichson2019jumpreluretrofitdefensestrategy proposes JumpRELU to address robustness through adversarial examples.
 
-application: @rajamanoharan2024jumpingaheadimprovingreconstruction proves that it imroves construction fielity [[thoughts/sparse autoencoder#Gated SAE]]
+@rajamanoharan2024jumpingaheadimprovingreconstruction then apply this to improves construction fielity as [[thoughts/sparse autoencoder#Gated SAE]]
 
 $$
 J(z) \coloneqq z H(z - \kappa) = \begin{cases} 0 & \text{if } z \leq \kappa \\ z & \text{if } z > \kappa \end{cases}

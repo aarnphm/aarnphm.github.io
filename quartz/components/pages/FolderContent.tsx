@@ -2,7 +2,7 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import path from "path"
 import style from "../styles/listPage.scss"
 import PageListConstructor, { byDateAndAlphabetical, SortFn } from "../PageList"
-import { stripSlashes, simplifySlug, joinSegments, FullSlug } from "../../util/path"
+import { stripSlashes, simplifySlug, joinSegments, FullSlug, splitAnchor } from "../../util/path"
 import { Root } from "hast"
 import { htmlToJsx } from "../../util/jsx"
 import { QuartzPluginData } from "../../plugins/vfile"
@@ -121,10 +121,21 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         ),
       )
 
+      let entrySlug: string | undefined = undefined
+
       if (!processedPaths.has(filePath) && shouldIncludeFile(filePath) && !isAlias) {
         processedPaths.add(filePath)
         const ext = path.extname(filePath)
         const baseFileName = path.basename(filePath, ext)
+        if (ext.includes("pdf")) {
+          // we will resolve this manually
+          // url.resolve is considered legacy
+          // WHATWG equivalent https://nodejs.dev/en/api/v18/url/#urlresolvefrom-to
+          const url = new URL(`/${slug}`, "https://base.com")
+          const canonicalDest = url.pathname
+          let [destCanonical, _destAnchor] = splitAnchor(canonicalDest)
+          entrySlug = decodeURIComponent(stripSlashes(destCanonical, true))
+        }
 
         // Find all associated files with the same base name
         const associatedFiles = allFiles.filter((f) => {
@@ -143,7 +154,9 @@ export default ((opts?: Partial<FolderContentOptions>) => {
             : fileData.dates || defaultDate
 
         entries.push({
-          slug: joinSegments(folderSlug, filePath) as FullSlug,
+          slug: ext.includes("pdf")
+            ? (`/${entrySlug ?? "index"}` as FullSlug)
+            : (joinSegments(folderSlug, filePath) as FullSlug),
           frontmatter: {
             title: baseFileName,
             tags: [ext.split(".").at(-1) as string],
