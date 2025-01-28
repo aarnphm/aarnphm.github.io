@@ -2,5 +2,6 @@ name = "aarnphm"
 compatibility_date = "2025-01-21"
 pages_build_output_dir = "public"
 
-[vars]
-GIT_LFS_SKIP_SMUDGE = 1
+[[r2_buckets]]
+binding = "sites-blob"
+bucket_name = "sites"

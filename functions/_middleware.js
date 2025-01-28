@@ -1,5 +1,4 @@
-// https://media.githubusercontent.com/media/aarnphm/aarnphm.github.io/refs/heads/main/content/{url}
-// url: thoughts/university/twenty-four-twenty-five/sfwr-2fa3/Automata%20and%20Computability.pdf
+// raw URL: https://raw.githubusercontent.com/aarnphm/aarnphm.github.io/refs/heads/main/content/thoughts/university/twenty-four-twenty-five/sfwr-2fa3/Automata%20and%20Computability.pdf
 
 import LFS_CONFIG from "./.lfsconfig.txt"
 
@@ -213,7 +212,7 @@ async function getObjectFromLFS(objectInfo, request) {
 
 /**
  * @type {import("@cloudflare/workers-types").PagesFunction<{
- *   LFS_BUCKET?: R2Bucket,
+ *   LFS_BUCKET?: string,
  *   LFS_BUCKET_URL?: string,
  *   KEEP_HEADERS?: string
  * }>}
@@ -233,33 +232,31 @@ export async function onRequest(context) {
     })
   }
 
-  const response =
-    request.method === "GET"
-      ? await context.next()
-      : // if we request the HEAD of an LFS pointer, we want to GET the underlying
-        // object's info (including URL) and then return the object's HEAD instead
-        // so that Content-Length, etc. are correct
-        await context.next(context.request, { method: "GET" })
+  if (url.pathname.endsWith(".pdf")) {
+    const rawUrl = `https://raw.githubusercontent.com/aarnphm/aarnphm.github.io/refs/heads/main/content${url.pathname}`
 
-  if (response.body) {
-    const objectInfo = await getObjectInfo(response.clone())
-    if (objectInfo) {
-      const objectResponse =
-        env.LFS_BUCKET && env.LFS_BUCKET_URL
-          ? await getObjectFromBucket(
-              context,
-              env.LFS_BUCKET,
-              env.LFS_BUCKET_URL,
-              objectInfo.oid,
-              request,
-            )
-          : await getObjectFromLFS(objectInfo, request)
+    const response = await fetch(new Request(rawUrl, { method: "GET", headers: request.headers }))
 
-      // TODO: copy more headers from source `response`? rn just Cache-Control
-      const keepHeaders = (env.KEEP_HEADERS || KEEP_HEADERS).split(",")
-      return withHeadersFromSource(objectResponse, response, keepHeaders)
+    if (response.body) {
+      const objectInfo = await getObjectInfo(response.clone())
+      if (objectInfo) {
+        const objectResponse =
+          env.LFS_BUCKET && env.LFS_BUCKET_URL
+            ? await getObjectFromBucket(
+                context,
+                env.LFS_BUCKET,
+                env.LFS_BUCKET_URL,
+                objectInfo.oid,
+                request,
+              )
+            : await getObjectFromLFS(objectInfo, request)
+
+        // TODO: copy more headers from source `response`? rn just Cache-Control
+        const keepHeaders = (env.KEEP_HEADERS || KEEP_HEADERS).split(",")
+        return withHeadersFromSource(objectResponse, response, keepHeaders)
+      }
     }
   }
 
-  return response
+  return await context.next()
 }
