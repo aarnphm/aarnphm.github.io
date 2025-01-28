@@ -7,7 +7,7 @@ import SearchConstructor from "./Search"
 import { byDateAndAlphabetical } from "./PageList"
 import { getDate, Date as DateComponent } from "./Date"
 import { classNames } from "../util/lang"
-import { JSResourceToScriptElement, StaticResources } from "../util/resources"
+import { JSResource, JSResourceToScriptElement, StaticResources } from "../util/resources"
 import {
   clone,
   FullSlug,
@@ -398,15 +398,8 @@ export function mergeIsomorphic(ast: Node, suffix?: string) {
   mergeFootnotes(ast as Root, suffix)
 }
 
-export function pageResources(
-  baseDir: FullSlug | RelativeURL,
-  fileData: QuartzPluginData,
-  staticResources: StaticResources,
-): StaticResources {
-  const contentIndexPath = joinSegments(baseDir, "static/contentIndex.json")
-  const contentIndexScript = `const fetchData = fetch("${contentIndexPath}").then(data => data.json())`
-
-  const resources: StaticResources = {
+export const pageResources = (baseDir: FullSlug | RelativeURL, staticResources: StaticResources) =>
+  ({
     css: [
       { content: joinSegments(baseDir, "index.css") },
       { content: collapseHeaderStyle, inline: true },
@@ -422,7 +415,7 @@ export function pageResources(
         loadTime: "beforeDOMReady",
         contentType: "inline",
         spaPreserve: true,
-        script: contentIndexScript,
+        script: `const fetchData = fetch("${joinSegments(baseDir, "static/contentIndex.json")}").then(data => data.json())`,
       },
       {
         script: collapseHeaderScript,
@@ -430,21 +423,16 @@ export function pageResources(
         contentType: "inline",
       },
       ...staticResources.js,
+      {
+        src: joinSegments(baseDir, "postscript.js"),
+        loadTime: "afterDOMReady",
+        moduleType: "module",
+        contentType: "external",
+      },
     ],
-  }
+  }) satisfies StaticResources
 
-  // NOTE: we have to put this last to make sure spa.inline.ts is the last item.
-  resources.js.push({
-    src: joinSegments(baseDir, "postscript.js"),
-    loadTime: "afterDOMReady",
-    moduleType: "module",
-    contentType: "external",
-  })
-
-  return resources
-}
-
-const defaultTranscludeOptions: TranscludeOptions = { dynalist: true, title: true }
+const defaultTranscludeOpts: TranscludeOptions = { dynalist: true, title: true }
 
 interface TranscludeStats {
   words: number
@@ -472,9 +460,9 @@ export function transcludeFinal(
   const slug = fileData.slug as FullSlug
   let opts: TranscludeOptions
   if (userOpts) {
-    opts = { ...defaultTranscludeOptions, ...userOpts }
+    opts = { ...defaultTranscludeOpts, ...userOpts }
   } else {
-    opts = defaultTranscludeOptions
+    opts = defaultTranscludeOpts
   }
 
   if (fileData.frontmatter?.transclude) {
