@@ -1382,7 +1382,8 @@ export function renderPage(
           defer
           src={"https://static.cloudflareinsights.com/beacon.min.js"}
           data-cf-beacon='{"token": "3b6a9ecda4294f8bb5770c2bfb44078c"}'
-          crossorigin={"anonymous"}
+          crossOrigin={"anonymous"}
+          spa-preserve
         />
       )}
       {/* End Cloudflare Web Analytics */}
