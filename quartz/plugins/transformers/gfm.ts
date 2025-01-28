@@ -40,6 +40,14 @@ export const GitHubFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> =
                 node.children = [h("span.highlight-span", node.children)]
               },
             )
+            visit(tree, { tagName: "section" }, (node) => {
+              if (node.properties.dataFootnotes == "") {
+                const className = Array.isArray(node.properties.className)
+                  ? node.properties.className
+                  : (node.properties.className = [])
+                className.push("popover-hint")
+              }
+            })
           }
         }, [
           rehypeAutolinkHeadings,

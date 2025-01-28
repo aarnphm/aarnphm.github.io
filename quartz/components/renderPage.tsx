@@ -284,9 +284,11 @@ function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
 
   // finally, update the final position
   visit(root, { tagName: "section" }, (node: Element, index, parent) => {
-    if (node.properties.dataReferences) {
-      // @ts-ignore
-      node.properties.className.push("popover-hint")
+    if (node.properties.dataReferences == "") {
+      const className = Array.isArray(node.properties.className)
+        ? node.properties.className
+        : (node.properties.className = [])
+      className.push("popover-hint")
       // @ts-ignore
       node.children[1].children = finalRefs
       parent!.children.splice(index as number, 1, node)
@@ -379,9 +381,11 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
 
   // finally, update the final position
   visit(root, { tagName: "section" }, (node: Element) => {
-    if (node.properties.dataFootnotes) {
-      //@ts-ignore
-      node.properties.className.push("popover-hint")
+    if (node.properties.dataFootnotes == "") {
+      const className = Array.isArray(node.properties.className)
+        ? node.properties.className
+        : (node.properties.className = [])
+      className.push("popover-hint")
       // HACK: The node.children will have length 4, and ol is the 3rd items
       const ol = node.children[2] as Element
       ol.children = sortedRefs
