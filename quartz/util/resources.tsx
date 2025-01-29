@@ -6,6 +6,7 @@ export type JSResource = {
   moduleType?: "module"
   spaPreserve?: boolean
   async?: boolean
+  crossOrigin?: "anonymous" | "use-credentials"
 } & (
   | {
       src: string
@@ -34,6 +35,7 @@ export function JSResourceToScriptElement(resource: JSResource, preserve?: boole
         type={scriptType}
         spa-preserve={spaPreserve}
         async={resource.async}
+        crossOrigin={resource.crossOrigin}
       />
     )
   } else {
@@ -43,6 +45,7 @@ export function JSResourceToScriptElement(resource: JSResource, preserve?: boole
         key={randomUUID()}
         type={scriptType}
         spa-preserve={spaPreserve}
+        crossOrigin={resource.crossOrigin}
         dangerouslySetInnerHTML={{ __html: content }}
       />
     )

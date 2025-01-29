@@ -1,21 +1,16 @@
 ---
 id: Freud
 tags:
-  - seed
   - philosophy
 date: "2023-10-10"
-modified: 2025-01-17 05:54:05 GMT-05:00
+description: Austrian neurologist and founder of psychoanalysis
+modified: 2025-01-29 08:14:18 GMT-05:00
 title: Sigmund Freud
 ---
-
-## Beyond the Pleasure Principle
 
 ## The Ego and The Id
 
 > The state of consciousness is very transitory
-
-- [ ] P.16-18
-- [ ] The relationship between Pcts and Cs.
 
 ### Cs, Pcs, Ucs.
 
@@ -33,7 +28,9 @@ Internal perception yields sensation of processes arising in the most diverse st
 
 These sensations are my views about their idea for this. These sensations are multilocular, like external perceptions; they may come from different places simultaneously and may thus have different or even opposite qualities.
 
+```quotes
 Sensations of a pleasurable nature have not anything inherently impelling about them, whereas unpleasurable ones have it in the highest degree. The latter impel towards change, towards discharge, and that is why we interpret un-pleasure as implying a heightening and pleasure a lowering of energic cathexis.' Let us call what becomes conscious as pleasure and unpleasure a quantitative and qualitative
+```
 
 'something' in the course of mental events; the question then is whether this 'something' can become conscious in the place where it is, or whether it must first be transmitted to the system Pept.
 

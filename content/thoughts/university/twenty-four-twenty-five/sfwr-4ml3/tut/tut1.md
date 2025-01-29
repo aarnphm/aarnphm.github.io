@@ -1,9 +1,12 @@
 ---
 id: tut1
+aliases:
+  - linalg
 tags:
   - sfwr4ml3
 date: "2024-09-11"
-modified: "2024-10-28"
+description: linear algebra a la carte.
+modified: 2025-01-29 08:10:07 GMT-05:00
 title: linalg review
 transclude:
   title: false

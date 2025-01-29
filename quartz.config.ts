@@ -92,10 +92,7 @@ const config: QuartzConfig = {
         },
         keepBackground: true,
       }),
-      Plugin.Citations({
-        bibliographyFile: "./content/References.bib",
-        linkCitations: true,
-      }),
+      Plugin.Citations({ bibliography: "./content/References.bib" }),
       Plugin.ObsidianFlavoredMarkdown({ parseTags: false }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.CrawlLinks({

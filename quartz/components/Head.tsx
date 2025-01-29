@@ -70,6 +70,11 @@ export default (() => {
           </>
         )}
         <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin={"anonymous"} />
+        <link
+          rel="preconnect"
+          href="https://static.cloudflareinsights.com"
+          crossOrigin={"anonymous"}
+        />
         <link rel="preconnect" href="https://plausible.io" crossOrigin={"anonymous"} />
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin={"anonymous"} />
         {cfg.baseUrl && (

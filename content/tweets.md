@@ -5,9 +5,9 @@ aliases:
   - bookmarks
 tags:
   - seed
-date: 2024-10-24
-description: collections of tweets I like, since bookmark is getting crowded.
-modified: 2025-01-28 00:10:27 GMT-05:00
+date: "2024-10-24"
+description: collections of tweets, since bookmark is getting crowded.
+modified: 2025-01-29 08:37:19 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -121,6 +121,8 @@ https://x.com/cath_land/status/1881906298817786224 <!-- linktree but open source
 https://x.com/tobi/status/1878957750576906484 <!-- Tobi replies on Canada's Tech contribution to overall GDP -->
 
 https://x.com/chapman_bliss/status/1881613396359127467 <!-- Last day at Neural Link -->
+
+https://x.com/adonis_singh/status/1884499176865632672 <!-- R1 one-shotted into markets and individualism -->
 
 ## [[thoughts/Machine learning|machine learning]]
 

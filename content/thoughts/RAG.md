@@ -4,7 +4,8 @@ tags:
   - technical
   - ml
 date: "2024-02-07"
-modified: 2025-01-19 03:58:38 GMT-05:00
+description: and provide high-quality "sensors" to 'strong intelligence systems'.
+modified: 2025-01-29 08:29:17 GMT-05:00
 title: RAG
 ---
 
@@ -14,6 +15,6 @@ The idea of RAG is to combine a pretrained retriever and a seq2seq to do end-to-
 
 Two core components include [[thoughts/Embedding|embeddings]] and vector databases.
 
-Very useful for building "agents". In a sense agents are complex RAG application.
+Very useful for building "agents": Agents are complex RAG application.
 
 [^ref]

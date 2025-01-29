@@ -36,7 +36,8 @@ import curiusFriendScript from "./scripts/curius-friends.inline"
 import { htmlToJsx } from "../util/jsx"
 import Content from "./pages/Content"
 import { BuildCtx } from "../util/ctx"
-import { checkBib } from "../plugins/transformers/citations"
+import { checkBib, checkBibSection } from "../plugins/transformers/citations"
+import { checkFootnoteRef, checkFootnoteSection } from "../plugins/transformers/gfm"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -297,15 +298,6 @@ interface Note {
   id: string
 }
 
-const checkFootnoteRef = ({ type, tagName, properties }: Element) =>
-  type === "element" && tagName === "a" && Boolean(properties) && properties.dataFootnoteRef === ""
-
-const checkFootnoteSection = ({ type, tagName, properties }: Element) =>
-  type === "element" && tagName === "section" && properties.dataFootnotes == ""
-
-const checkBibSection = ({ type, tagName, properties }: Element) =>
-  type === "element" && tagName === "section" && properties.dataReferences == ""
-
 const getFootnotesList = (node: Element) =>
   (node.children as Element[]).filter((val) => val.tagName === "ol")[0]
 
@@ -420,6 +412,7 @@ export const pageResources = (baseDir: FullSlug | RelativeURL, staticResources: 
         loadTime: "afterDOMReady",
         moduleType: "module",
         contentType: "external",
+        crossOrigin: "anonymous",
       },
     ],
   }) satisfies StaticResources
@@ -433,9 +426,8 @@ interface TranscludeStats {
 }
 
 export function transcludeFinal(
-  _ctx: BuildCtx,
   root: Root,
-  { cfg, allFiles, fileData, externalResources }: QuartzComponentProps,
+  { cfg, allFiles, fileData }: QuartzComponentProps,
   userOpts?: Partial<TranscludeOptions>,
 ): Root {
   // NOTE: return early these cases, we probably don't want to transclude them anw
@@ -1012,20 +1004,6 @@ export const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
                   curius.app/aaron-pham
                 </a>
               </em>
-              <svg
-                id="curius-refetch"
-                aria-labelledby="refetch"
-                data-tooltip="refresh"
-                data-id="refetch"
-                height="12"
-                type="button"
-                viewBox="0 0 24 24"
-                width="12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <use href="#refetch-icon" />
-              </svg>
             </div>
           </div>
           <div id="curius-fetching-text" />
@@ -1075,6 +1053,9 @@ const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {
   const { cfg, displayClass } = props
   return (
     <div class={classNames(displayClass, "curius-trail")} data-limits={3} data-locale={cfg.locale}>
+      <h4 style={["font-size: initial", "margin-top: unset", "margin-bottom: 0.5rem"].join(";")}>
+        sentiers.
+      </h4>
       <ul class="section-ul" id="trail-list" />
     </div>
   )
@@ -1093,21 +1074,18 @@ export function renderPage(
   const root = clone(componentData.tree) as Root
   // NOTE: set componentData.tree to the edited html that has transclusions rendered
 
-  const tree = transcludeFinal(ctx, root, componentData)
+  const tree = transcludeFinal(root, componentData)
 
   // NOTE: Finally, we dump out the data-references and data-footnotes down to page footer, if exists
-  const retrieval: Element[] = []
+  let retrieval: Set<Element> = new Set<Element>()
   visit(tree, { tagName: "section" }, (node, index, parent) => {
-    if (node.properties.dataTransclude) {
-      console.log(node)
-    }
     if (node.properties?.dataReferences === "" || node.properties?.dataFootnotes === "") {
-      retrieval.push(node)
       const className = Array.isArray(node.properties.className)
         ? node.properties.className
         : (node.properties.className = [])
       className.push("main-col")
-      parent?.children.splice(index!, 1)
+      const els = new Set(parent?.children.splice(index!, 1))
+      retrieval = retrieval.union(els)
     }
   })
   componentData.tree = tree
@@ -1168,8 +1146,6 @@ export function renderPage(
       footer: FooterConstructor({ layout: "menu" }),
     }
   }
-
-  const disablePageFooter = componentData.fileData.frontmatter?.poem || slug === "curius"
 
   // Filter out components that should be skipped during serve
   const serve = (components: RenderComponents) => {
@@ -1245,22 +1221,15 @@ export function renderPage(
               <div class="wc-inner" />
             </div>
           </section>
-          {disablePageFooter ? (
-            <></>
-          ) : afterBody.length > 0 ? (
-            <section class="page-footer popover-hint grid all-col">
-              {retrieval.length > 0 &&
-                htmlToJsx(componentData.fileData.filePath!, {
-                  type: "root",
-                  children: retrieval,
-                } as Node)}
-              {afterBody.length > 0 &&
-                afterBody.map((BodyComponent) => <BodyComponent {...componentData} />)}
-            </section>
-          ) : (
-            <></>
-          )}
-          {slug !== "index" && <Footer {...componentData} />}
+          <section class="page-footer popover-hint grid all-col">
+            {retrieval.size > 0 &&
+              htmlToJsx(componentData.fileData.filePath!, {
+                type: "root",
+                children: [...retrieval],
+              } as Node)}
+            {afterBody.length > 0 &&
+              afterBody.map((BodyComponent) => <BodyComponent {...componentData} />)}
+          </section>
           {htmlToJsx(
             componentData.fileData.filePath!,
             s(
@@ -1361,13 +1330,14 @@ export function renderPage(
               ],
             ),
           )}
+          {slug !== "index" && <Footer {...componentData} />}
         </main>
       </body>
       {pageResources.js
         .filter((resource) => resource.loadTime === "afterDOMReady")
         .map((res) => JSResourceToScriptElement(res))}
       {/* Cloudflare Web Analytics */}
-      {!ctx.argv.serve && (
+      {!ctx.argv.serve && process.env.CF_PAGES === "1" && (
         <script
           defer
           src={"https://static.cloudflareinsights.com/beacon.min.js"}

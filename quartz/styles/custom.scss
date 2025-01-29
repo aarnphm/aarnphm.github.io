@@ -250,23 +250,24 @@ a {
   }
 
   &.internal.tag-link {
-    border-radius: unset;
-    background-color: unset;
     text-decoration: none;
+    padding: 0.1em 0.4em;
+    margin: 0 0.1em;
+    border: 1px solid var(--gray);
+    border-radius: 0px;
+    font-size: 0.9em;
+    background-color: var(--base);
 
-    position: relative;
-    padding-left: 0.1em;
-
-    @include links;
-    @include indicatorHook;
-
-    &::before {
-      border-left-color: inherit;
+    &:hover {
+      background-color: var(--light);
+      border-color: var(--dark);
+      color: var(--iris);
     }
   }
 
   &.anchor-like {
     @include links;
+    @include indicatorHook;
   }
 
   &[class~="landing-links"],
@@ -484,6 +485,10 @@ body {
   grid-template-areas:
     "grid-start grid-center-one grid-end"
     "grid-start grid-center-two grid-end";
+
+  &:empty {
+    display: none;
+  }
 }
 
 .byline {
@@ -601,7 +606,8 @@ svg[data-icon] {
   & > .popover-inner {
     &[data-content-type*="pdf"] {
       iframe {
-        min-height: 700px;
+        min-height: 600px;
+        min-width: 600px;
       }
     }
 

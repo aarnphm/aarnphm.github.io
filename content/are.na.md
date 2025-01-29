@@ -1,29 +1,20 @@
 ---
 id: are.na
-tags: []
-date: "2025-01-29"
-modified: 2025-01-29 03:33:11 GMT-05:00
-title: are.na
----
-
-- [ ] ***
-  id: are.na
-  aliases:
+aliases:
   - inspiration
-    tags:
+tags:
   - technical
   - seed
-    cssclasses:
+cssclasses:
   - nolist
-    date: 2024-10-24
-    description: cool stuff on the internet. My run-down version of are[dot]na
-    modified: 2025-01-27 14:09:29 GMT-05:00
-    permalinks:
+date: "2024-10-24"
+description: cool stuff on the internet. My run-down version of are[dot]na
+modified: 2025-01-29 06:12:30 GMT-05:00
+permalinks:
   - /website
   - /resources
   - /inspo
-    title: are.na
-
+title: are.na
 ---
 
 I also like to collect [[tweets|some based tweets on the internet]], and [[books]]

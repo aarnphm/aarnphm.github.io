@@ -276,7 +276,7 @@ function createTrailEl(
 
   const headers = document.createElement("div")
   headers.classList.add("curius-trail-header")
-  headers.innerHTML = `<span class="trail-title">sentier: ${trail_name}</span><span class="trail-description">${info.description!}</span>`
+  headers.innerHTML = `<span class="trail-title"><em>${trail_name}</em></span><span class="trail-description">${info.description!}</span>`
 
   const trailLink = `${curiusBase}/trail/${info.slug}`
 

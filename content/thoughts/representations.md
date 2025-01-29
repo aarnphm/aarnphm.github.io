@@ -4,11 +4,12 @@ tags:
   - seed
   - philosophy
 date: "2024-02-25"
-modified: 2025-01-25 01:07:46 GMT-05:00
+description: and the state of being.
+modified: 2025-01-29 08:44:23 GMT-05:00
 title: representations.
 ---
 
-See also: Edward Tuffe's [The Visual Display of Quantitative Information](https://www.edwardtufte.com/book/the-visual-display-of-quantitative-information/) - ISBN-13: 978-1930824133
+resources: Edward Tuffe's [The Visual Display of Quantitative Information - ISBN-13: 978-1930824133](https://www.edwardtufte.com/book/the-visual-display-of-quantitative-information/)
 
 > [!question]
 >
@@ -38,7 +39,7 @@ Tenet:
 
 ## internals grokking
 
-Though [[thoughts/mechanistic interpretability]] to invoke agency
+In the realm of AI, how we [[thoughts/mechanistic interpretability|grok]] these systems to understand its internal representations would help us understand how we think.
 
 ==Seeing clearly== to exercise _[[thoughts/Agency|agency]]_
 
@@ -53,8 +54,8 @@ Engaged use:
 - see clearly from right perspectives. Express intent naturally and precisely.
 - Explore the possible spaces only through engaging with the information
 
-Why don't we do this more?
-
+> [!question] Why don't we do this more?
+>
 > It is a hyperreal produced from a radiating synthesis of combinatory models in a hyperspace without atmosphere.
 
 _Simulacra and Simulation, Jean Baudrillard_

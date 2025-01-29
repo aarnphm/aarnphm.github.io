@@ -1,26 +1,9 @@
 import rehypeCitation from "rehype-citation"
-import { PluggableList } from "unified"
 import { visit } from "unist-util-visit"
 import { QuartzTransformerPlugin } from "../types"
-import { Element, Text, Root as HtmlRoot } from "hast"
+import { Element, Text } from "hast"
 import { extractArxivId } from "./links"
 import { h } from "hastscript"
-
-export interface Options {
-  bibliographyFile: string[] | string
-  suppressBibliography: boolean
-  linkCitations: boolean
-  csl: string
-  prettyLinks?: boolean
-}
-
-const defaultOptions: Options = {
-  bibliographyFile: ["./bibliography.bib"],
-  suppressBibliography: false,
-  linkCitations: false,
-  csl: "apa",
-  prettyLinks: true,
-}
 
 const URL_PATTERN = /https?:\/\/[^\s<>)"]+/g
 
@@ -61,9 +44,9 @@ function getLinkType(url: string): LinkType | undefined {
   return LINK_TYPES.find((type) => type.pattern(url))
 }
 
-function createLinkElement(href: string, prettyLinks: boolean): Element {
+function createLinkElement(href: string): Element {
   const linkType = getLinkType(href)
-  const displayText = prettyLinks && linkType ? linkType.label : href
+  const displayText = linkType ? linkType.label : href
 
   return h(
     "a.csl-external-link",
@@ -72,7 +55,7 @@ function createLinkElement(href: string, prettyLinks: boolean): Element {
   )
 }
 
-function processTextNode(node: Text, prettyLinks: boolean): (Element | Text)[] {
+function processTextNode(node: Text): (Element | Text)[] {
   const text = node.value
   const matches = Array.from(text.matchAll(URL_PATTERN))
 
@@ -93,15 +76,13 @@ function processTextNode(node: Text, prettyLinks: boolean): (Element | Text)[] {
     }
 
     // Add arXiv prefix if applicable
-    if (prettyLinks) {
-      const arxivId = extractArxivId(href)
-      if (arxivId) {
-        result.push(createTextNode(`arXiv preprint arXiv:${arxivId} `))
-      }
+    const arxivId = extractArxivId(href)
+    if (arxivId) {
+      result.push(createTextNode(`arXiv preprint arXiv:${arxivId} `))
     }
 
     // Add link element
-    result.push(createLinkElement(href, prettyLinks))
+    result.push(createLinkElement(href))
     lastIndex = startIndex + href.length
   })
 
@@ -114,15 +95,15 @@ function processTextNode(node: Text, prettyLinks: boolean): (Element | Text)[] {
 }
 
 // Function to process a list of nodes
-function processNodes(nodes: (Element | Text)[], prettyLinks: boolean): (Element | Text)[] {
+function processNodes(nodes: (Element | Text)[]): (Element | Text)[] {
   return nodes.flatMap((node) => {
     if (node.type === "text") {
-      return processTextNode(node, prettyLinks)
+      return processTextNode(node)
     }
     if (node.type === "element") {
       return {
         ...node,
-        children: processNodes(node.children as (Element | Text)[], prettyLinks),
+        children: processNodes(node.children as (Element | Text)[]),
       }
     }
     return [node]
@@ -135,85 +116,75 @@ export const checkBib = ({ tagName, properties }: Element) =>
   typeof properties.href === "string" &&
   properties.href.startsWith("#bib")
 
-export const Citations: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
-  const opts = { ...defaultOptions, ...userOpts }
-  return {
-    name: "Citations",
-    htmlPlugins() {
-      const plugins: PluggableList = []
+export const checkBibSection = ({ type, tagName, properties }: Element) =>
+  type === "element" && tagName === "section" && properties.dataReferences == ""
 
-      // Add rehype-citation to the list of plugins
-      plugins.push([
-        rehypeCitation,
-        {
-          bibliography: opts.bibliographyFile,
-          suppressBibliography: opts.suppressBibliography,
-          linkCitations: opts.linkCitations,
-          csl: opts.csl,
-        },
-      ])
+interface Options {
+  bibliography: string
+}
 
-      plugins.push(
-        // Transform the HTML of the citattions; add data-no-popover property to the citation links
-        // using https://github.com/syntax-tree/unist-util-visit as they're just anochor links
-        () => {
-          return (tree, _file) => {
-            visit(
-              tree,
-              (node) => checkBib(node as Element),
-              (node, _index, parent) => {
-                node.properties["data-bib"] = true
-                // update citation to be semantically correct
-                parent.tagName = "cite"
-              },
-            )
-          }
-        },
-        // Format external links correctly
-        () => {
-          return (tree: HtmlRoot, _file) => {
-            const checkReferences = ({ properties }: Element): boolean => {
-              const className = properties?.className
-              return Array.isArray(className) && className.includes("references")
-            }
-            const checkEntries = ({ properties }: Element): boolean => {
-              const className = properties?.className
-              return Array.isArray(className) && className.includes("csl-entry")
-            }
-
-            visit(
-              tree,
-              (node) => checkReferences(node as Element),
-              (node, index, parent) => {
-                const entries: Element[] = []
-                visit(
-                  node,
-                  (node) => checkEntries(node as Element),
-                  (node) => {
-                    const { properties, children } = node as Element
-                    entries.push(
-                      h("li", properties, processNodes(children as Element[], opts.prettyLinks!)),
-                    )
-                  },
-                )
-
-                parent!.children.splice(
-                  index!,
-                  1,
-                  h(
-                    "section.bibliography",
-                    { "data-references": true },
-                    h("h2#reference-label", [{ type: "text", value: "Bibliographie" }]),
-                    h("ul", ...entries),
-                  ),
-                )
-              },
-            )
-          }
+export const Citations: QuartzTransformerPlugin<Options> = ({ bibliography }: Options) => ({
+  name: "Citations",
+  htmlPlugins: () => [
+    [
+      rehypeCitation,
+      {
+        bibliography,
+        suppressBibliography: false,
+        linkCitations: true,
+        csl: "apa",
+      },
+    ],
+    // Transform the HTML of the citattions; add data-no-popover property to the citation links
+    // using https://github.com/syntax-tree/unist-util-visit as they're just anochor links
+    () => (tree) => {
+      visit(
+        tree,
+        (node) => checkBib(node as Element),
+        (node, _index, parent) => {
+          node.properties["data-bib"] = true
+          // update citation to be semantically correct
+          parent.tagName = "cite"
         },
       )
-
-      return plugins
     },
-  }
-}
+    // Format external links correctly
+    () => (tree) => {
+      const checkReferences = ({ properties }: Element): boolean => {
+        const className = properties?.className
+        return Array.isArray(className) && className.includes("references")
+      }
+      const checkEntries = ({ properties }: Element): boolean => {
+        const className = properties?.className
+        return Array.isArray(className) && className.includes("csl-entry")
+      }
+
+      visit(
+        tree,
+        (node) => checkReferences(node as Element),
+        (node, index, parent) => {
+          const entries: Element[] = []
+          visit(
+            node,
+            (node) => checkEntries(node as Element),
+            (node) => {
+              const { properties, children } = node as Element
+              entries.push(h("li", properties, processNodes(children as Element[])))
+            },
+          )
+
+          parent!.children.splice(
+            index!,
+            1,
+            h(
+              "section.bibliography",
+              { dataReferences: true },
+              h("h2#reference-label", [{ type: "text", value: "Bibliographie" }]),
+              h("ul", ...entries),
+            ),
+          )
+        },
+      )
+    },
+  ],
+})

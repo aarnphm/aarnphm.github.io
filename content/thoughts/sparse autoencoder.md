@@ -5,7 +5,7 @@ tags:
   - interp
 date: "2024-11-04"
 description: a variations of autoencoders operate on features sparsity, also known as SAEs.
-modified: 2025-01-28 07:54:36 GMT-05:00
+modified: 2025-01-29 08:56:43 GMT-05:00
 title: sparse autoencoder
 transclude:
   title: false
@@ -62,7 +62,7 @@ Ideas: output of decoder $f(x)$ has two roles
 - detects what features acre active <= L1 is crucial to ensure sparsity in decomposition
 - _estimates_ magnitudes of active features <= L1 is unwanted bias
 
-### Gated SAE
+## Gated SAE
 
 @rajamanoharan2024improvingdictionarylearninggated applies [[thoughts/optimization#JumpReLU|JumpRELU]] and observe [[thoughts/Pareto distribution|Pareto]] improvement over training.
 
@@ -105,7 +105,7 @@ _Figure 3: Gated SAE with weight sharing between gating and magnitude paths_
 
 _Figure 4: A gated encoder become a single layer linear encoder with [[thoughts/optimization#JumpReLU]]_ [@erichson2019jumpreluretrofitdefensestrategy] _activation function_ $\sigma_\theta$
 
-### feature suppression
+## feature suppression
 
 See also: [link](https://www.alignmentforum.org/posts/3JuSjTZyMzaSeTxKk/addressing-feature-suppression-in-saes)
 
@@ -146,3 +146,13 @@ $$
 > y &= W_d f_s(x) + b_d
 > \end{aligned}
 > $$
+
+## sparse dictionary learning
+
+_find sparsity representation through linear combination of basic elements_
+
+Assumption based on linear representation hypothesis.
+
+This is useful to describe activations, but doesn't encapsulate "concepts" within a network.
+
+![[thoughts/mechanistic interpretability#^geometry]]

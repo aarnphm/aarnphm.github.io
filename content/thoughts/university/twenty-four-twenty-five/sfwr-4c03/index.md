@@ -3,10 +3,9 @@ id: index
 tags:
   - university
   - sfwr4c03
-  - networking
 date: "2025-01-06"
 description: and TCP protocols
-modified: 2025-01-15 14:37:30 GMT-05:00
+modified: 2025-01-29 09:18:56 GMT-05:00
 title: Computer Network and Security
 ---
 

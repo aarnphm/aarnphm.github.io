@@ -118,6 +118,10 @@ body[data-slug="curius"] {
   & li[id|="curius-item"] {
     background-color: inherit;
 
+    & > * {
+      margin-left: 0.25rem;
+    }
+
     &[class~="focus"]:first-child,
     &[class~="active"]:first-child,
     &[class="curius-item"]:first-child {
@@ -312,14 +316,6 @@ svg.favorite-icon {
     font-size: 11px;
   }
 
-  #curius-refetch {
-    @include iconStyles;
-    margin-left: unset;
-    opacity: 1;
-    padding: 0;
-    outline: none;
-  }
-
   .curius-search-snippet {
     color: rgb(170, 170, 170);
     text-overflow: ellipsis;
@@ -485,8 +481,8 @@ svg.favorite-icon {
 
   .curius-trail-header {
     display: flex;
-    gap: 0.5rem;
     font-size: initial;
+    flex-direction: column;
   }
 
   .curius-item-address,
@@ -522,7 +518,9 @@ svg.favorite-icon {
 
     &[class~="focus"] {
       background: var(--lightgray);
-      border: 1px solid var(--dark);
+      border: 0px solid var(--dark);
+      border-top-width: 1px;
+      border-bottom-width: 1px;
     }
   }
 

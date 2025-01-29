@@ -1,5 +1,5 @@
 import { visit } from "unist-util-visit"
-import { Element, Node, Text, Root as hastRoot } from "hast"
+import { Element, Node, Text } from "hast"
 import { version } from "../../../package.json"
 import {
   Blockquote,
@@ -83,9 +83,8 @@ export const LLM: QuartzEmitterPlugin = () => {
           allFiles,
         }
 
-        const root = transcludeFinal(ctx, clone(tree) as hastRoot, componentData, {
-          dynalist: false,
-        })
+        const opts = { dynalist: false }
+        const root = transcludeFinal(clone(tree), componentData, opts)
         const mdast = toMdast(root, {
           handlers: {
             // handle ast parsed by rehype-pretty-code

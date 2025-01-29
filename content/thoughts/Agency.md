@@ -4,14 +4,13 @@ tags:
   - seed
   - philosophy
 date: "2024-02-07"
-modified: "2024-10-05"
+description: considered to be a study of action theory
+modified: 2025-01-29 04:10:50 GMT-05:00
 title: Agency
 ---
 
-> The ability and freedom to act in their immediate environment.
-
-Considered to be a study of [[thoughts/action theory|action theory]]
-
+> The ability and freedom to [[thoughts/action theory|act]] in their immediate environment.
+>
 > Everyone talks about having agency, but when it comes to falling in love, we have none (that's why it is called falling)
 
 [[thoughts/Chaos|Chaos]] allows for agency, but too much [[thoughts/Entropy|entropy]] can create problems.

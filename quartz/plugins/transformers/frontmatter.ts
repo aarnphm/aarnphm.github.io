@@ -2,7 +2,6 @@ import matter from "gray-matter"
 import remarkFrontmatter from "remark-frontmatter"
 import { QuartzTransformerPlugin } from "../types"
 import yaml from "js-yaml"
-import toml from "toml"
 import {
   FilePath,
   FullSlug,
@@ -33,16 +32,6 @@ export function getAliasSlugs(aliases: string[], argv: Argv, file: VFile, permal
   )
 }
 
-export interface Options {
-  delimiters: string | [string, string]
-  language: "yaml" | "toml"
-}
-
-const defaultOptions: Options = {
-  delimiters: "---",
-  language: "yaml",
-}
-
 function coalesceAliases(data: { [key: string]: any }, aliases: string[]) {
   for (const alias of aliases) {
     if (data[alias] !== undefined && data[alias] !== null) return data[alias]
@@ -66,82 +55,72 @@ function coerceToArray(input: string | string[]): string[] | undefined {
     .map((tag: string | number) => tag.toString())
 }
 
-export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
-  const opts = { ...defaultOptions, ...userOpts }
-  return {
-    name: "FrontMatter",
-    markdownPlugins({ cfg, allSlugs, argv }) {
-      return [
-        [remarkFrontmatter, ["yaml", "toml"]],
-        () => {
-          return (_, file) => {
-            const { data } = matter(Buffer.from(file.value), {
-              ...opts,
-              engines: {
-                yaml: (s) => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object,
-                toml: (s) => toml.parse(s) as object,
-              },
-            })
+export const FrontMatter: QuartzTransformerPlugin = () => ({
+  name: "FrontMatter",
+  markdownPlugins: ({ cfg, allSlugs, argv }) => [
+    [remarkFrontmatter, ["yaml", "toml"]],
+    () => {
+      return (_, file) => {
+        const { data } = matter(Buffer.from(file.value), {
+          delimiters: "---",
+          language: "yaml",
+          engines: {
+            yaml: (s) => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object,
+          },
+        })
 
-            if (data.title != null && data.title.toString() !== "") {
-              data.title = data.title.toString()
-            } else {
-              data.title = file.stem ?? i18n(cfg.configuration.locale).propertyDefaults.title
-            }
+        if (data.title != null && data.title.toString() !== "") {
+          data.title = data.title.toString()
+        } else {
+          data.title = file.stem ?? i18n(cfg.configuration.locale).propertyDefaults.title
+        }
 
-            const tags = coerceToArray(coalesceAliases(data, ["tags", "tag"]))
-            if (tags) data.tags = [...new Set(tags.map((tag: string) => slugTag(tag)))]
+        const tags = coerceToArray(coalesceAliases(data, ["tags", "tag"]))
+        if (tags) data.tags = [...new Set(tags.map((tag: string) => slugTag(tag)))]
 
-            const permalinks = coerceToArray(coalesceAliases(data, ["permalinks", "permalink"]))
-            if (permalinks) data.permalinks = permalinks
+        const permalinks = coerceToArray(coalesceAliases(data, ["permalinks", "permalink"]))
+        if (permalinks) data.permalinks = permalinks
 
-            const aliases = coerceToArray(coalesceAliases(data, ["aliases", "alias"]))
-            if (aliases) {
-              data.aliases = aliases
-              const slugs = getAliasSlugs(aliases, argv, file, permalinks)
-              file.data.aliases = slugs
-              allSlugs.push(...slugs)
-            }
+        const aliases = coerceToArray(coalesceAliases(data, ["aliases", "alias"]))
+        if (aliases) {
+          data.aliases = aliases
+          const slugs = getAliasSlugs(aliases, argv, file, permalinks)
+          file.data.aliases = slugs
+          allSlugs.push(...slugs)
+        }
 
-            const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses", "cssclass"]))
-            if (cssclasses) data.cssclasses = cssclasses
+        const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses", "cssclass"]))
+        if (cssclasses) data.cssclasses = cssclasses
 
-            const socialImage = coalesceAliases(data, ["socialImage", "image", "cover"])
-            if (socialImage) data.socialImage = socialImage
+        const socialImage = coalesceAliases(data, ["socialImage", "image", "cover"])
+        if (socialImage) data.socialImage = socialImage
 
-            const description = coalesceAliases(data, ["description", "socialDescription"])
-            if (description) data.description = description
+        const description = coalesceAliases(data, ["description", "socialDescription"])
+        if (description) data.description = description
 
-            const transclude = coalesceAliases(data, ["transclude", "transclusion"])
-            if (transclude) data.transclude = transclude
+        const transclude = coalesceAliases(data, ["transclude", "transclusion"])
+        if (transclude) data.transclude = transclude
 
-            const socials = coalesceAliases(data, ["social", "socials"])
-            if (socials) data.socials = socials
+        const socials = coalesceAliases(data, ["social", "socials"])
+        if (socials) data.socials = socials
 
-            const created = coalesceAliases(data, ["date", "created"])
-            if (created) data.created = created
-            const modified = coalesceAliases(data, [
-              "lastmod",
-              "updated",
-              "last-modified",
-              "modified",
-            ])
-            if (modified) data.modified = modified
-            const published = coalesceAliases(data, ["publishDate", "published", "date"])
-            if (published) data.published = published
+        const created = coalesceAliases(data, ["date", "created"])
+        if (created) data.created = created
+        const modified = coalesceAliases(data, ["lastmod", "updated", "last-modified", "modified"])
+        if (modified) data.modified = modified
+        const published = coalesceAliases(data, ["publishDate", "published", "date"])
+        if (published) data.published = published
 
-            let layout = coalesceAliases(data, ["pageLayout", "layout"])
-            layout ||= "default"
-            data.pageLayout = layout
+        let layout = coalesceAliases(data, ["pageLayout", "layout"])
+        layout ||= "default"
+        data.pageLayout = layout
 
-            // fill in frontmatter
-            file.data.frontmatter = data as QuartzPluginData["frontmatter"]
-          }
-        },
-      ]
+        // fill in frontmatter
+        file.data.frontmatter = data as QuartzPluginData["frontmatter"]
+      }
     },
-  }
-}
+  ],
+})
 
 export type TranscludeOptions = {
   dynalist: boolean

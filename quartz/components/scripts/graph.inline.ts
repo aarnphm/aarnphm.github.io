@@ -551,8 +551,8 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
 }
 
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
-  const notesActive = document.getElementById("stacked-notes-container")
-  if (notesActive?.classList.contains("active")) return
+  const notes = document.getElementById("stacked-notes-container")
+  if (notes?.classList.contains("active")) return
 
   const slug = e.detail.url
 

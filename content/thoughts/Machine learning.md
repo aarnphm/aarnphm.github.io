@@ -4,9 +4,9 @@ tags:
   - ml
   - sapling
 date: "2024-02-07"
-modified: 2024-12-14 08:13:13 GMT-05:00
-title: Machine learning
 description: and learning machine
+modified: 2025-01-29 05:45:55 GMT-05:00
+title: Machine learning
 ---
 
 Detects pattern within [[thoughts/data]] and use it to make useful prediction.
@@ -37,6 +37,8 @@ Some main exploration:
   - [[thoughts/sparse crosscoders]]
 - Supervised Q-learning
 - [[thoughts/Low-rank adapters]]
+- Transfer learning
+  - [[thoughts/knowledge distillation]]
 
 Fields
 
