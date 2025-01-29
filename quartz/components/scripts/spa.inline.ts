@@ -597,8 +597,6 @@ class StackedNoteManager {
   }
 
   async navigate(url: URL) {
-    startLoading()
-
     if (!this.active) return await this.open()
 
     await this.add(url)
