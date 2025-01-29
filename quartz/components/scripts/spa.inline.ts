@@ -213,7 +213,7 @@ class StackedNoteManager {
     url.searchParams.delete("stackedNotes")
 
     // Add current stack state
-    this.dag.getOrderedNodes().forEach((node) => {
+    this.dag.getOrderedNodes().map((node) => {
       url.searchParams.append("stackedNotes", this.hashSlug(node.slug))
     })
 
@@ -276,14 +276,21 @@ class StackedNoteManager {
     url.hash = ""
     url.search = ""
 
-    const response = await fetchCanonical(url.toString()).catch(console.error)
+    const response = await fetchCanonical(url).catch(console.error)
     if (!response) return
 
     const txt = await response.text()
     const html = p.parseFromString(txt, "text/html")
     normalizeRelativeURLs(html, url)
-    const contents = [...html.getElementsByClassName("popover-hint")] as HTMLElement[]
-    if (contents.length === 0) return
+    const contents = new Set<HTMLElement>()
+    for (const el of Array.from(html.getElementsByClassName("popover-hint"))) {
+      if (el.classList.contains("page-footer") && !el.hasChildNodes()) {
+        el.remove()
+        continue
+      }
+      contents.add(el as HTMLElement)
+    }
+    if (contents.size == 0) return
 
     const h1 = html.querySelector("h1")
     const title =
@@ -294,7 +301,7 @@ class StackedNoteManager {
 
     html.querySelectorAll<HTMLElement>(".mermaid-viewer").forEach((el) => el.remove())
 
-    return { hash, contents, title }
+    return { hash, contents: [...contents], title }
   }
 
   private allFiles: ContentIndex | null = null
@@ -303,58 +310,7 @@ class StackedNoteManager {
       const data = await fetchData
       this.allFiles = new Map(Object.entries(data) as [FullSlug, ContentDetails][])
     }
-  }
-
-  private async getBacklinks(slug: string) {
-    await this.loadData()
-    // Return empty array if no files loaded
-    if (!this.allFiles) return []
-
-    // Find all keys where the slug appears in their links array
-    return Array.from(this.allFiles.entries()).filter(([_, value]) =>
-      value.links.includes(slug as SimpleSlug),
-    ) as [FullSlug, ContentDetails][]
-  }
-
-  private async createBacklinks(slug: string) {
-    const noteBacklinks = document.createElement("section")
-    noteBacklinks.dataset.backlinks = "true"
-    noteBacklinks.classList.add("backlinks")
-
-    const data = await this.getBacklinks(slug)
-    const hasBacklinks = data.length > 0
-
-    const title = document.createElement("h2")
-    title.textContent = "Liens retour"
-    const overflow = document.createElement("div")
-    overflow.classList.add("overflow")
-    if (hasBacklinks) {
-      for (const [fullSlug, details] of data) {
-        const anchor = document.createElement("a")
-        anchor.classList.add("internal")
-        anchor.dataset.backlink = fullSlug
-        anchor.href = resolveRelative(getFullSlug(window), fullSlug)
-
-        const title = document.createElement("div")
-        title.classList.add("small")
-        title.textContent = details.title
-
-        const description = document.createElement("div")
-        description.classList.add("description")
-        description.textContent = unescapeHTML(details.description ?? "...")
-
-        anchor.append(title, description)
-        overflow.appendChild(anchor)
-      }
-    } else {
-      const nonce = document.createElement("div")
-      nonce.textContent = "Aucun lien retour trouvé"
-      overflow.appendChild(nonce)
-    }
-
-    noteBacklinks.append(title, overflow)
-
-    return noteBacklinks
+    return this.allFiles
   }
 
   private async createNote(
@@ -367,6 +323,7 @@ class StackedNoteManager {
 
     const note = document.createElement("div")
     note.className = "stacked-note"
+    note.id = this.hashSlug(slug)
     note.style.left = `${i * left}px`
     note.style.right = `-${right}px`
     note.dataset.slug = slug
@@ -385,29 +342,25 @@ class StackedNoteManager {
     const noteContent = document.createElement("div")
     noteContent.className = "stacked-content"
     noteContent.append(...contents)
-    if (!["tags"].some((v) => slug.includes(v))) {
-      const backlinks = await this.createBacklinks(slug)
-      noteContent.append(backlinks)
-    }
 
-    await this.loadData()
-    // NOTE: some pages are auto-generated, so we don't have access here in allFiles
-    const el = this.allFiles!.get(slug as FullSlug)
-    if (el) {
-      const date = el.fileData
-        ? new Date(el.fileData.dates!.modified)
-        : el.date
-          ? new Date(el.date)
-          : new Date()
-      if (date) {
-        const dateContent = document.createElement("div")
-        dateContent.classList.add("published")
-        dateContent.innerHTML = `<span lang="fr" class="metadata" dir="auto">dernière modification par <time datetime=${date.toISOString()}>${formatDate(date)}</time></span>`
-        noteContent.append(dateContent)
+    await this.loadData().then((allFiles) => {
+      // NOTE: some pages are auto-generated, so we don't have access here in allFiles
+      const el = allFiles.get(slug as FullSlug)
+      if (el) {
+        const date = el.fileData
+          ? new Date(el.fileData.dates!.modified)
+          : el.date
+            ? new Date(el.date)
+            : new Date()
+        if (date) {
+          const dateContent = document.createElement("div")
+          dateContent.classList.add("published")
+          dateContent.innerHTML = `<span lang="fr" class="metadata" dir="auto">dernière modification par <time datetime=${date.toISOString()}>${formatDate(date)}</time></span>`
+          noteContent.append(dateContent)
+        }
       }
-    }
-
-    note.append(noteContent, noteTitle)
+      note.append(noteContent, noteTitle)
+    })
 
     const links = [...noteContent.getElementsByClassName("internal")] as HTMLAnchorElement[]
 
@@ -549,7 +502,7 @@ class StackedNoteManager {
     return true
   }
 
-  private async updateAnchorHighlights() {
+  private updateAnchorHighlights() {
     for (const el of this.dag.getOrderedNodes()) {
       Array.from(el.note.getElementsByClassName("internal")).forEach((el) =>
         el.classList.toggle("dag", this.dag.has((el as HTMLAnchorElement).href)),
@@ -598,16 +551,15 @@ class StackedNoteManager {
       ...res,
     })
     this.updateURL()
+    notifyNav(this.getSlug(href))
     return true
   }
 
   async open() {
     // We will need to construct the results from the current page, so no need to fetch here.
-    const contents = [
-      ...Array.from(document.getElementsByClassName("popover-hint")).map((el) =>
-        el.cloneNode(true),
-      ),
-    ] as HTMLElement[]
+    const contents = Array.from(document.getElementsByClassName("popover-hint")).map((el) =>
+      el.cloneNode(true),
+    ) as HTMLElement[]
     const h1 = document.querySelector("h1")
     const title =
       h1?.innerText ??
@@ -625,7 +577,7 @@ class StackedNoteManager {
     await this.initFromParams()
     this.updateURL()
     await this.render()
-    notifyNav(this.getSlug(new URL("/", window.location.toString())))
+    notifyNav(getFullSlug(window) as FullSlug)
     return true
   }
 
@@ -645,12 +597,11 @@ class StackedNoteManager {
   }
 
   async navigate(url: URL) {
-    if (!this.active) {
-      return await this.open()
-    } else {
-      await this.add(url)
-    }
-    notifyNav(this.getSlug(url))
+    startLoading()
+
+    if (!this.active) return await this.open()
+
+    await this.add(url)
     await this.render()
     return true
   }
@@ -737,7 +688,6 @@ async function navigate(url: URL, isBack: boolean = false) {
   }
   notifyNav(getFullSlug(window))
   delete announcer.dataset.persist
-  window.__MERMAID_RENDERED__ && delete window.__MERMAID_RENDERED__
 }
 
 window.spaNavigate = navigate
@@ -790,14 +740,6 @@ function createRouter() {
       return window.history.forward()
     }
   })()
-}
-
-function pruneNotesElement() {
-  document
-    .querySelectorAll(
-      'main > section[class~="page-footer"], footer, nav.breadcrumb-container, .keybind, .search, .graph',
-    )
-    .forEach((el) => el.remove())
 }
 
 createRouter()
@@ -854,7 +796,11 @@ if (getFullSlug(window) === "notes" || window.location.host === "notes.aarnphm.x
     const slug = "notes"
     baseUrl.searchParams.set("stackedNotes", btoa(slug.toString()).replace(/=+$/, ""))
     baseUrl.pathname = `/${slug}`
-    pruneNotesElement()
+    document
+      .querySelectorAll(
+        'main > section[class~="page-footer"], footer, nav.breadcrumb-container, header > .keybind, header > .search, header > .graph',
+      )
+      .forEach((el) => el.remove())
 
     const displays = document.querySelectorAll(
       'main > section[class~="page-content"], main > section[class~="page-header"]',

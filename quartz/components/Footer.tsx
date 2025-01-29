@@ -24,6 +24,7 @@ export default ((userOpts?: Options) => {
   const Footer: QuartzComponent = ({ displayClass, cfg, fileData }: QuartzComponentProps) => {
     const year = new Date().getFullYear()
     const links = opts?.links ?? []
+    const addHomeLink = fileData.frontmatter?.pageLayout! === "letter" || fileData.slug === "curius"
 
     const DateFooter = () => <DateComponent date={getDate(cfg, fileData)!} locale={cfg.locale} />
 
@@ -42,7 +43,7 @@ export default ((userOpts?: Options) => {
               </li>
             )
           })}
-          {fileData.frontmatter?.pageLayout! === "letter" && (
+          {addHomeLink && (
             <li>
               <address>
                 <a href={"/"} target="_self" class="internal">

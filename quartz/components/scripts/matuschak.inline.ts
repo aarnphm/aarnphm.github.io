@@ -40,6 +40,7 @@ document.addEventListener("nav", async (ev) => {
       header.classList.remove("grid", "all-col")
       header.classList.add(header.dataset.column!)
       window.stacked.destroy()
+      window.location.reload()
     }
   }
 

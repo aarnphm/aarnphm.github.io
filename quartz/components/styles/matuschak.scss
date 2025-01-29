@@ -78,8 +78,8 @@ body.stack-mode > #quartz-root {
 
   .expand-button,
   .aside-container,
-  .page-footer,
   .page-content,
+  .page-footer:not(#stacked-notes-container .page-footer),
   .page-header:not(#stacked-notes-container .page-header),
   ul.content-meta > li.readable-source,
   footer {

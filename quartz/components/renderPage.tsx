@@ -285,10 +285,6 @@ function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
   // finally, update the final position
   visit(root, { tagName: "section" }, (node: Element, index, parent) => {
     if (node.properties.dataReferences == "") {
-      const className = Array.isArray(node.properties.className)
-        ? node.properties.className
-        : (node.properties.className = [])
-      className.push("popover-hint")
       // @ts-ignore
       node.children[1].children = finalRefs
       parent!.children.splice(index as number, 1, node)
@@ -382,10 +378,6 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   // finally, update the final position
   visit(root, { tagName: "section" }, (node: Element) => {
     if (node.properties.dataFootnotes == "") {
-      const className = Array.isArray(node.properties.className)
-        ? node.properties.className
-        : (node.properties.className = [])
-      className.push("popover-hint")
       // HACK: The node.children will have length 4, and ol is the 3rd items
       const ol = node.children[2] as Element
       ol.children = sortedRefs
@@ -661,7 +653,7 @@ export function transcludeFinal(
         if (transcludeFootnoteBlock.length !== 0) {
           if (!footnoteSection) {
             footnoteSection = h(
-              "section.footnotes.main-col.popover-hint",
+              "section.footnotes.main-col",
               { dataFootnotes: "", dataTransclude: "" },
               h(
                 "h2.sr-only#footnote-label",
@@ -691,7 +683,7 @@ export function transcludeFinal(
         if (transcludeBibBlock.length !== 0) {
           if (!bibSection) {
             bibSection = h(
-              "section.bibliography.main-col.popover-hint",
+              "section.bibliography.main-col",
               { dataReferences: "", dataTransclude: "" },
               h(
                 "h2#reference-label",
@@ -1101,21 +1093,24 @@ export function renderPage(
   const root = clone(componentData.tree) as Root
   // NOTE: set componentData.tree to the edited html that has transclusions rendered
 
-  componentData.tree = transcludeFinal(ctx, root, componentData)
+  const tree = transcludeFinal(ctx, root, componentData)
 
   // NOTE: Finally, we dump out the data-references and data-footnotes down to page footer, if exists
   const retrieval: Element[] = []
-  visit(componentData.tree as Root, { tagName: "section" }, (node, index, parent) => {
+  visit(tree, { tagName: "section" }, (node, index, parent) => {
     if (node.properties.dataTransclude) {
       console.log(node)
     }
     if (node.properties?.dataReferences === "" || node.properties?.dataFootnotes === "") {
       retrieval.push(node)
-      const className = new Set([...((node.properties.className ?? []) as string[]), "main-col"])
-      node.properties.className = [...className]
+      const className = Array.isArray(node.properties.className)
+        ? node.properties.className
+        : (node.properties.className = [])
+      className.push("main-col")
       parent?.children.splice(index!, 1)
     }
   })
+  componentData.tree = tree
 
   if (slug === "index") {
     components = {
@@ -1209,12 +1204,7 @@ export function renderPage(
     <html lang={lang}>
       <Head {...componentData} />
       <body data-slug={slug} data-language={lang} data-menu={isMenu} data-layout={pageLayout}>
-        <main
-          data-scroll-container
-          id="quartz-root"
-          class="page grid"
-          style={{ gridTemplateRows: "repeat(5, auto)" }}
-        >
+        <main id="quartz-root" class="page grid" style={{ gridTemplateRows: "repeat(5, auto)" }}>
           <Header {...componentData} headerStyle={headerStyle}>
             {header.map((HeaderComponent) => (
               <HeaderComponent {...componentData} />
@@ -1258,7 +1248,7 @@ export function renderPage(
           {disablePageFooter ? (
             <></>
           ) : afterBody.length > 0 ? (
-            <section class={classNames(undefined, "page-footer", "all-col", "grid")}>
+            <section class="page-footer popover-hint grid all-col">
               {retrieval.length > 0 &&
                 htmlToJsx(componentData.fileData.filePath!, {
                   type: "root",
