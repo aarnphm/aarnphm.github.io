@@ -46,16 +46,18 @@ export default ((userOpts?: Partial<SearchOptions>) => {
         )}
         <search id="search-container">
           <form id="search-space">
-            <input
-              autocomplete="off"
-              id="search-bar"
-              name="search"
-              type="text"
-              aria-label={searchPlaceholder}
-              placeholder={searchPlaceholder}
-            />
+            <div class="input-container">
+              <input
+                autocomplete="off"
+                id="search-bar"
+                name="search"
+                type="text"
+                aria-label={searchPlaceholder}
+                placeholder={searchPlaceholder}
+              />
+            </div>
+            <output id="search-layout" data-preview={opts.enablePreview} />
           </form>
-          <output id="search-layout" data-preview={opts.enablePreview} />
         </search>
       </div>
     )

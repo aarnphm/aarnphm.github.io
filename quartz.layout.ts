@@ -12,11 +12,12 @@ export const sharedPageComponents: SharedLayout = {
       spacerSymbol: "/",
       showCurrentPage: false,
     }),
+    Component.Image(),
+    Component.Graph({ repelForce: 2.3385416666667, centerForce: 0.588020833333333 }),
+    Component.Palette(),
     Component.Keybind(),
     Component.StackedNotes(),
     Component.Search(),
-    Component.Image(),
-    Component.Graph({ repelForce: 2.3385416666667, centerForce: 0.588020833333333 }),
   ],
   afterBody: [Component.Recommendations(), Component.Backlinks()],
   footer: Component.Footer({
@@ -48,10 +49,12 @@ export const defaultListPageLayout: PageLayout = {
   beforeBody: [
     Component.PageTitle(),
     Component.Breadcrumbs({ rootName: "~", style: "full", spacerSymbol: "/" }),
+    Component.Image(),
+    Component.Graph({ repelForce: 2.3385416666667, centerForce: 0.588020833333333 }),
+    Component.Palette(),
     Component.Keybind(),
     Component.StackedNotes(),
     Component.Search(),
-    Component.Image(),
   ],
   sidebar: [],
 }

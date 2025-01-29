@@ -23,7 +23,6 @@ document.addEventListener("nav", async (ev) => {
       container.classList.add("active")
       body.classList.add("stack-mode")
       header.classList.add("grid", "all-col")
-      header.classList.remove(header.dataset.column!)
 
       if (window.location.hash) {
         window.history.pushState("", document.title, currentUrl.split("#")[0])
@@ -38,7 +37,6 @@ document.addEventListener("nav", async (ev) => {
       container.classList.remove("active")
       body.classList.remove("stack-mode")
       header.classList.remove("grid", "all-col")
-      header.classList.add(header.dataset.column!)
       window.stacked.destroy()
       window.location.reload()
     }

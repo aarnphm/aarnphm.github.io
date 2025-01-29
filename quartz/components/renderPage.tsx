@@ -1067,7 +1067,6 @@ export function renderPage(
   componentData: QuartzComponentProps,
   components: RenderComponents,
   pageResources: StaticResources,
-  headerStyle: "main-col" | "full-col" = "main-col",
 ): string {
   // make a deep copy of the tree so we don't remove the transclusion references
   // for the file cached in contentMap in build.ts
@@ -1181,7 +1180,7 @@ export function renderPage(
       <Head {...componentData} />
       <body data-slug={slug} data-language={lang} data-menu={isMenu} data-layout={pageLayout}>
         <main id="quartz-root" class="page grid" style={{ gridTemplateRows: "repeat(5, auto)" }}>
-          <Header {...componentData} headerStyle={headerStyle}>
+          <Header {...componentData}>
             {header.map((HeaderComponent) => (
               <HeaderComponent {...componentData} />
             ))}
@@ -1230,6 +1229,7 @@ export function renderPage(
             {afterBody.length > 0 &&
               afterBody.map((BodyComponent) => <BodyComponent {...componentData} />)}
           </section>
+          <aside class="sidepanel-container right-col" />
           {htmlToJsx(
             componentData.fileData.filePath!,
             s(

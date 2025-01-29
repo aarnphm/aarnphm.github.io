@@ -6,6 +6,7 @@ import Image from "./Image"
 import Reader from "./Reader"
 import Toolbar from "./Toolbar"
 import Navigation from "./Navigation"
+import Palette from "./Palette"
 import Keybind from "./Keybind"
 import Content from "./pages/Content"
 import TagContent from "./pages/TagContent"
@@ -32,6 +33,7 @@ import Comments from "./Comments"
 
 export {
   Sidenotes,
+  Palette,
   Recommendations,
   StackedNotes,
   Byline,

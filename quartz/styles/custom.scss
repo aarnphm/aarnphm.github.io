@@ -303,17 +303,20 @@ blockquote[class="transclude"] {
       margin: 0;
     }
 
-    svg.blockquote-link {
-      opacity: 0.35;
-      transition: opacity 0.2s ease;
-      color: var(--gray);
-    }
-  }
+    .transclude-title-link {
+      svg {
+        opacity: 0.35;
+        transition: opacity 0.2s ease;
+        color: var(--gray);
+      }
 
-  &:hover {
-    .transclude-ref > .blockquote-link {
-      opacity: 1;
-      cursor: pointer;
+      &:hover {
+        svg {
+          opacity: 1;
+          cursor: pointer;
+          color: var(--darkgray);
+        }
+      }
     }
   }
 }

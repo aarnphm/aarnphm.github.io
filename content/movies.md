@@ -3,8 +3,8 @@ id: movies
 tags:
   - evergreen
 comments: false
-date: "2024-02-07"
-modified: 2025-01-26 13:30:40 GMT-05:00
+date: 2024-02-07
+modified: 2025-01-29 11:39:14 GMT-05:00
 title: movies.
 ---
 
@@ -29,15 +29,18 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] The Favorite (2018)
 - [ ] Under The Silver Lake (2018)
 - [ ] The Father (2020)
-- [x] Poor Things (2023)
 - [ ] Paris, Texas (1984)
 - [ ] Before Sunrise (1995)
 - [ ] The End of The Tour (2015)
 - [ ] Chungking Express (1994)
 - [ ] Twin Peaks (1990)
 - [ ] Call Me By Your Name (2017)
+- [ ] The Day of the Jackal (1973) [^remake]
+- [x] Poor Things (2023)
 - [x] The Defiant Ones (1958)
 - [x] Maestro (2023)
+
+[^remake]: There is also a remake (2024) starring Eddie Redmayne.
 
 ## recurring.
 

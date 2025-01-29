@@ -1,4 +1,4 @@
-import { getFullSlug } from "../../util/path"
+import { getFullSlug, SimpleSlug } from "../../util/path"
 
 export function registerEscapeHandler(outsideContainer: HTMLElement | null, cb: () => void) {
   if (!outsideContainer) return
@@ -252,3 +252,64 @@ export async function fetchCanonical(url: URL): Promise<Response> {
 export function isBrowser() {
   return typeof window !== "undefined"
 }
+
+const contextWindowWords = 30
+export const tokenizeTerm = (term: string) => {
+  const tokens = term.split(/\s+/).filter((t) => t.trim() !== "")
+  const tokenLen = tokens.length
+  if (tokenLen > 1) {
+    for (let i = 1; i < tokenLen; i++) {
+      tokens.push(tokens.slice(0, i + 1).join(" "))
+    }
+  }
+
+  return tokens.sort((a, b) => b.length - a.length) // always highlight longest terms first
+}
+
+export function highlight(searchTerm: string, text: string, trim?: boolean) {
+  const tokenizedTerms = tokenizeTerm(searchTerm)
+  let tokenizedText = text.split(/\s+/).filter((t) => t !== "")
+
+  let startIndex = 0
+  let endIndex = tokenizedText.length - 1
+  if (trim) {
+    const includesCheck = (tok: string) =>
+      tokenizedTerms.some((term) => tok.toLowerCase().startsWith(term.toLowerCase()))
+    const occurrencesIndices = tokenizedText.map(includesCheck)
+
+    let bestSum = 0
+    let bestIndex = 0
+    for (let i = 0; i < Math.max(tokenizedText.length - contextWindowWords, 0); i++) {
+      const window = occurrencesIndices.slice(i, i + contextWindowWords)
+      const windowSum = window.reduce((total, cur) => total + (cur ? 1 : 0), 0)
+      if (windowSum >= bestSum) {
+        bestSum = windowSum
+        bestIndex = i
+      }
+    }
+
+    startIndex = Math.max(bestIndex - contextWindowWords, 0)
+    endIndex = Math.min(startIndex + 2 * contextWindowWords, tokenizedText.length - 1)
+    tokenizedText = tokenizedText.slice(startIndex, endIndex)
+  }
+
+  const slice = tokenizedText
+    .map((tok) => {
+      // see if this tok is prefixed by any search terms
+      for (const searchTok of tokenizedTerms) {
+        if (tok.toLowerCase().includes(searchTok.toLowerCase())) {
+          const regex = new RegExp(searchTok.toLowerCase(), "gi")
+          return tok.replace(regex, `<span class="highlight">$&</span>`)
+        }
+      }
+      return tok
+    })
+    .join(" ")
+
+  return `${startIndex === 0 ? "" : "..."}${slice}${
+    endIndex === tokenizedText.length - 1 ? "" : "..."
+  }`
+}
+
+// To be used with search and everything else with flexsearch
+export const encode = (str: string) => str.toLowerCase().split(/([^a-z]|[^\x00-\x7F])/)

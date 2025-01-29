@@ -228,6 +228,20 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         joinScripts(componentResources.afterDOMLoaded),
       ])
 
+      const manifest = {
+        name: cfg.pageTitle,
+        short_name: cfg.baseUrl,
+        icons: [
+          { src: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+          { src: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+        ],
+        theme_color: cfg.theme.colors["lightMode"].secondary,
+        background_color: cfg.theme.colors["lightMode"].light,
+        display: "standalone",
+        lang: cfg.locale,
+        dir: "auto",
+      }
+
       promises.push(
         write({
           ctx,
@@ -258,6 +272,12 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
           slug: "postscript" as FullSlug,
           ext: ".js",
           content: postscript,
+        }),
+        write({
+          ctx,
+          slug: "site" as FullSlug,
+          ext: ".webmanifest",
+          content: JSON.stringify(manifest),
         }),
       )
 

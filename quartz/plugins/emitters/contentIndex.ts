@@ -20,6 +20,7 @@ export type ContentDetails = {
   tags: string[]
   layout: ContentLayout
   content: string
+  fileName: FilePath
   richContent?: string
   fileData?: QuartzPluginData
   date?: Date
@@ -231,6 +232,9 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
           linkIndex.set(slug, {
             title: file.data.frontmatter?.title!,
             links,
+            fileName: file.data
+              .filePath!.replace(".md", "")
+              .substring(ctx.argv.directory.length + 1) as FilePath,
             tags: file.data.frontmatter?.tags ?? [],
             aliases: file.data.frontmatter?.aliases ?? [],
             content: file.data.text ?? "",

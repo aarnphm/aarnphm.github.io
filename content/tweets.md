@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-01-29 08:37:19 GMT-05:00
+modified: 2025-01-29 10:36:51 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -66,6 +66,8 @@ https://x.com/virtualjew/status/1846593528350011539 <!-- You can just make grill
 
 https://x.com/qiaochuyuan/status/1629333539488690176?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ <!-- QC on attachment theory thread -->
 
+https://x.com/nwilliams030/status/1884282849471390185 <!-- neighbourhood as a form of proximity love -->
+
 ## technology
 
 https://x.com/Mappletons/status/1250532315459194880 <!-- Digital garden but wikitext go brr -->
@@ -116,6 +118,8 @@ https://x.com/pmarca/status/1880860012110856566 <!-- Links between EA and sexual
 
 https://x.com/cath_land/status/1881906298817786224 <!-- linktree but open source and for free lmao -->
 
+https://x.com/quantumbeans/status/1861251224567234695 <!-- algorithmic-generated art -->
+
 ## techno-optimist
 
 https://x.com/tobi/status/1878957750576906484 <!-- Tobi replies on Canada's Tech contribution to overall GDP -->
@@ -125,6 +129,8 @@ https://x.com/chapman_bliss/status/1881613396359127467 <!-- Last day at Neural L
 https://x.com/adonis_singh/status/1884499176865632672 <!-- R1 one-shotted into markets and individualism -->
 
 ## [[thoughts/Machine learning|machine learning]]
+
+https://x.com/simonw/status/1840438066974228912 <!-- NotebookLLM system prompt -->
 
 https://x.com/karpathy/status/1841536804073439268 <!-- Karpathy's at GPU MODE's IRL talk -->
 

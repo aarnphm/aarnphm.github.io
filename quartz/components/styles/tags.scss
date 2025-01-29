@@ -7,6 +7,7 @@ menu.tags > li > ul {
   gap: 0.4rem;
   margin: 0;
   flex-wrap: wrap;
+  flex-direction: row;
 }
 
 ul.tags {
@@ -20,11 +21,6 @@ menu.tags {
 li.socials {
   address {
     font-style: normal;
-  }
-
-  & > ul {
-    flex-direction: column;
-    gap: 0.8rem;
   }
 }
 

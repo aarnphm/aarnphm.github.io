@@ -157,7 +157,7 @@ header {
 
 section[class~="header"] {
   position: relative;
-  border-bottom: 1px solid var(--darkgray);
+  border-bottom: 1px solid var(--lightgray);
 }
 
 @keyframes reveal-header-border {
@@ -555,7 +555,7 @@ ol.overflow {
 .title-col {
   --main-col-padding-left: calc(var(--kern) * 4);
   --main-col-padding-right: 0px;
-  grid-column: 3/10;
+  grid-column: 3/9;
 
   .popover &,
   .stacked-content & {

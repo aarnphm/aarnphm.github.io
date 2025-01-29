@@ -115,7 +115,7 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
           allFiles,
         }
 
-        const content = renderPage(ctx, slug, componentData, opts, externalResources, "full-col")
+        const content = renderPage(ctx, slug, componentData, opts, externalResources)
         const fp = await write({
           ctx,
           content,

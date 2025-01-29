@@ -1,16 +1,11 @@
 import { classNames } from "../util/lang"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
-type Props = {
-  headerStyle?: "main-col" | "full-col"
-} & QuartzComponentProps
-
 export default (() => {
-  const Header: QuartzComponent = ({ children, headerStyle }: Props) => {
-    headerStyle = headerStyle ?? "main-col"
+  const Header: QuartzComponent = ({ children }: QuartzComponentProps) => {
     return children.length > 0 ? (
-      <section class={classNames(undefined, "header", headerStyle)} data-column={headerStyle}>
-        <header class={classNames(undefined, "header-content", headerStyle)}>{children}</header>
+      <section class={classNames(undefined, "header", "full-col")}>
+        <header class={classNames(undefined, "header-content", "full-col")}>{children}</header>
       </section>
     ) : null
   }

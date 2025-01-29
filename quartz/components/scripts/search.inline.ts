@@ -1,6 +1,6 @@
 import FlexSearch from "flexsearch"
 import type { ContentDetails } from "../../plugins"
-import { registerEscapeHandler, removeAllChildren } from "./util"
+import { registerEscapeHandler, removeAllChildren, highlight, tokenizeTerm, encode } from "./util"
 import { FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
 
 interface Item {
@@ -17,10 +17,9 @@ interface Item {
 type SearchType = "basic" | "tags"
 let searchType: SearchType = "basic"
 let currentSearchTerm: string = ""
-const encoder = (str: string) => str.toLowerCase().split(/([^a-z]|[^\x00-\x7F])/)
 let index = new FlexSearch.Document<Item>({
   charset: "latin:extra",
-  encode: encoder,
+  encode,
   document: {
     id: "id",
     tag: "tags",
@@ -47,67 +46,8 @@ let index = new FlexSearch.Document<Item>({
 
 const p = new DOMParser()
 const fetchContentCache: Map<FullSlug, Element[]> = new Map()
-const contextWindowWords = 30
 const numSearchResults = 10
 const numTagResults = 5
-
-const tokenizeTerm = (term: string) => {
-  const tokens = term.split(/\s+/).filter((t) => t.trim() !== "")
-  const tokenLen = tokens.length
-  if (tokenLen > 1) {
-    for (let i = 1; i < tokenLen; i++) {
-      tokens.push(tokens.slice(0, i + 1).join(" "))
-    }
-  }
-
-  return tokens.sort((a, b) => b.length - a.length) // always highlight longest terms first
-}
-
-function highlight(searchTerm: string, text: string, trim?: boolean) {
-  const tokenizedTerms = tokenizeTerm(searchTerm)
-  let tokenizedText = text.split(/\s+/).filter((t) => t !== "")
-
-  let startIndex = 0
-  let endIndex = tokenizedText.length - 1
-  if (trim) {
-    const includesCheck = (tok: string) =>
-      tokenizedTerms.some((term) => tok.toLowerCase().startsWith(term.toLowerCase()))
-    const occurrencesIndices = tokenizedText.map(includesCheck)
-
-    let bestSum = 0
-    let bestIndex = 0
-    for (let i = 0; i < Math.max(tokenizedText.length - contextWindowWords, 0); i++) {
-      const window = occurrencesIndices.slice(i, i + contextWindowWords)
-      const windowSum = window.reduce((total, cur) => total + (cur ? 1 : 0), 0)
-      if (windowSum >= bestSum) {
-        bestSum = windowSum
-        bestIndex = i
-      }
-    }
-
-    startIndex = Math.max(bestIndex - contextWindowWords, 0)
-    endIndex = Math.min(startIndex + 2 * contextWindowWords, tokenizedText.length - 1)
-    tokenizedText = tokenizedText.slice(startIndex, endIndex)
-  }
-
-  const slice = tokenizedText
-    .map((tok) => {
-      // see if this tok is prefixed by any search terms
-      for (const searchTok of tokenizedTerms) {
-        if (tok.toLowerCase().includes(searchTok.toLowerCase())) {
-          const regex = new RegExp(searchTok.toLowerCase(), "gi")
-          return tok.replace(regex, `<span class="highlight">$&</span>`)
-        }
-      }
-      return tok
-    })
-    .join(" ")
-
-  return `${startIndex === 0 ? "" : "..."}${slice}${
-    endIndex === tokenizedText.length - 1 ? "" : "..."
-  }`
-}
-
 function highlightHTML(searchTerm: string, el: HTMLElement) {
   const p = new DOMParser()
   const tokenizedTerms = tokenizeTerm(searchTerm)
@@ -149,13 +89,13 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
   return html.body
 }
 
-document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
+document.addEventListener("nav", async (e) => {
   const currentSlug = e.detail.url
   const data = await fetchData
   const container = document.getElementById("search-container")
   const searchButton = document.getElementById("search-button")
-  const searchBar = document.getElementById("search-bar") as HTMLInputElement | null
-  const searchLayout = document.getElementById("search-layout")
+  const searchBar = container?.querySelector("#search-bar") as HTMLInputElement | null
+  const searchLayout = container?.querySelector("#search-layout") as HTMLOutputElement | null
   const idDataMap = Object.keys(data) as FullSlug[]
 
   const appendLayout = (el: HTMLElement) => {
@@ -206,6 +146,9 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   let currentHover: HTMLInputElement | null = null
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
+    const paletteOpen = document.querySelector("search#palette-container") as HTMLDivElement
+    if (paletteOpen && paletteOpen.classList.contains("active")) return
+
     if ((e.key === "/" || e.key === "k") && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       e.preventDefault()
       const searchBarOpen = container?.classList.contains("active")

@@ -28,6 +28,8 @@ import {
   openaiSvg,
   hfSvg,
   obsidianSvg,
+  youtubeSvg,
+  gwernSvg,
 } from "../../components/svg"
 
 interface Options {
@@ -160,6 +162,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isWikipedia: dest.includes("wikipedia.org"),
                   isLessWrong: dest.includes("lesswrong.com"),
                   isBentoml: dest.includes("bentoml.com"),
+                  isYoutube: dest.includes("youtube.com"),
+                  isGwern: dest.includes("gwern.net"),
                   isNeovim: dest.includes("neovim.io"),
                   isQuartz: dest.includes("quartz.jzhao.xyz"),
                   isObsidian: dest.includes("obsidian.md"),
@@ -233,6 +237,10 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   ctx.node.children.push(createIconElement("/static/favicons/neovim.svg", "Neovim"))
                 } else if (linkTypes.isBentoml) {
                   ctx.node.children.push(bentomlSvg)
+                } else if (linkTypes.isYoutube) {
+                  ctx.node.children.push(youtubeSvg)
+                } else if (linkTypes.isGwern) {
+                  ctx.node.children.push(gwernSvg)
                 } else if (linkTypes.isObsidian) {
                   ctx.node.children.push(obsidianSvg)
                 } else if (linkTypes.isYC) {

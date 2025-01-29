@@ -40,10 +40,10 @@ nav#toc-vertical {
   display: flex;
   flex-direction: column;
 
-  position: sticky;
-  inset: 40% 0 0;
+  position: fixed;
+  inset: 50% 0 0;
   cursor: pointer;
-  z-index: 1000;
+  z-index: 999;
   max-width: calc(var(--indicator-position) * 1.2);
 
   button.toc-item {

@@ -780,7 +780,6 @@ if (stackedNotes && !container?.classList.contains("active")) {
   container?.classList.add("active")
   document.body.classList.add("stack-mode")
   header.classList.add("grid", "all-col")
-  header.classList.remove(header.dataset.column!)
 
   if (window.location.hash) {
     window.history.pushState("", document.title, baseUrl.toString().split("#")[0])

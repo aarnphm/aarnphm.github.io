@@ -4,11 +4,11 @@ tags:
   - sapling
   - ml
   - llm
-date: 2024-02-07
-modified: 2025-01-08 19:31:08 GMT-05:00
-title: LLMs
-description: a mathematical framework for intelligence
 abstract: large language models will probably be the most important piece of technology in the 21st century
+date: 2024-02-07
+description: a mathematical framework for intelligence
+modified: 2025-01-29 16:38:31 GMT-05:00
+title: LLMs
 ---
 
 [[thoughts/Machine learning|large language]] models, often implemented as [[thoughts/Autoregressive models|autoregressive]] [[thoughts/Transformers|transformers]] models.
@@ -72,7 +72,7 @@ https://twitter.com/paulg/status/1761801995302662175
 
 ### machine-assisted writings
 
-_source: [`gwern[dot]net`](https://gwern.net/gpt-3)_
+source: [creative fiction with GPT-3](https://gwern.net/gpt-3)
 
 Idea: use [[thoughts/mechanistic interpretability#sparse autoencoders]] to guide ideas generations
 
