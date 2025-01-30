@@ -8,7 +8,7 @@ tags:
 abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
 date: "2024-10-30"
 description: and reverse engineering neural networks.
-modified: 2025-01-29 08:56:12 GMT-05:00
+modified: 2025-01-30 12:22:44 GMT-05:00
 permalinks:
   - /mechinterp
 title: mechanistic interpretability
@@ -82,7 +82,7 @@ interpretable features.
 For feature [[thoughts/mechanistic interpretability#ablation]], we observe that manipulation of features activation can be strengthened or weakened
 to directly influence the model's outputs
 
-A few examples where [@panickssery2024steeringllama2contrastive] uses contrastive activation additions to steer Llama 2
+example: @panickssery2024steeringllama2contrastive uses [[thoughts/contrastive representation learning|contrastive activation additions]] to [steer](https://github.com/nrimsky/CAA) Llama 2
 
 ### [[thoughts/contrastive representation learning|contrastive]] activation additions
 
