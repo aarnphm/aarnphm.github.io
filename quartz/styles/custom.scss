@@ -211,9 +211,18 @@ $selector: "&:not(#{list.nth($excluded-hover-classes, 1)})";
   $selector: $selector + ":not(#{list.nth($excluded-hover-classes, $i)})";
 }
 
+li[id^="user-content-fn-"] {
+  &:hover {
+    a[data-footnote-backref] {
+      visibility: visible;
+    }
+  }
+}
+
 a {
   &[data-footnote-backref] {
     text-decoration: none;
+    visibility: hidden;
   }
 
   &[data-role="anchor"] {
@@ -481,11 +490,8 @@ body {
 .page-footer {
   padding-top: 0;
   margin-top: 2rem;
-
-  grid-template-rows: auto auto;
-  grid-template-areas:
-    "grid-start grid-center-one grid-end"
-    "grid-start grid-center-two grid-end";
+  margin-bottom: 0;
+  border-bottom-width: 0px;
 
   &:empty {
     display: none;
