@@ -487,6 +487,12 @@ body {
   margin-bottom: 2.5rem;
 }
 
+.page-footer:not(.sidepanel-container *):not(.popover *):not(#preview-container *),
+.byline:not(.sidepanel-container *):not(.popover *):not(#preview-container *) {
+  border-color: var(--gray);
+  background: var(--lightgray);
+}
+
 .page-footer {
   padding-top: 0;
   margin-top: 2rem;
@@ -518,7 +524,7 @@ body {
     padding-left: 1rem;
 
     &:last-child {
-      border-left: 1px solid var(--lightgray);
+      border-left: 1px solid var(--gray);
       padding-left: 1rem;
     }
   }

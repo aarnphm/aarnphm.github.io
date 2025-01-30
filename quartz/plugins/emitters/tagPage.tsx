@@ -12,7 +12,7 @@ import {
   pathToRoot,
 } from "../../util/path"
 import { defaultListPageLayout, sharedPageComponents } from "../../../quartz.layout"
-import { Spacer, TagContent } from "../../components"
+import { TagContent } from "../../components"
 import { write } from "./helpers"
 import { i18n } from "../../i18n"
 import DepGraph from "../../depgraph"
@@ -29,7 +29,6 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
     beforeBody: [],
     sidebar: [],
     afterBody: [],
-    footer: Spacer(),
     ...userOpts,
   }
 
@@ -115,7 +114,7 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
           allFiles,
         }
 
-        const content = renderPage(ctx, slug, componentData, opts, externalResources)
+        const content = renderPage(ctx, slug, componentData, opts, externalResources, true, true)
         const fp = await write({
           ctx,
           content,

@@ -30,6 +30,12 @@
   }
 
   .byline {
+    & > * {
+      &:last-child {
+        border-left: 1px solid var(--lightgray);
+      }
+    }
+
     menu.tags {
       grid-column: 1 / 1 !important;
     }
@@ -113,6 +119,10 @@
       0 10px 30px rgba(27, 33, 48, 0.16);
     overflow: auto;
     white-space: normal;
+
+    footer {
+      display: none;
+    }
   }
 
   & > .popover-inner[data-content-type] {

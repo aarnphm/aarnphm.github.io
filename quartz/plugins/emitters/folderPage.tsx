@@ -15,7 +15,7 @@ import {
   simplifySlug,
 } from "../../util/path"
 import { defaultListPageLayout, sharedPageComponents } from "../../../quartz.layout"
-import { FolderContent, Spacer } from "../../components"
+import { FolderContent } from "../../components"
 import { write } from "./helpers"
 import { i18n } from "../../i18n"
 import DepGraph from "../../depgraph"
@@ -33,7 +33,6 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
     beforeBody: [],
     sidebar: [],
     afterBody: [],
-    footer: Spacer(),
     ...userOpts,
   }
 
@@ -115,7 +114,7 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
           allFiles,
         }
 
-        const content = renderPage(ctx, slug, componentData, opts, externalResources)
+        const content = renderPage(ctx, slug, componentData, opts, externalResources, true, true)
         const fp = await write({
           ctx,
           content,

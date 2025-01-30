@@ -20,6 +20,11 @@ const LINK_TYPES: LinkType[] = [
     label: "[arXiv]",
   },
   {
+    type: "lesswrong",
+    pattern: (url: string) => url.toLowerCase().includes("lesswrong.com"),
+    label: "[lesswrong]",
+  },
+  {
     type: "github",
     pattern: (url: string) => url.toLowerCase().includes("github.com"),
     label: "[GitHub]",

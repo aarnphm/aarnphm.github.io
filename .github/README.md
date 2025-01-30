@@ -4,6 +4,10 @@ garden v2, on top of [quartz](https://quartz.jzhao.xyz/) v4.
 
 fwiw a lot of plugins are disabled during serve given that I have a lot of math notes (KaTeX is pretty expensive to run.)
 
+To run dev do `npm run dev`
+
+for devprod do `npm run prod`
+
 ## features
 
 A modified/personal enhancement from bare Quartz

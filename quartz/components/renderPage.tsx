@@ -1068,6 +1068,7 @@ export function renderPage(
   components: RenderComponents,
   pageResources: StaticResources,
   disableSidepanel?: boolean,
+  isFolderTag?: boolean,
 ): string {
   // make a deep copy of the tree so we don't remove the transclusion references
   // for the file cached in contentMap in build.ts
@@ -1090,6 +1091,7 @@ export function renderPage(
   })
   componentData.tree = tree
   disableSidepanel = disableSidepanel ?? true
+  isFolderTag = isFolderTag ?? false
 
   if (slug === "index") {
     components = {
@@ -1228,15 +1230,18 @@ export function renderPage(
               <div class="wc-inner" />
             </div>
           </section>
-          <section class="page-footer popover-hint grid all-col">
-            {retrieval.size > 0 &&
-              htmlToJsx(componentData.fileData.filePath!, {
-                type: "root",
-                children: [...retrieval],
-              } as Node)}
-            {afterBody.length > 0 &&
-              afterBody.map((BodyComponent) => <BodyComponent {...componentData} />)}
-          </section>
+          {!isFolderTag && (
+            <section class="page-footer popover-hint grid all-col">
+              {retrieval.size > 0 &&
+                htmlToJsx(componentData.fileData.filePath!, {
+                  type: "root",
+                  children: [...retrieval],
+                } as Node)}
+              {afterBody.length > 0 &&
+                afterBody.map((BodyComponent) => <BodyComponent {...componentData} />)}
+              {slug !== "index" && <Footer {...componentData} />}
+            </section>
+          )}
           <aside class="sidepanel-container" />
           {htmlToJsx(
             componentData.fileData.filePath!,
@@ -1342,7 +1347,6 @@ export function renderPage(
               ],
             ),
           )}
-          {slug !== "index" && <Footer {...componentData} />}
         </main>
       </body>
       {pageResources.js
