@@ -223,6 +223,15 @@ ul#helper {
             align-self: center;
             flex-shrink: 0;
 
+            kbd {
+              font-family: var(--bodyFont);
+              font-weight: 600;
+              margin-inline-end: 4px;
+              border-width: 0px;
+              line-height: inherit;
+              padding: 0;
+            }
+
             & > .suggestion-action {
               font-size: 11px;
               color: var(--iris);

@@ -10,7 +10,7 @@ export const sharedPageComponents: SharedLayout = {
       rootName: "~",
       style: "full",
       spacerSymbol: "/",
-      showCurrentPage: false,
+      showCurrentPage: true,
     }),
     Component.Image(),
     Component.Graph({ repelForce: 2.3385416666667, centerForce: 0.588020833333333 }),

@@ -23,9 +23,14 @@ let index = new FlexSearch.Document<Item>({
   encode,
   document: {
     id: "id",
+    tag: "slug",
     index: [
       {
         field: "name",
+        tokenize: "forward",
+      },
+      {
+        field: "slug",
         tokenize: "forward",
       },
       {
@@ -73,6 +78,11 @@ async function fetchContent(currentSlug: FullSlug, slug: FullSlug): Promise<Elem
 }
 
 type ActionType = "quick_open" | "command"
+interface Action {
+  name: string
+  onClick: (e: MouseEvent) => void
+  auxInnerHtml: string
+}
 
 let actionType: ActionType = "quick_open"
 let currentSearchTerm: string = ""
@@ -111,12 +121,129 @@ document.addEventListener("nav", async (e) => {
     if (actionType === "command") {
       helper.querySelectorAll<HTMLLIElement>("li[data-quick-open]").forEach((el) => {
         el.style.display = "none"
+        getCommandItems(ACTS)
       })
     } else if (actionType === "quick_open") {
       getRecentItems()
     }
 
     bar?.focus()
+  }
+
+  const ACTS: Action[] = [
+    {
+      name: "x.com (formerly Twitter)",
+      auxInnerHtml: `<svg width="1em" height="1em"><use href="#twitter-icon" /></svg>`,
+      onClick: (e) => {
+        window.location.href = "https://x.com/aarnphm_"
+      },
+    },
+    {
+      name: "bsky.app",
+      auxInnerHtml: `<svg width="1em" height="1em"><use href="#bsky-icon" /></svg>`,
+      onClick: (e) => {
+        window.location.href = "https://bsky.app/profile/aarnphm.xyz"
+      },
+    },
+    {
+      name: "substack",
+      auxInnerHtml: `<svg width="1em" height="1em"><use href="#substack-icon" /></svg>`,
+      onClick: (e) => {
+        window.location.href = "https://livingalonealone.com"
+      },
+    },
+    {
+      name: "github",
+      auxInnerHtml: `<svg width="1em" height="1em"><use href="#github-icon" /></svg>`,
+      onClick: (e) => {
+        window.location.href = "https://github.com/aarnphm"
+      },
+    },
+    {
+      name: "coffee chat",
+      auxInnerHtml: "<kbd>↵</kbd> on calendly",
+      onClick: (e) => {
+        window.location.href = "https://calendly.com/aarnphm/30min"
+      },
+    },
+    {
+      name: "current work",
+      auxInnerHtml: "<kbd>↵</kbd> as craft",
+      onClick: (e) => {
+        window.spaNavigate(
+          new URL(
+            resolveRelative(currentSlug, "/thoughts/craft" as FullSlug),
+            window.location.toString(),
+          ),
+        )
+      },
+    },
+    {
+      name: "cool people",
+      auxInnerHtml: "<kbd>↵</kbd> as inpiration",
+      onClick: (e) => {
+        window.spaNavigate(
+          new URL(
+            resolveRelative(currentSlug, "/influence" as FullSlug),
+            window.location.toString(),
+          ),
+        )
+      },
+    },
+    {
+      name: "old fashioned resume (maybe not up-to-date)",
+      auxInnerHtml: "<kbd>↵</kbd>",
+      onClick: (e) => {
+        window.spaNavigate(
+          new URL(
+            resolveRelative(currentSlug, "/thoughts/pdfs/2025q1-resume.pdf" as FullSlug),
+            window.location.toString(),
+          ),
+        )
+      },
+    },
+  ]
+
+  const createActComponent = ({ name, auxInnerHtml, onClick }: Action) => {
+    const item = document.createElement("div")
+    item.classList.add("suggestion-item")
+
+    const content = document.createElement("div")
+    content.classList.add("suggestion-content")
+    const title = document.createElement("div")
+    title.classList.add("suggestion-title")
+    title.innerHTML = name
+    content.appendChild(title)
+
+    const aux = document.createElement("div")
+    aux.classList.add("suggestion-aux")
+    aux.innerHTML = `<span class="suggestion-action">${auxInnerHtml}</span>`
+    item.append(content, aux)
+
+    function mainOnClick(e: MouseEvent) {
+      e.preventDefault()
+      onClick(e)
+      hidePalette()
+    }
+    item.addEventListener("click", mainOnClick)
+    window.addCleanup(() => item.removeEventListener("click", mainOnClick))
+    return item
+  }
+
+  function getCommandItems(acts: Action[]) {
+    if (output) {
+      removeAllChildren(output)
+    }
+    if (acts.length === 0) {
+      if (bar.matches(":focus") && currentSearchTerm === "") {
+        output.append(...ACTS.map(createActComponent))
+      } else {
+        output.append(createActComponent(ACTS[0]))
+      }
+    } else {
+      output.append(...acts.map(createActComponent))
+    }
+    setFocusFirstChild()
   }
 
   let recentItems: Item[] = []
@@ -293,6 +420,16 @@ document.addEventListener("nav", async (e) => {
         limit: numSearchResults,
         index: ["name", "aliases"],
       })
+    } else {
+      searchResults = await index.searchAsync({
+        query: currentSearchTerm,
+        limit: Math.max(numSearchResults, 10000),
+        tag: "actions",
+        index: ["name"],
+      })
+      for (let searchResult of searchResults) {
+        searchResult.result = searchResult.result.slice(0, numSearchResults)
+      }
     }
 
     const getByField = (field: string): number[] => {
@@ -301,34 +438,47 @@ document.addEventListener("nav", async (e) => {
     }
 
     // order titles ahead of content
-    const allIds: Set<number> = new Set([...getByField("name"), ...getByField("aliases")])
-    displayResults(
-      [...allIds]
-        .map((id) => {
-          const slug = idDataMap[id]
-          const aliases: string[] = data[slug].aliases
-          const target = aliases.find((alias) =>
-            alias.toLowerCase().includes(currentSearchTerm.toLowerCase()),
-          )
-          return {
-            id,
-            slug,
-            name: highlight(currentSearchTerm, data[slug].fileName) as FilePath,
-            aliases: data[slug].aliases,
-            target,
-          }
-        })
-        .sort((a, b) => {
-          // If both have targets or both don't have targets, maintain original order
-          if ((!a?.target && !b?.target) || (a?.target && b?.target)) return 0
-          // If a has target and b doesn't, a comes first
-          if (a?.target && !b?.target) return -1
-          // If b has target and a doesn't, b comes first
-          if (!a?.target && b?.target) return 1
-          return 0
-        }),
-      currentSearchTerm,
-    )
+    if (actionType === "quick_open") {
+      const allIds: Set<number> = new Set([...getByField("name"), ...getByField("aliases")])
+      displayResults(
+        [...allIds]
+          .map((id) => {
+            const slug = idDataMap[id]
+            const aliases: string[] = data[slug].aliases
+            const target = aliases.find((alias) =>
+              alias.toLowerCase().includes(currentSearchTerm.toLowerCase()),
+            )
+            return {
+              id,
+              slug,
+              name: highlight(currentSearchTerm, data[slug].fileName) as FilePath,
+              aliases: data[slug].aliases,
+              target,
+            }
+          })
+          .sort((a, b) => {
+            // If both have targets or both don't have targets, maintain original order
+            if ((!a?.target && !b?.target) || (a?.target && b?.target)) return 0
+            // If a has target and b doesn't, a comes first
+            if (a?.target && !b?.target) return -1
+            // If b has target and a doesn't, b comes first
+            if (!a?.target && b?.target) return 1
+            return 0
+          }),
+        currentSearchTerm,
+      )
+    } else {
+      getCommandItems(
+        [...new Set([...getByField("name")])]
+          .map((index) => ACTS[index - idDataMap.length])
+          .filter(Boolean)
+          .map(({ name, onClick, auxInnerHtml }) => ({
+            name: highlight(currentSearchTerm, name),
+            onClick,
+            auxInnerHtml,
+          })),
+      )
+    }
   }
 
   async function onType(e: HTMLElementEventMap["input"]) {
@@ -352,11 +502,9 @@ document.addEventListener("nav", async (e) => {
 
     noMatchEl.addEventListener("click", onNoMatchClick)
     window.addCleanup(() => noMatchEl.removeEventListener("click", onNoMatchClick))
-
     if (finalResults.length === 0) {
       if (bar.matches(":focus") && currentSearchTerm === "") {
         output.append(...recentItems.map(toHtml))
-        setFocusFirstChild()
       } else {
         output.appendChild(noMatchEl)
       }
@@ -426,10 +574,10 @@ document.addEventListener("nav", async (e) => {
   })
 
   registerEscapeHandler(container, hidePalette)
-  await fillDocument(data)
+  await fillDocument(data, ACTS)
 })
 
-async function fillDocument(data: ContentIndex) {
+async function fillDocument(data: ContentIndex, actions: Action[]) {
   let id = 0
   const promises = []
   for (const [slug, fileData] of Object.entries(data)) {
@@ -440,6 +588,17 @@ async function fillDocument(data: ContentIndex) {
         name: fileData.fileName,
         aliases: fileData.aliases,
         target: undefined,
+      }),
+    )
+  }
+  for (const el of actions) {
+    promises.push(
+      index.addAsync(id++, {
+        id,
+        slug: "actions" as FullSlug,
+        name: el.name as FilePath,
+        aliases: [],
+        target: el.auxInnerHtml,
       }),
     )
   }

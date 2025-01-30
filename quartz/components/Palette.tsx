@@ -28,7 +28,7 @@ export default (() => {
             <li>
               <kbd>↵</kbd> pour ouvrir
             </li>
-            <li data-open>
+            <li data-quick-open>
               <kbd>⟶</kbd> pour sélectionner
             </li>
             <li data-quick-open>

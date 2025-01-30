@@ -62,7 +62,7 @@ const defaultOptions: BreadcrumbOptions = {
   hideOnRoot: false,
   showCurrentPage: true,
   style: "full",
-  maxItems: 2,
+  maxItems: 0,
 }
 
 function formatCrumb(
@@ -179,7 +179,6 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
           isTagPath ? (slugParts.at(-1) ?? "") : fileData.frontmatter!.title,
           fileData.slug!,
           "" as SimpleSlug,
-          options.titleLength,
         )
         crumbs.push({
           displayName: formatted.displayName,

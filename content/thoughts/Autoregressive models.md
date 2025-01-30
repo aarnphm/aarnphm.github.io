@@ -4,7 +4,8 @@ tags:
   - seed
   - ml
 date: "2024-02-07"
-modified: 2025-01-19 03:54:06 GMT-05:00
+description: as a priori training objectives
+modified: 2025-01-30 15:46:34 GMT-05:00
 title: Autoregressive models
 ---
 
