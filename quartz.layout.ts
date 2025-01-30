@@ -37,11 +37,7 @@ export const defaultContentPageLayout: PageLayout = {
     Component.ArticleTitle(),
     Component.Byline(Component.TagList(), Component.ContentMeta()),
   ],
-  sidebar: [
-    Component.DesktopOnly(Component.TableOfContents()),
-    Component.Reader(),
-    Component.DesktopOnly(Component.Toolbar()),
-  ],
+  sidebar: [Component.DesktopOnly(Component.TableOfContents()), Component.Reader()],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)
