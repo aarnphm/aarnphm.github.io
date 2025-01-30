@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-01-29 10:36:51 GMT-05:00
+modified: 2025-01-30 10:28:45 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -119,6 +119,8 @@ https://x.com/pmarca/status/1880860012110856566 <!-- Links between EA and sexual
 https://x.com/cath_land/status/1881906298817786224 <!-- linktree but open source and for free lmao -->
 
 https://x.com/quantumbeans/status/1861251224567234695 <!-- algorithmic-generated art -->
+
+https://x.com/tylerangert/status/1884980797565788269 <!-- Team meme -->
 
 ## techno-optimist
 

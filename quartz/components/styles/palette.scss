@@ -12,6 +12,18 @@ body[data-disable-sidepanel="true"] {
   }
 }
 
+@media all and ($tablet) {
+  .sidepanel-container {
+    display: none;
+  }
+}
+
+@media all and ($mobile) {
+  .sidepanel-container {
+    display: none;
+  }
+}
+
 .sidepanel-container {
   // NOTE: This will be updated dynamically
   top: 4rem;
