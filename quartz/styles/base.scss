@@ -140,7 +140,7 @@ footer {
 }
 
 header {
-  padding: 0.5rem 0;
+  padding: 0.5rem 1rem;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -156,8 +156,13 @@ header {
 }
 
 section[class~="header"] {
-  position: relative;
-  border-bottom: 1px solid var(--lightgray);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  background: var(--light);
 }
 
 @keyframes reveal-header-border {

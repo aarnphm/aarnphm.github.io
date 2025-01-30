@@ -12,7 +12,7 @@ body[data-disable-sidepanel="true"] {
   }
 }
 
-@media all and ($tablet) {
+@media all and ((min-width: #{map.get($breakpoints, mobile)}) and (max-width: 1400px)) {
   .sidepanel-container {
     display: none;
   }
@@ -59,8 +59,8 @@ ul#helper {
   // NOTE: This will be updated dynamically
   top: 4rem;
   right: 0;
+  bottom: 0;
   position: fixed;
-  bottom: 1rem;
   width: calc(var(--grid-col-width) * 4);
   transition: right 0.3s ease-in-out;
 
@@ -132,6 +132,8 @@ ul#helper {
     }
 
     & > .sidepanel-header {
+      position: sticky;
+      top: 0;
       display: flex;
       justify-content: flex-end;
       border-bottom: 1px solid var(--lightgray);

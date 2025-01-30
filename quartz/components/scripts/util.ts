@@ -319,7 +319,6 @@ export function createSidePanel(asidePanel: HTMLDivElement) {
   const headerRect = pageHeader.getBoundingClientRect()
   const topPosition = headerRect.top + window.scrollY
   asidePanel.style.top = `${topPosition}px`
-  asidePanel.style.right = `${pageHeader.querySelector<HTMLDivElement>(".article-title")?.getBoundingClientRect().left}px`
   removeAllChildren(asidePanel)
 
   const header = document.createElement("div")

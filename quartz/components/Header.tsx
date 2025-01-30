@@ -4,8 +4,8 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 export default (() => {
   const Header: QuartzComponent = ({ children }: QuartzComponentProps) => {
     return children.length > 0 ? (
-      <section class={classNames(undefined, "header", "full-col")}>
-        <header class={classNames(undefined, "header-content", "full-col")}>{children}</header>
+      <section class={classNames(undefined, "header", "grid", "all-col")}>
+        <header class={classNames(undefined, "header-content", "all-col")}>{children}</header>
       </section>
     ) : null
   }

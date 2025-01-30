@@ -487,8 +487,12 @@ body {
   margin-bottom: 2.5rem;
 }
 
-.page-footer:not(.sidepanel-container *):not(.popover *):not(#preview-container *),
-.byline:not(.sidepanel-container *):not(.popover *):not(#preview-container *) {
+.page-footer:not(.sidepanel-container *):not(.popover *):not(#preview-container *):not(
+    .stacked-content *
+  ),
+.byline:not(.sidepanel-container *):not(.popover *):not(#preview-container *):not(
+    .stacked-content *
+  ) {
   border-color: var(--gray);
   background: var(--lightgray);
 }

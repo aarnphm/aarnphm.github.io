@@ -70,10 +70,7 @@
 
 body.stack-mode > #quartz-root {
   section[class~="header"] {
-    max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    z-index: 1000;
+    border-bottom: 1px solid var(--lightgray);
   }
 
   .expand-button,
