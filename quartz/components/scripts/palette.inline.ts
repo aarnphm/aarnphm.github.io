@@ -69,7 +69,6 @@ document.addEventListener("nav", async (e) => {
     helper.querySelectorAll<HTMLLIElement>("li[data-quick-open]").forEach((el) => {
       el.style.display = ""
     })
-    isActive = false
     recentItems = []
   }
 
@@ -85,7 +84,6 @@ document.addEventListener("nav", async (e) => {
     }
 
     bar?.focus()
-    isActive = true
   }
 
   let recentItems: Item[] = []
@@ -141,17 +139,16 @@ document.addEventListener("nav", async (e) => {
     output.append(...recentItems.map(toHtml))
   }
 
-  let isActive: boolean = false
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     const searchOpen = document.querySelector("search#search-container") as HTMLDivElement
     if (searchOpen && searchOpen.classList.contains("active")) return
 
-    if (e.key === "o" && (e.ctrlKey || e.metaKey) && !isActive) {
+    if (e.key === "o" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       const barOpen = container?.classList.contains("active")
       barOpen ? hidePalette() : showPalette("quick_open")
       return
-    } else if (e.key === "p" && (e.ctrlKey || e.metaKey) && !isActive) {
+    } else if (e.key === "p" && (e.altKey || e.metaKey)) {
       e.preventDefault()
       const barOpen = container?.classList.contains("active")
       barOpen ? hidePalette() : showPalette("command")

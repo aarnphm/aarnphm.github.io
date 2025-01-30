@@ -35,13 +35,11 @@ export const defaultOptions: Partial<D3Config> | undefined = {
 }
 
 export default ((opts?: Partial<D3Config>) => {
+  const cfg = JSON.stringify({ ...defaultOptions, ...opts })
   const Graph: QuartzComponent = ({ displayClass }: QuartzComponentProps) => (
     <div class={classNames(displayClass, "graph")}>
       <div id="global-graph-outer">
-        <div
-          id="global-graph-container"
-          data-cfg={JSON.stringify({ ...defaultOptions, ...opts })}
-        />
+        <div id="global-graph-container" data-cfg={cfg} />
       </div>
     </div>
   )

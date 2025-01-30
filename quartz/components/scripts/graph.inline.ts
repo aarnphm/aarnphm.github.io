@@ -49,7 +49,7 @@ type LinkRenderData = GraphicsInfo & {
 
 type NodeRenderData = GraphicsInfo & {
   simulationData: NodeData
-  label: Text & { __previousAlpha?: number }
+  label: Text
 }
 
 const localStorageKey = "graph-visited"

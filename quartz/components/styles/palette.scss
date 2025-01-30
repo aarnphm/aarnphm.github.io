@@ -1,69 +1,19 @@
 @use "sass:map";
 @use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
 
 .palette {
   min-width: fit-content;
   max-width: 14rem;
 
   & > #palette-container {
-    position: fixed;
-    contain: layout;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow-y: auto;
-    display: none;
-    backdrop-filter: blur(5px);
-
-    &.active {
-      display: inline-block;
-    }
+    @include containerPopover;
 
     & > #space {
       width: 30%;
-      margin-top: 7vh;
-      margin-left: auto;
-      margin-right: auto;
-      max-width: 80vw;
-      max-height: 80vh;
-      overflow: hidden;
 
-      border: 1px solid var(--lightgray);
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      background-color: var(--light);
-      box-shadow:
-        0 14px 50px rgba(27, 33, 48, 0.12),
-        0 10px 30px rgba(27, 33, 48, 0.16);
-
-      & > * {
-        box-sizing: border-box;
-      }
-
-      .input-container {
-        position: relative;
-        display: flex;
-
-        & > input {
-          width: 100%;
-          box-sizing: border-box;
-          padding: 1rem;
-          font-family: var(--bodyFont);
-          color: var(--dark);
-          background-color: var(--light);
-          font-size: 1.1em;
-          border: none;
-          border-radius: 0;
-          border-bottom: 1px solid var(--lightgray);
-
-          &:focus {
-            outline: none;
-          }
-        }
-      }
+      @include containerInner;
+      @include inputContainer;
 
       & > output {
         padding: 12px;

@@ -3,6 +3,7 @@
 
 body[data-slug="index"] {
   overflow-x: hidden;
+  font-size: 15.5px;
 
   .popover-inner {
     .side-col {
@@ -24,19 +25,6 @@ body[data-slug="index"] {
     margin: 1rem;
     border: 1px solid var(--gray);
     padding: 0 2rem;
-  }
-
-  h1:not(.popover *),
-  h2:not(.popover *) {
-    color: inherit;
-    font-family: "ITCGaramondStdLtCond", var(--bodyFont);
-  }
-
-  h3:not(.popover *),
-  h4:not(.popover *),
-  h5:not(.popover *),
-  h6:not(.popover *) {
-    color: inherit;
   }
 
   span[class*="rose"] {
