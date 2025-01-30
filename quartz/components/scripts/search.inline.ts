@@ -1,6 +1,13 @@
 import FlexSearch from "flexsearch"
 import type { ContentDetails } from "../../plugins"
-import { registerEscapeHandler, removeAllChildren, highlight, tokenizeTerm, encode } from "./util"
+import {
+  registerEscapeHandler,
+  removeAllChildren,
+  highlight,
+  tokenizeTerm,
+  encode,
+  fetchCanonical,
+} from "./util"
 import { FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
 
 interface Item {
@@ -329,8 +336,8 @@ document.addEventListener("nav", async (e) => {
       return fetchContentCache.get(slug) as Element[]
     }
 
-    const targetUrl = resolveUrl(slug).toString()
-    const contents = await fetch(targetUrl)
+    const targetUrl = resolveUrl(slug)
+    const contents = await fetchCanonical(targetUrl)
       .then((res) => res.text())
       .then((contents) => {
         if (contents === undefined) {

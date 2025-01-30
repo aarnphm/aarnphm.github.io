@@ -1,7 +1,7 @@
 import FlexSearch from "flexsearch"
 import { ContentIndex } from "../../plugins"
-import { FilePath, FullSlug, resolveRelative } from "../../util/path"
-import { highlight, registerEscapeHandler, removeAllChildren, encode } from "./util"
+import { FilePath, FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
+import { highlight, registerEscapeHandler, removeAllChildren, encode, fetchCanonical } from "./util"
 
 interface Item {
   id: number
@@ -42,7 +42,31 @@ function addToRecents(slug: FullSlug) {
   localStorage.setItem(localStorageKey, JSON.stringify([...visited]))
 }
 
+const p = new DOMParser()
+const fetchContentCache: Map<FullSlug, Element[]> = new Map()
+async function fetchContent(currentSlug: FullSlug, slug: FullSlug): Promise<Element[]> {
+  if (fetchContentCache.has(slug)) {
+    return fetchContentCache.get(slug) as Element[]
+  }
+
+  const targetUrl = new URL(resolveRelative(currentSlug, slug), location.toString())
+  const contents = await fetchCanonical(targetUrl)
+    .then((res) => res.text())
+    .then((contents) => {
+      if (contents === undefined) {
+        throw new Error(`Could not fetch ${targetUrl}`)
+      }
+      const html = p.parseFromString(contents ?? "", "text/html")
+      normalizeRelativeURLs(html, targetUrl)
+      return [...html.getElementsByClassName("popover-hint")]
+    })
+
+  fetchContentCache.set(slug, contents)
+  return contents
+}
+
 type ActionType = "quick_open" | "command"
+
 let actionType: ActionType = "quick_open"
 let currentSearchTerm: string = ""
 document.addEventListener("nav", async (e) => {
@@ -171,8 +195,43 @@ document.addEventListener("nav", async (e) => {
     if (!container?.classList.contains("active")) return
 
     if (e.metaKey && e.altKey && e.key === "Enter") {
-      console.log(e)
-      console.log(currentHover)
+      const asidePanel = document.querySelector(
+        "main > aside[class~='sidepanel-container']",
+      ) as HTMLDivElement
+      const pageHeader = document.querySelector(
+        "main > section[class~='page-header']",
+      ) as HTMLDivElement
+      if (!asidePanel || !currentHover || !pageHeader) return
+
+      // Calculate and set the top position based on page header
+      const headerRect = pageHeader.getBoundingClientRect()
+      const topPosition = headerRect.top + window.scrollY
+      asidePanel.style.top = `${topPosition}px`
+      asidePanel.style.right = `${pageHeader.querySelector<HTMLDivElement>(".article-title")?.getBoundingClientRect().left}px`
+      removeAllChildren(asidePanel)
+
+      const header = document.createElement("div")
+      header.classList.add("sidepanel-header", "all-col")
+
+      const closeButton = document.createElement("button")
+      closeButton.classList.add("close-button")
+      closeButton.ariaLabel = "close button"
+      closeButton.title = "close button"
+      closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width=16 height=16 viewbox="0 0 24 24" fill="currentColor" stroke="currentColor"><use href="#close-button"></svg>`
+      function onCloseClick() {
+        removeAllChildren(asidePanel)
+      }
+      closeButton.addEventListener("click", onCloseClick)
+      window.addCleanup(() => closeButton.removeEventListener("click", onCloseClick))
+      header.appendChild(closeButton)
+
+      const innerDiv = await fetchContent(currentSlug, currentHover.dataset.slug as FullSlug)
+      const sideInner = document.createElement("div")
+      sideInner.classList.add("sidepanel-inner")
+      sideInner.append(header, ...innerDiv)
+      asidePanel.appendChild(sideInner)
+      hidePalette()
+      return
     } else if (e.key === "Enter") {
       // If result has focus, navigate to that one, otherwise pick first result
       if (output?.contains(currentHover)) {

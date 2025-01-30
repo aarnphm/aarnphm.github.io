@@ -521,18 +521,26 @@ ol.overflow {
 }
 @media all and ($desktop) {
   .grid {
-    grid-template-columns: 1fr calc(var(--kern) * 3) repeat(9, 149px) calc(var(--kern) * 3) 1fr;
     --grid-col-width: 149px;
+    --grid-end: 1fr;
+    --sidepanel-padding-right: calc(var(--grid-end) + var(--kern) * 3);
+    grid-template-columns:
+      var(--grid-end) calc(var(--kern) * 3) repeat(9, var(--grid-col-width))
+      calc(var(--kern) * 3) var(--grid-end);
   }
 }
 @media all and ($tablet) {
   .grid {
-    grid-template-columns: 0 calc(var(--kern) * 3) repeat(9, 1fr) calc(var(--kern) * 3) 0;
+    --grid-end: 0;
+    grid-template-columns:
+      var(--grid-end) calc(var(--kern) * 3) repeat(9, 1fr) calc(var(--kern) * 3)
+      var(--grid-end);
   }
 }
 @media all and ($mobile) {
   .grid {
     grid-template-columns: 0 calc(var(--kern) * 1.5) repeat(9, 1fr) calc(var(--kern) * 1.5) 0;
+    --grid-end: 0;
     --grid-center-width: calc(100vw - (var(--kern) * 1.5) - (var(--kern) * 1.5));
     --grid-col-width: calc(var(--grid-center-width) / 9);
   }

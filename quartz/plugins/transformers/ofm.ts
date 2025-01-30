@@ -787,10 +787,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                                 stroke: "currentColor",
                                 strokewidth: 2,
                               },
-                              [
-                                s("line", { x1: 18, y1: 6, x2: 6, y2: 18 }),
-                                s("line", { x1: 6, y1: 6, x2: 18, y2: 18 }),
-                              ],
+                              [s("use", { href: "#close-button" })],
                             ),
                           ],
                         ),
