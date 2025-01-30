@@ -2,7 +2,7 @@ import { arrow, computePosition, flip, inline, Placement, shift } from "@floatin
 import { getFullSlug, normalizeRelativeURLs } from "../../util/path"
 import { getContentType } from "../../util/mime"
 import xmlFormat from "xml-formatter"
-import { fetchCanonical } from "./util"
+import { createSidePanel, fetchCanonical } from "./util"
 
 type ContentHandler = (
   response: Response,
@@ -184,6 +184,12 @@ async function setPosition(
       top: arrowY != null ? `${arrowY}px` : "",
     })
     element.dataset.placement = staticSide
+    const disableSidePanel = window.document.body.dataset.disableSidepanel === "true"
+    if (staticSide === "top" && disableSidePanel) {
+      element.style.top = "0px"
+    } else if (staticSide === "bottom" && disableSidePanel) {
+      element.style.bottom = "0px"
+    }
   }
 
   const linkRect = link.getBoundingClientRect()
@@ -261,9 +267,11 @@ async function mouseEnterHandler(
     return
   }
 
+  const position = window.document.body.dataset.disableSidepanel === "true" ? "bottom" : "right"
+
   if (hasAlreadyBeenFetched(link)) {
     if (hasPositionChanged(link)) {
-      return setPosition(link, link.lastChild as HTMLElement, "right", clientX, clientY)
+      return setPosition(link, link.lastChild as HTMLElement, position, clientX, clientY)
     }
     return
   }
@@ -306,7 +314,7 @@ async function mouseEnterHandler(
   const contentType = response.headers.get("Content-Type")
     ? response.headers.get("Content-Type")!.split(";")[0]
     : getContentType(targetUrl)
-  const [contentTypeCategory, typeInfo] = contentType.split("/")
+  const [contentTypeCategory, _] = contentType.split("/")
 
   const { popoverElement, popoverInner } = createPopoverElement()
   popoverInner.dataset.contentType = contentType ?? undefined
@@ -323,35 +331,83 @@ async function mouseEnterHandler(
 
   const handler =
     contentHandlers[contentTypeCategory] ||
-    contentHandlers[`${contentTypeCategory}/${typeInfo}`] ||
+    contentHandlers[contentType] ||
     contentHandlers["default"]
 
   handler(response, targetUrl, popoverInner)
-  setPosition(link, popoverElement, "right", clientX, clientY)
+  setPosition(link, popoverElement, position, clientX, clientY)
   link.appendChild(popoverElement)
 
   if (hash !== "") {
-    const heading = popoverInner.querySelector(
+    const heading = popoverInner.querySelector<HTMLElement>(
       `h1${hash}, h2${hash}, h3${hash}, h4${hash}, h5${hash}, h6${hash}`,
-    ) as HTMLElement | null
+    )
     if (heading) {
       popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
     }
   }
 }
 
-function mouseClickHandler(evt: MouseEvent) {
+async function mouseClickHandler(evt: MouseEvent) {
   const link = evt.currentTarget as HTMLAnchorElement
   const thisUrl = new URL(document.location.href)
   const targetUrl = new URL(link.href)
   const hash = decodeURIComponent(targetUrl.hash)
 
+  const container = document.getElementById("stacked-notes-container") as HTMLDivElement
+
+  if (evt.altKey && !container?.classList.contains("active")) {
+    evt.preventDefault()
+    evt.stopPropagation()
+    const asidePanel = document.querySelector<HTMLDivElement>(
+      "main > aside[class~='sidepanel-container']",
+    )
+
+    if (!asidePanel) return
+
+    const sideInner = createSidePanel(asidePanel)
+
+    let response: Response | void
+    if (link.dataset.arxivId) {
+      const url = new URL(`https://cdn.aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
+      response = await fetchCanonical(url).catch(console.error)
+    } else {
+      response = await fetchCanonical(new URL(`${targetUrl}`)).catch(console.error)
+    }
+
+    if (!response) return
+    const contentType = response.headers.get("Content-Type")
+      ? response.headers.get("Content-Type")!.split(";")[0]
+      : getContentType(targetUrl)
+
+    sideInner.dataset.contentType = contentType ?? undefined
+
+    if (contentType === "application/pdf") {
+      const pdf = document.createElement("iframe")
+      const blob = await response.blob()
+      const blobUrl = createManagedBlobUrl(blob, DEFAULT_BLOB_TIMEOUT)
+      pdf.src = blobUrl
+      sideInner.append(pdf)
+    } else {
+      const contents = await response.text()
+      const html = p.parseFromString(contents, "text/html")
+      normalizeRelativeURLs(html, targetUrl)
+      const elts = [
+        ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>),
+      ]
+      if (elts.length === 0) return
+
+      sideInner.append(...elts)
+    }
+    return
+  }
+
   if (compareUrls(thisUrl, targetUrl) && hash !== "") {
     evt.preventDefault()
     const mainContent = document.querySelector("article")
-    const heading = mainContent?.querySelector(
+    const heading = mainContent?.querySelector<HTMLDivElement>(
       `h1${hash}, h2${hash}, h3${hash}, h4${hash}, h5${hash}, h6${hash}`,
-    ) as HTMLElement | null
+    )
     if (heading) {
       heading.scrollIntoView({ behavior: "smooth" })
       // Optionally update the URL without a page reload

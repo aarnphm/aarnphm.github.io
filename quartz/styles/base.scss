@@ -563,9 +563,10 @@ ol.overflow {
 .title-col {
   --main-col-padding-left: calc(var(--kern) * 4);
   --main-col-padding-right: 0px;
-  grid-column: 3/9;
+  grid-column: 3/8;
 
   .popover &,
+  .sidepanel-container &,
   .stacked-content & {
     grid-column: 1/-1;
   }

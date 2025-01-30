@@ -15,7 +15,7 @@
 }
 
 .popover {
-  z-index: 999;
+  z-index: 997;
   position: absolute;
   overflow: visible;
   padding: 1rem;
@@ -53,7 +53,7 @@
       width: 12px;
       height: 12px;
       background: var(--light);
-      border: 0px solid var(--gray);
+      border: 0px solid var(--lightgray);
     }
     // Fix border colors for different placements
     &[data-placement^="top"] {
@@ -105,10 +105,12 @@
     line-height: normal;
     font-size: initial;
     font-family: var(--bodyFont);
-    border: 1px solid var(--gray);
+    border: 1px solid var(--lightgray);
+    border-radius: var(--border-radius);
     background-color: var(--light);
-    border-radius: 5px;
-    box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
+    box-shadow:
+      0 14px 50px rgba(27, 33, 48, 0.12),
+      0 10px 30px rgba(27, 33, 48, 0.16);
     overflow: auto;
     white-space: normal;
   }

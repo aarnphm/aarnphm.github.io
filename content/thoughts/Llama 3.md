@@ -4,11 +4,11 @@ tags:
   - ml
 date: "2024-12-23"
 description: excerpt from the papers by Meta Research.
-modified: 2025-01-23 07:02:49 GMT-05:00
+modified: 2025-01-30 09:40:13 GMT-05:00
 title: The Llama 3  Herd of Model
 ---
 
-[[thoughts/papers/2407.21783v3.pdf|pdf]] [@grattafiori2024llama3herdmodels]
+resources: @grattafiori2024llama3herdmodels, [[thoughts/papers/2407.21783v3.pdf]]
 
 > step-by-step reproduction from training => scaling => inference
 
@@ -16,7 +16,7 @@ pre-train 405B on 15.6T tokens with 8K context windows.
 
 The data mix: 50% of tokens corresponding to general knowledge, 25% mathematical and reasoning tokens, 17% code tokens, and 8% multilingual tokens.
 
-The also implement [[thoughts/annealing]] data to improve quality [@blakeney2024doesdatasparkjoy]
+@blakeney2024doesdatasparkjoy also implements [[thoughts/annealing]] data to improve quality
 
 They also run their own scaling law calculations, instead of using Chinchilla constant
 

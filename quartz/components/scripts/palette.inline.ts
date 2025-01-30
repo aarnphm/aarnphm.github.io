@@ -1,7 +1,14 @@
 import FlexSearch from "flexsearch"
 import { ContentIndex } from "../../plugins"
 import { FilePath, FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
-import { highlight, registerEscapeHandler, removeAllChildren, encode, fetchCanonical } from "./util"
+import {
+  highlight,
+  registerEscapeHandler,
+  removeAllChildren,
+  encode,
+  fetchCanonical,
+  createSidePanel,
+} from "./util"
 
 interface Item {
   id: number
@@ -167,8 +174,13 @@ document.addEventListener("nav", async (e) => {
   }
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    const searchOpen = document.querySelector("search#search-container") as HTMLDivElement
-    if (searchOpen && searchOpen.classList.contains("active")) return
+    const searchOpen = document.querySelector<HTMLDivElement>("search#search-container")
+    const noteContainer = document.getElementById("stacked-notes-container") as HTMLDivElement
+    if (
+      (searchOpen && searchOpen.classList.contains("active")) ||
+      (noteContainer && noteContainer.classList.contains("active"))
+    )
+      return
 
     if (e.key === "o" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
@@ -198,38 +210,11 @@ document.addEventListener("nav", async (e) => {
       const asidePanel = document.querySelector(
         "main > aside[class~='sidepanel-container']",
       ) as HTMLDivElement
-      const pageHeader = document.querySelector(
-        "main > section[class~='page-header']",
-      ) as HTMLDivElement
-      if (!asidePanel || !currentHover || !pageHeader) return
+      if (!asidePanel || !currentHover) return
 
-      // Calculate and set the top position based on page header
-      const headerRect = pageHeader.getBoundingClientRect()
-      const topPosition = headerRect.top + window.scrollY
-      asidePanel.style.top = `${topPosition}px`
-      asidePanel.style.right = `${pageHeader.querySelector<HTMLDivElement>(".article-title")?.getBoundingClientRect().left}px`
-      removeAllChildren(asidePanel)
-
-      const header = document.createElement("div")
-      header.classList.add("sidepanel-header", "all-col")
-
-      const closeButton = document.createElement("button")
-      closeButton.classList.add("close-button")
-      closeButton.ariaLabel = "close button"
-      closeButton.title = "close button"
-      closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width=16 height=16 viewbox="0 0 24 24" fill="currentColor" stroke="currentColor"><use href="#close-button"></svg>`
-      function onCloseClick() {
-        removeAllChildren(asidePanel)
-      }
-      closeButton.addEventListener("click", onCloseClick)
-      window.addCleanup(() => closeButton.removeEventListener("click", onCloseClick))
-      header.appendChild(closeButton)
-
+      const sideInner = createSidePanel(asidePanel)
       const innerDiv = await fetchContent(currentSlug, currentHover.dataset.slug as FullSlug)
-      const sideInner = document.createElement("div")
-      sideInner.classList.add("sidepanel-inner")
-      sideInner.append(header, ...innerDiv)
-      asidePanel.appendChild(sideInner)
+      sideInner.append(...innerDiv)
       hidePalette()
       return
     } else if (e.key === "Enter") {
@@ -348,7 +333,6 @@ document.addEventListener("nav", async (e) => {
 
   async function onType(e: HTMLElementEventMap["input"]) {
     currentSearchTerm = (e.target as HTMLInputElement).value
-    console.log(e, e.target)
     await querySearch(currentSearchTerm)
   }
 

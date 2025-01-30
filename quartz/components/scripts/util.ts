@@ -313,3 +313,39 @@ export function highlight(searchTerm: string, text: string, trim?: boolean) {
 
 // To be used with search and everything else with flexsearch
 export const encode = (str: string) => str.toLowerCase().split(/([^a-z]|[^\x00-\x7F])/)
+
+export function createSidePanel(asidePanel: HTMLDivElement) {
+  const pageHeader = document.querySelector(
+    "main > section[class~='page-header']",
+  ) as HTMLDivElement
+  if (!asidePanel) console.error("asidePanel must not be null")
+
+  // Calculate and set the top position based on page header
+  const headerRect = pageHeader.getBoundingClientRect()
+  const topPosition = headerRect.top + window.scrollY
+  asidePanel.style.top = `${topPosition}px`
+  asidePanel.style.right = `${pageHeader.querySelector<HTMLDivElement>(".article-title")?.getBoundingClientRect().left}px`
+  removeAllChildren(asidePanel)
+
+  const header = document.createElement("div")
+  header.classList.add("sidepanel-header", "all-col")
+
+  const closeButton = document.createElement("button")
+  closeButton.classList.add("close-button")
+  closeButton.ariaLabel = "close button"
+  closeButton.title = "close button"
+  closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width=16 height=16 viewbox="0 0 24 24" fill="currentColor" stroke="currentColor"><use href="#close-button"></svg>`
+  function onCloseClick() {
+    removeAllChildren(asidePanel)
+  }
+  closeButton.addEventListener("click", onCloseClick)
+  window.addCleanup(() => closeButton.removeEventListener("click", onCloseClick))
+  header.appendChild(closeButton)
+
+  const sideInner = document.createElement("div")
+  sideInner.classList.add("sidepanel-inner")
+  sideInner.appendChild(header)
+  asidePanel.appendChild(sideInner)
+
+  return sideInner
+}

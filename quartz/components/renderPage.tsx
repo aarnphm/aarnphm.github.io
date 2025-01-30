@@ -1067,6 +1067,7 @@ export function renderPage(
   componentData: QuartzComponentProps,
   components: RenderComponents,
   pageResources: StaticResources,
+  disableSidepanel?: boolean,
 ): string {
   // make a deep copy of the tree so we don't remove the transclusion references
   // for the file cached in contentMap in build.ts
@@ -1088,6 +1089,7 @@ export function renderPage(
     }
   })
   componentData.tree = tree
+  disableSidepanel = disableSidepanel ?? true
 
   if (slug === "index") {
     components = {
@@ -1178,7 +1180,13 @@ export function renderPage(
   const doc = (
     <html lang={lang}>
       <Head {...componentData} />
-      <body data-slug={slug} data-language={lang} data-menu={isMenu} data-layout={pageLayout}>
+      <body
+        data-slug={slug}
+        data-language={lang}
+        data-menu={isMenu}
+        data-layout={pageLayout}
+        data-disable-sidepanel={disableSidepanel}
+      >
         <main id="quartz-root" class="page grid" style={{ gridTemplateRows: "repeat(5, auto)" }}>
           <Header {...componentData}>
             {header.map((HeaderComponent) => (

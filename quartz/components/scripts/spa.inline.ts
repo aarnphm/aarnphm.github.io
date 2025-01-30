@@ -695,7 +695,7 @@ function createRouter() {
     window.addEventListener("click", async (event) => {
       const { url } = getOpts(event) ?? {}
       // dont hijack behaviour, just let browser act normally
-      if (!url || event.ctrlKey || event.metaKey) return
+      if (!url || event.ctrlKey || event.metaKey || event.altKey) return
       event.preventDefault()
 
       if (isSamePage(url) && url.hash) {

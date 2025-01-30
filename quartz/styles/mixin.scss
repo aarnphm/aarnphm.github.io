@@ -148,7 +148,7 @@
   overflow: hidden;
 
   border: 1px solid var(--lightgray);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   display: flex;
   flex-direction: column;
   background-color: var(--light);

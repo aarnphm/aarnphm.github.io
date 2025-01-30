@@ -130,7 +130,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
           allFiles: ctx.allFiles,
         }
 
-        const content = renderPage(ctx, slug, componentData, opts, externalResources)
+        const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
         fps.push(
           write({
             ctx,
