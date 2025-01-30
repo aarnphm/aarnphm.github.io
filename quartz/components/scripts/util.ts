@@ -154,8 +154,7 @@ export function closeReader(readerView: HTMLElement | null) {
   const allHr = document.querySelectorAll("hr")
   const quartz = document.getElementById("quartz-root")
   if (!allHr || !quartz) return
-  readerButton?.setAttribute("data-active", "false")
-  allHr.forEach((hr) => (hr.style.visibility = "show"))
+  allHr.forEach((hr) => (hr.style.visibility = "visible"))
   quartz.style.overflow = ""
   quartz.style.maxHeight = ""
 }
