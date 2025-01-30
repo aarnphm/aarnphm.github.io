@@ -9,6 +9,7 @@ import {
   fetchCanonical,
 } from "./util"
 import { FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
+import { escapeHTML } from "../../util/escape"
 
 interface Item {
   id: number
@@ -101,8 +102,9 @@ document.addEventListener("nav", async (e) => {
   const data = await fetchData
   const container = document.getElementById("search-container")
   const searchButton = document.getElementById("search-button")
-  const searchBar = container?.querySelector("#search-bar") as HTMLInputElement | null
-  const searchLayout = container?.querySelector("#search-layout") as HTMLOutputElement | null
+  const searchBar = container?.querySelector<HTMLInputElement>("#search-bar")
+  const searchLayout = container?.querySelector<HTMLOutputElement>("#search-layout")
+  const searchSpace = container?.querySelector<HTMLFormElement>("#search-space")
   const idDataMap = Object.keys(data) as FullSlug[]
 
   const appendLayout = (el: HTMLElement) => {
@@ -110,6 +112,20 @@ document.addEventListener("nav", async (e) => {
       searchLayout?.appendChild(el)
     }
   }
+
+  const keys = [
+    { kbd: "↑↓/<C-n><C-p>", description: "pour naviguer" },
+    { kbd: "↵", description: "pour ouvrir" },
+    { kbd: "esc", description: "pour rejeter" },
+  ]
+  const helper = document.createElement("ul")
+  helper.id = "helper"
+  for (const { kbd, description } of keys) {
+    const liEl = document.createElement("li")
+    liEl.innerHTML = `<kbd>${escapeHTML(kbd)}</kbd>${description}`
+    helper.appendChild(liEl)
+  }
+  searchSpace!.appendChild(helper)
 
   const enablePreview = searchLayout?.dataset?.preview === "true"
   let preview: HTMLDivElement | undefined = undefined
