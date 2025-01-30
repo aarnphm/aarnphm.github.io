@@ -151,13 +151,9 @@ export function setHeaderState(
 export function closeReader(readerView: HTMLElement | null) {
   if (!readerView) return
   readerView.classList.remove("active")
-  const toolbar = document.querySelector(".toolbar") as HTMLElement
   const allHr = document.querySelectorAll("hr")
   const quartz = document.getElementById("quartz-root")
-  if (!toolbar) return
-  if (!allHr) return
-  if (!quartz) return
-  const readerButton = toolbar.querySelector("#reader-button")
+  if (!allHr || !quartz) return
   readerButton?.setAttribute("data-active", "false")
   allHr.forEach((hr) => (hr.style.visibility = "show"))
   quartz.style.overflow = ""
