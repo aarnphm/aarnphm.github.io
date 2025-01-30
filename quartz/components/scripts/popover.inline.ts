@@ -147,6 +147,8 @@ async function handleDefaultContent(
   popoverInner.append(...elts)
 }
 
+const checkFolderTagPage = () => window.document.body.dataset.isFolderTag === "true"
+
 async function setPosition(
   link: HTMLElement,
   popoverElement: HTMLElement,
@@ -184,10 +186,10 @@ async function setPosition(
       top: arrowY != null ? `${arrowY}px` : "",
     })
     element.dataset.placement = staticSide
-    const disableSidePanel = window.document.body.dataset.disableSidepanel === "true"
-    if (staticSide === "top" && disableSidePanel) {
+    const isFolderTag = checkFolderTagPage()
+    if (staticSide === "top" && isFolderTag) {
       element.style.top = "0px"
-    } else if (staticSide === "bottom" && disableSidePanel) {
+    } else if (staticSide === "bottom" && isFolderTag) {
       element.style.bottom = "0px"
     }
   }
@@ -267,7 +269,7 @@ async function mouseEnterHandler(
     return
   }
 
-  const position = window.document.body.dataset.disableSidepanel === "true" ? "bottom" : "right"
+  const position = checkFolderTagPage() ? "bottom" : "right"
 
   if (hasAlreadyBeenFetched(link)) {
     if (hasPositionChanged(link)) {

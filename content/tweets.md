@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-01-30 10:28:45 GMT-05:00
+modified: 2025-01-30 13:09:08 GMT-05:00
 noindex: true
 title: /xeets/
 ---
@@ -67,6 +67,10 @@ https://x.com/virtualjew/status/1846593528350011539 <!-- You can just make grill
 https://x.com/qiaochuyuan/status/1629333539488690176?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ <!-- QC on attachment theory thread -->
 
 https://x.com/nwilliams030/status/1884282849471390185 <!-- neighbourhood as a form of proximity love -->
+
+https://x.com/booritney/status/1884857291046002714 <!-- dates in sf, after dark thursday -->
+
+https://x.com/tommytrxnh/status/1884908531079340090 <!-- Tommy's version -->
 
 ## technology
 
