@@ -23,19 +23,19 @@ export default (() => {
           <output id="result" />
           <ul id="helper">
             <li>
-              <kbd>↑↓</kbd> to navigate
+              <kbd>↑↓</kbd> pour naviguer
             </li>
             <li>
-              <kbd>↵</kbd> to open
+              <kbd>↵</kbd> pour ouvrir
+            </li>
+            <li data-open>
+              <kbd>⟶</kbd> pour sélectionner
             </li>
             <li data-quick-open>
-              <kbd>⌘ ↵</kbd> to open in a new tab
-            </li>
-            <li data-quick-open>
-              <kbd>⌘ ⌥ ↵</kbd> to open in a side panel
+              <kbd>⌘ ⌥ ↵</kbd> pour ouvrir dans un panneau
             </li>
             <li>
-              <kbd>esc</kbd> to dismiss
+              <kbd>esc</kbd> pour rejeter
             </li>
           </ul>
         </div>

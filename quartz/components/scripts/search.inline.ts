@@ -47,7 +47,7 @@ let index = new FlexSearch.Document<Item>({
 const p = new DOMParser()
 const fetchContentCache: Map<FullSlug, Element[]> = new Map()
 const numSearchResults = 10
-const numTagResults = 5
+const numTagResults = 10
 function highlightHTML(searchTerm: string, el: HTMLElement) {
   const p = new DOMParser()
   const tokenizedTerms = tokenizeTerm(searchTerm)
@@ -268,7 +268,7 @@ document.addEventListener("nav", async (e) => {
   const resultToHTML = ({ slug, title, content, tags, target }: Item) => {
     const htmlTags = tags.length > 0 ? `<ul class="tags">${tags.join("")}</ul>` : ``
     const itemTile = document.createElement("a")
-    const titleContent = target || title
+    const titleContent = target ? highlight(currentSearchTerm, target) : title
     const subscript = target ? `<b>${slug}</b>` : ``
     itemTile.classList.add("result-card")
     itemTile.id = slug
@@ -396,7 +396,7 @@ document.addEventListener("nav", async (e) => {
           query: query,
           // return at least 10000 documents, so it is enough to filter them by tag (implemented in flexsearch)
           limit: Math.max(numSearchResults, 10000),
-          index: ["title", "content"],
+          index: ["title", "content", "aliases"],
           tag: tag,
         })
         for (let searchResult of searchResults) {
@@ -428,6 +428,7 @@ document.addEventListener("nav", async (e) => {
 
     // order titles ahead of content
     const allIds: Set<number> = new Set([
+      ...getByField("aliases"),
       ...getByField("title"),
       ...getByField("content"),
       ...getByField("tags"),

@@ -3,18 +3,40 @@ id: movies
 tags:
   - evergreen
 comments: false
-date: 2024-02-07
-modified: 2025-01-29 11:39:14 GMT-05:00
+date: "2024-02-07"
+modified: 2025-01-30 06:37:46 GMT-05:00
 title: movies.
 ---
 
-A (mostly) up-to-date film, movies, shows that I have consumed, or on the watch list.
+A (mostly) up-to-date [[thoughts/Cinematography|film]], movies, shows that I have consumed, or on the watch list.
 
 > Similar to an [[books|antilibrary]], an anti-blockbusters is a collection of movies, short films that represents the art of film-making.
 
-Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.com/)
+Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.com/) are both awesome distributions and production companies that one should check out, (_if you have never heard about them_ :smiley:)
 
-## to [[thoughts/Cinematography|watch.]]
+## to watch.
+
+- [ ] A Different Man (2024)
+- [ ] A Real Pain (2024)
+- [ ] Queer (2024)
+- [ ] Civil War (2024)
+- [ ] I Saw the TV Glow (2024) [^lychian]
+- [ ] The Substance (2024)
+- [ ] How To Make Millions before Grandma [[ideas#lettres|dies]] (2024)
+- [ ] Evil Does Not Exists (2024)
+- [ ] The Brutalist (2024)
+- [ ] Do Not Expect Too Much from the End of the World (2024)
+- [ ] Kinds of Kindness (2024)
+- [ ] La Chimera (2024)
+- [ ] Nosferatu (2024)
+- [ ] Anora (2024)
+- [ ] Flow (2024)
+- [ ] Sometimes I Think About Dying (2023)
+- [ ] Perfect Days (2024)
+  - How we might live in a noisy life?
+  - What does life looks like when you accept ambitions for acceptance?
+
+[^lychian]: What makes a [Lychian] (https://en.wikipedia.org/wiki/David_Lynch) movie?
 
 - [ ] The King of Comedy (1982)
 - [ ] Dead Poets Society (1989)
@@ -36,11 +58,15 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] Twin Peaks (1990)
 - [ ] Call Me By Your Name (2017)
 - [ ] The Day of the Jackal (1973) [^remake]
-- [x] Poor Things (2023)
-- [x] The Defiant Ones (1958)
-- [x] Maestro (2023)
 
 [^remake]: There is also a remake (2024) starring Eddie Redmayne.
+
+## finished
+
+_doesn't mean that I won't watch it again, just that I will need some more time to process_ :smiley:
+
+- [x] Poor Things (2023)
+- [x] Maestro (2023)
 
 ## recurring.
 
@@ -54,7 +80,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - Casablanca (1942)
 - Godfather (1972)
 - China Town (1974)
-
+- The Defiant Ones (1958)
 - Scarface (1983)
 - Midnight Run (1988)
 - Goodfellas (1990)

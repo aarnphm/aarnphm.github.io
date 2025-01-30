@@ -6,9 +6,9 @@ aliases:
 tags:
   - technical
   - evergreen
-date: "2022-01-25"
+date: 2022-01-25
 description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
-modified: 2025-01-12 20:32:23 GMT-05:00
+modified: 2025-01-30 06:19:30 GMT-05:00
 title: ideas.
 ---
 
@@ -20,6 +20,7 @@ title: ideas.
 - education and pedagogical implications on next generations
 - recommendation system and word2vec
 - social interactions a la carte.
+- Lychian [[movies#to watch.]]
 
 ## projets
 

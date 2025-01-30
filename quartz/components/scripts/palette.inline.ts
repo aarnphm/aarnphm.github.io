@@ -1,6 +1,6 @@
 import FlexSearch from "flexsearch"
 import { ContentIndex } from "../../plugins"
-import { FilePath, FullSlug, resolveRelative, simplifySlug } from "../../util/path"
+import { FilePath, FullSlug, resolveRelative } from "../../util/path"
 import { highlight, registerEscapeHandler, removeAllChildren, encode } from "./util"
 
 interface Item {
@@ -8,6 +8,7 @@ interface Item {
   slug: FullSlug
   name: FilePath
   aliases: string[]
+  target: string | undefined
 }
 
 let index = new FlexSearch.Document<Item>({
@@ -55,6 +56,7 @@ document.addEventListener("nav", async (e) => {
   const bar = container.querySelector("#bar") as HTMLInputElement
   const output = container.getElementsByTagName("output")[0]
   const helper = container.querySelector("ul#helper") as HTMLUListElement
+  let currentHover: HTMLDivElement | null = null
 
   function hidePalette() {
     container?.classList.remove("active")
@@ -137,6 +139,7 @@ document.addEventListener("nav", async (e) => {
     }
 
     output.append(...recentItems.map(toHtml))
+    setFocusFirstChild()
   }
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
@@ -153,71 +156,73 @@ document.addEventListener("nav", async (e) => {
       const barOpen = container?.classList.contains("active")
       barOpen ? hidePalette() : showPalette("command")
       return
+    } else if (
+      e.key.startsWith("Esc") &&
+      container?.classList.contains("active") &&
+      bar.matches(":focus")
+    ) {
+      // Handle Escape key when input is focused
+      e.preventDefault()
+      hidePalette()
+      return
     }
 
-    // If search is active, then we will render the first result and display accordingly
+    if (currentHover) currentHover.classList.remove("focus")
     if (!container?.classList.contains("active")) return
 
-    if (e.key === "Enter") {
+    if (e.metaKey && e.altKey && e.key === "Enter") {
+      console.log(e)
+      console.log(currentHover)
+    } else if (e.key === "Enter") {
       // If result has focus, navigate to that one, otherwise pick first result
-      let anchor: HTMLAnchorElement | undefined
-      if (output?.contains(document.activeElement)) {
-        anchor = document.activeElement as HTMLAnchorElement
-        if (anchor.classList.contains("no-match")) return
+      if (output?.contains(currentHover)) {
         e.preventDefault()
-        anchor.click()
+        currentHover!.click()
       } else {
-        anchor = output.getElementsByClassName("suggestion-item")[0] as HTMLAnchorElement
-        if (!anchor || anchor?.classList.contains("no-match")) return
+        const anchor = output.getElementsByClassName("suggestion-item")[0] as HTMLDivElement
         e.preventDefault()
         anchor.click()
       }
-    } else if ((e.metaKey || e.altKey) && e.key === "Enter") {
-      // Find the focused item
-      const focusedElement = output.querySelector<HTMLDivElement>(".suggestion-item.focus")
-      if (!focusedElement || focusedElement.classList.contains("no-match")) return
-
-      e.preventDefault()
-      // Get the slug from the focused element's data
-      const items = output.querySelectorAll<HTMLDivElement>(".suggestion-item")
-      const currentIndex = Array.from(items).indexOf(focusedElement)
-      const slug = idDataMap[currentIndex]
-
-      // Add to recents and open in new tab
-      addToRecents(slug)
-      window.open(resolveRelative(currentSlug, slug), "_blank")
-      hidePalette()
-    } else if (
-      e.key === "ArrowUp" ||
-      (e.shiftKey && e.key === "Tab") ||
-      (e.ctrlKey && e.key === "p")
-    ) {
+    } else if (e.key === "ArrowUp" || (e.ctrlKey && e.key === "p")) {
       e.preventDefault()
       const items = output.querySelectorAll<HTMLDivElement>(".suggestion-item")
       if (items.length === 0) return
 
-      const focusedElement = output.querySelector<HTMLDivElement>(".suggestion-item.focus")
+      const focusedElement = currentHover
+        ? currentHover
+        : output.querySelector<HTMLDivElement>(".suggestion-item.focus")
 
       // Remove focus from current element
       if (focusedElement) {
         focusedElement.classList.remove("focus")
         // Get the previous element or cycle to the last
         const currentIndex = Array.from(items).indexOf(focusedElement)
-        const nextIndex = currentIndex <= 0 ? items.length - 1 : currentIndex - 1
-        items[nextIndex].classList.add("focus")
-        items[nextIndex].focus()
+        const prevIndex = currentIndex <= 0 ? items.length - 1 : currentIndex - 1
+        currentHover = items[prevIndex]
+        items[prevIndex].classList.add("focus")
+        items[prevIndex].focus()
       } else {
         // If no element is focused, start from the last one
         const lastIndex = items.length - 1
         items[lastIndex].classList.add("focus")
         items[lastIndex].focus()
       }
-    } else if (e.key === "ArrowDown" || e.key === "Tab" || (e.ctrlKey && e.key === "n")) {
+    } else if (e.key === "Tab") {
+      e.preventDefault()
+      const focusedElement = currentHover
+        ? currentHover
+        : output.querySelector<HTMLDivElement>(".suggestion-item.focus")
+      bar.value = currentSearchTerm =
+        focusedElement?.querySelector<HTMLDivElement>(".suggestion-title")!.textContent ?? ""
+      return await querySearch(currentSearchTerm)
+    } else if (e.key === "ArrowDown" || (e.ctrlKey && e.key === "n")) {
       e.preventDefault()
       const items = output.querySelectorAll<HTMLDivElement>(".suggestion-item")
       if (items.length === 0) return
 
-      const focusedElement = output.querySelector<HTMLDivElement>(".suggestion-item.focus")
+      const focusedElement = currentHover
+        ? currentHover
+        : output.querySelector<HTMLDivElement>(".suggestion-item.focus")
 
       // Remove focus from current element
       if (focusedElement) {
@@ -225,6 +230,7 @@ document.addEventListener("nav", async (e) => {
         // Get the next element or cycle to the first
         const currentIndex = Array.from(items).indexOf(focusedElement)
         const nextIndex = currentIndex >= items.length - 1 ? 0 : currentIndex + 1
+        currentHover = items[nextIndex]
         items[nextIndex].classList.add("focus")
         items[nextIndex].focus()
       } else {
@@ -235,9 +241,7 @@ document.addEventListener("nav", async (e) => {
     }
   }
 
-  async function onType(e: HTMLElementEventMap["input"]) {
-    currentSearchTerm = (e.target as HTMLInputElement).value
-
+  async function querySearch(currentSearchTerm: string) {
     let searchResults: FlexSearch.SimpleDocumentSearchResultSetUnit[]
     if (actionType === "quick_open") {
       searchResults = await index.searchAsync({
@@ -255,17 +259,38 @@ document.addEventListener("nav", async (e) => {
     // order titles ahead of content
     const allIds: Set<number> = new Set([...getByField("name"), ...getByField("aliases")])
     displayResults(
-      [...allIds].map((id) => {
-        const slug = idDataMap[id]
-        return {
-          id,
-          slug,
-          name: highlight(currentSearchTerm, data[slug].fileName) as FilePath,
-          aliases: data[slug].aliases,
-        }
-      }),
+      [...allIds]
+        .map((id) => {
+          const slug = idDataMap[id]
+          const aliases: string[] = data[slug].aliases
+          const target = aliases.find((alias) =>
+            alias.toLowerCase().includes(currentSearchTerm.toLowerCase()),
+          )
+          return {
+            id,
+            slug,
+            name: highlight(currentSearchTerm, data[slug].fileName) as FilePath,
+            aliases: data[slug].aliases,
+            target,
+          }
+        })
+        .sort((a, b) => {
+          // If both have targets or both don't have targets, maintain original order
+          if ((!a?.target && !b?.target) || (a?.target && b?.target)) return 0
+          // If a has target and b doesn't, a comes first
+          if (a?.target && !b?.target) return -1
+          // If b has target and a doesn't, b comes first
+          if (!a?.target && b?.target) return 1
+          return 0
+        }),
       currentSearchTerm,
     )
+  }
+
+  async function onType(e: HTMLElementEventMap["input"]) {
+    currentSearchTerm = (e.target as HTMLInputElement).value
+    console.log(e, e.target)
+    await querySearch(currentSearchTerm)
   }
 
   function displayResults(finalResults: Item[], currentSearchTerm: string) {
@@ -273,26 +298,50 @@ document.addEventListener("nav", async (e) => {
 
     removeAllChildren(output)
 
+    const noMatchEl = document.createElement("div")
+    noMatchEl.classList.add("suggestion-item", "no-match")
+    noMatchEl.innerHTML = `<div class="suggestion-content"><div class="suggestion-title">${currentSearchTerm}</div></div><div class="suggestion-aux"><span class="suggestion-action">enter to schedule a chat</span></div>`
+
+    const onNoMatchClick = () => {
+      window.location.href = `mailto:contact@aarnphm.xyz?subject=Chat about: ${encodeURIComponent(currentSearchTerm)}`
+      hidePalette()
+    }
+
+    noMatchEl.addEventListener("click", onNoMatchClick)
+    window.addCleanup(() => noMatchEl.removeEventListener("click", onNoMatchClick))
+
     if (finalResults.length === 0) {
-      output.innerHTML = `<div class="suggestion-item no-match"><div class="suggestion-content"><div class="suggestion-title">${currentSearchTerm}</div></div><div class="suggestion-aux"><span class="suggestion-action">enter to schedule a chat</span></div></div>`
+      if (bar.matches(":focus") && currentSearchTerm === "") {
+        output.append(...recentItems.map(toHtml))
+        setFocusFirstChild()
+      } else {
+        output.appendChild(noMatchEl)
+      }
     } else {
       output.append(...finalResults.map(toHtml))
     }
+    setFocusFirstChild()
+  }
 
+  function setFocusFirstChild() {
     // focus on first result, then also dispatch preview immediately
     const firstChild = output.firstElementChild as HTMLElement
     firstChild.classList.add("focus")
+    currentHover = firstChild as HTMLInputElement
   }
 
-  function toHtml({ name, slug }: Item) {
+  function toHtml({ name, slug, target }: Item) {
     const item = document.createElement("div")
     item.classList.add("suggestion-item")
+    item.dataset.slug = slug
 
     const content = document.createElement("div")
     content.classList.add("suggestion-content")
     const title = document.createElement("div")
     title.classList.add("suggestion-title")
-    title.innerHTML = name
+    const titleContent = target ? highlight(currentSearchTerm, target) : name
+    const subscript = target ? `${slug}` : ``
+    title.innerHTML = `${titleContent}<br/><span class="subscript">${subscript}</span>`
     content.appendChild(title)
 
     const aux = document.createElement("div")
@@ -313,6 +362,7 @@ document.addEventListener("nav", async (e) => {
       })
       // Add focus to current item
       item.classList.add("focus")
+      currentHover = item
     }
 
     item.addEventListener("click", onClick)
@@ -346,6 +396,7 @@ async function fillDocument(data: ContentIndex) {
         slug: slug as FullSlug,
         name: fileData.fileName,
         aliases: fileData.aliases,
+        target: undefined,
       }),
     )
   }
