@@ -4,6 +4,7 @@ import HeaderConstructor from "./Header"
 import ContentConstructor from "./pages/Content"
 import FooterConstructor from "./Footer"
 import SearchConstructor from "./Search"
+import PaletteConstructor from "./Palette"
 import { byDateAndAlphabetical } from "./PageList"
 import { getDate, Date as DateComponent } from "./Date"
 import { classNames } from "../util/lang"
@@ -1085,7 +1086,7 @@ export function renderPage(
         ? node.properties.className
         : (node.properties.className = [])
       className.push("main-col")
-      const els = new Set(parent?.children.splice(index!, 1))
+      const els = new Set(parent?.children.splice(index!, 1)) as Set<Element>
       retrieval = retrieval.union(els)
     }
   })
@@ -1104,6 +1105,7 @@ export function renderPage(
         const { displayClass } = props
         const Element = ElementComponent()
         const Search = SearchConstructor({ includeButton: false })
+        const Palette = PaletteConstructor()
 
         return (
           <>
@@ -1113,6 +1115,7 @@ export function renderPage(
             <div class={classNames(displayClass, "landing")}>
               <Element {...componentData} />
               <Search {...componentData} />
+              <Palette {...componentData} />
             </div>
           </>
         )
