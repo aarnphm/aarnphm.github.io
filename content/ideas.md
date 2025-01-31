@@ -8,7 +8,7 @@ tags:
   - evergreen
 date: 2022-01-25
 description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
-modified: 2025-01-30 06:19:30 GMT-05:00
+modified: 2025-01-30 21:25:29 GMT-05:00
 title: ideas.
 ---
 

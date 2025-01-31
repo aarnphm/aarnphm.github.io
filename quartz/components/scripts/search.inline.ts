@@ -114,7 +114,7 @@ document.addEventListener("nav", async (e) => {
   }
 
   const keys = [
-    { kbd: "↑↓/<C-n><C-p>", description: "pour naviguer" },
+    { kbd: "↑↓", description: "pour naviguer" },
     { kbd: "↵", description: "pour ouvrir" },
     { kbd: "esc", description: "pour rejeter" },
   ]

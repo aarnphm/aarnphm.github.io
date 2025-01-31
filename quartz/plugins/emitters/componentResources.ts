@@ -235,7 +235,7 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
           { src: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
           { src: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
         ],
-        theme_color: cfg.theme.colors["lightMode"].secondary,
+        theme_color: cfg.theme.colors["lightMode"].light,
         background_color: cfg.theme.colors["lightMode"].light,
         display: "standalone",
         lang: cfg.locale,
