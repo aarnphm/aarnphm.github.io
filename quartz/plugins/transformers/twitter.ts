@@ -32,7 +32,7 @@ const cache = new Map()
 
 export const Twitter: QuartzTransformerPlugin = () => ({
   name: "Twitter",
-  skipDuringServe: true,
+  skipDuringServe: false,
   markdownPlugins(ctx) {
     const locale = ctx.cfg.configuration.locale.split("-")[0] ?? "en"
     return [
@@ -74,15 +74,5 @@ export const Twitter: QuartzTransformerPlugin = () => ({
       },
     ]
   },
-  externalResources() {
-    return {
-      js: [
-        {
-          script,
-          loadTime: "afterDOMReady",
-          contentType: "inline",
-        },
-      ],
-    }
-  },
+  externalResources: () => ({ js: [], css: [] }),
 })

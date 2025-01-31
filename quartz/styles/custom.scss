@@ -337,18 +337,6 @@ blockquote.twitter-tweet {
   position: relative;
   margin-right: 0.5rem !important;
 
-  & > a {
-    border-radius: unset;
-    background-color: unset;
-    text-decoration: none;
-
-    @include links;
-
-    &[class="alias"] {
-      margin-left: 0.2625em;
-    }
-  }
-
   &:first-child {
     margin-top: 2rem;
   }

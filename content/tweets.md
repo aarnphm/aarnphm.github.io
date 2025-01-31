@@ -7,9 +7,11 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-01-30 13:09:08 GMT-05:00
+modified: 2025-01-30 21:40:29 GMT-05:00
 noindex: true
 title: /xeets/
+transclude:
+  dynalist: false
 ---
 
 https://x.com/sp_monte_carlo/status/1834647902485991519 <!-- Some math papers -->
