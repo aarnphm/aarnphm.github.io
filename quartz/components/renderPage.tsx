@@ -1269,13 +1269,13 @@ export function renderPage(
           .filter((resource) => resource.loadTime === "afterDOMReady")
           .map((res) => JSResourceToScriptElement(res))}
         {/* Cloudflare Web Analytics */}
-        {!ctx.argv.serve && process.env.CF_PAGES === "1" && (
+        {!ctx.argv.serve && (
           <script
             defer
             src={"https://static.cloudflareinsights.com/beacon.min.js"}
             data-cf-beacon='{"token": "3b6a9ecda4294f8bb5770c2bfb44078c"}'
             crossOrigin={"anonymous"}
-            spa-preserve
+            spa-preserve={true}
           />
         )}
         {/* End Cloudflare Web Analytics */}
