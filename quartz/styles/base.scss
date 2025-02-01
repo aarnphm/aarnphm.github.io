@@ -163,6 +163,7 @@ section[class~="header"] {
   margin-left: 0;
   margin-right: 0;
   background: var(--light);
+  border-bottom: 1px solid var(--lightgray);
 }
 
 @keyframes reveal-header-border {

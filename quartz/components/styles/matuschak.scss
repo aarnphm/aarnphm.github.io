@@ -69,17 +69,12 @@
 }
 
 body.stack-mode > #quartz-root {
-  section[class~="header"] {
-    border-bottom: 1px solid var(--lightgray);
-  }
-
   hgroup > .description {
     display: none;
   }
 
   .article-title {
     font-size: 25.5px;
-    margin-bottom: 0;
   }
 
   .expand-button,

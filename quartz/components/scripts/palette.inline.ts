@@ -56,7 +56,7 @@ function addToRecents(slug: FullSlug) {
 
 const p = new DOMParser()
 const fetchContentCache: Map<FullSlug, Element[]> = new Map()
-async function fetchContent(currentSlug: FullSlug, slug: FullSlug): Promise<Element[]> {
+async function fetchContent(currentSlug: FullSlug, slug: FullSlug): Promise<HTMLElement[]> {
   if (fetchContentCache.has(slug)) {
     return fetchContentCache.get(slug) as Element[]
   }
@@ -339,10 +339,10 @@ document.addEventListener("nav", async (e) => {
       ) as HTMLDivElement
       if (!asidePanel || !currentHover) return
 
-      const sideInner = createSidePanel(asidePanel)
-      const innerDiv = await fetchContent(currentSlug, currentHover.dataset.slug as FullSlug)
-      sideInner.append(...innerDiv)
-      hidePalette()
+      await fetchContent(currentSlug, currentHover.dataset.slug as FullSlug).then((innerDiv) => {
+        createSidePanel(asidePanel, ...innerDiv)
+        hidePalette()
+      })
       return
     } else if (e.key === "Enter") {
       // If result has focus, navigate to that one, otherwise pick first result

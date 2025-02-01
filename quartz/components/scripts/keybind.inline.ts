@@ -1,4 +1,4 @@
-import { registerEscapeHandler, registerEvents } from "./util"
+import { registerEscapeHandler } from "./util"
 
 type Browser = "Safari" | "Chrome" | "Firefox" | "Edge" | "Opera" | "Other"
 
@@ -67,9 +67,29 @@ const aliases: Record<string, { mac: string; def: string }> = {
   graphique: { mac: ";", def: "g" },
 }
 
+// Scroll amount in pixels per Ctrl-E/Y press
+const SCROLL_AMOUNT = 100
+
 document.addEventListener("nav", () => {
   const container = document.getElementById("shortcut-container")
   if (!container) return
+
+  // mimic vim behaviour
+  function scrollHandler(e: KeyboardEvent) {
+    // Only handle if Ctrl is pressed (but not Cmd on Mac)
+    if (!e.ctrlKey || e.metaKey) return
+
+    if ((e.ctrlKey && e.key === "e") || e.key === "d") {
+      e.preventDefault()
+      window.scrollBy({ top: SCROLL_AMOUNT, behavior: "smooth" })
+    } else if ((e.ctrlKey && e.key === "y") || e.key === "u") {
+      e.preventDefault()
+      window.scrollBy({ top: -SCROLL_AMOUNT, behavior: "smooth" })
+    }
+  }
+
+  document.addEventListener("keydown", scrollHandler)
+  window.addCleanup(() => document.removeEventListener("keydown", scrollHandler))
 
   const shortcuts = container.querySelectorAll(
     'ul[id="shortcut-list"] > li > div[id="shortcuts"]',

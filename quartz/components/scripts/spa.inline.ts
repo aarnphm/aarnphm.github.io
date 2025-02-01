@@ -229,7 +229,12 @@ class StackedNoteManager {
 
     // Update URL without reloading
     window.history.replaceState({}, "", url)
-    this.updateAnchorHighlights()
+    // Update anchor highlights
+    for (const el of this.dag.getOrderedNodes()) {
+      Array.from(el.note.getElementsByClassName("internal")).forEach((el) =>
+        el.classList.toggle("dag", this.dag.has((el as HTMLAnchorElement).dataset.slug!)),
+      )
+    }
   }
 
   getChain() {
@@ -382,16 +387,27 @@ class StackedNoteManager {
       }
 
       const onClick = async (e: MouseEvent) => {
-        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
+        if (e.ctrlKey || e.metaKey || e.shiftKey) return
 
         e.preventDefault()
-
-        if (this.dag.has(slug)) {
-          notifyNav(slug as FullSlug)
-          return await this.focus(slug)
+        if (e.altKey) {
+          // When alt/option is pressed, add to the end without truncating
+          const slug = link.dataset.slug as string
+          if (!this.dag.has(slug)) {
+            const res = await this.fetchContent(new URL(href))
+            if (!res) return
+            const dagNode = this.dag.addNode({ ...res, slug, anchor: link, note: undefined! })
+            dagNode.note = await this.createNote(this.dag.getOrderedNodes().length, {
+              slug,
+              ...res,
+            })
+            this.updateURL()
+            await this.render()
+            notifyNav(slug as FullSlug)
+          }
+          return
         }
         await this.add(new URL(href), link)
-        notifyNav(slug as FullSlug)
       }
 
       const onMouseEnter = (ev: MouseEvent) => {
@@ -415,13 +431,30 @@ class StackedNoteManager {
         }
       }
 
+      const onKeyDown = (ev: KeyboardEvent) => {
+        const link = ev.target as HTMLAnchorElement
+        if (ev.altKey && !link.title) {
+          link.title = "pour ajouter à la fin de la pile"
+        }
+      }
+      const onKeyUp = (ev: KeyboardEvent) => {
+        const link = ev.target as HTMLAnchorElement
+        if (!ev.altKey && link.title === "pour ajouter à la fin de la pile") {
+          link.title = ""
+        }
+      }
+
       link.addEventListener("click", onClick)
       link.addEventListener("mouseenter", onMouseEnter)
       link.addEventListener("mouseleave", onMouseLeave)
+      link.addEventListener("keydown", onKeyDown)
+      link.addEventListener("keyup", onKeyUp)
       window.addCleanup(() => {
         link.removeEventListener("click", onClick)
         link.removeEventListener("mouseenter", onMouseEnter)
         link.removeEventListener("mouseleave", onMouseLeave)
+        link.removeEventListener("keydown", onKeyDown)
+        link.removeEventListener("keyup", onKeyUp)
       })
     }
 
@@ -512,14 +545,6 @@ class StackedNoteManager {
     return true
   }
 
-  private updateAnchorHighlights() {
-    for (const el of this.dag.getOrderedNodes()) {
-      Array.from(el.note.getElementsByClassName("internal")).forEach((el) =>
-        el.classList.toggle("dag", this.dag.has((el as HTMLAnchorElement).dataset.slug!)),
-      )
-    }
-  }
-
   async add(href: URL, anchor?: HTMLElement) {
     let slug = this.getSlug(href)
 
@@ -538,6 +563,7 @@ class StackedNoteManager {
 
     // If note exists in DAG
     if (this.dag.has(slug)) {
+      notifyNav(slug)
       return await this.focus(slug)
     }
 
@@ -586,8 +612,8 @@ class StackedNoteManager {
     this.isActive = true
     await this.initFromParams()
     this.updateURL()
-    await this.render()
-    notifyNav(getFullSlug(window) as FullSlug)
+    await this.render().then(() => notifyNav(getFullSlug(window)))
+
     return true
   }
 

@@ -460,6 +460,11 @@ body {
 .article-title {
   font-size: 2.6rem;
   font-weight: 800;
+  margin-top: 0;
+}
+
+.page-header:not(aside[class~="sidepanel-container"] *) {
+  padding-top: var(--sidepanel-padding);
 }
 
 .page-footer,

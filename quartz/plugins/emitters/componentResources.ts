@@ -25,7 +25,6 @@ import { SocialImageOptions, getSatoriFont, defaultImageOptions } from "../../ut
 import satori, { SatoriOptions } from "satori"
 import { QuartzPluginData } from "../vfile"
 import sharp from "sharp"
-import { unescapeHTML } from "../../util/escape"
 import { i18n } from "../../i18n"
 import { styleText } from "node:util"
 

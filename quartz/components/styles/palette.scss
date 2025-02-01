@@ -2,10 +2,6 @@
 @use "../../styles/variables.scss" as *;
 @use "../../styles/mixin.scss" as *;
 
-.sidepanel-container.active ~ * .title-col:not(.sidepanel-container *) {
-  padding-right: 3rem;
-}
-
 body[data-disable-sidepanel="true"] {
   .sidepanel-container {
     display: none;
@@ -61,8 +57,12 @@ ul#helper {
   right: 0;
   bottom: 0;
   position: fixed;
-  width: calc(var(--grid-col-width) * 4);
+  width: calc(var(--grid-col-width) * 5);
   transition: right 0.3s ease-in-out;
+
+  @media all and ($tablet) {
+    width: calc(var(--grid-col-width) * 3);
+  }
 
   & > .sidepanel-inner {
     position: relative;
@@ -72,6 +72,7 @@ ul#helper {
 
     border: 1px solid var(--lightgray);
     border-radius: 0;
+    border-top-width: 0px;
     background-color: var(--light);
     box-shadow:
       0 14px 50px rgba(27, 33, 48, 0.12),
@@ -88,7 +89,7 @@ ul#helper {
     }
 
     & > * {
-      padding: 1rem;
+      padding: var(--sidepanel-padding);
       z-index: 998;
     }
 
@@ -113,6 +114,9 @@ ul#helper {
 
     .article-title {
       margin-top: 0;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow-x: hidden;
     }
 
     .grid {
@@ -133,13 +137,16 @@ ul#helper {
 
     & > .sidepanel-header {
       position: sticky;
-      top: 0;
+      bottom: 0;
       display: flex;
       justify-content: flex-end;
-      border-bottom: 1px solid var(--lightgray);
+      border-top: 1px solid var(--lightgray);
       background: var(--light);
       z-index: 2;
       max-height: 24px;
+      box-shadow:
+        0 14px 50px rgba(27, 33, 48, 0.12),
+        0 10px 30px rgba(27, 33, 48, 0.16);
 
       & > .close-button {
         display: flex;

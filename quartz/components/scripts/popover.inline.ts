@@ -264,6 +264,7 @@ async function handleStackedNotes(
   current.forEach((popover) => popover.remove())
 
   const targetUrl = new URL(link.href)
+  const hash = decodeURIComponent(targetUrl.hash)
 
   // Create an AbortController for this request
   const controller = new AbortController()
@@ -307,6 +308,15 @@ async function handleStackedNotes(
   column!.appendChild(popoverElement)
   popoverElement.style.visibility = "visible"
   popoverElement.style.opacity = "1"
+
+  if (hash !== "") {
+    const heading = popoverInner.querySelector<HTMLElement>(
+      `h1${hash}, h2${hash}, h3${hash}, h4${hash}, h5${hash}, h6${hash}`,
+    )
+    if (heading) {
+      popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
+    }
+  }
 
   const onMouseLeave = () => {
     if (activePopoverReq?.link === link) {
@@ -456,8 +466,6 @@ async function mouseClickHandler(evt: MouseEvent) {
 
     if (!asidePanel) return
 
-    const sideInner = createSidePanel(asidePanel)
-
     let response: Response | void
     if (link.dataset.arxivId) {
       const url = new URL(`https://cdn.aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
@@ -471,14 +479,12 @@ async function mouseClickHandler(evt: MouseEvent) {
       ? response.headers.get("Content-Type")!.split(";")[0]
       : getContentType(targetUrl)
 
-    sideInner.dataset.contentType = contentType ?? undefined
-
     if (contentType === "application/pdf") {
       const pdf = document.createElement("iframe")
       const blob = await response.blob()
       const blobUrl = createManagedBlobUrl(blob, DEFAULT_BLOB_TIMEOUT)
       pdf.src = blobUrl
-      sideInner.append(pdf)
+      createSidePanel(asidePanel, pdf)
     } else {
       const contents = await response.text()
       const html = p.parseFromString(contents, "text/html")
@@ -488,7 +494,7 @@ async function mouseClickHandler(evt: MouseEvent) {
       ]
       if (elts.length === 0) return
 
-      sideInner.append(...elts)
+      createSidePanel(asidePanel, ...elts)
     }
     return
   }
