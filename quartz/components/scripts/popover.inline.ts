@@ -155,21 +155,25 @@ async function setPosition(
   clientY: number,
 ) {
   const element = popoverElement.querySelector("#arrow") as HTMLElement
+  const ignoreArrow =
+    link.closest(".sidepanel-inner") !== null &&
+    !popoverElement.classList.contains("bib-popover") &&
+    !popoverElement.classList.contains("footnote-popover")
+  const middleware = [inline({ x: clientX, y: clientY }), shift(), flip()]
+
+  // Only add arrow middleware if not in sidepanel
+  if (!ignoreArrow) middleware.push(arrow({ element, padding: 8 }))
   const {
     x,
     y,
     middlewareData,
     placement: finalPlacement,
-  } = await computePosition(link, popoverElement, {
-    placement,
-    middleware: [
-      inline({ x: clientX, y: clientY }),
-      shift(),
-      flip(),
-      arrow({ element, padding: 8 }),
-    ],
-  })
+  } = await computePosition(link, popoverElement, { placement, middleware })
   Object.assign(popoverElement.style, { left: `${x}px`, top: `${y}px` })
+  if (ignoreArrow) {
+    element.style.display = "none"
+  }
+
   if (middlewareData.arrow) {
     const { x: arrowX, y: arrowY } = middlewareData.arrow
     const staticSide = {
@@ -365,10 +369,13 @@ async function mouseEnterHandler(
   let position: Placement = "right"
   // Check if link is within sidepanel
   const isInSidepanel = link.closest(".sidepanel-inner") !== null
+  console.log(isInSidepanel)
   if (window.document.body.dataset.isFolderTag === "true") {
     position = "left"
+  } else if (link.closest(".tag-link") !== null) {
+    position = "right"
   } else if (isInSidepanel) {
-    position = "top"
+    position = "bottom"
   }
 
   if (hasAlreadyBeenFetched(link)) {
