@@ -100,6 +100,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
       const plausibleScript = document.createElement("script")
       plausibleScript.src = "${plausibleHost}/js/script.outbound-links.manual.js"
       plausibleScript.setAttribute("data-domain", [location.hostname, "notes.aarnphm.xyz", "tinymorph.aarnphm.xyz"].join(','))
+      plausibleScript.setAttribute("spa-preserve", true)
       plausibleScript.defer = true
       document.head.appendChild(plausibleScript)
 
