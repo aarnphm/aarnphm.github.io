@@ -54,7 +54,7 @@ export default {
       title: "Bảng Nội Dung",
     },
     contentMeta: {
-      readingTime: ({ minutes }) => `đọc ${minutes} phút`,
+      readingTime: ({ minutes, words }) => `đọc ${minutes} phút (${words} từ)`,
     },
   },
   pages: {

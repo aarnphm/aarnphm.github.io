@@ -3,7 +3,6 @@ import style from "./styles/backlinks.scss"
 import { resolveRelative, simplifySlug } from "../util/path"
 import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
-import { unescapeHTML } from "../util/escape"
 
 export default (() => {
   const Backlinks: QuartzComponent = ({
@@ -47,15 +46,15 @@ export default (() => {
         <div class="overflow">
           {backlinkFiles.length > 0 ? (
             backlinkFiles.map((f) => (
-              <a href={resolveRelative(fileData.slug!, f.slug!)} data-backlink={f.slug!}>
+              <a
+                href={resolveRelative(fileData.slug!, f.slug!)}
+                data-backlink={f.slug!}
+                data-slug={f.slug!}
+                data-no-popover
+                class="internal"
+              >
                 <div class="small">{f.frontmatter?.title}</div>
-                <div class="description">
-                  {unescapeHTML(
-                    f.frontmatter?.description ??
-                      f.description?.trim() ??
-                      i18n(cfg.locale).propertyDefaults.description,
-                  )}
-                </div>
+                <div class="description">{f.description}</div>
               </a>
             ))
           ) : (

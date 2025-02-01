@@ -119,21 +119,17 @@ async function generateOgImage(
   fonts: SatoriOptions["fonts"],
   opts: SocialImageOptions,
   title: string,
-  description: string,
   fileData: QuartzPluginData,
   fileName: string,
 ) {
-  const svg = await satori(
-    opts.Component(ctx.cfg.configuration, fileData, opts, title, description, fonts),
-    {
-      width: opts.width,
-      height: opts.height,
-      fonts,
-      graphemeImages: {
-        "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
-      },
+  const svg = await satori(opts.Component(ctx.cfg.configuration, fileData, opts, title, fonts), {
+    width: opts.width,
+    height: opts.height,
+    fonts,
+    graphemeImages: {
+      "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
     },
-  )
+  })
 
   const content = await sharp(Buffer.from(svg)).webp({ quality: 70 }).toBuffer()
 
@@ -302,21 +298,8 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
             const slug = file.data.slug!
             const fileName = slug.replaceAll("/", "-")
             const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
-            const description = unescapeHTML(
-              file.data.frontmatter?.description ??
-                file.data.description?.trim() ??
-                i18n(cfg.locale).propertyDefaults.description,
-            )
 
-            return generateOgImage(
-              ctx,
-              fontData,
-              imageOptions,
-              title,
-              description,
-              file.data,
-              fileName,
-            )
+            return generateOgImage(ctx, fontData, imageOptions, title, file.data, fileName)
           })
         promises.push(...ogs)
       } else {

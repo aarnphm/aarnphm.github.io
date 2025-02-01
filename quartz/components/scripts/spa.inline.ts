@@ -1,15 +1,7 @@
 import micromorph from "micromorph"
-import {
-  FullSlug,
-  RelativeURL,
-  SimpleSlug,
-  getFullSlug,
-  normalizeRelativeURLs,
-  resolveRelative,
-} from "../../util/path"
+import { FullSlug, RelativeURL, getFullSlug, normalizeRelativeURLs } from "../../util/path"
 import { removeAllChildren, Dag, DagNode } from "./util"
 import { ContentIndex, ContentDetails } from "../../plugins"
-import { unescapeHTML } from "../../util/escape"
 import { formatDate } from "../Date"
 import { fetchCanonical } from "./util"
 
@@ -116,7 +108,9 @@ class StackedNoteManager {
     const contentWidth = parseInt(this.styled.getPropertyValue("--note-content-width"))
 
     const updateNoteStates = () => {
-      const notes = [...this.column.children] as HTMLElement[]
+      const notes = [...this.column.children].filter(
+        (el) => !el.classList.contains("popover"),
+      ) as HTMLElement[]
       const clientWidth = document.documentElement.clientWidth
 
       notes.forEach((note, idx, arr) => {
@@ -175,33 +169,49 @@ class StackedNoteManager {
     const stackedNotes = url.searchParams.getAll("stackedNotes")
 
     if (stackedNotes.length > 0) {
-      // Load each stacked note
-      for (const noteHash of stackedNotes) {
+      // Create an array to store all fetch promises
+      const fetchPromises = stackedNotes.map(async (noteHash) => {
         const slug = this.decodeHash(noteHash)
-        if (slug) {
-          const href = new URL(`/${slug}`, window.location.toString())
+        if (!slug) return null
 
-          if (this.dag.has(slug)) {
-            // NOTE: we still have to notifyNav to register events correctly if we initialized from searchParams
-            notifyNav(href.pathname as FullSlug)
-            continue
-          }
+        const href = new URL(`/${slug}`, window.location.toString())
 
-          const res = await this.fetchContent(href)
-          if (!res) continue
-
-          const dagNode = this.dag.addNode({
-            ...res,
-            slug,
-            anchor: null,
-            note: undefined!,
-          })
-          dagNode.note = await this.createNote(this.dag.getOrderedNodes().length, {
-            slug,
-            ...res,
-          })
+        if (this.dag.has(slug)) {
+          // Still notify for navigation events
           notifyNav(href.pathname as FullSlug)
+          return null
         }
+
+        const res = await this.fetchContent(href)
+        if (!res) return null
+
+        return {
+          slug,
+          href,
+          res,
+        }
+      })
+
+      // Wait for all fetches to complete in parallel
+      const results = await Promise.all(fetchPromises)
+
+      // Process the results in order
+      for (const result of results.filter(Boolean)) {
+        if (!result) continue
+        const { slug, href, res } = result
+
+        const dagNode = this.dag.addNode({
+          ...res,
+          slug,
+          anchor: null,
+          note: undefined!,
+        })
+
+        dagNode.note = await this.createNote(this.dag.getOrderedNodes().length, {
+          slug,
+          ...res,
+        })
+        notifyNav(href.pathname as FullSlug)
       }
     }
   }
@@ -355,7 +365,7 @@ class StackedNoteManager {
         if (date) {
           const dateContent = document.createElement("div")
           dateContent.classList.add("published")
-          dateContent.innerHTML = `<span lang="fr" class="metadata" dir="auto">dernière modification par <time datetime=${date.toISOString()}>${formatDate(date)}</time></span>`
+          dateContent.innerHTML = `<span lang="fr" class="metadata" dir="auto">dernière modification par <time datetime=${date.toISOString()}>${formatDate(date)}</time> (${el.readingTime?.minutes!} min de lecture)</span>`
           noteContent.append(dateContent)
         }
       }
@@ -505,7 +515,7 @@ class StackedNoteManager {
   private updateAnchorHighlights() {
     for (const el of this.dag.getOrderedNodes()) {
       Array.from(el.note.getElementsByClassName("internal")).forEach((el) =>
-        el.classList.toggle("dag", this.dag.has((el as HTMLAnchorElement).href)),
+        el.classList.toggle("dag", this.dag.has((el as HTMLAnchorElement).dataset.slug!)),
       )
     }
   }
@@ -788,25 +798,19 @@ if (stackedNotes && !container?.classList.contains("active")) {
 }
 
 // remove elements on notes.aarnphm.xyz
-if (getFullSlug(window) === "notes" || window.location.host === "notes.aarnphm.xyz") {
+if (window.location.host === "notes.aarnphm.xyz") {
   if (!stackedNotes || stackedNotes.length === 0) {
     const slug = "notes"
     baseUrl.searchParams.set("stackedNotes", btoa(slug.toString()).replace(/=+$/, ""))
     baseUrl.pathname = `/${slug}`
-    document
-      .querySelectorAll(
-        'main > section[class~="page-footer"], footer, nav.breadcrumb-container, header > .keybind, header > .search, header > .graph',
-      )
-      .forEach((el) => el.remove())
 
-    const displays = document.querySelectorAll(
-      'main > section[class~="page-content"], main > section[class~="page-header"]',
-    ) as NodeListOf<HTMLElement>
-    displays.forEach((el) => {
-      el.style.display = "none"
-    })
     window.stacked.navigate(baseUrl).then((data) => {
       if (data) window.location.reload()
+      document
+        .querySelectorAll(
+          'main > section[class~="page-footer"], main > section[class~="page-header"], main > section[class~="page-content"], nav.breadcrumb-container, header > .keybind, header > .search, header > .graph',
+        )
+        .forEach((el) => el.remove())
     })
   }
 }

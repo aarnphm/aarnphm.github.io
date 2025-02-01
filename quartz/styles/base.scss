@@ -316,6 +316,8 @@ figure {
 
   & > figcaption {
     font-style: italic;
+    display: flex;
+    justify-content: center;
   }
 
   &[data-rehype-pretty-code-figure] {
@@ -568,7 +570,7 @@ ol.overflow {
 .title-col {
   --main-col-padding-left: calc(var(--kern) * 4);
   --main-col-padding-right: 0px;
-  grid-column: 3/8;
+  grid-column: 3/9;
 
   .popover &,
   .sidepanel-container &,
@@ -583,6 +585,7 @@ ol.overflow {
   grid-column: 3/7;
 
   .popover &,
+  .sidepanel-container &,
   .stacked-content & {
     grid-column: 1/-1;
   }
@@ -607,6 +610,7 @@ ol.overflow {
   grid-column: 3/9;
 
   .popover &,
+  .sidepanel-container &,
   .stacked-content & {
     grid-column: 1/-1;
   }

@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html><head></head><body style="color: rgb(32, 33, 34); font-family: undefined;"><p>1) Note there are more than one way to do these.</p>
+<p>i) (aa)*(bb)* + a(aa)*b(bb)*<br>ii) b*a*((bb)b*a*)*b*<br>iii) (a*ba*b)*a*</p>
+<p></p>
+<p>3) We need to show that if we assume L is finite, that the pumping lemma is equivalent to True. If you select a k' such that k' &gt; |x| for all x in L, then the range of the first "for all" quantification becomes False. Applying the empty range axiom on forall results in True. From here it's relatively straight forward to show that even for finite languages the pumping lemma holds.&nbsp;&nbsp;</p>
+<p>4)&nbsp;</p>
+<p>a) Let x = a^(k^2), y = b^k, and z = a^k. Then no matter what is chosen for v, you can pump b's into the string to break the balance and produce a string outside the language</p>
+<p>b) Let x = a^kb, y = a^k, z = b. Because one can never choose a v which is not a sequence of a's and that the first b must be halfway through the string, you can then pump outside the language. Note Letting x = a^k, y = a^k, z = empty would not work.</p>
+<p>c) Applying the exact proof from lecture (for the perfect square example) works for this language as well.&nbsp;</p></body></html>

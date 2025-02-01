@@ -1,8 +1,9 @@
 import { Root as HTMLRoot } from "hast"
 import { toString } from "hast-util-to-string"
 import { QuartzTransformerPlugin } from "../types"
-import { escapeHTML } from "../../util/escape"
+import { escapeHTML, unescapeHTML } from "../../util/escape"
 import readingTime, { ReadTimeResults } from "reading-time"
+import { i18n } from "../../i18n"
 
 export interface Options {
   descriptionLength: number
@@ -23,7 +24,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
   const opts = { ...defaultOptions, ...userOpts }
   return {
     name: "Description",
-    htmlPlugins() {
+    htmlPlugins({ cfg }) {
       return [
         () => {
           return (tree: HTMLRoot, file) => {
@@ -68,7 +69,13 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
               return finalDesc.join(" ")
             }
 
-            file.data.description = processDescription(frontMatterDescription ?? text, true)
+            const description = processDescription(frontMatterDescription ?? text, true)
+            file.data.description = unescapeHTML(
+              frontMatterDescription ||
+                description.trim() ||
+                i18n(cfg.configuration.locale).propertyDefaults.description,
+            )
+            file.data.description = description
             file.data.abstract = file.data.frontmatter?.abstract ?? processDescription(text, false)
             file.data.text = text
             file.data.readingTime = readingTime(file.data.text!)

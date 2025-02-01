@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-01-30 21:40:29 GMT-05:00
+modified: 2025-02-01 05:21:34 GMT-05:00
 noindex: true
 title: /xeets/
 transclude:
@@ -128,6 +128,8 @@ https://x.com/quantumbeans/status/1861251224567234695 <!-- algorithmic-generated
 
 https://x.com/tylerangert/status/1884980797565788269 <!-- Team meme -->
 
+https://x.com/zswitten/status/1879693633911463960 <!-- aligned Claude -->
+
 ## techno-optimist
 
 https://x.com/tobi/status/1878957750576906484 <!-- Tobi replies on Canada's Tech contribution to overall GDP -->
@@ -137,6 +139,8 @@ https://x.com/chapman_bliss/status/1881613396359127467 <!-- Last day at Neural L
 https://x.com/adonis_singh/status/1884499176865632672 <!-- R1 one-shotted into markets and individualism -->
 
 ## [[thoughts/Machine learning|machine learning]]
+
+https://x.com/ZayneSprague/status/1836784332704215519 <!-- To CoT or not to CoT -->
 
 https://x.com/simonw/status/1840438066974228912 <!-- NotebookLLM system prompt -->
 

@@ -107,7 +107,6 @@ export type SocialImageOptions = {
     fileData: QuartzPluginData,
     opts: Options,
     title: string,
-    description: string,
     fonts: SatoriOptions["fonts"],
   ) => JSXInternal.Element
 }
@@ -119,10 +118,6 @@ export type ImageOptions = {
    * what title to use as header in image
    */
   title: string
-  /**
-   * what description to use as body in image
-   */
-  description: string
   /**
    * what fileName to use when writing to disk
    */
@@ -154,7 +149,6 @@ export const og: SocialImageOptions["Component"] = (
   fileData: QuartzPluginData,
   { colorScheme }: Options,
   title: string,
-  description: string,
   fonts: SatoriOptions["fonts"],
 ) => {
   let created: string | undefined
@@ -265,7 +259,7 @@ export const og: SocialImageOptions["Component"] = (
             fontFamily: fonts[1].name,
           }}
         >
-          {description}
+          {fileData.description}
         </p>
       </div>
     </div>

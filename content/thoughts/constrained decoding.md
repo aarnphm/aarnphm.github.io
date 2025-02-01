@@ -9,7 +9,7 @@ tags:
   - technical
 date: "2024-11-18"
 description: structured generations in vLLM a la carte
-modified: 2025-01-26 05:24:37 GMT-05:00
+modified: 2025-01-31 07:17:57 GMT-05:00
 title: constrained decoding
 transclude:
   title: false
@@ -156,7 +156,8 @@ Implemented in [@zheng2024sglangefficientexecutionstructured]
 #### Method 1: [[thoughts/constrained decoding#Guided generations with FSM.|FSM]]-based decoding
 
 - intuition: Using FSM [@willard2023efficientguidedgenerationlarge] to guide generations by increasing logit bias for tokens that conform to given JSON schema. This allows us to track the current state during decoding and filter out invalid tokens by applying logit bias to the output.
-  ![[thoughts/images/vllm/constrained-json-fsm.webp]]
+
+  ![[thoughts/images/vllm/constrained-json-fsm.webp|Decoding with FSM]]
 
 - limitation: we can see that given construction of FSM requires token-level access, it can only transition the state by only _one_ token at a time, resulting in slow decoding.
 
@@ -165,7 +166,7 @@ Implemented in [@zheng2024sglangefficientexecutionstructured]
 - intuition: breaks down JSON schemas, each containing either a chunk prefill part or constrained decoding part. They are then executed interleaved by inference system.
   Faster than per-token decoding given that chunked prefill components can process multiple tokens per forward pass
 
-  See also <https://github.com/guidance-ai/guidance#guidance-acceleration> using llama.cpp as backend.
+  See also https://github.com/guidance-ai/guidance#guidance-acceleration using llama.cpp as backend.
 
 - limitation:
   - interleaved-based require custom syntax, making it less expressive compared to regex.
@@ -174,7 +175,7 @@ Implemented in [@zheng2024sglangefficientexecutionstructured]
 
 #### **==Method 3: Jump-Forward Decoding with compressed FSM==**
 
-![[thoughts/images/vllm/jump-forward-decoding-fsm.webp]]
+![[thoughts/images/vllm/jump-forward-decoding-fsm.webp|Jump-forward decoding via compressed FSM]]
 
 > [!important]+ tokenization boundary handling
 >
@@ -195,11 +196,9 @@ Fix:
 
 intuition: Instead of expanding to $n$ state, we can compress certain chunks into one state to reduce the size of said FSM.
 
-![[thoughts/images/vllm/part-of-json-fsm.webp]]
-_figure 1: initial FSM state_
+![[thoughts/images/vllm/part-of-json-fsm.webp|initial FSM state]]
 
-![[thoughts/images/vllm/compressed-fsm-json.webp]]
-_figure 2: compressed FSM state_
+![[thoughts/images/vllm/compressed-fsm-json.webp|compressed FSM state]]
 
 A way to adapt character regex to work with tokens in `outlines`:
 
@@ -320,7 +319,7 @@ That's at least a 5x speedup over structured generations, given that out of the 
 >
 > All these paths lead to the same string and the same speedup, however they lead to potentially very different states for the LLM when it reaches state 6. That is, the strings are the same, but each path leads to a different conditional probability distribution in stage 6.
 >
-> ![[thoughts/images/vllm/json-difference-in-sampling-distribution.webp]]
+> ![[thoughts/images/vllm/json-difference-in-sampling-distribution.webp|Variance in sampling distribution for compressed states]]
 
 ### Guided generations with FSM.
 
@@ -398,15 +397,17 @@ $$
 >
 > We define a _finite-state machine_, given by $(Q, \Sigma , \delta, q_0, F)$ [^automaton-definition] where character comprising the strings in $\mathcal{V}$ are drawn from $\Sigma$, i.e: $\mathcal{V} \in \mathcal{P}(\Sigma)$
 >
-> ![[thoughts/images/vllm/fsm-iterative-generations.webp]] > _FSM making for regular expression `([0-9]*)?\.?[0-9]*`_
->
-> > [!note]- example illustration
+> > [!note]- example
+> >
+> > ![[thoughts/images/vllm/fsm-iterative-generations.webp|FSM illustration]]
+> >
+> > target regex: `([0-9]*)?\.?[0-9]*{:rs}`
 > >
 > > For simplicity, let the vocabulary $\mathcal{V}$ consists of strings $\{A, ., 42, .2, 1\}$
 > >
 > > - generations start: FSM in state 0, so it masks "A", since it wouldn't accepted by the FSM. Then we only sample ".", "42", ".2", "1" in this case
 > > - if we sample ".2" then we advance the FSM to state 3. In this case. only "42" and "1" are valid completions, so we mask other values before sampling.
-> >   If we sample "1" instead, then we advance FSM to state 1, in which case ".", ".42", ".2", and "1" are valid completions
+> > - If we sample "1" instead, then we advance FSM to state 1, in which case ".", ".42", ".2", and "1" are valid completions
 
 [^automaton-definition]: [[thoughts/DFA|finite state machine]]
 

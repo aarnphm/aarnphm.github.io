@@ -9,7 +9,6 @@ import sharp from "sharp"
 import { JSX } from "preact/jsx-runtime"
 import { defaultImageOptions, getSatoriFont, SocialImageOptions } from "../../util/og"
 import { HtmlContent, QuartzPluginData } from "../vfile"
-import { unescapeHTML } from "../../util/escape"
 import { BuildCtx } from "../../util/ctx"
 import { styleText } from "node:util"
 import { fromHtml } from "hast-util-from-html"
@@ -39,18 +38,12 @@ async function processChunk(
       const slug = file.data.slug!
       const fileName = slug.replaceAll("/", "-")
       const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
-      const description = unescapeHTML(
-        file.data.frontmatter?.description ??
-          file.data.description?.trim() ??
-          i18n(cfg.locale).propertyDefaults.description,
-      )
 
       const component = opts.Component(
         cfg,
         file.data,
         { ...defaultImageOptions, ...opts },
         title,
-        description,
         fonts,
       )
       const svg = await satori(component, {
@@ -74,7 +67,6 @@ const TwitterPost: SocialImageOptions["Component"] = (
   fileData: QuartzPluginData,
   { colorScheme }: Omit<SocialImageOptions, "Component">,
   title: string,
-  _description: string,
   fonts: SatoriOptions["fonts"],
 ) => {
   let created: string | undefined
@@ -191,7 +183,6 @@ const InstagramPost: SocialImageOptions["Component"] = (
   fileData: QuartzPluginData,
   { colorScheme }: Omit<SocialImageOptions, "Component">,
   title: string,
-  description: string,
   fonts: SatoriOptions["fonts"],
 ) => {
   return (
@@ -252,7 +243,7 @@ const InstagramPost: SocialImageOptions["Component"] = (
             fontStyle: "italic",
           }}
         >
-          <em>{description}</em>
+          <em>{fileData.description}</em>
         </p>
         <p
           style={{

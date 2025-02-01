@@ -10,6 +10,7 @@ import { i18n } from "../../i18n"
 import DepGraph from "../../depgraph"
 import { QuartzPluginData } from "../vfile"
 import { version } from "../../../package.json"
+import { ReadTimeResults } from "reading-time"
 
 export type ContentIndex = Map<FullSlug, ContentDetails>
 export type ContentLayout = "default" | "letter" | "technical" | "reflection"
@@ -24,6 +25,7 @@ export type ContentDetails = {
   richContent?: string
   fileData?: QuartzPluginData
   date?: Date
+  readingTime?: Partial<ReadTimeResults>
   description?: string
 }
 
@@ -240,9 +242,13 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
             content: file.data.text ?? "",
             richContent: escapeHTML(toHtml(tree as Root, { allowDangerousHtml: true })),
             date: date,
+            readingTime: {
+              minutes: Math.ceil(file.data.readingTime?.minutes!),
+              words: Math.ceil(file.data.readingTime?.words!),
+            },
             fileData: file.data,
             layout: file.data.frontmatter!.pageLayout,
-            description: file.data.description ?? i18n(cfg.locale).propertyDefaults.description,
+            description: file.data.description,
           })
         }
       }

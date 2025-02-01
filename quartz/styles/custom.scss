@@ -146,13 +146,10 @@
 hgroup {
   & > .description {
     overflow: hidden;
+    white-space: nowrap;
     text-overflow: ellipsis;
     font-style: italic;
     font-weight: 300;
-
-    display: -webkit-box;
-    line-clamp: 3;
-    -webkit-line-clamp: 3;
   }
 }
 
@@ -679,6 +676,16 @@ svg[data-icon] {
 @keyframes drawPath {
   to {
     stroke-dashoffset: 0;
+  }
+}
+
+.recommendations {
+  margin-bottom: 1.9rem;
+
+  & > .overflow {
+    padding-inline-start: 12px;
+    list-style: square;
+    margin-block: 0;
   }
 }
 

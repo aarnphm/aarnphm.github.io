@@ -81,9 +81,9 @@ function formatCrumb(
   }
 }
 
-export default ((opts?: Partial<BreadcrumbOptions>) => {
+export default ((userOpts?: Partial<BreadcrumbOptions>) => {
   // Merge options with defaults
-  const options: BreadcrumbOptions = { ...defaultOptions, ...opts }
+  const opts: BreadcrumbOptions = { ...defaultOptions, ...userOpts }
 
   // computed index of folder name to its associated file data
   let folderIndex: Map<string, QuartzPluginData> | undefined
@@ -93,16 +93,13 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
     allFiles,
     displayClass,
   }: QuartzComponentProps) => {
-    // Hide crumbs on root if enabled
-    if (options.hideOnRoot && fileData.slug === "index") {
-      return <></>
-    }
+    if (opts.hideOnRoot && fileData.slug === "index") return <></>
 
     // Format entry for root element
-    const firstEntry = formatCrumb(options.rootName, fileData.slug!, "/" as SimpleSlug)
+    const firstEntry = formatCrumb(opts.rootName, fileData.slug!, "/" as SimpleSlug)
     const crumbs: CrumbData[] = [firstEntry]
 
-    if (!folderIndex && options.resolveFrontmatterTitle) {
+    if (!folderIndex && opts.resolveFrontmatterTitle) {
       folderIndex = new Map()
       // construct the index for the first time
       for (const file of allFiles) {
@@ -141,7 +138,7 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
         currentPath = joinSegments(currentPath, slugParts[i])
         const includeTrailingSlash = !isTagPath || i < 1
 
-        switch (options.style) {
+        switch (opts.style) {
           case "letter":
             if (curPathSegment.startsWith(".")) {
               curPathSegment = curPathSegment.slice(0, 2)
@@ -174,7 +171,7 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
       }
 
       // Add current file to crumb (can directly use frontmatter title)
-      if (options.showCurrentPage && slugParts.at(-1) !== "index") {
+      if (opts.showCurrentPage && slugParts.at(-1) !== "index") {
         const formatted = formatCrumb(
           isTagPath ? (slugParts.at(-1) ?? "") : fileData.frontmatter!.title,
           fileData.slug!,
@@ -188,10 +185,10 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
     }
 
     let displayCrumbs = [...crumbs]
-    if (options.maxItems > 0 && crumbs.length > options.maxItems) {
+    if (opts.maxItems > 0 && crumbs.length > opts.maxItems) {
       const first = displayCrumbs[0]
       const last = displayCrumbs.slice(
-        displayCrumbs.length - options.maxItems! + 1,
+        displayCrumbs.length - opts.maxItems! + 1,
         displayCrumbs.length,
       )
       displayCrumbs = [first, { displayName: "...", path: crumbs.at(-2)!.path }, ...last]
@@ -204,7 +201,7 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
             <a href={crumb.path} data-breadcrumbs>
               {crumb.displayName}
             </a>
-            {index !== displayCrumbs.length - 1 && <p>{` ${options.spacerSymbol} `}</p>}
+            {index !== displayCrumbs.length - 1 && <p>{` ${opts.spacerSymbol} `}</p>}
           </div>
         ))}
       </nav>

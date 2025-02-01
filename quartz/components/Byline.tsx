@@ -3,9 +3,10 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 export default ((...components: QuartzComponent[]) => {
   const Components = Array.from(components)
   const Byline: QuartzComponent = (props: QuartzComponentProps) => {
+    const { ctx } = props
     return (
       <section class="byline all-col grid">
-        {Components.filter((Inner) => (props.ctx.argv.serve ? !Inner.skipDuringServe : true)).map(
+        {Components.filter((Inner) => (ctx.argv.serve ? !Inner.skipDuringServe : true)).map(
           (Inner) => (
             <Inner {...props} />
           ),

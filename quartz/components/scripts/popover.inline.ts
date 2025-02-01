@@ -202,11 +202,7 @@ async function setPosition(
 const hasAlreadyBeenFetched = (link: HTMLAnchorElement, classname?: string) =>
   [...link.children].some((child) => child.classList.contains(classname ?? "popover"))
 
-async function handleBibliographyPopover(
-  link: HTMLAnchorElement,
-  clientX: number,
-  clientY: number,
-) {
+async function handleBibliography(link: HTMLAnchorElement, clientX: number, clientY: number) {
   const href = link.getAttribute("href")!
 
   if (hasAlreadyBeenFetched(link, "bib-popover")) {
@@ -223,6 +219,7 @@ async function handleBibliographyPopover(
 
   setPosition(link, popoverElement, "top", clientX, clientY)
   link.appendChild(popoverElement)
+  return popoverElement
 }
 
 async function handleFootnote(link: HTMLAnchorElement, clientX: number, clientY: number) {
@@ -242,6 +239,60 @@ async function handleFootnote(link: HTMLAnchorElement, clientX: number, clientY:
 
   setPosition(link, popoverElement, "top", clientX, clientY)
   link.appendChild(popoverElement)
+  return popoverElement
+}
+
+async function handleStackedNotes(
+  stacked: HTMLDivElement,
+  link: HTMLAnchorElement,
+  { clientX, clientY }: { clientX: number; clientY: number },
+) {
+  const column = stacked.querySelector<HTMLDivElement>(".stacked-notes-column")
+  const popover = column!.querySelector<HTMLDivElement>('div[class~="stacked-popover"]')
+  if (popover) popover.remove()
+
+  const targetUrl = new URL(link.href)
+
+  const response = await fetchCanonical(new URL(`${targetUrl}`)).catch(console.error)
+  if (!response) return
+  const contentType = response.headers.get("Content-Type")
+    ? response.headers.get("Content-Type")!.split(";")[0]
+    : getContentType(targetUrl)
+  const [contentTypeCategory, _] = contentType.split("/")
+
+  const { popoverElement, popoverInner } = createPopoverElement("stacked-popover")
+  popoverInner.dataset.contentType = contentType ?? undefined
+
+  popoverInner.dataset.contentType = contentType ?? undefined
+  popoverElement.dataset.arrow = (contentType! !== "application/pdf").toString()
+
+  const contentHandlers: Record<string, ContentHandler> = {
+    image: async (_, targetUrl, popoverInner) => handleImageContent(targetUrl, popoverInner),
+    "application/pdf": async (response, _, popoverInner) =>
+      handlePdfContent(response, popoverInner),
+    "application/xml": async (response, _, popoverInner) =>
+      handleXmlContent(response, popoverInner),
+    default: handleDefaultContent,
+  }
+
+  const handler =
+    contentHandlers[contentTypeCategory] ||
+    contentHandlers[contentType] ||
+    contentHandlers["default"]
+
+  handler(response, targetUrl, popoverInner)
+  setPosition(link, popoverElement, "right", clientX, clientY)
+  column!.appendChild(popoverElement)
+  popoverElement.style.visibility = "visible"
+  popoverElement.style.opacity = "1"
+
+  const onMouseLeave = () => {
+    popoverElement.style.visibility = "hidden"
+    popoverElement.style.opacity = "0"
+  }
+  link.addEventListener("mouseleave", onMouseLeave)
+  window.addCleanup(() => link.removeEventListener("mouseleave", onMouseLeave))
+  return popoverElement
 }
 
 async function mouseEnterHandler(
@@ -251,7 +302,7 @@ async function mouseEnterHandler(
   const link = this
 
   if (link.dataset.bib === "") {
-    return handleBibliographyPopover(link, clientX, clientY)
+    return handleBibliography(link, clientX, clientY)
   }
 
   if (link.dataset.footnoteRef === "") {
@@ -260,13 +311,12 @@ async function mouseEnterHandler(
 
   const container = document.getElementById("stacked-notes-container") as HTMLDivElement
 
-  if (
-    link.dataset.noPopover === "" ||
-    link.dataset.noPopover === "true" ||
-    getFullSlug(window) === "notes" ||
-    container?.classList.contains("active")
-  ) {
+  if (link.dataset.noPopover === "" || link.dataset.noPopover === "true") {
     return
+  }
+
+  if (getFullSlug(window) === "notes" || container?.classList.contains("active")) {
+    return handleStackedNotes(container, link, { clientX, clientY })
   }
 
   const position = checkFolderTagPage() ? "bottom" : "right"
@@ -348,6 +398,7 @@ async function mouseEnterHandler(
       popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
     }
   }
+  return popoverElement
 }
 
 async function mouseClickHandler(evt: MouseEvent) {
@@ -420,6 +471,7 @@ async function mouseClickHandler(evt: MouseEvent) {
 
 document.addEventListener("nav", () => {
   const links = [...document.getElementsByClassName("internal")] as HTMLAnchorElement[]
+
   for (const link of links) {
     link.addEventListener("mouseenter", mouseEnterHandler)
     link.addEventListener("click", mouseClickHandler)

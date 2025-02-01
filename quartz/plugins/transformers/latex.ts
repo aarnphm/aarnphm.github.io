@@ -23,6 +23,7 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = (opts) => {
   const macros = opts?.customMacros ?? {}
   return {
     name: "Latex",
+    skipDuringServe: true,
     markdownPlugins() {
       return [remarkMath]
     },

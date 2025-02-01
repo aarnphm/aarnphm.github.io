@@ -5,11 +5,11 @@ tags:
   - networking
 date: "2025-01-15"
 description: and its origin.
-modified: 2025-01-29 09:19:01 GMT-05:00
+modified: 2025-01-31 06:56:55 GMT-05:00
 title: Internet
 ---
 
-hierarchical architecture
+Hierarchical architecture
 
 - Tier-1 ISP -> Tier-2 ISP -> Tier-3 ISP -> Local ISP
 

@@ -2,7 +2,7 @@
 @use "../../styles/variables.scss" as *;
 @use "../../styles/mixin.scss" as *;
 
-.title-col:not(.sidepanel-container *) {
+.sidepanel-container.active ~ * .title-col:not(.sidepanel-container *) {
   padding-right: 3rem;
 }
 

@@ -8,7 +8,7 @@ tags:
   - fruit
 date: "2022-04-22"
 description: Aaron's digital garden
-modified: 2024-12-28 00:21:48 GMT-05:00
+modified: 2025-01-31 21:56:05 GMT-05:00
 title: Aaron's notes
 ---
 
@@ -68,9 +68,9 @@ Currently, I'm working at a [infrastructure startup](https://bentoml.com) buildi
                                                 * about their intrinsic [[thoughts/Agency|drive]].
                                                 * <br /><br />My research interests lie in
                                                 * interpretability.
-                                                  * interpretability ([[thoughts/mechanistic interpretability|inner working]] of a neural network),
+                                                  * interpretability ([[thoughts/mechanistic interpretability|inner working]] of a neural network, especially cross-layer superposition),
                                                   * and ML system.
-                                                    * and [[thoughts/Machine learning|ML]] system (serving system, and kernel [[thoughts/optimization|optimization]]).
+                                                    * and [[thoughts/Machine learning|ML]] system (inference engine [[thoughts/optimization|optimization]]).
                                                   * <br /><br />On a higher level, I care
                                                   * about
                                                     * about building

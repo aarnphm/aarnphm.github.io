@@ -319,6 +319,7 @@ export function createSidePanel(asidePanel: HTMLDivElement) {
   const headerRect = pageHeader.getBoundingClientRect()
   const topPosition = headerRect.top + window.scrollY
   asidePanel.style.top = `${topPosition}px`
+  asidePanel.classList.add("active")
   removeAllChildren(asidePanel)
 
   const header = document.createElement("div")
@@ -331,6 +332,7 @@ export function createSidePanel(asidePanel: HTMLDivElement) {
   closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width=16 height=16 viewbox="0 0 24 24" fill="currentColor" stroke="currentColor"><use href="#close-button"></svg>`
   function onCloseClick() {
     removeAllChildren(asidePanel)
+    asidePanel.classList.remove("active")
   }
   closeButton.addEventListener("click", onCloseClick)
   window.addCleanup(() => closeButton.removeEventListener("click", onCloseClick))

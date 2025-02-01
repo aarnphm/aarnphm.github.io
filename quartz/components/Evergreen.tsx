@@ -5,7 +5,6 @@ import { i18n } from "../i18n"
 //@ts-ignore
 import script from "./scripts/evergreen.inline"
 import style from "./styles/evergreen.scss"
-import { unescapeHTML } from "../util/escape"
 import { QuartzPluginData } from "../plugins/vfile"
 
 type Props = {
@@ -39,10 +38,9 @@ interface EvergreenNotes {
 
 const defaultOpts: EvergreenNotes = { larges: [], smalls: [], tags: [] }
 
-const Notes = ((userOpts?: EvergreenNotes) => {
-  const opts = { ...defaultOpts, ...userOpts }
-
-  const Notes = ({ cfg, fileData, vaults }: Props) => {
+const Notes = ((userOpts?: EvergreenNotes) =>
+  ({ fileData, vaults }: Props) => {
+    const opts = { ...defaultOpts, ...userOpts }
     const largeFiles = vaults!.filter((file) => opts.larges.includes(simplifySlug(file.slug!)))
     const smallFiles = vaults!.filter((file) => opts.smalls.includes(simplifySlug(file.slug!)))
 
@@ -68,13 +66,7 @@ const Notes = ((userOpts?: EvergreenNotes) => {
               { href: resolveRelative(fileData.slug!, f.slug!), "data-list": true, class: "perma" },
               [
                 h("div", { class: "title" }, [f.frontmatter?.title]),
-                h("div", { class: "description" }, [
-                  unescapeHTML(
-                    f.frontmatter?.description ??
-                      f.description?.trim() ??
-                      i18n(cfg.locale).propertyDefaults.description,
-                  ),
-                ]),
+                h("div", { class: "description" }, [fileData.description!]),
               ],
             ),
           ),
@@ -113,11 +105,9 @@ const Notes = ((userOpts?: EvergreenNotes) => {
         ),
       ]),
     ])
-  }
-  return Notes
-}) satisfies QuartzComponentConstructor
+  }) satisfies QuartzComponentConstructor
 
-export default ((opts?: EvergreenNotes & any) => {
+export default ((opts?: EvergreenNotes) => {
   const Evergreen: QuartzComponent = (props: Props) => {
     const Permanent = Notes(opts)
     const { cfg, allFiles, content } = props

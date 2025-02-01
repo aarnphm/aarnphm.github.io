@@ -106,6 +106,7 @@ document.addEventListener("nav", async (e) => {
   const searchLayout = container?.querySelector<HTMLOutputElement>("#search-layout")
   const searchSpace = container?.querySelector<HTMLFormElement>("#search-space")
   const idDataMap = Object.keys(data) as FullSlug[]
+  const el = searchSpace?.querySelector("ul#helper")
 
   const appendLayout = (el: HTMLElement) => {
     if (searchLayout?.querySelector(`#${el.id}`) === null) {
@@ -113,19 +114,21 @@ document.addEventListener("nav", async (e) => {
     }
   }
 
-  const keys = [
-    { kbd: "↑↓", description: "pour naviguer" },
-    { kbd: "↵", description: "pour ouvrir" },
-    { kbd: "esc", description: "pour rejeter" },
-  ]
-  const helper = document.createElement("ul")
-  helper.id = "helper"
-  for (const { kbd, description } of keys) {
-    const liEl = document.createElement("li")
-    liEl.innerHTML = `<kbd>${escapeHTML(kbd)}</kbd>${description}`
-    helper.appendChild(liEl)
+  if (!el) {
+    const keys = [
+      { kbd: "↑↓", description: "pour naviguer" },
+      { kbd: "↵", description: "pour ouvrir" },
+      { kbd: "esc", description: "pour rejeter" },
+    ]
+    const helper = document.createElement("ul")
+    helper.id = "helper"
+    for (const { kbd, description } of keys) {
+      const liEl = document.createElement("li")
+      liEl.innerHTML = `<kbd>${escapeHTML(kbd)}</kbd>${description}`
+      helper.appendChild(liEl)
+    }
+    searchSpace!.appendChild(helper)
   }
-  searchSpace!.appendChild(helper)
 
   const enablePreview = searchLayout?.dataset?.preview === "true"
   let preview: HTMLDivElement | undefined = undefined

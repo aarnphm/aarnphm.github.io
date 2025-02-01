@@ -3,7 +3,6 @@ import { FullSlug, joinSegments, pathToRoot } from "../util/path"
 import { CSSResourceToStyleElement, JSResourceToScriptElement } from "../util/resources"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { SocialImageOptions, defaultImageOptions } from "../util/og"
-import { unescapeHTML } from "../util/escape"
 import { googleFontHref } from "../util/theme"
 
 export default (() => {
@@ -15,11 +14,6 @@ export default (() => {
     const titleSuffix = fileData.slug !== "index" ? (cfg.pageTitleSuffix ?? "") : ""
     const title =
       (fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title) + titleSuffix
-    const description = unescapeHTML(
-      fileData.frontmatter?.description ??
-        fileData.description?.trim() ??
-        i18n(cfg.locale).propertyDefaults.description,
-    )
     const { css, js } = externalResources
 
     const fileName = fileData.slug?.replaceAll("/", "-") as string
@@ -93,7 +87,7 @@ export default (() => {
         <meta name="twitter:creator" content="@aarnphm_" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
+        <meta name="twitter:description" content={fileData.description} />
         <meta name="twitter:widgets:theme" content="light" />
         <meta
           name="twitter:widgets:border-color"
@@ -101,9 +95,9 @@ export default (() => {
         />
         {/*We will only load based on "nav" */}
         <meta name="twitter:widgets:autoload" content="off" />
-        <meta property="og:description" content={description} />
+        <meta property="og:description" content={fileData.description} />
         <meta property="og:image:type" content={`image/${extension}`} />
-        <meta property="og:image:alt" content={description} />
+        <meta property="og:image:alt" content={fileData.description} />
         {!frontmatterImgUrl && cfg.generateSocialImages ? (
           <>
             <meta property="og:image:width" content={imageOptions.width.toString()} />
@@ -147,7 +141,7 @@ export default (() => {
             />
           </>
         )}
-        <meta name="description" content={description} />
+        <meta name="description" content={fileData.description} />
         <meta name="generator" content="Quartz" />
         {css.map((resource) => CSSResourceToStyleElement(resource, true))}
         {js

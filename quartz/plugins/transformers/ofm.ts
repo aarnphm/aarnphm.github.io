@@ -803,7 +803,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       }
 
       plugins.push(() => {
-        return (tree: HtmlRoot, _file) => {
+        return (tree, file) => {
           const onlyImage = ({ children }: Element) =>
             children.every((child) => (child as Element).tagName === "img" || whitespace(child))
           const withAlt = ({ tagName, properties }: Element) =>
@@ -823,6 +823,9 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
             return idx
           })
 
+          file.data.images = {}
+          let counter = 0
+
           visit(
             tree,
             (node) => withAlt(node as Element),
@@ -831,12 +834,17 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 return
               }
 
+              counter++
               parent?.children.splice(
                 idx!,
                 1,
                 h("figure", { "data-img-w-caption": true }, [
                   h("img", { ...(node as Element).properties, style: "margin: 1rem 0 0 0" }),
-                  h("figcaption", (node as Element).properties.alt as string),
+                  h("figcaption", [
+                    h("span", { class: "figure-prefix", style: "margin-right: 0.2em;" }, `figure`),
+                    h("span", { class: "figure-number" }, `${counter}`),
+                    h("span", { class: "figure-caption" }, `: ${(node as Element).properties.alt}`),
+                  ]),
                 ]),
               )
             },
@@ -865,6 +873,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
 declare module "vfile" {
   interface DataMap {
+    images: Record<string, { count: number; el: Element }>
     blocks: Record<string, Element>
     htmlAst: HtmlRoot
   }

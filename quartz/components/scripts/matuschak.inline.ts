@@ -2,8 +2,6 @@
 // given that we will need to hijack the router
 // We will only setup buttons here
 
-import { getFullSlug } from "../../util/path"
-
 // see ./spa.inline.ts
 document.addEventListener("nav", async (ev) => {
   const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
@@ -67,8 +65,7 @@ document.addEventListener("nav", async (ev) => {
     window.addCleanup(() => copyStacked.removeEventListener("click", onClick))
   }
 
-  if (window.location.hostname.startsWith("notes.aarnphm.xyz") || getFullSlug(window) === "notes")
-    return
+  if (window.location.hostname.startsWith("notes.aarnphm.xyz")) return
 
   button.addEventListener("click", switchCheckState)
   window.addCleanup(() => {
