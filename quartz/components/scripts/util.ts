@@ -1,4 +1,4 @@
-import { getFullSlug, SimpleSlug } from "../../util/path"
+import { FullSlug, getFullSlug, resolveRelative } from "../../util/path"
 
 export function registerEscapeHandler(outsideContainer: HTMLElement | null, cb: () => void) {
   if (!outsideContainer) return
@@ -336,6 +336,24 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
   }
   closeButton.addEventListener("click", onCloseClick)
   window.addCleanup(() => closeButton.removeEventListener("click", onCloseClick))
+
+  const redirectButton = document.createElement("button")
+  redirectButton.classList.add("redirect-button")
+  redirectButton.ariaLabel = "redirect to page"
+  redirectButton.title = "redirect to page"
+  redirectButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width=16 height=16 viewbox="0 0 24 24" fill="var(--gray)" stroke="none"><use href="#triple-dots"></svg>`
+  function onRedirectClick() {
+    window.spaNavigate(
+      new URL(
+        resolveRelative(getFullSlug(window), asidePanel.dataset.slug as FullSlug),
+        window.location.toString(),
+      ),
+    )
+  }
+  redirectButton.addEventListener("click", onRedirectClick)
+  window.addCleanup(() => redirectButton.removeEventListener("click", onRedirectClick))
+
+  header.appendChild(redirectButton)
   header.appendChild(closeButton)
 
   const sideInner = document.createElement("div")

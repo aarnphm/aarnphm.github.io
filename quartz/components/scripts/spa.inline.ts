@@ -734,6 +734,7 @@ async function navigate(url: URL, isBack: boolean = false) {
 }
 
 window.spaNavigate = navigate
+window.notifyNav = notifyNav
 
 function createRouter() {
   if (typeof window !== "undefined") {

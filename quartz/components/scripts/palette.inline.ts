@@ -340,7 +340,9 @@ document.addEventListener("nav", async (e) => {
       if (!asidePanel || !currentHover) return
 
       await fetchContent(currentSlug, currentHover.dataset.slug as FullSlug).then((innerDiv) => {
+        asidePanel.dataset.slug = currentHover!.dataset.slug
         createSidePanel(asidePanel, ...innerDiv)
+        window.notifyNav(currentHover!.dataset.slug as FullSlug)
         hidePalette()
       })
       return

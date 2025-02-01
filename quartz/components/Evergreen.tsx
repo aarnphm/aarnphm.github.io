@@ -66,7 +66,7 @@ const Notes = ((userOpts?: EvergreenNotes) =>
               { href: resolveRelative(fileData.slug!, f.slug!), "data-list": true, class: "perma" },
               [
                 h("div", { class: "title" }, [f.frontmatter?.title]),
-                h("div", { class: "description" }, [fileData.description!]),
+                h("div", { class: "description" }, [f.description!]),
               ],
             ),
           ),
@@ -114,7 +114,6 @@ export default ((opts?: EvergreenNotes) => {
     return (
       <div class="evergreen-content">
         <Permanent {...props} />
-        <AllTags {...props} opts />
         <article style={{ marginBottom: 0 }}>
           <h3 class="note-title">description</h3>
           {content}
@@ -124,6 +123,7 @@ export default ((opts?: EvergreenNotes) => {
             })}
           </p>
         </article>
+        <AllTags {...props} opts />
       </div>
     )
   }

@@ -3,8 +3,8 @@ id: Camus
 tags:
   - philosophy
 date: "2024-02-28"
-description: Camus, a scattered thoughts and notes.
-modified: "2024-11-27"
+description: and absurdism, create value by revolting against the nothingness of life.
+modified: 2025-02-01 11:26:15 GMT-05:00
 title: Camus
 ---
 

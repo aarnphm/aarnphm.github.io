@@ -1,5 +1,5 @@
 import { arrow, computePosition, flip, inline, Placement, shift } from "@floating-ui/dom"
-import { getFullSlug, normalizeRelativeURLs } from "../../util/path"
+import { FullSlug, getFullSlug, normalizeRelativeURLs } from "../../util/path"
 import { getContentType } from "../../util/mime"
 import xmlFormat from "xml-formatter"
 import { createSidePanel, fetchCanonical } from "./util"
@@ -147,8 +147,6 @@ async function handleDefaultContent(
   popoverInner.append(...elts)
 }
 
-const checkFolderTagPage = () => window.document.body.dataset.isFolderTag === "true"
-
 async function setPosition(
   link: HTMLElement,
   popoverElement: HTMLElement,
@@ -186,11 +184,8 @@ async function setPosition(
       top: arrowY != null ? `${arrowY}px` : "",
     })
     element.dataset.placement = staticSide
-    const isFolderTag = checkFolderTagPage()
-    if (staticSide === "top" && isFolderTag) {
-      element.style.top = "0px"
-    } else if (staticSide === "bottom" && isFolderTag) {
-      element.style.bottom = "0px"
+    if (staticSide === "right") {
+      element.style.right = "2px"
     }
   }
 
@@ -367,7 +362,14 @@ async function mouseEnterHandler(
     return handleStackedNotes(container, link, { clientX, clientY })
   }
 
-  const position = checkFolderTagPage() ? "bottom" : "right"
+  let position: Placement = "right"
+  // Check if link is within sidepanel
+  const isInSidepanel = link.closest(".sidepanel-inner") !== null
+  if (window.document.body.dataset.isFolderTag === "true") {
+    position = "left"
+  } else if (isInSidepanel) {
+    position = "top"
+  }
 
   if (hasAlreadyBeenFetched(link)) {
     if (hasPositionChanged(link)) {
@@ -465,6 +467,7 @@ async function mouseClickHandler(evt: MouseEvent) {
     )
 
     if (!asidePanel) return
+    asidePanel.dataset.slug = link.dataset.slug
 
     let response: Response | void
     if (link.dataset.arxivId) {
@@ -496,6 +499,7 @@ async function mouseClickHandler(evt: MouseEvent) {
 
       createSidePanel(asidePanel, ...elts)
     }
+    window.notifyNav(link.dataset.slug as FullSlug)
     return
   }
 
