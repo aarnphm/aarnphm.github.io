@@ -5,7 +5,7 @@ tags:
   - serving
 date: "2024-12-10"
 description: and vLLM integration with XGrammar
-modified: 2025-01-28 03:14:49 GMT-05:00
+modified: 2025-02-01 08:45:31 GMT-05:00
 pageLayout: technical
 socials:
   bentoml blog: https://bentoml.com/blog/structured-decoding-in-vllm-a-gentle-introduction
@@ -145,10 +145,11 @@ graph LR
     classDef default fill:#fff,stroke:#333,stroke-width:2px;
 ```
 
-From a technical perspective, an inference engine can modify the probability distribution for next-tokens by applying bias (often via logit masks) for all tokens from any given schemas. To apply these biases, [outlines](https://github.com/dottxt-ai/outlines) was proposed to construct a finite-state machine [^fsm] (FSM) from any given schemas to then guide the generations [@willard2023efficientguidedgenerationlarge]. This allows us to track the current state during decoding and filter out invalid tokens by applying logit bias to the output.
+From a technical perspective, an inference engine can modify the probability distribution for next-tokens by applying bias (often via logit masks) for all tokens from any given schemas. To apply these biases, [outlines](https://github.com/dottxt-ai/outlines) was proposed to construct a finite-state machine [^fsm] (FSM) from any given schemas to then guide the generations [@willard2023efficientguidedgenerationlarge]. This allows us to track the current state during decoding and filter out invalid tokens by applying logit bias to the output [^blogpost].
 
-![[thoughts/images/vllm/constrained-json-fsm.webp]]
-_courtesy of [LMSys, 2024](https://lmsys.org/blog/2024-02-05-compressed-fsm/)_
+[^blogpost]: [LMSys](https://lmsys.org/blog/2024-02-05-compressed-fsm/) goes into their implementation of a compressed FSM via outlines, in SGLang.
+
+![[thoughts/images/vllm/constrained-json-fsm.webp|courtesy of (LMSys, 2024)]]
 
 _in vLLM, you can use this by passing a JSON schema to the sampling params (either through [Python SDK](https://github.com/vllm-project/vllm/blob/80c751e7f68ade3d4c6391a0f3fce9ce970ddad0/benchmarks/benchmark_guided.py#L137) or HTTP requests)_
 

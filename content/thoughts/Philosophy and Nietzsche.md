@@ -3,8 +3,8 @@ id: Philosophy and Nietzsche
 tags:
   - philosophy
   - seed
-date: "2023-12-04"
-modified: 2025-01-29 08:23:45 GMT-05:00
+date: 2023-12-04
+modified: 2025-02-01 10:02:08 GMT-05:00
 title: Philosophy and Nietzsche
 ---
 
@@ -28,7 +28,7 @@ Critical philosophy has two inseparable moments: the referring back of all thing
 
 This is Nietzsche's twofold struggle:
 
-- against those who remove values from criticism, contenting themselves with producing inventories of existing values or we criticising things in the name of established values (the "philosophy labourers", Kant and Schopenhauer, [BGE ](#anatomy-of-beyond-good-and-evil) 211)
+- against those who remove values from criticism, contenting themselves with producing inventories of existing values or we criticising things in the name of established values (the "philosophy labourers", Kant and Schopenhauer, [[thoughts/Philosophy and Nietzsche#Beyond Good and Evil|BGE]] 211)
 - against those who criticise, or respect, values by deriving them from simple facts, from so-called "objective facts" (the utilitarians, the "scholars", BGE Part 6).
 
 Nietzsche attacks both the "high" idea of foundation which leaves values indifferent to their own origin and the idea of a simple causal derivation or smooth beginning which suggests an indifferent origin of values
@@ -184,7 +184,7 @@ What does this distinction mean? The passage quoted above invites comment on eve
 
 ---
 
-## _Anatomy_ of Beyond Good and Evil
+## Beyond Good and Evil
 
 tl/dr: N critiques the herd mentality, rather he challenges the rigid moral bindings. We all know his attack against Christianity, in a similar fashion as we are observing in technical [[thoughts/Determinism|determinism]] [^advances]
 

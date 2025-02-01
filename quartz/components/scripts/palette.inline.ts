@@ -15,7 +15,7 @@ interface Item {
   slug: FullSlug
   name: FilePath
   aliases: string[]
-  target: string | undefined
+  target?: string
 }
 
 let index = new FlexSearch.Document<Item>({
@@ -55,10 +55,10 @@ function addToRecents(slug: FullSlug) {
 }
 
 const p = new DOMParser()
-const fetchContentCache: Map<FullSlug, Element[]> = new Map()
+const fetchContentCache: Map<FullSlug, HTMLElement[]> = new Map()
 async function fetchContent(currentSlug: FullSlug, slug: FullSlug): Promise<HTMLElement[]> {
   if (fetchContentCache.has(slug)) {
-    return fetchContentCache.get(slug) as Element[]
+    return fetchContentCache.get(slug) as HTMLElement[]
   }
 
   const targetUrl = new URL(resolveRelative(currentSlug, slug), location.toString())
@@ -70,7 +70,7 @@ async function fetchContent(currentSlug: FullSlug, slug: FullSlug): Promise<HTML
       }
       const html = p.parseFromString(contents ?? "", "text/html")
       normalizeRelativeURLs(html, targetUrl)
-      return [...html.getElementsByClassName("popover-hint")]
+      return [...html.getElementsByClassName("popover-hint")] as HTMLElement[]
     })
 
   fetchContentCache.set(slug, contents)
@@ -180,7 +180,7 @@ document.addEventListener("nav", async (e) => {
     },
     {
       name: "cool people",
-      auxInnerHtml: "<kbd>↵</kbd> as inpiration",
+      auxInnerHtml: "<kbd>↵</kbd> as inspiration",
       onClick: (e) => {
         window.spaNavigate(
           new URL(
@@ -444,6 +444,7 @@ document.addEventListener("nav", async (e) => {
         [...allIds]
           .map((id) => {
             const slug = idDataMap[id]
+            if (!slug) return null
             const aliases: string[] = data[slug].aliases
             const target = aliases.find((alias) =>
               alias.toLowerCase().includes(currentSearchTerm.toLowerCase()),
@@ -456,6 +457,7 @@ document.addEventListener("nav", async (e) => {
               target,
             }
           })
+          .filter((result) => result !== null)
           .sort((a, b) => {
             // If both have targets or both don't have targets, maintain original order
             if ((!a?.target && !b?.target) || (a?.target && b?.target)) return 0

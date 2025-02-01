@@ -222,9 +222,14 @@ class StackedNoteManager {
     // Clear existing stackednotes params
     url.searchParams.delete("stackedNotes")
 
-    // Add current stack state
-    this.dag.getOrderedNodes().map((node) => {
+    // Add current stack state and right position
+    this.dag.getOrderedNodes().forEach((node, index, _) => {
       url.searchParams.append("stackedNotes", this.hashSlug(node.slug))
+
+      const width = parseInt(this.styled.getPropertyValue("--note-content-width"))
+      const left = parseInt(this.styled.getPropertyValue("--note-title-width"))
+      const right = width - left
+      node.note.style.right = `${-right + (this.dag.getOrderedNodes().length - index - 1) * left}px`
     })
 
     // Update URL without reloading
@@ -340,7 +345,7 @@ class StackedNoteManager {
     note.className = "stacked-note"
     note.id = this.hashSlug(slug)
     note.style.left = `${i * left}px`
-    note.style.right = `-${right}px`
+    note.style.right = `${-right + (this.dag.getOrderedNodes().length - i - 1) * left}px`
     note.dataset.slug = slug
 
     // Create note contents...
@@ -349,7 +354,11 @@ class StackedNoteManager {
     noteTitle.textContent = title
 
     const elView = () => {
-      this.main.scrollTo({ left: note.getBoundingClientRect().left - i * left, behavior: "smooth" })
+      // Calculate full scroll width and note's relative position
+      const scrollWidth = this.column.scrollWidth - this.main.clientWidth
+      const noteLeft = note.offsetLeft
+      const scrollPosition = Math.min(noteLeft, scrollWidth)
+      this.main.scrollTo({ left: scrollPosition, behavior: "smooth" })
     }
     noteTitle.addEventListener("click", elView)
     window.addCleanup(() => noteTitle.removeEventListener("click", elView))
@@ -414,20 +423,20 @@ class StackedNoteManager {
         const link = ev.target as HTMLAnchorElement
         if (this.dag.has(link.dataset.slug!)) {
           const note = this.dag.get(link.dataset.slug!)?.note
-          const header = note!.querySelector("h1") as HTMLHeadElement
-          const stackedTitle = note!.querySelector(".stacked-title") as HTMLDivElement
-          if (header) header.classList.toggle("dag", true)
-          if (stackedTitle) stackedTitle.classList.toggle("dag", true)
+          const header = note!.querySelector<HTMLHeadElement>("h1")
+          const stackedTitle = note!.querySelector<HTMLDivElement>(".stacked-title")
+          if (header) header!.classList.toggle("dag", true)
+          if (stackedTitle) stackedTitle!.classList.toggle("dag", true)
         }
       }
       const onMouseLeave = (ev: MouseEvent) => {
         const link = ev.target as HTMLAnchorElement
         if (this.dag.has(link.dataset.slug!)) {
           const note = this.dag.get(link.dataset.slug!)?.note
-          const header = note!.querySelector("h1") as HTMLHeadElement
-          const stackedTitle = note!.querySelector(".stacked-title") as HTMLDivElement
-          header.classList.toggle("dag", false)
-          stackedTitle.classList.toggle("dag", false)
+          const header = note!.querySelector<HTMLHeadElement>("h1")
+          const stackedTitle = note!.querySelector<HTMLDivElement>(".stacked-title")
+          if (header) header!.classList.toggle("dag", false)
+          if (stackedTitle) stackedTitle!.classList.toggle("dag", false)
         }
       }
 

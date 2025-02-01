@@ -4,9 +4,9 @@ tags:
   - philosophy
   - fruit
   - philos1aa3
-date: "2023-11-30"
+date: 2023-11-30
 description: and on Spinoza's Ethics.
-modified: 2025-01-07 15:56:29 GMT-05:00
+modified: 2025-02-01 10:02:46 GMT-05:00
 socialDescription: On Spinoza's Ethics.
 title: Questions about Spinoza
 ---
@@ -65,7 +65,7 @@ The arguments for the fallacy of teleological thinking are multifaceted. Spinoza
 
 Spinoza extends his critique to the realm of human morality and [[thoughts/aesthetic value|aesthetics]], arguing that the belief in a purposeful universe has led to skewed notions of good and evil, beauty and ugliness. He posits that these concepts are subjective and arise from how things affect individuals personally rather than from any intrinsic quality of the things themselves. By believing that everything is created for human use, people judge the value of things based on their utility or pleasure. This anthropocentric perspective, according to Spinoza, leads to a distorted understanding of nature and contributes to conflicts and scepticism, as what is considered 'good' or 'beautiful' varies widely among individuals.
 
-Nietzsche's approach in [[thoughts/Philosophy and Nietzsche#Anatomy of Beyond Good And Evil|Beyond Good and Evil]] presents a stark divergence from Spinoza's rationalistic [[thoughts/Determinism|determinism]]. Nietzsche, known for his provocative style and radical ideas, fundamentally challenges the concept of God, dismissing it as a mere human construct. He criticizes the Christian moral framework and the notion of an objective, universal truth. Nietzsche argues that what is often perceived as truth is merely a manifestation of human will and the power dynamics at play in society.
+Nietzsche's approach in [[thoughts/Philosophy and Nietzsche#Beyond Good and Evil|Beyond Good and Evil]] presents a stark divergence from Spinoza's rationalistic [[thoughts/Determinism|determinism]]. Nietzsche, known for his provocative style and radical ideas, fundamentally challenges the concept of God, dismissing it as a mere human construct. He criticizes the Christian moral framework and the notion of an objective, universal truth. Nietzsche argues that what is often perceived as truth is merely a manifestation of human will and the power dynamics at play in society.
 
 In "Beyond Good and Evil," Nietzsche states, “There is no such thing as moral phenomena, but only a moral interpretation of phenomena” (Beyond Good and Evil, Aphorism 108). This perspective reflects his belief in perspectivalism, the idea that all knowledge is interpretive and contingent upon individual perspectives. Nietzsche’s critique extends to the realm of [[thoughts/Metaphysics|metaphysics]] and [[thoughts/Epistemology|epistemology]] he views the belief in God and divine teleology as a weakness, a human invention to impose meaning and order in a fundamentally chaotic and purposeless universe.
 

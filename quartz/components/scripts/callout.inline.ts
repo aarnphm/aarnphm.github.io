@@ -8,6 +8,7 @@ function toggleCallout(this: HTMLElement) {
   // walk and adjust height of all parents
   let current = outerBlock
   let parent = outerBlock.parentElement
+  console.log(parent, current)
   while (parent) {
     if (!parent.classList.contains("callout")) {
       return
@@ -36,7 +37,9 @@ function wouldBreakAcrossPages(element: HTMLElement): boolean {
 }
 
 function setupCallout() {
-  const collapsible = document.getElementsByClassName(`callout is-collapsible`)
+  const collapsible = document.getElementsByClassName(
+    `callout is-collapsible`,
+  ) as HTMLCollectionOf<HTMLDivElement>
   for (const div of collapsible) {
     const title = div.firstElementChild
 
