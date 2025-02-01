@@ -693,12 +693,16 @@ ol.overflow {
   overflow-y: hidden;
 }
 
+iframe {
+  border-radius: var(--border-radius);
+  border: 1px solid var(--lightgray);
+  width: 100%;
+}
+
 .external-embed.youtube,
 iframe.pdf {
-  aspect-ratio: 16 / 9;
   height: 100%;
-  width: 100%;
-  border-radius: 5px;
+  aspect-ratio: 16 / 9;
 }
 
 .navigation-progress {
