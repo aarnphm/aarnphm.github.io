@@ -479,9 +479,6 @@ body {
 
 .page-footer:not(.sidepanel-container *):not(.popover *):not(#preview-container *):not(
     .stacked-content *
-  ),
-.byline:not(.sidepanel-container *):not(.popover *):not(#preview-container *):not(
-    .stacked-content *
   ) {
   border-color: var(--gray);
   background: var(--lightgray);
@@ -518,7 +515,7 @@ body {
     padding-left: 1rem;
 
     &:last-child {
-      border-left: 1px solid var(--gray);
+      border-left: 1px solid var(--lightgray);
       padding-left: 1rem;
     }
   }
