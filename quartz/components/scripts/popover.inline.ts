@@ -242,18 +242,40 @@ async function handleFootnote(link: HTMLAnchorElement, clientX: number, clientY:
   return popoverElement
 }
 
+// Track current active popover request
+let activePopoverReq: { abort: () => void; link: HTMLAnchorElement } | null = null
+
 async function handleStackedNotes(
   stacked: HTMLDivElement,
   link: HTMLAnchorElement,
   { clientX, clientY }: { clientX: number; clientY: number },
 ) {
+  // If there's an active request for a different link, cancel it
+  if (activePopoverReq && activePopoverReq.link !== link) {
+    activePopoverReq.abort()
+    activePopoverReq = null
+  }
+
   const column = stacked.querySelector<HTMLDivElement>(".stacked-notes-column")
-  const popover = column!.querySelector<HTMLDivElement>('div[class~="stacked-popover"]')
-  if (popover) popover.remove()
+  if (!column) return
+
+  // Remove any existing popovers
+  const current = column.querySelectorAll<HTMLDivElement>('div[class~="stacked-popover"]')
+  current.forEach((popover) => popover.remove())
 
   const targetUrl = new URL(link.href)
 
-  const response = await fetchCanonical(new URL(`${targetUrl}`)).catch(console.error)
+  // Create an AbortController for this request
+  const controller = new AbortController()
+  activePopoverReq = { abort: () => controller.abort(), link }
+
+  const response = await fetchCanonical(new URL(`${targetUrl}`), {
+    signal: controller.signal,
+  }).catch((error) => {
+    if (error.name === "AbortError") return null
+    console.error(error)
+    return null
+  })
   if (!response) return
   const contentType = response.headers.get("Content-Type")
     ? response.headers.get("Content-Type")!.split(";")[0]
@@ -287,11 +309,27 @@ async function handleStackedNotes(
   popoverElement.style.opacity = "1"
 
   const onMouseLeave = () => {
+    if (activePopoverReq?.link === link) {
+      activePopoverReq.abort()
+      activePopoverReq = null
+    }
     popoverElement.style.visibility = "hidden"
     popoverElement.style.opacity = "0"
+    setTimeout(() => {
+      if (popoverElement.style.visibility === "hidden") {
+        popoverElement.remove()
+      }
+    }, 100)
   }
+
   link.addEventListener("mouseleave", onMouseLeave)
-  window.addCleanup(() => link.removeEventListener("mouseleave", onMouseLeave))
+  window.addCleanup(() => {
+    link.removeEventListener("mouseleave", onMouseLeave)
+    if (activePopoverReq?.link === link) {
+      activePopoverReq.abort()
+      activePopoverReq = null
+    }
+  })
   return popoverElement
 }
 
