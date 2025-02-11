@@ -6,7 +6,7 @@ tags:
 date: "2024-12-10"
 description: nobby designer word for "the design of the current site"
 lang: en
-modified: 2025-01-30 12:25:17 GMT-05:00
+modified: 2025-02-05 14:55:02 GMT-05:00
 socials:
   twitter: https://x.com/aarnphm_/status/1861550609834402129
 title: colophon

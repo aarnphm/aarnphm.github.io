@@ -4,7 +4,7 @@ tags:
   - philosophy
 date: "2024-02-28"
 description: and absurdism, create value by revolting against the nothingness of life.
-modified: 2025-02-01 11:26:15 GMT-05:00
+modified: 2025-02-06 10:09:57 GMT-05:00
 title: Camus
 ---
 

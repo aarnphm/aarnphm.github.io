@@ -21,3 +21,5 @@ Auto-regressive models are often considered a more correct terminology when desc
 > [!important]
 >
 > The correct terminology when people refers to LLMs are _transformers being trained for auto-regressive objectives_
+
+Not to be confused with encoder-decoder models (_the original transformers papers propose encoder-decoder architecture, but this is mainly useful for translation_)

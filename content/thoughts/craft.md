@@ -8,7 +8,7 @@ tags:
 comments: false
 date: "2021-12-22"
 description: and celebration of the act of making.
-modified: 2025-01-26 06:27:18 GMT-05:00
+modified: 2025-02-02 10:11:27 GMT-05:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -34,7 +34,7 @@ You can find internal monologue under [[/posts/]] index.
   - Implemented telescope-style search https://github.com/jackyzha0/quartz/pull/722, https://github.com/jackyzha0/quartz/pull/774, https://github.com/jackyzha0/quartz/pull/782
   - Added sidenotes components, inspired by [Tuffe's CSS](https://edwardtufte.github.io/tufte-css/) https://github.com/jackyzha0/quartz/pull/1555, [[thoughts/mechanistic interpretability|examples]]
   - Added [LLM-readable source](https://x.com/aarnphm_/status/1857955302110376342)
-  - Landing page of [[/|this]] website, [tinymorph's documentation](tinymorph.aarnphm.xyz)
+  - Landing page of [[/|this]] website, [morph's documentation](https://tinymorph.aarnphm.xyz)
   - Custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA|jupyter notebook]]
   - Source: [github](https://github.com/jackyzha0/quartz), [site](https://quartz.jzhao.xyz/)
 
@@ -48,10 +48,11 @@ You can find internal monologue under [[/posts/]] index.
   - Source: [github](https://github.com/yetone/avante.nvim)
     ![[thoughts/images/avante.mp4]]
 
-- **tinymorph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-) [^tinymorph]
+- **morph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-) [^tinymorph]
 
   - Trained [[thoughts/sparse autoencoder]] to interpret Llama 3.2 features [@templeton2024scaling]
-  - Source: [github](https://github.com/aarnphm/tinymorph), [docs :construction:](https://tinymorph.aarnphm.xyz/)
+  - Build a custom [[thoughts/vLLM]] plugins to support activation intervention. Served on [BentoCloud](https://bentoml.com/cloud) with scale-to-zero enabled
+  - source: [github](https://github.com/aarnphm/morph), [docs](https://tinymorph.aarnphm.xyz/), [demo](https://morph-editor.app)
 
 - **OpenLLM** - :gear: Run any open-source [[thoughts/LLMs|LLMs]] as OpenAI compatible API endpoint in the cloud. (2023-)
 

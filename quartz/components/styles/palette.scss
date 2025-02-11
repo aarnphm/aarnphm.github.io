@@ -188,6 +188,10 @@ ul#helper {
       @include containerInner;
       @include inputContainer;
 
+      .input-container {
+        border-bottom: 1px solid var(--lightgray);
+      }
+
       & > output {
         padding: 12px;
         margin: 0;

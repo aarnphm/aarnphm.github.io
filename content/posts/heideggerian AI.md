@@ -12,7 +12,7 @@ title: I saw a marching band at a hackathon for the first time.
 
 ![[thoughts/images/996D2C94-D27C-4D97-B49D-227AF33B1E04_1_105_c.webp|judges at deltahacks XI]]
 
-I attended DeltaHacks XI a week ago from
+I attended DeltaHacks XI as a judge
 
 Tanmay talk about AGI and AI as user interface
 

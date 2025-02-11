@@ -4,9 +4,9 @@
   "interfaceFontFamily": "Parclo Serif Student,Apple Braille,EB Garamond",
   "textFontFamily": "Parclo Serif Student,BerkeleyMono Nerd Font Mono,Apple Braille,EB Garamond",
   "monospaceFontFamily": "BerkeleyMono Nerd Font Mono",
-  "baseFontSize": 16,
+  "baseFontSize": 15,
   "translucency": true,
-  "showViewHeader": false,
+  "showViewHeader": true,
   "enabledCssSnippets": [
     "snippet"
   ],

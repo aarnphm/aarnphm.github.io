@@ -4,8 +4,8 @@ tags:
   - sapling
   - growth
   - self
-date: "2024-02-18"
-modified: 2024-12-11 07:51:44 GMT-05:00
+date: 2024-02-18
+modified: 2025-02-09 11:10:01 GMT-05:00
 signature: from twenty three aaron
 socialDescription: on growing one year older. And a few things I learned growing up in a foreign land.
 socials:

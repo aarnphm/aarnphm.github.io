@@ -4,9 +4,9 @@ tags:
   - love
   - personal
   - writing
-date: "2025-01-06"
+date: 2025-01-06
 description: and being shattered into a million pieces, then picking oneself up.
-modified: 2025-01-11 01:38:50 GMT-05:00
+modified: 2025-02-04 23:17:47 GMT-05:00
 socials:
   bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lfcwbep7oc2q
   facebook: https://www.facebook.com/share/19ghibetuE/
