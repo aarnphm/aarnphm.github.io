@@ -3,16 +3,14 @@ id: I don't have a healthy relationship with myself
 tags:
   - love
   - self
-date: "2024-02-16"
+date: "2025-02-14"
+description: on love and the feeling of belongings.
 draft: true
-modified: 2025-01-16 17:03:21 GMT-05:00
-socialDescription: On spatial love.
+modified: 2025-02-14 15:08:03 GMT-05:00
 title: I spent half an hour benchmarking logits decoding.
 ---
 
-_on spatial love._
-
-![[posts/images/helenebailly-maurice-denis-environs-du-cap-mis-ne-1904.webp]]
+![[posts/images/helenebailly-maurice-denis-environs-du-cap-mis-ne-1904.webp|Environs du cap Misène, 1904]]
 
 https://www.youtube.com/watch?v=TUs7QN3bKsw
 

@@ -2,9 +2,9 @@
 id: midterm
 tags:
   - sfwr3s03
-date: "2025-02-11"
+date: 2025-02-11
 description: and a midterm review.
-modified: 2025-02-11 13:46:51 GMT-05:00
+modified: 2025-02-11 14:13:02 GMT-05:00
 title: Reviews and Evaluation Methods
 ---
 

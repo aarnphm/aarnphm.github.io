@@ -3,9 +3,9 @@ id: structured decoding
 tags:
   - technical
   - serving
-date: "2024-12-10"
+date: 2024-12-10
 description: and vLLM integration with XGrammar
-modified: 2025-02-01 08:45:31 GMT-05:00
+modified: 2025-02-12 09:44:04 GMT-05:00
 pageLayout: technical
 socials:
   bentoml blog: https://bentoml.com/blog/structured-decoding-in-vllm-a-gentle-introduction
@@ -15,7 +15,7 @@ socials:
 title: structured decoding, a guide for the impatient
 ---
 
-[[thoughts/constrained-decoding|tldr]]:
+[[thoughts/constrained decoding|tldr]]:
 
 - Structured decoding allows precise control over LLM output formats
 - vLLM now supports both [outlines](https://github.com/dottxt-ai/outlines) and [XGrammar](https://github.com/mlc-ai/xgrammar) backends for structured decoding
