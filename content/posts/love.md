@@ -5,8 +5,10 @@ tags:
   - growth
 date: "2025-02-14"
 description: on loneliness, Jungian-Bottonian love, and belongings.
-modified: 2025-02-14 18:54:06 GMT-05:00
-title: I spent an hour debugging logits decoding because it is Valentine, and I don't have any plans..
+modified: 2025-02-14 19:18:41 GMT-05:00
+socials:
+  substack: https://open.substack.com/pub/livingalone/p/jung-bottonian-love?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
+title: I spent an hour debugging logits decoding because it is Valentine, and I don't have any plans.
 ---
 
 _This is the first in a series where I want to delve deeper into the topics of relationship._
@@ -166,4 +168,3 @@ Here's are some media, quotes, and unstructured thoughts. I hope you might find 
 - Work-related: [[posts/structured decoding]] for vLLM v1 should be out promptly, in addition to a project I have been working on for the past 5 months that is in the realm of UX and productionising [[thoughts/mechanistic interpretability|interpretability]]
 
 </div>
-

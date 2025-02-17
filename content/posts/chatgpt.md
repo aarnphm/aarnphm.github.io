@@ -1,11 +1,11 @@
 ---
 id: chatgpt
 aliases:
-  - a1
+  - chat
 tags:
   - engineer4a03
   - fruit
-date: "2024-10-02"
+date: 2024-10-02
 modified: 2025-01-20 03:16:08 GMT-05:00
 permalinks:
   - /chatgpt

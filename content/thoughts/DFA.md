@@ -4,7 +4,7 @@ tags:
   - sfwr2fa3
   - math
 date: "2024-01-12"
-modified: 2025-01-27 14:03:34 GMT-05:00
+modified: 2025-02-16 04:26:29 GMT-05:00
 title: Deterministic Finite Automata
 ---
 
