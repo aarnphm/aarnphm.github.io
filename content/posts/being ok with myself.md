@@ -2,10 +2,10 @@
 id: being ok with myself
 tags:
   - growth
-date: "2024-11-02"
+date: 2024-11-02
 description: on living fruitfully.
 draft: true
-modified: 2025-01-24 20:24:41 GMT-05:00
+modified: 2025-02-20 16:42:44 GMT-05:00
 permalinks:
   - /living
 title: I went out to celebrate N's birthday and now we ended up in a swing bar.
