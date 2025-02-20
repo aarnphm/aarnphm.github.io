@@ -2,8 +2,8 @@
 id: NFA
 tags:
   - sfwr2fa3
-date: "2024-01-30"
-modified: "2024-11-19"
+date: 2024-01-30
+modified: 2025-02-19 01:05:01 GMT-05:00
 title: non-deterministic finite automaton
 description: via subset construction algorithm of DFA
 ---

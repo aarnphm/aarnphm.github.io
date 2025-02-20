@@ -7,9 +7,9 @@ tags:
   - seed
 cssclasses:
   - nolist
-date: 2024-10-24
+date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-02-20 16:42:44 GMT-05:00
+modified: 2025-02-20 12:09:44 GMT-05:00
 permalinks:
   - /website
   - /resources
@@ -48,6 +48,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://pudding.cool/2023/09/invisible-epidemic/ -- cool timeline scaling transition
 - https://www.chinatownjs.nyc/
 - https://www.benkuhn.net/outliers/
+- https://henry.codes/ -- very much text-dominant black/white
 
 ## portfolio
 
@@ -66,6 +67,10 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.muckrock.com/news/archives/2015/jul/21/nothing-indicate-nothing-indicate-subject-had-any-/ -- Paul Erdős, he is just a mathematician that really [[/tags/love|love]] math
 - https://matthewstrom.com/writing/generative-art-og-images/ -- Generative OG with [Brownian motion](https://en.wikipedia.org/wiki/Brownian_motion)
 - https://wattenberger.com/thoughts/yay-embeddings-math -- creative with embeddings in writing
+- https://docs.google.com/document/d/1h1vw4-t9Es4p2qQkZblnWcJDo6uEc6Yu61AxaLB5hKo/edit?curius=4635&tab=t.0 -- Atlantis
+- https://foundersatwork.posthaven.com/the-social-radar-what-i-did-at-y-combinator -- That one blogpost form Jess Livingston I kept coming back
+- https://basilhalperin.com/essays/agi-vs-emh.html -- AGI timeline
+- https://jameslin.bio/jolie -- Love, with a friend
 
 ## protocol
 
