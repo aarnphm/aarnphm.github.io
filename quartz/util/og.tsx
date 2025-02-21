@@ -202,7 +202,7 @@ export const og: SocialImageOptions["Component"] = (
         }}
       >
         <img
-          src={`https://${cfg.baseUrl}/static/icon.jpeg`}
+          src={`https://${cfg.baseUrl}/static/icon.png`}
           style={{
             position: "relative",
             backgroundClip: "border-box",
