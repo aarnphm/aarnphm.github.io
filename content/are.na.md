@@ -9,7 +9,7 @@ cssclasses:
   - nolist
 date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-02-20 12:09:44 GMT-05:00
+modified: 2025-02-21 12:48:41 GMT-05:00
 permalinks:
   - /website
   - /resources
@@ -71,6 +71,9 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://foundersatwork.posthaven.com/the-social-radar-what-i-did-at-y-combinator -- That one blogpost form Jess Livingston I kept coming back
 - https://basilhalperin.com/essays/agi-vs-emh.html -- AGI timeline
 - https://jameslin.bio/jolie -- Love, with a friend
+- https://www.paulgraham.com/good.html -- Be good
+- https://www.paulgraham.com/mean.html -- Mean people fail
+- https://joecarlsmith.com/2025/01/28/fake-thinking-and-real-thinking -- Fake vs Real thinking
 
 ## protocol
 

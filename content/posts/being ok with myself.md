@@ -5,7 +5,7 @@ tags:
 date: 2024-11-02
 description: on living fruitfully.
 draft: true
-modified: 2025-02-19 01:06:30 GMT-05:00
+modified: 2025-02-21 00:11:58 GMT-05:00
 permalinks:
   - /living
 title: I went out to celebrate N's birthday and now we ended up in a swing bar.

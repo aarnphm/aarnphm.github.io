@@ -949,6 +949,17 @@ const ElementComponent = (() => {
             </AliasLink>
           </address>
         </section>,
+        <section class="boring-legal">
+          <address class="clickable-container">
+            <AliasLink isInternal enablePopover={false} name="privacy" url="/privacy-policy" />
+            <AliasLink
+              isInternal
+              enablePopover={false}
+              name="term of service"
+              url="/terms-of-service"
+            />
+          </address>
+        </section>,
       ],
     })
 
