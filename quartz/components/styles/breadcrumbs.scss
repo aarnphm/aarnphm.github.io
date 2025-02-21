@@ -12,6 +12,18 @@
   flex-grow: 1;
   font-weight: 300;
   font-style: italic;
+
+  @media all and ($mobile) {
+    .breadcrumb-element {
+      display: none;
+
+      // Show first item
+      &:first-child,
+      &:last-child {
+        display: flex;
+      }
+    }
+  }
 }
 
 .breadcrumb-element {

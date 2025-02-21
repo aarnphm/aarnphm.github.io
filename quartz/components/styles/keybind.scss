@@ -6,6 +6,10 @@
   min-width: fit-content;
   cursor: pointer;
 
+  @media all and ($mobile) {
+    display: none;
+  }
+
   & > #shortcut-container {
     position: fixed;
     contain: layout;
