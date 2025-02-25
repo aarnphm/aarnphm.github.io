@@ -483,25 +483,13 @@ body {
   margin-bottom: 2.5rem;
 }
 
-// List of containers where we don't want to apply the default page header/footer styles
-$excluded-containers: (
-  ".sidepanel-container",
-  ".popover",
-  "#preview-container",
-  ".stacked-content",
-  '[data-slug="curius"]'
-);
-
-// Helper mixin to generate :not() selectors
-@mixin exclude-containers {
-  $selector: "";
-  @each $container in $excluded-containers {
-    $selector: $selector + ":not(#{$container} *)";
-  }
-  #{$selector} {
-    @content;
-  }
+.page-footer:not(.sidepanel-container *):not(.popover *):not(#preview-container *):not(
+    .stacked-content *
+  ):not([data-slug="curius"] *) {
+  border-color: var(--gray);
+  background: var(--lightgray);
 }
+
 .page-footer {
   padding-top: 0;
   margin-top: 2rem;
@@ -510,11 +498,6 @@ $excluded-containers: (
 
   &:empty {
     display: none;
-  }
-
-  @include exclude-containers {
-    border-color: var(--gray);
-    background: var(--lightgray);
   }
 }
 

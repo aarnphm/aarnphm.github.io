@@ -2,9 +2,9 @@
 id: DeepSeek
 tags:
   - ml
-date: "2025-01-25"
+date: 2025-01-25
 description: and OSS AI ftw.
-modified: 2025-01-29 05:45:55 GMT-05:00
+modified: 2025-02-22 20:36:14 GMT-05:00
 title: DeepSeek R1
 ---
 
@@ -21,6 +21,9 @@ Three major components:
 - [[thoughts/DeepSeek#Distill]]: [[thoughts/knowledge distillation]] from R1 to improve smaller variants
 
 ## R1-Zero
+
+Uses GRPO (Group Relative Policy Optimization) from @shao2024deepseekmathpushinglimitsmathematical
+
 
 ## R1
 

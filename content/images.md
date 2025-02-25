@@ -2,9 +2,9 @@
 id: images
 tags:
   - seed
-date: "2025-01-06"
+date: 2025-01-06
 description: and all the things I found interesting on the internet.
-modified: 2025-01-11 01:38:50 GMT-05:00
+modified: 2025-02-23 23:30:51 GMT-05:00
 title: images
 ---
 
@@ -29,3 +29,5 @@ title: images
 ![[thoughts/images/essays-that-resonate.webp|HK when essay that resonates]]
 
 ![[thoughts/images/black-carrrr.webp|carr]]
+
+![[thoughts/images/grok-system-prompt.webp|Grok 3 system prompt]]
