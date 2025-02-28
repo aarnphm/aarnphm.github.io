@@ -4,7 +4,7 @@ tags:
   - ml
 date: 2025-01-25
 description: and OSS AI ftw.
-modified: 2025-02-27 19:16:01 GMT-05:00
+modified: 2025-02-28 04:20:38 GMT-05:00
 title: DeepSeek R1
 ---
 

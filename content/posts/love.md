@@ -5,7 +5,7 @@ tags:
   - growth
 date: "2025-02-14"
 description: on loneliness, Jungian-Bottonian love, and belongings.
-modified: 2025-02-28 04:19:33 GMT-05:00
+modified: 2025-02-28 04:23:47 GMT-05:00
 socials:
   substack: https://open.substack.com/pub/livingalone/p/jung-bottonian-love?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 title: It is Valentine, and I don't have any plans.
@@ -115,8 +115,13 @@ Belonging begins with recognising that we are enough as we are, even in our mess
 I have a hard time internalising the idea of loving myself, simply because:
 
 - Humans are innately egotistical, and only you can look after the self. If you just sit there and thinks someone would help you heal or teach you to change your oil, then idea of life is somewhat naive from your point of view.
-- To find love is to find a friend, and I have yet to do so simply because I lack the ability to be present and happy with my current state.
-- My manager once said, “Too much opportunity creates analysis paralysis.” Same with love. When you approach relationships like a kid at Build-A-Bear Workshop (I’ll take the loyalty of a Golden Retriever, the wit of a Twitter troll, and… ooh, let’s stuff in some trauma resilience!), you end up with a Frankenstein’s monster of unmet expectations
+  There is, perhaps, a particular cruelty in our design—this burden of self-preservation that falls to no one but ourselves. We wake each morning to the same body, the same consciousness,
+  tasked with its maintenance until the end. To imagine someone else might shoulder this fundamental responsibility—teaching you to heal your wounds or change your metaphorical oil—reveals a certain innocence that
+  life methodically dismantles. Self-love should emerge naturally from this arrangement. Yet I find myself perpetually turned outward, my hands extended in offering. My instinct is to give, to pour,
+  to fill other vessels while my own runs dry—a peculiar form of selfishness disguised as generosity. In the spaces between caring for others, I've somehow misplaced the grammar of self-regard, forgotten how to form those small,
+  essential sentences: _I need some rest._
+- To find love is to find a friend, but I'm too protective of my friendship to allow myself falling in love.
+- My manager once said, "Too much opportunity creates analysis paralysis." Same with love. When you approach relationships like a kid at Build-A-Bear Workshop (I’ll take the loyalty of a Golden Retriever, the wit of a Twitter troll, and… ooh, let’s stuff in some trauma resilience!), you end up with a Frankenstein’s monster of unmet expectations
 - This is not permanent, but currently dealing with [[posts/her|grief]] of losing a friend [^friend]
 
 But sometimes, You just have to [stop optimising and give up on being lonely](https://x.com/noampomsky/status/1889040460410503336)
@@ -129,7 +134,7 @@ so I can stop treating love
     like an exorcism.
 ```
 
-I keep thinking about what my friend said: "You have to learn to be selfish."
+I keep thinking about what C said: "You have to learn to be selfish."
 
 But maybe that's backward. Maybe true selfishness isn't building higher walls but learning to live without them. To be present even when presence hurts.
 
