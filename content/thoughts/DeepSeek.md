@@ -4,7 +4,7 @@ tags:
   - ml
 date: 2025-01-25
 description: and OSS AI ftw.
-modified: 2025-02-22 20:36:14 GMT-05:00
+modified: 2025-02-27 19:16:01 GMT-05:00
 title: DeepSeek R1
 ---
 
@@ -22,7 +22,8 @@ Three major components:
 
 ## R1-Zero
 
-Uses GRPO (Group Relative Policy Optimization) from @shao2024deepseekmathpushinglimitsmathematical
+Uses GRPO (Group Relative Policy Optimization) from @shao2024deepseekmathpushinglimitsmathematical ^[Most of the innovation w.r.t RL can be found in the DeepSeekMath paper :smiley:]
+
 
 
 ## R1
