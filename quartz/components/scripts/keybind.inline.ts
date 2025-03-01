@@ -57,10 +57,14 @@ document.addEventListener("nav", async () => {
   registerEscapeHandler(keybind, hideContainer)
 })
 
-const _mapping = new Map([
-  ["\\", "/"],
-  ["j", "/curius"],
-])
+type MapAction = string | (() => void)
+const _mapping: Map<string, MapAction> = new Map()
+_mapping.set("\\", "/")
+_mapping.set("j", "/curius")
+_mapping.set("i", () => {
+  const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
+  if (button) button.click()
+})
 
 const aliases: Record<string, { mac: string; def: string }> = {
   recherche: { mac: "/", def: "k" },
@@ -114,10 +118,14 @@ document.addEventListener("nav", () => {
   function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (_mapping.get(e.key) !== undefined && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
-      const loc = _mapping.get(e.key) as string
-      container?.classList.toggle("active", false)
-      if (window.location.pathname === loc) return
-      window.spaNavigate(new URL(loc, window.location.toString()))
+      const action = _mapping.get(e.key)
+      if (typeof action === "function") {
+        action()
+      } else if (typeof action === "string") {
+        container?.classList.toggle("active", false)
+        if (window.location.pathname === action) return
+        window.spaNavigate(new URL(action, window.location.toString()))
+      }
     }
   }
 

@@ -19,6 +19,20 @@ body[data-slug="index"] {
     .side-col:not(.popover *) {
       grid-column: 3/7;
     }
+
+    .grid {
+      --grid-end: 0;
+    }
+  }
+
+  @media all and ($tablet) {
+    .main-col:not(.popover *) {
+      grid-column: 4/-4;
+    }
+
+    .side-col:not(.popover *) {
+      grid-column: 3/-3;
+    }
   }
 
   .page-content {
@@ -41,7 +55,7 @@ body[data-slug="index"] {
 
 .notes-outer {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(300px, 1fr));
 
   border: 0px solid var(--lightgray);
   border-top-width: 1px;

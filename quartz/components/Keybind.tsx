@@ -17,6 +17,7 @@ export const KeybindAlias = {
   "cmd+g": "graphique",
   "cmd+o": "opener",
   "cmd+p": "connector",
+  "cmd+i": "mode de notes",
 }
 
 const defaultOptions: Options = {

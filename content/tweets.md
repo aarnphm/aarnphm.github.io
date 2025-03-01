@@ -5,9 +5,9 @@ aliases:
   - bookmarks
 tags:
   - seed
-date: "2024-10-24"
+date: 2024-10-24
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-02-28 04:14:52 GMT-05:00
+modified: 2025-03-01 12:42:10 GMT-05:00
 noindex: true
 title: /xeets/
 transclude:
@@ -143,6 +143,8 @@ https://x.com/chapman_bliss/status/1881613396359127467 <!-- Last day at Neural L
 https://x.com/adonis_singh/status/1884499176865632672 <!-- R1 one-shotted into markets and individualism -->
 
 ## [[thoughts/Machine learning|machine learning]]
+
+https://x.com/thesephist/status/1895887696268288119 <!-- AI-centric interface design -->
 
 https://x.com/ZayneSprague/status/1836784332704215519 <!-- To CoT or not to CoT -->
 
