@@ -534,7 +534,7 @@ ol.overflow {
     --grid-end: 1fr;
     --sidepanel-padding-right: calc(var(--grid-end) + var(--kern) * 3);
     grid-template-columns:
-      var(--grid-end) calc(var(--kern) * 3) repeat(9, var(--grid-col-width))
+      0 calc(var(--kern) * 3) repeat(9, var(--grid-col-width))
       calc(var(--kern) * 3) var(--grid-end);
   }
 }
