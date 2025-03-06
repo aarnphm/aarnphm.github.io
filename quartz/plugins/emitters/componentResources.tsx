@@ -20,7 +20,6 @@ import { googleFontHref, joinStyles } from "../../util/theme"
 import { Features, transform } from "lightningcss"
 import { transform as transpile } from "esbuild"
 import { write } from "./helpers"
-import DepGraph from "../../depgraph"
 import { SocialImageOptions, getSatoriFont, defaultImageOptions } from "../../util/og"
 import satori, { SatoriOptions } from "satori"
 import { QuartzPluginData } from "../vfile"
@@ -39,7 +38,7 @@ type ComponentResources = {
 function getComponentResources(ctx: BuildCtx): ComponentResources {
   const allComponents: Set<QuartzComponent> = new Set()
   for (const emitter of ctx.cfg.plugins.emitters) {
-    const components = emitter.getQuartzComponents(ctx)
+    const components = emitter.getQuartzComponents?.(ctx) ?? []
     for (const component of components) {
       allComponents.add(component)
     }
@@ -156,10 +155,6 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
   const { fontOrigin } = { ...defaultOptions, ...opts }
   return {
     name,
-    getQuartzComponents: () => [],
-    async getDependencyGraph(_ctx, _content, _resources) {
-      return new DepGraph<FilePath>()
-    },
     async emit(ctx, content, _resources): Promise<FilePath[]> {
       const promises: Promise<FilePath>[] = []
       const cfg = ctx.cfg.configuration
@@ -311,5 +306,38 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
 
       return Promise.all(promises)
     },
+    externalResources: ({ cfg }) => ({
+      additionalHead: [
+        <link rel="manifest" href={`https://${cfg.configuration.baseUrl}/site.webmanifest`} />,
+        <link rel="shortcut icon" href={`https://${cfg.configuration.baseUrl}/favicon.ico`} />,
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href={`https://${cfg.configuration.baseUrl}/favicon-32x32.png`}
+        />,
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href={`https://${cfg.configuration.baseUrl}/favicon-16x16.png`}
+        />,
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href={`https://${cfg.configuration.baseUrl}/apple-touch-icon.png`}
+        />,
+        <link
+          rel="android-chrome"
+          sizes="192x192"
+          href={`https://${cfg.configuration.baseUrl}/android-chrome-192x192.png`}
+        />,
+        <link
+          rel="android-chrome"
+          sizes="512x512"
+          href={`https://${cfg.configuration.baseUrl}/android-chrome-512x512.png`}
+        />,
+      ],
+    }),
   }
 }

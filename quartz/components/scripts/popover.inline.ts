@@ -369,7 +369,6 @@ async function mouseEnterHandler(
   let position: Placement = "right"
   // Check if link is within sidepanel
   const isInSidepanel = link.closest(".sidepanel-inner") !== null
-  console.log(isInSidepanel)
   if (window.document.body.dataset.isFolderTag === "true") {
     position = "left"
   } else if (link.closest(".tag-link") !== null) {

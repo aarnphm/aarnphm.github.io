@@ -3,7 +3,6 @@ import { QuartzEmitterPlugin } from "../types"
 import path from "path"
 import fs from "node:fs/promises"
 import { glob } from "../../util/glob"
-import DepGraph from "../../depgraph"
 import { Argv } from "../../util/ctx"
 import { QuartzConfig } from "../../cfg"
 
@@ -23,10 +22,6 @@ const name = "Assets"
 export const Assets: QuartzEmitterPlugin = () => {
   return {
     name,
-    getQuartzComponents: () => [],
-    async getDependencyGraph(_ctx, _content, _resources) {
-      return new DepGraph<FilePath>()
-    },
     async emit({ argv, cfg }, _content, _resources): Promise<FilePath[]> {
       const assetsPath = argv.output
       const fps = await filesToCopy(argv, cfg)

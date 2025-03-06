@@ -416,6 +416,7 @@ export const pageResources = (baseDir: FullSlug | RelativeURL, staticResources: 
         crossOrigin: "anonymous",
       },
     ],
+    additionalHead: staticResources.additionalHead,
   }) satisfies StaticResources
 
 const defaultTranscludeOpts: TranscludeOptions = { dynalist: true, title: true }

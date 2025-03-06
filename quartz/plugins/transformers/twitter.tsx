@@ -4,7 +4,7 @@ import { Root } from "mdast"
 import { visit } from "unist-util-visit"
 import { unescapeHTML } from "../../util/escape"
 // @ts-ignore
-import script from "../../components/scripts/twitter.inline.ts"
+import script from "../../components/scripts/twitter.inline"
 
 export const twitterUrlRegex = /^.*(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/(status)\/(\d{19}).*/
 
@@ -74,5 +74,4 @@ export const Twitter: QuartzTransformerPlugin = () => ({
       },
     ]
   },
-  externalResources: () => ({ js: [], css: [] }),
 })

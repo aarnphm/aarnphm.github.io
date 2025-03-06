@@ -53,13 +53,11 @@ async function processChunk(
         fonts,
         // `code` will be the detected language code, `emoji` if it's an Emoji, or `unknown` if not able to tell.
         // `segment` will be the content to render.
-        loadAdditionalAsset: async (code: string, segment: string) => {
-          if (code === "emoji") {
-            // if segment is an emoji, load the image.
-            return `data:image/svg+xml;base64,${btoa(await loadEmoji("twemoji", getIconCode(segment)))}`
+        loadAdditionalAsset: async (languageCode: string, segment: string) => {
+          if (languageCode === "emoji") {
+            return `data:image/svg+xml;base64,${btoa(await loadEmoji(getIconCode(segment)))}`
           }
-          // if segment is normal text
-          return code
+          return languageCode
         },
       })
       const img = await sharp(Buffer.from(svg)).png().toBuffer()
@@ -310,7 +308,6 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
     skipDuringServe: true,
     requiresFullContent: true,
     name,
-    getQuartzComponents: () => [],
     async emit(ctx, content, _resource) {
       const { configuration } = ctx.cfg
       // Re-use OG image generation infrastructure

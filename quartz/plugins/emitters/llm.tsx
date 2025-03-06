@@ -26,7 +26,6 @@ import { toMdast, defaultHandlers as hastToMdastHandlers, State } from "hast-uti
 import { toMarkdown, defaultHandlers as mdastToTextHandlers } from "mdast-util-to-markdown"
 import { gfmToMarkdown } from "mdast-util-gfm"
 import { InlineMath, Math, mathToMarkdown } from "mdast-util-math"
-import DepGraph from "../../depgraph"
 import { toText } from "hast-util-to-text"
 import { headingRank } from "hast-util-heading-rank"
 import { checkMermaidCode } from "../transformers/ofm"
@@ -58,10 +57,6 @@ export const LLM: QuartzEmitterPlugin = () => {
   return {
     name,
     skipDuringServe: true,
-    getQuartzComponents: () => [],
-    async getDependencyGraph() {
-      return new DepGraph<FilePath>()
-    },
     async emit(ctx, content, resources): Promise<FilePath[]> {
       const cfg = ctx.cfg.configuration
       const fps: Promise<FilePath>[] = []

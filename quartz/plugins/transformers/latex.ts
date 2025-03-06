@@ -24,9 +24,7 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = (opts) => {
   return {
     name: "Latex",
     skipDuringServe: true,
-    markdownPlugins() {
-      return [remarkMath]
-    },
+    markdownPlugins: () => [remarkMath],
     htmlPlugins() {
       switch (engine) {
         case "typst": {
@@ -51,8 +49,6 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = (opts) => {
               },
             ],
           }
-        default:
-          return { css: [], js: [] }
       }
     },
   }

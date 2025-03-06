@@ -14,7 +14,7 @@ export default (() => {
     const titleSuffix = fileData.slug !== "index" ? (cfg.pageTitleSuffix ?? "") : ""
     const title =
       (fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title) + titleSuffix
-    const { css, js } = externalResources
+    const { css, js, additionalHead } = externalResources
 
     const fileName = fileData.slug?.replaceAll("/", "-") as string
 
@@ -63,41 +63,41 @@ export default (() => {
             <link rel="stylesheet" href={googleFontHref(cfg.theme)} />
           </>
         )}
-        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin={"anonymous"} />
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin="anonymous" />
         <link
           rel="preconnect"
           href="https://static.cloudflareinsights.com"
-          crossOrigin={"anonymous"}
+          crossOrigin="anonymous"
         />
-        <link rel="preconnect" href="https://plausible.io" crossOrigin={"anonymous"} />
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin={"anonymous"} />
-        {cfg.baseUrl && (
-          <>
-            <link rel="alternate" type="application/rss+xml" title="rss feed" href="/index.xml" />
-            <link rel="alternate" type="application/atom+xml" title="atom feed" href="/feed.xml" />
-          </>
-        )}
+        <link rel="preconnect" href="https://plausible.io" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {/* OG/twitter meta tags */}
-        <meta name="og:site_name" content={cfg.pageTitle} />
-        <meta property="og:locale" content={cfg.locale} />
-        <meta property="og:title" content={title} />
-        <meta property="og:type" content="website" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={fileData.description} />
+        <meta name="twitter:image" content={ogImagePath} />
+        <meta property="twitter:domain" content={url.toString()} />
+        <meta property="twitter:url" content={socialUrl} />
         <meta name="twitter:site" content="@aarnphm_" />
         <meta name="twitter:creator" content="@aarnphm_" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={fileData.description} />
         <meta name="twitter:widgets:theme" content="light" />
+        <meta name="twitter:widgets:autoload" content="off" />
         <meta
           name="twitter:widgets:border-color"
           content={cfg.theme.colors["lightMode"].secondary}
         />
+        <meta name="og:site_name" content={cfg.pageTitle} />
+        <meta property="og:url" content={socialUrl} />
+        <meta property="og:image" content={ogImagePath} />
+        <meta property="og:locale" content={cfg.locale} />
+        <meta property="og:title" content={title} />
+        <meta property="og:type" content="website" />
         {/*We will only load based on "nav" */}
-        <meta name="twitter:widgets:autoload" content="off" />
         <meta property="og:description" content={fileData.description} />
         <meta property="og:image:type" content={`image/${extension}`} />
         <meta property="og:image:alt" content={fileData.description} />
+        <meta property="og:image" content={ogImagePath} />
         {!frontmatterImgUrl && cfg.generateSocialImages ? (
           <>
             <meta property="og:image:width" content={imageOptions.width.toString()} />
@@ -108,27 +108,12 @@ export default (() => {
         ) : (
           <></>
         )}
-        <meta property="og:image" content={ogImagePath} />
-        {cfg.baseUrl && (
-          <>
-            <meta property="og:url" content={socialUrl} />
-            <meta property="og:image" content={ogImagePath} />
-            <meta name="twitter:image" content={ogImagePath} />
-            <meta property="twitter:domain" content={url.toString()}></meta>
-            <meta property="twitter:url" content={socialUrl}></meta>
-          </>
-        )}
         <link rel="icon" href={iconPath} />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="apple-touch-icon" href={iconPath} />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/site.webmanifest" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="android-chrome" sizes="192x192" href="/android-chrome-192x192.png" />
-        <link rel="android-chrome" sizes="512x512" href="/android-chrome-512x512.png" />
         <link rel="canonical" href={socialUrl} />
         <meta name="author" content="Aaron Pham" />
+        <meta name="description" content={fileData.description} />
+        <meta name="generator" content="Quartz" />
         {!fileData.slug!.includes("university") && (
           <>
             <meta
@@ -141,12 +126,17 @@ export default (() => {
             />
           </>
         )}
-        <meta name="description" content={fileData.description} />
-        <meta name="generator" content="Quartz" />
         {css.map((resource) => CSSResourceToStyleElement(resource, true))}
         {js
           .filter((resource) => resource.loadTime === "beforeDOMReady")
           .map((res) => JSResourceToScriptElement(res, true))}
+        {additionalHead.map((resource) => {
+          if (typeof resource === "function") {
+            return resource(fileData)
+          } else {
+            return resource
+          }
+        })}
       </head>
     )
   }

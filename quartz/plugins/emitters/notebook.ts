@@ -46,7 +46,6 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
   return {
     name,
     skipDuringServe: true,
-    getQuartzComponents: () => [],
     async getDependencyGraph() {
       return new DepGraph<FilePath>()
     },

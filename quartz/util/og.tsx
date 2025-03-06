@@ -161,6 +161,7 @@ export const og: SocialImageOptions["Component"] = (
     minutes: Math.ceil(fileData.readingTime?.minutes!),
     words: Math.ceil(fileData.readingTime?.words!),
   })
+  const iconPath = `https://${cfg.baseUrl}/static/icon.png`
 
   const Li = [created, reading]
 
@@ -202,7 +203,7 @@ export const og: SocialImageOptions["Component"] = (
         }}
       >
         <img
-          src={`https://${cfg.baseUrl}/static/icon.png`}
+          src={iconPath}
           style={{
             position: "relative",
             backgroundClip: "border-box",
@@ -226,6 +227,9 @@ export const og: SocialImageOptions["Component"] = (
               fontWeight: 700,
               marginRight: "4rem",
               fontFamily: fonts[0].name,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
             }}
           >
             {title}

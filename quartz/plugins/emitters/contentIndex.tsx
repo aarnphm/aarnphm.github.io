@@ -34,6 +34,7 @@ interface Options {
   enableRSS: boolean
   enableAtom: boolean
   rssLimit?: number
+  rssSlug: string
   includeEmptyFiles: boolean
 }
 
@@ -42,6 +43,7 @@ const defaultOptions: Options = {
   enableRSS: true,
   enableAtom: true,
   rssLimit: 10,
+  rssSlug: "index",
   includeEmptyFiles: true,
 }
 
@@ -184,7 +186,6 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
   return {
     name: "ContentIndex",
     requiresFullContent: true,
-    getQuartzComponents: () => [],
     async getDependencyGraph(ctx, content, _resources) {
       const graph = new DepGraph<FilePath>()
 
@@ -282,7 +283,7 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
           await write({
             ctx,
             content: generateRSSFeed(cfg, linkIndex, opts.rssLimit),
-            slug: "index" as FullSlug,
+            slug: (opts?.rssSlug ?? "index") as FullSlug,
             ext: ".xml",
           }),
         )
@@ -321,6 +322,32 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
       )
 
       return emitted
+    },
+    externalResources: ({ cfg }) => {
+      const additionalHead = []
+      if (opts?.enableRSS) {
+        additionalHead.push(
+          <link
+            rel="alternate"
+            type="application/rss+xml"
+            title="RSS feed"
+            href={`https://${cfg.configuration.baseUrl}/index.xml`}
+          />,
+        )
+      }
+
+      if (opts?.enableAtom) {
+        additionalHead.push(
+          <link
+            rel="alternate"
+            type="application/atom+xml"
+            title="atom feed"
+            href={`https://${cfg.configuration.baseUrl}/feed.xml`}
+          />,
+        )
+      }
+
+      return { additionalHead }
     },
   }
 }

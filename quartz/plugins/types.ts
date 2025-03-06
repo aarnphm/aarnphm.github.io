@@ -13,6 +13,7 @@ export interface PluginTypes {
 }
 
 type OptionType = object | undefined
+type ExternalResourcesFn = (ctx: BuildCtx) => Partial<StaticResources> | undefined
 export type QuartzTransformerPlugin<Options extends OptionType = undefined> = (
   opts?: Options,
 ) => QuartzTransformerPluginInstance
@@ -22,7 +23,7 @@ export type QuartzTransformerPluginInstance = {
   textTransform?: (ctx: BuildCtx, src: string | Buffer) => string | Buffer
   markdownPlugins?: (ctx: BuildCtx) => PluggableList
   htmlPlugins?: (ctx: BuildCtx) => PluggableList
-  externalResources?: (ctx: BuildCtx) => Partial<StaticResources>
+  externalResources?: ExternalResourcesFn
 }
 
 export type QuartzFilterPlugin<Options extends OptionType = undefined> = (
@@ -42,12 +43,18 @@ export type QuartzEmitterPluginInstance = {
   skipDuringServe?: boolean
   requiresFullContent?: boolean
   emit(ctx: BuildCtx, content: HtmlContent[], resources: StaticResources): Promise<FilePath[]>
-  getQuartzComponents(ctx: BuildCtx): QuartzComponent[]
+  /**
+   * Returns the components (if any) that are used in rendering the page.
+   * This helps Quartz optimize the page by only including necessary resources
+   * for components that are actually used.
+   */
+  getQuartzComponents?(ctx: BuildCtx): QuartzComponent[]
   getDependencyGraph?(
     ctx: BuildCtx,
     content: HtmlContent[],
     resources: StaticResources,
   ): Promise<DepGraph<FilePath>>
+  externalResources?: ExternalResourcesFn
 }
 
 export interface Notes {

@@ -5,9 +5,9 @@ aliases:
   - bookmarks
 tags:
   - seed
-date: 2024-10-24
+date: "2024-10-24"
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-03-01 12:42:10 GMT-05:00
+modified: 2025-03-05 22:50:28 GMT-05:00
 noindex: true
 title: /xeets/
 transclude:
@@ -183,5 +183,3 @@ https://x.com/vllm_project/status/1879979185474859303 <!-- By yours truly -->
 https://x.com/flowersslop/status/1882241958397067677 <!-- R1 having existential crisis -->
 
 https://x.com/rupspace/status/1877882538859078084 <!-- Highway network -->
-
-https://x.com/qtnx_/status/1882955103797395566 <!-- DeepSeek R1 Distill SAE -->
