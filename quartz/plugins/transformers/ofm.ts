@@ -40,6 +40,7 @@ export interface Options {
   enableInHtmlEmbed: boolean
   enableYouTubeEmbed: boolean
   enableVideoEmbed: boolean
+  enableInlineFootnotes: boolean
 }
 
 const defaultOptions: Options = {
@@ -54,6 +55,7 @@ const defaultOptions: Options = {
   enableInHtmlEmbed: false,
   enableYouTubeEmbed: true,
   enableVideoEmbed: true,
+  enableInlineFootnotes: true,
 }
 
 const calloutMapping = {
@@ -116,6 +118,8 @@ export const wikilinkRegex = new RegExp(
   /!?\[\[([^\[\]\|\#\\]+)?(#+[^\[\]\|\#\\]+)?(\\?\|[^\[\]\#]+)?\]\]/g,
 )
 
+export const inlineFootnoteRegex = /\^\[((?:[^\[\]]|\[(?:[^\[\]]|\[[^\[\]]*\])*\])*)\]/g
+
 // ^\|([^\n])+\|\n(\|) -> matches the header row
 // ( ?:?-{3,}:? ?\|)+  -> matches the header row separator
 // (\|([^\n])+\|\n)+   -> matches the body rows
@@ -167,7 +171,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           src = src.toString()
         }
 
-        src = src.replace(commentRegex, "")
+        src = (src as string).replace(commentRegex, "")
       }
 
       // pre-transform blockquotes
@@ -176,7 +180,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           src = src.toString()
         }
 
-        src = src.replace(calloutLineRegex, (value: string) => {
+        src = (src as string).replace(calloutLineRegex, (value: string) => {
           // force newline after title of callout
           return value + "\n> "
         })
@@ -189,7 +193,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
         }
 
         // replace all wikilinks inside a table first
-        src = src.replace(tableRegex, (value) => {
+        src = (src as string).replace(tableRegex, (value) => {
           // escape all aliases and headers in wikilinks inside a table
           return value.replace(tableWikilinkRegex, (_value, raw) => {
             // const [raw]: (string | undefined)[] = capture
@@ -203,11 +207,11 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
         })
 
         // replace all other wikilinks
-        src = src.replace(wikilinkRegex, (value, ...capture) => {
+        src = (src as string).replace(wikilinkRegex, (value, ...capture) => {
           const [rawFp, rawHeader, rawAlias]: (string | undefined)[] = capture
 
           const [fp, anchor] = splitAnchor(`${rawFp ?? ""}${rawHeader ?? ""}`)
-          const blockRef = Boolean(rawHeader?.match(/^#?\^/)) ? "^" : ""
+          const blockRef = rawHeader?.match(/^#?\^/) ? "^" : ""
           const displayAnchor = anchor ? `#${blockRef}${anchor.trim().replace(/^#+/, "")}` : ""
           const displayAlias = rawAlias ?? rawHeader?.replace("#", "|") ?? ""
           const embedDisplay = value.startsWith("!") ? "!" : ""
@@ -218,6 +222,35 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
           return `${embedDisplay}[[${fp}${displayAnchor}${displayAlias}]]`
         })
+      }
+
+      if (opts.enableInlineFootnotes) {
+        // Replaces ^[inline] footnotes with regular footnotes [^1]:
+        const footnotes: Record<string, string> = {}
+        let counter = 0
+
+        // Replace inline footnotes with references and collect definitions
+        const result = (src as string).replace(
+          inlineFootnoteRegex,
+          (_match: string, content: string) => {
+            counter++
+            const id = `generated-inline-footnote-${counter}`
+            footnotes[id] = content.trim()
+            return `[^${id}]`
+          },
+        )
+
+        // Append footnote definitions if any are found
+        if (Object.keys(footnotes).length > 0) {
+          return (
+            result +
+            "\n\n" +
+            Object.entries(footnotes)
+              .map(([id, content]) => `[^${id}]: ${content}`)
+              .join("\n") +
+            "\n"
+          )
+        }
       }
 
       return src

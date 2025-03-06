@@ -9,7 +9,7 @@ cssclasses:
   - nolist
 date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-02-28 12:40:46 GMT-05:00
+modified: 2025-03-05 18:53:13 GMT-05:00
 permalinks:
   - /website
   - /resources
@@ -49,6 +49,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.chinatownjs.nyc/
 - https://www.benkuhn.net/outliers/
 - https://henry.codes/ -- very much text-dominant black/white
+- https://www.youtube.com/watch?v=Wo2m3jaJixU -- Linear Realtime Sync
 
 ## portfolio
 
@@ -56,6 +57,8 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://tinnei.com/
 - https://www.tylerxhobbs.com/works/categories/digital -- utilitarian design
 - https://negative.sanctuary.computer/ -- landing poggies
+- https://leimao.github.io/ -- Lei Mao's blog on CUDA and GPU optimization (NVIDIA)
+- https://www.lei.chat -- AI Compiler (AMD)
 
 ## essay
 
@@ -69,12 +72,21 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://wattenberger.com/thoughts/yay-embeddings-math -- creative with embeddings in writing
 - https://docs.google.com/document/d/1h1vw4-t9Es4p2qQkZblnWcJDo6uEc6Yu61AxaLB5hKo/edit?curius=4635&tab=t.0 -- Atlantis
 - https://foundersatwork.posthaven.com/the-social-radar-what-i-did-at-y-combinator -- That one blogpost form Jess Livingston I kept coming back
-- https://basilhalperin.com/essays/agi-vs-emh.html -- AGI timeline
+- https://basilhalperin.com/essays/agi-vs-emh.html -- AGI timeline, Basil Halperin
 - https://jameslin.bio/jolie -- Love, with a friend
 - https://www.paulgraham.com/good.html -- Be good
 - https://www.paulgraham.com/mean.html -- Mean people fail
 - https://joecarlsmith.com/2025/01/28/fake-thinking-and-real-thinking -- Fake vs Real thinking
 - https://www.lesswrong.com/posts/H7fkGinsv8SDxgiS2/ironing-out-the-squiggles -- Ironing Out the Squiggles
+- https://readsomethingwonderful.com/p/47/the-inner-ring -- Read something wonderful
+- https://optimists.ai/2024/03/10/deconstructing-bostroms-argument-for-ai-doom/ -- Bostrom's Argument for AI Doom
+- https://paulgraham.com/95.html -- PG's 95% of great programmers in
+- https://paulgraham.com/woke.html -- Origin of Wokeness
+- https://www.lei.chat/posts/triton-linear-layout-concept/ -- Lei's Chat on Triton Linear Layout
+- https://writeordiemag.com/elliptical-love/untranslatable -- Untranslatable
+- https://www.oaktreecapital.com/docs/default-source/memos/on-bubble-watch.pdf?sfvrsn=ab105466_4 -- On Bubble Watch and Stock market
+- https://ordinaryinstants.substack.com/p/graduate-school-is-just-a-metaphor -- Graduate school is just a metaphor
+- https://www.epi.org/publication/u-s-benefits-from-immigration -- US benefits from immigration but policy reforms needed to maximize gains
 
 ## protocol
 
@@ -91,14 +103,20 @@ https://x.com/poetengineer__/status/1895397439852695708
 - https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
 - [ziglang/zig/.../general_purpose_allocator.zig](https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig) -- The GPA you need to care about
 - https://lettermatic.com/fonts/parclo-serif -- Parclo I might buy this
-- https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
 - https://drmichaellevin.org/resources/otherlabs.html -- Labs interests
 - _SouthParkCommons meetup for AI interfaces, [Geoffrey Litt](https://www.geoffreylitt.com/)_
   ![[https://www.youtube.com/watch?v=5OaTk5q_CTc]]
 - https://www.mrporter.com/en-us/journal/fashion/derek-guy-style-resolutions-25156188 -- Style resolution
 - https://thegenerality.com/agi/ -- The effort for AGI at Microsoft [GitHub](https://github.com/microsoft/unilm)
-- https://jax-ml.github.io/scaling-book/ -- JAX scaling book
 - https://katex.org/docs/supported.html -- supported DSL for KaTeX
 - https://www.youtube.com/watch?v=WxK11RsLqp4&t=2169s -- Realtime sync in Linear
+- https://www.nserc-crsng.gc.ca/Students-Etudiants/Guides-Guides/TriRTA-TriBFR_eng.asp -- Canadian government grant research
+- https://www.cbo.gov/system/files/2020-01/55967-CBO-immigration.pdf -- Foreign-Born Population and Its Effects on US Economy
 - [mech-interp trails](https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvYXV0b2VuY29kZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvbGF0ZW50LXNwYWNl&stackedNotes=dGhvdWdodHMvcmVwcmVzZW50YXRpb25z&stackedNotes=dGhvdWdodHMvZGF0YQ)
 - [interesting trails](https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvSW50ZXJuZXQ&stackedNotes=dGhvdWdodHMvRGV0ZXJtaW5pc20&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9lbmdpbmVlci00YTAzL2xpdGVyYXR1cmUtcmV2aWV3&stackedNotes=cG9zdHMvY2hhdGdwdA&stackedNotes=dGhvdWdodHMvT0NJ&stackedNotes=dGhvdWdodHMvQ29udGVudC1hZGRyZXNzYWJsZS1zdG9yYWdl&stackedNotes=dGhvdWdodHMvYW50aHJvcGljLXNhZmV0eS1mZWxsb3c&stackedNotes=dGhvdWdodHMvTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvb3B0aW1pemF0aW9u&stackedNotes=dGhvdWdodHMvTExNcw&stackedNotes=dGhvdWdodHMvZXRoaWNz&stackedNotes=dGhvdWdodHMvYWVzdGhldGljLXZhbHVl&stackedNotes=dGhvdWdodHMvUGhpbG9zb3BoeS1hbmQtTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvZGlhbGVjdGljcw&stackedNotes=dGhvdWdodHMvcmVhc29u&stackedNotes=dGhvdWdodHMvQ2FtdXM&stackedNotes=cG9zdHMvMjAyNA&stackedNotes=cXVvdGVz&stackedNotes=dGhvdWdodHMvSGVsbWhvbHR6LWRlY29tcG9zaXRpb24&stackedNotes=dGhvdWdodHMvTW9udGUtQ2FybG8&stackedNotes=dGhvdWdodHMvQ2hvbGVza3ktZGVjb21wb3NpdGlvbg&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9zZndyLTRtbDMvQmlhcy1hbmQtaW50ZXJjZXB0&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=cG9zdHMvc3RydWN0dXJlZC1kZWNvZGluZw&stackedNotes=dGhvdWdodHMvVHJhbnNmb3JtZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvQ2F1Y2h5LW1vbWVudHVtLWVxdWF0aW9u&stackedNotes=dGhvdWdodHMvVGVuc29yLWZpZWxk&stackedNotes=dGhvdWdodHMvbWFuaWZvbGQ&stackedNotes=dGhvdWdodHMvUHJvZ3Jlc3NpdmUtZGlzY2xvc3VyZQ&stackedNotes=dGhvdWdodHMvR2lsZXMtRGVsZXV6ZQ&stackedNotes=dGhvdWdodHMvQXV0b3JlZ3Jlc3NpdmUtbW9kZWxz&stackedNotes=dGhvdWdodHMvTGxhbWEtMw&stackedNotes=dGhvdWdodHMvZGlzcGxhY2VtZW50&stackedNotes=dGhvdWdodHMvY29uc3RyYWluZWQtZGVjb2Rpbmc&stackedNotes=dGhvdWdodHMvUGFyZXRvLWRpc3RyaWJ1dGlvbg&stackedNotes=cG9zdHMvUXVlc3Rpb25zLWFib3V0LU1ldGFwaHlzaWNz&stackedNotes=dGhvdWdodHMvQWdlbmN5&stackedNotes=cG9zdHMvY29ycG9yYXRlLXBlcnNvbmhvb2Q&stackedNotes=dGhvdWdodHMvVmVyeS1TbGVuZGVyLURpZmZlcmVuY2Vz&stackedNotes=dGhvdWdodHMvQXJpc3RvdGxl&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ)
+
+### [[thoughts/Machine learning]]
+
+- https://github.com/bytedance/flux -- fast communication-overlapping library for TP
+- https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
+- https://jax-ml.github.io/scaling-book/ -- JAX scaling book

@@ -639,6 +639,11 @@ svg[data-icon] {
 
   & > .search-button {
     border-radius: 0px;
+    display: none;
+
+    @media all and ($mobile) {
+      display: flex;
+    }
   }
 
   & > #search-container > #search-layout {

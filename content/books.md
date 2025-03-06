@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2022-04-22"
 description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
-modified: 2025-01-23 07:06:24 GMT-05:00
+modified: 2025-03-03 14:20:44 GMT-05:00
 title: antilibrary.
 ---
 
@@ -111,22 +111,23 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 
 ### fiction
 
-| title                   | author                |
-| ----------------------- | --------------------- |
-| Recursion               | Blake Crouch          |
-| Sea of Tranquility      | Emily St. John Mandel |
-| Oblivion                | David Foster Wallace  |
-| The Uninhabitable Earth | Wallace-Weels         |
-| The Idiot               | Fyodor Dostoevsky     |
-| The Brothers Karamazov  | Fyodor Dostoevsky     |
-| Fall On Your Knees      | Ann-Marie MacDonald   |
-| Foundation              | Isaac Asimov          |
-| Robinson Crusoe         | Daniel Defoe          |
-| The Overstory           | Richard Powers        |
-| Rejection               | Tony Tulathimutte     |
-| Play It as It Lays      | Joan Didion           |
-| Slaughterhouse-Five     | Kurt Vonnegut         |
-| Homage to Catalonia     | George Orwell         |
+| title                             | author                | notes                                                  |
+| --------------------------------- | --------------------- | ------------------------------------------------------ |
+| Recursion                         | Blake Crouch          |                                                        |
+| Sea of Tranquility                | Emily St. John Mandel |                                                        |
+| Oblivion                          | David Foster Wallace  |                                                        |
+| The Uninhabitable Earth           | Wallace-Weels         |                                                        |
+| The Idiot                         | Fyodor Dostoevsky     |                                                        |
+| The Brothers Karamazov            | Fyodor Dostoevsky     |                                                        |
+| Fall On Your Knees                | Ann-Marie MacDonald   |                                                        |
+| Foundation                        | Isaac Asimov          |                                                        |
+| Robinson Crusoe                   | Daniel Defoe          |                                                        |
+| The Overstory                     | Richard Powers        |                                                        |
+| Rejection                         | Tony Tulathimutte     |                                                        |
+| Play It as It Lays                | Joan Didion           |                                                        |
+| Slaughterhouse-Five               | Kurt Vonnegut         |                                                        |
+| Homage to Catalonia               | George Orwell         |                                                        |
+| The Unbearable Lightness of Being | Milan Kundera         | [notes](https://www.cs.cmu.edu/~yangke/lightness.html) |
 
 ### poetry
 
@@ -139,8 +140,11 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 
 ## finished.
 
+_The following includes a list of books I have finished._
+
 ### 2025
 
+- **The Castle** by Frank Kafka
 - **The Prince** by Niccolò Machiavelli
 
 ### 2024

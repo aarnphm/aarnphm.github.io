@@ -13,6 +13,7 @@ import { BuildCtx } from "../../util/ctx"
 import { styleText } from "node:util"
 import { fromHtml } from "hast-util-from-html"
 import { htmlToJsx } from "../../util/jsx"
+import { loadEmoji, getIconCode } from "../../util/emoji"
 
 export interface PressReleaseOptions {
   height: number
@@ -50,6 +51,16 @@ async function processChunk(
         width: opts.width,
         height: opts.height,
         fonts,
+        // `code` will be the detected language code, `emoji` if it's an Emoji, or `unknown` if not able to tell.
+        // `segment` will be the content to render.
+        loadAdditionalAsset: async (code: string, segment: string) => {
+          if (code === "emoji") {
+            // if segment is an emoji, load the image.
+            return `data:image/svg+xml;base64,${btoa(await loadEmoji("twemoji", getIconCode(segment)))}`
+          }
+          // if segment is normal text
+          return code
+        },
       })
       const img = await sharp(Buffer.from(svg)).png().toBuffer()
       return await write({

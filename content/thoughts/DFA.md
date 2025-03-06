@@ -3,8 +3,8 @@ id: DFA
 tags:
   - sfwr2fa3
   - math
-date: "2024-01-12"
-modified: 2025-02-16 04:26:29 GMT-05:00
+date: 2024-01-12
+modified: 2025-03-04 12:02:52 GMT-05:00
 title: Deterministic Finite Automata
 ---
 
@@ -115,33 +115,6 @@ $$
 
 [[thoughts/representations|representation]]:
 
-```mermaid
-stateDiagram-v2
-    direction LR
-    classDef accepting fill:#4CAF50,stroke:#333,stroke-width:2px
-    classDef start fill:#FFD700,stroke:#333,stroke-width:2px
-
-    s1: s1
-    s2: s2
-    s3: s3
-    s4: s4
-
-    [*] --> s1
-    s1 --> s1: b
-    s1 --> s2: a
-
-    s2 --> s2: b
-    s2 --> s3: a
-
-    s3 --> s3: b
-    s3 --> s4: a
-
-    s4 --> s4: a,b
-
-    class s4 accepting
-    class s1 start
-```
-
 > if in final string then accept, otherwise reject the string
 
 The following is the transfer function:
@@ -187,6 +160,8 @@ $$
 > 7. $\{ x \mid \text{a is the fifth last char of x} \}$
 > 8. $\emptyset$
 > 9. $\Sigma^{*}$
+
+<details>
 
 1.
 
@@ -250,6 +225,8 @@ stateDiagram-v2
   class s1 accepting
 ```
 
+</details>
+
 ### transfer function
 
 $$
@@ -276,7 +253,7 @@ $$
 >
 > Or $\mathcal{L}(M) = \{x \mid \hat{\delta}(s,x) \in F \}$
 
-Q: Create DFA $M$ where $\Sigma = \{0,1\}  $ such that $\mathcal{L}(M) = \{x \mid  \text{x is a binary string representation of a multiple of 3 or x = 6}\}$
+Q: Create DFA $M$ where $\Sigma = \{0,1\}$ such that $\mathcal{L}(M) = \{x \mid  \text{x is a binary string representation of a multiple of 3 or x = 6}\}$
 
 $$
 \begin{align}
@@ -301,9 +278,9 @@ $$
 
 If $L_{1}$ and $L_{2}$ are regular:
 
-1. $\neg L$ is _regular_ (closed under comparison)
+1. $\neg L$ is _regular_ (closed under complement)
 2. $L_{1} \cap L_{2}$
-3. $L_{1} \cup L_{2}$
+3. $L_{1} \cup L_{2}$ = $\neg (\neg L_{1} \cap \neg L_2)$
 
 ### proof (1)
 
@@ -318,3 +295,37 @@ Or $\neg L = \mathcal{L}(M^{'})$
 ### proof (2)
 
 Let $L_1$ and $L_2$ be regular languages, there $\exists M_{1} \cap M_{2} \text{ s.t } M_{1}=(Q_{1}, \Sigma,\delta_{1}, s_{1},F_{1}) \cap M_{2}=(Q_{2}, \Sigma, \delta_{2}, s_{2}, F_{2})$ and $\mathcal{L}(M_{1})=L \cap \mathcal{L}(M_{2}) = L_{2}$
+
+(product construction, Cartesian)
+
+> [!important] Lemma (Kozen)
+>
+> $\forall x \in \Sigma^{*} | \hat{\delta_3} ((p, q), x) = (\hat{\delta_1} (p, x) , \hat{\delta_2} (q,x))$
+
+## product construction
+
+example: create a DFA that accepts a string as a multiple of 6 (from binary even string and a multiple of three machines via product construction)
+
+Let $M_{3} = (Q_{3}, \Sigma, \delta_3, s_3,  F_{3})$ where
+
+- $Q_{3} = Q_{1} \times Q_{2}$
+- $\delta_3 ((p,q), a) = (\delta_1 (p,a), \delta_2 (q,a))$
+- $F_{3} = F_{1} \times F_{2}$
+- $s_{3} = (s_{1}, s_{2})$
+
+Set notation:
+
+$F_{3} = \{(a,0)\}$, $F_{1}=\{a\}$ and $F_{2} = \{0\}$
+
+$$
+\begin{aligned}
+F_3 &= Q_{3} - ((Q_{1}-F_{1}) \times (Q_{2} - F_{2})) \\
+&= Q_{3} - \{b\}  \times \{1, 2\} \\
+&= \{ (a, 0), (b, 0), (a, 1), (a, 2)\}
+\end{aligned}
+$$
+
+Ex: $L_{1} = \{a^n b^m \mid n,m \ge  0\}$ (is regular), where $L_2 = \{a^n b^n \mid  n\ge 0\}$ (is not regular), and $L_{3} = \{ x | \#(x,a) = \#(x,b)\}$
+
+> If $L_{1}$ is regular, and $L_{2} \subseteq L_{1}$, then is $L_{2}$ Reg? (use [[thoughts/NFA]] for this)
+

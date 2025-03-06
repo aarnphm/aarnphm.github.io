@@ -140,19 +140,20 @@ footer {
 }
 
 header {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0;
+  padding-right: var(--sidepanel-padding-right);
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 0.6rem;
+}
 
-  & > .header-content {
-    width: 100%;
-    align-items: center;
-    column-gap: 0.6rem;
-    display: flex;
-    position: relative;
-  }
+.header-content {
+  width: 100%;
+  align-items: center;
+  column-gap: 0.6rem;
+  display: flex;
+  position: relative;
 }
 
 section[class~="header"] {
@@ -532,10 +533,17 @@ ol.overflow {
   .grid {
     --grid-col-width: 149px;
     --grid-end: 1fr;
+    --grid-left: 0;
     --sidepanel-padding-right: calc(var(--grid-end) + var(--kern) * 3);
     grid-template-columns:
-      0 calc(var(--kern) * 3) repeat(9, var(--grid-col-width))
+      var(--grid-left) calc(var(--kern) * 3) repeat(9, var(--grid-col-width))
       calc(var(--kern) * 3) var(--grid-end);
+  }
+
+  [data-is-folder-tag="true"] {
+    .grid {
+      --grid-left: 1fr;
+    }
   }
 }
 @media all and ($tablet) {

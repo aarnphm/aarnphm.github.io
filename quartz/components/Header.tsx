@@ -5,7 +5,7 @@ export default (() => {
   const Header: QuartzComponent = ({ children }: QuartzComponentProps) => {
     return children.length > 0 ? (
       <section class={classNames(undefined, "header", "grid", "all-col")}>
-        <header class={classNames(undefined, "header-content", "all-col")}>{children}</header>
+        <header class={classNames(undefined, "header-content", "main-col")}>{children}</header>
       </section>
     ) : null
   }

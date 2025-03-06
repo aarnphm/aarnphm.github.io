@@ -5,6 +5,7 @@
   font-size: 0.8rem !important;
   min-width: fit-content;
   cursor: pointer;
+  visibility: hidden;
 
   @media all and ($mobile) {
     display: none;

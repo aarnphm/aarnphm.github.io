@@ -192,8 +192,11 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
           return isTagLink ? 0.5 : 1
         }),
     )
-    .force("collide", forceCollide<NodeData>((n) => nodeRadius(n) * 2).iterations(2))
-    .force("radial", forceRadial(radius * 0.8, width / 2, height / 2).strength(0.3))
+    .force(
+      "collide",
+      forceCollide<NodeData>((n) => nodeRadius(n) * 2),
+    )
+    .force("radial", forceRadial(radius * 0.8, width / 2, height / 2).strength(0.4))
 
   // precompute style prop strings as pixi doesn't support css variables
   const cssVars = [
