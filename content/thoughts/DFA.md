@@ -4,7 +4,7 @@ tags:
   - sfwr2fa3
   - math
 date: 2024-01-12
-modified: 2025-03-04 12:02:52 GMT-05:00
+modified: 2025-03-07 20:50:29 GMT-05:00
 title: Deterministic Finite Automata
 ---
 
@@ -284,7 +284,7 @@ If $L_{1}$ and $L_{2}$ are regular:
 
 ### proof (1)
 
-Let $M = (Q, \Sigma, \nabla ta, s, F)$ and $M^{'} = (Q, \Sigma, \delta, s, Q-F)$
+Let $M = (Q, \Sigma, \delta, s, F)$ and $M^{'} = (Q, \Sigma, \delta, s, Q-F)$
 
 $$
 \mathcal{L}(M^{'}) = \neg \mathcal{L}(M)

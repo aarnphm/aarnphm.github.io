@@ -61,36 +61,45 @@
       background: var(--light);
       border: 0px solid var(--lightgray);
     }
-    // Fix border colors for different placements
-    &[data-placement^="top"] {
+
+    &.top {
+      border-bottom-width: 1px;
+      border-right-width: 1px;
+
       &::after {
-        border-top-width: 1px;
-        border-left-width: 1px;
-        transform: translate(12px, 12px);
+        top: -6px;
+        left: -6px;
+        z-index: -1;
       }
     }
 
-    &[data-placement^="bottom"] {
+    &.bottom {
+      border-top-width: 1px;
+      border-left-width: 1px;
+
       &::after {
-        border-bottom-width: 1px;
-        border-right-width: 1px;
-        transform: translate(-12px);
+        bottom: 1px;
+        right: 1px;
       }
     }
 
-    &[data-placement^="left"] {
+    &.left {
+      border-right-width: 1px;
+      border-top-width: 1px;
+
       &::after {
-        border-left-width: 1px;
-        border-bottom-width: 1px;
-        transform: translate(-2px, 2px);
+        left: 1px;
+        bottom: 1px;
       }
     }
 
-    &[data-placement^="right"] {
+    &.right {
+      border-left-width: 1px;
+      border-bottom-width: 1px;
+
       &::after {
-        border-right-width: 1px;
-        border-top-width: 1px;
-        transform: translate(-18px);
+        right: 1px;
+        top: 1px;
       }
     }
   }

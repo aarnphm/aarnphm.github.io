@@ -334,9 +334,9 @@ document.addEventListener("nav", async (e) => {
     if (!container?.classList.contains("active")) return
 
     if (e.metaKey && e.altKey && e.key === "Enter") {
-      const asidePanel = document.querySelector(
+      const asidePanel = document.querySelector<HTMLDivElement>(
         "main > aside[class~='sidepanel-container']",
-      ) as HTMLDivElement
+      )
       if (!asidePanel || !currentHover) return
 
       await fetchContent(currentSlug, currentHover.dataset.slug as FullSlug).then((innerDiv) => {

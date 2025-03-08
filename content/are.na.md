@@ -9,7 +9,7 @@ cssclasses:
   - nolist
 date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-03-05 18:53:13 GMT-05:00
+modified: 2025-03-08 03:36:08 GMT-05:00
 permalinks:
   - /website
   - /resources
@@ -21,7 +21,7 @@ I also like to collect [[tweets|some based tweets on the internet]], and [[books
 
 ## discourse
 
-- [Gwern](https://www.lesswrong.com/posts/HiTjDZyWdLEGCDzqu/?commentId=MPNF8uSsi9mvZLxqz) on distilling Opus 3.5 into Claude 3.6 instead of releasing Opus 3.5
+- https://www.lesswrong.com/posts/HiTjDZyWdLEGCDzqu/?commentId=MPNF8uSsi9mvZLxqz -- Gwern on distilling Opus 3.5 into Claude 3.6 instead of releasing Opus 3.5
 
 ## website
 
@@ -49,10 +49,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.chinatownjs.nyc/
 - https://www.benkuhn.net/outliers/
 - https://henry.codes/ -- very much text-dominant black/white
-- https://www.youtube.com/watch?v=Wo2m3jaJixU -- Linear Realtime Sync
-
-## portfolio
-
+- https://www.ruth-zhao.com/computer -- map world
 - https://chia.design/
 - https://tinnei.com/
 - https://www.tylerxhobbs.com/works/categories/digital -- utilitarian design
@@ -87,6 +84,8 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.oaktreecapital.com/docs/default-source/memos/on-bubble-watch.pdf?sfvrsn=ab105466_4 -- On Bubble Watch and Stock market
 - https://ordinaryinstants.substack.com/p/graduate-school-is-just-a-metaphor -- Graduate school is just a metaphor
 - https://www.epi.org/publication/u-s-benefits-from-immigration -- US benefits from immigration but policy reforms needed to maximize gains
+- https://aeon.co/essays/simone-de-beauvoirs-authentic-love-is-a-project-of-equals -- Simone de Beavoir's "Love is a joint project"
+- https://www.washingtonpost.com/context/the-portable-bloomberg-the-wit-wisdom-of-michael-bloomberg/ba5281b4-886d-42dc-a28d-e67eceb60719/ -- The Portable Bloomberg: [[thoughts/pdfs/The Wit and Wisdom of Michael Bloomberg.pdf|The Wit & Wisdom of Michael Bloomberg]]
 
 ## protocol
 
@@ -109,7 +108,8 @@ https://x.com/poetengineer__/status/1895397439852695708
 - https://www.mrporter.com/en-us/journal/fashion/derek-guy-style-resolutions-25156188 -- Style resolution
 - https://thegenerality.com/agi/ -- The effort for AGI at Microsoft [GitHub](https://github.com/microsoft/unilm)
 - https://katex.org/docs/supported.html -- supported DSL for KaTeX
-- https://www.youtube.com/watch?v=WxK11RsLqp4&t=2169s -- Realtime sync in Linear
+- https://www.youtube.com/watch?v=WxK11RsLqp4&t=2169s -- Linear Realtime Sync
+- https://www.youtube.com/watch?v=Wo2m3jaJixU -- Linear Realtime Sync 2
 - https://www.nserc-crsng.gc.ca/Students-Etudiants/Guides-Guides/TriRTA-TriBFR_eng.asp -- Canadian government grant research
 - https://www.cbo.gov/system/files/2020-01/55967-CBO-immigration.pdf -- Foreign-Born Population and Its Effects on US Economy
 - [mech-interp trails](https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvYXV0b2VuY29kZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvbGF0ZW50LXNwYWNl&stackedNotes=dGhvdWdodHMvcmVwcmVzZW50YXRpb25z&stackedNotes=dGhvdWdodHMvZGF0YQ)

@@ -310,13 +310,11 @@ export function highlight(searchTerm: string, text: string, trim?: boolean) {
 export const encode = (str: string) => str.toLowerCase().split(/([^a-z]|[^\x00-\x7F])/)
 
 export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElement[]) {
-  const pageHeader = document.querySelector(
-    "main > section[class~='page-header']",
-  ) as HTMLDivElement
-  if (!asidePanel) console.error("asidePanel must not be null")
+  const pageHeader = document.querySelector<HTMLDivElement>("main > section[class~='page-header']")
+  if (!asidePanel || !pageHeader) console.error("asidePanel must not be null")
 
   // Calculate and set the top position based on page header
-  const headerRect = pageHeader.getBoundingClientRect()
+  const headerRect = pageHeader!.getBoundingClientRect()
   const topPosition = headerRect.top + window.scrollY
   asidePanel.style.top = `${topPosition}px`
   asidePanel.classList.add("active")

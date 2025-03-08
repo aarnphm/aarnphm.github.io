@@ -15,7 +15,7 @@ interface Colors {
   darkMode: ColorScheme
 }
 
-type FontSpecification =
+export type FontSpecification =
   | string
   | {
       name: string

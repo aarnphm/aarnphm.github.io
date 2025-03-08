@@ -5,7 +5,7 @@ import { joinSegments } from "./path"
 import { QuartzPluginData } from "../plugins/vfile"
 import { formatDate, getDate } from "../components/Date"
 import { i18n } from "../i18n"
-import { ThemeKey } from "./theme"
+import { getFontSpecificationName, ThemeKey } from "./theme"
 
 const headerFont = joinSegments("static", "GT-Sectra-Display-Regular.woff")
 const bodyFont = joinSegments("static", "GT-Sectra-Book.woff")
@@ -37,8 +37,18 @@ export async function getSatoriFont(
   }
 
   return [
-    { name: cfg.theme.typography.header, data: header, weight: headerWeight, style: "normal" },
-    { name: cfg.theme.typography.body, data: body, weight: bodyWeight, style: "normal" },
+    {
+      name: getFontSpecificationName(cfg.theme.typography.header),
+      data: header,
+      weight: headerWeight,
+      style: "normal",
+    },
+    {
+      name: getFontSpecificationName(cfg.theme.typography.body),
+      data: body,
+      weight: bodyWeight,
+      style: "normal",
+    },
   ]
 }
 

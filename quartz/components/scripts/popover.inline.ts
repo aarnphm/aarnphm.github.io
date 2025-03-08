@@ -155,14 +155,13 @@ async function setPosition(
   clientY: number,
 ) {
   const element = popoverElement.querySelector("#arrow") as HTMLElement
-  const ignoreArrow =
-    link.closest(".sidepanel-inner") !== null &&
-    !popoverElement.classList.contains("bib-popover") &&
-    !popoverElement.classList.contains("footnote-popover")
-  const middleware = [inline({ x: clientX, y: clientY }), shift(), flip()]
+  const middleware = [
+    inline({ x: clientX, y: clientY }),
+    shift(),
+    flip(),
+    arrow({ element, padding: 4 }),
+  ]
 
-  // Only add arrow middleware if not in sidepanel
-  if (!ignoreArrow) middleware.push(arrow({ element, padding: 8 }))
   const {
     x,
     y,
@@ -170,27 +169,24 @@ async function setPosition(
     placement: finalPlacement,
   } = await computePosition(link, popoverElement, { placement, middleware })
   Object.assign(popoverElement.style, { left: `${x}px`, top: `${y}px` })
-  if (ignoreArrow) {
-    element.style.display = "none"
-  }
+
+  popoverElement.dataset.placement = finalPlacement
 
   if (middlewareData.arrow) {
     const { x: arrowX, y: arrowY } = middlewareData.arrow
-    const staticSide = {
-      top: "bottom",
-      right: "left",
-      bottom: "top",
-      left: "right",
-    }[finalPlacement.split("-")[0]] as string
 
+    // Clear any previous arrow positioning classes
+    element.classList.remove("arrow-top", "arrow-bottom", "arrow-left", "arrow-right")
+
+    // Add the appropriate arrow direction class based on final placement
+    const [basePlacement] = finalPlacement.split("-") as [Placement]
+    element.classList.add(basePlacement)
+
+    // Position the arrow
     Object.assign(element.style, {
       left: arrowX != null ? `${arrowX}px` : "",
       top: arrowY != null ? `${arrowY}px` : "",
     })
-    element.dataset.placement = staticSide
-    if (staticSide === "right") {
-      element.style.right = "2px"
-    }
   }
 
   const linkRect = link.getBoundingClientRect()
@@ -369,12 +365,10 @@ async function mouseEnterHandler(
   let position: Placement = "right"
   // Check if link is within sidepanel
   const isInSidepanel = link.closest(".sidepanel-inner") !== null
-  if (window.document.body.dataset.isFolderTag === "true") {
+  if (link.closest(".tag-link") !== null) {
     position = "left"
-  } else if (link.closest(".tag-link") !== null) {
-    position = "right"
   } else if (isInSidepanel) {
-    position = "bottom"
+    position = "top"
   }
 
   if (hasAlreadyBeenFetched(link)) {
