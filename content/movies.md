@@ -3,8 +3,8 @@ id: movies
 tags:
   - evergreen
 comments: false
-date: 2024-02-07
-modified: 2025-01-30 21:25:29 GMT-05:00
+date: "2024-02-07"
+modified: 2025-03-10 00:06:10 GMT-04:00
 title: movies.
 ---
 
@@ -30,7 +30,6 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] La Chimera (2024)
 - [ ] Nosferatu (2024)
 - [ ] Anora (2024)
-- [ ] Flow (2024)
 - [ ] Sometimes I Think About Dying (2023)
 - [ ] Perfect Days (2024)
   - How we might live in a noisy life?
@@ -57,9 +56,6 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] Chungking Express (1994)
 - [ ] Twin Peaks (1990)
 - [ ] Call Me By Your Name (2017)
-- [ ] The Day of the Jackal (1973) [^remake]
-
-[^remake]: There is also a remake (2024) starring Eddie Redmayne.
 
 ## finished
 
@@ -67,6 +63,11 @@ _doesn't mean that I won't watch it again, just that I will need some more time 
 
 - [x] Poor Things (2023)
 - [x] Maestro (2023)
+- [x] The Wild Robot (2024)
+- [x] The Day of the Jackal (1973) [^remake]
+- [x] Flow (2024)
+
+[^remake]: There is also a remake series (2024) starring Eddie Redmayne. (very chill)
 
 ## recurring.
 

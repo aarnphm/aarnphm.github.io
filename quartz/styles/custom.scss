@@ -457,7 +457,7 @@ body {
   }
 }
 
-#preview-container {
+.preview-container {
   flex-grow: 1;
 }
 
@@ -483,7 +483,7 @@ body {
   margin-bottom: 2.5rem;
 }
 
-.page-footer:not(.sidepanel-container *):not(.popover *):not(#preview-container *):not(
+.page-footer:not(.sidepanel-container *):not(.popover *):not(.preview-container *):not(
     .stacked-content *
   ):not([data-slug="curius"] *) {
   border-color: var(--gray);
@@ -646,7 +646,7 @@ svg[data-icon] {
     }
   }
 
-  & > #search-container > #search-layout {
+  & > .search-container > .search-layout {
     & .highlight {
       border-radius: 0px;
       background: color-mix(in srgb, var(--iris) 60%, rgba(255, 255, 255, 0));

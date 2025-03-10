@@ -13,14 +13,8 @@ import {
 import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import { pageResources, transcludeFinal } from "../../components/renderPage"
-import {
-  clone,
-  FilePath,
-  FullSlug,
-  isRelativeURL,
-  pathToRoot,
-  resolveRelative,
-} from "../../util/path"
+import { FilePath, FullSlug, isRelativeURL, pathToRoot, resolveRelative } from "../../util/path"
+import { clone } from "../../util/clone"
 import { write } from "./helpers"
 import { toMdast, defaultHandlers as hastToMdastHandlers, State } from "hast-util-to-mdast"
 import { toMarkdown, defaultHandlers as mdastToTextHandlers } from "mdast-util-to-markdown"

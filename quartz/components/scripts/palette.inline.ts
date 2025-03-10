@@ -1,5 +1,4 @@
 import FlexSearch from "flexsearch"
-import { ContentIndex } from "../../plugins"
 import { FilePath, FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
 import {
   highlight,
@@ -301,7 +300,7 @@ document.addEventListener("nav", async (e) => {
   }
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    const searchOpen = document.querySelector<HTMLDivElement>("search#search-container")
+    const searchOpen = document.querySelector<HTMLDivElement>("search.search-container")
     const noteContainer = document.getElementById("stacked-notes-container") as HTMLDivElement
     if (
       (searchOpen && searchOpen.classList.contains("active")) ||

@@ -272,6 +272,10 @@ h6 {
   &[id]:hover > a {
     opacity: 1;
   }
+
+  &:not([id]) > a[role="anchor"] {
+    display: none;
+  }
 }
 
 // typography improvements
@@ -505,7 +509,6 @@ video {
 
 div:has(> .overflow) {
   display: flex;
-  overflow-y: auto;
   max-height: 100%;
 }
 
@@ -513,10 +516,23 @@ ul.overflow,
 ol.overflow {
   max-height: 100%;
   overflow-y: auto;
+  width: 100%;
 
   // clearfix
   content: "";
   clear: both;
+  & > li:last-of-type {
+    margin-bottom: 30px;
+  }
+
+  & > li.overflow-end {
+    height: 4px;
+    margin: 0;
+  }
+
+  &.gradient-active {
+    mask-image: linear-gradient(to bottom, black calc(100% - 50px), transparent 100%);
+  }
 }
 
 .desktop-only {

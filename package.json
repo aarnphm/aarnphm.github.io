@@ -17,7 +17,7 @@
     "docs": "npx quartz build --serve -d docs",
     "check": "tsc --noEmit && npx prettier . --check",
     "format": "npx prettier . --write",
-    "test": "tsx ./quartz/util/path.test.ts && tsx ./quartz/depgraph.test.ts",
+    "test": "tsx --test",
     "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1",
     "cf": "npx wrangler pages dev",
     "vercel": "npx vercel dev",
@@ -127,6 +127,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@anthropic-ai/claude-code": "^0.2.35",
     "@cloudflare/workers-types": "^4.20250204.0",
     "@types/cli-spinner": "^0.2.3",
     "@types/d3": "^7.4.3",

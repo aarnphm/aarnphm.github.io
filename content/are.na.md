@@ -9,7 +9,7 @@ cssclasses:
   - nolist
 date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-03-08 03:36:08 GMT-05:00
+modified: 2025-03-08 20:35:04 GMT-05:00
 permalinks:
   - /website
   - /resources
@@ -56,6 +56,11 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://negative.sanctuary.computer/ -- landing poggies
 - https://leimao.github.io/ -- Lei Mao's blog on CUDA and GPU optimization (NVIDIA)
 - https://www.lei.chat -- AI Compiler (AMD)
+- https://studio.4o4.space/ -- 4o4 Studio
+
+## researchers
+
+- https://nicholas.carlini.com/ -- Security/Adversarial against LLMs
 
 ## essay
 
@@ -74,6 +79,10 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.paulgraham.com/good.html -- Be good
 - https://www.paulgraham.com/mean.html -- Mean people fail
 - https://joecarlsmith.com/2025/01/28/fake-thinking-and-real-thinking -- Fake vs Real thinking
+- https://joecarlsmith.com/2023/02/16/why-should-ethical-anti-realists-do-ethics -- Why should ethical anti-realists do ethics?
+  - believe in an objective [[thoughts/ethics|ethical]] truth
+  - map-making with no territory: "figuring out the normative truth" (from normative realist)
+  - [[thoughts/anti realist do ethics|notes]]
 - https://www.lesswrong.com/posts/H7fkGinsv8SDxgiS2/ironing-out-the-squiggles -- Ironing Out the Squiggles
 - https://readsomethingwonderful.com/p/47/the-inner-ring -- Read something wonderful
 - https://optimists.ai/2024/03/10/deconstructing-bostroms-argument-for-ai-doom/ -- Bostrom's Argument for AI Doom
@@ -86,6 +95,9 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.epi.org/publication/u-s-benefits-from-immigration -- US benefits from immigration but policy reforms needed to maximize gains
 - https://aeon.co/essays/simone-de-beauvoirs-authentic-love-is-a-project-of-equals -- Simone de Beavoir's "Love is a joint project"
 - https://www.washingtonpost.com/context/the-portable-bloomberg-the-wit-wisdom-of-michael-bloomberg/ba5281b4-886d-42dc-a28d-e67eceb60719/ -- The Portable Bloomberg: [[thoughts/pdfs/The Wit and Wisdom of Michael Bloomberg.pdf|The Wit & Wisdom of Michael Bloomberg]]
+- https://www.autodidacts.io/troubleshooting/ -- On Troubleshooting
+- https://ryolu.notion.site/how-to-make-something-great -- How to make something great, by Ryo Lu
+- https://www.personalcanon.com/p/in-praise-of-writing-on-the-internet -- In praise of writing on the internet
 
 ## protocol
 
@@ -108,8 +120,10 @@ https://x.com/poetengineer__/status/1895397439852695708
 - https://www.mrporter.com/en-us/journal/fashion/derek-guy-style-resolutions-25156188 -- Style resolution
 - https://thegenerality.com/agi/ -- The effort for AGI at Microsoft [GitHub](https://github.com/microsoft/unilm)
 - https://katex.org/docs/supported.html -- supported DSL for KaTeX
+- https://www.joshwcomeau.com/blog/whimsical-animations/ -- SVG sprites
 - https://www.youtube.com/watch?v=WxK11RsLqp4&t=2169s -- Linear Realtime Sync
 - https://www.youtube.com/watch?v=Wo2m3jaJixU -- Linear Realtime Sync 2
+- https://www.youtube.com/watch?v=fThhbt23SGM -- Design is a [[thoughts/Search|Search]] problem
 - https://www.nserc-crsng.gc.ca/Students-Etudiants/Guides-Guides/TriRTA-TriBFR_eng.asp -- Canadian government grant research
 - https://www.cbo.gov/system/files/2020-01/55967-CBO-immigration.pdf -- Foreign-Born Population and Its Effects on US Economy
 - [mech-interp trails](https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvYXV0b2VuY29kZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvbGF0ZW50LXNwYWNl&stackedNotes=dGhvdWdodHMvcmVwcmVzZW50YXRpb25z&stackedNotes=dGhvdWdodHMvZGF0YQ)
@@ -120,3 +134,4 @@ https://x.com/poetengineer__/status/1895397439852695708
 - https://github.com/bytedance/flux -- fast communication-overlapping library for TP
 - https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
 - https://jax-ml.github.io/scaling-book/ -- JAX scaling book
+- https://www.jeremykun.com/2023/08/10/mlir-getting-started/ -- [[thoughts/MLIR]] introduction

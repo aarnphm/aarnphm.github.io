@@ -10,7 +10,6 @@ import { getDate, Date as DateComponent } from "./Date"
 import { classNames } from "../util/lang"
 import { JSResourceToScriptElement, StaticResources } from "../util/resources"
 import {
-  clone,
   FullSlug,
   SimpleSlug,
   RelativeURL,
@@ -18,6 +17,7 @@ import {
   normalizeHastElement,
   resolveRelative,
 } from "../util/path"
+import { clone } from "../util/clone"
 import { githubSvg, substackSvg, bskySvg, twitterSvg, svgOptions, QuartzIcon } from "./svg"
 import { EXIT, visit } from "unist-util-visit"
 import { Root, Element, ElementContent, Node } from "hast"

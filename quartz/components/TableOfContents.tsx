@@ -7,6 +7,7 @@ import { i18n } from "../i18n"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 import { htmlToJsx } from "../util/jsx"
 import Slugger from "github-slugger"
+import OverflowList from "./OverflowList"
 
 const ghSlugger = new Slugger()
 
@@ -63,7 +64,7 @@ export default ((userOpts?: Partial<Options>) => {
           <h3>{i18n(cfg.locale).components.tableOfContents.title}</h3>
         </button>
         <div id="toc-content">
-          <ul class="overflow">
+          <OverflowList id="toc-ul">
             {fileData.toc!.map((entry) => (
               <li key={entry.slug} class={`depth-${entry.depth}`}>
                 <a href={`#${entry.slug}`} data-for={entry.slug}>
@@ -71,7 +72,7 @@ export default ((userOpts?: Partial<Options>) => {
                 </a>
               </li>
             ))}
-          </ul>
+          </OverflowList>
         </div>
       </nav>
     )
@@ -84,6 +85,6 @@ export default ((userOpts?: Partial<Options>) => {
   }
 
   TableOfContents.css = modernStyle
-  TableOfContents.afterDOMLoaded = script
+  TableOfContents.afterDOMLoaded = script + OverflowList.afterDOMLoaded("toc-ul")
   return TableOfContents
 }) satisfies QuartzComponentConstructor

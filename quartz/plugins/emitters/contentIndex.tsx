@@ -12,9 +12,9 @@ import { QuartzPluginData } from "../vfile"
 import { version } from "../../../package.json"
 import { ReadTimeResults } from "reading-time"
 
-export type ContentIndex = Map<FullSlug, ContentDetails>
 export type ContentLayout = "default" | "letter" | "technical" | "reflection"
 export type ContentDetails = {
+  slug: string
   title: string
   links: SimpleSlug[]
   aliases: string[]
@@ -233,6 +233,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
           file.data.links = links
 
           linkIndex.set(slug, {
+            slug,
             title: file.data.frontmatter?.title!,
             links,
             fileName: file.data

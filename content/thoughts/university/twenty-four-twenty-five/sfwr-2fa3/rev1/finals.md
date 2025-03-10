@@ -2,8 +2,8 @@
 id: finals
 tags:
   - sfwr2fa3
-date: "2024-04-15"
-modified: "2024-11-18"
+date: 2024-04-15
+modified: 2025-03-08 13:39:53 GMT-05:00
 title: finals
 description: review in 2023-2024
 ---

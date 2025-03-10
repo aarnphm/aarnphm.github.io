@@ -22,13 +22,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
     return (
       <div class={classNames(displayClass, "search")}>
         {opts.includeButton && (
-          <span
-            class="search-button"
-            id="search-button"
-            aria-label="Toggle search mode"
-            type="button"
-            tabindex={-1}
-          >
+          <span class="search-button" aria-label="Toggle search mode" type="button" tabindex={-1}>
             <svg
               role="img"
               xmlns="http://www.w3.org/2000/svg"
@@ -44,19 +38,19 @@ export default ((userOpts?: Partial<SearchOptions>) => {
             </svg>
           </span>
         )}
-        <search id="search-container">
-          <form id="search-space">
+        <search class="search-container">
+          <form class="search-space">
             <div class="input-container">
               <input
                 autocomplete="off"
-                id="search-bar"
+                class="search-bar"
                 name="search"
                 type="text"
                 aria-label={searchPlaceholder}
                 placeholder={searchPlaceholder}
               />
             </div>
-            <output id="search-layout" data-preview={opts.enablePreview} />
+            <output class="search-layout" data-preview={opts.enablePreview} />
           </form>
         </search>
       </div>

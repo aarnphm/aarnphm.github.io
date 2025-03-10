@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-03-05 22:50:28 GMT-05:00
+modified: 2025-03-08 04:17:11 GMT-05:00
 noindex: true
 title: /xeets/
 transclude:
@@ -33,8 +33,6 @@ https://x.com/CanadaKaz/status/1851653777633247673 <!-- say the thing, ask more 
 https://x.com/noampomsky/status/1860856607607050633 <!-- Ava on Iain McGilchrist of attention being a moral act -->
 
 https://x.com/m_kaytweets/status/1801627208517140625 <!-- Liking things that are "you" thing -->
-
-https://x.com/juniperfolly/status/1875270769116377463 <!-- Funny girlfriend tax memes -->
 
 https://x.com/noampomsky/status/1876151263882350630 <!-- Ava on practicality over unreasonable romantic dreamy thing -->
 
