@@ -53,7 +53,7 @@
     "d3": "^7.9.0",
     "esbuild-sass-plugin": "^3.3.1",
     "fast-xml-parser": "^5.0.6",
-    "flexsearch": "0.7.43",
+    "flexsearch": "0.8.135",
     "github-slugger": "^2.0.0",
     "globby": "^14.1.0",
     "gray-matter": "^4.0.3",
