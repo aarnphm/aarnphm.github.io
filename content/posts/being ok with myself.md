@@ -2,10 +2,10 @@
 id: being ok with myself
 tags:
   - growth
-date: 2024-11-02
+date: "2024-11-02"
 description: on living fruitfully.
 draft: true
-modified: 2025-02-21 00:11:58 GMT-05:00
+modified: 2025-03-21 08:06:08 GMT-04:00
 permalinks:
   - /living
 title: I went out to celebrate N's birthday and now we ended up in a swing bar.
@@ -16,3 +16,5 @@ One thing I realised that I'm pretty much a workaholic, although I do have the c
 friendship is about giving enough [[thoughts/Attention|attention]]
 
 I preemptedly book a staycation during reading week, because why not do things more spontaneously if you can afford to do so?
+
+https://onegirlinfinitethoughts.substack.com/p/not-lost-not-found-becoming

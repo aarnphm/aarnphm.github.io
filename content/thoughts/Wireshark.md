@@ -19,4 +19,3 @@ _capture messages being sent by/received from a computer_
 > - packets are never ==being sent== by the sniffer
 
 ![[thoughts/images/packet-sniffer.webp|package sniffer structure]]
-

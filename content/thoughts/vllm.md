@@ -6,7 +6,7 @@ tags:
   - technical
 date: "2024-09-09"
 description: efficient LLM serving engine.
-modified: 2025-01-24 20:25:22 GMT-05:00
+modified: 2025-03-25 05:48:01 GMT-04:00
 permalinks:
   - /vllm
 title: vLLM
@@ -91,6 +91,10 @@ https://x.com/karpathy/status/1697318534555336961
 > Uses a small cheap "draft model" to generate candidate K tokens => feed back to the large models in a batch
 >
 > - have a sort of sampling logics to get the probability of the next token, then forward passing for all later tokens.
+
+### n-grams
+
+see also: [blogs from huggingface](https://huggingface.co/blog/assisted-generation)
 
 ## continuous batching
 

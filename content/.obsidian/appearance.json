@@ -1,12 +1,12 @@
 {
   "accentColor": "",
   "cssTheme": "Minimal",
-  "interfaceFontFamily": "Parclo Serif Student,Apple Braille,EB Garamond",
+  "interfaceFontFamily": "Bricolage Grotesque,Parclo Serif Student,Apple Braille,EB Garamond",
   "textFontFamily": "Parclo Serif Student,BerkeleyMono Nerd Font Mono,Apple Braille,EB Garamond",
   "monospaceFontFamily": "BerkeleyMono Nerd Font Mono",
-  "baseFontSize": 18,
+  "baseFontSize": 19,
   "translucency": true,
-  "showViewHeader": true,
+  "showViewHeader": false,
   "enabledCssSnippets": [
     "snippet"
   ],

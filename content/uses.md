@@ -5,9 +5,11 @@ tags:
 comments: false
 date: "2024-01-22"
 description: Includes the tools I use, workflow,  etc.
-modified: 2024-12-26 17:55:39 GMT-05:00
+modified: 2025-04-09 00:34:09 GMT-04:00
 title: uses.
 ---
+
+see also [[are.na|links]] , [[tweets|based twitter posts]]
 
 ### hardware.
 
@@ -40,9 +42,9 @@ title: uses.
 
 ### programming languages.
 
-- [Python](https://www.python.org/) for ml work.
-- [Go](https://golang.org/) for infrastructure work.
-- [Rust](https://www.rust-lang.org/) for exploration work.
+- [Python](https://www.python.org/) for ml work. Mostly I stayed in this land for majority of my work.
+- [Go](https://golang.org/) for infrastructure.
+- [Zig](https://ziglang.org/) for exploration work.
 
 ### cookware.
 
@@ -58,8 +60,3 @@ used for [[thoughts/Dishes|hosting]]
 - Keychron Q8 Pro: Gateron Ink Black, 205g0 + 105g0, Durock V2, Olivia GMK
 - Keychron Q1 Pro: NK Cream, 105g0, 72g spring, Durock V2
 - Logitech G515 TKL: Gateron Brown Slim, stock everything else.
-
-### links.
-
-- [toronto coworking spots](https://www.corner.inc/list/02c68af9-8286-474f-91de-0b4e702330e6?sid=49933781-9175-48ae-852b-acb5006e8bca)
-- [GNU C Manual Reference](https://www.c-asm.com/gnu-c-manual.html)

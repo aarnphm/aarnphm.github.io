@@ -5,7 +5,7 @@
   "graph": true,
   "backlink": true,
   "canvas": true,
-  "outgoing-link": false,
+  "outgoing-link": true,
   "tag-pane": true,
   "page-preview": true,
   "daily-notes": false,
@@ -23,10 +23,10 @@
   "slides": true,
   "audio-recorder": true,
   "workspaces": true,
-  "file-recovery": false,
+  "file-recovery": true,
   "publish": false,
   "sync": false,
   "properties": true,
-  "bookmarks": false,
+  "bookmarks": true,
   "webviewer": true
 }

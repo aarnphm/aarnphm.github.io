@@ -5,11 +5,11 @@ tags:
   - sapling
 date: "2024-02-07"
 description: and learning machine
-modified: 2025-01-29 05:45:55 GMT-05:00
+modified: 2025-03-22 08:17:16 GMT-04:00
 title: Machine learning
 ---
 
-Detects pattern within [[thoughts/data]] and use it to make useful prediction.
+Learn patterns from [[thoughts/data]] distributions and make useful predictions based on assigned-objectives.
 
 Generally [[thoughts/AGI|AI]] $\subset$ [[/tags/ml|ML]] $\subset$ [[thoughts/deep learning|DL]]
 
@@ -18,6 +18,7 @@ Some main exploration:
 - [[thoughts/Transformers|Transformers]]
   - [[thoughts/LLMs|Large language models]]
 - [[thoughts/NLP]]
+- [[thoughts/Bayesian Neural Network]]
 - [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Convolutional Neural Network|CNN]]
 - [[thoughts/Logistic regression]]
 - [[thoughts/optimization|Optimization]]

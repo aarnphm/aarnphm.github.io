@@ -4,7 +4,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-02-07"
-modified: 2025-03-10 00:06:10 GMT-04:00
+modified: 2025-03-18 17:13:33 GMT-04:00
 title: movies.
 ---
 
@@ -21,7 +21,6 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] Queer (2024)
 - [ ] Civil War (2024)
 - [ ] I Saw the TV Glow (2024) [^lychian]
-- [ ] The Substance (2024)
 - [ ] How To Make Millions before Grandma [[ideas#lettres|dies]] (2024)
 - [ ] Evil Does Not Exists (2024)
 - [ ] The Brutalist (2024)
@@ -31,6 +30,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] Nosferatu (2024)
 - [ ] Anora (2024)
 - [ ] Sometimes I Think About Dying (2023)
+- [ ] Challenger (2024)
 - [ ] Perfect Days (2024)
   - How we might live in a noisy life?
   - What does life looks like when you accept ambitions for acceptance?
@@ -66,6 +66,8 @@ _doesn't mean that I won't watch it again, just that I will need some more time 
 - [x] The Wild Robot (2024)
 - [x] The Day of the Jackal (1973) [^remake]
 - [x] Flow (2024)
+- [x] Here (2024)
+- [x] The Substance (2024)
 
 [^remake]: There is also a remake series (2024) starring Eddie Redmayne. (very chill)
 

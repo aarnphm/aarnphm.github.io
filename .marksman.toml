@@ -10,7 +10,7 @@ markdown.file_extensions = ["md", "markdown", "markdown.mdx"]
 # * full: the whole copy of a document is sent by the editor
 #   on every update,
 # * incremental: only the changed parts are sent by
-#   the editor. This will result in less trafic between
+#   the editor. This will result in less traffic between
 #   the editor and Marksman, but the overall performance
 #   impact is marginal.
 # Defaults to `full` because the editors have bugs in incremental

@@ -3,8 +3,8 @@ id: DFA
 tags:
   - sfwr2fa3
   - math
-date: 2024-01-12
-modified: 2025-03-07 20:50:29 GMT-05:00
+date: "2024-01-12"
+modified: 2025-03-18 15:39:31 GMT-04:00
 title: Deterministic Finite Automata
 ---
 
@@ -26,7 +26,7 @@ i.e: Given $\Sigma = \{0,1\}$ string $011011\ldots$
 
 We get length of a string for given $\Sigma$: $\mid aaba \mid = 4$
 
-or $\mid a^3 \mid \equiv \mid aaa \mid = 3$
+or $\mid a^3 \mid \approx \mid aaa \mid = 3$
 
 ### set of string
 
@@ -329,3 +329,26 @@ Ex: $L_{1} = \{a^n b^m \mid n,m \ge  0\}$ (is regular), where $L_2 = \{a^n b^n \
 
 > If $L_{1}$ is regular, and $L_{2} \subseteq L_{1}$, then is $L_{2}$ Reg? (use [[thoughts/NFA]] for this)
 
+## quotient construction
+
+_lec feb 4_
+
+$$
+\begin{aligned}
+Q &= \{[p] \mid  p \in Q\}\\
+\delta^{'}([p],a) &= [\delta (p,a)] \\
+s^{'} &= [s] \\
+F^{'} &= \{[p] \mid  p \in F\}
+\end{aligned}
+$$
+
+> [!note] annotations
+>
+> $[p] = \{q \mid  p \approx q\} \text{ iff } p \approx q$
+>
+> note that ==$[p] = [q] $==
+
+1. Create a table of all pairs of states $(p, q)$
+2. Mark $(p,q)$ if $p \in F$ and $q \notin F$ or vice versa
+3. If $(p,q)$ is unmarked and $(\delta (p,a), \delta (q,a))$ is marked for some a, then mark it.
+4. if $(p,q)$ is unmarked then $p \approx q$

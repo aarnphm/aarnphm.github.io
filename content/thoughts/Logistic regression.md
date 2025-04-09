@@ -3,8 +3,8 @@ id: Logistic regression
 tags:
   - sfwr4ml3
   - ml
-date: "2024-12-14"
-modified: 2024-12-14 06:38:47 GMT-05:00
+date: 2024-12-14
+modified: 2025-03-21 08:12:33 GMT-04:00
 title: Logistic regression
 ---
 

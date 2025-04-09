@@ -8,7 +8,7 @@ tags:
 comments: false
 date: "2021-12-22"
 description: and celebration of the act of making.
-modified: 2025-02-02 10:11:27 GMT-05:00
+modified: 2025-04-09 17:50:48 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -50,9 +50,12 @@ You can find internal monologue under [[/posts/]] index.
 
 - **morph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-) [^tinymorph]
 
-  - Trained [[thoughts/sparse autoencoder]] to interpret Llama 3.2 features [@templeton2024scaling]
+  - Trained [[thoughts/sparse autoencoder]] to interpret QwQ CoT and features [@templeton2024scaling]
   - Build a custom [[thoughts/vLLM]] plugins to support activation intervention. Served on [BentoCloud](https://bentoml.com/cloud) with scale-to-zero enabled
-  - source: [github](https://github.com/aarnphm/morph), [docs](https://tinymorph.aarnphm.xyz/), [demo](https://morph-editor.app)
+  - Dynamic inference graph with structured outputs endpoints for steered [suggestions](https://github.com/aarnphm/morph/blob/cd5f916776273aea5d27c5ed08e300e3ca04a1f5/python/asteraceae/service.py#L748), a search RAG to infer author style and tonality with [Exa](https://exa.ai) and [LlamaIndex](https://www.llamaindex.ai/)
+  - Similarity search via embedded [PGlite](https://pglite.dev/) within the browser to ensure no data ever leave users computer.
+  - Markdown editor with [CodeMirror](https://codemirror.net/6/doc/manual.html) and additional plugins for rendering with remark-rehype ecosystem. Built with Next.js 15 and [Flexoki](https://stephango.com/flexoki) design system.
+  - source: [github](https://github.com/aarnphm/morph), [engineering docs](https://engineering.morph-editor.app/), [wip user docs](https://docs.morph-editor.app), [demo](https://morph-editor.app)
 
 - **OpenLLM** - :gear: Run any open-source [[thoughts/LLMs|LLMs]] as OpenAI compatible API endpoint in the cloud. (2023-)
 

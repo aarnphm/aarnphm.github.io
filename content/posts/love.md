@@ -19,7 +19,7 @@ _The first part is an exploration into Jung's archetypes and how love is **a mut
 ![[posts/images/helenebailly-maurice-denis-environs-du-cap-mis-ne-1904.webp|Environs du cap Misène (1904)]]
 
 I've been mulling over this all morning, wondering what I want to write about _love_ - the state that morphs into every crevice of one's consciousness - romantic, platonic, familial.
-
+ 
 What do I really know about it? Less than I'd like, more than I admit.
 
 I went to grab a coffee earlier today. The barista knows my order by now - Latte, oat milk, hot.
@@ -71,7 +71,7 @@ For instance, an individual going through post-divorce isolation [^example] or a
 The body will not allow itself to be exposed to annihilation. It’s prepared to annihilate itself to avoid that
 ```
 
-[^example]: I come across this threads on [r/Jung](https://www.reddit.com/r/Jung/comments/195ecoy/going_through_divorce_unbearable_sorrow_please/)
+[^example]: I come across this threads on [r/Jung ](https://www.reddit.com/r/Jung/comments/195ecoy/going_through_divorce_unbearable_sorrow_please/)
 
 Yet these walls, while temporarily numbing pain, perpetuate a cycle of alienation. By refusing to engage with the shadow’s raw material—grief, rage, longing—the individual stagnates, mistaking the atrophy of emotional risk for "strength".
 

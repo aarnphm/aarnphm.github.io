@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-03-08 04:17:11 GMT-05:00
+modified: 2025-03-21 04:04:07 GMT-04:00
 noindex: true
 title: /xeets/
 transclude:
@@ -181,3 +181,5 @@ https://x.com/vllm_project/status/1879979185474859303 <!-- By yours truly -->
 https://x.com/flowersslop/status/1882241958397067677 <!-- R1 having existential crisis -->
 
 https://x.com/rupspace/status/1877882538859078084 <!-- Highway network -->
+
+https://x.com/VictorTaelin/status/1897108466243641399 <!-- Claude Code optimize HVM3 to 328 MIPs per M4 Core -->

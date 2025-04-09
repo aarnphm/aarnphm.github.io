@@ -4,7 +4,7 @@ tags:
   - commerce4pa3
 date: "2025-01-22"
 description: a case study.
-modified: 2025-01-22 08:56:34 GMT-05:00
+modified: 2025-03-21 06:33:50 GMT-04:00
 title: Canada Airlines Corp
 ---
 

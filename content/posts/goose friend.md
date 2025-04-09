@@ -1,13 +1,12 @@
 ---
-id: goose friends.
+id: goose friend
 tags:
   - poetry
   - friend
-date: 2024-10-04
+date: "2024-10-04"
 draft: true
-modified: 2025-02-14 21:49:52 GMT-05:00
-poem: true
-socialDescription: on making friendship.
+modified: 2025-03-22 15:19:29 GMT-04:00
+socialDescription: on turning a year older.
 title: goose friends.
 ---
 
