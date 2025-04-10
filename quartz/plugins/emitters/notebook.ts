@@ -7,9 +7,16 @@ import { FilePath, joinSegments, slugifyFilePath } from "../../util/path"
 import { Argv } from "../../util/ctx"
 import { spawn } from "child_process"
 import { styleText } from "node:util"
+import * as process from "process"
 
 const notebookFiles = async (argv: Argv, cfg: QuartzConfig) => {
   return await glob("**/*.ipynb", argv.directory, [...cfg.configuration.ignorePatterns])
+}
+
+// Special case for template path resolution
+// Use path.resolve for absolute paths instead of process.cwd()
+function getTemplatePath(argv: Argv): string {
+  return path.resolve(argv.directory, "templates")
 }
 
 function runConvertCommand(argv: Argv, nbPath: string, targetSlug: string, outputDir: string) {
@@ -19,9 +26,11 @@ function runConvertCommand(argv: Argv, nbPath: string, targetSlug: string, outpu
     "jupyter-contrib-nbextensions",
     "--with",
     "notebook<7",
+    "--from",
+    "jupyter-core",
     "jupyter",
     "nbconvert",
-    `--TemplateExporter.extra_template_basedirs=${joinSegments(process.cwd(), argv.directory, "templates")}`,
+    `--TemplateExporter.extra_template_basedirs=${getTemplatePath(argv)}`,
     "--to",
     "html",
     "--template=quartz-notebooks",
@@ -37,64 +46,53 @@ function runConvertCommand(argv: Argv, nbPath: string, targetSlug: string, outpu
   // Special case for Cloudflare Pages
   const args =
     process.env.CF_PAGES === "1" ? ["-m", "uv", "tool", "run", ...nbConvertArgs] : nbConvertArgs
-  return spawn(command, args)
+  
+  return spawn(command, args, {
+    env: { ...process.env },  // Ensure we pass environment variables
+  })
 }
 
-const name = "NotebookViewer"
 export const NotebookViewer: QuartzEmitterPlugin = () => {
   return {
-    name,
-    skipDuringServe: true,
-    async emit({ argv, cfg }, _content, _resources): Promise<FilePath[]> {
-      const outputDir = argv.output
+    name: "NotebookViewer",
+    async *emit({ argv, cfg }) {
+      if (process.env.VERCEL_ENV) return
+
       const fps = await notebookFiles(argv, cfg)
-      const res: FilePath[] = []
-
-      if (fps.length === 0 || process.env.VERCEL_ENV) return res
-
-      let completed = 0
-      let errors = 0
-      const updateProgress = () => {
-        const percent = Math.round((completed / fps.length) * 100)
-        process.stdout.write(
-          `\r[emit:NotebookViewer] Converting notebooks: ${completed}/${fps.length} (${percent}%)` +
-            (errors > 0 ? styleText("yellow", ` (${errors} errors)`) : ""),
-        )
-      }
 
       for (const fp of fps) {
         const src = joinSegments(argv.directory, fp) as FilePath
         const outputName = (slugifyFilePath(fp as FilePath, true) + ".html") as FilePath
-        const dest = joinSegments(outputDir, outputName) as FilePath
+        const dest = joinSegments(argv.output, outputName) as FilePath
         const dir = path.dirname(dest) as FilePath
 
         try {
           await fs.mkdir(dir, { recursive: true })
-          runConvertCommand(argv, src, outputName, outputDir)
-          res.push(dest)
-          completed++
-          updateProgress()
+          
+          // Create a simple promise that resolves when the child process exits
+          const result = await new Promise<FilePath>((resolve, reject) => {
+            const proc = runConvertCommand(argv, src, outputName, argv.output)
+            
+            proc.on('error', (err) => {
+              console.error(`Failed to start subprocess for ${fp}:`, err)
+              reject(err)
+            })
+            
+            proc.on('exit', (code) => {
+              if (code === 0) {
+                resolve(dest)
+              } else {
+                reject(new Error(`Process exited with code ${code}`))
+              }
+            })
+          })
+          
+          yield result
         } catch (err) {
           console.error(styleText("red", `\n[emit:NotebookViewer] Error processing ${fp}:`), err)
-          errors++
-          updateProgress()
           continue
         }
       }
-
-      if (argv.verbose) {
-        console.log() // New line after progress
-        const summaryColor = errors > 0 ? "yellow" : "green"
-        console.log(
-          styleText(
-            summaryColor,
-            `[emit:NotebookViewer] Completed conversion of ${completed} notebooks` +
-              (errors > 0 ? ` (${errors} errors)` : ""),
-          ),
-        )
-      }
-
-      return res
     },
   }
 }
