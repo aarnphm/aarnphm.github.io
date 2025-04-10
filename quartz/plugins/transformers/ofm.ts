@@ -211,8 +211,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           const [rawFp, rawHeader, rawAlias]: (string | undefined)[] = capture
 
           const [fp, anchor] = splitAnchor(`${rawFp ?? ""}${rawHeader ?? ""}`)
-          const blockRef = rawHeader?.match(/^#?\^/) ? "^" : ""
-          const displayAnchor = anchor ? `#${blockRef}${anchor.trim().replace(/^#+/, "")}` : ""
+          const displayAnchor = anchor ? `#${anchor.trim().replace(/^#+/, "")}` : ""
           const displayAlias = rawAlias ?? rawHeader?.replace("#", "|") ?? ""
           const embedDisplay = value.startsWith("!") ? "!" : ""
 
@@ -798,36 +797,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     ],
                   ),
                   node,
-                  h(
-                    ".mermaid-viewer",
-                    h(".mermaid-backdrop"),
-                    h(
-                      "#mermaid-space",
-                      h(
-                        ".mermaid-header",
-                        h(
-                          "button.close-button",
-                          { ariaLabel: "close button", title: "close button", type: "button" },
-                          [
-                            s(
-                              "svg",
-                              {
-                                ...svgOptions,
-                                ariaHidden: true,
-                                width: 24,
-                                height: 24,
-                                fill: "none",
-                                stroke: "currentColor",
-                                strokewidth: 2,
-                              },
-                              [s("use", { href: "#close-button" })],
-                            ),
-                          ],
-                        ),
-                      ),
-                      h(".mermaid-content"),
-                    ),
-                  ),
+                  h("#mermaid-container", { role: "dialog" }),
                 ]
               },
             )

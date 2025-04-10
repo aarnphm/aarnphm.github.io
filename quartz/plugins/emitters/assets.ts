@@ -22,10 +22,9 @@ const name = "Assets"
 export const Assets: QuartzEmitterPlugin = () => {
   return {
     name,
-    async emit({ argv, cfg }, _content, _resources): Promise<FilePath[]> {
+    async *emit({ argv, cfg }, _content, _resources) {
       const assetsPath = argv.output
       const fps = await filesToCopy(argv, cfg)
-      const res: FilePath[] = []
       for (const fp of fps) {
         const ext = path.extname(fp)
         const src = joinSegments(argv.directory, fp) as FilePath
@@ -52,13 +51,11 @@ export const Assets: QuartzEmitterPlugin = () => {
             await fs.copyFile(src, dest)
           }
 
-          res.push(dest)
+          yield dest
         } catch (err) {
           console.warn(`[emit:${name}] Failed to process asset: ${fp}`, err)
         }
       }
-
-      return res
     },
   }
 }

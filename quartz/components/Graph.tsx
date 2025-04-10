@@ -17,6 +17,7 @@ export interface D3Config {
   removeTags: string[]
   showTags: boolean
   focusOnHover?: boolean
+  enableRadial?: boolean
 }
 
 export const defaultOptions: Partial<D3Config> | undefined = {
@@ -25,21 +26,22 @@ export const defaultOptions: Partial<D3Config> | undefined = {
   depth: -1,
   scale: 0.8,
   repelForce: 0.9,
-  centerForce: 0.4,
+  centerForce: 0.2,
   linkDistance: 60,
   fontSize: 0.5,
   opacityScale: 1,
   showTags: true,
   removeTags: [],
   focusOnHover: true,
+  enableRadial: true,
 }
 
 export default ((opts?: Partial<D3Config>) => {
   const cfg = JSON.stringify({ ...defaultOptions, ...opts })
   const Graph: QuartzComponent = ({ displayClass }: QuartzComponentProps) => (
     <div class={classNames(displayClass, "graph")}>
-      <div id="global-graph-outer">
-        <div id="global-graph-container" data-cfg={cfg} />
+      <div class="global-graph-outer">
+        <div class="global-graph-container" data-cfg={cfg} />
       </div>
     </div>
   )

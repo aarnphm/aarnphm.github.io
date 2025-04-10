@@ -1,8 +1,8 @@
 import { BuildCtx } from "../util/ctx"
 import { PerfTimer } from "../util/perf"
-import { HtmlContent } from "../plugins/vfile"
+import { ProcessedContent } from "../plugins/vfile"
 
-export function filterContent(ctx: BuildCtx, content: HtmlContent[]): HtmlContent[] {
+export function filterContent(ctx: BuildCtx, content: ProcessedContent[]): ProcessedContent[] {
   const { cfg, argv } = ctx
   const perf = new PerfTimer()
   const initialLength = content.length

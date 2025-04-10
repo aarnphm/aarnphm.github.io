@@ -7,8 +7,8 @@ import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { write } from "./helpers"
 import sharp from "sharp"
 import { JSX } from "preact/jsx-runtime"
-import { defaultImageOptions, getSatoriFont, SocialImageOptions } from "../../util/og"
-import { HtmlContent, QuartzPluginData } from "../vfile"
+import { defaultImageOptions, getSatoriFonts, SocialImageOptions } from "../../util/og"
+import { ProcessedContent, QuartzPluginData } from "../vfile"
 import { BuildCtx } from "../../util/ctx"
 import { styleText } from "node:util"
 import { fromHtml } from "hast-util-from-html"
@@ -18,7 +18,7 @@ import { loadEmoji, getIconCode } from "../../util/emoji"
 export interface PressReleaseOptions {
   height: number
   width: number
-  Component: SocialImageOptions["Component"]
+  Component: SocialImageOptions["imageStructure"]
 }
 
 function chunk<T>(arr: T[], size: number): T[][] {
@@ -27,7 +27,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
   )
 }
 async function processChunk(
-  items: HtmlContent[],
+  items: ProcessedContent[],
   ctx: BuildCtx,
   cfg: GlobalConfiguration,
   opts: PressReleaseOptions,
@@ -71,7 +71,7 @@ async function processChunk(
   )
 }
 
-const TwitterPost: SocialImageOptions["Component"] = (
+const TwitterPost: SocialImageOptions["imageStructure"] = (
   cfg: GlobalConfiguration,
   fileData: QuartzPluginData,
   { colorScheme }: Omit<SocialImageOptions, "Component">,

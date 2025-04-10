@@ -7,15 +7,16 @@ import { QuartzEmitterPlugin } from "../types"
 import { toHtml } from "hast-util-to-html"
 import { write } from "./helpers"
 import { i18n } from "../../i18n"
-import DepGraph from "../../depgraph"
 import { QuartzPluginData } from "../vfile"
 import { version } from "../../../package.json"
 import { ReadTimeResults } from "reading-time"
 
+export type ContentIndexMap = Map<FullSlug, ContentDetails>
 export type ContentLayout = "default" | "letter" | "technical" | "reflection"
 export type ContentDetails = {
   slug: string
   title: string
+  filePath: FilePath
   links: SimpleSlug[]
   aliases: string[]
   tags: string[]
@@ -47,7 +48,7 @@ const defaultOptions: Options = {
   includeEmptyFiles: true,
 }
 
-function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndex): string {
+function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndexMap): string {
   const base = cfg.baseUrl ?? ""
   const createURLEntry = (slug: SimpleSlug, content: ContentDetails): string => {
     let modifiedDate = content.date
@@ -66,7 +67,7 @@ function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndex): string {
   return `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${urls}</urlset>`
 }
 
-function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: number): string {
+function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndexMap, limit?: number): string {
   const base = cfg.baseUrl ?? "example.com"
 
   const createURLEntry = (slug: SimpleSlug, content: ContentDetails): string => {
@@ -185,36 +186,10 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
   opts = { ...defaultOptions, ...opts }
   return {
     name: "ContentIndex",
-    requiresFullContent: true,
-    async getDependencyGraph(ctx, content, _resources) {
-      const graph = new DepGraph<FilePath>()
-
-      for (const [_tree, file] of content) {
-        const sourcePath = file.data.filePath!
-
-        graph.addEdge(
-          sourcePath,
-          joinSegments(ctx.argv.output, "static/contentIndex.json") as FilePath,
-        )
-        if (opts?.enableSiteMap) {
-          graph.addEdge(sourcePath, joinSegments(ctx.argv.output, "sitemap.xml") as FilePath)
-        }
-        if (opts?.enableRSS) {
-          graph.addEdge(sourcePath, joinSegments(ctx.argv.output, "index.xml") as FilePath)
-        }
-        if (opts?.enableAtom) {
-          graph.addEdge(sourcePath, joinSegments(ctx.argv.output, "feed.xml") as FilePath)
-        }
-        graph.addEdge(sourcePath, joinSegments(ctx.argv.output, "robots.txt") as FilePath)
-      }
-
-      return graph
-    },
-    async emit(ctx, content, _resources) {
+    async *emit(ctx, content, _resources) {
       const cfg = ctx.cfg.configuration
 
-      const emitted: FilePath[] = []
-      const linkIndex: ContentIndex = new Map()
+      const linkIndex: ContentIndexMap = new Map()
       for (const [tree, file] of content) {
         const slug = file.data.slug!
         const date = getDate(ctx.cfg.configuration, file.data) ?? new Date()
@@ -236,6 +211,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
             slug,
             title: file.data.frontmatter?.title!,
             links,
+            filePath: file.data.filePath!,
             fileName: file.data
               .filePath!.replace(".md", "")
               .substring(ctx.argv.directory.length + 1) as FilePath,
@@ -255,50 +231,42 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
         }
       }
 
-      emitted.push(
-        await write({
-          ctx,
-          content: `User-agent: *
+      yield await write({
+        ctx,
+        content: `User-agent: *
 Allow: /
 Host: https://${cfg.baseUrl}
 Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.xml")}
 `,
-          slug: "robots" as FullSlug,
-          ext: ".txt",
-        }),
-      )
+        slug: "robots" as FullSlug,
+        ext: ".txt",
+      })
 
       if (opts?.enableSiteMap) {
-        emitted.push(
-          await write({
-            ctx,
-            content: generateSiteMap(cfg, linkIndex),
-            slug: "sitemap" as FullSlug,
-            ext: ".xml",
-          }),
-        )
+        yield await write({
+          ctx,
+          content: generateSiteMap(cfg, linkIndex),
+          slug: "sitemap" as FullSlug,
+          ext: ".xml",
+        })
       }
 
       if (opts?.enableRSS) {
-        emitted.push(
-          await write({
-            ctx,
-            content: generateRSSFeed(cfg, linkIndex, opts.rssLimit),
-            slug: (opts?.rssSlug ?? "index") as FullSlug,
-            ext: ".xml",
-          }),
-        )
+        yield await write({
+          ctx,
+          content: generateRSSFeed(cfg, linkIndex, opts.rssLimit),
+          slug: (opts?.rssSlug ?? "index") as FullSlug,
+          ext: ".xml",
+        })
       }
 
       if (opts?.enableAtom) {
-        emitted.push(
-          await write({
-            ctx,
-            content: generateAtomFeed(cfg, linkIndex, opts.rssLimit),
-            slug: "feed" as FullSlug,
-            ext: ".xml",
-          }),
-        )
+        yield await write({
+          ctx,
+          content: generateAtomFeed(cfg, linkIndex, opts.rssLimit),
+          slug: "feed" as FullSlug,
+          ext: ".xml",
+        })
       }
 
       const fp = joinSegments("static", "contentIndex") as FullSlug
@@ -313,16 +281,12 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
         }),
       )
 
-      emitted.push(
-        await write({
-          ctx,
-          content: JSON.stringify(simplifiedIndex),
-          slug: fp,
-          ext: ".json",
-        }),
-      )
-
-      return emitted
+      yield await write({
+        ctx,
+        content: JSON.stringify(simplifiedIndex),
+        slug: fp,
+        ext: ".json",
+      })
     },
     externalResources: ({ cfg }) => {
       const additionalHead = []

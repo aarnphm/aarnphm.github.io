@@ -12,7 +12,7 @@ yargs(hideBin(process.argv))
   .command("build", "Build Quartz into a bundle of static HTML files", BuildArgv, async (argv) => {
     await handleBuild(argv)
   })
-  .showHelpOnFail(false)
+  .showHelpOnFail(true)
   .help()
   .strict()
   .demandCommand().argv

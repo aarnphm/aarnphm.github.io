@@ -141,7 +141,10 @@ async function handleDefaultContent(
   const html = p.parseFromString(contents, "text/html")
   normalizeRelativeURLs(html, targetUrl)
   // strip all IDs from elements to prevent duplicates
-  html.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"))
+  html.querySelectorAll("[id]").forEach((el) => {
+    const targetID = `popover-${el.id}`
+    el.id = targetID
+  })
   const elts = [
     ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>),
   ].map(cleanAbsoluteElement)
@@ -307,9 +310,8 @@ async function handleStackedNotes(
   popoverElement.style.opacity = "1"
 
   if (hash !== "") {
-    const heading = popoverInner.querySelector<HTMLElement>(
-      `h1${hash}, h2${hash}, h3${hash}, h4${hash}, h5${hash}, h6${hash}`,
-    )
+    const targetAnchor = hash.startsWith("#popover") ? hash : `#popover-${hash.slice(1)}`
+    const heading = popoverInner.querySelector(targetAnchor) as HTMLElement | null
     if (heading) {
       popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
     }
@@ -389,9 +391,8 @@ async function mouseEnterHandler(
     // Handle same-page hash links
     if (hash !== "") {
       const article = document.querySelector("article")
-      const heading = article?.querySelector(
-        `h1${hash}, h2${hash}, h3${hash}, h4${hash}, h5${hash}, h6${hash}`,
-      ) as HTMLElement | null
+      const targetAnchor = hash.startsWith("#popover") ? hash : `#popover-${hash.slice(1)}`
+      const heading = article?.querySelector(targetAnchor) as HTMLElement | null
       if (heading) {
         heading.classList.add("dag")
         // Add cleanup for mouseleave
@@ -443,9 +444,8 @@ async function mouseEnterHandler(
   link.appendChild(popoverElement)
 
   if (hash !== "") {
-    const heading = popoverInner.querySelector<HTMLElement>(
-      `h1${hash}, h2${hash}, h3${hash}, h4${hash}, h5${hash}, h6${hash}`,
-    )
+    const targetAnchor = hash.startsWith("#popover") ? hash : `#popover-${hash.slice(1)}`
+    const heading = popoverInner.querySelector(targetAnchor) as HTMLElement | null
     if (heading) {
       popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
     }
@@ -495,7 +495,10 @@ async function mouseClickHandler(evt: MouseEvent) {
       const html = p.parseFromString(contents, "text/html")
       normalizeRelativeURLs(html, targetUrl)
       // strip all IDs from elements to prevent duplicates
-      html.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"))
+      html.querySelectorAll("[id]").forEach((el) => {
+        const targetID = `popover-${el.id}`
+        el.id = targetID
+      })
       const elts = [
         ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>),
       ]
@@ -510,9 +513,8 @@ async function mouseClickHandler(evt: MouseEvent) {
   if (compareUrls(thisUrl, targetUrl) && hash !== "") {
     evt.preventDefault()
     const mainContent = document.querySelector("article")
-    const heading = mainContent?.querySelector<HTMLDivElement>(
-      `h1${hash}, h2${hash}, h3${hash}, h4${hash}, h5${hash}, h6${hash}`,
-    )
+    const targetAnchor = hash.startsWith("#popover") ? hash : `#popover-${hash.slice(1)}`
+    const heading = mainContent?.querySelector(targetAnchor) as HTMLElement | null
     if (heading) {
       heading.scrollIntoView({ behavior: "smooth" })
       // Optionally update the URL without a page reload

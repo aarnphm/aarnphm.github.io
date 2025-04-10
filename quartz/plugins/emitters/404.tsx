@@ -25,10 +25,7 @@ export const NotFoundPage: QuartzEmitterPlugin = () => {
     getQuartzComponents() {
       return [Head, pageBody, Footer]
     },
-    async getDependencyGraph(_ctx, _content, _resources) {
-      return new DepGraph<FilePath>()
-    },
-    async emit(ctx, _content, resources): Promise<FilePath[]> {
+    async *emit(ctx, _content, resources) {
       const cfg = ctx.cfg.configuration
       const slug = "404" as FullSlug
 
@@ -52,14 +49,12 @@ export const NotFoundPage: QuartzEmitterPlugin = () => {
         allFiles: [],
       }
 
-      return [
-        await write({
-          ctx,
-          content: renderPage(ctx, slug, componentData, opts, externalResources),
-          slug,
-          ext: ".html",
-        }),
-      ]
+      yield await write({
+        ctx,
+        content: renderPage(ctx, slug, componentData, opts, externalResources),
+        slug,
+        ext: ".html",
+      })
     },
   }
 }

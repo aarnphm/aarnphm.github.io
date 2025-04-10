@@ -31,18 +31,18 @@ export const AllTags: QuartzComponent = ({ cfg, allFiles }: Props) => {
 }
 
 interface EvergreenNotes {
-  larges: string[]
-  smalls: string[]
+  lg: string[]
+  sm: string[]
   tags: string[]
 }
 
-const defaultOpts: EvergreenNotes = { larges: [], smalls: [], tags: [] }
+const defaultOpts: EvergreenNotes = { lg: [], sm: [], tags: [] }
 
 const Notes = ((userOpts?: EvergreenNotes) =>
   ({ fileData, vaults }: Props) => {
     const opts = { ...defaultOpts, ...userOpts }
-    const largeFiles = vaults!.filter((file) => opts.larges.includes(simplifySlug(file.slug!)))
-    const smallFiles = vaults!.filter((file) => opts.smalls.includes(simplifySlug(file.slug!)))
+    const largeFiles = vaults!.filter((file) => opts.lg.includes(simplifySlug(file.slug!)))
+    const smallFiles = vaults!.filter((file) => opts.sm.includes(simplifySlug(file.slug!)))
 
     const tagItemMap: Map<string, QuartzPluginData[]> = new Map()
     for (const tag of opts.tags) {

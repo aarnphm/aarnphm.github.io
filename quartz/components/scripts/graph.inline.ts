@@ -68,11 +68,9 @@ type TweenNode = {
   stop: () => void
 }
 
-async function renderGraph(container: string, fullSlug: FullSlug) {
+async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   const slug = simplifySlug(fullSlug)
   const visited = getVisited()
-  const graph = document.getElementById(container)
-  if (!graph) return
   removeAllChildren(graph)
 
   let {
@@ -86,6 +84,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     removeTags,
     showTags,
     focusOnHover,
+    enableRadial,
   } = JSON.parse(graph.dataset["cfg"]!) as D3Config
 
   const data: Map<SimpleSlug, ContentDetails> = new Map(
@@ -163,10 +162,6 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
   const width = graph.offsetWidth
   const height = Math.max(graph.offsetHeight, 250)
 
-  // we virtualize the simulation and use pixi to actually render it
-  // Calculate the radius of the container circle
-  const radius = Math.min(width, height) / 2 - 40 // 40px padding
-
   // Calculate optimal link distance based on graph size
   const optimalDistance = Math.sqrt((width * height) / graphData.nodes.length) * 1.5
 
@@ -196,7 +191,9 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       "collide",
       forceCollide<NodeData>((n) => nodeRadius(n) * 2),
     )
-    .force("radial", forceRadial(radius * 0.8, width / 2, height / 2).strength(0.4))
+
+  const radius = (Math.min(width, height) / 2) * 0.8
+  if (enableRadial) simulation.force("radial", forceRadial(radius).strength(0.2))
 
   // precompute style prop strings as pixi doesn't support css variables
   const cssVars = [
@@ -428,6 +425,10 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
         if (!dragging) renderPixiFromD3()
       })
 
+    if (isTagNode) {
+      gfx.stroke({ width: 2, color: computedStyleMap["--tertiary"] })
+    }
+
     nodesContainer.addChild(gfx)
     labelsContainer.addChild(label)
 
@@ -524,7 +525,9 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     )
   }
 
+  let stopAnimation = false
   function animate(time: number) {
+    if (stopAnimation) return
     for (const n of nodeRenderData) {
       const { x, y } = n.simulationData
       if (!x || !y) continue
@@ -549,8 +552,20 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     requestAnimationFrame(animate)
   }
 
-  const graphAnimationFrameHandle = requestAnimationFrame(animate)
-  window.addCleanup(() => cancelAnimationFrame(graphAnimationFrameHandle))
+  requestAnimationFrame(animate)
+  return () => {
+    stopAnimation = true
+    app.destroy()
+  }
+}
+
+let globalGraphCleanups: (() => void)[] = []
+
+function cleanupGlobalGraphs() {
+  for (const cleanup of globalGraphCleanups) {
+    cleanup()
+  }
+  globalGraphCleanups = []
 }
 
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
@@ -561,41 +576,47 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
   addToVisited(simplifySlug(slug))
 
-  const container = document.getElementById("global-graph-outer")
-  const graph = document.querySelector(".graph")
+  const containers = [...document.getElementsByClassName("global-graph-outer")] as HTMLElement[]
 
-  function renderGlobalGraph() {
+  async function renderGlobalGraph() {
     const slug = getFullSlug(window)
-    container?.classList.add("active")
-    graph?.classList.add("active")
 
-    renderGraph("global-graph-container", slug)
-    registerEscapeHandler(container, hideGlobalGraph)
+    for (const container of containers) {
+      container.classList.add("active")
+      const graphContainer = container.querySelector(".global-graph-container") as HTMLElement
+      registerEscapeHandler(container, hideGlobalGraph)
+      if (graphContainer) {
+        globalGraphCleanups.push(await renderGraph(graphContainer, slug))
+      }
+    }
   }
 
   function hideGlobalGraph() {
-    container?.classList.remove("active")
-    graph?.classList.remove("active")
+    cleanupGlobalGraphs()
+    for (const container of containers) {
+      container.classList.remove("active")
+    }
   }
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if ((e.key === ";" || e.key === "g") && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       e.preventDefault()
-      const globalGraphOpen = container?.classList.contains("active")
-      globalGraphOpen ? hideGlobalGraph() : renderGlobalGraph()
+      const anyGlobalGraphOpen = containers.some((container) =>
+        container.classList.contains("active"),
+      )
+      anyGlobalGraphOpen ? hideGlobalGraph() : renderGlobalGraph()
     }
   }
 
-  const onClick = (ev: MouseEvent) => {
-    ev.preventDefault()
-    const globalGraphOpen = container?.classList.contains("active")
-    globalGraphOpen ? hideGlobalGraph() : renderGlobalGraph()
-  }
-
-  const containerIcon = document.getElementById("graph-button")
-  containerIcon?.addEventListener("click", onClick)
-  window.addCleanup(() => containerIcon?.removeEventListener("click", onClick))
+  const containerIcons = document.getElementsByClassName("global-graph-icon")
+  Array.from(containerIcons).forEach((icon) => {
+    icon.addEventListener("click", renderGlobalGraph)
+    window.addCleanup(() => icon.removeEventListener("click", renderGlobalGraph))
+  })
 
   document.addEventListener("keydown", shortcutHandler)
-  window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
+  window.addCleanup(() => {
+    document.removeEventListener("keydown", shortcutHandler)
+    cleanupGlobalGraphs()
+  })
 })

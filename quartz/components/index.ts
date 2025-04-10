@@ -30,8 +30,10 @@ import MobileOnly from "./MobileOnly"
 import RecentNotes from "./RecentNotes"
 import Breadcrumbs from "./Breadcrumbs"
 import Comments from "./Comments"
+import Flex from "./Flex"
 
 export {
+  Flex,
   Sidenotes,
   Palette,
   Recommendations,

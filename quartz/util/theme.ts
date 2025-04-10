@@ -25,6 +25,7 @@ export type FontSpecification =
 
 export interface Theme {
   typography: {
+    title?: FontSpecification
     header: FontSpecification
     body: FontSpecification
     code: FontSpecification
@@ -37,8 +38,8 @@ export interface Theme {
 export type ThemeKey = keyof Colors
 
 const DEFAULT_SANS_SERIF =
-  '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif'
-const DEFAULT_MONO = 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace'
+  'system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
+const DEFAULT_MONO = "ui-monospace, SFMono-Regular, SF Mono, Menlo, monospace"
 
 export function getFontSpecificationName(spec: FontSpecification): string {
   if (typeof spec === "string") {
@@ -48,7 +49,10 @@ export function getFontSpecificationName(spec: FontSpecification): string {
   return spec.name
 }
 
-function formatFontSpecification(type: "header" | "body" | "code", spec: FontSpecification) {
+function formatFontSpecification(
+  type: "title" | "header" | "body" | "code",
+  spec: FontSpecification,
+) {
   if (typeof spec === "string") {
     spec = { name: spec }
   }
@@ -82,13 +86,49 @@ function formatFontSpecification(type: "header" | "body" | "code", spec: FontSpe
 }
 
 export function googleFontHref(theme: Theme) {
-  const { code, header, body } = theme.typography
-
+  const { header, body, code } = theme.typography
   const headerFont = formatFontSpecification("header", header)
   const bodyFont = formatFontSpecification("body", body)
   const codeFont = formatFontSpecification("code", code)
 
-  return `https://fonts.googleapis.com/css2?family=${bodyFont}&family=${headerFont}&family=${codeFont}&display=swap`
+  return `https://fonts.googleapis.com/css2?family=${headerFont}&family=${bodyFont}&family=${codeFont}&display=swap`
+}
+
+export function googleFontSubsetHref(theme: Theme, text: string) {
+  const title = theme.typography.title || theme.typography.header
+  const titleFont = formatFontSpecification("title", title)
+
+  return `https://fonts.googleapis.com/css2?family=${titleFont}&text=${encodeURIComponent(text)}&display=swap`
+}
+
+export interface GoogleFontFile {
+  url: string
+  filename: string
+  extension: string
+}
+
+export async function processGoogleFonts(
+  stylesheet: string,
+  baseUrl: string,
+): Promise<{
+  processedStylesheet: string
+  fontFiles: GoogleFontFile[]
+}> {
+  const fontSourceRegex = /url\((https:\/\/fonts.gstatic.com\/s\/[^)]+\.(woff2|ttf))\)/g
+  const fontFiles: GoogleFontFile[] = []
+  let processedStylesheet = stylesheet
+
+  let match
+  while ((match = fontSourceRegex.exec(stylesheet)) !== null) {
+    const url = match[1]
+    const [filename, extension] = url.split("/").pop()!.split(".")
+    const staticUrl = `https://${baseUrl}/static/fonts/${filename}.${extension}`
+
+    processedStylesheet = processedStylesheet.replace(url, staticUrl)
+    fontFiles.push({ url, filename, extension })
+  }
+
+  return { processedStylesheet, fontFiles }
 }
 
 export function joinStyles(theme: Theme, ...stylesheet: string[]) {
@@ -106,9 +146,10 @@ ${stylesheet.join("\n\n")}
   --highlight: ${theme.colors.lightMode.highlight};
   --textHighlight: ${theme.colors.lightMode.textHighlight};
 
-  --headerFont: "${theme.typography.header}", ${DEFAULT_SANS_SERIF};
-  --bodyFont: "${theme.typography.body}", ${DEFAULT_SANS_SERIF};
-  --codeFont: "${theme.typography.code}", ${DEFAULT_MONO};
+  --titleFont: "${getFontSpecificationName(theme.typography.title || theme.typography.header)}", ${DEFAULT_SANS_SERIF};
+  --headerFont: "${getFontSpecificationName(theme.typography.header)}", ${DEFAULT_SANS_SERIF};
+  --bodyFont: "${getFontSpecificationName(theme.typography.body)}", ${DEFAULT_SANS_SERIF};
+  --codeFont: "${getFontSpecificationName(theme.typography.code)}", ${DEFAULT_MONO};
 }
 
 :root[saved-theme="dark"] {

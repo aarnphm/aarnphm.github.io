@@ -4,9 +4,9 @@ import { Data, VFile } from "vfile"
 
 export type QuartzPluginData = Data
 export type MarkdownContent = [MdRoot, VFile]
-export type HtmlContent = [HtmlRoot, VFile]
+export type ProcessedContent = [HtmlRoot, VFile]
 
-export function defaultProcessedContent(vfileData: Partial<QuartzPluginData>): HtmlContent {
+export function defaultProcessedContent(vfileData: Partial<QuartzPluginData>): ProcessedContent {
   const root: HtmlRoot = { type: "root", children: [] }
   const vfile = new VFile("")
   vfile.data = vfileData

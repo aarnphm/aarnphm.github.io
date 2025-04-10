@@ -2,11 +2,19 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import path from "path"
 import style from "../styles/listPage.scss"
 import PageListConstructor, { byDateAndAlphabetical, SortFn } from "../PageList"
-import { stripSlashes, simplifySlug, joinSegments, FullSlug, splitAnchor } from "../../util/path"
+import {
+  stripSlashes,
+  simplifySlug,
+  joinSegments,
+  FullSlug,
+  splitAnchor,
+  isFolderPath,
+} from "../../util/path"
 import { Root } from "hast"
 import { htmlToJsx } from "../../util/jsx"
 import { QuartzPluginData } from "../../plugins/vfile"
 import EvergreenConstructor from "../Evergreen"
+import { FileTrieNode } from "../../util/fileTrie"
 
 interface FolderContentOptions {
   /**
@@ -53,14 +61,22 @@ const defaultOptions: FolderContentOptions = {
 export default ((opts?: Partial<FolderContentOptions>) => {
   const options: FolderContentOptions = { ...defaultOptions, ...opts }
 
+  let trie: FileTrieNode<
+    QuartzPluginData & {
+      slug: string
+      title: string
+      filePath: string
+    }
+  >
+
   const shouldIncludeFile = extensionFilterFn(options)
 
   const tags = ["ml", "interp", "philosophy", "serving"]
   // NOTE: we will always add the generated tags "folder" for better distinction
   const PageList = PageListConstructor({ highlightTags: [...tags, "folder"] })
   const Evergreen = EvergreenConstructor({
-    larges: ["thoughts/mechanistic-interpretability", "thoughts/vllm"],
-    smalls: [
+    lg: ["thoughts/mechanistic-interpretability", "thoughts/vllm"],
+    sm: [
       "thoughts/constrained-decoding",
       "thoughts/LLMs",
       "thoughts/Transformers",
@@ -77,6 +93,21 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props
+    // Initialize trie if not already initialized
+    if (!trie) {
+      trie = new FileTrieNode([])
+      allFiles.forEach((file) => {
+        if (file.frontmatter) {
+          trie.add({
+            ...file,
+            slug: file.slug!,
+            title: file.frontmatter.title,
+            filePath: file.filePath!,
+          })
+        }
+      })
+    }
+
     const folderSlug = stripSlashes(simplifySlug(fileData.slug!))
     const entries: QuartzPluginData[] = []
     const processedPaths = new Set<string>()

@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-03-21 04:04:07 GMT-04:00
+modified: 2025-04-10 06:27:14 GMT-04:00
 noindex: true
 title: /xeets/
 transclude:
@@ -18,7 +18,7 @@ see also [[are.na]]
 
 ---
 
-https://x.com/sp_monte_carlo/status/1834647902485991519 <!-- Some math papers -->
+<!-- https://x.com/sp_monte_carlo/status/1834647902485991519 <!-- Some math papers --> -->
 
 https://x.com/davidbessis/status/1849442615176950202 <!-- finite complex reflection arrangement are $K(\pi, 1)$ -->
 
@@ -90,7 +90,7 @@ https://x.com/313formation/status/1828059730998083853 <!-- resources for SWE int
 
 https://x.com/XorDev/status/1834966384855368108 <!-- visual editor -->
 
-https://x.com/_opencv_/status/1877613841187492189 <!-- Wozniaks behind closed door -->
+<!-- https://x.com/_opencv_/status/1877613841187492189 <!-- Wozniaks behind closed door --> -->
 
 https://x.com/id_aa_carmack/status/1878854976623218956 <!-- Carmack on HW team at Meta -->
 

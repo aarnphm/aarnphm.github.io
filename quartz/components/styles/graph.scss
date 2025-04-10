@@ -2,10 +2,10 @@
 @use "../../styles/mixin.scss" as *;
 
 .graph {
-  & > #global-graph-outer {
+  & > .global-graph-outer {
     @include containerPopover;
 
-    & > #global-graph-container {
+    & > .global-graph-container {
       height: 80vh;
       width: 75%;
 

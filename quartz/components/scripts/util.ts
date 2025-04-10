@@ -381,7 +381,8 @@ class DiagramPanZoom {
   private scale = 1
   private readonly MIN_SCALE = 0.5
   private readonly MAX_SCALE = 3
-  private readonly ZOOM_SENSITIVITY = 0.001
+
+  cleanups: (() => void)[] = []
 
   constructor(
     private container: HTMLElement,
@@ -389,19 +390,33 @@ class DiagramPanZoom {
   ) {
     this.setupEventListeners()
     this.setupNavigationControls()
+    this.resetTransform()
   }
 
   private setupEventListeners() {
     // Mouse drag events
-    this.container.addEventListener("mousedown", this.onMouseDown.bind(this))
-    document.addEventListener("mousemove", this.onMouseMove.bind(this))
-    document.addEventListener("mouseup", this.onMouseUp.bind(this))
+    const mouseDownHandler = this.onMouseDown.bind(this)
+    const mouseMoveHandler = this.onMouseMove.bind(this)
+    const mouseUpHandler = this.onMouseUp.bind(this)
+    const resizeHandler = this.resetTransform.bind(this)
 
-    // Wheel zoom events
-    this.container.addEventListener("wheel", this.onWheel.bind(this), { passive: false })
+    this.container.addEventListener("mousedown", mouseDownHandler)
+    document.addEventListener("mousemove", mouseMoveHandler)
+    document.addEventListener("mouseup", mouseUpHandler)
+    window.addEventListener("resize", resizeHandler)
 
-    // Reset on window resize
-    window.addEventListener("resize", this.resetTransform.bind(this))
+    this.cleanups.push(
+      () => this.container.removeEventListener("mousedown", mouseDownHandler),
+      () => document.removeEventListener("mousemove", mouseMoveHandler),
+      () => document.removeEventListener("mouseup", mouseUpHandler),
+      () => window.removeEventListener("resize", resizeHandler),
+    )
+  }
+
+  cleanup() {
+    for (const cleanup of this.cleanups) {
+      cleanup()
+    }
   }
 
   private setupNavigationControls() {
@@ -409,18 +424,9 @@ class DiagramPanZoom {
     controls.className = "mermaid-controls"
 
     // Zoom controls
-    const zoomIn = this.createButton(
-      `<svg width="24" height="24" strokewidth="0" stroke="none"><use href="#zoom-in"/></svg>`,
-      () => this.zoom(0.1),
-    )
-    const zoomOut = this.createButton(
-      `<svg width="24" height="24" strokewidth="0" stroke="none"><use href="#zoom-out"/></svg>`,
-      () => this.zoom(-0.1),
-    )
-    const resetBtn = this.createButton(
-      `<svg width="24" height="24" strokewidth="0" stroke="none"><use href="#expand-sw-ne"/></svg>`,
-      () => this.resetTransform(),
-    )
+    const zoomIn = this.createButton("+", () => this.zoom(0.1))
+    const zoomOut = this.createButton("-", () => this.zoom(-0.1))
+    const resetBtn = this.createButton("Reset", () => this.resetTransform())
 
     controls.appendChild(zoomOut)
     controls.appendChild(resetBtn)
@@ -431,7 +437,7 @@ class DiagramPanZoom {
 
   private createButton(text: string, onClick: () => void): HTMLButtonElement {
     const button = document.createElement("button")
-    button.innerHTML = text
+    button.textContent = text
     button.className = "mermaid-control-button"
     button.addEventListener("click", onClick)
     window.addCleanup(() => button.removeEventListener("click", onClick))
@@ -462,26 +468,6 @@ class DiagramPanZoom {
     this.container.style.cursor = "grab"
   }
 
-  private onWheel(e: WheelEvent) {
-    e.preventDefault()
-
-    const delta = -e.deltaY * this.ZOOM_SENSITIVITY
-    const newScale = Math.min(Math.max(this.scale + delta, this.MIN_SCALE), this.MAX_SCALE)
-
-    // Calculate mouse position relative to content
-    const rect = this.content.getBoundingClientRect()
-    const mouseX = e.clientX - rect.left
-    const mouseY = e.clientY - rect.top
-
-    // Adjust pan to zoom around mouse position
-    const scaleDiff = newScale - this.scale
-    this.currentPan.x -= mouseX * scaleDiff
-    this.currentPan.y -= mouseY * scaleDiff
-
-    this.scale = newScale
-    this.updateTransform()
-  }
-
   private zoom(delta: number) {
     const newScale = Math.min(Math.max(this.scale + delta, this.MIN_SCALE), this.MAX_SCALE)
 
@@ -496,82 +482,75 @@ class DiagramPanZoom {
 
     this.scale = newScale
     this.updateTransform()
-    return this
   }
 
   private updateTransform() {
     this.content.style.transform = `translate(${this.currentPan.x}px, ${this.currentPan.y}px) scale(${this.scale})`
-    return this
-  }
-
-  public setInitialPan(pan: Position) {
-    this.currentPan = pan
-    this.startPan = { x: 0, y: 0 }
-    return this
   }
 
   private resetTransform() {
     this.scale = 1
-    // Reset to center instead of origin
-    const containerRect = this.container.getBoundingClientRect()
-    this.currentPan = { x: containerRect.width / 2, y: 0 }
+    const svg = this.content.querySelector("svg")!
+    this.currentPan = {
+      x: svg.getBoundingClientRect().width / 2,
+      y: svg.getBoundingClientRect().height / 2,
+    }
     this.updateTransform()
-    return this
   }
 }
 
 export function mermaidViewer(nodes: NodeListOf<HTMLDivElement>) {
-  for (const codeBlock of Array.from(nodes)) {
-    const svg = codeBlock.getElementsByTagName("svg")[0]
+  for (let i = 0; i < nodes.length; i++) {
+    const codeBlock = nodes[i] as HTMLElement
+    const pre = codeBlock.parentElement as HTMLPreElement
+    const clipboardBtn = pre.querySelector(".clipboard-button") as HTMLButtonElement
+    const expandBtn = pre.querySelector(".expand-button") as HTMLButtonElement
 
-    const pre = codeBlock.parentNode as HTMLPreElement
-    const expandBtn = pre.querySelector<HTMLButtonElement>(".expand-button")
-    const popupContainer = pre.querySelector<HTMLElement>(".mermaid-viewer")
+    const clipboardStyle = window.getComputedStyle(clipboardBtn)
+    const clipboardWidth =
+      clipboardBtn.offsetWidth +
+      parseFloat(clipboardStyle.marginLeft || "0") +
+      parseFloat(clipboardStyle.marginRight || "0")
+
+    // Set expand button position
+    expandBtn.style.right = `calc(${clipboardWidth}px + 0.3rem)`
+    pre.prepend(expandBtn)
+
+    // query popup container
+    const popupContainer = pre.querySelector("#mermaid-container") as HTMLElement
+    if (!popupContainer) return
 
     let panZoom: DiagramPanZoom | null = null
-
-    const closeBtn = popupContainer?.querySelector<HTMLButtonElement>(".close-button")
-
     function showMermaid() {
-      const container = popupContainer?.querySelector<HTMLElement>("#mermaid-space")
-      const content = popupContainer?.querySelector<HTMLElement>(".mermaid-content")
-      if (!content || !container) return
+      const container = popupContainer.querySelector("#mermaid-space") as HTMLElement
+      const content = popupContainer.querySelector(".mermaid-content") as HTMLElement
+      if (!content) return
       removeAllChildren(content)
 
-      const cloned = svg!.cloneNode(true) as SVGElement
-      cloned.style.transform = ""
-      content.appendChild(cloned)
+      // Clone the mermaid content
+      const mermaidContent = codeBlock.querySelector("svg")!.cloneNode(true) as SVGElement
+      content.appendChild(mermaidContent)
 
       // Show container
-      popupContainer?.classList.add("active")
+      popupContainer.classList.add("active")
       container.style.cursor = "grab"
-      content.style.transform = `scale(1)`
 
       // Initialize pan-zoom after showing the popup
       panZoom = new DiagramPanZoom(container, content)
-      panZoom.setInitialPan({ x: 0, y: 0 })
     }
 
     function hideMermaid() {
-      popupContainer?.classList.remove("active")
+      popupContainer.classList.remove("active")
+      panZoom?.cleanup()
       panZoom = null
     }
 
-    function handleEscape(e: KeyboardEvent) {
-      if (e.key === "Escape" && popupContainer?.classList.contains("active")) {
-        e.stopPropagation()
-        hideMermaid()
-      }
-    }
-
-    expandBtn?.addEventListener("click", showMermaid)
-    closeBtn?.addEventListener("click", hideMermaid)
-    document.addEventListener("keydown", handleEscape)
+    expandBtn.addEventListener("click", showMermaid)
+    registerEscapeHandler(popupContainer, hideMermaid)
 
     window.addCleanup(() => {
-      expandBtn?.removeEventListener("click", showMermaid)
-      closeBtn?.removeEventListener("click", hideMermaid)
-      document.removeEventListener("keydown", handleEscape)
+      panZoom?.cleanup()
+      expandBtn.removeEventListener("click", showMermaid)
     })
   }
 }

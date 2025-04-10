@@ -2,34 +2,20 @@ import matter from "gray-matter"
 import remarkFrontmatter from "remark-frontmatter"
 import { QuartzTransformerPlugin } from "../types"
 import yaml from "js-yaml"
-import {
-  FilePath,
-  FullSlug,
-  slugifyFilePath,
-  joinSegments,
-  slugTag,
-  stripSlashes,
-} from "../../util/path"
+import { FilePath, FullSlug, slugifyFilePath, slugTag, getFileExtension } from "../../util/path"
 import { QuartzPluginData } from "../vfile"
 import { i18n } from "../../i18n"
 import { ContentLayout } from "../emitters/contentIndex"
-import { Argv } from "../../util/ctx"
-import path from "path"
-import { VFile } from "vfile"
 
-export function getAliasSlugs(aliases: string[], argv: Argv, file: VFile, permalinks?: string[]) {
-  const dir = path.posix.relative(argv.directory, path.dirname(file.data.filePath!))
-  const slugs: FullSlug[] = aliases.map(
-    (alias) => path.posix.join(dir, slugifyFilePath(alias as FilePath, false)) as FullSlug,
-  )
-  if (permalinks && permalinks.length > 0) {
-    slugs.push(...(permalinks.map((el) => stripSlashes(el, true)) as FullSlug[]))
+function getAliasSlugs(aliases: string[]): FullSlug[] {
+  const res: FullSlug[] = []
+  for (const alias of aliases) {
+    const isMd = getFileExtension(alias) === "md"
+    const mockFp = isMd ? alias : alias + ".md"
+    const slug = slugifyFilePath(mockFp as FilePath)
+    res.push(slug)
   }
-
-  // fix any slugs that have trailing slash
-  return slugs.map((slug) =>
-    slug.endsWith("/") ? (joinSegments(slug, "index") as FullSlug) : slug,
-  )
+  return res
 }
 
 function coalesceAliases(data: { [key: string]: any }, aliases: string[]) {
@@ -57,7 +43,7 @@ function coerceToArray(input: string | string[]): string[] | undefined {
 
 export const FrontMatter: QuartzTransformerPlugin = () => ({
   name: "FrontMatter",
-  markdownPlugins: ({ cfg, allSlugs, argv }) => [
+  markdownPlugins: ({ cfg, allSlugs }) => [
     [remarkFrontmatter, ["yaml", "toml"]],
     () => {
       return (_, file) => {
@@ -78,15 +64,19 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
         const tags = coerceToArray(coalesceAliases(data, ["tags", "tag"]))
         if (tags) data.tags = [...new Set(tags.map((tag: string) => slugTag(tag)))]
 
-        const permalinks = coerceToArray(coalesceAliases(data, ["permalinks", "permalink"]))
-        if (permalinks) data.permalinks = permalinks
-
         const aliases = coerceToArray(coalesceAliases(data, ["aliases", "alias"]))
         if (aliases) {
           data.aliases = aliases
-          const slugs = getAliasSlugs(aliases, argv, file, permalinks)
-          file.data.aliases = slugs
-          allSlugs.push(...slugs)
+          file.data.aliases = getAliasSlugs(aliases)
+          allSlugs.push(...file.data.aliases)
+        }
+
+        if (data.permalink != null && data.permalink.toString() !== "") {
+          data.permalink = data.permalink.toString() as FullSlug
+          const aliases = file.data.aliases ?? []
+          aliases.push(data.permalink)
+          file.data.aliases = aliases
+          allSlugs.push(data.permalink)
         }
 
         const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses", "cssclass"]))
@@ -149,6 +139,7 @@ declare module "vfile" {
         enableToc: string
         cssclasses: string[]
         socialImage: string
+        socialDescription: string
         noindex: boolean
         comments: boolean
         transclude: Partial<TranscludeOptions>

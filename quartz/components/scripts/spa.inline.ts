@@ -319,8 +319,6 @@ class StackedNoteManager {
       this.getSlug(url) ??
       html.querySelector("title")?.textContent
 
-    html.querySelectorAll<HTMLElement>(".mermaid-viewer").forEach((el) => el.remove())
-
     return { hash, contents: [...contents], title }
   }
 
@@ -658,10 +656,11 @@ class StackedNoteManager {
   }
 }
 
+let isNavigating = false
 const stacked = new StackedNoteManager()
 window.stacked = stacked
 
-async function navigate(url: URL, isBack: boolean = false) {
+async function _navigate(url: URL, isBack: boolean = false) {
   const stackedContainer = document.getElementById("stacked-notes-container")
   if (stackedContainer?.classList.contains("active")) {
     return await stacked.navigate(url)
@@ -737,6 +736,19 @@ async function navigate(url: URL, isBack: boolean = false) {
   delete announcer.dataset.persist
 }
 
+async function navigate(url: URL, isBack: boolean = false) {
+  if (isNavigating) return
+  isNavigating = true
+  try {
+    await _navigate(url, isBack)
+  } catch (e) {
+    console.error(e)
+    window.location.assign(url)
+  } finally {
+    isNavigating = false
+  }
+}
+
 window.spaNavigate = navigate
 window.notifyNav = notifyNav
 
@@ -755,21 +767,13 @@ function createRouter() {
         return
       }
 
-      try {
-        navigate(url, false)
-      } catch (e) {
-        window.location.assign(url)
-      }
+      navigate(url, false)
     })
 
     window.addEventListener("popstate", (event) => {
       const { url } = getOpts(event) ?? {}
       if (window.location.hash && window.location.pathname === url?.pathname) return
-      try {
-        navigate(new URL(window.location.toString()), true)
-      } catch (e) {
-        window.location.reload()
-      }
+      navigate(new URL(window.location.toString()), true)
       return
     })
   }

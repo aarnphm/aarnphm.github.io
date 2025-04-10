@@ -6,7 +6,6 @@ import { classNames } from "../../util/lang"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { QuartzComponentProps, QuartzComponent } from "../../components/types"
 import { ArticleTitle, ContentMeta } from "../../components"
-import DepGraph from "../../depgraph"
 import { Date, getDate } from "../../components/Date"
 import { StaticResources } from "../../util/resources"
 import { sharedPageComponents, defaultContentPageLayout } from "../../../quartz.layout"
@@ -53,13 +52,6 @@ export const InfinitePoemPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (u
     name: "InfinitePage",
     getQuartzComponents() {
       return [Head, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
-    },
-    async getDependencyGraph(_ctx, _content, _resources) {
-      // Example graph:
-      // nested/file.md --> nested/file.html
-      //          \-------> nested/index.html
-      // TODO implement
-      return new DepGraph<FilePath>()
     },
     async emit(ctx, content, resources): Promise<FilePath[]> {
       const cfg = ctx.cfg.configuration

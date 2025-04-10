@@ -8,7 +8,6 @@ const configuration: GlobalConfiguration = {
   pageTitle: "Aaron's notes",
   enableSPA: true,
   enablePopovers: true,
-  generateSocialImages: true,
   analytics: {
     provider: "plausible",
   },
@@ -168,7 +167,8 @@ const config: QuartzConfig = {
       Plugin.Assets(),
       Plugin.Static(),
       Plugin.NotFoundPage(),
-      Plugin.PressKit(),
+      Plugin.CustomOgImages(),
+      // Plugin.PressKit(),
     ],
   },
 }

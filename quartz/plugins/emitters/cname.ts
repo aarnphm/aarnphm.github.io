@@ -1,7 +1,6 @@
 import { FilePath, joinSegments } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
 import fs from "fs"
-import DepGraph from "../../depgraph"
 import { styleText } from "node:util"
 
 export function extractDomainFromBaseUrl(baseUrl: string) {
@@ -12,9 +11,6 @@ export function extractDomainFromBaseUrl(baseUrl: string) {
 const name = "CNAME"
 export const CNAME: QuartzEmitterPlugin = () => ({
   name,
-  async getDependencyGraph(_ctx, _content, _resources) {
-    return new DepGraph<FilePath>()
-  },
   async emit({ argv, cfg }, _content, _resources): Promise<FilePath[]> {
     if (!cfg.configuration.baseUrl) {
       console.warn(
@@ -27,7 +23,7 @@ export const CNAME: QuartzEmitterPlugin = () => ({
     if (!content) {
       return []
     }
-    fs.writeFileSync(path, content)
+    await fs.promises.writeFile(path, content)
     return [path] as FilePath[]
   },
 })

@@ -2,7 +2,7 @@ import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import HeaderConstructor from "../../components/Header"
 import { pageResources, renderPage } from "../../components/renderPage"
-import { HtmlContent, QuartzPluginData, defaultProcessedContent } from "../vfile"
+import { ProcessedContent, QuartzPluginData, defaultProcessedContent } from "../vfile"
 import { FullPageLayout } from "../../cfg"
 import {
   FilePath,
@@ -15,7 +15,6 @@ import { defaultListPageLayout, sharedPageComponents } from "../../../quartz.lay
 import { TagContent } from "../../components"
 import { write } from "./helpers"
 import { i18n } from "../../i18n"
-import DepGraph from "../../depgraph"
 
 interface TagPageOptions extends FullPageLayout {
   sort?: (f1: QuartzPluginData, f2: QuartzPluginData) => number
@@ -37,33 +36,10 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
 
   return {
     name: "TagPage",
-    requiresFullContent: true,
     getQuartzComponents() {
       return [Head, Header, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
-    async getDependencyGraph(ctx, content, _resources) {
-      const graph = new DepGraph<FilePath>()
-
-      for (const [_tree, file] of content) {
-        const sourcePath = file.data.filePath!
-        const tags = (file.data.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes)
-        // if the file has at least one tag, it is used in the tag index page
-        if (tags.length > 0) {
-          tags.push("index")
-        }
-
-        for (const tag of tags) {
-          graph.addEdge(
-            sourcePath,
-            joinSegments(ctx.argv.output, "tags", tag + ".html") as FilePath,
-          )
-        }
-      }
-
-      return graph
-    },
-    async emit(ctx, content, resources): Promise<FilePath[]> {
-      const fps: FilePath[] = []
+    async *emit(ctx, content, resources) {
       const allFiles = ctx.allFiles
       const cfg = ctx.cfg.configuration
 
@@ -74,7 +50,7 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
       // add base tag
       tags.add("index")
 
-      const tagDescriptions: Record<string, HtmlContent> = Object.fromEntries(
+      const tagDescriptions: Record<string, ProcessedContent> = Object.fromEntries(
         [...tags].map((tag) => {
           const title =
             tag === "index"
@@ -115,16 +91,13 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
         }
 
         const content = renderPage(ctx, slug, componentData, opts, externalResources, true, true)
-        const fp = await write({
+        yield await write({
           ctx,
           content,
           slug: file.data.slug!,
           ext: ".html",
         })
-
-        fps.push(fp)
       }
-      return fps
     },
   }
 }

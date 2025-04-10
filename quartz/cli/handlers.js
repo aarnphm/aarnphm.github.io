@@ -19,6 +19,10 @@ import { styleText } from "node:util"
  * @param {import("../util/ctx.ts").Argv} argv arguments for `build`
  */
 export async function handleBuild(argv) {
+  if (argv.serve) {
+    argv.watch = true
+  }
+
   console.log("\n" + styleText(["bgGreen", "black"], `Quartz v${version}`) + "\n")
   const ctx = await esbuild.context({
     entryPoints: [fp],
@@ -36,17 +40,18 @@ export async function handleBuild(argv) {
     sourcemap: true,
     sourcesContent: false,
     plugins: [
-      sassPlugin({ type: "css-text", cssImports: true, embedded: true, sourceMap: false }),
+      sassPlugin({
+        type: "css-text",
+        cssImports: true,
+      }),
       sassPlugin({
         filter: /\.inline\.scss$/,
         type: "css",
         cssImports: true,
-        embedded: true,
-        sourceMap: false,
       }),
       {
         name: "inline-script-loader",
-        async setup(build) {
+        setup(build) {
           build.onLoad({ filter: /\.inline\.(ts|js)$/ }, async (args) => {
             let text = await promises.readFile(args.path, "utf8")
 
@@ -124,9 +129,10 @@ export async function handleBuild(argv) {
     clientRefresh()
   }
 
+  let clientRefresh = () => {}
   if (argv.serve) {
     const connections = []
-    const clientRefresh = () => connections.forEach((conn) => conn.send("rebuild"))
+    clientRefresh = () => connections.forEach((conn) => conn.send("rebuild"))
 
     if (argv.baseDir !== "" && !argv.baseDir.startsWith("/")) {
       argv.baseDir = "/" + argv.baseDir
@@ -232,6 +238,7 @@ export async function handleBuild(argv) {
 
       return serve()
     })
+
     server.listen(argv.port)
     const wss = new WebSocketServer({ port: argv.wsPort })
     wss.on("connection", (ws) => connections.push(ws))
@@ -241,18 +248,26 @@ export async function handleBuild(argv) {
         `[serve] Started a Quartz server listening at http://localhost:${argv.port}${argv.baseDir}`,
       ),
     )
-    console.log("[serve] hint: exit with ctrl+c")
-    const paths = await globby(
-      ["**/*.ts", "**/*.js", "**/*.tsx", "**/*.scss", "package.json", "**/*.bib", "**/*.xsl"],
-      { gitignore: true },
-    )
+  } else {
+    await build(clientRefresh)
+    ctx.dispose()
+  }
+
+  if (argv.watch) {
+    const paths = await globby([
+      "**/*.ts",
+      "quartz/cli/*.js",
+      "quartz/static/**/*",
+      "**/*.tsx",
+      "**/*.scss",
+      "package.json",
+    ])
     chokidar
       .watch(paths, { ignoreInitial: true })
       .on("add", () => build(clientRefresh))
       .on("change", () => build(clientRefresh))
       .on("unlink", () => build(clientRefresh))
-  } else {
-    await build(() => {})
-    ctx.dispose()
+
+    console.log(styleText("grey", "hint: exit with ctrl+c"))
   }
 }

@@ -1,4 +1,4 @@
-import { FilePath, FullSlug, joinSegments } from "../../util/path"
+import { FullSlug, joinSegments } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
 // @ts-ignore
 import spaRouterScript from "../../components/scripts/spa.inline"
@@ -16,16 +16,10 @@ import pseudoScript from "../../components/scripts/clipboard-pseudo.inline"
 import pseudoStyle from "../../components/styles/pseudocode.scss"
 import { BuildCtx } from "../../util/ctx"
 import { QuartzComponent } from "../../components/types"
-import { googleFontHref, joinStyles } from "../../util/theme"
+import { googleFontHref, joinStyles, processGoogleFonts } from "../../util/theme"
 import { Features, transform } from "lightningcss"
 import { transform as transpile } from "esbuild"
 import { write } from "./helpers"
-import { SocialImageOptions, getSatoriFont, defaultImageOptions } from "../../util/og"
-import satori, { SatoriOptions } from "satori"
-import { QuartzPluginData } from "../vfile"
-import sharp from "sharp"
-import { i18n } from "../../i18n"
-import { styleText } from "node:util"
 
 const name = "ComponentResources"
 
@@ -113,93 +107,46 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
   componentResources.afterDOMLoaded.push(insightsScript, spaRouterScript)
 }
 
-async function generateOgImage(
-  ctx: BuildCtx,
-  fonts: SatoriOptions["fonts"],
-  opts: SocialImageOptions,
-  title: string,
-  fileData: QuartzPluginData,
-  fileName: string,
-) {
-  const svg = await satori(opts.Component(ctx.cfg.configuration, fileData, opts, title, fonts), {
-    width: opts.width,
-    height: opts.height,
-    fonts,
-    graphemeImages: {
-      "🚧": "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6a7.svg",
-    },
-  })
-
-  const content = await sharp(Buffer.from(svg)).webp({ quality: 70 }).toBuffer()
-
-  return await write({
-    ctx,
-    slug: joinSegments("static", "social-images", fileName) as FullSlug,
-    ext: `.webp`,
-    content,
-  })
-}
-
-interface Options {
-  fontOrigin: "googleFonts" | "local"
-}
-
-const defaultOptions: Options = {
-  fontOrigin: "googleFonts",
-}
-
-export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<Options>) => {
-  let fonts: Promise<SatoriOptions["fonts"]>
-  let imageOptions: SocialImageOptions
-
-  const { fontOrigin } = { ...defaultOptions, ...opts }
+export const ComponentResources: QuartzEmitterPlugin = () => {
   return {
     name,
-    async emit(ctx, content, _resources): Promise<FilePath[]> {
-      const promises: Promise<FilePath>[] = []
+    async *emit(ctx, _content, _resources) {
       const cfg = ctx.cfg.configuration
       // component specific scripts and styles
       const componentResources = getComponentResources(ctx)
       let googleFontsStyleSheet = ""
-      if (fontOrigin === "local") {
+      if (cfg.theme.fontOrigin === "local") {
         // let the user do it themselves in css
-      } else if (fontOrigin === "googleFonts" && !cfg.theme.cdnCaching) {
-        let match
+      } else if (cfg.theme.fontOrigin === "googleFonts" && !cfg.theme.cdnCaching) {
+        const response = await fetch(googleFontHref(ctx.cfg.configuration.theme))
+        googleFontsStyleSheet = await response.text()
 
-        const fontSourceRegex = /url\((https:\/\/fonts.gstatic.com\/s\/[^)]+\.(woff2|ttf))\)/g
-
-        googleFontsStyleSheet = await (
-          await fetch(googleFontHref(ctx.cfg.configuration.theme))
-        ).text()
-
-        while ((match = fontSourceRegex.exec(googleFontsStyleSheet)) !== null) {
-          // match[0] is the `url(path)`, match[1] is the `path`
-          const url = match[1]
-          // the static name of this file.
-          const [filename, ext] = url.split("/").pop()!.split(".")
-
-          googleFontsStyleSheet = googleFontsStyleSheet.replace(
-            url,
-            `https://${cfg.baseUrl}/static/fonts/${filename}.ttf`,
+        if (!cfg.baseUrl) {
+          throw new Error(
+            "baseUrl must be defined when using Google Fonts without cfg.theme.cdnCaching",
           )
+        }
 
-          promises.push(
-            fetch(url)
-              .then((res) => {
-                if (!res.ok) {
-                  throw new Error(`Failed to fetch font`)
-                }
-                return res.arrayBuffer()
-              })
-              .then((buf) =>
-                write({
-                  ctx,
-                  slug: joinSegments("static", "fonts", filename) as FullSlug,
-                  ext: `.${ext}`,
-                  content: Buffer.from(buf),
-                }),
-              ),
-          )
+        const { processedStylesheet, fontFiles } = await processGoogleFonts(
+          googleFontsStyleSheet,
+          cfg.baseUrl,
+        )
+        googleFontsStyleSheet = processedStylesheet
+
+        // Download and save font files
+        for (const fontFile of fontFiles) {
+          const res = await fetch(fontFile.url)
+          if (!res.ok) {
+            throw new Error(`failed to fetch font ${fontFile.filename}`)
+          }
+
+          const buf = await res.arrayBuffer()
+          yield write({
+            ctx,
+            slug: joinSegments("static", "fonts", fontFile.filename) as FullSlug,
+            ext: `.${fontFile.extension}`,
+            content: Buffer.from(buf),
+          })
         }
       }
 
@@ -233,78 +180,42 @@ export const ComponentResources: QuartzEmitterPlugin<Options> = (opts?: Partial<
         dir: "auto",
       }
 
-      promises.push(
-        write({
-          ctx,
-          slug: "index" as FullSlug,
-          ext: ".css",
-          content: transform({
-            filename: "index.css",
-            code: Buffer.from(stylesheet),
-            minify: true,
-            targets: {
-              safari: (15 << 16) | (6 << 8), // 15.6
-              ios_saf: (15 << 16) | (6 << 8), // 15.6
-              edge: 115 << 16,
-              firefox: 102 << 16,
-              chrome: 109 << 16,
-            },
-            include: Features.MediaQueries,
-          }).code.toString(),
-        }),
-        write({
+      yield write({
+        ctx,
+        slug: "index" as FullSlug,
+        ext: ".css",
+        content: transform({
+          filename: "index.css",
+          code: Buffer.from(stylesheet),
+          minify: true,
+          targets: {
+            safari: (15 << 16) | (6 << 8), // 15.6
+            ios_saf: (15 << 16) | (6 << 8), // 15.6
+            edge: 115 << 16,
+            firefox: 102 << 16,
+            chrome: 109 << 16,
+          },
+          include: Features.MediaQueries,
+        }).code.toString(),
+      }),
+        yield write({
           ctx,
           slug: "prescript" as FullSlug,
           ext: ".js",
           content: prescript,
         }),
-        write({
+        yield write({
           ctx,
           slug: "postscript" as FullSlug,
           ext: ".js",
           content: postscript,
-        }),
-        write({
-          ctx,
-          slug: "site" as FullSlug,
-          ext: ".webmanifest",
-          content: JSON.stringify(manifest),
-        }),
-      )
-
-      if (cfg.generateSocialImages && !ctx.argv.serve) {
-        if (ctx.argv.verbose)
-          console.log(styleText("blue", `[emit:${name}] Generating social images...`))
-
-        if (!imageOptions) {
-          if (typeof cfg.generateSocialImages !== "boolean") {
-            imageOptions = { ...defaultImageOptions, ...cfg.generateSocialImages }
-          } else {
-            imageOptions = defaultImageOptions
-          }
-        }
-
-        if (!fonts) fonts = getSatoriFont(cfg)
-        const fontData = await fonts
-
-        const ogs = [...content]
-          .filter(([_, file]) => !file.data.slug!.includes("university"))
-          .map(([_, file]) => {
-            const slug = file.data.slug!
-            const fileName = slug.replaceAll("/", "-")
-            const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
-
-            return generateOgImage(ctx, fontData, imageOptions, title, file.data, fileName)
-          })
-        promises.push(...ogs)
-      } else {
-        if (ctx.argv.verbose)
-          console.log(
-            styleText("yellow", `[emit:${name}] Skipping OG generations during serve time.`),
-          )
-      }
-
-      return Promise.all(promises)
+        })
+      yield write({
+        ctx,
+        slug: "site" as FullSlug,
+        ext: ".webmanifest",
+        content: JSON.stringify(manifest),
+      })
     },
     externalResources: ({ cfg }) => ({
       additionalHead: [

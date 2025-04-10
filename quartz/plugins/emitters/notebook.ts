@@ -1,6 +1,5 @@
 import { QuartzConfig } from "../../cfg"
 import { QuartzEmitterPlugin } from "../types"
-import DepGraph from "../../depgraph"
 import path from "path"
 import fs from "node:fs/promises"
 import { glob } from "../../util/glob"
@@ -46,9 +45,6 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
   return {
     name,
     skipDuringServe: true,
-    async getDependencyGraph() {
-      return new DepGraph<FilePath>()
-    },
     async emit({ argv, cfg }, _content, _resources): Promise<FilePath[]> {
       const outputDir = argv.output
       const fps = await notebookFiles(argv, cfg)
