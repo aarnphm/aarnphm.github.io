@@ -8,7 +8,6 @@ import {
   joinSegments,
   FullSlug,
   splitAnchor,
-  isFolderPath,
 } from "../../util/path"
 import { Root } from "hast"
 import { htmlToJsx } from "../../util/jsx"

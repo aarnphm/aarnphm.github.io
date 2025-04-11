@@ -1220,7 +1220,7 @@ export function renderPage(
           data-disable-sidepanel={disableSidepanel}
           data-is-folder-tag={isFolderTag}
         >
-          <main id="quartz-root" class="page grid" style={{ gridTemplateRows: "repeat(5, auto)" }}>
+          <main id="quartz-root" class={classNames(undefined, "page", slug==="index" ? "grid" : "")} style={slug !== "index" ? { display: "flex", flexDirection: "column", minHeight: "100vh" }: undefined}>
             <Header {...componentData}>
               {header.map((HeaderComponent) => (
                 <HeaderComponent {...componentData} />
@@ -1231,14 +1231,12 @@ export function renderPage(
                 <div class="stacked-notes-column" />
               </div>
             </section>
-            {beforeBody.length > 0 ? (
+            {beforeBody.length > 0 && (
               <section class="page-header popover-hint grid all-col">
                 {beforeBody.map((BodyComponent) => (
                   <BodyComponent {...componentData} />
                 ))}
               </section>
-            ) : (
-              <></>
             )}
             <section
               class={classNames(
@@ -1246,15 +1244,13 @@ export function renderPage(
                 "page-content",
                 slug === "index" ? "side-col" : "grid all-col",
               )}
-            >
-              {sidebar.length > 0 ? (
+              style={{ flex: "1 1 auto" }}>
+              {sidebar.length > 0 && (
                 <aside class="aside-container left-col">
                   {sidebar.map((BodyComponent) => (
                     <BodyComponent {...componentData} />
                   ))}
                 </aside>
-              ) : (
-                <></>
               )}
               <Content {...componentData} />
               <div id="wc-modal" class="wc-modal">

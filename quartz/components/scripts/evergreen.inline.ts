@@ -126,4 +126,51 @@ document.addEventListener("nav", () => {
       li.classList.remove("fade-out")
     })
   }
+
+  // Setup sidepanel layout toggle
+  const setupSidepanelLayoutToggle = () => {
+    const quartzRoot = document.getElementById("quartz-root")
+    const sidepanel = document.querySelector(".sidepanel-container")
+    const slugData = document.body.getAttribute("data-slug")
+
+    // Skip for index page since it has special layout
+    if (slugData === "index" || !quartzRoot || !sidepanel) return
+
+    // Save original styles to restore them later
+    const originalStyle = {
+      display: quartzRoot.style.display,
+      flexDirection: quartzRoot.style.flexDirection,
+      minHeight: quartzRoot.style.minHeight,
+    }
+
+    // Create a mutation observer to watch for class changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === "attributes" && mutation.attributeName === "class") {
+          if (sidepanel.classList.contains("active")) {
+            // When sidepanel is active, switch to grid layout
+            quartzRoot.classList.add("grid")
+            quartzRoot.style.display = ""
+            quartzRoot.style.flexDirection = ""
+            quartzRoot.style.minHeight = ""
+          } else {
+            // When sidepanel is inactive, restore flex layout
+            quartzRoot.classList.remove("grid")
+            quartzRoot.style.display = originalStyle.display
+            quartzRoot.style.flexDirection = originalStyle.flexDirection
+            quartzRoot.style.minHeight = originalStyle.minHeight
+          }
+        }
+      })
+    })
+
+    // Start observing the sidepanel for class changes
+    observer.observe(sidepanel, { attributes: true })
+
+    // Add cleanup for the observer
+    window.addCleanup(() => observer.disconnect())
+  }
+
+  // Run the setup
+  setupSidepanelLayoutToggle()
 })
