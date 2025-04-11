@@ -465,7 +465,7 @@ async function mouseClickHandler(evt: MouseEvent) {
     evt.preventDefault()
     evt.stopPropagation()
     const asidePanel = document.querySelector<HTMLDivElement>(
-      "main > aside[class~='sidepanel-container']",
+      "main > * > aside[class~='sidepanel-container']",
     )
 
     if (!asidePanel) return

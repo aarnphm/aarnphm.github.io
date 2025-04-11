@@ -3,7 +3,7 @@ id: Summer fellows
 tags:
   - application
 date: "2025-03-28"
-modified: 2025-03-28 22:28:59 GMT-04:00
+modified: 2025-04-11 18:49:36 GMT-04:00
 noindex: true
 title: YC 25 Summer fellows
 ---
@@ -12,7 +12,7 @@ title: YC 25 Summer fellows
 >
 > List any competitions/awards you have won, or papers you’ve published.
 
-I won Hack The North 2021 as a Finalist (https://devpost.com/software/twogether?_gl=1*1fwifmz*_gcl_au*NjM2MzA3NDQ4LjE3NDMyMTE0MTA.*_ga*MzEwMTc5NjEzLjE3NDMyMTE0MTE.*_ga_0YHJK3Y10M*MTc0MzIxMTQxMC4xLjEuMTc0MzIxMTQyMS4wLjAuMA..), where I trained and fine-tuned a Gaussian Mixture Model to find the safest path between different locations, trained on past assault data provided by Toronto Police Department from 2015 onwards.
+I won Hack The North 2021 as a [Finalist](https://devpost.com/software/twogether?_gl=1*1fwifmz*_gcl_au*NjM2MzA3NDQ4LjE3NDMyMTE0MTA.*_ga*MzEwMTc5NjEzLjE3NDMyMTE0MTE.*_ga_0YHJK3Y10M*MTc0MzIxMTQxMC4xLjEuMTc0MzIxMTQyMS4wLjAuMA), where I trained and fine-tuned a Gaussian Mixture Model to find the safest path between different locations, trained on past assault data provided by Toronto Police Department from 2015 onwards.
 Integrated with Google Maps API to show heat maps of avoided zone.
 
 > [!question]

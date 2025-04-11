@@ -334,7 +334,7 @@ document.addEventListener("nav", async (e) => {
 
     if (e.metaKey && e.altKey && e.key === "Enter") {
       const asidePanel = document.querySelector<HTMLDivElement>(
-        "main > aside[class~='sidepanel-container']",
+        "main > * > aside[class~='sidepanel-container']",
       )
       if (!asidePanel || !currentHover) return
 

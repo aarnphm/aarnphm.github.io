@@ -112,7 +112,7 @@ function setupHeaderOverlay() {
 
   function handleScroll() {
     const asidePanel = document.querySelector<HTMLDivElement>(
-      "main > aside[class~='sidepanel-container']",
+      "main > * > aside[class~='sidepanel-container']",
     )
     if (asidePanel && asidePanel.classList.contains("active")) return
     // Add a 50px threshold

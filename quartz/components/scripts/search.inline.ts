@@ -523,3 +523,4 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     await setupSearch(element, currentSlug, data)
   }
 })
+

@@ -615,9 +615,10 @@ export function transcludeFinal(
         const transcludeFootnoteBlock: Element[] = []
         const transcludeBibBlock: Element[] = []
 
-        visit(node, function (node: Element) {
+        visit(node, function (el) {
+          const node = el as Element
           const { properties } = node
-          if (checkFootnoteRef(node as Element)) {
+          if (checkFootnoteRef(node)) {
             visit(page.htmlAst!, { tagName: "section" }, (node) => {
               if (node.properties.dataFootnotes == "") {
                 const noteId = (properties.href! as string).replace("#", "")
@@ -1125,9 +1126,9 @@ export function renderPage(
               Bonjour, je suis Aaron.
             </h1>
             <div class={classNames(displayClass, "landing")}>
-              <Element {...componentData} />
-              <Search {...componentData} />
-              <Palette {...componentData} />
+              <Element {...props} />
+              <Search {...props} />
+              <Palette {...props} />
             </div>
           </>
         )
@@ -1220,7 +1221,15 @@ export function renderPage(
           data-disable-sidepanel={disableSidepanel}
           data-is-folder-tag={isFolderTag}
         >
-          <main id="quartz-root" class={classNames(undefined, "page", slug==="index" ? "grid" : "")} style={slug !== "index" ? { display: "flex", flexDirection: "column", minHeight: "100vh" }: undefined}>
+          <main
+            id="quartz-root"
+            class={classNames(undefined, "page", slug === "index" ? "grid" : "")}
+            style={
+              slug !== "index"
+                ? { display: "flex", flexDirection: "column", minHeight: "100vh" }
+                : undefined
+            }
+          >
             <Header {...componentData}>
               {header.map((HeaderComponent) => (
                 <HeaderComponent {...componentData} />
@@ -1244,7 +1253,8 @@ export function renderPage(
                 "page-content",
                 slug === "index" ? "side-col" : "grid all-col",
               )}
-              style={{ flex: "1 1 auto" }}>
+              style={{ flex: "1 1 auto" }}
+            >
               {sidebar.length > 0 && (
                 <aside class="aside-container left-col">
                   {sidebar.map((BodyComponent) => (
@@ -1256,6 +1266,7 @@ export function renderPage(
               <div id="wc-modal" class="wc-modal">
                 <div class="wc-inner" />
               </div>
+              <aside class="sidepanel-container" />
             </section>
             {!isFolderTag && (
               <section class="page-footer popover-hint grid all-col">
@@ -1269,7 +1280,6 @@ export function renderPage(
                 {slug !== "index" && <Footer {...componentData} />}
               </section>
             )}
-            <aside class="sidepanel-container" />
             <QuartzIcon filePath={componentData.fileData.filePath!} />
           </main>
         </body>
