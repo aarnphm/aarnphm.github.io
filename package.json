@@ -58,6 +58,7 @@
     "globby": "^14.1.0",
     "gray-matter": "^4.0.3",
     "hast-util-from-html": "^2.0.3",
+    "hast-util-from-html-isomorphic": "^2.0.0",
     "hast-util-heading-rank": "^3.0.0",
     "hast-util-to-html": "^9.0.5",
     "hast-util-to-jsx-runtime": "^2.3.6",
