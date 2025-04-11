@@ -26,7 +26,7 @@
   },
   "engines": {
     "npm": ">=9.3.1",
-    "node": "20 || >=22"
+    "node": ">=22"
   },
   "keywords": [
     "site generator",
@@ -57,6 +57,7 @@
     "github-slugger": "^2.0.0",
     "globby": "^14.1.0",
     "gray-matter": "^4.0.3",
+    "hast-util-find-and-replace": "^5.0.1",
     "hast-util-from-html": "^2.0.3",
     "hast-util-from-html-isomorphic": "^2.0.0",
     "hast-util-heading-rank": "^3.0.0",
@@ -79,6 +80,7 @@
     "mdast-util-to-markdown": "^2.1.2",
     "mdast-util-to-string": "^4.0.0",
     "micromorph": "^0.4.5",
+    "minimatch": "^10.0.1",
     "motion": "^12.6.5",
     "node-tikzjax": "^1.0.3",
     "pixi.js": "^8.9.1",

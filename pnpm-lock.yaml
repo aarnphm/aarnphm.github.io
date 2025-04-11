@@ -59,6 +59,9 @@ importers:
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
+      hast-util-find-and-replace:
+        specifier: ^5.0.1
+        version: 5.0.1
       hast-util-from-html:
         specifier: ^2.0.3
         version: 2.0.3
@@ -125,6 +128,9 @@ importers:
       micromorph:
         specifier: ^0.4.5
         version: 0.4.5
+      minimatch:
+        specifier: ^10.0.1
+        version: 10.0.1
       motion:
         specifier: ^12.6.5
         version: 12.6.5
