@@ -4,7 +4,7 @@ tags:
   - ml
 title: Group Relative Policy Optimization
 description: and RL.
-modified: 2025-03-29 21:25:43 GMT-04:00
+modified: 2025-04-13 20:21:18 GMT-04:00
 ---
 
 a [[thoughts/Machine learning|RL]] policy [[thoughts/optimization|optimization]] where the critic model is the same size as the policy models
