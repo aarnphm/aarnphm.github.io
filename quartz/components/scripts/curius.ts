@@ -1,11 +1,12 @@
 import { Link, CuriusResponse, Trail, TrailInfo } from "../types"
 import { registerEscapeHandler, registerEvents, removeAllChildren } from "./util"
 import { ValidLocale, i18n } from "../../i18n"
-import FlexSearch, { IndexOptions } from "flexsearch"
+import FlexSearch from "flexsearch"
 import { LCG } from "../../util/helpers"
+import { encode } from "./util"
 
-const curiusBase = "https://curius.app"
-export const CURIUS = `${curiusBase}/aaron-pham`
+const CURIUS_HOST = "https://curius.app"
+export const CURIUS = `${CURIUS_HOST}/aaron-pham`
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
 
 export const fetchLinksHeaders: RequestInit = {
@@ -278,7 +279,7 @@ function createTrailEl(
   headers.classList.add("curius-trail-header")
   headers.innerHTML = `<span class="trail-title"><em>${trail_name}</em></span><span class="trail-description">${info.description!}</span>`
 
-  const trailLink = `${curiusBase}/trail/${info.slug}`
+  const trailLink = `${CURIUS_HOST}/trail/${info.slug}`
 
   const links = document.createElement("ul")
   links.classList.add("trail-ul")
@@ -325,19 +326,10 @@ function createTrailEl(
   return container
 }
 
-let index: FlexSearch.Document<Link> = new FlexSearch.Document({
-  charset: "latin:advanced",
-  document: {
-    id: "id",
-    index: [
-      ...Object.keys(_SENTINEL).map(
-        (key) =>
-          ({ field: key, tokenize: "forward" }) as IndexOptions<Link, false> & {
-            field: string
-          },
-      ),
-    ],
-  },
+let index = new FlexSearch.Document({
+  tokenize: "forward",
+  encode,
+  document: { id: "id", index: Array.from(Object.keys(_SENTINEL)) },
 })
 
 const numSearchResults = 20
@@ -553,11 +545,16 @@ export async function curiusSearch(linksData: Link[]) {
   await fillIndex(linksData)
 }
 
+let indexPopulated = false
 async function fillIndex(links: Link[]) {
+  if (indexPopulated) return
   let id = 0
-  const promises: Array<Promise<unknown>> = []
+  const promises = []
   for (const link of links) {
-    promises.push(index.addAsync(id++, { ...link }))
+    promises.push(index.addAsync(id, { ...link }))
+    id++
   }
-  return await Promise.all(promises)
+
+  await Promise.all(promises)
+  indexPopulated = true
 }

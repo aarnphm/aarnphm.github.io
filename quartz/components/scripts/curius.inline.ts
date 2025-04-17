@@ -9,8 +9,6 @@ import {
   curiusSearch,
 } from "./curius"
 
-const refetchTimeout = 2 * 60 * 1000 // 2 minutes
-
 let currentActive: HTMLLIElement | null = null
 function createLinkEl(Link: Link): HTMLLIElement {
   const curiusItem = document.createElement("li")
