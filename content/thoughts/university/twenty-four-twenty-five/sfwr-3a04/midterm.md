@@ -5,7 +5,7 @@ tags:
   - midterm
 date: "2025-03-03"
 description: and designs.
-modified: 2025-03-03 13:26:15 GMT-05:00
+modified: 2025-04-17 05:11:40 GMT-04:00
 title: software architectures
 ---
 
