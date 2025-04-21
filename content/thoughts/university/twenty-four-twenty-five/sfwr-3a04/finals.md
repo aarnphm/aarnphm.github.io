@@ -4,7 +4,7 @@ tags:
   - sfwr3a04
 date: 2025-04-17
 description: And everything in between
-modified: 2025-04-17 09:08:12 GMT-04:00
+modified: 2025-04-17 16:08:20 GMT-04:00
 title: Software Design 2
 ---
 

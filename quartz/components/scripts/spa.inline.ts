@@ -656,7 +656,6 @@ class StackedNoteManager {
   }
 }
 
-let isNavigating = false
 const stacked = new StackedNoteManager()
 window.stacked = stacked
 
@@ -737,15 +736,11 @@ async function _navigate(url: URL, isBack: boolean = false) {
 }
 
 async function navigate(url: URL, isBack: boolean = false) {
-  if (isNavigating) return
-  isNavigating = true
   try {
     await _navigate(url, isBack)
   } catch (e) {
     console.error(e)
     window.location.assign(url)
-  } finally {
-    isNavigating = false
   }
 }
 

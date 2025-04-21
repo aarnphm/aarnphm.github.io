@@ -91,16 +91,17 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     componentResources.afterDOMLoaded.push(`
       const plausibleScript = document.createElement("script")
       plausibleScript.src = "${plausibleHost}/js/script.outbound-links.manual.js"
-      plausibleScript.setAttribute("data-domain", [location.hostname, "notes.aarnphm.xyz", "tinymorph.aarnphm.xyz"].join(','))
-      plausibleScript.setAttribute("spa-preserve", true)
+      plausibleScript.setAttribute("data-domain", [location.hostname, "notes.aarnphm.xyz"].join(','))
       plausibleScript.defer = true
+      plausibleScript.onload = () => {
+        window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };
+        plausible('pageview')
+        document.addEventListener('nav', () => {
+          plausible('pageview')
+        })
+      }
+
       document.head.appendChild(plausibleScript)
-
-      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
-
-      document.addEventListener("nav", () => {
-        plausible("pageview")
-      })
     `)
   }
 
