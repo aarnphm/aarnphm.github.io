@@ -5,7 +5,7 @@ tags:
 date: 2025-04-19
 description: on nature of North-American pedagogy
 draft: true
-modified: 2025-04-20 21:51:21 GMT-04:00
+modified: 2025-04-21 00:51:27 GMT-04:00
 title: how to capstone
 ---
 

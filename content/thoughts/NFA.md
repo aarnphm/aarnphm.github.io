@@ -1,10 +1,10 @@
 ---
 id: NFA
 tags:
-  - sfwr2fa3
+  - math
 date: "2024-01-30"
 description: via subset construction algorithm of DFA
-modified: 2025-03-04 07:46:30 GMT-05:00
+modified: 2025-04-22 07:25:41 GMT-04:00
 title: non-deterministic finite automaton
 ---
 

@@ -152,7 +152,7 @@ We can show that longest-shared-prefix-first order is equivalent to DFS order by
     - longest-shared-prefix-first order will select $z$, which is a valid DFS
       q.e.d
 
-![[thoughts/constrained decoding#compressed FSM for jump-ahead tokens.]]
+![[thoughts/structured outputs#compressed FSM for jump-ahead tokens.]]
 
 ## Multi-head Latent Attention (MLA)
 

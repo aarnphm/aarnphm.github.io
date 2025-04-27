@@ -9,7 +9,7 @@ cssclasses:
   - nolist
 date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-04-09 00:34:18 GMT-04:00
+modified: 2025-04-27 10:22:26 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -98,6 +98,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
   - > If you became too good at spotting the wolves beneath the wool, too fluent in the language of red flags, too unwilling to be dazzled by the cheap magic tricks of love bombers and smooth-tongued frauds.
 - https://read.mindmine.xyz/p/stop-hiding -- Stop hiding from your power.
 - https://www.stevestewartwilliams.com/cp/159468280 -- Human Equivalents of the Peacock's Tail
+- https://archive.ph/YNZI0 -- Elon wants what he can't have: Wikipedia
 
 ### life is literature
 
@@ -143,6 +144,7 @@ https://x.com/poetengineer__/status/1895397439852695708
 
 ## resources
 
+- https://www.gap-map.org/?sort=rank -- Gap Map
 - https://fontsource.org/ -- Font search, made easy
 - https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
 - [ziglang/zig/.../general_purpose_allocator.zig](https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig) -- The GPA you need to care about

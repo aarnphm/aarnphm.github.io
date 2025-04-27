@@ -15,14 +15,14 @@ socials:
 title: structured decoding, a guide for the impatient
 ---
 
-[[thoughts/constrained decoding|tldr]]:
+[[thoughts/structured outputs|tldr]]:
 
 - Structured decoding allows precise control over LLM output formats
 - vLLM now supports both [outlines](https://github.com/dottxt-ai/outlines) and [XGrammar](https://github.com/mlc-ai/xgrammar) backends for structured decoding
 - Recent XGrammar integration brings up to 5x improvement in time per output token (TPOT) under load
 - Upcoming v1 release focuses on enhanced performance and schedule-level mask broadcasting for mixed-requests batch support
 
-_[vLLM](https://blog.vllm.ai/2023/06/20/vllm.html) is the high-throughput and efficient inference engine for running **large-language models** ([[thoughts/LLMs|LLM]]). In this post, we will explore the annotated history of language models, describe the current state of [[thoughts/constrained decoding|structured decoding]] in vLLM, as well as the recent integration with [XGrammar](https://github.com/vllm-project/vllm/pull/10785), and share a tentative roadmap for vLLM's [v1](https://github.com/vllm-project/vllm/issues/8779) improvement for structured decoding._
+_[vLLM](https://blog.vllm.ai/2023/06/20/vllm.html) is the high-throughput and efficient inference engine for running **large-language models** ([[thoughts/LLMs|LLM]]). In this post, we will explore the annotated history of language models, describe the current state of [[thoughts/structured outputs|structured decoding]] in vLLM, as well as the recent integration with [XGrammar](https://github.com/vllm-project/vllm/pull/10785), and share a tentative roadmap for vLLM's [v1](https://github.com/vllm-project/vllm/issues/8779) improvement for structured decoding._
 
 > We would also invite users to tackle this blog post from a philosophical perspective, and in the process trying to posit that structured decoding represents a fundamental shift in how we think about LLM outputs. It also plays an important role in building complex agentic system.
 
@@ -166,7 +166,7 @@ _in vLLM, you can use this by passing a JSON schema to the sampling params (eith
     - $q_0 \in Q$ is the start state
     - $F \subseteq Q$ is the set of all accepted states.
 
-    Intuitively, we can describe any structured format (JSON, YAML, etc.) using a context-free grammar due to its expressive nature.
+    Intuitively, we can describe any structured format (JSON, YAML, etc.) using a [[thoughts/Context-Free Grammar|context-free grammar]] due to its expressive nature.
 
 ### previous limitation in vLLM.
 
@@ -182,7 +182,7 @@ There are few limitations with current vLLM's support of the Outlines backend:
 
 ### integrations with XGrammar
 
-[XGrammar](https://github.com/mlc-ai/xgrammar) introduces a new technique that batch constrained decoding with _pushdown automaton_ (PDA). You can think of a PDA as a "collection of FSMs, and each FSM represents a context-free grammar (CFG)." One significant advantage of PDA is its recursive nature, allowing us to execute multiple state transitions. They also include additional [optimisation](https://blog.mlc.ai/2024/11/22/achieving-efficient-flexible-portable-structured-generation-with-xgrammar) (for those who are interested) to reduce grammar compilation overhead.
+[XGrammar](https://github.com/mlc-ai/xgrammar) introduces a new technique that batch constrained decoding with _pushdown automaton_ (PDA). You can think of a PDA as a "collection of FSMs, and each FSM represents a [[thoughts/Context-Free Grammar|context-free grammar]] (CFG)." One significant advantage of PDA is its recursive nature, allowing us to execute multiple state transitions. They also include additional [optimisation](https://blog.mlc.ai/2024/11/22/achieving-efficient-flexible-portable-structured-generation-with-xgrammar) (for those who are interested) to reduce grammar compilation overhead.
 
 This is great because it addresses **limitation (1)** by moving grammar compilation out of Python into C, utilising `pthread`. Additionally, XGrammar lays the groundwork for addressing **limitation (4)** in future releases. Below are performance comparisons between the XGrammar and Outlines backends:
 

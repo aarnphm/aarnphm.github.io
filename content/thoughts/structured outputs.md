@@ -3,14 +3,16 @@ id: constrained decoding
 aliases:
   - structured decoding
   - guided decoding
+  - structured outputs
+  - constrained decoding
 tags:
   - ml
   - proposal
   - technical
 date: 2024-11-18
-description: structured generations in vLLM a la carte
+description: structured generations in vLLM a la carte, or in general
 modified: 2025-02-13 14:32:52 GMT-05:00
-title: constrained decoding
+title: structured outputs
 transclude:
   title: false
 ---
@@ -153,7 +155,7 @@ How do we apply said masks to GPU block? Zero-overhead generations?
 
 Implemented in [@zheng2024sglangefficientexecutionstructured]
 
-#### Method 1: [[thoughts/constrained decoding#Guided generations with FSM.|FSM]]-based decoding
+#### Method 1: [[thoughts/structured outputs#Guided generations with FSM.|FSM]]-based decoding
 
 - intuition: Using FSM [@willard2023efficientguidedgenerationlarge] to guide generations by increasing logit bias for tokens that conform to given JSON schema. This allows us to track the current state during decoding and filter out invalid tokens by applying logit bias to the output.
 
@@ -190,7 +192,7 @@ Fix:
 - implement ==re-tokenization== mechanism during jump-forward phase (append string instead of the tokens, followed with re-tokenization of the entire text) $\to$ add approximately 4% of overhead
 - use a comprehensive regex to guide the decoding phase, instead of employing multiple concatenated regex [^coalescence]
 
-[^coalescence]: this phenomena is also known as [[thoughts/constrained decoding#Coalescence|coalescence]] in structured generations, where it exploit deterministic structures in desired outputs to skip expensive forward pass
+[^coalescence]: this phenomena is also known as [[thoughts/structured outputs#Coalescence|coalescence]] in structured generations, where it exploit deterministic structures in desired outputs to skip expensive forward pass
 
 ### Coalescence
 
