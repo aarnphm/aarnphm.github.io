@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2024-01-22"
 description: Includes the tools I use, workflow,  etc.
-modified: 2025-04-09 00:34:09 GMT-04:00
+modified: 2025-05-18 23:27:14 GMT-04:00
 title: uses.
 ---
 
@@ -30,6 +30,7 @@ see also [[are.na|links]] , [[tweets|based twitter posts]]
 - [Ghostty](https://ghostty.org/)
   - [neovim](https://neovim.io/) and [config](https://github.com/aarnphm/editor) ^neovim
   - patched [Berkeley Mono](https://berkeleygraphics.com/typefaces/berkeley-mono/) with Nerd Fonts.
+  - [dotfiles](https://github.com/aarnphm/detachtools/)
 - [Obsidian](https://obsidian.md/), hosted with [Quartz](https://quartz.jzhao.xyz) (this site)
 - GitHub
 - Apple Notes

@@ -8,7 +8,6 @@ export const sharedPageComponents: SharedLayout = {
     Component.StackedNotes(),
     Component.Breadcrumbs({
       rootName: "~",
-      style: "full",
       spacerSymbol: "/",
       showCurrentPage: true,
     }),
@@ -43,7 +42,7 @@ export const defaultContentPageLayout: PageLayout = {
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [
     Component.StackedNotes(),
-    Component.Breadcrumbs({ rootName: "~", style: "full", spacerSymbol: "/" }),
+    Component.Breadcrumbs({ rootName: "~", spacerSymbol: "/" }),
     Component.Image(),
     Component.Graph(),
     Component.Palette(),

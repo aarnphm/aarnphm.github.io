@@ -1,3 +1,4 @@
+import { getFullSlug } from "../../util/path"
 import { getCollapsedState, setCollapsedState, setHeaderState } from "./util"
 
 type MaybeHTMLElement = HTMLElement | undefined
@@ -108,7 +109,7 @@ window.addEventListener("resize", setupHeaders)
 // Add overlay to section[class~="header"] once scrolling
 function setupHeaderOverlay() {
   const header = document.querySelector('section[class~="header"]') as HTMLElement
-  if (!header) return
+  if (!header || getFullSlug(window) === "index") return
 
   function handleScroll() {
     const asidePanel = document.querySelector<HTMLDivElement>(

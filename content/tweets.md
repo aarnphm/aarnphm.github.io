@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-04-10 06:27:14 GMT-04:00
+modified: 2025-05-13 11:54:18 GMT-04:00
 noindex: true
 title: /xeets/
 transclude:
@@ -139,6 +139,8 @@ https://x.com/tobi/status/1878957750576906484 <!-- Tobi replies on Canada's Tech
 https://x.com/chapman_bliss/status/1881613396359127467 <!-- Last day at Neural Link -->
 
 https://x.com/adonis_singh/status/1884499176865632672 <!-- R1 one-shotted into markets and individualism -->
+
+https://x.com/spencerc99/status/1721704642307113346 <!-- Spencer's inspiration from game to make playful software -->
 
 ## [[thoughts/Machine learning|machine learning]]
 

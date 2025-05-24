@@ -4,7 +4,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-02-07"
-modified: 2025-03-18 17:13:33 GMT-04:00
+modified: 2025-05-12 23:52:50 GMT-04:00
 title: movies.
 ---
 
@@ -68,6 +68,7 @@ _doesn't mean that I won't watch it again, just that I will need some more time 
 - [x] Flow (2024)
 - [x] Here (2024)
 - [x] The Substance (2024)
+- [x] A Real Pain (2024)
 
 [^remake]: There is also a remake series (2024) starring Eddie Redmayne. (very chill)
 

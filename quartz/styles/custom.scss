@@ -439,6 +439,10 @@ body {
   }
 
   &[data-slug="index"] {
+    section[class~="header"] {
+      border-bottom: none;
+    }
+
     .center {
       --index-border-width: 1px;
       position: relative;

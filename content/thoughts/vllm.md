@@ -6,7 +6,7 @@ tags:
   - technical
 date: "2024-09-09"
 description: efficient LLM serving engine.
-modified: 2025-03-25 05:48:01 GMT-04:00
+modified: 2025-05-13 03:15:10 GMT-04:00
 permalinks:
   - /vllm
 title: vLLM
@@ -217,6 +217,10 @@ graph TB
 
 ### proposal
 
+#### structured outputs
+
 ![[thoughts/structured outputs|guided decoding]]
+
+#### Unification of tool calling and reasoning parser
 
 [^ref]

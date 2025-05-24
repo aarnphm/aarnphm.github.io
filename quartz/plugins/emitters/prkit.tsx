@@ -321,7 +321,9 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
         ([_, file]) => !file.data.slug!.includes("university"),
       )
       if (filteredContents.length === 0) return []
-      const fonts = await getSatoriFont(configuration, true)
+      const headerFont = configuration.theme.typography.header
+      const bodyFont = configuration.theme.typography.body
+      const fonts = await getSatoriFonts(configuration, headerFont, bodyFont)
 
       // rough heuristics: 128 gives enough time for v8 to JIT and optimize parsing code paths
       const NUM_WORKERS = 4

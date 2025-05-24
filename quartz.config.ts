@@ -166,6 +166,7 @@ const config: QuartzConfig = {
       Plugin.ContentIndex({ rssLimit: 60 }),
       Plugin.Assets(),
       Plugin.Static(),
+      Plugin.Favicon(),
       Plugin.NotFoundPage(),
       Plugin.CustomOgImages(),
       // Plugin.PressKit(),

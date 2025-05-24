@@ -4,6 +4,7 @@ import HeaderConstructor from "./Header"
 import ContentConstructor from "./pages/Content"
 import FooterConstructor from "./Footer"
 import SearchConstructor from "./Search"
+import Graph from "./Graph"
 import PaletteConstructor from "./Palette"
 import { byDateAndAlphabetical } from "./PageList"
 import { getDate, Date as DateComponent } from "./Date"
@@ -1110,15 +1111,13 @@ export function renderPage(
   if (slug === "index") {
     components = {
       ...components,
-      header: [],
+      header: [Graph(), SearchConstructor({ includeButton: false }), PaletteConstructor()],
       sidebar: [],
       afterBody: [],
       beforeBody: [],
       pageBody: (props: QuartzComponentProps) => {
         const { displayClass } = props
         const Element = ElementComponent()
-        const Search = SearchConstructor({ includeButton: false })
-        const Palette = PaletteConstructor()
 
         return (
           <>
@@ -1127,8 +1126,6 @@ export function renderPage(
             </h1>
             <div class={classNames(displayClass, "landing")}>
               <Element {...props} />
-              <Search {...props} />
-              <Palette {...props} />
             </div>
           </>
         )

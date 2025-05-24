@@ -9,7 +9,7 @@ cssclasses:
   - nolist
 date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-04-27 10:22:26 GMT-04:00
+modified: 2025-05-23 11:45:46 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -57,6 +57,11 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://leimao.github.io/ -- Lei Mao's blog on CUDA and GPU optimization (NVIDIA)
 - https://www.lei.chat -- AI Compiler (AMD)
 - https://studio.4o4.space/ -- 4o4 Studio
+- https://cogtoolslab.github.io/ -- cognitive tools lab
+  - reverse engineering the human cognitive toolkit, by Prof. Judith Fan
+- https://everythingiseverything.nyc/map/ -- Bagel places, in NYC
+- https://www.rockstargames.com/VI -- GTA VI when?
+- https://www.tetragrammaton.com/
 
 ## researchers
 
@@ -64,6 +69,9 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 
 ## essay
 
+- https://cybermonk.substack.com/p/i-am -- I am
+- https://blog.scottstevenson.net/p/how-to-finally-make-something-a16c8db7ba2a -- How to finally make something
+- http://www.aaronsw.com/weblog/theoryofchange -- Theory of Change
 - https://thesolarmonk.com/posts/a-spacebar-for-the-web -- vintage, letter type
 - https://retool.com/visual-basic -- ASCII effects and procedural arrangement
 - https://www.tylerxhobbs.com/words/flow-fields -- flow feel
@@ -81,15 +89,12 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.lesswrong.com/posts/H7fkGinsv8SDxgiS2/ironing-out-the-squiggles -- Ironing Out the Squiggles
 - https://readsomethingwonderful.com/p/47/the-inner-ring -- Read something wonderful
 - https://optimists.ai/2024/03/10/deconstructing-bostroms-argument-for-ai-doom/ -- Bostrom's Argument for AI Doom
-- https://paulgraham.com/95.html -- PG's 95% of great programmers in
-- https://paulgraham.com/woke.html -- Origin of Wokeness
 - https://writeordiemag.com/elliptical-love/untranslatable -- Untranslatable
 - https://www.oaktreecapital.com/docs/default-source/memos/on-bubble-watch.pdf?sfvrsn=ab105466_4 -- On Bubble Watch and Stock market
 - https://ordinaryinstants.substack.com/p/graduate-school-is-just-a-metaphor -- Graduate school is just a metaphor
 - https://www.epi.org/publication/u-s-benefits-from-immigration -- US benefits from immigration but policy reforms needed to maximize gains
 - https://www.washingtonpost.com/context/the-portable-bloomberg-the-wit-wisdom-of-michael-bloomberg/ba5281b4-886d-42dc-a28d-e67eceb60719/ -- The Portable Bloomberg: [[thoughts/pdfs/The Wit and Wisdom of Michael Bloomberg.pdf|The Wit & Wisdom of Michael Bloomberg]]
 - https://www.autodidacts.io/troubleshooting/ -- On Troubleshooting
-- https://blog.aayushg.com/conviction/ -- Conviction is the scarcest resources
 - https://www.stevestewartwilliams.com/p/the-problem-of-free-will-solved -- The Problem of Free Will
 - https://www.overcomingbias.com/p/alien-life-info-but-not-status-found -- Alien Life Info, But not Status, Found
 - https://stirthepots.substack.com/p/things-i-notice-when-im-not-rushing -- things i notice when i'm not rushing
@@ -99,6 +104,18 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://read.mindmine.xyz/p/stop-hiding -- Stop hiding from your power.
 - https://www.stevestewartwilliams.com/cp/159468280 -- Human Equivalents of the Peacock's Tail
 - https://archive.ph/YNZI0 -- Elon wants what he can't have: Wikipedia
+- https://danluu.com/learn-what/ -- What to learn
+- https://pketh.org/organic-software.html -- In Search of Organic Software
+
+### argumentative
+
+- https://blog.aayushg.com/conviction/ -- Conviction is the scarcest resources
+- https://danluu.com/ballmer/ -- Steve Ballmer was an underrated CEO
+- https://www.dwarkesh.com/p/questions-about-ai?open=false -- Questions about AI, by Dwarkesh
+- https://epoch.ai/gradient-updates/most-ai-value-will-come-from-broad-automation-not-from-r-d -- Most AI value will come from broad automation, not from R&D
+- https://www.thefp.com/p/a-fifth-of-american-adults-cant-read-i-teach-them -- A fifth of American Adults Can't Read. Here's How to Teach Them.
+- https://paulgraham.com/95.html -- PG's 95% of great programmers in
+- https://paulgraham.com/woke.html -- Origin of Wokeness
 
 ### life is literature
 
@@ -133,6 +150,10 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 
 - https://www.youtube.com/watch?v=WJ76FfBZuhI&ab_channel=SoderCinema -- Narcissistic Facades - Amy Dunne
 
+## tools
+
+- https://cobalt.tools/ -- new YT downloader
+
 ## protocol
 
 - [Willow](https://willowprotocol.org/specs/index.html#specifications) -- protocol for synchronisable data store
@@ -146,7 +167,7 @@ https://x.com/poetengineer__/status/1895397439852695708
 
 - https://www.gap-map.org/?sort=rank -- Gap Map
 - https://fontsource.org/ -- Font search, made easy
-- https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
+- https://github.com/NixOS/nixpkgs/blob/master/lib/meta.nix -- meta.nix and helpers function in Nix
 - [ziglang/zig/.../general_purpose_allocator.zig](https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig) -- The GPA you need to care about
 - https://lettermatic.com/fonts/parclo-serif -- Parclo I might buy this
 - https://drmichaellevin.org/resources/otherlabs.html -- Labs interests
@@ -164,9 +185,9 @@ https://x.com/poetengineer__/status/1895397439852695708
 - https://www.youtube.com/watch?v=sX2nF1fW7kI -- When Nanoseconds Matter: Ultrafast Trading System in C++
 - https://www.vmware.com/docs/the-basics-of-remote-direct-memory-access-rdma-in-vsphere -- RDMA in VSphere
   - Good introduction to RDMA
+- https://www.corner.inc/list/02c68af9-8286-474f-91de-0b4e702330e6?sid=49933781-9175-48ae-852b-acb5006e8bca -- toronto coworking spots
 - [mech-interp trails](https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvYXV0b2VuY29kZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvbGF0ZW50LXNwYWNl&stackedNotes=dGhvdWdodHMvcmVwcmVzZW50YXRpb25z&stackedNotes=dGhvdWdodHMvZGF0YQ)
 - [interesting trails](https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvSW50ZXJuZXQ&stackedNotes=dGhvdWdodHMvRGV0ZXJtaW5pc20&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9lbmdpbmVlci00YTAzL2xpdGVyYXR1cmUtcmV2aWV3&stackedNotes=cG9zdHMvY2hhdGdwdA&stackedNotes=dGhvdWdodHMvT0NJ&stackedNotes=dGhvdWdodHMvQ29udGVudC1hZGRyZXNzYWJsZS1zdG9yYWdl&stackedNotes=dGhvdWdodHMvYW50aHJvcGljLXNhZmV0eS1mZWxsb3c&stackedNotes=dGhvdWdodHMvTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvb3B0aW1pemF0aW9u&stackedNotes=dGhvdWdodHMvTExNcw&stackedNotes=dGhvdWdodHMvZXRoaWNz&stackedNotes=dGhvdWdodHMvYWVzdGhldGljLXZhbHVl&stackedNotes=dGhvdWdodHMvUGhpbG9zb3BoeS1hbmQtTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvZGlhbGVjdGljcw&stackedNotes=dGhvdWdodHMvcmVhc29u&stackedNotes=dGhvdWdodHMvQ2FtdXM&stackedNotes=cG9zdHMvMjAyNA&stackedNotes=cXVvdGVz&stackedNotes=dGhvdWdodHMvSGVsbWhvbHR6LWRlY29tcG9zaXRpb24&stackedNotes=dGhvdWdodHMvTW9udGUtQ2FybG8&stackedNotes=dGhvdWdodHMvQ2hvbGVza3ktZGVjb21wb3NpdGlvbg&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9zZndyLTRtbDMvQmlhcy1hbmQtaW50ZXJjZXB0&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=cG9zdHMvc3RydWN0dXJlZC1kZWNvZGluZw&stackedNotes=dGhvdWdodHMvVHJhbnNmb3JtZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvQ2F1Y2h5LW1vbWVudHVtLWVxdWF0aW9u&stackedNotes=dGhvdWdodHMvVGVuc29yLWZpZWxk&stackedNotes=dGhvdWdodHMvbWFuaWZvbGQ&stackedNotes=dGhvdWdodHMvUHJvZ3Jlc3NpdmUtZGlzY2xvc3VyZQ&stackedNotes=dGhvdWdodHMvR2lsZXMtRGVsZXV6ZQ&stackedNotes=dGhvdWdodHMvQXV0b3JlZ3Jlc3NpdmUtbW9kZWxz&stackedNotes=dGhvdWdodHMvTGxhbWEtMw&stackedNotes=dGhvdWdodHMvZGlzcGxhY2VtZW50&stackedNotes=dGhvdWdodHMvY29uc3RyYWluZWQtZGVjb2Rpbmc&stackedNotes=dGhvdWdodHMvUGFyZXRvLWRpc3RyaWJ1dGlvbg&stackedNotes=cG9zdHMvUXVlc3Rpb25zLWFib3V0LU1ldGFwaHlzaWNz&stackedNotes=dGhvdWdodHMvQWdlbmN5&stackedNotes=cG9zdHMvY29ycG9yYXRlLXBlcnNvbmhvb2Q&stackedNotes=dGhvdWdodHMvVmVyeS1TbGVuZGVyLURpZmZlcmVuY2Vz&stackedNotes=dGhvdWdodHMvQXJpc3RvdGxl&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ)
-- [toronto coworking spots](https://www.corner.inc/list/02c68af9-8286-474f-91de-0b4e702330e6?sid=49933781-9175-48ae-852b-acb5006e8bca)
 - [GNU C Manual Reference](https://www.c-asm.com/gnu-c-manual.html)
 
 ### vc.
@@ -175,6 +196,7 @@ https://x.com/poetengineer__/status/1895397439852695708
 
 ### [[thoughts/Machine learning]]
 
+- https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf -- Matrix cookbook
 - https://github.com/bytedance/flux -- fast communication-overlapping library for TP
 - https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
 - https://jax-ml.github.io/scaling-book/ -- JAX scaling book
@@ -184,3 +206,6 @@ https://x.com/poetengineer__/status/1895397439852695708
 - https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/ -- [[thoughts/Bayesian Neural Network]]
 - https://docs.google.com/document/d/1gGr1xw2NhCPG7ynZtiGgpgETRXYUJ8YjH8zZxwt6A6o/edit?tab=t.0#heading=h.3kkp24ma2sf7 -- Structural tags in xgrammar (to be used in [[thoughts/vllm|vLLM]])
 - https://www.lei.chat/posts/triton-linear-layout-concept/ -- Lei's Chat on Triton Linear Layout
+- https://research.colfax-intl.com/cutlass-tutorial-writing-gemm-kernels-using-tensor-memory-for-nvidia-blackwell-gpus/ -- GEMM kernels on Blackwell GPUs
+- https://www.youtube.com/watch?v=XYSKd4dOT3Y&ab_channel=NeelNanda -- How to Think about Thinking Model
+- https://www.joelsimon.net/lluminate -- Creative exploration with LLM

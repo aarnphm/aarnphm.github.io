@@ -1,5 +1,5 @@
 ---
-id: constrained decoding
+id: structured outputs
 aliases:
   - structured decoding
   - guided decoding
@@ -7,11 +7,11 @@ aliases:
   - constrained decoding
 tags:
   - ml
-  - proposal
-  - technical
-date: 2024-11-18
+  - rfc
+  - vllm
+date: "2024-11-18"
 description: structured generations in vLLM a la carte, or in general
-modified: 2025-02-13 14:32:52 GMT-05:00
+modified: 2025-05-07 15:27:38 GMT-04:00
 title: structured outputs
 transclude:
   title: false

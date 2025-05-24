@@ -4,7 +4,7 @@ tags:
   - evergreen
 date: "2024-01-09"
 description: and my livelihood.
-modified: 2025-01-25 02:07:03 GMT-05:00
+modified: 2025-05-17 01:02:08 GMT-04:00
 noindex: true
 title: Expenses
 ---
@@ -24,6 +24,7 @@ title: Expenses
 | bookbear express              | 70        | Y          | USD      | Chase |           |
 | Claude                        | 240       | Y          | USD      | Chase |           |
 | Vocabulary                    | 29.99     | Y          | USD      | Chase |           |
+| Netflix                       | 23.99     | M          | CAD      | Chase |           |
 | Duolingo Max                  | 149.99    | Y          | USD      | Chase |           |
 | Strava                        | 79.99     | Y          | USD      | Chase |           |
 | Twitter Premium+              | 210       | Y          | USD      | Chase |           |

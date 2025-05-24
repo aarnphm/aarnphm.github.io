@@ -5,7 +5,7 @@ tags:
   - growth
 date: "2025-02-14"
 description: on loneliness, Jungian-Bottonian love, and belongings.
-modified: 2025-03-01 13:38:24 GMT-05:00
+modified: 2025-05-23 11:00:43 GMT-04:00
 socials:
   substack: https://open.substack.com/pub/livingalone/p/jung-bottonian-love?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 title: It is Valentine, and I don't have any plans.
@@ -19,7 +19,7 @@ _The first part is an exploration into Jung's archetypes and how love is **a mut
 ![[posts/images/helenebailly-maurice-denis-environs-du-cap-mis-ne-1904.webp|Environs du cap Misène (1904)]]
 
 I've been mulling over this all morning, wondering what I want to write about _love_ - the state that morphs into every crevice of one's consciousness - romantic, platonic, familial.
- 
+
 What do I really know about it? Less than I'd like, more than I admit.
 
 I went to grab a coffee earlier today. The barista knows my order by now - Latte, oat milk, hot.
@@ -171,3 +171,4 @@ Here's are some media, quotes, and unstructured thoughts. I hope you might find 
 - Work-related: [[posts/structured decoding]] for vLLM v1 should be out promptly, in addition to a project I have been working on for the past 5 months that is in the realm of UX and productionising [[thoughts/mechanistic interpretability|interpretability]]
 
 </div>
+

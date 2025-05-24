@@ -68,6 +68,30 @@ type TweenNode = {
   stop: () => void
 }
 
+// workaround for pixijs webgpu issue: https://github.com/pixijs/pixijs/issues/11389
+async function determineGraphicsAPI(): Promise<"webgpu" | "webgl"> {
+  const adapter = await navigator.gpu?.requestAdapter().catch(() => null)
+  const device = adapter && (await adapter.requestDevice().catch(() => null))
+  if (!device) {
+    return "webgl"
+  }
+
+  const canvas = document.createElement("canvas")
+  const gl =
+    (canvas.getContext("webgl2") as WebGL2RenderingContext | null) ??
+    (canvas.getContext("webgl") as WebGLRenderingContext | null)
+
+  // we have to return webgl so pixijs automatically falls back to canvas
+  if (!gl) {
+    return "webgl"
+  }
+
+  const webglMaxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)
+  const webgpuMaxTextures = device.limits.maxSampledTexturesPerShaderStage
+
+  return webglMaxTextures === webgpuMaxTextures ? "webgpu" : "webgl"
+}
+
 async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   const slug = simplifySlug(fullSlug)
   const visited = getVisited()
@@ -80,6 +104,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     scale,
     repelForce,
     centerForce,
+    linkDistance,
     fontSize,
     removeTags,
     showTags,
@@ -162,35 +187,11 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   const width = graph.offsetWidth
   const height = Math.max(graph.offsetHeight, 250)
 
-  // Calculate optimal link distance based on graph size
-  const optimalDistance = Math.sqrt((width * height) / graphData.nodes.length) * 1.5
-
   const simulation: Simulation<NodeData, LinkData> = forceSimulation<NodeData>(graphData.nodes)
-    .force(
-      "charge",
-      forceManyBody()
-        .strength(-150 * repelForce)
-        .distanceMax(width / 2),
-    )
-    .force("center", forceCenter(width / 2, height / 2).strength(centerForce))
-    .force(
-      "link",
-      forceLink(graphData.links)
-        .distance((d) => {
-          // Longer distances for tag connections
-          const isTagLink = d.source.id.startsWith("tags/") || d.target.id.startsWith("tags/")
-          return isTagLink ? optimalDistance * 1.5 : optimalDistance
-        })
-        .strength((d) => {
-          // Stronger connections for direct links
-          const isTagLink = d.source.id.startsWith("tags/") || d.target.id.startsWith("tags/")
-          return isTagLink ? 0.5 : 1
-        }),
-    )
-    .force(
-      "collide",
-      forceCollide<NodeData>((n) => nodeRadius(n) * 2),
-    )
+    .force("charge", forceManyBody().strength(-100 * repelForce))
+    .force("center", forceCenter().strength(centerForce))
+    .force("link", forceLink(graphData.links).distance(linkDistance))
+    .force("collide", forceCollide<NodeData>((n) => nodeRadius(n)).iterations(3))
 
   const radius = (Math.min(width, height) / 2) * 0.8
   if (enableRadial) simulation.force("radial", forceRadial(radius).strength(0.2))
@@ -220,7 +221,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     const isCurrent = d.id === slug
     if (isCurrent) {
       return computedStyleMap["--secondary"]
-    } else if (visited.has(d.id)) {
+    } else if (visited.has(d.id) || d.id.startsWith("tags/")) {
       return computedStyleMap["--tertiary"]
     } else {
       return computedStyleMap["--gray"]
@@ -290,9 +291,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
 
     tweenGroup.getAll().forEach((tw) => tw.start())
     tweens.set("link", {
-      update(time: number) {
-        tweenGroup.update(time)
-      },
+      update: tweenGroup.update.bind(tweenGroup),
       stop() {
         tweenGroup.getAll().forEach((tw) => tw.stop())
       },
@@ -322,9 +321,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
 
     tweenGroup.getAll().forEach((tw) => tw.start())
     tweens.set("label", {
-      update(time: number) {
-        tweenGroup.update(time)
-      },
+      update: tweenGroup.update.bind(tweenGroup),
       stop() {
         tweenGroup.getAll().forEach((tw) => tw.stop())
       },
@@ -348,9 +345,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
 
     tweenGroup.getAll().forEach((tw) => tw.start())
     tweens.set("hover", {
-      update(time: number) {
-        tweenGroup.update(time)
-      },
+      update: tweenGroup.update.bind(tweenGroup),
       stop() {
         tweenGroup.getAll().forEach((tw) => tw.stop())
       },
@@ -366,6 +361,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   tweens.forEach((tween) => tween.stop())
   tweens.clear()
 
+  const pixiPreference = await determineGraphicsAPI()
   const app = new Application()
   await app.init({
     width,
@@ -374,7 +370,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     autoStart: false,
     autoDensity: true,
     backgroundAlpha: 0,
-    preference: "webgpu",
+    preference: pixiPreference,
     resolution: window.devicePixelRatio,
     eventMode: "static",
   })
@@ -396,7 +392,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       eventMode: "none",
       text,
       alpha: 0,
-      anchor: { x: 0.5, y: 1.5 },
+      anchor: { x: 0.5, y: 1.2 },
       style: {
         fontSize: fontSize * 15,
         fill: computedStyleMap["--dark"],
@@ -444,12 +440,12 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     nodeRenderData.push(nodeRenderDatum)
   }
 
-  for (const simulationData of graphData.links) {
-    const gfx = new Graphics()
+  for (const l of graphData.links) {
+    const gfx = new Graphics({ interactive: false, eventMode: "none" })
     linkContainer.addChild(gfx)
 
     const linkRenderDatum: LinkRenderData = {
-      simulationData,
+      simulationData: l,
       gfx,
       color: computedStyleMap["--lightgray"],
       alpha: 1,
@@ -516,7 +512,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
           [0, 0],
           [width, height],
         ])
-        .scaleExtent([0.2, 8])
+        .scaleExtent([0.25, 4])
         .on("zoom", ({ transform }) => {
           currentTransform = transform
           stage.scale.set(transform.k, transform.k)
@@ -531,19 +527,18 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     for (const n of nodeRenderData) {
       const { x, y } = n.simulationData
       if (!x || !y) continue
-      // No need to add width/2 and height/2 as the force center is already at center
-      n.gfx.position.set(x, y)
+      n.gfx.position.set(x + width / 2, y + height / 2)
       if (n.label) {
-        n.label.position.set(x, y)
+        n.label.position.set(x + width / 2, y + height / 2)
       }
     }
 
     for (const l of linkRenderData) {
       const linkData = l.simulationData
       l.gfx.clear()
-      l.gfx.moveTo(linkData.source.x!, linkData.source.y!)
+      l.gfx.moveTo(linkData.source.x! + width / 2, linkData.source.y! + height / 2)
       l.gfx
-        .lineTo(linkData.target.x!, linkData.target.y!)
+        .lineTo(linkData.target.x! + width / 2, linkData.target.y! + height / 2)
         .stroke({ alpha: l.alpha, width: 1, color: l.color })
     }
 

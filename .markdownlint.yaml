@@ -2,3 +2,4 @@ default: true
 extends: markdownlint/style/prettier
 MD013: false
 MD033: false
+MD034: false
