@@ -9,12 +9,18 @@ tags:
   - ml
   - rfc
   - vllm
-date: "2024-11-18"
+date: 2024-11-18
 description: structured generations in vLLM a la carte, or in general
-modified: 2025-05-07 15:27:38 GMT-04:00
+modified: 2025-05-28 14:58:40 GMT-04:00
 title: structured outputs
 transclude:
   title: false
+---
+
+## structural tags
+
+See also: [docs WIP](https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm4higcSGpvKKNdmtY/edit?tab=t.0#heading=h.nc4nxxczgw4w)
+
 ---
 
 see also [RFC](https://github.com/vllm-project/vllm/issues/11908)

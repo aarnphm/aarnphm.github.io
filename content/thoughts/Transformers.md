@@ -3,9 +3,9 @@ id: Transformers
 tags:
   - ml
   - technical
-date: 2024-02-07
+date: "2024-02-07"
 description: and the backbone of the AI progress.
-modified: 2025-01-28 04:37:34 GMT-05:00
+modified: 2025-05-28 12:03:08 GMT-04:00
 title: Transformers
 ---
 
@@ -18,6 +18,10 @@ ELI5: Mom often creates a food list consists of $n$ of items to buy. Your job is
 Most implementations are [[thoughts/Autoregressive models|autoregressive]]. Most major SOTA are decoder-only, as encoder-decoder models has lack behind due to their expensive encoding phase.
 
 [[thoughts/state-space models|state-space models]] which address transformers' [efficiency issues](https://arxiv.org/pdf/2009.06732) in attention layers within information-dense data
+
+## internals
+
+See also: [transformers from scratch](https://e2eml.school/transformers.html)
 
 ## memory limitations.
 
@@ -35,7 +39,7 @@ $$
 
 Either compute-bound (batch inference, saturated usage) or memory-bound (latency)
 
-[[thoughts/vllm#speculative decoding]] => memory-bound (to saturate FLOPs)
+[[thoughts/Speculative decoding]] => memory-bound (to saturate FLOPs)
 
 ### KV
 
@@ -95,7 +99,11 @@ $$
 P_t(s_t) = \frac{\mathbb{E}_\mathbb{M} \left[ \prod_{i=1}^{t \wedge T} G_i(S_{i-1}, S_i, f_\theta) \cdot [S_t = s_t] \right]}{\mathbb{E}_\mathbb{M} \left[ \prod_{i=1}^{t \wedge T} G_i(S_{i-1}, S_i, f_\theta) \right]}
 $$
 
-_Given that $T$ is mostly finite_ we can then define _overall posterior_ $\mathbb{P}(s) = \lim_{t \to \infty} \mathbb{P}_t(s)$ [@lew2023sequentialmontecarlosteering{see 2.2 for examples}]
+_Given that $T$ is mostly finite_ we can then define _overall posterior_ [@lew2023sequentialmontecarlosteering{see 2.2 for examples}]
+
+$$
+\mathbb{P}(s) = \lim_{t \to \infty} \mathbb{P}_t(s)
+$$
 
 ```pseudo lineNumber=false
 \begin{algorithm}

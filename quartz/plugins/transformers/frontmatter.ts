@@ -61,7 +61,7 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
           data.title = file.stem ?? i18n(cfg.configuration.locale).propertyDefaults.title
         }
 
-        const tags = coerceToArray(coalesceAliases(data, ["tags", "tag"]))
+        const tags = coerceToArray(coalesceAliases(data, ["tags"]))
         if (tags) data.tags = [...new Set(tags.map((tag: string) => slugTag(tag)))]
 
         const aliases = coerceToArray(coalesceAliases(data, ["aliases", "alias"]))
@@ -79,7 +79,7 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
           allSlugs.push(data.permalink)
         }
 
-        const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses", "cssclass"]))
+        const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses"]))
         if (cssclasses) data.cssclasses = cssclasses
 
         const socialImage = coalesceAliases(data, ["socialImage", "image", "cover"])

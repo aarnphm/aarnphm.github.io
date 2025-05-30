@@ -4,9 +4,9 @@ tags:
   - ml
   - serving
   - technical
-date: "2025-05-21"
+date: 2025-05-21
 description: a method to speed up LLM decoding
-modified: 2025-05-21 09:59:07 GMT-04:00
+modified: 2025-05-28 14:37:01 GMT-04:00
 title: Speculative decoding
 ---
 
@@ -15,7 +15,7 @@ Idea: "draft-and-verify" using smaller models to generate a head tokens (quick e
 Intuitively:
 
 - we generate a small set of lookahead tokens, albeit 2-5 tokens with smaller speculators
-- uses the larger models to "verify" the input sequences + draft tokens (then replace tokens that aren't valid from rejection sampler)
+- uses the larger [[thoughts/Transformers#model]] to "verify" the input sequences + draft tokens (then replace tokens that aren't valid from rejection sampler)
 
 In a sense, we are verify these in parallel instead of [[thoughts/Autoregressive models|autoregressive decoding]].
 

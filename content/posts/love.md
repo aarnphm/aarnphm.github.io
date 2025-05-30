@@ -3,9 +3,9 @@ id: love
 tags:
   - love
   - growth
-date: "2025-02-14"
+date: 2025-02-14
 description: on loneliness, Jungian-Bottonian love, and belongings.
-modified: 2025-05-23 11:00:43 GMT-04:00
+modified: 2025-05-27 22:10:37 GMT-04:00
 socials:
   substack: https://open.substack.com/pub/livingalone/p/jung-bottonian-love?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 title: It is Valentine, and I don't have any plans.

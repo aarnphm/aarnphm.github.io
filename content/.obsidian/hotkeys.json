@@ -91,14 +91,6 @@
       "key": "B"
     }
   ],
-  "file-explorer:open": [
-    {
-      "modifiers": [
-        "Mod"
-      ],
-      "key": "."
-    }
-  ],
   "app:go-back": [
     {
       "modifiers": [
@@ -147,14 +139,6 @@
         "Mod"
       ],
       "key": "Z"
-    }
-  ],
-  "app:toggle-right-sidebar": [
-    {
-      "modifiers": [
-        "Mod"
-      ],
-      "key": "J"
     }
   ],
   "editor:focus-left": [
@@ -226,15 +210,6 @@
       "key": "Backspace"
     }
   ],
-  "obsidian-citation-plugin:insert-markdown-citation": [
-    {
-      "modifiers": [
-        "Mod",
-        "Shift"
-      ],
-      "key": "E"
-    }
-  ],
   "graph:open-local": [
     {
       "modifiers": [
@@ -276,6 +251,43 @@
         "Mod"
       ],
       "key": "Z"
+    }
+  ],
+  "app:toggle-right-sidebar": [
+    {
+      "modifiers": [
+        "Alt",
+        "Mod"
+      ],
+      "key": "B"
+    }
+  ],
+  "editor:toggle-comments": [],
+  "webviewer:search": [
+    {
+      "modifiers": [
+        "Mod",
+        "Shift"
+      ],
+      "key": "\\"
+    }
+  ],
+  "file-explorer:open": [
+    {
+      "modifiers": [
+        "Mod",
+        "Shift"
+      ],
+      "key": "E"
+    }
+  ],
+  "obsidian-citation-plugin:insert-markdown-citation": [
+    {
+      "modifiers": [
+        "Ctrl",
+        "Mod"
+      ],
+      "key": "E"
     }
   ]
 }

@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2022-04-22"
 description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
-modified: 2025-03-03 14:20:44 GMT-05:00
+modified: 2025-05-27 23:33:49 GMT-04:00
 title: antilibrary.
 ---
 
@@ -15,7 +15,7 @@ See also: [[/curius|digital version]]
 
 ## [[/tags/evergreen]] books
 
-_A list of book that remains forever in my bag, and I like the idea of reading it in perpetuity_
+A list of book that remains forever in my bag, and I like the idea of reading it in _perpetuity_
 
 - Beyond Good and Evil by Friedrich Nietzsche
 - [[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]] by Gilles Deleuze
@@ -33,6 +33,7 @@ _A list of book that remains forever in my bag, and I like the idea of reading i
 | The Second Sex                                    | Simone de Beauvoir               |                                                      |
 | Being and Time                                    | Martin Heidegger                 | [[thoughts/being#Heidegger's Being and Time\|notes]] |
 | The Rebel                                         | [[thoughts/Camus\|Albert Camus]] |                                                      |
+| The First Man                                     | Albert Camus                     |                                                      |
 
 ## to read.
 
@@ -66,6 +67,10 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | Anti-Oedipus                                                                                                             | [[thoughts/Giles Deleuze]] and Félix Guattari                                                     |                                                                                                                                                                        |
 | A Conflict of Visions                                                                                                    | Thomas Sowell                                                                                     |                                                                                                                                                                        |
 | Orwell's Revenge: The 1984 Palimpsest                                                                                    | Peter W. Huber                                                                                    |                                                                                                                                                                        |
+| Intuition Pumps and Other Tools for Thinking                                                                             | Daniel Dennett                                                                                    |                                                                                                                                                                        |
+| The Concept of Mind                                                                                                      | Gibert Rye                                                                                        |                                                                                                                                                                        |
+| Naked Lunch                                                                                                              | William S. Burroughs                                                                              |                                                                                                                                                                        |
+| Phenomenology of Perception                                                                                              | Maurice Merleau-Ponty                                                                             |                                                                                                                                                                        |
 
 #### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 
@@ -82,7 +87,6 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 #### [[thoughts/Camus|Camus]]
 
 - **The Fall**
-- **The First Man**
 - **Resistance, Rebellion, and Death**
 
 ### non-fiction
@@ -108,6 +112,7 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | The Creative Act: A Way of Being                                               | Rick Rubin                                                                                                           |                                                                                                                                               |
 | The Notebook: A History of Thinking on Paper                                   | Roland Allen                                                                                                         |                                                                                                                                               |
 | Trillion Dollar Baby: How Norway Beat the Oil Giants and Won a Lasting Fortune | Paul Cleary                                                                                                          |                                                                                                                                               |
+| Leaving the Twentieth Century: Situationist Revolutions                        | McKenzie Wark                                                                                                        |                                                                                                                                               |
 
 ### fiction
 

@@ -7,9 +7,9 @@ tags:
   - seed
 cssclasses:
   - nolist
-date: "2024-10-24"
+date: 2024-10-24
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-05-23 11:45:46 GMT-04:00
+modified: 2025-05-28 14:45:38 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -79,16 +79,13 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://handwritten.blog/2022-10-01-hyperlinks-in-handwriting.html -- Handwritten blog
 - https://www.muckrock.com/news/archives/2015/jul/21/nothing-indicate-nothing-indicate-subject-had-any-/ -- Paul Erdős, he is just a mathematician that really [[/tags/love|love]] math
 - https://matthewstrom.com/writing/generative-art-og-images/ -- Generative OG with [Brownian motion](https://en.wikipedia.org/wiki/Brownian_motion)
-- https://wattenberger.com/thoughts/yay-embeddings-math -- creative with embeddings in writing
 - https://docs.google.com/document/d/1h1vw4-t9Es4p2qQkZblnWcJDo6uEc6Yu61AxaLB5hKo/edit -- Atlantis
-- https://foundersatwork.posthaven.com/the-social-radar-what-i-did-at-y-combinator -- That one blog from Jess Livingston I kept coming back
-- https://basilhalperin.com/essays/agi-vs-emh.html -- AGI timeline, Basil Halperin
+- https://foundersatwork.posthaven.com/the-social-radar-what-i-did-at-y-combinator -- Social radar, by Jess Livingston
 - https://jameslin.bio/jolie -- Love, with a friend
 - https://www.paulgraham.com/good.html -- Be good
 - https://www.paulgraham.com/mean.html -- Mean people fail
 - https://www.lesswrong.com/posts/H7fkGinsv8SDxgiS2/ironing-out-the-squiggles -- Ironing Out the Squiggles
 - https://readsomethingwonderful.com/p/47/the-inner-ring -- Read something wonderful
-- https://optimists.ai/2024/03/10/deconstructing-bostroms-argument-for-ai-doom/ -- Bostrom's Argument for AI Doom
 - https://writeordiemag.com/elliptical-love/untranslatable -- Untranslatable
 - https://www.oaktreecapital.com/docs/default-source/memos/on-bubble-watch.pdf?sfvrsn=ab105466_4 -- On Bubble Watch and Stock market
 - https://ordinaryinstants.substack.com/p/graduate-school-is-just-a-metaphor -- Graduate school is just a metaphor
@@ -106,6 +103,15 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://archive.ph/YNZI0 -- Elon wants what he can't have: Wikipedia
 - https://danluu.com/learn-what/ -- What to learn
 - https://pketh.org/organic-software.html -- In Search of Organic Software
+
+### machine learning
+
+- https://www.goodfire.ai/blog/painting-with-concepts -- Painting with concepts, via SAE for SDXL-turbo
+- https://www.goodfire.ai/blog/under-the-hood-of-a-reasoning-model -- Under te hood of a reasoning models, SAEs.
+- https://wattenberger.com/thoughts/yay-embeddings-math -- creative with embeddings in writing
+- https://basilhalperin.com/essays/agi-vs-emh.html -- AGI timeline, Basil Halperin
+- https://optimists.ai/2024/03/10/deconstructing-bostroms-argument-for-ai-doom/ -- Bostrom's Argument for AI Doom
+- https://www.joelsimon.net/lluminate -- Creative exploration with LLM
 
 ### argumentative
 
@@ -149,6 +155,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 ### video
 
 - https://www.youtube.com/watch?v=WJ76FfBZuhI&ab_channel=SoderCinema -- Narcissistic Facades - Amy Dunne
+- https://www.youtube.com/watch?v=54M3zZKHFRw&ab_channel=ShannonKim -- Situationist Movement, the myth of creative director
 
 ## tools
 
@@ -189,6 +196,7 @@ https://x.com/poetengineer__/status/1895397439852695708
 - [mech-interp trails](https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvYXV0b2VuY29kZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvbGF0ZW50LXNwYWNl&stackedNotes=dGhvdWdodHMvcmVwcmVzZW50YXRpb25z&stackedNotes=dGhvdWdodHMvZGF0YQ)
 - [interesting trails](https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvSW50ZXJuZXQ&stackedNotes=dGhvdWdodHMvRGV0ZXJtaW5pc20&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9lbmdpbmVlci00YTAzL2xpdGVyYXR1cmUtcmV2aWV3&stackedNotes=cG9zdHMvY2hhdGdwdA&stackedNotes=dGhvdWdodHMvT0NJ&stackedNotes=dGhvdWdodHMvQ29udGVudC1hZGRyZXNzYWJsZS1zdG9yYWdl&stackedNotes=dGhvdWdodHMvYW50aHJvcGljLXNhZmV0eS1mZWxsb3c&stackedNotes=dGhvdWdodHMvTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvb3B0aW1pemF0aW9u&stackedNotes=dGhvdWdodHMvTExNcw&stackedNotes=dGhvdWdodHMvZXRoaWNz&stackedNotes=dGhvdWdodHMvYWVzdGhldGljLXZhbHVl&stackedNotes=dGhvdWdodHMvUGhpbG9zb3BoeS1hbmQtTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvZGlhbGVjdGljcw&stackedNotes=dGhvdWdodHMvcmVhc29u&stackedNotes=dGhvdWdodHMvQ2FtdXM&stackedNotes=cG9zdHMvMjAyNA&stackedNotes=cXVvdGVz&stackedNotes=dGhvdWdodHMvSGVsbWhvbHR6LWRlY29tcG9zaXRpb24&stackedNotes=dGhvdWdodHMvTW9udGUtQ2FybG8&stackedNotes=dGhvdWdodHMvQ2hvbGVza3ktZGVjb21wb3NpdGlvbg&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9zZndyLTRtbDMvQmlhcy1hbmQtaW50ZXJjZXB0&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=cG9zdHMvc3RydWN0dXJlZC1kZWNvZGluZw&stackedNotes=dGhvdWdodHMvVHJhbnNmb3JtZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvQ2F1Y2h5LW1vbWVudHVtLWVxdWF0aW9u&stackedNotes=dGhvdWdodHMvVGVuc29yLWZpZWxk&stackedNotes=dGhvdWdodHMvbWFuaWZvbGQ&stackedNotes=dGhvdWdodHMvUHJvZ3Jlc3NpdmUtZGlzY2xvc3VyZQ&stackedNotes=dGhvdWdodHMvR2lsZXMtRGVsZXV6ZQ&stackedNotes=dGhvdWdodHMvQXV0b3JlZ3Jlc3NpdmUtbW9kZWxz&stackedNotes=dGhvdWdodHMvTGxhbWEtMw&stackedNotes=dGhvdWdodHMvZGlzcGxhY2VtZW50&stackedNotes=dGhvdWdodHMvY29uc3RyYWluZWQtZGVjb2Rpbmc&stackedNotes=dGhvdWdodHMvUGFyZXRvLWRpc3RyaWJ1dGlvbg&stackedNotes=cG9zdHMvUXVlc3Rpb25zLWFib3V0LU1ldGFwaHlzaWNz&stackedNotes=dGhvdWdodHMvQWdlbmN5&stackedNotes=cG9zdHMvY29ycG9yYXRlLXBlcnNvbmhvb2Q&stackedNotes=dGhvdWdodHMvVmVyeS1TbGVuZGVyLURpZmZlcmVuY2Vz&stackedNotes=dGhvdWdodHMvQXJpc3RvdGxl&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ)
 - [GNU C Manual Reference](https://www.c-asm.com/gnu-c-manual.html)
+- https://www.rubick.com/steel-threads/ -- Steel threads are a technique that will make you a [[thoughts/steel threads|better engineer]]
 
 ### vc.
 
@@ -204,8 +212,7 @@ https://x.com/poetengineer__/status/1895397439852695708
 - https://huggingface.co/spaces/HuggingFaceFW/blogpost-fineweb-v1 -- FineWeb: decanting the web for the finest text data at scale.
 - https://arxiv.org/abs/2401.08671 -- DeepSpeed-FastGen
 - https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/ -- [[thoughts/Bayesian Neural Network]]
-- https://docs.google.com/document/d/1gGr1xw2NhCPG7ynZtiGgpgETRXYUJ8YjH8zZxwt6A6o/edit?tab=t.0#heading=h.3kkp24ma2sf7 -- Structural tags in xgrammar (to be used in [[thoughts/vllm|vLLM]])
 - https://www.lei.chat/posts/triton-linear-layout-concept/ -- Lei's Chat on Triton Linear Layout
 - https://research.colfax-intl.com/cutlass-tutorial-writing-gemm-kernels-using-tensor-memory-for-nvidia-blackwell-gpus/ -- GEMM kernels on Blackwell GPUs
 - https://www.youtube.com/watch?v=XYSKd4dOT3Y&ab_channel=NeelNanda -- How to Think about Thinking Model
-- https://www.joelsimon.net/lluminate -- Creative exploration with LLM
+- https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm4higcSGpvKKNdmtY/edit?tab=t.0#heading=h.nc4nxxczgw4w -- Structural tags in xgrammar (to be used in [[thoughts/vllm|vLLM]])

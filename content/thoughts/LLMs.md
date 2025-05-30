@@ -5,9 +5,9 @@ tags:
   - ml
   - llm
 abstract: large language models will probably be the most important piece of technology in the 21st century
-date: 2024-02-07
+date: "2024-02-07"
 description: a mathematical framework for intelligence
-modified: 2025-01-29 16:38:31 GMT-05:00
+modified: 2025-05-28 17:25:52 GMT-04:00
 title: LLMs
 ---
 
@@ -109,6 +109,22 @@ Overall should be a net positive, but it's a double-edged sword.
 Tool that lower of barrier of entry is always a good thing, but it often will lead to probably even higher discrepancies in quality of software
 
 Increased in productivity, but also increased in technical debt, as these generated code are mostly "bad" code, and often we have to nudge and do a lot of **[[thoughts/prompt engineering|prompt engineering]]**.
+
+### Truthfulness
+
+Preference data to train against dense (model)
+
+Judges -> evaluator models
+
+Dense models <- (reasoning)
+
+UX -> how to get in front of users?
+
+Data provenance and governance ?
+
+https://x.com/leonardtang_/status/1927396709870489634
+
+_outperform opus and gpt-4o_
 
 ---
 
