@@ -4,7 +4,7 @@ tags:
   - friend
 date: "2025-05-30"
 description: with love and prosperity - Aaron
-modified: 2025-05-30 16:20:20 GMT-04:00
+modified: 2025-05-30 16:26:51 GMT-04:00
 pageLayout: letter
 title: to brenda
 ---
@@ -30,8 +30,6 @@ a subtitle for change we can’t read.
 Inside: bar‑light, refrigerant cool.
 The counter—Carrara moonstone—veined
 like late‑October river ice.
-A lone votive sparks its gold heartbeat
-into twin espresso martinis.
 
 You stand across from me. That smile
 arrives first. Between us:
