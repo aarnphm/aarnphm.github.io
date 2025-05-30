@@ -1,0 +1,10 @@
+packages:
+  - ./
+supportedArchitectures:
+  os:
+    - win32
+    - darwin
+    - current
+  cpu:
+    - x64
+    - arm64

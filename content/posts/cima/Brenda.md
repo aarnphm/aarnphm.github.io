@@ -3,9 +3,9 @@ id: Brenda
 tags:
   - friend
 date: "2025-05-30"
-modified: 2025-05-30 16:12:12 GMT-04:00
+description: with love and prosperity - Aaron
+modified: 2025-05-30 16:20:20 GMT-04:00
 pageLayout: letter
-signature: with love and prosperity - Aaron
 title: to brenda
 ---
 
