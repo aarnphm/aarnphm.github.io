@@ -8,7 +8,7 @@ tags:
 comments: false
 date: "2021-12-22"
 description: and celebration of the act of making.
-modified: 2025-04-09 17:50:48 GMT-04:00
+modified: 2025-05-30 20:52:45 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -24,6 +24,16 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
 You can find internal monologue under [[/posts/]] index.
 
 ## open source.
+
+- **vllm-project/vllm** - :seedling: A high-throughput and memory-efficient inference and serving engine for [[thoughts/LLMs]] (2024-)
+
+  - Structured outputs compatibility in V0 and V1 engine https://github.com/vllm-project/vllm/pull/12388 https://github.com/vllm-project/vllm/pull/16577 https://github.com/vllm-project/vllm/pull/15317 https://github.com/vllm-project/vllm/pull/10785 https://github.com/vllm-project/vllm/pull/14868
+    - Jump-forward decoding https://github.com/vllm-project/vllm/pull/15490
+      - Design docs: [[thoughts/structured outputs]]
+  - V1 tool calling support
+    - WIP Rust tool parser
+  - V1 MLP speculator support https://github.com/vllm-project/vllm/pull/18719
+  - Source: [github](https://github.com/vllm-project/vllm), [docs](docs.vllm.ai), [[thoughts/vllm|notes]]
 
 - **Quartz** - :seedling: a fast, batteries-included static-site generator that transforms Markdown content into fully functional websites (2023-)
 

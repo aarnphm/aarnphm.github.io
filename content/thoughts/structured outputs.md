@@ -9,13 +9,17 @@ tags:
   - ml
   - rfc
   - vllm
-date: 2024-11-18
+date: "2024-11-18"
 description: structured generations in vLLM a la carte, or in general
-modified: 2025-05-28 14:58:40 GMT-04:00
+modified: 2025-05-30 20:52:31 GMT-04:00
 title: structured outputs
 transclude:
   title: false
 ---
+
+## jump-forward decoding
+
+also known as fast-forward tokens, or forced tokens.
 
 ## structural tags
 
