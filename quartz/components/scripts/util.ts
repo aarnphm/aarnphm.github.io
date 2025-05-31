@@ -361,6 +361,7 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
 
   if (window.mermaid) {
     const nodes = sideInner.querySelectorAll<HTMLDivElement>("pre > code.mermaid")
+    if (nodes.length === 0) return
     window.mermaid.run({ nodes }).then(() => {
       mermaidViewer(nodes)
     })
