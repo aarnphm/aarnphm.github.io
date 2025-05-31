@@ -756,7 +756,7 @@ export const TopLinks = {
   parfum: "/thoughts/Scents",
   "are.na": "/are.na",
   tweets: "/tweets",
-  curius: "/curius",
+  craft: "/thoughts/craft",
 }
 
 type AliasLinkProp = {
