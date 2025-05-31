@@ -8,7 +8,7 @@ tags:
 comments: false
 date: "2021-12-22"
 description: and celebration of the act of making.
-modified: 2025-05-30 20:52:45 GMT-04:00
+modified: 2025-05-30 20:59:20 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -44,7 +44,7 @@ You can find internal monologue under [[/posts/]] index.
   - Implemented telescope-style search https://github.com/jackyzha0/quartz/pull/722, https://github.com/jackyzha0/quartz/pull/774, https://github.com/jackyzha0/quartz/pull/782
   - Added sidenotes components, inspired by [Tuffe's CSS](https://edwardtufte.github.io/tufte-css/) https://github.com/jackyzha0/quartz/pull/1555, [[thoughts/mechanistic interpretability|examples]]
   - Added [LLM-readable source](https://x.com/aarnphm_/status/1857955302110376342)
-  - Landing page of [[/|this]] website, [morph's documentation](https://tinymorph.aarnphm.xyz)
+  - Landing page of [[/|this]] website, [morph's documentation](https://engineering.morph-editor.app)
   - Custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA|jupyter notebook]]
   - Source: [github](https://github.com/jackyzha0/quartz), [site](https://quartz.jzhao.xyz/)
 
@@ -58,7 +58,7 @@ You can find internal monologue under [[/posts/]] index.
   - Source: [github](https://github.com/yetone/avante.nvim)
     ![[thoughts/images/avante.mp4]]
 
-- **morph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-) [^tinymorph]
+- **morph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-) [^morph]
 
   - Trained [[thoughts/sparse autoencoder]] to interpret QwQ CoT and features [@templeton2024scaling]
   - Build a custom [[thoughts/vLLM]] plugins to support activation intervention. Served on [BentoCloud](https://bentoml.com/cloud) with scale-to-zero enabled
@@ -98,14 +98,14 @@ You can find internal monologue under [[/posts/]] index.
   - Built using AWS Fargate, React Native, TypeScript, GraphQL, Apache Spark MLlib, Google Maps API
   - Source: [github](https://github.com/tiproad/omw), [devpost](https://devpost.com/software/twogether)
 
-[^tinymorph]:
-    An excerpt from the [problem statement](https://tinymorph.aarnphm.xyz/ProblemStatementAndGoals/ProblemStatement):
+[^morph]:
+    An excerpt from the [problem statement](https://engineering.morph-editor.app/ProblemStatementAndGoals/ProblemStatement):
 
     > [[thoughts/Autoregressive models]] excels at surfacing machines’ internal representation of the world through a simple interface: given a blob of [[thoughts/Language|text]], the model will generate a contiguous piece of text that it predicts as the most probable tokens. For example, if you give it a Wikipedia article, the model should produce text consistent with the remainder of said article. These models works well given the following assumption: the inputs prompt must be coherent and well-structured surrounding a given problem the users want to achieve. A writer might provide paragraphs from their favourite authors - let’s say Joan Didion, as context to formulate their arguments for a certain writing. The model then “suggests” certain ideas that simulate Didion’s style of writing. Here is a big catch: garbage in, garbage out. If your prompt are disconnected or incoherent, the model will generate text that is equally incoherent.
     >
     > This heuristic lays the foundation to the proliferation of conversational user [[thoughts/representations|interfaces]] (CUIs), which is obvious given that chat is a thin wrapper around text modality. Yet, CUIs often prove frustrating when dealing with tasks that require larger sets of information (think of support portals, orders forms, etc.). Additionally, for tasks that require frequent information [[thoughts/RAG|retrieval]] (research, travel planning, writing, etc.), CUIs are suboptimal as they compel users to unnecessarily maintain information in their working memory (for no reason). For writers, the hardest part of writing or getting over writers block usually relies on how to coherently structure their thoughts onto papers. This requires a step beyond pure conversation partners, an interface that induces both planning and modelling of ideas.
     >
-    > Given these challenges, tinymorph doesn’t seek to be a mere tools for rewriting text. tinymorph aims to explore alternative interfaces for text generations models to extend our cognitive abilities. This means developing spatial and visual interfaces that allow for non-linear exploration of information and ideas, through writing.
+    > Given these challenges, morph doesn’t seek to be a mere tools for rewriting text. morph aims to explore alternative interfaces for text generations models to extend our cognitive abilities. This means developing spatial and visual interfaces that allow for non-linear exploration of information and ideas, through writing.
 
 ## talks.
 

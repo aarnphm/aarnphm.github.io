@@ -5,7 +5,7 @@ tags:
 abstract: application for Anthropic Safety Fellow Batch 0.
 date: "2025-01-20"
 description: and 2024.
-modified: 2025-02-03 07:57:58 GMT-05:00
+modified: 2025-05-30 20:58:23 GMT-04:00
 noindex: true
 title: anthropic safety fellow
 ---
@@ -16,7 +16,7 @@ title: anthropic safety fellow
 
 I'm initially drawn to interpretability research through Olah's work on Inception V1 back in 2020, where he debunked a lot of "dark magic" within the models' internal. In a sense, it helped me to have better understand how these models sample these probability distribution. Additionally, it also helped me to have a more holistic view in how loss functions shape emergent behaviour in neural net at all. Understanding this is crucial for us to build better AI systems to allow us to do better work in more efficient manner. With all of the LLMs advances in the recent years, this seems to be even more compelling and urgent.
 
-I have always been interested in research, from a perspective of an engineer working on ML infra for the past four years during my undergrad. The black-box nature of these models gives me a scratch that I would want to explore. In essence, this program enables me to venture into these problems, and these problems are worth solving. It will also help me to evaluate whether academia is something worth pursuing. Currently, I'm working on https://github.com/aarnphm/tinymorph, which acts as an exploration into how we can integrate SAEs into a WYSIWYG editor to helps me become a better writer.
+I have always been interested in research, from a perspective of an engineer working on ML infra for the past four years during my undergrad. The black-box nature of these models gives me a scratch that I would want to explore. In essence, this program enables me to venture into these problems, and these problems are worth solving. It will also help me to evaluate whether academia is something worth pursuing. Currently, I'm working on https://github.com/aarnphm/morph, which acts as an exploration into how we can integrate SAEs into a WYSIWYG editor to helps me become a better writer.
 
 > [!question] How likely are you to accept a full-time offer at Anthropic if you receive an offer after the program?
 >
