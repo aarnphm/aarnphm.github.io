@@ -50,7 +50,6 @@ export default ((opts: Partial<Options>) => {
 
   Comments.afterDOMLoaded = script
   Comments.css = commentsStyle
-  Comments.skipDuringServe = true
 
   return Comments
 }) satisfies QuartzComponentConstructor<Options>

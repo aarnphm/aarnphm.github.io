@@ -305,8 +305,6 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
   const instagramOptions = { ...defaultInstagramOptions, ...userOpts?.instagram }
   const twitterOpts = { ...defaultTwitterOptions, ...userOpts?.twitter }
   return {
-    skipDuringServe: true,
-    requiresFullContent: true,
     name,
     async emit(ctx, content, _resource) {
       const { configuration } = ctx.cfg

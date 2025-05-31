@@ -50,7 +50,6 @@ const name = "LLM"
 export const LLM: QuartzEmitterPlugin = () => {
   return {
     name,
-    skipDuringServe: true,
     async emit(ctx, content, resources): Promise<FilePath[]> {
       const cfg = ctx.cfg.configuration
       const fps: Promise<FilePath>[] = []

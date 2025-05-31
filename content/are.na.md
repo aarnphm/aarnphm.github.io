@@ -7,9 +7,9 @@ tags:
   - seed
 cssclasses:
   - nolist
-date: 2024-10-24
+date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-05-28 14:45:38 GMT-04:00
+modified: 2025-05-30 23:50:39 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -63,9 +63,10 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.rockstargames.com/VI -- GTA VI when?
 - https://www.tetragrammaton.com/
 
-## researchers
+## people
 
 - https://nicholas.carlini.com/ -- Security/Adversarial against LLMs
+- https://en.wikipedia.org/wiki/John_Galliano -- John Galliano, legendary [[thoughts/fashion]] designer, currently creative director for Maison Margiela
 
 ## essay
 

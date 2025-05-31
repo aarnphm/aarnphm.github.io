@@ -11,7 +11,7 @@ tags:
   - vllm
 date: "2024-11-18"
 description: structured generations in vLLM a la carte, or in general
-modified: 2025-05-30 20:52:31 GMT-04:00
+modified: 2025-05-31 10:25:01 GMT-04:00
 title: structured outputs
 transclude:
   title: false
@@ -23,7 +23,7 @@ also known as fast-forward tokens, or forced tokens.
 
 ## structural tags
 
-See also: [docs WIP](https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm4higcSGpvKKNdmtY/edit?tab=t.0#heading=h.nc4nxxczgw4w)
+See also: [docs](https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm4higcSGpvKKNdmtY/edit?tab=t.0#heading=h.nc4nxxczgw4w)
 
 ---
 

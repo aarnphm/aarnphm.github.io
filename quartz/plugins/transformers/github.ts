@@ -97,7 +97,6 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
   return {
     name: "GitHub",
-    skipDuringServe: true,
     markdownPlugins() {
       return [
         () => {

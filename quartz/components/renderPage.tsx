@@ -1164,20 +1164,6 @@ export function renderPage(
     }
   }
 
-  // Filter out components that should be skipped during serve
-  const serve = (components: RenderComponents) => {
-    if (ctx.argv.serve) {
-      for (const [key, comps] of Object.entries(components)) {
-        if (Array.isArray(comps)) {
-          components[key as keyof RenderComponents] = Array.from(
-            comps.filter((comp) => !comp.skipDuringServe),
-          ) as QuartzComponent[] & QuartzComponent
-        }
-      }
-    }
-    return components
-  }
-
   const {
     head: Head,
     header,
@@ -1186,7 +1172,7 @@ export function renderPage(
     afterBody,
     sidebar,
     footer: Footer,
-  } = serve(components)
+  } = components
   const Header = HeaderConstructor()
 
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style

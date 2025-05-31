@@ -4,7 +4,7 @@ tags:
   - seed
 date: "2024-02-19"
 description: a hobby, and definition of personal taste.
-modified: 2025-01-17 02:03:09 GMT-05:00
+modified: 2025-05-30 23:49:00 GMT-04:00
 title: fashion.
 ---
 

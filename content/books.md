@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2022-04-22"
 description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
-modified: 2025-05-27 23:33:49 GMT-04:00
+modified: 2025-05-30 23:52:12 GMT-04:00
 title: antilibrary.
 ---
 
@@ -25,7 +25,6 @@ A list of book that remains forever in my bag, and I like the idea of reading it
 
 | title                                             | author                           | notes                                                |
 | ------------------------------------------------- | -------------------------------- | ---------------------------------------------------- |
-| The Critique of Pure Reason                       | Immanuel Kant                    |                                                      |
 | The Metaphysics of Morals                         | Immanuel Kant                    |                                                      |
 | Crime and Punishment                              | Fyodor Dostoevsky                |                                                      |
 | Structure and Interpretation of Computer Programs | Abelson and Sussman              | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf)      |
@@ -62,7 +61,6 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | Pensees                                                                                                                  | Pascal                                                                                            | [html](https://www.gutenberg.org/files/18269/18269-h/18269-h.htm)                                                                                                      |
 | Being and Nothingness                                                                                                    | Jean-Paul Sartre                                                                                  |                                                                                                                                                                        |
 | Philosophical Investigations                                                                                             | Ludwig Wittgenstein                                                                               | [pdf](https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf) |
-| [[thoughts/Freud#The Ego and the Id\|The Ego and The Id]]                                                                | Sigmund Freud                                                                                     |                                                                                                                                                                        |
 | A Thousand Plateaus                                                                                                      | [[thoughts/Giles Deleuze]] and Félix Guattari                                                     |                                                                                                                                                                        |
 | Anti-Oedipus                                                                                                             | [[thoughts/Giles Deleuze]] and Félix Guattari                                                     |                                                                                                                                                                        |
 | A Conflict of Visions                                                                                                    | Thomas Sowell                                                                                     |                                                                                                                                                                        |
@@ -151,6 +149,9 @@ _The following includes a list of books I have finished._
 
 - **The Castle** by Frank Kafka
 - **The Prince** by Niccolò Machiavelli
+- **The Applicant** by [Sylvia Plath](https://www.poetryfoundation.org/poems/57419/the-applicant)
+- **The Critique of Pure Reason** by Immanuel Kant
+- **[[thoughts/Freud#The Ego and the Id|The Ego and The Id]]** by Sigmund Freud
 
 ### 2024
 

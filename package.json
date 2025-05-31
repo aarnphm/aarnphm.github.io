@@ -42,6 +42,7 @@
   "dependencies": {
     "@clack/prompts": "^0.10.1",
     "@floating-ui/dom": "^1.7.0",
+    "@googleapis/docs": "^3.4.0",
     "@myriaddreamin/rehype-typst": "^0.5.4",
     "@myriaddreamin/typst-ts-node-compiler": "^0.5.4",
     "@myriaddreamin/typst.ts": "^0.5.4",
@@ -56,6 +57,7 @@
     "flexsearch": "^0.8.204",
     "github-slugger": "^2.0.0",
     "globby": "^14.1.0",
+    "googleapis": "^149.0.0",
     "gray-matter": "^4.0.3",
     "hast-util-find-and-replace": "^5.0.1",
     "hast-util-from-html": "^2.0.3",

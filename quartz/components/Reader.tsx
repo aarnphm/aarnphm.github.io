@@ -255,7 +255,6 @@ export default (() => {
   }
   Reader.css = style
   Reader.afterDOMLoaded = readerScript
-  Reader.skipDuringServe = true
 
   return Reader
 }) satisfies QuartzComponentConstructor
