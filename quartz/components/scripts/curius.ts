@@ -329,7 +329,27 @@ function createTrailEl(
 let index = new FlexSearch.Document({
   tokenize: "forward",
   encode,
-  document: { id: "id", index: Array.from(Object.keys(_SENTINEL)) },
+  document: {
+    id: "id",
+    index: [
+      {
+        field: "title",
+        tokenize: "forward",
+      },
+      {
+        field: "link",
+        tokenize: "forward",
+      },
+      {
+        field: "snippet",
+        tokenize: "forward",
+      },
+      {
+        field: "trails",
+        tokenize: "forward",
+      },
+    ],
+  },
 })
 
 const numSearchResults = 20

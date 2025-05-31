@@ -3,9 +3,10 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import HeaderConstructor from "./Header"
 import ContentConstructor from "./pages/Content"
 import FooterConstructor from "./Footer"
-import SearchConstructor from "./Search"
+import Search from "./Search"
 import Graph from "./Graph"
-import PaletteConstructor from "./Palette"
+import Palette from "./Palette"
+import Image from "./Image"
 import { byDateAndAlphabetical } from "./PageList"
 import { getDate, Date as DateComponent } from "./Date"
 import { classNames } from "../util/lang"
@@ -1111,7 +1112,7 @@ export function renderPage(
   if (slug === "index") {
     components = {
       ...components,
-      header: [Graph(), SearchConstructor({ includeButton: false }), PaletteConstructor()],
+      header: [Image(), Graph(), Search(), Palette()],
       sidebar: [],
       afterBody: [],
       beforeBody: [],
