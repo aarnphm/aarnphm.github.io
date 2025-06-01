@@ -2,11 +2,11 @@
 id: a broken heart
 tags:
   - love
-  - personal
+  - fiction
   - writing
-date: 2025-01-06
+date: "2025-01-06"
 description: and being shattered into a million pieces, then picking oneself up.
-modified: 2025-02-04 23:17:47 GMT-05:00
+modified: 2025-06-01 12:33:56 GMT-04:00
 socials:
   bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lfcwbep7oc2q
   facebook: https://www.facebook.com/share/19ghibetuE/

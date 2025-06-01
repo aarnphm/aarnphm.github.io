@@ -5,7 +5,7 @@ tags:
   - serving
 date: "2025-05-22"
 description: and llm-d
-modified: 2025-05-31 10:39:00 GMT-04:00
+modified: 2025-05-31 19:05:04 GMT-04:00
 title: distributed inference
 ---
 
@@ -39,7 +39,7 @@ optimization: https://docs.google.com/document/d/1X-VQD2U0E2Jb0ncmjxCruyQO02Z_cg
 
 sig notes: https://docs.google.com/document/d/1dHLWBy8CXaURT-4W562pfFDP6HDrn-WgCtDQb08tD7k/edit
 
-autoscaling examples: https://docs.google.com/document/u/1/d/1IFsCwWtIGMujaZZqEMR4ZYeZBi7Hb1ptfImCa1fFf1A
+autoscaling examples: https://docs.google.com/document/d/1IFsCwWtIGMujaZZqEMR4ZYeZBi7Hb1ptfImCa1fFf1A
 
 use cases:
 

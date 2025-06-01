@@ -42,6 +42,7 @@
   "dependencies": {
     "@clack/prompts": "^0.10.1",
     "@floating-ui/dom": "^1.7.0",
+    "@google-cloud/local-auth": "^3.0.1",
     "@googleapis/docs": "^3.4.0",
     "@myriaddreamin/rehype-typst": "^0.5.4",
     "@myriaddreamin/typst-ts-node-compiler": "^0.5.4",
