@@ -67,7 +67,7 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
 
   const release = await mut.acquire()
   perf.addEvent("clean")
-  await rm(argv.output, { recursive: true, force: true })
+  await rm(output, { recursive: true, force: true })
   console.log(`Cleaned output directory \`${output}\` in ${perf.timeSince("clean")}`)
 
   perf.addEvent("glob")
@@ -125,9 +125,10 @@ async function startWatching(
     ctx,
     mut,
     contentMap,
-    ignored: (path) => {
-      if (gitIgnoredMatcher(path)) return true
-      const pathStr = path.toString()
+    ignored: (fp) => {
+      const pathStr = toPosixPath(fp.toString())
+      if (pathStr.startsWith(".git/")) return true
+      if (gitIgnoredMatcher(pathStr)) return true
       for (const pattern of cfg.configuration.ignorePatterns) {
         if (minimatch(pathStr, pattern)) {
           return true

@@ -82,6 +82,9 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
         const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses"]))
         if (cssclasses) data.cssclasses = cssclasses
 
+        const noindex = coerceToArray(coalesceAliases(data, ["noindex", "unlisted"]))
+        if (noindex) data.noindex = noindex
+
         const socialImage = coalesceAliases(data, ["socialImage", "image", "cover"])
         if (socialImage) data.socialImage = socialImage
 
