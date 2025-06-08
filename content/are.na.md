@@ -9,7 +9,7 @@ cssclasses:
   - nolist
 date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-05-30 23:50:39 GMT-04:00
+modified: 2025-06-06 01:28:42 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -62,6 +62,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://everythingiseverything.nyc/map/ -- Bagel places, in NYC
 - https://www.rockstargames.com/VI -- GTA VI when?
 - https://www.tetragrammaton.com/
+- https://basement.studio/
 
 ## people
 

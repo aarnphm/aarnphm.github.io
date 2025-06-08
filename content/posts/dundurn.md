@@ -50,9 +50,11 @@ The woman's face turned towards the window, mouthing a silent aperture suspended
 B touched his tongue to the roof of his mouth. The chalky residue was now gone. He'd need another half soon.
 ```
 
-His phone buzzed. Sixteen missed calls, three from K at Cima's, ten from the coffee shop, the rest from an unknown "(415)" that he didn't recognize, but knew it was S's. _He deleted the voicemail without listening_
+His phone buzzed. Sixteen missed calls, three from K at Cima's, ten from the coffee shop, the rest from an unknown "(415)". _He deleted the voicemail without listening_
 
-The German blurred again. "Vereinbarung". Agreement. Arrangement. Understanding. In English, everything had too many meanings. _B typed "contract"._
+_is this the person who I think it is?_
+
+The German blurred again. "Vereinbarung".  Agreement. Arrangement. Understanding. In English, everything had too many meanings. _B typed "contract"._
 
 Somebody knocked. B didn't answer. People has been knocking all week -- HOA, Gas inspection, vent maintenance, the property manager about plants dying on the escape hatch. _Or is it last week?_
 
