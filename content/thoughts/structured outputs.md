@@ -11,7 +11,7 @@ tags:
   - vllm
 date: "2024-11-18"
 description: structured generations in vLLM a la carte, or in general
-modified: 2025-05-31 10:25:01 GMT-04:00
+modified: 2025-06-16 21:20:00 GMT-04:00
 title: structured outputs
 transclude:
   title: false
@@ -19,7 +19,11 @@ transclude:
 
 ## jump-forward decoding
 
-also known as fast-forward tokens, or forced tokens.
+Also known as fast-forward tokens, or forced tokens, or [ff-strings](https://github.com/guidance-ai/llguidance/blob/main/docs/fast_forward.md#safely-converting-ff-strings-to-ff-tokens) (abbrev: ff, jf)
+
+See also: [toktrie implementation in llguidance](https://github.com/guidance-ai/llguidance/blob/main/docs/toktrie.md)
+
+One can think about this as "[[thoughts/Speculative decoding|speculative decoding]] but with 100% acceptance rate."
 
 ## structural tags
 

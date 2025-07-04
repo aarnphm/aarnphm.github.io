@@ -5,7 +5,7 @@ tags:
 comments: false
 date: "2022-04-22"
 description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
-modified: 2025-05-30 23:52:12 GMT-04:00
+modified: 2025-06-29 05:21:40 GMT-04:00
 title: antilibrary.
 ---
 
@@ -69,6 +69,7 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | The Concept of Mind                                                                                                      | Gibert Rye                                                                                        |                                                                                                                                                                        |
 | Naked Lunch                                                                                                              | William S. Burroughs                                                                              |                                                                                                                                                                        |
 | Phenomenology of Perception                                                                                              | Maurice Merleau-Ponty                                                                             |                                                                                                                                                                        |
+| Das Passagen-Werk                                                                                                        | Walter Benjamin                                                                                   | [[thoughts/pdf/The Archades Project - Walter Benjamin.pdf\|pdf]]                                                                                                       |
 
 #### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 

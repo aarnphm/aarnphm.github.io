@@ -5,7 +5,7 @@ tags:
   - technical
 date: "2024-02-07"
 description: and the backbone of the AI progress.
-modified: 2025-05-28 12:03:08 GMT-04:00
+modified: 2025-06-16 22:52:35 GMT-04:00
 title: Transformers
 ---
 
@@ -39,7 +39,9 @@ $$
 
 Either compute-bound (batch inference, saturated usage) or memory-bound (latency)
 
-[[thoughts/Speculative decoding]] => memory-bound (to saturate FLOPs)
+![[thoughts/PD disaggregated serving#Prefill/Decode]]
+
+![[thoughts/Speculative decoding]]
 
 ### KV
 
@@ -48,6 +50,12 @@ The core "retrieval" bags that contains all previous stored key-value pair or ne
 Prefill disaggregation is pretty interesting in a sense that we can separate prefill stage to a separate nodes [@qin2024mooncakekvcachecentricdisaggregatedarchitecture]
 
 ![[thoughts/images/mooncake-pd.webp|KV-centric optimization]]
+
+> [!question]
+>
+> Why do we need to use KV Cache?
+
+
 
 ### next-token prediction.
 

@@ -6,7 +6,7 @@ tags:
   - technical
 date: "2024-09-09"
 description: efficient LLM serving engine.
-modified: 2025-05-13 03:15:10 GMT-04:00
+modified: 2025-07-02 09:41:05 GMT-04:00
 permalinks:
   - /vllm
 title: vLLM
@@ -217,9 +217,37 @@ graph TB
 
 ### proposal
 
+#### [[thoughts/Speculative decoding|speculative decoding]]
+
+##### Problem.
+
+We currently have v1 implementations for eagle/eagle3. However, to add a new eagle supports to a certain target models, one would have to write a eagle adapter head for that set of models.
+Additionally, for dense and MoE models, implementations would be vastly different from each other here, making time to support rather arduous.
+
+We will need a generic way to support eagle/eagle3, as well as other methods going forward with vLLM.
+
+##### Goal.
+
+- Enhanced Configurability
+  One key advantage of the speculators format is its enhanced configurability compared to current vLLM model definitions. For example, you can easily add extra layer norms and include/exclude bias in the fusion layer through configuration settings.
+
+- Integration Progress
+
+  I'm currently working on integrating this format into vLLM. The plan is for speculators to become a vLLM dependency, allowing us to leverage configurable model definitions to support a wide variety of draft models.
+
+  As a first step, I'm developing a translation layer that:
+
+  - Detects if a checkpoint is in speculators format
+  - Instantiates it using speculators if applicable
+  - Converts its configuration into vLLM's SpeculativeConfig format
+
+- Future Goals
+  As we expand support for more architectures and proposal algorithms, our goal is to require minimal or no changes on the vLLM side.
+  Here's an example of one of our converted checkpoints: https://huggingface.co/nm-testing/eagle-llama3.1-8b-instruct/tree/main
+
 #### structured outputs
 
-![[thoughts/structured outputs|guided decoding]]
+![[thoughts/structured outputs|structured outputs v1]]
 
 #### Unification of tool calling and reasoning parser
 

@@ -5,7 +5,7 @@ tags:
   - rfc
   - vllm
 date: "2025-05-07"
-description: unification of frontend parsers (tool calling + reasoning)
+description: unification of frontend parsers
 modified: 2025-05-07 17:43:54 GMT-04:00
 title: tool calling
 transclude:
@@ -25,7 +25,7 @@ way for us to move forward, especially with v0.10.x.
 
 ## proposed change
 
-XGrammar team recently introduced us the next design interations for structural tags, which aims to support more use case, including function/tool calling, reasoning, custom tags.
+XGrammar team recently introduced us the next design iterations for structural tags, which aims to support more use case, including function/tool calling, reasoning, custom tags.
 
 The workflow can be seen as follows:
 
@@ -45,7 +45,7 @@ From vLLM perspective:
 ┌────────────────────────────────┐
 │ vLLM (OpenAI‑compatible FE)    │
 └───┬───────────────────┬────────┘
-    │ [tool / func‑call │ reasoning_fmt]
+    │ [tool / func‑call │ reasoning]
     ▼                   │
 ┌──────────┐            │
 │  Parser  │◀───────────┘
@@ -90,11 +90,11 @@ Aim:
 
 There are a few compatibility matrix we need to consider:
 
-| features              | function/tool caling | structured outputs | reasoning |
-| --------------------- | -------------------- | ------------------ | --------- |
-| function/tool calling | -                    |                    |           |
-| structured outputs    |                      | -                  |           |
-| reasoning             |                      |                    | -         |
+| features              | function/tool calling | structured outputs | reasoning |
+| --------------------- | --------------------- | ------------------ | --------- |
+| function/tool calling | -                     |                    |           |
+| structured outputs    |                       | -                  |           |
+| reasoning             |                       |                    | -         |
 
 _NOTE_: For reasoning logics, there are forced/non-forced mode (which is recently introduced by Qwen3-series of models)
 

@@ -1,10 +1,10 @@
 {
   "accentColor": "",
   "cssTheme": "Minimal",
-  "interfaceFontFamily": "Bricolage Grotesque,Parclo Serif Student,Apple Braille,EB Garamond",
-  "textFontFamily": "Parclo Serif Student,BerkeleyMono Nerd Font Mono,Apple Braille,EB Garamond",
-  "monospaceFontFamily": "BerkeleyMono Nerd Font Mono",
-  "baseFontSize": 19,
+  "interfaceFontFamily": "",
+  "textFontFamily": "Berkeley Mono",
+  "monospaceFontFamily": "Berkeley Mono",
+  "baseFontSize": 16,
   "translucency": true,
   "showViewHeader": false,
   "enabledCssSnippets": [
@@ -12,6 +12,6 @@
   ],
   "baseFontSizeAction": true,
   "theme": "system",
-  "nativeMenus": true,
-  "showRibbon": true
+  "nativeMenus": false,
+  "showRibbon": false
 }

@@ -1,5 +1,6 @@
 {
   "preview": true,
   "graph": false,
-  "bookmarks": false
+  "bookmarks": false,
+  "tab-header": false
 }

@@ -3,7 +3,7 @@ id: Bias and intercept
 tags:
   - sfwr4ml3
 date: "2024-09-16"
-modified: "2024-10-28"
+modified: 2025-07-03 21:55:12 GMT-04:00
 title: Bias and intercept
 ---
 

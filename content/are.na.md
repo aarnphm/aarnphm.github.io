@@ -9,7 +9,7 @@ cssclasses:
   - nolist
 date: "2024-10-24"
 description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-06-06 01:28:42 GMT-04:00
+modified: 2025-07-03 20:07:37 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -68,6 +68,10 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 
 - https://nicholas.carlini.com/ -- Security/Adversarial against LLMs
 - https://en.wikipedia.org/wiki/John_Galliano -- John Galliano, legendary [[thoughts/fashion]] designer, currently creative director for Maison Margiela
+- https://en.wikipedia.org/wiki/Daniel_Dennett -- Daniel Dennett, philosophy of the minds
+- https://plato.stanford.edu/entries/merleau-ponty/ -- Maurice Merleau-Ponty, embodied cognition
+- https://en.wikipedia.org/wiki/John_Carmack -- John Carmack
+- https://en.wikipedia.org/wiki/Chlo%C3%AB_Sevigny -- Chloë Sevigny
 
 ## essay
 
@@ -105,6 +109,13 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://archive.ph/YNZI0 -- Elon wants what he can't have: Wikipedia
 - https://danluu.com/learn-what/ -- What to learn
 - https://pketh.org/organic-software.html -- In Search of Organic Software
+- https://emilymstark.com/2022/12/18/death-to-the-line-of-death.html -- The death of the line of death
+- https://matthewstrom.com/writing/album-art/ -- The history of [[thoughts/music theory|album art]]
+- https://bigthink.com/smart-skills/how-curiosity-rewires-your-brain-for-change/ -- How curiosity rewires your brain for change
+  > When we are curious, the brain's dopaminergic system -- the same one that lights up when we anticipate a reward -- kicks into gear. Simply put, curiosity makes us feel good about the prospect of discovering something new.
+- https://a16z.com/a-good-place-to-work/ -- A Good Place to Work, Ben Horowitz
+- https://cristobal.arquipelago.org/writing/screenshot.html -- Notes from Screenshot Conf
+- https://www.avabear.xyz/p/dialectical-damage -- Dialectical damage
 
 ### machine learning
 
@@ -148,6 +159,8 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
   - map-making with no territory: "figuring out the normative truth" (from normative realist)
   - [[thoughts/anti realist do ethics|notes]]
 - https://turntrout.com/self-fulfilling-misalignment -- Self-Fulfilling Misalignment Data Might Be Poisoning Our AI Models
+- https://www.youtube.com/watch?v=KIu4y1stILY&ab_channel=essentialsalts -- Politices as Neuro-Physiology, a conversation with Uberboyo
+  - In what way the connection between philosophy, ideas and cultural does [[thoughts/Philosophy and Nietzsche|Nietzsche]] nihilism?
 
 ### poetry
 
@@ -158,6 +171,10 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 
 - https://www.youtube.com/watch?v=WJ76FfBZuhI&ab_channel=SoderCinema -- Narcissistic Facades - Amy Dunne
 - https://www.youtube.com/watch?v=54M3zZKHFRw&ab_channel=ShannonKim -- Situationist Movement, the myth of creative director
+- https://www.youtube.com/watch?v=GNB2oMISvsI&ab_channel=ArcherGreen -- When you shot the movie in 480p
+- https://www.youtube.com/watch?v=JFj8kWm_N-Y&ab_channel=OverthinkPodcast -- Merleau-Ponty, the Phenomenology of Perception
+- https://www.youtube.com/watch?v=Aa-A17TldZQ&ab_channel=Queen -- Why the Universe Sends You Someone You Can't Be With, Carl Jung
+- https://www.youtube.com/watch?v=rQ-An5bhkrs&t=11303s&ab_channel=Amii -- Upper Bound 2025, John Carmack's talk
 
 ## tools
 
@@ -170,7 +187,8 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 
 ## arts
 
-https://x.com/poetengineer__/status/1895397439852695708
+- https://x.com/poetengineer__/status/1895397439852695708
+- https://www.youtube.com/watch?v=lsVMJIJ3Xrs&ab_channel=Amoeba
 
 ## resources
 
@@ -199,6 +217,13 @@ https://x.com/poetengineer__/status/1895397439852695708
 - [interesting trails](https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvSW50ZXJuZXQ&stackedNotes=dGhvdWdodHMvRGV0ZXJtaW5pc20&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9lbmdpbmVlci00YTAzL2xpdGVyYXR1cmUtcmV2aWV3&stackedNotes=cG9zdHMvY2hhdGdwdA&stackedNotes=dGhvdWdodHMvT0NJ&stackedNotes=dGhvdWdodHMvQ29udGVudC1hZGRyZXNzYWJsZS1zdG9yYWdl&stackedNotes=dGhvdWdodHMvYW50aHJvcGljLXNhZmV0eS1mZWxsb3c&stackedNotes=dGhvdWdodHMvTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvb3B0aW1pemF0aW9u&stackedNotes=dGhvdWdodHMvTExNcw&stackedNotes=dGhvdWdodHMvZXRoaWNz&stackedNotes=dGhvdWdodHMvYWVzdGhldGljLXZhbHVl&stackedNotes=dGhvdWdodHMvUGhpbG9zb3BoeS1hbmQtTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvZGlhbGVjdGljcw&stackedNotes=dGhvdWdodHMvcmVhc29u&stackedNotes=dGhvdWdodHMvQ2FtdXM&stackedNotes=cG9zdHMvMjAyNA&stackedNotes=cXVvdGVz&stackedNotes=dGhvdWdodHMvSGVsbWhvbHR6LWRlY29tcG9zaXRpb24&stackedNotes=dGhvdWdodHMvTW9udGUtQ2FybG8&stackedNotes=dGhvdWdodHMvQ2hvbGVza3ktZGVjb21wb3NpdGlvbg&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9zZndyLTRtbDMvQmlhcy1hbmQtaW50ZXJjZXB0&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=cG9zdHMvc3RydWN0dXJlZC1kZWNvZGluZw&stackedNotes=dGhvdWdodHMvVHJhbnNmb3JtZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvQ2F1Y2h5LW1vbWVudHVtLWVxdWF0aW9u&stackedNotes=dGhvdWdodHMvVGVuc29yLWZpZWxk&stackedNotes=dGhvdWdodHMvbWFuaWZvbGQ&stackedNotes=dGhvdWdodHMvUHJvZ3Jlc3NpdmUtZGlzY2xvc3VyZQ&stackedNotes=dGhvdWdodHMvR2lsZXMtRGVsZXV6ZQ&stackedNotes=dGhvdWdodHMvQXV0b3JlZ3Jlc3NpdmUtbW9kZWxz&stackedNotes=dGhvdWdodHMvTGxhbWEtMw&stackedNotes=dGhvdWdodHMvZGlzcGxhY2VtZW50&stackedNotes=dGhvdWdodHMvY29uc3RyYWluZWQtZGVjb2Rpbmc&stackedNotes=dGhvdWdodHMvUGFyZXRvLWRpc3RyaWJ1dGlvbg&stackedNotes=cG9zdHMvUXVlc3Rpb25zLWFib3V0LU1ldGFwaHlzaWNz&stackedNotes=dGhvdWdodHMvQWdlbmN5&stackedNotes=cG9zdHMvY29ycG9yYXRlLXBlcnNvbmhvb2Q&stackedNotes=dGhvdWdodHMvVmVyeS1TbGVuZGVyLURpZmZlcmVuY2Vz&stackedNotes=dGhvdWdodHMvQXJpc3RvdGxl&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ)
 - [GNU C Manual Reference](https://www.c-asm.com/gnu-c-manual.html)
 - https://www.rubick.com/steel-threads/ -- Steel threads are a technique that will make you a [[thoughts/steel threads|better engineer]]
+- [[thoughts/GPU programming]]
+- https://www.doc.ic.ac.uk/~eedwards/compsys/float/#:~:text=Add%20the%20exponents%20to%20find,1.021%20%C3%97%20106 -- Floating points arithmetics
+- https://www.unco.edu/campus-recreation/pdf/intramural-sports/spring20/running-pace-chart.pdf -- Running pace chart
+
+### technical
+
+- https://huggingface.co/blog/from-chunks-to-blocks -- From Chunks to Blocks: Accelerating Uploads and Downloads on the Hub
 
 ### vc.
 
@@ -212,9 +237,23 @@ https://x.com/poetengineer__/status/1895397439852695708
 - https://jax-ml.github.io/scaling-book/ -- JAX scaling book
 - https://www.jeremykun.com/2023/08/10/mlir-getting-started/ -- [[thoughts/MLIR]] introduction
 - https://huggingface.co/spaces/HuggingFaceFW/blogpost-fineweb-v1 -- FineWeb: decanting the web for the finest text data at scale.
-- https://arxiv.org/abs/2401.08671 -- DeepSpeed-FastGen
 - https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/ -- [[thoughts/Bayesian Neural Network]]
 - https://www.lei.chat/posts/triton-linear-layout-concept/ -- Lei's Chat on Triton Linear Layout
 - https://research.colfax-intl.com/cutlass-tutorial-writing-gemm-kernels-using-tensor-memory-for-nvidia-blackwell-gpus/ -- GEMM kernels on Blackwell GPUs
 - https://www.youtube.com/watch?v=XYSKd4dOT3Y&ab_channel=NeelNanda -- How to Think about Thinking Model
 - https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm4higcSGpvKKNdmtY/edit?tab=t.0#heading=h.nc4nxxczgw4w -- Structural tags in xgrammar (to be used in [[thoughts/vllm|vLLM]])
+- https://drive.google.com/file/u/1/d/1l54BwUi07JnqwB5_iHCVVZ3TnR05acDm/view?usp=sharing -- Critique on "The Illusion of Thinking"
+- https://huggingface.co/blog/rearchitecting-uploads-and-downloads -- Rearchitecting Hugging Face Uploads and Downloads
+- https://www.youtube.com/watch?v=VAzL8RHot1c&ab_channel=InterconnectsAI -- The art of training a good (reasoning) language models, by Nathan Lambert
+
+#### papers
+
+- https://arxiv.org/pdf/2401.08671 -- DeepSpeed-FastGen
+- https://arxiv.org/pdf/2506.06941 -- The Illusion of Thinking
+- https://arxiv.org/pdf/2505.24832 -- How much do [[thoughts/LLMs|language]] models memorize?
+- https://arxiv.org/pdf/2405.07987 -- The Platonic Representation Hypothesis
+- https://arxiv.org/pdf/2501.16007 -- TopLOC, A locality Sensitive Hashing Scheme for Trustless Verifable Inference
+- https://arxiv.org/pdf/2504.02922 -- Overcoming Sparsity Artifacts in Crosscoders to Interpret Chat-Tuning
+  - [LessWrong](https://www.lesswrong.com/posts/xmpauEXEerzYcJKNm/what-we-learned-trying-to-diff-base-and-chat-models-and-why)
+- https://arxiv.org/pdf/2505.05315 -- Scalable Chain of Thoughts via Elastic Reasoning
+  - https://github.com/SalesforceAIResearch/Elastic-Reasoning

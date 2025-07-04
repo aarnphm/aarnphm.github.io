@@ -7,7 +7,7 @@ tags:
   - seed
 date: "2024-10-24"
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-05-30 20:28:20 GMT-04:00
+modified: 2025-07-04 10:20:43 GMT-04:00
 noindex: true
 title: /xeets/
 transclude:
@@ -61,6 +61,8 @@ https://x.com/kasratweets/status/1880147402025582924 <!-- Kasra on loneliness, o
 https://x.com/VividVoid_/status/1828461484277461447 <!-- philosophical wisdom -->
 
 https://x.com/melissa/status/1883821342354768109 <!-- Melissa on fairness within marriage -->
+
+https://x.com/bimbosattva_/status/1935812993528599012?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ <!-- Be autistic and women will love you -->
 
 ## love
 
@@ -128,6 +130,8 @@ https://x.com/tylerangert/status/1884980797565788269 <!-- Team meme -->
 
 https://x.com/zswitten/status/1879693633911463960 <!-- aligned Claude -->
 
+https://x.com/filpizlo/status/1935019034531217647 <!-- C++ programs that are memory-safe -->
+
 ## techno-optimist
 
 https://x.com/tobi/status/1878957750576906484 <!-- Tobi replies on Canada's Tech contribution to overall GDP -->
@@ -181,3 +185,9 @@ https://x.com/flowersslop/status/1882241958397067677 <!-- R1 having existential 
 https://x.com/rupspace/status/1877882538859078084 <!-- Highway network -->
 
 https://x.com/VictorTaelin/status/1897108466243641399 <!-- Claude Code optimize HVM3 to 328 MIPs per M4 Core -->
+
+https://x.com/karpathy/status/1937902205765607626 <!-- Karpathy on "context engineering" over prompt engineering -->
+
+https://x.com/jkminder/status/1939790920326541601 <!-- Model diffing on Chat vs. Base Model -->
+
+https://x.com/leloykun/status/1941067659157913625 <!-- Adam with Aggressive Gradient Value/Norm Clipping ≈ Smoothed SignSGD/NormSGD -->

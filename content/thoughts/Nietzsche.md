@@ -4,6 +4,7 @@ tags:
   - philosophy
   - philos1aa3
 date: "2023-11-30"
+modified: 2025-06-12 15:28:01 GMT-04:00
 title: Nietzsche's Life
 ---
 

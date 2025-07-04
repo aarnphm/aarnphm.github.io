@@ -4,10 +4,12 @@ tags:
   - seed
   - ml
 date: "2023-10-10"
-modified: 2025-03-22 08:29:34 GMT-04:00
+modified: 2025-06-16 22:52:35 GMT-04:00
 noindex: true
 title: GPU programming
 ---
+
+UCCL: https://github.com/uccl-project/uccl
 
 ## Triton Linear Layout
 

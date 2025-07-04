@@ -4,7 +4,7 @@ tags:
   - evergreen
 comments: false
 date: "2024-02-07"
-modified: 2025-05-12 23:52:50 GMT-04:00
+modified: 2025-06-30 20:16:29 GMT-04:00
 title: movies.
 ---
 
@@ -37,6 +37,7 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 
 [^lychian]: What makes a [Lychian] (https://en.wikipedia.org/wiki/David_Lynch) movie?
 
+- [ ] Blue Jasmine (2013)
 - [ ] The King of Comedy (1982)
 - [ ] Dead Poets Society (1989)
 - [ ] La Haine (1995)
@@ -55,7 +56,13 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] The End of The Tour (2015)
 - [ ] Chungking Express (1994)
 - [ ] Twin Peaks (1990)
-- [ ] Call Me By Your Name (2017)
+- [ ] The Florida Project
+- [ ] The Master
+- [ ] Boogie Nights
+- [ ] The Big Lebowski (1998)
+- [ ] Late Night with The Devil
+- [ ] Groundhog Day
+- [ ] Zodiac
 
 ## finished
 
@@ -69,6 +76,7 @@ _doesn't mean that I won't watch it again, just that I will need some more time 
 - [x] Here (2024)
 - [x] The Substance (2024)
 - [x] A Real Pain (2024)
+- [x] Call Me By Your Name (2017)
 
 [^remake]: There is also a remake series (2024) starring Eddie Redmayne. (very chill)
 
@@ -198,3 +206,5 @@ _doesn't mean that I won't watch it again, just that I will need some more time 
 - Bojack Horseman (2014)
 - True Detective (2014)
 - The Knick (2014)
+- Modern Love (2019-2021)
+  - Anne Hathaway, Kit Harington

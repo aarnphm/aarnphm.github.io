@@ -5,7 +5,7 @@ aliases:
 tags:
   - evergreen
 date: "2024-01-23"
-modified: 2025-01-26 13:44:02 GMT-05:00
+modified: 2025-06-14 23:19:30 GMT-04:00
 socialDescription: A collection of quotes, wisdom, and advice.
 title: advice.
 transclude:
@@ -69,6 +69,8 @@ Craftsman is knowing how to work, Art is knowing when to stop. -- Ben Affleck
 Ask not what your country can do for you - ask what you can do for your country. -- J.F.Kennedy
 
 It is actually ok to miss somebody. [...] But you know that sadness, it's a gift, a lovely thing to feel in a way, because it means you really love somebody when you miss them. It makes me feel close to her when I miss her in a strange way [that our heart desires]. And when I miss [my mom] I remember all of the cuddles I used to get from her. [The reason why] I remember is because she made me so happy so that I can celebrate her and miss her at the same time -- Andrew Garfield on _[[posts/Oanh|grief]]_
+
+Like the generations of leaves, the lives of mortal men. Now the wind scatters the old leaves across the earth, now the living timber bursts with the new buds and spring comes round again. And so with men: as one generation comes to life, another dies away. -- Homer, The Iliad
 
 ## On drive.
 

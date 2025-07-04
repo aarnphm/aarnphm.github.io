@@ -5,7 +5,7 @@ tags:
 abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
 date: "2024-02-07"
 description: and posteriori information retrieval.
-modified: 2025-02-05 14:11:23 GMT-05:00
+modified: 2025-07-03 22:38:27 GMT-04:00
 title: Attention
 ---
 
@@ -42,6 +42,10 @@ $$
 [@ainslie2023gqatraininggeneralizedmultiquery]
 
 idea: reduce number of KV heads $n_k$ to a fraction $n_k^{'} = \frac{n_q}{k}$ of number of query heads $n_q$ (evenly dividing the query heads into $n_k$ groups with $r$ heads)
+
+## Tree Attention
+
+https://arxiv.org/abs/2408.04093 [@shyam2025treeattentiontopologyawaredecoding]
 
 ## RadixAttention
 
@@ -210,6 +214,10 @@ $$
 >     \mathbf{u}_t &= \mathbf{W}^O [o_{t,1}; o_{t,2}; \dots; o_{t, n_h}] \tag{11}
 > \end{align}
 > $$
+
+## CascadeAttention
+
+https://flashinfer.ai/2024/02/02/cascade-inference.html
 
 ## RingAttention
 

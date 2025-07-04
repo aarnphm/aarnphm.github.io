@@ -3,8 +3,8 @@ id: Philosophy and Nietzsche
 tags:
   - philosophy
   - seed
-date: 2023-12-04
-modified: 2025-02-01 10:02:08 GMT-05:00
+date: "2023-12-04"
+modified: 2025-06-16 19:10:49 GMT-04:00
 title: Philosophy and Nietzsche
 ---
 
@@ -182,6 +182,10 @@ N oppose will to power to Schopenhauerian will to live, only because of the extr
 What does this distinction mean? The passage quoted above invites comment on every word. - The concept of force is, by nature, victorious because the relation of force to force, understood conceptually, is one of domina-tion: when two forces are related one is dominant and the other is dominated. (Even God and the universe are caught in a relation of domination, however debatable the interpretation of such a relation may be in this case.) Nevertheless, this victorious concept of force needs a complement and this complement is internal, an internal will. It would not be victorious without such an addition. This is because relations of forces remain indeterminate unless an element which is capable of determining them from a double point of view is added to force itself. Forces in relation reflect a simultaneous double genesis: the reciprocal genesis of their difference in quantity and the absolute genesis of their respective qualities. The will to power is thus added to force, but as the differential and genetic element, as the internal element of its production. It is in no way anthropomorphic. More precisely, it is added to force as the internal principle of the determination of its quality in a relation (x + dx) and as the internal principle of the quantitative determination of this relation itself (dy/dx). The will to power must be described as the genealogical element of force and of forces. Thus it is always through the will to power that one force prevails over others and dominates or commands them. Moreover it is also the will to power (dy) which makes a force obey within a relation; it is through will to power that it obeys." We have already encountered the relationship between the eternal
 ```
 
+> [!QUESTION]
+>
+> Heidegger on "Why most will [**not understand**](https://www.youtube.com/watch?v=XMV9cdIlYYU&ab_channel=essentialsalts) will to power?"
+
 ---
 
 ## Beyond Good and Evil
@@ -231,7 +235,7 @@ Mentions the Death of God and start the introduction to the doctrine of eternal 
 > The original title was "la gayza scienza", and "gay" doesn't necessarily means homosexuality, rather flexible and joyful.
 > If word for word to be transcribed, it would meant The Joyful Science.
 
-> [!note] aphorism 24
+- [ ] > [!note] aphorism 24
 
 ---
 

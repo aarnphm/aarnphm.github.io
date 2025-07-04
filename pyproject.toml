@@ -39,3 +39,80 @@ allow-direct-references = true
 only-include = ["content"]
 [tool.hatch.build.targets.wheel]
 packages = ["content"]
+
+[tool.pyright]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"
+verboseOutput = true
+useLibraryCodeForTypes = true
+strictListInference = true
+strictDictionaryInference = true
+strictSetInference = true
+strictParameterNoneValue = true
+enableTypeIgnoreComments = true
+reportMissingImports = 'warning'
+reportMissingTypeStubs = false
+deprecateTypingAliases = true
+enableReachabilityAnalysis = true
+enableExperimentalFeatures = true
+
+[tool.pyright.defineConstantj]
+MYPY = true
+
+[tool.mypy]
+pretty = true
+python_version = 3.8
+show_error_codes = true
+strict = true
+ignore_missing_imports = true
+explicit_package_bases = true
+warn_unreachable = true
+plugins = ["numpy.typing.mypy_plugin"]
+
+[tool.ruff]
+extend-include = ["*.ipynb"]
+preview = true
+line-length = 119
+indent-width = 2
+
+[tool.ruff.format]
+preview = true
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = true
+docstring-code-format = true
+
+[tool.ruff.lint]
+ignore = ["RUF012", "ANN", "E722"]
+select = [
+  "F",
+  "G",
+  "PERF",
+  "RUF",
+  "W6",
+  "E71",
+  "E72",
+  "E112",
+  "E113",
+  "E203",
+  "E272",
+  "E502",
+  "E702",
+  "E703",
+  "E731",
+  "W191",
+  "W291",
+  "W293",
+  "UP039",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ty.src]
+respect-ignore-files = true
+root = "./"
+
+[tool.ty.environment]
+python = "./.venv"
+python-version = "3.11"

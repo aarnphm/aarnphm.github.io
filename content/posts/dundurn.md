@@ -7,7 +7,7 @@ tags:
   - writing
 date: "2025-06-01"
 description: a short story.
-modified: 2025-06-03 15:41:50 GMT-04:00
+modified: 2025-06-30 00:41:03 GMT-04:00
 title: apartment 220
 unlisted: true
 ---
@@ -30,7 +30,7 @@ Page sixty-three again. _Vereinbarung._ The cursor has stopped moving twenty min
 
 Page sixty-seven.
 
-  _Ausführungsbestimmungen_ became "executive provisions". Then "executive decisions", then just "decisions". _B deleted the line and move on._
+_Ausführungsbestimmungen_ became "executive provisions". Then "executive decisions", then just "decisions". _B deleted the line and move on._
 
 It was Tuesday, which meant he should have been at the coffee shop four hours ago. Or is it Thursday?
 
@@ -54,7 +54,7 @@ His phone buzzed. Sixteen missed calls, three from K at Cima's, ten from the cof
 
 _is this the person who I think it is?_
 
-The German blurred again. "Vereinbarung".  Agreement. Arrangement. Understanding. In English, everything had too many meanings. _B typed "contract"._
+The German blurred again. "Vereinbarung". Agreement. Arrangement. Understanding. In English, everything had too many meanings. _B typed "contract"._
 
 Somebody knocked. B didn't answer. People has been knocking all week -- HOA, Gas inspection, vent maintenance, the property manager about plants dying on the escape hatch. _Or is it last week?_
 
