@@ -1,10 +1,10 @@
 ---
+comments: false
+date: 2024-02-07
 id: movies
+modified: "2025-07-05 01:27:34 GMT-04:00"
 tags:
   - evergreen
-comments: false
-date: "2024-02-07"
-modified: 2025-06-30 20:16:29 GMT-04:00
 title: movies.
 ---
 
@@ -30,13 +30,13 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] Nosferatu (2024)
 - [ ] Anora (2024)
 - [ ] Sometimes I Think About Dying (2023)
-- [ ] Challenger (2024)
 - [ ] Perfect Days (2024)
   - How we might live in a noisy life?
   - What does life looks like when you accept ambitions for acceptance?
 
 [^lychian]: What makes a [Lychian] (https://en.wikipedia.org/wiki/David_Lynch) movie?
 
+- [x] Challenger (2024)
 - [ ] Blue Jasmine (2013)
 - [ ] The King of Comedy (1982)
 - [ ] Dead Poets Society (1989)
@@ -77,6 +77,7 @@ _doesn't mean that I won't watch it again, just that I will need some more time 
 - [x] The Substance (2024)
 - [x] A Real Pain (2024)
 - [x] Call Me By Your Name (2017)
+- [x] Love & Other Drugs (2010)
 
 [^remake]: There is also a remake series (2024) starring Eddie Redmayne. (very chill)
 
