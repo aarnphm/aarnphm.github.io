@@ -151,6 +151,10 @@ const cache = new Map<string, { title: string; bibkey: string }>()
 // entries. Each arXiv id will map to a single in-flight promise.
 const bibEntryTasks = new Map<string, Promise<{ key: string; entry: string }>>()
 
+function normalizeArxivId(id: string): string {
+  return id.replace(/^arxiv:/i, "").replace(/v\d+$/i, "")
+}
+
 async function fetchArxivMetadata(id: string): Promise<ArxivMeta> {
   const ARXIV_API_BASE = "http://export.arxiv.org/api/query"
   const queryUrl = `${ARXIV_API_BASE}?id_list=${id}`
@@ -196,7 +200,6 @@ async function ensureBibEntry(
   bibPath: string,
   id: string,
 ): Promise<{ key: string; entry: string }> {
-  // If another invocation is already processing this id, await it to avoid race conditions
   if (bibEntryTasks.has(id)) {
     return bibEntryTasks.get(id)!
   }
@@ -204,29 +207,34 @@ async function ensureBibEntry(
   const task = (async (): Promise<{ key: string; entry: string }> => {
     const absPath = path.isAbsolute(bibPath) ? bibPath : path.join(process.env.PWD!, bibPath)
 
-    const references = new Cite(fs.existsSync(absPath) ? fs.readFileSync(absPath, "utf8") : "", {
-      generateGraph: false,
-    })
+    const fileContent = fs.existsSync(absPath) ? fs.readFileSync(absPath, "utf8") : ""
+    const references = new Cite(fileContent, { generateGraph: false })
 
-    // Check whether an entry for this arXiv id already exists (archiveprefix = arXiv & matching eprint)
-    const existing = (references.data as any[]).find(
-      (d) =>
-        ((d.archiveprefix ?? d.archivePrefix ?? "").toString().toLowerCase() === "arxiv" ||
-          (d.type ?? "").toLowerCase() === "misc") &&
-        String(d.eprint ?? "").replace(/^arxiv:/i, "") === id,
-    ) as any | undefined
+    const normId = normalizeArxivId(id)
+
+    const existing = (references.data as any[]).find((d: any) => {
+      const eprintNorm = normalizeArxivId(String(d.eprint ?? ""))
+      if (eprintNorm && eprintNorm === normId) return true
+      const url = String(d.url ?? "")
+      if (url.includes(`/abs/${normId}`)) return true
+      const journal = String(d.journal ?? "")
+      if (journal.includes(`arXiv:${normId}`)) return true
+      return false
+    }) as any | undefined
 
     if (existing) {
       return { key: existing.id, entry: "" }
     }
 
-    // Not present – fetch BibTeX from arXiv and append
     const bibtex = (await fetchBibtex(id)).trim()
     const newCite = new Cite(bibtex, { generateGraph: false })
     const newKey = newCite.data[0].id
 
-    const prefix =
-      fs.existsSync(absPath) && fs.readFileSync(absPath, "utf8").trim().length ? "\n\n" : ""
+    if ((references.data as any[]).some((d: any) => d.id === newKey)) {
+      return { key: newKey, entry: "" }
+    }
+
+    const prefix = fileContent.trim().length ? "\n\n" : ""
     fs.appendFileSync(absPath, `${prefix}${bibtex}\n`)
 
     return { key: newKey, entry: bibtex }
@@ -265,7 +273,10 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
 
               node.children = [{ type: "text", value: cached.title } as Text]
 
-              parent.children = [node, { type: "text", value: ` [@${cached.bibkey}]` } as Text]
+              parent.children.splice(index, 1, node, {
+                type: "text",
+                value: ` [@${cached.bibkey}] `,
+              } as Text)
             })(),
           )
         })
@@ -273,7 +284,6 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
         if (tasks.length) await Promise.all(tasks)
       },
     ],
-    // bibtex-tidy --modify --blank-lines --months --no-align --sort=type,year --duplicates=key,doi --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,series,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields ./contents/References.bib
     htmlPlugins: () => [
       [
         rehypeCitation,

@@ -2,7 +2,7 @@
 date: 2025-05-21
 description: "a method to speed up LLM decoding"
 id: "Speculative decoding"
-modified: "2025-07-05 00:16:38 GMT-04:00"
+modified: "2025-07-05 01:03:25 GMT-04:00"
 tags:
   - ml
   - serving
@@ -204,13 +204,20 @@ see also: [LMSYS blog](https://lmsys.org/blog/2023-11-21-lookahead-decoding/),
 
 ## optimization
 
-https://arxiv.org/pdf/2406.14066v2
+https://arxiv.org/pdf/2406.14066v2 optimizes via goodput.
+
+https://arxiv.org/pdf/2405.04304v1 focuses on dynamic speculative length.
 
 ## speculative sampling
 
 aliases: SpS, speculative decoding.
 
-https://arxiv.org/pdf/2211.17192 [^standard-sampling], [`vllm/v1/sample/rejection_sampler.py`](https://github.com/vllm-project/vllm/blob/02f0c7b220422792f5e53de2a7d51d2d3ff2df28/vllm/v1/sample/rejection_sampler.py)
+Based on:
+
+- https://arxiv.org/pdf/2211.17192 [^standard-sampling]
+- https://arxiv.org/pdf/1811.03115
+- https://arxiv.org/pdf/2302.01318
+- [`vllm/v1/sample/rejection_sampler.py`](https://github.com/vllm-project/vllm/blob/02f0c7b220422792f5e53de2a7d51d2d3ff2df28/vllm/v1/sample/rejection_sampler.py)
 
 [^standard-sampling]:
     Note that we refer to standard sampling to methods such as argmax, top-k, nucleus, temperatures, et al., albeit each have a different ways to process logits.
@@ -225,8 +232,6 @@ https://arxiv.org/pdf/2211.17192 [^standard-sampling], [`vllm/v1/sample/rejectio
 - Lenience factor $l$ to perform speed versus quality trade-off [^lenience] when draft-models distributions is different from target-models'. Note that we can't use `temperature=0` (i.e argmax sampling).
   - Instead we allow some lenience before standardizing the distribution (accept token $x$ sampled from $M_q$ in case of $p(x) \le l \dot \max{p}$)
   - In this case, then similar empirical increases to $\alpha$ to those of `temperature=1`
-
-> https://arxiv.org/pdf/2302.01318 goes into more details for implementation a parallelized verification draft stage, but conceptually they are the same.
 
 [^discrepancy-with-rejection-sampling]:
     Rejection sampling follows a iterative sampling procedure that might looks superficially similar to speculative sampling:
