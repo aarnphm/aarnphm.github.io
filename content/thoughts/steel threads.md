@@ -23,7 +23,6 @@ Usage:
    For example, you might choose one API that you think would be part of the new service.
 3. Build out the new API in a new service.
 4. Make it work for just that narrow use case.
-
    - For any other use case, use the old code path. Get it out to production, into full use.
      > [!TIP]
      >

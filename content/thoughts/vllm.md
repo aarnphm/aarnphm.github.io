@@ -236,7 +236,6 @@ We will need a generic way to support eagle/eagle3, as well as other methods goi
   I'm currently working on integrating this format into vLLM. The plan is for speculators to become a vLLM dependency, allowing us to leverage configurable model definitions to support a wide variety of draft models.
 
   As a first step, I'm developing a translation layer that:
-
   - Detects if a checkpoint is in speculators format
   - Instantiates it using speculators if applicable
   - Converts its configuration into vLLM's SpeculativeConfig format

@@ -11,6 +11,7 @@ tsconfig.tsbuildinfo
 replit.nix
 quartz.git
 *.autosave
+**/.conform*
 .vercel
 __pycache__
 sites

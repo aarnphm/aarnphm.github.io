@@ -25,14 +25,7 @@ import { h, s } from "hastscript"
 import { wikilinkRegex } from "./ofm"
 import { findAndReplace as hastFindReplace } from "hast-util-find-and-replace"
 import isAbsoluteUrl from "is-absolute-url"
-import {
-  FullSlug,
-  RelativeURL,
-  simplifySlug,
-  splitAnchor,
-  stripSlashes,
-  transformLink,
-} from "../../util/path"
+import { FullSlug, simplifySlug, splitAnchor, stripSlashes, transformLink } from "../../util/path"
 import path from "path"
 import { FindAndReplaceList } from "hast-util-find-and-replace"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"

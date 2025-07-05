@@ -22,7 +22,6 @@ Problem --> Thesis --> Structure
 > Athenians are harming themselves since Socrates is the only one who concerns the truth and what truly good is.
 
 - "Ancient" / Recent accusation
-
   - Bad association with pre/post
   - Ancient:
     - Physicist -> enquire things in heaven and under the earth

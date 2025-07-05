@@ -27,7 +27,6 @@ depends on two sorts of _objects_:
 >   $$
 >   \circ : \text{hom}(b,c) \times \text{hom}(a,b) \mapsto \text{hom}(a,c)
 >   $$
->
 >   - associativity: if $f: a \to b, g: b \to c$ and $h: c \to d$ then we have
 >
 >     $$

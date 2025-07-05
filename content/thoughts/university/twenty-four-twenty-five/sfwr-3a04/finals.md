@@ -24,8 +24,6 @@ See also: [[thoughts/university/twenty-four-twenty-five/sfwr-3a04/midterm|midter
 
 ## Interaction-Oriented Architecture
 
-
-
 ## Hierarchy Architecture
 
 | Architecture Type   | Key Characteristics                                                                                                                                                              | Benefits                                                                                                                     | Limitations                                                                                                          | Use Cases                                                                                                    |
@@ -76,7 +74,6 @@ Idea of SAAM:
 | **Enterprise Service Bus (ESB)**        | - Unified architecture for high reusability<br>- Addresses reliability and scalability issues<br>- Supports asynchronous queuing<br>- Enables event-driven messaging<br>- Centralizes policy and rules management               | - Additional architectural complexity<br>- Performance overhead from intermediate processing<br>- Configuration and management challenges                                                                                                           |
 
 - Think about Broker as a middleware style architecture
-
   - RPC
 
   ```mermaid

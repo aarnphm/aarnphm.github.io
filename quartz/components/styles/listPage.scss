@@ -9,7 +9,8 @@ ul.section-ul {
 
 li.section-li {
   border-top: 1px solid;
-  padding: calc(var(--kern) * 1.5) 0;
+  padding: calc(var(--kern) * 1.5) 4px;
+  padding-left: 0px;
   transition: border-color 0.3s;
 
   &:first-child {

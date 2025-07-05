@@ -48,7 +48,6 @@ Can we shift [[thoughts/education#system|education system]] away from assessing 
 - is a space which a game takes place. Once we step into it, we suspend the rules of life, allow the rules of the game to take over our interactions
 
 - boundaries of magic circle often via ceremonies:
-
   - National Anthem before olympics game
   - Gong before yoga class
   - Walking down the aisle at a wedding

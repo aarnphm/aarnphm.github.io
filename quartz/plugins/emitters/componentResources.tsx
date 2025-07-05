@@ -181,7 +181,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         dir: "auto",
       }
 
-      yield write({
+      ;(yield write({
         ctx,
         slug: "index" as FullSlug,
         ext: ".css",
@@ -210,7 +210,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
           slug: "postscript" as FullSlug,
           ext: ".js",
           content: postscript,
-        })
+        }))
       yield write({
         ctx,
         slug: "site" as FullSlug,

@@ -32,8 +32,8 @@ const cache = new Map()
 
 export const Twitter: QuartzTransformerPlugin = () => ({
   name: "Twitter",
-  markdownPlugins(ctx) {
-    const locale = ctx.cfg.configuration.locale.split("-")[0] ?? "en"
+  markdownPlugins: ({ cfg }) => {
+    const locale = cfg.configuration.locale.split("-")[0] ?? "en"
     return [
       () => async (tree) => {
         const promises: Promise<void>[] = []

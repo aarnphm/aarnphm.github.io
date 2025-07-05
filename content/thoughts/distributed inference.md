@@ -44,16 +44,20 @@ or _well-lit path_
 ##### [[thoughts/distributed inference#Autoscaling]]
 
 optimization:
+
 - https://docs.google.com/document/d/1X-VQD2U0E2Jb0ncmjxCruyQO02Z_cgB46sinpVk97-A/edit
 
 sig notes:
+
 - UPDATED: https://docs.google.com/document/d/1lghRMB2UJftEzCpk00A-1onfS2375ZtJG8FOYbP1tec/edit?tab=t.0#heading=h.4wdpe484slj1
 - OLD: https://docs.google.com/document/d/1dHLWBy8CXaURT-4W562pfFDP6HDrn-WgCtDQb08tD7k/edit
 
 autoscaling examples:
+
 - https://docs.google.com/document/d/1IFsCwWtIGMujaZZqEMR4ZYeZBi7Hb1ptfImCa1fFf1A
 
 use cases:
+
 - Google: no strong incentives for auto-scaling on large workload
   - Single production workload - configurations, extensions, and optimizations of llm-d
   - High customer SLO expectation
@@ -73,7 +77,6 @@ background: https://github.com/llm-d/llm-d/blob/dev/docs/proposals/llm-d.md
 - dynamism is not a big part of the workloads a few big models
 
 - Exploration for areas and involvement into llm-d:
-
   - Financial customers
   - RedHat customers
 
@@ -82,7 +85,7 @@ background: https://github.com/llm-d/llm-d/blob/dev/docs/proposals/llm-d.md
 - Request scheduling
 - Opinions for P/D on TPU (mixed batching)
 
-[Kubernetes LLM Inference Autoscaling examples](https://docs.google.com/document/d/1IFsCwWtIGMujaZZqEMR4ZYeZBi7Hb1ptfImCa1fFf1A/edit?resourcekey=0-8lD1pc_wDVxiwyI8SIhBCw&tab=t.0#heading=h.msa1v1j90u )
+[Kubernetes LLM Inference Autoscaling examples](https://docs.google.com/document/d/1IFsCwWtIGMujaZZqEMR4ZYeZBi7Hb1ptfImCa1fFf1A/edit?resourcekey=0-8lD1pc_wDVxiwyI8SIhBCw&tab=t.0#heading=h.msa1v1j90u)
 
 [Proposal: New SLO Parameters in InferenceSchedulerObjective](https://docs.google.com/document/d/1j2KRAT68_FYxq1iVzG0xVL-DHQhGVUZBqiM22Hd_0hc/edit?resourcekey=0-5cSovS8QcRQNYXj0_kRMiw&tab=t.0#heading=h.emkaixupvf39)
 

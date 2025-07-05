@@ -32,7 +32,6 @@ Tomorrow’s medicine is today’s research. That is why the question of how we 
    Measures such as data minimization, differential privacy, encryption, and strict access controls must be in place. The framework should also include ongoing compliance checks and audits to ensure data-handling practices remain in line with evolving legal standards and community expectations.
 
 4. Guidelines
-
    - Minimum necessary data collection principle
    - End-to-end encryption for all health data
    - Strict access controls and audit trails
@@ -69,7 +68,6 @@ Tomorrow’s medicine is today’s research. That is why the question of how we 
    who may not be well-represented in the data.
 
 4. Guidelines
-
    - Rigorous bias audits of training datasets.
    - Engaging local communities (e.g., Northern Ontario Indigenous communities, diverse communities in Hamilton) in the development and testing phases.
    - Regularly updating and retraining models on more representative datasets.
@@ -103,7 +101,6 @@ Tomorrow’s medicine is today’s research. That is why the question of how we 
    The trajectory suggests future regulatory frameworks may explicitly demand that automated decision-making tools, such as our AI system—particularly in healthcare— must provide understandable rationales for their outputs [@aida2024companion].
 
 4. Guidelines
-
    - Use of interpretable ML models where possible [@nanda2023concrete; @pozdniakov2024largelanguagemodelsmeet{pp. 3}; @cammarata2020thread]
    - Implements techniques like Local Interpretable Model-agnostic Explanations (LIME) [@ribeiro2016lime; @zafar2019dlime] or Shapley values
    - Clear communication of system limitations [@lundberg2017unified]

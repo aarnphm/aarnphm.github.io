@@ -506,7 +506,7 @@ async function fillDocument(data: ContentIndex) {
         content: fileData.content,
         tags: fileData.tags,
         aliases: fileData.aliases,
-      })
+      }),
     )
     id++
   }
@@ -523,4 +523,3 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     await setupSearch(element, currentSlug, data)
   }
 })
-

@@ -26,7 +26,6 @@ You can find internal monologue under [[/posts/]] index.
 ## open source.
 
 - **vllm-project/vllm** - :seedling: A high-throughput and memory-efficient inference and serving engine for [[thoughts/LLMs]] (2024-)
-
   - Structured outputs compatibility in V0 and V1 engine https://github.com/vllm-project/vllm/pull/12388 https://github.com/vllm-project/vllm/pull/16577 https://github.com/vllm-project/vllm/pull/15317 https://github.com/vllm-project/vllm/pull/10785 https://github.com/vllm-project/vllm/pull/14868
     - Jump-forward decoding https://github.com/vllm-project/vllm/pull/15490
       - Design docs: [[thoughts/structured outputs]]
@@ -36,7 +35,6 @@ You can find internal monologue under [[/posts/]] index.
   - Source: [github](https://github.com/vllm-project/vllm), [docs](docs.vllm.ai), [[thoughts/vllm|notes]]
 
 - **Quartz** - :seedling: a fast, batteries-included static-site generator that transforms Markdown content into fully functional websites (2023-)
-
   - A set of tools that helps you publish your [[thoughts/Digital garden|digital garden]] and notes as a website for free.
   - Improved performance of graph interaction with Canvas https://github.com/jackyzha0/quartz/pull/1328
   - Added support for PDF in popover modal https://github.com/jackyzha0/quartz/pull/913
@@ -51,7 +49,6 @@ You can find internal monologue under [[/posts/]] index.
     https://x.com/aarnphm_/status/1861550609834402129
 
 - **avante.nvim** - :mortar_board: [Cursor](https://www.cursor.com/) IDE, but for [[uses#^neovim|Neovim]] (2024-)
-
   - Implemented bounding UI popover to improve QOL https://github.com/yetone/avante.nvim/pull/29
   - Added support for lazy setup for better load time improvement https://github.com/yetone/avante.nvim/pull/14
   - Added Rust crates for `.avanterules` templates https://github.com/yetone/avante.nvim/pull/466
@@ -59,7 +56,6 @@ You can find internal monologue under [[/posts/]] index.
     ![[thoughts/images/avante.mp4]]
 
 - **morph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-) [^morph]
-
   - Trained [[thoughts/sparse autoencoder]] to interpret QwQ CoT and features [@templeton2024scaling]
   - Build a custom [[thoughts/vLLM]] plugins to support activation intervention. Served on [BentoCloud](https://bentoml.com/cloud) with scale-to-zero enabled
   - Dynamic inference graph with structured outputs endpoints for steered [suggestions](https://github.com/aarnphm/morph/blob/cd5f916776273aea5d27c5ed08e300e3ca04a1f5/python/asteraceae/service.py#L748), a search RAG to infer author style and tonality with [Exa](https://exa.ai) and [LlamaIndex](https://www.llamaindex.ai/)
@@ -68,7 +64,6 @@ You can find internal monologue under [[/posts/]] index.
   - source: [github](https://github.com/aarnphm/morph), [engineering docs](https://engineering.morph-editor.app/), [wip user docs](https://docs.morph-editor.app), [demo](https://morph-editor.app)
 
 - **OpenLLM** - :gear: Run any open-source [[thoughts/LLMs|LLMs]] as OpenAI compatible API endpoint in the cloud. (2023-)
-
   - 🔬 Build for fast and production usages
   - 🚂 Support Llama, Qwen, Gemma, etc, and **[[thoughts/quantization|quantized]]** versions
   - ⛓️ OpenAI-compatible API
@@ -78,13 +73,11 @@ You can find internal monologue under [[/posts/]] index.
     ![[thoughts/images/openllm.gif]]
 
 - **BentoML** - :bento: Build Production-grade AI Application (2021-) [@yangbentoml2022]
-
   - a framework that simplifies [[thoughts/Machine learning|machine learning]] model deployment and provides a faster way to ship your model to production. Supports a variety of use cases, from classical ML to [[thoughts/LLMs]], diffusions models.
   - Built using Python, [[thoughts/BuildKit|BuildKit]], gRPC
   - Source: [github](https://github.com/bentoml/bentoml), [docs](https://docs.bentoml.com)
 
 - **incogni.to** - :last_quarter_moon: an event platform that curates for those yearning to be seen for ==who they are, not what they can "sell"== (2024)
-
   - Implemented a [[thoughts/RAG]] pipeline for recommendation system based on users preferences and interests, with [command-r-plus-08-2024](https://huggingface.co/CohereForAI/c4ai-command-r-plus), deployed with [[thoughts/vllm|vLLM]] and BentoML [@yangbentoml2022]
   - Added semantic search to find relevant events based on query with [Cohere Rerank](https://cohere.com/rerank)
   - General UI implementation with shadcn/ui and vercel/next.js

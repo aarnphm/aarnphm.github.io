@@ -17,4 +17,3 @@ $$
 \mathcal{I}_{\text{GRPO}}(\theta ) = \mathbf{E}[q \approx P(Q), \{ o_{i} \}^{G}_{i=1} \approx \pi_{\theta_{\text{old}}}(O|q)]
 \end{aligned}
 $$
-

@@ -42,7 +42,6 @@ where:
     Often refers to this principle as applied to Newtonian mechanics, that is Newton's laws of motion hold in all frames related to one another by a Galilean transformation.
 
 2. Deviatoric stress is **linear** in this variable $\sigma (\varepsilon) = -p \mathbf{I} + \mathbf{C} : \varepsilon$,
-
    - where $p$ is independent on the strain rate tensor
    - $\mathbf{C}$ is the fourth-order tensor for constant of proportionality (viscosity tensor)
    - $:$ is the double-dot product
@@ -66,7 +65,6 @@ where:
    $$
    \text{tr}(\varepsilon) = \nabla \cdot \mathbf{u}
    $$
-
    - trace of the stress tensor then becomes $\text{tr}(\sigma) = -3p + (3 \lambda + 2 \mu) \nabla \cdot \mathbf{u}$ (trace of identity tensor is 3)
 
    - alternatively decomposing stress tensor into **isotropic** and **deviatoric** part in fluid dynamic:

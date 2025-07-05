@@ -6,3 +6,5 @@ node_modules
 .venv
 safari.css
 *.pdf
+pnpm-lock.yaml
+flake.lock

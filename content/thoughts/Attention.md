@@ -1,11 +1,11 @@
 ---
+abstract: "The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks."
+date: 2024-02-07
+description: "and posteriori information retrieval."
 id: Attention
+modified: "2025-07-04 20:48:12 GMT-04:00"
 tags:
   - technical
-abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
-date: "2024-02-07"
-description: and posteriori information retrieval.
-modified: 2025-07-03 22:38:27 GMT-04:00
 title: Attention
 ---
 
@@ -45,7 +45,7 @@ idea: reduce number of KV heads $n_k$ to a fraction $n_k^{'} = \frac{n_q}{k}$ of
 
 ## Tree Attention
 
-https://arxiv.org/abs/2408.04093 [@shyam2025treeattentiontopologyawaredecoding]
+https://arxiv.org/abs/2408.04093
 
 ## RadixAttention
 

@@ -38,7 +38,7 @@ _List of subscription I have stopped using_
 | Apple One      | 19.95 | M          | USD      | Chase |
 | Supermaven Pro | 10    | M          | USD      | Chase |
 | ChatGPT Plus   | 240   | Y          | USD      | Chase |
-| Strava                        | 79.99     | Y          | USD      | Chase |
-| Midjourney                    | 10        | M          | USD      | Chase |
-| Netflix                       | 23.99     | M          | CAD      | Chase |
+| Strava         | 79.99 | Y          | USD      | Chase |
+| Midjourney     | 10    | M          | USD      | Chase |
+| Netflix        | 23.99 | M          | CAD      | Chase |
 | Perplexity Pro | 200   | Y          | USD      | Chase |

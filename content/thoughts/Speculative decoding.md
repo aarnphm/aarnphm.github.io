@@ -1,13 +1,13 @@
 ---
-id: Speculative decoding
+date: 2025-05-21
+description: "a method to speed up LLM decoding"
+id: "Speculative decoding"
+modified: "2025-07-05 00:16:38 GMT-04:00"
 tags:
   - ml
   - serving
   - technical
-date: "2025-05-21"
-description: a method to speed up LLM decoding
-modified: 2025-07-04 02:33:44 GMT-04:00
-title: Speculative decoding
+title: "Speculative decoding"
 ---
 
 Idea: "draft-and-verify" using smaller models to generate a head tokens (quick explanation from [karpathy](https://x.com/karpathy/status/1697318534555336961))
@@ -25,14 +25,22 @@ A few techniques such as [[thoughts/Speculative decoding#ngrams|ngrams]], [[thou
 
 _Extrapolation Algorithm for Greater Language-model Efficiency_
 
-https://arxiv.org/pdf/2503.01840 [@li2025eagle3scalinginferenceacceleration], https://arxiv.org/pdf/2406.16858 [@li2024eagle2], https://arxiv.org/pdf/2401.15077 [@li2024eagle]
+- https://arxiv.org/pdf/2503.01840
+- https://arxiv.org/pdf/2406.16858
+- https://arxiv.org/pdf/2401.15077
 
-Difference between [[thoughts/Speculative decoding#EAGLE-1]] and [[thoughts/Speculative decoding#EAGLE-3]]:
+Motivation:
 
-- EAGLE-1's limitation at its feature prediction constraints, via LM head architecture,
-- EAGLE-3 addresses this by use direct token prediction and rely on multi-layer feature fusion called "training-time test", similar to [[thoughts/Speculative decoding#MLP Speculator]]
+- speculative sampling relies on the draft models having similar distributions as the target models.
+  - use smaller models. i.e: Llama 3.2 3B as draft for Llama 3.3 70B.
+  - high overhead for stepping through the whole models would outweighs the benefits
 
-> [!important] Distribution skew
+> [!note] Difference between [[thoughts/Speculative decoding#EAGLE-1]] and [[thoughts/Speculative decoding#EAGLE-3]]
+>
+> - EAGLE-1's limitation at its feature prediction constraints, via LM head architecture,
+> - EAGLE-3 addresses this by use direct token prediction and rely on multi-layer feature fusion called "training-time test", similar to [[thoughts/Speculative decoding#MLP Speculator]]
+
+> [!important] distribution skew
 >
 > EAGLE _does not_ involve any fine-tuning of the target model, therefore preservation of outputs distributions by EAGLE is theoretically guaranteed for both greedy and non-greedy sampling. This is not the case with Lookahead and Medusa.
 
@@ -75,7 +83,7 @@ EAGLE address this by **inputs the token sequence from one time step ahead inclu
 
 ![[thoughts/images/eagle-figure-6-architecture.webp]]
 
-- input: `[feature_seq, token_seq] # [bs, seq_len, hidden_dim], [bs, seq_len]`
+- `[feature_seq, token_seq] # [bs, seq_len, hidden_dim], [bs, seq_len]`
 - `token_seq -> token_emb # [bs, seq_len] -> [bs, seq_len, hidden_dim]`
 - `fused_seq = feature_seq * token_emb # [bs, seq_len, 2xhidden_dim]` [^triton-fused-ops]
 - autoregressive_head:
@@ -101,15 +109,14 @@ EAGLE address this by **inputs the token sequence from one time step ahead inclu
   L_{\text{cls}} &= \text{CrossEntropy}(p_{i+2}, \hat{p}_{i+2})
   \end{aligned}
   $$
-- Autoregression head with loss $L = L_{\text{reg}} + w_\text{cls} L_j\text{cls}$
+- Autoregressive head with loss $L = L_{\text{reg}} + w_{\text{cls}} L_{\text{cls}}$
+  - set $w_{\text{cls}}=0.1$ given that classification loss is in order magnitude bigger than regression loss
 
-  - set $w_\text{cls}=0.1$ given that classification loss is in order magnitude bigger than regression loss
-
-- Dataset: ShareGPT, 68k dialogue,
+- Dataset: ShareGPT, 68k dialogue
 - Hyperparameter:
   - LR: $3e^{-5}$
   - AdamW with beta $(\beta_1, \beta_2)=(0.9,0.95)$
-  - gradient clipping: 0.5
+  - gradient clipping: $0.5$
 
 ### EAGLE-2
 
@@ -121,7 +128,7 @@ tl/dr: Improvement on EAGLE-1 via context-aware dynamic draft tree into this dra
 
 ## HASS
 
-https://arxiv.org/pdf/2408.15766 [@zhang2025learningharmonizedrepresentationsspeculative]
+https://arxiv.org/pdf/2408.15766
 
 https://github.com/HArmonizedSS/HASS
 
@@ -137,17 +144,21 @@ https://arxiv.org/abs/2404.19124v1
 
 ## DistillSpec
 
-https://arxiv.org/abs/2310.08461 [@zhou2024distillspecimprovingspeculativedecoding]
+https://arxiv.org/abs/2310.08461
 
 ## Medusa
+
+https://sites.google.com/view/medusa-llm
 
 https://github.com/FasterDecoding/Medusa
 
 ## ngrams
 
-also known as Prompt Lookup Decoding (PLD), [HF's assisted generations](https://huggingface.co/blog/assisted-generation)
-
 https://github.com/apoorvumang/prompt-lookup-decoding
+
+_also known as Prompt Lookup Decoding (PLD)_, [HF's assisted generations](https://huggingface.co/blog/assisted-generation)
+
+idea: to use string matching from prompt to generate candidate tokens, instead of using a draft-based models.
 
 ```python
 def find_candidate_pred_tokens(input_ids, max_ngram_size=3, num_pred_tokens=10):
@@ -190,6 +201,10 @@ see also: [LMSYS blog](https://lmsys.org/blog/2023-11-21-lookahead-decoding/),
 ## MagicDec
 
 ---
+
+## optimization
+
+https://arxiv.org/pdf/2406.14066v2
 
 ## speculative sampling
 
@@ -370,7 +385,7 @@ _Objective_: to use $M_q$ to generate $\gamma \in \mathbb{Z}^{+}$ completions, a
     \end{aligned}
     $$
 
-    As desired. $\boxed{}$
+    $\boxed{}$
 
 ### acceptance probability
 

@@ -161,29 +161,23 @@ The decision is complicated by:
    Feasibility: Plan A is risky due to unresolved savings and union skepticism. Plan B offers short-term relief but sacrifices long-term growth. A hybrid approach (partial downsizing + phased growth) might balance risks.
 
 3. CA vs. AC: Operational & Financial Comparison
-
    - Financial Health (1994):
-
      - CA: Net income = -38M; Debt/Equity = 2.47:1.
      - AC: Net income = 129M; Debt/Equity = 3.63:1 (but better cash flow).
 
    - Operational Efficiency:
-
      - Load Factor: CA (69.3%) > AC (63.2%).
      - Unit Costs: CA (7.1¢/ASK) < AC (8.5¢/ASK) (Exhibit 4), but AC’s newer fleet improved long-term efficiency.
      - Market Reach: CA had more Canadian destinations (109 vs. 74) but fewer U.S. routes (7 vs. 19).
 
 4. Role of Alliances
-
    - CA & American Airlines (AA):
-
      - Benefits: Code-sharing expands trans-border reach post-open skies. AA’s CRS (Sabre) enhances yield management.
      - Risks: Dependency on AA; loss of Gemini CRS weakened domestic control.
 
    - AC & Continental: Provided limited synergy (few overlapping hubs), but AC’s Osaka route win signaled government favoritism.
 
 5. Impact of Open-Skies Agreement
-
    - Opportunities:
      - CA could expand into U.S. markets (e.g., Chicago, NYC after slot restrictions lift).
      - Leverage AA’s hubs (Dallas, Chicago) for international feed.
@@ -193,17 +187,14 @@ The decision is complicated by:
 
 6. Risks & Benefits of SPSC Collaboration
    Benefits:
-
    - Open-book transparency built trust (e.g., pilot union audits validated financials).
    - Joint problem-solving identified 78M savings (e.g., fuel efficiency).
 
    Risks:
-
    - CUPE’s absence delayed critical negotiations.
    - Employee skepticism due to past failures (e.g., AMR deal underdelivered).
 
 7. Recommendations for Senior Management
-
    1. Negotiate with CUPE: Offer incentives to join SPSC to close the 66M savings gap.
    2. Prioritize International Routes: Redirect capacity to Pacific Rim/Latin America, leveraging CA’s existing strengths.
    3. Optimize Fleet: Sell older 737s to fund Stage 3-compliant aircraft, reducing maintenance costs.
@@ -294,9 +285,7 @@ Outcome: A zero-sum rivalry that nearly bankrupted CA and eroded industry profit
 ## Porter’s Five Forces
 
 1. Threat of New Entrants
-
    - Barriers to Entry:
-
      - High Capital Costs: Significant investment required for aircraft, maintenance, and infrastructure (e.g., CA’s 300M acquisition of CPAir, 900M projected from Wardair fleet sales
      - Regulatory Hurdles: Even post-deregulation, slot allocations (e.g., restrictions at O’Hare/La Guardia under the open skies treaty) and safety certifications limit new entrants.
      - Brand Loyalty: Established FFPs (e.g., CA’s alliance with AA’s Advantage) and CRS dominance (e.g., Sabre) deter new competitors.
@@ -307,7 +296,6 @@ Outcome: A zero-sum rivalry that nearly bankrupted CA and eroded industry profit
      - Overall: Moderate threat due to charters and potential U.S. incursion, but high barriers protect incumbents.
 
 2. Bargaining Power of Suppliers
-
    - Aircraft Manufacturers (Boeing, Airbus):
      - High Power: Limited suppliers; CA’s mixed fleet (737s, Airbus A310s) led to inefficiencies and dependency on manufacturers for fleet renewal.
    - Fuel Suppliers:
@@ -319,14 +307,11 @@ Outcome: A zero-sum rivalry that nearly bankrupted CA and eroded industry profit
      - Overall: High supplier power due to concentrated inputs and union influence.
 
 3. Bargaining Power of Buyers
-
    - Passengers:
-
      - Price Sensitivity: Charters captured 31% of Vancouver-Toronto traffic by 1993 by undercutting fares.
      - Loyalty Programs: Business travelers valued FFPs (e.g., CA’s partnership with AA) but leisure travelers prioritized cost.
 
    - Corporate Clients:
-
      - Negotiated Discounts: Large corporations could demand bulk fare reductions.
 
    - Cargo Clients:
@@ -334,7 +319,6 @@ Outcome: A zero-sum rivalry that nearly bankrupted CA and eroded industry profit
      - Overall: Moderate to high power due to price transparency and competition from charters.
 
 4. Threat of Substitutes
-
    - Domestic Routes:
      - Trains/Buses: Viable for short-haul trips (e.g., Eastern Triangle), but irrelevant for transcontinental flights.
    - International Routes:
@@ -344,7 +328,6 @@ Outcome: A zero-sum rivalry that nearly bankrupted CA and eroded industry profit
      - Overall: Low to moderate threat, primarily from ground transportation for short distances.
 
 5. Intensity of Competitive Rivalry
-
    - Price Wars: CA and AC engaged in destructive fare battles (e.g., Wardair’s failed expansion triggered industry-wide losses).
    - Capacity Battles: AC flooded markets to suppress CA (e.g., 20% domestic overcapacity in 1992).
    - Alliance Competition:

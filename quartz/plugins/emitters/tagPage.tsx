@@ -4,12 +4,7 @@ import HeaderConstructor from "../../components/Header"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { ProcessedContent, QuartzPluginData, defaultProcessedContent } from "../vfile"
 import { FullPageLayout } from "../../cfg"
-import {
-  FullSlug,
-  getAllSegmentPrefixes,
-  joinSegments,
-  pathToRoot,
-} from "../../util/path"
+import { FullSlug, getAllSegmentPrefixes, joinSegments, pathToRoot } from "../../util/path"
 import { defaultListPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { TagContent } from "../../components"
 import { write } from "./helpers"
@@ -96,7 +91,6 @@ async function processTagPage(
     ext: ".html",
   })
 }
-
 
 export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) => {
   const opts: FullPageLayout = {

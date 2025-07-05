@@ -46,9 +46,9 @@ function runConvertCommand(argv: Argv, nbPath: string, targetSlug: string, outpu
   // Special case for Cloudflare Pages
   const args =
     process.env.CF_PAGES === "1" ? ["-m", "uv", "tool", "run", ...nbConvertArgs] : nbConvertArgs
-  
+
   return spawn(command, args, {
-    env: { ...process.env },  // Ensure we pass environment variables
+    env: { ...process.env }, // Ensure we pass environment variables
   })
 }
 
@@ -68,17 +68,17 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
 
         try {
           await fs.mkdir(dir, { recursive: true })
-          
+
           // Create a simple promise that resolves when the child process exits
           const result = await new Promise<FilePath>((resolve, reject) => {
             const proc = runConvertCommand(argv, src, outputName, argv.output)
-            
-            proc.on('error', (err) => {
+
+            proc.on("error", (err) => {
               console.error(`Failed to start subprocess for ${fp}:`, err)
               reject(err)
             })
-            
-            proc.on('exit', (code) => {
+
+            proc.on("exit", (code) => {
               if (code === 0) {
                 resolve(dest)
               } else {
@@ -86,7 +86,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
               }
             })
           })
-          
+
           yield result
         } catch (err) {
           console.error(styleText("red", `\n[emit:NotebookViewer] Error processing ${fp}:`), err)

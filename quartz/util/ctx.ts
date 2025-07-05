@@ -37,8 +37,10 @@ export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<Bui
   allFiles.forEach((file) => {
     // Handle PDFs and files with frontmatter
     if (file.slug) {
-      const isPdf = file.filePath ? path.extname(file.filePath).toLowerCase().includes('pdf') : false
-      
+      const isPdf = file.filePath
+        ? path.extname(file.filePath).toLowerCase().includes("pdf")
+        : false
+
       if (isPdf || file.frontmatter) {
         let slug = file.slug
         let title = file.frontmatter?.title
@@ -50,10 +52,10 @@ export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<Bui
           const canonicalDest = url.pathname
           const [destCanonical, _] = splitAnchor(canonicalDest)
           slug = decodeURIComponent(stripSlashes(destCanonical, true)) as FullSlug
-          
+
           // Use filename as title if no frontmatter title
           if (!title) {
-            const baseName = path.basename(file.filePath!, '.pdf')
+            const baseName = path.basename(file.filePath!, ".pdf")
             title = baseName
           }
         }

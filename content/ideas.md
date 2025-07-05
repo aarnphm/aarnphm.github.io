@@ -29,7 +29,6 @@ title: ideas.
   - Uses `conceallevel`
   - <https://github.com/frabjous/knap>
 - yet another emulator in Rust
-
   - Want to stream current running process and make it clickable?
   - Vim and Emacs support
   - multiplexer
@@ -50,7 +49,6 @@ title: ideas.
 - [[thoughts/Rust|Rust]] key-value store
   - Think of it as MongoDB but has Redis capability
 - Dockerfile for LLM
-
   - [ollama](https://github.com/ollama/ollama)'s Modelfile.
   - Dockerfile frontend, [[thoughts/BuildKit]], [[thoughts/OCI|OCI]]-compliant frontend.
   - Stay away from Docker 😄

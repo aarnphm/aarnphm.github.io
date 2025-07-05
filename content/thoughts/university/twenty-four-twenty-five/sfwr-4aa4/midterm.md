@@ -149,7 +149,6 @@ To solve race condition, uses semaphores.
 ## polling and interrupt
 
 - polling: reading memloc to receive update of an event
-
   - think of
 
     ```prolog
@@ -162,7 +161,6 @@ To solve race condition, uses semaphores.
     ```
 
 - interrupt: receieve interrupt signal
-
   - think of
 
     ```prolog

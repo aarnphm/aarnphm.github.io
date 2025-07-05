@@ -13,8 +13,9 @@ See [[books|antilibrary]] for reading list.
 
 ## current
 
-- LeLabo's Rose 31, Lavande 31, Labdanum 18
+- LeLabo's Rose 31, Lavande 31, Labdanum 18, Santal 31
 - Aesop's Gloam
+- Aesop's Aurner
 
 ## like.
 

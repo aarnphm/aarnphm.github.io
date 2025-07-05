@@ -1,13 +1,6 @@
-// @ts-ignore
 import { QuartzPluginData } from "../plugins/vfile"
-import {
-  joinSegments,
-  resolveRelative,
-  clone,
-  simplifySlug,
-  SimpleSlug,
-  FilePath,
-} from "../util/path"
+import { joinSegments, resolveRelative, simplifySlug, SimpleSlug, FilePath } from "../util/path"
+import { clone } from "../util/clone"
 
 type OrderEntries = "sort" | "filter" | "map"
 

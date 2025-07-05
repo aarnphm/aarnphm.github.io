@@ -11,10 +11,9 @@ modified: 2025-06-12 14:48:08 GMT-04:00
 title: mixed
 ---
 
-
 See also [[are.na|link rings]]
 
 - Love In Us All by Pharoah Sanders
-- init ding + _snd by Microstoria
+- init ding + \_snd by Microstoria
 - https://capitald.bandcamp.com/album/songs-pt-2
   - 415, or Boss

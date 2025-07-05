@@ -55,8 +55,6 @@ Prefill disaggregation is pretty interesting in a sense that we can separate pre
 >
 > Why do we need to use KV Cache?
 
-
-
 ### next-token prediction.
 
 Sampling: we essentially look forward K-tokens, and then we sample from the distribution of the next token.

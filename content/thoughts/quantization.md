@@ -1,10 +1,10 @@
 ---
+date: 2024-02-05
 id: quantization
+modified: "2025-07-04 20:47:32 GMT-04:00"
 tags:
   - seed
   - ml
-date: "2024-02-05"
-modified: 2024-12-13 05:58:55 GMT-05:00
 title: Quantization
 ---
 
@@ -61,7 +61,7 @@ $$
 \forall x \in [a, b] \quad x_q = \text{clip}(\text{round}(x/S + Z), \text{round}(a/S + Z), \text{round}(b/S + Z))
 $$
 
-See also: [paper](https://arxiv.org/abs/1712.05877)
+https://arxiv.org/abs/1712.05877
 
 ## quantization time
 
@@ -74,6 +74,10 @@ See also: [paper](https://arxiv.org/abs/1712.05877)
   - `fake_quantize` operations are inserted in the computation graph
   - `fake_quantize` is a no-op during inference, but during training, it simulates the effect of quantization
 
-## Methods and libraries
+## methods
 
-[bitsandbytes](https://github.com/TimDettmers/bitsandbytes) and [GPTQ](https://arxiv.org/abs/2210.17323)
+[bitsandbytes](https://github.com/TimDettmers/bitsandbytes) 
+
+### GPTQ
+
+https://arxiv.org/abs/2210.17323

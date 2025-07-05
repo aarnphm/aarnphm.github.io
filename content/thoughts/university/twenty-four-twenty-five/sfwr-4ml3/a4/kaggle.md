@@ -1,12 +1,12 @@
 ---
+date: 2024-12-03
+description: "CIFAR Challenge: Classify the World of Objects!"
 id: kaggle
+modified: "2025-07-04 20:47:58 GMT-04:00"
 tags:
   - sfwr4ml3
   - competition
-date: "2024-12-03"
-description: "CIFAR Challenge: Classify the World of Objects!"
-modified: "2024-12-03"
-title: CIFAR100 with CNN
+title: "CIFAR100 with CNN"
 ---
 
 See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a4/Kaggle.ipynb|jupyter notebook]]
@@ -42,7 +42,7 @@ Model: fine tuned version of EfficientNetV2 trained on ImageNet21k from [@tan202
 
 ## reasoning
 
-reference: [paper](https://arxiv.org/pdf/2104.00298)
+https://arxiv.org/pdf/2104.00298
 
 EfficientNetV2 includes a optimisations to make training a lot faster while keeping the model relatively lean. They were built on top of a limited search space and a fused conv layers called Fused-MBConv.
 
@@ -98,6 +98,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ncols = 100
 
+
 # CIFAR-100 dataset (download and create DataLoader)
 def get_dataloaders(batch_size):
   transform_train = transforms.Compose([
@@ -117,13 +118,19 @@ def get_dataloaders(batch_size):
 
   return train_loader, test_loader
 
-def _holistic_patch(model, num_features=100):model.classifier[1]=nn.Linear(model.classifier[1].in_features, num_features)
+
+def _holistic_patch(model, num_features=100):
+  model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_features)
+
 
 # Load EfficientNetV2 model
 def init_model(variants: Literal['S', 'M', 'L'] = 'S', patch=_holistic_patch):
-  if variants == 'S'  : model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.DEFAULT)
-  elif variants == 'M': model = models.efficientnet_v2_m(weights=models.EfficientNet_V2_M_Weights.DEFAULT)
-  elif variants == 'L': model = models.efficientnet_v2_l(weights=models.EfficientNet_V2_L_Weights.DEFAULT)
+  if variants == 'S':
+    model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.DEFAULT)
+  elif variants == 'M':
+    model = models.efficientnet_v2_m(weights=models.EfficientNet_V2_M_Weights.DEFAULT)
+  elif variants == 'L':
+    model = models.efficientnet_v2_l(weights=models.EfficientNet_V2_L_Weights.DEFAULT)
   patch(model)
   model.variants = variants
   model = model.to(device)
@@ -132,28 +139,29 @@ def init_model(variants: Literal['S', 'M', 'L'] = 'S', patch=_holistic_patch):
 
 # Load model if exists
 def load_checkpoint(filepath, model=None, variants='S'):
-  if model is None: model = init_model(variants)
+  if model is None:
+    model = init_model(variants)
   load_model(model, filepath)
   model.eval()
   return model
 
 
 # Save model to safetensors
-def save_checkpoint(model, accuracy, model_prefix, basedir="./model"):
+def save_checkpoint(model, accuracy, model_prefix, basedir='./model'):
   timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
   os.makedirs(basedir, exist_ok=True)
 
-  variants = "default"
-  if hasattr(model, "variants"): variants = model.variants
+  variants = 'default'
+  if hasattr(model, 'variants'):
+    variants = model.variants
 
   filepath = os.path.join(basedir, f'{model_prefix}_{variants}_{accuracy:.2f}_{timestamp}.safetensors')
   save_model(model, filepath)
   print(f'Model checkpoint saved to {filepath}.')
+
+
 # Train the model
-def train(model, train_loader,
-          criterion, optimizer, scheduler,
-          num_epochs,
-          *, ncols=100):
+def train(model, train_loader, criterion, optimizer, scheduler, num_epochs, *, ncols=100):
   best_accuracy = 0.0
   train_losses = []
   train_accuracies = []
@@ -242,6 +250,7 @@ def plot_training_history(train_losses, train_accuracies):
 
   plt.show()
 
+
 def validations(model, test_loader, classes, num_examples=16):
   model.eval()
   SAMPLES, PREDS, LABELS = [], [], []
@@ -264,29 +273,27 @@ def validations(model, test_loader, classes, num_examples=16):
   for R in range(4):
     for C in range(4):
       image_np = SAMPLES[i].cpu().numpy().transpose(1, 2, 0)
-      image_np = (image_np * np.array((0.2675, 0.2565, 0.2761)) + np.array((0.5071, 0.4867, 0.4408)))  # Unnormalize
+      image_np = image_np * np.array((0.2675, 0.2565, 0.2761)) + np.array((0.5071, 0.4867, 0.4408))  # Unnormalize
       image_np = np.clip(image_np, 0, 1)
       ax[R, C].imshow(image_np)
       ax[R, C].set_title('Actual: ' + classes[LABELS[i]], fontsize=16).set_color('k')
       ax[R, C].set_ylabel(PREDS[i], fontsize=16, rotation=0, labelpad=25).set_color('m')
       if LABELS[i] == LABELS[i]:
-          ax[R, C].set_xlabel('Predicted: ' + classes[LABELS[i]], fontsize=16).set_color('b')
+        ax[R, C].set_xlabel('Predicted: ' + classes[LABELS[i]], fontsize=16).set_color('b')
       else:
-          ax[R, C].set_xlabel('Predicted: ' + classes[LABELS[i]], fontsize=16).set_color('r')
+        ax[R, C].set_xlabel('Predicted: ' + classes[LABELS[i]], fontsize=16).set_color('r')
       ax[R, C].set_xticks([])
       ax[R, C].set_yticks([])
       i += 1
 
   plt.show()
 
-if __name__ == "__main__":
-  model = init_model(variants="L")
+
+if __name__ == '__main__':
+  model = init_model(variants='L')
   optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=1e-4)
   criterion = nn.CrossEntropyLoss(label_smoothing=0.1)  # Add label smoothing
-  scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
-    optimizer,
-    T_0=5, T_mult=2, eta_min=1e-6
-)
+  scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=5, T_mult=2, eta_min=1e-6)
   train(model, train_loader, criterion, optimizer, scheduler, num_epochs, ncols=ncols)
   evaluate(model, test_loader)
 ```

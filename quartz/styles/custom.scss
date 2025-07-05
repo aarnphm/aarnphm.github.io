@@ -12,17 +12,7 @@
 @use "./pages/technical.scss";
 @use "./pages/reflection.scss";
 
-@include font-face(
-  "Berkeley Mono",
-  ("BerkeleyMono-Regular.woff2", "BerkeleyMono-Regular.woff"),
-  ("woff2", "woff")
-);
-@include font-face(
-  "Berkeley Mono Italic",
-  ("BerkeleyMonoVariable-Italic.woff2", "BerkeleyMonoVariable-Italic.woff"),
-  ("woff2", "woff"),
-  italic
-);
+@include font-face("Berkeley Mono", ("Berkeley Mono Variable.woff2"), ("woff2"));
 @include font-face("ABC Diatype Light", "ABCDiatype-Light.woff2", "woff2");
 @include font-face("ITCGaramondStdLtCond", "ITCGaramondStdLtCond.woff2", "woff2");
 @include font-face("GT Sectra Display", "GT-Sectra-Display-Regular.woff", "woff");

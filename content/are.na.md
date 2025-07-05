@@ -1,19 +1,19 @@
 ---
-id: are.na
 aliases:
   - inspiration
-tags:
-  - technical
-  - seed
 cssclasses:
   - nolist
-date: "2024-10-24"
-description: cool stuff on the internet. My run-down version of are[dot]na
-modified: 2025-07-03 20:07:37 GMT-04:00
+date: 2024-10-24
+description: "cool stuff on the internet. My run-down version of are[dot]na"
+id: are.na
+modified: "2025-07-04 20:40:03 GMT-04:00"
 permalinks:
   - /website
   - /resources
   - /inspo
+tags:
+  - technical
+  - seed
 title: are.na
 ---
 
@@ -248,12 +248,12 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 
 #### papers
 
-- https://arxiv.org/pdf/2401.08671 -- DeepSpeed-FastGen
-- https://arxiv.org/pdf/2506.06941 -- The Illusion of Thinking
-- https://arxiv.org/pdf/2505.24832 -- How much do [[thoughts/LLMs|language]] models memorize?
-- https://arxiv.org/pdf/2405.07987 -- The Platonic Representation Hypothesis
-- https://arxiv.org/pdf/2501.16007 -- TopLOC, A locality Sensitive Hashing Scheme for Trustless Verifable Inference
-- https://arxiv.org/pdf/2504.02922 -- Overcoming Sparsity Artifacts in Crosscoders to Interpret Chat-Tuning
+- https://arxiv.org/pdf/2401.08671
+- https://arxiv.org/pdf/2506.06941
+- https://arxiv.org/pdf/2505.24832
+- https://arxiv.org/pdf/2405.07987
+- https://arxiv.org/pdf/2501.16007
+- https://arxiv.org/pdf/2504.02922
   - [LessWrong](https://www.lesswrong.com/posts/xmpauEXEerzYcJKNm/what-we-learned-trying-to-diff-base-and-chat-models-and-why)
-- https://arxiv.org/pdf/2505.05315 -- Scalable Chain of Thoughts via Elastic Reasoning
+- https://arxiv.org/pdf/2505.05315
   - https://github.com/SalesforceAIResearch/Elastic-Reasoning

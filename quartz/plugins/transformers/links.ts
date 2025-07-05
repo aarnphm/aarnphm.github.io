@@ -78,26 +78,24 @@ const ALLOWED_EXTENSIONS = [
   ".txt",
 ]
 
+/**
+ * Match arXiv URLs such as:
+ *  - https://arxiv.org/abs/1712.05877
+ *  - https://arxiv.org/pdf/1712.05877.pdf
+ *  - https://arxiv.org/html/1712.05877
+ *  - https://arxiv.org/pdf/1712.05877v1.pdf
+ */
+const ARXIV_URL_REGEX =
+  /^https?:\/\/arxiv\.org\/(?:abs|pdf|html)[\/\w.-]*?(\d{4}\.\d{4,5})(?:v\d+)?(?:\.pdf)?(?:[?#].*)?$/i
+
 export function extractArxivId(url: string): string | null {
   try {
     const urlObj = new URL(url)
     if (!urlObj.hostname.includes("arxiv.org")) return null
 
-    // Match different arXiv URL patterns
-    const patterns = [
-      /arxiv.org\/abs\/(\d+\.\d+)/,
-      /arxiv.org\/html\/(\d+\.\d+)/,
-      /arxiv.org\/pdf\/(\d+\.\d+)(\.pdf)?/,
-      /arxiv.org\/\w+\/(\d+\.\d+)/,
-    ]
-
-    for (const pattern of patterns) {
-      const match = url.match(pattern)
-      if (match) return match[1]
-    }
-
-    return null
-  } catch (e) {
+    const match = url.match(ARXIV_URL_REGEX)
+    return match ? match[1] : null
+  } catch {
     return null
   }
 }
