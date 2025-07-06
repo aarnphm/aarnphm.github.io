@@ -1,11 +1,11 @@
 ---
+comments: false
+date: 2024-01-22
+description: "Includes the tools I use, workflow,  etc."
 id: uses
+modified: "2025-07-05 01:56:10 GMT-04:00"
 tags:
   - technical
-comments: false
-date: "2024-01-22"
-description: Includes the tools I use, workflow,  etc.
-modified: 2025-05-18 23:27:14 GMT-04:00
 title: uses.
 ---
 
@@ -31,7 +31,7 @@ see also [[are.na|links]] , [[tweets|based twitter posts]]
   - [neovim](https://neovim.io/) and [config](https://github.com/aarnphm/editor) ^neovim
   - patched [Berkeley Mono](https://berkeleygraphics.com/typefaces/berkeley-mono/) with Nerd Fonts.
   - [dotfiles](https://github.com/aarnphm/detachtools/)
-- [Obsidian](https://obsidian.md/), hosted with [Quartz](https://quartz.jzhao.xyz) (this site)
+- [Obsidian](https://obsidian.md/), hosted with [a modified version of Quartz](https://quartz.jzhao.xyz) (this site)
 - GitHub
 - Apple Notes
 - [Bitwarden](https://bitwarden.com/)

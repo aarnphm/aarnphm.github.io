@@ -57,7 +57,7 @@ ul#helper {
   right: 0;
   bottom: 0;
   position: fixed;
-  width: calc(var(--grid-col-width) * 5);
+  width: calc(var(--grid-col-width) * 4);
   transition: right 0.3s ease-in-out;
 
   @media all and ($tablet) {

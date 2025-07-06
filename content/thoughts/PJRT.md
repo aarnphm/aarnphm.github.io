@@ -1,8 +1,10 @@
 ---
+date: 2024-03-04
+description: "PTX equivalent for XLA"
 id: PJRT
+modified: "2025-07-05 01:57:20 GMT-04:00"
 tags:
   - ml
-date: "2024-03-04"
 title: PJRT
 ---
 

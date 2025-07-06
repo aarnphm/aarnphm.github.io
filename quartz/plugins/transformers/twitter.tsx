@@ -48,13 +48,13 @@ export const Twitter: QuartzTransformerPlugin = () => ({
               `https://publish.twitter.com/oembed?url=${url}&dnt=true&omit_script=true&lang=${locale}`,
             )
               .then((res) => res.json())
+              .catch((error) => {
+                console.error(`Failed to fetch Twitter embed for ${url}:`, error)
+                return value
+              })
               .then((data: TwitterEmbed) => {
                 value = unescapeHTML(data.html)
                 cache.set(cacheKey, value)
-                return value
-              })
-              .catch((error) => {
-                console.error(`Failed to fetch Twitter embed for ${url}:`, error)
                 return value
               })
           }

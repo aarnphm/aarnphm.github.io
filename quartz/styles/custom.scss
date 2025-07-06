@@ -531,6 +531,9 @@ body {
   menu.tags {
     grid-column: 3/6;
   }
+  .header-content {
+    grid-column: 3/-1;
+  }
 }
 
 .callout {

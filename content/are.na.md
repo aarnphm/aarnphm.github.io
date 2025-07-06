@@ -6,7 +6,7 @@ cssclasses:
 date: 2024-10-24
 description: "cool stuff on the internet. My run-down version of are[dot]na"
 id: are.na
-modified: "2025-07-04 20:40:03 GMT-04:00"
+modified: "2025-07-05 02:41:08 GMT-04:00"
 permalinks:
   - /website
   - /resources
@@ -63,6 +63,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.rockstargames.com/VI -- GTA VI when?
 - https://www.tetragrammaton.com/
 - https://basement.studio/
+- https://barnsworthburning.net/
 
 ## people
 
