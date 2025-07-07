@@ -1,11 +1,11 @@
 ---
+comments: false
+date: 2022-04-22
+description: "A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading."
 id: books
+modified: "2025-07-07 06:11:50 GMT-04:00"
 tags:
   - evergreen
-comments: false
-date: "2022-04-22"
-description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
-modified: 2025-06-29 05:21:40 GMT-04:00
 title: antilibrary.
 ---
 
@@ -132,6 +132,7 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | Slaughterhouse-Five               | Kurt Vonnegut         |                                                        |
 | Homage to Catalonia               | George Orwell         |                                                        |
 | The Unbearable Lightness of Being | Milan Kundera         | [notes](https://www.cs.cmu.edu/~yangke/lightness.html) |
+| The Sea, The Sea                  | Iris Murdoch          |                                                        |
 
 ### poetry
 
