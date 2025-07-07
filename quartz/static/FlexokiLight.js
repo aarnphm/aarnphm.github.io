@@ -53,7 +53,3 @@ t.prefs_.set(‘cursor-color’, flexoki.base800);
 // t.prefs_.set(‘background-color’, flexoki.black);
 // t.prefs_.set(‘foreground-color’, flexoki.paper);
 // t.prefs_.set(‘cursor-color’, flexoki.base400);
-
-// Additional cursor settings
-t.prefs_.set(‘cursor-blink’, false);
-t.prefs_.set(‘cursor-blink-cycle’, [1000, 1000]);
