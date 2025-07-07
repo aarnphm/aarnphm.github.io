@@ -6,7 +6,7 @@ cssclasses:
 date: 2024-10-24
 description: "cool stuff on the internet. My run-down version of are[dot]na"
 id: are.na
-modified: "2025-07-05 02:41:08 GMT-04:00"
+modified: "2025-07-07 02:08:40 GMT-04:00"
 permalinks:
   - /website
   - /resources
@@ -117,6 +117,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://a16z.com/a-good-place-to-work/ -- A Good Place to Work, Ben Horowitz
 - https://cristobal.arquipelago.org/writing/screenshot.html -- Notes from Screenshot Conf
 - https://www.avabear.xyz/p/dialectical-damage -- Dialectical damage
+- https://halogen2.tumblr.com/post/187591113672/i-think-love-is-something-that-happens-to-other -- I think love is something that happens to other.
 
 ### machine learning
 
