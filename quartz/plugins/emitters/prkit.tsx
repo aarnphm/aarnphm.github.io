@@ -6,7 +6,8 @@ import { i18n } from "../../i18n"
 import { formatDate, getDate } from "../../components/Date"
 import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { write } from "./helpers"
-import sharp from "sharp"
+import sharpLib from "sharp"
+import type sharp from "sharp"
 import { JSX } from "preact"
 import { getSatoriFonts } from "../../util/og"
 import { ThemeKey } from "../../util/theme"
@@ -16,7 +17,6 @@ import { styleText } from "node:util"
 import { fromHtml } from "hast-util-from-html"
 import { htmlToJsx } from "../../util/jsx"
 import { loadEmoji, getIconCode } from "../../util/emoji"
-import type { Sharp } from "sharp"
 
 type PressReleaseComponent = (
   cfg: GlobalConfiguration,
@@ -72,7 +72,7 @@ async function processChunk(
           return languageCode
         },
       })
-      const img: Awaited<ReturnType<Sharp["toBuffer"]>> = await sharp(Buffer.from(svg)).png().toBuffer()
+      const img: Awaited<ReturnType<ReturnType<typeof sharp>["toBuffer"]>> = await sharpLib(Buffer.from(svg)).png().toBuffer()
       return await write({
         ctx,
         content: img,
