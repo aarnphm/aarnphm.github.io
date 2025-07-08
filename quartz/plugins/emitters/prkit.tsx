@@ -1,4 +1,5 @@
-import satori, { SatoriOptions } from "satori"
+import satori from "satori"
+import type { SatoriOptions } from "satori/wasm"
 import { GlobalConfiguration } from "../../cfg"
 import { QuartzEmitterPlugin } from "../types"
 import { i18n } from "../../i18n"
@@ -21,7 +22,7 @@ type PressReleaseComponent = (
   fileData: QuartzPluginData,
   opts: PressReleaseOptions,
   title: string,
-  fonts: SatoriOptions["fonts"],
+  fonts: NonNullable<SatoriOptions["fonts"]>,
 ) => JSXInternal.Element
 
 export interface PressReleaseOptions {
@@ -86,7 +87,7 @@ const TwitterPost: PressReleaseComponent = (
   fileData: QuartzPluginData,
   { colorScheme },
   title: string,
-  fonts: SatoriOptions["fonts"],
+  fonts: NonNullable<SatoriOptions["fonts"]>,
 ) => {
   let created: string | undefined
   let reading: string | undefined
@@ -199,7 +200,7 @@ const InstagramPost: PressReleaseComponent = (
   fileData: QuartzPluginData,
   { colorScheme },
   title: string,
-  fonts: SatoriOptions["fonts"],
+  fonts: NonNullable<SatoriOptions["fonts"]>,
 ) => {
   return (
     <div
@@ -349,7 +350,7 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
 
       for (const [platform, opts] of platforms) {
         for (const chunkItems of chunks) {
-          const results = await processChunk(chunkItems, ctx, configuration, opts, fonts, platform)
+          const results = await processChunk(chunkItems, ctx, configuration, opts, fonts!, platform)
           for (const filePath of results) {
             yield filePath
           }
