@@ -6,8 +6,9 @@ import { formatDate, getDate } from "../../components/Date"
 import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { write } from "./helpers"
 import sharp from "sharp"
-import { JSX } from "preact/jsx-runtime"
-import { defaultImageOptions, getSatoriFonts, SocialImageOptions } from "../../util/og"
+import { JSXInternal } from "preact/src/jsx"
+import { getSatoriFonts } from "../../util/og"
+import { ThemeKey } from "../../util/theme"
 import { ProcessedContent, QuartzPluginData } from "../vfile"
 import { BuildCtx } from "../../util/ctx"
 import { styleText } from "node:util"
@@ -15,10 +16,19 @@ import { fromHtml } from "hast-util-from-html"
 import { htmlToJsx } from "../../util/jsx"
 import { loadEmoji, getIconCode } from "../../util/emoji"
 
+type PressReleaseComponent = (
+  cfg: GlobalConfiguration,
+  fileData: QuartzPluginData,
+  opts: PressReleaseOptions,
+  title: string,
+  fonts: SatoriOptions["fonts"],
+) => JSXInternal.Element
+
 export interface PressReleaseOptions {
   height: number
   width: number
-  Component: SocialImageOptions["imageStructure"]
+  colorScheme: ThemeKey
+  Component: PressReleaseComponent
 }
 
 function chunk<T>(arr: T[], size: number): T[][] {
@@ -43,7 +53,7 @@ async function processChunk(
       const component = opts.Component(
         cfg,
         file.data,
-        { ...defaultImageOptions, ...opts },
+        opts,
         title,
         fonts,
       )
@@ -71,10 +81,10 @@ async function processChunk(
   )
 }
 
-const TwitterPost: SocialImageOptions["imageStructure"] = (
+const TwitterPost: PressReleaseComponent = (
   cfg: GlobalConfiguration,
   fileData: QuartzPluginData,
-  { colorScheme }: Omit<SocialImageOptions, "Component">,
+  { colorScheme },
   title: string,
   fonts: SatoriOptions["fonts"],
 ) => {
@@ -89,7 +99,9 @@ const TwitterPost: SocialImageOptions["imageStructure"] = (
     words: Math.ceil(fileData.readingTime?.words!),
   })
 
-  const Li = [created, reading]
+  const metaItems: string[] = []
+  if (created) metaItems.push(created)
+  if (reading) metaItems.push(reading)
 
   return (
     <div
@@ -145,15 +157,11 @@ const TwitterPost: SocialImageOptions["imageStructure"] = (
               fontStyle: "italic",
             }}
           >
-            {Li.map((item, index) => {
-              if (item) {
-                return (
-                  <li key={index} style={{ fontStyle: "italic" }}>
-                    {item}
-                  </li>
-                )
-              }
-            })}
+            {metaItems.map((item, index) => (
+              <li key={index} style={{ fontStyle: "italic" }}>
+                {item}
+              </li>
+            ))}
           </ul>
         </div>
         <p
@@ -166,10 +174,9 @@ const TwitterPost: SocialImageOptions["imageStructure"] = (
             display: "-webkit-box",
             WebkitLineClamp: 7,
             WebkitBoxOrient: "vertical",
-            lineClamp: 7,
           }}
         >
-          <Abstract {...getAbstractProps(fileData.abstract!)} />
+          {fileData.abstract && <Abstract {...getAbstractProps(fileData.abstract)} />}
         </p>
       </div>
     </div>
@@ -177,7 +184,7 @@ const TwitterPost: SocialImageOptions["imageStructure"] = (
 }
 
 type Props = {
-  children: JSX.Element
+  children: JSXInternal.Element
 }
 
 const getAbstractProps = (abstract: string): Props =>
@@ -187,10 +194,10 @@ function Abstract({ children }: Props) {
   return <span>{children}</span>
 }
 
-const InstagramPost: SocialImageOptions["Component"] = (
+const InstagramPost: PressReleaseComponent = (
   cfg: GlobalConfiguration,
   fileData: QuartzPluginData,
-  { colorScheme }: Omit<SocialImageOptions, "Component">,
+  { colorScheme },
   title: string,
   fonts: SatoriOptions["fonts"],
 ) => {
@@ -264,7 +271,7 @@ const InstagramPost: SocialImageOptions["Component"] = (
             fontSize: "2em",
           }}
         >
-          <Abstract {...getAbstractProps(fileData.abstract!)} />
+          {fileData.abstract && <Abstract {...getAbstractProps(fileData.abstract)} />}
         </p>
         <p
           style={{
@@ -286,12 +293,14 @@ const InstagramPost: SocialImageOptions["Component"] = (
 const defaultInstagramOptions: PressReleaseOptions = {
   height: 1920,
   width: 1080,
+  colorScheme: "darkMode",
   Component: InstagramPost,
 }
 
 const defaultTwitterOptions: PressReleaseOptions = {
   height: 900,
   width: 900,
+  colorScheme: "lightMode",
   Component: TwitterPost,
 }
 
