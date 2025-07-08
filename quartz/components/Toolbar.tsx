@@ -2,7 +2,7 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 // @ts-ignore
 import script from "./scripts/toolbar.inline.ts"
 import style from "./styles/toolbar.scss"
-import { JSXInternal } from "preact/src/jsx"
+import { JSX } from "preact"
 import { classNames } from "../util/lang"
 
 interface ToolbarProps {
@@ -11,7 +11,8 @@ interface ToolbarProps {
   tooltip?: string
   active?: boolean
   primary?: boolean
-  Icon: () => JSXInternal.Element
+  Icon: () => JSX.Element
+  key?: string
 }
 
 const ToolbarButton = ({ id, label, tooltip, active, primary, Icon }: ToolbarProps) => (

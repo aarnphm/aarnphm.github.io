@@ -1,7 +1,5 @@
-declare module "preact/src/jsx" {
-  import { JSX } from "preact"
-  export type JSXInternal = JSX
-  export { JSX }
+declare module "preact/jsx-runtime" {
+  export { JSX } from "preact"
 }
 
 declare module "node:util" {
@@ -43,11 +41,31 @@ declare module "satori/wasm" {
   }
 }
 
-// Minimal fallback if JSX namespace is not found (ensures TSX compiles in isolated modules)
-declare namespace JSX {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  interface IntrinsicElements {
-    // Allow any tag
-    [elemName: string]: any
+// Minimal stub for 'preact' types in case they are not resolved
+// This provides just enough typing information for JSX generics used in the codebase.
+declare module "preact" {
+  export namespace JSX {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    interface Element extends HTMLElement {}
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    interface IntrinsicElements {
+      [elemName: string]: any
+    }
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export const h: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export const Fragment: any
+}
+
+// Stub for '@types/sharp' when not installed
+declare module "sharp" {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sharp: any
+  export = sharp
+}
+
+// Minimal Buffer type if Node types are unavailable
+declare class Buffer extends Uint8Array {
+  static from(arrayBuffer: ArrayBuffer | ArrayBufferView | string): Buffer
 }

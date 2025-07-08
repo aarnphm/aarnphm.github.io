@@ -7,7 +7,7 @@ import { formatDate, getDate } from "../../components/Date"
 import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { write } from "./helpers"
 import sharp from "sharp"
-import type { JSXInternal } from "preact/src/jsx"
+import { JSX } from "preact"
 import { getSatoriFonts } from "../../util/og"
 import { ThemeKey } from "../../util/theme"
 import { ProcessedContent, QuartzPluginData } from "../vfile"
@@ -16,6 +16,7 @@ import { styleText } from "node:util"
 import { fromHtml } from "hast-util-from-html"
 import { htmlToJsx } from "../../util/jsx"
 import { loadEmoji, getIconCode } from "../../util/emoji"
+import type { Sharp } from "sharp"
 
 type PressReleaseComponent = (
   cfg: GlobalConfiguration,
@@ -23,7 +24,7 @@ type PressReleaseComponent = (
   opts: PressReleaseOptions,
   title: string,
   fonts: NonNullable<SatoriOptions["fonts"]>,
-) => JSXInternal.Element
+) => JSX.Element
 
 export interface PressReleaseOptions {
   height: number
@@ -71,7 +72,7 @@ async function processChunk(
           return languageCode
         },
       })
-      const img = await sharp(Buffer.from(svg)).png().toBuffer()
+      const img: Awaited<ReturnType<Sharp["toBuffer"]>> = await sharp(Buffer.from(svg)).png().toBuffer()
       return await write({
         ctx,
         content: img,
@@ -185,7 +186,7 @@ const TwitterPost: PressReleaseComponent = (
 }
 
 type Props = {
-  children: JSXInternal.Element
+  children: JSX.Element
 }
 
 const getAbstractProps = (abstract: string): Props =>
