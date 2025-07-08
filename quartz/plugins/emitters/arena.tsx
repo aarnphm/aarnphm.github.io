@@ -116,7 +116,8 @@ function createCategoryTree(cat: CategoryInfo, h: typeof import("hastscript").h)
     }
   })
 
-  const grid = h("div.arena-grid", cards)
+  const gridChildren = cards.length > 0 ? cards : [h("p", "No links available in this section.")]
+  const grid = h("div.arena-grid", gridChildren as ElementContent[])
   return { type: "root", children: [grid] }
 }
 

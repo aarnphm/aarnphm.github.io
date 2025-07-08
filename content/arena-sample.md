@@ -23,3 +23,14 @@ title: are.na sample
 - https://lonely.com
   - Sub1
   - Sub2 with longer explanation that should wrap and show in tooltip properly.
+
+## philosophy
+
+- https://plato.stanford.edu/entries/nietzsche/ -- SEP on Nietzsche
+- https://example.org -- Just link no note
+- Broken bullet no dash
+
+## invalid
+
+- not-a-url -- This should trigger invalid entry handling
+- https://correct.com -- good one
