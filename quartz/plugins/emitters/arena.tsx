@@ -70,7 +70,14 @@ function createCategoryTree(cat: CategoryInfo, h: typeof import("hastscript").h)
     const linePattern = /^-?\s*(https?:[^\s]+)(?:\s*--\s*(.*))?$/i
     const match = textContent.match(linePattern)
     if (!match) {
-      console.warn("Malformed list item skipped:", textContent)
+      // Add placeholder card to indicate parsing issue
+      cards.push(
+        h(
+          "div.arena-card",
+          { style: "background: var(--lightgray);" },
+          [h("div.arena-title", "Invalid entry"), h("p.arena-note", textContent)],
+        ),
+      )
       return
     }
     try {
