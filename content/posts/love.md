@@ -3,11 +3,11 @@ id: love
 tags:
   - love
   - growth
-date: "2025-02-14"
 description: on loneliness, Jungian-Bottonian love, and belongings.
-modified: 2025-06-01 12:22:21 GMT-04:00
+date: "2025-02-14"
 socials:
   substack: https://open.substack.com/pub/livingalone/p/jung-bottonian-love?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
+modified: 2025-07-08 13:56:37 GMT-04:00
 title: It is Valentine, and I don't have any plans.
 ---
 
@@ -171,3 +171,4 @@ Here's are some media, quotes, and unstructured thoughts. I hope you might find 
 - Work-related: [[posts/structured decoding]] for vLLM v1 should be out promptly, in addition to a project I have been working on for the past 5 months that is in the realm of UX and productionising [[thoughts/mechanistic interpretability|interpretability]]
 
 </div>
+

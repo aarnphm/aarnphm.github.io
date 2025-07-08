@@ -7,8 +7,10 @@ tags:
   - writing
 description: 'tw: addiction'
 date: "2025-06-01"
-modified: 2025-07-08 13:50:33 GMT-04:00
-title: apartment two twentyj
+socials:
+  substack: https://open.substack.com/pub/livingalone/p/apartment-two-twenty?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
+modified: 2025-07-08 13:56:35 GMT-04:00
+title: apartment two twenty
 ---
 
 ![[posts/images/edward-hopper-house-by-the-railroad.webp|House by the railroad, Edward Hopper]]
