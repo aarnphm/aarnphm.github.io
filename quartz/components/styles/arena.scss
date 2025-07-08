@@ -2,11 +2,12 @@
 @use "../../styles/variables.scss" as *;
 
 .arena-grid {
+  column-gap: 18px;
+  row-gap: 18px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   padding: 1rem 0;
-  animation: fadein 0.4s ease-in;
+  animation: fadein 0.5s ease;
 }
 
 @keyframes fadein {
@@ -48,10 +49,10 @@
   background: var(--light);
   text-decoration: none;
   color: inherit;
-  transition: box-shadow 0.25s ease, transform 0.15s ease;
+  transition: box-shadow 0.28s cubic-bezier(0.19, 1, 0.22, 1), transform 0.28s cubic-bezier(0.19, 1, 0.22, 1);
 
   &:hover {
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
     transform: translateY(-6px) scale(1.02);
   }
 
@@ -72,23 +73,37 @@
   content: attr(data-subnote);
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
-  bottom: -2.4rem;
+  transform: translate(-50%, 10px);
+  bottom: 100%;
   background: var(--dark);
   color: var(--light);
   font-size: 0.75rem;
-  padding: 0.3rem 0.5rem;
+  padding: 0.45rem 0.6rem;
   border-radius: 4px;
   white-space: pre-line;
   max-width: 260px;
   pointer-events: none;
   z-index: 1000;
   opacity: 0;
-  animation: tooltipfade 0.2s forwards;
+  animation: tooltipfade 0.28s forwards;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes tooltipfade {
   to {
     opacity: 1;
+    transform: translate(-50%, 0);
   }
+}
+
+.arena-card[data-subnote]:hover::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% - 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--dark);
+  opacity: 0;
+  animation: tooltipfade 0.28s forwards;
 }

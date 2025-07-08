@@ -75,7 +75,10 @@ function createCategoryTree(cat: CategoryInfo, h: typeof import("hastscript").h)
         h(
           "div.arena-card",
           { style: "background: var(--lightgray);" },
-          [h("div.arena-title", "Invalid entry"), h("p.arena-note", textContent)],
+          [
+            h("div.arena-title", "Invalid entry"),
+            h("p.arena-note", "Could not parse: " + textContent),
+          ],
         ),
       )
       return

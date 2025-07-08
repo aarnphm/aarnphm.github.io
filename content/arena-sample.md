@@ -18,3 +18,8 @@ title: are.na sample
 ## arts
 
 - https://gallery.org -- Online gallery -- Minimal white-space aesthetic
+  - Sub entry note only
+- https://invalid entry without url
+- https://lonely.com
+  - Sub1
+  - Sub2 with longer explanation that should wrap and show in tooltip properly.
