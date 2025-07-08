@@ -65,25 +65,6 @@ declare module "sharp" {
   export = sharp
 }
 
-// Minimal stubs for Node built-in modules when @types/node is not resolved
-declare module "fs" {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const fs: any
-  export = fs
-}
-
-declare module "path" {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const path: any
-  export = path
-}
-
-declare module "util" {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const util: any
-  export = util
-}
-
 declare module "reading-time" {
   export interface ReadingTimeResult {
     text: string
