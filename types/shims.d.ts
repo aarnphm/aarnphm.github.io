@@ -11,7 +11,18 @@ declare module "hastscript" {
 }
 
 declare module "hast" {
-  export * from "@types/hast"
+  export interface Node {
+    type: string
+  }
+  export interface Element extends Node {
+    tagName: string
+    properties?: Record<string, any>
+    children: Element[] | any[]
+  }
+  export interface Root extends Node {
+    children: Element[] | any[]
+  }
+  export type ElementContent = Element | any
 }
 
 declare module "unist-util-visit" {

@@ -2,7 +2,7 @@ import { BuildCtx } from "../../util/ctx"
 import { QuartzEmitterPlugin } from "../types"
 import { QuartzPluginData } from "../vfile"
 import { ProcessedContent } from "../vfile"
-import { Root, Element } from "hast"
+import type { Root, Element, ElementContent } from "hast"
 import { visit } from "unist-util-visit"
 import { pathToRoot, FullSlug } from "../../util/path"
 import { write } from "./helpers"
@@ -67,23 +67,24 @@ function createCategoryTree(cat: CategoryInfo, h: typeof import("hastscript").h)
   const cards: Element[] = []
   visit({ type: "root", children: cat.items } as Root, { tagName: "li" }, (node: any) => {
     const textContent = (node.children ?? []).map((n: any) => (n.value ?? "")).join("")
-    // split into url -- note
-    const match = textContent.match(/^-?\s*(https?:[^\s]+)\s*--\s*(.*)$/i)
+    const linePattern = /^-?\s*(https?:[^\s]+)(?:\s*--\s*(.*))?$/i
+    const match = textContent.match(linePattern)
     if (!match) {
+      console.warn("Malformed list item skipped:", textContent)
       return
     }
     try {
       const url = match[1]
-      const note = match[2] || ""
+      const note = match[2] ?? ""
       // check for nested list for subentries
       let subNote = ""
       if (node.children) {
         const sub = node.children.find((c: any) => c.tagName === "ul")
-        if (sub) {
+        if (sub && Array.isArray(sub.children)) {
           const subTexts: string[] = []
           sub.children.forEach((li: any) => {
-            const t = li.children.map((n: any) => (n.value ?? "")).join("")
-            subTexts.push(t)
+            const t = (li.children ?? []).map((n: any) => (n.value ?? "")).join("")
+            if (t) subTexts.push(t)
           })
           subNote = subTexts.join("\n")
         }
@@ -101,7 +102,7 @@ function createCategoryTree(cat: CategoryInfo, h: typeof import("hastscript").h)
         ),
       )
     } catch (err) {
-      console.error("Error parsing list item", err)
+      console.error("Error parsing list item: ", textContent, err)
     }
   })
 
