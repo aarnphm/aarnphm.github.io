@@ -7,8 +7,8 @@ tags:
   - writing
 description: 'tw: addiction'
 date: "2025-06-01"
-modified: 2025-07-08 12:35:34 GMT-04:00
-title: apartment 220
+modified: 2025-07-08 13:50:33 GMT-04:00
+title: apartment two twentyj
 ---
 
 ![[posts/images/edward-hopper-house-by-the-railroad.webp|House by the railroad, Edward Hopper]]
@@ -160,17 +160,31 @@ _[He looked away, disappearing into the revolving door.]_
 Shoulders tense, skin prickling beneath his shirt. Mirrors lining the back wall shines a dimple light against one's fixture-
 a fractured procession of pale faces staring back, folding against the heavy pull of gravity. _Is this how I look now?_
 
-Shelves of generic aspirin and cough drops lined walls papered with peeling prescriptions. Everything felt tired, forgotten.
-Except for one thing: the gleaming steel cabinet behind the counter, all clean lines and digital locks. Inside, rows of bottles caught the light like small treasures—blues, bars, footballs.
+Upon the shelves there stood arrayed such remedies as might comfort the minor afflictions of the commonplace—powders for the head,
+syrups for the throat, all manner of palliatives whose very names had been worn smooth by countless repetitions.
+The wallpaper, once perhaps bearing the dignity of official proclamations, now hung in tatters, its edges curled like the fingers of supplicants.
+Yet behind the mahogany counter, as if placed there by providence, stood a cabinet that it seemed to mock the decay surrounding it.
+Within its chamber, vials were arranged with the devotion of a monk tending relics—each bottle catching the gaslight like a small confession,
+blue and white and amber, promising either salvation or its more expedient cousin.
 
 His eyes fixed on the cabinet while he waited. _School buses_, he thought, spotting the yellow rectangles. _Ladders_ for the scored white ones. The taxonomy of chemical relief on borrowed time.
 
-Outside again, prescription folded in the palm of his hand, he hesitated. Glendale Park is nearby, a patch of greenery where he used to read.
+_[He got the pills.]_
 
+Outside again, prescription folded in the palm of his hand like some covenant with suffering, he hesitated. The street lamps cast
+their judgment in pools of yellow light. Glendale Park lay nearby—a patch of greenery where he once believed in the redemptive power
+of literature, where Dostoevsky had made sense and Kafka had seemed merely clever rather than prophetic.
+
+The gate stood open, as if expecting him.
+
+He walked the familiar path past the memorial bench, past the oak where lovers carved their temporary eternities. His footsteps found their own rhythm,
+leading him to the small rise where the city’s glow dimmed to a suggestion. Here, he lay back upon the damp earth.
+
+The pills dissolved bitter beneath his tongue—a communion of sorts. The sky stretched above him like black silk pierced by pinpoint stars, cool against his burning skin. When his phone rang—J’s ringtone, that particular melody of reproach—he felt the vibration through the ground more than heard it. He hadn’t returned her call back. Probably wouldn’t now.
 He lay back on damp earth, pills dissolving bitter beneath his tongue. The sky was black silk pierced by pinpoint stars, cool against burning skin.
 Echoes roses, his phone rang -- J's ringtone. _He hadn't returned her call back. Probably wouldn't now._
 
-Voices grew distant, submerged beneath a rhythmic murmur like waves pulsing behind his temples. T and K calling his name, their footsteps hurried across gravel.
+Voices grew distant, submerged beneath a rhythmic murmur like waves pulsing behind his temples. _T and K calling his name, their footsteps hurried across gravel._
 But their voices were already fading, drifting further away with each beat of his slowing heart.
 
 <br>
@@ -197,12 +211,11 @@ _May 29th, 2025_
 
 ## updates.
 
-Hi everyone, hope everyone is doing well. I moved to Toronto!
+Hi everyone, hope everyone is doing well.
 
 https://x.com/aarnphm_/status/1929630631786614946
 
 I had a bit of trouble publishing this one given that between moving and other life events, but finally got some pockets of time to finish this.
-There are few more pieces that I want to finish soon.
 
 ![[posts/images/IMG_2781.webp]] ![[posts/images/IMG_2783.webp]]
 
