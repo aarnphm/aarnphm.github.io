@@ -306,19 +306,22 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
   const twitterOpts = { ...defaultTwitterOptions, ...userOpts?.twitter }
   return {
     name,
-    async emit(ctx, content, _resource) {
+    getQuartzComponents() {
+      return []
+    },
+    async *emit(ctx, content, _resource) {
       const { configuration } = ctx.cfg
       // Re-use OG image generation infrastructure
       if (!configuration.baseUrl) {
         console.warn(`[emit:${name}] Skip PressKit generation ('baseUrl' is missing)`)
-        return []
+        return
       }
 
       // Filter content first
       const filteredContents = [...content].filter(
         ([_, file]) => !file.data.slug!.includes("university"),
       )
-      if (filteredContents.length === 0) return []
+      if (filteredContents.length === 0) return
       const headerFont = configuration.theme.typography.header
       const bodyFont = configuration.theme.typography.body
       const fonts = await getSatoriFonts(configuration, headerFont, bodyFont)
@@ -330,21 +333,19 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
 
       if (ctx.argv.verbose) console.log(styleText("blue", `[emit:${name}] Generating press kit...`))
 
-      // Process both platforms and all chunks in parallel
-      const [instagram, twitter] = await Promise.all([
-        Promise.all(
-          chunks.map((chunk) =>
-            processChunk(chunk, ctx, configuration, instagramOptions, fonts, "instagram"),
-          ),
-        ),
-        Promise.all(
-          chunks.map((chunk) =>
-            processChunk(chunk, ctx, configuration, twitterOpts, fonts, "twitter"),
-          ),
-        ),
-      ])
+      const platforms: Array<["instagram" | "twitter", PressReleaseOptions]> = [
+        ["instagram", instagramOptions],
+        ["twitter", twitterOpts],
+      ]
 
-      return [...instagram.flat(), ...twitter.flat()]
+      for (const [platform, opts] of platforms) {
+        for (const chunkItems of chunks) {
+          const results = await processChunk(chunkItems, ctx, configuration, opts, fonts, platform)
+          for (const filePath of results) {
+            yield filePath
+          }
+        }
+      }
     },
   }
 }
