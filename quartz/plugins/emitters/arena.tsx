@@ -69,9 +69,12 @@ function createCategoryTree(cat: CategoryInfo, h: typeof import("hastscript").h)
     const textContent = (node.children ?? []).map((n: any) => (n.value ?? "")).join("")
     // split into url -- note
     const match = textContent.match(/^-?\s*(https?:[^\s]+)\s*--\s*(.*)$/i)
-    if (match) {
+    if (!match) {
+      return
+    }
+    try {
       const url = match[1]
-      const note = match[2]
+      const note = match[2] || ""
       // check for nested list for subentries
       let subNote = ""
       if (node.children) {
@@ -97,6 +100,8 @@ function createCategoryTree(cat: CategoryInfo, h: typeof import("hastscript").h)
           [h("div.arena-title", url), h("p.arena-note", note)],
         ),
       )
+    } catch (err) {
+      console.error("Error parsing list item", err)
     }
   })
 

@@ -3,8 +3,21 @@
 
 .arena-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.2rem;
+  padding: 1rem 0;
+  animation: fadein 0.4s ease-in;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .arena-category {
@@ -13,12 +26,12 @@
   border: 1px solid var(--lightgray);
   background: var(--light);
   padding: 1rem;
-  transition: box-shadow 0.2s ease, transform 0.1s ease;
+  transition: box-shadow 0.25s ease, transform 0.15s ease;
   cursor: pointer;
 
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
-    transform: translateY(-2px);
+    transform: translateY(-4px);
   }
 
   h2, h3, h4, h5, h6 {
@@ -27,6 +40,7 @@
 }
 
 .arena-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--lightgray);
@@ -34,10 +48,11 @@
   background: var(--light);
   text-decoration: none;
   color: inherit;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.25s ease, transform 0.15s ease;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
   }
 
   .arena-title {
@@ -58,7 +73,7 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: -2.2rem;
+  bottom: -2.4rem;
   background: var(--dark);
   color: var(--light);
   font-size: 0.75rem;
@@ -68,4 +83,12 @@
   max-width: 260px;
   pointer-events: none;
   z-index: 1000;
+  opacity: 0;
+  animation: tooltipfade 0.2s forwards;
+}
+
+@keyframes tooltipfade {
+  to {
+    opacity: 1;
+  }
 }
