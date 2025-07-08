@@ -7,7 +7,6 @@ import { formatDate, getDate } from "../../components/Date"
 import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { write } from "./helpers"
 import sharpLib from "sharp"
-import type sharp from "sharp"
 import { JSX } from "preact"
 import { getSatoriFonts } from "../../util/og"
 import { ThemeKey } from "../../util/theme"
@@ -43,7 +42,7 @@ async function processChunk(
   ctx: BuildCtx,
   cfg: GlobalConfiguration,
   opts: PressReleaseOptions,
-  fonts: SatoriOptions["fonts"],
+  fonts: NonNullable<SatoriOptions["fonts"]>,
   directory: "instagram" | "twitter",
 ): Promise<FilePath[]> {
   return Promise.all(
@@ -72,7 +71,7 @@ async function processChunk(
           return languageCode
         },
       })
-      const img: Awaited<ReturnType<ReturnType<typeof sharp>["toBuffer"]>> = await sharpLib(Buffer.from(svg)).png().toBuffer()
+      const img = await sharpLib(Buffer.from(svg)).png().toBuffer()
       return await write({
         ctx,
         content: img,
@@ -335,7 +334,7 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
       if (filteredContents.length === 0) return
       const headerFont = configuration.theme.typography.header
       const bodyFont = configuration.theme.typography.body
-      const fonts = await getSatoriFonts(configuration, headerFont, bodyFont)
+      const fonts = (await getSatoriFonts(configuration, headerFont, bodyFont)) as NonNullable<SatoriOptions["fonts"]>
 
       // rough heuristics: 128 gives enough time for v8 to JIT and optimize parsing code paths
       const NUM_WORKERS = 4
@@ -351,7 +350,7 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
 
       for (const [platform, opts] of platforms) {
         for (const chunkItems of chunks) {
-          const results = await processChunk(chunkItems, ctx, configuration, opts, fonts!, platform)
+          const results = await processChunk(chunkItems, ctx, configuration, opts, fonts, platform)
           for (const filePath of results) {
             yield filePath
           }

@@ -1,15 +1,15 @@
-import { promises as fs } from "fs"
+import { promises as fs } from "node:fs"
 import { FontWeight, SatoriOptions } from "satori/wasm"
 import { GlobalConfiguration } from "../cfg"
 import { QuartzPluginData } from "../plugins/vfile"
 import { JSX } from "preact"
 import { FontSpecification, getFontSpecificationName, ThemeKey } from "./theme"
-import path from "path"
+import path from "node:path"
 import { QUARTZ, joinSegments } from "./path"
 import { formatDate, getDate } from "../components/Date"
 import readingTime from "reading-time"
 import { i18n } from "../i18n"
-import { styleText } from "util"
+import { styleText } from "node:util"
 
 const defaultHeaderWeight = [700]
 const defaultBodyWeight = [400]
