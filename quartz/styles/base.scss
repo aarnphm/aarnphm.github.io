@@ -583,6 +583,9 @@ ol.overflow {
       var(--grid-end) calc(var(--kern) * 3) repeat(9, 1fr) calc(var(--kern) * 3)
       var(--grid-end);
   }
+  .header-content {
+    grid-column: 3/-1;
+  }
 }
 @media all and ($mobile) {
   .grid {
@@ -590,6 +593,9 @@ ol.overflow {
     --grid-end: 0;
     --grid-center-width: calc(100vw - (var(--kern) * 1.5) - (var(--kern) * 1.5));
     --grid-col-width: calc(var(--grid-center-width) / 9);
+  }
+  .header-content {
+    grid-column: 3/-1;
   }
 }
 
