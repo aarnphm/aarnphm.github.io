@@ -165,6 +165,7 @@ const config: QuartzConfig = {
         }),
       }),
       Plugin.TagPage(),
+      Plugin.ArenaPage(),
       Plugin.NotebookViewer(),
       // Plugin.InfinitePoemPage(),
       Plugin.ContentIndex({ rssLimit: 60 }),
