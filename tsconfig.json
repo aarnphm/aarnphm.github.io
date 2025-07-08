@@ -15,7 +15,8 @@
     "noUnusedParameters": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "preact"
+    "jsxImportSource": "preact",
+    "types": ["node"]
   },
   "include": ["**/*.ts", "**/*.tsx", "./package.json"],
   "exclude": ["build/**/*.d.ts"]
