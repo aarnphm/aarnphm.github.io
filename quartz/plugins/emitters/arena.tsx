@@ -11,6 +11,7 @@ import * as Component from "../../components"
 import { sharedPageComponents, defaultListPageLayout } from "../../../quartz.layout"
 import { defaultProcessedContent } from "../vfile"
 import { clone } from "../../util/clone"
+const arenaStyle = `@import "../../components/styles/arena.scss";`;
 
 /** Helper to slugify heading text */
 function toSlug(text: string): string {
@@ -48,16 +49,13 @@ function extractCategories(tree: Root): CategoryInfo[] {
 }
 
 function createHomeTree(categories: CategoryInfo[], h: typeof import("hastscript").h): Root {
-  const children: Element[] = []
+  const children: Element[] = [h("div", { class: "arena-grid" }, [])]
+  const grid = children[0] as Element
   for (const cat of categories) {
     const href = `./${cat.slug}`
-    children.push(
-      h("div.arena-category", [
-        h(
-          "a",
-          { href, class: "internal arena-link", "data-no-popover": "true" },
-          cat.heading,
-        ),
+    grid.children.push(
+      h("a.arena-category", { href, class: "internal arena-link", "data-no-popover": "true" }, [
+        h("h3", cat.heading),
       ]),
     )
   }
@@ -65,7 +63,45 @@ function createHomeTree(categories: CategoryInfo[], h: typeof import("hastscript
 }
 
 function createCategoryTree(cat: CategoryInfo, h: typeof import("hastscript").h): Root {
-  return { type: "root", children: cat.items }
+  // parse list items into cards
+  const cards: Element[] = []
+  visit({ type: "root", children: cat.items } as Root, { tagName: "li" }, (node: any) => {
+    const textContent = (node.children ?? []).map((n: any) => (n.value ?? "")).join("")
+    // split into url -- note
+    const match = textContent.match(/^-?\s*(https?:[^\s]+)\s*--\s*(.*)$/i)
+    if (match) {
+      const url = match[1]
+      const note = match[2]
+      // check for nested list for subentries
+      let subNote = ""
+      if (node.children) {
+        const sub = node.children.find((c: any) => c.tagName === "ul")
+        if (sub) {
+          const subTexts: string[] = []
+          sub.children.forEach((li: any) => {
+            const t = li.children.map((n: any) => (n.value ?? "")).join("")
+            subTexts.push(t)
+          })
+          subNote = subTexts.join("\n")
+        }
+      }
+      cards.push(
+        h(
+          "a.arena-card",
+          {
+            href: url,
+            target: "_blank",
+            rel: "noopener noreferrer",
+            "data-subnote": subNote || undefined,
+          },
+          [h("div.arena-title", url), h("p.arena-note", note)],
+        ),
+      )
+    }
+  })
+
+  const grid = h("div.arena-grid", cards)
+  return { type: "root", children: [grid] }
 }
 
 export const ArenaPage: QuartzEmitterPlugin = () => {
@@ -96,6 +132,7 @@ export const ArenaPage: QuartzEmitterPlugin = () => {
         qpd.frontmatter.pageLayout = "default"
         // create static resources from plugins
         const pr = buildPageResources(pathToRoot("are.na" as FullSlug), resources)
+        pr.css.push({ content: arenaStyle, inline: true })
         const allFiles = content.map(([, vf]) => vf.data as QuartzPluginData)
         const layoutHome = {
           ...sharedPageComponents,
@@ -133,6 +170,7 @@ export const ArenaPage: QuartzEmitterPlugin = () => {
         qpd.frontmatter = { title: cat.heading, pageLayout: "default" }
 
         const prCat = buildPageResources(pathToRoot(slug as FullSlug), resources)
+        prCat.css.push({ content: arenaStyle, inline: true })
         const allFiles2 = content.map(([, vf]) => vf.data as QuartzPluginData)
         const layoutCat = {
           ...sharedPageComponents,
