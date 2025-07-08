@@ -2,14 +2,6 @@ declare module "preact/jsx-runtime" {
   export { JSX } from "preact"
 }
 
-declare module "node:util" {
-  export * from "util"
-  /**
-   * Minimal type for Node.js 20+ `styleText` helper used in codebase
-   */
-  export function styleText(color: string, text: string): string
-}
-
 declare module "hast-util-from-html" {
   import type { Root } from "hast"
   interface Options {
