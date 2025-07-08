@@ -5,13 +5,13 @@ aliases:
   - bookmarks
 tags:
   - seed
-date: "2024-10-24"
 description: collections of tweets, since bookmark is getting crowded.
-modified: 2025-07-04 10:20:43 GMT-04:00
-noindex: true
-title: /xeets/
 transclude:
   dynalist: false
+date: "2024-10-24"
+modified: 2025-07-08 06:51:15 GMT-04:00
+noindex: true
+title: /xeets/
 ---
 
 see also [[are.na]]
@@ -63,6 +63,10 @@ https://x.com/VividVoid_/status/1828461484277461447 <!-- philosophical wisdom --
 https://x.com/melissa/status/1883821342354768109 <!-- Melissa on fairness within marriage -->
 
 https://x.com/bimbosattva_/status/1935812993528599012?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ <!-- Be autistic and women will love you -->
+
+https://x.com/phokarlsson/status/1794384589898805621 <!-- Treat people as if they are too complex to hold it inside your head -->
+
+https://x.com/jacquemusx/status/1942186663557353504 <!-- Iris van Herpen -->
 
 ## love
 

@@ -1,24 +1,35 @@
-import satori, { SatoriOptions } from "satori"
+import satori from "satori"
+import type { SatoriOptions } from "satori/wasm"
 import { GlobalConfiguration } from "../../cfg"
 import { QuartzEmitterPlugin } from "../types"
 import { i18n } from "../../i18n"
 import { formatDate, getDate } from "../../components/Date"
 import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { write } from "./helpers"
-import sharp from "sharp"
-import { JSX } from "preact/jsx-runtime"
-import { defaultImageOptions, getSatoriFonts, SocialImageOptions } from "../../util/og"
+import sharpLib from "sharp"
+import { JSX } from "preact"
+import { getSatoriFonts } from "../../util/og"
+import { ThemeKey } from "../../util/theme"
 import { ProcessedContent, QuartzPluginData } from "../vfile"
 import { BuildCtx } from "../../util/ctx"
-import { styleText } from "node:util"
+import { styleText } from "util"
 import { fromHtml } from "hast-util-from-html"
 import { htmlToJsx } from "../../util/jsx"
 import { loadEmoji, getIconCode } from "../../util/emoji"
 
+type PressReleaseComponent = (
+  cfg: GlobalConfiguration,
+  fileData: QuartzPluginData,
+  opts: PressReleaseOptions,
+  title: string,
+  fonts: NonNullable<SatoriOptions["fonts"]>,
+) => JSX.Element
+
 export interface PressReleaseOptions {
   height: number
   width: number
-  Component: SocialImageOptions["imageStructure"]
+  colorScheme: ThemeKey
+  Component: PressReleaseComponent
 }
 
 function chunk<T>(arr: T[], size: number): T[][] {
@@ -31,7 +42,7 @@ async function processChunk(
   ctx: BuildCtx,
   cfg: GlobalConfiguration,
   opts: PressReleaseOptions,
-  fonts: SatoriOptions["fonts"],
+  fonts: NonNullable<SatoriOptions["fonts"]>,
   directory: "instagram" | "twitter",
 ): Promise<FilePath[]> {
   return Promise.all(
@@ -40,13 +51,7 @@ async function processChunk(
       const fileName = slug.replaceAll("/", "-")
       const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
 
-      const component = opts.Component(
-        cfg,
-        file.data,
-        { ...defaultImageOptions, ...opts },
-        title,
-        fonts,
-      )
+      const component = opts.Component(cfg, file.data, opts, title, fonts)
       const svg = await satori(component, {
         width: opts.width,
         height: opts.height,
@@ -60,7 +65,7 @@ async function processChunk(
           return languageCode
         },
       })
-      const img = await sharp(Buffer.from(svg)).png().toBuffer()
+      const img = await sharpLib(Buffer.from(svg)).png().toBuffer()
       return await write({
         ctx,
         content: img,
@@ -71,12 +76,12 @@ async function processChunk(
   )
 }
 
-const TwitterPost: SocialImageOptions["imageStructure"] = (
+const TwitterPost: PressReleaseComponent = (
   cfg: GlobalConfiguration,
   fileData: QuartzPluginData,
-  { colorScheme }: Omit<SocialImageOptions, "Component">,
+  { colorScheme },
   title: string,
-  fonts: SatoriOptions["fonts"],
+  fonts: NonNullable<SatoriOptions["fonts"]>,
 ) => {
   let created: string | undefined
   let reading: string | undefined
@@ -89,7 +94,9 @@ const TwitterPost: SocialImageOptions["imageStructure"] = (
     words: Math.ceil(fileData.readingTime?.words!),
   })
 
-  const Li = [created, reading]
+  const metaItems: string[] = []
+  if (created) metaItems.push(created)
+  if (reading) metaItems.push(reading)
 
   return (
     <div
@@ -145,15 +152,11 @@ const TwitterPost: SocialImageOptions["imageStructure"] = (
               fontStyle: "italic",
             }}
           >
-            {Li.map((item, index) => {
-              if (item) {
-                return (
-                  <li key={index} style={{ fontStyle: "italic" }}>
-                    {item}
-                  </li>
-                )
-              }
-            })}
+            {metaItems.map((item, index) => (
+              <li key={index} style={{ fontStyle: "italic" }}>
+                {item}
+              </li>
+            ))}
           </ul>
         </div>
         <p
@@ -166,10 +169,9 @@ const TwitterPost: SocialImageOptions["imageStructure"] = (
             display: "-webkit-box",
             WebkitLineClamp: 7,
             WebkitBoxOrient: "vertical",
-            lineClamp: 7,
           }}
         >
-          <Abstract {...getAbstractProps(fileData.abstract!)} />
+          {fileData.abstract && <Abstract {...getAbstractProps(fileData.abstract)} />}
         </p>
       </div>
     </div>
@@ -187,12 +189,12 @@ function Abstract({ children }: Props) {
   return <span>{children}</span>
 }
 
-const InstagramPost: SocialImageOptions["Component"] = (
+const InstagramPost: PressReleaseComponent = (
   cfg: GlobalConfiguration,
   fileData: QuartzPluginData,
-  { colorScheme }: Omit<SocialImageOptions, "Component">,
+  { colorScheme },
   title: string,
-  fonts: SatoriOptions["fonts"],
+  fonts: NonNullable<SatoriOptions["fonts"]>,
 ) => {
   return (
     <div
@@ -264,7 +266,7 @@ const InstagramPost: SocialImageOptions["Component"] = (
             fontSize: "2em",
           }}
         >
-          <Abstract {...getAbstractProps(fileData.abstract!)} />
+          {fileData.abstract && <Abstract {...getAbstractProps(fileData.abstract)} />}
         </p>
         <p
           style={{
@@ -286,12 +288,14 @@ const InstagramPost: SocialImageOptions["Component"] = (
 const defaultInstagramOptions: PressReleaseOptions = {
   height: 1920,
   width: 1080,
+  colorScheme: "darkMode",
   Component: InstagramPost,
 }
 
 const defaultTwitterOptions: PressReleaseOptions = {
   height: 900,
   width: 900,
+  colorScheme: "lightMode",
   Component: TwitterPost,
 }
 
@@ -306,22 +310,27 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
   const twitterOpts = { ...defaultTwitterOptions, ...userOpts?.twitter }
   return {
     name,
-    async emit(ctx, content, _resource) {
+    getQuartzComponents() {
+      return []
+    },
+    async *emit(ctx, content, _resource) {
       const { configuration } = ctx.cfg
       // Re-use OG image generation infrastructure
       if (!configuration.baseUrl) {
         console.warn(`[emit:${name}] Skip PressKit generation ('baseUrl' is missing)`)
-        return []
+        return
       }
 
       // Filter content first
       const filteredContents = [...content].filter(
         ([_, file]) => !file.data.slug!.includes("university"),
       )
-      if (filteredContents.length === 0) return []
+      if (filteredContents.length === 0) return
       const headerFont = configuration.theme.typography.header
       const bodyFont = configuration.theme.typography.body
-      const fonts = await getSatoriFonts(configuration, headerFont, bodyFont)
+      const fonts = (await getSatoriFonts(configuration, headerFont, bodyFont)) as NonNullable<
+        SatoriOptions["fonts"]
+      >
 
       // rough heuristics: 128 gives enough time for v8 to JIT and optimize parsing code paths
       const NUM_WORKERS = 4
@@ -330,21 +339,19 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
 
       if (ctx.argv.verbose) console.log(styleText("blue", `[emit:${name}] Generating press kit...`))
 
-      // Process both platforms and all chunks in parallel
-      const [instagram, twitter] = await Promise.all([
-        Promise.all(
-          chunks.map((chunk) =>
-            processChunk(chunk, ctx, configuration, instagramOptions, fonts, "instagram"),
-          ),
-        ),
-        Promise.all(
-          chunks.map((chunk) =>
-            processChunk(chunk, ctx, configuration, twitterOpts, fonts, "twitter"),
-          ),
-        ),
-      ])
+      const platforms: Array<["instagram" | "twitter", PressReleaseOptions]> = [
+        ["instagram", instagramOptions],
+        ["twitter", twitterOpts],
+      ]
 
-      return [...instagram.flat(), ...twitter.flat()]
+      for (const [platform, opts] of platforms) {
+        for (const chunkItems of chunks) {
+          const results = await processChunk(chunkItems, ctx, configuration, opts, fonts, platform)
+          for (const filePath of results) {
+            yield filePath
+          }
+        }
+      }
     },
   }
 }

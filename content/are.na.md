@@ -1,20 +1,20 @@
 ---
+id: are.na
 aliases:
   - inspiration
-cssclasses:
-  - nolist
-date: 2024-10-24
-description: "cool stuff on the internet. My run-down version of are[dot]na"
-id: are.na
-modified: "2025-07-07 02:08:40 GMT-04:00"
+tags:
+  - technical
+  - seed
+description: cool stuff on the internet. My run-down version of are[dot]na
+date: "2024-10-24"
+modified: 2025-07-08 07:32:14 GMT-04:00
 permalinks:
   - /website
   - /resources
   - /inspo
-tags:
-  - technical
-  - seed
 title: are.na
+cssclasses:
+  - nolist
 ---
 
 I also like to collect [[tweets|some based tweets on the internet]], [[books]], and [[/curius|bookmarks]]
@@ -27,7 +27,7 @@ I also like to collect [[tweets|some based tweets on the internet]], [[books]], 
 
 _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 
-- https://www.sholis.com/ -- Clean visual, great contents
+- https://www.sholis.com/
 - https://jzhao.xyz/ -- The original Quartz's implementation
   - daylightcomputer's inspired but in pure CSS and [HTML](https://github.com/jackyzha0/sunlit)
 - https://daylightcomputer.com/ -- Daylight Computer landing
@@ -73,6 +73,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://plato.stanford.edu/entries/merleau-ponty/ -- Maurice Merleau-Ponty, embodied cognition
 - https://en.wikipedia.org/wiki/John_Carmack -- John Carmack
 - https://en.wikipedia.org/wiki/Chlo%C3%AB_Sevigny -- Chloë Sevigny
+- https://www.poetryfoundation.org/poets/john-berryman -- John Berryman
 
 ## essay
 
@@ -259,3 +260,5 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
   - [LessWrong](https://www.lesswrong.com/posts/xmpauEXEerzYcJKNm/what-we-learned-trying-to-diff-base-and-chat-models-and-why)
 - https://arxiv.org/pdf/2505.05315
   - https://github.com/SalesforceAIResearch/Elastic-Reasoning
+- https://arxiv.org/pdf/2412.14093
+- https://arxiv.org/pdf/2506.18032

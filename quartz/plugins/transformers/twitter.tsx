@@ -53,10 +53,7 @@ export const Twitter: QuartzTransformerPlugin = () => ({
                 cache.set(cacheKey, value)
                 return value
               })
-              .catch((error) => {
-                console.error(`Failed to fetch Twitter embed for ${url}:`, error)
-                return value
-              })
+              .catch(() => value)
           }
           parent!.children.splice(index, 1, { type: "html", value })
         }

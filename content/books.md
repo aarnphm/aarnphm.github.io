@@ -1,11 +1,11 @@
 ---
-comments: false
-date: 2022-04-22
-description: "A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading."
 id: books
-modified: "2025-07-07 06:11:50 GMT-04:00"
+comments: false
 tags:
   - evergreen
+description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
+date: "2022-04-22"
+modified: 2025-07-08 04:31:05 GMT-04:00
 title: antilibrary.
 ---
 
@@ -26,13 +26,13 @@ A list of book that remains forever in my bag, and I like the idea of reading it
 | title                                             | author                           | notes                                                |
 | ------------------------------------------------- | -------------------------------- | ---------------------------------------------------- |
 | The Metaphysics of Morals                         | Immanuel Kant                    |                                                      |
-| Crime and Punishment                              | Fyodor Dostoevsky                |                                                      |
 | Structure and Interpretation of Computer Programs | Abelson and Sussman              | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf)      |
 | Man and His Symbols                               | Carl G. Jung                     |                                                      |
 | The Second Sex                                    | Simone de Beauvoir               |                                                      |
 | Being and Time                                    | Martin Heidegger                 | [[thoughts/being#Heidegger's Being and Time\|notes]] |
 | The Rebel                                         | [[thoughts/Camus\|Albert Camus]] |                                                      |
 | The First Man                                     | Albert Camus                     |                                                      |
+| The Need For Roots                                | Simone Weil                      |                                                      |
 
 ## to read.
 
@@ -154,6 +154,7 @@ _The following includes a list of books I have finished._
 - **The Applicant** by [Sylvia Plath](https://www.poetryfoundation.org/poems/57419/the-applicant)
 - **The Critique of Pure Reason** by Immanuel Kant
 - **[[thoughts/Freud#The Ego and the Id|The Ego and The Id]]** by Sigmund Freud
+- **Crime and Punishment** by Fyodor Dostoevsky
 
 ### 2024
 

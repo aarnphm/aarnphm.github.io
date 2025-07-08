@@ -1,0 +1,114 @@
+// Arena (are.na) page styles
+@use "../../styles/variables.scss" as *;
+
+.arena-grid {
+  column-gap: 20px;
+  row-gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  padding: 1rem 0;
+  animation: fadein 0.5s ease;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.arena-category {
+  display: block;
+  text-decoration: none;
+  border: 1px solid var(--lightgray);
+  background: var(--light);
+  padding: 1rem;
+  transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+    transform: translateY(-8px) scale(1.025);
+  }
+
+  h2, h3, h4, h5, h6 {
+    margin: 0;
+  }
+}
+
+.arena-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--lightgray);
+  padding: 1rem;
+  background: var(--light);
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  &:hover {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+    transform: translateY(-8px) scale(1.02);
+  }
+
+  .arena-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .arena-note {
+    font-size: 0.8rem;
+    color: var(--gray);
+    line-height: 1.3;
+  }
+}
+
+/* Tooltip for subentry */
+.arena-card[data-subnote]:hover::after {
+  content: attr(data-subnote);
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 10px);
+  bottom: 100%;
+  background: var(--dark);
+  color: var(--light);
+  font-size: 0.8rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 4px;
+  white-space: pre-line;
+  max-width: 260px;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0;
+  animation: tooltipfade 0.35s forwards;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes tooltipfade {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.arena-card[data-subnote]:hover::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% - 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--dark);
+  opacity: 0;
+  animation: tooltipfade 0.35s forwards;
+}
