@@ -3,8 +3,9 @@ id: writing
 tags:
   - sapling
   - evergreen
+description: a knowledge distillation and learning process
 date: "2023-07-29"
-modified: "2024-10-28"
+modified: 2025-07-09 05:46:34 GMT-04:00
 title: Writing
 ---
 

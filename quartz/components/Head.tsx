@@ -69,7 +69,7 @@ export default (() => {
             <meta name="twitter:image" content={ogImageDefaultPath} />
             <meta
               property="og:image:type"
-              content={`image/${getFileExtension(ogImageDefaultPath) ?? "png"}`}
+              content={`image/${getFileExtension(ogImageDefaultPath)?.slice(1) ?? "png"}`}
             />
           </>
         )}
@@ -85,7 +85,18 @@ export default (() => {
         <link rel="icon" href={iconPath} />
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
-        {/* TODO: bring back PR kit */}
+        {!fileData.slug!.includes("university") && (
+          <>
+            <meta
+              name="pr:twitter"
+              content={`https://${cfg.baseUrl}/static/twitter/${fileData.slug!.replaceAll("/", "-")}.png`}
+            />
+            <meta
+              name="pr:instagram"
+              content={`https://${cfg.baseUrl}/static/instagram/${fileData.slug!.replaceAll("/", "-")}.png`}
+            />
+          </>
+        )}
 
         {css.map((resource) => CSSResourceToStyleElement(resource, true))}
         {js
