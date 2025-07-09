@@ -5,7 +5,7 @@ tags:
   - fiction
   - shorts
   - writing
-description: 'tw: addiction'
+description: "tw: addiction"
 date: "2025-06-01"
 socials:
   substack: https://open.substack.com/pub/livingalone/p/apartment-two-twenty?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true

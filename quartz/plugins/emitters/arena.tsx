@@ -12,6 +12,7 @@ import { BuildCtx } from "../../util/ctx"
 import type { Root, Element, ElementContent } from "hast"
 import { visit } from "unist-util-visit"
 import { clone } from "../../util/clone"
+import { h } from "hastscript"
 
 interface ArenaPageOptions extends FullPageLayout {
   enableGrid?: boolean
@@ -55,36 +56,34 @@ function extractCategories(tree: Root): CategoryInfo[] {
   return categories
 }
 
-function createHomeTree(categories: CategoryInfo[], h: typeof import("hastscript").h, opts: ArenaPageOptions): Root {
+function createHomeTree(categories: CategoryInfo[], opts: ArenaPageOptions,): Root {
   const children: Element[] = [h("div", { class: "arena-grid" }, [])]
   const grid = children[0] as Element
   for (const cat of categories) {
     const href = `./${cat.slug}`
     grid.children.push(
-      h(`a.${opts.categoryClass}`, { href, class: "internal arena-link", "data-no-popover": "true" }, [
-        h("h3", cat.heading),
-      ]),
+      h(
+        `a.${opts.categoryClass}`,
+        { href, class: "internal arena-link", "data-no-popover": "true" },
+        [h("h3", cat.heading)],
+      ),
     )
   }
   return { type: "root", children }
 }
 
-function createCategoryTree(cat: CategoryInfo, h: typeof import("hastscript").h): Root {
+function createCategoryTree(cat: CategoryInfo): Root {
   const cards: Element[] = []
   visit({ type: "root", children: cat.items } as Root, { tagName: "li" }, (node: any) => {
-    const textContent = (node.children ?? []).map((n: any) => (n.value ?? "")).join("")
+    const textContent = (node.children ?? []).map((n: any) => n.value ?? "").join("")
     const linePattern = /^-?\s*(https?:[^\s]+)(?:\s*--\s*(.*))?$/i
     const match = textContent.match(linePattern)
     if (!match) {
       cards.push(
-        h(
-          "div.arena-card",
-          { style: "background: var(--lightgray);" },
-          [
-            h("div.arena-title", "Invalid entry"),
-            h("p.arena-note", "Could not parse: " + textContent),
-          ],
-        ),
+        h("div.arena-card", { style: "background: var(--lightgray);" }, [
+          h("div.arena-title", "Invalid entry"),
+          h("p.arena-note", "Could not parse: " + textContent),
+        ]),
       )
       return
     }
@@ -97,7 +96,7 @@ function createCategoryTree(cat: CategoryInfo, h: typeof import("hastscript").h)
         if (sub && Array.isArray(sub.children)) {
           const subTexts: string[] = []
           sub.children.forEach((li: any) => {
-            const t = (li.children ?? []).map((n: any) => (n.value ?? "")).join("")
+            const t = (li.children ?? []).map((n: any) => n.value ?? "").join("")
             if (t) subTexts.push(t)
           })
           subNote = subTexts.join("\n")
@@ -138,7 +137,7 @@ async function processArenaPage(
   categoryInfo?: CategoryInfo,
 ) {
   const h = (await import("hastscript")).h
-  
+
   let processedTree: Root
   if (isCategory && categoryInfo) {
     processedTree = createCategoryTree(categoryInfo, h)
@@ -148,10 +147,10 @@ async function processArenaPage(
 
   const cfg = ctx.cfg.configuration
   const externalResources = pageResources(pathToRoot(slug), resources)
-  
-  externalResources.css.push({ 
-    content: `@import "../../components/styles/arena.scss";`, 
-    inline: true 
+
+  externalResources.css.push({
+    content: `@import "../../components/styles/arena.scss";`,
+    inline: true,
   })
 
   const componentData: QuartzComponentProps = {
@@ -161,7 +160,8 @@ async function processArenaPage(
       slug,
       frontmatter: {
         ...file.frontmatter,
-        title: isCategory && categoryInfo ? categoryInfo.heading : file.frontmatter?.title || "Are.na",
+        title:
+          isCategory && categoryInfo ? categoryInfo.heading : file.frontmatter?.title || "Are.na",
         pageLayout: "default",
       },
     },
@@ -173,7 +173,7 @@ async function processArenaPage(
   }
 
   const content = renderPage(ctx, slug, componentData, opts, externalResources, false, false)
-  
+
   return write({
     ctx,
     content,
@@ -197,20 +197,11 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<ArenaPageOptions>> = (userOp
   return {
     name: "ArenaPage",
     getQuartzComponents() {
-      return [
-        Head, 
-        Header, 
-        ...header, 
-        ...beforeBody, 
-        pageBody, 
-        ...afterBody, 
-        ...sidebar, 
-        Footer
-      ]
+      return [Head, Header, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async *emit(ctx, content, resources) {
       const allFiles = content.map((c) => c[1].data)
-      
+
       const arenaContent = content.find(([_, vfile]) => vfile.data.slug === "are.na")
       if (!arenaContent) return
 
@@ -246,7 +237,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<ArenaPageOptions>> = (userOp
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
       const allFiles = content.map((c) => c[1].data)
-      
+
       const changedSlugs = new Set<string>()
       for (const changeEvent of changeEvents) {
         if (!changeEvent.file) continue

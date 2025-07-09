@@ -135,7 +135,7 @@ const config: QuartzConfig = {
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
       Plugin.ContentPage(),
-      // Plugin.LLM(),
+      Plugin.LLM(),
       Plugin.FolderPage({
         pageBody: Component.FolderContent({
           sort: (a: QuartzPluginData, b: QuartzPluginData): number => {
@@ -165,7 +165,7 @@ const config: QuartzConfig = {
         }),
       }),
       Plugin.TagPage(),
-      Plugin.ArenaPage(),
+      // Plugin.ArenaPage(),
       // Plugin.InfinitePoemPage(),
       Plugin.NotebookViewer(),
       Plugin.ContentIndex({ rssLimit: 60 }),

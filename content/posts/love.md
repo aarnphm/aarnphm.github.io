@@ -171,4 +171,3 @@ Here's are some media, quotes, and unstructured thoughts. I hope you might find 
 - Work-related: [[posts/structured decoding]] for vLLM v1 should be out promptly, in addition to a project I have been working on for the past 5 months that is in the realm of UX and productionising [[thoughts/mechanistic interpretability|interpretability]]
 
 </div>
-

@@ -28,7 +28,9 @@
   border: 1px solid var(--lightgray);
   background: var(--light);
   padding: 1rem;
-  transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition:
+    box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+    transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   cursor: pointer;
 
   &:hover {
@@ -36,7 +38,11 @@
     transform: translateY(-8px) scale(1.025);
   }
 
-  h2, h3, h4, h5, h6 {
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     margin: 0;
   }
 }
@@ -50,7 +56,9 @@
   background: var(--light);
   text-decoration: none;
   color: inherit;
-  transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition:
+    box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+    transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
   &:hover {
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);

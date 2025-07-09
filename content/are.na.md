@@ -262,3 +262,4 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
   - https://github.com/SalesforceAIResearch/Elastic-Reasoning
 - https://arxiv.org/pdf/2412.14093
 - https://arxiv.org/pdf/2506.18032
+- https://arxiv.org/pdf/2403.09629
