@@ -51,3 +51,4 @@ The following lists of people who I owed a lot. I would separate from top-to-bot
 - Steven Soderbergh
 - Christopher Nolan
 - Raymond Carver
+- Simone Weil

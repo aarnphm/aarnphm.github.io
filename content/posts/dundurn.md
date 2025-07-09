@@ -229,7 +229,7 @@ apartment became part of me—it made me enjoy my stay in Canada. Getting to kno
 If you’re ever in Hamilton, here are some recs:
 
 - Democracy on Locke, and Epic Books
-- My favorite bar—shout out to Cima and staff (if you’re ever in town, check them out and tell them Aaron sent you)
+- My favorite bar—s/o to Cima and staff (if you’re ever in town, check them out and tell them Aaron sent you)
 - James Waldron Butcher Shop
 - Mickey McGuire Cheese shop on Ogilvie Street
 - Locke Street
