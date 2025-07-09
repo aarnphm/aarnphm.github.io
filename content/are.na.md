@@ -64,6 +64,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.tetragrammaton.com/
 - https://basement.studio/
 - https://barnsworthburning.net/
+- https://html.energy/events.html
 
 ## people
 
@@ -74,6 +75,25 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://en.wikipedia.org/wiki/John_Carmack -- John Carmack
 - https://en.wikipedia.org/wiki/Chlo%C3%AB_Sevigny -- Chloë Sevigny
 - https://www.poetryfoundation.org/poets/john-berryman -- John Berryman
+- https://en.wikipedia.org/wiki/Sol_LeWitt -- Sol Lewitt
+  - His [letter](https://borisinjac.com/sol-lewitts-letter-eva-hesse/) to Eva Hesse [^sol-lewitts-letter]
+
+[^sol-lewitts-letter]:
+    ```poetry
+    Dear Eva,
+
+    It will be almost a month since you wrote to me and you have possibly forgotten your state of mind (I doubt it though). You seem the same as always, and being you, hate every minute of it. Don’t! Learn to say “Fuck You” to the world once in a while. You have every right to. Just stop thinking, worrying, looking over your shoulder wondering, doubting, fearing, hurting, hoping for some easy way out, struggling, grasping, confusing, itchin, scratching, mumbling, bumbling, grumbling, humbling, stumbling, numbling, rumbling, gambling, tumbling, scumbling, scrambling, hitching, hatching, bitching, moaning, groaning, honing, boning, horse-shitting, hair-splitting, nit-picking, piss-trickling, nose sticking, ass-gouging, eyeball-poking, finger-pointing, alleyway-sneaking, long waiting, small stepping, evil-eyeing, back-scratching, searching, perching, besmirching, grinding, grinding, grinding away at yourself. Stop it and just DO!
+
+    From your description, and from what I know of your previous work and you [sic] ability; the work you are doing sounds very good “Drawing-clean-clear but crazy like machines, larger and bolder… real nonsense.” That sounds fine, wonderful – real nonsense. Do more. More nonsensical, more crazy, more machines, more breasts, penises, cunts, whatever – make them abound with nonsense. Try and tickle something inside you, your “weird humor.” You belong in the most secret part of you. Don’t worry about cool, make your own uncool. Make your own, your own world. If you fear, make it work for you – draw & paint your fear and anxiety. And stop worrying about big, deep things such as “to decide on a purpose and way of life, a consistant [sic] approach to even some impossible end or even an imagined end” You must practice being stupid, dumb, unthinking, empty. Then you will be able to DO!
+
+    I have much confidence in you and even though you are tormenting yourself, the work you do is very good. Try to do some BAD work – the worst you can think of and see what happens but mainly relax and let everything go to hell – you are not responsible for the world – you are only responsible for your work – so DO IT. And don’t think that your work has to conform to any preconceived form, idea or flavor. It can be anything you want it to be. But if life would be easier for you if you stopped working – then stop. Don’t punish yourself. However, I think that it is so deeply engrained in you that it would be easier to DO!
+
+    It seems I do understand your attitude somewhat, anyway, because I go through a similar process every so often. I have an “Agonizing Reappraisal” of my work and change everything as much as possible = and hate everything I’ve done, and try to do something entirely different and better. Maybe that kind of process is necessary to me, pushing me on and on. The feeling that I can do better than that shit I just did. Maybe you need your agony to accomplish what you do. And maybe it goads you on to do better. But it is very painful I know. It would be better if you had the confidence just to do the stuff and not even think about it. Can’t you leave the “world” and “ART” alone and also quit fondling your ego. I know that you (or anyone) can only work so much and the rest of the time you are left with your thoughts. But when you work or before your work you have to empty you [sic] mind and concentrate on what you are doing. After you do something it is done and that’s that. After a while you can see some are better than others but also you can see what direction you are going. I’m sure you know all that. You also must know that you don’t have to justify your work – not even to yourself. Well, you know I admire your work greatly and can’t understand why you are so bothered by it. But you can see the next ones and I can’t. You also must believe in your ability. I think you do. So try the most outrageous things you can – shock yourself. You have at your power the ability to do anything.
+
+    I would like to see your work and will have to be content to wait until Aug or Sept. I have seen photos of some of Tom’s new things at Lucy’s. They are impressive – especially the ones with the more rigorous form: the simpler ones. I guess he’ll send some more later on. Let me know how the shows are going and that kind of stuff.
+
+    My work had changed since you left and it is much better. I will be having a show May 4 -9 at the Daniels Gallery 17 E 64yh St (where Emmerich was), I wish you could be there. Much love to you both.
+    ```
 
 ## essay
 
@@ -119,6 +139,8 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://cristobal.arquipelago.org/writing/screenshot.html -- Notes from Screenshot Conf
 - https://www.avabear.xyz/p/dialectical-damage -- Dialectical damage
 - https://halogen2.tumblr.com/post/187591113672/i-think-love-is-something-that-happens-to-other -- I think love is something that happens to other.
+- https://evanjconrad.com/posts/love -- On love and relationship
+- https://barnsworthburning.net/ -- cool hyperlinks format
 
 ### machine learning
 

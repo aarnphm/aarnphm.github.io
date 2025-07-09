@@ -12,7 +12,9 @@ A (mostly) up-to-date [[thoughts/Cinematography|film]], movies, shows that I hav
 
 > Similar to an [[books|antilibrary]], an anti-blockbusters is a collection of movies, short films that represents the art of film-making.
 
-Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.com/) are both awesome distributions and production companies that one should check out, (_if you have never heard about them_ :smiley:)
+Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.com/) are both awesome distributions and production companies that one should check out, (_if you have never heard about them_ 😅)
+
+If you want a more complete list, check out [this entries on letterboxd](https://letterboxd.com/bailey0/list/movies-everyone-tells-you-are-the-best-movies/)
 
 ## to watch.
 
@@ -36,7 +38,6 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 
 [^lychian]: What makes a [Lychian] (https://en.wikipedia.org/wiki/David_Lynch) movie?
 
-- [x] Challenger (2024)
 - [ ] Blue Jasmine (2013)
 - [ ] The King of Comedy (1982)
 - [ ] Dead Poets Society (1989)
@@ -63,6 +64,10 @@ Honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.c
 - [ ] Late Night with The Devil
 - [ ] Groundhog Day
 - [ ] Zodiac
+- [ ] Singin' in the Rain
+- [ ] It's a wonderful life
+- [ ] There Will Be Blood
+- [ ] Vertigo
 
 ## finished
 
@@ -78,6 +83,7 @@ _doesn't mean that I won't watch it again, just that I will need some more time 
 - [x] A Real Pain (2024)
 - [x] Call Me By Your Name (2017)
 - [x] Love & Other Drugs (2010)
+- [x] Challenger (2024)
 
 [^remake]: There is also a remake series (2024) starring Eddie Redmayne. (very chill)
 
@@ -89,6 +95,7 @@ _doesn't mean that I won't watch it again, just that I will need some more time 
 
 ### vintage.
 
+- Spirited Away
 - Citizen Kane (1941)
 - Casablanca (1942)
 - Godfather (1972)
@@ -103,6 +110,7 @@ _doesn't mean that I won't watch it again, just that I will need some more time 
 - Good Will Hunting (1997) ^gwh
 - Notting Hill (1999)
 - Chicago (2002)
+- 2001: a space odyssey
 
 ### thriller.
 

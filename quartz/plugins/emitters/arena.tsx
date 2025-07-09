@@ -2,16 +2,14 @@ import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import HeaderConstructor from "../../components/Header"
 import { pageResources, renderPage } from "../../components/renderPage"
-import { ProcessedContent, QuartzPluginData } from "../vfile"
+import { QuartzPluginData } from "../vfile"
 import { FullPageLayout } from "../../cfg"
 import { FullSlug, pathToRoot } from "../../util/path"
 import { defaultListPageLayout, sharedPageComponents } from "../../../quartz.layout"
-import { Content } from "../../components"
 import { write } from "./helpers"
 import { BuildCtx } from "../../util/ctx"
 import type { Root, Element, ElementContent } from "hast"
 import { visit } from "unist-util-visit"
-import { clone } from "../../util/clone"
 import { h } from "hastscript"
 
 interface ArenaPageOptions extends FullPageLayout {
@@ -19,7 +17,7 @@ interface ArenaPageOptions extends FullPageLayout {
   categoryClass?: string
 }
 
-const defaultOptions: ArenaPageOptions = {
+const defaultOptions: Partial<ArenaPageOptions> = {
   enableGrid: true,
   categoryClass: "arena-category",
 }
@@ -56,7 +54,7 @@ function extractCategories(tree: Root): CategoryInfo[] {
   return categories
 }
 
-function createHomeTree(categories: CategoryInfo[], opts: ArenaPageOptions,): Root {
+function createHomeTree(categories: CategoryInfo[], opts: ArenaPageOptions): Root {
   const children: Element[] = [h("div", { class: "arena-grid" }, [])]
   const grid = children[0] as Element
   for (const cat of categories) {
@@ -136,13 +134,11 @@ async function processArenaPage(
   isCategory: boolean = false,
   categoryInfo?: CategoryInfo,
 ) {
-  const h = (await import("hastscript")).h
-
   let processedTree: Root
   if (isCategory && categoryInfo) {
-    processedTree = createCategoryTree(categoryInfo, h)
+    processedTree = createCategoryTree(categoryInfo)
   } else {
-    processedTree = createHomeTree(categories, h, opts as ArenaPageOptions)
+    processedTree = createHomeTree(categories, opts as ArenaPageOptions)
   }
 
   const cfg = ctx.cfg.configuration
@@ -186,7 +182,6 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<ArenaPageOptions>> = (userOp
   const opts: FullPageLayout = {
     ...sharedPageComponents,
     ...defaultListPageLayout,
-    pageBody: Content(),
     ...defaultOptions,
     ...userOpts,
   }
@@ -261,7 +256,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<ArenaPageOptions>> = (userOp
           opts,
           resources,
           categories,
-          "are.na" as FullSlug,
+          "are.na/index" as FullSlug,
         )
 
         for (const cat of categories) {

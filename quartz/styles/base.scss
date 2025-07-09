@@ -31,6 +31,24 @@ body {
   font-family: var(--bodyFont);
   font-weight: normal;
   color: var(--darkgray);
+
+  // image-grid
+  --image-grid-fit: cover;
+  --image-grid-background: transparent;
+  --img-grid-gap: 0.5rem;
+}
+@media all and ($mobile) {
+  body {
+    --img-grid-gap: 0.25rem;
+  }
+}
+
+.img-grid-ratio {
+  --image-grid-fit: contain;
+}
+
+.img-grid-ratio {
+  --image-grid-fit: contain;
 }
 
 mark {
@@ -761,4 +779,32 @@ iframe.pdf {
   background: var(--secondary);
   transition: width 0.2s ease;
   z-index: 9999;
+}
+
+a[data-no-popover="true"]:hover {
+  background-color: transparent;
+}
+
+.image-grid {
+  display: grid;
+  margin-block-start: var(--img-grid-gap);
+  margin-block-end: var(--img-grid-gap);
+  grid-column-gap: var(--img-grid-gap);
+  grid-row-gap: 0;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+
+  & > br {
+    display: none;
+  }
+}
+
+.image-grid > a,
+.image-grid > img {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--image-grid-fit);
+  background-color: var(--image-grid-background);
+  align-self: stretch;
 }

@@ -219,10 +219,11 @@ https://x.com/aarnphm_/status/1929630631786614946
 
 I had a bit of trouble publishing this one given that between moving and other life events, but finally got some pockets of time to finish this.
 
-![[posts/images/IMG_2781.webp]] ![[posts/images/IMG_2783.webp]]
+![[posts/images/IMG_2781.webp]]
+![[posts/images/IMG_2783.webp]]
 
 This piece is a homage to my previous apartment in Hamilton, where I lived for two years.
-I didn’t enjoy school and were dreading moving back to Canada after San Francisco. But this
+I didn't enjoy school and were dreading moving back to Canada after San Francisco. But this
 apartment became part of me—it made me enjoy my stay in Canada. Getting to know the people working in the neighborhood became a major part of my life.
 
 If you’re ever in Hamilton, here are some recs:
