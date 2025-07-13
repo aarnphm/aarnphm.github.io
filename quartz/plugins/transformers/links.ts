@@ -175,6 +175,71 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isYC: dest.includes("ycombinator.com"),
                   isAnthropic:
                     dest.includes("transformer-circuits.pub") || dest.includes("anthropic.com"),
+                  isGoogleDocs: dest.includes("docs.google.com"),
+                  isGoogleDrive: dest.includes("drive.google.com"),
+                }
+
+                if (
+                  linkTypes.isWikipedia &&
+                  node.children.length === 1 &&
+                  node.children[0].type === "text"
+                ) {
+                  try {
+                    const u = new URL(dest)
+                    const lang = u.hostname.split(".")[0]
+                    const m = u.pathname.match(/\/wiki\/(.+)/)
+                    if (m) {
+                      node.children[0].value = `wikipedia/${lang}/${m[1]}`
+                    }
+                  } catch {}
+                }
+
+                if (
+                  linkTypes.isYoutube &&
+                  node.children.length === 1 &&
+                  node.children[0].type === "text"
+                ) {
+                  try {
+                    const u = new URL(dest)
+                    const vid = u.searchParams.get("v")
+                    if (vid) {
+                      node.children = [{ type: "text", value: `youtube/v=${vid}` }]
+                    }
+                  } catch {}
+                }
+
+                if (
+                  linkTypes.isGoogleDocs &&
+                  node.children.length === 1 &&
+                  node.children[0].type === "text"
+                ) {
+                  try {
+                    const u = new URL(dest)
+                    const m = u.pathname.match(/\/d\/([^/]+)/)
+                    if (m) {
+                      const id = m[1]
+                      let displayId = id
+                      if (id.length > 10) {
+                        displayId = `${id.slice(0, 3)}[...]${id.slice(-3)}`
+                      }
+                      node.children[0].value = `docs.google.com/${displayId}`
+                    }
+                  } catch {}
+                }
+
+                if (
+                  linkTypes.isGoogleDrive &&
+                  node.children.length === 1 &&
+                  node.children[0].type === "text"
+                ) {
+                  try {
+                    const u = new URL(dest)
+                    const m = u.pathname.match(/\/d\/([^/]+)/)
+                    if (m) {
+                      const id = m[1]
+                      node.children[0].value = `drive.google.com/${id}`
+                    }
+                  } catch {}
                 }
 
                 // Handle special link types

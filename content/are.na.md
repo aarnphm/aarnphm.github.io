@@ -77,6 +77,20 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.poetryfoundation.org/poets/john-berryman -- John Berryman
 - https://en.wikipedia.org/wiki/Sol_LeWitt -- Sol Lewitt
   - His [letter](https://borisinjac.com/sol-lewitts-letter-eva-hesse/) to Eva Hesse [^sol-lewitts-letter]
+- https://en.wikipedia.org/wiki/William_James -- Willian James
+  - father of American psychology
+  - [[thoughts/Epistemology|epistemology]], psychology, and [[thoughts/Metaphysics|metaphysics]]
+- https://en.wikipedia.org/wiki/L._E._J._Brouwer -- L. E. J. Brouwer
+  - Dutch mathematician who worked on topology, set theory and complex analysis
+  - known for philosophy of _intuition_, a constructivist school of mathematics which argues that math is a _cognitive construct_ rather than a type of **objective truth**.
+- https://en.wikipedia.org/wiki/Ludwig_Boltzmann -- Ludwig Boltzmann
+  - Boltzmann machine, classical thermodynamics, and current definition of [[thoughts/Entropy|entropy]]:
+    $$
+    S = k_B \ln \Omega
+    $$
+    where $\Omega$ is the number of microstates whose energy equals the system's energy, interpreted as a measure of the statistical disorder of a system.
+- https://plato.stanford.edu/entries/frege/ -- Gottlob Frege
+- https://plato.stanford.edu/entries/russell/ -- Bertrand Russell
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -132,13 +146,15 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://emilymstark.com/2022/12/18/death-to-the-line-of-death.html -- The death of the line of death
 - https://matthewstrom.com/writing/album-art/ -- The history of [[thoughts/music theory|album art]]
 - https://bigthink.com/smart-skills/how-curiosity-rewires-your-brain-for-change/ -- How curiosity rewires your brain for change
-  > When we are curious, the brain's dopaminergic system -- the same one that lights up when we anticipate a reward -- kicks into gear. Simply put, curiosity makes us feel good about the prospect of discovering something new.
+  - > When we are curious, the brain's dopaminergic system -- the same one that lights up when we anticipate a reward -- kicks into gear. Simply put, curiosity makes us feel good about the prospect of discovering something new.
 - https://a16z.com/a-good-place-to-work/ -- A Good Place to Work, Ben Horowitz
 - https://cristobal.arquipelago.org/writing/screenshot.html -- Notes from Screenshot Conf
 - https://www.avabear.xyz/p/dialectical-damage -- Dialectical damage
 - https://halogen2.tumblr.com/post/187591113672/i-think-love-is-something-that-happens-to-other -- I think love is something that happens to other.
 - https://evanjconrad.com/posts/love -- On love and relationship
 - https://barnsworthburning.net/ -- cool hyperlinks format
+- https://substack.com/home/post/p-163080300 -- Love is not enough
+- https://mindslice.substack.com/p/alignment -- [[thoughts/Alignment]]
 
 ### machine learning
 
@@ -148,6 +164,8 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://basilhalperin.com/essays/agi-vs-emh.html -- AGI timeline, Basil Halperin
 - https://optimists.ai/2024/03/10/deconstructing-bostroms-argument-for-ai-doom/ -- Bostrom's Argument for AI Doom
 - https://www.joelsimon.net/lluminate -- Creative exploration with LLM
+- https://docs.google.com/presentation/d/1dGA1Jpppv9BciOOrc95ZYRinsj_ZYrI-IQOIifHGIZw/edit?slide=id.p#slide=id.p -- Transformers in Diffusion Models for Image Generations and Beyond
+- https://discuss.vllm.ai/t/numerical-difference-between-vllm-logprobs-and-huggingface-logprobs/151 -- Numerical difference between [[thoughts/vllm|vLLM]] logprobs and HF logprobs
 
 ### argumentative
 
@@ -198,6 +216,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.youtube.com/watch?v=JFj8kWm_N-Y&ab_channel=OverthinkPodcast -- Merleau-Ponty, the Phenomenology of Perception
 - https://www.youtube.com/watch?v=Aa-A17TldZQ&ab_channel=Queen -- Why the Universe Sends You Someone You Can't Be With, Carl Jung
 - https://www.youtube.com/watch?v=rQ-An5bhkrs&t=11303s&ab_channel=Amii -- Upper Bound 2025, John Carmack's talk
+- https://www.youtube.com/watch?v=AivF_Lj8cVM&ab_channel=Josephine -- Put love at the centre of your life, NOT discipline
 
 ## tools
 
@@ -222,7 +241,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://lettermatic.com/fonts/parclo-serif -- Parclo I might buy this
 - https://drmichaellevin.org/resources/otherlabs.html -- Labs interests
 - _SouthParkCommons meetup for AI interfaces, [Geoffrey Litt](https://www.geoffreylitt.com/)_
-  ![[https://www.youtube.com/watch?v=5OaTk5q_CTc]]
+  - ![[https://www.youtube.com/watch?v=5OaTk5q_CTc]]
 - https://www.mrporter.com/en-us/journal/fashion/derek-guy-style-resolutions-25156188 -- Style resolution
 - https://thegenerality.com/agi/ -- The effort for AGI at Microsoft [GitHub](https://github.com/microsoft/unilm)
 - https://katex.org/docs/supported.html -- supported DSL for KaTeX
@@ -243,6 +262,13 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - [[thoughts/GPU programming]]
 - https://www.doc.ic.ac.uk/~eedwards/compsys/float/#:~:text=Add%20the%20exponents%20to%20find,1.021%20%C3%97%20106 -- Floating points arithmetics
 - https://www.unco.edu/campus-recreation/pdf/intramural-sports/spring20/running-pace-chart.pdf -- Running pace chart
+
+### lecture
+
+- https://www.youtube.com/watch?v=m47A0AmqxQE&list=PL62C50202CE181183&index=5&ab_channel=flame0430 -- Iris Murdoch on Philosophy and Literature
+- https://www.youtube.com/watch?v=PgPNfPhG4Wc&ab_channel=StanfordOnline -- AA228/CS248 Decision Making Under Uncertainty | Policy Gradient Estimation & Optimization
+- https://www.youtube.com/watch?v=BXwALAkPubc&ab_channel=HarvardMathematicsDepartment -- Exotic Phenomena in dimension 4, Lisa Piccirillo
+- https://www.youtube.com/watch?v=i2acsy7Zzfo&ab_channel=HarvardMathematicsDepartment -- Random Matrix Statistics and Airy Line Ensembles, Jiaoyang Huang
 
 ### technical
 
@@ -283,3 +309,4 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://arxiv.org/pdf/2412.14093
 - https://arxiv.org/pdf/2506.18032
 - https://arxiv.org/pdf/2403.09629
+- https://arxiv.org/pdf/1910.02054

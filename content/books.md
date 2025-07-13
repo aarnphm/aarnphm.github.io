@@ -33,6 +33,7 @@ A list of book that remains forever in my bag, and I like the idea of reading it
 | The Rebel                                         | [[thoughts/Camus\|Albert Camus]] |                                                      |
 | The First Man                                     | Albert Camus                     |                                                      |
 | The Need For Roots                                | Simone Weil                      |                                                      |
+| Ma Gastronomie                                    | Fernand Point                    |                                                      |
 
 ## to read.
 

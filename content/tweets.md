@@ -68,6 +68,8 @@ https://x.com/phokarlsson/status/1794384589898805621 <!-- Treat people as if the
 
 https://x.com/jacquemusx/status/1942186663557353504 <!-- Iris van Herpen -->
 
+https://x.com/thecaravanindia/status/1942869801593958709 <!-- Bertrand Russell releases a manifesto warning about the danger of nuclear weapons -->
+
 ## love
 
 https://x.com/virtualjew/status/1846593528350011539 <!-- You can just make grilled cheese with onions -->

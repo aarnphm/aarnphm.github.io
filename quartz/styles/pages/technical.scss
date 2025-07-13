@@ -17,8 +17,13 @@ body[data-layout="technical"] {
 
   @media all and ($desktop) {
     .title-col:not(.popover *),
+    .header-content:not(.popover *),
     .main-col:not(.popover *) {
       grid-column: 5/10;
+    }
+
+    .header-content:not(.popover *) {
+      grid-column: 5/-1;
     }
 
     menu.tags:not(.popover *) {
