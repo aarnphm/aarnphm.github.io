@@ -1,13 +1,13 @@
 ---
 id: are.na
 aliases:
-  - inspiration
+  - inspo
 tags:
   - technical
   - seed
 description: cool stuff on the internet. My run-down version of are[dot]na
 date: "2024-10-24"
-modified: 2025-07-08 07:32:14 GMT-04:00
+modified: 2025-07-29 13:38:53 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -65,6 +65,8 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://basement.studio/
 - https://barnsworthburning.net/
 - https://html.energy/events.html
+- https://devouringdetails.com/ -- Devouring Details
+- https://calv.info/about -- Calvin, as in Calvin and Hobbes
 
 ## people
 
@@ -91,6 +93,8 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
     where $\Omega$ is the number of microstates whose energy equals the system's energy, interpreted as a measure of the statistical disorder of a system.
 - https://plato.stanford.edu/entries/frege/ -- Gottlob Frege
 - https://plato.stanford.edu/entries/russell/ -- Bertrand Russell
+- https://web.stanford.edu/~cm5/overview.html -- Ciprian Manolescu
+  - Floer homology and dimension-4 topology
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -217,6 +221,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.youtube.com/watch?v=Aa-A17TldZQ&ab_channel=Queen -- Why the Universe Sends You Someone You Can't Be With, Carl Jung
 - https://www.youtube.com/watch?v=rQ-An5bhkrs&t=11303s&ab_channel=Amii -- Upper Bound 2025, John Carmack's talk
 - https://www.youtube.com/watch?v=AivF_Lj8cVM&ab_channel=Josephine -- Put love at the centre of your life, NOT discipline
+- https://www.youtube.com/watch?v=dCP9uYLa8HA&ab_channel=DuCinema -- Emma Stone
 
 ## tools
 
@@ -294,6 +299,16 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://drive.google.com/file/u/1/d/1l54BwUi07JnqwB5_iHCVVZ3TnR05acDm/view?usp=sharing -- Critique on "The Illusion of Thinking"
 - https://huggingface.co/blog/rearchitecting-uploads-and-downloads -- Rearchitecting Hugging Face Uploads and Downloads
 - https://www.youtube.com/watch?v=VAzL8RHot1c&ab_channel=InterconnectsAI -- The art of training a good (reasoning) language models, by Nathan Lambert
+- https://x.com/Kimi_Moonshot/status/1944589115510734931 -- Kimi K2 architecture
+  - ![[thoughts/images/kimi-architecture.png]]
+
+### [[tags/math]]
+
+- https://www.youtube.com/watch?v=e1xo6qWTmoc&ab_channel=OxfordMathematics -- Thesis Competition at Oxford Mathematics
+  - https://youtu.be/e1xo6qWTmoc?si=U3esZ-Zq_DJy5Is1&t=134 -- Surgery presentation on [[thoughts/bordism bicategories]]
+- https://www.youtube.com/watch?v=B83yIIaTq_s&ab_channel=SimonsFoundation -- Lisa Piccirillo: Exotic Phenomena in Dimension 4
+  - also https://www.youtube.com/watch?v=BXwALAkPubc&ab_channel=HarvardMathematicsDepartment
+  - Lisa solves Conway knot problem
 
 #### papers
 

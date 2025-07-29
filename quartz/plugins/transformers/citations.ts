@@ -261,9 +261,10 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
           const arxivId = extractArxivId(node.url)
           if (!arxivId) return
 
+          const cacheKey = `arxiv:${arxivId}`
           tasks.push(
             (async () => {
-              let cached = cache.get(arxivId)
+              let cached = cache.get(cacheKey)
               if (!cached) {
                 const meta = await fetchArxivMetadata(arxivId)
                 const { key: bibkey } = await ensureBibEntry(bibliography, arxivId)

@@ -64,7 +64,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
   const shouldIncludeFile = extensionFilterFn(options)
 
-  const tags = ["ml", "interp", "philosophy", "serving"]
+  const tags = ["ml", "interp", "philosophy", "serving", "love", "fiction"]
   // NOTE: we will always add the generated tags "folder" for better distinction
   const PageList = PageListConstructor({ highlightTags: [...tags, "folder"] })
   const Evergreen = EvergreenConstructor({

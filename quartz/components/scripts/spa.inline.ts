@@ -640,10 +640,19 @@ class StackedNoteManager {
   }
 
   async navigate(url: URL) {
-    if (!this.active) return await this.open()
+    if (isNavigating) return
+    isNavigating = true
+    try {
+      if (!this.active) return await this.open()
 
-    await this.add(url)
-    await this.render()
+      await this.add(url)
+      await this.render()
+    } catch (e) {
+      console.error(`Failed to navigate to ${url}: ${e}`)
+      return false
+    } finally {
+      isNavigating = false
+    }
     return true
   }
 
@@ -656,6 +665,7 @@ class StackedNoteManager {
   }
 }
 
+let isNavigating = false
 const stacked = new StackedNoteManager()
 window.stacked = stacked
 
@@ -736,11 +746,15 @@ async function _navigate(url: URL, isBack: boolean = false) {
 }
 
 async function navigate(url: URL, isBack: boolean = false) {
+  if (isNavigating) return
+  isNavigating = true
   try {
     await _navigate(url, isBack)
   } catch (e) {
     console.error(e)
     window.location.assign(url)
+  } finally {
+    isNavigating = false
   }
 }
 
@@ -768,7 +782,11 @@ function createRouter() {
     window.addEventListener("popstate", (event) => {
       const { url } = getOpts(event) ?? {}
       if (window.location.hash && window.location.pathname === url?.pathname) return
-      navigate(new URL(window.location.toString()), true)
+      try {
+        navigate(new URL(window.location.toString()), true)
+      } catch (e) {
+        window.location.reload()
+      }
       return
     })
   }

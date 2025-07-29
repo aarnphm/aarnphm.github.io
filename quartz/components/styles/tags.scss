@@ -1,3 +1,6 @@
+@use "../../styles/variables.scss" as *;
+@use "../../styles/mixin.scss" as *;
+
 ul.tags,
 menu.tags,
 menu.tags > li > ul {
@@ -16,6 +19,14 @@ ul.tags {
 
 menu.tags {
   grid-column: 6/8;
+
+  @media all and ($tablet) {
+    grid-column: 3/6;
+  }
+
+  @media all and ($mobile) {
+    grid-column: 3/6;
+  }
 }
 
 li.socials {

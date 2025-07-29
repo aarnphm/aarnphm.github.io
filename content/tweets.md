@@ -9,7 +9,7 @@ description: collections of tweets, since bookmark is getting crowded.
 transclude:
   dynalist: false
 date: "2024-10-24"
-modified: 2025-07-08 06:51:15 GMT-04:00
+modified: 2025-07-15 09:57:58 GMT-04:00
 noindex: true
 title: /xeets/
 ---
@@ -197,3 +197,7 @@ https://x.com/karpathy/status/1937902205765607626 <!-- Karpathy on "context engi
 https://x.com/jkminder/status/1939790920326541601 <!-- Model diffing on Chat vs. Base Model -->
 
 https://x.com/leloykun/status/1941067659157913625 <!-- Adam with Aggressive Gradient Value/Norm Clipping ≈ Smoothed SignSGD/NormSGD -->
+
+https://x.com/Kimi_Moonshot/status/1944589115510734931 <!-- Kimi K2 rough architecture -->
+
+https://x.com/jobergum/status/1945036230799892726 <!-- ColBERT WASM for embeddings -->
