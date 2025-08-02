@@ -31,3 +31,5 @@ title: images
 ![[thoughts/images/black-carrrr.webp|carr]]
 
 ![[thoughts/images/grok-system-prompt.webp|Grok 3 system prompt]]
+
+![[thoughts/images/Nietzsche speaks of marriage.webp|Nietzsche speaks of marriage]]

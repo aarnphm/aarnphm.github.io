@@ -4,12 +4,12 @@ aliases:
   - advice
 tags:
   - evergreen
-date: "2024-01-23"
-modified: 2025-06-14 23:19:30 GMT-04:00
-socialDescription: A collection of quotes, wisdom, and advice.
-title: advice.
 transclude:
   dynalist: false
+date: "2024-01-23"
+modified: 2025-08-01 08:48:35 GMT-04:00
+title: advice.
+socialDescription: A collection of quotes, wisdom, and advice.
 ---
 
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
@@ -35,6 +35,14 @@ You don't know about real loss, because it only occurs when you [[posts/her|love
 When you do something, do it 100%. When you work, work. When you laugh, laugh. When you eat, eat like it's your last meal -- Tony the valet ([[posts/physical touch|Green Book]])
 
 Life can only be understood backwards; but it must be lived forwards. -- Søren Kierkegaard
+
+I am full of the sky, and the sky is full of feeling -- [Jasmine](https://x.com/j_asminewang/status/1950598766136090904)
+
+When you are not fed [[tags/love]] with a spoon you learn to lick it with a knife
+
+Wanting to feel wanted is the loneliest feeling ever
+
+==The most personal is the most creative== -- Martin Scorsese
 
 ## On bits and bytes.
 

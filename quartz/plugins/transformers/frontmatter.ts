@@ -97,6 +97,9 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
         const socials = coalesceAliases(data, ["social", "socials"])
         if (socials) data.socials = socials
 
+        const authors = coalesceAliases(data, ["author", "authors"])
+        if (authors) data.authors = authors
+
         const created = coalesceAliases(data, ["date", "created"])
         if (created) {
           data.created = created
@@ -151,6 +154,7 @@ declare module "vfile" {
         transclude: Partial<TranscludeOptions>
         signature: string
         socials: Record<string, string>
+        authors: string[]
       }>
   }
 }

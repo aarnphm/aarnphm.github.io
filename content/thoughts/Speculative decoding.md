@@ -6,7 +6,7 @@ tags:
   - technical
 description: a method to speed up LLM decoding
 date: "2025-05-21"
-modified: 2025-07-24 20:03:57 GMT-04:00
+modified: 2025-08-01 23:06:06 GMT-04:00
 title: Speculative decoding
 ---
 
@@ -20,6 +20,11 @@ Intuitively:
 In a sense, we are verify these in parallel instead of [[thoughts/Autoregressive models|autoregressive decoding]].
 
 A few techniques such as [[thoughts/Speculative decoding#ngrams|ngrams]], [[thoughts/Speculative decoding#EAGLE|EAGLE]] are supported in [[thoughts/vllm|vLLM]]
+
+## papers
+
+- https://github.com/hemingkx/SpeculativeDecodingPapers
+- https://www.arxiv.org/pdf/2506.20675
 
 ## EAGLE
 
@@ -125,6 +130,10 @@ tl/dr: Improvement on EAGLE-1 via context-aware dynamic draft tree into this dra
 ### EAGLE-3
 
 ![[thoughts/images/eagle-3-inference-pipeline.webp]]
+
+> [!NOTE] Qwen3 replication
+>
+> https://mp.weixin.qq.com/s/Dmdg6aLgFHZEcm6TY1vKkA
 
 ## HASS
 
@@ -546,147 +555,338 @@ If we get an improvement for $\gamma$, we'd also get improvement for any $0 < \g
 
 #### speculators composition design
 
+##### Problem statement
+
+Currently, support for speculative decoding algorithms like EAGLE and EAGLE-3 in vLLM is implemented via architecture-specific
+classes under `model_executor`. For example, `EagleLlamaForCausalLM` and `Eagle3LlamaForCausalLM` are separate model classes for LLaMA-based models, duplicating much of the base causal LM logic.
+Similarly, other architectures (MiniCPM, etc.) have their own Eagle-speculator classes.
+This leads to code duplication and maintenance burden, since each class reimplements similar logic (e.g. embedding inputs, combining states, output processing) with only minor variations.
+
+Additionally, current limitations include requiring the draft model to run with tp=1 (no tensor parallelism) due to lack of heterogenous KV-cache support.
+Oftentimes we might want the KV cache for the draft to be separated from the target's; and this is yet to be supported in v1. However, this design would not consider the modification of this step, but taking this into consideration.j
+
+##### Goal
+
+Our aim is to design a reusable and extensible composition architecture for speculative decoding that addresses these issues:
+
+- More architecture supports: Easily add supports for newer architecture (Qwen3, MoE models, Gemma, Mistral, et al.)
+- Modular layer customization: allowing override specific components.
+- composition over inheritance: high-level `SpeculativeModel` contains and orchestrates a target model and a draft model component.
+- pipeline & parallelism compatibility: Ensure the forward-pass logic works with vLLM’s distributed execution features – PP and TP – as well as any model-specific optimizations should still work.
+- extensible to new methods: HASS, Medusa, just to name a few.
+
+##### Implementation
+
+I propose a `SpeculatorForCausalLM` generic wrapper that takes a `base_model` and `draft_model`:
+
 ```python
-# model_executor/models/llama.py
-from vllm.model_executor.layers import VocabParallelEmbedding, ParallelLMHead, RMSNorm
-from vllm.model_executor.models.interfaces import SupportsLoRA, SupportsPP
+import torch
+import torch.nn as nn
+from vllm.model_executor.layers import VocabParallelEmbedding, ParallelLMHead
+from vllm.model_executor.cache import KVCacheManager  # dual‑model cache mgr
 
 
-class EagleSpeculatorForCausalLM(nn.Module, SupportsLoRA, SupportsPP):
-  def __init__(self, vllm_config: VllmConfig):
+class SpeculatorForCausalLM(nn.Module):
+  def __init__(
+    self,
+    base_model_cls,
+    draft_cls,
+    cfg,  # full HF/Speculators config
+    algo: str = 'eagle3',
+  ):
     super().__init__()
-    spec_cfg = vllm_config.speculative_config
-    algo = spec_cfg.algorithm  # "eagle" or "eagle3"
-    draft_hf_cfg = spec_cfg.draft_model_config.hf_config  # HF config for draft
-    base_hf_cfg = vllm_config.model_config.hf_config  # HF config for target
 
-    # 1. Embedding Layer (share or separate)
-    vocab_size = draft_hf_cfg.vocab_size
-    hidden_size = draft_hf_cfg.hidden_size
-    if base_hf_cfg.tie_word_embeddings and get_pp_group().world_size == 1:
-      self.embed_tokens = target_model.embed_tokens  # reuse target embedding (assumes passed in or global context)
-    else:
-      self.embed_tokens = VocabParallelEmbedding(vocab_size, hidden_size, prefix='embed_tokens')
+    self.target: BaseCausalLM = base_model_cls(cfg)
 
-    # 2. Draft Transformer Layers
-    if algo == 'eagle':
-      num_layers = draft_hf_cfg.num_hidden_layers
-      layers = []
-      for i in range(num_layers):
-        layer = BaseDecoderLayerClass(draft_hf_cfg, prefix=f'layers.{i}')
-        if i == 0:
-          # disable first layer's input LayerNorm if present
-          if hasattr(layer, 'input_layernorm'):
-            layer.input_layernorm = nn.Identity()
-        layers.append(layer)
-      self.layers = nn.ModuleList(layers)
-      # Fusion linear to combine target hidden + new embed
-      self.fc = nn.Linear(hidden_size * 2, hidden_size, bias=False)
-      # If final RMSNorm or layernorm is needed (depends on architecture)
-      if hasattr(draft_hf_cfg, 'rms_norm_eps'):
-        self.norm = RMSNorm(hidden_size, eps=draft_hf_cfg.rms_norm_eps)
-    elif algo == 'eagle3':
-      # single-layer draft
-      layer = BaseDecoderLayerClass(draft_hf_cfg, prefix='layers.0')
-      # Expand QKV for combined input
-      if hasattr(layer, 'self_attn') and hasattr(layer.self_attn, 'qkv_proj'):
-        layer.self_attn.qkv_proj = QKVParallelLinear(
-          2 * hidden_size,  # double input dim (embed + hidden)
-          head_size=layer.self_attn.head_dim,
-          total_num_heads=layer.self_attn.total_num_heads,
-          total_num_kv_heads=layer.self_attn.total_num_kv_heads,
-          bias=False,
-          prefix='layers.0.qkv_proj',
-        )
-      self.layers = nn.ModuleList([layer])
-      # Linear to combine multiple hidden states (if returned by draft)
-      combine_in_dim = (draft_hf_cfg.target_hidden_size or hidden_size) * 3
-      self.fc = nn.Linear(combine_in_dim, hidden_size, bias=False)
-      # Final norm before output
-      self.norm = RMSNorm(hidden_size, eps=draft_hf_cfg.rms_norm_eps)
+    if cfg.tensor_parallel_size > 1:
+      self.target.embed_tokens = VocabParallelEmbedding(
+        num_embeddings=cfg.vocab_size, embedding_dim=cfg.hidden_size, bias=False
+      )
+      self.target.lm_head = ParallelLMHead(num_embeddings=cfg.vocab_size, embedding_dim=cfg.hidden_size, bias=True)
 
-    # 3. Output Head / Logits Processor
-    if algo == 'eagle3':
-      draft_vocab = draft_hf_cfg.draft_vocab_size  # smaller vocab
-      self.lm_head = ParallelLMHead(draft_vocab, hidden_size, bias=False)
-      # Mapping from draft IDs to target IDs
-      self.draft_id_to_target_id = nn.Parameter(torch.zeros(draft_vocab, dtype=torch.long), requires_grad=False)
-    else:
-      if base_hf_cfg.tie_word_embeddings and get_pp_group().world_size == 1:
-        # Use target's head via shared weights
-        self.lm_head = None
+    self.draft: SpeculatorDraftModel = draft_cls(base_cfg=cfg, target=self.target, algo=algo)
+
+    # assumption: heterogeneous cache
+    self.kv_cache_metadata = KVCacheMetadata(
+      target_layers=self.target.num_hidden_layers, draft_layers=self.draft.num_layers
+    )
+
+  @torch.inference_mode()
+  def forward(self, input_ids, pos, stop_layer: int) -> torch.Tensor:
+    outputs, hidden_states = self.target.forward(
+      input_ids, positions=pos, stop_layer=stop_layer, kv_cache=self.kv_cache_metadata.target
+    )
+    return self.draft_step(hidden_states, outputs, pos)
+
+  @torch.inference_mode()
+  def draft_step(self, cur_hidden, new_token_embed, pos):
+    h_draft = self.draft.forward(
+      cur_hidden=cur_hidden, new_embed=new_token_embed, pos=pos, kv_cache=self.kv_cache_metadata.draft
+    )
+    logits = self.draft.compute_logits(h_draft, vocab_parallel=self.target.lm_head)
+    return logits, h_draft
+```
+
+Note that the scheduler logics is not included in here, given that we have a different branch to perform rejections separately.
+
+We also have a `SpeculatorDraftModel` to be used:
+
+```python
+class SpeculatorDraftModel(nn.Module):
+  num_layers: int  # used by KVCache metadata
+
+  def forward(self, cur_hidden, new_embed, pos, kv_cache): ...
+  def compute_logits(self, hidden_state, vocab_parallel): ...
+
+
+class EagleDraftModel(SpeculatorDraftModel):
+  def __init__(self, base_cfg, target, algo='eagle'):
+    super().__init__()
+    self.num_layers = 1
+    hs = base_cfg.hidden_size
+    # 3.a fusion proj doubles input dim (hidden + embed)
+    self.fusion = nn.Linear(hs * 2, hs, bias=False)
+
+    # 3.b reuse target's decoder layer weights (copy, not tie)
+    self.layer = target.layers[-1].__class__(base_cfg)
+    self.layer.load_state_dict(target.layers[-1].state_dict())
+
+    # 3.c optionally tie norm & lm_head
+    self.norm = target.norm
+
+  def forward(self, cur_hidden, new_embed, pos, kv_cache):
+    x = self.fusion(torch.cat([cur_hidden, new_embed], dim=-1))
+    x = self.layer(hidden_states=x, position_ids=pos, kv_cache=kv_cache)
+    return self.norm(x)
+
+
+class Eagle3DraftModel(SpeculatorDraftModel):
+  def __init__(self, base_cfg, target, algo='eagle3'):
+    super().__init__()
+    self.num_layers = 1
+    self.draft_layer = LlamaDraftLayerEagle3(base_cfg)  # custom?
+    self.hidden_norm = nn.RMSNorm(base_cfg.hidden_size, eps=1e-6)
+
+    # reduced‑vocab head (author's design)
+    self.draft_vocab = base_cfg.draft_vocab
+    self.small_head = nn.Linear(base_cfg.hidden_size, self.draft_vocab, bias=False)
+
+    # mapping tensor (draft‑id → target‑id)
+    self.id_map: torch.LongTensor = torch.load(cfg.draft_id_map)  # pre‑baked
+
+  def forward(self, cur_hidden, new_embed, pos, kv_cache):
+    mixed = torch.cat([cur_hidden, new_embed], dim=-1)  # dim = 2h
+    out = self.draft_layer(mixed, pos, kv_cache)
+    return self.hidden_norm(out)
+
+  def compute_logits(self, hidden_state, vocab_parallel):
+    logits_small = self.small_head(hidden_state)  # (B, V_small)
+    # sparse scatter into full sharded vocab
+    logits_full = torch.full_like(vocab_parallel.weight, float('-inf')).view(-1)
+    logits_full[self.id_map] = logits_small.view(-1)
+    return logits_full.view_as(logits_small)
+
+
+# custom draft layers for eagle 3
+class LlamaDraftLayerEagle3(nn.Module):
+  # LlamaDecoderLayer with double‑width QKV.
+
+  def __init__(self, cfg):
+    super().__init__()
+    self.qkv_proj = nn.Linear(cfg.hidden_size * 2, 3 * cfg.hidden_size, bias=False)  # 2× in‑dim
+    self.attn = LlamaAttention(cfg)
+    self.mlp = LlamaMLP(cfg)
+    self.norm1 = nn.RMSNorm(cfg.hidden_size, eps=cfg.rms_norm_eps)
+    self.norm2 = nn.RMSNorm(cfg.hidden_size, eps=cfg.rms_norm_eps)
+
+  def forward(self, hidden_and_embed, pos, kv_cache):
+    qkv = self.qkv_proj(hidden_and_embed)
+    attn_out = self.attn(qkv, position_ids=pos, kv_cache=kv_cache)
+    h = hidden_and_embed + attn_out
+    h = h + self.mlp(self.norm1(h))
+    return self.norm2(h)
+```
+
+```python
+class EagleModel(nn.Module):
+  target: TargetModel # LlamaForCausalLM, Qwen3ForCausalLM
+  target_head/layer: int | list[int] # 3 layers -> fused -> LayerNorm -> embeddings -> concat
+
+  def forward(self, input_ids, position, hidden_states):
+    hds = self.target.extract_hidden_states(hidden_states)
+    # verify.
+
+  def batch_propose(self): ...
+```
+
+```python
+# llama.py
+class LlamaForCausalLM(nn.Module):
+  def get_eagle3_aux_hidden_state_layers(self) -> tuple[int]:
+    num_layers = len(self.model.layers)
+    return (2, num_layers // 2, num_layers - 3)
+
+  def extract_hidden_states(self, aux):
+    layers = self.get_eagle3_aux_hidden_state_layers()
+    # return list of hidden states
+    return [aux[layers[0]], aux[layers[1]], aux[layers[2]]]
+```
+
+##### Plan
+
+- Eagle-generic implementations
+- Separate Llama from Eagle/Eagle-3 definitions (expose hidden states)
+- support different draft models architecture
+
+##### Questions
+
+> [!question]
+>
+> PP and TP compatibility?
+
+For PP, there could be two options:
+
+- Attach draft to the end of pipeline:
+  - If the draft model needs the final hidden state of the target’s last layer, it makes sense to place the draft’s computation on the same device as the last pipeline stage of the target.
+    - For example, in a 2-way PP:
+      - layers 0–N/2 are on GPU0 and layers N/2–N on GPU1. The Eagle draft (which essentially acts like an extra layer) can be placed on GPU1 right after the target’s own layers.
+- Treat draft as separate parallel branch:
+  - in cases like Medusa, we might run draft heads concurrently with parts of the target model. Our design can support that in the future (this is somewhat aligned with [SGLang implementation](https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/speculative/eagle_draft_extend_cuda_graph_runner.py))
+
+For TP, we will aim to relax that by handling heterogeneous parallelism, but this depends on how we refactor the KVCacheManager in vLLM. Ideally, we could have another `SpeculatorRunner`, similar to V0, and the KVCacheManager must know how to handle different metadata from both target and draft models.
+
+> [!question]
+>
+> Heterogeneous KV Cache?
+
+##### Appendix
+
+SpecForge's EAGLE-3 interfaces for [TTT](https://github.com/sgl-project/SpecForge/blob/main/specforge/modeling/draft/base.py#L38):
+
+```python
+class Eagle3DraftModel(PreTrainedModel, ABC):
+  @abstractmethod
+  def embed_input_ids(self, input_ids: torch.Tensor) -> torch.Tensor:
+    """
+    Embed the input ids.
+    """
+    pass
+
+  @abstractmethod
+  def project_hidden_states(self, hidden_states: torch.Tensor) -> torch.Tensor:
+    """
+    Project the concatenated hidden states from the high, medium and low layers to the target hidden size.
+    """
+    pass
+
+  @abstractmethod
+  def compute_logits(self, hidden_states: torch.Tensor) -> torch.Tensor:
+    """
+    Compute the logits of the draft model.
+    """
+    pass
+
+  def prepare_decoder_attention_mask(
+    self,
+    attention_mask: torch.Tensor,
+    hidden_states: torch.Tensor,
+    batch_size: int,
+    seq_length: int,
+    past_key_values_length: int,
+  ) -> torch.Tensor:
+    """
+    Prepare the attention mask of the draft model.
+    """
+    # create causal mask
+    # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len]
+    combined_attention_mask = None
+    if seq_length > 1:
+      combined_attention_mask = _make_causal_mask(
+        (batch_size, seq_length),
+        hidden_states.dtype,
+        device=hidden_states.device,
+        past_key_values_length=past_key_values_length,
+      )
+
+    if attention_mask is not None:
+      # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len]
+      expanded_attn_mask = _expand_mask(attention_mask, hidden_states.dtype, tgt_len=seq_length).to(
+        hidden_states.device
+      )
+      combined_attention_mask = (
+        expanded_attn_mask if combined_attention_mask is None else expanded_attn_mask + combined_attention_mask
+      )
+    return combined_attention_mask
+
+  @abstractmethod
+  def backbone(
+    self,
+    input_embeds: torch.Tensor,
+    hidden_states: torch.Tensor,
+    cache_hidden: torch.Tensor,
+    attention_mask: torch.Tensor,
+    position_ids: torch.Tensor,
+    use_cache: bool = True,
+  ) -> torch.Tensor:
+    """
+    The backbone of the draft model.
+    """
+    pass
+
+  def freeze_embedding(self) -> None:
+    """
+    Freeze the embeddings of the draft model so that they are not updated during training.
+    """
+    self.embed_tokens.weight.requires_grad = False
+
+  @torch.no_grad()
+  def load_embedding(self, model_path: str, embedding_key: str = 'model.embed_tokens.weight') -> None:
+    """
+    Load the embedding of the draft model.
+
+    Args:
+        model_path (str): The path to the huggingface repository.
+    """
+    if os.path.exists(model_path):
+      # model_path is a local directory
+      # check if there is file ending with index.json
+      glob_path = os.path.join(model_path, '*.index.json')
+      index_json_path = glob.glob(glob_path)
+
+      if len(index_json_path) == 0:
+        raise FileNotFoundError(f'No index.json file found in {model_path}')
+      if len(index_json_path) > 1:
+        raise FileNotFoundError(f'Multiple index.json files found in {model_path}')
+      index_json_path = index_json_path[0]
+
+      with open(index_json_path, 'r') as f:
+        index_json = json.load(f)
+      ckpt_file = index_json['weight_map'][embedding_key]
+
+      if ckpt_file.endswith('.safetensors'):
+        with safe_open(os.path.join(model_path, ckpt_file), framework='pt') as f:
+          emb_tokens = f.get_tensor(embedding_key)
       else:
-        self.lm_head = ParallelLMHead(vocab_size, hidden_size, bias=False)
-        if draft_hf_cfg.tie_word_embeddings:
-          self.lm_head.tie_weights(self.embed_tokens)  # tie weights if needed
-    scale = getattr(draft_hf_cfg, 'logit_scale', 1.0)
+        state_dict = torch.load(os.path.join(model_path, ckpt_file))
+        emb_tokens = state_dict[embedding_key]
+      self.embed_tokens.weight.copy_(emb_tokens)
+    else:
+      # this is the case where model_path is a huggingface repository
+      # we first need to locate its local cache
+      local_cache_path = snapshot_download(repo_id=model_path)
+      self.load_embedding(local_cache_path, embedding_key)
 
-    self.logits_processor = LogitsProcessor(vocab_size, scale=scale)
+  def load_vocab_mapping(self, file_path: str) -> None:
+    """
+    Load the vocab buffers of the draft model.
 
-  def forward(self, input_ids: Tensor, positions: Tensor, prev_hidden: Tensor):
-    """Compute draft model hidden states for speculative tokens."""
-    new_embeds = self.embed_tokens(input_ids)  # [num_tokens, H]
-    if algo == 'eagle':
-      # Fuse target hidden and new token embed
-      hidden = self.fc(torch.cat((new_embeds, prev_hidden), dim=-1))
-      residual = None
-      for layer in self.layers:
-        hidden, residual = layer(positions, hidden, residual)
-      hidden = hidden + residual  # add final residual
-      if hasattr(self, 'norm'):
-        hidden = self.norm(hidden)
-      # Return final hidden twice (to match interface: (last_hidden, all_hidden) if needed)
-      return hidden, hidden
-    elif algo == 'eagle3':
-      # Single layer processes embed & prev_hidden separately
-      layer = self.layers[0]
-      # Assume modified layer forward signature: layer(positions, embeds, hidden, residual=None)
-      draft_out, hidden_pre = layer(positions, new_embeds, prev_hidden, None)
-      # Apply norm combining hidden and residual (if layer returns prenorm residual)
-      hidden = self.norm(draft_out) if hidden_pre is None else self.norm(draft_out, hidden_pre)
-      return hidden, hidden
-
-  def compute_logits(self, hidden_states: Tensor, sampling_metadata: SamplingMetadata):
-    """Compute logits over the target vocabulary from draft hidden states."""
-    if self.lm_head is None:
-      # If using shared embedding as output weight
-      return self.logits_processor(self.embed_tokens, hidden_states, sampling_metadata)
-    logits = self.logits_processor(self.lm_head, hidden_states, sampling_metadata)
-    if hasattr(self, 'draft_id_to_target_id'):
-      # Map logits from draft vocab to full target vocab
-      full_vocab = self.vocab_size = self.vllm_config.model_config.hf_config.vocab_size
-      mapped_logits = hidden_states.new_full((hidden_states.size(0), full_vocab), float('-inf'))
-      idx = self.draft_id_to_target_id  # vector of length draft_vocab
-      mapped_logits[:, idx] = logits
-      return mapped_logits
-    return logits
-
-  def load_weights(self, weights: Iterable[tuple[str, Tensor]]):
-    """Load weights from HuggingFace checkpoint, handling merged and skipped params."""
-    param_dict = {}
-    for name, tensor in weights:
-      # Skip target LM head weights if present
-      if name.startswith('lm_head.'):
-        if self.lm_head is None:
-          continue  # skip if using target's head
-      # Handle special mappings
-      if 'd2t' in name:
-        name = name.replace('d2t', 'draft_id_to_target_id')
-      if name.startswith('layers.') or name.startswith('model.layers.'):
-        # If base uses split QKV in checkpoint and merged in model:
-        for merged, subparts in self.packed_modules_mapping.items():
-          # E.g., merged "qkv_proj" vs subparts ["q_proj","k_proj","v_proj"]
-          for sub in subparts:
-            if f'.{sub}.' in name:
-              name = name.replace(f'.{sub}.', f'.{merged}.')
-              break
-      # Skip embedding if shared (already provided by target)
-      if get_pp_group().world_size == 1 and 'embed_tokens' in name and self.embed_tokens is target_model.embed_tokens:
-        continue
-      # Prefix "model." if needed (in our design, weights might be named without "model.")
-      key = name if name.startswith('model.') else f'model.{name}'
-      param_dict[key] = tensor
-    # Use AutoWeightsLoader to handle device placement, quantization, etc.
-    loader = AutoWeightsLoader(self, skip_prefixes=None)
-    return loader.load_weights(param_dict.items())
+    Args:
+        file_path (str): The path to the vocab mapping file.
+    """
+    assert hasattr(self, 't2d') and hasattr(self, 'd2t'), (
+      't2d and d2t buffersare not found in the draft model, please check your draft model implementation'
+    )
+    vocab_mapping = torch.load(file_path)
+    self.t2d.copy_(vocab_mapping['t2d'])
+    self.d2t.copy_(vocab_mapping['d2t'])
 ```

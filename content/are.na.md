@@ -7,7 +7,7 @@ tags:
   - seed
 description: cool stuff on the internet. My run-down version of are[dot]na
 date: "2024-10-24"
-modified: 2025-07-29 13:38:53 GMT-04:00
+modified: 2025-08-02 13:16:24 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -95,6 +95,10 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://plato.stanford.edu/entries/russell/ -- Bertrand Russell
 - https://web.stanford.edu/~cm5/overview.html -- Ciprian Manolescu
   - Floer homology and dimension-4 topology
+- https://thezvi.wordpress.com/ -- Zvi Mowshowitz
+- https://www.nytimes.com/2025/07/31/science/mary-k-gaillard-dead.html?camp=7JFJX -- Mary K. Gaillard
+- https://www.neelnanda.io/about -- Neel Nanda
+  - [[thoughts/mechanistic interpretability]], lead GDM applied interpretability team
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -159,6 +163,30 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://barnsworthburning.net/ -- cool hyperlinks format
 - https://substack.com/home/post/p-163080300 -- Love is not enough
 - https://mindslice.substack.com/p/alignment -- [[thoughts/Alignment]]
+- https://aresluna.org/frame-of-preference/ -- Frame of references, a history of Mac Settings, 1984-2004
+- https://web.stanford.edu/dept/SUL/sites/mac/primary/docs/bom/anthrophilic.html -- Design Considerations for an Anthropophilic Computer
+  - > You might think that any number of computers have been designed with these criteria in mind, but not so. Any system which requires a user to ever see the interior, for any reason, does not meet these specifications. There must not be additional ROMS, RAMS, boards or accessories except those that can be understood by the PITS as a separate appliance.
+  - > Seeing the guts is taboo. Things in sockets is taboo (unless to make servicing cheaper without imposing too large an initial cost). Billions of keys on the keyboard is taboo. Computerese is taboo. Large manuals, or many of them (large manuals are a sure sign of bad design) is taboo. **Self-instructional programs are NOT taboo.**
+  - > The computer must be in one lump. This means, given present technology, a 4 or 5 inch CRT (unless a better display comes along in the next year), a keyboard, and disk integrated into one package.
+- https://www.nytimes.com/2025/07/21/magazine/men-heterofatalism-dating-relationships.html -- The Trouble with Wanting Men
+- https://calv.info/openai-reflections -- reflections on OpenAI
+- https://thezvi.wordpress.com/2025/08/01/the-week-in-ai-governance/
+- https://ambrook.com/offrange/technology/like-farming-on-the-moon -- If you are a farmer, NASA would like a word
+- https://dl.acm.org/doi/pdf/10.1145/97351.97360 -- Human Values and the Futures of Technology: A Declaration of Empowerment, Ben Shneiderman
+- https://kevinlu.ai/the-only-important-technology-is-the-internet -- The Only Important Technology is the Internet
+- [[thoughts/papers/google_delayexp.pdf|Speed Matters for Google Web Search]]
+  - latency from 100ms to 400ms reduces number of search per users by 0.2% to 0.6%
+  - Injecting server-side delay for pre-header and post-header delay
+- https://www.alignmentforum.org/posts/hjMy4ZxS5ogA9cTYK/how-i-think-about-my-research-process-explore-understand -- How I Think About My Research Process: Explore, Understand, Distill
+- https://usefulfictions.substack.com/p/50-things-i-know -- 50 things i know
+  - > 33. If you always let people in in traffic, no one can cut you off.
+  - > 36. “You are ruined by your gifts” — the traits that make you exceptional are the very same traits that show up in your neuroses and limitations. Learning to love the upsides, if undertaken with clarity and gentleness, also creates more space to address the downsides. This is what makes the [Enneagram](https://usefulfictions.substack.com/p/there-are-nine-wolves-inside-of-you) tremendously potent.
+  - > 38. There is no grand unifying theory of morality, nothing that doesn’t break down in any edge cases — so avoid totalizing ideologies, or else. If you take anything too seriously, it can make you crazy. Related: Utilitarianism is a perfect program that doesn’t run on human hardware.
+  - > 45. If you can train yourself to ask “is there a better way to do this?” at random intervals ten times a day, you will become unstoppable.
+- https://velvetnoise.substack.com/p/the-key-to-love-is-understanding -- The key to [[tags/love]] is understanding
+- https://illustrated.substack.com/p/grief-maybe -- Grief, maybe (ILLUSTRATED)
+- https://substack.com/inbox/post/168424831 -- conversational compatibility is the chemical reaction between questions
+- https://www.scopeofwork.net/aquatic-achievements/
 
 ### machine learning
 
@@ -170,6 +198,9 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.joelsimon.net/lluminate -- Creative exploration with LLM
 - https://docs.google.com/presentation/d/1dGA1Jpppv9BciOOrc95ZYRinsj_ZYrI-IQOIifHGIZw/edit?slide=id.p#slide=id.p -- Transformers in Diffusion Models for Image Generations and Beyond
 - https://discuss.vllm.ai/t/numerical-difference-between-vllm-logprobs-and-huggingface-logprobs/151 -- Numerical difference between [[thoughts/vllm|vLLM]] logprobs and HF logprobs
+- https://z.ai/blog/glm-4.5 -- GLM 4.5 releases
+- https://jeremybernste.in/writing/deriving-muon -- Deriving [[thoughts/muon|Muon]]
+  - https://github.com/KellerJordan/modded-nanogpt
 
 ### argumentative
 
@@ -222,6 +253,9 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.youtube.com/watch?v=rQ-An5bhkrs&t=11303s&ab_channel=Amii -- Upper Bound 2025, John Carmack's talk
 - https://www.youtube.com/watch?v=AivF_Lj8cVM&ab_channel=Josephine -- Put love at the centre of your life, NOT discipline
 - https://www.youtube.com/watch?v=dCP9uYLa8HA&ab_channel=DuCinema -- Emma Stone
+- https://www.youtube.com/watch?v=nNEweeN32QI&ab_channel=PhilosophyOverdose -- Is God an Unnecessary Hypothesis, Peter van Inwagen, 2004 Calvin College
+- https://www.youtube.com/watch?v=llu7prGMDhk&ab_channel=JuliandeMedeiros -- Lacan/Žižek on how to find your dream: a step-by-step by step guide
+- https://www.youtube.com/watch?v=X-D5FERQzU4&ab_channel=DeficitOwls -- Money Did Not Come From Barter - It Came From Blood Feuds
 
 ## tools
 
@@ -300,7 +334,8 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://huggingface.co/blog/rearchitecting-uploads-and-downloads -- Rearchitecting Hugging Face Uploads and Downloads
 - https://www.youtube.com/watch?v=VAzL8RHot1c&ab_channel=InterconnectsAI -- The art of training a good (reasoning) language models, by Nathan Lambert
 - https://x.com/Kimi_Moonshot/status/1944589115510734931 -- Kimi K2 architecture
-  - ![[thoughts/images/kimi-architecture.png]]
+  - ![[thoughts/images/kimi-architecture.webp]]
+- https://docs.google.com/document/d/1p-ggQV3vVWIQuCccXEl1fD0thJOgXimlbBpGk6FI32I/edit?tab=t.0#heading=h.y0ohi6l5z9qn -- MATS 9.0 Winter 2025
 
 ### [[tags/math]]
 

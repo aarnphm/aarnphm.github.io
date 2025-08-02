@@ -189,7 +189,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     const lang = u.hostname.split(".")[0]
                     const m = u.pathname.match(/\/wiki\/(.+)/)
                     if (m) {
-                      node.children[0].value = `wikipedia/${lang}/${m[1]}`
+                      node.children[0].value = `wikipedia/${lang !== "simple" ? lang + "/" : ""}${m[1]}`
                     }
                   } catch {}
                 }

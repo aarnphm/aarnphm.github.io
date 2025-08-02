@@ -1,10 +1,10 @@
 ---
-comments: false
-date: 2024-02-07
 id: movies
-modified: "2025-07-05 01:27:34 GMT-04:00"
+comments: false
 tags:
   - evergreen
+date: "2024-02-07"
+modified: 2025-08-01 11:33:33 GMT-04:00
 title: movies.
 ---
 
@@ -20,31 +20,31 @@ If you want a more complete list, check out [this entries on letterboxd](https:/
 
 - [ ] A Different Man (2024)
 - [ ] A Real Pain (2024)
-- [ ] Queer (2024)
-- [ ] Civil War (2024)
 - [ ] I Saw the TV Glow (2024) [^lychian]
 - [ ] How To Make Millions before Grandma [[ideas#lettres|dies]] (2024)
 - [ ] Evil Does Not Exists (2024)
-- [ ] The Brutalist (2024)
 - [ ] Do Not Expect Too Much from the End of the World (2024)
 - [ ] Kinds of Kindness (2024)
 - [ ] La Chimera (2024)
 - [ ] Nosferatu (2024)
-- [ ] Anora (2024)
 - [ ] Sometimes I Think About Dying (2023)
 - [ ] Perfect Days (2024)
   - How we might live in a noisy life?
   - What does life looks like when you accept ambitions for acceptance?
-
-[^lychian]: What makes a [Lychian] (https://en.wikipedia.org/wiki/David_Lynch) movie?
-
+- [ ] Small Things Like This (2024)
+- [ ] Eyes Wide Shut (1999)
+- [ ] There Will Be Blood (2007)
+- [ ] Normal People
+- [ ] Fleabag
+- [ ] Eternal Sunshine of the Spotless Mind
+- [ ] Before Sunrise
+- [ ] Frances Ha (2012)
 - [ ] Blue Jasmine (2013)
 - [ ] The King of Comedy (1982)
 - [ ] Dead Poets Society (1989)
 - [ ] La Haine (1995)
 - [ ] Flame & Citron (2008)
 - [ ] Blue is the Warmest Color (2013)
-- [ ] Frances Ha (2012)
 - [ ] Dallas Buyers Club (2013)
 - [ ] Paterson (2016)
 - [ ] Manchester by the Sea (2016)
@@ -68,6 +68,10 @@ If you want a more complete list, check out [this entries on letterboxd](https:/
 - [ ] It's a wonderful life
 - [ ] There Will Be Blood
 - [ ] Vertigo
+- [ ] Anatomy of a Fall
+- [ ] The Perks of Being a Wallflower
+
+[^lychian]: What makes a [Lychian] (https://en.wikipedia.org/wiki/David_Lynch) movie?
 
 ## finished
 
@@ -84,6 +88,11 @@ _doesn't mean that I won't watch it again, just that I will need some more time 
 - [x] Call Me By Your Name (2017)
 - [x] Love & Other Drugs (2010)
 - [x] Challenger (2024)
+- [x] Anora (2024)
+- [x] The Brutalist (2024)
+- [x] Civil War (2024)
+- [x] Queer (2024)
+- [x] No Reservations (2007)
 
 [^remake]: There is also a remake series (2024) starring Eddie Redmayne. (very chill)
 

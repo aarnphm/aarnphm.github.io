@@ -6,10 +6,10 @@ tags:
   - shorts
   - writing
 description: "tw: addiction"
-date: "2025-06-01"
 socials:
   substack: https://open.substack.com/pub/livingalone/p/apartment-two-twenty?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
-modified: 2025-07-08 13:56:35 GMT-04:00
+date: "2025-06-01"
+modified: 2025-07-31 20:58:44 GMT-04:00
 title: apartment two twenty
 ---
 
@@ -93,13 +93,13 @@ half torn, the other spilled on top of the counter--he couldn't remember emptyin
 
 <br>
 
-"&nbsp;&nbsp;I know you're in there man. I can smell the coffee."
+&nbsp;&nbsp;"I know you're in there man. I can smell the coffee."
 
 _But the cezve was cold. He smelled his palms, reeked of stale espresso._
 
 &nbsp;&nbsp;“I’m sick,” he rasped.
 
-&nbsp;&nbsp;&nbsp;&nbsp;“Yeah, okay. Just... M wants to know if you’re coming back. Ever.”
+&nbsp;&nbsp;&nbsp;&nbsp;“Yeah, okay. Just... K wants to know if you’re coming back. Ever.”
 
 He patted his pockets. One bar left. The pharmacy on King closed at six. His hand shook against the brick wall.
 
@@ -147,7 +147,7 @@ The warped floorboards yawning beneath each crooked steps. Halfway down, he lean
 the wall bowing slightly, pressed against his shoulder. The floodlights now blurred into watercolor halos in the twilight.
 Faces passed—strangers casting sidelong glances at the thin man in yesterday's clothes who moved like he was carrying invisible weight.
 
-The pharmacy stood beside the coffee bar where he used to work, a Victorian bones dressed in fluorescent decay -- high tin ceilings blackened with centuries of cigarette smoke.
+The pharmacy stood beside the coffee bar where he work, a Victorian bones dressed in fluorescent decay -- high tin ceilings blackened with centuries of cigarette smoke.
 He saw T leaning over the La Marzocco, the one he operated for two years before everything started sliding sideways. Their eyes met for a brief second.
 T mouthed something, but the street noise—car horns, distant sirens, the general hum of other people's functioning lives—conveniently swallowed the words.
 
@@ -183,8 +183,7 @@ He walked the familiar path past the memorial bench, past the oak where lovers c
 leading him to the small rise where the city’s glow dimmed to a suggestion. Here, he lay back upon the damp earth.
 
 The pills dissolved bitter beneath his tongue—a communion of sorts. The sky stretched above him like black silk pierced by pinpoint stars, cool against his burning skin. When his phone rang—J’s ringtone, that particular melody of reproach—he felt the vibration through the ground more than heard it. He hadn’t returned her call back. Probably wouldn’t now.
-He lay back on damp earth, pills dissolving bitter beneath his tongue. The sky was black silk pierced by pinpoint stars, cool against burning skin.
-Echoes roses, his phone rang -- J's ringtone. _He hadn't returned her call back. Probably wouldn't now._
+Pills dissolving bitter beneath his tongue.
 
 Voices grew distant, submerged beneath a rhythmic murmur like waves pulsing behind his temples. _T and K calling his name, their footsteps hurried across gravel._
 But their voices were already fading, drifting further away with each beat of his slowing heart.

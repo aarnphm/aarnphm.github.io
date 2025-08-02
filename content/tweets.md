@@ -9,7 +9,7 @@ description: collections of tweets, since bookmark is getting crowded.
 transclude:
   dynalist: false
 date: "2024-10-24"
-modified: 2025-07-15 09:57:58 GMT-04:00
+modified: 2025-08-01 11:36:26 GMT-04:00
 noindex: true
 title: /xeets/
 ---
@@ -69,6 +69,8 @@ https://x.com/phokarlsson/status/1794384589898805621 <!-- Treat people as if the
 https://x.com/jacquemusx/status/1942186663557353504 <!-- Iris van Herpen -->
 
 https://x.com/thecaravanindia/status/1942869801593958709 <!-- Bertrand Russell releases a manifesto warning about the danger of nuclear weapons -->
+
+https://x.com/michael_nielsen/status/1951055480920613156 <!-- Don't drop out of college -->
 
 ## love
 
@@ -201,3 +203,7 @@ https://x.com/leloykun/status/1941067659157913625 <!-- Adam with Aggressive Grad
 https://x.com/Kimi_Moonshot/status/1944589115510734931 <!-- Kimi K2 rough architecture -->
 
 https://x.com/jobergum/status/1945036230799892726 <!-- ColBERT WASM for embeddings -->
+
+https://x.com/geoffreylitt/status/1950601513870499953 <!-- Geoffrey Litt on capabilities debates -->
+
+https://x.com/NeelNanda5/status/1950344397075456438 <!-- MATS 9.0 Stream Winter Batch -->
