@@ -19,9 +19,9 @@ const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
 }
 
 const copyFile = async (argv: Argv, fp: FilePath) => {
+  const ext = path.extname(fp)
   const src = joinSegments(argv.directory, fp) as FilePath
-
-  const name = slugifyFilePath(fp)
+  const name = slugifyFilePath(fp as FilePath, true) + (ext.includes("pdf") ? "" : ext)
   const dest = joinSegments(argv.output, name) as FilePath
 
   // ensure dir exists

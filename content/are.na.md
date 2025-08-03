@@ -11,7 +11,7 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-08-03 17:02:23 GMT-04:00
+modified: 2025-08-03 17:13:31 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -222,6 +222,7 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://www.scopeofwork.net/aquatic-achievements/
 - https://kayserifserif.place/carry -- I carry your website with me( i carry it in my website)
   - > (In the quiet aftermath of the most wonderful and exhausting gathering at your home, you find traces of your friends everywhere. A strand of hair draped across the couch, every extra chair commandeered, lingering perfume… echoes of presence in the console.)
+- https://wholeearth.info/p/whole-earth-catalog-fall-1968?format=spreads&index=0 -- Whole Earth Index
 
 ### machine learning
 

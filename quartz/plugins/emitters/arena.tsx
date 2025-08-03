@@ -11,6 +11,7 @@ import { BuildCtx } from "../../util/ctx"
 import type { Root, Element, ElementContent } from "hast"
 import { visit } from "unist-util-visit"
 import { h } from "hastscript"
+import { pageResources, transcludeFinal } from "../../components/renderPage"
 
 interface ArenaPageOptions extends FullPageLayout {
   enableGrid?: boolean

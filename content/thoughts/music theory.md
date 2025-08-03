@@ -2,8 +2,9 @@
 id: music theory
 tags:
   - seed
-  - sapling
+description: half step into the oblivion
 date: "2023-09-25"
+modified: 2025-08-03 17:12:49 GMT-04:00
 title: Music theory
 ---
 
