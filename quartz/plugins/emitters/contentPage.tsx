@@ -77,12 +77,8 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
     async *emit(ctx, content, resources) {
       const allFiles = content.map((c) => c[1].data)
 
-      let containsIndex = false
       for (const [tree, file] of content) {
         const slug = file.data.slug!
-        if (slug === "index") {
-          containsIndex = true
-        }
         // only process home page, non-tag pages, and non-index pages
         if (slug.endsWith("/index") || slug.startsWith("tags/")) continue
         yield processContent(ctx, tree, file.data, allFiles, opts, resources)

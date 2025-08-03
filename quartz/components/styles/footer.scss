@@ -34,6 +34,8 @@ footer {
       align-items: center;
       box-sizing: border-box;
 
+      border: none !important;
+
       & > * {
         color: inherit;
       }

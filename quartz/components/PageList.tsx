@@ -73,7 +73,10 @@ export default ((userOpts?: Options) => {
                       <Date date={getDate(cfg, page)!} locale={cfg.locale} />
                     </div>
                   )}
-                  <div class="desc">{title}</div>
+                  <div class="desc">
+                    {title}
+                    {tags.includes("folder") && <span>/</span>}
+                  </div>
                   {hiTags.length > 0 ? (
                     <menu class="tag-highlights">
                       {hiTags.map((el) => (

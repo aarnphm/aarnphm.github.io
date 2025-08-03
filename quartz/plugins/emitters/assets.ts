@@ -18,42 +18,40 @@ const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
   return await glob("**", argv.directory, patterns)
 }
 
-const name = "Assets"
+const copyFile = async (argv: Argv, fp: FilePath) => {
+  const src = joinSegments(argv.directory, fp) as FilePath
+
+  const name = slugifyFilePath(fp)
+  const dest = joinSegments(argv.output, name) as FilePath
+
+  // ensure dir exists
+  const dir = path.dirname(dest) as FilePath
+  await fs.mkdir(dir, { recursive: true })
+
+  await fs.copyFile(src, dest)
+  return dest
+}
+
 export const Assets: QuartzEmitterPlugin = () => {
   return {
-    name,
+    name: "Assets",
     async *emit({ argv, cfg }, _content, _resources) {
-      const assetsPath = argv.output
       const fps = await filesToCopy(argv, cfg)
       for (const fp of fps) {
-        const ext = path.extname(fp)
-        const src = joinSegments(argv.directory, fp) as FilePath
-        const name = (slugifyFilePath(fp as FilePath, true) + ext) as FilePath
-        const dest = joinSegments(assetsPath, name) as FilePath
+        yield copyFile(argv, fp)
+      }
+    },
+    async *partialEmit(ctx, _content, _resources, changeEvents) {
+      for (const changeEvent of changeEvents) {
+        const ext = path.extname(changeEvent.path)
+        if (ext === ".md" || ext === ".pdf") continue
 
-        try {
-          // Check if destination exists
-          const srcStat = await fs.stat(src)
-          let shouldCopy = true
-
-          try {
-            const destStat = await fs.stat(dest)
-            // Only copy if source is newer than destination
-            shouldCopy = srcStat.mtimeMs > destStat.mtimeMs
-          } catch {
-            // Destination doesn't exist, should copy
-            shouldCopy = true
-          }
-
-          if (shouldCopy) {
-            const dir = path.dirname(dest) as FilePath
-            await fs.mkdir(dir, { recursive: true })
-            await fs.copyFile(src, dest)
-          }
-
-          yield dest
-        } catch (err) {
-          console.warn(`[emit:${name}] Failed to process asset: ${fp}`, err)
+        if (changeEvent.type === "add" || changeEvent.type === "change") {
+          yield copyFile(ctx.argv, changeEvent.path)
+        } else if (changeEvent.type === "delete") {
+          const name = slugifyFilePath(changeEvent.path)
+          const dest = joinSegments(ctx.argv.output, name) as FilePath
+          await fs.unlink(dest)
         }
       }
     },

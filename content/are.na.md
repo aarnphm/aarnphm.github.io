@@ -1,31 +1,31 @@
 ---
 id: are.na
-aliases:
-  - inspo
-tags:
-  - technical
-  - seed
-description: cool stuff on the internet. My run-down version of are[dot]na
-date: "2024-10-24"
-modified: 2025-08-02 13:16:24 GMT-04:00
 permalinks:
   - /website
   - /resources
   - /inspo
+tags:
+  - technical
+  - seed
+description: My run-down version of are[dot]na
+date: "2024-10-24"
+socials:
+  are.na: https://www.are.na/aaron-pham/channels
+modified: 2025-08-03 17:02:23 GMT-04:00
+aliases:
+  - inspo
 title: are.na
 cssclasses:
   - nolist
 ---
 
-I also like to collect [[tweets|some based tweets on the internet]], [[books]], and [[/curius|bookmarks]]
+see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 
 ## discourse
 
 - https://www.lesswrong.com/posts/HiTjDZyWdLEGCDzqu/?commentId=MPNF8uSsi9mvZLxqz -- Gwern on distilling Opus 3.5 into Claude 3.6 instead of releasing Opus 3.5
 
 ## website
-
-_see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 
 - https://www.sholis.com/
 - https://jzhao.xyz/ -- The OG Quartz's implementation
@@ -63,10 +63,25 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.rockstargames.com/VI -- GTA VI when?
 - https://www.tetragrammaton.com/
 - https://basement.studio/
+- https://tatianabilbao.com -- Tatiana Bilbao Estudio
 - https://barnsworthburning.net/
 - https://html.energy/events.html
 - https://devouringdetails.com/ -- Devouring Details
 - https://calv.info/about -- Calvin, as in Calvin and Hobbes
+- https://ampersand.pm/ -- Morgan
+  - met at [HTML Day](html.green)
+- https://www.alanagoyal.com -- Alana Goyal
+- https://www.chloeyan.me/
+- https://ertdfgcvb.xyz
+- https://shashwathsantosh.com/
+- https://solarprotocol.net -- Solar Protocol
+- https://archive.jakedowsmith.com/rosemarybutcher.com -- Rosemary Butcher
+  - Timeline visualisation
+- https://motherfuckingwebsite.com -- This is a motherfucking website
+  - > "Good design is as little design as possible." - some German mtf
+- https://www.sfsystemsclub.com -- SF Systems Club
+- https://www.curatingcraft.com -- Curating Craft
+  - by Daybreak
 
 ## people
 
@@ -99,6 +114,24 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.nytimes.com/2025/07/31/science/mary-k-gaillard-dead.html?camp=7JFJX -- Mary K. Gaillard
 - https://www.neelnanda.io/about -- Neel Nanda
   - [[thoughts/mechanistic interpretability]], lead GDM applied interpretability team
+- https://rosszurowski.com/ -- Ross Zurowski
+- https://nickm.com -- Nick Montfort
+  - MIT, Digital Media Lab
+  - _Output: An Anthology of Computer-Generated Text, 1953-2023_
+- https://www.trudy.computer - Trudy Painter
+  - Gizmo
+  - prev: Google Creative Lab + MIT
+- https://omar.website -- Omar Rizwan
+  - Folk Computer, TabFS, https://x.com/rsnous
+- https://www.katrinaromulo.com -- Katrina Romulo
+  - Brand Designer
+  - work: hyper!, halia
+- https://turntrout.com/welcome -- Alex Turner
+  - [[thoughts/mechanistic interpretability|scalable alignment]] researcher
+- https://marijnhaverbeke.nl/blog -- Marijn Haverbeke
+  - CodeMirror
+- https://connorlowe.com/ -- Connor Lowe
+- https://henry.codes/
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -131,7 +164,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://foundersatwork.posthaven.com/the-social-radar-what-i-did-at-y-combinator -- Social radar, by Jess Livingston
 - https://jameslin.bio/jolie -- Love, with a friend
 - https://www.paulgraham.com/good.html -- Be good
-- https://www.paulgraham.com/mean.html -- Mean people fail
+- https://www.paulgraham.com/mean.html -- Mean [[are.na#people|people]] fail
 - https://www.lesswrong.com/posts/H7fkGinsv8SDxgiS2/ironing-out-the-squiggles -- Ironing Out the Squiggles
 - https://readsomethingwonderful.com/p/47/the-inner-ring -- Read something wonderful
 - https://writeordiemag.com/elliptical-love/untranslatable -- Untranslatable
@@ -187,6 +220,8 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://illustrated.substack.com/p/grief-maybe -- Grief, maybe (ILLUSTRATED)
 - https://substack.com/inbox/post/168424831 -- conversational compatibility is the chemical reaction between questions
 - https://www.scopeofwork.net/aquatic-achievements/
+- https://kayserifserif.place/carry -- I carry your website with me( i carry it in my website)
+  - > (In the quiet aftermath of the most wonderful and exhausting gathering at your home, you find traces of your friends everywhere. A strand of hair draped across the couch, every extra chair commandeered, lingering perfume… echoes of presence in the console.)
 
 ### machine learning
 
@@ -243,6 +278,11 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - http://www.phys.unm.edu/~tw/fas/yits/archive/eberhart_thegroundhog.html -- The Groundhog by Richard Eberthart
 - http://www.phys.unm.edu/~tw/fas/yits/archive/oliver_wildgeese.html -- Wild [[posts/goose friend.md|Geese]] by Mary Oliver
 
+### design
+
+- https://www.are.na/editorial/are-nas-new-web-client-sander-is-now-available-for-everyone -- Are.na's web client, Sander.
+- https://jonwhitestudio.com/ -- Jon White Studio
+
 ### video
 
 - https://www.youtube.com/watch?v=WJ76FfBZuhI&ab_channel=SoderCinema -- Narcissistic Facades - Amy Dunne
@@ -256,6 +296,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
 - https://www.youtube.com/watch?v=nNEweeN32QI&ab_channel=PhilosophyOverdose -- Is God an Unnecessary Hypothesis, Peter van Inwagen, 2004 Calvin College
 - https://www.youtube.com/watch?v=llu7prGMDhk&ab_channel=JuliandeMedeiros -- Lacan/Žižek on how to find your dream: a step-by-step by step guide
 - https://www.youtube.com/watch?v=X-D5FERQzU4&ab_channel=DeficitOwls -- Money Did Not Come From Barter - It Came From Blood Feuds
+- https://www.youtube.com/watch?v=HyPY6vm8Vbo&ab_channel=LucyMoon -- essentials that have immeasurably improved my life this year
 
 ## tools
 
@@ -343,7 +384,7 @@ _see also: [portfolio trail](https://curius.app/aaron-pham/portfolio)_
   - https://youtu.be/e1xo6qWTmoc?si=U3esZ-Zq_DJy5Is1&t=134 -- Surgery presentation on [[thoughts/bordism bicategories]]
 - https://www.youtube.com/watch?v=B83yIIaTq_s&ab_channel=SimonsFoundation -- Lisa Piccirillo: Exotic Phenomena in Dimension 4
   - also https://www.youtube.com/watch?v=BXwALAkPubc&ab_channel=HarvardMathematicsDepartment
-  - Lisa solves Conway knot problem
+  - Conway knot problem
 
 #### papers
 

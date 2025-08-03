@@ -59,6 +59,8 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
       return []
     },
     async *emit(ctx, content, _resources) {
+      if (ctx.argv.watch) return []
+
       const cfg = ctx.cfg.configuration
       const headerFont = cfg.theme.typography.header
       const bodyFont = cfg.theme.typography.body
@@ -66,7 +68,10 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
 
       for (const [_tree, vfile] of content) {
         // if this file defines socialImage, we can skip
-        if (vfile.data.frontmatter?.socialImage !== undefined) {
+        if (
+          vfile.data.frontmatter?.socialImage !== undefined ||
+          vfile.data.slug!.includes("university")
+        ) {
           continue
         }
 

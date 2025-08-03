@@ -314,6 +314,8 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
       return []
     },
     async *emit(ctx, content, _resource) {
+      if (ctx.argv.watch) return []
+
       const { configuration } = ctx.cfg
       // Re-use OG image generation infrastructure
       if (!configuration.baseUrl) {
@@ -351,6 +353,35 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
             yield filePath
           }
         }
+      }
+    },
+
+    externalResources: (ctx) => {
+      if (!ctx.cfg.configuration.baseUrl) return {}
+
+      const baseUrl = ctx.cfg.configuration.baseUrl
+      return {
+        additionalHead: [
+          (pageData) => {
+            const hasPr = pageData.filePath !== undefined && !pageData.slug!.includes("university")
+            return (
+              <>
+                {!hasPr && (
+                  <>
+                    <meta
+                      name="pr:twitter"
+                      content={`https://${baseUrl}/static/twitter/${pageData.slug!.replaceAll("/", "-")}.png`}
+                    />
+                    <meta
+                      name="pr:instagram"
+                      content={`https://${baseUrl}/static/instagram/${pageData.slug!.replaceAll("/", "-")}.png`}
+                    />
+                  </>
+                )}
+              </>
+            )
+          },
+        ],
       }
     },
   }

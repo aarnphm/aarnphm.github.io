@@ -1,5 +1,5 @@
 import { visit } from "unist-util-visit"
-import { Element, Node, Text } from "hast"
+import { Root as HtmlRoot, Node, Element, Text } from "hast"
 import { version } from "../../../package.json"
 import {
   Blockquote,
@@ -10,6 +10,9 @@ import {
   FootnoteDefinition,
   Heading,
 } from "mdast"
+import { BuildCtx } from "../../util/ctx"
+import { QuartzPluginData } from "../vfile"
+import { StaticResources } from "../../util/resources"
 import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import { pageResources, transcludeFinal } from "../../components/renderPage"
@@ -47,480 +50,466 @@ const heading = (h: State, node: Element): Heading => {
 
 const name = "LLM"
 
-export const LLM: QuartzEmitterPlugin = () => {
-  return {
-    name,
-    async emit(ctx, content, resources): Promise<FilePath[]> {
-      const cfg = ctx.cfg.configuration
-      const fps: Promise<FilePath>[] = []
-      const allFiles = ctx.allFiles
+async function llmText(
+  ctx: BuildCtx,
+  tree: HtmlRoot,
+  fileData: QuartzPluginData,
+  allFiles: QuartzPluginData[],
+  resources: StaticResources,
+  reconstructed: string[],
+) {
+  const slug = fileData.slug!
+  const cfg = ctx.cfg.configuration
+  const externalResources = pageResources(pathToRoot(slug), resources)
+  const componentData: QuartzComponentProps = {
+    ctx,
+    fileData,
+    externalResources,
+    cfg,
+    children: [],
+    tree,
+    allFiles,
+  }
 
-      let resconstructed: string[] = []
+  const root = transcludeFinal(clone(tree), componentData, { dynalist: false })
+  const mdast = toMdast(root, {
+    handlers: {
+      figure(h, node) {
+        if (node.properties?.dataRehypePrettyCodeFigure === "") {
+          let pre: Element | undefined
+          let code: Element | undefined
+          let figcaption: Element | undefined
 
-      for (const [tree, file] of content) {
-        const slug = file.data.slug!
+          const checkCaption = ({ tagName, properties }: Element) =>
+            tagName === "figcaption" &&
+            Boolean(properties) &&
+            properties.dataRehypePrettyCodeTitle === ""
+          visit(
+            node,
+            (node) => checkCaption(node as Element),
+            (el) => {
+              figcaption = el as Element
+              return false
+            },
+          )
+          visit(node, { tagName: "pre" }, (el: Element) => {
+            pre = el
+            return false
+          })
+          // Find pre, code, and figcaption elements
+          visit(pre as Node, { tagName: "code" }, (el: Element) => {
+            code = el
+            return false
+          })
 
-        const externalResources = pageResources(pathToRoot(slug), resources)
-        const componentData: QuartzComponentProps = {
-          ctx,
-          fileData: file.data,
-          externalResources,
-          cfg,
-          children: [],
-          tree,
-          allFiles,
+          if (!code || !pre) return hastToMdastHandlers.figure(h, node)
+
+          // Get language
+          const lang = pre.properties?.dataLanguage
+
+          // Get title from figcaption
+          let title = ""
+          if (figcaption) {
+            title = (figcaption.children[0] as Text)?.value
+          }
+
+          // Get highlighted lines
+          // FIX: CORRECT THE CHAIN, not work very well for now
+          const highlightedLines: number[] = []
+          // Get highlighted words
+          const highlightedWords: string[] = []
+          for (const [i, span] of code.children.entries()) {
+            if ((span as Element).properties?.dataHighlightedLine == "") {
+              highlightedLines.push(i)
+            }
+
+            // FIX: THIS ALSO DOESN'T WORK YET
+            visit(span, "element", (el: Element) => {
+              if (el.tagName === "mark" && el.properties?.dataHighlightedCharsMark) {
+                let word = ""
+                el.children.map((span) => {
+                  word += ((span as Element).children[0] as Text)?.value
+                })
+                highlightedWords.push(word)
+              }
+            })
+          }
+
+          // Build code content from spans
+          let codeContent = ""
+          const hasLines = ({ properties }: Element) =>
+            Boolean(properties) && properties.dataLine !== undefined
+          visit(
+            code,
+            (node) => hasLines(node as Element),
+            (span) => {
+              visit(span, "text", (text: Text) => {
+                codeContent += text.value
+              })
+              codeContent += "\n"
+            },
+          )
+
+          // Build meta string
+          const meta = [
+            title ? `title="${title}"` : "",
+            highlightedLines.length ? `{${highlightedLines.join(",")}}` : "",
+            highlightedWords.length ? `/${highlightedWords.join("/")}/` : "",
+          ]
+            .filter(Boolean)
+            .join(" ")
+
+          const result: Code = {
+            type: "code",
+            lang: (lang as string | null) ?? null,
+            meta: meta || null,
+            value: codeContent.trimEnd(),
+          }
+
+          h.patch(node, result)
+          return result
+        } else if (node.properties?.dataRemarkTikz === "") {
+          let value: string | undefined = undefined
+          visit(node, { tagName: "annotation" }, (node) => {
+            value = JSON.parse((node.children[0] as Text).value)
+            return false
+          })
+          if (value === undefined) return hastToMdastHandlers.figure(h, node)
+
+          const results: Code = { type: "code", lang: "tikz", value }
+          h.patch(node, results)
+          return results
+        }
+        return hastToMdastHandlers.figure(h, node)
+      },
+      // handle math node correctly
+      span(h, node) {
+        const classNames = (node.properties.className ?? []) as string[]
+        // katex: inline-math, katex-display: block-math
+        if (classNames.includes("katex") || classNames.includes("katex-display")) {
+          const inline = !classNames.includes("katex-display")
+          let source: string | null = null
+
+          const checkAnnotation = ({ tagName, properties, children }: Element) =>
+            tagName === "annotation" &&
+            Boolean(properties.encoding) &&
+            children.length > 0 &&
+            properties.encoding === "application/x-tex"
+
+          visit(
+            node,
+            (node) => checkAnnotation(node as Element),
+            (node) => {
+              const [inner] = (node as Element).children
+              if (inner.type === "text") {
+                source = inner.value
+                return false // stop traversal
+              }
+            },
+          )
+          if (!source) {
+            console.warn(
+              `[emit:${name}] Could not extract LaTeX source from KaTeX node (slug: ${slug})`,
+            )
+            return hastToMdastHandlers.span(h, node)
+          }
+
+          const results: Math | InlineMath = {
+            type: inline ? "inlineMath" : "math",
+            value: source,
+          }
+          h.patch(node, results)
+          return results
+        } else {
+          return hastToMdastHandlers.span(h, node)
+        }
+      },
+      h2: heading,
+      h3: heading,
+      h4: heading,
+      h5: heading,
+      h6: heading,
+      pre(h, node) {
+        const classNames = (node.properties?.className ?? []) as string[]
+        // handle poetry correctly
+        if (classNames.includes("poetry")) {
+          const lang = node.properties.dataLanguage
+          const results: Code = {
+            type: "code",
+            lang: "poetry",
+            meta: `language=${lang}`.trim(),
+            value: toText(node),
+          }
+          h.patch(node, results)
+          return results
         }
 
-        const opts = { dynalist: false }
-        const root = transcludeFinal(clone(tree), componentData, opts)
-        const mdast = toMdast(root, {
-          handlers: {
-            // handle ast parsed by rehype-pretty-code
-            figure(h, node) {
-              if (node.properties?.dataRehypePrettyCodeFigure === "") {
-                let pre: Element | undefined
-                let code: Element | undefined
-                let figcaption: Element | undefined
-
-                const checkCaption = ({ tagName, properties }: Element) =>
-                  tagName === "figcaption" &&
-                  Boolean(properties) &&
-                  properties.dataRehypePrettyCodeTitle === ""
-                visit(
-                  node,
-                  (node) => checkCaption(node as Element),
-                  (el) => {
-                    figcaption = el as Element
-                    return false
-                  },
-                )
-                visit(node, { tagName: "pre" }, (el: Element) => {
-                  pre = el
-                  return false
-                })
-                // Find pre, code, and figcaption elements
-                visit(pre as Node, { tagName: "code" }, (el: Element) => {
-                  code = el
-                  return false
-                })
-
-                if (!code || !pre) return hastToMdastHandlers.figure(h, node)
-
-                // Get language
-                const lang = pre.properties?.dataLanguage
-
-                // Get title from figcaption
-                let title = ""
-                if (figcaption) {
-                  title = (figcaption.children[0] as Text)?.value
-                }
-
-                // Get highlighted lines
-                // FIX: CORRECT THE CHAIN, not work very well for now
-                const highlightedLines: number[] = []
-                // Get highlighted words
-                const highlightedWords: string[] = []
-                for (const [i, span] of code.children.entries()) {
-                  if ((span as Element).properties?.dataHighlightedLine == "") {
-                    highlightedLines.push(i)
-                  }
-
-                  // FIX: THIS ALSO DOESN'T WORK YET
-                  visit(span, "element", (el: Element) => {
-                    if (el.tagName === "mark" && el.properties?.dataHighlightedCharsMark) {
-                      let word = ""
-                      el.children.map((span) => {
-                        word += ((span as Element).children[0] as Text)?.value
-                      })
-                      highlightedWords.push(word)
-                    }
-                  })
-                }
-
-                // Build code content from spans
-                let codeContent = ""
-                const hasLines = ({ properties }: Element) =>
-                  Boolean(properties) && properties.dataLine !== undefined
-                visit(
-                  code,
-                  (node) => hasLines(node as Element),
-                  (span) => {
-                    visit(span, "text", (text: Text) => {
-                      codeContent += text.value
-                    })
-                    codeContent += "\n"
-                  },
-                )
-
-                // Build meta string
-                const meta = [
-                  title ? `title="${title}"` : "",
-                  highlightedLines.length ? `{${highlightedLines.join(",")}}` : "",
-                  highlightedWords.length ? `/${highlightedWords.join("/")}/` : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")
-
-                const result: Code = {
-                  type: "code",
-                  lang: (lang as string | null) ?? null,
-                  meta: meta || null,
-                  value: codeContent.trimEnd(),
-                }
-
-                h.patch(node, result)
-                return result
-              } else if (node.properties?.dataRemarkTikz === "") {
-                let value: string | undefined = undefined
-                visit(node, { tagName: "annotation" }, (node) => {
-                  value = JSON.parse((node.children[0] as Text).value)
-                  return false
-                })
-                if (value === undefined) return hastToMdastHandlers.figure(h, node)
-
-                const results: Code = { type: "code", lang: "tikz", value }
-                h.patch(node, results)
-                return results
-              }
-              return hastToMdastHandlers.figure(h, node)
-            },
-            // handle math node correctly
-            span(h, node) {
-              const classNames = (node.properties.className ?? []) as string[]
-              // katex: inline-math, katex-display: block-math
-              if (classNames.includes("katex") || classNames.includes("katex-display")) {
-                const inline = !classNames.includes("katex-display")
-                let source: string | null = null
-
-                const checkAnnotation = ({ tagName, properties, children }: Element) =>
-                  tagName === "annotation" &&
-                  Boolean(properties.encoding) &&
-                  children.length > 0 &&
-                  properties.encoding === "application/x-tex"
-
-                visit(
-                  node,
-                  (node) => checkAnnotation(node as Element),
-                  (node) => {
-                    const [inner] = (node as Element).children
-                    if (inner.type === "text") {
-                      source = inner.value
-                      return false // stop traversal
-                    }
-                  },
-                )
-                if (!source) {
-                  console.warn(
-                    `[emit:${name}] Could not extract LaTeX source from KaTeX node (slug: ${slug})`,
-                  )
-                  return hastToMdastHandlers.span(h, node)
-                }
-
-                const results: Math | InlineMath = {
-                  type: inline ? "inlineMath" : "math",
-                  value: source,
-                }
-                h.patch(node, results)
-                return results
-              } else {
-                return hastToMdastHandlers.span(h, node)
-              }
-            },
-            h2: heading,
-            h3: heading,
-            h4: heading,
-            h5: heading,
-            h6: heading,
-            pre(h, node) {
-              const classNames = (node.properties?.className ?? []) as string[]
-              // handle poetry correctly
-              if (classNames.includes("poetry")) {
-                const lang = node.properties.dataLanguage
-                const results: Code = {
-                  type: "code",
-                  lang: "poetry",
-                  meta: `language=${lang}`.trim(),
-                  value: toText(node),
-                }
-                h.patch(node, results)
-                return results
-              }
-
-              let codeEl: Element | undefined
-              // handle mermaid
-              visit(
-                node,
-                (node) => checkMermaidCode(node as Element),
-                (el) => {
-                  codeEl = el as Element
-                  return false
-                },
-              )
-
-              if (codeEl) {
-                const results: Code = {
-                  type: "code",
-                  lang: "mermaid",
-                  value: codeEl.properties?.dataClipboard as string,
-                }
-                h.patch(node, results)
-                return results
-              }
-              return hastToMdastHandlers.pre(h, node)
-            },
-            // handle callout correctly
-            blockquote(h, node) {
-              const classNames = (node.properties?.className ?? []) as string[]
-              if (classNames.includes("callout")) {
-                // Get callout type
-                const type = node.properties?.dataCallout as string
-
-                // Get title from callout-title-inner
-                let title = ""
-                let titleNode: Element | undefined
-                visit(node, "element", (el: Element) => {
-                  if ((el.properties?.className as string[])?.includes("callout-title-inner")) {
-                    titleNode = el
-                    return false
-                  }
-                })
-                if (titleNode) {
-                  title = ((titleNode.children[0] as Element)?.children[0] as Text)?.value
-                }
-
-                // Check collapse state
-                const isCollapsible = classNames.includes("is-collapsible")
-                const isCollapsed = classNames.includes("is-collapsed")
-                const collapseChar = isCollapsible ? (isCollapsed ? "-" : "+") : ""
-
-                // Get remaining content
-                let content: any[] = []
-                visit(node, "element", (el: Element) => {
-                  if ((el.properties?.className as string[])?.includes("callout-content")) {
-                    // Convert children using default blockquote handler to maintain parsing
-                    content = h.all(el)
-                    return false
-                  }
-                })
-
-                const result: Blockquote = {
-                  type: "blockquote",
-                  children: [
-                    {
-                      type: "paragraph",
-                      children: [
-                        {
-                          type: "text",
-                          value: `[!${type}]${collapseChar}${title ? ` ${title.trim()}` : ""}`,
-                          data: { unescaped: true },
-                        },
-                      ],
-                    },
-                    ...content,
-                  ],
-                }
-
-                h.patch(node, result)
-                return result
-              } else if (classNames.includes("transclude")) {
-                // we will also flatten transclude
-                const unfold: Element = {
-                  type: "element",
-                  tagName: "div",
-                  properties: {},
-                  children: [
-                    {
-                      type: "comment",
-                      value: `transclude of ${node.properties.dataUrl}${node.properties.dataBlock ?? ""} start`,
-                    },
-                    {
-                      type: "element",
-                      tagName: "div",
-                      properties: node.properties,
-                      children: node.children,
-                    },
-                    {
-                      type: "comment",
-                      value: `transclude of ${node.properties.dataUrl}${node.properties.dataBlock ?? ""} end`,
-                    },
-                  ],
-                }
-                const result = hastToMdastHandlers.div(h, unfold)
-                // NOTE: We have to ignore the error here given that we have to patch the position of the unfold flow to this blockquote div
-                // @ts-ignore
-                h.patch(node, result)
-                return result
-              }
-              return hastToMdastHandlers.blockquote(h, node)
-            },
-            div(h, node) {
-              const classNames = (node.properties?.className ?? []) as string[]
-              // handle pseudocode
-              if (classNames.includes("ps-root")) {
-                let value: string | undefined = undefined
-                visit(node, "element", (node) => {
-                  if (node.tagName === "annotation") {
-                    value = JSON.parse((node.children[0] as Text).value)
-                    return false
-                  }
-                })
-                if (value === undefined) return hastToMdastHandlers.div(h, node)
-
-                const results: Code = { type: "code", lang: "pseudo", value }
-                h.patch(node, results)
-                return results
-              } else if (node.properties.id === "telescope") {
-                // support for telescopic text for llms.txt
-                return h.all(node.children[0])
-              }
-              return hastToMdastHandlers.div(h, node)
-            },
-            a(h, node) {
-              if (node.properties.dataFootnoteRef === "") {
-                const identifier = (node.properties?.id as string).replace(
-                  "user-content-fnref-",
-                  "",
-                )
-                const result: Paragraph = {
-                  type: "paragraph",
-                  children: [{ type: "footnoteReference", identifier, label: identifier }],
-                }
-                h.patch(node, result)
-                return result
-              } else if (node.properties.dataFootnoteBackref === "") {
-                // FIXME: Right now, we patch the backref with a empty string, probably not good, should just remove it.
-                const result: Paragraph = {
-                  type: "paragraph",
-                  children: [{ type: "text", value: "" }],
-                }
-                h.patch(node, result)
-                return result
-              }
-              return hastToMdastHandlers.a(h, node)
-            },
-            // handle footnotes correctly
-            section(h, node) {
-              if (node.properties.dataFootnotes == "") {
-                const ol = node.children.pop() as Element
-                const defs: FootnoteDefinition[] = []
-                for (const li of ol.children as Element[]) {
-                  const identifier = (li.properties?.id as string).replace("user-content-fn-", "")
-                  const children = h.all(li) as DefinitionContent[]
-                  defs.push({
-                    type: "footnoteDefinition",
-                    identifier,
-                    label: identifier,
-                    children,
-                  })
-                }
-                const results: Root = {
-                  type: "root",
-                  children: defs,
-                }
-                h.patch(node, results)
-                return results
-              }
-              return hastToMdastHandlers.section(h, node)
-            },
-            p(h, node) {
-              if (
-                node.properties.dataCodeblock === "sms" ||
-                node.properties.dataCodeblock === "quotes"
-              ) {
-                const lang = node.properties.dataCodeblock as string
-                const results: Code = {
-                  type: "code",
-                  lang,
-                  value: toText(node),
-                }
-                h.patch(node, results)
-                return results
-              }
-              return hastToMdastHandlers.p(h, node)
-            },
+        let codeEl: Element | undefined
+        // handle mermaid
+        visit(
+          node,
+          (node) => checkMermaidCode(node as Element),
+          (el) => {
+            codeEl = el as Element
+            return false
           },
-        }) as Root
-        const baseUrl = cfg.baseUrl ?? "https://example.com"
-        const contentBase = toMarkdown(mdast, {
-          bullet: "-",
-          emphasis: "_",
-          rule: "-",
-          extensions: [
-            {
-              handlers: {
-                code(node, _parent, _context, _info) {
-                  const { lang, meta, value } = node
-                  const info = [lang, meta].filter(Boolean).join(" ")
-                  return "```" + (info ? info + "\n" : "\n") + value + "\n```"
-                },
-                text(node, parent, context, info) {
-                  if (node.data?.unescaped) {
-                    return node.value
-                  }
-                  return mdastToTextHandlers.text(node, parent, context, info)
-                },
-                link(node, parent, context, info) {
-                  if (isRelativeURL(node.url)) {
-                    // in this case, it will be relative to root, so we resolve baseURL
-                    if (
-                      slug === "index" ||
-                      !["thoughts", "posts", "tags"].some((it) => slug.includes(it))
-                    ) {
-                      node.url = `https://${baseUrl}/${node.url.substring(2)}`
-                    } else {
-                      node.url = `https://${baseUrl}/${slug}/${resolveRelative(slug, node.url)}`
-                    }
-                  }
-                  return mdastToTextHandlers.link(node, parent, context, info)
-                },
-                image(node, parent, context, info) {
-                  if (isRelativeURL(node.url)) {
-                    node.url = `https://${baseUrl}/${slug}/${resolveRelative(slug, node.url)}`
-                  }
-                  return mdastToTextHandlers.image(node, parent, context, info)
-                },
-              },
-            },
-            mathToMarkdown(),
-            gfmToMarkdown(),
-          ],
-        })
+        )
 
-        const refs = slug !== "index" ? `${slug}.html.md` : "llms.txt"
-        const tags = file.data.frontmatter?.tags ?? ["default"]
-        const content = `---
+        if (codeEl) {
+          const results: Code = {
+            type: "code",
+            lang: "mermaid",
+            value: codeEl.properties?.dataClipboard as string,
+          }
+          h.patch(node, results)
+          return results
+        }
+        return hastToMdastHandlers.pre(h, node)
+      },
+      // handle callout correctly
+      blockquote(h, node) {
+        const classNames = (node.properties?.className ?? []) as string[]
+        if (classNames.includes("callout")) {
+          // Get callout type
+          const type = node.properties?.dataCallout as string
+
+          // Get title from callout-title-inner
+          let title = ""
+          let titleNode: Element | undefined
+          visit(node, "element", (el: Element) => {
+            if ((el.properties?.className as string[])?.includes("callout-title-inner")) {
+              titleNode = el
+              return false
+            }
+          })
+          if (titleNode) {
+            title = ((titleNode.children[0] as Element)?.children[0] as Text)?.value
+          }
+
+          // Check collapse state
+          const isCollapsible = classNames.includes("is-collapsible")
+          const isCollapsed = classNames.includes("is-collapsed")
+          const collapseChar = isCollapsible ? (isCollapsed ? "-" : "+") : ""
+
+          // Get remaining content
+          let content: any[] = []
+          visit(node, "element", (el: Element) => {
+            if ((el.properties?.className as string[])?.includes("callout-content")) {
+              // Convert children using default blockquote handler to maintain parsing
+              content = h.all(el)
+              return false
+            }
+          })
+
+          const result: Blockquote = {
+            type: "blockquote",
+            children: [
+              {
+                type: "paragraph",
+                children: [
+                  {
+                    type: "text",
+                    value: `[!${type}]${collapseChar}${title ? ` ${title.trim()}` : ""}`,
+                    data: { unescaped: true },
+                  },
+                ],
+              },
+              ...content,
+            ],
+          }
+
+          h.patch(node, result)
+          return result
+        } else if (classNames.includes("transclude")) {
+          // we will also flatten transclude
+          const unfold: Element = {
+            type: "element",
+            tagName: "div",
+            properties: {},
+            children: [
+              {
+                type: "comment",
+                value: `transclude of ${node.properties.dataUrl}${node.properties.dataBlock ?? ""} start`,
+              },
+              {
+                type: "element",
+                tagName: "div",
+                properties: node.properties,
+                children: node.children,
+              },
+              {
+                type: "comment",
+                value: `transclude of ${node.properties.dataUrl}${node.properties.dataBlock ?? ""} end`,
+              },
+            ],
+          }
+          const result = hastToMdastHandlers.div(h, unfold)
+          // NOTE: We have to ignore the error here given that we have to patch the position of the unfold flow to this blockquote div
+          // @ts-ignore
+          h.patch(node, result)
+          return result
+        }
+        return hastToMdastHandlers.blockquote(h, node)
+      },
+      div(h, node) {
+        const classNames = (node.properties?.className ?? []) as string[]
+        // handle pseudocode
+        if (classNames.includes("ps-root")) {
+          let value: string | undefined = undefined
+          visit(node, "element", (node) => {
+            if (node.tagName === "annotation") {
+              value = JSON.parse((node.children[0] as Text).value)
+              return false
+            }
+          })
+          if (value === undefined) return hastToMdastHandlers.div(h, node)
+
+          const results: Code = { type: "code", lang: "pseudo", value }
+          h.patch(node, results)
+          return results
+        } else if (node.properties.id === "telescope") {
+          // support for telescopic text for llms.txt
+          return h.all(node.children[0])
+        }
+        return hastToMdastHandlers.div(h, node)
+      },
+      a(h, node) {
+        if (node.properties.dataFootnoteRef === "") {
+          const identifier = (node.properties?.id as string).replace("user-content-fnref-", "")
+          const result: Paragraph = {
+            type: "paragraph",
+            children: [{ type: "footnoteReference", identifier, label: identifier }],
+          }
+          h.patch(node, result)
+          return result
+        } else if (node.properties.dataFootnoteBackref === "") {
+          // FIXME: Right now, we patch the backref with a empty string, probably not good, should just remove it.
+          const result: Paragraph = {
+            type: "paragraph",
+            children: [{ type: "text", value: "" }],
+          }
+          h.patch(node, result)
+          return result
+        }
+        return hastToMdastHandlers.a(h, node)
+      },
+      // handle footnotes correctly
+      section(h, node) {
+        if (node.properties.dataFootnotes == "") {
+          const ol = node.children.pop() as Element
+          const defs: FootnoteDefinition[] = []
+          for (const li of ol.children as Element[]) {
+            const identifier = (li.properties?.id as string).replace("user-content-fn-", "")
+            const children = h.all(li) as DefinitionContent[]
+            defs.push({
+              type: "footnoteDefinition",
+              identifier,
+              label: identifier,
+              children,
+            })
+          }
+          const results: Root = {
+            type: "root",
+            children: defs,
+          }
+          h.patch(node, results)
+          return results
+        }
+        return hastToMdastHandlers.section(h, node)
+      },
+      p(h, node) {
+        if (node.properties.dataCodeblock === "sms" || node.properties.dataCodeblock === "quotes") {
+          const lang = node.properties.dataCodeblock as string
+          const results: Code = {
+            type: "code",
+            lang,
+            value: toText(node),
+          }
+          h.patch(node, results)
+          return results
+        }
+        return hastToMdastHandlers.p(h, node)
+      },
+    },
+  }) as Root
+  const baseUrl = cfg.baseUrl ?? "https://example.com"
+  const contentBase = toMarkdown(mdast, {
+    bullet: "-",
+    emphasis: "_",
+    rule: "-",
+    extensions: [
+      {
+        handlers: {
+          code(node, _parent, _context, _info) {
+            const { lang, meta, value } = node
+            const info = [lang, meta].filter(Boolean).join(" ")
+            return "```" + (info ? info + "\n" : "\n") + value + "\n```"
+          },
+          text(node, parent, context, info) {
+            if (node.data?.unescaped) {
+              return node.value
+            }
+            return mdastToTextHandlers.text(node, parent, context, info)
+          },
+          link(node, parent, context, info) {
+            if (isRelativeURL(node.url)) {
+              // in this case, it will be relative to root, so we resolve baseURL
+              if (
+                slug === "index" ||
+                !["thoughts", "posts", "tags"].some((it) => slug.includes(it))
+              ) {
+                node.url = `https://${baseUrl}/${node.url.substring(2)}`
+              } else {
+                node.url = `https://${baseUrl}/${slug}/${resolveRelative(slug, node.url)}`
+              }
+            }
+            return mdastToTextHandlers.link(node, parent, context, info)
+          },
+          image(node, parent, context, info) {
+            if (isRelativeURL(node.url)) {
+              node.url = `https://${baseUrl}/${slug}/${resolveRelative(slug, node.url)}`
+            }
+            return mdastToTextHandlers.image(node, parent, context, info)
+          },
+        },
+      },
+      mathToMarkdown(),
+      gfmToMarkdown(),
+    ],
+  })
+
+  const refs = slug !== "index" ? `${slug}.html.md` : "llms.txt"
+  const tags = fileData.frontmatter?.tags ?? ["default"]
+  const content = `---
 slug: ${slug}
 tags:
 ${tags.map((t, idx, arr) => (idx != arr.length - 1 ? `  - ${t}` : `  - ${t}`)).join("\n")}
-description: "${file.data.frontmatter?.description ?? `resconstructed source of https://${baseUrl}/${slug}`}"
-title: "${file.data.frontmatter?.title}"
-date: ${file.data.frontmatter?.date}
+description: "${fileData.frontmatter?.description ?? `reconstructed source of https://${baseUrl}/${slug}`}"
+title: "${fileData.frontmatter?.title}"
+date: ${fileData.frontmatter?.date}
 permalink: https://${baseUrl}/${refs}
 full: https://${baseUrl}/llms-full.txt
 ---
 ${contentBase}`
-        resconstructed.push(content)
+  reconstructed.push(content)
 
-        if (slug === "index") {
-          fps.push(
-            write({
-              ctx,
-              content,
-              slug: "llms" as FullSlug,
-              ext: ".txt",
-            }),
-          )
-        } else {
-          fps.push(
-            write({
-              ctx,
-              content: `---
+  if (slug === "index") {
+    return write({
+      ctx,
+      content,
+      slug: "llms" as FullSlug,
+      ext: ".txt",
+    })
+  } else {
+    return write({
+      ctx,
+      content: `---
 slug: ${slug}
 permalink: https://${baseUrl}/${slug}.html.md
 tags:
 ${tags.map((t, idx, arr) => (idx != arr.length - 1 ? `  - ${t}` : `  - ${t}`)).join("\n")}
-title: "${file.data.frontmatter?.title}"
-date: ${file.data.frontmatter?.date}
+title: "${fileData.frontmatter?.title}"
+date: ${fileData.frontmatter?.date}
 description: "human and llm-readable source of https://${baseUrl}/${slug}"
 generator:
   quartz: "v${version}"
@@ -542,23 +531,46 @@ system_prompt: |
   - You can also access the entirety of <url>https://${baseUrl}</url> at <full_slug>https://${baseUrl}/llms-full.txt</full_slug>
 ---
 ${contentBase}`,
-              slug,
-              ext: ".html.md",
-            }),
-          )
+      slug,
+      ext: ".html.md",
+    })
+  }
+}
+
+export const LLM: QuartzEmitterPlugin = () => {
+  return {
+    name,
+    async *emit(ctx, content, resources) {
+      const allFiles = content.map((c) => c[1].data)
+      const reconstructed: string[] = []
+
+      for (const [tree, file] of content) {
+        yield llmText(ctx, tree, file.data, allFiles, resources, reconstructed)
+      }
+      yield write({
+        ctx,
+        content: reconstructed.join("\n\n"),
+        slug: "llms-full" as FullSlug,
+        ext: ".txt",
+      })
+    },
+    async *partialEmit(ctx, content, resources, changeEvents) {
+      const allFiles = content.map((c) => c[1].data)
+
+      // find all slugs that changed or were added
+      const changedSlugs = new Set<string>()
+      for (const changeEvent of changeEvents) {
+        if (!changeEvent.file) continue
+        if (changeEvent.type === "add" || changeEvent.type === "change") {
+          changedSlugs.add(changeEvent.file.data.slug!)
         }
       }
 
-      fps.push(
-        write({
-          ctx,
-          content: resconstructed.join("\n\n"),
-          slug: "llms-full" as FullSlug,
-          ext: ".txt",
-        }),
-      )
+      const reconstructed: string[] = []
 
-      return Promise.all(fps)
+      for (const [tree, file] of content) {
+        yield llmText(ctx, tree, file.data, allFiles, resources, reconstructed)
+      }
     },
   }
 }

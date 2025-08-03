@@ -1,3 +1,6 @@
+import path from "path"
+import fs from "node:fs/promises"
+import crypto from "node:crypto"
 import { Root } from "hast"
 import { GlobalConfiguration } from "../../cfg"
 import { formatDate, getDate } from "../../components/Date"
@@ -75,7 +78,7 @@ function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndexMap, limit?:
     <title>${escapeHTML(content.title)}</title>
     <link>https://${joinSegments(base, encodeURI(slug))}</link>
     <guid>https://${joinSegments(base, encodeURI(slug))}</guid>
-    <description><![CDATA[ ${content.description} ]]</description>
+    <description><![CDATA[ ${content.description} ]]></description>
     <author>contact@aarnphm.xyz</author>
     <pubDate>${content.date?.toUTCString()}</pubDate>
     ${content.tags.map((el) => `<category domain="https://${joinSegments(base, "tags", el)}">${el}</category>`).join("\n")}
@@ -137,7 +140,7 @@ function generateAtomFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: n
       <name>Aaron Pham</name>
       <email>contact@aarnphm.xyz</email>
     </author>
-    <content type="html">${content.richContent}</content>
+    <content type="html"><!CDATA[${content.richContent}]]></content>
   </entry>`
   }
 
@@ -218,7 +221,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
             tags: file.data.frontmatter?.tags ?? [],
             aliases: file.data.frontmatter?.aliases ?? [],
             content: file.data.text ?? "",
-            richContent: escapeHTML(toHtml(tree as Root, { allowDangerousHtml: true })),
+            richContent: toHtml(tree as Root, { allowDangerousHtml: true }),
             date: date,
             readingTime: {
               minutes: Math.ceil(file.data.readingTime?.minutes!),
@@ -231,7 +234,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
         }
       }
 
-      yield await write({
+      yield write({
         ctx,
         content: `User-agent: *
 Allow: /
@@ -243,7 +246,7 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
       })
 
       if (opts?.enableSiteMap) {
-        yield await write({
+        yield write({
           ctx,
           content: generateSiteMap(cfg, linkIndex),
           slug: "sitemap" as FullSlug,
@@ -252,7 +255,7 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
       }
 
       if (opts?.enableRSS) {
-        yield await write({
+        yield write({
           ctx,
           content: generateRSSFeed(cfg, linkIndex, opts.rssLimit),
           slug: (opts?.rssSlug ?? "index") as FullSlug,
@@ -261,7 +264,7 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
       }
 
       if (opts?.enableAtom) {
-        yield await write({
+        yield write({
           ctx,
           content: generateAtomFeed(cfg, linkIndex, opts.rssLimit),
           slug: "feed" as FullSlug,
@@ -281,12 +284,36 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
         }),
       )
 
-      yield await write({
+      yield write({
         ctx,
         content: JSON.stringify(simplifiedIndex),
         slug: fp,
         ext: ".json",
       })
+
+      if (ctx.argv.watch) {
+        // https://chromium.googlesource.com/devtools/devtools-frontend/+/main/docs/ecosystem/automatic_workspace_folders.md
+        const slug = joinSegments(".well-known", "appspecific", "com.chrome.devtools") as FullSlug
+        const root = path.resolve(path.dirname(ctx.argv.directory)) as FilePath
+        const dir = path.dirname(joinSegments(ctx.argv.output, slug)) as FilePath
+        await fs.mkdir(dir, { recursive: true })
+        yield write({
+          ctx,
+          content: JSON.stringify({
+            workspace: {
+              root,
+              uuid: crypto
+                .createHash("sha256")
+                .update(root)
+                .digest("hex")
+                .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5")
+                .substring(0, 36),
+            },
+          }),
+          slug,
+          ext: ".json",
+        })
+      }
     },
     externalResources: ({ cfg }) => {
       const additionalHead = []

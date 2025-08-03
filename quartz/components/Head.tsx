@@ -85,18 +85,6 @@ export default (() => {
         <link rel="icon" href={iconPath} />
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
-        {!fileData.slug!.includes("university") && (
-          <>
-            <meta
-              name="pr:twitter"
-              content={`https://${cfg.baseUrl}/static/twitter/${fileData.slug!.replaceAll("/", "-")}.png`}
-            />
-            <meta
-              name="pr:instagram"
-              content={`https://${cfg.baseUrl}/static/instagram/${fileData.slug!.replaceAll("/", "-")}.png`}
-            />
-          </>
-        )}
 
         {css.map((resource) => CSSResourceToStyleElement(resource, true))}
         {js

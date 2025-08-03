@@ -112,6 +112,7 @@ const config: QuartzConfig = {
           "\\argmax": "\\mathop{\\operatorname{arg\\,max}}\\limits",
           "\\upgamma": "\\mathit{\\gamma}",
           "\\upphi": "\\mathit{\\phi}",
+          "\\upeta": "\\mathit{\\eta}",
           "\\upbeta": "\\mathit{\\beta}",
           "\\upalpha": "\\mathit{\\alpha}",
           "\\uptheta": "\\mathit{\\theta}",

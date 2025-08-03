@@ -836,6 +836,10 @@ img.inline-icons {
   ol {
     list-style-type: none;
   }
+
+  ol {
+    padding-inline-start: 0px;
+  }
 }
 
 body[data-slug="influence"] {

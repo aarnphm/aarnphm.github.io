@@ -44,17 +44,21 @@ function getComponentResources(ctx: BuildCtx): ComponentResources {
     afterDOMLoaded: new Set<string>(),
   }
 
+  function normalizeResource(resource: string | string[] | undefined): string[] {
+    if (!resource) return []
+    if (Array.isArray(resource)) return resource
+    return [resource]
+  }
+
   for (const component of allComponents) {
     const { css, beforeDOMLoaded, afterDOMLoaded } = component
-    if (css) {
-      componentResources.css.add(css)
-    }
-    if (beforeDOMLoaded) {
-      componentResources.beforeDOMLoaded.add(beforeDOMLoaded)
-    }
-    if (afterDOMLoaded) {
-      componentResources.afterDOMLoaded.add(afterDOMLoaded)
-    }
+    const normalizedCss = normalizeResource(css)
+    const normalizedBeforeDOMLoaded = normalizeResource(beforeDOMLoaded)
+    const normalizedAfterDOMLoaded = normalizeResource(afterDOMLoaded)
+
+    normalizedCss.forEach((c) => componentResources.css.add(c))
+    normalizedBeforeDOMLoaded.forEach((b) => componentResources.beforeDOMLoaded.add(b))
+    normalizedAfterDOMLoaded.forEach((a) => componentResources.afterDOMLoaded.add(a))
   }
 
   return {
@@ -111,7 +115,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
 export const ComponentResources: QuartzEmitterPlugin = () => {
   return {
     name,
-    async *emit(ctx, _content, _resources) {
+    async *emit(ctx) {
       const cfg = ctx.cfg.configuration
       // component specific scripts and styles
       const componentResources = getComponentResources(ctx)
@@ -181,7 +185,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         dir: "auto",
       }
 
-      ;(yield write({
+      yield write({
         ctx,
         slug: "index" as FullSlug,
         ext: ".css",
@@ -198,19 +202,22 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
           },
           include: Features.MediaQueries,
         }).code.toString(),
-      }),
-        yield write({
-          ctx,
-          slug: "prescript" as FullSlug,
-          ext: ".js",
-          content: prescript,
-        }),
-        yield write({
-          ctx,
-          slug: "postscript" as FullSlug,
-          ext: ".js",
-          content: postscript,
-        }))
+      })
+
+      yield write({
+        ctx,
+        slug: "prescript" as FullSlug,
+        ext: ".js",
+        content: prescript,
+      })
+
+      yield write({
+        ctx,
+        slug: "postscript" as FullSlug,
+        ext: ".js",
+        content: postscript,
+      })
+
       yield write({
         ctx,
         slug: "site" as FullSlug,
@@ -218,6 +225,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         content: JSON.stringify(manifest),
       })
     },
+    async *partialEmit() {},
     externalResources: ({ cfg }) => ({
       additionalHead: [
         <link rel="manifest" href={`https://${cfg.configuration.baseUrl}/site.webmanifest`} />,

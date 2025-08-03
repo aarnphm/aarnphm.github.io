@@ -12,7 +12,7 @@
         <link href="/index.css" rel="stylesheet" type="text/css" />
         <style type="text/css">
           body{max-width:768px;margin:0 auto}section{margin:30px
-          15px}hgroup{margin-bottom:2rem}a{text-decoration:none}
+            15px}hgroup{margin-bottom:2rem}a{text-decoration:none}@media (max-width: 800px) {body{padding: 0 2rem}}
         </style>
       </head>
       <body>
@@ -92,7 +92,7 @@
             <xsl:value-of select="atom:title" />
           </div>
           <menu class="tag-highlights">
-            <xsl:for-each select="atom:category">
+            <xsl:for-each select="atom:category[position() &lt;= 2]">
               <li class="tag">
                 <xsl:value-of select="@term" />
               </li>

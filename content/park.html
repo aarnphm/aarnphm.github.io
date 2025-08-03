@@ -6,21 +6,84 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
+      @font-face {
+        font-family: 'Parclo Serif Student';
+        src: url('https://aarnphm.xyz/static/ParcloSerifStudent-Regular.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Parclo Serif Student';
+        src: url('https://aarnphm.xyz/static/ParcloSerifStudent-Italic.woff2') format('woff2');
+        font-weight: 400;
+        font-style: italic;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Parclo Serif Student';
+        src: url('https://aarnphm.xyz/static/ParcloSerifStudent-Light.woff2') format('woff2');
+        font-weight: 300;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Parclo Serif Student';
+        src: url('https://aarnphm.xyz/static/ParcloSerifStudent-LightItalic.woff2') format('woff2');
+        font-weight: 300;
+        font-style: italic;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Parclo Serif Student';
+        src: url('https://aarnphm.xyz/static/ParcloSerifStudent-Medium.woff2') format('woff2');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Parclo Serif Student';
+        src: url('https://aarnphm.xyz/static/ParcloSerifStudent-SemiBold.woff2') format('woff2');
+        font-weight: 600;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Parclo Serif Student';
+        src: url('https://aarnphm.xyz/static/ParcloSerifStudent-Bold.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Parclo Serif Student';
+        src: url('https://aarnphm.xyz/static/ParcloSerifStudent-Black.woff2') format('woff2');
+        font-weight: 900;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: 'Berkeley Mono';
+        src: url('https://aarnphm.xyz/static/Berkeley%20Mono%20Variable.woff2') format('woff2');
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+      }
+
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-      }
 
-      :root {
-        --base: "#faf4ed";
-        --light: "#fffaf3";
-        --lightgray: "#f2e9e1";
-        --gray: "#9893a5";
-        --darkgray: "#797593";
-        --dark: "#575279";
-        --secondary: "#d7827e";
-        --tertiary: "#b4637a";
+        --base: #faf4ed;
+        --light: #fffaf3;
+        --lightgray: #f2e9e1;
+        --gray: #9893a5;
+        --darkgray: #797593;
+        --dark: #575279;
+        --secondary: #d7827e;
+        --tertiary: #b4637a;
         --highlight: rgba(143, 159, 169, 0.15);
         --textHighlight: rgba(246, 193, 119, 0.28);
 
@@ -35,13 +98,12 @@
         --pine: rgba(40, 105, 131, 1);
         --foam: rgba(86, 148, 159, 1);
         --iris: rgba(144, 122, 169, 1);
-        --dag-highlights: var(--foam);
         --gray-200: rgba(0, 0, 0, 0.2);
         --normalWeight: 400;
         --semiBoldWeight: 600;
         --boldWeight: 700;
 
-        --kern: "12px";
+        --kern: 12px;
         --border-radius: var(--kern);
         --align-cap-height: -6px;
         --align-baseline: -6px;
@@ -69,30 +131,48 @@
         font-style: normal;
         font-variant-numeric: slashed-zero;
         font-weight: var(--normalWeight);
+        background-color: var(--base);
       }
 
+      h1,
       body {
-        font-family:
-          "Parclo Serif", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas,
-          "Courier New", monospace;
+        font-family: "Parclo Serif Student", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+      }
+
+
+      .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2.5rem 1.75rem;
+        background-color: var(--surface);
+        border-radius: var(--border-radius);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        opacity: 0;
+        animation: fadeIn 1.2s ease-in-out forwards;
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
       }
 
       h1 {
         font-size: 1.2rem;
         font-weight: 400;
         margin-bottom: 2rem;
-        color: #666;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: var(--dark);
       }
 
       .tree-root {
-        color: #2a2a2a;
+        color: var(--dark);
       }
 
       .tree-node {
         margin: 0;
         padding: 0;
         position: relative;
+        font-family: "Berkeley Mono", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
       }
 
       .tree-item {
@@ -106,7 +186,6 @@
         color: #666;
         user-select: none;
         flex-shrink: 0;
-        width: 20px;
         text-align: center;
       }
 
@@ -119,7 +198,7 @@
 
       .expandable {
         cursor: pointer;
-        color: #0066cc;
+        color: var(--secondary);
         text-decoration: underline;
         text-decoration-style: dotted;
         transition: all 0.2s ease;
@@ -127,13 +206,14 @@
       }
 
       .expandable:hover {
-        background-color: #e8f0fe;
+        background-color: var(--tertiary);
+        color: var(--lightgray);
         text-decoration-style: solid;
       }
 
       .expandable.expanded {
-        color: #333;
-        background-color: #f0f0f0;
+        color: var(--dark);
+        background-color: var(--lightgray);
         text-decoration: none;
         font-weight: 500;
       }
@@ -151,23 +231,12 @@
         opacity: 1;
       }
 
-      .tree-children::before {
-        content: "";
-        position: absolute;
-        left: -30px;
-        top: 0;
-        bottom: 0;
-        width: 1px;
-        background: #ccc;
-      }
-
-      .last-child > .tree-children::before {
-        bottom: calc(100% - 12px);
-      }
-
       .story-text {
-        color: #2a2a2a;
+        color: var(--dark);
         white-space: pre-wrap;
+      }
+      .story-text:first-child {
+        margin-left: 4px;
       }
 
       @media (max-width: 600px) {
@@ -178,16 +247,16 @@
       }
     </style>
   </head>
-  <body>
-    <h1>I don't have a concept of time</h1>
-    <div class="tree-root">
+      <body>
+    <div class="container">
+      <h1>I don't have a concept of time</h1>
+      <div class="tree-root">
       <div class="tree-node">
         <div class="tree-item">
           <span class="tree-branch"></span>
           <div class="tree-content">
             <span class="story-text">She</span>
-            <span class="expandable" data-id="remembered">remembered</span>
-            <span class="story-text">.</span>
+            <span class="expandable" data-id="remembered">remembered.</span>
           </div>
         </div>
         <div class="tree-children" data-parent="remembered">

@@ -9,7 +9,7 @@ description: collections of tweets, since bookmark is getting crowded.
 transclude:
   dynalist: false
 date: "2024-10-24"
-modified: 2025-08-01 11:36:26 GMT-04:00
+modified: 2025-08-03 14:58:24 GMT-04:00
 noindex: true
 title: /xeets/
 ---
@@ -207,3 +207,5 @@ https://x.com/jobergum/status/1945036230799892726 <!-- ColBERT WASM for embeddin
 https://x.com/geoffreylitt/status/1950601513870499953 <!-- Geoffrey Litt on capabilities debates -->
 
 https://x.com/NeelNanda5/status/1950344397075456438 <!-- MATS 9.0 Stream Winter Batch -->
+
+https://x.com/kepano/status/1952067484242391197 <!-- fear-based employment endemic -->

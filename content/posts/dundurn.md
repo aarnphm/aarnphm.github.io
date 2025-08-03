@@ -6,10 +6,10 @@ tags:
   - shorts
   - writing
 description: "tw: addiction"
+date: "2025-06-01"
 socials:
   substack: https://open.substack.com/pub/livingalone/p/apartment-two-twenty?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
-date: "2025-06-01"
-modified: 2025-07-31 20:58:44 GMT-04:00
+modified: 2025-08-03 15:42:46 GMT-04:00
 title: apartment two twenty
 ---
 

@@ -55,8 +55,9 @@ function runConvertCommand(argv: Argv, nbPath: string, targetSlug: string, outpu
 export const NotebookViewer: QuartzEmitterPlugin = () => {
   return {
     name: "NotebookViewer",
+    async *partialEmit() {},
     async *emit({ argv, cfg }) {
-      if (process.env.VERCEL_ENV) return
+      if (process.env.VERCEL_ENV) return []
 
       const fps = await notebookFiles(argv, cfg)
 

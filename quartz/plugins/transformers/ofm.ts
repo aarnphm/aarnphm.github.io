@@ -42,6 +42,7 @@ export interface Options {
   enableVideoEmbed: boolean
   enableInlineFootnotes: boolean
   enableImageGrid: boolean
+  enableBrokenWikilinks: boolean
 }
 
 const defaultOptions: Options = {
@@ -58,6 +59,7 @@ const defaultOptions: Options = {
   enableVideoEmbed: true,
   enableInlineFootnotes: true,
   enableImageGrid: true,
+  enableBrokenWikilinks: true,
 }
 
 const calloutMapping = {
@@ -256,7 +258,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       return src
     },
-    markdownPlugins() {
+    markdownPlugins(ctx) {
       const plugins: PluggableList = []
 
       // regex replacements
@@ -330,6 +332,18 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                   }
 
                   // otherwise, fall through to regular link
+                }
+
+                // treat as broken link if slug not in ctx.allSlugs
+                if (opts.enableBrokenWikilinks) {
+                  const slug = slugifyFilePath(fp as FilePath)
+                  const exists = ctx.allSlugs && ctx.allSlugs.includes(slug)
+                  if (!exists) {
+                    return {
+                      type: "html",
+                      value: `<a class=\"internal broken\">${alias ?? fp}</a>`,
+                    }
+                  }
                 }
 
                 // internal link
