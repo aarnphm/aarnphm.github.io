@@ -13,13 +13,13 @@
   },
   "scripts": {
     "dev": "NODE_ENV=development pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --serve --watch",
-    "prod": "NODE_ENV=production pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 && pnpm cf",
+    "prod": "NODE_ENV=production pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --bundleInfo --verbose && pnpm cf",
     "docs": "pnpm exec quartz/bootstrap-cli.mjs build --serve -d docs",
     "check": "tsc --noEmit && pnpm prettier . --check",
-    "format": "pnpm prettier . --write && pnpx bibtex-tidy --months --merge=combine --no-align --sort=type,year,eprint --duplicates=key,doi,citation --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,serie s,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields --blank-lines --modify ./content/References.bib",
+    "format": "pnpm prettier . --write && pnpx bibtex-tidy --months --merge=combine --no-align --sort=type,year,eprint --duplicates=key,doi,citation --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,series,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields --blank-lines --modify ./content/References.bib",
     "test": "tsx --test",
     "profile": "0x -D prof quartz/bootstrap-cli.mjs build --concurrency=1",
-    "cf": "pnpm dlx wrangler pages dev",
+    "cf": "pnpm dlx wrangler pages functions build --outdir=./public/worker/",
     "vercel": "pnpm dlx vercel dev",
     "vendorred": "go run quartz/scripts/format.go -dir=sites",
     "convert": "tsx quartz/scripts/convert.ts"
