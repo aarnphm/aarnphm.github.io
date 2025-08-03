@@ -14,6 +14,7 @@
   "scripts": {
     "dev": "NODE_ENV=development pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --serve --watch",
     "prod": "NODE_ENV=production pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --bundleInfo --verbose && pnpm cf",
+    "deploy": "pnpm prod && pnpm dlx wrangler deploy",
     "docs": "pnpm exec quartz/bootstrap-cli.mjs build --serve -d docs",
     "check": "tsc --noEmit && pnpm prettier . --check",
     "format": "pnpm prettier . --write && pnpx bibtex-tidy --months --merge=combine --no-align --sort=type,year,eprint --duplicates=key,doi,citation --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,series,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields --blank-lines --modify ./content/References.bib",
