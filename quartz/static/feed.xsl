@@ -11,8 +11,7 @@
         <link rel="icon" href="./static/icon.webp" />
         <link href="/index.css" rel="stylesheet" type="text/css" />
         <style type="text/css">
-          body{max-width:768px;margin:0 auto; padding: 0 2rem}section{margin:30px
-            15px}hgroup{margin-bottom:2rem}a{text-decoration:none}
+          body{max-width:768px;margin:0 auto;padding:0 32px}section{margin:30px 15px}hgroup{margin-bottom:2rem}a{text-decoration:none}
         </style>
       </head>
       <body>
