@@ -2,7 +2,7 @@
   "name": "@aarnphm/aarnphm.github.io",
   "description": "🌱 heavily modified version of Quartz for Aaron's notes",
   "private": true,
-  "version": "4.5.0",
+  "version": "4.5.1",
   "type": "module",
   "author": "Aaron Pham <contact@aarnphm.xyz>",
   "license": "MIT",

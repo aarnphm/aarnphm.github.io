@@ -1,7 +1,5 @@
 import { i18n } from "../../i18n"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
-// @ts-ignore
-import notFoundScript from "../scripts/404.inline"
 
 const NotFound: QuartzComponent = ({ cfg }: QuartzComponentProps) => {
   return (
@@ -15,7 +13,5 @@ const NotFound: QuartzComponent = ({ cfg }: QuartzComponentProps) => {
     </>
   )
 }
-
-NotFound.afterDOMLoaded = notFoundScript
 
 export default (() => NotFound) satisfies QuartzComponentConstructor

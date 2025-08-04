@@ -14,6 +14,8 @@ import clipboardStyle from "../../components/styles/clipboard.scss"
 // @ts-ignore
 import pseudoScript from "../../components/scripts/clipboard-pseudo.inline"
 import pseudoStyle from "../../components/styles/pseudocode.scss"
+// @ts-ignore
+import notFoundScript from "../components/scripts/404.inline"
 import { BuildCtx } from "../../util/ctx"
 import { QuartzComponent } from "../../components/types"
 import { googleFontHref, joinStyles, processGoogleFonts } from "../../util/theme"
@@ -109,7 +111,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     `)
   }
 
-  componentResources.afterDOMLoaded.push(insightsScript, spaRouterScript)
+  componentResources.afterDOMLoaded.push(insightsScript, notFoundScript, spaRouterScript)
 }
 
 export const ComponentResources: QuartzEmitterPlugin = () => {
