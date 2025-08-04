@@ -15,7 +15,7 @@ import clipboardStyle from "../../components/styles/clipboard.scss"
 import pseudoScript from "../../components/scripts/clipboard-pseudo.inline"
 import pseudoStyle from "../../components/styles/pseudocode.scss"
 // @ts-ignore
-import notFoundScript from "../components/scripts/404.inline"
+import notFoundScript from "../../components/scripts/404.inline"
 import { BuildCtx } from "../../util/ctx"
 import { QuartzComponent } from "../../components/types"
 import { googleFontHref, joinStyles, processGoogleFonts } from "../../util/theme"
