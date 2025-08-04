@@ -68,7 +68,7 @@ const ALLOWED_EXTENSIONS = [
   ".h",
   ".hpp",
   ".ts",
-  ".js",
+  ".tsx",
   ".yaml",
   ".yml",
   ".rs",
@@ -257,7 +257,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     if (ALLOWED_EXTENSIONS.includes(ctx.ext) && !isAbsoluteUrl(ctx.dest)) {
                       ctx.classes.push("cdn-links")
                       ctx.dest = ctx.node.properties.href =
-                        `https://cdn.aarnphm.xyz/assets/${ctx.dest}` as RelativeURL
+                        `https://aarnphm.xyz/${ctx.dest}` as RelativeURL
                     }
                   }
                 }

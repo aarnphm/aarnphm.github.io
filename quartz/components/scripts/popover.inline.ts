@@ -409,7 +409,7 @@ async function mouseEnterHandler(
 
   let response: Response | void
   if (link.dataset.arxivId) {
-    const url = new URL(`https://cdn.aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
+    const url = new URL(`https://aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
     response = await fetchCanonical(url).catch(console.error)
   } else {
     response = await fetchCanonical(new URL(`${targetUrl}`)).catch(console.error)
@@ -473,7 +473,7 @@ async function mouseClickHandler(evt: MouseEvent) {
 
     let response: Response | void
     if (link.dataset.arxivId) {
-      const url = new URL(`https://cdn.aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
+      const url = new URL(`https://aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
       response = await fetchCanonical(url).catch(console.error)
     } else {
       response = await fetchCanonical(new URL(`${targetUrl}`)).catch(console.error)

@@ -1,4 +1,6 @@
 import LFS_CONFIG from "./.lfsconfig.txt"
+import handleArxiv from "./arxiv"
+import handleCurius from "./curius"
 
 const VERSION = "version https://git-lfs.github.com/spec/v1\n"
 const MIME = "application/vnd.git-lfs+json"
@@ -226,14 +228,13 @@ export default {
 
     // rendering supported code files as text/plain
     const assetsMatch = url.pathname.match(
-      /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|js|tsx|jsx|yaml|yml|rs|m|sql|sh|txt)$/i,
+      /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|tsx|jsx|yaml|yml|rs|m|sql|sh|txt)$/i,
     )
     if (assetsMatch) {
       const originResp = await env.ASSETS.fetch(request)
       return withHeaders(originResp, {
         "Content-Type": "text/plain; charset=utf-8",
         "X-Content-Type-Options": "nosniff",
-        "Content-Security-Policy": "default-src 'none'; script-src 'none';",
         "X-Frame-Options": "DENY",
         "Cache-Control": "no-store, no-cache, must-revalidate",
       })
@@ -252,6 +253,32 @@ export default {
       return withHeaders(originResp, {
         "Content-Type": "text/html; charset=utf-8",
       })
+    }
+
+    if (url.pathname === "/api/arxiv") {
+      const resp = await handleArxiv(request)
+      const apiHeaders: Record<string, string> = {
+        "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "https://aarnphm.xyz",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+        "Access-Control-Allow-Headers":
+          "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+      }
+      return withHeaders(resp, apiHeaders)
+    }
+
+    if (url.pathname === "/api/curius") {
+      const resp = await handleCurius(request)
+      const apiHeaders: Record<string, string> = {
+        "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "https://aarnphm.xyz",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+        "Access-Control-Allow-Headers":
+          "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+      }
+      return withHeaders(resp, apiHeaders)
     }
 
     // Handle API paths first so non-GET methods are allowed

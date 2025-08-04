@@ -176,10 +176,7 @@ export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => 
 
 export async function fetchFollowing() {
   try {
-    const resp = await fetch(
-      "https://cdn.aarnphm.xyz/api/curius?query=following",
-      fetchLinksHeaders,
-    )
+    const resp = await fetch("https://aarnphm.xyz/api/curius?query=following", fetchLinksHeaders)
     if (!resp.ok) {
       throw new Error("Failed to get followings from curius")
     }
@@ -195,7 +192,7 @@ export async function fetchFollowing() {
 
 export async function fetchUsers() {
   try {
-    const resp = await fetch("https://cdn.aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
+    const resp = await fetch("https://aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
     if (!resp.ok) {
       throw new Error("Failed to get users from curius")
     }
@@ -211,7 +208,7 @@ export async function fetchUsers() {
 
 async function fetchLinks() {
   try {
-    const resp = await fetch("https://cdn.aarnphm.xyz/api/curius?query=links", fetchLinksHeaders)
+    const resp = await fetch("https://aarnphm.xyz/api/curius?query=links", fetchLinksHeaders)
     if (!resp.ok) {
       throw new Error("Failed to get links from curius")
     }
