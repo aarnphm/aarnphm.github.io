@@ -226,48 +226,17 @@ export default {
 
     // rendering supported code files as text/plain
     const assetsMatch = url.pathname.match(
-      /^\/(thoughts|posts)\/.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|js|yaml|yml|rs|m|sql|sh|txt)$/i,
+      /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|js|tsx|jsx|yaml|yml|rs|m|sql|sh|txt)$/i,
     )
     if (assetsMatch) {
-      if (request.method !== "GET") {
-        return new Response(JSON.stringify({ error: "Method not allowed" }), {
-          status: 405,
-          headers: { "Content-Type": "application/json" },
-        })
-      }
-      const filePath = `${assetsMatch[1]}.${assetsMatch[2]}`
-      const cleanPath = sanitizePath(decodeURIComponent(filePath))
-      if (!isValidPath(cleanPath)) {
-        return new Response(JSON.stringify({ error: "Invalid file path" }), {
-          status: 403,
-          headers: { "Content-Type": "application/json" },
-        })
-      }
-      return await fetch(`https://aarnphm.xyz/${cleanPath}`, {
-        headers: {
-          Accept: "text/plain",
-          "User-Agent": "Cloudflare Worker",
-        },
+      const originResp = await env.ASSETS.fetch(request)
+      return withHeaders(originResp, {
+        "Content-Type": "text/plain; charset=utf-8",
+        "X-Content-Type-Options": "nosniff",
+        "Content-Security-Policy": "default-src 'none'; script-src 'none';",
+        "X-Frame-Options": "DENY",
+        "Cache-Control": "no-store, no-cache, must-revalidate",
       })
-        .catch((e) => {
-          console.error(e)
-          return new Response(JSON.stringify({ error: "Not found" }), {
-            status: 404,
-            headers: { "Content-Type": "application/json" },
-          })
-        })
-        .then((r) => r.text())
-        .then((text) => {
-          return new Response(text, {
-            headers: {
-              "Content-Type": "text/plain; charset=utf-8",
-              "X-Content-Type-Options": "nosniff",
-              "Content-Security-Policy": "default-src 'none'; script-src 'none';",
-              "X-Frame-Options": "DENY",
-              "Cache-Control": "no-store, no-cache, must-revalidate",
-            },
-          })
-        })
     }
 
     // https://developers.cloudflare.com/workers/static-assets/redirects/
