@@ -21,21 +21,34 @@ const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
 const copyFile = async (argv: Argv, fp: FilePath) => {
   const ext = path.extname(fp)
   const src = joinSegments(argv.directory, fp) as FilePath
-  const name = slugifyFilePath(fp as FilePath, true) + (ext.includes("pdf") ? "" : ext)
+  const name = (slugifyFilePath(fp, true) + (ext.includes("pdf") ? "" : ext)) as FilePath
   const dest = joinSegments(argv.output, name) as FilePath
 
-  // ensure dir exists
-  const dir = path.dirname(dest) as FilePath
-  await fs.mkdir(dir, { recursive: true })
+  const srcStat = await fs.stat(src)
+  let shouldCopy = true
 
-  await fs.copyFile(src, dest)
+  try {
+    const destStat = await fs.stat(dest)
+    // Only copy if source is newer thescapeHTML(toHtml(tree as Root, { allowDangerousHtml: true }))an destination
+    shouldCopy = srcStat.mtimeMs > destStat.mtimeMs
+  } catch {
+    // Destination doesn't exist, should copy
+    shouldCopy = true
+  }
+
+  if (shouldCopy) {
+    const dir = path.dirname(dest) as FilePath
+    await fs.mkdir(dir, { recursive: true })
+    await fs.copyFile(src, dest)
+  }
+
   return dest
 }
 
 export const Assets: QuartzEmitterPlugin = () => {
   return {
     name: "Assets",
-    async *emit({ argv, cfg }, _content, _resources) {
+    async *emit({ argv, cfg }) {
       const fps = await filesToCopy(argv, cfg)
       for (const fp of fps) {
         yield copyFile(argv, fp)
@@ -44,7 +57,7 @@ export const Assets: QuartzEmitterPlugin = () => {
     async *partialEmit(ctx, _content, _resources, changeEvents) {
       for (const changeEvent of changeEvents) {
         const ext = path.extname(changeEvent.path)
-        if (ext === ".md" || ext === ".pdf") continue
+        if (ext === ".md") continue
 
         if (changeEvent.type === "add" || changeEvent.type === "change") {
           yield copyFile(ctx.argv, changeEvent.path)

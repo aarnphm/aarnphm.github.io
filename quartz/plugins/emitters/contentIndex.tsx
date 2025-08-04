@@ -140,7 +140,7 @@ function generateAtomFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: n
       <name>Aaron Pham</name>
       <email>contact@aarnphm.xyz</email>
     </author>
-    <content type="html"><!CDATA[${content.richContent}]]></content>
+    <content type="html">${content.richContent}</content>
   </entry>`
   }
 
@@ -221,7 +221,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
             tags: file.data.frontmatter?.tags ?? [],
             aliases: file.data.frontmatter?.aliases ?? [],
             content: file.data.text ?? "",
-            richContent: toHtml(tree as Root, { allowDangerousHtml: true }),
+            richContent: escapeHTML(toHtml(tree as Root, { allowDangerousHtml: true })),
             date: date,
             readingTime: {
               minutes: Math.ceil(file.data.readingTime?.minutes!),
@@ -236,7 +236,8 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
 
       yield write({
         ctx,
-        content: `User-agent: *
+        content: `
+User-agent: *
 Allow: /
 Host: https://${cfg.baseUrl}
 Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.xml")}
@@ -289,6 +290,17 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
         content: JSON.stringify(simplifiedIndex),
         slug: fp,
         ext: ".json",
+      })
+
+      // inform Chrome to yield correct information
+      yield write({
+        ctx,
+        content: `
+/park
+  Content-Type: text/html; charset=utf-8
+`,
+        slug: "_headers" as FullSlug,
+        ext: "",
       })
 
       if (ctx.argv.watch) {

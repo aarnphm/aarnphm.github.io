@@ -9,8 +9,7 @@
         <link rel="icon" href="./static/icon.webp" />
         <link href="/index.css" rel="stylesheet" type="text/css" />
         <style type="text/css">
-          body{max-width:768px;margin:0 auto}section{margin:30px
-          15px}hgroup{margin-bottom:2rem}a{text-decoration:none}
+          body{max-width:768px;margin:0 auto}section{margin:30px 15px}hgroup{margin-bottom:2rem}a{text-decoration:none}@media (max-width: 800px){body{padding: 0 32px}}
         </style>
       </head>
       <body>
@@ -88,7 +87,7 @@
         </p>
       </hgroup>
       <menu class="tags">
-        <xsl:for-each select="category">
+        <xsl:for-each select="category[position() &lt;= 2]">
           <li class="tag">
             <xsl:value-of select="." />
           </li>

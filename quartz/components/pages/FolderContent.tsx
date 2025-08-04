@@ -70,13 +70,13 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const Evergreen = EvergreenConstructor({
     lg: ["thoughts/mechanistic-interpretability", "thoughts/vllm"],
     sm: [
+      "are.na",
       "thoughts/constrained-decoding",
       "thoughts/LLMs",
       "thoughts/Transformers",
       "thoughts/Camus",
       "thoughts/atelier-with-friends",
       "thoughts/Attention",
-      "thoughts/representations",
       "thoughts/Philosophy-and-Nietzsche",
       "thoughts/ethics",
       "thoughts/Existentialism",

@@ -1,4 +1,4 @@
-name = "aarnphm"
+name = "portfolio"
 compatibility_date = "2025-01-21"
 main = "./public/worker/index.js"
 preview_urls = true
@@ -16,3 +16,6 @@ run_worker_first = true
 
 [observability.logs]
 enabled = true
+
+[placement]
+mode = "smart"
