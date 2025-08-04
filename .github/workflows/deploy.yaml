@@ -12,6 +12,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    if: ${{ github.repository == 'jackyzha0/quartz' }} # Comment this out if you want to publish your own images on a fork!
     steps:
       - uses: actions/checkout@v4
         with:

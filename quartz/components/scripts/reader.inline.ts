@@ -4,7 +4,14 @@ document.addEventListener("nav", () => {
   const readerView = document.querySelector(".reader") as HTMLElement
   if (!readerView) return
 
-  const closeFunctor = () => closeReader(readerView)
+  const closeFunctor = () => {
+    closeReader(readerView)
+    const headers = document.querySelector<HTMLDivElement>('section[class~="header"]')
+    if (headers) {
+      headers.style.display = "grid"
+    }
+  }
+
   // Register escape handler for the reader view
   registerEscapeHandler(readerView, closeFunctor)
 
@@ -20,6 +27,11 @@ document.addEventListener("nav", () => {
     const quartz = document.getElementById("quartz-root") as HTMLDivElement
     quartz.style.overflow = "hidden"
     quartz.style.maxHeight = "0px"
+
+    const headers = document.querySelector<HTMLDivElement>('section[class~="header"]')
+    if (headers) {
+      headers.style.display = "none"
+    }
   }
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
