@@ -67,9 +67,9 @@ function setupHeaders() {
             savedState === "false",
           )
         }
+        const collapsed = content.classList.contains("collapsed")
+        content.style.maxHeight = collapsed ? `0px` : `inherit`
       }
-      const collapsed = content!.classList.contains("collapsed")
-      content!.style.maxHeight = collapsed ? `0px` : `inherit`
     }
   }
 
