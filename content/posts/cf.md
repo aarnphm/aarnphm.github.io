@@ -5,7 +5,7 @@ tags:
   - technical
 description: And maybe you should, or shouldn't.
 date: "2025-08-04"
-modified: 2025-08-04 16:44:34 GMT-04:00
+modified: 2025-08-04 16:46:23 GMT-04:00
 title: Moving to Cloudflare
 ---
 
@@ -44,7 +44,7 @@ This website is entirely built with a customised version of [Quartz](https://qua
     - For the tasks that I want to achieve (which is current hosting PDFs), Cloudflare is a better choice here
 - Moved all DNS, domain to Cloudflare, and migrated to Cloudflare [Pages](https://pages.cloudflare.com/)
   - I was also considering to use Vercel DNS, but given that I have already been on R2 at this point, it seems prudent to use Cloudflare for the sake of simplicity
-    - Lee Rob from Vercel reached out for [feedback](https://x.com/aarnphm_/status/1882982597908955548?s=46&t=K6_tWk-1vuN4JVbmPrSC7A), so I'm indeed very much bullish on Vercel on their care/dedications to their customers.
+    - Lee Rob from Vercel reached out for [feedback](https://x.com/aarnphm_/status/1882982597908955548?s=46&t=K6_tWk-1vuN4JVbmPrSC7A), so I'm indeed bullish on Vercel on their care/dedications to their customers.
   - Their free tier encapsulates pretty much all features I would ever needed, for now.
   - The only reasons I haven't yet migrated to Cloudflare fully is because `wrangler` 3 was rather hard to use with TypeScript, and Vercel supports for TypeScript is superior at this point.
 - [6aadff3](https://github.com/aarnphm/aarnphm.github.io/commit/6aadff359a5e8ccb7879e6e8a69e79c8ba1542cd): Migrated to Cloudflare Workers
