@@ -640,8 +640,6 @@ class StackedNoteManager {
   }
 
   async navigate(url: URL) {
-    if (isNavigating) return
-    isNavigating = true
     try {
       if (!this.active) return await this.open()
 
@@ -650,8 +648,6 @@ class StackedNoteManager {
     } catch (e) {
       console.error(`Failed to navigate to ${url}: ${e}`)
       return false
-    } finally {
-      isNavigating = false
     }
     return true
   }
@@ -665,11 +661,10 @@ class StackedNoteManager {
   }
 }
 
-let isNavigating = false
 const stacked = new StackedNoteManager()
 window.stacked = stacked
 
-async function _navigate(url: URL, isBack: boolean = false) {
+async function navigate(url: URL, isBack: boolean = false) {
   const stackedContainer = document.getElementById("stacked-notes-container")
   if (stackedContainer?.classList.contains("active")) {
     return await stacked.navigate(url)
@@ -745,19 +740,6 @@ async function _navigate(url: URL, isBack: boolean = false) {
   delete announcer.dataset.persist
 }
 
-async function navigate(url: URL, isBack: boolean = false) {
-  if (isNavigating) return
-  isNavigating = true
-  try {
-    await _navigate(url, isBack)
-  } catch (e) {
-    console.error(e)
-    window.location.assign(url)
-  } finally {
-    isNavigating = false
-  }
-}
-
 window.spaNavigate = navigate
 window.notifyNav = notifyNav
 
@@ -776,7 +758,12 @@ function createRouter() {
         return
       }
 
-      navigate(url, false)
+      try {
+        navigate(url, false)
+      } catch (e) {
+        console.error(e)
+        window.location.assign(url)
+      }
     })
 
     window.addEventListener("popstate", (event) => {
@@ -786,6 +773,7 @@ function createRouter() {
         navigate(new URL(window.location.toString()), true)
       } catch (e) {
         window.location.reload()
+        console.error(e)
       }
       return
     })

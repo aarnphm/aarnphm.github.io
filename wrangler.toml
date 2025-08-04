@@ -1,8 +1,10 @@
 name = "portfolio"
 compatibility_date = "2025-01-21"
-main = "./public/worker/index.js"
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
+main = "./worker/index.ts"
 preview_urls = true
 workers_dev = true
+rules = [{ type = "Text", globs = ["**/*.txt"], fallthrough = true }]
 
 [[r2_buckets]]
 binding = "LFS_BUCKET"

@@ -12,15 +12,16 @@
     "url": "https://github.com/aarnphm/aarnphm.github.io.git"
   },
   "scripts": {
-    "dev": "NODE_ENV=development pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --serve --watch",
-    "prod": "NODE_ENV=production pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --bundleInfo --verbose && pnpm cf",
-    "deploy": "pnpm prod && pnpm dlx wrangler deploy",
-    "docs": "pnpm exec quartz/bootstrap-cli.mjs build --serve -d docs",
+    "dev": "NODE_ENV=development pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --serve",
+    "bundle": "pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --bundleInfo --verbose",
+    "prod": "NODE_ENV=production pnpm bundle",
+    "cf:dev": "pnpm cf:types && CF_PAGES=1 NODE_ENV=development pnpm bundle && pnpm dlx wrangler dev --port 8080 --live-reload",
+    "cf:types": "pnpm dlx wrangler types",
+    "cf:deploy": "pnpm check && pnpm dlx wrangler deploy",
     "check": "tsc --noEmit && pnpm prettier . --check",
     "format": "pnpm prettier . --write && pnpx bibtex-tidy --months --merge=combine --no-align --sort=type,year,eprint --duplicates=key,doi,citation --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,series,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields --blank-lines --modify ./content/References.bib",
     "test": "tsx --test",
     "profile": "0x -D prof quartz/bootstrap-cli.mjs build --concurrency=1",
-    "cf": "pnpm dlx wrangler pages functions build --outdir=./public/worker/",
     "vercel": "pnpm dlx vercel dev",
     "vendorred": "go run quartz/scripts/format.go -dir=sites",
     "convert": "tsx quartz/scripts/convert.ts"
@@ -138,7 +139,6 @@
   },
   "devDependencies": {
     "@anthropic-ai/claude-code": "^0.2.126",
-    "@cloudflare/workers-types": "^4.20250803.0",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
@@ -156,7 +156,8 @@
     "prettier": "^3.6.2",
     "ts-morph": "^26.0.0",
     "tsx": "^4.20.3",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "wrangler": "^4.27.0"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
 }

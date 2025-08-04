@@ -5,11 +5,6 @@
   "buildCommand": "pnpm exec quartz/bootstrap-cli.mjs build --bundleInfo --verbose",
   "outputDirectory": "public",
   "functions": {
-    "api/file.ts": {
-      "memory": 1024,
-      "maxDuration": 10,
-      "includeFiles": "content/**/*.{py,go,java,c,cpp,cxx,cu,cuh,h,hpp,ts,yaml,yml,rs,m,sql,sh,txt}"
-    },
     "api/curius.ts": {
       "memory": 1024,
       "maxDuration": 10
@@ -18,41 +13,5 @@
       "memory": 1024,
       "maxDuration": 10
     }
-  },
-  "redirects": [
-    {
-      "source": "/assets/:path*.:ext(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|yaml|yml|rs|m|sql|sh|txt)",
-      "destination": "/api/file?path=:path*.:ext",
-      "permanent": true
-    },
-    { "source": "/view-source", "destination": "https://github.com/aarnphm" },
-    { "source": "/view-profile", "destination": "https://twitter.com/aarnphm_" }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "s-maxage=300, stale-while-revalidate=59"
-        },
-        {
-          "key": "Access-Control-Allow-Credentials",
-          "value": "true"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "https://aarnphm.xyz"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-        }
-      ]
-    }
-  ]
+  }
 }

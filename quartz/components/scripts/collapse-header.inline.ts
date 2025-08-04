@@ -53,9 +53,9 @@ function setupHeaders() {
       }
 
       // Apply saved state
-      const content = document.querySelector(
+      const content = document.querySelector<HTMLElement>(
         `.collapsible-header-content[data-references="${button.id}"]`,
-      ) as HTMLElement
+      )
       // setup once
       if (content) {
         const savedState = getCollapsedState(window, button.id)
@@ -68,8 +68,8 @@ function setupHeaders() {
           )
         }
       }
-      const collapsed = content.classList.contains("collapsed")
-      content.style.maxHeight = collapsed ? `0px` : `inherit`
+      const collapsed = content!.classList.contains("collapsed")
+      content!.style.maxHeight = collapsed ? `0px` : `inherit`
     }
   }
 

@@ -12,7 +12,6 @@ import { getSatoriFonts } from "../../util/og"
 import { ThemeKey } from "../../util/theme"
 import { ProcessedContent, QuartzPluginData } from "../vfile"
 import { BuildCtx } from "../../util/ctx"
-import { styleText } from "util"
 import { fromHtml } from "hast-util-from-html"
 import { htmlToJsx } from "../../util/jsx"
 import { loadEmoji, getIconCode } from "../../util/emoji"
@@ -338,8 +337,6 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
       const NUM_WORKERS = 4
       const CHUNK_SIZE = Math.ceil(filteredContents.length / NUM_WORKERS)
       const chunks = chunk(filteredContents, CHUNK_SIZE)
-
-      if (ctx.argv.verbose) console.log(styleText("blue", `[emit:${name}] Generating press kit...`))
 
       const platforms: Array<["instagram" | "twitter", PressReleaseOptions]> = [
         ["instagram", instagramOptions],

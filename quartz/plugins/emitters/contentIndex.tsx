@@ -293,17 +293,7 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
       })
 
       // inform Chrome to yield correct information
-      yield write({
-        ctx,
-        content: `
-/park
-  Content-Type: text/html; charset=utf-8
-`,
-        slug: "_headers" as FullSlug,
-        ext: "",
-      })
-
-      if (ctx.argv.watch) {
+      if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
         // https://chromium.googlesource.com/devtools/devtools-frontend/+/main/docs/ecosystem/automatic_workspace_folders.md
         const slug = joinSegments(".well-known", "appspecific", "com.chrome.devtools") as FullSlug
         const root = path.resolve(path.dirname(ctx.argv.directory)) as FilePath

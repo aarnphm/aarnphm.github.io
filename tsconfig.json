@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["esnext", "DOM", "DOM.Iterable"],
+    "types": ["./worker-configuration.d.ts", "node"],
     "experimentalDecorators": true,
     "module": "esnext",
     "target": "esnext",

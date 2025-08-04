@@ -71,7 +71,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
           await fs.mkdir(dir, { recursive: true })
 
           // Create a simple promise that resolves when the child process exits
-          const result = await new Promise<FilePath>((resolve, reject) => {
+          const result = new Promise<FilePath>((resolve, reject) => {
             const proc = runConvertCommand(argv, src, outputName, argv.output)
 
             proc.on("error", (err) => {

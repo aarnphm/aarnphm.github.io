@@ -1,9 +1,7 @@
 ---
 id: are.na
-permalinks:
-  - /website
-  - /resources
-  - /inspo
+aliases:
+  - inspo
 tags:
   - technical
   - seed
@@ -11,9 +9,11 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-08-03 21:13:11 GMT-04:00
-aliases:
-  - inspo
+modified: 2025-08-04 00:04:07 GMT-04:00
+permalinks:
+  - /website
+  - /resources
+  - /inspo
 title: are.na
 cssclasses:
   - nolist
@@ -131,7 +131,10 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://marijnhaverbeke.nl/blog -- Marijn Haverbeke
   - CodeMirror
 - https://connorlowe.com/ -- Connor Lowe
-- https://henry.codes/
+- https://henry.codes/ -- Henry Desroches
+- https://jennywen.ca/ -- Jenny Wen
+  - Figma
+- https://www.thibaut.cool/ -- Thibaut Crépelle
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -248,6 +251,7 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://www.thefp.com/p/a-fifth-of-american-adults-cant-read-i-teach-them -- A fifth of American Adults Can't Read. Here's How to Teach Them.
 - https://paulgraham.com/95.html -- PG's 95% of great programmers in
 - https://paulgraham.com/woke.html -- Origin of Wokeness
+- https://www.noahpinion.blog/p/will-data-centers-crash-the-economy -- Will data centers crash the economy?
 
 ### life is literature
 
