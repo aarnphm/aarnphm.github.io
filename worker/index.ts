@@ -161,7 +161,7 @@ async function getObjectAction(
   })
   const res = await fetch(url.toString(), { method: "POST", headers, body })
   if (res.ok && res.headers.get("Content-Type")?.startsWith(MIME)) {
-    const batch = await res.json()
+    const batch: any = await res.json()
     const obj = batch.objects?.[0]
     if ((!batch.transfer || batch.transfer === "basic") && obj?.authenticated)
       return obj.actions.download
@@ -240,59 +240,40 @@ export default {
       })
     }
 
-    // https://developers.cloudflare.com/workers/static-assets/redirects/
-    if (url.pathname === "/view-source")
-      return Response.redirect("https://github.com/aarnphm/aarnphm.github.io", 301)
-    if (url.pathname === "/view-profile") return Response.redirect("https://x.com/aarnphm_", 301)
-    if (url.pathname === "/github") return Response.redirect("https://github.com/aarnphm", 301)
-    if (url.pathname === "/substack") return Response.redirect("https://substack.com/@aarnphm", 301)
-
-    // handle /park to response accordingly
-    if (url.pathname === "/park") {
-      const originResp = await env.ASSETS.fetch(request)
-      return withHeaders(originResp, {
-        "Content-Type": "text/html; charset=utf-8",
-      })
+    const apiHeaders: Record<string, string> = {
+      "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
+      "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Origin": "https://aarnphm.xyz",
+      "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+      "Access-Control-Allow-Headers":
+        "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
     }
 
-    if (url.pathname === "/api/arxiv") {
-      const resp = await handleArxiv(request)
-      const apiHeaders: Record<string, string> = {
-        "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "https://aarnphm.xyz",
-        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-        "Access-Control-Allow-Headers":
-          "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+    switch (url.pathname) {
+      case "/view-source":
+        return Response.redirect("https://github.com/aarnphm/aarnphm.github.io", 301)
+      case "/view-profile":
+        return Response.redirect("https://x.com/aarnphm_", 301)
+      case "/github":
+        return Response.redirect("https://github.com/aarnphm", 301)
+      case "/substack":
+        return Response.redirect("https://substack.com/@aarnphm", 301)
+      case "/.lfsconfig":
+        return new Response(null, { status: 404 })
+      case "/park": {
+        const originResp = await env.ASSETS.fetch(request)
+        return withHeaders(originResp, {
+          "Content-Type": "text/html; charset=utf-8",
+        })
       }
-      return withHeaders(resp, apiHeaders)
-    }
-
-    if (url.pathname === "/api/curius") {
-      const resp = await handleCurius(request)
-      const apiHeaders: Record<string, string> = {
-        "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "https://aarnphm.xyz",
-        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-        "Access-Control-Allow-Headers":
-          "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+      case "/api/arxiv": {
+        const resp = await handleArxiv(request)
+        return withHeaders(resp, apiHeaders)
       }
-      return withHeaders(resp, apiHeaders)
-    }
-
-    // Handle API paths first so non-GET methods are allowed
-    if (url.pathname.startsWith("/api/")) {
-      const originResp = await env.ASSETS.fetch(request)
-      const apiHeaders: Record<string, string> = {
-        "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "https://aarnphm.xyz",
-        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-        "Access-Control-Allow-Headers":
-          "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+      case "/api/curius": {
+        const resp = await handleCurius(request)
+        return withHeaders(resp, apiHeaders)
       }
-      return withHeaders(originResp, apiHeaders)
     }
 
     // Deny non-GET/HEAD for other paths
@@ -301,9 +282,6 @@ export default {
         status: request.method === "OPTIONS" ? 200 : 405,
         headers: { Allow: "GET, HEAD, OPTIONS" },
       })
-
-    // Block .lfsconfig exposure
-    if (url.pathname === "/.lfsconfig") return new Response(null, { status: 404 })
 
     // PDF redirect to R2 / LFS
     if (url.pathname.endsWith(".pdf")) {

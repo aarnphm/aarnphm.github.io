@@ -18,6 +18,3 @@ run_worker_first = true
 
 [observability.logs]
 enabled = true
-
-[placement]
-mode = "smart"
