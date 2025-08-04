@@ -237,6 +237,12 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
       yield write({
         ctx,
         content: `
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Perplexity-User
+Disallow: /
+
 User-agent: *
 Allow: /
 Host: https://${cfg.baseUrl}

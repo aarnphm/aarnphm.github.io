@@ -1,17 +1,17 @@
 ---
 id: craft
-aliases:
-  - work
-  - portfolio
-tags:
-  - evergreen
-comments: false
-date: "2021-12-22"
-description: and celebration of the act of making.
-modified: 2025-05-30 20:59:20 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
+tags:
+  - evergreen
+description: and celebration of the act of making.
+date: "2021-12-22"
+modified: 2025-08-04 13:45:45 GMT-04:00
+comments: false
+aliases:
+  - work
+  - portfolio
 title: craft.
 ---
 
@@ -34,7 +34,7 @@ You can find internal monologue under [[/posts/]] index.
   - V1 MLP speculator support https://github.com/vllm-project/vllm/pull/18719
   - Source: [github](https://github.com/vllm-project/vllm), [docs](docs.vllm.ai), [[thoughts/vllm|notes]]
 
-- **Quartz** - :seedling: a fast, batteries-included static-site generator that transforms Markdown content into fully functional websites (2023-)
+- **Quartz** - :seedling: a fast, batteries-included static-site generator that transforms Markdown content into fully functional websites (2023-) ^quartz
   - A set of tools that helps you publish your [[thoughts/Digital garden|digital garden]] and notes as a website for free.
   - Improved performance of graph interaction with Canvas https://github.com/jackyzha0/quartz/pull/1328
   - Added support for PDF in popover modal https://github.com/jackyzha0/quartz/pull/913

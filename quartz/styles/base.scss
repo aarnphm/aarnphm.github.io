@@ -117,6 +117,7 @@ strong {
 a {
   text-decoration: underline;
   color: var(--darkgray);
+  cursor: pointer;
 
   &:hover {
     color: var(--tertiary);

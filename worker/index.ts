@@ -260,11 +260,12 @@ export default {
         return Response.redirect("https://substack.com/@aarnphm", 301)
       case "/.lfsconfig":
         return new Response(null, { status: 404 })
+      case "/site.webmanifest":
+        const originResp = await env.ASSETS.fetch(request)
+        return withHeaders(originResp, apiHeaders)
       case "/park": {
         const originResp = await env.ASSETS.fetch(request)
-        return withHeaders(originResp, {
-          "Content-Type": "text/html; charset=utf-8",
-        })
+        return withHeaders(originResp, { "Content-Type": "text/html; charset=utf-8" })
       }
       case "/api/arxiv": {
         const resp = await handleArxiv(request)

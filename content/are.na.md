@@ -6,10 +6,10 @@ tags:
   - technical
   - seed
 description: My run-down version of are[dot]na
-date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-08-04 00:04:07 GMT-04:00
+date: "2024-10-24"
+modified: 2025-08-04 13:28:12 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -227,6 +227,7 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
   - > (In the quiet aftermath of the most wonderful and exhausting gathering at your home, you find traces of your friends everywhere. A strand of hair draped across the couch, every extra chair commandeered, lingering perfume… echoes of presence in the console.)
 - https://wholeearth.info/p/whole-earth-catalog-fall-1968?format=spreads&index=0 -- Whole Earth Index
 - https://substack.com/inbox/post/169322228 -- A constellation of lookers
+- https://blog.cloudflare.com/perplexity-is-using-stealth-undeclared-crawlers-to-evade-website-no-crawl-directives/ -- Perplexity is using stealth, undeclared crawlers to evade website no-crawl directives
 
 ### machine learning
 
@@ -359,6 +360,7 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 ### technical
 
 - https://huggingface.co/blog/from-chunks-to-blocks -- From Chunks to Blocks: Accelerating Uploads and Downloads on the Hub
+- https://datatracker.ietf.org/doc/html/rfc9309 -- Robots Exclusion Protocol
 
 ### vc.
 

@@ -10,7 +10,7 @@ export const CURIUS = `${CURIUS_HOST}/aaron-pham`
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
 
 export const fetchLinksHeaders: RequestInit = {
-  method: "POST",
+  method: "GET",
   headers: { "Content-Type": "application/json" },
 }
 

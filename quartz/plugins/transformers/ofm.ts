@@ -59,7 +59,7 @@ const defaultOptions: Options = {
   enableVideoEmbed: true,
   enableInlineFootnotes: true,
   enableImageGrid: true,
-  enableBrokenWikilinks: true,
+  enableBrokenWikilinks: false,
 }
 
 const calloutMapping = {
@@ -334,20 +334,31 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                   // otherwise, fall through to regular link
                 }
 
+                // internal link
+                const url = fp + anchor
+
                 // treat as broken link if slug not in ctx.allSlugs
                 if (opts.enableBrokenWikilinks) {
                   const slug = slugifyFilePath(fp as FilePath)
                   const exists = ctx.allSlugs && ctx.allSlugs.includes(slug)
                   if (!exists) {
                     return {
-                      type: "html",
-                      value: `<a class=\"internal broken\">${alias ?? fp}</a>`,
+                      type: "link",
+                      url,
+                      data: {
+                        hProperties: {
+                          className: ["broken"],
+                        },
+                      },
+                      children: [
+                        {
+                          type: "text",
+                          value: alias ?? fp,
+                        },
+                      ],
                     }
                   }
                 }
-
-                // internal link
-                const url = fp + anchor
 
                 return {
                   type: "link",
