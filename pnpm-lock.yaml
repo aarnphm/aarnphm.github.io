@@ -292,8 +292,8 @@ importers:
         version: 17.7.2
     devDependencies:
       '@anthropic-ai/claude-code':
-        specifier: ^0.2.126
-        version: 0.2.126
+        specifier: ^1.0.24
+        version: 1.0.24
       '@types/d3':
         specifier: ^7.4.3
         version: 7.4.3
@@ -360,8 +360,8 @@ packages:
   '@antfu/utils@8.1.1':
     resolution: {integrity: sha512-Mex9nXf9vR6AhcXmMrlz/HVgYYZpVGJ6YlPgwl7UnaFpnshXs6EK/oa5Gpf3CzENMjkvEx2tQtntGnb7UtSTOQ==}
 
-  '@anthropic-ai/claude-code@0.2.126':
-    resolution: {integrity: sha512-YBAtMs0OobKlrmvCicl8DZa8uLOSiaorW+V0aVYeGVU6q/lf7ZoPmckZT2B3e8rS43tgXmjadK/KHdJ1UztT6Q==}
+  '@anthropic-ai/claude-code@1.0.24':
+    resolution: {integrity: sha512-4S6ly2297ngNlto7IFZeEicS9u0yRDhocOzndWFovGBb+iUoEPKdZa/rhVk/tcyCADL6S+mMkiGQOlqFDrN3JQ==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -3862,10 +3862,12 @@ snapshots:
 
   '@antfu/utils@8.1.1': {}
 
-  '@anthropic-ai/claude-code@0.2.126':
+  '@anthropic-ai/claude-code@1.0.24':
     optionalDependencies:
       '@img/sharp-darwin-arm64': 0.33.5
+      '@img/sharp-darwin-x64': 0.33.5
       '@img/sharp-linux-arm': 0.33.5
+      '@img/sharp-linux-arm64': 0.33.5
       '@img/sharp-linux-x64': 0.33.5
       '@img/sharp-win32-x64': 0.33.5
 
