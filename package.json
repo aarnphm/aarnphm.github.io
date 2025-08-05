@@ -139,7 +139,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@anthropic-ai/claude-code": "^0.2.126",
+    "@anthropic-ai/claude-code": "^1.0.24",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
