@@ -56,7 +56,7 @@ deprecateTypingAliases = true
 enableReachabilityAnalysis = true
 enableExperimentalFeatures = true
 
-[tool.pyright.defineConstantj]
+[tool.pyright.defineConstant]
 MYPY = true
 
 [tool.mypy]

@@ -5,7 +5,10 @@ tags:
   - technical
 description: And maybe you should, or shouldn't.
 date: "2025-08-04"
-modified: 2025-08-04 16:46:23 GMT-04:00
+socials:
+  twitter: https://x.com/aarnphm_/status/1952474293654413636
+  hackernews: https://news.ycombinator.com/item?id=44791222
+modified: 2025-08-04 18:07:00 GMT-04:00
 title: Moving to Cloudflare
 ---
 

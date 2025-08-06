@@ -5,10 +5,10 @@ aliases:
   - reveng neural net
 tags:
   - interp
-abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
-date: 2024-10-30
 description: and reverse engineering neural networks.
-modified: 2025-02-02 09:50:29 GMT-05:00
+date: "2024-10-30"
+abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
+modified: 2025-08-05 21:53:43 GMT-04:00
 permalinks:
   - /mechinterp
 title: mechanistic interpretability
@@ -188,5 +188,11 @@ See also: [writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mec
 > [!important] empirical claims
 >
 > related to phase change
+
+## attribution graph
+
+see also [[thoughts/Attribution parameter decomposition]], [Circuit Tracing: Revealing Computational Graphs in Language Models](https://transformer-circuits.pub/2025/attribution-graphs/methods.html), [On the Biology of a Large Language Model](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)
+
+Depicts influence of features on one another, allowing one to trace intermediate steps the model uses to produce outputs. Think of autonomous path-finder for activations points, instead of using something like a [[thoughts/sparse crosscoders|replacement models]] to infer more interpretable features.
 
 [^ref]

@@ -6,10 +6,10 @@ tags:
   - technical
   - seed
 description: My run-down version of are[dot]na
+date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-08-04 13:28:12 GMT-04:00
+modified: 2025-08-05 22:01:14 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -82,6 +82,8 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://www.sfsystemsclub.com -- SF Systems Club
 - https://www.curatingcraft.com -- Curating Craft
   - by Daybreak
+- https://www.yooksel.com/
+- https://stream.thesephist.com/ -- Linus' stream
 
 ## people
 
@@ -150,6 +152,41 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
     > I would like to see your work and will have to be content to wait until Aug or Sept. I have seen photos of some of Tom’s new things at Lucy’s. They are impressive – especially the ones with the more rigorous form: the simpler ones. I guess he’ll send some more later on. Let me know how the shows are going and that kind of stuff.
     >
     > My work had changed since you left and it is much better. I will be having a show May 4 -9 at the Daniels Gallery 17 E 64yh St (where Emmerich was), I wish you could be there. Much love to you both.
+
+## places
+
+- https://goo.gl/maps/SdprwK8pHLSbJB4i7
+  - Rooms Coffee | 135 Ossington
+- https://goo.gl/maps/J8EWZSS13uZbv6XD6
+  - Rooms Coffee | 915 Dupont
+- https://maps.app.goo.gl/xF1CbAPUZy4E2YkV7
+  - Rooms Coffee | 17 Baldwin
+- https://maps.app.goo.gl/EvYLaxoUAhqXejhj6
+  - Alternity
+- https://maps.app.goo.gl/qsBcJ8dVfog1Mev87
+  - Coco's neighborhood coffee shop
+- https://goo.gl/maps/VCsSapR9dhnwF2yB9
+  - Bevy @ TheCombine
+- https://maps.app.goo.gl/vJY9DPf98uF5jTyk9
+  - Isle of Coffee (Queen)
+- https://goo.gl/maps/prhPXxtXKJqD9RzH7
+  - Mofer Coffee on Queen
+- https://g.page/pageonecafe?share
+  - Page One Coffee + Bar
+- https://goo.gl/maps/xNXqAjSutyDyqSYd6
+  - 10 DEAN
+- https://goo.gl/maps/QejcvcNqXYQGP7Ex9
+  - Cafe Pamenar
+- https://goo.gl/maps/iYhQjBGDjkG4v3aH6
+  - Milky’s Cloud Room
+- https://g.page/FoundCoffee?share
+  - Found Coffee on College
+- https://g.page/carboniccoffee?share
+  - Carbonic Coffee
+- https://maps.app.goo.gl/24Lth72sDeicpzco7
+  - Nabulu Coffee
+- https://g.page/stacktmarket?share
+  - Stakt Market
 
 ## essay
 
@@ -228,6 +265,17 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://wholeearth.info/p/whole-earth-catalog-fall-1968?format=spreads&index=0 -- Whole Earth Index
 - https://substack.com/inbox/post/169322228 -- A constellation of lookers
 - https://blog.cloudflare.com/perplexity-is-using-stealth-undeclared-crawlers-to-evade-website-no-crawl-directives/ -- Perplexity is using stealth, undeclared crawlers to evade website no-crawl directives
+- https://www.goodreads.com/author_blog_posts/25905231-layers -- Layers
+  - > Faulkner was absolutely right: The past is never dead. It’s not even past
+  - > It’s worth remembering that this is not true—or at least not true to the same degree—for cultures that built with perishable materials: wood, bamboo, paper, rammed earth. Unless actively maintained, these structures will perish in fire, flood, war, often lasting no more than decades, much less centuries.
+- https://shreniks-subconscious.super.site/journal/impermanence-bay-area-musings -- Impermanence (Bay Area Musings)
+  - > I notice how I’m feeling a kind of tenderness for things that don’t last. It shows up in unexpected places, like the bruised-purple petals scattered on the sidewalk after a windy night, or the quick glimmer of someone’s laughter on a street corner before it disappears into the ordinary quiet.
+  - > Impermanence makes things precious. The fleetingness of a perfect moment is what gives it color and weight.
+  - > I remember thinking, almost with a twinge of sadness even as it was happening, how none of us would be able to return to that exact constellation of people and feeling again. And yet, maybe that’s what made it matter so much.
+  - > Maybe that’s the secret to contentment: finding beauty in the not-lasting. Cherishing moments for their brevity, saying thank you to every sunset you happen to catch, every ordinary dinner that feels like home.
+- https://www.nytimes.com/2025/08/04/technology/rationalists-ai-lighthaven.html -- The Rise of Silicon Valley’s Techno-Religion
+  - [[thoughts/Roko's Basilisk]]
+  - > “All of this feels mythic,” she said. “Even the non-Rationalist scientists find this compelling — the same way the Manhattan Project was compelling. We want to work on something mythic.”
 
 ### machine learning
 
@@ -242,6 +290,16 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://z.ai/blog/glm-4.5 -- GLM 4.5 releases
 - https://jeremybernste.in/writing/deriving-muon -- Deriving [[thoughts/muon|Muon]]
   - https://github.com/KellerJordan/modded-nanogpt
+  - https://kellerjordan.github.io/posts/muon/
+- https://www.neuronpedia.org/graph/info -- The circuit analysis research landscape
+  - [[thoughts/mechanistic interpretability#attribution graph]]
+  - On Biology of LLMs
+  - Futures and directions of interpretability [research](https://www.neuronpedia.org/graph/info#section-directions-for-future-work)
+    - Influence functions, or training data attributions methods
+    - Scaling interpreting CoT, exempli gratia [Docent](https://transluce.org/introducing-docent)
+    -
+- https://ethanding.substack.com/p/ai-subscriptions-get-short-squeezed -- Tokens are getting more expensive
+- https://docs.google.com/presentation/d/1NOrUVZNkcKHom5ih5uqqOSrV4Vi8KZRN8LYaAeADX80/edit?slide=id.g3724263dfb4_0_68#slide=id.g3724263dfb4_0_68 -- Scaling MoE with llm-d and vLLM
 
 ### argumentative
 
@@ -279,6 +337,15 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://turntrout.com/self-fulfilling-misalignment -- Self-Fulfilling Misalignment Data Might Be Poisoning Our AI Models
 - https://www.youtube.com/watch?v=KIu4y1stILY&ab_channel=essentialsalts -- Politices as Neuro-Physiology, a conversation with Uberboyo
   - In what way the connection between philosophy, ideas and cultural does [[thoughts/Philosophy and Nietzsche|Nietzsche]] nihilism?
+
+## stream
+
+- https://notes.andymatuschak.org/Effective_system_design_requires_insights_drawn_from_serious_contexts_of_use -- Effective system design requires insights drawn from serious contexts of use
+
+### financial reports
+
+- https://investors.palantir.com/news-details/2025/Palantir-Reports-Q2-2025-U-S--Comm-Revenue-Growth-of-93-YY-and-Revenue-Growth-of-48-YY-Guides-Q3-Revenue-to-50-YY-Raises-FY-2025-Revenue-Guidance-to-45-YY-and-U-S--Comm-Revenue-Guidance-to-85-YY-Crushing-Consensus-Expectations/ -- Palantir Q3 Earnings 2025 Reports
+  - $1Bn in Revenue, 45% Y/Y
 
 ### poetry
 
@@ -409,3 +476,5 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://arxiv.org/pdf/2506.18032
 - https://arxiv.org/pdf/2403.09629
 - https://arxiv.org/pdf/1910.02054
+- https://arxiv.org/abs/2506.19143
+  - which thought trace matters?

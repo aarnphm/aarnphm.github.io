@@ -9,7 +9,7 @@ description: collections of tweets, since bookmark is getting crowded.
 transclude:
   dynalist: false
 date: "2024-10-24"
-modified: 2025-08-03 14:58:24 GMT-04:00
+modified: 2025-08-04 20:17:30 GMT-04:00
 noindex: true
 title: /xeets/
 ---
@@ -71,6 +71,8 @@ https://x.com/jacquemusx/status/1942186663557353504 <!-- Iris van Herpen -->
 https://x.com/thecaravanindia/status/1942869801593958709 <!-- Bertrand Russell releases a manifesto warning about the danger of nuclear weapons -->
 
 https://x.com/michael_nielsen/status/1951055480920613156 <!-- Don't drop out of college -->
+
+https://x.com/gabrielpeterss4/status/1951781057973608948?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ <!-- working on your problems -->
 
 ## love
 
