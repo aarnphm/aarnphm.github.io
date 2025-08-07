@@ -1,5 +1,5 @@
 import { visit } from "unist-util-visit"
-import { Root as HtmlRoot, Node, Element, Text } from "hast"
+import { Root as HtmlRoot, Node, Element, Text, Parents } from "hast"
 import { version } from "../../../package.json"
 import {
   Blockquote,
@@ -369,7 +369,7 @@ async function llmText(
           return results
         } else if (node.properties.id === "telescope") {
           // support for telescopic text for llms.txt
-          return h.all(node.children[0])
+          return h.all(node.children[0] as Parents)
         }
         return hastToMdastHandlers.div(h, node)
       },

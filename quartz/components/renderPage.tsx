@@ -751,12 +751,13 @@ export function transcludeFinal(
 export const TopLinks = {
   livres: "/books",
   merci: "/influence",
-  colophon: "/colophon",
   advice: "/quotes",
   parfum: "/thoughts/Scents",
   "are.na": "/are.na",
-  tweets: "/tweets",
   craft: "/thoughts/craft",
+  home: "/furnitures",
+  movies: "/movies",
+  tunes: "/mixed",
 }
 
 type AliasLinkProp = {
@@ -916,12 +917,11 @@ const ElementComponent = (() => {
       children: [
         <section>
           <h2>jardin:</h2>
-          <div class="clickable-container">
+          <address class="clickable-container">
             {Object.entries(TopLinks).map(([name, url]) => (
               <AliasLink isInternal enablePopover={false} key={name} name={name} url={url} />
             ))}
-            <AliasLink newTab classes={["external"]} name="notes" url="https://notes.aarnphm.xyz" />
-          </div>
+          </address>
         </section>,
         <section>
           <h2>média:</h2>
@@ -955,6 +955,8 @@ const ElementComponent = (() => {
         </section>,
         <section class="boring-legal">
           <address class="clickable-container">
+            <AliasLink newTab classes={["external"]} name="notes" url="https://notes.aarnphm.xyz" />
+            <AliasLink isInternal enablePopover={false} name="colophon" url="/colophon" />
             <AliasLink isInternal enablePopover={false} name="privacy" url="/privacy-policy" />
             <AliasLink
               isInternal

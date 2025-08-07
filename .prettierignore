@@ -9,3 +9,6 @@ safari.css
 pnpm-lock.yaml
 flake.lock
 worker-configuration.d.ts
+*.mp4
+*.webp
+*.zip

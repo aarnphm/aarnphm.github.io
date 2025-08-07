@@ -57,7 +57,7 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
     name: "NotebookViewer",
     async *partialEmit() {},
     async *emit({ argv, cfg }) {
-      if (process.env.VERCEL_ENV) return []
+      if (argv.watch) return []
 
       const fps = await notebookFiles(argv, cfg)
 

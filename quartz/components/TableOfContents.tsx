@@ -7,7 +7,7 @@ import { i18n } from "../i18n"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 import { htmlToJsx } from "../util/jsx"
 import Slugger from "github-slugger"
-import OverflowList from "./OverflowList"
+import OverflowListFactory from "./OverflowList"
 
 const ghSlugger = new Slugger()
 
@@ -21,6 +21,7 @@ const defaultOptions: Options = {
 
 export default ((userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }
+  const { OverflowList, overflowListAfterDOMLoaded } = OverflowListFactory()
 
   const TableOfContents: QuartzComponent = ({
     fileData,
@@ -85,6 +86,6 @@ export default ((userOpts?: Partial<Options>) => {
   }
 
   TableOfContents.css = modernStyle
-  TableOfContents.afterDOMLoaded = script + OverflowList.afterDOMLoaded("toc-ul")
+  TableOfContents.afterDOMLoaded = script + overflowListAfterDOMLoaded
   return TableOfContents
 }) satisfies QuartzComponentConstructor

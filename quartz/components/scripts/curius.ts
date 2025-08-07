@@ -1,7 +1,7 @@
 import { Link, CuriusResponse, Trail, TrailInfo } from "../types"
 import { registerEscapeHandler, registerEvents, removeAllChildren } from "./util"
 import { ValidLocale, i18n } from "../../i18n"
-import FlexSearch from "flexsearch"
+import FlexSearch, { Id } from "flexsearch"
 import { LCG } from "../../util/helpers"
 import { encode } from "./util"
 
@@ -565,7 +565,7 @@ export async function curiusSearch(linksData: Link[]) {
 let indexPopulated = false
 async function fillIndex(links: Link[]) {
   if (indexPopulated) return
-  let id = 0
+  let id: Id = 0
   const promises = []
   for (const link of links) {
     promises.push(index.addAsync(id, { ...link }))

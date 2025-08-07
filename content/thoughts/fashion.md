@@ -2,9 +2,9 @@
 id: fashion
 tags:
   - seed
-date: "2024-02-19"
 description: a hobby, and definition of personal taste.
-modified: 2025-05-30 23:49:00 GMT-04:00
+date: "2024-02-19"
+modified: 2025-08-07 17:33:35 GMT-04:00
 title: fashion.
 ---
 
@@ -116,4 +116,5 @@ https://x.com/dieworkwear/status/1878635785731403880 <!-- Cream/yellowish suits 
 _A few items that I love_
 
 - Maxi Candy Hobo from [Mansur Gavriel](https://www.mansurgavriel.com/products/maxi-candy-bag-black)
+- Alden Cordovan Tassel [Loafers](https://www.aldenshop.com/collections/cordovan-loafers)
 - ![[thoughts/Scents#current|current scents that are on rotation]]

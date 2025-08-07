@@ -439,8 +439,9 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
             visit(
               tree,
               "element",
-              (node: Element) => toAddBlock(node as Element),
-              function (node: Element) {
+              toAddBlock,
+              // @ts-ignore
+              (node: Element) => {
                 const className = Array.isArray(node.properties.className)
                   ? node.properties.className
                   : (node.properties.className = [])
@@ -458,7 +459,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
                 /^https:\/\/github\.com\/([^\/]+)\/([^\/\s#]+)/,
               )
               if (githubMatch && toString(node) === node.properties.href!) {
-                visit(node, { type: "text" }, function (el: Text) {
+                visit(node, "text", function (el: Text) {
                   el.value = `${githubMatch[1]}/${githubMatch[2]}`
                 })
               }

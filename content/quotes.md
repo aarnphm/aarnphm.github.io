@@ -7,7 +7,7 @@ tags:
 transclude:
   dynalist: false
 date: "2024-01-23"
-modified: 2025-08-03 17:19:28 GMT-04:00
+modified: 2025-08-07 14:38:56 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -101,6 +101,8 @@ Success consists of going from failure to failure without loss of enthusiasm. --
 An old friend of mine, a journalist, once said that paradise on earth was to work all day alone in anticipation of an evening in interesting company. -- Ian McEwan
 
 Highly focused people do not leave their options open. They select their priorities and are comfortable ignoring the rest. If you commit to nothing, you'll be distracted by everything. -- James Clear
+
+Uncanny ability to be mentioned in every slack thread about code that's mysteriously breaking -- https://x.com/kipperrii, from Claude
 
 ## On randomness and fun.
 

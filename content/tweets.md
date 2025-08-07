@@ -9,7 +9,7 @@ description: collections of tweets, since bookmark is getting crowded.
 transclude:
   dynalist: false
 date: "2024-10-24"
-modified: 2025-08-06 14:32:33 GMT-04:00
+modified: 2025-08-08 17:04:53 GMT-04:00
 noindex: true
 title: /xeets/
 ---
@@ -43,6 +43,8 @@ https://x.com/cremieuxrecueil/status/1876097710610338066 <!-- five capacities ty
 https://x.com/ruzhaoart/status/1876149783997677605 <!-- Jacky's sister on traditional art -->
 
 https://x.com/melkuo/status/1835775713410269621 <!-- 2024 Canada's housing market -->
+
+https://x.com/poetengineer__/status/1895397439852695708 <!-- a measured heart -->
 
 ## life
 
@@ -213,3 +215,5 @@ https://x.com/geoffreylitt/status/1950601513870499953 <!-- Geoffrey Litt on capa
 https://x.com/NeelNanda5/status/1950344397075456438 <!-- MATS 9.0 Stream Winter Batch -->
 
 https://x.com/JayaGup10/status/1952871186888843528 <!-- Integration landscape from labs -->
+
+![[are.na#^goodfire-gpt-oss]]

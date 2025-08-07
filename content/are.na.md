@@ -1,7 +1,9 @@
 ---
 id: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /resources
+  - /inspo
 tags:
   - technical
   - seed
@@ -9,11 +11,9 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-08-05 22:01:14 GMT-04:00
-permalinks:
-  - /website
-  - /resources
-  - /inspo
+modified: 2025-08-08 17:04:52 GMT-04:00
+aliases:
+  - inspo
 title: are.na
 cssclasses:
   - nolist
@@ -84,6 +84,7 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
   - by Daybreak
 - https://www.yooksel.com/
 - https://stream.thesephist.com/ -- Linus' stream
+- https://www.goodfire.ai/ -- Goodfire AI
 
 ## people
 
@@ -276,6 +277,8 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://www.nytimes.com/2025/08/04/technology/rationalists-ai-lighthaven.html -- The Rise of Silicon Valley’s Techno-Religion
   - [[thoughts/Roko's Basilisk]]
   - > “All of this feels mythic,” she said. “Even the non-Rationalist scientists find this compelling — the same way the Manhattan Project was compelling. We want to work on something mythic.”
+- https://etsd.tech/posts/rtfc -- Read the f\*\*\* code
+- https://ryanandrewlangdon.com/2020/01/28/today-i-learned-that-not-everyone-has-an-internal-monologue-and-it-has-ruined-my-day/
 
 ### machine learning
 
@@ -297,9 +300,16 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
   - Futures and directions of interpretability [research](https://www.neuronpedia.org/graph/info#section-directions-for-future-work)
     - Influence functions, or training data attributions methods
     - Scaling interpreting CoT, exempli gratia [Docent](https://transluce.org/introducing-docent)
-    -
 - https://ethanding.substack.com/p/ai-subscriptions-get-short-squeezed -- Tokens are getting more expensive
 - https://docs.google.com/presentation/d/1NOrUVZNkcKHom5ih5uqqOSrV4Vi8KZRN8LYaAeADX80/edit?slide=id.g3724263dfb4_0_68#slide=id.g3724263dfb4_0_68 -- Scaling MoE with llm-d and vLLM
+- https://x.com/GoodfireAI/status/1953903581075288470 -- gpt-oss hackathon from Goodfire ^goodfire-gpt-oss
+  - > experts actually seem to specialize - e.g. a “business expert” that activates most on business strategy & management topics.
+  - > just as Claude fixates on spiritual bliss after talking to itself for many turns, gpt-oss has its own attractor states: nonsense code & creative writing!
+  - > memoized during training: https://x.com/jack_merullo_/status/1953860284638278043
+  - > SAEs and features activated on mentions of LLaMA models
+  - > gpt-oss' inability to act as a naive text completion model (vs. reverting to a chat format), even with jailbreaks, correlates with how subjectively cooked/slop-ish it feels
+  - > found that you can sometimes get interpolated reasoning levels from gpt-oss between “low”, “medium”, and “high” (but “none”, “ultra”, “infinite” don’t work)
+  - > basic contrastive steering of gpt-oss-20b, following Anthropic’s “persona vectors”: https://x.com/MarkMBissell/status/1952919910134497332
 
 ### argumentative
 
@@ -371,6 +381,9 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://www.youtube.com/watch?v=llu7prGMDhk&ab_channel=JuliandeMedeiros -- Lacan/Žižek on how to find your dream: a step-by-step by step guide
 - https://www.youtube.com/watch?v=X-D5FERQzU4&ab_channel=DeficitOwls -- Money Did Not Come From Barter - It Came From Blood Feuds
 - https://www.youtube.com/watch?v=HyPY6vm8Vbo&ab_channel=LucyMoon -- essentials that have immeasurably improved my life this year
+- https://www.youtube.com/watch?v=ny3sCjFiLYc&ab_channel=KunmiK -- How to ask a girl out - Louie C.K. asks a girl out
+- https://www.youtube.com/watch?v=9xYasBUv530&ab_channel=SefoNad -- Emotional Maturity in Past Lives
+- https://www.youtube.com/watch?v=Q-yqCgMWGNo&ab_channel=TakeTwo -- How Dennis Villeneuve creates visual meaning, Enemy
 
 ## tools
 
@@ -383,7 +396,6 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 
 ## arts
 
-- https://x.com/poetengineer__/status/1895397439852695708
 - https://www.youtube.com/watch?v=lsVMJIJ3Xrs&ab_channel=Amoeba
 
 ## resources
@@ -416,6 +428,7 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - [[thoughts/GPU programming]]
 - https://www.doc.ic.ac.uk/~eedwards/compsys/float/#:~:text=Add%20the%20exponents%20to%20find,1.021%20%C3%97%20106 -- Floating points arithmetics
 - https://www.unco.edu/campus-recreation/pdf/intramural-sports/spring20/running-pace-chart.pdf -- Running pace chart
+- https://github.com/triton-lang/triton/blob/a758c595ddb149381b7ee888982f1afbeb02823c/python/triton_kernels/triton_kernels/matmul_ogs_details/_matmul_ogs.py#L291 -- matmul_ogs for mxfp4
 
 ### lecture
 
@@ -478,3 +491,8 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://arxiv.org/pdf/1910.02054
 - https://arxiv.org/abs/2506.19143
   - which thought trace matters?
+- https://arxiv.org/pdf/2503.18292
+- https://arxiv.org/pdf/2310.05209
+- https://arxiv.org/pdf/2104.09864
+  - [[thoughts/RoPE]]
+  - more popular methods: https://arxiv.org/pdf/2309.00071

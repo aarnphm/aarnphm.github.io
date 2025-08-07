@@ -1,3 +1,4 @@
+import type { Mermaid } from "mermaid"
 import { mermaidViewer } from "./util"
 
 const cssVars = [
@@ -22,7 +23,7 @@ document.addEventListener("nav", async () => {
     "https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.esm.min.mjs"
   )
   // The actual mermaid instance is the default export
-  const mermaid: typeof import("mermaid/dist/mermaid").default = mermaidImport.default
+  const mermaid: Mermaid = mermaidImport.default
 
   const textMapping: WeakMap<HTMLElement, string> = new WeakMap()
   for (const node of nodes) {
@@ -72,9 +73,7 @@ document.addEventListener("nav", async () => {
   document.addEventListener("themechange", renderMermaid)
   window.addCleanup(() => document.removeEventListener("themechange", renderMermaid))
 
-  mermaid.run({ nodes }).then(() => {
-    mermaidViewer(nodes)
-  })
+  mermaidViewer(nodes)
   window.mermaid = mermaid
   return
 })

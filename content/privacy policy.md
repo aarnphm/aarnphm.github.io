@@ -27,7 +27,6 @@ I don’t actively collect personal information unless you choose to email me. H
    email address and any details you provide to respond to you.
 2. I use [Plausible](https://plausible.io/) for analytics (a simple, privacy Google Analytics alternatives). You should refer to their sites if you have any concern.
 3. I host everything on Cloudflare, and their analytics gives me more performance-related metrics, and I don't think that they track IP there? (If this is not the case, let me know!).
-4. I also use Vercel for hosting some functions (but intend to move to Cloudflare Workers one day). I don't enable any Vercel-related metrics/analytics.
 
 ### Uses of information
 

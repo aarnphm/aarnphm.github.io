@@ -7,11 +7,11 @@ import { FullPageLayout } from "../../cfg"
 import { FullSlug, pathToRoot } from "../../util/path"
 import { defaultListPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { write } from "./helpers"
+import { Content } from "../../components"
 import { BuildCtx } from "../../util/ctx"
 import type { Root, Element, ElementContent } from "hast"
 import { visit } from "unist-util-visit"
 import { h } from "hastscript"
-import { pageResources, transcludeFinal } from "../../components/renderPage"
 
 interface ArenaPageOptions extends FullPageLayout {
   enableGrid?: boolean
@@ -185,6 +185,8 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<ArenaPageOptions>> = (userOp
     ...defaultListPageLayout,
     ...defaultOptions,
     ...userOpts,
+    // TODO: subpage content instead of placeholders
+    pageBody: Content(),
   }
 
   const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts

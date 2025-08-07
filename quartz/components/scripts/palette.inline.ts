@@ -1,4 +1,4 @@
-import FlexSearch from "flexsearch"
+import FlexSearch, { DocumentData } from "flexsearch"
 import { FilePath, FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
 import {
   highlight,
@@ -9,12 +9,12 @@ import {
   createSidePanel,
 } from "./util"
 
-interface Item {
+interface Item extends DocumentData {
   id: number
   slug: FullSlug
   name: FilePath
   aliases: string[]
-  target?: string
+  target: string
 }
 
 let index = new FlexSearch.Document<Item>({

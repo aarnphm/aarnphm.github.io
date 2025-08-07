@@ -312,6 +312,7 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
     getQuartzComponents() {
       return []
     },
+    async *partialEmit() {},
     async *emit(ctx, content, _resource) {
       if (ctx.argv.watch) return []
 

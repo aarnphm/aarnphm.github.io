@@ -6,6 +6,8 @@ const VERSION = "version https://git-lfs.github.com/spec/v1\n"
 const MIME = "application/vnd.git-lfs+json"
 const KEEP_HEADERS = "Cache-Control"
 
+type CfCacheStorage = CacheStorage & { readonly default: Cache }
+
 function splitFirst(str: string, delim: string): [string, string?] {
   const idx = str.indexOf(delim)
   return idx === -1 ? [str] : [str.slice(0, idx), str.slice(idx + 1)]
@@ -59,57 +61,6 @@ function withHeadersFromSource(response: Response, source: Response, headers: st
   const map: Record<string, string | null> = {}
   for (const h of headers) map[h] = source.headers.get(h)
   return withHeaders(response, map)
-}
-
-const ALLOWED_EXTENSIONS = new Set([
-  ".py",
-  ".go",
-  ".java",
-  ".c",
-  ".cpp",
-  ".cxx",
-  ".cu",
-  ".cuh",
-  ".h",
-  ".hpp",
-  ".ts",
-  ".js",
-  ".yaml",
-  ".yml",
-  ".rs",
-  ".m",
-  ".sql",
-  ".sh",
-  ".txt",
-])
-
-function sanitizePath(filePath: string): string {
-  let cleaned = filePath.trim()
-  cleaned = cleaned.replace(/\\/g, "/") // normalize backslashes
-  const parts = cleaned.split("/").filter((seg) => {
-    const lower = seg.toLowerCase()
-    return (
-      seg !== ".." && seg !== "." && !lower.includes("%2e") // encoded '.'
-    )
-  })
-  return parts
-    .join("/")
-    .replace(/\/+/g, "/")
-    .replace(/^\/+|\/+$/g, "")
-}
-
-function isValidPath(filePath: string): boolean {
-  if (filePath.includes("\0")) return false
-  const dot = filePath.lastIndexOf(".")
-  const ext = dot === -1 ? "" : filePath.slice(dot).toLowerCase()
-  if (!ALLOWED_EXTENSIONS.has(ext)) return false
-  if (!filePath || filePath.includes("..")) return false
-  try {
-    decodeURIComponent(filePath)
-  } catch {
-    return false
-  }
-  return true
 }
 
 async function getObjectInfo(
@@ -177,16 +128,18 @@ async function getObjectFromBucket(
   request: Request,
 ): Promise<Response> {
   const cacheKey = new Request(extendPath(bucketUrl, path).toString(), request)
-  const cached = await caches.default.match(cacheKey)
+  // https://developers.cloudflare.com/workers/reference/how-the-cache-works/#cache-api
+  const cache = (caches as CfCacheStorage).default
+  const cached = await cache.match(cacheKey)
   if (cached) return cached
   const method = request.method.toLowerCase() as "get" | "head"
-  const object = await bucket[method](path)
+  const object = (await bucket[method](path)) as R2ObjectBody
   const headers = new Headers()
   object.writeHttpMetadata(headers)
   if (object.httpEtag) headers.set("ETag", object.httpEtag)
-  const resp = new Response(object.body, { method: request.method, headers })
+  const resp = new Response(object.body, { headers })
   ctx.waitUntil(
-    caches.default.put(
+    cache.put(
       cacheKey,
       withHeaders(resp.clone(), { "Cache-Control": "immutable, max-age=31536000" }),
     ),
@@ -228,7 +181,7 @@ export default {
 
     // rendering supported code files as text/plain
     const assetsMatch = url.pathname.match(
-      /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|tsx|jsx|yaml|yml|rs|m|sql|sh|txt)$/i,
+      /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|tsx|jsx|yaml|yml|rs|m|sql|sh|txt|zig|lua)$/i,
     )
     if (assetsMatch) {
       const originResp = await env.ASSETS.fetch(request)
@@ -262,7 +215,7 @@ export default {
         return new Response(null, { status: 404 })
       case "/site.webmanifest":
         const originResp = await env.ASSETS.fetch(request)
-        return withHeaders(originResp, apiHeaders)
+        return withHeaders(originResp, { ...apiHeaders, "Access-Control-Allow-Origin": "*" })
       case "/park": {
         const originResp = await env.ASSETS.fetch(request)
         return withHeaders(originResp, { "Content-Type": "text/html; charset=utf-8" })

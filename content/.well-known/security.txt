@@ -1,0 +1,6 @@
+Contact: mailto:security@aarnphm.xyz
+Expires: 2026-01-01T01:22:00.000Z
+Encryption: https://aarnphm.xyz/pgp-key.txt
+Preferred-Languages: en,fr,vn
+Canonical: https://aarnphm.xyz/.well-known/security.txt
+Policy: https://aarnphm.xyz/security-policy

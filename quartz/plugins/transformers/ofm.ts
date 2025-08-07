@@ -157,6 +157,39 @@ export const checkMermaidCode = ({ tagName, properties }: Element) =>
   Boolean(properties.className) &&
   (properties.className as string[]).includes("mermaid")
 
+export const wikiTextTransform = (src: string) => {
+  // replace all wikilinks inside a table first
+  src = src.replace(tableRegex, (value) => {
+    // escape all aliases and headers in wikilinks inside a table
+    return value.replace(tableWikilinkRegex, (_value, raw) => {
+      // const [raw]: (string | undefined)[] = capture
+      let escaped = raw ?? ""
+      escaped = escaped.replace("#", "\\#")
+      // escape pipe characters if they are not already escaped
+      escaped = escaped.replace(/((^|[^\\])(\\\\)*)\|/g, "$1\\|")
+
+      return escaped
+    })
+  })
+
+  // replace all other wikilinks
+  src = src.replace(wikilinkRegex, (value, ...capture) => {
+    const [rawFp, rawHeader, rawAlias]: (string | undefined)[] = capture
+
+    const [fp, anchor] = splitAnchor(`${rawFp ?? ""}${rawHeader ?? ""}`)
+    const displayAnchor = anchor ? `#${anchor.trim().replace(/^#+/, "")}` : ""
+    const displayAlias = rawAlias ?? rawHeader?.replace("#", "|") ?? ""
+    const embedDisplay = value.startsWith("!") ? "!" : ""
+
+    if (rawFp?.match(externalLinkRegex)) {
+      return `${embedDisplay}[${displayAlias.replace(/^\|/, "")}](${rawFp})`
+    }
+
+    return `${embedDisplay}[[${fp}${displayAnchor}${displayAlias}]]`
+  })
+  return src
+}
+
 export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
   const allowDangerousHtml = true
@@ -168,23 +201,15 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
   return {
     name: "ObsidianFlavoredMarkdown",
-    textTransform(_, src) {
+    textTransform(_, src: any) {
       // do comments at text level
       if (opts.comments) {
-        if (src instanceof Buffer) {
-          src = src.toString()
-        }
-
-        src = (src as string).replace(commentRegex, "")
+        src = src.replace(commentRegex, "")
       }
 
       // pre-transform blockquotes
       if (opts.callouts) {
-        if (src instanceof Buffer) {
-          src = src.toString()
-        }
-
-        src = (src as string).replace(calloutLineRegex, (value: string) => {
+        src = src.replace(calloutLineRegex, (value: string) => {
           // force newline after title of callout
           return value + "\n> "
         })
@@ -192,39 +217,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       // pre-transform wikilinks (fix anchors to things that may contain illegal syntax e.g. codeblocks, latex)
       if (opts.wikilinks) {
-        if (src instanceof Buffer) {
-          src = src.toString()
-        }
-
-        // replace all wikilinks inside a table first
-        src = (src as string).replace(tableRegex, (value) => {
-          // escape all aliases and headers in wikilinks inside a table
-          return value.replace(tableWikilinkRegex, (_value, raw) => {
-            // const [raw]: (string | undefined)[] = capture
-            let escaped = raw ?? ""
-            escaped = escaped.replace("#", "\\#")
-            // escape pipe characters if they are not already escaped
-            escaped = escaped.replace(/((^|[^\\])(\\\\)*)\|/g, "$1\\|")
-
-            return escaped
-          })
-        })
-
-        // replace all other wikilinks
-        src = (src as string).replace(wikilinkRegex, (value, ...capture) => {
-          const [rawFp, rawHeader, rawAlias]: (string | undefined)[] = capture
-
-          const [fp, anchor] = splitAnchor(`${rawFp ?? ""}${rawHeader ?? ""}`)
-          const displayAnchor = anchor ? `#${anchor.trim().replace(/^#+/, "")}` : ""
-          const displayAlias = rawAlias ?? rawHeader?.replace("#", "|") ?? ""
-          const embedDisplay = value.startsWith("!") ? "!" : ""
-
-          if (rawFp?.match(externalLinkRegex)) {
-            return `${embedDisplay}[${displayAlias.replace(/^\|/, "")}](${rawFp})`
-          }
-
-          return `${embedDisplay}[[${fp}${displayAnchor}${displayAlias}]]`
-        })
+        src = wikiTextTransform(src)
       }
 
       if (opts.enableInlineFootnotes) {
@@ -233,15 +226,12 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
         let counter = 0
 
         // Replace inline footnotes with references and collect definitions
-        const result = (src as string).replace(
-          inlineFootnoteRegex,
-          (_match: string, content: string) => {
-            counter++
-            const id = `generated-inline-footnote-${counter}`
-            footnotes[id] = content.trim()
-            return `[^${id}]`
-          },
-        )
+        const result = src.replace(inlineFootnoteRegex, (_match: string, content: string) => {
+          counter++
+          const id = `generated-inline-footnote-${counter}`
+          footnotes[id] = content.trim()
+          return `[^${id}]`
+        })
 
         // Append footnote definitions if any are found
         if (Object.keys(footnotes).length > 0) {
@@ -280,54 +270,78 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 if (value.startsWith("!")) {
                   const ext: string = path.extname(fp).toLowerCase()
                   const url = slugifyFilePath(fp as FilePath)
-                  if ([".png", ".jpg", ".jpeg", ".gif", ".bmp", ".svg", ".webp"].includes(ext)) {
-                    const match = wikilinkImageEmbedRegex.exec(alias ?? "")
-                    const alt = match?.groups?.alt ?? ""
-                    const width = match?.groups?.width ?? "auto"
-                    const height = match?.groups?.height ?? "auto"
-                    return {
-                      type: "image",
-                      url,
-                      data: {
-                        hProperties: {
-                          width,
-                          height,
-                          alt,
+                  switch (ext) {
+                    // images
+                    case ".png":
+                    case ".jpg":
+                    case ".jpeg":
+                    case ".gif":
+                    case ".bmp":
+                    case ".svg":
+                    case ".webp": {
+                      const match = wikilinkImageEmbedRegex.exec(alias ?? "")
+                      const alt = match?.groups?.alt ?? ""
+                      const width = match?.groups?.width ?? "auto"
+                      const height = match?.groups?.height ?? "auto"
+                      return {
+                        type: "image",
+                        url,
+                        data: {
+                          hProperties: {
+                            width,
+                            height,
+                            alt,
+                          },
                         },
-                      },
+                      }
                     }
-                  } else if ([".mp4", ".webm", ".ogv", ".mov", ".mkv"].includes(ext)) {
-                    return {
-                      type: "html",
-                      value: `<video src="${url}" controls loop></video>`,
+                    // videos
+                    case ".mp4":
+                    case ".webm":
+                    case ".ogv":
+                    case ".mov":
+                    case ".mkv": {
+                      return {
+                        type: "html",
+                        value: `<video src="${url}" controls loop></video>`,
+                      }
                     }
-                  } else if (
-                    [".mp3", ".webm", ".wav", ".m4a", ".ogg", ".3gp", ".flac"].includes(ext)
-                  ) {
-                    return {
-                      type: "html",
-                      value: `<audio src="${url}" controls></audio>`,
+                    // audio
+                    case ".mp3":
+                    case ".wav":
+                    case ".m4a":
+                    case ".ogg":
+                    case ".3gp":
+                    case ".flac": {
+                      return {
+                        type: "html",
+                        value: `<audio src="${url}" controls></audio>`,
+                      }
                     }
-                  } else if ([".pdf"].includes(ext)) {
-                    return {
-                      type: "html",
-                      value: `<iframe src="${url}" class="pdf"></iframe>`,
+                    // documents
+                    case ".pdf": {
+                      return {
+                        type: "html",
+                        value: `<iframe src="${url}" class="pdf"></iframe>`,
+                      }
                     }
-                  } else {
-                    const block = anchor
-                    return {
-                      type: "html",
-                      data: { hProperties: { transclude: true } },
-                      value: toHtml(
-                        h(
-                          "blockquote.transclude",
-                          { "data-url": url, "data-block": block, "data-embed-alias": alias },
-                          h("a.transclude-inner", { href: url + anchor }, [
-                            { type: "text", value: `Transclude of ${url} ${block}` },
-                          ]),
+                    // default: transclude block
+                    default: {
+                      const block = anchor
+                      return {
+                        type: "html",
+                        data: { hProperties: { transclude: true } },
+                        value: toHtml(
+                          h(
+                            "blockquote.transclude",
+                            { "data-url": url, "data-block": block, "data-embed-alias": alias },
+                            h("a.transclude-inner", { href: url + anchor }, [
+                              { type: "text", value: `Transclude of ${url} ${block}` },
+                            ]),
+                          ),
+                          { allowDangerousHtml },
                         ),
-                        { allowDangerousHtml },
-                      ),
+                      }
                     }
                   }
 
@@ -643,6 +657,9 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
             visit(tree, "element", (node, index, parent) => {
               if (blockTagTypes.has(node.tagName)) {
+                if (file.data.slug === "are.na") {
+                  console.dir(parent, { depth: 10 })
+                }
                 const nextChild = parent?.children.at(index! + 2) as Element
                 if (nextChild && nextChild.tagName === "p") {
                   const text = nextChild.children.at(0) as Literal
@@ -832,6 +849,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                       type: "button",
                       ariaLabel: "Expand mermaid diagram",
                       tabindex: -1,
+                      "data-view-component": true,
                     },
                     [
                       s("svg", { ...svgOptions, viewbox: "0 -8 24 24", tabindex: -1 }, [
@@ -855,7 +873,9 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     ],
                   ),
                   node,
-                  h("#mermaid-container", { role: "dialog" }),
+                  h("#mermaid-container", { role: "dialog" }, [
+                    h("#mermaid-space", [h(".mermaid-content")]),
+                  ]),
                 ]
               },
             )

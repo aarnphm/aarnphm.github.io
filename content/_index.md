@@ -6,9 +6,9 @@ aliases:
 tags:
   - evergreen
   - fruit
+description: and digital garden.
 date: "2022-04-22"
-description: Aaron's digital garden
-modified: 2025-01-31 21:56:05 GMT-05:00
+modified: 2025-08-08 21:32:14 GMT-04:00
 title: Aaron's notes
 ---
 
@@ -21,19 +21,19 @@ Currently, I'm working at a [infrastructure startup](https://bentoml.com) buildi
 * present.
   * present, but you will find
   *  me
-    * me either writing
-      * or working on [[thoughts/work|open-source projects]]
-        * or spending too much time on fixing the [site you are on](https://github.com/aarnphm/aarnphm.github.io)
+    * me either writing.
+      * me working on [[thoughts/work|open-source projects]].
+        * me spending too much time on fixing this [site](https://github.com/aarnphm/aarnphm.github.io).
           * me [[books|reading]].
     * I enjoy
     * to
       * to take long walks
         * nerd-snipping on [[/tags/math|math-related]] topics,
-          * libraries
+          * going to public libraries
             * watching people
               * yuzu-related dishes
-                * anything [[thoughts/images/onionnnnnnnnnn.webp|onion]] or garlic or beets (i heckin love onion)
-                  * watches (horology)
+                * anything [[thoughts/images/onionnnnnnnnnn.webp|onion-related]] or garlic or beets
+                  * collecting watches (horology)
                     * folktronica
                       * Miles David and the Quintet
                         * Focault and Wittgenstein's writing,
@@ -76,14 +76,13 @@ Currently, I'm working at a [infrastructure startup](https://bentoml.com) buildi
                                                     * about building
                                                     * tools that
                                                       * [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|tools]] that
-                                                      * extend
-                                                        * extend our [[thoughts/Agency|agency]]: agency
-                                                        * to
+                                                        * extend our [[thoughts/Agency|agency]]:
+                                                        * agency
                                                           * to follow what one is drawn towards
                                                             * as a medium of [[thoughts/representations|expression]]
-                                                              * to fullfil one's [[thoughts/desire]] in life. In general, sofware should
-                                                              * be
-                                                                * be minimal.
-                                                                  * be intuitive
-                                                                    * be [malleable](https://www.geoffreylitt.com/2023/03/25/llm-end-user-programming.html).
+                                                              * to fulfil one's [[thoughts/desire]] in life.
+                                                      * Software should be
+                                                        * be minimal.
+                                                          * be intuitive.
+                                                            * be [malleable.](https://www.geoffreylitt.com/2023/03/25/llm-end-user-programming.html)
 ```

@@ -12,7 +12,7 @@ async function queryUsers(): Promise<ApiResponse> {
   try {
     const r = await fetch("https://curius.app/api/users/aaron-pham", HEADERS)
     if (!r.ok) throw new Error("Network error")
-    const d = await r.json()
+    const d: any = await r.json()
     return { user: d.user }
   } catch {
     return { user: {} as User }
@@ -23,7 +23,7 @@ async function queryLinks(): Promise<ApiResponse> {
   try {
     const r = await fetch("https://curius.app/api/users/3584/links", HEADERS)
     if (!r.ok) throw new Error("Network error")
-    const d = await r.json()
+    const d: any = await r.json()
     return { links: d.userSaved || [] }
   } catch {
     return { links: [] }

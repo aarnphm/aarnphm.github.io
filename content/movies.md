@@ -4,7 +4,7 @@ comments: false
 tags:
   - evergreen
 date: "2024-02-07"
-modified: 2025-08-01 11:33:33 GMT-04:00
+modified: 2025-08-07 16:25:52 GMT-04:00
 title: movies.
 ---
 
@@ -70,6 +70,7 @@ If you want a more complete list, check out [this entries on letterboxd](https:/
 - [ ] Vertigo
 - [ ] Anatomy of a Fall
 - [ ] The Perks of Being a Wallflower
+- [ ] We Won't Grow Old Together
 
 [^lychian]: What makes a [Lychian] (https://en.wikipedia.org/wiki/David_Lynch) movie?
 

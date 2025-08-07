@@ -2,8 +2,8 @@ import esbuild from "esbuild"
 import remarkParse from "remark-parse"
 import remarkRehype from "remark-rehype"
 import { Processor, unified } from "unified"
-import { Root as MDRoot } from "remark-parse/lib"
-import { Root as HTMLRoot } from "hast"
+import { Root as MdRoot } from "mdast"
+import { Root as HtmlRoot } from "hast"
 import { MarkdownContent, ProcessedContent } from "../plugins/vfile"
 import { PerfTimer } from "../util/perf"
 import { read } from "to-vfile"
@@ -15,8 +15,8 @@ import { trace } from "../util/trace"
 import { BuildCtx, WorkerSerializableBuildCtx } from "../util/ctx"
 import { styleText } from "util"
 
-export type QuartzMdProcessor = Processor<MDRoot, MDRoot, MDRoot>
-export type QuartzHtmlProcessor = Processor<undefined, MDRoot, HTMLRoot>
+export type QuartzMdProcessor = Processor<MdRoot, MdRoot, MdRoot>
+export type QuartzHtmlProcessor = Processor<undefined, MdRoot, HtmlRoot>
 
 export function createMdProcessor(ctx: BuildCtx): QuartzMdProcessor {
   const transformers = ctx.cfg.plugins.transformers
@@ -127,7 +127,7 @@ export function createMarkdownParser(ctx: BuildCtx, mdContent: MarkdownContent[]
       try {
         const perf = new PerfTimer()
 
-        const newAst = await processor.run(ast as MDRoot, file)
+        const newAst = await processor.run(ast as MdRoot, file)
         res.push([newAst, file])
 
         if (ctx.argv.verbose) {

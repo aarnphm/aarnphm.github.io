@@ -63,7 +63,7 @@ function startLoading() {
 
 interface StackedNote {
   slug: string
-  contents: HTMLElement[]
+  contents: [...HTMLDivElement[]]
   title: string
   hash?: string
 }
@@ -302,13 +302,13 @@ class StackedNoteManager {
     const txt = await response.text()
     const html = p.parseFromString(txt, "text/html")
     normalizeRelativeURLs(html, url)
-    const contents = new Set<HTMLElement>()
+    const contents = new Set<HTMLDivElement>()
     for (const el of Array.from(html.getElementsByClassName("popover-hint"))) {
       if (el.classList.contains("page-footer") && !el.hasChildNodes()) {
         el.remove()
         continue
       }
-      contents.add(el as HTMLElement)
+      contents.add(el as HTMLDivElement)
     }
     if (contents.size == 0) return
 
@@ -537,21 +537,6 @@ class StackedNoteManager {
     return
   }
 
-  private async focus(slug: string) {
-    const notes = [...this.column.children] as HTMLElement[]
-    const note = notes.find((note) => note.dataset.slug === slug)
-    if (!note) return false
-
-    requestAnimationFrame(() => {
-      this.main.scrollTo({ left: note.getBoundingClientRect().left, behavior: "smooth" })
-    })
-    note.classList.add("highlights")
-    setTimeout(() => {
-      note.classList.remove("highlights")
-    }, 500)
-    return true
-  }
-
   async add(href: URL, anchor?: HTMLElement) {
     let slug = this.getSlug(href)
 
@@ -570,8 +555,19 @@ class StackedNoteManager {
 
     // If note exists in DAG
     if (this.dag.has(slug)) {
+      const notes = [...this.column.children] as HTMLElement[]
+      const note = notes.find((note) => note.dataset.slug === slug)
+      if (!note) return false
+
+      requestAnimationFrame(() => {
+        this.main.scrollTo({ left: note.getBoundingClientRect().left, behavior: "smooth" })
+      })
+      note.classList.add("highlights")
+      setTimeout(() => {
+        note.classList.remove("highlights")
+      }, 500)
       notifyNav(slug)
-      return await this.focus(slug)
+      return true
     }
 
     // Get clicked note's slug
@@ -642,6 +638,10 @@ class StackedNoteManager {
   async navigate(url: URL) {
     try {
       if (!this.active) return await this.open()
+
+      // notify about to nav
+      const event: CustomEventMap["prenav"] = new CustomEvent("prenav", { detail: {} })
+      document.dispatchEvent(event)
 
       await this.add(url)
       await this.render()

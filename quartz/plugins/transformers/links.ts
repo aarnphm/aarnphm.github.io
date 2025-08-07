@@ -133,6 +133,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
             visit(
               tree,
               (node: Element) => shouldRewriteLinks(node as Element),
+              //@ts-ignore
               (node: Element) => {
                 const classes = (node.properties.className ?? []) as string[]
                 // insert a span element into node.children

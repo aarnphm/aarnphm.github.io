@@ -119,7 +119,7 @@ function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndexMap, limit?:
 </rss>`
 }
 
-function generateAtomFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: number): string {
+function generateAtomFeed(cfg: GlobalConfiguration, idx: ContentIndexMap, limit?: number): string {
   const base = cfg.baseUrl ?? "example.com"
   const createURLEntry = (slug: SimpleSlug, content: ContentDetails): string => {
     let modifiedDate = content.date

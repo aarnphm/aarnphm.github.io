@@ -13,8 +13,9 @@ export default (() => {
           id="stacked-note-toggle"
           title="Toggle stacked notes"
           aria-label="Toggle stacked notes"
-          type="button"
           role="switch"
+          // @ts-ignore
+          type="button"
           aria-checked="false"
         >
           <div class="view-toggle-slide" />

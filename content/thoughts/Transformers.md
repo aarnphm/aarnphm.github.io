@@ -3,9 +3,9 @@ id: Transformers
 tags:
   - ml
   - technical
-date: "2024-02-07"
 description: and the backbone of the AI progress.
-modified: 2025-06-16 22:52:35 GMT-04:00
+date: "2024-02-07"
+modified: 2025-08-07 17:42:54 GMT-04:00
 title: Transformers
 ---
 
@@ -45,15 +45,23 @@ Either compute-bound (batch inference, saturated usage) or memory-bound (latency
 
 ### KV
 
+![[thoughts/KV offloading#motivation]]
+
 The core "retrieval" bags that contains all previous stored key-value pair or newly added items.
 
-Prefill disaggregation is pretty interesting in a sense that we can separate prefill stage to a separate nodes [@qin2024mooncakekvcachecentricdisaggregatedarchitecture]
+[[thoughts/PD disaggregated serving|Prefill disaggregation]] is pretty interesting in a sense that we can separate prefill stage to a separate nodes [@qin2024mooncakekvcachecentricdisaggregatedarchitecture]
 
 ![[thoughts/images/mooncake-pd.webp|KV-centric optimization]]
 
-> [!question]
->
-> Why do we need to use KV Cache?
+#### napkin math
+
+for calculating memory usage, see also [calculator from LMCache team](https://lmcache.ai/kv_cache_calculator.html)
+
+$$
+\frac{2 \times \text{batch_size} \times  \text{seq_len} \times  \text{num_layers} \times  \text{num_attn_heads} \times \text{dim_attn_heads} \times (\text{precision} / 8)}{1024^{3}}
+$$
+
+in this case, precision can be FP16, MXFP4, [[thoughts/quantization|FP8]]
 
 ### next-token prediction.
 
@@ -61,7 +69,7 @@ Sampling: we essentially look forward K-tokens, and then we sample from the dist
 
 ### multi-token prediction.
 
-[@gloeckle2024betterfasterlarge]
+@gloeckle2024betterfasterlarge
 
 ![[thoughts/images/MTP-deepseek.webp|MTP implementation in DeepSeek, where they keep causal chain for prediction of each token at each depth]]
 

@@ -1,6 +1,5 @@
 import { Project } from "ts-morph"
 import * as path from "path"
-import * as fs from "fs"
 
 /**
  * Codemod: replace "@/xyz" style imports and other `@` path aliases with a file-relative path.

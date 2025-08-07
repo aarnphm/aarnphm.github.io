@@ -28,3 +28,5 @@ MWC25.pdf
 capstone
 .morph
 tracker
+*.asc
+*.sig

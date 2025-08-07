@@ -11,6 +11,7 @@
 @use "./pages/letters.scss";
 @use "./pages/technical.scss";
 @use "./pages/reflection.scss";
+@use "./pages/arena.scss";
 
 @include font-face("Berkeley Mono", ("Berkeley Mono Variable.woff2"), ("woff2"));
 @include font-face("ABC Diatype Light", "ABCDiatype-Light.woff2", "woff2");

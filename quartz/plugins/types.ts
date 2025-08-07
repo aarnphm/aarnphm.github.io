@@ -63,3 +63,17 @@ export type QuartzEmitterPluginInstance = {
   getQuartzComponents?: (ctx: BuildCtx) => QuartzComponent[]
   externalResources?: ExternalResourcesFn
 }
+
+export interface Notes {
+  container: HTMLElement
+  main: HTMLElement // the scrollable div
+  column: HTMLElement // the actual container for all stacks
+
+  active: boolean
+  destroy(): void
+  getChain(): string
+
+  open(): Promise<boolean>
+  add(href: URL): Promise<boolean>
+  navigate(url: URL): Promise<boolean>
+}

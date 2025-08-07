@@ -58,6 +58,7 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
     getQuartzComponents() {
       return []
     },
+    async *partialEmit() {},
     async *emit(ctx, content, _resources) {
       if (ctx.argv.watch) return []
 
@@ -122,7 +123,7 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
             const defaultOgImagePath = `https://${baseUrl}/static/og-image.webp`
             const ogImagePath = userDefinedOgImagePath ?? generatedOgImagePath ?? defaultOgImagePath
 
-            const ogImageMimeType = `image/${getFileExtension(ogImagePath).slice(1) ?? "png"}`
+            const ogImageMimeType = `image/${getFileExtension(ogImagePath)!.slice(1) ?? "png"}`
             return (
               <>
                 {!userDefinedOgImagePath && (

@@ -6,11 +6,11 @@ tags:
   - technical
 description: a method to speed up LLM decoding
 date: "2025-05-21"
-modified: 2025-08-01 23:06:06 GMT-04:00
+modified: 2025-08-07 16:59:49 GMT-04:00
 title: Speculative decoding
 ---
 
-Idea: "draft-and-verify" using smaller models to generate a head tokens (quick explanation from [karpathy](https://x.com/karpathy/status/1697318534555336961))
+Idea: "draft-and-verify" using smaller models to generate a head tokens (quick explanation from [karpathy](https://x.com/karpathy/status/1697318534555336961)), for proof see [[thoughts/Speculative decoding#speculative sampling]]
 
 Intuitively:
 
@@ -24,7 +24,7 @@ A few techniques such as [[thoughts/Speculative decoding#ngrams|ngrams]], [[thou
 ## papers
 
 - https://github.com/hemingkx/SpeculativeDecodingPapers
-- https://www.arxiv.org/pdf/2506.20675
+- https://arxiv.org/pdf/2506.20675
 
 ## EAGLE
 
@@ -36,7 +36,7 @@ _Extrapolation Algorithm for Greater Language-model Efficiency_
 
 Motivation:
 
-- speculative sampling relies on the draft models having similar distributions as the target models.
+- [[thoughts/Speculative decoding#speculative sampling]] relies on the draft models having similar distributions as the target models.
   - use smaller models. i.e: Llama 3.2 3B as draft for Llama 3.3 70B.
   - high overhead for stepping through the whole models would outweighs the benefits
 
@@ -88,9 +88,12 @@ EAGLE address this by **inputs the token sequence from one time step ahead inclu
 
 ![[thoughts/images/eagle-figure-6-architecture.webp]]
 
-- `[feature_seq, token_seq] # [bs, seq_len, hidden_dim], [bs, seq_len]`
-- `token_seq -> token_emb # [bs, seq_len] -> [bs, seq_len, hidden_dim]`
-- `fused_seq = feature_seq * token_emb # [bs, seq_len, 2xhidden_dim]` [^triton-fused-ops]
+- ```python
+  [feature_seq, token_seq] # [bs, seq_len, hidden_dim], [bs, seq_len]
+  token_seq -> token_emb # [bs, seq_len] -> [bs, seq_len, hidden_dim]
+  fused_seq = feature_seq * token_emb # [bs, seq_len, 2 x hidden_dim]
+  ```
+  [^triton-fused-ops]
 - autoregressive_head:
   - FC layer -> `reduce # [bs, seq_len, hidden_dim]`
   - decoder layer -> `features`
@@ -547,7 +550,7 @@ If we get an improvement for $\gamma$, we'd also get improvement for any $0 < \g
 >
 > The expected factor of increase in number of operations is $\frac{(1-\alpha)(\gamma \hat{c} + \gamma + 1)}{1-\alpha^{\gamma +1}}$ [^proof-3-11]
 
-[^proof-3-11]: Denote by $\hat{T}$ the number of arithmetic operations done by standard decoding per tokens, therefore speculative sampling costs $\hat{T} \hat{c} \gamma + \hat{T}(\gamma +1)$ operations. Then divided by the expected tokens we got the desired results $\boxed{}$
+[^proof-3-11]: Denote by $\hat{T}$ the number of arithmetic operations done by standard decoding per tokens, therefore [[thoughts/Speculative decoding#speculative sampling]] costs $\hat{T} \hat{c} \gamma + \hat{T}(\gamma +1)$ operations. Then divided by the expected tokens we got the desired results $\boxed{}$
 
 ---
 

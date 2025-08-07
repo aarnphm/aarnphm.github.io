@@ -2,9 +2,9 @@
 id: notes
 tags:
   - seed
-date: "2024-12-08"
 description: contact[at]aarnphm[dot]xyz
-modified: 2025-01-25 02:22:03 GMT-05:00
+date: "2024-12-08"
+modified: 2025-08-07 16:41:07 GMT-04:00
 noindex: true
 title: procedural notes.
 ---

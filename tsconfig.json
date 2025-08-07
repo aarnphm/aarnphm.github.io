@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "lib": ["esnext", "DOM", "DOM.Iterable"],
-    "types": ["./worker-configuration.d.ts", "node"],
     "experimentalDecorators": true,
     "module": "esnext",
     "target": "esnext",
@@ -19,5 +18,5 @@
     "jsxImportSource": "preact"
   },
   "include": ["**/*.ts", "**/*.tsx", "./package.json"],
-  "exclude": ["build/**/*.d.ts"]
+  "exclude": ["build/**/*.d.ts", "worker/**", "worker-configuration.d.ts"]
 }
