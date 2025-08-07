@@ -69,7 +69,9 @@ export default async function handleArxiv(request: Request): Promise<Response> {
       })
     const metadata = await getArxivMetadata(identifier)
     if (url.searchParams.get("metadata") === "true")
-      return new Response(JSON.stringify(metadata), { headers: { "Content-Type": "application/json" } })
+      return new Response(JSON.stringify(metadata), {
+        headers: { "Content-Type": "application/json" },
+      })
     const pdfResp = await fetch(metadata.pdfUrl, { headers: { "User-Agent": USER_AGENT } })
     if (!pdfResp.ok || !pdfResp.body)
       return new Response(JSON.stringify({ error: `Failed to fetch PDF: ${pdfResp.statusText}` }), {
