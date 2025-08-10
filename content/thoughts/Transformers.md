@@ -5,7 +5,7 @@ tags:
   - technical
 description: and the backbone of the AI progress.
 date: "2024-02-07"
-modified: 2025-08-07 17:42:54 GMT-04:00
+modified: 2025-08-10 17:22:26 GMT-04:00
 title: Transformers
 ---
 
@@ -58,7 +58,7 @@ The core "retrieval" bags that contains all previous stored key-value pair or ne
 for calculating memory usage, see also [calculator from LMCache team](https://lmcache.ai/kv_cache_calculator.html)
 
 $$
-\frac{2 \times \text{batch_size} \times  \text{seq_len} \times  \text{num_layers} \times  \text{num_attn_heads} \times \text{dim_attn_heads} \times (\text{precision} / 8)}{1024^{3}}
+\frac{2 \times \text{batch\_size} \times  \text{seq\_len} \times  \text{num\_layers} \times  \text{num\_attn\_heads} \times \text{dim\_attn\_heads} \times (\text{precision} / 8)}{1024^{3}}
 $$
 
 in this case, precision can be FP16, MXFP4, [[thoughts/quantization|FP8]]
