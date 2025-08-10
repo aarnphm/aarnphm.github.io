@@ -8,10 +8,10 @@ tags:
   - technical
   - seed
 description: My run-down version of are[dot]na
-date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-08-08 17:04:52 GMT-04:00
+date: "2024-10-24"
+modified: 2025-08-10 00:31:47 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -138,6 +138,10 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://jennywen.ca/ -- Jenny Wen
   - Figma
 - https://www.thibaut.cool/ -- Thibaut Crépelle
+- https://en.wikipedia.org/wiki/Harry_Nyquist -- Harry Nyquist
+  - Communication theory, stability of feedback amplifiers
+  - Johnson–Nyquist noise
+  - Nyquist–Shannon sampling theorem
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -321,6 +325,7 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://paulgraham.com/95.html -- PG's 95% of great programmers in
 - https://paulgraham.com/woke.html -- Origin of Wokeness
 - https://www.noahpinion.blog/p/will-data-centers-crash-the-economy -- Will data centers crash the economy?
+- https://x.com/eigenrobot/status/1954363395068616745 -- Gaza's privatization
 
 ### life is literature
 
@@ -428,7 +433,8 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - [[thoughts/GPU programming]]
 - https://www.doc.ic.ac.uk/~eedwards/compsys/float/#:~:text=Add%20the%20exponents%20to%20find,1.021%20%C3%97%20106 -- Floating points arithmetics
 - https://www.unco.edu/campus-recreation/pdf/intramural-sports/spring20/running-pace-chart.pdf -- Running pace chart
-- https://github.com/triton-lang/triton/blob/a758c595ddb149381b7ee888982f1afbeb02823c/python/triton_kernels/triton_kernels/matmul_ogs_details/_matmul_ogs.py#L291 -- matmul_ogs for mxfp4
+- https://github.com/triton-lang/triton/blob/a758c595ddb149381b7ee888982f1afbeb02823c/python/triton_kernels/triton_kernels/matmul_ogs_details/_matmul_ogs.py#L291 -- matmul_ogs for [[thoughts/quantization#mxfp4|mxfp4]]
+- https://notes.eatonphil.com/2025-08-09-what-even-is-distributed-systems.html -- What even is _distributed systems_
 
 ### lecture
 

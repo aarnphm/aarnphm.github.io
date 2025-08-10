@@ -6,13 +6,13 @@ aliases:
 tags:
   - evergreen
   - fruit
-description: and digital garden.
+description: practicing the act of digital gardening.
 date: "2022-04-22"
-modified: 2025-08-08 21:32:14 GMT-04:00
+modified: 2025-08-10 05:22:14 GMT-04:00
 title: Aaron's notes
 ---
 
-I'm best reached [on twitter](https://twitter.com/aarnphm_) or [contact\[at\]aarnphm.xyz](mailto:contact@aarnphm.xyz)
+I'm best reached [on twitter](https://twitter.com/aarnphm_) or [contact\[at\]aarnphm.xyz](mailto:contact@aarnphm.xyz). If you are interested in dating me, then see [[/dating|this doc.]]
 
 Currently, I'm working at a [infrastructure startup](https://bentoml.com) building [[/tags/ml]] serving systems, where I mainly work on [[thoughts/LLMs|LLM]] [[thoughts/vllm|serving engine]].
 
@@ -68,21 +68,15 @@ Currently, I'm working at a [infrastructure startup](https://bentoml.com) buildi
                                                 * about their intrinsic [[thoughts/Agency|drive]].
                                                 * <br /><br />My research interests lie in
                                                 * interpretability.
-                                                  * interpretability ([[thoughts/mechanistic interpretability|inner working]] of a neural network, especially cross-layer superposition),
+                                                  * interpretability ([[thoughts/mechanistic interpretability|inner working]] of a neural network),
                                                   * and ML system.
                                                     * and [[thoughts/Machine learning|ML]] system (inference engine [[thoughts/optimization|optimization]]).
                                                   * <br /><br />On a higher level, I care
                                                   * about
-                                                    * about building
-                                                    * tools that
-                                                      * [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|tools]] that
-                                                        * extend our [[thoughts/Agency|agency]]:
-                                                        * agency
-                                                          * to follow what one is drawn towards
-                                                            * as a medium of [[thoughts/representations|expression]]
-                                                              * to fulfil one's [[thoughts/desire]] in life.
-                                                      * Software should be
-                                                        * be minimal.
-                                                          * be intuitive.
-                                                            * be [malleable.](https://www.geoffreylitt.com/2023/03/25/llm-end-user-programming.html)
+                                                    * about building [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|tools]]
+                                                    * that extend our [[thoughts/Agency|agency]]:
+                                                      * agency
+                                                        * to follow what one is drawn towards
+                                                          * as a medium of [[thoughts/representations|expression]]
+                                                            * to fulfil one's [[thoughts/desire]] in life.
 ```

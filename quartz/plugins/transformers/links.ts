@@ -183,7 +183,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 if (
                   linkTypes.isWikipedia &&
                   node.children.length === 1 &&
-                  node.children[0].type === "text"
+                  node.children[0].type === "text" &&
+                  node.children[0].value === dest
                 ) {
                   try {
                     const u = new URL(dest)
@@ -198,7 +199,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 if (
                   linkTypes.isYoutube &&
                   node.children.length === 1 &&
-                  node.children[0].type === "text"
+                  node.children[0].type === "text" &&
+                  node.children[0].value === dest
                 ) {
                   try {
                     const u = new URL(dest)
@@ -212,7 +214,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 if (
                   linkTypes.isGoogleDocs &&
                   node.children.length === 1 &&
-                  node.children[0].type === "text"
+                  node.children[0].type === "text" &&
+                  node.children[0].value === dest
                 ) {
                   try {
                     const u = new URL(dest)
@@ -231,7 +234,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 if (
                   linkTypes.isGoogleDrive &&
                   node.children.length === 1 &&
-                  node.children[0].type === "text"
+                  node.children[0].type === "text" &&
+                  node.children[0].value === dest
                 ) {
                   try {
                     const u = new URL(dest)

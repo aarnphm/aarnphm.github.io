@@ -11,7 +11,7 @@ const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
   const patterns = ["**/*.md", ...cfg.configuration.ignorePatterns]
 
   // Skip PDFs when running in Cloudflare Pages
-  if (process.env.CF_PAGES === "1") {
+  if (process.env.CF_PAGES === "1" || argv.watch) {
     patterns.push("**/*.pdf", "**.ddl", "**.mat")
   }
 

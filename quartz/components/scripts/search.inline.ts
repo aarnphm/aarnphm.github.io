@@ -1,4 +1,4 @@
-import FlexSearch from "flexsearch"
+import FlexSearch, { DocumentData } from "flexsearch"
 import type { ContentDetails } from "../../plugins"
 import {
   registerEscapeHandler,
@@ -11,14 +11,14 @@ import {
 import { FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
 import { escapeHTML } from "../../util/escape"
 
-interface Item {
+interface Item extends DocumentData {
   id: number
   slug: FullSlug
   title: string
   content: string
   tags: string[]
   aliases: string[]
-  target: string | undefined
+  target: string
 }
 
 // Can be expanded with things like "term" in the future
@@ -27,7 +27,7 @@ let searchType: SearchType = "basic"
 let currentSearchTerm: string = ""
 
 // Initialize the FlexSearch Document instance with the appropriate configuration
-const index = new FlexSearch.Document({
+const index = new FlexSearch.Document<Item>({
   tokenize: "forward",
   encode,
   document: {
@@ -421,6 +421,7 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
         // search by title and content index and then filter by tag (implemented in flexsearch)
         const tag = currentSearchTerm.substring(0, separatorIndex)
         const query = currentSearchTerm.substring(separatorIndex + 1).trim()
+        // @ts-ignore
         const results = await index.searchAsync({
           query: query,
           // return at least 10000 documents, so it is enough to filter them by tag
@@ -428,6 +429,7 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
           index: ["title", "content", "aliases"],
           tag: tag,
         })
+        // @ts-ignore
         searchResults = Object.values(results)
         // set search type to basic and remove tag from term for proper highlighting and scroll
         searchType = "basic"
@@ -439,6 +441,7 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
           limit: numSearchResults,
           index: ["tags"],
         })
+        // @ts-ignore
         searchResults = Object.values(results)
       }
     } else if (searchType === "basic") {
@@ -447,6 +450,7 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
         limit: numSearchResults,
         index: ["title", "content", "aliases"],
       })
+      // @ts-ignore
       searchResults = Object.values(results)
     }
 

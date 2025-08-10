@@ -5,7 +5,7 @@ tags:
   - evergreen
 description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
 date: "2022-04-22"
-modified: 2025-07-08 04:31:05 GMT-04:00
+modified: 2025-08-10 04:58:22 GMT-04:00
 title: antilibrary.
 ---
 
@@ -19,7 +19,9 @@ A list of book that remains forever in my bag, and I like the idea of reading it
 
 - Beyond Good and Evil by Friedrich Nietzsche
 - [[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]] by Gilles Deleuze
-- **[Web Browser Engineering](https://browser.engineering/onepage.html)** by Pavel Panchekha & Chris Harrelson
+- [Web Browser Engineering](https://browser.engineering/onepage.html) by Pavel Panchekha & Chris Harrelson
+- Ma Gastronomie by Fernand Point
+- The Critique of Pure Reason by Immanuel Kant
 
 ## current.
 
@@ -32,8 +34,6 @@ A list of book that remains forever in my bag, and I like the idea of reading it
 | Being and Time                                    | Martin Heidegger                 | [[thoughts/being#Heidegger's Being and Time\|notes]] |
 | The Rebel                                         | [[thoughts/Camus\|Albert Camus]] |                                                      |
 | The First Man                                     | Albert Camus                     |                                                      |
-| The Need For Roots                                | Simone Weil                      |                                                      |
-| Ma Gastronomie                                    | Fernand Point                    |                                                      |
 
 ## to read.
 
@@ -83,11 +83,6 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 
 - **The Critique of Practical Reason**
 - **Groundwork of the Metaphysics of Morals**
-
-#### [[thoughts/Camus|Camus]]
-
-- **The Fall**
-- **Resistance, Rebellion, and Death**
 
 ### non-fiction
 
@@ -153,9 +148,11 @@ _The following includes a list of books I have finished._
 - **The Castle** by Frank Kafka
 - **The Prince** by Niccolò Machiavelli
 - **The Applicant** by [Sylvia Plath](https://www.poetryfoundation.org/poems/57419/the-applicant)
-- **The Critique of Pure Reason** by Immanuel Kant
 - **[[thoughts/Freud#The Ego and the Id|The Ego and The Id]]** by Sigmund Freud
 - **Crime and Punishment** by Fyodor Dostoevsky
+- **The Need For Roots** by Simone Weil
+- **The Fall** by Albert Camus
+- **Resistance, Rebellion, and Death** by Albert Camus
 
 ### 2024
 

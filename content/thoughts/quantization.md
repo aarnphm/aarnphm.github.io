@@ -1,10 +1,10 @@
 ---
-date: 2024-02-05
 id: quantization
-modified: "2025-07-04 20:47:32 GMT-04:00"
 tags:
   - seed
   - ml
+date: "2024-02-05"
+modified: 2025-08-10 01:07:13 GMT-04:00
 title: Quantization
 ---
 
@@ -62,6 +62,48 @@ $$
 $$
 
 https://arxiv.org/abs/1712.05877
+
+## mxfp4
+
+see also: [specification](https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf)
+
+stands for _microscaling (mx) of 4-bit floating-point (fp4)_
+
+https://arxiv.org/pdf/2310.10537, first proposed in Open Compute Project (OCP), backed by OpenAI, AMD, NVIDIA, Microsoft, Meta.
+
+Developed for training, given that FP4 is "good enough" in inference.
+
+- E2M1: 1 sign bit, 2 exponent bit, and 1 mantissa bit per parameter.
+- Block: divided into 32 block_size
+- Use a common 8-bit shared scale, best fit all values in a block.
+- The value is decoded as:
+  $$
+  X_i = P_i \times S
+  $$
+  where $X_i$ is the reconstructed value, $P_i$ is the FP4 quantized value, and $S$ denotes the shared scale.
+
+To preserve gradient integrity:
+
+- Stochastic Rounding: Randomizes rounding direction, ensuring no systematic loss of information during training updates prevents bias and preserves learning progress.
+- Random Hadamard Transform
+- Group-wise Quantization
+
+```pseudo
+\begin{algorithm}
+\caption{Convert vector of scalar floats $\{V_i\}_{i=1}^k$ to an MX block $\{X,\{P_i\}_{i=1}^k\}$}
+\begin{algorithmic}
+\Require $e^{\max}_{\text{elem}}$ \Comment{exponent of the largest normal number in the element data format}
+\State $\text{shared\_exp} \gets \left\lfloor \log_2\!\left(\max_i |V_i|\right) \right\rfloor - e^{\max}_{\text{elem}}$
+\State $X \gets 2^{\text{shared\_exp}}$
+\For{$i = 1$ \textbf{to} $k$}
+    \State $P_i \gets \text{quantize\_to\_element\_format}\!\left(\frac{V_i}{X}\right)$ \Comment{clamp to normal-number range}
+\EndFor
+\State \textbf{return} $X,\ \{P_i\}_{i=1}^{k}$
+\end{algorithmic}
+\end{algorithm}
+```
+
+![[thoughts/images/compute-flow-mxformat.webp]]
 
 ## quantization time
 

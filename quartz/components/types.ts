@@ -29,7 +29,7 @@ export type QuartzComponentConstructor<Options extends object | undefined = unde
   opts: Options,
 ) => QuartzComponent
 
-interface Entity extends Partial<DocumentData> {
+interface Entity extends DocumentData {
   id: number
   createdDate: string
   modifiedDate: string
@@ -79,7 +79,7 @@ export interface TrailInfo {
   links: Map<number, Link>
 }
 
-export interface User extends Entity {
+export interface User extends Partial<Entity> {
   firstName: string
   lastName: string
   major?: string
@@ -99,7 +99,7 @@ export interface User extends Entity {
   followingUsers: FollowingUser[]
 }
 
-export interface Link extends Entity {
+export interface Link extends Partial<Entity> {
   link: string
   title: string
   favorite: boolean

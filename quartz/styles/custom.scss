@@ -12,6 +12,7 @@
 @use "./pages/technical.scss";
 @use "./pages/reflection.scss";
 @use "./pages/arena.scss";
+@use "./pages/dating.scss";
 
 @include font-face("Berkeley Mono", ("Berkeley Mono Variable.woff2"), ("woff2"));
 @include font-face("ABC Diatype Light", "ABCDiatype-Light.woff2", "woff2");
@@ -872,4 +873,16 @@ body[data-slug="influence"] {
   margin-top: 1.9rem;
   padding-top: 1rem;
   border-top: 1px solid var(--lightgray);
+}
+
+.float-right {
+  margin: calc(1.5 * $baseMargin) 0 calc(1.5 * $baseMargin) calc(3 * $baseMargin);
+  float: right;
+  max-width: 45%;
+
+  & img,
+  img.float-right {
+    margin: 0 auto !important;
+    display: block;
+  }
 }

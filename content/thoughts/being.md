@@ -3,9 +3,9 @@ id: being
 tags:
   - seed
   - philosophy
-date: "2024-06-12"
 description: en sein.
-modified: 2025-01-05 14:38:38 GMT-05:00
+date: "2024-06-12"
+modified: 2025-08-09 23:43:27 GMT-04:00
 title: being.
 ---
 

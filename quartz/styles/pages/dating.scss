@@ -1,0 +1,35 @@
+@use "sass:map";
+@use "../variables.scss" as *;
+@use "../mixin.scss" as *;
+
+[data-slug="dating"] {
+  section {
+    &[data-activities] {
+      p {
+        &:first-child:not(.popover *) {
+          font-size: 18px;
+          font-weight: $boldWeight;
+        }
+      }
+
+      ul,
+      ol {
+        list-style-type: none;
+      }
+
+      ol {
+        padding-inline-start: 0px;
+      }
+    }
+
+    &[data-compat] {
+      p {
+        &:first-child:not(.popover *) {
+          font-size: 22.2763px; // follows h3
+          font-weight: $semiBoldWeight;
+          font-style: italic;
+        }
+      }
+    }
+  }
+}

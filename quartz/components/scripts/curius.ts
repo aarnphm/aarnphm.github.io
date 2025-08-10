@@ -298,8 +298,8 @@ function createTrailEl(
         el.classList.remove("focus")
       }
 
-      const openLink = (e: HTMLElementEventMap["click"]) => {
-        if (e.target instanceof HTMLAnchorElement) return
+      const openLink = (evt: HTMLElementEventMap["click"]) => {
+        if (evt.target instanceof HTMLAnchorElement) return
         window.open(trailLink, "_blank")
       }
 

@@ -2,13 +2,23 @@
 @use "../variables.scss" as *;
 
 body[data-layout="letter"] {
-  .header,
-  .byline,
-  .page-footer {
+  .stacked-buttons:not(.popover *),
+  .breadcrumb-container:not(.popover *),
+  .byline:not(.popover *),
+  .page-footer:not(.popover *) {
     display: none;
   }
 
+  .overlay {
+    box-shadow: none !important;
+  }
+
+  section[class~="header"] {
+    border-bottom-width: 0px;
+  }
+
   @media all and ($desktop) {
+    .title-col:not(.popover *),
     .main-col:not(.popover *) {
       grid-column: 4/9;
     }

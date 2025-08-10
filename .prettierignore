@@ -12,3 +12,6 @@ worker-configuration.d.ts
 *.mp4
 *.webp
 *.zip
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/

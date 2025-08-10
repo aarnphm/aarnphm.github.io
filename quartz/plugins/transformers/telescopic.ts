@@ -93,10 +93,10 @@ function parseMarkdown(mdContent: string): TelescopicOutput {
   // The algorithm works by assuming that any time you encounter a longer depth than the current one,
   // you are moving onto the next line.
   const firstNonEmptyLine = lines.find((l) => l.trim().length > 0)
-  const defaultBulletMatch = firstNonEmptyLine?.match(
-    `^\\s*(${RegexEscapedBulletSeparators.join("|")})`,
-  )
-  const defaultDepth = defaultBulletMatch ? defaultBulletMatch[0].length - 1 : 0
+  const defaultDepth =
+    // @ts-ignore
+    firstNonEmptyLine?.match(`^\\s*(${RegexEscapedBulletSeparators.join("|")})`)?.[0]?.length - 1 ||
+    0
   for (const line of lines) {
     const trimmedLine = line.trim()
     if (!trimmedLine.length) {

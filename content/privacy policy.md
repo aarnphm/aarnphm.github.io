@@ -1,15 +1,15 @@
 ---
 id: privacy policy
-tags:
-  - evergreen
-date: "2025-02-21"
-description: for Stripe, but shouldn't affect general sites interaction
-modified: 2025-02-21 15:29:59 GMT-05:00
-noindex: true
-pageLayout: technical
 permalinks:
   - /privacy
+tags:
+  - evergreen
+description: for Stripe, but shouldn't affect general sites interaction
+date: "2025-02-21"
+modified: 2025-08-10 01:23:18 GMT-04:00
+noindex: true
 title: Privacy Policy
+pageLayout: technical
 ---
 
 **Effective date**: February 21, 2025
@@ -26,7 +26,7 @@ I don’t actively collect personal information unless you choose to email me. H
 1. Email Contact: If you email me at [contact\[at\]aarnphm.xyz](mailto:contact@aarnphm.xyz), I collect your
    email address and any details you provide to respond to you.
 2. I use [Plausible](https://plausible.io/) for analytics (a simple, privacy Google Analytics alternatives). You should refer to their sites if you have any concern.
-3. I host everything on Cloudflare, and their analytics gives me more performance-related metrics, and I don't think that they track IP there? (If this is not the case, let me know!).
+3. I host and use everything on Cloudflare (Workers, R2, KV, Email), and their analytics gives me more performance-related metrics, and I don't think that they track IP there? (If this is not the case, let me know!).
 
 ### Uses of information
 

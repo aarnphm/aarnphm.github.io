@@ -2,12 +2,13 @@
 id: dundurn
 tags:
   - menu
+description: atelier with friends deux  - orangeville
+date: "2024-03-23"
+menu: true
+modified: 2025-08-10 03:08:02 GMT-04:00
+title: dundurn.
 cssclasses:
   - menu
-date: "2024-03-23"
-description: atelier with friends deux  - orangeville
-menu: true
-title: dundurn.
 ---
 
 ## ==entrée.==
@@ -18,7 +19,7 @@ oignons caramélisés, bouillon de bœuf, gruyère, baguette.
 
 ## ==plat principal.==
 
-### [[thoughts/atelier with friends/images/dundurn-1.webp|poissons.]]
+### poissons.
 
 flétan, sauce au beurre citronné, carottes anciennes rôties, purée de carottes.
 

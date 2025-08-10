@@ -35,7 +35,7 @@ export function registerMouseHover(el: HTMLElement, ...classList: string[]) {
 }
 
 type EventType = HTMLElementEventMap[keyof HTMLElementEventMap]
-type EventHandlers<E extends EventType> = (evt: E) => any
+type EventHandlers<E extends EventType> = (evt: E) => any | void
 
 export function registerEvents<
   T extends Document | HTMLElement | null,

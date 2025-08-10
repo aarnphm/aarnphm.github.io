@@ -17,8 +17,7 @@ interface Item extends DocumentData {
   target: string
 }
 
-let index = new FlexSearch.Document<Item>({
-  charset: "latin:extra",
+let index = new FlexSearch.Document({
   encode,
   document: {
     id: "id",

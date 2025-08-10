@@ -33,3 +33,5 @@ title: images
 ![[thoughts/images/grok-system-prompt.webp|Grok 3 system prompt]]
 
 ![[thoughts/images/Nietzsche speaks of marriage.webp|Nietzsche speaks of marriage]]
+
+![[thoughts/images/42A9F921-686E-498E-AA95-AD980AB7D078_1_105_c.webp|Are you a Kafka or a Dostoevsky person]]

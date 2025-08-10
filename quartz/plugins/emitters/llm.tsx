@@ -541,6 +541,8 @@ export const LLM: QuartzEmitterPlugin = () => {
   return {
     name,
     async *emit(ctx, content, resources) {
+      if (ctx.argv.watch) return []
+
       const allFiles = content.map((c) => c[1].data)
       const reconstructed: string[] = []
 
@@ -555,6 +557,8 @@ export const LLM: QuartzEmitterPlugin = () => {
       })
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
+      if (ctx.argv.watch) return []
+
       const allFiles = content.map((c) => c[1].data)
 
       // find all slugs that changed or were added

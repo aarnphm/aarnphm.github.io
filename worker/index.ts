@@ -179,6 +179,11 @@ export default {
       return env.ASSETS.fetch(newReq)
     }
 
+    // permanent redirect d.aarnphm.xyz -> aarnphm.xyz/dating
+    if (url.hostname === "d.aarnphm.xyz") {
+      return Response.redirect("https://aarnphm.xyz/dating", 301)
+    }
+
     // rendering supported code files as text/plain
     const assetsMatch = url.pathname.match(
       /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|tsx|jsx|yaml|yml|rs|m|sql|sh|txt|zig|lua)$/i,

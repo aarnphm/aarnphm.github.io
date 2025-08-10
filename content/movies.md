@@ -4,7 +4,7 @@ comments: false
 tags:
   - evergreen
 date: "2024-02-07"
-modified: 2025-08-07 16:25:52 GMT-04:00
+modified: 2025-08-10 03:56:31 GMT-04:00
 title: movies.
 ---
 
@@ -121,6 +121,8 @@ _doesn't mean that I won't watch it again, just that I will need some more time 
 - Notting Hill (1999)
 - Chicago (2002)
 - 2001: a space odyssey
+- We Won't Grow Old Together (1972)
+  - A married man's (Jean Yanne) six-year affair with a much-younger mistress (Marlène Jobert) reaches its end.A married man's (Jean Yanne) six-year affair with a much-younger mistress (Marlène Jobert) reaches its end.
 
 ### thriller.
 

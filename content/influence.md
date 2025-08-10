@@ -1,18 +1,18 @@
 ---
 id: influence
-aliases:
-  - thanks
-  - cool people
+permalinks:
+  - /thanks
 tags:
   - growth
   - love
-abstract: I want to think about my life as being RLHF by the people I surround myself with. As such, we populate our concept of the world around them. This is a list of people that inspire me to be my best-self at all times.
-comments: false
-date: "2024-01-23"
 description: a thank you letter.
-modified: 2025-01-20 17:51:13 GMT-05:00
-permalinks:
-  - /thanks
+date: "2024-01-23"
+aliases:
+  - thanks
+  - cool people
+abstract: I want to think about my life as being RLHF by the people I surround myself with. As such, we populate our concept of the world around them. This is a list of people that inspire me to be my best-self at all times.
+modified: 2025-08-10 03:47:43 GMT-04:00
+comments: false
 title: affecter.
 ---
 
@@ -23,7 +23,7 @@ The following lists of people who I owed a lot. I would separate from top-to-bot
 - [Jacky](https://jzhao.xyz/), for always encouraging me to think hardly, even from afar
 - [Chaoyu](https://twitter.com/chaoyu_), for taking a bet on me, four years ago.
 - [Sean](https://www.linkedin.com/in/ssheng/), whom I consider as a friend both professionally and personally.
-- All my colleagues at [that infrastructure startup](https://bentoml.com/), for your trust in me for the past four years.
+- All my colleagues at [that infrastructure startup](https://bentoml.com/), for your trust in me.
 - [Tommy](https://tommytrinh.me/), for your laughs, and going through life with pure determinism.
 - [Kelly](https://www.kellychong.ca/), for your wonderful [[thoughts/taste]] and holistic worldview.
 - [Wilbur](https://www.wilburzhang.com/), for your thoughts, vulnerability, and trust.
@@ -52,3 +52,7 @@ The following lists of people who I owed a lot. I would separate from top-to-bot
 - Christopher Nolan
 - Raymond Carver
 - Simone Weil
+- Claude Shannon
+- John von Neumann
+- [Horace He](https://horace.io/)
+- Sergei Rachmaninoff

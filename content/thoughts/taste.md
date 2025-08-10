@@ -3,7 +3,8 @@ id: taste
 tags:
   - seed
   - pattern
-date: 2024-02-19
+date: "2024-02-19"
+modified: 2025-08-09 22:44:45 GMT-04:00
 title: taste
 ---
 

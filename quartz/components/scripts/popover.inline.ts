@@ -146,7 +146,7 @@ async function handleDefaultContent(
     el.id = targetID
   })
   const elts = [
-    ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>),
+    ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLDivElement>),
   ].map(cleanAbsoluteElement)
   if (elts.length === 0) return
   popoverInner.append(...elts)

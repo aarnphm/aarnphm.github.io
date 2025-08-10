@@ -657,9 +657,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
             visit(tree, "element", (node, index, parent) => {
               if (blockTagTypes.has(node.tagName)) {
-                if (file.data.slug === "are.na") {
-                  console.dir(parent, { depth: 10 })
-                }
                 const nextChild = parent?.children.at(index! + 2) as Element
                 if (nextChild && nextChild.tagName === "p") {
                   const text = nextChild.children.at(0) as Literal
@@ -920,7 +917,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 idx!,
                 1,
                 h("figure", { "data-img-w-caption": true }, [
-                  h("img", { ...(node as Element).properties, style: "margin: 1rem 0 0 0" }),
+                  h("img", { ...(node as Element).properties }),
                   h("figcaption", [
                     h("span", { class: "figure-prefix", style: "margin-right: 0.2em;" }, `figure`),
                     h("span", { class: "figure-number" }, `${counter}`),
