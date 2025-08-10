@@ -9,17 +9,17 @@ tags:
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-noindex: true
-modified: 2025-08-10 16:46:08 GMT-04:00
+modified: 2025-08-10 17:16:23 GMT-04:00
+pageLayout: letter
 permalinks:
   - /hinge
   - /bumble
   - /date
 title: dating me.
-pageLayout: letter
+noindex: true
 ---
 
-Most people know me as `aarnphm`, but you can call me _Aaron_ (or [A-A-Ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
+Most people know me as `aarnphm`, but you can call me _Aaron_ (or [a-a-ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
 
 I was born in 2001 and I'm currently an [[thoughts/Transformers#inference.|inference]] optimization [[/|engineer]] at [bentoml](https://bentoml.com/)—which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]]—based in Toronto, Canada.
 

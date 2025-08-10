@@ -1,3 +1,5 @@
+@use "../../styles/variables.scss" as *;
+
 .collapsible-header {
   --translate-position: 0px;
 
@@ -24,28 +26,28 @@
   }
 
   &:first-child {
-    margin-top: 1rem;
+    margin-top: calc(2 * $baseMargin);
   }
 
   &:last-child {
-    margin-bottom: 1rem;
+    margin-bottom: calc(2 * $baseMargin);
   }
 
   // Indentation based on header level
   &[data-level="2"] {
-    margin-left: 1rem;
+    margin-left: calc(2 * $baseMargin);
   }
   &[data-level="3"] {
-    margin-left: 1.5rem;
+    margin-left: calc(3 * $baseMargin);
   }
   &[data-level="4"] {
-    margin-left: 1.9rem;
+    margin-left: calc(3.8 * $baseMargin);
   }
   &[data-level="5"] {
-    margin-left: 2.2rem;
+    margin-left: calc(4.4 * $baseMargin);
   }
   &[data-level="6"] {
-    margin-left: 2.4rem;
+    margin-left: calc(4.8 * $baseMargin);
   }
 
   & .collapsed-dots {

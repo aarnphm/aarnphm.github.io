@@ -248,7 +248,7 @@ const InstagramPost: PressReleaseComponent = (
           style={{
             color: cfg.theme.colors[colorScheme].light,
             fontFamily: fonts[1].name,
-            fontSize: "3em",
+            fontSize: "2.5em",
             margin: 0,
             fontStyle: "italic",
           }}
@@ -262,7 +262,7 @@ const InstagramPost: PressReleaseComponent = (
             fontWeight: fonts[1].weight,
             margin: 0,
             marginTop: "6rem",
-            fontSize: "2em",
+            fontSize: "1.5em",
           }}
         >
           {fileData.abstract && <Abstract {...getAbstractProps(fileData.abstract)} />}
@@ -277,7 +277,7 @@ const InstagramPost: PressReleaseComponent = (
             marginTop: "12rem",
           }}
         >
-          {cfg.baseUrl}
+          {cfg.baseUrl}/{fileData.slug}
         </p>
       </div>
     </div>
@@ -287,7 +287,7 @@ const InstagramPost: PressReleaseComponent = (
 const defaultInstagramOptions: PressReleaseOptions = {
   height: 1920,
   width: 1080,
-  colorScheme: "darkMode",
+  colorScheme: "lightMode",
   Component: InstagramPost,
 }
 
@@ -361,10 +361,9 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
       return {
         additionalHead: [
           (pageData) => {
-            const hasPr = pageData.filePath !== undefined && !pageData.slug!.includes("university")
             return (
               <>
-                {!hasPr && (
+                {!pageData.slug!.includes("university") && (
                   <>
                     <meta
                       name="pr:twitter"

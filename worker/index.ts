@@ -186,7 +186,7 @@ export default {
 
     // rendering supported code files as text/plain
     const assetsMatch = url.pathname.match(
-      /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|tsx|jsx|yaml|yml|rs|m|sql|sh|txt|zig|lua)$/i,
+      /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|tsx|jsx|yaml|yml|rs|m|sql|sh|zig|lua)$/i,
     )
     if (assetsMatch) {
       const originResp = await env.ASSETS.fetch(request)
