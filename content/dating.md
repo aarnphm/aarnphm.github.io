@@ -1,17 +1,19 @@
 ---
 id: dating
-permalinks:
-  - /hinge
+aliases:
+  - dating-profile
+  - date
+  - date-me
 tags:
   - evergreen
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-aliases:
-  - profile
-  - date
-  - personal
-modified: 2025-08-10 06:15:24 GMT-04:00
+modified: 2025-08-10 15:52:36 GMT-04:00
+permalinks:
+  - /hinge
+  - /bumble
+  - /date
 noindex: true
 title: dating me.
 pageLayout: letter
@@ -19,7 +21,7 @@ pageLayout: letter
 
 Most people know me as `aarnphm`, but you can call me _Aaron_ (or [A-A-Ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
 
-I was born in '01 and I'm currently an [[thoughts/Transformers#inference.|inference]] optimization [[/|engineer]] at [bentoml](https://bentoml.com/)—which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]]—based in Toronto, Canada.
+I was born in 2001 and I'm currently an [[thoughts/Transformers#inference.|inference]] optimization [[/|engineer]] at [bentoml](https://bentoml.com/)—which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]]—based in Toronto, Canada.
 
 This document doesn't represent the whole me, but it should give you a sense of the "non-tech" version of who I am and what I do in my downtime.
 
@@ -34,7 +36,7 @@ I'm hoping to find a wonderful woman to be my partner [^partner], someone I can 
 
 ## about me.
 
-Here is what my friends describe me:
+Here is what my friends' attestation of me:
 
 ```quotes
 Caring, inquisitive, loyal, thoughtful  -- N
@@ -42,6 +44,10 @@ Caring, inquisitive, loyal, thoughtful  -- N
 
 ```quotes
 [Aaron] is someone with very kind and warm energy. I always appreciate seeing you. -- T
+```
+
+```quotes
+I think that Aaron is someone I trust to be there for me at the drop of a hat, no matter if it’s 3pm on a sunday or 3am on a weeknight. Aaron is very attentive and will do everything in his power to make you feel loved and cared for. He’s willing to go to great lengths to make people feel special and he has great taste and great musings that promise good conversations and a good time. -- C
 ```
 
 I'm a _honest_ person, and I'm not afraid to admit to mistakes. I'm sure I'll make _even more mistakes_, but no one is ✨ _perfect_ ✨ and we only have one life to live 🙂
@@ -278,7 +284,7 @@ Aight, enough of me. Get to know me if you want to learn more 😅
 
 Getting in touch
 
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSemsBH5SY2VeQCVkOFeE-0y3jRhQ4UhttkLRvQpq3AW8AIQVQ/viewform?embedded=true" width="640" height="1174" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSemsBH5SY2VeQCVkOFeE-0y3jRhQ4UhttkLRvQpq3AW8AIQVQ/viewform?embedded=true" width="640" height="1300" frameborder="0" marginheight="0" marginwidth="0" />
 
 </section>
 
