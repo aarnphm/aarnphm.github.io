@@ -10,7 +10,7 @@ tags:
 description: just another fish in the sea.
 date: "2025-08-09"
 noindex: true
-modified: 2025-08-10 16:35:57 GMT-04:00
+modified: 2025-08-10 16:46:08 GMT-04:00
 permalinks:
   - /hinge
   - /bumble
@@ -232,15 +232,12 @@ Photography
 Possible deal-breakers
 
 1. I don't want kids, at least for the next five years.
-
-- That said, I'd make it work for the _right_ person.
-
+   - That said, I'd make it work for the _right_ person.
 2. Historically speaking, my relationship has been polyamorous, but I'm open to monogamy. I found that my work schedule fits well with that style of romantic attachment, and I'm definitely not the jealous type. Though my previous partner and I ended on a sour note, I'm more than happy with the growth.
 3. I care deeply about my friends, and I believe that as partners, we don't have to do everything together. I definitely want to spend the majority of my time with you, but I'll need "boys" time.
 4. Most of my friends are female. I have very clear boundaries that I never cross with friends, but I want all my female friendships—especially with N and C—to remain strong.
-5. I currently live in Toronto, Canada. I'm open to long-distance (but prefer not to) if there's a good chance we'd end up in the same city, assuming everything goes well. San Francisco, Berkeley, San Jose, New York, and Boston are all possibilities.
-
-- I plan to move back to the US soon, but for the foreseeable future, I'll be based in Toronto.
+5. I currently live in Toronto, Canada. I'm open to long-distance (but prefer not to) if there's a good chance we'd end up in the same city, assuming everything goes well! San Francisco, Berkeley, San Jose, New York, and Boston are all possibilities.
+   - I plan to move back to the US in the future, but for the foreseeable future, I'll be based in Toronto.
 
 </section>
 
