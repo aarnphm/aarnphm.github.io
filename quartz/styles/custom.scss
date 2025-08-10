@@ -886,3 +886,14 @@ body[data-slug="influence"] {
     display: block;
   }
 }
+.float-left {
+  margin: calc(1.5 * $baseMargin) calc(3 * $baseMargin) calc(1.5 * $baseMargin) 0;
+  float: left;
+  max-width: 45%;
+
+  & img,
+  img.float-left {
+    margin: 0 auto !important;
+    display: block;
+  }
+}

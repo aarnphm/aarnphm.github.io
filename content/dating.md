@@ -9,12 +9,12 @@ tags:
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-08-10 16:07:05 GMT-04:00
+noindex: true
+modified: 2025-08-10 16:35:57 GMT-04:00
 permalinks:
   - /hinge
   - /bumble
   - /date
-noindex: true
 title: dating me.
 pageLayout: letter
 ---
@@ -88,6 +88,12 @@ I might not be good at something initially, but this modus operandi has allowed 
 I do want to pursue research at some point. Right now I'm dabbling with [[thoughts/mechanistic interpretability]], topological manifolds, and number theory.
 
 ## personal life.
+
+<figure class="float-left">
+
+![[thoughts/images/old-couples-love.webp|this could be us.]]
+
+</figure>
 
 That said, I care deeply about the well-being of the people around me. My [headspace](https://notes.aarnphm.xyz) has been occupied with a lot lately, but I always try to stay present and make time for the people in my life.
 This might be connected to something else, though—I moved abroad at 17 to study at a private all-boys boarding school in Vancouver, and I think that left me more anxious than I'd like to admit [^being-human].
@@ -186,6 +192,10 @@ Design/Fashion/Watches
   - Collina Strada and Sandy Liang are a few favorites of mine lately.
 - I also have a watch collection and a bit of a horology nerd.
 
+![[thoughts/images/A34D3063-8B5C-4784-BC8E-3C018662D9FC_1_105_c.webp]]
+![[thoughts/images/BB9BEC3A-AEFB-41B2-809A-4700E5C4AA15_1_105_c.webp]]
+![[thoughts/images/1527713E-E480-493B-AEB0-60CBAEF1B3D3_1_105_c.webp]]
+
 </section>
 
 <section data-activities>
@@ -225,7 +235,7 @@ Possible deal-breakers
 
 - That said, I'd make it work for the _right_ person.
 
-2. My past relationship was polyamorous, but I'm open to monogamy. I found that my work schedule fits well with that style of romantic attachment, and I'm definitely not the jealous type. Though my previous partner and I ended on a sour note, I'm more than happy with the growth.
+2. Historically speaking, my relationship has been polyamorous, but I'm open to monogamy. I found that my work schedule fits well with that style of romantic attachment, and I'm definitely not the jealous type. Though my previous partner and I ended on a sour note, I'm more than happy with the growth.
 3. I care deeply about my friends, and I believe that as partners, we don't have to do everything together. I definitely want to spend the majority of my time with you, but I'll need "boys" time.
 4. Most of my friends are female. I have very clear boundaries that I never cross with friends, but I want all my female friendships—especially with N and C—to remain strong.
 5. I currently live in Toronto, Canada. I'm open to long-distance (but prefer not to) if there's a good chance we'd end up in the same city, assuming everything goes well. San Francisco, Berkeley, San Jose, New York, and Boston are all possibilities.
@@ -239,7 +249,7 @@ Possible deal-breakers
 What I'm offering in a relationship
 
 1. I'm cautiously optimistic, sometimes a bit self-deprecating.
-2. My attachment style has always been ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D), though I found that my previous partner was ["anxious-preoccupied"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B118%5D-,Anxious%2Dpreoccupied,-%5Bedit%5D). I'm a caregiver at heart, so I definitely want to look after you.
+2. My attachment style has always been ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D), though I found that my previous partner was ["anxious-preoccupied"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B118%5D-,Anxious%2Dpreoccupied,-%5Bedit%5D), which is a bit easier to give them "word of affirmation". I'm a caregiver at heart, so I definitely want to look after you.
 3. I will cook for you. You don't have to come into the kitchen, but you're more than welcome to join.
 4. My [love languages](https://en.wikipedia.org/wiki/The_Five_Love_Languages) are physical touch, gifts, and quality time. I think of a life _partner_ as someone you're mutually supportive of and committed to—someone you're building something together with.
 5. I will cook for you.
@@ -276,15 +286,7 @@ I'd love to:
 ![[thoughts/images/3DA0F7DF-8F9B-47D8-BAA7-114429E5C359_1_105_c.webp]]
 ![[thoughts/images/0181AD4F-3C0A-4D99-9AF5-9145AFE56E22.webp]]
 
-Aight, enough of me. Get to know me if you want to learn more 😅
-
-</section>
-
-<section data-compat>
-
-Getting in touch
-
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSemsBH5SY2VeQCVkOFeE-0y3jRhQ4UhttkLRvQpq3AW8AIQVQ/viewform?embedded=true" width="640" height="1300" frameborder="0" marginheight="0" marginwidth="0" />
+Aight, enough of me. [Contact me](https://f.aarnphm.xyz) if you want to learn more 😅
 
 </section>
 

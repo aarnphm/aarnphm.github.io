@@ -396,8 +396,31 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
               tree,
               (node) => filterNodes(node as Element),
               (node, index, parent) => {
-                const { children } = node as Element
-                if (children[0].type === "text" && children[0].value === "[^sign]") {
+                const element = node as Element
+                const isLiteralSignToken =
+                  element.children[0]?.type === "text" &&
+                  (element.children[0] as Text).value.trim() === "[^sign]"
+
+                const containsSignFootnoteRef = (el: Element): boolean => {
+                  const scan = (n: any): boolean => {
+                    if (n && n.type === "element") {
+                      const e = n as Element
+                      if (e.tagName === "sup" && e.children?.length) {
+                        const first = e.children[0] as any
+                        if (first && first.type === "element" && first.tagName === "a") {
+                          const href = (first.properties?.href as string) || ""
+                          const id = (first.properties?.id as string) || ""
+                          if (href.includes("fn-sign") || id.includes("fnref-sign")) return true
+                        }
+                      }
+                      return (e.children || []).some(scan)
+                    }
+                    return false
+                  }
+                  return scan(el)
+                }
+
+                if (isLiteralSignToken || containsSignFootnoteRef(element)) {
                   parent!.children.splice(index!, 1, h(`p.${opts.signature.class}`, maps(text)))
                 }
               },
