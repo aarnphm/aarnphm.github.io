@@ -1,17 +1,18 @@
 ---
 id: dating
-aliases:
-  - profile
-  - date
-  - personal
+permalinks:
+  - /hinge
 tags:
   - evergreen
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-08-10 06:10:13 GMT-04:00
-permalinks:
-  - /hinge
+aliases:
+  - profile
+  - date
+  - personal
+modified: 2025-08-10 06:15:24 GMT-04:00
+noindex: true
 title: dating me.
 pageLayout: letter
 ---
@@ -122,7 +123,7 @@ Bouldering
 
 Cooking
 
-- I love food. There's something mystical about Michelin-starred chefs dedicating their entire lives to perfecting the art of making food.
+- I love food. There's something mystical about Michelin-starred chefs dedicating their entire lives to perfecting the art of food making.
 - Food nourishes the soul, and cooking—working on a dish from start to finish—feels deeply rewarding.
 - It's also how I show love to my friends.
 - I [[thoughts/atelier with friends|host]] dinners regularly, mostly centered around French and Italian cuisine.
