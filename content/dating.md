@@ -9,7 +9,7 @@ tags:
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-08-10 15:52:36 GMT-04:00
+modified: 2025-08-10 16:07:05 GMT-04:00
 permalinks:
   - /hinge
   - /bumble
@@ -36,7 +36,7 @@ I'm hoping to find a wonderful woman to be my partner [^partner], someone I can 
 
 ## about me.
 
-Here is what my friends' attestation of me:
+Here is my friends' attestation of me:
 
 ```quotes
 Caring, inquisitive, loyal, thoughtful  -- N
@@ -92,7 +92,7 @@ I do want to pursue research at some point. Right now I'm dabbling with [[though
 That said, I care deeply about the well-being of the people around me. My [headspace](https://notes.aarnphm.xyz) has been occupied with a lot lately, but I always try to stay present and make time for the people in my life.
 This might be connected to something else, though—I moved abroad at 17 to study at a private all-boys boarding school in Vancouver, and I think that left me more anxious than I'd like to admit [^being-human].
 
-My mom says I was always shy growing up. These days I'm much more social, though I suppose the right word is ambivert: I'm comfortable in social settings, but I also deeply value my alone time.
+My mom says I was always shy growing up. These days I'm much more social, though I suppose the right word is _ambivert_: I'm comfortable in social settings, but I also deeply value my alone time.
 
 [^being-human]: Regardless, this was life-changing, as it taught me a lot about [[thoughts/being]] _human_.
 

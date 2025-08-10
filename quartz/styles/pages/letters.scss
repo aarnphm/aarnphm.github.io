@@ -16,11 +16,4 @@ body[data-layout="letter"] {
   section[class~="header"] {
     border-bottom-width: 0px;
   }
-
-  @media all and ($desktop) {
-    .title-col:not(.popover *),
-    .main-col:not(.popover *) {
-      grid-column: 4/9;
-    }
-  }
 }
