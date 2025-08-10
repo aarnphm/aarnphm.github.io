@@ -267,6 +267,9 @@ I'd love to:
 2. We can go bouldering, grab food, then spend the night watching Paris, Texas, or
 3. Rent a cabin near Lake Simcoe, and enjoy the nature.
 
+![[thoughts/images/3DA0F7DF-8F9B-47D8-BAA7-114429E5C359_1_105_c.webp]]
+![[thoughts/images/0181AD4F-3C0A-4D99-9AF5-9145AFE56E22.webp]]
+
 Aight, enough of me. Get to know me if you want to learn more 😅
 
 </section>
