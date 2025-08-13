@@ -1,22 +1,22 @@
 ---
 id: dating
-aliases:
-  - dating-profile
-  - date
-  - date-me
+permalinks:
+  - /hinge
+  - /bumble
+  - /date
 tags:
   - evergreen
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-08-12 22:27:47 GMT-04:00
-permalinks:
-  - /hinge
-  - /bumble
-  - /date
-noindex: true
-title: dating me.
+modified: 2025-08-13 16:10:26 GMT-04:00
 pageLayout: letter
+aliases:
+  - dating-profile
+  - date
+  - date-me
+title: dating me.
+noindex: true
 ---
 
 Most people know me as `aarnphm`, but you can call me _Aaron_ (or [a-a-ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
@@ -126,7 +126,7 @@ So, yes, I _care_. I care a lot about people, both in its abstract and physical 
 
 ## what i like doing.
 
-I have an attention-span of a three-year-old, but an old soul (some said). So I like to explore and do a lot of things.
+I have the attention-span of a three-year-old, but an old soul (some said). So I like to explore and do a lot of things.
 
 <section data-activities>
 
@@ -183,7 +183,10 @@ Vinyl/[[movies|Movies]]
   ![[posts/images/2023-flac-1.mp3]]
 - Music is a huge part of my life—I honestly wouldn't be able to function without it.
 - I prefer classical orchestra, a mix of blues and jazz, 80s rock, and I have a deep appreciation for house and garage culture.
+  - Rach 3, Rhapsody on Paganini
 - A bit of a cinemaphile
+- I use YouTube Music, beyerdynamic DT 1990 Pro
+  - This comes with [YouTube](https://www.youtube.com/feed/subscriptions) Premium. [I](https://www.youtube.com/watch?v=z0bSdV8DA4M&ab_channel=EpsilonDelta) [watch](https://www.youtube.com/watch?v=cKS47dq5RtA&ab_channel=essentialsalts) [a](https://www.youtube.com/watch?v=BXwALAkPubc&t=673s&ab_channel=HarvardMathematicsDepartment) [decent](https://www.youtube.com/watch?v=i2acsy7Zzfo&ab_channel=HarvardMathematicsDepartment) [amount](https://www.youtube.com/watch?v=4jQTb6sRGLg&ab_channel=GPUMODE) [of](https://www.youtube.com/watch?v=noC3G9oNxro&ab_channel=JuliandeMedeiros) [YouTube](https://www.youtube.com/watch?v=KniNW8Xe4Us&t=3s&ab_channel=SimonOz), [esp](https://www.youtube.com/watch?v=68UcnUdt6xA&t=4s&ab_channel=Sisyphus55) [when](https://www.youtube.com/watch?v=Mc3tTRkjCvE) [I'm](https://www.youtube.com/watch?v=6QyzGgq64MM&ab_channel=CharStiles) [winding](https://www.youtube.com/watch?v=Tt_hDVN5TZE) [down](https://www.youtube.com/watch?v=30YWsGDr8mA&list=PLcGKfGEEONaBNsY_bOj8IhbCPvj6OAdWo&ab_channel=StrangeLoopConference).
 
 </section>
 
@@ -207,17 +210,17 @@ Design/Fashion/Watches
 
 <section data-activities>
 
-Writing/Reading
+[[thoughts/writing|Writing]]/Reading
 
-- One of the main reasons I publish and open-source my garden is because I want to share my writing.
-- I mainly write for myself and collect items from across the internet for archival purposes.
+- ![[thoughts/writing#^ava-writing]]
+- I mainly write for myself and this garden serves as a personal archival.
   - I use [curius](curius.app) to save links on the go, but often transfer them back here later.
   - If you're interested in [[colophon|how this website was built]]
 - I find essay and fiction formats very refreshing.
-  - I'm heavily influenced by Michel Foucault, Ludwig Wittgenstein, Franz Kafka, and Raymond Carver's writing.
+  - I'm heavily influenced by Michel Foucault, Albert Camus, Ludwig Wittgenstein, Franz Kafka, Raymond Carver, and a few more researchers (that I can proudly call them my friends)
 - I also maintain a [[books|antilibrary]] of literature that I've enjoyed.
-- I read [[are.na#papers]] and textbooks for fun sometimes.
-  - Yes, I know.
+- I read [[are.na#papers|papers]] and math textbooks for fun sometimes.
+  - Yes, I know, it is a thing.
 
 </section>
 
@@ -242,11 +245,12 @@ I would say that free will is nothing but our conscious experience of deciding w
 
 Possible deal-breakers
 
-1. I don't want kids, at least for the next five years.
+1. I don't want kids, _yet_, at least for the next five years.
+   - We are young still, many things yet to be explored.
    - That said, I'd make it work for the _right_ person.
 2. Historically speaking, my relationship has been polyamorous, but I'm open to monogamy. I found that my work schedule fits well with that style of romantic attachment, and I'm definitely not the jealous type. Though my previous partner and I ended on a sour note, I'm more than happy with the growth.
 3. I care deeply about my friends, and I believe that as partners, we don't have to do everything together. I definitely want to spend the majority of my time with you, but I'll need "boys" time.
-4. Most of my friends are female. I have very clear boundaries that I never cross with friends, but I want all my female friendships—especially with N and C—to remain strong.
+4. Most of my friends are female. I have very clear boundaries that I **never cross** with friends, but I want all my female friendships—especially with N and C—to remain strong.
 5. I currently live in Toronto, Canada. I'm open to long-distance (but prefer not to) if there's a good chance we'd end up in the same city, assuming everything goes well! San Francisco, Berkeley, San Jose, New York, and Boston are all possibilities.
    - I plan to move back to the US in the future, but for the foreseeable future, I'll be based in Toronto.
 
@@ -261,6 +265,7 @@ What I'm offering in a relationship
 3. I will cook for you. You don't have to come into the kitchen, but you're more than welcome to join.
 4. My [love languages](https://en.wikipedia.org/wiki/The_Five_Love_Languages) are physical touch, gifts, and quality time. I think of a life _partner_ as someone you're mutually supportive of and committed to—someone you're building something together with.
 5. I will cook for you.
+6. I will write letters to you.
 
 </section>
 

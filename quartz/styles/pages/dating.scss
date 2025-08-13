@@ -5,11 +5,9 @@
 [data-slug="dating"] {
   section {
     &[data-activities] {
-      p {
-        &:first-child:not(.popover *) {
-          font-size: 22.2763px; // follows h3
-          font-weight: $semiBoldWeight;
-        }
+      > p:first-of-type:not(.popover *) {
+        font-size: 22.2763px; // follows h3
+        font-weight: $semiBoldWeight;
       }
 
       ul:not(.popover *),
@@ -23,12 +21,10 @@
     }
 
     &[data-compat] {
-      p {
-        &:first-child:not(.popover *) {
-          font-size: 22.2763px; // follows h3
-          font-weight: $semiBoldWeight;
-          font-style: italic;
-        }
+      > p:first-of-type:not(.popover *) {
+        font-size: 22.2763px; // follows h3
+        font-weight: $semiBoldWeight;
+        font-style: italic;
       }
     }
   }

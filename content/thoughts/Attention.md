@@ -1,11 +1,11 @@
 ---
-abstract: "The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks."
-date: 2024-02-07
-description: "and posteriori information retrieval."
 id: Attention
-modified: "2025-07-04 20:48:12 GMT-04:00"
 tags:
   - technical
+description: and posteriori information retrieval.
+date: "2024-02-07"
+abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
+modified: 2025-08-13 14:44:43 GMT-04:00
 title: Attention
 ---
 
@@ -251,3 +251,7 @@ A_{ij} = \frac{\exp(q_i^T K_j / \sqrt{d})}{\sum_{t=1}^{i//B} \exp(q_i^T K_t / \s
 $$
 
 where $A_{ij}=(a_{i,(j-1)B+1}, \ldots a_{i,jB})$ is row vector of attention score on j-th KV block.
+
+## Multi-Matrix Factorization Attention
+
+First proposed in [[thoughts/MoE#Step3]]

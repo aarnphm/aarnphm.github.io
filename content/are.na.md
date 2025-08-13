@@ -1,29 +1,33 @@
 ---
 id: are.na
-permalinks:
-  - /website
-  - /resources
-  - /inspo
+aliases:
+  - inspo
 tags:
   - technical
   - seed
 description: My run-down version of are[dot]na
-date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-08-12 11:59:44 GMT-04:00
-aliases:
-  - inspo
+date: "2024-10-24"
+modified: 2025-08-13 16:17:59 GMT-04:00
+permalinks:
+  - /website
+  - /resources
+  - /inspo
 title: are.na
 cssclasses:
   - nolist
 ---
 
-see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
+see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na#live|live updates]]
 
 ## discourse
 
 - https://www.lesswrong.com/posts/HiTjDZyWdLEGCDzqu/?commentId=MPNF8uSsi9mvZLxqz -- Gwern on distilling Opus 3.5 into Claude 3.6 instead of releasing Opus 3.5
+- https://www.dwarkesh.com/p/gwern-branwen -- Gwern Branwen - How an Anonymous Researcher Predicted AI's Trajectory
+  - > By writing, you are voting on the future of the Shoggoth using one of the few currencies it acknowledges: tokens it has to predict. If you aren’t writing, you are abdicating the future or your role in it. If you think it’s enough to just be a good citizen, to vote for your favorite politician, to pick up litter and recycle, the future doesn’t care about you.
+  - > There are ways to influence the Shoggoth more, but not many. If you don’t already occupy a handful of key roles or work at a frontier lab, your influence rounds off to 0, far more than ever before. If there are values you have which are not expressed yet in text, if there are things you like or want, if they aren’t reflected online, then to the AI they don’t exist. That is dangerously close to won’t exist.
+  - > But yes, you are also creating a sort of immortality for yourself personally. You aren’t just creating a persona, you are creating your future self too. What self are you showing the LLMs, and how will they treat you in the future?
 
 ## website
 
@@ -87,6 +91,8 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://www.goodfire.ai/ -- Goodfire AI
 - nice.rocks -- Nice rocks
 - https://www.philosophyofprogress.com/ -- Philosophy of Progress
+- https://browser.engineering/onepage.html -- Web Browser Engineering
+- https://yismailuofa.github.io/
 
 ## people
 
@@ -287,6 +293,8 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://ryanandrewlangdon.com/2020/01/28/today-i-learned-that-not-everyone-has-an-internal-monologue-and-it-has-ruined-my-day/
 - https://ifp.org/biotechs-lost-archive/ -- Biotech's Lost Archive
 - https://velvetnoise.substack.com/p/the-key-to-love-is-understanding -- The key to love is understanding
+- https://benjamincongdon.me/blog/2025/01/25/AI-Slop-Suspicion-and-Writing-Back/ -- AI Slop Suspicion and Writing Back.
+- https://www.sherryning.com/p/what-should-you-do-when-youre-madly -- What should you do when you're madly in love
 
 ### machine learning
 
@@ -515,3 +523,7 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
   - more popular methods: https://arxiv.org/pdf/2309.00071
 - https://arxiv.org/pdf/2508.06471
 - https://arxiv.org/abs/1112.0510
+
+## live
+
+- <iframe name="newstadium" height="1500px" src="https://newsystems.ca/newstadium/" scrolling="no" marginwidth="0" marginheight="0"></iframe>

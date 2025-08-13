@@ -9,7 +9,7 @@ description: collections of tweets, since bookmark is getting crowded.
 transclude:
   dynalist: false
 date: "2024-10-24"
-modified: 2025-08-08 17:04:53 GMT-04:00
+modified: 2025-08-13 14:14:18 GMT-04:00
 noindex: true
 title: /xeets/
 ---
@@ -146,6 +146,8 @@ https://x.com/filpizlo/status/1935019034531217647 <!-- C++ programs that are mem
 
 https://x.com/kepano/status/1952067484242391197 <!-- fear-based employment endemic -->
 
+https://x.com/badlogicgames/status/1955625313121038462 <!-- ClaudeCode-ception -->
+
 ## techno-optimist
 
 https://x.com/tobi/status/1878957750576906484 <!-- Tobi replies on Canada's Tech contribution to overall GDP -->
@@ -215,5 +217,7 @@ https://x.com/geoffreylitt/status/1950601513870499953 <!-- Geoffrey Litt on capa
 https://x.com/NeelNanda5/status/1950344397075456438 <!-- MATS 9.0 Stream Winter Batch -->
 
 https://x.com/JayaGup10/status/1952871186888843528 <!-- Integration landscape from labs -->
+
+https://x.com/HSVSphere/status/1955714317816316150 <!-- modern-infrastructure + AI -->
 
 ![[are.na#^goodfire-gpt-oss]]

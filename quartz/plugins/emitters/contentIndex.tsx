@@ -82,6 +82,7 @@ function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndexMap, limit?:
     <author>contact@aarnphm.xyz</author>
     <pubDate>${content.date?.toUTCString()}</pubDate>
     ${content.tags.map((el) => `<category domain="https://${joinSegments(base, "tags", el)}">${el}</category>`).join("\n")}
+    <content:encoded>${content.richContent}</content:encoded>
   </item>`
   }
 

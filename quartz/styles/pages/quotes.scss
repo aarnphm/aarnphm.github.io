@@ -1,9 +1,16 @@
 // Quote display
 body[data-slug="quotes"] {
-  & blockquote {
+  & blockquote:not(.twitter-tweet) {
     border-left: none;
     padding-left: 0;
     margin: 0;
+  }
+
+  blockquote.twitter-tweet {
+    &:not(:last-child) {
+      margin-bottom: 0rem !important;
+      margin-left: 3rem;
+    }
   }
 
   & article {

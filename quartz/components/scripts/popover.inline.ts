@@ -56,8 +56,8 @@ const DEFAULT_BLOB_TIMEOUT = 30 * 60 * 1000 // 30 minutes
 
 const p = new DOMParser()
 function cleanAbsoluteElement(element: HTMLDivElement): HTMLDivElement {
-  const refsAndNotes = element.querySelectorAll(
-    "section[data-references], section[data-footnotes], [data-skip-preview]",
+  const refsAndNotes = element.querySelectorAll<HTMLDivElement>(
+    "section[data-references], section[data-footnotes], [data-skip-preview], .telescopic-container",
   )
   refsAndNotes.forEach((section) => section.remove())
   return element

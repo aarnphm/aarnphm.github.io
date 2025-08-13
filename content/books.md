@@ -4,8 +4,10 @@ comments: false
 tags:
   - evergreen
 description: A (mostly) up-to-date book lists that I read, wanting, am reading, or finished reading.
+transclude:
+  title: false
 date: "2022-04-22"
-modified: 2025-08-10 04:58:22 GMT-04:00
+modified: 2025-08-13 15:12:06 GMT-04:00
 title: antilibrary.
 ---
 
@@ -17,11 +19,12 @@ See also: [[/curius|digital version]]
 
 A list of book that remains forever in my bag, and I like the idea of reading it in _perpetuity_
 
-- Beyond Good and Evil by Friedrich Nietzsche
-- [[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]] by Gilles Deleuze
-- [Web Browser Engineering](https://browser.engineering/onepage.html) by Pavel Panchekha & Chris Harrelson
-- Ma Gastronomie by Fernand Point
-- The Critique of Pure Reason by Immanuel Kant
+- Beyond Good and Evil, Friedrich Nietzsche
+- The **[[thoughts/Philosophy and Nietzsche#The Gay Science|Gay]] [[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|Science]]**, Friedrich Nietzsche
+- [[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]], Gilles Deleuze
+- The Critique of Pure Reason, Immanuel Kant
+- A Thousand Plateaus, [[thoughts/Giles Deleuze]] and Félix Guattari | |
+- Anti-Oedipus, [[thoughts/Giles Deleuze]] and Félix Guattari | |
 
 ## current.
 
@@ -62,8 +65,6 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | Pensees                                                                                                                  | Pascal                                                                                            | [html](https://www.gutenberg.org/files/18269/18269-h/18269-h.htm)                                                                                                      |
 | Being and Nothingness                                                                                                    | Jean-Paul Sartre                                                                                  |                                                                                                                                                                        |
 | Philosophical Investigations                                                                                             | Ludwig Wittgenstein                                                                               | [pdf](https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf) |
-| A Thousand Plateaus                                                                                                      | [[thoughts/Giles Deleuze]] and Félix Guattari                                                     |                                                                                                                                                                        |
-| Anti-Oedipus                                                                                                             | [[thoughts/Giles Deleuze]] and Félix Guattari                                                     |                                                                                                                                                                        |
 | A Conflict of Visions                                                                                                    | Thomas Sowell                                                                                     |                                                                                                                                                                        |
 | Orwell's Revenge: The 1984 Palimpsest                                                                                    | Peter W. Huber                                                                                    |                                                                                                                                                                        |
 | Intuition Pumps and Other Tools for Thinking                                                                             | Daniel Dennett                                                                                    |                                                                                                                                                                        |
@@ -76,7 +77,6 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 
 - **The Will to Power**
 - **Thus Spoke Zarathustra**
-- **On The Genealogy of Morals**
 - **Ecce Homo**
 
 #### [[thoughts/Philosophy and Kant|Kant]]
@@ -92,7 +92,6 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | Digital Minimalism                                                             | Cal Newport                                                                                                          |                                                                                                                                               |
 | Playing Software: Homo Ludens in Computational Culture                         | Miguel Sicart                                                                                                        |                                                                                                                                               |
 | Reimagining Capitalism in a World on Fire                                      | Rebecca Henderson                                                                                                    |                                                                                                                                               |
-| Principles                                                                     | Ray Dalio                                                                                                            |                                                                                                                                               |
 | Mindset                                                                        | Dr. Carol S. Dweck                                                                                                   |                                                                                                                                               |
 | The Pleasure of Finding Things Out                                             | Richard P. Feynman                                                                                                   |                                                                                                                                               |
 | Walden and Civil Disobedience                                                  | Henry David Thoreau                                                                                                  |                                                                                                                                               |
@@ -108,6 +107,7 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | The Notebook: A History of Thinking on Paper                                   | Roland Allen                                                                                                         |                                                                                                                                               |
 | Trillion Dollar Baby: How Norway Beat the Oil Giants and Won a Lasting Fortune | Paul Cleary                                                                                                          |                                                                                                                                               |
 | Leaving the Twentieth Century: Situationist Revolutions                        | McKenzie Wark                                                                                                        |                                                                                                                                               |
+| Building A Character                                                           | Constantin Stanislavski                                                                                              |                                                                                                                                               |
 
 ### fiction
 
@@ -129,6 +129,7 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | Homage to Catalonia               | George Orwell         |                                                        |
 | The Unbearable Lightness of Being | Milan Kundera         | [notes](https://www.cs.cmu.edu/~yangke/lightness.html) |
 | The Sea, The Sea                  | Iris Murdoch          |                                                        |
+| Men without women                 | Murakami              |                                                        |
 
 ### poetry
 
@@ -153,6 +154,14 @@ _The following includes a list of books I have finished._
 - **The Need For Roots** by Simone Weil
 - **The Fall** by Albert Camus
 - **Resistance, Rebellion, and Death** by Albert Camus
+- **On Friendship** by Michel de Montaigne
+- **On The Genealogy of Morals** by Friedrich Nietzsche
+- **Principles** by Ray Dalio
+- [Web Browser Engineering](https://browser.engineering/onepage.html) by Pavel Panchekha & Chris Harrelson
+- Ma Gastronomie by Fernand Point
+  - The fascinating point about this book is that there is literally no instructions.
+  - You have to cook with _feeling_ and [[thoughts/play|experiment]] with the recipes.
+  - It is _ok_ to fail.
 
 ### 2024
 
@@ -170,7 +179,6 @@ _The following includes a list of books I have finished._
 - **The end of the affair** by Graham Greene
 - **The Little Book of [[thoughts/deep learning|Deep Learning]]** by [François Fleuret](https://fleuret.org/public/lbdl.pdf)
 - **Tomorrow, and Tomorrow, and Tomorrow** by Gabrielle Zevin
-- The **[[thoughts/Philosophy and Nietzsche#The Gay Science|Gay]] [[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|Science]]** by Friedrich Nietzsche
 - **The Three-Body Problem** by Liu Cixin
 - **Beyond The Pleasure Principle** by [[thoughts/Freud|Sigmund Freud]]
 - **Essays in Love** by Alain de Botton

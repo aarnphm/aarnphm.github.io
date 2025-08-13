@@ -459,7 +459,12 @@ export function transcludeFinal(
 
   const { dynalist } = opts
 
-  const anchor = (href: string, url: string, description: string, title: boolean): Element => {
+  const anchor = (
+    href: string,
+    url: string,
+    description: string | null,
+    title: boolean,
+  ): Element => {
     if (!title) return {} as Element
 
     const [parent, ...children] = url.split("/")
@@ -545,10 +550,7 @@ export function transcludeFinal(
         if (blockNode) {
           if (blockNode.tagName === "li") blockNode = h("ul", blockNode)
 
-          const children = [
-            anchor(inner.properties?.href as string, url, alias, title),
-            normalizeHastElement(blockNode, slug, transcludeTarget),
-          ]
+          const children = [normalizeHastElement(blockNode, slug, transcludeTarget)]
           if (fileData.frontmatter?.pageLayout !== "reflection") {
             children.push(
               h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [

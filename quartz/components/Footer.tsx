@@ -1,6 +1,6 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import style from "./styles/footer.scss"
-import { version } from "../../package.json"
+import { version, repository } from "../../package.json"
 import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
 import { Date as DateComponent, getDate } from "./Date"
@@ -27,6 +27,35 @@ export default ((userOpts?: Options) => {
     const addHomeLink = fileData.frontmatter?.pageLayout! === "letter" || fileData.slug === "curius"
 
     const DateFooter = () => <DateComponent date={getDate(cfg, fileData)!} locale={cfg.locale} />
+
+    const Sha = () => {
+      const fullSha =
+        process.env.WORKERS_CI_COMMIT_SHA ||
+        process.env.CF_PAGES_COMMIT_SHA ||
+        process.env.GITHUB_SHA ||
+        ""
+      if (!fullSha) return null
+      const shortSha = fullSha.slice(0, 7)
+      const repoUrl = (repository?.url || "").replace(/\.git$/, "")
+      const commitUrl = repoUrl ? `${repoUrl}/commit/${fullSha}` : undefined
+      return (
+        <>
+          {", "}
+          {commitUrl ? (
+            <a
+              href={commitUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`commit ${shortSha}`}
+            >
+              {shortSha}
+            </a>
+          ) : (
+            <span>{shortSha}</span>
+          )}
+        </>
+      )
+    }
 
     const MinimalFooter = () => (
       <>
@@ -63,6 +92,7 @@ export default ((userOpts?: Options) => {
             Quartz v{version}
           </a>{" "}
           © {year}
+          <Sha />
         </p>
       </>
     )

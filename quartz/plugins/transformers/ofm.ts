@@ -177,7 +177,8 @@ export const wikiTextTransform = (src: string) => {
     const [rawFp, rawHeader, rawAlias]: (string | undefined)[] = capture
 
     const [fp, anchor] = splitAnchor(`${rawFp ?? ""}${rawHeader ?? ""}`)
-    const displayAnchor = anchor ? `#${anchor.trim().replace(/^#+/, "")}` : ""
+    const blockRef = Boolean(rawHeader?.startsWith("#^")) ? "^" : ""
+    const displayAnchor = anchor ? `#${blockRef}${anchor.trim().replace(/^#+/, "")}` : ""
     const displayAlias = rawAlias ?? rawHeader?.replace("#", "|") ?? ""
     const embedDisplay = value.startsWith("!") ? "!" : ""
 
@@ -262,6 +263,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               wikilinkRegex,
               (value: string, ...capture: string[]) => {
                 let [rawFp, rawHeader, rawAlias] = capture
+                console.log(rawFp, rawHeader, rawAlias)
                 const fp = rawFp?.trim() ?? ""
                 const anchor = rawHeader?.trim() ?? ""
                 const alias: string | undefined = rawAlias?.slice(1).trim()

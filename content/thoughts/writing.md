@@ -5,7 +5,7 @@ tags:
   - evergreen
 description: a knowledge distillation and learning process
 date: "2023-07-29"
-modified: 2025-07-09 05:46:34 GMT-04:00
+modified: 2025-08-13 13:51:08 GMT-04:00
 title: Writing
 ---
 
@@ -15,7 +15,7 @@ title: Writing
 
 Writing is an exploration, an excavation of self and the world in this painfully intricate dance. It is a way to bridge the chasm between ideas, to extend a filament of one consciousness to others. It is an extension of self, a second brain, where bounded by constraining nets of syntax and grammar, providing grounds for freedom of expression and articulate one's interests and curiosity.
 
-> The thing I like about writing is that it’s quite literally *thinking*—a way for me access my own interiority and construct something from it. What I write is all mine, it’s a living thing, it’s an extension of me that wanders out into the world. It is desire turned inwards instead of outwards, focused instead of displaced. It’s a way to access self-knowledge and self-respect. (Ava on [how to avoid half-heartedness](https://www.avabear.xyz/p/how-to-avoid-half-heartedness))
+> The thing I like about writing is that it’s quite literally *thinking*—a way for me access my own interiority and construct something from it. What I write is all mine, it’s a living thing, it’s an extension of me that wanders out into the world. It is desire turned inwards instead of outwards, focused instead of displaced. It’s a way to access self-knowledge and self-respect. (Ava on [how to avoid half-heartedness](https://www.avabear.xyz/p/how-to-avoid-half-heartedness)) ^ava-writing
 
 The modality of [[thoughts/Language#representation.|text]] essentially creates a universal interface that allows individuals from diverse backgrounds and contexts to form intricate networks of thoughts.
 
@@ -26,6 +26,9 @@ Andy Matuschak's on [[books|books]] and writing:
 > What I am doing right now, writing this essay, is, technically, **a linear walk through the [[thoughts/Networked Thoughts|network]] of my ideas**. That is what writing is: turning a net into a line. But it is also very concretely what I do, since I have _externalised_ my ideas in a [note-taking system](https://obsidian.md/) where the thoughts are linked with [[thoughts/Hypertext|hyperlinks]] (Henrik Karlsson, [Reader-generated Essay](https://www.lesswrong.com/posts/ZtMsyMP5F7zzP8Gvc/reader-generated-essays))
 
 At its core, writing endeavours to transmute the [[thoughts/Chaos|chaos]] of [[thoughts/Existentialism|existence]] into discernible narratives, offering a conduit for shared understanding amidst the inherent disarray of life. Such a form of [looseness in mutation](https://subconscious.substack.com/p/hypertext-montage)
+
+![[thoughts/images/henrik-writing.png]]
+- from [David Perell](https://x.com/phokarlsson/status/1955644184674566411)
 
 ## as playground.
 

@@ -6,8 +6,9 @@ tags:
   - evergreen
 transclude:
   dynalist: false
+  title: false
 date: "2024-01-23"
-modified: 2025-08-12 22:28:02 GMT-04:00
+modified: 2025-08-13 14:34:12 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -16,17 +17,17 @@ socialDescription: A collection of quotes, wisdom, and advice.
 
 ## On life.
 
-Throw me some wisdom, and advices? I have none. -- Jesse
+Throw me some wisdom, and advices? I have none. -- J
 
 Your life so far is a drawing canvas. You can't change what's already been drawn, but you can always paint a new line. -- [Tommy](https://twitter.com/tommytrxnh) ^tommy
 
 20 years from now you will be more disappointed by the things that you didn’t do than by the ones you did do. So throw off the bowlines. Sail away from the safe harbour. Catch the trade winds in your sails. Explore. Dream. Discover. -- Mark Twain
 
-Sometimes, we [care] too much about potential, less on credentials -- Kate
+Sometimes, we [care] too much about potential, less on credentials -- K
 
 But no matter the medicinal virtues of being a true friend or sustaining a long close relationship with another, the ultimate touchstone of friendship is not improvement, neither of the self nor of the other, the ultimate touchstone is witness, the privilege of having ==been seen== by someone and the _equal privilege of being granted the sight of the essence_ of another, to have walked with them and to have believed in them, and sometimes just to have accompanied them for however brief a span, on a journey impossible to accomplish alone. —- David Whyte
 
-Love is reverence, and worship, and glory, and the upward glance. Not a bandage for dirty sores. But they don't know it. Those who speak of love most promiscuously are the ones who've never felt it. They make some sort of feeble stew out of sympathy, compassion, contempt, and general indifference, and they call it love. Once you've felt what it means to love as you and I know it - total passion for the total height - you're incapable of anything less... -- Ayn Rand
+[[tags/love|Love]] is reverence, and worship, and glory, and the upward glance. Not a bandage for dirty sores. But they don't know it. Those who speak of love most promiscuously are the ones who've never felt it. They make some sort of feeble stew out of sympathy, compassion, contempt, and general indifference, and they call it love. Once you've felt what it means to love as you and I know it - total passion for the total height - you're incapable of anything less... -- Ayn Rand
 
 In another life, I would have really liked just doing laundry and taxes with you -- Ke Huy Quan ([[/movies#^eeao|Everything Everywhere All at Once]])
 
