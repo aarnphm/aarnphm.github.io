@@ -141,9 +141,18 @@ ul#helper {
       }
     }
 
+    & > .page-content {
+      flex: 1 1 auto;
+    }
+
+    & > .page-footer {
+      margin-top: auto;
+    }
+
     & > .sidepanel-header {
       position: sticky;
       bottom: 0;
+      margin-top: auto;
       gap: 0.3em;
       display: flex;
       justify-content: flex-end;

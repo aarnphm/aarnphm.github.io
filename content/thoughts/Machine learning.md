@@ -3,13 +3,13 @@ id: Machine learning
 tags:
   - ml
   - sapling
-date: "2024-02-07"
 description: and learning machine
-modified: 2025-03-22 08:17:16 GMT-04:00
+date: "2024-02-07"
+modified: 2025-08-12 22:40:04 GMT-04:00
 title: Machine learning
 ---
 
-Learn patterns from [[thoughts/data]] distributions and make useful predictions based on assigned-objectives.
+Learn patterns from distributions and make useful predictions based on assigned-objectives.
 
 Generally [[thoughts/AGI|AI]] $\subset$ [[/tags/ml|ML]] $\subset$ [[thoughts/deep learning|DL]]
 

@@ -1,14 +1,14 @@
 ---
 id: corporate personhood
-aliases:
-  - corporate responsibility
+lang: en-US
 tags:
   - engineer4a03
   - fruit
-date: "2024-11-19"
 description: and moral responsibilities of corporation.
-lang: en-US
-modified: 2025-01-26 08:54:25 GMT-05:00
+date: "2024-11-19"
+modified: 2025-08-12 22:40:13 GMT-04:00
+aliases:
+  - corporate responsibility
 title: Of Corporations, Courts, Personhood, and Morality
 ---
 
@@ -43,7 +43,7 @@ While Donaldson’s vision of corporations as “moral persons” attempts to im
 ## Implications on social responsibility
 
 By treating corporations as persons, we risk anthropomorphising entities that are fundamentally tools of capital accumulation. [@zuboff2020surveillance] describes how corporations exploit
-personal [[thoughts/data]] for profit, often at the expense of individual privacy and autonomy, with the rise of surveillance capitalism. Similarly, [@atlasofai] demonstrates
+personal data for profit, often at the expense of individual privacy and autonomy, with the rise of surveillance capitalism. Similarly, [@atlasofai] demonstrates
 the deployment of AI to optimise corporate efficiency often lacks moral oversight, exacerbating inequalities and affecting marginalised communities disproportionately.
 
 Recognising corporations are not moral agents; we shift the onus onto legal frameworks and societal pressures to enforce ethical behaviour. This understanding aligns with the objective reality of corporations as collections of individuals whose actions must be guided by laws and norms rather than assumed moral capacities.

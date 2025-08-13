@@ -9,14 +9,14 @@ tags:
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-08-10 17:16:23 GMT-04:00
-pageLayout: letter
+modified: 2025-08-12 22:27:47 GMT-04:00
 permalinks:
   - /hinge
   - /bumble
   - /date
-title: dating me.
 noindex: true
+title: dating me.
+pageLayout: letter
 ---
 
 Most people know me as `aarnphm`, but you can call me _Aaron_ (or [a-a-ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
@@ -60,6 +60,13 @@ I'm someone you can rely on[^1] --when I make a commitment to you, I'll be 100% 
 
 [^1]: reliable in both logistics and emotional capacity, but I'm still human at the end of the day.
 
+I want to build a farm one day, and a high believer in lab-grown meat [^lab-grown]
+
+[^lab-grown]:
+    This will be one of the most important innovation in the 21st century. Though, I would still want to raise cattle ethically.
+
+    Note that when I refers to "direct B2C", I would expect having 3-4 families to share a cow. In this case, it would be a lot cheaper for each family comparing to getting their stock at Costco.
+
 ## professional life.
 
 <figure class='float-right'>
@@ -85,7 +92,7 @@ My approach to problems has stayed consistent since I learned arithmetic: ==don'
 
 I might not be good at something initially, but this modus operandi has allowed me to work on what's probably the hardest [problem](https://github.com/vllm-project/vllm) of our time--_scaling intelligence_
 
-I do want to pursue research at some point. Right now I'm dabbling with [[thoughts/mechanistic interpretability]], topological manifolds, and number theory.
+![[research]]
 
 ## personal life.
 
@@ -226,6 +233,10 @@ Photography
 [^photography-portfolio]: One day I would clean-up and polish my photography portfolio.
 
 ## compatibility.
+
+```quotes
+I would say that free will is nothing but our conscious experience of deciding what to do, which I know I am experiencing as I write this review, and this experience is not invalidated by the reflection that physical laws made it inevitable that I would want to make these decisions. -- Steven Weinberg
+```
 
 <section data-compat>
 

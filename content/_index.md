@@ -8,7 +8,7 @@ tags:
   - fruit
 description: practicing the act of digital gardening.
 date: "2022-04-22"
-modified: 2025-08-10 05:22:14 GMT-04:00
+modified: 2025-08-12 21:58:25 GMT-04:00
 title: Aaron's notes
 ---
 
@@ -66,7 +66,7 @@ Currently, I'm working at a [infrastructure startup](https://bentoml.com) buildi
                                             * about how they treat others
                                               * about their cadence
                                                 * about their intrinsic [[thoughts/Agency|drive]].
-                                                * <br /><br />My research interests lie in
+                                                * <br /><br />My [[research]] interests lie in
                                                 * interpretability.
                                                   * interpretability ([[thoughts/mechanistic interpretability|inner working]] of a neural network),
                                                   * and ML system.

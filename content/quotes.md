@@ -7,7 +7,7 @@ tags:
 transclude:
   dynalist: false
 date: "2024-01-23"
-modified: 2025-08-07 14:38:56 GMT-04:00
+modified: 2025-08-12 22:28:02 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -45,6 +45,12 @@ When you are not fed [[tags/love]] with a spoon you learn to lick it with a knif
 Wanting to feel wanted is the loneliest feeling ever
 
 It took me most of my life to understand this: the people who care the most about you are often the ones who can hurt you the most. Not because they mean to, but because they got in. They gave you what you'd been _looking for_. But life happens. Fear creeps in. People mess up. They run, shut down, say things they don't mean or stay silent when it matters the most. And suddenly you're left questioning if it ever meant anything at all. _It did._ They cared. _Maybe still do._ But now you get to find out if they belong in your life. The ones who want to stay will _show up._ The ones who don't will _fade._
+
+_Marriage as a long conversation._ When entering a marriage, one should ask the question: do you think you will be able to have good conversations with this woman right into old age? Everything else in marriage is transitory, but most of the time in interaction is spent in conversation. -- F. Nietzsche
+
+"The longer I live, the more deeply I learn that love — whether we call it friendship or family or romance — is the work of mirroring and magnifying each other’s light. Gentle work. Steadfast work. Life-saving work in those moments when life and shame and sorrow occlude our own light from our view, but there is still a clear-eyed loving person to beam it back. In our best moments, we are that person for another." — James Baldwin, Nothing Personal
+
+I would say that free will is nothing but our conscious experience of deciding what to do, which I know I am experiencing as I write this review, and this experience is not invalidated by the reflection that physical laws made it inevitable that I would want to make these decisions. -- Steven Weinberg
 
 ## On bits and bytes.
 
@@ -84,6 +90,8 @@ It is actually ok to miss somebody. [...] But you know that sadness, it's a gift
 
 Like the generations of leaves, the lives of mortal men. Now the wind scatters the old leaves across the earth, now the living timber bursts with the new buds and spring comes round again. And so with men: as one generation comes to life, another dies away. -- Homer, The Iliad
 
+There is no iron law that postulates that technology must benefit the many at the expense of the few. And quite naturally, when large swaths of the populace are left behind by technological change, they are likely to resist it. -- Carl Benedikt Frey
+
 ## On drive.
 
 Life can be much broader when you discover one simple fact...==that everything around you was made up by people no smarter than you....== Once you learn that, you'll never be the same again.-- Steve Jobs ^life-jobs-smart
@@ -111,3 +119,7 @@ I have to be successful because I like expensive things. -- some random person o
 People like you think I get lucky. Here's the thing, I make my own luck. -- Harvey Specter
 
 Sticks and stones may breaks my bone, but there will be always something that offend a feminist -- Some random British reporter
+
+## phrases to live by
+
+joie de vivre -- exuberant enjoyment of life

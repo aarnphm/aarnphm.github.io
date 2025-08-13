@@ -8,10 +8,10 @@ tags:
   - technical
   - seed
 description: My run-down version of are[dot]na
+date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-08-10 00:31:47 GMT-04:00
+modified: 2025-08-12 11:59:44 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -85,6 +85,8 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://www.yooksel.com/
 - https://stream.thesephist.com/ -- Linus' stream
 - https://www.goodfire.ai/ -- Goodfire AI
+- nice.rocks -- Nice rocks
+- https://www.philosophyofprogress.com/ -- Philosophy of Progress
 
 ## people
 
@@ -283,6 +285,8 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
   - > “All of this feels mythic,” she said. “Even the non-Rationalist scientists find this compelling — the same way the Manhattan Project was compelling. We want to work on something mythic.”
 - https://etsd.tech/posts/rtfc -- Read the f\*\*\* code
 - https://ryanandrewlangdon.com/2020/01/28/today-i-learned-that-not-everyone-has-an-internal-monologue-and-it-has-ruined-my-day/
+- https://ifp.org/biotechs-lost-archive/ -- Biotech's Lost Archive
+- https://velvetnoise.substack.com/p/the-key-to-love-is-understanding -- The key to love is understanding
 
 ### machine learning
 
@@ -314,6 +318,10 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
   - > gpt-oss' inability to act as a naive text completion model (vs. reverting to a chat format), even with jailbreaks, correlates with how subjectively cooked/slop-ish it feels
   - > found that you can sometimes get interpolated reasoning levels from gpt-oss between “low”, “medium”, and “high” (but “none”, “ultra”, “infinite” don’t work)
   - > basic contrastive steering of gpt-oss-20b, following Anthropic’s “persona vectors”: https://x.com/MarkMBissell/status/1952919910134497332
+- https://x.com/Zai_org/status/1954750596634054965
+- https://www.tilderesearch.com/blog/momoe
+  - See also: [triton-based](https://github.com/shawntan/scattermoe) implementation of Sparse MoE
+  - Qwen3 modular fused: https://github.com/woct0rdho/transformers-qwen3-moe-fused/blob/master/qwen3_moe_fused/modular_qwen3_moe_fused.py
 
 ### argumentative
 
@@ -479,6 +487,8 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
 - https://www.youtube.com/watch?v=B83yIIaTq_s&ab_channel=SimonsFoundation -- Lisa Piccirillo: Exotic Phenomena in Dimension 4
   - also https://www.youtube.com/watch?v=BXwALAkPubc&ab_channel=HarvardMathematicsDepartment
   - Conway knot problem
+- https://www.benparry.ca/euler-integration-lotka-volterra -- Euler Integration & the Lotka-Volterra Equations
+- https://www.benparry.ca/lorenz-system -- Lorenz system
 
 #### papers
 
@@ -499,6 +509,9 @@ see also [[tweets|based tweets]], [[books]], and [[/curius|bookmarks]]
   - which thought trace matters?
 - https://arxiv.org/pdf/2503.18292
 - https://arxiv.org/pdf/2310.05209
+- https://arxiv.org/pdf/2310.10537
 - https://arxiv.org/pdf/2104.09864
   - [[thoughts/RoPE]]
   - more popular methods: https://arxiv.org/pdf/2309.00071
+- https://arxiv.org/pdf/2508.06471
+- https://arxiv.org/abs/1112.0510

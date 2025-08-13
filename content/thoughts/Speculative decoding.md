@@ -6,7 +6,7 @@ tags:
   - technical
 description: a method to speed up LLM decoding
 date: "2025-05-21"
-modified: 2025-08-07 16:59:49 GMT-04:00
+modified: 2025-08-12 11:55:00 GMT-04:00
 title: Speculative decoding
 ---
 
@@ -23,7 +23,8 @@ A few techniques such as [[thoughts/Speculative decoding#ngrams|ngrams]], [[thou
 
 ## papers
 
-- https://github.com/hemingkx/SpeculativeDecodingPapers
+see also: https://github.com/hemingkx/SpeculativeDecodingPapers
+
 - https://arxiv.org/pdf/2506.20675
 
 ## EAGLE

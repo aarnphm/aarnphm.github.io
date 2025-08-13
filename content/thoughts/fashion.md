@@ -4,7 +4,7 @@ tags:
   - seed
 description: a hobby, and definition of personal taste.
 date: "2024-02-19"
-modified: 2025-08-07 17:33:35 GMT-04:00
+modified: 2025-08-12 08:11:21 GMT-04:00
 title: fashion.
 ---
 
@@ -118,3 +118,7 @@ _A few items that I love_
 - Maxi Candy Hobo from [Mansur Gavriel](https://www.mansurgavriel.com/products/maxi-candy-bag-black)
 - Alden Cordovan Tassel [Loafers](https://www.aldenshop.com/collections/cordovan-loafers)
 - ![[thoughts/Scents#current|current scents that are on rotation]]
+
+## show
+
+- Pitti Uomo -- Italian menswear fashion

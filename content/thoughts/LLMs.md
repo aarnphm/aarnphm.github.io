@@ -4,10 +4,10 @@ tags:
   - sapling
   - ml
   - llm
-abstract: large language models will probably be the most important piece of technology in the 21st century
-date: "2024-02-07"
 description: a mathematical framework for intelligence
-modified: 2025-05-28 17:25:52 GMT-04:00
+date: "2024-02-07"
+abstract: large language models will probably be the most important piece of technology in the 21st century
+modified: 2025-08-12 22:40:25 GMT-04:00
 title: LLMs
 ---
 
@@ -62,7 +62,7 @@ To create a better [[thoughts/representations|representations]] of the world for
 
 ### AI generated content
 
-Don't shit where you eat, **[[thoughts/Garbage in Garbage out|Garbage in, garbage out]]**. The quality of the content is highly dependent on the quality of the data it was trained on, or model are incredibly sensitive to [[thoughts/data|data]] variances and biases.
+Don't shit where you eat, **[[thoughts/Garbage in Garbage out|Garbage in, garbage out]]**. The quality of the content is highly dependent on the quality of the data it was trained on, or model are incredibly sensitive to data variances and biases.
 
 Bland doublespeak
 
