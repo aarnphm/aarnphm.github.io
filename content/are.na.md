@@ -1,7 +1,9 @@
 ---
 id: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /resources
+  - /inspo
 tags:
   - technical
   - seed
@@ -9,11 +11,9 @@ description: My run-down version of are[dot]na
 socials:
   are.na: https://www.are.na/aaron-pham/channels
 date: "2024-10-24"
-modified: 2025-08-14 02:35:32 GMT-04:00
-permalinks:
-  - /website
-  - /resources
-  - /inspo
+modified: 2025-08-14 15:33:45 GMT-04:00
+aliases:
+  - inspo
 title: are.na
 cssclasses:
   - nolist
@@ -150,6 +150,8 @@ see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na
   - Communication theory, stability of feedback amplifiers
   - Johnson–Nyquist noise
   - Nyquist–Shannon sampling theorem
+- https://iquilezles.org/ -- Inigo Quilez
+  - shadertoy
 
 [^sol-lewitts-letter]:
     > Dear Eva,

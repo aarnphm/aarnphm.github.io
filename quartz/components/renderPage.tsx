@@ -751,6 +751,7 @@ export function transcludeFinal(
 }
 
 export const TopLinks = {
+  workshop: "/lectures",
   livres: "/books",
   merci: "/influence",
   advice: "/quotes",
