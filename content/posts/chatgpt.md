@@ -6,7 +6,7 @@ tags:
   - engineer4a03
   - fruit
 date: "2024-10-02"
-modified: 2025-08-12 22:40:36 GMT-04:00
+modified: 2025-08-14 00:26:01 GMT-04:00
 aliases:
   - chat
 title: On ChatGPT and its pedagogical consequences
@@ -40,8 +40,6 @@ However, [@keles2022computationalcomplexityselfattention{pp. 4}] proved that the
 The current positioning of GenAI at the peak of inflated expectations aligns with the [@gartner2024multimodal] prediction. Three key factors support this assessment: rapid advancement in research, widespread enterprise adoption, and increased public awareness.
 Ongoing research in GenAI, specifically language models, spans several topics, including mechanistic interpretability [@nanda2023concrete], which explores the inner workings of auto-regressive models, information retrieval techniques aimed to improve correctness and reduce hallucinations among LLM systems [@béchard2024reducinghallucinationstructuredoutputs; @dhuliawala2023chainofverificationreduceshallucinationlarge],
 as well as vested interests in multimodal applications of transformers [@xu2023multimodallearningtransformerssurvey]. Leading research labs, from Anthropic on their interpretability and alignment work [@elhage2022superposition; @bricken2023monosemanticity; @templeton2024scaling], AI21's Jamba with its innovative hybrid transformers architecture [@jambateam2024jamba15hybridtransformermambamodels] to open-weights models from [Meta](https://www.llama.com/), [Google](https://deepmind.google/technologies/gemini/pro/) continue lead redefine the boundaries of what these systems are capable of.
-
-Hello
 
 Enterprise adoption is evident with Salesforce [@nijkamp2023xgen7btechnicalreport], Oracle's [collaboration with Cohere](https://cohere.com/customer-stories/oracle), and Microsoft's Copilot for its 365 Product Suite. However, widespread implementation doesn't necessarily equate to immediate, measurable productivity gains. Integrating these systems effectively into enterprise workflows to deliver tangible business value takes time and effort.
 

@@ -263,7 +263,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               wikilinkRegex,
               (value: string, ...capture: string[]) => {
                 let [rawFp, rawHeader, rawAlias] = capture
-                console.log(rawFp, rawHeader, rawAlias)
                 const fp = rawFp?.trim() ?? ""
                 const anchor = rawHeader?.trim() ?? ""
                 const alias: string | undefined = rawAlias?.slice(1).trim()

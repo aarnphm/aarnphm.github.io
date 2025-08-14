@@ -9,7 +9,7 @@ description: My run-down version of are[dot]na
 socials:
   are.na: https://www.are.na/aaron-pham/channels
 date: "2024-10-24"
-modified: 2025-08-13 16:17:59 GMT-04:00
+modified: 2025-08-14 02:35:32 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -318,7 +318,8 @@ see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na
     - Scaling interpreting CoT, exempli gratia [Docent](https://transluce.org/introducing-docent)
 - https://ethanding.substack.com/p/ai-subscriptions-get-short-squeezed -- Tokens are getting more expensive
 - https://docs.google.com/presentation/d/1NOrUVZNkcKHom5ih5uqqOSrV4Vi8KZRN8LYaAeADX80/edit?slide=id.g3724263dfb4_0_68#slide=id.g3724263dfb4_0_68 -- Scaling MoE with llm-d and vLLM
-- https://x.com/GoodfireAI/status/1953903581075288470 -- gpt-oss hackathon from Goodfire ^goodfire-gpt-oss
+- gpt-oss hackathon from Goodfire ^goodfire-gpt-oss
+  - https://x.com/GoodfireAI/status/1953903581075288470
   - > experts actually seem to specialize - e.g. a “business expert” that activates most on business strategy & management topics.
   - > just as Claude fixates on spiritual bliss after talking to itself for many turns, gpt-oss has its own attractor states: nonsense code & creative writing!
   - > memoized during training: https://x.com/jack_merullo_/status/1953860284638278043
@@ -330,6 +331,7 @@ see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na
 - https://www.tilderesearch.com/blog/momoe
   - See also: [triton-based](https://github.com/shawntan/scattermoe) implementation of Sparse MoE
   - Qwen3 modular fused: https://github.com/woct0rdho/transformers-qwen3-moe-fused/blob/master/qwen3_moe_fused/modular_qwen3_moe_fused.py
+- https://docs.google.com/document/d/1ZV73D2vgaj2yu_tjN3TVOP6QVLWVPXJB2rrqSZQxYtI/edit?usp=drivesdk -- AI research overview
 
 ### argumentative
 
