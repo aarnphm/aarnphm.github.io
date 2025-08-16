@@ -21,6 +21,7 @@ import { randomIdNonSecure } from "./util/random"
 import { ChangeEvent } from "./plugins/types"
 import { minimatch } from "minimatch"
 import { styleText } from "util"
+import { Repository } from "@napi-rs/simple-git"
 
 type ContentMap = Map<
   FilePath,
@@ -43,6 +44,20 @@ type BuildData = {
 }
 
 async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
+  let gitCommitSha: string | undefined
+
+  if (argv.serve || argv.watch) {
+    try {
+      const repo = Repository.discover(argv.directory)
+      const head = await repo.head()
+      gitCommitSha = head?.target() || undefined
+    } catch (e) {
+      if (argv.verbose) {
+        console.log(styleText("yellow", "Warning: Unable to get git commit SHA"))
+      }
+    }
+  }
+
   const ctx: BuildCtx = {
     buildId: randomIdNonSecure(),
     argv,
@@ -50,6 +65,7 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
     allSlugs: [],
     allFiles: [],
     incremental: false,
+    gitCommitSha,
   }
 
   const perf = new PerfTimer()

@@ -5,7 +5,7 @@ tags:
 description: and posteriori information retrieval.
 date: "2024-02-07"
 abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
-modified: 2025-08-13 14:44:43 GMT-04:00
+modified: 2025-08-15 05:01:01 GMT-04:00
 title: Attention
 ---
 
@@ -160,7 +160,9 @@ We can show that longest-shared-prefix-first order is equivalent to DFS order by
 
 ## Multi-head Latent Attention (MLA)
 
-low-rank joint compression for attention ==keys and values== to reduce KV cache during inference [@deepseekai2025deepseekr1incentivizingreasoningcapability{see 2.1.1}]
+![[thoughts/images/mla-comparison.webp]]
+
+low-rank joint compression for attention ==keys and values== to reduce KV cache during inference [@deepseekai2025deepseekv3technicalreport{see 2.1.1}; @deepseekai2024deepseekv2strongeconomicalefficient]
 
 - $d$ denote the embedding dimension
 - $n_h$ denotes number of attention heads
@@ -181,8 +183,9 @@ $$
 - $d_c \ll d_h n_h$ indicates KV [[thoughts/Compression|compression]] dimension
 - $W^{DKV} \in  \mathbb{R}^{d_c \times d}$ denotes down-projection matrix
 - $W^{UK}, W^{UV} \in \mathbb{R}^{d_h n_h \times d_c}$ are the up-projection matrices to keys and values, respectively
-- $W^{KR} \in \mathbb{R}^{d^R_h \times d}$ is the matrix used to produced the duplicate key that carries RoPE
-- $\mathrm{RoPE}(.)$ denotes operations for RoPE matrices, and $\mathrm{RoPE}[;]$ denotes ==concatenation==
+- $W^{KR} \in \mathbb{R}^{d^R_h \times d}$ is the matrix used to produced the duplicate key that carries [[thoughts/RoPE|RoPE]]
+- $\mathrm{RoPE}(.)$ denotes operations for RoPE matrices, and $[;]$ denotes ==concatenation==
+- Note that only $\boxed{\textcolor{blue}{\mathbf{c}_t^{KV}}}, \boxed{\textcolor{blue}{\mathbf{k}_t^{R}}}$ needs to be cached
 
 > [!important] cached generations
 >

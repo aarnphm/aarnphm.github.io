@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-08-13 14:34:12 GMT-04:00
+modified: 2025-08-15 06:07:57 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -52,6 +52,8 @@ _Marriage as a long conversation._ When entering a marriage, one should ask the 
 "The longer I live, the more deeply I learn that love — whether we call it friendship or family or romance — is the work of mirroring and magnifying each other’s light. Gentle work. Steadfast work. Life-saving work in those moments when life and shame and sorrow occlude our own light from our view, but there is still a clear-eyed loving person to beam it back. In our best moments, we are that person for another." — James Baldwin, Nothing Personal
 
 I would say that free will is nothing but our conscious experience of deciding what to do, which I know I am experiencing as I write this review, and this experience is not invalidated by the reflection that physical laws made it inevitable that I would want to make these decisions. -- Steven Weinberg
+
+I always have such need to merely talk to you. Even when I have nothing to talk about - with you I just seem to right ahead and sort of invent it. I invent it for you -- Virginia Woolf, from a letter to _Vita Sackville West_
 
 ## On bits and bytes.
 

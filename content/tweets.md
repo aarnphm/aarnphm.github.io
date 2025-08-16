@@ -8,8 +8,9 @@ tags:
 description: collections of tweets, since bookmark is getting crowded.
 transclude:
   dynalist: false
+  title: false
 date: "2024-10-24"
-modified: 2025-08-13 14:14:18 GMT-04:00
+modified: 2025-08-15 06:08:47 GMT-04:00
 noindex: true
 title: /xeets/
 ---
@@ -75,6 +76,8 @@ https://x.com/thecaravanindia/status/1942869801593958709 <!-- Bertrand Russell r
 https://x.com/michael_nielsen/status/1951055480920613156 <!-- Don't drop out of college -->
 
 https://x.com/gabrielpeterss4/status/1951781057973608948?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ <!-- working on your problems -->
+
+https://x.com/aarnphm_/status/1956238570353504615 <!-- Seeing N -->
 
 ## love
 

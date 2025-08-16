@@ -1,6 +1,7 @@
 @use "../base.scss";
 @use "../variables.scss" as *;
 
+body[data-layout="letter-poem"],
 body[data-layout="letter"] {
   .stacked-buttons:not(.popover *),
   .breadcrumb-container:not(.popover *),
@@ -15,5 +16,18 @@ body[data-layout="letter"] {
 
   section[class~="header"] {
     border-bottom-width: 0px;
+  }
+}
+
+body[data-layout="letter-poem"] {
+  background-color: white;
+
+  img {
+    width: 100% !important;
+    pointer: none;
+  }
+
+  hgroup {
+    display: none;
   }
 }

@@ -30,6 +30,7 @@ export interface BuildCtx {
   allFiles: FilePath[]
   trie?: FileTrieNode<BuildTimeTrieData>
   incremental: boolean
+  gitCommitSha?: string
 }
 
 export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<BuildTimeTrieData> {

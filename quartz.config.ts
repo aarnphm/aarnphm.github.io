@@ -128,7 +128,6 @@ const config: QuartzConfig = {
           "neovim.io",
         ],
       }),
-      // Plugin.GoogleDocs(),
       Plugin.TableOfContents({ maxDepth: 5 }),
     ],
     filters: [Plugin.RemoveDrafts()],

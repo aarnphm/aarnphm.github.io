@@ -7,7 +7,7 @@ description: A (mostly) up-to-date book lists that I read, wanting, am reading, 
 transclude:
   title: false
 date: "2022-04-22"
-modified: 2025-08-13 15:12:06 GMT-04:00
+modified: 2025-08-15 05:09:22 GMT-04:00
 title: antilibrary.
 ---
 
@@ -23,8 +23,8 @@ A list of book that remains forever in my bag, and I like the idea of reading it
 - The **[[thoughts/Philosophy and Nietzsche#The Gay Science|Gay]] [[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|Science]]**, Friedrich Nietzsche
 - [[thoughts/Philosophy and Nietzsche|Nietzsche and Philosophy]], Gilles Deleuze
 - The Critique of Pure Reason, Immanuel Kant
-- A Thousand Plateaus, [[thoughts/Giles Deleuze]] and Félix Guattari | |
-- Anti-Oedipus, [[thoughts/Giles Deleuze]] and Félix Guattari | |
+- A Thousand Plateaus, [[thoughts/Giles Deleuze]] and Félix Guattari
+- Anti-Oedipus, [[thoughts/Giles Deleuze]] and Félix Guattari
 
 ## current.
 

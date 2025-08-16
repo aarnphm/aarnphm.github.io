@@ -15,7 +15,7 @@ import { version } from "../../../package.json"
 import { ReadTimeResults } from "reading-time"
 
 export type ContentIndexMap = Map<FullSlug, ContentDetails>
-export type ContentLayout = "default" | "letter" | "technical" | "reflection"
+export type ContentLayout = "default" | "letter" | "technical" | "reflection" | "letter-poem"
 export type ContentDetails = {
   slug: string
   title: string

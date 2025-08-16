@@ -1,25 +1,25 @@
 ---
 id: are.na
-permalinks:
-  - /website
-  - /resources
-  - /inspo
+aliases:
+  - inspo
 tags:
   - technical
   - seed
 description: My run-down version of are[dot]na
+date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-08-14 15:33:45 GMT-04:00
-aliases:
-  - inspo
+modified: 2025-08-15 21:59:47 GMT-04:00
+permalinks:
+  - /website
+  - /resources
+  - /inspo
 title: are.na
 cssclasses:
   - nolist
 ---
 
-see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na#live|live updates]]
+see also [[/curius|bookmarks]]
 
 ## discourse
 
@@ -93,6 +93,8 @@ see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na
 - https://www.philosophyofprogress.com/ -- Philosophy of Progress
 - https://browser.engineering/onepage.html -- Web Browser Engineering
 - https://yismailuofa.github.io/
+- https://dougalves.work/
+- https://www.makingsoftware.com/
 
 ## people
 
@@ -152,6 +154,7 @@ see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na
   - Nyquist–Shannon sampling theorem
 - https://iquilezles.org/ -- Inigo Quilez
   - shadertoy
+- https://apossible.com/
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -297,8 +300,23 @@ see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na
 - https://velvetnoise.substack.com/p/the-key-to-love-is-understanding -- The key to love is understanding
 - https://benjamincongdon.me/blog/2025/01/25/AI-Slop-Suspicion-and-Writing-Back/ -- AI Slop Suspicion and Writing Back.
 - https://www.sherryning.com/p/what-should-you-do-when-youre-madly -- What should you do when you're madly in love
+- https://jewishcurrents.org/beyond-grievance -- Beyond Grievance
+- https://web.archive.org/web/20031029211844/http://www.frostbytes.com/~jimf/informing.html -- Informing Ourselves To Death
+  - > After all, anyone who has studied the history of technology knows that technological change is always a Faustian bargain: Technology giveth and technology taketh away, and not always in equal measure.
+- https://milky.substack.com/p/moderation -- moderation, by molly mielke mccarthy
+- https://web.archive.org/web/20240329074753/https://www.theatlantic.com/magazine/archive/1993/12/how-the-world-works/305854/ -- How the world works
+- https://carly.substack.com/p/designers-designers-designers -- Designers! Designers! Designers!
+- https://www.personalcanon.com/p/how-to-begin -- How to begin
+- https://sfpc.study/blog/falling-failing-feeling-freeing -- Falling, Failing, Feeling, Freeing \*\*
+- https://www.are.na/kristoffer-tjalve/poetic-web-calendar -- Poetic Web Calendar
+- https://www.links.net/dox/tech/computopia.html -- Computopia \*\*
+- https://www.experimental-history.com/p/28-slightly-rude-notes-on-writing
+- https://www.experimental-history.com/p/face-it-youre-a-crazy-person -- Face it, you are a crazy person \*\*
+- https://substack.com/inbox/post/170580516 -- "If I love you, it's because in some way we are the same type of bastard"
+- https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for -- some parts of you only emerge from certain people
+- https://northeastlarder.com/ -- Northeast Larder
 
-### machine learning
+### [[thoughts/Machine learning]]
 
 - https://www.goodfire.ai/blog/painting-with-concepts -- Painting with concepts, via SAE for SDXL-turbo
 - https://www.goodfire.ai/blog/under-the-hood-of-a-reasoning-model -- Under te hood of a reasoning models, SAEs.
@@ -334,6 +352,28 @@ see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na
   - See also: [triton-based](https://github.com/shawntan/scattermoe) implementation of Sparse MoE
   - Qwen3 modular fused: https://github.com/woct0rdho/transformers-qwen3-moe-fused/blob/master/qwen3_moe_fused/modular_qwen3_moe_fused.py
 - https://docs.google.com/document/d/1ZV73D2vgaj2yu_tjN3TVOP6QVLWVPXJB2rrqSZQxYtI/edit?usp=drivesdk -- AI research overview
+- https://x.com/djcows/status/1955435075136606449 -- Read your weights
+- https://timdettmers.com/2022/08/17/llm-int8-and-emergent-features/ -- [[thoughts/LLMs]].int8() and Emergent Features
+  - https://arxiv.org/pdf/2110.02861
+- https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf -- Matrix cookbook
+- https://github.com/bytedance/flux -- fast communication-overlapping library for TP
+- https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
+- https://jax-ml.github.io/scaling-book/ -- JAX scaling book
+- https://www.jeremykun.com/2023/08/10/mlir-getting-started/ -- [[thoughts/MLIR]] introduction
+- https://huggingface.co/spaces/HuggingFaceFW/blogpost-fineweb-v1 -- FineWeb: decanting the web for the finest text data at scale.
+- https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/ -- [[thoughts/Bayesian Neural Network]]
+- https://www.lei.chat/posts/triton-linear-layout-concept/ -- Lei's Chat on Triton Linear Layout
+- https://research.colfax-intl.com/cutlass-tutorial-writing-gemm-kernels-using-tensor-memory-for-nvidia-blackwell-gpus/ -- GEMM kernels on Blackwell GPUs
+- https://www.youtube.com/watch?v=XYSKd4dOT3Y&ab_channel=NeelNanda -- How to Think about Thinking Model
+- https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm4higcSGpvKKNdmtY/edit?tab=t.0#heading=h.nc4nxxczgw4w -- Structural tags in xgrammar (to be used in [[thoughts/vllm|vLLM]])
+- https://drive.google.com/file/u/1/d/1l54BwUi07JnqwB5_iHCVVZ3TnR05acDm/view?usp=sharing -- Critique on "The Illusion of Thinking"
+- https://huggingface.co/blog/rearchitecting-uploads-and-downloads -- Rearchitecting Hugging Face Uploads and Downloads
+- https://www.youtube.com/watch?v=VAzL8RHot1c&ab_channel=InterconnectsAI -- The art of training a good (reasoning) language models, by Nathan Lambert
+- https://x.com/Kimi_Moonshot/status/1944589115510734931 -- Kimi K2 architecture
+  - ![[thoughts/images/kimi-architecture.webp]]
+- https://docs.google.com/document/d/1p-ggQV3vVWIQuCccXEl1fD0thJOgXimlbBpGk6FI32I/edit?tab=t.0#heading=h.y0ohi6l5z9qn -- MATS 9.0 Winter 2025
+- https://nousresearch.com/measuring-thinking-efficiency-in-reasoning-models-the-missing-benchmark/
+- https://x.com/nic__carter/status/1797635177973158182
 
 ### argumentative
 
@@ -376,6 +416,12 @@ see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na
 ## stream
 
 - https://notes.andymatuschak.org/Effective_system_design_requires_insights_drawn_from_serious_contexts_of_use -- Effective system design requires insights drawn from serious contexts of use
+- https://wilderness.land/
+- https://jennyclark.substack.com/p/prayer-for-the-girl-who-often-forgets -- prayer for the girl who often forgets that enough is enough
+- ![[tweets]]
+- https://x.com/divya_venn/status/1956105667871412685
+- ![[books]]
+- ![[mixed]]
 
 ### financial reports
 
@@ -409,6 +455,10 @@ see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na
 - https://www.youtube.com/watch?v=ny3sCjFiLYc&ab_channel=KunmiK -- How to ask a girl out - Louie C.K. asks a girl out
 - https://www.youtube.com/watch?v=9xYasBUv530&ab_channel=SefoNad -- Emotional Maturity in Past Lives
 - https://www.youtube.com/watch?v=Q-yqCgMWGNo&ab_channel=TakeTwo -- How Dennis Villeneuve creates visual meaning, Enemy
+- https://www.youtube.com/watch?v=t6RZp2AhKyw&ab_channel=MedleyInterlispProject -- Lexical Functional Grammar Demonstration — Ron Kaplan (December 1982)
+- https://www.youtube.com/watch?v=XfpMkf4rD6E&t=1407s&ab_channel=StanfordOnline -- Stanford CS25: V2 I Introduction to Transformers w/ Andrej Karpathy
+- https://www.youtube.com/watch?v=8--5LwHRhjk&ab_channel=InigoQuilez -- Painting Characters with Math
+- https://www.youtube.com/watch?v=PIvc6vvkMzM&ab_channel=EpsilonScience -- Gamification of Large Language Models, Michal Valko
 
 ## tools
 
@@ -472,26 +522,6 @@ see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na
 
 - https://www.generalist.com/briefing/hummingbird-ventures -- Hummingbird Ventures
 
-### [[thoughts/Machine learning]]
-
-- https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf -- Matrix cookbook
-- https://github.com/bytedance/flux -- fast communication-overlapping library for TP
-- https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
-- https://jax-ml.github.io/scaling-book/ -- JAX scaling book
-- https://www.jeremykun.com/2023/08/10/mlir-getting-started/ -- [[thoughts/MLIR]] introduction
-- https://huggingface.co/spaces/HuggingFaceFW/blogpost-fineweb-v1 -- FineWeb: decanting the web for the finest text data at scale.
-- https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/ -- [[thoughts/Bayesian Neural Network]]
-- https://www.lei.chat/posts/triton-linear-layout-concept/ -- Lei's Chat on Triton Linear Layout
-- https://research.colfax-intl.com/cutlass-tutorial-writing-gemm-kernels-using-tensor-memory-for-nvidia-blackwell-gpus/ -- GEMM kernels on Blackwell GPUs
-- https://www.youtube.com/watch?v=XYSKd4dOT3Y&ab_channel=NeelNanda -- How to Think about Thinking Model
-- https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm4higcSGpvKKNdmtY/edit?tab=t.0#heading=h.nc4nxxczgw4w -- Structural tags in xgrammar (to be used in [[thoughts/vllm|vLLM]])
-- https://drive.google.com/file/u/1/d/1l54BwUi07JnqwB5_iHCVVZ3TnR05acDm/view?usp=sharing -- Critique on "The Illusion of Thinking"
-- https://huggingface.co/blog/rearchitecting-uploads-and-downloads -- Rearchitecting Hugging Face Uploads and Downloads
-- https://www.youtube.com/watch?v=VAzL8RHot1c&ab_channel=InterconnectsAI -- The art of training a good (reasoning) language models, by Nathan Lambert
-- https://x.com/Kimi_Moonshot/status/1944589115510734931 -- Kimi K2 architecture
-  - ![[thoughts/images/kimi-architecture.webp]]
-- https://docs.google.com/document/d/1p-ggQV3vVWIQuCccXEl1fD0thJOgXimlbBpGk6FI32I/edit?tab=t.0#heading=h.y0ohi6l5z9qn -- MATS 9.0 Winter 2025
-
 ### [[tags/math]]
 
 - https://www.youtube.com/watch?v=e1xo6qWTmoc&ab_channel=OxfordMathematics -- Thesis Competition at Oxford Mathematics
@@ -527,6 +557,7 @@ see also [[tweets|based tweets]], [[books]], [[/curius|bookmarks]], and [[are.na
   - more popular methods: https://arxiv.org/pdf/2309.00071
 - https://arxiv.org/pdf/2508.06471
 - https://arxiv.org/abs/1112.0510
+- https://arxiv.org/pdf/2504.02263
 
 ## live
 

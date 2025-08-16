@@ -1169,6 +1169,16 @@ export function renderPage(
     }
   }
 
+  if (componentData.fileData.frontmatter?.pageLayout === "letter-poem") {
+    components = {
+      ...components,
+      header: [Graph(), Search(), Palette()],
+      sidebar: [],
+      afterBody: [],
+      beforeBody: [],
+    }
+  }
+
   const {
     head: Head,
     header,

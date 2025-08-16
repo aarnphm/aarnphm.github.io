@@ -27,7 +27,8 @@ Andy Matuschak's on [[books|books]] and writing:
 
 At its core, writing endeavours to transmute the [[thoughts/Chaos|chaos]] of [[thoughts/Existentialism|existence]] into discernible narratives, offering a conduit for shared understanding amidst the inherent disarray of life. Such a form of [looseness in mutation](https://subconscious.substack.com/p/hypertext-montage)
 
-![[thoughts/images/henrik-writing.png]]
+![[thoughts/images/henrik-writing.webp]]
+
 - from [David Perell](https://x.com/phokarlsson/status/1955644184674566411)
 
 ## as playground.

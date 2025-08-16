@@ -20,7 +20,7 @@
     "cf:types": "pnpm dlx wrangler types",
     "cf:deploy": "pnpm check && pnpm dlx wrangler deploy",
     "cf:prepare": "pnpm format && pnpm convert && pnpm cf:types",
-    "check": "pnpm cf:prepare && pnpm prettier . --check && tsgo --noEmit && pnpm test",
+    "check": "pnpm cf:prepare && pnpm prettier . --check && tsc --noEmit && pnpm test",
     "format": "pnpm prettier . --write && pnpx bibtex-tidy --months --merge=combine --no-align --sort=type,year,eprint --duplicates=key,doi,citation --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,series,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields --blank-lines --modify ./content/References.bib",
     "test": "tsx --test",
     "profile": "0x -D prof quartz/bootstrap-cli.mjs build --concurrency=1",
@@ -48,8 +48,6 @@
     "@citation-js/plugin-doi": "^0.7.18",
     "@clack/prompts": "^0.11.0",
     "@floating-ui/dom": "^1.7.3",
-    "@google-cloud/local-auth": "^3.0.1",
-    "@googleapis/docs": "^5.0.1",
     "@myriaddreamin/rehype-typst": "^0.6.0",
     "@myriaddreamin/typst-ts-node-compiler": "^0.6.0",
     "@myriaddreamin/typst.ts": "^0.6.0",
@@ -64,7 +62,6 @@
     "flexsearch": "^0.8.205",
     "github-slugger": "^2.0.0",
     "globby": "^14.1.0",
-    "googleapis": "^155.0.1",
     "gray-matter": "^4.0.3",
     "hast-util-find-and-replace": "^5.0.1",
     "hast-util-from-html": "^2.0.3",
@@ -139,7 +136,7 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "@anthropic-ai/claude-code": "^1.0.77",
+    "@anthropic-ai/claude-code": "^1.0.81",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
@@ -159,7 +156,7 @@
     "ts-morph": "^26.0.0",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2",
-    "wrangler": "^4.29.1"
+    "wrangler": "^4.30.0"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
 }

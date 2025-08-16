@@ -21,7 +21,7 @@ const defaultOptions: Options = { layout: "minimal", links: {} as Record<string,
 
 export default ((userOpts?: Options) => {
   const opts = { ...defaultOptions, ...userOpts }
-  const Footer: QuartzComponent = ({ displayClass, cfg, fileData }: QuartzComponentProps) => {
+  const Footer: QuartzComponent = ({ displayClass, cfg, fileData, ctx }: QuartzComponentProps) => {
     const year = new Date().getFullYear()
     const links = opts?.links ?? []
     const addHomeLink = fileData.frontmatter?.pageLayout! === "letter" || fileData.slug === "curius"
@@ -33,6 +33,7 @@ export default ((userOpts?: Options) => {
         process.env.WORKERS_CI_COMMIT_SHA ||
         process.env.CF_PAGES_COMMIT_SHA ||
         process.env.GITHUB_SHA ||
+        ctx?.gitCommitSha ||
         ""
       if (!fullSha) return null
       const shortSha = fullSha.slice(0, 7)
@@ -47,6 +48,7 @@ export default ((userOpts?: Options) => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`commit ${shortSha}`}
+              style="color: var(--tertiary)"
             >
               {shortSha}
             </a>
