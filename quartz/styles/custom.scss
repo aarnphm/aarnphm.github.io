@@ -893,3 +893,17 @@ body[data-slug="influence"] {
     display: block;
   }
 }
+
+@media all and ($mobile) {
+  [data-slug="dating"] {
+    .page-footer {
+      display: grid !important;
+
+      > [data-recs],
+      > [data-backlinks],
+      > footer {
+        display: none;
+      }
+    }
+  }
+}

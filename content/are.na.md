@@ -1,7 +1,9 @@
 ---
 id: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /resources
+  - /inspo
 tags:
   - technical
   - seed
@@ -9,11 +11,9 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-08-15 21:59:47 GMT-04:00
-permalinks:
-  - /website
-  - /resources
-  - /inspo
+modified: 2025-08-18 15:44:12 GMT-04:00
+aliases:
+  - inspo
 title: are.na
 cssclasses:
   - nolist
@@ -315,6 +315,7 @@ see also [[/curius|bookmarks]]
 - https://substack.com/inbox/post/170580516 -- "If I love you, it's because in some way we are the same type of bastard"
 - https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for -- some parts of you only emerge from certain people
 - https://northeastlarder.com/ -- Northeast Larder
+- https://www.gleech.org/stopping -- What's stopping you?
 
 ### [[thoughts/Machine learning]]
 
@@ -374,6 +375,8 @@ see also [[/curius|bookmarks]]
 - https://docs.google.com/document/d/1p-ggQV3vVWIQuCccXEl1fD0thJOgXimlbBpGk6FI32I/edit?tab=t.0#heading=h.y0ohi6l5z9qn -- MATS 9.0 Winter 2025
 - https://nousresearch.com/measuring-thinking-efficiency-in-reasoning-models-the-missing-benchmark/
 - https://x.com/nic__carter/status/1797635177973158182
+- https://www.youtube.com/watch?v=PIvc6vvkMzM&ab_channel=EpsilonScience -- Gamification of Large Language Models, Michal Valko
+- https://www.seangoedecke.com/great-software-design/ -- Great software design looks underwhelming
 
 ### argumentative
 
@@ -458,7 +461,8 @@ see also [[/curius|bookmarks]]
 - https://www.youtube.com/watch?v=t6RZp2AhKyw&ab_channel=MedleyInterlispProject -- Lexical Functional Grammar Demonstration — Ron Kaplan (December 1982)
 - https://www.youtube.com/watch?v=XfpMkf4rD6E&t=1407s&ab_channel=StanfordOnline -- Stanford CS25: V2 I Introduction to Transformers w/ Andrej Karpathy
 - https://www.youtube.com/watch?v=8--5LwHRhjk&ab_channel=InigoQuilez -- Painting Characters with Math
-- https://www.youtube.com/watch?v=PIvc6vvkMzM&ab_channel=EpsilonScience -- Gamification of Large Language Models, Michal Valko
+- https://www.youtube.com/watch?v=3_kdbJnCMwU&ab_channel=DavidBalcarras -- Bryan Magee - The Great Philosophers \*\*
+- https://www.youtube.com/watch?v=H4_Tsjmqxak&ab_channel=PhilosophyOverdose -- Husserl, Heidegger & Existentialism - Hubert Dreyfus & Bryan Magee (1987) \*\*
 
 ## tools
 

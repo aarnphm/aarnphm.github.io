@@ -1172,7 +1172,7 @@ export function renderPage(
   if (componentData.fileData.frontmatter?.pageLayout === "letter-poem") {
     components = {
       ...components,
-      header: [Graph(), Search(), Palette()],
+      header: [],
       sidebar: [],
       afterBody: [],
       beforeBody: [],
