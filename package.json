@@ -151,7 +151,7 @@
     "@typescript/native-preview": "7.0.0-dev.20250808.1",
     "bibtex-tidy": "^1.14.0",
     "esbuild": "^0.25.9",
-    "mermaid": "^11.9.0",
+    "mermaid": "^11.10.0",
     "prettier": "^3.6.2",
     "ts-morph": "^26.0.0",
     "tsx": "^4.20.4",
