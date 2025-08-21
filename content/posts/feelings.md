@@ -9,4 +9,4 @@ title: making
 pageLayout: letter-poem
 ---
 
-![[posts/images/IMG_0088.jpeg]]
+![[posts/images/IMG_0088.webp]]

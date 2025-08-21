@@ -1,16 +1,16 @@
 ---
 id: mechanistic interpretability
-aliases:
-  - mechinterp
-  - reveng neural net
+permalinks:
+  - /mechinterp
 tags:
   - interp
 description: and reverse engineering neural networks.
 date: "2024-10-30"
 abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
-modified: 2025-08-05 21:53:43 GMT-04:00
-permalinks:
-  - /mechinterp
+modified: 2025-08-20 01:50:39 GMT-04:00
+aliases:
+  - mechinterp
+  - reveng neural net
 title: mechanistic interpretability
 ---
 
@@ -157,7 +157,12 @@ idea: deletes one activation of the network to see how performance on a task cha
 - mean ablation: Deletion by setting activations to the mean of the dataset
 - random ablation or _resampling_
 
-## residual stream
+
+## mathematical frameworks to transformers
+
+see also: @elhage2021mathematical
+
+### residual stream
 
 ![[thoughts/images/residual-stream-illustration.webp|Residual stream illustration]]
 
@@ -178,6 +183,8 @@ residual stream $x_{0}$ has dimension $\mathit{(C,E)}$ where
 $$
 x_{1} = \mathit{H}{(x_{0})} + x_{0}
 $$
+
+![[thoughts/induction heads|induction heads]]
 
 ## grokking
 

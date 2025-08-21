@@ -1,9 +1,7 @@
 ---
 id: are.na
-permalinks:
-  - /website
-  - /resources
-  - /inspo
+aliases:
+  - inspo
 tags:
   - technical
   - seed
@@ -11,9 +9,11 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-08-18 15:44:12 GMT-04:00
-aliases:
-  - inspo
+modified: 2025-08-20 05:35:06 GMT-04:00
+permalinks:
+  - /website
+  - /resources
+  - /inspo
 title: are.na
 cssclasses:
   - nolist
@@ -155,6 +155,8 @@ see also [[/curius|bookmarks]]
 - https://iquilezles.org/ -- Inigo Quilez
   - shadertoy
 - https://apossible.com/
+- https://www.linkedin.com/in/lukaszkaiser/ -- Lukasz Kaiser
+  - OpenAI, logic and automaton
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -377,6 +379,7 @@ see also [[/curius|bookmarks]]
 - https://x.com/nic__carter/status/1797635177973158182
 - https://www.youtube.com/watch?v=PIvc6vvkMzM&ab_channel=EpsilonScience -- Gamification of Large Language Models, Michal Valko
 - https://www.seangoedecke.com/great-software-design/ -- Great software design looks underwhelming
+- https://openai.com/index/deep-double-descent/ -- Deep double descent
 
 ### argumentative
 

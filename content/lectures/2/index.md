@@ -2,9 +2,9 @@
 id: index
 tags:
   - seed
-description: overview of transformers
-date: "2025-08-14"
+description: attention
+date: "2025-08-21"
 modified: 2025-08-21 09:46:49 GMT-04:00
 noindex: true
-title: 0[dot]1
+title: 0[dot]2
 ---

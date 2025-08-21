@@ -5,7 +5,7 @@ tags:
 description: and posteriori information retrieval.
 date: "2024-02-07"
 abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
-modified: 2025-08-15 05:01:01 GMT-04:00
+modified: 2025-08-21 10:25:13 GMT-04:00
 title: Attention
 ---
 
@@ -14,6 +14,12 @@ Attention operates on a sequence of query $Q$, key $K$ and value $V$ vector. Att
 $$
 A(Q, K, V) = \text{softmax}(\frac{Q \cdot K^{T}}{\sqrt{d}})V \space \space \text{ for } Q_{L \times d}, K_{L \times d}, V_{L \times d}
 $$
+
+First introduced from https://arxiv.org/abs/1409.0473. One can think of attention for QKV as:
+
+- Q: what I'm looking for
+- K: what information do I have
+- V: what information do I need to share to each other.
 
 > [!note]+ equivalent
 >
@@ -258,3 +264,5 @@ where $A_{ij}=(a_{i,(j-1)B+1}, \ldots a_{i,jB})$ is row vector of attention scor
 ## Multi-Matrix Factorization Attention
 
 First proposed in [[thoughts/MoE#Step3]]
+
+## convexity
