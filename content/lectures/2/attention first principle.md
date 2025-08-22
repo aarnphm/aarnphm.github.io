@@ -3,7 +3,7 @@ id: attention
 tags:
   - seed
 date: "2025-08-21"
-modified: 2025-08-21 12:20:07 GMT-04:00
+modified: 2025-08-22 13:23:16 GMT-04:00
 title: attention primer
 ---
 
@@ -45,10 +45,127 @@ $$
 _Proof._ $PQ(PK)^\top=PQK^\top P^\top$. Row‑softmax respects row permutations, i.e., $\sigma(PZP^\top)=P\sigma(Z)P^\top$. Then $P\sigma(QK^\top)P^\top \cdot PV = P(\sigma(QK^\top)V)$. ∎
 
 **A.2 Proposition (Why the $\tfrac{1}{\sqrt{d_k}}$ scale?).**
+
 Assume $q,k\in\mathbb{R}^{d_k}$ have i.i.d. entries with $\mathbb{E}[q_i]=\mathbb{E}[k_i]=0$, $\operatorname{Var}(q_i)=\operatorname{Var}(k_i)=1$. Then
 $\operatorname{Var}(q^\top k)=d_k$. Scaling by $1/\sqrt{d_k}$ keeps logit variance $\approx 1$, stabilizing softmax and gradients as width grows. (Matches the original motivation. ) ([NeurIPS Papers][2])
 
-_Proof._ $\operatorname{Var}\big(\sum_i q_i k_i\big)=\sum_i \operatorname{Var}(q_i k_i)=\sum_i \mathbb{E}[q_i^2]\mathbb{E}[k_i^2]=d_k$. ∎
+> [!abstract]- Detailed
+>
+> Let $q,k\in\mathbb{R}^d$. Define the (unscaled) logit $S:=q^\top k = \sum_{i=1}^d q_i k_i$ and the scaled logit
+>
+> $$
+> Z:=\frac{q^\top k}{\sqrt{d}}\;.
+> $$
+>
+> Assume $\mathbb{E}[q]=\mathbb{E}[k]=0$ and $\mathrm{Cov}(q)=\Sigma_q$, $\mathrm{Cov}(k)=\Sigma_k$, with $q$ and $k$ **independent as random vectors** (no independence across coordinates is required). Then
+>
+> $$
+> \mathrm{Var}(S)=\operatorname{tr}(\Sigma_q\Sigma_k),\qquad
+> \mathrm{Var}(Z)=\frac{1}{d}\operatorname{tr}(\Sigma_q\Sigma_k).
+> $$
+>
+> In particular, under **isotropy** $\Sigma_q=\Sigma_k=I_d$ one gets
+>
+> $$
+> \mathrm{Var}(S)=d,\qquad \mathrm{Var}(Z)=1.
+> $$
+
+_Proof._
+
+$\operatorname{Var}\big(\sum_i q_i k_i\big)=\sum_i \operatorname{Var}(q_i k_i)=\sum_i \mathbb{E}[q_i^2]\mathbb{E}[k_i^2]=d_k$. ∎
+
+#### Proof 1 (matrix‑expectation route; works without coordinate‑wise independence)
+
+Write $S=q^\top k = k^\top q$. Since $q$ and $k$ are independent and mean‑zero,
+
+$$
+\mathbb{E}[S]=\mathbb{E}[q]^\top \mathbb{E}[k]=0.
+$$
+
+For the second moment,
+
+$$
+S^2=(q^\top k)^2=(k^\top q)(q^\top k)=k^\top (qq^\top)k.
+$$
+
+Take conditional expectation given $k$ and then average:
+
+$$
+\mathbb{E}[S^2]
+= \mathbb{E}_k\!\left[\,k^\top \,\mathbb{E}_q[qq^\top]\, k\,\right]
+= \mathbb{E}_k\!\left[\,k^\top \Sigma_q\, k\,\right]
+= \mathbb{E}\!\left[\operatorname{tr}\!\big(\Sigma_q\, k k^\top\big)\right]
+= \operatorname{tr}\!\big(\Sigma_q\, \mathbb{E}[k k^\top]\big)
+= \operatorname{tr}(\Sigma_q \Sigma_k).
+$$
+
+Since $\mathbb{E}[S]=0$, we have $\mathrm{Var}(S)=\mathbb{E}[S^2]=\operatorname{tr}(\Sigma_q\Sigma_k)$. Dividing by $d$ yields the claimed variance for $Z=S/\sqrt{d}$.
+
+_Remarks._ (i) If $\mu_q:=\mathbb{E}[q]$ and $\mu_k:=\mathbb{E}[k]$ are nonzero, the same computation gives
+
+$$
+\mathrm{Var}(S)=\operatorname{tr}(\Sigma_q\Sigma_k)+\mu_k^\top \Sigma_q\,\mu_k+\mu_q^\top \Sigma_k\,\mu_q,
+$$
+
+so the isotropic, zero‑mean case reduces to $\operatorname{tr}(I\cdot I)=d$. (ii) A special case of this expectation identity appears throughout high‑dimensional probability; see, e.g., Vershynin’s notes on quadratic/bilinear forms.&#x20;
+
+#### Proof 2 (elementary coordinate‑wise route; i.i.d. entries)
+
+Assume further that $\{q_i\}_{i=1}^d$ and $\{k_i\}_{i=1}^d$ are **independent** families with $\mathbb{E}[q_i]=\mathbb{E}[k_i]=0$, $\mathrm{Var}(q_i)=\mathrm{Var}(k_i)=1$. Then
+
+$$
+\mathbb{E}[S]=\sum_{i=1}^d \mathbb{E}[q_i]\mathbb{E}[k_i]=0,
+\quad
+\mathrm{Var}(S)
+= \sum_{i=1}^d \mathrm{Var}(q_i k_i)
++ 2\!\!\sum_{1\le i<j\le d}\!\!\mathrm{Cov}(q_i k_i,\, q_j k_j).
+$$
+
+Independence across coordinates kills the cross‑covariances; moreover,
+$\mathrm{Var}(q_i k_i)=\mathbb{E}[q_i^2]\mathbb{E}[k_i^2]=1$. Hence $\mathrm{Var}(S)=d$ and $\mathrm{Var}(Z)=1$. This is exactly the computation quoted in _Attention Is All You Need_, §3.2.1 (and its footnote), to motivate dividing by $\sqrt{d_k}$. ([NeurIPS Papers][2])
+
+> [!question] Why this matters for softmax?
+>
+> Softmax is the gradient of the log‑sum‑exp potential; its Jacobian is
+> $\nabla^2 \mathrm{lse}_\lambda(z)=\lambda(\mathrm{Diag}(p)-pp^\top)$, so **large logit magnitudes** (relative to the temperature $T=1/\lambda$) push $p$ into near‑one‑hot corners where the Jacobian’s entries (and hence gradients) are tiny. The Transformer paper explicitly notes that without scaling, dot products “grow large in magnitude, pushing the softmax into regions where it has extremely small gradients.” Keeping $\mathrm{Var}(Z)\approx O(1)$ as $d$ grows prevents that saturation. ([NeurIPS Papers][2], [arXiv][112])
+
+#### Strengthening: concentration/tails (subgaussian → subexponential → Bernstein)
+
+Beyond variance, we can give **dimension‑free tail control** for the scaled logit under mild assumptions.
+
+- If each coordinate $q_i$ and $k_i$ is **subgaussian** (zero mean, unit variance) and independent, then each product $X_i:=q_i k_i$ is **subexponential** with $\psi_1$‑norm bounded by a universal constant (product‑of‑subgaussians lemma).&#x20;
+
+- The sum $S=\sum_{i=1}^d X_i$ then satisfies **Bernstein’s inequality**:
+
+$$
+\mathbb{P}\big(|S|\ge t\big)\ \le\ 2\exp\!\left[-c\,\min\!\left(\frac{t^2}{K^2 d},\ \frac{t}{K}\right)\right]\!,
+$$
+
+for an absolute constant $c>0$ and $K=\max_i\|X_i\|_{\psi_1}=O(1)$. Dividing by $\sqrt d$ gives
+
+$$
+\mathbb{P}\!\left(\left|\frac{S}{\sqrt d}\right|\ge t\right)\ \le\ 2\exp\!\left[-c\,\min\!\left(\frac{t^2}{K^2},\ \frac{\sqrt d\,t}{K}\right)\right].
+$$
+
+For fixed $t=O(1)$, the first branch dominates, yielding **dimension‑free subgaussian tails** for $Z=S/\sqrt d$. This formalizes that the $\tfrac1{\sqrt d}$ scaling not only normalizes the variance but also **stabilizes concentration** as $d$ grows.&#x20;
+
+#### Practical corollaries and context
+
+- **Head‑wise scaling in MHA.** For head dimension $d_h$, set $Z_h=(q_h^\top k_h)/\sqrt{d_h}$ so that $\mathrm{Var}(Z_h)=1$ under isotropy. This is exactly the form in the original MHA definition. ([NeurIPS Papers][2])
+
+- **Compatibility with LayerNorm.** With LayerNorm, hidden coordinates are approximately standardized; the isotropy assumption is thus a reasonable first‑order model in practice, aligning with the above calculation. ([arXiv][113])
+
+Sources:
+
+- **Transformer & scaling motivation (explicit variance $d_k$ statement and softmax‑saturation rationale):** _Attention Is All You Need_, §3.2.1 and footnote. ([NeurIPS Papers][1])
+- **Softmax/LSE Jacobian and gradient properties:** Gao & Pavel. ([arXiv][2])
+- **High‑dimensional probability facts used here:**
+  – Product of subgaussians is subexponential (Lemma 2.7.7).
+  – Bernstein inequality for sums of independent subexponentials.
+  – (Background) isotropy and quadratic/bilinear forms.&#x20;
+
+[112]: https://arxiv.org/pdf/1704.00805 "On the Properties of the Softmax Function with Application ..."
+[113]: https://arxiv.org/abs/1607.06450 "Layer Normalization"
 
 **A.3 The kernel/regression view (why attention “works”).**
 If vectors are **length‑normalized** (LayerNorm makes this plausible in practice), then
@@ -146,25 +263,22 @@ o(q)=\sum_j w_j(q)\,v_j
 =\frac{\sum_j K_\sigma(q,k_j)\,v_j}{\sum_\ell K_\sigma(q,k_\ell)},
 $$
 
-which is precisely the **Nadaraya–Watson (NW) kernel regression estimator** evaluated at $q$ with “design points” $k_j$ and “responses” $v_j$. ([Wikipedia][4])
+which is precisely the **Nadaraya–Watson (NW) kernel regression estimator** evaluated at $q$ with “design points” $k_j$ and “responses” $v_j$. ([Wikipedia][114])
 ∎
 
 ---
 
 ### Remarks and refinements
 
-- **Why the $1/\sqrt{d}$ in attention?** It couples with temperature $T$ to set the _effective_ bandwidth $\sigma^2=T\sqrt{d}$. Keeping logit variance $O(1)$ as $d$ grows stabilizes the softmax (and thus the kernel bandwidth), which is the original scaling motivation. ([NeurIPS Papers][1])
+- **Why the $1/\sqrt{d}$ in attention?** It couples with temperature $T$ to set the _effective_ bandwidth $\sigma^2=T\sqrt{d}$. Keeping logit variance $O(1)$ as $d$ grows stabilizes the softmax (and thus the kernel bandwidth), which is the original scaling motivation. ([NeurIPS Papers][2])
 
 - **Without exact length normalization.**
   If keys have small norm variation, say $|\|k_j\|^2-\beta^2|\le \varepsilon$ for all $j$, then the attention weights differ from the RBF‑normalized weights by at most a multiplicative factor $\exp(\varepsilon/(2T\sqrt{d}))$ _before_ renormalization; after renormalization, the total deviation is correspondingly controlled. (This follows directly from Step 3 by factoring the extra $\exp(\|k_j\|^2/(2\sqrt{d}T))$ term.)
 
 - **MHA and GQA interpretations.**
-  Each head $h$ has its own feature map $(W_Q^h,W_K^h)$; applying the same derivation in that head’s space shows head‑wise attention is an NW smoother with bandwidth $\sigma_h^2=T\sqrt{d_h}$. **MHA** linearly combines $H$ such smoothers via $W_O$ (an ensemble of kernels). **GQA/MQA** _share the dictionary_ $\{k_j,v_j\}$ across heads (or groups) but the optimization/softmax and thus the kernel view are unchanged. ([NeurIPS Papers][1])
+  Each head $h$ has its own feature map $(W_Q^h,W_K^h)$; applying the same derivation in that head’s space shows head‑wise attention is an NW smoother with bandwidth $\sigma_h^2=T\sqrt{d_h}$. **MHA** linearly combines $H$ such smoothers via $W_O$ (an ensemble of kernels). **GQA/MQA** _share the dictionary_ $\{k_j,v_j\}$ across heads (or groups) but the optimization/softmax and thus the kernel view are unchanged. ([NeurIPS Papers][2])
 
-[1]: https://papers.neurips.cc/paper/7181-attention-is-all-you-need.pdf "Attention is All you Need"
-[2]: https://en.wikipedia.org/wiki/Radial_basis_function_kernel "Radial basis function kernel"
-[3]: https://en.wikipedia.org/wiki/Polarization_identity "Polarization identity"
-[4]: https://en.wikipedia.org/wiki/Kernel_regression "Kernel regression"
+[114]: https://en.wikipedia.org/wiki/Kernel_regression "Kernel regression"
 
 > **Takeaway.** With LN and dot‑product softmax, attention approximates RBF‑kernel regression on learned features, explaining why it smoothly interpolates relevant tokens and scales with width.
 
@@ -265,7 +379,7 @@ $\|\sigma(z+\delta z)-\sigma(z)\|_2 \le \lambda\,\|\delta z\|_2$. Insert $\delta
 - **MHA:** read/write $K,V\in\mathbb{R}^{n\times(hd_h)}$ ⇒ **HBM‑limited** at long $n$.
 - **GQA (G groups):** memory $\sim 2G d_h$ per token per layer; improves bandwidth, close to MQA when $G$ small. ([arXiv][14])
 - **MLA (latent $d_c$):** memory $\sim d_c$ per token per layer; can be orders smaller; up‑proj absorbed into $W_Q,W_O$ at inference.&#x20;
-- **IO‑aware optimization:** FlashAttention reduces **HBM traffic** by tiling Q/K/V and fusing softmax; exact attention, big wall‑clock gains. (Use as “where to go next” slide.) ([arXiv][15], [Tri Dao][16])
+- **IO‑aware optimization:** FlashAttention reduces **HBM traffic** by tiling Q/K/V and fusing softmax; exact attention, big wall‑clock gains. ([arXiv][15], [Tri Dao][16])
 
 ---
 
