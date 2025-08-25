@@ -4,7 +4,7 @@ tags:
   - seed
   - math
 date: "2025-08-21"
-modified: 2025-08-21 12:30:53 GMT-04:00
+modified: 2025-08-25 10:42:51 GMT-04:00
 title: convexity
 ---
 
@@ -50,7 +50,7 @@ for any temperature $\tau>0$.
 
 ---
 
-## 1) Pose the convex program
+### pose the convex program
 
 Use the **minimization** form (equivalent to maximizing similarity + entropy):
 
@@ -70,9 +70,7 @@ Facts:
 
 > TL;DR: we’ve set up a bona fide convex optimization problem; KKT will characterize its unique global minimizer.
 
----
-
-## 2) Lagrangian and KKT conditions
+### Lagrangian and KKT conditions
 
 Introduce multipliers $\lambda\in\mathbb{R}$ for the equality constraint and $\mu\in\mathbb{R}^n_{\ge 0}$ for $\alpha\ge 0$. The Lagrangian is
 
@@ -124,9 +122,7 @@ $$
 
 as claimed. Because the problem is strictly convex on the feasible affine set, this optimizer is **unique**. (If you prefer to see the KKT equality conditions written in a differentiable‑optimization setting, the derivation is presented in the implicit‑layers tutorial when treating softmax as the solution of an entropy‑regularized linear objective.) ([implicit-layers-tutorial.org][4])
 
----
-
-## 3) Dual/variational check (one‑liner)
+### dual/variational check
 
 The convex conjugate of the **negative entropy** is the **log‑sum‑exp** (LSE), and the gradient of LSE is softmax. Concretely,
 
@@ -138,16 +134,12 @@ $$
 
 The maximizer is exactly $\alpha=\mathrm{softmax}(s/\tau)$ (Fenchel–Young inequality with equality at the gradient of LSE). This links the primal optimum and the softmax _directly_ via convex duality. ([Wikipedia][5], [arXiv][3], [Proceedings of Machine Learning Research][6])
 
----
-
-## 4) Edge cases & limits
+### edge cases & limits
 
 - **No regularization ($\tau\to 0^+$).** The solution collapses to the vertex $e_{j^*}$ with $j^*\in\arg\max_i s_i$ (softmax $\to$ argmax). ([Mathematics Stack Exchange][7], [arXiv][3])
 - **High temperature ($\tau\to\infty$).** Weights approach uniform. (Immediate from the softmax formula.)
 
----
-
-### Why this matters for attention
+#### Why this matters for attention
 
 In self‑attention, $s_i=\langle q,k_i\rangle$ (scaled). The KKT derivation above shows the attention weights are **precisely** the unique solution of a **convex** (indeed strictly convex on the feasible affine set) program that balances alignment $s^\top \alpha$ with entropy $H(\alpha)$. This gives a clean optimization‑theoretic interpretation of the softmax step. Moreover, the same machinery explains variants: different regularizers $\Rightarrow$ different normalizers (e.g., sparsemax via Euclidean projection), doubly‑stochastic constraints $\Rightarrow$ Sinkhorn/OT, etc. (softmax as Gibbs distribution/logit equilibrium). ([arXiv][3])
 
@@ -198,11 +190,9 @@ _(Punchline: softmax doesn’t “just happen”—it falls straight out of KKT 
 
 ## why we care about convexity?
 
-Short answer: **convexity buys guarantees, knobs, and certificates**—all things you usually don’t get from vanilla (non‑convex) transformers.
+**convexity buys guarantees, knobs, and certificates**—all things you usually don’t get from vanilla (non‑convex) transformers.
 
-Below is the fast, technical tour.
-
-### 1) Guarantees (global optima & analyzability)
+### guarantees (global optima & [[thoughts/mechanistic interpretability|interpretability]])
 
 - **Solve to global optimality (for the convex surrogate).** If you replace the softmax block with a convex attention layer and rewrite the training objective accordingly, the _training_ problem can be cast as a **convex program**. That means no spurious minima and provable convergence to the global solution of _that_ model. See _Convexifying Transformers_ for a concrete formulation and analysis. ([arXiv][1], [arXiv][2])
 
@@ -210,7 +200,7 @@ Below is the fast, technical tour.
 
 - **Well‑behaved sensitivity.** When an attention subproblem is **strongly convex** in the weights $\alpha$, the mapping “scores $\mapsto$ $\alpha^*$” is single‑valued and differentiable almost everywhere; implicit differentiation is stable and exact—useful both for proofs and for numerics. (This is the same reason optimization layers are attractive.) ([Stanford University][4], [Proceedings of Machine Learning Research][5])
 
-### 2) Knobs (designing the attention operator with guarantees)
+### knobs
 
 Write attention weight selection as the **regularized argmax**
 
@@ -228,7 +218,7 @@ and pick $\Omega$ to get the behavior you want. This **Fenchel–Young** view tu
 
 These come with optimization‑theoretic guarantees (existence/uniqueness, convergence) inherited from convexity.
 
-### 3) Certificates (verification & robustness)
+### certificates (verification & robustness)
 
 Transformers are hard to _verify_ because softmax/attention are non‑linear and non‑convex in the inputs. A convex lens gives **outer approximations** that are tight enough to be useful:
 
@@ -236,20 +226,20 @@ Transformers are hard to _verify_ because softmax/attention are non‑linear and
 
 - **Tooling compatibility.** These bounds slot into modern verifiers (e.g., α,β‑CROWN / BaB families) that rely on convex relaxations to scale certification. Concavity/convexity‑aware formulations are the workhorse behind state‑of‑the‑art verified results. ([GitHub][12], [arXiv][13])
 
-### 4) Geometry you can reason about
+### geometry you can reason about
 
 - **Outputs live in a convex set.** Softmax attention produces $y=\sum_i \alpha_i v_i$ with $\alpha\in\Delta$, so $y$ lies in the **convex hull** of values. Understanding this “probability cage” motivates alternatives (e.g., normalized attention beyond the simplex) and makes constraints on $y$ analyzable. ([arXiv][14])
 
 - **When you want out of the cage:** The convex view also clarifies what you must change (the feasible set or regularizer) to escape that hull while keeping optimization tractable (e.g., Sinkhorn or non‑probability normalizations). ([Proceedings of Machine Learning Research][8])
 
-### 5) Pragmatics: when this _actually_ helps
+### pragmatics: when this _actually_ helps
 
 - **You need guarantees** (safety‑critical or high‑reliability): convex surrogates + verification bounds give **certified** behavior. ([Proceedings of Machine Learning Research][10])
 - **You want structure** (sparsity, matching, conservation): choose $\Omega$ or constraints to enforce it _by design_, not by hope. ([Journal of Machine Learning Research][6], [Proceedings of Machine Learning Research][8])
 - **You want analysis** (what is the model really learning?): convex duality exposes implicit biases (e.g., low‑rank, clustering). ([arXiv][3])
 - **You need differentiable constraints in‑network:** optimization layers (QP/conic) give you disciplined, end‑to‑end differentiable constraint handling. ([Proceedings of Machine Learning Research][5], [Stanford University][4])
 
-### 6) Reality check
+### reality check
 
 Convex ≠ “bigger BLEU overnight.” The **standard** transformer remains non‑convex in $(Q,K,V,\theta)$. The convex story is (i) a **surrogate** you can train with global guarantees, or (ii) an **analysis lens** that yields principled variants (sparse, OT, etc.) and **certificates**. Used judiciously, it’s the difference between _“it works”_ and _“we know why—and can prove useful things about it.”_ ([arXiv][1], [Proceedings of Machine Learning Research][10])
 

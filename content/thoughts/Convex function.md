@@ -4,7 +4,7 @@ tags:
   - math
 description: a real-valued function is convex if its epigraph is a convex set
 date: "2024-12-10"
-modified: 2025-08-24 07:59:18 GMT-04:00
+modified: 2025-08-25 10:32:52 GMT-04:00
 title: Convex function
 ---
 
@@ -73,7 +73,7 @@ a generalization of the notion of a triangle or tetrahedron to arbitrary dimensi
 - a 4-dimensional simplex is a 5-cell.
 
 Specifically, a k-simplex is a k-dimensional polytope that is the convex hull of its $k+1$ vertices.
-Formally, suppose the $k+1$ points $u_0, \ldots, u_k$ are _affinely independent_, which means the $k$ vectors $u_1 \minus u_0, \ldots, u_k \minus u_0$ are _linearly independent_.
+Formally, suppose the $k+1$ points $u_0, \ldots, u_k$ are _affinely independent_, which means the $k$ vectors $u_1 - u_0, \ldots, u_k - u_0$ are _linearly independent_.
 Then simplex determined by them is a set of points:
 
 $$

@@ -5,7 +5,7 @@ tags:
   - math
 description: continuity study
 date: "2025-08-21"
-modified: 2025-08-24 08:15:51 GMT-04:00
+modified: 2025-08-25 10:32:59 GMT-04:00
 title: Lipschitzness
 ---
 
@@ -18,7 +18,7 @@ Let $(\mathcal{X},\|\cdot\|)$ be a [[thoughts/norm|normed]] space and $f:\mathca
 > $f$ is **$L$-Lipschitz (w\.r.t. $\|\cdot\|$)** if
 >
 > $$
-> \|f(x)\minus f(y)\|\;\le\;L\,\|x \minus y\|\quad\forall x,y\in\operatorname{dom}f.
+> \|f(x)- f(y)\|\;\le\;L\,\|x - y\|\quad\forall x,y\in\operatorname{dom}f.
 > $$
 
 > [!note] properties
@@ -70,20 +70,20 @@ For convex $f$, the following are **equivalent**:
 
 ## smoothness & strong convexity
 
-- **$L$-smooth:** $\|\nabla f(x)\minus\nabla f(y)\|_*\le L\|x\minus\;y\|$.
-  For convex $f$: $f(y)\le f(x)+\langle\nabla f(x),y\minus\;x\rangle+\tfrac{L}{2}\|y\minus\;x\|^2$; and Baillon–Haddad co-coercivity:
+- **$L$-smooth:** $\|\nabla f(x)-\nabla f(y)\|_*\le L\|x-\;y\|$.
+  For convex $f$: $f(y)\le f(x)+\langle\nabla f(x),y-\;x\rangle+\tfrac{L}{2}\|y-\;x\|^2$; and Baillon–Haddad co-coercivity:
 
   $$
-  \langle\nabla f(x)\minus\nabla f(y),x\minus\;y\rangle \;\ge\; \tfrac{1}{L}\|\nabla f(x)\minus\nabla f(y)\|_*^2.
+  \langle\nabla f(x)-\nabla f(y),x-\;y\rangle \;\ge\; \tfrac{1}{L}\|\nabla f(x)-\nabla f(y)\|_*^2.
   $$
 
-- **$\mu$-strongly convex:** $f(y)\ge f(x)+\langle\nabla f(x),y\minus x\rangle+\tfrac{\mu}{2}\|y\minus x\|^2$.
+- **$\mu$-strongly convex:** $f(y)\ge f(x)+\langle\nabla f(x),y- x\rangle+\tfrac{\mu}{2}\|y- x\|^2$.
   **Fact:** no nonconstant strongly convex function is globally Lipschitz on $\mathbb{R}^n$ (it grows at least quadratically).
 
 ## examples
 
 - $f(x)=\|x\|$: **1-Lipschitz** w\.r.t. $\|\cdot\|$ (subgradients in the dual unit ball).
 - $f(x)=\langle a,x\rangle$: **$\|a\|_*$-Lipschitz**.
-- Hinge loss $f(t)=\max(0,1 \minus t)$: **1-Lipschitz** on $\mathbb{R}$.
+- Hinge loss $f(t)=\max(0,1 - t)$: **1-Lipschitz** on $\mathbb{R}$.
 - Log-sum-exp $f(z)=\log\sum_i e^{z_i}$: $\nabla f(z)=\text{softmax}(z)$, $\|\nabla f(z)\|_1=1$ $\Rightarrow$ **1-Lipschitz w\.r.t. $\|\cdot\|_\infty$** (nice tie-in to attention logits).
 - Quadratic $f(x)=\tfrac12 x^\top Qx$: **not** globally Lipschitz on $\mathbb{R}^n$ unless the domain is bounded; but it **is** $L$-smooth with $L=\|Q\|_{\text{op}}$.

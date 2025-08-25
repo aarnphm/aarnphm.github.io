@@ -3,7 +3,7 @@ id: attention
 tags:
   - seed
 date: "2025-08-21"
-modified: 2025-08-24 08:13:17 GMT-04:00
+modified: 2025-08-25 10:40:32 GMT-04:00
 title: attention primer
 ---
 
@@ -11,7 +11,7 @@ title: attention primer
 
 - **Notation.** Sequence $X\in\mathbb{R}^{n\times d}$. Projections $W_Q,W_K,W_V$. Heads $h$, head dim $d_h$.
 - **Softmax/LSE.** $\operatorname{softmax}(z)_i = \frac{e^{z_i}}{\sum_j e^{z_j}}$; $\operatorname{LSE}(z)=\log\sum_j e^{z_j}$.
-- **Stable softmax.** Use $z\leftarrow z\minus\max(z)$ (log‑sum‑exp trick).
+- **Stable softmax.** Use $z\leftarrow z-\max(z)$ (log‑sum‑exp trick).
 - **RoPE** injects relative position by rotating $(q,k)$ in 2‑D frequency planes before the dot product. [@su2023roformerenhancedtransformerrotary]
 - **Why the $\frac{1}{\sqrt{d_k}}$** scale? It variance‑normalizes dot products so logits don’t blow up with $d_k$ (see Prop. A1 below; and [@vaswani2023attentionneed; §3.2.1])
 - **KL** $D_{\mathrm{KL}}(P\|Q)=\sum_i P_i\log\frac{P_i}{Q_i}$. Jointly convex in $(P,Q)$; bounds total variation via Pinsker. Use it to (i) align attention distributions, (ii) measure head agreement, (iii) distill approximations (e.g., MHA→GQA). ([home.ttic.edu][3], [people.lids.mit.edu][4])
@@ -159,12 +159,12 @@ This is a standard identity equivalent to the dot‑product axioms. ([Wikipedia]
 3. **Insert into the logits and separate constants.**
    Using Step 2,
 
-$$
-\frac{\langle q,k_j\rangle}{\sqrt{d}\,T}
-= \underbrace{\frac{\|q\|^2}{2\sqrt{d}\,T}}_{\text{row‑constant}}
-+ \frac{\|k_j\|^2}{2\sqrt{d}\,T}
--\frac{\|q-k_j\|^2}{2\,T\,\sqrt{d}}.
-$$
+   $$
+   \frac{\langle q,k_j\rangle}{\sqrt{d}\,T}
+   = \underbrace{\frac{\|q\|^2}{2\sqrt{d}\,T}}_{\text{row‑constant}}
+   + \frac{\|k_j\|^2}{2\sqrt{d}\,T}
+   -\frac{\|q-k_j\|^2}{2\,T\,\sqrt{d}}.
+   $$
 
 The first term is constant in $j$ and therefore **cancels inside softmax** (adding a constant to all logits leaves softmax unchanged).
 
@@ -201,9 +201,7 @@ $$
 which is precisely the **Nadaraya–Watson (NW) kernel regression estimator** evaluated at $q$ with “design points” $k_j$ and “responses” $v_j$. ([Wikipedia][114])
 ∎
 
----
-
-### Remarks and refinements
+### remarks and refinements
 
 - **Why the $1/\sqrt{d}$ in attention?** It couples with temperature $T$ to set the _effective_ bandwidth $\sigma^2=T\sqrt{d}$. Keeping logit variance $O(1)$ as $d$ grows stabilizes the softmax (and thus the kernel bandwidth), which is the original scaling motivation. ([NeurIPS Papers][2])
 
@@ -217,9 +215,7 @@ which is precisely the **Nadaraya–Watson (NW) kernel regression estimator** ev
 
 > **Takeaway.** With LN and dot‑product softmax, attention approximates RBF‑kernel regression on learned features, explaining why it smoothly interpolates relevant tokens and scales with width.
 
----
-
-## 2) Multi‑Head Attention (MHA) as multi‑kernel learning
+## Multi‑Head Attention (MHA) as multi‑kernel learning
 
 With heads $i=1,\dots,h$,
 
@@ -234,9 +230,7 @@ $$
 
 (The base formulation and scaling are from Vaswani et al., 2017.) ([NeurIPS Papers][2])
 
----
-
-## 3) Grouped‑Query & Multi‑Query Attention (GQA/MQA)
+## Grouped‑Query & Multi‑Query Attention (GQA/MQA)
 
 During **decode**, KV cache bandwidth dominates. **MQA** shares **one** $K,V$ across all heads; **GQA** shares KV across **$G$** groups ($1<G<h$): a speed/quality compromise. Formal definition from Ainslie et al. (2023): queries have $h$ heads, but keys/values have $G$ heads; each group of $\tfrac{h}{G}$ query heads attends to the same $K_g,V_g$. ([arXiv][10])
 
@@ -257,9 +251,7 @@ $$
 
 for $L=\lambda$ (non‑expansiveness at $\lambda\!=\!1$). This shows head‑sharing error is controlled by how different per‑head $K_i$ are in the subspace seen by $q$. (Rigorous Lipschitz facts from “On the Properties of Softmax”.)&#x20;
 
----
-
-## 4) DeepSeek’s **Multi‑Head Latent Attention (MLA)**
+## DeepSeek’s **Multi‑Head Latent Attention (MLA)**
 
 **Problem.** Even GQA leaves a non‑trivial KV cache. **MLA** aggressively compresses KV while _improving_ quality vs MHA in DeepSeek‑V2. Key idea: **learn a low‑rank joint latent for $K$ and $V$** that is cached; reconstruct full $K,V$ via cheap up‑projections when needed.
 
@@ -284,18 +276,7 @@ During **inference**, only $c^{KV}_t$ is cached, so KV cache per token is $d_c$ 
 
 **Context with GQA/MQA.** MQA/GQA share $K,V$; MLA _compresses_ them into a learned latent cache with **joint low‑rank structure**, a different axis of efficiency. (Background: MQA by Shazeer; GQA by Ainslie et al.) ([arXiv][11])
 
----
-
-## 5) Visualizations you can put on slides
-
-1. **Projection geometry** (2D): scatter $k_j$ on a unit circle, show a query $q$. Draw level sets of $\exp(\langle q,k\rangle/T)$ and the resulting attention barycenter over $V$. (Connect to kernel regression.)
-2. **Entropy surfaces vs temperature**: plot $H(\operatorname{softmax}(z/T))$ as a function of 2‑class logit gap $\Delta$. Shows monotone $H\uparrow$ with $T$. (Use the log‑sum‑exp stable implementation.) ([Oxford Academic][12])
-3. **KV‑cache bars** across MHA, GQA, MQA, MLA vs $h,d_h,d_c$.
-4. **Mechanistic view** (Transformer‑Circuits): illustrate heads as read‑write vectors on the residual stream, then relate MLA’s up‑projections to “virtual heads”. ([transformer-circuits.pub][13])
-
----
-
-## 6) Formal derivations & short proofs you can include
+## formal derivations
 
 **D.1 Self‑attention as gradient of a potential (when $V=K$).**
 Define $F(q)=\log\sum_j \exp(\langle q,k_j\rangle/T)$. Then $\nabla_q F(q)=\sum_j p_j\,k_j$ with $p=\operatorname{softmax}(\langle q,K\rangle/T)$. Thus, with $V=K$, the attention output is **∇ of a convex potential** (smooth max). Good slide for mathematical motivation. (Softmax = ∇LSE.)&#x20;
@@ -307,22 +288,18 @@ If $\|q\|=\|k_j\|=c$ (approx true after LN), then the attention weights equal an
 Using Prop. 4 of “Softmax properties”, with inverse‑temperature $\lambda$ (often 1 in practice):
 $\|\sigma(z+\delta z)-\sigma(z)\|_2 \le \lambda\,\|\delta z\|_2$. Insert $\delta z=\tfrac{1}{\sqrt{d_h}}q(K_g-K_i)^\top$ to state a clean robustness bound to KV sharing.&#x20;
 
----
-
-## 7) Complexity summary (decode‑phase, per token)
+## Complexity summary (decode‑phase, per token)
 
 - **MHA:** read/write $K,V\in\mathbb{R}^{n\times(hd_h)}$ ⇒ **HBM‑limited** at long $n$.
 - **GQA (G groups):** memory $\sim 2G d_h$ per token per layer; improves bandwidth, close to MQA when $G$ small. ([arXiv][14])
 - **MLA (latent $d_c$):** memory $\sim d_c$ per token per layer; can be orders smaller; up‑proj absorbed into $W_Q,W_O$ at inference.&#x20;
 - **IO‑aware optimization:** FlashAttention reduces **HBM traffic** by tiling Q/K/V and fusing softmax; exact attention, big wall‑clock gains. ([arXiv][15], [Tri Dao][16])
 
----
-
-## 8) CUDA: correctness‑first kernels (single head, single batch)
+## CUDA: correctness‑first kernels (single head, single batch)
 
 > **Design goal:** maximum clarity; three kernels (scores → softmax → output). You can later fuse and tile.
 
-### 8.1 Compute scores $S=QK^\top/\sqrt{d}$
+### compute scores $S=QK^\top/\sqrt{d}$
 
 ```cpp
 // qk_scores.cu
@@ -357,7 +334,7 @@ extern "C" void qk_scores(const float* Q, const float* K, float* S, int n, int d
 }
 ```
 
-### 8.2 Row‑wise softmax (numerically stable; in‑place on S)
+### row‑wise softmax (numerically stable; in‑place on S)
 
 ```cpp
 // row_softmax.cu
@@ -393,7 +370,7 @@ extern "C" void row_softmax(float* S, int n) {
 }
 ```
 
-### 8.3 Apply to values $O = S V$
+### apply to values $O = S V$
 
 ```cpp
 // apply_values.cu
@@ -433,9 +410,7 @@ extern "C" void apply_values(const float* S, const float* V, float* O, int n, in
 - **Kernel fusion**: compute partial QKᵀ → streaming softmax → accumulate $OV$ without storing $S$ (FlashAttention idea). ([arXiv][15])
 - **Paged KV** & **GQA/MQA/MLA** reduce HBM pressure; quantify with a roofline plot.
 
----
-
-## 9) Triton: a compact, fused attention (clarity‑first)
+## triton: a compact, fused attention (clarity‑first)
 
 Below is a didactic **two‑pass** Triton kernel: pass 1 computes running row‑max/sum for softmax; pass 2 recomputes tiles to form the output $O$ (avoids storing $S$). Single head, no mask, one batch for clarity.
 
@@ -443,47 +418,16 @@ Below is a didactic **two‑pass** Triton kernel: pass 1 computes running row‑
 
 > **Why two passes?** It matches the pedagogy of stable softmax (compute row‑max & denom, then normalize) yet avoids materializing $S$. You can evolve it to a **single‑pass streaming** kernel (à la FlashAttention) once students grasp this version. (For background on IO‑aware attention, see FlashAttention.) ([arXiv][15])
 
----
-
-## 10) Where to push performance (after correctness)
+## Where to push performance (after correctness)
 
 - **IO‑aware tiling (FlashAttention):** stream K/V tiles; maintain running $(m_i,\ell_i)$; write O blocks; no $n\times n$ intermediates. Latest FA‑3 saturates H100 tensor cores, includes FP8 paths. ([arXiv][17], [Tri Dao][16])
 - **KV layout & paging:** lay out KV in **paged** blocks (PagedAttention) + **GQA/MQA** or **MLA** to tame cache. ([arXiv][14])
 - **RoPE in fused kernels:** apply rotations to $Q,K$ **inside** tiles to avoid extra global reads; with MLA use decoupled scheme.&#x20;
 - **Mixed precision:** FP16/FP8 accumulations, per‑row max/sub; ensure numerics via LSE trick. (See stable LSE references.) ([Oxford Academic][12])
 
----
-
-## 11) Suggested slide sequencing
-
-1. **Motivation** (HBM bottlenecks; why attention helps pattern matching & routing).
-2. **Self‑attention derivation** (A.1–A.3) + regression/kernel interpretation. ([Proceedings of Machine Learning Research][9])
-3. **MHA as multi‑kernel** aggregator; capacity discussion. ([NeurIPS Papers][2])
-4. **GQA/MQA**: math + speed vs quality; Lipschitz robustness bound. ([arXiv][14])
-5. **MLA**: equations (9–13), cache math, decoupled RoPE; empirical headline.&#x20;
-6. **Optimization**: IO‑awareness (FlashAttention), numerics. ([arXiv][15])
-7. **Code**: CUDA three‑kernel baseline → Triton fused two‑pass.
-8. **Wrap‑up**: how these ideas combine in modern LLMs (GQA+RoPE+FlashAttn, or MLA), and how KL/entropy tools help analyze them.
-
----
-
-## 12) Compact references (primary sources)
-
-- **Transformer (Scaled dot‑product & MHA).** Vaswani et al., 2017. ([NeurIPS Papers][2])
-- **MQA.** Shazeer, 2019. ([arXiv][18])
-- **GQA.** Ainslie et al., 2023. ([arXiv][10])
-- **MLA (DeepSeek‑V2).** Liu et al., 2024 (eqs., cache math, decoupled RoPE).&#x20;
-- **RoPE.** Su et al., 2021. ([arXiv][1])
-- **Kernel/linear attention views.** Katharopoulos et al., 2020; Choromanski et al., 2020. ([Proceedings of Machine Learning Research][9], [arXiv][8])
-- **FlashAttention.** Dao et al., 2022; FA‑3 update. ([arXiv][15], [Tri Dao][16])
-- **Softmax as ∇LSE; Lipschitz/Jacobian.** (Softmax properties)&#x20;
-- **Transformer‑Circuits (mechanistic visualization).** ([transformer-circuits.pub][13])
-
----
-
 ### Appendix: one more formal nugget you might like on a blackboard
 
-**E.1 MHA ≈ mixture of kernel smoothers.** For head $i$, define kernel
+**E.1 MHA $\approx$ mixture of kernel smoothers.** For head $i$, define kernel
 $\kappa_i(q,k)=\exp(\langle W_Q^i q, W_K^i k\rangle/\sqrt{d_h})$. Then
 
 $$

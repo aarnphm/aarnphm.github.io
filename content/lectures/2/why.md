@@ -2,14 +2,17 @@
 id: why
 tags:
   - seed
+  - ml
+  - math
+description: motivations of attention
 date: "2025-08-21"
-modified: 2025-08-21 12:38:35 GMT-04:00
+modified: 2025-08-25 10:46:29 GMT-04:00
 title: why
 ---
 
 ---
 
-## 1) Why dot products? Why _softmax_?
+## why dot products? why _softmax_?
 
 Let a query $q\in\mathbb{R}^{d}$ retrieve from a dictionary $\{(k_j,v_j)\}_{j=1}^n$, with keys $k_j\in\mathbb{R}^{d}$ and values $v_j\in\mathbb{R}^{d_v}$. Define logits
 
@@ -26,9 +29,7 @@ $$
 
 Hence $\exp(z_j/T)\propto \exp\big(-\|q-k_j\|^2/(2T\sqrt d)\big)$, i.e. **softmax‑weights are Gaussian/RBF weights in feature space** up to a per‑row constant that cancels out. Attention is thus kernel smoothing on a learned feature map. (This identity is purely algebraic; the $\sqrt d$ in the logits rescales the “bandwidth”.)
 
----
-
-## 2) Softmax from entropy‑regularized maximization (Gibbs variational principle)
+## softmax from entropy‑regularized maximization (Gibbs variational principle)
 
 For a fixed logit vector $z\in\mathbb{R}^n$ and temperature $T>0$, consider the **entropy‑regularized linear program**
 
@@ -88,9 +89,7 @@ $$
 
 Hence softmax is the gradient of a convex potential; it is **$\lambda$‑Lipschitz** and **$1/\lambda$‑cocoercive** in $\ell_2$, with spectrum governed by $\operatorname{Diag}(p)-pp^\top$. For $\lambda=1$ (the usual case), softmax is non‑expansive. These properties are standard and useful for stability bounds below.&#x20;
 
----
-
-## 3) Attention as a solved optimization
+## attention as a solved optimization
 
 For each query row $q_i$, define logits $z^{(i)}\in\mathbb{R}^n$ by
 
@@ -118,11 +117,9 @@ Thus **self‑attention computes the entropy‑regularized best convex combinati
 
 This variational picture is exactly the exponential‑family view where log‑sum‑exp is the cumulant generating function and entropy is the dual potential. ([People at EECS Berkeley][1])
 
----
+## From single head => MHA => GQA
 
-## 4) From single head ⇒ MHA ⇒ GQA
-
-### 4.1 Multi‑Head Attention (MHA) = parallel entropic programs
+### Multi‑Head Attention (MHA) = parallel entropic programs
 
 For head $h=1,\dots,H$, with its own projections $W_Q^h,W_K^h,W_V^h$, we solve
 
@@ -134,7 +131,7 @@ $$
 and return $o_i = W_O[\,\sum_j p_{1,j}^{(i)} v_{1,j}\;;\dots; \sum_j p_{H,j}^{(i)} v_{H,j}\,]$.
 **Key point.** The head‑wise problems **decouple** (same entropy but different logits/values per head); coupling enters linearly through $W_O$. (Transformer original.) ([NeurIPS Papers][5])
 
-### 4.2 Grouped‑Query / Multi‑Query Attention (GQA/MQA)
+### Grouped‑Query / Multi‑Query Attention (GQA/MQA)
 
 In **MQA**, all heads share a single $K,V$; in **GQA**, heads are partitioned into $G$ groups, each sharing $K_g,V_g$. For a head $h$ in group $g(h)$,
 
@@ -171,29 +168,20 @@ $$
 
 Thus the **quality loss** from grouping heads is controlled by (i) how different the original head‑specific keys were (operator norm $\|K_g-K_h\|_{op}$), (ii) query norm, and (iii) inverse temperature $1/T$. (Lipschitz/cocoercivity facts from convex analysis of softmax.)&#x20;
 
----
-
-## 6) Why the $\tfrac{1}{\sqrt d}$ scale?
+## Why the $\tfrac{1}{\sqrt d}$ scale?
 
 If $q,k$ have i.i.d. zero‑mean, unit‑variance entries, then $\mathrm{Var}(\langle q,k\rangle)=d$; dividing by $\sqrt d$ keeps the **logit variance $O(1)$** as width grows, stabilizing the entropy‑regularized problem and its gradients. (Transformer §3.2.) ([NeurIPS Papers][5])
 
----
-
-## 7) Takeaway summary (for one slide)
+## takeaway
 
 - **Self‑attention** on row $i$ =
   $\displaystyle \arg\max_{p\in\Delta}\big\{ \langle p,\tfrac{1}{\sqrt d}K q_i\rangle + T H(p)\big\}$
-  ⇒ $p=\operatorname{softmax}((K q_i)/(\sqrt d\,T))$, $o_i=\mathbb{E}_{p}[V]$.
-
+  $\implies p=\operatorname{softmax}((K q_i)/(\sqrt d\,T))$, $o_i=\mathbb{E}_{p}[V]$.
 - **MHA** = $H$ independent copies of the same convex program on different feature maps, linearly combined by $W_O$.
-
 - **GQA/MQA** = replace per‑head dictionaries by shared group dictionaries in the _same_ convex program.
-
 - **Kernel view** (with normalized $q,k$): attention weights are **RBF weights** with bandwidth $\sigma^2 = T\sqrt d$.
 
----
-
-## 8) Minimal code: run the **kernel equivalence**
+## minimal code: run the **kernel equivalence**
 
 The cell below **runs** a sanity check. With $\|q_i\|=\|k_j\|=1$, it shows that
 
@@ -214,38 +202,16 @@ when $\sigma^2=T\sqrt d$. The reported differences are at machine precision.
 
 **Result from running it just now (n=32, d=64, dv=16, T=1):**
 
-```
+```text
 sigma^2 used = 8.0
 max|ΔW| ≈ 1.39e-17,  ||ΔW||_F ≈ 1.22e-16
 max|ΔO| ≈ 1.66e-16,  ||ΔO||_F ≈ 8.29e-16
 ```
 
-You can scroll to the executed code block in this chat to rerun or tweak `n, d, dv, T`. (It’s the cell titled “Attention ≈ Entropic kernel regression demo”.)
-
----
-
-## 9) Pointers for your lecture
-
 - Use (1) to **motivate softmax** as the unique solution of a **maximum‑entropy** selection over candidates, not an ad‑hoc normalization.
 - Show $\nabla\!\operatorname{lse}=$ softmax and the Hessian $\lambda(\mathrm{Diag}(p)-pp^\top)$ to connect smoothness, conditioning, and robustness.&#x20;
 - For **MHA**, emphasize **parallel entropic programs** (independence across heads) and that **GQA** modifies only the dictionary. Cite the primary GQA & MQA sources. ([arXiv][7])
 - If you later discuss **MLA/DeepSeek‑V2**, keep the same optimization view but note that MLA _compresses the dictionary_ (KV) into a latent and reconstructs on the fly; the entropic program itself stays row‑wise. ([arXiv][8])
-
----
-
-### References (primary, math‑forward)
-
-- **Convex/variational foundation for softmax/log‑sum‑exp:**
-  Gao & Pavel, _On the Properties of the Softmax Function_ (gradient, Hessian, Lipschitz, conjugacy).&#x20;
-  Wainwright & Jordan, _Graphical Models, Exponential Families, and Variational Inference_ (log‑partition as sup of linear + entropy). ([People at EECS Berkeley][1])
-  Boyd & Vandenberghe, _Convex Optimization_ (log‑sum‑exp properties). ([Stanford University][2])
-  Cover & Thomas, _Elements of Information Theory_ (Gibbs/maximum‑entropy principles). ([ICDST][3])
-
-- **Architectures:**
-  Vaswani et al., _Attention is All You Need_ (scaled dot‑product; multi‑head). ([NeurIPS Papers][5])
-  Shazeer, _Fast Transformer Decoding: One Write‑Head is All You Need_ (MQA). ([arXiv][6])
-  Ainslie et al., _GQA_ (grouped‑query attention). ([arXiv][7], [ACL Anthology][9])
-  DeepSeek‑V2 (MLA / decoupled RoPE, KV compression). ([arXiv][8])
 
 ---
 
@@ -262,6 +228,20 @@ Uniqueness follows because the objective is strictly concave on the simplex. (Gi
 Let $\mathrm{lse}_\lambda(z)=\lambda^{-1}\log\sum_j e^{\lambda z_j}$. Then $\nabla \mathrm{lse}_\lambda=\sigma(\lambda z)$ and
 $\nabla^2\mathrm{lse}_\lambda(z)=\lambda(\mathrm{Diag}(p)-pp^\top)\succeq 0$ with operator norm $\le\lambda$.
 Hence $\sigma(\lambda\cdot)$ is $\lambda$-Lipschitz and $1/\lambda$-cocoercive in $\ell_2$. Set $\lambda=1/T$.&#x20;
+
+## References
+
+- **Convex/variational foundation for softmax/log‑sum‑exp:**
+  Gao & Pavel, _On the Properties of the Softmax Function_ (gradient, Hessian, Lipschitz, conjugacy).&#x20;
+  Wainwright & Jordan, _Graphical Models, Exponential Families, and Variational Inference_ (log‑partition as sup of linear + entropy). ([People at EECS Berkeley][1])
+  Boyd & Vandenberghe, _Convex Optimization_ (log‑sum‑exp properties). ([Stanford University][2])
+  Cover & Thomas, _Elements of Information Theory_ (Gibbs/maximum‑entropy principles). ([ICDST][3])
+
+- **Architectures:**
+  Vaswani et al., _Attention is All You Need_ (scaled dot‑product; multi‑head). ([NeurIPS Papers][5])
+  Shazeer, _Fast Transformer Decoding: One Write‑Head is All You Need_ (MQA). ([arXiv][6])
+  Ainslie et al., _GQA_ (grouped‑query attention). ([arXiv][7], [ACL Anthology][9])
+  DeepSeek‑V2 (MLA / decoupled RoPE, KV compression). ([arXiv][8])
 
 [1]: https://people.eecs.berkeley.edu/~jordan/papers/wainwright-jordan-fnt.pdf "Graphical Models, Exponential Families, and Variational ..."
 [2]: https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf "Convex Optimization"

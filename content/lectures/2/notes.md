@@ -5,7 +5,7 @@ tags:
   - workshop
 description: attention and math
 date: "2025-08-21"
-modified: 2025-08-24 13:22:47 GMT-04:00
+modified: 2025-08-25 10:31:59 GMT-04:00
 title: transcript
 ---
 
@@ -115,12 +115,12 @@ Maximizer: $p=\mathrm{softmax}(z)$. (Temperature $T$: replace $z$ by $z/T$ and s
 
 > [!math] Proposition
 >
-> softmax is the gradient of LSE with Jacobian $J=\lambda(\operatorname{Diag}(p)\minus\;pp^\top)$ whose spectral norm is bounded (scales with $\lambda$, i.e., inverse temperature)
+> softmax is the gradient of LSE with Jacobian $J=\lambda(\operatorname{Diag}(p)-\;pp^\top)$ whose spectral norm is bounded (scales with $\lambda$, i.e., inverse temperature)
 
 _Proof_
 
 $$
-J(z)\;=\;\nabla^2 \mathrm{lse}_\lambda(z)\;=\;\lambda\big(\operatorname{Diag}(p)\minus\;p\,p^\top\big),
+J(z)\;=\;\nabla^2 \mathrm{lse}_\lambda(z)\;=\;\lambda\big(\operatorname{Diag}(p)-\;p\,p^\top\big),
 \quad\text{where }p=\operatorname{softmax}(\lambda z).
 $$
 
@@ -150,23 +150,23 @@ Differentiate $p_i = e^{\lambda z_i}/S$ w\.r.t. $z_j$:
 
 $$
 \frac{\partial p_i}{\partial z_j}
-= \frac{\lambda e^{\lambda z_i}\,\delta_{ij}\,S \minus\; e^{\lambda z_i}\,\lambda e^{\lambda z_j}}{S^2}
-= \lambda\Big(\delta_{ij}\frac{e^{\lambda z_i}}{S} \minus\; \frac{e^{\lambda z_i}}{S}\frac{e^{\lambda z_j}}{S}\Big)
-= \lambda\big(\delta_{ij}p_i \minus\; p_i p_j\big).
+= \frac{\lambda e^{\lambda z_i}\,\delta_{ij}\,S -\; e^{\lambda z_i}\,\lambda e^{\lambda z_j}}{S^2}
+= \lambda\Big(\delta_{ij}\frac{e^{\lambda z_i}}{S} -\; \frac{e^{\lambda z_i}}{S}\frac{e^{\lambda z_j}}{S}\Big)
+= \lambda\big(\delta_{ij}p_i -\; p_i p_j\big).
 $$
 
 In matrix form,
 
 $$
 J(z)=\Big[\frac{\partial p_i}{\partial z_j}\Big]_{i,j}
-=\lambda\big(\operatorname{Diag}(p)\minus\;p\,p^\top\big).
+=\lambda\big(\operatorname{Diag}(p)-\;p\,p^\top\big).
 $$
 
 This explicit Hessian is given (and used to show convexity of LSE) in standard convex‑optimization notes; Boyd’s notes/slides show the same expression at $\lambda=1$. ([Stanford University][2])
 
 **Properties (immediate corollaries).**
 
-- $J(z)$ is **positive semidefinite**: for any $v$, $v^\top J v=\lambda\!\left(\sum_i p_i v_i^2 \minus\; (\sum_i p_i v_i)^2\right)=\lambda\,\mathrm{Var}_{i\sim p}(v_i)\ge 0$. Therefore $\mathrm{lse}_\lambda$ is convex, and softmax is its monotone gradient map. ([Computer Science at Princeton][1])
+- $J(z)$ is **positive semidefinite**: for any $v$, $v^\top J v=\lambda\!\left(\sum_i p_i v_i^2 -\; (\sum_i p_i v_i)^2\right)=\lambda\,\mathrm{Var}_{i\sim p}(v_i)\ge 0$. Therefore $\mathrm{lse}_\lambda$ is convex, and softmax is its monotone gradient map. ([Computer Science at Princeton][1])
 - $J(z)\mathbf{1}=0$: adding a constant to all coordinates of $z$ leaves softmax unchanged (shift‑invariance). ([arXiv][3])
 
 ---
@@ -175,7 +175,7 @@ Summary:
 
 - **Lagrange multipliers:** enforce equality constraints by pricing them; optimality ⇒ gradient of $f$ lies in the span of constraint normals. ([Wikipedia][1])
 - **KKT:** feasibility + dual feasibility + complementary slackness + stationarity. In convex problems with Slater: **necessary & sufficient**. ([Wikipedia][4], [CMU School of Computer Science][5])
-- **Entropy:** $H$ concave; $\minus\;H$ convex on the simplex.
+- **Entropy:** $H$ concave; $-\;H$ convex on the simplex.
 - **Softmax via entropy:** $\operatorname{lse}(z)=\max_{p\in\Delta}\langle z,p\rangle+H(p)\Rightarrow p=\mathrm{softmax}(z)$. Use this to justify temperatures/entropic regularizers in attention. ([Proceedings of Machine Learning Research][11], [seas.ucla.edu][13])
 
 [1]: https://en.wikipedia.org/wiki/Lagrange_multiplier "Lagrange multiplier - Wikipedia"
