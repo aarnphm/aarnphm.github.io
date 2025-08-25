@@ -2,8 +2,9 @@
 id: Relational Algebra
 tags:
   - sfwr3db3
+description: and some more annotations
 date: "2024-12-13"
-modified: 2024-12-13 07:22:23 GMT-05:00
+modified: 2025-08-24 07:37:22 GMT-04:00
 title: Relational Algebra
 ---
 
@@ -108,11 +109,11 @@ i.e: `Student(sNumber, sName)` and `Course(cNumber, cName)` are **not union comp
 
 For relations $R_1$ and $R_2$ that are union compatible, here's how many times a tuple $t$ appears in the result:
 
-| Operation    | Symbol | Result (occurrences of tuple $t$) |
-| ------------ | ------ | --------------------------------- |
-| Union        | $\cup$ | $m + n$                           |
-| Intersection | $\cap$ | $\texttt{min}(m,n)$               |
-| Difference   | $-$    | $\texttt{max}(0, m-n)$            |
+| Operation    | Symbol       | Result (occurrences of tuple $t$) |
+| ------------ | ------------ | --------------------------------- |
+| Union        | $\cup$       | $m + n$                           |
+| Intersection | $\cap$       | $\texttt{min}(m,n)$               |
+| Difference   | $\textrm{-}$ | $\texttt{max}(0, m-n)$            |
 
 where $m$ is the number of times $t$ appears in $R_1$ and $n$ is the number of times it appears in $R_2$.
 

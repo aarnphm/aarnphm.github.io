@@ -9,7 +9,7 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-08-20 05:35:06 GMT-04:00
+modified: 2025-08-22 16:26:30 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -380,6 +380,8 @@ see also [[/curius|bookmarks]]
 - https://www.youtube.com/watch?v=PIvc6vvkMzM&ab_channel=EpsilonScience -- Gamification of Large Language Models, Michal Valko
 - https://www.seangoedecke.com/great-software-design/ -- Great software design looks underwhelming
 - https://openai.com/index/deep-double-descent/ -- Deep double descent
+- ![[https://www.youtube.com/watch?v=5jSC8bjo-dI&ab_channel=InstituteforAdvancedStudy]]
+- ![[https://www.youtube.com/watch?v=HvEGJUwQEO8&ab_channel=InstituteforAdvancedStudy]]
 
 ### argumentative
 

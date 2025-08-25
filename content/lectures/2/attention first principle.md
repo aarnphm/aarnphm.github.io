@@ -3,29 +3,22 @@ id: attention
 tags:
   - seed
 date: "2025-08-21"
-modified: 2025-08-22 13:23:16 GMT-04:00
+modified: 2025-08-24 08:13:17 GMT-04:00
 title: attention primer
 ---
 
-## 0) Two‑slide primer (LA & Info‑theory you’ll use)
-
-**Slide P1 — Linear algebra & numerics cheatsheet**
+## primer
 
 - **Notation.** Sequence $X\in\mathbb{R}^{n\times d}$. Projections $W_Q,W_K,W_V$. Heads $h$, head dim $d_h$.
 - **Softmax/LSE.** $\operatorname{softmax}(z)_i = \frac{e^{z_i}}{\sum_j e^{z_j}}$; $\operatorname{LSE}(z)=\log\sum_j e^{z_j}$.
-- **Stable softmax.** Use $z\leftarrow z-\max(z)$ (log‑sum‑exp trick).
-- **RoPE** injects relative position by rotating $(q,k)$ in 2‑D frequency planes before the dot product. (Su et al., 2021). ([arXiv][1])
-- **Why the $\frac{1}{\sqrt{d_k}}$** scale? It variance‑normalizes dot products so logits don’t blow up with $d_k$ (see Prop. A1 below; and Vaswani et al., §3.2.1). ([NeurIPS Papers][2])
-
-**Slide P2 — KL divergence & “temperature”**
-
+- **Stable softmax.** Use $z\leftarrow z\minus\max(z)$ (log‑sum‑exp trick).
+- **RoPE** injects relative position by rotating $(q,k)$ in 2‑D frequency planes before the dot product. [@su2023roformerenhancedtransformerrotary]
+- **Why the $\frac{1}{\sqrt{d_k}}$** scale? It variance‑normalizes dot products so logits don’t blow up with $d_k$ (see Prop. A1 below; and [@vaswani2023attentionneed; §3.2.1])
 - **KL** $D_{\mathrm{KL}}(P\|Q)=\sum_i P_i\log\frac{P_i}{Q_i}$. Jointly convex in $(P,Q)$; bounds total variation via Pinsker. Use it to (i) align attention distributions, (ii) measure head agreement, (iii) distill approximations (e.g., MHA→GQA). ([home.ttic.edu][3], [people.lids.mit.edu][4])
 - **Softmax temperature $T$.** $\operatorname{softmax}(z/T)$ controls entropy smoothly; $T\!\uparrow\Rightarrow$ higher entropy. (Theory & practice refs.) ([Cross Validated][5], [arXiv][6])
 - **Softmax = $\nabla$LSE.** The Jacobian is $J=\lambda(\operatorname{Diag}(p)-pp^\top)$; Lipschitz constant scales with inverse temperature parameter $\lambda$. Useful for error bounds later.&#x20;
 
----
-
-## 1) Self‑attention from first principles
+## self‑attention from first principles
 
 Let $Q=XW_Q,\;K=XW_K,\;V=XW_V$. Scaled dot‑product attention:
 
@@ -42,7 +35,9 @@ $$
 \mathrm{Attn}(PQ,PK,PV)=P\,\mathrm{Attn}(Q,K,V).
 $$
 
-_Proof._ $PQ(PK)^\top=PQK^\top P^\top$. Row‑softmax respects row permutations, i.e., $\sigma(PZP^\top)=P\sigma(Z)P^\top$. Then $P\sigma(QK^\top)P^\top \cdot PV = P(\sigma(QK^\top)V)$. ∎
+_Proof._
+
+$PQ(PK)^\top=PQK^\top P^\top$. Row‑softmax respects row permutations, i.e., $\sigma(PZP^\top)=P\sigma(Z)P^\top$. Then $P\sigma(QK^\top)P^\top \cdot PV = P(\sigma(QK^\top)V) \; \boxed{}$.
 
 **A.2 Proposition (Why the $\tfrac{1}{\sqrt{d_k}}$ scale?).**
 
@@ -72,9 +67,7 @@ $\operatorname{Var}(q^\top k)=d_k$. Scaling by $1/\sqrt{d_k}$ keeps logit varian
 
 _Proof._
 
-$\operatorname{Var}\big(\sum_i q_i k_i\big)=\sum_i \operatorname{Var}(q_i k_i)=\sum_i \mathbb{E}[q_i^2]\mathbb{E}[k_i^2]=d_k$. ∎
-
-#### Proof 1 (matrix‑expectation route; works without coordinate‑wise independence)
+$\operatorname{Var}\big(\sum_i q_i k_i\big)=\sum_i \operatorname{Var}(q_i k_i)=\sum_i \mathbb{E}[q_i^2]\mathbb{E}[k_i^2]=d_k \; \boxed{}$.
 
 Write $S=q^\top k = k^\top q$. Since $q$ and $k$ are independent and mean‑zero,
 
@@ -108,64 +101,6 @@ $$
 $$
 
 so the isotropic, zero‑mean case reduces to $\operatorname{tr}(I\cdot I)=d$. (ii) A special case of this expectation identity appears throughout high‑dimensional probability; see, e.g., Vershynin’s notes on quadratic/bilinear forms.&#x20;
-
-#### Proof 2 (elementary coordinate‑wise route; i.i.d. entries)
-
-Assume further that $\{q_i\}_{i=1}^d$ and $\{k_i\}_{i=1}^d$ are **independent** families with $\mathbb{E}[q_i]=\mathbb{E}[k_i]=0$, $\mathrm{Var}(q_i)=\mathrm{Var}(k_i)=1$. Then
-
-$$
-\mathbb{E}[S]=\sum_{i=1}^d \mathbb{E}[q_i]\mathbb{E}[k_i]=0,
-\quad
-\mathrm{Var}(S)
-= \sum_{i=1}^d \mathrm{Var}(q_i k_i)
-+ 2\!\!\sum_{1\le i<j\le d}\!\!\mathrm{Cov}(q_i k_i,\, q_j k_j).
-$$
-
-Independence across coordinates kills the cross‑covariances; moreover,
-$\mathrm{Var}(q_i k_i)=\mathbb{E}[q_i^2]\mathbb{E}[k_i^2]=1$. Hence $\mathrm{Var}(S)=d$ and $\mathrm{Var}(Z)=1$. This is exactly the computation quoted in _Attention Is All You Need_, §3.2.1 (and its footnote), to motivate dividing by $\sqrt{d_k}$. ([NeurIPS Papers][2])
-
-> [!question] Why this matters for softmax?
->
-> Softmax is the gradient of the log‑sum‑exp potential; its Jacobian is
-> $\nabla^2 \mathrm{lse}_\lambda(z)=\lambda(\mathrm{Diag}(p)-pp^\top)$, so **large logit magnitudes** (relative to the temperature $T=1/\lambda$) push $p$ into near‑one‑hot corners where the Jacobian’s entries (and hence gradients) are tiny. The Transformer paper explicitly notes that without scaling, dot products “grow large in magnitude, pushing the softmax into regions where it has extremely small gradients.” Keeping $\mathrm{Var}(Z)\approx O(1)$ as $d$ grows prevents that saturation. ([NeurIPS Papers][2], [arXiv][112])
-
-#### Strengthening: concentration/tails (subgaussian → subexponential → Bernstein)
-
-Beyond variance, we can give **dimension‑free tail control** for the scaled logit under mild assumptions.
-
-- If each coordinate $q_i$ and $k_i$ is **subgaussian** (zero mean, unit variance) and independent, then each product $X_i:=q_i k_i$ is **subexponential** with $\psi_1$‑norm bounded by a universal constant (product‑of‑subgaussians lemma).&#x20;
-
-- The sum $S=\sum_{i=1}^d X_i$ then satisfies **Bernstein’s inequality**:
-
-$$
-\mathbb{P}\big(|S|\ge t\big)\ \le\ 2\exp\!\left[-c\,\min\!\left(\frac{t^2}{K^2 d},\ \frac{t}{K}\right)\right]\!,
-$$
-
-for an absolute constant $c>0$ and $K=\max_i\|X_i\|_{\psi_1}=O(1)$. Dividing by $\sqrt d$ gives
-
-$$
-\mathbb{P}\!\left(\left|\frac{S}{\sqrt d}\right|\ge t\right)\ \le\ 2\exp\!\left[-c\,\min\!\left(\frac{t^2}{K^2},\ \frac{\sqrt d\,t}{K}\right)\right].
-$$
-
-For fixed $t=O(1)$, the first branch dominates, yielding **dimension‑free subgaussian tails** for $Z=S/\sqrt d$. This formalizes that the $\tfrac1{\sqrt d}$ scaling not only normalizes the variance but also **stabilizes concentration** as $d$ grows.&#x20;
-
-#### Practical corollaries and context
-
-- **Head‑wise scaling in MHA.** For head dimension $d_h$, set $Z_h=(q_h^\top k_h)/\sqrt{d_h}$ so that $\mathrm{Var}(Z_h)=1$ under isotropy. This is exactly the form in the original MHA definition. ([NeurIPS Papers][2])
-
-- **Compatibility with LayerNorm.** With LayerNorm, hidden coordinates are approximately standardized; the isotropy assumption is thus a reasonable first‑order model in practice, aligning with the above calculation. ([arXiv][113])
-
-Sources:
-
-- **Transformer & scaling motivation (explicit variance $d_k$ statement and softmax‑saturation rationale):** _Attention Is All You Need_, §3.2.1 and footnote. ([NeurIPS Papers][1])
-- **Softmax/LSE Jacobian and gradient properties:** Gao & Pavel. ([arXiv][2])
-- **High‑dimensional probability facts used here:**
-  – Product of subgaussians is subexponential (Lemma 2.7.7).
-  – Bernstein inequality for sums of independent subexponentials.
-  – (Background) isotropy and quadratic/bilinear forms.&#x20;
-
-[112]: https://arxiv.org/pdf/1704.00805 "On the Properties of the Softmax Function with Application ..."
-[113]: https://arxiv.org/abs/1607.06450 "Layer Normalization"
 
 **A.3 The kernel/regression view (why attention “works”).**
 If vectors are **length‑normalized** (LayerNorm makes this plausible in practice), then

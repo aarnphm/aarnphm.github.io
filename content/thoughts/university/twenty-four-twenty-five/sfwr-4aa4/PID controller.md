@@ -2,8 +2,9 @@
 id: PID controller
 tags:
   - sfwr4aa4
+description: proportional-integral-derivative
 date: "2024-12-18"
-modified: 2024-12-18 03:14:17 GMT-05:00
+modified: 2025-08-24 07:38:46 GMT-04:00
 title: PID controller
 ---
 
@@ -61,7 +62,7 @@ $$
 
 % Plus and Minus signs
 \node at (0.2, 0.5) {$+$};
-\node at (0.2, -0.5) {$-$};
+\node at (0.2, -0.5) {$\textrm{-}$};
 
 \end{tikzpicture}
 \end{document}
@@ -111,7 +112,7 @@ _proportional-integral_
 
 % Plus and Minus signs
 \node at (0.2, 0.5) {$+$};
-\node at (0.2, -0.5) {$-$};
+\node at (0.2, -0.5) {$\textrm{-}$};
 
 \end{tikzpicture}
 \end{document}
@@ -160,7 +161,7 @@ $$
 
 % Plus and Minus signs
 \node at (0.2, 0.5) {$+$};
-\node at (0.2, -0.5) {$-$};
+\node at (0.2, -0.5) {$\textrm{-}$};
 
 \end{tikzpicture}
 \end{document}

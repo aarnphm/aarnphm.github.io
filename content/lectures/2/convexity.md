@@ -269,4 +269,3 @@ If you want, I can sketch how to drop a **Fenchel–Young attention layer** into
 [12]: https://github.com/Verified-Intelligence/alpha-beta-CROWN "Verified-Intelligence/alpha-beta-CROWN"
 [13]: https://arxiv.org/html/2312.16760v1 "The Fourth International Verification of Neural Networks ..."
 [14]: https://arxiv.org/abs/2005.09561 "Normalized Attention Without Probability Cage"
-

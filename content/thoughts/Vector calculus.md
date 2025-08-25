@@ -2,9 +2,9 @@
 id: Vector calculus
 tags:
   - math
-date: "2024-11-27"
 description: just enough vector calculus to be dangerous
-modified: 2024-12-14 01:26:26 GMT-05:00
+date: "2024-11-27"
+modified: 2025-08-24 08:26:23 GMT-04:00
 title: Vector calculus
 ---
 

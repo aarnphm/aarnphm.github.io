@@ -157,7 +157,6 @@ idea: deletes one activation of the network to see how performance on a task cha
 - mean ablation: Deletion by setting activations to the mean of the dataset
 - random ablation or _resampling_
 
-
 ## mathematical frameworks to transformers
 
 see also: @elhage2021mathematical

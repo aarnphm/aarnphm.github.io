@@ -98,7 +98,15 @@ function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndexMap, limit?:
 
       return f1.title.localeCompare(f2.title)
     })
-    .filter(([_, content]) => content.fileData?.frontmatter?.noindex !== true)
+    .filter(([_, content]) => {
+      if (
+        !content.fileData ||
+        !content.fileData.frontmatter ||
+        !content.fileData.frontmatter.noindex
+      )
+        return true
+      return content.fileData.frontmatter.noindex !== true
+    })
     .map(([slug, content]) => createURLEntry(simplifySlug(slug), content))
     .slice(0, limit ?? idx.size)
     .join("")
@@ -157,7 +165,15 @@ function generateAtomFeed(cfg: GlobalConfiguration, idx: ContentIndexMap, limit?
 
       return f1.title.localeCompare(f2.title)
     })
-    .filter(([_, content]) => content.fileData?.frontmatter?.noindex !== true)
+    .filter(([_, content]) => {
+      if (
+        !content.fileData ||
+        !content.fileData.frontmatter ||
+        !content.fileData.frontmatter.noindex
+      )
+        return true
+      return content.fileData.frontmatter.noindex !== true
+    })
     .map(([slug, content]) => createURLEntry(simplifySlug(slug), content))
     .slice(0, limit ?? idx.size)
     .join("")

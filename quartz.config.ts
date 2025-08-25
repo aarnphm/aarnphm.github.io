@@ -117,7 +117,7 @@ const config: QuartzConfig = {
           "\\upalpha": "\\mathit{\\alpha}",
           "\\uptheta": "\\mathit{\\theta}",
         },
-        katexOptions: { strict: false },
+        katexOptions: { strict: true, throwOnError: true },
       }),
       Plugin.GitHub({
         internalLinks: [

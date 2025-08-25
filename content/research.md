@@ -7,7 +7,7 @@ transclude:
   dynalist: false
   title: false
 date: "2025-08-12"
-modified: 2025-08-18 10:39:25 GMT-04:00
+modified: 2025-08-24 13:22:48 GMT-04:00
 title: research
 ---
 
@@ -19,4 +19,4 @@ I would want to do research at some point. I'm interested in [[thoughts/mechanis
 >
 > Toolbox comprises of equipment that are designed to fit specific functions. In essence, you can pretty much "build" anything given the materials to do so.
 > Mech interp is the toolbox for analysing statistical models. These models still behave like a black-box, and we still lack a lot of the tools to fully understand
-> how these models behave and functions
+> how these models behave and functions. Some tools recently includes attribution graphs,

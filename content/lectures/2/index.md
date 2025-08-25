@@ -4,7 +4,7 @@ tags:
   - seed
 description: attention
 date: "2025-08-21"
-modified: 2025-08-21 09:46:49 GMT-04:00
+modified: 2025-08-23 05:42:52 GMT-04:00
 noindex: true
 title: 0[dot]2
 ---

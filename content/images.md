@@ -37,3 +37,5 @@ title: images
 ![[thoughts/images/42A9F921-686E-498E-AA95-AD980AB7D078_1_105_c.webp|Are you a Kafka or a Dostoevsky person]]
 
 ![[thoughts/images/modern-infra-ai.webp]]
+
+![[thoughts/images/information density economist.webp]]
