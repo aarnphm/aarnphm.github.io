@@ -116,7 +116,7 @@
     "remark-smartypants": "^3.0.2",
     "rfdc": "^1.4.1",
     "rough-notation": "^0.5.1",
-    "sass-embedded": "^1.90.0",
+    "sass-embedded": "^1.91.0",
     "satori": "^0.16.2",
     "serve-handler": "^6.1.6",
     "sharp": "^0.34.3",
@@ -136,7 +136,7 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "@anthropic-ai/claude-code": "^1.0.90",
+    "@anthropic-ai/claude-code": "^1.0.92",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
@@ -148,7 +148,7 @@
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.33",
-    "@typescript/native-preview": "7.0.0-dev.20250825.1",
+    "@typescript/native-preview": "7.0.0-dev.20250826.1",
     "bibtex-tidy": "^1.14.0",
     "esbuild": "^0.25.9",
     "mermaid": "^11.10.1",
@@ -156,7 +156,7 @@
     "ts-morph": "^26.0.0",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
-    "wrangler": "^4.32.0"
+    "wrangler": "^4.33.0"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
 }
