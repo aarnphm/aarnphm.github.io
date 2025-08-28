@@ -1,10 +1,10 @@
 ---
-date: 2024-10-10
-id: "KV compression"
-modified: "2025-07-04 20:50:31 GMT-04:00"
+id: KV compression
 tags:
   - ml
-title: "KV compression"
+date: "2024-10-10"
+modified: 2025-08-28 09:33:53 GMT-04:00
+title: KV compression
 ---
 
 see also: [github](https://github.com/October2001/Awesome-KV-Cache-Compression)
@@ -14,6 +14,8 @@ TLDR: Most algorithm determine importance through aggregating attentions over ob
 More recent work aggregated attention from _limited observation windows_ [@li2024snapkvllmknowslooking; @cai2024pyramidkvdynamickvcache]
 
 uses top_k to find $k$-indices of attentions per head to preserve, and evict the not-so-important ones.
+
+Another techniques to work with KV is to offload to a central storage, to then reuse in other context.
 
 ## idea.
 
@@ -41,6 +43,8 @@ https://arxiv.org/abs/2309.17453
 _Using attention sink_
 
 Ablate attentions among layers that deemed to be less valuable to current generations.
+
+## RocketKV
 
 ## Pyramid-KV
 

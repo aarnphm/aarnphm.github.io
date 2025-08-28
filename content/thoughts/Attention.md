@@ -5,7 +5,7 @@ tags:
 description: and posteriori information retrieval.
 date: "2024-02-07"
 abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
-modified: 2025-08-21 10:25:13 GMT-04:00
+modified: 2025-08-28 12:03:55 GMT-04:00
 title: Attention
 ---
 
@@ -223,6 +223,8 @@ $$
 >     \mathbf{u}_t &= \mathbf{W}^O [o_{t,1}; o_{t,2}; \dots; o_{t, n_h}] \tag{11}
 > \end{align}
 > $$
+
+![[lectures/3/quantisation basics#multi-latent attention]]
 
 ## CascadeAttention
 

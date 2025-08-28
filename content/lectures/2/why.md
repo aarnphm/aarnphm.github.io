@@ -6,7 +6,7 @@ tags:
   - math
 description: motivations of attention
 date: "2025-08-21"
-modified: 2025-08-25 10:46:29 GMT-04:00
+modified: 2025-08-26 15:54:20 GMT-04:00
 title: why
 ---
 
@@ -188,7 +188,7 @@ The cell below **runs** a sanity check. With $\|q_i\|=\|k_j\|=1$, it shows that
 $$
 \operatorname{softmax}\!\Big(\tfrac{QK^\top}{\sqrt d\,T}\Big)
 \quad\equiv\quad
-\text{row‑normalize}\Big(\exp\!\big(-\tfrac{\|q_i-k_j\|^2}{2\sigma^2}\big)\Big)
+\text{row}-\text{normalize}\Big(\exp\!\big(-\tfrac{\|q_i-k_j\|^2}{2\sigma^2}\big)\Big)
 $$
 
 when $\sigma^2=T\sqrt d$. The reported differences are at machine precision.

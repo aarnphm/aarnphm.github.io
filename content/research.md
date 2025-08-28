@@ -7,16 +7,24 @@ transclude:
   dynalist: false
   title: false
 date: "2025-08-12"
-modified: 2025-08-24 13:22:48 GMT-04:00
+modified: 2025-08-27 14:14:43 GMT-04:00
 title: research
 ---
 
-I would want to do research at some point. I'm interested in [[thoughts/mechanistic interpretability]] and [[/tags/ml|ML]] system optimization.
+I would like to do research at some point. I'm interested in [[thoughts/mechanistic interpretability]] and [[/tags/ml|ML]] system optimization.
 
 > [!abstract]- For non-ML folks
 >
-> an analogy I tend to refer to mech interp is the toolbox. I do have a tendency of taking things apart in lieu of reading manuals, as it allows me to understand a lot about how thing works under the hood.
+> Whenever I introduced myself to new people, I often said that I work on ML infrastructure. Yet, people doesn't seem to understand
+> what this means. Oftentimes I have to follow up with: "I'm building the infrastructure to run something like ChatGPT."
 >
-> Toolbox comprises of equipment that are designed to fit specific functions. In essence, you can pretty much "build" anything given the materials to do so.
-> Mech interp is the toolbox for analysing statistical models. These models still behave like a black-box, and we still lack a lot of the tools to fully understand
-> how these models behave and functions. Some tools recently includes attribution graphs,
+> It then dawned on me that ML infrastructure is still a relatively esoteric field despite its huge relevance in SF/academia literature.
+> So here is a dialectic attempt to clarify what I do, in a Q&A format.
+>
+> **Q**: _So why do we need to do research in ML system?_
+>
+> **A**: Imagine you own a car that's already pretty fast--but you're not really content with "fast". You decide to mod the engine, strip away passenger seats,
+> add new pistons, reroute fuel lines, etc. What happens when the engine receive additional boost? What happens if you change the certain tyres grip level? What happens when you
+> hardening/soften part of the suspension?
+>
+> Despite the popularity of ChatGPT, Copilot, Claude, etc, the big labs are still burning through a lot of capital. We are still, I believe

@@ -1,13 +1,13 @@
 ---
 id: Stochastic gradient descent
+permalinks:
+  - /SGD
 tags:
   - sfwr4ml3
   - ml
-date: "2024-11-11"
 description: gradient descent but with smoothness properties (differentiable or sub-differentiable)
-modified: 2025-01-29 07:48:58 GMT-05:00
-permalinks:
-  - /SGD
+date: "2024-11-11"
+modified: 2025-08-28 07:32:04 GMT-04:00
 title: Stochastic gradient descent
 ---
 
@@ -29,3 +29,11 @@ See also [[thoughts/university/twenty-three-twenty-four/compsci-4x03/A4|that num
 \end{algorithmic}
 \end{algorithm}
 ```
+
+Intuition: you can think of it as online [[thoughts/gradient descent]], where the true gradient $Q(w)$ is approximated by a gradient at a single sample[^step-size]:
+
+$$
+w \coloneqq w - \upeta \nabla Q_i(w)
+$$
+
+[^step-size]: $\upeta$ is often considered as step-size during a linear-regression training run.

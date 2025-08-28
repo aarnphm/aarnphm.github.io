@@ -186,58 +186,148 @@ async function fetchArxivMetadata(id: string): Promise<ArxivMeta> {
   }
 }
 
+// Replace your fetchBibtex with this Atom->BibTeX path
 async function fetchBibtex(id: string): Promise<string> {
-  const res = await fetch(`https://arxiv.org/bibtex/${id}`)
-  if (!res.ok) throw new Error(`Failed to fetch BibTeX for ${id}: ${res.statusText}`)
-  const html = await res.text()
-  // The response is HTML with <pre> block containing the bibtex. Extract first @...}
-  const match = html.match(/@.*?\n}/s)
-  if (!match) throw new Error(`Unable to extract BibTeX for ${id}`)
-  return match[0]
+  const norm = normalizeArxivId(id)
+  const ARXIV_API_BASE = "http://export.arxiv.org/api/query"
+  const url = `${ARXIV_API_BASE}?id_list=${encodeURIComponent(norm)}`
+
+  const res = await fetch(url, {
+    headers: {
+      // arXiv asks for a descriptive UA for automated access
+      // https://info.arxiv.org/help/api/user-manual.html
+      "User-Agent": "QuartzArxivTransformer/1.0 (+https://github.com/aarnphm)",
+      Accept: "application/atom+xml",
+    },
+  })
+  if (!res.ok) throw new Error(`arXiv API error for ${norm}: ${res.status} ${res.statusText}`)
+
+  const xml = await res.text()
+  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_" })
+  const feed = parser.parse(xml)
+  const entry = feed?.feed?.entry
+  if (!entry) throw new Error(`No entry returned for arXiv id ${norm}`)
+
+  // Normalize "entry" to object even when only one result is returned
+  const e = Array.isArray(entry) ? entry[0] : entry
+
+  // title, authors, published year
+  const title: string = String(e.title || "")
+    .trim()
+    .replace(/\s+/g, " ")
+  const authorsRaw = Array.isArray(e.author) ? e.author : [e.author]
+  const authors: string[] = authorsRaw.map((a: any) => String(a.name || "").trim()).filter(Boolean)
+  const year: string = String(e.published || "").slice(0, 4)
+
+  // primary category
+  const primaryClass: string = e["arxiv:primary_category"]?.["@_term"] || ""
+
+  // DOI (if supplied) and journal_ref (if supplied)
+  const doi: string | undefined = e["arxiv:doi"] ? String(e["arxiv:doi"]).trim() : undefined
+  const journalRef: string | undefined = e["arxiv:journal_ref"]
+    ? String(e["arxiv:journal_ref"]).trim()
+    : undefined
+
+  // Construct a stable key: firstAuthorLastNameYYYYarXivID (no version)
+  const firstLast = (authors[0] || "unknown")
+    .split(/\s+/)
+    .pop()!
+    .toLowerCase()
+    .replace(/[^a-z]/g, "")
+  const key = `${firstLast}${year || "n.d."}${norm.replace(/\./g, "")}`
+
+  // Author list "First Last and First Last"
+  const authorBib = authors.join(" and ")
+
+  // Prefer @misc for preprints; include eprint & archivePrefix per biblatex guidance
+  // See: arXiv bib/eprint guidance and BibLaTeX usage notes.
+  const fields: Record<string, string> = {
+    title,
+    author: authorBib,
+    year: year || new Date().getUTCFullYear().toString(),
+    eprint: norm,
+    archivePrefix: "arXiv",
+  }
+  if (primaryClass) fields.primaryClass = primaryClass
+  if (doi) fields.doi = doi
+  // If journal_ref present (post-publication), include it as 'journal'
+  if (journalRef) fields.journal = journalRef
+  fields.url = `https://arxiv.org/abs/${norm}`
+
+  // Emit formatted BibTeX
+  const body = Object.entries(fields)
+    .map(([k, v]) => `  ${k} = {${v}}`)
+    .join(",\n")
+
+  return `@misc{${key},\n${body}\n}`
+}
+
+function normEprint(x?: unknown): string | null {
+  if (!x) return null
+  return String(x)
+    .replace(/^arxiv:/i, "")
+    .replace(/v\d+$/i, "")
+    .trim()
+}
+function arxivIdFromUrl(url?: unknown): string | null {
+  if (!url) return null
+  const m = String(url).match(/arxiv\.org\/(?:abs|pdf)\/([0-9]+\.[0-9]+)(?:v\d+)?/i)
+  return m ? m[1] : null
+}
+/** same work iff same versionless eprint OR same arXiv id in URL */
+function isSameWorkMinimal(a: any, b: any): boolean {
+  const ae = normEprint(a.eprint),
+    be = normEprint(b.eprint)
+  if (ae && be && ae === be) return true
+  const au = arxivIdFromUrl(a.url),
+    bu = arxivIdFromUrl(b.url)
+  if (au && bu && au === bu) return true
+  return false
 }
 
 async function ensureBibEntry(
   bibPath: string,
   id: string,
 ): Promise<{ key: string; entry: string }> {
-  if (bibEntryTasks.has(id)) {
-    return bibEntryTasks.get(id)!
-  }
+  // de-dupe concurrent calls per arXiv id
+  if (bibEntryTasks.has(id)) return bibEntryTasks.get(id)!
 
   const task = (async (): Promise<{ key: string; entry: string }> => {
     const absPath = path.isAbsolute(bibPath) ? bibPath : path.join(process.env.PWD!, bibPath)
 
+    // load current library
     const fileContent = fs.existsSync(absPath) ? fs.readFileSync(absPath, "utf8") : ""
-    const references = new Cite(fileContent, { generateGraph: false })
+    const lib = new Cite(fileContent, { generateGraph: false })
+    const libItems = lib.data as any[]
 
-    const normId = normalizeArxivId(id)
-
-    const existing = (references.data as any[]).find((d: any) => {
-      const eprintNorm = normalizeArxivId(String(d.eprint ?? ""))
-      if (eprintNorm && eprintNorm === normId) return true
-      const url = String(d.url ?? "")
-      if (url.includes(`/abs/${normId}`)) return true
-      const journal = String(d.journal ?? "")
-      if (journal.includes(`arXiv:${normId}`)) return true
-      return false
-    }) as any | undefined
-
-    if (existing) {
-      return { key: existing.id, entry: "" }
+    // candidate identity from the *id* you were asked to insert
+    const eprint = normEprint(id)
+    const candidate = {
+      eprint, // e.g., "2405.16444"
+      url: `https://arxiv.org/abs/${eprint}`, // matches future/old entries
     }
 
-    const bibtex = (await fetchBibtex(id)).trim()
+    // 1) If anything in lib matches by (eprint || url-id), reuse it
+    const found = libItems.find((x: any) => isSameWorkMinimal(x, candidate))
+    if (found) return { key: found.id, entry: "" }
+
+    // 2) Otherwise synthesize a BibTeX entry from the Atom API (captcha-free)
+    const bibtex = (await fetchBibtex(eprint!)).trim() // your Atom->BibTeX impl
     const newCite = new Cite(bibtex, { generateGraph: false })
-    const newKey = newCite.data[0].id
+    let newEntry = newCite.data[0]
 
-    if ((references.data as any[]).some((d: any) => d.id === newKey)) {
-      return { key: newKey, entry: "" }
+    // 3) If the generated key collides, namespace deterministically with arXiv id
+    if (libItems.some((x: any) => x.id === newEntry.id)) {
+      const suffix = eprint!.replace(/\./g, "")
+      newEntry = { ...newEntry, id: `${newEntry.id}-${suffix}` }
     }
 
+    // 4) Append atomically
     const prefix = fileContent.trim().length ? "\n\n" : ""
-    fs.appendFileSync(absPath, `${prefix}${bibtex}\n`)
+    const rendered = new Cite(newEntry).format("bibtex")
+    fs.appendFileSync(absPath, `${prefix}${rendered}\n`)
 
-    return { key: newKey, entry: bibtex }
+    return { key: newEntry.id, entry: rendered }
   })()
 
   bibEntryTasks.set(id, task)

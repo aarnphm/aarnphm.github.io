@@ -4,7 +4,7 @@ tags:
   - seed
   - math
 date: "2025-08-21"
-modified: 2025-08-25 10:42:51 GMT-04:00
+modified: 2025-08-26 15:52:44 GMT-04:00
 title: convexity
 ---
 
@@ -205,7 +205,7 @@ _(Punchline: softmax doesn’t “just happen”—it falls straight out of KKT 
 Write attention weight selection as the **regularized argmax**
 
 $$
-\alpha^\*(s)\;=\;\arg\max_{\alpha\in\Delta}\ \langle s,\alpha\rangle-\Omega(\alpha),
+\alpha^* (s)\;=\;\arg\max_{\alpha\in\Delta}\ \langle s,\alpha\rangle-\Omega(\alpha),
 $$
 
 and pick $\Omega$ to get the behavior you want. This **Fenchel–Young** view turns the normalizer into a design knob (softmax, sparsemax, entmax, …) with convex training losses and clean moment‑matching properties. Examples:

@@ -5,7 +5,7 @@ tags:
   - technical
 description: and the backbone of the AI progress.
 date: "2024-02-07"
-modified: 2025-08-10 17:22:26 GMT-04:00
+modified: 2025-08-28 09:58:55 GMT-04:00
 title: Transformers
 ---
 
@@ -52,6 +52,8 @@ The core "retrieval" bags that contains all previous stored key-value pair or ne
 [[thoughts/PD disaggregated serving|Prefill disaggregation]] is pretty interesting in a sense that we can separate prefill stage to a separate nodes [@qin2024mooncakekvcachecentricdisaggregatedarchitecture]
 
 ![[thoughts/images/mooncake-pd.webp|KV-centric optimization]]
+
+![[lectures/3/notes#kvcache ad-hoc implementation]]
 
 #### napkin math
 

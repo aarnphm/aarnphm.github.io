@@ -2,9 +2,9 @@
 id: PD disaggregated serving
 tags:
   - ml
-date: "2025-06-16"
 description: and scaling in hyperscaler
-modified: 2025-06-17 02:32:11 GMT-04:00
+date: "2025-06-16"
+modified: 2025-08-28 09:58:10 GMT-04:00
 title: P/D disaggregated serving
 ---
 

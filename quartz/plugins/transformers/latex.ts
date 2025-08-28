@@ -30,7 +30,7 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = (opts) => {
           return [[rehypeTypst, opts?.typstOptions ?? {}]]
         }
         default: {
-          return [[rehypeKatex, { output: "htmlAndMathml", macros, ...(opts?.katexOptions ?? {}) }]]
+          return [[rehypeKatex, { output: "htmlAndMathml", macros, ...opts?.katexOptions }]]
         }
       }
     },

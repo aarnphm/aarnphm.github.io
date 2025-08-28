@@ -5,11 +5,12 @@ aliases:
 tags:
   - technical
   - seed
+  - evergreen
 description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-08-22 16:26:30 GMT-04:00
+modified: 2025-08-28 09:29:19 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -28,6 +29,7 @@ see also [[/curius|bookmarks]]
   - > By writing, you are voting on the future of the Shoggoth using one of the few currencies it acknowledges: tokens it has to predict. If you aren’t writing, you are abdicating the future or your role in it. If you think it’s enough to just be a good citizen, to vote for your favorite politician, to pick up litter and recycle, the future doesn’t care about you.
   - > There are ways to influence the Shoggoth more, but not many. If you don’t already occupy a handful of key roles or work at a frontier lab, your influence rounds off to 0, far more than ever before. If there are values you have which are not expressed yet in text, if there are things you like or want, if they aren’t reflected online, then to the AI they don’t exist. That is dangerously close to won’t exist.
   - > But yes, you are also creating a sort of immortality for yourself personally. You aren’t just creating a persona, you are creating your future self too. What self are you showing the LLMs, and how will they treat you in the future?
+- https://x.com/gwern/status/1959511089961636341
 
 ## website
 
@@ -95,6 +97,10 @@ see also [[/curius|bookmarks]]
 - https://yismailuofa.github.io/
 - https://dougalves.work/
 - https://www.makingsoftware.com/
+- https://fieldsofchess.com/
+- https://www.luerzersarchive.com/
+- https://eyeondesign.aiga.org/
+- https://www.oneclub.org/awards/adcawards/-archive/awards/2025/all/all/select
 
 ## people
 
@@ -157,6 +163,8 @@ see also [[/curius|bookmarks]]
 - https://apossible.com/
 - https://www.linkedin.com/in/lukaszkaiser/ -- Lukasz Kaiser
   - OpenAI, logic and automaton
+- https://en.wikipedia.org/wiki/A._C._Grayling -- A. C. Grayling
+  - Epistemological Scepticism and Transcendental Arguments (1981)
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -311,13 +319,9 @@ see also [[/curius|bookmarks]]
 - https://www.personalcanon.com/p/how-to-begin -- How to begin
 - https://sfpc.study/blog/falling-failing-feeling-freeing -- Falling, Failing, Feeling, Freeing \*\*
 - https://www.are.na/kristoffer-tjalve/poetic-web-calendar -- Poetic Web Calendar
-- https://www.links.net/dox/tech/computopia.html -- Computopia \*\*
-- https://www.experimental-history.com/p/28-slightly-rude-notes-on-writing
-- https://www.experimental-history.com/p/face-it-youre-a-crazy-person -- Face it, you are a crazy person \*\*
-- https://substack.com/inbox/post/170580516 -- "If I love you, it's because in some way we are the same type of bastard"
-- https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for -- some parts of you only emerge from certain people
 - https://northeastlarder.com/ -- Northeast Larder
-- https://www.gleech.org/stopping -- What's stopping you?
+- https://grugbrain.dev/
+- https://research.contrary.com/deep-dive/building-an-american-tsmc -- Building an American TSMC \*\*
 
 ### [[thoughts/Machine learning]]
 
@@ -382,6 +386,12 @@ see also [[/curius|bookmarks]]
 - https://openai.com/index/deep-double-descent/ -- Deep double descent
 - ![[https://www.youtube.com/watch?v=5jSC8bjo-dI&ab_channel=InstituteforAdvancedStudy]]
 - ![[https://www.youtube.com/watch?v=HvEGJUwQEO8&ab_channel=InstituteforAdvancedStudy]]
+- https://x.com/JingyuanLiu123/status/1959093411283443726 -- TPU vs GPU parallelism strategies
+- https://horace.io/brrr_intro.html -- Deep Learning from first principle
+- https://colah.github.io/posts/2014-03-NN-Manifolds-Topology/ -- Neural Network, and Manifolds
+- https://x.com/GoodfireAI/status/1960378734852046859 -- Adversarial examples affects feature share directions.
+  - https://x.com/livgorton/status/1960378437102657654
+  - https://arxiv.org/abs/2508.17456
 
 ### argumentative
 
@@ -394,6 +404,7 @@ see also [[/curius|bookmarks]]
 - https://paulgraham.com/woke.html -- Origin of Wokeness
 - https://www.noahpinion.blog/p/will-data-centers-crash-the-economy -- Will data centers crash the economy?
 - https://x.com/eigenrobot/status/1954363395068616745 -- Gaza's privatization
+- https://ifstudies.org/report-brief/in-pursuit-marriage-motherhood-and-womens-well-being -- In Pursuit: Marriage, Motherhood, and Women’s Well-Being \*\*
 
 ### life is literature
 
@@ -407,6 +418,13 @@ see also [[/curius|bookmarks]]
 - https://en.wikipedia.org/wiki/Rhizome_(philosophy) -- Rhizome
   - [[thoughts/Rhizome]]
 - https://aeon.co/essays/simone-de-beauvoirs-authentic-love-is-a-project-of-equals -- Simone de Beavoir's "Love is a joint project"
+- https://www.links.net/dox/tech/computopia.html -- Computopia \*\*
+- https://www.experimental-history.com/p/28-slightly-rude-notes-on-writing
+- https://www.experimental-history.com/p/face-it-youre-a-crazy-person -- Face it, you are a crazy person \*\*
+- https://substack.com/inbox/post/170580516 -- "If I love you, it's because in some way we are the same type of bastard"
+- https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for -- some parts of you only emerge from certain people
+- https://www.gleech.org/stopping -- What's stopping you?
+- https://www.sherryning.com/p/goodbye-august -- Goodbye August
 
 ### [[tags/philosophy]]
 
@@ -440,11 +458,22 @@ see also [[/curius|bookmarks]]
 
 - http://www.phys.unm.edu/~tw/fas/yits/archive/eberhart_thegroundhog.html -- The Groundhog by Richard Eberthart
 - http://www.phys.unm.edu/~tw/fas/yits/archive/oliver_wildgeese.html -- Wild [[posts/goose friend.md|Geese]] by Mary Oliver
+- > Here’s to the ones who dream
+  > Foolish as they may seem
+  >
+  > She told me
+  > ”A bit of madness is key
+  > To give us new colors to see
+  > Who knows where it will lead us?
+  > And that’s why they need us”
+  >
+  > La La Land - “Audition (the fools who dream)”
 
 ### design
 
 - https://www.are.na/editorial/are-nas-new-web-client-sander-is-now-available-for-everyone -- Are.na's web client, Sander.
 - https://jonwhitestudio.com/ -- Jon White Studio
+- https://www.commarts.com/
 
 ### video
 
@@ -468,6 +497,14 @@ see also [[/curius|bookmarks]]
 - https://www.youtube.com/watch?v=8--5LwHRhjk&ab_channel=InigoQuilez -- Painting Characters with Math
 - https://www.youtube.com/watch?v=3_kdbJnCMwU&ab_channel=DavidBalcarras -- Bryan Magee - The Great Philosophers \*\*
 - https://www.youtube.com/watch?v=H4_Tsjmqxak&ab_channel=PhilosophyOverdose -- Husserl, Heidegger & Existentialism - Hubert Dreyfus & Bryan Magee (1987) \*\*
+- https://www.youtube.com/watch?v=sFux7pl6lf4&ab_channel=vlogbrothers -- Are Languages Alive?
+- https://www.youtube.com/watch?v=FH5wiwOyPX4&ab_channel=GPUMODE -- GPUMODE 2024 Keynotes
+  - https://drive.google.com/drive/folders/1Pz607n07u382_ybdd4gFdrNyEWra5kpj
+- https://www.youtube.com/watch?v=wSauUgRIQDg&t=120s&ab_channel=SamBurer -- Two Decades of Low-Rank Optimization
+  Given a $M \in R^{m\times\;n}$
+  - > rank measures the amount of information in $M$
+  - most big data matrices are low-rank
+  - [[thoughts/Singular Value Decomposition|SVD]]
 
 ## tools
 
@@ -485,10 +522,8 @@ see also [[/curius|bookmarks]]
 ## resources
 
 - https://www.gap-map.org/?sort=rank -- Gap Map
-- https://fontsource.org/ -- Font search, made easy
 - https://github.com/NixOS/nixpkgs/blob/master/lib/meta.nix -- meta.nix and helpers function in Nix
 - [ziglang/zig/.../general_purpose_allocator.zig](https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig) -- The GPA you need to care about
-- https://lettermatic.com/fonts/parclo-serif -- Parclo I might buy this
 - https://drmichaellevin.org/resources/otherlabs.html -- Labs interests
 - _SouthParkCommons meetup for AI interfaces, [Geoffrey Litt](https://www.geoffreylitt.com/)_
   - ![[https://www.youtube.com/watch?v=5OaTk5q_CTc]]
@@ -514,13 +549,27 @@ see also [[/curius|bookmarks]]
 - https://www.unco.edu/campus-recreation/pdf/intramural-sports/spring20/running-pace-chart.pdf -- Running pace chart
 - https://github.com/triton-lang/triton/blob/a758c595ddb149381b7ee888982f1afbeb02823c/python/triton_kernels/triton_kernels/matmul_ogs_details/_matmul_ogs.py#L291 -- matmul_ogs for [[thoughts/quantization#mxfp4|mxfp4]]
 - https://notes.eatonphil.com/2025-08-09-what-even-is-distributed-systems.html -- What even is _distributed systems_
+- https://x.com/rsnous/status/1446211454378524692 -- "We do not lose texts because of catastrophic events that wipe out all copies of them. We lose texts because they stop being copied."
+- https://www.dandad.org/en/d-ad-masterclass-creative-courses/
+- Shanghai vLLM meetup 2025
+  - https://mp.weixin.qq.com/s/pDmAXHcN7Iqc8sUKgJgGtg
+- https://dlsyscourse.org/lectures/ -- DLSys, CMU
+
+### interfaces
+
+- https://x.com/_baku89/status/1848878071585378521
+- https://x.com/SomeHats/status/1577717329680601089
+- https://x.com/hturan/status/1958590911920615635
+
+### fonts
+
+- https://fontsource.org/ -- Font search, made easy
+- https://departuremono.com/ -- Departure Mono
+- https://lettermatic.com/fonts/parclo-serif -- Parclo I might buy this
 
 ### lecture
 
 - https://www.youtube.com/watch?v=m47A0AmqxQE&list=PL62C50202CE181183&index=5&ab_channel=flame0430 -- Iris Murdoch on Philosophy and Literature
-- https://www.youtube.com/watch?v=PgPNfPhG4Wc&ab_channel=StanfordOnline -- AA228/CS248 Decision Making Under Uncertainty | Policy Gradient Estimation & Optimization
-- https://www.youtube.com/watch?v=BXwALAkPubc&ab_channel=HarvardMathematicsDepartment -- Exotic Phenomena in dimension 4, Lisa Piccirillo
-- https://www.youtube.com/watch?v=i2acsy7Zzfo&ab_channel=HarvardMathematicsDepartment -- Random Matrix Statistics and Airy Line Ensembles, Jiaoyang Huang
 
 ### technical
 
@@ -535,11 +584,15 @@ see also [[/curius|bookmarks]]
 
 - https://www.youtube.com/watch?v=e1xo6qWTmoc&ab_channel=OxfordMathematics -- Thesis Competition at Oxford Mathematics
   - https://youtu.be/e1xo6qWTmoc?si=U3esZ-Zq_DJy5Is1&t=134 -- Surgery presentation on [[thoughts/bordism bicategories]]
+- https://www.benparry.ca/euler-integration-lotka-volterra -- Euler Integration & the Lotka-Volterra Equations
+- https://www.benparry.ca/lorenz-system -- Lorenz system
+- https://www.youtube.com/watch?v=O8WZVR3eCNQ&ab_channel=InstituteforAdvancedStudy -- The adjoint Brascamp-Lieb inequality - Terence Tao
+- https://www.youtube.com/watch?v=PgPNfPhG4Wc&ab_channel=StanfordOnline -- AA228/CS248 Decision Making Under Uncertainty | Policy Gradient Estimation & Optimization
 - https://www.youtube.com/watch?v=B83yIIaTq_s&ab_channel=SimonsFoundation -- Lisa Piccirillo: Exotic Phenomena in Dimension 4
   - also https://www.youtube.com/watch?v=BXwALAkPubc&ab_channel=HarvardMathematicsDepartment
   - Conway knot problem
-- https://www.benparry.ca/euler-integration-lotka-volterra -- Euler Integration & the Lotka-Volterra Equations
-- https://www.benparry.ca/lorenz-system -- Lorenz system
+- https://www.youtube.com/watch?v=i2acsy7Zzfo&ab_channel=HarvardMathematicsDepartment -- Random Matrix Statistics and Airy Line Ensembles, Jiaoyang Huang
+- https://www.youtube.com/watch?v=QauoO0j9Y9Y&ab_channel=InstituteforPure%26AppliedMathematics%28IPAM%29 -- Terence Tao: The Erdős Discrepancy Problem
 
 #### papers
 

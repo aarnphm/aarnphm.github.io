@@ -3,7 +3,7 @@ id: attention
 tags:
   - seed
 date: "2025-08-21"
-modified: 2025-08-25 10:40:32 GMT-04:00
+modified: 2025-08-26 15:52:06 GMT-04:00
 title: attention primer
 ---
 
@@ -24,7 +24,7 @@ Let $Q=XW_Q,\;K=XW_K,\;V=XW_V$. Scaled dot‑product attention:
 
 $$
 \mathrm{Attn}(Q,K,V)\;=\;\sigma\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V,\quad
-\sigma(\cdot)=\text{row‑softmax}.
+\sigma(\cdot)=\text{row}-\text{softmax}.
 $$
 
 **A.1 Proposition (Permutation equivariance).**
@@ -161,7 +161,7 @@ This is a standard identity equivalent to the dot‑product axioms. ([Wikipedia]
 
    $$
    \frac{\langle q,k_j\rangle}{\sqrt{d}\,T}
-   = \underbrace{\frac{\|q\|^2}{2\sqrt{d}\,T}}_{\text{row‑constant}}
+   = \underbrace{\frac{\|q\|^2}{2\sqrt{d}\,T}}_{\text{row}-\text{constant}}
    + \frac{\|k_j\|^2}{2\sqrt{d}\,T}
    -\frac{\|q-k_j\|^2}{2\,T\,\sqrt{d}}.
    $$

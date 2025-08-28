@@ -10,7 +10,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-10-24"
-modified: 2025-08-15 06:08:47 GMT-04:00
+modified: 2025-08-26 22:59:54 GMT-04:00
 noindex: true
 title: /xeets/
 ---
@@ -79,6 +79,8 @@ https://x.com/gabrielpeterss4/status/1951781057973608948?s=46&t=E_gPjnJKDBGnwpVr
 
 https://x.com/aarnphm_/status/1956238570353504615 <!-- Seeing N -->
 
+https://x.com/SchrodingrsBrat/status/1960157702232940796 <!-- September is the true New Year, Sherry -->
+
 ## love
 
 https://x.com/virtualjew/status/1846593528350011539 <!-- You can just make grilled cheese with onions -->
@@ -90,6 +92,8 @@ https://x.com/nwilliams030/status/1884282849471390185 <!-- neighbourhood as a fo
 https://x.com/booritney/status/1884857291046002714 <!-- dates in sf, after dark thursday -->
 
 https://x.com/tommytrxnh/status/1884908531079340090 <!-- Tommy's version -->
+
+https://x.com/noampomsky/status/1960404829647585590 <!-- Life -->
 
 ## technology
 

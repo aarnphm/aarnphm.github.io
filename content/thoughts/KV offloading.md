@@ -6,7 +6,7 @@ tags:
   - inference
 description: and LMCache.
 date: "2025-08-06"
-modified: 2025-08-07 17:28:48 GMT-04:00
+modified: 2025-08-25 11:28:06 GMT-04:00
 title: KV offloading
 ---
 
@@ -24,3 +24,9 @@ see also: [handbook](https://bentoml.com/llm/inference-optimization/kv-cache-off
 ![[thoughts/Transformers#napkin math]]
 
 ## LMCache
+
+implementation of @yao2025cacheblendfastlargelanguage
+
+The idea is to mix between prefix caching and recompute incremental KV based on attention deviation metrics (HKVD tokens [^abbrev])
+
+[^abbrev]: read as "high-KV-deviation tokens", or $\delta_{\text{KV}}$

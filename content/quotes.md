@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-08-20 06:19:36 GMT-04:00
+modified: 2025-08-26 15:00:30 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -56,6 +56,8 @@ I would say that free will is nothing but our conscious experience of deciding w
 I always have such need to merely talk to you. Even when I have nothing to talk about - with you I just seem to right ahead and sort of invent it. I invent it for you -- Virginia Woolf, from a letter to _Vita Sackville West_
 
 Of all the ways to lose a person, death is the kindest.
+
+Life starts all over again when it gets crisp in the fall -- F. Scott Fitzgerald
 
 ## On bits and bytes.
 

@@ -1,22 +1,22 @@
 ---
 id: dating
-permalinks:
-  - /hinge
-  - /bumble
-  - /date
+aliases:
+  - dating-profile
+  - date
+  - date-me
 tags:
   - evergreen
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-08-13 16:10:26 GMT-04:00
-pageLayout: letter
-aliases:
-  - dating-profile
-  - date
-  - date-me
-title: dating me.
+modified: 2025-08-27 13:59:26 GMT-04:00
+permalinks:
+  - /hinge
+  - /bumble
+  - /date
 noindex: true
+title: dating me.
+pageLayout: letter
 ---
 
 Most people know me as `aarnphm`, but you can call me _Aaron_ (or [a-a-ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
