@@ -7,9 +7,11 @@ description: and more notes
 transclude:
   title: false
 date: "2025-08-26"
-modified: 2025-08-28 10:41:21 GMT-04:00
+modified: 2025-08-28 13:49:42 GMT-04:00
 title: transcript
 ---
+
+see also [[lectures/3/quantisation basics]]
 
 ## kvcache ad-hoc implementation
 
