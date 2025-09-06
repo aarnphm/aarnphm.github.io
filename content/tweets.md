@@ -10,7 +10,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-10-24"
-modified: 2025-08-26 22:59:54 GMT-04:00
+modified: 2025-09-05 17:09:42 GMT-04:00
 noindex: true
 title: /xeets/
 ---
@@ -80,6 +80,8 @@ https://x.com/gabrielpeterss4/status/1951781057973608948?s=46&t=E_gPjnJKDBGnwpVr
 https://x.com/aarnphm_/status/1956238570353504615 <!-- Seeing N -->
 
 https://x.com/SchrodingrsBrat/status/1960157702232940796 <!-- September is the true New Year, Sherry -->
+
+https://x.com/bolau_/status/1963676094546186539 <!-- performative curius highlighting -->
 
 ## love
 

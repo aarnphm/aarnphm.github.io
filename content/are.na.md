@@ -1,7 +1,9 @@
 ---
 id: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /resources
+  - /inspo
 tags:
   - technical
   - seed
@@ -10,11 +12,9 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-08-28 09:29:19 GMT-04:00
-permalinks:
-  - /website
-  - /resources
-  - /inspo
+modified: 2025-09-06 19:32:13 GMT-04:00
+aliases:
+  - inspo
 title: are.na
 cssclasses:
   - nolist
@@ -89,7 +89,6 @@ see also [[/curius|bookmarks]]
 - https://www.curatingcraft.com -- Curating Craft
   - by Daybreak
 - https://www.yooksel.com/
-- https://stream.thesephist.com/ -- Linus' stream
 - https://www.goodfire.ai/ -- Goodfire AI
 - nice.rocks -- Nice rocks
 - https://www.philosophyofprogress.com/ -- Philosophy of Progress
@@ -385,13 +384,19 @@ see also [[/curius|bookmarks]]
 - https://www.seangoedecke.com/great-software-design/ -- Great software design looks underwhelming
 - https://openai.com/index/deep-double-descent/ -- Deep double descent
 - ![[https://www.youtube.com/watch?v=5jSC8bjo-dI&ab_channel=InstituteforAdvancedStudy]]
-- ![[https://www.youtube.com/watch?v=HvEGJUwQEO8&ab_channel=InstituteforAdvancedStudy]]
+- ![[https://www.youtube.com/watch?v=HvEGJUwQEO8&ab_channel=InstituteforAdvancedStudy]] -- On the Connection between Neural Networks and Kernels: a Modern Perspective, Simon Du
+- https://www.youtube.com/watch?v=yFXPU2lMNdk&ab_channel=InstituteforAdvancedStudy -- Learning Representations Using Causal Invariance, Leon Bottou
 - https://x.com/JingyuanLiu123/status/1959093411283443726 -- TPU vs GPU parallelism strategies
 - https://horace.io/brrr_intro.html -- Deep Learning from first principle
 - https://colah.github.io/posts/2014-03-NN-Manifolds-Topology/ -- Neural Network, and Manifolds
 - https://x.com/GoodfireAI/status/1960378734852046859 -- Adversarial examples affects feature share directions.
   - https://x.com/livgorton/status/1960378437102657654
   - https://arxiv.org/abs/2508.17456
+- https://x.com/keenanisalive/status/1964434335911858552
+  - Geometric representation of encoders: maps a high-dimensional data $x$ to low-dimensional latent $z$, then the decoder tries to map $z$ back to $x$.
+  - We _always_ learn a k-dimensional submanifold $M$
+    ![[thoughts/images/submanifold mapping.webp]]
+  - See also: [[thoughts/autoencoder diagrams intuition|diagrams]]
 
 ### argumentative
 
@@ -444,10 +449,12 @@ see also [[/curius|bookmarks]]
 - https://notes.andymatuschak.org/Effective_system_design_requires_insights_drawn_from_serious_contexts_of_use -- Effective system design requires insights drawn from serious contexts of use
 - https://wilderness.land/
 - https://jennyclark.substack.com/p/prayer-for-the-girl-who-often-forgets -- prayer for the girl who often forgets that enough is enough
+- https://stream.thesephist.com/ -- Linus' stream
 - ![[tweets]]
 - https://x.com/divya_venn/status/1956105667871412685
 - ![[books]]
 - ![[mixed]]
+- ![[images]]
 
 ### financial reports
 
@@ -474,6 +481,7 @@ see also [[/curius|bookmarks]]
 - https://www.are.na/editorial/are-nas-new-web-client-sander-is-now-available-for-everyone -- Are.na's web client, Sander.
 - https://jonwhitestudio.com/ -- Jon White Studio
 - https://www.commarts.com/
+- https://x.com/zachlieberman/status/1963683642011455980
 
 ### video
 
@@ -505,6 +513,8 @@ see also [[/curius|bookmarks]]
   - > rank measures the amount of information in $M$
   - most big data matrices are low-rank
   - [[thoughts/Singular Value Decomposition|SVD]]
+- https://www.youtube.com/watch?v=sdFQS2Bctj0&ab_channel=LilaRose -- How men commit differently than woman?
+- https://www.youtube.com/watch?v=hNIbd4mUVeU&ab_channel=Sisyphus55 -- Watch this when you're depressed \*\*
 
 ## tools
 
@@ -537,6 +547,7 @@ see also [[/curius|bookmarks]]
 - https://www.nserc-crsng.gc.ca/Students-Etudiants/Guides-Guides/TriRTA-TriBFR_eng.asp -- Canadian government grant research
 - https://www.cbo.gov/system/files/2020-01/55967-CBO-immigration.pdf -- Foreign-Born Population and Its Effects on US Economy
 - https://www.youtube.com/watch?v=sX2nF1fW7kI -- When Nanoseconds Matter: Ultrafast Trading System in C++
+  - https://github.com/CppCon/CppCon2024/blob/main/Presentations/When_Nanoseconds_Matter.pdf
 - https://www.vmware.com/docs/the-basics-of-remote-direct-memory-access-rdma-in-vsphere -- RDMA in VSphere
   - Good introduction to RDMA
 - https://www.corner.inc/list/02c68af9-8286-474f-91de-0b4e702330e6?sid=49933781-9175-48ae-852b-acb5006e8bca -- toronto coworking spots
@@ -554,6 +565,7 @@ see also [[/curius|bookmarks]]
 - Shanghai vLLM meetup 2025
   - https://mp.weixin.qq.com/s/pDmAXHcN7Iqc8sUKgJgGtg
 - https://dlsyscourse.org/lectures/ -- DLSys, CMU
+- https://github.com/CppCon/CppCon2024 -- CppConf 2024
 
 ### interfaces
 

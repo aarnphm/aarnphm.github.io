@@ -3,8 +3,9 @@ id: midterm
 tags:
   - sfwr4ml3
   - ml
+  - linalg
 date: "2024-10-28"
-modified: 2024-12-14 05:14:15 GMT-05:00
+modified: 2025-08-28 19:27:22 GMT-04:00
 title: Supervised machine learning
 ---
 

@@ -5,7 +5,7 @@ tags:
   - sapling
 description: and learning machine
 date: "2024-02-07"
-modified: 2025-08-12 22:40:04 GMT-04:00
+modified: 2025-08-28 19:27:46 GMT-04:00
 title: Machine learning
 ---
 
@@ -47,6 +47,6 @@ Fields
 
 Related:
 
-- [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm#linear algebra review.|linear algebra]].
+- [[tags/linalg]].
 - [[thoughts/Automatic Differentiation|autograd]]
 - [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm|supervised machine learning]].

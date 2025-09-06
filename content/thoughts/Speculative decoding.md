@@ -6,18 +6,22 @@ tags:
   - technical
 description: a method to speed up LLM decoding
 date: "2025-05-21"
-modified: 2025-08-12 11:55:00 GMT-04:00
+modified: 2025-09-05 17:24:00 GMT-04:00
 title: Speculative decoding
 ---
 
-Idea: "draft-and-verify" using smaller models to generate a head tokens (quick explanation from [karpathy](https://x.com/karpathy/status/1697318534555336961)), for proof see [[thoughts/Speculative decoding#speculative sampling]]
+See [slides](https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN5XaULO3AnCWWoRe4/edit#slide=id.p)
 
-Intuitively:
+Idea: "draft-and-verify" using smaller models to generate a head tokens
+
+https://x.com/karpathy/status/1697318534555336961
+
+Intuition:
 
 - we generate a small set of lookahead tokens, albeit 2-5 tokens with smaller speculators
 - uses the larger [[thoughts/Transformers#model]] to "verify" the input sequences + draft tokens (then replace tokens that aren't valid from rejection sampler)
 
-In a sense, we are verify these in parallel instead of [[thoughts/Autoregressive models|autoregressive decoding]].
+In a sense, we are verify these in parallel instead of [[thoughts/Autoregressive models|autoregressive decoding]]. Given that verification is a lot cheaper comparing to [[thoughts/Autoregressive models|autoregressive]] decoding.
 
 A few techniques such as [[thoughts/Speculative decoding#ngrams|ngrams]], [[thoughts/Speculative decoding#EAGLE|EAGLE]] are supported in [[thoughts/vllm|vLLM]]
 
@@ -240,6 +244,288 @@ where it takes the probability vectors of draft models $y_i^D$ for token positio
 
 https://arxiv.org/pdf/2302.01318
 
+## von Neumann acceptance-rejection
+
+> [!note] problem statement
+>
+> As we already know, finding an explicit formula for $F^{-1}(y)$ for the CDF of a random variable $X$ we wish to generate, $F(x) = P(X \le x)$, is not always possible.
+>
+> Moreover, even if it is, there may be alternative methods for generating a random variable distributed as $F$ that is more efficient than the inverse transform method or other methods we have come across.
+
+### formulation
+
+- **Goal:** sample from target density $f$ (known up to normalization) using proposals from easy density $g$.
+- **Envelope:** assume $M \ge 1$ with $f(x) \le M\,g(x)$ for all $x$ on the support of $f$.
+- **Algorithm:**
+  - Sample $Y \sim g$.
+  - Sample $U \sim \mathrm{Unif}(0,1)$.
+  - **Accept** $Y$ iff
+
+    $$
+    U \le \frac{f(Y)}{M\,g(Y)}.
+    $$
+
+    Else **reject** and repeat.
+
+- **Acceptance rate:**
+
+  $$
+  \Pr[\text{accept}] = \frac{1}{M},\qquad \mathbb{E}[\text{proposals per accept}] = M.
+  $$
+
+### proof
+
+- Joint density of proposal–uniform: $g(y)\cdot 1_{[0,1]}(u)$.
+- Accepted region $A=\{(y,u): u \le f(y)/(M g(y))\}$.
+- Marginal of accepted $Y$:
+
+  $$
+  \int_0^{f(y)/(M g(y))} g(y)\,du \;=\; \frac{f(y)}{M}.
+  $$
+
+- Total acceptance probability:
+
+  $$
+  \int \frac{f(y)}{M}\,dy \;=\; \frac{1}{M}.
+  $$
+
+- Conditioning on acceptance yields density proportional to $f(y)$ → samples from $f$ (up to the same normalization).
+
+#### tl/dr
+
+$$
+\Pr(Y\in dy\mid \text{acc})
+\;=\;
+\frac{\Pr(\text{acc}\mid Y{=}y)\,g(y)\,dy}{\Pr(\text{acc})}
+\;=\;
+\frac{\frac{f(y)}{M g(y)}g(y)\,dy}{\int \frac{f}{M}}
+\;=\;
+\frac{f(y)}{Z}\,dy.
+$$
+
+#### full derivation
+
+> Goal: turn an _unnormalized_ target $f$ into exact samples from the **normalized** density $f/Z$ using only a sampler for an easy proposal $g$ and a coin $U\sim\mathrm{Unif}(0,1)$.
+
+##### assumptions
+
+- Measurable space $(\mathcal X,\mathcal A)$, with base measure $dx$ (Lebesgue for continuous, counting for discrete).
+- **Target (unnormalized):** $f:\mathcal X\to[0,\infty)$ with finite mass
+
+  $$
+  Z \;:=\; \int_{\mathcal X} f(x)\,dx \;\in\; (0,\infty).
+  $$
+
+  The desired law is $p^\star(x)=f(x)/Z$.
+
+- **Proposal:** a probability density/mass $g$ satisfying **support coverage**
+
+  $$
+  f(x)>0 \;\Rightarrow\; g(x)>0.
+  $$
+
+- **Envelope:** a constant $M\ge 1$ with
+
+  $$
+  \forall x:\quad f(x)\;\le\; M\,g(x).
+  $$
+
+#### correctness
+
+three-way, pick your poison.
+
+##### a. geometric proof
+
+Consider the joint density on $(Y,U)$:
+
+$$
+(Y,U)\ \sim\ g(y)\cdot \mathbf 1_{[0,1]}(u).
+$$
+
+Define the **accept region**
+
+$$
+A \;=\; \Big\{(y,u)\,:\ 0 \le u \le \frac{f(y)}{M\,g(y)}\Big\}.
+$$
+
+Compute the marginal of accepted $Y$:
+
+$$
+\begin{aligned}
+\Pr(Y\in dy,\ \text{accept})
+&= \int_0^{f(y)/(M g(y))} g(y)\,du\,dy
+= \frac{f(y)}{M}\,dy.
+\end{aligned}
+$$
+
+The overall acceptance probability is
+
+$$
+\Pr(\text{accept}) \;=\; \int \frac{f(y)}{M}\,dy \;=\; \frac{Z}{M}.
+$$
+
+Therefore the **conditional** density of $Y$ given acceptance is
+
+$$
+p_{Y\mid \text{acc}}(y)
+= \frac{ \frac{f(y)}{M} }{ \frac{Z}{M} }
+= \frac{f(y)}{Z}
+= p^\star(y).
+$$
+
+$\boxed{}$
+
+##### b. bayesian proof
+
+$$
+p_{Y\mid \text{acc}}(y)
+= \frac{\Pr(\text{acc}\mid Y{=}y)\,g(y)}{\Pr(\text{acc})}
+= \frac{\frac{f(y)}{M g(y)}\,g(y)}{\int \frac{f(z)}{M g(z)} g(z)\,dz}
+= \frac{f(y)}{\int f(z)\,dz}
+= \frac{f(y)}{Z}.
+$$
+
+##### c. measure-theoretic (radon–nikodym) view
+
+Define a finite measure $\nu$ via $d\nu = g(y)\,dy\otimes du$ on $\mathcal X\times[0,1]$.
+Let $A$ be as above. The **acceptance measure** on $\mathcal X$ is the pushforward
+
+$$
+\mu(B) \;:=\; \nu\big( (B\times[0,1])\cap A \big)
+=\int_B \!\!\int_0^{f(y)/(M g(y))} g(y)\,du\,dy
+= \int_B \frac{f(y)}{M}\,dy.
+$$
+
+Hence $\mu(\mathcal X)=Z/M$, and the **normalized** version of $\mu$ has density $f/Z$.
+Everything else (acceptance rate, expectation) falls out immediately.
+
+#### acceptance probability and expected proposals
+
+- Acceptance probability per attempt:
+
+  $$
+  \Pr(\text{accept}) \;=\; \frac{Z}{M}.
+  $$
+
+  If $f$ is already normalized ($Z=1$), this simplifies to $1/M$.
+
+- Number of proposals $N$ until first accept is geometric with success probability $Z/M$:
+
+  $$
+  \mathbb E[N] \;=\; \frac{M}{Z}
+  \quad(\text{equals }M\text{ when }Z=1).
+  $$
+
+#### discrete form (LLM-friendly)
+
+Let $\mathcal V$ be finite or countable, with target mass $p(i)\propto f(i)$, proposal $q(i)=g(i)$, and $M\ge \max_i f(i)/g(i)$.
+
+One attempt:
+
+- Draw $I\sim q$.
+- Draw $U\sim\mathrm{Unif}(0,1)$.
+- Accept iff
+
+  $$
+  U \le \frac{f(I)}{M\,g(I)}.
+  $$
+
+Then
+
+$$
+\Pr(\text{output}=i)
+= \frac{ \Pr(I=i,\ \text{accept}) }{ \Pr(\text{accept}) }
+= \frac{ q(i)\cdot \frac{f(i)}{M g(i)} }{ \sum_j q(j)\cdot \frac{f(j)}{M g(j)} }
+= \frac{ f(i) }{ \sum_j f(j) }
+= \frac{f(i)}{Z}.
+$$
+
+#### why the uniform coin is essential (the "vertical measure")
+
+You need a Bernoulli with parameter $f(Y)/(M g(Y))$ **for each realized $Y$**.
+
+Sampling $U\sim\mathrm{Unif}(0,1)$ and testing $U \le f(Y)/(M g(Y))$ _is exactly that coin_.
+
+Formally, it supplies the vertical measure that carves the acceptance slice whose area equals $f(y)/M$.
+
+#### generalized envelopes (non-constant $M$)
+
+If you only have a **pointwise** bound $f(x) \le c(x)\,g(x)$ with $c(x)\ge 1$, the same proof works with
+
+$$
+\text{accept iff}\quad
+U \le \frac{f(Y)}{c(Y)\,g(Y)}.
+$$
+
+Then
+
+$$
+\Pr(\text{accept})=\int \frac{f(x)}{c(x)}\,dx
+\quad\text{and}\quad
+p_{Y\mid \text{acc}}(y)=\frac{f(y)}{\int f}.
+$$
+
+(You trade a constant-rate geometric for an inhomogeneous success, but correctness is unchanged.)
+
+#### squeezing (cheap early accept/reject)
+
+If you also have a **lower** bound $h(x)\le f(x)\le M g(x)$, then with a single $U\sim\mathrm{Unif}(0,1)$:
+
+- **Early accept** if $U \le h(Y)/(M g(Y))$ (no need to evaluate $f$).
+- Else compute $f(Y)$ and accept if $U \le f(Y)/(M g(Y))$; otherwise reject.
+
+The proof is identical: you partition the accept region into a cheap rectangle (under $h$) plus a residual slice (between $h$ and $f$).
+
+#### termination and edge conditions
+
+- **Almost sure termination:** since $\Pr(\text{accept})=Z/M>0$, the geometric scheme halts a.s.
+- **Support coverage is non-negotiable:** if $\exists x: f(x)>0, g(x)=0$, then $\sup f/g=\infty$ and acceptance probability collapses there—no sampler can fix missing support.
+- **Tight envelopes matter:** smaller $M$ (or $c(x)$) ⇒ higher acceptance ⇒ lower $\mathbb E[N]$.
+
+### implication
+
+- **Choose $g$ wisely:** cheap sampler; shape close to $f$ (small $M$).
+- **Tail dominance:** ensure $g$ bounds $f$ in the tails; otherwise acceptance collapses.
+- **Diagnostics:** empirical $\hat M \approx 1/\text{acceptance-rate}$.
+
+#### how this surfaces in [[thoughts/LLMs|llm]] inference?
+
+- Using a proposal $q(\cdot\mid x_{<t})$ and target $p(\cdot\mid x_{<t})$, the classical acceptance rule per token $i$ is
+
+  $$
+  A(i)=\min\!\Big(1,\;\frac{p(i\mid x_{<t})}{M\,q(i\mid x_{<t})}\Big).
+  $$
+
+- Special practice: set $M=1$ where feasible; handle rejections by falling back to sampling from $p$, preserving exactness via mixture decomposition.
+
+#### pseudocode
+
+```text
+Given target f (unnormalized OK), proposal g, envelope M ≥ sup_x f(x)/g(x)
+
+repeat:
+  y ~ g
+  u ~ Uniform(0,1)
+  if u ≤ f(y)/(M*g(y)):
+     return y
+```
+
+- Discrete case: replace densities with probabilities $p(i), q(i)$.
+- Expected loops per output: $M$. Tune $g$ to shrink $M$.
+
+#### vllm pointers
+
+- Feature docs: “Speculative Decoding” section in vLLM user documentation.
+- Self-speculative n-gram path: look for “prompt lookup” / “n-gram” speculative decoding modules (e.g., components named like `ngram_worker`).
+- Repository: search the codebase for “speculative decoding,” “draft,” “verify,” “ngram,” and review examples/tests.
+- Deployment: check vLLM + Triton integration guides for production serving patterns.
+
+### references
+
+- von Neumann (1951): foundational acceptance–rejection idea.
+- Modern proofs in standard Monte Carlo and SIAM-style reviews of AR.
+- @leviathan2023fastinferencetransformersspeculative, @chen2023acceleratinglargelanguagemodel
+
 ## speculative sampling
 
 aliases: SpS, speculative decoding.
@@ -261,7 +547,7 @@ Based on:
 - Latency is improved at the cost of increasing ops, with $\gamma=5$ [^alias]
 - This is not useful when computation resources are limited.
 - [[thoughts/Speculative decoding#wall-time improvement|Wall-time]] improvement by $\frac{1-\alpha^{\gamma +1}}{(1-\alpha)(\gamma c + 1)}$ where $\alpha$ is the approximation $E(\beta)$ [^approx-beta]
-- Note that this is **different from** rejection sampling [^discrepancy-with-rejection-sampling]
+- extension of rejection sampling [^discrepancy-with-rejection-sampling]
 - Lenience factor $l$ to perform speed versus quality trade-off [^lenience] when draft-models distributions is different from target-models'. [^greedy-and-non-greedy]
 
 [^alias]: also referred in practice as `num_speculative_tokens`
@@ -381,11 +667,13 @@ _Objective_: to use $M_q$ to generate $\gamma \in \mathbb{Z}^{+}$ completions, a
     Note that
 
     $$
+    \begin{aligned}
     p'(x)
-      = \operatorname{norm}\!\bigl(\max(0,\;p(x)-q(x))\bigr)
-      = \frac{p(x)-\min\!\bigl(q(x),\,p(x)\bigr)}
-            {\displaystyle \sum_{x'}\!\bigl(p(x')-\min\!\bigl(q(x'),\,p(x')\bigr)\bigr)}
-      = \frac{p(x)-\min\!\bigl(q(x),\,p(x)\bigr)}{1-\beta},
+      &= \operatorname{norm}\!\bigl(\max(0,\;p(x)-q(x))\bigr) \\
+      &= \frac{p(x)-\min\!\bigl(q(x),\,p(x)\bigr)}
+            {\displaystyle \sum_{x'}\!\bigl(p(x')-\min\!\bigl(q(x'),\,p(x')\bigr)\bigr)} \\
+      &= \frac{p(x)-\min\!\bigl(q(x),\,p(x)\bigr)}{1-\beta},
+    \end{aligned}
     $$
 
     so the normalising constant for the adjusted distribution $p'(x)$ is $1-\beta$;
@@ -567,7 +855,7 @@ Similarly, other architectures (MiniCPM, etc.) have their own Eagle-speculator c
 This leads to code duplication and maintenance burden, since each class reimplements similar logic (e.g. embedding inputs, combining states, output processing) with only minor variations.
 
 Additionally, current limitations include requiring the draft model to run with tp=1 (no tensor parallelism) due to lack of heterogenous KV-cache support.
-Oftentimes we might want the KV cache for the draft to be separated from the target's; and this is yet to be supported in v1. However, this design would not consider the modification of this step, but taking this into consideration.j
+Oftentimes we might want the KV cache for the draft to be separated from the target's; and this is yet to be supported in v1. However, this design would not consider the modification of this step, but taking this into consideration.
 
 ##### Goal
 

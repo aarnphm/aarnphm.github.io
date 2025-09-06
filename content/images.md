@@ -39,3 +39,7 @@ title: images
 ![[thoughts/images/modern-infra-ai.webp]]
 
 ![[thoughts/images/information density economist.webp]]
+
+![[thoughts/images/speculative-drawing.webp]]
+
+![[thoughts/images/exploitation of visual thoughts.webp]]

@@ -1,0 +1,17 @@
+[project]
+name = "lecture-2"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fire>=0.7.1",
+    "memray>=1.18.0",
+    "numpy>=2.3.2",
+    "pyinstrument>=5.1.1",
+    "regex>=2025.9.1",
+    "scalene>=1.5.54",
+    "speedscope>=1.0",
+    "tqdm>=4.67.1",
+    "viztracer>=1.0.4",
+]

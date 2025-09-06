@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-08-26 15:00:30 GMT-04:00
+modified: 2025-09-04 23:31:06 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -59,6 +59,8 @@ Of all the ways to lose a person, death is the kindest.
 
 Life starts all over again when it gets crisp in the fall -- F. Scott Fitzgerald
 
+Another way to feel free is to meet someone who makes you think “if you love me I don’t care if everyone hates me” and actually have them love you back -- Ava
+
 ## On bits and bytes.
 
 Computer is a bicycle for the mind. -- [Steve Jobs](https://www.youtube.com/watch?v=ob_GX50Za6c&ab_channel=MichaelLawrence)
@@ -98,6 +100,8 @@ It is actually ok to miss somebody. [...] But you know that sadness, it's a gift
 Like the generations of leaves, the lives of mortal men. Now the wind scatters the old leaves across the earth, now the living timber bursts with the new buds and spring comes round again. And so with men: as one generation comes to life, another dies away. -- Homer, The Iliad
 
 There is no iron law that postulates that technology must benefit the many at the expense of the few. And quite naturally, when large swaths of the populace are left behind by technological change, they are likely to resist it. -- Carl Benedikt Frey
+
+“If you have odd ways of conducting yourself or odd beliefs you need to lean into it because all the conventional advice wont work, it only works if you’re closer to the average” - [@mattchowx](https://x.com/mattchowx)
 
 ## On drive.
 

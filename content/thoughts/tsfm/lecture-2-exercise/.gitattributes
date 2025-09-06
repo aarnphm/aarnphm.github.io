@@ -1,0 +1,2 @@
+*.txt filter=lfs diff=lfs merge=lfs -text
+*.txt !text !filter !merge !diff

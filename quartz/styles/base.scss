@@ -92,7 +92,10 @@ td,
 li,
 ol,
 ul,
-.katex {
+.katex,
+.math,
+.typst-doc,
+.typst-doc * {
   color: var(--dark);
   fill: var(--dark);
   hyphens: auto;
@@ -104,7 +107,10 @@ a,
 li,
 ol,
 ul,
-.katex {
+.katex,
+.math,
+.typst-doc,
+.typst-doc * {
   overflow-wrap: anywhere;
   word-break: auto-phrase;
   /* tr and td removed from list of selectors for overflow-wrap, allowing them to use default 'normal' property value */

@@ -59,7 +59,7 @@
     "d3": "^7.9.0",
     "esbuild-sass-plugin": "^3.3.1",
     "fast-xml-parser": "^5.2.5",
-    "flexsearch": "^0.8.205",
+    "flexsearch": "^0.8.212",
     "github-slugger": "^2.0.0",
     "globby": "^14.1.0",
     "gray-matter": "^4.0.3",
@@ -116,7 +116,7 @@
     "remark-smartypants": "^3.0.2",
     "rfdc": "^1.4.1",
     "rough-notation": "^0.5.1",
-    "sass-embedded": "^1.92.0",
+    "sass-embedded": "^1.92.1",
     "satori": "^0.18.2",
     "serve-handler": "^6.1.6",
     "sharp": "^0.34.3",
@@ -136,7 +136,8 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "@anthropic-ai/claude-code": "^1.0.105",
+    "@anthropic-ai/claude-code": "^1.0.108",
+    "@openai/codex": "^0.29.0",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",

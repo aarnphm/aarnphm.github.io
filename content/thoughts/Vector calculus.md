@@ -4,7 +4,7 @@ tags:
   - math
 description: just enough vector calculus to be dangerous
 date: "2024-11-27"
-modified: 2025-08-24 08:26:23 GMT-04:00
+modified: 2025-08-28 21:52:53 GMT-04:00
 title: Vector calculus
 ---
 
@@ -65,6 +65,8 @@ $$
 > When $m = n$, the Jacobian matrix is a square, so its determinant is a well-defined function of $x$ [^conjecture]
 
 When $m=1$, or $f: \mathbf{R}^n \to \mathbf{R}$ is a scalar-valued function, then Jacobian matrix reduced to the row vector $\nabla^T f$, and this row vector of all first-order partial derivatives of $f$ is the ==transpose of the [[thoughts/Vector calculus#gradient]]== of $f$, or $\mathbf{J}_f = \nabla^T f$
+
+Intuitively, one can think about Jacobian matrix as the linear map of a function onto a subspace.
 
 [^conjecture]: See also [Jacobian conjecture](https://en.wikipedia.org/wiki/Jacobian_conjecture)
 

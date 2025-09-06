@@ -4,12 +4,13 @@ aliases:
   - linalg
 tags:
   - sfwr4ml3
-date: "2024-09-11"
+  - linalg
 description: linear algebra a la carte.
-modified: 2025-01-29 08:10:07 GMT-05:00
-title: linalg review
 transclude:
   title: false
+date: "2024-09-11"
+modified: 2025-08-28 19:27:22 GMT-04:00
+title: linalg review
 ---
 
 See also [matrix cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf)

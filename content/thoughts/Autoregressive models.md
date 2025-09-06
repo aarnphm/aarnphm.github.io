@@ -3,9 +3,9 @@ id: Autoregressive models
 tags:
   - seed
   - ml
-date: "2024-02-07"
 description: as a priori training objectives
-modified: 2025-01-30 15:46:34 GMT-05:00
+date: "2024-02-07"
+modified: 2025-09-05 09:53:19 GMT-04:00
 title: Autoregressive models
 ---
 
@@ -23,3 +23,23 @@ Auto-regressive models are often considered a more correct terminology when desc
 > The correct terminology when people refers to LLMs are _transformers being trained for auto-regressive objectives_
 
 Not to be confused with encoder-decoder models (_the original transformers papers propose encoder-decoder architecture, but this is mainly useful for translation_)
+
+## next token prediction
+
+Define a conditional probability distribution over the vocabulary for the next token: $p(x_t \mid x_{<t})$ with context $x_{<t} = (x_1, ..., x_{t-1})$
+
+Model outputs via softmax:
+
+$$
+p(x_t \mid x_{<t}) = \mathrm{softmax}(h_{t-1} W + b)
+$$
+
+where $h_{t-1}$ is the hidden state, and $W$, $b$ form the un-embedding layer.
+
+Training objective: negative log-likelihood (cross-entropy):
+
+$$
+\mathcal{L} = -\log p(x*t^{\text{true}} \mid x*{<t})
+$$
+
+Our goal is to _sample_ for next-token: $x \sim p(x_{t} \mid x_{<t})$

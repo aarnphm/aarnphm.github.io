@@ -2,9 +2,9 @@
 id: gradient descent
 tags:
   - ml
-date: "2024-12-10"
 description: and what is she descending from, really?
-modified: 2024-12-14 02:34:14 GMT-05:00
+date: "2024-12-10"
+modified: 2025-08-28 19:06:32 GMT-04:00
 title: gradient descent
 ---
 
@@ -71,7 +71,7 @@ $$
 \begin{aligned}
 E(w) &= L(w) + \lambda \text{Reg}(w) \\[8pt]
 L(w) &= \sum_{i} l(f_w(x^i), y^i) \\[8pt]
-\nabla_w (L(w)) &= \sum_{i} \nabla_w (l(f_w(x^i), y^i))
+\nabla_w (L(w)) &= \sum_{i} \nabla_w (l(f_w(x^i), y^i)) --ready-check-timeout-sec
 \end{aligned}
 $$
 

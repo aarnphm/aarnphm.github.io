@@ -3,9 +3,9 @@ id: index
 tags:
   - university
   - commerce4pa3
-date: "2025-01-06"
 description: commerce capstone
-modified: 2025-01-23 06:08:36 GMT-05:00
+date: "2025-01-06"
+modified: 2025-09-04 09:17:02 GMT-04:00
 title: "Business Policy: Strategy Management"
 ---
 

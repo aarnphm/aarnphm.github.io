@@ -4,7 +4,7 @@ comments: false
 tags:
   - evergreen
 date: "2024-02-07"
-modified: 2025-08-10 03:56:31 GMT-04:00
+modified: 2025-09-04 21:40:03 GMT-04:00
 title: movies.
 ---
 
@@ -19,7 +19,6 @@ If you want a more complete list, check out [this entries on letterboxd](https:/
 ## to watch.
 
 - [ ] A Different Man (2024)
-- [ ] A Real Pain (2024)
 - [ ] I Saw the TV Glow (2024) [^lychian]
 - [ ] How To Make Millions before Grandma [[ideas#lettres|dies]] (2024)
 - [ ] Evil Does Not Exists (2024)
@@ -38,11 +37,8 @@ If you want a more complete list, check out [this entries on letterboxd](https:/
 - [ ] Fleabag
 - [ ] Eternal Sunshine of the Spotless Mind
 - [ ] Before Sunrise
-- [ ] Frances Ha (2012)
 - [ ] Blue Jasmine (2013)
 - [ ] The King of Comedy (1982)
-- [ ] Dead Poets Society (1989)
-- [ ] La Haine (1995)
 - [ ] Flame & Citron (2008)
 - [ ] Blue is the Warmest Color (2013)
 - [ ] Dallas Buyers Club (2013)
@@ -78,22 +74,26 @@ If you want a more complete list, check out [this entries on letterboxd](https:/
 
 _doesn't mean that I won't watch it again, just that I will need some more time to process_ :smiley:
 
-- [x] Poor Things (2023)
-- [x] Maestro (2023)
-- [x] The Wild Robot (2024)
-- [x] The Day of the Jackal (1973) [^remake]
-- [x] Flow (2024)
-- [x] Here (2024)
-- [x] The Substance (2024)
-- [x] A Real Pain (2024)
-- [x] Call Me By Your Name (2017)
-- [x] Love & Other Drugs (2010)
-- [x] Challenger (2024)
-- [x] Anora (2024)
-- [x] The Brutalist (2024)
-- [x] Civil War (2024)
-- [x] Queer (2024)
-- [x] No Reservations (2007)
+- Dead Poets Society (1989)
+- La Haine (1995)
+- Poor Things (2023)
+- Maestro (2023)
+- The Wild Robot (2024)
+- The Day of the Jackal (1973) [^remake]
+- Flow (2024)
+- Here (2024)
+- The Substance (2024)
+- A Real Pain (2024)
+- Call Me By Your Name (2017)
+- Love & Other Drugs (2010)
+- Challenger (2024)
+- Anora (2024)
+- The Brutalist (2024)
+- Civil War (2024)
+- Queer (2024)
+- No Reservations (2007)
+- A Real Pain (2024)
+- Frances Ha (2012)
 
 [^remake]: There is also a remake series (2024) starring Eddie Redmayne. (very chill)
 

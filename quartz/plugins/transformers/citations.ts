@@ -300,6 +300,38 @@ async function ensureBibEntry(
     const lib = new Cite(fileContent, { generateGraph: false })
     const libItems = lib.data as any[]
 
+    // Helper: extract a versionless arXiv id from various shapes of a CSL item
+    const itemArxivId = (x: any): string | null => {
+      // try eprint field (varying capitalizations)
+      const e = normEprint(x?.eprint ?? x?.EPRINT ?? x?.Eprint)
+      if (e) return e
+      // try URL field (varying capitalizations)
+      const url = x?.url ?? x?.URL
+      const fromUrl = arxivIdFromUrl(url)
+      if (fromUrl) return fromUrl
+      return null
+    }
+
+    // Helper: parse bib file text directly to find a key by contained arXiv id/link
+    const findKeyInRawFile = (content: string, eprint: string): string | null => {
+      if (!content.trim()) return null
+      const entryRegex = /@\w+\{\s*([^,]+)\s*,([\s\S]*?)\}\s*(?=@|$)/g
+      let m: RegExpExecArray | null
+      const idNoVersion = eprint.replace(/v\d+$/i, "")
+      // patterns we consider a match for the same work
+      const urlRe = new RegExp(String.raw`arxiv\.org\/(?:abs|pdf)\/${idNoVersion}(?:v\d+)?`, "i")
+      const eprintRe = new RegExp(
+        String.raw`eprint\s*=\s*[{\"]\s*${idNoVersion}(?:v\d+)?\s*[}\"]`,
+        "i",
+      )
+      while ((m = entryRegex.exec(content)) !== null) {
+        const key = m[1].trim()
+        const body = m[2]
+        if (urlRe.test(body) || eprintRe.test(body)) return key
+      }
+      return null
+    }
+
     // candidate identity from the *id* you were asked to insert
     const eprint = normEprint(id)
     const candidate = {
@@ -308,8 +340,18 @@ async function ensureBibEntry(
     }
 
     // 1) If anything in lib matches by (eprint || url-id), reuse it
-    const found = libItems.find((x: any) => isSameWorkMinimal(x, candidate))
-    if (found) return { key: found.id, entry: "" }
+    const found = libItems.find((x: any) => {
+      // First: try structured minimal check (handles URL/eprint on typical items)
+      if (isSameWorkMinimal(x, candidate)) return true
+      // Second: if parser used different capitalizations, compare via derived ids
+      const xa = itemArxivId(x)
+      return xa !== null && xa === eprint
+    })
+    if (found) return { key: (found as any).id, entry: "" }
+
+    // 1.5) If not found via structured data, scan raw file for a matching entry by link/eprint
+    const rawKey = fileContent ? findKeyInRawFile(fileContent, eprint!) : null
+    if (rawKey) return { key: rawKey, entry: "" }
 
     // 2) Otherwise synthesize a BibTeX entry from the Atom API (captcha-free)
     const bibtex = (await fetchBibtex(eprint!)).trim() // your Atom->BibTeX impl
