@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import dataclasses, json, os, multiprocessing
+import dataclasses, json, os, multiprocessing, heapq
 
 from .core import PRETOKENIZER
 
@@ -62,6 +62,8 @@ class Tokenizer:
   vocab: dict[tuple[int, ...], int]
   id_to_sym: dict[int, tuple[int, ...]] = dataclasses.field(init=False)
   ranks: dict[tuple[int, int], int] = dataclasses.field(init=False)
+  encode_cache: dict[bytes, tuple[int, ...]] = dataclasses.field(default_factory=dict, init=False)
+  cache_max_token_bytes: int = 100
 
   def __post_init__(self) -> None:
     self.id_to_sym = {tok_id: tuple(symbol) for symbol, tok_id in self.vocab.items() if tok_id >= 256}
@@ -91,36 +93,90 @@ class Tokenizer:
     return list(zip(symbols, symbols[1:]))
 
   def _apply_bpe(self, symbols: list[int]) -> list[int]:
-    if len(symbols) < 2:
+    n = len(symbols)
+    if n < 2:
       return symbols
-    while True:
-      pairs = self._get_pairs(symbols)
-      candidates = [(pair, self.ranks[pair]) for pair in pairs if pair in self.ranks]
-      if not candidates:
-        break
-      best_pair = min(candidates, key=lambda x: x[1])[0]
-      merged: list[int] = []
-      i = 0
-      while i < len(symbols):
-        if i < len(symbols) - 1 and (symbols[i], symbols[i + 1]) == best_pair:
-          merged.append(self.merges[best_pair])
-          i += 2
-        else:
-          merged.append(symbols[i])
-          i += 1
-      symbols = merged
-      if len(symbols) < 2:
-        break
-    return symbols
+    ids = list(symbols)
+    next_idx = list(range(1, n)) + [-1]
+    prev_idx = [-1] + list(range(0, n - 1))
+    alive = [True] * n
+    stamp = [0] * n
+    heap: list[tuple[int, int, int, int, int]] = []
+
+    ranks = self.ranks
+    merges = self.merges
+    heappush = heapq.heappush
+    heappop = heapq.heappop
+
+    def push(i: int) -> None:
+      if i < 0 or i >= n:
+        return
+      j = next_idx[i]
+      if j == -1:
+        return
+      pair = (ids[i], ids[j])
+      r = ranks.get(pair)
+      if r is None:
+        return
+      new_id = merges[pair]
+      heappush(heap, (r, i, stamp[i], j, new_id))
+
+    for i in range(n - 1):
+      push(i)
+
+    while heap:
+      r, i, _, j, new_id = heappop(heap)
+      if i < 0 or j < 0:
+        continue
+      if not (alive[i] and alive[j]):
+        continue
+      if next_idx[i] != j or prev_idx[j] != i:
+        continue
+      cur = ranks.get((ids[i], ids[j]))
+      if cur is None or cur != r:
+        push(i)
+        continue
+      ids[i] = new_id
+      stamp[i] += 1
+      alive[j] = False
+      nj = next_idx[j]
+      next_idx[i] = nj
+      if nj != -1:
+        prev_idx[nj] = i
+      pi = prev_idx[i]
+      if pi != -1:
+        stamp[pi] += 1
+        push(pi)
+      if next_idx[i] != -1:
+        push(i)
+
+    out: list[int] = []
+    k = 0
+    while k != -1 and k < n:
+      if alive[k]:
+        out.append(ids[k])
+      k = next_idx[k]
+    return out
 
   def encode(self, text: str) -> list[int]:
     tokens: list[int] = []
-    for piece in PRETOKENIZER.findall(text):
-      b = piece.encode('utf-8')
-      symbols = list(b)
-      merged = self._apply_bpe(symbols)
-      tokens.extend(merged)
+    cache = self.encode_cache
+    for m in PRETOKENIZER.finditer(text):
+      b = m.group().encode('utf-8')
+      if len(b) <= self.cache_max_token_bytes:
+        cached = cache.get(b)
+        if cached is None:
+          merged = tuple(self._apply_bpe(list(b)))
+          cache[b] = merged
+        else:
+          merged = cached
+        tokens.extend(merged)
+      else:
+        tokens.extend(self._apply_bpe(list(b)))
     return tokens
+
+  def encode_bytes(self, data: bytes) -> list[int]:
+    return self._apply_bpe(list(data))
 
   def decode(self, ids: list[int]) -> str:
     def flatten(idx: int, out: list[int]) -> None:

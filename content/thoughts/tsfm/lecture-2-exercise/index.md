@@ -5,7 +5,7 @@ tags:
   - ml
 description: This exercise focuses on understanding and optimizing a Byte Pair Encoding (BPE) tokenizer.
 date: "2025-09-04"
-modified: 2025-09-07 08:44:58 GMT-04:00
+modified: 2025-09-07 18:13:32 GMT-04:00
 noindex: true
 title: Tokenization and Computation
 ---
@@ -36,4 +36,3 @@ to run training:
 ```bash
 minibpe-train -d tinygpt-train --proc 5 --batch_size 500
 ```
-

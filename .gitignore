@@ -12,6 +12,7 @@ replit.nix
 quartz.git
 *.autosave
 **/.conform*
+**/target
 .vercel
 __pycache__
 sites

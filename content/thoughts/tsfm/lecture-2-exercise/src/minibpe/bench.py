@@ -2,14 +2,12 @@ from __future__ import annotations
 
 import os, time, typing as t
 import fire
-from tqdm import tqdm
 
-from .core import resolve_ds
 from .impl import Tokenizer as PyTokenizer
 from ._core import Tokenizer as RustTokenizer
 
 
-def _load_valid_text(dataset: t.Literal['toy', 'tinygpt'] = 'toy') -> str:
+def _load_valid_text(dataset: t.Literal['toy', 'tinygpt', 'tinygpt-train'] = 'toy') -> str:
   base_dir = os.path.dirname(__file__)
   if dataset == 'toy':
     path = os.path.join(base_dir, 'data', 'toy_data.txt')
@@ -17,16 +15,16 @@ def _load_valid_text(dataset: t.Literal['toy', 'tinygpt'] = 'toy') -> str:
     path = os.path.join(base_dir, 'data', 'TinyStoriesV2-GPT4-valid.txt')
   return open(path, 'r', encoding='utf-8', errors='ignore').read()
 
-def _roundtrip(model, text: str) -> float:
+def _timings_ms(model: PyTokenizer | RustTokenizer, text: str) -> tuple[float, float, float]:
   enc_start = time.perf_counter()
   ids = model.encode(text)
-  enc_s = time.perf_counter() - enc_start
+  enc_ms = (time.perf_counter() - enc_start) * 1000
 
   dec_start = time.perf_counter()
   _ = model.decode(ids)
-  dec_s = time.perf_counter() - dec_start
+  dec_ms = (time.perf_counter() - dec_start) * 1000
 
-  return enc_s + dec_s
+  return enc_ms, dec_ms, enc_ms + dec_ms
 
 def benchmark(
   dataset: t.Literal['toy', 'tinygpt-train'] = 'toy', merges: int = 500, processes: int = 4, batch_size: int = 1
@@ -48,17 +46,15 @@ def benchmark(
   # TODO: DOGSHIT LOL
   # start = time.perf_counter(); r_model = RustTokenizer.train_from_files([train_path], merges, processes); rust_train_s = time.perf_counter() - start
 
-  # Python encode/decode
-  py_rt_s = _roundtrip(py_model, text)
-  # Rust encode/decode
-  r_rt_s = _roundtrip(r_model, text)
+  py_enc_ms, py_dec_ms, py_rt_ms = _timings_ms(py_model, text)
+  r_enc_ms, r_dec_ms, r_rt_ms = _timings_ms(r_model, text)
 
   print(f'dataset={dataset}')
-  # print(f'python_train_s={py_train_s:.4f}')
-  # print(f'rust_train_s={rust_train_s:.4f}')
-  print(f'python_roundtrip_s={py_rt_s:.4f}')
-  print(f'rust_roundtrip_s={r_rt_s:.4f}')
+  header = f"{'model':<10} {'encode_ms':>12} {'decode_ms':>12} {'roundtrip_ms':>14}"
+  print(header)
+  print('-' * len(header))
+  print(f"{'python':<10} {py_enc_ms:12.2f} {py_dec_ms:12.2f} {py_rt_ms:14.2f}")
+  print(f"{'rust':<10} {r_enc_ms:12.2f} {r_dec_ms:12.2f} {r_rt_ms:14.2f}")
 
 
-def cli():
-  fire.Fire(benchmark)
+def cli() -> None: fire.Fire(benchmark)

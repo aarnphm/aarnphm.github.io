@@ -31,6 +31,7 @@ const configuration: GlobalConfiguration = {
     "**.ignore.pdf",
     "capstone",
     "**/.conform*",
+    "**/target",
   ],
   defaultDateType: "created",
   theme: {
