@@ -25,13 +25,13 @@ dependencies = [
   "scikit-learn>=1.5.2",
   "pandas>=2.2.3",
   "jupyterlab-vim>=4.1.4",
-  "minitokenizer",
+  "minibpe",
   "datasets>=4.0.0",
 ]
 dynamic = ["version"]
 
 [tool.uv.sources]
-minitokenizer = { path = "content/thoughts/tsfm/lecture-2-exercise" }
+minibpe = { path = "content/thoughts/tsfm/lecture-2-exercise" }
 
 [tool.hatch.version]
 source = "nodejs"
@@ -44,7 +44,7 @@ only-include = ["content"]
 packages = ["content"]
 
 [tool.pyright]
-pythonVersion = "3.12"
+pythonVersion = "3.11"
 typeCheckingMode = "strict"
 verboseOutput = true
 useLibraryCodeForTypes = true
@@ -64,7 +64,7 @@ MYPY = true
 
 [tool.mypy]
 pretty = true
-python_version = 3.8
+python_version = "3.11"
 show_error_codes = true
 strict = true
 ignore_missing_imports = true

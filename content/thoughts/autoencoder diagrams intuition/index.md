@@ -5,9 +5,9 @@ tags:
   - ml
 description: intuition for latent mapping
 date: "2025-09-07"
-modified: 2025-09-07 01:58:32 GMT+00:00
+modified: 2025-09-07 16:15:07 GMT-04:00
 noindex: true
-title: autoencoder diagrams
+title: panoramic representations
 ---
 
 Two complementary illustrations help convey both (i) what a “vanilla” autoencoder represents, and (ii) how it gets implemented as a neural network. Several versions of these files are included, in the [Portable Document Format (PDF)](https://en.wikipedia.org/wiki/PDF).
