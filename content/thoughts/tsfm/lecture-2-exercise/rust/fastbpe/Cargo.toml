@@ -14,4 +14,4 @@ rayon = "1.10"
 hashbrown = "0.16"
 anyhow = "1"
 memmap2 = "0.9"
-ahash = "0.8"
+ahash = { version = "0.8", features = ["std"] }

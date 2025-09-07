@@ -2,18 +2,17 @@ use std::fs;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-use ahash::AHashMap as HbMap;
+use ahash::AHashMap;
 use memmap2::Mmap;
 use rayon::prelude::*;
 use regex::Regex;
 
 #[derive(Clone)]
 pub struct PreTrainedBPE {
-    pub merges: HbMap<(u32, u32), u32>,
-    pub ranks: HbMap<(u32, u32), usize>,
+    pub merges: AHashMap<(u32, u32), u32>,
+    pub ranks: AHashMap<(u32, u32), usize>,
     pub id_to_bytes: Vec<Vec<u8>>,
     pub merges_ordered: Vec<((u32, u32), u32)>,
-    pub pattern: Regex,
 }
 
 pub(crate) fn compile_with_fallback(user: Option<&str>) -> Regex {
@@ -29,51 +28,45 @@ fn default_pattern() -> &'static str {
     "'(?:[sdmt]|ll|ve|re)| ?\\p{L}+| ?\\p{N}+| ?[^\\s\\p{L}\\p{N}]+|\\s+"
 }
 
-fn pretokenize_str(pattern: &Regex, text: &str) -> HbMap<String, u32> {
-    let mut local: HbMap<String, u32> = HbMap::new();
-    for m in pattern.find_iter(text) {
-        *local.entry(m.as_str().to_string()).or_insert(0) += 1;
+fn pretokenize_bytes(bytes: &[u8]) -> AHashMap<Vec<u8>, u32> {
+    let mut counts: AHashMap<Vec<u8>, u32> = AHashMap::new();
+    let mut i: usize = 0;
+    while i < bytes.len() {
+        let b = bytes[i];
+        if b.is_ascii_whitespace() {
+            let start = i;
+            i += 1;
+            while i < bytes.len() && bytes[i].is_ascii_whitespace() {
+                i += 1;
+            }
+            let tok = bytes[start..i].to_vec();
+            *counts.entry(tok).or_insert(0) += 1;
+        } else {
+            let start = i;
+            i += 1;
+            while i < bytes.len() && !bytes[i].is_ascii_whitespace() {
+                i += 1;
+            }
+            let tok = bytes[start..i].to_vec();
+            *counts.entry(tok).or_insert(0) += 1;
+        }
     }
-    local
+    counts
 }
 
-fn count_tokens_parallel(pattern: &Regex, paths: Vec<String>) -> HbMap<String, u32> {
-    let result = paths
-        .into_par_iter()
-        .map(|p| {
-            let file = match fs::File::open(&p) {
-                Ok(f) => f,
-                Err(_) => return HbMap::new(),
-            };
-            let mmap = unsafe { Mmap::map(&file).unwrap() };
-            let s = std::str::from_utf8(&mmap[..]).unwrap_or("");
-            pretokenize_str(pattern, s)
-        })
-        .reduce(
-            || HbMap::new(),
-            |mut a, b| {
-                for (k, v) in b {
-                    *a.entry(k).or_insert(0) += v;
-                }
-                a
-            },
-        );
-    result
-}
-
-fn strings_to_corpus(counts: &HbMap<String, u32>) -> Vec<(Vec<u32>, u32)> {
+fn bytes_map_to_corpus(counts: &AHashMap<Vec<u8>, u32>) -> Vec<(Vec<u32>, u32)> {
     counts
         .iter()
-        .map(|(s, &c)| (s.as_bytes().iter().map(|&b| b as u32).collect(), c))
+        .map(|(bs, &c)| (bs.iter().map(|&b| b as u32).collect(), c))
         .collect()
 }
 
-fn compute_pair_counts(corpus: &[(Vec<u32>, u32)]) -> HbMap<(u32, u32), u64> {
+fn compute_pair_counts(corpus: &[(Vec<u32>, u32)]) -> AHashMap<(u32, u32), u64> {
     corpus
         .par_iter()
         .map(|(syms, freq)| {
             let freq = *freq;
-            let mut local: HbMap<(u32, u32), u64> = HbMap::new();
+            let mut local: AHashMap<(u32, u32), u64> = AHashMap::new();
             if syms.len() >= 2 {
                 for w in syms.windows(2) {
                     let pair = (w[0], w[1]);
@@ -83,7 +76,7 @@ fn compute_pair_counts(corpus: &[(Vec<u32>, u32)]) -> HbMap<(u32, u32), u64> {
             local
         })
         .reduce(
-            || HbMap::new(),
+            || AHashMap::new(),
             |mut a, b| {
                 for (k, v) in b {
                     *a.entry(k).or_insert(0) += v;
@@ -113,85 +106,18 @@ fn merge_corpus(corpus: &mut [(Vec<u32>, u32)], pair: (u32, u32), new_id: u32) {
     });
 }
 
-pub fn train_from_files(
-    paths: Vec<String>,
-    num_merges: usize,
-    pattern: Option<String>,
-    num_threads: Option<usize>,
-) -> PreTrainedBPE {
-    if let Some(n) = num_threads {
-        let _ = rayon::ThreadPoolBuilder::new()
-            .num_threads(n)
-            .build_global();
-    }
-    let regex = compile_with_fallback(pattern.as_deref());
-    let counts = count_tokens_parallel(&regex, paths);
-    let (merges_seq, id_to_bytes) = train_bpe_internal(counts, num_merges);
-    let mut merges: HbMap<(u32, u32), u32> = HbMap::new();
-    for (pair, nid) in merges_seq.iter() {
-        merges.insert(*pair, *nid);
-    }
-    let ranks = build_ranks(&merges_seq);
-    PreTrainedBPE {
-        merges,
-        ranks,
-        id_to_bytes,
-        merges_ordered: merges_seq,
-        pattern: regex,
-    }
-}
-
-fn train_bpe_internal(
-    token_counts: HbMap<String, u32>,
-    num_merges: usize,
-) -> (Vec<((u32, u32), u32)>, Vec<Vec<u8>>) {
-    let mut id_to_bytes: Vec<Vec<u8>> = (0u32..256).map(|i| vec![i as u8]).collect();
-    let mut corpus = strings_to_corpus(&token_counts);
-    let mut merges_seq: Vec<((u32, u32), u32)> = Vec::new();
-    let mut next_id: u32 = 256;
-    for _ in 0..num_merges {
-        let pair_counts = compute_pair_counts(&corpus);
-        if pair_counts.is_empty() {
-            break;
-        }
-        let best = pair_counts.into_iter().max_by_key(|(_, c)| *c).unwrap().0;
-        let new_id = next_id;
-        next_id += 1;
-        merge_corpus(&mut corpus, best, new_id);
-        let mut bytes = Vec::with_capacity(
-            id_to_bytes[best.0 as usize].len() + id_to_bytes[best.1 as usize].len(),
-        );
-        bytes.extend_from_slice(&id_to_bytes[best.0 as usize]);
-        bytes.extend_from_slice(&id_to_bytes[best.1 as usize]);
-        id_to_bytes.push(bytes);
-        merges_seq.push((best, new_id));
-    }
-    (merges_seq, id_to_bytes)
-}
-
-pub(crate) fn train_bpe_internal_private(
-    token_counts: HbMap<String, u32>,
-    num_merges: usize,
-) -> (Vec<((u32, u32), u32)>, Vec<Vec<u8>>) {
-    train_bpe_internal(token_counts, num_merges)
-}
-
-fn build_ranks(merges_seq: &[((u32, u32), u32)]) -> HbMap<(u32, u32), usize> {
-    let mut r = HbMap::new();
+fn build_ranks(merges_seq: &[((u32, u32), u32)]) -> AHashMap<(u32, u32), usize> {
+    let mut r = AHashMap::new();
     for (i, (p, _)) in merges_seq.iter().enumerate() {
         r.insert(*p, i);
     }
     r
 }
 
-pub(crate) fn build_ranks_private(merges_seq: &[((u32, u32), u32)]) -> HbMap<(u32, u32), usize> {
-    build_ranks(merges_seq)
-}
-
 fn apply_best_merge_once(
     seq: &[u32],
-    ranks: &HbMap<(u32, u32), usize>,
-    merges: &HbMap<(u32, u32), u32>,
+    ranks: &AHashMap<(u32, u32), usize>,
+    merges: &AHashMap<(u32, u32), u32>,
 ) -> Option<Vec<u32>> {
     if seq.len() < 2 {
         return None;
@@ -225,8 +151,16 @@ fn apply_best_merge_once(
 
 pub fn encode_str(model: &PreTrainedBPE, text: &str) -> Vec<u32> {
     let mut tokens: Vec<u32> = Vec::new();
-    for t in model.pattern.find_iter(text).map(|m| m.as_str()) {
-        let mut seq: Vec<u32> = t.as_bytes().iter().map(|&b| b as u32).collect();
+    let bytes = text.as_bytes();
+    let mut i: usize = 0;
+    while i < bytes.len() {
+        let start = i;
+        let is_ws = bytes[i].is_ascii_whitespace();
+        i += 1;
+        while i < bytes.len() && bytes[i].is_ascii_whitespace() == is_ws {
+            i += 1;
+        }
+        let mut seq: Vec<u32> = bytes[start..i].iter().map(|&b| b as u32).collect();
         loop {
             if let Some(next_seq) = apply_best_merge_once(&seq, &model.ranks, &model.merges) {
                 if next_seq.len() == seq.len() {
@@ -254,14 +188,13 @@ pub fn decode_ids(model: &PreTrainedBPE, ids: &[u32]) -> String {
 
 pub fn load_from_dir<P: AsRef<Path>>(
     dir: P,
-    pattern: Option<String>,
 ) -> anyhow::Result<PreTrainedBPE> {
-    let regex = compile_with_fallback(pattern.as_deref());
     let merges_fp = dir.as_ref().join("merges.txt");
     let f = fs::File::open(&merges_fp)?;
     let reader = BufReader::new(f);
+
     let mut merges_ordered: Vec<((u32, u32), u32)> = Vec::new();
-    let mut merges: HbMap<(u32, u32), u32> = HbMap::new();
+    let mut merges: AHashMap<(u32, u32), u32> = AHashMap::new();
     for line in reader.lines() {
         let s = line?;
         let t = s.trim();
@@ -283,6 +216,7 @@ pub fn load_from_dir<P: AsRef<Path>>(
         merges_ordered.push(((a, b), nid));
     }
     merges_ordered.sort_by_key(|(_, nid)| *nid);
+
     let mut id_to_bytes: Vec<Vec<u8>> = (0u32..256).map(|i| vec![i as u8]).collect();
     for ((a, b), nid) in merges_ordered.iter() {
         let mut bytes =
@@ -295,11 +229,11 @@ pub fn load_from_dir<P: AsRef<Path>>(
         id_to_bytes[*nid as usize] = bytes;
     }
     let ranks = build_ranks(&merges_ordered);
+
     Ok(PreTrainedBPE {
         merges,
         ranks,
         id_to_bytes,
         merges_ordered,
-        pattern: regex,
     })
 }
