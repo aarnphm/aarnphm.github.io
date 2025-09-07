@@ -26,4 +26,4 @@ see also:
 
 To the extent possible under law, the author has waived all copyright and related or neighboring rights to this work. You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission.
 
-[![CC0](https://licensebuttons.net/p/zero/1.0/88x31.png)](https://creativecommons.org/publicdomain/cc0/1.0/)
+[![CC0](https://licensebuttons.net/p/zero/1.0/88x31.webp)](https://creativecommons.org/publicdomain/cc0/1.0/)

@@ -12,6 +12,8 @@ title: Tokenization and Computation
 
 see also [[thoughts/tsfm/2|notes]], [[thoughts/Tokenization#BPE]]
 
+![[thoughts/images/final-optimization-tsfm-tokenizers-from-scratch.webp]]
+
 ## download data for training tokenizers
 
 ```bash
