@@ -49,7 +49,7 @@ impl Tokenizer {
                     local
                 })
                 .reduce(
-                    || HbMap::new(),
+                    HbMap::new,
                     |mut a, b| {
                         for (k, v) in b {
                             *a.entry(k).or_insert(0) += v;
