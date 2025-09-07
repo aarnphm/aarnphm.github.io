@@ -2,7 +2,7 @@ use pyo3::prelude::*;
 
 mod bpe;
 use bpe::compile_with_fallback;
-use hashbrown::HashMap as HbMap;
+use ahash::AHashMap as HbMap;
 use rayon::prelude::*;
 
 #[pyclass]
@@ -59,7 +59,7 @@ impl Tokenizer {
                 )
         };
         let (merges_seq, id_to_bytes) = bpe::train_bpe_internal_private(counts, num_merges);
-        let mut merges: hashbrown::HashMap<(u32, u32), u32> = hashbrown::HashMap::new();
+        let mut merges: ahash::AHashMap<(u32, u32), u32> = ahash::AHashMap::new();
         for (pair, nid) in merges_seq.iter() {
             merges.insert(*pair, *nid);
         }

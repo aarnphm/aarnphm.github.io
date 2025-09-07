@@ -12,7 +12,7 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-09-06 19:32:13 GMT-04:00
+modified: 2025-09-06 19:56:06 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -100,6 +100,7 @@ see also [[/curius|bookmarks]]
 - https://www.luerzersarchive.com/
 - https://eyeondesign.aiga.org/
 - https://www.oneclub.org/awards/adcawards/-archive/awards/2025/all/all/select
+- https://www.lydianottingham.com/
 
 ## people
 
@@ -397,6 +398,7 @@ see also [[/curius|bookmarks]]
   - We _always_ learn a k-dimensional submanifold $M$
     ![[thoughts/images/submanifold mapping.webp]]
   - See also: [[thoughts/autoencoder diagrams intuition|diagrams]]
+- https://substack.com/@jakeeaton/note/c-140561607
 
 ### argumentative
 

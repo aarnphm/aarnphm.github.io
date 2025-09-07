@@ -17,20 +17,13 @@ def _load_valid_text(dataset: t.Literal['toy', 'tinygpt'] = 'toy') -> str:
     path = os.path.join(base_dir, 'data', 'TinyStoriesV2-GPT4-valid.txt')
   return open(path, 'r', encoding='utf-8', errors='ignore').read()
 
-def _roundtrip_with_progress(model, text: str, label: str) -> float:
+def _roundtrip(model, text: str) -> float:
   enc_start = time.perf_counter()
   ids = model.encode(text)
   enc_s = time.perf_counter() - enc_start
 
   dec_start = time.perf_counter()
-  bar = tqdm(total=len(ids), desc=f'{label} decode', unit='tok')
-  # decode token-by-token to visualize progress
-  parts: list[str] = []
-  for i in ids:
-    parts.append(model.decode([i]))
-    bar.update(1)
-  bar.close()
-  _ = ''.join(parts)  # ensure similar work to full decode
+  _ = model.decode(ids)
   dec_s = time.perf_counter() - dec_start
 
   return enc_s + dec_s
@@ -56,9 +49,9 @@ def benchmark(
   # start = time.perf_counter(); r_model = RustTokenizer.train_from_files([train_path], merges, processes); rust_train_s = time.perf_counter() - start
 
   # Python encode/decode
-  py_rt_s = _roundtrip_with_progress(py_model, text, 'python')
+  py_rt_s = _roundtrip(py_model, text)
   # Rust encode/decode
-  r_rt_s = _roundtrip_with_progress(r_model, text, 'rust')
+  r_rt_s = _roundtrip(r_model, text)
 
   print(f'dataset={dataset}')
   # print(f'python_train_s={py_train_s:.4f}')

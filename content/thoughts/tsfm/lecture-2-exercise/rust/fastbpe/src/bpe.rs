@@ -2,8 +2,7 @@ use std::fs;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-use hashbrown::HashMap as HbMap;
-use indicatif::{ProgressBar, ProgressStyle};
+use ahash::AHashMap as HbMap;
 use memmap2::Mmap;
 use rayon::prelude::*;
 use regex::Regex;
@@ -39,11 +38,6 @@ fn pretokenize_str(pattern: &Regex, text: &str) -> HbMap<String, u32> {
 }
 
 fn count_tokens_parallel(pattern: &Regex, paths: Vec<String>) -> HbMap<String, u32> {
-    let pb = ProgressBar::new(paths.len() as u64);
-    pb.set_style(
-        ProgressStyle::with_template("{msg} {bar:40.cyan/blue} {pos}/{len} ({eta})").unwrap(),
-    );
-    pb.set_message("Pretokenizing");
     let result = paths
         .into_par_iter()
         .map(|p| {
@@ -52,26 +46,8 @@ fn count_tokens_parallel(pattern: &Regex, paths: Vec<String>) -> HbMap<String, u
                 Err(_) => return HbMap::new(),
             };
             let mmap = unsafe { Mmap::map(&file).unwrap() };
-            let bytes = &mmap[..];
-            let chunk_size: usize = 2 * 1024 * 1024; // 2MB chunks
-            let mut totals: HbMap<String, u32> = HbMap::new();
-            // find UTF-8 boundaries to avoid splitting in the middle of a codepoint
-            let mut start: usize = 0;
-            while start < bytes.len() {
-                let end_guess = start.saturating_add(chunk_size).min(bytes.len());
-                let mut end = end_guess;
-                while end < bytes.len() && (bytes[end] & 0b1100_0000) == 0b1000_0000 {
-                    end += 1;
-                }
-                let s = std::str::from_utf8(&bytes[start..end]).unwrap_or("");
-                let local = pretokenize_str(pattern, s);
-                for (k, v) in local {
-                    *totals.entry(k).or_insert(0) += v;
-                }
-                start = end;
-            }
-            pb.inc(1);
-            totals
+            let s = std::str::from_utf8(&mmap[..]).unwrap_or("");
+            pretokenize_str(pattern, s)
         })
         .reduce(
             || HbMap::new(),
@@ -82,7 +58,6 @@ fn count_tokens_parallel(pattern: &Regex, paths: Vec<String>) -> HbMap<String, u
                 a
             },
         );
-    pb.finish_and_clear();
     result
 }
 
@@ -174,11 +149,6 @@ fn train_bpe_internal(
     let mut corpus = strings_to_corpus(&token_counts);
     let mut merges_seq: Vec<((u32, u32), u32)> = Vec::new();
     let mut next_id: u32 = 256;
-    let pb = ProgressBar::new(num_merges as u64);
-    pb.set_style(
-        ProgressStyle::with_template("{msg} {bar:40.magenta/blue} {pos}/{len} ({eta})").unwrap(),
-    );
-    pb.set_message("BPE merges");
     for _ in 0..num_merges {
         let pair_counts = compute_pair_counts(&corpus);
         if pair_counts.is_empty() {
@@ -195,9 +165,7 @@ fn train_bpe_internal(
         bytes.extend_from_slice(&id_to_bytes[best.1 as usize]);
         id_to_bytes.push(bytes);
         merges_seq.push((best, new_id));
-        pb.inc(1);
     }
-    pb.finish_and_clear();
     (merges_seq, id_to_bytes)
 }
 
