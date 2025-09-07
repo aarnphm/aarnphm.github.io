@@ -1,17 +1,32 @@
 [project]
-name = "lecture-2"
+name = "minibpe"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.13"
+description = "minibpe but even more scuffed and garbage"
+readme = "index.md"
+requires-python = ">=3.11"
 dependencies = [
-    "fire>=0.7.1",
-    "memray>=1.18.0",
-    "numpy>=2.3.2",
-    "pyinstrument>=5.1.1",
-    "regex>=2025.9.1",
-    "scalene>=1.5.54",
-    "speedscope>=1.0",
-    "tqdm>=4.67.1",
-    "viztracer>=1.0.4",
+  "datasets>=4.0.0",
+  "fire>=0.7.1",
+  "memray>=1.18.0",
+  "numpy>=2.3.2",
+  "psutil>=7.0.0",
+  "pyinstrument>=5.1.1",
+  "regex>=2025.9.1",
+  "scalene>=1.5.54",
+  "speedscope>=1.0",
+  "tqdm>=4.67.1",
+  "viztracer>=1.0.4",
 ]
+
+[project.scripts]
+minibpe-train = "minibpe.core:cli"
+minibpe-bench = "minibpe.bench:cli"
+
+[build-system]
+requires = ["maturin>=1,<2"]
+build-backend = "maturin"
+
+[tool.maturin]
+python-source = "src"
+module-name = "minibpe._core"
+manifest-path = "rust/fastbpe/Cargo.toml"

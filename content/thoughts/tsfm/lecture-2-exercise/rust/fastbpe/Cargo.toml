@@ -1,0 +1,17 @@
+[package]
+name = "fastbpe"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "_core"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.26", features = ["extension-module"] }
+regex = "1.10"
+rayon = "1.10"
+hashbrown = "0.16"
+anyhow = "1"
+indicatif = "0.18"
+memmap2 = "0.9"

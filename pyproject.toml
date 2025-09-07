@@ -25,10 +25,13 @@ dependencies = [
   "scikit-learn>=1.5.2",
   "pandas>=2.2.3",
   "jupyterlab-vim>=4.1.4",
-  "manimgl>=1.7.1",
-  "moderngl-window>=2.4.6",
+  "minitokenizer",
+  "datasets>=4.0.0",
 ]
 dynamic = ["version"]
+
+[tool.uv.sources]
+minitokenizer = { path = "content/thoughts/tsfm/lecture-2-exercise" }
 
 [tool.hatch.version]
 source = "nodejs"
