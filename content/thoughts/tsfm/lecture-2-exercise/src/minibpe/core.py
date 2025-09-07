@@ -9,6 +9,7 @@ from tqdm import tqdm
 from ._core import Tokenizer as TokenizerFast
 
 
+# GPT-2 split pattern
 PRETOKENIZER_PATTERN = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 PRETOKENIZER = re.compile(PRETOKENIZER_PATTERN)
 BASEDIR = os.path.dirname(__file__)

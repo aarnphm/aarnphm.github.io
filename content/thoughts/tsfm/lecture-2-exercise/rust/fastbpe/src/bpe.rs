@@ -2,17 +2,16 @@ use std::fs;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-use ahash::AHashMap;
-use memmap2::Mmap;
-use rayon::prelude::*;
-use regex::Regex;
+use rustc_hash::FxHashMap;
+use fancy_regex::Regex;
 
 #[derive(Clone)]
 pub struct PreTrainedBPE {
-    pub merges: AHashMap<(u32, u32), u32>,
-    pub ranks: AHashMap<(u32, u32), usize>,
+    pub merges: FxHashMap<(u32, u32), u32>,
+    pub ranks: FxHashMap<(u32, u32), usize>,
     pub id_to_bytes: Vec<Vec<u8>>,
     pub merges_ordered: Vec<((u32, u32), u32)>,
+    pub pattern: Regex,
 }
 
 pub(crate) fn compile_with_fallback(user: Option<&str>) -> Regex {
@@ -28,149 +27,23 @@ fn default_pattern() -> &'static str {
     "'(?:[sdmt]|ll|ve|re)| ?\\p{L}+| ?\\p{N}+| ?[^\\s\\p{L}\\p{N}]+|\\s+"
 }
 
-fn pretokenize_bytes(bytes: &[u8]) -> AHashMap<Vec<u8>, u32> {
-    let mut counts: AHashMap<Vec<u8>, u32> = AHashMap::new();
-    let mut i: usize = 0;
-    while i < bytes.len() {
-        let b = bytes[i];
-        if b.is_ascii_whitespace() {
-            let start = i;
-            i += 1;
-            while i < bytes.len() && bytes[i].is_ascii_whitespace() {
-                i += 1;
-            }
-            let tok = bytes[start..i].to_vec();
-            *counts.entry(tok).or_insert(0) += 1;
-        } else {
-            let start = i;
-            i += 1;
-            while i < bytes.len() && !bytes[i].is_ascii_whitespace() {
-                i += 1;
-            }
-            let tok = bytes[start..i].to_vec();
-            *counts.entry(tok).or_insert(0) += 1;
-        }
-    }
-    counts
-}
-
-fn bytes_map_to_corpus(counts: &AHashMap<Vec<u8>, u32>) -> Vec<(Vec<u32>, u32)> {
-    counts
-        .iter()
-        .map(|(bs, &c)| (bs.iter().map(|&b| b as u32).collect(), c))
-        .collect()
-}
-
-fn compute_pair_counts(corpus: &[(Vec<u32>, u32)]) -> AHashMap<(u32, u32), u64> {
-    corpus
-        .par_iter()
-        .map(|(syms, freq)| {
-            let freq = *freq;
-            let mut local: AHashMap<(u32, u32), u64> = AHashMap::new();
-            if syms.len() >= 2 {
-                for w in syms.windows(2) {
-                    let pair = (w[0], w[1]);
-                    *local.entry(pair).or_insert(0) += freq as u64;
-                }
-            }
-            local
-        })
-        .reduce(
-            || AHashMap::new(),
-            |mut a, b| {
-                for (k, v) in b {
-                    *a.entry(k).or_insert(0) += v;
-                }
-                a
-            },
-        )
-}
-
-fn merge_corpus(corpus: &mut [(Vec<u32>, u32)], pair: (u32, u32), new_id: u32) {
-    corpus.par_iter_mut().for_each(|(syms, _)| {
-        if syms.len() < 2 {
-            return;
-        }
-        let mut merged: Vec<u32> = Vec::with_capacity(syms.len());
-        let mut i = 0;
-        while i < syms.len() {
-            if i + 1 < syms.len() && syms[i] == pair.0 && syms[i + 1] == pair.1 {
-                merged.push(new_id);
-                i += 2;
-            } else {
-                merged.push(syms[i]);
-                i += 1;
-            }
-        }
-        *syms = merged;
-    });
-}
-
-fn build_ranks(merges_seq: &[((u32, u32), u32)]) -> AHashMap<(u32, u32), usize> {
-    let mut r = AHashMap::new();
+fn build_ranks(merges_seq: &[((u32, u32), u32)]) -> FxHashMap<(u32, u32), usize> {
+    let mut r = FxHashMap::default();
     for (i, (p, _)) in merges_seq.iter().enumerate() {
         r.insert(*p, i);
     }
     r
 }
 
-fn apply_best_merge_once(
-    seq: &[u32],
-    ranks: &AHashMap<(u32, u32), usize>,
-    merges: &AHashMap<(u32, u32), u32>,
-) -> Option<Vec<u32>> {
-    if seq.len() < 2 {
-        return None;
-    }
-    let mut best: Option<((u32, u32), usize)> = None;
-    for w in seq.windows(2) {
-        let pair = (w[0], w[1]);
-        if let Some(&rank) = ranks.get(&pair) {
-            match best {
-                None => best = Some((pair, rank)),
-                Some((_, br)) if rank < br => best = Some((pair, rank)),
-                _ => {}
-            }
-        }
-    }
-    let ((a, b), _) = best?;
-    let new_id = *merges.get(&(a, b)).unwrap();
-    let mut out = Vec::with_capacity(seq.len());
-    let mut i = 0;
-    while i < seq.len() {
-        if i + 1 < seq.len() && seq[i] == a && seq[i + 1] == b {
-            out.push(new_id);
-            i += 2;
-        } else {
-            out.push(seq[i]);
-            i += 1;
-        }
-    }
-    Some(out)
-}
-
 pub fn encode_str(model: &PreTrainedBPE, text: &str) -> Vec<u32> {
     let mut tokens: Vec<u32> = Vec::new();
-    let bytes = text.as_bytes();
-    let mut i: usize = 0;
-    while i < bytes.len() {
-        let start = i;
-        let is_ws = bytes[i].is_ascii_whitespace();
-        i += 1;
-        while i < bytes.len() && bytes[i].is_ascii_whitespace() == is_ws {
-            i += 1;
-        }
-        let mut seq: Vec<u32> = bytes[start..i].iter().map(|&b| b as u32).collect();
-        loop {
-            if let Some(next_seq) = apply_best_merge_once(&seq, &model.ranks, &model.merges) {
-                if next_seq.len() == seq.len() {
-                    break;
-                }
-                seq = next_seq;
-            } else {
-                break;
-            }
-        }
+    for t in model
+        .pattern
+        .find_iter(text)
+        .map(|m| m.expect("regex match").as_str())
+    {
+        let mut seq: Vec<u32> = t.as_bytes().iter().map(|&b| b as u32).collect();
+        byte_pair_merge(&mut seq, &model.ranks, &model.merges);
         tokens.extend(seq);
     }
     tokens
@@ -189,12 +62,13 @@ pub fn decode_ids(model: &PreTrainedBPE, ids: &[u32]) -> String {
 pub fn load_from_dir<P: AsRef<Path>>(
     dir: P,
 ) -> anyhow::Result<PreTrainedBPE> {
+    let regex = compile_with_fallback(None);
     let merges_fp = dir.as_ref().join("merges.txt");
     let f = fs::File::open(&merges_fp)?;
     let reader = BufReader::new(f);
 
     let mut merges_ordered: Vec<((u32, u32), u32)> = Vec::new();
-    let mut merges: AHashMap<(u32, u32), u32> = AHashMap::new();
+    let mut merges: FxHashMap<(u32, u32), u32> = FxHashMap::default();
     for line in reader.lines() {
         let s = line?;
         let t = s.trim();
@@ -235,5 +109,28 @@ pub fn load_from_dir<P: AsRef<Path>>(
         ranks,
         id_to_bytes,
         merges_ordered,
+        pattern: regex,
     })
+}
+
+// In-place tiktoken-like byte pair merge using ranks ordering
+fn byte_pair_merge(seq: &mut Vec<u32>, ranks: &FxHashMap<(u32, u32), usize>, merges: &FxHashMap<(u32, u32), u32>) {
+    if seq.len() < 2 { return; }
+    loop {
+        let mut best: Option<(usize, usize)> = None; // (rank, index)
+        let mut best_rank: usize = usize::MAX;
+        let mut idx: usize = 0;
+        while idx + 1 < seq.len() {
+            if let Some(&r) = ranks.get(&(seq[idx], seq[idx + 1])) {
+                if r < best_rank { best_rank = r; best = Some((r, idx)); }
+            }
+            idx += 1;
+        }
+        let Some((_, i)) = best else { break };
+        let new_id = match merges.get(&(seq[i], seq[i + 1])) { Some(x) => *x, None => break };
+        // merge at i
+        seq[i] = new_id;
+        seq.remove(i + 1);
+        if seq.len() < 2 { break; }
+    }
 }

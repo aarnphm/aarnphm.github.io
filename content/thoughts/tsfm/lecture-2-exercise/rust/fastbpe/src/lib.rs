@@ -1,7 +1,6 @@
 use pyo3::prelude::*;
 
 mod bpe;
-use bpe::compile_with_fallback;
 
 #[pyclass]
 pub struct Tokenizer {

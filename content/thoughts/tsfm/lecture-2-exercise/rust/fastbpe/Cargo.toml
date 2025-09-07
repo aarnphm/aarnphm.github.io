@@ -9,9 +9,9 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.26", features = ["extension-module"] }
-regex = "1.10"
+fancy-regex = "0.13"
 rayon = "1.10"
 hashbrown = "0.16"
 anyhow = "1"
 memmap2 = "0.9"
-ahash = { version = "0.8", features = ["std"] }
+rustc-hash = "1.1"
