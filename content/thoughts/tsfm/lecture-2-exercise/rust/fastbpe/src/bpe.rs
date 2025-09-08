@@ -5,6 +5,13 @@ use std::path::Path;
 use rustc_hash::FxHashMap;
 use fancy_regex::Regex;
 
+// Byte-level BPE core (Rust)
+// Walkthrough:
+// - `load_from_dir` parses merges and builds both `ranks` (pair -> rank) and
+//   `id_to_bytes` by composing bytes for each learned id.
+// - `encode_str` pretokenizes, turns each token into bytes, then merges in-place
+//   using `byte_pair_merge` (simple best-first scan per step, fast in Rust).
+// - `decode_ids` concatenates the byte expansions from `id_to_bytes`.
 #[derive(Clone)]
 pub struct PreTrainedBPE {
     pub merges: FxHashMap<(u32, u32), u32>,
@@ -47,6 +54,13 @@ pub fn encode_str(model: &PreTrainedBPE, text: &str) -> Vec<u32> {
         tokens.extend(seq);
     }
     tokens
+}
+
+// Encode raw bytes (used for parity with Python's encode_bytes)
+pub fn encode_bytes(model: &PreTrainedBPE, data: &[u8]) -> Vec<u32> {
+    let mut seq: Vec<u32> = data.iter().map(|&b| b as u32).collect();
+    byte_pair_merge(&mut seq, &model.ranks, &model.merges);
+    seq
 }
 
 pub fn decode_ids(model: &PreTrainedBPE, ids: &[u32]) -> String {

@@ -1,4 +1,5 @@
 use pyo3::prelude::*;
+use pyo3::types::PyBytes;
 
 mod bpe;
 
@@ -17,8 +18,12 @@ impl Tokenizer {
         Ok(Self { inner: trained })
     }
 
-    fn encode(&self, text: &str) -> Vec<u32> {
-        bpe::encode_str(&self.inner, text)
+    fn encode(&self, text: &str) -> Vec<u32> { bpe::encode_str(&self.inner, text) }
+    fn encode_bytes<'py>(&self, py: Python<'py>, data: &Bound<'py, PyBytes>) -> Vec<u32> {
+        // SAFETY: Holding GIL only to access bytes; merge is pure Rust
+        let slice = data.as_bytes();
+        // Release GIL during compute-heavy merge
+        py.allow_threads(|| bpe::encode_bytes(&self.inner, slice))
     }
     fn decode(&self, ids: Vec<u32>) -> String {
         bpe::decode_ids(&self.inner, &ids)

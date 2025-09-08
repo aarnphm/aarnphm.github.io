@@ -4,6 +4,15 @@ import dataclasses, json, os, multiprocessing, heapq
 
 from .core import PRETOKENIZER
 
+# Byte-level BPE encoder in pure Python
+# Walkthrough:
+# - Loads merges (pair -> new_id) and builds ranks (pair -> rank order)
+# - Encodes by: pretokenize -> bytes -> merge loop
+# - Merge loop keeps a linked list of indices and a min-heap of candidate pairs
+#   ordered by rank. Each pop validates adjacency and staleness, merges in place,
+#   then updates neighboring pairs. This avoids full rescans on every step.
+# - Decoding expands ids back to bytes by recursively composing learned pairs.
+
 
 def _parse_merges_batch(lines: list[str]) -> dict[tuple[int, int], int]:
   out: dict[tuple[int, int], int] = {}
@@ -66,7 +75,9 @@ class Tokenizer:
   cache_max_token_bytes: int = 100
 
   def __post_init__(self) -> None:
+    # Build id -> symbol table for decoding (only non-byte ids >=256)
     self.id_to_sym = {tok_id: tuple(symbol) for symbol, tok_id in self.vocab.items() if tok_id >= 256}
+    # Convert merges table to ranks (lower rank merges first)
     self.ranks = {pair: rank for rank, (pair, _) in enumerate(sorted(self.merges.items(), key=lambda kv: kv[1]))}
 
   @classmethod
@@ -93,6 +104,8 @@ class Tokenizer:
     return list(zip(symbols, symbols[1:]))
 
   def _apply_bpe(self, symbols: list[int]) -> list[int]:
+    # Heap + linked-list merge
+    # This is similar to the implementation in tiktoken
     n = len(symbols)
     if n < 2:
       return symbols
@@ -159,6 +172,7 @@ class Tokenizer:
     return out
 
   def encode(self, text: str) -> list[int]:
+    # Pretokenize to minimize cross-boundary merges, operate on raw UTF-8 bytes
     tokens: list[int] = []
     cache = self.encode_cache
     for m in PRETOKENIZER.finditer(text):
@@ -179,6 +193,7 @@ class Tokenizer:
     return self._apply_bpe(list(data))
 
   def decode(self, ids: list[int]) -> str:
+    # Expand composed ids back to bytes using iterative stack; decode as utf-8
     def flatten(idx: int, out: list[int]) -> None:
       stack: list[int] = [idx]
       while stack:
