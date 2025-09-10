@@ -286,8 +286,8 @@ importers:
         specifier: ^1.0.110
         version: 1.0.110
       '@openai/codex':
-        specifier: ^0.31.0
-        version: 0.31.0
+        specifier: ^0.32.0
+        version: 0.32.0
       '@types/d3':
         specifier: ^7.4.3
         version: 7.4.3
@@ -1304,8 +1304,8 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@openai/codex@0.31.0':
-    resolution: {integrity: sha512-W52C8tZREO7DyyYQiGZcEiTpky0m83QwY+s7YUX0MsOmtGXyTKh/mUhQYiHe/S4Uish9r6w6ovSoA20Er8dJ7Q==}
+  '@openai/codex@0.32.0':
+    resolution: {integrity: sha512-TvqjWzM7uTYID2EWd5bqx8OEQELXljFdO9GOZligpUj4QnE6DZt03EonKpVlPir58ecShOzU0OTPsflp0SIW1w==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -4526,7 +4526,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.19.1
 
-  '@openai/codex@0.31.0':
+  '@openai/codex@0.32.0':
     dependencies:
       '@vscode/ripgrep': 1.15.14
     transitivePeerDependencies:
