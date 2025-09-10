@@ -5,7 +5,7 @@ tags:
   - technical
 description: and the backbone of the AI progress.
 date: "2024-02-07"
-modified: 2025-08-28 09:58:55 GMT-04:00
+modified: 2025-09-10 12:29:56 GMT-04:00
 title: Transformers
 ---
 
@@ -71,7 +71,7 @@ Sampling: we essentially look forward K-tokens, and then we sample from the dist
 
 ### multi-token prediction.
 
-@gloeckle2024betterfasterlarge
+@gloeckle2024betterfasterlarge, also used in [[thoughts/Speculative decoding]] for [[thoughts/DeepSeek|DeepSeek-V3 and DeepSeek-R1]]
 
 ![[thoughts/images/MTP-deepseek.webp|MTP implementation in DeepSeek, where they keep causal chain for prediction of each token at each depth]]
 

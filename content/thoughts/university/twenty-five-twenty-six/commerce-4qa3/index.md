@@ -5,7 +5,7 @@ tags:
   - commerce4qa3
 description: understanding of production & operations management
 date: "2025-01-06"
-modified: 2025-09-04 09:11:21 GMT-04:00
+modified: 2025-09-08 10:23:53 GMT-04:00
 title: Operations Modelling and Analysis
 ---
 
@@ -18,4 +18,4 @@ instructor: [Dr. Mahmut Parlar](mailto:parlar@mcmaster.ca)
 
 TA: [Robab Eynloo](mailto:eynloor@mcmaster.ca)
 
-- Office Hour: GSB 105E (11:00 to 12:30) Starts September 10, 2025
+- Office Hour: 1100-1230, GSB 105E, Starts 09/10/2025

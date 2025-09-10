@@ -5,7 +5,7 @@ tags:
   - ml
 description: on visualisation
 date: "2025-09-06"
-modified: 2025-09-07 16:15:28 GMT-04:00
+modified: 2025-09-08 10:18:34 GMT-04:00
 noindex: true
 title: intuition
 ---

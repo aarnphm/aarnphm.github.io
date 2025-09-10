@@ -5,7 +5,8 @@ tags:
   - technical
 description: Python and Rust
 date: "2025-09-07"
-modified: 2025-09-07 18:17:32 GMT-04:00
+modified: 2025-09-08 14:05:30 GMT-04:00
+noindex: true
 title: implementation
 ---
 

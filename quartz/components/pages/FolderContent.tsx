@@ -114,8 +114,10 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     for (const slug of ctx.allSlugs) {
       const slugParts = stripSlashes(simplifySlug(slug)).split(path.posix.sep)
 
-      // Check if this slug is under our current folder
-      if (!slug.startsWith(folderSlug) || slug === folderSlug || slugParts.includes("images")) {
+      // Check if this slug is under our current folder.
+      // Use a segment boundary to avoid false positives like
+      // treating `content/lectures/41` as a child of `content/lectures/4`.
+      if (!slug.startsWith(`${folderSlug}/`) || slugParts.includes("images")) {
         continue
       }
 
@@ -166,7 +168,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         const associatedFiles = allFiles.filter((f) => {
           const fileSlug = stripSlashes(simplifySlug(f.slug!))
           const fileBase = path.basename(fileSlug, path.extname(fileSlug))
-          const fileInFolder = fileSlug.startsWith(folderSlug)
+          const fileInFolder = fileSlug.startsWith(`${folderSlug}/`)
           return fileInFolder && fileBase === baseFileName
         })
 
@@ -205,7 +207,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       // Get all files within this subfolder to determine its dates
       const filesInSubfolder = allFiles.filter((file) => {
         const fileSlug = stripSlashes(simplifySlug(file.slug!))
-        return fileSlug.startsWith(subfolderSlug) && fileSlug !== subfolderSlug
+        return fileSlug.startsWith(`${subfolderSlug}/`)
       })
 
       // Sort files by date and take the first one's dates
@@ -228,7 +230,8 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     // Add any markdown-only entries that might not exist as files
     for (const file of allFiles) {
       const fileSlug = stripSlashes(simplifySlug(file.slug!))
-      if (fileSlug.startsWith(folderSlug) && fileSlug !== folderSlug) {
+      // Only treat as inside this folder when it has a segment boundary
+      if (fileSlug.startsWith(`${folderSlug}/`)) {
         const relativePath = fileSlug.slice(folderSlug.length + 1)
         if (!relativePath.includes("/") && !processedPaths.has(relativePath)) {
           entries.push({

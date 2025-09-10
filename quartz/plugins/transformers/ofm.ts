@@ -17,6 +17,9 @@ import { splitAnchor } from "../../util/path"
 import { CSSResource, JSResource } from "../../util/resources"
 // @ts-ignore
 import calloutScript from "../../components/scripts/callout.inline.ts"
+// @ts-ignore
+import mermaidScript from "../../components/scripts/mermaid.inline"
+import mermaidStyle from "../../components/styles/mermaid.inline.scss"
 import { FilePath, pathToRoot, slugTag, slugifyFilePath } from "../../util/path"
 import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
@@ -846,7 +849,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     {
                       type: "button",
                       ariaLabel: "Expand mermaid diagram",
-                      tabindex: -1,
                       "data-view-component": true,
                     },
                     [
@@ -860,6 +862,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     {
                       type: "button",
                       ariaLabel: "copy source",
+                      "data-view-component": true,
                     },
                     [
                       s("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "copy-icon" }, [
@@ -942,6 +945,18 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           script: calloutScript,
           loadTime: "afterDOMReady",
           contentType: "inline",
+        })
+      }
+      if (opts.mermaid) {
+        js.push({
+          script: mermaidScript,
+          loadTime: "afterDOMReady",
+          contentType: "inline",
+          moduleType: "module",
+        })
+        css.push({
+          content: mermaidStyle,
+          inline: true,
         })
       }
 

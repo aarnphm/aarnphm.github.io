@@ -6,7 +6,7 @@ tags:
   - technical
 description: a method to speed up LLM decoding
 date: "2025-05-21"
-modified: 2025-09-05 17:24:00 GMT-04:00
+modified: 2025-09-10 10:40:43 GMT-04:00
 title: Speculative decoding
 ---
 
@@ -41,13 +41,15 @@ _Extrapolation Algorithm for Greater Language-model Efficiency_
 
 Motivation:
 
+- Some tokens are easier to generate than other tokens
+  - Think of conjunctive adverbs, comparing to more complex word such as "annoyingly"
 - [[thoughts/Speculative decoding#speculative sampling]] relies on the draft models having similar distributions as the target models.
   - use smaller models. i.e: Llama 3.2 3B as draft for Llama 3.3 70B.
   - high overhead for stepping through the whole models would outweighs the benefits
 
 > [!note] Difference between [[thoughts/Speculative decoding#EAGLE-1]] and [[thoughts/Speculative decoding#EAGLE-3]]
 >
-> - EAGLE-1's limitation at its feature prediction constraints, via LM head architecture,
+> - EAGLE-1's limitation at its feature prediction constraints, via LM head architecture
 > - EAGLE-3 addresses this by use direct token prediction and rely on multi-layer feature fusion called "training-time test", similar to [[thoughts/Speculative decoding#MLP Speculator]]
 
 > [!important] distribution skew
@@ -163,11 +165,35 @@ https://arxiv.org/abs/2404.19124v1
 
 https://arxiv.org/abs/2310.08461
 
+## SpecInfer
+
+https://arxiv.org/abs/2305.09781
+
 ## Medusa
 
 https://sites.google.com/view/medusa-llm
 
 https://github.com/FasterDecoding/Medusa
+
+The idea is pretty interesting, if we add $\textbf{LM\_Head}$ to understand how to speculative certain tokens, then uses [[thoughts/Attention|Tree Attention]] to create a masks for certain future prediction tokens.
+
+Instead of [[thoughts/Speculative decoding#von Neumann acceptance-rejection|rejection sampling]], they propose ==typical acceptance== to select plausible candidates, inspired by @hewitt2022truncationsamplinglanguagemodel. This is to circumvent greedy-decoding when using in conjunction with other sampling parameters (such as top-p, top-k, temperature)
+
+> [!note] typical acceptance
+>
+> Given $x_{1},x_{2},\ldots,x_{n+K+1}$, composed by both top-prediction from the language model heads and MEDUSA heads, consider the following condition:
+>
+> $$
+> p_{\text{original}}(x_{n+k}|x_1, x_2, \ldots, x_{n+k-1}) > \min(\varepsilon, \delta \exp(-H(p_{\text{original}}(\cdot|x_1, x_2, \ldots, x_{n+k-1}))))
+> $$
+
+where $H(\cdot)$ denotes [[thoughts/Entropy|entropy function]], and $\varepsilon, \delta$ denotes hard-threshold and entropy-dependent threshold respectively.
+
+### self distillation.
+
+a variant of LoRA for PEFT.
+
+### search through optimized tree construction.
 
 ## ngrams
 
@@ -815,7 +841,7 @@ For wall-time [^definition] analysis, assuming we can run $\gamma +1$ concurrent
 
     Each run will then costs $T c \gamma  + T = T(c \gamma +1)$ (running $M_q$ $\gamma$ times and running $M_p$ once)
 
-    Given (1) procduces $\frac{1-\alpha^{\gamma +1}}{1-\alpha}$ tokens
+    Given (1) produces $\frac{1-\alpha^{\gamma +1}}{1-\alpha}$ tokens
 
     The cost to produces a token with speculative sampling would be $\frac{(c \gamma +1)(1-\alpha )}{1-\alpha^{\gamma +1}} T$
 

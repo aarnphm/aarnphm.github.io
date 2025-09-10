@@ -1,21 +1,21 @@
 ---
 id: dating
-permalinks:
-  - /hinge
-  - /bumble
-  - /date
+aliases:
+  - date
+  - date-me
 tags:
   - evergreen
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-09-04 23:33:31 GMT-04:00
-pageLayout: letter
-aliases:
-  - date
-  - date-me
-title: dating me.
+modified: 2025-09-10 08:34:59 GMT-04:00
+permalinks:
+  - /hinge
+  - /bumble
+  - /date
 noindex: true
+title: dating me.
+pageLayout: letter
 ---
 
 This document doesn't represent the whole me, but it should give you a sense of the "non-tech" version of who I am and what I do in my downtime.
@@ -82,7 +82,7 @@ I want to build a farm one day, and a high believer in lab-grown meat [^lab-grow
 
     Note that when I refers to "direct B2C", I would expect having 3-4 families to share a cow. In this case, it would be a lot cheaper for each family comparing to getting their stock at Costco.
 
-Most people know me online as `aarnphm`, but you can call me _Aaron_ (or [a-a-ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
+Most people know me online as `aarnphm` /urn-fm/, but you can call me _Aaron_ (or [a-a-ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
 
 I'm currently an [[thoughts/Transformers#inference.|inference]] optimization [[/|engineer]] at [bentoml](https://bentoml.com/), which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]], based in Toronto, Canada.
 

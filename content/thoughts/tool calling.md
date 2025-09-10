@@ -4,9 +4,11 @@ tags:
   - ml
   - rfc
   - vllm
-date: "2025-05-07"
 description: unification of frontend parsers
-modified: 2025-05-07 17:43:54 GMT-04:00
+socials:
+  github: https://github.com/vllm-project/vllm/issues/17817
+date: "2025-05-07"
+modified: 2025-09-08 21:57:24 GMT-04:00
 title: tool calling
 transclude:
   title: false

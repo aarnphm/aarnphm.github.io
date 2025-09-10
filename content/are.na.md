@@ -9,10 +9,10 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-09-06 19:56:06 GMT-04:00
+date: "2024-10-24"
+modified: 2025-09-09 00:48:04 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -101,6 +101,7 @@ see also [[/curius|bookmarks]]
 - https://eyeondesign.aiga.org/
 - https://www.oneclub.org/awards/adcawards/-archive/awards/2025/all/all/select
 - https://www.lydianottingham.com/
+- https://farayan.me/dappled
 
 ## people
 
@@ -165,6 +166,9 @@ see also [[/curius|bookmarks]]
   - OpenAI, logic and automaton
 - https://en.wikipedia.org/wiki/A._C._Grayling -- A. C. Grayling
   - Epistemological Scepticism and Transcendental Arguments (1981)
+- https://en.wikipedia.org/wiki/Paul_Samuelson -- Paul Samuelson
+  - Economist, advisor to JFK
+  - columnist on Chicago School with [[thoughts/Capitalism and Freedom|Milton Friedman]]
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -215,6 +219,8 @@ see also [[/curius|bookmarks]]
   - Nabulu Coffee
 - https://g.page/stacktmarket?share
   - Stakt Market
+- https://loquatsf.com/
+  - Loquat SF
 
 ## essay
 
@@ -399,6 +405,9 @@ see also [[/curius|bookmarks]]
     ![[thoughts/images/submanifold mapping.webp]]
   - See also: [[thoughts/autoencoder diagrams intuition|diagrams]]
 - https://substack.com/@jakeeaton/note/c-140561607
+- https://ghost.oxen.ai/why-grpo-is-important-and-how-it-works/ -- Why GRPO is important and how it works
+- https://x.com/GoodfireAI/status/1965189414491168785
+  - SAE scaling law dynamics
 
 ### argumentative
 
@@ -412,6 +421,7 @@ see also [[/curius|bookmarks]]
 - https://www.noahpinion.blog/p/will-data-centers-crash-the-economy -- Will data centers crash the economy?
 - https://x.com/eigenrobot/status/1954363395068616745 -- Gaza's privatization
 - https://ifstudies.org/report-brief/in-pursuit-marriage-motherhood-and-womens-well-being -- In Pursuit: Marriage, Motherhood, and Women’s Well-Being \*\*
+- https://www.lesswrong.com/posts/gfbX3h4RueuDzWs7m/some-rules-for-life-v-0-0 -- Rules for life
 
 ### life is literature
 

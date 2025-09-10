@@ -8,7 +8,7 @@ tags:
   - fruit
 description: practicing the act of digital gardening.
 date: "2022-04-22"
-modified: 2025-09-04 21:33:23 GMT-04:00
+modified: 2025-09-10 08:29:01 GMT-04:00
 title: Aaron's notes
 ---
 
