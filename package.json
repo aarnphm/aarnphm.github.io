@@ -136,8 +136,8 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "@anthropic-ai/claude-code": "^1.0.110",
-    "@openai/codex": "^0.31.0",
+    "@anthropic-ai/claude-code": "^1.0.111",
+    "@openai/codex": "^0.34.0",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
@@ -149,7 +149,7 @@
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.33",
-    "@typescript/native-preview": "7.0.0-dev.20250910.1",
+    "@typescript/native-preview": "7.0.0-dev.20250911.1",
     "bibtex-tidy": "^1.14.0",
     "esbuild": "^0.25.9",
     "mermaid": "^11.11.0",
