@@ -5,12 +5,12 @@ tags:
   - ml
 description: This exercise focuses on understanding and optimizing a Byte Pair Encoding (BPE) tokenizer.
 date: "2025-09-04"
-modified: 2025-09-07 18:13:32 GMT-04:00
+modified: 2025-09-11 15:58:40 GMT-04:00
 noindex: true
 title: Tokenization and Computation
 ---
 
-see also [[thoughts/tsfm/2|notes]], [[thoughts/Tokenization#BPE]]
+see also [[thoughts/tsfm/2|notes]], [[thoughts/byte-pair encoding|BPE]]
 
 ![[thoughts/images/final-optimization-tsfm-tokenizers-from-scratch.webp]]
 

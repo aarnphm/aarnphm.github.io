@@ -2,5 +2,7 @@
   "table-editor-obsidian",
   "obsidian-vimrc-support",
   "obsidian-minimal-settings",
-  "pseudocode-in-obs"
+  "pseudocode-in-obs",
+  "obsidian-tikzjax",
+  "obsidian-latex-suite"
 ]

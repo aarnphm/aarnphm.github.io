@@ -5,6 +5,7 @@ import regex as re, psutil, speedscope, fire
 
 from collections import Counter, defaultdict
 from tqdm import tqdm
+from datasets import load_dataset
 
 from ._core import Tokenizer as TokenizerFast
 
@@ -26,7 +27,7 @@ def _init_worker(fpath: str, special_token: str):
   _WORKER_SPECIAL_TOKEN_BYTES = special_token.encode('utf-8')
 
 
-def pretokenize_chunk(start_end_indices: tuple[int, int]) -> Counter:
+def pretokenize_chunk(start_end_indices: tuple[int, int]) -> Counter[list[str]]:
   start, end = start_end_indices
   assert (_WORKER_MMAP is not None) and (_WORKER_SPECIAL_TOKEN_BYTES is not None)
   chunk_bytes = _WORKER_MMAP[start:end]
@@ -37,8 +38,8 @@ def pretokenize_chunk(start_end_indices: tuple[int, int]) -> Counter:
   return Counter(pretokens)
 
 
-def pretokenize_batch(boundary_batch):
-  total = Counter()
+def pretokenize_batch(boundary_batch: list[tuple[int, int]]):
+  total: Counter[list[str]] = Counter()
   for bounds in boundary_batch:
     total.update(pretokenize_chunk(bounds))
   return total, len(boundary_batch)
@@ -51,7 +52,7 @@ def chunk_text_file(
   memory_interval: float = 1.0,
   memory_log_path: str | None = None,
   pt_batch: int = 256,
-) -> Counter:
+) -> Counter[list[str]]:
   with open(file_path, 'rb') as f:
     mm = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
     special = special_token.encode('utf-8')
@@ -140,8 +141,8 @@ def resolve_ds(ds: str) -> str:
   return os.path.join(data, ds)
 
 
-def _count_texts_batch(texts: list[str]) -> tuple[Counter, int]:
-  c = Counter()
+def _count_texts_batch(texts: list[str]):
+  c: Counter[str] = Counter()
   total = 0
   for t_ in texts:
     toks = PRETOKENIZER.findall(t_)
@@ -153,38 +154,42 @@ def _count_texts_batch(texts: list[str]) -> tuple[Counter, int]:
 def build_fineweb_parallel(
   token_budget: int = 1_000_000_000, split: str = 'train', processes: int = 8, batch_docs: int = 1000
 ) -> Counter:
-  from datasets import load_dataset
 
+  # Load as streaming to iterate lazily and respect token budget
   ds = load_dataset('HuggingFaceFW/fineweb', split=split, streaming=True)
-  counts = Counter()
+
+  # Map: pretokenize texts in batches, attach token list and length per example
+  def _pretok_batch(batch: dict[str, list[t.Any]]):
+    texts: list[str] = batch.get('text', [])
+    pretoks = [PRETOKENIZER.findall(t_) if t_ else [] for t_ in texts]
+    lengths = [len(p) for p in pretoks]
+    return {'_pretokens': pretoks, '_pretok_len': lengths}
+
+  ds = ds.map(_pretok_batch, batched=True, batch_size=max(1, batch_docs))
+
+  counts: Counter[str] = Counter()
   total = 0
-  batch: list[str] = []
-  with mp.Pool(processes) as p:
-    bar = tqdm(total=token_budget, desc='FineWeb pretok', unit='tok')
+  bar = tqdm(total=token_budget, desc='FineWeb pretok', unit='tok')
 
-    def flush(b: list[str]):
-      nonlocal counts, total
-      if not b:
-        return
-      c, n = p.apply(_count_texts_batch, (b,))
-      counts.update(c)
-      total += n
-      bar.update(n)
+  for ex in ds:
+    pretoks: list[str] | None = ex.get('_pretokens')
+    if pretoks is None:
+      # If batched transformation flattened, fall back to tokenizing a single text
+      text = ex.get('text')
+      if text:
+        toks = PRETOKENIZER.findall(text)
+        counts.update(toks)
+        total += len(toks)
+        bar.update(len(toks))
+    else:
+      counts.update(pretoks)
+      total += len(pretoks)
+      bar.update(len(pretoks))
 
-    for example in ds:
-      text = example.get('text')
-      if not text:
-        continue
-      batch.append(text)
-      if len(batch) >= batch_docs:
-        flush(batch)
-        batch = []
-      if total >= token_budget:
-        break
-    flush(batch)
-    bar.close()
-    p.close()
-    p.join()
+    if total >= token_budget:
+      break
+
+  bar.close()
   return counts
 
 

@@ -127,7 +127,33 @@ pub fn load_from_dir<P: AsRef<Path>>(
     })
 }
 
-// In-place tiktoken-like byte pair merge using ranks ordering
+/// In-place byte-pair merge for a single pretoken's byte-ids.
+///
+/// algorithm
+/// - `seq` starts as raw bytes (u32 ids 0..=255). We repeatedly find the
+///   adjacent pair with the lowest rank (earliest merge in training order)
+///   using `ranks: pair -> rank`, and replace that pair with its merged id
+///   from `merges: pair -> new_id`.
+/// - This is equivalent to applying merges in training order constrained to the
+///   pairs that actually appear in the current `seq`. We stop when no adjacent
+///   pair exists in `ranks`.
+///
+/// rationale
+/// - Each iteration scans the sequence once to pick the best pair (O(n)), then
+///   performs one merge (shrinks length by 1).
+///   - Worst-case O(n^2), but GPT-2 pretokenization yields short pieces
+///     - scans are cheap and branch-predictable.
+/// - Compared to naive implementation of BPE:
+///   - Python implementations that recompute pair counts or maintain complex heaps
+///   - this implementation:
+///     - Uses precomputed `ranks` for O(1) pair priority checks.
+///     - Mutates `seq` in place (no rebuilding of vectors per step).
+///     - Avoids Python-level dict/list overhead; leverages Rust and `FxHashMap`
+///       for low-latency hashing on (u32,u32) pairs.
+///     - A heap-based approach can be asymptotically better (O(n log n)), but for
+///       short tokens the linear scan per merge has smaller constants and is faster
+///       in practice
+///     - similar to how tiktoken implement it.
 fn byte_pair_merge(seq: &mut Vec<u32>, ranks: &FxHashMap<(u32, u32), usize>, merges: &FxHashMap<(u32, u32), u32>) {
     if seq.len() < 2 { return; }
     loop {

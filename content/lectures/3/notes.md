@@ -1,4 +1,6 @@
 ---
+socials:
+  youtube: https://youtu.be/DDLlOqQ46HE
 id: notes
 tags:
   - seed
@@ -7,7 +9,7 @@ description: and more notes
 transclude:
   title: false
 date: "2025-08-26"
-modified: 2025-08-28 13:49:42 GMT-04:00
+modified: 2025-09-11 11:25:44 GMT-04:00
 title: transcript
 ---
 

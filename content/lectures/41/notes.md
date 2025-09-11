@@ -1,4 +1,6 @@
 ---
+socials:
+  youtube: https://youtu.be/sSdoETRQQHY
 id: notes
 tags:
   - seed
@@ -7,7 +9,7 @@ description: 2/n some more notes on EAGLE and MTP
 transclude:
   title: false
 date: "2025-09-10"
-modified: 2025-09-10 12:54:28 GMT-04:00
+modified: 2025-09-11 11:26:08 GMT-04:00
 title: transcript
 ---
 

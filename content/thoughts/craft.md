@@ -1,6 +1,9 @@
 ---
 id: craft
-comments: false
+permalinks:
+  - /thoughts/work
+  - /craft
+  - /portfolio
 tags:
   - evergreen
 description: and a celebration for the act of making.
@@ -8,11 +11,8 @@ date: "2021-12-22"
 aliases:
   - work
   - portfolio
-modified: 2025-08-07 16:26:36 GMT-04:00
-permalinks:
-  - /thoughts/work
-  - /craft
-  - /portfolio
+modified: 2025-09-11 11:24:52 GMT-04:00
+comments: false
 title: craft.
 ---
 
@@ -106,6 +106,10 @@ You can find internal monologue under [[/posts/]] index.
 - OpenLLM, and everything about running LLMs in production at Hack The North (2023)
   - Source: [[thoughts/images/htn-openllm.pdf|slides]]
     ![[thoughts/images/htn-2023-speaks.webp]]
+- infer, a [[/lectures|workshop series]] at New Stadium (2025-)
+  - Everything about inference engine and everything in between
+  - List:
+    1.
 
 ## companies.
 
