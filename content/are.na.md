@@ -12,7 +12,7 @@ description: My run-down version of are[dot]na
 socials:
   are.na: https://www.are.na/aaron-pham/channels
 date: "2024-10-24"
-modified: 2025-09-09 00:48:04 GMT-04:00
+modified: 2025-09-12 16:48:17 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -102,6 +102,7 @@ see also [[/curius|bookmarks]]
 - https://www.oneclub.org/awards/adcawards/-archive/awards/2025/all/all/select
 - https://www.lydianottingham.com/
 - https://farayan.me/dappled
+- https://posthog.com/
 
 ## people
 

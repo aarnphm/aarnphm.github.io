@@ -130,6 +130,7 @@ const config: QuartzConfig = {
         ],
       }),
       Plugin.TableOfContents({ maxDepth: 5 }),
+      Plugin.Slides(),
     ],
     filters: [Plugin.RemoveDrafts()],
     emitters: [
@@ -166,7 +167,6 @@ const config: QuartzConfig = {
         }),
       }),
       Plugin.TagPage(),
-      // Plugin.ArenaPage(),
       Plugin.NotebookViewer(),
       Plugin.ContentIndex({ rssLimit: 60 }),
       Plugin.Assets(),
@@ -175,6 +175,8 @@ const config: QuartzConfig = {
       Plugin.NotFoundPage(),
       Plugin.CustomOgImages(),
       Plugin.PressKit(),
+      Plugin.SlidesPage(),
+      // Plugin.ArenaPage(),
     ],
   },
 }

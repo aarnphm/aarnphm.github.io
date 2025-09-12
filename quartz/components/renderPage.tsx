@@ -1195,6 +1195,7 @@ export function renderPage(
     (componentData.fileData.frontmatter?.lang ?? componentData.cfg.locale)?.split("-")[0] ?? "en"
   const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? "default"
   if (pageLayout === "technical") disableSidepanel = true
+  const isSlides = componentData.fileData.frontmatter?.slides ?? false
 
   return (
     `<!DOCTYPE html>
@@ -1216,6 +1217,7 @@ export function renderPage(
           data-slug={slug}
           data-language={lang}
           data-menu={isMenu}
+          data-slides={isSlides}
           data-layout={pageLayout}
           data-disable-sidepanel={disableSidepanel}
           data-is-folder-tag={isFolderTag}
@@ -1265,7 +1267,7 @@ export function renderPage(
               <div id="wc-modal" class="wc-modal">
                 <div class="wc-inner" />
               </div>
-              <aside class="sidepanel-container" />
+              {!isSlides && <aside class="sidepanel-container" />}
             </section>
             {!isFolderTag && (
               <section class="page-footer popover-hint grid all-col">

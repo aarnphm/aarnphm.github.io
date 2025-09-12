@@ -78,4 +78,3 @@ The death cross makes for compelling headlines but has been a better signal of a
 ## bottom line
 
 The death cross is used in technical analysis to understand stock price movement, signaling when the short-term moving average has fallen below a longer-term moving average, indicating a bearish trend.
-

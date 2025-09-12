@@ -23,7 +23,6 @@ export const sharedPageComponents: SharedLayout = {
     links: {
       github: "https://github.com/aarnphm",
       twitter: "https://twitter.com/aarnphm_",
-      bsky: "https://bsky.app/profile/aarnphm.xyz",
       feed: "/feed.xml",
     },
   }),

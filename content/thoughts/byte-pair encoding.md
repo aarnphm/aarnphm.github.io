@@ -74,4 +74,3 @@ For "aaabdaaabac" with vocabulary size 6:
 ### byte-level
 
 Byte-level converts text into UTF-8 first and treats it as a stream of bytes. This guarantees any UTF-8 encoded text can be encoded by the BPE. Used in BERT-like models (RoBERTa, BART, DeBERTa) and GPT-like models (GPT-2).
-

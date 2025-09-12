@@ -100,6 +100,9 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
         const authors = coalesceAliases(data, ["author", "authors"])
         if (authors) data.authors = authors
 
+        const slides = coalesceAliases(data, ["slides", "slide", "ppt", "powerpoint"])
+        if (slides) data.slides = slides
+
         const created = coalesceAliases(data, ["date", "created"])
         if (created) {
           data.created = created
@@ -151,6 +154,7 @@ declare module "vfile" {
         socialDescription: string
         noindex: boolean
         comments: boolean
+        slides: boolean
         transclude: Partial<TranscludeOptions>
         signature: string
         socials: Record<string, string>

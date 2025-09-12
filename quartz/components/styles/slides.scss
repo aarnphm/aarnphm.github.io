@@ -1,0 +1,60 @@
+@use "../../styles/variables.scss" as *;
+
+.slides-root {
+  position: relative;
+}
+
+.slides-deck {
+  display: block;
+}
+
+.slide {
+  min-height: calc(100vh - 56px);
+  display: none;
+}
+
+.slide.active {
+  display: block;
+}
+
+.slides-controls {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  background: var(--light);
+  border-top: 1px solid var(--lightgray);
+}
+
+.slides-controls .prev,
+.slides-controls .next {
+  font: inherit;
+  background: var(--highlight);
+  color: var(--dark);
+  border: 1px solid var(--lightgray);
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+}
+
+.slides-controls .status {
+  flex: 1;
+  text-align: center;
+  color: var(--gray);
+}
+
+@media all and ($mobile) {
+  .slides-controls {
+    position: fixed;
+    padding: 0.375rem 0.5rem;
+    background: color-mix(in srgb, var(--light) 92%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  .slides-controls .status {
+    font-size: 0.875rem;
+  }
+}

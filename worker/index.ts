@@ -181,7 +181,7 @@ export default {
 
     // permanent redirect d.aarnphm.xyz -> aarnphm.xyz/dating
     if (url.hostname === "d.aarnphm.xyz") {
-      return Response.redirect("https://aarnphm.xyz/dating", 301)
+      return Response.redirect("https://aarnphm.xyz/dating/slides", 301)
     }
 
     // rendering supported code files as text/plain

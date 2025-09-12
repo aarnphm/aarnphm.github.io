@@ -31,6 +31,7 @@ import RecentNotes from "./RecentNotes"
 import Breadcrumbs from "./Breadcrumbs"
 import Comments from "./Comments"
 import Flex from "./Flex"
+import SlidesContent from "./SlidesContent"
 
 export {
   Flex,
@@ -66,4 +67,5 @@ export {
   NotFound,
   Breadcrumbs,
   Comments,
+  SlidesContent,
 }

@@ -1,6 +1,7 @@
 @use "../base.scss";
 @use "../variables.scss" as *;
 
+body[data-slides="true"],
 body[data-layout="letter-poem"],
 body[data-layout="letter"] {
   .stacked-buttons:not(.popover *),
@@ -29,5 +30,11 @@ body[data-layout="letter-poem"] {
 
   hgroup {
     display: none;
+  }
+}
+
+body[data-slides="true"] {
+  section[class~="page-header"]:not(.popover *) {
+    display: none !important;
   }
 }

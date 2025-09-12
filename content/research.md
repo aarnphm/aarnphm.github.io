@@ -7,7 +7,7 @@ transclude:
   dynalist: false
   title: false
 date: "2025-08-12"
-modified: 2025-09-01 16:23:11 GMT-04:00
+modified: 2025-09-12 16:25:33 GMT-04:00
 title: research
 ---
 
@@ -26,5 +26,3 @@ I would like to do research at some point. I'm interested in [[thoughts/mechanis
 > **A**: Imagine you own a car that's already pretty fast--but you're not really content with "fast". You decide to mod the engine, strip away passenger seats,
 > add new pistons, reroute fuel lines, etc. What happens when the engine receive additional boost? What happens if you change the certain tyres grip level? What happens when you
 > hardening/soften part of the suspension?
->
-> Despite the popularity of ChatGPT, Copilot, Claude, etc, the big labs are still burning through a lot of capital. We are still, I believe

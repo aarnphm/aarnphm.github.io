@@ -1,18 +1,17 @@
 ---
+slides: true
 id: dating
 aliases:
   - date
   - date-me
+  - hinge
+  - bumble
 tags:
   - evergreen
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-09-10 08:34:59 GMT-04:00
-permalinks:
-  - /hinge
-  - /bumble
-  - /date
+modified: 2025-09-12 13:23:39 GMT-04:00
 noindex: true
 title: dating me.
 pageLayout: letter
