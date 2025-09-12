@@ -98,4 +98,3 @@ used by: ALBERT, XLNet, Marian, T5
 Uses BPE or unigram on character stream. The "▁" symbol represents spaces, enabling simple decoding by concatenation and space replacement.
 
 **Models using SentencePiece:** Combined with unigram algorithm in all Transformers implementations.
-

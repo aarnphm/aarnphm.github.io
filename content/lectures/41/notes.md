@@ -1,6 +1,4 @@
 ---
-socials:
-  youtube: https://youtu.be/sSdoETRQQHY
 id: notes
 tags:
   - seed
@@ -8,9 +6,11 @@ tags:
 description: 2/n some more notes on EAGLE and MTP
 transclude:
   title: false
+socials:
+  youtube: https://youtu.be/sSdoETRQQHY
+modified: 2025-09-11 19:19:41 GMT-04:00
+title: supplement to 0.41
 date: "2025-09-10"
-modified: 2025-09-11 11:26:08 GMT-04:00
-title: transcript
 ---
 
 megathread: [[thoughts/Speculative decoding]]

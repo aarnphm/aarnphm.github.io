@@ -7,7 +7,7 @@ tags:
 description: and reverse engineering neural networks.
 date: "2024-10-30"
 abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
-modified: 2025-08-20 01:50:39 GMT-04:00
+modified: 2025-09-11 18:02:12 GMT-04:00
 aliases:
   - mechinterp
   - reveng neural net

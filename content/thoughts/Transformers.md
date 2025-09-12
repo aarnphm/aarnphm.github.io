@@ -5,7 +5,7 @@ tags:
   - technical
 description: and the backbone of the AI progress.
 date: "2024-02-07"
-modified: 2025-09-10 12:29:56 GMT-04:00
+modified: 2025-09-11 19:09:14 GMT-04:00
 title: Transformers
 ---
 
@@ -21,7 +21,7 @@ Most implementations are [[thoughts/Autoregressive models|autoregressive]]. Most
 
 ## internals
 
-See also: [transformers from scratch](https://e2eml.school/transformers.html)
+See also: [transformers from scratch](https://e2eml.school/transformers.html), [[thoughts/mechanistic interpretability]], @geva2021transformerfeedforwardlayerskeyvalue
 
 ## memory limitations.
 

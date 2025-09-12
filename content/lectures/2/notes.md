@@ -5,13 +5,19 @@ tags:
   - workshop
 description: attention and math
 date: "2025-08-21"
-modified: 2025-08-25 10:31:59 GMT-04:00
-title: transcript
+modified: 2025-09-11 19:16:15 GMT-04:00
+title: supplement to 0.2
 ---
 
-see [[lectures/2/why|reasoning]], [[lectures/2/attention first principle|attention from first principle]], [[lectures/2/convexity|convexity cases]], and [[thoughts/Attention]]
+supports:
 
-```python
+- [[lectures/2/why|reasoning]]
+- [[lectures/2/attention first principle|attention from first principle]]
+- [[lectures/2/convexity|convexity cases]]
+- [[thoughts/Attention]]
+- [[thoughts/mechanistic interpretability]]
+
+```python title="lipschitz.py"
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -50,7 +56,7 @@ plt.savefig(png_path)
 plt.savefig(svg_path)
 ```
 
-## Lagrange multipliers (equality constraints)
+## [[thoughts/Lagrange multiplier]]
 
 **Problem.** $\min_x f(x)$ s.t. $h(x)=0$.
 
@@ -66,7 +72,7 @@ Geometric read: at optimum, $\nabla f$ is a linear combo of constraint normals. 
 
 **Beyond finite-dimensional:** the same idea generalizes to Banach spaces (calculus of variations). ([Wikipedia][2])
 
-## From Lagrange to KKT (with inequalities)
+## KKT
 
 **General convex program.**
 $\min_x f(x)$ s.t. $g_i(x)\le 0$ (inequalities), $h_j(x)=0$ (equalities).

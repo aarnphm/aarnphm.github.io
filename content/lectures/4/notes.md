@@ -7,8 +7,8 @@ description: 1/n of acceptance-rejection
 transclude:
   title: false
 date: "2025-09-05"
-modified: 2025-09-10 07:20:04 GMT-04:00
-title: transcript
+modified: 2025-09-11 19:19:32 GMT-04:00
+title: supplement to 0.4
 ---
 
 see also [[thoughts/Speculative decoding]], [[/speculative|wip ideas]]

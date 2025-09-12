@@ -3,9 +3,10 @@ id: convexity
 tags:
   - seed
   - math
+description: emperical formulation for attention.
 date: "2025-08-21"
-modified: 2025-08-26 15:52:44 GMT-04:00
-title: convexity
+modified: 2025-09-11 18:14:39 GMT-04:00
+title: convexity prose
 ---
 
 We can interpret the softmax-based attention weight computation as solving an _entropy-regularized_ optimization.

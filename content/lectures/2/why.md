@@ -6,8 +6,8 @@ tags:
   - math
 description: motivations of attention
 date: "2025-08-21"
-modified: 2025-08-26 15:54:20 GMT-04:00
-title: why
+modified: 2025-09-11 18:15:39 GMT-04:00
+title: why certain components in attention?
 ---
 
 ---

@@ -3,11 +3,12 @@ id: implementation
 tags:
   - seed
   - technical
+  - ml
 description: Python and Rust
 date: "2025-09-07"
-modified: 2025-09-08 14:05:30 GMT-04:00
+modified: 2025-09-11 22:17:12 GMT-04:00
 noindex: true
-title: implementation
+title: implementation of tokenization
 ---
 
 - training logic: [[thoughts/tsfm/lecture-2-exercise/src/minibpe/core.py]]
