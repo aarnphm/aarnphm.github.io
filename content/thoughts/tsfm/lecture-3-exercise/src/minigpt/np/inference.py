@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-import argparse, json, pathlib, dataclasses
-from typing import Optional
+import argparse, json, pathlib, dataclasses, re
 
 import numpy as np
 from transformers import AutoTokenizer
 
-# Training-side model structures
-from minigpt.np.train import LMConfig, LMParams, BlockParams
+from minigpt.np.ds import LMConfig, LMParams, BlockParams
 
-# Low-level ops (NumPy versions)
+# Low-level ops
 from minigpt.np.modular import (
   softmax,
   layer_norm as T_layer_norm,
@@ -29,7 +27,7 @@ def _to_array(x):
   return np.array(x, dtype=np.float32)
 
 
-def load_config(config_path: pathlib.Path, fallback: Optional[dict] = None) -> LMConfig:
+def load_config(config_path: pathlib.Path, fallback: dict | None = None) -> LMConfig:
   if config_path.is_file():
     with open(config_path, 'r') as f:
       cfg_dict = json.load(f)
@@ -54,7 +52,6 @@ def load_params(ckpt_params: dict, weight_tying: bool) -> LMParams:
   beta_f = _to_array(ckpt_params['beta_f'])
 
   # Flat representation
-  import re
   pat = re.compile(r'^blocks\.(\d+)\.')
   block_indices = set()
   for k in ckpt_params.keys():
@@ -168,10 +165,11 @@ def _prefill(
   # Final layer norm + LM head
   x_f = T_layer_norm(x.astype(np.float32, copy=False), params.gamma_f, params.beta_f)
   if config.weight_tying:
-    logits = x_f @ params.W_E.T
+    logits2D = x_f.reshape(B * S, D) @ params.W_E.T
+    logits = logits2D.reshape(B, S, -1)
   else:
-    logits = x_f.reshape(B * S, D) @ params.W_LM
-    logits = logits.reshape(B, S, -1)
+    logits2D = x_f.reshape(B * S, D) @ params.W_LM
+    logits = logits2D.reshape(B, S, -1)
 
   return logits[0, -1], kv  # (V,), KVCache
 
@@ -246,14 +244,37 @@ def _decode_one(
   return logits[0, 0]  # (V,)
 
 
-def top_k_logits(logits: np.ndarray, k: Optional[int]) -> np.ndarray:
-  if k is None or k <= 0 or k >= logits.shape[-1]:
-    return logits
-  # keep top-k, set others to -inf
-  idx = np.argpartition(logits, -k)[-k:]
-  mask = np.full_like(logits, -np.inf)
-  mask[idx] = logits[idx]
-  return mask
+def top_k_top_p_filtering(logits: np.ndarray, k: int = 0, p: float = 0.0) -> np.ndarray:
+  """top-k and top-p (nucleus) filtering on 1D logits.
+
+  - top-k: keep the k highest logits, mask others to -inf.
+  - top-p: among remaining tokens, keep the smallest prefix whose cumulative probability (after softmax) >= top_p.
+
+  Ensures at least one token is kept.
+  """
+  V = logits.shape[-1]
+  out = logits
+
+  if k > 0:
+    idx = np.argpartition(out, -k)[-k:]
+    mask = np.full_like(out, -np.inf)
+    mask[idx] = out[idx]
+    out = mask
+
+  if 0.0 < p < 1.0:
+    sorted_idx = np.argsort(out)[::-1]
+    sorted_logits = out[sorted_idx]
+    probs = softmax(sorted_logits.astype(np.float32))
+    cumsum = np.cumsum(probs)
+    cutoff = int(np.searchsorted(cumsum, p, side='left'))
+    keep_n = max(1, cutoff + 1)
+
+    mask = np.full_like(out, -np.inf)
+    keep_idx = sorted_idx[:keep_n]
+    mask[keep_idx] = out[keep_idx]
+    out = mask
+
+  return out
 
 
 def generate(
@@ -263,8 +284,9 @@ def generate(
   config: LMConfig,
   *,
   max_new_tokens: int = 32,
-  temperature: float = 1.0,
-  top_k: Optional[int] = None,
+  temperature: float = 0.6,
+  top_k: int = 20,
+  top_p: float = 0.95,
   seed: int = 42,
 ) -> str:
   rng = np.random.default_rng(seed)
@@ -289,8 +311,9 @@ def generate(
       next_id = int(np.argmax(next_logits))
     else:
       scaled = next_logits / max(temperature, 1e-8)
-      scaled = top_k_logits(scaled, top_k)
+      scaled = top_k_top_p_filtering(scaled, k=top_k, top_p=top_p)
       probs = softmax(scaled.astype(np.float32))
+      # equivalent to torch.multinomial
       probs = np.clip(probs, 1e-12, 1.0)
       probs = probs / probs.sum()
       next_id = int(rng.choice(len(probs), p=probs))
@@ -338,15 +361,17 @@ def _load_state(weights_path: pathlib.Path) -> dict:
 def main():
   ap = argparse.ArgumentParser()
   ap.add_argument('--ckpt_root', type=str, default='checkpoints', help='Root dir with steps_<n> subdirs or a step dir')
+  ap.add_argument('--name', type=str, default='hinterland-np', help='Model name; checkpoints saved under checkpoints/<name>/')
   ap.add_argument('--step', type=int, default=0, help='Specific step to load (0 => latest)')
   ap.add_argument('--prompt', type=str, default='Once upon a time,')
   ap.add_argument('--max_new_tokens', type=int, default=100)
-  ap.add_argument('--temperature', type=float, default=1.0)
-  ap.add_argument('--top_k', type=int, default=0)
+  ap.add_argument('--temperature', type=float, default=0.6)
+  ap.add_argument('--top_k', type=int, default=20)
+  ap.add_argument('--top_p', type=float, default=0.95)
   ap.add_argument('--seed', type=int, default=42)
   args = ap.parse_args()
 
-  root = pathlib.Path(args.ckpt_root)
+  root = pathlib.Path(args.ckpt_root) / args.name
   if root.is_dir() and root.name.startswith('steps_'):
     step_dir = root
   else:
@@ -369,7 +394,7 @@ def main():
 
   params = load_params(state, weight_tying=config.weight_tying)
 
-  tokenizer = AutoTokenizer.from_pretrained(getattr(config, 'tokenizer', None), trust_remote_code=True)
+  tokenizer = AutoTokenizer.from_pretrained(getattr(config, 'tokenizer', None), use_fast=True)
 
   text = generate(
     args.prompt,
@@ -378,7 +403,8 @@ def main():
     config,
     max_new_tokens=args.max_new_tokens,
     temperature=args.temperature,
-    top_k=(args.top_k if args.top_k > 0 else None),
+    top_k=args.top_k,
+    top_p=args.top_p,
     seed=args.seed,
   )
   print('\n=== Generated ===\n')

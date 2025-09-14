@@ -14,7 +14,7 @@ except Exception:
   _HAVE_SAFETENSORS = False
 
 from minigpt.np.modular import (
-  softmax, build_causal_mask,
+  build_causal_mask,
   layer_norm as T_layer_norm,
   layer_norm_bwd as T_layer_norm_bwd,
   qkv_proj_fwd_cached as T_qkv_fwd,
@@ -24,6 +24,8 @@ from minigpt.np.modular import (
   ffn_cached as T_ff_fwd,
   ffn_bwd_from_cache as T_ff_bwd_cache,
 )
+
+from minigpt.np.ds import LMConfig, LMParams, BlockParams
 
 
 # ---------
@@ -120,10 +122,15 @@ def embedding_fwd(token_ids: np.ndarray, W_E: np.ndarray):
 
 def embedding_bwd(dOut: np.ndarray, cache, W_E: np.ndarray):
   token_ids, _ = cache
-  dW = np.zeros_like(W_E)
+  V, D = W_E.shape
   flat_ids = token_ids.reshape(-1)
   flat_dOut = dOut.reshape(-1, dOut.shape[-1])
-  np.add.at(dW, flat_ids, flat_dOut)
+  # Accumulate per-unique token to reduce scattered writes
+  uniq, inv = np.unique(flat_ids, return_inverse=True)
+  tmp = np.zeros((uniq.shape[0], D), dtype=W_E.dtype)
+  np.add.at(tmp, inv, flat_dOut)
+  dW = np.zeros_like(W_E)
+  dW[uniq] = tmp
   return dW
 
 
@@ -152,19 +159,40 @@ def linear_bwd(dY: np.ndarray, cache):
 
 
 def cross_entropy_logits(logits: np.ndarray, targets: np.ndarray, ignore_index: int | None = None):
-  probs = softmax(logits, axis=-1)
-  N = logits.shape[0]
-  one_hot = np.zeros_like(logits)
-  one_hot[np.arange(N), targets] = 1.0
+  """Compute CE and gradient without building an N×V one-hot.
 
-  if ignore_index is not None:
-    valid = (targets != ignore_index).astype(np.float64)
-    denom = np.maximum(valid.sum(), 1.0)
-    loss = -np.sum(valid[:, None] * np.log(np.maximum(probs, 1e-12)) * one_hot) / denom
-    dLogits = (probs - one_hot) * (valid[:, None] / denom)
-  else:
-    loss = -np.sum(np.log(np.maximum(probs, 1e-12)) * one_hot) / N
-    dLogits = (probs - one_hot) / N
+  logits: (N, V), targets: (N,)
+  """
+  N, V = logits.shape
+  # log-softmax
+  max_logits = np.max(logits, axis=-1, keepdims=True)
+  shifted = logits - max_logits
+  exp = np.exp(shifted)
+  sumexp = np.sum(exp, axis=-1, keepdims=True)
+  log_probs = shifted - np.log(np.maximum(sumexp, 1e-12))
+
+  if ignore_index is None:
+    gather = log_probs[np.arange(N), targets]
+    loss = -np.mean(gather)
+    probs = exp / sumexp
+    dLogits = probs
+    dLogits[np.arange(N), targets] -= 1.0
+    dLogits /= N
+    return loss, dLogits
+
+  valid = (targets != ignore_index)
+  valid_idx = np.where(valid)[0]
+  denom = max(int(valid_idx.shape[0]), 1)
+  if denom == 0:
+    return 0.0, np.zeros_like(logits)
+  gather = log_probs[valid_idx, targets[valid_idx]]
+  loss = -np.sum(gather) / denom
+  probs = exp / sumexp
+  dLogits = probs
+  dLogits[valid_idx, targets[valid_idx]] -= 1.0
+  scale = np.zeros((N, 1), dtype=logits.dtype)
+  scale[valid_idx, 0] = 1.0 / denom
+  dLogits *= scale
   return loss, dLogits
 
 
@@ -253,21 +281,6 @@ def mlp_bwd(dY: np.ndarray, cache):
 # Transformer block (pre-norm)
 # ---------------------------
 
-
-@dataclasses.dataclass
-class BlockParams:
-  W_Q: np.ndarray
-  W_K: np.ndarray
-  W_V: np.ndarray
-  W_O: np.ndarray
-  gamma1: np.ndarray
-  beta1: np.ndarray
-  W1: np.ndarray
-  W2: np.ndarray
-  gamma2: np.ndarray
-  beta2: np.ndarray
-
-
 def init_block(d_model: int, n_heads: int, d_ff: int) -> BlockParams:
   H = n_heads
   Dh = d_model // H
@@ -323,41 +336,6 @@ def block_bwd(dY: np.ndarray, p: BlockParams, cache, n_heads: int):
   return dX, grads
 
 
-@dataclasses.dataclass
-class LMConfig:
-  name: str = 'hinterland-np'
-  tokenizer: str = 'Qwen/Qwen3-Next-80B-A3B-Instruct'
-  d_model: int = 128
-  n_heads: int = 4
-  n_layers: int = 2
-  d_ff: int = 4 * 128
-  vocab_size: int = 151936  # NOTE: this will be updated after loading the tokenizer
-  max_seq_len: int = 256
-  weight_tying: bool = True
-  seed: int = 42
-  lr: float = 3e-4
-  betas: tuple[float, float] = dataclasses.field(default_factory=lambda: (0.9, 0.95))
-  weight_decay: float = 0.01
-  grad_clip: float | None = 1.0
-  batch_size: int = 16
-  steps: int = 200
-  warmup_steps: int = 0
-  eval_every: int = 50
-  log_every: int = 10
-  stride: int = 0  # sliding window stride; 0 => seq_len
-  prefetch: int = 4
-
-
-@dataclasses.dataclass
-class LMParams:
-  W_E: np.ndarray
-  W_pos: np.ndarray
-  blocks: list[BlockParams]
-  gamma_f: np.ndarray
-  beta_f: np.ndarray
-  W_LM: np.ndarray | None
-
-
 def init_lm(config: LMConfig, tokenizer_vocab_size: int) -> LMParams:
   seed_everything(config.seed)
   D = config.d_model
@@ -385,8 +363,10 @@ def lm_fwd(token_ids: np.ndarray, params: LMParams, config: LMConfig, *, attn_ma
 
   x_f, ln_f_cache = layer_norm_fwd(x, params.gamma_f, params.beta_f)
   if config.weight_tying:
-    logits = x_f @ params.W_E.T
-    lm_cache = ('tied', x_f)
+    X2D = x_f.reshape(B * S, D)
+    logits2D = X2D @ params.W_E.T
+    logits = logits2D.reshape(B, S, -1)
+    lm_cache = ('tied', x_f.shape)
   else:
     X2D = x_f.reshape(-1, D)
     logits2D, lm_lin_cache = linear_fwd(X2D, params.W_LM)
@@ -402,9 +382,16 @@ def lm_bwd(dLogits: np.ndarray, token_ids: np.ndarray, caches, params: LMParams,
   D = config.d_model
 
   if lm_cache[0] == 'tied':
-    x_f = lm_cache[1]
-    dX_f = dLogits @ params.W_E
-    dW_E_head = np.einsum('bsd,bsV->dV', x_f, dLogits)
+    x_shape = lm_cache[1]
+    Bx, Sx, Dx = x_shape
+    dLogits2D = dLogits.reshape(Bx * Sx, -1)
+    dX2D = dLogits2D @ params.W_E
+    dX_f = dX2D.reshape(Bx, Sx, Dx)
+    # Recompute x_f from ln_f_cache to form X2D efficiently for dW_E
+    x_post_blocks, gamma_f, beta_f = ln_f_cache
+    x_f_recomp = T_layer_norm(x_post_blocks.astype(np.float32, copy=False), gamma_f, beta_f)
+    X2D = x_f_recomp.reshape(Bx * Sx, Dx)
+    dW_E_head = X2D.T @ dLogits2D
   else:
     x_shape, lm_lin_cache = lm_cache[1]
     Bx, Sx, Dx = x_shape
@@ -857,7 +844,7 @@ def train(config: LMConfig):
       elapsed = time.time() - start
       # keep the bar tidy while logging
       pbar.set_postfix({'loss': f'{loss:.4f}', 'elapsed_s': f'{elapsed:.2f}'})
-      pbar.write(f'[train] step {step:5d} | loss {loss:.4f} | {elapsed:.2f}s | {_timestamp()}')
+      pbar.write(f'[train] step {step:5d} | loss {loss:.4f} | {_timestamp()}')
 
     if step % config.eval_every == 0:
       val_loss = evaluate_tokens(
