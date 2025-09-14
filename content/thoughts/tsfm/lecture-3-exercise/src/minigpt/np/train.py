@@ -7,15 +7,15 @@ from transformers import AutoTokenizer
 from datasets import load_dataset
 
 from minigpt.np.modular import (
-  softmax as softmax,
+  softmax,
   layer_norm as T_layer_norm,
-  layer_norm_backward as T_layer_norm_backward,
-  qkv_projection_forward_cached as T_qkv_fwd,
-  qkv_projection_backward_from_cache as T_qkv_bwd_cache,
-  multi_head_attention_forward_cached as T_attn_fwd,
-  multi_head_attention_backward_from_cache as T_attn_bwd_cache,
-  feed_forward_forward_cached as T_ff_fwd,
-  feed_forward_backward_from_cache as T_ff_bwd_cache,
+  layer_norm_bwd as T_layer_norm_bwd,
+  qkv_proj_fwd_cached as T_qkv_fwd,
+  qkv_proj_bwd_from_cache as T_qkv_bwd_cache,
+  mha_fwd_cached as T_attn_fwd,
+  mha_bwd_from_cache as T_attn_bwd_cache,
+  ffn_cached as T_ff_fwd,
+  ffn_bwd_from_cache as T_ff_bwd_cache,
 )
 
 
@@ -23,10 +23,9 @@ from minigpt.np.modular import (
 # utilities
 # ---------
 
-# tqdm for progress bars (fallback to no-op if unavailable)
 try:
-  from tqdm.auto import tqdm  # type: ignore
-except Exception:  # pragma: no cover - graceful fallback when tqdm isn't installed
+  from tqdm.auto import tqdm
+except Exception:
 
   class _TqdmFallback:
     def __init__(self, iterable=None, total=None, desc=None, dynamic_ncols=True, leave=True, **kwargs):
@@ -88,7 +87,7 @@ def truncated_normal(shape, std=0.02):
 # ------------------
 
 
-def layer_norm_forward(x: np.ndarray, gamma: np.ndarray, beta: np.ndarray):
+def layer_norm_fwd(x: np.ndarray, gamma: np.ndarray, beta: np.ndarray):
   y = T_layer_norm(
     x.astype(np.float32, copy=False), gamma.astype(np.float32, copy=False), beta.astype(np.float32, copy=False)
   )
@@ -96,19 +95,19 @@ def layer_norm_forward(x: np.ndarray, gamma: np.ndarray, beta: np.ndarray):
   return y, cache
 
 
-def layer_norm_backward(dy: np.ndarray, cache):
+def layer_norm_bwd(dy: np.ndarray, cache):
   x, gamma, beta = cache
-  dx, dgamma, dbeta = T_layer_norm_backward(x, gamma, beta, dy.astype(np.float32, copy=False))
+  dx, dgamma, dbeta = T_layer_norm_bwd(x, gamma, beta, dy.astype(np.float32, copy=False))
   return dx, dgamma, dbeta
 
 
-def embedding_forward(token_ids: np.ndarray, W_E: np.ndarray):
+def embedding_fwd(token_ids: np.ndarray, W_E: np.ndarray):
   x = W_E[token_ids]
   cache = (token_ids, W_E.shape[0])
   return x, cache
 
 
-def embedding_backward(dOut: np.ndarray, cache, W_E: np.ndarray):
+def embedding_bwd(dOut: np.ndarray, cache, W_E: np.ndarray):
   token_ids, _ = cache
   dW = np.zeros_like(W_E)
   flat_ids = token_ids.reshape(-1)
@@ -117,24 +116,24 @@ def embedding_backward(dOut: np.ndarray, cache, W_E: np.ndarray):
   return dW
 
 
-def pos_embedding_forward(S: int, W_pos: np.ndarray):
+def pos_embedding_fwd(S: int, W_pos: np.ndarray):
   return W_pos[:S], S
 
 
-def pos_embedding_backward(dOut: np.ndarray, cache, W_pos: np.ndarray):
+def pos_embedding_bwd(dOut: np.ndarray, cache, W_pos: np.ndarray):
   S = cache
   dW = np.zeros_like(W_pos)
   dW[:S] = dOut
   return dW
 
 
-def linear_forward(X2D: np.ndarray, W: np.ndarray):
+def linear_fwd(X2D: np.ndarray, W: np.ndarray):
   Y = X2D @ W
   cache = (X2D, W)
   return Y, cache
 
 
-def linear_backward(dY: np.ndarray, cache):
+def linear_bwd(dY: np.ndarray, cache):
   X2D, W = cache
   dW = X2D.T @ dY
   dX = dY @ W.T
@@ -179,7 +178,10 @@ def mha_forward(
 
   X2D = x.reshape(-1, D).astype(np.float32, copy=False)
   (q2d, k2d, v2d), qkv_cache = T_qkv_fwd(
-    X2D, W_Q.astype(np.float32, copy=False), W_K.astype(np.float32, copy=False), W_V.astype(np.float32, copy=False)
+    X2D,
+    W_Q.astype(np.float32, copy=False),
+    W_K.astype(np.float32, copy=False),
+    W_V.astype(np.float32, copy=False)
   )
 
   q = q2d.reshape(B, S, H, Dh).transpose(0, 2, 1, 3)
@@ -189,7 +191,7 @@ def mha_forward(
   attn_out, attn_cache = T_attn_fwd(q, k, v, causal=attn_mask is None, attn_mask=attn_mask)
 
   context2d = attn_out.transpose(0, 2, 1, 3).reshape(B * S, H * Dh)
-  out2d, o_cache = linear_forward(context2d, W_O.astype(np.float32, copy=False))
+  out2d, o_cache = linear_fwd(context2d, W_O.astype(np.float32, copy=False))
   y = out2d.reshape(B, S, D)
   cache = {
     'x_shape': (B, S, D),
@@ -210,7 +212,7 @@ def mha_backward(dY: np.ndarray, cache: dict):
   o_cache = cache['o_cache']
 
   dOut2D = dY.reshape(B * S, D).astype(np.float32, copy=False)
-  dCtx2D, dW_O = linear_backward(dOut2D, o_cache)
+  dCtx2D, dW_O = linear_bwd(dOut2D, o_cache)
   dCtx = dCtx2D.reshape(B, S, H, Dh).transpose(0, 2, 1, 3)
 
   dQ, dK, dV = T_attn_bwd_cache(dCtx, attn_cache)
@@ -225,7 +227,8 @@ def mha_backward(dY: np.ndarray, cache: dict):
 
 def mlp_forward(x: np.ndarray, W1: np.ndarray, W2: np.ndarray):
   y, cache = T_ff_fwd(
-    x.astype(np.float32, copy=False), W1.astype(np.float32, copy=False), W2.astype(np.float32, copy=False)
+    x.astype(np.float32, copy=False),
+    W1.astype(np.float32, copy=False), W2.astype(np.float32, copy=False)
   )
   return y, cache
 
@@ -273,10 +276,10 @@ def init_block(d_model: int, n_heads: int, d_ff: int) -> BlockParams:
 def block_forward(
   x: np.ndarray, p: BlockParams, n_heads: int, *, attn_mask: np.ndarray | None
 ) -> tuple[np.ndarray, tuple]:
-  ln1, ln1_cache = layer_norm_forward(x, p.gamma1, p.beta1)
+  ln1, ln1_cache = layer_norm_fwd(x, p.gamma1, p.beta1)
   attn_out, attn_cache = mha_forward(ln1, p.W_Q, p.W_K, p.W_V, p.W_O, n_heads=n_heads, attn_mask=attn_mask)
   x1 = x + attn_out
-  ln2, ln2_cache = layer_norm_forward(x1, p.gamma2, p.beta2)
+  ln2, ln2_cache = layer_norm_fwd(x1, p.gamma2, p.beta2)
   ff_out, ff_cache = mlp_forward(ln2, p.W1, p.W2)
   y = x1 + ff_out
   cache = (ln1_cache, attn_cache, x, ln2_cache, ff_cache, x1)
@@ -288,11 +291,11 @@ def block_backward(dY: np.ndarray, p: BlockParams, cache, n_heads: int):
   dX1 = dY.copy()
   dFF = dY.copy()
   dLN2, dW1, dW2 = mlp_backward(dFF, ff_cache)
-  dX1_ln2, dgamma2, dbeta2 = layer_norm_backward(dLN2 + dX1, ln2_cache)
+  dX1_ln2, dgamma2, dbeta2 = layer_norm_bwd(dLN2 + dX1, ln2_cache)
   dX = dX1_ln2.copy()
   dAttn = dX1_ln2.copy()
   dLN1, dW_Q, dW_K, dW_V, dW_O = mha_backward(dAttn, attn_cache)
-  dX_pre, dgamma1, dbeta1 = layer_norm_backward(dLN1, ln1_cache)
+  dX_pre, dgamma1, dbeta1 = layer_norm_bwd(dLN1, ln1_cache)
   dX += dX_pre
   grads = {
     'W_Q': dW_Q,
@@ -357,8 +360,8 @@ def init_lm(config: LMConfig, tokenizer_vocab_size: int) -> LMParams:
 def lm_forward(token_ids: np.ndarray, params: LMParams, config: LMConfig, *, attn_mask: np.ndarray | None):
   B, S = token_ids.shape
   D = config.d_model
-  x_e, emb_cache = embedding_forward(token_ids, params.W_E)
-  pos_slice, pos_cache = pos_embedding_forward(S, params.W_pos)
+  x_e, emb_cache = embedding_fwd(token_ids, params.W_E)
+  pos_slice, pos_cache = pos_embedding_fwd(S, params.W_pos)
   x = x_e + pos_slice
 
   block_caches = []
@@ -366,13 +369,13 @@ def lm_forward(token_ids: np.ndarray, params: LMParams, config: LMConfig, *, att
     x, cache = block_forward(x, blk, n_heads=config.n_heads, attn_mask=attn_mask)
     block_caches.append(cache)
 
-  x_f, ln_f_cache = layer_norm_forward(x, params.gamma_f, params.beta_f)
+  x_f, ln_f_cache = layer_norm_fwd(x, params.gamma_f, params.beta_f)
   if config.weight_tying:
     logits = x_f @ params.W_E.T
     lm_cache = ('tied', x_f)
   else:
     X2D = x_f.reshape(-1, D)
-    logits2D, lm_lin_cache = linear_forward(X2D, params.W_LM)
+    logits2D, lm_lin_cache = linear_fwd(X2D, params.W_LM)
     logits = logits2D.reshape(B, S, -1)
     lm_cache = ('untied', (x_f.shape, lm_lin_cache))
   caches = (emb_cache, pos_cache, block_caches, ln_f_cache, lm_cache)
@@ -392,11 +395,11 @@ def lm_backward(dLogits: np.ndarray, token_ids: np.ndarray, caches, params: LMPa
     x_shape, lm_lin_cache = lm_cache[1]
     Bx, Sx, Dx = x_shape
     dLogits2D = dLogits.reshape(Bx * Sx, -1)
-    dX2D, dW_LM = linear_backward(dLogits2D, lm_lin_cache)
+    dX2D, dW_LM = linear_bwd(dLogits2D, lm_lin_cache)
     dX_f = dX2D.reshape(Bx, Sx, Dx)
     dW_E_head = None
 
-  dX_blocks, dgamma_f, dbeta_f = layer_norm_backward(dX_f, ln_f_cache)
+  dX_blocks, dgamma_f, dbeta_f = layer_norm_bwd(dX_f, ln_f_cache)
   grads_blocks = []
   dX = dX_blocks
   for blk, cache in zip(reversed(params.blocks), reversed(block_caches)):
@@ -405,8 +408,8 @@ def lm_backward(dLogits: np.ndarray, token_ids: np.ndarray, caches, params: LMPa
   grads_blocks = list(reversed(grads_blocks))
 
   dPos = np.sum(dX, axis=0)
-  dW_pos = pos_embedding_backward(dPos, S, params.W_pos)
-  dW_E_embed = embedding_backward(dX, emb_cache, params.W_E)
+  dW_pos = pos_embedding_bwd(dPos, S, params.W_pos)
+  dW_E_embed = embedding_bwd(dX, emb_cache, params.W_E)
   if lm_cache[0] == 'tied':
     dW_E = dW_E_embed + dW_E_head.T
     dW_LM = None

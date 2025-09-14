@@ -3,7 +3,7 @@ from __future__ import annotations
 import torch, numpy as np, torch.nn.functional as F
 
 
-def torch_matmul_backward(A_np, B_np, dOut_np):
+def torch_matmul_bwd(A_np, B_np, dOut_np):
   """PyTorch implementation of matrix multiplication backward pass"""
   A_torch = torch.from_numpy(A_np).float().requires_grad_(True)
   B_torch = torch.from_numpy(B_np).float().requires_grad_(True)
@@ -15,7 +15,7 @@ def torch_matmul_backward(A_np, B_np, dOut_np):
   return A_torch.grad.detach().numpy(), B_torch.grad.detach().numpy()
 
 
-def torch_input_embedding_backward(x_indices, W_E_np, dOut_np):
+def torch_input_embedding_bwd(x_indices, W_E_np, dOut_np):
   """PyTorch implementation of input embedding backward pass"""
   W_E_torch = torch.from_numpy(W_E_np).float().requires_grad_(True)
   x_indices_torch = torch.from_numpy(x_indices).long()
@@ -27,7 +27,7 @@ def torch_input_embedding_backward(x_indices, W_E_np, dOut_np):
   return W_E_torch.grad.detach().numpy()
 
 
-def torch_softmax_backward(x_np, grad_out_np):
+def torch_softmax_bwd(x_np, grad_out_np):
   """PyTorch implementation of softmax backward pass"""
   x_torch = torch.from_numpy(x_np).float().requires_grad_(True)
   grad_out_torch = torch.from_numpy(grad_out_np).float()
@@ -38,7 +38,7 @@ def torch_softmax_backward(x_np, grad_out_np):
   return x_torch.grad.detach().numpy()
 
 
-def torch_multi_head_attention_backward(q_np, k_np, v_np, dOut_np, *, causal=False):
+def torch_mha_bwd(q_np, k_np, v_np, dOut_np, *, causal=False):
   """PyTorch implementation of multi-head attention backward pass"""
   q_torch = torch.from_numpy(q_np).float().requires_grad_(True)
   k_torch = torch.from_numpy(k_np).float().requires_grad_(True)
@@ -63,7 +63,7 @@ def torch_multi_head_attention_backward(q_np, k_np, v_np, dOut_np, *, causal=Fal
   return (q_torch.grad.detach().numpy(), k_torch.grad.detach().numpy(), v_torch.grad.detach().numpy())
 
 
-def torch_qkv_projection_backward(x_np, W_Q_np, W_K_np, W_V_np, dOut_flat):
+def torch_qkv_proj_bwd(x_np, W_Q_np, W_K_np, W_V_np, dOut_flat):
   """PyTorch implementation of QKV projection backward pass"""
   batch_size, seq_len, d_model = x_np.shape
   _, d_qkv = W_Q_np.shape
@@ -91,7 +91,7 @@ def torch_qkv_projection_backward(x_np, W_Q_np, W_K_np, W_V_np, dOut_flat):
   )
 
 
-def torch_layer_norm_backward(x_np, gamma_np, beta_np, dOut_np, eps=1e-6):
+def torch_layer_norm_bwd(x_np, gamma_np, beta_np, dOut_np, eps=1e-6):
   """PyTorch implementation of layer norm backward pass (last-dim)."""
   x_t = torch.from_numpy(x_np).float().requires_grad_(True)
   gamma_t = torch.from_numpy(gamma_np).float().requires_grad_(True)
@@ -105,7 +105,7 @@ def torch_layer_norm_backward(x_np, gamma_np, beta_np, dOut_np, eps=1e-6):
   return (x_t.grad.detach().numpy(), gamma_t.grad.detach().numpy(), beta_t.grad.detach().numpy())
 
 
-def torch_feed_forward_backward(x_np, W1_np, W2_np, dOut_np):
+def torch_ffn_bwd(x_np, W1_np, W2_np, dOut_np):
   """PyTorch implementation of FFN (ReLU) backward pass."""
   x_t = torch.from_numpy(x_np).float().requires_grad_(True)
   W1_t = torch.from_numpy(W1_np).float().requires_grad_(True)
@@ -119,7 +119,7 @@ def torch_feed_forward_backward(x_np, W1_np, W2_np, dOut_np):
   return (x_t.grad.detach().numpy(), W1_t.grad.detach().numpy(), W2_t.grad.detach().numpy())
 
 
-def torch_block_backward(
+def torch_block_bwd(
   x_np,
   W_Q_np,
   W_K_np,
