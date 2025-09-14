@@ -5,7 +5,7 @@ tags:
   - technical
 description: and the backbone of the AI progress.
 date: "2024-02-07"
-modified: 2025-09-11 19:09:14 GMT-04:00
+modified: 2025-09-14 14:23:23 GMT-04:00
 title: Transformers
 ---
 
@@ -15,13 +15,46 @@ See also: [[thoughts/LLMs|LLMs]], [[thoughts/Embedding|embedding]], [visualisati
 
 ELI5: Mom often creates a food list consists of $n$ of items to buy. Your job is to guess what the last item on this list would be.
 
-Most implementations are [[thoughts/Autoregressive models|autoregressive]]. Most major SOTA are decoder-only, as encoder-decoder models has lack behind due to their expensive encoding phase.
+Most implementations are [[thoughts/Autoregressive models|autoregressive]]. Most major SOTA are decoder-only, given that encoder-decoder are mostly used for machine translation task.
 
-[[thoughts/state-space models|state-space models]] which address transformers' [efficiency issues](https://arxiv.org/pdf/2009.06732) in attention layers within information-dense data
+[[thoughts/state-space models|state-space models]] which address transformers' [efficiency issues](https://arxiv.org/pdf/2009.06732) in attention layers within information-dense data.
 
 ## internals
 
-See also: [transformers from scratch](https://e2eml.school/transformers.html), [[thoughts/mechanistic interpretability]], @geva2021transformerfeedforwardlayerskeyvalue
+See also: [transformers from scratch](https://e2eml.school/transformers.html), [[thoughts/mechanistic interpretability]], [[thoughts/tsfm|toronto school of foundational modelling]], @geva2021transformerfeedforwardlayerskeyvalue
+
+procedure: tokenization -> positional_embeddings -> input_embeddings -> ffn + attn -> hidden_states -> probability distributions -> sampled (next token)
+
+```mermaid
+flowchart LR
+  A["input_ids (B x T)\nexample: 5 x 128"] --> B["Token + Positional Embeddings\n(B x T x d_model)"]
+  B --> C["Transformer Blocks (×L)\n{Multi‑Head Attention + FFN}"]
+  C --> D["Logits\n(B x T x |V|)"]
+  D --> E["Softmax → Probabilities\n(B x T x |V|)"]
+  E --> F["Decode/Sample/Argmax\noutput_ids (B x T)"]
+```
+
+Objective (next‑token NLL / cross‑entropy): given logits $L \in R^{B\times T\times \mid V\mid}$ and probabilities `p = softmax(L)`, with gold next tokens $y \in V^{B\times T}$, training minimizes the negative log‑likelihood across tokens:
+
+$$
+\mathcal{L}(\theta) = -\frac{1}{B T_\text{eff}} \sum_{b=1}^B \sum_{t\in\mathcal{M}} \log\, p_\theta\big(y_{b,t}\mid x_{b,\le t}\big),
+$$
+
+where $\mathcal{M}$ indexes non‑padded, shift‑right targets.
+
+> [!note] intuition
+>
+> for each position in the batch and sequence (e.g., $5 \times 128$), the model produces a probability distribution over the vocabulary;
+>
+> the loss is the sum of the log probabilities assigned to the correct next tokens, averaged over all supervised positions.
+
+Let number of tokens $N$, embedding dim to $d$, we have embeddings $E \in R^{N\times d}$
+
+### [[thoughts/Embedding]]
+
+The idea of Q,K,V is to project with the embeddings to create $W_q, W_k, W_v$
+
+![[thoughts/Attention]]
 
 ## memory limitations.
 

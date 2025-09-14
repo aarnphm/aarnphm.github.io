@@ -158,17 +158,19 @@ document.addEventListener("nav", async () => {
   const textMapping: WeakMap<HTMLElement, string> = new WeakMap()
   for (const node of nodes) {
     const n = node.querySelector("code.mermaid") as HTMLDivElement
-    textMapping.set(n, n.innerText)
+    // Preserve exact source text (innerText may collapse whitespace)
+    textMapping.set(n, n.textContent ?? "")
   }
 
   async function renderMermaid() {
     // de-init any other diagrams
     for (const node of nodes) {
       const n = node.querySelector("code.mermaid") as HTMLDivElement
-      node.removeAttribute("data-processed")
-      const oldText = textMapping.get(node)
-      if (oldText) {
-        node.innerHTML = oldText
+      // Reset mermaid processing on the actual code node
+      n.removeAttribute("data-processed")
+      const oldText = textMapping.get(n)
+      if (oldText !== undefined) {
+        n.textContent = oldText
       }
     }
 
