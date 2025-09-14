@@ -12,8 +12,6 @@ from minigpt.np.modular import (
   block_bwd,
   layer_norm_bwd,
   ffn_bwd,
-)
-from minigpt.np.torch_primitives import (
   torch_matmul_bwd,
   torch_input_embedding_bwd,
   torch_softmax_bwd,

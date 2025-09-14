@@ -1,13 +1,20 @@
 from __future__ import annotations
 
-import argparse, json, math, time, dataclasses, pathlib
+import argparse, json, math, time, dataclasses, pathlib, os, threading, queue
+from collections.abc import Iterable
 
 import numpy as np
 from transformers import AutoTokenizer
 from datasets import load_dataset
 
+try:
+  from safetensors.numpy import save_file as st_save_file  # type: ignore
+  _HAVE_SAFETENSORS = True
+except Exception:
+  _HAVE_SAFETENSORS = False
+
 from minigpt.np.modular import (
-  softmax,
+  softmax, build_causal_mask,
   layer_norm as T_layer_norm,
   layer_norm_bwd as T_layer_norm_bwd,
   qkv_proj_fwd_cached as T_qkv_fwd,
@@ -57,6 +64,10 @@ def seed_everything(seed: int = 42) -> None:
 
 def get_rng():
   return globals().get('_GLOBAL_RNG', np.random.default_rng(42))
+
+
+def _timestamp() -> str:
+  return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
 
 
 def kaiming_uniform(shape, a=math.sqrt(5)):
@@ -204,7 +215,7 @@ def mha_forward(
   return y, cache
 
 
-def mha_backward(dY: np.ndarray, cache: dict):
+def mha_bwd(dY: np.ndarray, cache: dict):
   B, S, D = cache['x_shape']
   H, Dh = cache['H'], cache['Dh']
   qkv_cache = cache['qkv_cache']
@@ -225,7 +236,7 @@ def mha_backward(dY: np.ndarray, cache: dict):
   return dX, dW_Q, dW_K, dW_V, dW_O
 
 
-def mlp_forward(x: np.ndarray, W1: np.ndarray, W2: np.ndarray):
+def mlp_fwd(x: np.ndarray, W1: np.ndarray, W2: np.ndarray):
   y, cache = T_ff_fwd(
     x.astype(np.float32, copy=False),
     W1.astype(np.float32, copy=False), W2.astype(np.float32, copy=False)
@@ -233,7 +244,7 @@ def mlp_forward(x: np.ndarray, W1: np.ndarray, W2: np.ndarray):
   return y, cache
 
 
-def mlp_backward(dY: np.ndarray, cache):
+def mlp_bwd(dY: np.ndarray, cache):
   dX, dW1, dW2 = T_ff_bwd_cache(dY.astype(np.float32, copy=False), cache)
   return dX, dW1, dW2
 
@@ -273,28 +284,28 @@ def init_block(d_model: int, n_heads: int, d_ff: int) -> BlockParams:
   return BlockParams(W_Q, W_K, W_V, W_O, gamma1, beta1, W1, W2, gamma2, beta2)
 
 
-def block_forward(
+def block_fwd(
   x: np.ndarray, p: BlockParams, n_heads: int, *, attn_mask: np.ndarray | None
 ) -> tuple[np.ndarray, tuple]:
   ln1, ln1_cache = layer_norm_fwd(x, p.gamma1, p.beta1)
   attn_out, attn_cache = mha_forward(ln1, p.W_Q, p.W_K, p.W_V, p.W_O, n_heads=n_heads, attn_mask=attn_mask)
   x1 = x + attn_out
   ln2, ln2_cache = layer_norm_fwd(x1, p.gamma2, p.beta2)
-  ff_out, ff_cache = mlp_forward(ln2, p.W1, p.W2)
+  ff_out, ff_cache = mlp_fwd(ln2, p.W1, p.W2)
   y = x1 + ff_out
   cache = (ln1_cache, attn_cache, x, ln2_cache, ff_cache, x1)
   return y, cache
 
 
-def block_backward(dY: np.ndarray, p: BlockParams, cache, n_heads: int):
+def block_bwd(dY: np.ndarray, p: BlockParams, cache, n_heads: int):
   ln1_cache, attn_cache, x, ln2_cache, ff_cache, x1 = cache
   dX1 = dY.copy()
   dFF = dY.copy()
-  dLN2, dW1, dW2 = mlp_backward(dFF, ff_cache)
+  dLN2, dW1, dW2 = mlp_bwd(dFF, ff_cache)
   dX1_ln2, dgamma2, dbeta2 = layer_norm_bwd(dLN2 + dX1, ln2_cache)
   dX = dX1_ln2.copy()
   dAttn = dX1_ln2.copy()
-  dLN1, dW_Q, dW_K, dW_V, dW_O = mha_backward(dAttn, attn_cache)
+  dLN1, dW_Q, dW_K, dW_V, dW_O = mha_bwd(dAttn, attn_cache)
   dX_pre, dgamma1, dbeta1 = layer_norm_bwd(dLN1, ln1_cache)
   dX += dX_pre
   grads = {
@@ -314,6 +325,7 @@ def block_backward(dY: np.ndarray, p: BlockParams, cache, n_heads: int):
 
 @dataclasses.dataclass
 class LMConfig:
+  name: str = 'hinterland-np'
   tokenizer: str = 'Qwen/Qwen3-Next-80B-A3B-Instruct'
   d_model: int = 128
   n_heads: int = 4
@@ -332,6 +344,8 @@ class LMConfig:
   warmup_steps: int = 0
   eval_every: int = 50
   log_every: int = 10
+  stride: int = 0  # sliding window stride; 0 => seq_len
+  prefetch: int = 4
 
 
 @dataclasses.dataclass
@@ -357,7 +371,7 @@ def init_lm(config: LMConfig, tokenizer_vocab_size: int) -> LMParams:
   return LMParams(W_E, W_pos, blocks, gamma_f, beta_f, W_LM)
 
 
-def lm_forward(token_ids: np.ndarray, params: LMParams, config: LMConfig, *, attn_mask: np.ndarray | None):
+def lm_fwd(token_ids: np.ndarray, params: LMParams, config: LMConfig, *, attn_mask: np.ndarray | None):
   B, S = token_ids.shape
   D = config.d_model
   x_e, emb_cache = embedding_fwd(token_ids, params.W_E)
@@ -366,7 +380,7 @@ def lm_forward(token_ids: np.ndarray, params: LMParams, config: LMConfig, *, att
 
   block_caches = []
   for blk in params.blocks:
-    x, cache = block_forward(x, blk, n_heads=config.n_heads, attn_mask=attn_mask)
+    x, cache = block_fwd(x, blk, n_heads=config.n_heads, attn_mask=attn_mask)
     block_caches.append(cache)
 
   x_f, ln_f_cache = layer_norm_fwd(x, params.gamma_f, params.beta_f)
@@ -382,7 +396,7 @@ def lm_forward(token_ids: np.ndarray, params: LMParams, config: LMConfig, *, att
   return logits, caches
 
 
-def lm_backward(dLogits: np.ndarray, token_ids: np.ndarray, caches, params: LMParams, config: LMConfig):
+def lm_bwd(dLogits: np.ndarray, token_ids: np.ndarray, caches, params: LMParams, config: LMConfig):
   emb_cache, pos_cache, block_caches, ln_f_cache, lm_cache = caches
   B, S = token_ids.shape
   D = config.d_model
@@ -403,7 +417,7 @@ def lm_backward(dLogits: np.ndarray, token_ids: np.ndarray, caches, params: LMPa
   grads_blocks = []
   dX = dX_blocks
   for blk, cache in zip(reversed(params.blocks), reversed(block_caches)):
-    dX, g = block_backward(dX, blk, cache, n_heads=config.n_heads)
+    dX, g = block_bwd(dX, blk, cache, n_heads=config.n_heads)
     grads_blocks.append(g)
   grads_blocks = list(reversed(grads_blocks))
 
@@ -545,32 +559,152 @@ def prepare_text_stream(dataset_name: str = 'roneneldan/TinyStories', split: str
       yield txt
 
 
-def pack_tokens(token_iter: List[int], seq_len: int):
-  buf = []
-  for t in token_iter:
-    buf.append(t)
-    if len(buf) == seq_len:
-      yield np.array(buf, dtype=np.int64)
-      buf = []
+# ---------------------------
+# Tokenization to disk/memmap
+# ---------------------------
 
 
-def make_batch(tokenizer, text_iter, seq_len: int, batch_size: int, eos_id: int):
-  token_stream = []
-  for _ in range(batch_size * 32):
-    try:
-      txt = next(text_iter)
-    except StopIteration:
-      break
-    ids = tokenizer.encode(txt, add_special_tokens=False)
-    if eos_id is not None:
+@dataclasses.dataclass
+class TokenDataset:
+  path_bin: pathlib.Path
+  meta: dict
+  tokens: np.memmap
+
+  @property
+  def n_tokens(self) -> int:
+    return int(self.meta['n_tokens'])
+
+  @property
+  def dtype(self):
+    return np.dtype(self.meta.get('dtype', 'uint32'))
+
+  def sample_batch(self, batch_size: int, seq_len: int, stride: int, rng: np.random.Generator) -> tuple[np.ndarray, np.ndarray]:
+    max_start = self.n_tokens - (seq_len + 1)
+    if max_start <= 0:
+      raise ValueError('Not enough tokens to form a sequence')
+    if stride <= 0:
+      stride = 1
+    n_positions = max_start // stride + 1
+    pos_idx = rng.integers(0, n_positions, size=batch_size)
+    starts = (pos_idx * stride).astype(np.int64, copy=False)
+    x = np.empty((batch_size, seq_len), dtype=np.int64)
+    y = np.empty((batch_size, seq_len), dtype=np.int64)
+    for i, s in enumerate(starts):
+      seg = self.tokens[s : s + seq_len + 1]
+      x[i] = seg[:seq_len].astype(np.int64, copy=False)
+      y[i] = seg[1:].astype(np.int64, copy=False)
+    return x, y
+
+  def sequential_batches(self, seq_len: int, stride: int, batch_size: int, drop_last: bool = True) -> Iterable[tuple[np.ndarray, np.ndarray]]:
+    max_start = self.n_tokens - (seq_len + 1)
+    if max_start <= 0:
+      return
+    if stride <= 0:
+      stride = 1
+    starts = np.arange(0, max_start + 1, stride, dtype=np.int64)
+    for i in range(0, len(starts), batch_size):
+      bs = starts[i : i + batch_size]
+      if drop_last and bs.shape[0] < batch_size:
+        break
+      x = np.empty((bs.shape[0], seq_len), dtype=np.int64)
+      y = np.empty((bs.shape[0], seq_len), dtype=np.int64)
+      for j, s in enumerate(bs):
+        seg = self.tokens[s : s + seq_len + 1]
+        x[j] = seg[:seq_len].astype(np.int64, copy=False)
+        y[j] = seg[1:].astype(np.int64, copy=False)
+      yield x, y
+
+
+def _tokens_basename(dataset_name: str, split: str) -> str:
+  safe = dataset_name.replace('/', '__')
+  return f'{safe}.{split}'
+
+# we want to build/load the binary tokens beforehand, such that we avoid tokenization on the fly
+def build_or_load_tokens(
+  out_dir: pathlib.Path,
+  dataset_name: str,
+  split: str,
+  tokenizer,
+  *,
+  overwrite: bool = False,
+) -> TokenDataset:
+  out_dir.mkdir(parents=True, exist_ok=True)
+  base = _tokens_basename(dataset_name, split)
+  bin_path = out_dir / f'{base}.tokens.bin'
+  meta_path = out_dir / f'{base}.meta.json'
+  eos_id = tokenizer.eos_token_id or tokenizer.pad_token_id or 0
+
+  if not overwrite and bin_path.exists() and meta_path.exists():
+    with open(meta_path, 'r') as f:
+      meta = json.load(f)
+    n_tokens = int(meta['n_tokens'])
+    dtype = np.dtype(meta.get('dtype', 'uint32'))
+    tokens = np.memmap(bin_path, dtype=dtype, mode='r', shape=(n_tokens,))
+    return TokenDataset(bin_path, meta, tokens)
+
+  # Build token file by streaming and appending to .bin
+  tmp_path = out_dir / f'{base}.tmp.bin'
+  count = 0
+  with open(tmp_path, 'wb') as f:
+    pbar = tqdm(desc=f'tokenize:{split}', dynamic_ncols=True)
+    for txt in prepare_text_stream(dataset_name=dataset_name, split=split, streaming=True):
+      ids = tokenizer.encode(txt, add_special_tokens=False)
       ids = ids + [eos_id]
-    token_stream.extend(ids)
-  if len(token_stream) < seq_len * batch_size + 1:
-    return None
-  seqs = list(pack_tokens(token_stream, seq_len + 1))[:batch_size]
-  x = np.stack([s[:-1] for s in seqs], axis=0)
-  y = np.stack([s[1:] for s in seqs], axis=0)
-  return x, y
+      arr = np.asarray(ids, dtype=np.uint32)
+      arr.tofile(f)
+      count += arr.shape[0]
+      pbar.update(1)
+    pbar.close()
+  os.replace(tmp_path, bin_path)
+  meta = {
+    'dtype': 'uint32',
+    'n_tokens': int(count),
+    'eos_id': int(eos_id),
+    'tokenizer': str(getattr(tokenizer, 'name_or_path', 'unknown')),
+    'dataset_name': dataset_name,
+    'split': split,
+    'created_ts': time.time(),
+  }
+  with open(meta_path, 'w') as f:
+    json.dump(meta, f)
+  tokens = np.memmap(bin_path, dtype=np.uint32, mode='r', shape=(count,))
+  return TokenDataset(bin_path, meta, tokens)
+
+
+# BatchPrefetcher fills in a queue in a background thread to overlap both compute and processing data.
+class BatchPrefetcher:
+  def __init__(
+    self, ds: TokenDataset, batch_size: int, seq_len: int, stride: int, seed: int, prefetch: int = 4
+  ) -> None:
+    self.ds = ds
+    self.batch_size = batch_size
+    self.seq_len = seq_len
+    self.stride = stride
+    self.q: queue.Queue[tuple[np.ndarray, np.ndarray]] = queue.Queue(maxsize=max(1, prefetch))
+    self.stop_event = threading.Event()
+    self.rng = np.random.default_rng(seed)
+    self.th = threading.Thread(target=self._worker, daemon=True)
+    self.th.start()
+
+  def _worker(self):
+    while not self.stop_event.is_set():
+      try:
+        batch = self.ds.sample_batch(self.batch_size, self.seq_len, self.stride, self.rng)
+        self.q.put(batch)
+      except Exception:
+        self.stop_event.set()
+        break
+
+  def next(self, timeout: float | None = None) -> tuple[np.ndarray, np.ndarray]:
+    return self.q.get(timeout=timeout)
+
+  def stop(self):
+    self.stop_event.set()
+    try:
+      self.q.put_nowait((np.empty((0, 0), dtype=np.int64), np.empty((0, 0), dtype=np.int64)))
+    except Exception:
+      pass
+    self.th.join(timeout=1.0)
 
 
 # ---------------
@@ -581,14 +715,14 @@ def make_batch(tokenizer, text_iter, seq_len: int, batch_size: int, eos_id: int)
 def compute_loss_and_grads(
   x: np.ndarray, y: np.ndarray, params: LMParams, config: LMConfig, *, attn_mask: np.ndarray | None
 ):
-  logits, caches = lm_forward(x, params, config, attn_mask=attn_mask)
+  logits, caches = lm_fwd(x, params, config, attn_mask=attn_mask)
   B, S, V = logits.shape
   loss, dLogits2D = cross_entropy_logits(logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None)
   dLogits = dLogits2D.reshape(B, S, V)
-  grads = lm_backward(dLogits, x, caches, params, config)
+  grads = lm_bwd(dLogits, x, caches, params, config)
   return loss, grads
 
-
+# NOTE: This is not used anymore, given we replaced with memmapped implementation.
 def evaluate(
   data_iter,
   tokenizer,
@@ -605,12 +739,71 @@ def evaluate(
   iterator = range(steps)
   if show_progress:
     iterator = tqdm(iterator, total=steps, desc=desc or 'eval', leave=False, dynamic_ncols=True)
+
+  def make_batch(tokenizer, text_iter, seq_len: int, batch_size: int, eos_id: int):
+    token_stream = []
+    for _ in range(batch_size * 32):
+      try:
+        txt = next(text_iter)
+      except StopIteration:
+        break
+      ids = tokenizer.encode(txt, add_special_tokens=False)
+      if eos_id is not None:
+        ids = ids + [eos_id]
+      token_stream.extend(ids)
+    if len(token_stream) < seq_len * batch_size + 1:
+      return None
+
+    def pack_tokens(token_iter: List[int], seq_len: int):
+      buf = []
+      for t in token_iter:
+        buf.append(t)
+        if len(buf) == seq_len:
+          yield np.array(buf, dtype=np.int64)
+          buf = []
+
+    seqs = list(pack_tokens(token_stream, seq_len + 1))[:batch_size]
+    x = np.stack([s[:-1] for s in seqs], axis=0)
+    y = np.stack([s[1:] for s in seqs], axis=0)
+    return x, y
+
   for _ in iterator:
     batch = make_batch(tokenizer, data_iter, config.max_seq_len, config.batch_size, eos_id)
     if batch is None:
       break
     x, y = batch
-    logits, _ = lm_forward(x, params, config, attn_mask=attn_mask)
+    logits, _ = lm_fwd(x, params, config, attn_mask=attn_mask)
+    B, S, V = logits.shape
+    loss, _ = cross_entropy_logits(logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None)
+    losses.append(loss)
+  return float(np.mean(losses)) if losses else float('nan')
+
+
+def evaluate_tokens(
+  ds: TokenDataset,
+  tokenizer,
+  params: LMParams,
+  config: LMConfig,
+  steps: int = 50,
+  *,
+  attn_mask: np.ndarray | None,
+  stride: int | None = None,
+  show_progress: bool = False,
+  desc: str | None = None,
+):
+  losses: list[float] = []
+  stride_val = stride if stride is not None else (config.stride if config.stride > 0 else config.max_seq_len)
+  batch_iter = ds.sequential_batches(config.max_seq_len, stride_val, config.batch_size, drop_last=True)
+  batches = iter(batch_iter)
+  iterator = range(steps)
+  if show_progress:
+    iterator = tqdm(iterator, total=steps, desc=desc or 'eval', leave=False, dynamic_ncols=True)
+  for _ in iterator:
+    try:
+      x, y = next(batches)
+    except StopIteration:
+      break
+    logits, _ = lm_fwd(x, params, config, attn_mask=attn_mask)
     B, S, V = logits.shape
     loss, _ = cross_entropy_logits(logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None)
     losses.append(loss)
@@ -619,90 +812,166 @@ def evaluate(
 
 def train(config: LMConfig):
   seed_everything(config.seed)
-  out_dir = pathlib.Path('checkpoints')
+  out_dir = (checkpoint_dirs := pathlib.Path('checkpoints')) / config.name
   out_dir.mkdir(exist_ok=True, parents=True)
 
   tokenizer = load_tokenizer(config.tokenizer)
   # Use the true tokenizer size (includes added/special tokens), not base vocab_size.
   config.vocab_size = len(tokenizer)
 
+  # Build or load tokenized datasets (memmapped)
+  tokens_dir = checkpoint_dirs / 'tokens'
+  train_tokens = build_or_load_tokens(tokens_dir, 'roneneldan/TinyStories', 'train', tokenizer, overwrite=False)
+  val_tokens = build_or_load_tokens(tokens_dir, 'roneneldan/TinyStories', 'validation', tokenizer, overwrite=False)
+
   params = init_lm(config, tokenizer_vocab_size=len(tokenizer))
   opt = AdamW(params, lr=config.lr, betas=config.betas, weight_decay=config.weight_decay, grad_clip=config.grad_clip)
 
   # Build and cache a causal mask once per sequence length to avoid per-step allocation
   S = config.max_seq_len
-  causal_mask = np.tril(np.ones((S, S), dtype=bool), 0)
+  causal_mask = build_causal_mask(S, S)
 
-  train_stream = prepare_text_stream('roneneldan/TinyStories', split='train', streaming=True)
-  val_stream = prepare_text_stream('roneneldan/TinyStories', split='validation', streaming=True)
-  train_iter = iter(train_stream)
-  val_iter = iter(val_stream)
+  # Async prefetching batches from memmapped tokens with sliding window stride
+  stride = config.stride if config.stride > 0 else config.max_seq_len
+  prefetcher = BatchPrefetcher(
+    train_tokens,
+    batch_size=config.batch_size,
+    seq_len=config.max_seq_len,
+    stride=stride,
+    seed=config.seed + 1234,
+    prefetch=config.prefetch,
+  )
 
   train_losses = []
   val_points = []
   start = time.time()
   pbar = tqdm(total=config.steps, desc='train', dynamic_ncols=True)
   for step in range(1, config.steps + 1):
-    batch = None
-    while batch is None:
-      batch = make_batch(tokenizer, train_iter, config.max_seq_len, config.batch_size, tokenizer.eos_token_id)
-    x, y = batch
+    x, y = prefetcher.next()
 
     loss, grads = compute_loss_and_grads(x, y, params, config, attn_mask=causal_mask)
-    train_losses.append(loss)
+    train_losses.append(float(loss))
     opt.step(params, grads)
 
     if step % config.log_every == 0:
       elapsed = time.time() - start
       # keep the bar tidy while logging
       pbar.set_postfix({'loss': f'{loss:.4f}', 'elapsed_s': f'{elapsed:.2f}'})
-      pbar.write(f'step {step:5d} | loss {loss:.4f} | {elapsed:.2f}s')
+      pbar.write(f'[train] step {step:5d} | loss {loss:.4f} | {elapsed:.2f}s | {_timestamp()}')
 
     if step % config.eval_every == 0:
-      v_iter = iter(val_stream)
-      val_loss = evaluate(
-        v_iter, tokenizer, params, config, steps=20, attn_mask=causal_mask, show_progress=True, desc=f'eval@{step}'
+      val_loss = evaluate_tokens(
+        val_tokens,
+        tokenizer,
+        params,
+        config,
+        steps=20,
+        attn_mask=causal_mask,
+        stride=stride,
+        show_progress=True,
+        desc=f'eval@{step}',
       )
       val_points.append((step, float(val_loss)))
-      pbar.write(f'[eval] step {step} | val_loss {val_loss:.4f}')
+      pbar.write(f'[evals] step {step:5d} | val_loss {val_loss:.4f} | {_timestamp()}')
+
+      # Save an intermediate checkpoint at this step as well
+      _save_checkpoint(
+        out_dir,
+        step,
+        params,
+        config,
+        tokenizer_name=config.tokenizer,
+        train_losses=train_losses,
+        val_points=val_points,
+      )
 
     pbar.update(1)
 
-  ckpt = {
-    'config': dataclasses.asdict(config),
-    'params': {
-      'W_E': params.W_E.tolist(),
-      'W_pos': params.W_pos.tolist(),
-      'gamma_f': params.gamma_f.tolist(),
-      'beta_f': params.beta_f.tolist(),
-      'blocks': [
-        {
-          'W_Q': b.W_Q.tolist(),
-          'W_K': b.W_K.tolist(),
-          'W_V': b.W_V.tolist(),
-          'W_O': b.W_O.tolist(),
-          'gamma1': b.gamma1.tolist(),
-          'beta1': b.beta1.tolist(),
-          'W1': b.W1.tolist(),
-          'W2': b.W2.tolist(),
-          'gamma2': b.gamma2.tolist(),
-          'beta2': b.beta2.tolist(),
-        }
-        for b in params.blocks
-      ],
-    },
-    'train_losses': train_losses,
-    'val_points': val_points,
-    'tokenizer': config.tokenizer,
+  # Final checkpoint at last step
+  _save_checkpoint(
+    out_dir,
+    config.steps,
+    params,
+    config,
+    tokenizer_name=config.tokenizer,
+    train_losses=train_losses,
+    val_points=val_points,
+  )
+  prefetcher.stop()
+
+
+def _flatten_params_for_save(params: LMParams) -> dict[str, np.ndarray]:
+  state: dict[str, np.ndarray] = {}
+  # ensure float32 arrays
+  state['W_E'] = params.W_E.astype(np.float32, copy=False)
+  state['W_pos'] = params.W_pos.astype(np.float32, copy=False)
+  state['gamma_f'] = params.gamma_f.astype(np.float32, copy=False)
+  state['beta_f'] = params.beta_f.astype(np.float32, copy=False)
+  if params.W_LM is not None:
+    state['W_LM'] = params.W_LM.astype(np.float32, copy=False)
+  for i, b in enumerate(params.blocks):
+    prefix = f'blocks.{i}.'
+    state[prefix + 'W_Q'] = b.W_Q.astype(np.float32, copy=False)
+    state[prefix + 'W_K'] = b.W_K.astype(np.float32, copy=False)
+    state[prefix + 'W_V'] = b.W_V.astype(np.float32, copy=False)
+    state[prefix + 'W_O'] = b.W_O.astype(np.float32, copy=False)
+    state[prefix + 'gamma1'] = b.gamma1.astype(np.float32, copy=False)
+    state[prefix + 'beta1'] = b.beta1.astype(np.float32, copy=False)
+    state[prefix + 'W1'] = b.W1.astype(np.float32, copy=False)
+    state[prefix + 'W2'] = b.W2.astype(np.float32, copy=False)
+    state[prefix + 'gamma2'] = b.gamma2.astype(np.float32, copy=False)
+    state[prefix + 'beta2'] = b.beta2.astype(np.float32, copy=False)
+  return state
+
+
+def _save_checkpoint(
+  root: pathlib.Path,
+  step: int,
+  params: LMParams,
+  config: LMConfig,
+  *,
+  tokenizer_name: str,
+  train_losses: list[float],
+  val_points: list[tuple[int, float]],
+) -> None:
+  step_dir = root / f'steps_{step}'
+  step_dir.mkdir(parents=True, exist_ok=True)
+
+  # Save weights
+  weights_path = step_dir / ('weights.safetensors' if _HAVE_SAFETENSORS else 'weights.npz')
+  flat = _flatten_params_for_save(params)
+  if _HAVE_SAFETENSORS:
+    st_save_file(flat, str(weights_path))
+  else:
+    # Fallback to portable NPZ
+    np.savez_compressed(weights_path, **flat)
+
+  # Save config
+  cfg_path = step_dir / 'config.json'
+  cfg_dict = dataclasses.asdict(config)
+  # Ensure simple JSON types for nested fields
+  if isinstance(cfg_dict.get('betas'), tuple):
+    cfg_dict['betas'] = list(cfg_dict['betas'])
+  with open(cfg_path, 'w') as fcfg:
+    json.dump(cfg_dict, fcfg)
+
+  # Save training metadata
+  meta = {
+    'name': config.name,
+    'step': int(step),
+    'tokenizer': tokenizer_name,
+    'train_losses': [float(x) for x in train_losses],
+    'val_points': [[int(s), float(v)] for (s, v) in val_points],
   }
-  with open(out_dir / 'lm_numpy_qwen_tinystories.json', 'w') as f:
-    json.dump(ckpt, f)
-  print(f'Saved checkpoint to {out_dir / "lm_numpy_qwen_tinystories.json"}')
+  with open(step_dir / 'meta.json', 'w') as fm:
+    json.dump(meta, fm)
+  print(f'Saved checkpoint @ step {step} to {step_dir} | {_timestamp()}')
 
 
 def main():
   p = argparse.ArgumentParser()
-  p.add_argument('--steps', type=int, default=200)
+  p.add_argument('--name', type=str, default='hinterland-np', help='Model name; checkpoints saved under checkpoints/<name>/')
+  p.add_argument('--steps', type=int, default=1000)
   p.add_argument('--d_model', type=int, default=128)
   p.add_argument('--n_heads', type=int, default=4)
   p.add_argument('--n_layers', type=int, default=2)
@@ -714,9 +983,12 @@ def main():
   p.add_argument('--eval_every', type=int, default=50)
   p.add_argument('--log_every', type=int, default=10)
   p.add_argument('--tokenizer', type=str, default='Qwen/Qwen3-Next-80B-A3B-Instruct')
+  p.add_argument('--stride', type=int, default=0, help='sliding window stride (0 => seq_len)')
+  p.add_argument('--prefetch', type=int, default=4, help='number of prefetched batches')
   args = p.parse_args()
 
   cfg = LMConfig(
+    name=args.name,
     tokenizer=args.tokenizer,
     d_model=args.d_model,
     n_heads=args.n_heads,
@@ -730,6 +1002,8 @@ def main():
     grad_clip=args.grad_clip,
     eval_every=args.eval_every,
     log_every=args.log_every,
+    stride=args.stride,
+    prefetch=args.prefetch,
   )
   train(cfg)
 

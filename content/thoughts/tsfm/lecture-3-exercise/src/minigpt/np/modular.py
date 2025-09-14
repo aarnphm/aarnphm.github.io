@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import numpy as np, numpy.typing as npt
+import numpy as np, numpy.typing as npt, torch, torch.nn.functional as F
 
 
 def build_causal_mask(Sq: int, Sk: int) -> npt.NDArray[np.float32]:
@@ -374,3 +374,185 @@ def block_bwd(
 
   dX = dRes1 + (dXq + dXk + dXv).reshape(B, S, d_model)
   return dX, dW_Q, dW_K, dW_V, dW_O, dW1, dW2, (dG1 + dG2), (dB1 + dB2)
+
+# ---------------------------
+# Torch version of components
+# ---------------------------
+
+def torch_matmul_bwd(A_np, B_np, dOut_np):
+  A = torch.from_numpy(A_np).float().requires_grad_(True)
+  B = torch.from_numpy(B_np).float().requires_grad_(True)
+  dOut = torch.from_numpy(dOut_np).float()
+
+  output = A @ B
+  output.backward(dOut)
+
+  return A.grad.detach().numpy(), B.grad.detach().numpy()
+
+
+def torch_input_embedding_bwd(x_indices, W_E_np, dOut_np):
+  W_E = torch.from_numpy(W_E_np).float().requires_grad_(True)
+  x_indices = torch.from_numpy(x_indices).long()
+  dOut = torch.from_numpy(dOut_np).float()
+
+  output = F.embedding(x_indices, W_E)
+  output.backward(dOut)
+
+  return W_E.grad.detach().numpy()
+
+
+def torch_softmax_bwd(x_np, grad_out_np):
+  x = torch.from_numpy(x_np).float().requires_grad_(True)
+  grad_out = torch.from_numpy(grad_out_np).float()
+
+  softmax_output = F.softmax(x, dim=-1)
+  softmax_output.backward(grad_out)
+
+  return x.grad.detach().numpy()
+
+
+def torch_mha_bwd(q_np, k_np, v_np, dOut_np, *, causal=False):
+  q = torch.from_numpy(q_np).float().requires_grad_(True)
+  k = torch.from_numpy(k_np).float().requires_grad_(True)
+  v = torch.from_numpy(v_np).float().requires_grad_(True)
+  dOut = torch.from_numpy(dOut_np).float()
+
+  # Multi-head attention forward pass
+  d_h = q.shape[-1]
+  attn_scores = q @ k.transpose(-2, -1) / np.sqrt(d_h)
+
+  if causal:
+    S = attn_scores.shape[-1]
+    mask = torch.tril(torch.ones((S, S), dtype=torch.bool))
+    if attn_scores.dim() == 4:
+      mask = mask.unsqueeze(0).unsqueeze(0)  # (1,1,S,S)
+    attn_scores = torch.where(mask, attn_scores, torch.tensor(1e-9, dtype=attn_scores.dtype))
+  attn_weights = F.softmax(attn_scores, dim=-1)
+  output = attn_weights @ v
+
+  output.backward(dOut)
+
+  return (q.grad.detach().numpy(), k.grad.detach().numpy(), v.grad.detach().numpy())
+
+
+def torch_qkv_proj_bwd(x_np, W_Q_np, W_K_np, W_V_np, d_out_flat):
+  batch_size, seq_len, d_model = x_np.shape
+  _, d_qkv = W_Q_np.shape
+
+  x = torch.from_numpy(x_np).float().requires_grad_(True)
+  W_Q = torch.from_numpy(W_Q_np).float().requires_grad_(True)
+  W_K = torch.from_numpy(W_K_np).float().requires_grad_(True)
+  W_V = torch.from_numpy(W_V_np).float().requires_grad_(True)
+  d_out = torch.from_numpy(d_out_flat.reshape(batch_size, seq_len, d_qkv)).float()
+
+  # QKV projection forward pass
+  q = x @ W_Q
+  k = x @ W_K
+  v = x @ W_V
+
+  # Sum outputs since they share the same input x
+  dX = q + k + v
+  dX.backward(d_out)
+
+  return (
+    x.grad.reshape(-1, d_model).detach().numpy(),
+    W_Q.grad.detach().numpy(),
+    W_K.grad.detach().numpy(),
+    W_V.grad.detach().numpy(),
+  )
+
+
+def torch_layer_norm_bwd(x_np, gamma_np, beta_np, dOut_np, eps=1e-6):
+  x_t = torch.from_numpy(x_np).float().requires_grad_(True)
+  gamma_t = torch.from_numpy(gamma_np).float().requires_grad_(True)
+  beta_t = torch.from_numpy(beta_np).float().requires_grad_(True)
+  dOut_t = torch.from_numpy(dOut_np).float()
+
+  D = x_np.shape[-1]
+  y = F.layer_norm(x_t, normalized_shape=(D,), weight=gamma_t, bias=beta_t, eps=eps)
+  y.backward(dOut_t)
+
+  return (x_t.grad.detach().numpy(), gamma_t.grad.detach().numpy(), beta_t.grad.detach().numpy())
+
+
+def torch_ffn_bwd(x_np, W1_np, W2_np, dOut_np):
+  x_t = torch.from_numpy(x_np).float().requires_grad_(True)
+  W1_t = torch.from_numpy(W1_np).float().requires_grad_(True)
+  W2_t = torch.from_numpy(W2_np).float().requires_grad_(True)
+  dOut_t = torch.from_numpy(dOut_np).float()
+
+  a1 = torch.relu(x_t @ W1_t)
+  y = a1 @ W2_t
+  y.backward(dOut_t)
+
+  return (x_t.grad.detach().numpy(), W1_t.grad.detach().numpy(), W2_t.grad.detach().numpy())
+
+
+def torch_block_bwd(
+  x_np,
+  W_Q_np,
+  W_K_np,
+  W_V_np,
+  W_O_np,
+  W_FF_expand_np,
+  W_FF_contract_np,
+  gamma_np,
+  beta_np,
+  dOut_np,
+  eps=1e-6,
+  causal=False,
+):
+  x_t = torch.from_numpy(x_np).float().requires_grad_(True)
+  W_Q_t = torch.from_numpy(W_Q_np).float().requires_grad_(True)
+  W_K_t = torch.from_numpy(W_K_np).float().requires_grad_(True)
+  W_V_t = torch.from_numpy(W_V_np).float().requires_grad_(True)
+  W_O_t = torch.from_numpy(W_O_np).float().requires_grad_(True)
+  W_FF_expand_t = torch.from_numpy(W_FF_expand_np).float().requires_grad_(True)
+  W_FF_contract_t = torch.from_numpy(W_FF_contract_np).float().requires_grad_(True)
+  gamma_t = torch.from_numpy(gamma_np).float().requires_grad_(True)
+  beta_t = torch.from_numpy(beta_np).float().requires_grad_(True)
+  dOut_t = torch.from_numpy(dOut_np).float()
+
+  # QKV projections
+  q_t = x_t @ W_Q_t
+  k_t = x_t @ W_K_t
+  v_t = x_t @ W_V_t
+
+  # Multi-head attention (batched matmul on 3D tensors)
+  d_h = q_t.shape[-1]
+  scores = (q_t @ k_t.transpose(-2, -1)) / np.sqrt(d_h)
+  if causal:
+    S = scores.shape[-1]
+    mask = torch.tril(torch.ones((S, S), dtype=torch.bool))
+    scores = torch.where(mask, scores, torch.tensor(float('-inf'), dtype=scores.dtype))
+  weights = torch.softmax(scores, dim=-1)
+  attn_out = weights @ v_t
+
+  # Output projection
+  attn_proj = attn_out @ W_O_t
+
+  # Residual + LN
+  res1 = x_t + attn_proj
+  ln1 = F.layer_norm(res1, normalized_shape=(x_np.shape[-1],), weight=gamma_t, bias=beta_t, eps=eps)
+
+  # FFN with ReLU
+  ff = torch.relu(ln1 @ W_FF_expand_t) @ W_FF_contract_t
+
+  # Residual + LN
+  res2 = ln1 + ff
+  ln2 = F.layer_norm(res2, normalized_shape=(x_np.shape[-1],), weight=gamma_t, bias=beta_t, eps=eps)
+
+  # Backprop
+  ln2.backward(dOut_t)
+
+  return (
+    x_t.grad.detach().numpy(),
+    W_Q_t.grad.detach().numpy(),
+    W_K_t.grad.detach().numpy(),
+    W_V_t.grad.detach().numpy(),
+    W_O_t.grad.detach().numpy(),
+    W_FF_expand_t.grad.detach().numpy(),
+    W_FF_contract_t.grad.detach().numpy(),
+    gamma_t.grad.detach().numpy(),
+    beta_t.grad.detach().numpy(),
+  )
