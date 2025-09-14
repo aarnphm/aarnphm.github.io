@@ -5,7 +5,7 @@ tags:
   - ml
 description: from scratch frfr
 date: "2025-09-11"
-modified: 2025-09-13 20:24:15 GMT-04:00
+modified: 2025-09-14 02:27:37 GMT+00:00
 title: numpy implementation of Transformer
 ---
 
@@ -27,7 +27,7 @@ uv sync
 Run the provided gradient checks:
 
 ```bash
-python test_backward_passes.py
+pytest test_backward_passes.py
 ```
 
 ## assignment

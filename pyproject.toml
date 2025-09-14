@@ -24,11 +24,13 @@ dependencies = [
   "scikit-learn>=1.5.2",
   "pandas>=2.2.3",
   "jupyterlab-vim>=4.1.4",
+  "pytest>=8.4.2",
 ]
 dynamic = ["version"]
 
 [tool.uv.sources]
 minibpe = { path = "content/thoughts/tsfm/lecture-2-exercise" }
+minitransformers = { path = "content/thoughts/tsfm/lecture-3-exercise" }
 
 [tool.hatch.version]
 source = "nodejs"
