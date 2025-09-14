@@ -7,12 +7,12 @@ from transformers import AutoTokenizer
 
 from minigpt.np.ds import LMConfig, LMParams, BlockParams
 
-# Low-level ops
+# low-level ops
 from minigpt.np.modular import (
   softmax,
   layer_norm as T_layer_norm,
-  qkv_proj_fwd_cached as T_qkv_fwd,
-  mha_fwd_cached as T_attn_fwd,
+  qkv_proj as T_qkv_fwd,
+  mha_fwd as T_attn_fwd,
   ffn as T_ff,
 )
 
@@ -136,7 +136,7 @@ def _prefill(
   for li, blk in enumerate(params.blocks):
     ln1 = T_layer_norm(x.astype(np.float32, copy=False), blk.gamma1, blk.beta1)  # (1, S, D)
     X2D = ln1.reshape(B * S, D)
-    (q2d, k2d, v2d), _ = T_qkv_fwd(
+    q2d, k2d, v2d = T_qkv_fwd(
       X2D,
       blk.W_Q.astype(np.float32, copy=False),
       blk.W_K.astype(np.float32, copy=False),
@@ -151,13 +151,17 @@ def _prefill(
     kv.layers[li].k[:, :S, :] = k[0]
     kv.layers[li].v[:, :S, :] = v[0]
 
-    attn_out, _ = T_attn_fwd(q, k, v, causal=True, attn_mask=None)  # (1, H, S, Dh)
+    attn_out = T_attn_fwd(q, k, v, causal=True, attn_mask=None)  # (1, H, S, Dh)
     context2d = attn_out.transpose(0, 2, 1, 3).reshape(B * S, H * Dh)
     out2d = context2d @ blk.W_O.astype(np.float32, copy=False)
+
+    # residual stream
     x1 = x + out2d.reshape(B, S, D)
 
     ln2 = T_layer_norm(x1.astype(np.float32, copy=False), blk.gamma2, blk.beta2)
     ff = T_ff(ln2.astype(np.float32, copy=False), blk.W1.astype(np.float32, copy=False), blk.W2.astype(np.float32, copy=False))
+
+    # residual stream
     x = x1 + ff
 
   kv.seq_len = S
@@ -171,6 +175,7 @@ def _prefill(
     logits2D = x_f.reshape(B * S, D) @ params.W_LM
     logits = logits2D.reshape(B, S, -1)
 
+  # Return next-token logits for the last context position and the filled KV cache.
   return logits[0, -1], kv  # (V,), KVCache
 
 
@@ -192,7 +197,7 @@ def _decode_one(
     # Pre-norm
     ln1 = T_layer_norm(x.astype(np.float32, copy=False), blk.gamma1, blk.beta1)  # (1, 1, D)
     X2D = ln1.reshape(1, D)
-    (q2d, k2d, v2d), _ = T_qkv_fwd(
+    q2d, k2d, v2d = T_qkv_fwd(
       X2D,
       blk.W_Q.astype(np.float32, copy=False),
       blk.W_K.astype(np.float32, copy=False),
@@ -217,7 +222,7 @@ def _decode_one(
     V[0, :, cur:cur + 1, :] = v_new[0]
 
     # Single-step attention (no mask needed since keys include only <= current)
-    attn_out, _ = T_attn_fwd(q, K, V, causal=False, attn_mask=None)  # (1, H, 1, Dh)
+    attn_out = T_attn_fwd(q, K, V, causal=False, attn_mask=None)  # (1, H, 1, Dh)
     context2d = attn_out.transpose(0, 2, 1, 3).reshape(1, H * Dh)
     out2d = context2d @ blk.W_O.astype(np.float32, copy=False)
     x1 = x + out2d.reshape(1, 1, D)
@@ -242,6 +247,29 @@ def _decode_one(
     logits = logits.reshape(1, 1, -1)
 
   return logits[0, 0]  # (V,)
+
+
+def _sample_from_logits(
+  logits: np.ndarray,
+  *,
+  temperature: float,
+  top_k: int,
+  top_p: float,
+  rng: np.random.Generator,
+) -> int:
+  """Sample a token id from 1D logits with temperature/top-k/top-p.
+
+  Uses greedy argmax when temperature <= 0.
+  """
+  if temperature <= 0:
+    return int(np.argmax(logits))
+
+  scaled = logits.astype(np.float64) / max(temperature, 1e-8)
+  scaled = top_k_top_p_filtering(scaled, k=top_k, p=top_p)
+  probs = softmax(scaled.astype(np.float32))
+  probs = np.clip(probs, 1e-12, 1.0)
+  probs = probs / probs.sum()
+  return int(rng.choice(len(probs), p=probs))
 
 
 def top_k_top_p_filtering(logits: np.ndarray, k: int = 0, p: float = 0.0) -> np.ndarray:
@@ -299,24 +327,20 @@ def generate(
 
   eos_id = tokenizer.eos_token_id if tokenizer.eos_token_id is not None else tokenizer.pad_token_id
 
-  # 1) Prefill on the full prompt (caches K/V up to len(ids))
+  # prefill on the full prompt (caches K/V up to len(ids))
   ctx = ids[-config.max_seq_len :]
   x = np.array(ctx, dtype=np.int64)[None, :]  # (1, S)
   last_logits, kv = _prefill(x, params, config)
 
-  # 2) Sample first new token from prefill logits
+  # decode: sample from prefill logits, then iteratively update via KV cache
   for _ in range(max_new_tokens):
-    next_logits = last_logits.astype(np.float64)
-    if temperature <= 0:
-      next_id = int(np.argmax(next_logits))
-    else:
-      scaled = next_logits / max(temperature, 1e-8)
-      scaled = top_k_top_p_filtering(scaled, k=top_k, top_p=top_p)
-      probs = softmax(scaled.astype(np.float32))
-      # equivalent to torch.multinomial
-      probs = np.clip(probs, 1e-12, 1.0)
-      probs = probs / probs.sum()
-      next_id = int(rng.choice(len(probs), p=probs))
+    next_id = _sample_from_logits(
+      last_logits,
+      temperature=temperature,
+      top_k=top_k,
+      top_p=top_p,
+      rng=rng,
+    )
 
     ids.append(next_id)
     if eos_id is not None and next_id == eos_id:
@@ -324,7 +348,7 @@ def generate(
     if kv.seq_len >= config.max_seq_len:
       break
 
-    # 3) Decode next position using KV cache
+    # decode next position using kv cache
     last_logits = _decode_one(next_id, kv, params, config)
 
   return tokenizer.decode(ids, skip_special_tokens=True)

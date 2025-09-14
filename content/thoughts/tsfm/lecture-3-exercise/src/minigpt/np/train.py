@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import argparse, json, math, time, dataclasses, pathlib, os, threading, queue
+import argparse, json, math, time, dataclasses, pathlib, os, threading, queue, sys
 from collections.abc import Iterable
 
 import numpy as np
@@ -8,7 +8,7 @@ from transformers import AutoTokenizer
 from datasets import load_dataset
 
 try:
-  from safetensors.numpy import save_file as st_save_file  # type: ignore
+  from safetensors.numpy import save_file as st_save_file, load_file as st_load_file  # type: ignore
   _HAVE_SAFETENSORS = True
 except Exception:
   _HAVE_SAFETENSORS = False
@@ -19,8 +19,8 @@ from minigpt.np.modular import (
   layer_norm_bwd as T_layer_norm_bwd,
   qkv_proj_fwd_cached as T_qkv_fwd,
   qkv_proj_bwd_from_cache as T_qkv_bwd_cache,
-  mha_fwd_cached as T_attn_fwd,
-  mha_bwd_from_cache as T_attn_bwd_cache,
+  mha_fwd as T_attn_fwd,
+  mha_bwd as T_attn_bwd,
   ffn_cached as T_ff_fwd,
   ffn_bwd_from_cache as T_ff_bwd_cache,
 )
@@ -56,6 +56,51 @@ except Exception:
 
   def tqdm(*args, **kwargs):  # type: ignore
     return _TqdmFallback(*args, **kwargs)
+
+
+def _is_truthy(s: str | None) -> bool:
+  if s is None:
+    return False
+  return s.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def is_interactive() -> bool:
+  # Allow override via env: FORCE_TQDM=1 to force, NO_TQDM=1 to disable
+  if _is_truthy(os.environ.get('FORCE_TQDM')):
+    return True
+  if _is_truthy(os.environ.get('NO_TQDM')):
+    return False
+  try:
+    return sys.stdout.isatty()
+  except Exception:
+    return False
+
+
+class _LogProgress:
+  def __init__(self, total: int | None = None, desc: str | None = None):
+    self.total = total
+    self.desc = desc
+    self.n = 0
+
+  def update(self, n: int = 1):
+    self.n += n
+
+  def set_postfix(self, *args, **kwargs):
+    # no-op for non-interactive logging
+    pass
+
+  def write(self, s: str):
+    print(s, flush=True)
+
+  def close(self):
+    # no-op
+    pass
+
+
+def make_progress(total: int | None = None, desc: str | None = None):
+  if is_interactive():
+    return tqdm(total=total, desc=desc, dynamic_ncols=True)
+  return _LogProgress(total=total, desc=desc)
 
 
 def seed_everything(seed: int = 42) -> None:
@@ -227,7 +272,9 @@ def mha_forward(
   k = k2d.reshape(B, S, H, Dh).transpose(0, 2, 1, 3)
   v = v2d.reshape(B, S, H, Dh).transpose(0, 2, 1, 3)
 
-  attn_out, attn_cache = T_attn_fwd(q, k, v, causal=attn_mask is None, attn_mask=attn_mask)
+  # Non-cached attention forward (do not store attn/q/k/v to save memory)
+  causal_flag = attn_mask is None
+  attn_out = T_attn_fwd(q, k, v, causal=causal_flag, attn_mask=attn_mask)
 
   context2d = attn_out.transpose(0, 2, 1, 3).reshape(B * S, H * Dh)
   out2d, o_cache = linear_fwd(context2d, W_O.astype(np.float32, copy=False))
@@ -236,26 +283,41 @@ def mha_forward(
     'x_shape': (B, S, D),
     'H': H,
     'Dh': Dh,
+    # minimal info for recomputation in backward
     'qkv_cache': qkv_cache,
-    'attn_cache': attn_cache,
+    'causal': causal_flag,
     'o_cache': o_cache,
   }
   return y, cache
 
 
 def mha_bwd(dY: np.ndarray, cache: dict):
+  # Shapes/params
   B, S, D = cache['x_shape']
   H, Dh = cache['H'], cache['Dh']
   qkv_cache = cache['qkv_cache']
-  attn_cache = cache['attn_cache']
   o_cache = cache['o_cache']
+  causal_flag = cache.get('causal', True)
 
+  # Backward through output projection
   dOut2D = dY.reshape(B * S, D).astype(np.float32, copy=False)
   dCtx2D, dW_O = linear_bwd(dOut2D, o_cache)
   dCtx = dCtx2D.reshape(B, S, H, Dh).transpose(0, 2, 1, 3)
 
-  dQ, dK, dV = T_attn_bwd_cache(dCtx, attn_cache)
+  # Recompute Q, K, V from cached input/weights
+  X2D, W_Q, W_K, W_V = qkv_cache
+  q2d = X2D @ W_Q
+  k2d = X2D @ W_K
+  v2d = X2D @ W_V
+  q = q2d.reshape(B, S, H, Dh).transpose(0, 2, 1, 3)
+  k = k2d.reshape(B, S, H, Dh).transpose(0, 2, 1, 3)
+  v = v2d.reshape(B, S, H, Dh).transpose(0, 2, 1, 3)
 
+  # Recompute attention backward (no cache)
+  attn_mask = None if causal_flag else build_causal_mask(S, S)
+  dQ, dK, dV = T_attn_bwd(q, k, v, dCtx, causal=causal_flag, attn_mask=attn_mask)
+
+  # Backprop through QKV projections (using cached x/weights only)
   dQ2D = dQ.transpose(0, 2, 1, 3).reshape(B * S, H * Dh)
   dK2D = dK.transpose(0, 2, 1, 3).reshape(B * S, H * Dh)
   dV2D = dV.transpose(0, 2, 1, 3).reshape(B * S, H * Dh)
@@ -306,12 +368,13 @@ def block_fwd(
   ln2, ln2_cache = layer_norm_fwd(x1, p.gamma2, p.beta2)
   ff_out, ff_cache = mlp_fwd(ln2, p.W1, p.W2)
   y = x1 + ff_out
-  cache = (ln1_cache, attn_cache, x, ln2_cache, ff_cache, x1)
+  # Cache only what backward actually needs: ln1, attn, ln2, ff caches
+  cache = (ln1_cache, attn_cache, ln2_cache, ff_cache)
   return y, cache
 
 
 def block_bwd(dY: np.ndarray, p: BlockParams, cache, n_heads: int):
-  ln1_cache, attn_cache, x, ln2_cache, ff_cache, x1 = cache
+  ln1_cache, attn_cache, ln2_cache, ff_cache = cache
   dX1 = dY.copy()
   dFF = dY.copy()
   dLN2, dW1, dW2 = mlp_bwd(dFF, ff_cache)
@@ -633,7 +696,7 @@ def build_or_load_tokens(
   tmp_path = out_dir / f'{base}.tmp.bin'
   count = 0
   with open(tmp_path, 'wb') as f:
-    pbar = tqdm(desc=f'tokenize:{split}', dynamic_ncols=True)
+    pbar = make_progress(desc=f'tokenize:{split}')
     for txt in prepare_text_stream(dataset_name=dataset_name, split=split, streaming=True):
       ids = tokenizer.encode(txt, add_special_tokens=False)
       ids = ids + [eos_id]
@@ -724,7 +787,7 @@ def evaluate(
   losses = []
   eos_id = tokenizer.eos_token_id or tokenizer.pad_token_id or 0
   iterator = range(steps)
-  if show_progress:
+  if show_progress and is_interactive():
     iterator = tqdm(iterator, total=steps, desc=desc or 'eval', leave=False, dynamic_ncols=True)
 
   def make_batch(tokenizer, text_iter, seq_len: int, batch_size: int, eos_id: int):
@@ -783,7 +846,7 @@ def evaluate_tokens(
   batch_iter = ds.sequential_batches(config.max_seq_len, stride_val, config.batch_size, drop_last=True)
   batches = iter(batch_iter)
   iterator = range(steps)
-  if show_progress:
+  if show_progress and is_interactive():
     iterator = tqdm(iterator, total=steps, desc=desc or 'eval', leave=False, dynamic_ncols=True)
   for _ in iterator:
     try:
@@ -811,8 +874,41 @@ def train(config: LMConfig):
   train_tokens = build_or_load_tokens(tokens_dir, 'roneneldan/TinyStories', 'train', tokenizer, overwrite=False)
   val_tokens = build_or_load_tokens(tokens_dir, 'roneneldan/TinyStories', 'validation', tokenizer, overwrite=False)
 
-  params = init_lm(config, tokenizer_vocab_size=len(tokenizer))
-  opt = AdamW(params, lr=config.lr, betas=config.betas, weight_decay=config.weight_decay, grad_clip=config.grad_clip)
+  # Try to resume from the latest checkpoint if present
+  resume = _maybe_load_latest_checkpoint(out_dir)
+  if resume is not None:
+    last_step, loaded_params, train_losses, val_points, loaded_opt_state = resume
+    # Align config architecture with checkpoint to avoid shape mismatches
+    arch_cfg = _load_arch_config(out_dir, last_step)
+    if arch_cfg is not None:
+      for k in ['d_model', 'n_heads', 'n_layers', 'd_ff', 'weight_tying', 'max_seq_len']:
+        if k in arch_cfg:
+          setattr(config, k, arch_cfg[k])
+    # Validate vocab size compatibility
+    if loaded_params.W_E.shape[0] != config.vocab_size:
+      raise ValueError(
+        f"Tokenizer vocab size {config.vocab_size} != checkpoint {loaded_params.W_E.shape[0]}"
+      )
+    params = loaded_params
+    opt = AdamW(params, lr=config.lr, betas=config.betas, weight_decay=config.weight_decay, grad_clip=config.grad_clip)
+    if loaded_opt_state is not None:
+      _load_optimizer_state_into(opt, params, loaded_opt_state)
+    start_step = last_step
+    # If we resume, interpret config.steps as additional steps to run
+    target_step = start_step + int(config.steps)
+  else:
+    params = init_lm(config, tokenizer_vocab_size=len(tokenizer))
+    opt = AdamW(
+      params,
+      lr=config.lr,
+      betas=config.betas,
+      weight_decay=config.weight_decay,
+      grad_clip=config.grad_clip,
+    )
+    train_losses = []
+    val_points = []
+    start_step = 0
+    target_step = int(config.steps)
 
   # Build and cache a causal mask once per sequence length to avoid per-step allocation
   S = config.max_seq_len
@@ -829,11 +925,10 @@ def train(config: LMConfig):
     prefetch=config.prefetch,
   )
 
-  train_losses = []
-  val_points = []
   start = time.time()
-  pbar = tqdm(total=config.steps, desc='train', dynamic_ncols=True)
-  for step in range(1, config.steps + 1):
+  remaining = max(0, target_step - start_step)
+  pbar = make_progress(total=remaining, desc='train')
+  for step in range(start_step + 1, target_step + 1):
     x, y = prefetcher.next()
 
     loss, grads = compute_loss_and_grads(x, y, params, config, attn_mask=causal_mask)
@@ -843,8 +938,9 @@ def train(config: LMConfig):
     if step % config.log_every == 0:
       elapsed = time.time() - start
       # keep the bar tidy while logging
-      pbar.set_postfix({'loss': f'{loss:.4f}', 'elapsed_s': f'{elapsed:.2f}'})
-      pbar.write(f'[train] step {step:5d} | loss {loss:.4f} | {_timestamp()}')
+      if is_interactive():
+        pbar.set_postfix({'loss': f'{loss:.4f}', 'elapsed_s': f'{elapsed:.2f}'})
+      pbar.write(f'[train] step {step:5d} | loss {loss:.4f} | elapsed {elapsed:.2f}s | {_timestamp()}')
 
     if step % config.eval_every == 0:
       val_loss = evaluate_tokens(
@@ -855,11 +951,11 @@ def train(config: LMConfig):
         steps=20,
         attn_mask=causal_mask,
         stride=stride,
-        show_progress=True,
+        show_progress=is_interactive(),
         desc=f'eval@{step}',
       )
       val_points.append((step, float(val_loss)))
-      pbar.write(f'[evals] step {step:5d} | val_loss {val_loss:.4f} | {_timestamp()}')
+      pbar.write(f'[evals] step {step:5d} | loss {val_loss:.4f} | {_timestamp()}')
 
       # Save an intermediate checkpoint at this step as well
       _save_checkpoint(
@@ -870,6 +966,7 @@ def train(config: LMConfig):
         tokenizer_name=config.tokenizer,
         train_losses=train_losses,
         val_points=val_points,
+        optimizer=opt,
       )
 
     pbar.update(1)
@@ -877,14 +974,20 @@ def train(config: LMConfig):
   # Final checkpoint at last step
   _save_checkpoint(
     out_dir,
-    config.steps,
+    target_step,
     params,
     config,
     tokenizer_name=config.tokenizer,
     train_losses=train_losses,
     val_points=val_points,
+    optimizer=opt,
   )
   prefetcher.stop()
+
+  try:
+    pbar.close()
+  except Exception:
+    pass
 
 
 def _flatten_params_for_save(params: LMParams) -> dict[str, np.ndarray]:
@@ -920,6 +1023,7 @@ def _save_checkpoint(
   tokenizer_name: str,
   train_losses: list[float],
   val_points: list[tuple[int, float]],
+  optimizer: 'AdamW' | None = None,
 ) -> None:
   step_dir = root / f'steps_{step}'
   step_dir.mkdir(parents=True, exist_ok=True)
@@ -953,6 +1057,186 @@ def _save_checkpoint(
   with open(step_dir / 'meta.json', 'w') as fm:
     json.dump(meta, fm)
   print(f'Saved checkpoint @ step {step} to {step_dir} | {_timestamp()}')
+
+  # Save optimizer state separately (npz for portability)
+  if optimizer is not None:
+    opt_path = step_dir / 'optimizer.npz'
+    flat_opt = _flatten_optimizer_state_for_save(optimizer, params)
+    np.savez_compressed(opt_path, **flat_opt)
+
+
+def _flatten_optimizer_state_for_save(opt: 'AdamW', params: LMParams) -> dict[str, np.ndarray | np.int64 | np.float32]:
+  state: dict[str, np.ndarray | np.int64 | np.float32] = {}
+  # Hyperparameters and step
+  state['t'] = np.int64(opt.t)
+  state['lr'] = np.float32(opt.lr)
+  state['beta1'] = np.float32(opt.betas[0])
+  state['beta2'] = np.float32(opt.betas[1])
+  state['weight_decay'] = np.float32(opt.weight_decay)
+  state['eps'] = np.float32(opt.eps)
+  state['grad_clip'] = np.float32(opt.grad_clip if opt.grad_clip is not None else -1.0)
+
+  def put(prefix: str, m_arr: np.ndarray, v_arr: np.ndarray):
+    state[f'm.{prefix}'] = m_arr.astype(np.float32, copy=False)
+    state[f'v.{prefix}'] = v_arr.astype(np.float32, copy=False)
+
+  put('W_E', opt.m['W_E'], opt.v['W_E'])
+  put('W_pos', opt.m['W_pos'], opt.v['W_pos'])
+  put('gamma_f', opt.m['gamma_f'], opt.v['gamma_f'])
+  put('beta_f', opt.m['beta_f'], opt.v['beta_f'])
+  if params.W_LM is not None and 'W_LM' in opt.m:
+    put('W_LM', opt.m['W_LM'], opt.v['W_LM'])
+  for i, _ in enumerate(params.blocks):
+    b_m = opt.m['blocks'][i]
+    b_v = opt.v['blocks'][i]
+    for k in ['W_Q', 'W_K', 'W_V', 'W_O', 'gamma1', 'beta1', 'W1', 'W2', 'gamma2', 'beta2']:
+      put(f'blocks.{i}.{k}', b_m[k], b_v[k])
+  return state
+
+
+def _load_optimizer_state_into(opt: 'AdamW', params: LMParams, npz_state: dict[str, np.ndarray]):
+  # Restore scalar hyperparameters and t
+  if 't' in npz_state:
+    try:
+      opt.t = int(np.array(npz_state['t']).astype(np.int64))
+    except Exception:
+      pass
+  # m/v tensors
+  def get(prefix: str) -> tuple[np.ndarray, np.ndarray] | None:
+    m_key, v_key = f'm.{prefix}', f'v.{prefix}'
+    if m_key in npz_state and v_key in npz_state:
+      return npz_state[m_key], npz_state[v_key]
+    return None
+
+  def load_arr(dst_m: np.ndarray, dst_v: np.ndarray, key_prefix: str):
+    pair = get(key_prefix)
+    if pair is None:
+      return
+    m_arr, v_arr = pair
+    if dst_m.shape == m_arr.shape:
+      dst_m[...] = m_arr.astype(np.float32, copy=False)
+    if dst_v.shape == v_arr.shape:
+      dst_v[...] = v_arr.astype(np.float32, copy=False)
+
+  load_arr(opt.m['W_E'], opt.v['W_E'], 'W_E')
+  load_arr(opt.m['W_pos'], opt.v['W_pos'], 'W_pos')
+  load_arr(opt.m['gamma_f'], opt.v['gamma_f'], 'gamma_f')
+  load_arr(opt.m['beta_f'], opt.v['beta_f'], 'beta_f')
+  if params.W_LM is not None and 'W_LM' in opt.m:
+    load_arr(opt.m['W_LM'], opt.v['W_LM'], 'W_LM')
+  for i, _ in enumerate(params.blocks):
+    b_m = opt.m['blocks'][i]
+    b_v = opt.v['blocks'][i]
+    for k in ['W_Q', 'W_K', 'W_V', 'W_O', 'gamma1', 'beta1', 'W1', 'W2', 'gamma2', 'beta2']:
+      load_arr(b_m[k], b_v[k], f'blocks.{i}.{k}')
+
+
+def _maybe_load_latest_checkpoint(root: pathlib.Path):
+  if not root.exists():
+    return None
+  # Find step directories
+  step_dirs = []
+  for p in root.iterdir():
+    if p.is_dir() and p.name.startswith('steps_'):
+      try:
+        s = int(p.name.split('_', 1)[1])
+      except Exception:
+        continue
+      step_dirs.append((s, p))
+  if not step_dirs:
+    return None
+  step_dirs.sort(key=lambda x: x[0])
+  last_step, last_dir = step_dirs[-1]
+
+  # Load weights
+  weights_path_st = last_dir / 'weights.safetensors'
+  weights_path_npz = last_dir / 'weights.npz'
+  flat: dict[str, np.ndarray]
+  if _HAVE_SAFETENSORS and weights_path_st.exists():
+    flat = dict(st_load_file(str(weights_path_st)))
+  elif weights_path_npz.exists():
+    with np.load(weights_path_npz, allow_pickle=False) as z:
+      flat = {k: z[k] for k in z.files}
+  else:
+    return None
+
+  params = _unflatten_params(flat)
+
+  # Load training metadata if available
+  train_losses: list[float] = []
+  val_points: list[tuple[int, float]] = []
+  meta_path = last_dir / 'meta.json'
+  if meta_path.exists():
+    try:
+      with open(meta_path, 'r') as fm:
+        meta = json.load(fm)
+      train_losses = [float(x) for x in meta.get('train_losses', [])]
+      val_points = [(int(s), float(v)) for s, v in meta.get('val_points', [])]
+    except Exception:
+      pass
+
+  # Load optimizer state if available
+  opt_state = None
+  opt_path = last_dir / 'optimizer.npz'
+  if opt_path.exists():
+    with np.load(opt_path, allow_pickle=False) as z:
+      opt_state = {k: z[k] for k in z.files}
+
+  return last_step, params, train_losses, val_points, opt_state
+
+
+def _unflatten_params(flat: dict[str, np.ndarray]) -> LMParams:
+  # Core tensors
+  W_E = flat['W_E'].astype(np.float32, copy=False)
+  W_pos = flat['W_pos'].astype(np.float32, copy=False)
+  gamma_f = flat['gamma_f'].astype(np.float32, copy=False)
+  beta_f = flat['beta_f'].astype(np.float32, copy=False)
+  W_LM = flat.get('W_LM', None)
+  if W_LM is not None:
+    W_LM = W_LM.astype(np.float32, copy=False)
+
+  # Blocks
+  # Collect all block indices present
+  blk_indices: set[int] = set()
+  for k in flat.keys():
+    if k.startswith('blocks.'):
+      try:
+        idx = int(k.split('.')[1])
+        blk_indices.add(idx)
+      except Exception:
+        pass
+  blocks: list[BlockParams] = []
+  for i in sorted(blk_indices):
+    prefix = f'blocks.{i}.'
+    def g(name: str) -> np.ndarray:
+      return flat[prefix + name].astype(np.float32, copy=False)
+    blk = BlockParams(
+      W_Q=g('W_Q'),
+      W_K=g('W_K'),
+      W_V=g('W_V'),
+      W_O=g('W_O'),
+      gamma1=g('gamma1'),
+      beta1=g('beta1'),
+      W1=g('W1'),
+      W2=g('W2'),
+      gamma2=g('gamma2'),
+      beta2=g('beta2'),
+    )
+    blocks.append(blk)
+
+  return LMParams(W_E=W_E, W_pos=W_pos, blocks=blocks, gamma_f=gamma_f, beta_f=beta_f, W_LM=W_LM)
+
+
+def _load_arch_config(root: pathlib.Path, step: int) -> dict | None:
+  cfg_path = root / f'steps_{step}' / 'config.json'
+  if not cfg_path.exists():
+    return None
+  try:
+    with open(cfg_path, 'r') as f:
+      cfg = json.load(f)
+    return cfg
+  except Exception:
+    return None
 
 
 def main():

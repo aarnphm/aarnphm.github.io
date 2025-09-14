@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import dataclasses
+import dataclasses, numpy as np
 
 @dataclasses.dataclass
 class LMConfig:
@@ -49,5 +49,3 @@ class BlockParams:
   W2: np.ndarray
   gamma2: np.ndarray
   beta2: np.ndarray
-
-

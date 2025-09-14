@@ -1,12 +1,12 @@
 ---
 id: reports
 tags:
-  - seed
+  - technical
   - ml
   - vllm
+description: and documentation of learning procedure.
 date: "2025-09-13"
-descriptions: and documentation of learning procedure.
-modified: 2025-09-14 11:44:16 GMT-04:00
+modified: 2025-09-14 14:30:50 GMT-04:00
 noindex: true
 title: assignment three reports.
 ---
