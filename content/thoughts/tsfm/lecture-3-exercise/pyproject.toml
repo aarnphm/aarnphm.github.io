@@ -10,4 +10,5 @@ dependencies = [
   "jaxlib>=0.7.1",
   "numpy>=2.3.3",
   "torch>=2.8.0",
+  'vllm==0.10.2',
 ]

@@ -1,7 +1,6 @@
 import numpy as np
-from typing import Tuple
 
-def matmul_backward(A: np.ndarray, B: np.ndarray, dY: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def matmul_backward(A: np.ndarray, B: np.ndarray, dY: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     dB = A.T @ dY
     dA = dY @ B.T
     return dA, dB
@@ -9,18 +8,17 @@ def matmul_backward(A: np.ndarray, B: np.ndarray, dY: np.ndarray) -> Tuple[np.nd
 def input_embedding(x: np.ndarray, W_E: np.ndarray) -> np.ndarray:
     return x @ W_E
 
-def input_embedding_backward(x: np.ndarray, W_E: np.ndarray, dOut: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def input_embedding_backward(x: np.ndarray, W_E: np.ndarray, dOut: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     return matmul_backward(x, W_E, dOut)
 
-def relu(x: np.ndarray) -> np.ndarray:
-    return np.maximum(0, x)
+def relu(x: np.ndarray) -> np.ndarray: return np.maximum(0, x)
 
 def layer_norm(x: np.ndarray, gamma: np.ndarray, beta: np.ndarray) -> np.ndarray:
     mu = x.mean(axis=-1, keepdims=True)
     var = x.var(axis=-1, keepdims=True)
     return gamma * (x - mu) / np.sqrt(var + 1e-6) + beta
 
-def layer_norm_backward(x: np.ndarray, gamma: np.ndarray, beta: np.ndarray, dOut: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def layer_norm_backward(x: np.ndarray, gamma: np.ndarray, beta: np.ndarray, dOut: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     eps = 1e-6
     D = x.shape[-1]
     mu = x.mean(axis=-1, keepdims=True)
@@ -65,7 +63,7 @@ def multi_head_attention(q: np.ndarray, k: np.ndarray, v: np.ndarray) -> np.ndar
     attn = softmax(q @ np.swapaxes(k, -2, -1) * scale)
     return attn @ v
 
-def multi_head_attention_backward(q: np.ndarray, k: np.ndarray, v: np.ndarray, dOut: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def multi_head_attention_backward(q: np.ndarray, k: np.ndarray, v: np.ndarray, dOut: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     Dh = q.shape[-1]
     scale = 1.0 / np.sqrt(Dh)
 
@@ -83,7 +81,7 @@ def multi_head_attention_backward(q: np.ndarray, k: np.ndarray, v: np.ndarray, d
 def feed_forward_network(x: np.ndarray, W_1: np.ndarray, W_2: np.ndarray):
     return relu(x @ W_1) @ W_2
 
-def feed_forward_network_backward(x: np.ndarray, W_1: np.ndarray, W_2: np.ndarray, dOut: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def feed_forward_network_backward(x: np.ndarray, W_1: np.ndarray, W_2: np.ndarray, dOut: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     B, S, d_model = x.shape
     X2D = x.reshape(-1, d_model)
 

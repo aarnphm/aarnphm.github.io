@@ -47,6 +47,7 @@ export const SlidesPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
     ...defaultContentPageLayout,
     pageBody: SlidesContent(),
     ...userOpts,
+    sidebar: [],
   }
 
   const { head: Head, footer: Footer } = sharedPageComponents

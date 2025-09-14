@@ -25,10 +25,35 @@ document.addEventListener("nav", () => {
     emitThemeChangeEvent(newTheme)
   }
 
-  // Darkmode toggle
-  const themeButton = document.querySelector("#darkmode") as HTMLButtonElement
-  themeButton.addEventListener("click", switchTheme)
-  window.addCleanup(() => themeButton.removeEventListener("click", switchTheme))
+  // Darkmode toggle via button (if present)
+  const themeButton = document.querySelector("#darkmode") as HTMLButtonElement | null
+  if (themeButton) {
+    themeButton.addEventListener("click", switchTheme)
+    window.addCleanup(() => themeButton.removeEventListener("click", switchTheme))
+  }
+
+  // Darkmode toggle via keyboard: press "D" (no modifiers)
+  const shouldIgnoreTarget = (el: EventTarget | null) => {
+    if (!el || !(el instanceof Element)) return false
+    const tag = el.tagName.toLowerCase()
+    return (
+      tag === "input" ||
+      tag === "textarea" ||
+      (el as HTMLElement).isContentEditable ||
+      el.closest(".search .search-container") !== null
+    )
+  }
+
+  const keyToggle = (e: KeyboardEvent) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return
+    if (shouldIgnoreTarget(e.target)) return
+    if (e.key === "D" || e.key === "d") {
+      e.preventDefault()
+      switchTheme(e)
+    }
+  }
+  document.addEventListener("keydown", keyToggle)
+  window.addCleanup(() => document.removeEventListener("keydown", keyToggle))
 
   // Listen for changes in prefers-color-scheme
   const colorSchemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)")

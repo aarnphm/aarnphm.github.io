@@ -5,7 +5,7 @@ tags:
   - ml
 description: from scratch frfr
 date: "2025-09-11"
-modified: 2025-09-11 23:38:28 GMT-04:00
+modified: 2025-09-13 20:24:15 GMT-04:00
 title: numpy implementation of Transformer
 ---
 
@@ -29,8 +29,6 @@ Run the provided gradient checks:
 ```bash
 python test_backward_passes.py
 ```
-
----
 
 ## assignment
 

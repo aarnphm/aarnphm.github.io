@@ -30,6 +30,14 @@
   --sidepanel-padding: 14px;
 }
 
+// Override accent colors for dark theme
+:root[saved-theme="dark"] {
+  --gold: rgb(208, 162, 21);
+  --pine: rgb(135, 154, 57);
+  --foam: rgb(67, 133, 190);
+  --iris: rgb(139, 126, 200);
+}
+
 /**
  * Animation-related
  */
