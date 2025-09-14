@@ -1,7 +1,6 @@
 from __future__ import annotations
-import numpy as np
-import torch
-import torch.nn.functional as F
+
+import torch, numpy as np, torch.nn.functional as F
 
 
 def torch_matmul_backward(A_np, B_np, dOut_np):
@@ -121,7 +120,18 @@ def torch_feed_forward_backward(x_np, W1_np, W2_np, dOut_np):
 
 
 def torch_block_backward(
-  x_np, W_Q_np, W_K_np, W_V_np, W_O_np, W_FF_expand_np, W_FF_contract_np, gamma_np, beta_np, dOut_np, eps=1e-6, causal=False,
+  x_np,
+  W_Q_np,
+  W_K_np,
+  W_V_np,
+  W_O_np,
+  W_FF_expand_np,
+  W_FF_contract_np,
+  gamma_np,
+  beta_np,
+  dOut_np,
+  eps=1e-6,
+  causal=False,
 ):
   """PyTorch implementation of the full block backward pass, matching block_forward."""
   x_t = torch.from_numpy(x_np).float().requires_grad_(True)
@@ -146,7 +156,7 @@ def torch_block_backward(
   if causal:
     S = scores.shape[-1]
     mask = torch.tril(torch.ones((S, S), dtype=torch.bool))
-    scores = torch.where(mask, scores, torch.tensor(float("-inf"), dtype=scores.dtype))
+    scores = torch.where(mask, scores, torch.tensor(float('-inf'), dtype=scores.dtype))
   weights = torch.softmax(scores, dim=-1)
   attn_out = weights @ v_t
 

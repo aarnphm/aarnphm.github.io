@@ -5,7 +5,7 @@ tags:
   - ml
 description: from scratch frfr
 date: "2025-09-11"
-modified: 2025-09-14 02:27:37 GMT+00:00
+modified: 2025-09-14 01:22:02 GMT-04:00
 title: numpy implementation of Transformer
 ---
 
@@ -13,9 +13,7 @@ this directory contains a numpy implementation of transformer components with bo
 
 ## what you have
 
-- `transformer.py`: NumPy implementations for core Transformer components and a full block, each with forward and backward passes.
-- `test_backward_passes.py`: Tests that compare NumPy gradients against PyTorch for correctness.
-- `main.py`: Minimal entry point.
+- `src/minigpt/np`: all numpy implementation, with `torch_primitives.py` the equivalent.
 
 ## setup
 
@@ -27,7 +25,7 @@ uv sync
 Run the provided gradient checks:
 
 ```bash
-pytest test_backward_passes.py
+pytest tests
 ```
 
 ## assignment

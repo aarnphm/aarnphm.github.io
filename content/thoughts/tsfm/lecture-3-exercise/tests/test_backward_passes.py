@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np, pytest, torch
 
-from transformer import (
+from minigpt.np.modular import (
   matmul_backward,
   input_embedding_backward,
   qkv_projection_backward,
@@ -10,8 +10,10 @@ from transformer import (
   multi_head_attention_backward,
   qkv_projection,
   block_backward,
+  layer_norm_backward,
+  feed_forward_network_backward,
 )
-from torch_primitives import (
+from minigpt.np.torch_primitives import (
   torch_matmul_backward,
   torch_input_embedding_backward,
   torch_softmax_backward,
@@ -22,11 +24,13 @@ from torch_primitives import (
   torch_block_backward,
 )
 
-@pytest.fixture(scope="module", autouse=True)
+
+@pytest.fixture(scope='module', autouse=True)
 def auto_set_seed():
   np.random.seed(42)
   torch.backends.cuda.matmul.allow_tf32 = True
   torch.backends.cudnn.allow_tf32 = True
+
 
 def compare_gradients(grad_numpy, grad_torch, rtol=1e-5, atol=1e-6, name=''):
   """Compare numpy and torch gradients"""
@@ -108,7 +112,8 @@ def test_softmax_backward():
   # Compare gradients
   assert compare_gradients(grad_x_numpy, grad_x_torch, name='softmax')
 
-@pytest.mark.parametrize("causal", [True, False])
+
+@pytest.mark.parametrize('causal', [True, False])
 def test_multi_head_attention_backward(causal):
   """Test multi-head attention backward pass"""
   # Create test data with smaller dimensions for debugging
@@ -176,9 +181,6 @@ def test_layer_norm_backward():
   beta = np.random.randn(D).astype(np.float32)
   dOut = np.random.randn(B, S, D).astype(np.float32)
 
-  # NumPy implementation
-  from transformer import layer_norm_backward
-
   dX_np, dGamma_np, dBeta_np = layer_norm_backward(x, gamma, beta, dOut)
 
   # PyTorch implementation
@@ -199,9 +201,6 @@ def test_feed_forward_network_backward():
   W2 = (np.random.randn(d_ff, d_model) * 0.1).astype(np.float32)
   dOut = np.random.randn(B, S, d_model).astype(np.float32)
 
-  # NumPy implementation
-  from transformer import feed_forward_network_backward
-
   dX_np, dW1_np, dW2_np = feed_forward_network_backward(x, W1, W2, dOut)
 
   # PyTorch implementation
@@ -214,7 +213,7 @@ def test_feed_forward_network_backward():
   assert match_x and match_w1 and match_w2
 
 
-@pytest.mark.parametrize("causal", [True, False])
+@pytest.mark.parametrize('causal', [True, False])
 def test_block_backward(causal):
   """Test full transformer block backward pass"""
   B, S, d_model = 2, 6, 32

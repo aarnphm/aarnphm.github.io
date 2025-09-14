@@ -1,7 +1,7 @@
 [project]
-name = "minitransformers"
+name = "minigpt"
 version = "0.1.0"
-description = "minitransformers but with numpy, and more"
+description = "minigpt, but with both numpy, triton, and cuda, and jax"
 readme = "index.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -10,7 +10,19 @@ dependencies = [
   "jaxlib>=0.7.1",
   "numpy>=2.3.3",
   "torch>=2.8.0",
-  'vllm==0.10.2',
-  "datasets",
-  "pytest",
+  "tqdm>=4.67.1",
+  "transformers>=4.56.1",
+  "huggingface-hub[hf-xet]>=0.34.4",
+  "tokenizers>=0.22.0",
+  "datasets>=4.0.0",
 ]
+
+[dependency-groups]
+dev = ["pytest>=8.4.2"]
+
+[project.scripts]
+minigpt-train-numpy = "minigpt.np.train:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

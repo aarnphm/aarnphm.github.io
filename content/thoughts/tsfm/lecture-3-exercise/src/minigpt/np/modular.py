@@ -1,14 +1,16 @@
 from __future__ import annotations
-import numpy as np
-import numpy.typing as npt
+
+import numpy as np, numpy.typing as npt
+
+
+def build_causal_mask(Sq: int, Sk: int) -> npt.NDArray[np.float32]:
+  return np.tril(np.ones((Sq, Sk), dtype=bool), 0)
 
 
 def matmul_backward(
   A: npt.NDArray[np.float32], B: npt.NDArray[np.float32], dY: npt.NDArray[np.float32]
 ) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.float32]]:
-  dB = A.T @ dY
-  dA = dY @ B.T
-  return dA, dB
+  return dY @ B.T, A.T @ dY
 
 
 def input_embedding(x: npt.NDArray[np.float32], W_E: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
@@ -26,7 +28,7 @@ def relu(x: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
 
 
 def layer_norm(
-  x: npt.NDArray[np.float32], gamma: npt.NDArray[np.float32], beta: npt.NDArray[np.float32]
+  x: npt.NDArray[np.float32], gamma: npt.NDArray[np.float32], beta: npt.NDArray[np.float32], eps: float = 1e-6
 ) -> npt.NDArray[np.float32]:
   mu = x.mean(axis=-1, keepdims=True)
   var = x.var(axis=-1, keepdims=True)
@@ -38,8 +40,8 @@ def layer_norm_backward(
   gamma: npt.NDArray[np.float32],
   beta: npt.NDArray[np.float32],
   dOut: npt.NDArray[np.float32],
+  eps: float = 1e-6,
 ) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]]:
-  eps = 1e-6
   D = x.shape[-1]
   mu = x.mean(axis=-1, keepdims=True)
   x_mu = x - mu
@@ -86,6 +88,31 @@ def qkv_projection(
   return q, k, v
 
 
+def qkv_projection_forward_cached(
+  x: npt.NDArray[np.float32], W_Q: npt.NDArray[np.float32], W_K: npt.NDArray[np.float32], W_V: npt.NDArray[np.float32]
+) -> tuple[tuple[npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]], tuple]:
+  q, k, v = qkv_projection(x, W_Q, W_K, W_V)
+  cache = (x, W_Q, W_K, W_V)
+  return (q, k, v), cache
+
+
+def qkv_projection_backward_from_cache(
+  dQ: npt.NDArray[np.float32], dK: npt.NDArray[np.float32], dV: npt.NDArray[np.float32], cache: tuple
+) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]]:
+  x, W_Q, W_K, W_V = cache
+  D = x.shape[-1]
+  Dq = W_Q.shape[1]
+  X2D = x.reshape(-1, D)
+  dQ2D = dQ.reshape(-1, Dq)
+  dK2D = dK.reshape(-1, Dq)
+  dV2D = dV.reshape(-1, Dq)
+  dXq, dW_Q = matmul_backward(X2D, W_Q, dQ2D)
+  dXk, dW_K = matmul_backward(X2D, W_K, dK2D)
+  dXv, dW_V = matmul_backward(X2D, W_V, dV2D)
+  dX = (dXq + dXk + dXv).reshape(x.shape)
+  return dX, dW_Q, dW_K, dW_V
+
+
 def qkv_projection_backward(
   x: npt.NDArray[np.float32],
   W_Q: npt.NDArray[np.float32],
@@ -119,13 +146,13 @@ def multi_head_attention(
   # i.e: newly generated tokens must not affect previous tokens distribution.
   if attn_mask is None and causal:
     S = scores.shape[-1]
-    attn_mask = np.tril(np.ones((S, S), dtype=bool), 0)
+    attn_mask = build_causal_mask(S, S)
 
   if attn_mask is not None:
     if scores.ndim == 4:
-      scores = np.where(attn_mask[None, None, :, :], scores, float("-inf"))
+      scores = np.where(attn_mask[None, None, :, :], scores, float('-inf'))
     else:
-      scores = np.where(attn_mask, scores, float("-inf"))
+      scores = np.where(attn_mask, scores, float('-inf'))
 
   # (..., S_q, S_k) -> (..., S_q, D_h)
   attn = softmax(scores)
@@ -150,13 +177,13 @@ def multi_head_attention_backward(
   # i.e: newly generated tokens must not affect previous tokens distribution.
   if attn_mask is None and causal:
     S = scores.shape[-1]
-    attn_mask = np.tril(np.ones((S, S), dtype=bool), 0)
+    attn_mask = build_causal_mask(S, S)
 
   if attn_mask is not None:
     if scores.ndim == 4:
-      scores = np.where(attn_mask[None, None, :, :], scores, float("-inf"))
+      scores = np.where(attn_mask[None, None, :, :], scores, float('-inf'))
     else:
-      scores = np.where(attn_mask, scores, float("-inf"))
+      scores = np.where(attn_mask, scores, float('-inf'))
 
   attn = softmax(scores)  # (..., S_q, S_k)
   dV = np.swapaxes(attn, -2, -1) @ dOut  # (..., S_k, D_h)
@@ -169,6 +196,55 @@ def multi_head_attention_backward(
     else:
       dScores = np.where(attn_mask, dScores, 0.0)
 
+  dQ = dScores @ k * scale
+  dK = np.swapaxes(dScores, -2, -1) @ q * scale
+  return dQ, dK, dV
+
+
+def multi_head_attention_forward_cached(
+  q: npt.NDArray[np.float32],
+  k: npt.NDArray[np.float32],
+  v: npt.NDArray[np.float32],
+  *,
+  causal: bool = False,
+  attn_mask: npt.NDArray[np.float32] | None = None,
+) -> tuple[npt.NDArray[np.float32], dict]:
+  Dh = q.shape[-1]
+  scale = 1.0 / np.sqrt(Dh)
+  scores = q @ np.swapaxes(k, -2, -1) * scale
+  # broadcastable masks
+  if attn_mask is None and causal:
+    S = scores.shape[-1]
+    attn_mask = build_causal_mask(S, S)
+  if attn_mask is not None:
+    if scores.ndim == 4:
+      scores = np.where(attn_mask[None, None, :, :], scores, float('-inf'))
+    else:
+      scores = np.where(attn_mask, scores, float('-inf'))
+  attn = softmax(scores)
+  out = attn @ v
+  cache = {'q': q, 'k': k, 'v': v, 'attn': attn, 'attn_mask': attn_mask, 'scale': scale}
+  return out, cache
+
+
+def multi_head_attention_backward_from_cache(
+  dOut: npt.NDArray[np.float32], cache: dict
+) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]]:
+  q = cache['q']
+  k = cache['k']
+  v = cache['v']
+  attn = cache['attn']
+  attn_mask = cache['attn_mask']
+  scale = cache['scale']
+
+  dV = np.swapaxes(attn, -2, -1) @ dOut
+  dAttn = dOut @ np.swapaxes(v, -2, -1)
+  dScores = softmax_backward_from_probs(attn, dAttn)
+  if attn_mask is not None:
+    if dScores.ndim == 4:
+      dScores = np.where(attn_mask[None, None, :, :], dScores, 0.0)
+    else:
+      dScores = np.where(attn_mask, dScores, 0.0)
   dQ = dScores @ k * scale
   dK = np.swapaxes(dScores, -2, -1) @ q * scale
   return dQ, dK, dV
@@ -191,6 +267,35 @@ def feed_forward_network_backward(
   dX2D, dW_1 = matmul_backward(X2D, W_1, dZ1)
 
   return dX2D.reshape(B, S, d_model), dW_1, dW_2
+
+
+def feed_forward_forward_cached(
+  x: npt.NDArray[np.float32], W_1: npt.NDArray[np.float32], W_2: npt.NDArray[np.float32]
+) -> tuple[npt.NDArray[np.float32], tuple]:
+  y = feed_forward_network(x, W_1, W_2)
+  cache = (x, W_1, W_2)
+  return y, cache
+
+
+def feed_forward_backward_from_cache(
+  dY: npt.NDArray[np.float32], cache: tuple
+) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]]:
+  x, W_1, W_2 = cache
+  return feed_forward_network_backward(x, W_1, W_2, dY)
+
+
+def layer_norm_forward_cached(
+  x: npt.NDArray[np.float32], gamma: npt.NDArray[np.float32], beta: npt.NDArray[np.float32]
+) -> tuple[npt.NDArray[np.float32], tuple]:
+  y = layer_norm(x, gamma, beta)
+  return y, (x, gamma, beta)
+
+
+def layer_norm_backward_from_cache(
+  dY: npt.NDArray[np.float32], cache: tuple
+) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]]:
+  x, gamma, beta = cache
+  return layer_norm_backward(x, gamma, beta, dY)
 
 
 def block_forward(

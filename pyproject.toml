@@ -30,7 +30,7 @@ dynamic = ["version"]
 
 [tool.uv.sources]
 minibpe = { path = "content/thoughts/tsfm/lecture-2-exercise" }
-minitransformers = { path = "content/thoughts/tsfm/lecture-3-exercise" }
+minigpt = { path = "content/thoughts/tsfm/lecture-3-exercise" }
 
 [tool.hatch.version]
 source = "nodejs"
