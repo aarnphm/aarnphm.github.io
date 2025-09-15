@@ -6,7 +6,7 @@ tags:
   - technical
 description: a method to speed up LLM decoding
 date: "2025-05-21"
-modified: 2025-09-10 10:40:43 GMT-04:00
+modified: 2025-09-15 00:45:09 GMT-04:00
 title: Speculative decoding
 ---
 
@@ -270,265 +270,108 @@ where it takes the probability vectors of draft models $y_i^D$ for token positio
 
 https://arxiv.org/pdf/2302.01318
 
-## von Neumann acceptance-rejection
+## von Neumann acceptance–rejection
+
+see also: von Neumann (1951), foundational statement of the acceptance–rejection method.
 
 > [!note] problem statement
 >
-> As we already know, finding an explicit formula for $F^{-1}(y)$ for the CDF of a random variable $X$ we wish to generate, $F(x) = P(X \le x)$, is not always possible.
+> We often need exact samples from a target distribution, but two obstacles arise:
 >
-> Moreover, even if it is, there may be alternative methods for generating a random variable distributed as $F$ that is more efficient than the inverse transform method or other methods we have come across.
+> - only an unnormalized density $f(x)$ is available (unknown normalizer $Z=\int f$), and/or
+> - the inverse CDF $F^{-1}$ is unavailable or numerically unstable.
+>
+> The acceptance–rejection (AR) method circumvents both by using an easy-to-sample proposal $g$ and an envelope constant $M\ge 1$ such that $f(x)\le M\,g(x)$ pointwise.
+>
+> AR produces samples exactly from the normalized target $p^\star(x)=f(x)/Z$.
+>
+> Efficiency is controlled by $M$: the expected proposals per accepted draw is $\mathbb E[N]=M/Z$ (equals $M$ when $f$ is normalized).
 
-### formulation
+Classical scheme to sample from a target density/mass $p^\star(x)\propto f(x)$ using proposals from an easy distribution $g$ under an envelope bound.
 
-- **Goal:** sample from target density $f$ (known up to normalization) using proposals from easy density $g$.
-- **Envelope:** assume $M \ge 1$ with $f(x) \le M\,g(x)$ for all $x$ on the support of $f$.
-- **Algorithm:**
-  - Sample $Y \sim g$.
-  - Sample $U \sim \mathrm{Unif}(0,1)$.
-  - **Accept** $Y$ iff
+### setup and algorithm
 
-    $$
-    U \le \frac{f(Y)}{M\,g(Y)}.
-    $$
+- Target (unnormalized): $f:\mathcal X\to[0,\infty)$ with mass $Z=\int f(x)\,dx\in(0,\infty)$; desired law $p^\star(x)=f(x)/Z$.
+- Proposal: probability density/mass $g$ with support covering that of $f$.
+- Envelope: constant $M\ge 1$ such that $\forall x,\ f(x)\le M\,g(x)$.
+- Algorithm (one attempt):
+  1. Draw $Y\sim g$ and $U\sim\mathrm{Unif}(0,1)$.
+  2. Accept $Y$ if $U\le f(Y)/(M g(Y))$; otherwise reject and repeat.
 
-    Else **reject** and repeat.
+### walkthrough (explicit)
 
-- **Acceptance rate:**
+1. Choose a proposal $g$ that approximates the shape of $f$ but is cheap to sample; verify support coverage ($f>0\Rightarrow g>0$).
+2. Find an envelope constant $M\ge \sup_x f(x)/g(x)$ (analytically if possible; otherwise pick a safe upper bound and refine empirically).
+3. Repeat until you have one sample:
+   - Sample $Y\sim g$ and a uniform $U\sim\mathrm{Unif}(0,1)$.
+   - Compute the acceptance ratio $a(Y)=f(Y)/(M g(Y))\in[0,1]$.
+   - If $U\le a(Y)$, return $Y$; else reject and go back to the first bullet.
+4. Diagnostics: empirical acceptance $\approx Z/M$; tighten $M$ or pick a closer $g$ to increase acceptance.
 
-  $$
-  \Pr[\text{accept}] = \frac{1}{M},\qquad \mathbb{E}[\text{proposals per accept}] = M.
-  $$
+### correctness (concise)
 
-### proof
-
-- Joint density of proposal–uniform: $g(y)\cdot 1_{[0,1]}(u)$.
-- Accepted region $A=\{(y,u): u \le f(y)/(M g(y))\}$.
-- Marginal of accepted $Y$:
-
-  $$
-  \int_0^{f(y)/(M g(y))} g(y)\,du \;=\; \frac{f(y)}{M}.
-  $$
-
-- Total acceptance probability:
-
-  $$
-  \int \frac{f(y)}{M}\,dy \;=\; \frac{1}{M}.
-  $$
-
-- Conditioning on acceptance yields density proportional to $f(y)$ → samples from $f$ (up to the same normalization).
-
-#### tl/dr
+Accepted region: $A=\{(y,u): 0\le u\le f(y)/(M g(y))\}$. Then
 
 $$
-\Pr(Y\in dy\mid \text{acc})
-\;=\;
-\frac{\Pr(\text{acc}\mid Y{=}y)\,g(y)\,dy}{\Pr(\text{acc})}
-\;=\;
-\frac{\frac{f(y)}{M g(y)}g(y)\,dy}{\int \frac{f}{M}}
-\;=\;
-\frac{f(y)}{Z}\,dy.
-$$
-
-#### full derivation
-
-> Goal: turn an _unnormalized_ target $f$ into exact samples from the **normalized** density $f/Z$ using only a sampler for an easy proposal $g$ and a coin $U\sim\mathrm{Unif}(0,1)$.
-
-##### assumptions
-
-- Measurable space $(\mathcal X,\mathcal A)$, with base measure $dx$ (Lebesgue for continuous, counting for discrete).
-- **Target (unnormalized):** $f:\mathcal X\to[0,\infty)$ with finite mass
-
-  $$
-  Z \;:=\; \int_{\mathcal X} f(x)\,dx \;\in\; (0,\infty).
-  $$
-
-  The desired law is $p^\star(x)=f(x)/Z$.
-
-- **Proposal:** a probability density/mass $g$ satisfying **support coverage**
-
-  $$
-  f(x)>0 \;\Rightarrow\; g(x)>0.
-  $$
-
-- **Envelope:** a constant $M\ge 1$ with
-
-  $$
-  \forall x:\quad f(x)\;\le\; M\,g(x).
-  $$
-
-#### correctness
-
-three-way, pick your poison.
-
-##### a. geometric proof
-
-Consider the joint density on $(Y,U)$:
-
-$$
-(Y,U)\ \sim\ g(y)\cdot \mathbf 1_{[0,1]}(u).
-$$
-
-Define the **accept region**
-
-$$
-A \;=\; \Big\{(y,u)\,:\ 0 \le u \le \frac{f(y)}{M\,g(y)}\Big\}.
-$$
-
-Compute the marginal of accepted $Y$:
-
-$$
-\begin{aligned}
 \Pr(Y\in dy,\ \text{accept})
-&= \int_0^{f(y)/(M g(y))} g(y)\,du\,dy
-= \frac{f(y)}{M}\,dy.
-\end{aligned}
+\;=\;\int_0^{f(y)/(M g(y))} g(y)\,du\,dy
+\;=\;\frac{f(y)}{M}\,dy.
 $$
 
-The overall acceptance probability is
-
-$$
-\Pr(\text{accept}) \;=\; \int \frac{f(y)}{M}\,dy \;=\; \frac{Z}{M}.
-$$
-
-Therefore the **conditional** density of $Y$ given acceptance is
+Hence $\Pr(\text{accept})=\int f/M=Z/M$ and
 
 $$
 p_{Y\mid \text{acc}}(y)
-= \frac{ \frac{f(y)}{M} }{ \frac{Z}{M} }
-= \frac{f(y)}{Z}
-= p^\star(y).
+\;=\;\frac{\tfrac{f(y)}{M}}{\tfrac{Z}{M}}
+\;=\;\frac{f(y)}{Z}
+\;=\;p^\star(y).
 $$
 
-$\boxed{}$
+Therefore accepted samples are exactly distributed as the normalized target.
 
-##### b. bayesian proof
+### acceptance rate and work
 
-$$
-p_{Y\mid \text{acc}}(y)
-= \frac{\Pr(\text{acc}\mid Y{=}y)\,g(y)}{\Pr(\text{acc})}
-= \frac{\frac{f(y)}{M g(y)}\,g(y)}{\int \frac{f(z)}{M g(z)} g(z)\,dz}
-= \frac{f(y)}{\int f(z)\,dz}
-= \frac{f(y)}{Z}.
-$$
+- Acceptance probability per proposal: $\Pr(\text{accept})=Z/M$ (equals $1/M$ when $f$ is normalized).
+- Number of proposals until first accept is geometric with mean $\mathbb E[N]=M/Z$ (equals $M$ when $Z=1$).
 
-##### c. measure-theoretic (radon–nikodym) view
+### why the uniform coin is essential (Bernoulli view)
 
-Define a finite measure $\nu$ via $d\nu = g(y)\,dy\otimes du$ on $\mathcal X\times[0,1]$.
-Let $A$ be as above. The **acceptance measure** on $\mathcal X$ is the pushforward
+For any realized proposal $Y=y$, the accept/reject decision is a Bernoulli trial with success probability
 
 $$
-\mu(B) \;:=\; \nu\big( (B\times[0,1])\cap A \big)
-=\int_B \!\!\int_0^{f(y)/(M g(y))} g(y)\,du\,dy
-= \int_B \frac{f(y)}{M}\,dy.
+\Pr(\text{accept}\mid Y=y)\;=\;\frac{f(y)}{M\,g(y)}\;\in[0,1].
 $$
 
-Hence $\mu(\mathcal X)=Z/M$, and the **normalized** version of $\mu$ has density $f/Z$.
-Everything else (acceptance rate, expectation) falls out immediately.
+Sampling $U\sim\mathrm{Unif}(0,1)$ and checking $U\le f(Y)/(M g(Y))$ implements exactly that coin. Geometrically, the uniform supplies the “vertical” measure that carves an acceptance slice of area $f(y)/M$ under the rectangle of height 1 over $y$.
 
-#### acceptance probability and expected proposals
+### discrete form (LLM-friendly)
 
-- Acceptance probability per attempt:
-
-  $$
-  \Pr(\text{accept}) \;=\; \frac{Z}{M}.
-  $$
-
-  If $f$ is already normalized ($Z=1$), this simplifies to $1/M$.
-
-- Number of proposals $N$ until first accept is geometric with success probability $Z/M$:
-
-  $$
-  \mathbb E[N] \;=\; \frac{M}{Z}
-  \quad(\text{equals }M\text{ when }Z=1).
-  $$
-
-#### discrete form (LLM-friendly)
-
-Let $\mathcal V$ be finite or countable, with target mass $p(i)\propto f(i)$, proposal $q(i)=g(i)$, and $M\ge \max_i f(i)/g(i)$.
-
-One attempt:
-
-- Draw $I\sim q$.
-- Draw $U\sim\mathrm{Unif}(0,1)$.
-- Accept iff
-
-  $$
-  U \le \frac{f(I)}{M\,g(I)}.
-  $$
-
-Then
+For vocab $\mathcal V$, define target mass $p(i)\propto f(i)$, proposal $q(i)=g(i)$, and constant $M\ge\max_i f(i)/g(i)$. One attempt draws $I\sim q$, $U\sim\mathrm{Unif}(0,1)$ and accepts if $U\le f(I)/(M q(I))$. This yields
 
 $$
 \Pr(\text{output}=i)
-= \frac{ \Pr(I=i,\ \text{accept}) }{ \Pr(\text{accept}) }
-= \frac{ q(i)\cdot \frac{f(i)}{M g(i)} }{ \sum_j q(j)\cdot \frac{f(j)}{M g(j)} }
-= \frac{ f(i) }{ \sum_j f(j) }
-= \frac{f(i)}{Z}.
+\;=\;\frac{ f(i) }{ \sum_j f(j) }\;=\;\frac{f(i)}{Z}.
 $$
 
-#### why the uniform coin is essential (the "vertical measure")
+### variants and refinements
 
-You need a Bernoulli with parameter $f(Y)/(M g(Y))$ **for each realized $Y$**.
+- Pointwise envelope: if $f(x)\le c(x)g(x)$ with $c(x)\ge 1$, accept iff $U\le f(Y)/(c(Y)g(Y))$. Correctness is unchanged; acceptance is $\int f/c$.
+- Squeezing: if a cheap lower bound $h(x)\le f(x)\le M g(x)$ is available, early-accept if $U\le h(Y)/(M g(Y))$; otherwise evaluate $f$ and apply the standard test.
 
-Sampling $U\sim\mathrm{Unif}(0,1)$ and testing $U \le f(Y)/(M g(Y))$ _is exactly that coin_.
+### practice notes (LLM inference)
 
-Formally, it supplies the vertical measure that carves the acceptance slice whose area equals $f(y)/M$.
-
-#### generalized envelopes (non-constant $M$)
-
-If you only have a **pointwise** bound $f(x) \le c(x)\,g(x)$ with $c(x)\ge 1$, the same proof works with
-
-$$
-\text{accept iff}\quad
-U \le \frac{f(Y)}{c(Y)\,g(Y)}.
-$$
-
-Then
-
-$$
-\Pr(\text{accept})=\int \frac{f(x)}{c(x)}\,dx
-\quad\text{and}\quad
-p_{Y\mid \text{acc}}(y)=\frac{f(y)}{\int f}.
-$$
-
-(You trade a constant-rate geometric for an inhomogeneous success, but correctness is unchanged.)
-
-#### squeezing (cheap early accept/reject)
-
-If you also have a **lower** bound $h(x)\le f(x)\le M g(x)$, then with a single $U\sim\mathrm{Unif}(0,1)$:
-
-- **Early accept** if $U \le h(Y)/(M g(Y))$ (no need to evaluate $f$).
-- Else compute $f(Y)$ and accept if $U \le f(Y)/(M g(Y))$; otherwise reject.
-
-The proof is identical: you partition the accept region into a cheap rectangle (under $h$) plus a residual slice (between $h$ and $f$).
-
-#### termination and edge conditions
-
-- **Almost sure termination:** since $\Pr(\text{accept})=Z/M>0$, the geometric scheme halts a.s.
-- **Support coverage is non-negotiable:** if $\exists x: f(x)>0, g(x)=0$, then $\sup f/g=\infty$ and acceptance probability collapses there—no sampler can fix missing support.
-- **Tight envelopes matter:** smaller $M$ (or $c(x)$) ⇒ higher acceptance ⇒ lower $\mathbb E[N]$.
-
-### implication
-
-- **Choose $g$ wisely:** cheap sampler; shape close to $f$ (small $M$).
-- **Tail dominance:** ensure $g$ bounds $f$ in the tails; otherwise acceptance collapses.
-- **Diagnostics:** empirical $\hat M \approx 1/\text{acceptance-rate}$.
-
-#### how this surfaces in [[thoughts/LLMs|llm]] inference?
-
-- Using a proposal $q(\cdot\mid x_{<t})$ and target $p(\cdot\mid x_{<t})$, the classical acceptance rule per token $i$ is
+- Use proposal $q(\cdot\mid x_{<t})$ and target $p(\cdot\mid x_{<t})$; a per-token acceptance rule is
 
   $$
-  A(i)=\min\!\Big(1,\;\frac{p(i\mid x_{<t})}{M\,q(i\mid x_{<t})}\Big).
+  A(i)=\min\!\Bigl(1,\;\frac{p(i\mid x_{<t})}{M\,q(i\mid x_{<t})}\Bigr).
   $$
 
-- Special practice: set $M=1$ where feasible; handle rejections by falling back to sampling from $p$, preserving exactness via mixture decomposition.
+- Smaller $M$ (or tighter bounds) increases acceptance and reduces expected proposals.
 
-#### pseudocode
+### pseudocode
 
 ```text
 Given target f (unnormalized OK), proposal g, envelope M ≥ sup_x f(x)/g(x)
-
 repeat:
   y ~ g
   u ~ Uniform(0,1)
@@ -536,21 +379,62 @@ repeat:
      return y
 ```
 
-- Discrete case: replace densities with probabilities $p(i), q(i)$.
-- Expected loops per output: $M$. Tune $g$ to shrink $M$.
+### example: truncated Gaussian (uniform proposal)
 
-#### vllm pointers
+- Target (unnormalized): on an interval $[a,b]$ with mean $\mu$ and scale $\sigma>0$
 
-- Feature docs: “Speculative Decoding” section in vLLM user documentation.
-- Self-speculative n-gram path: look for “prompt lookup” / “n-gram” speculative decoding modules (e.g., components named like `ngram_worker`).
-- Repository: search the codebase for “speculative decoding,” “draft,” “verify,” “ngram,” and review examples/tests.
-- Deployment: check vLLM + Triton integration guides for production serving patterns.
+  $$
+  f(x) = \exp\!\Bigl(-\tfrac{1}{2}\,\tfrac{(x-\mu)^2}{\sigma^2}\Bigr)\,\mathbf 1_{[a,b]}(x).
+  $$
 
-### references
+- Proposal: $g(x)=\tfrac{1}{b-a}\,\mathbf 1_{[a,b]}(x)$ (uniform on $[a,b]$).
 
-- von Neumann (1951): foundational acceptance–rejection idea.
-- Modern proofs in standard Monte Carlo and SIAM-style reviews of AR.
-- @leviathan2023fastinferencetransformersspeculative, @chen2023acceleratinglargelanguagemodel
+- Envelope: the supremum of $f$ on $[a,b]$ is attained at $x_\star=\mathrm{clip}(\mu;[a,b])$, with
+
+  $$
+  f_\max \;=\; \exp\!\Bigl(-\tfrac{1}{2}\,\tfrac{(x_\star-\mu)^2}{\sigma^2}\Bigr) \in (0,1].
+  $$
+
+  Since $g\equiv 1/(b-a)$ on $[a,b]$, a valid envelope is $M=(b-a)\,f_\max$.
+
+- Accept–reject: draw $Y\sim\mathrm{Unif}[a,b]$, $U\sim\mathrm{Unif}(0,1)$ and accept iff
+
+  $$
+  U \le \frac{f(Y)}{M\,g(Y)} = \frac{\exp\!\bigl(-\tfrac{1}{2}\,\tfrac{(Y-\mu)^2}{\sigma^2}\bigr)}{f_\max}.
+  $$
+
+- Expected acceptance:
+
+  $$
+  \Pr(\text{accept}) = \frac{Z}{M}
+  = \frac{\displaystyle \int_a^b \! \exp\!\Bigl(-\tfrac{1}{2}\,\tfrac{(x-\mu)^2}{\sigma^2}\Bigr) dx}{(b-a)\,f_\max}
+  = \frac{\sigma\,\sqrt{2\pi}\,\bigl[\Phi(\tfrac{b-\mu}{\sigma})-\Phi(\tfrac{a-\mu}{\sigma})\bigr]}{(b-a)\,f_\max},
+  $$
+
+  where $\Phi$ is the standard normal CDF. If $\mu\in[a,b]$ then $f_\max=1$ and the expression simplifies.
+
+- Numeric example: $\mu=0$, $\sigma=1$, $[a,b]=[0,3]$. Here $f_\max=1$, so
+
+  $$
+  \Pr(\text{accept})
+  = \frac{\sqrt{2\pi}\,[\Phi(3)-\Phi(0)]}{3}
+  \approx \frac{2.5066\times 0.49865}{3}
+  \approx 0.417.
+  $$
+
+- Minimal implementation (pseudo-code):
+
+  ```python
+  def sample_trunc_gauss(mu, sigma, a, b):
+    # envelope height
+    x_star = min(max(mu, a), b)
+    f_max = math.exp(-0.5 * ((x_star - mu) / sigma) ** 2)
+    while True:
+      y = random.uniform(a, b)
+      u = random.random()  # Uniform(0,1)
+      if u <= math.exp(-0.5 * ((y - mu) / sigma) ** 2) / f_max:
+        return y
+  ```
 
 ## speculative sampling
 

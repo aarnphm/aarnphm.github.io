@@ -11,8 +11,6 @@ noindex: true
 title: assignment three reports.
 ---
 
-![[thoughts/images/configuration-runs.png]]
-
 ```json
 {
   "name": "hinterland-np",
@@ -45,6 +43,12 @@ title: assignment three reports.
   "target_loss": null
 }
 ```
+
+![[thoughts/images/configuration-runs.webp]]
+
+![[thoughts/images/inference-runs.webp]]
+
+![[thoughts/images/plots.webp]]
 
 ---
 

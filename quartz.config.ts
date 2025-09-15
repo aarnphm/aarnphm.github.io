@@ -85,7 +85,9 @@ const config: QuartzConfig = {
       Plugin.Pseudocode(),
       Plugin.TikzJax(),
       Plugin.TelescopicText(),
-      // FIXME: implement this
+      // Convert code-file transcludes to code blocks before highlighting
+      Plugin.CodeViewer(),
+      // TODO: implement this
       // Plugin.Recipe(),
       // Plugin.Embeddings(),
       Plugin.Twitter(),

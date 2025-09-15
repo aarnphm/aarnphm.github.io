@@ -15,3 +15,6 @@ worker-configuration.d.ts
 .ruff_cache/
 .mypy_cache/
 .ipynb_checkpoints/
+*.npz
+*.safetensors
+*.bin

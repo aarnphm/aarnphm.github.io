@@ -8,7 +8,7 @@ transclude:
   title: false
 socials:
   youtube: https://youtu.be/DDLlOqQ46HE
-modified: 2025-09-11 19:19:04 GMT-04:00
+modified: 2025-09-14 23:39:07 GMT-04:00
 title: supplement to 0.3
 date: "2025-08-26"
 ---
@@ -17,53 +17,7 @@ see also [[lectures/3/quantisation basics]]
 
 ## kvcache ad-hoc implementation
 
-see full pseudocode: [[lectures/3/simple_kv_model.py]]
-
-```python title="kv_cache.py"
-class KVCache:
-  """
-  Per-stream, per-layer KV cache.
-  Stores K and V as lists of tensors, one (K,V) per layer.
-  Shapes: K,V: [B, H, T, D_head]
-  """
-
-  # T: seq_len
-  # B: batch_size
-  # H: hidden_dim
-  # D_head: attn_head_dimensions
-
-  def __init__(self, n_layers: int):
-    self.K = [None] * n_layers
-    self.V = [None] * n_layers
-
-  def get(self, layer_idx: int):
-    return self.K[layer_idx], self.V[layer_idx]
-
-  def set_full(self, layer_idx: int, K_full, V_full):
-    # Used during prefill to stash entire prompt K/V
-    self.K[layer_idx] = K_full
-    self.V[layer_idx] = V_full
-
-  def append_step(self, layer_idx: int, k_new, v_new):
-    # k_new, v_new: [B, H, 1, D_head]
-    K_prev, V_prev = self.get(layer_idx)
-    if K_prev is None:
-      self.K[layer_idx] = k_new
-      self.V[layer_idx] = v_new
-    else:
-      self.K[layer_idx] = torch.cat([K_prev, k_new], dim=2)
-      self.V[layer_idx] = torch.cat([V_prev, v_new], dim=2)
-
-  # Optional: sliding-window eviction for local attention layers
-  def trim_left(self, layer_idx: int, max_T: int):
-    K, V = self.get(layer_idx)
-    if K is None:
-      return
-    T = K.shape[2]
-    if T > max_T:
-      self.K[layer_idx] = K[:, :, T - max_T :, :]
-      self.V[layer_idx] = V[:, :, T - max_T :, :]
-```
+![[lectures/3/simple_kv_model.py]]
 
 ## complexity trade-off (mental math)
 

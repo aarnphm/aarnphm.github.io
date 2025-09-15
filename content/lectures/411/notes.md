@@ -1,6 +1,4 @@
 ---
-socials:
-  youtube: https://youtu.be/sSdoETRQQHY
 id: notes
 tags:
   - seed
@@ -9,6 +7,6 @@ description: linear algebra notes
 transclude:
   title: false
 date: "2025-09-12"
-modified: 2025-09-14 14:43:17 GMT-04:00
+modified: 2025-09-14 23:39:07 GMT-04:00
 title: supplement to 0.411
 ---

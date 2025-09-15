@@ -12,6 +12,7 @@ import {
   joinSegments,
   pathToRoot,
   simplifySlug,
+  slugifyFilePath,
 } from "../../util/path"
 import { defaultListPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { FolderContent } from "../../components"
@@ -120,21 +121,20 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
       return [Head, Header, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async *emit(ctx, content, resources) {
-      const allFiles = content.map((c) => c[1].data)
+      const mdFiles = content.map((c) => c[1].data)
       const cfg = ctx.cfg.configuration
 
+      // Build folder set from all slugs (includes non-markdown files)
       const folders: Set<SimpleSlug> = new Set(
-        allFiles.flatMap((data) => {
-          return data.slug
-            ? _getFolders(data.slug).filter(
-                (folderName) => folderName !== "." && folderName !== "tags",
-              )
-            : []
-        }),
+        ctx.allSlugs.flatMap((slug) =>
+          _getFolders(slug as FullSlug).filter(
+            (folderName) => folderName !== "." && folderName !== "tags",
+          ),
+        ),
       )
 
       const folderInfo = computeFolderInfo(folders, content, cfg.locale)
-      yield* processFolderInfo(ctx, folderInfo, allFiles, opts, resources)
+      yield* processFolderInfo(ctx, folderInfo, mdFiles, opts, resources)
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
       const allFiles = content.map((c) => c[1].data)
@@ -143,9 +143,15 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
       // Find all folders that need to be updated based on changed files
       const affectedFolders: Set<SimpleSlug> = new Set()
       for (const changeEvent of changeEvents) {
-        if (!changeEvent.file) continue
-        const slug = changeEvent.file.data.slug!
-        const folders = _getFolders(slug).filter(
+        // Prefer slug from VFile if available (markdown)
+        let baseSlug: FullSlug | undefined = changeEvent.file?.data.slug as FullSlug | undefined
+        // For non-markdown or missing VFile, derive from path
+        if (!baseSlug) {
+          baseSlug = slugifyFilePath(changeEvent.path)
+        }
+        if (!baseSlug) continue
+
+        const folders = _getFolders(baseSlug).filter(
           (folderName) => folderName !== "." && folderName !== "tags",
         )
         folders.forEach((folder) => affectedFolders.add(folder))
