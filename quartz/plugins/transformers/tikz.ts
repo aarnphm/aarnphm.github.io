@@ -14,6 +14,7 @@ async function tex2svg(input: string) {
     texPackages: { pgfplots: "", amsmath: "intlimits" },
     tikzLibraries: "arrows.meta,calc",
     addToPreamble: "% comment",
+    showConsole: true,
   })
   const svg = await dvi2svg(dvi)
   return svg

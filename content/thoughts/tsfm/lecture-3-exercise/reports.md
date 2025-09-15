@@ -6,10 +6,12 @@ tags:
   - vllm
 description: and documentation of learning procedure.
 date: "2025-09-13"
-modified: 2025-09-15 11:24:31 GMT-04:00
+modified: 2025-09-15 18:00:42 GMT-04:00
 noindex: true
 title: assignment three reports.
 ---
+
+## [[thoughts/optimization#ReLU]] run
 
 ```json
 {
@@ -50,6 +52,66 @@ title: assignment three reports.
 
 ![[thoughts/images/plots.webp]]
 
+## explanation
+
+`TokenDataset`:
+
+- memmaps a flat token stream from disk; serves random or sequential windows.
+- Shapes: $x,y \in \text{int\_64}$ with shape `(B, S)`. y is x shifted by 1.
+
+  Disk/memmap and metadata:
+
+  ```text disableLineNumber=true
+  [ <base>.tokens.bin ] <-- np.memmap(dtype=meta['dtype'], shape=(n*tokens,))
+  |
+  v
+  tokens: t0 t1 t2 t3 t4 ... t_{N-1}
+  ```
+
+  Random window sampling (sample_batch):
+  - Inputs: batch_size=B, seq_len=S, stride, rng
+  - max_start = N - (S+1)
+  - n_positions = max_start // stride + 1
+  - starts = (rng.integers(0, n_positions, size=B)) \* stride
+  - For each start s [^token-graph]:
+    ![[thoughts/images/token-dataset-graph.webp]]
+
+  Sequential iteration (sequential_batches)
+  - starts = [0, stride, 2*stride, ...] up to max_start
+  - yield in chunks of size B (drop_last optional)
+
+`BatchPrefetcher`:
+
+- Background thread fills a bounded queue with precomputed batches to overlap
+  data prep and compute.
+- Shapes: each queued item is a tuple (x, y) with x,y ∈ int64, (B, S). [^graph]
+  ![[thoughts/images/graph-prefetcher.webp]]
+- Stop logic: sets an event, attempts a final put to unblock consumers, then joins the worker thread.
+
+[^token-graph]:
+    ```text disableLineNumber=true
+    seg = tokens[s : s + S + 1] = [t_s, t_{s+1}, ..., t_{s+S}]
+    x_i = seg[:S]               = [t_s, ..., t_{s+S-1}]
+    y_i = seg[1:]               = [t_{s+1}, ..., t_{s+S}]
+
+    tokens:  ...  t_{s-1} | t_s  t_{s+1} t_{s+2} ... t_{s+S} | t_{s+S+1} ...
+    [------- S+1 -------]
+    x:           [------ S ------]
+    y:              [------ S ------]
+    ```
+
+[^graph]:
+    ```text disableLineNumber=true
+    +-----------------------+        q.put((x,y))        +----------------------------+         q.get()         +-----------------------+
+    |     Worker Thread     | -------------------------> |     Queue (maxsize=P)      | --------------------->  |      Main Thread      |
+    | _worker():            |                            |  [(x,y), (x,y), ...]       |                         | train loop            |
+    |  ds.sample_batch(...) |                            |  bounded producer/consumer |                         | prefetcher.next()     |
+    +-----------------------+                            +----------------------------+                         +-----------------------+
+
+    Stop sequence:
+    [ prefetcher.stop() ] -> stop_event.set() -> q.put_nowait(dummy) -> thread.join()
+    ```
+
 ---
 
 ## setup
@@ -84,6 +146,10 @@ title: assignment three reports.
 
 trace through git commits for edification purposes.
 
+### DDP CPU implementation
+
+TODO
+
 ### [1ef6de57](https://github.com/aarnphm/aarnphm.github.io/commit/1ef6de57d5b911ce00bfad87443c63b554fab686)
 
 - Add parameters counter, both simplex and tree view
@@ -109,7 +175,7 @@ trace through git commits for edification purposes.
 
 - ✅ Pre-tokenize to disk + memmap. Stream TinyStories once, tokenize in big batches, write a single .bin of token IDs and .idx for document starts; training samples are contiguous chunks via random offsets.
 - ✅ Sliding window with stride.
-  - When packing tokens, use overlapping windows (seq_len, stride < seq_len) to maximize utilization and reduce “insufficient tokens, try again” loops.
+  - When packing tokens, use overlapping windows (seq_len, stride < seq_len) to maximize utilization.
 - ✅ Async prefetch.
   - Run tokenization/packing in a background thread/process, push ready (x, y) into a bounded Queue, and pop from it in the train loop to hide preprocessing latency.
 

@@ -1,6 +1,16 @@
 from __future__ import annotations
 
-import argparse, json, math, time, dataclasses, pathlib, os, threading, queue, sys
+import argparse
+import json
+import math
+import time
+import dataclasses
+import pathlib
+import os
+import threading
+import queue
+import sys
+# multiprocessing was used for an experimental DDP path; now removed
 from collections.abc import Iterable
 
 import numpy as np
@@ -35,6 +45,55 @@ from minigpt.np.ds import LMConfig, LMParams, BlockParams
 # ---------
 # utilities
 # ---------
+
+class TinyProfiler:
+  class _Section:
+    def __init__(self, parent: 'TinyProfiler', name: str):
+      self.parent = parent
+      self.name = name
+      self.t0 = 0.0
+
+    def __enter__(self):
+      if not self.parent.enabled:
+        return self
+      self.t0 = time.perf_counter()
+      return self
+
+    def __exit__(self, exc_type, exc, tb):
+      if not self.parent.enabled:
+        return False
+      dt = time.perf_counter() - self.t0
+      rec = self.parent.times.setdefault(self.name, [0, 0.0])
+      rec[0] += 1
+      rec[1] += dt
+      return False
+
+  def __init__(self, enabled: bool = False):
+    self.enabled = enabled
+    self.times: dict[str, list] = {}
+
+  def section(self, name: str):
+    return TinyProfiler._Section(self, name)
+
+  def report(self) -> str:
+    if not self.enabled:
+      return ''
+    lines = ["[profile] section | calls | total_s | avg_ms"]
+    for k, (n, t) in sorted(self.times.items(), key=lambda x: x[0]):
+      avg_ms = (t / max(1, n)) * 1e3
+      lines.append(f"[profile] {k:12s} | {n:5d} | {t:7.3f}s | {avg_ms:7.2f}ms")
+    return "\n".join(lines)
+
+
+_GLOBAL_PROFILER: TinyProfiler | None = None
+
+
+def get_profiler() -> TinyProfiler:
+  global _GLOBAL_PROFILER
+  if _GLOBAL_PROFILER is None:
+    enabled = _is_truthy(os.environ.get('NP_TRAIN_PROFILE'))
+    _GLOBAL_PROFILER = TinyProfiler(enabled=enabled)
+  return _GLOBAL_PROFILER
 
 try:
   from tqdm.auto import tqdm
@@ -131,6 +190,11 @@ def _timestamp() -> str:
   return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
 
 
+# NOTE: The previous experimental multiprocessing/DDP code path has been removed
+# to simplify the training loop and avoid instability. Profiling remains so we
+# can inspect forward/backward/step timings while iterating on stability.
+
+
 def kaiming_uniform(shape, a=math.sqrt(5)):
   rng = get_rng()
   fan_in = shape[0] if len(shape) >= 1 else 1
@@ -221,6 +285,19 @@ def _eq_str(arr: np.ndarray | None) -> str:
 
 def _size(arr: np.ndarray | None) -> int:
   return int(arr.size) if arr is not None else 0
+
+
+def _params_all_finite(p: LMParams) -> bool:
+  def ok(a: np.ndarray | None) -> bool:
+    return True if a is None else bool(np.isfinite(a).all())
+  if not ok(p.W_E) or not ok(p.W_pos) or not ok(p.gamma_f) or not ok(p.beta_f):
+    return False
+  if p.W_LM is not None and not ok(p.W_LM):
+    return False
+  for b in p.blocks:
+    if not (ok(b.W_Q) and ok(b.W_K) and ok(b.W_V) and ok(b.W_O) and ok(b.gamma1) and ok(b.beta1) and ok(b.W1) and ok(b.W2) and ok(b.gamma2) and ok(b.beta2)):
+      return False
+  return True
 
 
 def parameter_breakdown(params: LMParams) -> dict:
@@ -894,6 +971,8 @@ class AdamW:
 
 
 def load_tokenizer(tokenizer: str):
+  if AutoTokenizer is None:
+    raise ImportError("transformers is required for load_tokenizer(); please install 'transformers'.")
   tok = AutoTokenizer.from_pretrained(tokenizer, use_fast=True)
   if tok.pad_token is None:
     tok.pad_token = tok.eos_token if tok.eos_token is not None else '<|pad|>'
@@ -906,6 +985,8 @@ def prepare_text_stream(
   split: str = 'train',
   streaming: bool = True,
 ):
+  if load_dataset is None:
+    raise ImportError("datasets is required for prepare_text_stream(); please install 'datasets'.")
   ds = load_dataset(dataset_name, split=split, streaming=streaming)
   for ex in ds:
     txt = ex.get('text', None)
@@ -1100,13 +1181,16 @@ def compute_loss_and_grads(
   attn_mask: np.ndarray | None,
   return_accuracy: bool = False,
 ):
-  logits, caches = lm_fwd(x, params, config, attn_mask=attn_mask)
+  with get_profiler().section('fwd'):
+    logits, caches = lm_fwd(x, params, config, attn_mask=attn_mask)
   B, S, V = logits.shape
-  loss, dLogits2D = cross_entropy_logits(
-    logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None
-  )
+  with get_profiler().section('loss'):
+    loss, dLogits2D = cross_entropy_logits(
+      logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None
+    )
   dLogits = dLogits2D.reshape(B, S, V)
-  grads = lm_bwd(dLogits, x, caches, params, config)
+  with get_profiler().section('bwd'):
+    grads = lm_bwd(dLogits, x, caches, params, config)
   if return_accuracy:
     with np.errstate(invalid='ignore'):
       preds = np.argmax(logits, axis=-1)
@@ -1330,7 +1414,7 @@ def train(config: LMConfig):
   S = config.max_seq_len
   causal_mask = build_causal_mask(S, S)
 
-  # Async prefetching batches from memmapped tokens with sliding window stride
+  # Async prefetching (single-process training only)
   stride = config.stride if config.stride > 0 else config.max_seq_len
   prefetcher = BatchPrefetcher(
     train_tokens,
@@ -1353,21 +1437,30 @@ def train(config: LMConfig):
   early_stop_reason: str | None = None
   remaining = max(0, target_step - start_step)
   pbar = make_progress(total=remaining, desc='train')
-  for step in range(start_step + 1, target_step + 1):
-    x, y = prefetcher.next()
 
+  # No multiprocessing/DP path; keep training single-process for stability
+
+  for step in range(start_step + 1, target_step + 1):
     # Adjust learning rate with warmup and plateau reductions
     if config.warmup_steps > 0 and step <= config.warmup_steps:
       opt.lr = plateau_lr * (step / max(1, config.warmup_steps))
     else:
       opt.lr = plateau_lr
 
+    with get_profiler().section('batch'):
+      x, y = prefetcher.next()
     loss, grads, train_acc = compute_loss_and_grads(
       x, y, params, config, attn_mask=causal_mask, return_accuracy=True
     )
+
     train_losses.append(float(loss))
     train_accuracies.append(float(train_acc))
-    opt.step(params, grads)
+    with get_profiler().section('opt_step'):
+      opt.step(params, grads)
+    # finite guard: if params blew up, stop early to avoid cascading NaNs
+    if not _params_all_finite(params):
+      pbar.write('[error] non-finite parameters after step; stopping training early')
+      break
 
     if step % config.log_every == 0:
       elapsed = time.time() - start
@@ -1383,7 +1476,8 @@ def train(config: LMConfig):
       )
 
     if step % config.eval_every == 0:
-      val_loss, val_acc = evaluate_tokens(
+      with get_profiler().section('eval'):
+        val_loss, val_acc = evaluate_tokens(
         val_tokens,
         tokenizer,
         params,
@@ -1457,7 +1551,8 @@ def train(config: LMConfig):
         break
 
       # Save an intermediate checkpoint at this step as well
-      _save_checkpoint(
+      with get_profiler().section('checkpoint'):
+        _save_checkpoint(
         out_dir,
         step,
         params,
@@ -1473,7 +1568,8 @@ def train(config: LMConfig):
     pbar.update(1)
 
   # Final checkpoint at last step
-  _save_checkpoint(
+  with get_profiler().section('checkpoint'):
+    _save_checkpoint(
     out_dir,
     target_step,
     params,
@@ -1485,7 +1581,11 @@ def train(config: LMConfig):
     val_acc_points=val_acc_points,
     optimizer=opt,
   )
-  prefetcher.stop()
+  if prefetcher is not None:
+    prefetcher.stop()
+  rep = get_profiler().report()
+  if rep:
+    print(rep, flush=True)
 
   try:
     pbar.close()
@@ -1528,7 +1628,7 @@ def _save_checkpoint(
   val_points: list[tuple[int, float]],
   train_accuracies: list[float] | None = None,
   val_acc_points: list[tuple[int, float]] | None = None,
-  optimizer: 'AdamW' | None = None,
+  optimizer: AdamW | None = None,
 ) -> None:
   step_dir = root / f'steps_{step}'
   step_dir.mkdir(parents=True, exist_ok=True)
@@ -1855,6 +1955,7 @@ def main():
   p.add_argument(
     '--prefetch', type=int, default=4, help='number of prefetched batches'
   )
+  p.add_argument('--profile', action='store_true', help='enable tiny profiler')
   args = p.parse_args()
 
   cfg = LMConfig(
@@ -1907,6 +2008,9 @@ def main():
       flush=True,
     )
     return
+
+  if args.profile:
+    os.environ['NP_TRAIN_PROFILE'] = '1'
   train(cfg)
 
 

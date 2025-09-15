@@ -7,10 +7,10 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
+date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-09-14 21:07:41 GMT-04:00
+modified: 2025-09-15 14:28:19 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -411,6 +411,7 @@ see also [[/curius|bookmarks]]
   - SAE scaling law dynamics
 - https://x.com/_xjdr/status/1966215415027347856
   - MatFormer: https://arxiv.org/pdf/2310.07707
+- https://x.com/Grad62304977/status/1967548295816819184
 
 ### argumentative
 

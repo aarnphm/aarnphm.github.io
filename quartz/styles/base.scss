@@ -438,26 +438,39 @@ pre {
         background-color: var(--highlight);
         border-left: 3px solid var(--secondary);
       }
-
-      &::before {
-        content: counter(line);
-        counter-increment: line;
-        width: 1rem;
-        margin-right: 1rem;
-        display: inline-block;
-        text-align: right;
-        color: rgba(115, 138, 148, 0.6);
-      }
     }
 
-    &[data-line-numbers-max-digits="2"] > [data-line]::before {
+    // Only show line-number counter when not explicitly disabled
+    &:not([data-disable-line-number]) > [data-line]::before {
+      content: counter(line);
+      counter-increment: line;
+      width: 1rem;
+      margin-right: 1rem;
+      display: inline-block;
+      text-align: right;
+      color: rgba(115, 138, 148, 0.6);
+    }
+
+    // If the attribute is on the <pre> wrapper (e.g., set by HTML plugin),
+    // ensure counters are not rendered either (overridden below at root scope).
+
+    &:not([data-disable-line-number])[data-line-numbers-max-digits="2"] > [data-line]::before {
       width: 2rem;
     }
 
-    &[data-line-numbers-max-digits="3"] > [data-line]::before {
+    &:not([data-disable-line-number])[data-line-numbers-max-digits="3"] > [data-line]::before {
       width: 3rem;
     }
   }
+}
+
+// Parent override when attribute is on <pre>
+pre[data-disable-line-number] > code > [data-line]::before {
+  content: none;
+  counter-increment: none;
+  display: none;
+  margin-right: 0;
+  width: 0;
 }
 
 code {
