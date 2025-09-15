@@ -483,7 +483,7 @@ class StackedNoteManager {
         node.note = await this.createNote(0, {
           slug: node.slug,
           title: node.title,
-          contents: node.contents,
+          contents: node.contents as HTMLDivElement[],
         })
         this.column.appendChild(node.note)
       }
@@ -507,7 +507,7 @@ class StackedNoteManager {
         node.note = await this.createNote(i, {
           slug: node.slug,
           title: node.title,
-          contents: node.contents,
+          contents: node.contents as HTMLDivElement[],
         })
         this.column.appendChild(node.note)
 
@@ -598,7 +598,7 @@ class StackedNoteManager {
     // We will need to construct the results from the current page, so no need to fetch here.
     const contents = Array.from(document.getElementsByClassName("popover-hint")).map((el) =>
       el.cloneNode(true),
-    ) as HTMLElement[]
+    ) as HTMLDivElement[]
     const h1 = document.querySelector("h1")
     const title =
       h1?.innerText ??

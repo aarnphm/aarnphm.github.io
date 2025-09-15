@@ -200,7 +200,9 @@ document.addEventListener("nav", async () => {
       },
     })
 
-    await mermaid.run({ nodes: [...nodes].map((n) => n.querySelector("code.mermaid")) })
+    await mermaid.run({
+      nodes: [...nodes].map((n) => n.querySelector("code.mermaid") as HTMLDivElement),
+    })
   }
 
   await renderMermaid()
@@ -210,27 +212,40 @@ document.addEventListener("nav", async () => {
   for (let i = 0; i < nodes.length; i++) {
     const pre = nodes[i]
     const codeBlock = pre.querySelector("code.mermaid") as HTMLDivElement
-    const clipboardBtn = pre.querySelector(".clipboard-button") as HTMLButtonElement
-    const expandBtn = pre.querySelector(".expand-button") as HTMLButtonElement
+    const clipboardBtn = pre.querySelector(".clipboard-button") as HTMLElement | null
+    const expandBtn = pre.querySelector(".expand-button") as HTMLElement | null
 
-    const clipboardStyle = window.getComputedStyle(clipboardBtn)
-    const clipboardWidth =
-      clipboardBtn.offsetWidth +
-      parseFloat(clipboardStyle.marginLeft || "0") +
-      parseFloat(clipboardStyle.marginRight || "0")
+    // If either control is missing, skip this block (don't abort handler)
+    if (!(clipboardBtn instanceof Element) || !(expandBtn instanceof HTMLElement)) {
+      continue
+    }
 
-    // Set expand button position
+    // Compute total width of clipboard button including horizontal margins
+    let clipboardWidth = 0
+    try {
+      const clipboardStyle = window.getComputedStyle(clipboardBtn)
+      clipboardWidth =
+        (clipboardBtn as HTMLElement).offsetWidth +
+        parseFloat(clipboardStyle.marginLeft || "0") +
+        parseFloat(clipboardStyle.marginRight || "0")
+    } catch {
+      // Fall back to a sane default if getComputedStyle fails
+      clipboardWidth = clipboardBtn.offsetWidth || 0
+    }
+
+    // Set expand button position relative to the clipboard button
     expandBtn.style.right = `calc(${clipboardWidth}px + 0.3rem)`
-    pre.prepend(expandBtn)
 
     // query popup container
-    const popupContainer = pre.querySelector("#mermaid-container") as HTMLElement
-    if (!popupContainer) return
+    const popupContainer = pre.querySelector("#mermaid-container") as HTMLElement | null
+    if (!popupContainer) {
+      continue
+    }
 
     let panZoom: DiagramPanZoom | null = null
     function showMermaid() {
-      const container = popupContainer.querySelector("#mermaid-space") as HTMLElement
-      const content = popupContainer.querySelector(".mermaid-content") as HTMLElement
+      const container = popupContainer!.querySelector("#mermaid-space") as HTMLElement
+      const content = popupContainer!.querySelector(".mermaid-content") as HTMLElement
       if (!content) return
       removeAllChildren(content)
 
@@ -239,7 +254,7 @@ document.addEventListener("nav", async () => {
       content.appendChild(mermaidContent)
 
       // Show container
-      popupContainer.classList.add("active")
+      popupContainer?.classList.add("active")
       container.style.cursor = "grab"
 
       // Initialize pan-zoom after showing the popup
@@ -247,7 +262,7 @@ document.addEventListener("nav", async () => {
     }
 
     function hideMermaid() {
-      popupContainer.classList.remove("active")
+      popupContainer?.classList.remove("active")
       panZoom?.cleanup()
       panZoom = null
     }

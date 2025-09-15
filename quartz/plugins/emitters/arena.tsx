@@ -125,7 +125,7 @@ function createCategoryTree(cat: CategoryInfo): Root {
 
 async function processArenaPage(
   ctx: BuildCtx,
-  tree: Root,
+  _tree: Root,
   file: QuartzPluginData,
   allFiles: QuartzPluginData[],
   opts: FullPageLayout,

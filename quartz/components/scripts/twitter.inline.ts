@@ -8,8 +8,10 @@ window.twttr = (function (d: Document, s: "script", id: string) {
   js.src = "https://platform.twitter.com/widgets.js"
   fjs.parentNode!.insertBefore(js, fjs)
 
+  //@ts-ignore
   t._e = []
   t.ready = function (f) {
+    //@ts-ignore
     t._e.push(f)
   }
 

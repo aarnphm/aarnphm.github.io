@@ -132,42 +132,51 @@ document.addEventListener("nav", async (e) => {
     {
       name: "x.com (formerly Twitter)",
       auxInnerHtml: `<svg width="1em" height="1em"><use href="#twitter-icon" /></svg>`,
-      onClick: (e) => {
+      onClick: () => {
         window.location.href = "https://x.com/aarnphm_"
       },
     },
     {
       name: "bsky.app",
       auxInnerHtml: `<svg width="1em" height="1em"><use href="#bsky-icon" /></svg>`,
-      onClick: (e) => {
+      onClick: () => {
         window.location.href = "https://bsky.app/profile/aarnphm.xyz"
       },
     },
     {
       name: "substack",
       auxInnerHtml: `<svg width="1em" height="1em"><use href="#substack-icon" /></svg>`,
-      onClick: (e) => {
+      onClick: () => {
         window.location.href = "https://livingalonealone.com"
       },
     },
     {
       name: "github",
       auxInnerHtml: `<svg width="1em" height="1em"><use href="#github-icon" /></svg>`,
-      onClick: (e) => {
+      onClick: () => {
         window.location.href = "https://github.com/aarnphm"
+      },
+    },
+    {
+      name: "dating me",
+      auxInnerHtml: "<kbd>↵</kbd> as love",
+      onClick: () => {
+        window.spaNavigate(
+          new URL(resolveRelative(currentSlug, "/dating" as FullSlug), window.location.toString()),
+        )
       },
     },
     {
       name: "coffee chat",
       auxInnerHtml: "<kbd>↵</kbd> on calendly",
-      onClick: (e) => {
+      onClick: () => {
         window.location.href = "https://calendly.com/aarnphm/30min"
       },
     },
     {
       name: "current work",
       auxInnerHtml: "<kbd>↵</kbd> as craft",
-      onClick: (e) => {
+      onClick: () => {
         window.spaNavigate(
           new URL(
             resolveRelative(currentSlug, "/thoughts/craft" as FullSlug),
@@ -179,7 +188,7 @@ document.addEventListener("nav", async (e) => {
     {
       name: "cool people",
       auxInnerHtml: "<kbd>↵</kbd> as inspiration",
-      onClick: (e) => {
+      onClick: () => {
         window.spaNavigate(
           new URL(
             resolveRelative(currentSlug, "/influence" as FullSlug),
@@ -191,7 +200,7 @@ document.addEventListener("nav", async (e) => {
     {
       name: "old fashioned resume (maybe not up-to-date)",
       auxInnerHtml: "<kbd>↵</kbd>",
-      onClick: (e) => {
+      onClick: () => {
         window.spaNavigate(
           new URL(
             resolveRelative(currentSlug, "/thoughts/pdfs/2025q1-resume.pdf" as FullSlug),
@@ -263,6 +272,7 @@ document.addEventListener("nav", async (e) => {
     els.forEach((slug) => {
       const id = idDataMap.findIndex((s) => s === slug)
       if (id !== -1) {
+        //@ts-ignore
         recentItems.push({
           id,
           slug,
@@ -282,6 +292,7 @@ document.addEventListener("nav", async (e) => {
         const slug = availableSlugs[randomIndex]
         const id = idDataMap.findIndex((s) => s === slug)
 
+        //@ts-ignore
         recentItems.push({
           id,
           slug: slug as FullSlug,
@@ -413,6 +424,7 @@ document.addEventListener("nav", async (e) => {
   }
 
   async function querySearch(currentSearchTerm: string) {
+    //@ts-ignore
     let searchResults: FlexSearch.SimpleDocumentSearchResultSetUnit[]
     if (actionType === "quick_open") {
       searchResults = await index.searchAsync({
@@ -421,6 +433,7 @@ document.addEventListener("nav", async (e) => {
         index: ["name", "aliases"],
       })
     } else {
+      //@ts-ignore
       searchResults = await index.searchAsync({
         query: currentSearchTerm,
         limit: Math.max(numSearchResults, 10000),
@@ -441,6 +454,7 @@ document.addEventListener("nav", async (e) => {
     if (actionType === "quick_open") {
       const allIds: Set<number> = new Set([...getByField("name"), ...getByField("aliases")])
       displayResults(
+        //@ts-ignore
         [...allIds]
           .map((id) => {
             const slug = idDataMap[id]
@@ -584,6 +598,7 @@ async function fillDocument(data: ContentIndex, actions: Action[]) {
   const promises = []
   for (const [slug, fileData] of Object.entries(data)) {
     promises.push(
+      //@ts-ignore
       index.addAsync(id++, {
         id,
         slug: slug as FullSlug,

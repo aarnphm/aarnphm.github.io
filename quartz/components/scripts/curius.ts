@@ -237,7 +237,7 @@ export function createTrailMetadata(res: CuriusResponse) {
       link.trails.map((trail) => {
         if (!trailMetadata.has(trail.trailName))
           trailMetadata.set(trail.trailName, { trail, links: new Map() })
-        trailMetadata.get(trail.trailName)!.links.set(link.id, link)
+        trailMetadata.get(trail.trailName)!.links.set(link.id as number, link)
       })
     })
   return trailMetadata
@@ -307,6 +307,7 @@ function createTrailEl(
         el,
         ["mouseenter", onMouseEnter],
         ["mouseleave", onMouseLeave],
+        //@ts-ignore
         ["click", openLink],
       )
 
@@ -568,6 +569,7 @@ async function fillIndex(links: Link[]) {
   let id: Id = 0
   const promises = []
   for (const link of links) {
+    //@ts-ignore
     promises.push(index.addAsync(id, { ...link }))
     id++
   }

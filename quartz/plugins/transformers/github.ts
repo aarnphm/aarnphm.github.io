@@ -124,7 +124,9 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
             mdastFindReplace(
               tree,
               [
+                //@ts-ignore
                 [referenceRegex, replaceReference],
+                //@ts-ignore
                 [mentionRegex, replaceMention],
                 [/(?:#|\bgh-)([1-9]\d*)/gi, replaceIssue],
                 [/\b([a-f\d]{7,40})\.{3}([a-f\d]{7,40})\b/gi, replaceHashRange],

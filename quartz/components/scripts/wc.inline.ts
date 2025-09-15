@@ -2,11 +2,9 @@ document.addEventListener("nav", () => {
   const modal = document.getElementById("wc-modal") as HTMLElement
   if (!modal) return
   const inner = modal.querySelector(".wc-inner") as HTMLElement
-  let current: Selection | null = null
 
   function updateModal() {
     const selection = window.getSelection()
-    current = selection
 
     if (!selection || selection.isCollapsed) {
       modal!.style.visibility = "hidden"

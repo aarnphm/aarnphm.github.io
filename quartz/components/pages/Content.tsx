@@ -1,7 +1,6 @@
 import { htmlToJsx } from "../../util/jsx"
-import { FilePath, resolveRelative, slugifyFilePath } from "../util/path"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
-import { joinSegments } from "../../util/path"
+import { FullSlug, joinSegments, pathToRoot, resolveRelative } from "../../util/path"
 
 export default (() => {
   const Content: QuartzComponent = ({ fileData, tree }: QuartzComponentProps) => {
@@ -16,8 +15,14 @@ export default (() => {
             see also:{" "}
             <a
               data-no-popover
-              data-slug={joinSegments(fileData.slug!, "/slides")}
-              href={joinSegments(fileData.slug!, "/slides")}
+              data-slug={resolveRelative(
+                fileData.slug!,
+                joinSegments(fileData.slug!, "/slides") as FullSlug,
+              )}
+              href={resolveRelative(
+                fileData.slug!,
+                joinSegments(fileData.slug!, "/slides") as FullSlug,
+              )}
             >
               slides deck
             </a>

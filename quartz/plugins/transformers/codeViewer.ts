@@ -146,7 +146,7 @@ async function readCodeFile(ctx: BuildCtx, resolvedRel: FilePath) {
 }
 
 export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
-  const opts = { exts: Array.from(DEFAULT_EXTS), ...(userOpts ?? {}) }
+  const opts = { exts: Array.from(DEFAULT_EXTS), ...userOpts }
   const exts = new Set(opts.exts!.map((e) => e.toLowerCase()))
 
   // We implement as a Markdown transformer that preempts OFM on code embeds.
@@ -161,6 +161,7 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
             const replacements: [RegExp, string | ReplaceFunction][] = [
               [
                 wikilinkRegex,
+                //@ts-ignore
                 (value: string, ...capture: string[]) => {
                   const [rawFp] = capture
                   const fp = (rawFp ?? "").trim()

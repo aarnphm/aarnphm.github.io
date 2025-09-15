@@ -8,7 +8,7 @@ transclude:
   title: false
 socials:
   youtube: https://youtu.be/sSdoETRQQHY
-modified: 2025-09-11 19:19:41 GMT-04:00
+modified: 2025-09-15 05:29:17 GMT-04:00
 title: supplement to 0.41
 date: "2025-09-10"
 ---
@@ -28,30 +28,30 @@ megathread: [[thoughts/Speculative decoding]]
 Medusa offers two verification modes:
 
 - rejection sampling, same as [@leviathan2023fastinferencetransformersspeculative]: _lossless_ by design. Medusa’s authors note it "generate\[s] consistent responses with the same distribution as the original model," but "cannot further enhance acceleration." [@cai2024medusasimplellminference]
-- typical acceptance: a heuristic that **replaces** rejection sampling. a heuristic that replaces rejection sampling:
+- typical acceptance: a heuristic that **replaces** rejection sampling:
   - forces the first token to be greedy and unconditionally accepted
   - then for subsequent tokens accepts the longest candidate prefix whose tokens exceed an entropy-dependent probability threshold under the original model, a truncation-style rule.
 
 ### a minimal proof
 
-_claim:_ MEDUSA with typical acceptance is lossful for non-greedy decoding.
+Claim. Medusa with typical acceptance is lossy for non-greedy decoding.
 
-_proof:_ fix a state $s$ with
+Proof. Fix a state $s$ with
 
 $$
 P(x{=}a\mid s)=0.6,\quad P(x{=}b\mid s)=0.4.
 $$
 
-with typical acceptance:
+Under typical acceptance:
 
 - Medusa outputs $a$ with probability $1$ at the first position.
 - The target model under non-greedy sampling outputs $a$ with probability $0.6$ and $b$ with probability $0.4$.
-- The resulting distributions differ (total-variation distance $=0.4$ > 0).
-- Therefore the procedure is lossful. $\boxed{}$
+- The resulting distributions differ (total variation distance $=0.4$ > 0).
+- Therefore the procedure is lossy. $\boxed{}$
 
 #### formal
 
-For Medusa, at state $s$ with target logits $P(\cdot\mid s)$, the emitted first token under typical-acceptance satisfies
+For Medusa, at state $s$ with target distribution $P(\cdot\mid s)$, the emitted first token under typical acceptance satisfies
 
 $$
 X^{\text{Medusa}}_1 \equiv \arg\max_x P(x\mid s) \quad\text{a.s.,}
@@ -61,7 +61,7 @@ independent of any sampling temperature or nucleus threshold, because the first 
 
 > [!theorem] 1.1
 >
-> If $P(\cdot\mid s)$ is non-degenerate (i.e., not a Dirac at its $\arg\max$), then Medusa with typical acceptance is lossless **only** for the greedy policy; it is **lossful** for any stochastic policy (e.g., temperature/noise, top-$p$, top-$k$).
+> If $P(\cdot\mid s)$ is non-degenerate (i.e., not a Dirac at its $\arg\max$), then Medusa with typical acceptance is lossless (w.r.t. policy $\pi$) **only** when $\pi$ is the greedy policy; it is **lossy** for any stochastic policy (e.g., temperature/noise, top-$p$, top-$k$).
 
 **Proof.**
 
@@ -69,16 +69,16 @@ Let $a=\arg\max_x P(x\mid s)$ and assume $P(a\mid s)<1$.
 
 For any stochastic policy $\pi$ that samples from more than one token (e.g., identity or nucleus), the desired law is $\pi[P(\cdot\mid s)]$, which assigns some mass to tokens $b\neq a$.
 
-But Medusa typical-acceptance returns $a$ with probability $1$. Hence the total-variation distance satisfies
+But typical acceptance returns $a$ a.s. Hence the total variation distance satisfies
 
 $$
 \operatorname{TV}\left(\,\mathcal L(X^{\text{Medusa}}_1)\,,\,\pi[P(\cdot\mid s)]\,\right)
 \;\ge\; 1-\pi[P(\cdot\mid s)](a) \;>\; 0.
 $$
 
-Therefore the method is lossful unless $P(a\mid s)=1$ (degenerate/greedy case). $\boxed{}$
+Therefore the method is lossy unless $P(a\mid s)=1$ (degenerate/greedy case). $\boxed{}$
 
-### corollary (joint lossfulness)
+### corollary (joint lossiness)
 
 Even if the “always greedy first token” constraint were removed, Medusa’s **longest-accepted-prefix under thresholds** induces a non-rejection event
 
@@ -86,7 +86,7 @@ $$
 A(\hat x_{1:m}) \;=\;\bigcap_{i=1}^{m}\big\{\,P(\hat x_i\mid s, \hat x_{<i})\ge\tau_i(s,\hat x_{<i})\,\big\},
 $$
 
-and then emits $\hat x\_{1\:M}$ where $M=\max{m\:A(\hat x\_{1\:m})}$ among a candidate set.
+and then emits $\hat x\_{1:M}$ where $M=\max\{\,m:\,A(\hat x\_{1:m})\,\}$ among a candidate set.
 
 This conditioning on _passing thresholds_ without the importance-weight correction skews both marginals and joints away from $\pi[P]$ (no acceptance rule of the form $\min{1, P/Q}$ is applied).
 
@@ -94,7 +94,7 @@ This conditioning on _passing thresholds_ without the importance-weight correcti
 >
 > _(This is why Medusa presents typical acceptance as an efficiency/quality trade-off, not a distribution-preserving scheme.)_
 
-### total variance, joint law
+### total variation, joint law
 
 Let the vocab for step-1 be $\{a,b\}$, for step-2 be $\{u,v\}$. Let the true joint be
 
@@ -110,7 +110,7 @@ $$
 \mathbb{P}_{\text{Medusa}}(x_1,x_2)=\delta_{(a,u)}(x_1,x_2).
 $$
 
-The total-variation distance on the 2-token joint is
+The total variation distance on the 2-token joint is
 
 $$
 \operatorname{TV}\big(\delta_{(a,u)},\,P\big)
@@ -234,24 +234,37 @@ The draft now predicts $f_{t+2}$ (the feature after that token) instead of $f_{t
 
   Here’s the clean story on **why EAGLE feeds shifted vs. unshifted tokens into its feature-predictor**—and exactly how the loop runs.
 
-### what “shifted tokens” fix
+### what "shifted tokens" fix
 
-Let $f_t$ be the target LLM’s second-to-top hidden at step $t$ (before LM head), and $p_{t+1}=\mathrm{softmax}(W f_t)$. If you try to _predict the next feature_ $f_{t+1}$ from only $(F_{1:t},T_{1:t})$, you’re forecasting a **multi-modal** object: the _realized_ $f_{t+1}$ depends on the _sampled_ token $x_{t+1}$. Formally,
+Let $f_t$ be the target LLM’s second-to-top hidden at step $t$ (before LM head), and $p_{t+1}=\mathrm{softmax}(W f_t)$.
+
+If you try to _predict the next feature_ $f_{t+1}$ from only $(F_{1:t},T_{1:t})$, you’re forecasting a **multi-modal** object: the _realized_ $f_{t+1}$ depends on the _sampled_ token $x_{t+1}$.
+
+Formally,
 
 $$
 \mathcal{P}(f_{t+1}\mid F_{1:t},T_{1:t})
 \;=\;\sum_{x} p_{t+1}(x)\;\delta\big(f_{t+1}-\Phi(F_{1:t},T_{1:t},x)\big),
 $$
 
-a mixture over token-conditioned branches $x\mapsto \Phi(\cdot,x)$. Regressing to a single point (e.g., Smooth-L1) collapses modes and yields a “blurred feature” that _is not any branch the target LLM will actually take_, hurting acceptance. EAGLE resolves this by _conditioning on the sampled token itself_: it feeds the **token sequence advanced by one time step** (the “shifted” tokens) so the predictor targets the _correct branch_ deterministically. This is explicitly the paper’s fix for “feature uncertainty.” ([arXiv][1])
+a mixture over token-conditioned branches $x\mapsto \Phi(\cdot,x)$.
 
-Concretely, **EAGLE predicts $f_{i+1}$ from $(F_{1:i},\,T_{2:i+1})$**—features aligned with **tokens shifted by +1**—thereby including the _actual_ $t_{i+1}$ that was sampled by the target model. In the running example (“I → am/always”), the model predicts $f_{\text{always}}$ using $(f_I,\ t_{\text{always}})$ and $f_{\text{am}}$ using $(f_I,\ t_{\text{am}})$; once the token is sampled, the predictor locks onto the right branch. This is spelled out both narratively and in the diagrammatic pipeline. ([arXiv][1])
+Regressing to a single point (e.g., Smooth-L1) collapses modes and yields a “blurred feature” that _is not any branch the target LLM will actually take_, hurting acceptance.
+
+> EAGLE resolves this by _conditioning on the sampled token itself_:
+>
+> - it feeds the **token sequence advanced by one time step** (the “shifted” tokens) so the predictor targets the _correct branch_ deterministically.
+
+Concretely, **EAGLE predicts $f_{i+1}$ from $(F_{1:i},\,T_{2:i+1})$**—features aligned with **tokens shifted by +1**—thereby including the _actual_ $t_{i+1}$ that was sampled by the target model.
+
+- In the running example (“I → am/always”), the model predicts $f_{\text{always}}$ using $(f_I,\ t_{\text{always}})$ and $f_{\text{am}}$ using $(f_I,\ t_{\text{am}})$; once the token is sampled, the predictor locks onto the right branch.
 
 #### why keep “unshifted” around?
 
-The paper evaluates variants: **feature-only**, **token-only**, **feature\&unshifted-token**, and the final **feature\&shifted-token**. Both “feature\&shifted” and “feature\&unshifted” fuse token semantics with features, but only the _shifted_ variant **accounts for sampling randomness**, delivering the big jump in acceptance/speed without extra complexity. Ablations show the jump from \~1.9× to \~2.8× speedup once uncertainty is handled via shift. ([arXiv][1])
+The paper evaluates variants: **feature-only**, **token-only**, **feature\&unshifted-token**, and the final **feature\&shifted-token**.
 
-> “feature\&shifted-token … markedly enhances the draft model’s capability by simply advancing the token by one time step, allowing the draft model to account for the randomness in sampling,” while “feature\&unshifted-token” does not. ([arXiv][1])
+- Both “feature\&shifted” and “feature\&unshifted” fuse token semantics with features, but only the _shifted_ variant **accounts for sampling randomness**, delivering the big jump in acceptance/speed without extra complexity.
+- Ablations show the jump from \~1.9× to \~2.8× speedup once uncertainty is handled via shift (arXiv).
 
 ## EAGLE-3
 
@@ -356,7 +369,7 @@ Only $\Delta\_{\parallel}$ influences logits: $W\Delta=W\Delta\_{\parallel}$ and
 > - With finite capacity/data, optimizing $\mathcal{L}\_{\text{E1}}$ allocates learning budget to drive **both** components small, wasting sample capacity on $\Delta\_{\perp}$ (logit‑irrelevant directions).
 > - The effective regression dimension is $d$, not $\mathrm{rank}(W)\le d$; generalization/sample complexity scales with the larger $d$.
 
-> [!math] Propo 3.1 (sample‑complexity gap)
+> [!math] Proposition 3.1 (sample‑complexity gap)
 >
 > Suppose locally the CE term is quadratic in the logit error $\delta\ell=W\Delta$ with Hessian $H\succ 0$. Then the joint objective behaves like
 >
@@ -380,7 +393,7 @@ EAGLE‑1/2 reused the **top layer** feature (immediately before $W$).
 
 > EAGLE‑3 notes this layer is **optimized for the next token**; it is a strong sufficient statistic for $x_{t+1}$ **but not** for $x_{t+2}$ under a small draft. They therefore **fuse low/mid/high features** as input to the draft.
 
-Let $Z*H,Z_M,Z_L$ be high/mid/low features of the _target_ model at step $t+1$ and $Y=x\_{t+1}$. Then
+Let $Z_H,Z_M,Z_L$ be high/mid/low features of the _target_ model at step $t+1$ and $Y=x\_{t+1}$. Then
 
 $$
 I(Y;\,[Z_H,Z_M,Z_L])\;\ge\; I(Y;\,Z_H),
@@ -389,7 +402,7 @@ $$
 with strict inequality whenever $Z_M$ or $Z_L$ carry token‑relevant bits not fully determined by $Z_H$. By the Bayes–risk identity for classification,
 
 $$
-\inf_{q(\cdot|Z)}\mathbb{E}\big[\mathrm{CE}(p(\cdot|X),q(\cdot|Z))\big]
+\inf_{q(\cdot|Z)}\mathbb{E}\big[\mathrm{CE}(p(\cdot|Z),q(\cdot|Z))\big]
 \;=\; \mathbb{E}\big[H(Y|Z)\big],
 $$
 
@@ -408,9 +421,9 @@ Teacher‑forced training (only ground‑truth contexts) suffers **exposure bias
 - at inference the draft must condition on _its own_ predicted tokens, a different state distribution.
 - TTT simulates a short multi‑step roll‑out **during training**, i.e.:
   - it mixes in the draft's predicted tokens as inputs so training matches test‑time usage.
-  - This is the same fix that underlies **scheduled sampling** and **DAgger** in sequence prediction/imitation learning. [@bengio2015scheduledsamplingsequenceprediction; ]
+  - This is the same fix that underlies **scheduled sampling** and **DAgger** in sequence prediction/imitation learning. [@bengio2015scheduledsamplingsequenceprediction]
 
-> [!math] Propo 3.2 (distribution‑matching reduces compounding error)
+> [!math] Proposition 3.2 (distribution‑matching reduces compounding error)
 >
 > Let $\rho\_{\text{TF}}$ be the teacher‑forced state distribution and $\rho\_\theta$ the draft’s induced distribution.
 >
@@ -499,12 +512,12 @@ Hence the penalty on $\Delta_{\perp}$ induces the $\Theta((d-r)/n)$ overhead. (S
 │ Δ∥ ∈ Row(W)⊤ (logit-relevant), Δ⊥ ∈ Null(W)          │
 │ (logit-irrelevant, WΔ⊥ = 0).                         │
 │                                                      │
-│ Objective includes both feature loss ‖Δ∥‖²+‖Δ⊥‖²      │
+│ Objective includes both feature loss ‖Δ∥‖²+‖Δ⊥‖²     │
 │ and CE(logits), which depends only on Δ∥.            │
 │                                                      │
 │ Therefore: feature regression wastes capacity on     │
 │ Δ⊥. Sample complexity scales like Θ(d/n) vs. Θ(r/n)  │
-│ if only Δ∥ is needed (r = rank(W) ≤ d).               │
+│ if only Δ∥ is needed (r = rank(W) ≤ d).              │
 │                                                      │
 │ ⇒ EAGLE-3 drops feature loss → avoids Δ⊥ → scales    │
 │ better with data. ([arxiv.org/abs/2503.01840])       │
@@ -584,7 +597,7 @@ $$
 =\sum_x \min\{q(x),p(x)\}=1-\mathrm{TV}(p,q).
 $$
 
-Formal analyses of speculative decoding express expected rejections/acceptance directly in terms of TV; see Yin et al. (Theorem 1), which ties unbiasedness and efficiency to $\mathrm{TV}(p,q)$. Pinsker then gives the KL=>TV bound.) $\boxed{}$
+Formal analyses of speculative decoding express expected rejections/acceptance directly in terms of TV; see Yin et al. (Theorem 1), which ties unbiasedness and efficiency to $\mathrm{TV}(p,q)$. Pinsker then gives the KL→TV bound. $\boxed{}$
 
 ```psql
 ┌──────────────────────────────────────────────────────┐
@@ -600,7 +613,7 @@ Formal analyses of speculative decoding express expected rejections/acceptance d
 └──────────────────────────────────────────────────────┘
 ```
 
-**Consequence for EAGLE‑3.** Since EAGLE‑3 trains the draft on tokens directly (dropping feature loss) and feeds H–M–L inputs plus training‑time test (below), it directly reduces CE/KL between draft and target next‑token laws, hence reduces TV, hence raises acceptance multiplicatively across steps—exactly what their scaling curve shows. ([arXiv][4])
+**Consequence for EAGLE‑3.** Since EAGLE‑3 trains the draft on tokens directly (dropping feature loss) and feeds H–M–L inputs plus training‑time test (below), it directly reduces CE/KL between draft and target next‑token laws, hence reduces TV, hence raises acceptance multiplicatively across steps—exactly what their scaling curve shows.
 
 > [!math] Lemma 3.6 Training‑time test (on‑policy rollouts) controls compounding error
 >
@@ -712,7 +725,7 @@ $$
 \mathbb{E}[L] \;=\; \sum_{i=1}^{K}\prod_{j=1}^{i}\alpha_j.
 $$
 
-speed factor relative to one token/pass. EAGLE‑3's training reduces KL -> increasing each $\alpha_i$, hence larger $L$ and bigger speedups.
+speed factor relative to one token/pass. EAGLE‑3's training reduces KL → increasing each $\alpha_i$, hence larger $L$ and bigger speedups.
 
 ### engineering consideration
 

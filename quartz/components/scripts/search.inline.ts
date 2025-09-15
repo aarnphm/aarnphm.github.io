@@ -503,6 +503,7 @@ async function fillDocument(data: ContentIndex) {
   const promises = []
   for (const [slug, fileData] of Object.entries<ContentDetails>(data)) {
     promises.push(
+      //@ts-ignore
       index.addAsync({
         id,
         slug: slug as FullSlug,

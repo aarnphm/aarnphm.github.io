@@ -2,7 +2,6 @@ import { QuartzTransformerPlugin } from "../types"
 import { Element, ElementContent, Root } from "hast"
 import { headingRank } from "hast-util-heading-rank"
 import { toString as hastToString } from "hast-util-to-string"
-import { visit } from "unist-util-visit"
 
 export type SlideSection = {
   type: "intro" | "section"

@@ -36,10 +36,10 @@ function createLinkEl(Link: Link): HTMLLIElement {
     misc.id = `curius-misc-${Link.id}`
     const time = document.createElement("span")
     time.id = `curius-span-${Link.id}`
-    const modifiedDate = new Date(Link.modifiedDate)
+    const modifiedDate = new Date(Link.modifiedDate as string)
     time.innerHTML = `<time datetime=${
       Link.modifiedDate
-    } title="${modifiedDate.toUTCString()}">${timeSince(Link.createdDate)}</time>`
+    } title="${modifiedDate.toUTCString()}">${timeSince(Link.createdDate as string)}</time>`
     misc.appendChild(time)
 
     if (Link.highlights.length > 0) {
@@ -138,6 +138,7 @@ function createLinkEl(Link: Link): HTMLLIElement {
 
   registerEvents(
     curiusItem,
+    //@ts-ignore
     ["click", onClick],
     ["mouseenter", onMouseEnter],
     ["mouseleave", onMouseLeave],

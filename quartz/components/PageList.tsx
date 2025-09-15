@@ -1,6 +1,6 @@
 import { isFolderPath, resolveRelative } from "../util/path"
 import { QuartzPluginData } from "../plugins/vfile"
-import { Date, getDate } from "./Date"
+import { Date as DateComponent, getDate } from "./Date"
 import { QuartzComponent, QuartzComponentProps, QuartzComponentConstructor } from "./types"
 import { GlobalConfiguration } from "../cfg"
 
@@ -58,6 +58,7 @@ export default ((userOpts?: Options) => {
           const title = page.frontmatter?.title
           const tags = page.frontmatter?.tags ?? []
           const hiTags = opts.highlightTags.filter((v) => tags.includes(v))
+          const date = new Date(0)
 
           return (
             <li class="section-li" data-index={idx}>
@@ -68,9 +69,13 @@ export default ((userOpts?: Options) => {
                 data-tags={tags.join(",")}
               >
                 <div class="note-grid">
-                  {page.dates && (
+                  {page.dates ? (
                     <div class="meta">
-                      <Date date={getDate(cfg, page)!} locale={cfg.locale} />
+                      <DateComponent date={getDate(cfg, page)!} locale={cfg.locale} />
+                    </div>
+                  ) : (
+                    <div class="meta">
+                      <DateComponent date={date} locale={cfg.locale} />
                     </div>
                   )}
                   <div class="desc">

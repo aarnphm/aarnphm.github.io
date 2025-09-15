@@ -6,7 +6,7 @@ tags:
   - technical
 description: a method to speed up LLM decoding
 date: "2025-05-21"
-modified: 2025-09-15 00:45:09 GMT-04:00
+modified: 2025-09-15 04:25:20 GMT-04:00
 title: Speculative decoding
 ---
 
@@ -378,63 +378,6 @@ repeat:
   if u ≤ f(y)/(M*g(y)):
      return y
 ```
-
-### example: truncated Gaussian (uniform proposal)
-
-- Target (unnormalized): on an interval $[a,b]$ with mean $\mu$ and scale $\sigma>0$
-
-  $$
-  f(x) = \exp\!\Bigl(-\tfrac{1}{2}\,\tfrac{(x-\mu)^2}{\sigma^2}\Bigr)\,\mathbf 1_{[a,b]}(x).
-  $$
-
-- Proposal: $g(x)=\tfrac{1}{b-a}\,\mathbf 1_{[a,b]}(x)$ (uniform on $[a,b]$).
-
-- Envelope: the supremum of $f$ on $[a,b]$ is attained at $x_\star=\mathrm{clip}(\mu;[a,b])$, with
-
-  $$
-  f_\max \;=\; \exp\!\Bigl(-\tfrac{1}{2}\,\tfrac{(x_\star-\mu)^2}{\sigma^2}\Bigr) \in (0,1].
-  $$
-
-  Since $g\equiv 1/(b-a)$ on $[a,b]$, a valid envelope is $M=(b-a)\,f_\max$.
-
-- Accept–reject: draw $Y\sim\mathrm{Unif}[a,b]$, $U\sim\mathrm{Unif}(0,1)$ and accept iff
-
-  $$
-  U \le \frac{f(Y)}{M\,g(Y)} = \frac{\exp\!\bigl(-\tfrac{1}{2}\,\tfrac{(Y-\mu)^2}{\sigma^2}\bigr)}{f_\max}.
-  $$
-
-- Expected acceptance:
-
-  $$
-  \Pr(\text{accept}) = \frac{Z}{M}
-  = \frac{\displaystyle \int_a^b \! \exp\!\Bigl(-\tfrac{1}{2}\,\tfrac{(x-\mu)^2}{\sigma^2}\Bigr) dx}{(b-a)\,f_\max}
-  = \frac{\sigma\,\sqrt{2\pi}\,\bigl[\Phi(\tfrac{b-\mu}{\sigma})-\Phi(\tfrac{a-\mu}{\sigma})\bigr]}{(b-a)\,f_\max},
-  $$
-
-  where $\Phi$ is the standard normal CDF. If $\mu\in[a,b]$ then $f_\max=1$ and the expression simplifies.
-
-- Numeric example: $\mu=0$, $\sigma=1$, $[a,b]=[0,3]$. Here $f_\max=1$, so
-
-  $$
-  \Pr(\text{accept})
-  = \frac{\sqrt{2\pi}\,[\Phi(3)-\Phi(0)]}{3}
-  \approx \frac{2.5066\times 0.49865}{3}
-  \approx 0.417.
-  $$
-
-- Minimal implementation (pseudo-code):
-
-  ```python
-  def sample_trunc_gauss(mu, sigma, a, b):
-    # envelope height
-    x_star = min(max(mu, a), b)
-    f_max = math.exp(-0.5 * ((x_star - mu) / sigma) ** 2)
-    while True:
-      y = random.uniform(a, b)
-      u = random.random()  # Uniform(0,1)
-      if u <= math.exp(-0.5 * ((y - mu) / sigma) ** 2) / f_max:
-        return y
-  ```
 
 ## speculative sampling
 

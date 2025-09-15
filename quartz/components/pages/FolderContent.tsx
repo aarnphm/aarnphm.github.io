@@ -255,7 +255,8 @@ export default ((opts?: Partial<FolderContentOptions>) => {
             const augmentedDates = {
               created: file.dates?.created ?? folderFallback?.created ?? defaultDate.created,
               modified: file.dates?.modified ?? folderFallback?.modified ?? defaultDate.modified,
-              published: file.dates?.published ?? folderFallback?.published ?? defaultDate.published,
+              published:
+                file.dates?.published ?? folderFallback?.published ?? defaultDate.published,
             }
             entries.push({ ...file, dates: augmentedDates })
             processed.add(fileSlug)

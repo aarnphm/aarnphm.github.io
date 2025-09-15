@@ -7,7 +7,7 @@ transclude:
   dynalist: false
   title: false
 date: "2025-08-12"
-modified: 2025-09-15 02:37:02 GMT-04:00
+modified: 2025-09-15 04:14:25 GMT-04:00
 title: research
 ---
 
@@ -39,8 +39,8 @@ I would like to do research at some point. I'm interested in [[thoughts/mechanis
 > Q: I’m not technical — what’s one step?
 > A: Pick a concrete question tied to an outcome you care about, choose a simple baseline, and change one thing at a time. Keep notes.
 
-- Scaling laws (Kaplan et al. 2020): https://arxiv.org/abs/2001.08361
-- Compute‑optimal training (Hoffmann et al. 2022): https://arxiv.org/abs/2203.15556
-- FlashAttention (Dao et al. 2022): https://arxiv.org/abs/2205.14135
+- https://arxiv.org/abs/2001.08361
+- https://arxiv.org/abs/2203.15556
+- https://arxiv.org/abs/2205.14135
 - Radix‑style KV reuse (SGLang blog): https://lmsys.org/blog/2024-01-17-sglang/
 - How to Read a Paper (Keshav): https://dl.acm.org/doi/10.1145/1273445.1273458

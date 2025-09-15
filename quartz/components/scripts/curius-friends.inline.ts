@@ -40,10 +40,10 @@ document.addEventListener("nav", async () => {
 
     const time = document.createElement("span")
     time.id = `curius-span-${user.link.id}`
-    const modifiedDate = new Date(Link.modifiedDate)
+    const modifiedDate = new Date(Link.modifiedDate as string)
     time.innerHTML = `<time datetime=${
       Link.modifiedDate
-    } title="${modifiedDate.toUTCString()}">${timeSince(Link.createdDate)}</time>`
+    } title="${modifiedDate.toUTCString()}">${timeSince(Link.createdDate as string)}</time>`
     titleDiv.append(name, time)
 
     // description div
