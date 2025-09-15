@@ -6,16 +6,12 @@ tags:
   - vllm
 description: and documentation of learning procedure.
 date: "2025-09-13"
-modified: 2025-09-15 00:05:00 GMT-04:00
+modified: 2025-09-14 21:43:11 GMT-04:00
 noindex: true
 title: assignment three reports.
 ---
 
-Tokenizer used: [Qwen/Qwen3-Next-80B-A3B-Instruct](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct)
-
 ![[thoughts/images/configuration-runs.png]]
-
-train configuration:
 
 ```json
 {
@@ -30,10 +26,7 @@ train configuration:
   "weight_tying": true,
   "seed": 42,
   "lr": 0.0003,
-  "betas": [
-    0.9,
-    0.95
-  ],
+  "betas": [0.9, 0.95],
   "weight_decay": 0.01,
   "grad_clip": 1.0,
   "batch_size": 16,
@@ -43,7 +36,7 @@ train configuration:
   "log_every": 10,
   "stride": 0,
   "prefetch": 8,
-  "lr_min": 1e-06,
+  "lr_min": 1e-6,
   "plateau_patience": 5,
   "plateau_factor": 0.5,
   "lr_cooldown": 0,
@@ -59,7 +52,7 @@ train configuration:
 
 trace through git commits for edification purposes.
 
-### []()
+### [1ef6de57](https://github.com/aarnphm/aarnphm.github.io/commit/1ef6de57d5b911ce00bfad87443c63b554fab686)
 
 - Add parameters counter, both simplex and tree view
 - Add early stop and LR plateau implementation.

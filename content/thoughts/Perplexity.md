@@ -1,17 +1,20 @@
 ---
-title: "Perplexity"
-source: "https://en.wikipedia.org/wiki/Perplexity"
+id: Perplexity
+tags:
+  - seed
+  - clippings
+description: information theory measure of uncertainty in probability distributions, used in NLP for evaluating language models.
 author:
   - "[[Contributors to Wikimedia projects]]"
-published: 2006-04-04
-created: 2025-09-14
-description: "Wikipedia page on perplexity: information theory measure of uncertainty in probability distributions, used in NLP for evaluating language models."
-tags:
-  - "seed"
-  - "clippings"
+date: "2025-09-14"
+created: "2025-09-14"
+modified: 2025-09-14 23:16:08 GMT-04:00
+published: "2006-04-04"
+title: perplexity
+source: https://en.wikipedia.org/wiki/Perplexity
 ---
 
-a measure of uncertainty in the value of a sample from a discrete probability distribution. 
+a measure of uncertainty in the value of a sample from a discrete probability distribution.
 
 > The larger the perplexity, the less likely it is that an observer can guess the value which will be drawn from the distribution.
 
@@ -31,7 +34,7 @@ For a uniform distribution over exactly $k$ outcomes (each with probability $1/k
 
 > [!important]
 >
-> perplexity is the exponentiation of entropy. 
+> perplexity is the exponentiation of entropy.
 
 Entropy measures the expected number of bits required to encode the outcome using an optimal variable-length code.
 
@@ -53,7 +56,7 @@ $$
 
 where $\tilde{p}$ denotes the empirical distribution of the test sample ($\tilde{p}(x) = n/N$ if $x$ appeared $n$ times in the test sample of size $N$).
 
-By [[thoughts/Kullback-Leibler divergence|KL divergence]] definition: $H(\tilde{p}, q) = H(\tilde{p}) + D_{KL}(\tilde{p} \| q) \geq H(\tilde{p})$. 
+By [[thoughts/Kullback-Leibler divergence|KL divergence]] definition: $H(\tilde{p}, q) = H(\tilde{p}) + D_{KL}(\tilde{p} \| q) \geq H(\tilde{p})$.
 
 > perplexity is minimized when $q = \tilde{p}$.
 
