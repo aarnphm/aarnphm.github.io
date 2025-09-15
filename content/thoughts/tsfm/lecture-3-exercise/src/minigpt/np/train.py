@@ -140,6 +140,229 @@ def truncated_normal(shape, std=0.02):
   return np.clip(x, -2 * std, 2 * std)
 
 
+# ---------------------
+# Parameter accounting
+# ---------------------
+
+def count_parameters(params: LMParams) -> int:
+  """Return the total number of scalar parameters in the model."""
+  total = 0
+  total += int(params.W_E.size)
+  total += int(params.W_pos.size)
+  total += int(params.gamma_f.size) + int(params.beta_f.size)
+  if params.W_LM is not None:
+    total += int(params.W_LM.size)
+  for b in params.blocks:
+    total += int(b.W_Q.size + b.W_K.size + b.W_V.size + b.W_O.size)
+    total += int(b.gamma1.size + b.beta1.size + b.gamma2.size + b.beta2.size)
+    total += int(b.W1.size + b.W2.size)
+  return int(total)
+
+
+def parameters_nbytes(params: LMParams) -> int:
+  """Approximate total bytes for parameters based on array dtypes."""
+  bytes_ = 0
+  def nbytes(arr: np.ndarray | None) -> int:
+    return int(arr.nbytes) if arr is not None else 0
+  bytes_ += nbytes(params.W_E)
+  bytes_ += nbytes(params.W_pos)
+  bytes_ += nbytes(params.gamma_f) + nbytes(params.beta_f)
+  bytes_ += nbytes(params.W_LM)
+  for b in params.blocks:
+    bytes_ += nbytes(b.W_Q) + nbytes(b.W_K) + nbytes(b.W_V) + nbytes(b.W_O)
+    bytes_ += nbytes(b.gamma1) + nbytes(b.beta1) + nbytes(b.gamma2) + nbytes(b.beta2)
+    bytes_ += nbytes(b.W1) + nbytes(b.W2)
+  return int(bytes_)
+
+
+# -----------------------------
+# Parameter breakdown tree view
+# -----------------------------
+
+def _fmt_int(n: int) -> str:
+  return f"{int(n):,}"
+
+
+def _shape_str(arr: np.ndarray | None) -> str:
+  if arr is None:
+    return "-"
+  shp = tuple(int(x) for x in arr.shape)
+  return '(' + '×'.join(str(x) for x in shp) + ')'
+
+
+def _eq_str(arr: np.ndarray | None) -> str:
+  if arr is None:
+    return '-'
+  shp = tuple(int(x) for x in arr.shape)
+  if len(shp) == 0:
+    return '1'
+  return ' × '.join(str(x) for x in shp)
+
+
+def _size(arr: np.ndarray | None) -> int:
+  return int(arr.size) if arr is not None else 0
+
+
+def parameter_breakdown(params: LMParams) -> dict:
+  """Return a nested dict with parameter counts per component and per block."""
+  tree: dict[str, object] = {
+    'total': count_parameters(params),
+    'embeddings': {
+      'W_E': _size(params.W_E),
+      'W_pos': _size(params.W_pos),
+    },
+    'blocks': [],
+    'final_ln': {
+      'gamma_f': _size(params.gamma_f),
+      'beta_f': _size(params.beta_f),
+    },
+    'lm_head': {'tied': params.W_LM is None, 'W_LM': _size(params.W_LM) if params.W_LM is not None else 0},
+  }
+
+  blocks_list: list[dict[str, object]] = []
+  for i, b in enumerate(params.blocks):
+    blk = {
+      'idx': i,
+      'ln1': {
+        'gamma1': _size(b.gamma1),
+        'beta1': _size(b.beta1),
+      },
+      'attn': {
+        'W_Q': _size(b.W_Q),
+        'W_K': _size(b.W_K),
+        'W_V': _size(b.W_V),
+        'W_O': _size(b.W_O),
+      },
+      'mlp': {
+        'W1': _size(b.W1),
+        'W2': _size(b.W2),
+      },
+      'ln2': {
+        'gamma2': _size(b.gamma2),
+        'beta2': _size(b.beta2),
+      },
+    }
+    # subtotal per block
+    blk['subtotal'] = (
+      blk['ln1']['gamma1'] + blk['ln1']['beta1'] +  # type: ignore
+      blk['attn']['W_Q'] + blk['attn']['W_K'] + blk['attn']['W_V'] + blk['attn']['W_O'] +  # type: ignore
+      blk['mlp']['W1'] + blk['mlp']['W2'] +  # type: ignore
+      blk['ln2']['gamma2'] + blk['ln2']['beta2']  # type: ignore
+    )
+    blocks_list.append(blk)
+  tree['blocks'] = blocks_list
+
+  return tree
+
+
+def format_param_tree(params: LMParams, config: LMConfig, *, unicode: bool = True) -> str:
+  """Produce a human-readable tree of parameter counts and shapes.
+
+  Each leaf shows: name shape [equation] = count
+  """
+  br = parameter_breakdown(params)
+  use = {
+    'branch': '├── ' if unicode else '+-- ',
+    'last': '└── ' if unicode else '\\-- ',
+    'pipe': '│   ' if unicode else '|   ',
+    'sp': '    ',
+  }
+
+  lines: list[str] = []
+  root_total = br['total']  # type: ignore
+  lines.append(
+    f"Model Parameters: {_fmt_int(root_total)} (d_model={config.d_model}, n_layers={config.n_layers}, n_heads={config.n_heads}, d_ff={config.d_ff}, vocab={getattr(config, 'vocab_size', 'NA')})"
+  )
+
+  def emit_param(prefix: str, is_last: bool, name: str, arr: np.ndarray | None):
+    conn = use['last'] if is_last else use['branch']
+    if arr is None:
+      lines.append(f"{prefix}{conn}{name}: -")
+    else:
+      lines.append(
+        f"{prefix}{conn}{name}: {_shape_str(arr)}  [{_eq_str(arr)}] = {_fmt_int(_size(arr))}"
+      )
+
+  def render_embeddings(prefix: str):
+    emb_items = [('W_E', params.W_E), ('W_pos', params.W_pos)]
+    for i, (n, a) in enumerate(emb_items):
+      emit_param(prefix, i == len(emb_items) - 1, n, a)
+
+  def render_block(prefix: str, idx: int, b: BlockParams, is_last_block: bool):
+    subtotal = (
+      _size(b.gamma1) + _size(b.beta1) +
+      _size(b.W_Q) + _size(b.W_K) + _size(b.W_V) + _size(b.W_O) +
+      _size(b.W1) + _size(b.W2) +
+      _size(b.gamma2) + _size(b.beta2)
+    )
+    conn = use['last'] if is_last_block else use['branch']
+    lines.append(f"{prefix}{conn}Block[{idx}] [subtotal={_fmt_int(subtotal)}]")
+    blk_prefix = prefix + (use['sp'] if is_last_block else use['pipe'])
+
+    # LN1
+    lines.append(f"{blk_prefix}{use['branch']}LayerNorm1")
+    ln1_prefix = blk_prefix + use['sp']
+    emit_param(ln1_prefix, False, 'gamma1', b.gamma1)
+    emit_param(ln1_prefix, True, 'beta1', b.beta1)
+
+    # SelfAttention
+    lines.append(f"{blk_prefix}{use['branch']}SelfAttention")
+    attn_prefix = blk_prefix + use['sp']
+    emit_param(attn_prefix, False, 'W_Q', b.W_Q)
+    emit_param(attn_prefix, False, 'W_K', b.W_K)
+    emit_param(attn_prefix, False, 'W_V', b.W_V)
+    emit_param(attn_prefix, True, 'W_O', b.W_O)
+
+    # MLP
+    lines.append(f"{blk_prefix}{use['branch']}MLP")
+    mlp_prefix = blk_prefix + use['sp']
+    emit_param(mlp_prefix, False, 'W1', b.W1)
+    emit_param(mlp_prefix, True, 'W2', b.W2)
+
+    # LN2
+    lines.append(f"{blk_prefix}{use['last']}LayerNorm2")
+    ln2_prefix = blk_prefix + use['sp']
+    emit_param(ln2_prefix, False, 'gamma2', b.gamma2)
+    emit_param(ln2_prefix, True, 'beta2', b.beta2)
+
+  def render_final_ln(prefix: str):
+    emit_param(prefix, False, 'gamma_f', params.gamma_f)
+    emit_param(prefix, True, 'beta_f', params.beta_f)
+
+  def render_lm_head(prefix: str):
+    if params.W_LM is None:
+      lines.append(f"{prefix}{use['last']}LMHead [tied -> uses W_E; no extra params]")
+    else:
+      total = _size(params.W_LM)
+      lines.append(f"{prefix}{use['last']}LMHead [subtotal={_fmt_int(total)}]")
+      emit_param(prefix + use['sp'], True, 'W_LM', params.W_LM)
+
+  # Root sections in order
+  sections: list[tuple[str, callable]] = []
+  emb_total = _size(params.W_E) + _size(params.W_pos)
+  sections.append((f"Embeddings [subtotal={_fmt_int(emb_total)}]", render_embeddings))
+  sections.append((f"Blocks × {len(params.blocks)}", None))  # header only; blocks rendered separately
+  sections.append(("LayerNorm", render_final_ln))
+  sections.append(("LMHead", render_lm_head))
+
+  for si, (title, renderer) in enumerate(sections):
+    is_last_section = si == len(sections) - 1
+    conn = use['last'] if is_last_section else use['branch']
+    lines.append(f"{conn}{title}")
+    base_prefix = use['sp'] if is_last_section else use['pipe']
+    if title.startswith('Blocks'):
+      for bi, b in enumerate(params.blocks):
+        render_block(base_prefix, bi, b, is_last_block=(bi == len(params.blocks) - 1))
+    elif renderer is not None:
+      renderer(base_prefix)
+
+  return '\n'.join(lines)
+
+
+def print_param_tree(params: LMParams, config: LMConfig, *, unicode: bool = True) -> None:
+  print(format_param_tree(params, config, unicode=unicode), flush=True)
+
+
 # ------------------
 # Layers and helpers
 # ------------------
@@ -763,13 +986,24 @@ class BatchPrefetcher:
 
 
 def compute_loss_and_grads(
-  x: np.ndarray, y: np.ndarray, params: LMParams, config: LMConfig, *, attn_mask: np.ndarray | None
+  x: np.ndarray,
+  y: np.ndarray,
+  params: LMParams,
+  config: LMConfig,
+  *,
+  attn_mask: np.ndarray | None,
+  return_accuracy: bool = False,
 ):
   logits, caches = lm_fwd(x, params, config, attn_mask=attn_mask)
   B, S, V = logits.shape
   loss, dLogits2D = cross_entropy_logits(logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None)
   dLogits = dLogits2D.reshape(B, S, V)
   grads = lm_bwd(dLogits, x, caches, params, config)
+  if return_accuracy:
+    with np.errstate(invalid='ignore'):
+      preds = np.argmax(logits, axis=-1)
+      acc = float(np.mean((preds == y).astype(np.float32)))
+    return loss, grads, acc
   return loss, grads
 
 # NOTE: This is not used anymore, given we replaced with memmapped implementation.
@@ -842,6 +1076,8 @@ def evaluate_tokens(
   desc: str | None = None,
 ):
   losses: list[float] = []
+  correct: int = 0
+  total: int = 0
   stride_val = stride if stride is not None else (config.stride if config.stride > 0 else config.max_seq_len)
   batch_iter = ds.sequential_batches(config.max_seq_len, stride_val, config.batch_size, drop_last=True)
   batches = iter(batch_iter)
@@ -857,7 +1093,13 @@ def evaluate_tokens(
     B, S, V = logits.shape
     loss, _ = cross_entropy_logits(logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None)
     losses.append(loss)
-  return float(np.mean(losses)) if losses else float('nan')
+    # accuracy
+    preds = np.argmax(logits, axis=-1)
+    correct += int(np.sum((preds == y)))
+    total += int(B * S)
+  mean_loss = float(np.mean(losses)) if losses else float('nan')
+  acc = float(correct / total) if total > 0 else float('nan')
+  return mean_loss, acc
 
 
 def train(config: LMConfig):
@@ -877,7 +1119,7 @@ def train(config: LMConfig):
   # Try to resume from the latest checkpoint if present
   resume = _maybe_load_latest_checkpoint(out_dir)
   if resume is not None:
-    last_step, loaded_params, train_losses, val_points, loaded_opt_state = resume
+    last_step, loaded_params, train_losses, val_points, loaded_opt_state, train_accuracies, val_acc_points = resume
     # Align config architecture with checkpoint to avoid shape mismatches
     arch_cfg = _load_arch_config(out_dir, last_step)
     if arch_cfg is not None:
@@ -907,8 +1149,18 @@ def train(config: LMConfig):
     )
     train_losses = []
     val_points = []
+    train_accuracies: list[float] = []
+    val_acc_points: list[tuple[int, float]] = []
     start_step = 0
     target_step = int(config.steps)
+
+  # Report parameter count and approximate memory footprint
+  n_params = count_parameters(params)
+  n_bytes = parameters_nbytes(params)
+  print(
+    f"[model] n_params {n_params:,} ({n_params/1e6:.2f}M) | params_mem ~ {n_bytes/1e6:.2f} MB | {_timestamp()}",
+    flush=True,
+  )
 
   # Build and cache a causal mask once per sequence length to avoid per-step allocation
   S = config.max_seq_len
@@ -926,24 +1178,44 @@ def train(config: LMConfig):
   )
 
   start = time.time()
+  # Scheduler/early stopping state
+  best_val: float | None = None
+  best_step: int = start_step
+  no_improve_evals: int = 0
+  no_improve_plateau: int = 0
+  cooldown: int = 0
+  plateau_lr: float = float(config.lr)
+  early_stopped: bool = False
+  early_stop_reason: str | None = None
   remaining = max(0, target_step - start_step)
   pbar = make_progress(total=remaining, desc='train')
   for step in range(start_step + 1, target_step + 1):
     x, y = prefetcher.next()
 
-    loss, grads = compute_loss_and_grads(x, y, params, config, attn_mask=causal_mask)
+    # Adjust learning rate with warmup and plateau reductions
+    if config.warmup_steps > 0 and step <= config.warmup_steps:
+      opt.lr = plateau_lr * (step / max(1, config.warmup_steps))
+    else:
+      opt.lr = plateau_lr
+
+    loss, grads, train_acc = compute_loss_and_grads(
+      x, y, params, config, attn_mask=causal_mask, return_accuracy=True
+    )
     train_losses.append(float(loss))
+    train_accuracies.append(float(train_acc))
     opt.step(params, grads)
 
     if step % config.log_every == 0:
       elapsed = time.time() - start
       # keep the bar tidy while logging
       if is_interactive():
-        pbar.set_postfix({'loss': f'{loss:.4f}', 'elapsed_s': f'{elapsed:.2f}'})
-      pbar.write(f'[train] step {step:5d} | loss {loss:.4f} | elapsed {elapsed:.2f}s | {_timestamp()}')
+        pbar.set_postfix({'loss': f'{loss:.4f}', 'acc': f'{train_acc:.3f}', 'elapsed_s': f'{elapsed:.2f}'})
+      pbar.write(
+        f'[train] step {step:5d} | loss {loss:.4f} | acc {train_acc:.3f} | elapsed {elapsed:.2f}s | {_timestamp()}'
+      )
 
     if step % config.eval_every == 0:
-      val_loss = evaluate_tokens(
+      val_loss, val_acc = evaluate_tokens(
         val_tokens,
         tokenizer,
         params,
@@ -955,7 +1227,51 @@ def train(config: LMConfig):
         desc=f'eval@{step}',
       )
       val_points.append((step, float(val_loss)))
-      pbar.write(f'[evals] step {step:5d} | loss {val_loss:.4f} | {_timestamp()}')
+      val_acc_points.append((step, float(val_acc)))
+      pbar.write(f'[evals] step {step:5d} | loss {val_loss:.4f} | acc {val_acc:.3f} | {_timestamp()}')
+
+      # Update best and scheduler/early stopping
+      improved = False
+      if best_val is None or (best_val - float(val_loss)) > float(config.early_stop_min_delta):
+        best_val = float(val_loss)
+        best_step = step
+        no_improve_evals = 0
+        if cooldown > 0:
+          cooldown = max(0, cooldown - 1)
+        no_improve_plateau = 0
+        improved = True
+      else:
+        no_improve_evals += 1
+        no_improve_plateau += 1
+        if cooldown > 0:
+          cooldown -= 1
+
+      # ReduceLROnPlateau (on validation loss)
+      if (not improved) and cooldown <= 0 and no_improve_plateau >= max(1, int(config.plateau_patience)):
+        new_plateau_lr = max(float(config.lr_min), float(plateau_lr) * float(config.plateau_factor))
+        if new_plateau_lr < plateau_lr - 1e-12:
+          pbar.write(
+            f"[sched] step {step:5d} | val {val_loss:.4f} | lr {plateau_lr:.3e} -> {new_plateau_lr:.3e}"
+          )
+          plateau_lr = new_plateau_lr
+          cooldown = int(config.lr_cooldown)
+        no_improve_plateau = 0
+
+      # Early stopping: target loss or patience
+      if config.target_loss is not None and float(val_loss) <= float(config.target_loss):
+        early_stopped = True
+        early_stop_reason = f"target_loss <= {config.target_loss}"
+      elif no_improve_evals >= int(config.early_stop_patience):
+        early_stopped = True
+        early_stop_reason = (
+          f"no improvement for {config.early_stop_patience} evals (best {best_val:.4f} @ step {best_step})"
+          if best_val is not None else f"no improvement for {config.early_stop_patience} evals"
+        )
+
+      if early_stopped:
+        pbar.write(f"[early-stop] step {step:5d} | reason: {early_stop_reason}")
+        target_step = step  # ensure the final checkpoint below uses this step index
+        break
 
       # Save an intermediate checkpoint at this step as well
       _save_checkpoint(
@@ -966,6 +1282,8 @@ def train(config: LMConfig):
         tokenizer_name=config.tokenizer,
         train_losses=train_losses,
         val_points=val_points,
+        train_accuracies=train_accuracies,
+        val_acc_points=val_acc_points,
         optimizer=opt,
       )
 
@@ -980,6 +1298,8 @@ def train(config: LMConfig):
     tokenizer_name=config.tokenizer,
     train_losses=train_losses,
     val_points=val_points,
+    train_accuracies=train_accuracies,
+    val_acc_points=val_acc_points,
     optimizer=opt,
   )
   prefetcher.stop()
@@ -1023,6 +1343,8 @@ def _save_checkpoint(
   tokenizer_name: str,
   train_losses: list[float],
   val_points: list[tuple[int, float]],
+  train_accuracies: list[float] | None = None,
+  val_acc_points: list[tuple[int, float]] | None = None,
   optimizer: 'AdamW' | None = None,
 ) -> None:
   step_dir = root / f'steps_{step}'
@@ -1053,7 +1375,12 @@ def _save_checkpoint(
     'tokenizer': tokenizer_name,
     'train_losses': [float(x) for x in train_losses],
     'val_points': [[int(s), float(v)] for (s, v) in val_points],
+    'n_params': int(count_parameters(params)),
   }
+  if train_accuracies is not None:
+    meta['train_accuracies'] = [float(a) for a in train_accuracies]
+  if val_acc_points is not None:
+    meta['val_acc_points'] = [[int(s), float(a)] for (s, a) in val_acc_points]
   with open(step_dir / 'meta.json', 'w') as fm:
     json.dump(meta, fm)
   print(f'Saved checkpoint @ step {step} to {step_dir} | {_timestamp()}')
@@ -1165,6 +1492,8 @@ def _maybe_load_latest_checkpoint(root: pathlib.Path):
   # Load training metadata if available
   train_losses: list[float] = []
   val_points: list[tuple[int, float]] = []
+  train_accuracies: list[float] = []
+  val_acc_points: list[tuple[int, float]] = []
   meta_path = last_dir / 'meta.json'
   if meta_path.exists():
     try:
@@ -1172,6 +1501,9 @@ def _maybe_load_latest_checkpoint(root: pathlib.Path):
         meta = json.load(fm)
       train_losses = [float(x) for x in meta.get('train_losses', [])]
       val_points = [(int(s), float(v)) for s, v in meta.get('val_points', [])]
+      # optional accuracy history
+      train_accuracies = [float(x) for x in meta.get('train_accuracies', [])]
+      val_acc_points = [(int(s), float(v)) for s, v in meta.get('val_acc_points', [])]
     except Exception:
       pass
 
@@ -1182,7 +1514,7 @@ def _maybe_load_latest_checkpoint(root: pathlib.Path):
     with np.load(opt_path, allow_pickle=False) as z:
       opt_state = {k: z[k] for k in z.files}
 
-  return last_step, params, train_losses, val_points, opt_state
+  return last_step, params, train_losses, val_points, opt_state, train_accuracies, val_acc_points
 
 
 def _unflatten_params(flat: dict[str, np.ndarray]) -> LMParams:
@@ -1242,17 +1574,32 @@ def _load_arch_config(root: pathlib.Path, step: int) -> dict | None:
 def main():
   p = argparse.ArgumentParser()
   p.add_argument('--name', type=str, default='hinterland-np', help='Model name; checkpoints saved under checkpoints/<name>/')
-  p.add_argument('--steps', type=int, default=1000)
+  p.add_argument('--print_params_only', action='store_true', help='Initialize model, print parameter count and exit')
+  p.add_argument('--print_params_tree', action='store_true', help='Print a tree view of parameter counts per block and exit')
+  # model configuration
   p.add_argument('--d_model', type=int, default=128)
   p.add_argument('--n_heads', type=int, default=4)
   p.add_argument('--n_layers', type=int, default=2)
   p.add_argument('--seq', type=int, default=128)
-  p.add_argument('--batch', type=int, default=16)
+  # hyperparameters
+  p.add_argument('--steps', type=int, default=1000)
   p.add_argument('--lr', type=float, default=3e-4)
   p.add_argument('--weight_decay', type=float, default=0.01)
   p.add_argument('--grad_clip', type=float, default=1.0)
+  # logging
   p.add_argument('--eval_every', type=int, default=50)
   p.add_argument('--log_every', type=int, default=10)
+  # Scheduling / early stopping
+  p.add_argument('--warmup_steps', type=int, default=0)
+  p.add_argument('--lr_min', type=float, default=1e-6)
+  p.add_argument('--plateau_patience', type=int, default=5)
+  p.add_argument('--plateau_factor', type=float, default=0.5)
+  p.add_argument('--lr_cooldown', type=int, default=0)
+  p.add_argument('--early_stop_patience', type=int, default=10)
+  p.add_argument('--early_stop_min_delta', type=float, default=1e-3)
+  p.add_argument('--target_loss', type=float, default=None)
+  # tokenization
+  p.add_argument('--batch', type=int, default=16)
   p.add_argument('--tokenizer', type=str, default='Qwen/Qwen3-Next-80B-A3B-Instruct')
   p.add_argument('--stride', type=int, default=0, help='sliding window stride (0 => seq_len)')
   p.add_argument('--prefetch', type=int, default=4, help='number of prefetched batches')
@@ -1273,9 +1620,35 @@ def main():
     grad_clip=args.grad_clip,
     eval_every=args.eval_every,
     log_every=args.log_every,
+    warmup_steps=args.warmup_steps,
+    lr_min=args.lr_min,
+    plateau_patience=args.plateau_patience,
+    plateau_factor=args.plateau_factor,
+    lr_cooldown=args.lr_cooldown,
+    early_stop_patience=args.early_stop_patience,
+    early_stop_min_delta=args.early_stop_min_delta,
+    target_loss=args.target_loss,
     stride=args.stride,
     prefetch=args.prefetch,
   )
+  if args.print_params_only:
+    tokenizer = load_tokenizer(cfg.tokenizer)
+    cfg.vocab_size = len(tokenizer)
+    params = init_lm(cfg, tokenizer_vocab_size=len(tokenizer))
+    n_params = count_parameters(params)
+    n_bytes = parameters_nbytes(params)
+    print(f"[model] n_params {n_params:,} ({n_params/1e6:.2f}M) | params_mem ~ {n_bytes/1e6:.2f} MB | {_timestamp()}", flush=True)
+    return
+  if args.print_params_tree:
+    tokenizer = load_tokenizer(cfg.tokenizer)
+    cfg.vocab_size = len(tokenizer)
+    params = init_lm(cfg, tokenizer_vocab_size=len(tokenizer))
+    print_param_tree(params, cfg, unicode=True)
+    # Also print totals line for quick scan
+    n_params = count_parameters(params)
+    n_bytes = parameters_nbytes(params)
+    print(f"\n[summary] n_params {n_params:,} ({n_params/1e6:.2f}M) | params_mem ~ {n_bytes/1e6:.2f} MB | {_timestamp()}", flush=True)
+    return
   train(cfg)
 
 

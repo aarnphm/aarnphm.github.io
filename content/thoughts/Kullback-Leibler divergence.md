@@ -5,9 +5,9 @@ aliases:
 tags:
   - math
   - probability
-date: "2024-12-12"
 description: also called relative entropy or I-divergence
-modified: 2025-07-03 19:16:49 GMT-04:00
+date: "2024-12-12"
+modified: 2025-09-14 20:14:20 GMT-04:00
 title: Kullback-Leibler divergence
 ---
 

@@ -25,6 +25,15 @@ class LMConfig:
   log_every: int = 10
   stride: int = 0  # sliding window stride; 0 => seq_len
   prefetch: int = 4
+  # Learning-rate scheduling
+  lr_min: float = 1e-6
+  plateau_patience: int = 5
+  plateau_factor: float = 0.5
+  lr_cooldown: int = 0
+  # Early stopping
+  early_stop_patience: int = 10
+  early_stop_min_delta: float = 1e-3
+  target_loss: float | None = None
 
 
 @dataclasses.dataclass

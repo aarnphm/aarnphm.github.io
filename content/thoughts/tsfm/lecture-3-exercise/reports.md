@@ -6,20 +6,70 @@ tags:
   - vllm
 description: and documentation of learning procedure.
 date: "2025-09-13"
-modified: 2025-09-14 14:30:50 GMT-04:00
+modified: 2025-09-15 00:05:00 GMT-04:00
 noindex: true
 title: assignment three reports.
 ---
 
 Tokenizer used: [Qwen/Qwen3-Next-80B-A3B-Instruct](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct)
 
----
+![[thoughts/images/configuration-runs.png]]
 
-## appendix
+train configuration:
+
+```json
+{
+  "name": "hinterland-np",
+  "tokenizer": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+  "d_model": 512,
+  "n_heads": 4,
+  "n_layers": 4,
+  "d_ff": 2048,
+  "vocab_size": 151669,
+  "max_seq_len": 512,
+  "weight_tying": true,
+  "seed": 42,
+  "lr": 0.0003,
+  "betas": [
+    0.9,
+    0.95
+  ],
+  "weight_decay": 0.01,
+  "grad_clip": 1.0,
+  "batch_size": 16,
+  "steps": 1000,
+  "warmup_steps": 0,
+  "eval_every": 50,
+  "log_every": 10,
+  "stride": 0,
+  "prefetch": 8,
+  "lr_min": 1e-06,
+  "plateau_patience": 5,
+  "plateau_factor": 0.5,
+  "lr_cooldown": 0,
+  "early_stop_patience": 10,
+  "early_stop_min_delta": 0.001,
+  "target_loss": null
+}
+```
+
+---
 
 ## profiling
 
 trace through git commits for edification purposes.
+
+### []()
+
+- Add parameters counter, both simplex and tree view
+- Add early stop and LR plateau implementation.
+- Add ASCII plot for eval/train graph
+
+### [758bba9d](https://github.com/aarnphm/aarnphm.github.io/commit/758bba9df1a2e7dcfa08e4239d737acef26c14ff)
+
+- add resume checkpointing, saving optimizer states, plumbing logs
+- remove unnecessary backward pass cache. Activation re-materialisation should only cache certain attention matrices, instead of everything.
+- cleanup forward pass for inference logics.
 
 ### [d758a3e4](https://github.com/aarnphm/aarnphm.github.io/commit/d758a3e41a7b6da8c4d8f2770656a4774314b9f1)
 
@@ -51,7 +101,7 @@ trace through git commits for edification purposes.
   - Do the same in backward:
     - dX_f = dLogits2D @ W_E
     - dW_E_head = X2D.T @ dLogits2D
-- speed up embedding backward.
+- ✅ speed up embedding backward.
   - avoid np.add.at directly on a huge (V, D) buffer:
     - Accumulate on unique tokens only, then scatter:
       - uniq, inv = np.unique(flat_ids, return_inverse=True)
@@ -85,4 +135,4 @@ _(optional, but omitted for brevity)_
 
 ### [b88041b7](https://github.com/aarnphm/aarnphm.github.io/commit/b88041b7d6b1a493dcc1a3edd61ab456594f1782)
 
-- initial implementation of the modular repository, with cleaning up from skafolding.
+- initial implementation of the modular repository, with cleaning up from scaffolding.

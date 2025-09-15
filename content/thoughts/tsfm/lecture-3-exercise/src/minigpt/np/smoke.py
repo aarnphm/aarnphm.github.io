@@ -3,8 +3,8 @@ from __future__ import annotations
 import numpy as np
 
 from minigpt.np.ds import LMConfig
+from minigpt.np.modular import build_causal_mask
 from minigpt.np.train import (
-  build_causal_mask,
   init_lm,
   compute_loss_and_grads,
   AdamW,

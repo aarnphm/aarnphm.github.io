@@ -27,6 +27,10 @@ Under content, there are additional tools/implementation both in Rust, Python, C
 - Components: `PascalCase.tsx` (e.g., `ExplorerNode.tsx`). Utilities: lowercase or camel file names (e.g., `path.ts`, `fileTrie.ts`).
 - Variables/functions: `camelCase`; types/interfaces: `PascalCase`.
 - Python (optional tools in `pyproject.toml`): ruff and mypy with 2-space indent; keep notebooks and scripts minimal.
+- Markdown files should be use wikilinks and absolute internal-links when reference with based from `content`. For example.
+  - [[thoughts/optimization#momentum]], [[thoughts/Attention]]
+- These markdown will be consumed with Obsidian. Any content under `content/` should also be indexed accordingly.
+- All math equation should be written with LaTeX in markdown.
 
 ## Commit & Pull Request Guidelines
 

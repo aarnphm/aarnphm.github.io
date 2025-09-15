@@ -1,9 +1,7 @@
 ---
 id: are.na
-permalinks:
-  - /website
-  - /resources
-  - /inspo
+aliases:
+  - inspo
 tags:
   - technical
   - seed
@@ -12,9 +10,11 @@ description: My run-down version of are[dot]na
 socials:
   are.na: https://www.are.na/aaron-pham/channels
 date: "2024-10-24"
-modified: 2025-09-12 16:48:17 GMT-04:00
-aliases:
-  - inspo
+modified: 2025-09-14 21:07:41 GMT-04:00
+permalinks:
+  - /website
+  - /resources
+  - /inspo
 title: are.na
 cssclasses:
   - nolist
@@ -409,6 +409,8 @@ see also [[/curius|bookmarks]]
 - https://ghost.oxen.ai/why-grpo-is-important-and-how-it-works/ -- Why GRPO is important and how it works
 - https://x.com/GoodfireAI/status/1965189414491168785
   - SAE scaling law dynamics
+- https://x.com/_xjdr/status/1966215415027347856
+  - MatFormer: https://arxiv.org/pdf/2310.07707
 
 ### argumentative
 
@@ -464,6 +466,7 @@ see also [[/curius|bookmarks]]
 - https://jennyclark.substack.com/p/prayer-for-the-girl-who-often-forgets -- prayer for the girl who often forgets that enough is enough
 - https://stream.thesephist.com/ -- Linus' stream
 - ![[tweets]]
+- https://x.com/Miles_Brundage/status/1967385510974009500
 - https://x.com/divya_venn/status/1956105667871412685
 - ![[books]]
 - ![[mixed]]

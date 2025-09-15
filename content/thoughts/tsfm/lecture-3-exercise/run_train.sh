@@ -12,9 +12,9 @@ ts="$(date +%Y%m%d_%H%M%S)"
 LOG_FILE="${LOG_DIR}/train_${ts}.log"
 PID_FILE="${LOG_DIR}/train.pid"
 
-CMD=(python -u -m minigpt.np.train \
-  --seq 256 --d_model 128 --n_heads 4 --n_layers 2 \
-  --batch 16 --prefetch 8
+CMD=(python -u -m minigpt.np.train
+  --seq 512 --d_model 512 --n_heads 8 --n_layers 4
+  --batch 64 --prefetch 8 --stride 4
 )
 
 # Allow passing extra args, e.g.: ./run_train.sh --steps 10000 --name run1
