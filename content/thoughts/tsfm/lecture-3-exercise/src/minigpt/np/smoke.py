@@ -4,11 +4,7 @@ import numpy as np
 
 from minigpt.np.ds import LMConfig
 from minigpt.np.modular import build_causal_mask
-from minigpt.np.train import (
-  init_lm,
-  compute_loss_and_grads,
-  AdamW,
-)
+from minigpt.np.train import init_lm, compute_loss_and_grads, AdamW
 
 
 def run_smoke(seed: int = 123) -> list[float]:
@@ -31,10 +27,19 @@ def run_smoke(seed: int = 123) -> list[float]:
 
   # Synthetic batch (fixed for determinism)
   x = rng.integers(0, V, size=(cfg.batch_size, cfg.max_seq_len), dtype=np.int64)
-  y = np.concatenate([x[:, 1:], rng.integers(0, V, size=(cfg.batch_size, 1), dtype=np.int64)], axis=1)
+  y = np.concatenate(
+    [x[:, 1:], rng.integers(0, V, size=(cfg.batch_size, 1), dtype=np.int64)],
+    axis=1,
+  )
 
   params = init_lm(cfg, tokenizer_vocab_size=V)
-  opt = AdamW(params, lr=cfg.lr, betas=cfg.betas, weight_decay=cfg.weight_decay, grad_clip=cfg.grad_clip)
+  opt = AdamW(
+    params,
+    lr=cfg.lr,
+    betas=cfg.betas,
+    weight_decay=cfg.weight_decay,
+    grad_clip=cfg.grad_clip,
+  )
 
   mask = build_causal_mask(cfg.max_seq_len, cfg.max_seq_len)
   losses: list[float] = []

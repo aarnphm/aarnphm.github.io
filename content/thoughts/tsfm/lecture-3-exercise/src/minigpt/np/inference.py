@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-import argparse, json, pathlib, dataclasses, re
+import argparse
+import json
+import pathlib
+import dataclasses
+import re
 
 import numpy as np
 from transformers import AutoTokenizer
@@ -18,6 +22,7 @@ from minigpt.np.modular import (
 
 try:
   from safetensors.numpy import load_file as st_load_file  # type: ignore
+
   _HAVE_SAFETENSORS = True
 except Exception:
   _HAVE_SAFETENSORS = False
@@ -27,7 +32,10 @@ def _to_array(x):
   return np.array(x, dtype=np.float32)
 
 
-def load_config(config_path: pathlib.Path, fallback: dict | None = None) -> LMConfig:
+def load_config(
+  config_path: pathlib.Path,
+  fallback: dict | None = None,
+) -> LMConfig:
   if config_path.is_file():
     with open(config_path, 'r') as f:
       cfg_dict = json.load(f)
@@ -44,7 +52,6 @@ def load_config(config_path: pathlib.Path, fallback: dict | None = None) -> LMCo
 
 
 def load_params(ckpt_params: dict, weight_tying: bool) -> LMParams:
-  """Load params from flat state dict (safetensors/npz) with keys 'blocks.<i>.<name>'."""
   # Heads
   W_E = _to_array(ckpt_params['W_E'])
   W_pos = _to_array(ckpt_params['W_pos'])
@@ -76,10 +83,21 @@ def load_params(ckpt_params: dict, weight_tying: bool) -> LMParams:
     blocks.append(blk)
 
   W_LM = None
-  if (not weight_tying) and ('W_LM' in ckpt_params) and (ckpt_params['W_LM'] is not None):
+  if (
+    (not weight_tying)
+    and ('W_LM' in ckpt_params)
+    and (ckpt_params['W_LM'] is not None)
+  ):
     W_LM = _to_array(ckpt_params['W_LM'])
 
-  return LMParams(W_E=W_E, W_pos=W_pos, blocks=blocks, gamma_f=gamma_f, beta_f=beta_f, W_LM=W_LM)
+  return LMParams(
+    W_E=W_E,
+    W_pos=W_pos,
+    blocks=blocks,
+    gamma_f=gamma_f,
+    beta_f=beta_f,
+    W_LM=W_LM,
+  )
 
 
 # ========================
@@ -89,8 +107,8 @@ def load_params(ckpt_params: dict, weight_tying: bool) -> LMParams:
 
 @dataclasses.dataclass
 class LayerKV:
-  k: np.ndarray  # shape (H, max_seq_len, Dh)
-  v: np.ndarray  # shape (H, max_seq_len, Dh)
+  k: np.ndarray  # shape (H, max_seq_len, d_h)
+  v: np.ndarray  # shape (H, max_seq_len, d_h)
 
 
 @dataclasses.dataclass
@@ -104,11 +122,11 @@ def _init_kv_cache(params: LMParams, config: LMConfig) -> KVCache:
   H = config.n_heads
   max_len = int(config.max_seq_len)
   for blk in params.blocks:
-    Dh = blk.W_Q.shape[1] // H
+    d_h = blk.W_Q.shape[1] // H
     layers.append(
       LayerKV(
-        k=np.zeros((H, max_len, Dh), dtype=np.float32),
-        v=np.zeros((H, max_len, Dh), dtype=np.float32),
+        k=np.zeros((H, max_len, d_h), dtype=np.float32),
+        v=np.zeros((H, max_len, d_h), dtype=np.float32),
       )
     )
   return KVCache(layers=layers, seq_len=0)
@@ -127,39 +145,50 @@ def _prefill(
 
   # Embedding + positional
   x_e = params.W_E[token_ids]  # (1, S, D)
-  pos = params.W_pos[:S]       # (S, D)
+  pos = params.W_pos[:S]  # (S, D)
   x = x_e + pos[None, :, :]
 
   kv = _init_kv_cache(params, config)
 
   # Forward through layers and materialize K/V for all S steps
   for li, blk in enumerate(params.blocks):
-    ln1 = T_layer_norm(x.astype(np.float32, copy=False), blk.gamma1, blk.beta1)  # (1, S, D)
-    X2D = ln1.reshape(B * S, D)
+    # (1, S, D)
+    ln1 = T_layer_norm(x.astype(np.float32, copy=False), blk.gamma1, blk.beta1)
+    x2d = ln1.reshape(B * S, D)
     q2d, k2d, v2d = T_qkv_fwd(
-      X2D,
+      x2d,
       blk.W_Q.astype(np.float32, copy=False),
       blk.W_K.astype(np.float32, copy=False),
       blk.W_V.astype(np.float32, copy=False),
     )
-    Dh = blk.W_Q.shape[1] // H
-    q = q2d.reshape(B, S, H, Dh).transpose(0, 2, 1, 3)
-    k = k2d.reshape(B, S, H, Dh).transpose(0, 2, 1, 3)
-    v = v2d.reshape(B, S, H, Dh).transpose(0, 2, 1, 3)
+    d_h = blk.W_Q.shape[1] // H
+    q = q2d.reshape(B, S, H, d_h).transpose(0, 2, 1, 3)
+    k = k2d.reshape(B, S, H, d_h).transpose(0, 2, 1, 3)
+    v = v2d.reshape(B, S, H, d_h).transpose(0, 2, 1, 3)
 
     # Save K/V into cache
     kv.layers[li].k[:, :S, :] = k[0]
     kv.layers[li].v[:, :S, :] = v[0]
 
-    attn_out = T_attn_fwd(q, k, v, causal=True, attn_mask=None)  # (1, H, S, Dh)
-    context2d = attn_out.transpose(0, 2, 1, 3).reshape(B * S, H * Dh)
-    out2d = context2d @ blk.W_O.astype(np.float32, copy=False)
+    attn_out = T_attn_fwd(
+      q, k, v, causal=True, attn_mask=None
+    )  # (1, H, S, d_h)
+    ctx2d = attn_out.transpose(0, 2, 1, 3).reshape(B * S, H * d_h)
+    out2d = ctx2d @ blk.W_O.astype(np.float32, copy=False)
 
     # residual stream
     x1 = x + out2d.reshape(B, S, D)
 
-    ln2 = T_layer_norm(x1.astype(np.float32, copy=False), blk.gamma2, blk.beta2)
-    ff = T_ff(ln2.astype(np.float32, copy=False), blk.W1.astype(np.float32, copy=False), blk.W2.astype(np.float32, copy=False))
+    ln2 = T_layer_norm(
+      x1.astype(np.float32, copy=False),
+      blk.gamma2,
+      blk.beta2,
+    )
+    ff = T_ff(
+      ln2.astype(np.float32, copy=False),
+      blk.W1.astype(np.float32, copy=False),
+      blk.W2.astype(np.float32, copy=False),
+    )
 
     # residual stream
     x = x1 + ff
@@ -167,69 +196,81 @@ def _prefill(
   kv.seq_len = S
 
   # Final layer norm + LM head
-  x_f = T_layer_norm(x.astype(np.float32, copy=False), params.gamma_f, params.beta_f)
+  x_f = T_layer_norm(
+    x.astype(np.float32, copy=False),
+    params.gamma_f,
+    params.beta_f,
+  )
   if config.weight_tying:
-    logits2D = x_f.reshape(B * S, D) @ params.W_E.T
-    logits = logits2D.reshape(B, S, -1)
+    logits_2d = x_f.reshape(B * S, D) @ params.W_E.T
+    logits = logits_2d.reshape(B, S, -1)
   else:
-    logits2D = x_f.reshape(B * S, D) @ params.W_LM
-    logits = logits2D.reshape(B, S, -1)
+    logits_2d = x_f.reshape(B * S, D) @ params.W_LM
+    logits = logits_2d.reshape(B, S, -1)
 
   # Return next-token logits for the last context position and the filled KV cache.
   return logits[0, -1], kv  # (V,), KVCache
 
 
 def _decode_one(
-  last_token_id: int,
-  kv: KVCache,
-  params: LMParams,
-  config: LMConfig,
+  last_token_id: int, kv: KVCache, params: LMParams, config: LMConfig
 ) -> np.ndarray:
   D, H = config.d_model, config.n_heads
   cur = kv.seq_len
   assert cur < config.max_seq_len, 'Exceeded max_seq_len during decoding'
 
   # Embed + position for the current step
-  x = (params.W_E[last_token_id].astype(np.float32, copy=False) + params.W_pos[cur].astype(np.float32, copy=False))[None, None, :]
+  x = (
+    params.W_E[last_token_id].astype(np.float32, copy=False)
+    + params.W_pos[cur].astype(np.float32, copy=False)
+  )[None, None, :]
 
   # Through blocks
   for li, blk in enumerate(params.blocks):
     # Pre-norm
-    ln1 = T_layer_norm(x.astype(np.float32, copy=False), blk.gamma1, blk.beta1)  # (1, 1, D)
-    X2D = ln1.reshape(1, D)
+    ln1 = T_layer_norm(
+      x.astype(np.float32, copy=False), blk.gamma1, blk.beta1
+    )  # (1, 1, D)
+    x2d = ln1.reshape(1, D)
     q2d, k2d, v2d = T_qkv_fwd(
-      X2D,
+      x2d,
       blk.W_Q.astype(np.float32, copy=False),
       blk.W_K.astype(np.float32, copy=False),
       blk.W_V.astype(np.float32, copy=False),
     )
-    Dh = blk.W_Q.shape[1] // H
-    q = q2d.reshape(1, 1, H, Dh).transpose(0, 2, 1, 3)  # (1, H, 1, Dh)
-    k_new = k2d.reshape(1, 1, H, Dh).transpose(0, 2, 1, 3)  # (1, H, 1, Dh)
-    v_new = v2d.reshape(1, 1, H, Dh).transpose(0, 2, 1, 3)  # (1, H, 1, Dh)
+    d_h = blk.W_Q.shape[1] // H
+    q = q2d.reshape(1, 1, H, d_h).transpose(0, 2, 1, 3)  # (1, H, 1, d_h)
+    k_new = k2d.reshape(1, 1, H, d_h).transpose(0, 2, 1, 3)  # (1, H, 1, d_h)
+    v_new = v2d.reshape(1, 1, H, d_h).transpose(0, 2, 1, 3)  # (1, H, 1, d_h)
 
     # Gather K/V so far and append the new step
-    k_prev = kv.layers[li].k[:, :cur, :]  # (H, cur, Dh)
-    v_prev = kv.layers[li].v[:, :cur, :]  # (H, cur, Dh)
+    k_prev = kv.layers[li].k[:, :cur, :]  # (H, cur, d_h)
+    v_prev = kv.layers[li].v[:, :cur, :]  # (H, cur, d_h)
 
-    # Build (1, H, cur+1, Dh)
-    K = np.empty((1, H, cur + 1, Dh), dtype=np.float32)
-    V = np.empty((1, H, cur + 1, Dh), dtype=np.float32)
+    # Build (1, H, cur+1, d_h)
+    K = np.empty((1, H, cur + 1, d_h), dtype=np.float32)
+    V = np.empty((1, H, cur + 1, d_h), dtype=np.float32)
     if cur > 0:
       K[0, :, :cur, :] = k_prev
       V[0, :, :cur, :] = v_prev
-    K[0, :, cur:cur + 1, :] = k_new[0]
-    V[0, :, cur:cur + 1, :] = v_new[0]
+    K[0, :, cur : cur + 1, :] = k_new[0]
+    V[0, :, cur : cur + 1, :] = v_new[0]
 
     # Single-step attention (no mask needed since keys include only <= current)
-    attn_out = T_attn_fwd(q, K, V, causal=False, attn_mask=None)  # (1, H, 1, Dh)
-    context2d = attn_out.transpose(0, 2, 1, 3).reshape(1, H * Dh)
-    out2d = context2d @ blk.W_O.astype(np.float32, copy=False)
+    attn_out = T_attn_fwd(
+      q, K, V, causal=False, attn_mask=None
+    )  # (1, H, 1, d_h)
+    ctx2d = attn_out.transpose(0, 2, 1, 3).reshape(1, H * d_h)
+    out2d = ctx2d @ blk.W_O.astype(np.float32, copy=False)
     x1 = x + out2d.reshape(1, 1, D)
 
     # FFN
     ln2 = T_layer_norm(x1.astype(np.float32, copy=False), blk.gamma2, blk.beta2)
-    ff = T_ff(ln2.astype(np.float32, copy=False), blk.W1.astype(np.float32, copy=False), blk.W2.astype(np.float32, copy=False))
+    ff = T_ff(
+      ln2.astype(np.float32, copy=False),
+      blk.W1.astype(np.float32, copy=False),
+      blk.W2.astype(np.float32, copy=False),
+    )
     x = x1 + ff
 
     # Update cache in-place for next steps
@@ -239,7 +280,12 @@ def _decode_one(
   kv.seq_len = cur + 1
 
   # Final norm + head on the last position only
-  x_f = T_layer_norm(x.astype(np.float32, copy=False), params.gamma_f, params.beta_f)  # (1, 1, D)
+  # (1, 1, D)
+  x_f = T_layer_norm(
+    x.astype(np.float32, copy=False),
+    params.gamma_f,
+    params.beta_f,
+  )
   if config.weight_tying:
     logits = x_f @ params.W_E.T  # (1, 1, V)
   else:
@@ -257,10 +303,6 @@ def _sample_from_logits(
   top_p: float,
   rng: np.random.Generator,
 ) -> int:
-  """Sample a token id from 1D logits with temperature/top-k/top-p.
-
-  Uses greedy argmax when temperature <= 0.
-  """
   if temperature <= 0:
     return int(np.argmax(logits))
 
@@ -272,14 +314,11 @@ def _sample_from_logits(
   return int(rng.choice(len(probs), p=probs))
 
 
-def top_k_top_p_filtering(logits: np.ndarray, k: int = 0, p: float = 0.0) -> np.ndarray:
-  """top-k and top-p (nucleus) filtering on 1D logits.
-
-  - top-k: keep the k highest logits, mask others to -inf.
-  - top-p: among remaining tokens, keep the smallest prefix whose cumulative probability (after softmax) >= top_p.
-
-  Ensures at least one token is kept.
-  """
+def top_k_top_p_filtering(
+  logits: np.ndarray,
+  k: int = 0,
+  p: float = 0.0,
+) -> np.ndarray:
   V = logits.shape[-1]
   out = logits
 
@@ -325,7 +364,11 @@ def generate(
     eos = getattr(tokenizer, 'eos_token_id', None)
     ids = [bos if bos is not None else (eos if eos is not None else 0)]
 
-  eos_id = tokenizer.eos_token_id if tokenizer.eos_token_id is not None else tokenizer.pad_token_id
+  eos_id = (
+    tokenizer.eos_token_id
+    if tokenizer.eos_token_id is not None
+    else tokenizer.pad_token_id
+  )
 
   # prefill on the full prompt (caches K/V up to len(ids))
   ctx = ids[-config.max_seq_len :]
@@ -335,11 +378,7 @@ def generate(
   # decode: sample from prefill logits, then iteratively update via KV cache
   for _ in range(max_new_tokens):
     next_id = _sample_from_logits(
-      last_logits,
-      temperature=temperature,
-      top_k=top_k,
-      top_p=top_p,
-      rng=rng,
+      last_logits, temperature=temperature, top_k=top_k, top_p=top_p, rng=rng
     )
 
     ids.append(next_id)
@@ -374,7 +413,9 @@ def _find_latest_step_dir(root: pathlib.Path) -> pathlib.Path:
 def _load_state(weights_path: pathlib.Path) -> dict:
   if weights_path.suffix == '.safetensors':
     if not _HAVE_SAFETENSORS:
-      raise RuntimeError('safetensors not available but .safetensors checkpoint provided')
+      raise RuntimeError(
+        'safetensors not available but .safetensors checkpoint provided'
+      )
     return dict(st_load_file(str(weights_path)))
   if weights_path.suffix == '.npz':
     with np.load(weights_path, allow_pickle=False) as zf:
@@ -384,9 +425,21 @@ def _load_state(weights_path: pathlib.Path) -> dict:
 
 def main():
   ap = argparse.ArgumentParser()
-  ap.add_argument('--ckpt_root', type=str, default='checkpoints', help='Root dir with steps_<n> subdirs or a step dir')
-  ap.add_argument('--name', type=str, default='hinterland-np', help='Model name; checkpoints saved under checkpoints/<name>/')
-  ap.add_argument('--step', type=int, default=0, help='Specific step to load (0 => latest)')
+  ap.add_argument(
+    '--ckpt_root',
+    type=str,
+    default='checkpoints',
+    help='Root dir with steps_<n> subdirs or a step dir',
+  )
+  ap.add_argument(
+    '--name',
+    type=str,
+    default='hinterland-np',
+    help='Model name; checkpoints saved under checkpoints/<name>/',
+  )
+  ap.add_argument(
+    '--step', type=int, default=0, help='Specific step to load (0 => latest)'
+  )
   ap.add_argument('--prompt', type=str, default='Once upon a time,')
   ap.add_argument('--max_new_tokens', type=int, default=100)
   ap.add_argument('--temperature', type=float, default=0.6)
@@ -399,7 +452,11 @@ def main():
   if root.is_dir() and root.name.startswith('steps_'):
     step_dir = root
   else:
-    step_dir = (root / f'steps_{args.step}') if args.step > 0 else _find_latest_step_dir(root)
+    step_dir = (
+      (root / f'steps_{args.step}')
+      if args.step > 0
+      else _find_latest_step_dir(root)
+    )
 
   cfg_path = step_dir / 'config.json'
   config = load_config(cfg_path)
@@ -412,13 +469,17 @@ def main():
   elif npz_path.is_file():
     weights_path = npz_path
   else:
-    raise FileNotFoundError(f'no weights.safetensors or weights.npz in {step_dir}')
+    raise FileNotFoundError(
+      f'no weights.safetensors or weights.npz in {step_dir}'
+    )
 
   state = _load_state(weights_path)
 
   params = load_params(state, weight_tying=config.weight_tying)
 
-  tokenizer = AutoTokenizer.from_pretrained(getattr(config, 'tokenizer', None), use_fast=True)
+  tokenizer = AutoTokenizer.from_pretrained(
+    getattr(config, 'tokenizer', None), use_fast=True
+  )
 
   text = generate(
     args.prompt,

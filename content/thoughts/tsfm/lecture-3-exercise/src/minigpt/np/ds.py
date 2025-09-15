@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses, numpy as np
 
+
 @dataclasses.dataclass
 class LMConfig:
   name: str = 'hinterland-np'
@@ -10,12 +11,16 @@ class LMConfig:
   n_heads: int = 4
   n_layers: int = 2
   d_ff: int = 4 * 128
-  vocab_size: int = 151936  # NOTE: this will be updated after loading the tokenizer
+  vocab_size: int = (
+    151936  # NOTE: this will be updated after loading the tokenizer
+  )
   max_seq_len: int = 256
   weight_tying: bool = True
   seed: int = 42
   lr: float = 3e-4
-  betas: tuple[float, float] = dataclasses.field(default_factory=lambda: (0.9, 0.95))
+  betas: tuple[float, float] = dataclasses.field(
+    default_factory=lambda: (0.9, 0.95)
+  )
   weight_decay: float = 0.01
   grad_clip: float | None = 1.0
   batch_size: int = 16
@@ -44,6 +49,7 @@ class LMParams:
   gamma_f: np.ndarray
   beta_f: np.ndarray
   W_LM: np.ndarray | None
+
 
 # transformers block
 @dataclasses.dataclass

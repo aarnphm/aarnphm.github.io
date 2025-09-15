@@ -8,7 +8,11 @@ from transformers import AutoTokenizer
 from datasets import load_dataset
 
 try:
-  from safetensors.numpy import save_file as st_save_file, load_file as st_load_file  # type: ignore
+  from safetensors.numpy import (
+    save_file as st_save_file,
+    load_file as st_load_file,
+  )  # type: ignore
+
   _HAVE_SAFETENSORS = True
 except Exception:
   _HAVE_SAFETENSORS = False
@@ -37,8 +41,18 @@ try:
 except Exception:
 
   class _TqdmFallback:
-    def __init__(self, iterable=None, total=None, desc=None, dynamic_ncols=True, leave=True, **kwargs):
-      self.iterable = iterable if iterable is not None else range(int(total or 0))
+    def __init__(
+      self,
+      iterable=None,
+      total=None,
+      desc=None,
+      dynamic_ncols=True,
+      leave=True,
+      **kwargs,
+    ):
+      self.iterable = (
+        iterable if iterable is not None else range(int(total or 0))
+      )
       self.total = total
 
     def __iter__(self):
@@ -61,7 +75,7 @@ except Exception:
 def _is_truthy(s: str | None) -> bool:
   if s is None:
     return False
-  return s.strip().lower() in {"1", "true", "yes", "y", "on"}
+  return s.strip().lower() in {'1', 'true', 'yes', 'y', 'on'}
 
 
 def is_interactive() -> bool:
@@ -144,6 +158,7 @@ def truncated_normal(shape, std=0.02):
 # Parameter accounting
 # ---------------------
 
+
 def count_parameters(params: LMParams) -> int:
   """Return the total number of scalar parameters in the model."""
   total = 0
@@ -162,15 +177,19 @@ def count_parameters(params: LMParams) -> int:
 def parameters_nbytes(params: LMParams) -> int:
   """Approximate total bytes for parameters based on array dtypes."""
   bytes_ = 0
+
   def nbytes(arr: np.ndarray | None) -> int:
     return int(arr.nbytes) if arr is not None else 0
+
   bytes_ += nbytes(params.W_E)
   bytes_ += nbytes(params.W_pos)
   bytes_ += nbytes(params.gamma_f) + nbytes(params.beta_f)
   bytes_ += nbytes(params.W_LM)
   for b in params.blocks:
     bytes_ += nbytes(b.W_Q) + nbytes(b.W_K) + nbytes(b.W_V) + nbytes(b.W_O)
-    bytes_ += nbytes(b.gamma1) + nbytes(b.beta1) + nbytes(b.gamma2) + nbytes(b.beta2)
+    bytes_ += (
+      nbytes(b.gamma1) + nbytes(b.beta1) + nbytes(b.gamma2) + nbytes(b.beta2)
+    )
     bytes_ += nbytes(b.W1) + nbytes(b.W2)
   return int(bytes_)
 
@@ -179,13 +198,14 @@ def parameters_nbytes(params: LMParams) -> int:
 # Parameter breakdown tree view
 # -----------------------------
 
+
 def _fmt_int(n: int) -> str:
-  return f"{int(n):,}"
+  return f'{int(n):,}'
 
 
 def _shape_str(arr: np.ndarray | None) -> str:
   if arr is None:
-    return "-"
+    return '-'
   shp = tuple(int(x) for x in arr.shape)
   return '(' + '×'.join(str(x) for x in shp) + ')'
 
@@ -207,47 +227,44 @@ def parameter_breakdown(params: LMParams) -> dict:
   """Return a nested dict with parameter counts per component and per block."""
   tree: dict[str, object] = {
     'total': count_parameters(params),
-    'embeddings': {
-      'W_E': _size(params.W_E),
-      'W_pos': _size(params.W_pos),
-    },
+    'embeddings': {'W_E': _size(params.W_E), 'W_pos': _size(params.W_pos)},
     'blocks': [],
     'final_ln': {
       'gamma_f': _size(params.gamma_f),
       'beta_f': _size(params.beta_f),
     },
-    'lm_head': {'tied': params.W_LM is None, 'W_LM': _size(params.W_LM) if params.W_LM is not None else 0},
+    'lm_head': {
+      'tied': params.W_LM is None,
+      'W_LM': _size(params.W_LM) if params.W_LM is not None else 0,
+    },
   }
 
   blocks_list: list[dict[str, object]] = []
   for i, b in enumerate(params.blocks):
     blk = {
       'idx': i,
-      'ln1': {
-        'gamma1': _size(b.gamma1),
-        'beta1': _size(b.beta1),
-      },
+      'ln1': {'gamma1': _size(b.gamma1), 'beta1': _size(b.beta1)},
       'attn': {
         'W_Q': _size(b.W_Q),
         'W_K': _size(b.W_K),
         'W_V': _size(b.W_V),
         'W_O': _size(b.W_O),
       },
-      'mlp': {
-        'W1': _size(b.W1),
-        'W2': _size(b.W2),
-      },
-      'ln2': {
-        'gamma2': _size(b.gamma2),
-        'beta2': _size(b.beta2),
-      },
+      'mlp': {'W1': _size(b.W1), 'W2': _size(b.W2)},
+      'ln2': {'gamma2': _size(b.gamma2), 'beta2': _size(b.beta2)},
     }
     # subtotal per block
     blk['subtotal'] = (
-      blk['ln1']['gamma1'] + blk['ln1']['beta1'] +  # type: ignore
-      blk['attn']['W_Q'] + blk['attn']['W_K'] + blk['attn']['W_V'] + blk['attn']['W_O'] +  # type: ignore
-      blk['mlp']['W1'] + blk['mlp']['W2'] +  # type: ignore
-      blk['ln2']['gamma2'] + blk['ln2']['beta2']  # type: ignore
+      blk['ln1']['gamma1']
+      + blk['ln1']['beta1']  # type: ignore
+      + blk['attn']['W_Q']
+      + blk['attn']['W_K']
+      + blk['attn']['W_V']
+      + blk['attn']['W_O']  # type: ignore
+      + blk['mlp']['W1']
+      + blk['mlp']['W2']  # type: ignore
+      + blk['ln2']['gamma2']
+      + blk['ln2']['beta2']  # type: ignore
     )
     blocks_list.append(blk)
   tree['blocks'] = blocks_list
@@ -255,7 +272,9 @@ def parameter_breakdown(params: LMParams) -> dict:
   return tree
 
 
-def format_param_tree(params: LMParams, config: LMConfig, *, unicode: bool = True) -> str:
+def format_param_tree(
+  params: LMParams, config: LMConfig, *, unicode: bool = True
+) -> str:
   """Produce a human-readable tree of parameter counts and shapes.
 
   Each leaf shows: name shape [equation] = count
@@ -271,16 +290,16 @@ def format_param_tree(params: LMParams, config: LMConfig, *, unicode: bool = Tru
   lines: list[str] = []
   root_total = br['total']  # type: ignore
   lines.append(
-    f"Model Parameters: {_fmt_int(root_total)} (d_model={config.d_model}, n_layers={config.n_layers}, n_heads={config.n_heads}, d_ff={config.d_ff}, vocab={getattr(config, 'vocab_size', 'NA')})"
+    f'Model Parameters: {_fmt_int(root_total)} (d_model={config.d_model}, n_layers={config.n_layers}, n_heads={config.n_heads}, d_ff={config.d_ff}, vocab={getattr(config, "vocab_size", "NA")})'
   )
 
   def emit_param(prefix: str, is_last: bool, name: str, arr: np.ndarray | None):
     conn = use['last'] if is_last else use['branch']
     if arr is None:
-      lines.append(f"{prefix}{conn}{name}: -")
+      lines.append(f'{prefix}{conn}{name}: -')
     else:
       lines.append(
-        f"{prefix}{conn}{name}: {_shape_str(arr)}  [{_eq_str(arr)}] = {_fmt_int(_size(arr))}"
+        f'{prefix}{conn}{name}: {_shape_str(arr)}  [{_eq_str(arr)}] = {_fmt_int(_size(arr))}'
       )
 
   def render_embeddings(prefix: str):
@@ -290,23 +309,29 @@ def format_param_tree(params: LMParams, config: LMConfig, *, unicode: bool = Tru
 
   def render_block(prefix: str, idx: int, b: BlockParams, is_last_block: bool):
     subtotal = (
-      _size(b.gamma1) + _size(b.beta1) +
-      _size(b.W_Q) + _size(b.W_K) + _size(b.W_V) + _size(b.W_O) +
-      _size(b.W1) + _size(b.W2) +
-      _size(b.gamma2) + _size(b.beta2)
+      _size(b.gamma1)
+      + _size(b.beta1)
+      + _size(b.W_Q)
+      + _size(b.W_K)
+      + _size(b.W_V)
+      + _size(b.W_O)
+      + _size(b.W1)
+      + _size(b.W2)
+      + _size(b.gamma2)
+      + _size(b.beta2)
     )
     conn = use['last'] if is_last_block else use['branch']
-    lines.append(f"{prefix}{conn}Block[{idx}] [subtotal={_fmt_int(subtotal)}]")
+    lines.append(f'{prefix}{conn}Block[{idx}] [subtotal={_fmt_int(subtotal)}]')
     blk_prefix = prefix + (use['sp'] if is_last_block else use['pipe'])
 
     # LN1
-    lines.append(f"{blk_prefix}{use['branch']}LayerNorm1")
+    lines.append(f'{blk_prefix}{use["branch"]}LayerNorm1')
     ln1_prefix = blk_prefix + use['sp']
     emit_param(ln1_prefix, False, 'gamma1', b.gamma1)
     emit_param(ln1_prefix, True, 'beta1', b.beta1)
 
     # SelfAttention
-    lines.append(f"{blk_prefix}{use['branch']}SelfAttention")
+    lines.append(f'{blk_prefix}{use["branch"]}SelfAttention')
     attn_prefix = blk_prefix + use['sp']
     emit_param(attn_prefix, False, 'W_Q', b.W_Q)
     emit_param(attn_prefix, False, 'W_K', b.W_K)
@@ -314,13 +339,13 @@ def format_param_tree(params: LMParams, config: LMConfig, *, unicode: bool = Tru
     emit_param(attn_prefix, True, 'W_O', b.W_O)
 
     # MLP
-    lines.append(f"{blk_prefix}{use['branch']}MLP")
+    lines.append(f'{blk_prefix}{use["branch"]}MLP')
     mlp_prefix = blk_prefix + use['sp']
     emit_param(mlp_prefix, False, 'W1', b.W1)
     emit_param(mlp_prefix, True, 'W2', b.W2)
 
     # LN2
-    lines.append(f"{blk_prefix}{use['last']}LayerNorm2")
+    lines.append(f'{blk_prefix}{use["last"]}LayerNorm2')
     ln2_prefix = blk_prefix + use['sp']
     emit_param(ln2_prefix, False, 'gamma2', b.gamma2)
     emit_param(ln2_prefix, True, 'beta2', b.beta2)
@@ -331,35 +356,47 @@ def format_param_tree(params: LMParams, config: LMConfig, *, unicode: bool = Tru
 
   def render_lm_head(prefix: str):
     if params.W_LM is None:
-      lines.append(f"{prefix}{use['last']}LMHead [tied -> uses W_E; no extra params]")
+      lines.append(
+        f'{prefix}{use["last"]}LMHead [tied -> uses W_E; no extra params]'
+      )
     else:
       total = _size(params.W_LM)
-      lines.append(f"{prefix}{use['last']}LMHead [subtotal={_fmt_int(total)}]")
+      lines.append(f'{prefix}{use["last"]}LMHead [subtotal={_fmt_int(total)}]')
       emit_param(prefix + use['sp'], True, 'W_LM', params.W_LM)
 
   # Root sections in order
   sections: list[tuple[str, callable]] = []
   emb_total = _size(params.W_E) + _size(params.W_pos)
-  sections.append((f"Embeddings [subtotal={_fmt_int(emb_total)}]", render_embeddings))
-  sections.append((f"Blocks × {len(params.blocks)}", None))  # header only; blocks rendered separately
-  sections.append(("LayerNorm", render_final_ln))
-  sections.append(("LMHead", render_lm_head))
+  sections.append((
+    f'Embeddings [subtotal={_fmt_int(emb_total)}]',
+    render_embeddings,
+  ))
+  sections.append((
+    f'Blocks × {len(params.blocks)}',
+    None,
+  ))  # header only; blocks rendered separately
+  sections.append(('LayerNorm', render_final_ln))
+  sections.append(('LMHead', render_lm_head))
 
   for si, (title, renderer) in enumerate(sections):
     is_last_section = si == len(sections) - 1
     conn = use['last'] if is_last_section else use['branch']
-    lines.append(f"{conn}{title}")
+    lines.append(f'{conn}{title}')
     base_prefix = use['sp'] if is_last_section else use['pipe']
     if title.startswith('Blocks'):
       for bi, b in enumerate(params.blocks):
-        render_block(base_prefix, bi, b, is_last_block=(bi == len(params.blocks) - 1))
+        render_block(
+          base_prefix, bi, b, is_last_block=(bi == len(params.blocks) - 1)
+        )
     elif renderer is not None:
       renderer(base_prefix)
 
   return '\n'.join(lines)
 
 
-def print_param_tree(params: LMParams, config: LMConfig, *, unicode: bool = True) -> None:
+def print_param_tree(
+  params: LMParams, config: LMConfig, *, unicode: bool = True
+) -> None:
   print(format_param_tree(params, config, unicode=unicode), flush=True)
 
 
@@ -370,15 +407,23 @@ def print_param_tree(params: LMParams, config: LMConfig, *, unicode: bool = True
 
 def layer_norm_fwd(x: np.ndarray, gamma: np.ndarray, beta: np.ndarray):
   y = T_layer_norm(
-    x.astype(np.float32, copy=False), gamma.astype(np.float32, copy=False), beta.astype(np.float32, copy=False)
+    x.astype(np.float32, copy=False),
+    gamma.astype(np.float32, copy=False),
+    beta.astype(np.float32, copy=False),
   )
-  cache = (x.astype(np.float32, copy=False), gamma.astype(np.float32, copy=False), beta.astype(np.float32, copy=False))
+  cache = (
+    x.astype(np.float32, copy=False),
+    gamma.astype(np.float32, copy=False),
+    beta.astype(np.float32, copy=False),
+  )
   return y, cache
 
 
 def layer_norm_bwd(dy: np.ndarray, cache):
   x, gamma, beta = cache
-  dx, dgamma, dbeta = T_layer_norm_bwd(x, gamma, beta, dy.astype(np.float32, copy=False))
+  dx, dgamma, dbeta = T_layer_norm_bwd(
+    x, gamma, beta, dy.astype(np.float32, copy=False)
+  )
   return dx, dgamma, dbeta
 
 
@@ -426,7 +471,9 @@ def linear_bwd(dY: np.ndarray, cache):
   return dX, dW
 
 
-def cross_entropy_logits(logits: np.ndarray, targets: np.ndarray, ignore_index: int | None = None):
+def cross_entropy_logits(
+  logits: np.ndarray, targets: np.ndarray, ignore_index: int | None = None
+):
   """Compute CE and gradient without building an N×V one-hot.
 
   logits: (N, V), targets: (N,)
@@ -448,7 +495,7 @@ def cross_entropy_logits(logits: np.ndarray, targets: np.ndarray, ignore_index: 
     dLogits /= N
     return loss, dLogits
 
-  valid = (targets != ignore_index)
+  valid = targets != ignore_index
   valid_idx = np.where(valid)[0]
   denom = max(int(valid_idx.shape[0]), 1)
   if denom == 0:
@@ -488,7 +535,7 @@ def mha_forward(
     X2D,
     W_Q.astype(np.float32, copy=False),
     W_K.astype(np.float32, copy=False),
-    W_V.astype(np.float32, copy=False)
+    W_V.astype(np.float32, copy=False),
   )
 
   q = q2d.reshape(B, S, H, Dh).transpose(0, 2, 1, 3)
@@ -538,7 +585,9 @@ def mha_bwd(dY: np.ndarray, cache: dict):
 
   # Recompute attention backward (no cache)
   attn_mask = None if causal_flag else build_causal_mask(S, S)
-  dQ, dK, dV = T_attn_bwd(q, k, v, dCtx, causal=causal_flag, attn_mask=attn_mask)
+  dQ, dK, dV = T_attn_bwd(
+    q, k, v, dCtx, causal=causal_flag, attn_mask=attn_mask
+  )
 
   # Backprop through QKV projections (using cached x/weights only)
   dQ2D = dQ.transpose(0, 2, 1, 3).reshape(B * S, H * Dh)
@@ -552,7 +601,8 @@ def mha_bwd(dY: np.ndarray, cache: dict):
 def mlp_fwd(x: np.ndarray, W1: np.ndarray, W2: np.ndarray):
   y, cache = T_ff_fwd(
     x.astype(np.float32, copy=False),
-    W1.astype(np.float32, copy=False), W2.astype(np.float32, copy=False)
+    W1.astype(np.float32, copy=False),
+    W2.astype(np.float32, copy=False),
   )
   return y, cache
 
@@ -565,6 +615,7 @@ def mlp_bwd(dY: np.ndarray, cache):
 # ---------------------------
 # Transformer block (pre-norm)
 # ---------------------------
+
 
 def init_block(d_model: int, n_heads: int, d_ff: int) -> BlockParams:
   H = n_heads
@@ -586,7 +637,9 @@ def block_fwd(
   x: np.ndarray, p: BlockParams, n_heads: int, *, attn_mask: np.ndarray | None
 ) -> tuple[np.ndarray, tuple]:
   ln1, ln1_cache = layer_norm_fwd(x, p.gamma1, p.beta1)
-  attn_out, attn_cache = mha_forward(ln1, p.W_Q, p.W_K, p.W_V, p.W_O, n_heads=n_heads, attn_mask=attn_mask)
+  attn_out, attn_cache = mha_forward(
+    ln1, p.W_Q, p.W_K, p.W_V, p.W_O, n_heads=n_heads, attn_mask=attn_mask
+  )
   x1 = x + attn_out
   ln2, ln2_cache = layer_norm_fwd(x1, p.gamma2, p.beta2)
   ff_out, ff_cache = mlp_fwd(ln2, p.W1, p.W2)
@@ -628,14 +681,22 @@ def init_lm(config: LMConfig, tokenizer_vocab_size: int) -> LMParams:
   V = tokenizer_vocab_size
   W_E = truncated_normal((V, D), std=0.02)
   W_pos = truncated_normal((config.max_seq_len, D), std=0.02)
-  blocks = [init_block(D, config.n_heads, config.d_ff) for _ in range(config.n_layers)]
+  blocks = [
+    init_block(D, config.n_heads, config.d_ff) for _ in range(config.n_layers)
+  ]
   gamma_f = np.ones((D,), dtype=np.float32)
   beta_f = np.zeros((D,), dtype=np.float32)
   W_LM = None if config.weight_tying else truncated_normal((D, V), std=0.02)
   return LMParams(W_E, W_pos, blocks, gamma_f, beta_f, W_LM)
 
 
-def lm_fwd(token_ids: np.ndarray, params: LMParams, config: LMConfig, *, attn_mask: np.ndarray | None):
+def lm_fwd(
+  token_ids: np.ndarray,
+  params: LMParams,
+  config: LMConfig,
+  *,
+  attn_mask: np.ndarray | None,
+):
   B, S = token_ids.shape
   D = config.d_model
   x_e, emb_cache = embedding_fwd(token_ids, params.W_E)
@@ -662,7 +723,13 @@ def lm_fwd(token_ids: np.ndarray, params: LMParams, config: LMConfig, *, attn_ma
   return logits, caches
 
 
-def lm_bwd(dLogits: np.ndarray, token_ids: np.ndarray, caches, params: LMParams, config: LMConfig):
+def lm_bwd(
+  dLogits: np.ndarray,
+  token_ids: np.ndarray,
+  caches,
+  params: LMParams,
+  config: LMConfig,
+):
   emb_cache, pos_cache, block_caches, ln_f_cache, lm_cache = caches
   B, S = token_ids.shape
   D = config.d_model
@@ -675,7 +742,9 @@ def lm_bwd(dLogits: np.ndarray, token_ids: np.ndarray, caches, params: LMParams,
     dX_f = dX2D.reshape(Bx, Sx, Dx)
     # Recompute x_f from ln_f_cache to form X2D efficiently for dW_E
     x_post_blocks, gamma_f, beta_f = ln_f_cache
-    x_f_recomp = T_layer_norm(x_post_blocks.astype(np.float32, copy=False), gamma_f, beta_f)
+    x_f_recomp = T_layer_norm(
+      x_post_blocks.astype(np.float32, copy=False), gamma_f, beta_f
+    )
     X2D = x_f_recomp.reshape(Bx * Sx, Dx)
     dW_E_head = X2D.T @ dLogits2D
   else:
@@ -704,7 +773,14 @@ def lm_bwd(dLogits: np.ndarray, token_ids: np.ndarray, caches, params: LMParams,
     dW_E = dW_E_embed
     dW_LM = None
 
-  grads = {'W_E': dW_E, 'W_pos': dW_pos, 'blocks': grads_blocks, 'gamma_f': dgamma_f, 'beta_f': dbeta_f, 'W_LM': dW_LM}
+  grads = {
+    'W_E': dW_E,
+    'W_pos': dW_pos,
+    'blocks': grads_blocks,
+    'gamma_f': dgamma_f,
+    'beta_f': dbeta_f,
+    'W_LM': dW_LM,
+  }
   return grads
 
 
@@ -715,7 +791,13 @@ def lm_bwd(dLogits: np.ndarray, token_ids: np.ndarray, caches, params: LMParams,
 
 class AdamW:
   def __init__(
-    self, params_ref, lr=3e-4, betas=(0.9, 0.95), weight_decay=0.01, eps=1e-8, grad_clip: float | None = None
+    self,
+    params_ref,
+    lr=3e-4,
+    betas=(0.9, 0.95),
+    weight_decay=0.01,
+    eps=1e-8,
+    grad_clip: float | None = None,
   ):
     self.lr = lr
     self.betas = betas
@@ -819,7 +901,11 @@ def load_tokenizer(tokenizer: str):
   return tok
 
 
-def prepare_text_stream(dataset_name: str = 'roneneldan/TinyStories', split: str = 'train', streaming: bool = True):
+def prepare_text_stream(
+  dataset_name: str = 'roneneldan/TinyStories',
+  split: str = 'train',
+  streaming: bool = True,
+):
   ds = load_dataset(dataset_name, split=split, streaming=streaming)
   for ex in ds:
     txt = ex.get('text', None)
@@ -851,7 +937,9 @@ class TokenDataset:
   def dtype(self):
     return np.dtype(self.meta.get('dtype', 'uint32'))
 
-  def sample_batch(self, batch_size: int, seq_len: int, stride: int, rng: np.random.Generator) -> tuple[np.ndarray, np.ndarray]:
+  def sample_batch(
+    self, batch_size: int, seq_len: int, stride: int, rng: np.random.Generator
+  ) -> tuple[np.ndarray, np.ndarray]:
     max_start = self.n_tokens - (seq_len + 1)
     if max_start <= 0:
       raise ValueError('Not enough tokens to form a sequence')
@@ -868,7 +956,9 @@ class TokenDataset:
       y[i] = seg[1:].astype(np.int64, copy=False)
     return x, y
 
-  def sequential_batches(self, seq_len: int, stride: int, batch_size: int, drop_last: bool = True) -> Iterable[tuple[np.ndarray, np.ndarray]]:
+  def sequential_batches(
+    self, seq_len: int, stride: int, batch_size: int, drop_last: bool = True
+  ) -> Iterable[tuple[np.ndarray, np.ndarray]]:
     max_start = self.n_tokens - (seq_len + 1)
     if max_start <= 0:
       return
@@ -891,6 +981,7 @@ class TokenDataset:
 def _tokens_basename(dataset_name: str, split: str) -> str:
   safe = dataset_name.replace('/', '__')
   return f'{safe}.{split}'
+
 
 # we want to build/load the binary tokens beforehand, such that we avoid tokenization on the fly
 def build_or_load_tokens(
@@ -920,7 +1011,9 @@ def build_or_load_tokens(
   count = 0
   with open(tmp_path, 'wb') as f:
     pbar = make_progress(desc=f'tokenize:{split}')
-    for txt in prepare_text_stream(dataset_name=dataset_name, split=split, streaming=True):
+    for txt in prepare_text_stream(
+      dataset_name=dataset_name, split=split, streaming=True
+    ):
       ids = tokenizer.encode(txt, add_special_tokens=False)
       ids = ids + [eos_id]
       arr = np.asarray(ids, dtype=np.uint32)
@@ -947,13 +1040,21 @@ def build_or_load_tokens(
 # BatchPrefetcher fills in a queue in a background thread to overlap both compute and processing data.
 class BatchPrefetcher:
   def __init__(
-    self, ds: TokenDataset, batch_size: int, seq_len: int, stride: int, seed: int, prefetch: int = 4
+    self,
+    ds: TokenDataset,
+    batch_size: int,
+    seq_len: int,
+    stride: int,
+    seed: int,
+    prefetch: int = 4,
   ) -> None:
     self.ds = ds
     self.batch_size = batch_size
     self.seq_len = seq_len
     self.stride = stride
-    self.q: queue.Queue[tuple[np.ndarray, np.ndarray]] = queue.Queue(maxsize=max(1, prefetch))
+    self.q: queue.Queue[tuple[np.ndarray, np.ndarray]] = queue.Queue(
+      maxsize=max(1, prefetch)
+    )
     self.stop_event = threading.Event()
     self.rng = np.random.default_rng(seed)
     self.th = threading.Thread(target=self._worker, daemon=True)
@@ -962,7 +1063,9 @@ class BatchPrefetcher:
   def _worker(self):
     while not self.stop_event.is_set():
       try:
-        batch = self.ds.sample_batch(self.batch_size, self.seq_len, self.stride, self.rng)
+        batch = self.ds.sample_batch(
+          self.batch_size, self.seq_len, self.stride, self.rng
+        )
         self.q.put(batch)
       except Exception:
         self.stop_event.set()
@@ -974,7 +1077,10 @@ class BatchPrefetcher:
   def stop(self):
     self.stop_event.set()
     try:
-      self.q.put_nowait((np.empty((0, 0), dtype=np.int64), np.empty((0, 0), dtype=np.int64)))
+      self.q.put_nowait((
+        np.empty((0, 0), dtype=np.int64),
+        np.empty((0, 0), dtype=np.int64),
+      ))
     except Exception:
       pass
     self.th.join(timeout=1.0)
@@ -996,7 +1102,9 @@ def compute_loss_and_grads(
 ):
   logits, caches = lm_fwd(x, params, config, attn_mask=attn_mask)
   B, S, V = logits.shape
-  loss, dLogits2D = cross_entropy_logits(logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None)
+  loss, dLogits2D = cross_entropy_logits(
+    logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None
+  )
   dLogits = dLogits2D.reshape(B, S, V)
   grads = lm_bwd(dLogits, x, caches, params, config)
   if return_accuracy:
@@ -1005,6 +1113,7 @@ def compute_loss_and_grads(
       acc = float(np.mean((preds == y).astype(np.float32)))
     return loss, grads, acc
   return loss, grads
+
 
 # NOTE: This is not used anymore, given we replaced with memmapped implementation.
 def evaluate(
@@ -1022,9 +1131,17 @@ def evaluate(
   eos_id = tokenizer.eos_token_id or tokenizer.pad_token_id or 0
   iterator = range(steps)
   if show_progress and is_interactive():
-    iterator = tqdm(iterator, total=steps, desc=desc or 'eval', leave=False, dynamic_ncols=True)
+    iterator = tqdm(
+      iterator,
+      total=steps,
+      desc=desc or 'eval',
+      leave=False,
+      dynamic_ncols=True,
+    )
 
-  def make_batch(tokenizer, text_iter, seq_len: int, batch_size: int, eos_id: int):
+  def make_batch(
+    tokenizer, text_iter, seq_len: int, batch_size: int, eos_id: int
+  ):
     token_stream = []
     for _ in range(batch_size * 32):
       try:
@@ -1052,13 +1169,17 @@ def evaluate(
     return x, y
 
   for _ in iterator:
-    batch = make_batch(tokenizer, data_iter, config.max_seq_len, config.batch_size, eos_id)
+    batch = make_batch(
+      tokenizer, data_iter, config.max_seq_len, config.batch_size, eos_id
+    )
     if batch is None:
       break
     x, y = batch
     logits, _ = lm_fwd(x, params, config, attn_mask=attn_mask)
     B, S, V = logits.shape
-    loss, _ = cross_entropy_logits(logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None)
+    loss, _ = cross_entropy_logits(
+      logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None
+    )
     losses.append(loss)
   return float(np.mean(losses)) if losses else float('nan')
 
@@ -1078,12 +1199,24 @@ def evaluate_tokens(
   losses: list[float] = []
   correct: int = 0
   total: int = 0
-  stride_val = stride if stride is not None else (config.stride if config.stride > 0 else config.max_seq_len)
-  batch_iter = ds.sequential_batches(config.max_seq_len, stride_val, config.batch_size, drop_last=True)
+  stride_val = (
+    stride
+    if stride is not None
+    else (config.stride if config.stride > 0 else config.max_seq_len)
+  )
+  batch_iter = ds.sequential_batches(
+    config.max_seq_len, stride_val, config.batch_size, drop_last=True
+  )
   batches = iter(batch_iter)
   iterator = range(steps)
   if show_progress and is_interactive():
-    iterator = tqdm(iterator, total=steps, desc=desc or 'eval', leave=False, dynamic_ncols=True)
+    iterator = tqdm(
+      iterator,
+      total=steps,
+      desc=desc or 'eval',
+      leave=False,
+      dynamic_ncols=True,
+    )
   for _ in iterator:
     try:
       x, y = next(batches)
@@ -1091,7 +1224,9 @@ def evaluate_tokens(
       break
     logits, _ = lm_fwd(x, params, config, attn_mask=attn_mask)
     B, S, V = logits.shape
-    loss, _ = cross_entropy_logits(logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None)
+    loss, _ = cross_entropy_logits(
+      logits.reshape(B * S, V), y.reshape(B * S), ignore_index=None
+    )
     losses.append(loss)
     # accuracy
     preds = np.argmax(logits, axis=-1)
@@ -1113,26 +1248,55 @@ def train(config: LMConfig):
 
   # Build or load tokenized datasets (memmapped)
   tokens_dir = checkpoint_dirs / 'tokens'
-  train_tokens = build_or_load_tokens(tokens_dir, 'roneneldan/TinyStories', 'train', tokenizer, overwrite=False)
-  val_tokens = build_or_load_tokens(tokens_dir, 'roneneldan/TinyStories', 'validation', tokenizer, overwrite=False)
+  train_tokens = build_or_load_tokens(
+    tokens_dir, 'roneneldan/TinyStories', 'train', tokenizer, overwrite=False
+  )
+  val_tokens = build_or_load_tokens(
+    tokens_dir,
+    'roneneldan/TinyStories',
+    'validation',
+    tokenizer,
+    overwrite=False,
+  )
 
   # Try to resume from the latest checkpoint if present
   resume = _maybe_load_latest_checkpoint(out_dir)
   if resume is not None:
-    last_step, loaded_params, train_losses, val_points, loaded_opt_state, train_accuracies, val_acc_points = resume
+    (
+      last_step,
+      loaded_params,
+      train_losses,
+      val_points,
+      loaded_opt_state,
+      train_accuracies,
+      val_acc_points,
+    ) = resume
     # Align config architecture with checkpoint to avoid shape mismatches
     arch_cfg = _load_arch_config(out_dir, last_step)
     if arch_cfg is not None:
-      for k in ['d_model', 'n_heads', 'n_layers', 'd_ff', 'weight_tying', 'max_seq_len']:
+      for k in [
+        'd_model',
+        'n_heads',
+        'n_layers',
+        'd_ff',
+        'weight_tying',
+        'max_seq_len',
+      ]:
         if k in arch_cfg:
           setattr(config, k, arch_cfg[k])
     # Validate vocab size compatibility
     if loaded_params.W_E.shape[0] != config.vocab_size:
       raise ValueError(
-        f"Tokenizer vocab size {config.vocab_size} != checkpoint {loaded_params.W_E.shape[0]}"
+        f'Tokenizer vocab size {config.vocab_size} != checkpoint {loaded_params.W_E.shape[0]}'
       )
     params = loaded_params
-    opt = AdamW(params, lr=config.lr, betas=config.betas, weight_decay=config.weight_decay, grad_clip=config.grad_clip)
+    opt = AdamW(
+      params,
+      lr=config.lr,
+      betas=config.betas,
+      weight_decay=config.weight_decay,
+      grad_clip=config.grad_clip,
+    )
     if loaded_opt_state is not None:
       _load_optimizer_state_into(opt, params, loaded_opt_state)
     start_step = last_step
@@ -1158,7 +1322,7 @@ def train(config: LMConfig):
   n_params = count_parameters(params)
   n_bytes = parameters_nbytes(params)
   print(
-    f"[model] n_params {n_params:,} ({n_params/1e6:.2f}M) | params_mem ~ {n_bytes/1e6:.2f} MB | {_timestamp()}",
+    f'[model] n_params {n_params:,} ({n_params / 1e6:.2f}M) | params_mem ~ {n_bytes / 1e6:.2f} MB | {_timestamp()}',
     flush=True,
   )
 
@@ -1209,7 +1373,11 @@ def train(config: LMConfig):
       elapsed = time.time() - start
       # keep the bar tidy while logging
       if is_interactive():
-        pbar.set_postfix({'loss': f'{loss:.4f}', 'acc': f'{train_acc:.3f}', 'elapsed_s': f'{elapsed:.2f}'})
+        pbar.set_postfix({
+          'loss': f'{loss:.4f}',
+          'acc': f'{train_acc:.3f}',
+          'elapsed_s': f'{elapsed:.2f}',
+        })
       pbar.write(
         f'[train] step {step:5d} | loss {loss:.4f} | acc {train_acc:.3f} | elapsed {elapsed:.2f}s | {_timestamp()}'
       )
@@ -1228,11 +1396,15 @@ def train(config: LMConfig):
       )
       val_points.append((step, float(val_loss)))
       val_acc_points.append((step, float(val_acc)))
-      pbar.write(f'[evals] step {step:5d} | loss {val_loss:.4f} | acc {val_acc:.3f} | {_timestamp()}')
+      pbar.write(
+        f'[evals] step {step:5d} | loss {val_loss:.4f} | acc {val_acc:.3f} | {_timestamp()}'
+      )
 
       # Update best and scheduler/early stopping
       improved = False
-      if best_val is None or (best_val - float(val_loss)) > float(config.early_stop_min_delta):
+      if best_val is None or (best_val - float(val_loss)) > float(
+        config.early_stop_min_delta
+      ):
         best_val = float(val_loss)
         best_step = step
         no_improve_evals = 0
@@ -1247,30 +1419,41 @@ def train(config: LMConfig):
           cooldown -= 1
 
       # ReduceLROnPlateau (on validation loss)
-      if (not improved) and cooldown <= 0 and no_improve_plateau >= max(1, int(config.plateau_patience)):
-        new_plateau_lr = max(float(config.lr_min), float(plateau_lr) * float(config.plateau_factor))
+      if (
+        (not improved)
+        and cooldown <= 0
+        and no_improve_plateau >= max(1, int(config.plateau_patience))
+      ):
+        new_plateau_lr = max(
+          float(config.lr_min), float(plateau_lr) * float(config.plateau_factor)
+        )
         if new_plateau_lr < plateau_lr - 1e-12:
           pbar.write(
-            f"[sched] step {step:5d} | val {val_loss:.4f} | lr {plateau_lr:.3e} -> {new_plateau_lr:.3e}"
+            f'[sched] step {step:5d} | val {val_loss:.4f} | lr {plateau_lr:.3e} -> {new_plateau_lr:.3e}'
           )
           plateau_lr = new_plateau_lr
           cooldown = int(config.lr_cooldown)
         no_improve_plateau = 0
 
       # Early stopping: target loss or patience
-      if config.target_loss is not None and float(val_loss) <= float(config.target_loss):
+      if config.target_loss is not None and float(val_loss) <= float(
+        config.target_loss
+      ):
         early_stopped = True
-        early_stop_reason = f"target_loss <= {config.target_loss}"
+        early_stop_reason = f'target_loss <= {config.target_loss}'
       elif no_improve_evals >= int(config.early_stop_patience):
         early_stopped = True
         early_stop_reason = (
-          f"no improvement for {config.early_stop_patience} evals (best {best_val:.4f} @ step {best_step})"
-          if best_val is not None else f"no improvement for {config.early_stop_patience} evals"
+          f'no improvement for {config.early_stop_patience} evals (best {best_val:.4f} @ step {best_step})'
+          if best_val is not None
+          else f'no improvement for {config.early_stop_patience} evals'
         )
 
       if early_stopped:
-        pbar.write(f"[early-stop] step {step:5d} | reason: {early_stop_reason}")
-        target_step = step  # ensure the final checkpoint below uses this step index
+        pbar.write(f'[early-stop] step {step:5d} | reason: {early_stop_reason}')
+        target_step = (
+          step  # ensure the final checkpoint below uses this step index
+        )
         break
 
       # Save an intermediate checkpoint at this step as well
@@ -1351,7 +1534,9 @@ def _save_checkpoint(
   step_dir.mkdir(parents=True, exist_ok=True)
 
   # Save weights
-  weights_path = step_dir / ('weights.safetensors' if _HAVE_SAFETENSORS else 'weights.npz')
+  weights_path = step_dir / (
+    'weights.safetensors' if _HAVE_SAFETENSORS else 'weights.npz'
+  )
   flat = _flatten_params_for_save(params)
   if _HAVE_SAFETENSORS:
     st_save_file(flat, str(weights_path))
@@ -1392,7 +1577,9 @@ def _save_checkpoint(
     np.savez_compressed(opt_path, **flat_opt)
 
 
-def _flatten_optimizer_state_for_save(opt: 'AdamW', params: LMParams) -> dict[str, np.ndarray | np.int64 | np.float32]:
+def _flatten_optimizer_state_for_save(
+  opt: 'AdamW', params: LMParams
+) -> dict[str, np.ndarray | np.int64 | np.float32]:
   state: dict[str, np.ndarray | np.int64 | np.float32] = {}
   # Hyperparameters and step
   state['t'] = np.int64(opt.t)
@@ -1401,7 +1588,9 @@ def _flatten_optimizer_state_for_save(opt: 'AdamW', params: LMParams) -> dict[st
   state['beta2'] = np.float32(opt.betas[1])
   state['weight_decay'] = np.float32(opt.weight_decay)
   state['eps'] = np.float32(opt.eps)
-  state['grad_clip'] = np.float32(opt.grad_clip if opt.grad_clip is not None else -1.0)
+  state['grad_clip'] = np.float32(
+    opt.grad_clip if opt.grad_clip is not None else -1.0
+  )
 
   def put(prefix: str, m_arr: np.ndarray, v_arr: np.ndarray):
     state[f'm.{prefix}'] = m_arr.astype(np.float32, copy=False)
@@ -1416,18 +1605,32 @@ def _flatten_optimizer_state_for_save(opt: 'AdamW', params: LMParams) -> dict[st
   for i, _ in enumerate(params.blocks):
     b_m = opt.m['blocks'][i]
     b_v = opt.v['blocks'][i]
-    for k in ['W_Q', 'W_K', 'W_V', 'W_O', 'gamma1', 'beta1', 'W1', 'W2', 'gamma2', 'beta2']:
+    for k in [
+      'W_Q',
+      'W_K',
+      'W_V',
+      'W_O',
+      'gamma1',
+      'beta1',
+      'W1',
+      'W2',
+      'gamma2',
+      'beta2',
+    ]:
       put(f'blocks.{i}.{k}', b_m[k], b_v[k])
   return state
 
 
-def _load_optimizer_state_into(opt: 'AdamW', params: LMParams, npz_state: dict[str, np.ndarray]):
+def _load_optimizer_state_into(
+  opt: 'AdamW', params: LMParams, npz_state: dict[str, np.ndarray]
+):
   # Restore scalar hyperparameters and t
   if 't' in npz_state:
     try:
       opt.t = int(np.array(npz_state['t']).astype(np.int64))
     except Exception:
       pass
+
   # m/v tensors
   def get(prefix: str) -> tuple[np.ndarray, np.ndarray] | None:
     m_key, v_key = f'm.{prefix}', f'v.{prefix}'
@@ -1454,7 +1657,18 @@ def _load_optimizer_state_into(opt: 'AdamW', params: LMParams, npz_state: dict[s
   for i, _ in enumerate(params.blocks):
     b_m = opt.m['blocks'][i]
     b_v = opt.v['blocks'][i]
-    for k in ['W_Q', 'W_K', 'W_V', 'W_O', 'gamma1', 'beta1', 'W1', 'W2', 'gamma2', 'beta2']:
+    for k in [
+      'W_Q',
+      'W_K',
+      'W_V',
+      'W_O',
+      'gamma1',
+      'beta1',
+      'W1',
+      'W2',
+      'gamma2',
+      'beta2',
+    ]:
       load_arr(b_m[k], b_v[k], f'blocks.{i}.{k}')
 
 
@@ -1503,7 +1717,9 @@ def _maybe_load_latest_checkpoint(root: pathlib.Path):
       val_points = [(int(s), float(v)) for s, v in meta.get('val_points', [])]
       # optional accuracy history
       train_accuracies = [float(x) for x in meta.get('train_accuracies', [])]
-      val_acc_points = [(int(s), float(v)) for s, v in meta.get('val_acc_points', [])]
+      val_acc_points = [
+        (int(s), float(v)) for s, v in meta.get('val_acc_points', [])
+      ]
     except Exception:
       pass
 
@@ -1514,7 +1730,15 @@ def _maybe_load_latest_checkpoint(root: pathlib.Path):
     with np.load(opt_path, allow_pickle=False) as z:
       opt_state = {k: z[k] for k in z.files}
 
-  return last_step, params, train_losses, val_points, opt_state, train_accuracies, val_acc_points
+  return (
+    last_step,
+    params,
+    train_losses,
+    val_points,
+    opt_state,
+    train_accuracies,
+    val_acc_points,
+  )
 
 
 def _unflatten_params(flat: dict[str, np.ndarray]) -> LMParams:
@@ -1540,8 +1764,10 @@ def _unflatten_params(flat: dict[str, np.ndarray]) -> LMParams:
   blocks: list[BlockParams] = []
   for i in sorted(blk_indices):
     prefix = f'blocks.{i}.'
+
     def g(name: str) -> np.ndarray:
       return flat[prefix + name].astype(np.float32, copy=False)
+
     blk = BlockParams(
       W_Q=g('W_Q'),
       W_K=g('W_K'),
@@ -1556,7 +1782,14 @@ def _unflatten_params(flat: dict[str, np.ndarray]) -> LMParams:
     )
     blocks.append(blk)
 
-  return LMParams(W_E=W_E, W_pos=W_pos, blocks=blocks, gamma_f=gamma_f, beta_f=beta_f, W_LM=W_LM)
+  return LMParams(
+    W_E=W_E,
+    W_pos=W_pos,
+    blocks=blocks,
+    gamma_f=gamma_f,
+    beta_f=beta_f,
+    W_LM=W_LM,
+  )
 
 
 def _load_arch_config(root: pathlib.Path, step: int) -> dict | None:
@@ -1573,9 +1806,22 @@ def _load_arch_config(root: pathlib.Path, step: int) -> dict | None:
 
 def main():
   p = argparse.ArgumentParser()
-  p.add_argument('--name', type=str, default='hinterland-np', help='Model name; checkpoints saved under checkpoints/<name>/')
-  p.add_argument('--print_params_only', action='store_true', help='Initialize model, print parameter count and exit')
-  p.add_argument('--print_params_tree', action='store_true', help='Print a tree view of parameter counts per block and exit')
+  p.add_argument(
+    '--name',
+    type=str,
+    default='hinterland-np',
+    help='Model name; checkpoints saved under checkpoints/<name>/',
+  )
+  p.add_argument(
+    '--print_params_only',
+    action='store_true',
+    help='Initialize model, print parameter count and exit',
+  )
+  p.add_argument(
+    '--print_params_tree',
+    action='store_true',
+    help='Print a tree view of parameter counts per block and exit',
+  )
   # model configuration
   p.add_argument('--d_model', type=int, default=128)
   p.add_argument('--n_heads', type=int, default=4)
@@ -1600,9 +1846,15 @@ def main():
   p.add_argument('--target_loss', type=float, default=None)
   # tokenization
   p.add_argument('--batch', type=int, default=16)
-  p.add_argument('--tokenizer', type=str, default='Qwen/Qwen3-Next-80B-A3B-Instruct')
-  p.add_argument('--stride', type=int, default=0, help='sliding window stride (0 => seq_len)')
-  p.add_argument('--prefetch', type=int, default=4, help='number of prefetched batches')
+  p.add_argument(
+    '--tokenizer', type=str, default='Qwen/Qwen3-Next-80B-A3B-Instruct'
+  )
+  p.add_argument(
+    '--stride', type=int, default=0, help='sliding window stride (0 => seq_len)'
+  )
+  p.add_argument(
+    '--prefetch', type=int, default=4, help='number of prefetched batches'
+  )
   args = p.parse_args()
 
   cfg = LMConfig(
@@ -1637,7 +1889,10 @@ def main():
     params = init_lm(cfg, tokenizer_vocab_size=len(tokenizer))
     n_params = count_parameters(params)
     n_bytes = parameters_nbytes(params)
-    print(f"[model] n_params {n_params:,} ({n_params/1e6:.2f}M) | params_mem ~ {n_bytes/1e6:.2f} MB | {_timestamp()}", flush=True)
+    print(
+      f'[model] n_params {n_params:,} ({n_params / 1e6:.2f}M) | params_mem ~ {n_bytes / 1e6:.2f} MB | {_timestamp()}',
+      flush=True,
+    )
     return
   if args.print_params_tree:
     tokenizer = load_tokenizer(cfg.tokenizer)
@@ -1647,7 +1902,10 @@ def main():
     # Also print totals line for quick scan
     n_params = count_parameters(params)
     n_bytes = parameters_nbytes(params)
-    print(f"\n[summary] n_params {n_params:,} ({n_params/1e6:.2f}M) | params_mem ~ {n_bytes/1e6:.2f} MB | {_timestamp()}", flush=True)
+    print(
+      f'\n[summary] n_params {n_params:,} ({n_params / 1e6:.2f}M) | params_mem ~ {n_bytes / 1e6:.2f} MB | {_timestamp()}',
+      flush=True,
+    )
     return
   train(cfg)
 

@@ -6,7 +6,7 @@ tags:
   - vllm
 description: and documentation of learning procedure.
 date: "2025-09-13"
-modified: 2025-09-14 21:43:11 GMT-04:00
+modified: 2025-09-15 11:24:31 GMT-04:00
 noindex: true
 title: assignment three reports.
 ---
@@ -51,6 +51,34 @@ title: assignment three reports.
 ![[thoughts/images/plots.webp]]
 
 ---
+
+## setup
+
+> [!info]
+>
+> Environment:
+>
+> - Python 3.11
+> - NumPy 2.3
+> - PyTorch 2.8.0
+> - HuggingFace `datasets/transformers` for data and tokenization.
+> - FFN activation is GELU (tanh approximation).
+
+- Quick checks
+  - Run tests: `pytest -q` (expects 10 tests passing)
+  - Smoke train (synthetic data): `python -m minigpt.np.smoke`
+    - Example: `first: 5.5629, last: 2.3235` on CPU (20 steps)
+- Training
+  - Streaming TinyStories, memmapped tokens, async prefetch
+  - `./run_train.sh [--steps 1000 --name run1 ...]`
+  - See [[thoughts/tsfm/lecture-3-exercise/reports#data processing|data processing]] for pipeline details
+- Inference
+  - `./run_inference.sh` or `python -m minigpt.np.inference --prompt "..." --max_new_tokens 32`
+- Loss plots
+  - `./run_plot.sh [CKPT_DIR] [--width 120 --height 20]`
+- Performance tips
+  - `export OMP_NUM_THREADS=<cores>; export MKL_NUM_THREADS=<cores>`
+  - Prefer larger batch/accumulation for bigger GEMMs
 
 ## profiling
 
@@ -133,3 +161,18 @@ _(optional, but omitted for brevity)_
 ### [b88041b7](https://github.com/aarnphm/aarnphm.github.io/commit/b88041b7d6b1a493dcc1a3edd61ab456594f1782)
 
 - initial implementation of the modular repository, with cleaning up from scaffolding.
+
+### Activation: switch FFN to GELU
+
+> [!note]
+> We replaced ReLU with GELU in the feed‑forward network for better Transformer performance and smoother gradients.
+
+- Change: swap ReLU → GELU in `src/minigpt/np/modular.py` FFN forward/backward and Torch equivalents.
+  - Numpy: `ffn` now uses `gelu(z)`; `ffn_bwd` uses analytic derivative of the tanh‑approx GELU.
+  - Torch: `torch_ffn_bwd` and `torch_block_bwd` use `F.gelu(..., approximate='tanh')`.
+- GELU formula (tanh approx):
+  - $\mathrm{gelu}(x) = \tfrac{1}{2} x \left(1 + \tanh\!\big(\sqrt{2/\pi}\,(x + 0.044715\,x^3)\big)\right)$
+- Rationale:
+  - Standard for GPT‑like models; yields better training stability vs ReLU.
+- Validation:
+  - Unit tests comparing NumPy and PyTorch grads all pass locally (10/10).

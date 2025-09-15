@@ -18,7 +18,9 @@ def _read_json(p: pathlib.Path) -> dict:
     return json.load(f)
 
 
-def _find_latest_meta(ckpt_dir: pathlib.Path) -> tuple[pathlib.Path, dict, dict | None]:
+def _find_latest_meta(
+  ckpt_dir: pathlib.Path,
+) -> tuple[pathlib.Path, dict, dict | None]:
   candidates = list(ckpt_dir.rglob('steps_*/meta.json'))
   if not candidates:
     raise FileNotFoundError(f'no meta.json found under {ckpt_dir}')
@@ -44,7 +46,9 @@ def _find_latest_meta(ckpt_dir: pathlib.Path) -> tuple[pathlib.Path, dict, dict 
   return best_path, best_meta, cfg
 
 
-def _build_series(meta: dict, cfg: dict | None) -> tuple[Series, Series | None, dict]:
+def _build_series(
+  meta: dict, cfg: dict | None
+) -> tuple[Series, Series | None, dict]:
   name = str(meta.get('name', 'run'))
   step = int(meta.get('step', 0))
 
@@ -56,7 +60,11 @@ def _build_series(meta: dict, cfg: dict | None) -> tuple[Series, Series | None, 
   log_every = int((cfg or {}).get('log_every', 1))
   # Prefer explicit step points if present; otherwise assume 1..N (per-step logging)
   train_points = meta.get('train_points')
-  if isinstance(train_points, list) and train_points and all(isinstance(p, (int, float)) for p in train_points):
+  if (
+    isinstance(train_points, list)
+    and train_points
+    and all(isinstance(p, (int, float)) for p in train_points)
+  ):
     xs_train = [float(p) for p in train_points]
   else:
     xs_train = [float(i + 1) for i in range(len(train_losses))]
@@ -74,7 +82,9 @@ def _build_series(meta: dict, cfg: dict | None) -> tuple[Series, Series | None, 
     val_losses = meta.get('val_losses') or meta.get('validation_losses')
     if isinstance(val_losses, list) and val_losses:
       eval_every = int((cfg or {}).get('eval_every', 1))
-      xs_val = [float((i + 1) * max(1, eval_every)) for i in range(len(val_losses))]
+      xs_val = [
+        float((i + 1) * max(1, eval_every)) for i in range(len(val_losses))
+      ]
       ys_val = [float(x) for x in val_losses]
       val_series = Series('val', xs_val, ys_val, 'o')
 
@@ -87,13 +97,19 @@ def _build_series(meta: dict, cfg: dict | None) -> tuple[Series, Series | None, 
   return train, val_series, info
 
 
-def _build_accuracy_series(meta: dict, cfg: dict | None) -> tuple[Series | None, Series | None]:
+def _build_accuracy_series(
+  meta: dict, cfg: dict | None
+) -> tuple[Series | None, Series | None]:
   # train accuracies: list[float]
   train_accs = meta.get('train_accuracies')
   train_series: Series | None = None
   if isinstance(train_accs, list) and train_accs:
     train_points = meta.get('train_points')
-    if isinstance(train_points, list) and train_points and all(isinstance(p, (int, float)) for p in train_points):
+    if (
+      isinstance(train_points, list)
+      and train_points
+      and all(isinstance(p, (int, float)) for p in train_points)
+    ):
       xs_train = [float(p) for p in train_points]
     else:
       xs_train = [float(i + 1) for i in range(len(train_accs))]
@@ -132,7 +148,9 @@ def _minmax(vals: Iterable[float]) -> tuple[float, float]:
   return float(mn), float(mx)
 
 
-def _render_ascii(series_list: list[Series], width: int = 80, height: int = 16) -> str:
+def _render_ascii(
+  series_list: list[Series], width: int = 80, height: int = 16
+) -> str:
   # Domains
   x_min = min(min(s.xs) for s in series_list)
   x_max = max(max(s.xs) for s in series_list)
@@ -204,14 +222,16 @@ def _render_ascii(series_list: list[Series], width: int = 80, height: int = 16) 
       # map row back to y for label
       frac = 1.0 - (i / max(1, (height - 1)))
       y_val = y_min + frac * (y_max - y_min)
-      label = f"{y_val:8.3f}"
+      label = f'{y_val:8.3f}'
     else:
       label = ' ' * 8
     lines.append(label + ' | ' + ''.join(row))
 
   # x-axis label line
   x_axis = ' ' * 8 + ' + ' + '-' * (width - 2)
-  x_ticks = f"{x_min:.0f}".ljust(width // 2 - 2) + f"{x_max:.0f}".rjust(width // 2)
+  x_ticks = f'{x_min:.0f}'.ljust(width // 2 - 2) + f'{x_max:.0f}'.rjust(
+    width // 2
+  )
   lines.append(x_axis)
   lines.append(' ' * 11 + x_ticks)
   return '\n'.join(lines)
@@ -219,7 +239,12 @@ def _render_ascii(series_list: list[Series], width: int = 80, height: int = 16) 
 
 def main(argv: list[str] | None = None) -> int:
   ap = argparse.ArgumentParser(description='ASCII train/val loss plotter')
-  ap.add_argument('--ckpt-dir', type=pathlib.Path, default=pathlib.Path('checkpoints'), help='checkpoints root')
+  ap.add_argument(
+    '--ckpt-dir',
+    type=pathlib.Path,
+    default=pathlib.Path('checkpoints'),
+    help='checkpoints root',
+  )
   ap.add_argument('--width', type=int, default=80)
   ap.add_argument('--height', type=int, default=16)
   ns = ap.parse_args(argv)
@@ -232,11 +257,13 @@ def main(argv: list[str] | None = None) -> int:
   if val is not None:
     series_loss.append(val)
   header_loss = (
-    f"run: {info['name']}  step: {info['step']}\n"
-    f"log_every: {info['log_every']}  eval_every: {info['eval_every']}\n"
+    f'run: {info["name"]}  step: {info["step"]}\n'
+    f'log_every: {info["log_every"]}  eval_every: {info["eval_every"]}\n'
     f"loss: train='.'  val='o'  overlap='#'\n"
   )
-  body_loss = _render_ascii(series_loss, width=max(20, ns.width), height=max(8, ns.height))
+  body_loss = _render_ascii(
+    series_loss, width=max(20, ns.width), height=max(8, ns.height)
+  )
 
   # Accuracy panel (if available)
   acc_train, acc_val = _build_accuracy_series(meta, cfg)
@@ -248,10 +275,12 @@ def main(argv: list[str] | None = None) -> int:
     if acc_val is not None:
       series_acc.append(acc_val)
     header_acc = (
-      "\n\n"  # spacer between panels
+      '\n\n'  # spacer between panels
       f"accuracy: train='.'  val='o'  overlap='#'\n"
     )
-    body_acc = _render_ascii(series_acc, width=max(20, ns.width), height=max(8, ns.height))
+    body_acc = _render_ascii(
+      series_acc, width=max(20, ns.width), height=max(8, ns.height)
+    )
     output = output + header_acc + body_acc
 
   print(output)

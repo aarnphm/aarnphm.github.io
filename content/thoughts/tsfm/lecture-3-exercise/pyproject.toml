@@ -24,3 +24,16 @@ dev = ["pytest>=8.4.2"]
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.ruff]
+extend-include = ["*.ipynb"]
+preview = true
+line-length = 80
+indent-width = 2
+
+[tool.ruff.format]
+preview = true
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+docstring-code-format = true

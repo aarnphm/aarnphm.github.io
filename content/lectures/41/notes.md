@@ -4,13 +4,13 @@ tags:
   - seed
   - workshop
 description: 2/n some more notes on EAGLE and MTP
-transclude:
-  title: false
+date: "2025-09-10"
 socials:
   youtube: https://youtu.be/sSdoETRQQHY
-modified: 2025-09-15 05:29:17 GMT-04:00
+modified: 2025-09-15 11:02:34 GMT-04:00
 title: supplement to 0.41
-date: "2025-09-10"
+transclude:
+  title: false
 ---
 
 megathread: [[thoughts/Speculative decoding]]
@@ -504,7 +504,7 @@ For random‑design least squares, the **minimax excess risk** is $\Theta(d/n)$;
 
 Hence the penalty on $\Delta_{\perp}$ induces the $\Theta((d-r)/n)$ overhead. (See also [minimax risk for linear least squares](https://projecteuclid.org/journals/annals-of-statistics/volume-50/issue-4/Exact-minimax-risk-for-linear-least-squares-and-the-lower/10.1214/22-AOS2181.full), [lecture notes](https://www.stat.berkeley.edu/~ryantibs/statlearn-s23/lectures/review.pdf), [distribution-free robust linear regression](https://jaouadmourtada.github.io/files/slides/robust-linear-slides.pdf)) $\boxed{}$
 
-```psql
+```text
 ┌──────────────────────────────────────────────────────┐
 │ Lemma A: Nullspace Penalty – Feature Regression      │
 │------------------------------------------------------│
@@ -555,7 +555,7 @@ $$
 
 i.e., $= \mathbb{E}[H(Y\mid Z)] + \mathbb{E}[\mathrm{KL}(\cdot)]$, minimized at $q=p$. Hence the optimum equals conditional entropy. Monotonicity of conditional entropy gives $H(Y\mid Z_H)\ge H(Y\mid Z_H,Z_M,Z_L)$, with a strict drop whenever the added features convey conditional mutual information about $Y$. (identity) $\boxed{}$
 
-```psql
+```text
 ┌──────────────────────────────────────────────────────┐
 │ Lemma B: H–M–L Fusion Lowers Bayes Cross-Entropy     │
 │------------------------------------------------------│
@@ -599,7 +599,7 @@ $$
 
 Formal analyses of speculative decoding express expected rejections/acceptance directly in terms of TV; see Yin et al. (Theorem 1), which ties unbiasedness and efficiency to $\mathrm{TV}(p,q)$. Pinsker then gives the KL→TV bound. $\boxed{}$
 
-```psql
+```text
 ┌──────────────────────────────────────────────────────┐
 │ Lemma C: Acceptance = 1 – TV; CE ↓ ⇒ Acceptance ↑    │
 │------------------------------------------------------│
@@ -625,7 +625,7 @@ Formal analyses of speculative decoding express expected rejections/acceptance d
 
 See also @bengio2015scheduledsamplingsequenceprediction
 
-```psql
+```text
 ┌──────────────────────────────────────────────────────┐
 │ Lemma D: Training-Time Test (TTT) Controls Drift     │
 │------------------------------------------------------│
@@ -756,11 +756,13 @@ vllm serve deepseek-ai/DeepSeek-V3 \
 **EAGLE‑3 draft against a base LLaMA:**
 
 ```bash
-vllm serve meta-llama/Llama-3.3-70B-Instruct \
-  --tensor-parallel-size 4 \
-  --speculative-config '{"model":"yuhuili/EAGLE3-LLaMA3.3-Instruct-70B",
-                         "method":"eagle3",
-                         "num_speculative_tokens":3}'
+vllm serve meta-llama/Llama-3.3-70B-Instruct -tp 2 --speculative-config "$(yq - <<'EOF'
+method: eagle3
+model: yuhuili/EAGLE3-LLaMA3.3-Instruct-70B
+num_speculative_tokens: 5
+draft_tensor_parallel_size: 2
+EOF
+)"
 ```
 
 ### notes

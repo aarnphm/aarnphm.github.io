@@ -34,8 +34,12 @@ def compare_gradients(grad_numpy, grad_torch, rtol=1e-5, atol=1e-6, name=''):
   """Compare numpy and torch gradients"""
   print(f'\n{name} Gradient Comparison:')
   print(f'  Numpy shape: {grad_numpy.shape}, Torch shape: {grad_torch.shape}')
-  print(f'  Max absolute difference: {np.max(np.abs(grad_numpy - grad_torch)):.2e}')
-  print(f'  Relative error: {np.max(np.abs((grad_numpy - grad_torch) / (np.abs(grad_torch) + 1e-8))):.2e}')
+  print(
+    f'  Max absolute difference: {np.max(np.abs(grad_numpy - grad_torch)):.2e}'
+  )
+  print(
+    f'  Relative error: {np.max(np.abs((grad_numpy - grad_torch) / (np.abs(grad_torch) + 1e-8))):.2e}'
+  )
 
   if np.allclose(grad_numpy, grad_torch, rtol=rtol, atol=atol):
     print(f'  ✅ {name} gradients match!')
@@ -72,7 +76,9 @@ def test_input_embedding_bwd():
 
   # Input indices (integer tokens)
   x_indices = np.random.randint(0, vocab_size, (batch_size, seq_len))
-  x_onehot = np.eye(vocab_size)[x_indices]  # Shape: (batch_size, seq_len, vocab_size)
+  x_onehot = np.eye(vocab_size)[
+    x_indices
+  ]  # Shape: (batch_size, seq_len, vocab_size)
 
   W_E_np = np.random.randn(vocab_size, d_model).astype(np.float32) * 0.1
   dOut_np = np.random.randn(batch_size, seq_len, d_model).astype(np.float32)
@@ -117,10 +123,21 @@ def test_mha_bwd(causal):
   # Create test data with smaller dimensions for debugging
   batch_size, num_heads, seq_len, head_dim = 1, 2, 4, 8
 
-  q_np = np.random.randn(batch_size, num_heads, seq_len, head_dim).astype(np.float32) * 0.1
-  k_np = np.random.randn(batch_size, num_heads, seq_len, head_dim).astype(np.float32) * 0.1
-  v_np = np.random.randn(batch_size, num_heads, seq_len, head_dim).astype(np.float32) * 0.1
-  dOut_np = np.random.randn(batch_size, num_heads, seq_len, head_dim).astype(np.float32)
+  q_np = (
+    np.random.randn(batch_size, num_heads, seq_len, head_dim).astype(np.float32)
+    * 0.1
+  )
+  k_np = (
+    np.random.randn(batch_size, num_heads, seq_len, head_dim).astype(np.float32)
+    * 0.1
+  )
+  v_np = (
+    np.random.randn(batch_size, num_heads, seq_len, head_dim).astype(np.float32)
+    * 0.1
+  )
+  dOut_np = np.random.randn(batch_size, num_heads, seq_len, head_dim).astype(
+    np.float32
+  )
 
   # NumPy implementation
   dQ_numpy, dK_numpy, dV_numpy = mha_bwd(q_np, k_np, v_np, dOut_np)
@@ -157,10 +174,14 @@ def test_qkv_proj_bwd():
   dOut_flat = np.random.randn(*q_flat.shape).astype(np.float32)
 
   # NumPy backward pass
-  dX_numpy, dW_Q_numpy, dW_K_numpy, dW_V_numpy = qkv_proj_bwd(x_flat, W_Q_np, W_K_np, W_V_np, dOut_flat)
+  dX_numpy, dW_Q_numpy, dW_K_numpy, dW_V_numpy = qkv_proj_bwd(
+    x_flat, W_Q_np, W_K_np, W_V_np, dOut_flat
+  )
 
   # PyTorch implementation
-  dX_torch, dW_Q_torch, dW_K_torch, dW_V_torch = torch_qkv_proj_bwd(x_np, W_Q_np, W_K_np, W_V_np, dOut_flat)
+  dX_torch, dW_Q_torch, dW_K_torch, dW_V_torch = torch_qkv_proj_bwd(
+    x_np, W_Q_np, W_K_np, W_V_np, dOut_flat
+  )
 
   # Compare gradients
   match_x = compare_gradients(dX_numpy, dX_torch, name='dX')
@@ -229,14 +250,50 @@ def test_block_bwd(causal):
   beta = (np.random.randn(d_model) * 0.1).astype(np.float32)
   dOut = np.random.randn(B, S, d_model).astype(np.float32)
 
-  grads_np = block_bwd(x, W_Q, W_K, W_V, W_O, W_FF_expand, W_FF_contract, gamma, beta, dOut, causal=causal)
+  grads_np = block_bwd(
+    x,
+    W_Q,
+    W_K,
+    W_V,
+    W_O,
+    W_FF_expand,
+    W_FF_contract,
+    gamma,
+    beta,
+    dOut,
+    causal=causal,
+  )
 
   # PyTorch implementation
-  grads_t = torch_block_bwd(x, W_Q, W_K, W_V, W_O, W_FF_expand, W_FF_contract, gamma, beta, dOut, causal=causal)
+  grads_t = torch_block_bwd(
+    x,
+    W_Q,
+    W_K,
+    W_V,
+    W_O,
+    W_FF_expand,
+    W_FF_contract,
+    gamma,
+    beta,
+    dOut,
+    causal=causal,
+  )
 
-  names = ['dX', 'dW_Q', 'dW_K', 'dW_V', 'dW_O', 'dW_FF_expand', 'dW_FF_contract', 'dGamma', 'dBeta']
+  names = [
+    'dX',
+    'dW_Q',
+    'dW_K',
+    'dW_V',
+    'dW_O',
+    'dW_FF_expand',
+    'dW_FF_contract',
+    'dGamma',
+    'dBeta',
+  ]
   matches = []
   for name, g_np, g_t in zip(names, grads_np, grads_t):
-    matches.append(compare_gradients(g_np, g_t, name=f'{name} (causal={causal})'))
+    matches.append(
+      compare_gradients(g_np, g_t, name=f'{name} (causal={causal})')
+    )
 
   assert all(matches)
