@@ -61,7 +61,7 @@ let activePreference: ThemePreference = (() => {
 
 let toggleElement: HTMLElement | null = null
 
-const showThemeToast = (preference: ThemePreference, resolved: Theme) => {
+const showThemeToast = (preference: ThemePreference, _resolved: Theme) => {
   const event: CustomEventMap["toast"] = new CustomEvent("toast", {
     detail: {
       message: `current theme: ${preference}`,

@@ -11,6 +11,7 @@ export default (() => {
     <span
       id="light-toggle"
       class={classNames(displayClass, "darkmode")}
+      // @ts-ignore
       type="button"
       role="button"
       tabIndex={0}

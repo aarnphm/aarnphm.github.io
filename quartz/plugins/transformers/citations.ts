@@ -11,8 +11,14 @@ import "@citation-js/plugin-bibtex"
 import "@citation-js/plugin-doi"
 import fs from "node:fs"
 import path from "node:path"
+import { createHash } from "node:crypto"
+import { QUARTZ } from "../../util/path"
 
 const URL_PATTERN = /https?:\/\/[^\s<>)"]+/g
+
+function normalizeArxivId(id: string): string {
+  return id.replace(/^arxiv:/i, "").replace(/v\d+$/i, "")
+}
 
 interface LinkType {
   type: string
@@ -47,6 +53,151 @@ const LINK_TYPES: LinkType[] = [
     label: "[alignment forum]",
   },
 ]
+
+interface CachedCitationEntry {
+  title: string
+  bibkey: string
+}
+
+interface CitationsCachePayload {
+  hash: string
+  documents: Record<string, string[]>
+  metadata: Record<string, CachedCitationEntry>
+}
+
+interface CacheState {
+  documents: Map<string, string[]>
+  metadata: Map<string, CachedCitationEntry>
+  hash: string
+  dirty: boolean
+}
+
+const repoRoot = process.env.PWD ?? process.cwd()
+const citationsCacheDir = path.join(repoRoot, QUARTZ, ".quartz-cache")
+const citationsCacheFile = path.join(citationsCacheDir, "citations.json")
+
+function ensureCacheDir() {
+  if (!fs.existsSync(citationsCacheDir)) {
+    fs.mkdirSync(citationsCacheDir, { recursive: true })
+  }
+}
+
+function sanitizeLinks(links: string[] | undefined): string[] {
+  if (!Array.isArray(links)) return []
+  return Array.from(new Set(links.filter((link) => typeof link === "string"))).sort((a, b) =>
+    a.localeCompare(b),
+  )
+}
+
+function loadCachePayload(): CitationsCachePayload {
+  ensureCacheDir()
+  if (!fs.existsSync(citationsCacheFile)) {
+    return { hash: "", documents: {}, metadata: {} }
+  }
+
+  try {
+    const raw = fs.readFileSync(citationsCacheFile, "utf8")
+    const parsed = JSON.parse(raw) as Partial<CitationsCachePayload>
+    return {
+      hash: typeof parsed.hash === "string" ? parsed.hash : "",
+      documents: parsed.documents ?? {},
+      metadata: parsed.metadata ?? {},
+    }
+  } catch {
+    return { hash: "", documents: {}, metadata: {} }
+  }
+}
+
+function computeDocumentsHash(documents: Map<string, string[]>): string {
+  const ordered = Array.from(documents.entries())
+    .map(([doc, links]) => [doc, sanitizeLinks(links)] as const)
+    .sort(([a], [b]) => a.localeCompare(b))
+  return createHash("sha256").update(JSON.stringify(ordered)).digest("hex")
+}
+
+const cacheState: CacheState = (() => {
+  const payload = loadCachePayload()
+
+  const documents = new Map<string, string[]>()
+  for (const [doc, links] of Object.entries(payload.documents)) {
+    documents.set(doc, sanitizeLinks(links))
+  }
+
+  const metadata = new Map<string, CachedCitationEntry>()
+  for (const [id, value] of Object.entries(payload.metadata)) {
+    if (value && typeof value.title === "string" && typeof value.bibkey === "string") {
+      metadata.set(normalizeArxivId(id), { title: value.title, bibkey: value.bibkey })
+    }
+  }
+
+  const initialHash =
+    payload.hash && typeof payload.hash === "string" && payload.hash.length > 0
+      ? payload.hash
+      : computeDocumentsHash(documents)
+
+  return {
+    documents,
+    metadata,
+    hash: initialHash,
+    dirty: false,
+  }
+})()
+
+const memoryCache = new Map<string, CachedCitationEntry>()
+
+function persistCacheState() {
+  if (!cacheState.dirty) return
+
+  ensureCacheDir()
+  const documentsEntries = Array.from(cacheState.documents.entries())
+    .map(([doc, links]) => [doc, sanitizeLinks(links)] as const)
+    .sort(([a], [b]) => a.localeCompare(b))
+  const metadataEntries = Array.from(cacheState.metadata.entries()).sort(([a], [b]) =>
+    a.localeCompare(b),
+  )
+
+  const payload: CitationsCachePayload = {
+    hash: cacheState.hash,
+    documents: Object.fromEntries(documentsEntries),
+    metadata: Object.fromEntries(metadataEntries),
+  }
+
+  fs.writeFileSync(citationsCacheFile, JSON.stringify(payload, null, 2), "utf8")
+  cacheState.dirty = false
+}
+
+function pruneMetadata() {
+  const activeIds = new Set<string>()
+  for (const links of cacheState.documents.values()) {
+    for (const link of links) {
+      const id = extractArxivId(link)
+      if (id) {
+        activeIds.add(normalizeArxivId(id))
+      }
+    }
+  }
+
+  let removed = false
+  for (const id of Array.from(cacheState.metadata.keys())) {
+    if (!activeIds.has(id)) {
+      cacheState.metadata.delete(id)
+      memoryCache.delete(id)
+      removed = true
+    }
+  }
+
+  if (removed) {
+    cacheState.dirty = true
+  }
+}
+
+function arraysEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false
+  }
+  return true
+}
 
 function createTextNode(value: string): HastText {
   return { type: "text", value }
@@ -144,16 +295,9 @@ interface ArxivMeta {
   url: string
 }
 
-// In-memory cache so each id is processed at most once per build.
-const cache = new Map<string, { title: string; bibkey: string }>()
-
 // Prevent concurrent writes for the same arXiv id which can lead to duplicated
 // entries. Each arXiv id will map to a single in-flight promise.
 const bibEntryTasks = new Map<string, Promise<{ key: string; entry: string }>>()
-
-function normalizeArxivId(id: string): string {
-  return id.replace(/^arxiv:/i, "").replace(/v\d+$/i, "")
-}
 
 async function fetchArxivMetadata(id: string): Promise<ArxivMeta> {
   const ARXIV_API_BASE = "http://export.arxiv.org/api/query"
@@ -385,36 +529,122 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
   return {
     name: "Citations",
     markdownPlugins: () => [
-      () => async (tree: Root) => {
-        const tasks: Promise<void>[] = []
+      () => async (tree: Root, file: any) => {
+        const arxivNodes: { node: Link; index: number; parent: any; id: string }[] = []
 
         visit(tree, "link", (node: Link, index: number | undefined, parent: any) => {
           if (index === undefined || !parent) return
           const arxivId = extractArxivId(node.url)
           if (!arxivId) return
 
-          const cacheKey = `arxiv:${arxivId}`
-          tasks.push(
-            (async () => {
-              let cached = cache.get(cacheKey)
-              if (!cached) {
-                const meta = await fetchArxivMetadata(arxivId)
-                const { key: bibkey } = await ensureBibEntry(bibliography, arxivId)
-                cached = { title: meta.title, bibkey }
-                cache.set(arxivId, cached)
-              }
-
-              node.children = [{ type: "text", value: cached.title } as Text]
-
-              parent.children.splice(index, 1, node, {
-                type: "text",
-                value: ` [@${cached.bibkey}] `,
-              } as Text)
-            })(),
-          )
+          arxivNodes.push({ node, index, parent, id: normalizeArxivId(arxivId) })
         })
 
-        if (tasks.length) await Promise.all(tasks)
+        const fileKey: string | undefined =
+          (file?.data?.filePath as string | undefined) ?? (file?.path as string | undefined)
+
+        const docIds = Array.from(new Set(arxivNodes.map((entry) => entry.id))).sort()
+        const canonicalLinks = docIds.map((id) => `https://arxiv.org/abs/${id}`)
+        const previousLinks = fileKey ? cacheState.documents.get(fileKey) : undefined
+        const previousLinksSanitized = previousLinks ? sanitizeLinks(previousLinks) : []
+
+        let docChanged = false
+        if (fileKey) {
+          if (canonicalLinks.length === 0) {
+            if (cacheState.documents.has(fileKey)) {
+              cacheState.documents.delete(fileKey)
+              docChanged = true
+            }
+          } else {
+            docChanged = !previousLinks || !arraysEqual(previousLinksSanitized, canonicalLinks)
+            cacheState.documents.set(fileKey, canonicalLinks)
+          }
+        } else if (canonicalLinks.length > 0) {
+          docChanged = true
+        }
+
+        if (docChanged) {
+          cacheState.dirty = true
+        }
+
+        const nextHash = computeDocumentsHash(cacheState.documents)
+        if (nextHash !== cacheState.hash) {
+          cacheState.hash = nextHash
+          cacheState.dirty = true
+        }
+
+        const previousDocIds = new Set<string>(
+          previousLinksSanitized
+            .map((link) => extractArxivId(link))
+            .filter((id): id is string => Boolean(id))
+            .map((id) => normalizeArxivId(id)),
+        )
+
+        const idsToFetch = new Set<string>()
+        if (docChanged) {
+          for (const id of docIds) {
+            if (!previousDocIds.has(id) && !cacheState.metadata.has(id)) {
+              idsToFetch.add(id)
+            }
+          }
+        }
+        for (const id of docIds) {
+          if (!cacheState.metadata.has(id)) {
+            idsToFetch.add(id)
+          }
+        }
+
+        if (docChanged) {
+          pruneMetadata()
+        }
+
+        if (arxivNodes.length === 0) {
+          if (cacheState.dirty) {
+            persistCacheState()
+          }
+          return
+        }
+
+        const refetched = new Set<string>()
+        for (const { node, index, parent, id } of arxivNodes) {
+          let entry = memoryCache.get(id) ?? cacheState.metadata.get(id)
+
+          let needsFetch = idsToFetch.has(id) && !refetched.has(id)
+          if (!entry) {
+            needsFetch = true
+          }
+
+          let meta: ArxivMeta | undefined
+          if (needsFetch) {
+            refetched.add(id)
+            meta = await fetchArxivMetadata(id)
+          }
+
+          const { key: bibkey } = await ensureBibEntry(bibliography, id)
+
+          if (!entry || needsFetch) {
+            const title = meta ? meta.title : (entry?.title ?? `arXiv:${id}`)
+            entry = { title, bibkey }
+            memoryCache.set(id, entry)
+            cacheState.metadata.set(id, entry)
+            cacheState.dirty = true
+          } else if (entry.bibkey !== bibkey) {
+            entry = { ...entry, bibkey }
+            memoryCache.set(id, entry)
+            cacheState.metadata.set(id, entry)
+            cacheState.dirty = true
+          }
+
+          node.children = [{ type: "text", value: entry.title } as Text]
+          parent.children.splice(index, 1, node, {
+            type: "text",
+            value: ` [@${entry.bibkey}] `,
+          } as Text)
+        }
+
+        if (cacheState.dirty) {
+          persistCacheState()
+        }
       },
     ],
     htmlPlugins: () => [

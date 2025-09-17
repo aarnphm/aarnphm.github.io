@@ -889,7 +889,7 @@ const ElementComponent = (() => {
   const RecentNotes = NotesComponent({
     header: "récentes",
     slug: "thoughts/" as SimpleSlug,
-    numLimits: 6,
+    numLimits: 9,
   })
   const RecentPosts = NotesComponent({
     header: "écriture",

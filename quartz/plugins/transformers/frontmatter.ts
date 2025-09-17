@@ -70,13 +70,14 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
           file.data.aliases = getAliasSlugs(aliases)
           allSlugs.push(...file.data.aliases)
         }
+        const permalinks = coerceToArray(coalesceAliases(data, ["permalink", "permalinks"]))
 
-        if (data.permalink != null && data.permalink.toString() !== "") {
-          data.permalink = data.permalink.toString() as FullSlug
+        if (permalinks) {
+          data.permalinks = permalinks as FullSlug[]
           const aliases = file.data.aliases ?? []
-          aliases.push(data.permalink)
+          aliases.push(...data.permalinks)
           file.data.aliases = aliases
-          allSlugs.push(data.permalink)
+          allSlugs.push(data.permalinks)
         }
 
         const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses"]))

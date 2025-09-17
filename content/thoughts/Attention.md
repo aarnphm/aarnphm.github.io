@@ -7,7 +7,7 @@ tags:
 description: and posteriori information retrieval.
 date: "2024-02-07"
 abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
-modified: 2025-09-16 14:15:00 GMT-04:00
+modified: 2025-09-17 05:41:11 GMT-04:00
 title: Attention
 ---
 
@@ -39,9 +39,9 @@ Allows the model to jointly attend to information from different representation 
 
 $$
 \begin{aligned}
-\text{MHA}(Q,K,V) &= \text{concat}(\text{head}_1, \cdots, \text{head}_n) W^O \\
-&\text{where } \space \text{head}_i = \text{A}(QW_i^O, KW_i^O, VW_i^O) \\
-W^O & \in \mathbb{R}^{hd_v \times d_{\text{model}}}
+\text{MHA}(Q,K,V) &= \operatorname{concat}(\text{head}_1, \ldots, \text{head}_h)\, W_O,\\
+\text{head}_i &= \operatorname{softmax}\!\left(\frac{Q W_{Q,i}\,(K W_{K,i})^{\top}}{\sqrt{d_h}}\right)\, V W_{V,i},\\
+& W_O \in \mathbb{R}^{(h d_h) \times d_{\text{model}}},\; W_{Q,i},W_{K,i} \in \mathbb{R}^{d_{\text{model}} \times d_h},\; W_{V,i} \in \mathbb{R}^{d_{\text{model}} \times d_h}.
 \end{aligned}
 $$
 
@@ -58,11 +58,85 @@ The concatenation and final projection $W^O$ then recombine the perspectives int
 > [!motivation]+ why split the model into heads?
 > Each head learns a slightly different relational probe over the same sequence. One head might focus on syntactic structure, another on long-distance coreference. By projecting $Q$, $K$, and $V$ into lower dimensional spaces, we allow those probes to specialise without paying the quadratic cost of a single massive head. Empirically this improves data efficiency because the model can reuse a single context to answer multiple "questions" about it in parallel, rather than re-reading the sequence each time.
 
-> [!question]- tasks to internalise multi-head behaviour
+> [!question]+ tasks to internalise multi-head behaviour (updated)
 >
-> - [ ] Visualise attention heatmaps from several heads on the same prompt; annotate the linguistic or algorithmic pattern each head locks onto.
-> - [ ] Compare perplexity of a single-head transformer to a multi-head variant while keeping parameter count fixed; note how diversification of heads changes inductive biases.
-> - [ ] Derive how residual mixing $W_O$ recombines the per-head outputs and explain why this post-projection is necessary for information sharing between heads.
+> - [ ] Visualise attention heatmaps from several heads on the same prompt; annotate the linguistic or algorithmic pattern each head locks onto [@voita2019analyzingmha].
+> - [ ] Compare perplexity of a single-head transformer to a multi-head variant while keeping parameter count fixed; relate to redundancy/prunability of heads [@michel2019sixteenheads].
+> - [ ] Derive how residual mixing $W_O$ recombines the per-head outputs and why separate softmax normalisers per head change expressivity [@elhage2021mathematical].
+
+> [!example]- Worked toy: two offset heads vs one big head
+> Consider a length-$L$ sequence with two heads: head 1 attends to the next token $(+1)$ and head 2 attends to the previous token $(-1)$. Let $\beta \gg 0$ so each head's softmax is nearly an argmax on its offset.
+>
+> $$
+> S^{(+1)}_{ij} = \beta\,[j=i+1], \quad S^{(-1)}_{ij} = \beta\,[j=i-1], \quad P^{(\pm1)} = \operatorname{softmax}_j S^{(\pm1)}.
+> $$
+>
+> With values $V \in \mathbb{R}^{L\times d_h}$ and output projection blocks $W_O^{(1)}, W_O^{(2)}$, the MHA output is
+>
+> $$
+> Y_{\text{MHA}} = \big(P^{(+1)} V\big) W_O^{(1)} + \big(P^{(-1)} V\big) W_O^{(2)}.
+> $$
+>
+> A single head with scores $S = S^{(+1)} + S^{(-1)}$ yields $P=\operatorname{softmax}(S)$ and output $Y_{\text{SH}} = (PV)\,\tilde W_O$. Because $\operatorname{softmax}(A+B) \neq \operatorname{softmax}(A)+\operatorname{softmax}(B)$ in general, $Y_{\text{SH}}$ cannot match $Y_{\text{MHA}}$ for all inputs even if $\tilde W_O$ is chosen adversarially—one normaliser vs two. This structural independence of normalisers increases expressivity [@cordonnier2019relationshipselfattentionconvolution; @yun2019universaltransformers].
+>
+> ```python
+> import torch, math
+> torch.set_printoptions(precision=3, sci_mode=False)
+> L, d_h = 6, 4
+> beta = 10.0  # high temperature -> near-argmax
+>
+> # Build (+1) and (-1) score matrices
+> S_p1 = torch.full((L,L), -float('inf'))
+> S_m1 = torch.full((L,L), -float('inf'))
+> for i in range(L-1): S_p1[i, i+1] = beta
+> for i in range(1, L):  S_m1[i, i-1] = beta
+>
+> softmax = lambda S: (S - S.max(dim=-1, keepdim=True).values).softmax(dim=-1)
+> P1, P2 = softmax(S_p1), softmax(S_m1)
+>
+> V = torch.randn(L, d_h)
+> WO1, WO2 = torch.randn(d_h, d_h), torch.randn(d_h, d_h)
+>
+> Y_mha = P1@V@WO1 + P2@V@WO2
+>
+> # Single-head surrogate: add scores and use one normaliser
+> P = softmax(S_p1 + S_m1)
+> WOt = torch.randn(d_h, d_h)
+> Y_sh = P@V@WOt
+>
+> print('||Y_mha - Y_sh||_F =', torch.linalg.norm(Y_mha - Y_sh).item())
+> ```
+>
+> On random seeds this norm is typically O(1). No choice of a single post-projection can remove the coupling induced by the single softmax normaliser; two heads give two independent distributions you can recombine downstream. Empirically, heads do specialise and can be pruned selectively [@voita2019analyzingmha; @michel2019sixteenheads].
+
+> [!math]+ Proof sketch: softmax factorisation barrier
+>
+> Let $S_i = QW_{Q,i}(KW_{K,i})^\top/\sqrt{d_h}$ and $P_i = \operatorname{softmax}(S_i)$.
+>
+> If a single-head self-attention with some score matrix $S$ and post-projection $\tilde W_O$ reproduced an $h$-head layer for all $Q,K,V$, then we would need $\operatorname{softmax}(S) V\tilde W_O = \sum_{i=1}^h P_i V W_{V,i} W_O^{(i)}$ for all $V$.
+>
+> This forces $\operatorname{softmax}(S) = \sum_i P_i M_i$ for some fixed matrices $M_i$ independent of inputs.
+>
+> But since softmax is not additive and $P_i$ depend on disjoint parameter sets, there exist inputs making $\sum_i P_i M_i$ violate row-stochasticity or attention symmetry constraints unless $h=1$ or all $S_i$ are affinely dependent.
+>
+> Hence in one layer, multi-head is strictly more expressive due to independent normalisers. See also [@cordonnier2019relationshipselfattentionconvolution; @yun2019universaltransformers].
+
+> [!note]+ Parameter and compute at fixed $d_{\text{model}}$
+>
+> - Params (packed projections): $W_Q,W_K,W_V,W_O \in \mathbb{R}^{d_m\times d_m}$ $\Rightarrow$ about $4d_m^2$ weights, essentially independent of head count $h$ (implementation splits the columns into $h$ groups).
+> - FLOPs (naive): $\Theta(L^2 d_m)$ per layer per sequence; choosing $h$ changes per-head tile sizes and kernel efficiency, not asymptotics.
+> - KV cache: per token per layer stores $K,V$ of size $2d_m$ (in bytes: $2d_m$ times dtype size). Changing $h$ does not change the sum dimension, but affects the layout and can impact IO-bound kernels in practice.
+
+> [!tip]- Minimal PyTorch MHA (for reproducing plots quickly)
+>
+> ```python
+> import torch, torch.nn as nn
+> L, d_model, nhead = 64, 256, 8
+> mha = nn.MultiheadAttention(d_model, nhead, batch_first=True, bias=False)
+> x = torch.randn(1, L, d_model)
+> y, attn = mha(x, x, x, need_weights=True, average_attn_weights=False)
+> # attn shape: [1, nhead, L, L]; visualise per-head heatmaps
+> ```
 
 > [!todo]+ tasks to deepen multi-head understanding
 >

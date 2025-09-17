@@ -78,6 +78,7 @@ export default (() => {
                     href={resolveRelative(slidesSlug, origSlug)}
                     class="internal"
                     data-slug={resolveRelative(slidesSlug, origSlug)}
+                    data-no-popover
                   >
                     text
                   </a>

@@ -284,22 +284,6 @@ export class Toast {
     this.maybeRemoveContainer()
   }
 
-  private forceRemove(entry: ToastEntry) {
-    this.clearEntryHideTimer(entry)
-    if (entry.teardownTimer !== undefined) {
-      window.clearTimeout(entry.teardownTimer)
-      entry.teardownTimer = undefined
-    }
-
-    const index = this.toasts.indexOf(entry)
-    if (index !== -1) {
-      this.toasts.splice(index, 1)
-    }
-
-    entry.element.remove()
-    this.maybeRemoveContainer()
-  }
-
   private clearEntryHideTimer(entry: ToastEntry) {
     if (entry.hideTimer !== undefined) {
       window.clearTimeout(entry.hideTimer)
