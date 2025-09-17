@@ -31,6 +31,7 @@ import RecentNotes from "./RecentNotes"
 import Breadcrumbs from "./Breadcrumbs"
 import Comments from "./Comments"
 import Flex from "./Flex"
+import Grid from "./Grid"
 import SlidesContent from "./SlidesContent"
 
 export {
@@ -68,4 +69,5 @@ export {
   Breadcrumbs,
   Comments,
   SlidesContent,
+  Grid,
 }

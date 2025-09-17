@@ -4,8 +4,8 @@ tags:
   - seed
   - ml
 description: K, V and KVCache
-date: "2025-08-21"
-modified: 2025-08-28 18:41:30 GMT-04:00
+date: "2025-08-28"
+modified: 2025-09-15 21:53:30 GMT-04:00
 noindex: true
 title: 0[dot]3
 ---

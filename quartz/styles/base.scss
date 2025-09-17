@@ -179,6 +179,10 @@ header {
   flex-direction: row;
   align-items: center;
   gap: 0.6rem;
+
+  & > :last-child {
+    margin-left: auto;
+  }
 }
 
 .header-content {
@@ -187,7 +191,7 @@ header {
   column-gap: 0.6rem;
   display: flex;
   position: relative;
-  grid-column: 6/-1;
+  grid-column: 6/-4;
 }
 
 section[class~="header"] {
@@ -619,7 +623,7 @@ ol.overflow {
       --grid-left: 1fr;
     }
     .header-content {
-      grid-column: 3/-1;
+      grid-column: 3/-4;
     }
   }
 }
@@ -631,7 +635,7 @@ ol.overflow {
       var(--grid-end);
   }
   .header-content {
-    grid-column: 3/-1;
+    grid-column: 3/-4;
   }
 }
 @media all and ($mobile) {

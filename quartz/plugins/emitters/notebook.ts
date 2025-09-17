@@ -6,6 +6,7 @@ import { glob } from "../../util/glob"
 import { FilePath, joinSegments, slugifyFilePath } from "../../util/path"
 import { Argv } from "../../util/ctx"
 import { spawn } from "child_process"
+import { availableParallelism } from "node:os"
 import { styleText } from "node:util"
 import * as process from "process"
 
@@ -57,41 +58,108 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
     name: "NotebookViewer",
     async *partialEmit() {},
     async *emit({ argv, cfg }) {
-      if (argv.watch) return []
-
       const fps = await notebookFiles(argv, cfg)
 
-      for (const fp of fps) {
+      if (fps.length === 0) {
+        return
+      }
+
+      const resolveWorkerLimit = () => {
+        if (argv.concurrency && argv.concurrency > 0) {
+          return argv.concurrency
+        }
+
+        try {
+          return availableParallelism()
+        } catch {
+          return 1
+        }
+      }
+
+      const maxWorkers = Math.max(1, Math.min(resolveWorkerLimit(), fps.length))
+
+      type NotebookTaskResult =
+        | { status: "fulfilled"; dest: FilePath; fp: FilePath; id: number }
+        | { status: "rejected"; error: unknown; fp: FilePath; id: number }
+
+      let taskId = 0
+      const inflight = new Map<number, Promise<NotebookTaskResult>>()
+
+      const convertNotebook = async (fp: FilePath): Promise<FilePath> => {
         const src = joinSegments(argv.directory, fp) as FilePath
         const outputName = (slugifyFilePath(fp as FilePath, true) + ".html") as FilePath
         const dest = joinSegments(argv.output, outputName) as FilePath
         const dir = path.dirname(dest) as FilePath
 
-        try {
-          await fs.mkdir(dir, { recursive: true })
+        await fs.mkdir(dir, { recursive: true })
 
-          // Create a simple promise that resolves when the child process exits
-          const result = new Promise<FilePath>((resolve, reject) => {
-            const proc = runConvertCommand(argv, src, outputName, argv.output)
+        await new Promise<void>((resolve, reject) => {
+          const proc = runConvertCommand(argv, src, outputName, argv.output)
 
-            proc.on("error", (err) => {
-              console.error(`Failed to start subprocess for ${fp}:`, err)
-              reject(err)
-            })
+          proc.on("error", reject)
 
-            proc.on("exit", (code) => {
-              if (code === 0) {
-                resolve(dest)
-              } else {
-                reject(new Error(`Process exited with code ${code}`))
-              }
-            })
+          proc.on("exit", (code) => {
+            if (code === 0) {
+              resolve()
+            } else {
+              reject(new Error(`Process exited with code ${code}`))
+            }
           })
+        })
 
-          yield result
-        } catch (err) {
-          console.error(styleText("red", `\n[emit:NotebookViewer] Error processing ${fp}:`), err)
+        return dest
+      }
+
+      const enqueue = (fp: FilePath) => {
+        const id = taskId++
+        const task = convertNotebook(fp)
+          .then((dest) => ({ status: "fulfilled" as const, dest, fp, id }))
+          .catch((error) => ({ status: "rejected" as const, error, fp, id }))
+        inflight.set(id, task)
+      }
+
+      const takeNext = async (): Promise<NotebookTaskResult | null> => {
+        if (inflight.size === 0) {
+          return null
+        }
+
+        const settled = await Promise.race(inflight.values())
+        inflight.delete(settled.id)
+        return settled
+      }
+
+      for (const fp of fps) {
+        enqueue(fp)
+        if (inflight.size >= maxWorkers) {
+          const result = await takeNext()
+          if (!result) {
+            continue
+          }
+
+          if (result.status === "fulfilled") {
+            yield result.dest
+          } else {
+            console.error(
+              styleText("red", `\n[emit:NotebookViewer] Error processing ${result.fp}:`),
+              result.error,
+            )
+          }
+        }
+      }
+
+      while (inflight.size > 0) {
+        const result = await takeNext()
+        if (!result) {
           continue
+        }
+
+        if (result.status === "fulfilled") {
+          yield result.dest
+        } else {
+          console.error(
+            styleText("red", `\n[emit:NotebookViewer] Error processing ${result.fp}:`),
+            result.error,
+          )
         }
       }
     },

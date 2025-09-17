@@ -4,7 +4,7 @@ comments: false
 tags:
   - evergreen
 date: "2024-02-07"
-modified: 2025-09-04 21:40:03 GMT-04:00
+modified: 2025-09-16 15:05:35 GMT-04:00
 title: movies.
 ---
 
@@ -67,6 +67,12 @@ If you want a more complete list, check out [this entries on letterboxd](https:/
 - [ ] Anatomy of a Fall
 - [ ] The Perks of Being a Wallflower
 - [ ] We Won't Grow Old Together
+- [ ] Butch Cassidy and the Sundance Kid
+- [ ] All the President’s Men
+- [ ] Three Days of the Condor
+- [ ] The Sting
+- [ ] Jeremiah Johnson
+- [ ] All Is Lost
 
 [^lychian]: What makes a [Lychian] (https://en.wikipedia.org/wiki/David_Lynch) movie?
 

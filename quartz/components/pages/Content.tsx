@@ -1,6 +1,6 @@
 import { htmlToJsx } from "../../util/jsx"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
-import { FullSlug, joinSegments, pathToRoot, resolveRelative } from "../../util/path"
+import { FullSlug, joinSegments, resolveRelative } from "../../util/path"
 
 export default (() => {
   const Content: QuartzComponent = ({ fileData, tree }: QuartzComponentProps) => {

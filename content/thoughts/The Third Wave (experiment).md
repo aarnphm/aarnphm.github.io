@@ -1,16 +1,14 @@
 ---
 id: The Third Wave (experiment)
-author:
-  - Contributors to Wikimedia projects
-published: "2023-04-05"
-source: https://simple.wikipedia.org/wiki/The_Third_Wave_(experiment)
-date: "2025-08-01"
-modified: 2025-08-01 23:23:34 GMT-04:00
-created: "2025-08-01"
-description: experimental social campaign, 1967
 tags:
   - seed
   - clippings
+published: "2023-04-05"
+source: https://simple.wikipedia.org/wiki/The_Third_Wave_(experiment)
+date: "2025-08-01"
+modified: 2025-09-17 02:59:45 GMT-04:00
+created: "2025-08-01"
+description: experimental social campaign, 1967
 title: The Third Wave (experiment)
 ---
 

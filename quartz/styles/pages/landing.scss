@@ -115,6 +115,10 @@ a.min-links {
   font-weight: inherit;
   text-decoration: none;
 
+  &:hover {
+    color: var(--tertiary);
+  }
+
   &.internal {
     background-color: unset;
     border-radius: 0;

@@ -1,16 +1,14 @@
 ---
 id: mean-squared error
-author:
-  - "[[Contributors to Wikimedia projects]]"
-published: "2003-03-26"
-source: https://en.wikipedia.org/wiki/Mean_squared_error
-date: "2025-09-11"
-modified: 2025-09-11 12:50:41 GMT-04:00
-created: "2025-09-11"
-description: statistical measure of estimator quality, bias-variance decomposition, examples, and applications.
 tags:
   - seed
   - clippings
+description: statistical measure of estimator quality, bias-variance decomposition, examples, and applications.
+source: https://en.wikipedia.org/wiki/Mean_squared_error
+date: "2025-09-11"
+created: "2025-09-11"
+modified: 2025-09-17 03:00:25 GMT-04:00
+published: "2003-03-26"
 title: Mean squared error
 ---
 

@@ -1,4 +1,6 @@
 ---
+socials:
+  youtube: https://youtu.be/DDLlOqQ46HE
 id: notes
 tags:
   - seed
@@ -6,11 +8,9 @@ tags:
 description: and more notes
 transclude:
   title: false
-socials:
-  youtube: https://youtu.be/DDLlOqQ46HE
-modified: 2025-09-14 23:39:07 GMT-04:00
+date: "2025-08-28"
+modified: 2025-09-15 21:53:37 GMT-04:00
 title: supplement to 0.3
-date: "2025-08-26"
 ---
 
 see also [[lectures/3/quantisation basics]]

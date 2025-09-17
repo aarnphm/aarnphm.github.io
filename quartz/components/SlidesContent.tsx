@@ -61,7 +61,7 @@ export default (() => {
     const sections = (fileData.slidesIndex ?? []) as SlideSection[]
 
     return (
-      <div class="slides-root main-col">
+      <div class="slides-root">
         <div class="slides-deck" role="list">
           {sections.map((s, idx) => (
             <section

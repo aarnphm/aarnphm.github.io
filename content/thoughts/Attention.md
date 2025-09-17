@@ -7,7 +7,7 @@ tags:
 description: and posteriori information retrieval.
 date: "2024-02-07"
 abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
-modified: 2025-09-14 14:30:39 GMT-04:00
+modified: 2025-09-16 14:15:00 GMT-04:00
 title: Attention
 ---
 
@@ -17,7 +17,7 @@ $$
 A(Q, K, V) = \text{softmax}(\frac{Q \cdot K^{T}}{\sqrt{d}})V \space \space \text{ for } Q_{L \times d}, K_{L \times d}, V_{L \times d}
 $$
 
-First introduced from https://arxiv.org/abs/1409.0473. One can think of attention for QKV as:
+First introduced in [@vaswani2023attentionneed]. One can think of attention for QKV as:
 
 - Q: what I'm looking for
 - K: what information do I have
@@ -33,7 +33,7 @@ First introduced from https://arxiv.org/abs/1409.0473. One can think of attentio
 >
 > where the ==learnable== weight matrices $W_{V}^{l,h} \in \mathbb{R}^{d \times d_h}$ and $W_{O}^{l,h} \in \mathbb{R}^{d_h \times d}$, $d_h$ is the dimension per head, are combined OV matrix
 
-## Muti-head Attention
+## Multi-head Attention
 
 Allows the model to jointly attend to information from different representation subspaces at different positions:
 
@@ -45,19 +45,105 @@ W^O & \in \mathbb{R}^{hd_v \times d_{\text{model}}}
 \end{aligned}
 $$
 
+Each head can specialise on a distinct relational pattern in the same context window.
+
+One may focus on positional offsets (e.g., "next token" dependencies) while another emphasises semantic alignment (e.g., subject ↔ predicate links).
+This diversity reduces the risk that a single head saturates and misses important cues, analogous to how [[thoughts/ensemble learning|ensembles]] provide robustness by blending multiple predictors.
+
+The concatenation and final projection $W^O$ then recombine the perspectives into the [[thoughts/Transformers|transformer]] residual stream.
+
+> [!tip]+ building intuition
+> Imagine each attention head as a separate spotlight scanning the same stage from a slightly different angle. None of the spotlights alone illuminates the full choreography, yet together they produce a richer, multi-view understanding of the performance.
+
+> [!motivation]+ why split the model into heads?
+> Each head learns a slightly different relational probe over the same sequence. One head might focus on syntactic structure, another on long-distance coreference. By projecting $Q$, $K$, and $V$ into lower dimensional spaces, we allow those probes to specialise without paying the quadratic cost of a single massive head. Empirically this improves data efficiency because the model can reuse a single context to answer multiple "questions" about it in parallel, rather than re-reading the sequence each time.
+
+> [!question]- tasks to internalise multi-head behaviour
+>
+> - [ ] Visualise attention heatmaps from several heads on the same prompt; annotate the linguistic or algorithmic pattern each head locks onto.
+> - [ ] Compare perplexity of a single-head transformer to a multi-head variant while keeping parameter count fixed; note how diversification of heads changes inductive biases.
+> - [ ] Derive how residual mixing $W_O$ recombines the per-head outputs and explain why this post-projection is necessary for information sharing between heads.
+
+> [!todo]+ tasks to deepen multi-head understanding
+>
+> - Work through a two-token toy example where one head tracks positional offsets while another tracks part-of-speech, then visualise the resulting attention heatmaps.
+> - Summarise how head specialisation emerges in practice (e.g., induction heads, name mover heads) by referencing case studies in [[thoughts/Transformer Circuits Framework|Transformer Circuits]].
+> - Compare the compute/memory footprint of doubling the number of heads versus increasing the hidden dimension, highlighting when each trade-off is preferable.
+
 ## Group-Query Attention
 
-[@ainslie2023gqatraininggeneralizedmultiquery]
+Group-Query Attention [@ainslie2023gqatraininggeneralizedmultiquery]
 
 idea: reduce number of KV heads $n_k$ to a fraction $n_k^{'} = \frac{n_q}{k}$ of number of query heads $n_q$ (evenly dividing the query heads into $n_k$ groups with $r$ heads)
 
+This technique targets the decode-time bottleneck in autoregressive generation. During prefill we still benefit from many $Q$ heads to capture diverse patterns, but at decode time the key/value caches dominate GPU memory bandwidth. Sharing a smaller set of $K,V$ representations across multiple $Q$ heads keeps latency low and unlocks larger batch sizes without sacrificing the nuanced querying capacity. In other words, GQA trades a tiny amount of representational flexibility for a substantial improvement in cache locality.
+
+GQA keeps a rich set of query projections so that each decoding token can still ask a nuanced question, but it shares keys and values among groups of queries. The insight is that auto-regressive decoding is bottlenecked by memory bandwidth rather than compute—duplicating $K$ and $V$ per head is expensive, yet their content is often redundant because neighbouring heads tend to look at similar context tokens. By amortising $K$ and $V$ across a group, we trade a small loss in expressivity for a large win in cache locality and throughput on modern GPUs.
+
+> [!motivation] decoding-first design pressure
+> During inference each new token only appends a single query but must read the entire cached key/value tensors. Grouping $Q$ heads while keeping fewer $K/V$ copies reduces the size of that cache and the amount of memory traffic per step, which is exactly the term that dominates latency for long-context models.
+
+> [!question]- explore the design space
+>
+> - [ ] Starting from a vanilla transformer decoder, implement grouped keys/values and benchmark the decode tokens-per-second improvement as context length grows.
+> - [ ] Analyse how grouping interacts with rotary or ALiBi positional encodings—does sharing $K/V$ across heads degrade positional resolution?
+> - [ ] Reproduce the ablation table from @ainslie2023gqatraininggeneralizedmultiquery to see how aggressively $n_k^{'}$ can be reduced before accuracy drops on your domain.
+
+> [!todo]+ follow-up questions
+>
+> - Derive how the attention matrix factorises when queries are grouped and quantify the approximation error introduced by shared $K,V$ pairs.
+> - Collect empirical results comparing [[thoughts/KV compression|KV cache]] sizes for MHA, Multi-Query, and GQA across popular decoder-only models.
+> - Investigate hardware implications: how does GQA interact with tensor parallelism or speculative decoding pipelines?
+
 ## Tree Attention
 
-https://arxiv.org/abs/2408.04093
+Tree Attention [@shyam2025treeattentiontopologyawaredecoding] derives an energy formulation of attention and evaluates the softmax reduction through a communication tree. Keys and values are sharded along the sequence dimension; each query reduces over shards in $\log p$ stages for $p$ devices, cutting communication steps relative to the linear pipeline used in RingAttention. The method stays exact and can reuse single-GPU kernels such as FlashAttention-2, yielding up to $4\times$ decoder speedups on Llama-scale models while lowering peak memory traffic.
+
+> [!motivation] topology matches hardware
+> NVLink and InfiniBand fabrics already provide efficient tree collectives, so aggregating per-shard softmax statistics along that topology overlaps communication with compute instead of circulating full KV blocks around the ring.
+
+> [!question]- tasks
+>
+> - [ ] Implement a tree-reduction decode for a toy sharded KV setup and compare against RingAttention on 2–8 GPUs; measure communication steps and wall-clock latency.
+> - [ ] Profile sensitivity to interconnect bandwidth and block sizes; verify the $N/p + \log p$ scaling predicted in [@shyam2025treeattentiontopologyawaredecoding].
+> - [ ] Explore compatibility with prefix-reuse systems (Paged/RadixAttention) when K/V are paged or cached.
+
+> [!note] related but different
+> Hierarchical token routing or coarse-to-fine attention over document structure is orthogonal to this topology-aware multi-GPU scheduling trick.
+
+## Sliding Window Attention
+
+Sliding window (or local) attention constrains each token to attend only to neighbours within a fixed radius $w$. The computational cost drops from $\mathcal{O}(L^2)$ to $\mathcal{O}(L \cdot w)$, which is crucial for extremely long sequences where full-context attention is prohibitive. Intuitively, this mimics how we read a long novel: we usually only need to relate a sentence to nearby sentences, occasionally jumping back to earlier chapters.
+
+- Motivation: maximise throughput on long-context tasks where relevant information is clustered locally (e.g., speech, DNA sequences).
+- Intuition: local convolutions but with content-aware weighting rather than fixed kernels.
+- Challenge: ensuring important long-range dependencies are not lost—often solved by adding a handful of global tokens or dilation patterns.
+
+> [!todo]+ experiments to run
+>
+> - Implement a toy [[thoughts/Autoregressive models|autoregressive]] model with sliding window attention and track perplexity as $w$ varies.
+> - Document hybrid strategies (e.g., dilated windows, stride patterns) and how they impact the receptive field.
+> - Collect references on how models like Longformer or [[thoughts/Transformers|BigBird-style transformers]] mix local and global tokens.
+
+See also Longformer [@beltagy2020longformerlongdocumenttransformer] and BigBird [@zaheer2021bigbirdtransformerslonger].
+
+## FlashAttention & IO-Aware Kernels
+
+FlashAttention [@dao2022flashattentionfastmemoryefficientexact] reframes attention as a tiled matrix multiplication that keeps intermediate results in high-speed SRAM rather than slower GPU DRAM. The key insight is that recomputing softmax denominators on-the-fly avoids materialising the full attention matrix, drastically reducing memory traffic. As sequence lengths grow, attention becomes more IO-bound than FLOP-bound, so this optimisation yields both speedups and numerical stability (via online normalisation). See also FlashAttention‑2 [@dao2023flashattention2fasterattentionbetter] and FlashAttention‑3 [@shah2024flashattention3fastaccurateattention].
+
+- Motivation: eliminate memory bandwidth bottlenecks so that longer contexts fit on commodity GPUs.
+- Intuition: compute attention in blocks, never storing more than necessary—like reading a massive spreadsheet through a moving window rather than printing the entire sheet.
+- Extension: variants such as FlashAttention-2/3, xFormers, and Triton kernels specialise for [[thoughts/GPU programming|GPU]] architectures and sparse layouts.
+
+> [!todo]+ future notes
+>
+> - Re-derive the online softmax algorithm that maintains running maxima and partition functions per tile.
+> - Benchmark FlashAttention against naive attention under identical hardware to quantify the IO savings.
+> - Explore how FlashAttention integrates with techniques above (e.g., can GQA heads share tiles efficiently?).
 
 ## RadixAttention
 
-@zheng2024sglangefficientexecutionstructured proposes this to maintain a LRU eviction policy to maintain relevant [[thoughts/KV compression|KV cache]] for all requests within a [[thoughts/Radix tree|radix tree]], Implemented in https://github.com/sgl-project/sglang
+RadixAttention [@zheng2024sglangefficientexecutionstructured] maintains an LRU eviction policy to keep relevant [[thoughts/KV compression|KV cache]] entries for all requests within a [[thoughts/Radix tree|radix tree]], implemented in https://github.com/sgl-project/sglang and detailed in the SGLang paper and LMSYS blog (Jan 17, 2024).
 
 radix tree setup:
 
@@ -73,6 +159,15 @@ _dynamic evolution of the radix tree in response to various requests._
 > These requests include two chat ses,sions, a batch of few-shot learning inquiries, and a self-consistency sampling. Each tree edge carries a label denoting a substring or a sequence of tokens. The nodes are color-coded to reflect different states: green for newly added nodes, blue for cached nodes accessed during the time point, and red for nodes that have been evicted.
 >
 > [full explanation](https://lmsys.org/blog/2024-01-17-sglang/#backend-automatic-kv-cache-reuse-with-radixattention)
+
+> [!motivation] amortising repeated prefixes
+> Shared prefixes across requests mean the expensive prefill phase has already computed the relevant keys and values. A radix tree indexes those prefixes so the runtime can instantly reuse them, and the LRU policy discards only the paths that have fallen out of active use. This keeps latency predictable even when the workload mixes long chats, few-shot prompts, and batched sampling.
+
+> [!question]- exercises for deployment engineers
+>
+> - [ ] Simulate a workload with replayed prefixes and measure cache-hit rate as you vary the tree eviction threshold; plot how it affects end-to-end throughput.
+> - [ ] Implement instrumentation that surfaces when two requests could share a prefix but fail to because of tokenisation mismatch.
+> - [ ] Extend the scheduling algorithm above with priority weights so latency-sensitive requests pre-empt background sampling without trashing the cache.
 
 ### cache-aware scheduling
 
@@ -170,7 +265,7 @@ We can show that longest-shared-prefix-first order is equivalent to DFS order by
 
 ![[thoughts/images/mla-comparison.webp]]
 
-low-rank joint compression for attention ==keys and values== to reduce KV cache during inference [@deepseekai2025deepseekv3technicalreport{see 2.1.1}; @deepseekai2024deepseekv2strongeconomicalefficient]
+low-rank joint compression for attention ==keys and values== to reduce KV cache during inference [@deepseekai2025deepseekv3technicalreport, see Section 2.1.1; @deepseekai2024deepseekv2strongeconomicalefficient]
 
 - $d$ denote the embedding dimension
 - $n_h$ denotes number of attention heads
@@ -197,7 +292,16 @@ $$
 
 > [!important] cached generations
 >
-> Both $\textcolor{blue}{\mathbf{c}_t^{KV}}$ and $\textcolor{blue}{\mathbf{k}_t^{R}}$ should be cached to reduce KV cache while maintaining performance with [[thoughts/Attention#Muti-head Attention|MHA]]
+> Both $\textcolor{blue}{\mathbf{c}_t^{KV}}$ and $\textcolor{blue}{\mathbf{k}_t^{R}}$ should be cached to reduce KV cache while maintaining performance with [[thoughts/Attention#Multi-head Attention|MHA]]
+
+> [!motivation] why latent compression matters
+> MLA recognises that most of the information inside $K$ and $V$ lies in a low-dimensional manifold. By learning shared latent codes ($\mathbf{c}_t^{KV}$ and $\mathbf{c}_t^{Q}$) and lightweight up-projections, the model keeps the expressivity of many heads without storing every head explicitly. This decouples compute (which stays similar) from memory footprint (which shrinks drastically), enabling deployment on GPUs with limited KV cache.
+
+> [!question]- MLA study plan
+>
+> - [ ] Re-derive equations (1)–(9) starting from a standard attention layer and show how the compression matrices factorise the original weight tensors.
+> - [ ] Measure perplexity and cache usage on a long-context benchmark when toggling MLA on/off for the same base model.
+> - [ ] Investigate whether sharing $\mathbf{c}_t^{KV}$ across layers compounds errors or if independent latents per layer yield better stability.
 
 For attention ==queries==, we can perform the same operation:
 
@@ -232,19 +336,52 @@ $$
 
 https://flashinfer.ai/2024/02/02/cascade-inference.html
 
+CascadeAttention builds a two-stage filter for attention scores. A cheap scorer (for example, a low-rank approximation or sparse lookup) first estimates which key blocks are likely to matter. Only those candidates are passed to the expensive exact attention, meaning most tokens never touch the quadratic computation. This mirrors cascade classifiers in computer vision: fast heuristics prune the search space so heavy models only run on promising regions.
+
+> [!motivation]+ matching cost to usefulness
+> Long contexts often contain filler tokens. Spending equal compute on every position wastes FLOPs, so a cascade keeps throughput high by adapting compute to token importance.
+
+> [!question]- tasks
+>
+> - [ ] Implement a toy cascade with random feature hashing as the coarse scorer; report recall of true top-$k$ attention weights.
+> - [ ] Explore how to set the threshold dynamically based on query entropy so we do not over-prune when the model is uncertain.
+> - [ ] Compare latency of the cascade versus FlashAttention when processing prompts containing repetitive boilerplate plus a short critical instruction.
+
 ## RingAttention
 
-[@liu2023ringattentionblockwisetransformers]
+RingAttention [@liu2023ringattentionblockwisetransformers] shards long contexts across devices in a ring pipeline. Striped Attention [@brandon2023stripedattentionfasterring] improves load balance with alternating shard ownership.
+
+RingAttention shards a long sequence across multiple devices and circulates key/value blocks in a logical ring. Each GPU holds only a slice of the cache, streams neighbouring slices just in time, and discards them after use. The ring topology overlaps communication with computation, so no single device ever needs the full context resident in memory.
+
+> [!motivation] hardware-aligned parallelism
+> Transformer memory demands grow with sequence length, but GPU memory per device is fixed. RingAttention trades redundant KV storage for bandwidth-efficient peer-to-peer communication, letting us scale to million-token contexts without out-of-memory errors.
+
+> [!question]- experiments
+>
+> - [ ] Simulate RingAttention with three devices and measure throughput as you vary block size; look for the sweet spot where communication overlaps compute.
+> - [ ] Analyse failure cases when network latency spikes—how resilient is the ring schedule compared to fully sharded data parallelism?
+> - [ ] Derive how gradient checkpointing interacts with the ring; can we reuse streamed activations during backprop?
 
 ## RazorAttention
 
-[@tang2024razorattentionefficientkvcache]
+RazorAttention [@tang2024razorattentionefficientkvcache] maintains a fixed-size KV cache by scoring tokens with a learned eviction policy. Instead of evicting whole prefixes (like radix trees) or oldest tokens (pure LRU), it "shaves" the least impactful tokens anywhere in the sequence. Importance scores come from lightweight predictors trained to approximate how much each token will contribute to future attention.
+
+> [!motivation] selective forgetting
+> Decoder-only models often attend mostly to recent or semantically salient tokens. By identifying and dropping low-utility KV entries, RazorAttention keeps cache usage bounded while preserving the signal that matters for prediction.
+
+> [!question]- sharpening intuition
+>
+> - [ ] Replicate the token-importance predictor on a small dataset and visualise which positions it consistently removes.
+> - [ ] Evaluate quality versus cache size trade-offs when combining RazorAttention with grouped-query attention—do their savings compound?
+> - [ ] Formally compare RazorAttention's policy with standard LRU by computing expected retained attention mass under a synthetic long-conversation workload.
 
 ## Paged Attention
 
-[@kwon2023efficient]
+Paged Attention [@kwon2023efficient]
 
 In conjunction with [[thoughts/Continuous batching|continuous batching]], implemented in [[thoughts/vllm|vLLM]]
+
+> The goal is to reduce internal and external fragmentation in LLM inference. see [[lectures/3/infer-0.3.pdf|this workshop]] for more information.
 
 Reduce memory usage of attention mechanism by swapping kv-cache in and out of memory. A block manager is similar to those of _virtual memory_ in OS.
 
@@ -265,8 +402,95 @@ $$
 
 where $A_{ij}=(a_{i,(j-1)B+1}, \ldots a_{i,jB})$ is row vector of attention score on j-th KV block.
 
+> [!motivation] keeping inference steady under load
+> Serving many users at once means the GPU must juggle dozens of sequences with wildly different lengths. Paging prevents a single long request from monopolising memory by moving cold KV blocks to host memory while keeping hot blocks on device.
+
+> [!question]- hands-on prompts
+>
+> - [ ] Trace how vLLM's block manager migrates pages during a mixed workload (long chat + short tool call); sketch the timeline.
+> - [ ] Experiment with different block sizes $B$ and record the impact on fragmentation and swap frequency.
+> - [ ] Prototype a heuristic that prefetches likely-needed pages based on the query length distribution.
+
+## positional encodings & length extrapolation
+
+> [!summary]
+> Positional encodings determine how models reason about order. Good schemes train short but generalise to longer contexts.
+
+- Absolute/learned: add a learned vector per position; simple, weak extrapolation.
+- Relative position bias: learn bias as a function of pairwise distance; stable encoders.
+- [[thoughts/RoPE|RoPE]]: rotate Q/K in complex plane; inner products encode relative offsets; robust long‑range behavior [@su2023roformerenhancedtransformerrotary].
+- ALiBi: add linear distance penalties to attention logits, inducing recency bias that extends context without re‑training [@press2022trainshorttestlong].
+
+### RoPE scaling to extend context
+
+- NTK‑aware scaling: adjust RoPE frequency base to stretch periods for longer contexts.
+- YaRN: segment and rescale RoPE dims; efficient extension with small fine‑tune [@peng2023yarnefficientcontextwindow].
+- LongRoPE: search-guided rescaling with progressive training to reach 1M–2M+ tokens [@ding2024longropeextendingllmcontext].
+
+See also: [[lectures/3/quantisation basics#multi-latent attention|MLA]] for architectural KV reduction complementary to PE scaling.
+
+---
+
+## Efficient Attention Families
+
+> [!note]
+> Exact kernels cut memory traffic; sparse/local reduce edges; linear/approximate trade exactness for O(L) time.
+
+### Exact, IO‑aware kernels
+
+- FlashAttention v1/v2/v3: tile/fuse softmax, read each tile once from HBM; FA‑3 exploits FP8 and hardware copy engines for higher throughput [@dao2022flashattentionfastmemoryefficientexact; @dao2023flashattention2fasterattentionbetter; @shah2024flashattention3fastaccurateattention].
+- Flash‑Decoding (+ +): specialised kernels for decode that parallelise across KV blocks and fuse reductions.
+
+### Sparse/local attention (exact on a pattern)
+
+- Longformer: sliding window with optional global tokens for linear scaling [@beltagy2020longformerlongdocumenttransformer].
+- BigBird: block-sparse (window + random + global) with theoretical guarantees [@zaheer2021bigbirdtransformerslonger].
+
+### Linear/approximate attention
+
+- Reformer: LSH buckets for sub-quadratic attention + reversible layers [@kitaev2020reformerefficienttransformer].
+- Linformer: low-rank projection along sequence dimension [@wang2020linformerselfattentionlinearcomplexity].
+- Performer: FAVOR+ kernel features approximate softmax for linear time [@choromanski2022rethinkingattentionperformers].
+- Nyströmformer: landmark-based Nyström approximation [@xiong2021nystromformernystrombasedalgorithmapproximating].
+
+### Multi‑device and prefix‑aware inference
+
+- Ring/Striped Attention: partition long sequences across devices, overlapping compute and communication [@liu2023ringattentionblockwisetransformers; @brandon2023stripedattentionfasterring].
+- Cascade/Tree-aware kernels: exploit shared prefixes and tree layouts to reuse KV IO [@zheng2024sglangefficientexecutionstructured; @shyam2025treeattentiontopologyawaredecoding].
+
 ## Multi-Matrix Factorization Attention
 
 First proposed in [[thoughts/MoE#Step3]]
 
+The idea is to approximate the dense attention matrix by factorising it into multiple low-rank products, each specialised for a subset of heads or positions. Instead of computing $QK^T$ directly, we learn bases $U_i V_i^T$ whose weighted sum reconstructs the attention pattern. This reduces quadratic cost to a series of matrix multiplications with much smaller inner dimensions.
+
+> [!motivation] sharing structure across heads
+> Attention maps often lie near a union of low-dimensional subspaces (e.g., monotonic alignments, locality patterns). Factorisation captures those templates explicitly so the model reuses them instead of re-deriving them per head.
+
+> [!question]- further work
+>
+> - [ ] Derive the computational complexity of using $m$ factors with rank $r$ and compare it to dense attention for typical $m, r$.
+> - [ ] Implement a small transformer with multi-matrix factors and inspect whether each factor aligns with an interpretable pattern (locality, copying, etc.).
+> - [ ] Investigate how the factorisation interacts with sparsity—can the same bases support both global and local attention if we gate them per token?
+
 ## convexity
+
+see also [[lectures/2/convexity|emperical finding]]
+
+---
+
+## cheatsheet
+
+| Method              | Type         | Complexity (seq) | Key idea                                    | Typical win                    |
+| ------------------- | ------------ | ---------------: | ------------------------------------------- | ------------------------------ |
+| FlashAttention‑3    | exact kernel |           O(L^2) | tiled IO‑minimal attention; FP8/TMA overlap | large train speedups on Hopper |
+| Flash‑Decoding / ++ | exact decode |   O(L) per token | block‑parallel KV, fused reductions         | multi‑× decode on long ctx     |
+| Longformer          | sparse       |          ~O(L·w) | local window + global tokens                | linear scaling for long docs   |
+| BigBird             | sparse       |          ~O(L·w) | window + random + global blocks             | theory + strong practice       |
+| Reformer            | approx       |       O(L log L) | LSH attention; reversible layers            | memory/time reductions         |
+| Linformer           | approx       |           O(L·k) | low‑rank K/V along L                        | linear time/space              |
+| Performer           | approx       |           O(L·d) | FAVOR+ random features                      | linear attention               |
+| Nyströmformer       | approx       |           O(L·m) | landmark Nyström approximation              | fewer tokens, good quality     |
+| MQA/GQA             | arch/infer   |    O(H_k d_h) KV | share K/V across heads/groups               | KV/bandwidth savings           |
+| Ring/Striped        | parallel     |           O(L^2) | pipeline across devices                     | million‑token context          |
+| Cascade/Tree‑aware  | kernel       |           O(L^2) | KV reuse on shared prefixes                 | big wins on shared prompts     |

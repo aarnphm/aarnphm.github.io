@@ -2,9 +2,11 @@
 id: talks
 tags:
   - seed
+  - linalg
 description: outlines
 date: "2025-09-15"
-modified: 2025-09-15 14:58:11 GMT-04:00
+modified: 2025-09-17 02:33:51 GMT-04:00
+noindex: true
 title: speaker notes
 ---
 

@@ -458,6 +458,7 @@ export function transcludeFinal(
   }
 
   const { dynalist } = opts
+  const isLanding = slug === "index"
 
   const anchor = (
     href: string,
@@ -747,6 +748,12 @@ export function transcludeFinal(
     fileData.readingTime = { ...fileData.readingTime, words: stats.words, minutes: stats.minutes }
   }
 
+  if (isLanding) {
+    visit(root, { tagName: "a" }, (node: Element) => {
+      node.properties["data-no-popover"] = true
+    })
+  }
+
   return root
 }
 
@@ -758,7 +765,7 @@ export const TopLinks = {
   parfum: "/thoughts/Scents",
   "are.na": "/are.na",
   craft: "/thoughts/craft",
-  home: "/furnitures",
+  home: "/thoughts/furnitures",
   movies: "/movies",
   tunes: "/mixed",
 }
@@ -831,7 +838,11 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
                 const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
                 return (
                   <li>
-                    <a href={resolveRelative(fileData.slug!, page.slug!)} class={classes}>
+                    <a
+                      data-no-popover
+                      href={resolveRelative(fileData.slug!, page.slug!)}
+                      class={classes}
+                    >
                       <div class="landing-meta">
                         <span class="landing-mspan">
                           <DateComponent date={getDate(cfg, page)!} locale={cfg.locale} />
@@ -846,7 +857,11 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
             {remaining > 0 && (
               <p>
                 <em>
-                  <a href={resolveRelative(fileData.slug!, opts!.slug)} class={classes}>
+                  <a
+                    data-no-popover
+                    href={resolveRelative(fileData.slug!, opts!.slug)}
+                    class={classes}
+                  >
                     {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
                       remaining,
                     })}
@@ -874,12 +889,12 @@ const ElementComponent = (() => {
   const RecentNotes = NotesComponent({
     header: "récentes",
     slug: "thoughts/" as SimpleSlug,
-    numLimits: 9,
+    numLimits: 6,
   })
   const RecentPosts = NotesComponent({
     header: "écriture",
     slug: "posts/" as SimpleSlug,
-    numLimits: 9,
+    numLimits: 6,
   })
 
   const Element: QuartzComponent = (componentData: QuartzComponentProps) => {

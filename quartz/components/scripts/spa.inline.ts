@@ -4,6 +4,7 @@ import { removeAllChildren, Dag, DagNode } from "./util"
 import { ContentDetails } from "../../plugins"
 import { formatDate } from "../Date"
 import { fetchCanonical } from "./util"
+import { Toast } from "./toast"
 
 // adapted from `micromorph`
 // https://github.com/natemoo-re/micromorph
@@ -45,6 +46,25 @@ function notifyNav(url: FullSlug) {
 
 const cleanupFns: Set<(...args: any[]) => void> = new Set()
 window.addCleanup = (fn) => cleanupFns.add(fn)
+
+if (!window.quartzToast) {
+  const toast = new Toast()
+  window.quartzToast = toast
+
+  const handleToast = (event: CustomEventMap["toast"]) => {
+    const detail = event.detail
+    if (!detail?.message) return
+    toast.show(detail.message, {
+      durationMs: detail.durationMs,
+      styles: detail.styles,
+      containerId: detail.containerId,
+      containerStyles: detail.containerStyles,
+    })
+  }
+
+  document.addEventListener("toast", handleToast)
+  document.addEventListener("prenav", () => toast.destroy())
+}
 
 function startLoading() {
   const loadingBar = document.createElement("div")

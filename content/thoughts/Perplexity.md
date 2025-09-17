@@ -3,15 +3,13 @@ id: Perplexity
 tags:
   - seed
   - clippings
-description: information theory measure of uncertainty in probability distributions, used in NLP for evaluating language models.
-author:
-  - "[[Contributors to Wikimedia projects]]"
-date: "2025-09-14"
-created: "2025-09-14"
-modified: 2025-09-14 23:16:08 GMT-04:00
 published: "2006-04-04"
-title: perplexity
 source: https://en.wikipedia.org/wiki/Perplexity
+date: "2025-09-14"
+modified: 2025-09-17 03:00:08 GMT-04:00
+created: "2025-09-14"
+description: information theory measure of uncertainty in probability distributions, used in NLP for evaluating language models.
+title: perplexity
 ---
 
 a measure of uncertainty in the value of a sample from a discrete probability distribution.

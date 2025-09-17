@@ -5,7 +5,7 @@ tags:
   - probability
 description: criterion for finding difference between input logits and targets.
 date: "2025-09-14"
-modified: 2025-09-14 20:26:12 GMT-04:00
+modified: 2025-09-15 23:47:49 GMT-04:00
 title: cross entropy
 ---
 
@@ -36,7 +36,7 @@ $$
 ## maximum likelihood
 
 - Empirical risk with cross‑entropy equals the negative log‑likelihood (NLL) of the dataset under the model.
-- Minimizing cross‑entropy thus performs maximum likelihood estimation (MLE).
+- Minimizing cross‑entropy thus performs [[thoughts/Maximum likelihood estimation]] (MLE).
 - Derivation sketch for a dataset $\{(x_i, y_i)\}$ with categorical model $q_\theta(y\mid x)$:
   - Objective: minimize
     $$
@@ -136,10 +136,12 @@ Numeric example (weighted mean)
 ```python
 import torch
 
-logits = torch.tensor([[2.0, 0.0],    # sample 0
-                       [0.2, 0.0]])   # sample 1
-y = torch.tensor([0, 1])              # true classes
-w = torch.tensor([1.0, 2.0])          # class weights (for 0 and 1)
+logits = torch.tensor([
+  [2.0, 0.0],  # sample 0
+  [0.2, 0.0],
+])  # sample 1
+y = torch.tensor([0, 1])  # true classes
+w = torch.tensor([1.0, 2.0])  # class weights (for 0 and 1)
 
 # Framework result (weighted mean):
 crit = torch.nn.CrossEntropyLoss(weight=w, reduction='mean')
@@ -147,7 +149,7 @@ loss_fw = crit(logits, y)
 
 # Manual check
 p = torch.softmax(logits, dim=1)
-ell = -torch.log(p[range(2), y])      # per-sample losses
+ell = -torch.log(p[range(2), y])  # per-sample losses
 weights = w[y]
 loss_manual = (weights * ell).sum() / weights.sum()
 

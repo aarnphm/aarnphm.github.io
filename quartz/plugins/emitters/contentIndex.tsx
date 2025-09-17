@@ -341,7 +341,13 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
       }
     },
     externalResources: ({ cfg }) => {
-      const additionalHead = []
+      const additionalHead = [
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
+        />,
+      ]
+
       if (opts?.enableRSS) {
         additionalHead.push(
           <link

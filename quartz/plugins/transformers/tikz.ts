@@ -12,7 +12,7 @@ async function tex2svg(input: string) {
   await load()
   const dvi = await tex(input, {
     texPackages: { pgfplots: "", amsmath: "intlimits" },
-    tikzLibraries: "arrows.meta,calc",
+    tikzLibraries: "arrows.meta,calc,positioning",
     addToPreamble: "% comment",
     showConsole: true,
   })

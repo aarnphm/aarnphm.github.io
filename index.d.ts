@@ -8,6 +8,7 @@ interface CustomEventMap {
   prenav: CustomEvent<{}>
   nav: CustomEvent<{ url: FullSlug }>
   themechange: CustomEvent<{ theme: "light" | "dark" }>
+  toast: CustomEvent<import("./quartz/components/scripts/toast").ToastEventDetail>
 }
 
 type ContentIndex = Record<FullSlug, ContentDetails>

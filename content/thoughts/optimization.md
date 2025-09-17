@@ -4,7 +4,7 @@ tags:
   - ml
 description: A list of optimization functions that can be used in ML training to reduce loss, and more.
 date: "2024-10-31"
-modified: 2025-08-01 15:31:20 GMT-04:00
+modified: 2025-09-16 00:47:18 GMT-04:00
 title: ml optimization
 ---
 
@@ -15,6 +15,35 @@ $$
 $$
 
 where $y \in \mathbb{R}^k$
+
+> [!tip] numerical stability (log‑sum‑exp)
+> Always subtract the max logit: with $m = \max_j y_j$,
+>
+> $$
+> p_i = \frac{e^{y_i - m}}{\sum_j e^{y_j - m}}, \qquad
+> \log p_i = y_i - \operatorname{LSE}(y),\quad \operatorname{LSE}(y)=\log\sum_j e^{y_j}.
+> $$
+
+### Jacobian and gradients
+
+Jacobian of softmax $p=\text{softmax}(y)$:
+
+$$
+\frac{\partial p_i}{\partial y_j} = p_i(\delta_{ij} - p_j) \;\equiv\; \operatorname{diag}(p) - pp^\top.
+$$
+
+Cross‑entropy with hard label $y^*$: $L=-\log p_{y^*}$. Gradient w.r.t. logits:
+
+$$
+\frac{\partial L}{\partial y} = p - \operatorname{one\_hot}(y^*).
+$$
+
+For soft targets $t \in \Delta^k$, $L=-\sum_i t_i \log p_i$ gives $\partial L/\partial y = p - t$.
+
+> [!see-also] links
+>
+> - Binary special case: [[thoughts/Logistic regression#MLE derivation and gradients]].
+> - Training view: [[thoughts/Maximum likelihood estimation#training statistical models (derivation sketch)]].
 
 ## `exp()`
 
@@ -134,6 +163,17 @@ J(z) \coloneqq z H(z - \kappa) = \begin{cases} 0 & \text{if } z \leq \kappa \\ z
 $$
 
 ![[thoughts/images/JumpReLU.mp4]]
+
+## Newton methods
+
+Second‑order step with gradient $g=\nabla f(\theta)$ and Hessian $H=\nabla^2 f(\theta)$:
+
+$$
+\theta_{t+1} = \theta_t - H(\theta_t)^{-1} g(\theta_t).
+$$
+
+- For convex $f$, converges quadratically near optimum.
+- In practice use approximations: L‑BFGS, conjugate gradients, or Fisher‐scoring/natural‑gradient with Fisher $F \approx H$.
 
 ## momentum
 

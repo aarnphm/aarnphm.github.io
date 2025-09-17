@@ -7,10 +7,10 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-09-15 14:28:19 GMT-04:00
+date: "2024-10-24"
+modified: 2025-09-16 19:47:16 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -102,6 +102,7 @@ see also [[/curius|bookmarks]]
 - https://www.oneclub.org/awards/adcawards/-archive/awards/2025/all/all/select
 - https://www.lydianottingham.com/
 - https://farayan.me/dappled
+- https://www.tiat.place/
 - https://posthog.com/
 
 ## people
@@ -545,6 +546,7 @@ see also [[/curius|bookmarks]]
 ## arts
 
 - https://www.youtube.com/watch?v=lsVMJIJ3Xrs&ab_channel=Amoeba
+- https://www.metmuseum.org/art/collection/search/441933 -- Moonlight, Strandgade 30, Vilhelm Hammershøi
 
 ## resources
 
@@ -604,6 +606,8 @@ see also [[/curius|bookmarks]]
 
 - https://huggingface.co/blog/from-chunks-to-blocks -- From Chunks to Blocks: Accelerating Uploads and Downloads on the Hub
 - https://datatracker.ietf.org/doc/html/rfc9309 -- Robots Exclusion Protocol
+- https://github.com/Keen-Technologies/physical_atari -- Physical Atari
+- https://modelcontextprotocol.io/llms-full.txt -- MCP protocol
 
 ### vc.
 

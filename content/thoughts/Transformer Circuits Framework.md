@@ -5,13 +5,18 @@ tags:
   - interpretability
 description: Anthropic, 2021
 date: "2025-09-15"
-modified: 2025-09-15 17:59:06 GMT-04:00
+modified: 2025-09-16 15:46:00 GMT-04:00
 title: A Mathematical Framework for Transformer Circuits
 ---
 
 The framework treats a transformer as linear updates to a shared residual stream, making algebraic structure explicit and suggesting “privileged” feature bases for interpretation.
 
-## residual stream as a linear space
+see also:
+
+- [[thoughts/induction heads]], superposition, logit lens
+- Matrix perspectives and decompositions: [[thoughts/Singular Value Decomposition|SVD]], [[thoughts/Attention]], [[thoughts/Vector calculus#Jacobian matrix|Jacobian]].
+
+## residual stream as a [[/tags/linalg]] space
 
 For token position $t$, the residual vector $r^{(\ell)}_t\in\mathbb R^d$ evolves via skip connections as
 
@@ -23,7 +28,7 @@ $$
 
 The unembedding is linear: logits $\ell_t=U^\top r^{(L)}_t$ for unembedding matrix $U\in\mathbb R^{d\times |V|}$. The [[thoughts/Attention|attention]] and MLP blocks are (piecewise) linear maps that write directions into the residual stream.
 
-> [!note] Lens intuition
+> [!note] lens intuition
 > “Logit lens” inspects $U^\top r^{(\ell)}$ mid‑stack; early layers partially align residual directions with token directions, revealing emergent features.
 
 ## heads and MLPs as linear writes
@@ -46,14 +51,8 @@ which is a data‑dependent low‑rank write into the residual stream. MLPs appl
 >
 > A circuit is a composed path of linear writes that implements a behavior (e.g., induction heads). Basis choices can make the path sparse and legible.
 
-## Minimal equations to remember
+## takeaway
 
 - Residual update: $r\leftarrow r + \Delta_{\text{attn}} + \Delta_{\text{mlp}}$.
 - Logits: $\ell=U^\top r$; probabilities $\mathrm{softmax}(\ell)$.
 - Projection onto a feature $a$: $\operatorname{proj}_a(r)=\dfrac{a^\top r}{a^\top a}a$; feature activation is a dot product.
-
-## Pointers
-
-- Original overview: https://transformer-circuits.pub/2021/framework/index.html
-- Induction heads, superposition, logit lens, and more: see [[thoughts/induction heads]]
-- Matrix perspectives and decompositions: [[thoughts/Singular Value Decomposition|SVD]], [[thoughts/Attention]], [[thoughts/Vector calculus#Jacobian matrix|Jacobian]].

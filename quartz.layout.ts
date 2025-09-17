@@ -5,7 +5,6 @@ import * as Component from "./quartz/components"
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [
-    Component.Darkmode(),
     Component.StackedNotes(),
     Component.Breadcrumbs({
       rootName: "~",
@@ -17,6 +16,7 @@ export const sharedPageComponents: SharedLayout = {
     Component.Palette(),
     Component.Keybind(),
     Component.Search(),
+    Component.Darkmode(),
   ],
   afterBody: [Component.Recommendations(), Component.Backlinks()],
   footer: Component.Footer({

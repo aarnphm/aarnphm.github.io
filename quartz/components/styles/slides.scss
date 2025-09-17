@@ -2,6 +2,21 @@
 
 .slides-root {
   position: relative;
+  grid-column: 6/-2;
+}
+
+@media all and ($tablet) {
+  .slides-root {
+    --main-col-padding-left: 0px;
+    --main-col-padding-right: calc(var(--kern) * 2);
+    grid-column: 3/10;
+  }
+}
+@media all and ($mobile) {
+  .slides-root {
+    --main-col-padding-right: 0px;
+    grid-column: 3 / -3;
+  }
 }
 
 .slides-deck {
