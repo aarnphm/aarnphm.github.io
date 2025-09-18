@@ -12,7 +12,7 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-09-18 13:53:14 GMT-04:00
+modified: 2025-09-18 17:19:00 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -422,6 +422,7 @@ see also [[/curius|bookmarks]]
   - I'm tired
 - https://x.com/jackminong/status/1968518159826305438
   - See also [[thoughts/Weight tying]]
+- https://x.com/josh_bickett/status/1725556267014595032 \*\*
 
 ### argumentative
 

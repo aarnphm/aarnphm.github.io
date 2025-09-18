@@ -128,6 +128,7 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
 export type TranscludeOptions = {
   dynalist: boolean
   title: boolean
+  skipTranscludes: boolean
 }
 
 declare module "vfile" {

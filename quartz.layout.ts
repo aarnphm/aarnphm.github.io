@@ -10,6 +10,7 @@ export const sharedPageComponents: SharedLayout = {
       rootName: "~",
       spacerSymbol: "/",
       showCurrentPage: true,
+      trailingWindow: 1,
     }),
     Component.Image(),
     Component.Graph(),

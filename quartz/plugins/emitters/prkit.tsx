@@ -314,7 +314,7 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = (userOpts
     },
     async *partialEmit() {},
     async *emit(ctx, content, _resource) {
-      if (ctx.argv.watch) return []
+      if (ctx.argv.watch && !ctx.argv.force) return []
 
       const { configuration } = ctx.cfg
       // Re-use OG image generation infrastructure

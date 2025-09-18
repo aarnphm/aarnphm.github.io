@@ -11,6 +11,12 @@ export const CommonArgv = {
     default: false,
     describe: "print out extra logging information",
   },
+  force: {
+    boolean: true,
+    alias: ["f"],
+    default: false,
+    describe: "force-load all plugins",
+  },
 }
 
 export const BuildArgv = {

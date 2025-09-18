@@ -27,6 +27,49 @@ import { toText } from "hast-util-to-text"
 import { headingRank } from "hast-util-heading-rank"
 import { checkMermaidCode } from "../transformers/ofm"
 
+const stripKnownExtensions = (value: string) =>
+  value.replace(/\.(md|mdx|markdown)$/i, "").replace(/\.html?$/i, "")
+
+const normalizeTranscludeSlug = (
+  currentSlug: FullSlug,
+  dataUrl?: string,
+  dataSlug?: string,
+): string | null => {
+  const candidate = (dataSlug ?? dataUrl)?.trim()
+  if (!candidate) return null
+
+  const anchorIdx = candidate.indexOf("#")
+  const anchor = anchorIdx >= 0 ? candidate.slice(anchorIdx) : ""
+  const bare = anchorIdx >= 0 ? candidate.slice(0, anchorIdx) : candidate
+
+  if (bare.startsWith("http://") || bare.startsWith("https://")) {
+    return `${bare}${anchor}`
+  }
+
+  const cleaned = stripKnownExtensions(bare)
+  if (cleaned.startsWith("/")) {
+    const slug = cleaned.slice(1)
+    return `${slug}${anchor}`
+  }
+
+  if (cleaned.startsWith("./") || cleaned.startsWith("../")) {
+    const segments = currentSlug.split("/").filter(Boolean).slice(0, -1)
+    const targetSegments = cleaned.split("/")
+    for (const segment of targetSegments) {
+      if (segment === "" || segment === ".") continue
+      if (segment === "..") {
+        segments.pop()
+        continue
+      }
+      segments.push(segment)
+    }
+    const slug = stripKnownExtensions(segments.join("/"))
+    return `${slug}${anchor}`
+  }
+
+  return `${stripKnownExtensions(cleaned)}${anchor}`
+}
+
 const heading = (h: State, node: Element): Heading => {
   // NOTE: for all heading, we append the links in hast syntax tree. For markdown, we don't need to do this.
   node.children.pop()
@@ -71,7 +114,10 @@ async function llmText(
     allFiles,
   }
 
-  const root = transcludeFinal(clone(tree), componentData, { dynalist: false })
+  const root = transcludeFinal(clone(tree), componentData, {
+    dynalist: false,
+    skipTranscludes: true,
+  })
   const mdast = toMdast(root, {
     handlers: {
       figure(h, node) {
@@ -321,33 +367,28 @@ async function llmText(
           h.patch(node, result)
           return result
         } else if (classNames.includes("transclude")) {
-          // we will also flatten transclude
-          const unfold: Element = {
-            type: "element",
-            tagName: "div",
-            properties: {},
-            children: [
-              {
-                type: "comment",
-                value: `transclude of ${node.properties.dataUrl}${node.properties.dataBlock ?? ""} start`,
-              },
-              {
-                type: "element",
-                tagName: "div",
-                properties: node.properties,
-                children: node.children,
-              },
-              {
-                type: "comment",
-                value: `transclude of ${node.properties.dataUrl}${node.properties.dataBlock ?? ""} end`,
-              },
-            ],
+          const dataUrl = node.properties?.dataUrl as string | undefined
+          const dataBlock = node.properties?.dataBlock as string | undefined
+          const dataSlugProp =
+            (node.properties?.dataSlug as string | undefined) ??
+            (node.properties?.["data-slug"] as string | undefined)
+          const normalizedSlug = normalizeTranscludeSlug(slug, dataUrl, dataSlugProp)
+          if (!normalizedSlug) {
+            return hastToMdastHandlers.blockquote(h, node)
           }
-          const result = hastToMdastHandlers.div(h, unfold)
-          // NOTE: We have to ignore the error here given that we have to patch the position of the unfold flow to this blockquote div
-          // @ts-ignore
-          h.patch(node, result)
-          return result
+          const finalSlug = `${normalizedSlug}${dataBlock ?? ""}`
+          const refText: Text = {
+            type: "text",
+            value: `<ref slug="${finalSlug}">`,
+          }
+          ;(refText.data as Record<string, unknown>) = { unescaped: true }
+          const refParagraph: Paragraph = {
+            type: "paragraph",
+            children: [refText],
+          }
+          // @ts-ignore patch expects same node type but we intentionally replace entire blockquote with paragraph
+          h.patch(node, refParagraph)
+          return refParagraph
         }
         return hastToMdastHandlers.blockquote(h, node)
       },
@@ -481,17 +522,26 @@ async function llmText(
   const refs = slug !== "index" ? `${slug}.html.md` : "llms.txt"
   const tags = fileData.frontmatter?.tags ?? ["default"]
   const content = `---
-slug: ${slug}
 tags:
 ${tags.map((t, idx, arr) => (idx != arr.length - 1 ? `  - ${t}` : `  - ${t}`)).join("\n")}
 description: "${fileData.frontmatter?.description ?? `reconstructed source of https://${baseUrl}/${slug}`}"
+reconstructured: true
 title: "${fileData.frontmatter?.title}"
 date: ${fileData.frontmatter?.date}
 permalink: https://${baseUrl}/${refs}
 full: https://${baseUrl}/llms-full.txt
 ---
 ${contentBase}`
-  reconstructed.push(content)
+  reconstructed.push(`<system_prompt>
+A few instructions for using https://${baseUrl}/llms-full.txt:
+- It will include all notes from Aaron.
+- Every files are encapsulated between <document slug=...></document>
+- If you encounter a "<ref slug=xxx>", then make sure to search for <document slug=xxx>.
+- If the representation here is lacking, you can still access the ref source via https://${baseUrl}/<slug>.html.md for the full markdown format.
+</system_prompt>
+<document slug=${slug}>
+${content}
+</document>`)
 
   if (slug === "index") {
     return write({
@@ -541,7 +591,7 @@ export const LLM: QuartzEmitterPlugin = () => {
   return {
     name,
     async *emit(ctx, content, resources) {
-      if (ctx.argv.watch) return []
+      if (ctx.argv.watch && !ctx.argv.force) return []
 
       const allFiles = content.map((c) => c[1].data)
       const reconstructed: string[] = []
@@ -551,13 +601,13 @@ export const LLM: QuartzEmitterPlugin = () => {
       }
       yield write({
         ctx,
-        content: reconstructed.join("\n\n"),
+        content: reconstructed.join("\n"),
         slug: "llms-full" as FullSlug,
         ext: ".txt",
       })
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
-      if (ctx.argv.watch) return []
+      if (ctx.argv.watch && !ctx.argv.force) return []
 
       const allFiles = content.map((c) => c[1].data)
 

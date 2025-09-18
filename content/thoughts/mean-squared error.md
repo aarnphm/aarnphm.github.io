@@ -1,30 +1,36 @@
 ---
+description: statistical measure of estimator quality, bias-variance decomposition, examples, and applications.
 id: mean-squared error
 tags:
   - seed
   - clippings
-description: statistical measure of estimator quality, bias-variance decomposition, examples, and applications.
+published: "2003-03-26"
 source: https://en.wikipedia.org/wiki/Mean_squared_error
 date: "2025-09-11"
 created: "2025-09-11"
-modified: 2025-09-17 03:00:25 GMT-04:00
-published: "2003-03-26"
+modified: 2025-09-18 17:39:33 GMT-04:00
 title: Mean squared error
 ---
 
 In statistics, the **mean squared error** (MSE) or **mean squared deviation** (MSD) of an estimator measures the average of the squares of the errors—the average squared difference between estimated values and the true value.
 
-$$\text{MSE} = \mathbb{E}[(\hat{\theta} - \theta)^2]$$
+$$
+\text{MSE} = \mathbb{E}[(\hat{\theta} - \theta)^2]
+$$
 
 MSE is a risk function corresponding to the expected value of squared error loss. It incorporates both the variance of the estimator and its bias:
 
-$$\text{MSE}(\hat{\theta}) = \text{Var}(\hat{\theta}) + [\text{Bias}(\hat{\theta}, \theta)]^2$$
+$$
+\text{MSE}(\hat{\theta}) = \text{Var}(\hat{\theta}) + [\text{Bias}(\hat{\theta}, \theta)]^2
+$$
 
 ## predictor
 
 For $n$ predictions $\hat{Y}_i$ and observed values $Y_i$:
 
-$$\text{MSE} = \frac{1}{n}\sum_{i=1}^{n}(Y_i - \hat{Y}_i)^2$$
+$$
+\text{MSE} = \frac{1}{n}\sum_{i=1}^{n}(Y_i - \hat{Y}_i)^2
+$$
 
 In matrix notation: $\text{MSE} = \frac{1}{n}\mathbf{e}^T\mathbf{e}$ where $\mathbf{e} = \mathbf{Y} - \hat{\mathbf{Y}}$
 
@@ -32,11 +38,15 @@ In matrix notation: $\text{MSE} = \frac{1}{n}\mathbf{e}^T\mathbf{e}$ where $\mat
 
 For estimator $\hat{\theta}$ of parameter $\theta$:
 
-$$\text{MSE}(\hat{\theta}) = \mathbb{E}_\theta[(\hat{\theta} - \theta)^2]$$
+$$
+\text{MSE}(\hat{\theta}) = \mathbb{E}_\theta[(\hat{\theta} - \theta)^2]
+$$
 
 **Bias-Variance Decomposition:**
 
-$$\text{MSE}(\hat{\theta}) = \text{Var}_\theta(\hat{\theta}) + [\text{Bias}(\hat{\theta}, \theta)]^2$$
+$$
+\text{MSE}(\hat{\theta}) = \text{Var}_\theta(\hat{\theta}) + [\text{Bias}(\hat{\theta}, \theta)]^2
+$$
 
 ## examples
 
@@ -44,13 +54,17 @@ $$\text{MSE}(\hat{\theta}) = \text{Var}_\theta(\hat{\theta}) + [\text{Bias}(\hat
 
 For sample mean $\bar{X} = \frac{1}{n}\sum_{i=1}^n X_i$:
 
-$$\text{MSE}(\bar{X}) = \mathbb{E}[(\bar{X} - \mu)^2] = \frac{\sigma^2}{n}$$
+$$
+\text{MSE}(\bar{X}) = \mathbb{E}[(\bar{X} - \mu)^2] = \frac{\sigma^2}{n}
+$$
 
 ### sample variance
 
 For corrected sample variance $S_{n-1}^2 = \frac{1}{n-1}\sum_{i=1}^n(X_i - \bar{X})^2$:
 
-$$\text{MSE}(S_{n-1}^2) = \frac{1}{n}\left(\gamma_2 + \frac{2n}{n-1}\right)\sigma^4$$
+$$
+\text{MSE}(S_{n-1}^2) = \frac{1}{n}\left(\gamma_2 + \frac{2n}{n-1}\right)\sigma^4
+$$
 
 where $\gamma_2 = \mu_4/\sigma^4 - 3$ is the excess kurtosis.
 
