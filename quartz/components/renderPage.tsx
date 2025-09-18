@@ -421,7 +421,11 @@ export const pageResources = (baseDir: FullSlug | RelativeURL, staticResources: 
     additionalHead: staticResources.additionalHead,
   }) satisfies StaticResources
 
-const defaultTranscludeOpts: TranscludeOptions = { dynalist: true, title: true }
+const defaultTranscludeOpts: TranscludeOptions = {
+  dynalist: true,
+  title: true,
+  skipTranscludes: false,
+}
 
 interface TranscludeStats {
   words: number
@@ -457,7 +461,7 @@ export function transcludeFinal(
     opts = { ...opts, ...fileData.frontmatter?.transclude }
   }
 
-  const { dynalist } = opts
+  const { dynalist, skipTranscludes } = opts
   const isLanding = slug === "index"
 
   const anchor = (
@@ -521,6 +525,9 @@ export function transcludeFinal(
     ) as string
 
     if (classNames.includes("transclude")) {
+      if (skipTranscludes) {
+        return
+      }
       const [inner] = node.children as Element[]
       const transcludeTarget = inner.properties["data-slug"] as FullSlug
       const page = allFiles.find((f) => f.slug === transcludeTarget)

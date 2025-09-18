@@ -12,6 +12,7 @@ export interface Argv {
   watch: boolean
   port: number
   wsPort: number
+  force: boolean
   remoteDevHost?: string
   concurrency?: number
 }

@@ -3,7 +3,7 @@ id: Helmholtz decomposition
 tags:
   - math
 date: "2024-11-27"
-modified: "2024-11-27"
+modified: 2025-09-18 11:50:01 GMT-04:00
 title: Helmholtz decomposition
 ---
 

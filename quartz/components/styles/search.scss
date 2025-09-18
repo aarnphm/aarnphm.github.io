@@ -12,6 +12,8 @@
   }
 
   & > .search-button {
+    background-color: transparent;
+    border: 1px var(--lightgray) solid;
     font-family: inherit;
     font-size: inherit;
     padding: 0;
@@ -28,7 +30,7 @@
 
     & > p {
       display: inline;
-      padding: 0 1rem;
+      color: var(--gray);
     }
 
     & svg {
@@ -36,7 +38,7 @@
 
       .search-path {
         stroke: var(--darkgray);
-        stroke-width: 2px;
+        stroke-width: 1.5px;
         transition: stroke 0.5s ease;
       }
     }

@@ -76,7 +76,7 @@ export default (() => {
           h(
             "a",
             {
-              href: resolveRelative(fileData.slug!, (fileData.slug! + ".html.md") as FullSlug),
+              href: resolveRelative(fileData.slug!, (fileData.slug! + ".md") as FullSlug),
               target: "_blank",
               rel: "noopener noreferrer",
               class: "llm-source",
@@ -89,10 +89,7 @@ export default (() => {
               type: "button",
               ariaLabel: "copy source",
               class: "clipboard-button",
-              "data-href": resolveRelative(
-                fileData.slug!,
-                (fileData.slug! + ".html.md") as FullSlug,
-              ),
+              "data-href": resolveRelative(fileData.slug!, (fileData.slug! + ".md") as FullSlug),
             },
 
             h("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "copy-icon" }, [

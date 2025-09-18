@@ -1,4 +1,4 @@
-import FlexSearch, { DocumentData } from "flexsearch"
+import FlexSearch, { DefaultDocumentSearchResults, DocumentData, Id } from "flexsearch"
 import type { ContentDetails } from "../../plugins"
 import {
   registerEscapeHandler,
@@ -19,6 +19,7 @@ interface Item extends DocumentData {
   tags: string[]
   aliases: string[]
   target: string
+  [key: string]: any
 }
 
 // Can be expanded with things like "term" in the future
@@ -407,13 +408,7 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
     searchLayout.classList.toggle("display-results", currentSearchTerm !== "")
     searchType = currentSearchTerm.startsWith("#") ? "tags" : "basic"
 
-    // Define a type for search results
-    interface SearchResult {
-      field: string
-      result: number[]
-    }
-
-    let searchResults: SearchResult[] = []
+    let searchResults: DefaultDocumentSearchResults<Item>
     if (searchType === "tags") {
       currentSearchTerm = currentSearchTerm.substring(1).trim()
       const separatorIndex = currentSearchTerm.indexOf(" ")
@@ -421,15 +416,13 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
         // search by title and content index and then filter by tag (implemented in flexsearch)
         const tag = currentSearchTerm.substring(0, separatorIndex)
         const query = currentSearchTerm.substring(separatorIndex + 1).trim()
-        // @ts-ignore
         const results = await index.searchAsync({
           query: query,
           // return at least 10000 documents, so it is enough to filter them by tag
           limit: Math.max(numSearchResults, 10000),
           index: ["title", "content", "aliases"],
-          tag: tag,
+          tag: { tags: tag },
         })
-        // @ts-ignore
         searchResults = Object.values(results)
         // set search type to basic and remove tag from term for proper highlighting and scroll
         searchType = "basic"
@@ -441,7 +434,6 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
           limit: numSearchResults,
           index: ["tags"],
         })
-        // @ts-ignore
         searchResults = Object.values(results)
       }
     } else if (searchType === "basic") {
@@ -450,13 +442,29 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
         limit: numSearchResults,
         index: ["title", "content", "aliases"],
       })
-      // @ts-ignore
       searchResults = Object.values(results)
     }
 
+    const coerceIds = (hit?: DefaultDocumentSearchResults<Item>[number]): number[] => {
+      if (!hit) {
+        return []
+      }
+
+      return hit.result
+        .map((value: Id) => {
+          if (typeof value === "number") {
+            return value
+          }
+
+          const parsed = Number.parseInt(String(value), 10)
+          return Number.isNaN(parsed) ? null : parsed
+        })
+        .filter((value): value is number => value !== null)
+    }
+
     const getByField = (field: string): number[] => {
-      const results = searchResults.filter((x) => x.field === field)
-      return results.length === 0 ? [] : [...results[0].result]
+      const hit = searchResults.find((x) => x.field === field)
+      return coerceIds(hit)
     }
 
     // order titles ahead of content

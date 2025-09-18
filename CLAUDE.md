@@ -72,6 +72,7 @@ React-like components in `quartz/components/` using Preact:
 - Obsidian-style callouts and embedded links
 - All math equations in LaTeX format
 - Citations via `[@reference]` syntax linking to References.bib
+- All headings must be in lowercase.
 
 **Academic References:**
 For arxiv papers, fetch BibTeX entries:

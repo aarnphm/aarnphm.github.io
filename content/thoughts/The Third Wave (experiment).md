@@ -3,47 +3,74 @@ id: The Third Wave (experiment)
 tags:
   - seed
   - clippings
-published: "2023-04-05"
-source: https://simple.wikipedia.org/wiki/The_Third_Wave_(experiment)
-date: "2025-08-01"
-modified: 2025-09-17 02:59:45 GMT-04:00
-created: "2025-08-01"
 description: experimental social campaign, 1967
-title: The Third Wave (experiment)
+source: https://theanarchistlibrary.org/library/ron-jones-the-third-wave-1967-an-account
+date: "2025-08-01"
+created: "2025-08-01"
+modified: 2025-09-18 08:43:07 GMT-04:00
+published: "2023-04-05"
+title: The Third Wave
 ---
 
-**The Third Wave** was an experimental social campaign made by California high school history teacher [Ron Jones](https://simple.wikipedia.org/wiki/Ron_Jones "Ron Jones") in 1967. This experiment was meant to explain to the students how the German population could accept the actions of the [Nazis](https://simple.wikipedia.org/wiki/Nazi_Germany "Nazi Germany") during the rise of the Third Reich and the [Second World War](https://simple.wikipedia.org/wiki/WWII "WWII").[^2] [^3] [^4] [^5] [^6]
+> [!abstract]
+> Ron Jones staged the Third Wave inside his Cubberley High School world-history class during April 3–7, 1967, to make fascist discipline and group conformity legible to adolescents steeped in postwar liberalism.[@jones1972thirdwave][@lipsett2008historyfirstperson] The exercise rapidly exceeded the classroom boundary, showing how procedural rigor, symbols, and surveillance can conjure authoritarian loyalty in days.
 
-Jones taught his students about Nazi Germany. During his senior level World History class, he found it difficult to explain to his students how the German population could accept the actions of the Nazis. He decided to make a fake [social movement](https://simple.wikipedia.org/wiki/Social_movement "Social movement") as an example of the appeal of [fascism](https://simple.wikipedia.org/wiki/Fascism "Fascism"). The experiment took place over the course of 5 days (or nine, according to student Sherry Toulsey). Jones started a series of exercises in his classroom mainly focusing on discipline and community. This was intended to model certain traits of the Nazi movement.
+## experimental brief
 
-The experiment started to get out of control. The movement grew outside of his class and members began to increase in the hundreds. He convinced the students to attend a rally where he claimed that the classroom project was part of a nationwide movement, and that the announcement of a Third Wave presidential candidate would be televised. When the students arrived, they were shown a blank channel. Jones told his students that the movement was an experiment about fascism. He showed his students a short film about the actions of Nazi Germany.[^7]
+- Objective:
+  - expose students to the mechanics of authoritarian takeover by replacing democratic norms with ritualised obedience inside a controlled classroom cell.[@jones1972thirdwave]
+- Population:
+  - thirty sophomores and seniors at Ellwood P. Cubberley High School in Palo Alto; additional students joined voluntarily once rumours spread.[@weinfield1991rememberingthirdwave]
+- Instructor stance:
+  - Jones simultaneously positioned himself as benevolent autocrat and propagandist, borrowing cadence from Marine drills and New Left organising to keep orders credible.[@lipsett2008historyfirstperson]
 
-This project was turned into an American film, **[The Wave](<https://simple.wikipedia.org/wiki/The_Wave_(1981_film)> "The Wave (1981 film)")**, in 1981, and a very praised German film, **[Die Welle](<https://simple.wikipedia.org/w/index.php?title=The_Wave_(2008_film)&action=edit&redlink=1> "The Wave (2008 film) (not yet started)")**, in 2008.
+## day-by-day protocol
 
-The experiment started at [Cubberley High School](https://simple.wikipedia.org/w/index.php?title=Cubberley_High_School&action=edit&redlink=1 "Cubberley High School (not yet started)") in [Palo Alto](https://simple.wikipedia.org/wiki/Palo_Alto "Palo Alto"), [California](https://simple.wikipedia.org/wiki/California "California"), during the first week of April, 1967.[^1] Jones was a member of the [SDS](https://simple.wikipedia.org/wiki/Students_for_a_Democratic_Society "Students for a Democratic Society"),[^9] sponsor of the Cubberley United Student Movement,[^10] and a supporter of the [Black Panthers](https://simple.wikipedia.org/wiki/Black_Panther_Party "Black Panther Party").[^11] Jones decided to create this experiment after finding it hard to tell his students how the [German people](https://simple.wikipedia.org/wiki/German_people "German people") could have ignored [the Holocaust](https://simple.wikipedia.org/wiki/Holocaust "Holocaust").[^7] Jones started a movement called "The Third Wave" and told his students that the movement wanted to end [democracy](https://simple.wikipedia.org/wiki/Democracy "Democracy").[^2] The idea that democracy focuses on individuals was seen as a drawback, and Jones focused this main point of the movement in its motto: "Strength through discipline, strength through community, strength through action, strength through pride." [^2]
+### day 1 — strength through discipline (monday, april 3)
 
-The experiment was not well documented, being briefly mentioned in two issues of the Cubberley High School student newspaper, _The Cubberley Catamount_.[^8] [^12] Another issue of the paper has a longer description of the experiment when it was finished.[^2] Jones wrote a detailed recollection about nine years after.[^7] Articles from other authors followed, some featuring an interview with Jones and the students involved.[^3]
+Jones enforced silent entry, upright posture, and synchronized responses. He rewarded perfect compliance with instant approval, proving how procedural clarity lowers cognitive friction.[@jones1972thirdwave]
 
-[^1]: [^8]
+### day 2 — strength through community (tuesday, april 4)
 
-[^2]: Bill Klink (April 21, 1967). ["'Third Wave' presents inside look into Fascism"](https://web.archive.org/web/20181023094600/http://www.cubberleycatamount.com/Content/66-67/Catamount). _Cubberley Catamount_. Vol. 11, no. 14. Ellwood P. Cubberley High School. Archived from [the original](http://www.cubberleycatamount.com/Content/66-67/Catamount%20Pages/V11No14/) on 2018-10-23. Retrieved 2015-05-14.
+Students adopted a two-finger salute, collective motto, and roll-call response "Strength through discipline." Identity cues plus mutual policing elevated the affective bond, mirroring [[thoughts/observer-expectancy effect|observer expectancies]] inside the classroom.[@jones1972thirdwave]
 
-[^3]: Leslie Weinfield (September 1991). ["Remembering the 3rd Wave"](https://web.archive.org/web/20110719004549/http://www.ronjoneswriter.com/wave.html). _Ron Jones Website_. Archived from [the original](http://www.ronjoneswriter.com/wave.html) on July 19, 2011. Retrieved July 19, 2011.
+### day 3 — strength through action (wednesday, april 5)
 
-[^4]: ["Palo Alto student social experiment goes terribly wrong in 'Invisible Line'"](https://www.mercurynews.com/2020/08/05/palo-alto-student-social-experiment-goes-terribly-wrong-in-invisible-line). _The Mercury News_. 2020-08-05. Retrieved 2022-05-17.
+Jones formalised membership cards, assigned each student to recruit peers, and installed a complaint channel for reporting dissent. This bureaucratic layer weaponised trust and gave early joiners status leverage.[@weinfield1991rememberingthirdwave]
 
-[^5]: Kirti, Kamna (2021-06-23). ["This Classroom Experiment Explains How Hitler Rose to Power & No One Protested"](https://medium.com/the-collector/this-classroom-experiment-explains-how-hitler-rose-to-power-why-no-one-protested-e653676437). _The Collector_. Retrieved 2022-05-17.
+### day 4 — strength through pride (thursday, april 6)
 
-[^6]: ["Anthea Lipsett meets the teacher who carried out a terrifying experiment in fascism in the 1960s"](https://www.theguardian.com/education/2008/sep/16/schoolsworldwide.film). _the Guardian_. 2008-09-15. Retrieved 2022-05-17.
+Over two hundred students claimed affiliation. Jones broadcast fabricated intelligence about a national Third Wave network, published propaganda, and scheduled a rally, tightening the information loop and crowd-managing via scarcity of access.[@lipsett2008historyfirstperson]
 
-[^7]: Jones, Ron (1972). ["The Third Wave"](https://web.archive.org/web/20050224084643/http://www.vaniercollege.qc.ca/Auxiliary/Psychology/Frank/Thirdwave.html). Archived from [the original](http://www.vaniercollege.qc.ca/Auxiliary/Psychology/Frank/Thirdwave.html) on 2005-02-24. Retrieved 2016-12-03., and Jones, Ron (1976). ["The Third Wave"](https://web.archive.org/web/20150202082041/http://www.thewavehome.com/1976_The-Third-Wave_story.htm). _The Wave Home_. Archived from [the original](http://www.thewavehome.com/1976_The-Third-Wave_story.htm) on 2015-02-02. Retrieved 2016-12-03.
+### Day 5 — Revelation (Friday, April 7)
 
-[^8]: Bernice Sakuma & Robin Leler (April 7, 1967). ["Through the Tiger Eye"](https://web.archive.org/web/20170811010452/http://www.cubberleycatamount.com/Content/66-67/Catamount%20Pages/V11No13/). _Cubberley Catamount_. Vol. 11, no. 13. Ellwood P. Cubberley High School. Archived from [the original](http://www.cubberleycatamount.com/Content/66-67/Catamount%20Pages/V11No13/) on 2017-08-11. Retrieved 2015-05-14.
+At the rally Jones projected an empty television feed, then screened Holocaust footage and disclosed the hoax. The abrupt epistemic reversal stressed that fascism thrives on learned obedience and abdication of personal agency.[@jones1972thirdwave]
 
-[^9]: Charles Scott (December 8, 1967). ["The Games People Play..."](https://web.archive.org/web/20170811010651/http://www.cubberleycatamount.com/Content/67-68/Catamount%20Pages/V12No6/) _Cubberley Catamount_. Vol. 12, no. 6. Ellwood P. Cubberley High School. Archived from [the original](http://www.cubberleycatamount.com/Content/67-68/Catamount%20Pages/V12No6/) on 2017-08-11. Retrieved 2015-05-14.
+## Mechanisms Observed
 
-[^10]: [""Lesson Plan, the story of The Third Wave""](http://www.lessonplanmovie.com/). Retrieved 2018-11-13.
+- Ritual compression: concise commands and kinesthetic drills displace deliberation, making obedience feel efficient.[@jones1972thirdwave]
+- Symbolic affordances: visual signals (salute, banners, motto typography) offer status currency, collapsing nuanced identities into a single performative axis.[@lipsett2008historyfirstperson]
+- Distributed surveillance: deputising students to watch one another generated a high-signal gossip channel that suppressed dissent without overt force.[@weinfield1991rememberingthirdwave]
+- Out-group construction: non-participants were framed as chaotic, giving members a rationale to escalate recruitment pressure.[@weinfield1991rememberingthirdwave]
 
-[^11]: ["The Catamount: "Society is Sterile" -- R. Jones"](https://web.archive.org/web/20211123060431/http://www.cubberleycatamount.com/Content/69-70/Catamount%20Pages/V14No10%2019700304/). Archived from [the original](http://www.cubberleycatamount.com/Content/69-70/Catamount%20Pages/V14No10%2019700304/) on 2021-11-23. Retrieved 2018-11-13.
+> [!warning] Ethical Risk Envelope
+> The experiment lacked informed consent, psychological safeguards, or opt-out mechanics. Jones effectively recreated authoritarian harm pathways on minors, crossing today’s research ethics constraints (IRB, Belmont principles). The escalation underscores how fast-loop pedagogy can mutate into abuse when the instructor controls both stimulus and evaluation.
 
-[^12]: Bernice Sakuma & Robin Leler (April 7, 1967). ["Through the Tiger Eye"](https://web.archive.org/web/20170811010452/http://www.cubberleycatamount.com/Content/66-67/Catamount%20Pages/V11No13/). _Cubberley Catamount_. Vol. 11, no. 13. Ellwood P. Cubberley High School. Archived from [the original](http://www.cubberleycatamount.com/Content/66-67/Catamount%20Pages/V11No13/) on 2017-08-11. Retrieved 2015-05-14.
+## aftermath and media diffusion
+
+Jones was removed from teaching history the following academic year yet continued on campus in other roles, signalling administrative discomfort without public reckoning.[@lipsett2008historyfirstperson] Subsequent retellings include the 1972 first-person essay, the 1981 ABC television film _The Wave_, and Germany’s _Die Welle_ (2008), each reframing the narrative for anxieties about contemporary extremism.[@lee2016thirdwavemedia]
+
+> [!note] Archival Scarcity
+> Primary coverage came from _The Cubberley Catamount_ student newspaper; surviving issues are digitised in fragments, leaving researchers dependent on oral histories and Jones’s retrospective accounts.[@weinfield1991rememberingthirdwave]
+
+## pedagogical takeaways
+
+- Embed discussions of democratic fragility directly in civics curricula instead of shock experiments; scaffold with structured debates, case studies, and reflective journals inside [[thoughts/education]].
+- Treat charismatic leadership drills as inherently high-risk interventions requiring transparent guardrails and third-party oversight.
+- Use the Third Wave as a comparative study alongside texts like Orwell’s _1984_ to highlight how language compression and ritual produce [[thoughts/Orwellian]] surveillance norms.
+
+## Open Questions
+
+- How would a digitally mediated version propagate when coordination primitives (group chats, feeds) collapse spatial friction?
+- Can we design counter-rituals that inoculate students against authoritarian aesthetics without inducing the same coercive dynamics?
+- What metrics would reliably flag unsafe convergence (e.g., density of anonymous reports, auto-catalytic recruitment rates) before day five?

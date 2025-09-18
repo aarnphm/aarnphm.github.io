@@ -3,9 +3,10 @@ id: index
 tags:
   - seed
   - ml
+  - tsfm
 description: from scratch frfr
 date: "2025-09-11"
-modified: 2025-09-14 03:22:09 GMT-04:00
+modified: 2025-09-19 12:21:42 GMT-04:00
 title: numpy implementation of Transformer
 ---
 

@@ -8,11 +8,11 @@ tags:
   - evergreen
 description: and a celebration for the act of making.
 date: "2021-12-22"
+modified: 2025-09-18 15:50:29 GMT-04:00
+comments: false
 aliases:
   - work
   - portfolio
-modified: 2025-09-11 11:24:52 GMT-04:00
-comments: false
 title: craft.
 ---
 
@@ -107,9 +107,14 @@ You can find internal monologue under [[/posts/]] index.
   - Source: [[thoughts/images/htn-openllm.pdf|slides]]
     ![[thoughts/images/htn-2023-speaks.webp]]
 - infer, a [[/lectures|workshop series]] at New Stadium (2025-)
-  - Everything about inference engine and everything in between
-  - List:
-    1.
+  - Everything about inference engine and in between.
+  - so far:
+    - [[lectures/1/notes|1. overview of transformers-based inference]]
+    - [[lectures/2/notes|2. attention convexity]]
+    - [[lectures/3/notes|3. K,V, and KVCache]]
+    - [[lectures/4/notes|4. Speculative decoding]]
+      - [[lectures/4/notes|41. EAGLE, and MTP]]
+        - [[lectures/4/notes|411. linear algebra]]
 
 ## companies.
 

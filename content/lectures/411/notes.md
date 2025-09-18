@@ -9,7 +9,7 @@ description: linear algebra notes
 transclude:
   title: false
 date: "2025-09-12"
-modified: 2025-09-17 02:33:50 GMT-04:00
+modified: 2025-09-19 23:59:16 GMT-04:00
 title: supplement to 0.411
 ---
 
@@ -847,6 +847,54 @@ Back substitution gives $z=\tfrac{5}{7}$, $y=\tfrac{10}{7}$, $x=\tfrac{6}{7}$. P
 > - Infinite: $x+y=1$, $2x+2y=2$ → same line; one pivot, one free var. General solution $\{(t,1-t)\mid t\in\mathbb{R}\}$.
 > - None: $x+y=1$, $x+y=2$ → contradictory rows after elimination $[0\;0\mid 1]$.
 
+## dual
+
+> [!abstract] Dual spaces and dual bases
+> For a vector space $V$ over $\mathbb F$, the dual $V^*=\{\varphi:V\to\mathbb F\,|\,\varphi\text{ linear}\}$ consists of covectors (linear functionals). The natural pairing is $\langle\varphi, v\rangle=\varphi(v)$.
+
+### Dual basis and coordinates
+
+- Given a basis $B=\{e_1,\dots,e_n\}$ of $V$, the dual basis $B^*=\{e^1,\dots,e^n\}$ satisfies $e^i(e_j)=\delta^i_j$.
+- Any $\varphi\in V^*$ has unique coordinates $\varphi=\sum_i \alpha_i e^i$; any $v\in V$ has $v=\sum_j v_j e_j$. The scalar $\varphi(v)=\sum_i \alpha_i v_i$ is coordinate‑free.
+
+### Linear maps and the dual (pullback)
+
+- For $T:V\to W$, the dual map $T^*:W^*\to V^*$ is $T^*(\psi)=\psi\circ T$. In matrices (standard bases), $[T^*]=[T]^\top$.
+- Application: normal equations in least squares arise from applying $T^*$ to the residual functional, giving $A^\top A x=A^\top b$.
+
+### Inner products and adjoints
+
+- An inner product $\langle\cdot,\cdot\rangle$ gives an isomorphism $\flat:V\to V^*$ via $v^{\flat}=\langle v,\cdot\rangle$, and inverse $\sharp:V^*\to V$ (the Riesz map). Coordinates depend on the metric.
+- The adjoint $T^\dagger:W\to V$ satisfies $\langle Tx,y\rangle=\langle x,T^\dagger y\rangle$. In Euclidean bases, $[T^\dagger]=[T]^\top$; with weighted inner products $\langle x,y\rangle_M=x^\top M y$, one gets $[T^\dagger]=M^{-1} [T]^\top N$ (for $M,N\succ 0$ on domain/codomain).
+
+### Change of basis: covariant vs. contravariant
+
+- If vector coordinates change by $[v]'=S^{-1}[v]$ (contravariant), then covector coordinates change by $[\varphi]'=[\varphi] S$ (covariant), preserving $\varphi(v)$.
+- Rows (covectors) transform with the inverse‑transpose of how columns (vectors) transform.
+
+> [!example] Constraint as a covector
+> In $\mathbb R^3$, the plane $2x-y+z=0$ corresponds to the covector $\varphi=[2\,-1\,1]$ acting as $\varphi(v)=0$. Its kernel is the plane through the origin; any normal vector to the plane represents the same covector up to scaling.
+
+### Weighted least squares (worked adjoint example)
+
+Minimize $\|Ax-b\|_{W}^{2}=(Ax-b)^\top W (Ax-b)$ with $W\succ 0$. The normal equations use the weighted adjoint: $A^\dagger_W = A^\top W$, giving
+$$A^\top W A\,x=A^\top W b.$$
+Example with
+
+$$
+A=\begin{bmatrix}1&1\\1&2\\1&3\end{bmatrix},\quad
+W=\operatorname{diag}(1,4,1),\quad
+b=\begin{bmatrix}1\\2\\2\end{bmatrix}.
+$$
+
+Compute
+
+$$
+A^\top W A=\begin{bmatrix}6&12\\12&26\end{bmatrix},\qquad A^\top W b=\begin{bmatrix}11\\23\end{bmatrix},
+$$
+
+so $\begin{bmatrix}6&12\\12&26\end{bmatrix}x=\begin{bmatrix}11\\23\end{bmatrix}$ with solution $x_1=\tfrac{5}{6},\;x_2=\tfrac{1}{2}$. In the $W$‑inner product, the adjoint of $A$ is $A^\dagger_W=A^\top W$ (not just $A^\top$).
+
 ## matrices
 
 > [!abstract] What is a matrix?
@@ -1025,7 +1073,7 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 
 > [!tip] Computation note
 >
-> Naive multiplication is $O(n^3)$ for $n\times n$. Libraries use cache‑aware blocking and vectorization; advanced algorithms (Strassen, etc.) trade constants for asymptotics.
+> Naive multiplication is $O(n^3)$ for $n\times n$. Libraries use cache‑aware blocking and vectorization; advanced algorithms ([[thoughts/Strassen algorithm|Strassen]], etc.) trade constants for asymptotics.
 
 #### how the naive algorithm works
 
@@ -1174,13 +1222,14 @@ for i in 0..m step Mb:                # block rows of A/C
 > [!tip] Choosing dimensions
 > Keep `Mb,Nb,Kb` large enough to amortize packing but small enough to fit L2; choose `mr×nr` to saturate registers/FMA (e.g., 8×6 AVX2, 16×8 AVX‑512, architecture‑dependent).
 
-### CUDA/cuBLAS GEMM (GPU)
+### CUDA/cuBLAS GEMM
 
 - Use cuBLAS for high‑performance GPU GEMM. cuBLAS assumes column‑major storage; treat row‑major by swapping/transposing operands so that you compute `C^T = B^T A^T`.
 - Prefer `cublasGemmEx`/`cublasLtMatmul` to access Tensor Cores (FP16/BF16/TF32 with FP32 accumulation). Set math mode appropriately for your CUDA version/hardware.
 
 > [!example] Basic SGEMM (column‑major)
-> Multiplies `C = α A B + β C` with `A∈R^{m×k}`, `B∈R^{k×n}`, `C∈R^{m×n}`. Leading dimension `lda=m`, `ldb=k`, `ldc=m` in column‑major.
+>
+> Multiplies $C = \alpha A B + \beta C$ with $A \in R^{m\times k},B\in R^{k\times n},C \in R^{m\times n}$. Leading dimension $\text{lda}=m,\text{ldb}=k,\text{ldc}=m$ in column‑major.
 >
 > ```cpp
 > // g++/nvcc: nvcc -O3 gemm_cublas.cu -lcublas
@@ -1210,9 +1259,10 @@ for i in 0..m step Mb:                # block rows of A/C
 > ```
 
 > [!tip] Row‑major inputs
-> If `A,B,C` are row‑major in host code, compute `C^T = B^T A^T` by calling `cublasSgemm(h, CUBLAS_OP_T, CUBLAS_OP_T, n, m, k, ...)` with swapped operands and leading dimensions set to their row‑major strides.
+> If `A,B,C` are row‑major in host code, compute $C^T = B^T A^T$ by calling `cublasSgemm(h, CUBLAS_OP_T, CUBLAS_OP_T, n, m, k, ...)` with swapped operands and leading dimensions set to their row‑major strides.
 
 > [!example] Tensor Cores via `cublasGemmEx`
+>
 > Mixed precision on Ampere+: FP16/BF16 inputs, FP32 accumulate. Enable fast modes (TF32/FP16) if desired.
 >
 > ```cpp
@@ -1281,7 +1331,7 @@ for i in 0..m step Mb:                # block rows of A/C
 > - Alignment: Tensor Cores prefer dimensions that are multiples of 8/16 (FP16/BF16); pad or use Lt heuristics.
 > - Streams: associate a CUDA stream with `cublasSetStream` to overlap transfers/compute; ensure lifetime of inputs until the GEMM completes.
 
-### Strassen’s algorithm (case)
+### [[thoughts/Strassen algorithm|Strassen]]’s algorithm (case)
 
 - Idea: partition $A,B$ into 2×2 blocks of size $n/2$ and compute 7 block products instead of 8 via linear combinations, reducing complexity to $O(n^{\log_2 7})\approx O(n^{2.807})$.
 - One recursion step (square powers of two for simplicity):
@@ -1290,7 +1340,7 @@ for i in 0..m step Mb:                # block rows of A/C
   \begin{align*}
   M*1&=(A*{11}+A*{22})(B*{11}+B*{22}), & M_2&=(A*{21}+A*{22})B*{11}, & M*3&=A*{11}(B*{12}-B*{22}),\\
   M*4&=A*{22}(B*{21}-B*{11}), & M*5&=(A*{11}+A*{12})B*{22}, & M*6&=(A*{21}-A*{11})(B*{11}+B*{12}),\\
-  M_7&=(A*{12}-A*{22})(B*{21}+B\_{22}),
+  M_7&=(A*{12}-A*{22})(B*{21}+B_{22}),
   \end{align*}
   $$
   then
@@ -1348,7 +1398,8 @@ def strassen(A: np.ndarray, B: np.ndarray, cutoff: int = 128) -> np.ndarray:
   return Cp[: A.shape[0], : B.shape[1]]
 ```
 
-> [!note] When to use Strassen
+> [!note] when to use strassen
+>
 > Use only for very large dense square-ish matrices, good arithmetic intensity, and when you can tolerate a modest increase in rounding error. Otherwise, high‑quality blocked GEMM is typically faster and more stable.
 
 > [!warning] Common pitfalls
@@ -1573,54 +1624,6 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 
 - Use symmetric algorithms (QR, divide‑and‑conquer, MRRR) for Hermitian problems; they return orthonormal eigenvectors and are backward stable.
 - For non‑normal $A$, eigenvalues can be ill‑conditioned and sensitive; consider the SVD and pseudospectra for robustness, and prefer Schur forms.
-
-## dual
-
-> [!abstract] Dual spaces and dual bases
-> For a vector space $V$ over $\mathbb F$, the dual $V^*=\{\varphi:V\to\mathbb F\,|\,\varphi\text{ linear}\}$ consists of covectors (linear functionals). The natural pairing is $\langle\varphi, v\rangle=\varphi(v)$.
-
-### Dual basis and coordinates
-
-- Given a basis $B=\{e_1,\dots,e_n\}$ of $V$, the dual basis $B^*=\{e^1,\dots,e^n\}$ satisfies $e^i(e_j)=\delta^i_j$.
-- Any $\varphi\in V^*$ has unique coordinates $\varphi=\sum_i \alpha_i e^i$; any $v\in V$ has $v=\sum_j v_j e_j$. The scalar $\varphi(v)=\sum_i \alpha_i v_i$ is coordinate‑free.
-
-### Linear maps and the dual (pullback)
-
-- For $T:V\to W$, the dual map $T^*:W^*\to V^*$ is $T^*(\psi)=\psi\circ T$. In matrices (standard bases), $[T^*]=[T]^\top$.
-- Application: normal equations in least squares arise from applying $T^*$ to the residual functional, giving $A^\top A x=A^\top b$.
-
-### Inner products and adjoints
-
-- An inner product $\langle\cdot,\cdot\rangle$ gives an isomorphism $\flat:V\to V^*$ via $v^{\flat}=\langle v,\cdot\rangle$, and inverse $\sharp:V^*\to V$ (the Riesz map). Coordinates depend on the metric.
-- The adjoint $T^\dagger:W\to V$ satisfies $\langle Tx,y\rangle=\langle x,T^\dagger y\rangle$. In Euclidean bases, $[T^\dagger]=[T]^\top$; with weighted inner products $\langle x,y\rangle_M=x^\top M y$, one gets $[T^\dagger]=M^{-1} [T]^\top N$ (for $M,N\succ 0$ on domain/codomain).
-
-### Change of basis: covariant vs. contravariant
-
-- If vector coordinates change by $[v]'=S^{-1}[v]$ (contravariant), then covector coordinates change by $[\varphi]'=[\varphi] S$ (covariant), preserving $\varphi(v)$.
-- Rows (covectors) transform with the inverse‑transpose of how columns (vectors) transform.
-
-> [!example] Constraint as a covector
-> In $\mathbb R^3$, the plane $2x-y+z=0$ corresponds to the covector $\varphi=[2\,-1\,1]$ acting as $\varphi(v)=0$. Its kernel is the plane through the origin; any normal vector to the plane represents the same covector up to scaling.
-
-### Weighted least squares (worked adjoint example)
-
-Minimize $\|Ax-b\|_{W}^{2}=(Ax-b)^\top W (Ax-b)$ with $W\succ 0$. The normal equations use the weighted adjoint: $A^\dagger_W = A^\top W$, giving
-$$A^\top W A\,x=A^\top W b.$$
-Example with
-
-$$
-A=\begin{bmatrix}1&1\\1&2\\1&3\end{bmatrix},\quad
-W=\operatorname{diag}(1,4,1),\quad
-b=\begin{bmatrix}1\\2\\2\end{bmatrix}.
-$$
-
-Compute
-
-$$
-A^\top W A=\begin{bmatrix}6&12\\12&26\end{bmatrix},\qquad A^\top W b=\begin{bmatrix}11\\23\end{bmatrix},
-$$
-
-so $\begin{bmatrix}6&12\\12&26\end{bmatrix}x=\begin{bmatrix}11\\23\end{bmatrix}$ with solution $x_1=\tfrac{5}{6},\;x_2=\tfrac{1}{2}$. In the $W$‑inner product, the adjoint of $A$ is $A^\dagger_W=A^\top W$ (not just $A^\top$).
 
 ## cross product
 

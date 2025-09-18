@@ -7,14 +7,14 @@ tags:
 description: and posteriori information retrieval.
 date: "2024-02-07"
 abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
-modified: 2025-09-17 05:41:11 GMT-04:00
+modified: 2025-09-18 18:23:56 GMT-04:00
 title: Attention
 ---
 
 Attention operates on a sequence of query $Q$, key $K$ and value $V$ vector. Attention matrix of a sequence then computed as [@vaswani2023attentionneed]:
 
 $$
-A(Q, K, V) = \text{softmax}(\frac{Q \cdot K^{T}}{\sqrt{d}})V \space \space \text{ for } Q_{L \times d}, K_{L \times d}, V_{L \times d}
+A(Q, K, V) = \operatorname{softmax}(\frac{Q \cdot K^{T}}{\sqrt{d}})V \space \space \text{ for } Q_{L \times d}, K_{L \times d}, V_{L \times d}
 $$
 
 First introduced in [@vaswani2023attentionneed]. One can think of attention for QKV as:

@@ -33,6 +33,7 @@ const configuration: GlobalConfiguration = {
     "capstone",
     "**/.conform*",
     "**/target",
+    "**/data",
   ],
   defaultDateType: "created",
   theme: {
@@ -133,6 +134,7 @@ const config: QuartzConfig = {
         ],
       }),
       Plugin.TableOfContents({ maxDepth: 5 }),
+      Plugin.LLM(),
       Plugin.Slides(),
     ],
     filters: [Plugin.RemoveDrafts()],
@@ -140,7 +142,7 @@ const config: QuartzConfig = {
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
       Plugin.ContentPage(),
-      Plugin.LLM(),
+      Plugin.LLMText(),
       Plugin.FolderPage({
         pageBody: Component.FolderContent({
           sort: (a: QuartzPluginData, b: QuartzPluginData): number => {
@@ -158,6 +160,7 @@ const config: QuartzConfig = {
             ".py",
             ".go",
             ".c",
+            ".cpp",
             ".m",
             ".cu",
             ".java",
@@ -165,6 +168,7 @@ const config: QuartzConfig = {
             ".js",
             ".ipynb",
             ".json",
+            ".csv",
           ],
           exclude: [/\.(ignore\.pdf)$/, /400232791/],
         }),

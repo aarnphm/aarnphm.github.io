@@ -10,6 +10,7 @@ export const sharedPageComponents: SharedLayout = {
       rootName: "~",
       spacerSymbol: "/",
       showCurrentPage: true,
+      trailingWindow: 1,
     }),
     Component.Image(),
     Component.Graph(),
@@ -42,7 +43,7 @@ export const defaultContentPageLayout: PageLayout = {
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [
     Component.StackedNotes(),
-    Component.Breadcrumbs({ rootName: "~", spacerSymbol: "/" }),
+    Component.Breadcrumbs({ rootName: "~", spacerSymbol: "/", trailingWindow: 1 }),
     Component.Image(),
     Component.Graph(),
     Component.Palette(),

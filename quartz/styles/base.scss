@@ -98,22 +98,9 @@ ul,
 .typst-doc * {
   color: var(--dark);
   fill: var(--dark);
-  hyphens: auto;
-}
-
-p,
-text,
-a,
-li,
-ol,
-ul,
-.katex,
-.math,
-.typst-doc,
-.typst-doc * {
+  // hyphens: auto;
   overflow-wrap: anywhere;
-  word-break: auto-phrase;
-  /* tr and td removed from list of selectors for overflow-wrap, allowing them to use default 'normal' property value */
+  // word-break: auto-phrase;
 }
 
 strong {
@@ -786,7 +773,7 @@ ol.overflow {
 }
 
 .katex-display {
-  display: initial;
+  display: initial !important;
   overflow-x: auto;
   overflow-y: hidden;
 }

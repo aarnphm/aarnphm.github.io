@@ -43,3 +43,5 @@ title: images
 ![[thoughts/images/speculative-drawing.webp]]
 
 ![[thoughts/images/exploitation of visual thoughts.webp]]
+
+![[thoughts/images/perception-of-architecture.webp|Perceptron architecture]]

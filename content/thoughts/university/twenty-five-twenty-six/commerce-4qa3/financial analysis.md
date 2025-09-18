@@ -1,14 +1,16 @@
 ---
-id: Strategy and Competition
+id: financial analysis
 tags:
   - commerce4qa3
-description: chapter 1
+description: chapter 1 and 2
 date: "2025-09-11"
-modified: 2025-09-11 14:11:02 GMT-04:00
+modified: 2025-09-18 12:50:54 GMT-04:00
 title: financial analysis
 ---
 
-Continuous compounding
+see also: [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/timeseries.py]]
+
+## continuous compounding
 
 $$
 S(t) = S_{0}\exp^{rt}
@@ -21,6 +23,8 @@ P = \sum_{c=1}^{n} c_i \exp^{-r t_i}
 $$
 
 ## forecasting
+
+see also: [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/beer_sales_analysis.py]]
 
 > [!abstract] inverse-square law
 >
@@ -36,7 +40,9 @@ where $F$ is the forecast, $D$ is the actual demand
 
 ![[thoughts/mean-squared error]]
 
-## analysis of _stationary_ time serires
+![[thoughts/average absolute deviation]]
+
+## analysis of _stationary_ time series
 
 1. naive approach
    $$
@@ -66,3 +72,34 @@ where $F$ is the forecast, $D$ is the actual demand
    see also: [[thoughts/pdfs/Holt-1957-Republished-IJF-2004.pdf]]
    - uses for trend, certain moving items
    - ![[thoughts/Holt linear]]
+5. Seasonality
+
+## decompositions of time series
+
+$$
+\begin{aligned}
+\text{Time series} &= \text{Trend} \times \text{Seasonality} \times \text{Random} \\
+Y &= T \times S \times R
+\end{aligned}
+$$
+
+see also: [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/trend_regression.py]]
+
+![[thoughts/university/twenty-five-twenty-six/commerce-4qa3/trend_regression_quarter.svg]]
+![[thoughts/university/twenty-five-twenty-six/commerce-4qa3/trend_regression_none.svg]]
+
+## monitor forecast
+
+Running Sum of Forecast Error:
+
+$$
+\operatorname{RSFE}_{t} = \sum_{i=1}^{t} e_i, e_i = F_i - D_i
+$$
+
+updated MAD is $\text{updated }\operatorname{MAD}_t =\frac{\sum_{i=1}^{t} |e_i|}{t}$
+
+hence the tracking signals is:
+
+$$
+\operatorname{TS}_t = \frac{\operatorname{RSFE}_t}{\text{updated } \operatorname{MAD}_t}
+$$

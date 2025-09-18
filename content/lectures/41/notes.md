@@ -7,7 +7,7 @@ description: 2/n some more notes on EAGLE and MTP
 date: "2025-09-10"
 socials:
   youtube: https://youtu.be/sSdoETRQQHY
-modified: 2025-09-15 11:02:34 GMT-04:00
+modified: 2025-09-17 12:23:41 GMT-04:00
 title: supplement to 0.41
 transclude:
   title: false
@@ -83,10 +83,10 @@ Therefore the method is lossy unless $P(a\mid s)=1$ (degenerate/greedy case). $\
 Even if the “always greedy first token” constraint were removed, Medusa’s **longest-accepted-prefix under thresholds** induces a non-rejection event
 
 $$
-A(\hat x_{1:m}) \;=\;\bigcap_{i=1}^{m}\big\{\,P(\hat x_i\mid s, \hat x_{<i})\ge\tau_i(s,\hat x_{<i})\,\big\},
+A(\hat{x}_{1:m}) \;=\;\bigcap_{i=1}^{m}\big\{\,P(\hat{x_i}\mid s, \hat{x}_{<i})\ge\tau_i(s,\hat{x}_{<i})\,\big\},
 $$
 
-and then emits $\hat x\_{1:M}$ where $M=\max\{\,m:\,A(\hat x\_{1:m})\,\}$ among a candidate set.
+and then emits $\hat{x}_{1:M}$ where $M=\max\{\,m:\,A(\hat{x}_{1:m})\,\}$ among a candidate set.
 
 This conditioning on _passing thresholds_ without the importance-weight correction skews both marginals and joints away from $\pi[P]$ (no acceptance rule of the form $\min{1, P/Q}$ is applied).
 
@@ -148,7 +148,7 @@ $$
 Lossless speculative decoding requires an acceptance law that exactly cancels the proposal bias from the drafter $Q(\cdot\mid s)$ (the Leviathan correction). Typical acceptance instead uses a **threshold event**
 
 $$
-\text{accept if } P(x_i\mid s,\hat x_{<i}) \ge \min\big(\epsilon,\;\delta\,e^{-H(P(\cdot\mid s,\hat x_{<i}))}\big),
+\text{accept if } P(x_i\mid s,\hat{x}_{<i}) \ge \min\big(\epsilon,\;\delta\,e^{-H(P(\cdot\mid s,\hat{x}_{<i}))}\big),
 $$
 
 then picks the **longest** accepted prefix.
@@ -327,7 +327,6 @@ Only $\Delta\_{\parallel}$ influences logits: $W\Delta=W\Delta\_{\parallel}$ and
 [^figure]: code to generate some ASCII:
 
     ```bash
-    #!/usr/bin/env bash
     cat <<'FIG'
     ┌────────────────────────────────────────────────────────────────────────────┐
     │                 Geometry of the LM‑head map  W : R^d → R^V                 │

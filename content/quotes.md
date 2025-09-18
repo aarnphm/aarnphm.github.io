@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-09-04 23:31:06 GMT-04:00
+modified: 2025-09-17 12:34:08 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -62,6 +62,10 @@ Life starts all over again when it gets crisp in the fall -- F. Scott Fitzgerald
 Another way to feel free is to meet someone who makes you think “if you love me I don’t care if everyone hates me” and actually have them love you back -- Ava
 
 ## On bits and bytes.
+
+Don’t worry about what anybody else is going to do. The best way to predict the future is to invent it. -- Alan Kay
+
+Reform our infantilized society. Give people the tools to resist and destroy consumer culture (ubiquitous emotionally-manipulative branding and advertising, materialism, artificial fashions) and the corporation’s oligarchical control over employment, entertainment, and creativity. Return power, dignity, and responsibility to the individual. -- Bret Victor, Long-term Goal
 
 Computer is a bicycle for the mind. -- [Steve Jobs](https://www.youtube.com/watch?v=ob_GX50Za6c&ab_channel=MichaelLawrence)
 
