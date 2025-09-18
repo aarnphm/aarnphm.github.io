@@ -1,20 +1,20 @@
 ---
 id: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /resources
+  - /inspo
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
+date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-09-16 19:47:16 GMT-04:00
-permalinks:
-  - /website
-  - /resources
-  - /inspo
+modified: 2025-09-18 13:53:14 GMT-04:00
+aliases:
+  - inspo
 title: are.na
 cssclasses:
   - nolist
@@ -90,7 +90,7 @@ see also [[/curius|bookmarks]]
   - by Daybreak
 - https://www.yooksel.com/
 - https://www.goodfire.ai/ -- Goodfire AI
-- nice.rocks -- Nice rocks
+- https://nice.rocks -- Nice rocks
 - https://www.philosophyofprogress.com/ -- Philosophy of Progress
 - https://browser.engineering/onepage.html -- Web Browser Engineering
 - https://yismailuofa.github.io/
@@ -104,6 +104,8 @@ see also [[/curius|bookmarks]]
 - https://farayan.me/dappled
 - https://www.tiat.place/
 - https://posthog.com/
+- https://reducing-suffering.org/
+- https://1a3orn.com/
 
 ## people
 
@@ -330,6 +332,7 @@ see also [[/curius|bookmarks]]
 - https://northeastlarder.com/ -- Northeast Larder
 - https://grugbrain.dev/
 - https://research.contrary.com/deep-dive/building-an-american-tsmc -- Building an American TSMC \*\*
+- https://jzmazlish.substack.com/p/ak-or-just-okay-ai-and-economic-growth -- AK or just okay? AI and economic growth
 
 ### [[thoughts/Machine learning]]
 
@@ -353,6 +356,7 @@ see also [[/curius|bookmarks]]
     - Scaling interpreting CoT, exempli gratia [Docent](https://transluce.org/introducing-docent)
 - https://ethanding.substack.com/p/ai-subscriptions-get-short-squeezed -- Tokens are getting more expensive
 - https://docs.google.com/presentation/d/1NOrUVZNkcKHom5ih5uqqOSrV4Vi8KZRN8LYaAeADX80/edit?slide=id.g3724263dfb4_0_68#slide=id.g3724263dfb4_0_68 -- Scaling MoE with llm-d and vLLM
+- https://www.anthropic.com/research/persona-vectors -- Persona vector
 - gpt-oss hackathon from Goodfire ^goodfire-gpt-oss
   - https://x.com/GoodfireAI/status/1953903581075288470
   - > experts actually seem to specialize - e.g. a “business expert” that activates most on business strategy & management topics.
@@ -413,6 +417,11 @@ see also [[/curius|bookmarks]]
 - https://x.com/_xjdr/status/1966215415027347856
   - MatFormer: https://arxiv.org/pdf/2310.07707
 - https://x.com/Grad62304977/status/1967548295816819184
+- https://x.com/repligate/status/1968093240646889820
+- https://x.com/mrsiipa/status/1968284758661894436
+  - I'm tired
+- https://x.com/jackminong/status/1968518159826305438
+  - See also [[thoughts/Weight tying]]
 
 ### argumentative
 
@@ -427,6 +436,8 @@ see also [[/curius|bookmarks]]
 - https://x.com/eigenrobot/status/1954363395068616745 -- Gaza's privatization
 - https://ifstudies.org/report-brief/in-pursuit-marriage-motherhood-and-womens-well-being -- In Pursuit: Marriage, Motherhood, and Women’s Well-Being \*\*
 - https://www.lesswrong.com/posts/gfbX3h4RueuDzWs7m/some-rules-for-life-v-0-0 -- Rules for life
+- https://marginalrevolution.com/marginalrevolution/2025/02/why-i-think-ai-take-off-is-relatively-slow.html -- Why I think AI take-off is relatively slow.
+- https://x.com/eigenrobot/status/1968726067612389636
 
 ### life is literature
 

@@ -1,0 +1,7 @@
+[workspace]
+members = [
+  "crates/infinijup",
+  "crates/infinijup-cli",
+]
+resolver = "2"
+

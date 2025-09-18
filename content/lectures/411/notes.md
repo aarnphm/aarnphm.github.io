@@ -9,7 +9,7 @@ description: linear algebra notes
 transclude:
   title: false
 date: "2025-09-12"
-modified: 2025-09-17 02:33:50 GMT-04:00
+modified: 2025-09-17 12:33:05 GMT-04:00
 title: supplement to 0.411
 ---
 
@@ -1025,7 +1025,7 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 
 > [!tip] Computation note
 >
-> Naive multiplication is $O(n^3)$ for $n\times n$. Libraries use cache‑aware blocking and vectorization; advanced algorithms (Strassen, etc.) trade constants for asymptotics.
+> Naive multiplication is $O(n^3)$ for $n\times n$. Libraries use cache‑aware blocking and vectorization; advanced algorithms ([[thoughts/Strassen algorithm|Strassen]], etc.) trade constants for asymptotics.
 
 #### how the naive algorithm works
 
@@ -1281,7 +1281,7 @@ for i in 0..m step Mb:                # block rows of A/C
 > - Alignment: Tensor Cores prefer dimensions that are multiples of 8/16 (FP16/BF16); pad or use Lt heuristics.
 > - Streams: associate a CUDA stream with `cublasSetStream` to overlap transfers/compute; ensure lifetime of inputs until the GEMM completes.
 
-### Strassen’s algorithm (case)
+### [[thoughts/Strassen algorithm|Strassen]]’s algorithm (case)
 
 - Idea: partition $A,B$ into 2×2 blocks of size $n/2$ and compute 7 block products instead of 8 via linear combinations, reducing complexity to $O(n^{\log_2 7})\approx O(n^{2.807})$.
 - One recursion step (square powers of two for simplicity):
@@ -1290,7 +1290,7 @@ for i in 0..m step Mb:                # block rows of A/C
   \begin{align*}
   M*1&=(A*{11}+A*{22})(B*{11}+B*{22}), & M_2&=(A*{21}+A*{22})B*{11}, & M*3&=A*{11}(B*{12}-B*{22}),\\
   M*4&=A*{22}(B*{21}-B*{11}), & M*5&=(A*{11}+A*{12})B*{22}, & M*6&=(A*{21}-A*{11})(B*{11}+B*{12}),\\
-  M_7&=(A*{12}-A*{22})(B*{21}+B\_{22}),
+  M_7&=(A*{12}-A*{22})(B*{21}+B_{22}),
   \end{align*}
   $$
   then
@@ -1348,7 +1348,8 @@ def strassen(A: np.ndarray, B: np.ndarray, cutoff: int = 128) -> np.ndarray:
   return Cp[: A.shape[0], : B.shape[1]]
 ```
 
-> [!note] When to use Strassen
+> [!note] when to use strassen
+>
 > Use only for very large dense square-ish matrices, good arithmetic intensity, and when you can tolerate a modest increase in rounding error. Otherwise, high‑quality blocked GEMM is typically faster and more stable.
 
 > [!warning] Common pitfalls

@@ -307,7 +307,11 @@ export function highlight(searchTerm: string, text: string, trim?: boolean) {
 }
 
 // To be used with search and everything else with flexsearch
-export const encode = (str: string) => str.toLowerCase().split(/([^a-z]|[^\x00-\x7F])/)
+export const encode = (str: string) =>
+  str
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((token) => token.length > 0)
 
 export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElement[]) {
   const pageHeader = document.querySelector<HTMLDivElement>("main > section[class~='page-header']")

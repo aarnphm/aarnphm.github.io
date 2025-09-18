@@ -200,3 +200,4 @@ successful_*.txt
 bentofile.yaml
 cmd.txt
 checkpoints
+.claude

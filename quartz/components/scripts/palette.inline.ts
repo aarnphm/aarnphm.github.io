@@ -1,4 +1,4 @@
-import FlexSearch, { DocumentData } from "flexsearch"
+import FlexSearch, { DefaultDocumentSearchResults, DocumentData } from "flexsearch"
 import { FilePath, FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
 import {
   highlight,
@@ -15,9 +15,10 @@ interface Item extends DocumentData {
   name: FilePath
   aliases: string[]
   target: string
+  [key: string]: any
 }
 
-let index = new FlexSearch.Document({
+let index = new FlexSearch.Document<Item>({
   encode,
   document: {
     id: "id",
@@ -424,8 +425,7 @@ document.addEventListener("nav", async (e) => {
   }
 
   async function querySearch(currentSearchTerm: string) {
-    //@ts-ignore
-    let searchResults: FlexSearch.SimpleDocumentSearchResultSetUnit[]
+    let searchResults: DefaultDocumentSearchResults<Item>
     if (actionType === "quick_open") {
       searchResults = await index.searchAsync({
         query: currentSearchTerm,
@@ -433,11 +433,10 @@ document.addEventListener("nav", async (e) => {
         index: ["name", "aliases"],
       })
     } else {
-      //@ts-ignore
       searchResults = await index.searchAsync({
         query: currentSearchTerm,
         limit: Math.max(numSearchResults, 10000),
-        tag: "actions",
+        tag: { tags: "actions" },
         index: ["name"],
       })
       for (let searchResult of searchResults) {
