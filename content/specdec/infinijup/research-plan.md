@@ -1,20 +1,21 @@
 ---
 id: research-plan
 tags:
+  - system
   - design
   - research
-  - prototype
+  - morph
 description: Snapshot/branch/restore plan for GPU-backed Jupyter sessions with CUDA-state capture and Merkle-DAG revisions.
 date: "2025-09-18"
-modified: 2025-09-18 15:08:42 GMT-04:00
+modified: 2025-09-20 21:03:22 GMT-04:00
 noindex: true
-title: Infinijup
+title: research plan for Infinijup
 ---
 
 see also
 
-- [[/specdec/infinijupyter/notes|specification, brain dump]]
-- [[/specdec/infinijupyter/overview]]
+- [[/specdec/infinijup/notes|specification, brain dump]]
+- [[/specdec/infinijup/overview]]
 
 ## problem statement
 
@@ -23,12 +24,12 @@ Deliver branchable, resumable Jupyter sessions whose CUDA workloads (kernels, gr
 ## scope and constraints
 
 - MVP: single-machine, single-user, one Jupyter kernel plus supervised GPU sidecars.
-- Platform: Linux x86_64, NVIDIA driver ≥ 570, CUDA ≥ 12.8, CRIU ≥ 4.0 with GPU plugins.
+- Platform: Linux x86_64, NVIDIA driver >= 570, CUDA >= 12.8, CRIU >= 4.0 with GPU plugins.
 - Privileges: CAP_CHECKPOINT_RESTORE + CAP_SYS_PTRACE (or root) required; we assume elevated daemon.
-- Kernels: Python IPyKernel; vLLM workloads (in-process or supervised service) are first-class targets.
+- Kernels: Python ipykernel; vLLM workloads (in-process or supervised service) are first-class targets.
 - Storage: local `.infinijup/objects/` content-addressed store; SQLite metadata; Redis optional for progress events.
 
-## user stories (mvp)
+## user stories
 
 - Trigger "Snapshot" in Jupyter to freeze CUDA workloads and persist a named restore point.
 - Branch from any snapshot to explore a new path without overwriting prior GPU state.
@@ -61,8 +62,8 @@ Components
 
 1. **Discover**: enumerate target process tree, GPUs, NVML device topology, and ensure exclusive access.
 2. **Quiesce**:
-   - Kernel magic triggers cooperative pause (sync CUDA streams, flush async work).
-   - vLLM hook drains request queue, exits CUDA Graph capture, records kv-cache metadata.
+   - Kernel magic triggers cooperative pause (sync CUDA streams, flush async work): `%infinijup mark label="…"`
+   - vLLM hook drains request queue, exits CUDAGraph capture, records kv-cache metadata.
 3. **Freeze**:
    - Invoke `cuda-checkpoint` to suspend contexts and stage VRAM to host buffers.
    - Lock GPU clocks/topology fingerprint for restore validation.
@@ -166,3 +167,7 @@ Threads hold lineage only; reconciliation requires restore-and-resnapshot (no au
 - Should daemon auto-resume workloads after checkpoint, or leave them frozen until user confirmation?
 - How aggressively do we compact packfiles vs. keeping historical segments for auditability?
 - Any compliance constraints around storing VRAM dumps that may contain secrets?
+- Is a privileged daemon acceptable for first release, or do we need a rootless profile?
+- Can we hard-require CUDA 12.8+/driver ≥ 570, or must we widen the compatibility matrix?
+- Is there a minimum GPU set (H100/A100) we must validate before launch?
+- What compliance posture do we need for storing VRAM dumps that may embed secrets?

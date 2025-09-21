@@ -1,6 +1,9 @@
 import LFS_CONFIG from "./.lfsconfig.txt"
 import handleArxiv from "./arxiv"
 import handleCurius from "./curius"
+import Garden from "./mcp"
+import { ensureAuthorized, handleGitHubCallback, handleGitHubLogin, handleLogout, handleMintToken } from "./github-handler"
+import { Hono } from "hono"
 
 const VERSION = "version https://git-lfs.github.com/spec/v1\n"
 const MIME = "application/vnd.git-lfs+json"
@@ -61,6 +64,14 @@ function withHeadersFromSource(response: Response, source: Response, headers: st
   const map: Record<string, string | null> = {}
   for (const h of headers) map[h] = source.headers.get(h)
   return withHeaders(response, map)
+}
+
+function headersToObject(headers: Headers): Record<string, string> {
+  const o: Record<string, string> = {}
+  headers.forEach((value, key) => {
+    o[key] = value
+  })
+  return o
 }
 
 async function getObjectInfo(
@@ -156,19 +167,57 @@ async function getObjectFromLFS(
   const action = await getObjectAction(lfsUrl, info)
   if (!action) return new Response(null, { status: 500 })
   const headers = action.header
-    ? { ...action.header, ...Object.fromEntries(request.headers) }
-    : Object.fromEntries(request.headers)
+    ? { ...action.header, ...headersToObject(request.headers) }
+    : headersToObject(request.headers)
   return fetch(action.href, { method: request.method, headers, cf: { cacheTtl: 31536000 } })
 }
 
 type Env = {
   LFS_BUCKET_URL?: string
   KEEP_HEADERS?: string
+  GITHUB_CLIENT_ID: string
+  GITHUB_CLIENT_SECRET: string
+  SESSION_SECRET: string
+  PUBLIC_BASE_URL?: string
+  AUTH_COOKIE_NAME?: string
+  AUTH_SESSION_TTL_DAYS?: string
+  AUTH_TOKEN_TTL_SECONDS?: string
 } & Cloudflare.Env
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url)
+
+    const app = new Hono<{ Bindings: Env }>()
+    app.get("/auth/github/login", async (c) => {
+      return handleGitHubLogin(c.req.raw as Request, c.env)
+    })
+    app.get("/auth/github/callback", async (c) => {
+      return handleGitHubCallback(c.req.raw as Request, c.env)
+    })
+    app.get("/auth/logout", async (c) => {
+      return handleLogout(c.req.raw as Request, c.env)
+    })
+    app.all("/mcp/token", async (c) => {
+      const resp = await handleMintToken(c.req.raw as Request, c.env)
+      return withHeaders(resp, {
+        "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "https://aarnphm.xyz",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+        "Access-Control-Allow-Headers":
+          "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+      })
+    })
+    app.all("/mcp", async (c) => {
+      const unauthorized = await ensureAuthorized(c.req.raw as Request, c.env)
+      if (unauthorized) return unauthorized
+      // @ts-ignore durable object class provided by agents sdk
+      return Garden.serve("/mcp", { binding: "MCP_OBJECT" }).fetch(c.req.raw, c.env, c.executionCtx)
+    })
+
+    const maybeAuth = await app.fetch(request, env, ctx)
+    if (maybeAuth.status !== 404) return maybeAuth
 
     // Internal rewrite for notes domain root -> /notes?stackedNotes=<encoded>
     if (url.hostname === "notes.aarnphm.xyz" && url.pathname === "/") {
@@ -204,7 +253,7 @@ export default {
       "Access-Control-Allow-Origin": "https://aarnphm.xyz",
       "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
       "Access-Control-Allow-Headers":
-        "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+        "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
     }
 
     switch (url.pathname) {
@@ -268,3 +317,5 @@ export default {
     return env.ASSETS.fetch(request)
   },
 } satisfies ExportedHandler<Env>
+
+export { Garden }

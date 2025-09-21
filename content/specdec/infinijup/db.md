@@ -3,11 +3,12 @@ id: db
 tags:
   - system
   - design
-description: Metadata, manifests, and on-demand loading for Infinijupyter.
+  - morph
+description: metadata, manifests, and on-demand loading.
 date: "2025-09-17"
-modified: 2025-09-18 15:08:30 GMT-04:00
+modified: 2025-09-18 18:36:54 GMT-04:00
 noindex: true
-title: database and on-demand loading
+title: database and on-demand loading for Infinijup
 ---
 
 ## goals
@@ -19,7 +20,7 @@ title: database and on-demand loading
 
 ## storage layout
 
-- Local root: `~/.infinijupyter/` with subdirs:
+- Local root: `~/.infinijup/` with subdirs:
   - `db.sqlite` (WAL mode)
   - `chunks/aa/bb…` (BLAKE3 prefix fanout)
   - `manifests/` for small JSON manifests (also reflected in DB)

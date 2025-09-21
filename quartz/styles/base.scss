@@ -773,7 +773,7 @@ ol.overflow {
 }
 
 .katex-display {
-  display: initial;
+  display: initial !important;
   overflow-x: auto;
   overflow-y: hidden;
 }

@@ -4,7 +4,7 @@ tags:
   - commerce4qa3
 description: chapter 7
 date: "2025-09-18"
-modified: 2025-09-18 14:04:52 GMT-04:00
+modified: 2025-09-18 18:10:24 GMT-04:00
 title: supply chain analytics and capacity growth
 ---
 
@@ -17,8 +17,8 @@ ex. Restaurant expansion
 $$
 \begin{aligned}
 Rx &= F + Vx \\
-&= \overline{x} = \operatorname{BEP}(x) = \frac{F}{R-V} \\
-\operatorname{BEP}(\$) = \operatorname{BEP}(x) \times R
+\overline{x} &= \operatorname{BEP}(x) = \frac{F}{R-V} \\
+\operatorname{BEP}(\$) &= \operatorname{BEP}(x) \times R
 \end{aligned}
 $$
 

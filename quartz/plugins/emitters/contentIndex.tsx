@@ -40,6 +40,7 @@ interface Options {
   rssLimit?: number
   rssSlug: string
   includeEmptyFiles: boolean
+  enableSecurity: boolean
 }
 
 const defaultOptions: Options = {
@@ -49,6 +50,7 @@ const defaultOptions: Options = {
   rssLimit: 10,
   rssSlug: "index",
   includeEmptyFiles: true,
+  enableSecurity: true,
 }
 
 function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndexMap): string {
@@ -138,7 +140,7 @@ function generateAtomFeed(cfg: GlobalConfiguration, idx: ContentIndexMap, limit?
     return `<entry>
     <title>${escapeHTML(content.title)}</title>
     <link href="https://${joinSegments(base, encodeURI(slug))}" />
-    <link rel="alternate" type="text/markdown" href="https://${joinSegments(base, encodeURI(slug))}.html.md" />
+    <link rel="alternate" type="text/markdown" href="https://${joinSegments(base, encodeURI(slug))}.md" />
     <summary>${content.description}</summary>
     <published>${content.date?.toISOString()}</published>
     <updated>${modifiedDate?.toISOString()}</updated>
@@ -268,6 +270,53 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
         slug: "robots" as FullSlug,
         ext: ".txt",
       })
+
+      if (opts?.enableSecurity) {
+        const baseDomain = cfg.baseUrl ?? "aarnphm.xyz"
+        const securityPolicyEntry =
+          linkIndex.get("security-policy" as FullSlug) ??
+          Array.from(linkIndex.values()).find((details) => {
+            const normalizedFile = details.fileName.replace(/\\/g, "/")
+            return (
+              normalizedFile === ("content/security policy" as FilePath) ||
+              normalizedFile.endsWith("/security policy") ||
+              details.slug === "security-policy"
+            )
+          })
+
+        const fallbackSlug = securityPolicyEntry
+          ? simplifySlug(securityPolicyEntry.slug as FullSlug)
+          : ("security-policy" as SimpleSlug)
+        const policyPermalink = securityPolicyEntry?.fileData?.frontmatter?.permalinks?.[0]
+        const policyHref = policyPermalink
+          ? `https://${joinSegments(baseDomain, policyPermalink.replace(/^\/+/, ""))}`
+          : `https://${joinSegments(baseDomain, fallbackSlug)}`
+
+        const modifiedSource =
+          securityPolicyEntry?.fileData?.frontmatter?.modified ??
+          securityPolicyEntry?.date?.toISOString()
+        const lastModifiedDate = modifiedSource ? new Date(modifiedSource) : new Date()
+        const safeLastModified = Number.isNaN(lastModifiedDate.getTime())
+          ? new Date()
+          : lastModifiedDate
+        const expiresDate = new Date(safeLastModified.getTime() + 1000 * 60 * 60 * 24 * 180)
+
+        const securityTxt = `Contact: mailto:security@aarnphm.xyz
+Encryption: https://${joinSegments(baseDomain, "pgp-key.txt")}
+Policy: ${policyHref}
+Canonical: https://${joinSegments(baseDomain, ".well-known", "security.txt")}
+Preferred-Languages: en
+Last-Modified: ${safeLastModified.toISOString()}
+Expires: ${expiresDate.toISOString()}
+`
+
+        yield write({
+          ctx,
+          content: securityTxt,
+          slug: joinSegments(".well-known", "security") as FullSlug,
+          ext: ".txt",
+        })
+      }
 
       if (opts?.enableSiteMap) {
         yield write({

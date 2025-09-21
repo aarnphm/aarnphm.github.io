@@ -6,7 +6,7 @@ tags:
   - seed
   - ml
 date: "2025-09-08"
-modified: 2025-09-10 08:28:52 GMT-04:00
+modified: 2025-09-18 18:10:41 GMT-04:00
 noindex: true
 title: GPU
 ---
@@ -32,3 +32,9 @@ _blog post: [Making Deep Learning Go Brrrr From First Principles](https://horace
 ### blackwell
 
 cpasync kernel
+
+wgmma
+
+tiling
+
+### hopper

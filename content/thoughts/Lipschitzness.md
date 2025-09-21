@@ -5,7 +5,7 @@ tags:
   - math
 description: continuity study
 date: "2025-08-21"
-modified: 2025-09-16 00:23:41 GMT-04:00
+modified: 2025-09-19 18:16:36 GMT-04:00
 title: Lipschitzness
 ---
 
@@ -116,15 +116,25 @@ For convex $f$, the following are **equivalent**:
 
 ## smoothness & strong convexity
 
-- **$L$-smooth:** $\|\nabla f(x)-\nabla f(y)\|_*\le L\|x-\;y\|$.
+- $L$-smooth:
+
+  $$
+  \|\nabla f(x)-\nabla f(y)\|_*\le L\|x-\;y\|
+  $$
+
   For convex $f$: $f(y)\le f(x)+\langle\nabla f(x),y-\;x\rangle+\tfrac{L}{2}\|y-\;x\|^2$; and Baillon–Haddad co-coercivity:
 
   $$
   \langle\nabla f(x)-\nabla f(y),x-\;y\rangle \;\ge\; \tfrac{1}{L}\|\nabla f(x)-\nabla f(y)\|_*^2.
   $$
 
-- **$\mu$-strongly convex:** $f(y)\ge f(x)+\langle\nabla f(x),y- x\rangle+\tfrac{\mu}{2}\|y- x\|^2$.
-  **Fact:** no nonconstant strongly convex function is globally Lipschitz on $\mathbb{R}^n$ (it grows at least quadratically).
+- $\mu$-strongly convex:
+
+  $$
+  f(y)\ge f(x)+\langle\nabla f(x),y- x\rangle+\tfrac{\mu}{2}\|y- x\|^2
+  $$
+
+  _fact:_ no nonconstant strongly convex function is globally Lipschitz on $\mathbb{R}^n$ (it grows at least quadratically).
 
 ## examples
 
@@ -134,7 +144,9 @@ For convex $f$, the following are **equivalent**:
 - Log-sum-exp $f(z)=\log\sum_i e^{z_i}$: $\nabla f(z)=\text{softmax}(z)$, $\|\nabla f(z)\|_1=1$ $\Rightarrow$ **1-Lipschitz w\.r.t. $\|\cdot\|_\infty$** (nice tie-in to attention logits).
 - Quadratic $f(x)=\tfrac12 x^\top Qx$: **not** globally Lipschitz on $\mathbb{R}^n$ unless the domain is bounded; but it **is** $L$-smooth with $L=\|Q\|_{\text{op}}$.
 
-## logistic loss: 0/1 vs ±1 forms (Lipschitz constants)
+## logistic loss
+
+_0/1 vs $\pm 1$ forms (Lipschitz constants)_
 
 Two equivalent ways to write the binary logistic negative log‑likelihood per example (with logit $t=w^\top x + b$):
 

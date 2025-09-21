@@ -3,11 +3,12 @@ id: notes
 tags:
   - seed
   - system
+  - morph
 description: and more information.
 date: "2025-09-17"
-modified: 2025-09-18 15:08:26 GMT-04:00
+modified: 2025-09-20 20:57:28 GMT-04:00
 noindex: true
-title: design decisions
+title: design decision for Inifinijup
 ---
 
 ## overview

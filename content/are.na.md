@@ -12,7 +12,7 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-09-18 17:19:00 GMT-04:00
+modified: 2025-09-19 19:34:53 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -173,6 +173,12 @@ see also [[/curius|bookmarks]]
 - https://en.wikipedia.org/wiki/Paul_Samuelson -- Paul Samuelson
   - Economist, advisor to JFK
   - columnist on Chicago School with [[thoughts/Capitalism and Freedom|Milton Friedman]]
+- https://www.timdavis.com/ -- Tim Davis
+  - Modular, CEO
+- https://www.nondot.org/sabre/ -- Chris Lattner
+  - He's that talented, no need for introduction
+  - LLVM, Clang, MLIR, Swift, TPUs
+  - https://x.com/clattner_llvm
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -423,6 +429,7 @@ see also [[/curius|bookmarks]]
 - https://x.com/jackminong/status/1968518159826305438
   - See also [[thoughts/Weight tying]]
 - https://x.com/josh_bickett/status/1725556267014595032 \*\*
+- https://x.com/jkminder/status/1969082859311841413 -- [[thoughts/sparse crosscoders]] and non-linear representation dilemma
 
 ### argumentative
 

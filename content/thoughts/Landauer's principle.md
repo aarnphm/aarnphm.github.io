@@ -1,13 +1,16 @@
 ---
-title: "Landauer's principle"
-source: "https://en.wikipedia.org/wiki/Landauer%27s_principle"
-published: 2005-11-08
-created: 2025-09-17
-description: "minimum energy required to erase one bit of information"
+id: Landauer's principle
 tags:
-  - "seed"
-  - "clippings"
-  - "physics"
+  - seed
+  - clippings
+  - physics
+published: "2005-11-08"
+source: https://en.wikipedia.org/wiki/Landauer%27s_principle
+date: "2025-09-19"
+modified: 2025-09-19 23:48:07 GMT-04:00
+created: "2025-09-17"
+description: minimum energy required to erase one bit of information
+title: Landauer's principle
 ---
 
 a physical principle pertaining to a lower theoretical limit of energy consumption of computation.
@@ -20,7 +23,7 @@ first proposed by Rolf Landauer in 1961.
 
 see also:
 
-- [[thoughts/Information Theory|Information Theory]]
+- [[thoughts/Information Theory]]
 - Quantum speed limit
 - Bremermann's limit
 - Bekenstein bound

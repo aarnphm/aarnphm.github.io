@@ -4,7 +4,7 @@ use infinijup::{enforce_no_uvm_ipc, PreflightConfig};
 use tracing_subscriber::EnvFilter;
 
 #[derive(Parser, Debug)]
-#[command(name = "infinijupyter", version, about = "Infinijupyter CLI")] 
+#[command(name = "infinijup", version, about = "Infinijupyter CLI")] 
 struct Cli {
   #[arg(long, global = true, default_value = "info")] 
   log: String,

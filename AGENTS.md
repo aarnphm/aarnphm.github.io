@@ -19,6 +19,12 @@ You should be able to always search the web. Be super technical. But always give
   - Always keep everything in lowercase.
 - Markdown files will be consumed with Obsidian. Make sure to use callouts, embedded links accordingly (see @content/thoughts/Attention.md for example.)
 - All math equation should be written with LaTeX in markdown.
+  - For block-form, it should be formatted with `$$` with new lines. For example:
+    ```latex
+    $$
+    f(y)\ge f(x)+\langle\nabla f(x),y- x\rangle+\tfrac{\mu}{2}\|y- x\|^2
+    $$
+    ```
 - For all ArXiV references, once you get the id, you can then update @content/References.bib with the output of the following command:
   ```bash
   curl https://arxiv.org/bibtex/<id>
