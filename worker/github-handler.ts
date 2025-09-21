@@ -44,6 +44,8 @@ function getTokenTtlSeconds(env: Env): number {
 }
 
 export async function handleGitHubLogin(request: Request, env: Env): Promise<Response> {
+  if (!env.SESSION_SECRET || !env.GITHUB_CLIENT_ID)
+    return new Response("missing SESSION_SECRET or GITHUB_CLIENT_ID", { status: 500 })
   const url = new URL(request.url)
   const base = resolveBaseUrl(env, request)
   const next = url.searchParams.get("next") || "/mcp"
@@ -58,6 +60,8 @@ export async function handleGitHubLogin(request: Request, env: Env): Promise<Res
 }
 
 export async function handleGitHubCallback(request: Request, env: Env): Promise<Response> {
+  if (!env.SESSION_SECRET || !env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET)
+    return new Response("missing SESSION_SECRET or GitHub OAuth credentials", { status: 500 })
   const url = new URL(request.url)
   const code = url.searchParams.get("code")
   const state = url.searchParams.get("state")
