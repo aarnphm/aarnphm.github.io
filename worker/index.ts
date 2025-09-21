@@ -74,6 +74,48 @@ function headersToObject(headers: Headers): Record<string, string> {
   return o
 }
 
+function rewritePath(request: Request, pathname: string): Request {
+  const u = new URL(request.url)
+  u.pathname = pathname
+  return new Request(u.toString(), request)
+}
+
+function resolveBaseUrl(env: Env, request: Request): string {
+  if (env.PUBLIC_BASE_URL) return env.PUBLIC_BASE_URL.replace(/\/$/, "")
+  const u = new URL(request.url)
+  u.pathname = ""
+  u.search = ""
+  u.hash = ""
+  return u.toString().replace(/\/$/, "")
+}
+
+function getAllowedOrigin(env: Env, request: Request): string | null {
+  const origin = request.headers.get("Origin")
+  if (!origin) return null
+  try {
+    const o = new URL(origin)
+    const base = env.PUBLIC_BASE_URL ? new URL(env.PUBLIC_BASE_URL) : null
+    if (base && o.origin === base.origin) return origin
+    if (o.hostname === "localhost" || o.hostname === "127.0.0.1") return origin
+    if (o.hostname.endsWith(".workers.dev")) return origin
+  } catch {}
+  return null
+}
+
+function buildCorsHeaders(env: Env, request: Request): Record<string, string> {
+  const origin = getAllowedOrigin(env, request)
+  const headers: Record<string, string> = {
+    "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+    "Access-Control-Allow-Headers":
+      "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+  }
+  if (origin) {
+    headers["Access-Control-Allow-Origin"] = origin
+    headers["Access-Control-Allow-Credentials"] = "true"
+  }
+  return headers
+}
+
 async function getObjectInfo(
   response: Response,
 ): Promise<{ hash_algo: string; oid: string; size: number } | null> {
@@ -208,11 +250,14 @@ export default {
       const resp = await handleMintToken(c.req.raw as Request, c.env)
       return withHeaders(resp, {
         "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "https://aarnphm.xyz",
-        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-        "Access-Control-Allow-Headers":
-          "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+        ...buildCorsHeaders(c.env, c.req.raw),
+      })
+    })
+    app.all("/token", async (c) => {
+      const resp = await handleMintToken(c.req.raw as Request, c.env)
+      return withHeaders(resp, {
+        "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
+        ...buildCorsHeaders(c.env, c.req.raw),
       })
     })
     app.all("/mcp", async (c) => {
@@ -227,6 +272,18 @@ export default {
       // @ts-ignore durable object class provided by agents sdk
       return Garden.serve("/mcp", { binding: "MCP_OBJECT" }).fetch(c.req.raw, c.env, c.executionCtx)
     })
+    app.all("/sse", async (c) => {
+      const unauthorized = await ensureAuthorized(c.req.raw as Request, c.env)
+      if (unauthorized) return unauthorized
+      // @ts-ignore durable object class provided by agents sdk
+      const rewritten = rewritePath(c.req.raw, "/mcp/sse")
+      // @ts-ignore durable object class provided by agents sdk
+      return Garden.serve("/mcp", { binding: "MCP_OBJECT" }).fetch(rewritten, c.env, c.executionCtx)
+    })
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: buildCorsHeaders(env, request) })
+    }
 
     const maybeAuth = await app.fetch(request, env, ctx)
     if (maybeAuth.status !== 404) return maybeAuth
@@ -261,11 +318,7 @@ export default {
 
     const apiHeaders: Record<string, string> = {
       "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
-      "Access-Control-Allow-Credentials": "true",
-      "Access-Control-Allow-Origin": "https://aarnphm.xyz",
-      "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-      "Access-Control-Allow-Headers":
-        "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+      ...buildCorsHeaders(env, request),
     }
 
     switch (url.pathname) {
@@ -279,6 +332,55 @@ export default {
         return Response.redirect("https://substack.com/@aarnphm", 301)
       case "/.lfsconfig":
         return new Response(null, { status: 404 })
+      case "/.well-known/oauth-protected-resource": {
+        const base = resolveBaseUrl(env, request)
+        const body = JSON.stringify({
+          resource: {
+            token_endpoint: `${base}/mcp/token`,
+            authorization_endpoint: `${base}/auth/login`,
+            resource_url: `${base}/mcp/sse`,
+            aliases: [
+              { name: "mcp", sse_url: `${base}/mcp/sse`, token_url: `${base}/mcp/token` },
+            ],
+          },
+        })
+        return new Response(body, {
+          headers: { "Content-Type": "application/json", ...apiHeaders },
+        })
+      }
+      case "/.well-known/oauth-protected-resource/mcp": {
+        const base = resolveBaseUrl(env, request)
+        const body = JSON.stringify({
+          name: "mcp",
+          sse_url: `${base}/mcp/sse`,
+          token_url: `${base}/mcp/token`,
+        })
+        return new Response(body, { headers: { "Content-Type": "application/json", ...apiHeaders } })
+      }
+      case "/.well-known/oauth-authorization-server": {
+        const base = resolveBaseUrl(env, request)
+        const body = JSON.stringify({
+          issuer: base,
+          authorization_endpoint: `${base}/auth/login`,
+          token_endpoint: `${base}/mcp/token`,
+          response_types_supported: ["code"],
+          grant_types_supported: ["authorization_code"],
+          token_endpoint_auth_methods_supported: ["none"],
+        })
+        return new Response(body, { headers: { "Content-Type": "application/json", ...apiHeaders } })
+      }
+      case "/.well-known/openid-configuration": {
+        const base = resolveBaseUrl(env, request)
+        const body = JSON.stringify({
+          issuer: base,
+          authorization_endpoint: `${base}/auth/login`,
+          token_endpoint: `${base}/mcp/token`,
+          response_types_supported: ["code"],
+          subject_types_supported: ["public"],
+          id_token_signing_alg_values_supported: ["none"],
+        })
+        return new Response(body, { headers: { "Content-Type": "application/json", ...apiHeaders } })
+      }
       case "/site.webmanifest":
         const originResp = await env.ASSETS.fetch(request)
         return withHeaders(originResp, { ...apiHeaders, "Access-Control-Allow-Origin": "*" })
