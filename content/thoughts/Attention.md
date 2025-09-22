@@ -7,7 +7,7 @@ tags:
 description: and posteriori information retrieval.
 date: "2024-02-07"
 abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
-modified: 2025-09-18 18:23:56 GMT-04:00
+modified: 2025-09-21 02:21:43 GMT-04:00
 title: Attention
 ---
 

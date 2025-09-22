@@ -2,8 +2,15 @@ import LFS_CONFIG from "./.lfsconfig.txt"
 import handleArxiv from "./arxiv"
 import handleCurius from "./curius"
 import Garden from "./mcp"
-import { ensureAuthorized, handleGitHubCallback, handleGitHubLogin, handleLogout, handleMintToken } from "./github-handler"
-import { Hono } from "hono"
+import {
+  handleGitHubCallback,
+  handleGitHubLogin,
+  handleLogout,
+  handleMintToken,
+  getCookieName,
+} from "./github-handler"
+import { getCookie } from "./auth"
+import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
 
 const VERSION = "version https://git-lfs.github.com/spec/v1\n"
 const MIME = "application/vnd.git-lfs+json"
@@ -72,12 +79,6 @@ function headersToObject(headers: Headers): Record<string, string> {
     o[key] = value
   })
   return o
-}
-
-function rewritePath(request: Request, pathname: string): Request {
-  const u = new URL(request.url)
-  u.pathname = pathname
-  return new Request(u.toString(), request)
 }
 
 function resolveBaseUrl(env: Env, request: Request): string {
@@ -230,63 +231,53 @@ export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url)
 
-    const app = new Hono<{ Bindings: Env }>()
-    app.get("/auth/github/login", async (c) => {
-      return handleGitHubLogin(c.req.raw as Request, c.env)
-    })
-    app.get("/auth/github/callback", async (c) => {
-      return handleGitHubCallback(c.req.raw as Request, c.env)
-    })
-    app.get("/auth/logout", async (c) => {
-      return handleLogout(c.req.raw as Request, c.env)
-    })
-    app.get("/auth/login", async (c) => {
-      return handleGitHubLogin(c.req.raw as Request, c.env)
-    })
-    app.get("/auth/callback", async (c) => {
-      return handleGitHubCallback(c.req.raw as Request, c.env)
-    })
-    app.all("/mcp/token", async (c) => {
-      const resp = await handleMintToken(c.req.raw as Request, c.env)
-      return withHeaders(resp, {
-        "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
-        ...buildCorsHeaders(c.env, c.req.raw),
-      })
-    })
-    app.all("/token", async (c) => {
-      const resp = await handleMintToken(c.req.raw as Request, c.env)
-      return withHeaders(resp, {
-        "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
-        ...buildCorsHeaders(c.env, c.req.raw),
-      })
-    })
-    app.all("/mcp", async (c) => {
-      const unauthorized = await ensureAuthorized(c.req.raw as Request, c.env)
-      if (unauthorized) return unauthorized
-      // @ts-ignore durable object class provided by agents sdk
-      return Garden.serve("/mcp", { binding: "MCP_OBJECT" }).fetch(c.req.raw, c.env, c.executionCtx)
-    })
-    app.all("/mcp/sse", async (c) => {
-      const unauthorized = await ensureAuthorized(c.req.raw as Request, c.env)
-      if (unauthorized) return unauthorized
-      // @ts-ignore durable object class provided by agents sdk
-      return Garden.serve("/mcp", { binding: "MCP_OBJECT" }).fetch(c.req.raw, c.env, c.executionCtx)
-    })
-    app.all("/sse", async (c) => {
-      const unauthorized = await ensureAuthorized(c.req.raw as Request, c.env)
-      if (unauthorized) return unauthorized
-      // @ts-ignore durable object class provided by agents sdk
-      const rewritten = rewritePath(c.req.raw, "/mcp/sse")
-      // @ts-ignore durable object class provided by agents sdk
-      return Garden.serve("/mcp", { binding: "MCP_OBJECT" }).fetch(rewritten, c.env, c.executionCtx)
+    const defaultAuthHandler: ExportedHandler<Env> = {
+      async fetch(req, env, _ctx) {
+        const u = new URL(req.url)
+        switch (u.pathname) {
+          case "/auth/github/login":
+          case "/auth/login":
+            return handleGitHubLogin(req, env)
+          case "/auth/github/callback":
+          case "/auth/callback":
+            return handleGitHubCallback(req, env)
+          case "/auth/logout":
+            return handleLogout(req, env)
+          case "/mcp/token":
+          case "/token": {
+            const resp = await handleMintToken(req, env)
+            return withHeaders(resp, {
+              "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
+              ...buildCorsHeaders(env, req),
+            })
+          }
+        }
+        return new Response(null, { status: 404 })
+      },
+    }
+
+    const mcpApiHandler: ExportedHandler<Env> = {
+      async fetch(req, env, ctx) {
+        // @ts-ignore durable object class provided by agents sdk
+        return Garden.serve("/mcp", { binding: "MCP_OBJECT" }).fetch(req, env, ctx)
+      },
+    }
+
+    const provider = new OAuthProvider({
+      apiRoute: "/mcp",
+      apiHandler: mcpApiHandler as any,
+      defaultHandler: defaultAuthHandler as any,
+      authorizeEndpoint: "/oauth/authorize",
+      tokenEndpoint: "/oauth/token",
+      clientRegistrationEndpoint: "/oauth/register",
     })
 
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: buildCorsHeaders(env, request) })
     }
 
-    const maybeAuth = await app.fetch(request, env, ctx)
-    if (maybeAuth.status !== 404) return maybeAuth
+    const providerResp = await provider.fetch(request, env, ctx)
+    if (providerResp.status !== 404) return providerResp
 
     // Internal rewrite for notes domain root -> /notes?stackedNotes=<encoded>
     if (url.hostname === "notes.aarnphm.xyz" && url.pathname === "/") {
@@ -339,9 +330,7 @@ export default {
             token_endpoint: `${base}/mcp/token`,
             authorization_endpoint: `${base}/auth/login`,
             resource_url: `${base}/mcp/sse`,
-            aliases: [
-              { name: "mcp", sse_url: `${base}/mcp/sse`, token_url: `${base}/mcp/token` },
-            ],
+            aliases: [{ name: "mcp", sse_url: `${base}/mcp/sse`, token_url: `${base}/mcp/token` }],
           },
         })
         return new Response(body, {
@@ -355,31 +344,41 @@ export default {
           sse_url: `${base}/mcp/sse`,
           token_url: `${base}/mcp/token`,
         })
-        return new Response(body, { headers: { "Content-Type": "application/json", ...apiHeaders } })
+        return new Response(body, {
+          headers: { "Content-Type": "application/json", ...apiHeaders },
+        })
       }
       case "/.well-known/oauth-authorization-server": {
         const base = resolveBaseUrl(env, request)
         const body = JSON.stringify({
           issuer: base,
-          authorization_endpoint: `${base}/auth/login`,
-          token_endpoint: `${base}/mcp/token`,
+          authorization_endpoint: `${base}/oauth/authorize`,
+          token_endpoint: `${base}/oauth/token`,
+          registration_endpoint: `${base}/oauth/register`,
           response_types_supported: ["code"],
           grant_types_supported: ["authorization_code"],
+          code_challenge_methods_supported: ["S256"],
           token_endpoint_auth_methods_supported: ["none"],
         })
-        return new Response(body, { headers: { "Content-Type": "application/json", ...apiHeaders } })
+        return new Response(body, {
+          headers: { "Content-Type": "application/json", ...apiHeaders },
+        })
       }
       case "/.well-known/openid-configuration": {
         const base = resolveBaseUrl(env, request)
         const body = JSON.stringify({
           issuer: base,
-          authorization_endpoint: `${base}/auth/login`,
-          token_endpoint: `${base}/mcp/token`,
+          authorization_endpoint: `${base}/oauth/authorize`,
+          token_endpoint: `${base}/oauth/token`,
+          registration_endpoint: `${base}/oauth/register`,
           response_types_supported: ["code"],
           subject_types_supported: ["public"],
+          code_challenge_methods_supported: ["S256"],
           id_token_signing_alg_values_supported: ["none"],
         })
-        return new Response(body, { headers: { "Content-Type": "application/json", ...apiHeaders } })
+        return new Response(body, {
+          headers: { "Content-Type": "application/json", ...apiHeaders },
+        })
       }
       case "/site.webmanifest":
         const originResp = await env.ASSETS.fetch(request)

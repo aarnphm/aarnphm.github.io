@@ -29,7 +29,7 @@ function resolveBaseUrl(env: Env, request: Request): string {
   return u.toString().replace(/\/$/, "")
 }
 
-function getCookieName(env: Env): string {
+export function getCookieName(env: Env): string {
   return env.AUTH_COOKIE_NAME || "mcp_session"
 }
 

@@ -117,11 +117,7 @@ export class Garden extends McpAgent {
         if (!entry) throw new Error(`not found: ${slug}`)
         text = entry.content
       }
-      const wrapped = `<instruction>
-- If you encounter a "<ref slug=xxx>", then make sure to search for fetching ${base}/<slug>.md using \`search_files\` tool.
-- If there is missing information, make sure to search the web to provide additional information.
-</instruction>
-<context slug="${norm.replace(/^\//, "")}">
+      const wrapped = `<context slug="${norm.replace(/^\//, "")}" note="Make sure to respect system_prompt within the frontmatter">
 ${text}
 </context>`
       return { content: [{ type: "text", text: wrapped }] }

@@ -12,7 +12,7 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-09-19 19:34:53 GMT-04:00
+modified: 2025-09-21 02:29:03 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -430,6 +430,10 @@ see also [[/curius|bookmarks]]
   - See also [[thoughts/Weight tying]]
 - https://x.com/josh_bickett/status/1725556267014595032 \*\*
 - https://x.com/jkminder/status/1969082859311841413 -- [[thoughts/sparse crosscoders]] and non-linear representation dilemma
+- vLLM from scratch, weixin:
+  - 1.3: https://mp.weixin.qq.com/s/BdWG6_ZTaGRknmsbGfFkMQ
+  - 1.2: https://mp.weixin.qq.com/s/8BVEVPPqDQhQ2l8L90dMNQ
+  - 1.1: https://mp.weixin.qq.com/s/h1cFYDNxcHC30APcarF47A
 
 ### argumentative
 
@@ -552,6 +556,12 @@ see also [[/curius|bookmarks]]
   - [[thoughts/Singular Value Decomposition|SVD]]
 - https://www.youtube.com/watch?v=sdFQS2Bctj0&ab_channel=LilaRose -- How men commit differently than woman?
 - https://www.youtube.com/watch?v=hNIbd4mUVeU&ab_channel=Sisyphus55 -- Watch this when you're depressed \*\*
+- https://www.youtube.com/watch?v=x6TsR3y5Qfg -- Think Faster, Talk Smarter, by Matt Abrahams
+  - Framework to talk more eloquently:
+    - What if you could
+    - So that
+    - For example
+    - And that's not all
 
 ## tools
 
@@ -645,6 +655,7 @@ see also [[/curius|bookmarks]]
   - Conway knot problem
 - https://www.youtube.com/watch?v=i2acsy7Zzfo&ab_channel=HarvardMathematicsDepartment -- Random Matrix Statistics and Airy Line Ensembles, Jiaoyang Huang
 - https://www.youtube.com/watch?v=QauoO0j9Y9Y&ab_channel=InstituteforPure%26AppliedMathematics%28IPAM%29 -- Terence Tao: The Erdős Discrepancy Problem
+- https://writings.stephenwolfram.com/2025/09/the-ruliology-of-lambdas/ -- The Ruliology of Lambdas \*\*
 
 #### papers
 
