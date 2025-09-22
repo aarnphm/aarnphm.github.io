@@ -97,10 +97,11 @@ export async function handleGitHubCallback(request: Request, env: Env): Promise<
     iat,
     exp,
   })
+  const isSecure = new URL(request.url).protocol === "https:"
   const cookie = makeCookie(getCookieName(env), session, {
     path: "/",
     httpOnly: true,
-    secure: true,
+    secure: isSecure,
     sameSite: "Lax",
     maxAge: getSessionTtlSeconds(env),
   })
@@ -109,10 +110,11 @@ export async function handleGitHubCallback(request: Request, env: Env): Promise<
 }
 
 export async function handleLogout(_request: Request, env: Env): Promise<Response> {
+  const isSecure = new URL(_request.url).protocol === "https:"
   const cookie = makeCookie(getCookieName(env), "", {
     path: "/",
     httpOnly: true,
-    secure: true,
+    secure: isSecure,
     sameSite: "Lax",
     maxAge: 0,
   })

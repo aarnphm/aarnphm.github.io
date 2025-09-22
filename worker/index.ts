@@ -235,6 +235,16 @@ export default {
       async fetch(req, env, _ctx) {
         const u = new URL(req.url)
         switch (u.pathname) {
+          case "/oauth/authorize": {
+            const raw = getCookie(req, getCookieName(env))
+            if (!raw) {
+              const base = resolveBaseUrl(env, req)
+              const loginUrl = new URL(`${base}/auth/github/login`)
+              loginUrl.searchParams.set("next", u.pathname + u.search)
+              return Response.redirect(loginUrl.toString(), 302)
+            }
+            return new Response("ok", { status: 200, headers: buildCorsHeaders(env, req) })
+          }
           case "/auth/github/login":
           case "/auth/login":
             return handleGitHubLogin(req, env)
