@@ -12,7 +12,7 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-09-21 02:29:03 GMT-04:00
+modified: 2025-09-22 18:35:43 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -637,6 +637,7 @@ see also [[/curius|bookmarks]]
 - https://datatracker.ietf.org/doc/html/rfc9309 -- Robots Exclusion Protocol
 - https://github.com/Keen-Technologies/physical_atari -- Physical Atari
 - https://modelcontextprotocol.io/llms-full.txt -- MCP protocol
+- https://michaelnotebook.com/mmsw -- How to make memory systems widespread?
 
 ### vc.
 

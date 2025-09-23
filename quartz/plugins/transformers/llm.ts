@@ -1,14 +1,5 @@
 import { visit } from "unist-util-visit"
-import {
-  Root as MdRoot,
-  Link,
-  Html,
-  PhrasingContent,
-  RootContent,
-  BlockContent,
-  Paragraph,
-  Text,
-} from "mdast"
+import { Root as MdRoot, Link, Html, PhrasingContent, BlockContent, Paragraph, Text } from "mdast"
 import { toMarkdown } from "mdast-util-to-markdown"
 import { gfmToMarkdown } from "mdast-util-gfm"
 import { mathToMarkdown } from "mdast-util-math"

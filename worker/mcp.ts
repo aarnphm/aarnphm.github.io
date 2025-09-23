@@ -1,4 +1,4 @@
-import { McpAgent } from "agents/mcp"
+import { McpAgent } from "agents/dist/mcp/index.js"
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { z } from "zod"
 
@@ -105,7 +105,6 @@ export class Garden extends McpAgent {
 
     this.server.tool("read_text", { path: z.string().min(1) }, async (args: { path: string }) => {
       const { path } = args as { path: string }
-      const base = getBaseUrl()
       const norm = ensureMdPath(normalizePath(path))
       let text: string
       try {

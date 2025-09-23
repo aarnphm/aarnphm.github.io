@@ -2,14 +2,7 @@ import LFS_CONFIG from "./.lfsconfig.txt"
 import handleArxiv from "./arxiv"
 import handleCurius from "./curius"
 import Garden from "./mcp"
-import {
-  handleGitHubCallback,
-  handleGitHubLogin,
-  handleLogout,
-  handleMintToken,
-  getCookieName,
-} from "./github-handler"
-import { getCookie } from "./auth"
+import { GitHubHandler } from "./github-handler"
 import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
 
 const VERSION = "version https://git-lfs.github.com/spec/v1\n"
@@ -222,64 +215,21 @@ type Env = {
   GITHUB_CLIENT_SECRET: string
   SESSION_SECRET: string
   PUBLIC_BASE_URL?: string
-  AUTH_COOKIE_NAME?: string
-  AUTH_SESSION_TTL_DAYS?: string
-  AUTH_TOKEN_TTL_SECONDS?: string
 } & Cloudflare.Env
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url)
 
-    const defaultAuthHandler: ExportedHandler<Env> = {
-      async fetch(req, env, _ctx) {
-        const u = new URL(req.url)
-        switch (u.pathname) {
-          case "/oauth/authorize": {
-            const raw = getCookie(req, getCookieName(env))
-            if (!raw) {
-              const base = resolveBaseUrl(env, req)
-              const loginUrl = new URL(`${base}/auth/github/login`)
-              loginUrl.searchParams.set("next", u.pathname + u.search)
-              return Response.redirect(loginUrl.toString(), 302)
-            }
-            return new Response("ok", { status: 200, headers: buildCorsHeaders(env, req) })
-          }
-          case "/auth/github/login":
-          case "/auth/login":
-            return handleGitHubLogin(req, env)
-          case "/auth/github/callback":
-          case "/auth/callback":
-            return handleGitHubCallback(req, env)
-          case "/auth/logout":
-            return handleLogout(req, env)
-          case "/mcp/token":
-          case "/token": {
-            const resp = await handleMintToken(req, env)
-            return withHeaders(resp, {
-              "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
-              ...buildCorsHeaders(env, req),
-            })
-          }
-        }
-        return new Response(null, { status: 404 })
-      },
-    }
-
-    const mcpApiHandler: ExportedHandler<Env> = {
-      async fetch(req, env, ctx) {
-        // @ts-ignore durable object class provided by agents sdk
-        return Garden.serve("/mcp", { binding: "MCP_OBJECT" }).fetch(req, env, ctx)
-      },
-    }
-
     const provider = new OAuthProvider({
-      apiRoute: "/mcp",
-      apiHandler: mcpApiHandler as any,
-      defaultHandler: defaultAuthHandler as any,
-      authorizeEndpoint: "/oauth/authorize",
-      tokenEndpoint: "/oauth/token",
-      clientRegistrationEndpoint: "/oauth/register",
+      apiHandlers: {
+        // @ts-ignore
+        "/mcp": Garden.serve("/mcp", { binding: "MCP_OBJECT" }) as any,
+      },
+      authorizeEndpoint: "/authorize",
+      clientRegistrationEndpoint: "/register",
+      defaultHandler: GitHubHandler as any,
+      tokenEndpoint: "/token",
     })
 
     if (request.method === "OPTIONS") {
@@ -337,10 +287,10 @@ export default {
         const base = resolveBaseUrl(env, request)
         const body = JSON.stringify({
           resource: {
-            token_endpoint: `${base}/mcp/token`,
-            authorization_endpoint: `${base}/auth/login`,
-            resource_url: `${base}/mcp/sse`,
-            aliases: [{ name: "mcp", sse_url: `${base}/mcp/sse`, token_url: `${base}/mcp/token` }],
+            token_endpoint: `${base}/token`,
+            authorization_endpoint: `${base}/authorize`,
+            resource_url: `${base}/mcp`,
+            aliases: [{ name: "mcp", sse_url: `${base}/mcp`, token_url: `${base}/token` }],
           },
         })
         return new Response(body, {
@@ -351,8 +301,8 @@ export default {
         const base = resolveBaseUrl(env, request)
         const body = JSON.stringify({
           name: "mcp",
-          sse_url: `${base}/mcp/sse`,
-          token_url: `${base}/mcp/token`,
+          sse_url: `${base}/mcp`,
+          token_url: `${base}/token`,
         })
         return new Response(body, {
           headers: { "Content-Type": "application/json", ...apiHeaders },
@@ -362,9 +312,9 @@ export default {
         const base = resolveBaseUrl(env, request)
         const body = JSON.stringify({
           issuer: base,
-          authorization_endpoint: `${base}/oauth/authorize`,
-          token_endpoint: `${base}/oauth/token`,
-          registration_endpoint: `${base}/oauth/register`,
+          authorization_endpoint: `${base}/authorize`,
+          token_endpoint: `${base}/token`,
+          registration_endpoint: `${base}/register`,
           response_types_supported: ["code"],
           grant_types_supported: ["authorization_code"],
           code_challenge_methods_supported: ["S256"],
@@ -378,9 +328,9 @@ export default {
         const base = resolveBaseUrl(env, request)
         const body = JSON.stringify({
           issuer: base,
-          authorization_endpoint: `${base}/oauth/authorize`,
-          token_endpoint: `${base}/oauth/token`,
-          registration_endpoint: `${base}/oauth/register`,
+          authorization_endpoint: `${base}/authorize`,
+          token_endpoint: `${base}/token`,
+          registration_endpoint: `${base}/register`,
           response_types_supported: ["code"],
           subject_types_supported: ["public"],
           code_challenge_methods_supported: ["S256"],
