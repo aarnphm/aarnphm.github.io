@@ -115,20 +115,24 @@ export function renderApprovalDialog(request: Request, options: ApprovalDialogOp
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>${clientName} | Authorization Request</title>
 <style>
-:root { --primary-color: #0070f3; --border-color: #e5e7eb; --text-color: #333; --background-color: #fff; }
-body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; background: #f9fafb; margin: 0; }
-.container { max-width: 640px; margin: 2rem auto; padding: 1rem; }
-.card { background: var(--background-color); border-radius: 8px; box-shadow: 0 8px 36px 8px rgba(0,0,0,0.08); padding: 2rem; }
-.header { display: flex; align-items: center; justify-content: center; gap: .75rem; margin-bottom: 1rem; }
-.logo { width: 48px; height: 48px; border-radius: 8px; object-fit: contain; }
-.title { margin: 0; font-size: 1.25rem; font-weight: 600; }
-.desc { color: #555; text-align: center; }
-.info { border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
-.row { display: flex; gap: .5rem; margin: .35rem 0; }
-.label { min-width: 120px; font-weight: 600; }
-.actions { display: flex; justify-content: flex-end; gap: .75rem; margin-top: 1.5rem; }
-.btn { padding: .65rem 1.25rem; border-radius: 6px; border: 1px solid var(--border-color); background: #fff; cursor: pointer; }
-.btn.primary { background: var(--primary-color); color: #fff; border: none; }
+body { font-family: var(--bodyFont, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif); line-height: 1.6; margin: 0; background: var(--light, #ffffff); color: var(--dark, #111827); }
+a { color: var(--darkgray, #475569); text-decoration: underline; }
+a:hover { color: var(--tertiary, #b4637a); }
+.container { max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+.card { background: var(--light, #ffffff); border: 1px solid var(--lightgray, #e5e7eb); border-radius: 0; box-shadow: none; padding: 1.5rem; }
+.header { display: flex; align-items: center; justify-content: center; gap: .75rem; margin-bottom: .5rem; }
+.logo { width: 48px; height: 48px; object-fit: contain; }
+.title { margin: 0; font-size: 1.3rem; font-weight: 700; font-family: var(--headerFont, inherit); color: var(--dark, #111827); }
+.desc { color: var(--darkgray, #475569); text-align: center; margin: .25rem 0 1rem; }
+.section { margin: 1rem 0; }
+.info { border: 1px solid var(--lightgray, #e5e7eb); border-radius: 0; padding: 1rem; }
+.row { display: flex; gap: .5rem; margin: .35rem 0; align-items: baseline; }
+.label { min-width: 120px; font-weight: 600; color: var(--darkgray, #475569); }
+.actions { display: flex; justify-content: flex-end; gap: .75rem; margin-top: 1.25rem; }
+.btn { padding: .6rem 1rem; border-radius: 0; border: 1px solid var(--lightgray, #e5e7eb); background: transparent; color: var(--dark, #111827); font-weight: 500; }
+.btn.primary { background: var(--secondary, #4385be); border-color: var(--secondary, #4385be); color: var(--light, #ffffff); }
+.btn.primary:hover { filter: brightness(0.95); }
+.client-name { font-weight: 600; }
 </style>
 </head>
 <body>
@@ -139,14 +143,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helveti
       <h1 class="title">${serverName}</h1>
     </div>
     ${serverDesc ? `<p class="desc">${serverDesc}</p>` : ""}
-    <h2 style="margin:1rem 0 0 0; font-size: 1.1rem; font-weight: 600;">Authorization Request</h2>
-    <div class="info">
-      <div class="row"><div class="label">Name:</div><div>${clientName}</div></div>
-      ${clientUri ? `<div class="row"><div class="label">Website:</div><div><a href="${clientUri}" target="_blank" rel="noopener noreferrer">${clientUri}</a></div></div>` : ""}
-      ${policyUri ? `<div class="row"><div class="label">Privacy Policy:</div><div><a href="${policyUri}" target="_blank" rel="noopener noreferrer">${policyUri}</a></div></div>` : ""}
-      ${tosUri ? `<div class="row"><div class="label">Terms:</div><div><a href="${tosUri}" target="_blank" rel="noopener noreferrer">${tosUri}</a></div></div>` : ""}
-      ${redirectUris.length > 0 ? `<div class="row"><div class="label">Redirect URIs:</div><div>${redirectUris.map((u) => `<div>${u}</div>`).join("")}</div></div>` : ""}
-      ${contacts ? `<div class="row"><div class="label">Contact:</div><div>${contacts}</div></div>` : ""}
+    <div class="section info">
+      <div class="row"><div class="label">Name</div><div class="client-name">${clientName}</div></div>
+      ${clientUri ? `<div class="row"><div class="label">Website</div><div><a href="${clientUri}" target="_blank" rel="noopener noreferrer">${clientUri}</a></div></div>` : ""}
+      ${policyUri ? `<div class="row"><div class="label">Privacy</div><div><a href="${policyUri}" target="_blank" rel="noopener noreferrer">${policyUri}</a></div></div>` : ""}
+      ${tosUri ? `<div class="row"><div class="label">Terms</div><div><a href="${tosUri}" target="_blank" rel="noopener noreferrer">${tosUri}</a></div></div>` : ""}
+      ${redirectUris.length > 0 ? `<div class="row"><div class="label">Redirect URIs</div><div>${redirectUris.map((u) => `<div>${u}</div>`).join("")}</div></div>` : ""}
+      ${contacts ? `<div class="row"><div class="label">Contact</div><div>${contacts}</div></div>` : ""}
     </div>
     <form method="post" action="${new URL(request.url).pathname}">
       <input type="hidden" name="state" value="${encodedState}" />

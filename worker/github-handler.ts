@@ -28,7 +28,7 @@ app.get("/authorize", async (c) => {
     client: await c.env.OAUTH_PROVIDER.lookupClient(clientId),
     server: {
       description: "Aaron's notes MCP",
-      logo: "https://avatars.githubusercontent.com/u/aarnphm?s=200&v=4",
+      logo: "https://avatars.githubusercontent.com/u/29749331?v=4",
       name: "Aaron's notes",
     },
     state: { oauthReqInfo },
