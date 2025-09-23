@@ -55,7 +55,7 @@
     "@myriaddreamin/typst.ts": "^0.6.0",
     "@napi-rs/simple-git": "^0.1.22",
     "@tweenjs/tween.js": "^25.0.0",
-    "agents": "^0.1.6",
+    "agents": "^0.2.0",
     "ansi-truncate": "^1.4.0",
     "async-mutex": "^0.5.0",
     "chokidar": "^4.0.3",
@@ -78,7 +78,7 @@
     "hast-util-whitespace": "^3.0.0",
     "hastscript": "^9.0.1",
     "hono": "^4.9.8",
-    "is-absolute-url": "^4.0.1",
+    "is-absolute-url": "^5.0.0",
     "js-yaml": "^4.1.0",
     "katex": "^0.16.22",
     "lightningcss": "^1.30.1",
@@ -91,7 +91,7 @@
     "mdast-util-to-string": "^4.0.0",
     "micromorph": "^0.4.5",
     "minimatch": "^10.0.3",
-    "motion": "^12.23.18",
+    "motion": "^12.23.19",
     "node-tikzjax": "^1.0.3",
     "octokit": "^5.0.3",
     "pixi.js": "^8.13.2",
@@ -139,11 +139,11 @@
     "ws": "^8.18.3",
     "xml-formatter": "^3.6.7",
     "yargs": "^18.0.0",
-    "zod": "^3.25.76"
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@anthropic-ai/claude-code": "^1.0.120",
-    "@openai/codex": "^0.34.0",
+    "@openai/codex": "^0.40.0",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
@@ -155,7 +155,7 @@
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.33",
-    "@typescript/native-preview": "7.0.0-dev.20250910.1",
+    "@typescript/native-preview": "7.0.0-dev.20250923.1",
     "bibtex-tidy": "^1.14.0",
     "esbuild": "^0.25.10",
     "mermaid": "^11.12.0",
@@ -163,7 +163,7 @@
     "ts-morph": "^27.0.0",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
-    "wrangler": "^4.38.0"
+    "wrangler": "^4.39.0"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
 }
