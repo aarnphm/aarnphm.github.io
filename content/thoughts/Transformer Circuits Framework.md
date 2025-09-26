@@ -5,7 +5,7 @@ tags:
   - interpretability
 description: Anthropic, 2021
 date: "2025-09-15"
-modified: 2025-09-16 15:46:00 GMT-04:00
+modified: 2025-09-26 16:40:00 GMT-04:00
 title: A Mathematical Framework for Transformer Circuits
 ---
 
@@ -40,6 +40,22 @@ $$
 $$
 
 which is a data‑dependent low‑rank write into the residual stream. MLPs apply $W_2\,\sigma(W_1 r)$ — in linear regimes they also act as low‑rank writes.
+
+## attention heads as information movement
+
+> “Attention heads move information between positions in the residual stream.”[@elhage2021mathematical]
+
+- **Kronecker factorisation.** For head $h$, the linear part factors as
+
+  $$
+  H^{(h)}(R) = A^{(h)}(R) \otimes W_{OV}^{(h)} R,
+  $$
+
+  where $A^{(h)}$ routes tokens (query/key side) while $W_{OV}^{(h)}=W_O^{(h)}W_V^{(h)}$ transports the feature written into the residual stream. This tensor-product view makes the “information moves from source token via feature channel” story explicit.
+- **Query/Key routing.** $QK^\top$ scores select *which* source token sends information. The softmaxed attention matrix $A$ is a routing operator shaped by sequence content.
+- **Value transport.** The value projection $W_V$ extracts a feature from the source token; the output projection $W_O$ determines how that feature is written into the destination residual vector.
+- **Paths across layers.** Because each head writes additively into the residual stream, information can hop across tokens and layers, forming interpretable circuits (e.g., induction or copy heads).
+- **Diagnostics.** Inspecting $W_V W_O$ (spectrum, singular vectors) reveals what kind of feature is transported, while attention heatmaps show where it moves — see [[lectures/412/notes#spectral diagnostics]] for tooling.
 
 ## features, superposition, and privileged bases
 

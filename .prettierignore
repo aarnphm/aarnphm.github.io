@@ -18,3 +18,4 @@ worker-configuration.d.ts
 *.npz
 *.safetensors
 *.bin
+**/embeddings/*.json

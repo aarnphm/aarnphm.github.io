@@ -1,0 +1,374 @@
+// Semantic query worker: consumes shared embeddings and performs similarity search.
+
+import { env, pipeline } from "@huggingface/transformers"
+import "onnxruntime-web/webgpu"
+import "onnxruntime-web/wasm"
+
+export {}
+
+type VectorShardMeta = {
+  path: string
+  rows: number
+  rowOffset: number
+  byteLength: number
+  sha256?: string
+  byteStride: number
+}
+
+type LevelSection = {
+  level: number
+  indptr: { offset: number; elements: number; byteLength: number }
+  indices: { offset: number; elements: number; byteLength: number }
+}
+
+type Bm25Data = {
+  N: number
+  avgdl: number
+  docLen: number[]
+  postings: Record<string, [number, number][]>
+}
+
+type Manifest = {
+  version: number
+  dims: number
+  dtype: string
+  normalized: boolean
+  rows: number
+  shardSizeRows: number
+  vectors: {
+    dtype: string
+    rows: number
+    dims: number
+    shards: VectorShardMeta[]
+  }
+  ids: string[]
+  titles?: string[]
+  hnsw: {
+    M: number
+    efConstruction: number
+    entryPoint: number
+    maxLevel: number
+    graph: {
+      path: string
+      sha256?: string
+      levels: LevelSection[]
+    }
+  }
+  bm25?: {
+    path: string
+  }
+}
+
+type ConfigureMessage = {
+  type: "configure"
+  cfg: any
+  manifest: Manifest
+  vectorBuffer: ArrayBufferLike
+  graphBuffer: ArrayBufferLike
+  bm25?: Bm25Data
+}
+
+type SearchMessage = { type: "search"; text: string; k: number; seq: number }
+type ResetMessage = { type: "reset" }
+
+type WorkerMessage = ConfigureMessage | SearchMessage | ResetMessage
+
+type ReadyMessage = { type: "ready" }
+
+type SearchHit = { id: number; score: number }
+
+type SearchResultMessage = {
+  type: "search-result"
+  seq: number
+  semantic: SearchHit[]
+  bm25: SearchHit[]
+}
+
+type ErrorMessage = { type: "error"; seq?: number; message: string }
+
+let manifest: Manifest | null = null
+let cfg: any = null
+let vectorsView: Float32Array | null = null
+let dims = 0
+let rows = 0
+let classifier: any = null
+let envConfigured = false
+let entryPoint = -1
+let maxLevel = 0
+let efDefault = 128
+let levelGraph: { indptr: Uint32Array; indices: Uint32Array }[] = []
+let bm25Index: Bm25Data | null = null
+
+function configureRuntimeEnv() {
+  if (envConfigured) return
+  const modelRoot = cfg?.modelLocalPath ?? "/models"
+  env.localModelPath = modelRoot
+  env.allowLocalModels = true
+  env.allowRemoteModels = Boolean(cfg?.allowRemoteModels ?? false)
+  const wasmBackend = env.backends?.onnx?.wasm
+  if (!wasmBackend) {
+    throw new Error("transformers.js ONNX runtime backend unavailable")
+  }
+  const cdnBase = `https://cdn.jsdelivr.net/npm/@huggingface/transformers@${env.version}/dist/`
+  wasmBackend.wasmPaths = cdnBase
+  envConfigured = true
+}
+
+async function ensureEncoder() {
+  if (classifier) return
+  if (!cfg?.model) {
+    throw new Error("semantic worker missing model identifier")
+  }
+  configureRuntimeEnv()
+  const dtype = typeof cfg?.dtype === "string" && cfg.dtype.length > 0 ? cfg.dtype : "fp32"
+  const pipelineOpts: Record<string, unknown> = {
+    device: "wasm",
+    dtype,
+    local_files_only: true,
+  }
+  classifier = await pipeline("feature-extraction", cfg.model, pipelineOpts)
+  cfg.dtype = dtype
+}
+
+function vectorSlice(id: number): Float32Array {
+  if (!vectorsView) {
+    throw new Error("vector buffer not configured")
+  }
+  const start = id * dims
+  const end = start + dims
+  return vectorsView.subarray(start, end)
+}
+
+function dot(a: Float32Array, b: Float32Array): number {
+  let s = 0
+  for (let i = 0; i < dims; i++) {
+    s += a[i] * b[i]
+  }
+  return s
+}
+
+function normalize(vec: Float32Array) {
+  let norm = 0
+  for (let i = 0; i < vec.length; i++) norm += vec[i] * vec[i]
+  norm = Math.sqrt(norm) || 1
+  for (let i = 0; i < vec.length; i++) vec[i] /= norm
+}
+
+function tokenize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .split(/\s+/)
+    .map((token) => token.replace(/[^a-z0-9]/g, ""))
+    .filter((token) => token.length > 0)
+}
+
+function neighborsFor(level: number, node: number): Uint32Array {
+  const meta = levelGraph[level]
+  if (!meta) return new Uint32Array()
+  const { indptr, indices } = meta
+  if (node < 0 || node + 1 >= indptr.length) return new Uint32Array()
+  const start = indptr[node]
+  const end = indptr[node + 1]
+  return indices.subarray(start, end)
+}
+
+function insertSortedDescending(arr: SearchHit[], item: SearchHit) {
+  let idx = arr.length
+  while (idx > 0 && arr[idx - 1].score < item.score) {
+    idx -= 1
+  }
+  arr.splice(idx, 0, item)
+}
+
+function bruteForceSearch(query: Float32Array, k: number): SearchHit[] {
+  if (!vectorsView) return []
+  const hits: SearchHit[] = []
+  for (let id = 0; id < rows; id++) {
+    const score = dot(query, vectorSlice(id))
+    if (hits.length < k) {
+      insertSortedDescending(hits, { id, score })
+    } else if (score > hits[hits.length - 1].score) {
+      insertSortedDescending(hits, { id, score })
+      hits.length = k
+    }
+  }
+  return hits
+}
+
+function hnswSearch(query: Float32Array, k: number): SearchHit[] {
+  if (!manifest || !vectorsView || entryPoint < 0 || levelGraph.length === 0) {
+    return bruteForceSearch(query, k)
+  }
+  const ef = Math.max(efDefault, k * 4)
+  let ep = entryPoint
+  let epScore = dot(query, vectorSlice(ep))
+  for (let level = maxLevel; level > 0; level--) {
+    let changed = true
+    while (changed) {
+      changed = false
+      const neigh = neighborsFor(level, ep)
+      for (let i = 0; i < neigh.length; i++) {
+        const candidate = neigh[i]
+        if (candidate >= rows) continue
+        const score = dot(query, vectorSlice(candidate))
+        if (score > epScore) {
+          epScore = score
+          ep = candidate
+          changed = true
+        }
+      }
+    }
+  }
+
+  const visited = new Set<number>()
+  const candidateQueue: SearchHit[] = []
+  const best: SearchHit[] = []
+  insertSortedDescending(candidateQueue, { id: ep, score: epScore })
+  insertSortedDescending(best, { id: ep, score: epScore })
+  visited.add(ep)
+
+  while (candidateQueue.length > 0) {
+    const current = candidateQueue.shift()!
+    const worstBest = best.length >= ef ? best[best.length - 1].score : -Infinity
+    if (current.score < worstBest && best.length >= ef) {
+      break
+    }
+    const neigh = neighborsFor(0, current.id)
+    for (let i = 0; i < neigh.length; i++) {
+      const candidate = neigh[i]
+      if (candidate >= rows || visited.has(candidate)) continue
+      visited.add(candidate)
+      const score = dot(query, vectorSlice(candidate))
+      const hit = { id: candidate, score }
+      insertSortedDescending(candidateQueue, hit)
+      if (best.length < ef || score > best[best.length - 1].score) {
+        insertSortedDescending(best, hit)
+        if (best.length > ef) {
+          best.pop()
+        }
+      }
+    }
+  }
+
+  best.sort((a, b) => b.score - a.score)
+  return best.slice(0, k)
+}
+
+function bm25Search(text: string, k: number): SearchHit[] {
+  if (!bm25Index) return []
+  const terms = tokenize(text)
+  if (terms.length === 0) return []
+  const { N, avgdl, docLen, postings } = bm25Index
+  const scores = new Map<number, number>()
+  const k1 = 1.2
+  const b = 0.75
+  for (const term of terms) {
+    const posting = postings[term]
+    if (!posting) continue
+    const n = posting.length
+    if (n === 0) continue
+    const idf = Math.log(1 + (N - n + 0.5) / (n + 0.5))
+    for (let i = 0; i < posting.length; i++) {
+      const [docId, tf] = posting[i]
+      const length = docLen[docId] ?? avgdl
+      const denom = tf + k1 * (1 - b + b * (length / avgdl))
+      const contribution = idf * ((tf * (k1 + 1)) / denom)
+      scores.set(docId, (scores.get(docId) ?? 0) + contribution)
+    }
+  }
+  const hits = Array.from(scores.entries()).map(([id, score]) => ({ id, score }))
+  hits.sort((a, b) => b.score - a.score)
+  return hits.slice(0, k)
+}
+
+async function embed(text: string): Promise<Float32Array> {
+  await ensureEncoder()
+  const out = await classifier(text, { pooling: "mean", normalize: true })
+  const data = Array.from(out?.data ?? out) as number[]
+  const vec = new Float32Array(dims)
+  for (let i = 0; i < dims; i++) vec[i] = data[i] ?? 0
+  normalize(vec)
+  return vec
+}
+
+function configureState(message: ConfigureMessage) {
+  manifest = message.manifest
+  cfg = message.cfg
+  if (manifest.vectors.dtype !== "fp32") {
+    throw new Error(`unsupported embedding dtype '${manifest.vectors.dtype}', regenerate with fp32`)
+  }
+  dims = manifest.dims
+  rows = manifest.rows
+  vectorsView = new Float32Array(message.vectorBuffer)
+  entryPoint = manifest.hnsw.entryPoint
+  maxLevel = manifest.hnsw.maxLevel
+  efDefault = Math.max(64, manifest.hnsw.M * 4)
+  levelGraph = manifest.hnsw.graph.levels.map((level) => {
+    const indptr = new Uint32Array(message.graphBuffer, level.indptr.offset, level.indptr.elements)
+    const indices = new Uint32Array(
+      message.graphBuffer,
+      level.indices.offset,
+      level.indices.elements,
+    )
+    return { indptr, indices }
+  })
+  bm25Index = message.bm25 ?? null
+  classifier = null
+  envConfigured = false
+}
+
+self.onmessage = (event: MessageEvent<WorkerMessage>) => {
+  const data = event.data
+  if (data.type === "reset") {
+    manifest = null
+    cfg = null
+    vectorsView = null
+    classifier = null
+    envConfigured = false
+    levelGraph = []
+    entryPoint = -1
+    maxLevel = 0
+    bm25Index = null
+    return
+  }
+  if (data.type === "configure") {
+    try {
+      configureState(data)
+      const ready: ReadyMessage = { type: "ready" }
+      self.postMessage(ready)
+    } catch (err) {
+      const message: ErrorMessage = {
+        type: "error",
+        message: err instanceof Error ? err.message : String(err),
+      }
+      self.postMessage(message)
+    }
+    return
+  }
+  if (data.type === "search") {
+    void (async () => {
+      try {
+        if (!manifest || !vectorsView) {
+          throw new Error("semantic worker not configured")
+        }
+        const queryVec = await embed(data.text)
+        const semanticHits = hnswSearch(queryVec, Math.max(1, data.k))
+        const bm25Hits = bm25Search(data.text, Math.max(1, data.k))
+        const message: SearchResultMessage = {
+          type: "search-result",
+          seq: data.seq,
+          semantic: semanticHits,
+          bm25: bm25Hits,
+        }
+        self.postMessage(message)
+      } catch (err) {
+        const message: ErrorMessage = {
+          type: "error",
+          seq: data.seq,
+          message: err instanceof Error ? err.message : String(err),
+        }
+        self.postMessage(message)
+      }
+    })()
+  }
+}

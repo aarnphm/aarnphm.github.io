@@ -6,7 +6,7 @@ tags:
   - llm
 description: higher dimensions representations of information in subspaces
 date: "2024-02-25"
-modified: 2025-09-14 14:33:31 GMT-04:00
+modified: 2025-09-26 09:27:13 GMT-04:00
 title: Embedding
 ---
 

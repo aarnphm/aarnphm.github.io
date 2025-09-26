@@ -143,7 +143,7 @@ async function processArenaPage(
   }
 
   const cfg = ctx.cfg.configuration
-  const externalResources = pageResources(pathToRoot(slug), resources)
+  const externalResources = pageResources(pathToRoot(slug), resources, ctx)
 
   externalResources.css.push({
     content: `@import "../../components/styles/arena.scss";`,

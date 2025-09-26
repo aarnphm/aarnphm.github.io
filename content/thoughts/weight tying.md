@@ -5,14 +5,14 @@ tags:
   - ml
 description: reduce parameters size
 date: "2025-09-19"
-modified: 2025-09-19 18:31:20 GMT-04:00
+modified: 2025-09-24 23:19:33 GMT-04:00
 title: weight tying
 ---
 
 > [!summary]
-
-- tying enforces a shared embedding matrix $s$ for both input lookups and output logits, aligning update dynamics with the softmax weights and shrinking model size. [@press2017usingoutputembeddingimprove]
-- untying keeps distinct matrices $u$ and $v$, so only the currently consumed token’s vector is touched per step while the softmax rows update densely. [@press2017usingoutputembeddingimprove]
+>
+> - tying enforces a shared embedding matrix $s$ for both input lookups and output logits, aligning update dynamics with the softmax weights and shrinking model size. [@press2017usingoutputembeddingimprove]
+> - untying keeps distinct matrices $u$ and $v$, so only the currently consumed token’s vector is touched per step while the softmax rows update densely. [@press2017usingoutputembeddingimprove]
 
 ## setup
 

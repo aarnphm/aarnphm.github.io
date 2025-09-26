@@ -4,6 +4,8 @@ import * as Plugin from "./quartz/plugins"
 import * as Component from "./quartz/components"
 import { QuartzPluginData } from "./quartz/plugins/vfile"
 
+const model = "onnx-community/Qwen3-Embedding-0.6B-ONNX" // intfloat/multilingual-e5-large
+
 const configuration: GlobalConfiguration = {
   pageTitle: "Aaron's notes",
   enableSPA: true,
@@ -69,6 +71,15 @@ const configuration: GlobalConfiguration = {
       },
     },
   },
+  semanticSearch: {
+    enable: true,
+    model,
+    modelLocalPath: `/models/${model.split("/").join("/")}`,
+    dims: 1024,
+    dtype: "fp32",
+    shardSizeRows: 1024,
+    hnsw: { M: 16, efConstruction: 200 },
+  },
 }
 
 /**
@@ -88,9 +99,6 @@ const config: QuartzConfig = {
       Plugin.TelescopicText(),
       // Convert code-file transcludes to code blocks before highlighting
       Plugin.CodeViewer(),
-      // TODO: implement this
-      // Plugin.Recipe(),
-      // Plugin.Embeddings(),
       Plugin.Twitter(),
       Plugin.SyntaxHighlighting({
         theme: {
@@ -176,6 +184,7 @@ const config: QuartzConfig = {
       Plugin.TagPage(),
       Plugin.NotebookViewer(),
       Plugin.ContentIndex({ rssLimit: 60 }),
+      Plugin.SemanticIndex(configuration.semanticSearch!),
       Plugin.Assets(),
       Plugin.Static(),
       Plugin.Favicon(),

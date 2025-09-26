@@ -12,7 +12,7 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-09-22 18:35:43 GMT-04:00
+modified: 2025-09-25 03:57:06 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -106,6 +106,7 @@ see also [[/curius|bookmarks]]
 - https://posthog.com/
 - https://reducing-suffering.org/
 - https://1a3orn.com/
+- https://laurent.fyi/
 
 ## people
 
@@ -179,6 +180,7 @@ see also [[/curius|bookmarks]]
   - He's that talented, no need for introduction
   - LLVM, Clang, MLIR, Swift, TPUs
   - https://x.com/clattner_llvm
+- https://www.vilinskyy.com/ -- Alexander Vilinskyy
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -339,6 +341,8 @@ see also [[/curius|bookmarks]]
 - https://grugbrain.dev/
 - https://research.contrary.com/deep-dive/building-an-american-tsmc -- Building an American TSMC \*\*
 - https://jzmazlish.substack.com/p/ak-or-just-okay-ai-and-economic-growth -- AK or just okay? AI and economic growth
+- https://sharif.io/anna-alexei -- Always invite Anna
+- https://archive.is/ilTr1 -- The Economist, How to spot a genius
 
 ### [[thoughts/Machine learning]]
 

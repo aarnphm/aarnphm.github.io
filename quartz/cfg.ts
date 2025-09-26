@@ -39,6 +39,18 @@ export type Analytics =
       host?: string
     }
 
+type DType = "fp16" | "fp32"
+
+type SemanticIndexOptions = {
+  enable?: boolean
+  model?: string
+  dims?: number
+  dtype?: DType
+  shardSizeRows?: number
+  hnsw?: { M?: number; efConstruction?: number; efSearch?: number }
+  modelLocalPath?: string
+}
+
 export interface GlobalConfiguration {
   pageTitle: string
   pageTitleSuffix?: string
@@ -66,6 +78,8 @@ export interface GlobalConfiguration {
    * Region Codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
    */
   locale: ValidLocale
+  /** Semantic search configuration */
+  semanticSearch?: SemanticIndexOptions
 }
 
 export interface QuartzConfig {

@@ -385,7 +385,11 @@ export function mergeIsomorphic(ast: Node, suffix?: string) {
   mergeFootnotes(ast as Root, suffix)
 }
 
-export const pageResources = (baseDir: FullSlug | RelativeURL, staticResources: StaticResources) =>
+export const pageResources = (
+  baseDir: FullSlug | RelativeURL,
+  staticResources: StaticResources,
+  ctx: BuildCtx,
+) =>
   ({
     css: [
       { content: joinSegments(baseDir, "index.css") },
@@ -403,6 +407,12 @@ export const pageResources = (baseDir: FullSlug | RelativeURL, staticResources: 
         contentType: "inline",
         spaPreserve: true,
         script: `const fetchData = fetch("${joinSegments(baseDir, "static/contentIndex.json")}").then(data => data.json())`,
+      },
+      {
+        loadTime: "beforeDOMReady",
+        contentType: "inline",
+        spaPreserve: true,
+        script: `const semanticCfg = ${JSON.stringify(ctx.cfg?.configuration?.semanticSearch ?? {})}`,
       },
       {
         script: collapseHeaderScript,

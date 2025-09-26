@@ -49,7 +49,8 @@
     "@clack/prompts": "^0.11.0",
     "@cloudflare/workers-oauth-provider": "^0.0.10",
     "@floating-ui/dom": "^1.7.4",
-    "@modelcontextprotocol/sdk": "^1.18.1",
+    "@huggingface/transformers": "^3.7.3",
+    "@modelcontextprotocol/sdk": "^1.18.2",
     "@myriaddreamin/rehype-typst": "^0.6.0",
     "@myriaddreamin/typst-ts-node-compiler": "^0.6.0",
     "@myriaddreamin/typst.ts": "^0.6.0",
@@ -91,9 +92,10 @@
     "mdast-util-to-string": "^4.0.0",
     "micromorph": "^0.4.5",
     "minimatch": "^10.0.3",
-    "motion": "^12.23.18",
+    "motion": "^12.23.22",
     "node-tikzjax": "^1.0.3",
     "octokit": "^5.0.3",
+    "onnxruntime-web": "^1.23.0",
     "pixi.js": "^8.13.2",
     "preact": "^10.27.2",
     "preact-render-to-string": "^6.6.1",
@@ -121,7 +123,7 @@
     "remark-smartypants": "^3.0.2",
     "rfdc": "^1.4.1",
     "rough-notation": "^0.5.1",
-    "sass-embedded": "^1.93.1",
+    "sass-embedded": "^1.93.2",
     "satori": "^0.18.3",
     "serve-handler": "^6.1.6",
     "sharp": "^0.34.4",
@@ -142,7 +144,8 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@anthropic-ai/claude-code": "^1.0.120",
+    "@anthropic-ai/claude-code": "^1.0.126",
+    "@cloudflare/workers-types": "^4.20250926.0",
     "@openai/codex": "^0.34.0",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
@@ -161,9 +164,16 @@
     "mermaid": "^11.12.0",
     "prettier": "^3.6.2",
     "ts-morph": "^27.0.0",
-    "tsx": "^4.20.5",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.2",
-    "wrangler": "^4.38.0"
+    "wrangler": "^4.40.2"
   },
-  "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
+  "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e",
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "use-sync-external-store>react": "^19.0.0"
+      }
+    }
+  }
 }

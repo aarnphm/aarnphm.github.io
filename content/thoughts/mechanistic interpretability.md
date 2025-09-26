@@ -7,7 +7,7 @@ tags:
 description: and reverse engineering neural networks.
 date: "2024-10-30"
 abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
-modified: 2025-09-11 18:02:12 GMT-04:00
+modified: 2025-09-26 15:49:51 GMT-04:00
 aliases:
   - mechinterp
   - reveng neural net
@@ -116,6 +116,25 @@ When features are sparsed, superposition allows compression beyond what linear m
 reasoning: “noisy simulation”, where small neural networks exploit feature sparsity and properties of high-dimensional spaces to approximately simulate much larger much sparser neural networks
 
 In a sense, superposition is a form of **lossy [[thoughts/Compression|compression]]**
+
+This is plausible because:
+
+- Almost Orthogonal Vectors. Although it's only possible to have $n$ orthogonal vectors in an $n$-dimensional space, it's possible to have $\exp (n)$ many "almost orthogonal" ($< \epsilon$ cosine similarity) vectors in high-dimensional spaces. See the [Johnson–Lindenstrauss lemma](https://en.wikipedia.org/wiki/Johnson%E2%80%93Lindenstrauss_lemma).
+- Compressed sensing. In general, if one projects a vector into a lower-dimensional space, one can't reconstruct the original vector. However, this changes if one knows that the original vector is sparse. In this case, it is often possible to recover the original vector.
+
+The ideas in this section might be thought of in terms of four progressively more strict properties that neural network representations might have.
+
+- **Decomposability**: Neural network activations which are _decomposable_ can be decomposed into features, the meaning of which is not dependent on the value of other features. (This property is ultimately the most important — see the role of decomposition in defeating the curse of dimensionality.)
+- **Linearity**: Features correspond to directions. Each feature $f_i$ has a corresponding representation direction $W_i$. The presence of multiple features $f_1, f_2, \dots$ activating with values $x_{f_1}, x_{f_2}, \dots$ is represented by
+
+  $$
+    x_{f_1} W_{f_1} + x_{f_2} W_{f_2} + \dots.
+  $$
+
+- **Superposition vs Non-Superposition**: A linear representation exhibits superposition if $W^\top W$ is _not_ invertible. If $W^\top W$ _is_ invertible, it does _not_ exhibit superposition.
+- **Basis-Aligned**: A representation is basis aligned if _all_ $W_i$ are one-hot basis vectors. A representation is partially basis aligned if _all_ $W_i$ are sparse. This requires a privileged basis.
+
+The first two (decomposability and linearity) are properties we hypothesize to be widespread, while the latter (non-superposition and basis-aligned) are properties we believe only sometimes occur.
 
 ### importance
 

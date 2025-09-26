@@ -2,7 +2,7 @@ import sourceMapSupport from "source-map-support"
 sourceMapSupport.install(options)
 import path from "path"
 import { PerfTimer } from "./util/perf"
-import { rm } from "fs/promises"
+import { mkdir, readdir, rm } from "fs/promises"
 import { GlobbyFilterFunction, isGitIgnored } from "globby"
 import { parseMarkdown } from "./processors/parse"
 import { filterContent } from "./processors/filter"
@@ -41,6 +41,28 @@ type BuildData = {
   contentMap: ContentMap
   changesSinceLastBuild: Record<FilePath, ChangeEvent["type"]>
   lastBuildMs: number
+}
+
+async function cleanOutputDir(output: string) {
+  await mkdir(output, { recursive: true })
+  let entries: string[] = []
+  try {
+    entries = await readdir(output)
+  } catch (err: any) {
+    if (err?.code === "ENOENT") {
+      return
+    }
+    throw err
+  }
+  await Promise.all(
+    entries.map((entry) => {
+      if (entry === "models") {
+        return Promise.resolve()
+      }
+      const target = path.join(output, entry)
+      return rm(target, { recursive: true, force: true })
+    }),
+  )
 }
 
 async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
@@ -83,8 +105,10 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
 
   const release = await mut.acquire()
   perf.addEvent("clean")
-  await rm(output, { recursive: true, force: true })
-  console.log(`Cleaned output directory \`${output}\` in ${perf.timeSince("clean")}`)
+  await cleanOutputDir(output)
+  console.log(
+    `Cleaned output directory \`${output}\` (preserved /models) in ${perf.timeSince("clean")}`,
+  )
 
   perf.addEvent("glob")
   const allFiles = await glob("**/*.*", argv.directory, cfg.configuration.ignorePatterns)

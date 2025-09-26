@@ -14,6 +14,7 @@ You should be able to always search the web. Be super technical. But always give
 - Components: `PascalCase.tsx` (e.g., `ExplorerNode.tsx`). Utilities: lowercase or camel file names (e.g., `path.ts`, `fileTrie.ts`).
 - Variables/functions: `camelCase`; types/interfaces: `PascalCase`.
 - Python (optional tools in `pyproject.toml`): ruff and mypy with 2-space indent; keep notebooks and scripts minimal. No need to run formatter, just follows https://docs.fast.ai/dev/style.html for convention.
+  - No need to do gated imports. Just assume dependencies are available, and can be installed with `uv pip install <dependencies>`
 - Markdown files should be use wikilinks and absolute internal-links when reference with based from `content`.
   - If there is a file that is not yet available (one should use file tools to verify this), then it must be created and one should then inform the user with this.
   - Always keep everything in lowercase.

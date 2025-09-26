@@ -1,4 +1,5 @@
 import FlexSearch, { DefaultDocumentSearchResults, DocumentData, Id } from "flexsearch"
+import { SemanticClient } from "./semantic.inline"
 import type { ContentDetails } from "../../plugins"
 import {
   registerEscapeHandler,
@@ -24,8 +25,14 @@ interface Item extends DocumentData {
 
 // Can be expanded with things like "term" in the future
 type SearchType = "basic" | "tags"
-let searchType: SearchType = "basic"
+type SearchMode = "lexical" | "semantic"
+let searchMode: SearchMode = "semantic"
 let currentSearchTerm: string = ""
+let rawSearchTerm: string = ""
+let semantic: SemanticClient | null = null
+let semanticReady = false
+let semanticInitFailed = false
+type SimilarityResult = { item: Item; similarity: number }
 
 // Initialize the FlexSearch Document instance with the appropriate configuration
 const index = new FlexSearch.Document<Item>({
@@ -99,7 +106,11 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
   return html.body
 }
 
-async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: ContentIndex) {
+async function setupSearch(
+  searchElement: HTMLDivElement,
+  currentSlug: FullSlug,
+  data: ContentIndex,
+) {
   const container = searchElement.querySelector(".search-container") as HTMLElement
   if (!container) return
 
@@ -116,7 +127,13 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
   if (!searchSpace) return
 
   const idDataMap = Object.keys(data) as FullSlug[]
+  const slugToIndex = new Map<FullSlug, number>()
+  idDataMap.forEach((slug, idx) => slugToIndex.set(slug, idx))
   const el = searchSpace?.querySelector("ul#helper")
+  const modeToggle = searchSpace.querySelector(".search-mode-toggle") as HTMLDivElement | null
+  const modeButtons = modeToggle
+    ? Array.from(modeToggle.querySelectorAll<HTMLButtonElement>(".mode-option"))
+    : []
 
   const appendLayout = (el: HTMLElement) => {
     searchLayout.appendChild(el)
@@ -139,6 +156,77 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
   }
 
   const enablePreview = searchLayout.dataset.preview === "true"
+  if (!semantic && !semanticInitFailed) {
+    const client = new SemanticClient(semanticCfg)
+    try {
+      await client.ensureReady()
+      semantic = client
+      semanticReady = true
+    } catch (err) {
+      console.warn("[SemanticClient] initialization failed:", err)
+      client.dispose()
+      semantic = null
+      semanticReady = false
+      semanticInitFailed = true
+    }
+  } else if (semantic && !semanticReady) {
+    try {
+      await semantic.ensureReady()
+      semanticReady = true
+    } catch (err) {
+      console.warn("[SemanticClient] became unavailable:", err)
+      semantic.dispose()
+      semantic = null
+      semanticReady = false
+      semanticInitFailed = true
+    }
+  }
+  if (!semanticReady && searchMode === "semantic") {
+    searchMode = "lexical"
+  }
+  let searchSeq = 0
+  let runSearchTimer: number | null = null
+  searchLayout.dataset.mode = searchMode
+
+  const updateModeUI = (mode: SearchMode) => {
+    modeButtons.forEach((button) => {
+      const btnMode = (button.dataset.mode as SearchMode) ?? "lexical"
+      const isActive = btnMode === mode
+      button.classList.toggle("active", isActive)
+      button.setAttribute("aria-pressed", String(isActive))
+    })
+    if (modeToggle) {
+      modeToggle.dataset.mode = mode
+    }
+    searchLayout.dataset.mode = mode
+  }
+
+  const triggerSearchWithMode = (mode: SearchMode) => {
+    if (mode === "semantic" && !semanticReady) {
+      return
+    }
+    if (searchMode === mode) return
+    searchMode = mode
+    updateModeUI(mode)
+    if (rawSearchTerm.trim() !== "") {
+      searchLayout.classList.add("display-results")
+      const token = ++searchSeq
+      void runSearch(rawSearchTerm, token)
+    }
+  }
+
+  updateModeUI(searchMode)
+
+  modeButtons.forEach((button) => {
+    const btnMode = (button.dataset.mode as SearchMode) ?? "lexical"
+    if (btnMode === "semantic") {
+      button.disabled = !semanticReady
+      button.setAttribute("aria-disabled", String(!semanticReady))
+    }
+    const handler = () => triggerSearchWithMode(btnMode)
+    button.addEventListener("click", handler)
+    window.addCleanup(() => button.removeEventListener("click", handler))
+  })
   let preview: HTMLDivElement | undefined = undefined
   let previewInner: HTMLDivElement | undefined = undefined
   const results = document.createElement("div")
@@ -154,18 +242,21 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
   function hideSearch() {
     container.classList.remove("active")
     searchBar.value = "" // clear the input when we dismiss the search
+    rawSearchTerm = ""
     removeAllChildren(results)
     if (preview) {
       removeAllChildren(preview)
     }
     searchLayout.classList.remove("display-results")
-    searchType = "basic" // reset search type after closing
     searchButton.focus()
   }
 
-  function showSearch(searchTypeNew: SearchType) {
-    searchType = searchTypeNew
+  function showSearch(type: SearchType) {
     container.classList.add("active")
+    if (type === "tags") {
+      searchBar.value = "#"
+      rawSearchTerm = "#"
+    }
     searchBar.focus()
   }
 
@@ -185,9 +276,6 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
       e.preventDefault()
       const searchBarOpen = container.classList.contains("active")
       searchBarOpen ? hideSearch() : showSearch("tags")
-
-      // add "#" prefix for tag search
-      searchBar.value = "#"
       return
     }
 
@@ -249,36 +337,37 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
     }
   }
 
-  const formatForDisplay = (term: string, id: number) => {
+  const formatForDisplay = (term: string, id: number, renderType: SearchType) => {
     const slug = idDataMap[id]
     if (data[slug].layout === "letter") {
       return null
     }
     const aliases: string[] = data[slug].aliases
-    const target = aliases.find((alias) => alias.toLowerCase().includes(term.toLowerCase()))
+    const target = aliases.find((alias) => alias.toLowerCase().includes(term.toLowerCase())) ?? ""
 
     return {
       id,
       slug,
       title:
-        searchType === "tags" || target
+        renderType === "tags" || target
           ? data[slug].title
           : highlight(term, data[slug].title ?? ""),
       target,
       content: highlight(term, data[slug].content ?? "", true),
-      tags: highlightTags(term.substring(1), data[slug].tags),
+      tags: highlightTags(term, data[slug].tags, renderType),
       aliases: aliases,
     }
   }
 
-  function highlightTags(term: string, tags: string[]) {
-    if (!tags || searchType !== "tags") {
+  function highlightTags(term: string, tags: string[], renderType: SearchType) {
+    if (!tags || renderType !== "tags") {
       return []
     }
 
+    const tagTerm = term.toLowerCase()
     return tags
       .map((tag) => {
-        if (tag.toLowerCase().includes(term.toLowerCase())) {
+        if (tag.toLowerCase().includes(tagTerm)) {
           return `<li><p class="match-tag">#${tag}</p></li>`
         } else {
           return `<li><p>#${tag}</p></li>`
@@ -291,19 +380,30 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
     return new URL(resolveRelative(currentSlug, slug), location.toString())
   }
 
-  const resultToHTML = ({ slug, title, content, tags, target }: Item) => {
+  const resultToHTML = ({ item, percent }: { item: Item; percent: number | null }) => {
+    const { slug, title, content, tags, target } = item
     const htmlTags = tags.length > 0 ? `<ul class="tags">${tags.join("")}</ul>` : ``
     const itemTile = document.createElement("a")
     const titleContent = target ? highlight(currentSearchTerm, target) : title
     const subscript = target ? `<b>${slug}</b>` : ``
+    let percentLabel = "—"
+    let percentAttr = ""
+    if (percent !== null && Number.isFinite(percent)) {
+      const bounded = Math.max(0, Math.min(100, percent))
+      percentLabel = `${bounded.toFixed(1)}%`
+      percentAttr = bounded.toFixed(3)
+    }
     itemTile.classList.add("result-card")
     itemTile.id = slug
     itemTile.href = resolveUrl(slug).toString()
     itemTile.innerHTML = `<hgroup>
       <h3>${titleContent}</h3>
       ${subscript}${htmlTags}
+      ${searchMode === "semantic" ? `<span class="result-likelihood" title="match likelihood">&nbsp;${percentLabel}</span>` : ""}
       ${enablePreview && window.innerWidth > 600 ? "" : `<p>${content}</p>`}
     </hgroup>`
+    if (percentAttr) itemTile.dataset.scorePercent = percentAttr
+    else delete itemTile.dataset.scorePercent
 
     const handler = (evt: MouseEvent) => {
       if (evt.altKey || evt.ctrlKey || evt.metaKey || evt.shiftKey) return
@@ -325,15 +425,22 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
     return itemTile
   }
 
-  async function displayResults(finalResults: Item[]) {
+  async function displayResults(finalResults: SimilarityResult[]) {
     removeAllChildren(results)
     if (finalResults.length === 0) {
       results.innerHTML = `<a class="result-card no-match">
           <h3>No results.</h3>
           <p>Try another search term?</p>
       </a>`
+      currentHover = null
     } else {
-      results.append(...finalResults.map(resultToHTML))
+      const decorated = finalResults.map(({ item, similarity }) => {
+        if (!Number.isFinite(similarity)) return { item, percent: null }
+        const bounded = Math.max(-1, Math.min(1, similarity))
+        const percent = ((bounded + 1) / 2) * 100
+        return { item, percent }
+      })
+      results.append(...decorated.map(resultToHTML))
     }
 
     if (finalResults.length === 0 && preview) {
@@ -402,60 +509,69 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
     }
   }
 
-  async function onType(e: HTMLElementEventMap["input"]) {
+  async function runSearch(rawTerm: string, token: number) {
     if (!searchLayout || !index) return
-    currentSearchTerm = (e.target as HTMLInputElement).value
-    searchLayout.classList.toggle("display-results", currentSearchTerm !== "")
-    searchType = currentSearchTerm.startsWith("#") ? "tags" : "basic"
+    const trimmed = rawTerm.trim()
+    if (trimmed === "") {
+      removeAllChildren(results)
+      if (preview) {
+        removeAllChildren(preview)
+      }
+      currentHover = null
+      searchLayout.classList.remove("display-results")
+      return
+    }
 
-    let searchResults: DefaultDocumentSearchResults<Item>
-    if (searchType === "tags") {
-      currentSearchTerm = currentSearchTerm.substring(1).trim()
-      const separatorIndex = currentSearchTerm.indexOf(" ")
-      if (separatorIndex != -1) {
-        // search by title and content index and then filter by tag (implemented in flexsearch)
-        const tag = currentSearchTerm.substring(0, separatorIndex)
-        const query = currentSearchTerm.substring(separatorIndex + 1).trim()
+    const modeForRanking: SearchMode = searchMode
+    const initialType: SearchType = trimmed.startsWith("#") ? "tags" : "basic"
+    let workingType: SearchType = initialType
+    let highlightTerm = trimmed
+    let tagTerm = ""
+    let searchResults: DefaultDocumentSearchResults<Item> = []
+
+    if (initialType === "tags") {
+      tagTerm = trimmed.substring(1).trim()
+      const separatorIndex = tagTerm.indexOf(" ")
+      if (separatorIndex !== -1) {
+        const tag = tagTerm.substring(0, separatorIndex).trim()
+        const query = tagTerm.substring(separatorIndex + 1).trim()
         const results = await index.searchAsync({
-          query: query,
-          // return at least 10000 documents, so it is enough to filter them by tag
+          query,
           limit: Math.max(numSearchResults, 10000),
           index: ["title", "content", "aliases"],
           tag: { tags: tag },
         })
+        if (token !== searchSeq) return
         searchResults = Object.values(results)
-        // set search type to basic and remove tag from term for proper highlighting and scroll
-        searchType = "basic"
-        currentSearchTerm = query
+        workingType = "basic"
+        highlightTerm = query
       } else {
-        // default search by tags index
         const results = await index.searchAsync({
-          query: currentSearchTerm,
+          query: tagTerm,
           limit: numSearchResults,
           index: ["tags"],
         })
+        if (token !== searchSeq) return
         searchResults = Object.values(results)
+        highlightTerm = tagTerm
       }
-    } else if (searchType === "basic") {
+    } else {
       const results = await index.searchAsync({
-        query: currentSearchTerm,
+        query: highlightTerm,
         limit: numSearchResults,
         index: ["title", "content", "aliases"],
       })
+      if (token !== searchSeq) return
       searchResults = Object.values(results)
     }
 
     const coerceIds = (hit?: DefaultDocumentSearchResults<Item>[number]): number[] => {
-      if (!hit) {
-        return []
-      }
-
+      if (!hit) return []
       return hit.result
         .map((value: Id) => {
           if (typeof value === "number") {
             return value
           }
-
           const parsed = Number.parseInt(String(value), 10)
           return Number.isNaN(parsed) ? null : parsed
         })
@@ -467,34 +583,173 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
       return coerceIds(hit)
     }
 
-    // order titles ahead of content
     const allIds: Set<number> = new Set([
       ...getByField("aliases"),
       ...getByField("title"),
       ...getByField("content"),
       ...getByField("tags"),
     ])
-    const finalResults = [...allIds]
-      .map((id) => formatForDisplay(currentSearchTerm, id))
-      .filter((result): result is Item => result !== null)
-      .sort((a, b) => {
-        // If both have targets or both don't have targets, maintain original order
-        if ((!a?.target && !b?.target) || (a?.target && b?.target)) return 0
-        // If a has target and b doesn't, a comes first
-        if (a?.target && !b?.target) return -1
-        // If b has target and a doesn't, b comes first
-        if (!a?.target && b?.target) return 1
-        return 0
+
+    currentSearchTerm = highlightTerm
+
+    const candidateItems = new Map<string, Item>()
+    const ensureItem = (id: number): Item | null => {
+      const slug = idDataMap[id]
+      if (!slug) return null
+      const cached = candidateItems.get(slug)
+      if (cached) return cached
+      const item = formatForDisplay(highlightTerm, id, workingType)
+      if (item) {
+        candidateItems.set(slug, item)
+        return item
+      }
+      return null
+    }
+
+    const baseIndices: number[] = []
+    for (const id of allIds) {
+      const item = ensureItem(id)
+      if (!item) continue
+      const idx = slugToIndex.get(item.slug)
+      if (typeof idx === "number") {
+        baseIndices.push(idx)
+      }
+    }
+
+    let semanticIds: number[] = []
+    let bmIds: number[] = []
+    const semanticSimilarity = new Map<number, number>()
+    const bmSimilarity = new Map<number, number>()
+
+    const integrateIds = (ids: number[]) => {
+      ids.forEach((docId) => {
+        ensureItem(docId)
       })
-    await displayResults(finalResults)
+    }
+
+    const orchestrator = semanticReady && semantic ? semantic : null
+
+    const resolveSimilarity = (item: Item): number => {
+      const semanticHit = semanticSimilarity.get(item.id)
+      if (semanticHit !== undefined) return semanticHit
+      const lexicalHit = bmSimilarity.get(item.id)
+      return lexicalHit ?? Number.NaN
+    }
+
+    const render = async () => {
+      if (token !== searchSeq) return
+      const useSemantic = semanticReady && semanticIds.length > 0
+      const weights =
+        modeForRanking === "semantic" && useSemantic
+          ? { base: 0.3, semantic: 1, bm: 0.45 }
+          : { base: 1, semantic: useSemantic ? 0.15 : 0, bm: 0.9 }
+      const rrf = new Map<string, number>()
+      const push = (ids: number[], weight: number) => {
+        if (!ids.length || weight <= 0) return
+        ids.forEach((docId, rank) => {
+          const slug = idDataMap[docId]
+          if (!slug) return
+          const item = ensureItem(docId)
+          if (!item) return
+          const prev = rrf.get(slug) ?? 0
+          rrf.set(slug, prev + weight / (1 + rank))
+        })
+      }
+
+      push(baseIndices, weights.base)
+      push(semanticIds, weights.semantic)
+      push(bmIds, weights.bm)
+
+      const rankedEntries = Array.from(candidateItems.values())
+        .map((item) => ({ item, score: rrf.get(item.slug) ?? 0 }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, numSearchResults)
+
+      const displayEntries: SimilarityResult[] = []
+      for (const entry of rankedEntries) {
+        const similarity = resolveSimilarity(entry.item)
+        displayEntries.push({ item: entry.item, similarity })
+      }
+
+      await displayResults(displayEntries)
+    }
+
+    await render()
+
+    if (workingType === "tags" || !orchestrator || !semanticReady || highlightTerm.length < 2) {
+      return
+    }
+
+    try {
+      const { semantic: semRes, bm25: bmRes } = await orchestrator.search(
+        highlightTerm,
+        numSearchResults,
+      )
+      if (token !== searchSeq) return
+      semanticIds = semRes.map((x) => x.id)
+      semanticSimilarity.clear()
+      semRes.forEach(({ id, score }) => semanticSimilarity.set(id, score))
+      bmIds = bmRes.map((x) => x.id)
+      bmSimilarity.clear()
+      bmRes.forEach(({ id, score }) => bmSimilarity.set(id, score))
+      integrateIds(semanticIds)
+      integrateIds(bmIds)
+    } catch (err) {
+      console.warn("[SemanticClient] search failed:", err)
+      orchestrator.dispose()
+      semantic = null
+      semanticReady = false
+      semanticInitFailed = true
+      if (searchMode === "semantic") {
+        searchMode = "lexical"
+        updateModeUI(searchMode)
+      }
+      modeButtons.forEach((button) => {
+        if ((button.dataset.mode as SearchMode) === "semantic") {
+          button.disabled = true
+          button.setAttribute("aria-disabled", "true")
+        }
+      })
+    }
+
+    await render()
+  }
+
+  function onType(e: HTMLElementEventMap["input"]) {
+    if (!searchLayout || !index) return
+    rawSearchTerm = (e.target as HTMLInputElement).value
+    const hasQuery = rawSearchTerm.trim() !== ""
+    searchLayout.classList.toggle("display-results", hasQuery)
+    const term = rawSearchTerm
+    const token = ++searchSeq
+    if (runSearchTimer !== null) {
+      window.clearTimeout(runSearchTimer)
+      runSearchTimer = null
+    }
+    if (!hasQuery) {
+      void runSearch("", token)
+      return
+    }
+    const delay = searchMode === "semantic" ? 160 : 60
+    runSearchTimer = window.setTimeout(() => {
+      runSearchTimer = null
+      void runSearch(term, token)
+    }, delay)
   }
 
   document.addEventListener("keydown", shortcutHandler)
   window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
-  searchButton.addEventListener("click", () => showSearch("basic"))
-  window.addCleanup(() => searchButton.removeEventListener("click", () => showSearch("basic")))
+  const openHandler = () => showSearch("basic")
+  searchButton.addEventListener("click", openHandler)
+  window.addCleanup(() => searchButton.removeEventListener("click", openHandler))
   searchBar.addEventListener("input", onType)
   window.addCleanup(() => searchBar.removeEventListener("input", onType))
+  window.addCleanup(() => {
+    if (runSearchTimer !== null) {
+      window.clearTimeout(runSearchTimer)
+      runSearchTimer = null
+    }
+  })
 
   registerEscapeHandler(container, hideSearch)
   await fillDocument(data)
@@ -531,7 +786,9 @@ async function fillDocument(data: ContentIndex) {
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const currentSlug = e.detail.url
   const data = await fetchData
-  const searchElement = document.getElementsByClassName("search")
+  const searchElement = document.getElementsByClassName(
+    "search",
+  ) as HTMLCollectionOf<HTMLDivElement>
   for (const element of searchElement) {
     await setupSearch(element, currentSlug, data)
   }

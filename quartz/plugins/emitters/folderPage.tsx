@@ -38,7 +38,7 @@ async function* processFolderInfo(
     const slug = joinSegments(folder, "index") as FullSlug
     const [tree, file] = folderContent
     const cfg = ctx.cfg.configuration
-    const externalResources = pageResources(pathToRoot(slug), resources)
+    const externalResources = pageResources(pathToRoot(slug), resources, ctx)
     const componentData: QuartzComponentProps = {
       ctx,
       fileData: file.data,

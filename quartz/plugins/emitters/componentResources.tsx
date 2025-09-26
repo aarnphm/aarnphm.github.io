@@ -1,4 +1,5 @@
 import { FullSlug, joinSegments } from "../../util/path"
+import path from "path"
 import { QuartzEmitterPlugin } from "../types"
 // @ts-ignore
 import spaRouterScript from "../../components/scripts/spa.inline"
@@ -18,8 +19,10 @@ import { BuildCtx } from "../../util/ctx"
 import { QuartzComponent } from "../../components/types"
 import { googleFontHref, joinStyles, processGoogleFonts } from "../../util/theme"
 import { Features, transform } from "lightningcss"
-import { transform as transpile } from "esbuild"
+import { transform as transpile, build as bundle } from "esbuild"
+import { globby } from "globby"
 import { write } from "./helpers"
+import fs from "node:fs/promises"
 
 const name = "ComponentResources"
 
@@ -224,8 +227,46 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         ext: ".webmanifest",
         content: JSON.stringify(manifest),
       })
+
+      const workerFiles = await globby(["quartz/**/*.worker.ts"])
+      for (const src of workerFiles) {
+        const result = await bundle({
+          entryPoints: [src],
+          bundle: true,
+          minify: true,
+          platform: "browser",
+          format: "esm",
+          write: false,
+        })
+        const code = result.outputFiles[0].text
+        const name = path.basename(src).replace(/\.ts$/, "")
+        yield write({ ctx, slug: name as FullSlug, ext: ".js", content: code })
+      }
     },
-    async *partialEmit() {},
+    async *partialEmit(ctx, _content, _resources, changeEvents) {
+      for (const changeEvent of changeEvents) {
+        if (!/\.worker\.ts$/.test(changeEvent.path)) continue
+        if (changeEvent.type === "delete") {
+          const name = path.basename(changeEvent.path).replace(/\.ts$/, "")
+          const dest = joinSegments(ctx.argv.output, `${name}.js`)
+          try {
+            await fs.unlink(dest)
+          } catch {}
+          continue
+        }
+        const result = await bundle({
+          entryPoints: [changeEvent.path],
+          bundle: true,
+          minify: true,
+          platform: "browser",
+          format: "esm",
+          write: false,
+        })
+        const code = result.outputFiles[0].text
+        const name = path.basename(changeEvent.path).replace(/\.ts$/, "")
+        yield write({ ctx, slug: name as FullSlug, ext: ".js", content: code })
+      }
+    },
     externalResources: ({ cfg }) => ({
       additionalHead: [
         <link rel="manifest" href={`https://${cfg.configuration.baseUrl}/site.webmanifest`} />,

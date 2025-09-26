@@ -8,7 +8,7 @@ tags:
   - evergreen
 description: and a celebration for the act of making.
 date: "2021-12-22"
-modified: 2025-09-18 15:50:29 GMT-04:00
+modified: 2025-09-26 08:55:08 GMT-04:00
 comments: false
 aliases:
   - work
@@ -115,6 +115,7 @@ You can find internal monologue under [[/posts/]] index.
     - [[lectures/4/notes|4. Speculative decoding]]
       - [[lectures/4/notes|41. EAGLE, and MTP]]
         - [[lectures/4/notes|411. linear algebra]]
+- vLLM Toronto Meetup, 2025
 
 ## companies.
 

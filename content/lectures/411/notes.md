@@ -9,7 +9,7 @@ description: linear algebra notes
 transclude:
   title: false
 date: "2025-09-12"
-modified: 2025-09-19 23:59:16 GMT-04:00
+modified: 2025-09-26 10:46:57 GMT-04:00
 title: supplement to 0.411
 ---
 
@@ -1010,7 +1010,9 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 >
 > - LU (no pivot): $A=\begin{bmatrix}2&3\\6&8\end{bmatrix}=\underbrace{\begin{bmatrix}1&0\\3&1\end{bmatrix}}_{L}\underbrace{\begin{bmatrix}2&3\\0&-1\end{bmatrix}}_{U}$. Solve $Ax=b$ via $Ly=c$, then $Ux=c$.
 > - QR (Gram–Schmidt on $\mathbb R^{2\times 2}$): with $A=\begin{bmatrix}1&1\\1&0\end{bmatrix}$,
->   $$Q=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix},\quad R=\begin{bmatrix}\sqrt2&1/\sqrt2\\0&1/\sqrt2\end{bmatrix},\quad A=QR.$$
+>   $$
+>   Q=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix},\quad R=\begin{bmatrix}\sqrt2&1/\sqrt2\\0&1/\sqrt2\end{bmatrix},\quad A=QR
+>   $$
 
 ### Pseudoinverse (least squares solution)
 
@@ -1047,7 +1049,7 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 
 - Column view: $AB=[A\mathbf{b}_1\;\cdots\;A\mathbf{b}_p]$ — each column of $C$ is $A$ applied to a column of $B$.
 - Row view: rows of $C$ are rows of $A$ times $B$; equivalently $C^\top=B^\top A^\top$.
-- Block view: valid when block shapes match; enables efficient reasoning and implementation.
+- Block view: valid when block shapes match
 
 > [!tip] Rationale
 > The definition $c_{ij}=\sum_k a_{ik}b_{kj}$ is exactly “compose linear maps” in coordinates. It also aligns with the Frobenius inner product via trace cyclicity, making matrix calculus clean and basis‑invariant.

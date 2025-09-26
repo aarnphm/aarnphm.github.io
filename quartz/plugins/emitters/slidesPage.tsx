@@ -25,7 +25,7 @@ async function processSlides(
   const baseSlug = fileData.slug!
   const slidesSlug = joinSegments(baseSlug, "slides") as FullSlug
   const cfg = ctx.cfg.configuration
-  const externalResources = pageResources(pathToRoot(slidesSlug), resources)
+  const externalResources = pageResources(pathToRoot(slidesSlug), resources, ctx)
   const componentData: QuartzComponentProps = {
     ctx,
     fileData,
