@@ -11,7 +11,7 @@ noindex: true
 title: supplement for supplement for 0.412
 ---
 
-see also: [[lectures/412/notes]], [[lectures/412/tools]], [[thoughts/transformer circuits framework]], [[thoughts/attention]], [[thoughts/induction heads]]
+see also: [[lectures/412/notes]], [[lectures/412/tools]], [[thoughts/mathematical framework transformers circuits]], [[thoughts/attention]], [[thoughts/induction heads]]
 
 ## introduction
 

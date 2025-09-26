@@ -1,3 +1,4 @@
+import path from "node:path"
 import { write } from "./helpers"
 import { QuartzEmitterPlugin } from "../types"
 import { FilePath, FullSlug } from "../../util/path"
@@ -16,6 +17,7 @@ const defaults: GlobalConfiguration["semanticSearch"] = {
   shardSizeRows: 1024,
   hnsw: { M: 16, efConstruction: 200 },
   modelLocalPath: computeModelLocalPath(DEFAULT_MODEL_ID),
+  allowRemoteModels: true,
 }
 
 type ContentDetails = {
@@ -44,24 +46,28 @@ export const SemanticIndex: QuartzEmitterPlugin<Partial<GlobalConfiguration["sem
     async *emit(ctx, content, _resources) {
       if (!o.enable) return
 
-      const token =
-        process.env.HF_TOKEN ??
-        process.env.HUGGINGFACEHUB_API_TOKEN ??
-        process.env.HUGGING_FACE_TOKEN
-      try {
-        const result = await ensureLocalModel({
-          outputDir: ctx.argv.output,
-          modelId: o.model!,
-          token: token ?? undefined,
-        })
-        if (result.downloaded > 0) {
-          console.info(
-            `[SemanticIndex] staged ${result.downloaded} files (${result.skipped} cached) for ${o.model} @ ${result.revision}`,
-          )
+      if (!o.allowRemoteModels) {
+        const token =
+          process.env.HF_TOKEN ??
+          process.env.HUGGINGFACEHUB_API_TOKEN ??
+          process.env.HUGGING_FACE_TOKEN
+        try {
+          const mirrorDirs = [path.join(ctx.argv.directory, "embeddings")]
+          const result = await ensureLocalModel({
+            outputDir: ctx.argv.output,
+            modelId: o.model!,
+            token: token ?? undefined,
+            mirrorDirs,
+          })
+          if (result.downloaded > 0) {
+            console.info(
+              `[SemanticIndex] staged ${result.downloaded} files (${result.skipped} cached) for ${o.model} @ ${result.revision}`,
+            )
+          }
+        } catch (err) {
+          const reason = err instanceof Error ? err.message : String(err)
+          console.warn(`[SemanticIndex] failed to stage model assets for ${o.model}: ${reason}`)
         }
-      } catch (err) {
-        const reason = err instanceof Error ? err.message : String(err)
-        console.warn(`[SemanticIndex] failed to stage model assets for ${o.model}: ${reason}`)
       }
 
       const docs: ContentDetails[] = []

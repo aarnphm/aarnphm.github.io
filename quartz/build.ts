@@ -43,39 +43,18 @@ type BuildData = {
   lastBuildMs: number
 }
 
-async function cleanOutputDir(output: string) {
-  await mkdir(output, { recursive: true })
-  let entries: string[] = []
-  try {
-    entries = await readdir(output)
-  } catch (err: any) {
-    if (err?.code === "ENOENT") {
-      return
-    }
-    throw err
-  }
-  await Promise.all(
-    entries.map((entry) => {
-      if (entry === "models") {
-        return Promise.resolve()
-      }
-      const target = path.join(output, entry)
-      return rm(target, { recursive: true, force: true })
-    }),
-  )
-}
-
 async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
   let gitCommitSha: string | undefined
 
   if (argv.serve || argv.watch) {
     try {
       const repo = Repository.discover(argv.directory)
-      const head = await repo.head()
+      const head = repo.head()
       gitCommitSha = head?.target() || undefined
     } catch (e) {
       if (argv.verbose) {
         console.log(styleText("yellow", "Warning: Unable to get git commit SHA"))
+        console.error(e)
       }
     }
   }
@@ -105,10 +84,8 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
 
   const release = await mut.acquire()
   perf.addEvent("clean")
-  await cleanOutputDir(output)
-  console.log(
-    `Cleaned output directory \`${output}\` (preserved /models) in ${perf.timeSince("clean")}`,
-  )
+  await rm(output, { recursive: true, force: true })
+  console.log(`Cleaned output directory \`${output}\` in ${perf.timeSince("clean")}`)
 
   perf.addEvent("glob")
   const allFiles = await glob("**/*.*", argv.directory, cfg.configuration.ignorePatterns)

@@ -101,10 +101,15 @@ let bm25Index: Bm25Data | null = null
 
 function configureRuntimeEnv() {
   if (envConfigured) return
-  const modelRoot = cfg?.modelLocalPath ?? "/models"
+  const modelRoot =
+    typeof cfg?.modelLocalPath === "string" && cfg.modelLocalPath.length > 0
+      ? cfg.modelLocalPath
+      : "/models"
   env.localModelPath = modelRoot
-  env.allowLocalModels = true
-  env.allowRemoteModels = Boolean(cfg?.allowRemoteModels ?? false)
+  const allowRemote = cfg?.allowRemoteModels ?? true
+  const hasConfiguredLocalModel = Boolean(cfg?.modelLocalPath)
+  env.allowLocalModels = hasConfiguredLocalModel
+  env.allowRemoteModels = allowRemote
   const wasmBackend = env.backends?.onnx?.wasm
   if (!wasmBackend) {
     throw new Error("transformers.js ONNX runtime backend unavailable")
@@ -121,10 +126,12 @@ async function ensureEncoder() {
   }
   configureRuntimeEnv()
   const dtype = typeof cfg?.dtype === "string" && cfg.dtype.length > 0 ? cfg.dtype : "fp32"
+  const allowRemote = cfg?.allowRemoteModels ?? true
+  const hasConfiguredLocalModel = Boolean(cfg?.modelLocalPath)
   const pipelineOpts: Record<string, unknown> = {
     device: "wasm",
     dtype,
-    local_files_only: true,
+    local_files_only: hasConfiguredLocalModel && !allowRemote,
   }
   classifier = await pipeline("feature-extraction", cfg.model, pipelineOpts)
   cfg.dtype = dtype

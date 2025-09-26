@@ -224,7 +224,7 @@ export default {
     const provider = new OAuthProvider({
       apiHandlers: {
         // @ts-ignore
-        "/mcp": Garden.serve("/mcp", { binding: "MCP_OBJECT" }) as any,
+        "/mcp": Garden.serve("/mcp", { binding: "MCP_OBJECT" }),
       },
       authorizeEndpoint: "/authorize",
       clientRegistrationEndpoint: "/register",

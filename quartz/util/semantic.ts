@@ -24,6 +24,7 @@ type EnsureOptions = {
   revision?: string
   token?: string
   force?: boolean
+  mirrorDirs?: string[]
 }
 
 type EnsureResult = {
@@ -125,6 +126,24 @@ async function fileMatchesExpected(dest: string, file: HFSibling): Promise<boole
   }
 }
 
+async function mirrorFileIntoRoots(
+  src: string,
+  file: HFSibling,
+  mirrorRoots: string[],
+): Promise<void> {
+  if (mirrorRoots.length === 0) return
+  await Promise.all(
+    mirrorRoots.map(async (root) => {
+      const dest = safeJoin(root, file.rfilename)
+      await fs.mkdir(path.dirname(dest), { recursive: true })
+      if (await fileMatchesExpected(dest, file)) {
+        return
+      }
+      await fs.copyFile(src, dest)
+    }),
+  )
+}
+
 export function computeModelLocalPath(modelId: string): string {
   const segments = modelId.split("/").filter(Boolean).map(sanitizeSegment)
   return ensureLeadingSlash(["models", ...segments].join("/"))
@@ -136,12 +155,16 @@ export async function ensureLocalModel({
   revision,
   token,
   force,
+  mirrorDirs,
 }: EnsureOptions): Promise<EnsureResult> {
   if (!modelId) {
     return { downloaded: 0, skipped: 0, revision: "" }
   }
   const modelSegments = modelId.split("/").filter(Boolean).map(sanitizeSegment)
   const modelRoot = path.join(outputDir, "models", ...modelSegments)
+  const mirrorRoots = (mirrorDirs ?? [])
+    .filter((dir) => dir && dir.trim().length > 0)
+    .map((dir) => path.join(dir, ...modelSegments))
   const metaPath = path.join(modelRoot, MODEL_META_FILENAME)
   let previousSha: string | undefined
   if (!force) {
@@ -160,6 +183,7 @@ export async function ensureLocalModel({
 
   const files = siblings.filter(shouldDownloadFile)
   await fs.mkdir(modelRoot, { recursive: true })
+  await Promise.all(mirrorRoots.map((root) => fs.mkdir(root, { recursive: true })))
 
   let downloaded = 0
   let skipped = 0
@@ -169,11 +193,13 @@ export async function ensureLocalModel({
       !force && previousSha === resolvedSha && (await fileMatchesExpected(dest, file))
     if (upToDate) {
       skipped += 1
+      await mirrorFileIntoRoots(dest, file, mirrorRoots)
       continue
     }
     const fileUrl = new URL(`/${modelId}/resolve/${resolvedSha}/${file.rfilename}`, HF_BASE_URL)
     await downloadFile(fileUrl.toString(), dest, token)
     downloaded += 1
+    await mirrorFileIntoRoots(dest, file, mirrorRoots)
   }
 
   await fs.writeFile(
@@ -184,6 +210,15 @@ export async function ensureLocalModel({
       files: files.length,
     }),
   )
+
+  if (mirrorRoots.length > 0) {
+    const metaCopies = mirrorRoots.map(async (root) => {
+      const target = path.join(root, MODEL_META_FILENAME)
+      await fs.mkdir(path.dirname(target), { recursive: true })
+      await fs.copyFile(metaPath, target)
+    })
+    await Promise.all(metaCopies)
+  }
 
   return { downloaded, skipped, revision: resolvedSha }
 }

@@ -74,7 +74,7 @@ const configuration: GlobalConfiguration = {
   semanticSearch: {
     enable: true,
     model,
-    modelLocalPath: `/models/${model.split("/").join("/")}`,
+    allowRemoteModels: true,
     dims: 1024,
     dtype: "fp32",
     shardSizeRows: 1024,

@@ -103,7 +103,7 @@ $$
 with $A^{(h)}(X_{\ell})\in\mathbb{R}^{T\times T}$ encoding token-to-token routing and $W_{OV}^{(h)} = W_O^{(h)}W_V^{(h)}\in\mathbb{R}^{d_{model}\times d_{model}}$ a low-rank map ($\mathrm{rank} \le d_{head}$).
 
 - Because the only nonlinearity resides in the softmax defining $A^{(h)}$, freezing $A^{(h)}$ linearizes the head completely.
-- the idea of [[thoughts/Transformer Circuits Framework#attention heads as information movement|information movement]] comes from the fact attention compute value vectors for each tokens from residual stream, and linearly combine each of those vectors based on attention pattern.
+- the idea of [[thoughts/mathematical framework transformers circuits#attention heads as information movement|information movement]] comes from the fact attention compute value vectors for each tokens from residual stream, and linearly combine each of those vectors based on attention pattern.
   - i.e linear map $[n_\text{context}, d_{\text{model}}] \to [n_{\text{context}}, d_{\text{model}}]$
 - This enables path analysis:
   - expand logits as sums of products of $W_{OV}$ and $W_{QK}$ matrices and map each product to a circuit acting on a basis vector in the residual stream. [@elhage2021mathematical]

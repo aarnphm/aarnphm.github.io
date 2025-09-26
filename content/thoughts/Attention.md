@@ -141,7 +141,7 @@ The concatenation and final projection $W^O$ then recombine the perspectives int
 > [!todo]+ tasks to deepen multi-head understanding
 >
 > - Work through a two-token toy example where one head tracks positional offsets while another tracks part-of-speech, then visualise the resulting attention heatmaps.
-> - Summarise how head specialisation emerges in practice (e.g., induction heads, name mover heads) by referencing case studies in [[thoughts/Transformer Circuits Framework|Transformer Circuits]].
+> - Summarise how head specialisation emerges in practice (e.g., induction heads, name mover heads) by referencing case studies in [[thoughts/mathematical framework transformers circuits|Transformer Circuits]].
 > - Compare the compute/memory footprint of doubling the number of heads versus increasing the hidden dimension, highlighting when each trade-off is preferable.
 
 ## Group-Query Attention

@@ -49,6 +49,7 @@ type SemanticIndexOptions = {
   shardSizeRows?: number
   hnsw?: { M?: number; efConstruction?: number; efSearch?: number }
   modelLocalPath?: string
+  allowRemoteModels?: boolean
 }
 
 export interface GlobalConfiguration {
