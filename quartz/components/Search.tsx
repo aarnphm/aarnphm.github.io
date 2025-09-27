@@ -52,7 +52,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
               <div class="search-mode-toggle" role="radiogroup" aria-label="Search mode">
                 <button
                   type="button"
-                  class="mode-option active"
+                  class="mode-option"
                   data-mode="lexical"
                   aria-pressed="true"
                   aria-label="Full-text search"

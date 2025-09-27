@@ -22,7 +22,7 @@ import {
 import { clone } from "../util/clone"
 import { githubSvg, substackSvg, bskySvg, twitterSvg, svgOptions, QuartzIcon } from "./svg"
 import { EXIT, visit } from "unist-util-visit"
-import { Root, Element, ElementContent, Node } from "hast"
+import { Root, Element, ElementContent, Node, Text } from "hast"
 import { i18n } from "../i18n"
 import { JSX } from "preact"
 import { headingRank } from "hast-util-heading-rank"
@@ -296,36 +296,57 @@ function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
   })
 }
 
-interface Note {
-  href: string
-  id: string
-}
-
 const getFootnotesList = (node: Element) =>
   (node.children as Element[]).filter((val) => val.tagName === "ol")[0]
 
 const getBibList = (node: Element) =>
   (node.children as Element[]).filter((val) => val.tagName === "ul")[0]
 
+type FootnoteInfo = {
+  originalHref: string
+  index: number
+  footnoteId: string
+  referenceIds: string[]
+}
+
 function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
-  const orderNotes: Note[] = []
+  const notesByHref = new Map<string, FootnoteInfo>()
+  const noteOrder: FootnoteInfo[] = []
   const finalRefs: Element[] = []
   const toRemove: Element[] = []
+  const suffixFragment = appendSuffix ? `-${appendSuffix}` : ""
 
-  let idx = 0
   visit(
     root,
     // @ts-ignore
     (node: Element) => {
       if (checkFootnoteRef(node)) {
-        orderNotes.push({ href: node.properties.href as string, id: node.properties.id as string })
-        node.properties.href = `${node.properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
-        node.properties.id =
-          node.properties.id + `${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
-        visit(node, "text", (node) => {
-          node.value = `${idx + 1}`
-          idx++
-        })
+        const originalHref = node.properties.href as string
+        let info = notesByHref.get(originalHref)
+        if (!info) {
+          const index = notesByHref.size + 1
+          info = {
+            originalHref,
+            index,
+            footnoteId: `fn-${index}${suffixFragment}`,
+            referenceIds: [],
+          }
+          notesByHref.set(originalHref, info)
+          noteOrder.push(info)
+        }
+
+        const refId = `fnref-${info.index}-${info.referenceIds.length + 1}${suffixFragment}`
+        info.referenceIds.push(refId)
+
+        node.properties.href = `#${info.footnoteId}`
+        node.properties.id = refId
+
+        const current = info
+        if (current) {
+          visit(node, "text", (textNode: Text) => {
+            textNode.value = `${current.index}`
+          })
+        }
       }
     },
   )
@@ -339,7 +360,7 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
 
   // we don't want to remove the last nodes
   toRemove.pop()
-  if (orderNotes.length === 0) return
+  if (noteOrder.length === 0) return
 
   // Remove all reference divs except the last one
   visit(root, { tagName: "section" }, (node: Element, index, parent) => {
@@ -348,27 +369,71 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
     }
   })
 
-  // Sort finalRefs based on orderNotes
-  const sortedRefs = (
-    orderNotes
-      .map(({ href }: Note) => {
-        // Remove the '#' from the href to match with footnote IDs
-        const noteId = href.replace("#", "")
-        return finalRefs.find((ref) => {
-          return ref.properties?.id === noteId
-        })
-      })
-      .filter(Boolean) as Element[]
-  ).map((ref) => {
-    const transclude = ref.properties?.id
-    ref.properties!.id = `${transclude}${appendSuffix ? "-" + appendSuffix : ""}`
-    visit(ref, { tagName: "a" }, (c) => {
-      if (c.properties.dataFootnoteBackref == "") {
-        c.properties.href = `${c.properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
+  const sortedRefs: Element[] = []
+  const seenOriginal = new Set<string>()
+
+  for (const note of noteOrder) {
+    const originalId = note.originalHref.replace("#", "")
+    if (seenOriginal.has(originalId)) {
+      continue
+    }
+    const refIdx = finalRefs.findIndex((ref) => ref.properties?.id === originalId)
+    if (refIdx === -1) {
+      continue
+    }
+    const ref = finalRefs[refIdx]
+    seenOriginal.add(originalId)
+
+    ref.properties = ref.properties ?? {}
+    ref.properties.id = note.footnoteId
+
+    const anchorsToRemove: { parent: Element; index: number }[] = []
+    visit(ref, "element", (child: Element, index, parent) => {
+      if (
+        child.tagName === "a" &&
+        child.properties?.dataFootnoteBackref === ""
+      ) {
+        anchorsToRemove.push({ parent: parent as Element, index: index as number })
       }
     })
-    return ref
-  })
+
+    anchorsToRemove.sort((a, b) => b.index - a.index)
+    for (const { parent, index } of anchorsToRemove) {
+      parent.children.splice(index, 1)
+      const maybeText = parent.children[index - 1] as Text | undefined
+      if (maybeText && maybeText.type === "text" && maybeText.value.trim() === "") {
+        parent.children.splice(index - 1, 1)
+      }
+    }
+
+    let container: Element = ref
+    for (let i = ref.children.length - 1; i >= 0; i--) {
+      const child = ref.children[i]
+      if (child.type === "element") {
+        container = child as Element
+        break
+      }
+    }
+
+    note.referenceIds.forEach((refId, ordinal) => {
+      if (container.children.length > 0) {
+        container.children.push({ type: "text", value: " " } as Text)
+      }
+      container.children.push(
+        h(
+          "a",
+          {
+            href: `#${refId}`,
+            dataFootnoteBackref: "",
+            ariaLabel: "Back to content",
+          },
+          `↩${ordinal === 0 ? "" : ordinal + 1}`,
+        ) as Element,
+      )
+    })
+
+    sortedRefs.push(ref)
+  }
 
   // finally, update the final position
   visit(root, { tagName: "section" }, (node: Element) => {

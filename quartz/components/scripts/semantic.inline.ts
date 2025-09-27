@@ -218,7 +218,8 @@ export class SemanticClient {
         ? this.cfg.manifestUrl
         : "/embeddings/manifest.json"
     const disableCache = Boolean(this.cfg?.disableCache)
-    const baseUrl = typeof this.cfg?.manifestBaseUrl === "string" ? this.cfg.manifestBaseUrl : undefined
+    const baseUrl =
+      typeof this.cfg?.manifestBaseUrl === "string" ? this.cfg.manifestBaseUrl : undefined
     this.ingestWorker.postMessage({ type: "init", manifestUrl, baseUrl, disableCache })
   }
 

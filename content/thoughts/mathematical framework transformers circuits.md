@@ -52,7 +52,8 @@ which is a data‑dependent low‑rank write into the residual stream. MLPs appl
   $$
 
   where $A^{(h)}$ routes tokens (query/key side) while $W_{OV}^{(h)}=W_O^{(h)}W_V^{(h)}$ transports the feature written into the residual stream. This tensor-product view makes the “information moves from source token via feature channel” story explicit.
-- **Query/Key routing.** $QK^\top$ scores select *which* source token sends information. The softmaxed attention matrix $A$ is a routing operator shaped by sequence content.
+
+- **Query/Key routing.** $QK^\top$ scores select _which_ source token sends information. The softmaxed attention matrix $A$ is a routing operator shaped by sequence content.
 - **Value transport.** The value projection $W_V$ extracts a feature from the source token; the output projection $W_O$ determines how that feature is written into the destination residual vector.
 - **Paths across layers.** Because each head writes additively into the residual stream, information can hop across tokens and layers, forming interpretable circuits (e.g., induction or copy heads).
 - **Diagnostics.** Inspecting $W_V W_O$ (spectrum, singular vectors) reveals what kind of feature is transported, while attention heatmaps show where it moves — see [[lectures/412/notes#spectral diagnostics]] for tooling.

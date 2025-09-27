@@ -10,7 +10,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-10-24"
-modified: 2025-09-05 17:09:42 GMT-04:00
+modified: 2025-09-27 16:37:12 GMT-04:00
 noindex: true
 title: /xeets/
 ---
@@ -156,6 +156,8 @@ https://x.com/filpizlo/status/1935019034531217647 <!-- C++ programs that are mem
 https://x.com/kepano/status/1952067484242391197 <!-- fear-based employment endemic -->
 
 https://x.com/badlogicgames/status/1955625313121038462 <!-- ClaudeCode-ception -->
+
+https://x.com/juliendubois/status/1971518637161992214 <!-- that one guy at microsoft using macbook programming on linux -->
 
 ## techno-optimist
 

@@ -45,3 +45,26 @@ title: images
 ![[thoughts/images/exploitation of visual thoughts.webp]]
 
 ![[thoughts/images/perception-of-architecture.webp|Perceptron architecture]]
+
+![[thoughts/images/sad-child-good-writer.webp|becoming a sad child to become good writer]]
+
+![[thoughts/images/susan-sontag-elloquence.webp|Susan Sontag, in as consciousness is harnessed to flesh]]
+
+![[thoughts/images/friend-art-nyc-subway.webp|modern friend art on NYC subway]]
+
+![[thoughts/images/develop-personal-taste.webp|Developing personal taste]]
+
+![[thoughts/images/intellectual-loneliness.webp|looking for people who are still thinking]]
+
+![[thoughts/images/Fairchild Semiconductor's fathers.webp|Fairchild Semiconductor's fathers]]
+
+## authors
+
+![[thoughts/images/joan-didion.webp|joan didion]]
+![[thoughts/images/susan-sontag.webp|susan sontag]]
+![[thoughts/images/maya-angelou.webp|maya angelou]]
+
+![[thoughts/images/maya-angelou.webp|maya angelou]]
+![[thoughts/images/donna-tartt.webp|donna tartt]]
+![[thoughts/images/elsa-schiaparelli.webp|elsa schiaparelli]]
+![[thoughts/images/georgia-okeeffe.webp|georgia o'keeffe]]
