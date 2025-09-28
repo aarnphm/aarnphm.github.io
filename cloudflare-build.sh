@@ -8,8 +8,26 @@ if ! command -v git-lfs >/dev/null 2>&1; then
 fi
 
 git lfs install --local
-git lfs fetch origin "${CF_PAGES_BRANCH:-main}"
-git lfs checkout
+
+branch="${CF_PAGES_BRANCH:-main}"
+branch="${branch#[}"
+branch="${branch%]}"
+ref="${CF_PAGES_COMMIT_SHA:-}"
+
+if [[ -n "$ref" ]]; then
+  if ! git lfs fetch origin "$ref"; then
+    echo "git lfs fetch by commit failed, falling back to branch '${branch}'"
+    git lfs fetch origin "$branch"
+  fi
+else
+  git lfs fetch origin "$branch"
+fi
+
+# As a safety net, ensure we have all tracked blobs for this tree
+if ! git lfs checkout; then
+  echo "git lfs checkout failed, attempting a full pull"
+  git lfs pull origin "$branch"
+fi
 
 git lfs ls-files --size
 
