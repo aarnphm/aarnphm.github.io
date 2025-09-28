@@ -228,7 +228,8 @@ export default {
       },
       authorizeEndpoint: "/authorize",
       clientRegistrationEndpoint: "/register",
-      defaultHandler: GitHubHandler as any,
+      // @ts-ignore
+      defaultHandler: GitHubHandler,
       tokenEndpoint: "/token",
     })
 
