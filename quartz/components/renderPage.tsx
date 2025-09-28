@@ -389,10 +389,7 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
 
     const anchorsToRemove: { parent: Element; index: number }[] = []
     visit(ref, "element", (child: Element, index, parent) => {
-      if (
-        child.tagName === "a" &&
-        child.properties?.dataFootnoteBackref === ""
-      ) {
+      if (child.tagName === "a" && child.properties?.dataFootnoteBackref === "") {
         anchorsToRemove.push({ parent: parent as Element, index: index as number })
       }
     })

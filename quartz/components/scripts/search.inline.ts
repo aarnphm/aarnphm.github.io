@@ -26,7 +26,35 @@ interface Item extends DocumentData {
 // Can be expanded with things like "term" in the future
 type SearchType = "basic" | "tags"
 type SearchMode = "lexical" | "semantic"
-let searchMode: SearchMode = "semantic"
+const SEARCH_MODE_STORAGE_KEY = "quartz:search:mode"
+
+const loadStoredSearchMode = (): SearchMode | null => {
+  if (typeof window === "undefined") {
+    return null
+  }
+
+  try {
+    const stored = window.localStorage.getItem(SEARCH_MODE_STORAGE_KEY)
+    return stored === "lexical" || stored === "semantic" ? stored : null
+  } catch (err) {
+    console.warn("[Search] failed to read stored search mode:", err)
+    return null
+  }
+}
+
+const persistSearchMode = (mode: SearchMode) => {
+  if (typeof window === "undefined") {
+    return
+  }
+
+  try {
+    window.localStorage.setItem(SEARCH_MODE_STORAGE_KEY, mode)
+  } catch (err) {
+    console.warn("[Search] failed to persist search mode:", err)
+  }
+}
+
+let searchMode: SearchMode = "lexical"
 let currentSearchTerm: string = ""
 let rawSearchTerm: string = ""
 let semantic: SemanticClient | null = null
@@ -181,6 +209,14 @@ async function setupSearch(
       semanticInitFailed = true
     }
   }
+  const storedMode = loadStoredSearchMode()
+  if (storedMode === "semantic") {
+    if (semanticReady) {
+      searchMode = storedMode
+    }
+  } else if (storedMode === "lexical") {
+    searchMode = storedMode
+  }
   if (!semanticReady && searchMode === "semantic") {
     searchMode = "lexical"
   }
@@ -208,6 +244,7 @@ async function setupSearch(
     if (searchMode === mode) return
     searchMode = mode
     updateModeUI(mode)
+    persistSearchMode(searchMode)
     if (rawSearchTerm.trim() !== "") {
       searchLayout.classList.add("display-results")
       const token = ++searchSeq

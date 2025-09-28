@@ -1,9 +1,7 @@
 ---
 id: are.na
-permalinks:
-  - /website
-  - /resources
-  - /inspo
+aliases:
+  - inspo
 tags:
   - technical
   - seed
@@ -12,9 +10,11 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-09-27 17:07:21 GMT-04:00
-aliases:
-  - inspo
+modified: 2025-09-28 04:11:35 GMT-04:00
+permalinks:
+  - /website
+  - /resources
+  - /inspo
 title: are.na
 cssclasses:
   - nolist
@@ -112,6 +112,8 @@ see also [[/curius|bookmarks]]
   - epilepsy warning
 - https://mitul.ca/
 - https://chimcisaac.co/
+- https://www.ethansmith2000.com/blog
+- https://sander.ai/
 
 ## people
 
@@ -348,6 +350,7 @@ see also [[/curius|bookmarks]]
 - https://jzmazlish.substack.com/p/ak-or-just-okay-ai-and-economic-growth -- AK or just okay? AI and economic growth
 - https://sharif.io/anna-alexei -- Always invite Anna
 - https://archive.is/ilTr1 -- The Economist, How to spot a genius
+- https://unchartedterritories.tomaspueyo.com/p/mountains -- Why Warm Countries Are Poorer \*\*
 
 ### [[thoughts/Machine learning]]
 
@@ -443,6 +446,7 @@ see also [[/curius|bookmarks]]
   - 1.3: https://mp.weixin.qq.com/s/BdWG6_ZTaGRknmsbGfFkMQ
   - 1.2: https://mp.weixin.qq.com/s/8BVEVPPqDQhQ2l8L90dMNQ
   - 1.1: https://mp.weixin.qq.com/s/h1cFYDNxcHC30APcarF47A
+- https://ma-lab-berkeley.github.io/deep-representation-learning-book/ -- Learning Deep Representations of Data Distributions [@ldrdd2025]
 
 ### argumentative
 

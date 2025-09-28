@@ -10,7 +10,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-10-24"
-modified: 2025-09-27 16:37:12 GMT-04:00
+modified: 2025-09-28 03:45:25 GMT-04:00
 noindex: true
 title: /xeets/
 ---
@@ -230,5 +230,7 @@ https://x.com/NeelNanda5/status/1950344397075456438 <!-- MATS 9.0 Stream Winter 
 https://x.com/JayaGup10/status/1952871186888843528 <!-- Integration landscape from labs -->
 
 https://x.com/HSVSphere/status/1955714317816316150 <!-- modern-infrastructure + AI -->
+
+https://x.com/ShiqianMa/status/1971979845170315669 <!-- Manifold Muon, as spectral GD -->
 
 ![[are.na#^goodfire-gpt-oss]]
