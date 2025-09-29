@@ -3,8 +3,9 @@ id: Philosophy and Nietzsche
 tags:
   - philosophy
   - seed
+description: and Zarathustra.
 date: "2023-12-04"
-modified: 2025-06-16 19:10:49 GMT-04:00
+modified: 2025-09-28 18:54:24 GMT-04:00
 title: Philosophy and Nietzsche
 ---
 

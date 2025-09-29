@@ -225,8 +225,12 @@ input[type="checkbox"] {
   border-radius: 3px;
   background-color: var(--light);
   position: relative;
-  margin-inline-end: 0.2rem;
-  margin-inline-start: -1.4rem;
+  display: inline-block;
+  vertical-align: text-top;
+  margin-inline-end: 0.5rem;
+  margin-inline-start: 0;
+  margin-left: 2px !important;
+  flex-shrink: 0;
   appearance: none;
   width: 16px;
   height: 16px;
@@ -741,8 +745,17 @@ ol.overflow {
 .page-content {
   & article {
     & li:has(> input[type="checkbox"]) {
+      position: relative;
+      display: list-item;
       list-style-type: none;
-      padding-left: 0;
+      padding-inline-start: calc(16px + 0.75rem);
+    }
+
+    & li:has(> input[type="checkbox"]) > input[type="checkbox"] {
+      position: absolute;
+      inset-inline-start: 0;
+      top: 0.35em;
+      margin-left: 2px !important;
     }
 
     & li:has(> input[type="checkbox"]:checked) {
