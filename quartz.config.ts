@@ -145,7 +145,7 @@ const config: QuartzConfig = {
       Plugin.LLM(),
       Plugin.Slides(),
     ],
-    filters: [Plugin.RemoveDrafts()],
+    filters: [Plugin.RemoveDrafts(), Plugin.RemovePrivate()],
     emitters: [
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),

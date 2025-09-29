@@ -5,7 +5,7 @@ tags:
   - technical
 description: and the backbone of the AI progress.
 date: "2024-02-07"
-modified: 2025-09-14 14:23:23 GMT-04:00
+modified: 2025-09-28 16:33:23 GMT-04:00
 title: Transformers
 ---
 
@@ -27,11 +27,11 @@ procedure: tokenization -> positional_embeddings -> input_embeddings -> ffn + at
 
 ```mermaid
 flowchart LR
-  A["input_ids (B x T)\nexample: 5 x 128"] --> B["Token + Positional Embeddings\n(B x T x d_model)"]
-  B --> C["Transformer Blocks (×L)\n{Multi‑Head Attention + FFN}"]
-  C --> D["Logits\n(B x T x |V|)"]
-  D --> E["Softmax → Probabilities\n(B x T x |V|)"]
-  E --> F["Decode/Sample/Argmax\noutput_ids (B x T)"]
+  A["input_ids (B x T)"] --> B["token + positional embeddings (B x T x d_model)"]
+  B --> C["transformer (×L) {Attn + FFN}"]
+  C --> D["logits (B x T x |V|)"]
+  D --> E["softmax → probs (B x T x |V|)"]
+  E --> F["decode/sample/argmax output_ids (B x T)"]
 ```
 
 Objective (next‑token NLL / cross‑entropy): given logits $L \in R^{B\times T\times \mid V\mid}$ and probabilities `p = softmax(L)`, with gold next tokens $y \in V^{B\times T}$, training minimizes the negative log‑likelihood across tokens:

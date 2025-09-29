@@ -8,6 +8,45 @@ import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
 const VERSION = "version https://git-lfs.github.com/spec/v1\n"
 const MIME = "application/vnd.git-lfs+json"
 const KEEP_HEADERS = "Cache-Control"
+const AI_USER_AGENT_PATTERNS = [
+  "amazonbot",
+  "applebot-extended",
+  "bytespider",
+  "ccbot",
+  "claudebot",
+  "claude-web",
+  "diffbot",
+  "duckassistbot",
+  "facebookbot",
+  "friendlycrawler",
+  "google-extended",
+  "gptbot",
+  "imagesiftbot",
+  "iisearchbot",
+  "meta-externalagent",
+  "omgili",
+  "omgilibot",
+  "perplexitybot",
+  "petalbot",
+  "velenpublicwebcrawler",
+]
+const CONTENT_INDEX_CACHE_TTL = 60_000
+
+type ContentIndexEntry = {
+  slug: string
+  title?: string
+  filePath: string
+  fileName: string
+  content: string
+  links?: string[]
+  aliases?: string[]
+  tags?: string[]
+  layout?: string
+  date?: string
+  description?: string
+}
+
+type ContentIndexMap = Record<string, ContentIndexEntry>
 
 type CfCacheStorage = CacheStorage & { readonly default: Cache }
 
@@ -72,6 +111,119 @@ function headersToObject(headers: Headers): Record<string, string> {
     o[key] = value
   })
   return o
+}
+
+function getExtension(pathname: string): string | null {
+  const last = pathname.split("/").pop() ?? ""
+  const idx = last.lastIndexOf(".")
+  return idx === -1 ? null : last.slice(idx + 1).toLowerCase()
+}
+
+function shouldTreatAsDocument(pathname: string): boolean {
+  const ext = getExtension(pathname)
+  if (!ext) return true
+  return ext === "html" || ext === "htm"
+}
+
+function isAiCrawler(request: Request): boolean {
+  const ua = request.headers.get("User-Agent")
+  if (!ua) return false
+  const lowered = ua.toLowerCase()
+  return AI_USER_AGENT_PATTERNS.some((token) => lowered.includes(token))
+}
+
+function safeDecode(str: string): string {
+  try {
+    return decodeURIComponent(str)
+  } catch {
+    return str
+  }
+}
+
+function normalizePathname(pathname: string): string {
+  if (!pathname) return "/"
+  const collapsed = pathname.replace(/\/+/g, "/")
+  if (collapsed === "/") return "/"
+  return collapsed.replace(/\/$/, "") || "/"
+}
+
+function slugCandidatesFromPath(pathname: string): string[] {
+  const decoded = safeDecode(pathname)
+  const normalized = normalizePathname(decoded)
+  let slug = normalized === "/" ? "index" : normalized.replace(/^\//, "")
+  slug = slug.replace(/\.md$/i, "").replace(/\.html?$/i, "")
+  const candidates = new Set<string>([slug])
+  if (slug && slug !== "index" && !slug.endsWith("/index")) candidates.add(`${slug}/index`)
+  return Array.from(candidates).filter(Boolean)
+}
+
+function slugCandidatesFromUrl(url: URL): string[] {
+  const base = slugCandidatesFromPath(url.pathname)
+  if (url.hostname === "notes.aarnphm.xyz" && normalizePathname(url.pathname) === "/") {
+    base.unshift("notes")
+  }
+  return Array.from(new Set(base))
+}
+
+function slugToMarkdownPath(slug: string): string {
+  const cleaned = slug.replace(/^\/+/, "")
+  return `/${encodeURIComponent(cleaned).replace(/%2F/gi, "/")}.md`
+}
+
+let contentIndexCache: { data: ContentIndexMap; ts: number } | null = null
+
+async function loadContentIndex(env: Env, request: Request): Promise<ContentIndexMap> {
+  if (contentIndexCache && Date.now() - contentIndexCache.ts < CONTENT_INDEX_CACHE_TTL)
+    return contentIndexCache.data
+  const base = resolveBaseUrl(env, request)
+  const indexUrl = new URL("/static/contentIndex.json", base)
+  const assetReq = new Request(indexUrl.toString(), { method: "GET" })
+  const res = await env.ASSETS.fetch(assetReq)
+  if (!res.ok) throw new Error(`content index fetch failed: ${res.status} ${res.statusText}`)
+  const json = (await res.json()) as ContentIndexMap
+  contentIndexCache = { data: json, ts: Date.now() }
+  return json
+}
+
+async function resolveContentEntry(
+  env: Env,
+  request: Request,
+  url: URL,
+): Promise<ContentIndexEntry | null> {
+  const candidates = slugCandidatesFromUrl(url)
+  if (candidates.length === 0) return null
+  const index = await loadContentIndex(env, request)
+  for (const candidate of candidates) {
+    const entry = index[candidate]
+    if (entry) return entry
+  }
+  return null
+}
+
+async function fetchMarkdownAsset(
+  env: Env,
+  request: Request,
+  path: string,
+): Promise<Response | null> {
+  const base = resolveBaseUrl(env, request)
+  const normalized = path.startsWith("/") ? path : `/${path}`
+  const assetUrl = new URL(normalized, base)
+  const assetReq = new Request(assetUrl.toString(), {
+    method: request.method,
+    headers: request.headers,
+  })
+  const assetResp = await env.ASSETS.fetch(assetReq)
+  if (!assetResp.ok) return null
+  const headers = new Headers(assetResp.headers)
+  headers.set("Content-Type", "text/markdown; charset=utf-8")
+  headers.set("X-Content-Type-Options", "nosniff")
+  if (!headers.has("Cache-Control"))
+    headers.set("Cache-Control", "public, s-maxage=900, max-age=60")
+  return new Response(assetResp.body, {
+    status: assetResp.status,
+    statusText: assetResp.statusText,
+    headers,
+  })
 }
 
 function resolveBaseUrl(env: Env, request: Request): string {
@@ -220,6 +372,8 @@ type Env = {
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url)
+    const method = request.method.toUpperCase()
+    const isSafeMethod = method === "GET" || method === "HEAD"
 
     const provider = new OAuthProvider({
       apiHandlers: {
@@ -239,6 +393,33 @@ export default {
 
     const providerResp = await provider.fetch(request, env, ctx)
     if (providerResp.status !== 404) return providerResp
+
+    if (url.pathname.endsWith(".md")) {
+      if (!isSafeMethod) return new Response(null, { status: 405, headers: { Allow: "GET, HEAD" } })
+      const direct = await fetchMarkdownAsset(env, request, url.pathname)
+      if (direct) return direct
+      const fallbackEntry = await resolveContentEntry(env, request, url)
+      if (fallbackEntry) {
+        const fallback = await fetchMarkdownAsset(
+          env,
+          request,
+          slugToMarkdownPath(fallbackEntry.slug),
+        )
+        if (fallback) return fallback
+      }
+      return new Response(null, { status: 404 })
+    }
+
+    const aiCrawler = isAiCrawler(request)
+    if (aiCrawler && isSafeMethod && shouldTreatAsDocument(url.pathname)) {
+      const entry = await resolveContentEntry(env, request, url)
+      if (entry) {
+        const target = new URL(slugToMarkdownPath(entry.slug), url)
+        target.search = url.search
+        target.hash = url.hash
+        return Response.redirect(target.toString(), 302)
+      }
+    }
 
     // Internal rewrite for notes domain root -> /notes?stackedNotes=<encoded>
     if (url.hostname === "notes.aarnphm.xyz" && url.pathname === "/") {

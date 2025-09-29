@@ -1,4 +1,4 @@
-import { arrow, computePosition, flip, inline, Placement, shift } from "@floating-ui/dom"
+import { computePosition, flip, inline, Placement, shift, Strategy } from "@floating-ui/dom"
 import { FullSlug, getFullSlug, normalizeRelativeURLs } from "../../util/path"
 import { getContentType } from "../../util/mime"
 import xmlFormat from "xml-formatter"
@@ -10,51 +10,53 @@ type ContentHandler = (
   popoverInner: HTMLDivElement,
 ) => Promise<void>
 
-// Helper to manage blob URL cleanup
+interface PositioningOptions {
+  clientX: number
+  clientY: number
+  placement?: Placement
+  strategy?: Strategy
+}
+
+interface ShowPopoverOptions {
+  placement?: Placement
+  strategy?: Strategy
+  hash?: string
+  popoverInner?: HTMLElement
+}
+
 const blobCleanupMap = new Map<string, NodeJS.Timeout>()
+const DEFAULT_BLOB_TIMEOUT = 30 * 60 * 1000 // 30 minutes
 
-/**
- * Creates a blob URL and schedules it for cleanup
- * @param blob The blob to create a URL for
- * @param timeoutMs Time in milliseconds after which to revoke the blob URL (default: 5 minutes)
- * @returns The created blob URL
- */
-function createManagedBlobUrl(blob: Blob, timeoutMs: number = 5 * 60 * 1000): string {
+const p = new DOMParser()
+let activeAnchor: HTMLAnchorElement | null = null
+let activePopoverReq: { abort: () => void; link: HTMLAnchorElement } | null = null
+
+function createManagedBlobUrl(blob: Blob, timeoutMs: number = DEFAULT_BLOB_TIMEOUT): string {
   const blobUrl = URL.createObjectURL(blob)
+  const existingTimeout = blobCleanupMap.get(blobUrl)
 
-  // Clear any existing timeout for this URL
-  if (blobCleanupMap.has(blobUrl)) {
-    clearTimeout(blobCleanupMap.get(blobUrl))
+  if (existingTimeout) {
+    clearTimeout(existingTimeout)
   }
 
-  // Schedule cleanup
   const timeoutId = setTimeout(() => {
     URL.revokeObjectURL(blobUrl)
     blobCleanupMap.delete(blobUrl)
   }, timeoutMs)
 
   blobCleanupMap.set(blobUrl, timeoutId)
-
   return blobUrl
 }
 
-/**
- * Immediately cleanup a blob URL if it exists
- * @param blobUrl The blob URL to cleanup
- * @param timeoutId The timeout ID associated with the blob URL
- */
-function cleanupBlobUrl(blobUrl: string, timeoutId: NodeJS.Timeout): void {
-  if (blobCleanupMap.has(blobUrl)) {
+function cleanupBlobUrl(blobUrl: string): void {
+  const timeoutId = blobCleanupMap.get(blobUrl)
+  if (timeoutId !== undefined) {
     clearTimeout(timeoutId)
     URL.revokeObjectURL(blobUrl)
     blobCleanupMap.delete(blobUrl)
   }
 }
 
-// Set a longer default timeout since we're not cleaning up on popover close
-const DEFAULT_BLOB_TIMEOUT = 30 * 60 * 1000 // 30 minutes
-
-const p = new DOMParser()
 function cleanAbsoluteElement(element: HTMLDivElement): HTMLDivElement {
   const refsAndNotes = element.querySelectorAll<HTMLDivElement>(
     "section[data-references], section[data-footnotes], [data-skip-preview], .telescopic-container",
@@ -63,47 +65,16 @@ function cleanAbsoluteElement(element: HTMLDivElement): HTMLDivElement {
   return element
 }
 
-function hasPositionChanged(link: HTMLElement): boolean {
-  const popover = link.lastChild as HTMLElement
-  if (!popover.classList.contains("popover")) return true
-  const current = link.getBoundingClientRect()
-
-  // Check if we stored previous position
-  const prevTop = popover.dataset.linkTop
-  const prevLeft = popover.dataset.linkLeft
-
-  return (
-    !prevTop ||
-    !prevLeft ||
-    Math.abs(parseFloat(prevTop) - current.top) > 1 ||
-    Math.abs(parseFloat(prevLeft) - current.left) > 1
-  )
-}
-
-// Helper functions
-function createPopoverElement(className?: string): {
+function createPopoverElement(...classes: string[]): {
   popoverElement: HTMLElement
   popoverInner: HTMLDivElement
 } {
   const popoverElement = document.createElement("div")
-  popoverElement.classList.add("popover", ...(className ? [className] : []))
+  popoverElement.classList.add("popover", ...classes)
   const popoverInner = document.createElement("div")
   popoverInner.classList.add("popover-inner")
   popoverElement.appendChild(popoverInner)
-  const arrowElement = document.createElement("div")
-  arrowElement.id = "arrow"
-  popoverElement.appendChild(arrowElement)
   return { popoverElement, popoverInner }
-}
-
-function compareUrls(a: URL, b: URL): boolean {
-  const u1 = new URL(a.toString())
-  const u2 = new URL(b.toString())
-  u1.hash = ""
-  u1.search = ""
-  u2.hash = ""
-  u2.search = ""
-  return u1.toString() === u2.toString()
 }
 
 async function handleImageContent(targetUrl: URL, popoverInner: HTMLDivElement) {
@@ -113,12 +84,10 @@ async function handleImageContent(targetUrl: URL, popoverInner: HTMLDivElement) 
   popoverInner.appendChild(img)
 }
 
-// NOTE: Given that we will run this on cloudflare workers, all PDF will be fetched
-// directly from Git LFS server.
 async function handlePdfContent(response: Response, popoverInner: HTMLDivElement) {
   const pdf = document.createElement("iframe")
   const blob = await response.blob()
-  const blobUrl = createManagedBlobUrl(blob, DEFAULT_BLOB_TIMEOUT)
+  const blobUrl = createManagedBlobUrl(blob)
   pdf.src = blobUrl
   popoverInner.appendChild(pdf)
 }
@@ -140,7 +109,6 @@ async function handleDefaultContent(
   const contents = await response.text()
   const html = p.parseFromString(contents, "text/html")
   normalizeRelativeURLs(html, targetUrl)
-  // strip all IDs from elements to prevent duplicates
   html.querySelectorAll("[id]").forEach((el) => {
     const targetID = `popover-${el.id}`
     el.id = targetID
@@ -152,105 +120,173 @@ async function handleDefaultContent(
   popoverInner.append(...elts)
 }
 
+const contentHandlers: Record<string, ContentHandler> = {
+  image: async (_, targetUrl, popoverInner) => handleImageContent(targetUrl, popoverInner),
+  "application/pdf": async (response, _targetUrl, popoverInner) =>
+    handlePdfContent(response, popoverInner),
+  "application/xml": async (response, _targetUrl, popoverInner) =>
+    handleXmlContent(response, popoverInner),
+  default: handleDefaultContent,
+}
+
+async function populatePopoverContent(
+  response: Response,
+  targetUrl: URL,
+  popoverInner: HTMLDivElement,
+) {
+  const headerContentType = response.headers.get("Content-Type")
+  const contentType = headerContentType
+    ? headerContentType.split(";")[0]
+    : getContentType(targetUrl)
+  const [contentTypeCategory] = contentType.split("/")
+  popoverInner.dataset.contentType = contentType ?? undefined
+
+  const handler =
+    contentHandlers[contentTypeCategory] ??
+    contentHandlers[contentType] ??
+    contentHandlers["default"]
+
+  await handler(response, targetUrl, popoverInner)
+}
+
 async function setPosition(
   link: HTMLElement,
   popoverElement: HTMLElement,
-  placement: Placement,
-  clientX: number,
-  clientY: number,
+  { clientX, clientY, placement, strategy = "fixed" }: PositioningOptions,
 ) {
-  const element = popoverElement.querySelector("#arrow") as HTMLElement
-  const middleware = [
-    inline({ x: clientX, y: clientY }),
-    shift(),
-    flip(),
-    arrow({ element, padding: 4 }),
-  ]
-
+  const middleware = [inline({ x: clientX, y: clientY }), shift(), flip()]
   const {
     x,
     y,
-    middlewareData,
     placement: finalPlacement,
-  } = await computePosition(link, popoverElement, { placement, middleware })
-  Object.assign(popoverElement.style, { left: `${x}px`, top: `${y}px` })
+  } = await computePosition(link, popoverElement, {
+    placement,
+    strategy,
+    middleware,
+  })
 
+  popoverElement.style.position = strategy
+  popoverElement.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`
   popoverElement.dataset.placement = finalPlacement
-
-  if (middlewareData.arrow) {
-    const { x: arrowX, y: arrowY } = middlewareData.arrow
-
-    // Clear any previous arrow positioning classes
-    element.classList.remove("arrow-top", "arrow-bottom", "arrow-left", "arrow-right")
-
-    // Add the appropriate arrow direction class based on final placement
-    const [basePlacement] = finalPlacement.split("-") as [Placement]
-    element.classList.add(basePlacement)
-
-    // Position the arrow
-    Object.assign(element.style, {
-      left: arrowX != null ? `${arrowX}px` : "",
-      top: arrowY != null ? `${arrowY}px` : "",
-    })
-  }
-
-  const linkRect = link.getBoundingClientRect()
-  popoverElement.dataset.linkTop = linkRect.top.toString()
-  popoverElement.dataset.linkLeft = linkRect.left.toString()
 }
 
-const hasAlreadyBeenFetched = (link: HTMLAnchorElement, classname?: string) =>
-  [...link.children].some((child) => child.classList.contains(classname ?? "popover"))
+async function showPopover(
+  link: HTMLAnchorElement,
+  popoverElement: HTMLElement,
+  pointer: { clientX: number; clientY: number },
+  options: ShowPopoverOptions = {},
+) {
+  clearActivePopover()
+  popoverElement.classList.add("active-popover")
 
-async function handleBibliography(link: HTMLAnchorElement, clientX: number, clientY: number) {
-  const href = link.getAttribute("href")!
+  await setPosition(link, popoverElement, {
+    clientX: pointer.clientX,
+    clientY: pointer.clientY,
+    placement: options.placement,
+    strategy: options.strategy,
+  })
 
-  if (hasAlreadyBeenFetched(link, "bib-popover")) {
-    if (hasPositionChanged(link)) {
-      return setPosition(link, link.lastChild as HTMLElement, "top", clientX, clientY)
+  const { hash, popoverInner } = options
+  if (hash && hash !== "" && popoverInner) {
+    const targetAnchor = hash.startsWith("#popover") ? hash : `#popover-${hash.slice(1)}`
+    const heading = popoverInner.querySelector(targetAnchor) as HTMLElement | null
+    if (heading) {
+      popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
     }
-    return
   }
 
-  const bibEntry = document.getElementById(href.replace("#", "")) as HTMLLIElement
-
-  const { popoverElement, popoverInner } = createPopoverElement("bib-popover")
-  popoverInner.innerHTML = bibEntry.innerHTML
-
-  setPosition(link, popoverElement, "top", clientX, clientY)
-  link.appendChild(popoverElement)
-  return popoverElement
+  activeAnchor = link
 }
 
-async function handleFootnote(link: HTMLAnchorElement, clientX: number, clientY: number) {
-  const href = link.getAttribute("href")!
+function clearActivePopover() {
+  activeAnchor = null
+  const allPopoverElements = document.querySelectorAll(".popover")
+  allPopoverElements.forEach((popoverElement) => popoverElement.classList.remove("active-popover"))
+}
 
-  if (hasAlreadyBeenFetched(link, "footnote-popover")) {
-    if (hasPositionChanged(link)) {
-      return setPosition(link, link.lastChild as HTMLElement, "top", clientX, clientY)
-    }
-    return
+function compareUrls(a: URL, b: URL): boolean {
+  const u1 = new URL(a.toString())
+  const u2 = new URL(b.toString())
+  u1.hash = ""
+  u1.search = ""
+  u2.hash = ""
+  u2.search = ""
+  return u1.toString() === u2.toString()
+}
+
+async function handleBibliography(
+  link: HTMLAnchorElement,
+  pointer: { clientX: number; clientY: number },
+) {
+  const href = link.getAttribute("href")
+  if (!href) return
+
+  const entryId = href.replace("#", "")
+  const bibEntry = document.getElementById(entryId) as HTMLLIElement | null
+  if (!bibEntry) return
+
+  const popoverId = link.dataset.popoverId ?? `popover-bib-${entryId}`
+  let popoverElement = document.getElementById(popoverId) as HTMLElement | null
+  let popoverInner: HTMLDivElement | null = null
+
+  if (!popoverElement) {
+    const created = createPopoverElement("bib-popover")
+    popoverElement = created.popoverElement
+    popoverInner = created.popoverInner
+    popoverElement.id = popoverId
+    popoverInner.innerHTML = bibEntry.innerHTML
+    document.body.appendChild(popoverElement)
+  } else {
+    popoverInner = popoverElement.querySelector(".popover-inner") as HTMLDivElement | null
   }
 
-  const footnoteEntry = document.getElementById(href.replace("#", "")) as HTMLLIElement
-  const { popoverElement, popoverInner } = createPopoverElement("footnote-popover")
-  popoverInner.innerHTML = footnoteEntry.innerHTML
-  popoverInner.querySelectorAll("[data-footnote-backref]").forEach((el) => el.remove())
+  if (!popoverInner) return
 
-  setPosition(link, popoverElement, "top", clientX, clientY)
-  link.appendChild(popoverElement)
-  return popoverElement
+  link.dataset.popoverId = popoverId
+  await showPopover(link, popoverElement, pointer, { placement: "top" })
 }
 
-// Track current active popover request
-let activePopoverReq: { abort: () => void; link: HTMLAnchorElement } | null = null
+async function handleFootnote(
+  link: HTMLAnchorElement,
+  pointer: { clientX: number; clientY: number },
+) {
+  const href = link.getAttribute("href")
+  if (!href) return
+
+  const entryId = href.replace("#", "")
+  const footnoteEntry = document.getElementById(entryId) as HTMLLIElement | null
+  if (!footnoteEntry) return
+
+  const popoverId = link.dataset.popoverId ?? `popover-footnote-${entryId}`
+  let popoverElement = document.getElementById(popoverId) as HTMLElement | null
+  let popoverInner: HTMLDivElement | null = null
+
+  if (!popoverElement) {
+    const created = createPopoverElement("footnote-popover")
+    popoverElement = created.popoverElement
+    popoverInner = created.popoverInner
+    popoverElement.id = popoverId
+    popoverInner.innerHTML = footnoteEntry.innerHTML
+    popoverInner.querySelectorAll("[data-footnote-backref]").forEach((el) => el.remove())
+    document.body.appendChild(popoverElement)
+  } else {
+    popoverInner = popoverElement.querySelector(".popover-inner") as HTMLDivElement | null
+  }
+
+  if (!popoverInner) return
+
+  link.dataset.popoverId = popoverId
+  await showPopover(link, popoverElement, pointer, { placement: "top" })
+}
 
 async function handleStackedNotes(
-  stacked: HTMLDivElement,
+  stacked: HTMLDivElement | null,
   link: HTMLAnchorElement,
-  { clientX, clientY }: { clientX: number; clientY: number },
+  pointer: { clientX: number; clientY: number },
 ) {
-  // If there's an active request for a different link, cancel it
+  if (!stacked) return
+  clearActivePopover()
+
   if (activePopoverReq && activePopoverReq.link !== link) {
     activePopoverReq.abort()
     activePopoverReq = null
@@ -259,53 +295,50 @@ async function handleStackedNotes(
   const column = stacked.querySelector<HTMLDivElement>(".stacked-notes-column")
   if (!column) return
 
-  // Remove any existing popovers
-  const current = column.querySelectorAll<HTMLDivElement>('div[class~="stacked-popover"]')
-  current.forEach((popover) => popover.remove())
+  column
+    .querySelectorAll<HTMLDivElement>('div[class~="stacked-popover"]')
+    .forEach((popover) => popover.remove())
 
   const targetUrl = new URL(link.href)
   const hash = decodeURIComponent(targetUrl.hash)
+  targetUrl.hash = ""
+  targetUrl.search = ""
 
-  // Create an AbortController for this request
   const controller = new AbortController()
   activePopoverReq = { abort: () => controller.abort(), link }
 
-  const response = await fetchCanonical(new URL(`${targetUrl}`), {
+  const response = await fetchCanonical(new URL(targetUrl.toString()), {
     signal: controller.signal,
-  }).catch((error) => {
-    if (error.name === "AbortError") return null
+  }).catch((error: Error & { name: string }) => {
+    if (error.name === "AbortError") {
+      return null
+    }
     console.error(error)
     return null
   })
-  if (!response) return
-  const contentType = response.headers.get("Content-Type")
-    ? response.headers.get("Content-Type")!.split(";")[0]
-    : getContentType(targetUrl)
-  const [contentTypeCategory, _] = contentType.split("/")
 
-  const { popoverElement, popoverInner } = createPopoverElement("stacked-popover")
-  popoverInner.dataset.contentType = contentType ?? undefined
-
-  popoverInner.dataset.contentType = contentType ?? undefined
-  popoverElement.dataset.arrow = (contentType! !== "application/pdf").toString()
-
-  const contentHandlers: Record<string, ContentHandler> = {
-    image: async (_, targetUrl, popoverInner) => handleImageContent(targetUrl, popoverInner),
-    "application/pdf": async (response, _, popoverInner) =>
-      handlePdfContent(response, popoverInner),
-    "application/xml": async (response, _, popoverInner) =>
-      handleXmlContent(response, popoverInner),
-    default: handleDefaultContent,
+  if (!response) {
+    activePopoverReq = null
+    return
   }
 
-  const handler =
-    contentHandlers[contentTypeCategory] ||
-    contentHandlers[contentType] ||
-    contentHandlers["default"]
+  const { popoverElement, popoverInner } = createPopoverElement("stacked-popover")
+  await populatePopoverContent(response, targetUrl, popoverInner)
 
-  handler(response, targetUrl, popoverInner)
-  setPosition(link, popoverElement, "right", clientX, clientY)
-  column!.appendChild(popoverElement)
+  if (popoverInner.childElementCount === 0) {
+    popoverElement.remove()
+    activePopoverReq = null
+    return
+  }
+
+  column.appendChild(popoverElement)
+  await setPosition(link, popoverElement, {
+    clientX: pointer.clientX,
+    clientY: pointer.clientY,
+    placement: "right",
+    strategy: "absolute",
+  })
+
   popoverElement.style.visibility = "visible"
   popoverElement.style.opacity = "1"
 
@@ -318,10 +351,6 @@ async function handleStackedNotes(
   }
 
   const onMouseLeave = () => {
-    if (activePopoverReq?.link === link) {
-      activePopoverReq.abort()
-      activePopoverReq = null
-    }
     popoverElement.style.visibility = "hidden"
     popoverElement.style.opacity = "0"
     setTimeout(() => {
@@ -334,51 +363,35 @@ async function handleStackedNotes(
   link.addEventListener("mouseleave", onMouseLeave)
   window.addCleanup(() => {
     link.removeEventListener("mouseleave", onMouseLeave)
-    if (activePopoverReq?.link === link) {
-      activePopoverReq.abort()
-      activePopoverReq = null
-    }
   })
-  return popoverElement
+
+  activePopoverReq = null
 }
 
 async function mouseEnterHandler(
   this: HTMLAnchorElement,
   { clientX, clientY }: { clientX: number; clientY: number },
 ) {
-  const link = this
+  const link = (activeAnchor = this)
 
   if (link.dataset.bib === "") {
-    return handleBibliography(link, clientX, clientY)
+    await handleBibliography(link, { clientX, clientY })
+    return
   }
 
   if (link.dataset.footnoteRef === "") {
-    return handleFootnote(link, clientX, clientY)
+    await handleFootnote(link, { clientX, clientY })
+    return
   }
 
-  const container = document.getElementById("stacked-notes-container") as HTMLDivElement
+  const container = document.getElementById("stacked-notes-container") as HTMLDivElement | null
 
   if (link.dataset.noPopover === "" || link.dataset.noPopover === "true") {
     return
   }
 
   if (getFullSlug(window) === "notes" || container?.classList.contains("active")) {
-    return handleStackedNotes(container, link, { clientX, clientY })
-  }
-
-  let position: Placement = "right"
-  // Check if link is within sidepanel
-  const isInSidepanel = link.closest(".sidepanel-inner") !== null
-  if (link.closest(".tag-link") !== null) {
-    position = "left"
-  } else if (isInSidepanel) {
-    position = "top"
-  }
-
-  if (hasAlreadyBeenFetched(link)) {
-    if (hasPositionChanged(link)) {
-      return setPosition(link, link.lastChild as HTMLElement, position, clientX, clientY)
-    }
+    await handleStackedNotes(container, link, { clientX, clientY })
     return
   }
 
@@ -386,16 +399,14 @@ async function mouseEnterHandler(
   const targetUrl = new URL(link.href)
   const hash = decodeURIComponent(targetUrl.hash)
 
-  // prevent hover of the same page
   if (compareUrls(thisUrl, targetUrl)) {
-    // Handle same-page hash links
+    clearActivePopover()
     if (hash !== "") {
       const article = document.querySelector("article")
       const targetAnchor = hash.startsWith("#popover") ? hash : `#popover-${hash.slice(1)}`
       const heading = article?.querySelector(targetAnchor) as HTMLElement | null
       if (heading) {
         heading.classList.add("dag")
-        // Add cleanup for mouseleave
         const cleanup = () => {
           heading.classList.remove("dag")
           link.removeEventListener("mouseleave", cleanup)
@@ -407,68 +418,74 @@ async function mouseEnterHandler(
     return
   }
 
+  targetUrl.hash = ""
+  targetUrl.search = ""
+
+  const popoverId = `popover-${targetUrl.pathname}`
+  const existingPopover = document.getElementById(popoverId) as HTMLElement | null
+
+  if (existingPopover) {
+    const popoverInner = existingPopover.querySelector(".popover-inner") as HTMLDivElement | null
+    if (!popoverInner) return
+    await showPopover(link, existingPopover, { clientX, clientY }, { hash, popoverInner })
+    return
+  }
+
   let response: Response | void
   if (link.dataset.arxivId) {
     const url = new URL(`https://aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
-    response = await fetchCanonical(url).catch(console.error)
+    response = await fetchCanonical(url).catch((error) => {
+      console.error(error)
+    })
   } else {
-    response = await fetchCanonical(new URL(`${targetUrl}`)).catch(console.error)
+    response = await fetchCanonical(new URL(targetUrl.toString())).catch((error) => {
+      console.error(error)
+    })
   }
 
   if (!response) return
-  const contentType = response.headers.get("Content-Type")
-    ? response.headers.get("Content-Type")!.split(";")[0]
-    : getContentType(targetUrl)
-  const [contentTypeCategory, _] = contentType.split("/")
+  if (activeAnchor !== link) return
 
   const { popoverElement, popoverInner } = createPopoverElement()
-  popoverInner.dataset.contentType = contentType ?? undefined
-  popoverElement.dataset.arrow = (contentType! !== "application/pdf").toString()
+  popoverElement.id = popoverId
 
-  const contentHandlers: Record<string, ContentHandler> = {
-    image: async (_, targetUrl, popoverInner) => handleImageContent(targetUrl, popoverInner),
-    "application/pdf": async (response, _, popoverInner) =>
-      handlePdfContent(response, popoverInner),
-    "application/xml": async (response, _, popoverInner) =>
-      handleXmlContent(response, popoverInner),
-    default: handleDefaultContent,
+  await populatePopoverContent(response, targetUrl, popoverInner)
+
+  if (popoverInner.childElementCount === 0) {
+    popoverElement.remove()
+    return
   }
 
-  const handler =
-    contentHandlers[contentTypeCategory] ||
-    contentHandlers[contentType] ||
-    contentHandlers["default"]
-
-  handler(response, targetUrl, popoverInner)
-  setPosition(link, popoverElement, position, clientX, clientY)
-  link.appendChild(popoverElement)
-
-  if (hash !== "") {
-    const targetAnchor = hash.startsWith("#popover") ? hash : `#popover-${hash.slice(1)}`
-    const heading = popoverInner.querySelector(targetAnchor) as HTMLElement | null
-    if (heading) {
-      popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
-    }
+  document.body.appendChild(popoverElement)
+  if (activeAnchor !== link) {
+    popoverElement.remove()
+    return
   }
-  return popoverElement
+
+  await showPopover(link, popoverElement, { clientX, clientY }, { hash, popoverInner })
 }
 
 async function mouseClickHandler(evt: MouseEvent) {
   const link = evt.currentTarget as HTMLAnchorElement
+  clearActivePopover()
+
   const thisUrl = new URL(document.location.href)
   const targetUrl = new URL(link.href)
   const hash = decodeURIComponent(targetUrl.hash)
+  targetUrl.hash = ""
+  targetUrl.search = ""
 
-  const container = document.getElementById("stacked-notes-container") as HTMLDivElement
+  const container = document.getElementById("stacked-notes-container") as HTMLDivElement | null
 
   if (evt.altKey && !container?.classList.contains("active")) {
     evt.preventDefault()
     evt.stopPropagation()
+
     const asidePanel = document.querySelector<HTMLDivElement>(
       "main > * > aside[class~='sidepanel-container']",
     )
-
     if (!asidePanel) return
+
     asidePanel.dataset.slug = link.dataset.slug
 
     let response: Response | void
@@ -476,25 +493,29 @@ async function mouseClickHandler(evt: MouseEvent) {
       const url = new URL(`https://aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
       response = await fetchCanonical(url).catch(console.error)
     } else {
-      response = await fetchCanonical(new URL(`${targetUrl}`)).catch(console.error)
+      const fetchUrl = new URL(link.href)
+      fetchUrl.hash = ""
+      fetchUrl.search = ""
+      response = await fetchCanonical(fetchUrl).catch(console.error)
     }
 
     if (!response) return
-    const contentType = response.headers.get("Content-Type")
-      ? response.headers.get("Content-Type")!.split(";")[0]
+
+    const headerContentType = response.headers.get("Content-Type")
+    const contentType = headerContentType
+      ? headerContentType.split(";")[0]
       : getContentType(targetUrl)
 
     if (contentType === "application/pdf") {
       const pdf = document.createElement("iframe")
       const blob = await response.blob()
-      const blobUrl = createManagedBlobUrl(blob, DEFAULT_BLOB_TIMEOUT)
+      const blobUrl = createManagedBlobUrl(blob)
       pdf.src = blobUrl
       createSidePanel(asidePanel, pdf)
     } else {
       const contents = await response.text()
       const html = p.parseFromString(contents, "text/html")
       normalizeRelativeURLs(html, targetUrl)
-      // strip all IDs from elements to prevent duplicates
       html.querySelectorAll("[id]").forEach((el) => {
         const targetID = `popover-${el.id}`
         el.id = targetID
@@ -506,6 +527,7 @@ async function mouseClickHandler(evt: MouseEvent) {
 
       createSidePanel(asidePanel, ...elts)
     }
+
     window.notifyNav(link.dataset.slug as FullSlug)
     return
   }
@@ -517,7 +539,6 @@ async function mouseClickHandler(evt: MouseEvent) {
     const heading = mainContent?.querySelector(targetAnchor) as HTMLElement | null
     if (heading) {
       heading.scrollIntoView({ behavior: "smooth" })
-      // Optionally update the URL without a page reload
       history.pushState(null, "", hash)
     }
   }
@@ -528,15 +549,22 @@ document.addEventListener("nav", () => {
 
   for (const link of links) {
     link.addEventListener("mouseenter", mouseEnterHandler)
+    link.addEventListener("mouseleave", clearActivePopover)
     link.addEventListener("click", mouseClickHandler)
+
     window.addCleanup(() => {
       link.removeEventListener("mouseenter", mouseEnterHandler)
+      link.removeEventListener("mouseleave", clearActivePopover)
       link.removeEventListener("click", mouseClickHandler)
 
-      for (const [blobUrl, timeoutId] of blobCleanupMap.entries()) {
-        cleanupBlobUrl(blobUrl, timeoutId)
+      for (const blobUrl of Array.from(blobCleanupMap.keys())) {
+        cleanupBlobUrl(blobUrl)
       }
-      blobCleanupMap.clear()
+
+      if (activePopoverReq) {
+        activePopoverReq.abort()
+        activePopoverReq = null
+      }
     })
   }
 })

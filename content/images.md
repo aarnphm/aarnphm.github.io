@@ -58,13 +58,16 @@ title: images
 
 ![[thoughts/images/Fairchild Semiconductor's fathers.webp|Fairchild Semiconductor's fathers]]
 
+![[thoughts/images/actually my life isn't over yet.webp|actually my life isn't over]]
+
+![[thoughts/images/old-books-in-philly.webp]]
+
 ## authors
 
 ![[thoughts/images/joan-didion.webp|joan didion]]
 ![[thoughts/images/susan-sontag.webp|susan sontag]]
 ![[thoughts/images/maya-angelou.webp|maya angelou]]
 
-![[thoughts/images/maya-angelou.webp|maya angelou]]
 ![[thoughts/images/donna-tartt.webp|donna tartt]]
 ![[thoughts/images/elsa-schiaparelli.webp|elsa schiaparelli]]
 ![[thoughts/images/georgia-okeeffe.webp|georgia o'keeffe]]

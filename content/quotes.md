@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-09-17 12:34:08 GMT-04:00
+modified: 2025-09-28 22:29:21 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -134,6 +134,8 @@ I have to be successful because I like expensive things. -- some random person o
 People like you think I get lucky. Here's the thing, I make my own luck. -- Harvey Specter
 
 Sticks and stones may breaks my bone, but there will be always something that offend a feminist -- Some random British reporter
+
+damn gurl are you lipschitz continuous because you look fine as hell -- [Yacine](https://x.com/yacinelearning/status/1972482692148260879)
 
 ## phrases to live by
 

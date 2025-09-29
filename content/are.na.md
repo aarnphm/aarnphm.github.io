@@ -7,10 +7,10 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-09-28 04:11:35 GMT-04:00
+date: "2024-10-24"
+modified: 2025-09-29 02:23:30 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -114,6 +114,7 @@ see also [[/curius|bookmarks]]
 - https://chimcisaac.co/
 - https://www.ethansmith2000.com/blog
 - https://sander.ai/
+- https://messenger.abeto.co/
 
 ## people
 
@@ -351,6 +352,8 @@ see also [[/curius|bookmarks]]
 - https://sharif.io/anna-alexei -- Always invite Anna
 - https://archive.is/ilTr1 -- The Economist, How to spot a genius
 - https://unchartedterritories.tomaspueyo.com/p/mountains -- Why Warm Countries Are Poorer \*\*
+- https://simulation-argument.com/simulation/ -- Are we living in a simulation?
+- https://substack.com/home/post/p-160050674 -- how to become gently interesting
 
 ### [[thoughts/Machine learning]]
 
@@ -447,6 +450,8 @@ see also [[/curius|bookmarks]]
   - 1.2: https://mp.weixin.qq.com/s/8BVEVPPqDQhQ2l8L90dMNQ
   - 1.1: https://mp.weixin.qq.com/s/h1cFYDNxcHC30APcarF47A
 - https://ma-lab-berkeley.github.io/deep-representation-learning-book/ -- Learning Deep Representations of Data Distributions [@ldrdd2025]
+- https://www.julian.ac/blog/2025/09/27/failing-to-understand-the-exponential-again/ -- Failing to Understand the Exponential, Again
+- https://www.ethansmith2000.com/post/where-are-you -- Where are you?
 
 ### argumentative
 
@@ -651,6 +656,7 @@ see also [[/curius|bookmarks]]
 - https://github.com/Keen-Technologies/physical_atari -- Physical Atari
 - https://modelcontextprotocol.io/llms-full.txt -- MCP protocol
 - https://michaelnotebook.com/mmsw -- How to make memory systems widespread?
+- https://github.com/francoismichel/ssh3 -- ssh3
 
 ### vc.
 
