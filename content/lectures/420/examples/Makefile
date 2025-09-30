@@ -14,7 +14,7 @@ TARGETS = 01_vector_add 02_vectorized_loads 03_matmul 04_coalescing 05_reduction
 CUTE_TARGETS = 06_cute_basics 07_cute_swizzling 08_cute_tiling 09_cute_paged_attention
 
 # CuTe examples require CUTLASS 3.x+ headers
-CUTLASS_DIR ?= $(HOME)/cutlass
+CUTLASS_DIR ?= $(HOME)/workspace/cutlass
 CUTE_INCLUDES = -I$(CUTLASS_DIR)/include
 CUTE_FLAGS = $(NVCC_FLAGS) $(CUTE_INCLUDES) -DCUTE_SM_90_ENABLED
 
@@ -63,9 +63,9 @@ cute: $(CUTE_TARGETS)
 	$(NVCC) $(CUTE_FLAGS) $(ARCH) -o $@ $<
 
 # Python example (no compilation needed)
-python: 10_cute_python_paged_attention.py
+python: 10_cute_paged_attention.py
 	@echo "Python example ready. Run with:"
-	@echo "  python 10_cute_python_paged_attention.py"
+	@echo "  python 10_cute_paged_attention.py"
 
 clean:
 	rm -f $(TARGETS) $(CUTE_TARGETS) *.o
@@ -98,7 +98,7 @@ test_cute: cute
 
 test_python:
 	@echo "Running Python CuTe DSL example..."
-	python 10_cute_python_paged_attention.py
+	python 10_cute_paged_attention.py
 
 test_all: test test_cute test_python
 

@@ -452,7 +452,7 @@ For production use, see:
 """)
 
 
-if __name__ == '__main__':
+def main():
   parser = argparse.ArgumentParser(description='Paged Attention: PyTorch vs CuTe DSL')
   parser.add_argument('-v', '--verbose', action='count', default=0, help='Increase verbosity (-v for version info, -vv for all details)')
   parser.add_argument('--seq-len', type=int, default=None, help='Sequence length (default: run multiple sizes)')
@@ -513,3 +513,5 @@ if __name__ == '__main__':
         head_dim=args.head_dim,
         page_size=args.page_size,
       )
+
+if __name__ == '__main__': main()

@@ -5,7 +5,7 @@ tags:
   - ml
   - gpu
 date: "2025-09-30"
-modified: 2025-09-30 14:58:32 GMT-04:00
+modified: 2025-09-30 20:22:16 GMT+00:00
 noindex: true
 title: build instructions for 0.420
 ---
@@ -311,7 +311,7 @@ Sequence 1: [logical pages] → Block table[1] → [physical pages 2,5,9]
 
 ---
 
-#### 10_cute_python_paged_attention.py
+#### 10_cute_paged_attention.py
 
 **Python CuTe DSL: Paged Attention**
 
@@ -337,7 +337,7 @@ Usage:
 
 ```bash
 # Falls back to PyTorch reference if CuTe DSL unavailable
-python 10_cute_python_paged_attention.py
+python 10_cute_paged_attention.py
 ```
 
 Kernel definition:
@@ -426,7 +426,7 @@ examples/
 ├── 07_cute_swizzling.cu              # Bank conflict avoidance
 ├── 08_cute_tiling.cu                 # Hierarchical tiling
 ├── 09_cute_paged_attention.cu        # Paged attention (C++)
-├── 10_cute_python_paged_attention.py # Paged attention (Python)
+├── 10_cute_paged_attention.py        # Paged attention (Python, CuTe, PyTorch)
 │
 ├── Makefile                          # Build system with CuTe support
 ├── verify.sh                         # Automated testing script
