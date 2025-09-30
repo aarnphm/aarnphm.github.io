@@ -4,17 +4,17 @@
 #include "common.cuh"
 #include <stdio.h>
 
-__global__ void vector_add(const float *a, const float *b, float *c, int N) {
+__global__ void vector_add(const half *a, const half *b, half *c, int N) {
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   if (idx < N) {
-    c[idx] = a[idx] + b[idx];
+    c[idx] = __hadd(a[idx], b[idx]);
   }
 }
 
 // CPU reference implementation
-void vector_add_cpu(const float *a, const float *b, float *c, int N) {
+void vector_add_cpu(const half *a, const half *b, half *c, int N) {
   for (int i = 0; i < N; i++) {
-    c[i] = a[i] + b[i];
+    c[i] = __hadd(a[i], b[i]);
   }
 }
 
@@ -23,20 +23,20 @@ int main() {
   print_device_info();
 
   const int N = 1 << 20; // 1M elements
-  const size_t bytes = N * sizeof(float);
+  const size_t bytes = N * sizeof(half);
 
   // Allocate host memory
-  float *h_a = (float *)malloc(bytes);
-  float *h_b = (float *)malloc(bytes);
-  float *h_c = (float *)malloc(bytes);
-  float *h_c_ref = (float *)malloc(bytes);
+  half *h_a = (half *)malloc(bytes);
+  half *h_b = (half *)malloc(bytes);
+  half *h_c = (half *)malloc(bytes);
+  half *h_c_ref = (half *)malloc(bytes);
 
   // Initialize input arrays
-  init_array(h_a, N, 10.0f);
-  init_array(h_b, N, 10.0f);
+  init_array(h_a, N, __float2half(10.0f));
+  init_array(h_b, N, __float2half(10.0f));
 
   // Allocate device memory
-  float *d_a, *d_b, *d_c;
+  half *d_a, *d_b, *d_c;
   CUDA_CHECK(cudaMalloc(&d_a, bytes));
   CUDA_CHECK(cudaMalloc(&d_b, bytes));
   CUDA_CHECK(cudaMalloc(&d_c, bytes));
@@ -68,7 +68,7 @@ int main() {
 
   // Verify result
   vector_add_cpu(h_a, h_b, h_c_ref, N);
-  bool correct = verify_results(h_c, h_c_ref, N);
+  bool correct = verify_results(h_c, h_c_ref, N, __float2half(1e-3f));
   printf("Verification: %s\n", correct ? "PASSED" : "FAILED");
 
   // Cleanup

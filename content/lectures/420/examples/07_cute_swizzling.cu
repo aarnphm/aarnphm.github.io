@@ -8,8 +8,8 @@ using namespace cute;
 
 // Matrix transpose WITHOUT swizzling (has bank conflicts)
 template<int TILE_M, int TILE_N>
-__global__ void transpose_no_swizzle(float const* A, float* B, int M, int N) {
-  __shared__ float smem[TILE_M][TILE_N];
+__global__ void transpose_no_swizzle(half const* A, half* B, int M, int N) {
+  __shared__ half smem[TILE_M][TILE_N];
 
   int tx = threadIdx.x;
   int ty = threadIdx.y;
@@ -32,14 +32,14 @@ __global__ void transpose_no_swizzle(float const* A, float* B, int M, int N) {
 
 // Matrix transpose WITH CuTe swizzling (no bank conflicts)
 template<int TILE_M, int TILE_N>
-__global__ void transpose_with_swizzle(float const* A, float* B, int M, int N) {
+__global__ void transpose_with_swizzle(half const* A, half* B, int M, int N) {
   // CuTe swizzle layout: Swizzle<3,3,3> for 128-byte swizzle
   using SmemLayout = decltype(composition(
       Swizzle<3, 3, 3>{},
       Layout<Shape<Int<TILE_M>, Int<TILE_N>>,
              Stride<Int<TILE_N>, Int<1>>>{}));
 
-  __shared__ __align__(16) float smem_data[TILE_M * TILE_N];
+  __shared__ __align__(16) half smem_data[TILE_M * TILE_N];
   auto smem_layout = SmemLayout{};
   auto smem = make_tensor(make_smem_ptr(smem_data), smem_layout);
 
@@ -98,14 +98,14 @@ __global__ void swizzle_demo() {
 void test_transpose(int M, int N) {
   printf("\n=== Transpose Performance Comparison (%dx%d) ===\n", M, N);
 
-  const size_t bytes = M * N * sizeof(float);
-  float *h_A = (float*)malloc(bytes);
-  float *h_B_no_swizzle = (float*)malloc(bytes);
-  float *h_B_swizzle = (float*)malloc(bytes);
+  const size_t bytes = M * N * sizeof(half);
+  half *h_A = (half*)malloc(bytes);
+  half *h_B_no_swizzle = (half*)malloc(bytes);
+  half *h_B_swizzle = (half*)malloc(bytes);
 
-  init_array(h_A, M * N, 100.0f);
+  init_array(h_A, M * N, __float2half(100.0f));
 
-  float *d_A, *d_B;
+  half *d_A, *d_B;
   CUDA_CHECK(cudaMalloc(&d_A, bytes));
   CUDA_CHECK(cudaMalloc(&d_B, bytes));
 
@@ -151,10 +151,10 @@ void test_transpose(int M, int N) {
 
   for (int i = 0; i < M; i++) {
     for (int j = 0; j < N; j++) {
-      float expected = h_A[i * N + j];
-      if (fabs(h_B_no_swizzle[j * M + i] - expected) > 1e-5)
+      float expected = __half2float(h_A[i * N + j]);
+      if (fabs(__half2float(h_B_no_swizzle[j * M + i]) - expected) > 1e-2)
         no_swizzle_correct = false;
-      if (fabs(h_B_swizzle[j * M + i] - expected) > 1e-5)
+      if (fabs(__half2float(h_B_swizzle[j * M + i]) - expected) > 1e-2)
         swizzle_correct = false;
     }
   }

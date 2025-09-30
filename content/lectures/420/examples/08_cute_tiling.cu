@@ -8,11 +8,11 @@ using namespace cute;
 
 // GEMM using CuTe hierarchical tiling
 template<int TILE_M, int TILE_N, int TILE_K>
-__global__ void gemm_cute_tiled(float const* A_ptr, float const* B_ptr,
-                                 float* C_ptr, int M, int N, int K) {
+__global__ void gemm_cute_tiled(half const* A_ptr, half const* B_ptr,
+                                 half* C_ptr, int M, int N, int K) {
   // Define shared memory tiles
-  __shared__ float smem_A[TILE_M][TILE_K];
-  __shared__ float smem_B[TILE_K][TILE_N];
+  __shared__ half smem_A[TILE_M][TILE_K];
+  __shared__ half smem_B[TILE_K][TILE_N];
 
   // Global tensor layouts
   auto A_layout = make_layout(make_shape(M, K), make_stride(K, Int<1>{}));
@@ -51,7 +51,7 @@ __global__ void gemm_cute_tiled(float const* A_ptr, float const* B_ptr,
   auto sB_thr = local_partition(sB, thr_layout, tid);
 
   // Accumulator
-  float acc = 0.0f;
+  half acc = __float2half(0.0f);
 
   // Main loop over K dimension
   int num_k_tiles = (K + TILE_K - 1) / TILE_K;
@@ -87,7 +87,7 @@ __global__ void gemm_cute_tiled(float const* A_ptr, float const* B_ptr,
 
     if (m_local < TILE_M && n_local < TILE_N) {
       for (int k = 0; k < TILE_K; k++) {
-        acc += sA(m_local, k) * sB(k, n_local);
+        acc = __hadd(acc, __hmul(sA(m_local, k), sB(k, n_local)));
       }
     }
 
@@ -145,19 +145,19 @@ __global__ void tiling_demo() {
 void test_gemm_cute(int M, int N, int K) {
   printf("\n=== GEMM with CuTe Tiling (%dx%dx%d) ===\n", M, N, K);
 
-  const size_t bytes_A = M * K * sizeof(float);
-  const size_t bytes_B = K * N * sizeof(float);
-  const size_t bytes_C = M * N * sizeof(float);
+  const size_t bytes_A = M * K * sizeof(half);
+  const size_t bytes_B = K * N * sizeof(half);
+  const size_t bytes_C = M * N * sizeof(half);
 
-  float *h_A = (float*)malloc(bytes_A);
-  float *h_B = (float*)malloc(bytes_B);
-  float *h_C = (float*)malloc(bytes_C);
-  float *h_C_ref = (float*)malloc(bytes_C);
+  half *h_A = (half*)malloc(bytes_A);
+  half *h_B = (half*)malloc(bytes_B);
+  half *h_C = (half*)malloc(bytes_C);
+  half *h_C_ref = (half*)malloc(bytes_C);
 
-  init_array(h_A, M * K, 1.0f);
-  init_array(h_B, K * N, 1.0f);
+  init_array(h_A, M * K, __float2half(1.0f));
+  init_array(h_B, K * N, __float2half(1.0f));
 
-  float *d_A, *d_B, *d_C;
+  half *d_A, *d_B, *d_C;
   CUDA_CHECK(cudaMalloc(&d_A, bytes_A));
   CUDA_CHECK(cudaMalloc(&d_B, bytes_B));
   CUDA_CHECK(cudaMalloc(&d_C, bytes_C));
@@ -193,13 +193,13 @@ void test_gemm_cute(int M, int N, int K) {
       for (int j = 0; j < N; j++) {
         float sum = 0.0f;
         for (int k = 0; k < K; k++) {
-          sum += h_A[i * K + k] * h_B[k * N + j];
+          sum += __half2float(h_A[i * K + k]) * __half2float(h_B[k * N + j]);
         }
-        h_C_ref[i * N + j] = sum;
+        h_C_ref[i * N + j] = __float2half(sum);
       }
     }
 
-    bool correct = verify_results(h_C, h_C_ref, M * N, 1e-3f);
+    bool correct = verify_results(h_C, h_C_ref, M * N, __float2half(1e-2f));
     printf("Verification: %s\n", correct ? "PASSED" : "FAILED");
   }
 

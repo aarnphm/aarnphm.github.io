@@ -10,10 +10,10 @@ using namespace cute;
 // Each sequence's KV cache is split into fixed-size pages (blocks)
 template<int HEAD_DIM, int PAGE_SIZE, int BLOCK_SIZE>
 __global__ void paged_attention_kernel(
-    float* __restrict__ out,              // [num_seqs, num_heads, head_dim]
-    const float* __restrict__ query,      // [num_seqs, num_heads, head_dim]
-    const float* __restrict__ key_cache,  // [num_pages, num_heads, page_size, head_dim]
-    const float* __restrict__ value_cache,// [num_pages, num_heads, page_size, head_dim]
+    half* __restrict__ out,              // [num_seqs, num_heads, head_dim]
+    const half* __restrict__ query,      // [num_seqs, num_heads, head_dim]
+    const half* __restrict__ key_cache,  // [num_pages, num_heads, page_size, head_dim]
+    const half* __restrict__ value_cache,// [num_pages, num_heads, page_size, head_dim]
     const int* __restrict__ block_tables, // [num_seqs, max_num_pages]
     const int* __restrict__ context_lens, // [num_seqs]
     int num_seqs, int num_heads, int max_num_pages) {
@@ -29,11 +29,11 @@ __global__ void paged_attention_kernel(
   const int num_pages = (context_len + PAGE_SIZE - 1) / PAGE_SIZE;
 
   // Shared memory for current page's K and V
-  __shared__ float smem_K[PAGE_SIZE][HEAD_DIM];
-  __shared__ float smem_V[PAGE_SIZE][HEAD_DIM];
+  __shared__ half smem_K[PAGE_SIZE][HEAD_DIM];
+  __shared__ half smem_V[PAGE_SIZE][HEAD_DIM];
 
   // Load query for this sequence and head
-  float q[HEAD_DIM / BLOCK_SIZE];
+  half q[HEAD_DIM / BLOCK_SIZE];
   const int q_offset = (seq_idx * num_heads + head_idx) * HEAD_DIM;
 
   #pragma unroll
@@ -47,7 +47,11 @@ __global__ void paged_attention_kernel(
   // Online softmax statistics
   float row_max = -INFINITY;
   float row_sum = 0.0f;
-  float acc[HEAD_DIM / BLOCK_SIZE] = {0.0f};
+  half acc[HEAD_DIM / BLOCK_SIZE];
+  #pragma unroll
+  for (int i = 0; i < HEAD_DIM / BLOCK_SIZE; i++) {
+    acc[i] = __float2half(0.0f);
+  }
 
   // Process each page
   for (int page_idx = 0; page_idx < num_pages; page_idx++) {
@@ -95,7 +99,7 @@ __global__ void paged_attention_kernel(
       for (int i = 0; i < HEAD_DIM / BLOCK_SIZE; i++) {
         int d = tid + i * BLOCK_SIZE;
         if (d < HEAD_DIM) {
-          qk += q[i] * smem_K[t][d];
+          qk += __half2float(__hmul(q[i], smem_K[t][d]));
         }
       }
 
@@ -126,9 +130,9 @@ __global__ void paged_attention_kernel(
         scores[t] = exp_curr;
 
         // Update accumulator
-        float scale = exp_prev;
+        half scale = __float2half(exp_prev);
         for (int i = 0; i < HEAD_DIM / BLOCK_SIZE; i++) {
-          acc[i] *= scale;
+          acc[i] = __hmul(acc[i], scale);
         }
       }
     }
@@ -137,13 +141,13 @@ __global__ void paged_attention_kernel(
 
     // Accumulate attention * V
     for (int t = 0; t < tokens_in_page; t++) {
-      float attn_weight = (tid == 0) ? scores[t] : 0.0f;
+      half attn_weight = (tid == 0) ? __float2half(scores[t]) : __float2half(0.0f);
 
       #pragma unroll
       for (int i = 0; i < HEAD_DIM / BLOCK_SIZE; i++) {
         int d = tid + i * BLOCK_SIZE;
         if (d < HEAD_DIM) {
-          acc[i] += attn_weight * smem_V[t][d];
+          acc[i] = __hadd(acc[i], __hmul(attn_weight, smem_V[t][d]));
         }
       }
     }
@@ -153,9 +157,10 @@ __global__ void paged_attention_kernel(
 
   // Final normalization and write output
   if (tid == 0) {
+    half inv_sum = __float2half(1.0f / row_sum);
     #pragma unroll
     for (int i = 0; i < HEAD_DIM / BLOCK_SIZE; i++) {
-      acc[i] /= row_sum;
+      acc[i] = __hmul(acc[i], inv_sum);
     }
   }
 
@@ -218,29 +223,29 @@ void test_paged_attention() {
   int total_pages = 4;
 
   // Allocate host memory
-  float *h_query = (float*)malloc(num_seqs * num_heads * head_dim * sizeof(float));
-  float *h_output = (float*)malloc(num_seqs * num_heads * head_dim * sizeof(float));
+  half *h_query = (half*)malloc(num_seqs * num_heads * head_dim * sizeof(half));
+  half *h_output = (half*)malloc(num_seqs * num_heads * head_dim * sizeof(half));
 
   // Initialize query
-  init_array(h_query, num_seqs * num_heads * head_dim, 1.0f);
+  init_array(h_query, num_seqs * num_heads * head_dim, __float2half(1.0f));
 
   // Allocate device memory
-  float *d_query, *d_output, *d_key_cache, *d_value_cache;
+  half *d_query, *d_output, *d_key_cache, *d_value_cache;
   int *d_block_tables, *d_context_lens;
 
-  CUDA_CHECK(cudaMalloc(&d_query, num_seqs * num_heads * head_dim * sizeof(float)));
-  CUDA_CHECK(cudaMalloc(&d_output, num_seqs * num_heads * head_dim * sizeof(float)));
-  CUDA_CHECK(cudaMalloc(&d_key_cache, total_pages * num_heads * page_size * head_dim * sizeof(float)));
-  CUDA_CHECK(cudaMalloc(&d_value_cache, total_pages * num_heads * page_size * head_dim * sizeof(float)));
+  CUDA_CHECK(cudaMalloc(&d_query, num_seqs * num_heads * head_dim * sizeof(half)));
+  CUDA_CHECK(cudaMalloc(&d_output, num_seqs * num_heads * head_dim * sizeof(half)));
+  CUDA_CHECK(cudaMalloc(&d_key_cache, total_pages * num_heads * page_size * head_dim * sizeof(half)));
+  CUDA_CHECK(cudaMalloc(&d_value_cache, total_pages * num_heads * page_size * head_dim * sizeof(half)));
   CUDA_CHECK(cudaMalloc(&d_block_tables, num_seqs * max_num_pages * sizeof(int)));
   CUDA_CHECK(cudaMalloc(&d_context_lens, num_seqs * sizeof(int)));
 
   // Initialize caches with dummy data
-  CUDA_CHECK(cudaMemset(d_key_cache, 0, total_pages * num_heads * page_size * head_dim * sizeof(float)));
-  CUDA_CHECK(cudaMemset(d_value_cache, 0, total_pages * num_heads * page_size * head_dim * sizeof(float)));
+  CUDA_CHECK(cudaMemset(d_key_cache, 0, total_pages * num_heads * page_size * head_dim * sizeof(half)));
+  CUDA_CHECK(cudaMemset(d_value_cache, 0, total_pages * num_heads * page_size * head_dim * sizeof(half)));
 
   // Copy data to device
-  CUDA_CHECK(cudaMemcpy(d_query, h_query, num_seqs * num_heads * head_dim * sizeof(float),
+  CUDA_CHECK(cudaMemcpy(d_query, h_query, num_seqs * num_heads * head_dim * sizeof(half),
                         cudaMemcpyHostToDevice));
   CUDA_CHECK(cudaMemcpy(d_block_tables, h_block_tables, num_seqs * max_num_pages * sizeof(int),
                         cudaMemcpyHostToDevice));
@@ -263,7 +268,7 @@ void test_paged_attention() {
   CUDA_CHECK(cudaGetLastError());
 
   // Copy result back
-  CUDA_CHECK(cudaMemcpy(h_output, d_output, num_seqs * num_heads * head_dim * sizeof(float),
+  CUDA_CHECK(cudaMemcpy(h_output, d_output, num_seqs * num_heads * head_dim * sizeof(half),
                         cudaMemcpyDeviceToHost));
 
   printf("Kernel execution time: %.3f ms\n", timer.elapsed());

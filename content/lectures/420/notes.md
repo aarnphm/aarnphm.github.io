@@ -9,7 +9,7 @@ description: GPUs, CUTLASS, and CuTe
 transclude:
   title: false
 date: "2025-09-30"
-modified: 2025-09-30 15:47:19 GMT-04:00
+modified: 2025-09-30 18:49:01 GMT-04:00
 title: supplement to 0.420
 ---
 
@@ -1541,12 +1541,12 @@ GEMM accounts for 80-90% of compute in transformer training and inference. Optim
 > Computational complexity:
 > - FLOPs: 2MNK (K multiplies + K-1 adds per output element)
 > - Memory (naive): (MK + KN + MN) elements
-> - Arithmetic intensity (naive): 2MNK / 4(MK+KN+MN) bytes
+> - Arithmetic intensity (naive): 2MNK / 2(MK+KN+MN) bytes
 >
 > For square matrices (M=N=K):
 > - FLOPs: 2N³
-> - Memory: 3N² elements = 12N² bytes (FP32)
-> - Arithmetic intensity: 2N³ / 12N² = N/6 FLOPs/byte
+> - Memory: 3N² elements = 6N² bytes (FP16)
+> - Arithmetic intensity: 2N³ / 6N² = N/3 FLOPs/byte
 >
 > Example: N=4096
 > - FLOPs: ~137 GFLOP
@@ -1577,17 +1577,17 @@ Performance analysis:
 
 - Each thread loads $2K$ values from global memory (two loads per MAC)
 - Computes $2K$ FLOPs
-- Arithmetic intensity: $\frac{2K}{2K \times 4 \text{ bytes}} = \frac{1}{4}$ FLOPs/byte (0.25 FLOP/byte)
-- Roofline bound on H100: $0.25 \times 3.35\,\text{TB/s} = 0.84\,\text{TFLOP/s}$
-- Utilization vs 1,979 TFLOP/s peak: $0.84 / 1,979 \approx 0.04\%$
+- Arithmetic intensity: $\frac{2K}{2K \times 2 \text{ bytes}} = \frac{1}{2}$ FLOPs/byte (0.5 FLOP/byte)
+- Roofline bound on H100: $0.5 \times 3.35\,\text{TB/s} = 1.68\,\text{TFLOP/s}$
+- Utilization vs 1,979 TFLOP/s peak: $1.68 / 1,979 \approx 0.08\%$
 
-> [!calculation] 4096×4096×4096 FP32 matmul — naive kernel roofline
+> [!calculation] 4096×4096×4096 FP16 matmul — naive kernel roofline
 >
 > - Total FLOPs: $2N^3 = 2 \times 4096^3 = 1.3744 \times 10^{11}$ (137.4 GFLOP)
-> - Global traffic: each MAC issues two 4-byte loads ⇒ $2N^3 \times 4 = 5.50 \times 10^{11}$ bytes plus $N^2 \times 4 = 6.7 \times 10^7$ bytes for the store → $5.50\times10^{11}$ bytes (513 GiB)
-> - Arithmetic intensity: $1.3744\times10^{11} / 5.50\times10^{11} = 0.25$ FLOP/byte
-> - Peak sustained throughput bounded by HBM3 bandwidth (3.35 TB/s): $0.25 \times 3.35 = 0.84$ TFLOP/s
-> - Runtime lower bound: $5.50\times10^{11} / 3.35\times10^{12} = 1.64\times10^{-1}$ s ⇒ $\ge 164$ ms for the naive kernel at scale 4096
+> - Global traffic: each MAC issues two 2-byte loads ⇒ $2N^3 \times 2 = 2.75 \times 10^{11}$ bytes plus $N^2 \times 2 = 3.4 \times 10^7$ bytes for the store → $2.75\times10^{11}$ bytes (256 GiB)
+> - Arithmetic intensity: $1.3744\times10^{11} / 2.75\times10^{11} = 0.5$ FLOP/byte
+> - Peak sustained throughput bounded by HBM3 bandwidth (3.35 TB/s): $0.5 \times 3.35 = 1.68$ TFLOP/s
+> - Runtime lower bound: $2.75\times10^{11} / 3.35\times10^{12} = 8.2\times10^{-2}$ s ⇒ $\ge 82$ ms for the naive kernel at scale 4096
 
 Bottleneck: Memory bandwidth. Each value of $A$ and $B$ is loaded multiple times from global memory.
 
@@ -1632,13 +1632,13 @@ Partition into tiles:
 >                     └──────────────────────┘
 > ```
 
-> [!calculation] 128×128×32 tile bandwidth math (FP32 on H100)
+> [!calculation] 128×128×32 tile bandwidth math (FP16 on H100)
 >
-> - Per $K$-slice we load $128\times32$ elements from $A$ and $B$ each ⇒ $8192$ floats = 32 KB
-> - With $K = 4096$ there are 128 such slices, so an output tile pulls $128 \times 32$ KB = 4.19 MB from HBM and writes a 128×128 tile (256 KB)
-> - Summed over all tiles of a 4096³ GEMM, global traffic drops to 4.36 GB (down from 550 GB in the naive kernel)
-> - Arithmetic intensity climbs to $2N^3 / 4.36\,\text{GB} = 31.5$ FLOP/byte ⇒ roofline cap $31.5 \times 3.35 = 106$ TFLOP/s
-> - Bandwidth-limited runtime floor: $4.36\,\text{GB} / 3.35\,\text{TB/s} = 1.30$ ms, a 126× reduction in bytes moved compared to the naive loop
+> - Per $K$-slice we load $128\times32$ elements from $A$ and $B$ each ⇒ $8192$ halfs = 16 KB
+> - With $K = 4096$ there are 128 such slices, so an output tile pulls $128 \times 16$ KB = 2.10 MB from HBM and writes a 128×128 tile (128 KB)
+> - Summed over all tiles of a 4096³ GEMM, global traffic drops to 2.18 GB (down from 256 GB in the naive kernel)
+> - Arithmetic intensity climbs to $2N^3 / 2.18\,\text{GB} = 63$ FLOP/byte ⇒ roofline cap $63 \times 3.35 = 211$ TFLOP/s
+> - Bandwidth-limited runtime floor: $2.18\,\text{GB} / 3.35\,\text{TB/s} = 0.65$ ms, a 126× reduction in bytes moved compared to the naive loop
 
 [^matmul-tiling]: Each thread block computes a 128×128 tile of output C. Input tiles are loaded into shared memory (128×32 slices from A and B), reused across all 128×128=16,384 threads. The K dimension is tiled into chunks of 32; the outer loop steps through K/32 iterations. This transforms $O(MNK)$ global memory accesses into $O(MN + NK)$ with an $O(K)$ reuse factor, boosting arithmetic intensity by >120×. With FP16 inputs (2-byte elements) the same blocking yields $I \approx 64$ FLOP/byte; further hierarchy-aware staging (L2 residency, tensor memory accelerator) can push toward the $I \approx 10^3$ regime needed to become compute-bound on Hopper.
 
@@ -1677,7 +1677,7 @@ Performance analysis:
 
 - Each tile loaded once from global memory
 - Reused across 128 thread computations
-- Arithmetic intensity: $\frac{2 \times 128 \times 128 \times 32}{2 \times 128 \times 32 \times 4} \approx 64$ FLOPs/byte
+- Arithmetic intensity: $\frac{2 \times 128 \times 128 \times 32}{2 \times 128 \times 32 \times 2} \approx 64$ FLOPs/byte
 - Performance: ~300 TFLOP/s
 - Utilization: 15%
 
@@ -2800,7 +2800,7 @@ Benefits:
 >
 > ```
 > ┌─────────────────────────────────────────────────────────────────────┐
-> │ VIRTUAL ADDRESS SPACE (Logical KV Cache per Sequence)              │
+> │ VIRTUAL ADDRESS SPACE (Logical KV Cache per Sequence)               │
 > └─────────────────────────────────────────────────────────────────────┘
 >
 > Sequence 0 (48 tokens, 3 pages):        Sequence 1 (32 tokens, 2 pages):
@@ -3241,16 +3241,16 @@ Roofline model visualizes performance limits based on arithmetic intensity:
 > │        │                     │
 > │  214   │      ╱──────────────┘  ← FP16 tiled (I ≈ 64)
 > │        │     ╱
-> │  107   │    ╱   ← FP32 tiled (I ≈ 32)
+> │        │    ╱
 > │        │   ╱
-> │ 0.84   │  ╱    ← Naive (I ≈ 0.25)
+> │ 1.68   │  ╱    ← Naive (I ≈ 0.5)
 > │        │ ╱
 > │────────┴────────────────────────────→
-> 0     0.25     32      600     1000+  Arithmetic Intensity (FLOP/byte)
+> 0      0.5      64      600     1000+  Arithmetic Intensity (FLOP/byte)
 >                   ↑ Ridge point (≈ 592)
 > ```
 
-[^roofline]: The ridge point sits at $I = P_{\text{peak}} / B \approx 1979 / 3.35 \approx 592$ FLOP/byte for H100. Kernels below that intensity are memory-bound with performance capped by $I \times 3.35\,\text{TB/s}$. The naive GEMM (I ≈ 0.25) therefore tops out at 0.84 TFLOP/s. A 128×128×32 FP32 tiled kernel raises intensity to ≈32, pushing the roofline bound to ~107 TFLOP/s. Switching to FP16 inputs halves the bytes and doubles $I$ to ≈64, nudging the roofline bound to ~214 TFLOP/s. Only when the program approaches perfect data reuse—each matrix element fetched once, giving $I \gtrsim 10^3$—does the kernel enter the compute-bound regime and approach the 1,979 TFLOP/s tensor-core ceiling. This plot makes clear whether the next optimization knob should target bandwidth or compute utilization.
+[^roofline]: The ridge point sits at $I = P_{\text{peak}} / B \approx 1979 / 3.35 \approx 592$ FLOP/byte for H100. Kernels below that intensity are memory-bound with performance capped by $I \times 3.35\,\text{TB/s}$. The naive FP16 GEMM (I ≈ 0.5) therefore tops out at 1.68 TFLOP/s. A 128×128×32 FP16 tiled kernel raises intensity to ≈64, pushing the roofline bound to ~214 TFLOP/s. Only when the program approaches perfect data reuse—each matrix element fetched once, giving $I \gtrsim 10^3$—does the kernel enter the compute-bound regime and approach the 1,979 TFLOP/s tensor-core ceiling. This plot makes clear whether the next optimization knob should target bandwidth or compute utilization.
 
 Key insight: For a given arithmetic intensity $I$ (FLOP/byte):
 

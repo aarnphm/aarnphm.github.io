@@ -7,8 +7,8 @@
 using namespace cute;
 
 // Simple kernel using CuTe layouts
-__global__ void vector_add_cute(float const* A_ptr, float const* B_ptr,
-                                 float* C_ptr, int N) {
+__global__ void vector_add_cute(half const* A_ptr, half const* B_ptr,
+                                 half* C_ptr, int N) {
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (idx < N) {
@@ -28,7 +28,7 @@ __global__ void vector_add_cute(float const* A_ptr, float const* B_ptr,
 }
 
 // Demonstrate 2D layout operations
-__global__ void matrix_copy_cute(float const* src, float* dst, int M, int N) {
+__global__ void matrix_copy_cute(half const* src, half* dst, int M, int N) {
   int row = blockIdx.y * blockDim.y + threadIdx.y;
   int col = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -45,7 +45,7 @@ __global__ void matrix_copy_cute(float const* src, float* dst, int M, int N) {
 }
 
 // Demonstrate layout composition
-__global__ void layout_composition_demo(float const* input, float* output,
+__global__ void layout_composition_demo(half const* input, half* output,
                                         int M, int N) {
   int tid = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -74,16 +74,16 @@ void test_vector_add() {
   printf("\n=== Test 1: Vector Addition with CuTe ===\n");
 
   const int N = 1024;
-  const size_t bytes = N * sizeof(float);
+  const size_t bytes = N * sizeof(half);
 
-  float *h_A = (float*)malloc(bytes);
-  float *h_B = (float*)malloc(bytes);
-  float *h_C = (float*)malloc(bytes);
+  half *h_A = (half*)malloc(bytes);
+  half *h_B = (half*)malloc(bytes);
+  half *h_C = (half*)malloc(bytes);
 
-  init_array(h_A, N, 10.0f);
-  init_array(h_B, N, 10.0f);
+  init_array(h_A, N, __float2half(10.0f));
+  init_array(h_B, N, __float2half(10.0f));
 
-  float *d_A, *d_B, *d_C;
+  half *d_A, *d_B, *d_C;
   CUDA_CHECK(cudaMalloc(&d_A, bytes));
   CUDA_CHECK(cudaMalloc(&d_B, bytes));
   CUDA_CHECK(cudaMalloc(&d_C, bytes));
@@ -103,7 +103,8 @@ void test_vector_add() {
   // Verify
   bool correct = true;
   for (int i = 0; i < N; i++) {
-    if (fabs(h_C[i] - (h_A[i] + h_B[i])) > 1e-5) {
+    float expected = __half2float(h_A[i]) + __half2float(h_B[i]);
+    if (fabs(__half2float(h_C[i]) - expected) > 1e-2) {
       correct = false;
       break;
     }
@@ -124,14 +125,14 @@ void test_matrix_copy() {
 
   const int M = 128;
   const int N = 128;
-  const size_t bytes = M * N * sizeof(float);
+  const size_t bytes = M * N * sizeof(half);
 
-  float *h_src = (float*)malloc(bytes);
-  float *h_dst = (float*)malloc(bytes);
+  half *h_src = (half*)malloc(bytes);
+  half *h_dst = (half*)malloc(bytes);
 
-  init_array(h_src, M * N, 100.0f);
+  init_array(h_src, M * N, __float2half(100.0f));
 
-  float *d_src, *d_dst;
+  half *d_src, *d_dst;
   CUDA_CHECK(cudaMalloc(&d_src, bytes));
   CUDA_CHECK(cudaMalloc(&d_dst, bytes));
 
@@ -158,8 +159,8 @@ void test_matrix_copy() {
 void test_layout_composition() {
   printf("\n=== Test 3: Layout Composition ===\n");
 
-  float *d_dummy;
-  CUDA_CHECK(cudaMalloc(&d_dummy, 1024 * sizeof(float)));
+  half *d_dummy;
+  CUDA_CHECK(cudaMalloc(&d_dummy, 1024 * sizeof(half)));
 
   layout_composition_demo<<<1, 32>>>(d_dummy, d_dummy, 16, 16);
   CUDA_CHECK(cudaGetLastError());

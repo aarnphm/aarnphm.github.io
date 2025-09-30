@@ -6,15 +6,15 @@
 
 // Naive matrix multiplication: C = A * B
 // Each thread computes one element of C
-__global__ void matmul_naive(const float *A, const float *B, float *C, int M,
+__global__ void matmul_naive(const half *A, const half *B, half *C, int M,
                              int N, int K) {
   int row = blockIdx.y * blockDim.y + threadIdx.y;
   int col = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (row < M && col < N) {
-    float sum = 0.0f;
+    half sum = __float2half(0.0f);
     for (int k = 0; k < K; k++) {
-      sum += A[row * K + k] * B[k * N + col];
+      sum = __hadd(sum, __hmul(A[row * K + k], B[k * N + col]));
     }
     C[row * N + col] = sum;
   }
@@ -23,15 +23,15 @@ __global__ void matmul_naive(const float *A, const float *B, float *C, int M,
 // Tiled matrix multiplication with shared memory
 #define TILE_SIZE 32
 
-__global__ void matmul_tiled(const float *A, const float *B, float *C, int M,
+__global__ void matmul_tiled(const half *A, const half *B, half *C, int M,
                               int N, int K) {
-  __shared__ float As[TILE_SIZE][TILE_SIZE];
-  __shared__ float Bs[TILE_SIZE][TILE_SIZE];
+  __shared__ half As[TILE_SIZE][TILE_SIZE];
+  __shared__ half Bs[TILE_SIZE][TILE_SIZE];
 
   int row = blockIdx.y * TILE_SIZE + threadIdx.y;
   int col = blockIdx.x * TILE_SIZE + threadIdx.x;
 
-  float sum = 0.0f;
+  half sum = __float2half(0.0f);
 
   // Loop over tiles
   for (int t = 0; t < (K + TILE_SIZE - 1) / TILE_SIZE; t++) {
@@ -40,15 +40,15 @@ __global__ void matmul_tiled(const float *A, const float *B, float *C, int M,
     int b_row = t * TILE_SIZE + threadIdx.y;
 
     As[threadIdx.y][threadIdx.x] =
-        (row < M && a_col < K) ? A[row * K + a_col] : 0.0f;
+        (row < M && a_col < K) ? A[row * K + a_col] : __float2half(0.0f);
     Bs[threadIdx.y][threadIdx.x] =
-        (b_row < K && col < N) ? B[b_row * N + col] : 0.0f;
+        (b_row < K && col < N) ? B[b_row * N + col] : __float2half(0.0f);
 
     __syncthreads();
 
     // Compute partial product for this tile
     for (int k = 0; k < TILE_SIZE; k++) {
-      sum += As[threadIdx.y][k] * Bs[k][threadIdx.x];
+      sum = __hadd(sum, __hmul(As[threadIdx.y][k], Bs[k][threadIdx.x]));
     }
 
     __syncthreads();
@@ -60,12 +60,12 @@ __global__ void matmul_tiled(const float *A, const float *B, float *C, int M,
 }
 
 // CPU reference implementation
-void matmul_cpu(const float *A, const float *B, float *C, int M, int N, int K) {
+void matmul_cpu(const half *A, const half *B, half *C, int M, int N, int K) {
   for (int i = 0; i < M; i++) {
     for (int j = 0; j < N; j++) {
-      float sum = 0.0f;
+      half sum = __float2half(0.0f);
       for (int k = 0; k < K; k++) {
-        sum += A[i * K + k] * B[k * N + j];
+        sum = __hadd(sum, __hmul(A[i * K + k], B[k * N + j]));
       }
       C[i * N + j] = sum;
     }
@@ -81,23 +81,23 @@ int main() {
   const int N = 1024;
   const int K = 1024;
 
-  const size_t bytes_A = M * K * sizeof(float);
-  const size_t bytes_B = K * N * sizeof(float);
-  const size_t bytes_C = M * N * sizeof(float);
+  const size_t bytes_A = M * K * sizeof(half);
+  const size_t bytes_B = K * N * sizeof(half);
+  const size_t bytes_C = M * N * sizeof(half);
 
   // Allocate host memory
-  float *h_A = (float *)malloc(bytes_A);
-  float *h_B = (float *)malloc(bytes_B);
-  float *h_C_naive = (float *)malloc(bytes_C);
-  float *h_C_tiled = (float *)malloc(bytes_C);
-  float *h_C_ref = (float *)malloc(bytes_C);
+  half *h_A = (half *)malloc(bytes_A);
+  half *h_B = (half *)malloc(bytes_B);
+  half *h_C_naive = (half *)malloc(bytes_C);
+  half *h_C_tiled = (half *)malloc(bytes_C);
+  half *h_C_ref = (half *)malloc(bytes_C);
 
   // Initialize
-  init_array(h_A, M * K, 1.0f);
-  init_array(h_B, K * N, 1.0f);
+  init_array(h_A, M * K, __float2half(1.0f));
+  init_array(h_B, K * N, __float2half(1.0f));
 
   // Allocate device memory
-  float *d_A, *d_B, *d_C;
+  half *d_A, *d_B, *d_C;
   CUDA_CHECK(cudaMalloc(&d_A, bytes_A));
   CUDA_CHECK(cudaMalloc(&d_B, bytes_B));
   CUDA_CHECK(cudaMalloc(&d_C, bytes_C));
@@ -153,8 +153,8 @@ int main() {
     printf("\nComputing CPU reference...\n");
     matmul_cpu(h_A, h_B, h_C_ref, M, N, K);
 
-    bool naive_correct = verify_results(h_C_naive, h_C_ref, M * N, 1e-3f);
-    bool tiled_correct = verify_results(h_C_tiled, h_C_ref, M * N, 1e-3f);
+    bool naive_correct = verify_results(h_C_naive, h_C_ref, M * N, __float2half(1e-2f));
+    bool tiled_correct = verify_results(h_C_tiled, h_C_ref, M * N, __float2half(1e-2f));
 
     printf("\nVerification:\n");
     printf("  Naive: %s\n", naive_correct ? "PASSED" : "FAILED");
@@ -162,7 +162,7 @@ int main() {
   } else {
     printf("\nSkipping CPU verification (matrix too large)\n");
     // Just verify naive vs tiled
-    bool consistent = verify_results(h_C_naive, h_C_tiled, M * N, 1e-3f);
+    bool consistent = verify_results(h_C_naive, h_C_tiled, M * N, __float2half(1e-2f));
     printf("Naive vs Tiled consistency: %s\n", consistent ? "PASSED" : "FAILED");
   }
 

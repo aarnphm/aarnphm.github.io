@@ -5,9 +5,9 @@
 #include <stdio.h>
 
 // Coalesced access: consecutive threads read consecutive addresses
-__global__ void transpose_coalesced(const float *input, float *output, int width,
+__global__ void transpose_coalesced(const half *input, half *output, int width,
                                      int height) {
-  __shared__ float tile[32][33]; // +1 to avoid bank conflicts
+  __shared__ half tile[32][33]; // +1 to avoid bank conflicts
 
   int x = blockIdx.x * 32 + threadIdx.x;
   int y = blockIdx.y * 32 + threadIdx.y;
@@ -29,7 +29,7 @@ __global__ void transpose_coalesced(const float *input, float *output, int width
 }
 
 // Uncoalesced access: naive transpose
-__global__ void transpose_naive(const float *input, float *output, int width,
+__global__ void transpose_naive(const half *input, half *output, int width,
                                  int height) {
   int x = blockIdx.x * 32 + threadIdx.x;
   int y = blockIdx.y * 32 + threadIdx.y;
@@ -41,7 +41,7 @@ __global__ void transpose_naive(const float *input, float *output, int width,
 }
 
 // CPU reference
-void transpose_cpu(const float *input, float *output, int width, int height) {
+void transpose_cpu(const half *input, half *output, int width, int height) {
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
       output[x * height + y] = input[y * width + x];
@@ -55,19 +55,19 @@ int main() {
 
   const int width = 4096;
   const int height = 4096;
-  const size_t bytes = width * height * sizeof(float);
+  const size_t bytes = width * height * sizeof(half);
 
   // Allocate host memory
-  float *h_input = (float *)malloc(bytes);
-  float *h_output_naive = (float *)malloc(bytes);
-  float *h_output_coalesced = (float *)malloc(bytes);
-  float *h_output_ref = (float *)malloc(bytes);
+  half *h_input = (half *)malloc(bytes);
+  half *h_output_naive = (half *)malloc(bytes);
+  half *h_output_coalesced = (half *)malloc(bytes);
+  half *h_output_ref = (half *)malloc(bytes);
 
   // Initialize
-  init_array(h_input, width * height, 100.0f);
+  init_array(h_input, width * height, __float2half(100.0f));
 
   // Allocate device memory
-  float *d_input, *d_output;
+  half *d_input, *d_output;
   CUDA_CHECK(cudaMalloc(&d_input, bytes));
   CUDA_CHECK(cudaMalloc(&d_output, bytes));
 
@@ -113,9 +113,9 @@ int main() {
 
   // Verify
   bool naive_correct = verify_results(h_output_naive, h_output_ref,
-                                      width * height, 1e-5f);
+                                      width * height, __float2half(1e-3f));
   bool coalesced_correct = verify_results(h_output_coalesced, h_output_ref,
-                                          width * height, 1e-5f);
+                                          width * height, __float2half(1e-3f));
 
   printf("\nVerification:\n");
   printf("  Naive: %s\n", naive_correct ? "PASSED" : "FAILED");

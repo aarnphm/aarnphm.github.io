@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cuda_runtime.h>
+#include <cuda_fp16.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -49,6 +50,13 @@ template <typename T> void init_array(T *arr, size_t n, T max_val = 1.0) {
   }
 }
 
+// Specialization for half precision
+template <> void init_array<half>(half *arr, size_t n, half max_val) {
+  for (size_t i = 0; i < n; i++) {
+    arr[i] = __float2half(static_cast<float>(rand()) / RAND_MAX * __half2float(max_val));
+  }
+}
+
 // Verify results
 template <typename T>
 bool verify_results(const T *result, const T *expected, size_t n,
@@ -57,6 +65,22 @@ bool verify_results(const T *result, const T *expected, size_t n,
     if (fabs(result[i] - expected[i]) > tolerance) {
       fprintf(stderr, "Mismatch at index %zu: got %f, expected %f\n", i,
               (float)result[i], (float)expected[i]);
+      return false;
+    }
+  }
+  return true;
+}
+
+// Specialization for half precision
+template <>
+bool verify_results<half>(const half *result, const half *expected, size_t n,
+                          half tolerance) {
+  for (size_t i = 0; i < n; i++) {
+    float r = __half2float(result[i]);
+    float e = __half2float(expected[i]);
+    float tol = __half2float(tolerance);
+    if (fabs(r - e) > tol) {
+      fprintf(stderr, "Mismatch at index %zu: got %f, expected %f\n", i, r, e);
       return false;
     }
   }
