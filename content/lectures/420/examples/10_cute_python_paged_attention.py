@@ -221,32 +221,22 @@ if CUTE_AVAILABLE:
     ).launch(grid=(num_heads, num_seqs, 1), block=(1, 1, 1))
 
 
-def test_paged_attention(verbosity: int = 0):
-  print('=' * 70)
-  print('Testing Paged Attention: PyTorch Reference vs CuTe DSL')
-  print('=' * 70)
-
+def test_paged_attention(verbosity: int = 0, num_seqs: int = 2, seq_len: int = 32, num_heads: int = 4, head_dim: int = 64, page_size: int = 16):
   # Problem size
-  num_seqs = 2
-  num_heads = 4
-  head_dim = 64
-  page_size = 16
-  max_num_pages = 4
+  max_num_pages = (seq_len + page_size - 1) // page_size
 
-  # Context lengths for each sequence
-  context_lens = torch.tensor([32, 24], dtype=torch.int32, device='cuda')
+  # Context lengths for each sequence (all at max for this test)
+  context_lens = torch.full((num_seqs,), seq_len, dtype=torch.int32, device='cuda')
+
+  # Calculate total pages needed
+  total_pages = num_seqs * max_num_pages
 
   # Block tables (maps logical pages to physical pages)
-  block_tables = torch.tensor(
-    [
-      [0, 1, -1, -1],  # Seq 0: 32 tokens = 2 pages (pages 0, 1)
-      [2, 3, -1, -1],  # Seq 1: 24 tokens = 2 pages (pages 2, 3)
-    ],
-    dtype=torch.int32,
-    device='cuda',
-  )
-
-  total_pages = 4
+  block_tables = torch.zeros((num_seqs, max_num_pages), dtype=torch.int32, device='cuda')
+  for seq_idx in range(num_seqs):
+    pages_for_seq = max_num_pages
+    for page_idx in range(pages_for_seq):
+      block_tables[seq_idx, page_idx] = seq_idx * max_num_pages + page_idx
 
   # Allocate tensors
   query = torch.randn(num_seqs, num_heads, head_dim, dtype=torch.float32, device='cuda')
@@ -260,7 +250,7 @@ def test_paged_attention(verbosity: int = 0):
   print(f'  Heads: {num_heads}')
   print(f'  Head dimension: {head_dim}')
   print(f'  Page size: {page_size} tokens')
-  print(f'  Context lengths: {context_lens.cpu().tolist()}')
+  print(f'  Sequence length: {seq_len} tokens')
   print(f'  Total pages: {total_pages}')
 
   # Run PyTorch reference
@@ -268,13 +258,16 @@ def test_paged_attention(verbosity: int = 0):
   print('Running PyTorch reference implementation...')
   print('-' * 70)
 
+  if verbosity >= 1:
+    print(f'Benchmarking with {100 if seq_len <= 128 else 20} iterations (3 warmup runs)')
+
   # Warmup
   for _ in range(3):
     _ = paged_attention_torch(query, key_cache, value_cache, block_tables, context_lens, scale)
   torch.cuda.synchronize()
 
-  # Time PyTorch implementation
-  num_iterations = 100
+  # Time PyTorch implementation (fewer iterations for larger inputs)
+  num_iterations = 100 if seq_len <= 128 else 20
   torch.cuda.synchronize()
   start = time.perf_counter()
   for _ in range(num_iterations):
@@ -412,11 +405,12 @@ def test_paged_attention(verbosity: int = 0):
 
   # Show memory efficiency benefits
   print('\n' + '=' * 70)
-  print('Paged Attention Benefits')
+  print('Memory Efficiency Analysis')
   print('=' * 70)
 
-  max_len = 2048
-  avg_len = 512
+  # Use actual sequence length as max, and simulate 25% utilization as average
+  max_len = seq_len
+  avg_len = max(seq_len // 4, page_size)
 
   print(f'\nScenario: {num_seqs} sequences with max_len={max_len}, avg_len={avg_len}')
   print(
@@ -461,6 +455,11 @@ For production use, see:
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Paged Attention: PyTorch vs CuTe DSL')
   parser.add_argument('-v', '--verbose', action='count', default=0, help='Increase verbosity (-v for version info, -vv for all details)')
+  parser.add_argument('--seq-len', type=int, default=None, help='Sequence length (default: run multiple sizes)')
+  parser.add_argument('--num-seqs', type=int, default=2, help='Number of sequences (default: 2)')
+  parser.add_argument('--num-heads', type=int, default=4, help='Number of attention heads (default: 4)')
+  parser.add_argument('--head-dim', type=int, default=64, help='Head dimension (default: 64)')
+  parser.add_argument('--page-size', type=int, default=16, help='Page size in tokens (default: 16)')
   args = parser.parse_args()
 
   if not torch.cuda.is_available():
@@ -479,4 +478,38 @@ if __name__ == '__main__':
       print('CuTe DSL available: No (falling back to PyTorch reference)')
     print()
 
-  test_paged_attention(verbosity=args.verbose)
+  print('=' * 70)
+  print('Paged Attention: PyTorch, CuTe DSL')
+  print('=' * 70)
+
+  # Run tests with different sequence lengths
+  if args.seq_len is not None:
+    # Single test with specified size
+    test_paged_attention(
+      verbosity=args.verbose,
+      num_seqs=args.num_seqs,
+      seq_len=args.seq_len,
+      num_heads=args.num_heads,
+      head_dim=args.head_dim,
+      page_size=args.page_size,
+    )
+  else:
+    # Run multiple sizes: small for correctness, large for performance
+    test_configs = [
+      {'seq_len': 32, 'label': 'Small (correctness check)'},
+      {'seq_len': 4096, 'label': 'Large (performance test)'},
+    ]
+
+    for i, config in enumerate(test_configs):
+      if i > 0:
+        print('\n\n')
+      print(f"Test {i + 1}/{len(test_configs)}: {config['label']}")
+      print()
+      test_paged_attention(
+        verbosity=args.verbose,
+        num_seqs=args.num_seqs,
+        seq_len=config['seq_len'],
+        num_heads=args.num_heads,
+        head_dim=args.head_dim,
+        page_size=args.page_size,
+      )
