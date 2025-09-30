@@ -7,10 +7,10 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
+date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-09-29 02:23:30 GMT-04:00
+modified: 2025-09-30 08:02:43 GMT-04:00
 permalinks:
   - /website
   - /resources
@@ -115,6 +115,11 @@ see also [[/curius|bookmarks]]
 - https://www.ethansmith2000.com/blog
 - https://sander.ai/
 - https://messenger.abeto.co/
+- https://www.tedsummer.com/#root/Ted-Summer
+- https://www.yudhister.me/
+- https://isleofany.com
+- https://solderneer.me/
+  - Another Quartz in the wild!
 
 ## people
 
@@ -189,6 +194,7 @@ see also [[/curius|bookmarks]]
   - LLVM, Clang, MLIR, Swift, TPUs
   - https://x.com/clattner_llvm
 - https://www.vilinskyy.com/ -- Alexander Vilinskyy
+- https://jnnnthnn.com/ -- Jonathan Unikowski
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -354,12 +360,14 @@ see also [[/curius|bookmarks]]
 - https://unchartedterritories.tomaspueyo.com/p/mountains -- Why Warm Countries Are Poorer \*\*
 - https://simulation-argument.com/simulation/ -- Are we living in a simulation?
 - https://substack.com/home/post/p-160050674 -- how to become gently interesting
+- https://sundogg.substack.com/p/have-you-put-down-your-bags -- Have you put down the bags?
+- https://aeon.co/essays/does-language-mirror-the-mind-an-intellectual-history -- Our languages, our world
 
 ### [[thoughts/Machine learning]]
 
 - https://www.goodfire.ai/blog/painting-with-concepts -- Painting with concepts, via SAE for SDXL-turbo
 - https://www.goodfire.ai/blog/under-the-hood-of-a-reasoning-model -- Under te hood of a reasoning models, SAEs.
-- https://wattenberger.com/thoughts/yay-embeddings-math -- creative with embeddings in writing
+- https://wattenberger.com/thoughts/yay-embeddings-math -- creative with embeddings in writinghttps://aeon.co/essays/does-language-mirror-the-mind-an-intellectual-history
 - https://basilhalperin.com/essays/agi-vs-emh.html -- AGI timeline, Basil Halperin
 - https://optimists.ai/2024/03/10/deconstructing-bostroms-argument-for-ai-doom/ -- Bostrom's Argument for AI Doom
 - https://www.joelsimon.net/lluminate -- Creative exploration with LLM
@@ -584,6 +592,7 @@ see also [[/curius|bookmarks]]
 ## tools
 
 - https://cobalt.tools/ -- new YT downloader
+- https://www.truthsystems.ai -- A programmatic governance and unified compliance agent.
 
 ## protocol
 
@@ -657,6 +666,7 @@ see also [[/curius|bookmarks]]
 - https://modelcontextprotocol.io/llms-full.txt -- MCP protocol
 - https://michaelnotebook.com/mmsw -- How to make memory systems widespread?
 - https://github.com/francoismichel/ssh3 -- ssh3
+- https://thundergolfer.com/uni/docs/performance/napkin-math/ -- napkin math
 
 ### vc.
 

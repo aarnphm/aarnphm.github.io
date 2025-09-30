@@ -68,7 +68,7 @@ $$
 \nabla_x \mathcal L(x^\star,\nu^\star)=\nabla f(x^\star)+\nabla h(x^\star)^\top\nu^\star=0,\quad h(x^\star)=0.
 $$
 
-At optimum, $\nabla f$ lies in the span of constraint normals. Extends to Banach spaces. ([1], [2])
+At optimum, $\nabla f$ lies in the span of constraint normals. Extends to Banach spaces.
 
 ## KKT
 
@@ -83,11 +83,11 @@ KKT conditions:
 3. Complementary slackness: $\lambda_i^\star g_i(x^\star)=0$
 4. Stationarity: $\nabla f(x^\star)+\sum_i\lambda_i^\star\nabla g_i(x^\star)+\sum_j\nu_j^\star\nabla h_j(x^\star)=0$.
 
-Sufficiency: with Slater’s condition (strict feasibility), KKT are necessary and sufficient (strong duality). Practical steps: form $\mathcal L$, build dual $g(\lambda,\nu)=\inf_x\mathcal L$, maximize $g$ s.t. $\lambda\ge0$, recover $x^\star$ from KKT. ([3]–[6])
+Sufficiency: with Slater's condition (strict feasibility), KKT are necessary and sufficient (strong duality). Practical steps: form $\mathcal L$, build dual $g(\lambda,\nu)=\inf_x\mathcal L$, maximize $g$ s.t. $\lambda\ge0$, recover $x^\star$ from KKT.
 
 ## Shannon entropy
 
-Discrete $H(p)=-\sum_i p_i\log p_i$ (concave; maximized by uniform). In convex analysis, $\sum_i p_i\log p_i$ on the simplex is convex; log‑sum‑exp is convex. Entropy acts as a spread regularizer in attention. ([7]–[9])
+Discrete $H(p)=-\sum_i p_i\log p_i$ (concave; maximized by uniform). In convex analysis, $\sum_i p_i\log p_i$ on the simplex is convex; log‑sum‑exp is convex. Entropy acts as a spread regularizer in attention. [@blondel2020learningfenchelyounglosses]
 
 ## Variational softmax
 
@@ -97,27 +97,13 @@ $$
 \operatorname{lse}(z)=\max_{p\in\Delta}\langle z,p\rangle+H(p),\quad \Delta=\{p\ge0,\ \sum_i p_i=1\}.
 $$
 
-Maximizer $p=\mathrm{softmax}(z)$; with temperature $T$, use $z/T$ and scale $H$ by $T$. LSE is the convex conjugate of negative entropy (restricted to $\Delta$). ([10]–[13])
+Maximizer $p=\mathrm{softmax}(z)$; with temperature $T$, use $z/T$ and scale $H$ by $T$. LSE is the convex conjugate of negative entropy (restricted to $\Delta$). [@gao2018propertiessoftmaxfunctionapplication; @blondel2019fenchelyoung]
 
 Proposition. For $\lambda=1/T$, $\nabla\mathrm{lse}_\lambda(z)=\mathrm{softmax}(\lambda z)$ and $\nabla^2\mathrm{lse}_\lambda(z)=\lambda(\operatorname{Diag}(p)-pp^\top)$. The Hessian is PSD and has operator norm $\le \lambda$ (softmax is Lipschitz with constant at most $\lambda$). Shift‑invariance: $J(z)\mathbf{1}=0$.
 
 Summary:
 
-- Lagrange multipliers enforce equality constraints; at optimum $\nabla f$ lies in constraint span. ([1])
-- KKT: feasibility, dual feasibility, complementary slackness, stationarity; Slater ⇒ necessary and sufficient. ([3]–[6])
-- Entropy: concave; its negative is convex on the simplex; motivates entropic regularization in attention.
-- Variational softmax: $\operatorname{lse}(z)=\max_{p\in\Delta}\langle z,p\rangle+H(p)$ ⇒ $p=\mathrm{softmax}(z)$; temperature is a scale.
-
-[1]: https://en.wikipedia.org/wiki/Lagrange_multiplier
-[2]: https://en.wikipedia.org/wiki/Lagrange_multipliers_on_Banach_spaces
-[3]: https://en.wikipedia.org/wiki/Karush%E2%80%93Kuhn%E2%80%93Tucker_conditions
-[4]: https://en.wikipedia.org/wiki/Slater%27s_condition
-[5]: https://www.cs.cmu.edu/~ggordon/10725-F12/slides/16-kkt.pdf
-[6]: https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf
-[7]: https://en.wikipedia.org/wiki/Entropy_%28information_theory%29
-[8]: https://stanford.edu/~boyd/cvxbook/bv_cvxslides.pdf
-[9]: https://arxiv.org/pdf/1901.02324
-[10]: https://arxiv.org/pdf/1704.00805
-[11]: https://proceedings.mlr.press/v89/blondel19a/blondel19a.pdf
-[12]: https://www.cs.cmu.edu/~afm/Home_files/CMU-ML-10-109.pdf
-[13]: https://www.seas.ucla.edu/~vandenbe/236C/lectures/conj.pdf
+- Lagrange multipliers enforce equality constraints; at optimum $\nabla f$ lies in constraint span.
+- KKT: feasibility, dual feasibility, complementary slackness, stationarity; Slater ⇒ necessary and sufficient.
+- Entropy: concave; its negative is convex on the simplex; motivates entropic regularization in attention. [@blondel2020learningfenchelyounglosses]
+- Variational softmax: $\operatorname{lse}(z)=\max_{p\in\Delta}\langle z,p\rangle+H(p)$ ⇒ $p=\mathrm{softmax}(z)$; temperature is a scale. [@gao2018propertiessoftmaxfunctionapplication; @blondel2019fenchelyoung]

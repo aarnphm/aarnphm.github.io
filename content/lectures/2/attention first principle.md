@@ -3,9 +3,9 @@ id: attention
 tags:
   - seed
   - ml
-description: Self-attention from first principles with formal properties and efficient variants. See also https://aarnphm.xyz/thoughts/Attention
+description: Self-attention from first principles with formal properties and efficient variants.
 date: "2025-08-21"
-modified: 2025-09-14 23:00:01 GMT-04:00
+modified: 2025-09-30 06:36:09 GMT-04:00
 title: attention primer
 ---
 
@@ -21,17 +21,17 @@ $$
 \operatorname{softmax}(z)_i = \frac{e^{z_i}}{\sum_j e^{z_j}},\quad \operatorname{LSE}(z)=\log\sum_j e^{z_j},\quad \nabla\!\operatorname{LSE}(z)=\operatorname{softmax}(z).
 $$
 
-Stability uses $z\leftarrow z-\max(z)$. Temperature $T>0$ uses $\operatorname{softmax}(z/T)$ (entropy increases with $T$) ([5], [6]).
+Stability uses $z\leftarrow z-\max(z)$. Temperature $T>0$ uses $\operatorname{softmax}(z/T)$ (entropy increases with $T$). [@dabah2025temperaturescalingconformalprediction]
 
-RoPE. Rotary position embeddings add relative position via complex-plane rotations of $(q,k)$ before the dot product ([1]).
+RoPE. Rotary position embeddings add relative position via complex-plane rotations of $(q,k)$ before the dot product. [@su2023roformerenhancedtransformerrotary]
 
-KL divergence. [[thoughts/Kullback-Leibler divergence]]
+[[thoughts/Kullback-Leibler divergence]], i.e: KL divergence.
 
 $$
 D_{\mathrm{KL}}(P\|Q)=\sum_i P_i\log\frac{P_i}{Q_i}
 $$
 
-is jointly convex and controls total variation (Pinsker) ([3], [4]).
+is jointly convex and controls total variation (Pinsker).
 
 ## scaled dot-product self-attention
 
@@ -49,7 +49,7 @@ $$
 > \mathrm{Attn}(PQ,PK,PV)=P\,\mathrm{Attn}(Q,K,V).
 > $$
 
-Proof. $PQ(PK)^\top=PQK^\top P^\top$ and row-softmax satisfies $\sigma(PZP^\top)=P\sigma(Z)P^\top$; multiply by $PV$ on the right.
+Proof. $PQ(PK)^\top=PQK^\top P^\top$ and row-wise softmax satisfies $\sigma_{\text{row}}(PZP^\top)=P\,\sigma_{\text{row}}(Z)\,P^\top$ (since $P$ is orthogonal and permutes both rows and columns consistently, preserving row-wise normalization). Multiply by $PV$ on the right to complete the proof.
 
 > [!abstract] Proposition 2 (Variance Scaling).
 >
@@ -59,11 +59,11 @@ Proof. $PQ(PK)^\top=PQK^\top P^\top$ and row-softmax satisfies $\sigma(PZP^\top)
 > \mathrm{Var}(S)=\operatorname{tr}(\Sigma_q\Sigma_k),\quad \mathrm{Var}(Z)=\frac{1}{d}\operatorname{tr}(\Sigma_q\Sigma_k).
 > $$
 >
-> In particular, under isotropy $\Sigma_q=\Sigma_k=I_d$, $\mathrm{Var}(S)=d$ and $\mathrm{Var}(Z)=1$ ([2, §3.2.1]).
+> In particular, under isotropy $\Sigma_q=\Sigma_k=I_d$, $\mathrm{Var}(S)=d$ and $\mathrm{Var}(Z)=1$. [@vaswani2023attentionneed]
 
 Proof. Use $\mathbb{E}[S]=0$ and $\mathbb{E}[S^2]=\operatorname{tr}(\Sigma_q\Sigma_k)$ via $S^2=k^\top (qq^\top)k$ and iterated expectation; scale by $1/d$.
 
-## kernel regression view
+## kernel regression
 
 > [!abstract] Proposition 3 (Exact RBF Weights under Normalization).
 >
@@ -73,7 +73,7 @@ Proof. Use $\mathbb{E}[S]=0$ and $\mathbb{E}[S^2]=\operatorname{tr}(\Sigma_q\Sig
 > w_j(q)=\frac{\exp(-\|q-k_j\|^2/(2\sigma^2))}{\sum_{\ell}\exp(-\|q-k_\ell\|^2/(2\sigma^2))}\quad\text{with}\quad \sigma^2=T\sqrt{d}.
 > $$
 >
-> Hence $o(q)=\sum_j w_j(q)v_j$ is the Nadaraya–Watson estimator with Gaussian kernel ([7]).
+> Hence $o(q)=\sum_j w_j(q)v_j$ is the Nadaraya–Watson estimator with Gaussian kernel.
 
 Proof. Use polarization $\langle q,k_j\rangle = \tfrac12(\|q\|^2+\|k_j\|^2-\|q-k_j\|^2)$, cancel row-constants in softmax, and match with $K_\sigma(x,y)=\exp(-\|x-y\|^2/(2\sigma^2))$; identify $\sigma^2=T\sqrt{d}$. For small norm variation, the multiplicative deviation is controlled by $\exp(\|k_j\|^2/(2T\sqrt{d}))$ before renormalization.
 
@@ -85,11 +85,11 @@ $$
 \text{MHA}(X)=W_O [O_1;\ldots;O_h],\quad O_i=\sigma\!\left(\frac{Q_i K_i^\top}{\sqrt{d_h}}\right)V_i.
 $$
 
-Each head induces a kernel smoother in its own feature space $(W_Q^i,W_K^i,W_V^i)$; concatenation and $W_O$ implement a learned multi-kernel combination ([2]).
+Each head induces a kernel smoother in its own feature space $(W_Q^i,W_K^i,W_V^i)$; concatenation and $W_O$ implement a learned multi-kernel combination. [@vaswani2023attentionneed]
 
 ## grouped‑query & multi‑query attention (GQA/MQA)
 
-During decode, KV-cache bandwidth dominates. MQA shares one $K,V$ across all heads; GQA shares KV across $G$ groups ($1<G<h$). In GQA, queries have $h$ heads while keys/values have $G$ heads; each group of $h/G$ query heads attends to shared $(K_g,V_g)$ ([10], [11]).
+During decode, KV-cache bandwidth dominates. MQA shares one $K,V$ across all heads; GQA shares KV across $G$ groups ($1<G<h$). In GQA, queries have $h$ heads while keys/values have $G$ heads; each group of $h/G$ query heads attends to shared $(K_g,V_g)$. [@ainslie2023gqatraininggeneralizedmultiquery; @shazeer2019fasttransformerdecodingwritehead]
 
 Memory per token per layer (FP16 elements counted, constants omitted):
 
@@ -119,16 +119,16 @@ During inference, only $c^{KV}_t$ is cached, giving $d_c$ elements per token per
 
 D.1 Self‑attention as gradient (when $V=K$). Define $F(q)=\log\sum_j \exp(\langle q,k_j\rangle/T)$. Then $\nabla_q F(q)=\sum_j p_j\,k_j$ with $p=\operatorname{softmax}(\langle q,K\rangle/T)$. Thus, with $V=K$, attention equals the gradient of a convex potential (smooth max).
 
-D.2 Nadaraya–Watson equivalence (LN). If $\|q\|=\|k_j\|=c$ (approx true after LN), attention weights equal the RBF kernel in $\|q-k_j\|$ up to a row-constant; see Proposition 3 ([7], [8], [9]).
+D.2 Nadaraya–Watson equivalence (LN). If $\|q\|=\|k_j\|=c$ (approx true after LN), attention weights equal the RBF kernel in $\|q-k_j\|$ up to a row-constant; see Proposition 3. [@choromanski2022rethinkingattentionperformers; @katharopoulos2020transformers]
 
 D.3 Lipschitz bound for group replacement (GQA). With inverse-temperature $\lambda$, $\|\sigma(z+\delta z)-\sigma(z)\|_2 \le \lambda\,\|\delta z\|_2$. Insert $\delta z= q(K_g-K_i)^\top/\sqrt{d_h}$.
 
 ## complexity summary (decode‑phase, per token)
 
 - MHA: read/write $K,V\in\mathbb{R}^{n\times(hd_h)}$ ⇒ HBM‑limited at long $n$.
-- GQA (G groups): memory $\sim 2G d_h$; bandwidth improves, approaching MQA when $G$ is small ([10]).
+- GQA (G groups): memory $\sim 2G d_h$; bandwidth improves, approaching MQA when $G$ is small. [@ainslie2023gqatraininggeneralizedmultiquery]
 - MLA (latent $d_c$): memory $\sim d_c$; up‑projections absorbed into $W_Q,W_O$ at inference.
-- IO‑aware kernels: FlashAttention tiles Q/K/V and fuses softmax; exact attention with reduced HBM traffic ([15], [16], [17]).
+- IO‑aware kernels: FlashAttention tiles Q/K/V and fuses softmax; exact attention with reduced HBM traffic. [@dao2022flashattentionfastmemoryefficientexact; @shah2024flashattention3fastaccurateattention]
 
 ## reference cuda kernels (single head, single batch)
 
@@ -229,7 +229,7 @@ extern "C" void apply_values(const float* S, const float* V, float* O, int n, in
 }
 ```
 
-Masked causal attention sets $S_{ij}=-\infty$ for $j>i$. For performance, see [15–17].
+Masked causal attention sets $S_{ij}=-\infty$ for $j>i$.
 
 ## triton implementation
 
@@ -239,10 +239,10 @@ Two‑pass Triton kernel: (1) running row‑max/sum for softmax; (2) recompute t
 
 ## Performance Notes
 
-- IO‑aware tiling (FlashAttention): stream K/V tiles, maintain running $(m_i,\ell_i)$, avoid $n\times n$ intermediates ([15–17]).
-- KV paging + sharing: paged layouts with GQA/MQA/MLA reduce HBM traffic ([10], [11]).
+- IO‑aware tiling (FlashAttention): stream K/V tiles, maintain running $(m_i,\ell_i)$, avoid $n\times n$ intermediates. [@dao2022flashattentionfastmemoryefficientexact; @shah2024flashattention3fastaccurateattention]
+- KV paging + sharing: paged layouts with GQA/MQA/MLA reduce HBM traffic. [@ainslie2023gqatraininggeneralizedmultiquery; @shazeer2019fasttransformerdecodingwritehead]
 - RoPE in fused kernels: apply rotations within tiles; with MLA use decoupled scheme.
-- Mixed precision: FP16/FP8 with LSE stabilization ([12]).
+- Mixed precision: FP16/FP8 with LSE stabilization.
 
 ---
 
@@ -255,19 +255,3 @@ $$
 $$
 
 E.2 MLA cache accounting. Per‑token, per‑layer: MHA $2hd_h$ vs. MLA $d_c$. Example: $h{=}64,d_h{=}128,d_c{=}1024$ → $\approx16\times$ reduction.
-
-[1]: https://arxiv.org/pdf/2104.09864 "Enhanced Transformer with Rotary Position Embedding"
-[2]: https://papers.neurips.cc/paper/7181-attention-is-all-you-need.pdf "Attention is All you Need"
-[3]: https://home.ttic.edu/~madhurt/courses/infotheory2021/l5.pdf "Lecture 5: January 26, 2021 1 Convexity of KL-divergence"
-[4]: https://people.lids.mit.edu/yp/homepage/data/LN_fdiv.pdf "7.1 Definition and basic properties of f-divergences - People"
-[5]: https://stats.stackexchange.com/questions/527080/what-is-the-role-of-temperature-in-softmax "What is the role of temperature in Softmax? - Cross Validated"
-[6]: https://arxiv.org/html/2402.05806v2 "On Temperature Scaling and Conformal Prediction of Deep Classifiers"
-[7]: https://en.wikipedia.org/wiki/Kernel_regression "Kernel regression"
-[8]: https://arxiv.org/abs/2009.14794 "[2009.14794] Rethinking Attention with Performers"
-[9]: https://proceedings.mlr.press/v119/katharopoulos20a/katharopoulos20a.pdf "Fast Autoregressive Transformers with Linear Attention"
-[10]: https://arxiv.org/abs/2305.13245 "GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints"
-[11]: https://arxiv.org/pdf/1911.02150 "Fast Transformer Decoding: One Write-Head is All You Need"
-[12]: https://academic.oup.com/imajna/article/41/4/2311/5893596 "Accurately computing the log-sum-exp and softmax functions"
-[15]: https://arxiv.org/abs/2205.14135 "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness"
-[16]: https://tridao.me/publications/flash3/flash3.pdf "FlashAttention-3: Fast and Accurate Attention with ..."
-[17]: https://arxiv.org/abs/2407.08608 "[2407.08608] FlashAttention-3: Fast and Accurate Attention ..."

@@ -7,7 +7,7 @@ description: Quick mental models and cross-language notes on tracing GC
 source: synthesis
 date: "2025-09-27"
 created: "2025-09-18"
-modified: 2025-09-27 18:54:09 GMT-04:00
+modified: 2025-09-30 06:22:01 GMT-04:00
 published: "2004-01-17"
 title: tracing garbage collection
 ---
@@ -31,12 +31,14 @@ title: tracing garbage collection
 3. recycle the remaining white set via sweep lists or evacuation; optionally compact by generation or region depending on implementation goals.[^mark-sweep]
 
 ```mermaid
-flowchart TD
-    Roots[[Root set]] --> GrayQueue
-    GrayQueue -->|scan| BlackPool((Black set))
-    GrayQueue -->|discover| GrayQueue
-    BlackPool -->|write barrier hit| GrayQueue
-    WhitePool{{White set}} -.evacuate.-> FreeLists[(Free lists)]
+flowchart LR
+    Roots[[root set]] --> GrayQueue[gray worklist]
+    GrayQueue -->|scan| BlackPool((black set))
+    GrayQueue -->|discover| Discover[enqueue successor]
+    Discover --> GrayQueue
+    BlackPool -.write barrier hit.-> Barrier[barrier shade]
+    Barrier --> GrayQueue
+    WhitePool{{white set}} -.evacuate.-> FreeLists[(free lists)]
     FreeLists -.reallocate.-> GrayQueue
 ```
 
@@ -54,15 +56,15 @@ flowchart TD
 - scheduling: collectors interleave short marking steps with application execution, emptying gray queues gradually and greatly shrinking pause windows versus naive mark-sweep.[^tracing][^ravenbrook]
 
 ```mermaid
-stateDiagram-v2
-    [*] --> Snapshot
-    Snapshot --> MutatorAssist: roots discovered
-    MutatorAssist --> Marker: enqueue gray node
-    Marker --> BarrierCheck: scan fields
-    BarrierCheck --> Marker: shade successor
-    BarrierCheck --> Snapshot: invariant breach
-    Marker --> Sweeper: queue empty
-    Sweeper --> [*]
+flowchart LR
+    snapshot[start] --> Snapshot[snapshot roots]
+    Snapshot --> MutatorAssist[mutator assist enqueue]
+    MutatorAssist --> Marker[scan gray node]
+    Marker --> BarrierCheck{barrier check}
+    BarrierCheck -->|shade successor| Marker
+    BarrierCheck -.invariant breach.-> Snapshot
+    Marker --> Sweeper[sweeper drains queue]
+    Sweeper --> collection[complete]
 ```
 
 ## trade-offs to track

@@ -51,12 +51,16 @@ def attn_two_pass(
     # scores [M, N] = q @ k^T / sqrt(d)
     scores = tl.dot(q, tl.trans(k)) * (1.0 / tl.sqrt(tl.float32(d)))
 
-    # Update running max
-    m_i = tl.maximum(m_i, tl.max(scores, axis=1))
-    # Compute exp(scores - m_i) safely
-    scores = scores - m_i[:, None]
-    p = tl.exp(scores)
+    # Online softmax: track max and rescale accumulated sum
+    m_i_new = tl.maximum(m_i, tl.max(scores, axis=1))
+    # Rescale previous accumulator when max increases
+    alpha = tl.exp(m_i - m_i_new)
+    l_i = l_i * alpha
+    # Add current tile's contribution
+    p = tl.exp(scores - m_i_new[:, None])
     l_i += tl.sum(p, axis=1)
+    # Update running max
+    m_i = m_i_new
 
   # ----------------------------
   # Pass 2: accumulate O = softmax(S) @ V

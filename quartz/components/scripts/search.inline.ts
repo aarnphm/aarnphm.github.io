@@ -154,6 +154,98 @@ async function setupSearch(
   const searchSpace = searchElement?.querySelector(".search-space") as HTMLFormElement
   if (!searchSpace) return
 
+  // Create semantic search progress bar
+  const progressBar = document.createElement("div")
+  progressBar.className = "semantic-search-progress"
+  progressBar.style.cssText = `
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background: var(--secondary);
+    transition: width 0.2s ease;
+    opacity: 0;
+    z-index: 9999;
+  `
+  searchBar.parentElement?.appendChild(progressBar)
+
+  let progressFrame: number | null = null
+  let progressActive = false
+  let progressCurrent = 0
+  let progressTarget = 0
+  const PROGRESS_IDLE_CAP = 95
+
+  const stopProgressAnimation = () => {
+    progressActive = false
+    if (progressFrame !== null) {
+      window.cancelAnimationFrame(progressFrame)
+      progressFrame = null
+    }
+  }
+
+  const resetProgressBar = () => {
+    stopProgressAnimation()
+    progressCurrent = 0
+    progressTarget = 0
+    progressBar.style.opacity = "0"
+    progressBar.style.width = "0%"
+  }
+
+  const progressTick = () => {
+    if (!progressActive) {
+      progressFrame = null
+      return
+    }
+
+    if (progressTarget < PROGRESS_IDLE_CAP) {
+      progressTarget = Math.min(PROGRESS_IDLE_CAP, progressTarget + 0.25)
+    }
+
+    const delta = progressTarget - progressCurrent
+    const step = Math.max(Math.abs(delta) * 0.18, 0.35)
+    progressCurrent = Math.min(progressTarget, progressCurrent + step)
+    progressBar.style.width = `${progressCurrent}%`
+
+    if (progressTarget === 100 && Math.abs(100 - progressCurrent) < 0.6) {
+      progressBar.style.width = "100%"
+      progressBar.style.opacity = "0"
+      stopProgressAnimation()
+      window.setTimeout(() => {
+        if (!progressActive) {
+          progressCurrent = 0
+          progressTarget = 0
+          progressBar.style.width = "0%"
+        }
+      }, 220)
+      return
+    }
+
+    progressFrame = window.requestAnimationFrame(progressTick)
+  }
+
+  const ensureProgressAnimation = () => {
+    if (!progressActive) {
+      progressActive = true
+      progressFrame = window.requestAnimationFrame(progressTick)
+    } else if (progressFrame === null) {
+      progressFrame = window.requestAnimationFrame(progressTick)
+    }
+  }
+
+  const startSemanticProgress = () => {
+    resetProgressBar()
+    progressBar.style.opacity = "1"
+    progressTarget = 85
+    progressActive = true
+    progressFrame = window.requestAnimationFrame(progressTick)
+  }
+
+  const completeSemanticProgress = () => {
+    progressTarget = 100
+    ensureProgressAnimation()
+  }
+
   const idDataMap = Object.keys(data) as FullSlug[]
   const slugToIndex = new Map<FullSlug, number>()
   idDataMap.forEach((slug, idx) => slugToIndex.set(slug, idx))
@@ -222,6 +314,7 @@ async function setupSearch(
   }
   let searchSeq = 0
   let runSearchTimer: number | null = null
+  let lastInputAt = 0
   searchLayout.dataset.mode = searchMode
 
   const updateModeUI = (mode: SearchMode) => {
@@ -235,6 +328,32 @@ async function setupSearch(
       modeToggle.dataset.mode = mode
     }
     searchLayout.dataset.mode = mode
+  }
+
+  const computeDebounceDelay = (term: string): number => {
+    const trimmed = term.trim()
+    const lastTerm = currentSearchTerm
+    const isExtension =
+      lastTerm.length > 0 && trimmed.length > lastTerm.length && trimmed.startsWith(lastTerm)
+    const isRetraction = lastTerm.length > trimmed.length
+    const isReplacement =
+      lastTerm.length > 0 && !trimmed.startsWith(lastTerm) && !lastTerm.startsWith(trimmed)
+    const baseFullQueryDelay = 200
+    const semanticPenalty = searchMode === "semantic" ? 60 : 0
+
+    if (isExtension && trimmed.length > 2) {
+      return baseFullQueryDelay + semanticPenalty
+    }
+
+    if (isReplacement && trimmed.length > 3) {
+      return Math.max(90, baseFullQueryDelay - 80)
+    }
+
+    if (isRetraction) {
+      return 90
+    }
+
+    return baseFullQueryDelay + (searchMode === "semantic" ? 40 : 0)
   }
 
   const triggerSearchWithMode = (mode: SearchMode) => {
@@ -286,6 +405,7 @@ async function setupSearch(
     }
     searchLayout.classList.remove("display-results")
     searchButton.focus()
+    resetProgressBar()
   }
 
   function showSearch(type: SearchType) {
@@ -444,7 +564,13 @@ async function setupSearch(
 
     const handler = (evt: MouseEvent) => {
       if (evt.altKey || evt.ctrlKey || evt.metaKey || evt.shiftKey) return
-      window.spaNavigate(new URL((evt.target as HTMLAnchorElement).href))
+      const anchor = evt.currentTarget as HTMLAnchorElement | null
+      if (!anchor) return
+      evt.preventDefault()
+      const href = anchor.getAttribute("href")
+      if (!href) return
+      const url = new URL(href, window.location.toString())
+      window.spaNavigate(url)
       hideSearch()
     }
 
@@ -556,6 +682,7 @@ async function setupSearch(
       }
       currentHover = null
       searchLayout.classList.remove("display-results")
+      resetProgressBar()
       return
     }
 
@@ -717,12 +844,17 @@ async function setupSearch(
       return
     }
 
+    startSemanticProgress()
+
     try {
       const { semantic: semRes, bm25: bmRes } = await orchestrator.search(
         highlightTerm,
         numSearchResults,
       )
-      if (token !== searchSeq) return
+      if (token !== searchSeq) {
+        completeSemanticProgress()
+        return
+      }
       semanticIds = semRes.map((x) => x.id)
       semanticSimilarity.clear()
       semRes.forEach(({ id, score }) => semanticSimilarity.set(id, score))
@@ -731,8 +863,10 @@ async function setupSearch(
       bmRes.forEach(({ id, score }) => bmSimilarity.set(id, score))
       integrateIds(semanticIds)
       integrateIds(bmIds)
+      completeSemanticProgress()
     } catch (err) {
       console.warn("[SemanticClient] search failed:", err)
+      completeSemanticProgress()
       orchestrator.dispose()
       semantic = null
       semanticReady = false
@@ -767,8 +901,14 @@ async function setupSearch(
       void runSearch("", token)
       return
     }
-    const delay = searchMode === "semantic" ? 160 : 60
+    const now = performance.now()
+    lastInputAt = now
+    const delay = computeDebounceDelay(term)
+    const scheduledAt = lastInputAt
     runSearchTimer = window.setTimeout(() => {
+      if (scheduledAt !== lastInputAt) {
+        return
+      }
       runSearchTimer = null
       void runSearch(term, token)
     }, delay)
@@ -786,6 +926,7 @@ async function setupSearch(
       window.clearTimeout(runSearchTimer)
       runSearchTimer = null
     }
+    resetProgressBar()
   })
 
   registerEscapeHandler(container, hideSearch)

@@ -5,8 +5,8 @@ tags:
   - math
 description: Entropy-regularized attention as a convex program; Fenchel–Young view, geometry, and verification insights.
 date: "2025-08-21"
-modified: 2025-09-14 23:13:14 GMT-04:00
-title: convexity prose
+modified: 2025-09-30 06:37:40 GMT-04:00
+title: convexity of attention
 ---
 
 We study attention weight computation as a convex program: entropy‑regularized linear maximization on the probability simplex. We derive uniqueness and closed‑form solutions, connect to Fenchel–Young regularizers (softmax/sparsemax/entmax), and outline geometric and verification consequences.
@@ -47,7 +47,7 @@ At optimality $\alpha_i>0$ so $\mu_i=0$; exponentiating yields $\alpha_i\propto 
 >
 > As $\tau\downarrow 0$, $\alpha^*(s,\tau)\to e_k$ for any $k\in\arg\max_i s_i$ (extreme point/argmax). As $\tau\uparrow\infty$, $\alpha^*\to \tfrac{1}{n}\mathbf{1}$.
 
-## Fenchel–Young view and design knobs
+## Fenchel–Young view
 
 Write attention as the regularized argmax
 
@@ -58,35 +58,19 @@ $$
 with convex regularizer $\Omega$. Choices of $\Omega$ give different behaviors with convex losses and explicit solutions:
 
 - Softmax: $\Omega(\alpha)=\tau\sum_i\alpha_i\log\alpha_i$ (dense, max‑entropy).
-- Sparsemax/entmax: $\Omega$ inducing exact zeros in $\alpha$ (sparse attention; convex objectives; closed‑form/provably convergent solvers) ([1], [2]).
-- Doubly‑stochastic attention: apply Sinkhorn to obtain row/column stochastic $W$ (OT connection; beneficial inductive biases) ([3]).
+- Sparsemax/entmax: $\Omega$ inducing exact zeros in $\alpha$ (sparse attention; convex objectives; closed‑form/provably convergent solvers). [@martins2022sparsecontinuousdistributions; @peters2019sparsesequencetosequencemodels]
+- Doubly‑stochastic attention: apply Sinkhorn to obtain row/column stochastic $W$ (OT connection; beneficial inductive biases). [@sander2022sinkformers]
 
 ## geometry and convexity
 
 - Input non‑convexity. As a function of $(q,k)$, scores are bilinear and the softmax mapping is non‑convex; standard transformers remain non‑convex in parameters.
-- Weight‑space convexity. For fixed scores, optimizing over $\alpha\in\Delta$ is convex; the output $y=\sum_i\alpha_i v_i$ lies in the convex hull of $\{v_i\}$ (the “probability cage”) ([11]).
+- Weight‑space convexity. For fixed scores, optimizing over $\alpha\in\Delta$ is convex; the output $y=\sum_i\alpha_i v_i$ lies in the convex hull of $\{v_i\}$ (the "probability cage"). [@richter2020normalizedattentionprobabilitycage]
 
 ## verification and robustness
 
-Tight convex lower and concave upper bounds for softmax enable robustness verification with stronger certificates than linear relaxations; they integrate into $\alpha, \beta$‑CROWN/BaB verifiers ([4], [5], [6]).
+Tight convex lower and concave upper bounds for softmax enable robustness verification with stronger certificates than linear relaxations; they integrate into $\alpha, \beta$‑CROWN/BaB verifiers.
 
-## Practical levers
-
-- Guarantees: convex surrogates train to global optimality for the surrogate model ([9]).
-- Structure: choose $\Omega$ and constraints to promote sparsity, matching, or conservation (e.g., Sinkhorn) with principled convergence ([1], [3]).
-- Analysis: convex duality exposes implicit biases (e.g., low‑rank/clustering) and yields interpretable formulations ([10]).
-- Differentiation: optimization layers allow exact/implicit gradients with stable sensitivity ([7], [8]).
-
----
-
-[1]: https://jmlr.org/papers/v23/21-0879.html "Sparse Continuous Distributions and Fenchel-Young Losses"
-[2]: https://arxiv.org/pdf/1905.05702 "From Softmax to Sparsemax/Entmax"
-[3]: https://proceedings.mlr.press/v151/sander22a/sander22a.pdf "Sinkformers: Transformers with Doubly Stochastic Attention"
-[4]: https://proceedings.mlr.press/v206/wei23c/wei23c.pdf "Convex Bounds on the Softmax Function with Applications to Robustness Verification"
-[5]: https://research.ibm.com/publications/convex-bounds-on-the-softmax-function-with-applications-to-robustness-verification "IBM: Convex Bounds on Softmax"
-[6]: https://github.com/Verified-Intelligence/alpha-beta-CROWN "alpha-beta-CROWN verifier"
-[7]: https://stanford.edu/~boyd/papers/pdf/diff_cvxpy.pdf "Differentiable Convex Optimization Layers"
-[8]: https://proceedings.mlr.press/v70/amos17a/amos17a.pdf "OptNet: Differentiable Optimization as a Layer"
-[9]: https://arxiv.org/pdf/2211.11052 "Convexifying Transformers"
-[10]: https://arxiv.org/abs/2205.08078 "Unraveling Attention via Convex Duality"
-[11]: https://arxiv.org/abs/2005.09561 "Normalized Attention Without Probability Cage"
+- Guarantees: convex surrogates train to global optimality for the surrogate model. [@ergen2022convexifyingtransformersimprovingoptimization]
+- Structure: choose $\Omega$ and constraints to promote sparsity, matching, or conservation (e.g., Sinkhorn) with principled convergence. [@martins2022sparsecontinuousdistributions; @sander2022sinkformers]
+- Analysis: convex duality exposes implicit biases (e.g., low‑rank/clustering) and yields interpretable formulations. [@sahiner2022unravelingattentionconvexduality]
+- Differentiation: optimization layers allow exact/implicit gradients with stable sensitivity. [@amos2017optnet]

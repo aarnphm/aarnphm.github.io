@@ -6,9 +6,19 @@ tags:
   - math
 description: motivations of attention
 date: "2025-08-21"
-modified: 2025-09-11 18:15:39 GMT-04:00
+modified: 2025-09-30 07:02:46 GMT-04:00
 title: why certain components in attention?
 ---
+
+see also:
+
+- Wainwright & Jordan, variational view of log‑partition. [^1]
+- Boyd & Vandenberghe, log‑sum‑exp and convexity. [^2]
+- [@vaswani2023attentionneed; @shazeer2019fasttransformerdecodingwritehead; @ainslie2023gqatraininggeneralizedmultiquery]
+
+[^1]: https://people.eecs.berkeley.edu/~jordan/papers/wainwright-jordan-fnt.pdf
+
+[^2]: https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf
 
 ## Why dot products and softmax?
 
@@ -34,10 +44,10 @@ MHA: heads $h=1,\dots,H$ solve independent copies with head‑specific projectio
 
 GQA/MQA: share $K,V$ across groups (or all heads). Only the dictionary changes; the per‑row entropic program remains the same.
 
-Stability under grouping. With $z=K_h q/\sqrt d$ and $\tilde z=K_g q/\sqrt d$, $\delta z=\tilde z-z=(K_g-K_h)q/\sqrt d$. Using the Lipschitz property of softmax,
+Stability under grouping. With $z=K_h q/\sqrt d$ and $\tilde z=K_g q/\sqrt d$, $\delta z=\tilde z-z=(K_g-K_h)q/\sqrt d$. The softmax function $\sigma(\lambda \cdot)$ has Lipschitz constant $\lambda$ (with $\lambda=1/T$), so:
 
 $$
-\|p(\tilde z)-p(z)\|_2\le \tfrac{1}{T\sqrt d}\,\|K_g-K_h\|_{op}\,\|q\|_2,
+\|p(\tilde z)-p(z)\|_2 = \|\sigma(z/T)-\sigma(\tilde z/T)\|_2 \le \tfrac{1}{T}\|\delta z\|_2 = \tfrac{1}{T\sqrt d}\,\|(K_g-K_h)q\|_2 \le \tfrac{1}{T\sqrt d}\,\|K_g-K_h\|_{op}\,\|q\|_2,
 $$
 
 so weight drift (and thus output drift) is controlled by dictionary mismatch, query norm, and temperature.
@@ -46,22 +56,9 @@ so weight drift (and thus output drift) is controlled by dictionary mismatch, qu
 
 If $q,k$ have i.i.d. zero‑mean, unit‑variance entries, $\mathrm{Var}(\langle q,k\rangle)=d$. Dividing by $\sqrt d$ keeps logit variance $O(1)$ as width grows, stabilizing the softmax and gradients.
 
-## Takeaways
-
-- Softmax arises as the unique MaxEnt solution; attention is a per‑row entropic program on the simplex.
-- With normalized features, attention weights equal RBF weights; bandwidth $\sigma^2=T\sqrt d$.
-- MHA decouples across heads; GQA/MQA share dictionaries with controlled stability loss.
-- The $1/\sqrt d$ scaling normalizes logits and preserves numerics.
-
-## References
-
-- Wainwright & Jordan, variational view of log‑partition. ([1])
-- Boyd & Vandenberghe, log‑sum‑exp and convexity. ([2])
-- Vaswani et al., scaled dot‑product and multi‑head. ([5])
-- Shazeer (MQA) and Ainslie et al. (GQA). ([6], [7])
-
-[1]: https://people.eecs.berkeley.edu/~jordan/papers/wainwright-jordan-fnt.pdf
-[2]: https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf
-[5]: https://arxiv.org/abs/1706.03762
-[6]: https://arxiv.org/abs/1911.02150
-[7]: https://arxiv.org/abs/2305.13245
+> [!important]
+>
+> - Softmax arises as the unique MaxEnt solution; attention is a per‑row entropic program on the simplex.
+> - With normalized features, attention weights equal RBF weights; bandwidth $\sigma^2=T\sqrt d$.
+> - MHA decouples across heads; GQA/MQA share dictionaries with controlled stability loss.
+> - The $1/\sqrt d$ scaling normalizes logits and preserves numerics.
