@@ -9,7 +9,7 @@ description: GPUs, CUTLASS, and CuTe
 transclude:
   title: false
 date: "2025-09-30"
-modified: 2025-09-30 06:41:59 GMT-04:00
+modified: 2025-09-30 15:47:19 GMT-04:00
 title: supplement to 0.420
 ---
 
@@ -65,18 +65,19 @@ see also: [[thoughts/GPU programming|GPU]], [[thoughts/XLA]], [[thoughts/LLMs]]
 ### CPU vs GPU: philosophical differences
 
 > [!info] Latency-centric CPU design vs throughput-centric GPU design
-> | Aspect | CPU | GPU |
-> | -------------------------- | ------------------------------------------- | ---------------------------------------------------- |
-> | Design Goal | Low-latency sequential execution | High-throughput parallel execution |
-> | Execution Model | Complex out-of-order with branch prediction | Simple in-order with no speculation |
-> | Cache Hierarchy | Large L1/L2/L3 caches (tens of MB) | Minimal caching, programmer-managed shared memory |
-> | Core Count | Few cores (4-64 on server CPUs) | Hundreds of SMs running tens of thousands of threads |
-> | Per-Thread Performance | High (sophisticated ILP, speculation) | Low (simple in-order execution) |
-> | Aggregate Throughput | Optimized for single-thread speed | Optimized for total work completed per second |
-> | Context Switching | Microseconds (expensive OS operation) | Single clock cycle (zero-overhead warp switching) |
-> | Clock Frequency | 3-5 GHz | 1.4 GHz |
-> | Memory Model | Sequential consistency guaranteed | Relaxed consistency, explicit synchronization |
-> | Power per Core | 10-20W per complex core | <1W per simple execution unit |
+>
+> | Aspect                 | CPU                                         | GPU                                                  |
+> | ---------------------- | ------------------------------------------- | ---------------------------------------------------- |
+> | Design Goal            | Low-latency sequential execution            | High-throughput parallel execution                   |
+> | Execution Model        | Complex out-of-order with branch prediction | Simple in-order with no speculation                  |
+> | Cache Hierarchy        | Large L1/L2/L3 caches (tens of MB)          | Minimal caching, programmer-managed shared memory    |
+> | Core Count             | Few cores (4-64 on server CPUs)             | Hundreds of SMs running tens of thousands of threads |
+> | Per-Thread Performance | High (sophisticated ILP, speculation)       | Low (simple in-order execution)                      |
+> | Aggregate Throughput   | Optimized for single-thread speed           | Optimized for total work completed per second        |
+> | Context Switching      | Microseconds (expensive OS operation)       | Single clock cycle (zero-overhead warp switching)    |
+> | Clock Frequency        | 3-5 GHz                                     | 1.4 GHz                                              |
+> | Memory Model           | Sequential consistency guaranteed           | Relaxed consistency, explicit synchronization        |
+> | Power per Core         | 10-20W per complex core                     | <1W per simple execution unit                        |
 
 > [!note] Clarification: "cycle" terminology
 >
@@ -193,8 +194,9 @@ To illustrate the scale difference, compare a high-end server CPU with H100:
 > | TDP                       | 360W                      | 700W                     | 1.9×   |
 
 > [!note] Hopper concurrency multiplier
+>
 > H100 runs 1,408× more threads concurrently than a 96-core EPYC CPU. This massive thread count enables:
-
+>
 > - Latency hiding: While 64 warps wait on memory (400 cycles), the remaining ~63 warps keep execution units busy
 > - Throughput optimization: Even if each thread is 10× slower than a CPU thread, 1,408× more threads = 140× higher aggregate throughput
 > - Memory bandwidth utilization: 270K threads can saturate 3.35 TB/s HBM3 bandwidth; 192 CPU threads cannot saturate 460 GB/s DDR5
@@ -1993,6 +1995,28 @@ Example:
 // cosize = f(7, 3) + 1 = 7 + 24 + 1 = 32
 ```
 
+> [!example] Layout mapping visualization
+>
+> ```
+> Layout L = (4, 3):(1, 4)  [column-major 4×3 matrix]
+>
+> Logical View (coordinates):        Physical Memory (linear addresses):
+>
+>     col: 0   1   2                  addr:  0  1  2  3  4  5  6  7  8  9  10 11
+> row:  ┌───┬───┬───┐                        ↓  ↓  ↓  ↓  ↓  ↓  ↓  ↓  ↓  ↓  ↓  ↓
+>   0   │ 0 │ 4 │ 8 │                      [00 01 02 03 04 05 06 07 08 09 10 11]
+>       ├───┼───┼───┤
+>   1   │ 1 │ 5 │ 9 │                 Mapping function:
+>       ├───┼───┼───┤                 f(r, c) = r × 1 + c × 4
+>   2   │ 2 │ 6 │10 │
+>       ├───┼───┼───┤                 Examples:
+>   3   │ 3 │ 7 │11 │                 (0,0) → 0×1 + 0×4 = 0
+>       └───┴───┴───┘                 (1,2) → 1×1 + 2×4 = 9
+>                                      (3,1) → 3×1 + 1×4 = 7
+>
+> Column-major: consecutive rows stored contiguously (stride 1 in row dimension)
+> ```
+
 Implementation follows CuTe 4.1 layout/partition semantics for Hopper/Blackwell targeted kernels.
 
 Theorem (Layout Function Properties).
@@ -2025,6 +2049,49 @@ Example:
 auto tiled = composition(layout_A, layout_B);
 ```
 
+> [!example] Layout composition visualization
+>
+> ```
+> Given:
+>   Layout A = (8, 4):(1, 8)  [8×4 column-major, 32 elements]
+>   Layout B = (2, 2):(0, 1)  [2×2 tile selector]
+>
+> Step 1: Layout A maps coordinates to memory addresses
+>
+>   A's logical view:              A's memory layout:
+>      0   8  16  24               [0,1,2,3,4,5,6,7, 8,9,10,11,12,13,14,15,
+>      1   9  17  25                16,17,18,19,20,21,22,23, 24,25,26,27,28,29,30,31]
+>      2  10  18  26
+>      3  11  19  27               f_A(r,c) = r×1 + c×8
+>      4  12  20  28
+>      5  13  21  29
+>      6  14  22  30
+>      7  15  23  31
+>
+> Step 2: Layout B = (2,2):(0,1) selects a 2×2 region
+>
+>   B's logical view:              B maps to indices in A:
+>      (0,0) (0,1)                   0  1
+>      (1,0) (1,1)                   0  1
+>                                  (stride 0 in row, stride 1 in col)
+>
+> Step 3: Composition R = A ∘ B applies B's coordinates through A's mapping
+>
+>   R(i,j) = A(B(i,j))
+>
+>   R(0,0) = A(B(0,0)) = A(0,0) = 0×1 + 0×8 = 0
+>   R(0,1) = A(B(0,1)) = A(0,1) = 0×1 + 1×8 = 8
+>   R(1,0) = A(B(1,0)) = A(0,0) = 0×1 + 0×8 = 0
+>   R(1,1) = A(B(1,1)) = A(0,1) = 0×1 + 1×8 = 8
+>
+>   Result R = (2,2):(0,8) - selects first row of A, columns 0 and 1
+>                             (broadcasts across rows due to stride 0)
+>
+>   R's view:
+>      0  8     ← same as A[0,0] and A[0,1]
+>      0  8     ← broadcast (stride 0 in row dimension)
+> ```
+
 Theorem (Composition Associativity).
 Composition of layouts is associative: $(\mathcal{L}_A \circ \mathcal{L}_B) \circ \mathcal{L}_C = \mathcal{L}_A \circ (\mathcal{L}_B \circ \mathcal{L}_C)$.
 
@@ -2050,6 +2117,56 @@ Example:
 auto tiled = logical_divide(layout, Shape<_8, _8>{});
 ```
 
+> [!example] Logical division (tiling) visualization
+>
+> ```
+> Original Layout: L = (16, 16):(1, 16)  [16×16 column-major]
+> Tile Shape: T = (4, 4)
+> Result: L / T creates hierarchical layout ((4,4), (4,4))
+>
+> Original 16×16 matrix:                 After logical_divide by (4,4):
+>
+> ┌─────────────────────────┐           ┌─────┬─────┬─────┬─────┐
+> │  0  16  32  48 ... 240  │           │Tile │Tile │Tile │Tile │
+> │  1  17  33  49 ... 241  │           │ 0,0 │ 0,1 │ 0,2 │ 0,3 │
+> │  2  18  34  50 ... 242  │           │     │     │     │     │
+> │  3  19  35  51 ... 243  │           │ 4×4 │ 4×4 │ 4×4 │ 4×4 │
+> │  4  20  36  52 ... 244  │           ├─────┼─────┼─────┼─────┤
+> │  5  21  37  53 ... 245  │           │Tile │Tile │Tile │Tile │
+> │  6  22  38  54 ... 246  │           │ 1,0 │ 1,1 │ 1,2 │ 1,3 │
+> │  7  23  39  55 ... 247  │           │     │     │     │     │
+> │  8  24  40  56 ... 248  │           │ 4×4 │ 4×4 │ 4×4 │ 4×4 │
+> │  9  25  41  57 ... 249  │           ├─────┼─────┼─────┼─────┤
+> │ 10  26  42  58 ... 250  │           │Tile │Tile │Tile │Tile │
+> │ 11  27  43  59 ... 251  │           │ 2,0 │ 2,1 │ 2,2 │ 2,3 │
+> │ 12  28  44  60 ... 252  │           │     │     │     │     │
+> │ 13  29  45  61 ... 253  │           │ 4×4 │ 4×4 │ 4×4 │ 4×4 │
+> │ 14  30  46  62 ... 254  │           ├─────┼─────┼─────┼─────┤
+> │ 15  31  47  63 ... 255  │           │Tile │Tile │Tile │Tile │
+> └─────────────────────────┘           │ 3,0 │ 3,1 │ 3,2 │ 3,3 │
+>                                       │     │     │     │     │
+>                                       │ 4×4 │ 4×4 │ 4×4 │ 4×4 │
+>                                       └─────┴─────┴─────┴─────┘
+>
+> Hierarchical shape: ((4, 4), (4, 4))
+>                      └─────┘  └─────┘
+>                      tile     tile
+>                      dims     grid
+>
+> Indexing:
+>   tiled[tile_y, tile_x, elem_y, elem_x]
+>
+> Example: Access element at global (5, 10)
+>   tile_y = 5 / 4 = 1, elem_y = 5 % 4 = 1
+>   tile_x = 10 / 4 = 2, elem_x = 10 % 4 = 2
+>   → tiled[1, 2, 1, 2] = original[5, 10]
+>
+> Benefits:
+>   - Enables hierarchical algorithms (block-level then thread-level)
+>   - Natural mapping to GPU grid/block/thread hierarchy
+>   - Compose with other layout operations (swizzle, partition)
+> ```
+
 #### logical product
 
 Definition. Let $\mathcal{L}_A$ and $\mathcal{L}_B$ be layouts. Their logical product $\mathcal{L}_A \times \mathcal{L}_B$ tiles $\mathcal{L}_A$ across dimensions of $\mathcal{L}_B$.
@@ -2067,6 +2184,72 @@ auto blocked_product(BlockLayout block, TilerLayout tiler) {
 Raked product: Similar but interleaves blocks.
 
 Use case: Creating thread-value (TV) layouts where each thread processes multiple values.
+
+> [!example] Thread-value layouts: Blocked vs Raked
+>
+> ```
+> Given: 4 threads (T0, T1, T2, T3), each processing 4 values
+> Total: 16 elements arranged in 4×4 grid
+>
+> BLOCKED PRODUCT - Contiguous blocks per thread:
+> ═══════════════════════════════════════════════
+>
+>   Thread layout: (2, 2):(2, 1)        Value layout: (2, 2):(1, 2)
+>   ┌────┬────┐                         Each thread gets 2×2 block
+>   │ T0 │ T1 │
+>   ├────┼────┤
+>   │ T2 │ T3 │
+>   └────┴────┘
+>
+> Result - Each thread owns a contiguous block:
+>
+>    0   1   2   3        Memory Layout:
+>  ┌───┬───┬───┬───┐
+> 0│T0 │T0 │T1 │T1 │     [T0:0, T0:1, T0:2, T0:3, T1:0, T1:1, T1:2, T1:3,
+>  │ 0 │ 1 │ 0 │ 1 │      T2:0, T2:1, T2:2, T2:3, T3:0, T3:1, T3:2, T3:3]
+>  ├───┼───┼───┼───┤
+> 1│T0 │T0 │T1 │T1 │     Good for:
+>  │ 2 │ 3 │ 2 │ 3 │     - Coalesced loads (threads load adjacent addresses)
+>  ├───┼───┼───┼───┤     - Matrix tiling
+> 2│T2 │T2 │T3 │T3 │     - Tensor core layouts
+>  │ 0 │ 1 │ 0 │ 1 │
+>  ├───┼───┼───┼───┤
+> 3│T2 │T2 │T3 │T3 │
+>  │ 2 │ 3 │ 2 │ 3 │
+>  └───┴───┴───┴───┘
+>
+> RAKED PRODUCT - Interleaved values per thread:
+> ══════════════════════════════════════════════
+>
+> Result - Threads interleaved across space:
+>
+>    0   1   2   3        Memory Layout:
+>  ┌───┬───┬───┬───┐
+> 0│T0 │T1 │T0 │T1 │     [T0:0, T1:0, T0:1, T1:1, T2:0, T3:0, T2:1, T3:1,
+>  │ 0 │ 0 │ 1 │ 1 │      T0:2, T1:2, T0:3, T1:3, T2:2, T3:2, T2:3, T3:3]
+>  ├───┼───┼───┼───┤
+> 1│T2 │T3 │T2 │T3 │     Good for:
+>  │ 0 │ 0 │ 1 │ 1 │     - Warp-level reductions
+>  ├───┼───┼───┼───┤     - Strided memory patterns
+> 2│T0 │T1 │T0 │T1 │     - SIMD-style operations
+>  │ 2 │ 2 │ 3 │ 3 │
+>  ├───┼───┼───┼───┤
+> 3│T2 │T3 │T2 │T3 │
+>  │ 2 │ 2 │ 3 │ 3 │
+>  └───┴───┴───┴───┘
+>
+> CuTe code example:
+> ──────────────────
+> // Blocked: Each thread gets contiguous 2×2 tile
+> auto thr_layout = make_layout(Shape<_2,_2>{}, Stride<_2,_1>{});
+> auto val_layout = make_layout(Shape<_2,_2>{}, Stride<_1,_2>{});
+> auto blocked = blocked_product(thr_layout, val_layout);
+>
+> // Raked: Threads interleaved with stride
+> auto raked = raked_product(thr_layout, val_layout);
+>
+> Key insight: Blocked for spatial locality, Raked for warp-level parallelism
+> ```
 
 ### hierarchical tiling with local_tile
 
@@ -2182,6 +2365,54 @@ float val = smem[threadIdx.x][col];  // All threads hit same bank
 > Address of `smem[i][col]` is `base + (i * 128 + col) * sizeof(float)`.
 > Bank = `(address / 4) % 32 = (i * 128 + col) % 32`.
 > When `col` is constant, all threads map to bank `col % 32` → 32-way conflict.
+
+> [!example] Bank conflict visualization
+>
+> ```
+> Shared memory organized into 32 banks (4-byte words)
+>
+> Without Swizzle - Column Access (32-way conflict):
+> ═══════════════════════════════════════════════════
+> Threads 0-31 all read column 0:
+>
+>   Thread  Row  Address        Bank                  ┌──────────────────────────┐
+>    T0  →  0   base + 0×128    0                     │ Bank 0: T0,T1,T2...T31   │ ← 32 accesses!
+>    T1  →  1   base + 1×128    0                     │        (serialized)      │
+>    T2  →  2   base + 2×128    0                     │                          │
+>   ...                                               │ Bank 1: [idle]           │
+>   T31  → 31   base + 31×128   0                     │ Bank 2: [idle]           │
+>                                                     │  ...                     │
+> Result: 32 transactions (1 per thread, serialized)  │ Bank 31: [idle]          │
+>                                                     └──────────────────────────┘
+>
+> With XOR Swizzle - Bank Spreading (conflict-free):
+> ══════════════════════════════════════════════════
+> swizzled_col = col ^ ((row >> shift) & mask)
+>
+>   Thread  Row  Swizzle          Bank  ┌─────────────────────────┐
+>    T0  →  0   0 ^ (0>>5 & 7)=0    0   │ Bank 0:  T0             │ ← 1 access
+>    T1  →  1   0 ^ (1>>5 & 7)=0    0   │ Bank 1:  [idle]         │
+>   ...                                 │  ...                    │
+>   T31  → 31   0 ^ (31>>5 & 7)=0   0   │ Bank 31: [idle]         │
+>                                       └─────────────────────────┘
+>
+> Better example with row >> 3 (for 8 rows per bank rotation):
+>
+>   T0  → row 0:  col ^ (0>>3 & 7) = col ^ 0  → Bank col%32
+>   T8  → row 8:  col ^ (8>>3 & 7) = col ^ 1  → Bank (col^1)%32
+>   T16 → row 16: col ^ (16>>3 & 7) = col ^ 2 → Bank (col^2)%32
+>   T24 → row 24: col ^ (24>>3 & 7) = col ^ 3 → Bank (col^3)%32
+>
+> When accessing same column across rows, XOR rotates bank assignment:
+>
+>   Row 0-7:   Banks 0,1,2,3,...31     (no rotation)
+>   Row 8-15:  Banks 1,0,3,2,...30     (XOR with 1)
+>   Row 16-23: Banks 2,3,0,1,...29     (XOR with 2)
+>   Row 24-31: Banks 3,2,1,0,...28     (XOR with 3)
+>
+> Result: 1 transaction for warp (all threads access different banks)
+> Speedup: 32× fewer transactions!
+> ```
 
 #### Swizzle function design
 
@@ -2565,28 +2796,82 @@ Benefits:
 - Dynamic allocation (grow cache as needed)
 - Efficient batching (share pages across requests)
 
-> [!example] Paged attention memory layout [^paged-attention]
+> [!example] Paged attention memory layout (virtual memory analogy) [^paged-attention]
 >
 > ```
-> Logical KV Cache          Physical Pages
-> ┌──────────────┐         ┌─────┬─────┬─────┐
-> │ Seq 0        │         │ P0  │ P1  │ P2  │
-> │ [0..15 ]─────┼────────→│16tok│16tok│16tok│
-> │ [16..31]─────┼───┐     └─────┴─────┴─────┘
-> │ [32..47]     │   │     ┌─────┬─────┬─────┐
-> └──────────────┘   └────→│ P7  │ P12 │ P3  │
-> ┌──────────────┐         │16tok│16tok│16tok│
-> │ Seq 1        │     ┌──→└─────┴─────┴─────┘
-> │ [0..15 ]─────┼─────┘   ┌─────┬─────┬─────┐
-> │ [16..31]─────┼────────→│ P5  │ P9  │ ... │
-> └──────────────┘         │16tok│16tok│     │
->                          └─────┴─────┴─────┘
-> Block Table
-> ┌──────┬──────┬──────┬──────┐
-> │ Seq0 │  0   │  7   │  12  │
-> │ Seq1 │  5   │  9   │  ... │
-> └──────┴──────┴──────┴──────┘
->         ↑ Physical Page IDs
+> ┌─────────────────────────────────────────────────────────────────────┐
+> │ VIRTUAL ADDRESS SPACE (Logical KV Cache per Sequence)              │
+> └─────────────────────────────────────────────────────────────────────┘
+>
+> Sequence 0 (48 tokens, 3 pages):        Sequence 1 (32 tokens, 2 pages):
+> ┌──────────────────────────────┐       ┌──────────────────────────────┐
+> │ Virtual Page 0  [tok 0..15]  │       │ Virtual Page 0  [tok 0..15]  │
+> │ Virtual Page 1  [tok 16..31] │       │ Virtual Page 1  [tok 16..31] │
+> │ Virtual Page 2  [tok 32..47] │       └──────────────────────────────┘
+> └──────────────────────────────┘               │          │
+>        │          │          │                 │          │
+>        │          │          └─────────┐       │          │
+>        │          └──────────┐         │       │          └────────┐
+>        │                     │         │       │                   │
+>        ▼                     ▼         ▼       ▼                   ▼
+> ┌─────────────────────────────────────────────────────────────────────┐
+> │ PHYSICAL MEMORY (GPU Global Memory - Non-contiguous Pages)          │
+> └─────────────────────────────────────────────────────────────────────┘
+>
+> ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+> │ P0  │ P1  │ P2  │ P3  │ P4  │ P5  │ P6  │ P7  │ P8  │ P9  │ P10 │ P11 │
+> │Seq0 │     │     │     │     │Seq1 │     │Seq0 │     │Seq1 │     │     │
+> │16tok│     │     │     │     │16tok│     │16tok│     │16tok│     │     │
+> │tok  │     │     │     │     │tok  │     │tok  │     │tok  │     │     │
+> │0-15 │     │     │     │     │0-15 │     │16-31│     │16-31│     │     │
+> └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+>   ▲                               ▲           ▲           ▲
+>   │                               │           │           │
+>   Seq0,VP0                     Seq1,VP0    Seq0,VP1   Seq1,VP1
+>
+> ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬───────┐
+> │ P12 │ P13 │ P14 │ P15 │ ...                                             │
+> │Seq0 │     │     │     │                                                 │
+> │16tok│     │     │     │                                                 │
+> │tok  │     │     │     │                                                 │
+> │32-47│     │     │     │                                                 │
+> └─────┴─────┴─────┴─────┴─────────────────────────────────────────────────┘
+>   ▲
+>   │
+>   Seq0,VP2
+>
+> ┌─────────────────────────────────────────────────────────────────────┐
+> │ BLOCK TABLE (Virtual Page → Physical Page Translation)              │
+> └─────────────────────────────────────────────────────────────────────┘
+>
+>        Virtual Page Index:     0    1    2    3    ...
+>                               ┌────┬────┬────┬────┬────┐
+> Sequence 0 (len=48) →         │ 0  │ 7  │ 12 │ -1 │ -1 │
+>                               └────┴────┴────┴────┴────┘
+>                                 ↓    ↓    ↓
+>                           Phys  P0   P7   P12  (non-contiguous!)
+>
+>                               ┌────┬────┬────┬────┬────┐
+> Sequence 1 (len=32) →         │ 5  │ 9  │ -1 │ -1 │ -1 │
+>                               └────┴────┴────┴────┴────┘
+>                                 ↓    ↓
+>                           Phys  P5   P9
+>
+>
+> ─────────────
+> 1. Virtual address space: Each sequence sees contiguous logical pages [0,1,2,...]
+> 2. Physical pages: Scattered across GPU memory (like OS virtual memory)
+> 3. Block table: Translation lookaside buffer (TLB) for page mapping
+> 4. Attention kernel: Translates virtual page → physical page per access
+> 5. Benefits: Zero fragmentation, dynamic growth, page sharing for prefixes
+>
+> Memory Access Pattern in Kernel:
+> ────────────────────────────────
+> for page_idx in range(num_pages_for_seq):
+>     physical_page = block_table[seq_id, page_idx]  # Virtual → Physical
+>     keys = key_cache[physical_page]                # Load from physical memory
+>     scores = query @ keys.T
+>     ...
 > ```
 
 [^paged-attention]: Instead of allocating contiguous memory for each sequence's KV cache, paged attention uses fixed-size pages (e.g., 16 tokens) that can be scattered in memory. A block table maps logical sequence positions to physical pages. Seq 0 tokens 0-15 live in page 0, tokens 16-31 in page 7 (non-contiguous!), tokens 32-47 in page 12. This eliminates fragmentation from varying sequence lengths, enables dynamic growth without reallocation, and allows page sharing across sequences for prefix caching (multiple prompts sharing the same prefix reuse the same physical pages).
@@ -2945,7 +3230,7 @@ Step-by-step process:
 
 Roofline model visualizes performance limits based on arithmetic intensity:
 
-> [!example] Roofline model for H100
+> [!example] Roofline model for H100 [^roofline]
 >
 > ```
 > Performance (TFLOP/s)
@@ -2964,8 +3249,8 @@ Roofline model visualizes performance limits based on arithmetic intensity:
 > 0     0.25     32      600     1000+  Arithmetic Intensity (FLOP/byte)
 >                   ↑ Ridge point (≈ 592)
 > ```
->
-> _Speaker notes:_ The ridge point sits at $I = P_{\text{peak}} / B \approx 1979 / 3.35 \approx 592$ FLOP/byte for H100. Kernels below that intensity are memory-bound with performance capped by $I \times 3.35\,\text{TB/s}$. The naive GEMM (I ≈ 0.25) therefore tops out at 0.84 TFLOP/s. A 128×128×32 FP32 tiled kernel raises intensity to ≈32, pushing the roofline bound to ~107 TFLOP/s. Switching to FP16 inputs halves the bytes and doubles $I$ to ≈64, nudging the roofline bound to ~214 TFLOP/s. Only when the program approaches perfect data reuse—each matrix element fetched once, giving $I \gtrsim 10^3$—does the kernel enter the compute-bound regime and approach the 1,979 TFLOP/s tensor-core ceiling. This plot makes clear whether the next optimization knob should target bandwidth or compute utilization.
+
+[^roofline]: The ridge point sits at $I = P_{\text{peak}} / B \approx 1979 / 3.35 \approx 592$ FLOP/byte for H100. Kernels below that intensity are memory-bound with performance capped by $I \times 3.35\,\text{TB/s}$. The naive GEMM (I ≈ 0.25) therefore tops out at 0.84 TFLOP/s. A 128×128×32 FP32 tiled kernel raises intensity to ≈32, pushing the roofline bound to ~107 TFLOP/s. Switching to FP16 inputs halves the bytes and doubles $I$ to ≈64, nudging the roofline bound to ~214 TFLOP/s. Only when the program approaches perfect data reuse—each matrix element fetched once, giving $I \gtrsim 10^3$—does the kernel enter the compute-bound regime and approach the 1,979 TFLOP/s tensor-core ceiling. This plot makes clear whether the next optimization knob should target bandwidth or compute utilization.
 
 Key insight: For a given arithmetic intensity $I$ (FLOP/byte):
 
@@ -3061,6 +3346,482 @@ Key concepts:
 1. Separate logical (shape) from physical (stride)
 2. Hierarchical tiling (grid → block → warp → thread)
 3. Composable abstractions (layouts, tensors, partitions)
+
+### CuTe DSL Python examples
+
+NVIDIA's CuTe DSL is available as a Python library in the CUTLASS package, allowing rapid prototyping and exploration of CuTe concepts before implementing in C++. The Python API mirrors the C++ API closely, making it an excellent learning tool.
+
+#### setup and basics
+
+Install CUTLASS with Python support:
+
+```bash
+pip install nvidia-cutlass
+```
+
+Basic imports and tensor creation:
+
+```python
+import cutlass
+import cutlass.cute as cute
+
+
+@cute.jit
+def create_tensor_from_ptr(ptr: cute.Pointer):
+  # Create layout: 8×5 column-major
+  layout = cute.make_layout((8, 5), stride=(1, 8))
+  tensor = cute.make_tensor(ptr, layout)
+  return tensor
+```
+
+A tensor in CuTe is mathematically defined as: `T(c) = *(E + L(c))` where:
+
+- `E` is the engine (pointer-like object for memory access)
+- `L` is the layout (coordinate-to-offset mapping)
+- `c` is a coordinate in the logical space
+
+#### data types
+
+CuTe provides GPU-specific numeric types for runtime dynamic values:
+
+```python
+# Integer types: Int8, Int16, Int32, Int64
+x = cutlass.Int32(42)
+
+# Floating point types: Float16, Float32, Float64, BFloat16, TFloat32
+y = cutlass.Float32(3.14159)
+
+# 8-bit float formats for Hopper/Ada
+fp8_e4m3 = cutlass.Float8E4M3(1.5)  # E4M3: 4 exponent bits, 3 mantissa bits
+fp8_e5m2 = cutlass.Float8E5M2(2.0)  # E5M2: 5 exponent bits, 2 mantissa bits
+
+
+# Type conversion and arithmetic
+@cute.jit
+def type_operations():
+  a = cutlass.Int32(10)
+  b = cutlass.Int32(3)
+  x = cutlass.Float32(5.5)
+
+  sum_int = a + b  # Int32
+  mixed = a + x  # Promotes to Float32
+
+  return sum_int, mixed
+```
+
+These types are essential for mixed-precision computations (FP8/FP16 input, FP32 accumulation) on modern GPUs.
+
+#### layout algebra operations
+
+##### coalesce
+
+The `coalesce` operation simplifies a layout by flattening modes while preserving the coordinate-to-offset mapping:
+
+```python
+@cute.jit
+def coalesce_example():
+  # Hierarchical layout: (2, (1, 6)) with complex strides
+  layout = cute.make_layout((2, (1, 6)), stride=(1, (cutlass.Int32(6), 2)))
+  result = cute.coalesce(layout)
+
+  print('Original:', layout)  # ((2,(1,6)), (1,(6,2)))
+  print('Coalesced:', result)  # (12, 1) - simplified to rank-1
+
+  # Preserves mapping: layout(i, j, k) == result(linearized_index)
+  assert layout.size() == result.size()  # Both have 12 elements
+```
+
+Use case: Simplifying layout expressions before performing partitioning or composition.
+
+##### composition
+
+Layout composition creates a new access pattern by chaining layouts: `R(c) = A(B(c))`
+
+```python
+@cute.jit
+def composition_example():
+  # A: 6×2 layout with stride (8, 2)
+  A = cute.make_layout((6, 2), stride=(cutlass.Int32(8), 2))
+
+  # B: 4×3 layout with stride (3, 1)
+  B = cute.make_layout((4, 3), stride=(3, 1))
+
+  # R = A ∘ B: B's coordinates index into A's domain
+  R = cute.composition(A, B)
+
+  print('Layout A:', A)
+  print('Layout B:', B)
+  print('Composition R = A ∘ B:', R)
+
+  # R selects elements from A using B's pattern
+  # Example: R(1, 2) = A(B(1, 2)) = A(1*3 + 2*1) = A(5)
+```
+
+Use case: Implementing tiling or selecting subsets of a tensor.
+
+##### logical divide (tiling)
+
+Partition a layout into tiles of a specified shape:
+
+```python
+@cute.jit
+def logical_divide_example():
+  # 64×64 column-major layout
+  layout = cute.make_layout((64, 64), stride=(1, 64))
+
+  # Partition into 8×8 tiles
+  tiled = cute.logical_divide(layout, (8, 8))
+
+  print('Original shape:', layout.shape)  # (64, 64)
+  print('Tiled shape:', tiled.shape)  # ((8, 8), (8, 8))
+  # Outer tuple: tile dimensions
+  # Inner tuple: number of tiles per dimension
+
+  # Access tile (2, 3): tiled[2, 3, :, :]
+  # Access element (5, 7) within tile (2, 3): tiled[2, 3, 5, 7]
+```
+
+This operation is fundamental to CuTe's hierarchical tiling model: global → block → thread.
+
+#### tensor operations
+
+##### tensor creation from DLPack
+
+Interoperate with PyTorch, NumPy, JAX:
+
+```python
+import torch
+from cutlass.cute.runtime import from_dlpack
+
+
+def torch_to_cute():
+  # PyTorch tensor
+  a = torch.randn(8, 5, dtype=torch.float32).cuda()
+
+  # Convert to CuTe tensor
+  @cute.jit
+  def process_tensor(src: cute.Tensor):
+    cute.print_tensor(src)
+    # Perform CuTe operations...
+
+  process_tensor(from_dlpack(a))
+```
+
+##### coordinate tensors
+
+Coordinate tensors map coordinates to themselves, useful for understanding layout transformations:
+
+```python
+@cute.jit
+def coordinate_tensor_example():
+  layout = cute.make_layout((4, 3), stride=(1, 4))
+  coord_tensor = cute.make_identity_tensor(layout.shape)
+
+  # Prints:
+  # [[(0,0) (0,1) (0,2)]
+  #  [(1,0) (1,1) (1,2)]
+  #  [(2,0) (2,1) (2,2)]
+  #  [(3,0) (3,1) (3,2)]]
+  cute.print_tensor(coord_tensor)
+
+  # After applying a layout transformation:
+  transformed = cute.composition(layout, coord_tensor)
+  # Shows how coordinates map through the layout
+```
+
+##### tensor partitioning
+
+Partition tensors across threads (Python equivalent of `local_partition`):
+
+```python
+@cute.jit
+def partition_example():
+  # Global tensor: 128×128
+  global_layout = cute.make_layout((128, 128), stride=(1, 128))
+  global_tensor = cute.make_tensor(ptr, global_layout)
+
+  # Thread layout: 32×4 = 128 threads
+  thread_layout = cute.make_layout((32, 4))
+
+  # Partition for thread 0
+  thread_tensor = cute.local_partition(global_tensor, thread_layout, 0)
+
+  print('Global shape:', global_tensor.shape)  # (128, 128)
+  print('Thread shape:', thread_tensor.shape)  # (4, 32) per thread
+```
+
+#### elementwise addition kernel
+
+Complete example demonstrating CuTe kernel authoring with proper launch pattern:
+
+```python
+# Step 1: Define device kernel
+@cute.kernel
+def elementwise_add_kernel(gA: cute.Tensor, gB: cute.Tensor, gC: cute.Tensor):
+  # Thread indexing
+  tidx, _, _ = cute.arch.thread_idx()
+  bidx, _, _ = cute.arch.block_idx()
+  bdim, _, _ = cute.arch.block_dim()
+
+  thread_idx = bidx * bdim + tidx
+
+  # Compute global coordinate
+  m, n = gA.shape
+  ni = thread_idx % n
+  mi = thread_idx // n
+
+  # Bounds check
+  if mi < m and ni < n:
+    # Load, compute, store
+    a_val = gA[mi, ni]
+    b_val = gB[mi, ni]
+    gC[mi, ni] = a_val + b_val
+
+
+# Step 2: Define host wrapper
+@cute.jit
+def elementwise_add_launch(mA: cute.Tensor, mB: cute.Tensor, mC: cute.Tensor):
+  num_threads_per_block = 256
+  m, n = mA.shape
+  num_blocks = (m * n + num_threads_per_block - 1) // num_threads_per_block
+
+  elementwise_add_kernel(mA, mB, mC).launch(grid=(num_blocks, 1, 1), block=(num_threads_per_block, 1, 1))
+
+
+# Step 3: Prepare and convert tensors
+M, N = 1024, 1024
+a = torch.randn(M, N, device='cuda', dtype=torch.float16)
+b = torch.randn(M, N, device='cuda', dtype=torch.float16)
+c = torch.zeros(M, N, device='cuda', dtype=torch.float16)
+
+a_ = from_dlpack(a, assumed_align=16)
+b_ = from_dlpack(b, assumed_align=16)
+c_ = from_dlpack(c, assumed_align=16)
+
+# Step 4: Compile
+compiled_add = cute.compile(elementwise_add_launch, a_, b_, c_)
+
+# Step 5: Execute
+compiled_add(a_, b_, c_)
+
+# Verify correctness
+torch.testing.assert_close(c, a + b)
+```
+
+Vectorized version using CuTe's tiling and layout algebra:
+
+```python
+@cute.kernel
+def vectorized_add_kernel(gA: cute.Tensor, gB: cute.Tensor, gC: cute.Tensor):
+  tidx, _, _ = cute.arch.thread_idx()
+  bidx, _, _ = cute.arch.block_idx()
+
+  # Slice for thread-block level view
+  blk_coord = ((None, None), bidx)
+  tA = gA[blk_coord]
+  tB = gB[blk_coord]
+  tC = gC[blk_coord]
+
+  # Slice for thread level view (each thread gets a fragment)
+  thr_A = tA[(None, tidx)]
+  thr_B = tB[(None, tidx)]
+  thr_C = tC[(None, tidx)]
+
+  # Vectorized operations on fragments
+  for i in range(cute.size(thr_A)):
+    thr_C[i] = thr_A[i] + thr_B[i]
+
+
+@cute.jit
+def vectorized_add_launch(mA: cute.Tensor, mB: cute.Tensor, mC: cute.Tensor):
+  # Create thread and value layouts
+  thr_layout = cute.make_layout((4, 32), stride=(32, 1))  # 128 threads
+  val_layout = cute.make_layout((4, 8), stride=(8, 1))  # 32 values/thread
+
+  # Generate tiler
+  tiler_mn, tv_layout = cute.make_layout_tv(thr_layout, val_layout)
+
+  # Divide tensors into tiles
+  gA = cute.zipped_divide(mA, tiler_mn)
+  gB = cute.zipped_divide(mB, tiler_mn)
+  gC = cute.zipped_divide(mC, tiler_mn)
+
+  # Launch kernel
+  vectorized_add_kernel(gA, gB, gC).launch(
+    grid=(cute.size(gC, mode=[1]), 1, 1), block=(cute.size(tv_layout, mode=[0]), 1, 1)
+  )
+
+
+# Use same compilation pattern as above
+compiled_vec = cute.compile(vectorized_add_launch, a_, b_, c_)
+compiled_vec(a_, b_, c_)
+```
+
+Key advantages of CuTe's tiling approach:
+
+- Automatic coalesced memory access through layout algebra
+- Vectorized loads via proper stride patterns (128-bit transactions)
+- Compile-time optimization of memory access patterns
+- Reduced memory latency through tiling
+
+#### practical workflow
+
+1. Prototype in Python using `cute.jit`:
+   - Experiment with layout transformations
+   - Verify partitioning logic
+   - Test kernel logic on small inputs
+
+2. Translate to C++ for production:
+   - Python syntax maps directly to C++ CuTe API
+   - Replace `@cute.jit` with template functions
+   - Add compile-time optimizations (e.g., `cute::Int<128>` for static dimensions)
+
+3. Profile and iterate:
+   - Use `nsys` or `ncu` to identify bottlenecks
+   - Refine layout choices based on bank conflict analysis
+   - Optimize thread-to-data mappings
+
+Example notebooks:
+
+- [CuTe Layout Algebra](https://github.com/NVIDIA/cutlass/blob/main/examples/python/CuTeDSL/notebooks/cute_layout_algebra.ipynb)
+- [Data Types](https://github.com/NVIDIA/cutlass/blob/main/examples/python/CuTeDSL/notebooks/data_types.ipynb)
+- [Elementwise Add](https://github.com/NVIDIA/cutlass/blob/main/examples/python/CuTeDSL/notebooks/elementwise_add.ipynb)
+- [Tensor Operations](https://github.com/NVIDIA/cutlass/blob/main/examples/python/CuTeDSL/notebooks/tensor.ipynb)
+
+#### common pitfalls and solutions
+
+##### kernel launch pattern
+
+The proper pattern requires three components:
+
+1. Device kernel with `@cute.kernel`
+2. Host wrapper with `@cute.jit` that calls `.launch()`
+3. Compilation with `cute.compile()`
+
+Correct pattern:
+
+```python
+# Step 1: Define device kernel
+@cute.kernel
+def my_kernel(a: cute.Tensor, b: cute.Tensor, c: cute.Tensor):
+  # Device-side kernel code
+  tidx, _, _ = cute.arch.thread_idx()
+  bidx, _, _ = cute.arch.block_idx()
+  # ... kernel implementation ...
+  c[tidx] = a[tidx] + b[tidx]
+
+
+# Step 2: Define host wrapper with @cute.jit
+@cute.jit
+def launch_wrapper(a: cute.Tensor, b: cute.Tensor, c: cute.Tensor):
+  # Optional: perform layout transformations
+  tiled_a = cute.zipped_divide(a, tile_shape)
+  tiled_b = cute.zipped_divide(b, tile_shape)
+
+  # Launch kernel with grid/block configuration
+  my_kernel(tiled_a, tiled_b, c).launch(grid=(num_blocks, 1, 1), block=(256, 1, 1))
+
+
+# Step 3: Convert tensors
+a_ = from_dlpack(a, assumed_align=16)
+b_ = from_dlpack(b, assumed_align=16)
+c_ = from_dlpack(c, assumed_align=16)
+
+# Step 4: Compile the wrapper
+compiled_fn = cute.compile(launch_wrapper, a_, b_, c_)
+
+# Step 5: Execute (can call multiple times)
+for _ in range(100):
+  compiled_fn(a_, b_, c_)
+```
+
+Common mistakes:
+
+```python
+# ❌ Wrong: Calling kernel directly without @cute.jit wrapper
+tensor_ = from_dlpack(tensor, assumed_align=16)
+my_kernel(tensor_).launch(grid=..., block=...)  # Missing MLIR context!
+
+
+# ❌ Wrong: Converting inside @cute.jit
+@cute.jit
+def bad_wrapper():
+  a_ = from_dlpack(a, assumed_align=16)  # Convert outside!
+  my_kernel(a_).launch(...)
+
+
+# ❌ Wrong: Trying to compile @cute.kernel directly
+compiled = cute.compile(my_kernel, a_)  # Compile the @cute.jit wrapper!
+```
+
+##### type annotation errors
+
+Ensure proper type annotations for kernel arguments:
+
+```python
+@cute.kernel
+def my_kernel(
+  output: cute.Tensor,  # Runtime dynamic
+  input: cute.Tensor,  # Runtime dynamic
+  scale: cutlass.Float32,  # Runtime dynamic
+  tile_size: cutlass.Constexpr,  # Compile-time constant
+):
+  # Scale must be wrapped: cutlass.Float32(value)
+  # tile_size can be raw int (compile-time known)
+  pass
+
+
+# Call with proper types
+my_kernel(
+  output_,
+  input_,
+  cutlass.Float32(0.125),  # Wrap runtime values
+  64,  # Compile-time constant
+).launch(grid=..., block=...)
+```
+
+##### tensor lifetime issues
+
+CuTe tensors reference original PyTorch memory - ensure tensors stay alive:
+
+```python
+# ❌ Tensor goes out of scope before kernel executes
+def bad_example():
+  temp = torch.randn(M, N, device='cuda')
+  temp_ = from_dlpack(temp, assumed_align=16)
+  return temp_  # temp deleted, temp_ now invalid!
+
+
+result = bad_example()
+my_kernel(result).launch(...)  # Undefined behavior!
+
+
+# ✅ Keep original tensor alive
+def good_example():
+  tensor = torch.randn(M, N, device='cuda')
+  tensor_ = from_dlpack(tensor, assumed_align=16)
+  my_kernel(tensor_).launch(...)
+  torch.cuda.synchronize()  # Wait for kernel completion
+  return tensor  # Original tensor stays valid
+```
+
+##### grid/block configuration
+
+Grid and block dimensions must be tuples of 3 integers:
+
+```python
+# ❌ Wrong dimensions
+my_kernel(tensor_).launch(grid=256, block=128)
+
+# ✅ Correct - always 3D tuples
+my_kernel(tensor_).launch(grid=(num_blocks, 1, 1), block=(threads_per_block, 1, 1))
+
+# Using CuTe size helpers
+my_kernel(tiled_tensor).launch(
+  grid=(cute.size(tiled_tensor, mode=[1]), 1, 1),  # Number of tiles
+  block=(cute.size(thread_layout, mode=[0]), 1, 1),  # Threads per block
+)
+```
 
 ### optimization checklist
 

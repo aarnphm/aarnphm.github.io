@@ -10,6 +10,8 @@ Note: This requires CUTLASS 4.0+ with Python DSL support (currently in beta)
 
 import torch
 import numpy as np
+import argparse
+import time
 
 try:
   import cutlass
@@ -103,9 +105,9 @@ if CUTE_AVAILABLE:
     scale: cutlass.Float32,
     num_seqs: cutlass.Int32,
     num_heads: cutlass.Int32,
-    head_dim: cutlass.Constexpr,
-    page_size: cutlass.Constexpr,
-    max_num_pages: cutlass.Constexpr,
+    head_dim: cutlass.Int32,
+    page_size: cutlass.Int32,
+    max_num_pages: cutlass.Int32,
   ):
     """
     CuTe DSL implementation of paged attention.
@@ -183,8 +185,43 @@ if CUTE_AVAILABLE:
       for d in range(head_dim):
         output[seq_idx, head_idx, d] = acc[d] * inv_row_sum
 
+  @cute.jit
+  def paged_attention_cute_launch(
+    output: cute.Tensor,
+    query: cute.Tensor,
+    key_cache: cute.Tensor,
+    value_cache: cute.Tensor,
+    block_tables: cute.Tensor,
+    context_lens: cute.Tensor,
+    scale: cutlass.Float32,
+    num_seqs: cutlass.Int32,
+    num_heads: cutlass.Int32,
+    head_dim: cutlass.Int32,
+    page_size: cutlass.Int32,
+    max_num_pages: cutlass.Int32,
+  ):
+    """
+    JIT wrapper for launching the paged attention kernel.
+    """
+    # Grid: (num_heads, num_seqs, 1), Block: (1, 1, 1)
+    # Each block handles one (seq, head) pair
+    paged_attention_cute_kernel(
+      output,
+      query,
+      key_cache,
+      value_cache,
+      block_tables,
+      context_lens,
+      scale,
+      num_seqs,
+      num_heads,
+      head_dim,
+      page_size,
+      max_num_pages,
+    ).launch(grid=(num_heads, num_seqs, 1), block=(1, 1, 1))
 
-def test_paged_attention():
+
+def test_paged_attention(verbosity: int = 0):
   print('=' * 70)
   print('Testing Paged Attention: PyTorch Reference vs CuTe DSL')
   print('=' * 70)
@@ -231,11 +268,24 @@ def test_paged_attention():
   print('Running PyTorch reference implementation...')
   print('-' * 70)
 
-  output_ref = paged_attention_torch(query, key_cache, value_cache, block_tables, context_lens, scale)
+  # Warmup
+  for _ in range(3):
+    _ = paged_attention_torch(query, key_cache, value_cache, block_tables, context_lens, scale)
+  torch.cuda.synchronize()
+
+  # Time PyTorch implementation
+  num_iterations = 100
+  torch.cuda.synchronize()
+  start = time.perf_counter()
+  for _ in range(num_iterations):
+    output_ref = paged_attention_torch(query, key_cache, value_cache, block_tables, context_lens, scale)
+  torch.cuda.synchronize()
+  pytorch_time = (time.perf_counter() - start) / num_iterations * 1000  # Convert to ms
 
   print(f'Output shape: {output_ref.shape}')
-  print('Output sample (seq=0, head=0, first 8 dims):')
-  print(f'  {output_ref[0, 0, :8].cpu().numpy()}')
+  if verbosity >= 1:
+    print('Output sample (seq=0, head=0, first 8 dims):')
+    print(f'  {output_ref[0, 0, :8].cpu().numpy()}')
 
   # Run CuTe DSL kernel if available
   if CUTE_AVAILABLE:
@@ -245,34 +295,75 @@ def test_paged_attention():
 
     output_cute = torch.zeros_like(query)
 
-    # Compile and launch kernel
-    grid = (num_heads, num_seqs, 1)
-    block = (1, 1, 1)
-
     try:
-      # Use cute.jit to compile and cache
-      @cute.jit
-      def launch_paged_attention():
-        paged_attention_cute_kernel(
-          from_dlpack(output_cute),
-          from_dlpack(query),
-          from_dlpack(key_cache),
-          from_dlpack(value_cache),
-          from_dlpack(block_tables),
-          from_dlpack(context_lens),
-          np.float32(scale),
-          num_seqs,
-          num_heads,
-          head_dim,
-          page_size,
-          max_num_pages,
-        ).launch(grid=grid, block=block)
+      # Convert PyTorch tensors to CuTe tensors
+      output_cute_ = from_dlpack(output_cute, assumed_align=16)
+      query_ = from_dlpack(query, assumed_align=16)
+      key_cache_ = from_dlpack(key_cache, assumed_align=16)
+      value_cache_ = from_dlpack(value_cache, assumed_align=16)
+      block_tables_ = from_dlpack(block_tables, assumed_align=16)
+      context_lens_ = from_dlpack(context_lens, assumed_align=16)
 
-      launch_paged_attention()
+      # Compile the launch wrapper
+      paged_attention_compiled = cute.compile(
+        paged_attention_cute_launch,
+        output_cute_,
+        query_,
+        key_cache_,
+        value_cache_,
+        block_tables_,
+        context_lens_,
+        cutlass.Float32(scale),
+        cutlass.Int32(num_seqs),
+        cutlass.Int32(num_heads),
+        cutlass.Int32(head_dim),
+        cutlass.Int32(page_size),
+        cutlass.Int32(max_num_pages),
+      )
+
+      # Warmup
+      for _ in range(3):
+        paged_attention_compiled(
+          output_cute_,
+          query_,
+          key_cache_,
+          value_cache_,
+          block_tables_,
+          context_lens_,
+          cutlass.Float32(scale),
+          cutlass.Int32(num_seqs),
+          cutlass.Int32(num_heads),
+          cutlass.Int32(head_dim),
+          cutlass.Int32(page_size),
+          cutlass.Int32(max_num_pages),
+        )
+      torch.cuda.synchronize()
+
+      # Time CuTe implementation
+      torch.cuda.synchronize()
+      start = time.perf_counter()
+      for _ in range(num_iterations):
+        paged_attention_compiled(
+          output_cute_,
+          query_,
+          key_cache_,
+          value_cache_,
+          block_tables_,
+          context_lens_,
+          cutlass.Float32(scale),
+          cutlass.Int32(num_seqs),
+          cutlass.Int32(num_heads),
+          cutlass.Int32(head_dim),
+          cutlass.Int32(page_size),
+          cutlass.Int32(max_num_pages),
+        )
+      torch.cuda.synchronize()
+      cute_time = (time.perf_counter() - start) / num_iterations * 1000  # Convert to ms
 
       print(f'Output shape: {output_cute.shape}')
-      print('Output sample (seq=0, head=0, first 8 dims):')
-      print(f'  {output_cute[0, 0, :8].cpu().numpy()}')
+      if verbosity >= 1:
+        print('Output sample (seq=0, head=0, first 8 dims):')
+        print(f'  {output_cute[0, 0, :8].cpu().numpy()}')
 
       # Compare results
       print('\n' + '-' * 70)
@@ -291,6 +382,21 @@ def test_paged_attention():
       else:
         print(f'✗ FAILED (tolerance: {tolerance})')
 
+      # Performance comparison
+      print('\n' + '-' * 70)
+      print('Performance Comparison')
+      print('-' * 70)
+      print(f'PyTorch reference: {pytorch_time:.3f} ms')
+      print(f'CuTe DSL kernel: {cute_time:.3f} ms')
+      speedup = pytorch_time / cute_time
+      print(f'Speedup: {speedup:.2f}x')
+      if speedup > 1.0:
+        print(f'CuTe is {speedup:.2f}x faster')
+      elif speedup < 1.0:
+        print(f'PyTorch is {1/speedup:.2f}x faster')
+      else:
+        print('Performance is similar')
+
     except Exception as e:
       print(f'Error running CuTe DSL kernel: {e}')
       print('Note: CuTe DSL is in beta and may require specific CUDA/driver versions')
@@ -299,6 +405,10 @@ def test_paged_attention():
     print('\n' + '-' * 70)
     print('CuTe DSL not available - showing PyTorch reference only')
     print('-' * 70)
+    print('\n' + '-' * 70)
+    print('Performance')
+    print('-' * 70)
+    print(f'PyTorch reference: {pytorch_time:.3f} ms')
 
   # Show memory efficiency benefits
   print('\n' + '=' * 70)
@@ -330,10 +440,11 @@ def test_paged_attention():
   print(f'  Savings: {(traditional_memory - paged_memory) / traditional_memory * 100:.1f}%')
   print(f'  Fragmentation: < {page_size} tokens per sequence')
 
-  print('\n' + '=' * 70)
-  print('Key Concepts Demonstrated')
-  print('=' * 70)
-  print("""
+  if verbosity >= 2:
+    print('\n' + '=' * 70)
+    print('Key Concepts Demonstrated')
+    print('=' * 70)
+    print("""
 1. KV cache paging: Fixed-size pages eliminate memory fragmentation
 2. Block tables: Logical-to-physical page mapping enables flexibility
 3. Online softmax: Streaming computation with running max/sum statistics
@@ -348,18 +459,24 @@ For production use, see:
 
 
 if __name__ == '__main__':
+  parser = argparse.ArgumentParser(description='Paged Attention: PyTorch vs CuTe DSL')
+  parser.add_argument('-v', '--verbose', action='count', default=0, help='Increase verbosity (-v for version info, -vv for all details)')
+  args = parser.parse_args()
+
   if not torch.cuda.is_available():
     print('Error: CUDA not available')
     exit(1)
 
-  print(f'PyTorch version: {torch.__version__}')
-  print(f'CUDA available: {torch.cuda.is_available()}')
-  print(f'CUDA version: {torch.version.cuda}')
+  if args.verbose >= 1:
+    print(f'PyTorch version: {torch.__version__}')
+    print(f'CUDA available: {torch.cuda.is_available()}')
+    print(f'CUDA version: {torch.version.cuda}')
 
-  if CUTE_AVAILABLE:
-    print('CuTe DSL available: Yes')
-    print('  Install: pip install nvidia-cutlass-dsl')
-  else:
-    print('CuTe DSL available: No (falling back to PyTorch reference)')
+    if CUTE_AVAILABLE:
+      print('CuTe DSL available: Yes')
+      print('  Install: pip install nvidia-cutlass-dsl')
+    else:
+      print('CuTe DSL available: No (falling back to PyTorch reference)')
+    print()
 
-  test_paged_attention()
+  test_paged_attention(verbosity=args.verbose)
