@@ -21,9 +21,6 @@ id = "c8591d9cecbd4cf4b569a8edadc3302d"
 [[kv_namespaces]]
 binding = "ARENA_SNAPSHOTS"
 id = "03182f291ccc4443949575b70e2ea883"
-
-[[kv_namespaces]]
-binding = "ARENA_SNAPSHOTS"
 preview_id = "7b9961c823c54005a5deeb37121392a2"
 remote = true
 
