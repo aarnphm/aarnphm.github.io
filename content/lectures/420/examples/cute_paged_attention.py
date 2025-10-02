@@ -102,7 +102,7 @@ if CUTE_AVAILABLE:
     value_cache: cute.Tensor,
     block_tables: cute.Tensor,
     context_lens: cute.Tensor,
-    scale: cutlass.Float16,
+    scale: cutlass.Float32,
     num_seqs: cutlass.Int32,
     num_heads: cutlass.Int32,
     head_dim: cutlass.Int32,
@@ -128,12 +128,12 @@ if CUTE_AVAILABLE:
       num_pages_seq = (context_len + page_size - 1) // page_size
 
       # Cache query vector for this CTA in registers
-      q_local = cute.make_fragment((head_dim,), cutlass.Float16)
-      acc = cute.make_fragment((head_dim,), cutlass.Float16)
+      q_local = cute.make_fragment((head_dim,), cutlass.Float32)
+      acc = cute.make_fragment((head_dim,), cutlass.Float32)
 
       for d in range(head_dim):
         q_local[d] = query[seq_idx, head_idx, d]
-        acc[d] = cutlass.Float16(0.0)
+        acc[d] = cutlass.Float32(0.0)
 
       # Online softmax statistics
       row_max = float('-inf')
@@ -193,7 +193,7 @@ if CUTE_AVAILABLE:
     value_cache: cute.Tensor,
     block_tables: cute.Tensor,
     context_lens: cute.Tensor,
-    scale: cutlass.Float16,
+    scale: cutlass.Float32,
     num_seqs: cutlass.Int32,
     num_heads: cutlass.Int32,
     head_dim: cutlass.Int32,
@@ -221,9 +221,7 @@ if CUTE_AVAILABLE:
     ).launch(grid=(num_heads, num_seqs, 1), block=(1, 1, 1))
 
 
-def test_paged_attention(
-  verbosity: int = 0, num_seqs: int = 2, seq_len: int = 32, num_heads: int = 4, head_dim: int = 64, page_size: int = 16
-):
+def test_paged_attention(verbosity: int = 0, num_seqs: int = 2, seq_len: int = 32, num_heads: int = 4, head_dim: int = 64, page_size: int = 16):
   # Problem size
   max_num_pages = (seq_len + page_size - 1) // page_size
 
@@ -241,9 +239,9 @@ def test_paged_attention(
       block_tables[seq_idx, page_idx] = seq_idx * max_num_pages + page_idx
 
   # Allocate tensors
-  query = torch.randn(num_seqs, num_heads, head_dim, dtype=torch.float16, device='cuda')
-  key_cache = torch.randn(total_pages, num_heads, page_size, head_dim, dtype=torch.float16, device='cuda')
-  value_cache = torch.randn(total_pages, num_heads, page_size, head_dim, dtype=torch.float16, device='cuda')
+  query = torch.randn(num_seqs, num_heads, head_dim, dtype=torch.float32, device='cuda')
+  key_cache = torch.randn(total_pages, num_heads, page_size, head_dim, dtype=torch.float32, device='cuda')
+  value_cache = torch.randn(total_pages, num_heads, page_size, head_dim, dtype=torch.float32, device='cuda')
 
   scale = 1.0 / np.sqrt(head_dim)
 
@@ -308,7 +306,7 @@ def test_paged_attention(
         value_cache_,
         block_tables_,
         context_lens_,
-        cutlass.Float16(scale),
+        cutlass.Float32(scale),
         cutlass.Int32(num_seqs),
         cutlass.Int32(num_heads),
         cutlass.Int32(head_dim),
@@ -325,7 +323,7 @@ def test_paged_attention(
           value_cache_,
           block_tables_,
           context_lens_,
-          cutlass.Float16(scale),
+          cutlass.Float32(scale),
           cutlass.Int32(num_seqs),
           cutlass.Int32(num_heads),
           cutlass.Int32(head_dim),
@@ -345,7 +343,7 @@ def test_paged_attention(
           value_cache_,
           block_tables_,
           context_lens_,
-          cutlass.Float16(scale),
+          cutlass.Float32(scale),
           cutlass.Int32(num_seqs),
           cutlass.Int32(num_heads),
           cutlass.Int32(head_dim),
@@ -371,7 +369,7 @@ def test_paged_attention(
       print(f'Max absolute difference: {max_diff:.6f}')
       print(f'Mean absolute difference: {mean_diff:.6f}')
 
-      tolerance = 1e-2  # FP16 requires larger tolerance
+      tolerance = 1e-3
       if max_diff < tolerance:
         print(f'✓ PASSED (tolerance: {tolerance})')
       else:
@@ -388,7 +386,7 @@ def test_paged_attention(
       if speedup > 1.0:
         print(f'CuTe is {speedup:.2f}x faster')
       elif speedup < 1.0:
-        print(f'PyTorch is {1 / speedup:.2f}x faster')
+        print(f'PyTorch is {1/speedup:.2f}x faster')
       else:
         print('Performance is similar')
 
@@ -416,20 +414,20 @@ def test_paged_attention(
 
   print(f'\nScenario: {num_seqs} sequences with max_len={max_len}, avg_len={avg_len}')
   print(
-    f'KV cache element size: {num_heads} heads × {head_dim} dim × 2 bytes (FP16) = {num_heads * head_dim * 2} bytes/token'
+    f'KV cache element size: {num_heads} heads × {head_dim} dim × 4 bytes = {num_heads * head_dim * 4} bytes/token'
   )
 
   # Traditional pre-allocated cache
-  traditional_memory = num_seqs * max_len * num_heads * head_dim * 2 * 2  # 2 for K and V, 2 bytes for FP16
+  traditional_memory = num_seqs * max_len * num_heads * head_dim * 4 * 2  # 2 for K and V
   print('\nTraditional (pre-allocated):')
-  print(f'  Memory: {num_seqs} seqs × {max_len} tokens × {num_heads * head_dim * 2 * 2} bytes')
+  print(f'  Memory: {num_seqs} seqs × {max_len} tokens × {num_heads * head_dim * 4 * 2} bytes')
   print(f'  Total: {traditional_memory / 1024 / 1024:.2f} MB')
   print(f'  Utilization: {avg_len / max_len * 100:.1f}%')
-  print(f'  Wasted: {(max_len - avg_len) * num_seqs * num_heads * head_dim * 2 * 2 / 1024 / 1024:.2f} MB')
+  print(f'  Wasted: {(max_len - avg_len) * num_seqs * num_heads * head_dim * 4 * 2 / 1024 / 1024:.2f} MB')
 
   # Paged attention
   pages_needed = num_seqs * ((avg_len + page_size - 1) // page_size)
-  paged_memory = pages_needed * page_size * num_heads * head_dim * 2 * 2
+  paged_memory = pages_needed * page_size * num_heads * head_dim * 4 * 2
   print('\nPaged attention:')
   print(f'  Pages needed: {pages_needed} pages × {page_size} tokens')
   print(f'  Memory: {paged_memory / 1024 / 1024:.2f} MB')
@@ -456,9 +454,7 @@ For production use, see:
 
 def main():
   parser = argparse.ArgumentParser(description='Paged Attention: PyTorch vs CuTe DSL')
-  parser.add_argument(
-    '-v', '--verbose', action='count', default=0, help='Increase verbosity (-v for version info, -vv for all details)'
-  )
+  parser.add_argument('-v', '--verbose', action='count', default=0, help='Increase verbosity (-v for version info, -vv for all details)')
   parser.add_argument('--seq-len', type=int, default=None, help='Sequence length (default: run multiple sizes)')
   parser.add_argument('--num-seqs', type=int, default=2, help='Number of sequences (default: 2)')
   parser.add_argument('--num-heads', type=int, default=4, help='Number of attention heads (default: 4)')
@@ -507,7 +503,7 @@ def main():
     for i, config in enumerate(test_configs):
       if i > 0:
         print('\n\n')
-      print(f'Test {i + 1}/{len(test_configs)}: {config["label"]}')
+      print(f"Test {i + 1}/{len(test_configs)}: {config['label']}")
       print()
       test_paged_attention(
         verbosity=args.verbose,
