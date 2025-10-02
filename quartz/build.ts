@@ -2,7 +2,7 @@ import sourceMapSupport from "source-map-support"
 sourceMapSupport.install(options)
 import path from "path"
 import { PerfTimer } from "./util/perf"
-import { mkdir, readdir, rm } from "fs/promises"
+import { rm } from "fs/promises"
 import { GlobbyFilterFunction, isGitIgnored } from "globby"
 import { parseMarkdown } from "./processors/parse"
 import { filterContent } from "./processors/filter"

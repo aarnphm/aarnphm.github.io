@@ -42,7 +42,10 @@ export const Twitter: QuartzTransformerPlugin = () => ({
   markdownPlugins({ cfg }) {
     const locale = cfg.configuration.locale.split("-")[0] ?? "en"
     return [
-      () => async (tree) => {
+      () => async (tree, file) => {
+        const fileData = file.data
+        if (fileData.slug === "are.na") return
+
         const promises: Promise<void>[] = []
 
         const fetchEmbedded = async (

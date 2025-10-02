@@ -10,22 +10,41 @@ You should be able to always search the web. Be super technical. But always give
 
 ## Instructions
 
+**IMPORTANT**: Most of the cases if you need to verify build, make sure to see if `pnpm dev` is being run. In this cases, then `pnpm bundle` or any build step are not necessary. Otherwise you can use the following:
+
+- For build and development:
+  - `pnpm bundle` - Build for production (concurrency 8, bundleInfo, verbose)
+    - After this, run `fd --glob "*.[pdf|ddl]" public -x rm` to mae it compatible with `wrangler`
+  - `pnpm prod` - Production build with NODE_ENV=production
+  - `pnpm bundle:dev` - Development build for Cloudflare Pages
+  - `pnpm cf:dev` - Run Cloudflare Worker development server on port 8080
+  - `pnpm cf:deploy` - Deploy to Cloudflare (runs check first)
+- For code quality:
+  - `pnpm check` - Complete validation pipeline (format, convert, cf:types, prettier check, TypeScript check, tests)
+  - `pnpm format` - Format code with Prettier and organize References.bib with bibtex-tidy
+  - `pnpm test` - Run tests using tsx --test
+  - `tsc --noEmit` - TypeScript type checking without emitting files
+- Other utilities:
+  - `pnpm convert` - Run conversion scripts (tsx quartz/scripts/convert.ts)
+  - `pnpm cf:types` - Generate Cloudflare Worker types
+  - `pnpm cf:prepare` - Prepare for Cloudflare deployment (format, convert, types)
 - TypeScript/TSX: 2-space indent, ES modules. Format with Prettier (`pnpm format`).
-- Components: `PascalCase.tsx` (e.g., `ExplorerNode.tsx`). Utilities: lowercase or camel file names (e.g., `path.ts`, `fileTrie.ts`).
-- Variables/functions: `camelCase`; types/interfaces: `PascalCase`.
+  - Components: `PascalCase.tsx` (e.g., `ExplorerNode.tsx`). Utilities: lowercase or camel file names (e.g., `path.ts`, `fileTrie.ts`).
+    - If you are writing buttons, most case prefer `span[type="button"]` over button. But make sure to ask for confirmation.
+  - Variables/functions: `camelCase`; types/interfaces: `PascalCase`.
 - Python (optional tools in `pyproject.toml`): ruff and mypy with 2-space indent; keep notebooks and scripts minimal. No need to run formatter, just follows https://docs.fast.ai/dev/style.html for convention.
   - No need to do gated imports. Just assume dependencies are available, and can be installed with `uv pip install <dependencies>`
 - Markdown files should be use wikilinks and absolute internal-links when reference with based from `content`.
   - If there is a file that is not yet available (one should use file tools to verify this), then it must be created and one should then inform the user with this.
   - Always keep everything in lowercase.
-- Markdown files will be consumed with Obsidian. Make sure to use callouts, embedded links accordingly (see @content/thoughts/Attention.md for example.)
-- All math equation should be written with LaTeX in markdown.
-  - For block-form, it should be formatted with `$$` with new lines. For example:
-    ```latex
-    $$
-    f(y)\ge f(x)+\langle\nabla f(x),y- x\rangle+\tfrac{\mu}{2}\|y- x\|^2
-    $$
-    ```
+  - Markdown files will be consumed with Obsidian. Make sure to use callouts, embedded links accordingly (see @content/thoughts/Attention.md for example.)
+  - All math equation should be written with LaTeX in markdown.
+    - For block-form, it should be formatted with `$$` with new lines. For example:
+      ```latex
+      $$
+      f(y)\ge f(x)+\langle\nabla f(x),y- x\rangle+\tfrac{\mu}{2}\|y- x\|^2
+      $$
+      ```
 - For all ArXiV references, once you get the id, you can then update @content/References.bib with the output of the following command:
   ```bash
   curl https://arxiv.org/bibtex/<id>

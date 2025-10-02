@@ -7,7 +7,6 @@ tags:
 description: and documentation of learning procedure.
 date: "2025-09-13"
 modified: 2025-09-15 18:00:42 GMT-04:00
-noindex: true
 title: assignment three reports.
 ---
 

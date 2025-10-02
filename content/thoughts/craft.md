@@ -1,18 +1,18 @@
 ---
 id: craft
-permalinks:
-  - /thoughts/work
-  - /craft
-  - /portfolio
+aliases:
+  - work
+  - portfolio
 tags:
   - evergreen
 description: and a celebration for the act of making.
 date: "2021-12-22"
-modified: 2025-09-26 08:55:08 GMT-04:00
+modified: 2025-10-01 16:26:17 GMT-04:00
 comments: false
-aliases:
-  - work
-  - portfolio
+permalinks:
+  - /thoughts/work
+  - /craft
+  - /portfolio
 title: craft.
 ---
 
@@ -113,8 +113,10 @@ You can find internal monologue under [[/posts/]] index.
     - [[lectures/2/notes|2. attention convexity]]
     - [[lectures/3/notes|3. K,V, and KVCache]]
     - [[lectures/4/notes|4. Speculative decoding]]
-      - [[lectures/4/notes|41. EAGLE, and MTP]]
-        - [[lectures/4/notes|411. linear algebra]]
+      - [[lectures/41/notes|41. EAGLE, and MTP]]
+        - [[lectures/411/notes|411. linear algebra]]
+        - [[lectures/412/notes|412. linear algebra in transformers]]
+      - [[lectures/420/notes|420. matmul and GPU quirks]]
 - vLLM Toronto Meetup, 2025
 
 ## companies.

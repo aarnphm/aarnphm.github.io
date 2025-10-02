@@ -2,9 +2,11 @@
 id: images
 tags:
   - seed
-date: 2025-01-06
 description: and all the things I found interesting on the internet.
-modified: 2025-02-23 23:30:51 GMT-05:00
+transclude:
+  title: false
+date: "2025-01-06"
+modified: 2025-10-01 02:36:21 GMT-04:00
 title: images
 ---
 
@@ -61,6 +63,12 @@ title: images
 ![[thoughts/images/actually my life isn't over yet.webp|actually my life isn't over]]
 
 ![[thoughts/images/old-books-in-philly.webp]]
+
+![[thoughts/images/human evolution but with ml terminology.webp]]
+
+![[thoughts/images/girl hop off crdt.webp]]
+
+![[thoughts/images/gatsby the great.webp]]
 
 ## authors
 

@@ -111,7 +111,7 @@
   backdrop-filter: blur(5px);
 
   &.active {
-    display: inline-block;
+    display: flex;
   }
 }
 

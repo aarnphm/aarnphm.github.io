@@ -842,7 +842,7 @@ export const TopLinks = {
   merci: "/influence",
   advice: "/quotes",
   parfum: "/thoughts/Scents",
-  "are.na": "/are.na",
+  "are.na": "/arena",
   craft: "/thoughts/craft",
   home: "/thoughts/furnitures",
   movies: "/movies",
@@ -1290,6 +1290,8 @@ export function renderPage(
   const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? "default"
   if (pageLayout === "technical") disableSidepanel = true
   const isSlides = componentData.fileData.frontmatter?.slides ?? false
+  const isArena = slug === "arena" || slug.startsWith("arena/")
+  const isArenaSubpage = slug.startsWith("arena/") && slug !== "arena"
 
   return (
     `<!DOCTYPE html>
@@ -1315,6 +1317,7 @@ export function renderPage(
           data-layout={pageLayout}
           data-disable-sidepanel={disableSidepanel}
           data-is-folder-tag={isFolderTag}
+          data-arena-subpage={isArenaSubpage}
         >
           <main
             id="quartz-root"
@@ -1336,7 +1339,14 @@ export function renderPage(
               </div>
             </section>
             {beforeBody.length > 0 && (
-              <section class="page-header popover-hint grid all-col">
+              <section
+                class={classNames(
+                  undefined,
+                  "page-header",
+                  "popover-hint",
+                  isArena ? "all-col" : "all-col grid",
+                )}
+              >
                 {beforeBody.map((BodyComponent) => (
                   <BodyComponent {...componentData} />
                 ))}
@@ -1346,7 +1356,7 @@ export function renderPage(
               class={classNames(
                 undefined,
                 "page-content",
-                slug === "index" ? "side-col" : "grid all-col",
+                slug === "index" ? "side-col" : isArena ? "all-col" : "grid all-col",
               )}
               style={{ flex: "1 1 auto" }}
             >
@@ -1358,10 +1368,14 @@ export function renderPage(
                 </aside>
               )}
               <Content {...componentData} />
-              <div id="wc-modal" class="wc-modal">
-                <div class="wc-inner" />
-              </div>
-              {!isSlides && <aside class="sidepanel-container" />}
+              {!isSlides && !isArena && (
+                <>
+                  <div id="wc-modal" class="wc-modal">
+                    <div class="wc-inner" />
+                  </div>
+                  <aside class="sidepanel-container" />
+                </>
+              )}
             </section>
             {!isFolderTag && (
               <section class="page-footer popover-hint grid all-col">

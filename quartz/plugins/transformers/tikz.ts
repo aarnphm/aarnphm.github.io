@@ -8,13 +8,13 @@ import { svgOptions } from "../../components/svg"
 import { toHtml } from "hast-util-to-html"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 
-async function tex2svg(input: string) {
+async function tex2svg(input: string, showConsole: boolean) {
   await load()
   const dvi = await tex(input, {
     texPackages: { pgfplots: "", amsmath: "intlimits" },
     tikzLibraries: "arrows.meta,calc,positioning",
     addToPreamble: "% comment",
-    showConsole: true,
+    showConsole,
   })
   const svg = await dvi2svg(dvi)
   return svg
@@ -96,7 +96,16 @@ function makeTikzGraph(node: Code, svg: string, style?: string): Element {
   )
 }
 
-export const TikzJax: QuartzTransformerPlugin = () => {
+interface Options {
+  showConsole: boolean
+}
+
+const defaultOpts: Options = {
+  showConsole: false,
+}
+
+export const TikzJax: QuartzTransformerPlugin<Options> = (opts?: Options) => {
+  const o = { ...defaultOpts, ...opts }
   return {
     name: "TikzJax",
     // TODO: maybe we should render client-side instead of server-side? (build-time would increase).
@@ -126,7 +135,7 @@ export const TikzJax: QuartzTransformerPlugin = () => {
             const { index, parent, value, base64 } = nodes[i]
             let svg
             if (base64 !== undefined) svg = base64
-            else svg = await tex2svg(value)
+            else svg = await tex2svg(value, o.showConsole)
             const node = parent.children[index] as Code
 
             parent.children.splice(index, 1, {

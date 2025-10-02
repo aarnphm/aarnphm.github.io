@@ -47,6 +47,7 @@
     "@citation-js/plugin-bibtex": "^0.7.18",
     "@citation-js/plugin-doi": "^0.7.18",
     "@clack/prompts": "^0.11.0",
+    "@cloudflare/puppeteer": "^1.0.4",
     "@cloudflare/workers-oauth-provider": "^0.0.11",
     "@floating-ui/dom": "^1.7.4",
     "@huggingface/transformers": "^3.7.4",
@@ -144,13 +145,13 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250927.0",
+    "@cloudflare/workers-types": "^4.20251001.0",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
     "@types/katex": "^0.16.7",
     "@types/mdast": "^4.0.4",
-    "@types/node": "^24.6.0",
+    "@types/node": "^24.6.2",
     "@types/pretty-time": "^1.1.5",
     "@types/source-map-support": "^0.5.10",
     "@types/unist": "^3.0.3",
@@ -163,14 +164,15 @@
     "prettier": "^3.6.2",
     "ts-morph": "^27.0.0",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "wrangler": "^4.40.3"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e",
   "pnpm": {
     "peerDependencyRules": {
       "allowedVersions": {
-        "use-sync-external-store>react": "^19.0.0"
+        "use-sync-external-store>react": "^19.0.0",
+        "zod": "^3.22.0 || ^4.0.0"
       }
     }
   }

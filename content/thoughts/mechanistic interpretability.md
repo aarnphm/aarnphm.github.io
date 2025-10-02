@@ -7,7 +7,7 @@ tags:
 description: and reverse engineering neural networks.
 date: "2024-10-30"
 abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
-modified: 2025-09-26 15:49:51 GMT-04:00
+modified: 2025-10-01 02:16:29 GMT-04:00
 aliases:
   - mechinterp
   - reveng neural net
@@ -22,11 +22,9 @@ To attack the _curse of dimensionality_, the question remains: _==how do we hope
 
 [^lesswrongarc]: good read from [Lawrence C](https://www.lesswrong.com/posts/6FkWnktH3mjMAxdRT/what-i-would-do-if-i-wasn-t-at-arc-evals#Ambitious_mechanistic_interpretability) for ambitious mech interp.
 
-Topics:
-
-- [[thoughts/sparse autoencoder]]
-- [[thoughts/sparse crosscoders]]
-- [[thoughts/Attribution parameter decomposition]]
+![[thoughts/sparse autoencoder]]
+![[thoughts/sparse crosscoders]]
+![[thoughts/Attribution parameter decomposition]]
 
 ## open problems
 

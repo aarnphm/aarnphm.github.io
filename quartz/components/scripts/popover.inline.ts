@@ -194,8 +194,6 @@ async function showPopover(
       popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
     }
   }
-
-  activeAnchor = link
 }
 
 function clearActivePopover() {
@@ -451,14 +449,12 @@ async function mouseEnterHandler(
 
   await populatePopoverContent(response, targetUrl, popoverInner)
 
-  if (popoverInner.childElementCount === 0) {
-    popoverElement.remove()
+  if (!!document.getElementById(popoverId)) {
     return
   }
 
   document.body.appendChild(popoverElement)
   if (activeAnchor !== link) {
-    popoverElement.remove()
     return
   }
 

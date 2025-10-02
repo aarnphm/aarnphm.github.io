@@ -6,8 +6,7 @@ tags:
   - augmented
 description: made with gpt-5 and claude
 date: "2025-09-26"
-modified: 2025-09-26 16:35:00 GMT-04:00
-noindex: true
+modified: 2025-10-01 16:54:15 GMT-04:00
 title: supplement for supplement for 0.412
 ---
 

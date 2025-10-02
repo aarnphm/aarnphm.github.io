@@ -1,17 +1,17 @@
 {
   "accentColor": "",
   "cssTheme": "Minimal",
-  "interfaceFontFamily": "Berkeley Mono",
-  "textFontFamily": "Berkeley Mono",
+  "interfaceFontFamily": "PP Neue Montreal,Berkeley Mono",
+  "textFontFamily": "PP Neue Montreal,Berkeley Mono",
   "monospaceFontFamily": "Berkeley Mono",
-  "baseFontSize": 16,
+  "baseFontSize": 18,
   "translucency": true,
   "showViewHeader": false,
   "enabledCssSnippets": [
     "snippet"
   ],
-  "baseFontSizeAction": true,
+  "baseFontSizeAction": false,
   "theme": "system",
-  "nativeMenus": false,
-  "showRibbon": false
+  "nativeMenus": true,
+  "showRibbon": true
 }

@@ -1,26 +1,25 @@
 ---
 id: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /resources
+  - /inspo
+  - /are.na
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-09-30 08:02:43 GMT-04:00
-permalinks:
-  - /website
-  - /resources
-  - /inspo
+date: "2024-10-24"
+modified: 2025-10-02 05:13:11 GMT-04:00
+aliases:
+  - inspo
 title: are.na
 cssclasses:
   - nolist
 ---
-
-see also [[/curius|bookmarks]]
 
 ## discourse
 
@@ -29,101 +28,128 @@ see also [[/curius|bookmarks]]
   - > By writing, you are voting on the future of the Shoggoth using one of the few currencies it acknowledges: tokens it has to predict. If you aren’t writing, you are abdicating the future or your role in it. If you think it’s enough to just be a good citizen, to vote for your favorite politician, to pick up litter and recycle, the future doesn’t care about you.
   - > There are ways to influence the Shoggoth more, but not many. If you don’t already occupy a handful of key roles or work at a frontier lab, your influence rounds off to 0, far more than ever before. If there are values you have which are not expressed yet in text, if there are things you like or want, if they aren’t reflected online, then to the AI they don’t exist. That is dangerously close to won’t exist.
   - > But yes, you are also creating a sort of immortality for yourself personally. You aren’t just creating a persona, you are creating your future self too. What self are you showing the LLMs, and how will they treat you in the future?
-- https://x.com/gwern/status/1959511089961636341
+- https://x.com/gwern/status/1959511089961636341 -- Gwen's creative discourse
 
 ## website
 
-- https://www.sholis.com/
-- https://jzhao.xyz/ -- The OG Quartz's implementation
-  - daylightcomputer's inspired but in pure CSS and [HTML](https://github.com/jackyzha0/sunlit)
-- https://daylightcomputer.com/ -- Daylight Computer landing
+- https://www.sholis.com/ -- Brian Sholis
+- https://jzhao.xyz/ -- Jacky Zhao
+  - daylightcomputer's inspired but in pure CSS and HTML
+  - source: https://github.com/jackyzha0/sunlit
+- https://daylightcomputer.com/ -- Daylight Computer
 - https://walzr.com/IMG_0001 -- Send to YouTube in Photos app
-- https://shapefarm.net/ -- clean aesthetics with nice hierarchical components
-- https://jacobleech.com/ -- warm, graphics, animation smooth
-- https://ertdfgcvb.xyz/ -- cool ascii animations
+- https://shapefarm.net/ -- Shape Farm
+  - clean aesthetics with nice hierarchical components
+- https://jacobleech.com/ -- Jacob Leech
+  - warm, graphics, animation smooth
+- https://ertdfgcvb.xyz/ -- ertdfgcvb
+  - cool ascii animations
 - https://typicalmitul.com/montreal-in-motion -- Montreal in Lens
-- http://pressanykey.today/ -- cool visualisation of typing process
-- https://langworth.com/ -- wait terminal go brrr
-- https://perfume-area.com/reviews/page:2 -- arena for perfume
-- https://clock.vvhuang.com/ -- the graphic for the clock is nice
-- https://handyarrows.com/ -- Arrowssssss
-- https://brand.dropbox.com/ -- Cool brand design from Dropbox, by daybreak studio
-- https://tomcritchlow.com/wiki/ -- Wikitext garden
-- https://www.alanagoyal.com/notes -- Apple Notes-inspired portfolio
+- http://pressanykey.today/ -- Press Any Key
+  - cool visualisation of typing process
+- https://langworth.com/ -- Ian Langworth
+  - wait terminal go brrr
+- https://perfume-area.com/reviews/page:2 -- PERFUME AREA
+  - arena for perfume
+- https://clock.vvhuang.com/ -- Prague Astronomical Clock
+  - the graphic for the clock is nice
+- https://handyarrows.com/
+  - Arrowssssss
+- https://brand.dropbox.com/
+  - Cool brand design from Dropbox, by daybreak studio
+- https://tomcritchlow.com/wiki/
+  - Wikitext [[thoughts/Digital garden|garden]]
+- https://www.alanagoyal.com/notes
+  - Apple Notes-inspired portfolio
   - https://github.com/alanagoyal/alanagoyal, mostly just react-markdown and React 19 Server Component.
-- https://pudding.cool/2023/09/invisible-epidemic/ -- cool timeline scaling transition
-- https://www.chinatownjs.nyc/
-- https://www.benkuhn.net/outliers/
-- https://henry.codes/ -- very much text-dominant black/white
-- https://www.ruth-zhao.com/computer -- map world
-- https://chia.design/
-- https://tinnei.com/
-- https://www.tylerxhobbs.com/works/categories/digital -- utilitarian design
-- https://negative.sanctuary.computer/ -- landing poggies
-- https://leimao.github.io/ -- Lei Mao's blog on CUDA and GPU optimization (NVIDIA)
-- https://www.lei.chat -- AI Compiler (AMD)
-- https://studio.4o4.space/ -- 4o4 Studio
+- https://pudding.cool/2023/09/invisible-epidemic/
+  - cool timeline scaling transition
+- https://www.chinatownjs.nyc/ -- Chinatown.js
+- https://www.benkuhn.net/outliers/ -- Searching for outliers
+- https://henry.codes/ -- Henry Desroches
+  - very much text-dominant black/white
+- https://www.ruth-zhao.com/computer -- Ruth Zhao
+  - map world
+- https://chia.design/ -- Chia Amisola
+- https://tinnei.com/ -- Tinnei / 10A
+- https://www.tylerxhobbs.com/works/categories/digital -- Tyler Hobbs
+  - utilitarian design
+- https://negative.sanctuary.computer/ -- Studio Carbon Negative
+  - landing poggies
+- https://leimao.github.io/ -- Lei Mao's Log Book
+- https://www.lei.chat -- Lei's Chat
+  - AI Compiler (AMD)
+- https://studio.4o4.space/ -- STUDIO 4o4
+  - 4o4 Studio
 - https://cogtoolslab.github.io/ -- cognitive tools lab
+  - cognitive tools lab
   - reverse engineering the human cognitive toolkit, by Prof. Judith Fan
-- https://everythingiseverything.nyc/map/ -- Bagel places, in NYC
-- https://www.rockstargames.com/VI -- GTA VI when?
-- https://www.tetragrammaton.com/
-- https://basement.studio/
+- https://everythingiseverything.nyc/map/ -- everything is everything NYC
+  - Bagel places, in NYC
+- https://www.rockstargames.com/VI -- Grand Theft Auto VI
+  - GTA VI when?
+- https://www.tetragrammaton.com/ -- Tetragrammaton
+- https://basement.studio/ -- basement.studio
 - https://tatianabilbao.com -- Tatiana Bilbao Estudio
-- https://barnsworthburning.net/
-- https://html.energy/events.html
-- https://devouringdetails.com/ -- Devouring Details
-- https://calv.info/about -- Calvin, as in Calvin and Hobbes
-- https://ampersand.pm/ -- Morgan
+- https://barnsworthburning.net/ -- barnsworthburning
+- https://html.energy/events.html -- HTML Energy
+- https://devouringdetails.com/ -- Devouring Details [**]
+- https://calv.info/about -- Calvin French-Owen
+  - Calvin, as in Calvin and Hobbes
+- https://ampersand.pm/ -- &pm (Morgan.)
   - met at [HTML Day](html.green)
-- https://www.alanagoyal.com -- Alana Goyal
-- https://www.chloeyan.me/
-- https://ertdfgcvb.xyz
-- https://shashwathsantosh.com/
+- https://www.chloeyan.me/ -- Chloe Yan
+- https://ertdfgcvb.xyz -- ertdfgcvb
+- https://shashwathsantosh.com/ -- Shashwath Santosh
 - https://solarprotocol.net -- Solar Protocol
 - https://archive.jakedowsmith.com/rosemarybutcher.com -- Rosemary Butcher
   - Timeline visualisation
-- https://motherfuckingwebsite.com -- This is a motherfucking website
+- https://motherfuckingwebsite.com
+  - This is a motherfucking website
   - > "Good design is as little design as possible." - some German mtf
 - https://www.sfsystemsclub.com -- SF Systems Club
 - https://www.curatingcraft.com -- Curating Craft
   - by Daybreak
-- https://www.yooksel.com/
+- https://www.yooksel.com/ -- Yooksel
 - https://www.goodfire.ai/ -- Goodfire AI
-- https://nice.rocks -- Nice rocks
+- https://nice.rocks -- nice.rocks
 - https://www.philosophyofprogress.com/ -- Philosophy of Progress
 - https://browser.engineering/onepage.html -- Web Browser Engineering
-- https://yismailuofa.github.io/
-- https://dougalves.work/
-- https://www.makingsoftware.com/
-- https://fieldsofchess.com/
-- https://www.luerzersarchive.com/
-- https://eyeondesign.aiga.org/
-- https://www.oneclub.org/awards/adcawards/-archive/awards/2025/all/all/select
-- https://www.lydianottingham.com/
-- https://farayan.me/dappled
-- https://www.tiat.place/
-- https://posthog.com/
-- https://reducing-suffering.org/
-- https://1a3orn.com/
-- https://laurent.fyi/
-- https://shen.land
-- https://particularly.online/
+- https://yismailuofa.github.io/ -- youssef ismail
+- https://dougalves.work/ -- Doug–Alves
+- https://www.makingsoftware.com/ -- Making Software
+  - https://www.makingsoftware.com/chapters/color-spaces-models-and-gamuts -- Color space
+- https://fieldsofchess.com/ -- Fields of Chess
+- https://www.luerzersarchive.com/ -- Lürzer's Archive
+- https://eyeondesign.aiga.org/ -- AIGA Eye on Design
+- https://www.oneclub.org/awards/adcawards/-archive/awards/2025/all/all/select -- ADC Awards
+- https://www.lydianottingham.com/ -- Lydia Nottingham
+- https://farayan.me/dappled -- Dappled Light
+- https://www.tiat.place/ -- tiat.place
+- https://posthog.com/ -- PostHog
+- https://reducing-suffering.org/ -- Essays on Reducing Suffering
+- https://1a3orn.com/ -- 1a3orn
+- https://laurent.fyi/ -- laurent del rey
+- https://shen.land -- shen.land
+- https://particularly.online/ -- particularly.online
   - epilepsy warning
-- https://mitul.ca/
-- https://chimcisaac.co/
-- https://www.ethansmith2000.com/blog
-- https://sander.ai/
-- https://messenger.abeto.co/
-- https://www.tedsummer.com/#root/Ted-Summer
-- https://www.yudhister.me/
-- https://isleofany.com
-- https://solderneer.me/
+- https://mitul.ca/ -- Mitul Shah
+- https://chimcisaac.co/ -- Chi McIsaac
+- https://www.ethansmith2000.com/blog -- Ethan Smith
+- https://sander.ai/ -- Sander Dieleman
+- https://messenger.abeto.co/ -- Messenger
+- https://www.tedsummer.com/#root/Ted-Summer -- Ted Summer
+- https://www.yudhister.me/ -- Yudhister Kumar
+- https://isleofany.com -- Isle of Any
+- https://solderneer.me/ -- solderneer
   - Another Quartz in the wild!
+- https://www.memoria.day/ -- Memoria
+- https://www.kran.ai -- Esben Kran
+- https://www.johnnylin.co/ -- Johnny Lin
 
 ## people
 
-- https://nicholas.carlini.com/ -- Security/Adversarial against LLMs
+- https://nicholas.carlini.com/ -- Nicholas Carlini, Security/Adversarial against LLMs
 - https://en.wikipedia.org/wiki/John_Galliano -- John Galliano, legendary [[thoughts/fashion]] designer, currently creative director for Maison Margiela
 - https://en.wikipedia.org/wiki/Daniel_Dennett -- Daniel Dennett, philosophy of the minds
 - https://plato.stanford.edu/entries/merleau-ponty/ -- Maurice Merleau-Ponty, embodied cognition
@@ -153,10 +179,10 @@ see also [[/curius|bookmarks]]
 - https://www.neelnanda.io/about -- Neel Nanda
   - [[thoughts/mechanistic interpretability]], lead GDM applied interpretability team
 - https://rosszurowski.com/ -- Ross Zurowski
-- https://nickm.com -- Nick Montfort
+- https://nickm.com/ -- Nick Montfort
   - MIT, Digital Media Lab
   - _Output: An Anthology of Computer-Generated Text, 1953-2023_
-- https://www.trudy.computer - Trudy Painter
+- https://www.trudy.computer -- Trudy Painter
   - Gizmo
   - prev: Google Creative Lab + MIT
 - https://omar.website -- Omar Rizwan
@@ -195,6 +221,7 @@ see also [[/curius|bookmarks]]
   - https://x.com/clattner_llvm
 - https://www.vilinskyy.com/ -- Alexander Vilinskyy
 - https://jnnnthnn.com/ -- Jonathan Unikowski
+- https://wesleyac.com/ -- wesley.
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -303,7 +330,7 @@ see also [[/curius|bookmarks]]
   - > The computer must be in one lump. This means, given present technology, a 4 or 5 inch CRT (unless a better display comes along in the next year), a keyboard, and disk integrated into one package.
 - https://www.nytimes.com/2025/07/21/magazine/men-heterofatalism-dating-relationships.html -- The Trouble with Wanting Men
 - https://calv.info/openai-reflections -- reflections on OpenAI
-- https://thezvi.wordpress.com/2025/08/01/the-week-in-ai-governance/
+- https://thezvi.wordpress.com/2025/08/01/the-week-in-ai-governance/ -- The EU AI Code of Practice, The Week in AI governance, Aug 1st
 - https://ambrook.com/offrange/technology/like-farming-on-the-moon -- If you are a farmer, NASA would like a word
 - https://dl.acm.org/doi/pdf/10.1145/97351.97360 -- Human Values and the Futures of Technology: A Declaration of Empowerment, Ben Shneiderman
 - https://kevinlu.ai/the-only-important-technology-is-the-internet -- The Only Important Technology is the Internet
@@ -319,8 +346,8 @@ see also [[/curius|bookmarks]]
 - https://velvetnoise.substack.com/p/the-key-to-love-is-understanding -- The key to [[tags/love]] is understanding
 - https://illustrated.substack.com/p/grief-maybe -- Grief, maybe (ILLUSTRATED)
 - https://substack.com/inbox/post/168424831 -- conversational compatibility is the chemical reaction between questions
-- https://www.scopeofwork.net/aquatic-achievements/
-- https://kayserifserif.place/carry -- I carry your website with me( i carry it in my website)
+- https://www.scopeofwork.net/aquatic-achievements/ -- Aquatic Achievements
+- https://kayserifserif.place/carry -- I carry your website with me (i carry it in my website)
   - > (In the quiet aftermath of the most wonderful and exhausting gathering at your home, you find traces of your friends everywhere. A strand of hair draped across the couch, every extra chair commandeered, lingering perfume… echoes of presence in the console.)
 - https://wholeearth.info/p/whole-earth-catalog-fall-1968?format=spreads&index=0 -- Whole Earth Index
 - https://substack.com/inbox/post/169322228 -- A constellation of lookers
@@ -337,7 +364,7 @@ see also [[/curius|bookmarks]]
   - [[thoughts/Roko's Basilisk]]
   - > “All of this feels mythic,” she said. “Even the non-Rationalist scientists find this compelling — the same way the Manhattan Project was compelling. We want to work on something mythic.”
 - https://etsd.tech/posts/rtfc -- Read the f\*\*\* code
-- https://ryanandrewlangdon.com/2020/01/28/today-i-learned-that-not-everyone-has-an-internal-monologue-and-it-has-ruined-my-day/
+- https://ryanandrewlangdon.com/2020/01/28/today-i-learned-that-not-everyone-has-an-internal-monologue-and-it-has-ruined-my-day/ -- Today I learned that some people doesn't have an internal monologue
 - https://ifp.org/biotechs-lost-archive/ -- Biotech's Lost Archive
 - https://velvetnoise.substack.com/p/the-key-to-love-is-understanding -- The key to love is understanding
 - https://benjamincongdon.me/blog/2025/01/25/AI-Slop-Suspicion-and-Writing-Back/ -- AI Slop Suspicion and Writing Back.
@@ -349,21 +376,29 @@ see also [[/curius|bookmarks]]
 - https://web.archive.org/web/20240329074753/https://www.theatlantic.com/magazine/archive/1993/12/how-the-world-works/305854/ -- How the world works
 - https://carly.substack.com/p/designers-designers-designers -- Designers! Designers! Designers!
 - https://www.personalcanon.com/p/how-to-begin -- How to begin
-- https://sfpc.study/blog/falling-failing-feeling-freeing -- Falling, Failing, Feeling, Freeing \*\*
+- https://sfpc.study/blog/falling-failing-feeling-freeing -- Falling, Failing, Feeling, Freeing [**]
 - https://www.are.na/kristoffer-tjalve/poetic-web-calendar -- Poetic Web Calendar
 - https://northeastlarder.com/ -- Northeast Larder
-- https://grugbrain.dev/
-- https://research.contrary.com/deep-dive/building-an-american-tsmc -- Building an American TSMC \*\*
+- https://grugbrain.dev/ -- The Grug Brained Developer
+- https://research.contrary.com/deep-dive/building-an-american-tsmc -- Building an American TSMC [**]
 - https://jzmazlish.substack.com/p/ak-or-just-okay-ai-and-economic-growth -- AK or just okay? AI and economic growth
 - https://sharif.io/anna-alexei -- Always invite Anna
 - https://archive.is/ilTr1 -- The Economist, How to spot a genius
-- https://unchartedterritories.tomaspueyo.com/p/mountains -- Why Warm Countries Are Poorer \*\*
+- https://unchartedterritories.tomaspueyo.com/p/mountains -- Why Warm Countries Are Poorer [**]
 - https://simulation-argument.com/simulation/ -- Are we living in a simulation?
 - https://substack.com/home/post/p-160050674 -- how to become gently interesting
 - https://sundogg.substack.com/p/have-you-put-down-your-bags -- Have you put down the bags?
 - https://aeon.co/essays/does-language-mirror-the-mind-an-intellectual-history -- Our languages, our world
+- https://substack.com/home/post/p-174682351 -- An Existential Guide to: Making Friends [**]
+- https://archive.ph/MegKQ -- How AI is changing the office
+- https://www.henrikkarlsson.xyz/p/how-i-read -- Henrik Karlsson, How I Read [**]
+- https://emotional.codes/dtr/ -- Defining the Relationship
+- https://huyenchip.com/2021/02/27/why-not-join-a-startup.html -- Chip Huyen, 7 reasons not to join a startup and 1 reason to
+  - > Reason 1. Goodbye work-life balance
+  - > Reason 4. You won’t get rich
+  - > If you want to get rich, join a big company and climb their rank.
 
-### [[thoughts/Machine learning]]
+## [[thoughts/Machine learning]]
 
 - https://www.goodfire.ai/blog/painting-with-concepts -- Painting with concepts, via SAE for SDXL-turbo
 - https://www.goodfire.ai/blog/under-the-hood-of-a-reasoning-model -- Under te hood of a reasoning models, SAEs.
@@ -451,7 +486,7 @@ see also [[/curius|bookmarks]]
   - I'm tired
 - https://x.com/jackminong/status/1968518159826305438
   - See also [[thoughts/Weight tying]]
-- https://x.com/josh_bickett/status/1725556267014595032 \*\*
+- https://x.com/josh_bickett/status/1725556267014595032 [**]
 - https://x.com/jkminder/status/1969082859311841413 -- [[thoughts/sparse crosscoders]] and non-linear representation dilemma
 - vLLM from scratch, weixin:
   - 1.3: https://mp.weixin.qq.com/s/BdWG6_ZTaGRknmsbGfFkMQ
@@ -460,10 +495,32 @@ see also [[/curius|bookmarks]]
 - https://ma-lab-berkeley.github.io/deep-representation-learning-book/ -- Learning Deep Representations of Data Distributions [@ldrdd2025]
 - https://www.julian.ac/blog/2025/09/27/failing-to-understand-the-exponential-again/ -- Failing to Understand the Exponential, Again
 - https://www.ethansmith2000.com/post/where-are-you -- Where are you?
+- https://github.com/pranjalssh/fast.cu -- fast kernels, in [[thoughts/GPU programming|CUDA]]
+- https://x.com/karpathy/status/1973435013875314729 -- Karpathy's bitter lesson on Dwarkesh's pod with Sutton
+  - > Stated plainly, today's frontier LLM research is not about building animals. It is about summoning ghosts. You can think of ghosts as a fundamentally different kind of point in the space of possible intelligences
+  - > They are these imperfect replicas, a kind of statistical distillation of humanity's documents with some sprinkle on top. They are not platonically bitter lesson pilled, but they are perhaps "practically" bitter lesson pilled, at least compared to a lot of what came before.
+- https://x.com/deepcohen/status/1973191790602887544 -- Central flows
+  - https://centralflows.github.io/part1/
+    - How [[thoughts/gradient descent]] works?
+- https://x.com/nrehiew_/status/1973404310127124790 -- DSA comparing to attention sink in long-context regime
+  - see also: https://x.com/nathancgy4/status/1973420757196873885
+  - [[thoughts/optimization#softmax]] over 2048 tokens, thus $QK$ weights magnitudes are preserved, and no "attention budget" are being given to useless tokens.
 
-### argumentative
+    ```python
+    import torch
 
-- https://blog.aayushg.com/conviction/ -- Conviction is the scarcest resources
+    qk_scores_short = torch.randn(2048)
+    qk_scores_long = torch.randn(128000)
+
+    max_v = torch.max(qk_scores_short.max(), qk_scores_long.max())
+    qk_scores_short[0] = max_val
+    qk_scores_long[0] = max_val
+    qk_scores_short.softmax(0)[0], qk_scores_long.softmax(0)[0]
+    ```
+
+## argumentative
+
+- https://blog.aayushg.com/conviction/ -- Conviction is the scarcest resource
 - https://danluu.com/ballmer/ -- Steve Ballmer was an underrated CEO
 - https://www.dwarkesh.com/p/questions-about-ai?open=false -- Questions about AI, by Dwarkesh
 - https://epoch.ai/gradient-updates/most-ai-value-will-come-from-broad-automation-not-from-r-d -- Most AI value will come from broad automation, not from R&D
@@ -472,12 +529,13 @@ see also [[/curius|bookmarks]]
 - https://paulgraham.com/woke.html -- Origin of Wokeness
 - https://www.noahpinion.blog/p/will-data-centers-crash-the-economy -- Will data centers crash the economy?
 - https://x.com/eigenrobot/status/1954363395068616745 -- Gaza's privatization
-- https://ifstudies.org/report-brief/in-pursuit-marriage-motherhood-and-womens-well-being -- In Pursuit: Marriage, Motherhood, and Women’s Well-Being \*\*
+- https://ifstudies.org/report-brief/in-pursuit-marriage-motherhood-and-womens-well-being -- In Pursuit: Marriage, Motherhood, and Women’s Well-Being [**]
 - https://www.lesswrong.com/posts/gfbX3h4RueuDzWs7m/some-rules-for-life-v-0-0 -- Rules for life
 - https://marginalrevolution.com/marginalrevolution/2025/02/why-i-think-ai-take-off-is-relatively-slow.html -- Why I think AI take-off is relatively slow.
 - https://x.com/eigenrobot/status/1968726067612389636
+- https://mishaglouberman.substack.com/p/stop-pretending-toronto-is-more-than -- Stop Pretending Toronto is More Than It Is.
 
-### life is literature
+## life is literature
 
 - https://ryolu.notion.site/how-to-make-something-great -- How to make something great, by Ryo Lu
 - https://www.personalcanon.com/p/in-praise-of-writing-on-the-internet -- In praise of writing on the internet
@@ -489,15 +547,15 @@ see also [[/curius|bookmarks]]
 - https://en.wikipedia.org/wiki/Rhizome_(philosophy) -- Rhizome
   - [[thoughts/Rhizome]]
 - https://aeon.co/essays/simone-de-beauvoirs-authentic-love-is-a-project-of-equals -- Simone de Beavoir's "Love is a joint project"
-- https://www.links.net/dox/tech/computopia.html -- Computopia \*\*
+- https://www.links.net/dox/tech/computopia.html -- Computopia [**]
 - https://www.experimental-history.com/p/28-slightly-rude-notes-on-writing
-- https://www.experimental-history.com/p/face-it-youre-a-crazy-person -- Face it, you are a crazy person \*\*
+- https://www.experimental-history.com/p/face-it-youre-a-crazy-person -- Face it, you are a crazy person [**]
 - https://substack.com/inbox/post/170580516 -- "If I love you, it's because in some way we are the same type of bastard"
 - https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for -- some parts of you only emerge from certain people
 - https://www.gleech.org/stopping -- What's stopping you?
 - https://www.sherryning.com/p/goodbye-august -- Goodbye August
 
-### [[tags/philosophy]]
+## [[tags/philosophy]]
 
 - https://www.marxists.org/history/erol/periodicals/theoretical-review/1982301.htm -- The Concepts of Ideology, Hegemony, and Organic Intellectuals in Gramsci’s Marxism
 - https://joecarlsmith.com/2020/11/29/grokking-illusionism -- Grokking Illusionism
@@ -513,9 +571,9 @@ see also [[/curius|bookmarks]]
 ## stream
 
 - https://notes.andymatuschak.org/Effective_system_design_requires_insights_drawn_from_serious_contexts_of_use -- Effective system design requires insights drawn from serious contexts of use
-- https://wilderness.land/
+- https://wilderness.land/ -- wilderness.land
 - https://jennyclark.substack.com/p/prayer-for-the-girl-who-often-forgets -- prayer for the girl who often forgets that enough is enough
-- https://stream.thesephist.com/ -- Linus' stream
+- https://stream.thesephist.com/ -- Linus's stream
 - ![[tweets]]
 - https://x.com/Miles_Brundage/status/1967385510974009500
 - https://x.com/divya_venn/status/1956105667871412685
@@ -523,12 +581,12 @@ see also [[/curius|bookmarks]]
 - ![[mixed]]
 - ![[images]]
 
-### financial reports
+## financial reports
 
 - https://investors.palantir.com/news-details/2025/Palantir-Reports-Q2-2025-U-S--Comm-Revenue-Growth-of-93-YY-and-Revenue-Growth-of-48-YY-Guides-Q3-Revenue-to-50-YY-Raises-FY-2025-Revenue-Guidance-to-45-YY-and-U-S--Comm-Revenue-Guidance-to-85-YY-Crushing-Consensus-Expectations/ -- Palantir Q3 Earnings 2025 Reports
   - $1Bn in Revenue, 45% Y/Y
 
-### poetry
+## poetry
 
 - http://www.phys.unm.edu/~tw/fas/yits/archive/eberhart_thegroundhog.html -- The Groundhog by Richard Eberthart
 - http://www.phys.unm.edu/~tw/fas/yits/archive/oliver_wildgeese.html -- Wild [[posts/goose friend.md|Geese]] by Mary Oliver
@@ -543,14 +601,14 @@ see also [[/curius|bookmarks]]
   >
   > La La Land - “Audition (the fools who dream)”
 
-### design
+## design
 
 - https://www.are.na/editorial/are-nas-new-web-client-sander-is-now-available-for-everyone -- Are.na's web client, Sander.
 - https://jonwhitestudio.com/ -- Jon White Studio
-- https://www.commarts.com/
+- https://www.commarts.com/ -- Communication Arts
 - https://x.com/zachlieberman/status/1963683642011455980
 
-### video
+## video
 
 - https://www.youtube.com/watch?v=WJ76FfBZuhI&ab_channel=SoderCinema -- Narcissistic Facades - Amy Dunne
 - https://www.youtube.com/watch?v=54M3zZKHFRw&ab_channel=ShannonKim -- Situationist Movement, the myth of creative director
@@ -570,8 +628,8 @@ see also [[/curius|bookmarks]]
 - https://www.youtube.com/watch?v=t6RZp2AhKyw&ab_channel=MedleyInterlispProject -- Lexical Functional Grammar Demonstration — Ron Kaplan (December 1982)
 - https://www.youtube.com/watch?v=XfpMkf4rD6E&t=1407s&ab_channel=StanfordOnline -- Stanford CS25: V2 I Introduction to Transformers w/ Andrej Karpathy
 - https://www.youtube.com/watch?v=8--5LwHRhjk&ab_channel=InigoQuilez -- Painting Characters with Math
-- https://www.youtube.com/watch?v=3_kdbJnCMwU&ab_channel=DavidBalcarras -- Bryan Magee - The Great Philosophers \*\*
-- https://www.youtube.com/watch?v=H4_Tsjmqxak&ab_channel=PhilosophyOverdose -- Husserl, Heidegger & Existentialism - Hubert Dreyfus & Bryan Magee (1987) \*\*
+- https://www.youtube.com/watch?v=3_kdbJnCMwU&ab_channel=DavidBalcarras -- Bryan Magee - The Great Philosophers [**]
+- https://www.youtube.com/watch?v=H4_Tsjmqxak&ab_channel=PhilosophyOverdose -- Husserl, Heidegger & Existentialism - Hubert Dreyfus & Bryan Magee (1987) [**]
 - https://www.youtube.com/watch?v=sFux7pl6lf4&ab_channel=vlogbrothers -- Are Languages Alive?
 - https://www.youtube.com/watch?v=FH5wiwOyPX4&ab_channel=GPUMODE -- GPUMODE 2024 Keynotes
   - https://drive.google.com/drive/folders/1Pz607n07u382_ybdd4gFdrNyEWra5kpj
@@ -581,7 +639,7 @@ see also [[/curius|bookmarks]]
   - most big data matrices are low-rank
   - [[thoughts/Singular Value Decomposition|SVD]]
 - https://www.youtube.com/watch?v=sdFQS2Bctj0&ab_channel=LilaRose -- How men commit differently than woman?
-- https://www.youtube.com/watch?v=hNIbd4mUVeU&ab_channel=Sisyphus55 -- Watch this when you're depressed \*\*
+- https://www.youtube.com/watch?v=hNIbd4mUVeU&ab_channel=Sisyphus55 -- Watch this when you're depressed [**]
 - https://www.youtube.com/watch?v=x6TsR3y5Qfg -- Think Faster, Talk Smarter, by Matt Abrahams
   - Framework to talk more eloquently:
     - What if you could
@@ -591,8 +649,8 @@ see also [[/curius|bookmarks]]
 
 ## tools
 
-- https://cobalt.tools/ -- new YT downloader
-- https://www.truthsystems.ai -- A programmatic governance and unified compliance agent.
+- https://cobalt.tools/ -- cobalt
+- https://www.truthsystems.ai -- Truth Systems
 
 ## protocol
 
@@ -601,17 +659,14 @@ see also [[/curius|bookmarks]]
 
 ## arts
 
-- https://www.youtube.com/watch?v=lsVMJIJ3Xrs&ab_channel=Amoeba
+- https://www.youtube.com/watch?v=lsVMJIJ3Xrs&ab_channel=Amoeba -- Floating Points - What's In My Bag?
 - https://www.metmuseum.org/art/collection/search/441933 -- Moonlight, Strandgade 30, Vilhelm Hammershøi
 
 ## resources
 
 - https://www.gap-map.org/?sort=rank -- Gap Map
-- https://github.com/NixOS/nixpkgs/blob/master/lib/meta.nix -- meta.nix and helpers function in Nix
-- [ziglang/zig/.../general_purpose_allocator.zig](https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig) -- The GPA you need to care about
-- https://drmichaellevin.org/resources/otherlabs.html -- Labs interests
-- _SouthParkCommons meetup for AI interfaces, [Geoffrey Litt](https://www.geoffreylitt.com/)_
-  - ![[https://www.youtube.com/watch?v=5OaTk5q_CTc]]
+- https://drmichaellevin.org/resources/otherlabs.html -- Other Labs of Interest
+- https://www.youtube.com/watch?v=5OaTk5q_CTc -- _SouthParkCommons meetup for AI interfaces, [Geoffrey Litt](https://www.geoffreylitt.com/)_
 - https://www.mrporter.com/en-us/journal/fashion/derek-guy-style-resolutions-25156188 -- Style resolution
 - https://thegenerality.com/agi/ -- The effort for AGI at Microsoft [GitHub](https://github.com/microsoft/unilm)
 - https://katex.org/docs/supported.html -- supported DSL for KaTeX
@@ -621,45 +676,43 @@ see also [[/curius|bookmarks]]
 - https://www.youtube.com/watch?v=fThhbt23SGM -- Design is a [[thoughts/Search|Search]] problem
 - https://www.nserc-crsng.gc.ca/Students-Etudiants/Guides-Guides/TriRTA-TriBFR_eng.asp -- Canadian government grant research
 - https://www.cbo.gov/system/files/2020-01/55967-CBO-immigration.pdf -- Foreign-Born Population and Its Effects on US Economy
-- https://www.youtube.com/watch?v=sX2nF1fW7kI -- When Nanoseconds Matter: Ultrafast Trading System in C++
-  - https://github.com/CppCon/CppCon2024/blob/main/Presentations/When_Nanoseconds_Matter.pdf
-- https://www.vmware.com/docs/the-basics-of-remote-direct-memory-access-rdma-in-vsphere -- RDMA in VSphere
-  - Good introduction to RDMA
 - https://www.corner.inc/list/02c68af9-8286-474f-91de-0b4e702330e6?sid=49933781-9175-48ae-852b-acb5006e8bca -- toronto coworking spots
-- [mech-interp trails](https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvYXV0b2VuY29kZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvbGF0ZW50LXNwYWNl&stackedNotes=dGhvdWdodHMvcmVwcmVzZW50YXRpb25z&stackedNotes=dGhvdWdodHMvZGF0YQ)
-- [interesting trails](https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvSW50ZXJuZXQ&stackedNotes=dGhvdWdodHMvRGV0ZXJtaW5pc20&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9lbmdpbmVlci00YTAzL2xpdGVyYXR1cmUtcmV2aWV3&stackedNotes=cG9zdHMvY2hhdGdwdA&stackedNotes=dGhvdWdodHMvT0NJ&stackedNotes=dGhvdWdodHMvQ29udGVudC1hZGRyZXNzYWJsZS1zdG9yYWdl&stackedNotes=dGhvdWdodHMvYW50aHJvcGljLXNhZmV0eS1mZWxsb3c&stackedNotes=dGhvdWdodHMvTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvb3B0aW1pemF0aW9u&stackedNotes=dGhvdWdodHMvTExNcw&stackedNotes=dGhvdWdodHMvZXRoaWNz&stackedNotes=dGhvdWdodHMvYWVzdGhldGljLXZhbHVl&stackedNotes=dGhvdWdodHMvUGhpbG9zb3BoeS1hbmQtTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvZGlhbGVjdGljcw&stackedNotes=dGhvdWdodHMvcmVhc29u&stackedNotes=dGhvdWdodHMvQ2FtdXM&stackedNotes=cG9zdHMvMjAyNA&stackedNotes=cXVvdGVz&stackedNotes=dGhvdWdodHMvSGVsbWhvbHR6LWRlY29tcG9zaXRpb24&stackedNotes=dGhvdWdodHMvTW9udGUtQ2FybG8&stackedNotes=dGhvdWdodHMvQ2hvbGVza3ktZGVjb21wb3NpdGlvbg&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9zZndyLTRtbDMvQmlhcy1hbmQtaW50ZXJjZXB0&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=cG9zdHMvc3RydWN0dXJlZC1kZWNvZGluZw&stackedNotes=dGhvdWdodHMvVHJhbnNmb3JtZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvQ2F1Y2h5LW1vbWVudHVtLWVxdWF0aW9u&stackedNotes=dGhvdWdodHMvVGVuc29yLWZpZWxk&stackedNotes=dGhvdWdodHMvbWFuaWZvbGQ&stackedNotes=dGhvdWdodHMvUHJvZ3Jlc3NpdmUtZGlzY2xvc3VyZQ&stackedNotes=dGhvdWdodHMvR2lsZXMtRGVsZXV6ZQ&stackedNotes=dGhvdWdodHMvQXV0b3JlZ3Jlc3NpdmUtbW9kZWxz&stackedNotes=dGhvdWdodHMvTGxhbWEtMw&stackedNotes=dGhvdWdodHMvZGlzcGxhY2VtZW50&stackedNotes=dGhvdWdodHMvY29uc3RyYWluZWQtZGVjb2Rpbmc&stackedNotes=dGhvdWdodHMvUGFyZXRvLWRpc3RyaWJ1dGlvbg&stackedNotes=cG9zdHMvUXVlc3Rpb25zLWFib3V0LU1ldGFwaHlzaWNz&stackedNotes=dGhvdWdodHMvQWdlbmN5&stackedNotes=cG9zdHMvY29ycG9yYXRlLXBlcnNvbmhvb2Q&stackedNotes=dGhvdWdodHMvVmVyeS1TbGVuZGVyLURpZmZlcmVuY2Vz&stackedNotes=dGhvdWdodHMvQXJpc3RvdGxl&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ)
-- [GNU C Manual Reference](https://www.c-asm.com/gnu-c-manual.html)
-- https://www.rubick.com/steel-threads/ -- Steel threads are a technique that will make you a [[thoughts/steel threads|better engineer]]
-- [[thoughts/GPU programming]]
+- https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvYXV0b2VuY29kZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvbGF0ZW50LXNwYWNl&stackedNotes=dGhvdWdodHMvcmVwcmVzZW50YXRpb25z&stackedNotes=dGhvdWdodHMvZGF0YQ -- mech-interp trails
+- https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvSW50ZXJuZXQ&stackedNotes=dGhvdWdodHMvRGV0ZXJtaW5pc20&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9lbmdpbmVlci00YTAzL2xpdGVyYXR1cmUtcmV2aWV3&stackedNotes=cG9zdHMvY2hhdGdwdA&stackedNotes=dGhvdWdodHMvT0NJ&stackedNotes=dGhvdWdodHMvQ29udGVudC1hZGRyZXNzYWJsZS1zdG9yYWdl&stackedNotes=dGhvdWdodHMvYW50aHJvcGljLXNhZmV0eS1mZWxsb3c&stackedNotes=dGhvdWdodHMvTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvb3B0aW1pemF0aW9u&stackedNotes=dGhvdWdodHMvTExNcw&stackedNotes=dGhvdWdodHMvZXRoaWNz&stackedNotes=dGhvdWdodHMvYWVzdGhldGljLXZhbHVl&stackedNotes=dGhvdWdodHMvUGhpbG9zb3BoeS1hbmQtTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvZGlhbGVjdGljcw&stackedNotes=dGhvdWdodHMvcmVhc29u&stackedNotes=dGhvdWdodHMvQ2FtdXM&stackedNotes=cG9zdHMvMjAyNA&stackedNotes=cXVvdGVz&stackedNotes=dGhvdWdodHMvSGVsbWhvbHR6LWRlY29tcG9zaXRpb24&stackedNotes=dGhvdWdodHMvTW9udGUtQ2FybG8&stackedNotes=dGhvdWdodHMvQ2hvbGVza3ktZGVjb21wb3NpdGlvbg&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9zZndyLTRtbDMvQmlhcy1hbmQtaW50ZXJjZXB0&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=cG9zdHMvc3RydWN0dXJlZC1kZWNvZGluZw&stackedNotes=dGhvdWdodHMvVHJhbnNmb3JtZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvQ2F1Y2h5LW1vbWVudHVtLWVxdWF0aW9u&stackedNotes=dGhvdWdodHMvVGVuc29yLWZpZWxk&stackedNotes=dGhvdWdodHMvbWFuaWZvbGQ&stackedNotes=dGhvdWdodHMvUHJvZ3Jlc3NpdmUtZGlzY2xvc3VyZQ&stackedNotes=dGhvdWdodHMvR2lsZXMtRGVsZXV6ZQ&stackedNotes=dGhvdWdodHMvQXV0b3JlZ3Jlc3NpdmUtbW9kZWxz&stackedNotes=dGhvdWdodHMvTGxhbWEtMw&stackedNotes=dGhvdWdodHMvZGlzcGxhY2VtZW50&stackedNotes=dGhvdWdodHMvY29uc3RyYWluZWQtZGVjb2Rpbmc&stackedNotes=dGhvdWdodHMvUGFyZXRvLWRpc3RyaWJ1dGlvbg&stackedNotes=cG9zdHMvUXVlc3Rpb25zLWFib3V0LU1ldGFwaHlzaWNz&stackedNotes=dGhvdWdodHMvQWdlbmN5&stackedNotes=cG9zdHMvY29ycG9yYXRlLXBlcnNvbmhvb2Q&stackedNotes=dGhvdWdodHMvVmVyeS1TbGVuZGVyLURpZmZlcmVuY2Vz&stackedNotes=dGhvdWdodHMvQXJpc3RvdGxl&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ -- interesting trails
 - https://www.doc.ic.ac.uk/~eedwards/compsys/float/#:~:text=Add%20the%20exponents%20to%20find,1.021%20%C3%97%20106 -- Floating points arithmetics
 - https://www.unco.edu/campus-recreation/pdf/intramural-sports/spring20/running-pace-chart.pdf -- Running pace chart
 - https://github.com/triton-lang/triton/blob/a758c595ddb149381b7ee888982f1afbeb02823c/python/triton_kernels/triton_kernels/matmul_ogs_details/_matmul_ogs.py#L291 -- matmul_ogs for [[thoughts/quantization#mxfp4|mxfp4]]
 - https://notes.eatonphil.com/2025-08-09-what-even-is-distributed-systems.html -- What even is _distributed systems_
 - https://x.com/rsnous/status/1446211454378524692 -- "We do not lose texts because of catastrophic events that wipe out all copies of them. We lose texts because they stop being copied."
-- https://www.dandad.org/en/d-ad-masterclass-creative-courses/
-- Shanghai vLLM meetup 2025
-  - https://mp.weixin.qq.com/s/pDmAXHcN7Iqc8sUKgJgGtg
+- https://www.dandad.org/en/d-ad-masterclass-creative-courses/ -- D&AD Masterclasses
+- https://mp.weixin.qq.com/s/pDmAXHcN7Iqc8sUKgJgGtg -- Shanghai vLLM meetup 2025
 - https://dlsyscourse.org/lectures/ -- DLSys, CMU
 - https://github.com/CppCon/CppCon2024 -- CppConf 2024
 
-### interfaces
+## interfaces
 
-- https://x.com/_baku89/status/1848878071585378521
-- https://x.com/SomeHats/status/1577717329680601089
-- https://x.com/hturan/status/1958590911920615635
+- https://x.com/_baku89/status/1848878071585378521 -- An interface defines the metric of search space
+- https://x.com/SomeHats/status/1577717329680601089 -- when yr not using a drawing
+  - (or u haven't added it to yr animation yet) it just hangs out at the bottom of the screen
+- https://x.com/hturan/status/1958590911920615635 -- exploring paths through latent space
+  - by interpolating between known embeddings
 
-### fonts
+## fonts
 
-- https://fontsource.org/ -- Font search, made easy
+- https://fontsource.org/ -- Fontsource
 - https://departuremono.com/ -- Departure Mono
 - https://lettermatic.com/fonts/parclo-serif -- Parclo I might buy this
 
-### lecture
+## lecture
 
 - https://www.youtube.com/watch?v=m47A0AmqxQE&list=PL62C50202CE181183&index=5&ab_channel=flame0430 -- Iris Murdoch on Philosophy and Literature
 
-### technical
+## technical
 
+- https://github.com/NixOS/nixpkgs/blob/master/lib/meta.nix -- meta.nix and helpers function in Nix
+- https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig -- Zig's General Purpose Allocator
+  - The only GPA you need to care about.
+- https://github.com/triton-lang/triton/blob/main/python/tutorials/gluon/01-intro.py -- Gluon
 - https://huggingface.co/blog/from-chunks-to-blocks -- From Chunks to Blocks: Accelerating Uploads and Downloads on the Hub
 - https://datatracker.ietf.org/doc/html/rfc9309 -- Robots Exclusion Protocol
 - https://github.com/Keen-Technologies/physical_atari -- Physical Atari
@@ -667,17 +720,34 @@ see also [[/curius|bookmarks]]
 - https://michaelnotebook.com/mmsw -- How to make memory systems widespread?
 - https://github.com/francoismichel/ssh3 -- ssh3
 - https://thundergolfer.com/uni/docs/performance/napkin-math/ -- napkin math
+- https://www.youtube.com/watch?v=sX2nF1fW7kI -- When Nanoseconds Matter: Ultrafast Trading System in C++
+  - https://github.com/CppCon/CppCon2024/blob/main/Presentations/When_Nanoseconds_Matter.pdf
+- https://www.vmware.com/docs/the-basics-of-remote-direct-memory-access-rdma-in-vsphere -- RDMA in VSphere
+  - Good introduction to RDMA
+- [GNU C Manual Reference](https://www.c-asm.com/gnu-c-manual.html)
+- https://www.rubick.com/steel-threads/ -- Steel threads are a technique that will make you a [[thoughts/steel threads|better engineer]]
+- [[thoughts/GPU programming]]
+- https://github.com/replit/ruspty/pull/93 -- dont drop user fd until node reads a synthetic EOF
+- https://janet.guide/ -- Janet for Mortals
+  - https://janet-lang.org/ -- Janet Programming Language
+- https://standardkernel.com/ -- Standard Kernel
+- https://github.com/NVIDIA/tilus -- NVIDIA/tilus
+  - Tile-level GPU programming
+  - lower level comparing to CuTe
+  - uses [hidet](https://github.com/hidet-org/hidet) IR
 
-### vc.
+## vc
 
-- https://www.generalist.com/briefing/hummingbird-ventures -- Hummingbird Ventures
+- https://www.generalist.com/briefing/hummingbird-ventures -- The Best Venture Firm You've Never Heard Of
+- https://www.sequoiacap.com/ -- Sequoia Capital
+- https://www.luxcapital.com/ -- Lux Capital
 
-### [[tags/math]]
+## [[tags/math]]
 
 - https://www.youtube.com/watch?v=e1xo6qWTmoc&ab_channel=OxfordMathematics -- Thesis Competition at Oxford Mathematics
   - https://youtu.be/e1xo6qWTmoc?si=U3esZ-Zq_DJy5Is1&t=134 -- Surgery presentation on [[thoughts/bordism bicategories]]
-- https://www.benparry.ca/euler-integration-lotka-volterra -- Euler Integration & the Lotka-Volterra Equations
-- https://www.benparry.ca/lorenz-system -- Lorenz system
+- https://www.benparry.ca/euler-integration-lotka-volterra -- Euler Integration & Lotka-Volterra
+- https://www.benparry.ca/lorenz-system -- The Lorenz System
 - https://www.youtube.com/watch?v=O8WZVR3eCNQ&ab_channel=InstituteforAdvancedStudy -- The adjoint Brascamp-Lieb inequality - Terence Tao
 - https://www.youtube.com/watch?v=PgPNfPhG4Wc&ab_channel=StanfordOnline -- AA228/CS248 Decision Making Under Uncertainty | Policy Gradient Estimation & Optimization
 - https://www.youtube.com/watch?v=B83yIIaTq_s&ab_channel=SimonsFoundation -- Lisa Piccirillo: Exotic Phenomena in Dimension 4
@@ -685,9 +755,9 @@ see also [[/curius|bookmarks]]
   - Conway knot problem
 - https://www.youtube.com/watch?v=i2acsy7Zzfo&ab_channel=HarvardMathematicsDepartment -- Random Matrix Statistics and Airy Line Ensembles, Jiaoyang Huang
 - https://www.youtube.com/watch?v=QauoO0j9Y9Y&ab_channel=InstituteforPure%26AppliedMathematics%28IPAM%29 -- Terence Tao: The Erdős Discrepancy Problem
-- https://writings.stephenwolfram.com/2025/09/the-ruliology-of-lambdas/ -- The Ruliology of Lambdas \*\*
+- https://writings.stephenwolfram.com/2025/09/the-ruliology-of-lambdas/ -- The Ruliology of Lambdas [**]
 
-#### papers
+## papers
 
 - https://arxiv.org/pdf/2401.08671
 - https://arxiv.org/pdf/2506.06941
@@ -713,7 +783,3 @@ see also [[/curius|bookmarks]]
 - https://arxiv.org/pdf/2508.06471
 - https://arxiv.org/abs/1112.0510
 - https://arxiv.org/pdf/2504.02263
-
-## live
-
-- <iframe name="newstadium" height="1500px" src="https://newsystems.ca/newstadium/" scrolling="no" marginwidth="0" marginheight="0"></iframe>

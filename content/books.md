@@ -7,7 +7,7 @@ description: A (mostly) up-to-date book lists that I read, wanting, am reading, 
 transclude:
   title: false
 date: "2022-04-22"
-modified: 2025-09-20 15:58:17 GMT-04:00
+modified: 2025-09-30 19:36:27 GMT-04:00
 title: antilibrary.
 ---
 
@@ -38,7 +38,7 @@ A list of book that remains forever in my bag, and I like the idea of reading it
 | The Rebel                                         | [[thoughts/Camus\|Albert Camus]] |                                                                                                                                                                        |
 | The First Man                                     | Albert Camus                     |                                                                                                                                                                        |
 | Philosophical Investigations                      | Ludwig Wittgenstein              | [pdf](https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf) |
-| Tractatus Logico-Philosophicus                    | Ludwig Wittgenstein              |                                                                                                                                                                        |
+| Tractatus Logico-Philosophicus                    | Ludwig Wittgenstein              | [[thoughts/Tractatus Logico-Philosophicus\|notes]]                                                                                                                     |
 
 ## to read.
 

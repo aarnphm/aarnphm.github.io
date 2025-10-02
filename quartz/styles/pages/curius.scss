@@ -428,6 +428,7 @@ svg.favorite-icon {
 
   .friend-li {
     display: none;
+    padding: 2px;
 
     &[class~="focus"] {
       background: var(--lightgray);

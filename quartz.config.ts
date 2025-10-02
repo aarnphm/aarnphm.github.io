@@ -95,7 +95,7 @@ const config: QuartzConfig = {
       Plugin.CreatedModifiedDate({ priority: ["frontmatter", "filesystem"] }),
       Plugin.Aarnphm(),
       Plugin.Pseudocode(),
-      Plugin.TikzJax(),
+      Plugin.TikzJax({ showConsole: false }),
       Plugin.TelescopicText(),
       // Convert code-file transcludes to code blocks before highlighting
       Plugin.CodeViewer(),
@@ -144,6 +144,7 @@ const config: QuartzConfig = {
       Plugin.TableOfContents({ maxDepth: 5 }),
       Plugin.LLM(),
       Plugin.Slides(),
+      Plugin.Arena(),
     ],
     filters: [Plugin.RemoveDrafts(), Plugin.RemovePrivate()],
     emitters: [
@@ -192,7 +193,7 @@ const config: QuartzConfig = {
       Plugin.CustomOgImages(),
       Plugin.PressKit(),
       Plugin.SlidesPage(),
-      // Plugin.ArenaPage(),
+      Plugin.ArenaPage(),
     ],
   },
 }

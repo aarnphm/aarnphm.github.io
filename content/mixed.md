@@ -7,13 +7,11 @@ description: and a list of vinyl and music are on my mind for mixing.
 transclude:
   title: false
 date: "2025-06-09"
-modified: 2025-08-15 05:53:21 GMT-04:00
+modified: 2025-10-01 02:35:49 GMT-04:00
 title: mixed
 cssclasses:
   - nolist
 ---
-
-See also [[are.na|are(dot)na]]
 
 ## digital
 

@@ -11,7 +11,7 @@ aliases:
   - thanks
   - cool people
 abstract: I want to think about my life as being RLHF by the people I surround myself with. As such, we populate our concept of the world around them. This is a list of people that inspire me to be my best-self at all times.
-modified: 2025-08-10 03:47:43 GMT-04:00
+modified: 2025-10-01 17:11:09 GMT-04:00
 comments: false
 title: affecter.
 ---

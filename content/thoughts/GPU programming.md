@@ -5,86 +5,96 @@ aliases:
 tags:
   - seed
   - ml
+description: bedstone of scaling intelligence
 date: "2025-09-08"
-modified: 2025-09-18 18:10:41 GMT-04:00
-noindex: true
+modified: 2025-10-01 18:02:05 GMT-04:00
+permalinks:
+  - /gpus
 title: GPU
+noindex: true
 ---
 
-> [!abstract]
-> modal glossary entry: https://modal.com/gpu-glossary/device-hardware/cuda-device-architecture
+see also: [modal glossary](https://modal.com/gpu-glossary/device-hardware/cuda-device-architecture)
 
-> [!tip]
 > uccl project: https://github.com/uccl-project/uccl
 
-> [!note]
-> mostly covers nvidia, but the architectural patterns apply to amd and intel discrete gpus with similar simt front-ends
-
-## Architecture Overview
+## architecture overview
 
 See [[lectures/420/notes|comprehensive GPU architecture notes]] for detailed coverage of GPU fundamentals, CUDA programming model, and optimization techniques.
 
 > [!info] core terminology
 >
-> | concept                       | summary                                                                                                                                                                                              | jump-off                                                                  |
-> | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-> | gpu vs cpu                    | throughput-optimized accelerator (270k+ resident threads on [[lectures/420/notes#thread count comparison: epyc vs h100 \| hopper]]) vs latency-optimized cpu (≈192 hardware threads on 96-core epyc) | [[lectures/420/notes#cpu vs gpu: philosophical differences]]              |
-> | sm (streaming multiprocessor) | scheduling + execution quad containing cuda cores, tensor cores, shared memory partitions                                                                                                            | [[lectures/420/notes#hopper/blackwell sm topology]]                       |
-> | simt                          | warp-level (32 thread) execution model issuing one instruction per warp                                                                                                                              | [[lectures/420/notes#thread execution model: simt]]                       |
-> | memory hierarchy              | registers (≈1 cycle) → shared/l1 (20–30) → l2 (≈200) → hbm (≈400) → nvlink fabric                                                                                                                    | [[lectures/420/notes#hopper h100 memory hierarchy (per sm unless noted)]] |
-> | latency hiding                | 64 resident warps per sm swap on stall to cover ≈400-cycle hbm accesses                                                                                                                              | [[lectures/420/notes#hopper concurrency multiplier]]                      |
+> | concept                       | summary                                                                                                                                                                                              | jump-off                                                            |
+> | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+> | gpu vs cpu                    | throughput-optimized accelerator (270k+ resident threads on [[lectures/420/notes#thread count comparison: EPYC vs H100 \| hopper]]) vs latency-optimized cpu (≈192 hardware threads on 96-core epyc) | [[lectures/420/notes#CPU vs GPU: philosophical differences]]        |
+> | sm (streaming multiprocessor) | scheduling + execution quad containing cuda cores, tensor cores, shared memory partitions                                                                                                            | [[lectures/420/notes#streaming multiprocessor (SM) architecture]]   |
+> | SIMT                          | warp-level (32 thread) execution model issuing one instruction per warp                                                                                                                              | [[lectures/420/notes#thread execution model: SIMT]]                 |
+> | memory hierarchy              | registers ($\approx 1$ cycle) → shared/l1 (20–30) → l2 ($\approx 200$) → hbm (≈400) → nvlink fabric                                                                                                  | [[lectures/420/notes#memory hierarchy: the performance bottleneck]] |
+> | latency hiding                | 64 resident warps per sm swap on stall to cover ≈400-cycle hbm accesses                                                                                                                              | [[lectures/420/notes#level 4: warps and threads]]                   |
 
-## Execution Units
+## execution units
 
-See [[lectures/420/notes#SM execution units: a detailed breakdown|execution unit breakdown]] for detailed comparison.
+See [[lectures/420/notes#streaming multiprocessor (SM) architecture|execution unit breakdown]] for detailed comparison.
 
 > [!table] sm execution roles (hopper/blackwell)
 >
-> | unit                      | capacity per sm                           | responsibility                        | deeper dive                                             |
-> | ------------------------- | ----------------------------------------- | ------------------------------------- | ------------------------------------------------------- |
-> | warp schedulers           | 4 quads, 16 warp issue slots/cycle        | pick ready warps, arbitrate pipelines | [[lectures/420/notes#hopper/blackwell sm topology]]     |
-> | cuda cores                | 128 fp32/int32 alus                       | scalar and vector integer/fp work     | [[lectures/420/notes#cuda cores vs tensor cores]]       |
-> | tensor cores              | 4 mma pipelines (fp16/bf16/tf32/fp8/fp4)  | matrix multiply-accumulate via wgmma  | [[lectures/420/notes#wgmma warp-group matrix multiply]] |
-> | load/store units          | 64b sector loads, cp.async, tma front-end | coalesced global/shared traffic       | [[lectures/420/notes#memory coalescing]]                |
-> | special function units    | exp, sin, cos, rsqrt throughput           | transcendental evaluation             | [[lectures/420/notes#special function unit (sfu)]]      |
-> | tensor memory accelerator | descriptor-driven dma (sm90+)             | async tensor copies, multicast        | [[lectures/420/notes#tensor memory accelerator (tma)]]  |
+> | unit                      | capacity per sm                           | responsibility                        | deeper dive                                            |
+> | ------------------------- | ----------------------------------------- | ------------------------------------- | ------------------------------------------------------ |
+> | warp schedulers           | 4 quads, 16 warp issue slots/cycle        | pick ready warps, arbitrate pipelines | [[lectures/420/notes#1. Warp Scheduler]]               |
+> | cuda cores                | 128 fp32/int32 alus                       | scalar and vector integer/fp work     | [[lectures/420/notes#2. CUDA Core]]                    |
+> | tensor cores              | 4 mma pipelines (fp16/bf16/tf32/fp8/fp4)  | matrix multiply-accumulate via wgmma  | [[lectures/420/notes#tensor core operation]]           |
+> | load/store units          | 64b sector loads, cp.async, tma front-end | coalesced global/shared traffic       | [[lectures/420/notes#4. Load/Store Unit (LSU)]]        |
+> | special function units    | exp, sin, cos, rsqrt throughput           | transcendental evaluation             | [[lectures/420/notes#5. Special Function Unit (SFU)]]  |
+> | tensor memory accelerator | descriptor-driven dma (sm90+)             | async tensor copies, multicast        | [[lectures/420/notes#tensor memory accelerator (TMA)]] |
 
-## NVIDIA Architectures
+## amd
 
-### Hopper (H100, 2022)
+### [[thoughts/PD disaggregated serving|pd disaggregated serving]]
 
-> [!example] hopper quick facts
+## nvidia architectures
+
+### cuda
+
+see also @lindholm2008nvidia
+
+### hopper
+
+i.e: H100 (2022)
+
+> [!example] sheets
 >
-> | metric       | value                                                                                      |
-> | ------------ | ------------------------------------------------------------------------------------------ |
-> | sm count     | 132 (144 on sxm)                                                                           |
-> | cuda cores   | 16,896                                                                                     |
-> | tensor cores | 528 (4th gen)                                                                              |
-> | hbm          | 80 gb hbm3 @ 3.35 tb/s                                                                     |
-> | fp16 peak    | 1,979 tflop/s                                                                              |
-> | fp8 peak     | 3,958 tflop/s                                                                              |
-> | reference    | [[lectures/420/notes#hopper h100 memory hierarchy (per sm unless noted)]] · modal glossary |
+> | metric       | value                                                                                |
+> | ------------ | ------------------------------------------------------------------------------------ |
+> | sm count     | 132 (144 on sxm)                                                                     |
+> | cuda cores   | 16,896                                                                               |
+> | tensor cores | 528 (4th gen)                                                                        |
+> | hbm          | 80 gb hbm3 @ 3.35 tb/s                                                               |
+> | fp16 peak    | 1,979 tflop/s                                                                        |
+> | fp8 peak     | 3,958 tflop/s                                                                        |
+> | reference    | [[lectures/420/notes#memory hierarchy: the performance bottleneck]] · modal glossary |
 
-> [!tip] hopper standout features
+> [!tip] hopper features
 >
 > - [[lectures/420/notes#thread block clusters and distributed shared memory|thread block clusters]] + dsme fabric
-> - [[lectures/420/notes#tensor memory accelerator (tma)|tensor memory accelerator]] for descriptor-driven async copies
-> - [[lectures/420/notes#wgmma warp-group matrix multiply|wgmma]] instructions and mbarrier synchronization
+> - [[lectures/420/notes#tensor memory accelerator (TMA)|tensor memory accelerator]] for descriptor-driven async copies
+> - [[lectures/420/notes#tensor core operation|wgmma]] instructions and mbarrier synchronization
 > - fp8 (e4m3, e5m2) execution paths highlighted in section 11 of the jax scaling book: https://jax-ml.github.io/scaling-book/
 
-### Blackwell (B200, 2024)
+### blackwell
 
-> [!example] blackwell quick facts
+i.e: b200 (2024)
+
+> [!example] sheets
 >
-> | metric       | value                                                                                           |
-> | ------------ | ----------------------------------------------------------------------------------------------- |
-> | sm count     | 192                                                                                             |
-> | cuda cores   | 24,576                                                                                          |
-> | tensor cores | 768 (5th gen)                                                                                   |
-> | hbm          | 192 gb hbm3e @ 8 tb/s                                                                           |
-> | fp16 peak    | 2,250 tflop/s                                                                                   |
-> | fp4 peak     | 20,000 tflop/s                                                                                  |
-> | reference    | [[lectures/420/notes#nvidia architectures \| architecture table]] · jax scaling book section 12 |
+> | metric       | value                                                                                            |
+> | ------------ | ------------------------------------------------------------------------------------------------ |
+> | sm count     | 192                                                                                              |
+> | cuda cores   | 24,576                                                                                           |
+> | tensor cores | 768 (5th gen)                                                                                    |
+> | hbm          | 192 gb hbm3e @ 8 tb/s                                                                            |
+> | fp16 peak    | 2,250 tflop/s                                                                                    |
+> | fp4 peak     | 20,000 tflop/s                                                                                   |
+> | reference    | [[lectures/420/notes#level 1: the GPU chip \| architecture table]] · jax scaling book section 12 |
 
 > [!tip] blackwell enhancements
 >
@@ -93,32 +103,28 @@ See [[lectures/420/notes#SM execution units: a detailed breakdown|execution unit
 > - nvls fabric for multi-gpu topologies, complements nvlink
 > - guidance in "how to scale your model" (jax scaling book): https://jax-ml.github.io/scaling-book/
 
-## Programming Models
+### cutlass and cute dsl
 
-### CUTLASS and CUTe DSL
-
-See [[lectures/420/notes#cutlass and the cute dsl|CUTLASS and CUTe DSL section]] for comprehensive coverage.
+See [[lectures/420/notes#cute dsl mental model|CUTLASS and CuTe DSL section]] for comprehensive coverage.
 
 > [!table] templated gemm stack
 >
-> | component                         | focus                                                             | follow-up                                                    |
-> | --------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------ |
-> | cutlass                           | template-based gemm primitives, epilogue fusion, cute integration | [[lectures/420/notes#cutlass stages]]                        |
-> | cute dsl                          | layout algebra for compile-time tiling/swizzling                  | [[lectures/420/notes#layout algebra]]                        |
-> | cute swizzle ops                  | xor, block-raked layouts to kill bank conflicts                   | [[lectures/420/notes#swizzling and bank conflict avoidance]] |
-> | cute local_tile / local_partition | hierarchical decompositions down to register tiles                | [[lectures/420/notes#local_tile and local_partition]]        |
+> | component                         | focus                                                             | follow-up                                                                                                                          |
+> | --------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+> | cutlass                           | template-based gemm primitives, epilogue fusion, cute integration | [[lectures/420/notes#hierarchical tiling with local_tile]]                                                                         |
+> | cute dsl                          | layout algebra for compile-time tiling/swizzling                  | [[lectures/420/notes#layout algebra operations]]                                                                                   |
+> | cute swizzle ops                  | xor, block-raked layouts to kill bank conflicts                   | [[lectures/420/notes#swizzling and bank conflict avoidance]]                                                                       |
+> | cute local_tile / local_partition | hierarchical decompositions down to register tiles                | [[lectures/420/notes#hierarchical tiling with local_tile]] · [[lectures/420/notes#thread-level partitioning with local_partition]] |
 
-### Triton Linear Layout
+### triton linear layout
 
 See also: [post](https://www.lei.chat/posts/triton-linear-layout-concept/) · modal glossary on tensor cores: https://modal.com/gpu-glossary/device-hardware/tensor-core
 
 Triton's layout system provides high-level abstractions similar to CUTe but with Python-based programming model.
 
-## Performance Analysis
+## roofline model
 
-### Roofline Model
-
-See [[lectures/420/notes#roofline model and performance bounds|Roofline model section]].
+![[lectures/420/notes#roofline model|Roofline model section]].
 
 > [!abstract] roofline checklist
 >
@@ -126,7 +132,7 @@ See [[lectures/420/notes#roofline model and performance bounds|Roofline model se
 > - ridge point on h100: i ≈ 592 flop/byte (1979 tflop/s ÷ 3.35 tb/s)
 > - optimization target: increase reuse via tiling so intensity crosses the ridge point
 
-### Profiling Tools
+### profiling tools
 
 > [!info] profiling toolkit
 >
@@ -134,9 +140,9 @@ See [[lectures/420/notes#roofline model and performance bounds|Roofline model se
 > - ncu (nsight compute) for kernel metrics + roofline overlays
 > - critical metrics: occupancy, bank conflicts, dram throughput, tensor core utilization
 
-## Resources
+## resources
 
-> [!reference] curated resources
+> [!reference]
 >
 > | theme                  | resource                                                                                                 | notes                                                                    |
 > | ---------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |

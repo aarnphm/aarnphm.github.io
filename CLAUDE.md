@@ -6,6 +6,8 @@ Also don't have to bold text, keep it causal.
 
 ## Development Commands
 
+**IMPORTANT**: Most of the cases if you need to verify build, make sure to see if `pnpm dev` is being run. In this cases, then `pnpm bundle` or any build step are not necessary.
+
 **Build and Development:**
 
 - `pnpm dev` - Start development server with hot reload (concurrency 8, verbose output)
@@ -65,6 +67,7 @@ React-like components in `quartz/components/` using Preact:
 - PascalCase.tsx naming (e.g., ExplorerNode.tsx)
 - Utilities use camelCase (e.g., path.ts, fileTrie.ts)
 - 2-space indentation, ES modules
+- If you are writing buttons, most case prefer `span[type="button"]` over button. But make sure to ask for confirmation.
 
 ## Content Guidelines
 

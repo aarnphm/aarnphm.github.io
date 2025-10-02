@@ -7,7 +7,6 @@ tags:
 description: linear algebra in transformers
 date: "2025-09-26"
 modified: 2025-09-26 02:14:19 GMT-04:00
-noindex: true
 title: 0[dot]412
 ---
 

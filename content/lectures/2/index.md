@@ -5,8 +5,7 @@ tags:
   - ml
 description: convex attention, bottom-up approach
 date: "2025-08-21"
-modified: 2025-09-11 18:15:31 GMT-04:00
-noindex: true
+modified: 2025-10-01 16:53:49 GMT-04:00
 title: 0[dot]2
 ---
 

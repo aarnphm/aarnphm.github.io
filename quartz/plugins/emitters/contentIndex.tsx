@@ -13,6 +13,7 @@ import { i18n } from "../../i18n"
 import { QuartzPluginData } from "../vfile"
 import { version } from "../../../package.json"
 import { ReadTimeResults } from "reading-time"
+import { ArenaData } from "../transformers/arena"
 
 export type ContentIndexMap = Map<FullSlug, ContentDetails>
 export type ContentLayout = "default" | "letter" | "technical" | "reflection" | "letter-poem"
@@ -213,14 +214,15 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
 
       const linkIndex: ContentIndexMap = new Map()
       for (const [tree, file] of content) {
-        const slug = file.data.slug!
+        let slug = file.data.slug!
         const date = getDate(ctx.cfg.configuration, file.data) ?? new Date()
 
+        if (slug === "are.na") {
+          slug = "arena" as FullSlug
+        }
+
         if (opts?.includeEmptyFiles || (file.data.text && file.data.text !== "")) {
-          // Filter out PDF links and links to noindex pages
           const links = (file.data.links ?? []).filter((link) => {
-            // Skip links to pages with noindex: true
-            // @ts-ignore
             const targetFile = content.find(([_, f]) => f.data.slug === link)?.[1]
             if (targetFile?.data.frontmatter?.noindex === true) return false
 
@@ -250,6 +252,33 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
             layout: file.data.frontmatter!.pageLayout,
             description: file.data.description,
           })
+
+          if (slug === "arena") {
+            const arenaData = file.data.arenaData as ArenaData | undefined
+            if (arenaData) {
+              for (const channel of arenaData.channels) {
+                const channelSlug = joinSegments("arena", channel.slug) as FullSlug
+                linkIndex.set(channelSlug, {
+                  slug: channelSlug,
+                  title: channel.name,
+                  links: ["arena" as SimpleSlug],
+                  filePath: file.data.filePath!,
+                  fileName: file.data.filePath!.replace(".md", "") as FilePath,
+                  tags: file.data.frontmatter?.tags ?? [],
+                  aliases: [],
+                  content: channel.blocks.map((b) => b.title || b.content).join(" "),
+                  richContent: "",
+                  date: date,
+                  readingTime: {
+                    minutes: 1,
+                    words: channel.blocks.length * 10,
+                  },
+                  layout: "default",
+                  description: `${channel.blocks.length} blocks in ${channel.name}`,
+                })
+              }
+            }
+          }
         }
       }
 

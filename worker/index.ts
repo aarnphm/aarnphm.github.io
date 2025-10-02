@@ -1,3 +1,4 @@
+import puppeteer from "@cloudflare/puppeteer"
 import LFS_CONFIG from "./.lfsconfig.txt"
 import handleArxiv from "./arxiv"
 import handleCurius from "./curius"
@@ -31,6 +32,10 @@ const AI_USER_AGENT_PATTERNS = [
   "velenpublicwebcrawler",
 ]
 const CONTENT_INDEX_CACHE_TTL = 60_000
+
+type SnapshotMetadata = {
+  contentType?: string
+}
 
 type ContentIndexEntry = {
   slug: string
@@ -200,32 +205,6 @@ async function resolveContentEntry(
   return null
 }
 
-async function fetchMarkdownAsset(
-  env: Env,
-  request: Request,
-  path: string,
-): Promise<Response | null> {
-  const base = resolveBaseUrl(env, request)
-  const normalized = path.startsWith("/") ? path : `/${path}`
-  const assetUrl = new URL(normalized, base)
-  const assetReq = new Request(assetUrl.toString(), {
-    method: request.method,
-    headers: request.headers,
-  })
-  const assetResp = await env.ASSETS.fetch(assetReq)
-  if (!assetResp.ok) return null
-  const headers = new Headers(assetResp.headers)
-  headers.set("Content-Type", "text/markdown; charset=utf-8")
-  headers.set("X-Content-Type-Options", "nosniff")
-  if (!headers.has("Cache-Control"))
-    headers.set("Cache-Control", "public, s-maxage=900, max-age=60")
-  return new Response(assetResp.body, {
-    status: assetResp.status,
-    statusText: assetResp.statusText,
-    headers,
-  })
-}
-
 function resolveBaseUrl(env: Env, request: Request): string {
   if (env.PUBLIC_BASE_URL) return env.PUBLIC_BASE_URL.replace(/\/$/, "")
   const u = new URL(request.url)
@@ -260,6 +239,92 @@ function buildCorsHeaders(env: Env, request: Request): Record<string, string> {
     headers["Access-Control-Allow-Credentials"] = "true"
   }
   return headers
+}
+
+function responseFrom(
+  body: ArrayBuffer | Uint8Array,
+  contentType: string,
+  cors: Record<string, string>,
+) {
+  return new Response(body, {
+    headers: {
+      "Content-Type": contentType,
+      "Cache-Control": "public, max-age=31536000, immutable",
+      ...cors,
+    },
+  })
+}
+
+async function captureSnapshot(env: Env, source: string, width: number): Promise<ArrayBuffer> {
+  const browser = await puppeteer.launch(env.BROWSER)
+  const page = await browser.newPage()
+  try {
+    await page.setViewport({ width, height: Math.round(width * 0.625), deviceScaleFactor: 1 })
+    await page.goto(source, { waitUntil: "networkidle", timeout: 20_000 })
+    const screenshot = (await page.screenshot({ type: "webp", fullPage: true })) as ArrayBuffer
+    await browser.close()
+    return screenshot
+  } catch (error) {
+    try {
+      await browser.close()
+    } catch {}
+    throw error
+  }
+}
+
+async function handleArenaSnapshot(
+  request: Request,
+  env: Env,
+  ctx: ExecutionContext,
+): Promise<Response> {
+  if (!env.ARENA_SNAPSHOTS) {
+    return new Response(JSON.stringify({ error: "kv_not_configured" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
+  }
+
+  const url = new URL(request.url)
+  const id = url.searchParams.get("id")
+  const source = url.searchParams.get("source")
+
+  if (!id || !source) {
+    return new Response(JSON.stringify({ error: "missing_parameters" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json", ...buildCorsHeaders(env, request) },
+    })
+  }
+
+  const cached = await env.ARENA_SNAPSHOTS.getWithMetadata<ArrayBuffer, SnapshotMetadata>(id, {
+    type: "arrayBuffer",
+  })
+  if (cached.value) {
+    return responseFrom(
+      cached.value,
+      cached.metadata?.contentType ?? "image/webp",
+      buildCorsHeaders(env, request),
+    )
+  }
+
+  const width = parseInt(env.ARENA_SNAPSHOT_WIDTH ?? "1280", 10)
+
+  let screenshot: ArrayBuffer
+  try {
+    screenshot = await captureSnapshot(env, source, Number.isFinite(width) ? width : 1280)
+  } catch (error) {
+    return new Response(JSON.stringify({ error: "capture_failed", message: String(error) }), {
+      status: 502,
+      headers: { "Content-Type": "application/json", ...buildCorsHeaders(env, request) },
+    })
+  }
+
+  ctx.waitUntil(
+    env.ARENA_SNAPSHOTS.put(id, screenshot, {
+      metadata: { contentType: "image/webp" },
+    }),
+  )
+
+  return responseFrom(screenshot, "image/webp", buildCorsHeaders(env, request))
 }
 
 async function getObjectInfo(
@@ -367,6 +432,9 @@ type Env = {
   GITHUB_CLIENT_SECRET: string
   SESSION_SECRET: string
   PUBLIC_BASE_URL?: string
+  ARENA_SNAPSHOTS: KVNamespace
+  ARENA_SNAPSHOT_WIDTH?: string
+  BROWSER: Fetcher
 } & Cloudflare.Env
 
 export default {
@@ -394,22 +462,6 @@ export default {
     const providerResp = await provider.fetch(request, env, ctx)
     if (providerResp.status !== 404) return providerResp
 
-    if (url.pathname.endsWith(".md")) {
-      if (!isSafeMethod) return new Response(null, { status: 405, headers: { Allow: "GET, HEAD" } })
-      const direct = await fetchMarkdownAsset(env, request, url.pathname)
-      if (direct) return direct
-      const fallbackEntry = await resolveContentEntry(env, request, url)
-      if (fallbackEntry) {
-        const fallback = await fetchMarkdownAsset(
-          env,
-          request,
-          slugToMarkdownPath(fallbackEntry.slug),
-        )
-        if (fallback) return fallback
-      }
-      return new Response(null, { status: 404 })
-    }
-
     const aiCrawler = isAiCrawler(request)
     if (aiCrawler && isSafeMethod && shouldTreatAsDocument(url.pathname)) {
       const entry = await resolveContentEntry(env, request, url)
@@ -433,6 +485,9 @@ export default {
     // permanent redirect d.aarnphm.xyz -> aarnphm.xyz/dating
     if (url.hostname === "d.aarnphm.xyz") {
       return Response.redirect("https://aarnphm.xyz/dating/slides", 301)
+    }
+    if (url.hostname === "arena.aarnphm.xyz") {
+      return Response.redirect("https://aarnphm.xyz/arena", 301)
     }
 
     // rendering supported code files as text/plain
@@ -536,6 +591,9 @@ export default {
       case "/api/curius": {
         const resp = await handleCurius(request)
         return withHeaders(resp, apiHeaders)
+      }
+      case "/api/arena-snapshot": {
+        return handleArenaSnapshot(request, env, ctx)
       }
     }
 

@@ -10,13 +10,9 @@ transclude:
   dynalist: false
   title: false
 date: "2024-10-24"
-modified: 2025-09-28 03:45:25 GMT-04:00
+modified: 2025-10-01 18:19:03 GMT-04:00
 noindex: true
 title: /xeets/
----
-
-see also [[are.na]]
-
 ---
 
 https://x.com/davidbessis/status/1849442615176950202 <!-- finite complex reflection arrangement are $K(\pi, 1)$ -->
@@ -96,6 +92,8 @@ https://x.com/booritney/status/1884857291046002714 <!-- dates in sf, after dark 
 https://x.com/tommytrxnh/status/1884908531079340090 <!-- Tommy's version -->
 
 https://x.com/noampomsky/status/1960404829647585590 <!-- Life -->
+
+https://x.com/Phil_Lewis_/status/1973448285164806247 <!-- Jane Goodall, ethologist and conservationist, has died -->
 
 ## technology
 

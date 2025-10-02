@@ -4,8 +4,7 @@ tags:
   - seed
 description: contact[at]aarnphm[dot]xyz
 date: "2024-12-08"
-modified: 2025-08-07 16:41:07 GMT-04:00
-noindex: true
+modified: 2025-10-01 16:53:40 GMT-04:00
 title: procedural notes.
 ---
 

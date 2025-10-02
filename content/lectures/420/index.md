@@ -7,7 +7,6 @@ tags:
 description: matmul and GPU quirks
 date: "2025-09-30"
 modified: 2025-09-30 06:41:04 GMT-04:00
-noindex: true
 title: 0[dot]420
 ---
 

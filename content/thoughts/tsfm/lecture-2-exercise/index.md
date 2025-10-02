@@ -7,7 +7,6 @@ tags:
 description: This exercise focuses on understanding and optimizing a Byte Pair Encoding (BPE) tokenizer.
 date: "2025-09-04"
 modified: 2025-09-19 12:21:20 GMT-04:00
-noindex: true
 title: tokenization and computation
 ---
 

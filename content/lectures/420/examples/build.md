@@ -6,7 +6,6 @@ tags:
   - gpu
 date: "2025-09-30"
 modified: 2025-09-30 20:22:16 GMT+00:00
-noindex: true
 title: build instructions for 0.420
 ---
 

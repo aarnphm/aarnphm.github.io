@@ -36,8 +36,10 @@ nav#toc-vertical {
   inset: 20% 0;
 }
 
-.main-col {
-  grid-column: 6/-2;
+body[data-slides="true"] {
+  .main-col {
+    grid-column: 6/-2;
+  }
 }
 
 .slides-controls {
