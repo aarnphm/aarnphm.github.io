@@ -28,9 +28,6 @@ dependencies = [
 ]
 dynamic = ["version"]
 
-[project.scripts]
-cute_paged_attn = "content.lectures.420.examples.cute_paged_attention:main"
-
 [tool.uv.sources]
 minibpe = { path = "content/thoughts/tsfm/lecture-2-exercise" }
 minigpt = { path = "content/thoughts/tsfm/lecture-3-exercise" }
