@@ -13,17 +13,10 @@ import numpy as np
 import argparse
 import time
 
-try:
-  import cutlass
-  import cutlass.cute as cute
-  import cutlass.cute.math as cute_math
-  from cutlass.cute.runtime import from_dlpack
-
-  CUTE_AVAILABLE = True
-except ImportError:
-  print('Warning: nvidia-cutlass-dsl not installed')
-  print('Install with: pip install nvidia-cutlass-dsl')
-  CUTE_AVAILABLE = False
+import cutlass
+import cutlass.cute as cute
+import cutlass.cute.math as cute_math
+from cutlass.cute.runtime import from_dlpack
 
 
 def paged_attention_torch(
@@ -92,133 +85,131 @@ def paged_attention_torch(
   return output
 
 
-if CUTE_AVAILABLE:
+@cute.kernel
+def paged_attention_cute_kernel(
+  output: cute.Tensor,
+  query: cute.Tensor,
+  key_cache: cute.Tensor,
+  value_cache: cute.Tensor,
+  block_tables: cute.Tensor,
+  context_lens: cute.Tensor,
+  scale: cutlass.Float32,
+  num_seqs: cutlass.Int32,
+  num_heads: cutlass.Int32,
+  head_dim: cutlass.Int32,
+  page_size: cutlass.Int32,
+  max_num_pages: cutlass.Int32,
+):
+  """
+  CuTe DSL implementation of paged attention.
 
-  @cute.kernel
-  def paged_attention_cute_kernel(
-    output: cute.Tensor,
-    query: cute.Tensor,
-    key_cache: cute.Tensor,
-    value_cache: cute.Tensor,
-    block_tables: cute.Tensor,
-    context_lens: cute.Tensor,
-    scale: cutlass.Float32,
-    num_seqs: cutlass.Int32,
-    num_heads: cutlass.Int32,
-    head_dim: cutlass.Int32,
-    page_size: cutlass.Int32,
-    max_num_pages: cutlass.Int32,
-  ):
-    """
-    CuTe DSL implementation of paged attention.
+  This is a simplified version demonstrating the CuTe DSL Python API.
+  A full implementation would include:
+  - Shared memory tiling
+  - Online softmax with streaming updates
+  - Warp-level optimizations
+  - TMA (Tensor Memory Accelerator) usage on Hopper
+  """
 
-    This is a simplified version demonstrating the CuTe DSL Python API.
-    A full implementation would include:
-    - Shared memory tiling
-    - Online softmax with streaming updates
-    - Warp-level optimizations
-    - TMA (Tensor Memory Accelerator) usage on Hopper
-    """
+  # Grid: (num_heads, num_seqs, 1), Block: (1, 1, 1)
+  head_idx, seq_idx, _ = cute.arch.block_idx()
 
-    # Grid: (num_heads, num_seqs, 1), Block: (1, 1, 1)
-    head_idx, seq_idx, _ = cute.arch.block_idx()
+  if seq_idx < num_seqs and head_idx < num_heads:
+    context_len = context_lens[seq_idx]
+    num_pages_seq = (context_len + page_size - 1) // page_size
 
-    if seq_idx < num_seqs and head_idx < num_heads:
-      context_len = context_lens[seq_idx]
-      num_pages_seq = (context_len + page_size - 1) // page_size
+    # Cache query vector for this CTA in registers
+    q_local = cute.make_fragment((head_dim,), cutlass.Float32)
+    acc = cute.make_fragment((head_dim,), cutlass.Float32)
 
-      # Cache query vector for this CTA in registers
-      q_local = cute.make_fragment((head_dim,), cutlass.Float32)
-      acc = cute.make_fragment((head_dim,), cutlass.Float32)
+    for d in range(head_dim):
+      q_local[d] = query[seq_idx, head_idx, d]
+      acc[d] = cutlass.Float32(0.0)
 
-      for d in range(head_dim):
-        q_local[d] = query[seq_idx, head_idx, d]
-        acc[d] = cutlass.Float32(0.0)
+    # Online softmax statistics
+    row_max = float('-inf')
+    row_sum = 0.0
 
-      # Online softmax statistics
-      row_max = float('-inf')
-      row_sum = 0.0
+    # Process each page
+    for page_idx in range(max_num_pages):
+      page_is_active = page_idx < num_pages_seq
+      block_num = block_tables[seq_idx, page_idx] if page_is_active else -1
+      page_is_active = page_is_active and (block_num >= 0)
 
-      # Process each page
-      for page_idx in range(max_num_pages):
-        page_is_active = page_idx < num_pages_seq
-        block_num = block_tables[seq_idx, page_idx] if page_is_active else -1
-        page_is_active = page_is_active and (block_num >= 0)
+      page_start = page_idx * page_size
+      page_end = min(page_start + page_size, context_len)
+      tokens_in_page = page_end - page_start if page_is_active else 0
 
-        page_start = page_idx * page_size
-        page_end = min(page_start + page_size, context_len)
-        tokens_in_page = page_end - page_start if page_is_active else 0
+      # Compute attention scores for tokens in this page
+      for token_idx in range(page_size):
+        token_is_active = page_is_active and (token_idx < tokens_in_page)
+        if token_is_active:
+          qk_score = 0.0
 
-        # Compute attention scores for tokens in this page
-        for token_idx in range(page_size):
-          token_is_active = page_is_active and (token_idx < tokens_in_page)
-          if token_is_active:
-            qk_score = 0.0
+          for d in range(head_dim):
+            qk_score += q_local[d] * key_cache[block_num, head_idx, token_idx, d]
 
-            for d in range(head_dim):
-              qk_score += q_local[d] * key_cache[block_num, head_idx, token_idx, d]
+          qk_score *= scale
 
-            qk_score *= scale
+          # Online softmax update
+          prev_max = row_max
+          row_max = max(row_max, qk_score)
 
-            # Online softmax update
-            prev_max = row_max
-            row_max = max(row_max, qk_score)
+          exp_prev = 0.0 if prev_max == float('-inf') else cute_math.exp(prev_max - row_max)
+          exp_curr = cute_math.exp(qk_score - row_max)
 
-            exp_prev = 0.0 if prev_max == float('-inf') else cute_math.exp(prev_max - row_max)
-            exp_curr = cute_math.exp(qk_score - row_max)
+          row_sum = row_sum * exp_prev + exp_curr
 
-            row_sum = row_sum * exp_prev + exp_curr
+          # Scale accumulator
+          for d in range(head_dim):
+            acc[d] *= exp_prev
 
-            # Scale accumulator
-            for d in range(head_dim):
-              acc[d] *= exp_prev
+          # Add attention * V
+          attn_weight = exp_curr
 
-            # Add attention * V
-            attn_weight = exp_curr
+          for d in range(head_dim):
+            acc[d] += attn_weight * value_cache[block_num, head_idx, token_idx, d]
 
-            for d in range(head_dim):
-              acc[d] += attn_weight * value_cache[block_num, head_idx, token_idx, d]
+    # Final normalization and write output
+    inv_row_sum = 0.0 if row_sum == 0.0 else 1.0 / row_sum
 
-      # Final normalization and write output
-      inv_row_sum = 0.0 if row_sum == 0.0 else 1.0 / row_sum
+    for d in range(head_dim):
+      output[seq_idx, head_idx, d] = acc[d] * inv_row_sum
 
-      for d in range(head_dim):
-        output[seq_idx, head_idx, d] = acc[d] * inv_row_sum
-
-  @cute.jit
-  def paged_attention_cute_launch(
-    output: cute.Tensor,
-    query: cute.Tensor,
-    key_cache: cute.Tensor,
-    value_cache: cute.Tensor,
-    block_tables: cute.Tensor,
-    context_lens: cute.Tensor,
-    scale: cutlass.Float32,
-    num_seqs: cutlass.Int32,
-    num_heads: cutlass.Int32,
-    head_dim: cutlass.Int32,
-    page_size: cutlass.Int32,
-    max_num_pages: cutlass.Int32,
-  ):
-    """
-    JIT wrapper for launching the paged attention kernel.
-    """
-    # Grid: (num_heads, num_seqs, 1), Block: (1, 1, 1)
-    # Each block handles one (seq, head) pair
-    paged_attention_cute_kernel(
-      output,
-      query,
-      key_cache,
-      value_cache,
-      block_tables,
-      context_lens,
-      scale,
-      num_seqs,
-      num_heads,
-      head_dim,
-      page_size,
-      max_num_pages,
-    ).launch(grid=(num_heads, num_seqs, 1), block=(1, 1, 1))
+@cute.jit
+def paged_attention_cute_launch(
+  output: cute.Tensor,
+  query: cute.Tensor,
+  key_cache: cute.Tensor,
+  value_cache: cute.Tensor,
+  block_tables: cute.Tensor,
+  context_lens: cute.Tensor,
+  scale: cutlass.Float32,
+  num_seqs: cutlass.Int32,
+  num_heads: cutlass.Int32,
+  head_dim: cutlass.Int32,
+  page_size: cutlass.Int32,
+  max_num_pages: cutlass.Int32,
+):
+  """
+  JIT wrapper for launching the paged attention kernel.
+  """
+  # Grid: (num_heads, num_seqs, 1), Block: (1, 1, 1)
+  # Each block handles one (seq, head) pair
+  paged_attention_cute_kernel(
+    output,
+    query,
+    key_cache,
+    value_cache,
+    block_tables,
+    context_lens,
+    scale,
+    num_seqs,
+    num_heads,
+    head_dim,
+    page_size,
+    max_num_pages,
+  ).launch(grid=(num_heads, num_seqs, 1), block=(1, 1, 1))
 
 
 def test_paged_attention(verbosity: int = 0, num_seqs: int = 2, seq_len: int = 32, num_heads: int = 4, head_dim: int = 64, page_size: int = 16):
@@ -281,25 +272,41 @@ def test_paged_attention(verbosity: int = 0, num_seqs: int = 2, seq_len: int = 3
     print(f'  {output_ref[0, 0, :8].cpu().numpy()}')
 
   # Run CuTe DSL kernel if available
-  if CUTE_AVAILABLE:
-    print('\n' + '-' * 70)
-    print('Running CuTe DSL kernel...')
-    print('-' * 70)
+  print('\n' + '-' * 70)
+  print('Running CuTe DSL kernel...')
+  print('-' * 70)
 
-    output_cute = torch.zeros_like(query)
+  output_cute = torch.zeros_like(query)
 
-    try:
-      # Convert PyTorch tensors to CuTe tensors
-      output_cute_ = from_dlpack(output_cute, assumed_align=16)
-      query_ = from_dlpack(query, assumed_align=16)
-      key_cache_ = from_dlpack(key_cache, assumed_align=16)
-      value_cache_ = from_dlpack(value_cache, assumed_align=16)
-      block_tables_ = from_dlpack(block_tables, assumed_align=16)
-      context_lens_ = from_dlpack(context_lens, assumed_align=16)
+  try:
+    # Convert PyTorch tensors to CuTe tensors
+    output_cute_ = from_dlpack(output_cute, assumed_align=16)
+    query_ = from_dlpack(query, assumed_align=16)
+    key_cache_ = from_dlpack(key_cache, assumed_align=16)
+    value_cache_ = from_dlpack(value_cache, assumed_align=16)
+    block_tables_ = from_dlpack(block_tables, assumed_align=16)
+    context_lens_ = from_dlpack(context_lens, assumed_align=16)
 
-      # Compile the launch wrapper
-      paged_attention_compiled = cute.compile(
-        paged_attention_cute_launch,
+    # Compile the launch wrapper
+    paged_attention_compiled = cute.compile(
+      paged_attention_cute_launch,
+      output_cute_,
+      query_,
+      key_cache_,
+      value_cache_,
+      block_tables_,
+      context_lens_,
+      cutlass.Float32(scale),
+      cutlass.Int32(num_seqs),
+      cutlass.Int32(num_heads),
+      cutlass.Int32(head_dim),
+      cutlass.Int32(page_size),
+      cutlass.Int32(max_num_pages),
+    )
+
+    # Warmup
+    for _ in range(3):
+      paged_attention_compiled(
         output_cute_,
         query_,
         key_cache_,
@@ -313,95 +320,69 @@ def test_paged_attention(verbosity: int = 0, num_seqs: int = 2, seq_len: int = 3
         cutlass.Int32(page_size),
         cutlass.Int32(max_num_pages),
       )
+    torch.cuda.synchronize()
 
-      # Warmup
-      for _ in range(3):
-        paged_attention_compiled(
-          output_cute_,
-          query_,
-          key_cache_,
-          value_cache_,
-          block_tables_,
-          context_lens_,
-          cutlass.Float32(scale),
-          cutlass.Int32(num_seqs),
-          cutlass.Int32(num_heads),
-          cutlass.Int32(head_dim),
-          cutlass.Int32(page_size),
-          cutlass.Int32(max_num_pages),
-        )
-      torch.cuda.synchronize()
+    # Time CuTe implementation
+    torch.cuda.synchronize()
+    start = time.perf_counter()
+    for _ in range(num_iterations):
+      paged_attention_compiled(
+        output_cute_,
+        query_,
+        key_cache_,
+        value_cache_,
+        block_tables_,
+        context_lens_,
+        cutlass.Float32(scale),
+        cutlass.Int32(num_seqs),
+        cutlass.Int32(num_heads),
+        cutlass.Int32(head_dim),
+        cutlass.Int32(page_size),
+        cutlass.Int32(max_num_pages),
+      )
+    torch.cuda.synchronize()
+    cute_time = (time.perf_counter() - start) / num_iterations * 1000  # Convert to ms
 
-      # Time CuTe implementation
-      torch.cuda.synchronize()
-      start = time.perf_counter()
-      for _ in range(num_iterations):
-        paged_attention_compiled(
-          output_cute_,
-          query_,
-          key_cache_,
-          value_cache_,
-          block_tables_,
-          context_lens_,
-          cutlass.Float32(scale),
-          cutlass.Int32(num_seqs),
-          cutlass.Int32(num_heads),
-          cutlass.Int32(head_dim),
-          cutlass.Int32(page_size),
-          cutlass.Int32(max_num_pages),
-        )
-      torch.cuda.synchronize()
-      cute_time = (time.perf_counter() - start) / num_iterations * 1000  # Convert to ms
+    print(f'Output shape: {output_cute.shape}')
+    if verbosity >= 1:
+      print('Output sample (seq=0, head=0, first 8 dims):')
+      print(f'  {output_cute[0, 0, :8].cpu().numpy()}')
 
-      print(f'Output shape: {output_cute.shape}')
-      if verbosity >= 1:
-        print('Output sample (seq=0, head=0, first 8 dims):')
-        print(f'  {output_cute[0, 0, :8].cpu().numpy()}')
-
-      # Compare results
-      print('\n' + '-' * 70)
-      print('Verification')
-      print('-' * 70)
-
-      max_diff = torch.max(torch.abs(output_cute - output_ref)).item()
-      mean_diff = torch.mean(torch.abs(output_cute - output_ref)).item()
-
-      print(f'Max absolute difference: {max_diff:.6f}')
-      print(f'Mean absolute difference: {mean_diff:.6f}')
-
-      tolerance = 1e-3
-      if max_diff < tolerance:
-        print(f'✓ PASSED (tolerance: {tolerance})')
-      else:
-        print(f'✗ FAILED (tolerance: {tolerance})')
-
-      # Performance comparison
-      print('\n' + '-' * 70)
-      print('Performance Comparison')
-      print('-' * 70)
-      print(f'PyTorch reference: {pytorch_time:.3f} ms')
-      print(f'CuTe DSL kernel: {cute_time:.3f} ms')
-      speedup = pytorch_time / cute_time
-      print(f'Speedup: {speedup:.2f}x')
-      if speedup > 1.0:
-        print(f'CuTe is {speedup:.2f}x faster')
-      elif speedup < 1.0:
-        print(f'PyTorch is {1/speedup:.2f}x faster')
-      else:
-        print('Performance is similar')
-
-    except Exception as e:
-      print(f'Error running CuTe DSL kernel: {e}')
-      print('Note: CuTe DSL is in beta and may require specific CUDA/driver versions')
-
-  else:
+    # Compare results
     print('\n' + '-' * 70)
-    print('CuTe DSL not available - showing PyTorch reference only')
+    print('Verification')
     print('-' * 70)
+
+    max_diff = torch.max(torch.abs(output_cute - output_ref)).item()
+    mean_diff = torch.mean(torch.abs(output_cute - output_ref)).item()
+
+    print(f'Max absolute difference: {max_diff:.6f}')
+    print(f'Mean absolute difference: {mean_diff:.6f}')
+
+    tolerance = 1e-3
+    if max_diff < tolerance:
+      print(f'✓ PASSED (tolerance: {tolerance})')
+    else:
+      print(f'✗ FAILED (tolerance: {tolerance})')
+
+    # Performance comparison
     print('\n' + '-' * 70)
-    print('Performance')
+    print('Performance Comparison')
     print('-' * 70)
     print(f'PyTorch reference: {pytorch_time:.3f} ms')
+    print(f'CuTe DSL kernel: {cute_time:.3f} ms')
+    speedup = pytorch_time / cute_time
+    print(f'Speedup: {speedup:.2f}x')
+    if speedup > 1.0:
+      print(f'CuTe is {speedup:.2f}x faster')
+    elif speedup < 1.0:
+      print(f'PyTorch is {1/speedup:.2f}x faster')
+    else:
+      print('Performance is similar')
+
+  except Exception as e:
+    print(f'Error running CuTe DSL kernel: {e}')
+    print('Note: CuTe DSL is in beta and may require specific CUDA/driver versions')
 
   # Show memory efficiency benefits
   print('\n' + '=' * 70)
