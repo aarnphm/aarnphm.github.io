@@ -255,12 +255,54 @@ function responseFrom(
   })
 }
 
-async function captureSnapshot(env: Env, source: string, width: number): Promise<ArrayBuffer> {
+class SnapshotScheduler {
+  #concurrency: number
+  #active = 0
+  #queue: Array<() => void> = []
+
+  constructor(concurrency: number) {
+    this.#concurrency = Math.max(1, Math.floor(concurrency))
+  }
+
+  setConcurrency(requested: number) {
+    const normalized = Number.isFinite(requested) && requested > 0 ? Math.floor(requested) : 1
+    if (normalized === this.#concurrency) return
+    this.#concurrency = normalized
+    this.#drain()
+  }
+
+  async run<T>(task: () => Promise<T>): Promise<T> {
+    if (this.#active >= this.#concurrency) {
+      await new Promise<void>((resolve) => {
+        this.#queue.push(resolve)
+      })
+    }
+    this.#active++
+    try {
+      return await task()
+    } finally {
+      this.#active--
+      this.#drain()
+    }
+  }
+
+  #drain() {
+    while (this.#active < this.#concurrency && this.#queue.length > 0) {
+      const next = this.#queue.shift()
+      if (next) next()
+    }
+  }
+}
+
+const snapshotScheduler = new SnapshotScheduler(1)
+const inflightSnapshots = new Map<string, Promise<ArrayBuffer>>()
+
+async function performSnapshot(env: Env, source: string, width: number): Promise<ArrayBuffer> {
   const browser = await puppeteer.launch(env.BROWSER)
   const page = await browser.newPage()
   try {
     await page.setViewport({ width, height: Math.round(width * 0.625), deviceScaleFactor: 1 })
-    await page.goto(source, { waitUntil: "networkidle", timeout: 20_000 })
+    await page.goto(source, { waitUntil: "networkidle0", timeout: 20_000 })
     const screenshot = (await page.screenshot({ type: "webp", fullPage: true })) as ArrayBuffer
     await browser.close()
     return screenshot
@@ -270,6 +312,24 @@ async function captureSnapshot(env: Env, source: string, width: number): Promise
     } catch {}
     throw error
   }
+}
+
+async function captureSnapshot(
+  env: Env,
+  id: string,
+  source: string,
+  width: number,
+): Promise<ArrayBuffer> {
+  const requested = Number.parseInt(env.ARENA_SNAPSHOT_CONCURRENCY ?? "", 10)
+  snapshotScheduler.setConcurrency(requested)
+
+  const existing = inflightSnapshots.get(id)
+  if (existing) return existing
+
+  const task = snapshotScheduler.run(() => performSnapshot(env, source, width))
+  inflightSnapshots.set(id, task)
+  task.finally(() => inflightSnapshots.delete(id))
+  return task
 }
 
 async function handleArenaSnapshot(
@@ -306,11 +366,12 @@ async function handleArenaSnapshot(
     )
   }
 
-  const width = parseInt(env.ARENA_SNAPSHOT_WIDTH ?? "1280", 10)
+  const widthConfig = parseInt(env.ARENA_SNAPSHOT_WIDTH ?? "1280", 10)
+  const captureWidth = Number.isFinite(widthConfig) && widthConfig > 0 ? widthConfig : 1280
 
   let screenshot: ArrayBuffer
   try {
-    screenshot = await captureSnapshot(env, source, Number.isFinite(width) ? width : 1280)
+    screenshot = await captureSnapshot(env, id, source, captureWidth)
   } catch (error) {
     return new Response(JSON.stringify({ error: "capture_failed", message: String(error) }), {
       status: 502,
@@ -434,6 +495,7 @@ type Env = {
   PUBLIC_BASE_URL?: string
   ARENA_SNAPSHOTS: KVNamespace
   ARENA_SNAPSHOT_WIDTH?: string
+  ARENA_SNAPSHOT_CONCURRENCY?: string
   BROWSER: Fetcher
 } & Cloudflare.Env
 

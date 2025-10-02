@@ -13,7 +13,7 @@ description: My run-down version of are[dot]na
 socials:
   are.na: https://www.are.na/aaron-pham/channels
 date: "2024-10-24"
-modified: 2025-10-02 05:13:11 GMT-04:00
+modified: 2025-10-02 16:20:25 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -146,6 +146,7 @@ cssclasses:
 - https://www.memoria.day/ -- Memoria
 - https://www.kran.ai -- Esben Kran
 - https://www.johnnylin.co/ -- Johnny Lin
+- https://100r.ca/site/weathering_software_winter.html -- Weathering Software Winter
 
 ## people
 

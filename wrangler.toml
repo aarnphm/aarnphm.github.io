@@ -20,8 +20,12 @@ id = "c8591d9cecbd4cf4b569a8edadc3302d"
 
 [[kv_namespaces]]
 binding = "ARENA_SNAPSHOTS"
-id = "e43d32eebf704e54a268df68735722a2"
-preview_id = "ARENA_SNAPSHOTS_PREVIEW"
+id = "03182f291ccc4443949575b70e2ea883"
+
+[[kv_namespaces]]
+binding = "ARENA_SNAPSHOTS"
+preview_id = "7b9961c823c54005a5deeb37121392a2"
+remote = true
 
 [[r2_buckets]]
 binding = "LFS_BUCKET"
