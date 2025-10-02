@@ -12,12 +12,12 @@ function resolveSnapshotConcurrency(): number {
 
 function ensurePlaceholder(img: HTMLImageElement) {
   if (!img.dataset.snapshotPlaceholder) {
-    img.dataset.snapshotPlaceholder = PLACEHOLDER_FALLBACK
+    img.dataset.snapshotPlaceholder = SNAPSHOT_PLACEHOLDER
   }
   const current = img.getAttribute("src")
   const placeholder = img.dataset.snapshotPlaceholder
   if (!current || current === img.dataset.snapshotSrc || current === "") {
-    img.src = placeholder ?? PLACEHOLDER_FALLBACK
+    img.src = placeholder ?? SNAPSHOT_PLACEHOLDER
   }
 }
 
