@@ -3,7 +3,7 @@
 
 [data-slug*="arena"] {
   blockquote.twitter-tweet {
-    margin-bottom: 0 !important;
+    margin: 2rem !important;
     height: fit-content;
     width: 100%;
   }
@@ -390,13 +390,16 @@ body[data-arena-subpage="true"] {
     align-items: stretch;
     min-height: 0;
     border: 1px solid var(--gray);
-    border-radius: 16px;
+    border-radius: 4px;
+
+    &:has(.arena-modal-iframe) {
+      border: none;
+      border-radius: 0;
+    }
 
     .arena-modal-iframe {
       width: 100%;
       height: 100%;
-      border: 0;
-      border-radius: 12px;
       background: var(--light);
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
       display: block;
@@ -449,6 +452,63 @@ body[data-arena-subpage="true"] {
       color: inherit;
       text-decoration: underline;
       font-weight: 600;
+    }
+
+    .arena-iframe-error {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--light);
+      border-radius: 12px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .arena-iframe-error-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 2rem;
+      text-align: center;
+      max-width: 400px;
+
+      svg {
+        color: var(--gray);
+        width: 48px;
+        height: 48px;
+      }
+
+      p {
+        margin: 0;
+        color: var(--darkgray);
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+    }
+
+    .arena-iframe-error-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--secondary);
+      color: var(--light);
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background: var(--tertiary);
+      }
+
+      svg {
+        width: 15px;
+        height: 15px;
+        color: currentColor;
+      }
     }
   }
 
@@ -513,6 +573,41 @@ body[data-arena-subpage="true"] {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .arena-url-copy-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+
+    &:hover {
+      background-color: var(--gray);
+    }
+
+    .copy-icon {
+      display: block;
+    }
+
+    .check-icon {
+      display: none;
+      fill: rgb(63, 185, 80);
+    }
+
+    &.check {
+      .copy-icon {
+        display: none;
+      }
+
+      .check-icon {
+        display: block;
+      }
+    }
   }
 
   .arena-modal-link {
@@ -694,6 +789,12 @@ body[data-arena-subpage="true"] {
       border-color: var(--gray);
     }
 
+    .arena-url-copy-button {
+      &:hover {
+        background-color: var(--dark);
+      }
+    }
+
     .arena-modal-link {
       color: var(--light);
 
@@ -719,6 +820,16 @@ body[data-arena-subpage="true"] {
 
       a {
         color: var(--secondary);
+      }
+    }
+
+    .arena-iframe-error {
+      background: var(--dark);
+    }
+
+    .arena-iframe-error-content {
+      p {
+        color: var(--gray);
       }
     }
 

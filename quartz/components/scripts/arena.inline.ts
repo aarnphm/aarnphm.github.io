@@ -170,11 +170,59 @@ function updateNavButtons() {
   }
 }
 
+function getModalBlockId(element: HTMLElement): string | null {
+  const modalContainer = element.closest(".arena-block-modal-data") as HTMLElement | null
+  if (!modalContainer) return null
+
+  if (modalContainer.dataset.blockId) {
+    return modalContainer.dataset.blockId
+  }
+
+  const modalId = modalContainer.id
+  if (modalId && modalId.startsWith("arena-modal-data-")) {
+    return modalId.slice("arena-modal-data-".length)
+  }
+
+  return null
+}
+
+function buildBlockShareUrl(blockId: string): string {
+  const shareUrl = new URL(window.location.href)
+  shareUrl.hash = `arena-block-${blockId}`
+  return shareUrl.toString()
+}
+
+function handleCopyButton(button: HTMLElement) {
+  const blockId = getModalBlockId(button)
+  const targetUrl = blockId ? buildBlockShareUrl(blockId) : button.getAttribute("data-url")
+  if (!targetUrl) {
+    return
+  }
+
+  navigator.clipboard.writeText(targetUrl).then(
+    () => {
+      button.classList.add("check")
+      setTimeout(() => {
+        button.classList.remove("check")
+      }, 2000)
+    },
+    (error) => console.error(error),
+  )
+}
+
 document.addEventListener("nav", () => {
   totalBlocks = document.querySelectorAll("[data-block-id][data-block-index]").length
 
   const onClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement
+
+    const copyButton = target.closest("span.arena-url-copy-button") as HTMLElement | null
+    if (copyButton) {
+      e.preventDefault()
+      e.stopPropagation()
+      handleCopyButton(copyButton)
+      return
+    }
 
     const blockClickable = target.closest(".arena-block-clickable")
     if (blockClickable) {

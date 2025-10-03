@@ -1,11 +1,7 @@
 ---
 id: are.na
-permalinks:
-  - /website
-  - /tweets
-  - /resources
-  - /inspo
-  - /are.na
+aliases:
+  - inspo
 tags:
   - technical
   - seed
@@ -14,9 +10,13 @@ description: My run-down version of are[dot]na
 socials:
   are.na: https://www.are.na/aaron-pham/channels
 date: "2024-10-24"
-modified: 2025-10-03 05:17:27 GMT-04:00
-aliases:
-  - inspo
+modified: 2025-10-03 06:40:04 GMT-04:00
+permalinks:
+  - /website
+  - /tweets
+  - /resources
+  - /inspo
+  - /are.na
 title: are.na
 cssclasses:
   - nolist
@@ -368,7 +368,7 @@ cssclasses:
 - https://wholeearth.info/p/whole-earth-catalog-fall-1968?format=spreads&index=0 -- Whole Earth Index
 - https://substack.com/inbox/post/169322228 -- A constellation of lookers
 - https://blog.cloudflare.com/perplexity-is-using-stealth-undeclared-crawlers-to-evade-website-no-crawl-directives/ -- Perplexity is using stealth, undeclared crawlers to evade website no-crawl directives
-- https://www.goodreads.com/author_blog_posts/25905231-layers -- Layers
+- https://kenliu.substack.com/p/layers -- Layers
   - > Faulkner was absolutely right: The past is never dead. It’s not even past
   - > It’s worth remembering that this is not true—or at least not true to the same degree—for cultures that built with perishable materials: wood, bamboo, paper, rammed earth. Unless actively maintained, these structures will perish in fire, flood, war, often lasting no more than decades, much less centuries.
 - https://shreniks-subconscious.super.site/journal/impermanence-bay-area-musings -- Impermanence (Bay Area Musings)

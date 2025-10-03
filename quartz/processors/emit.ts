@@ -11,7 +11,7 @@ export async function emitContent(ctx: BuildCtx, content: ProcessedContent[]) {
   const perf = new PerfTimer()
   const log = new QuartzLogger(ctx.argv.verbose)
 
-  log.start(`Emitting files`)
+  log.start(``)
 
   let emittedFiles = 0
   const staticResources = getStaticResourcesFromPlugins(ctx)
