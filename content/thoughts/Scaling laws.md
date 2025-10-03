@@ -4,7 +4,7 @@ tags:
   - ml
 description: empirical relationships linking model/data/compute to performance
 date: "2025-09-15"
-modified: 2025-10-03 06:01:54 GMT-04:00
+modified: 2025-10-03 16:24:22 GMT-04:00
 title: scaling laws
 ---
 
@@ -27,6 +27,15 @@ further reading:
 - https://arxiv.org/abs/2203.15556
 
 ## power law
+
+[Power laws](https://en.wikipedia.org/wiki/Power_law) describe relationships where one quantity varies as a power of another: $y = ax^k$. In deep learning, performance metrics often follow power-law relationships with scale.
+
+- https://arxiv.org/abs/1712.00409
+  - Baidu Research study showing generalization error follows power-law with dataset size across domains
+  - Demonstrates predictable scaling across machine translation, language modeling, image classification, and speech recognition
+  - Key insight: can extrapolate final model performance from small-scale experiments
+  - General form: error $\propto$ (dataset size)$^{-\alpha}$ where $\alpha$ is task-dependent
+  - Enables data-driven decisions about whether to gather more data or improve model architecture
 
 ### canonical scaling relations
 

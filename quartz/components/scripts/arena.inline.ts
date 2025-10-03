@@ -128,6 +128,20 @@ function showModal(blockId: string) {
 
   hydrateSubstackEmbeds(modalBody)
 
+  const sidebar = modalBody.querySelector(".arena-modal-sidebar") as HTMLElement | null
+  const hasConnections = modalBody.querySelector(".arena-modal-connections") !== null
+  const collapseBtn = modal?.querySelector(".arena-modal-collapse") as HTMLElement | null
+
+  if (sidebar) {
+    if (hasConnections) {
+      sidebar.classList.remove("collapsed")
+      collapseBtn?.classList.remove("active")
+    } else {
+      sidebar.classList.add("collapsed")
+      collapseBtn?.classList.add("active")
+    }
+  }
+
   updateNavButtons()
   modal.classList.add("active")
   document.body.style.overflow = "hidden"
@@ -229,6 +243,17 @@ document.addEventListener("nav", () => {
 
     if (target.closest(".arena-modal-next")) {
       navigateBlock(1)
+      return
+    }
+
+    if (target.closest(".arena-modal-collapse")) {
+      const modal = document.getElementById("arena-modal")
+      const sidebar = modal?.querySelector(".arena-modal-sidebar") as HTMLElement | null
+      const collapseBtn = target.closest(".arena-modal-collapse") as HTMLElement | null
+      if (sidebar) {
+        sidebar.classList.toggle("collapsed")
+        collapseBtn?.classList.toggle("active")
+      }
       return
     }
 

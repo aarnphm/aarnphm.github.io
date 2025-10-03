@@ -3,13 +3,55 @@ import { ArenaChannel, ArenaBlock } from "../../plugins/transformers/arena"
 import { classNames } from "../../util/lang"
 import { htmlToJsx } from "../../util/jsx"
 import { toHtml } from "hast-util-to-html"
-import type { ElementContent, Root } from "hast"
+import type { ElementContent, Root, Element } from "hast"
 import style from "../styles/arena.scss"
 // @ts-ignore
 import modalScript from "../scripts/arena.inline"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
+import { FullSlug, normalizeHastElement } from "../../util/path"
+import { transcludeFinal } from "../renderPage"
 
 const substackPostRegex = /^https?:\/\/[^/]+\/p\/[^/]+/i
+
+const rewriteArxivUrl = (rawUrl: string): string => {
+  try {
+    const parsed = new URL(rawUrl)
+    if (!parsed.hostname.toLowerCase().endsWith("arxiv.org")) {
+      return rawUrl
+    }
+
+    const pathSegments = parsed.pathname.split("/").filter(Boolean)
+    if (pathSegments.length === 0) {
+      return rawUrl
+    }
+
+    const [head, ...rest] = pathSegments
+    if (rest.length === 0) {
+      return rawUrl
+    }
+
+    const normalizedHead = head.toLowerCase()
+    const remainder = rest.join("/")
+    const suffix = `${parsed.search}${parsed.hash}`
+
+    if (normalizedHead === "pdf") {
+      return `https://ar5iv.org/pdf/${remainder}${suffix}`
+    }
+
+    if (normalizedHead === "html") {
+      return `https://ar5iv.org/html/${remainder}${suffix}`
+    }
+
+    if (normalizedHead === "abs") {
+      const sanitized = remainder.replace(/\.pdf$/i, "")
+      return `https://ar5iv.org/html/${sanitized}${suffix}`
+    }
+
+    return `https://ar5iv.org/${[head, ...rest].join("/")}${suffix}`
+  } catch {
+    return rawUrl
+  }
+}
 
 const escapeHtml = (value: string): string =>
   value
@@ -19,45 +61,101 @@ const escapeHtml = (value: string): string =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;")
 
-const nodeToHtml = (node?: ElementContent): string => {
-  if (!node) {
-    return ""
+const normalizeDate = (value: string): { display: string; dateTime?: string } => {
+  const trimmed = value.trim()
+  const match = trimmed.match(/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/)
+  if (!match) {
+    return { display: trimmed.length > 0 ? trimmed : value }
   }
 
-  const root: Root = {
-    type: "root",
-    children: [node as ElementContent],
+  const [, monthStr, dayStr, yearStr] = match
+  const month = Number(monthStr)
+  const day = Number(dayStr)
+  const year = Number(yearStr)
+
+  if (
+    Number.isNaN(month) ||
+    Number.isNaN(day) ||
+    Number.isNaN(year) ||
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > 31
+  ) {
+    return { display: trimmed }
   }
 
-  return toHtml(root, { allowDangerousHtml: true })
-}
+  const date = new Date(Date.UTC(year, month - 1, day))
+  const formatter = new Intl.DateTimeFormat("en-US", { dateStyle: "medium" })
+  const display = formatter.format(date)
+  const iso = `${yearStr.padStart(4, "0")}-${monthStr.padStart(2, "0")}-${dayStr.padStart(2, "0")}`
 
-const buildSrcDoc = (block: ArenaBlock): string => {
-  const body = block.htmlNode
-    ? nodeToHtml(block.htmlNode)
-    : `<p>${escapeHtml(block.title ?? block.content ?? "")}</p>`
-
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><style>html,body{margin:0;padding:12px;font-family:inherit;font-size:16px;line-height:1.5;color:var(--text,#111);background:var(--light,#fff);overflow:hidden;}a{color:inherit;text-decoration:underline;}img,video{max-width:100%;height:auto;display:block;}p{margin:0 0 1em 0;}ul,ol{margin:0 0 1em 1.5em;padding:0;}code{font-family:inherit;background:rgba(0,0,0,0.05);padding:0.15em 0.3em;border-radius:4px;}</style></head><body>${body}</body></html>`
+  return { display, dateTime: iso }
 }
 
 export default (() => {
-  const ChannelContent: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
+  const ChannelContent: QuartzComponent = (componentData: QuartzComponentProps) => {
+    const { fileData, displayClass } = componentData
     const channel = fileData.arenaChannel as ArenaChannel | undefined
 
     if (!channel) {
       return <article class="arena-content">Channel not found</article>
     }
 
+    const rebaseAndTransclude = (node?: ElementContent): Root | undefined => {
+      if (!node) return undefined
+      const curBase = "are.na" as FullSlug
+      const newBase = fileData.slug! as FullSlug
+      const rebased =
+        node.type === "element"
+          ? (normalizeHastElement(node as Element, curBase, newBase) as ElementContent)
+          : node
+      const root: Root = { type: "root", children: [rebased] }
+      return transcludeFinal(root, componentData, { dynalist: false })
+    }
+
+    const jsxFromNode = (node?: ElementContent) => {
+      const processed = rebaseAndTransclude(node)
+      return processed ? htmlToJsx(fileData.filePath!, processed) : undefined
+    }
+
+    const htmlFromNode = (node?: ElementContent) => {
+      const processed = rebaseAndTransclude(node)
+      return processed ? toHtml(processed, { allowDangerousHtml: true }) : undefined
+    }
+
     const renderBlock = (block: ArenaBlock, blockIndex: number) => {
       const hasSubItems = block.subItems && block.subItems.length > 0
       const frameTitle = block.title ?? block.content ?? `Block ${blockIndex + 1}`
-      const iframeSrcDoc = block.url ? undefined : buildSrcDoc(block)
+      const resolvedUrl = block.url ? rewriteArxivUrl(block.url) : undefined
+      const targetUrl = block.url ? (resolvedUrl ?? block.url) : undefined
+      const iframeSrcDoc = targetUrl
+        ? undefined
+        : (() => {
+            const html = htmlFromNode(block.htmlNode)
+            const body = html ?? `<p>${escapeHtml(block.title ?? block.content ?? "")}</p>`
+            return `<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"/><style>html,body{margin:0;padding:12px;font-family:inherit;font-size:16px;line-height:1.5;color:var(--text,#111);background:var(--light,#fff);overflow:hidden;}a{color:inherit;text-decoration:underline;}img,video{max-width:100%;height:auto;display:block;}p{margin:0 0 1em 0;}ul,ol{margin:0 0 1em 1.5em;padding:0;}code{font-family:inherit;background:rgba(0,0,0,0.05);padding:0.15em 0.3em;border-radius:4px;}</style></head><body>${body}</body></html>`
+          })()
       const embedHtml = block.embedHtml
       const isSubstackCandidate = block.url ? substackPostRegex.test(block.url) : false
+      const accessedRaw =
+        block.metadata?.accessed ??
+        block.metadata?.accessed_date ??
+        block.metadata?.date
+      const accessed = accessedRaw ? normalizeDate(accessedRaw) : undefined
 
       const convertFromText = (text: string) => {
-        const tocAst = fromHtmlIsomorphic(text, { fragment: true })
-        return htmlToJsx(fileData.filePath!, tocAst)
+        const tocAst = fromHtmlIsomorphic(text, { fragment: true }) as Root
+        const curBase = "are.na" as FullSlug
+        const newBase = fileData.slug! as FullSlug
+        const rebasedChildren = tocAst.children.map((ch) =>
+          ch.type === "element"
+            ? (normalizeHastElement(ch as Element, curBase, newBase) as ElementContent)
+            : (ch as ElementContent),
+        )
+        const root: Root = { type: "root", children: rebasedChildren }
+        const processed = transcludeFinal(root, componentData, { dynalist: false })
+        return htmlToJsx(fileData.filePath!, processed)
       }
 
       return (
@@ -69,6 +167,24 @@ export default (() => {
           data-block-index={blockIndex}
           data-channel-slug={channel.slug}
         >
+          {hasSubItems && (
+            <div class="arena-block-connections-indicator">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 15 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8 2.75C8 2.47386 7.77614 2.25 7.5 2.25C7.22386 2.25 7 2.47386 7 2.75V7H2.75C2.47386 7 2.25 7.22386 2.25 7.5C2.25 7.77614 2.47386 8 2.75 8H7V12.25C7 12.5261 7.22386 12.75 7.5 12.75C7.77614 12.75 8 12.5261 8 12.25V8H12.25C12.5261 8 12.75 7.77614 12.75 7.5C12.75 7.22386 12.5261 7 12.25 7H8V2.75Z"
+                  fill="currentColor"
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+          )}
           <div
             class="arena-block-clickable"
             role="button"
@@ -77,7 +193,7 @@ export default (() => {
           >
             <div class="arena-block-content">
               {block.titleHtmlNode
-                ? htmlToJsx(fileData.filePath!, block.titleHtmlNode)
+                ? jsxFromNode(block.titleHtmlNode)
                 : block.title || block.content}
             </div>
           </div>
@@ -93,9 +209,10 @@ export default (() => {
                 {block.url && (
                   <div class="arena-modal-url-bar">
                     <span
+                      // @ts-ignore
                       type="button"
                       class="arena-url-copy-button"
-                      data-url={block.url}
+                      data-url={block.url!}
                       role="button"
                       tabIndex={0}
                       aria-label="Copy URL to clipboard"
@@ -185,7 +302,7 @@ export default (() => {
                       loading="lazy"
                       data-block-id={block.id}
                       sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
-                      {...(block.url ? { src: block.url } : { srcDoc: iframeSrcDoc })}
+                      {...(targetUrl ? { src: targetUrl } : { srcDoc: iframeSrcDoc })}
                     />
                   )}
                 </div>
@@ -193,6 +310,22 @@ export default (() => {
               <div class="arena-modal-sidebar">
                 <div class="arena-modal-info">
                   <h3 class="arena-modal-title">{block.title ?? ""}</h3>
+                  {accessed && (
+                    <div class="arena-modal-meta">
+                      <div class="arena-meta-item">
+                        <span class="arena-meta-label">accessed</span>
+                        {accessed.dateTime ? (
+                          <time class="arena-meta-value" dateTime={accessed.dateTime}>
+                            <em>{accessed.display}</em>
+                          </time>
+                        ) : (
+                          <span class="arena-meta-value">
+                            <em>{accessed.display}</em>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 {hasSubItems && (
                   <div class="arena-modal-connections">
@@ -204,7 +337,7 @@ export default (() => {
                       {block.subItems!.map((subItem) => (
                         <li key={subItem.id}>
                           {subItem.titleHtmlNode
-                            ? htmlToJsx(fileData.filePath!, subItem.titleHtmlNode)
+                            ? jsxFromNode(subItem.titleHtmlNode)
                             : subItem.title || subItem.content}
                         </li>
                       ))}
@@ -227,6 +360,23 @@ export default (() => {
         <div class="arena-block-modal" id="arena-modal">
           <div class="arena-modal-content">
             <div class="arena-modal-nav">
+              <button type="button" class="arena-modal-nav-btn arena-modal-collapse">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="4" x2="20" y1="12" y2="12" />
+                  <line x1="4" x2="20" y1="6" y2="6" />
+                  <line x1="4" x2="20" y1="18" y2="18" />
+                </svg>
+              </button>
               <button
                 type="button"
                 class="arena-modal-nav-btn arena-modal-prev"

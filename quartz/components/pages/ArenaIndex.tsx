@@ -17,7 +17,7 @@ export default (() => {
     const limits = 5
 
     return (
-      <article class="arena-index main-col">
+      <article class="arena-index main-col popover-hint">
         <div class="arena-channels-list">
           {arenaData.channels.map((channel) => {
             const channelPath = joinSegments(arenaBase, channel.slug) as FullSlug

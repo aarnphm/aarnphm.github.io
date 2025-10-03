@@ -340,10 +340,17 @@ Last-Modified: ${safeLastModified.toISOString()}
 Expires: ${expiresDate.toISOString()}
 `
 
+        // fallback for both options.
         yield write({
           ctx,
           content: securityTxt,
           slug: joinSegments(".well-known", "security") as FullSlug,
+          ext: ".txt",
+        })
+        yield write({
+          ctx,
+          content: securityTxt,
+          slug: "security" as FullSlug,
           ext: ".txt",
         })
       }

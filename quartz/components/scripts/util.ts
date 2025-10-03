@@ -317,10 +317,6 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
   const pageHeader = document.querySelector<HTMLDivElement>("main > section[class~='page-header']")
   if (!asidePanel || !pageHeader) console.error("asidePanel must not be null")
 
-  // Calculate and set the top position based on page header
-  const headerRect = pageHeader!.getBoundingClientRect()
-  const topPosition = headerRect.top + window.scrollY
-  asidePanel.style.top = `${topPosition}px`
   asidePanel.classList.add("active")
   removeAllChildren(asidePanel)
 

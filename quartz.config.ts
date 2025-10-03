@@ -129,6 +129,12 @@ const config: QuartzConfig = {
           "\\upbeta": "\\mathit{\\beta}",
           "\\upalpha": "\\mathit{\\alpha}",
           "\\uptheta": "\\mathit{\\theta}",
+          // KaTeX does not support tabular/multicolumn. Provide safe fallbacks.
+          // This macro drops alignment specifiers and yields only the cell content.
+          // IMPORTANT: when spanning >1 columns, add explicit '&'s in source rows.
+          "\\multicolumn": "#3",
+          // Text micro symbol compatibility
+          "\\textmu": "\\mu",
         },
         katexOptions: { strict: true, throwOnError: true },
       }),

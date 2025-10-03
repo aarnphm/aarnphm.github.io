@@ -135,5 +135,5 @@ function setupHeaderOverlay() {
 }
 
 // Initialize header overlay
-document.addEventListener("nav", setupHeaderOverlay)
-window.addEventListener("resize", setupHeaderOverlay)
+// document.addEventListener("nav", setupHeaderOverlay)
+// window.addEventListener("resize", setupHeaderOverlay)

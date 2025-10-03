@@ -32,7 +32,8 @@ type TwitterEmbed = {
 
 const cache = new Map<string, string>()
 
-const fallbackHtml = (url: string) => `<p>Link to original <a href="${url}">tweet</a>.</p>`
+const fallbackHtml = (url: string) =>
+  `<p class="twitter-fallback">Link to original <a href="${url}">tweet</a>.</p>`
 
 export async function fetchTwitterEmbed(url: string, locale: string): Promise<string> {
   const cacheKey = `twitter:${locale}:${url}`

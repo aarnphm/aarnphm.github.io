@@ -182,13 +182,10 @@ header {
 }
 
 section[class~="header"] {
-  position: sticky;
   top: 0;
-  z-index: 1000;
   max-width: 100%;
   margin-left: 0;
   margin-right: 0;
-  background: var(--light);
   border-bottom: 1px solid var(--lightgray);
   transition:
     box-shadow 100ms linear,
@@ -841,4 +838,83 @@ a[data-no-popover="true"]:hover {
   object-fit: var(--image-grid-fit);
   background-color: var(--image-grid-background);
   align-self: stretch;
+}
+
+@keyframes staticNoise {
+  0% {
+    transform: translate3d(0, 2rem, 0);
+  }
+  10% {
+    transform: translate3d(-1rem, -2rem, 0);
+  }
+  20% {
+    transform: translate3d(-4rem, 1rem, 0);
+  }
+  30% {
+    transform: translate3d(4.5rem, -4.5rem, 0);
+  }
+  40% {
+    transform: translate3d(-1rem, 3.5rem, 0);
+  }
+  50% {
+    transform: translate3d(-4.5rem, -2rem, 0);
+  }
+  60% {
+    transform: translate3d(1rem, 3rem, 0);
+  }
+  70% {
+    transform: translate3d(3.5rem, -4rem, 0);
+  }
+  80% {
+    transform: translate3d(-4.5rem, 0.5rem, 0);
+  }
+  90% {
+    transform: translate3d(3rem, -2.5rem, 0);
+  }
+  100% {
+    transform: translate3d(-3.5rem, 0, 0);
+  }
+}
+
+@keyframes showOpacity {
+  to {
+    opacity: 1;
+  }
+}
+
+#grain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+  opacity: 0;
+  animation: showOpacity 1s forwards;
+  animation-delay: 0.5s;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  &:before {
+    content: "";
+    top: -50vh;
+    left: -50vw;
+    width: 200vw;
+    height: 200vh;
+    position: fixed;
+    background-image: url(https://upload.wikimedia.org/wikipedia/commons/5/5c/Image_gaussian_noise_example.png);
+    opacity: 0.1;
+    pointer-events: none;
+    will-change: transform;
+    animation: staticNoise 1s steps(2) infinite;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #grain {
+    display: none;
+  }
 }

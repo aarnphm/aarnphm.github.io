@@ -844,7 +844,10 @@ async function setupSearch(
       return
     }
 
-    startSemanticProgress()
+    const showProgress = modeForRanking === "semantic"
+    if (showProgress) {
+      startSemanticProgress()
+    }
 
     try {
       const { semantic: semRes, bm25: bmRes } = await orchestrator.search(
@@ -852,7 +855,7 @@ async function setupSearch(
         numSearchResults,
       )
       if (token !== searchSeq) {
-        completeSemanticProgress()
+        if (showProgress) completeSemanticProgress()
         return
       }
       semanticIds = semRes.map((x) => x.id)
@@ -863,10 +866,10 @@ async function setupSearch(
       bmRes.forEach(({ id, score }) => bmSimilarity.set(id, score))
       integrateIds(semanticIds)
       integrateIds(bmIds)
-      completeSemanticProgress()
+      if (showProgress) completeSemanticProgress()
     } catch (err) {
       console.warn("[SemanticClient] search failed:", err)
-      completeSemanticProgress()
+      if (showProgress) completeSemanticProgress()
       orchestrator.dispose()
       semantic = null
       semanticReady = false

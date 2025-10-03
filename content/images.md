@@ -6,7 +6,7 @@ description: and all the things I found interesting on the internet.
 transclude:
   title: false
 date: "2025-01-06"
-modified: 2025-10-01 02:36:21 GMT-04:00
+modified: 2025-10-03 18:13:26 GMT-04:00
 title: images
 ---
 
@@ -24,7 +24,7 @@ title: images
 
 ![[thoughts/images/investment-dwellings-versus-ip.webp|Canada versus Ireland]]
 
-![[thoughts/images/gated-tensions-circuit.webp]]
+![[thoughts/images/gated-tensions-circuit.webp|Gated tensions circuits]]
 
 ![[thoughts/images/amare-love-latin.webp|Amare]]
 
@@ -38,13 +38,13 @@ title: images
 
 ![[thoughts/images/42A9F921-686E-498E-AA95-AD980AB7D078_1_105_c.webp|Are you a Kafka or a Dostoevsky person]]
 
-![[thoughts/images/modern-infra-ai.webp]]
+![[thoughts/images/modern-infra-ai.webp|The modernity of AI infrastructure]]
 
-![[thoughts/images/information density economist.webp]]
+![[thoughts/images/information density economist.webp|information density]]
 
-![[thoughts/images/speculative-drawing.webp]]
+![[thoughts/images/speculative-drawing.webp|Speculative drawing]]
 
-![[thoughts/images/exploitation of visual thoughts.webp]]
+![[thoughts/images/exploitation of visual thoughts.webp|Exploitation of visual thoughts]]
 
 ![[thoughts/images/perception-of-architecture.webp|Perceptron architecture]]
 
@@ -62,15 +62,17 @@ title: images
 
 ![[thoughts/images/actually my life isn't over yet.webp|actually my life isn't over]]
 
-![[thoughts/images/old-books-in-philly.webp]]
+![[thoughts/images/old-books-in-philly.webp|Old books in Philly]]
 
-![[thoughts/images/human evolution but with ml terminology.webp]]
+![[thoughts/images/human evolution but with ml terminology.webp|But ML though]]
 
-![[thoughts/images/girl hop off crdt.webp]]
+![[thoughts/images/girl hop off crdt.webp|Gurl get off crdt, otherwise we will never gonna ship]]
 
-![[thoughts/images/gatsby the great.webp]]
+![[thoughts/images/gatsby the great.webp|The Great Gatsby]]
 
-![[thoughts/images/your passion is not random.webp]]
+![[thoughts/images/your passion is not random.webp|Your passion is not random]]
+
+![[thoughts/images/lovers.webp|lovers]]
 
 ## authors
 
