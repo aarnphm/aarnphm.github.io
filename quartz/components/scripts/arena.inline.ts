@@ -170,31 +170,8 @@ function updateNavButtons() {
   }
 }
 
-function getModalBlockId(element: HTMLElement): string | null {
-  const modalContainer = element.closest(".arena-block-modal-data") as HTMLElement | null
-  if (!modalContainer) return null
-
-  if (modalContainer.dataset.blockId) {
-    return modalContainer.dataset.blockId
-  }
-
-  const modalId = modalContainer.id
-  if (modalId && modalId.startsWith("arena-modal-data-")) {
-    return modalId.slice("arena-modal-data-".length)
-  }
-
-  return null
-}
-
-function buildBlockShareUrl(blockId: string): string {
-  const shareUrl = new URL(window.location.href)
-  shareUrl.hash = `arena-block-${blockId}`
-  return shareUrl.toString()
-}
-
 function handleCopyButton(button: HTMLElement) {
-  const blockId = getModalBlockId(button)
-  const targetUrl = blockId ? buildBlockShareUrl(blockId) : button.getAttribute("data-url")
+  const targetUrl = button.getAttribute("data-url")
   if (!targetUrl) {
     return
   }
