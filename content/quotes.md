@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-09-28 22:29:21 GMT-04:00
+modified: 2025-10-03 04:16:53 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -60,6 +60,8 @@ Of all the ways to lose a person, death is the kindest.
 Life starts all over again when it gets crisp in the fall -- F. Scott Fitzgerald
 
 Another way to feel free is to meet someone who makes you think “if you love me I don’t care if everyone hates me” and actually have them love you back -- Ava
+
+![[are.na#^camus]]
 
 ## On bits and bytes.
 

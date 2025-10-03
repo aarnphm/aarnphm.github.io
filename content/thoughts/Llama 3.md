@@ -117,8 +117,41 @@ Training config:
   - tensor parallelism: split individual weights tensors to multiple chunks on different devices
   - pipeline parallelism: partition models _vertically_ into stages by layers so different devices can process in parallel different stages of the full model pipeline
   - context parallelism: divides input context into segments; reducing memory bottleneck for long sequence inputs
+  - data parallel iteration looks like this:
+
+    ```mermaid
+    sequenceDiagram
+        participant Loader as dataloader
+        participant Rank0 as gpu0 / rank0
+        participant Rank1 as gpu1 / rank1
+        participant Opt as optimizer state
+
+        Loader->>Rank0: slice minibatch B_t / 2
+        Loader->>Rank1: slice minibatch B_t / 2
+
+        Rank0->>Rank0: forward pass (B_t/2)
+        Rank1->>Rank1: forward pass (B_t/2)
+
+        Rank0->>Rank0: backward pass -> grad W0
+        Rank1->>Rank1: backward pass -> grad W1
+
+        par gradient allreduce
+            Rank0->>Rank1: allreduce(grad W)
+        and
+            Rank1->>Rank0: allreduce(grad W)
+        end
+
+        Opt->>Rank0: apply optimizer step (Adam/Lion)
+        Opt->>Rank1: apply optimizer step (Adam/Lion)
+
+        Rank0->>Loader: request next minibatch B_{t+1}
+        Rank1->>Loader: request next minibatch B_{t+1}
+    ```
+
   - FSDP: shards the model, optimizer, and gradients while implementing data parallelism (process data on multiple GPUs and synchronize per training steps)
-    - They also do some network-aware parallelism configuration, but essentially they do `all_gather{:python}`
-    - FSDP in Zero-2 mode, **not** Zero-3 mode. I.e., they keep the weight tensors materialized after the forward pass instead of re-gathering them in backward.
+    - forward pass: per layer `all_gather` the sharded parameters, compute activations, then optionally re-shard; backward pass: use `reduce_scatter` to shard gradients instead of a full allreduce.
+    - optimizer shards (Adam moments) remain distributed — each rank updates only its shard, so post-step weights are already partitioned, avoiding extra communication.
+    - They also do some network-aware parallelism configuration, but essentially FSDP replaces the dense DP allreduce with gather/scatter pairs tuned to NCCLX over Clos fabrics.
+    - FSDP in Zero-2 mode, **not** Zero-3 mode. i.e., they keep the weight tensors materialized after the forward pass instead of re-gathering them during backward, trading a bit of memory for lower communication latency.
 
 [^ref]

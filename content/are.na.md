@@ -2,6 +2,7 @@
 id: are.na
 permalinks:
   - /website
+  - /tweets
   - /resources
   - /inspo
   - /are.na
@@ -13,7 +14,7 @@ description: My run-down version of are[dot]na
 socials:
   are.na: https://www.are.na/aaron-pham/channels
 date: "2024-10-24"
-modified: 2025-10-02 16:20:25 GMT-04:00
+modified: 2025-10-03 05:17:27 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -25,10 +26,30 @@ cssclasses:
 
 - https://www.lesswrong.com/posts/HiTjDZyWdLEGCDzqu/?commentId=MPNF8uSsi9mvZLxqz -- Gwern on distilling Opus 3.5 into Claude 3.6 instead of releasing Opus 3.5
 - https://www.dwarkesh.com/p/gwern-branwen -- Gwern Branwen - How an Anonymous Researcher Predicted AI's Trajectory
-  - > By writing, you are voting on the future of the Shoggoth using one of the few currencies it acknowledges: tokens it has to predict. If you aren’t writing, you are abdicating the future or your role in it. If you think it’s enough to just be a good citizen, to vote for your favorite politician, to pick up litter and recycle, the future doesn’t care about you.
-  - > There are ways to influence the Shoggoth more, but not many. If you don’t already occupy a handful of key roles or work at a frontier lab, your influence rounds off to 0, far more than ever before. If there are values you have which are not expressed yet in text, if there are things you like or want, if they aren’t reflected online, then to the AI they don’t exist. That is dangerously close to won’t exist.
-  - > But yes, you are also creating a sort of immortality for yourself personally. You aren’t just creating a persona, you are creating your future self too. What self are you showing the LLMs, and how will they treat you in the future?
+  - > By writing, you are voting on the future of the Shoggoth using one of the few currencies it acknowledges: tokens it has to predict. If you aren't writing, you are abdicating the future or your role in it. If you think it's enough to just be a good citizen, to vote for your favorite politician, to pick up litter and recycle, the future doesn't care about you.
+  - > There are ways to influence the Shoggoth more, but not many. If you don't already occupy a handful of key roles or work at a frontier lab, your influence rounds off to 0, far more than ever before. If there are values you have which are not expressed yet in text, if there are things you like or want, if they aren't reflected online, then to the AI they don't exist. That is dangerously close to won't exist.
+  - > But yes, you are also creating a sort of immortality for yourself personally. You aren't just creating a persona, you are creating your future self too. What self are you showing the LLMs, and how will they treat you in the future?
 - https://x.com/gwern/status/1959511089961636341 -- Gwen's creative discourse
+- https://x.com/Miles_Brundage/status/1967385510974009500 -- transition to fortune cookies
+- https://x.com/divya_venn/status/1956105667871412685 -- No one talks about how being avoidant can benefit you in every relationship other than your romantic one
+- https://x.com/ryolu_/status/1973794203416383594 -- Love is attention
+
+## tweets
+
+- https://x.com/davidbessis/status/1849442615176950202 -- finite complex reflection arrangement
+- https://x.com/twaniimals/status/1836560827756740626 -- moo deng go brr
+- https://x.com/Griveau/status/1851937688988889514 -- time machine rent free
+- https://twitter.com/melissa/status/1877951245912334484 -- Lies about health
+- https://x.com/CanadaKaz/status/1851653777633247673 -- say the thing, ask more
+- https://x.com/noampomsky/status/1860856607607050633 -- Ava on Iain McGilchrist of attention being a moral act
+- https://x.com/m_kaytweets/status/1801627208517140625 -- Liking things that are "you" thing
+- https://x.com/noampomsky/status/1876151263882350630 -- Ava on practicality over unreasonable romantic dreamy thing
+- https://x.com/phokarlsson/status/1876314921765634337 -- HK on mirror as apostle
+- https://x.com/cremieuxrecueil/status/1826452344881516729 -- National Toxicology Report on fluoride in US
+- https://x.com/cremieuxrecueil/status/1876097710610338066 -- five capacities type in human psyche
+- https://x.com/ruzhaoart/status/1876149783997677605 -- Jacky's sister on traditional art
+- https://x.com/melkuo/status/1835775713410269621 -- 2024 Canada's housing market
+- https://x.com/poetengineer__/status/1895397439852695708 -- a measured heart
 
 ## website
 
@@ -53,9 +74,9 @@ cssclasses:
   - arena for perfume
 - https://clock.vvhuang.com/ -- Prague Astronomical Clock
   - the graphic for the clock is nice
-- https://handyarrows.com/
+- https://handyarrows.com/ -- Hand-draw arrow
   - Arrowssssss
-- https://brand.dropbox.com/
+- https://brand.dropbox.com/ -- Dropbox brand design
   - Cool brand design from Dropbox, by daybreak studio
 - https://tomcritchlow.com/wiki/
   - Wikitext [[thoughts/Digital garden|garden]]
@@ -68,7 +89,7 @@ cssclasses:
 - https://www.benkuhn.net/outliers/ -- Searching for outliers
 - https://henry.codes/ -- Henry Desroches
   - very much text-dominant black/white
-- https://www.ruth-zhao.com/computer -- Ruth Zhao
+- https://www.ruth-zhao.com -- Ruth Zhao
   - map world
 - https://chia.design/ -- Chia Amisola
 - https://tinnei.com/ -- Tinnei / 10A
@@ -79,8 +100,6 @@ cssclasses:
 - https://leimao.github.io/ -- Lei Mao's Log Book
 - https://www.lei.chat -- Lei's Chat
   - AI Compiler (AMD)
-- https://studio.4o4.space/ -- STUDIO 4o4
-  - 4o4 Studio
 - https://cogtoolslab.github.io/ -- cognitive tools lab
   - cognitive tools lab
   - reverse engineering the human cognitive toolkit, by Prof. Judith Fan
@@ -88,10 +107,6 @@ cssclasses:
   - Bagel places, in NYC
 - https://www.rockstargames.com/VI -- Grand Theft Auto VI
   - GTA VI when?
-- https://www.tetragrammaton.com/ -- Tetragrammaton
-- https://basement.studio/ -- basement.studio
-- https://tatianabilbao.com -- Tatiana Bilbao Estudio
-- https://barnsworthburning.net/ -- barnsworthburning
 - https://html.energy/events.html -- HTML Energy
 - https://devouringdetails.com/ -- Devouring Details [**]
 - https://calv.info/about -- Calvin French-Owen
@@ -322,7 +337,7 @@ cssclasses:
 - https://halogen2.tumblr.com/post/187591113672/i-think-love-is-something-that-happens-to-other -- I think love is something that happens to other.
 - https://evanjconrad.com/posts/love -- On love and relationship
 - https://barnsworthburning.net/ -- cool hyperlinks format
-- https://substack.com/home/post/p-163080300 -- Love is not enough
+- https://museguided.substack.com/p/love-is-not-enough -- Love is not enough
 - https://mindslice.substack.com/p/alignment -- [[thoughts/Alignment]]
 - https://aresluna.org/frame-of-preference/ -- Frame of references, a history of Mac Settings, 1984-2004
 - https://web.stanford.edu/dept/SUL/sites/mac/primary/docs/bom/anthrophilic.html -- Design Considerations for an Anthropophilic Computer
@@ -387,10 +402,14 @@ cssclasses:
 - https://archive.is/ilTr1 -- The Economist, How to spot a genius
 - https://unchartedterritories.tomaspueyo.com/p/mountains -- Why Warm Countries Are Poorer [**]
 - https://simulation-argument.com/simulation/ -- Are we living in a simulation?
-- https://substack.com/home/post/p-160050674 -- how to become gently interesting
+- https://lananhngvu.substack.com/p/how-to-become-gently-interesting -- how to become gently interesting
+  - > My first suggestion: sit with something long enough.
+  - > Just simple, unassuming places, like a park you’ve never visited, a station or a random indie bookstore that is not aesthetic by normal standard.
+  - > When your attention stretches beyond the usual, you start seeing patterns, questions, and connections that others miss. Your perspective deepens. And with that depth comes a quiet magnetism, because interestingness isn’t a performance, it’s the result of a mind that’s been gently reshaped by new experiences and curiosity.
+  - > ==Let yourself be bored==
 - https://sundogg.substack.com/p/have-you-put-down-your-bags -- Have you put down the bags?
 - https://aeon.co/essays/does-language-mirror-the-mind-an-intellectual-history -- Our languages, our world
-- https://substack.com/home/post/p-174682351 -- An Existential Guide to: Making Friends [**]
+- https://theshadowedarchive.substack.com/p/an-existential-guide-to-making-friends -- An Existential Guide to: Making Friends [**]
 - https://archive.ph/MegKQ -- How AI is changing the office
 - https://www.henrikkarlsson.xyz/p/how-i-read -- Henrik Karlsson, How I Read [**]
 - https://emotional.codes/dtr/ -- Defining the Relationship
@@ -398,18 +417,96 @@ cssclasses:
   - > Reason 1. Goodbye work-life balance
   - > Reason 4. You won’t get rich
   - > If you want to get rich, join a big company and climb their rank.
+- http://www.martinacecilia.com/place-vanishing-points/ -- How to place vanishing points
+- https://map.simonsarris.com/p/breadcrumbs -- Breadcrumbs
+- https://thedosagemakesitso.substack.com/p/worship-adoration-valence -- Worship. Adoration. Valence
 
 ## [[thoughts/Machine learning]]
 
+- https://x.com/thesephist/status/1895887696268288119 -- AI-centric interface design
+- https://x.com/ZayneSprague/status/1836784332704215519 -- To CoT or not to CoT
+- https://x.com/simonw/status/1840438066974228912 -- NotebookLLM system prompt
+- https://x.com/karpathy/status/1841536804073439268 -- Karpathy's at GPU MODE's IRL talk
+- https://x.com/stephen_wolfram/status/1826692234554875979 -- Explanation into ML
+- https://x.com/sarahookr/status/1834294208821428571 -- inference-time not capture governance guardrails
+- https://x.com/banburismus_/status/1819354340290658725 -- Tom McGrath's questions about cross-layer superposition
+- https://x.com/NeelNanda5/status/1850656772002120009 -- Neel's take on Anthropic's crosscoders
+- https://x.com/AIatMeta/status/1851327605716435011 -- layer skip in self-speculative decoding
+- https://x.com/JungleSilicon/status/1866352582349750555 -- embedding visualisation from Midjourney
+- https://x.com/sleenyre/status/1851519830375207309 -- sae for flux-lens for exploring image embeddings
+- https://x.com/jxmnop/status/1851706815244902691 -- contextual document embeddings OSS
+- https://x.com/JustinLin610/status/1861847752835248381 -- QwQ reasoning models outperform o1
+- https://x.com/ch402/status/1874990808539275687 -- Chris Olah on state of AI research
+- https://x.com/giansegato/status/1875944887973183785 -- The opportunity is now, don't believe in both extreme wrt to AI
+- https://x.com/nrehiew_/status/1876091138366652438 -- ML with shape suffixes stylistic choice
+- https://x.com/behrouz_ali/status/1878859086227255347 -- Titan, scaling Neural Memory
+- https://x.com/vllm_project/status/1879979185474859303 -- By yours truly
+- https://x.com/flowersslop/status/1882241958397067677 -- R1 having existential crisis
+- https://x.com/rupspace/status/1877882538859078084 -- Highway network
+- https://x.com/VictorTaelin/status/1897108466243641399 -- Claude Code optimize HVM3 to 328 MIPs per M4 Core
+- https://x.com/karpathy/status/1937902205765607626 -- Karpathy on "context engineering" over prompt engineering
+- https://x.com/jkminder/status/1939790920326541601 -- Model diffing on Chat vs. Base Model
+- https://x.com/leloykun/status/1941067659157913625 -- Adam with Aggressive Gradient Value/Norm Clipping ≈ Smoothed SignSGD/NormSGD
+- https://x.com/Kimi_Moonshot/status/1944589115510734931 -- Kimi K2 rough architecture
+- https://x.com/jobergum/status/1945036230799892726 -- ColBERT WASM for embeddings
+- https://x.com/geoffreylitt/status/1950601513870499953 -- Geoffrey Litt on capabilities debates
+- https://x.com/NeelNanda5/status/1950344397075456438 -- MATS 9.0 Stream Winter Batch
+- https://x.com/JayaGup10/status/1952871186888843528 -- Integration landscape from labs
+- https://x.com/HSVSphere/status/1955714317816316150 -- modern-infrastructure + AI
+- https://x.com/ShiqianMa/status/1971979845170315669 -- Manifold Muon, as spectral GD
+- https://x.com/GoodfireAI/status/1953903581075288470 -- gpt-oss interpretability speed run at Goodfire
+  - > experts actually seem to specialize - e.g. a “business expert” that activates most on business strategy & management topics.
+  - > just as Claude fixates on spiritual bliss after talking to itself for many turns, gpt-oss has its own attractor states: nonsense code & creative writing!
+  - > memoized during training: https://x.com/jack_merullo_/status/1953860284638278043
+  - > SAEs and features activated on mentions of LLaMA models
+  - > gpt-oss' inability to act as a naive text completion model (vs. reverting to a chat format), even with jailbreaks, correlates with how subjectively cooked/slop-ish it feels
+  - > found that you can sometimes get interpolated reasoning levels from gpt-oss between “low”, “medium”, and “high” (but “none”, “ultra”, “infinite” don’t work)
+  - > basic contrastive steering of gpt-oss-20b, following Anthropic’s “persona vectors”: https://x.com/MarkMBissell/status/1952919910134497332
+- https://x.com/Zai_org/status/1954750596634054965 -- GLM 4.5 Technical report
+  - Agentic workflow RL scale
+  - https://z.ai/blog/glm-4.5
+- https://x.com/djcows/status/1955435075136606449 -- Read your weights
+- https://x.com/Kimi_Moonshot/status/1944589115510734931 -- Kimi K2 architecture
+- https://x.com/nic__carter/status/1797635177973158182 -- The neck-breaking speed of AI
+- https://x.com/JingyuanLiu123/status/1959093411283443726 -- TPU vs GPU parallelism strategies
+- https://x.com/GoodfireAI/status/1960378734852046859 -- Adversarial examples affects feature share directions.
+  - https://x.com/livgorton/status/1960378437102657654
+  - https://arxiv.org/abs/2508.17456
+- https://x.com/keenanisalive/status/1964434335911858552 -- autoencoder representations
+  - Geometric representation of encoders: maps a high-dimensional data $x$ to low-dimensional latent $z$, then the decoder tries to map $z$ back to $x$.
+  - We _always_ learn a k-dimensional submanifold $M$
+    ![[thoughts/images/submanifold mapping.webp]]
+  - See also: [[thoughts/autoencoder diagrams intuition|diagrams]]
+- https://x.com/GoodfireAI/status/1965189414491168785 -- SAE scaling law dynamics
+  - scaling on feature manifolds
+  - in terms of manifold discovered
+- https://x.com/_xjdr/status/1966215415027347856 -- Qwen3-Next architecture difference with hybrid and Gated Delta Rule
+  - MatFormer: https://arxiv.org/abs/2310.07707
+- https://x.com/Grad62304977/status/1967548295816819184 -- RL resources
+- https://x.com/repligate/status/1968093240646889820 -- Yud's AI book
+- https://x.com/mrsiipa/status/1968284758661894436 -- The NVIDIA regime
+  - I'm tired
+- https://x.com/jackminong/status/1968518159826305438 -- PyTorch weirdness
+  - See also [[thoughts/Weight tying]]
+- https://x.com/josh_bickett/status/1725556267014595032 -- What is an AI agent [**]
+- https://x.com/jkminder/status/1969082859311841413 -- [[thoughts/sparse crosscoders]] and non-linear representation dilemma
+- https://x.com/karpathy/status/1973435013875314729 -- Karpathy's bitter lesson on Dwarkesh's pod with Sutton
+  - > Stated plainly, today's frontier LLM research is not about building animals. It is about summoning ghosts. You can think of ghosts as a fundamentally different kind of point in the space of possible intelligences
+  - > They are these imperfect replicas, a kind of statistical distillation of humanity's documents with some sprinkle on top. They are not platonically bitter lesson pilled, but they are perhaps "practically" bitter lesson pilled, at least compared to a lot of what came before.
+- https://x.com/deepcohen/status/1973191790602887544 -- Central flows
+  - https://centralflows.github.io/part1/
+    - How [[thoughts/gradient descent]] works?
+- https://x.com/nrehiew_/status/1973404310127124790 -- DSA comparing to attention sink in long-context regime
+  - see also: https://x.com/nathancgy4/status/1973420757196873885
+  - [[thoughts/optimization#softmax]] over 2048 tokens, thus $QK$ weights magnitudes are preserved, and no "attention budget" are being given to useless tokens.
 - https://www.goodfire.ai/blog/painting-with-concepts -- Painting with concepts, via SAE for SDXL-turbo
 - https://www.goodfire.ai/blog/under-the-hood-of-a-reasoning-model -- Under te hood of a reasoning models, SAEs.
-- https://wattenberger.com/thoughts/yay-embeddings-math -- creative with embeddings in writinghttps://aeon.co/essays/does-language-mirror-the-mind-an-intellectual-history
+- https://wattenberger.com/thoughts/yay-embeddings-math -- creative with embeddings in writing
 - https://basilhalperin.com/essays/agi-vs-emh.html -- AGI timeline, Basil Halperin
 - https://optimists.ai/2024/03/10/deconstructing-bostroms-argument-for-ai-doom/ -- Bostrom's Argument for AI Doom
 - https://www.joelsimon.net/lluminate -- Creative exploration with LLM
 - https://docs.google.com/presentation/d/1dGA1Jpppv9BciOOrc95ZYRinsj_ZYrI-IQOIifHGIZw/edit?slide=id.p#slide=id.p -- Transformers in Diffusion Models for Image Generations and Beyond
 - https://discuss.vllm.ai/t/numerical-difference-between-vllm-logprobs-and-huggingface-logprobs/151 -- Numerical difference between [[thoughts/vllm|vLLM]] logprobs and HF logprobs
-- https://z.ai/blog/glm-4.5 -- GLM 4.5 releases
 - https://jeremybernste.in/writing/deriving-muon -- Deriving [[thoughts/muon|Muon]]
   - https://github.com/KellerJordan/modded-nanogpt
   - https://kellerjordan.github.io/posts/muon/
@@ -422,23 +519,12 @@ cssclasses:
 - https://ethanding.substack.com/p/ai-subscriptions-get-short-squeezed -- Tokens are getting more expensive
 - https://docs.google.com/presentation/d/1NOrUVZNkcKHom5ih5uqqOSrV4Vi8KZRN8LYaAeADX80/edit?slide=id.g3724263dfb4_0_68#slide=id.g3724263dfb4_0_68 -- Scaling MoE with llm-d and vLLM
 - https://www.anthropic.com/research/persona-vectors -- Persona vector
-- gpt-oss hackathon from Goodfire ^goodfire-gpt-oss
-  - https://x.com/GoodfireAI/status/1953903581075288470
-  - > experts actually seem to specialize - e.g. a “business expert” that activates most on business strategy & management topics.
-  - > just as Claude fixates on spiritual bliss after talking to itself for many turns, gpt-oss has its own attractor states: nonsense code & creative writing!
-  - > memoized during training: https://x.com/jack_merullo_/status/1953860284638278043
-  - > SAEs and features activated on mentions of LLaMA models
-  - > gpt-oss' inability to act as a naive text completion model (vs. reverting to a chat format), even with jailbreaks, correlates with how subjectively cooked/slop-ish it feels
-  - > found that you can sometimes get interpolated reasoning levels from gpt-oss between “low”, “medium”, and “high” (but “none”, “ultra”, “infinite” don’t work)
-  - > basic contrastive steering of gpt-oss-20b, following Anthropic’s “persona vectors”: https://x.com/MarkMBissell/status/1952919910134497332
-- https://x.com/Zai_org/status/1954750596634054965
-- https://www.tilderesearch.com/blog/momoe
+- https://www.tilderesearch.com/blog/momoe -- MoMoE: Memory-optimized Mixture of Experts
   - See also: [triton-based](https://github.com/shawntan/scattermoe) implementation of Sparse MoE
   - Qwen3 modular fused: https://github.com/woct0rdho/transformers-qwen3-moe-fused/blob/master/qwen3_moe_fused/modular_qwen3_moe_fused.py
 - https://docs.google.com/document/d/1ZV73D2vgaj2yu_tjN3TVOP6QVLWVPXJB2rrqSZQxYtI/edit?usp=drivesdk -- AI research overview
-- https://x.com/djcows/status/1955435075136606449 -- Read your weights
 - https://timdettmers.com/2022/08/17/llm-int8-and-emergent-features/ -- [[thoughts/LLMs]].int8() and Emergent Features
-  - https://arxiv.org/pdf/2110.02861
+  - https://arxiv.org/abs/2110.02861
 - https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf -- Matrix cookbook
 - https://github.com/bytedance/flux -- fast communication-overlapping library for TP
 - https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
@@ -448,47 +534,18 @@ cssclasses:
 - https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/ -- [[thoughts/Bayesian Neural Network]]
 - https://www.lei.chat/posts/triton-linear-layout-concept/ -- Lei's Chat on Triton Linear Layout
 - https://research.colfax-intl.com/cutlass-tutorial-writing-gemm-kernels-using-tensor-memory-for-nvidia-blackwell-gpus/ -- GEMM kernels on Blackwell GPUs
-- https://www.youtube.com/watch?v=XYSKd4dOT3Y&ab_channel=NeelNanda -- How to Think about Thinking Model
 - https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm4higcSGpvKKNdmtY/edit?tab=t.0#heading=h.nc4nxxczgw4w -- Structural tags in xgrammar (to be used in [[thoughts/vllm|vLLM]])
 - https://drive.google.com/file/u/1/d/1l54BwUi07JnqwB5_iHCVVZ3TnR05acDm/view?usp=sharing -- Critique on "The Illusion of Thinking"
 - https://huggingface.co/blog/rearchitecting-uploads-and-downloads -- Rearchitecting Hugging Face Uploads and Downloads
-- https://www.youtube.com/watch?v=VAzL8RHot1c&ab_channel=InterconnectsAI -- The art of training a good (reasoning) language models, by Nathan Lambert
-- https://x.com/Kimi_Moonshot/status/1944589115510734931 -- Kimi K2 architecture
   - ![[thoughts/images/kimi-architecture.webp]]
 - https://docs.google.com/document/d/1p-ggQV3vVWIQuCccXEl1fD0thJOgXimlbBpGk6FI32I/edit?tab=t.0#heading=h.y0ohi6l5z9qn -- MATS 9.0 Winter 2025
 - https://nousresearch.com/measuring-thinking-efficiency-in-reasoning-models-the-missing-benchmark/
-- https://x.com/nic__carter/status/1797635177973158182
-- https://www.youtube.com/watch?v=PIvc6vvkMzM&ab_channel=EpsilonScience -- Gamification of Large Language Models, Michal Valko
 - https://www.seangoedecke.com/great-software-design/ -- Great software design looks underwhelming
 - https://openai.com/index/deep-double-descent/ -- Deep double descent
-- ![[https://www.youtube.com/watch?v=5jSC8bjo-dI&ab_channel=InstituteforAdvancedStudy]]
-- ![[https://www.youtube.com/watch?v=HvEGJUwQEO8&ab_channel=InstituteforAdvancedStudy]] -- On the Connection between Neural Networks and Kernels: a Modern Perspective, Simon Du
-- https://www.youtube.com/watch?v=yFXPU2lMNdk&ab_channel=InstituteforAdvancedStudy -- Learning Representations Using Causal Invariance, Leon Bottou
-- https://x.com/JingyuanLiu123/status/1959093411283443726 -- TPU vs GPU parallelism strategies
 - https://horace.io/brrr_intro.html -- Deep Learning from first principle
 - https://colah.github.io/posts/2014-03-NN-Manifolds-Topology/ -- Neural Network, and Manifolds
-- https://x.com/GoodfireAI/status/1960378734852046859 -- Adversarial examples affects feature share directions.
-  - https://x.com/livgorton/status/1960378437102657654
-  - https://arxiv.org/abs/2508.17456
-- https://x.com/keenanisalive/status/1964434335911858552
-  - Geometric representation of encoders: maps a high-dimensional data $x$ to low-dimensional latent $z$, then the decoder tries to map $z$ back to $x$.
-  - We _always_ learn a k-dimensional submanifold $M$
-    ![[thoughts/images/submanifold mapping.webp]]
-  - See also: [[thoughts/autoencoder diagrams intuition|diagrams]]
 - https://substack.com/@jakeeaton/note/c-140561607
 - https://ghost.oxen.ai/why-grpo-is-important-and-how-it-works/ -- Why GRPO is important and how it works
-- https://x.com/GoodfireAI/status/1965189414491168785
-  - SAE scaling law dynamics
-- https://x.com/_xjdr/status/1966215415027347856
-  - MatFormer: https://arxiv.org/pdf/2310.07707
-- https://x.com/Grad62304977/status/1967548295816819184
-- https://x.com/repligate/status/1968093240646889820
-- https://x.com/mrsiipa/status/1968284758661894436
-  - I'm tired
-- https://x.com/jackminong/status/1968518159826305438
-  - See also [[thoughts/Weight tying]]
-- https://x.com/josh_bickett/status/1725556267014595032 [**]
-- https://x.com/jkminder/status/1969082859311841413 -- [[thoughts/sparse crosscoders]] and non-linear representation dilemma
 - vLLM from scratch, weixin:
   - 1.3: https://mp.weixin.qq.com/s/BdWG6_ZTaGRknmsbGfFkMQ
   - 1.2: https://mp.weixin.qq.com/s/8BVEVPPqDQhQ2l8L90dMNQ
@@ -497,27 +554,19 @@ cssclasses:
 - https://www.julian.ac/blog/2025/09/27/failing-to-understand-the-exponential-again/ -- Failing to Understand the Exponential, Again
 - https://www.ethansmith2000.com/post/where-are-you -- Where are you?
 - https://github.com/pranjalssh/fast.cu -- fast kernels, in [[thoughts/GPU programming|CUDA]]
-- https://x.com/karpathy/status/1973435013875314729 -- Karpathy's bitter lesson on Dwarkesh's pod with Sutton
-  - > Stated plainly, today's frontier LLM research is not about building animals. It is about summoning ghosts. You can think of ghosts as a fundamentally different kind of point in the space of possible intelligences
-  - > They are these imperfect replicas, a kind of statistical distillation of humanity's documents with some sprinkle on top. They are not platonically bitter lesson pilled, but they are perhaps "practically" bitter lesson pilled, at least compared to a lot of what came before.
-- https://x.com/deepcohen/status/1973191790602887544 -- Central flows
-  - https://centralflows.github.io/part1/
-    - How [[thoughts/gradient descent]] works?
-- https://x.com/nrehiew_/status/1973404310127124790 -- DSA comparing to attention sink in long-context regime
-  - see also: https://x.com/nathancgy4/status/1973420757196873885
-  - [[thoughts/optimization#softmax]] over 2048 tokens, thus $QK$ weights magnitudes are preserved, and no "attention budget" are being given to useless tokens.
+- https://hazyresearch.stanford.edu/blog/2025-09-28-tp-llama-main -- We Bought the Whole GPU, So We're Damn Well Going to Use the Whole GPU
 
-    ```python
-    import torch
+  ```python
+  import torch
 
-    qk_scores_short = torch.randn(2048)
-    qk_scores_long = torch.randn(128000)
+  qk_scores_short = torch.randn(2048)
+  qk_scores_long = torch.randn(128000)
 
-    max_v = torch.max(qk_scores_short.max(), qk_scores_long.max())
-    qk_scores_short[0] = max_val
-    qk_scores_long[0] = max_val
-    qk_scores_short.softmax(0)[0], qk_scores_long.softmax(0)[0]
-    ```
+  max_v = torch.max(qk_scores_short.max(), qk_scores_long.max())
+  qk_scores_short[0] = max_val
+  qk_scores_long[0] = max_val
+  qk_scores_short.softmax(0)[0], qk_scores_long.softmax(0)[0]
+  ```
 
 ## argumentative
 
@@ -535,14 +584,39 @@ cssclasses:
 - https://marginalrevolution.com/marginalrevolution/2025/02/why-i-think-ai-take-off-is-relatively-slow.html -- Why I think AI take-off is relatively slow.
 - https://x.com/eigenrobot/status/1968726067612389636
 - https://mishaglouberman.substack.com/p/stop-pretending-toronto-is-more-than -- Stop Pretending Toronto is More Than It Is.
+- https://baincapitalventures.com/insight/we-must-know-we-will-know/ -- We must know, we will know
 
 ## life is literature
 
+- https://x.com/carmenleelau/status/1818771532132311200 -- People who demand nothing of you
+- https://x.com/NicoleSHsing/status/1876672940353450369 -- existence
+- https://x.com/xhfloz/status/1878624648717553753 -- The Scream to The Sun arc
+- https://x.com/ashotmagazine/status/1879964949776330837 -- rest-in-peace David Lynch
+- https://x.com/MelisaSeah/status/1875931461565693997 -- Vietnamese being in frontier art and fashion style
+- https://x.com/kasratweets/status/1880147402025582924 -- Kasra on loneliness, or emotional insecurity
+- https://x.com/VividVoid_/status/1828461484277461447 -- philosophical wisdom
+- https://x.com/melissa/status/1883821342354768109 -- Melissa on fairness within marriage
+- https://x.com/bimbosattva_/status/1935812993528599012?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- Be autistic and women will love you
+- https://x.com/phokarlsson/status/1794384589898805621 -- Treat people as if they are too complex to hold it inside your head
+- https://x.com/jacquemusx/status/1942186663557353504 -- Iris van Herpen
+- https://x.com/thecaravanindia/status/1942869801593958709 -- Bertrand Russell releases a manifesto warning about the danger of nuclear weapons
+- https://x.com/michael_nielsen/status/1951055480920613156 -- Don't drop out of college
+- https://x.com/gabrielpeterss4/status/1951781057973608948?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- working on your problems
+- https://x.com/aarnphm_/status/1956238570353504615 -- Seeing N
+- https://x.com/SchrodingrsBrat/status/1960157702232940796 -- September is the true New Year, Sherry
+- https://x.com/bolau_/status/1963676094546186539 -- performative curius highlighting
+- https://x.com/virtualjew/status/1846593528350011539 -- You can just make grilled cheese with onions
+- https://x.com/qiaochuyuan/status/1629333539488690176?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- QC on attachment theory thread
+- https://x.com/nwilliams030/status/1884282849471390185 -- neighbourhood as a form of proximity love
+- https://x.com/booritney/status/1884857291046002714 -- dates in sf, after dark thursday
+- https://x.com/tommytrxnh/status/1884908531079340090 -- Tommy's version
+- https://x.com/noampomsky/status/1960404829647585590 -- Life
+- https://x.com/Phil_Lewis_/status/1973448285164806247 -- Jane Goodall, ethologist and conservationist, has died
 - https://ryolu.notion.site/how-to-make-something-great -- How to make something great, by Ryo Lu
 - https://www.personalcanon.com/p/in-praise-of-writing-on-the-internet -- In praise of writing on the internet
 - https://www.henrikkarlsson.xyz/p/being-patient-with-problems -- Being patient with the problems
 - https://chias.blog/2022/there-is-an-internet-that-is-mine/ -- There is an internet that is mine
-- https://substack.com/home/post/p-154954711 -- [[movies|Film]] that healed me
+- https://hannahsarchive.substack.com/p/films-that-have-healed-me -- [[movies|Film]] that healed me
 - https://www.henrikkarlsson.xyz/p/constraints -- An essay in which my friend feels stuck and I suggest relaxing some constraints
 - https://en.wikipedia.org/wiki/Lovecraftian_horror -- Eldritch Horror
 - https://en.wikipedia.org/wiki/Rhizome_(philosophy) -- Rhizome
@@ -555,6 +629,46 @@ cssclasses:
 - https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for -- some parts of you only emerge from certain people
 - https://www.gleech.org/stopping -- What's stopping you?
 - https://www.sherryning.com/p/goodbye-august -- Goodbye August
+- https://sashachapin.substack.com/p/my-six-stages-of-learning-to-be-a -- My six stages of learning to be a socially normal person
+  - > Connecting with people is about being a dazzling person
+  - > Connecting with people is about playing their game
+
+## technology
+
+- https://x.com/Mappletons/status/1250532315459194880 -- Digital garden but wikitext go brr
+- https://x.com/VictorPontis/status/1876723918020452809 -- Lu.ma team structure
+- https://x.com/kepano/status/1694731713686196526 -- Obsidian manifesto
+- https://x.com/kepano/status/1844491841787273467 -- static sites versus dynamic sites
+- https://x.com/313formation/status/1828059730998083853 -- resources for SWE introduction
+- https://x.com/XorDev/status/1834966384855368108 -- visual editor
+- https://x.com/_opencv_/status/1877613841187492189 -- Wozniaks behind closed door
+- https://x.com/id_aa_carmack/status/1878854976623218956 -- Carmack on HW team at Meta
+- https://x.com/jankulveit/status/1845390887062257719 -- Slop removal on Twitter
+- https://x.com/usgraphics/status/1797331802740408497 -- Berkeley Graphics on design process and clientele
+- https://x.com/AlecStapp/status/1875677444528861492 -- Only in America, with SpaceX
+- https://x.com/RichardMCNgo/status/1875093600612261909 -- independent research
+- https://x.com/natfriedman/status/1874884925587087434 -- Nat Friedman's micro-plastics effort
+- https://x.com/kaseyklimes/status/1875927241999204849 -- value-creation versus value-extraction capitalism
+- https://x.com/sarahookr/status/1875970084558299402 -- Collusion ring in academia
+- https://x.com/aidenybai/status/1875683367758541026 -- Another ratioed by Aiden Bai, the one who wrote million.js
+- https://x.com/CherrilynnZ/status/1836881535154409629 -- visualising emotions
+- https://x.com/spikedoanz/status/1856505412167839925/ -- FEXPA op in ARM
+- https://x.com/elzr/status/1274209005557211138 -- threads for reading as tree representations
+- https://x.com/eshear/status/1880109350251032637 -- Emmett Shear on PG's advice
+- https://x.com/pmarca/status/1880845551467634761 -- technology hallucinations with TikTok's recent ban in US
+- https://x.com/pmarca/status/1880860012110856566 -- Links between EA and sexual obsession lol
+- https://x.com/cath_land/status/1881906298817786224 -- linktree but open source and for free lmao
+- https://x.com/quantumbeans/status/1861251224567234695 -- algorithmic-generated art
+- https://x.com/tylerangert/status/1884980797565788269 -- Team meme
+- https://x.com/zswitten/status/1879693633911463960 -- aligned Claude
+- https://x.com/filpizlo/status/1935019034531217647 -- C++ programs that are memory-safe
+- https://x.com/kepano/status/1952067484242391197 -- fear-based employment endemic
+- https://x.com/badlogicgames/status/1955625313121038462 -- ClaudeCode-ception
+- https://x.com/juliendubois/status/1971518637161992214 -- that one guy at microsoft using macbook programming on linux
+- https://x.com/tobi/status/1878957750576906484 -- Tobi replies on Canada's Tech contribution to overall GDP
+- https://x.com/chapman_bliss/status/1881613396359127467 -- Last day at Neural Link
+- https://x.com/adonis_singh/status/1884499176865632672 -- R1 one-shotted into markets and individualism
+- https://x.com/spencerc99/status/1721704642307113346 -- Spencer's inspiration from game to make playful software
 
 ## [[tags/philosophy]]
 
@@ -568,6 +682,13 @@ cssclasses:
 - https://turntrout.com/self-fulfilling-misalignment -- Self-Fulfilling Misalignment Data Might Be Poisoning Our AI Models
 - https://www.youtube.com/watch?v=KIu4y1stILY&ab_channel=essentialsalts -- Politices as Neuro-Physiology, a conversation with Uberboyo
   - In what way the connection between philosophy, ideas and cultural does [[thoughts/Philosophy and Nietzsche|Nietzsche]] nihilism?
+- https://www.youtube.com/watch?v=E2x2WTWjcEA -- this word is the (True) purpose of human life
+  - > "The Son of God became man, that we might become god" - St. Athanasius of Alexandria
+- https://www.youtube.com/watch?v=Rupf69o8kQc -- Why Modern [[/tags/love|love]] feels empty
+  - [[thoughts/Giles Deleuze]]: ventures outwards to realize these potentiality.
+  - Commit someone who will inevitability fails us.
+  - > unfolding of love sustains the form of life itself
+  - [[thoughts/Camus]]: "The misery and greatness of this world: it offers no truths, but only objects for love. Absurdity is king, but love saves us from it." ^camus
 
 ## stream
 
@@ -575,12 +696,9 @@ cssclasses:
 - https://wilderness.land/ -- wilderness.land
 - https://jennyclark.substack.com/p/prayer-for-the-girl-who-often-forgets -- prayer for the girl who often forgets that enough is enough
 - https://stream.thesephist.com/ -- Linus's stream
-- ![[tweets]]
-- https://x.com/Miles_Brundage/status/1967385510974009500
-- https://x.com/divya_venn/status/1956105667871412685
-- ![[books]]
-- ![[mixed]]
-- ![[images]]
+- [[/books|antilibrary]]
+- [[/mixed|music lists]]
+- [[/images|images I found across the internet]]
 
 ## financial reports
 
@@ -591,23 +709,29 @@ cssclasses:
 
 - http://www.phys.unm.edu/~tw/fas/yits/archive/eberhart_thegroundhog.html -- The Groundhog by Richard Eberthart
 - http://www.phys.unm.edu/~tw/fas/yits/archive/oliver_wildgeese.html -- Wild [[posts/goose friend.md|Geese]] by Mary Oliver
-- > Here’s to the ones who dream
-  > Foolish as they may seem
-  >
-  > She told me
-  > ”A bit of madness is key
-  > To give us new colors to see
-  > Who knows where it will lead us?
-  > And that’s why they need us”
-  >
-  > La La Land - “Audition (the fools who dream)”
+- https://www.imdb.com/title/tt3783958/ -- La La Land
+  - > Here’s to the ones who dream
+    > Foolish as they may seem
+    >
+    > She told me
+    > ”A bit of madness is key
+    > To give us new colors to see
+    > Who knows where it will lead us?
+    > And that’s why they need us”
+    >
+    > La La Land - “Audition (the fools who dream)”
 
 ## design
 
 - https://www.are.na/editorial/are-nas-new-web-client-sander-is-now-available-for-everyone -- Are.na's web client, Sander.
 - https://jonwhitestudio.com/ -- Jon White Studio
 - https://www.commarts.com/ -- Communication Arts
-- https://x.com/zachlieberman/status/1963683642011455980
+- https://x.com/zachlieberman/status/1963683642011455980 -- Speculative drawing
+- https://www.tetragrammaton.com/ -- Tetragrammaton
+- https://studio.4o4.space/ -- STUDIO 4o4
+- https://basement.studio/ -- basement.studio
+- https://tatianabilbao.com -- Tatiana Bilbao Estudio
+- https://barnsworthburning.net/ -- barnsworthburning
 
 ## video
 
@@ -672,9 +796,6 @@ cssclasses:
 - https://thegenerality.com/agi/ -- The effort for AGI at Microsoft [GitHub](https://github.com/microsoft/unilm)
 - https://katex.org/docs/supported.html -- supported DSL for KaTeX
 - https://www.joshwcomeau.com/blog/whimsical-animations/ -- SVG sprites
-- https://www.youtube.com/watch?v=WxK11RsLqp4&t=2169s -- Linear Realtime Sync
-- https://www.youtube.com/watch?v=Wo2m3jaJixU -- Linear Realtime Sync 2
-- https://www.youtube.com/watch?v=fThhbt23SGM -- Design is a [[thoughts/Search|Search]] problem
 - https://www.nserc-crsng.gc.ca/Students-Etudiants/Guides-Guides/TriRTA-TriBFR_eng.asp -- Canadian government grant research
 - https://www.cbo.gov/system/files/2020-01/55967-CBO-immigration.pdf -- Foreign-Born Population and Its Effects on US Economy
 - https://www.corner.inc/list/02c68af9-8286-474f-91de-0b4e702330e6?sid=49933781-9175-48ae-852b-acb5006e8bca -- toronto coworking spots
@@ -702,11 +823,23 @@ cssclasses:
 
 - https://fontsource.org/ -- Fontsource
 - https://departuremono.com/ -- Departure Mono
-- https://lettermatic.com/fonts/parclo-serif -- Parclo I might buy this
+- https://lettermatic.com/fonts/parclo-serif -- Parclo Serif
 
 ## lecture
 
 - https://www.youtube.com/watch?v=m47A0AmqxQE&list=PL62C50202CE181183&index=5&ab_channel=flame0430 -- Iris Murdoch on Philosophy and Literature
+- https://www.youtube.com/watch?v=WxK11RsLqp4&t=2169s -- Linear Realtime Sync
+- https://www.youtube.com/watch?v=Wo2m3jaJixU -- Linear Realtime Sync 2
+- https://www.youtube.com/watch?v=fThhbt23SGM -- Design is a [[thoughts/Search|Search]] problem
+- https://www.youtube.com/watch?v=PIvc6vvkMzM&ab_channel=EpsilonScience -- Gamification of Large Language Models, Michal Valko
+- https://www.youtube.com/watch?v=VAzL8RHot1c&ab_channel=InterconnectsAI -- The art of training a good (reasoning) language models, by Nathan Lambert
+- https://www.youtube.com/watch?v=XYSKd4dOT3Y&ab_channel=NeelNanda -- How to Think about Thinking Model
+- https://www.youtube.com/watch?v=VPslgC9piIw -- Reverse engineer FA4, Charles Modal Labs, 10/01/2025.
+- https://www.youtube.com/watch?v=5jSC8bjo-dI&ab_channel=InstituteforAdvancedStudy -- Emergent linguistic structure in deep contextual neural word representations - Chris Manning
+- https://www.youtube.com/watch?v=HvEGJUwQEO8&ab_channel=InstituteforAdvancedStudy -- On the Connection between Neural Networks and Kernels: a Modern Perspective, Simon Du
+- https://www.youtube.com/watch?v=yFXPU2lMNdk&ab_channel=InstituteforAdvancedStudy -- Learning Representations Using Causal Invariance, Leon Bottou
+- https://youtu.be/IVA2bK9qjzE?si=D5niDuHTAksgu_Nl -- David Deutsch: AGI, the origins of quantum computing, and the future of humanity [**]
+  - You are valuable economically, because you are different.
 
 ## technical
 
@@ -760,27 +893,27 @@ cssclasses:
 
 ## papers
 
-- https://arxiv.org/pdf/2401.08671
-- https://arxiv.org/pdf/2506.06941
-- https://arxiv.org/pdf/2505.24832
-- https://arxiv.org/pdf/2405.07987
-- https://arxiv.org/pdf/2501.16007
-- https://arxiv.org/pdf/2504.02922
+- https://arxiv.org/abs/2401.08671
+- https://arxiv.org/abs/2506.06941
+- https://arxiv.org/abs/2505.24832
+- https://arxiv.org/abs/2405.07987
+- https://arxiv.org/abs/2501.16007
+- https://arxiv.org/abs/2504.02922
   - [LessWrong](https://www.lesswrong.com/posts/xmpauEXEerzYcJKNm/what-we-learned-trying-to-diff-base-and-chat-models-and-why)
-- https://arxiv.org/pdf/2505.05315
+- https://arxiv.org/abs/2505.05315
   - https://github.com/SalesforceAIResearch/Elastic-Reasoning
-- https://arxiv.org/pdf/2412.14093
-- https://arxiv.org/pdf/2506.18032
-- https://arxiv.org/pdf/2403.09629
-- https://arxiv.org/pdf/1910.02054
+- https://arxiv.org/abs/2412.14093
+- https://arxiv.org/abs/2506.18032
+- https://arxiv.org/abs/2403.09629
+- https://arxiv.org/abs/1910.02054
 - https://arxiv.org/abs/2506.19143
   - which thought trace matters?
-- https://arxiv.org/pdf/2503.18292
-- https://arxiv.org/pdf/2310.05209
-- https://arxiv.org/pdf/2310.10537
-- https://arxiv.org/pdf/2104.09864
+- https://arxiv.org/abs/2503.18292
+- https://arxiv.org/abs/2310.05209
+- https://arxiv.org/abs/2310.10537
+- https://arxiv.org/abs/2104.09864
   - [[thoughts/RoPE]]
-  - more popular methods: https://arxiv.org/pdf/2309.00071
-- https://arxiv.org/pdf/2508.06471
+  - more popular methods: https://arxiv.org/abs/2309.00071
+- https://arxiv.org/abs/2508.06471
 - https://arxiv.org/abs/1112.0510
-- https://arxiv.org/pdf/2504.02263
+- https://arxiv.org/abs/2504.02263

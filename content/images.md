@@ -70,6 +70,8 @@ title: images
 
 ![[thoughts/images/gatsby the great.webp]]
 
+![[thoughts/images/your passion is not random.webp]]
+
 ## authors
 
 ![[thoughts/images/joan-didion.webp|joan didion]]

@@ -223,6 +223,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
 
         if (opts?.includeEmptyFiles || (file.data.text && file.data.text !== "")) {
           const links = (file.data.links ?? []).filter((link) => {
+            // @ts-ignore
             const targetFile = content.find(([_, f]) => f.data.slug === link)?.[1]
             if (targetFile?.data.frontmatter?.noindex === true) return false
 

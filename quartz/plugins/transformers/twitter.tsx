@@ -30,7 +30,36 @@ type TwitterEmbed = {
   version: "1.0"
 }
 
-const cache = new Map()
+const cache = new Map<string, string>()
+
+const fallbackHtml = (url: string) => `<p>Link to original <a href="${url}">tweet</a>.</p>`
+
+export async function fetchTwitterEmbed(url: string, locale: string): Promise<string> {
+  const cacheKey = `twitter:${locale}:${url}`
+  const cached = cache.get(cacheKey)
+  if (cached) {
+    return cached
+  }
+
+  let value = fallbackHtml(url)
+
+  try {
+    const res = await fetch(
+      `https://publish.twitter.com/oembed?url=${url}&dnt=true&omit_script=true&lang=${locale}`,
+    )
+    if (!res.ok) {
+      throw new Error(`Twitter oEmbed request failed with status ${res.status}`)
+    }
+    const data = (await res.json()) as TwitterEmbed
+    value = unescapeHTML(data.html)
+  } catch {
+    // swallow network failures and fall back to a simple link
+    value = fallbackHtml(url)
+  }
+
+  cache.set(cacheKey, value)
+  return value
+}
 
 export const Twitter: QuartzTransformerPlugin = () => ({
   name: "Twitter",
@@ -54,22 +83,7 @@ export const Twitter: QuartzTransformerPlugin = () => ({
           url: string,
           locale: string,
         ) => {
-          let value = `<p>Link to original <a href="${url}">tweet</a>.</p>`
-
-          const cacheKey = `twitter:${url}`
-          let htmlString = cache.get(cacheKey)
-          if (!htmlString) {
-            await fetch(
-              `https://publish.twitter.com/oembed?url=${url}&dnt=true&omit_script=true&lang=${locale}`,
-            )
-              .then((res) => res.json())
-              .then((data) => {
-                value = unescapeHTML((data as TwitterEmbed).html)
-                cache.set(cacheKey, value)
-                return value
-              })
-              .catch(() => value)
-          }
+          const value = await fetchTwitterEmbed(url, locale)
           parent.children.splice(index, 1, { type: "html", value } as Html)
         }
 

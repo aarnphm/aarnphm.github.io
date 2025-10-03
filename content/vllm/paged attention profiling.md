@@ -1,8 +1,19 @@
-# paged attention profiling
+---
+id: paged_attention_profiling
+tags:
+  - seed
+  - vllm
+description: items to test out cute kernels
+date: "2025-10-03"
+modified: 2025-10-03 02:46:47 GMT-04:00
+noindex: true
+title: Paged Attention Profiling
+---
 
-The `paged_attention_cute` kernel shipped in `content/lectures/420/examples/10_cute_paged_attention_optimized.cu` is structured so each cooperative thread array handles a single `(sequence, head)` pair with warp-level online softmax. Profiling that kernel requires launching the standalone harness that file provides.
+The `paged_attention_cute` kernel shipped in [[lectures/420/examples/10_cute_paged_attention_optimized.cu]] is structured so each cooperative thread array handles a single `(sequence, head)` pair with warp-level online softmax. Profiling that kernel requires launching the standalone harness that file provides.
 
 > [!info] build
+>
 > ```bash
 > nvcc -std=c++20 -O3 -I/usr/local/cuda/include \
 >   content/lectures/420/examples/10_cute_paged_attention_optimized.cu \
@@ -12,6 +23,7 @@ The `paged_attention_cute` kernel shipped in `content/lectures/420/examples/10_c
 ## ncu
 
 > [!example] kernel-level metrics
+>
 > ```bash
 > ncu --set full --target-processes all \
 >   --kernel-name ::paged_attention_cute \
@@ -24,6 +36,7 @@ The `paged_attention_cute` kernel shipped in `content/lectures/420/examples/10_c
 ## nsys
 
 > [!example] timeline capture
+>
 > ```bash
 > nsys profile --sample=cpu --trace=cuda,osrt,nvtx \
 >   --cuda-graph-trace=graph-node \

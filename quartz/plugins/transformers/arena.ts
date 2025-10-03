@@ -1,6 +1,6 @@
 import { QuartzTransformerPlugin } from "../types"
 import { Root as MdastRoot, List, ListItem, Paragraph, PhrasingContent, Link, Text } from "mdast"
-import { ElementContent } from "hast"
+import { Element, ElementContent } from "hast"
 import { QuartzPluginData } from "../vfile"
 import { toString } from "mdast-util-to-string"
 import { toHast } from "mdast-util-to-hast"
@@ -10,6 +10,7 @@ import { visit, CONTINUE } from "unist-util-visit"
 import { wikiTextTransform } from "./ofm"
 import { createHash } from "crypto"
 import { fromMarkdown } from "mdast-util-from-markdown"
+import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
 
 export interface ArenaBlock {
   id: string
@@ -21,6 +22,7 @@ export interface ArenaBlock {
   subItems?: ArenaBlock[]
   highlighted?: boolean
   htmlNode?: ElementContent
+  embedHtml?: string
 }
 
 export interface ArenaChannel {
@@ -28,6 +30,7 @@ export interface ArenaChannel {
   name: string
   slug: string
   blocks: ArenaBlock[]
+  titleHtmlNode?: ElementContent
 }
 
 export interface ArenaData {
@@ -108,6 +111,53 @@ const paragraphToHtml = (paragraph?: Paragraph): ElementContent | undefined => {
   }
 
   return undefined
+}
+
+type NodeWithData = {
+  data?: {
+    hProperties?: Record<string, unknown>
+  }
+}
+
+const setDataAttribute = <T extends NodeWithData>(node: T, key: string, value: string): void => {
+  if (!node.data) {
+    node.data = {}
+  }
+  if (!node.data.hProperties) {
+    node.data.hProperties = {}
+  }
+  node.data.hProperties[key] = value
+}
+
+const cloneElementContent = <T extends ElementContent>(node: T): T => {
+  // structuredClone preserves prototypes and avoids JSON serialization issues
+  return typeof structuredClone === "function"
+    ? structuredClone(node)
+    : (JSON.parse(JSON.stringify(node)) as T)
+}
+
+const elementContainsAnchor = (node: ElementContent): boolean => {
+  if (node.type !== "element") {
+    return false
+  }
+
+  if (node.tagName === "a") {
+    return true
+  }
+
+  if (!("children" in node) || !node.children) {
+    return false
+  }
+
+  return (node.children as ElementContent[]).some((child) => elementContainsAnchor(child))
+}
+
+const makeSnapshotKey = (url: string, title: string): string => {
+  const hash = createHash("sha256")
+  hash.update(url)
+  hash.update("::")
+  hash.update(title)
+  return hash.digest("hex").slice(0, 32)
 }
 
 const findDelimiter = (value: string): { index: number; length: number } | null => {
@@ -192,7 +242,9 @@ const buildTitleParagraph = (
   const fallback = stripHighlightMarker(fallbackText)
   const markdown = wikiTextTransform(fallback)
   const mdast = fromMarkdown(markdown)
-  const firstParagraph = mdast.children.find((child): child is Paragraph => child.type === "paragraph")
+  const firstParagraph = mdast.children.find(
+    (child): child is Paragraph => child.type === "paragraph",
+  )
   if (firstParagraph) {
     return clone(firstParagraph) as Paragraph
   }
@@ -204,21 +256,15 @@ const buildTitleParagraph = (
   }
 }
 
-const makeSnapshotKey = (url: string, title: string): string => {
-  const hash = createHash("sha256")
-  hash.update(url)
-  hash.update("::")
-  hash.update(title)
-  return hash.digest("hex").slice(0, 32)
-}
-
 export const Arena: QuartzTransformerPlugin = () => {
   return {
     name: "Arena",
-    markdownPlugins() {
+    markdownPlugins(ctx) {
+      const localeConfig = ctx.cfg.configuration.locale ?? "en"
+      const locale = localeConfig.split("-")[0] ?? "en"
       return [
         () => {
-          return (tree: MdastRoot, file) => {
+          return async (tree: MdastRoot, file) => {
             const fileData = file.data as QuartzPluginData
 
             if (fileData.slug !== "are.na") return
@@ -226,6 +272,7 @@ export const Arena: QuartzTransformerPlugin = () => {
             const channels: ArenaChannel[] = []
             let blockCounter = 0
             const slugger = new Slugger()
+            const embedPromises: Promise<void>[] = []
 
             const createBlock = (listItem: ListItem, depth = 0): ArenaBlock | null => {
               const paragraph = listItem.children.find(
@@ -294,6 +341,10 @@ export const Arena: QuartzTransformerPlugin = () => {
               const snapshotKey = url
                 ? makeSnapshotKey(url, finalTitle ?? fallbackContent)
                 : undefined
+              setDataAttribute(listItem as NodeWithData, "data-arena-block-id", blockId)
+              if (paragraph) {
+                setDataAttribute(paragraph as NodeWithData, "data-arena-block-paragraph", blockId)
+              }
 
               const block: ArenaBlock = {
                 id: blockId,
@@ -314,6 +365,14 @@ export const Arena: QuartzTransformerPlugin = () => {
                 if (subItems.length > 0) {
                   block.subItems = subItems
                 }
+              }
+
+              if (block.url && twitterUrlRegex.test(block.url)) {
+                embedPromises.push(
+                  fetchTwitterEmbed(block.url, locale).then((html) => {
+                    block.embedHtml = html
+                  }),
+                )
               }
 
               return block
@@ -340,12 +399,15 @@ export const Arena: QuartzTransformerPlugin = () => {
                     headingText.length > 0 ? headingText : `Channel ${channels.length + 1}`
                   const slug = slugger.slug(name || `channel-${channels.length + 1}`)
 
+                  const channelId = `channel-${channels.length}`
                   const channel: ArenaChannel = {
-                    id: `channel-${channels.length}`,
+                    id: channelId,
                     name,
                     slug,
                     blocks: [],
                   }
+
+                  setDataAttribute(node as NodeWithData, "data-arena-channel-id", channelId)
 
                   channels.push(channel)
                   pendingChannel = channel
@@ -368,13 +430,102 @@ export const Arena: QuartzTransformerPlugin = () => {
               return CONTINUE
             })
 
+            if (embedPromises.length > 0) {
+              await Promise.all(embedPromises)
+            }
+
             fileData.arenaData = { channels }
           }
         },
       ]
     },
     htmlPlugins() {
-      return []
+      return [
+        () => {
+          return (tree, file) => {
+            const fileData = file.data as QuartzPluginData
+            if (fileData.slug !== "are.na") return
+
+            const arenaData = fileData.arenaData
+            if (!arenaData) return
+
+            const blocksById = new Map<string, ArenaBlock>()
+            const channelById = new Map<string, ArenaChannel>()
+            const registerBlocks = (blocks: ArenaBlock[]) => {
+              for (const block of blocks) {
+                blocksById.set(block.id, block)
+                if (block.subItems) {
+                  registerBlocks(block.subItems)
+                }
+              }
+            }
+
+            for (const channel of arenaData.channels) {
+              channelById.set(channel.id, channel)
+              registerBlocks(channel.blocks)
+            }
+
+            visit(tree, "element", (node: Element) => {
+              if (!node.properties) return
+
+              const channelId = node.properties["data-arena-channel-id"]
+              if (typeof channelId === "string") {
+                const channel = channelById.get(channelId)
+                if (channel) {
+                  const headingClone = cloneElementContent(node)
+                  if (headingClone.type === "element") {
+                    if (elementContainsAnchor(headingClone as ElementContent)) {
+                      const spanNode: Element = {
+                        type: "element",
+                        tagName: "span",
+                        properties: {},
+                        children: (headingClone.children ?? []).map((child) =>
+                          cloneElementContent(child as ElementContent),
+                        ),
+                      }
+                      channel.titleHtmlNode = spanNode
+                    }
+                  }
+                }
+
+                delete node.properties["data-arena-channel-id"]
+              }
+
+              const blockOwner = node.properties["data-arena-block-id"]
+              if (typeof blockOwner === "string") {
+                delete node.properties["data-arena-block-id"]
+              }
+
+              const blockId = node.properties["data-arena-block-paragraph"]
+              if (typeof blockId !== "string") {
+                return
+              }
+
+              const block = blocksById.get(blockId)
+              if (!block) {
+                delete node.properties["data-arena-block-paragraph"]
+                return
+              }
+
+              const blockClone = cloneElementContent(node)
+              if (blockClone.type === "element" && blockClone.properties) {
+                delete blockClone.properties["data-arena-block-paragraph"]
+                delete blockClone.properties["data-arena-block-id"]
+              }
+
+              const inlineClone = cloneElementContent(blockClone)
+              if (inlineClone.type === "element" && inlineClone.tagName === "p") {
+                inlineClone.tagName = "span"
+              }
+
+              block.titleHtmlNode = inlineClone as ElementContent
+              block.htmlNode = blockClone as ElementContent
+
+              delete node.properties["data-arena-block-paragraph"]
+            })
+          }
+        },
+      ]
     },
   }
 }

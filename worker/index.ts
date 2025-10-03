@@ -1,4 +1,3 @@
-import puppeteer from "@cloudflare/puppeteer"
 import LFS_CONFIG from "./.lfsconfig.txt"
 import handleArxiv from "./arxiv"
 import handleCurius from "./curius"
@@ -32,9 +31,13 @@ const AI_USER_AGENT_PATTERNS = [
   "velenpublicwebcrawler",
 ]
 const CONTENT_INDEX_CACHE_TTL = 60_000
+const SUBSTACK_PRECONNECT_REGEX =
+  /<link\b[^>]*\brel=["'][^"']*\bpreconnect\b[^"']*["'][^>]*\bhref=["']https:\/\/substackcdn\.com\/?[^"']*["'][^>]*>/i
+const MAX_HEAD_BYTES = 150_000
 
-type SnapshotMetadata = {
-  contentType?: string
+function extractHeadSection(html: string): string | null {
+  const match = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)
+  return match ? match[1] : null
 }
 
 type ContentIndexEntry = {
@@ -170,6 +173,155 @@ function slugCandidatesFromUrl(url: URL): string[] {
   return Array.from(new Set(base))
 }
 
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}
+
+function decodeHtmlEntities(raw: string): string {
+  return raw.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z]+);/g, (match, entity) => {
+    if (entity[0] === "#") {
+      const codePoint =
+        entity[1].toLowerCase() === "x"
+          ? parseInt(entity.slice(2), 16)
+          : parseInt(entity.slice(1), 10)
+      if (!Number.isNaN(codePoint)) {
+        try {
+          return String.fromCodePoint(codePoint)
+        } catch {
+          return match
+        }
+      }
+      return match
+    }
+    switch (entity) {
+      case "amp":
+        return "&"
+      case "lt":
+        return "<"
+      case "gt":
+        return ">"
+      case "quot":
+        return '"'
+      case "apos":
+      case "#39":
+        return "'"
+      default:
+        return match
+    }
+  })
+}
+
+function extractMetaProperty(html: string, property: string): string | null {
+  const pattern = new RegExp(
+    `<meta[^>]+property=["']${escapeRegExp(property)}["'][^>]+content=["']([^"']*)["'][^>]*>`,
+    "i",
+  )
+  const match = html.match(pattern)
+  if (!match) return null
+  return decodeHtmlEntities(match[1].trim())
+}
+
+function detectSubstackHead(html: string): boolean {
+  return SUBSTACK_PRECONNECT_REGEX.test(html)
+}
+
+type EmbedPayload =
+  | {
+      type: "substack"
+      url: string
+      title: string | null
+      description: string | null
+      locale: string | null
+    }
+  | { type: "unknown" }
+
+async function fetchSubstackMetadata(target: URL): Promise<EmbedPayload> {
+  const upstream = await fetch(target.toString(), {
+    cf: {
+      cacheTtl: 3600,
+      cacheEverything: true,
+    },
+    headers: {
+      "User-Agent": "Mozilla/5.0 (compatible; aarnphm-garden-embed/1.0; +https://aarnphm.xyz/)",
+    },
+  })
+
+  if (!upstream.ok) {
+    throw new Error(`upstream status ${upstream.status}`)
+  }
+
+  const text = await upstream.text()
+  const headSection = extractHeadSection(text)
+  const detectionSource = headSection ?? text.slice(0, MAX_HEAD_BYTES)
+  if (!detectSubstackHead(detectionSource)) {
+    return { type: "unknown" }
+  }
+
+  const metaSource = headSection ?? text
+  const title = extractMetaProperty(metaSource, "og:title")
+  const description = extractMetaProperty(metaSource, "og:description")
+  const localeRaw = extractMetaProperty(metaSource, "og:locale")
+  const locale = localeRaw ? (localeRaw.split(/[_.]/)[0]?.toLowerCase() ?? null) : null
+
+  return {
+    type: "substack",
+    url: target.toString(),
+    title: title ?? null,
+    description: description ?? null,
+    locale: locale ?? null,
+  }
+}
+
+async function handleEmbedRequest(
+  request: Request,
+  apiHeaders: Record<string, string>,
+): Promise<Response> {
+  const reqUrl = new URL(request.url)
+  const embedHeaders = { "Content-Type": "application/json", ...apiHeaders }
+  const urlParam = reqUrl.searchParams.get("url")
+  if (!urlParam) {
+    return new Response(JSON.stringify({ error: "missing url" }), {
+      status: 400,
+      headers: embedHeaders,
+    })
+  }
+
+  let target: URL
+  try {
+    target = new URL(urlParam)
+  } catch {
+    return new Response(JSON.stringify({ error: "invalid url" }), {
+      status: 400,
+      headers: embedHeaders,
+    })
+  }
+
+  // Basic allowlist: only handle HTTP(S)
+  if (target.protocol !== "https:" && target.protocol !== "http:") {
+    return new Response(JSON.stringify({ error: "unsupported protocol" }), {
+      status: 400,
+      headers: embedHeaders,
+    })
+  }
+
+  try {
+    const payload = await fetchSubstackMetadata(target)
+    const status = payload.type === "substack" ? 200 : 204
+    return new Response(JSON.stringify(payload), {
+      status,
+      headers: {
+        ...embedHeaders,
+        "Cache-Control": "s-maxage=1800, stale-while-revalidate=60",
+      },
+    })
+  } catch (err: any) {
+    return new Response(JSON.stringify({ error: err?.message ?? "embed fetch failed" }), {
+      status: 502,
+      headers: embedHeaders,
+    })
+  }
+}
+
 function slugToMarkdownPath(slug: string): string {
   const cleaned = slug.replace(/^\/+/, "")
   return `/${encodeURIComponent(cleaned).replace(/%2F/gi, "/")}.md`
@@ -239,153 +391,6 @@ function buildCorsHeaders(env: Env, request: Request): Record<string, string> {
     headers["Access-Control-Allow-Credentials"] = "true"
   }
   return headers
-}
-
-function responseFrom(
-  body: ArrayBuffer | Uint8Array,
-  contentType: string,
-  cors: Record<string, string>,
-) {
-  return new Response(body, {
-    headers: {
-      "Content-Type": contentType,
-      "Cache-Control": "public, max-age=31536000, immutable",
-      ...cors,
-    },
-  })
-}
-
-class SnapshotScheduler {
-  #concurrency: number
-  #active = 0
-  #queue: Array<() => void> = []
-
-  constructor(concurrency: number) {
-    this.#concurrency = Math.max(1, Math.floor(concurrency))
-  }
-
-  setConcurrency(requested: number) {
-    const normalized = Number.isFinite(requested) && requested > 0 ? Math.floor(requested) : 1
-    if (normalized === this.#concurrency) return
-    this.#concurrency = normalized
-    this.#drain()
-  }
-
-  async run<T>(task: () => Promise<T>): Promise<T> {
-    if (this.#active >= this.#concurrency) {
-      await new Promise<void>((resolve) => {
-        this.#queue.push(resolve)
-      })
-    }
-    this.#active++
-    try {
-      return await task()
-    } finally {
-      this.#active--
-      this.#drain()
-    }
-  }
-
-  #drain() {
-    while (this.#active < this.#concurrency && this.#queue.length > 0) {
-      const next = this.#queue.shift()
-      if (next) next()
-    }
-  }
-}
-
-const snapshotScheduler = new SnapshotScheduler(1)
-const inflightSnapshots = new Map<string, Promise<ArrayBuffer>>()
-
-async function performSnapshot(env: Env, source: string, width: number): Promise<ArrayBuffer> {
-  const browser = await puppeteer.launch(env.BROWSER)
-  const page = await browser.newPage()
-  try {
-    await page.setViewport({ width, height: Math.round(width * 0.625), deviceScaleFactor: 1 })
-    await page.goto(source, { waitUntil: "networkidle0", timeout: 20_000 })
-    const screenshot = (await page.screenshot({ type: "webp", fullPage: true })) as ArrayBuffer
-    await browser.close()
-    return screenshot
-  } catch (error) {
-    try {
-      await browser.close()
-    } catch {}
-    throw error
-  }
-}
-
-async function captureSnapshot(
-  env: Env,
-  id: string,
-  source: string,
-  width: number,
-): Promise<ArrayBuffer> {
-  const requested = Number.parseInt(env.ARENA_SNAPSHOT_CONCURRENCY ?? "", 10)
-  snapshotScheduler.setConcurrency(requested)
-
-  const existing = inflightSnapshots.get(id)
-  if (existing) return existing
-
-  const task = snapshotScheduler.run(() => performSnapshot(env, source, width))
-  inflightSnapshots.set(id, task)
-  task.finally(() => inflightSnapshots.delete(id))
-  return task
-}
-
-async function handleArenaSnapshot(
-  request: Request,
-  env: Env,
-  ctx: ExecutionContext,
-): Promise<Response> {
-  if (!env.ARENA_SNAPSHOTS) {
-    return new Response(JSON.stringify({ error: "kv_not_configured" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    })
-  }
-
-  const url = new URL(request.url)
-  const id = url.searchParams.get("id")
-  const source = url.searchParams.get("source")
-
-  if (!id || !source) {
-    return new Response(JSON.stringify({ error: "missing_parameters" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json", ...buildCorsHeaders(env, request) },
-    })
-  }
-
-  const cached = await env.ARENA_SNAPSHOTS.getWithMetadata<ArrayBuffer, SnapshotMetadata>(id, {
-    type: "arrayBuffer",
-  })
-  if (cached.value) {
-    return responseFrom(
-      cached.value,
-      cached.metadata?.contentType ?? "image/webp",
-      buildCorsHeaders(env, request),
-    )
-  }
-
-  const widthConfig = parseInt(env.ARENA_SNAPSHOT_WIDTH ?? "1280", 10)
-  const captureWidth = Number.isFinite(widthConfig) && widthConfig > 0 ? widthConfig : 1280
-
-  let screenshot: ArrayBuffer
-  try {
-    screenshot = await captureSnapshot(env, id, source, captureWidth)
-  } catch (error) {
-    return new Response(JSON.stringify({ error: "capture_failed", message: String(error) }), {
-      status: 502,
-      headers: { "Content-Type": "application/json", ...buildCorsHeaders(env, request) },
-    })
-  }
-
-  ctx.waitUntil(
-    env.ARENA_SNAPSHOTS.put(id, screenshot, {
-      metadata: { contentType: "image/webp" },
-    }),
-  )
-
-  return responseFrom(screenshot, "image/webp", buildCorsHeaders(env, request))
 }
 
 async function getObjectInfo(
@@ -493,10 +498,6 @@ type Env = {
   GITHUB_CLIENT_SECRET: string
   SESSION_SECRET: string
   PUBLIC_BASE_URL?: string
-  ARENA_SNAPSHOTS: KVNamespace
-  ARENA_SNAPSHOT_WIDTH?: string
-  ARENA_SNAPSHOT_CONCURRENCY?: string
-  BROWSER: Fetcher
 } & Cloudflare.Env
 
 export default {
@@ -654,8 +655,8 @@ export default {
         const resp = await handleCurius(request)
         return withHeaders(resp, apiHeaders)
       }
-      case "/api/arena-snapshot": {
-        return handleArenaSnapshot(request, env, ctx)
+      case "/api/embed": {
+        return handleEmbedRequest(request, apiHeaders)
       }
     }
 

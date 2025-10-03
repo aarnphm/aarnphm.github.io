@@ -1,17 +1,18 @@
 ---
 id: GPU programming
-aliases:
-  - gpus
+permalinks:
+  - /gpus
 tags:
   - seed
   - ml
+  - hardware
 description: bedstone of scaling intelligence
 date: "2025-09-08"
-modified: 2025-10-01 18:02:05 GMT-04:00
-permalinks:
-  - /gpus
-title: GPU
+aliases:
+  - gpus
+modified: 2025-10-03 02:55:53 GMT-04:00
 noindex: true
+title: GPU
 ---
 
 see also: [modal glossary](https://modal.com/gpu-glossary/device-hardware/cuda-device-architecture)
@@ -50,6 +51,12 @@ See [[lectures/420/notes#streaming multiprocessor (SM) architecture|execution un
 ## amd
 
 ### [[thoughts/PD disaggregated serving|pd disaggregated serving]]
+
+RCCL on PyNCCL
+
+SGLang
+
+NIXL + UCX
 
 ## nvidia architectures
 
