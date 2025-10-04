@@ -2,7 +2,7 @@ import sourceMapSupport from "source-map-support"
 import type { Dirent } from "fs"
 import path from "path"
 import { PerfTimer } from "./util/perf"
-import { mkdir, readdir, rm } from "fs/promises"
+import { rm } from "fs/promises"
 import { GlobbyFilterFunction, isGitIgnored } from "globby"
 import { parseMarkdown } from "./processors/parse"
 import { filterContent } from "./processors/filter"
@@ -43,20 +43,6 @@ type BuildData = {
   contentMap: ContentMap
   changesSinceLastBuild: Record<FilePath, ChangeEvent["type"]>
   lastBuildMs: number
-}
-
-async function emptyDirectory(dir: string) {
-  const entries: Dirent[] = await readdir(dir, { withFileTypes: true }).catch((err) => {
-    const error = err as NodeJS.ErrnoException
-    if (error.code === "ENOENT") {
-      return [] as Dirent[]
-    }
-    throw err
-  })
-
-  await Promise.all(
-    entries.map((entry) => rm(path.join(dir, entry.name), { recursive: true, force: true })),
-  )
 }
 
 async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
@@ -100,15 +86,8 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
 
   const release = await mut.acquire()
   perf.addEvent("clean")
-  const preserveOutputRoot = argv.watch || argv.serve
-  if (preserveOutputRoot) {
-    await mkdir(output, { recursive: true })
-    await emptyDirectory(output)
-    console.log(`Cleared contents of \`${output}\` in ${perf.timeSince("clean")}`)
-  } else {
-    await rm(output, { recursive: true, force: true })
-    console.log(`Removed \`${output}\` in ${perf.timeSince("clean")}`)
-  }
+  await rm(output, { recursive: true, force: true })
+  console.log(`Removed \`${output}\` in ${perf.timeSince("clean")}`)
 
   perf.addEvent("glob")
   const allFiles = await glob("**/*.*", argv.directory, cfg.configuration.ignorePatterns)

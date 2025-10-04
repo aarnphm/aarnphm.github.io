@@ -36,6 +36,45 @@ export async function getSatoriFonts(
 
   const url = new URL(`https://${cfg.baseUrl ?? "example.com"}`)
 
+  const readLocalFont = async (relativePath: string) => {
+    const absolutePath = path.join(QUARTZ, relativePath)
+    try {
+      return await fs.readFile(absolutePath)
+    } catch (error) {
+      console.log(
+        styleText(
+          "yellow",
+          `\nWarning: failed to read local font asset at ${absolutePath}, ${String(error)}`,
+        ),
+      )
+      return undefined
+    }
+  }
+
+  const fetchFontFromBaseUrl = async (relativePath: string) => {
+    try {
+      const res = await fetch(new URL(relativePath, url).toString())
+      if (!res.ok) {
+        console.log(
+          styleText(
+            "yellow",
+            `\nWarning: failed to fetch font ${relativePath} from ${url.toString()}, got ${res.status} ${res.statusText}`,
+          ),
+        )
+        return undefined
+      }
+      return await res.arrayBuffer()
+    } catch (error) {
+      console.log(
+        styleText(
+          "yellow",
+          `\nWarning: network error while fetching font ${relativePath} from ${url.toString()}, ${String(error)}`,
+        ),
+      )
+      return undefined
+    }
+  }
+
   const headerFontName = typeof headerFont === "string" ? headerFont : headerFont.name
   const bodyFontName = typeof bodyFont === "string" ? bodyFont : bodyFont.name
 
@@ -45,8 +84,10 @@ export async function getSatoriFonts(
     if (useGoogleFonts) {
       data = await fetchTtf(headerFontName, weight)
     } else {
-      const res = await fetch(`${url.toString()}/${headerFontLocal}`)
-      data = await res.arrayBuffer()
+      data = await readLocalFont(headerFontLocal)
+      if (!data) {
+        data = await fetchFontFromBaseUrl(headerFontLocal)
+      }
     }
     if (!data) return null
     return {
@@ -62,8 +103,10 @@ export async function getSatoriFonts(
     if (useGoogleFonts) {
       data = await fetchTtf(bodyFontName, weight)
     } else {
-      const res = await fetch(`${url.toString()}/${bodyFontLocal}`)
-      data = await res.arrayBuffer()
+      data = await readLocalFont(bodyFontLocal)
+      if (!data) {
+        data = await fetchFontFromBaseUrl(bodyFontLocal)
+      }
     }
 
     if (!data) return null

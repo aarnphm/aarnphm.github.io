@@ -8,12 +8,12 @@ tags:
 description: what neural networks are, ontologically speaking
 signature: with abundance of love and joy - Aaron
 date: "2025-10-04"
-modified: 2025-10-04 18:29:25 GMT-04:00
+modified: 2025-10-04 18:48:54 GMT-04:00
 title: connectionist networks
 pageLayout: technical
 ---
 
-I've been thinking about connectionist networks lately, and there's something deeply unsettling about how we talk about them. Not unsettling in a bad way—more like that productive discomfort you get when you realize the categories you've been using don't quite map onto reality.
+I've been thinking about connectionist networks lately (or for the past two years or so), and there's something deeply unsettling about how we talk about them. Not unsettling in a bad way—more like that productive discomfort you get when you realize the categories you've been using don't quite map onto reality.
 
 The whole connectionist project started as a rejection, really. A rejection of the idea that intelligence is symbol manipulation all the way down. Back in 1986, when Rumelhart and McClelland dropped their PDP volumes [@rumelhart1986parallel], they weren't just proposing a new computational architecture—they were making an ontological claim about what cognition _is_.
 
@@ -127,19 +127,23 @@ $$
 
 where the variables $\{v_i\}$ form an orthonormal set—meaning $\langle v_i, v_j \rangle = \delta_{ij}$.
 
-The orthonormality requirement isn't incidental. It's what makes unbinding work. To retrieve the value associated with variable $v_j$, we compute (here $\langle v_j, S \rangle$ denotes tensor contraction—contracting $v_j$ with the first factor via the inner product):
+> [!important] orthonormality requirements
+
+To retrieve the value associated with variable $v_j$, we compute (here $\langle v_j, S \rangle$ denotes tensor contraction—contracting $v_j$ with the first factor via the inner product):
 
 $$
 \langle v_j, S \rangle = \left\langle v_j, \sum_i v_i \otimes r_i \right\rangle = \sum_i \langle v_j, v_i \rangle r_i = r_j
 $$
 
-Elegant, right? You get systematic compositionality—you can build complex structures from parts. You get distributed representation—the structure exists across dimensions, not in localist nodes. You get both symbolic structure _and_ subsymbolic processing.
+Pretty neat. You get systematic compositionality—you can build complex structures from parts. You get distributed representation—the structure exists across dimensions, not in localist nodes. You get both symbolic structure _and_ subsymbolic processing.
 
-But here's what bothers me: the orthonormality requirement. In practice, you're using high-dimensional random vectors that are approximately orthogonal. So unbinding becomes noisy: $\langle v_j, S \rangle \approx r_j + \epsilon$.
+Though, the orthonormality requirement somewhat bothers me. In practice, you're using high-dimensional random vectors that are approximately orthogonal. So unbinding becomes noisy: $\langle v_j, S \rangle \approx r_j + \epsilon$.
 
 The question is whether this noise is a bug or a feature. Maybe perfect symbolic retrieval was always a rationalist fantasy, and human cognition is actually this kind of noisy reconstruction all the way down. Maybe the fuzziness is what allows generalization.
 
-Smolensky's framework shows that you _can_ have your cake and eat it too—systematic structure in a distributed system. But it also reveals the tension: the more you demand symbolic precision, the more you need structure (orthonormality) that feels imposed rather than emergent.
+Smolensky's framework shows that you _can_ have your cake and eat it too: systematic structure in a distributed system. But it also reveals that the more you demand symbolic precision, the more you need structure (orthonormality) that feels imposed rather than emergent.
+
+c.f: [[thoughts/Convex function]], [[lectures/2/convexity|convexity of attention]]
 
 ## the ontology of learned representations
 
