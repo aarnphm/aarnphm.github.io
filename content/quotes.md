@@ -109,6 +109,8 @@ There is no iron law that postulates that technology must benefit the many at th
 
 “If you have odd ways of conducting yourself or odd beliefs you need to lean into it because all the conventional advice wont work, it only works if you’re closer to the average” - [@mattchowx](https://x.com/mattchowx)
 
+Every psychoanalytic treatment is an attempt at liberating repressed love which has found a meagre outlet in the compromise of a symptom -- [[thoughts/Freud|Sigmund Freud]]
+
 ## On drive.
 
 Life can be much broader when you discover one simple fact...==that everything around you was made up by people no smarter than you....== Once you learn that, you'll never be the same again.-- Steve Jobs ^life-jobs-smart

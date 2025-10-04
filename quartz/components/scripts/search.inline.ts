@@ -61,6 +61,53 @@ let semantic: SemanticClient | null = null
 let semanticReady = false
 let semanticInitFailed = false
 type SimilarityResult = { item: Item; similarity: number }
+let chunkMetadata: Record<string, { parentSlug: string; chunkId: number }> = {}
+
+/**
+ * Get parent document slug for a chunk ID
+ */
+function getParentSlug(slug: string): string {
+  const meta = chunkMetadata[slug]
+  return meta ? meta.parentSlug : slug
+}
+
+/**
+ * Reciprocal Rank Fusion for aggregating chunk scores to document scores
+ * @param chunkScores Array of [chunkId, score] tuples for a document
+ * @param k RRF constant (60 is standard)
+ */
+function reciprocalRankFusion(chunkScores: Array<[number, number]>, k: number = 60): number {
+  const sorted = chunkScores.sort((a, b) => b[1] - a[1])
+  return sorted.reduce((sum, [_, score], rank) => sum + 1.0 / (k + rank), 0)
+}
+
+/**
+ * Aggregate semantic search results from chunks to documents
+ */
+function aggregateChunkResults(
+  results: SemanticResult[],
+  idDataMap: string[],
+): Map<string, { ids: number[]; scores: number[]; maxScore: number }> {
+  const docMap = new Map<string, { ids: number[]; scores: number[]; maxScore: number }>()
+
+  for (const { id, score } of results) {
+    const slug = idDataMap[id]
+    if (!slug) continue
+
+    const parentSlug = getParentSlug(slug)
+
+    if (!docMap.has(parentSlug)) {
+      docMap.set(parentSlug, { ids: [], scores: [], maxScore: -Infinity })
+    }
+
+    const entry = docMap.get(parentSlug)!
+    entry.ids.push(id)
+    entry.scores.push(score)
+    entry.maxScore = Math.max(entry.maxScore, score)
+  }
+
+  return docMap
+}
 
 // Initialize the FlexSearch Document instance with the appropriate configuration
 const index = new FlexSearch.Document<Item>({
@@ -282,6 +329,22 @@ async function setupSearch(
       await client.ensureReady()
       semantic = client
       semanticReady = true
+
+      // Load chunk metadata from manifest
+      try {
+        const manifestUrl =
+          typeof semanticCfg?.manifestUrl === "string" && semanticCfg.manifestUrl.length > 0
+            ? semanticCfg.manifestUrl
+            : "/embeddings/manifest.json"
+        const res = await fetch(manifestUrl)
+        if (res.ok) {
+          const manifest = await res.json()
+          chunkMetadata = manifest.chunkMetadata || {}
+        }
+      } catch (err) {
+        console.warn("[Search] failed to load chunk metadata:", err)
+        chunkMetadata = {}
+      }
     } catch (err) {
       console.warn("[SemanticClient] initialization failed:", err)
       client.dispose()
@@ -858,12 +921,39 @@ async function setupSearch(
         if (showProgress) completeSemanticProgress()
         return
       }
-      semanticIds = semRes.map((x) => x.id)
+
+      // Aggregate chunk results to document level
+      const semDocMap = aggregateChunkResults(semRes, idDataMap)
+      const bmDocMap = aggregateChunkResults(bmRes, idDataMap)
+
+      // Build document-level results with weighted average of chunk scores
+      semanticIds = []
       semanticSimilarity.clear()
-      semRes.forEach(({ id, score }) => semanticSimilarity.set(id, score))
-      bmIds = bmRes.map((x) => x.id)
+      for (const [parentSlug, { ids, scores, maxScore }] of semDocMap) {
+        const parentIdx = slugToIndex.get(parentSlug as FullSlug)
+        if (typeof parentIdx !== "number") continue
+
+        // Use weighted average: 70% max score + 30% average of all chunks
+        const avgScore = scores.reduce((sum, s) => sum + s, 0) / scores.length
+        const aggregatedScore = 0.7 * maxScore + 0.3 * avgScore
+
+        semanticIds.push(parentIdx)
+        semanticSimilarity.set(parentIdx, aggregatedScore)
+      }
+
+      bmIds = []
       bmSimilarity.clear()
-      bmRes.forEach(({ id, score }) => bmSimilarity.set(id, score))
+      for (const [parentSlug, { ids, scores, maxScore }] of bmDocMap) {
+        const parentIdx = slugToIndex.get(parentSlug as FullSlug)
+        if (typeof parentIdx !== "number") continue
+
+        const avgScore = scores.reduce((sum, s) => sum + s, 0) / scores.length
+        const aggregatedScore = 0.7 * maxScore + 0.3 * avgScore
+
+        bmIds.push(parentIdx)
+        bmSimilarity.set(parentIdx, aggregatedScore)
+      }
+
       integrateIds(semanticIds)
       integrateIds(bmIds)
       if (showProgress) completeSemanticProgress()

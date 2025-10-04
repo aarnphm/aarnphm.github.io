@@ -20,7 +20,12 @@ import { wikiTextTransform, wikilinkRegex, externalLinkRegex } from "./ofm"
 import { createHash } from "crypto"
 import { fromMarkdown } from "mdast-util-from-markdown"
 import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
-import { splitAnchor } from "../../util/path"
+import {
+  splitAnchor,
+  transformLink,
+  stripSlashes,
+  simplifySlug,
+} from "../../util/path"
 import { findAndReplace as mdastFindReplace, ReplaceFunction } from "mdast-util-find-and-replace"
 
 export interface ArenaBlock {
@@ -192,9 +197,11 @@ const listItemContentToInlineHtml = (listItem: ListItem): ElementContent | undef
     }
   }
 
+  // Use a block container so display-level children (e.g., KaTeX display math)
+  // remain valid HTML and render with proper margins.
   return {
     type: "element",
-    tagName: "span",
+    tagName: "div",
     properties: {},
     children,
   }
@@ -536,9 +543,21 @@ export const Arena: QuartzTransformerPlugin = () => {
               if (node.type === "heading") {
                 const depth = (node as any).depth as number | undefined
                 if (depth === 2) {
-                  const headingText = toString(node).trim()
-                  const name =
-                    headingText.length > 0 ? headingText : `Channel ${channels.length + 1}`
+                  // Prefer deriving channel name from linked wikilink basename (e.g., [[thoughts/Machine learning]] → "Machine learning")
+                  let name = toString(node).trim()
+                  const linkChild = (node as any).children?.find(
+                    (ch: any) => ch.type === "link",
+                  ) as Link | undefined
+                  if (linkChild && !/^https?:\/\//i.test(linkChild.url)) {
+                    try {
+                      const parts = decodeURI(linkChild.url).split("/")
+                      const base = parts.at(-1)
+                      if (base && base.trim().length > 0) {
+                        name = base.trim()
+                      }
+                    } catch {}
+                  }
+                  if (name.length === 0) name = `Channel ${channels.length + 1}`
                   const slug = slugger.slug(name || `channel-${channels.length + 1}`)
 
                   const channelId = `channel-${channels.length}`
@@ -581,7 +600,7 @@ export const Arena: QuartzTransformerPlugin = () => {
         },
       ]
     },
-    htmlPlugins() {
+    htmlPlugins(ctx) {
       return [
         () => {
           return (tree, file) => {
@@ -607,6 +626,82 @@ export const Arena: QuartzTransformerPlugin = () => {
               registerBlocks(channel.blocks)
             }
 
+            // Helper to annotate links in Arena HAST fragments similar to CrawlLinks
+            const applyLinkProcessing = (node?: ElementContent): ElementContent | undefined => {
+              if (!node) return undefined
+
+              const visitEl = (el: ElementContent) => {
+                if (el.type !== "element") return
+                const e = el as Element
+
+                if (e.tagName === "a" && typeof e.properties?.href === "string") {
+                  let dest = e.properties.href as string
+                  const classes = Array.isArray(e.properties.className)
+                    ? (e.properties.className as string[])
+                    : typeof e.properties.className === "string"
+                      ? [e.properties.className]
+                      : []
+
+                  const isExternal = externalLinkRegex.test(dest)
+
+                  if (!isExternal && !dest.startsWith("#")) {
+                    // Transform to site-relative link and attach data-slug
+                    dest = transformLink(fileData.slug!, dest, {
+                      strategy: "absolute",
+                      allSlugs: ctx.allSlugs,
+                    })
+                    e.properties.href = dest
+
+                    const url = new URL(dest, "https://base.com/" + stripSlashes(fileData.slug!, true))
+                    let canonical = url.pathname
+                    let [destCanonical] = splitAnchor(canonical)
+                    if (destCanonical.endsWith("/")) destCanonical += "index"
+                    const full = decodeURIComponent(stripSlashes(destCanonical, true))
+                    e.properties["data-slug"] = full
+
+                    if (!classes.includes("internal")) classes.push("internal")
+                  } else if (isExternal) {
+                    if (!classes.includes("external")) classes.push("external")
+                  }
+
+                  if (classes.length > 0) {
+                    e.properties.className = classes
+                  }
+                }
+
+                if ((el as Element).children) {
+                  ;((el as Element).children as ElementContent[]).forEach(visitEl)
+                }
+              }
+
+              const cloned = cloneElementContent(node)
+              visitEl(cloned)
+              return cloned
+            }
+
+            // helper to aggregate inline content from a <li> (exclude nested <ul>)
+            const aggregateListItem = (li: Element): ElementContent => {
+              const collected: ElementContent[] = []
+              for (const ch of (li.children ?? []) as ElementContent[]) {
+                const el = cloneElementContent(ch)
+                if (el.type === "element" && el.tagName === "ul") continue
+                if (el.type === "element" && el.properties) {
+                  delete el.properties["data-arena-block-paragraph"]
+                  delete el.properties["data-arena-block-id"]
+                }
+                collected.push(el)
+              }
+              // Use a block container so nested block elements (e.g., display math)
+              // are legal and style correctly inside notes.
+              const aggregated: ElementContent = {
+                type: "element",
+                tagName: "div",
+                properties: {},
+                children: collected,
+              }
+              return applyLinkProcessing(aggregated) ?? aggregated
+            }
+
             visit(tree, "element", (node: Element, _index, parent) => {
               if (!node.properties) return
 
@@ -625,7 +720,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                           cloneElementContent(child as ElementContent),
                         ),
                       }
-                      channel.titleHtmlNode = spanNode
+                      channel.titleHtmlNode = applyLinkProcessing(spanNode) ?? spanNode
                     }
                   }
                 }
@@ -633,8 +728,14 @@ export const Arena: QuartzTransformerPlugin = () => {
                 delete node.properties["data-arena-channel-id"]
               }
 
+              // If we encounter the owning <li>, make sure we capture its inline content
               const blockOwner = node.properties["data-arena-block-id"]
               if (typeof blockOwner === "string") {
+                const ownerBlock = blocksById.get(blockOwner)
+              if (ownerBlock && node.tagName === "li") {
+                // Snapshot inline html for blocks that don't have a paragraph
+                ownerBlock.htmlNode = aggregateListItem(node)
+              }
                 delete node.properties["data-arena-block-id"]
               }
 
@@ -652,27 +753,7 @@ export const Arena: QuartzTransformerPlugin = () => {
               // Build an aggregated inline content node from the list item containing this paragraph
               let aggregated: ElementContent | undefined
               if (parent && parent.type === "element" && parent.tagName === "li") {
-                const li = parent
-                // Collect all children of the li except nested lists
-                const collected: ElementContent[] = []
-                for (const ch of (li.children ?? []) as ElementContent[]) {
-                  const el = cloneElementContent(ch)
-                  if (el.type === "element" && el.tagName === "ul") continue
-                  if (el.type === "element") {
-                    if (el.properties) {
-                      delete el.properties["data-arena-block-paragraph"]
-                      delete el.properties["data-arena-block-id"]
-                    }
-                  }
-                  collected.push(el)
-                }
-
-                aggregated = {
-                  type: "element",
-                  tagName: "span",
-                  properties: {},
-                  children: collected,
-                }
+                aggregated = aggregateListItem(parent)
               }
 
               // Title is the cleaned paragraph itself (inline)
@@ -685,12 +766,16 @@ export const Arena: QuartzTransformerPlugin = () => {
                 if (inlineTitleClone.tagName === "p") inlineTitleClone.tagName = "span"
               }
 
-              block.titleHtmlNode = inlineTitleClone as ElementContent
+              block.titleHtmlNode = (applyLinkProcessing(
+                inlineTitleClone as ElementContent,
+              ) ?? (inlineTitleClone as ElementContent)) as ElementContent
               if (aggregated) {
                 block.htmlNode = aggregated as ElementContent
               } else {
                 // fallback to paragraph clone if aggregation failed
-                block.htmlNode = inlineTitleClone as ElementContent
+                block.htmlNode = (applyLinkProcessing(
+                  inlineTitleClone as ElementContent,
+                ) ?? (inlineTitleClone as ElementContent)) as ElementContent
               }
 
               delete node.properties["data-arena-block-paragraph"]

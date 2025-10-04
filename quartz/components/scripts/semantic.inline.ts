@@ -6,6 +6,11 @@ type ManifestLevel = {
   indices: { offset: number; elements: number; byteLength: number }
 }
 
+type ChunkMetadata = {
+  parentSlug: string
+  chunkId: number
+}
+
 type Manifest = {
   version: number
   dims: number
@@ -28,6 +33,7 @@ type Manifest = {
   }
   ids: string[]
   titles?: string[]
+  chunkMetadata?: Record<string, ChunkMetadata>
   hnsw: {
     M: number
     efConstruction: number

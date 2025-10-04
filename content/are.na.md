@@ -1,22 +1,21 @@
 ---
 id: are.na
-aliases:
-  - inspo
-tags:
-  - technical
-  - seed
-  - evergreen
-description: My run-down version of are[dot]na
-date: "2024-10-24"
-socials:
-  are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-03 18:36:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
   - /resources
   - /inspo
-  - /are.na
+tags:
+  - technical
+  - seed
+  - evergreen
+description: My run-down version of are[dot]na
+socials:
+  are.na: https://www.are.na/aaron-pham/channels
+date: "2024-10-24"
+modified: 2025-10-04 03:32:55 GMT-04:00
+aliases:
+  - inspo
 title: are.na
 cssclasses:
   - nolist
@@ -45,6 +44,19 @@ cssclasses:
 - https://x.com/ryolu_/status/1973794203416383594 -- Love is attention
   - \_meta:
     - date: 10/03/2025
+- https://x.com/noampomsky/status/1974221039782568262 -- when you spend enough time with people who felt alive, it rewires your sense of what life is
+  - \_meta:
+    - date: 10/03/2025
+  - https://x.com/noampomsky/status/1974246778133250450
+- https://x.com/roryisconfused/status/1973491704704671918 -- God takes a sort of aesthetic pleasure in us, that He enjoys our charms and our ways.
+  - \_meta:
+    - date: 10/03/2025
+- https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace -- Cluster structure of thingspace
+  - \_meta:
+    - date: 09/04/2025
+- https://www.multiamory.com/podcast/339-the-smorgasbord-of-relationships -- The smorgasbord of relationship
+  - \_meta:
+    - date: 09/04/2025
 
 ## tweets
 
@@ -357,6 +369,11 @@ cssclasses:
 - https://mkodama.org/ -- Miles Kodama
   - \_meta:
     - date: 10/03/2025
+- https://luckysoap.com/statements/handmadeweb.html -- Handmade Web
+  - \_meta:
+    - date: 10/04/2025
+  - > I evoke the term 'handmade web' to refer to web pages coded by hand rather than by software; web pages made and maintained by individuals rather than by businesses or corporations; web pages which are provisional, temporary, or one-of-a-kind;
+  - > In The Web We Lost (2012), Anil Dash writes: "In the early days of the social web, there was a broad expectation that regular people might own their own identities by having their own websites, instead of being dependent on a few big sites to host their online identity."
 
 ## people
 
@@ -709,7 +726,7 @@ cssclasses:
 - https://halogen2.tumblr.com/post/187591113672/i-think-love-is-something-that-happens-to-other -- I think love is something that happens to other.
   - \_meta:
     - date: 07/07/2025
-- https://evanjconrad.com/posts/love -- On love and relationship
+- https://evanjconrad.com/posts/love -- On love and relationship [**]
   - \_meta:
     - date: 07/09/2025
 - https://barnsworthburning.net/ -- cool hyperlinks format
@@ -912,6 +929,21 @@ cssclasses:
 - https://thedosagemakesitso.substack.com/p/worship-adoration-valence -- Worship. Adoration. Valence
   - \_meta:
     - date: 10/03/2025
+- https://www.alignmentforum.org/posts/ShgAxjgN55gmq47ou/trustworthy-and-untrustworthy-models-1 -- Trustworthy and untrustworthy models [**]
+  - \_meta:
+    - date: 10/03/2025
+- https://www.betonit.ai/p/shes-the-one -- She's the One
+  - \_meta:
+    - date: 10/04/2025
+  - > Figure out your top priorities - and be flexible about everything else
+  - > Giving looks a high priority and personality a low priority. This is beyond foolish
+  - > Ask to hold hands on the first date. [...] My goal, rather, is to help ordinary shy guys out of the Friend Zone.
+    > If a woman refuses to hold hands on the first date, you’re probably in her Friend Zone for life. Bitter to learn, but good to know.
+  - > Bitter truth: Even if a woman sincerely considers you supremely deserving of nice treatment now, the treatment you receive will almost certainly get worse.
+  - > If you want kids, remember that virtually ==all traits are heritable.==
+- https://www.betonit.ai/p/i-want-to-hold-your-hand -- I want to hold your hand
+  - \_meta:
+    - date: 10/04/2025
 
 ## [[thoughts/Machine learning]]
 
@@ -1055,7 +1087,7 @@ cssclasses:
 - https://x.com/_xjdr/status/1966215415027347856 -- Qwen3-Next architecture difference with hybrid and Gated Delta Rule
   - \_meta:
     - date: 10/03/2025
-  - MatFormer: https://arxiv.org/abs/2310.07707
+  - https://arxiv.org/abs/2310.07707
 - https://x.com/Grad62304977/status/1967548295816819184 -- RL resources
   - \_meta:
     - date: 10/03/2025
@@ -1158,19 +1190,22 @@ cssclasses:
 - https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
   - \_meta:
     - date: 08/16/2025
-- https://jax-ml.github.io/scaling-book/ -- JAX scaling book
+- https://jax-ml.github.io/scaling-book/ -- JAX scaling book [**]
   - \_meta:
     - date: 08/16/2025
+- https://nanotron-ultrascale-playbook.static.hf.space/index.html -- The Ultra-Scale Playbook: Training LLMs on GPU Clusters [**]
+  - \_meta:
+    - date: 10/04/2025
 - https://www.jeremykun.com/2023/08/10/mlir-getting-started/ -- [[thoughts/MLIR]] introduction
   - \_meta:
     - date: 08/16/2025
-- https://huggingface.co/spaces/HuggingFaceFW/blogpost-fineweb-v1 -- FineWeb: decanting the web for the finest text data at scale.
+- https://huggingfacefw-blogpost-fineweb-v1.static.hf.space -- FineWeb: decanting the web for the finest text data at scale. [**]
   - \_meta:
     - date: 08/16/2025
-- https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/ -- [[thoughts/Bayesian Neural Network]]
+- https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/ -- [[thoughts/Bayesian Neural Network]] [**]
   - \_meta:
     - date: 08/16/2025
-- https://www.lei.chat/posts/triton-linear-layout-concept/ -- Lei's Chat on Triton Linear Layout
+- https://www.lei.chat/posts/triton-linear-layout-concept/ -- Triton Linear Layout
   - \_meta:
     - date: 08/16/2025
 - https://research.colfax-intl.com/cutlass-tutorial-writing-gemm-kernels-using-tensor-memory-for-nvidia-blackwell-gpus/ -- GEMM kernels on Blackwell GPUs
@@ -1189,7 +1224,7 @@ cssclasses:
 - https://docs.google.com/document/d/1p-ggQV3vVWIQuCccXEl1fD0thJOgXimlbBpGk6FI32I/edit?tab=t.0#heading=h.y0ohi6l5z9qn -- MATS 9.0 Winter 2025
   - \_meta:
     - date: 08/16/2025
-- https://nousresearch.com/measuring-thinking-efficiency-in-reasoning-models-the-missing-benchmark/
+- https://nousresearch.com/measuring-thinking-efficiency-in-reasoning-models-the-missing-benchmark/ -- Measuring reasoning model thinking efficiency
   - \_meta:
     - date: 08/16/2025
 - https://www.seangoedecke.com/great-software-design/ -- Great software design looks underwhelming
@@ -1204,18 +1239,17 @@ cssclasses:
 - https://colah.github.io/posts/2014-03-NN-Manifolds-Topology/ -- Neural Network, and Manifolds
   - \_meta:
     - date: 08/28/2025
-- https://substack.com/@jakeeaton/note/c-140561607
+- https://substack.com/@jakeeaton/note/c-140561607 -- AI skeptics unconsciously anthropomorphize LLMs in their critiques, like their anger is directed more at a naive zoomer intern who can’t infer the context of your ask.
   - \_meta:
     - date: 09/07/2025
 - https://ghost.oxen.ai/why-grpo-is-important-and-how-it-works/ -- Why GRPO is important and how it works
   - \_meta:
     - date: 09/10/2025
-- vLLM from scratch, weixin:
+- https://mp.weixin.qq.com/s/h1cFYDNxcHC30APcarF47A -- [[thoughts/vllm|vLLM]] from scratch
   - \_meta:
     - date: 09/21/2025
   - 1.3: https://mp.weixin.qq.com/s/BdWG6_ZTaGRknmsbGfFkMQ
   - 1.2: https://mp.weixin.qq.com/s/8BVEVPPqDQhQ2l8L90dMNQ
-  - 1.1: https://mp.weixin.qq.com/s/h1cFYDNxcHC30APcarF47A
 - https://ma-lab-berkeley.github.io/deep-representation-learning-book/ -- Learning Deep Representations of Data Distributions [@ldrdd2025]
   - \_meta:
     - date: 09/28/2025
@@ -1225,7 +1259,7 @@ cssclasses:
 - https://www.ethansmith2000.com/post/where-are-you -- Where are you?
   - \_meta:
     - date: 09/29/2025
-- https://github.com/pranjalssh/fast.cu -- fast kernels, in [[thoughts/GPU programming|CUDA]]
+- https://github.com/pranjalssh/fast.cu -- fast kernels, in [[thoughts/GPU-programming|CUDA]]
   - \_meta:
     - date: 10/02/2025
 - https://hazyresearch.stanford.edu/blog/2025-09-28-tp-llama-main -- We Bought the Whole GPU, So We're Damn Well Going to Use the Whole GPU
@@ -1598,7 +1632,7 @@ cssclasses:
 - http://www.phys.unm.edu/~tw/fas/yits/archive/eberhart_thegroundhog.html -- The Groundhog by Richard Eberthart
   - \_meta:
     - date: 04/09/2025
-- http://www.phys.unm.edu/~tw/fas/yits/archive/oliver_wildgeese.html -- Wild [[posts/goose friend.md|Geese]] by Mary Oliver
+- http://www.phys.unm.edu/~tw/fas/yits/archive/oliver_wildgeese.html -- Wild [[posts/goose friend|Geese]] by Mary Oliver
   - \_meta:
     - date: 04/09/2025
 - https://www.imdb.com/title/tt3783958/ -- La La Land
@@ -1735,6 +1769,12 @@ cssclasses:
     - So that
     - For example
     - And that's not all
+- https://www.youtube.com/watch?v=5qSN-R_E3w0 -- Lecture 77: Domain Specific Languages for GPU Kernels
+  - \_meta:
+    - date: 09/30/2025
+  - $$
+    \frac{\text{intelligence}}{\text{dollar}} = \frac{\text{intelligence}}{\text{FLOPs}} \times \frac{\text{FLOPs}}{\text{dollar}}
+    $$
 
 ## tools
 
@@ -1988,6 +2028,9 @@ cssclasses:
 - https://menlovc.com/ -- Menlo
   - \_meta:
     - date: 10/03/2025
+- https://basecase.vc/ -- basecase vc.
+  - \_meta:
+    - date: 10/04/2025
 
 ## [[tags/math]]
 
@@ -2086,3 +2129,6 @@ cssclasses:
 - https://arxiv.org/abs/2504.02263
   - \_meta:
     - date: 10/03/2025
+- https://arxiv.org/abs/2412.01784
+  - \_meta:
+    - date: 10/04/2025

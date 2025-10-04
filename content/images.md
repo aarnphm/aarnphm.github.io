@@ -74,6 +74,10 @@ title: images
 
 ![[thoughts/images/lovers.webp|lovers]]
 
+![[thoughts/images/Sigmund Freud and his writing.webp|Sigmund Freud and his beautiful writing]]
+
+![[thoughts/images/narcissism.webp]]
+
 ## authors
 
 ![[thoughts/images/joan-didion.webp|joan didion]]

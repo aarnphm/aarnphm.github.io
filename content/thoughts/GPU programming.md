@@ -1,18 +1,18 @@
 ---
 id: GPU programming
-permalinks:
-  - /gpus
+aliases:
+  - gpus
 tags:
   - seed
   - ml
   - hardware
 description: bedstone of scaling intelligence
 date: "2025-09-08"
-aliases:
-  - gpus
-modified: 2025-10-03 02:55:53 GMT-04:00
-noindex: true
+modified: 2025-10-04 03:34:30 GMT-04:00
+permalinks:
+  - /gpus
 title: GPU
+noindex: true
 ---
 
 see also: [modal glossary](https://modal.com/gpu-glossary/device-hardware/cuda-device-architecture)
@@ -25,13 +25,13 @@ See [[lectures/420/notes|comprehensive GPU architecture notes]] for detailed cov
 
 > [!info] core terminology
 >
-> | concept                       | summary                                                                                                                                                                                              | jump-off                                                            |
-> | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-> | gpu vs cpu                    | throughput-optimized accelerator (270k+ resident threads on [[lectures/420/notes#thread count comparison: EPYC vs H100 \| hopper]]) vs latency-optimized cpu (≈192 hardware threads on 96-core epyc) | [[lectures/420/notes#CPU vs GPU: philosophical differences]]        |
-> | sm (streaming multiprocessor) | scheduling + execution quad containing cuda cores, tensor cores, shared memory partitions                                                                                                            | [[lectures/420/notes#streaming multiprocessor (SM) architecture]]   |
-> | SIMT                          | warp-level (32 thread) execution model issuing one instruction per warp                                                                                                                              | [[lectures/420/notes#thread execution model: SIMT]]                 |
-> | memory hierarchy              | registers ($\approx 1$ cycle) → shared/l1 (20–30) → l2 ($\approx 200$) → hbm (≈400) → nvlink fabric                                                                                                  | [[lectures/420/notes#memory hierarchy: the performance bottleneck]] |
-> | latency hiding                | 64 resident warps per sm swap on stall to cover ≈400-cycle hbm accesses                                                                                                                              | [[lectures/420/notes#level 4: warps and threads]]                   |
+> | concept                       | summary                                                                                                                                                                                              |
+> | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | gpu vs cpu                    | throughput-optimized accelerator (270k+ resident threads on [[lectures/420/notes#thread count comparison: EPYC vs H100 \| hopper]]) vs latency-optimized cpu (≈192 hardware threads on 96-core epyc) |
+> | sm (streaming multiprocessor) | scheduling + execution quad containing cuda cores, tensor cores, shared memory partitions                                                                                                            |
+> | SIMT                          | warp-level (32 thread) execution model issuing one instruction per warp                                                                                                                              |
+> | memory hierarchy              | registers ($\approx 1$ cycle) → shared/l1 (20–30) → l2 ($\approx 200$) → hbm (≈400) → nvlink fabric                                                                                                  |
+> | latency hiding                | 64 resident warps per sm swap on stall to cover ≈400-cycle hbm accesses                                                                                                                              |
 
 ## execution units
 
@@ -128,8 +128,6 @@ See [[lectures/420/notes#cute dsl mental model|CUTLASS and CuTe DSL section]] fo
 See also: [post](https://www.lei.chat/posts/triton-linear-layout-concept/) · modal glossary on tensor cores: https://modal.com/gpu-glossary/device-hardware/tensor-core
 
 Triton's layout system provides high-level abstractions similar to CUTe but with Python-based programming model.
-
-## roofline model
 
 ![[lectures/420/notes#roofline model|Roofline model section]].
 

@@ -7,8 +7,10 @@ import math
 from pathlib import Path
 from collections.abc import Iterable
 import random
+from functools import lru_cache
 
 import numpy as np
+import tiktoken
 
 
 DEFAULT_VLLM_URL = os.environ.get("VLLM_URL") or os.environ.get("VLLM_EMBED_URL") or "http://127.0.0.1:8000/v1/embeddings"
@@ -28,6 +30,83 @@ def l2_normalize_rows(x: np.ndarray) -> np.ndarray:
   norms = np.linalg.norm(x, ord=2, axis=1, keepdims=True)
   norms[norms == 0] = 1.0
   return x / norms
+
+
+@lru_cache(maxsize=1)
+def get_tiktoken_encoder():
+  """Get the o200k_base tokenizer (GPT-4o) with caching"""
+  return tiktoken.get_encoding("o200k_base")
+
+
+def count_tokens(text: str) -> int:
+  """Count tokens using o200k_base encoding"""
+  encoder = get_tiktoken_encoder()
+  return len(encoder.encode(text))
+
+
+def get_text_splitter(chunk_size: int, overlap: int):
+  """Lazy-load langchain text splitter"""
+  from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+  encoder = get_tiktoken_encoder()
+  return RecursiveCharacterTextSplitter(
+    chunk_size=chunk_size * 4,  # character approximation
+    chunk_overlap=overlap * 4,
+    separators=["\n\n", "\n", ". ", " ", ""],
+    length_function=lambda t: len(encoder.encode(t)),
+    is_separator_regex=False,
+  )
+
+
+def chunk_document(
+  doc: dict, max_tokens: int = 512, overlap_tokens: int = 128, min_chunk_size: int = 100
+) -> list[dict]:
+  """
+  Chunk a document if it exceeds max_tokens
+
+  Args:
+    doc: {'slug': str, 'title': str, 'text': str}
+    max_tokens: Maximum tokens per chunk
+    overlap_tokens: Overlap between chunks
+    min_chunk_size: Minimum chunk size (avoid tiny chunks)
+
+  Returns:
+    List of chunk dicts with metadata
+  """
+  text = doc["text"]
+  token_count = count_tokens(text)
+
+  # No chunking needed
+  if token_count <= max_tokens:
+    return [
+      {
+        "slug": doc["slug"],
+        "title": doc.get("title", doc["slug"]),
+        "text": text,
+        "chunk_id": 0,
+        "parent_slug": doc["slug"],
+        "is_chunked": False,
+      }
+    ]
+
+  # Apply chunking
+  splitter = get_text_splitter(max_tokens, overlap_tokens)
+  raw_chunks = splitter.split_text(text)
+
+  # Filter out tiny chunks
+  valid_chunks = [c for c in raw_chunks if count_tokens(c) >= min_chunk_size]
+
+  return [
+    {
+      "slug": f"{doc['slug']}#chunk{i}",
+      "title": doc.get("title", doc["slug"]),
+      "text": chunk,
+      "chunk_id": i,
+      "parent_slug": doc["slug"],
+      "is_chunked": True,
+    }
+    for i, chunk in enumerate(valid_chunks)
+  ]
 
 
 def write_shards(vectors: np.ndarray, shard_size: int, dtype: str, out_dir: Path) -> list[dict]:
@@ -149,6 +228,9 @@ def main():
   ap.add_argument("--out", default="public/embeddings")
   ap.add_argument("--use-vllm", action="store_true", default=bool(os.environ.get("USE_VLLM", "")))
   ap.add_argument("--vllm-url", default=DEFAULT_VLLM_URL)
+  ap.add_argument("--chunk-size", type=int, default=512, help="Max tokens per chunk")
+  ap.add_argument("--chunk-overlap", type=int, default=128, help="Overlap tokens between chunks")
+  ap.add_argument("--no-chunking", action="store_true", help="Disable chunking (embed full docs)")
   args = ap.parse_args()
 
   recs = list(load_jsonl(args.jsonl))
@@ -156,9 +238,31 @@ def main():
     print("No input found in public/embeddings-text.jsonl; run the site build first to emit JSONL.")
     return
 
-  ids = [r["slug"] for r in recs]
-  titles = [r.get("title", r["slug"]) for r in recs]
-  texts = [r["text"] for r in recs]
+  # Apply chunking
+  if args.no_chunking:
+    chunks = recs
+    chunk_metadata = {}
+    print(f"Chunking disabled. Processing {len(chunks)} full documents")
+  else:
+    chunks = []
+    chunk_metadata = {}
+    for rec in recs:
+      doc_chunks = chunk_document(rec, max_tokens=args.chunk_size, overlap_tokens=args.chunk_overlap)
+      chunks.extend(doc_chunks)
+      # Build chunk metadata map
+      for chunk in doc_chunks:
+        if chunk["is_chunked"]:
+          chunk_metadata[chunk["slug"]] = {
+            "parentSlug": chunk["parent_slug"],
+            "chunkId": chunk["chunk_id"],
+          }
+    chunked_count = sum(1 for c in chunks if c.get("is_chunked", False))
+    print(f"Chunked {len(recs)} documents into {len(chunks)} chunks ({chunked_count} chunked, {len(chunks) - chunked_count} unchanged)")
+    print(f"  Chunk size: {args.chunk_size} tokens, overlap: {args.chunk_overlap} tokens")
+
+  ids = [c["slug"] for c in chunks]
+  titles = [c.get("title", c["slug"]) for c in chunks]
+  texts = [c["text"] for c in chunks]
 
   if args.use_vllm:
     vecs = embed_vllm(texts, args.model, args.vllm_url)
@@ -276,6 +380,7 @@ def main():
     },
     "ids": ids,
     "titles": titles,
+    "chunkMetadata": chunk_metadata,
     "hnsw": {
       "M": hnsw["M"],
       "efConstruction": hnsw["efConstruction"],

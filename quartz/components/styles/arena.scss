@@ -1,6 +1,12 @@
 @use "../../styles/variables.scss" as *;
 @use "../../styles/mixin.scss" as *;
 
+@keyframes arena-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 [data-slug*="arena"] {
   p.twitter-fallback,
   blockquote.twitter-tweet {
@@ -325,7 +331,6 @@ body[data-arena-subpage="true"] {
   height: 100dvh;
   align-items: center;
   justify-content: center;
-  padding: 10px;
   z-index: 1000;
   &.active {
     background-color: var(--light);
@@ -444,6 +449,12 @@ body[data-arena-subpage="true"] {
     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
     display: block;
     min-height: 0;
+    border: 0;
+  }
+
+  .arena-modal-iframe-youtube {
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 
   .arena-modal-embed {
@@ -482,6 +493,16 @@ body[data-arena-subpage="true"] {
 
   .arena-modal-embed-substack .substack-post-embed {
     width: 100%;
+  }
+
+  .arena-modal-embed-substack .arena-loading-spinner {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-top-color: var(--secondary);
+    animation: arena-spinner-rotate 0.75s linear infinite;
+    display: inline-block;
   }
 
   .arena-modal-embed-substack p {
@@ -791,6 +812,7 @@ body[data-arena-subpage="true"] {
 
   .arena-index {
     .arena-channel-row {
+      cursor: pointer;
       border-color: var(--darkgray);
       border-bottom-color: var(--darkgray);
 

@@ -272,9 +272,19 @@ async function fetchSubstackMetadata(target: URL): Promise<EmbedPayload> {
   }
 }
 
+async function sha256Hex(input: string): Promise<string> {
+  const enc = new TextEncoder().encode(input)
+  const buf = await crypto.subtle.digest("SHA-256", enc)
+  const bytes = new Uint8Array(buf)
+  let hex = ""
+  for (let i = 0; i < bytes.length; i++) hex += bytes[i].toString(16).padStart(2, "0")
+  return hex
+}
+
 async function handleEmbedRequest(
   request: Request,
   apiHeaders: Record<string, string>,
+  env: Env,
 ): Promise<Response> {
   const reqUrl = new URL(request.url)
   const embedHeaders = { "Content-Type": "application/json", ...apiHeaders }
@@ -305,13 +315,45 @@ async function handleEmbedRequest(
   }
 
   try {
+    // KV-backed cache keyed by sha256(hex) of encodeURIComponent(url)
+    const encoded = encodeURIComponent(target.toString())
+    const key = `substack:${await sha256Hex(encoded)}`
+
+    // Try KV first
+    let cached: EmbedPayload | null = null
+    try {
+      const s = await env.SUBSTACK_CACHE.get(key)
+      if (s) cached = JSON.parse(s) as EmbedPayload
+    } catch {}
+
+    if (cached) {
+      const status = cached.type === "substack" ? 200 : 204
+      return new Response(JSON.stringify(cached), {
+        status,
+        headers: {
+          ...embedHeaders,
+          "Cache-Control": "s-maxage=1800, stale-while-revalidate=60",
+          "X-Substack-Cache": "hit",
+        },
+      })
+    }
+
+    // Miss: fetch and populate KV
     const payload = await fetchSubstackMetadata(target)
     const status = payload.type === "substack" ? 200 : 204
+
+    // Store with TTL (7 days for substack payloads, 1 day for unknown)
+    try {
+      const ttl = payload.type === "substack" ? 60 * 60 * 24 * 7 : 60 * 60 * 24
+      await env.SUBSTACK_CACHE.put(key, JSON.stringify(payload), { expirationTtl: ttl })
+    } catch {}
+
     return new Response(JSON.stringify(payload), {
       status,
       headers: {
         ...embedHeaders,
         "Cache-Control": "s-maxage=1800, stale-while-revalidate=60",
+        "X-Substack-Cache": "miss",
       },
     })
   } catch (err: any) {
@@ -573,6 +615,8 @@ export default {
     }
 
     switch (url.pathname) {
+      case "/are.na":
+        return Response.redirect("https://aarnphm.xyz/arena", 301)
       case "/view-source":
         return Response.redirect("https://github.com/aarnphm/aarnphm.github.io", 301)
       case "/view-profile":
@@ -656,7 +700,7 @@ export default {
         return withHeaders(resp, apiHeaders)
       }
       case "/api/embed": {
-        return handleEmbedRequest(request, apiHeaders)
+        return handleEmbedRequest(request, apiHeaders, env)
       }
     }
 

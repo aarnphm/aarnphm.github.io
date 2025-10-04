@@ -137,3 +137,6 @@ function setupHeaderOverlay() {
 // Initialize header overlay
 // document.addEventListener("nav", setupHeaderOverlay)
 // window.addEventListener("resize", setupHeaderOverlay)
+
+// Expose to window so TS treats this as used and lets us opt-in later if we want
+;(window as any).__arenaSetupHeaderOverlay = setupHeaderOverlay

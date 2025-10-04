@@ -3,9 +3,13 @@ import { ArenaData } from "../../plugins/transformers/arena"
 import { resolveRelative, joinSegments, FullSlug } from "../../util/path"
 import style from "../styles/arena.scss"
 import { classNames } from "../../util/lang"
+import { toArenaHeadingInlineJsx, toArenaJsx, arenaBlockTimestamp } from "../../util/arena"
+// @ts-ignore
+import modalScript from "../scripts/arena.inline"
 
 export default (() => {
-  const ArenaIndex: QuartzComponent = ({ fileData }: QuartzComponentProps) => {
+  const ArenaIndex: QuartzComponent = (componentData: QuartzComponentProps) => {
+    const { fileData } = componentData
     const arenaData = fileData.arenaData as ArenaData | undefined
 
     if (!arenaData || !arenaData.channels) {
@@ -22,15 +26,26 @@ export default (() => {
           {arenaData.channels.map((channel) => {
             const channelPath = joinSegments(arenaBase, channel.slug) as FullSlug
             return (
-              <a
-                href={resolveRelative(currentSlug, channelPath)}
-                class="arena-channel-row internal"
-                data-slug={channelPath}
-                data-no-popover
-                key={channel.slug}
-              >
+              <div class="arena-channel-row" key={channel.slug} data-slug={channelPath}>
                 <div class="arena-channel-row-header">
-                  <h2>{channel.name}</h2>
+                  <h2>
+                    <a
+                      href={resolveRelative(currentSlug, channelPath)}
+                      class="internal"
+                      data-slug={channelPath}
+                      data-no-popover
+                    >
+                      {channel.titleHtmlNode
+                        ? toArenaHeadingInlineJsx(
+                            fileData.filePath!,
+                            channel.titleHtmlNode,
+                            currentSlug,
+                            channelPath,
+                            componentData,
+                          )
+                        : channel.name}
+                    </a>
+                  </h2>
                   <span class="arena-channel-row-count">
                     {channel.blocks.length - limits > 0
                       ? channel.blocks.length - limits
@@ -38,27 +53,37 @@ export default (() => {
                   </span>
                 </div>
                 <div class="arena-channel-row-preview">
-                  {channel.blocks.slice(0, limits).map((block) => {
-                    return (
-                      <div
-                        key={block.id}
-                        class={classNames(
-                          undefined,
-                          `arena-channel-row-preview-item`,
-                          block.highlighted ? "highlighted" : "",
-                        )}
-                        data-block-id={block.id}
-                        role="button"
-                        tabIndex={0}
-                      >
-                        <div class="arena-channel-row-preview-text">
-                          {block.title || block.content}
+                  {[...channel.blocks]
+                    .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
+                    .slice(0, limits)
+                    .map((block) => {
+                      return (
+                        <div
+                          key={block.id}
+                          class={classNames(
+                            undefined,
+                            `arena-channel-row-preview-item`,
+                            block.highlighted ? "highlighted" : "",
+                          )}
+                          data-block-id={block.id}
+                          role="button"
+                          tabIndex={0}
+                        >
+                          <div class="arena-channel-row-preview-text">
+                            {block.titleHtmlNode
+                              ? toArenaJsx(
+                                  fileData.filePath!,
+                                  block.titleHtmlNode,
+                                  currentSlug,
+                                  componentData,
+                                )
+                              : block.title || block.content}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
                 </div>
-              </a>
+              </div>
             )
           })}
         </div>
@@ -67,6 +92,7 @@ export default (() => {
   }
 
   ArenaIndex.css = style
+  ArenaIndex.afterDOMLoaded = modalScript
 
   return ArenaIndex
 }) satisfies QuartzComponentConstructor

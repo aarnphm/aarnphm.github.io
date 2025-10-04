@@ -1,17 +1,167 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import { ArenaChannel, ArenaBlock } from "../../plugins/transformers/arena"
 import { classNames } from "../../util/lang"
-import { htmlToJsx } from "../../util/jsx"
 import { toHtml } from "hast-util-to-html"
-import type { ElementContent, Root, Element } from "hast"
+import type { ElementContent, Root } from "hast"
 import style from "../styles/arena.scss"
 // @ts-ignore
 import modalScript from "../scripts/arena.inline"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { FullSlug, normalizeHastElement } from "../../util/path"
-import { transcludeFinal } from "../renderPage"
+import { FullSlug } from "../../util/path"
+import {
+  toArenaJsx,
+  fromHtmlStringToArenaJsx,
+  toArenaRoot,
+  arenaBlockTimestamp,
+} from "../../util/arena"
 
 const substackPostRegex = /^https?:\/\/[^/]+\/p\/[^/]+/i
+
+type YouTubeEmbedSpec = {
+  src: string
+}
+
+const isValidYouTubeVideoId = (value: string | null | undefined): value is string =>
+  !!value && /^[0-9A-Za-z_-]{11}$/.test(value)
+
+const parseYouTubeTimestamp = (value: string | null): string | undefined => {
+  if (!value) return undefined
+
+  const trimmed = value.trim()
+  if (trimmed.length === 0) return undefined
+
+  if (/^\d+$/.test(trimmed)) {
+    return trimmed.replace(/^0+/, "") || "0"
+  }
+
+  let matched = false
+  let totalSeconds = 0
+  const durationRegex = /(\d+)([hms])/gi
+  trimmed.replace(durationRegex, (_match, amount, unit) => {
+    matched = true
+    const numeric = Number(amount)
+    if (Number.isNaN(numeric)) return ""
+    switch (unit.toLowerCase()) {
+      case "h":
+        totalSeconds += numeric * 3600
+        break
+      case "m":
+        totalSeconds += numeric * 60
+        break
+      case "s":
+        totalSeconds += numeric
+        break
+    }
+    return ""
+  })
+
+  if (matched) {
+    return totalSeconds > 0 ? String(totalSeconds) : "0"
+  }
+
+  if (/^\d{1,2}(:\d{2}){1,2}$/.test(trimmed)) {
+    const parts = trimmed.split(":").map((part) => Number(part))
+    if (parts.some((part) => Number.isNaN(part))) {
+      return undefined
+    }
+    let seconds = 0
+    for (const part of parts) {
+      seconds = seconds * 60 + part
+    }
+    return seconds > 0 ? String(seconds) : "0"
+  }
+
+  return undefined
+}
+
+const extractYouTubeStart = (url: URL): string | undefined => {
+  const searchStart =
+    parseYouTubeTimestamp(url.searchParams.get("start")) ??
+    parseYouTubeTimestamp(url.searchParams.get("t"))
+  if (searchStart) return searchStart
+
+  const hash = url.hash.startsWith("#") ? url.hash.slice(1) : url.hash
+  if (!hash) return undefined
+
+  const hashParams = hash.includes("=")
+    ? new URLSearchParams(hash)
+    : new URLSearchParams(`t=${hash}`)
+  return (
+    parseYouTubeTimestamp(hashParams.get("start")) ?? parseYouTubeTimestamp(hashParams.get("t"))
+  )
+}
+
+const buildYouTubeEmbed = (rawUrl: string): YouTubeEmbedSpec | undefined => {
+  try {
+    const url = new URL(rawUrl)
+    const normalizedHost = url.hostname.toLowerCase()
+    const host = normalizedHost.startsWith("www.") ? normalizedHost.slice(4) : normalizedHost
+    const isKnownHost =
+      host === "youtu.be" || host.endsWith("youtube.com") || host.endsWith("youtube-nocookie.com")
+    if (!isKnownHost) return undefined
+
+    const segments = url.pathname.split("/").filter(Boolean)
+    let videoId: string | undefined
+    let playlistId: string | undefined
+
+    if (host === "youtu.be") {
+      videoId = segments[0]
+    } else if (segments[0] === "watch") {
+      videoId = url.searchParams.get("v") ?? undefined
+    } else if (segments[0] === "embed" && segments[1]) {
+      videoId = segments[1]
+    } else if (segments[0] === "shorts" && segments[1]) {
+      videoId = segments[1]
+    } else if (segments[0] === "live" && segments[1]) {
+      videoId = segments[1]
+    }
+
+    playlistId = url.searchParams.get("list") ?? undefined
+    if (!videoId && segments[0] === "playlist") {
+      playlistId = playlistId ?? segments[1]
+    }
+
+    if (!videoId) {
+      const candidate = url.searchParams.get("v")
+      if (candidate) {
+        videoId = candidate
+      }
+    }
+
+    if (videoId && !isValidYouTubeVideoId(videoId)) {
+      videoId = undefined
+    }
+
+    const start = extractYouTubeStart(url)
+    const indexParam = url.searchParams.get("index") ?? url.searchParams.get("i") ?? undefined
+    const endParam = url.searchParams.get("end") ?? undefined
+
+    const params = new URLSearchParams()
+    if (playlistId) {
+      params.set("list", playlistId)
+      if (indexParam && /^\d+$/.test(indexParam)) {
+        params.set("index", indexParam)
+      }
+    }
+    if (start && /^\d+$/.test(start)) {
+      params.set("start", start)
+    }
+    if (endParam && /^\d+$/.test(endParam)) {
+      params.set("end", endParam)
+    }
+
+    if (!videoId && !playlistId) {
+      return undefined
+    }
+
+    const path = videoId ? `/embed/${videoId}` : "/embed/videoseries"
+    const query = params.toString()
+    const src = `https://www.youtube-nocookie.com${path}${query ? `?${query}` : ""}`
+    return { src }
+  } catch {
+    return undefined
+  }
+}
 
 const rewriteArxivUrl = (rawUrl: string): string => {
   try {
@@ -102,26 +252,15 @@ export default (() => {
       return <article class="arena-content">Channel not found</article>
     }
 
-    const rebaseAndTransclude = (node?: ElementContent): Root | undefined => {
-      if (!node) return undefined
-      const curBase = "are.na" as FullSlug
-      const newBase = fileData.slug! as FullSlug
-      const rebased =
-        node.type === "element"
-          ? (normalizeHastElement(node as Element, curBase, newBase) as ElementContent)
-          : node
-      const root: Root = { type: "root", children: [rebased] }
-      return transcludeFinal(root, componentData, { dynalist: false })
-    }
-
-    const jsxFromNode = (node?: ElementContent) => {
-      const processed = rebaseAndTransclude(node)
-      return processed ? htmlToJsx(fileData.filePath!, processed) : undefined
-    }
+    const jsxFromNode = (node?: ElementContent) =>
+      node
+        ? toArenaJsx(fileData.filePath!, node, fileData.slug! as FullSlug, componentData)
+        : undefined
 
     const htmlFromNode = (node?: ElementContent) => {
-      const processed = rebaseAndTransclude(node)
-      return processed ? toHtml(processed, { allowDangerousHtml: true }) : undefined
+      if (!node) return undefined
+      const root = toArenaRoot(node, fileData.slug! as FullSlug, componentData)
+      return toHtml(root, { allowDangerousHtml: true })
     }
 
     const renderBlock = (block: ArenaBlock, blockIndex: number) => {
@@ -129,33 +268,22 @@ export default (() => {
       const frameTitle = block.title ?? block.content ?? `Block ${blockIndex + 1}`
       const resolvedUrl = block.url ? rewriteArxivUrl(block.url) : undefined
       const targetUrl = block.url ? (resolvedUrl ?? block.url) : undefined
-      const iframeSrcDoc = targetUrl
-        ? undefined
-        : (() => {
-            const html = htmlFromNode(block.htmlNode)
-            const body = html ?? `<p>${escapeHtml(block.title ?? block.content ?? "")}</p>`
-            return `<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"/><style>html,body{margin:0;padding:12px;font-family:inherit;font-size:16px;line-height:1.5;color:var(--text,#111);background:var(--light,#fff);overflow:hidden;}a{color:inherit;text-decoration:underline;}img,video{max-width:100%;height:auto;display:block;}p{margin:0 0 1em 0;}ul,ol{margin:0 0 1em 1.5em;padding:0;}code{font-family:inherit;background:rgba(0,0,0,0.05);padding:0.15em 0.3em;border-radius:4px;}</style></head><body>${body}</body></html>`
-          })()
+      // No srcDoc fallback for internal links; we'll hydrate with popover-hint content
       const embedHtml = block.embedHtml
       const isSubstackCandidate = block.url ? substackPostRegex.test(block.url) : false
+      const youtubeEmbed = block.url ? buildYouTubeEmbed(block.url) : undefined
       const accessedRaw =
-        block.metadata?.accessed ??
-        block.metadata?.accessed_date ??
-        block.metadata?.date
+        block.metadata?.accessed ?? block.metadata?.accessed_date ?? block.metadata?.date
       const accessed = accessedRaw ? normalizeDate(accessedRaw) : undefined
 
       const convertFromText = (text: string) => {
-        const tocAst = fromHtmlIsomorphic(text, { fragment: true }) as Root
-        const curBase = "are.na" as FullSlug
-        const newBase = fileData.slug! as FullSlug
-        const rebasedChildren = tocAst.children.map((ch) =>
-          ch.type === "element"
-            ? (normalizeHastElement(ch as Element, curBase, newBase) as ElementContent)
-            : (ch as ElementContent),
+        const root = fromHtmlIsomorphic(text, { fragment: true }) as Root
+        return fromHtmlStringToArenaJsx(
+          fileData.filePath!,
+          root,
+          fileData.slug! as FullSlug,
+          componentData,
         )
-        const root: Root = { type: "root", children: rebasedChildren }
-        const processed = transcludeFinal(root, componentData, { dynalist: false })
-        return htmlToJsx(fileData.filePath!, processed)
       }
 
       return (
@@ -288,22 +416,63 @@ export default (() => {
                 <div class="arena-modal-main-content">
                   {embedHtml ? (
                     convertFromText(embedHtml as string)
+                  ) : youtubeEmbed ? (
+                    <iframe
+                      class={classNames(
+                        undefined,
+                        "arena-modal-iframe",
+                        "arena-modal-iframe-youtube",
+                      )}
+                      title={`YouTube embed: ${frameTitle}`}
+                      loading="lazy"
+                      data-block-id={block.id}
+                      src={youtubeEmbed.src}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      referrerPolicy="strict-origin-when-cross-origin"
+                    />
                   ) : isSubstackCandidate && block.url ? (
                     <div
                       class="arena-modal-embed arena-modal-embed-substack"
                       data-substack-url={block.url}
                     >
-                      <p>Loading Substack preview...</p>
+                      <span
+                        class="arena-loading-spinner"
+                        role="status"
+                        aria-label="Loading Substack preview"
+                      />
                     </div>
-                  ) : (
+                  ) : targetUrl ? (
                     <iframe
                       class="arena-modal-iframe"
                       title={`Embedded block: ${frameTitle}`}
                       loading="lazy"
                       data-block-id={block.id}
                       sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
-                      {...(targetUrl ? { src: targetUrl } : { srcDoc: iframeSrcDoc })}
+                      src={targetUrl}
                     />
+                  ) : (
+                    <div class="arena-modal-internal-host" data-block-id={block.id}>
+                      {block.htmlNode
+                        ? jsxFromNode(block.htmlNode)
+                        : block.titleHtmlNode
+                          ? jsxFromNode(block.titleHtmlNode)
+                          : block.title || block.content}
+                      <div class="arena-modal-fallback" aria-hidden="true">
+                        <svg
+                          width="64"
+                          height="40"
+                          viewBox="0 0 64 40"
+                          xmlns="http://www.w3.org/2000/svg"
+                          style="display:block;opacity:0.5;margin:12px auto;"
+                        >
+                          <rect x="1" y="1" width="62" height="38" rx="6" fill="none" stroke="currentColor"/>
+                          <rect x="8" y="10" width="48" height="4" rx="2" fill="currentColor"/>
+                          <rect x="8" y="18" width="36" height="4" rx="2" fill="currentColor"/>
+                          <rect x="8" y="26" width="28" height="4" rx="2" fill="currentColor"/>
+                        </svg>
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
@@ -334,13 +503,17 @@ export default (() => {
                       <span class="arena-modal-connections-count">{block.subItems!.length}</span>
                     </div>
                     <ul class="arena-modal-connections-list">
-                      {block.subItems!.map((subItem) => (
-                        <li key={subItem.id}>
-                          {subItem.titleHtmlNode
-                            ? jsxFromNode(subItem.titleHtmlNode)
-                            : subItem.title || subItem.content}
-                        </li>
-                      ))}
+                      {[...block.subItems!]
+                        .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
+                        .map((subItem) => (
+                          <li key={subItem.id}>
+                            {subItem.htmlNode
+                              ? jsxFromNode(subItem.htmlNode)
+                              : subItem.titleHtmlNode
+                                ? jsxFromNode(subItem.titleHtmlNode)
+                                : subItem.title || subItem.content}
+                          </li>
+                        ))}
                     </ul>
                   </div>
                 )}
@@ -354,7 +527,9 @@ export default (() => {
     return (
       <article class="arena-channel-page main-col">
         <div class="arena-channel-grid">
-          {channel.blocks.map((block, idx) => renderBlock(block, idx))}
+          {[...channel.blocks]
+            .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
+            .map((block, idx) => renderBlock(block, idx))}
         </div>
 
         <div class="arena-block-modal" id="arena-modal">

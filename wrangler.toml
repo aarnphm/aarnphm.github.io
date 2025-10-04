@@ -18,6 +18,12 @@ new_sqlite_classes = ["Garden"]
 binding = "OAUTH_KV"
 id = "c8591d9cecbd4cf4b569a8edadc3302d"
 
+[[kv_namespaces]]
+binding = "SUBSTACK_CACHE"
+id = "03bf87553daf4045beb9c27c95b2e5ae"
+preview_id = "c6627b39355a474d98b7a871e0965b3b"
+remote = true
+
 [[r2_buckets]]
 binding = "LFS_BUCKET"
 bucket_name = "sites"

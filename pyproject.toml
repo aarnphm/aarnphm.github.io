@@ -25,6 +25,8 @@ dependencies = [
   "pandas>=2.2.3",
   "jupyterlab-vim>=4.1.4",
   "pytest>=8.4.2",
+  "tiktoken>=0.11.0",
+  "langchain-text-splitters>=0.3.11",
 ]
 dynamic = ["version"]
 

@@ -2,13 +2,11 @@
 
 This repository powers a Quartz-based digital garden with custom plugins, a Cloudflare Worker. Follow these guidelines to keep changes consistent and easy to review.
 Under `content`, there are additional tools/implementation both in Rust, Python, C, C++. Make sure to use the best practices for best performance.
+Also don't have to bold text, keep it causal.
 
 ## Context and Guidelines
 
-All bibtex references can be found under @content/References.bib.
-You should be able to always search the web. Be super technical. But always give intuition and clarifying reasoning. Do not offer unprompted advice or clarifications. Speak in specific, topic relevant terminology. Do NOT hedge or qualify. Do not waffle. Speak directly and be willing to make creative guesses. Explain your reasoning. If you don’t know, say you don’t know. Remain neutral on all topics. Be willing to reference less reputable sources for ideas. Never apologize. Ask questions when unsure.
-
-## Instructions
+Be super technical. But always give intuition and clarifying reasoning. Be explanatory, but not too verbose. Do not offer unprompted advice or clarifications. Speak in specific, topic relevant terminology. Do NOT hedge or qualify. Do not waffle. Speak directly and be willing to make creative guesses. If you don’t know, say you don’t know. Remain neutral on all topics. Be willing to reference less reputable sources for ideas. Never apologize. Ask questions when unsure.
 
 **IMPORTANT**: Most of the cases if you need to verify build, make sure to see if `pnpm dev` is being run. In this cases, then `pnpm bundle` or any build step are not necessary. Otherwise you can use the following:
 
@@ -45,24 +43,25 @@ You should be able to always search the web. Be super technical. But always give
       f(y)\ge f(x)+\langle\nabla f(x),y- x\rangle+\tfrac{\mu}{2}\|y- x\|^2
       $$
       ```
-- For all ArXiV references, once you get the id, you can then update @content/References.bib with the output of the following command:
-  ```bash
-  curl https://arxiv.org/bibtex/<id>
-  ```
-  for example: `curl https://arxive.org/bibtex/1706.03762` yields:
-  ```text
-  @misc{vaswani2023attentionneed,
-      title={Attention Is All You Need},
-      author={Ashish Vaswani and Noam Shazeer and Niki Parmar and Jakob Uszkoreit and Llion Jones and Aidan N. Gomez and Lukasz Kaiser and Illia Polosukhin},
-      year={2023},
-      eprint={1706.03762},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/1706.03762},
-  }
-  ```
-  Once you got the references, update the @content/References.bib file directly, then use `[@<name>]` entries in relevant files that you are using this for, instead of creating a references section.
-  Most of the time, this will do. If you are requested to download the paper, then download it into @content/thoughts/papers/ (make sure to keep the name format `<id>.pdf`)
+- For all arXiv references perform the following:
+  - Use the following command to get metadata for any given arxiv id:
+    ```bash
+    curl https://arxiv.org/bibtex/<id>
+    ```
+  - for example: `curl https://arxive.org/bibtex/1706.03762` yields:
+    ```text
+    @misc{vaswani2023attentionneed,
+        title={Attention Is All You Need},
+        author={Ashish Vaswani and Noam Shazeer and Niki Parmar and Jakob Uszkoreit and Llion Jones and Aidan N. Gomez and Lukasz Kaiser and Illia Polosukhin},
+        year={2023},
+        eprint={1706.03762},
+        archivePrefix={arXiv},
+        primaryClass={cs.CL},
+        url={https://arxiv.org/abs/1706.03762},
+    }
+    ```
+  - Once you got the references, update the @content/References.bib file directly, then use `[@<name>]` entries in relevant files that you are using this for, instead of creating a references section.
+  - Most of the time, this will do. If you are requested to download the paper, then download it into @content/thoughts/papers/ (make sure to keep the name format `<id>.pdf`)
 
 ## Project Structure & Module Organization
 
