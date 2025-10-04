@@ -5,7 +5,7 @@ tags:
   - seed
 description: we study ethics in order to improve our life, or Aristotelian ethics
 date: "2024-03-05"
-modified: 2025-10-04 01:43:37 GMT-04:00
+modified: 2025-10-04 18:08:51 GMT-04:00
 title: ethics
 ---
 
@@ -135,7 +135,7 @@ Common good approach: promote flourishing of whole community, not just aggregate
 
 Don't ask "what should I do?" Ask: "what kind of person should I be?" Morality is about character, not rules or outcomes.
 
-Aristotle: virtue (_arete_) is excellence of character acquired through practice. [@aristotle2000nicomachean] Eudaimonia (flourishing, living well) is the goal. You achieve it through virtuous activity.
+Aristotle: virtue (_arete_) is excellence of character acquired through practice. [@aristotle_nicomachean_ethics] Eudaimonia (flourishing, living well) is the goal. You achieve it through virtuous activity.
 
 **Key virtues**: courage, temperance, justice, wisdom, generosity, friendliness, truthfulness. Each is mean between extremes:
 

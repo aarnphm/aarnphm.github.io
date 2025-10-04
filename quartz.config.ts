@@ -208,6 +208,8 @@ const config: QuartzConfig = {
             "thoughts/Philosophy-and-Nietzsche",
             "thoughts/ethics",
             "thoughts/Existentialism",
+            "thoughts/reductionism",
+            "thoughts/GPU-programming",
           ],
         }),
       }),

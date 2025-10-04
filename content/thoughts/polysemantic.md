@@ -6,7 +6,7 @@ tags:
 socials:
   circuits: https://transformer-circuits.pub/2023/monosemantic-features/index.html
 date: "2025-10-04"
-modified: 2025-10-04 17:59:10 GMT-04:00
+modified: 2025-10-04 18:24:20 GMT-04:00
 title: Polysemantic
 ---
 

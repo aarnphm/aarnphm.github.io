@@ -74,6 +74,10 @@ a[data-list] {
   text-decoration: none;
   font-weight: $normalWeight;
   color: inherit !important;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .permanent-grid {

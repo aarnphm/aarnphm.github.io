@@ -7,10 +7,10 @@ tags:
   - technical
   - fruit
 description: choosing to give your full, continuously.
-date: "2025-10-04"
 socials:
   essay: https://aarnphm.xyz/posts/love
-modified: 2025-10-04 04:33:01 GMT-04:00
+date: "2025-10-04"
+modified: 2025-10-04 18:08:52 GMT-04:00
 noindex: true
 title: dilectio
 ---
@@ -111,7 +111,7 @@ Context-sensitive: you respond to their needs as _they_ articulate them, not as 
 
 ### virtue ethics
 
-Aristotle: _philia_ (friendship/love) is central to good life. [@aristotle2000nicomachean] Not instrumental (using friends for benefit) but intrinsic (friends are good in themselves). Reciprocal development: you flourish together.
+Aristotle: _philia_ (friendship/love) is central to good life. [@aristotle_nicomachean_ethics] Not instrumental (using friends for benefit) but intrinsic (friends are good in themselves). Reciprocal development: you flourish together.
 
 Love as practice developing character. Patience, generosity, attention—these aren't pre-existing traits you apply to relationships. You _learn_ them through loving, through failing, through staying when it's hard. Virtue is acquired through practice.
 

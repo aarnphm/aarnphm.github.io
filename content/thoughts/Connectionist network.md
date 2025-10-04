@@ -3,14 +3,14 @@ id: Connectionist network
 tags:
   - philosophy
   - ml
-  - cognitive-science
   - stream
   - microblog
 description: what neural networks are, ontologically speaking
 signature: with abundance of love and joy - Aaron
 date: "2025-10-04"
-modified: 2025-10-04 17:49:45 GMT-04:00
+modified: 2025-10-04 18:29:25 GMT-04:00
 title: connectionist networks
+pageLayout: technical
 ---
 
 I've been thinking about connectionist networks lately, and there's something deeply unsettling about how we talk about them. Not unsettling in a bad way—more like that productive discomfort you get when you realize the categories you've been using don't quite map onto reality.
@@ -59,7 +59,7 @@ is the network rewriting its own constitution, i.e: changing what it _is_.
 
 ## the universal approximation theorem and its discontents
 
-Sure, a feedforward network with one hidden layer can approximate any continuous function on a compact set [@cybenko1989approximation]. Mathematically:
+Sure, a feedforward network with one hidden layer can approximate any continuous function on a compact set [@Cybenko1989]. Mathematically:
 
 For any continuous $f: \mathbb{R}^n \to \mathbb{R}^m$ and $\epsilon > 0$, there exists a network $g$ with sufficient hidden units such that:
 
@@ -114,6 +114,32 @@ $$
 $$
 
 This says that everything can potentially relate to everything else, distance be damned. It's almost Leibnizian—monads reflecting the entire universe from their perspective.
+
+## smolensky's tensor product representation
+
+There's an elegant attempt to bridge the connectionist-symbolic divide that deserves attention: Paul Smolensky's tensor product variable binding [@smolensky1990tensor].
+
+The core idea: represent variable-value bindings $(v,r)$ as their tensor product $v \otimes r$. A symbolic structure with multiple bindings becomes:
+
+$$
+S = \sum_i v_i \otimes r_i
+$$
+
+where the variables $\{v_i\}$ form an orthonormal set—meaning $\langle v_i, v_j \rangle = \delta_{ij}$.
+
+The orthonormality requirement isn't incidental. It's what makes unbinding work. To retrieve the value associated with variable $v_j$, we compute (here $\langle v_j, S \rangle$ denotes tensor contraction—contracting $v_j$ with the first factor via the inner product):
+
+$$
+\langle v_j, S \rangle = \left\langle v_j, \sum_i v_i \otimes r_i \right\rangle = \sum_i \langle v_j, v_i \rangle r_i = r_j
+$$
+
+Elegant, right? You get systematic compositionality—you can build complex structures from parts. You get distributed representation—the structure exists across dimensions, not in localist nodes. You get both symbolic structure _and_ subsymbolic processing.
+
+But here's what bothers me: the orthonormality requirement. In practice, you're using high-dimensional random vectors that are approximately orthogonal. So unbinding becomes noisy: $\langle v_j, S \rangle \approx r_j + \epsilon$.
+
+The question is whether this noise is a bug or a feature. Maybe perfect symbolic retrieval was always a rationalist fantasy, and human cognition is actually this kind of noisy reconstruction all the way down. Maybe the fuzziness is what allows generalization.
+
+Smolensky's framework shows that you _can_ have your cake and eat it too—systematic structure in a distributed system. But it also reveals the tension: the more you demand symbolic precision, the more you need structure (orthonormality) that feels imposed rather than emergent.
 
 ## the ontology of learned representations
 
