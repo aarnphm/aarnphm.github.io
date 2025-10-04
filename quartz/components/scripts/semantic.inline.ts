@@ -45,9 +45,6 @@ type Manifest = {
       levels: ManifestLevel[]
     }
   }
-  bm25?: {
-    path: string
-  }
 }
 
 type IngestReadyMessage = {
@@ -55,12 +52,6 @@ type IngestReadyMessage = {
   manifest: Manifest
   vectorBuffer: ArrayBufferLike
   graphBuffer: ArrayBufferLike
-  bm25?: {
-    N: number
-    avgdl: number
-    docLen: number[]
-    postings: Record<string, [number, number][]>
-  }
 }
 
 type IngestProgressMessage = {
@@ -77,14 +68,12 @@ type QueryResultMessage = {
   type: "search-result"
   seq: number
   semantic: SemanticResult[]
-  bm25: SemanticResult[]
 }
 
 type QueryErrorMessage = { type: "error"; seq?: number; message: string }
 
 type SearchPayload = {
   semantic: SemanticResult[]
-  bm25: SemanticResult[]
 }
 
 type PendingResolver = {
@@ -171,7 +160,6 @@ export class SemanticClient {
           manifest: msg.manifest,
           vectorBuffer: msg.vectorBuffer,
           graphBuffer: msg.graphBuffer,
-          bm25: msg.bm25,
         },
         [
           ...(msg.vectorBuffer instanceof ArrayBuffer ? [msg.vectorBuffer] : []),
@@ -199,7 +187,7 @@ export class SemanticClient {
         const pending = this.pending.get(msg.seq)
         if (pending) {
           this.pending.delete(msg.seq)
-          pending.resolve({ semantic: msg.semantic ?? [], bm25: msg.bm25 ?? [] })
+          pending.resolve({ semantic: msg.semantic ?? [] })
         }
         return
       }

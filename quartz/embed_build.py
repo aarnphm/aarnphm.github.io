@@ -188,16 +188,71 @@ def write_hnsw_graph(levels: list[list[list[int]]], rows: int, out_path: Path) -
 
 
 
-def embed_vllm(texts: list[str], model_id: str, vllm_url: str) -> np.ndarray:
+def embed_vllm(
+  texts: list[str],
+  model_id: str,
+  vllm_url: str,
+  batch_size: int = 64,
+  concurrency: int = 8,
+) -> np.ndarray:
   import requests
-  out: list[np.ndarray] = []
-  bs = 64
-  for i in range(0, len(texts), bs):
-    batch = texts[i : i + bs]
+  from concurrent.futures import ThreadPoolExecutor, as_completed
+
+  # Apply model-specific prefixes for documents (asymmetric search)
+  model_lower = model_id.lower()
+  if "e5" in model_lower:
+    # E5 models: use "passage:" prefix for documents
+    prefixed = [f"passage: {t}" for t in texts]
+  elif "qwen" in model_lower and "embedding" in model_lower:
+    # Qwen3-Embedding: documents use plain text (no prefix)
+    prefixed = texts
+  elif "embeddinggemma" in model_lower:
+    # embeddinggemma: use "title: none | text:" prefix for documents
+    prefixed = [f"title: none | text: {t}" for t in texts]
+  else:
+    # Default: no prefix for unknown models
+    prefixed = texts
+
+  print(f"Embedding {len(prefixed)} texts with vLLM (batch_size={batch_size}, concurrency={concurrency})")
+
+  # Create batches
+  batches = []
+  for i in range(0, len(prefixed), batch_size):
+    batch = prefixed[i : i + batch_size]
+    batches.append((i, batch))
+
+  # Function to send a single batch request
+  def send_batch(batch_info: tuple[int, list[str]]) -> tuple[int, list[np.ndarray]]:
+    idx, batch = batch_info
     r = requests.post(vllm_url, json={"model": model_id, "input": batch}, timeout=300)
     r.raise_for_status()
     data = r.json()["data"]
-    out.extend([np.asarray(item["embedding"], dtype=np.float32) for item in data])
+    embeddings = [np.asarray(item["embedding"], dtype=np.float32) for item in data]
+    return (idx, embeddings)
+
+  # Send batches concurrently (or sequentially if only 1 batch)
+  results: dict[int, list[np.ndarray]] = {}
+  if len(batches) == 1:
+    # Single batch - no need for threading
+    idx, embeddings = send_batch(batches[0])
+    results[idx] = embeddings
+  else:
+    # Multiple batches - use concurrent requests
+    with ThreadPoolExecutor(max_workers=concurrency) as executor:
+      futures = {executor.submit(send_batch, batch_info): batch_info[0] for batch_info in batches}
+      completed = 0
+      for future in as_completed(futures):
+        idx, embeddings = future.result()
+        results[idx] = embeddings
+        completed += 1
+        if completed % max(1, len(batches) // 10) == 0 or completed == len(batches):
+          print(f"  Completed {completed}/{len(batches)} batches ({completed * 100 // len(batches)}%)")
+
+  # Reconstruct in order
+  out: list[np.ndarray] = []
+  for i in sorted(results.keys()):
+    out.extend(results[i])
+
   return np.stack(out, axis=0)
 
 
@@ -206,8 +261,22 @@ def embed_hf(texts: list[str], model_id: str, device: str) -> np.ndarray:
   from sentence_transformers import SentenceTransformer
 
   model = SentenceTransformer(model_id, device=device)
-  # E5 family benefits from prefixes; treat docs as passages
-  prefixed = [f"passage: {t}" for t in texts]
+
+  # Apply model-specific prefixes for documents (asymmetric search)
+  model_lower = model_id.lower()
+  if "e5" in model_lower:
+    # E5 models: use "passage:" prefix for documents
+    prefixed = [f"passage: {t}" for t in texts]
+  elif "qwen" in model_lower and "embedding" in model_lower:
+    # Qwen3-Embedding: documents use plain text (no prefix)
+    prefixed = texts
+  elif "embeddinggemma" in model_lower:
+    # embeddinggemma: use "title: none | text:" prefix for documents
+    prefixed = [f"title: none | text: {t}" for t in texts]
+  else:
+    # Default: no prefix for unknown models
+    prefixed = texts
+
   vecs = model.encode(
     prefixed,
     batch_size=64,
@@ -231,6 +300,18 @@ def main():
   ap.add_argument("--chunk-size", type=int, default=512, help="Max tokens per chunk")
   ap.add_argument("--chunk-overlap", type=int, default=128, help="Overlap tokens between chunks")
   ap.add_argument("--no-chunking", action="store_true", help="Disable chunking (embed full docs)")
+  ap.add_argument(
+    "--concurrency",
+    type=int,
+    default=int(os.environ.get("VLLM_CONCURRENCY", "8")),
+    help="Number of concurrent requests to vLLM (default: 8)",
+  )
+  ap.add_argument(
+    "--batch-size",
+    type=int,
+    default=int(os.environ.get("VLLM_BATCH_SIZE", "64")),
+    help="Batch size for vLLM requests (default: 64)",
+  )
   args = ap.parse_args()
 
   recs = list(load_jsonl(args.jsonl))
@@ -265,7 +346,13 @@ def main():
   texts = [c["text"] for c in chunks]
 
   if args.use_vllm:
-    vecs = embed_vllm(texts, args.model, args.vllm_url)
+    vecs = embed_vllm(
+      texts,
+      args.model,
+      args.vllm_url,
+      batch_size=args.batch_size,
+      concurrency=args.concurrency,
+    )
   else:
     device = "cuda" if os.environ.get("CUDA_VISIBLE_DEVICES") else "cpu"
     vecs = embed_hf(texts, args.model, device)

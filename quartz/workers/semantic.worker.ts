@@ -21,13 +21,6 @@ type LevelSection = {
   indices: { offset: number; elements: number; byteLength: number }
 }
 
-type Bm25Data = {
-  N: number
-  avgdl: number
-  docLen: number[]
-  postings: Record<string, [number, number][]>
-}
-
 type Manifest = {
   version: number
   dims: number
@@ -54,9 +47,6 @@ type Manifest = {
       levels: LevelSection[]
     }
   }
-  bm25?: {
-    path: string
-  }
 }
 
 type ConfigureMessage = {
@@ -65,7 +55,6 @@ type ConfigureMessage = {
   manifest: Manifest
   vectorBuffer: ArrayBufferLike
   graphBuffer: ArrayBufferLike
-  bm25?: Bm25Data
 }
 
 type SearchMessage = { type: "search"; text: string; k: number; seq: number }
@@ -81,7 +70,6 @@ type SearchResultMessage = {
   type: "search-result"
   seq: number
   semantic: SearchHit[]
-  bm25: SearchHit[]
 }
 
 type ErrorMessage = { type: "error"; seq?: number; message: string }
@@ -97,7 +85,6 @@ let entryPoint = -1
 let maxLevel = 0
 let efDefault = 128
 let levelGraph: { indptr: Uint32Array; indices: Uint32Array }[] = []
-let bm25Index: Bm25Data | null = null
 
 function configureRuntimeEnv() {
   if (envConfigured) return
@@ -159,14 +146,6 @@ function normalize(vec: Float32Array) {
   for (let i = 0; i < vec.length; i++) norm += vec[i] * vec[i]
   norm = Math.sqrt(norm) || 1
   for (let i = 0; i < vec.length; i++) vec[i] /= norm
-}
-
-function tokenize(text: string): string[] {
-  return text
-    .toLowerCase()
-    .split(/\s+/)
-    .map((token) => token.replace(/[^a-z0-9]/g, ""))
-    .filter((token) => token.length > 0)
 }
 
 function neighborsFor(level: number, node: number): Uint32Array {
@@ -261,36 +240,30 @@ function hnswSearch(query: Float32Array, k: number): SearchHit[] {
   return best.slice(0, k)
 }
 
-function bm25Search(text: string, k: number): SearchHit[] {
-  if (!bm25Index) return []
-  const terms = tokenize(text)
-  if (terms.length === 0) return []
-  const { N, avgdl, docLen, postings } = bm25Index
-  const scores = new Map<number, number>()
-  const k1 = 1.2
-  const b = 0.75
-  for (const term of terms) {
-    const posting = postings[term]
-    if (!posting) continue
-    const n = posting.length
-    if (n === 0) continue
-    const idf = Math.log(1 + (N - n + 0.5) / (n + 0.5))
-    for (let i = 0; i < posting.length; i++) {
-      const [docId, tf] = posting[i]
-      const length = docLen[docId] ?? avgdl
-      const denom = tf + k1 * (1 - b + b * (length / avgdl))
-      const contribution = idf * ((tf * (k1 + 1)) / denom)
-      scores.set(docId, (scores.get(docId) ?? 0) + contribution)
+async function embed(text: string, isQuery: boolean = false): Promise<Float32Array> {
+  await ensureEncoder()
+  // Apply model-specific prefixes for asymmetric search
+  let prefixedText = text
+  if (cfg?.model) {
+    const modelName = cfg.model.toLowerCase()
+    if (modelName.includes("e5")) {
+      // E5 models require query: or passage: prefix
+      prefixedText = isQuery ? `query: ${text}` : `passage: ${text}`
+    } else if (modelName.includes("qwen") && modelName.includes("embedding")) {
+      // Qwen3-Embedding requires task instruction for queries only
+      if (isQuery) {
+        const task = "Given a web search query, retrieve relevant passages that answer the query"
+        prefixedText = `Instruct: ${task}\nQuery: ${text}`
+      }
+      // Documents use plain text (no prefix)
+    } else if (modelName.includes("embeddinggemma")) {
+      // embeddinggemma requires specific prefixes
+      prefixedText = isQuery
+        ? `task: search result | query: ${text}`
+        : `title: none | text: ${text}`
     }
   }
-  const hits = Array.from(scores.entries()).map(([id, score]) => ({ id, score }))
-  hits.sort((a, b) => b.score - a.score)
-  return hits.slice(0, k)
-}
-
-async function embed(text: string): Promise<Float32Array> {
-  await ensureEncoder()
-  const out = await classifier(text, { pooling: "mean", normalize: true })
+  const out = await classifier(prefixedText, { pooling: "mean", normalize: true })
   const data = Array.from(out?.data ?? out) as number[]
   const vec = new Float32Array(dims)
   for (let i = 0; i < dims; i++) vec[i] = data[i] ?? 0
@@ -319,7 +292,6 @@ function configureState(message: ConfigureMessage) {
     )
     return { indptr, indices }
   })
-  bm25Index = message.bm25 ?? null
   classifier = null
   envConfigured = false
 }
@@ -335,7 +307,6 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
     levelGraph = []
     entryPoint = -1
     maxLevel = 0
-    bm25Index = null
     return
   }
   if (data.type === "configure") {
@@ -358,14 +329,12 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
         if (!manifest || !vectorsView) {
           throw new Error("semantic worker not configured")
         }
-        const queryVec = await embed(data.text)
+        const queryVec = await embed(data.text, true)
         const semanticHits = hnswSearch(queryVec, Math.max(1, data.k))
-        const bm25Hits = bm25Search(data.text, Math.max(1, data.k))
         const message: SearchResultMessage = {
           type: "search-result",
           seq: data.seq,
           semantic: semanticHits,
-          bm25: bm25Hits,
         }
         self.postMessage(message)
       } catch (err) {

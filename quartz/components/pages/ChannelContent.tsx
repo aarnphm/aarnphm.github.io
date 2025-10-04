@@ -466,10 +466,18 @@ export default (() => {
                           xmlns="http://www.w3.org/2000/svg"
                           style="display:block;opacity:0.5;margin:12px auto;"
                         >
-                          <rect x="1" y="1" width="62" height="38" rx="6" fill="none" stroke="currentColor"/>
-                          <rect x="8" y="10" width="48" height="4" rx="2" fill="currentColor"/>
-                          <rect x="8" y="18" width="36" height="4" rx="2" fill="currentColor"/>
-                          <rect x="8" y="26" width="28" height="4" rx="2" fill="currentColor"/>
+                          <rect
+                            x="1"
+                            y="1"
+                            width="62"
+                            height="38"
+                            rx="6"
+                            fill="none"
+                            stroke="currentColor"
+                          />
+                          <rect x="8" y="10" width="48" height="4" rx="2" fill="currentColor" />
+                          <rect x="8" y="18" width="36" height="4" rx="2" fill="currentColor" />
+                          <rect x="8" y="26" width="28" height="4" rx="2" fill="currentColor" />
                         </svg>
                       </div>
                     </div>

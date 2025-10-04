@@ -1,5 +1,5 @@
 import FlexSearch, { DefaultDocumentSearchResults, DocumentData, Id } from "flexsearch"
-import { SemanticClient } from "./semantic.inline"
+import { SemanticClient, type SemanticResult } from "./semantic.inline"
 import type { ContentDetails } from "../../plugins"
 import {
   registerEscapeHandler,
@@ -62,6 +62,7 @@ let semanticReady = false
 let semanticInitFailed = false
 type SimilarityResult = { item: Item; similarity: number }
 let chunkMetadata: Record<string, { parentSlug: string; chunkId: number }> = {}
+let manifestIds: string[] = []
 
 /**
  * Get parent document slug for a chunk ID
@@ -72,41 +73,53 @@ function getParentSlug(slug: string): string {
 }
 
 /**
- * Reciprocal Rank Fusion for aggregating chunk scores to document scores
- * @param chunkScores Array of [chunkId, score] tuples for a document
- * @param k RRF constant (60 is standard)
- */
-function reciprocalRankFusion(chunkScores: Array<[number, number]>, k: number = 60): number {
-  const sorted = chunkScores.sort((a, b) => b[1] - a[1])
-  return sorted.reduce((sum, [_, score], rank) => sum + 1.0 / (k + rank), 0)
-}
-
-/**
- * Aggregate semantic search results from chunks to documents
+ * Aggregate semantic search results from chunks to documents using RRF
+ * @param results Raw semantic results (chunk-level)
+ * @param slugToDocIndex Map from document slug to index in idDataMap
+ * @returns Object with rrfScores (for ranking) and maxScores (for display)
  */
 function aggregateChunkResults(
   results: SemanticResult[],
-  idDataMap: string[],
-): Map<string, { ids: number[]; scores: number[]; maxScore: number }> {
-  const docMap = new Map<string, { ids: number[]; scores: number[]; maxScore: number }>()
+  slugToDocIndex: Map<FullSlug, number>,
+): { rrfScores: Map<number, number>; maxScores: Map<number, number> } {
+  // Group chunks by parent document
+  const docChunks = new Map<string, Array<{ rank: number; score: number }>>()
 
-  for (const { id, score } of results) {
-    const slug = idDataMap[id]
-    if (!slug) continue
+  results.forEach(({ id, score }, rank) => {
+    // id is an index into manifestIds (the chunk IDs from embeddings)
+    const chunkSlug = manifestIds[id]
+    if (!chunkSlug) return
 
-    const parentSlug = getParentSlug(slug)
+    // Get parent document slug
+    const parentSlug = getParentSlug(chunkSlug)
 
-    if (!docMap.has(parentSlug)) {
-      docMap.set(parentSlug, { ids: [], scores: [], maxScore: -Infinity })
+    if (!docChunks.has(parentSlug)) {
+      docChunks.set(parentSlug, [])
     }
 
-    const entry = docMap.get(parentSlug)!
-    entry.ids.push(id)
-    entry.scores.push(score)
-    entry.maxScore = Math.max(entry.maxScore, score)
+    docChunks.get(parentSlug)!.push({ rank, score })
+  })
+
+  // Apply RRF for ranking and track max similarity for display
+  const rrfScores = new Map<number, number>()
+  const maxScores = new Map<number, number>()
+  const RRF_K = 60
+
+  for (const [parentSlug, chunks] of docChunks) {
+    const docIdx = slugToDocIndex.get(parentSlug as FullSlug)
+    if (typeof docIdx !== "number") continue
+
+    // RRF formula: sum(1 / (k + rank)) across all chunks
+    const rrfScore = chunks.reduce((sum, { rank }) => sum + 1.0 / (RRF_K + rank), 0)
+
+    // Max similarity score for display (original 0-1 range)
+    const maxScore = Math.max(...chunks.map((c) => c.score))
+
+    rrfScores.set(docIdx, rrfScore)
+    maxScores.set(docIdx, maxScore)
   }
 
-  return docMap
+  return { rrfScores, maxScores }
 }
 
 // Initialize the FlexSearch Document instance with the appropriate configuration
@@ -330,20 +343,22 @@ async function setupSearch(
       semantic = client
       semanticReady = true
 
-      // Load chunk metadata from manifest
+      // Load chunk metadata and IDs from manifest
       try {
-        const manifestUrl =
-          typeof semanticCfg?.manifestUrl === "string" && semanticCfg.manifestUrl.length > 0
-            ? semanticCfg.manifestUrl
-            : "/embeddings/manifest.json"
+        const manifestUrl = "/embeddings/manifest.json"
         const res = await fetch(manifestUrl)
         if (res.ok) {
           const manifest = await res.json()
           chunkMetadata = manifest.chunkMetadata || {}
+          manifestIds = manifest.ids || []
+          console.debug(
+            `[Search] Loaded manifest: ${manifestIds.length} chunks, ${Object.keys(chunkMetadata).length} chunked documents`,
+          )
         }
       } catch (err) {
         console.warn("[Search] failed to load chunk metadata:", err)
         chunkMetadata = {}
+        manifestIds = []
       }
     } catch (err) {
       console.warn("[SemanticClient] initialization failed:", err)
@@ -565,6 +580,11 @@ async function setupSearch(
     const aliases: string[] = data[slug].aliases
     const target = aliases.find((alias) => alias.toLowerCase().includes(term.toLowerCase())) ?? ""
 
+    // Check if query contains title words (for boosting exact matches)
+    const queryTokens = tokenizeTerm(term)
+    const titleTokens = tokenizeTerm(data[slug].title ?? "")
+    const titleMatch = titleTokens.some((t) => queryTokens.includes(t))
+
     return {
       id,
       slug,
@@ -576,6 +596,7 @@ async function setupSearch(
       content: highlight(term, data[slug].content ?? "", true),
       tags: highlightTags(term, data[slug].tags, renderType),
       aliases: aliases,
+      titleMatch, // Add title match flag for boosting
     }
   }
 
@@ -844,9 +865,7 @@ async function setupSearch(
     }
 
     let semanticIds: number[] = []
-    let bmIds: number[] = []
     const semanticSimilarity = new Map<number, number>()
-    const bmSimilarity = new Map<number, number>()
 
     const integrateIds = (ids: number[]) => {
       ids.forEach((docId) => {
@@ -858,9 +877,7 @@ async function setupSearch(
 
     const resolveSimilarity = (item: Item): number => {
       const semanticHit = semanticSimilarity.get(item.id)
-      if (semanticHit !== undefined) return semanticHit
-      const lexicalHit = bmSimilarity.get(item.id)
-      return lexicalHit ?? Number.NaN
+      return semanticHit ?? Number.NaN
     }
 
     const render = async () => {
@@ -868,24 +885,30 @@ async function setupSearch(
       const useSemantic = semanticReady && semanticIds.length > 0
       const weights =
         modeForRanking === "semantic" && useSemantic
-          ? { base: 0.3, semantic: 1, bm: 0.45 }
-          : { base: 1, semantic: useSemantic ? 0.15 : 0, bm: 0.9 }
+          ? { base: 0.3, semantic: 1.0 }
+          : { base: 1.0, semantic: useSemantic ? 0.3 : 0 }
       const rrf = new Map<string, number>()
-      const push = (ids: number[], weight: number) => {
+      const push = (ids: number[], weight: number, applyTitleBoost: boolean = false) => {
         if (!ids.length || weight <= 0) return
         ids.forEach((docId, rank) => {
           const slug = idDataMap[docId]
           if (!slug) return
           const item = ensureItem(docId)
           if (!item) return
+
+          // Apply title boost for FlexSearch results (1.5x boost for exact title matches)
+          let effectiveWeight = weight
+          if (applyTitleBoost && item.titleMatch) {
+            effectiveWeight *= 1.5
+          }
+
           const prev = rrf.get(slug) ?? 0
-          rrf.set(slug, prev + weight / (1 + rank))
+          rrf.set(slug, prev + effectiveWeight / (1 + rank))
         })
       }
 
-      push(baseIndices, weights.base)
-      push(semanticIds, weights.semantic)
-      push(bmIds, weights.bm)
+      push(baseIndices, weights.base, true) // FlexSearch with title boost
+      push(semanticIds, weights.semantic, false) // Semantic without boost
 
       const rankedEntries = Array.from(candidateItems.values())
         .map((item) => ({ item, score: rrf.get(item.slug) ?? 0 }))
@@ -913,49 +936,34 @@ async function setupSearch(
     }
 
     try {
-      const { semantic: semRes, bm25: bmRes } = await orchestrator.search(
+      const { semantic: semRes } = await orchestrator.search(
         highlightTerm,
-        numSearchResults,
+        numSearchResults * 3, // Request more chunks to ensure good document coverage
       )
       if (token !== searchSeq) {
         if (showProgress) completeSemanticProgress()
         return
       }
 
-      // Aggregate chunk results to document level
-      const semDocMap = aggregateChunkResults(semRes, idDataMap)
-      const bmDocMap = aggregateChunkResults(bmRes, idDataMap)
+      // Aggregate chunk results to document level using RRF
+      const { rrfScores: semRrfScores, maxScores: semMaxScores } = aggregateChunkResults(
+        semRes,
+        slugToIndex,
+      )
 
-      // Build document-level results with weighted average of chunk scores
-      semanticIds = []
+      // Use RRF scores for ranking
+      semanticIds = Array.from(semRrfScores.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, numSearchResults)
+        .map(([docIdx]) => docIdx)
+
+      // Use max chunk similarity for display (0-1 range)
       semanticSimilarity.clear()
-      for (const [parentSlug, { ids, scores, maxScore }] of semDocMap) {
-        const parentIdx = slugToIndex.get(parentSlug as FullSlug)
-        if (typeof parentIdx !== "number") continue
-
-        // Use weighted average: 70% max score + 30% average of all chunks
-        const avgScore = scores.reduce((sum, s) => sum + s, 0) / scores.length
-        const aggregatedScore = 0.7 * maxScore + 0.3 * avgScore
-
-        semanticIds.push(parentIdx)
-        semanticSimilarity.set(parentIdx, aggregatedScore)
-      }
-
-      bmIds = []
-      bmSimilarity.clear()
-      for (const [parentSlug, { ids, scores, maxScore }] of bmDocMap) {
-        const parentIdx = slugToIndex.get(parentSlug as FullSlug)
-        if (typeof parentIdx !== "number") continue
-
-        const avgScore = scores.reduce((sum, s) => sum + s, 0) / scores.length
-        const aggregatedScore = 0.7 * maxScore + 0.3 * avgScore
-
-        bmIds.push(parentIdx)
-        bmSimilarity.set(parentIdx, aggregatedScore)
-      }
+      semMaxScores.forEach((score, docIdx) => {
+        semanticSimilarity.set(docIdx, score)
+      })
 
       integrateIds(semanticIds)
-      integrateIds(bmIds)
       if (showProgress) completeSemanticProgress()
     } catch (err) {
       console.warn("[SemanticClient] search failed:", err)

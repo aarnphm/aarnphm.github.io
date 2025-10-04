@@ -7,12 +7,12 @@ tags:
   - technical
   - fruit
 description: choosing to give your full, continuously.
+date: "2025-10-04"
 socials:
   essay: https://aarnphm.xyz/posts/love
-date: "2025-10-04"
-modified: 2025-10-04 02:30:10 GMT-04:00
+modified: 2025-10-04 04:33:01 GMT-04:00
 noindex: true
-title: love
+title: dilectio
 ---
 
 Love is not a feeling that happens to you. It's a discipline, a practice, a continuous choice to attend to someone despite no guarantees. You choose to stay in the hermeneutic circle, to keep interpreting generously, to refuse instrumental understanding. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]

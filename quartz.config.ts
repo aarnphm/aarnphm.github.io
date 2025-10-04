@@ -4,7 +4,7 @@ import * as Plugin from "./quartz/plugins"
 import * as Component from "./quartz/components"
 import { QuartzPluginData } from "./quartz/plugins/vfile"
 
-const model = "onnx-community/Qwen3-Embedding-0.6B-ONNX" // intfloat/multilingual-e5-large
+const model = "onnx-community/embeddinggemma-300m-ONNX" // onnx-community/Qwen3-Embedding-0.6B-ONNX, intfloat/multilingual-e5-large
 
 const configuration: GlobalConfiguration = {
   pageTitle: "Aaron's notes",

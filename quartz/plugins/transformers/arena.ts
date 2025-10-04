@@ -20,12 +20,7 @@ import { wikiTextTransform, wikilinkRegex, externalLinkRegex } from "./ofm"
 import { createHash } from "crypto"
 import { fromMarkdown } from "mdast-util-from-markdown"
 import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
-import {
-  splitAnchor,
-  transformLink,
-  stripSlashes,
-  simplifySlug,
-} from "../../util/path"
+import { splitAnchor, transformLink, stripSlashes, simplifySlug } from "../../util/path"
 import { findAndReplace as mdastFindReplace, ReplaceFunction } from "mdast-util-find-and-replace"
 
 export interface ArenaBlock {
@@ -652,7 +647,10 @@ export const Arena: QuartzTransformerPlugin = () => {
                     })
                     e.properties.href = dest
 
-                    const url = new URL(dest, "https://base.com/" + stripSlashes(fileData.slug!, true))
+                    const url = new URL(
+                      dest,
+                      "https://base.com/" + stripSlashes(fileData.slug!, true),
+                    )
                     let canonical = url.pathname
                     let [destCanonical] = splitAnchor(canonical)
                     if (destCanonical.endsWith("/")) destCanonical += "index"
@@ -732,10 +730,10 @@ export const Arena: QuartzTransformerPlugin = () => {
               const blockOwner = node.properties["data-arena-block-id"]
               if (typeof blockOwner === "string") {
                 const ownerBlock = blocksById.get(blockOwner)
-              if (ownerBlock && node.tagName === "li") {
-                // Snapshot inline html for blocks that don't have a paragraph
-                ownerBlock.htmlNode = aggregateListItem(node)
-              }
+                if (ownerBlock && node.tagName === "li") {
+                  // Snapshot inline html for blocks that don't have a paragraph
+                  ownerBlock.htmlNode = aggregateListItem(node)
+                }
                 delete node.properties["data-arena-block-id"]
               }
 
@@ -766,16 +764,14 @@ export const Arena: QuartzTransformerPlugin = () => {
                 if (inlineTitleClone.tagName === "p") inlineTitleClone.tagName = "span"
               }
 
-              block.titleHtmlNode = (applyLinkProcessing(
-                inlineTitleClone as ElementContent,
-              ) ?? (inlineTitleClone as ElementContent)) as ElementContent
+              block.titleHtmlNode = (applyLinkProcessing(inlineTitleClone as ElementContent) ??
+                (inlineTitleClone as ElementContent)) as ElementContent
               if (aggregated) {
                 block.htmlNode = aggregated as ElementContent
               } else {
                 // fallback to paragraph clone if aggregation failed
-                block.htmlNode = (applyLinkProcessing(
-                  inlineTitleClone as ElementContent,
-                ) ?? (inlineTitleClone as ElementContent)) as ElementContent
+                block.htmlNode = (applyLinkProcessing(inlineTitleClone as ElementContent) ??
+                  (inlineTitleClone as ElementContent)) as ElementContent
               }
 
               delete node.properties["data-arena-block-paragraph"]

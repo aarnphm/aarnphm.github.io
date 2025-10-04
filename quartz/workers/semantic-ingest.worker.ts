@@ -15,13 +15,6 @@ type LevelSection = {
   indices: { offset: number; elements: number; byteLength: number }
 }
 
-type Bm25Data = {
-  N: number
-  avgdl: number
-  docLen: number[]
-  postings: Record<string, [number, number][]>
-}
-
 type ChunkMetadata = {
   parentSlug: string
   chunkId: number
@@ -54,9 +47,6 @@ type Manifest = {
       levels: LevelSection[]
     }
   }
-  bm25?: {
-    path: string
-  }
 }
 
 type InitMessage = {
@@ -77,7 +67,6 @@ type ReadyMessage = {
   manifest: Manifest
   vectorBuffer: TransferableBuffer
   graphBuffer: TransferableBuffer
-  bm25?: Bm25Data
 }
 
 type ProgressMessage = {
@@ -253,19 +242,6 @@ async function populateGraph(
   return cloneToTransferable(payload)
 }
 
-async function loadBm25(
-  manifest: Manifest,
-  baseUrl: string | undefined,
-): Promise<Bm25Data | undefined> {
-  if (!manifest.bm25?.path) return undefined
-  const url = toAbsolute(manifest.bm25.path, baseUrl)
-  const res = await fetch(url, { signal: abortController?.signal ?? undefined })
-  if (!res.ok) {
-    throw new Error(`failed to fetch BM25 index ${url}: ${res.status} ${res.statusText}`)
-  }
-  return (await res.json()) as Bm25Data
-}
-
 async function handleInit(msg: InitMessage) {
   abortController?.abort()
   abortController = new AbortController()
@@ -279,13 +255,11 @@ async function handleInit(msg: InitMessage) {
   const manifest = (await response.json()) as Manifest
   const { buffer: vectorBuffer } = await populateVectors(manifest, msg.baseUrl, msg.disableCache)
   const graphBuffer = await populateGraph(manifest, msg.baseUrl, msg.disableCache)
-  const bm25 = await loadBm25(manifest, msg.baseUrl)
   const ready: ReadyMessage = {
     type: "ready",
     manifest,
     vectorBuffer,
     graphBuffer,
-    bm25,
   }
   const transfers: ArrayBuffer[] = []
   if (vectorBuffer instanceof ArrayBuffer) transfers.push(vectorBuffer)

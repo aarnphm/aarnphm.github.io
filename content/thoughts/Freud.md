@@ -2,9 +2,9 @@
 id: Freud
 tags:
   - philosophy
-date: "2023-10-10"
 description: Austrian neurologist and founder of psychoanalysis
-modified: 2025-01-29 08:14:18 GMT-05:00
+date: "2023-10-10"
+modified: 2025-10-04 04:01:16 GMT-04:00
 title: Sigmund Freud
 ---
 
