@@ -6,7 +6,7 @@ tags:
   - engineer4a03
   - fruit
 date: "2024-10-02"
-modified: 2025-08-14 00:26:01 GMT-04:00
+modified: 2025-10-04 17:41:24 GMT-04:00
 aliases:
   - chat
 title: On ChatGPT and its pedagogical consequences
@@ -27,7 +27,7 @@ Subsequently, the development of [[thoughts/Machine learning|AI]] had taken a sy
 
 While GOFAI showed promise through decision-tree [[thoughts/reason|reasoning]], its limitations became apparent in the 1980s when the field entered "AI Winter." This was likely due to the cynicism within the AI researchers' community and a reduction in funding, which halted most research and development [@handler2008avoidanotheraiwinter].
 
-However, given the rise of Moore's Law and the exponential amount of computing and data available, a new approach to [[thoughts/AGI|AI]] arose, focusing on statistical methods and connectionist networks such as artificial neural networks. [@10.7551/mitpress/4626.001.0001] dubbed this approach as New Fangled AI (NFAI). Fast forward to the $21^{\text{st}}$ century, ML has entered the mainstream through the rise of generative AI (GenAI).
+However, given the rise of Moore's Law and the exponential amount of computing and data available, a new approach to [[thoughts/AGI|AI]] arose, focusing on statistical methods and [[thoughts/Connectionist network|connectionist networks]] such as artificial neural networks. [@10.7551/mitpress/4626.001.0001] dubbed this approach as New Fangled AI (NFAI). Fast forward to the $21^{\text{st}}$ century, ML has entered the mainstream through the rise of generative AI (GenAI).
 
 This paper posits that GenAI currently occupies the "peak of inflated expectations", approaching the "trough of disillusionment" on Gartner's hype cycle. It will also examine the implications of machine-assisted interfaces beyond conversational UI and their pedagogical consequences for student learning and assessment.
 

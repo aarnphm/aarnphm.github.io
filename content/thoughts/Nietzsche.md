@@ -3,10 +3,13 @@ id: Nietzsche
 tags:
   - philosophy
   - philos1aa3
+description: the man that was most mistakenly understood
 date: "2023-11-30"
-modified: 2025-06-12 15:28:01 GMT-04:00
+modified: 2025-10-04 16:46:02 GMT-04:00
 title: Nietzsche's Life
 ---
+
+see also [[thoughts/Philosophy and Nietzsche|Deleuze intepretation of Nietzche]]
 
 _1844-1900_
 

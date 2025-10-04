@@ -1,10 +1,10 @@
 ---
 id: Attribution parameter decomposition
 tags:
-  - interp
-date: "2025-01-29"
+  - interpretability
 description: and mechanisms of components.
-modified: 2025-01-29 06:05:59 GMT-05:00
+date: "2025-01-29"
+modified: 2025-10-04 17:51:17 GMT-04:00
 title: Attribution parameter decomposition
 ---
 

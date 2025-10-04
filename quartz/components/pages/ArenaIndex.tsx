@@ -20,10 +20,12 @@ export default (() => {
     const currentSlug = (fileData.slug ?? arenaBase) as FullSlug
     const limits = 5
 
+    const sortedChannels = [...arenaData.channels].sort((a, b) => b.blocks.length - a.blocks.length)
+
     return (
       <article class="arena-index main-col popover-hint">
         <div class="arena-channels-list">
-          {arenaData.channels.map((channel) => {
+          {sortedChannels.map((channel) => {
             const channelPath = joinSegments(arenaBase, channel.slug) as FullSlug
             return (
               <div class="arena-channel-row" key={channel.slug} data-slug={channelPath}>

@@ -1,13 +1,13 @@
 ---
 id: induction heads
 tags:
-  - interp
+  - interpretability
   - ml
 description: and mathematical framework of transformers
 transclude:
   title: false
 date: "2025-01-18"
-modified: 2025-08-20 15:46:30 GMT-04:00
+modified: 2025-10-04 17:51:31 GMT-04:00
 title: induction heads
 ---
 

@@ -10,10 +10,10 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
+date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-10-04 03:32:55 GMT-04:00
+modified: 2025-10-04 16:50:19 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -533,6 +533,11 @@ cssclasses:
 - https://wesleyac.com/ -- wesley.
   - \_meta:
     - date: 10/02/2025
+- https://www.tomeveritt.se -- Tom Everitt
+  - \_meta:
+    - date: 10/04/2025
+  - Staff Research Scientist, DeepMind
+  - [@everitt2025evaluatinggoaldirectednesslargelanguage]
 
 [^sol-lewitts-letter]:
     > Dear Eva,
@@ -944,6 +949,15 @@ cssclasses:
 - https://www.betonit.ai/p/i-want-to-hold-your-hand -- I want to hold your hand
   - \_meta:
     - date: 10/04/2025
+- https://benjaminfspector.com/writing/tgg -- The Generation Game
+  - \_meta:
+    - date: 10/04/2025
+- https://roonscape.ai/p/agi-futures -- AGI futures
+  - \_meta:
+    - date: 10/04/2025
+  - > Neuralink Third Impact
+  - > Simulation Theory
+  - > If God were to visit this world, he would destroy it. An unbounded resource gatherer was summoned; a demon of the Platonic ether forged through incredible optimization pressures that created instrumental convergence to power-seeking behavior. One by one, the stars are blinking out in the heavens as their energy is harnessed to further the Fiend’s profane purpose.
 
 ## [[thoughts/Machine learning]]
 

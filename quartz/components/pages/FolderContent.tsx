@@ -31,6 +31,9 @@ interface FolderContentOptions {
    * If not provided, no extensions are excluded
    */
   exclude?: (string | RegExp)[]
+  lg: string[]
+  sm: string[]
+  tags: string[]
 }
 
 function extensionFilterFn(opts: FolderContentOptions): (filePath: string) => boolean {
@@ -56,6 +59,9 @@ function extensionFilterFn(opts: FolderContentOptions): (filePath: string) => bo
 const defaultOptions: FolderContentOptions = {
   include: undefined,
   exclude: undefined,
+  lg: [],
+  sm: [],
+  tags: [],
 }
 
 export default ((opts?: Partial<FolderContentOptions>) => {
@@ -70,26 +76,10 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
   const shouldIncludeFile = extensionFilterFn(options)
 
-  const tags = ["ml", "interp", "philosophy", "serving", "love", "fiction", "math", "evergreen"]
   // NOTE: we will always add the generated tags "folder" for better distinction
+  const { lg, sm, tags } = options
   const PageList = PageListConstructor({ highlightTags: [...tags, "folder"] })
-  const Evergreen = EvergreenConstructor({
-    lg: ["thoughts/mechanistic-interpretability", "thoughts/vllm"],
-    sm: [
-      "are.na",
-      "thoughts/constrained-decoding",
-      "thoughts/LLMs",
-      "thoughts/Transformers",
-      "thoughts/Camus",
-      "thoughts/atelier-with-friends",
-      "thoughts/Attention",
-      "thoughts/Philosophy-and-Nietzsche",
-      "thoughts/ethics",
-      "thoughts/Existentialism",
-      "thoughts/Scents",
-    ],
-    tags,
-  })
+  const Evergreen = EvergreenConstructor({ lg, sm, tags })
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props

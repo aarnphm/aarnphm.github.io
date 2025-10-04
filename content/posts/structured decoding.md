@@ -3,16 +3,16 @@ id: structured decoding
 tags:
   - technical
   - serving
-date: 2024-12-10
 description: and vLLM integration with XGrammar
-modified: 2025-02-12 09:44:04 GMT-05:00
-pageLayout: technical
+date: "2024-12-10"
 socials:
-  bentoml blog: https://bentoml.com/blog/structured-decoding-in-vllm-a-gentle-introduction
-  hackernews: https://news.ycombinator.com/item?id=42711051
-  official blog: https://blog.vllm.ai/2025/01/14/struct-decode-intro.html
   twitter: https://x.com/vllm_project/status/1879979185474859303
+  official blog: https://blog.vllm.ai/2025/01/14/struct-decode-intro.html
+  hackernews: https://news.ycombinator.com/item?id=42711051
+  bentoml blog: https://bentoml.com/blog/structured-decoding-in-vllm-a-gentle-introduction
+modified: 2025-10-04 17:41:39 GMT-04:00
 title: structured decoding, a guide for the impatient
+pageLayout: technical
 ---
 
 [[thoughts/structured outputs|tldr]]:
@@ -84,7 +84,7 @@ Concurrently, Donald Norman's Parallel Distributed Processing [@10.7551/mitpress
     One of the many reasons why attention-based transformers works better than LSTM is because transformers are very scalable and hardware-aware (you can’t just arbitrary add more LSTM block and hope for better long-term retention). For more information, please refer back to the original paper.
 
 In retrospect, GOFAI are [[thoughts/Determinism|deterministic]] in a sense that intentionality is injected within symbolic tokens through explicit programming.
-Connectionist networks, on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
+[[thoughts/Connectionist network]], on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
 Unlike GOFAI, its internal representation is determined by the state of the entire network states rather than one singular unit. Although these models exhibit [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]], one should be aware that this is not [[thoughts/AGI|artificial general intelligence]] _yet_, largely due to researchers' [[thoughts/observer-expectancy effect]].
 
 In **summary**:

@@ -4,6 +4,7 @@ tags:
   - sapling
   - ml
   - llm
+  - philosophy
 description: a mathematical framework for intelligence
 date: "2024-02-07"
 abstract: large language models will probably be the most important piece of technology in the 21st century

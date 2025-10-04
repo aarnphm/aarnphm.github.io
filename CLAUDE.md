@@ -1,12 +1,10 @@
 # CLAUDE.md
 
-This repository powers a Quartz-based digital garden with custom plugins, a Cloudflare Worker. Follow these guidelines to keep changes consistent and easy to review.
-Under `content`, there are additional tools/implementation both in Rust, Python, C, C++. Make sure to use the best practices for best performance.
-Also don't have to bold text, keep it causal.
+This repository powers a Quartz-based digital garden with custom plugins, a Cloudflare Worker. Follow these guidelines to keep changes consistent and easy to review. There are additional tools/implementation both in Rust, Python, C, C++ under @content/. Make sure to use the best practices for best performance system-level wise.
 
 ## Development Commands
 
-**IMPORTANT**: Most of the cases if you need to verify build, make sure to see if `pnpm dev` is being run. In this cases, then `pnpm bundle` or any build step are not necessary.
+**IMPORTANT**: Most of the cases if you need to verify build, make sure to see if `pnpm dev` is being run. In this cases, then `pnpm bundle` or any build step are not necessary. If you want to run any command, make sure to `cd` to the git directory first.
 
 **Build and Development:**
 
@@ -32,13 +30,11 @@ Also don't have to bold text, keep it causal.
 
 ## Architecture Overview
 
-This is a heavily modified Quartz-based digital garden with custom plugins and Cloudflare Worker integration.
-
 **Core Structure:**
 
-- `quartz/` - TypeScript source for CLI, plugins, and components
-- `content/` - Markdown notes, academic papers, and assets (builds into static site)
-- `worker/` - Cloudflare Worker TypeScript code
+- `quartz/` - TypeScript source for CLI, plugins, and components, built on top of remark/rehype/unist, mdast,hast ecosystem and best practices
+- `content/` - Markdown notes, academic papers, assets, library implementations, tool monorepo.
+- `worker/` - Cloudflare Worker TypeScript
 - `public/` - Build output directory
 
 **Key Technologies:**
@@ -47,7 +43,7 @@ This is a heavily modified Quartz-based digital garden with custom plugins and C
 - **Runtime:** Node.js >= 22, pnpm 9 package manager
 - **Deployment:** Cloudflare Pages + Worker
 - **Content:** Markdown with Obsidian-flavored syntax, LaTeX math, citations
-- **Additional Languages:** Python 3.11, Rust nightly, Go 1.23, C++21, CUDA 12.8+
+- **Additional Languages:** Python 3.11, Rust nightly, Go 1.23, C++21, CUDA 12.8+, CUTLASS 4.0, CuTeDSL Python.
 
 **Plugin System:**
 The site uses custom Quartz plugins (quartz/plugins/):

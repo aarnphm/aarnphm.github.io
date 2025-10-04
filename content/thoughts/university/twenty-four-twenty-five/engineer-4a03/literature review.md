@@ -2,11 +2,11 @@
 id: literature review
 tags:
   - engineer4a03
-date: "2024-10-07"
 description: How we understand machine learning system is how we can move towards a safe futures, yet the road ahead lies many troubles to overcome. A literature review into the inception of the field, as well as where do we go from here.
-modified: 2025-01-19 05:10:26 GMT-05:00
-noindex: true
+date: "2024-10-07"
 sidenotes: false
+modified: 2025-10-04 17:42:08 GMT-04:00
+noindex: true
 title: machine learning, from the inception of time, a literature review
 ---
 
@@ -57,7 +57,7 @@ proposed intermediate processors within the network (often known as "hidden laye
 These systems, built on top of statistical methods[^5] and connectionist networks are often referred to by Haugeland as New-Fangled AI (NFAI) [@10.7551/mitpress/4626.001.0001].
 
 In retrospect, GOFAI are [[thoughts/Determinism|deterministic]] in a sense that intentionality is injected within symbolic tokens through explicit programming.
-Connectionist networks, on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
+[[thoughts/Connectionist network]], on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
 Unlike GOFAI, its internal representation is determined by the state of the entire network rather than any single unit.
 Given the rise of Moore's Law and the exponential amount of computing and data available, we are currently witnessing the dominance of connectionist networks, especially with the injection of LLMs into the mainstream [@kaplan2020scalinglawsneurallanguage],
 where the majority of research are focused on developing artificial neural networks that optimizes around loss functions [@vaswani2023attentionneed; @srivastava_dropout_2014]. One notable example that combines both GOFAI and NFAI

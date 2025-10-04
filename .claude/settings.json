@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__sequential-thinking__sequentialthinking",
+      "mcp__arxiv__search_papers",
+      "mcp__arxiv__read_paper"
+    ]
+  },
+  "enableAllProjectMcpServers": true
+}
