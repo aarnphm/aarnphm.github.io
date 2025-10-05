@@ -1,21 +1,21 @@
 ---
 id: are.na
-permalinks:
-  - /website
-  - /tweets
-  - /resources
-  - /inspo
+aliases:
+  - inspo
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
+date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-10-05 14:37:36 GMT-04:00
-aliases:
-  - inspo
+modified: 2025-10-05 16:03:11 GMT-04:00
+permalinks:
+  - /website
+  - /tweets
+  - /resources
+  - /inspo
 title: are.na
 cssclasses:
   - nolist
@@ -639,6 +639,10 @@ cssclasses:
 
 ## essay
 
+- https://www.benkuhn.net/pjm/ -- How I've run major projects
+  - \_meta:
+    - date: 10/05/2025
+  - > Even more importantly than freeing up time, clearing my schedule made sure the project was the top idea in my mind. If I don’t do that, it’s easy for me to let projects “go on autopilot,” where I keep them running but don’t proactively make time to think through things like whether we should change goals, add or drop priorities, or do other “non-obvious” things.
 - https://newsletter.squishy.computer/p/all-you-need-is-links -- All you need is links [**]
   - \_meta:
     - date: 10/05/2025
@@ -712,12 +716,6 @@ cssclasses:
 - https://www.autodidacts.io/troubleshooting/ -- On Troubleshooting
   - \_meta:
     - date: 03/09/2025
-- https://www.stevestewartwilliams.com/p/the-problem-of-free-will-solved -- The Problem of Free Will
-  - \_meta:
-    - date: 04/09/2025
-- https://www.overcomingbias.com/p/alien-life-info-but-not-status-found -- Alien Life Info, But not Status, Found
-  - \_meta:
-    - date: 04/09/2025
 - https://stirthepots.substack.com/p/things-i-notice-when-im-not-rushing -- things i notice when i'm not rushing
   - \_meta:
     - date: 04/09/2025
@@ -727,9 +725,6 @@ cssclasses:
     - date: 04/09/2025
   - > If you became too good at spotting the wolves beneath the wool, too fluent in the language of red flags, too unwilling to be dazzled by the cheap magic tricks of love bombers and smooth-tongued frauds.
 - https://read.mindmine.xyz/p/stop-hiding -- Stop hiding from your power.
-  - \_meta:
-    - date: 04/09/2025
-- https://www.stevestewartwilliams.com/cp/159468280 -- Human Equivalents of the Peacock's Tail
   - \_meta:
     - date: 04/09/2025
 - https://archive.ph/YNZI0 -- Elon wants what he can't have: Wikipedia
@@ -927,9 +922,6 @@ cssclasses:
 - https://unchartedterritories.tomaspueyo.com/p/mountains -- Why Warm Countries Are Poorer [**]
   - \_meta:
     - date: 10/02/2025
-- https://simulation-argument.com/simulation/ -- Are we living in a simulation?
-  - \_meta:
-    - date: 09/29/2025
 - https://lananhngvu.substack.com/p/how-to-become-gently-interesting -- how to become gently interesting
   - \_meta:
     - date: 10/03/2025
@@ -938,9 +930,6 @@ cssclasses:
   - > When your attention stretches beyond the usual, you start seeing patterns, questions, and connections that others miss. Your perspective deepens. And with that depth comes a quiet magnetism, because interestingness isn’t a performance, it’s the result of a mind that’s been gently reshaped by new experiences and curiosity.
   - > ==Let yourself be bored==
 - https://sundogg.substack.com/p/have-you-put-down-your-bags -- Have you put down the bags?
-  - \_meta:
-    - date: 09/30/2025
-- https://aeon.co/essays/does-language-mirror-the-mind-an-intellectual-history -- Our languages, our world
   - \_meta:
     - date: 09/30/2025
 - https://theshadowedarchive.substack.com/p/an-existential-guide-to-making-friends -- An Existential Guide to: Making Friends [**]
@@ -965,9 +954,6 @@ cssclasses:
   - \_meta:
     - date: 10/03/2025
 - https://map.simonsarris.com/p/breadcrumbs -- Breadcrumbs
-  - \_meta:
-    - date: 10/03/2025
-- https://thedosagemakesitso.substack.com/p/worship-adoration-valence -- Worship. Adoration. Valence
   - \_meta:
     - date: 10/03/2025
 - https://www.alignmentforum.org/posts/ShgAxjgN55gmq47ou/trustworthy-and-untrustworthy-models-1 -- Trustworthy and untrustworthy models [**]
@@ -1669,10 +1655,25 @@ cssclasses:
 - https://turntrout.com/self-fulfilling-misalignment -- Self-Fulfilling Misalignment Data Might Be Poisoning Our AI Models
   - \_meta:
     - date: 04/09/2025
+- https://www.stevestewartwilliams.com/p/the-problem-of-free-will-solved -- The Problem of Free Will
+  - \_meta:
+    - date: 04/09/2025
+- https://www.stevestewartwilliams.com/cp/159468280 -- Human Equivalents of the Peacock's Tail
+  - \_meta:
+    - date: 04/09/2025
+- https://www.overcomingbias.com/p/alien-life-info-but-not-status-found -- Alien Life Info, But not Status, Found
+  - \_meta:
+    - date: 04/09/2025
 - https://www.youtube.com/watch?v=KIu4y1stILY&ab_channel=essentialsalts -- Politices as Neuro-Physiology, a conversation with Uberboyo
   - \_meta:
     - date: 07/04/2025
   - In what way the connection between philosophy, ideas and cultural does [[thoughts/Philosophy and Nietzsche|Nietzsche]] nihilism?
+- https://simulation-argument.com/simulation/ -- Are we living in a simulation?
+  - \_meta:
+    - date: 09/29/2025
+- https://aeon.co/essays/does-language-mirror-the-mind-an-intellectual-history -- Our languages, our world
+  - \_meta:
+    - date: 09/30/2025
 - https://www.youtube.com/watch?v=E2x2WTWjcEA -- this word is the (True) purpose of human life
   - \_meta:
     - date: 10/03/2025
@@ -1684,6 +1685,9 @@ cssclasses:
   - Commit someone who will inevitability fails us.
   - > unfolding of love sustains the form of life itself
   - [[thoughts/Camus]]: "The misery and greatness of this world: it offers no truths, but only objects for love. Absurdity is king, but love saves us from it." ^camus
+- https://thedosagemakesitso.substack.com/p/worship-adoration-valence -- Worship. Adoration. Valence
+  - \_meta:
+    - date: 10/03/2025
 
 ## stream
 

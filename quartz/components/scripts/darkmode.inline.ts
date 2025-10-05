@@ -50,14 +50,21 @@ const emitThemeChangeEvent = (theme: Theme) => {
   document.dispatchEvent(event)
 }
 
-let activePreference: ThemePreference = (() => {
+const readStoredPreference = (): ThemePreference => {
   const storedPreference = localStorage.getItem(PREFERENCE_STORAGE_KEY)
   if (isPreference(storedPreference)) {
     return storedPreference
   }
 
+  const legacyTheme = localStorage.getItem(LEGACY_STORAGE_KEY)
+  if (isTheme(legacyTheme)) {
+    return legacyTheme
+  }
+
   return "system"
-})()
+}
+
+let activePreference: ThemePreference = readStoredPreference()
 
 let toggleElement: HTMLElement | null = null
 

@@ -42,6 +42,9 @@ export interface ArenaBlock {
   htmlNode?: ElementContent
   embedHtml?: string
   metadata?: Record<string, string>
+  internalSlug?: string
+  internalHref?: string
+  internalHash?: string
 }
 
 export interface ArenaChannel {
@@ -432,6 +435,69 @@ export const Arena: QuartzTransformerPlugin = () => {
               return cloned
             }
 
+            type InternalLinkInfo = {
+              slug: string
+              href: string
+              hash?: string
+            }
+
+            const classListFromProps = (props?: Element["properties"]): string[] => {
+              if (!props) return []
+              const classProp = props.className
+              if (Array.isArray(classProp)) {
+                return classProp.map((cls) => cls.toString())
+              }
+              if (typeof classProp === "string") {
+                return classProp.split(/\s+/).filter((cls) => cls.length > 0)
+              }
+              return []
+            }
+
+            const findInternalLink = (node?: ElementContent): InternalLinkInfo | undefined => {
+              if (!node) return undefined
+
+              if (node.type === "element") {
+                const elementNode = node as Element
+                const classList = classListFromProps(elementNode.properties)
+
+                if (elementNode.tagName === "a" && classList.includes("internal")) {
+                  const slug = elementNode.properties?.["data-slug"]
+                  if (typeof slug === "string" && slug.length > 0) {
+                    const rawHref = elementNode.properties?.href
+                    const hrefString = typeof rawHref === "string" ? rawHref : undefined
+                    const [, anchor] = hrefString ? splitAnchor(hrefString) : ["", ""]
+                    const canonicalSlug = stripSlashes(slug, true)
+                    const canonicalHref = `/${canonicalSlug}${anchor ?? ""}`
+                    return {
+                      slug,
+                      href: canonicalHref,
+                      hash: anchor && anchor.length > 0 ? anchor : undefined,
+                    }
+                  }
+                }
+
+                if (elementNode.children) {
+                  for (const child of elementNode.children as ElementContent[]) {
+                    const found = findInternalLink(child)
+                    if (found) {
+                      return found
+                    }
+                  }
+                }
+              }
+
+              if ("children" in node && node.children) {
+                for (const child of node.children as ElementContent[]) {
+                  const found = findInternalLink(child)
+                  if (found) {
+                    return found
+                  }
+                }
+              }
+
+              return undefined
+            }
+
             const aggregateListItem = (li: Element): ElementContent => {
               const collected: ElementContent[] = []
               for (const child of (li.children ?? []) as ElementContent[]) {
@@ -536,6 +602,14 @@ export const Arena: QuartzTransformerPlugin = () => {
                 }
 
                 block.htmlNode = aggregateListItem(el)
+
+                const internalLinkInfo =
+                  findInternalLink(block.titleHtmlNode) ?? findInternalLink(block.htmlNode)
+                if (internalLinkInfo) {
+                  block.internalSlug = internalLinkInfo.slug
+                  block.internalHref = internalLinkInfo.href
+                  block.internalHash = internalLinkInfo.hash
+                }
 
                 const sublist = el.children?.find((childNode) => {
                   if (typeof childNode !== "object" || childNode === null) return false

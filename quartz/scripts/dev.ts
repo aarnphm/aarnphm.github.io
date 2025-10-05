@@ -23,6 +23,13 @@ let lifecycleRegistered = false
 let pnpmDev: ManagedChild | null = null
 let wrangler: ManagedChild | null = null
 let rawInputEnabled = false
+const DEFAULT_DEV_PORT = 8080
+const WS_PORT_OFFSET = 1
+const WRANGLER_PORT_OFFSET = 2
+const MAX_BASE_PORT = 65535 - WRANGLER_PORT_OFFSET
+
+const runtimeConfig = resolveRuntimeConfig(process.argv.slice(2))
+process.env.PUBLIC_BASE_URL = runtimeConfig.publicBaseUrl
 
 void main()
 
@@ -35,8 +42,136 @@ function resolveGitRoot(): string {
   return path.resolve(current, "..", "..")
 }
 
+interface RuntimeConfig {
+  port: number
+  wsPort: number
+  wranglerPort: number
+  pnpmDevArgs: string[]
+  wranglerArgs: string[]
+  publicBaseUrl: string
+}
+
+interface CliOptions {
+  port: number | null
+  help: boolean
+}
+
+function assertBasePort(candidate: number): void {
+  if (!Number.isInteger(candidate)) {
+    failStartup(`port must be an integer between 1 and ${MAX_BASE_PORT}, got ${candidate}`)
+  }
+  if (candidate < 1 || candidate > MAX_BASE_PORT) {
+    failStartup(`port must be between 1 and ${MAX_BASE_PORT}, got ${candidate}`)
+  }
+}
+
+function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
+  const { port, help } = parseCliOptions(argv)
+  if (help) {
+    printHelp()
+    process.exit(0)
+  }
+  const envBaseUrl = process.env.PUBLIC_BASE_URL
+  const envPort = parsePortFromBase(envBaseUrl)
+  const effectivePort = port ?? envPort ?? DEFAULT_DEV_PORT
+  assertBasePort(effectivePort)
+  const wsPort = effectivePort + WS_PORT_OFFSET
+  const wranglerPort = effectivePort + WRANGLER_PORT_OFFSET
+  const publicBaseUrl =
+    port !== null
+      ? `http://localhost:${effectivePort}`
+      : (envBaseUrl ?? `http://localhost:${effectivePort}`)
+  const pnpmDevArgs = ["dev", "--", "--port", String(effectivePort), "--wsPort", String(wsPort)]
+  const wranglerArgs = ["dlx", "wrangler", "dev", "--port", String(wranglerPort)]
+  return { port: effectivePort, wsPort, wranglerPort, pnpmDevArgs, wranglerArgs, publicBaseUrl }
+}
+
+function parseCliOptions(argv: string[]): CliOptions {
+  let port: number | null = null
+  let help = false
+  for (let index = 0; index < argv.length; index += 1) {
+    const token = argv[index]
+    if (token === "--") {
+      break
+    }
+    if (token === "--help" || token === "-h") {
+      help = true
+      continue
+    }
+    if (token === "--port") {
+      const value = argv[index + 1]
+      if (!value) {
+        failStartup("missing port value for --port")
+      }
+      index += 1
+      port = parsePortValue(value)
+      continue
+    }
+    if (token.startsWith("--port=")) {
+      port = parsePortValue(token.slice("--port=".length))
+    }
+  }
+  return { port, help }
+}
+
+function parsePortValue(raw: string): number {
+  const parsed = Number(raw)
+  if (!Number.isFinite(parsed)) {
+    failStartup(`invalid port: ${raw}`)
+  }
+  assertBasePort(parsed)
+  return parsed
+}
+
+function printHelp(): void {
+  const prefix = formattedLabels.main ?? "[main]"
+  const lines = [
+    "usage: pnpm swarm -- [options]",
+    "",
+    "options:",
+    "  --port <port>       bind pnpm dev to <port>, websocket to <port+1>, wrangler dev to <port+2>",
+    "  --help, -h          show this message",
+    "",
+    "environment:",
+    "  PUBLIC_BASE_URL     overrides default http://localhost:<port> when --port is not passed",
+    "",
+    "example:",
+    "  pnpm swarm -- --port 8081",
+  ]
+  for (const line of lines) {
+    process.stdout.write(`${prefix} ${line}\n`)
+  }
+}
+
+function parsePortFromBase(value?: string): number | null {
+  if (!value) {
+    return null
+  }
+  try {
+    const candidate = value.includes("://") ? value : `http://${value}`
+    const url = new URL(candidate)
+    if (!url.port) {
+      return null
+    }
+    const parsed = Number(url.port)
+    return Number.isInteger(parsed) ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+function failStartup(message: string): never {
+  const prefix = formattedLabels.main ?? "[main]"
+  process.stderr.write(`${prefix} ${message}\n`)
+  process.exit(1)
+}
+
 async function main(): Promise<void> {
-  pnpmDev = startProcess(["dev"], "pnpm:dev")
+  log(
+    "main",
+    `using dev port ${runtimeConfig.port}, ws ${runtimeConfig.wsPort}, wrangler ${runtimeConfig.wranglerPort}`,
+  )
+  pnpmDev = startProcess(runtimeConfig.pnpmDevArgs, "pnpm:dev")
   registerLifecycle()
   registerCtrlCHandler()
   pnpmDev.on("exit", (code, signal) => {
@@ -79,7 +214,7 @@ async function manageWranglerLoop(): Promise<void> {
   while (!shuttingDown) {
     const exists = await pathExists(publicDir)
     if (exists && wrangler === null) {
-      wrangler = startProcess(["dlx", "wrangler", "dev"], "wrangler")
+      wrangler = startProcess(runtimeConfig.wranglerArgs, "wrangler")
       wrangler.on("exit", (code, signal) => {
         log(
           "main",
@@ -132,9 +267,7 @@ function startProcess(args: string[], label: Label): ManagedChild {
     cwd: gitRoot,
     env: {
       ...process.env,
-      ...(label === "wrangler"
-        ? { PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL ?? "http://localhost:8080" }
-        : {}),
+      ...(label === "wrangler" ? { PUBLIC_BASE_URL: runtimeConfig.publicBaseUrl } : {}),
     },
     stdio: ["ignore", "pipe", "pipe"],
   }) as ManagedChild
