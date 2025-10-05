@@ -1,21 +1,20 @@
 ---
 id: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /tweets
+  - /resources
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-05 16:29:16 GMT-04:00
-permalinks:
-  - /website
-  - /tweets
-  - /resources
-  - /inspo
+date: "2024-10-24"
+modified: 2025-10-05 16:41:30 GMT-04:00
+aliases:
+  - inspo
 title: are.na
 cssclasses:
   - nolist
@@ -60,6 +59,9 @@ cssclasses:
 
 ## tweets
 
+- https://x.com/DavidSHolz/status/1974909666154119495 -- Robots and cage fighting
+  - \_meta:
+    - date: 10/05/2025
 - https://x.com/davidbessis/status/1849442615176950202 -- finite complex reflection arrangement
   - \_meta:
     - date: 10/03/2025

@@ -1,5 +1,5 @@
 import { fetchCanonical } from "./util"
-import { normalizeRelativeURLs, FullSlug } from "../../util/path"
+import { normalizeRelativeURLs } from "../../util/path"
 
 let currentBlockIndex = 0
 let totalBlocks = 0

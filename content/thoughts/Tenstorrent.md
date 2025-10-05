@@ -6,7 +6,7 @@ tags:
   - accelerators
 description: RISC-V based AI accelerators with programmable architecture
 date: "2025-10-05"
-modified: 2025-10-05 06:08:40 GMT-04:00
+modified: 2025-10-05 17:27:07 GMT-04:00
 title: Tenstorrent
 ---
 
@@ -30,7 +30,7 @@ see also: [[thoughts/GPU programming]], [[thoughts/MLIR]], [[thoughts/Compiler]]
 
 ### wormhole (second gen, production)
 
-**specifications [@tenstorrent2024wormhole; @semianalysis2021wormhole]:**
+**specifications:** [@tenstorrent2024wormhole; @semianalysis2021wormhole]
 
 - 12nm GlobalFoundries, 670mm² die
 - 12GB GDDR6, 192-bit bus
@@ -49,7 +49,7 @@ raw compute: H100 has 4.2× throughput. raw price: H100 costs 21× more.
 
 ### blackhole (third gen, sampling)
 
-**specifications [@tenstorrent2024blackhole; @vasiljevic2024blackhole]:**
+**specifications:** [@tenstorrent2024blackhole; @vasiljevic2024blackhole]
 
 - 140 Tensix cores (p150a), 6nm TSMC
 - 32GB GDDR6, 256-bit bus, 512 GB/s bandwidth
@@ -969,23 +969,6 @@ tt-mlir/
 ```
 
 younger than tt-metal. fewer contributors, faster iteration.
-
-### community size
-
-**GitHub stars:**
-
-- tt-metal: ~600 stars
-- CUDA samples: ~5,000 stars
-- PyTorch: ~70,000 stars
-
-small community. fewer StackOverflow answers, tutorials, blog posts.
-
-**contributors:**
-
-- tt-metal: ~30 active contributors (mostly Tenstorrent employees)
-- PyTorch: ~2,000 contributors
-
-vendor-driven. less organic community growth.
 
 ## future roadmap
 

@@ -198,6 +198,7 @@ ul#helper {
 
       @include containerInner;
       @include inputContainer;
+      max-height: fit-content;
 
       .input-container {
         border-bottom: 1px solid var(--lightgray);

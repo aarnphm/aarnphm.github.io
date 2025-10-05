@@ -588,7 +588,7 @@ async function setupSearch(
       <h3>${titleContent}</h3>
       ${subscript}${htmlTags}
       ${searchMode === "semantic" ? `<span class="result-likelihood" title="match likelihood">&nbsp;${percentLabel}</span>` : ""}
-      ${enablePreview && window.innerWidth > 600 && searchMode !== "semantic" ? "" : `<p>${content}</p>`}
+      ${enablePreview && window.innerWidth > 600 ? "" : `<p>${content}</p>`}
     </hgroup>`
     if (percentAttr) itemTile.dataset.scorePercent = percentAttr
     else delete itemTile.dataset.scorePercent

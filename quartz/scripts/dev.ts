@@ -23,12 +23,15 @@ let lifecycleRegistered = false
 let pnpmDev: ManagedChild | null = null
 let wrangler: ManagedChild | null = null
 let rawInputEnabled = false
+let pnpmDevRetriesRemaining = 0
 const DEFAULT_DEV_PORT = 8080
 const WS_PORT_OFFSET = 1
 const WRANGLER_PORT_OFFSET = 2
 const MAX_BASE_PORT = 65535 - WRANGLER_PORT_OFFSET
 
 const runtimeConfig = resolveRuntimeConfig(process.argv.slice(2))
+const totalPnpmDevAttempts = runtimeConfig.pnpmDevRetryLimit + 1
+pnpmDevRetriesRemaining = runtimeConfig.pnpmDevRetryLimit
 process.env.PUBLIC_BASE_URL = runtimeConfig.publicBaseUrl
 
 void main()
@@ -49,11 +52,13 @@ interface RuntimeConfig {
   pnpmDevArgs: string[]
   wranglerArgs: string[]
   publicBaseUrl: string
+  pnpmDevRetryLimit: number
 }
 
 interface CliOptions {
   port: number | null
   help: boolean
+  retry: number | null
 }
 
 function assertBasePort(candidate: number): void {
@@ -66,7 +71,7 @@ function assertBasePort(candidate: number): void {
 }
 
 function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
-  const { port, help } = parseCliOptions(argv)
+  const { port, help, retry } = parseCliOptions(argv)
   if (help) {
     printHelp()
     process.exit(0)
@@ -83,12 +88,22 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
       : (envBaseUrl ?? `http://localhost:${effectivePort}`)
   const pnpmDevArgs = ["dev", "--", "--port", String(effectivePort), "--wsPort", String(wsPort)]
   const wranglerArgs = ["dlx", "wrangler", "dev", "--port", String(wranglerPort)]
-  return { port: effectivePort, wsPort, wranglerPort, pnpmDevArgs, wranglerArgs, publicBaseUrl }
+  const pnpmDevRetryLimit = retry ?? 2
+  return {
+    port: effectivePort,
+    wsPort,
+    wranglerPort,
+    pnpmDevArgs,
+    wranglerArgs,
+    publicBaseUrl,
+    pnpmDevRetryLimit,
+  }
 }
 
 function parseCliOptions(argv: string[]): CliOptions {
   let port: number | null = null
   let help = false
+  let retry: number | null = null
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index]
     if (token === "--") {
@@ -109,9 +124,22 @@ function parseCliOptions(argv: string[]): CliOptions {
     }
     if (token.startsWith("--port=")) {
       port = parsePortValue(token.slice("--port=".length))
+      continue
+    }
+    if (token === "--retry") {
+      const value = argv[index + 1]
+      if (!value) {
+        failStartup("missing retry value for --retry")
+      }
+      index += 1
+      retry = parseRetryValue(value)
+      continue
+    }
+    if (token.startsWith("--retry=")) {
+      retry = parseRetryValue(token.slice("--retry=".length))
     }
   }
-  return { port, help }
+  return { port, help, retry }
 }
 
 function parsePortValue(raw: string): number {
@@ -123,6 +151,14 @@ function parsePortValue(raw: string): number {
   return parsed
 }
 
+function parseRetryValue(raw: string): number {
+  const parsed = Number(raw)
+  if (!Number.isFinite(parsed) || !Number.isInteger(parsed) || parsed < 0) {
+    failStartup(`invalid retry count: ${raw}`)
+  }
+  return parsed
+}
+
 function printHelp(): void {
   const prefix = formattedLabels.main ?? "[main]"
   const lines = [
@@ -130,6 +166,7 @@ function printHelp(): void {
     "",
     "options:",
     "  --port <port>       bind pnpm dev to <port>, websocket to <port+1>, wrangler dev to <port+2>",
+    "  --retry <count>     restart pnpm dev up to <count> times when it exits non-zero",
     "  --help, -h          show this message",
     "",
     "environment:",
@@ -171,24 +208,70 @@ async function main(): Promise<void> {
     "main",
     `using dev port ${runtimeConfig.port}, ws ${runtimeConfig.wsPort}, wrangler ${runtimeConfig.wranglerPort}`,
   )
-  pnpmDev = startProcess(runtimeConfig.pnpmDevArgs, "pnpm:dev")
+  log("main", `launching pnpm dev (attempt 1/${totalPnpmDevAttempts})`)
+  launchPnpmDev()
   registerLifecycle()
   registerCtrlCHandler()
-  pnpmDev.on("exit", (code, signal) => {
-    if (!shuttingDown) {
-      log(
-        "main",
-        `pnpm dev exited with code ${code ?? "null"} signal ${signal ?? "null"}`,
-        "stderr",
-      )
-      void shutdown(1)
-    }
-  })
-  pnpmDev.on("error", (err) => {
-    log("main", `failed to launch pnpm dev: ${describeError(err)}`, "stderr")
-    void shutdown(1)
-  })
   await manageWranglerLoop()
+}
+
+function launchPnpmDev(): void {
+  const attempt = runtimeConfig.pnpmDevRetryLimit - pnpmDevRetriesRemaining + 1
+  pnpmDev = startProcess(
+    runtimeConfig.pnpmDevArgs,
+    "pnpm:dev",
+    `starting pnpm:dev (attempt ${attempt}/${totalPnpmDevAttempts})`,
+  )
+  const child = pnpmDev
+  child.on("exit", (code, signal) => handlePnpmDevExit(child, code, signal))
+  child.on("error", (err) => handlePnpmDevError(child, err))
+}
+
+function handlePnpmDevExit(
+  child: ManagedChild,
+  code: number | null,
+  signal: NodeJS.Signals | null,
+): void {
+  if (pnpmDev === child) {
+    pnpmDev = null
+  }
+  if (shuttingDown) {
+    return
+  }
+  const stream: "stdout" | "stderr" = code === 0 && signal === null ? "stdout" : "stderr"
+  log("main", `pnpm dev exited with code ${code ?? "null"} signal ${signal ?? "null"}`, stream)
+  if (code === 0 && signal === null) {
+    void shutdown(0)
+    return
+  }
+  retryPnpmDev(`exit code ${code ?? "null"} signal ${signal ?? "null"}`)
+}
+
+function handlePnpmDevError(child: ManagedChild, err: Error): void {
+  if (pnpmDev === child) {
+    pnpmDev = null
+  }
+  if (shuttingDown) {
+    return
+  }
+  log("main", `pnpm dev error: ${describeError(err)}`, "stderr")
+  retryPnpmDev("process error")
+}
+
+function retryPnpmDev(reason: string): void {
+  if (pnpmDevRetriesRemaining === 0) {
+    log("main", `pnpm dev restart budget exhausted after ${totalPnpmDevAttempts} attempts`, "stderr")
+    void shutdown(1)
+    return
+  }
+  pnpmDevRetriesRemaining -= 1
+  const attempt = totalPnpmDevAttempts - pnpmDevRetriesRemaining
+  log(
+    "main",
+    `retrying pnpm dev after ${reason} (attempt ${attempt}/${totalPnpmDevAttempts}, ${pnpmDevRetriesRemaining} retries left)`,
+    "stderr",
+  )
+  launchPnpmDev()
 }
 
 function registerLifecycle(): void {
@@ -260,8 +343,8 @@ async function shutdown(code: number, signal?: NodeJS.Signals): Promise<void> {
   process.exit(code)
 }
 
-function startProcess(args: string[], label: Label): ManagedChild {
-  log("main", `starting ${label}`)
+function startProcess(args: string[], label: Label, message?: string): ManagedChild {
+  log("main", message ?? `starting ${label}`)
   // @ts-ignore
   const proc = spawn("pnpm", args, {
     cwd: gitRoot,

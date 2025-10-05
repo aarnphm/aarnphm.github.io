@@ -1,18 +1,17 @@
 ---
 id: GPU programming
-permalinks:
-  - /gpus
+aliases:
+  - gpus
 tags:
   - seed
   - ml
   - hardware
 description: bedstone of scaling intelligence
 date: "2025-09-08"
-modified: 2025-10-05 14:37:00 GMT-04:00
-aliases:
-  - gpus
+modified: 2025-10-05 17:21:49 GMT-04:00
+permalinks:
+  - /gpus
 title: GPU
-noindex: true
 ---
 
 see also: [modal glossary](https://modal.com/gpu-glossary/device-hardware/cuda-device-architecture)
@@ -48,7 +47,7 @@ See [[lectures/420/notes#streaming multiprocessor (SM) architecture|execution un
 > | special function units    | exp, sin, cos, rsqrt throughput           | transcendental evaluation             | [[lectures/420/notes#5. Special Function Unit (SFU)]]  |
 > | tensor memory accelerator | descriptor-driven dma (sm90+)             | async tensor copies, multicast        | [[lectures/420/notes#tensor memory accelerator (TMA)]] |
 
-## amd
+## AMD
 
 ### [[thoughts/PD disaggregated serving|pd disaggregated serving]]
 
@@ -58,7 +57,7 @@ SGLang
 
 NIXL + UCX
 
-## nvidia architectures
+## NVIDIA
 
 ### cuda
 

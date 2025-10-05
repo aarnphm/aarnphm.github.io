@@ -29,7 +29,7 @@ async function queryLinks(page: number = 0): Promise<ApiResponse> {
     return {
       links: d.userSaved || [],
       hasMore: d.hasMore ?? false,
-      page
+      page,
     }
   } catch {
     return { links: [], hasMore: false, page }
