@@ -119,7 +119,6 @@ dev = [
   "pandas>=2.2.3",
   "jupyterlab-vim>=4.1.4",
   "pytest>=8.4.2",
-  "torch>=2.8.0",
   "huggingface-hub[cli]>=0.35.3",
   "bentoml>=1.4.25",
   "pyupgrade>=3.20.0",
