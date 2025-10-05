@@ -88,15 +88,8 @@ let levelGraph: { indptr: Uint32Array; indices: Uint32Array }[] = []
 
 function configureRuntimeEnv() {
   if (envConfigured) return
-  const modelRoot =
-    typeof cfg?.modelLocalPath === "string" && cfg.modelLocalPath.length > 0
-      ? cfg.modelLocalPath
-      : "/models"
-  env.localModelPath = modelRoot
-  const allowRemote = cfg?.allowRemoteModels ?? true
-  const hasConfiguredLocalModel = Boolean(cfg?.modelLocalPath)
-  env.allowLocalModels = hasConfiguredLocalModel
-  env.allowRemoteModels = allowRemote
+  env.allowLocalModels = false
+  env.allowRemoteModels = true
   const wasmBackend = env.backends?.onnx?.wasm
   if (!wasmBackend) {
     throw new Error("transformers.js ONNX runtime backend unavailable")
@@ -113,12 +106,10 @@ async function ensureEncoder() {
   }
   configureRuntimeEnv()
   const dtype = typeof cfg?.dtype === "string" && cfg.dtype.length > 0 ? cfg.dtype : "fp32"
-  const allowRemote = cfg?.allowRemoteModels ?? true
-  const hasConfiguredLocalModel = Boolean(cfg?.modelLocalPath)
   const pipelineOpts: Record<string, unknown> = {
     device: "wasm",
     dtype,
-    local_files_only: hasConfiguredLocalModel && !allowRemote,
+    local_files_only: false,
   }
   classifier = await pipeline("feature-extraction", cfg.model, pipelineOpts)
   cfg.dtype = dtype
@@ -139,13 +130,6 @@ function dot(a: Float32Array, b: Float32Array): number {
     s += a[i] * b[i]
   }
   return s
-}
-
-function normalize(vec: Float32Array) {
-  let norm = 0
-  for (let i = 0; i < vec.length; i++) norm += vec[i] * vec[i]
-  norm = Math.sqrt(norm) || 1
-  for (let i = 0; i < vec.length; i++) vec[i] /= norm
 }
 
 function neighborsFor(level: number, node: number): Uint32Array {
@@ -185,7 +169,7 @@ function hnswSearch(query: Float32Array, k: number): SearchHit[] {
   if (!manifest || !vectorsView || entryPoint < 0 || levelGraph.length === 0) {
     return bruteForceSearch(query, k)
   }
-  const ef = Math.max(efDefault, k * 4)
+  const ef = Math.max(efDefault, k * 10)
   let ep = entryPoint
   let epScore = dot(query, vectorSlice(ep))
   for (let level = maxLevel; level > 0; level--) {
@@ -246,28 +230,36 @@ async function embed(text: string, isQuery: boolean = false): Promise<Float32Arr
   let prefixedText = text
   if (cfg?.model) {
     const modelName = cfg.model.toLowerCase()
-    if (modelName.includes("e5")) {
-      // E5 models require query: or passage: prefix
-      prefixedText = isQuery ? `query: ${text}` : `passage: ${text}`
-    } else if (modelName.includes("qwen") && modelName.includes("embedding")) {
-      // Qwen3-Embedding requires task instruction for queries only
-      if (isQuery) {
-        const task = "Given a web search query, retrieve relevant passages that answer the query"
-        prefixedText = `Instruct: ${task}\nQuery: ${text}`
+    switch (true) {
+      case modelName.includes("e5"): {
+        // E5 models require query: or passage: prefix
+        prefixedText = isQuery ? `query: ${text}` : `passage: ${text}`
+        break
       }
-      // Documents use plain text (no prefix)
-    } else if (modelName.includes("embeddinggemma")) {
-      // embeddinggemma requires specific prefixes
-      prefixedText = isQuery
-        ? `task: search result | query: ${text}`
-        : `title: none | text: ${text}`
+      case modelName.includes("qwen") && modelName.includes("embedding"): {
+        // Qwen3-Embedding requires task instruction for queries only
+        if (isQuery) {
+          const task = "Given a web search query, retrieve relevant passages that answer the query"
+          prefixedText = `Instruct: ${task}\nQuery: ${text}`
+        }
+        // Documents use plain text (no prefix)
+        break
+      }
+      case modelName.includes("embeddinggemma"): {
+        // embeddinggemma requires specific prefixes
+        prefixedText = isQuery
+          ? `task: search result | query: ${text}`
+          : `title: none | text: ${text}`
+        break
+      }
+      default:
+        break
     }
   }
   const out = await classifier(prefixedText, { pooling: "mean", normalize: true })
   const data = Array.from(out?.data ?? out) as number[]
   const vec = new Float32Array(dims)
   for (let i = 0; i < dims; i++) vec[i] = data[i] ?? 0
-  normalize(vec)
   return vec
 }
 

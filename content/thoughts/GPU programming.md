@@ -1,16 +1,16 @@
 ---
 id: GPU programming
-aliases:
-  - gpus
+permalinks:
+  - /gpus
 tags:
   - seed
   - ml
   - hardware
 description: bedstone of scaling intelligence
 date: "2025-09-08"
-modified: 2025-10-04 03:34:30 GMT-04:00
-permalinks:
-  - /gpus
+modified: 2025-10-05 14:37:00 GMT-04:00
+aliases:
+  - gpus
 title: GPU
 noindex: true
 ---

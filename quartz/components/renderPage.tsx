@@ -1292,6 +1292,7 @@ export function renderPage(
   const isSlides = componentData.fileData.frontmatter?.slides ?? false
   const isArena = slug === "arena" || slug.startsWith("arena/")
   const isArenaSubpage = slug.startsWith("arena/") && slug !== "arena"
+  if (isArena || isArenaSubpage) disableSidepanel = true
 
   return (
     `<!DOCTYPE html>

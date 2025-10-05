@@ -137,14 +137,7 @@ export class SemanticClient {
       event: MessageEvent<IngestReadyMessage | IngestProgressMessage | IngestErrorMessage>,
     ) => {
       const msg = event.data
-      if (msg.type === "progress") {
-        if (msg.totalRows > 0) {
-          console.debug(
-            `[SemanticClient] ingestion progress ${(msg.loadedRows / msg.totalRows) * 100}%`,
-          )
-        }
-        return
-      }
+      if (msg.type === "progress") return
       if (msg.type === "error") {
         this.handleFatal(msg.message)
         return

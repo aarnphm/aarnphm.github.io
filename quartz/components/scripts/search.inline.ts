@@ -83,9 +83,9 @@ function aggregateChunkResults(
   slugToDocIndex: Map<FullSlug, number>,
 ): { rrfScores: Map<number, number>; maxScores: Map<number, number> } {
   // Group chunks by parent document
-  const docChunks = new Map<string, Array<{ rank: number; score: number }>>()
+  const docChunks = new Map<string, Array<{ score: number }>>()
 
-  results.forEach(({ id, score }, rank) => {
+  results.forEach(({ id, score }) => {
     // id is an index into manifestIds (the chunk IDs from embeddings)
     const chunkSlug = manifestIds[id]
     if (!chunkSlug) return
@@ -97,7 +97,7 @@ function aggregateChunkResults(
       docChunks.set(parentSlug, [])
     }
 
-    docChunks.get(parentSlug)!.push({ rank, score })
+    docChunks.get(parentSlug)!.push({ score })
   })
 
   // Apply RRF for ranking and track max similarity for display
@@ -109,11 +109,14 @@ function aggregateChunkResults(
     const docIdx = slugToDocIndex.get(parentSlug as FullSlug)
     if (typeof docIdx !== "number") continue
 
-    // RRF formula: sum(1 / (k + rank)) across all chunks
-    const rrfScore = chunks.reduce((sum, { rank }) => sum + 1.0 / (RRF_K + rank), 0)
+    // Sort chunks by score descending to assign per-document ranks
+    chunks.sort((a, b) => b.score - a.score)
+
+    // RRF formula: sum(1 / (k + rank)) across all chunks, using per-document ranks
+    const rrfScore = chunks.reduce((sum, _, rank) => sum + 1.0 / (RRF_K + rank), 0)
 
     // Max similarity score for display (original 0-1 range)
-    const maxScore = Math.max(...chunks.map((c) => c.score))
+    const maxScore = chunks[0].score
 
     rrfScores.set(docIdx, rrfScore)
     maxScores.set(docIdx, maxScore)
@@ -224,86 +227,30 @@ async function setupSearch(
     height: 2px;
     width: 0;
     background: var(--secondary);
-    transition: width 0.2s ease;
+    transition: width 0.3s ease, opacity 0.3s ease;
     opacity: 0;
     z-index: 9999;
   `
   searchBar.parentElement?.appendChild(progressBar)
 
-  let progressFrame: number | null = null
-  let progressActive = false
-  let progressCurrent = 0
-  let progressTarget = 0
-  const PROGRESS_IDLE_CAP = 95
-
-  const stopProgressAnimation = () => {
-    progressActive = false
-    if (progressFrame !== null) {
-      window.cancelAnimationFrame(progressFrame)
-      progressFrame = null
-    }
-  }
-
-  const resetProgressBar = () => {
-    stopProgressAnimation()
-    progressCurrent = 0
-    progressTarget = 0
-    progressBar.style.opacity = "0"
-    progressBar.style.width = "0%"
-  }
-
-  const progressTick = () => {
-    if (!progressActive) {
-      progressFrame = null
-      return
-    }
-
-    if (progressTarget < PROGRESS_IDLE_CAP) {
-      progressTarget = Math.min(PROGRESS_IDLE_CAP, progressTarget + 0.25)
-    }
-
-    const delta = progressTarget - progressCurrent
-    const step = Math.max(Math.abs(delta) * 0.18, 0.35)
-    progressCurrent = Math.min(progressTarget, progressCurrent + step)
-    progressBar.style.width = `${progressCurrent}%`
-
-    if (progressTarget === 100 && Math.abs(100 - progressCurrent) < 0.6) {
-      progressBar.style.width = "100%"
-      progressBar.style.opacity = "0"
-      stopProgressAnimation()
-      window.setTimeout(() => {
-        if (!progressActive) {
-          progressCurrent = 0
-          progressTarget = 0
-          progressBar.style.width = "0%"
-        }
-      }, 220)
-      return
-    }
-
-    progressFrame = window.requestAnimationFrame(progressTick)
-  }
-
-  const ensureProgressAnimation = () => {
-    if (!progressActive) {
-      progressActive = true
-      progressFrame = window.requestAnimationFrame(progressTick)
-    } else if (progressFrame === null) {
-      progressFrame = window.requestAnimationFrame(progressTick)
-    }
-  }
-
   const startSemanticProgress = () => {
-    resetProgressBar()
     progressBar.style.opacity = "1"
-    progressTarget = 85
-    progressActive = true
-    progressFrame = window.requestAnimationFrame(progressTick)
+    progressBar.style.width = "0"
+    setTimeout(() => {
+      progressBar.style.width = "100%"
+    }, 10)
   }
 
   const completeSemanticProgress = () => {
-    progressTarget = 100
-    ensureProgressAnimation()
+    progressBar.style.opacity = "0"
+    setTimeout(() => {
+      progressBar.style.width = "0"
+    }, 300)
+  }
+
+  const resetProgressBar = () => {
+    progressBar.style.opacity = "0"
+    progressBar.style.width = "0"
   }
 
   const idDataMap = Object.keys(data) as FullSlug[]
@@ -641,7 +588,7 @@ async function setupSearch(
       <h3>${titleContent}</h3>
       ${subscript}${htmlTags}
       ${searchMode === "semantic" ? `<span class="result-likelihood" title="match likelihood">&nbsp;${percentLabel}</span>` : ""}
-      ${enablePreview && window.innerWidth > 600 ? "" : `<p>${content}</p>`}
+      ${enablePreview && window.innerWidth > 600 && searchMode !== "semantic" ? "" : `<p>${content}</p>`}
     </hgroup>`
     if (percentAttr) itemTile.dataset.scorePercent = percentAttr
     else delete itemTile.dataset.scorePercent

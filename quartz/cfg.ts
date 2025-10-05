@@ -42,14 +42,12 @@ export type Analytics =
 type DType = "fp16" | "fp32"
 
 type SemanticIndexOptions = {
-  enable?: boolean
-  model?: string
-  dims?: number
-  dtype?: DType
-  shardSizeRows?: number
-  hnsw?: { M?: number; efConstruction?: number; efSearch?: number }
-  modelLocalPath?: string
-  allowRemoteModels?: boolean
+  enable: boolean
+  model: string
+  dims: number
+  dtype: DType
+  shardSizeRows: number
+  hnsw: { M?: number; efConstruction?: number; efSearch?: number }
 }
 
 export interface GlobalConfiguration {
@@ -80,7 +78,7 @@ export interface GlobalConfiguration {
    */
   locale: ValidLocale
   /** Semantic search configuration */
-  semanticSearch?: SemanticIndexOptions
+  semanticSearch?: Partial<SemanticIndexOptions>
 }
 
 export interface QuartzConfig {

@@ -25,6 +25,7 @@ import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
 import { toString } from "mdast-util-to-string"
 import { capitalize } from "../../util/lang"
+import { buildYouTubeEmbed } from "../../util/youtube"
 import { PluggableList } from "unified"
 import { h, s } from "hastscript"
 import { whitespace } from "hast-util-whitespace"
@@ -148,8 +149,6 @@ const tagRegex = new RegExp(
   /(?<=^| )#((?:[-_\p{L}\p{Emoji}\p{M}\d])+(?:\/[-_\p{L}\p{Emoji}\p{M}\d]+)*)/gu,
 )
 const blockReferenceRegex = new RegExp(/\^([-_A-Za-z0-9]+)$/g)
-const ytLinkRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
-const ytPlaylistLinkRegex = /[?&]list=([^#?&]*)/
 const videoExtensionRegex = new RegExp(/\.(mp4|webm|ogg|avi|mov|flv|wmv|mkv|mpg|mpeg|3gp|m4v)$/)
 const wikilinkImageEmbedRegex = new RegExp(
   /^(?<alt>(?!^\d*x?\d*$).*?)?(\|?\s*?(?<width>\d+)(x(?<height>\d+))?)?$/,
@@ -791,45 +790,23 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
         plugins.push(() => {
           return (tree) => {
             visit(tree, (node: Element) => {
-              if (checkEmbed(node)) {
-                const src = (node as Element).properties.src as string
-                const match = src.match(ytLinkRegex)
-                const videoId = match && match[2].length == 11 ? match[2] : null
-                const playlistId = src.match(ytPlaylistLinkRegex)?.[1]
+              if (!checkEmbed(node)) return
 
-                const baseProperties = {
-                  class: "external-embed youtube",
-                  allow: "fullscreen",
-                  frameborder: 0,
-                  width: "600px",
-                }
+              const src = (node.properties.src ?? "") as string
+              const embed = typeof src === "string" ? buildYouTubeEmbed(src) : undefined
+              if (!embed) return
 
-                switch (true) {
-                  case Boolean(videoId && playlistId):
-                    // Video with playlist
-                    node.tagName = "iframe"
-                    node.properties = {
-                      ...baseProperties,
-                      src: `https://www.youtube.com/embed/${videoId}?list=${playlistId}`,
-                    }
-                    break
-                  case Boolean(videoId):
-                    // Single video
-                    node.tagName = "iframe"
-                    node.properties = {
-                      ...baseProperties,
-                      src: `https://www.youtube.com/embed/${videoId}`,
-                    }
-                    break
-                  case Boolean(playlistId):
-                    // Playlist only
-                    node.tagName = "iframe"
-                    node.properties = {
-                      ...baseProperties,
-                      src: `https://www.youtube.com/embed/videoseries?list=${playlistId}`,
-                    }
-                    break
-                }
+              const baseProperties = {
+                class: "external-embed youtube",
+                allow: "fullscreen",
+                frameborder: 0,
+                width: "600px",
+              }
+
+              node.tagName = "iframe"
+              node.properties = {
+                ...baseProperties,
+                src: embed.src,
               }
             })
           }

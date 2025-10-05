@@ -8,154 +8,9 @@ import modalScript from "../scripts/arena.inline"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 import { FullSlug } from "../../util/path"
 import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from "../../util/arena"
+import { buildYouTubeEmbed } from "../../util/youtube"
 
 const substackPostRegex = /^https?:\/\/[^/]+\/p\/[^/]+/i
-
-type YouTubeEmbedSpec = {
-  src: string
-}
-
-const isValidYouTubeVideoId = (value: string | null | undefined): value is string =>
-  !!value && /^[0-9A-Za-z_-]{11}$/.test(value)
-
-const parseYouTubeTimestamp = (value: string | null): string | undefined => {
-  if (!value) return undefined
-
-  const trimmed = value.trim()
-  if (trimmed.length === 0) return undefined
-
-  if (/^\d+$/.test(trimmed)) {
-    return trimmed.replace(/^0+/, "") || "0"
-  }
-
-  let matched = false
-  let totalSeconds = 0
-  const durationRegex = /(\d+)([hms])/gi
-  trimmed.replace(durationRegex, (_match, amount, unit) => {
-    matched = true
-    const numeric = Number(amount)
-    if (Number.isNaN(numeric)) return ""
-    switch (unit.toLowerCase()) {
-      case "h":
-        totalSeconds += numeric * 3600
-        break
-      case "m":
-        totalSeconds += numeric * 60
-        break
-      case "s":
-        totalSeconds += numeric
-        break
-    }
-    return ""
-  })
-
-  if (matched) {
-    return totalSeconds > 0 ? String(totalSeconds) : "0"
-  }
-
-  if (/^\d{1,2}(:\d{2}){1,2}$/.test(trimmed)) {
-    const parts = trimmed.split(":").map((part) => Number(part))
-    if (parts.some((part) => Number.isNaN(part))) {
-      return undefined
-    }
-    let seconds = 0
-    for (const part of parts) {
-      seconds = seconds * 60 + part
-    }
-    return seconds > 0 ? String(seconds) : "0"
-  }
-
-  return undefined
-}
-
-const extractYouTubeStart = (url: URL): string | undefined => {
-  const searchStart =
-    parseYouTubeTimestamp(url.searchParams.get("start")) ??
-    parseYouTubeTimestamp(url.searchParams.get("t"))
-  if (searchStart) return searchStart
-
-  const hash = url.hash.startsWith("#") ? url.hash.slice(1) : url.hash
-  if (!hash) return undefined
-
-  const hashParams = hash.includes("=")
-    ? new URLSearchParams(hash)
-    : new URLSearchParams(`t=${hash}`)
-  return (
-    parseYouTubeTimestamp(hashParams.get("start")) ?? parseYouTubeTimestamp(hashParams.get("t"))
-  )
-}
-
-const buildYouTubeEmbed = (rawUrl: string): YouTubeEmbedSpec | undefined => {
-  try {
-    const url = new URL(rawUrl)
-    const normalizedHost = url.hostname.toLowerCase()
-    const host = normalizedHost.startsWith("www.") ? normalizedHost.slice(4) : normalizedHost
-    const isKnownHost =
-      host === "youtu.be" || host.endsWith("youtube.com") || host.endsWith("youtube-nocookie.com")
-    if (!isKnownHost) return undefined
-
-    const segments = url.pathname.split("/").filter(Boolean)
-    let videoId: string | undefined
-    let playlistId: string | undefined
-
-    if (host === "youtu.be") {
-      videoId = segments[0]
-    } else if (segments[0] === "watch") {
-      videoId = url.searchParams.get("v") ?? undefined
-    } else if (segments[0] === "embed" && segments[1]) {
-      videoId = segments[1]
-    } else if (segments[0] === "shorts" && segments[1]) {
-      videoId = segments[1]
-    } else if (segments[0] === "live" && segments[1]) {
-      videoId = segments[1]
-    }
-
-    playlistId = url.searchParams.get("list") ?? undefined
-    if (!videoId && segments[0] === "playlist") {
-      playlistId = playlistId ?? segments[1]
-    }
-
-    if (!videoId) {
-      const candidate = url.searchParams.get("v")
-      if (candidate) {
-        videoId = candidate
-      }
-    }
-
-    if (videoId && !isValidYouTubeVideoId(videoId)) {
-      videoId = undefined
-    }
-
-    const start = extractYouTubeStart(url)
-    const indexParam = url.searchParams.get("index") ?? url.searchParams.get("i") ?? undefined
-    const endParam = url.searchParams.get("end") ?? undefined
-
-    const params = new URLSearchParams()
-    if (playlistId) {
-      params.set("list", playlistId)
-      if (indexParam && /^\d+$/.test(indexParam)) {
-        params.set("index", indexParam)
-      }
-    }
-    if (start && /^\d+$/.test(start)) {
-      params.set("start", start)
-    }
-    if (endParam && /^\d+$/.test(endParam)) {
-      params.set("end", endParam)
-    }
-
-    if (!videoId && !playlistId) {
-      return undefined
-    }
-
-    const path = videoId ? `/embed/${videoId}` : "/embed/videoseries"
-    const query = params.toString()
-    const src = `https://www.youtube-nocookie.com${path}${query ? `?${query}` : ""}`
-    return { src }
-  } catch {
-    return undefined
-  }
-}
 
 const rewriteArxivUrl = (rawUrl: string): string => {
   try {
@@ -316,7 +171,7 @@ export default (() => {
               <div class="arena-modal-main">
                 {block.url && (
                   <div class="arena-modal-url-bar">
-                    <span
+                    <button
                       // @ts-ignore
                       type="button"
                       class="arena-url-copy-button"
@@ -368,7 +223,7 @@ export default (() => {
                       >
                         <use href="#github-check" />
                       </svg>
-                    </span>
+                    </button>
                     <a
                       href={block.url}
                       target="_blank"

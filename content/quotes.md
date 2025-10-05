@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-10-03 04:16:53 GMT-04:00
+modified: 2025-10-05 03:20:02 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -16,6 +16,10 @@ socialDescription: A collection of quotes, wisdom, and advice.
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
 
 ## On life.
+
+Love consists in this, that two solitudes protect and touch and greet each other. -- Rainer Maria Rilke
+
+Love is the difficult realisation that something other than oneself is real. -- Iris Murdoch
 
 Throw me some wisdom, and advices? I have none. -- J
 

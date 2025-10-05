@@ -10,10 +10,10 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-04 22:20:41 GMT-04:00
+date: "2024-10-24"
+modified: 2025-10-05 14:37:36 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -105,17 +105,18 @@ cssclasses:
 - https://x.com/mots_pod/status/1974637749383946252 -- hey look at my neovim config!
   - \_meta:
     - date: 10/04/2025
+- https://x.com/philosophymeme0/status/1974201644440301891?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- Socrates peer pressuring his friends to go out
+  - \_meta:
+    - date: 10/05/2025
+- https://x.com/healdps/status/1974440443460149517?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- Dog core
+  - \_meta:
+    - date: 10/05/2025
 
 ## website
 
-- https://www.sholis.com/ -- Brian Sholis
+- https://press.stripe.com/ -- Stripe Press, Idea for Progress
   - \_meta:
-    - date: 10/02/2025
-- https://jzhao.xyz/ -- Jacky Zhao
-  - \_meta:
-    - date: 10/02/2025
-  - daylightcomputer's inspired but in pure CSS and HTML
-  - source: https://github.com/jackyzha0/sunlit
+    - date: 10/05/2025
 - https://daylightcomputer.com/ -- Daylight Computer
   - \_meta:
     - date: 10/02/2025
@@ -126,10 +127,6 @@ cssclasses:
   - \_meta:
     - date: 10/02/2025
   - clean aesthetics with nice hierarchical components
-- https://jacobleech.com/ -- Jacob Leech
-  - \_meta:
-    - date: 10/02/2025
-  - warm, graphics, animation smooth
 - https://ertdfgcvb.xyz/ -- ertdfgcvb
   - \_meta:
     - date: 10/02/2025
@@ -141,10 +138,6 @@ cssclasses:
   - \_meta:
     - date: 10/02/2025
   - cool visualisation of typing process
-- https://langworth.com/ -- Ian Langworth
-  - \_meta:
-    - date: 10/02/2025
-  - wait terminal go brrr
 - https://perfume-area.com/reviews/page:2 -- PERFUME AREA
   - \_meta:
     - date: 10/02/2025
@@ -165,11 +158,6 @@ cssclasses:
   - \_meta:
     - date: 10/02/2025
   - Wikitext [[thoughts/Digital garden|garden]]
-- https://www.alanagoyal.com/notes
-  - \_meta:
-    - date: 10/02/2025
-  - Apple Notes-inspired portfolio
-  - https://github.com/alanagoyal/alanagoyal, mostly just react-markdown and React 19 Server Component.
 - https://pudding.cool/2023/09/invisible-epidemic/
   - \_meta:
     - date: 10/02/2025
@@ -180,35 +168,10 @@ cssclasses:
 - https://www.benkuhn.net/outliers/ -- Searching for outliers
   - \_meta:
     - date: 10/02/2025
-- https://henry.codes/ -- Henry Desroches
-  - \_meta:
-    - date: 10/02/2025
-  - very much text-dominant black/white
-- https://www.ruth-zhao.com -- Ruth Zhao
-  - \_meta:
-    - date: 10/03/2025
-  - map world
-- https://chia.design/ -- Chia Amisola
-  - \_meta:
-    - date: 10/02/2025
-- https://tinnei.com/ -- Tinnei / 10A
-  - \_meta:
-    - date: 10/02/2025
-- https://www.tylerxhobbs.com/works/categories/digital -- Tyler Hobbs
-  - \_meta:
-    - date: 10/02/2025
-  - utilitarian design
 - https://negative.sanctuary.computer/ -- Studio Carbon Negative
   - \_meta:
     - date: 10/02/2025
   - landing poggies
-- https://leimao.github.io/ -- Lei Mao's Log Book
-  - \_meta:
-    - date: 10/02/2025
-- https://www.lei.chat -- Lei's Chat
-  - \_meta:
-    - date: 10/02/2025
-  - AI Compiler (AMD)
 - https://cogtoolslab.github.io/ -- cognitive tools lab
   - \_meta:
     - date: 05/23/2025
@@ -226,23 +189,6 @@ cssclasses:
   - \_meta:
     - date: 10/02/2025
 - https://devouringdetails.com/ -- Devouring Details [**]
-  - \_meta:
-    - date: 10/02/2025
-- https://calv.info/about -- Calvin French-Owen
-  - \_meta:
-    - date: 10/02/2025
-  - Calvin, as in Calvin and Hobbes
-- https://ampersand.pm/ -- &pm (Morgan.)
-  - \_meta:
-    - date: 10/02/2025
-  - met at [HTML Day](html.green)
-- https://www.chloeyan.me/ -- Chloe Yan
-  - \_meta:
-    - date: 10/02/2025
-- https://ertdfgcvb.xyz -- ertdfgcvb
-  - \_meta:
-    - date: 10/02/2025
-- https://shashwathsantosh.com/ -- Shashwath Santosh
   - \_meta:
     - date: 10/02/2025
 - https://solarprotocol.net -- Solar Protocol
@@ -377,12 +323,91 @@ cssclasses:
     - date: 10/04/2025
   - > I evoke the term 'handmade web' to refer to web pages coded by hand rather than by software; web pages made and maintained by individuals rather than by businesses or corporations; web pages which are provisional, temporary, or one-of-a-kind;
   - > In The Web We Lost (2012), Anil Dash writes: "In the early days of the social web, there was a broad expectation that regular people might own their own identities by having their own websites, instead of being dependent on a few big sites to host their online identity."
+- https://wireframes.internet.dev/ -- INTDEV showcase
+  - \_meta:
+    - date: 10/04/2025
+- https://asteriskmag.com/ -- Asterisk Magazine [**]
+  - \_meta:
+    - date: 10/05/2025
 
 ## people
 
-- https://nicholas.carlini.com/ -- Nicholas Carlini
+- https://www.linkedin.com/in/thakkarv/ -- Vijay Thakkar
+  - \_meta:
+    - date: 10/05/2025
+  - CUTLASS 4.0
+- https://www.ivanzhao.me/ -- Ivan Zhao
+  - \_meta:
+    - date: 10/05/2025
+- https://spencer.place/ -- Spencher Chang [**]
+  - \_meta:
+    - date: 10/05/2025
+- https://calv.info/about -- Calvin French-Owen
+  - \_meta:
+    - date: 09/15/2025
+  - Calvin, as in Calvin and Hobbes
+- https://www.sholis.com/ -- Brian Sholis
   - \_meta:
     - date: 10/02/2025
+- https://jzhao.xyz/ -- Jacky Zhao [**]
+  - \_meta:
+    - date: 10/02/2025
+  - daylightcomputer's inspired but in pure CSS and HTML
+  - source: https://github.com/jackyzha0/sunlit
+- https://jacobleech.com/ -- Jacob Leech
+  - \_meta:
+    - date: 10/02/2025
+  - warm, graphics, animation smooth
+- https://langworth.com/ -- Ian Langworth
+  - \_meta:
+    - date: 10/02/2025
+  - wait terminal go brrr
+- https://www.alanagoyal.com/notes
+  - \_meta:
+    - date: 10/02/2025
+  - Apple Notes-inspired portfolio
+  - https://github.com/alanagoyal/alanagoyal, mostly just react-markdown and React 19 Server Component.
+- https://henry.codes/ -- Henry Desroches
+  - \_meta:
+    - date: 10/02/2025
+  - very much text-dominant black/white
+- https://www.ruth-zhao.com -- Ruth Zhao [**]
+  - \_meta:
+    - date: 10/03/2025
+  - map world
+- https://chia.design/ -- Chia Amisola
+  - \_meta:
+    - date: 10/02/2025
+- https://tinnei.com/ -- Tinnei / 10A
+  - \_meta:
+    - date: 10/02/2025
+- https://www.tylerxhobbs.com/works/categories/digital -- Tyler Hobbs
+  - \_meta:
+    - date: 10/02/2025
+  - utilitarian design
+- https://leimao.github.io/ -- Lei Mao's Log Book
+  - \_meta:
+    - date: 10/02/2025
+- https://www.lei.chat -- Lei's Chat
+  - \_meta:
+    - date: 10/02/2025
+  - AI Compiler (AMD)
+- https://ampersand.pm/ -- &pm (Morgan.)
+  - \_meta:
+    - date: 10/02/2025
+  - met at [HTML Day](html.green)
+- https://www.chloeyan.me/ -- Chloe Yan
+  - \_meta:
+    - date: 10/02/2025
+- https://shashwathsantosh.com/ -- Shashwath Santosh
+  - \_meta:
+    - date: 10/02/2025
+- https://michaelnotebook.com/ -- Michael Nielsen
+  - \_meta:
+    - date: 10/05/2025
+- https://nicholas.carlini.com/ -- Nicholas Carlini
+  - \_meta:
+    - date: 09/02/2025
   - Security/Adversarial against LLMs
 - https://en.wikipedia.org/wiki/John_Galliano -- John Galliano
   - \_meta:
@@ -614,6 +639,10 @@ cssclasses:
 
 ## essay
 
+- https://newsletter.squishy.computer/p/all-you-need-is-links -- All you need is links [**]
+  - \_meta:
+    - date: 10/05/2025
+      -![[thoughts/images/hyperlinks.webp]]
 - https://cybermonk.substack.com/p/i-am -- I am
   - \_meta:
     - date: 05/23/2025
@@ -791,6 +820,10 @@ cssclasses:
 - https://velvetnoise.substack.com/p/the-key-to-love-is-understanding -- The key to [[tags/love]] is understanding
   - \_meta:
     - date: 08/02/2025
+- https://velvetnoise.substack.com/p/attention-is-love -- Attention is love [**]
+  - \_meta:
+    - date: 10/05/2025
+  - > To reach out and remain unseen is its own kind of anti-conversation, a silence where love should be.
 - https://illustrated.substack.com/p/grief-maybe -- Grief, maybe (ILLUSTRATED)
   - \_meta:
     - date: 08/02/2025
@@ -961,9 +994,41 @@ cssclasses:
   - > Neuralink Third Impact
   - > Simulation Theory
   - > If God were to visit this world, he would destroy it. An unbounded resource gatherer was summoned; a demon of the Platonic ether forged through incredible optimization pressures that created instrumental convergence to power-seeking behavior. One by one, the stars are blinking out in the heavens as their energy is harnessed to further the Fiend’s profane purpose.
+- https://selvaradov.net/select/ -- You can select as well as be selected
+  - \_meta:
+    - date: 10/04/2025
+- http://joschu.net/blog/opinionated-guide-ml-research.html -- Opinionated Guide to ML Research [**]
+  - \_meta:
+    - date: 10/04/2025
+  - > _Honing Your Taste_: Your ability to choose the right problems to work on is even more important than your raw technical skill.
+  - > 1. Read a lot of papers, and assess them critically. If possible, discuss them with others who have a deeper knowledge of the subject.
+  - > 2. Work in a research group with other people working on similar topics. That way you can absorb their experiences as well as your own.
+  - > 3. Seek advice from experienced researchers on what to work on. There’s no shame in working on ideas suggested by other people. Ideas are cheap, and there are lots of them in the air. Your skill comes in when you decide which one to work on, and how well you execute on it.
+  - > 4. Spend time reflecting on what research is useful and fruitful. Think about questions like
+    >    a. When is theory useful?
+    >    b. When are empirical results transferable?
+    >    c. What causes some ideas to get wide uptake, whereas others are forgotten?
+    >    d. What are the trends in your field? Which lines of work will make the other ones obsolete?
+- https://numinous.productions/ttft/ -- How can we develop transformative tools for thought?
+  - \_meta:
+    - date: 10/05/2025
+  - By Andy Matuschak and Michael Nielsen
+  - https://notation.app/n/d1VOwqGv5DbHdDLf
 
 ## [[thoughts/Machine learning]]
 
+- https://www.thought-anchors.com/ -- Thought Anchors in LLM Reasoning Traces
+  - \_meta:
+    - date: 10/05/2025
+  - https://arxiv.org/abs/2506.19143
+- https://kipp.ly/transformer-inference-arithmetic/ -- Transformers Inference Arithmetics [**]
+  - \_meta:
+    - date: 10/05/2025
+  - see also [[thoughts/Transformers#Inference]], [[thoughts/LLMs]]
+- https://www.youtube.com/watch?v=kLiwvnr4L80&t=868s -- Trends in Deep Learning, Bill Dally (NVIDIA)
+  - \_meta:
+    - date: 10/05/2025
+  - [[thoughts/GPU programming]], [[lectures/420/notes|NVIDIA architecture notes]]
 - https://x.com/thesephist/status/1895887696268288119 -- AI-centric interface design
   - \_meta:
     - date: 10/03/2025
@@ -1081,12 +1146,12 @@ cssclasses:
 - https://x.com/nic__carter/status/1797635177973158182 -- The neck-breaking speed of AI
   - \_meta:
     - date: 10/03/2025
-- https://x.com/JingyuanLiu123/status/1959093411283443726 -- TPU vs GPU parallelism strategies
+- https://x.com/JingyuanLiu123/status/1959093411283443726 -- TPU vs GPU parallelism strategies [**]
   - \_meta:
-    - date: 10/03/2025
+    - date: 19/26/2025
 - https://x.com/GoodfireAI/status/1960378734852046859 -- Adversarial examples affects feature share directions.
   - \_meta:
-    - date: 10/03/2025
+    - date: 09/15/2025
   - https://x.com/livgorton/status/1960378437102657654
   - https://arxiv.org/abs/2508.17456
 - https://x.com/keenanisalive/status/1964434335911858552 -- autoencoder representations
@@ -1213,7 +1278,7 @@ cssclasses:
 - https://nanotron-ultrascale-playbook.static.hf.space/index.html -- The Ultra-Scale Playbook: Training LLMs on GPU Clusters [**]
   - \_meta:
     - date: 10/04/2025
-- https://www.jeremykun.com/2023/08/10/mlir-getting-started/ -- [[thoughts/MLIR]] introduction
+- https://www.jeremykun.com/2023/08/10/mlir-getting-started/ -- [[thoughts/MLIR]] introduction [**]
   - \_meta:
     - date: 08/16/2025
 - https://huggingfacefw-blogpost-fineweb-v1.static.hf.space -- FineWeb: decanting the web for the finest text data at scale. [**]
@@ -1276,7 +1341,7 @@ cssclasses:
 - https://www.ethansmith2000.com/post/where-are-you -- Where are you?
   - \_meta:
     - date: 09/29/2025
-- https://github.com/pranjalssh/fast.cu -- fast kernels, in [[thoughts/GPU-programming|CUDA]]
+- https://github.com/pranjalssh/fast.cu -- fast kernels, in [[thoughts/GPU programming|CUDA]]
   - \_meta:
     - date: 10/02/2025
 - https://hazyresearch.stanford.edu/blog/2025-09-28-tp-llama-main -- We Bought the Whole GPU, So We're Damn Well Going to Use the Whole GPU
@@ -1477,6 +1542,10 @@ cssclasses:
 
 ## technology
 
+- https://blog.regehr.org/archives/2485 -- Why Do Peephole Optimizations Work?
+  - \_meta:
+    - date: 10/05/2025
+  - See also [[thoughts/Compiler]]
 - https://x.com/Mappletons/status/1250532315459194880 -- Digital garden but wikitext go brr
   - \_meta:
     - date: 10/03/2025
@@ -1701,6 +1770,10 @@ cssclasses:
 
 ## video
 
+- https://www.youtube.com/watch?v=ufa4pmBOBT8 -- CuTe, CUDA Tensors [**]
+  - \_meta:
+    - date: 10/05/2025
+  - see also [[thoughts/GPU programming]]
 - https://www.youtube.com/watch?v=WJ76FfBZuhI&ab_channel=SoderCinema -- Narcissistic Facades - Amy Dunne
   - \_meta:
     - date: 04/09/2025
@@ -1795,6 +1868,16 @@ cssclasses:
   - $$
     \frac{\text{intelligence}}{\text{dollar}} = \frac{\text{intelligence}}{\text{FLOPs}} \times \frac{\text{FLOPs}}{\text{dollar}}
     $$
+- https://www.youtube.com/watch?v=_NLHFoVNlbg -- Stanford CS230 | Autumn 2025 | Lecture 1: Introduction to Deep Learning
+  - \_meta:
+    - date: 10/04/2025
+- https://www.youtube.com/watch?v=yUmDRxV0krg&list=PL0NRmB0fnLJSpC1zCRoqAjStdQpANzTFK -- Geometry of Machine Learning
+  - \_meta:
+    - date: 10/04/2025
+  - Yann LeCun | Self-Supervised Learning, JEPA, World Models, and the future of AI
+- https://www.youtube.com/watch?v=10Qh55EQ90s&list=PL0NRmB0fnLJSpC1zCRoqAjStdQpANzTFK&index=2 -- James Halverson | Sparsity and Symbols with Kolmogorov-Arnold Networks
+  - \_meta:
+    - date: 10/05/2025
 
 ## tools
 
@@ -1888,6 +1971,17 @@ cssclasses:
 - https://github.com/CppCon/CppCon2024 -- CppConf 2024
   - \_meta:
     - date: 09/06/2025
+- https://www.britannica.com/topic/PARC-company -- Building PARC
+  - \_meta:
+    - date: 10/04/2025
+  - i.e: personal computer, WYSIWYG
+  - > The idea of “what you see is what you get” (WYSIWYG) would work on paper as well as the monitor. Unfortunately, at that time Xerox saw no point in innovating when their current technology worked so well.
+- https://www.compmotifs.com/ -- Science through Computation Initiative
+  - \_meta:
+    - date: 10/04/2025
+- https://notation.app -- Notation app [**]
+  - \_meta:
+    - date: 10/05/2025
 
 ## interfaces
 
@@ -1907,13 +2001,37 @@ cssclasses:
 
 - https://fontsource.org/ -- Fontsource
   - \_meta:
-    - date: 10/02/2025
-- https://departuremono.com/ -- Departure Mono
+    - date: 08/02/2025
+- https://servermono.com/ -- Server Mono
+  - \_meta:
+    - date: 10/04/2025
+- https://departuremono.com/ -- Departure Mono [**]
   - \_meta:
     - date: 08/28/2025
 - https://lettermatic.com/fonts/parclo-serif -- Parclo Serif
   - \_meta:
     - date: 10/03/2025
+- https://www.daybreak.studio/writing/adaline-typography -- Adaline
+  - \_meta:
+    - date: 10/04/2025
+- https://weltkern.com/typefaces -- WELTKERN typefaces
+  - \_meta:
+    - date: 10/04/2025
+- https://fonderiebretagne.fr/ -- Bretagne Type foundry
+  - \_meta:
+    - date: 10/04/2025
+- https://weltkern.com/typefaces/lausanne -- Lausanne
+  - \_meta:
+    - date: 10/04/2025
+- https://displaay.net/typeface/saans -- Displaay Saans
+  - \_meta:
+    - date: 10/04/2025
+- https://displaay.net/typeface/teodor -- Displaay Teodor
+  - \_meta:
+    - date: 10/04/2025
+- https://www.atipofoundry.com/ -- Atipo Foundry
+  - \_meta:
+    - date: 10/04/2025
 
 ## lecture
 
@@ -1957,6 +2075,15 @@ cssclasses:
 
 ## technical
 
+- http://lastweek.io/notes/MLIR/ -- MLIR at a 10000 feet
+  - \_meta:
+    - date: 10/05/2025
+- https://mlir.llvm.org/docs/ -- MLIR LLVM docs
+  - \_meta:
+    - date: 10/05/2025
+- https://docs.tenstorrent.com/tt-mlir/ -- [[thoughts/Tenstorrent]] MLIR
+  - \_meta:
+    - date: 10/05/2025
 - https://github.com/NixOS/nixpkgs/blob/master/lib/meta.nix -- meta.nix and helpers function in Nix
   - \_meta:
     - date: 10/02/2025
@@ -2027,6 +2154,9 @@ cssclasses:
 - https://en.wikipedia.org/wiki/Perlin_noise -- Perlin noise
   - \_meta:
     - date: 10/03/2025
+- https://bernsteinbear.com/blog/inline-caching/ -- Inline caching
+  - \_meta:
+    - date: 10/05/2025
 
 ## vc
 

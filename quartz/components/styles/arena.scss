@@ -21,6 +21,11 @@
     }
   }
 
+  a[data-role="anchor"],
+  span[data-role="anchor"] {
+    display: none;
+  }
+
   section[class~="header"] {
     border-bottom: 0;
     height: 0;
@@ -68,6 +73,13 @@ body[data-arena-subpage="true"] {
   .page-footer,
   li.readable-source {
     display: none;
+  }
+
+  .arena-title-block > h1 > a:first-of-type {
+    color: var(--darkgray);
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   .byline {
@@ -360,6 +372,7 @@ body[data-arena-subpage="true"] {
   will-change: transform, opacity;
 }
 
+.arena-url-copy-button,
 .arena-modal-next,
 .arena-modal-prev,
 .arena-modal-close,

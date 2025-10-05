@@ -479,9 +479,6 @@ def main():
         "levels": hnsw_meta,
       },
     },
-    "bm25": {
-      "path": "/embeddings/bm25.json",
-    },
   }
   (out_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False), encoding="utf-8")
   print(f"Wrote {len(shards)} vector shard(s), HNSW graph, and manifest to {out_dir}")

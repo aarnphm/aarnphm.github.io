@@ -1,27 +1,34 @@
 import { QuartzTransformerPlugin } from "../types"
-import {
-  Root as MdastRoot,
-  List,
-  ListItem,
-  Paragraph,
-  PhrasingContent,
-  Link,
-  Text,
-  RootContent as MdastContent,
-} from "mdast"
+import { Root as MdastRoot, List, ListItem, Paragraph, Link } from "mdast"
 import { Element, ElementContent } from "hast"
 import { QuartzPluginData } from "../vfile"
 import { toString } from "mdast-util-to-string"
-import { toHast } from "mdast-util-to-hast"
 import Slugger from "github-slugger"
-import { clone } from "../../util/clone"
 import { visit, CONTINUE } from "unist-util-visit"
-import { wikiTextTransform, wikilinkRegex, externalLinkRegex } from "./ofm"
+import { externalLinkRegex } from "./ofm"
 import { createHash } from "crypto"
-import { fromMarkdown } from "mdast-util-from-markdown"
 import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
 import { splitAnchor, transformLink, stripSlashes } from "../../util/path"
-import { findAndReplace as mdastFindReplace, ReplaceFunction } from "mdast-util-find-and-replace"
+import { writeFileSync } from "node:fs"
+import { join } from "node:path"
+
+const datasetKey = (attr: string): string =>
+  attr.replace(/-([a-z])/g, (_match, ch: string) => ch.toUpperCase())
+
+const getDataAttr = <T = unknown>(
+  props: Record<string, unknown> | undefined,
+  attr: string,
+): T | undefined => {
+  if (!props) return undefined
+  return (props[attr] ?? props[datasetKey(attr)]) as T | undefined
+}
+
+const deleteDataAttr = (props: Record<string, unknown> | undefined, attr: string): void => {
+  if (!props) return
+  delete props[attr]
+  delete props[datasetKey(attr)]
+}
+import { buildYouTubeEmbed, YouTubeEmbedSpec } from "../../util/youtube"
 
 export interface ArenaBlock {
   id: string
@@ -72,136 +79,6 @@ const parseLinkTitle = (text: string): { url: string; title?: string } | undefin
 
 const stripHighlightMarker = (value: string): string => value.replace(HIGHLIGHT_TRAILING, "").trim()
 
-const cleanParagraphForHtml = (paragraph: Paragraph): Paragraph => {
-  const cleaned = clone(paragraph) as Paragraph
-
-  while (cleaned.children.length > 0) {
-    const last = cleaned.children[cleaned.children.length - 1] as PhrasingContent
-
-    if (last.type === "text") {
-      const nextValue = last.value.replace(HIGHLIGHT_TRAILING, "")
-      if (nextValue.length === 0 && HIGHLIGHT_TRAILING.test(last.value)) {
-        cleaned.children.pop()
-        continue
-      }
-
-      if (nextValue !== last.value) {
-        last.value = nextValue.trimEnd()
-      }
-    }
-
-    break
-  }
-
-  return cleaned
-}
-
-const paragraphToHtml = (paragraph?: Paragraph): ElementContent | undefined => {
-  if (!paragraph) return undefined
-
-  const hastNode = toHast(cleanParagraphForHtml(paragraph), { allowDangerousHtml: true })
-
-  if (hastNode.type === "element") {
-    if (hastNode.tagName === "p") {
-      return {
-        type: "element",
-        tagName: "span",
-        properties: {},
-        children: hastNode.children as ElementContent[],
-      }
-    }
-    return hastNode as ElementContent
-  }
-
-  if (hastNode.type === "root") {
-    return {
-      type: "element",
-      tagName: "span",
-      properties: {},
-      children: hastNode.children as ElementContent[],
-    }
-  }
-
-  return undefined
-}
-
-// Convert wikilinks inside a paragraph into mdast link nodes, mirroring OFM behavior for inline links
-const convertWikilinksInParagraph = (paragraph: Paragraph): Paragraph => {
-  const node = clone(paragraph) as Paragraph
-  const replacements: [RegExp, string | ReplaceFunction][] = []
-
-  replacements.push([
-    wikilinkRegex,
-    (value: string, ...capture: string[]) => {
-      // ignore embeds inside title fallback
-      if (value.startsWith("!")) return false
-
-      let [rawFp, rawHeader, rawAlias] = capture
-      const fp = rawFp?.trim() ?? ""
-      const header = rawHeader?.trim() ?? ""
-      const alias: string | undefined = rawAlias?.slice(1).trim()
-
-      if (fp.match(externalLinkRegex)) {
-        return {
-          type: "link",
-          url: fp,
-          children: [{ type: "text", value: alias ?? fp }],
-        } satisfies Link
-      }
-
-      const [_f, anchor] = splitAnchor(`${fp}${header}`)
-      const url = `${fp}${anchor}`
-      return {
-        type: "link",
-        url,
-        children: [{ type: "text", value: alias ?? fp }],
-      } satisfies Link
-    },
-  ])
-
-  mdastFindReplace(node, replacements)
-  return node
-}
-
-// Build a combined inline HAST fragment from the list item paragraph and any inline siblings (excluding nested lists)
-const listItemContentToInlineHtml = (listItem: ListItem): ElementContent | undefined => {
-  const inlineChildren: MdastContent[] = []
-
-  for (const child of listItem.children) {
-    if (child.type === "list") continue
-    if (child.type === "paragraph") {
-      inlineChildren.push(cleanParagraphForHtml(child))
-    } else {
-      inlineChildren.push(child as MdastContent)
-    }
-  }
-
-  if (inlineChildren.length === 0) return undefined
-
-  const children: ElementContent[] = []
-  for (const child of inlineChildren) {
-    const hnode = toHast(child, { allowDangerousHtml: true })
-    if (hnode.type === "element") {
-      if (hnode.tagName === "p") {
-        children.push(...(hnode.children as ElementContent[]))
-      } else {
-        children.push(hnode as unknown as ElementContent)
-      }
-    } else if (hnode.type === "root") {
-      children.push(...(hnode.children as ElementContent[]))
-    }
-  }
-
-  // Use a block container so display-level children (e.g., KaTeX display math)
-  // remain valid HTML and render with proper margins.
-  return {
-    type: "element",
-    tagName: "div",
-    properties: {},
-    children,
-  }
-}
-
 type NodeWithData = {
   data?: {
     hProperties?: Record<string, unknown>
@@ -249,102 +126,6 @@ const makeSnapshotKey = (url: string, title: string): string => {
   return hash.digest("hex").slice(0, 32)
 }
 
-const findDelimiter = (value: string): { index: number; length: number } | null => {
-  const doubleDashIndex = value.indexOf("--")
-  const emDashIndex = value.indexOf("—")
-
-  if (doubleDashIndex === -1 && emDashIndex === -1) {
-    return null
-  }
-
-  if (doubleDashIndex !== -1 && (emDashIndex === -1 || doubleDashIndex < emDashIndex)) {
-    return { index: doubleDashIndex, length: 2 }
-  }
-
-  return { index: emDashIndex, length: 1 }
-}
-
-const buildTitleParagraph = (
-  paragraph: Paragraph | undefined,
-  {
-    parsedTitle,
-    preferLink,
-    fallbackText,
-  }: { parsedTitle?: string; preferLink?: Link; fallbackText: string },
-): Paragraph => {
-  const ensureParagraph = (node: Paragraph | undefined): Paragraph | undefined => {
-    if (!node) return undefined
-    return node.type === "paragraph" ? node : undefined
-  }
-
-  if (preferLink) {
-    return {
-      type: "paragraph",
-      children: clone(preferLink.children ?? []) as PhrasingContent[],
-    }
-  }
-
-  const originalParagraph = ensureParagraph(paragraph)
-
-  if (originalParagraph) {
-    if (parsedTitle) {
-      const extracted: PhrasingContent[] = []
-      let delimiterFound = false
-
-      for (const child of originalParagraph.children) {
-        if (!delimiterFound) {
-          if (child.type === "text") {
-            const info = findDelimiter(child.value)
-            if (info) {
-              delimiterFound = true
-              const suffix = stripHighlightMarker(child.value.slice(info.index + info.length))
-              if (suffix.trim().length > 0) {
-                extracted.push({ type: "text", value: suffix.trimStart() } as Text)
-              }
-              continue
-            }
-          }
-          continue
-        }
-
-        extracted.push(clone(child) as PhrasingContent)
-      }
-
-      if (delimiterFound) {
-        if (extracted.length === 0) {
-          extracted.push({ type: "text", value: stripHighlightMarker(parsedTitle) } as Text)
-        }
-
-        return {
-          type: "paragraph",
-          children: extracted,
-        }
-      }
-    }
-
-    return {
-      type: "paragraph",
-      children: clone(originalParagraph.children) as PhrasingContent[],
-    }
-  }
-
-  const fallback = stripHighlightMarker(fallbackText)
-  const markdown = wikiTextTransform(fallback)
-  const mdast = fromMarkdown(markdown)
-  const firstParagraph = mdast.children.find(
-    (child): child is Paragraph => child.type === "paragraph",
-  )
-  if (firstParagraph) {
-    return convertWikilinksInParagraph(firstParagraph)
-  }
-
-  return {
-    type: "paragraph",
-    children:
-      fallback.length > 0 ? ([{ type: "text", value: fallback } as Text] as PhrasingContent[]) : [],
-  }
-}
-
 export const Arena: QuartzTransformerPlugin = () => {
   return {
     name: "Arena",
@@ -355,41 +136,32 @@ export const Arena: QuartzTransformerPlugin = () => {
         () => {
           return async (tree: MdastRoot, file) => {
             const fileData = file.data as QuartzPluginData
-
             if (fileData.slug !== "are.na") return
 
-            const channels: ArenaChannel[] = []
-            let blockCounter = 0
             const slugger = new Slugger()
+            let blockCounter = 0
+            let channelCounter = 0
+            let pendingChannelId: string | null = null
             const embedPromises: Promise<void>[] = []
 
-            const tryExtractMetadata = (list: List): Record<string, string> | undefined => {
-              if (!list.children || list.children.length === 0) {
-                return undefined
-              }
+            const tryExtractMetadata = (list: List, owner: ListItem): void => {
+              if (!list.children || list.children.length === 0) return
 
               const firstChild = list.children[0]
-              if (firstChild?.type !== "listItem") {
-                return undefined
-              }
+              if (firstChild?.type !== "listItem") return
 
               const metaParagraph = firstChild.children.find(
                 (child): child is Paragraph => child.type === "paragraph",
               )
-
               const metaHeading = metaParagraph ? toString(metaParagraph).trim().toLowerCase() : ""
-              if (!metaHeading.startsWith("_meta")) {
-                return undefined
-              }
+              if (!metaHeading.startsWith("_meta")) return
 
               const metaList = firstChild.children.find(
                 (child): child is List => child.type === "list",
               )
-              if (!metaList || metaList.children.length === 0) {
-                // remove the _meta marker so it doesn't render downstream
-                list.children.shift()
-                return undefined
-              }
+              // remove marker regardless so it doesn't leak downstream
+              list.children.shift()
+              if (!metaList || metaList.children.length === 0) return
 
               const metadata: Record<string, string> = {}
               for (const item of metaList.children) {
@@ -407,12 +179,16 @@ export const Arena: QuartzTransformerPlugin = () => {
                 metadata[key] = value
               }
 
-              list.children.shift()
-
-              return Object.keys(metadata).length > 0 ? metadata : undefined
+              if (Object.keys(metadata).length > 0) {
+                setDataAttribute(
+                  owner as NodeWithData,
+                  "data-arena-block-meta",
+                  JSON.stringify(metadata),
+                )
+              }
             }
 
-            const createBlock = (listItem: ListItem, depth = 0): ArenaBlock | null => {
+            const registerBlock = (listItem: ListItem, depth = 0) => {
               const paragraph = listItem.children.find(
                 (child): child is Paragraph => child.type === "paragraph",
               )
@@ -426,17 +202,12 @@ export const Arena: QuartzTransformerPlugin = () => {
               )
 
               let url: string | undefined
-              let title: string | undefined
-              let content = strippedContent
-              let parsed: ReturnType<typeof parseLinkTitle> | undefined
-              let useLinkForTitle = false
+              let titleCandidate: string | undefined
 
               if (firstLink && depth === 0) {
                 const linkText = stripHighlightMarker(toString(firstLink).trim())
                 if (linkText.length > 0) {
-                  content = linkText
-                  title = linkText
-                  useLinkForTitle = true
+                  titleCandidate = linkText
                 }
 
                 if (firstLink.url && /^https?:\/\//.test(firstLink.url)) {
@@ -445,16 +216,10 @@ export const Arena: QuartzTransformerPlugin = () => {
               }
 
               if (depth === 0 && strippedContent.toLowerCase().startsWith("http")) {
-                parsed = parseLinkTitle(strippedContent)
+                const parsed = parseLinkTitle(strippedContent)
                 if (parsed) {
                   url = parsed.url
-                  if (parsed.title) {
-                    title = parsed.title
-                    content = parsed.title
-                  } else {
-                    content = parsed.url
-                  }
-                  useLinkForTitle = false
+                  titleCandidate = parsed.title ?? parsed.url ?? titleCandidate
                 }
               }
 
@@ -462,74 +227,76 @@ export const Arena: QuartzTransformerPlugin = () => {
                 url = firstLink.url
               }
 
-              const titleParagraph = buildTitleParagraph(paragraph, {
-                parsedTitle: depth === 0 ? parsed?.title : undefined,
-                preferLink: depth === 0 && useLinkForTitle ? firstLink : undefined,
-                fallbackText: content,
-              })
+              if (!titleCandidate || titleCandidate.length === 0) {
+                titleCandidate = strippedContent.length > 0 ? strippedContent : undefined
+              }
+              if ((!titleCandidate || titleCandidate.length === 0) && url) {
+                titleCandidate = url
+              }
 
-              const cleanedTitleParagraph = cleanParagraphForHtml(titleParagraph)
-              const titleText = toString(cleanedTitleParagraph).trim()
-              const titleHtmlNode = paragraphToHtml(titleParagraph)
-              const finalTitle = titleText.length > 0 ? titleText : title
-
-              const fallbackContent = content || finalTitle || url || ""
+              const fallbackContent = titleCandidate || strippedContent || url || ""
 
               const blockId = `block-${blockCounter++}`
-              const snapshotKey = url
-                ? makeSnapshotKey(url, finalTitle ?? fallbackContent)
-                : undefined
+              const snapshotKey = url ? makeSnapshotKey(url, fallbackContent) : undefined
+
               setDataAttribute(listItem as NodeWithData, "data-arena-block-id", blockId)
               if (paragraph) {
                 setDataAttribute(paragraph as NodeWithData, "data-arena-block-paragraph", blockId)
               }
 
-              const block: ArenaBlock = {
-                id: blockId,
+              const info: Record<string, unknown> = {
                 content: fallbackContent,
-                url,
-                title: finalTitle,
-                titleHtmlNode,
+                highlighted: highlighted || undefined,
                 snapshotKey,
-                highlighted,
-                htmlNode: listItemContentToInlineHtml(listItem),
+                title: titleCandidate,
+                url,
               }
+              setDataAttribute(
+                listItem as NodeWithData,
+                "data-arena-block-info",
+                JSON.stringify(info),
+              )
 
               const nestedList = listItem.children.find(
                 (child): child is List => child.type === "list",
               )
               if (nestedList) {
-                const metadata = tryExtractMetadata(nestedList)
-                if (metadata) {
-                  block.metadata = metadata
-                }
-              }
-              if (nestedList) {
-                const subItems = buildBlocks(nestedList, depth + 1)
-                if (subItems.length > 0) {
-                  block.subItems = subItems
+                tryExtractMetadata(nestedList, listItem)
+                for (const child of nestedList.children) {
+                  if (child.type === "listItem") {
+                    registerBlock(child as ListItem, depth + 1)
+                  }
                 }
               }
 
-              if (block.url && twitterUrlRegex.test(block.url)) {
+              if (url && twitterUrlRegex.test(url)) {
                 embedPromises.push(
-                  fetchTwitterEmbed(block.url, locale).then((html) => {
-                    block.embedHtml = html
-                  }),
+                  fetchTwitterEmbed(url, locale)
+                    .then((html) => {
+                      if (html) {
+                        setDataAttribute(
+                          listItem as NodeWithData,
+                          "data-arena-block-embed-html",
+                          html,
+                        )
+                      }
+                    })
+                    .catch(() => undefined),
                 )
               }
 
-              return block
+              if (url) {
+                const youtubeEmbed = buildYouTubeEmbed(url)
+                if (youtubeEmbed) {
+                  setDataAttribute(
+                    listItem as NodeWithData,
+                    "data-arena-block-youtube",
+                    JSON.stringify(youtubeEmbed),
+                  )
+                }
+              }
             }
 
-            const buildBlocks = (list: List, depth = 0): ArenaBlock[] =>
-              list.children
-                .map((child) =>
-                  child.type === "listItem" ? createBlock(child as ListItem, depth) : null,
-                )
-                .filter((block): block is ArenaBlock => block !== null)
-
-            let pendingChannel: ArenaChannel | undefined
             visit(tree, (node, _index, parent) => {
               if (parent !== tree) {
                 return CONTINUE
@@ -538,7 +305,6 @@ export const Arena: QuartzTransformerPlugin = () => {
               if (node.type === "heading") {
                 const depth = (node as any).depth as number | undefined
                 if (depth === 2) {
-                  // Prefer deriving channel name from linked wikilink basename (e.g., [[thoughts/Machine learning]] → "Machine learning")
                   let name = toString(node).trim()
                   const linkChild = (node as any).children?.find(
                     (ch: any) => ch.type === "link",
@@ -552,34 +318,34 @@ export const Arena: QuartzTransformerPlugin = () => {
                       }
                     } catch {}
                   }
-                  if (name.length === 0) name = `Channel ${channels.length + 1}`
-                  const slug = slugger.slug(name || `channel-${channels.length + 1}`)
+                  if (name.length === 0) name = `Channel ${channelCounter + 1}`
+                  const slug = slugger.slug(name || `channel-${channelCounter + 1}`)
 
-                  const channelId = `channel-${channels.length}`
-                  const channel: ArenaChannel = {
-                    id: channelId,
-                    name,
-                    slug,
-                    blocks: [],
-                  }
-
+                  const channelId = `channel-${channelCounter++}`
                   setDataAttribute(node as NodeWithData, "data-arena-channel-id", channelId)
+                  setDataAttribute(node as NodeWithData, "data-arena-channel-name", name)
+                  setDataAttribute(node as NodeWithData, "data-arena-channel-slug", slug)
 
-                  channels.push(channel)
-                  pendingChannel = channel
+                  pendingChannelId = channelId
                   return CONTINUE
                 }
 
-                if (pendingChannel) {
-                  pendingChannel = undefined
-                }
-
+                pendingChannelId = null
                 return CONTINUE
               }
 
-              if (node.type === "list" && pendingChannel) {
-                pendingChannel.blocks = buildBlocks(node as List)
-                pendingChannel = undefined
+              if (node.type === "list" && pendingChannelId) {
+                setDataAttribute(
+                  node as NodeWithData,
+                  "data-arena-channel-blocks",
+                  pendingChannelId,
+                )
+                for (const child of node.children) {
+                  if (child.type === "listItem") {
+                    registerBlock(child as ListItem)
+                  }
+                }
+                pendingChannelId = null
                 return CONTINUE
               }
 
@@ -589,8 +355,6 @@ export const Arena: QuartzTransformerPlugin = () => {
             if (embedPromises.length > 0) {
               await Promise.all(embedPromises)
             }
-
-            fileData.arenaData = { channels }
           }
         },
       ]
@@ -602,26 +366,18 @@ export const Arena: QuartzTransformerPlugin = () => {
             const fileData = file.data as QuartzPluginData
             if (fileData.slug !== "are.na") return
 
-            const arenaData = fileData.arenaData
-            if (!arenaData) return
-
-            const blocksById = new Map<string, ArenaBlock>()
+            const channels: ArenaChannel[] = []
             const channelById = new Map<string, ArenaChannel>()
-            const registerBlocks = (blocks: ArenaBlock[]) => {
-              for (const block of blocks) {
-                blocksById.set(block.id, block)
-                if (block.subItems) {
-                  registerBlocks(block.subItems)
-                }
+
+            const parseJsonAttr = <T>(value: unknown): T | undefined => {
+              if (typeof value !== "string" || value.length === 0) return undefined
+              try {
+                return JSON.parse(value) as T
+              } catch {
+                return undefined
               }
             }
 
-            for (const channel of arenaData.channels) {
-              channelById.set(channel.id, channel)
-              registerBlocks(channel.blocks)
-            }
-
-            // Helper to annotate links in Arena HAST fragments similar to CrawlLinks
             const applyLinkProcessing = (node?: ElementContent): ElementContent | undefined => {
               if (!node) return undefined
 
@@ -640,13 +396,10 @@ export const Arena: QuartzTransformerPlugin = () => {
                   const isExternal = externalLinkRegex.test(dest)
 
                   if (!isExternal && !dest.startsWith("#")) {
-                    // Transform to site-relative link and attach data-slug
                     dest = transformLink(fileData.slug!, dest, {
                       strategy: "absolute",
                       allSlugs: ctx.allSlugs,
                     })
-                    e.properties.href = dest
-
                     const url = new URL(
                       dest,
                       "https://base.com/" + stripSlashes(fileData.slug!, true),
@@ -655,6 +408,8 @@ export const Arena: QuartzTransformerPlugin = () => {
                     let [destCanonical] = splitAnchor(canonical)
                     if (destCanonical.endsWith("/")) destCanonical += "index"
                     const full = decodeURIComponent(stripSlashes(destCanonical, true))
+                    const canonicalHref = `${url.pathname}${url.search}${url.hash}` || "/"
+                    e.properties.href = canonicalHref
                     e.properties["data-slug"] = full
 
                     if (!classes.includes("internal")) classes.push("internal")
@@ -677,105 +432,196 @@ export const Arena: QuartzTransformerPlugin = () => {
               return cloned
             }
 
-            // helper to aggregate inline content from a <li> (exclude nested <ul>)
             const aggregateListItem = (li: Element): ElementContent => {
               const collected: ElementContent[] = []
-              for (const ch of (li.children ?? []) as ElementContent[]) {
-                const el = cloneElementContent(ch)
-                if (el.type === "element" && el.tagName === "ul") continue
-                if (el.type === "element" && el.properties) {
-                  delete el.properties["data-arena-block-paragraph"]
-                  delete el.properties["data-arena-block-id"]
+              for (const child of (li.children ?? []) as ElementContent[]) {
+                const cloned = cloneElementContent(child)
+                if (cloned.type === "element" && cloned.tagName === "ul") continue
+                if (cloned.type === "element" && cloned.properties) {
+                  deleteDataAttr(cloned.properties, "data-arena-block-paragraph")
+                  deleteDataAttr(cloned.properties, "data-arena-block-id")
                 }
-                collected.push(el)
+                collected.push(cloned)
               }
-              // Use a block container so nested block elements (e.g., display math)
-              // are legal and style correctly inside notes.
-              const aggregated: ElementContent = {
+              const wrapped: ElementContent = {
                 type: "element",
                 tagName: "div",
                 properties: {},
                 children: collected,
               }
-              return applyLinkProcessing(aggregated) ?? aggregated
+              return applyLinkProcessing(wrapped) ?? wrapped
             }
 
-            visit(tree, "element", (node: Element, _index, parent) => {
-              if (!node.properties) return
+            const buildBlocksFromList = (list: Element): ArenaBlock[] => {
+              const results: ArenaBlock[] = []
+              for (const child of list.children ?? []) {
+                if (typeof child !== "object" || child === null) continue
+                if ((child as Element).type !== "element") continue
+                const el = child as Element
+                if (el.tagName !== "li" || !el.properties) continue
+                const blockId = getDataAttr<string>(el.properties, "data-arena-block-id")
+                if (typeof blockId !== "string") continue
 
-              const channelId = node.properties["data-arena-channel-id"]
-              if (typeof channelId === "string") {
-                const channel = channelById.get(channelId)
-                if (channel) {
-                  const headingClone = cloneElementContent(node)
-                  if (headingClone.type === "element") {
-                    if (elementContainsAnchor(headingClone as ElementContent)) {
-                      const spanNode: Element = {
-                        type: "element",
-                        tagName: "span",
-                        properties: {},
-                        children: (headingClone.children ?? []).map((child) =>
-                          cloneElementContent(child as ElementContent),
-                        ),
-                      }
-                      channel.titleHtmlNode = applyLinkProcessing(spanNode) ?? spanNode
+                const info =
+                  parseJsonAttr<{
+                    content?: string
+                    highlighted?: boolean
+                    snapshotKey?: string
+                    title?: string
+                    url?: string
+                  }>(getDataAttr(el.properties, "data-arena-block-info")) ?? {}
+
+                const block: ArenaBlock = {
+                  id: blockId,
+                  content: info.content ?? "",
+                  url: typeof info.url === "string" ? info.url : undefined,
+                  title: typeof info.title === "string" ? info.title : undefined,
+                  snapshotKey: typeof info.snapshotKey === "string" ? info.snapshotKey : undefined,
+                  highlighted: Boolean(info.highlighted),
+                }
+
+                const metadata = parseJsonAttr<Record<string, string>>(
+                  getDataAttr(el.properties, "data-arena-block-meta"),
+                )
+                if (metadata) {
+                  block.metadata = metadata
+                }
+
+                const embedHtml = getDataAttr<string>(el.properties, "data-arena-block-embed-html")
+                if (typeof embedHtml === "string" && embedHtml.length > 0) {
+                  block.embedHtml = embedHtml
+                }
+
+                const youtubeSpec = parseJsonAttr<YouTubeEmbedSpec>(
+                  getDataAttr(el.properties, "data-arena-block-youtube"),
+                )
+                if (!block.embedHtml && youtubeSpec?.src) {
+                  const frameTitle = block.title ?? block.content ?? block.id
+                  block.embedHtml = `<iframe class="arena-modal-iframe arena-modal-iframe-youtube" title="YouTube embed: ${frameTitle.replace(/"/g, "&quot;")}" loading="lazy" data-block-id="${block.id}" src="${youtubeSpec.src}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+                }
+
+                const paragraphId = getDataAttr<string>(el.properties, "data-arena-block-paragraph")
+                let paragraphNode: Element | undefined
+                if (typeof paragraphId === "string") {
+                  const match = el.children?.find((childNode) => {
+                    if (typeof childNode !== "object" || childNode === null) return false
+                    if ((childNode as Element).type !== "element") return false
+                    const elementChild = childNode as Element
+                    return (
+                      getDataAttr<string>(elementChild.properties, "data-arena-block-paragraph") ===
+                      paragraphId
+                    )
+                  }) as Element | undefined
+                  if (match) {
+                    paragraphNode = match
+                    if (match.properties) {
+                      deleteDataAttr(match.properties, "data-arena-block-paragraph")
                     }
                   }
                 }
 
-                delete node.properties["data-arena-channel-id"]
-              }
-
-              // If we encounter the owning <li>, make sure we capture its inline content
-              const blockOwner = node.properties["data-arena-block-id"]
-              if (typeof blockOwner === "string") {
-                const ownerBlock = blocksById.get(blockOwner)
-                if (ownerBlock && node.tagName === "li") {
-                  // Snapshot inline html for blocks that don't have a paragraph
-                  ownerBlock.htmlNode = aggregateListItem(node)
+                if (paragraphNode) {
+                  const paragraphClone = cloneElementContent(paragraphNode)
+                  if (paragraphClone.type === "element") {
+                    if (paragraphClone.tagName === "p") {
+                      paragraphClone.tagName = "span"
+                    }
+                    if (paragraphClone.properties) {
+                      deleteDataAttr(paragraphClone.properties, "data-arena-block-id")
+                    }
+                  }
+                  block.titleHtmlNode =
+                    applyLinkProcessing(paragraphClone as ElementContent) ??
+                    (paragraphClone as ElementContent)
                 }
-                delete node.properties["data-arena-block-id"]
-              }
 
-              const blockId = node.properties["data-arena-block-paragraph"]
-              if (typeof blockId !== "string") {
-                return
-              }
+                block.htmlNode = aggregateListItem(el)
 
-              const block = blocksById.get(blockId)
-              if (!block) {
-                delete node.properties["data-arena-block-paragraph"]
-                return
-              }
+                const sublist = el.children?.find((childNode) => {
+                  if (typeof childNode !== "object" || childNode === null) return false
+                  if ((childNode as Element).type !== "element") return false
+                  return (childNode as Element).tagName === "ul"
+                }) as Element | undefined
 
-              // Build an aggregated inline content node from the list item containing this paragraph
-              let aggregated: ElementContent | undefined
-              if (parent && parent.type === "element" && parent.tagName === "li") {
-                aggregated = aggregateListItem(parent)
-              }
-
-              // Title is the cleaned paragraph itself (inline)
-              const inlineTitleClone = cloneElementContent(node)
-              if (inlineTitleClone.type === "element") {
-                if (inlineTitleClone.properties) {
-                  delete inlineTitleClone.properties["data-arena-block-paragraph"]
-                  delete inlineTitleClone.properties["data-arena-block-id"]
+                if (sublist) {
+                  const subBlocks = buildBlocksFromList(sublist)
+                  if (subBlocks.length > 0) {
+                    block.subItems = subBlocks
+                  }
                 }
-                if (inlineTitleClone.tagName === "p") inlineTitleClone.tagName = "span"
+
+                deleteDataAttr(el.properties, "data-arena-block-id")
+                deleteDataAttr(el.properties, "data-arena-block-info")
+                deleteDataAttr(el.properties, "data-arena-block-meta")
+                deleteDataAttr(el.properties, "data-arena-block-embed-html")
+                deleteDataAttr(el.properties, "data-arena-block-youtube")
+
+                results.push(block)
+              }
+              return results
+            }
+
+            visit(tree, "element", (node: Element) => {
+              if (!node.properties) return
+
+              const channelId = getDataAttr<string>(node.properties, "data-arena-channel-id")
+              if (typeof channelId === "string") {
+                const name = getDataAttr<string>(node.properties, "data-arena-channel-name")
+                const slug = getDataAttr<string>(node.properties, "data-arena-channel-slug")
+                if (!channelById.has(channelId)) {
+                  const channel: ArenaChannel = {
+                    id: channelId,
+                    name: typeof name === "string" ? name : channelId,
+                    slug: typeof slug === "string" ? slug : channelId,
+                    blocks: [],
+                  }
+
+                  const headingClone = cloneElementContent(node)
+                  if (headingClone.type === "element" && elementContainsAnchor(headingClone)) {
+                    const span: Element = {
+                      type: "element",
+                      tagName: "span",
+                      properties: {},
+                      children: (headingClone.children ?? []).map((child) =>
+                        cloneElementContent(child as ElementContent),
+                      ),
+                    }
+                    channel.titleHtmlNode = applyLinkProcessing(span) ?? span
+                  }
+
+                  channels.push(channel)
+                  channelById.set(channelId, channel)
+                }
+
+                deleteDataAttr(node.properties, "data-arena-channel-id")
+                deleteDataAttr(node.properties, "data-arena-channel-name")
+                deleteDataAttr(node.properties, "data-arena-channel-slug")
               }
 
-              block.titleHtmlNode = (applyLinkProcessing(inlineTitleClone as ElementContent) ??
-                (inlineTitleClone as ElementContent)) as ElementContent
-              if (aggregated) {
-                block.htmlNode = aggregated as ElementContent
-              } else {
-                // fallback to paragraph clone if aggregation failed
-                block.htmlNode = (applyLinkProcessing(inlineTitleClone as ElementContent) ??
-                  (inlineTitleClone as ElementContent)) as ElementContent
+              const blocksChannelId = getDataAttr<string>(
+                node.properties,
+                "data-arena-channel-blocks",
+              )
+              if (typeof blocksChannelId === "string") {
+                const channel = channelById.get(blocksChannelId)
+                if (channel) {
+                  const blocks = buildBlocksFromList(node)
+                  channel.blocks = blocks
+                }
+                deleteDataAttr(node.properties, "data-arena-channel-blocks")
               }
-
-              delete node.properties["data-arena-block-paragraph"]
             })
+
+            fileData.arenaData = { channels }
+
+            if (ctx.argv.watch && ctx.argv.force) {
+              try {
+                const debugPath = join(process.cwd(), "content", "arena_hast.json")
+                writeFileSync(debugPath, JSON.stringify(tree, null, 2))
+              } catch {
+                // ignore write failures during debugging
+              }
+            }
           }
         },
       ]

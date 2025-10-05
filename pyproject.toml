@@ -12,21 +12,9 @@ dependencies = [
   "matplotlib>=3.9.2",
   "numpy>=2.1.2",
   "scipy>=1.14.1",
-  "jupyter>=1.1.1",
-  "jupyter-client>=8.6.3",
-  "jupytext>=1.16.4",
-  "mypy>=1.12.1",
-  "plotly>=5.24.1",
-  "pnglatex>=1.1",
-  "pylatexenc>=2.10",
-  "pynvim>=0.5.0",
-  "pyperclip>=1.9.0",
-  "scikit-learn>=1.5.2",
-  "pandas>=2.2.3",
-  "jupyterlab-vim>=4.1.4",
-  "pytest>=8.4.2",
   "tiktoken>=0.11.0",
   "langchain-text-splitters>=0.3.11",
+  "bytecode>=0.17.0",
 ]
 dynamic = ["version"]
 
@@ -120,3 +108,24 @@ root = "./"
 [tool.ty.environment]
 python = "./.venv"
 python-version = "3.11"
+
+[dependency-groups]
+dev = [
+  "numba>=0.62.1",
+  "jupyter>=1.1.1",
+  "jupyter-client>=8.6.3",
+  "jupytext>=1.16.4",
+  "mypy>=1.12.1",
+  "plotly>=5.24.1",
+  "pnglatex>=1.1",
+  "pylatexenc>=2.10",
+  "pynvim>=0.5.0",
+  "pyperclip>=1.9.0",
+  "scikit-learn>=1.5.2",
+  "pandas>=2.2.3",
+  "jupyterlab-vim>=4.1.4",
+  "pytest>=8.4.2",
+  "torch>=2.8.0",
+  "huggingface-hub[cli]>=0.35.3",
+  "bentoml>=1.4.25",
+]

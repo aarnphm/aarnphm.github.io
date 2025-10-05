@@ -3,10 +3,11 @@ id: Polysemantic
 tags:
   - interpretability
   - llm
+description: properties in language models.
+date: "2025-10-04"
 socials:
   circuits: https://transformer-circuits.pub/2023/monosemantic-features/index.html
-date: "2025-10-04"
-modified: 2025-10-04 18:24:20 GMT-04:00
+modified: 2025-10-05 00:15:53 GMT-04:00
 title: Polysemantic
 ---
 

@@ -74,7 +74,6 @@ const configuration: GlobalConfiguration = {
   semanticSearch: {
     enable: true,
     model,
-    allowRemoteModels: true,
     dims: 1024,
     dtype: "fp32",
     shardSizeRows: 1024,
@@ -184,6 +183,9 @@ const config: QuartzConfig = {
             ".ipynb",
             ".json",
             ".csv",
+            ".webp",
+            ".mp4",
+            ".svg",
           ],
           exclude: [/\.(ignore\.pdf)$/, /400232791/],
           tags: [
