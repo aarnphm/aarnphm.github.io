@@ -36,6 +36,8 @@ import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
 import curiusScript from "./scripts/curius.inline"
 //@ts-ignore
 import curiusFriendScript from "./scripts/curius-friends.inline"
+//@ts-ignore
+import curiusNavigationScript from "./scripts/curius-navigation.inline"
 import { htmlToJsx } from "../util/jsx"
 import Content from "./pages/Content"
 import { BuildCtx } from "../util/ctx"
@@ -1176,6 +1178,19 @@ const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {
   )
 }
 
+export const CuriusNavigation: QuartzComponent = (props: QuartzComponentProps) => {
+  const { displayClass } = props
+  return (
+    <div class={classNames(displayClass, "curius-pagination", "curius-col")} id="curius-pagination">
+      <span id="curius-prev" style="visibility: hidden">
+        (prev)
+      </span>
+      <span id="curius-next">next</span>
+    </div>
+  )
+}
+CuriusNavigation.afterDOMLoaded = curiusNavigationScript
+
 export function renderPage(
   ctx: BuildCtx,
   slug: FullSlug,
@@ -1238,7 +1253,7 @@ export function renderPage(
       beforeBody: [],
       sidebar: [CuriusFriends, CuriusTrail],
       pageBody: CuriusContent,
-      afterBody: [],
+      afterBody: [CuriusNavigation],
       footer: FooterConstructor({ layout: "curius" }),
     }
   }
@@ -1291,6 +1306,7 @@ export function renderPage(
   if (pageLayout === "technical") disableSidepanel = true
   const isSlides = componentData.fileData.frontmatter?.slides ?? false
   const isArena = slug === "arena" || slug.startsWith("arena/")
+  const isCurius = slug === "curius"
   const isArenaSubpage = slug.startsWith("arena/") && slug !== "arena"
   if (isArena || isArenaSubpage) disableSidepanel = true
 
@@ -1369,7 +1385,7 @@ export function renderPage(
                 </aside>
               )}
               <Content {...componentData} />
-              {!isSlides && !isArena && (
+              {!isSlides && !isArena && !isCurius && (
                 <>
                   <div id="wc-modal" class="wc-modal">
                     <div class="wc-inner" />

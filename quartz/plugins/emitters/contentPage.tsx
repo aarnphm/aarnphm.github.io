@@ -6,6 +6,7 @@ import {
   renderPage,
   CuriusContent,
   CuriusFriends,
+  CuriusNavigation,
 } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
 import { pathToRoot } from "../../util/path"
@@ -66,6 +67,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         Header,
         CuriusFriends,
         CuriusContent,
+        CuriusNavigation,
         ...header,
         ...beforeBody,
         pageBody,
