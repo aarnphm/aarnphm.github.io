@@ -13,7 +13,7 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-04 16:50:19 GMT-04:00
+modified: 2025-10-04 22:20:41 GMT-04:00
 aliases:
   - inspo
 title: are.na
@@ -102,6 +102,9 @@ cssclasses:
 - https://x.com/poetengineer__/status/1895397439852695708 -- a measured heart
   - \_meta:
     - date: 10/03/2025
+- https://x.com/mots_pod/status/1974637749383946252 -- hey look at my neovim config!
+  - \_meta:
+    - date: 10/04/2025
 
 ## website
 
@@ -1468,6 +1471,9 @@ cssclasses:
     - date: 10/03/2025
   - > Connecting with people is about being a dazzling person
   - > Connecting with people is about playing their game
+- https://x.com/noampomsky/status/1974487754290729215?s=61 -- Feeling your feeling but it is just your resistance
+  - \_meta:
+    - date: 10/04/2025
 
 ## technology
 

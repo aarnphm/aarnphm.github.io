@@ -1,19 +1,13 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import { ArenaChannel, ArenaBlock } from "../../plugins/transformers/arena"
 import { classNames } from "../../util/lang"
-import { toHtml } from "hast-util-to-html"
 import type { ElementContent, Root } from "hast"
 import style from "../styles/arena.scss"
 // @ts-ignore
 import modalScript from "../scripts/arena.inline"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 import { FullSlug } from "../../util/path"
-import {
-  toArenaJsx,
-  fromHtmlStringToArenaJsx,
-  toArenaRoot,
-  arenaBlockTimestamp,
-} from "../../util/arena"
+import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from "../../util/arena"
 
 const substackPostRegex = /^https?:\/\/[^/]+\/p\/[^/]+/i
 
@@ -203,14 +197,6 @@ const rewriteArxivUrl = (rawUrl: string): string => {
   }
 }
 
-const escapeHtml = (value: string): string =>
-  value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
-
 const normalizeDate = (value: string): { display: string; dateTime?: string } => {
   const trimmed = value.trim()
   const match = trimmed.match(/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/)
@@ -256,12 +242,6 @@ export default (() => {
       node
         ? toArenaJsx(fileData.filePath!, node, fileData.slug! as FullSlug, componentData)
         : undefined
-
-    const htmlFromNode = (node?: ElementContent) => {
-      if (!node) return undefined
-      const root = toArenaRoot(node, fileData.slug! as FullSlug, componentData)
-      return toHtml(root, { allowDangerousHtml: true })
-    }
 
     const renderBlock = (block: ArenaBlock, blockIndex: number) => {
       const hasSubItems = block.subItems && block.subItems.length > 0

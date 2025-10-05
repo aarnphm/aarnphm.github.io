@@ -7,7 +7,7 @@ import {
   PhrasingContent,
   Link,
   Text,
-  Content as MdastContent,
+  RootContent as MdastContent,
 } from "mdast"
 import { Element, ElementContent } from "hast"
 import { QuartzPluginData } from "../vfile"
@@ -20,7 +20,7 @@ import { wikiTextTransform, wikilinkRegex, externalLinkRegex } from "./ofm"
 import { createHash } from "crypto"
 import { fromMarkdown } from "mdast-util-from-markdown"
 import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
-import { splitAnchor, transformLink, stripSlashes, simplifySlug } from "../../util/path"
+import { splitAnchor, transformLink, stripSlashes } from "../../util/path"
 import { findAndReplace as mdastFindReplace, ReplaceFunction } from "mdast-util-find-and-replace"
 
 export interface ArenaBlock {
@@ -667,8 +667,8 @@ export const Arena: QuartzTransformerPlugin = () => {
                   }
                 }
 
-                if ((el as Element).children) {
-                  ;((el as Element).children as ElementContent[]).forEach(visitEl)
+                if (el.children) {
+                  el.children.forEach(visitEl)
                 }
               }
 

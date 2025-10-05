@@ -8,7 +8,7 @@ tags:
 description: what neural networks are, ontologically speaking
 signature: with abundance of love and joy - Aaron
 date: "2025-10-04"
-modified: 2025-10-04 18:48:54 GMT-04:00
+modified: 2025-10-04 21:17:10 GMT-04:00
 title: connectionist networks
 pageLayout: technical
 ---
@@ -59,7 +59,7 @@ is the network rewriting its own constitution, i.e: changing what it _is_.
 
 ## the universal approximation theorem and its discontents
 
-Sure, a feedforward network with one hidden layer can approximate any continuous function on a compact set [@Cybenko1989]. Mathematically:
+Sure, a [[thoughts/FFN|feed-forward]] network with one hidden layer can approximate any continuous function on a compact set [@Cybenko1989]. Mathematically:
 
 For any continuous $f: \mathbb{R}^n \to \mathbb{R}^m$ and $\epsilon > 0$, there exists a network $g$ with sufficient hidden units such that:
 

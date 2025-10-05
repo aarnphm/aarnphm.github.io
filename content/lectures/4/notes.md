@@ -11,7 +11,7 @@ modified: 2025-09-15 11:00:39 GMT-04:00
 title: supplement to 0.4
 ---
 
-see also [[thoughts/Speculative decoding]], [[/specdec|indepedent research]]
+see also [[thoughts/Speculative decoding]], [[hinterland/specdec|indepedent research]]
 
 ![[thoughts/Speculative decoding#von Neumann acceptance-rejection]]
 

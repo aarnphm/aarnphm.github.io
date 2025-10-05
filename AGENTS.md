@@ -95,4 +95,4 @@ Be super technical. But always give intuition and clarifying reasoning. Be expla
 
 - Do not commit secrets; use `.env` locally and `wrangler.toml`/CF secrets for Worker.
 - Large binaries go through Git LFS; keep `public/` reproducible via `pnpm bundle`.
-- Node >= 22, pnpm 9; Python 3.11, Rust nightly, Go 1.23, C++21, CUDA 12.8++, Triton 3.4+, CUTLASS 4.2.0 and up, CuTeDSL in Python.
+- Node >= 22, pnpm 9; Python 3.11, Rust nightly, Go 1.23, C++21, CUDA 12.8++, Lean4, Triton 3.4+, CUTLASS 4.2.0+, CuTeDSL in Python.

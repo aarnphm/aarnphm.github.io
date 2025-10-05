@@ -1,5 +1,4 @@
 import sourceMapSupport from "source-map-support"
-import type { Dirent } from "fs"
 import path from "path"
 import { PerfTimer } from "./util/perf"
 import { rm } from "fs/promises"

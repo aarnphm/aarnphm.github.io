@@ -36,4 +36,4 @@ create_missing_file.enable = true
 # Other values include:
 # * "file-stem" to complete using file name without an extension,
 # * "file-path-stem" same as above but using file path.
-wiki.style = "file-path-stem"
+wiki.style = "file-path"
