@@ -32,6 +32,7 @@ export default (() => {
             placeholder="rechercher tous les canaux..."
             data-search-scope="index"
             aria-label="Rechercher tous les canaux"
+            aria-keyshortcuts="Meta+K Control+K"
           />
           <svg
             class="arena-search-icon"

@@ -1,19 +1,47 @@
-#!/usr/bin/env python3
-import os
-import json
-import argparse
-import hashlib
-import math
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "langchain-text-splitters",
+#     "numpy",
+#     "openai",
+#     "sentence-transformers",
+#     "tiktoken",
+# ]
+# ///
+
+from __future__ import annotations
+
+import os, json, argparse, hashlib, math, random, logging
+
 from pathlib import Path
-from collections.abc import Iterable
-import random
 from functools import lru_cache
+from collections.abc import Iterable
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-import numpy as np
-import tiktoken
+import tiktoken, numpy as np
+
+from openai import OpenAI
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
-DEFAULT_VLLM_URL = os.environ.get("VLLM_URL") or os.environ.get("VLLM_EMBED_URL") or "http://127.0.0.1:8000/v1/embeddings"
+logger = logging.getLogger(__name__)
+DEFAULT_VLLM_URL = os.environ.get("VLLM_URL") or os.environ.get("VLLM_EMBED_URL") or "http://127.0.0.1:8000/v1"
+
+
+def resolve_vllm_base_url(url: str) -> str:
+  if not url:
+    raise ValueError("vLLM URL must be non-empty")
+
+  trimmed = url.rstrip("/")
+  if trimmed.endswith("/v1/embeddings"):
+    trimmed = trimmed[: -len("/embeddings")]
+  elif trimmed.endswith("/embeddings"):
+    trimmed = trimmed[: trimmed.rfind("/")]
+
+  if not trimmed.endswith("/v1"):
+    trimmed = f"{trimmed}/v1"
+
+  return trimmed
 
 
 def load_jsonl(fp: str) -> Iterable[dict]:
@@ -34,20 +62,18 @@ def l2_normalize_rows(x: np.ndarray) -> np.ndarray:
 
 @lru_cache(maxsize=1)
 def get_tiktoken_encoder():
-  """Get the o200k_base tokenizer (GPT-4o) with caching"""
+  # Get the o200k_base tokenizer (GPT-4o) with caching
+  # change this if you want something else.
   return tiktoken.get_encoding("o200k_base")
 
 
 def count_tokens(text: str) -> int:
-  """Count tokens using o200k_base encoding"""
+  # Count tokens using o200k_base encoding
   encoder = get_tiktoken_encoder()
   return len(encoder.encode(text))
 
 
 def get_text_splitter(chunk_size: int, overlap: int):
-  """Lazy-load langchain text splitter"""
-  from langchain_text_splitters import RecursiveCharacterTextSplitter
-
   encoder = get_tiktoken_encoder()
   return RecursiveCharacterTextSplitter(
     chunk_size=chunk_size * 4,  # character approximation
@@ -195,8 +221,31 @@ def embed_vllm(
   batch_size: int = 64,
   concurrency: int = 8,
 ) -> np.ndarray:
-  import requests
-  from concurrent.futures import ThreadPoolExecutor, as_completed
+  base_url = resolve_vllm_base_url(vllm_url)
+  api_key = os.environ.get("VLLM_API_KEY") or os.environ.get("OPENAI_API_KEY") or "not-set"
+  client = OpenAI(base_url=base_url, api_key=api_key, timeout=300)
+
+  def list_available_models() -> list[str]:
+    models: list[str] = []
+    page = client.models.list()
+    models.extend(model.id for model in page.data)
+    while getattr(page, "has_more", False) and page.data:
+      cursor = page.data[-1].id
+      page = client.models.list(after=cursor)
+      models.extend(model.id for model in page.data)
+    return models
+
+  try:
+    available_models = list_available_models()
+  except Exception as exc:
+    raise RuntimeError(f"failed to query {base_url}/models: {exc}") from exc
+
+  if model_id not in available_models:
+    suggestions = ", ".join(sorted(available_models)) if available_models else "<none>"
+    logger.warning(
+      "model '%s' not served by vLLM at %s. Available models: %s. Use the first model, results may differ during semantic search (you can omit this message if your weights is a ONNX checkpoint of the same model.)", model_id, base_url, suggestions,
+    )
+    model_id = available_models[0]
 
   # Apply model-specific prefixes for documents (asymmetric search)
   model_lower = model_id.lower()
@@ -213,7 +262,11 @@ def embed_vllm(
     # Default: no prefix for unknown models
     prefixed = texts
 
-  print(f"Embedding {len(prefixed)} texts with vLLM (batch_size={batch_size}, concurrency={concurrency})")
+  print(
+    "Embedding"
+    f" {len(prefixed)} texts with vLLM"
+    f" (model={model_id}, batch_size={batch_size}, concurrency={concurrency})",
+  )
 
   # Create batches
   batches = []
@@ -224,10 +277,8 @@ def embed_vllm(
   # Function to send a single batch request
   def send_batch(batch_info: tuple[int, list[str]]) -> tuple[int, list[np.ndarray]]:
     idx, batch = batch_info
-    r = requests.post(vllm_url, json={"model": model_id, "input": batch}, timeout=300)
-    r.raise_for_status()
-    data = r.json()["data"]
-    embeddings = [np.asarray(item["embedding"], dtype=np.float32) for item in data]
+    response = client.embeddings.create(model=model_id, input=batch)
+    embeddings = [np.asarray(item.embedding, dtype=np.float32) for item in response.data]
     return (idx, embeddings)
 
   # Send batches concurrently (or sequentially if only 1 batch)
@@ -296,7 +347,11 @@ def main():
   ap.add_argument("--shard-size", type=int, default=int(os.environ.get("SEM_SHARD", "1024")))
   ap.add_argument("--out", default="public/embeddings")
   ap.add_argument("--use-vllm", action="store_true", default=bool(os.environ.get("USE_VLLM", "")))
-  ap.add_argument("--vllm-url", default=DEFAULT_VLLM_URL)
+  ap.add_argument(
+    "--vllm-url",
+    default=DEFAULT_VLLM_URL,
+    help="Base URL for the vLLM OpenAI-compatible server (accepts either /v1 or /v1/embeddings)",
+  )
   ap.add_argument("--chunk-size", type=int, default=512, help="Max tokens per chunk")
   ap.add_argument("--chunk-overlap", type=int, default=128, help="Overlap tokens between chunks")
   ap.add_argument("--no-chunking", action="store_true", help="Disable chunking (embed full docs)")
@@ -389,6 +444,7 @@ def main():
       return float((data[i] * data[j]).sum())
 
     entry = 0 if N > 0 else -1
+    entry_level = node_levels[entry] if entry >= 0 else -1
 
     def search_layer(q: int, ep: int, ef: int, L: int) -> list[int]:
       if ep < 0:
@@ -431,6 +487,9 @@ def main():
             levels[L][i].append(e)
           if i not in levels[L][e]:
             levels[L][e].append(i)
+      if lvl > entry_level:
+        entry = i
+        entry_level = lvl
 
     # trim neighbors to M
     for L in range(len(levels)):
@@ -440,6 +499,11 @@ def main():
           nb = levels[L][i]
           nb = sorted(nb, key=lambda j: sim(i, j), reverse=True)[:M]
           levels[L][i] = nb
+        else:
+          # Ensure neighbors remain deduplicated and sorted by similarity for deterministic output
+          unique = list(dict.fromkeys(levels[L][i]))
+          unique.sort(key=lambda j: sim(i, j), reverse=True)
+          levels[L][i] = unique[:M]
 
     return {
       "M": M,

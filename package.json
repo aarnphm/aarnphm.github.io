@@ -12,7 +12,7 @@
     "url": "https://github.com/aarnphm/aarnphm.github.io.git"
   },
   "scripts": {
-    "dev": "NODE_ENV=development pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --serve --verbose",
+    "dev": "NODE_ENV=development pnpm exec quartz/bootstrap-cli.mjs build --concurrency 16 --serve --verbose",
     "cf:dev": "until test -d public; do PUBLIC_BASE_URL=http://localhost:8080 pnpm dlx wrangler dev; done",
     "bundle": "pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --bundleInfo --verbose",
     "bundle:dev": "CF_PAGES=1 NODE_ENV=development pnpm bundle",

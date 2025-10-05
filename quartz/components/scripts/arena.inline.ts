@@ -430,12 +430,19 @@ function renderSearchResults(results: SearchIndexItem[], scope: "channel" | "ind
   }
 
   const fragment = document.createDocumentFragment()
-  results.forEach((result) => {
+  results.forEach((result, idx) => {
     const resultItem = document.createElement("div")
     resultItem.className = "arena-search-result-item"
     resultItem.setAttribute("data-block-id", result.blockId)
     if (result.channelSlug) {
       resultItem.setAttribute("data-channel-slug", result.channelSlug)
+    }
+    resultItem.dataset.index = String(idx)
+    resultItem.tabIndex = -1
+    resultItem.setAttribute("role", "option")
+    if (!resultItem.id) {
+      const uniqueId = `arena-search-${result.blockId}`
+      resultItem.id = uniqueId
     }
 
     const title = document.createElement("div")
@@ -477,6 +484,117 @@ document.addEventListener("nav", () => {
 
   // Build search index
   const searchInput = document.querySelector<HTMLInputElement>(".arena-search-input")
+  let activeResultIndex: number | null = null
+
+  const getSearchResults = () =>
+    Array.from(
+      document.querySelectorAll<HTMLElement>("#arena-search-container .arena-search-result-item"),
+    )
+
+  const resetActiveResultHighlight = () => {
+    activeResultIndex = null
+    if (searchInput) {
+      searchInput.removeAttribute("aria-activedescendant")
+    }
+    getSearchResults().forEach((result) => result.classList.remove("active"))
+  }
+
+  const setActiveResult = (
+    index: number | null,
+    options?: { focus?: boolean; scroll?: boolean },
+  ) => {
+    const results = getSearchResults()
+    if (results.length === 0) {
+      resetActiveResultHighlight()
+      if (options?.focus && searchInput) {
+        searchInput.focus()
+      }
+      return
+    }
+
+    if (index === null) {
+      resetActiveResultHighlight()
+      if (options?.focus && searchInput) {
+        searchInput.focus()
+      }
+      return
+    }
+
+    const clamped = Math.max(0, Math.min(index, results.length - 1))
+    results.forEach((result, idx) => {
+      result.classList.toggle("active", idx === clamped)
+    })
+
+    const target = results[clamped]
+    activeResultIndex = clamped
+    if (!target.id) {
+      const fallbackId = target.getAttribute("data-block-id") || `arena-result-${clamped}`
+      target.id = `arena-search-${fallbackId}`
+    }
+    if (searchInput) {
+      searchInput.setAttribute("aria-activedescendant", target.id)
+    }
+
+    if (options?.focus !== false) {
+      target.focus()
+    }
+
+    if (options?.scroll !== false) {
+      target.scrollIntoView({ block: "nearest" })
+    }
+  }
+
+  const wireSearchResultsInteractions = () => {
+    const items = getSearchResults()
+    items.forEach((item) => {
+      const idx = Number.parseInt(item.dataset.index ?? "", 10)
+      if (!Number.isInteger(idx)) return
+
+      const onFocus = () => setActiveResult(idx, { focus: false, scroll: false })
+      const onMouseEnter = () => setActiveResult(idx, { focus: false, scroll: false })
+
+      item.addEventListener("focus", onFocus)
+      item.addEventListener("mouseenter", onMouseEnter)
+
+      window.addCleanup(() => {
+        item.removeEventListener("focus", onFocus)
+        item.removeEventListener("mouseenter", onMouseEnter)
+      })
+    })
+  }
+
+  const focusSearchInput = (prefill?: string) => {
+    if (!searchInput) return
+    if (typeof prefill === "string") {
+      searchInput.value = prefill
+      searchInput.dispatchEvent(new Event("input", { bubbles: true }))
+    }
+    resetActiveResultHighlight()
+    const valueLength = searchInput.value.length
+    searchInput.focus()
+    try {
+      if (valueLength > 0) {
+        searchInput.select()
+      } else {
+        searchInput.setSelectionRange(valueLength, valueLength)
+      }
+    } catch {
+      // Some inputs (e.g. on Safari) may not support selection API depending on state
+    }
+  }
+
+  const clearSearchState = (options?: { blur?: boolean }) => {
+    if (searchInput) {
+      searchInput.value = ""
+      if (options?.blur !== false) {
+        searchInput.blur()
+      }
+      searchInput.removeAttribute("aria-activedescendant")
+    }
+    resetActiveResultHighlight()
+    closeSearchDropdown()
+  }
+
   if (searchInput) {
     const scope = searchInput.getAttribute("data-search-scope") as "channel" | "index"
     searchIndex = buildSearchIndex(scope)
@@ -494,11 +612,14 @@ document.addEventListener("nav", () => {
       searchDebounceTimer = window.setTimeout(() => {
         if (query.length < 2) {
           closeSearchDropdown()
+          resetActiveResultHighlight()
           return
         }
 
         const results = performSearch(query, searchIndex)
         renderSearchResults(results, scope)
+        wireSearchResultsInteractions()
+        resetActiveResultHighlight()
       }, 300)
     }
 
@@ -623,7 +744,7 @@ document.addEventListener("nav", () => {
 
       if (blockId) {
         e.preventDefault()
-        closeSearchDropdown()
+        clearSearchState({ blur: true })
 
         // If we're on the index page and clicked a result from another channel,
         // navigate to that channel first
@@ -648,14 +769,67 @@ document.addEventListener("nav", () => {
   }
 
   const onKey = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      const searchContainer = document.getElementById("arena-search-container")
+    const key = e.key.toLowerCase()
+    if ((e.metaKey || e.ctrlKey) && key === "k") {
+      e.preventDefault()
+      if (e.shiftKey) {
+        focusSearchInput("#")
+      } else {
+        focusSearchInput()
+      }
+      return
+    }
+
+    const results = getSearchResults()
+    const searchContainer = document.getElementById("arena-search-container")
+    const searchOpen = Boolean(searchContainer && searchContainer.classList.contains("active"))
+    const resultFocused = document.activeElement?.classList.contains("arena-search-result-item")
+    const inputFocused = document.activeElement === searchInput
+
+    if (searchOpen && results.length > 0) {
+      if (key === "arrowdown" || (!e.shiftKey && key === "tab")) {
+        e.preventDefault()
+        if (!e.shiftKey && key === "tab" && resultFocused && activeResultIndex === results.length - 1) {
+          setActiveResult(null, { focus: true, scroll: false })
+        } else if (inputFocused || activeResultIndex === null) {
+          setActiveResult(0)
+        } else {
+          const nextIndex = Math.min((activeResultIndex ?? -1) + 1, results.length - 1)
+          setActiveResult(nextIndex)
+        }
+        return
+      }
+
+      if (key === "arrowup" || (e.shiftKey && key === "tab")) {
+        e.preventDefault()
+        if (!resultFocused || activeResultIndex === null) {
+          setActiveResult(results.length - 1)
+        } else if (activeResultIndex <= 0) {
+          setActiveResult(null, { focus: true, scroll: false })
+        } else {
+          setActiveResult(activeResultIndex - 1)
+        }
+        return
+      }
+
+      if (key === "enter" && resultFocused) {
+        e.preventDefault()
+        ;(document.activeElement as HTMLElement)?.click()
+        return
+      }
+    }
+
+    if (key === "escape") {
       if (searchContainer && searchContainer.classList.contains("active")) {
+        resetActiveResultHighlight()
         closeSearchDropdown()
       } else {
         closeModal()
       }
-    } else if (e.key === "ArrowLeft") {
+      return
+    }
+
+    if (e.key === "ArrowLeft") {
       navigateBlock(-1)
     } else if (e.key === "ArrowRight") {
       navigateBlock(1)

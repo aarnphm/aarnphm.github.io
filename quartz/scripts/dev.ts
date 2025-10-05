@@ -260,7 +260,11 @@ function handlePnpmDevError(child: ManagedChild, err: Error): void {
 
 function retryPnpmDev(reason: string): void {
   if (pnpmDevRetriesRemaining === 0) {
-    log("main", `pnpm dev restart budget exhausted after ${totalPnpmDevAttempts} attempts`, "stderr")
+    log(
+      "main",
+      `pnpm dev restart budget exhausted after ${totalPnpmDevAttempts} attempts`,
+      "stderr",
+    )
     void shutdown(1)
     return
   }

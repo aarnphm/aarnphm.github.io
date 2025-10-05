@@ -367,6 +367,7 @@ export default (() => {
             data-search-scope="channel"
             data-channel-slug={channel.slug}
             aria-label="Rechercher ce canal"
+            aria-keyshortcuts="Meta+K Control+K"
           />
           <svg
             class="arena-search-icon"

@@ -1,20 +1,20 @@
 ---
 id: are.na
-permalinks:
-  - /website
-  - /tweets
-  - /resources
+aliases:
+  - inspo
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
+date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-10-05 16:41:30 GMT-04:00
-aliases:
-  - inspo
+modified: 2025-10-05 18:44:10 GMT-04:00
+permalinks:
+  - /website
+  - /tweets
+  - /resources
 title: are.na
 cssclasses:
   - nolist
@@ -116,6 +116,15 @@ cssclasses:
 
 ## website
 
+- https://farayan.me/dappled -- Dappled light
+  - \_meta:
+    - date: 10/05/2025
+  - Similar to https://github.com/jackyzha0/sunlit
+  - but in `@react-three/drei`
+  - https://farayan.me/
+- https://reh.at/about -- Rehat
+  - \_meta:
+    - date: 10/05/2025
 - https://press.stripe.com/ -- Stripe Press, Idea for Progress
   - \_meta:
     - date: 10/05/2025
@@ -535,6 +544,9 @@ cssclasses:
   - \_meta:
     - date: 08/21/2025
   - OpenAI, logic and automaton
+- https://www.lesswrong.com/users/neil-warren -- Neil Warren
+  - \_meta:
+    - date: 09/22/2025
 - https://en.wikipedia.org/wiki/A._C._Grayling -- A. C. Grayling
   - \_meta:
     - date: 08/28/2025
@@ -1639,6 +1651,9 @@ cssclasses:
 
 ## [[tags/philosophy]]
 
+- https://www.lesswrong.com/posts/JumyfYQaJkWnjCcEr/consequentialism-is-a-compass-not-a-judge -- Consequentialism is a compass, not a judge
+  - \_meta:
+    - date: 10/05/2025
 - https://www.marxists.org/history/erol/periodicals/theoretical-review/1982301.htm -- The Concepts of Ideology, Hegemony, and Organic Intellectuals in Gramsci’s Marxism
   - \_meta:
     - date: 04/09/2025
@@ -2084,10 +2099,13 @@ cssclasses:
 
 ## technical
 
+- https://en.wikipedia.org/wiki/L-system -- Lindenmayer system [**]
+  - \_meta:
+    - date: 10/05/2025
 - http://lastweek.io/notes/MLIR/ -- MLIR at a 10000 feet
   - \_meta:
     - date: 10/05/2025
-- https://mlir.llvm.org/docs/ -- MLIR LLVM docs
+- https://mlir.llvm.org/docs/ -- MLIR LLVM docs [**]
   - \_meta:
     - date: 10/05/2025
 - https://docs.tenstorrent.com/tt-mlir/ -- [[thoughts/Tenstorrent]] MLIR

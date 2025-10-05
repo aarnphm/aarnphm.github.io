@@ -74,10 +74,13 @@ const configuration: GlobalConfiguration = {
   semanticSearch: {
     enable: true,
     model,
-    dims: 1024,
+    aot: true,
+    dims: 768,
     dtype: "fp32",
     shardSizeRows: 1024,
     hnsw: { M: 16, efConstruction: 200 },
+    chunking: { chunkSize: 256, chunkOverlap: 64 },
+    vllm: { concurrency: 16, batchSize: 128 },
   },
 }
 

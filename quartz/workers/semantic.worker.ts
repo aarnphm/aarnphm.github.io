@@ -1,4 +1,3 @@
-// Unified semantic search worker: handles data loading and query execution
 import { env, pipeline } from "@huggingface/transformers"
 import "onnxruntime-web/webgpu"
 import "onnxruntime-web/wasm"
@@ -316,24 +315,9 @@ function insertSortedDescending(arr: SearchHit[], item: SearchHit) {
   arr.splice(idx, 0, item)
 }
 
-function bruteForceSearch(query: Float32Array, k: number): SearchHit[] {
-  if (!vectorsView) return []
-  const hits: SearchHit[] = []
-  for (let id = 0; id < rows; id++) {
-    const score = dot(query, vectorSlice(id))
-    if (hits.length < k) {
-      insertSortedDescending(hits, { id, score })
-    } else if (score > hits[hits.length - 1].score) {
-      insertSortedDescending(hits, { id, score })
-      hits.length = k
-    }
-  }
-  return hits
-}
-
 function hnswSearch(query: Float32Array, k: number): SearchHit[] {
   if (!manifest || !vectorsView || entryPoint < 0 || levelGraph.length === 0) {
-    return bruteForceSearch(query, k)
+    throw new Error("semantic graph not initialised; ensure embeddings include HNSW metadata")
   }
   const ef = Math.max(efDefault, k * 10)
   let ep = entryPoint
@@ -451,7 +435,9 @@ async function handleInit(msg: InitMessage) {
     manifest = (await response.json()) as Manifest
 
     if (manifest.vectors.dtype !== "fp32") {
-      throw new Error(`unsupported embedding dtype '${manifest.vectors.dtype}', regenerate with fp32`)
+      throw new Error(
+        `unsupported embedding dtype '${manifest.vectors.dtype}', regenerate with fp32`,
+      )
     }
 
     dims = manifest.dims
