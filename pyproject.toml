@@ -8,14 +8,7 @@ description = "Aaron's notes"
 readme = { file = ".github/README.md", content-type = "text/markdown" }
 authors = [{ name = "Aaron Pham", email = "contact@aarnphm.xyz" }]
 requires-python = ">=3.11"
-dependencies = [
-  "matplotlib>=3.9.2",
-  "numpy>=2.1.2",
-  "scipy>=1.14.1",
-  "tiktoken>=0.11.0",
-  "langchain-text-splitters>=0.3.11",
-  "bytecode>=0.17.0",
-]
+dependencies = ["numpy>=2.1.2", "scipy>=1.14.1", "bytecode>=0.17.0"]
 dynamic = ["version"]
 
 [tool.uv.sources]
@@ -111,6 +104,7 @@ python-version = "3.11"
 
 [dependency-groups]
 dev = [
+  "matplotlib>=3.9.2",
   "numba>=0.62.1",
   "jupyter>=1.1.1",
   "jupyter-client>=8.6.3",
@@ -128,4 +122,9 @@ dev = [
   "torch>=2.8.0",
   "huggingface-hub[cli]>=0.35.3",
   "bentoml>=1.4.25",
+  "pyupgrade>=3.20.0",
+  "ruff>=0.13.3",
+  "ty>=0.0.1a21",
+  "tiktoken>=0.11.0",
+  "langchain-text-splitters>=0.3.11",
 ]
