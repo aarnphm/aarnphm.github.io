@@ -4,7 +4,7 @@ comments: false
 tags:
   - evergreen
 date: "2024-02-07"
-modified: 2025-09-30 20:41:09 GMT-04:00
+modified: 2025-10-05 16:30:06 GMT-04:00
 title: movies.
 ---
 
@@ -18,6 +18,9 @@ If you want a more complete list, check out [this entries on letterboxd](https:/
 
 ## to watch.
 
+- [ ] One Battle After Another (2025)
+  - Paul Thomas Anderson
+  - The Master (2012), Magnolia (1999)
 - [ ] A Different Man (2024)
 - [ ] I Saw the TV Glow (2024) [^lychian]
 - [ ] How To Make Millions before Grandma [[ideas#lettres|dies]] (2024)

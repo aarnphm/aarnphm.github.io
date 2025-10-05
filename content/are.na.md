@@ -10,7 +10,7 @@ description: My run-down version of are[dot]na
 date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-05 16:03:11 GMT-04:00
+modified: 2025-10-05 16:29:16 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1712,6 +1712,9 @@ cssclasses:
 - [[/images|images I found across the internet]]
   - \_meta:
     - date: 10/03/2025
+- [[/movies|30 frames per seconds that capture the essence of being human]]
+  - \_meta:
+    - date: 10/05/2025
 
 ## financial reports
 
