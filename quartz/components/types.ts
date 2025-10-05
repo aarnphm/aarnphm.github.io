@@ -129,4 +129,6 @@ export interface CuriusResponse {
   links?: Link[]
   user?: User
   following?: Following[]
+  hasMore?: boolean
+  page?: number
 }

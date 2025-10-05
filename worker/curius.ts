@@ -6,6 +6,8 @@ interface ApiResponse {
   user?: User
   links?: Link[]
   following?: Following[]
+  hasMore?: boolean
+  page?: number
 }
 
 async function queryUsers(): Promise<ApiResponse> {
@@ -19,12 +21,27 @@ async function queryUsers(): Promise<ApiResponse> {
   }
 }
 
-async function queryLinks(): Promise<ApiResponse> {
+async function queryLinks(page: number = 0): Promise<ApiResponse> {
   try {
-    const r = await fetch("https://curius.app/api/users/3584/links", HEADERS)
+    const r = await fetch(`https://curius.app/api/users/3584/links?page=${page}`, HEADERS)
     if (!r.ok) throw new Error("Network error")
     const d: any = await r.json()
-    return { links: d.userSaved || [] }
+    return {
+      links: d.userSaved || [],
+      hasMore: d.hasMore ?? false,
+      page
+    }
+  } catch {
+    return { links: [], hasMore: false, page }
+  }
+}
+
+async function querySearchLinks(): Promise<ApiResponse> {
+  try {
+    const r = await fetch("https://curius.app/api/users/3584/searchLinks", HEADERS)
+    if (!r.ok) throw new Error("Network error")
+    const d: any = await r.json()
+    return { links: d.links || [] }
   } catch {
     return { links: [] }
   }
@@ -49,6 +66,7 @@ export default async function handleCurius(request: Request): Promise<Response> 
     })
   const url = new URL(request.url)
   const query = url.searchParams.get("query")
+  const page = parseInt(url.searchParams.get("page") || "0")
   let resp: ApiResponse = {}
   try {
     switch (query) {
@@ -56,14 +74,17 @@ export default async function handleCurius(request: Request): Promise<Response> 
         resp = await queryUsers()
         break
       case "links":
-        resp = await queryLinks()
+        resp = await queryLinks(page)
+        break
+      case "searchLinks":
+        resp = await querySearchLinks()
         break
       case "following":
         resp = await queryFollowing()
         break
       default:
-        const [r1, r2, r3] = await Promise.all([queryUsers(), queryLinks(), queryFollowing()])
-        resp = { user: r1.user, links: r2.links, following: r3.following }
+        const [r1, r2, r3] = await Promise.all([queryUsers(), queryLinks(0), queryFollowing()])
+        resp = { user: r1.user, links: r2.links, following: r3.following, hasMore: r2.hasMore }
         break
     }
     return new Response(JSON.stringify(resp), {

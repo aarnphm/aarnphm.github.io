@@ -541,3 +541,27 @@ svg.favorite-icon {
     }
   }
 }
+
+.curius-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding: 1rem 0 !important;
+  font-size: 0.9rem;
+
+  span {
+    cursor: pointer;
+    color: var(--dark);
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--tertiary);
+    }
+
+    &[style*="hidden"] {
+      color: var(--gray);
+      cursor: default;
+    }
+  }
+}
