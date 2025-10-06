@@ -392,14 +392,13 @@ hr {
   text-align: center;
   overflow: visible;
 
-  &::before {
-    content: "\2022\2022\2022";
+  &::after {
+    content: "\2042";
     display: inline-block;
     font-size: calc(0.8em + 0.2vw);
     letter-spacing: 1.25em;
-    color: var(--gray);
+    color: var(--dark);
     position: relative;
-    top: -0.75em;
   }
 }
 

@@ -163,11 +163,17 @@ document.addEventListener("nav", () => {
   const shouldIgnoreTarget = (el: EventTarget | null) => {
     if (!el || !(el instanceof Element)) return false
     const tag = el.tagName.toLowerCase()
+
+    // Check if headings modal is open
+    const headingsModal = document.querySelector(".headings-modal-container") as HTMLElement
+    const isHeadingsModalOpen = headingsModal && headingsModal.style.display === "flex"
+
     return (
       tag === "input" ||
       tag === "textarea" ||
       (el as HTMLElement).isContentEditable ||
-      el.closest(".search .search-container") !== null
+      el.closest(".search .search-container") !== null ||
+      isHeadingsModalOpen
     )
   }
 
@@ -181,7 +187,7 @@ document.addEventListener("nav", () => {
   const keyToggle = (e: KeyboardEvent) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return
     if (shouldIgnoreTarget(e.target)) return
-    if (e.key === "D" || e.key === "d") {
+    if (e.key === "D") {
       cyclePreference(e)
     }
   }

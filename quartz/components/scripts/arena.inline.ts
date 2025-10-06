@@ -789,7 +789,12 @@ document.addEventListener("nav", () => {
     if (searchOpen && results.length > 0) {
       if (key === "arrowdown" || (!e.shiftKey && key === "tab")) {
         e.preventDefault()
-        if (!e.shiftKey && key === "tab" && resultFocused && activeResultIndex === results.length - 1) {
+        if (
+          !e.shiftKey &&
+          key === "tab" &&
+          resultFocused &&
+          activeResultIndex === results.length - 1
+        ) {
           setActiveResult(null, { focus: true, scroll: false })
         } else if (inputFocused || activeResultIndex === null) {
           setActiveResult(0)

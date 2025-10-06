@@ -2,7 +2,7 @@
   "name": "@aarnphm/aarnphm.github.io",
   "description": "🌱 heavily modified version of Quartz for Aaron's notes",
   "private": true,
-  "version": "4.5.1",
+  "version": "4.5.2",
   "type": "module",
   "author": "Aaron Pham <contact@aarnphm.xyz>",
   "license": "MIT",
@@ -12,7 +12,7 @@
     "url": "https://github.com/aarnphm/aarnphm.github.io.git"
   },
   "scripts": {
-    "dev": "NODE_ENV=development pnpm exec quartz/bootstrap-cli.mjs build --concurrency 16 --serve --verbose",
+    "dev": "NODE_ENV=development pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --serve --verbose",
     "cf:dev": "until test -d public; do PUBLIC_BASE_URL=http://localhost:8080 pnpm dlx wrangler dev; done",
     "bundle": "pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --bundleInfo --verbose",
     "bundle:dev": "CF_PAGES=1 NODE_ENV=development pnpm bundle",

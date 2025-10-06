@@ -27,7 +27,7 @@
 
   .reader-container {
     display: flex;
-    max-width: #{map.get($breakpoints, mobile)};
+    max-width: 49%;
     margin: 0 auto;
     background: var(--light);
     box-shadow:

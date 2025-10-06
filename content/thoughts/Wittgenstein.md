@@ -5,9 +5,13 @@ tags:
   - philosophy
 description: language games, pictures of states, proposition
 date: "2025-10-04"
-modified: 2025-10-04 17:28:22 GMT-04:00
+modified: 2025-10-05 22:32:57 GMT-04:00
 title: Wittgenstein
 ---
+
+```quotes
+The world is the collection of facts, not of things. -- LW.
+```
 
 Wittgenstein's notebooks in essence, a snapshot of his thinking. I very much enjoyed reading through a few of his notebook, albeit it wasn't fully represented his thoughts while he was alive.
 

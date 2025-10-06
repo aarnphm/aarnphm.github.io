@@ -18,6 +18,15 @@ export const KeybindAlias = {
   "cmd+o": "opener",
   "cmd+p": "connector",
   "cmd+i": "mode de notes",
+  "cmd+'": "aide raccourcis",
+  gh: "navigation des titres",
+  D: "mode sombre/clair/système",
+  f: "mode de sélection de liens",
+  "j/k": "défiler haut/bas",
+  gg: "aller au début",
+  G: "aller à la fin",
+  "ctrl+d/u": "demi-page haut/bas",
+  "H/M/L": "haut/milieu/bas du viewport",
 }
 
 const defaultOptions: Options = {

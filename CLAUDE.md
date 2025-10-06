@@ -8,11 +8,8 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 
 **Build and Development:**
 
-- `pnpm dev` - Start development server with hot reload (concurrency 8, verbose output)
 - `pnpm bundle` - Build for production (concurrency 8, bundleInfo, verbose)
-- `pnpm prod` - Production build with NODE_ENV=production
 - `pnpm bundle:dev` - Development build for Cloudflare Pages
-- `pnpm cf:dev` - Run Cloudflare Worker development server on port 8080
 - `pnpm cf:deploy` - Deploy to Cloudflare (runs check first)
 
 **Code Quality:**
@@ -34,6 +31,7 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 
 - `quartz/` - TypeScript source for CLI, plugins, and components, built on top of remark/rehype/unist, mdast,hast ecosystem and best practices
 - `content/` - Markdown notes, academic papers, assets, library implementations, tool monorepo.
+  - `content/hinterland` - Special projects
 - `worker/` - Cloudflare Worker TypeScript
 - `public/` - Build output directory
 
@@ -74,6 +72,24 @@ React-like components in `quartz/components/` using Preact:
 - All math equations in LaTeX format
 - Citations via `[@reference]` syntax linking to References.bib
 - All headings must be in lowercase.
+- Make sure to use callouts, embedded links accordingly. For example:
+
+  ```markdown
+  > [!important] This is a callout
+  > And some content under here
+
+  And this is a [[thoughts/Attention|Attention]] as a internal wikilinks.
+  ```
+
+- When parsing frontmatter, if there is an entry `claude`, make sure to also consider it for additional instructions of any given files
+- All math equation should be written with LaTeX, with KaTeX flavor
+- For block-form, it should be formatted with `$$` with new lines. For example:
+  ```markdown
+  $$
+  f(y)\ge f(x)+\langle\nabla f(x),y- x\rangle+\frac{\mu}{2}\|y- x\|^2
+  $$
+  ```
+- for inline `$\text{hello}$` should work
 
 **Academic References:**
 For arxiv papers, fetch BibTeX entries:

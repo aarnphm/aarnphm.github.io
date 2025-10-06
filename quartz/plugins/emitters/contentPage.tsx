@@ -8,6 +8,7 @@ import {
   CuriusFriends,
   CuriusNavigation,
 } from "../../components/renderPage"
+import { HeadingsConstructor } from "../../components"
 import { FullPageLayout } from "../../cfg"
 import { pathToRoot } from "../../util/path"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
@@ -58,6 +59,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
 
   const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts
   const Header = HeaderConstructor()
+  const Headings = HeadingsConstructor()
 
   return {
     name: "ContentPage",
@@ -68,6 +70,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         CuriusFriends,
         CuriusContent,
         CuriusNavigation,
+        Headings,
         ...header,
         ...beforeBody,
         pageBody,

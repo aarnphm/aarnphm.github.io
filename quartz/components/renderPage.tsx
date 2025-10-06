@@ -7,6 +7,7 @@ import Search from "./Search"
 import Graph from "./Graph"
 import Palette from "./Palette"
 import Image from "./Image"
+import HeadingsConstructor from "./Headings"
 import { byDateAndAlphabetical } from "./PageList"
 import { getDate, Date as DateComponent } from "./Date"
 import { classNames } from "../util/lang"
@@ -43,6 +44,7 @@ import Content from "./pages/Content"
 import { BuildCtx } from "../util/ctx"
 import { checkBib, checkBibSection } from "../plugins/transformers/citations"
 import { checkFootnoteRef, checkFootnoteSection } from "../plugins/transformers/gfm"
+import Keybind from "./Keybind"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -444,11 +446,6 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   })
 }
 
-export function mergeIsomorphic(ast: Node, suffix?: string) {
-  mergeReferences(ast as Root, suffix)
-  mergeFootnotes(ast as Root, suffix)
-}
-
 export const pageResources = (
   baseDir: FullSlug | RelativeURL,
   staticResources: StaticResources,
@@ -822,7 +819,8 @@ export function transcludeFinal(
   }
 
   // NOTE: We then merge all references and footnotes to final items
-  mergeIsomorphic(root)
+  mergeReferences(root)
+  mergeFootnotes(root)
 
   // NOTE: Update the file's reading time with transcluded content
   if (fileData.readingTime) {
@@ -1226,7 +1224,7 @@ export function renderPage(
   if (slug === "index") {
     components = {
       ...components,
-      header: [Image(), Graph(), Search(), Palette()],
+      header: [Image(), Graph(), Search(), Palette(), Keybind()],
       sidebar: [],
       afterBody: [],
       beforeBody: [],
@@ -1298,6 +1296,7 @@ export function renderPage(
     footer: Footer,
   } = components
   const Header = HeaderConstructor()
+  const Headings = HeadingsConstructor()
 
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
   const lang =
@@ -1393,6 +1392,7 @@ export function renderPage(
                   <aside class="sidepanel-container" />
                 </>
               )}
+              <Headings {...componentData} />
             </section>
             {!isFolderTag && (
               <section class="page-footer popover-hint grid all-col">

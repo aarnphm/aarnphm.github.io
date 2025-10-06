@@ -4,11 +4,13 @@ tags:
   - interpretability
 description: and mechanisms of components.
 date: "2025-01-29"
-modified: 2025-10-04 17:51:17 GMT-04:00
+modified: 2025-10-06 04:00:26 GMT-04:00
 title: Attribution parameter decomposition
 ---
 
 by [[thoughts/papers/Interpretability in Parameter Space- Minimizing Mechanistic Description Length with Attribution-based Parameter Decomposition.pdf|Apollo Research]], [introduction](https://x.com/leedsharkey/status/1883904940558500282)
+
+see also: https://www.lesswrong.com/posts/EPefYWjuHNcNH4C7E/attribution-based-parameter-decomposition
 
 Goal:
 

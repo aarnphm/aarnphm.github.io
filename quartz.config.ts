@@ -56,7 +56,7 @@ const configuration: GlobalConfiguration = {
         secondary: "rgb(209, 77, 65)",
         tertiary: "rgb(218, 112, 44)",
         highlight: "rgb(218, 216, 206)",
-        textHighlight: "rgb(208, 162, 21)",
+        textHighlight: "rgb(241, 214, 126)",
       },
       darkMode: {
         light: "rgb(16, 15, 15)",
@@ -67,7 +67,7 @@ const configuration: GlobalConfiguration = {
         secondary: "rgb(209, 77, 65)",
         tertiary: "rgb(218, 112, 44)",
         highlight: "rgb(135, 154, 57)",
-        textHighlight: "rgb(102, 128, 11)",
+        textHighlight: "rgb(241, 214, 126)",
       },
     },
   },

@@ -35,6 +35,7 @@ import Comments from "./Comments"
 import Flex from "./Flex"
 import Grid from "./Grid"
 import SlidesContent from "./SlidesContent"
+import HeadingsConstructor from "./Headings"
 
 export {
   Flex,
@@ -74,4 +75,5 @@ export {
   Comments,
   SlidesContent,
   Grid,
+  HeadingsConstructor,
 }

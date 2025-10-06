@@ -1,27 +1,47 @@
 ---
+socials:
+  are.na: https://www.are.na/aaron-pham/channels
 id: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /tweets
+  - /resources
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-date: "2024-10-24"
-socials:
-  are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-05 18:44:10 GMT-04:00
-permalinks:
-  - /website
-  - /tweets
-  - /resources
 title: are.na
+date: "2024-10-24"
+modified: 2025-10-06 04:10:51 GMT-04:00
+aliases:
+  - inspo
+claude:
+  additional_context: |-
+    structure of are.na.md:
+    - h2: channels concept, where we have a row full of items
+    - each list entry under the h2 is considered as a block.
+    - A block will have the following structure:
+      ```
+      - <link> [separator:=--] <title>[optional] [**][optional]
+        - _meta:
+          - <metadata>: <value>
+        - [...optional notes]
+      ```
+      where:
+      - [**] denotes this block is highlighted
+      - _meta holds a yaml-markdown list of metadata for a given block
+      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
+    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
 cssclasses:
   - nolist
 ---
 
 ## discourse
 
+- https://sublimeinternet.substack.com/p/the-ai-debate-is-not-about-art-its -- The AI debate is about money
+  - \_meta:
+    - date: 10/05/2025
 - https://www.lesswrong.com/posts/HiTjDZyWdLEGCDzqu/?commentId=MPNF8uSsi9mvZLxqz -- Gwern on distilling Opus 3.5 into Claude 3.6 instead of releasing Opus 3.5
   - \_meta:
     - date: 03/08/2025
@@ -50,15 +70,22 @@ cssclasses:
 - https://x.com/roryisconfused/status/1973491704704671918 -- God takes a sort of aesthetic pleasure in us, that He enjoys our charms and our ways.
   - \_meta:
     - date: 10/03/2025
-- https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace -- Cluster structure of thingspace
+- https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace -- Cluster structure of thingspace [**]
   - \_meta:
     - date: 09/04/2025
+  - "Radial categories" are how cognitive psychologists describe the non-Aristotelian boundaries of words.
 - https://www.multiamory.com/podcast/339-the-smorgasbord-of-relationships -- The smorgasbord of relationship
   - \_meta:
     - date: 09/04/2025
 
 ## tweets
 
+- https://x.com/PI010101/status/1974909578983907490 -- GPT-5 found a counterexample to the NICD-with-erasures majority optimality (Simons list, p.25).
+  - \_meta:
+    - date: 10/06/2025
+- https://x.com/oxidist/status/1825247129155031198 -- New set of human every 150 years.
+  - \_meta:
+    - date: 10/05/2025
 - https://x.com/DavidSHolz/status/1974909666154119495 -- Robots and cage fighting
   - \_meta:
     - date: 10/05/2025
@@ -258,9 +285,10 @@ cssclasses:
 - https://www.oneclub.org/awards/adcawards/-archive/awards/2025/all/all/select -- ADC Awards
   - \_meta:
     - date: 10/02/2025
-- https://www.lydianottingham.com/ -- Lydia Nottingham
+- https://www.lydianottingham.com/ -- Lydia Nottingham [**]
   - \_meta:
     - date: 10/02/2025
+  - 🫶
 - https://farayan.me/dappled -- Dappled Light
   - \_meta:
     - date: 10/02/2025
@@ -343,6 +371,17 @@ cssclasses:
 
 ## people
 
+- https://www.yudhister.me/ -- Yudhister
+  - \_meta:
+    - date: 10/05/2025
+- https://oak-hu.github.io/ -- Oak Hu
+  - \_meta:
+    - date: 10/05/2025
+  - Another Quartz in the wild
+- https://logangraves.com/index -- Logan Graves [**]
+  - \_meta:
+    - date: 10/05/2025
+  - Very much utilitarian, html-based, simple site/blogroll.
 - https://www.linkedin.com/in/thakkarv/ -- Vijay Thakkar
   - \_meta:
     - date: 10/05/2025
@@ -420,6 +459,9 @@ cssclasses:
   - \_meta:
     - date: 09/02/2025
   - Security/Adversarial against LLMs
+- https://blog.jacobvosmaer.nl/ -- Jacob Vosmaer
+  - \_meta:
+    - date: 08/22/2025
 - https://en.wikipedia.org/wiki/John_Galliano -- John Galliano
   - \_meta:
     - date: 05/31/2025
@@ -598,6 +640,9 @@ cssclasses:
 
 ## places
 
+- https://pika.mit.edu/ -- PIKA @ MIT
+  - \_meta:
+    - date: 10/05/2025
 - https://maps.app.goo.gl/xx36MxJmbtx2pmH88 -- Rooms Coffee | 135 Ossington
   - \_meta:
     - date: 08/05/2025
@@ -653,6 +698,40 @@ cssclasses:
 
 ## essay
 
+- https://www.yudhister.me/2025-08-20/ -- linear contracts as optimally robust
+  - \_meta:
+    - date: 10/05/2025
+    - tags: [math]
+- https://offhandquibbles.substack.com/p/why-have-sex -- Why Have Sex?
+  - \_meta:
+    - date: 10/05/2025
+  - i.e: the evolution of anisogamy
+- [[thoughts/papers/Augmenting Human Intellect, A Conceptual Framework - D.C Engelbart, 1962.pdf]] -- "Augmenting Human Intellect", Douglas Engelbart
+  - \_meta:
+    - date: 05/15/2025
+  - source: https://www.dougengelbart.org/pubs/papers/scanned/Doug_Engelbart-AugmentingHumanIntellect.pdf
+- https://www.cs.virginia.edu/~robins/YouAndYourResearch.html -- You and Your Research, Richard Hamming [**]
+  - \_meta:
+    - date: 10/05/2025
+  - > One lesson was sufficient to educate my boss as to why I didn't want to do big jobs that displaced exploratory research and why I was justified in not doing crash jobs which absorb all the research computing facilities. I wanted instead to use the facilities to compute a large number of small problems. Again, in the early days, I was limited in computing capacity and it was clear, in my area, that a 'mathematician had no use for machines.' But I needed more machine capacity. Every time I had to tell some scientist in some other area, "No I can't; I haven't the machine capacity," he complained. I said "Go tell your Vice President that Hamming needs more computing capacity." After a while I could see what was happening up there at the top; many people said to my Vice President, "Your man needs more computing capacity." I got it!
+  - > The people who do great work with less ability but who are committed to it, get more done that those who have great skill and dabble in it, who work during the day and go home and do other things and come back and work the next day.
+- https://www.benkuhn.net/thinkrealhard/ -- Think real hard
+  - \_meta:
+    - date: 10/05/2025
+  - > In retrospect, I wish those people had just told me “think real hard.” I was looking for an easy way out—One Weird Trick to Programming Better—but programming is too hard for that.
+- https://michaelnielsen.org/blog/principles-of-effective-research/ -- Principles of Effective Research [**]
+  - \_meta:
+    - date: 10/05/2025
+  - > The philosophy underlying the essay is based on a famous quote attributed to [[thoughts/Aristotle]]: “We are what we repeatedly do. Excellence, then, is not an act but a habit.” Underlying all our habits are models (often unconscious) of how the world works.
+  - > [[/research|Research]] is, of course, only a part of life, and must be understood in relation to the rest of life
+  - > Effective people are proactive and take personal responsibility for the events in their lives.
+  - > They form a vision of how they want their life to be, and work toward achieving that vision.
+  - > They identify problems in their lives, and work toward solutions to those problems.
+  - Self-discipline:
+    - The first factor is having clarity about what one wants to achieve, why one wants to achieve it, and how to go about achieving it.
+    - The second factor affecting self-discipline is one’s social environment.
+      - Access to a social environment which encourages and supports the development of research skills and research excellence
+    - The third factor affecting self-discipline is a special kind of honesty, honesty to oneself, about oneself.
 - https://www.benkuhn.net/pjm/ -- How I've run major projects
   - \_meta:
     - date: 10/05/2025
@@ -997,7 +1076,7 @@ cssclasses:
 - https://selvaradov.net/select/ -- You can select as well as be selected
   - \_meta:
     - date: 10/04/2025
-- http://joschu.net/blog/opinionated-guide-ml-research.html -- Opinionated Guide to ML Research [**]
+- http://joschu.net/blog/opinionated-guide-ml-research.html -- An Opinionated Guide to ML Research [**]
   - \_meta:
     - date: 10/04/2025
   - > _Honing Your Taste_: Your ability to choose the right problems to work on is even more important than your raw technical skill.
@@ -1017,6 +1096,21 @@ cssclasses:
 
 ## [[thoughts/Machine learning]]
 
+- https://www.neuronpedia.org/graph/info -- The Circuits Research Landscape: Results and Perspective, Aug 2025 [**]
+  - \_meta:
+    - date: 10/06/2025
+  - [[thoughts/mechanistic interpretability]]
+- https://www.lesswrong.com/posts/L3aYFT4RDJYHbbsup/llms-can-learn-about-themselves-by-introspection -- LLMs can learn about themselves by introspection
+  - \_meta:
+    - date: 10/05/2025
+  - related to [[thoughts/Alignment]]
+  - TLDR: We find that [[thoughts/LLMs]] are capable of introspection on simple tasks. We discuss potential implications of introspection for interpretability and the moral status of AIs.
+    - I think this is largely [[thoughts/emergent behaviour]] based on [[thoughts/observer-expectancy effect]] through learnt patterns in RL/post-training paradigm.
+    - > LLMs can acquire knowledge that cannot be inferred from their training data. This challenges the view that LLMs simply imitate their training distributions. Instead, it appears that some LLMs have "privileged access" to certain facts about themselves and can use it to answer questions.
+      - I wonder if the models grok based on what they understand OOD? We certainly don't have a strong hypothesis on why model groks overall.
+- https://www.lesswrong.com/posts/3ghj8EuKzwD3MQR5G/an-introduction-to-representation-engineering-an-activation -- Representation Engineering, an activation-based paradigm for controlling [[thoughts/LLMs]]
+  - \_meta:
+    - date: 10/05/2025
 - https://www.thought-anchors.com/ -- Thought Anchors in LLM Reasoning Traces
   - \_meta:
     - date: 10/05/2025
@@ -1110,7 +1204,7 @@ cssclasses:
 - https://x.com/geoffreylitt/status/1950601513870499953 -- Geoffrey Litt on capabilities debates
   - \_meta:
     - date: 10/03/2025
-- https://x.com/NeelNanda5/status/1950344397075456438 -- MATS 9.0 Stream Winter Batch
+- https://x.com/NeelNanda5/status/1950344397075456438 -- MATS 9.0 [[/are.na#stream|Stream]] Winter Batch
   - \_meta:
     - date: 10/03/2025
 - https://x.com/JayaGup10/status/1952871186888843528 -- Integration landscape from labs
@@ -1131,7 +1225,7 @@ cssclasses:
   - > SAEs and features activated on mentions of LLaMA models
   - > gpt-oss' inability to act as a naive text completion model (vs. reverting to a chat format), even with jailbreaks, correlates with how subjectively cooked/slop-ish it feels
   - > found that you can sometimes get interpolated reasoning levels from gpt-oss between “low”, “medium”, and “high” (but “none”, “ultra”, “infinite” don’t work)
-  - > basic contrastive steering of gpt-oss-20b, following Anthropic’s “persona vectors”: https://x.com/MarkMBissell/status/1952919910134497332
+  - > basic contrastive steering of gpt-oss-20b, following Anthropic’s "persona vectors": https://x.com/MarkMBissell/status/1952919910134497332
 - https://x.com/Zai_org/status/1954750596634054965 -- GLM 4.5 Technical report
   - \_meta:
     - date: 10/03/2025
@@ -1542,6 +1636,10 @@ cssclasses:
 
 ## technology
 
+- https://mayberay.bearblog.dev/why-i-only-use-google-sheets/ -- Why I only use Google Sheets?
+  - \_meta:
+    - date: 10/05/2025
+  - > Zimbabwean taxes and duties are often very complex and having our customers know exactly what to pay would create a better customer journey and make the process faster since we would not have to wait on our third party duty processing company to reply to us on every customer inquiry 😅
 - https://blog.regehr.org/archives/2485 -- Why Do Peephole Optimizations Work?
   - \_meta:
     - date: 10/05/2025
@@ -1651,6 +1749,15 @@ cssclasses:
 
 ## [[tags/philosophy]]
 
+- https://minihf.com/posts/2025-06-07-commentary-on-janus-prophecies/ -- Commentary on the Turing Apocrypha [**]
+  - \_meta:
+    - date: 10/05/2025
+  - basis for https://generative.ink/prophecies/
+  - > _reframing exercise_. Not every theorist lost on [[thoughts/LLMs]], Barthes and Foucault for example are doing quite well. As difficult as it was to predict large language models some people had occasional glimpses of insight adjacent to or part of the underlying facts about reality that make LLMs possible.
+- https://www.lesswrong.com/posts/vzLrQaGPa9DNCpuZz/against-modal-logics -- Against Modal Logics
+  - \_meta:
+    - date: 10/05/2025
+    - tags: [philosophy]
 - https://www.lesswrong.com/posts/JumyfYQaJkWnjCcEr/consequentialism-is-a-compass-not-a-judge -- Consequentialism is a compass, not a judge
   - \_meta:
     - date: 10/05/2025
@@ -1732,6 +1839,9 @@ cssclasses:
 - [[/movies|30 frames per seconds that capture the essence of being human]]
   - \_meta:
     - date: 10/05/2025
+- [[/research|my research interests]]
+  - \_meta:
+    - date: 10/05/2025
 
 ## financial reports
 
@@ -1764,6 +1874,9 @@ cssclasses:
 
 ## design
 
+- https://www.metalabel.com/ -- Metalabel
+  - \_meta:
+    - date: 10/05/2025
 - https://www.are.na/editorial/are-nas-new-web-client-sander-is-now-available-for-everyone -- Are.na's web client, Sander.
   - \_meta:
     - date: 08/03/2025
@@ -2099,6 +2212,9 @@ cssclasses:
 
 ## technical
 
+- https://github.com/bytedance/flux -- COMET @ ByteDance
+  - \_meta:
+    - date: 10/06/2025
 - https://en.wikipedia.org/wiki/L-system -- Lindenmayer system [**]
   - \_meta:
     - date: 10/05/2025
@@ -2184,9 +2300,14 @@ cssclasses:
 - https://bernsteinbear.com/blog/inline-caching/ -- Inline caching
   - \_meta:
     - date: 10/05/2025
+  - see also [[thoughts/pdfs/Efficient Implementation of the Smalltalk-80 System.pdf]]
 
 ## vc
 
+- https://seldonlab.com/ -- Seldon Labs
+  - \_meta:
+    - date: 10/05/2025
+  - [[thoughts/AGI]] safe deployment
 - https://www.generalist.com/briefing/hummingbird-ventures -- The Best Venture Firm You've Never Heard Of
   - \_meta:
     - date: 10/02/2025
@@ -2211,6 +2332,14 @@ cssclasses:
 
 ## [[tags/math]]
 
+- https://quantum.country/qcvc -- Quantum computing for the very curious [**]
+  - \_meta:
+    - date: 10/05/2025
+  - By Andy Matuschak and Michael Nielsen
+- https://abuseofnotation.github.io/category-theory-illustrated/11_natural_transformations/ -- Category Theory, Illustrated, Natural transformations
+  - \_meta:
+    - date: 10/05/2025
+  - see also [[thoughts/category theory]]
 - https://www.youtube.com/watch?v=e1xo6qWTmoc&ab_channel=OxfordMathematics -- Thesis Competition at Oxford Mathematics
   - \_meta:
     - date: 07/29/2025
@@ -2244,7 +2373,36 @@ cssclasses:
 
 ## papers
 
-- https://arxiv.org/abs/2401.08671
+- https://arxiv.org/abs/2501.15225
+  - \_meta:
+    - date: 10/06/2025
+- https://arxiv.org/abs/2401.08383
+  - \_meta:
+    - date: 10/06/2025
+- https://arxiv.org/abs/2305.15054
+  - \_meta:
+    - date: 10/06/2025
+- https://arxiv.org/abs/2509.21519v3
+  - \_meta:
+    - date: 10/06/2025
+- https://arxiv.org/abs/1607.06450
+  - \_meta:
+    - date: 10/05/2025
+- https://arxiv.org/abs/2507.21509
+  - \_meta:
+    - date: 10/05/2025
+- https://arxiv.org/abs/2412.14093
+  - \_meta:
+    - date: 10/05/2025
+  - https://www.anthropic.com/research/alignment-faking
+- https://arxiv.org/abs/2506.18032
+  - \_meta:
+    - date: 10/05/2025
+  - Rater Sycophancy
+  - Instrumental Goal Guarding
+  - Low coherence
+  - Terminal goal guarding
+  - F.4: Another hypothesis that could indicate instrumental goal guarding is model behavior that tries to minimize future harm that other AIs might cause. These models would comply more if they believe their outputs will only be used to train a different model to be more harmful, with a training method such as Direct Preference Optimization (DPO). https://arxiv.org/abs/2401.08671
   - \_meta:
     - date: 10/03/2025
 - https://arxiv.org/abs/2506.06941

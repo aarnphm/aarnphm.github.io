@@ -12,7 +12,7 @@ const useColor = process.stdout.isTTY && process.stderr.isTTY
 const RESET = "\x1b[0m"
 const labelNames = {
   main: "main",
-  "pnpm:dev": "pnpm:dev",
+  "pnpm:exec": "pnpm:exec",
   wrangler: "wrangler",
 } as const
 type Label = keyof typeof labelNames
@@ -26,7 +26,7 @@ let rawInputEnabled = false
 let pnpmDevRetriesRemaining = 0
 const DEFAULT_DEV_PORT = 8080
 const WS_PORT_OFFSET = 1
-const WRANGLER_PORT_OFFSET = 2
+const WRANGLER_PORT_OFFSET = 707
 const MAX_BASE_PORT = 65535 - WRANGLER_PORT_OFFSET
 
 const runtimeConfig = resolveRuntimeConfig(process.argv.slice(2))
@@ -59,6 +59,7 @@ interface CliOptions {
   port: number | null
   help: boolean
   retry: number | null
+  force: boolean
 }
 
 function assertBasePort(candidate: number): void {
@@ -71,7 +72,7 @@ function assertBasePort(candidate: number): void {
 }
 
 function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
-  const { port, help, retry } = parseCliOptions(argv)
+  const { port, help, retry, force } = parseCliOptions(argv)
   if (help) {
     printHelp()
     process.exit(0)
@@ -86,7 +87,22 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
     port !== null
       ? `http://localhost:${effectivePort}`
       : (envBaseUrl ?? `http://localhost:${effectivePort}`)
-  const pnpmDevArgs = ["dev", "--", "--port", String(effectivePort), "--wsPort", String(wsPort)]
+  const pnpmDevArgs = [
+    "exec",
+    "quartz/bootstrap-cli.mjs",
+    "build",
+    "--concurrency",
+    "8",
+    "--serve",
+    "--verbose",
+    "--port",
+    String(effectivePort),
+    "--wsPort",
+    String(wsPort),
+  ]
+  if (force) {
+    pnpmDevArgs.push("--force")
+  }
   const wranglerArgs = ["dlx", "wrangler", "dev", "--port", String(wranglerPort)]
   const pnpmDevRetryLimit = retry ?? 2
   return {
@@ -103,6 +119,7 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
 function parseCliOptions(argv: string[]): CliOptions {
   let port: number | null = null
   let help = false
+  let force = false
   let retry: number | null = null
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index]
@@ -138,8 +155,11 @@ function parseCliOptions(argv: string[]): CliOptions {
     if (token.startsWith("--retry=")) {
       retry = parseRetryValue(token.slice("--retry=".length))
     }
+    if (token === "--force") {
+      force = true
+    }
   }
-  return { port, help, retry }
+  return { port, help, retry, force }
 }
 
 function parsePortValue(raw: string): number {
@@ -219,8 +239,8 @@ function launchPnpmDev(): void {
   const attempt = runtimeConfig.pnpmDevRetryLimit - pnpmDevRetriesRemaining + 1
   pnpmDev = startProcess(
     runtimeConfig.pnpmDevArgs,
-    "pnpm:dev",
-    `starting pnpm:dev (attempt ${attempt}/${totalPnpmDevAttempts})`,
+    "pnpm:exec",
+    `starting pnpm:exec (attempt ${attempt}/${totalPnpmDevAttempts})`,
   )
   const child = pnpmDev
   child.on("exit", (code, signal) => handlePnpmDevExit(child, code, signal))
@@ -480,7 +500,7 @@ function labelColor(label: Label): string | null {
   switch (label) {
     case "main":
       return "\x1b[38;5;39m"
-    case "pnpm:dev":
+    case "pnpm:exec":
       return "\x1b[38;5;110m"
     case "wrangler":
       return "\x1b[38;5;214m"

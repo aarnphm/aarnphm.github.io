@@ -7,7 +7,6 @@
 html,
 body {
   scroll-behavior: smooth;
-  scroll-padding-top: calc(var(--kern) * 3);
   text-size-adjust: none;
   hyphens: manual;
   line-height: var(--line-height);
@@ -15,7 +14,7 @@ body {
   text-rendering: optimizeLegibility;
   text-transform: none;
   word-spacing: 0;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.2px;
   font-size: var(--font-size);
   font-synthesis: style;
   font-kerning: normal;
@@ -98,13 +97,18 @@ ul,
 .typst-doc * {
   color: var(--dark);
   fill: var(--dark);
-  // hyphens: auto;
-  overflow-wrap: anywhere;
-  // word-break: auto-phrase;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
 }
 
 strong {
   font-weight: 500;
+}
+
+.math {
+  &.math-display {
+    text-align: center;
+  }
 }
 
 a {

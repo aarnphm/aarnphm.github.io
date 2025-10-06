@@ -213,6 +213,10 @@ a {
           margin: 0 auto;
           opacity: 1;
 
+          .title-col:not(.popover *) {
+            grid-column: 1 / -1;
+          }
+
           .byline {
             display: none;
 

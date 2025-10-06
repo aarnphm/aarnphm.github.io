@@ -78,6 +78,10 @@ title: images
 
 ![[thoughts/images/narcissism.webp]]
 
+![[thoughts/images/Dachshund sunbathing.webp]]
+
+![[thoughts/images/ship of thesus meme.webp]]
+
 ## authors
 
 ![[thoughts/images/joan-didion.webp|joan didion]]

@@ -9,12 +9,12 @@ tags:
   - ml
   - rfc
   - vllm
-date: "2024-11-18"
 description: structured generations in vLLM a la carte, or in general
-modified: 2025-06-16 21:20:00 GMT-04:00
-title: structured outputs
 transclude:
   title: false
+date: "2024-11-18"
+modified: 2025-10-06 03:49:27 GMT-04:00
+title: structured outputs
 ---
 
 ## jump-forward decoding
@@ -317,15 +317,15 @@ A simplified index can be shown as:
 
 ```python
 simplified_index = {
-    0: {'{"': 2},
-    2: {"name": 6},
-    6: {'":"': 9},
-    9: {'Paul': 14, 'John': 14},
-    14: {'","': 17},
-    17: {'age': 20},
-    20: {'":': 22},
-    22: {'20': 24, '30': 24},
-    24: {'}': 25},
+  0: {'{"': 2},
+  2: {'name': 6},
+  6: {'":"': 9},
+  9: {'Paul': 14, 'John': 14},
+  14: {'","': 17},
+  17: {'age': 20},
+  20: {'":': 22},
+  22: {'20': 24, '30': 24},
+  24: {'}': 25},
 }
 ```
 

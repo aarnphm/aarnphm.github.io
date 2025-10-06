@@ -3,10 +3,10 @@ id: finals
 tags:
   - sfwr4ml3
   - ml
-date: "2024-12-10"
 description: and an unstructured overview of patterns in machine learning
-modified: 2024-12-14 09:26:05 GMT-05:00
-title: Connectionist networks
+date: "2024-12-10"
+modified: 2025-10-05 21:36:06 GMT-04:00
+title: basis to supervised learning
 ---
 
 See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/midterm#probability theory|some statistical theory]]

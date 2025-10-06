@@ -118,7 +118,9 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
 
   return {
     name: "Pseudocode",
-    markdownPlugins() {
+    markdownPlugins({ argv }) {
+      if (argv.watch && !argv.force) return []
+
       return [
         () => (tree: MdRoot, _file) => {
           visit(tree, "code", (node) => {

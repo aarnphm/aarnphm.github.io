@@ -110,7 +110,9 @@ export const TikzJax: QuartzTransformerPlugin<Options> = (opts?: Options) => {
     name: "TikzJax",
     // TODO: maybe we should render client-side instead of server-side? (build-time would increase).
     // We skip tikz transpilation for now during process (takes too long for a file with a lot of tikz graph)
-    markdownPlugins() {
+    markdownPlugins({ argv }) {
+      if (argv.watch && !argv.force) return []
+
       return [
         () => async (tree) => {
           const nodes: TikzNode[] = []

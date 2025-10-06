@@ -14,7 +14,6 @@ Be super technical. But always give intuition and clarifying reasoning. Be expla
   - After this, run `fd --glob "*.[pdf|ddl]" public -x rm` to mae it compatible with `wrangler`
 - `pnpm prod` - Production build with NODE_ENV=production
 - `pnpm bundle:dev` - Development build for Cloudflare Pages
-- `pnpm cf:dev` - Run Cloudflare Worker development server on port 8080
 - `pnpm cf:deploy` - Deploy to Cloudflare (runs check first)
 
 **code quality**:
@@ -43,6 +42,7 @@ Be super technical. But always give intuition and clarifying reasoning. Be expla
 - Markdown:
   - Always keep everything in lowercase.
   - files should be use [[wikilink]] and absolute internal-links when reference with based from @content
+    - `content/hinterland` - Special projects
   - If there is a file that is not yet available, then it must be created.
   - Markdown files will be consumed with Obsidian.
     - Make sure to use callouts, embedded links accordingly. For example:
@@ -54,6 +54,7 @@ Be super technical. But always give intuition and clarifying reasoning. Be expla
       And this is a [[thoughts/Attention|Attention]] as a internal wikilinks.
       ```
 
+  - When parsing frontmatter, if there is an entry `claude`, make sure to also consider it for additional instructions of any given files
   - All math equation should be written with LaTeX, with KaTeX flavor
     - For block-form, it should be formatted with `$$` with new lines. For example:
       ```markdown

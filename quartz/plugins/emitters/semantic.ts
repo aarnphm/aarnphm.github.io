@@ -4,6 +4,7 @@ import { FilePath, FullSlug, joinSegments, QUARTZ } from "../../util/path"
 import { ReadTimeResults } from "reading-time"
 import { GlobalConfiguration } from "../../cfg"
 import { spawn } from "child_process"
+import { styleText } from "node:util"
 
 const DEFAULT_MODEL_ID = "onnx-community/Qwen3-Embedding-0.6B-ONNX"
 
@@ -203,7 +204,7 @@ export const SemanticIndex: QuartzEmitterPlugin<Partial<GlobalConfiguration["sem
 
       // If aot is false, run the embedding generation script
       if (!o.aot) {
-        console.log("\nGenerating embeddings (aot=false)...")
+        console.log(styleText("blue", `\n[emit:Semantic] Generating embeddings (aot=${o.aot})...`))
 
         // Check for uv
         const hasUv = await checkUvInstalled()
@@ -224,7 +225,10 @@ export const SemanticIndex: QuartzEmitterPlugin<Partial<GlobalConfiguration["sem
         }
       } else {
         console.log(
-          "\nSkipping embedding generation (aot=true). Expecting pre-generated embeddings in public/embeddings/",
+          styleText(
+            "yellow",
+            `\n[emit:Semantic] Skipping embedding generation (aot=${o.aot}). Expecting pre-generated embeddings in ${ctx.argv.output}/embeddings/`,
+          ),
         )
       }
     },

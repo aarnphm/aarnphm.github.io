@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-10-05 03:20:02 GMT-04:00
+modified: 2025-10-05 22:35:14 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -66,6 +66,16 @@ Life starts all over again when it gets crisp in the fall -- F. Scott Fitzgerald
 Another way to feel free is to meet someone who makes you think “if you love me I don’t care if everyone hates me” and actually have them love you back -- Ava
 
 ![[are.na#^camus]]
+
+```poetry
+"Try as you may,
+
+you just can't get away,
+
+from mathematics"
+
+Tom Lehrer
+```
 
 ## On bits and bytes.
 
