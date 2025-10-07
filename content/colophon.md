@@ -5,10 +5,10 @@ tags:
   - evergreen
   - design
 description: nobby designer word for "the design of the current site"
+date: "2024-12-10"
 socials:
   twitter: https://x.com/aarnphm_/status/1861550609834402129
-date: "2024-12-10"
-modified: 2025-09-13 20:03:34 GMT-04:00
+modified: 2025-10-06 22:16:28 GMT-04:00
 title: colophon
 ---
 
@@ -16,7 +16,7 @@ title: colophon
 
 [^sidepanel]: You can hold <kbd>alt+click</kbd> on any internal links to [popover](https://x.com/aarnphm_/status/1884954569341272345) a side panel 😃
 
-**typography** -- [Parclo Serif](https://lettermatic.com/fonts/parclo-serif?plan=student), [ITC Garamond](https://www.typewolf.com/itc-garamond) and [`Berkeley Mono{:prolog}`](https://usgraphics.com/products/berkeley-mono)
+**typography** -- [PP Neue Montreal](https://pangrampangram.com/products/neue-montreal), [Parclo Serif](https://lettermatic.com/fonts/parclo-serif?plan=student), [ITC Garamond](https://www.typewolf.com/itc-garamond) and [`Berkeley Mono{:prolog}`](https://usgraphics.com/products/berkeley-mono)
 
 **accessibility** -- follow ARIA spec. I tried to modify a few value in rose-pine to add a bit more contrast. Press <kbd>D</kbd> anywhere to toggle between light and dark mode.
 

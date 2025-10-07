@@ -38,6 +38,7 @@ export default (() => (componentData: QuartzComponentProps) => {
             class="internal"
             data-no-popover
             data-slug={arenaRootSlug}
+            style={{ background: "transparent" }}
           >
             are.na
           </a>

@@ -12,12 +12,6 @@
   top: calc(var(--kern) * 3);
 }
 
-.note-title {
-  @include tinyFonts;
-  font-size: 18px;
-  text-transform: lowercase;
-}
-
 .note-tags {
   .notes-list {
     display: flex;
@@ -51,6 +45,10 @@ a[data-list] {
       }
     }
   }
+}
+
+.permanent-grid {
+  margin-top: 1em;
 }
 
 .perma,

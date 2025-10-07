@@ -36,7 +36,7 @@ async function processSlides(
     allFiles,
   }
 
-  const content = renderPage(ctx, slidesSlug, componentData, opts, externalResources, false, false)
+  const content = renderPage(ctx, slidesSlug, componentData, opts, externalResources, false)
   return write({ ctx, content, slug: slidesSlug, ext: ".html" })
 }
 

@@ -708,6 +708,24 @@ export default {
     if (url.pathname.startsWith("/fonts/")) {
       const fontFile = url.pathname.replace(/^\/fonts\//, "")
 
+      // check referer to prevent hotlinking
+      const referer = request.headers.get("Referer")
+      const allowedHosts = ["aarnphm.xyz", "notes.aarnphm.xyz", "localhost", "127.0.0.1"]
+
+      if (referer) {
+        try {
+          const refererUrl = new URL(referer)
+          const isAllowed = allowedHosts.some(host =>
+            refererUrl.hostname === host || refererUrl.hostname.endsWith(`.${host}`)
+          )
+          if (!isAllowed) {
+            return new Response("forbidden", { status: 403 })
+          }
+        } catch {
+          return new Response("forbidden", { status: 403 })
+        }
+      }
+
       // construct cache key for edge caching
       const cacheKey = new Request(url.toString(), request)
       const cache = (caches as CfCacheStorage).default

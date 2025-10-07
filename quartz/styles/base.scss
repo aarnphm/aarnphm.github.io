@@ -11,15 +11,9 @@ body {
   hyphens: manual;
   line-height: var(--line-height);
   padding: 0;
-  text-rendering: optimizeLegibility;
   text-transform: none;
-  word-spacing: 0;
-  letter-spacing: -0.2px;
   font-size: var(--font-size);
-  font-synthesis: style;
-  font-kerning: normal;
   font-style: normal;
-  font-variant-numeric: slashed-zero;
   font-weight: $normalWeight;
 }
 

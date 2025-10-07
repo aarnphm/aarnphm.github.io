@@ -21,7 +21,6 @@ export const AllTags: QuartzComponent = ({ cfg, allFiles }: Props) => {
   ].sort((a, b) => a.localeCompare(b))
 
   return h("section", { class: "note-tags" }, [
-    h("h3", { class: "note-title" }, [i18n(cfg.locale).pages.tagContent.tag]),
     h(
       "div",
       { class: "notes-list" },
@@ -55,7 +54,6 @@ const Notes = ((userOpts?: EvergreenNotes) =>
     }
 
     return h("section", { class: "note-permanent" }, [
-      h("h3", { class: "note-title" }, ["persistantes"]),
       h("div", { class: "permanent-grid", style: "position: relative;" }, [
         h(
           "div",
@@ -115,7 +113,6 @@ export default ((opts?: EvergreenNotes) => {
       <div class="evergreen-content">
         <Permanent {...props} />
         <article style={{ marginBottom: 0 }}>
-          <h3 class="note-title">description</h3>
           {content}
           <p>
             {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({

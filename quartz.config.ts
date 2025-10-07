@@ -42,7 +42,8 @@ const configuration: GlobalConfiguration = {
     cdnCaching: true,
     fontOrigin: "local",
     typography: {
-      header: "PP Neue Montreal",
+      title: "Parclo Serif",
+      header: "Parclo Serif",
       body: "PP Neue Montreal",
       code: "Berkeley Mono",
     },

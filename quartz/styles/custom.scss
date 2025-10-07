@@ -539,6 +539,7 @@ body {
   font-size: 2.6rem;
   font-weight: 800;
   margin-top: 0;
+  font-family: var(--headerFont);
 }
 
 .page-header:not(aside[class~="sidepanel-container"] *) {

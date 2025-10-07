@@ -937,7 +937,7 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
                 <a
                   data-no-popover
                   href={resolveRelative(fileData.slug!, opts!.slug)}
-                  class={classes}
+                  class={classNames(undefined, classes, "see-more")}
                   style={{ fontSize: "0.9em", textDecoration: "underline" }}
                 >
                   {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
@@ -1193,7 +1193,6 @@ export function renderPage(
   componentData: QuartzComponentProps,
   components: RenderComponents,
   pageResources: StaticResources,
-  disableSidepanel?: boolean,
   isFolderTag?: boolean,
 ): string {
   // make a deep copy of the tree so we don't remove the transclusion references
@@ -1216,7 +1215,6 @@ export function renderPage(
     }
   })
   componentData.tree = tree
-  disableSidepanel = disableSidepanel ?? true
   isFolderTag = isFolderTag ?? false
 
   if (slug === "index") {
@@ -1295,12 +1293,10 @@ export function renderPage(
   const lang =
     (componentData.fileData.frontmatter?.lang ?? componentData.cfg.locale)?.split("-")[0] ?? "en"
   const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? "default"
-  if (pageLayout === "technical") disableSidepanel = true
   const isSlides = componentData.fileData.frontmatter?.slides ?? false
   const isArena = slug === "arena" || slug.startsWith("arena/")
   const isCurius = slug === "curius"
   const isArenaSubpage = slug.startsWith("arena/") && slug !== "arena"
-  if (isArena || isArenaSubpage) disableSidepanel = true
 
   return (
     `<!DOCTYPE html>
@@ -1324,7 +1320,6 @@ export function renderPage(
           data-menu={isMenu}
           data-slides={isSlides}
           data-layout={pageLayout}
-          data-disable-sidepanel={disableSidepanel}
           data-is-folder-tag={isFolderTag}
           data-arena-subpage={isArenaSubpage}
         >

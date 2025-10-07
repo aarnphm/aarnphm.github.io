@@ -140,6 +140,9 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 let dest = node.properties.href as RelativeURL
                 const ext: string = path.extname(dest).toLowerCase()
 
+                // Check for protocol-based URLs (mailto:, tel:, etc.)
+                const hasProtocol = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(dest)
+
                 // Initialize context object
                 const ctx: LinkContext = {
                   classes,
@@ -148,7 +151,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isExternal:
                     opts.enableRawEmbed && ALLOWED_EXTENSIONS.includes(ext)
                       ? true
-                      : isAbsoluteUrl(dest),
+                      : isAbsoluteUrl(dest) || hasProtocol,
                   node,
                 }
 
@@ -379,8 +382,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   node.properties.target = "_blank"
                 }
 
-                // don't process external links or intra-document anchors
-                const isInternal = !(isAbsoluteUrl(dest) || dest.startsWith("#"))
+                // don't process external links, protocol URLs, or intra-document anchors
+                const isInternal = !(isAbsoluteUrl(dest) || dest.startsWith("#") || hasProtocol)
                 if (isInternal) {
                   if (ext.includes("pdf")) {
                     // we use CF middleware for fetch from Git LFS, for now

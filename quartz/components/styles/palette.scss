@@ -2,12 +2,6 @@
 @use "../../styles/variables.scss" as *;
 @use "../../styles/mixin.scss" as *;
 
-body[data-disable-sidepanel="true"] {
-  .sidepanel-container {
-    display: none;
-  }
-}
-
 @media all and ((min-width: #{map.get($breakpoints, mobile)}) and (max-width: 1400px)) {
   .sidepanel-container {
     display: none;

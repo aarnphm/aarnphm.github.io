@@ -11,6 +11,7 @@
   gap: 0.25rem;
   font-weight: 300;
   font-style: italic;
+  font-family: var(--headerFont);
 
   @media all and ($mobile) {
     .breadcrumb-element {
@@ -104,13 +105,9 @@
     max-width: 100%;
 
     &:hover {
-      background-image: linear-gradient(
-        var(--link-underline-gradient-line-color),
-        var(--link-underline-gradient-line-color)
-      );
-      background-size: 1px 1px;
-      background-repeat: repeat-x;
-      background-position: 0% calc(100% - 0.1em);
+      background: var(--light);
+      color: var(--dark);
+      text-decoration: underline;
     }
   }
 }

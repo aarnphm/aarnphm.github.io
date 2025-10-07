@@ -3,15 +3,15 @@ id: PyTorch
 tags:
   - ml
   - framework
-date: "2024-11-11"
 description: tidbits from PyTorch
-modified: 2025-01-29 07:47:17 GMT-05:00
+date: "2024-11-11"
+modified: 2025-10-06 22:48:38 GMT-04:00
 title: PyTorch
 ---
 
 see also: [unstable docs](https://pytorch.org/docs/main/)
 
-## MultiMarginLoss
+## `MultiMarginLoss`
 
 Creates a criterion that optimizes a multi-class classification hinge loss (margin-based loss) between input $x$
 (a 2D mini-batch `Tensor`) and output $y$ (which is a 1D tensor of target class indices, $0 \le y \le \text{x}.\text{size}(1) -1$):
@@ -24,7 +24,7 @@ $$
 \because i \in \{0, \ldots x.\text{size}(0)-1\} \text{ and } i \neq y
 $$
 
-## SGD
+## `SGD`
 
 [[thoughts/Nesterov momentum]] is based on [On the importance of initialization and momentum in deep learning](http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf)
 

@@ -1,21 +1,21 @@
 ---
 id: are.na
-permalinks:
-  - /website
-  - /tweets
-  - /resources
+aliases:
+  - inspo
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
+date: "2024-10-24"
 socials:
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-10-06 21:38:46 GMT-04:00
+modified: 2025-10-06 21:55:18 GMT-04:00
 title: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /tweets
+  - /resources
 claude:
   additional_context: |-
     structure of are.na.md:
@@ -39,6 +39,11 @@ cssclasses:
 
 ## discourse
 
+- https://www.lesswrong.com/posts/YABJKJ3v97k9sbxwg/what-money-cannot-buy -- What Money Cannot Buy
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [fruit]
+  - takes: yes, but then it enables a lot of things in life. fwiw it can buy you a lot of freedom of mind to pursue your passion (huge enabling of agency, though agency are largely self-implied)
 - https://sublimeinternet.substack.com/p/the-ai-debate-is-not-about-art-its -- The AI debate is about money
   - [meta]:
     - date: 10/05/2025

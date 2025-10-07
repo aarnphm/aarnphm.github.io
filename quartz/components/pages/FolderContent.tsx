@@ -273,7 +273,6 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     return (
       <>
         <section class={classes}>
-          <h3 class="note-title">écriture</h3>
           <PageList {...listProps} />
         </section>
         <aside class="notes-evergreen">

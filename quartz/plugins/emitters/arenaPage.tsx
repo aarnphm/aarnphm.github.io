@@ -95,7 +95,7 @@ async function processChannel(
     allFiles,
   }
 
-  const content = renderPage(ctx, channelSlug, componentData, opts, externalResources, false, false)
+  const content = renderPage(ctx, channelSlug, componentData, opts, externalResources, false)
   return write({
     ctx,
     content,
