@@ -286,71 +286,82 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
 
                 handleCdnLinks(ctx)
 
-                // Add appropriate icons
-                if (linkTypes.isWikipedia) {
-                  ctx.node.children.push(
-                    createIconElement("/static/favicons/wikipedia.avif", "Wikipedia"),
-                  )
-                } else if (linkTypes.isApexDomain && file.data.slug! !== "index") {
-                  ctx.node.children.push(createIconElement("/static/icon.webp", "apex"))
-                } else if (linkTypes.isArxiv) {
-                  ctx.node.children.push(createIconElement("/static/favicons/arxiv.avif", "arXiv"))
-                } else if (linkTypes.isLessWrong) {
-                  ctx.node.children.push(
-                    createIconElement("/static/favicons/lesswrong.avif", "LessWrong"),
-                  )
-                } else if (linkTypes.isQuartz) {
-                  ctx.node.children.push(createIconElement("/static/favicons/quartz.png", "Quartz"))
-                } else if (linkTypes.isNeovim) {
-                  ctx.node.children.push(createIconElement("/static/favicons/neovim.svg", "Neovim"))
-                } else if (linkTypes.isBentoml) {
-                  ctx.node.children.push(bentomlSvg)
-                } else if (linkTypes.isYoutube) {
-                  ctx.node.children.push(youtubeSvg)
-                } else if (linkTypes.isGwern) {
-                  ctx.node.children.push(gwernSvg)
-                } else if (linkTypes.isObsidian) {
-                  ctx.node.children.push(obsidianSvg)
-                } else if (linkTypes.isYC) {
-                  ctx.node.children.push(ycSvg)
-                } else if (linkTypes.isDoi) {
-                  ctx.node.children.push(doiSvg)
-                } else if (linkTypes.isHf) {
-                  ctx.node.children.push(hfSvg)
-                } else if (linkTypes.isAnthropic) {
-                  ctx.node.children.push(anthropicSvg)
-                } else if (linkTypes.isOpenai) {
-                  ctx.node.children.push(openaiSvg)
-                } else if (linkTypes.isGithub) {
-                  ctx.node.children.push(githubSvg)
-                } else if (linkTypes.isSubstack) {
-                  ctx.node.children.push(substackSvg)
-                } else if (linkTypes.isTwitter) {
-                  ctx.node.children.push(twitterSvg)
-                } else if (linkTypes.isBsky) {
-                  ctx.node.children.push(bskySvg)
-                } else if (
-                  !linkTypes.isEmbedTwitter &&
-                  !linkTypes.isCslNode &&
-                  !linkTypes.isArxiv &&
-                  ctx.isExternal &&
-                  opts.externalLinkIcon
-                ) {
-                  ctx.node.children.push(
-                    s(
-                      "svg",
-                      {
-                        ...svgOptions,
-                        ariaHidden: true,
-                        class: "external-icon",
-                        viewbox: "0 -12 24 24",
-                        fill: "none",
-                        stroke: "currentColor",
-                        strokewidth: 1.5,
-                      },
-                      [s("use", { href: "#arrow-ne" })],
-                    ),
-                  )
+                // Add appropriate icons (skip if data-skip-icons is present)
+                const skipIcons =
+                  ctx.node.properties.dataSkipIcons === true ||
+                  ctx.node.properties.dataSkipIcons === "true"
+                if (!skipIcons) {
+                  if (linkTypes.isWikipedia) {
+                    ctx.node.children.push(
+                      createIconElement("/static/favicons/wikipedia.avif", "Wikipedia"),
+                    )
+                  } else if (linkTypes.isApexDomain && file.data.slug! !== "index") {
+                    ctx.node.children.push(createIconElement("/static/icon.webp", "apex"))
+                  } else if (linkTypes.isArxiv) {
+                    ctx.node.children.push(
+                      createIconElement("/static/favicons/arxiv.avif", "arXiv"),
+                    )
+                  } else if (linkTypes.isLessWrong) {
+                    ctx.node.children.push(
+                      createIconElement("/static/favicons/lesswrong.avif", "LessWrong"),
+                    )
+                  } else if (linkTypes.isQuartz) {
+                    ctx.node.children.push(
+                      createIconElement("/static/favicons/quartz.png", "Quartz"),
+                    )
+                  } else if (linkTypes.isNeovim) {
+                    ctx.node.children.push(
+                      createIconElement("/static/favicons/neovim.svg", "Neovim"),
+                    )
+                  } else if (linkTypes.isBentoml) {
+                    ctx.node.children.push(bentomlSvg)
+                  } else if (linkTypes.isYoutube) {
+                    ctx.node.children.push(youtubeSvg)
+                  } else if (linkTypes.isGwern) {
+                    ctx.node.children.push(gwernSvg)
+                  } else if (linkTypes.isObsidian) {
+                    ctx.node.children.push(obsidianSvg)
+                  } else if (linkTypes.isYC) {
+                    ctx.node.children.push(ycSvg)
+                  } else if (linkTypes.isDoi) {
+                    ctx.node.children.push(doiSvg)
+                  } else if (linkTypes.isHf) {
+                    ctx.node.children.push(hfSvg)
+                  } else if (linkTypes.isAnthropic) {
+                    ctx.node.children.push(anthropicSvg)
+                  } else if (linkTypes.isOpenai) {
+                    ctx.node.children.push(openaiSvg)
+                  } else if (linkTypes.isGithub) {
+                    ctx.node.children.push(githubSvg)
+                  } else if (linkTypes.isSubstack) {
+                    ctx.node.children.push(substackSvg)
+                  } else if (linkTypes.isTwitter) {
+                    ctx.node.children.push(twitterSvg)
+                  } else if (linkTypes.isBsky) {
+                    ctx.node.children.push(bskySvg)
+                  } else if (
+                    !linkTypes.isEmbedTwitter &&
+                    !linkTypes.isCslNode &&
+                    !linkTypes.isArxiv &&
+                    ctx.isExternal &&
+                    opts.externalLinkIcon
+                  ) {
+                    ctx.node.children.push(
+                      s(
+                        "svg",
+                        {
+                          ...svgOptions,
+                          ariaHidden: true,
+                          class: "external-icon",
+                          viewbox: "0 -12 24 24",
+                          fill: "none",
+                          stroke: "currentColor",
+                          strokewidth: 1.5,
+                        },
+                        [s("use", { href: "#arrow-ne" })],
+                      ),
+                    )
+                  }
                 }
 
                 // Check if the link has alias text

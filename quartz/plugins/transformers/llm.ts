@@ -192,7 +192,9 @@ const convertCalloutsToMarkdown = (tree: MdRoot) => {
 export const LLM: QuartzTransformerPlugin = () => {
   return {
     name: "LLM",
-    markdownPlugins(_ctx) {
+    markdownPlugins({ argv }) {
+      if (argv.watch && !argv.force) return []
+
       return [
         () => {
           return (tree: MdRoot, file) => {

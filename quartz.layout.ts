@@ -18,6 +18,7 @@ export const sharedPageComponents: SharedLayout = {
     Component.Keybind(),
     Component.Search(),
     Component.Darkmode(),
+    Component.CodeCopy(),
   ],
   afterBody: [Component.Recommendations(), Component.Backlinks()],
   footer: Component.Footer({
@@ -49,6 +50,8 @@ export const defaultListPageLayout: PageLayout = {
     Component.Palette(),
     Component.Keybind(),
     Component.Search(),
+    Component.Darkmode(),
+    Component.CodeCopy(),
   ],
   sidebar: [],
 }

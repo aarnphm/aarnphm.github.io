@@ -7,7 +7,7 @@ transclude:
   dynalist: false
   title: false
 date: "2025-08-12"
-modified: 2025-10-06 04:45:15 GMT-04:00
+modified: 2025-10-06 07:46:53 GMT-04:00
 title: research
 ---
 
@@ -183,7 +183,7 @@ The field is moving fast enough that by the time you read this, half the systems
 Recent work shows what happens when we split them properly:
 
 - @qin2024mooncakekvcachecentricdisaggregatedarchitecture achieves 525% throughput increases (i.e Mooncake)
-- @li2025250403775 reduces KV transfer latency by 96%.
+- @li2025flowkvdisaggregatedinferenceframework reduces KV transfer latency by 96%.
 
 But the interesting questions are ==cross-stage communication under dynamic workloads== and how to allocate resources when both stages compete for the same hardware.
 
@@ -196,7 +196,7 @@ Speculation must move beyond the naive draft-verify paradigm:
 
 For mixture-of-experts models, speculation remains largely unexplored.
 
-- Most work adapts general speculation to MoE: Speculative MoE [@li2025250304398], Exploiting inter-layer expert affinity [@yao2024240108383].
+- Most work adapts general speculation to MoE: Speculative MoE [@li2025speculativemoecommunicationefficient], Exploiting inter-layer expert affinity [@yao2024240108383].
 
 I suspect whether there are opportunity for self-speculation using expert activation patterns:
 
@@ -210,12 +210,12 @@ I suspect whether there are opportunity for self-speculation using expert activa
 
 We have some of the tools:
 
-- attribution patching [@syed2023231010348] for causality tracing
+- attribution patching [@syed2023attributionpatchingoutperformsautomated] for causality tracing
 - attention lens for visualization
 - [[thoughts/sparse autoencoder|sparse autoencoders]] for feature extraction
 - [[thoughts/Attribution parameter decomposition|APD]] for decomposing networks into mechanistic components.
 - Persona/thought vectors
 
-But there's no comprehensive mechanistic analysis of what happens at 128K+ token windows. Out-of-context representation learning [@shaki2025250310408] shows these models attend to things we didn't teach them, but we don't know how this scales with context.
+But there's no comprehensive mechanistic analysis of what happens at 128K+ token windows. Out-of-context representation learning [@shaki2025outofcontextreasoninglargelanguage] shows these models attend to things we didn't teach them, but we don't know how this scales with context.
 
 I'm interested in characterizing the search space these models explore during long-context processing, what emergent behaviors appear at extended windows, and whether we can build better systems by understanding these mechanisms rather than treating models as black boxes.

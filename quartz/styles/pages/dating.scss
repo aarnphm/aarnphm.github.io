@@ -9,6 +9,7 @@
       > p:first-of-type:not(.popover *) {
         font-size: 22.2763px; // follows h3
         font-weight: $semiBoldWeight;
+        margin-top: 1rem;
       }
 
       ul:not(.popover *),
@@ -28,6 +29,12 @@
         font-style: italic;
       }
     }
+  }
+}
+
+[data-slug="dating/slides"] {
+  #tldr {
+    margin-top: 2rem;
   }
 }
 

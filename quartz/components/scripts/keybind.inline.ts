@@ -209,9 +209,9 @@ document.addEventListener("nav", () => {
   let hintMarkers: HTMLElement[] = []
   let typedHint = ""
 
-  // Generate hint strings (2-3 chars like "as", "df", "gh")
+  // Generate hint strings (up to 4 chars)
   function generateHints(count: number): string[] {
-    const chars = "asdfghjkl"
+    const chars = "asdfghjklzxcvbnm"
     const hints: string[] = []
 
     if (count <= chars.length) {
@@ -219,11 +219,31 @@ document.addEventListener("nav", () => {
       for (let i = 0; i < count; i++) {
         hints.push(chars[i])
       }
-    } else {
+    } else if (count <= chars.length * chars.length) {
       // Two character hints
       for (let i = 0; i < chars.length && hints.length < count; i++) {
         for (let j = 0; j < chars.length && hints.length < count; j++) {
           hints.push(chars[i] + chars[j])
+        }
+      }
+    } else if (count <= chars.length * chars.length * chars.length) {
+      // Three character hints
+      for (let i = 0; i < chars.length && hints.length < count; i++) {
+        for (let j = 0; j < chars.length && hints.length < count; j++) {
+          for (let k = 0; k < chars.length && hints.length < count; k++) {
+            hints.push(chars[i] + chars[j] + chars[k])
+          }
+        }
+      }
+    } else {
+      // Four character hints
+      for (let i = 0; i < chars.length && hints.length < count; i++) {
+        for (let j = 0; j < chars.length && hints.length < count; j++) {
+          for (let k = 0; k < chars.length && hints.length < count; k++) {
+            for (let l = 0; l < chars.length && hints.length < count; l++) {
+              hints.push(chars[i] + chars[j] + chars[k] + chars[l])
+            }
+          }
         }
       }
     }
@@ -233,6 +253,12 @@ document.addEventListener("nav", () => {
 
   // Check if element is visible and clickable
   function isElementVisible(el: HTMLElement): boolean {
+    // Special case: clipboard buttons can be invisible but still interactable
+    const isClipboardButton = el.classList.contains("clipboard-button")
+    if (isClipboardButton) {
+      return true
+    }
+
     const rect = el.getBoundingClientRect()
     const style = window.getComputedStyle(el)
 
@@ -335,22 +361,8 @@ document.addEventListener("nav", () => {
       const marker = document.createElement("div")
       marker.className = "link-hint-marker"
       marker.textContent = hint
-      marker.style.cssText = `
-        position: fixed;
-        top: ${rect.top}px;
-        left: ${rect.left}px;
-        background: var(--pine);
-        color: var(--light);
-        padding: 0.2rem 0.4rem;
-        border-radius: 3px;
-        font-size: 0.5rem;
-        font-weight: bold;
-        font-family: var(--codeFont);
-        z-index: 10000;
-        pointer-events: none;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        text-transform: uppercase;
-      `
+      marker.style.top = `${rect.top}px`
+      marker.style.left = `${rect.left}px`
 
       document.body.appendChild(marker)
       hintMarkers.push(marker)
@@ -434,12 +446,12 @@ document.addEventListener("nav", () => {
 
       case "j":
         e.preventDefault()
-        window.scrollBy({ top: SCROLL_AMOUNT_SMALL, behavior: "instant" })
+        window.scrollBy({ top: SCROLL_AMOUNT_SMALL, behavior: "smooth" })
         break
 
       case "k":
         e.preventDefault()
-        window.scrollBy({ top: -SCROLL_AMOUNT_SMALL, behavior: "instant" })
+        window.scrollBy({ top: -SCROLL_AMOUNT_SMALL, behavior: "smooth" })
         break
 
       case "G":

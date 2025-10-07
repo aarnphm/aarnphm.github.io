@@ -1,6 +1,6 @@
 :root {
-  --telescope-highlight: #fcc16d55;
-  --telescope-highlight-hover: var(--gold);
+  --telescope-highlight: rgb(252, 193, 146);
+  --telescope-highlight-hover: rgb(249, 174, 119);
   --telescope-text-color: var(--dark);
   --telescope-border: #888;
 }
@@ -32,6 +32,17 @@
   }
 }
 
+[saved-theme="dark"] {
+  #telescope {
+    .details {
+      color: var(--light);
+    }
+    .expanded {
+      collor: var(--dark);
+    }
+  }
+}
+
 #telescope {
   color: var(--telescope-text-color);
 
@@ -57,12 +68,17 @@
   .details {
     display: inline;
     border-radius: 3px;
+    padding: 0 3px;
+    margin: -1px;
+    transition: background-color 0.2s ease;
     background-color: var(--telescope-highlight);
-    transition: background-color 0.5s ease;
     cursor: pointer;
 
     &.open {
       background-color: transparent;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
       cursor: initial;
     }
 

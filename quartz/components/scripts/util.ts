@@ -313,6 +313,25 @@ export const encode = (str: string) =>
     .split(/\s+/)
     .filter((token) => token.length > 0)
 
+export function getOrCreateSidePanel(): HTMLDivElement {
+  let asidePanel = document.querySelector<HTMLDivElement>(
+    "main > * > aside[class~='sidepanel-container']",
+  )
+
+  if (!asidePanel) {
+    const pageContent = document.querySelector<HTMLDivElement>("section.page-content")
+    if (!pageContent) {
+      throw new Error("page-content section not found")
+    }
+
+    asidePanel = document.createElement("aside")
+    asidePanel.classList.add("sidepanel-container")
+    pageContent.appendChild(asidePanel)
+  }
+
+  return asidePanel
+}
+
 export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElement[]) {
   const pageHeader = document.querySelector<HTMLDivElement>("main > section[class~='page-header']")
   if (!asidePanel || !pageHeader) console.error("asidePanel must not be null")

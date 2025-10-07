@@ -97,7 +97,8 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
   return {
     name: "GitHub",
-    markdownPlugins() {
+    markdownPlugins({ argv }) {
+      if (argv.watch && !argv.force) return []
       return [
         () => {
           return (tree: Root, file) => {
@@ -327,7 +328,9 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
         },
       ]
     },
-    htmlPlugins({ cfg }) {
+    htmlPlugins({ cfg, argv }) {
+      if (argv.watch && !argv.force) return []
+
       return [
         // automatically add dir https://github.com/rehypejs/rehype-github/blob/main/packages/dir/lib/index.js
         // It is simple enough and I don't want to add a whole deps for it.

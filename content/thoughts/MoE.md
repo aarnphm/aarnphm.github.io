@@ -14,7 +14,7 @@ title: MoE
 
 https://arxiv.org/pdf/2507.19427
 
-[@step3system], stored in bfloat16 or block-fp8, used for vision-language reasoning.
+[@stepfun2025step3largeaffordablemodelsystem], stored in bfloat16 or block-fp8, used for vision-language reasoning.
 
 see also https://zhuanlan.zhihu.com/p/1935657127348793545, https://zhuanlan.zhihu.com/p/1932920900203807997
 

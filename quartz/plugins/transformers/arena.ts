@@ -45,6 +45,7 @@ export interface ArenaBlock {
   internalSlug?: string
   internalHref?: string
   internalHash?: string
+  tags?: string[]
 }
 
 export interface ArenaChannel {
@@ -157,7 +158,8 @@ export const Arena: QuartzTransformerPlugin = () => {
                 (child): child is Paragraph => child.type === "paragraph",
               )
               const metaHeading = metaParagraph ? toString(metaParagraph).trim().toLowerCase() : ""
-              if (!metaHeading.startsWith("_meta")) return
+              const metaMarker = metaHeading.match(/^\[meta\](?:\s*[:\-–—])?/)
+              if (!metaMarker) return
 
               const metaList = firstChild.children.find(
                 (child): child is List => child.type === "list",
@@ -167,27 +169,126 @@ export const Arena: QuartzTransformerPlugin = () => {
               if (!metaList || metaList.children.length === 0) return
 
               const metadata: Record<string, string> = {}
+              const tags: string[] = []
+              const seenTags = new Set<string>()
+
+              const pushTags = (values: string[]) => {
+                for (const entry of values) {
+                  const trimmed = entry.trim()
+                  if (trimmed.length === 0) continue
+                  if (seenTags.has(trimmed)) continue
+                  seenTags.add(trimmed)
+                  tags.push(trimmed)
+                }
+              }
+
+              const extractTagTokens = (raw: string): string[] => {
+                let normalized = raw.trim()
+                if (normalized.length === 0) {
+                  return []
+                }
+                normalized = normalized.replace(/^[-•]\s*/, "")
+
+                const first = normalized.charAt(0)
+                const last = normalized.charAt(normalized.length - 1)
+                if ((first === "[" && last === "]") || (first === "(" && last === ")")) {
+                  normalized = normalized.slice(1, -1)
+                }
+
+                const rawTokens = normalized
+                  .split(/[\n,;|]/)
+                  .map((segment) => segment.trim())
+                  .filter((segment) => segment.length > 0)
+
+                const cleaned: string[] = []
+                for (const token of rawTokens.length > 0 ? rawTokens : [normalized]) {
+                  const stripped = token
+                    .replace(/^[-•]\s*/, "")
+                    .replace(/^['"]/, "")
+                    .replace(/['"]$/, "")
+                    .trim()
+                  if (stripped.length > 0) {
+                    cleaned.push(stripped)
+                  }
+                }
+
+                return cleaned
+              }
+
               for (const item of metaList.children) {
                 if (item.type !== "listItem") continue
                 const itemParagraph = item.children.find(
                   (child): child is Paragraph => child.type === "paragraph",
                 )
                 const raw = itemParagraph ? toString(itemParagraph).trim() : toString(item).trim()
-                if (raw.length === 0) continue
-                const delimiterIndex = raw.indexOf(":")
-                if (delimiterIndex === -1) continue
-                const key = raw.slice(0, delimiterIndex).trim().toLowerCase().replace(/\s+/g, "_")
-                const value = raw.slice(delimiterIndex + 1).trim()
-                if (key.length === 0 || value.length === 0) continue
+                const sublist = item.children.find((child): child is List => child.type === "list")
+
+                let keySource: string | undefined
+                let value: string | undefined
+
+                if (raw.length > 0) {
+                  const delimiterIndex = raw.indexOf(":")
+                  if (delimiterIndex !== -1) {
+                    keySource = raw.slice(0, delimiterIndex).trim()
+                    value = raw.slice(delimiterIndex + 1).trim()
+                  } else if (sublist) {
+                    const normalized = raw.trim().toLowerCase()
+                    if (normalized === "tags" || normalized === "[tags]") {
+                      keySource = "tags"
+                      value = ""
+                    }
+                  }
+                } else if (sublist) {
+                  keySource = "tags"
+                  value = ""
+                }
+
+                if (!keySource) continue
+
+                const normalizedKey = keySource.toLowerCase().replace(/\s+/g, "_")
+
+                if (normalizedKey === "tags") {
+                  const candidateStrings: string[] = []
+                  if (typeof value === "string" && value.length > 0) {
+                    candidateStrings.push(value)
+                  }
+                  if (sublist) {
+                    for (const child of sublist.children) {
+                      if (child.type !== "listItem") continue
+                      const childParagraph = child.children.find(
+                        (grand): grand is Paragraph => grand.type === "paragraph",
+                      )
+                      const tagText = childParagraph
+                        ? toString(childParagraph).trim()
+                        : toString(child).trim()
+                      if (tagText.length > 0) {
+                        candidateStrings.push(tagText)
+                      }
+                    }
+                  }
+                  for (const candidate of candidateStrings) {
+                    const tokens = extractTagTokens(candidate)
+                    if (tokens.length > 0) {
+                      pushTags(tokens)
+                    }
+                  }
+                  continue
+                }
+
+                if (!value || value.length === 0) continue
+                const key = normalizedKey
+                if (key.length === 0) continue
                 metadata[key] = value
               }
 
-              if (Object.keys(metadata).length > 0) {
-                setDataAttribute(
-                  owner as NodeWithData,
-                  "data-arena-block-meta",
-                  JSON.stringify(metadata),
-                )
+              const hasTags = tags.length > 0
+              const hasMetadata = Object.keys(metadata).length > 0
+
+              if (hasTags || hasMetadata) {
+                const payload = hasTags
+                  ? JSON.stringify({ ...(hasMetadata ? { metadata } : {}), tags })
+                  : JSON.stringify(metadata)
+                setDataAttribute(owner as NodeWithData, "data-arena-block-meta", payload)
               }
             }
 
@@ -546,11 +647,63 @@ export const Arena: QuartzTransformerPlugin = () => {
                   highlighted: Boolean(info.highlighted),
                 }
 
-                const metadata = parseJsonAttr<Record<string, string>>(
+                const metaPayload = parseJsonAttr<unknown>(
                   getDataAttr(el.properties, "data-arena-block-meta"),
                 )
-                if (metadata) {
-                  block.metadata = metadata
+                if (metaPayload && typeof metaPayload === "object" && !Array.isArray(metaPayload)) {
+                  const metaObject = metaPayload as Record<string, unknown>
+                  const hasMetadataProp = Object.prototype.hasOwnProperty.call(
+                    metaObject,
+                    "metadata",
+                  )
+                  const rawTags = metaObject.tags
+                  const tagsArray = Array.isArray(rawTags)
+
+                  if (hasMetadataProp) {
+                    const rawMetadata = metaObject.metadata
+                    if (
+                      rawMetadata &&
+                      typeof rawMetadata === "object" &&
+                      !Array.isArray(rawMetadata)
+                    ) {
+                      const entries: [string, string][] = []
+                      for (const [key, value] of Object.entries(rawMetadata)) {
+                        if (typeof value === "string" && value.length > 0) {
+                          entries.push([key, value])
+                        }
+                      }
+                      if (entries.length > 0) {
+                        block.metadata = Object.fromEntries(entries)
+                      }
+                    }
+                  }
+
+                  if (!hasMetadataProp && !tagsArray) {
+                    const entries: [string, string][] = []
+                    for (const [key, value] of Object.entries(metaObject)) {
+                      if (typeof value === "string" && value.length > 0) {
+                        entries.push([key, value])
+                      }
+                    }
+                    if (entries.length > 0) {
+                      block.metadata = Object.fromEntries(entries)
+                    }
+                  }
+
+                  if (tagsArray) {
+                    const deduped: string[] = []
+                    const seen = new Set<string>()
+                    for (const tag of rawTags as unknown[]) {
+                      if (typeof tag !== "string") continue
+                      const trimmed = tag.trim()
+                      if (trimmed.length === 0 || seen.has(trimmed)) continue
+                      seen.add(trimmed)
+                      deduped.push(trimmed)
+                    }
+                    if (deduped.length > 0) {
+                      block.tags = deduped
+                    }
+                  }
                 }
 
                 const embedHtml = getDataAttr<string>(el.properties, "data-arena-block-embed-html")

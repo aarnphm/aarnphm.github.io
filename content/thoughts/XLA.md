@@ -6,7 +6,7 @@ tags:
   - compilers
 description: or accelerated linear algebra
 date: "2022-12-23"
-modified: 2025-10-05 14:48:46 GMT-04:00
+modified: 2025-10-06 08:35:10 GMT-04:00
 title: XLA
 ---
 
@@ -1468,7 +1468,6 @@ print(lowered.as_text(dialect='hlo'))
 
 # generate DOT graph (with XLA_FLAGS)
 # produces fusion_*.dot files
-# convert: dot -Tpng fusion_0.dot > fusion_0.png
 ```
 
 ### performance profiling

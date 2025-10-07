@@ -6,7 +6,7 @@ tags:
   - technical
 description: a method to speed up LLM decoding
 date: "2025-05-21"
-modified: 2025-09-15 04:25:20 GMT-04:00
+modified: 2025-10-06 08:22:53 GMT-04:00
 title: Speculative decoding
 ---
 
@@ -167,7 +167,7 @@ https://arxiv.org/abs/2310.08461
 
 ## SpecInfer
 
-https://arxiv.org/abs/2305.09781
+[@Miao_2024]
 
 ## Medusa
 

@@ -4,26 +4,20 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 
 ## Development Commands
 
-**IMPORTANT**: Most of the cases if you need to verify build, make sure to see if `pnpm dev` is being run. In this cases, then `pnpm bundle` or any build step are not necessary. If you want to run any command, make sure to `cd` to the git directory first.
+**IMPORTANT**: Most of the cases if you need to verify build, make sure to check if port 8080 is available. If it is occupied, then do nothing, otherwise run `pnpm exec tsx quartz/script/dev.ts`. Chances are i'm running development build. Otherwise `pnpm bundle` would suffice.
 
 **Build and Development:**
 
 - `pnpm bundle` - Build for production (concurrency 8, bundleInfo, verbose)
-- `pnpm bundle:dev` - Development build for Cloudflare Pages
+  - After this, run `fd --glob "*.[pdf|ddl]" public -x rm` to mae it compatible with `wrangler`
 - `pnpm cf:deploy` - Deploy to Cloudflare (runs check first)
 
 **Code Quality:**
 
-- `pnpm check` - Complete validation pipeline (format, convert, cf:types, prettier check, TypeScript check, tests)
+- `pnpm check` - Complete validation pipeline
 - `pnpm format` - Format code with Prettier and organize References.bib with bibtex-tidy
-- `pnpm test` - Run tests using tsx --test
 - `tsc --noEmit` - TypeScript type checking without emitting files
-
-**Utilities:**
-
-- `pnpm convert` - Run conversion scripts (tsx quartz/scripts/convert.ts)
-- `pnpm cf:types` - Generate Cloudflare Worker types
-- `pnpm cf:prepare` - Prepare for Cloudflare deployment (format, convert, types)
+- `tsc --test` - TypeScript test
 
 ## Architecture Overview
 

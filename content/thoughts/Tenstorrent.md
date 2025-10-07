@@ -2,11 +2,11 @@
 id: Tenstorrent
 tags:
   - ml
+  - asic
   - hardware
-  - accelerators
 description: RISC-V based AI accelerators with programmable architecture
 date: "2025-10-05"
-modified: 2025-10-05 17:27:07 GMT-04:00
+modified: 2025-10-06 09:03:23 GMT-04:00
 title: Tenstorrent
 ---
 
@@ -29,6 +29,8 @@ see also: [[thoughts/GPU programming]], [[thoughts/MLIR]], [[thoughts/Compiler]]
 ## architecture
 
 ### wormhole (second gen, production)
+
+see also: https://docs.tenstorrent.com/aibs/wormhole/specifications.html
 
 **specifications:** [@tenstorrent2024wormhole; @semianalysis2021wormhole]
 
@@ -1016,6 +1018,7 @@ younger than tt-metal. fewer contributors, faster iteration.
 ### academic papers
 
 - [@thuning2024attention] - "Attention in SRAM on Tenstorrent Grayskull" demonstrates SRAM-based attention mechanisms
+  - https://github.com/moritztng/grayskull-attention
 - [@pizzini2025tenstorrent] - "Assessing Tenstorrent's RISC-V MatMul Acceleration Capabilities" provides detailed Tensix core analysis (ISC HPC 2025)
 - [@brown2024stencils] - "Accelerating stencils on the Tenstorrent Grayskull RISC-V accelerator" shows 5× energy efficiency vs Xeon (SC24)
 

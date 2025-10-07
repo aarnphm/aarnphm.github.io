@@ -4,8 +4,8 @@ tags:
   - evergreen
   - home
 description: what does home mean to you?
-date: 2025-07-04
-modified: 2025-08-07 16:39:57 GMT-04:00
+date: "2025-07-04"
+modified: 2025-10-06 17:13:40 GMT-04:00
 title: furnitures
 ---
 
@@ -19,3 +19,4 @@ Furnitures signify a permanent object that lives within your [[posts/dundurn|spa
 
 - https://maisoncorbeil.com/en/
 - https://stylegarage.com
+- https://www.lichennyc.com/

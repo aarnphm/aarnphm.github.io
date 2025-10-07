@@ -240,15 +240,16 @@ async function showModal(blockId: string) {
   clonedContent.style.display = "block"
   modalBody.appendChild(clonedContent)
 
-  const twttr = (window as any).twttr
-  if (twttr && typeof twttr.ready === "function") {
-    twttr.ready((readyTwttr: any) => {
+  if (window.twttr && typeof window.twttr.ready === "function") {
+    window.twttr.ready((readyTwttr: any) => {
       if (readyTwttr?.widgets?.load) {
         readyTwttr.widgets.load(modalBody)
       }
     })
-  } else if (twttr?.widgets?.load) {
-    twttr.widgets.load(modalBody)
+    // @ts-ignore
+  } else if (window.twttr?.widgets?.load) {
+    // @ts-ignore
+    window.twttr.widgets.load(modalBody)
   }
 
   hydrateSubstackEmbeds(modalBody)
@@ -746,19 +747,25 @@ document.addEventListener("nav", () => {
         e.preventDefault()
         clearSearchState({ blur: true })
 
-        // If we're on the index page and clicked a result from another channel,
-        // navigate to that channel first
-        if (channelSlug) {
+        // Check if modal data exists for this block
+        const modalData = document.getElementById(`arena-modal-data-${blockId}`)
+
+        if (modalData) {
+          // Modal data exists, show it directly
+          showModal(blockId)
+        } else if (channelSlug) {
+          // No modal data, navigate to the channel page
           const currentSlug = document.body?.dataset.slug || ""
           if (!currentSlug.startsWith(channelSlug)) {
-            // Navigate to the channel page
             window.location.href = `/${channelSlug}`
             return
           }
+          // If we're already on the channel page but no modal data, just show modal
+          showModal(blockId)
+        } else {
+          // Fallback: try to show modal anyway
+          showModal(blockId)
         }
-
-        // Show the block modal
-        showModal(blockId)
       }
       return
     }

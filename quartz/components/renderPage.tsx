@@ -45,6 +45,8 @@ import { BuildCtx } from "../util/ctx"
 import { checkBib, checkBibSection } from "../plugins/transformers/citations"
 import { checkFootnoteRef, checkFootnoteSection } from "../plugins/transformers/gfm"
 import Keybind from "./Keybind"
+import CodeCopy from "./CodeCopy"
+import Darkmode from "./Darkmode"
 
 interface RenderComponents {
   head: QuartzComponent
@@ -839,14 +841,10 @@ export function transcludeFinal(
 export const TopLinks = {
   workshop: "/lectures",
   livres: "/books",
-  merci: "/influence",
-  advice: "/quotes",
-  parfum: "/thoughts/Scents",
   "are.na": "/arena",
   craft: "/thoughts/craft",
   home: "/thoughts/furnitures",
   movies: "/movies",
-  tunes: "/mixed",
 }
 
 type AliasLinkProp = {
@@ -871,6 +869,7 @@ const AliasLink = (props: AliasLinkProp) => {
       rel="noopener noreferrer"
       className={className.join(" ")}
       data-no-popover={!opts.enablePopover}
+      data-skip-icons
     >
       {opts.name}
       {opts.children}
@@ -908,8 +907,8 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
     const remaining = Math.max(0, pages.length - opts!.numLimits!)
     const classes = ["min-links", "internal"].join(" ")
     return (
-      <section id={`note-item-${opts!.header}`} data-note>
-        <h2>{opts!.header}.</h2>
+      <section id={`note-item-${opts!.header}`} data-note style={{ marginTop: "1.2em" }}>
+        <em>{opts!.header}</em>
         <div class="notes-container">
           <div class="recent-links">
             <ul class="landing-notes">
@@ -934,18 +933,17 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
               })}
             </ul>
             {remaining > 0 && (
-              <p>
-                <em>
-                  <a
-                    data-no-popover
-                    href={resolveRelative(fileData.slug!, opts!.slug)}
-                    class={classes}
-                  >
-                    {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
-                      remaining,
-                    })}
-                  </a>
-                </em>
+              <p style={{ marginTop: "0" }}>
+                <a
+                  data-no-popover
+                  href={resolveRelative(fileData.slug!, opts!.slug)}
+                  class={classes}
+                  style={{ fontSize: "0.9em", textDecoration: "underline" }}
+                >
+                  {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
+                    remaining,
+                  })}
+                </a>
               </p>
             )}
           </div>
@@ -1012,16 +1010,16 @@ const ElementComponent = (() => {
 
     const Hyperlink = HyperlinksComponent({
       children: [
-        <section>
-          <h2>jardin:</h2>
+        <section style={{ marginTop: "0.9em" }}>
+          <em>jardin</em>
           <address class="clickable-container">
             {Object.entries(TopLinks).map(([name, url]) => (
               <AliasLink isInternal enablePopover={false} key={name} name={name} url={url} />
             ))}
           </address>
         </section>,
-        <section>
-          <h2>média:</h2>
+        <section style={{ marginTop: "0.9em" }}>
+          <em>média</em>
           <address class="clickable-container">
             <AliasLink newTab classes={["external"]} name="github" url="https://github.com/aarnphm">
               {githubIcon}
@@ -1224,7 +1222,7 @@ export function renderPage(
   if (slug === "index") {
     components = {
       ...components,
-      header: [Image(), Graph(), Search(), Palette(), Keybind()],
+      header: [Image(), Graph(), Search(), Palette(), Keybind(), CodeCopy(), Darkmode()],
       sidebar: [],
       afterBody: [],
       beforeBody: [],
@@ -1233,14 +1231,9 @@ export function renderPage(
         const Element = ElementComponent()
 
         return (
-          <>
-            <h1 class="article-title" style="margin-top: 2rem" lang="fr">
-              Bonjour, je suis Aaron.
-            </h1>
-            <div class={classNames(displayClass, "landing")}>
-              <Element {...props} />
-            </div>
-          </>
+          <div class={classNames(displayClass, "landing")}>
+            <Element {...props} />
+          </div>
         )
       },
     }
@@ -1385,12 +1378,9 @@ export function renderPage(
               )}
               <Content {...componentData} />
               {!isSlides && !isArena && !isCurius && (
-                <>
-                  <div id="wc-modal" class="wc-modal">
-                    <div class="wc-inner" />
-                  </div>
-                  <aside class="sidepanel-container" />
-                </>
+                <div id="wc-modal" class="wc-modal">
+                  <div class="wc-inner" />
+                </div>
               )}
               <Headings {...componentData} />
             </section>

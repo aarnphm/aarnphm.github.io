@@ -7,6 +7,7 @@ import {
   encode,
   fetchCanonical,
   createSidePanel,
+  getOrCreateSidePanel,
 } from "./util"
 
 interface Item extends DocumentData {
@@ -344,17 +345,19 @@ document.addEventListener("nav", async (e) => {
     if (!container?.classList.contains("active")) return
 
     if (e.metaKey && e.altKey && e.key === "Enter") {
-      const asidePanel = document.querySelector<HTMLDivElement>(
-        "main > * > aside[class~='sidepanel-container']",
-      )
-      if (!asidePanel || !currentHover) return
+      if (!currentHover) return
 
-      await fetchContent(currentSlug, currentHover.dataset.slug as FullSlug).then((innerDiv) => {
-        asidePanel.dataset.slug = currentHover!.dataset.slug
-        createSidePanel(asidePanel, ...innerDiv)
-        window.notifyNav(currentHover!.dataset.slug as FullSlug)
-        hidePalette()
-      })
+      try {
+        const asidePanel = getOrCreateSidePanel()
+        await fetchContent(currentSlug, currentHover.dataset.slug as FullSlug).then((innerDiv) => {
+          asidePanel.dataset.slug = currentHover!.dataset.slug
+          createSidePanel(asidePanel, ...innerDiv)
+          window.notifyNav(currentHover!.dataset.slug as FullSlug)
+          hidePalette()
+        })
+      } catch (error) {
+        console.error("Failed to create side panel:", error)
+      }
       return
     } else if (e.key === "Enter") {
       // If result has focus, navigate to that one, otherwise pick first result

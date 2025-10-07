@@ -55,8 +55,8 @@ const baseToastStyles: Partial<CSSStyleDeclaration> = {
 }
 
 const lightToastStyles: Partial<CSSStyleDeclaration> = {
-  background: "rgba(255, 255, 255, 0.94)",
-  color: "#0f172a",
+  background: "rgba(255, 252, 240, 0.94)",
+  color: "rgb(16, 15, 15)",
   boxShadow: "0 14px 34px rgba(15, 23, 42, 0.22)",
   border: "1px solid rgba(100, 116, 139, 0.16)",
   borderRadius: "12px",
@@ -223,14 +223,14 @@ export class Toast {
       el.style.padding = `${paddingY}px 12px`
 
       if (depth === 0) {
-        el.style.color = "#0f172a"
-        el.style.background = "rgba(255, 255, 255, 0.94)"
+        el.style.color = "rgb(16, 15, 15)"
+        el.style.background = "rgba(255, 252, 240, 0.94)"
         el.style.filter = "none"
         el.setAttribute("aria-hidden", "false")
       } else {
         const attenuatedAlpha = Math.max(0.24, 0.94 - depth * 0.18)
         el.style.color = "transparent"
-        el.style.background = `rgba(255, 255, 255, ${attenuatedAlpha})`
+        el.style.background = `rgba(255, 252, 240, ${attenuatedAlpha})`
         el.style.filter = "saturate(0.75) brightness(0.9)"
         el.setAttribute("aria-hidden", "true")
       }

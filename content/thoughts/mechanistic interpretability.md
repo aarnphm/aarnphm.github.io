@@ -7,7 +7,7 @@ tags:
 description: and reverse engineering neural networks.
 date: "2024-10-30"
 abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
-modified: 2025-10-04 17:50:58 GMT-04:00
+modified: 2025-10-06 19:50:49 GMT-04:00
 aliases:
   - mechinterp
   - reveng neural net
@@ -217,5 +217,9 @@ See also: [writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mec
 see also [[thoughts/Attribution parameter decomposition]], [Circuit Tracing: Revealing Computational Graphs in Language Models](https://transformer-circuits.pub/2025/attribution-graphs/methods.html), [On the Biology of a Large Language Model](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)
 
 Depicts influence of features on one another, allowing one to trace intermediate steps the model uses to produce outputs. Think of autonomous path-finder for activations points, instead of using something like a [[thoughts/sparse crosscoders|replacement models]] to infer more interpretable features.
+
+## stochastic parameter decomposition
+
+https://github.com/goodfire-ai/spd 👀
 
 [^ref]

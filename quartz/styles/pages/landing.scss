@@ -3,7 +3,7 @@
 
 body[data-slug="index"] {
   overflow-x: hidden;
-  font-size: 15.5px;
+  font-size: 1em;
 
   .popover-inner {
     .side-col {
@@ -80,7 +80,7 @@ body[data-slug="index"] {
 .landing-notes {
   padding-inline-start: 0;
   margin-left: 0;
-  margin-top: 0;
+  margin-top: 8px;
   margin-block-end: 0;
 
   & li {
@@ -110,13 +110,21 @@ body[data-slug="index"] {
   }
 }
 
+a[data-skip-icons="true"] {
+  svg[data-icon] {
+    display: none;
+  }
+}
+
 a.min-links {
   color: inherit;
   font-weight: inherit;
   text-decoration: none;
 
   &:hover {
-    color: var(--tertiary);
+    .landing-mtitle {
+      text-decoration: underline;
+    }
   }
 
   &.internal {
@@ -131,4 +139,6 @@ a.min-links {
   gap: 0.5rem;
   flex-flow: wrap;
   align-items: baseline;
+  font-style: normal;
+  margin-top: 8px;
 }

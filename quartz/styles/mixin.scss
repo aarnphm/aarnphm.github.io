@@ -44,7 +44,7 @@
   }
 }
 
-@mixin font-face($family, $filename, $format, $style: normal, $weight: normal) {
+@mixin font-face($family, $filename, $format, $style: normal, $weight: normal, $path: "/fonts/") {
   @font-face {
     font-family: $family;
     font-style: $style;
@@ -55,13 +55,13 @@
       @for $i from 1 through list.length($filename) {
         $src: list.append(
           $src,
-          url("/static/#{list.nth($filename, $i)}") format(#{list.nth($format, $i)}),
+          url("#{$path}#{list.nth($filename, $i)}") format(#{list.nth($format, $i)}),
           comma
         );
       }
       src: $src;
     } @else {
-      src: url("/static/#{$filename}") format($format);
+      src: url("#{$path}#{$filename}") format($format);
     }
   }
 }

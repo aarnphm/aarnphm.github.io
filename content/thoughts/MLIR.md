@@ -6,11 +6,17 @@ tags:
   - infrastructure
 description: multi-level intermediate representation for compiler infrastructure
 date: "2025-03-25"
-modified: 2025-10-05 02:25:13 GMT-04:00
+modified: 2025-10-06 07:01:09 GMT-04:00
 title: MLIR
 ---
 
 See also: [[thoughts/Compiler]], [[thoughts/XLA]], [[thoughts/PyTorch]], [[thoughts/GPU programming]]
+
+Good blogpost write up:
+
+- https://www.stephendiehl.com/posts/mlir_introduction/
+- https://mlir.llvm.org/docs/Tutorials/
+- https://www.jeremykun.com/2023/08/10/mlir-getting-started/
 
 > a compiler infrastructure project under the LLVM umbrella that provides a flexible framework for building reusable and extensible compiler infrastructure.
 

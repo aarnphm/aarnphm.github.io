@@ -58,6 +58,8 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
     name: "NotebookViewer",
     async *partialEmit() {},
     async *emit({ argv, cfg }) {
+      if (argv.watch && !argv.force) return []
+
       const fps = await notebookFiles(argv, cfg)
 
       if (fps.length === 0) {

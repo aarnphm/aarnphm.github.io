@@ -2,7 +2,7 @@ import { computePosition, flip, inline, Placement, shift, Strategy } from "@floa
 import { FullSlug, getFullSlug, normalizeRelativeURLs } from "../../util/path"
 import { getContentType } from "../../util/mime"
 import xmlFormat from "xml-formatter"
-import { createSidePanel, fetchCanonical } from "./util"
+import { createSidePanel, fetchCanonical, getOrCreateSidePanel } from "./util"
 
 type ContentHandler = (
   response: Response,
@@ -477,54 +477,54 @@ async function mouseClickHandler(evt: MouseEvent) {
     evt.preventDefault()
     evt.stopPropagation()
 
-    const asidePanel = document.querySelector<HTMLDivElement>(
-      "main > * > aside[class~='sidepanel-container']",
-    )
-    if (!asidePanel) return
+    try {
+      const asidePanel = getOrCreateSidePanel()
+      asidePanel.dataset.slug = link.dataset.slug
 
-    asidePanel.dataset.slug = link.dataset.slug
+      let response: Response | void
+      if (link.dataset.arxivId) {
+        const url = new URL(`https://aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
+        response = await fetchCanonical(url).catch(console.error)
+      } else {
+        const fetchUrl = new URL(link.href)
+        fetchUrl.hash = ""
+        fetchUrl.search = ""
+        response = await fetchCanonical(fetchUrl).catch(console.error)
+      }
 
-    let response: Response | void
-    if (link.dataset.arxivId) {
-      const url = new URL(`https://aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
-      response = await fetchCanonical(url).catch(console.error)
-    } else {
-      const fetchUrl = new URL(link.href)
-      fetchUrl.hash = ""
-      fetchUrl.search = ""
-      response = await fetchCanonical(fetchUrl).catch(console.error)
+      if (!response) return
+
+      const headerContentType = response.headers.get("Content-Type")
+      const contentType = headerContentType
+        ? headerContentType.split(";")[0]
+        : getContentType(targetUrl)
+
+      if (contentType === "application/pdf") {
+        const pdf = document.createElement("iframe")
+        const blob = await response.blob()
+        const blobUrl = createManagedBlobUrl(blob)
+        pdf.src = blobUrl
+        createSidePanel(asidePanel, pdf)
+      } else {
+        const contents = await response.text()
+        const html = p.parseFromString(contents, "text/html")
+        normalizeRelativeURLs(html, targetUrl)
+        html.querySelectorAll("[id]").forEach((el) => {
+          const targetID = `popover-${el.id}`
+          el.id = targetID
+        })
+        const elts = [
+          ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>),
+        ]
+        if (elts.length === 0) return
+
+        createSidePanel(asidePanel, ...elts)
+      }
+
+      window.notifyNav(link.dataset.slug as FullSlug)
+    } catch (error) {
+      console.error("Failed to create side panel:", error)
     }
-
-    if (!response) return
-
-    const headerContentType = response.headers.get("Content-Type")
-    const contentType = headerContentType
-      ? headerContentType.split(";")[0]
-      : getContentType(targetUrl)
-
-    if (contentType === "application/pdf") {
-      const pdf = document.createElement("iframe")
-      const blob = await response.blob()
-      const blobUrl = createManagedBlobUrl(blob)
-      pdf.src = blobUrl
-      createSidePanel(asidePanel, pdf)
-    } else {
-      const contents = await response.text()
-      const html = p.parseFromString(contents, "text/html")
-      normalizeRelativeURLs(html, targetUrl)
-      html.querySelectorAll("[id]").forEach((el) => {
-        const targetID = `popover-${el.id}`
-        el.id = targetID
-      })
-      const elts = [
-        ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>),
-      ]
-      if (elts.length === 0) return
-
-      createSidePanel(asidePanel, ...elts)
-    }
-
-    window.notifyNav(link.dataset.slug as FullSlug)
     return
   }
 

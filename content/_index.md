@@ -8,11 +8,11 @@ tags:
   - fruit
 description: practicing the act of digital gardening.
 date: "2022-04-22"
-modified: 2025-09-16 15:16:55 GMT-04:00
+modified: 2025-10-06 16:50:29 GMT-04:00
 title: Aaron's notes
 ---
 
-I'm best reached [on twitter](https://twitter.com/aarnphm_) or [contact\[at\]aarnphm.xyz](mailto:contact@aarnphm.xyz). As far as dating goes, see [[/dating|this doc.]]
+hi my name is aaron. I'm best reached [on twitter](https://twitter.com/aarnphm_) or [contact\[at\]aarnphm.xyz](mailto:contact@aarnphm.xyz). As far as dating goes, see [[/dating|this doc.]]
 
 Currently, I'm working at a [infrastructure startup](https://bentoml.com) building [[/tags/ml]] serving systems, where I mainly work on [[thoughts/LLMs|LLM]] [[thoughts/vllm|serving engine]].
 

@@ -7,6 +7,10 @@
   display: flex;
   flex-direction: column;
 
+  h2 {
+    margin-top: 0;
+  }
+
   h3 {
     --translate-position: 3px;
   }
@@ -31,6 +35,11 @@
 
   &:last-child {
     margin-bottom: calc(2 * $baseMargin);
+  }
+
+  // Reduce gap between adjacent sections at same level
+  & + & {
+    margin-top: calc(-1 * $baseMargin);
   }
 
   // Indentation based on header level
@@ -135,9 +144,20 @@
     .collapsible-header-content {
       border-left: 1px solid var(--lightgray);
       padding-left: var(--padding-width);
-      transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-      blockquote {
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        margin-top: 1rem;
+      }
+
+      blockquote,
+      p {
+        margin-bottom: 0;
+
         &:first-child {
           margin-top: 0 !important;
         }

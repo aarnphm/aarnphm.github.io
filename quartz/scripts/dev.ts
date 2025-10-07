@@ -187,6 +187,7 @@ function printHelp(): void {
     "options:",
     "  --port <port>       bind pnpm dev to <port>, websocket to <port+1>, wrangler dev to <port+2>",
     "  --retry <count>     restart pnpm dev up to <count> times when it exits non-zero",
+    "  --force             enforce running all plugins (longer to compile)",
     "  --help, -h          show this message",
     "",
     "environment:",

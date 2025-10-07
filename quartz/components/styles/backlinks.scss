@@ -16,6 +16,10 @@
       line-height: 1.3;
       text-decoration: none;
 
+      &:hover {
+        background: initial;
+      }
+
       & > .description,
       & > .small {
         line-height: 1.3;

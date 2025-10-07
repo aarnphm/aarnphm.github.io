@@ -704,6 +704,47 @@ export default {
       }
     }
 
+    // font serving from KV with edge caching
+    if (url.pathname.startsWith("/fonts/")) {
+      const fontFile = url.pathname.replace(/^\/fonts\//, "")
+
+      // construct cache key for edge caching
+      const cacheKey = new Request(url.toString(), request)
+      const cache = (caches as CfCacheStorage).default
+
+      // check edge cache first
+      const cached = await cache.match(cacheKey)
+      if (cached) return cached
+
+      // fetch from KV
+      const fontData = await env.FONTS.get(fontFile, "arrayBuffer")
+      if (!fontData) {
+        return new Response("font not found", { status: 404 })
+      }
+
+      // determine mime type
+      const mimeType = fontFile.endsWith(".woff2")
+        ? "font/woff2"
+        : fontFile.endsWith(".woff")
+          ? "font/woff"
+          : "application/octet-stream"
+
+      // build response with proper headers
+      const headers = new Headers({
+        "Content-Type": mimeType,
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Access-Control-Allow-Origin": "*",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+      })
+
+      const response = new Response(fontData, { headers })
+
+      // cache at edge for 1 year
+      ctx.waitUntil(cache.put(cacheKey, response.clone()))
+
+      return response
+    }
+
     // Deny non-GET/HEAD for other paths
     if (request.method !== "GET" && request.method !== "HEAD")
       return new Response(null, {

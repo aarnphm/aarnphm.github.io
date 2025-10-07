@@ -11,7 +11,7 @@ tags:
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-09-12 13:23:39 GMT-04:00
+modified: 2025-10-06 21:04:45 GMT-04:00
 noindex: true
 title: dating me.
 pageLayout: letter
@@ -21,7 +21,7 @@ This document doesn't represent the whole me, but it should give you a sense of 
 
 I hate dating apps. I know it's a numbers game, but I got lazy and tired of the repetition and algorithms, so I decided to make this instead—something I can share with someone I find attractive.
 
-I'm hoping to find a wonderful woman to be my partner [^partner], someone I can share a life with for many years to come 💕
+I'm hoping to find a wonderful woman to be my partner [^partner], someone I can share a life with for many years to come ♥
 
 [^partner]: And I meant, [wife](https://en.wikipedia.org/wiki/Wife).
 
@@ -32,15 +32,20 @@ I'm hoping to find a wonderful woman to be my partner [^partner], someone I can 
 
 Here's 30 second about me. By all means explore the rest of the documents.
 
-I'm a [[thoughts/LLMs|llm]] engineer, but have a knack for cooking: I make fresh pasta (tortellini, tagliatelle) every Sunday, velouté and beef stocks from time to time. I collect vinyl, climb V5s, and read math textbooks.
+I'm a [[thoughts/LLMs|software]] engineer working on language models, but do have a knack for cooking: I make fresh pasta (tortellini, tagliatelle) every Sunday, velouté and beef stocks from time to time. I collect vinyl, climb V5s, and read math textbooks.
 
-I'm obsessed with machine learning models, it is all I think about, other than caring for my friends and people in my life. Friends say I'm the 3am call who shows up.
+I'm a bit obsessive with my work, especially [[thoughts/Machine learning|machine learning]] model. It is all I think about these days, other than caring for my friends and people in my life ofc.
 
-Moved continents at a young age, learned solitude makes presence precious.
+Friends say I'm the 3am call who shows up.
 
-I like Rachmaninoff and garage culture, managed obsession, delve into random rabbit-hole.
+I moved continents at a young age, and learnt very early on that _solitude makes presence precious_.
 
-Looking for someone equally comfortable discussing Wittgenstein over homemade pasta, high empathy, witty and sharp, non-avoidance attachment style, or planning spontaneous cabin escapes.
+I like <span style="text-decoration: underline;">Rachmaninoff</span> and garage culture, and spending time delving into random rabbit-hole. I also practice "managed obsession" [^managed-obesssion]
+
+Looking for someone equally comfortable discussing Wittgenstein (or [[thoughts/Philosophy and Nietzsche|Nietzsche]]) over homemade pasta,
+high empathy, witty and sharp, non-avoidance attachment style, to plan spontaneous cabin escapes.
+
+[^managed-obesssion]: more of a time-block allocation thingy. I spend around 15-30 mins a day working on something I care about deeply. Right now, it is [[thoughts/Tractatus Logico-Philosophicus]] by [[thoughts/Wittgenstein]]
 
 five years plan: No kids, for now. I value my relationship with my female friends. I'm based in Toronto, but US-bound eventually.
 
@@ -61,7 +66,7 @@ Caring, inquisitive, loyal, thoughtful  -- N
 ```
 
 ```quotes
-I think that Aaron is someone I trust to be there for me at the drop of a hat, no matter if it’s 3pm on a sunday or 3am on a weeknight. Aaron is very attentive and will do everything in his power to make you feel loved and cared for. He’s willing to go to great lengths to make people feel special and he has great taste and great musings that promise good conversations and a good time. -- C
+I think that Aaron is someone I trust to be there for me at the drop of a hat, no matter if it’s 3pm on a sunday or 3am on a weeknight. [aaron] is very attentive and will do everything in his power to make you feel loved and cared for. He’s willing to go to great lengths to make people feel special and he has great taste and great musings that promise good conversations and a good time. -- C
 ```
 
 I'm a _honest_ person, and I'm not afraid to admit to mistakes. I'm sure I'll make _even more mistakes_, but no one is ✨ _perfect_ ✨ and we only have one life to live 🙂
@@ -84,6 +89,8 @@ I want to build a farm one day, and a high believer in lab-grown meat [^lab-grow
 Most people know me online as `aarnphm` /urn-fm/, but you can call me _Aaron_ (or [a-a-ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
 
 I'm currently an [[thoughts/Transformers#inference.|inference]] optimization [[/|engineer]] at [bentoml](https://bentoml.com/), which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]], based in Toronto, Canada.
+
+---
 
 ## professional life.
 
@@ -110,7 +117,13 @@ My approach to problems has stayed consistent since I learned arithmetic: ==don'
 
 I might not be good at something initially, but this modus operandi has allowed me to work on what's probably the hardest [problem](https://github.com/vllm-project/vllm) of our time--_scaling intelligence_
 
+> I know that the next section on my research interest can be a bit long, feel free to skip it! Otherwise hopefully it captures topics I'm currently fascinated with (as of oct, 2025)
+
+---
+
 ![[research]]
+
+---
 
 ## personal life.
 
@@ -142,6 +155,8 @@ Part of me wishes that one day I'll be able to give each of them the time and en
 ![[thoughts/images/C8F817FA-8961-4287-8318-B45FCA5D7E67.webp|A scene in "Lost in Translation (2003)". I do sometimes, think about the time I wronged my friends. But it happened for a reason, and we learnt to grow from our mistakes.]]
 
 So, yes, I _care_. I care a lot about people, both in its abstract and physical form. I try my hardest to amplify those around me and give them space to grow and achieve what they want in _life_ (also another thing my dear mom taught me 🙂)
+
+---
 
 ## what i like doing.
 
@@ -255,6 +270,8 @@ photography
 </section>
 
 [^photography-portfolio]: One day I would clean-up and polish my photography portfolio.
+
+---
 
 ## compatibility.
 

@@ -51,6 +51,9 @@ li.section-li {
     transition: color 0.3s;
     font-weight: $normalWeight;
     color: inherit;
+    &:hover {
+      background: transparent;
+    }
 
     &::before {
       content: "";

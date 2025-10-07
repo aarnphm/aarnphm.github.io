@@ -13,20 +13,14 @@
   },
   "scripts": {
     "dev": "NODE_ENV=development pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --serve --verbose",
-    "cf:dev": "until test -d public; do PUBLIC_BASE_URL=http://localhost:8080 pnpm dlx wrangler dev; done",
     "bundle": "pnpm exec quartz/bootstrap-cli.mjs build --concurrency 8 --bundleInfo --verbose",
     "bundle:dev": "CF_PAGES=1 NODE_ENV=development pnpm bundle",
     "prod": "NODE_ENV=production pnpm bundle",
-    "swarm": "pnpm exec tsx quartz/scripts/dev.ts",
-    "cf:types": "pnpm dlx wrangler types",
+    "swarm": "pnpx tsx quartz/scripts/dev.ts",
     "cf:deploy": "pnpm check && pnpm dlx wrangler deploy",
-    "cf:prepare": "pnpm format && pnpm convert && pnpm cf:types",
-    "check": "pnpm cf:prepare && pnpm prettier . --check && tsc --noEmit && pnpm test",
+    "check": "pnpm format && tsx quartz/scripts/convert.ts && pnpm dlx wrangler types && pnpm prettier . --check && tsc --noEmit && tsx --test",
     "format": "pnpx bibtex-tidy --months --merge=combine --no-align --sort=type,year,eprint --duplicates=key,doi,citation --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,series,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields --blank-lines --modify content/References.bib && pnpm prettier . --write",
-    "test": "tsx --test",
-    "profile": "0x -D prof quartz/bootstrap-cli.mjs build --concurrency=1",
-    "vendorred": "go run quartz/scripts/format.go -dir=sites",
-    "convert": "tsx quartz/scripts/convert.ts"
+    "profile": "0x -D prof quartz/bootstrap-cli.mjs build --concurrency=1"
   },
   "engines": {
     "npm": ">=9.3.1",
@@ -98,7 +92,7 @@
     "node-tikzjax": "^1.0.3",
     "octokit": "^5.0.3",
     "onnxruntime-web": "^1.23.0",
-    "pixi.js": "^8.13.2",
+    "pixi.js": "^8.14.0",
     "preact": "^10.27.2",
     "preact-render-to-string": "^6.6.2",
     "pretty-bytes": "^7.1.0",

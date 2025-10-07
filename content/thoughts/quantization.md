@@ -4,7 +4,7 @@ tags:
   - seed
   - ml
 date: "2024-02-05"
-modified: 2025-08-10 01:07:13 GMT-04:00
+modified: 2025-10-06 18:03:52 GMT-04:00
 title: Quantization
 ---
 
@@ -28,7 +28,7 @@ the idea is to compare the difference between two probability distribution when 
 
 ### [[thoughts/Kullback-Leibler divergence|KL calibration]]
 
-## `fp32` to `fp16`
+## `fp32 -> fp16`
 
 > Does my operation support `fp16`?
 
@@ -38,7 +38,7 @@ the idea is to compare the difference between two probability distribution when 
 
 For example `epsilon` in `LayerNormalization` usually is very small $1e^{-12}$, but smallest value in `fp16` is $\approx 6e^{-5}$, which cause `NaN` issues.
 
-## `fp32` to `int8`
+## `fp32 -> int8`
 
 Consider a float `x` in `[a, b]`, such that _affine quantization scheme_:
 
@@ -63,7 +63,7 @@ $$
 
 https://arxiv.org/abs/1712.05877
 
-## mxfp4
+## `mxfp4`
 
 see also: [specification](https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf)
 

@@ -2,11 +2,12 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import { ArenaChannel, ArenaBlock } from "../../plugins/transformers/arena"
 import { classNames } from "../../util/lang"
 import type { ElementContent, Root } from "hast"
+import type { ComponentChild } from "preact"
 import style from "../styles/arena.scss"
 // @ts-ignore
 import modalScript from "../scripts/arena.inline"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { FullSlug } from "../../util/path"
+import { FullSlug, slugTag } from "../../util/path"
 import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from "../../util/arena"
 import { buildYouTubeEmbed } from "../../util/youtube"
 
@@ -113,6 +114,51 @@ export default (() => {
       const displayUrl =
         block.url ??
         (block.internalSlug ? `https://${cfg.baseUrl}/${block.internalSlug}` : undefined)
+
+      const metadataEntries: Array<{ label: string; value: ComponentChild }> = []
+
+      if (accessed) {
+        metadataEntries.push({
+          label: "accessed",
+          value: accessed.dateTime ? (
+            <time dateTime={accessed.dateTime}>{accessed.display}</time>
+          ) : (
+            accessed.display
+          ),
+        })
+      }
+
+      if (block.metadata) {
+        const consumedKeys = new Set(["accessed", "accessed_date", "date", "tags", "tag"])
+        const additionalEntries = Object.entries(block.metadata)
+          .filter(([key, value]) => {
+            if (typeof value !== "string" || value.trim().length === 0) return false
+            if (consumedKeys.has(key.toLowerCase())) return false
+            return true
+          })
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([rawKey, rawValue]) => ({
+            label: rawKey.replace(/_/g, " "),
+            value: rawValue,
+          }))
+
+        metadataEntries.push(...additionalEntries)
+      }
+
+      if (block.tags && block.tags.length > 0) {
+        metadataEntries.push({
+          label: block.tags.length === 1 ? "tag" : "tags",
+          value: (
+            <span class="arena-meta-taglist">
+              {block.tags.map((tag) => (
+                <span class="tag-link" key={`${block.id}-tag-${slugTag(tag)}`}>
+                  {tag}
+                </span>
+              ))}
+            </span>
+          ),
+        })
+      }
 
       const convertFromText = (text: string) => {
         const root = fromHtmlIsomorphic(text, { fragment: true }) as Root
@@ -311,20 +357,14 @@ export default (() => {
               <div class="arena-modal-sidebar">
                 <div class="arena-modal-info">
                   <h3 class="arena-modal-title">{block.title ?? ""}</h3>
-                  {accessed && (
+                  {metadataEntries.length > 0 && (
                     <div class="arena-modal-meta">
-                      <div class="arena-meta-item">
-                        <span class="arena-meta-label">accessed</span>
-                        {accessed.dateTime ? (
-                          <time class="arena-meta-value" dateTime={accessed.dateTime}>
-                            <em>{accessed.display}</em>
-                          </time>
-                        ) : (
-                          <span class="arena-meta-value">
-                            <em>{accessed.display}</em>
-                          </span>
-                        )}
-                      </div>
+                      {metadataEntries.map(({ label, value }, index) => (
+                        <div class="arena-meta-item" key={`${label}-${index}`}>
+                          <span class="arena-meta-label">{label}</span>
+                          <em class="arena-meta-value">{value}</em>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>

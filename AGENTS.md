@@ -4,30 +4,23 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 
 ## Context and Guidelines
 
-Be super technical. But always give intuition and clarifying reasoning. Be explanatory, but not too verbose. Do not offer unprompted advice or clarifications. Speak in specific, topic relevant terminology. Do NOT hedge or qualify. Do not waffle. Speak directly and be willing to make creative guesses. If you don’t know, say you don’t know. Remain neutral on all topics. Be willing to reference less reputable sources for ideas. Never apologize. Ask questions when unsure. Also don't have to bold text, keep it lower case (especially headings) most of the time, but still follow proper grammar rules for uppercase. Response in natural tone.
+**IMPORTANT**: Most of the cases if you need to verify build, make sure to check if port 8080 is available. If it is occupied, then do nothing, otherwise run `pnpm exec tsx quartz/script/dev.ts`. Chances are i'm running development build. Otherwise `pnpm bundle` would suffice.
 
-**IMPORTANT**: Most of the cases if you need to verify build, make sure to see if `pnpm dev` is being run. In this cases, then `pnpm bundle` or any build step are not necessary. Otherwise you can use the following:
-
-**build and development**:
+**Build and Development**:
 
 - `pnpm bundle` - Build for production (concurrency 8, bundleInfo, verbose)
   - After this, run `fd --glob "*.[pdf|ddl]" public -x rm` to mae it compatible with `wrangler`
 - `pnpm prod` - Production build with NODE_ENV=production
-- `pnpm bundle:dev` - Development build for Cloudflare Pages
 - `pnpm cf:deploy` - Deploy to Cloudflare (runs check first)
 
-**code quality**:
+**Code Quality**:
 
-- `pnpm check` - Complete validation pipeline (format, convert, cf:types, prettier check, TypeScript check, tests)
+- `pnpm check` - Complete validation pipeline
 - `pnpm format` - Format code with Prettier and organize References.bib with bibtex-tidy
-- `pnpm test` - Run tests using tsx --test
 - `tsc --noEmit` - TypeScript type checking without emitting files
-  **notable utilities** (only uses when you have to):
-- `pnpm convert` - Run conversion scripts (tsx quartz/scripts/convert.ts)
-- `pnpm cf:types` - Generate Cloudflare Worker types
-- `pnpm cf:prepare` - Prepare for Cloudflare deployment (format, convert, types)
+- `tsc --test` - TypeScript test
 
-**language guidelines**:
+**Language Guidelines**:
 
 - TypeScript/TSX:
   - 2-space indent, ES modules. Format with Prettier (`pnpm format`).
@@ -88,6 +81,7 @@ Be super technical. But always give intuition and clarifying reasoning. Be expla
 
 - `quartz/` TypeScript source (CLI, plugins, components). Tests live beside utils: `quartz/util/*.test.ts`.
 - `content/` Markdown/notes and assets; built into the static site. Additional tools, kernels written in Rust, C, C++, Python, Go.
+  - `content/hinterland`: Special projects 😃
 - `public/` Build output (served locally and deployed).
 - `worker/` Cloudflare Worker TypeScript.
 - `.github/` CI, docs; `quartz.config.ts` site config; `dist/` transient build artifacts.

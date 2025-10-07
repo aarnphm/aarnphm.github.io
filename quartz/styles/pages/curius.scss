@@ -234,14 +234,11 @@ svg.favorite-icon {
   }
 
   .curius-item-fa {
-    display: flex;
     margin-right: 2px;
-    justify-content: center;
     align-items: center;
     -webkit-box-pack: center;
-    max-width: 1.25rem;
+    width: 12px;
     color: rgb(68, 68, 68);
-    padding: 0 0 2px;
   }
 
   .curius-item-address {
@@ -251,13 +248,16 @@ svg.favorite-icon {
   }
 
   .curius-item-link {
+    max-width: 80%;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    max-width: 70%;
 
-    @media all and ($desktop) {
-      max-width: 30%;
+    & > * {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 50%;
     }
   }
 

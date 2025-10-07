@@ -76,11 +76,15 @@ title: images
 
 ![[thoughts/images/Sigmund Freud and his writing.webp|Sigmund Freud and his beautiful writing]]
 
-![[thoughts/images/narcissism.webp]]
+![[thoughts/images/narcissism.webp|Narcissism]]
 
-![[thoughts/images/Dachshund sunbathing.webp]]
+![[thoughts/images/Dachshund sunbathing.webp|Look it's a hotdog sunbathing]]
 
-![[thoughts/images/ship of thesus meme.webp]]
+![[thoughts/images/ship of thesus meme.webp|Ship of Theseus]]
+
+![[thoughts/images/G2frRQ5XIAAPc58.webp|You can literally just change the field if you don't want so and so show up]]
+
+![[thoughts/images/G2khUsZWEAAK6oC.webp]]
 
 ## authors
 

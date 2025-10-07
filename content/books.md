@@ -7,7 +7,7 @@ description: A (mostly) up-to-date book lists that I read, wanting, am reading, 
 transclude:
   title: false
 date: "2022-04-22"
-modified: 2025-09-30 19:36:27 GMT-04:00
+modified: 2025-10-06 16:27:53 GMT-04:00
 title: antilibrary.
 ---
 
@@ -17,7 +17,7 @@ See also: [[/curius|digital version]]
 
 ## [[/tags/evergreen]] books
 
-A list of book that remains forever in my bag, and I like the idea of reading it in _perpetuity_
+A list of book that I keep going back, and I like the idea of reading it in _perpetuity_
 
 - Beyond Good and Evil, Friedrich Nietzsche
 - The **[[thoughts/Philosophy and Nietzsche#The Gay Science|Gay]] [[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf|Science]]**, Friedrich Nietzsche
@@ -25,20 +25,19 @@ A list of book that remains forever in my bag, and I like the idea of reading it
 - The Critique of Pure Reason, Immanuel Kant
 - A Thousand Plateaus, [[thoughts/Giles Deleuze]] and Félix Guattari
 - Anti-Oedipus, [[thoughts/Giles Deleuze]] and Félix Guattari
+- The Rebel, [[thoughts/Camus|Albert Camus]]
+- The First Man, Albert Camus
 
 ## current.
 
-| title                                             | author                           | notes                                                                                                                                                                  |
-| ------------------------------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| The Metaphysics of Morals                         | Immanuel Kant                    |                                                                                                                                                                        |
-| Structure and Interpretation of Computer Programs | Abelson and Sussman              | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf)                                                                                                                        |
-| Man and His Symbols                               | Carl G. Jung                     |                                                                                                                                                                        |
-| The Second Sex                                    | Simone de Beauvoir               |                                                                                                                                                                        |
-| Being and Time                                    | Martin Heidegger                 | [[thoughts/being#Heidegger's Being and Time\|notes]]                                                                                                                   |
-| The Rebel                                         | [[thoughts/Camus\|Albert Camus]] |                                                                                                                                                                        |
-| The First Man                                     | Albert Camus                     |                                                                                                                                                                        |
-| Philosophical Investigations                      | Ludwig Wittgenstein              | [pdf](https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf) |
-| Tractatus Logico-Philosophicus                    | Ludwig Wittgenstein              | [[thoughts/Tractatus Logico-Philosophicus\|notes]]                                                                                                                     |
+| title                                             | author              | notes                                                                                                                                                                  |
+| ------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The Metaphysics of Morals                         | Immanuel Kant       |                                                                                                                                                                        |
+| Structure and Interpretation of Computer Programs | Abelson and Sussman | [pdf](https://web.mit.edu/6.001/6.037/sicp.pdf)                                                                                                                        |
+| Man and His Symbols                               | Carl G. Jung        |                                                                                                                                                                        |
+| Being and Time                                    | Martin Heidegger    | [[thoughts/being#Heidegger's Being and Time\|notes]]                                                                                                                   |
+| Philosophical Investigations                      | Ludwig Wittgenstein | [pdf](https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf) |
+| Tractatus Logico-Philosophicus                    | Ludwig Wittgenstein | [[thoughts/Tractatus Logico-Philosophicus\|notes]]                                                                                                                     |
 
 ## to read.
 
@@ -51,7 +50,6 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | title                                                                                                                    | author                                                                                            | notes                                                             |
 | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | A Treatise of Human Nature                                                                                               | David Hume                                                                                        |                                                                   |
-| The Evolution of Modern Metaphysics: Making Sense of Things                                                              | A. W. Moore                                                                                       |                                                                   |
 | [[thoughts/papers/Being and Some Philosophers.pdf\|Being and Some Philosophers]]                                         | Etienne Gilson                                                                                    |                                                                   |
 | The Phenomenology of Spirit                                                                                              | G. W. F. Hegel                                                                                    |                                                                   |
 | The World as Will and [[thoughts/representations\|Representation]]                                                       | Arthur Schopenhauer                                                                               |                                                                   |
@@ -73,6 +71,7 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | Naked Lunch                                                                                                              | William S. Burroughs                                                                              |                                                                   |
 | Phenomenology of Perception                                                                                              | Maurice Merleau-Ponty                                                                             |                                                                   |
 | Das Passagen-Werk                                                                                                        | Walter Benjamin                                                                                   | [[thoughts/pdf/The Archades Project - Walter Benjamin.pdf\|pdf]]  |
+| RISIBLES AMOURS                                                                                                          | Milan Kundera                                                                                     | 1986 [FR]                                                         |
 
 #### [[thoughts/Philosophy and Nietzsche|Nietzsche]]
 
@@ -109,6 +108,7 @@ _reason: I have a few collections of books whose authors are somewhat related [^
 | Trillion Dollar Baby: How Norway Beat the Oil Giants and Won a Lasting Fortune | Paul Cleary                                                                                                          |                                                                                                                                               |
 | Leaving the Twentieth Century: Situationist Revolutions                        | McKenzie Wark                                                                                                        |                                                                                                                                               |
 | Building A Character                                                           | Constantin Stanislavski                                                                                              |                                                                                                                                               |
+| Grokking Algorithm                                                             | Aditya Y. Bhargava                                                                                                   | https://www.manning.com/books/grokking-algorithms                                                                                             |
 
 ### fiction
 
@@ -147,7 +147,10 @@ _The following includes a list of books I have finished._
 
 ### 2025
 
-- **The Castle** by Frank Kafka
+- **The Evolution of Modern Metaphysics: Making Sense of Things** by A. W. Moore
+- **Letter to Milena** by Franz Kafka
+- **The Second Sex** by Simone de Beauvoir
+- **The Castle** by Franz Kafka
 - **The Prince** by Niccolò Machiavelli
 - **The Applicant** by [Sylvia Plath](https://www.poetryfoundation.org/poems/57419/the-applicant)
 - **[[thoughts/Freud#The Ego and the Id|The Ego and The Id]]** by Sigmund Freud
@@ -168,7 +171,7 @@ _The following includes a list of books I have finished._
 
 - **Twilight of the Idols** by Nietzsche
 - **The Birth of Tragedy** by Nietzsche
-- **The Trial** by Frank Kafka
+- **The Trial** by Franz Kafka
 - **The Triple Helix: Gene, Organism, and Environment** by Richard Lewontin
 - **Fear and Trembling** by Søren Kierkegaard
 - **Either/Or** by Søren Kierkegaard
