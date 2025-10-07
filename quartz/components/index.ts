@@ -37,6 +37,7 @@ import Grid from "./Grid"
 import SlidesContent from "./SlidesContent"
 import HeadingsConstructor from "./Headings"
 import CodeCopy from "./CodeCopy"
+import BaseViewSelector from "./BaseViewSelector"
 
 export {
   Flex,
@@ -78,4 +79,5 @@ export {
   Grid,
   HeadingsConstructor,
   CodeCopy,
+  BaseViewSelector,
 }

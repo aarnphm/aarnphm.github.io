@@ -11,7 +11,7 @@ tags:
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-10-06 21:04:45 GMT-04:00
+modified: 2025-10-07 06:52:56 GMT-04:00
 noindex: true
 title: dating me.
 pageLayout: letter
@@ -45,7 +45,7 @@ I like <span style="text-decoration: underline;">Rachmaninoff</span> and garage 
 Looking for someone equally comfortable discussing Wittgenstein (or [[thoughts/Philosophy and Nietzsche|Nietzsche]]) over homemade pasta,
 high empathy, witty and sharp, non-avoidance attachment style, to plan spontaneous cabin escapes.
 
-[^managed-obesssion]: more of a time-block allocation thingy. I spend around 15-30 mins a day working on something I care about deeply. Right now, it is [[thoughts/Tractatus Logico-Philosophicus]] by [[thoughts/Wittgenstein]]
+[^managed-obesssion]: more of a time-block allocation thingy. I spend around 15-30 mins a day working on something I care about deeply. Right now, it is [[thoughts/Tractatus|Tractatus Logico-Philosophicus]] by [[thoughts/Wittgenstein]]
 
 five years plan: No kids, for now. I value my relationship with my female friends. I'm based in Toronto, but US-bound eventually.
 
@@ -117,9 +117,7 @@ My approach to problems has stayed consistent since I learned arithmetic: ==don'
 
 I might not be good at something initially, but this modus operandi has allowed me to work on what's probably the hardest [problem](https://github.com/vllm-project/vllm) of our time--_scaling intelligence_
 
-> I know that the next section on my research interest can be a bit long, feel free to skip it! Otherwise hopefully it captures topics I'm currently fascinated with (as of oct, 2025)
-
----
+> I know that the next section on my research interest can be a bit long, feel free to skip it [[dating#personal life.|to the next topic]]! Otherwise hopefully it captures topics I'm currently fascinated with (as of oct, 2025)
 
 ![[research]]
 

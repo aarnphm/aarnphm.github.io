@@ -18,7 +18,7 @@ ul.tags {
 }
 
 menu.tags {
-  grid-column: 6/8;
+  grid-column: 5/6;
 
   @media all and ($tablet) {
     grid-column: 3/6;

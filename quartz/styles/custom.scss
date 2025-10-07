@@ -12,6 +12,7 @@
 @use "./pages/technical.scss";
 @use "./pages/reflection.scss";
 @use "./pages/dating.scss";
+@use "./pages/bases.scss";
 
 // fonts from /static/ (legacy)
 @include font-face(
@@ -260,27 +261,6 @@ pre.poetry {
   }
 }
 
-$excluded-hover-classes: (
-  "[data-backlink]",
-  ".llm-source",
-  ".min-links",
-  "[data-role='anchor']",
-  ".result-card",
-  ".page-title",
-  "[data-breadcrumbs]",
-  "[data-list]",
-  "[data-tag]",
-  "[data-bib]",
-  "[data-no-popover]",
-  "[data-footnote-backref]",
-  '[class~="landing-links"]'
-);
-
-$selector: "&:not(#{list.nth($excluded-hover-classes, 1)})";
-@for $i from 2 through list.length($excluded-hover-classes) {
-  $selector: $selector + ":not(#{list.nth($excluded-hover-classes, $i)})";
-}
-
 li[id^="user-content-fn-"] {
   &:hover {
     a[data-footnote-backref] {
@@ -303,14 +283,6 @@ a {
   }
 
   &:hover {
-    #{$selector} {
-      // NOTE: If we want to go back to background, but I'm tired of it tbh
-      // background-color: var(--secondary) !important;
-      // color: var(--light) !important;
-      color: var(--foam) !important;
-      background: initial !important;
-    }
-
     .min-links,
     &[data-tag] > .title,
     &[data-backlink] > .small {
@@ -990,4 +962,8 @@ body[data-slug="influence"] {
 }
 a.prefix-left-gap {
   margin-left: 0.2em;
+}
+
+.published {
+  grid-column: 1/-1;
 }

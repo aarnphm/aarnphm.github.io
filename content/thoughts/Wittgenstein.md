@@ -99,7 +99,7 @@ these non-logical axioms undermined the reduction of mathematics to pure logic. 
 
 ## early-Wittgenstein
 
-_a la [[thoughts/Tractatus Logico-Philosophicus]]_
+_a la [[thoughts/Tractatus]]_
 
 the _Tractatus_ (1921) uses a hierarchical numbering system: seven main propositions (1-7) with decimal expansions (e.g., 2.1 comments on 2, 2.01 on 2.0). this structure mirrors logical atomism—complex propositions built from simpler ones, terminating in elementary propositions.
 

@@ -4,7 +4,7 @@ tags:
   - ml
 description: A list of optimization functions that can be used in ML training to reduce loss, and more.
 date: "2024-10-31"
-modified: 2025-09-16 00:47:18 GMT-04:00
+modified: 2025-10-07 05:09:33 GMT-04:00
 title: ml optimization
 ---
 
@@ -23,6 +23,8 @@ where $y \in \mathbb{R}^k$
 > p_i = \frac{e^{y_i - m}}{\sum_j e^{y_j - m}}, \qquad
 > \log p_i = y_i - \operatorname{LSE}(y),\quad \operatorname{LSE}(y)=\log\sum_j e^{y_j}.
 > $$
+
+see also: https://leimao.github.io/blog/Online-Safe-Softmax/ [@milakov2018onlinenormalizercalculationsoftmax], used with [[thoughts/Attention|Flash Attention]]
 
 ### Jacobian and gradients
 

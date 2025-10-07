@@ -1,21 +1,11 @@
 ---
-title: are.na
-permalinks:
-  - /website
-  - /tweets
-  - /resources
+id: are.na
+aliases:
+  - inspo
 tags:
   - technical
   - seed
   - evergreen
-description: My run-down version of are[dot]na
-socials:
-  are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-id: are.na
-modified: 2025-10-06 23:35:05 GMT-04:00
-aliases:
-  - inspo
 claude:
   additional_context: |-
     structure of are.na.md:
@@ -33,6 +23,16 @@ claude:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
+date: "2024-10-24"
+socials:
+  are.na: https://www.are.na/aaron-pham/channels
+modified: 2025-10-07 06:27:16 GMT-04:00
+description: My run-down version of are[dot]na
+permalinks:
+  - /website
+  - /tweets
+  - /resources
+title: are.na
 cssclasses:
   - nolist
 ---
@@ -148,6 +148,14 @@ cssclasses:
 
 ## website
 
+- https://www.peterdpong.com/
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [utilitarian, hypertext]
+- https://justinjay.wang/
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [utilitarian, hypertext]
 - https://felixdorner.de/
   - [meta]:
     - date: 10/06/2025
@@ -629,7 +637,7 @@ cssclasses:
   - [meta]:
     - date: 09/10/2025
   - Economist, advisor to JFK
-  - columnist on Chicago School with [[thoughts/Capitalism and Freedom|Milton Friedman]]
+  - columnist on Chicago School with [[library/Capitalism and Freedom|Milton Friedman]]
 - https://www.timdavis.com/ -- Tim Davis
   - [meta]:
     - date: 09/18/2025
@@ -730,6 +738,15 @@ cssclasses:
 
 ## essay
 
+- https://christophlocher.com/notes/ethnographic-research-on-dynamicland -- Götz Bachmann’s Ethnographic Research on Dynamicland [**]
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [tool for thought]
+- https://aeon.co/essays/pluck-and-hard-work-or-luck-of-birth-two-stories-one-man -- Pluck versus luck
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [merit]
+  - Meritocracy emphasises the power of the individual to overcome obstacles, but the real story is quite a different one
 - https://blog.redwoodresearch.org/p/guide -- Reading list for AI Safety
   - [meta]:
     - date: 10/06/2025
@@ -742,10 +759,18 @@ cssclasses:
   - [meta]:
     - date: 10/06/2025
     - tags: [self, creativity]
+- https://read.isabelunraveled.com/p/paris -- Paris diaries, part 2 [**]
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [fruit, self]
 - https://read.isabelunraveled.com/p/show-up -- Just show up [**]
   - [meta]:
     - date: 10/06/2025
     - tags: [love, self]
+- https://read.isabelunraveled.com/p/confidence -- Confidence Comes from Taking Care of Yourself
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [fruit]
 - https://offhandquibbles.substack.com/p/why-have-sex -- Why Have Sex?
   - [meta]:
     - date: 10/05/2025
@@ -1140,6 +1165,19 @@ cssclasses:
 
 ## [[thoughts/Machine learning]]
 
+- https://leimao.github.io/blog/CuTe-Tilers/ -- CuTe megathread [**]
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [ml, compiler]
+  - https://leimao.github.io/article/CuTe-Layout-Algebra/
+  - https://leimao.github.io/blog/CuTe-Inverse-Layout/
+  - https://leimao.github.io/blog/CuTe-Blocked-Raked-Products/
+  - https://leimao.github.io/blog/CuTe-Index-To-Coordinate/
+  - https://leimao.github.io/blog/CUDA-Driver-Runtime-Load-Run-Kernel/
+- https://hanlab.mit.edu/blog/svdquant-nvfp4 -- SVDQuant Meets NVFP4: 4× Smaller and 3× Faster FLUX with 16-bit Quality on NVIDIA Blackwell GPUs
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [inference, optimization]
 - https://www.youtube.com/watch?v=i6Y2EelEC04 -- iris: First-Class Multi-GPU Programming Experience in Triton
   - [meta]:
     - date: 10/06/2025
@@ -2022,6 +2060,10 @@ cssclasses:
 
 ## video
 
+- https://www.youtube.com/watch?v=oP3c1h8v2ZQ -- Kurt Vonnegut on the Shapes of Stories
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [books, computer]
 - https://www.youtube.com/watch?v=v4Ze7Yo9jgY -- Cillian Murphy visits Criterion closet
   - [meta]:
     - date: 10/06/2025
@@ -2344,6 +2386,10 @@ cssclasses:
 
 ## technical
 
+- https://github.com/luhmann/tufte-markdown -- tufte-css [**]
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [design]
 - https://github.com/pytorch/pytorch/blob/539c46b6e82e16d22b745d8b320ae0bf9b1df90b/torch/distributed/_functional_collectives.py#L333 -- AllReduce coalesce implementation in PyTorch
   - [meta]:
     - date: 10/06/2025
@@ -2483,6 +2529,17 @@ cssclasses:
 
 ## [[tags/math]]
 
+- https://leimao.github.io/blog/Tensor-Calculus-Layout-Conventions/ -- Tensor Calculus Layout Conventions
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [tensor calculus]
+- https://leimao.github.io/article/Automatic-Differentiation/ -- [[thoughts/Automatic Differentiation]]
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [autograd]
+  - see also:
+    - https://leimao.github.io/blog/Automatic-Differentiation-Revisited/
+    - https://leimao.github.io/blog/Compute-Hessian-Automatic-Differentiation/
 - https://www.yudhister.me/2025-08-20/ -- linear contracts as optimally robust
   - [meta]:
     - date: 10/05/2025

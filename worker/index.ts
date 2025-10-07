@@ -4,6 +4,7 @@ import handleCurius from "./curius"
 import Garden from "./mcp"
 import { GitHubHandler } from "./github-handler"
 import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
+import { handleStackedNotesRequest } from "./stacked"
 
 const VERSION = "version https://git-lfs.github.com/spec/v1\n"
 const MIME = "application/vnd.git-lfs+json"
@@ -540,6 +541,7 @@ type Env = {
   GITHUB_CLIENT_SECRET: string
   SESSION_SECRET: string
   PUBLIC_BASE_URL?: string
+  STACKED_CACHE?: KVNamespace
 } & Cloudflare.Env
 
 export default {
@@ -576,6 +578,12 @@ export default {
         target.hash = url.hash
         return Response.redirect(target.toString(), 302)
       }
+    }
+
+    // Handle stacked notes requests with server-side rendering
+    if (url.searchParams.has("stackedNotes")) {
+      const stacked = await handleStackedNotesRequest(request, env, ctx)
+      if (stacked) return stacked
     }
 
     // Internal rewrite for notes domain root -> /notes?stackedNotes=<encoded>
@@ -715,8 +723,8 @@ export default {
       if (referer) {
         try {
           const refererUrl = new URL(referer)
-          const isAllowed = allowedHosts.some(host =>
-            refererUrl.hostname === host || refererUrl.hostname.endsWith(`.${host}`)
+          const isAllowed = allowedHosts.some(
+            (host) => refererUrl.hostname === host || refererUrl.hostname.endsWith(`.${host}`),
           )
           if (!isAllowed) {
             return new Response("forbidden", { status: 403 })

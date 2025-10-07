@@ -840,7 +840,7 @@ export function transcludeFinal(
 
 export const TopLinks = {
   workshop: "/lectures",
-  livres: "/books",
+  livres: "/library",
   "are.na": "/arena",
   craft: "/thoughts/craft",
   home: "/thoughts/furnitures",
@@ -884,7 +884,7 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
       .filter((f: QuartzPluginData) => {
         if (f.slug!.startsWith(opts!.slug)) {
           return (
-            !["university", "tags", "index", ...cfg.ignorePatterns].some((it) =>
+            !["university", "tags", "library", "index", ...cfg.ignorePatterns].some((it) =>
               (f.slug as FullSlug).includes(it),
             ) && !f.frontmatter?.noindex
           )
@@ -1297,20 +1297,10 @@ export function renderPage(
   const isArena = slug === "arena" || slug.startsWith("arena/")
   const isCurius = slug === "curius"
   const isArenaSubpage = slug.startsWith("arena/") && slug !== "arena"
+  const isBase = componentData.fileData.bases ?? false
 
   return (
-    `<!DOCTYPE html>
-<!--
-/*************************************************************************
-* Bop got your nose !!!
-*
-* Hehe
-*
-* Anw if you see a component you like ping @aarnphm on Discord I can try
-* to send it your way. Have a wonderful day!
-**************************************************************************/
--->
-` +
+    `<!DOCTYPE html>` +
     render(
       <html lang={lang}>
         <Head {...componentData} />
@@ -1321,6 +1311,7 @@ export function renderPage(
           data-slides={isSlides}
           data-layout={pageLayout}
           data-is-folder-tag={isFolderTag}
+          data-is-base={isBase}
           data-arena-subpage={isArenaSubpage}
         >
           <main

@@ -2,7 +2,7 @@
 
 .slides-root {
   position: relative;
-  grid-column: 6/-2;
+  grid-column: 5/8;
 }
 
 @media all and ($tablet) {
@@ -34,12 +34,6 @@
 
 nav#toc-vertical {
   inset: 20% 0;
-}
-
-body[data-slides="true"] {
-  .main-col {
-    grid-column: 6/-2;
-  }
 }
 
 .slides-controls {

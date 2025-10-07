@@ -1,10 +1,14 @@
 ---
+status: current
 id: Capitalism and Freedom
 tags:
-  - book
+  - economic
+subcategory: economic
+author: Milton Friedman
 date: "2024-11-27"
-description: by Milton Friedman
-modified: "2024-11-27"
+modified: 2025-10-07 00:52:58 GMT-04:00
+category: non-fiction
+description: how do we think about jobs and money
 title: Capitalism and Freedom
 ---
 

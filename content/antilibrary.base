@@ -1,6 +1,157 @@
+summaries:
+  missing: values.filter(value.isType("null")).length
+filters:
+  or:
+    - file.hasTag("book")
+    - and:
+        - file.inFolder("library")
+        - not:
+            - file.hasTag("evergreen", "meta")
+properties:
+  file.tags:
+    displayName: tags
+  note.internal-notes:
+    displayName: notebooks
 views:
   - type: table
-    name: Table
+    name: philosophy
+    filters:
+      and:
+        - category == "philosophy"
+    groupBy:
+      property: status
+      direction: ASC
+    order:
+      - title
+      - category
+      - date
+      - status
+      - file.tags
+      - author
+      - subcategory
+      - file.backlinks
+      - internal-notes
+    sort:
+      - property: internal-notes
+        direction: ASC
+      - property: date
+        direction: DESC
+      - property: subcategory
+        direction: ASC
+      - property: category
+        direction: DESC
+      - property: status
+        direction: DESC
+      - property: title
+        direction: ASC
+    summaries: {}
+    columnSize:
+      note.title: 401
+      note.date: 147
+      note.internal-notes: 125
+  - type: table
+    name: top of mind
+    filters:
+      and:
+        - date >= "2023-06-06"
+        - and:
+            - category == "philosophy"
+            - '!subcategory.containsAny("Aurelius", "Descartes")'
+            - status.containsAny("to-read", "evergreen")
+    order:
+      - file.name
+      - file.tags
+      - date
+      - status
+  - type: table
+    name: wip
+    filters:
+      and:
+        - status != "finished"
+    groupBy:
+      property: category
+      direction: DESC
+    order:
+      - title
+      - category
+      - date
+      - status
+      - file.tags
+      - author
+      - year-finished
+      - subcategory
+    sort:
+      - property: title
+        direction: DESC
+      - property: category
+        direction: DESC
+      - property: status
+        direction: DESC
+    columnSize:
+      note.title: 401
+      note.date: 147
+      note.internal-notes: 125
+  - type: table
+    name: all
+    order:
+      - title
+      - category
+      - date
+      - status
+      - file.tags
+      - author
+      - year-finished
+      - subcategory
+    sort:
+      - property: status
+        direction: DESC
+      - property: category
+        direction: ASC
+      - property: title
+        direction: ASC
+    columnSize:
+      note.title: 401
+      note.date: 147
+      note.internal-notes: 125
+  - type: list
+    name: dynalist
+    groupBy:
+      property: category
+      direction: ASC
+    order:
+      - file.name
+      - description
+      - internal-notes
+      - file.backlinks
     sort:
       - property: file.name
-        direction: DESC
+        direction: ASC
+    nestedProperties: true
+  - type: cards
+    name: book card
+    filters:
+      and:
+        - category == "philosophy"
+    order:
+      - title
+      - category
+      - date
+      - status
+      - file.tags
+      - author
+      - subcategory
+      - internal-notes
+    sort:
+      - property: date
+        direction: ASC
+      - property: title
+        direction: ASC
+      - property: internal-notes
+        direction: ASC
+    summaries: {}
+    columnSize:
+      note.title: 401
+      note.date: 147
+      note.internal-notes: 125
+    cardSize: 320
+    image: note.images

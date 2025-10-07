@@ -27,10 +27,7 @@ document.addEventListener("nav", async (ev) => {
       }
       window.stacked.navigate(new URL(`/${ev.detail.url}`, window.location.toString()))
     } else {
-      button.setAttribute("aria-checked", "false")
-      container.classList.remove("active")
-      body.classList.remove("stack-mode")
-      header.classList.remove("grid", "all-col")
+      // Keep visual state intact until reload to prevent layout jump
       window.stacked.destroy()
       window.location.reload()
     }

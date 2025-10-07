@@ -947,5 +947,7 @@ declare module "vfile" {
     images: Record<string, { count: number; el: Element }>
     blocks: Record<string, Element>
     htmlAst: HtmlRoot
+    bases?: boolean
+    baseConfig?: any
   }
 }

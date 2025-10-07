@@ -70,9 +70,7 @@ li.section-li {
 
       @media all and ($desktop) {
         &:has(.tag-highlights):not(.stacked-content *):not(.popover *) {
-          grid-template-columns:
-            calc(var(--kern) * var(--grid-multiplier)) calc(var(--kern) * 30)
-            1fr;
+          grid-template-columns: calc(var(--kern) * var(--grid-multiplier)) repeat(2, 1fr);
         }
       }
 
@@ -148,14 +146,9 @@ li.section-li {
 }
 
 .notes-evergreen {
-  grid-column: 9/-3;
+  grid-column: 7/10;
   display: flex;
   flex-direction: column;
   padding-left: calc(var(--kern) * 2);
   justify-content: space-between;
-
-  h2 {
-    @include tinyFonts;
-    font-size: 14px;
-  }
 }

@@ -324,7 +324,7 @@ export function getOrCreateSidePanel(): HTMLDivElement {
       throw new Error("page-content section not found")
     }
 
-    asidePanel = document.createElement("aside")
+    asidePanel = document.createElement("aside") as HTMLDivElement
     asidePanel.classList.add("sidepanel-container")
     pageContent.appendChild(asidePanel)
   }

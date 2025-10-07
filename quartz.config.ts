@@ -111,6 +111,7 @@ const config: QuartzConfig = {
         keepBackground: true,
       }),
       Plugin.Citations({ bibliography: "./content/References.bib" }),
+      Plugin.ObsidianBases(),
       Plugin.ObsidianFlavoredMarkdown({ parseTags: false }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.CrawlLinks({
@@ -207,7 +208,7 @@ const config: QuartzConfig = {
             "thoughts/love",
             "thoughts/LLMs",
             "thoughts/Connectionist-network",
-            "thoughts/Tractatus-Logico-Philosophicus",
+            "thoughts/Tractatus",
             "thoughts/Transformers",
             "thoughts/Camus",
             "thoughts/Attention",
@@ -231,6 +232,7 @@ const config: QuartzConfig = {
       Plugin.PressKit(),
       Plugin.SlidesPage(),
       Plugin.ArenaPage(),
+      Plugin.BaseViewPage(),
     ],
   },
 }

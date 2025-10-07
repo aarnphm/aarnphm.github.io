@@ -44,7 +44,7 @@ async function processArenaIndex(
     allFiles,
   }
 
-  const content = renderPage(ctx, slug, componentData, opts, externalResources, false, false)
+  const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
   return write({
     ctx,
     content,

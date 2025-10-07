@@ -84,7 +84,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
 
       for (const [tree, file] of content) {
         const slug = file.data.slug!
-        if (slug.endsWith("/index") || slug.startsWith("tags/")) continue
+        if (slug.endsWith("/index") || slug.startsWith("tags/") || file.data.bases) continue
         yield processContent(ctx, tree, file.data, allFiles, opts, resources)
       }
     },

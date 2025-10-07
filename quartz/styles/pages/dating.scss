@@ -6,10 +6,15 @@
 [data-slug="dating"] {
   section {
     &[data-activities] {
+      &:first-of-type {
+        margin-top: 1rem;
+      }
+
       > p:first-of-type:not(.popover *) {
         font-size: 22.2763px; // follows h3
         font-weight: $semiBoldWeight;
         margin-top: 1rem;
+        font-family: var(--headerFont);
       }
 
       ul:not(.popover *),
@@ -23,10 +28,15 @@
     }
 
     &[data-compat] {
+      &:first-of-type {
+        margin-top: 1rem;
+      }
+
       > p:first-of-type:not(.popover *) {
         font-size: 22.2763px; // follows h3
         font-weight: $semiBoldWeight;
-        font-style: italic;
+        margin-top: 1rem;
+        font-family: var(--headerFont);
       }
     }
   }

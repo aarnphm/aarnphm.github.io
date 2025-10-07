@@ -145,6 +145,10 @@ const cssVars = [
 
 let mermaidImport = undefined
 document.addEventListener("nav", async () => {
+  // Skip mermaid rendering in stacked notes view - causes memory issues
+  const stackedContainer = document.getElementById("stacked-notes-container")
+  if (stackedContainer?.classList.contains("active")) return
+
   const nodes = document.querySelectorAll<HTMLDivElement>("pre:has(code.mermaid)")
   if (nodes.length === 0) return
 

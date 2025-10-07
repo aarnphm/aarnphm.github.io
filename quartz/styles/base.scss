@@ -179,7 +179,7 @@ header {
   column-gap: 0.6rem;
   display: flex;
   position: relative;
-  grid-column: 6/-4;
+  grid-column: 5/8;
 }
 
 section[class~="header"] {
@@ -600,9 +600,8 @@ ol.overflow {
 }
 @media all and ($desktop) {
   .grid {
-    --grid-col-width: 149px;
     --grid-end: 1fr;
-    --grid-left: 0;
+    --grid-left: 1fr;
     --sidepanel-padding-right: calc(var(--grid-end) + var(--kern) * 3);
     grid-template-columns:
       var(--grid-left) calc(var(--kern) * 3) repeat(9, var(--grid-col-width))
@@ -614,7 +613,7 @@ ol.overflow {
       --grid-left: 1fr;
     }
     .header-content {
-      grid-column: 3/-4;
+      grid-column: 4/10;
     }
   }
 }
@@ -658,7 +657,7 @@ ol.overflow {
 .title-col {
   --main-col-padding-left: calc(var(--kern) * 4);
   --main-col-padding-right: 0px;
-  grid-column: 6/-4;
+  grid-column: 5/8;
 
   .popover &,
   .sidepanel-container &,
@@ -670,7 +669,7 @@ ol.overflow {
 .main-col {
   --main-col-padding-left: calc(var(--kern) * 4);
   --main-col-padding-right: 0px;
-  grid-column: 6/-4;
+  grid-column: 5/8;
 
   .popover &,
   .sidepanel-container &,
@@ -695,7 +694,7 @@ ol.overflow {
 }
 
 .side-col {
-  grid-column: 3/9;
+  grid-column: 4/7;
 
   .popover &,
   .sidepanel-container &,
@@ -740,6 +739,15 @@ ol.overflow {
 
 .all-col {
   grid-column: 1/-1;
+}
+
+body[data-is-base="true"] {
+  .main-col {
+    grid-column: 3/-3;
+  }
+  .page-footer {
+    display: none;
+  }
 }
 
 .page-content {

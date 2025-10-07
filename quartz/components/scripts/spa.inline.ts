@@ -188,51 +188,99 @@ class StackedNoteManager {
     const url = new URL(window.location.toString())
     const stackedNotes = url.searchParams.getAll("stackedNotes")
 
-    if (stackedNotes.length > 0) {
-      // Create an array to store all fetch promises
-      const fetchPromises = stackedNotes.map(async (noteHash) => {
-        const slug = this.decodeHash(noteHash)
-        if (!slug) return null
+    if (stackedNotes.length === 0) return
 
-        const href = new URL(`/${slug}`, window.location.toString())
+    // Check if notes already rendered by server
+    const existingNotes = [...this.column.querySelectorAll(".stacked-note")] as HTMLElement[]
 
-        if (this.dag.has(slug)) {
-          // Still notify for navigation events
-          notifyNav(href.pathname as FullSlug)
-          return null
+    if (existingNotes.length > 0) {
+      // Server-rendered path: hydrate existing notes
+      for (const [index, noteElement] of existingNotes.entries()) {
+        const slug = noteElement.dataset.slug!
+        const noteHash = stackedNotes[index]
+        const decodedSlug = this.decodeHash(noteHash)
+
+        if (slug !== decodedSlug) {
+          console.warn(`slug mismatch at index ${index}: ${slug} vs ${decodedSlug}`)
+          continue
         }
 
-        const res = await this.fetchContent(href)
-        if (!res) return null
+        // Extract title and contents from existing DOM (no fetch needed)
+        const noteTitle = noteElement.querySelector(".stacked-title") as HTMLDivElement
+        const noteContent = noteElement.querySelector(".stacked-content") as HTMLDivElement
 
-        return {
+        const title = noteTitle?.textContent || slug
+        // Extract popover-hint elements from rendered content
+        const contents = noteContent
+          ? (Array.from(noteContent.querySelectorAll(".popover-hint")) as HTMLDivElement[])
+          : []
+
+        // Add to DAG with reference to existing DOM element
+        this.dag.addNode({
           slug,
-          href,
-          res,
-        }
+          title,
+          contents,
+          hash: "",
+          anchor: null,
+          note: noteElement,
+        })
+
+        // Attach event listeners
+        this.hydrateNote(noteElement)
+
+        notifyNav(slug as FullSlug)
+      }
+
+      // Update URL and DAG classes
+      this.updateURL()
+      return
+    }
+
+    // Client-rendered path: fetch and build notes
+
+    // Create an array to store all fetch promises
+    const fetchPromises = stackedNotes.map(async (noteHash) => {
+      const slug = this.decodeHash(noteHash)
+      if (!slug) return null
+
+      const href = new URL(`/${slug}`, window.location.toString())
+
+      if (this.dag.has(slug)) {
+        // Still notify for navigation events
+        notifyNav(href.pathname as FullSlug)
+        return null
+      }
+
+      const res = await this.fetchContent(href)
+      if (!res) return null
+
+      return {
+        slug,
+        href,
+        res,
+      }
+    })
+
+    // Wait for all fetches to complete in parallel
+    const results = await Promise.all(fetchPromises)
+
+    // Process the results in order
+    for (const result of results.filter(Boolean)) {
+      if (!result) continue
+      const { slug, href, res } = result
+
+      const dagNode = this.dag.addNode({
+        ...res,
+        slug,
+        anchor: null,
+        note: undefined!,
       })
 
-      // Wait for all fetches to complete in parallel
-      const results = await Promise.all(fetchPromises)
-
-      // Process the results in order
-      for (const result of results.filter(Boolean)) {
-        if (!result) continue
-        const { slug, href, res } = result
-
-        const dagNode = this.dag.addNode({
-          ...res,
-          slug,
-          anchor: null,
-          note: undefined!,
-        })
-
-        dagNode.note = await this.createNote(this.dag.getOrderedNodes().length, {
-          slug,
-          ...res,
-        })
-        notifyNav(href.pathname as FullSlug)
-      }
+      dagNode.note = await this.createNote(this.dag.getOrderedNodes().length, {
+        slug,
+        ...res,
+      })
+      notifyNav(href.pathname as FullSlug)
     }
   }
 
@@ -487,6 +535,122 @@ class StackedNoteManager {
 
     queueMicrotask(() => this.scrollHandler?.())
     return note
+  }
+
+  /**
+   * Hydrate a server-rendered note by attaching event listeners
+   * Does not create DOM, only binds interactivity
+   */
+  private hydrateNote(note: HTMLElement): void {
+    const slug = note.dataset.slug!
+    const noteTitle = note.querySelector(".stacked-title") as HTMLDivElement
+    const noteContent = note.querySelector(".stacked-content") as HTMLDivElement
+
+    if (!noteTitle || !noteContent) {
+      console.warn(`missing title or content for note ${slug}`)
+      return
+    }
+
+    // attach title click handler
+    const elView = () => {
+      const scrollWidth = this.column.scrollWidth - this.main.clientWidth
+      const noteLeft = note.offsetLeft
+      const scrollPosition = Math.min(noteLeft, scrollWidth)
+      this.main.scrollTo({ left: scrollPosition, behavior: "smooth" })
+    }
+    noteTitle.addEventListener("click", elView)
+    window.addCleanup(() => noteTitle.removeEventListener("click", elView))
+
+    // attach link handlers
+    const links = [...noteContent.getElementsByClassName("internal")] as HTMLAnchorElement[]
+
+    for (const link of links) {
+      const href = link.href
+      const linkSlug = link.dataset.slug as string
+
+      // update DAG class if already in stack
+      if (this.dag.has(linkSlug)) {
+        link.classList.add("dag")
+      }
+
+      const onClick = async (e: MouseEvent) => {
+        if (e.ctrlKey || e.metaKey || e.shiftKey) return
+
+        e.preventDefault()
+        if (e.altKey) {
+          // when alt/option is pressed, add to the end without truncating
+          if (!this.dag.has(linkSlug)) {
+            const res = await this.fetchContent(new URL(href))
+            if (!res) return
+            const dagNode = this.dag.addNode({
+              ...res,
+              slug: linkSlug,
+              anchor: link,
+              note: undefined!,
+            })
+            dagNode.note = await this.createNote(this.dag.getOrderedNodes().length, {
+              slug: linkSlug,
+              ...res,
+            })
+            this.updateURL()
+            await this.render()
+            notifyNav(linkSlug as FullSlug)
+          }
+          return
+        }
+        await this.add(new URL(href), link)
+      }
+
+      const onMouseEnter = (ev: MouseEvent) => {
+        const link = ev.target as HTMLAnchorElement
+        if (this.dag.has(link.dataset.slug!)) {
+          const note = this.dag.get(link.dataset.slug!)?.note
+          const header = note!.querySelector<HTMLHeadElement>("h1")
+          const stackedTitle = note!.querySelector<HTMLDivElement>(".stacked-title")
+          if (header) header!.classList.toggle("dag", true)
+          if (stackedTitle) stackedTitle!.classList.toggle("dag", true)
+        }
+      }
+      const onMouseLeave = (ev: MouseEvent) => {
+        const link = ev.target as HTMLAnchorElement
+        if (this.dag.has(link.dataset.slug!)) {
+          const note = this.dag.get(link.dataset.slug!)?.note
+          const header = note!.querySelector<HTMLHeadElement>("h1")
+          const stackedTitle = note!.querySelector<HTMLDivElement>(".stacked-title")
+          if (header) header!.classList.toggle("dag", false)
+          if (stackedTitle) stackedTitle!.classList.toggle("dag", false)
+        }
+      }
+
+      const onKeyDown = (ev: KeyboardEvent) => {
+        const link = ev.target as HTMLAnchorElement
+        if (ev.altKey && !link.title) {
+          link.title = "pour ajouter à la fin de la pile"
+        }
+      }
+      const onKeyUp = (ev: KeyboardEvent) => {
+        const link = ev.target as HTMLAnchorElement
+        if (!ev.altKey && link.title === "pour ajouter à la fin de la pile") {
+          link.title = ""
+        }
+      }
+
+      link.addEventListener("click", onClick)
+      link.addEventListener("mouseenter", onMouseEnter)
+      link.addEventListener("mouseleave", onMouseLeave)
+      link.addEventListener("keydown", onKeyDown)
+      link.addEventListener("keyup", onKeyUp)
+      window.addCleanup(() => {
+        link.removeEventListener("click", onClick)
+        link.removeEventListener("mouseenter", onMouseEnter)
+        link.removeEventListener("mouseleave", onMouseLeave)
+        link.removeEventListener("keydown", onKeyDown)
+        link.removeEventListener("keyup", onKeyUp)
+      })
+    }
+
+    // metadata footer is now included in server-rendered HTML
+    // no need to add it client-side during hydration
   }
 
   private async render() {

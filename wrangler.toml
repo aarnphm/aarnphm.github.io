@@ -21,12 +21,17 @@ id = "c8591d9cecbd4cf4b569a8edadc3302d"
 [[kv_namespaces]]
 binding = "SUBSTACK_CACHE"
 id = "03bf87553daf4045beb9c27c95b2e5ae"
-preview_id = "c6627b39355a474d98b7a871e0965b3b"
 remote = true
 
 [[kv_namespaces]]
 binding = "FONTS"
 id = "aec7fd95ca404e8c9941993b0e65821d"
+remote = true
+
+[[kv_namespaces]]
+binding = "STACKED_CACHE"
+id = "265f7849115a4b1ea8687bc9f8de54d6"
+preview_id = "4c407661817a4e1dbf6779ccdac0b341"
 remote = true
 
 [[r2_buckets]]

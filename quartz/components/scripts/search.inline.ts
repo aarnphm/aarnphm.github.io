@@ -298,9 +298,6 @@ async function setupSearch(
           const manifest = await res.json()
           chunkMetadata = manifest.chunkMetadata || {}
           manifestIds = manifest.ids || []
-          console.debug(
-            `[Search] Loaded manifest: ${manifestIds.length} chunks, ${Object.keys(chunkMetadata).length} chunked documents`,
-          )
         }
       } catch (err) {
         console.warn("[Search] failed to load chunk metadata:", err)
