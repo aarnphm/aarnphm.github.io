@@ -6,7 +6,7 @@ tags:
   - hardware
 description: RISC-V based AI accelerators with programmable architecture
 date: "2025-10-05"
-modified: 2025-10-06 09:03:23 GMT-04:00
+modified: 2025-10-06 22:57:46 GMT-04:00
 title: Tenstorrent
 ---
 
@@ -204,7 +204,7 @@ Ethernet latency: microseconds. NVLink latency: nanoseconds.
 
 data-parallel training with frequent all-reduce hits latency wall. pipeline parallelism works better (coarse-grained transfers).
 
-cost: commodity 400G switch costs $10k for 32 ports. NVSwitch costs $150k+ for equivalent connectivity.
+cost: commodity 400G switch costs \$USD10k for 32 ports. NVSwitch costs \$USD150k+ for equivalent connectivity.
 
 ## software stack
 
