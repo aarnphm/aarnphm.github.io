@@ -280,10 +280,15 @@
             outline: none;
             font-weight: inherit;
 
+            .result-likelihood {
+              font-family: var(--headerFont);
+            }
+
             &:hover,
             &:focus,
             &.focus {
               background: var(--lightgray);
+              color: var(--gray);
             }
 
             h3 {

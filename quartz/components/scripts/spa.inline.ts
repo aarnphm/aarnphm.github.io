@@ -553,7 +553,7 @@ class StackedNoteManager {
       })
     }
 
-    if (window.mermaid) await window.mermaid.run({ querySelector: "pre > code.mermaid" })
+    // Skip mermaid rendering for stacked notes - causes memory issues and failures
     return
   }
 
