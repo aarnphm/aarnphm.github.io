@@ -3,8 +3,9 @@ id: play
 tags:
   - seed
   - philosophy
+description: the state of being.
 date: "2023-10-18"
-modified: "2024-10-30"
+modified: 2025-10-07 18:25:34 GMT-04:00
 title: Play
 ---
 

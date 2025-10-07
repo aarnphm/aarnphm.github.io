@@ -770,7 +770,8 @@ span.tag-link:hover {
   font-family: var(--codeFont);
 
   &:hover {
-    color: var(--secondary);
+    color: var(--dark);
+    background: transparent;
 
     .arena-modal-link-text {
       text-decoration: underline;

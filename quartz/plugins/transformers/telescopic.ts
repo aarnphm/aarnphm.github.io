@@ -17,6 +17,7 @@
 // Some deviation: separator=" ", shouldExpandOnMouseOver=false
 import { QuartzTransformerPlugin } from "../types"
 import { Root, Element } from "hast"
+import type { RootContent, Text } from "hast"
 import { Root as MdastRoot, Code } from "mdast"
 import { toHtml } from "hast-util-to-html"
 import { SKIP, visit } from "unist-util-visit"
@@ -67,6 +68,57 @@ interface Config {
    * If true, allows sections to expand automatically on mouse over rather than requiring a click. Defaults to false.
    */
   shouldExpandOnMouseOver?: boolean
+}
+
+const createEmptyTextNode = (): Text => ({ type: "text", value: "" })
+const wikilinkRegex = createWikilinkRegex()
+
+function applyInlineFormatting(value: string): string {
+  if (!value) {
+    return value
+  }
+
+  let formatted = value
+
+  // Normalize hard and soft line breaks
+  formatted = formatted.replace(/\\n/g, "<br />")
+  formatted = formatted.replace(/\\(?=\s|$)/g, "<br />")
+  formatted = formatted.replace(/\n\s*\n\s*\n/g, "<hr />")
+  formatted = formatted.replace(/\n\s*\n/g, "<hr />")
+  formatted = formatted.replace(/\r?\n/g, "<br />")
+  formatted = formatted.replace(/<br\s*\/?>/gi, "<br />")
+  formatted = formatted.replace(/&softbreak;/gi, "<wbr />")
+  formatted = formatted.replace(/<softbreak\s*\/?>/gi, "<wbr />")
+
+  // Bold / strong emphasis (**text** or __text__)
+  formatted = formatted.replace(/(?<!\\)\*\*([\s\S]+?)\*\*/g, "<strong>$1</strong>")
+  formatted = formatted.replace(/(?<!\\)__([\s\S]+?)__/g, "<strong>$1</strong>")
+
+  // Italic emphasis (*text* or _text_)
+  formatted = formatted.replace(/(?<!\\)\*(?!\*)([^*\n]+?)\*(?!\*)/g, "<em>$1</em>")
+  formatted = formatted.replace(/(?<!\\)_(?!_)([^_\n]+?)_(?!_)/g, "<em>$1</em>")
+
+  // Strikethrough
+  formatted = formatted.replace(/(?<!\\)~~([\s\S]+?)~~/g, "<del>$1</del>")
+
+  // Restore escaped characters that should remain literal
+  formatted = formatted.replace(/\\\*/g, "*")
+  formatted = formatted.replace(/\\_/g, "_")
+  formatted = formatted.replace(/\\~/g, "~")
+  formatted = formatted.replace(/\\\\/g, "\\")
+
+  return formatted
+}
+
+function inlineFragmentToNodes(value: string): RootContent[] {
+  if (!value) {
+    return []
+  }
+
+  const formatted = applyInlineFormatting(value)
+  const fragment = fromHtmlIsomorphic(formatted, { fragment: true }) as Root
+  const children = (fragment.children ?? []) as RootContent[]
+  return children
 }
 
 /*****************/
@@ -178,12 +230,9 @@ function mdToContent(mdContent: string, separator: string = " "): Content {
 }
 
 function contentToHast(content: Content, opts: Config) {
-  const hastFromHtmlFragment = (value: string): Element =>
-    fromHtmlIsomorphic(value, { fragment: true }) as unknown as Element
-
   function processContent(line: Content) {
     let lastIndex = 0
-    const nodes = []
+    const nodes: RootContent[] = []
     let lineText = line.text
 
     for (let i = 0; i < line.replacements.length; i++) {
@@ -194,17 +243,27 @@ function contentToHast(content: Content, opts: Config) {
       lineText = after.join(replacement.og)
 
       // Add text before replacement
-      nodes.push(hastFromHtmlFragment(before))
+      nodes.push(...inlineFragmentToNodes(before))
 
       // Create telescopic node
+      const summaryChildren = inlineFragmentToNodes(replacement.og)
+      const expandedChildren = processContent({
+        text: replacement.new,
+        replacements: replacement.replacements,
+      })
+
       const detail: Element = h("span", { class: "details close" }, [
         // Original text
-        h("span", { class: "summary" }, [hastFromHtmlFragment(replacement.og)]),
+        h(
+          "span",
+          { class: "summary" },
+          summaryChildren.length ? summaryChildren : [createEmptyTextNode()],
+        ),
         // Expanded content
         h(
           "span",
           { class: "expanded" },
-          processContent({ text: replacement.new, replacements: replacement.replacements }),
+          expandedChildren.length ? expandedChildren : [createEmptyTextNode()],
         ),
       ])
 
@@ -215,31 +274,16 @@ function contentToHast(content: Content, opts: Config) {
     // Add remaining text
     // and a smoll refresh button
     if (lastIndex < lineText.length) {
-      nodes.push(hastFromHtmlFragment(lineText.slice(lastIndex)))
+      nodes.push(...inlineFragmentToNodes(lineText.slice(lastIndex)))
     }
 
     return nodes
   }
 
   // Helper to get fully expanded text
-  function getFullText(line: Content): string {
-    let text = line.text
-    for (const replacement of line.replacements) {
-      text = text.replace(replacement.og, replacement.new)
-      // Recursively expand nested replacements
-      const nestedContent = {
-        text: replacement.new,
-        replacements: replacement.replacements,
-      }
-      text = text.replace(replacement.new, getFullText(nestedContent))
-    }
-    return text
-  }
-
   return h(
     "div#telescope",
     { "data-expand": opts.shouldExpandOnMouseOver ? "hover" : "click" },
-    h("div", { id: "fulltext" }, fromHtmlIsomorphic(getFullText(content), { fragment: true })),
     processContent(content),
   )
 }

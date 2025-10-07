@@ -7,7 +7,7 @@ transclude:
   dynalist: false
   title: false
 date: "2025-08-12"
-modified: 2025-10-06 07:46:53 GMT-04:00
+modified: 2025-10-07 18:06:51 GMT-04:00
 title: research
 ---
 
@@ -178,27 +178,27 @@ The field is moving fast enough that by the time you read this, half the systems
 
 <br />
 
-> My research interests lie on speculative decoding and disaggregated serving architectures for large language models.
+> My research interests lie on emergent properties of speculative decoding on large language models.
 
-Recent work shows what happens when we split them properly:
+A lot of work recently focuses on disaggregated serving architectures of these models.
 
-- @qin2024mooncakekvcachecentricdisaggregatedarchitecture achieves 525% throughput increases (i.e Mooncake)
+- @qin2024mooncakekvcachecentricdisaggregatedarchitecture achieves 525% throughput increases (i.e Mooncake) [^notes]
 - @li2025flowkvdisaggregatedinferenceframework reduces KV transfer latency by 96%.
 
-But the interesting questions are ==cross-stage communication under dynamic workloads== and how to allocate resources when both stages compete for the same hardware.
+[^notes]: ==cross-stage communication under dynamic workloads== and how to allocate resources when both stages compete for the same hardware is a pretty cool system problems.
 
-Speculation must move beyond the naive draft-verify paradigm:
+I do think that, speculation should move beyond naive draft-verify paradigm:
 
 - Slice-level scheduling [@cheng2024240613511] shows 315.8% improvements by treating speculation as a scheduling problem.
 - SpecDec++ [@huang2024240519715] demonstrates 2.26× speedups with adaptive speculation that adjusts to rejection patterns.
 - Also SD for [Blockwise Sparse Attention](https://matx.com/research/sd_nsa) are relevant in working with long context tasks.
 - Greedy verification algorithm is also suboptimal, especially with softmax instability.
 
-For mixture-of-experts models, speculation remains largely unexplored.
+Especially for [[thoughts/MoE|mixture-of-experts]] models, SD remains largely unexplored.
 
 - Most work adapts general speculation to MoE: Speculative MoE [@li2025speculativemoecommunicationefficient], Exploiting inter-layer expert affinity [@yao2024240108383].
 
-I suspect whether there are opportunity for self-speculation using expert activation patterns:
+I suspect whether there are opportunity for self-speculation (i.e LayerSkip for MoE) using expert activation patterns:
 
 - Late-layer experts often mirror early-layer patterns — can we reuse them as draft models?
 - Training [[lectures/41/notes#MTP]] layers are expensive; routing-aware speculation that exploits expert sparsity might be cheaper.

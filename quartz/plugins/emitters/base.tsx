@@ -25,7 +25,6 @@ import { wikilinkRegex } from "../transformers/ofm"
 const wikilinkFlags = wikilinkRegex.flags.includes("g")
   ? wikilinkRegex.flags
   : `${wikilinkRegex.flags}g`
-const INLINE_WIKILINK_REGEX = new RegExp(wikilinkRegex.source, wikilinkFlags)
 
 function getFileBaseName(filePath?: string, slug?: string): string | undefined {
   const source = filePath ?? slug

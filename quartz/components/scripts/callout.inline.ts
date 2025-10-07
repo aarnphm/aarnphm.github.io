@@ -8,7 +8,6 @@ function toggleCallout(this: HTMLElement) {
   // walk and adjust height of all parents
   let current = outerBlock
   let parent = outerBlock.parentElement
-  console.log(parent, current)
   while (parent) {
     if (!parent.classList.contains("callout")) {
       return

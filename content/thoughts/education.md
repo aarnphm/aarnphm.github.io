@@ -1,9 +1,11 @@
 ---
 id: education
 tags:
-  - pattern
+  - seed
+  - pedagogy
+description: and how we learn.
 date: "2024-02-07"
-modified: "2024-11-03"
+modified: 2025-10-07 18:23:39 GMT-04:00
 title: education
 ---
 

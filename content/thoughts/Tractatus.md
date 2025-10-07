@@ -6,7 +6,7 @@ tags:
   - llm
 description: Wittgenstein's picture theory of language and its uncanny resonance with modern LLM latent spaces
 date: "2025-10-04"
-modified: 2025-10-07 04:47:01 GMT-04:00
+modified: 2025-10-07 18:40:09 GMT-04:00
 title: "Notes: TLP"
 ---
 
@@ -239,7 +239,7 @@ The numbered propositions build like this:
 ## open questions
 
 1. **formal detection**: can tautologies and contradictions be detected in latent space?
-2. **logical operations in attention**: do certain attention patterns correspond to logical operations (conjunction, disjunction, implication)? [@@zheng2025enhancing]
+2. **logical operations in attention**: do certain attention patterns correspond to logical operations (conjunction, disjunction, implication)? [@zheng2025enhancing]
 3. **atomic facts and neural representations**: is there formal mapping from atomic facts to neural representations, or is it compositional all the way down?
 4. **representing impossibility**: how do LLMs represent impossible states—low probability, zero probability, undefined regions? [@helliwell2024wittgenstein]
 5. **multimodal grounding**: does multimodal grounding (vision-language models) implement pictorial representation more directly?

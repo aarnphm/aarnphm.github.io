@@ -12,7 +12,7 @@
     "margin": "0",
     "downscalePercent": 100
   },
-  "tabSize": 2,
+  "tabSize": 4,
   "newFileLocation": "current",
   "newLinkFormat": "absolute",
   "newFileFolderPath": "thoughts",

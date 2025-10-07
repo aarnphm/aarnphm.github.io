@@ -4,16 +4,17 @@ tags:
   - philosophy
   - aesthetics
   - value-theory
-date: "2024-01-30"
+description: a branch of [[thoughts/Value|value]] theory concerning what makes things aesthetically good or valuable
 socials:
   sep: https://plato.stanford.edu/entries/aesthetic-concept/
-modified: 2025-10-04 16:54:42 GMT-04:00
+date: "2024-01-30"
+modified: 2025-10-07 19:11:11 GMT-04:00
 title: aesthetic value
 ---
 
-branch of [[thoughts/Value|value]] theory concerning what makes things aesthetically good or valuable. Related to but distinct from [[thoughts/taste|taste]] (capacity for aesthetic judgment) and beauty (one type of aesthetic value among others).
+Related to but distinct from [[thoughts/taste|taste]] (capacity for aesthetic judgment) and beauty (one type of aesthetic value among others).
 
-see also: [[thoughts/Value|value]], [[thoughts/taste|taste]], [[thoughts/Philosophy and Kant|Kant]], [[thoughts/Nietzsche|Nietzsche]]
+[[thoughts/Philosophy and Kant|Kant]], [[thoughts/Nietzsche|Nietzsche]] are somewhat relevant, but they operated on different value plane.
 
 ## core questions
 

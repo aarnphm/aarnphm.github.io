@@ -50,7 +50,7 @@ body[data-slug="curius"] {
   }
 
   .left-col {
-    grid-column: 3/5;
+    grid-column: 3/4;
   }
 
   .aside-container {
@@ -61,7 +61,7 @@ body[data-slug="curius"] {
   }
 
   .curius-col {
-    grid-column: 5/-3;
+    grid-column: 4/9;
     padding-left: 24px;
 
     @media all and ($tablet) {

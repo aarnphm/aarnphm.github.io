@@ -42,14 +42,15 @@ body[data-slug="index"] {
   }
 
   span[class*="rose"] {
-    color: rgb(215, 130, 126);
+    background-color: rgb(215, 130, 126);
     border-bottom: none;
+    color: var(--lightgray);
   }
 }
 
 [saved-theme="dark"] body[data-slug="index"] {
   span[class*="rose"] {
-    color: rgb(235, 188, 186);
+    background-color: rgb(235, 188, 186);
   }
 }
 

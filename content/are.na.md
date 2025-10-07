@@ -1,4 +1,6 @@
 ---
+socials:
+  are.na: https://www.are.na/aaron-pham/channels
 id: are.na
 aliases:
   - inspo
@@ -6,9 +8,37 @@ tags:
   - technical
   - seed
   - evergreen
+description: My run-down version of are[dot]na
+title: are.na
+date: "2024-10-24"
+modified: 2025-10-07 19:17:56 GMT-04:00
+codex:
+  additional_context: |-
+    structure of "are.na.md" can be considered as following:
+    - When I refer to <channel>, it is the H2 heading
+    - When I refer to a <channel>, it is per list entry under a <channel>
+    For example:
+      - "With regards to <discourse#block-1>, I want to expand on certain topics about money".
+        In this example, <discource#block-1> refers to "section discourse first list item"
+    A block will have the following structure:
+    - ```md
+      - <link> [separator:=--] <title>[optional] [**][optional]
+        - [meta]:
+          - <metadata>: <value>
+        - [...optional notes]
+      ```
+    - where:
+      - `[**]` denotes this block is highlighted
+      - `[meta]` holds a yaml-markdown list of metadata for a given block
+      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
+    This will be consumed by quartz/plugins/emitters/arena.ts, and then ingested with quartz/components/pages/[ArenaIndex|ChannelContent].tsx
+permalinks:
+  - /website
+  - /tweets
+  - /resources
 claude:
   additional_context: |-
-    structure of are.na.md:
+    structure of "are.na.md" can be considered as following:
     - <h2>: is considered a "channel", where we have a row full of items
     - each list entry under a <h2> is considered as a "block".
     - A block will have the following structure:
@@ -23,16 +53,6 @@ claude:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-date: "2024-10-24"
-socials:
-  are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-07 06:27:16 GMT-04:00
-description: My run-down version of are[dot]na
-permalinks:
-  - /website
-  - /tweets
-  - /resources
-title: are.na
 cssclasses:
   - nolist
 ---
@@ -47,107 +67,142 @@ cssclasses:
 - https://sublimeinternet.substack.com/p/the-ai-debate-is-not-about-art-its -- The AI debate is about money
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://www.lesswrong.com/posts/HiTjDZyWdLEGCDzqu/?commentId=MPNF8uSsi9mvZLxqz -- Gwern on distilling Opus 3.5 into Claude 3.6 instead of releasing Opus 3.5
   - [meta]:
     - date: 03/08/2025
+    - tags: [fruit]
 - https://www.dwarkesh.com/p/gwern-branwen -- Gwern Branwen - How an Anonymous Researcher Predicted AI's Trajectory
   - [meta]:
     - date: 08/13/2025
+    - tags: [fruit]
   - > By writing, you are voting on the future of the Shoggoth using one of the few currencies it acknowledges: tokens it has to predict. If you aren't writing, you are abdicating the future or your role in it. If you think it's enough to just be a good citizen, to vote for your favorite politician, to pick up litter and recycle, the future doesn't care about you.
   - > There are ways to influence the Shoggoth more, but not many. If you don't already occupy a handful of key roles or work at a frontier lab, your influence rounds off to 0, far more than ever before. If there are values you have which are not expressed yet in text, if there are things you like or want, if they aren't reflected online, then to the AI they don't exist. That is dangerously close to won't exist.
   - > But yes, you are also creating a sort of immortality for yourself personally. You aren't just creating a persona, you are creating your future self too. What self are you showing the LLMs, and how will they treat you in the future?
 - https://x.com/gwern/status/1959511089961636341 -- Gwen's creative discourse
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://x.com/Miles_Brundage/status/1967385510974009500 -- transition to fortune cookies
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/divya_venn/status/1956105667871412685 -- No one talks about how being avoidant can benefit you in every relationship other than your romantic one
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/ryolu_/status/1973794203416383594 -- Love is attention
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/noampomsky/status/1974221039782568262 -- when you spend enough time with people who felt alive, it rewires your sense of what life is
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - https://x.com/noampomsky/status/1974246778133250450
 - https://x.com/roryisconfused/status/1973491704704671918 -- God takes a sort of aesthetic pleasure in us, that He enjoys our charms and our ways.
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace -- Cluster structure of thingspace [**]
   - [meta]:
     - date: 09/04/2025
+    - tags: [fruit]
   - "Radial categories" are how cognitive psychologists describe the non-Aristotelian boundaries of words.
 - https://www.multiamory.com/podcast/339-the-smorgasbord-of-relationships -- The smorgasbord of relationship
   - [meta]:
     - date: 09/04/2025
+    - tags: [fruit]
 
 ## tweets
 
 - https://x.com/PI010101/status/1974909578983907490 -- GPT-5 found a counterexample to the NICD-with-erasures majority optimality (Simons list, p.25).
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://x.com/oxidist/status/1825247129155031198 -- New set of human every 150 years.
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://x.com/DavidSHolz/status/1974909666154119495 -- Robots and cage fighting
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://x.com/davidbessis/status/1849442615176950202 -- finite complex reflection arrangement
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/twaniimals/status/1836560827756740626 -- moo deng go brr
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/Griveau/status/1851937688988889514 -- time machine rent free
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://twitter.com/melissa/status/1877951245912334484 -- Lies about health
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/CanadaKaz/status/1851653777633247673 -- say the thing, ask more
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/noampomsky/status/1860856607607050633 -- Ava on Iain McGilchrist of attention being a moral act
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/m_kaytweets/status/1801627208517140625 -- Liking things that are "you" thing
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/noampomsky/status/1876151263882350630 -- Ava on practicality over unreasonable romantic dreamy thing
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/phokarlsson/status/1876314921765634337 -- HK on mirror as apostle
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/cremieuxrecueil/status/1826452344881516729 -- National Toxicology Report on fluoride in US
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/cremieuxrecueil/status/1876097710610338066 -- five capacities type in human psyche
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/ruzhaoart/status/1876149783997677605 -- Jacky's sister on traditional art
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/melkuo/status/1835775713410269621 -- 2024 Canada's housing market
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/poetengineer__/status/1895397439852695708 -- a measured heart
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/mots_pod/status/1974637749383946252 -- hey look at my neovim config!
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://x.com/philosophymeme0/status/1974201644440301891?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- Socrates peer pressuring his friends to go out
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://x.com/healdps/status/1974440443460149517?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- Dog core
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 
 ## website
 
+- https://christophlocher.com/
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [utilitarian, hypertext]
 - https://www.peterdpong.com/
   - [meta]:
     - date: 10/07/2025
@@ -159,15 +214,19 @@ cssclasses:
 - https://felixdorner.de/
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://gerhard.xyz/
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://www.cosmos.so/public-work -- Public Work, Cosmos [**]
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://smallweb.cc/ -- smallweb [**]
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://deadsimplesites.com/ -- dead simple sites
   - [meta]:
     - date: 10/06/2025
@@ -175,372 +234,476 @@ cssclasses:
 - https://farayan.me/dappled -- Dappled light
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - Similar to https://github.com/jackyzha0/sunlit
   - but in `@react-three/drei`
   - https://farayan.me/
 - https://reh.at/about -- Rehat
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://press.stripe.com/ -- Stripe Press, Idea for Progress
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://daylightcomputer.com/ -- Daylight Computer
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://walzr.com/IMG_0001 -- Send to YouTube in Photos app
   - [meta]:
     - date: 01/20/2025
+    - tags: [fruit]
 - https://shapefarm.net/ -- Shape Farm
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - clean aesthetics with nice hierarchical components
 - https://ertdfgcvb.xyz/ -- ertdfgcvb
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - cool ascii animations
 - https://typicalmitul.com/montreal-in-motion -- Montreal in Lens
   - [meta]:
     - date: 01/20/2025
+    - tags: [fruit]
 - http://pressanykey.today/ -- Press Any Key
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - cool visualisation of typing process
 - https://perfume-area.com/reviews/page:2 -- PERFUME AREA
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - arena for perfume
 - https://clock.vvhuang.com/ -- Prague Astronomical Clock
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - the graphic for the clock is nice
 - https://handyarrows.com/ -- Hand-draw arrow
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - Arrowssssss
 - https://brand.dropbox.com/ -- Dropbox brand design
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - Cool brand design from Dropbox, by daybreak studio
 - https://tomcritchlow.com/wiki/
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - Wikitext [[thoughts/Digital garden|garden]]
 - https://pudding.cool/2023/09/invisible-epidemic/
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - cool timeline scaling transition
 - https://www.chinatownjs.nyc/ -- Chinatown.js
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.benkuhn.net/outliers/ -- Searching for outliers
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://negative.sanctuary.computer/ -- Studio Carbon Negative
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - landing poggies
 - https://cogtoolslab.github.io/ -- cognitive tools lab
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
   - cognitive tools lab
   - reverse engineering the human cognitive toolkit, by Prof. Judith Fan
 - https://everythingiseverything.nyc/map/ -- everything is everything NYC
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - Bagel places, in NYC
 - https://www.rockstargames.com/VI -- Grand Theft Auto VI
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - GTA VI when?
 - https://html.energy/events.html -- HTML Energy
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://devouringdetails.com/ -- Devouring Details [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://solarprotocol.net -- Solar Protocol
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
 - https://archive.jakedowsmith.com/rosemarybutcher.com -- Rosemary Butcher
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
   - Timeline visualisation
 - https://motherfuckingwebsite.com
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - This is a motherfucking website
   - > "Good design is as little design as possible." - some German mtf
 - https://www.sfsystemsclub.com -- SF Systems Club
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
 - https://www.curatingcraft.com -- Curating Craft
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
   - by Daybreak
 - https://www.yooksel.com/ -- Yooksel
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.goodfire.ai/ -- Goodfire AI
   - [meta]:
     - date: 08/07/2025
+    - tags: [fruit]
 - https://nice.rocks -- nice.rocks
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.philosophyofprogress.com/ -- Philosophy of Progress
   - [meta]:
     - date: 08/12/2025
+    - tags: [fruit]
 - https://browser.engineering/onepage.html -- Web Browser Engineering
   - [meta]:
     - date: 08/13/2025
+    - tags: [fruit]
 - https://yismailuofa.github.io/ -- youssef ismail
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://dougalves.work/ -- Doug–Alves
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.makingsoftware.com/ -- Making Software
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - https://www.makingsoftware.com/chapters/color-spaces-models-and-gamuts -- Color space
 - https://fieldsofchess.com/ -- Fields of Chess
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.luerzersarchive.com/ -- Lürzer's Archive
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://eyeondesign.aiga.org/ -- AIGA Eye on Design
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.oneclub.org/awards/adcawards/-archive/awards/2025/all/all/select -- ADC Awards
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.lydianottingham.com/ -- Lydia Nottingham [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - 🫶
 - https://farayan.me/dappled -- Dappled Light
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.tiat.place/ -- tiat.place
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://posthog.com/ -- PostHog
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://reducing-suffering.org/ -- Essays on Reducing Suffering
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://1a3orn.com/ -- 1a3orn
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://laurent.fyi/ -- laurent del rey
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://shen.land -- shen.land
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://particularly.online/ -- particularly.online
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - epilepsy warning
 - https://mitul.ca/ -- Mitul Shah
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://chimcisaac.co/ -- Chi McIsaac
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.ethansmith2000.com/blog -- Ethan Smith
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://sander.ai/ -- Sander Dieleman
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://messenger.abeto.co/ -- Messenger
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.tedsummer.com/#root/Ted-Summer -- Ted Summer
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.yudhister.me/ -- Yudhister Kumar
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://isleofany.com -- Isle of Any
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://solderneer.me/ -- solderneer
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - Another Quartz in the wild!
 - https://www.memoria.day/ -- Memoria
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.kran.ai -- Esben Kran
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.johnnylin.co/ -- Johnny Lin
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://100r.ca/site/weathering_software_winter.html -- Weathering Software Winter
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://mkodama.org/ -- Miles Kodama
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://luckysoap.com/statements/handmadeweb.html -- Handmade Web
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
   - > I evoke the term 'handmade web' to refer to web pages coded by hand rather than by software; web pages made and maintained by individuals rather than by businesses or corporations; web pages which are provisional, temporary, or one-of-a-kind;
   - > In The Web We Lost (2012), Anil Dash writes: "In the early days of the social web, there was a broad expectation that regular people might own their own identities by having their own websites, instead of being dependent on a few big sites to host their online identity."
 - https://wireframes.internet.dev/ -- INTDEV showcase
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://asteriskmag.com/ -- Asterisk Magazine [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 
 ## people
 
 - https://abrandenberger.github.io/ -- Anna Brandenberger
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
   - cool book list: https://abrandenberger.github.io/library/
 - https://jiha-kim.github.io/ -- Jiha Kim
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://www.jeremykun.com/about/ -- Jeremy Kun
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
   - FHE
 - https://www.yudhister.me/ -- Yudhister
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://oak-hu.github.io/ -- Oak Hu
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - Another Quartz in the wild
 - https://logangraves.com/index -- Logan Graves [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - Very much utilitarian, html-based, simple site/blogroll.
 - https://www.linkedin.com/in/thakkarv/ -- Vijay Thakkar
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - CUTLASS 4.0
 - https://www.ivanzhao.me/ -- Ivan Zhao
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://spencer.place/ -- Spencher Chang [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://calv.info/about -- Calvin French-Owen
   - [meta]:
     - date: 09/15/2025
+    - tags: [fruit]
   - Calvin, as in Calvin and Hobbes
 - https://www.sholis.com/ -- Brian Sholis
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://jzhao.xyz/ -- Jacky Zhao [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - daylightcomputer's inspired but in pure CSS and HTML
   - source: https://github.com/jackyzha0/sunlit
 - https://jacobleech.com/ -- Jacob Leech
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - warm, graphics, animation smooth
 - https://langworth.com/ -- Ian Langworth
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - wait terminal go brrr
 - https://www.alanagoyal.com/notes
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - Apple Notes-inspired portfolio
   - https://github.com/alanagoyal/alanagoyal, mostly just react-markdown and React 19 Server Component.
 - https://henry.codes/ -- Henry Desroches
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - very much text-dominant black/white
 - https://www.ruth-zhao.com -- Ruth Zhao [**]
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - map world
 - https://chia.design/ -- Chia Amisola
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://tinnei.com/ -- Tinnei / 10A
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.tylerxhobbs.com/works/categories/digital -- Tyler Hobbs
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - utilitarian design
 - https://leimao.github.io/ -- Lei Mao's Log Book
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.lei.chat -- Lei's Chat
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - AI [[thoughts/Compiler]] ([[thoughts/GPU programming#AMD]])
 - https://ampersand.pm/ -- &pm (Morgan.)
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - met at [HTML Day](html.green)
 - https://www.chloeyan.me/ -- Chloe Yan
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://shashwathsantosh.com/ -- Shashwath Santosh
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://michaelnotebook.com/ -- Michael Nielsen
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://nicholas.carlini.com/ -- Nicholas Carlini
   - [meta]:
     - date: 09/02/2025
+    - tags: [fruit]
   - Security/Adversarial against LLMs
 - https://blog.jacobvosmaer.nl/ -- Jacob Vosmaer
   - [meta]:
     - date: 08/22/2025
+    - tags: [fruit]
 - https://en.wikipedia.org/wiki/John_Galliano -- John Galliano
   - [meta]:
     - date: 05/31/2025
+    - tags: [fruit]
     - legendary [[thoughts/fashion]] designer
     - past: creative director @ Maison Margiela
 - https://en.wikipedia.org/wiki/Daniel_Dennett -- Daniel Dennett
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
   - Philosophy of the minds
 - https://plato.stanford.edu/entries/merleau-ponty/ -- Maurice Merleau-Ponty
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
   - Embodied cognition
 - https://en.wikipedia.org/wiki/John_Carmack -- John Carmack
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://en.wikipedia.org/wiki/Chlo%C3%AB_Sevigny -- Chloë Sevigny
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://www.poetryfoundation.org/poets/john-berryman -- John Berryman
   - [meta]:
     - date: 07/08/2025
+    - tags: [fruit]
 - https://en.wikipedia.org/wiki/Sol_LeWitt -- Sol Lewitt
   - [meta]:
     - date: 07/09/2025
+    - tags: [fruit]
   - His [letter](https://borisinjac.com/sol-lewitts-letter-eva-hesse/) to Eva Hesse [^sol-lewitts-letter]
 - https://en.wikipedia.org/wiki/William_James -- Willian James
   - [meta]:
     - date: 07/13/2025
+    - tags: [fruit]
   - father of American psychology
   - [[thoughts/Epistemology|epistemology]], psychology, and [[thoughts/Metaphysics|metaphysics]]
 - https://en.wikipedia.org/wiki/L._E._J._Brouwer -- L. E. J. Brouwer
   - [meta]:
     - date: 07/13/2025
+    - tags: [fruit]
   - Dutch mathematician who worked on topology, set theory and complex analysis
   - known for philosophy of _intuition_, a constructivist school of mathematics which argues that math is a _cognitive construct_ rather than a type of **objective truth**.
 - https://en.wikipedia.org/wiki/Ludwig_Boltzmann -- Ludwig Boltzmann
   - [meta]:
     - date: 07/13/2025
+    - tags: [fruit]
   - Boltzmann machine, classical thermodynamics, and current definition of [[thoughts/Entropy|entropy]]:
     $$
     S = k_B \ln \Omega
@@ -549,117 +712,147 @@ cssclasses:
 - https://plato.stanford.edu/entries/frege/ -- Gottlob Frege
   - [meta]:
     - date: 07/13/2025
+    - tags: [fruit]
 - https://plato.stanford.edu/entries/russell/ -- Bertrand Russell
   - [meta]:
     - date: 07/13/2025
+    - tags: [fruit]
 - https://web.stanford.edu/~cm5/overview.html -- Ciprian Manolescu
   - [meta]:
     - date: 07/29/2025
+    - tags: [fruit]
   - Floer homology and dimension-4 topology
 - https://thezvi.wordpress.com/ -- Zvi Mowshowitz
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://www.nytimes.com/2025/07/31/science/mary-k-gaillard-dead.html?camp=7JFJX -- Mary K. Gaillard
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://www.neelnanda.io/about -- Neel Nanda
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
   - [[thoughts/mechanistic interpretability]], lead GDM applied interpretability team
 - https://rosszurowski.com/ -- Ross Zurowski
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
 - https://nickm.com/ -- Nick Montfort
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - MIT, Digital Media Lab
   - _Output: An Anthology of Computer-Generated Text, 1953-2023_
 - https://www.trudy.computer -- Trudy Painter
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - Gizmo
   - prev: Google Creative Lab + MIT
 - https://omar.website -- Omar Rizwan
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
   - Folk Computer, TabFS, https://x.com/rsnous
 - https://www.katrinaromulo.com -- Katrina Romulo
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
   - Brand Designer
   - work: hyper!, halia
 - https://turntrout.com/welcome -- Alex Turner
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
   - [[thoughts/mechanistic interpretability|scalable alignment]] researcher
 - https://marijnhaverbeke.nl/blog -- Marijn Haverbeke
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
   - CodeMirror
 - https://connorlowe.com/ -- Connor Lowe
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
 - https://henry.codes/ -- Henry Desroches
   - [meta]:
     - date: 08/04/2025
+    - tags: [fruit]
 - https://jennywen.ca/ -- Jenny Wen
   - [meta]:
     - date: 08/04/2025
+    - tags: [fruit]
   - Figma
 - https://www.thibaut.cool/ -- Thibaut Crépelle
   - [meta]:
     - date: 08/04/2025
+    - tags: [fruit]
 - https://en.wikipedia.org/wiki/Harry_Nyquist -- Harry Nyquist
   - [meta]:
     - date: 08/10/2025
+    - tags: [fruit]
   - Communication theory, stability of feedback amplifiers
   - Johnson–Nyquist noise
   - Nyquist–Shannon sampling theorem
 - https://iquilezles.org/ -- Inigo Quilez
   - [meta]:
     - date: 08/14/2025
+    - tags: [fruit]
   - shadertoy
 - https://apossible.com/
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://www.linkedin.com/in/lukaszkaiser/ -- Lukasz Kaiser
   - [meta]:
     - date: 08/21/2025
+    - tags: [fruit]
   - OpenAI, logic and automaton
 - https://www.lesswrong.com/users/neil-warren -- Neil Warren
   - [meta]:
     - date: 09/22/2025
+    - tags: [fruit]
 - https://en.wikipedia.org/wiki/A._C._Grayling -- A. C. Grayling
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
   - Epistemological Scepticism and Transcendental Arguments (1981)
 - https://en.wikipedia.org/wiki/Paul_Samuelson -- Paul Samuelson
   - [meta]:
     - date: 09/10/2025
+    - tags: [fruit]
   - Economist, advisor to JFK
   - columnist on Chicago School with [[library/Capitalism and Freedom|Milton Friedman]]
 - https://www.timdavis.com/ -- Tim Davis
   - [meta]:
     - date: 09/18/2025
+    - tags: [fruit]
   - Modular, CEO
 - https://www.nondot.org/sabre/ -- Chris Lattner
   - [meta]:
     - date: 09/18/2025
+    - tags: [fruit]
   - He's that talented, no need for introduction
   - LLVM, Clang, MLIR, Swift, TPUs
   - https://x.com/clattner_llvm
 - https://www.vilinskyy.com/ -- Alexander Vilinskyy
   - [meta]:
     - date: 09/26/2025
+    - tags: [fruit]
 - https://jnnnthnn.com/ -- Jonathan Unikowski
   - [meta]:
     - date: 09/30/2025
+    - tags: [fruit]
 - https://wesleyac.com/ -- wesley.
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.tomeveritt.se -- Tom Everitt
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
   - Staff Research Scientist, DeepMind
   - [@everitt2025evaluatinggoaldirectednesslargelanguage]
 
@@ -683,57 +876,75 @@ cssclasses:
 - https://pika.mit.edu/ -- PIKA @ MIT
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/xx36MxJmbtx2pmH88 -- Rooms Coffee | 135 Ossington
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/2XPzgLkTRUxQLQNa8 -- Rooms Coffee | 915 Dupont
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/xF1CbAPUZy4E2YkV7 -- Rooms Coffee | 17 Baldwin
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/EvYLaxoUAhqXejhj6 -- Alternity
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/qsBcJ8dVfog1Mev87 -- Coco's neighborhood coffee shop
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/ubajUb5KrB9XgJTL7 -- Bevy @ TheCombine
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/vJY9DPf98uF5jTyk9 -- Isle of Coffee (Queen)
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/FGGHtR1rzxX8LTxSA -- Mofer Coffee on Queen
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/6AdrB7FgTMoXgsUs5 -- Page One Coffee + Bar
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/noRrgPejGf4CYG556 -- 10 DEAN | Waverley
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/gPjjBhKiaVG1KYtU7 -- Cafe Pamenar
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/SMMTH1d1PSDTF7zcA -- Milky’s Cloud Room
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/vuXxq7aVDUG7jw7s8 -- Found Coffee on College
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/6yrQaRN4fr1fDMFC6 -- Carbonic Coffee
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/24Lth72sDeicpzco7 -- Nabulu Coffee
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/UMuTjTkmKwN7cvTE6 -- Stakt Market
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://maps.app.goo.gl/Ewq92uvU7EiAL5HF8 -- Loquat SF
   - [meta]:
     - date: 09/10/2025
+    - tags: [fruit]
   - https://loquatsf.com/
 
 ## essay
@@ -774,23 +985,28 @@ cssclasses:
 - https://offhandquibbles.substack.com/p/why-have-sex -- Why Have Sex?
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - i.e: the evolution of anisogamy
 - [[thoughts/papers/Augmenting Human Intellect, A Conceptual Framework - D.C Engelbart, 1962.pdf]] -- "Augmenting Human Intellect", Douglas Engelbart
   - [meta]:
     - date: 05/15/2025
+    - tags: [fruit]
   - source: https://www.dougengelbart.org/pubs/papers/scanned/Doug_Engelbart-AugmentingHumanIntellect.pdf
 - https://www.cs.virginia.edu/~robins/YouAndYourResearch.html -- You and Your Research, Richard Hamming [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - > One lesson was sufficient to educate my boss as to why I didn't want to do big jobs that displaced exploratory research and why I was justified in not doing crash jobs which absorb all the research computing facilities. I wanted instead to use the facilities to compute a large number of small problems. Again, in the early days, I was limited in computing capacity and it was clear, in my area, that a 'mathematician had no use for machines.' But I needed more machine capacity. Every time I had to tell some scientist in some other area, "No I can't; I haven't the machine capacity," he complained. I said "Go tell your Vice President that Hamming needs more computing capacity." After a while I could see what was happening up there at the top; many people said to my Vice President, "Your man needs more computing capacity." I got it!
   - > The people who do great work with less ability but who are committed to it, get more done that those who have great skill and dabble in it, who work during the day and go home and do other things and come back and work the next day.
 - https://www.benkuhn.net/thinkrealhard/ -- Think real hard
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - > In retrospect, I wish those people had just told me “think real hard.” I was looking for an easy way out—One Weird Trick to Programming Better—but programming is too hard for that.
 - https://michaelnielsen.org/blog/principles-of-effective-research/ -- Principles of Effective Research [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - > The philosophy underlying the essay is based on a famous quote attributed to [[thoughts/Aristotle]]: “We are what we repeatedly do. Excellence, then, is not an act but a habit.” Underlying all our habits are models (often unconscious) of how the world works.
   - > [[/research|Research]] is, of course, only a part of life, and must be understood in relation to the rest of life
   - > Effective people are proactive and take personal responsibility for the events in their lives.
@@ -804,172 +1020,225 @@ cssclasses:
 - https://www.benkuhn.net/pjm/ -- How I've run major projects
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - > Even more importantly than freeing up time, clearing my schedule made sure the project was the top idea in my mind. If I don’t do that, it’s easy for me to let projects “go on autopilot,” where I keep them running but don’t proactively make time to think through things like whether we should change goals, add or drop priorities, or do other “non-obvious” things.
 - https://newsletter.squishy.computer/p/all-you-need-is-links -- All you need is links [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
       -![[thoughts/images/hyperlinks.webp]]
 - https://cybermonk.substack.com/p/i-am -- I am
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
 - https://blog.scottstevenson.net/p/how-to-finally-make-something-a16c8db7ba2a -- How to finally make something
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
 - http://www.aaronsw.com/weblog/theoryofchange -- Theory of Change
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
 - https://thesolarmonk.com/posts/a-spacebar-for-the-web -- vintage, letter type
   - [meta]:
     - date: 01/17/2025
+    - tags: [fruit]
 - https://retool.com/visual-basic -- ASCII effects and procedural arrangement
   - [meta]:
     - date: 01/17/2025
+    - tags: [fruit]
 - https://www.tylerxhobbs.com/words/flow-fields -- flow feel
   - [meta]:
     - date: 01/17/2025
+    - tags: [fruit]
 - https://maalvika.substack.com/p/tiktoks-boyfriend-tests-and-the-spectacle -- tiktok boyfriend test and spectacle of modern love
   - [meta]:
     - date: 01/17/2025
+    - tags: [fruit]
 - https://handwritten.blog/2022-10-01-hyperlinks-in-handwriting.html -- Handwritten blog
   - [meta]:
     - date: 01/17/2025
+    - tags: [fruit]
 - https://www.muckrock.com/news/archives/2015/jul/21/nothing-indicate-nothing-indicate-subject-had-any-/ -- Paul Erdős, he is just a mathematician that really [[/tags/love|love]] math
   - [meta]:
     - date: 01/20/2025
+    - tags: [fruit]
 - https://matthewstrom.com/writing/generative-art-og-images/ -- Generative OG with [Brownian motion](https://en.wikipedia.org/wiki/Brownian_motion)
   - [meta]:
     - date: 01/20/2025
+    - tags: [fruit]
 - https://docs.google.com/document/d/1h1vw4-t9Es4p2qQkZblnWcJDo6uEc6Yu61AxaLB5hKo/edit -- Atlantis
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://foundersatwork.posthaven.com/the-social-radar-what-i-did-at-y-combinator -- Social radar, by Jess Livingston
   - [meta]:
     - date: 05/30/2025
+    - tags: [fruit]
 - https://jameslin.bio/jolie -- Love, with a friend
   - [meta]:
     - date: 02/20/2025
+    - tags: [fruit]
 - https://www.paulgraham.com/good.html -- Be good
   - [meta]:
     - date: 02/21/2025
+    - tags: [fruit]
 - https://www.paulgraham.com/mean.html -- Mean [[are.na#people|people]] fail
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
 - https://www.lesswrong.com/posts/H7fkGinsv8SDxgiS2/ironing-out-the-squiggles -- Ironing Out the Squiggles
   - [meta]:
     - date: 03/01/2025
+    - tags: [fruit]
 - https://readsomethingwonderful.com/p/47/the-inner-ring -- Read something wonderful
   - [meta]:
     - date: 03/05/2025
+    - tags: [fruit]
 - https://writeordiemag.com/elliptical-love/untranslatable -- Untranslatable
   - [meta]:
     - date: 03/05/2025
+    - tags: [fruit]
 - https://www.oaktreecapital.com/docs/default-source/memos/on-bubble-watch.pdf?sfvrsn=ab105466_4 -- On Bubble Watch and Stock market
   - [meta]:
     - date: 03/05/2025
+    - tags: [fruit]
 - https://ordinaryinstants.substack.com/p/graduate-school-is-just-a-metaphor -- Graduate school is just a metaphor
   - [meta]:
     - date: 03/05/2025
+    - tags: [fruit]
 - https://www.epi.org/publication/u-s-benefits-from-immigration -- US benefits from immigration but policy reforms needed to maximize gains
   - [meta]:
     - date: 03/05/2025
+    - tags: [fruit]
 - https://www.washingtonpost.com/context/the-portable-bloomberg-the-wit-wisdom-of-michael-bloomberg/ba5281b4-886d-42dc-a28d-e67eceb60719/ -- The Portable Bloomberg: [[thoughts/pdfs/The Wit and Wisdom of Michael Bloomberg.pdf|The Wit & Wisdom of Michael Bloomberg]]
   - [meta]:
     - date: 03/08/2025
+    - tags: [fruit]
 - https://www.autodidacts.io/troubleshooting/ -- On Troubleshooting
   - [meta]:
     - date: 03/09/2025
+    - tags: [fruit]
 - https://stirthepots.substack.com/p/things-i-notice-when-im-not-rushing -- things i notice when i'm not rushing
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
   - > The air changes when I’m not rushing. It remembers me.
 - https://onegirlinfinitethoughts.substack.com/p/what-if-love-never-finds-you -- What If Love never finds you?
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
   - > If you became too good at spotting the wolves beneath the wool, too fluent in the language of red flags, too unwilling to be dazzled by the cheap magic tricks of love bombers and smooth-tongued frauds.
 - https://read.mindmine.xyz/p/stop-hiding -- Stop hiding from your power.
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://archive.ph/YNZI0 -- Elon wants what he can't have: Wikipedia
   - [meta]:
     - date: 04/27/2025
+    - tags: [fruit]
 - https://danluu.com/learn-what/ -- What to learn
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
 - https://pketh.org/organic-software.html -- In Search of Organic Software
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
 - https://emilymstark.com/2022/12/18/death-to-the-line-of-death.html -- The death of the line of death
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://matthewstrom.com/writing/album-art/ -- The history of [[thoughts/music theory|album art]]
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://bigthink.com/smart-skills/how-curiosity-rewires-your-brain-for-change/ -- How curiosity rewires your brain for change
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
   - > When we are curious, the brain's dopaminergic system -- the same one that lights up when we anticipate a reward -- kicks into gear. Simply put, curiosity makes us feel good about the prospect of discovering something new.
 - https://a16z.com/a-good-place-to-work/ -- A Good Place to Work, Ben Horowitz
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://cristobal.arquipelago.org/writing/screenshot.html -- Notes from Screenshot Conf
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://www.avabear.xyz/p/dialectical-damage -- Dialectical damage
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://halogen2.tumblr.com/post/187591113672/i-think-love-is-something-that-happens-to-other -- I think love is something that happens to other.
   - [meta]:
     - date: 07/07/2025
+    - tags: [fruit]
 - https://evanjconrad.com/posts/love -- On love and relationship [**]
   - [meta]:
     - date: 07/09/2025
+    - tags: [fruit]
 - https://barnsworthburning.net/ -- cool hyperlinks format
   - [meta]:
     - date: 07/09/2025
+    - tags: [fruit]
 - https://museguided.substack.com/p/love-is-not-enough -- Love is not enough
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://mindslice.substack.com/p/alignment -- [[thoughts/Alignment]]
   - [meta]:
     - date: 07/13/2025
+    - tags: [fruit]
 - https://aresluna.org/frame-of-preference/ -- Frame of references, a history of Mac Settings, 1984-2004
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://web.stanford.edu/dept/SUL/sites/mac/primary/docs/bom/anthrophilic.html -- Design Considerations for an Anthropophilic Computer
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
   - > You might think that any number of computers have been designed with these criteria in mind, but not so. Any system which requires a user to ever see the interior, for any reason, does not meet these specifications. There must not be additional ROMS, RAMS, boards or accessories except those that can be understood by the PITS as a separate appliance.
   - > Seeing the guts is taboo. Things in sockets is taboo (unless to make servicing cheaper without imposing too large an initial cost). Billions of keys on the keyboard is taboo. Computerese is taboo. Large manuals, or many of them (large manuals are a sure sign of bad design) is taboo. **Self-instructional programs are NOT taboo.**
   - > The computer must be in one lump. This means, given present technology, a 4 or 5 inch CRT (unless a better display comes along in the next year), a keyboard, and disk integrated into one package.
 - https://www.nytimes.com/2025/07/21/magazine/men-heterofatalism-dating-relationships.html -- The Trouble with Wanting Men
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://calv.info/openai-reflections -- reflections on OpenAI
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://thezvi.wordpress.com/2025/08/01/the-week-in-ai-governance/ -- The EU AI Code of Practice, The Week in AI governance, Aug 1st
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://ambrook.com/offrange/technology/like-farming-on-the-moon -- If you are a farmer, NASA would like a word
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://dl.acm.org/doi/pdf/10.1145/97351.97360 -- Human Values and the Futures of Technology: A Declaration of Empowerment, Ben Shneiderman
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://kevinlu.ai/the-only-important-technology-is-the-internet -- The Only Important Technology is the Internet
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - [[thoughts/papers/google_delayexp.pdf|Speed Matters for Google Web Search]]
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
   - latency from 100ms to 400ms reduces number of search per users by 0.2% to 0.6%
   - Injecting server-side delay for pre-header and post-header delay
 - https://www.alignmentforum.org/posts/hjMy4ZxS5ogA9cTYK/how-i-think-about-my-research-process-explore-understand -- How I Think About My Research Process: Explore, Understand, Distill
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://usefulfictions.substack.com/p/50-things-i-know -- 50 things i know
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
   - > 33. If you always let people in in traffic, no one can cut you off.
   - > 36. “You are ruined by your gifts” — the traits that make you exceptional are the very same traits that show up in your neuroses and limitations. Learning to love the upsides, if undertaken with clarity and gentleness, also creates more space to address the downsides. This is what makes the [Enneagram](https://usefulfictions.substack.com/p/there-are-nine-wolves-inside-of-you) tremendously potent.
   - > 38. There is no grand unifying theory of morality, nothing that doesn’t break down in any edge cases — so avoid totalizing ideologies, or else. If you take anything too seriously, it can make you crazy. Related: Utilitarianism is a perfect program that doesn’t run on human hardware.
@@ -977,40 +1246,51 @@ cssclasses:
 - https://velvetnoise.substack.com/p/the-key-to-love-is-understanding -- The key to [[tags/love]] is understanding
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://velvetnoise.substack.com/p/attention-is-love -- Attention is love [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - > To reach out and remain unseen is its own kind of anti-conversation, a silence where love should be.
 - https://illustrated.substack.com/p/grief-maybe -- Grief, maybe (ILLUSTRATED)
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://substack.com/inbox/post/168424831 -- conversational compatibility is the chemical reaction between questions
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://www.scopeofwork.net/aquatic-achievements/ -- Aquatic Achievements
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://kayserifserif.place/carry -- I carry your website with me (i carry it in my website)
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - > (In the quiet aftermath of the most wonderful and exhausting gathering at your home, you find traces of your friends everywhere. A strand of hair draped across the couch, every extra chair commandeered, lingering perfume… echoes of presence in the console.)
 - https://wholeearth.info/p/whole-earth-catalog-fall-1968?format=spreads&index=0 -- Whole Earth Index
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
 - https://substack.com/inbox/post/169322228 -- A constellation of lookers
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
 - https://blog.cloudflare.com/perplexity-is-using-stealth-undeclared-crawlers-to-evade-website-no-crawl-directives/ -- Perplexity is using stealth, undeclared crawlers to evade website no-crawl directives
   - [meta]:
     - date: 08/04/2025
+    - tags: [fruit]
 - https://kenliu.substack.com/p/layers -- Layers
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - > Faulkner was absolutely right: The past is never dead. It’s not even past
   - > It’s worth remembering that this is not true—or at least not true to the same degree—for cultures that built with perishable materials: wood, bamboo, paper, rammed earth. Unless actively maintained, these structures will perish in fire, flood, war, often lasting no more than decades, much less centuries.
 - https://shreniks-subconscious.super.site/journal/impermanence-bay-area-musings -- Impermanence (Bay Area Musings)
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
   - > I notice how I’m feeling a kind of tenderness for things that don’t last. It shows up in unexpected places, like the bruised-purple petals scattered on the sidewalk after a windy night, or the quick glimmer of someone’s laughter on a street corner before it disappears into the ordinary quiet.
   - > Impermanence makes things precious. The fleetingness of a perfect moment is what gives it color and weight.
   - > I remember thinking, almost with a twinge of sadness even as it was happening, how none of us would be able to return to that exact constellation of people and feeling again. And yet, maybe that’s what made it matter so much.
@@ -1018,75 +1298,98 @@ cssclasses:
 - https://www.nytimes.com/2025/08/04/technology/rationalists-ai-lighthaven.html -- The Rise of Silicon Valley’s Techno-Religion
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
   - [[thoughts/Roko's Basilisk]]
   - > “All of this feels mythic,” she said. “Even the non-Rationalist scientists find this compelling — the same way the Manhattan Project was compelling. We want to work on something mythic.”
 - https://etsd.tech/posts/rtfc -- Read the f\*\*\* code
   - [meta]:
     - date: 08/07/2025
+    - tags: [fruit]
 - https://ryanandrewlangdon.com/2020/01/28/today-i-learned-that-not-everyone-has-an-internal-monologue-and-it-has-ruined-my-day/ -- Today I learned that some people doesn't have an internal monologue
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://ifp.org/biotechs-lost-archive/ -- Biotech's Lost Archive
   - [meta]:
     - date: 08/12/2025
+    - tags: [fruit]
 - https://velvetnoise.substack.com/p/the-key-to-love-is-understanding -- The key to love is understanding
   - [meta]:
     - date: 08/12/2025
+    - tags: [fruit]
 - https://benjamincongdon.me/blog/2025/01/25/AI-Slop-Suspicion-and-Writing-Back/ -- AI Slop Suspicion and Writing Back.
   - [meta]:
     - date: 08/13/2025
+    - tags: [fruit]
 - https://www.sherryning.com/p/what-should-you-do-when-youre-madly -- What should you do when you're madly in love
   - [meta]:
     - date: 08/13/2025
+    - tags: [fruit]
 - https://jewishcurrents.org/beyond-grievance -- Beyond Grievance
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://web.archive.org/web/20031029211844/http://www.frostbytes.com/~jimf/informing.html -- Informing Ourselves To Death
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
   - > After all, anyone who has studied the history of technology knows that technological change is always a Faustian bargain: Technology giveth and technology taketh away, and not always in equal measure.
 - https://milky.substack.com/p/moderation -- moderation, by molly mielke mccarthy
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://web.archive.org/web/20240329074753/https://www.theatlantic.com/magazine/archive/1993/12/how-the-world-works/305854/ -- How the world works
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://carly.substack.com/p/designers-designers-designers -- Designers! Designers! Designers!
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://www.personalcanon.com/p/how-to-begin -- How to begin
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://sfpc.study/blog/falling-failing-feeling-freeing -- Falling, Failing, Feeling, Freeing [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.are.na/kristoffer-tjalve/poetic-web-calendar -- Poetic Web Calendar
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://northeastlarder.com/ -- Northeast Larder
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://grugbrain.dev/ -- The Grug Brained Developer
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://research.contrary.com/deep-dive/building-an-american-tsmc -- Building an American TSMC [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://jzmazlish.substack.com/p/ak-or-just-okay-ai-and-economic-growth -- AK or just okay? AI and economic growth
   - [meta]:
     - date: 09/18/2025
+    - tags: [fruit]
 - https://sharif.io/anna-alexei -- Always invite Anna
   - [meta]:
     - date: 09/26/2025
+    - tags: [fruit]
 - https://archive.is/ilTr1 -- The Economist, How to spot a genius
   - [meta]:
     - date: 09/26/2025
+    - tags: [fruit]
 - https://unchartedterritories.tomaspueyo.com/p/mountains -- Why Warm Countries Are Poorer [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://lananhngvu.substack.com/p/how-to-become-gently-interesting -- how to become gently interesting
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - > My first suggestion: sit with something long enough.
   - > Just simple, unassuming places, like a park you’ve never visited, a station or a random indie bookstore that is not aesthetic by normal standard.
   - > When your attention stretches beyond the usual, you start seeing patterns, questions, and connections that others miss. Your perspective deepens. And with that depth comes a quiet magnetism, because interestingness isn’t a performance, it’s the result of a mind that’s been gently reshaped by new experiences and curiosity.
@@ -1094,36 +1397,46 @@ cssclasses:
 - https://sundogg.substack.com/p/have-you-put-down-your-bags -- Have you put down the bags?
   - [meta]:
     - date: 09/30/2025
+    - tags: [fruit]
 - https://theshadowedarchive.substack.com/p/an-existential-guide-to-making-friends -- An Existential Guide to: Making Friends [**]
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://archive.ph/MegKQ -- How AI is changing the office
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.henrikkarlsson.xyz/p/how-i-read -- Henrik Karlsson, How I Read [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://emotional.codes/dtr/ -- Defining the Relationship
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://huyenchip.com/2021/02/27/why-not-join-a-startup.html -- Chip Huyen, 7 reasons not to join a startup and 1 reason to
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - > Reason 1. Goodbye work-life balance
   - > Reason 4. You won’t get rich
   - > If you want to get rich, join a big company and climb their rank.
 - http://www.martinacecilia.com/place-vanishing-points/ -- How to place vanishing points
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://map.simonsarris.com/p/breadcrumbs -- Breadcrumbs
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.alignmentforum.org/posts/ShgAxjgN55gmq47ou/trustworthy-and-untrustworthy-models-1 -- Trustworthy and untrustworthy models [**]
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.betonit.ai/p/shes-the-one -- She's the One
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
   - > Figure out your top priorities - and be flexible about everything else
   - > Giving looks a high priority and personality a low priority. This is beyond foolish
   - > Ask to hold hands on the first date. [...] My goal, rather, is to help ordinary shy guys out of the Friend Zone.
@@ -1133,21 +1446,26 @@ cssclasses:
 - https://www.betonit.ai/p/i-want-to-hold-your-hand -- I want to hold your hand
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://benjaminfspector.com/writing/tgg -- The Generation Game
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://roonscape.ai/p/agi-futures -- AGI futures
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
   - > Neuralink Third Impact
   - > Simulation Theory
   - > If God were to visit this world, he would destroy it. An unbounded resource gatherer was summoned; a demon of the Platonic ether forged through incredible optimization pressures that created instrumental convergence to power-seeking behavior. One by one, the stars are blinking out in the heavens as their energy is harnessed to further the Fiend’s profane purpose.
 - https://selvaradov.net/select/ -- You can select as well as be selected
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - http://joschu.net/blog/opinionated-guide-ml-research.html -- An Opinionated Guide to ML Research [**]
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
   - > _Honing Your Taste_: Your ability to choose the right problems to work on is even more important than your raw technical skill.
   - > 1. Read a lot of papers, and assess them critically. If possible, discuss them with others who have a deeper knowledge of the subject.
   - > 2. Work in a research group with other people working on similar topics. That way you can absorb their experiences as well as your own.
@@ -1160,6 +1478,7 @@ cssclasses:
 - https://numinous.productions/ttft/ -- How can we develop transformative tools for thought?
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - By Andy Matuschak and Michael Nielsen
   - https://notation.app/n/d1VOwqGv5DbHdDLf
 
@@ -1198,9 +1517,11 @@ cssclasses:
 - https://github.com/IST-DASLab/FP-Quant -- Microscaling FP4 Quantisation
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://www.neuronpedia.org/graph/info -- The Circuits Research Landscape: Results and Perspective, Aug 2025 [**]
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
   - [[thoughts/mechanistic interpretability]]
 - https://www.lesswrong.com/posts/L3aYFT4RDJYHbbsup/llms-can-learn-about-themselves-by-introspection -- LLMs can learn about themselves by introspection
   - [meta]:
@@ -1214,114 +1535,150 @@ cssclasses:
 - https://www.lesswrong.com/posts/3ghj8EuKzwD3MQR5G/an-introduction-to-representation-engineering-an-activation -- Representation Engineering, an activation-based paradigm for controlling [[thoughts/LLMs]]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://www.thought-anchors.com/ -- Thought Anchors in LLM Reasoning Traces
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - https://arxiv.org/abs/2506.19143
 - https://kipp.ly/transformer-inference-arithmetic/ -- Transformers Inference Arithmetics [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - see also [[thoughts/Transformers#Inference]], [[thoughts/LLMs]]
 - https://www.youtube.com/watch?v=kLiwvnr4L80&t=868s -- Trends in Deep Learning, Bill Dally (NVIDIA)
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - [[thoughts/GPU programming]], [[lectures/420/notes|NVIDIA architecture notes]]
 - https://x.com/thesephist/status/1895887696268288119 -- AI-centric interface design
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/ZayneSprague/status/1836784332704215519 -- To CoT or not to CoT
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/simonw/status/1840438066974228912 -- NotebookLLM system prompt
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/karpathy/status/1841536804073439268 -- Karpathy's at GPU MODE's IRL talk
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/stephen_wolfram/status/1826692234554875979 -- Explanation into ML
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/sarahookr/status/1834294208821428571 -- inference-time not capture governance guardrails
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/banburismus_/status/1819354340290658725 -- Tom McGrath's questions about cross-layer superposition
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/NeelNanda5/status/1850656772002120009 -- Neel's take on Anthropic's crosscoders
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/AIatMeta/status/1851327605716435011 -- layer skip in self-speculative decoding
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/JungleSilicon/status/1866352582349750555 -- embedding visualisation from Midjourney
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/sleenyre/status/1851519830375207309 -- sae for flux-lens for exploring image embeddings
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/jxmnop/status/1851706815244902691 -- contextual document embeddings OSS
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/JustinLin610/status/1861847752835248381 -- QwQ reasoning models outperform o1
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/ch402/status/1874990808539275687 -- Chris Olah on state of AI research
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/giansegato/status/1875944887973183785 -- The opportunity is now, don't believe in both extreme wrt to AI
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/nrehiew_/status/1876091138366652438 -- ML with shape suffixes stylistic choice
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/behrouz_ali/status/1878859086227255347 -- Titan, scaling Neural Memory
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/vllm_project/status/1879979185474859303 -- By yours truly
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/flowersslop/status/1882241958397067677 -- R1 having existential crisis
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/rupspace/status/1877882538859078084 -- Highway network
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/VictorTaelin/status/1897108466243641399 -- Claude Code optimize HVM3 to 328 MIPs per M4 Core
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/karpathy/status/1937902205765607626 -- Karpathy on "context engineering" over prompt engineering
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/jkminder/status/1939790920326541601 -- Model diffing on Chat vs. Base Model
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/leloykun/status/1941067659157913625 -- Adam with Aggressive Gradient Value/Norm Clipping ≈ Smoothed SignSGD/NormSGD
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/Kimi_Moonshot/status/1944589115510734931 -- Kimi K2 rough architecture
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/jobergum/status/1945036230799892726 -- ColBERT WASM for embeddings
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/geoffreylitt/status/1950601513870499953 -- Geoffrey Litt on capabilities debates
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/NeelNanda5/status/1950344397075456438 -- MATS 9.0 [[/are.na#stream|Stream]] Winter Batch
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/JayaGup10/status/1952871186888843528 -- Integration landscape from labs
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/HSVSphere/status/1955714317816316150 -- modern-infrastructure + AI
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/ShiqianMa/status/1971979845170315669 -- Manifold Muon, as spectral GD
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/GoodfireAI/status/1953903581075288470 -- gpt-oss interpretability speed run at Goodfire
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - > experts actually seem to specialize - e.g. a “business expert” that activates most on business strategy & management topics.
   - > just as Claude fixates on spiritual bliss after talking to itself for many turns, gpt-oss has its own attractor states: nonsense code & creative writing!
   - > memoized during training: https://x.com/jack_merullo_/status/1953860284638278043
@@ -1332,31 +1689,39 @@ cssclasses:
 - https://x.com/Zai_org/status/1954750596634054965 -- GLM 4.5 Technical report
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - Agentic workflow RL scale
   - https://z.ai/blog/glm-4.5
 - https://x.com/djcows/status/1955435075136606449 -- Read your weights
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/Kimi_Moonshot/status/1944589115510734931 -- Kimi K2 architecture
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/nic__carter/status/1797635177973158182 -- The neck-breaking speed of AI
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://blog.ezyang.com/2025/08/the-parallelism-mesh-zoo/ -- The Parallelism Mesh Zoo
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://x.com/JingyuanLiu123/status/1959093411283443726 -- TPU vs GPU parallelism strategies [**]
   - [meta]:
     - date: 19/26/2025
+    - tags: [fruit]
 - https://x.com/GoodfireAI/status/1960378734852046859 -- Adversarial examples affects feature share directions.
   - [meta]:
     - date: 09/15/2025
+    - tags: [fruit]
   - https://x.com/livgorton/status/1960378437102657654
   - https://arxiv.org/abs/2508.17456
 - https://x.com/keenanisalive/status/1964434335911858552 -- autoencoder representations
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - Geometric representation of encoders: maps a high-dimensional data $x$ to low-dimensional latent $z$, then the decoder tries to map $z$ back to $x$.
   - We _always_ learn a k-dimensional submanifold $M$
     ![[thoughts/images/submanifold mapping.webp]]
@@ -1364,79 +1729,100 @@ cssclasses:
 - https://x.com/GoodfireAI/status/1965189414491168785 -- SAE scaling law dynamics
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - scaling on feature manifolds
   - in terms of manifold discovered
 - https://x.com/_xjdr/status/1966215415027347856 -- Qwen3-Next architecture difference with hybrid and Gated Delta Rule
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - https://arxiv.org/abs/2310.07707
 - https://x.com/Grad62304977/status/1967548295816819184 -- RL resources
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/repligate/status/1968093240646889820 -- Yud's AI book
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/mrsiipa/status/1968284758661894436 -- The NVIDIA regime
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - I'm tired
 - https://x.com/jackminong/status/1968518159826305438 -- PyTorch weirdness
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - See also [[thoughts/Weight tying]]
 - https://x.com/josh_bickett/status/1725556267014595032 -- What is an AI agent [**]
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/jkminder/status/1969082859311841413 -- [[thoughts/sparse crosscoders]] and non-linear representation dilemma
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/karpathy/status/1973435013875314729 -- Karpathy's bitter lesson on Dwarkesh's pod with Sutton
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - > Stated plainly, today's frontier LLM research is not about building animals. It is about summoning ghosts. You can think of ghosts as a fundamentally different kind of point in the space of possible intelligences
   - > They are these imperfect replicas, a kind of statistical distillation of humanity's documents with some sprinkle on top. They are not platonically bitter lesson pilled, but they are perhaps "practically" bitter lesson pilled, at least compared to a lot of what came before.
 - https://x.com/deepcohen/status/1973191790602887544 -- Central flows
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - https://centralflows.github.io/part1/
     - How [[thoughts/gradient descent]] works?
 - https://x.com/nrehiew_/status/1973404310127124790 -- DSA comparing to attention sink in long-context regime
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - see also: https://x.com/nathancgy4/status/1973420757196873885
   - [[thoughts/optimization#softmax]] over 2048 tokens, thus $QK$ weights magnitudes are preserved, and no "attention budget" are being given to useless tokens.
 - https://www.goodfire.ai/blog/painting-with-concepts -- Painting with concepts, via SAE for SDXL-turbo
   - [meta]:
     - date: 05/30/2025
+    - tags: [fruit]
 - https://www.goodfire.ai/blog/under-the-hood-of-a-reasoning-model -- Under te hood of a reasoning models, SAEs.
   - [meta]:
     - date: 05/30/2025
+    - tags: [fruit]
 - https://wattenberger.com/thoughts/yay-embeddings-math -- creative with embeddings in writing
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://basilhalperin.com/essays/agi-vs-emh.html -- AGI timeline, Basil Halperin
   - [meta]:
     - date: 05/30/2025
+    - tags: [fruit]
 - https://optimists.ai/2024/03/10/deconstructing-bostroms-argument-for-ai-doom/ -- Bostrom's Argument for AI Doom
   - [meta]:
     - date: 05/30/2025
+    - tags: [fruit]
 - https://www.joelsimon.net/lluminate -- Creative exploration with LLM
   - [meta]:
     - date: 05/30/2025
+    - tags: [fruit]
 - https://docs.google.com/presentation/d/1dGA1Jpppv9BciOOrc95ZYRinsj_ZYrI-IQOIifHGIZw/edit?slide=id.p#slide=id.p -- Transformers in Diffusion Models for Image Generations and Beyond
   - [meta]:
     - date: 07/13/2025
+    - tags: [fruit]
 - https://discuss.vllm.ai/t/numerical-difference-between-vllm-logprobs-and-huggingface-logprobs/151 -- Numerical difference between [[thoughts/vllm|vLLM]] logprobs and HF logprobs
   - [meta]:
     - date: 07/13/2025
+    - tags: [fruit]
 - https://jeremybernste.in/writing/deriving-muon -- Deriving [[thoughts/muon|Muon]]
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
   - https://github.com/KellerJordan/modded-nanogpt
   - https://kellerjordan.github.io/posts/muon/
 - https://www.neuronpedia.org/graph/info -- The circuit analysis research landscape
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
   - [[thoughts/mechanistic interpretability#attribution graph]]
   - On Biology of LLMs
   - Futures and directions of interpretability [research](https://www.neuronpedia.org/graph/info#section-directions-for-future-work)
@@ -1445,108 +1831,146 @@ cssclasses:
 - https://ethanding.substack.com/p/ai-subscriptions-get-short-squeezed -- Tokens are getting more expensive
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://docs.google.com/presentation/d/1NOrUVZNkcKHom5ih5uqqOSrV4Vi8KZRN8LYaAeADX80/edit?slide=id.g3724263dfb4_0_68#slide=id.g3724263dfb4_0_68 -- Scaling MoE with llm-d and vLLM
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://www.anthropic.com/research/persona-vectors -- Persona vector
   - [meta]:
     - date: 09/18/2025
+    - tags: [fruit]
 - https://www.tilderesearch.com/blog/momoe -- MoMoE: Memory-optimized Mixture of Experts
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - See also: [triton-based](https://github.com/shawntan/scattermoe) implementation of Sparse MoE
   - Qwen3 modular fused: https://github.com/woct0rdho/transformers-qwen3-moe-fused/blob/master/qwen3_moe_fused/modular_qwen3_moe_fused.py
 - https://docs.google.com/document/d/1ZV73D2vgaj2yu_tjN3TVOP6QVLWVPXJB2rrqSZQxYtI/edit?usp=drivesdk -- AI research overview
   - [meta]:
     - date: 08/14/2025
+    - tags: [fruit]
 - https://timdettmers.com/2022/08/17/llm-int8-and-emergent-features/ -- [[thoughts/LLMs]].int8() and Emergent Features
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
   - https://arxiv.org/abs/2110.02861
 - https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf -- Matrix cookbook
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://github.com/bytedance/flux -- fast communication-overlapping library for TP
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://jax-ml.github.io/scaling-book/ -- JAX scaling book [**]
   - [meta]:
     - date: 08/16/2025
+    - tags: [training, large scale]
+- https://jaxformer.com/ -- Training LLMs with Jax
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [training, large scale]
+  - made by Cohere folks
 - https://nanotron-ultrascale-playbook.static.hf.space/index.html -- The Ultra-Scale Playbook: Training LLMs on GPU Clusters [**]
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://www.jeremykun.com/2023/08/10/mlir-getting-started/ -- [[thoughts/MLIR]] introduction [**]
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://huggingfacefw-blogpost-fineweb-v1.static.hf.space -- FineWeb: decanting the web for the finest text data at scale. [**]
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/ -- [[thoughts/Bayesian Neural Network]] [**]
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://www.lei.chat/posts/triton-linear-layout-concept/ -- Triton Linear Layout
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://research.colfax-intl.com/cutlass-tutorial-writing-gemm-kernels-using-tensor-memory-for-nvidia-blackwell-gpus/ -- GEMM kernels on Blackwell GPUs
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm4higcSGpvKKNdmtY/edit?tab=t.0#heading=h.nc4nxxczgw4w -- Structural tags in xgrammar (to be used in [[thoughts/vllm|vLLM]])
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://drive.google.com/file/u/1/d/1l54BwUi07JnqwB5_iHCVVZ3TnR05acDm/view?usp=sharing -- Critique on "The Illusion of Thinking"
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://huggingface.co/blog/rearchitecting-uploads-and-downloads -- Rearchitecting Hugging Face Uploads and Downloads
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
   - ![[thoughts/images/kimi-architecture.webp]]
 - https://docs.google.com/document/d/1p-ggQV3vVWIQuCccXEl1fD0thJOgXimlbBpGk6FI32I/edit?tab=t.0#heading=h.y0ohi6l5z9qn -- MATS 9.0 Winter 2025
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://nousresearch.com/measuring-thinking-efficiency-in-reasoning-models-the-missing-benchmark/ -- Measuring reasoning model thinking efficiency
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://www.seangoedecke.com/great-software-design/ -- Great software design looks underwhelming
   - [meta]:
     - date: 08/18/2025
+    - tags: [fruit]
 - https://openai.com/index/deep-double-descent/ -- Deep double descent
   - [meta]:
     - date: 08/21/2025
+    - tags: [fruit]
 - https://horace.io/brrr_intro.html -- Deep Learning from first principle
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://colah.github.io/posts/2014-03-NN-Manifolds-Topology/ -- Neural Network, and Manifolds
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://substack.com/@jakeeaton/note/c-140561607 -- AI skeptics unconsciously anthropomorphize LLMs in their critiques, like their anger is directed more at a naive zoomer intern who can’t infer the context of your ask.
   - [meta]:
     - date: 09/07/2025
+    - tags: [fruit]
 - https://ghost.oxen.ai/why-grpo-is-important-and-how-it-works/ -- Why GRPO is important and how it works
   - [meta]:
     - date: 09/10/2025
+    - tags: [fruit]
 - https://mp.weixin.qq.com/s/h1cFYDNxcHC30APcarF47A -- [[thoughts/vllm|vLLM]] from scratch
   - [meta]:
     - date: 09/21/2025
+    - tags: [fruit]
   - 1.3: https://mp.weixin.qq.com/s/BdWG6_ZTaGRknmsbGfFkMQ
   - 1.2: https://mp.weixin.qq.com/s/8BVEVPPqDQhQ2l8L90dMNQ
 - https://ma-lab-berkeley.github.io/deep-representation-learning-book/ -- Learning Deep Representations of Data Distributions [@ldrdd2025]
   - [meta]:
     - date: 09/28/2025
+    - tags: [fruit]
 - https://www.julian.ac/blog/2025/09/27/failing-to-understand-the-exponential-again/ -- Failing to Understand the Exponential, Again
   - [meta]:
     - date: 09/29/2025
+    - tags: [fruit]
 - https://www.ethansmith2000.com/post/where-are-you -- Where are you?
   - [meta]:
     - date: 09/29/2025
+    - tags: [fruit]
 - https://github.com/pranjalssh/fast.cu -- fast kernels, in [[thoughts/GPU programming|CUDA]]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://hazyresearch.stanford.edu/blog/2025-09-28-tp-llama-main -- We Bought the Whole GPU, So We're Damn Well Going to Use the Whole GPU
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 
   ```python
   import torch
@@ -1565,295 +1989,388 @@ cssclasses:
 - https://blog.aayushg.com/conviction/ -- Conviction is the scarcest resource
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://danluu.com/ballmer/ -- Steve Ballmer was an underrated CEO
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
 - https://www.dwarkesh.com/p/questions-about-ai?open=false -- Questions about AI, by Dwarkesh
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
 - https://epoch.ai/gradient-updates/most-ai-value-will-come-from-broad-automation-not-from-r-d -- Most AI value will come from broad automation, not from R&D
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
 - https://www.thefp.com/p/a-fifth-of-american-adults-cant-read-i-teach-them -- A fifth of American Adults Can't Read. Here's How to Teach Them.
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
 - https://paulgraham.com/95.html -- PG's 95% of great programmers in
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
 - https://paulgraham.com/woke.html -- Origin of Wokeness
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
 - https://www.noahpinion.blog/p/will-data-centers-crash-the-economy -- Will data centers crash the economy?
   - [meta]:
     - date: 08/04/2025
+    - tags: [fruit]
 - https://x.com/eigenrobot/status/1954363395068616745 -- Gaza's privatization
   - [meta]:
     - date: 08/10/2025
+    - tags: [fruit]
 - https://ifstudies.org/report-brief/in-pursuit-marriage-motherhood-and-womens-well-being -- In Pursuit: Marriage, Motherhood, and Women’s Well-Being [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.lesswrong.com/posts/gfbX3h4RueuDzWs7m/some-rules-for-life-v-0-0 -- Rules for life
   - [meta]:
     - date: 09/10/2025
+    - tags: [fruit]
 - https://marginalrevolution.com/marginalrevolution/2025/02/why-i-think-ai-take-off-is-relatively-slow.html -- Why I think AI take-off is relatively slow.
   - [meta]:
     - date: 09/18/2025
+    - tags: [fruit]
 - https://x.com/eigenrobot/status/1968726067612389636
   - [meta]:
     - date: 09/18/2025
+    - tags: [fruit]
 - https://mishaglouberman.substack.com/p/stop-pretending-toronto-is-more-than -- Stop Pretending Toronto is More Than It Is.
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://baincapitalventures.com/insight/we-must-know-we-will-know/ -- We must know, we will know
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 
 ## life is literature
 
 - https://x.com/carmenleelau/status/1818771532132311200 -- People who demand nothing of you
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/NicoleSHsing/status/1876672940353450369 -- existence
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/xhfloz/status/1878624648717553753 -- The Scream to The Sun arc
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/ashotmagazine/status/1879964949776330837 -- rest-in-peace David Lynch
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/MelisaSeah/status/1875931461565693997 -- Vietnamese being in frontier art and fashion style
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/kasratweets/status/1880147402025582924 -- Kasra on loneliness, or emotional insecurity
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/VividVoid_/status/1828461484277461447 -- philosophical wisdom
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/melissa/status/1883821342354768109 -- Melissa on fairness within marriage
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/bimbosattva_/status/1935812993528599012?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- Be autistic and women will love you
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/phokarlsson/status/1794384589898805621 -- Treat people as if they are too complex to hold it inside your head
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/jacquemusx/status/1942186663557353504 -- Iris van Herpen
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/thecaravanindia/status/1942869801593958709 -- Bertrand Russell releases a manifesto warning about the danger of nuclear weapons
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/michael_nielsen/status/1951055480920613156 -- Don't drop out of college
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/gabrielpeterss4/status/1951781057973608948?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- working on your problems
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/aarnphm_/status/1956238570353504615 -- Seeing N
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/SchrodingrsBrat/status/1960157702232940796 -- September is the true New Year, Sherry
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/bolau_/status/1963676094546186539 -- performative curius highlighting
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/virtualjew/status/1846593528350011539 -- You can just make grilled cheese with onions
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/qiaochuyuan/status/1629333539488690176?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- QC on attachment theory thread
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/nwilliams030/status/1884282849471390185 -- neighbourhood as a form of proximity love
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/booritney/status/1884857291046002714 -- dates in sf, after dark thursday
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/tommytrxnh/status/1884908531079340090 -- Tommy's version
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/noampomsky/status/1960404829647585590 -- Life
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/Phil_Lewis_/status/1973448285164806247 -- Jane Goodall, ethologist and conservationist, has died
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://ryolu.notion.site/how-to-make-something-great -- How to make something great, by Ryo Lu
   - [meta]:
     - date: 03/09/2025
+    - tags: [fruit]
 - https://www.personalcanon.com/p/in-praise-of-writing-on-the-internet -- In praise of writing on the internet
   - [meta]:
     - date: 03/09/2025
+    - tags: [fruit]
 - https://www.henrikkarlsson.xyz/p/being-patient-with-problems -- Being patient with the problems
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://chias.blog/2022/there-is-an-internet-that-is-mine/ -- There is an internet that is mine
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://hannahsarchive.substack.com/p/films-that-have-healed-me -- [[movies|Film]] that healed me
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.henrikkarlsson.xyz/p/constraints -- An essay in which my friend feels stuck and I suggest relaxing some constraints
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://en.wikipedia.org/wiki/Lovecraftian_horror -- Eldritch Horror
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://en.wikipedia.org/wiki/Rhizome_(philosophy) -- Rhizome
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
   - [[thoughts/Rhizome]]
 - https://aeon.co/essays/simone-de-beauvoirs-authentic-love-is-a-project-of-equals -- Simone de Beavoir's "Love is a joint project"
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://www.links.net/dox/tech/computopia.html -- Computopia [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.experimental-history.com/p/28-slightly-rude-notes-on-writing
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://www.experimental-history.com/p/face-it-youre-a-crazy-person -- Face it, you are a crazy person [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://substack.com/inbox/post/170580516 -- "If I love you, it's because in some way we are the same type of bastard"
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for -- some parts of you only emerge from certain people
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://www.gleech.org/stopping -- What's stopping you?
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://www.sherryning.com/p/goodbye-august -- Goodbye August
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://sashachapin.substack.com/p/my-six-stages-of-learning-to-be-a -- My six stages of learning to be a socially normal person
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - > Connecting with people is about being a dazzling person
   - > Connecting with people is about playing their game
 - https://x.com/noampomsky/status/1974487754290729215?s=61 -- Feeling your feeling but it is just your resistance
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 
 ## technology
 
 - https://mayberay.bearblog.dev/why-i-only-use-google-sheets/ -- Why I only use Google Sheets?
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - > Zimbabwean taxes and duties are often very complex and having our customers know exactly what to pay would create a better customer journey and make the process faster since we would not have to wait on our third party duty processing company to reply to us on every customer inquiry 😅
 - https://x.com/Mappletons/status/1250532315459194880 -- Digital garden but wikitext go brr
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/VictorPontis/status/1876723918020452809 -- Lu.ma team structure
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/kepano/status/1694731713686196526 -- Obsidian manifesto
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/kepano/status/1844491841787273467 -- static sites versus dynamic sites
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/313formation/status/1828059730998083853 -- resources for SWE introduction
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/XorDev/status/1834966384855368108 -- visual editor
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/_opencv_/status/1877613841187492189 -- Wozniaks behind closed door
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/id_aa_carmack/status/1878854976623218956 -- Carmack on HW team at Meta
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/jankulveit/status/1845390887062257719 -- Slop removal on Twitter
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/usgraphics/status/1797331802740408497 -- Berkeley Graphics on design process and clientele
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/AlecStapp/status/1875677444528861492 -- Only in America, with SpaceX
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/RichardMCNgo/status/1875093600612261909 -- independent research
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/natfriedman/status/1874884925587087434 -- Nat Friedman's micro-plastics effort
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/kaseyklimes/status/1875927241999204849 -- value-creation versus value-extraction capitalism
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/sarahookr/status/1875970084558299402 -- Collusion ring in academia
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/aidenybai/status/1875683367758541026 -- Another ratioed by Aiden Bai, the one who wrote million.js
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/CherrilynnZ/status/1836881535154409629 -- visualising emotions
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/spikedoanz/status/1856505412167839925/ -- FEXPA op in ARM
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/elzr/status/1274209005557211138 -- threads for reading as tree representations
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/eshear/status/1880109350251032637 -- Emmett Shear on PG's advice
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/pmarca/status/1880845551467634761 -- technology hallucinations with TikTok's recent ban in US
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/pmarca/status/1880860012110856566 -- Links between EA and sexual obsession lol
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/cath_land/status/1881906298817786224 -- linktree but open source and for free lmao
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/quantumbeans/status/1861251224567234695 -- algorithmic-generated art
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/tylerangert/status/1884980797565788269 -- Team meme
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/zswitten/status/1879693633911463960 -- aligned Claude
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/filpizlo/status/1935019034531217647 -- C++ programs that are memory-safe
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/kepano/status/1952067484242391197 -- fear-based employment endemic
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/badlogicgames/status/1955625313121038462 -- ClaudeCode-ception
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/juliendubois/status/1971518637161992214 -- that one guy at microsoft using macbook programming on linux
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/tobi/status/1878957750576906484 -- Tobi replies on Canada's Tech contribution to overall GDP
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/chapman_bliss/status/1881613396359127467 -- Last day at Neural Link
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/adonis_singh/status/1884499176865632672 -- R1 one-shotted into markets and individualism
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://x.com/spencerc99/status/1721704642307113346 -- Spencer's inspiration from game to make playful software
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 
 ## [[tags/philosophy]]
 
 - https://caitlynrichardson.substack.com/p/can-intellectual-intimacy-replace -- can intellectual intimacy replace physical desire?
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://www.gleech.org/grids -- Preventing Side-effects in Gridworlds
   - [meta]:
     - date: 10/06/2025
@@ -1861,6 +2378,7 @@ cssclasses:
 - https://www.aquantumofhope.com/ -- A Quantum of Hope
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://www.lesswrong.com/posts/2HxAkCG7NWTrrn5R3/three-fallacies-of-teleology -- Three Fallacies of Teleology [**]
   - [meta]:
     - date: 10/06/2025
@@ -1886,6 +2404,7 @@ cssclasses:
 - https://minihf.com/posts/2025-06-07-commentary-on-janus-prophecies/ -- Commentary on the Turing Apocrypha [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - basis for https://generative.ink/prophecies/
   - > _reframing exercise_. Not every theorist lost on [[thoughts/LLMs]], Barthes and Foucault for example are doing quite well. As difficult as it was to predict large language models some people had occasional glimpses of insight adjacent to or part of the underlying facts about reality that make LLMs possible.
 - https://www.lesswrong.com/posts/vzLrQaGPa9DNCpuZz/against-modal-logics -- Against Modal Logics
@@ -1895,50 +2414,64 @@ cssclasses:
 - https://www.lesswrong.com/posts/JumyfYQaJkWnjCcEr/consequentialism-is-a-compass-not-a-judge -- Consequentialism is a compass, not a judge
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://www.marxists.org/history/erol/periodicals/theoretical-review/1982301.htm -- The Concepts of Ideology, Hegemony, and Organic Intellectuals in Gramsci’s Marxism
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://joecarlsmith.com/2020/11/29/grokking-illusionism -- Grokking Illusionism
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://joecarlsmith.com/2025/01/28/fake-thinking-and-real-thinking -- Fake vs Real thinking
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://joecarlsmith.com/2023/02/16/why-should-ethical-anti-realists-do-ethics -- Why should ethical anti-realists do ethics?
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
   - believe in an objective [[thoughts/ethics|ethical]] truth
   - map-making with no territory: "figuring out the normative truth" (from normative realist)
   - [[thoughts/anti realist do ethics|notes]]
 - https://turntrout.com/self-fulfilling-misalignment -- Self-Fulfilling Misalignment Data Might Be Poisoning Our AI Models
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://www.stevestewartwilliams.com/p/the-problem-of-free-will-solved -- The Problem of Free Will
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://www.stevestewartwilliams.com/cp/159468280 -- Human Equivalents of the Peacock's Tail
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://www.overcomingbias.com/p/alien-life-info-but-not-status-found -- Alien Life Info, But not Status, Found
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=KIu4y1stILY&ab_channel=essentialsalts -- Politices as Neuro-Physiology, a conversation with Uberboyo
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
   - In what way the connection between philosophy, ideas and cultural does [[thoughts/Philosophy and Nietzsche|Nietzsche]] nihilism?
 - https://simulation-argument.com/simulation/ -- Are we living in a simulation?
   - [meta]:
     - date: 09/29/2025
+    - tags: [fruit]
 - https://aeon.co/essays/does-language-mirror-the-mind-an-intellectual-history -- Our languages, our world
   - [meta]:
     - date: 09/30/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=E2x2WTWjcEA -- this word is the (True) purpose of human life
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - > "The Son of God became man, that we might become god" - St. Athanasius of Alexandria
 - https://www.youtube.com/watch?v=Rupf69o8kQc -- Why Modern [[/tags/love|love]] feels empty
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - [[thoughts/Giles Deleuze]]: ventures outwards to realize these potentiality.
   - Commit someone who will inevitability fails us.
   - > unfolding of love sustains the form of life itself
@@ -1946,45 +2479,58 @@ cssclasses:
 - https://thedosagemakesitso.substack.com/p/worship-adoration-valence -- Worship. Adoration. Valence
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 
 ## stream
 
 - https://notes.andymatuschak.org/Effective_system_design_requires_insights_drawn_from_serious_contexts_of_use -- Effective system design requires insights drawn from serious contexts of use
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
 - https://wilderness.land/ -- wilderness.land
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://jennyclark.substack.com/p/prayer-for-the-girl-who-often-forgets -- prayer for the girl who often forgets that enough is enough
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://stream.thesephist.com/ -- Linus's stream
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - [[/books|antilibrary]]
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - [[/mixed|music lists]]
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - [[/images|images I found across the internet]]
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - [[/movies|30 frames per seconds that capture the essence of being human]]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - [[/research|my research interests]]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - [[/influence|ebbs and flows that shape me]]
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - [[/quotes|quotes I try to live by]]
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - [[thoughts/furnitures|and fruitful living]]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - [[thoughts/Scents|parfum]]
   - [meta]:
     - date: 10/06/2025
@@ -1995,6 +2541,7 @@ cssclasses:
 - https://investors.palantir.com/news-details/2025/Palantir-Reports-Q2-2025-U-S--Comm-Revenue-Growth-of-93-YY-and-Revenue-Growth-of-48-YY-Guides-Q3-Revenue-to-50-YY-Raises-FY-2025-Revenue-Guidance-to-45-YY-and-U-S--Comm-Revenue-Guidance-to-85-YY-Crushing-Consensus-Expectations/ -- Palantir Q3 Earnings 2025 Reports
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
   - $1Bn in Revenue, 45% Y/Y
 
 ## poetry
@@ -2002,12 +2549,15 @@ cssclasses:
 - http://www.phys.unm.edu/~tw/fas/yits/archive/eberhart_thegroundhog.html -- The Groundhog by Richard Eberthart
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - http://www.phys.unm.edu/~tw/fas/yits/archive/oliver_wildgeese.html -- Wild [[posts/goose friend|Geese]] by Mary Oliver
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://www.imdb.com/title/tt3783958/ -- La La Land
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - > Here’s to the ones who dream
     > Foolish as they may seem
     >
@@ -2024,39 +2574,51 @@ cssclasses:
 - https://brunoarizio.com/
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://mushstudios.co/ -- Mush Studio
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://www.metalabel.com/ -- Metalabel
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://www.are.na/editorial/are-nas-new-web-client-sander-is-now-available-for-everyone -- Are.na's web client, Sander.
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
 - https://jonwhitestudio.com/ -- Jon White Studio
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
 - https://www.commarts.com/ -- Communication Arts
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://x.com/zachlieberman/status/1963683642011455980 -- Speculative drawing
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.tetragrammaton.com/ -- Tetragrammaton
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://studio.4o4.space/ -- STUDIO 4o4
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://basement.studio/ -- basement.studio
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://tatianabilbao.com -- Tatiana Bilbao Estudio
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://barnsworthburning.net/ -- barnsworthburning
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 
 ## video
 
@@ -2071,77 +2633,101 @@ cssclasses:
 - https://www.youtube.com/watch?v=ufa4pmBOBT8 -- CuTe, CUDA Tensors [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - see also [[thoughts/GPU programming]]
 - https://www.youtube.com/watch?v=WJ76FfBZuhI&ab_channel=SoderCinema -- Narcissistic Facades - Amy Dunne
   - [meta]:
     - date: 04/09/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=54M3zZKHFRw&ab_channel=ShannonKim -- Situationist Movement, the myth of creative director
   - [meta]:
     - date: 05/30/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=GNB2oMISvsI&ab_channel=ArcherGreen -- When you shot the movie in 480p
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=JFj8kWm_N-Y&ab_channel=OverthinkPodcast -- Merleau-Ponty, the Phenomenology of Perception
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=Aa-A17TldZQ&ab_channel=Queen -- Why the Universe Sends You Someone You Can't Be With, Carl Jung
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=rQ-An5bhkrs&t=11303s&ab_channel=Amii -- Upper Bound 2025, John Carmack's talk
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=AivF_Lj8cVM&ab_channel=Josephine -- Put love at the centre of your life, NOT discipline
   - [meta]:
     - date: 07/13/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=dCP9uYLa8HA&ab_channel=DuCinema -- Emma Stone
   - [meta]:
     - date: 07/29/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=nNEweeN32QI&ab_channel=PhilosophyOverdose -- Is God an Unnecessary Hypothesis, Peter van Inwagen, 2004 Calvin College
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=llu7prGMDhk&ab_channel=JuliandeMedeiros -- Lacan/Žižek on how to find your dream: a step-by-step by step guide
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=X-D5FERQzU4&ab_channel=DeficitOwls -- Money Did Not Come From Barter - It Came From Blood Feuds
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=HyPY6vm8Vbo&ab_channel=LucyMoon -- essentials that have immeasurably improved my life this year
   - [meta]:
     - date: 08/03/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=ny3sCjFiLYc&ab_channel=KunmiK -- How to ask a girl out - Louie C.K. asks a girl out
   - [meta]:
     - date: 08/07/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=9xYasBUv530&ab_channel=SefoNad -- Emotional Maturity in Past Lives
   - [meta]:
     - date: 08/07/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=Q-yqCgMWGNo&ab_channel=TakeTwo -- How Dennis Villeneuve creates visual meaning, Enemy
   - [meta]:
     - date: 08/07/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=t6RZp2AhKyw&ab_channel=MedleyInterlispProject -- Lexical Functional Grammar Demonstration — Ron Kaplan (December 1982)
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=XfpMkf4rD6E&t=1407s&ab_channel=StanfordOnline -- Stanford CS25: V2 I Introduction to Transformers w/ Andrej Karpathy
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=8--5LwHRhjk&ab_channel=InigoQuilez -- Painting Characters with Math
   - [meta]:
     - date: 08/16/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=3_kdbJnCMwU&ab_channel=DavidBalcarras -- Bryan Magee - The Great Philosophers [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=H4_Tsjmqxak&ab_channel=PhilosophyOverdose -- Husserl, Heidegger & Existentialism - Hubert Dreyfus & Bryan Magee (1987) [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=sFux7pl6lf4&ab_channel=vlogbrothers -- Are Languages Alive?
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=FH5wiwOyPX4&ab_channel=GPUMODE -- GPUMODE 2024 Keynotes
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
   - https://drive.google.com/drive/folders/1Pz607n07u382_ybdd4gFdrNyEWra5kpj
 - https://www.youtube.com/watch?v=wSauUgRIQDg&t=120s&ab_channel=SamBurer -- Two Decades of Low-Rank Optimization
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
       Given a $M \in R^{m\times\;n}$
   - > rank measures the amount of information in $M$
   - most big data matrices are low-rank
@@ -2149,12 +2735,15 @@ cssclasses:
 - https://www.youtube.com/watch?v=sdFQS2Bctj0&ab_channel=LilaRose -- How men commit differently than woman?
   - [meta]:
     - date: 09/06/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=hNIbd4mUVeU&ab_channel=Sisyphus55 -- Watch this when you're depressed [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=x6TsR3y5Qfg -- Think Faster, Talk Smarter, by Matt Abrahams
   - [meta]:
     - date: 09/21/2025
+    - tags: [fruit]
   - Framework to talk more eloquently:
     - What if you could
     - So that
@@ -2163,19 +2752,23 @@ cssclasses:
 - https://www.youtube.com/watch?v=5qSN-R_E3w0 -- Lecture 77: Domain Specific Languages for GPU Kernels
   - [meta]:
     - date: 09/30/2025
+    - tags: [fruit]
   - $$
     \frac{\text{intelligence}}{\text{dollar}} = \frac{\text{intelligence}}{\text{FLOPs}} \times \frac{\text{FLOPs}}{\text{dollar}}
     $$
 - https://www.youtube.com/watch?v=_NLHFoVNlbg -- Stanford CS230 | Autumn 2025 | Lecture 1: Introduction to Deep Learning
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=yUmDRxV0krg&list=PL0NRmB0fnLJSpC1zCRoqAjStdQpANzTFK -- Geometry of Machine Learning
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
   - Yann LeCun | Self-Supervised Learning, JEPA, World Models, and the future of AI
 - https://www.youtube.com/watch?v=10Qh55EQ90s&list=PL0NRmB0fnLJSpC1zCRoqAjStdQpANzTFK&index=2 -- James Halverson | Sparsity and Symbols with Kolmogorov-Arnold Networks
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 
 ## tools
 
@@ -2186,120 +2779,154 @@ cssclasses:
 - https://github.com/nichwch/nomad-hypertext -- Semantic search local first app
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://cobalt.tools/ -- cobalt
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.truthsystems.ai -- Truth Systems
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 
 ## protocol
 
 - [Willow](https://willowprotocol.org/specs/index.html#specifications) -- protocol for synchronisable data store
   - [meta]:
     - date: 01/20/2025
+    - tags: [fruit]
 - [Yjs](https://yjs.dev/) -- CRDT for shared editing
   - [meta]:
     - date: 01/20/2025
+    - tags: [fruit]
 
 ## arts
 
 - https://www.arthistoryproject.com/ -- Obelisk
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=lsVMJIJ3Xrs&ab_channel=Amoeba -- Floating Points - What's In My Bag?
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.metmuseum.org/art/collection/search/441933 -- Moonlight, Strandgade 30, Vilhelm Hammershøi
   - [meta]:
     - date: 09/17/2025
+    - tags: [fruit]
 
 ## resources
 
 - https://www.gap-map.org/?sort=rank -- Gap Map
   - [meta]:
     - date: 04/27/2025
+    - tags: [fruit]
 - https://drmichaellevin.org/resources/otherlabs.html -- Other Labs of Interest
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=5OaTk5q_CTc -- _SouthParkCommons meetup for AI interfaces, [Geoffrey Litt](https://www.geoffreylitt.com/)_
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.mrporter.com/en-us/journal/fashion/derek-guy-style-resolutions-25156188 -- Style resolution
   - [meta]:
     - date: 01/17/2025
+    - tags: [fruit]
 - https://thegenerality.com/agi/ -- The effort for AGI at Microsoft [GitHub](https://github.com/microsoft/unilm)
   - [meta]:
     - date: 01/26/2025
+    - tags: [fruit]
 - https://katex.org/docs/supported.html -- supported DSL for KaTeX
   - [meta]:
     - date: 02/28/2025
+    - tags: [fruit]
 - https://www.joshwcomeau.com/blog/whimsical-animations/ -- SVG sprites
   - [meta]:
     - date: 03/09/2025
+    - tags: [fruit]
 - https://www.nserc-crsng.gc.ca/Students-Etudiants/Guides-Guides/TriRTA-TriBFR_eng.asp -- Canadian government grant research
   - [meta]:
     - date: 03/05/2025
+    - tags: [fruit]
 - https://www.cbo.gov/system/files/2020-01/55967-CBO-immigration.pdf -- Foreign-Born Population and Its Effects on US Economy
   - [meta]:
     - date: 03/05/2025
+    - tags: [fruit]
 - https://www.corner.inc/list/02c68af9-8286-474f-91de-0b4e702330e6?sid=49933781-9175-48ae-852b-acb5006e8bca -- toronto coworking spots
   - [meta]:
     - date: 05/23/2025
+    - tags: [fruit]
 - https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvYXV0b2VuY29kZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvbGF0ZW50LXNwYWNl&stackedNotes=dGhvdWdodHMvcmVwcmVzZW50YXRpb25z&stackedNotes=dGhvdWdodHMvTkZB&stackedNotes=dGhvdWdodHMvREZB&stackedNotes=dGhvdWdodHMvQ29tcGlsZXI&stackedNotes=dGhvdWdodHMvTUxJUg&stackedNotes=bGVjdHVyZXMvMi93aHk&stackedNotes=dGhvdWdodHMvbm9ybQ&stackedNotes=bGVjdHVyZXMvNDExL25vdGVz&stackedNotes=dGhvdWdodHMvbGluZ3Vpc3RpYy1yZWxhdGl2aXR5&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=dGhvdWdodHMvcmVkdWN0aW9uaXNt&stackedNotes=dGhvdWdodHMvSW5uZXItcHJvZHVjdC1zcGFjZQ&stackedNotes=dGhvdWdodHMvRnJldWQ&stackedNotes=dGhvdWdodHMvaGVybWVuZXV0aWNz&stackedNotes=dGhvdWdodHMvbXVvbg&stackedNotes=dGhvdWdodHMvRXVsZXIncy1pZGVudGl0eQ&stackedNotes=dGhvdWdodHMvcGxheQ -- mech-interp trails
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvSW50ZXJuZXQ&stackedNotes=dGhvdWdodHMvRGV0ZXJtaW5pc20&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9lbmdpbmVlci00YTAzL2xpdGVyYXR1cmUtcmV2aWV3&stackedNotes=cG9zdHMvY2hhdGdwdA&stackedNotes=dGhvdWdodHMvT0NJ&stackedNotes=dGhvdWdodHMvQ29udGVudC1hZGRyZXNzYWJsZS1zdG9yYWdl&stackedNotes=dGhvdWdodHMvYW50aHJvcGljLXNhZmV0eS1mZWxsb3c&stackedNotes=dGhvdWdodHMvTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvb3B0aW1pemF0aW9u&stackedNotes=dGhvdWdodHMvTExNcw&stackedNotes=dGhvdWdodHMvZXRoaWNz&stackedNotes=dGhvdWdodHMvYWVzdGhldGljLXZhbHVl&stackedNotes=dGhvdWdodHMvUGhpbG9zb3BoeS1hbmQtTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvZGlhbGVjdGljcw&stackedNotes=dGhvdWdodHMvcmVhc29u&stackedNotes=dGhvdWdodHMvQ2FtdXM&stackedNotes=cG9zdHMvMjAyNA&stackedNotes=cXVvdGVz&stackedNotes=dGhvdWdodHMvSGVsbWhvbHR6LWRlY29tcG9zaXRpb24&stackedNotes=dGhvdWdodHMvTW9udGUtQ2FybG8&stackedNotes=dGhvdWdodHMvQ2hvbGVza3ktZGVjb21wb3NpdGlvbg&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9zZndyLTRtbDMvQmlhcy1hbmQtaW50ZXJjZXB0&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=cG9zdHMvc3RydWN0dXJlZC1kZWNvZGluZw&stackedNotes=dGhvdWdodHMvVHJhbnNmb3JtZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvQ2F1Y2h5LW1vbWVudHVtLWVxdWF0aW9u&stackedNotes=dGhvdWdodHMvVGVuc29yLWZpZWxk&stackedNotes=dGhvdWdodHMvbWFuaWZvbGQ&stackedNotes=dGhvdWdodHMvUHJvZ3Jlc3NpdmUtZGlzY2xvc3VyZQ&stackedNotes=dGhvdWdodHMvR2lsZXMtRGVsZXV6ZQ&stackedNotes=dGhvdWdodHMvQXV0b3JlZ3Jlc3NpdmUtbW9kZWxz&stackedNotes=dGhvdWdodHMvTGxhbWEtMw&stackedNotes=dGhvdWdodHMvZGlzcGxhY2VtZW50&stackedNotes=dGhvdWdodHMvY29uc3RyYWluZWQtZGVjb2Rpbmc&stackedNotes=dGhvdWdodHMvUGFyZXRvLWRpc3RyaWJ1dGlvbg&stackedNotes=cG9zdHMvUXVlc3Rpb25zLWFib3V0LU1ldGFwaHlzaWNz&stackedNotes=dGhvdWdodHMvQWdlbmN5&stackedNotes=cG9zdHMvY29ycG9yYXRlLXBlcnNvbmhvb2Q&stackedNotes=dGhvdWdodHMvVmVyeS1TbGVuZGVyLURpZmZlcmVuY2Vz&stackedNotes=dGhvdWdodHMvQXJpc3RvdGxl&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ -- interesting trails
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.doc.ic.ac.uk/~eedwards/compsys/float/#:~:text=Add%20the%20exponents%20to%20find,1.021%20%C3%97%20106 -- Floating points arithmetics
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://www.unco.edu/campus-recreation/pdf/intramural-sports/spring20/running-pace-chart.pdf -- Running pace chart
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://github.com/triton-lang/triton/blob/a758c595ddb149381b7ee888982f1afbeb02823c/python/triton_kernels/triton_kernels/matmul_ogs_details/_matmul_ogs.py#L291 -- matmul_ogs for [[thoughts/quantization#mxfp4|mxfp4]]
   - [meta]:
     - date: 08/10/2025
+    - tags: [fruit]
 - https://notes.eatonphil.com/2025-08-09-what-even-is-distributed-systems.html -- What even is _distributed systems_
   - [meta]:
     - date: 08/10/2025
+    - tags: [fruit]
 - https://x.com/rsnous/status/1446211454378524692 -- "We do not lose texts because of catastrophic events that wipe out all copies of them. We lose texts because they stop being copied."
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://www.dandad.org/en/d-ad-masterclass-creative-courses/ -- D&AD Masterclasses
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://mp.weixin.qq.com/s/pDmAXHcN7Iqc8sUKgJgGtg -- Shanghai vLLM meetup 2025
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://dlsyscourse.org/lectures/ -- DLSys, CMU
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://github.com/CppCon/CppCon2024 -- CppConf 2024
   - [meta]:
     - date: 09/06/2025
+    - tags: [fruit]
 - https://www.britannica.com/topic/PARC-company -- Building PARC
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
   - i.e: personal computer, WYSIWYG
   - > The idea of “what you see is what you get” (WYSIWYG) would work on paper as well as the monitor. Unfortunately, at that time Xerox saw no point in innovating when their current technology worked so well.
 - https://www.compmotifs.com/ -- Science through Computation Initiative
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 
 ## interfaces
 
 - https://x.com/_baku89/status/1848878071585378521 -- An interface defines the metric of search space
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://x.com/SomeHats/status/1577717329680601089 -- when yr not using a drawing
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - (or u haven't added it to yr animation yet) it just hangs out at the bottom of the screen
 - https://x.com/hturan/status/1958590911920615635 -- exploring paths through latent space
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - by interpolating between known embeddings
 
 ## fonts
@@ -2307,81 +2934,106 @@ cssclasses:
 - https://pangrampangram.com/products/neue-montreal -- PP Neue Montreal
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://fontsource.org/ -- Fontsource
   - [meta]:
     - date: 08/02/2025
+    - tags: [fruit]
 - https://servermono.com/ -- Server Mono
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://departuremono.com/ -- Departure Mono [**]
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://lettermatic.com/fonts/parclo-serif -- Parclo Serif
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.daybreak.studio/writing/adaline-typography -- Adaline
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://weltkern.com/typefaces -- WELTKERN typefaces
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://fonderiebretagne.fr/ -- Bretagne Type foundry
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://weltkern.com/typefaces/lausanne -- Lausanne
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://displaay.net/typeface/saans -- Displaay Saans
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://displaay.net/typeface/teodor -- Displaay Teodor
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://www.atipofoundry.com/ -- Atipo Foundry
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://abetkaua.com/en/ -- Typeface Alphabet of the Ukrainian Identity
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 
 ## lecture
 
 - https://www.youtube.com/watch?v=m47A0AmqxQE&list=PL62C50202CE181183&index=5&ab_channel=flame0430 -- Iris Murdoch on Philosophy and Literature
   - [meta]:
     - date: 07/13/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=WxK11RsLqp4&t=2169s -- Linear Realtime Sync
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=Wo2m3jaJixU -- Linear Realtime Sync 2
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=fThhbt23SGM -- Design is a [[thoughts/Search|Search]] problem
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=PIvc6vvkMzM&ab_channel=EpsilonScience -- Gamification of Large Language Models, Michal Valko
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=VAzL8RHot1c&ab_channel=InterconnectsAI -- The art of training a good (reasoning) language models, by Nathan Lambert
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=XYSKd4dOT3Y&ab_channel=NeelNanda -- How to Think about Thinking Model
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=VPslgC9piIw -- Reverse engineer FA4, Charles Modal Labs, 10/01/2025.
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=5jSC8bjo-dI&ab_channel=InstituteforAdvancedStudy -- Emergent linguistic structure in deep contextual neural word representations - Chris Manning
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=HvEGJUwQEO8&ab_channel=InstituteforAdvancedStudy -- On the Connection between Neural Networks and Kernels: a Modern Perspective, Simon Du
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=yFXPU2lMNdk&ab_channel=InstituteforAdvancedStudy -- Learning Representations Using Causal Invariance, Leon Bottou
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://youtu.be/IVA2bK9qjzE?si=D5niDuHTAksgu_Nl -- David Deutsch: AGI, the origins of quantum computing, and the future of humanity [**]
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - You are valuable economically, because you are different.
 
 ## technical
@@ -2393,6 +3045,7 @@ cssclasses:
 - https://github.com/pytorch/pytorch/blob/539c46b6e82e16d22b745d8b320ae0bf9b1df90b/torch/distributed/_functional_collectives.py#L333 -- AllReduce coalesce implementation in PyTorch
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://henryhmko.github.io/posts/tpu/tpu.html -- [[thoughts/TPU]] Deep Dive [**]
   - [meta]:
     - date: 10/06/2025
@@ -2405,98 +3058,127 @@ cssclasses:
 - https://www.jeremykun.com/2023/02/13/googles-fully-homomorphic-encryption-compiler-a-primer/ -- Google's Fully Homomorphic Encryption Compiler [**]
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://blog.regehr.org/archives/2485 -- Why Do Peephole Optimizations Work?
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - See also [[thoughts/Compiler]]
 - https://github.com/bytedance/flux -- COMET @ ByteDance
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://en.wikipedia.org/wiki/L-system -- Lindenmayer system [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - http://lastweek.io/notes/MLIR/ -- MLIR at a 10000 feet
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://mlir.llvm.org/docs/ -- MLIR LLVM docs [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://docs.tenstorrent.com/tt-mlir/ -- [[thoughts/Tenstorrent]] MLIR
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://github.com/NixOS/nixpkgs/blob/master/lib/meta.nix -- meta.nix and helpers function in Nix
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig -- Zig's General Purpose Allocator
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - The only GPA you need to care about.
 - https://github.com/triton-lang/triton/blob/main/python/tutorials/gluon/01-intro.py -- Gluon
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://huggingface.co/blog/from-chunks-to-blocks -- From Chunks to Blocks: Accelerating Uploads and Downloads on the Hub
   - [meta]:
     - date: 07/04/2025
+    - tags: [fruit]
 - https://datatracker.ietf.org/doc/html/rfc9309 -- Robots Exclusion Protocol
   - [meta]:
     - date: 08/04/2025
+    - tags: [fruit]
 - https://github.com/Keen-Technologies/physical_atari -- Physical Atari
   - [meta]:
     - date: 09/17/2025
+    - tags: [fruit]
 - https://modelcontextprotocol.io/llms-full.txt -- MCP protocol
   - [meta]:
     - date: 09/17/2025
+    - tags: [fruit]
 - https://michaelnotebook.com/mmsw -- How to make memory systems widespread?
   - [meta]:
     - date: 09/22/2025
+    - tags: [fruit]
 - https://github.com/francoismichel/ssh3 -- ssh3
   - [meta]:
     - date: 09/29/2025
+    - tags: [fruit]
 - https://thundergolfer.com/uni/docs/performance/napkin-math/ -- napkin math
   - [meta]:
     - date: 09/30/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=sX2nF1fW7kI -- When Nanoseconds Matter: Ultrafast Trading System in C++
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - https://github.com/CppCon/CppCon2024/blob/main/Presentations/When_Nanoseconds_Matter.pdf
 - https://www.vmware.com/docs/the-basics-of-remote-direct-memory-access-rdma-in-vsphere -- RDMA in VSphere
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - Good introduction to RDMA
 - [GNU C Manual Reference](https://www.c-asm.com/gnu-c-manual.html)
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.rubick.com/steel-threads/ -- Steel threads are a technique that will make you a [[thoughts/steel threads|better engineer]]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - [[thoughts/GPU programming]]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://github.com/replit/ruspty/pull/93 -- dont drop user fd until node reads a synthetic EOF
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://janet.guide/ -- Janet for Mortals
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - https://janet-lang.org/ -- Janet Programming Language
 - https://standardkernel.com/ -- Standard Kernel
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://github.com/NVIDIA/tilus -- NVIDIA/tilus
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
   - Tile-level GPU programming
   - lower level comparing to CuTe
   - uses [hidet](https://github.com/hidet-org/hidet) IR
 - https://x.com/_jzhao/status/1973830833254621192 -- film grains technical behind commuting.to
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://en.wikipedia.org/wiki/Perlin_noise -- Perlin noise
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://bernsteinbear.com/blog/inline-caching/ -- Inline caching
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - see also [[thoughts/pdfs/Efficient Implementation of the Smalltalk-80 System.pdf]]
 
 ## vc
@@ -2504,28 +3186,36 @@ cssclasses:
 - https://seldonlab.com/ -- Seldon Labs
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - [[thoughts/AGI]] safe deployment
 - https://www.generalist.com/briefing/hummingbird-ventures -- The Best Venture Firm You've Never Heard Of
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.sequoiacap.com/ -- Sequoia Capital
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.luxcapital.com/ -- Lux Capital
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.accel.com/ -- Accel
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://lsvp.com/ -- Lightspeed
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://menlovc.com/ -- Menlo
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://basecase.vc/ -- basecase vc.
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 
 ## [[tags/math]]
 
@@ -2576,44 +3266,56 @@ cssclasses:
 - https://jiha-kim.github.io/posts/reducing-probability-to-arithmetic/ -- Reducing Probability to Arithmetic
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://quantum.country/qcvc -- Quantum computing for the very curious [**]
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - By Andy Matuschak and Michael Nielsen
 - https://abuseofnotation.github.io/category-theory-illustrated/11_natural_transformations/ -- Category Theory, Illustrated, Natural transformations
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - see also [[thoughts/category theory]]
 - https://www.youtube.com/watch?v=e1xo6qWTmoc&ab_channel=OxfordMathematics -- Thesis Competition at Oxford Mathematics
   - [meta]:
     - date: 07/29/2025
+    - tags: [fruit]
   - https://youtu.be/e1xo6qWTmoc?si=U3esZ-Zq_DJy5Is1&t=134 -- Surgery presentation on [[thoughts/bordism bicategories]]
 - https://www.benparry.ca/euler-integration-lotka-volterra -- Euler Integration & Lotka-Volterra
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.benparry.ca/lorenz-system -- The Lorenz System
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=O8WZVR3eCNQ&ab_channel=InstituteforAdvancedStudy -- The adjoint Brascamp-Lieb inequality - Terence Tao
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=PgPNfPhG4Wc&ab_channel=StanfordOnline -- AA228/CS248 Decision Making Under Uncertainty | Policy Gradient Estimation & Optimization
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=B83yIIaTq_s&ab_channel=SimonsFoundation -- Lisa Piccirillo: Exotic Phenomena in Dimension 4
   - [meta]:
     - date: 07/29/2025
+    - tags: [fruit]
   - also https://www.youtube.com/watch?v=BXwALAkPubc&ab_channel=HarvardMathematicsDepartment
   - Conway knot problem
 - https://www.youtube.com/watch?v=i2acsy7Zzfo&ab_channel=HarvardMathematicsDepartment -- Random Matrix Statistics and Airy Line Ensembles, Jiaoyang Huang
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=QauoO0j9Y9Y&ab_channel=InstituteforPure%26AppliedMathematics%28IPAM%29 -- Terence Tao: The Erdős Discrepancy Problem
   - [meta]:
     - date: 08/28/2025
+    - tags: [fruit]
 - https://writings.stephenwolfram.com/2025/09/the-ruliology-of-lambdas/ -- The Ruliology of Lambdas [**]
   - [meta]:
     - date: 10/02/2025
+    - tags: [fruit]
 
 ## papers
 
@@ -2624,34 +3326,44 @@ cssclasses:
 - https://www.cambridge.org/core/journals/behavioral-and-brain-sciences/article/abs/minds-brains-and-programs/DC644B47A4299C637C89772FACC2706A -- Mind, brains, programs
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/1912.02279
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2501.15225
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2401.08383
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2305.15054
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2509.21519v3
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/1607.06450
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2507.21509
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2412.14093
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - https://www.anthropic.com/research/alignment-faking
 - https://arxiv.org/abs/2506.18032
   - [meta]:
     - date: 10/05/2025
+    - tags: [fruit]
   - Rater Sycophancy
   - Instrumental Goal Guarding
   - Low coherence
@@ -2659,68 +3371,89 @@ cssclasses:
   - F.4: Another hypothesis that could indicate instrumental goal guarding is model behavior that tries to minimize future harm that other AIs might cause. These models would comply more if they believe their outputs will only be used to train a different model to be more harmful, with a training method such as Direct Preference Optimization (DPO). https://arxiv.org/abs/2401.08671
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2506.06941
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2505.24832
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2405.07987
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2501.16007
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2504.02922
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - [LessWrong](https://www.lesswrong.com/posts/xmpauEXEerzYcJKNm/what-we-learned-trying-to-diff-base-and-chat-models-and-why)
 - https://arxiv.org/abs/2505.05315
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - https://github.com/SalesforceAIResearch/Elastic-Reasoning
 - https://arxiv.org/abs/2412.14093
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2506.18032
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2403.09629
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/1910.02054
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2506.19143
   - [meta]:
     - date: 08/05/2025
+    - tags: [fruit]
   - which thought trace matters?
 - https://arxiv.org/abs/2503.18292
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2310.05209
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2310.10537
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2104.09864
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
   - [[thoughts/RoPE]]
   - more popular methods: https://arxiv.org/abs/2309.00071
 - https://arxiv.org/abs/2508.06471
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/1112.0510
   - [meta]:
     - date: 08/12/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2504.02263
   - [meta]:
     - date: 10/03/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2412.01784
   - [meta]:
     - date: 10/04/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2510.00184
   - [meta]:
     - date: 10/06/2025
+    - tags: [fruit]

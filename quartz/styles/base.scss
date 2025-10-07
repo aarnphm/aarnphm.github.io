@@ -113,6 +113,7 @@ a {
   &:hover {
     background: var(--dark);
     color: var(--light);
+    opacity: 1;
   }
 
   &.internal {
@@ -275,10 +276,8 @@ thead {
     @include dagHighlights;
   }
 
-  article > & > a[data-role="anchor"] {
+  > a[data-role="anchor"] {
     color: var(--dark);
-    margin: 0 !important;
-    background-color: transparent;
   }
 }
 
@@ -297,6 +296,7 @@ h6 {
 
   &[id]:hover > a {
     opacity: 1;
+    color: var(--foam);
   }
 
   &:not([id]) > a[role="anchor"] {

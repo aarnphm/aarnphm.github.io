@@ -3,9 +3,9 @@ id: Agency
 tags:
   - seed
   - philosophy
-date: "2024-02-07"
 description: considered to be a study of action theory
-modified: 2025-01-29 04:10:50 GMT-05:00
+date: "2024-02-07"
+modified: 2025-10-07 18:24:46 GMT-04:00
 title: Agency
 ---
 
@@ -17,7 +17,7 @@ title: Agency
 
 ## Self-determination theory
 
-[link](https://selfdeterminationtheory.org/theory/)
+see also: <https://selfdeterminationtheory.org/theory/>
 
 ## having a shit blog has made me feel abundant
 
