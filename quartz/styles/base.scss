@@ -710,12 +710,7 @@ ol.overflow {
 }
 
 .full-col {
-  grid-column: 3 / -3;
-}
-@media all and ($mobile) {
-  .full-col {
-    grid-column: 3 / -3;
-  }
+  grid-column: 4/-4;
 }
 
 .left-col {
