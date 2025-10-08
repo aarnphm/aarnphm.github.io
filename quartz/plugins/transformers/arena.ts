@@ -8,7 +8,13 @@ import { visit, CONTINUE } from "unist-util-visit"
 import { externalLinkRegex } from "./ofm"
 import { createHash } from "crypto"
 import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
-import { splitAnchor, transformLink, stripSlashes, resolveRelative, FullSlug } from "../../util/path"
+import {
+  splitAnchor,
+  transformLink,
+  stripSlashes,
+  resolveRelative,
+  FullSlug,
+} from "../../util/path"
 import { writeFileSync } from "node:fs"
 import { join } from "node:path"
 import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
@@ -504,7 +510,9 @@ export const Arena: QuartzTransformerPlugin = () => {
 
                     const parsed = parseWikilink(match[0])
                     const resolved =
-                      parsed && fileData.slug ? resolveWikilinkTarget(parsed, fileData.slug as FullSlug) : null
+                      parsed && fileData.slug
+                        ? resolveWikilinkTarget(parsed, fileData.slug as FullSlug)
+                        : null
 
                     if (parsed && resolved) {
                       const hrefBase = resolveRelative(fileData.slug!, resolved.slug)
@@ -593,6 +601,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                 }
 
                 // Also transform text nodes stored directly on this element if it's a text node
+                // @ts-ignore
                 if (el.type === "text") {
                   return
                 }

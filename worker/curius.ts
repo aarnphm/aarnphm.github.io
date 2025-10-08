@@ -52,10 +52,7 @@ async function queryTrails(page: number = 0, alias?: string): Promise<ApiRespons
   const hasAlias = typeof alias === "string" && alias.length > 0
   try {
     if (hasAlias) {
-      const r = await fetch(
-        `https://curius.app/api/links?page=${page}&trailHash=${alias}`,
-        HEADERS,
-      )
+      const r = await fetch(`https://curius.app/api/links?page=${page}&trailHash=${alias}`, HEADERS)
       if (!r.ok) throw new Error("Network error")
       const d: any = await r.json()
       return {

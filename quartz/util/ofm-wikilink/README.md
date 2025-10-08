@@ -77,7 +77,11 @@ const html = await processor.process("[[page|link]] and ![[image.png|caption]]")
 yields:
 
 ```html
-<a href="page">link</a> and <figure><img src="image.png"><figcaption>caption</figcaption></figure>
+<a href="page">link</a> and
+<figure>
+  <img src="image.png" />
+  <figcaption>caption</figcaption>
+</figure>
 ```
 
 ## api
@@ -153,15 +157,11 @@ when `obsidian: true` (default), two key behaviors are enabled:
 
 ```typescript
 // obsidian: true (default)
-unified()
-  .use(remarkWikilink)
-  .use(remarkRehype)
+unified().use(remarkWikilink).use(remarkRehype)
 // [[Page]] → <a href="page">page</a>
 
 // obsidian: false - no annotations, raw wikilink nodes only
-unified()
-  .use(remarkWikilink, { obsidian: false })
-  .use(remarkRehype)
+unified().use(remarkWikilink, { obsidian: false }).use(remarkRehype)
 // [[Page]] → raw wikilink node (user must handle conversion)
 ```
 
@@ -198,7 +198,7 @@ strips file extensions before slugifying paths (only applies when obsidian mode 
 const processor = unified()
   .use(remarkParse)
   .use(remarkWikilink, {
-    stripExtensions: ['.md', '.mdx', '.base'] // default: ['.md', '.base']
+    stripExtensions: [".md", ".mdx", ".base"], // default: ['.md', '.base']
   })
 
 // input: [[notes.md]]

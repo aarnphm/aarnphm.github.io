@@ -5,7 +5,15 @@
 
 import type { Extension, CompileContext, Token } from "mdast-util-from-markdown"
 import type { Element as HastElement, Text as HastText } from "hast"
-import { FilePath, FullSlug, getFileExtension, slugAnchor, stripSlashes, sluggify } from "../path"
+import {
+  FilePath,
+  FullSlug,
+  getFileExtension,
+  slugAnchor,
+  stripSlashes,
+  sluggify,
+  endsWith,
+} from "../path"
 import "./types"
 import { Literal } from "unist"
 
@@ -90,14 +98,19 @@ function isAudioExtension(ext: string): boolean {
  * strips specified extensions before slugifying.
  * lowercases output for consistency with obsidian behavior.
  */
-function sluggifyFilePath(path: string, stripExts: string[]): string {
+function slugifyFilePath(path: string, stripExts: string[]): string {
   let fp = stripSlashes(path) as FilePath
   let ext = getFileExtension(fp)
   const withoutFileExt = fp.replace(new RegExp(ext + "$"), "")
   if ([".md", ".base", ...stripExts, undefined].includes(ext)) {
     ext = ""
   }
-  const slug = sluggify(withoutFileExt).toLowerCase()
+  let slug = sluggify(withoutFileExt)
+
+  // treat _index as index
+  if (endsWith(slug, "_index")) {
+    slug = slug.replace(/_index$/, "index")
+  }
   return (slug + ext) as FullSlug
 }
 
@@ -418,10 +431,19 @@ function exitWikilink(
       // only annotate nodes when obsidian mode is enabled
       if (obsidian) {
         const targetPath = wikilink.target.trim()
-        const url = sluggifyFilePath(targetPath, stripExtensions)
-        const ext = getFileExtension(wikilink.target) ?? ""
+        const ext = getFileExtension(targetPath) ?? ""
         const displayAnchor = wikilink.anchor?.trim() ?? ""
 
+        let url: string
+        // handle absolute paths like /tags/ml
+        if (targetPath.startsWith("/")) {
+          url = targetPath
+        } else if (!targetPath) {
+          // handle same-file anchors like #heading
+          url = ""
+        } else {
+          url = slugifyFilePath(targetPath, stripExtensions)
+        }
         if (wikilink.embed) {
           if (ext && isImageExtension(ext)) {
             annotateImageEmbed(node, wikilink, url)
@@ -455,9 +477,6 @@ export function isWikilink(node: any): node is Wikilink {
 
 declare module "mdast" {
   interface StaticPhrasingContentMap {
-    wikilink: Wikilink
-  }
-  interface PhrasingContentMap {
     wikilink: Wikilink
   }
 }

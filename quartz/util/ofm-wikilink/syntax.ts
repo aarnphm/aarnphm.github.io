@@ -37,11 +37,11 @@ export function wikilink(): Extension {
     text: {
       [codes.exclamationMark]: {
         name: "wikilink",
-        tokenize: tokenizeWikilink,
+        tokenize,
       },
       [codes.leftSquareBracket]: {
         name: "wikilink",
-        tokenize: tokenizeWikilink,
+        tokenize,
       },
     },
   }
@@ -51,7 +51,7 @@ export function wikilink(): Extension {
  * main wikilink tokenizer.
  * handles state transitions through the wikilink syntax.
  */
-const tokenizeWikilink: Tokenizer = function (effects, ok, nok) {
+const tokenize: Tokenizer = function (this, effects, ok, nok) {
   let previousWasBackslash = false
 
   return start

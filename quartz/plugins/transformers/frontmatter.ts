@@ -180,7 +180,10 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
 
         const currentSlug = file.data.slug as FullSlug | undefined
         if (currentSlug) {
-          const frontmatterLinks = collectFrontmatterLinks(data as Record<string, unknown>, currentSlug)
+          const frontmatterLinks = collectFrontmatterLinks(
+            data as Record<string, unknown>,
+            currentSlug,
+          )
           if (frontmatterLinks) {
             file.data.frontmatterLinks = frontmatterLinks
           }

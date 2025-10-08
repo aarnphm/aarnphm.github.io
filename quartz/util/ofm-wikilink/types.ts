@@ -73,20 +73,3 @@ export type WikilinkTokenType =
   | WikilinkAliasMarker
   | WikilinkAlias
   | WikilinkChunk
-
-declare module "micromark-util-types" {
-  interface TokenTypeMap {
-    wikilink: "wikilink"
-    wikilinkEmbedMarker: "wikilinkEmbedMarker"
-    wikilinkOpenMarker: "wikilinkOpenMarker"
-    wikilinkCloseMarker: "wikilinkCloseMarker"
-    wikilinkTarget: "wikilinkTarget"
-    wikilinkTargetChunk: "wikilinkTargetChunk"
-    wikilinkAnchorMarker: "wikilinkAnchorMarker"
-    wikilinkAnchor: "wikilinkAnchor"
-    wikilinkAnchorChunk: "wikilinkAnchorChunk"
-    wikilinkAliasMarker: "wikilinkAliasMarker"
-    wikilinkAlias: "wikilinkAlias"
-    wikilinkAliasChunk: "wikilinkAliasChunk"
-  }
-}

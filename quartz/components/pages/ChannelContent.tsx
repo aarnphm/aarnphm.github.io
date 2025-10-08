@@ -253,11 +253,11 @@ export default (() => {
             tabIndex={0}
             aria-label="View block details"
           >
-          <div class="arena-block-content">
-            {block.titleHtmlNode
-              ? jsxFromNode(block.titleHtmlNode)
-              : renderInlineText(block.title || block.content || "")}
-          </div>
+            <div class="arena-block-content">
+              {block.titleHtmlNode
+                ? jsxFromNode(block.titleHtmlNode)
+                : renderInlineText(block.title || block.content || "")}
+            </div>
           </div>
           <div
             class="arena-block-modal-data"

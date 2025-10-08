@@ -378,11 +378,11 @@ export default (() => {
             </div>
             <div class="arena-modal-sidebar">
               <div class="arena-modal-info">
-          <h3 class="arena-modal-title">
-            {block.titleHtmlNode
-              ? jsxFromNode(block.titleHtmlNode)
-              : renderInlineText(block.title ?? "")}
-          </h3>
+                <h3 class="arena-modal-title">
+                  {block.titleHtmlNode
+                    ? jsxFromNode(block.titleHtmlNode)
+                    : renderInlineText(block.title ?? "")}
+                </h3>
                 {metadataEntries.length > 0 && (
                   <div class="arena-modal-meta">
                     {metadataEntries.map(({ label, value }, index) => (

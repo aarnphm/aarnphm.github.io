@@ -10,6 +10,7 @@ import { clone } from "../../util/clone"
 import { fromHtml } from "hast-util-from-html"
 import { toMdast } from "hast-util-to-mdast"
 import { toString } from "mdast-util-to-string"
+import { wikilinkToMarkdown } from "../../util/ofm-wikilink"
 
 const stripKnownExtensions = (value: string) =>
   value.replace(/\.(md|mdx|markdown)$/i, "").replace(/\.html?$/i, "")
@@ -214,7 +215,7 @@ export const LLM: QuartzTransformerPlugin = () => {
               bullet: "-",
               emphasis: "_",
               rule: "-",
-              extensions: [mathToMarkdown(), gfmToMarkdown()],
+              extensions: [mathToMarkdown(), gfmToMarkdown(), wikilinkToMarkdown()],
             })
 
             fileData.llmsText = llmsText

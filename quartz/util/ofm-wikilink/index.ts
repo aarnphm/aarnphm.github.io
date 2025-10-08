@@ -21,25 +21,14 @@
  *   .data('toMarkdownExtensions', [wikilinkToMarkdown()])
  * ```
  */
+import type { Processor } from "unified"
+import type { Root } from "mdast"
 import { wikilink } from "./syntax"
 import { wikilinkToMarkdown } from "./toMarkdown"
 import { wikilinkFromMarkdown, isWikilink } from "./fromMarkdown"
 
 export { wikilink, wikilinkToMarkdown, wikilinkFromMarkdown, isWikilink }
 export type { Wikilink, FromMarkdownOptions } from "./fromMarkdown"
-export type {
-  WikilinkToken,
-  WikilinkEmbedMarker,
-  WikilinkOpenMarker,
-  WikilinkCloseMarker,
-  WikilinkTarget,
-  WikilinkAnchorMarker,
-  WikilinkAnchor,
-  WikilinkAliasMarker,
-  WikilinkAlias,
-  WikilinkChunk,
-  WikilinkTokenType,
-} from "./types"
 
 export interface RemarkWikilinkOptions {
   /**
@@ -59,16 +48,31 @@ export interface RemarkWikilinkOptions {
   stripExtensions?: string[]
 }
 
-export function remarkWikilink(options: RemarkWikilinkOptions = {}) {
-  // @ts-expect-error: TS is wrong about `this`.
-  // eslint-disable-next-line unicorn/no-this-assignment
-  const self = /** @type {Processor<Root>} */ this
-  const data = self.data()
-  const micromarkExtensions = data.micromarkExtensions || (data.micromarkExtensions = [])
-  const fromMarkdownExtensions = data.fromMarkdownExtensions || (data.fromMarkdownExtensions = [])
-  const toMarkdownExtensions = data.toMarkdownExtensions || (data.toMarkdownExtensions = [])
+declare module "micromark-util-types" {
+  interface TokenTypeMap {
+    wikilink: "wikilink"
+    wikilinkEmbedMarker: "wikilinkEmbedMarker"
+    wikilinkOpenMarker: "wikilinkOpenMarker"
+    wikilinkCloseMarker: "wikilinkCloseMarker"
+    wikilinkTarget: "wikilinkTarget"
+    wikilinkTargetChunk: "wikilinkTargetChunk"
+    wikilinkAnchorMarker: "wikilinkAnchorMarker"
+    wikilinkAnchor: "wikilinkAnchor"
+    wikilinkAnchorChunk: "wikilinkAnchorChunk"
+    wikilinkAliasMarker: "wikilinkAliasMarker"
+    wikilinkAlias: "wikilinkAlias"
+    wikilinkAliasChunk: "wikilinkAliasChunk"
+  }
+}
 
-  micromarkExtensions.push(wikilink())
-  fromMarkdownExtensions.push(wikilinkFromMarkdown(options))
-  toMarkdownExtensions.push(wikilinkToMarkdown())
+export function remarkWikilink(this: Processor<Root>, options: RemarkWikilinkOptions = {}): void {
+  const data = this.data()
+
+  data.micromarkExtensions ??= []
+  data.fromMarkdownExtensions ??= []
+  data.toMarkdownExtensions ??= []
+
+  data.micromarkExtensions.push(wikilink())
+  data.fromMarkdownExtensions.push(wikilinkFromMarkdown(options))
+  data.toMarkdownExtensions.push(wikilinkToMarkdown())
 }
