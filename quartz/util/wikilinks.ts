@@ -1,7 +1,6 @@
 import path from "path"
 import isAbsoluteUrl from "is-absolute-url"
 
-import { Image, Link, Html } from "mdast"
 import {
   FilePath,
   FullSlug,
@@ -11,7 +10,7 @@ import {
   splitAnchor,
   stripSlashes,
 } from "./path"
-import { WikilinkParsed, Wikilink } from "./micromark-extension-wikilink/fromMarkdown"
+import { WikilinkParsed, Wikilink } from "./ofm-wikilink/fromMarkdown"
 
 // re-export WikilinkParsed for external consumers
 export type { WikilinkParsed, Wikilink }
@@ -150,21 +149,6 @@ export function stripWikilinkFormatting(text: string): string {
 }
 
 /**
- * Normalize text for fuzzy matching.
- * Handles LaTeX, whitespace, case sensitivity.
- */
-export function normalizeForMatching(text: string): string {
-  return text
-    .trim()
-    .toLowerCase()
-    .replace(/\\/g, "") // remove backslashes
-    .replace(/\$/g, "") // remove $ symbols
-    .replace(/[^\w\s-]/g, "") // keep only word chars, spaces, and -
-    .replace(/\s+/g, " ") // collapse whitespace (after other replacements)
-    .trim() // trim again after collapsing
-}
-
-/**
  * Resolve wikilink anchor text to a heading slug.
  *
  * Matches Obsidian's behavior:
@@ -193,211 +177,6 @@ export function resolveAnchor(anchorText: string): string {
   }
   // slugify using github-slugger (same as heading slugs)
   return slugAnchor(text)
-}
-
-/**
- * mdast node representing an Obsidian wikilink.
- * extends standard mdast Link but preserves wikilink-specific metadata.
- *
- * note: this is the legacy representation used by wikilinkToMdast().
- * the micromark extension in ./micromark-extension-wikilink/ creates
- * a different node type during parsing. this interface is used when
- * converting wikilink nodes to Link nodes in the OFM transformer.
- */
-export interface WikilinkNode extends Link {
-  data: Link["data"] & {
-    wikilink: WikilinkParsed
-  }
-}
-
-/**
- * mdast node representing an embedded wikilink (transclusion).
- * can be an image, video, audio, pdf, or block transclude.
- */
-export interface EmbedNode {
-  type: "html" | "image"
-  value?: string
-  url?: string
-  data?: {
-    hProperties?: Record<string, any>
-    transclude?: boolean
-  }
-}
-
-/**
- * result of converting a WikilinkParsed to mdast nodes.
- * can be a link, image, video, audio, pdf, or transclude block.
- */
-export type WikilinkResult = WikilinkNode | Image | Html | null
-
-/**
- * configuration for wikilink conversion.
- */
-export interface WikilinkToMdastOptions {
-  /**
-   * all slugs in the vault, used for broken link detection.
-   */
-  allSlugs?: string[]
-  /**
-   * whether to mark broken wikilinks with a special class.
-   */
-  enableBrokenWikilinks?: boolean
-  /**
-   * base path for relative URLs (pathToRoot equivalent).
-   */
-  basePath?: string
-}
-
-/**
- * extension dimensions from image embed alias.
- * matches patterns like "100x200" or "100" in `![[image.png|100x200]]`.
- */
-const wikilinkImageEmbedRegex = new RegExp(
-  /^(?<alt>(?!^\d*x?\d*$).*?)?(\|?\s*?(?<width>\d+)(x(?<height>\d+))?)?$/,
-)
-
-/**
- * determine if a file extension is an image format.
- */
-function isImageExtension(ext: string): boolean {
-  return [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".svg", ".webp"].includes(ext)
-}
-
-/**
- * determine if a file extension is a video format.
- */
-function isVideoExtension(ext: string): boolean {
-  return [".mp4", ".webm", ".ogv", ".mov", ".mkv"].includes(ext)
-}
-
-/**
- * determine if a file extension is an audio format.
- */
-function isAudioExtension(ext: string): boolean {
-  return [".mp3", ".wav", ".m4a", ".ogg", ".3gp", ".flac"].includes(ext)
-}
-
-/**
- * convert a WikilinkParsed to an mdast node.
- * handles all Obsidian link types: basic links, embeds, images, videos, audio, pdfs, transclusions.
- *
- * @param wikilink - parsed wikilink from quartz/util/wikilinks.ts
- * @param options - configuration options
- * @returns mdast node or null if invalid
- */
-export function wikilinkToMdast(
-  wikilink: WikilinkParsed,
-  options: WikilinkToMdastOptions = {},
-): WikilinkResult {
-  const { target, anchor, alias, embed } = wikilink
-  const { allSlugs, enableBrokenWikilinks } = options
-
-  const fp = target.trim()
-  const displayAnchor = anchor?.trim() ?? ""
-
-  // handle embeds (transclusions)
-  if (embed) {
-    const ext = path.extname(fp).toLowerCase()
-    const url = slugifyFilePath(fp as FilePath)
-
-    // image embeds
-    if (isImageExtension(ext)) {
-      const match = wikilinkImageEmbedRegex.exec(alias ?? "")
-      const alt = match?.groups?.alt ?? ""
-      const width = match?.groups?.width ?? "auto"
-      const height = match?.groups?.height ?? "auto"
-
-      return {
-        type: "image",
-        url,
-        data: {
-          hProperties: {
-            width,
-            height,
-            alt,
-          },
-        },
-      } as Image
-    }
-
-    // video embeds
-    if (isVideoExtension(ext)) {
-      return {
-        type: "html",
-        value: `<video src="${url}" controls loop></video>`,
-      } as Html
-    }
-
-    // audio embeds
-    if (isAudioExtension(ext)) {
-      return {
-        type: "html",
-        value: `<audio src="${url}" controls></audio>`,
-      } as Html
-    }
-
-    // pdf embeds
-    if (ext === ".pdf") {
-      return {
-        type: "html",
-        value: `<iframe src="${url}" class="pdf"></iframe>`,
-      } as Html
-    }
-
-    // default: block transclude
-    // note: we use hastscript in ofm.ts, but here we generate raw HTML
-    // to avoid circular dependencies. the actual hastscript conversion
-    // happens in ofm.ts when it calls this function.
-    const block = displayAnchor
-    return {
-      type: "html",
-      data: { hProperties: { transclude: true } },
-      value: `<blockquote class="transclude" data-url="${url}" data-block="${block}" data-embed-alias="${alias ?? ""}"><a class="transclude-inner" href="${url}${displayAnchor}">Transclude of ${url} ${block}</a></blockquote>`,
-    } as Html
-  }
-
-  // regular internal link
-  const url = fp + displayAnchor
-  const displayText = alias ?? fp
-
-  // broken link detection
-  if (enableBrokenWikilinks && allSlugs) {
-    const slug = slugifyFilePath(fp as FilePath)
-    const exists = allSlugs.includes(slug)
-    if (!exists) {
-      return {
-        type: "link",
-        url,
-        data: {
-          hProperties: {
-            className: ["broken"],
-          },
-          wikilink,
-        },
-        children: [
-          {
-            type: "text",
-            value: displayText,
-          },
-        ],
-      } as WikilinkNode
-    }
-  }
-
-  // standard internal link
-  return {
-    type: "link",
-    url,
-    data: {
-      wikilink,
-    },
-    children: [
-      {
-        type: "text",
-        value: displayText,
-      },
-    ],
-  } as WikilinkNode
 }
 
 /**

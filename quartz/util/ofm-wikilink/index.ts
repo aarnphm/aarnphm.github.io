@@ -1,5 +1,5 @@
 /**
- * micromark extension for Obsidian wikilinks.
+ * ofm-wikilink - micromark extension for Obsidian-flavored wikilinks.
  *
  * provides:
  * - micromark syntax extension (tokenizer)
@@ -11,7 +11,7 @@
  * import { unified } from 'unified'
  * import remarkParse from 'remark-parse'
  * import remarkStringify from 'remark-stringify'
- * import { wikilink, wikilinkFromMarkdown, wikilinkToMarkdown } from './micromark-extension-wikilink'
+ * import { wikilink, wikilinkFromMarkdown, wikilinkToMarkdown } from 'ofm-wikilink'
  *
  * const processor = unified()
  *   .use(remarkParse)
@@ -23,9 +23,9 @@
  */
 import { wikilink } from "./syntax"
 import { wikilinkToMarkdown } from "./toMarkdown"
-import { wikilinkFromMarkdown, isWikilinkNode } from "./fromMarkdown"
+import { wikilinkFromMarkdown, isWikilink } from "./fromMarkdown"
 
-export { wikilink, wikilinkToMarkdown, wikilinkFromMarkdown, isWikilinkNode }
+export { wikilink, wikilinkToMarkdown, wikilinkFromMarkdown, isWikilink }
 export type { Wikilink, FromMarkdownOptions } from "./fromMarkdown"
 export type {
   WikilinkToken,
@@ -43,12 +43,20 @@ export type {
 
 export interface RemarkWikilinkOptions {
   /**
-   * enable Obsidian-style anchor handling.
-   * when true, anchors with multiple # segments (e.g., "Parent#Child#Grandchild")
-   * will use only the last segment ("Grandchild").
-   * default: false
+   * enable Obsidian-style nested anchor handling and automatic hast conversion.
+   * default: true
+   *
+   * when true: uses internal slugification and annotates nodes for automatic HTML conversion
+   * when false: returns raw wikilink nodes without hName annotations
    */
   obsidian?: boolean
+
+  /**
+   * file extensions to strip before slugifying.
+   * default: ['.md', '.base']
+   * only applies when obsidian: true
+   */
+  stripExtensions?: string[]
 }
 
 export function remarkWikilink(options: RemarkWikilinkOptions = {}) {

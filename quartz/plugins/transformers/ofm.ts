@@ -12,14 +12,13 @@ import { Element, Literal, Root as HtmlRoot } from "hast"
 import { ReplaceFunction, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import rehypeRaw from "rehype-raw"
 import { SKIP, visit } from "unist-util-visit"
-import path from "path"
 import { CSSResource, JSResource } from "../../util/resources"
 // @ts-ignore
 import calloutScript from "../../components/scripts/callout.inline.ts"
 // @ts-ignore
 import mermaidScript from "../../components/scripts/mermaid.inline"
 import mermaidStyle from "../../components/styles/mermaid.inline.scss"
-import { FilePath, pathToRoot, slugTag, slugifyFilePath } from "../../util/path"
+import { pathToRoot, slugTag } from "../../util/path"
 import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
 import { toString } from "mdast-util-to-string"
@@ -30,8 +29,8 @@ import { h, s } from "hastscript"
 import { whitespace } from "hast-util-whitespace"
 import { remove } from "unist-util-remove"
 import { svgOptions } from "../../components/svg"
-import { remarkWikilink, Wikilink } from "../../util/micromark-extension-wikilink"
-import { wikilinkToMdast, escapeWikilinkForTable, resolveAnchor } from "../../util/wikilinks"
+import { remarkWikilink, Wikilink } from "../../util/ofm-wikilink"
+import { escapeWikilinkForTable } from "../../util/wikilinks"
 
 export interface Options {
   comments: boolean
@@ -141,7 +140,6 @@ const tagRegex = new RegExp(
   /(?<=^| )#((?:[-_\p{L}\p{Emoji}\p{M}\d])+(?:\/[-_\p{L}\p{Emoji}\p{M}\d]+)*)/gu,
 )
 const blockReferenceRegex = new RegExp(/\^([-_A-Za-z0-9]+)$/g)
-const videoExtensionRegex = new RegExp(/\.(mp4|webm|ogg|avi|mov|flv|wmv|mkv|mpg|mpeg|3gp|m4v)$/)
 
 export const checkMermaidCode = ({ tagName, properties }: Element) =>
   tagName === "code" &&
@@ -218,7 +216,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       return src
     },
-    markdownPlugins(ctx) {
+    markdownPlugins(_ctx) {
       const plugins: PluggableList = [[remarkWikilink, { obsidian: true }]]
 
       // regex replacements
@@ -311,7 +309,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
         }
       })
 
-      // WikilinkNode visitor for experimental micromark parser
+      // wikilink visitor for experimental micromark parser
       plugins.push(() => {
         return (tree: Root, file) => {
           visit(tree, "wikilink", (node: Wikilink, index, parent) => {
@@ -323,75 +321,9 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
             if (!wikilink.target && wikilink.anchor) {
               wikilink.target = file.data.slug!
             }
-
-            // resolve anchor if present
-            if (wikilink.anchor) {
-              const anchorText = wikilink.anchor.replace(/^#/, "")
-              // normalize anchor text: handles nested paths and LaTeX
-              const resolvedSlug = resolveAnchor(anchorText)
-              wikilink.anchor = `#${resolvedSlug}`
-            }
-
-            // for markdown/block transcludes, use hastscript
-            if (wikilink.embed && !path.extname(wikilink.target)) {
-              const url = slugifyFilePath(wikilink.target as FilePath)
-              const block = wikilink.anchor ?? ""
-              const htmlNode: Html = {
-                type: "html",
-                data: { hProperties: { transclude: true } },
-                value: toHtml(
-                  h(
-                    "blockquote.transclude",
-                    {
-                      "data-url": url,
-                      "data-block": block,
-                      "data-embed-alias": wikilink.alias,
-                    },
-                    [
-                      h("a.transclude-inner", { href: url + block }, [
-                        { type: "text", value: `Transclude of ${url} ${block}` },
-                      ]),
-                    ],
-                  ),
-                  { allowDangerousHtml },
-                ),
-              }
-              // @ts-expect-error - parent is guaranteed to have children since we visited it
-              parent.children[index] = htmlNode
-              return
-            }
-
-            // delegate all other conversions to wikilinkToMdast
-            const result = wikilinkToMdast(wikilink, {
-              allSlugs: ctx.allSlugs,
-              enableBrokenWikilinks: opts.enableBrokenWikilinks,
-            })
-
-            if (result) {
-              // @ts-expect-error - parent is guaranteed to have children since we visited it
-              parent.children[index] = result
-            }
           })
         }
       })
-
-      if (opts.enableVideoEmbed) {
-        plugins.push(() => {
-          return (tree: Root, _file) => {
-            visit(tree, "image", (node, index, parent) => {
-              if (parent && index != undefined && videoExtensionRegex.test(node.url)) {
-                const newNode: Html = {
-                  type: "html",
-                  value: `<video controls src="${node.url}"></video>`,
-                }
-
-                parent.children.splice(index, 1, newNode)
-                return SKIP
-              }
-            })
-          }
-        })
-      }
 
       if (opts.callouts) {
         plugins.push(() => {
@@ -522,17 +454,16 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               if (index === undefined || parent === undefined) return
 
               const isOnlyImages = node.children.every((child) => {
-                if (child.type === "image") return true
+                if (["wikilink", "image"].includes(child.type)) return true
                 if (child.type === "text") return (child.value as string).trim() === ""
                 return false
               })
 
-              const imageNodes = node.children.filter((c) => c.type === "image")
+              const imageNodes = node.children.filter(
+                (c) => c.type === "image" || c.type === "wikilink",
+              )
               if (isOnlyImages && imageNodes.length >= 2) {
-                const htmlContent = node.children
-                  .filter((c) => c.type === "image")
-                  .map((img) => mdastToHtml(img))
-                  .join("\n")
+                const htmlContent = node.children.map((img) => mdastToHtml(img)).join("\n")
 
                 const gridNode: Html = {
                   type: "html",
@@ -798,11 +729,9 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 idx!,
                 1,
                 h("figure", { "data-img-w-caption": true }, [
-                  h("img", { ...(node as Element).properties }),
+                  h("img", { ...node.properties }),
                   h("figcaption", [
-                    h("span", { class: "figure-prefix", style: "margin-right: 0.2em;" }, `figure`),
-                    h("span", { class: "figure-number" }, `${counter}`),
-                    h("span", { class: "figure-caption" }, `: ${(node as Element).properties.alt}`),
+                    h("span", { class: "figure-caption" }, `${node.properties.alt}`),
                   ]),
                 ]),
               )

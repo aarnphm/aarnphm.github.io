@@ -1,13 +1,13 @@
 /**
  * mdast-util-to-markdown extension for wikilinks.
- * serializes WikilinkNode back to Obsidian wikilink syntax.
+ * serializes Wikilink back to Obsidian wikilink syntax.
  *
  * usage with unified:
  * ```typescript
  * import { unified } from 'unified'
  * import remarkParse from 'remark-parse'
  * import remarkStringify from 'remark-stringify'
- * import { wikilink, wikilinkFromMarkdown, wikilinkToMarkdown } from './micromark-extension-wikilink'
+ * import { wikilink, wikilinkFromMarkdown, wikilinkToMarkdown } from 'ofm-wikilink'
  *
  * const processor = unified()
  *   .use(remarkParse)
@@ -65,8 +65,8 @@ export function wikilinkToMarkdown(): Options {
 }
 
 /**
- * handler for WikilinkNode serialization.
- * converts WikilinkNode back to Obsidian wikilink syntax.
+ * handler for Wikilink serialization.
+ * converts Wikilink back to Obsidian wikilink syntax.
  *
  * examples:
  * - { target: "page" } → `[[page]]`
@@ -84,10 +84,17 @@ export function wikilinkToMarkdown(): Options {
 const handleWikilink: Handle = (node: Wikilink): string => {
   const wikilink = node.data?.wikilink
   if (!wikilink) {
-    // fallback: use raw value if available
+    // fallback: use node value if available
     return node.value ?? "[[]]"
   }
 
+  // prefer raw original text for exact round-trip serialization
+  // this preserves the original anchor text before slugification
+  if (wikilink.raw) {
+    return wikilink.raw
+  }
+
+  // reconstruct from components (may not match original exactly)
   const { target = "", anchor, alias, embed = false } = wikilink
 
   let result = ""
