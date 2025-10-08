@@ -225,10 +225,7 @@ export const SemanticIndex: QuartzEmitterPlugin<Partial<GlobalConfiguration["sem
         }
       } else {
         console.log(
-          styleText(
-            "yellow",
-            `[emit:Semantic] Skipping embedding generation (aot=${o.aot}). Expecting pre-generated embeddings in ${ctx.argv.output}/embeddings/`,
-          ),
+          styleText("yellow", `[emit:Semantic] Skipping embedding generation (aot=${o.aot})`),
         )
       }
     },

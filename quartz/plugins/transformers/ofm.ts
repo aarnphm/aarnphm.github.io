@@ -454,8 +454,9 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               if (index === undefined || parent === undefined) return
 
               const isOnlyImages = node.children.every((child) => {
-                if (["wikilink", "image"].includes(child.type)) return true
+                if (child.type === "image") return true
                 if (child.type === "text") return (child.value as string).trim() === ""
+                if (child.type === "wikilink") return child.data.hName === "img"
                 return false
               })
 
