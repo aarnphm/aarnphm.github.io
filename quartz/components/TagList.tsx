@@ -31,10 +31,17 @@ export default (() => {
               <h2>média</h2>
               <ul>
                 {Object.entries(fileData.frontmatter?.socials).map(([social, link]) => {
+                  const isInternal = link.startsWith("/")
                   return (
                     <li>
                       <address>
-                        <a href={link} target="_blank" rel="noopener noreferrer" class="external">
+                        <a
+                          href={link}
+                          target={!isInternal ? "_blank" : ""}
+                          rel={!isInternal ? "noopener noreferrer" : ""}
+                          class={isInternal ? "internal" : "external"}
+                          data-no-popover
+                        >
                           {social}
                         </a>
                       </address>

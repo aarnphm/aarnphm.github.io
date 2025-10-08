@@ -12,7 +12,7 @@ export default (() => {
       <article class={classString}>
         {hasSlides && (
           <p>
-            see also:{" "}
+            goto:{" "}
             <a
               data-no-popover
               data-slug={resolveRelative(
@@ -25,6 +25,10 @@ export default (() => {
               )}
             >
               slides deck
+            </a>{" "}
+            or
+            <a data-no-popover data-slug="/" href="/">
+              back home
             </a>
           </p>
         )}

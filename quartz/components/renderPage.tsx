@@ -1137,9 +1137,9 @@ export const CuriusFriends: QuartzComponent = (props: QuartzComponentProps) => {
   return (
     <div class={classNames(displayClass, "curius-friends")}>
       <h4 style={["font-size: initial", "margin-top: unset", "margin-bottom: 0.5rem"].join(";")}>
-        mes amis.
+        mes amis
       </h4>
-      <ul class="overflow section-ul" id="friends-list" style="margin-top: unset"></ul>
+      <ul class="overflow section-ul" id="friends-list" style="margin-top: unset" />
       <div id="see-more-friends">
         Void{" "}
         <span id="more" style="text-decoration: none !important">
@@ -1165,9 +1165,14 @@ CuriusFriends.afterDOMLoaded = curiusFriendScript
 const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {
   const { cfg, displayClass } = props
   return (
-    <div class={classNames(displayClass, "curius-trail")} data-limits={3} data-locale={cfg.locale}>
+    <div
+      class={classNames(displayClass, "curius-trail")}
+      data-num-trails={3}
+      data-limits={4}
+      data-locale={cfg.locale}
+    >
       <h4 style={["font-size: initial", "margin-top: unset", "margin-bottom: 0.5rem"].join(";")}>
-        sentiers.
+        sentiers
       </h4>
       <ul class="section-ul" id="trail-list" />
     </div>
@@ -1178,9 +1183,7 @@ export const CuriusNavigation: QuartzComponent = (props: QuartzComponentProps) =
   const { displayClass } = props
   return (
     <div class={classNames(displayClass, "curius-pagination", "curius-col")} id="curius-pagination">
-      <span id="curius-prev" style="visibility: hidden">
-        (prev)
-      </span>
+      <span id="curius-prev">(prev)</span>
       <span id="curius-next">next</span>
     </div>
   )

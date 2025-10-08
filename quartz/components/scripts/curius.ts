@@ -1,4 +1,4 @@
-import { Link, CuriusResponse, Trail, TrailInfo } from "../types"
+import { Link, CuriusResponse, Trail, TrailInfo, Following } from "../types"
 import { registerEscapeHandler, registerEvents, removeAllChildren } from "./util"
 import { ValidLocale, i18n } from "../../i18n"
 import FlexSearch, { Id } from "flexsearch"
@@ -8,6 +8,7 @@ import { encode } from "./util"
 const CURIUS_HOST = "https://curius.app"
 export const CURIUS = `${CURIUS_HOST}/aaron-pham`
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
+export const PINNED_FOLLOWING_IDS = [3971, 1296, 1294] as const
 
 export const fetchLinksHeaders: RequestInit = {
   method: "GET",
@@ -354,7 +355,7 @@ export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => 
 
 export async function fetchFollowing() {
   try {
-    const resp = await fetch("https://aarnphm.xyz/api/curius?query=following", fetchLinksHeaders)
+    const resp = await fetch("/api/curius?query=following", fetchLinksHeaders)
     if (!resp.ok) {
       throw new Error("Failed to get followings from curius")
     }
@@ -362,7 +363,29 @@ export async function fetchFollowing() {
     if (data === undefined || data.following === undefined) {
       throw new Error("No following data")
     }
-    return data.following
+    const prioritizedSet = new Set<number>(PINNED_FOLLOWING_IDS)
+    const prioritizedBuckets = new Map<number, Following[]>()
+    PINNED_FOLLOWING_IDS.forEach((id) => prioritizedBuckets.set(id, []))
+    const remaining: Following[] = []
+
+    data.following.forEach((entry) => {
+      const userId = entry.user.id
+      if (prioritizedSet.has(userId)) {
+        prioritizedBuckets.get(userId)!.push(entry)
+      } else {
+        remaining.push(entry)
+      }
+    })
+
+    const prioritized: Following[] = []
+    PINNED_FOLLOWING_IDS.forEach((id) => {
+      const entries = prioritizedBuckets.get(id)
+      if (entries && entries.length > 0) {
+        prioritized.push(...entries)
+      }
+    })
+
+    return [...prioritized, ...remaining]
   } catch (err) {
     console.error(err)
   }
@@ -370,7 +393,7 @@ export async function fetchFollowing() {
 
 export async function fetchUsers() {
   try {
-    const resp = await fetch("https://aarnphm.xyz/api/curius?query=user", fetchLinksHeaders)
+    const resp = await fetch("/api/curius?query=user", fetchLinksHeaders)
     if (!resp.ok) {
       throw new Error("Failed to get users from curius")
     }
@@ -386,7 +409,7 @@ export async function fetchUsers() {
 
 async function fetchLinks() {
   try {
-    const resp = await fetch("https://aarnphm.xyz/api/curius?query=links", fetchLinksHeaders)
+    const resp = await fetch("/api/curius?query=links", fetchLinksHeaders)
     if (!resp.ok) {
       throw new Error("Failed to get links from curius")
     }
@@ -401,23 +424,111 @@ async function fetchLinks() {
 }
 
 export async function fetchCuriusLinks(): Promise<CuriusResponse> {
-  const [user, following, links] = await Promise.all([fetchUsers(), fetchFollowing(), fetchLinks()])
+  const [user, following, links, trails] = await Promise.all([
+    fetchUsers(),
+    fetchFollowing(),
+    fetchLinks(),
+    fetchTrails(),
+  ])
 
-  return { links, user, following }
+  return { links, user, following, trails }
 }
 
-export function createTrailMetadata(res: CuriusResponse) {
+async function fetchTrailPages(trail: Trail): Promise<Link[]> {
+  const collected: Link[] = []
+  const seenIds = new Set<number>()
+  let page = 0
+  let hasMore = true
+
+  while (hasMore) {
+    try {
+      const resp = await fetch(
+        `/api/curius?query=trails&name=${encodeURIComponent(trail.hash)}&page=${page}`,
+        fetchLinksHeaders,
+      )
+      if (!resp.ok) {
+        throw new Error(`Failed to get trail ${trail.trailName} page ${page}`)
+      }
+
+      const data: CuriusResponse = await resp.json()
+      const pageLinks = data.links ?? []
+
+      pageLinks.forEach((rawLink) => {
+        const linkId = typeof rawLink.id === "number" ? rawLink.id : NaN
+        if (Number.isNaN(linkId) || seenIds.has(linkId)) return
+        seenIds.add(linkId)
+
+        const normalized: Link = {
+          ...rawLink,
+          trails: rawLink.trails && rawLink.trails.length > 0 ? rawLink.trails : [trail],
+        }
+
+        collected.push(normalized)
+      })
+
+      hasMore = data.hasMore ?? false
+      page += 1
+
+      if (!hasMore) break
+    } catch (error) {
+      console.error(`Failed to fetch trail ${trail.trailName} page ${page}`, error)
+      break
+    }
+  }
+
+  return collected
+}
+
+export async function createTrailMetadata(res: CuriusResponse): Promise<Map<string, TrailInfo>> {
   const trailMetadata: Map<string, TrailInfo> = new Map()
-  const links = res.links ?? []
-  links
-    .filter((link) => link.trails.length > 0)
-    .map((link) => {
-      link.trails.map((trail) => {
-        if (!trailMetadata.has(trail.trailName))
-          trailMetadata.set(trail.trailName, { trail, links: new Map() })
-        trailMetadata.get(trail.trailName)!.links.set(link.id as number, link)
+  const trails = res.trails ?? []
+
+  if (trails.length > 0) {
+    const trailCollections = await Promise.all(
+      trails.map(async (trail) => ({ trail, links: await fetchTrailPages(trail) })),
+    )
+
+    trailCollections.forEach(({ trail, links }) => {
+      if (links.length === 0) return
+      const trailName = trail.trailName
+
+      if (!trailMetadata.has(trailName)) {
+        trailMetadata.set(trailName, { trail, links: new Map() })
+      }
+
+      const trailBucket = trailMetadata.get(trailName)
+      if (!trailBucket) return
+
+      links.forEach((link) => {
+        const linkId = typeof link.id === "number" ? link.id : NaN
+        if (Number.isNaN(linkId)) return
+        if (!trailBucket.links.has(linkId)) {
+          trailBucket.links.set(linkId, link)
+        }
       })
     })
+  }
+
+  if (trailMetadata.size === 0) {
+    const links = res.links ?? []
+    links
+      .filter((link) => link.trails.length > 0)
+      .forEach((link) => {
+        link.trails.forEach((trail) => {
+          if (!trailMetadata.has(trail.trailName)) {
+            trailMetadata.set(trail.trailName, { trail, links: new Map() })
+          }
+          const trailBucket = trailMetadata.get(trail.trailName)
+          if (!trailBucket) return
+
+          const linkId = link.id
+          if (typeof linkId === "number") {
+            trailBucket.links.set(linkId, link)
+          }
+        })
+      })
+  }
+
   return trailMetadata
 }
 
@@ -427,12 +538,13 @@ export const createTrailList = (trails: Map<string, TrailInfo>) => {
   if (!trail || !total) return
 
   const limits = parseInt(total.dataset.limits!) ?? 5
+  const numTrails = parseInt(total.dataset.numTrails!) ?? 4
   const locale = total.dataset.locale! as ValidLocale
 
   removeAllChildren(trail)
   for (const [trail_name, { trail: Trail, links: linksMap }] of Array.from(trails.entries()).slice(
     0,
-    4,
+    numTrails,
   )) {
     const links = Array.from(linksMap.values())
     const remaining = Math.max(0, links.length - limits)
@@ -737,7 +849,7 @@ export async function curiusSearch(searchData: Link[]) {
 
 export async function fetchSearchLinks() {
   try {
-    const resp = await fetch("https://aarnphm.xyz/api/curius?query=searchLinks", fetchLinksHeaders)
+    const resp = await fetch("/api/curius?query=searchLinks", fetchLinksHeaders)
     if (!resp.ok) {
       throw new Error("Failed to get searchLinks from curius")
     }
@@ -746,6 +858,23 @@ export async function fetchSearchLinks() {
       throw new Error("No searchLinks data")
     }
     return data.links
+  } catch (err) {
+    console.error(err)
+    return []
+  }
+}
+
+export async function fetchTrails() {
+  try {
+    const resp = await fetch("/api/curius?query=trails", fetchLinksHeaders)
+    if (!resp.ok) {
+      throw new Error("Failed to get trails from curius")
+    }
+    const data: CuriusResponse = await resp.json()
+    if (data === undefined || data.trails === undefined) {
+      throw new Error("No trails data")
+    }
+    return data.trails
   } catch (err) {
     console.error(err)
     return []

@@ -50,7 +50,8 @@ document.addEventListener("nav", async (e) => {
   const linksData = callIfEmpty(resp.links!)
   if (linksData.length === 0) return
 
-  createTrailList(createTrailMetadata(resp))
+  const trailMetadata = await createTrailMetadata(resp)
+  createTrailList(trailMetadata)
 
   await curiusSearch(searchLinks)
 

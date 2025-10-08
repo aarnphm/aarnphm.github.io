@@ -23,10 +23,7 @@ async function loadPage(page: number) {
     fetchText.classList.toggle("active", true)
   }
 
-  const resp = await fetch(
-    `https://aarnphm.xyz/api/curius?query=links&page=${page}`,
-    fetchLinksHeaders,
-  )
+  const resp = await fetch(`/api/curius?query=links&page=${page}`, fetchLinksHeaders)
 
   if (fetchText) {
     fetchText.classList.toggle("active", false)
@@ -65,14 +62,6 @@ export function updateNavigation() {
   const nextButton = document.getElementById("curius-next")
 
   if (!prevButton || !nextButton) return
-
-  const { currentPage, hasMore } = window.curiusState || { currentPage: 0, hasMore: false }
-
-  prevButton.style.visibility = currentPage > 0 ? "visible" : "hidden"
-  prevButton.style.cursor = currentPage > 0 ? "pointer" : "default"
-
-  nextButton.style.visibility = hasMore ? "visible" : "hidden"
-  nextButton.style.cursor = hasMore ? "pointer" : "default"
 }
 
 document.addEventListener("nav", async (e) => {

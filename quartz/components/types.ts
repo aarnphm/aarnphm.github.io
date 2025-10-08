@@ -72,6 +72,7 @@ export interface Trail extends DocumentData {
   hash: string
   slug: string
   createdDate: string
+  users: any[]
 }
 
 export interface TrailInfo {
@@ -129,6 +130,7 @@ export interface CuriusResponse {
   links?: Link[]
   user?: User
   following?: Following[]
+  trails?: Trail[]
   hasMore?: boolean
   page?: number
 }

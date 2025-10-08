@@ -1,5 +1,6 @@
 ---
 socials:
+  curius: /curius
   are.na: https://www.are.na/aaron-pham/channels
 id: are.na
 aliases:
@@ -11,7 +12,7 @@ tags:
 description: My run-down version of are[dot]na
 title: are.na
 date: "2024-10-24"
-modified: 2025-10-07 19:17:56 GMT-04:00
+modified: 2025-10-07 21:22:15 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -116,6 +117,10 @@ cssclasses:
 
 ## tweets
 
+- https://x.com/made_in_cosmos/status/1975564721790329301 -- Movies are better when sex are hinted via metaphor
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [sex, film]
 - https://x.com/PI010101/status/1974909578983907490 -- GPT-5 found a counterexample to the NICD-with-erasures majority optimality (Simons list, p.25).
   - [meta]:
     - date: 10/06/2025
@@ -949,6 +954,10 @@ cssclasses:
 
 ## essay
 
+- https://ellululu.substack.com/p/the-art-of-asking -- The art of asking
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [friendship]
 - https://christophlocher.com/notes/ethnographic-research-on-dynamicland -- Götz Bachmann’s Ethnographic Research on Dynamicland [**]
   - [meta]:
     - date: 10/07/2025
@@ -2223,6 +2232,10 @@ cssclasses:
 
 ## technology
 
+- https://jasmi.news/p/32-notes-on-ai-and-writing -- 32 notes on AI and writing
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [ai, essay]
 - https://mayberay.bearblog.dev/why-i-only-use-google-sheets/ -- Why I only use Google Sheets?
   - [meta]:
     - date: 10/05/2025
@@ -2535,6 +2548,10 @@ cssclasses:
   - [meta]:
     - date: 10/06/2025
     - tags: [self]
+- [[/curius|curius]]
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [fruit]
 
 ## financial reports
 
@@ -3038,6 +3055,10 @@ cssclasses:
 
 ## technical
 
+- https://addyosmani.com/blog/script-priorities/ -- JavaScript Loading Priorities in Chrome
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [js]
 - https://github.com/luhmann/tufte-markdown -- tufte-css [**]
   - [meta]:
     - date: 10/07/2025

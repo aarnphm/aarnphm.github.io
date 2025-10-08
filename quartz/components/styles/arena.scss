@@ -122,7 +122,7 @@ body[data-arena-subpage="true"] {
 
 .arena-channel-row {
   padding: 12px;
-  border-radius: var(--border-radius);
+  border-radius: 0px;
   transition: box-shadow 0.4s ease;
   border: 1px solid var(--lightgray);
   transition: border-color 0.2s ease;
@@ -136,9 +136,7 @@ body[data-arena-subpage="true"] {
 
   &:hover {
     border-color: var(--tertiary);
-    box-shadow:
-      0 14px 50px rgba(27, 33, 48, 0.12),
-      0 10px 30px rgba(27, 33, 48, 0.16);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -245,7 +243,7 @@ body[data-arena-subpage="true"] {
   position: relative;
   background: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: 4px;
+  border-radius: 0px;
   overflow: hidden;
   transition: box-shadow 0.2s ease;
   min-height: 120px;
@@ -849,7 +847,7 @@ span.tag-link:hover {
     box-sizing: border-box;
     padding: 0.75rem 0 0.75rem 1rem;
     border: 1px solid var(--lightgray);
-    border-radius: 6px;
+    border-radius: 0px;
     font-size: 14px;
     font-family: var(--bodyFont);
     background: var(--light);

@@ -1,5 +1,7 @@
-import { fetchFollowing, timeSince } from "./curius"
+import { fetchFollowing, timeSince, PINNED_FOLLOWING_IDS } from "./curius"
 import { registerMouseHover, removeAllChildren } from "./util"
+
+const pinnedFollowingIds = new Set<number>(PINNED_FOLLOWING_IDS)
 
 document.addEventListener("nav", async () => {
   const friends = document.getElementById("friends-list") as HTMLUListElement | null
@@ -14,6 +16,9 @@ document.addEventListener("nav", async () => {
     const { user: User, link: Link } = user
     const li = document.createElement("li")
     li.classList.add("friend-li")
+    if (pinnedFollowingIds.has(User.id)) {
+      li.classList.add("friend-pinned")
+    }
 
     const onClick = (e: HTMLElementEventMap["click"]) => {
       if (e.target instanceof HTMLAnchorElement) return
@@ -24,7 +29,7 @@ document.addEventListener("nav", async () => {
 
     registerMouseHover(li, "focus")
 
-    // only show the first four friends
+    // only show first four friends
     index < 4 ? li.classList.add("active") : (li.id = "inactive")
 
     // title div
