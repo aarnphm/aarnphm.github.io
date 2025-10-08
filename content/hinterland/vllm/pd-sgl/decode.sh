@@ -3,8 +3,9 @@ set -x
 
 BOOTSTRAP_PORT=8998
 
-UCX_NET_DEVICES=mlx5_0 python3 -u -m sglang.launch_server \
+python3 -u -m sglang.launch_server \
   --model-path deepseek-ai/DeepSeek-V2-Lite-Chat \
+  --served-model-name deepseek-ai/DeepSeek-V2-Lite-Chat \
   --trust-remote-code \
   --host 0.0.0.0 \
   --port 7000 \
