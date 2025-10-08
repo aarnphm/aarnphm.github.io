@@ -748,6 +748,9 @@ body[data-is-base="true"] {
   .page-footer {
     display: none;
   }
+  .header {
+    visibility: hidden;
+  }
 }
 
 .page-content {

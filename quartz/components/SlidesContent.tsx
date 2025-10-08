@@ -82,6 +82,10 @@ export default (() => {
                   >
                     text
                   </a>
+                  ,{" "}
+                  <a data-no-popover data-slug="/" href="/">
+                    home
+                  </a>
                 </p>
               )}
               {toJsx(

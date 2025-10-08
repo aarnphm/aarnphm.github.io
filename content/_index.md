@@ -8,7 +8,7 @@ tags:
   - fruit
 description: practicing the act of digital gardening.
 date: "2022-04-22"
-modified: 2025-10-07 19:08:28 GMT-04:00
+modified: 2025-10-07 23:08:58 GMT-04:00
 title: Aaron's notes
 ---
 
@@ -87,4 +87,4 @@ currently, I'm working at a [startup](https://bentoml.com) building [[/tags/ml]]
           * our [[thoughts/Agency|agency]] to fulfil one's [[thoughts/desire]] in life.
 ```
 
-as far as [[thoughts/aesthetics value|aesthetic]] goes, i like my [[antilibrary|books]], and see [[/dating|this doc]] if you are interested.
+as far as [[thoughts/aesthetic value|aesthetic]] goes, i like my [[antilibrary|books]], and this [[/dating|doc]] if you are interested 🤭 ✨

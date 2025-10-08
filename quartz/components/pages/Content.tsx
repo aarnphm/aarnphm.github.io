@@ -26,7 +26,7 @@ export default (() => {
             >
               slides deck
             </a>{" "}
-            or
+            or{" "}
             <a data-no-popover data-slug="/" href="/">
               back home
             </a>

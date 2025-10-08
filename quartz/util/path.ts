@@ -4,6 +4,9 @@ import { clone } from "./clone"
 
 // this file must be isomorphic so it can't use node libs (e.g. path)
 
+// re-export github-slugger for use in other utilities
+export { slugAnchor }
+
 export const QUARTZ = "quartz"
 
 /// Utility type to simulate nominal types in TypeScript

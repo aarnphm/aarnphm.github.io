@@ -1,18 +1,19 @@
 ---
-socials:
-  curius: /curius
-  are.na: https://www.are.na/aaron-pham/channels
 id: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /tweets
+  - /resources
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-title: are.na
+socials:
+  curius: /curius
+  are.na: https://www.are.na/aaron-pham/channels
 date: "2024-10-24"
-modified: 2025-10-07 21:22:15 GMT-04:00
+modified: 2025-10-08 01:59:39 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -33,10 +34,6 @@ codex:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be consumed by quartz/plugins/emitters/arena.ts, and then ingested with quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-permalinks:
-  - /website
-  - /tweets
-  - /resources
 claude:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -54,6 +51,9 @@ claude:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
+aliases:
+  - inspo
+title: are.na
 cssclasses:
   - nolist
 ---
@@ -1514,11 +1514,11 @@ cssclasses:
 - https://thinkingmachines.ai/blog/lora/ -- LoRA Without Regret
   - [meta]:
     - date: 10/06/2025
-    - tags: [machine learning, training, lora]
+    - tags: [ml, training, lora]
 - https://hanlab.mit.edu/blog/streamingllm -- [[thoughts/Attention|Attention]] sink keeps language models stable [**]
   - [meta]:
     - date: 10/06/2025
-    - tags: [machine learning]
+    - tags: [ml]
   - see also: [[thoughts/KV compression#Streaming LLM]]
   - Diagraph sink
   - OpenAI: $\text{attention\_probs} = \operatorname{softmax}([\text{sink\_scalar}, a_{1},a_{2},\ldots,a_{t}])$
@@ -1960,10 +1960,11 @@ cssclasses:
     - tags: [fruit]
   - 1.3: https://mp.weixin.qq.com/s/BdWG6_ZTaGRknmsbGfFkMQ
   - 1.2: https://mp.weixin.qq.com/s/8BVEVPPqDQhQ2l8L90dMNQ
-- https://ma-lab-berkeley.github.io/deep-representation-learning-book/ -- Learning Deep Representations of Data Distributions [@ldrdd2025]
+- https://ma-lab-berkeley.github.io/deep-representation-learning-book/ -- Learning Deep Representations of Data Distributions
   - [meta]:
     - date: 09/28/2025
-    - tags: [fruit]
+    - tags: [ml]
+  - @ldrdd2025
 - https://www.julian.ac/blog/2025/09/27/failing-to-understand-the-exponential-again/ -- Failing to Understand the Exponential, Again
   - [meta]:
     - date: 09/29/2025
@@ -2380,6 +2381,11 @@ cssclasses:
 
 ## [[tags/philosophy]]
 
+- https://www.youtube.com/watch?v=C7n7wfQOGaI -- The Philosophy of Spinoza & Leibniz - Bryan Magee & Anthony Quinton (1987)
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [philosophy, rationalist]
+  - after Decartes, [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Sphinoza]]
 - https://caitlynrichardson.substack.com/p/can-intellectual-intimacy-replace -- can intellectual intimacy replace physical desire?
   - [meta]:
     - date: 10/06/2025
@@ -2639,6 +2645,23 @@ cssclasses:
 
 ## video
 
+- https://www.youtube.com/watch?v=x_y691nZztE -- I did love you... [**]
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [love]
+  - Hamlet by Andrew Scott
+  - Ophelia by Jessica Brown Findlay
+  - Claudius by Angus Wright
+  - Gertrude by Juliet Stevenson
+- https://www.youtube.com/watch?v=d_FzzLeA6pk -- Jane Goodall’s Impact
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [evolution]
+- https://www.youtube.com/watch?v=oOyQpwPrf2Q -- The Web is Going to Die [**]
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [eternal]
+  - Ghost town
 - https://www.youtube.com/watch?v=oP3c1h8v2ZQ -- Kurt Vonnegut on the Shapes of Stories
   - [meta]:
     - date: 10/07/2025
@@ -3003,6 +3026,12 @@ cssclasses:
 
 ## lecture
 
+- https://www.youtube.com/watch?v=cQP8WApzIQQ -- MIT 6.824, Distributed Systems
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [distributed system]
+  - https://pdos.csail.mit.edu/6.824/
+  - RPC and Threads: https://www.youtube.com/watch?v=gA4YXUJX7t8
 - https://www.youtube.com/watch?v=m47A0AmqxQE&list=PL62C50202CE181183&index=5&ab_channel=flame0430 -- Iris Murdoch on Philosophy and Literature
   - [meta]:
     - date: 07/13/2025
@@ -3055,6 +3084,10 @@ cssclasses:
 
 ## technical
 
+- http://www.fantasyjackpalance.com/fjp/sound/synth/synthdata/16-moog-minimoog.html -- Minimoog, synthesizer
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [music]
 - https://addyosmani.com/blog/script-priorities/ -- JavaScript Loading Priorities in Chrome
   - [meta]:
     - date: 10/07/2025
@@ -3240,6 +3273,11 @@ cssclasses:
 
 ## [[tags/math]]
 
+- https://userweb.ucs.louisiana.edu/~isb9112/dept/phil341/subsymbol/subsymbol.html -- wtf is a subsymbol?
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [math, ml]
+  - Smolensky view
 - https://leimao.github.io/blog/Tensor-Calculus-Layout-Conventions/ -- Tensor Calculus Layout Conventions
   - [meta]:
     - date: 10/07/2025
@@ -3340,6 +3378,10 @@ cssclasses:
 
 ## papers
 
+- https://arxiv.org/abs/2505.12049
+  - [meta]:
+    - date: 10/08/2025
+    - tags: [rl]
 - https://arxiv.org/abs/2410.01104
   - [meta]:
     - date: 10/06/2025
@@ -3478,3 +3520,7 @@ cssclasses:
   - [meta]:
     - date: 10/06/2025
     - tags: [fruit]
+- https://arxiv.org/pdf/2509.26537
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [kernel, interpretability]

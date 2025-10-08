@@ -638,7 +638,6 @@ export const BaseViewPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userO
     ...userOpts,
     pageBody: Content(),
     beforeBody: [BaseViewSelector()],
-    header: [],
     afterBody: [],
   }
 

@@ -13,7 +13,6 @@ import { ReplaceFunction, findAndReplace as mdastFindReplace } from "mdast-util-
 import rehypeRaw from "rehype-raw"
 import { SKIP, visit } from "unist-util-visit"
 import path from "path"
-import { splitAnchor } from "../../util/path"
 import { CSSResource, JSResource } from "../../util/resources"
 // @ts-ignore
 import calloutScript from "../../components/scripts/callout.inline.ts"
@@ -28,11 +27,11 @@ import { capitalize } from "../../util/lang"
 import { buildYouTubeEmbed } from "../../util/youtube"
 import { PluggableList } from "unified"
 import { h, s } from "hastscript"
-import { createWikilinkRegex, parseWikilink } from "../../util/wikilinks"
-import { wikilinkToMdast, escapeWikilinkForTable } from "../../util/mdast-util-wikilinks"
 import { whitespace } from "hast-util-whitespace"
 import { remove } from "unist-util-remove"
 import { svgOptions } from "../../components/svg"
+import { remarkWikilink, Wikilink } from "../../util/micromark-extension-wikilink"
+import { wikilinkToMdast, escapeWikilinkForTable, resolveAnchor } from "../../util/wikilinks"
 
 export interface Options {
   comments: boolean
@@ -119,13 +118,6 @@ export const externalLinkRegex = /^https?:\/\//i
 
 export const arrowRegex = new RegExp(/(-{1,2}>|={1,2}>|<-{1,2}|<={1,2})/g)
 
-// !?                 -> optional embedding
-// \[\[               -> open brace
-// ([^\[\]\|\#]+)     -> one or more non-special characters ([,],|, or #) (name)
-// (#[^\[\]\|\#]+)?   -> # then one or more non-special characters (heading link)
-// (\\?\|[^\[\]\#]+)? -> optional escape \ then | then zero or more non-special characters (alias)
-const wikilinkRegex = createWikilinkRegex()
-
 export const inlineFootnoteRegex = /\^\[((?:[^\[\]]|\[(?:[^\[\]]|\[[^\[\]]*\])*\])*)\]/g
 
 // ^\|([^\n])+\|\n(\|) -> matches the header row
@@ -157,30 +149,13 @@ export const checkMermaidCode = ({ tagName, properties }: Element) =>
   (properties.className as string[]).includes("mermaid")
 
 export const wikiTextTransform = (src: string) => {
-  // replace all wikilinks inside a table first
+  // replace all wikilinks inside a table first (always needed)
   src = src.replace(tableRegex, (value) => {
     // escape all aliases and headers in wikilinks inside a table
     return value.replace(tableWikilinkRegex, (_value, raw) => {
       const escaped = raw ?? ""
       return escapeWikilinkForTable(escaped)
     })
-  })
-
-  // replace all other wikilinks
-  src = src.replace(wikilinkRegex, (value, ...capture) => {
-    const [rawFp, rawHeader, rawAlias]: (string | undefined)[] = capture
-
-    const [fp, anchor] = splitAnchor(`${rawFp ?? ""}${rawHeader ?? ""}`)
-    const blockRef = Boolean(rawHeader?.startsWith("#^")) ? "^" : ""
-    const displayAnchor = anchor ? `#${blockRef}${anchor.trim().replace(/^#+/, "")}` : ""
-    const displayAlias = rawAlias ?? rawHeader?.replace("#", "|") ?? ""
-    const embedDisplay = value.startsWith("!") ? "!" : ""
-
-    if (rawFp?.match(externalLinkRegex)) {
-      return `${embedDisplay}[${displayAlias.replace(/^\|/, "")}](${rawFp})`
-    }
-
-    return `${embedDisplay}[[${fp}${displayAnchor}${displayAlias}]]`
   })
   return src
 }
@@ -244,56 +219,13 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       return src
     },
     markdownPlugins(ctx) {
-      const plugins: PluggableList = []
+      const plugins: PluggableList = [[remarkWikilink, { obsidian: true }]]
 
       // regex replacements
       plugins.push(() => {
         return (tree: Root, file) => {
           const replacements: [RegExp, string | ReplaceFunction][] = []
           const base = pathToRoot(file.data.slug!)
-
-          if (opts.wikilinks) {
-            replacements.push([
-              wikilinkRegex,
-              (value: string, ..._capture: string[]) => {
-                const parsed = parseWikilink(value)
-                if (!parsed) return SKIP
-
-                // for embeds that need hastscript, handle transclusion specially
-                if (parsed.embed && !path.extname(parsed.target)) {
-                  // markdown/block transclude needs hastscript
-                  const url = slugifyFilePath(parsed.target as FilePath)
-                  const block = parsed.anchor ?? ""
-                  return {
-                    type: "html",
-                    data: { hProperties: { transclude: true } },
-                    value: toHtml(
-                      h(
-                        "blockquote.transclude",
-                        {
-                          "data-url": url,
-                          "data-block": block,
-                          "data-embed-alias": parsed.alias,
-                        },
-                        h("a.transclude-inner", { href: url + block }, [
-                          { type: "text", value: `Transclude of ${url} ${block}` },
-                        ]),
-                      ),
-                      { allowDangerousHtml },
-                    ),
-                  }
-                }
-
-                // delegate all other conversions to mdast-util-wikilinks
-                const result = wikilinkToMdast(parsed, {
-                  allSlugs: ctx.allSlugs,
-                  enableBrokenWikilinks: opts.enableBrokenWikilinks,
-                })
-
-                return result ?? SKIP
-              },
-            ])
-          }
 
           if (opts.highlight) {
             replacements.push([
@@ -376,6 +308,70 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
             })
           }
           mdastFindReplace(tree, replacements)
+        }
+      })
+
+      // WikilinkNode visitor for experimental micromark parser
+      plugins.push(() => {
+        return (tree: Root, file) => {
+          visit(tree, "wikilink", (node: Wikilink, index, parent) => {
+            if (!node.data?.wikilink || index === undefined || !parent) return
+
+            const wikilink = node.data.wikilink
+
+            // handle same-file anchors: [[#heading]]
+            if (!wikilink.target && wikilink.anchor) {
+              wikilink.target = file.data.slug!
+            }
+
+            // resolve anchor if present
+            if (wikilink.anchor) {
+              const anchorText = wikilink.anchor.replace(/^#/, "")
+              // normalize anchor text: handles nested paths and LaTeX
+              const resolvedSlug = resolveAnchor(anchorText)
+              wikilink.anchor = `#${resolvedSlug}`
+            }
+
+            // for markdown/block transcludes, use hastscript
+            if (wikilink.embed && !path.extname(wikilink.target)) {
+              const url = slugifyFilePath(wikilink.target as FilePath)
+              const block = wikilink.anchor ?? ""
+              const htmlNode: Html = {
+                type: "html",
+                data: { hProperties: { transclude: true } },
+                value: toHtml(
+                  h(
+                    "blockquote.transclude",
+                    {
+                      "data-url": url,
+                      "data-block": block,
+                      "data-embed-alias": wikilink.alias,
+                    },
+                    [
+                      h("a.transclude-inner", { href: url + block }, [
+                        { type: "text", value: `Transclude of ${url} ${block}` },
+                      ]),
+                    ],
+                  ),
+                  { allowDangerousHtml },
+                ),
+              }
+              // @ts-expect-error - parent is guaranteed to have children since we visited it
+              parent.children[index] = htmlNode
+              return
+            }
+
+            // delegate all other conversions to wikilinkToMdast
+            const result = wikilinkToMdast(wikilink, {
+              allSlugs: ctx.allSlugs,
+              enableBrokenWikilinks: opts.enableBrokenWikilinks,
+            })
+
+            if (result) {
+              // @ts-expect-error - parent is guaranteed to have children since we visited it
+              parent.children[index] = result
+            }
+          })
         }
       })
 
@@ -474,7 +470,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 // add properties to base blockquote
                 node.data = {
                   hProperties: {
-                    ...(node.data?.hProperties ?? {}),
+                    ...node.data?.hProperties,
                     className: classNames.join(" "),
                     "data-callout": calloutType,
                     "data-callout-fold": collapse,

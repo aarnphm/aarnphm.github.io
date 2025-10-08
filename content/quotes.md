@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-10-05 22:35:14 GMT-04:00
+modified: 2025-10-08 01:19:17 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -76,6 +76,8 @@ from mathematics"
 
 Tom Lehrer
 ```
+
+in sf, people like their relationships like they like their AI projects: open source with unresolved merge conflicts -- someone on twitter.
 
 ## On bits and bytes.
 

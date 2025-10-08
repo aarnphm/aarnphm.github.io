@@ -6,8 +6,8 @@ tags:
   - llm
 description: Wittgenstein's picture theory of language and its uncanny resonance with modern LLM latent spaces
 date: "2025-10-04"
-modified: 2025-10-07 18:40:09 GMT-04:00
-title: "Notes: TLP"
+modified: 2025-10-08 03:35:09 GMT-04:00
+title: TLP
 ---
 
 > [!tip] reading posture
@@ -160,7 +160,7 @@ The numbered propositions build like this:
      - 6.41 The Tractatus demonstrated how to analyze language's logical structure, distinguish sense from nonsense, and clarify philosophical pseudo-problems through logic.
      - 6.42 Carnap operationalized this program, even as he departed from Wittgenstein's single fixed form.
      - 6.43 The Tractatus supplied not just conclusions but a method—logical analysis of language as philosophy's proper task—that defined analytic philosophy for decades.
-   - 6.5 **wittgenstein's retrospective distance**: By the 1930s, Wittgenstein was critiquing the Tractatus's picture theory, simple objects, and logical atomism.
+   - 6.5 **wittgenstein's retrospective distance**: By the 1930s, Wittgenstein was critiquing the Tractatus's picture theory, simple objects, and [[#logical space and embedding space|logical]] atomism.
      - 6.51 His Cambridge lectures (1930s onward) dismantled the earlier project.
      - 6.52 But the circle's version—hardened into logical positivism's verificationism, protocol sentences, and physicalism—persisted until Quine's "two dogmas" (1951) shattered analytic/synthetic distinction and reductionism.
      - 6.53 Even then, the Tractatus's influence endured: _Philosophical Investigations_ (1953) begins "In the _Tractatus Logico-Philosophicus_..." The ladder wasn't merely discarded; it structured the terrain traversed.

@@ -15,6 +15,7 @@ import type { ElementContent, Root } from "hast"
 import type { ComponentChild } from "preact"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 import { buildYouTubeEmbed } from "../../util/youtube"
+import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
 
 const substackPostRegex = /^https?:\/\/[^/]+\/p\/[^/]+/i
 
@@ -110,6 +111,55 @@ export default (() => {
         ? toArenaJsx(fileData.filePath!, node, fileData.slug! as FullSlug, componentData)
         : undefined
 
+    const renderInlineText = (text: string) => {
+      if (!text) return ""
+      const parts: ComponentChild[] = []
+      const regex = createWikilinkRegex()
+      let lastIndex = 0
+      let match: RegExpExecArray | null
+
+      while ((match = regex.exec(text)) !== null) {
+        const start = match.index
+        if (start > lastIndex) {
+          parts.push(text.slice(lastIndex, start))
+        }
+
+        const parsed = parseWikilink(match[0])
+        const resolved =
+          parsed && fileData.slug ? resolveWikilinkTarget(parsed, fileData.slug as FullSlug) : null
+
+        if (parsed && resolved) {
+          const hrefBase = resolveRelative(fileData.slug! as FullSlug, resolved.slug)
+          const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
+          parts.push(
+            <a
+              href={href}
+              class="internal"
+              data-no-popover
+              data-slug={resolved.slug}
+              key={`arena-wikilink-${parts.length}`}
+            >
+              {parsed.alias ?? parsed.target ?? match[0]}
+            </a>,
+          )
+        } else {
+          parts.push(parsed?.alias ?? parsed?.target ?? match[0])
+        }
+
+        lastIndex = regex.lastIndex
+      }
+
+      if (lastIndex < text.length) {
+        parts.push(text.slice(lastIndex))
+      }
+
+      if (parts.length === 1) {
+        return parts[0]
+      }
+
+      return <>{parts}</>
+    }
+
     const convertFromText = (text: string) => {
       const root = fromHtmlIsomorphic(text, { fragment: true }) as Root
       return fromHtmlStringToArenaJsx(
@@ -159,7 +209,7 @@ export default (() => {
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([rawKey, rawValue]) => ({
             label: rawKey.replace(/_/g, " "),
-            value: rawValue,
+            value: renderInlineText(rawValue),
           }))
 
         metadataEntries.push(...additionalEntries)
@@ -328,7 +378,11 @@ export default (() => {
             </div>
             <div class="arena-modal-sidebar">
               <div class="arena-modal-info">
-                <h3 class="arena-modal-title">{block.title ?? ""}</h3>
+          <h3 class="arena-modal-title">
+            {block.titleHtmlNode
+              ? jsxFromNode(block.titleHtmlNode)
+              : renderInlineText(block.title ?? "")}
+          </h3>
                 {metadataEntries.length > 0 && (
                   <div class="arena-modal-meta">
                     {metadataEntries.map(({ label, value }, index) => (
@@ -428,7 +482,7 @@ export default (() => {
                             channelPath,
                             componentData,
                           )
-                        : channel.name}
+                        : renderInlineText(channel.name)}
                     </a>
                   </h2>
                   <span class="arena-channel-row-count">
@@ -462,7 +516,7 @@ export default (() => {
                                   currentSlug,
                                   componentData,
                                 )
-                              : block.title || block.content}
+                              : renderInlineText(block.title || block.content || "")}
                           </div>
                         </div>
                       )

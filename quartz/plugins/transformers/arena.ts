@@ -8,9 +8,10 @@ import { visit, CONTINUE } from "unist-util-visit"
 import { externalLinkRegex } from "./ofm"
 import { createHash } from "crypto"
 import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
-import { splitAnchor, transformLink, stripSlashes } from "../../util/path"
+import { splitAnchor, transformLink, stripSlashes, resolveRelative, FullSlug } from "../../util/path"
 import { writeFileSync } from "node:fs"
 import { join } from "node:path"
+import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
 
 const datasetKey = (attr: string): string =>
   attr.replace(/-([a-z])/g, (_match, ch: string) => ch.toUpperCase())
@@ -489,6 +490,58 @@ export const Arena: QuartzTransformerPlugin = () => {
                 if (el.type !== "element") return
                 const e = el as Element
 
+                const processTextNode = (value: string): ElementContent[] => {
+                  const results: ElementContent[] = []
+                  const regex = createWikilinkRegex()
+                  let lastIndex = 0
+                  let match: RegExpExecArray | null
+
+                  while ((match = regex.exec(value)) !== null) {
+                    const start = match.index
+                    if (start > lastIndex) {
+                      results.push({ type: "text", value: value.slice(lastIndex, start) })
+                    }
+
+                    const parsed = parseWikilink(match[0])
+                    const resolved =
+                      parsed && fileData.slug ? resolveWikilinkTarget(parsed, fileData.slug as FullSlug) : null
+
+                    if (parsed && resolved) {
+                      const hrefBase = resolveRelative(fileData.slug!, resolved.slug)
+                      const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
+                      results.push({
+                        type: "element",
+                        tagName: "a",
+                        properties: {
+                          href,
+                          className: ["internal"],
+                          "data-slug": resolved.slug,
+                          "data-no-popover": true,
+                        },
+                        children: [
+                          {
+                            type: "text",
+                            value: parsed.alias ?? parsed.target ?? match[0],
+                          },
+                        ],
+                      })
+                    } else {
+                      results.push({
+                        type: "text",
+                        value: parsed?.alias ?? parsed?.target ?? match[0],
+                      })
+                    }
+
+                    lastIndex = regex.lastIndex
+                  }
+
+                  if (lastIndex < value.length) {
+                    results.push({ type: "text", value: value.slice(lastIndex) })
+                  }
+
+                  return results
+                }
+
                 if (e.tagName === "a" && typeof e.properties?.href === "string") {
                   let dest = e.properties.href as string
                   const classes = Array.isArray(e.properties.className)
@@ -527,7 +580,21 @@ export const Arena: QuartzTransformerPlugin = () => {
                 }
 
                 if (el.children) {
-                  el.children.forEach(visitEl)
+                  const newChildren: ElementContent[] = []
+                  for (const child of el.children as ElementContent[]) {
+                    if (child.type === "text") {
+                      newChildren.push(...processTextNode(child.value))
+                    } else {
+                      visitEl(child)
+                      newChildren.push(child)
+                    }
+                  }
+                  el.children = newChildren as ElementContent[]
+                }
+
+                // Also transform text nodes stored directly on this element if it's a text node
+                if (el.type === "text") {
+                  return
                 }
               }
 

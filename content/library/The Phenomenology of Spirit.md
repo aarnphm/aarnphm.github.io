@@ -1,11 +1,12 @@
 ---
 status: to-read
 id: The Phenomenology of Spirit
-tags:
-  - philosophy
+author: G. W. F. Hegel
+subcategory: Hegel
 title: The Phenomenology of Spirit
 date: "2025-09-18"
-author: G. W. F. Hegel
+modified: 2025-10-07 22:12:19 GMT-04:00
+tags:
+  - philosophy
 category: philosophy
-subcategory: Hegel
 ---

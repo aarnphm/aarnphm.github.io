@@ -5,7 +5,6 @@ import Byline from "./Byline"
 import Image from "./Image"
 import Reader from "./Reader"
 import Toolbar from "./Toolbar"
-import Navigation from "./Navigation"
 import Palette from "./Palette"
 import Keybind from "./Keybind"
 import Content from "./pages/Content"
@@ -49,7 +48,6 @@ export {
   Toolbar,
   Image,
   Reader,
-  Navigation,
   Keybind,
   ArticleTitle,
   Content,

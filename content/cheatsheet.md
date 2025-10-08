@@ -3,12 +3,11 @@ id: cheatsheet
 tags:
   - evergreen
   - math
+description: A list of cheatsheet of whatever that fits with my workflow
 date: "2024-10-10"
-modified: 2025-10-05 07:07:45 GMT-04:00
+modified: 2025-10-08 03:48:57 GMT-04:00
 title: cheatsheet
 ---
-
-A list of cheatsheet of whatever that fits with my workflow
 
 $$
 \begin{aligned}

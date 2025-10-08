@@ -7,8 +7,9 @@ import style from "../styles/arena.scss"
 // @ts-ignore
 import modalScript from "../scripts/arena.inline"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { FullSlug, slugTag } from "../../util/path"
+import { FullSlug, slugTag, resolveRelative } from "../../util/path"
 import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from "../../util/arena"
+import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
 import { buildYouTubeEmbed } from "../../util/youtube"
 
 const substackPostRegex = /^https?:\/\/[^/]+\/p\/[^/]+/i
@@ -99,6 +100,55 @@ export default (() => {
         ? toArenaJsx(fileData.filePath!, node, fileData.slug! as FullSlug, componentData)
         : undefined
 
+    const renderInlineText = (text: string) => {
+      if (!text) return ""
+      const parts: ComponentChild[] = []
+      const regex = createWikilinkRegex()
+      let lastIndex = 0
+      let match: RegExpExecArray | null
+
+      while ((match = regex.exec(text)) !== null) {
+        const start = match.index
+        if (start > lastIndex) {
+          parts.push(text.slice(lastIndex, start))
+        }
+
+        const parsed = parseWikilink(match[0])
+        const resolved =
+          parsed && fileData.slug ? resolveWikilinkTarget(parsed, fileData.slug as FullSlug) : null
+
+        if (parsed && resolved) {
+          const hrefBase = resolveRelative(fileData.slug! as FullSlug, resolved.slug)
+          const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
+          parts.push(
+            <a
+              href={href}
+              class="internal"
+              data-no-popover
+              data-slug={resolved.slug}
+              key={`wikilink-${parts.length}`}
+            >
+              {parsed.alias ?? parsed.target ?? match[0]}
+            </a>,
+          )
+        } else {
+          parts.push(parsed?.alias ?? parsed?.target ?? match[0])
+        }
+
+        lastIndex = regex.lastIndex
+      }
+
+      if (lastIndex < text.length) {
+        parts.push(text.slice(lastIndex))
+      }
+
+      if (parts.length === 1) {
+        return parts[0]
+      }
+
+      return <>{parts}</>
+    }
+
     const renderBlock = (block: ArenaBlock, blockIndex: number) => {
       const hasSubItems = block.subItems && block.subItems.length > 0
       const frameTitle = block.title ?? block.content ?? `Block ${blockIndex + 1}`
@@ -139,7 +189,7 @@ export default (() => {
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([rawKey, rawValue]) => ({
             label: rawKey.replace(/_/g, " "),
-            value: rawValue,
+            value: renderInlineText(rawValue),
           }))
 
         metadataEntries.push(...additionalEntries)
@@ -203,11 +253,11 @@ export default (() => {
             tabIndex={0}
             aria-label="View block details"
           >
-            <div class="arena-block-content">
-              {block.titleHtmlNode
-                ? jsxFromNode(block.titleHtmlNode)
-                : block.title || block.content}
-            </div>
+          <div class="arena-block-content">
+            {block.titleHtmlNode
+              ? jsxFromNode(block.titleHtmlNode)
+              : renderInlineText(block.title || block.content || "")}
+          </div>
           </div>
           <div
             class="arena-block-modal-data"
@@ -356,7 +406,11 @@ export default (() => {
               </div>
               <div class="arena-modal-sidebar">
                 <div class="arena-modal-info">
-                  <h3 class="arena-modal-title">{block.title ?? ""}</h3>
+                  <h3 class="arena-modal-title">
+                    {block.titleHtmlNode
+                      ? jsxFromNode(block.titleHtmlNode)
+                      : renderInlineText(block.title ?? "")}
+                  </h3>
                   {metadataEntries.length > 0 && (
                     <div class="arena-modal-meta">
                       {metadataEntries.map(({ label, value }, index) => (
