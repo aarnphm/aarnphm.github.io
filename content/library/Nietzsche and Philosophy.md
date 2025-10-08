@@ -1,11 +1,11 @@
 ---
 status: evergreen
 id: Nietzsche and Philosophy
-subcategory: Deleuze
+subcategory: Nietzsche
 author: Gilles Deleuze
 year-finished: "-"
 category: philosophy
-date: "2025-08-13"
+date: 2025-08-13
 modified: 2025-10-07 09:50:45 GMT-04:00
 description: being and multiplicity
 tags:

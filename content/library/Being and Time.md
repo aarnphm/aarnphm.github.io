@@ -3,9 +3,9 @@ status: current
 id: Being and Time
 tags:
   - philosophy
-subcategory: Heidegger
+subcategory: being
 title: Being and Time
-date: "2025-10-06"
+date: 2025-10-06
 author: Martin Heidegger
 modified: 2025-10-07 00:45:20 GMT-04:00
 category: philosophy

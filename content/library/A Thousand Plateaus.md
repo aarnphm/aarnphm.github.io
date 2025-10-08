@@ -4,9 +4,9 @@ year-finished: "-"
 id: A Thousand Plateaus
 tags:
   - philosophy
-subcategory: Deleuze
+subcategory: hermeneutics
 title: A Thousand Plateaus
-date: "2025-08-16"
+date: 2025-08-16
 author:
   - Gilles Deleuze
   - Félix Guattari

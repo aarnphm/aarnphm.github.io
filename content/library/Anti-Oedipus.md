@@ -4,9 +4,9 @@ year-finished: "-"
 id: Anti-Oedipus
 tags:
   - philosophy
-subcategory: Deleuze
+subcategory: hermeneutics
 title: Anti-Oedipus
-date: "2025-08-16"
+date: 2025-08-16
 author:
   - Gilles Deleuze
   - Félix Guattari

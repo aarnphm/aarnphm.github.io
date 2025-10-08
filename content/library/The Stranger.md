@@ -4,10 +4,10 @@ id: The Stranger
 tags:
   - fiction
 title: The Stranger
-date: "2022-08-21"
+date: 2022-08-21
 author: Albert Camus
 category: fiction
-subcategory: Camus
+subcategory: existentialism
 year-finished: 2024
 internal-notes: "[[thoughts/Camus]]"
 ---

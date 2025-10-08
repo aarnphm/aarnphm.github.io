@@ -4,7 +4,7 @@ id: A Pattern Language
 tags:
   - non-fiction
 title: "A Pattern Language: Towns, Building, Construction"
-date: "2025-10-07"
+date: 2025-10-07
 author:
   - Christopher Alexander
   - Sara Ishikawa
@@ -14,4 +14,5 @@ author:
   - Shlomo Angel
 category: non-fiction
 external-url: https://patternlanguage.cc/
+subcategory: communal
 ---

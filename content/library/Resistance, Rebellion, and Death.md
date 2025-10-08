@@ -3,10 +3,10 @@ status: finished
 id: Resistance, Rebellion, and Death
 tags:
   - philosophy
-title: "Resistance, Rebellion, and Death"
-date: "2025-10-07"
+title: Resistance, Rebellion, and Death
+date: 2025-10-07
 author: Albert Camus
 category: philosophy
-subcategory: Camus
+subcategory: existentialism
 year-finished: 2025
 ---

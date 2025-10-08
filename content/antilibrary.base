@@ -23,10 +23,8 @@ views:
       direction: ASC
     order:
       - title
-      - category
       - date
       - status
-      - file.tags
       - author
       - subcategory
       - file.backlinks
@@ -93,21 +91,23 @@ views:
       note.internal-notes: 125
   - type: table
     name: all
+    groupBy:
+      property: author
+      direction: ASC
     order:
       - title
       - category
       - date
       - status
       - file.tags
-      - author
       - year-finished
       - subcategory
     sort:
       - property: status
+        direction: ASC
+      - property: date
         direction: DESC
       - property: category
-        direction: ASC
-      - property: title
         direction: ASC
     columnSize:
       note.title: 401
@@ -123,6 +123,7 @@ views:
       - description
       - internal-notes
       - file.backlinks
+      - author
     sort:
       - property: file.name
         direction: ASC

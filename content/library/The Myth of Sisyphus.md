@@ -4,10 +4,10 @@ id: The Myth of Sisyphus
 tags:
   - philosophy
 title: The Myth of Sisyphus
-date: "2022-08-21"
+date: 2022-08-21
 author: Albert Camus
 category: philosophy
-subcategory: Camus
+subcategory: existentialism
 year-finished: 2024
 internal-notes: "[[thoughts/Camus#The Myth of Sisyphus]]"
 ---
