@@ -31,6 +31,7 @@ import {
   youtubeSvg,
   gwernSvg,
 } from "../../components/svg"
+import type { FrontmatterLink } from "./frontmatter"
 
 interface Options {
   enableArxivEmbed: boolean
@@ -133,8 +134,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
             visit(
               tree,
               (node: Element) => shouldRewriteLinks(node as Element),
-              //@ts-ignore
-              (node: Element, index?: number, parent?: Element) => {
+              (node: Element) => {
                 const classes = (node.properties.className ?? []) as string[]
                 // insert a span element into node.children
                 let dest = node.properties.href as RelativeURL
@@ -453,6 +453,17 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 }
               },
             )
+
+            const fmLinks = file.data.frontmatterLinks as
+              | Record<string, FrontmatterLink[]>
+              | undefined
+            if (fmLinks) {
+              for (const links of Object.values(fmLinks)) {
+                for (const link of links) {
+                  outgoing.add(simplifySlug(link.slug))
+                }
+              }
+            }
 
             file.data.links = [...outgoing]
           }

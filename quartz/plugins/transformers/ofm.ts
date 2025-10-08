@@ -28,6 +28,8 @@ import { capitalize } from "../../util/lang"
 import { buildYouTubeEmbed } from "../../util/youtube"
 import { PluggableList } from "unified"
 import { h, s } from "hastscript"
+import { createWikilinkRegex, parseWikilink } from "../../util/wikilinks"
+import { wikilinkToMdast, escapeWikilinkForTable } from "../../util/mdast-util-wikilinks"
 import { whitespace } from "hast-util-whitespace"
 import { remove } from "unist-util-remove"
 import { svgOptions } from "../../components/svg"
@@ -122,9 +124,7 @@ export const arrowRegex = new RegExp(/(-{1,2}>|={1,2}>|<-{1,2}|<={1,2})/g)
 // ([^\[\]\|\#]+)     -> one or more non-special characters ([,],|, or #) (name)
 // (#[^\[\]\|\#]+)?   -> # then one or more non-special characters (heading link)
 // (\\?\|[^\[\]\#]+)? -> optional escape \ then | then zero or more non-special characters (alias)
-export const wikilinkRegex = new RegExp(
-  /!?\[\[([^\[\]\|\#\\]+)?(#+[^\[\]\|\#\\]+)?(\\?\|[^\[\]\#]*)?\]\]/g,
-)
+const wikilinkRegex = createWikilinkRegex()
 
 export const inlineFootnoteRegex = /\^\[((?:[^\[\]]|\[(?:[^\[\]]|\[[^\[\]]*\])*\])*)\]/g
 
@@ -150,9 +150,6 @@ const tagRegex = new RegExp(
 )
 const blockReferenceRegex = new RegExp(/\^([-_A-Za-z0-9]+)$/g)
 const videoExtensionRegex = new RegExp(/\.(mp4|webm|ogg|avi|mov|flv|wmv|mkv|mpg|mpeg|3gp|m4v)$/)
-const wikilinkImageEmbedRegex = new RegExp(
-  /^(?<alt>(?!^\d*x?\d*$).*?)?(\|?\s*?(?<width>\d+)(x(?<height>\d+))?)?$/,
-)
 
 export const checkMermaidCode = ({ tagName, properties }: Element) =>
   tagName === "code" &&
@@ -164,13 +161,8 @@ export const wikiTextTransform = (src: string) => {
   src = src.replace(tableRegex, (value) => {
     // escape all aliases and headers in wikilinks inside a table
     return value.replace(tableWikilinkRegex, (_value, raw) => {
-      // const [raw]: (string | undefined)[] = capture
-      let escaped = raw ?? ""
-      escaped = escaped.replace("#", "\\#")
-      // escape pipe characters if they are not already escaped
-      escaped = escaped.replace(/((^|[^\\])(\\\\)*)\|/g, "$1\\|")
-
-      return escaped
+      const escaped = raw ?? ""
+      return escapeWikilinkForTable(escaped)
     })
   })
 
@@ -263,130 +255,42 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           if (opts.wikilinks) {
             replacements.push([
               wikilinkRegex,
-              (value: string, ...capture: string[]) => {
-                let [rawFp, rawHeader, rawAlias] = capture
-                const fp = rawFp?.trim() ?? ""
-                const anchor = rawHeader?.trim() ?? ""
-                const alias: string | undefined = rawAlias?.slice(1).trim()
+              (value: string, ..._capture: string[]) => {
+                const parsed = parseWikilink(value)
+                if (!parsed) return SKIP
 
-                // embed cases
-                if (value.startsWith("!")) {
-                  const ext: string = path.extname(fp).toLowerCase()
-                  const url = slugifyFilePath(fp as FilePath)
-                  switch (ext) {
-                    // images
-                    case ".png":
-                    case ".jpg":
-                    case ".jpeg":
-                    case ".gif":
-                    case ".bmp":
-                    case ".svg":
-                    case ".webp": {
-                      const match = wikilinkImageEmbedRegex.exec(alias ?? "")
-                      const alt = match?.groups?.alt ?? ""
-                      const width = match?.groups?.width ?? "auto"
-                      const height = match?.groups?.height ?? "auto"
-                      return {
-                        type: "image",
-                        url,
-                        data: {
-                          hProperties: {
-                            width,
-                            height,
-                            alt,
-                          },
-                        },
-                      }
-                    }
-                    // videos
-                    case ".mp4":
-                    case ".webm":
-                    case ".ogv":
-                    case ".mov":
-                    case ".mkv": {
-                      return {
-                        type: "html",
-                        value: `<video src="${url}" controls loop></video>`,
-                      }
-                    }
-                    // audio
-                    case ".mp3":
-                    case ".wav":
-                    case ".m4a":
-                    case ".ogg":
-                    case ".3gp":
-                    case ".flac": {
-                      return {
-                        type: "html",
-                        value: `<audio src="${url}" controls></audio>`,
-                      }
-                    }
-                    // documents
-                    case ".pdf": {
-                      return {
-                        type: "html",
-                        value: `<iframe src="${url}" class="pdf"></iframe>`,
-                      }
-                    }
-                    // default: transclude block
-                    default: {
-                      const block = anchor
-                      return {
-                        type: "html",
-                        data: { hProperties: { transclude: true } },
-                        value: toHtml(
-                          h(
-                            "blockquote.transclude",
-                            { "data-url": url, "data-block": block, "data-embed-alias": alias },
-                            h("a.transclude-inner", { href: url + anchor }, [
-                              { type: "text", value: `Transclude of ${url} ${block}` },
-                            ]),
-                          ),
-                          { allowDangerousHtml },
-                        ),
-                      }
-                    }
-                  }
-
-                  // otherwise, fall through to regular link
-                }
-
-                // internal link
-                const url = fp + anchor
-
-                // treat as broken link if slug not in ctx.allSlugs
-                if (opts.enableBrokenWikilinks) {
-                  const slug = slugifyFilePath(fp as FilePath)
-                  const exists = ctx.allSlugs && ctx.allSlugs.includes(slug)
-                  if (!exists) {
-                    return {
-                      type: "link",
-                      url,
-                      data: {
-                        hProperties: {
-                          className: ["broken"],
-                        },
-                      },
-                      children: [
+                // for embeds that need hastscript, handle transclusion specially
+                if (parsed.embed && !path.extname(parsed.target)) {
+                  // markdown/block transclude needs hastscript
+                  const url = slugifyFilePath(parsed.target as FilePath)
+                  const block = parsed.anchor ?? ""
+                  return {
+                    type: "html",
+                    data: { hProperties: { transclude: true } },
+                    value: toHtml(
+                      h(
+                        "blockquote.transclude",
                         {
-                          type: "text",
-                          value: alias ?? fp,
+                          "data-url": url,
+                          "data-block": block,
+                          "data-embed-alias": parsed.alias,
                         },
-                      ],
-                    }
+                        h("a.transclude-inner", { href: url + block }, [
+                          { type: "text", value: `Transclude of ${url} ${block}` },
+                        ]),
+                      ),
+                      { allowDangerousHtml },
+                    ),
                   }
                 }
 
-                return {
-                  type: "link",
-                  url,
-                  children: [
-                    {
-                      type: "text",
-                      value: alias ?? fp,
-                    },
-                  ],
-                }
+                // delegate all other conversions to mdast-util-wikilinks
+                const result = wikilinkToMdast(parsed, {
+                  allSlugs: ctx.allSlugs,
+                  enableBrokenWikilinks: opts.enableBrokenWikilinks,
+                })
+
+                return result ?? SKIP
               },
             ])
           }

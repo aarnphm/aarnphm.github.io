@@ -3,6 +3,7 @@ import remarkFrontmatter from "remark-frontmatter"
 import { QuartzTransformerPlugin } from "../types"
 import yaml from "js-yaml"
 import { FilePath, FullSlug, slugifyFilePath, slugTag, getFileExtension } from "../../util/path"
+import { extractWikilinks, resolveWikilinkTarget } from "../../util/wikilinks"
 import { QuartzPluginData } from "../vfile"
 import { i18n } from "../../i18n"
 import { ContentLayout } from "../emitters/contentIndex"
@@ -39,6 +40,65 @@ function coerceToArray(input: string | string[]): string[] | undefined {
   return input
     .filter((tag: unknown) => typeof tag === "string" || typeof tag === "number")
     .map((tag: string | number) => tag.toString())
+}
+
+export interface FrontmatterLink {
+  raw: string
+  slug: FullSlug
+  anchor?: string
+  alias?: string
+}
+
+function collectValueLinks(value: unknown, currentSlug: FullSlug): FrontmatterLink[] {
+  const results: FrontmatterLink[] = []
+  const seen = new Set<string>()
+
+  const visitValue = (val: unknown) => {
+    if (typeof val === "string") {
+      for (const link of extractWikilinks(val)) {
+        const resolved = resolveWikilinkTarget(link, currentSlug)
+        if (!resolved) continue
+
+        const fingerprint = `${resolved.slug}${resolved.anchor ?? ""}`
+        if (seen.has(fingerprint)) continue
+        seen.add(fingerprint)
+
+        results.push({
+          raw: link.raw,
+          slug: resolved.slug,
+          anchor: resolved.anchor,
+          alias: link.alias,
+        })
+      }
+    } else if (Array.isArray(val)) {
+      for (const item of val) {
+        visitValue(item)
+      }
+    } else if (val && typeof val === "object" && val.constructor === Object) {
+      for (const inner of Object.values(val as Record<string, unknown>)) {
+        visitValue(inner)
+      }
+    }
+  }
+
+  visitValue(value)
+  return results
+}
+
+function collectFrontmatterLinks(
+  data: Record<string, unknown>,
+  currentSlug: FullSlug,
+): Record<string, FrontmatterLink[]> | undefined {
+  const result: Record<string, FrontmatterLink[]> = {}
+
+  for (const [key, value] of Object.entries(data)) {
+    const links = collectValueLinks(value, currentSlug)
+    if (links.length > 0) {
+      result[key] = links
+    }
+  }
+
+  return Object.keys(result).length > 0 ? result : undefined
 }
 
 export const FrontMatter: QuartzTransformerPlugin = () => ({
@@ -118,6 +178,14 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
         layout ||= "default"
         data.pageLayout = layout
 
+        const currentSlug = file.data.slug as FullSlug | undefined
+        if (currentSlug) {
+          const frontmatterLinks = collectFrontmatterLinks(data as Record<string, unknown>, currentSlug)
+          if (frontmatterLinks) {
+            file.data.frontmatterLinks = frontmatterLinks
+          }
+        }
+
         // fill in frontmatter
         file.data.frontmatter = data as QuartzPluginData["frontmatter"]
       }
@@ -163,5 +231,6 @@ declare module "vfile" {
         socials: Record<string, string>
         authors: string[]
       }>
+    frontmatterLinks?: Record<string, FrontmatterLink[]>
   }
 }

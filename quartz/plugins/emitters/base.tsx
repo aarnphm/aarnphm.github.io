@@ -20,8 +20,10 @@ import { BaseFile, BaseView, BaseGroupBy } from "../../util/base/types"
 import { QuartzPluginData } from "../vfile"
 import { Root } from "hast"
 import { h } from "hastscript"
-import { wikilinkRegex } from "../transformers/ofm"
+import { createWikilinkRegex } from "../../util/wikilinks"
 
+const wikilinkRegex = createWikilinkRegex()
+const INLINE_WIKILINK_REGEX = createWikilinkRegex()
 const wikilinkFlags = wikilinkRegex.flags.includes("g")
   ? wikilinkRegex.flags
   : `${wikilinkRegex.flags}g`

@@ -4,6 +4,7 @@ import { QuartzTransformerPlugin } from "../types"
 import { escapeHTML, unescapeHTML } from "../../util/escape"
 import readingTime, { ReadTimeResults } from "reading-time"
 import { i18n } from "../../i18n"
+import { stripWikilinkFormatting } from "../../util/wikilinks"
 
 export interface Options {
   descriptionLength: number
@@ -31,6 +32,9 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
         () => {
           return async (tree: HTMLRoot, file) => {
             let frontMatterDescription = file.data.frontmatter?.description
+            if (typeof frontMatterDescription === "string") {
+              frontMatterDescription = stripWikilinkFormatting(frontMatterDescription)
+            }
             let text = escapeHTML(toString(tree))
 
             if (opts.replaceExternalLinks) {

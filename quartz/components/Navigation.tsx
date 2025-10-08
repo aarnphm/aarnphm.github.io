@@ -1,6 +1,7 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import navigationCss from "./styles/navigation.scss"
-import { FullSlug, TransformOptions, transformLink } from "../util/path"
+import { FullSlug, TransformOptions, transformLink, resolveRelative } from "../util/path"
+import { parseWikilink, resolveWikilinkTarget } from "../util/wikilinks"
 
 interface Options {
   prev: string
@@ -19,8 +20,20 @@ export default ((userOpts?: Partial<Options>) => {
       allSlugs: allFiles.map((f) => f.slug as FullSlug),
     }
 
-    const transformNav = (nav: string) =>
+    const transformNavLegacy = (nav: string) =>
       transformLink(fileData.slug!, nav.replace(/['"\[\]]+/g, ""), transformOpts)
+
+    const resolveNavEntry = (nav: string) => {
+      const parsed = parseWikilink(nav)
+      if (parsed) {
+        const resolved = resolveWikilinkTarget(parsed, fileData.slug as FullSlug)
+        if (resolved) {
+          const href = resolveRelative(fileData.slug!, resolved.slug)
+          return parsed.anchor ? `${href}${parsed.anchor}` : href
+        }
+      }
+      return transformNavLegacy(nav)
+    }
 
     const navigation = fileData.frontmatter?.navigation as [string, string]
     let baseOpts: Options = defaultOptions
@@ -28,8 +41,8 @@ export default ((userOpts?: Partial<Options>) => {
       const [next, prev] = navigation
       baseOpts = {
         ...defaultOptions,
-        prev: transformNav(prev),
-        next: transformNav(next),
+        prev: resolveNavEntry(prev),
+        next: resolveNavEntry(next),
       }
     }
 

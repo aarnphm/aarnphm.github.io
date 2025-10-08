@@ -6,6 +6,7 @@ import path from "path"
 import { FilePath } from "../../util/path"
 import { readFile } from "fs/promises"
 import { visit } from "unist-util-visit"
+import { createWikilinkRegex } from "../../util/wikilinks"
 
 type Options = {
   /** File extensions to treat as code files (lowercase, with dot). */
@@ -49,7 +50,7 @@ const DEFAULT_EXTS = new Set<string>([
 ])
 
 // Same wikilink regex semantics as OFM; we only care about embed variant here
-const wikilinkRegex = /!?\[\[([^\[\]\|\#\\]+)?(#+[^\[\]\|\#\\]+)?(\\?\|[^\[\]\#]*)?\]\]/g
+const wikilinkRegex = createWikilinkRegex()
 
 function languageFromExt(ext: string): string | undefined {
   const e = ext.replace(/^\./, "").toLowerCase()
