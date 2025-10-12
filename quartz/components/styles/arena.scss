@@ -459,6 +459,17 @@ body[data-arena-subpage="true"] {
   border: 1px solid var(--gray);
   border-radius: 4px;
 
+  .byline,
+  .title-col {
+    max-width: none;
+  }
+  .byline {
+    grid-column: 5/8;
+    & > .tags {
+      flex-grow: 0 0 20%;
+    }
+  }
+
   &:has(.arena-modal-iframe) {
     border: none;
     border-radius: 0;
@@ -836,6 +847,46 @@ span.tag-link:hover {
   }
 }
 
+// Wikilink trail styles
+.arena-modal-wikilink-trail {
+  .arena-modal-wikilink-trail-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--lightgray);
+
+    .arena-modal-wikilink-icon {
+      color: var(--secondary);
+      flex-shrink: 0;
+    }
+
+    .arena-modal-wikilink-trail-title {
+      font-size: 14px;
+      font-style: italic;
+      color: var(--darkgray);
+    }
+  }
+
+  .arena-modal-wikilink-trail-link {
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+
+    a.arena-wikilink-trail-anchor {
+      color: var(--secondary);
+      text-decoration: none;
+      transition: color 0.2s ease;
+
+      &:hover {
+        text-decoration: underline;
+        color: var(--tertiary);
+      }
+    }
+  }
+}
+
 // Search functionality styles
 .arena-search {
   position: relative;
@@ -948,6 +999,42 @@ span.tag-link:hover {
   padding: 3rem 1.5rem;
   color: var(--gray);
   font-size: 0.95rem;
+}
+
+.arena-iframe-error {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--light);
+  border-radius: 4px;
+}
+
+.arena-iframe-error-content {
+  text-align: center;
+  padding: 2rem;
+
+  p {
+    color: var(--gray);
+    margin-bottom: 1rem;
+  }
+}
+
+.arena-iframe-error-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--secondary);
+  color: var(--light);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.2s;
+
+  &:hover {
+    background: var(--tertiary);
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -1088,6 +1175,22 @@ span.tag-link:hover {
     .arena-modal-connections-list > li {
       a {
         color: var(--secondary);
+      }
+    }
+
+    .arena-modal-wikilink-trail-header {
+      border-bottom-color: var(--darkgray);
+
+      .arena-modal-wikilink-trail-title {
+        color: var(--light);
+      }
+    }
+
+    .arena-wikilink-trail-anchor {
+      color: var(--secondary);
+
+      &:hover {
+        color: var(--tertiary);
       }
     }
 

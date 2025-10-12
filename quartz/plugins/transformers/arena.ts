@@ -53,6 +53,7 @@ export interface ArenaBlock {
   internalHref?: string
   internalHash?: string
   tags?: string[]
+  embedDisabled?: boolean
 }
 
 export interface ArenaChannel {
@@ -67,6 +68,119 @@ export interface ArenaData {
   channels: ArenaChannel[]
 }
 
+/**
+ * Serializable version of ArenaBlock for search index.
+ * ElementContent fields (titleHtmlNode, htmlNode) are converted to HTML strings
+ * for JSON serialization. Enables full-text search and modal reconstruction
+ * without requiring build-time ElementContent access.
+ */
+export interface ArenaBlockSearchable {
+  /** Unique block identifier matching DOM data-block-id */
+  id: string
+
+  /** Slug of the channel containing this block */
+  channelSlug: string
+
+  /** Display name of the channel for search result context */
+  channelName: string
+
+  /** Plain text content (fallback if title unavailable) */
+  content: string
+
+  /** Block title if available */
+  title?: string
+
+  /** HTML string serialized from titleHtmlNode via hast-util-to-html */
+  titleHtml?: string
+
+  /** HTML string serialized from htmlNode for modal sidebar display */
+  blockHtml?: string
+
+  /** External URL if block references one */
+  url?: string
+
+  /** Whether block should be visually highlighted */
+  highlighted: boolean
+
+  /** Prerendered embed HTML (Twitter, YouTube iframe, etc) */
+  embedHtml?: string
+
+  /** Key-value metadata pairs (accessed date, author, etc) */
+  metadata?: Record<string, string>
+
+  /** Internal note slug reference if block links internally */
+  internalSlug?: string
+
+  /** Internal note resolved href */
+  internalHref?: string
+
+  /** Internal note anchor fragment */
+  internalHash?: string
+
+  /** Associated tags for filtering and search */
+  tags?: string[]
+
+  /** Nested sub-items (notes/annotations on this block) */
+  subItems?: ArenaBlockSearchable[]
+
+  /**
+   * True if this block has a prerendered modal div in the index page DOM.
+   * Optimization flag: if true, client can reuse existing modal;
+   * if false, client must reconstruct from JSON data.
+   */
+  hasModalInDom: boolean
+
+  /** True if embed rendering is explicitly disabled */
+  embedDisabled?: boolean
+
+  /** Snapshot key for caching (hash of url + title) */
+  snapshotKey?: string
+}
+
+/**
+ * Channel metadata for search index.
+ * Lightweight summary without full block data.
+ */
+export interface ArenaChannelSearchable {
+  /** Channel identifier */
+  id: string
+
+  /** Channel display name */
+  name: string
+
+  /** Channel URL slug */
+  slug: string
+
+  /** Total number of blocks in this channel */
+  blockCount: number
+}
+
+/**
+ * Complete search index for arena content.
+ * Generated at build time in arenaPage.tsx emitter.
+ * Emitted as static/arena-search.json for client-side consumption.
+ */
+export interface ArenaSearchIndex {
+  /**
+   * Schema version for cache invalidation.
+   * Increment when making breaking changes to the index structure.
+   */
+  version: string
+
+  /**
+   * All blocks from all channels in a flat array.
+   * Each block includes channel context (channelSlug, channelName).
+   * Enables efficient linear search and filtering.
+   */
+  blocks: ArenaBlockSearchable[]
+
+  /**
+   * Channel metadata for quick lookups and navigation.
+   * Sorted by block count descending (same as index page).
+   */
+  channels: ArenaChannelSearchable[]
+}
+
 declare module "vfile" {
   interface DataMap {
     arenaData?: ArenaData
@@ -74,7 +188,10 @@ declare module "vfile" {
   }
 }
 
-const HIGHLIGHT_TRAILING = /\s*\[?\*\*\]?\s*$/
+// Matches trailing section containing one or more markers in any order
+const TRAILING_MARKERS_PATTERN = /(?:\s*\[(?:\*\*|--|—)\])+\s*$/
+const HIGHLIGHT_MARKER = /\[\*\*\]/
+const EMBED_DISABLED_MARKER = /\[(?:--|—)\]/
 
 const parseLinkTitle = (text: string): { url: string; title?: string } | undefined => {
   const match = text.match(/^(https?:\/\/[^\s]+)\s*(?:(?:--|—)\s*(.+))?$/)
@@ -88,7 +205,8 @@ const parseLinkTitle = (text: string): { url: string; title?: string } | undefin
   }
 }
 
-const stripHighlightMarker = (value: string): string => value.replace(HIGHLIGHT_TRAILING, "").trim()
+const stripTrailingMarkers = (value: string): string =>
+  value.replace(TRAILING_MARKERS_PATTERN, "").trim()
 
 type NodeWithData = {
   data?: {
@@ -305,8 +423,14 @@ export const Arena: QuartzTransformerPlugin = () => {
               )
 
               const textContent = paragraph ? toString(paragraph).trim() : toString(listItem).trim()
-              const highlighted = HIGHLIGHT_TRAILING.test(textContent)
-              const strippedContent = stripHighlightMarker(textContent)
+
+              // Extract trailing markers section and check for both markers
+              const trailingMatch = textContent.match(TRAILING_MARKERS_PATTERN)
+              const trailingSection = trailingMatch ? trailingMatch[0] : ""
+
+              const highlighted = HIGHLIGHT_MARKER.test(trailingSection)
+              const embedDisabled = EMBED_DISABLED_MARKER.test(trailingSection)
+              const strippedContent = stripTrailingMarkers(textContent)
 
               const firstLink = paragraph?.children.find(
                 (child): child is Link => child.type === "link",
@@ -316,7 +440,8 @@ export const Arena: QuartzTransformerPlugin = () => {
               let titleCandidate: string | undefined
 
               if (firstLink && depth === 0) {
-                const linkText = stripHighlightMarker(toString(firstLink).trim())
+                let linkText = toString(firstLink).trim()
+                linkText = stripTrailingMarkers(linkText)
                 if (linkText.length > 0) {
                   titleCandidate = linkText
                 }
@@ -330,7 +455,11 @@ export const Arena: QuartzTransformerPlugin = () => {
                 const parsed = parseLinkTitle(strippedContent)
                 if (parsed) {
                   url = parsed.url
-                  titleCandidate = parsed.title ?? parsed.url ?? titleCandidate
+                  let parsedTitle = parsed.title
+                  if (parsedTitle) {
+                    parsedTitle = stripTrailingMarkers(parsedTitle)
+                  }
+                  titleCandidate = parsedTitle ?? parsed.url ?? titleCandidate
                 }
               }
 
@@ -358,6 +487,7 @@ export const Arena: QuartzTransformerPlugin = () => {
               const info: Record<string, unknown> = {
                 content: fallbackContent,
                 highlighted: highlighted || undefined,
+                embedDisabled: embedDisabled || undefined,
                 snapshotKey,
                 title: titleCandidate,
                 url,
@@ -709,6 +839,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                   parseJsonAttr<{
                     content?: string
                     highlighted?: boolean
+                    embedDisabled?: boolean
                     snapshotKey?: string
                     title?: string
                     url?: string
@@ -721,6 +852,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                   title: typeof info.title === "string" ? info.title : undefined,
                   snapshotKey: typeof info.snapshotKey === "string" ? info.snapshotKey : undefined,
                   highlighted: Boolean(info.highlighted),
+                  embedDisabled: Boolean(info.embedDisabled),
                 }
 
                 const metaPayload = parseJsonAttr<unknown>(

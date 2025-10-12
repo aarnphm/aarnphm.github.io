@@ -1769,6 +1769,21 @@
   doi = {10.18653/v1/2020.acl-main.698}
 }
 
+@inproceedings{10.1007/978-3-030-79876-5_37,
+  title = {The Lean 4 Theorem Prover and Programming Language},
+  author = {Moura, Leonardo de and Ullrich, Sebastian},
+  year = {2021},
+  booktitle = {Automated Deduction – CADE 28: 28th International Conference on Automated Deduction, Virtual Event, July 12–15, 2021, Proceedings},
+  publisher = {Springer-Verlag},
+  address = {Berlin, Heidelberg},
+  pages = {625–635},
+  doi = {10.1007/978-3-030-79876-5_37},
+  isbn = {978-3-030-79875-8},
+  url = {https://doi.org/10.1007/978-3-030-79876-5_37},
+  abstract = {Lean 4 is a reimplementation of the Lean interactive theorem prover (ITP) in Lean itself. It addresses many shortcomings of the previous versions and contains many new features. Lean 4 is fully extensible: users can modify and extend the parser, elaborator, tactics, decision procedures, pretty printer, and code generator. The new system has a hygienic macro system custom-built for ITPs. It contains a new typeclass resolution procedure based on tabled resolution, addressing significant performance problems reported by the growing user base. Lean 4 is also an efficient functional programming language based on a novel programming paradigm called functional but in-place. Efficient code generation is crucial for Lean users because many write custom proof automation procedures in Lean itself.},
+  numpages = {11}
+}
+
 @inproceedings{280922,
   title = {Orca: A Distributed Serving System for {Transformer-Based} Generative Models},
   author = {Gyeong-In Yu and Joo Seong Jeong and Geon-Woo Kim and Soojeong Kim and Byung-Gon Chun},
@@ -2099,14 +2114,6 @@
   howpublished = {https://arxiv.org/abs/1811.03115}
 }
 
-@misc{rosenfeld2019190912673,
-  title = {A {Constructive} {Prediction} of the {Generalization} {Error} {Across} {Scales}},
-  author = {Rosenfeld, Jonathan S. and Rosenfeld, Amir and Belinkov, Yonatan and Shavit, Nir},
-  year = {2019},
-  url = {https://arxiv.org/abs/1909.12673},
-  howpublished = {https://arxiv.org/abs/1909.12673}
-}
-
 @misc{chen2019191202279,
   title = {Angular {Visual} {Hardness}},
   author = {Chen, Beidi and Liu, Weiyang and Yu, Zhiding and Kautz, Jan and Shrivastava, Anshumali and Garg, Animesh and Anandkumar, Anima},
@@ -2153,6 +2160,16 @@
   url = {https://arxiv.org/abs/1905.10650},
   archiveprefix = {arXiv},
   primaryclass = {cs.CL}
+}
+
+@misc{rosenfeld2019constructivepredictiongeneralizationerror,
+  title = {A Constructive Prediction of the Generalization Error Across Scales},
+  author = {Jonathan S. Rosenfeld and Amir Rosenfeld and Yonatan Belinkov and Nir Shavit},
+  year = {2019},
+  eprint = {1909.12673},
+  url = {https://arxiv.org/abs/1909.12673},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG}
 }
 
 @misc{zhang2019rootmeansquarelayer,
@@ -2346,20 +2363,20 @@
   howpublished = {https://arxiv.org/abs/2104.00298}
 }
 
-@misc{yang2022220303466,
-  title = {Tensor {Programs} {V}: Tuning {Large} {Neural} {Networks} via {Zero}-{Shot} {Hyperparameter} {Transfer}},
-  author = {Yang, Greg and Hu, Edward J. and Babuschkin, Igor and Sidor, Szymon and Liu, Xiaodong and Farhi, David and Ryder, Nick and Pachocki, Jakub and Chen, Weizhu and Gao, Jianfeng},
-  year = {2022},
-  url = {https://arxiv.org/abs/2203.03466},
-  howpublished = {https://arxiv.org/abs/2203.03466}
-}
-
 @misc{semianalysis2022blackhole,
   title = {Tenstorrent Blackhole, Grendel, And Buda},
   author = {{SemiAnalysis}},
   year = {2022},
   month = apr,
   url = {https://semianalysis.com/2022/04/12/tenstorrent-blackhole-grendel-and/}
+}
+
+@misc{charton2022mathtransformerdoing,
+  title = {What is my math transformer doing? -- {Three} results on interpretability and generalization},
+  author = {Charton, Fran{\c c}ois},
+  year = {2022},
+  url = {https://arxiv.org/abs/2211.00170},
+  howpublished = {https://arxiv.org/abs/2211.00170}
 }
 
 @misc{tay2022efficienttransformerssurvey,
@@ -2415,6 +2432,16 @@
   howpublished = {https://arxiv.org/abs/2110.02861}
 }
 
+@misc{charton2022linearalgebratransformers,
+  title = {Linear algebra with transformers},
+  author = {François Charton},
+  year = {2022},
+  eprint = {2112.01898},
+  url = {https://arxiv.org/abs/2112.01898},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG}
+}
+
 @misc{power2022grokkinggeneralizationoverfittingsmall,
   title = {Grokking: Generalization Beyond Overfitting on Small Algorithmic Datasets},
   author = {Alethea Power and Yuri Burda and Harri Edwards and Igor Babuschkin and Vedant Misra},
@@ -2423,6 +2450,17 @@
   url = {https://arxiv.org/abs/2201.02177},
   archiveprefix = {arXiv},
   primaryclass = {cs.LG}
+}
+
+@misc{yang2022tensorprogramsvtuning,
+  title = {Tensor Programs V: Tuning Large Neural Networks via Zero-Shot Hyperparameter Transfer},
+  author = {Greg Yang and Edward J. Hu and Igor Babuschkin and Szymon Sidor and Xiaodong Liu and David Farhi and Nick Ryder and Jakub Pachocki and Weizhu Chen and Jianfeng Gao},
+  year = {2022},
+  eprint = {2203.03466},
+  url = {https://arxiv.org/abs/2203.03466},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  howpublished = {https://arxiv.org/abs/2203.03466}
 }
 
 @misc{hoffmann2022trainingcomputeoptimallargelanguage,
@@ -2548,7 +2586,7 @@
   howpublished = {https://arxiv.org/abs/2310.07707}
 }
 
-@misc{dey2023230403208,
+@misc{dey2023cerebrasgptopencomputeoptimallanguage,
   title = {Cerebras-{GPT}: Open {Compute}-{Optimal} {Language} {Models} {Trained} on the {Cerebras} {Wafer}-{Scale} {Cluster}},
   author = {Dey, Nolan and Gosal, Gurpreet and {Zhiming} and {Chen} and Khachane, Hemant and Marshall, William and Pathria, Ribhu and Tom, Marvin and Hestness, Joel},
   year = {2023},
@@ -2876,54 +2914,6 @@
   note = {Official programming documentation}
 }
 
-@misc{qian2024240415778,
-  title = {BASS: Batched {Attention}-optimized {Speculative} {Sampling}},
-  author = {Qian, Haifeng and Gonugondla, Sujan Kumar and Ha, Sungsoo and Shang, Mingyue and Gouda, Sanjay Krishna and Nallapati, Ramesh and Sengupta, Sudipta and Ma, Xiaofei and Deoras, Anoop},
-  year = {2024},
-  url = {https://arxiv.org/abs/2404.15778},
-  howpublished = {https://arxiv.org/abs/2404.15778}
-}
-
-@misc{huang2024240519715,
-  title = {SpecDec++: Boosting {Speculative} {Decoding} via {Adaptive} {Candidate} {Lengths}},
-  author = {Huang, Kaixuan and Guo, Xudong and Wang, Mengdi},
-  year = {2024},
-  url = {https://arxiv.org/abs/2405.19715},
-  howpublished = {https://arxiv.org/abs/2405.19715}
-}
-
-@misc{song2024240213516,
-  title = {ProSparse: Introducing and {Enhancing} {Intrinsic} {Activation} {Sparsity} within {Large} {Language} {Models}},
-  author = {Song, Chenyang and Han, Xu and Zhang, Zhengyan and Hu, Shengding and Shi, Xiyu and Li, Kuai and Chen, Chen and Liu, Zhiyuan and Li, Guangli and Yang, Tao and Sun, Maosong},
-  year = {2024},
-  url = {https://arxiv.org/abs/2402.13516},
-  howpublished = {https://arxiv.org/abs/2402.13516}
-}
-
-@misc{cheng2024240613511,
-  title = {Slice-{Level} {Scheduling} for {High} {Throughput} and {Load} {Balanced} {LLM} {Serving}},
-  author = {Cheng, Ke and Hu, Wen and Wang, Zhi and Peng, Hongen and Li, Jianguo and Zhang, Sheng},
-  year = {2024},
-  url = {https://arxiv.org/abs/2406.13511},
-  howpublished = {https://arxiv.org/abs/2406.13511}
-}
-
-@misc{yao2024240108383,
-  title = {Exploiting {Inter}-{Layer} {Expert} {Affinity} for {Accelerating} {Mixture}-of-{Experts} {Model} {Inference}},
-  author = {Yao, Jinghan and Anthony, Quentin and Shafi, Aamir and Subramoni, Hari and K., Dhabaleswar and {Panda}},
-  year = {2024},
-  url = {https://arxiv.org/abs/2401.08383},
-  howpublished = {https://arxiv.org/abs/2401.08383}
-}
-
-@misc{velikovi2024241001104,
-  title = {Softmax is not {Enough} (for {Sharp} {Size} {Generalisation})},
-  author = {Veli{\v c}kovi{\' c}, Petar and Perivolaropoulos, Christos and Barbero, Federico and Pascanu, Razvan},
-  year = {2024},
-  url = {https://arxiv.org/abs/2410.01104},
-  howpublished = {https://arxiv.org/abs/2410.01104}
-}
-
 @misc{turner2024steeringlanguagemodelsactivation,
   title = {Steering Language Models With Activation Engineering},
   author = {Alexander Matt Turner and Lisa Thiergart and Gavin Leech and David Udell and Juan J. Vazquez and Ulisse Mini and Monte MacDiarmid},
@@ -3029,6 +3019,17 @@
   primaryclass = {cs.AI}
 }
 
+@misc{yao2024exploitinginterlayerexpertaffinity,
+  title = {Exploiting Inter-Layer Expert Affinity for Accelerating Mixture-of-Experts Model Inference},
+  author = {Jinghan Yao and Quentin Anthony and Aamir Shafi and Hari Subramoni and Dhabaleswar K. and Panda},
+  year = {2024},
+  eprint = {2401.08383},
+  url = {https://arxiv.org/abs/2401.08383},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  howpublished = {https://arxiv.org/abs/2401.08383}
+}
+
 @misc{holmes2024deepspeedfastgenhighthroughputtextgeneration,
   title = {DeepSpeed-FastGen: High-throughput Text Generation for LLMs via MII and DeepSpeed-Inference},
   author = {Connor Holmes and Masahiro Tanaka and Michael Wyatt and Ammar Ahmad Awan and Jeff Rasley and Samyam Rajbhandari and Reza Yazdani Aminabadi and Heyang Qin and Arash Bakhtiari and Lev Kurilenko and Yuxiong He},
@@ -3121,6 +3122,16 @@
   archiveprefix = {arXiv},
   primaryclass = {cs.CL},
   howpublished = {https://arxiv.org/abs/2404.14469}
+}
+
+@misc{qian2024bassbatchedattentionoptimizedspeculative,
+  title = {BASS: Batched Attention-optimized Speculative Sampling},
+  author = {Haifeng Qian and Sujan Kumar Gonugondla and Sungsoo Ha and Mingyue Shang and Sanjay Krishna Gouda and Ramesh Nallapati and Sudipta Sengupta and Xiaofei Ma and Anoop Deoras},
+  year = {2024},
+  eprint = {2404.15778},
+  url = {https://arxiv.org/abs/2404.15778},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG}
 }
 
 @misc{rajamanoharan2024improvingdictionarylearninggated,
@@ -3385,7 +3396,15 @@
   howpublished = {\url{https://cbvinstitute.com/events/cbv-cfa-complementary-designations-to-advance-your-career/}}
 }
 
-@misc{bai2025251000184,
+@misc{shakerinava2025scalarrewardsaxiomaticframework,
+  title = {Beyond {Scalar} {Rewards}: An {Axiomatic} {Framework} for {Lexicographic} {MDPs}},
+  author = {Shakerinava, Mehran and Ravanbakhsh, Siamak and Oberman, Adam},
+  year = {2025},
+  url = {https://arxiv.org/abs/2505.12049},
+  howpublished = {https://arxiv.org/abs/2505.12049}
+}
+
+@misc{bai2025canttransformerslearnmultiplication,
   title = {Why {Can}'t {Transformers} {Learn} {Multiplication}? {Reverse}-{Engineering} {Reveals} {Long}-{Range} {Dependency} {Pitfalls}},
   author = {Bai, Xiaoyan and Pres, Itamar and Deng, Yuntian and Tan, Chenhao and Shieber, Stuart and Vi{\' e}gas, Fernanda and Wattenberg, Martin and Lee, Andrew},
   year = {2025},
@@ -3393,7 +3412,7 @@
   howpublished = {https://arxiv.org/abs/2510.00184}
 }
 
-@misc{adam2025250926537,
+@misc{adam2025losskernelgeometricprobe,
   title = {The {Loss} {Kernel}: A {Geometric} {Probe} for {Deep} {Learning} {Interpretability}},
   author = {Adam, Maxwell and Furman, Zach and Hoogland, Jesse},
   year = {2025},
@@ -3401,12 +3420,12 @@
   howpublished = {https://arxiv.org/abs/2509.26537}
 }
 
-@misc{shakerinava2025250512049,
-  title = {Beyond {Scalar} {Rewards}: An {Axiomatic} {Framework} for {Lexicographic} {MDPs}},
-  author = {Shakerinava, Mehran and Ravanbakhsh, Siamak and Oberman, Adam},
+@misc{zadouri2025hardwareefficientattentionfastdecoding,
+  title = {Hardware-{Efficient} {Attention} for {Fast} {Decoding}},
+  author = {Zadouri, Ted and Strauss, Hubert and Dao, Tri},
   year = {2025},
-  url = {https://arxiv.org/abs/2505.12049},
-  howpublished = {https://arxiv.org/abs/2505.12049}
+  url = {https://arxiv.org/abs/2505.21487},
+  howpublished = {https://arxiv.org/abs/2505.21487}
 }
 
 @misc{li2025eaglespeculativesamplingrequires,
@@ -3429,6 +3448,16 @@
   primaryclass = {cs.LG}
 }
 
+@misc{song2025prosparseintroducingenhancingintrinsic,
+  title = {ProSparse: Introducing and Enhancing Intrinsic Activation Sparsity within Large Language Models},
+  author = {Chenyang Song and Xu Han and Zhengyan Zhang and Shengding Hu and Xiyu Shi and Kuai Li and Chen Chen and Zhiyuan Liu and Guangli Li and Tao Yang and Maosong Sun},
+  year = {2025},
+  eprint = {2402.13516},
+  url = {https://arxiv.org/abs/2402.13516},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG}
+}
+
 @misc{yao2025cacheblendfastlargelanguage,
   title = {CacheBlend: Fast Large Language Model Serving for RAG with Cached Knowledge Fusion},
   author = {Jiayi Yao and Hanchen Li and Yuhan Liu and Siddhant Ray and Yihua Cheng and Qizheng Zhang and Kuntai Du and Shan Lu and Junchen Jiang},
@@ -3439,6 +3468,16 @@
   primaryclass = {cs.LG}
 }
 
+@misc{huang2025specdecboostingspeculativedecoding,
+  title = {SpecDec++: Boosting Speculative Decoding via Adaptive Candidate Lengths},
+  author = {Kaixuan Huang and Xudong Guo and Mengdi Wang},
+  year = {2025},
+  eprint = {2405.19715},
+  url = {https://arxiv.org/abs/2405.19715},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.CL}
+}
+
 @misc{cai2025pyramidkvdynamickvcache,
   title = {PyramidKV: Dynamic KV Cache Compression based on Pyramidal Information Funneling},
   author = {Zefan Cai and Yichi Zhang and Bofei Gao and Yuliang Liu and Yucheng Li and Tianyu Liu and Keming Lu and Wayne Xiong and Yue Dong and Junjie Hu and Wen Xiao},
@@ -3447,6 +3486,16 @@
   url = {https://arxiv.org/abs/2406.02069},
   archiveprefix = {arXiv},
   primaryclass = {cs.CL}
+}
+
+@misc{cheng2025slicelevelschedulinghighthroughput,
+  title = {Slice-Level Scheduling for High Throughput and Load Balanced LLM Serving},
+  author = {Ke Cheng and Wen Hu and Zhi Wang and Hongen Peng and Jianguo Li and Sheng Zhang},
+  year = {2025},
+  eprint = {2406.13511},
+  url = {https://arxiv.org/abs/2406.13511},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.DC}
 }
 
 @misc{feng2025adakvoptimizingkvcache,
@@ -3477,6 +3526,17 @@
   url = {https://arxiv.org/abs/2408.15766},
   archiveprefix = {arXiv},
   primaryclass = {cs.LG}
+}
+
+@misc{veličković2025softmaxforsharpsize,
+  title = {Softmax is not Enough (for Sharp Size Generalisation)},
+  author = {Petar Veličković and Christos Perivolaropoulos and Federico Barbero and Razvan Pascanu},
+  year = {2025},
+  eprint = {2410.01104},
+  url = {https://arxiv.org/abs/2410.01104},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  howpublished = {https://arxiv.org/abs/2410.01104}
 }
 
 @misc{gao2025falconfasterparallelinference,
@@ -3798,6 +3858,16 @@
   archiveprefix = {arXiv},
   primaryclass = {cs.DC},
   howpublished = {https://arxiv.org/abs/2506.20675}
+}
+
+@misc{bushnaq2025stochasticparameterdecomposition,
+  title = {Stochastic Parameter Decomposition},
+  author = {Lucius Bushnaq and Dan Braun and Lee Sharkey},
+  year = {2025},
+  eprint = {2506.20790},
+  url = {https://arxiv.org/abs/2506.20790},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG}
 }
 
 @misc{bilingualreasoning2024,

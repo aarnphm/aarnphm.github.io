@@ -1154,7 +1154,7 @@ describe("micromark wikilink extension", () => {
 
       assert(wikilink, "wikilink node should exist")
       assert.strictEqual(wikilink.data?.hName, "a")
-      assert.strictEqual(wikilink.data?.hProperties?.href, "file-with-spaces")
+      assert.strictEqual(wikilink.data?.hProperties?.href, "File-With-Spaces")
     })
 
     test("strips extension and slugifies", () => {
@@ -1163,7 +1163,7 @@ describe("micromark wikilink extension", () => {
 
       assert(wikilink, "wikilink node should exist")
       assert.strictEqual(wikilink.data?.hName, "a")
-      assert.strictEqual(wikilink.data?.hProperties?.href, "my-notes")
+      assert.strictEqual(wikilink.data?.hProperties?.href, "My-Notes")
     })
 
     test("handles special characters with slugification", () => {

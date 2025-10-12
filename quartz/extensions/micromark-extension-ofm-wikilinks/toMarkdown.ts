@@ -73,12 +73,15 @@ export function wikilinkToMarkdown(): Options {
  * - { target: "page", alias: "text" } → `[[page|text]]`
  * - { target: "page", anchor: "#heading" } → `[[page#heading]]`
  * - { target: "page", anchor: "#heading", alias: "text" } → `[[page#heading|text]]`
+ * - { target: "page", metadata: "{key:value}" } → `[[page#{key:value}]]`
+ * - { target: "page", anchor: "#heading", metadata: "{key:value}" } → `[[page#heading#{key:value}]]`
  * - { target: "img.png", embed: true } → `![[img.png]]`
  * - { target: "file", anchor: "#^block" } → `[[file#^block]]`
  *
  * escaping:
  * - target: escapes `\`, `|`, `#`, `]`
  * - anchor: escapes `\`, `|`, `]`
+ * - metadata: escapes `\`, `|`, `]`
  * - alias: escapes `\`, `]`
  */
 const handleWikilink: Handle = (node: Wikilink): string => {
@@ -95,7 +98,7 @@ const handleWikilink: Handle = (node: Wikilink): string => {
   }
 
   // reconstruct from components (may not match original exactly)
-  const { target = "", anchor, alias, embed = false } = wikilink
+  const { target = "", anchor, metadata, alias, embed = false } = wikilink
 
   let result = ""
 
@@ -116,6 +119,13 @@ const handleWikilink: Handle = (node: Wikilink): string => {
   if (anchor) {
     // anchor already has # prefix from fromMarkdown.ts
     result += escape(anchor, "\\|]")
+  }
+
+  // metadata component
+  // metadata already includes braces from exitMetadata
+  // escape: \ | ]
+  if (metadata) {
+    result += "#" + escape(metadata, "\\|]")
   }
 
   // alias component

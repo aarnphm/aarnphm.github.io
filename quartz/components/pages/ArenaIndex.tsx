@@ -354,13 +354,27 @@ export default (() => {
                       aria-label="Loading Substack preview"
                     />
                   </div>
+                ) : block.embedDisabled && targetUrl ? (
+                  <div class="arena-iframe-error">
+                    <div class="arena-iframe-error-content">
+                      <p>unable to embed content</p>
+                      <a
+                        href={targetUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="arena-iframe-error-link"
+                      >
+                        open in new tab →
+                      </a>
+                    </div>
+                  </div>
                 ) : targetUrl ? (
                   <iframe
                     class="arena-modal-iframe"
                     title={`Embedded block: ${frameTitle}`}
                     loading="lazy"
                     data-block-id={block.id}
-                    sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
+                    sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
                     src={targetUrl}
                   />
                 ) : (

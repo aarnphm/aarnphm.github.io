@@ -14,6 +14,12 @@ _if you don't have pnpm, then install 😃_
 
 A modified/personal enhancement from bare Quartz
 
+### parser
+
+some remark parsers for wikilinks, callouts, that supports general OFM compatibility
+
+see [ofm-wikilinks](./quartz/extensions/micromark-extension-ofm-wikilinks/) and [ofm-callouts](./quartz/extensions/micromark-extension-ofm-callouts/) for more information.
+
 ### [telescopic-text](https://github.com/jackyzha0/telescopic-text)
 
 Support a small subsets of the features, with wikilinks parsing

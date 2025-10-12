@@ -7,7 +7,7 @@ transclude:
   dynalist: false
   title: false
 date: "2025-08-12"
-modified: 2025-10-07 18:06:51 GMT-04:00
+modified: 2025-10-11 23:05:42 GMT-04:00
 title: research
 ---
 
@@ -189,14 +189,14 @@ A lot of work recently focuses on disaggregated serving architectures of these m
 
 I do think that, speculation should move beyond naive draft-verify paradigm:
 
-- Slice-level scheduling [@cheng2024240613511] shows 315.8% improvements by treating speculation as a scheduling problem.
-- SpecDec++ [@huang2024240519715] demonstrates 2.26× speedups with adaptive speculation that adjusts to rejection patterns.
-- Also SD for [Blockwise Sparse Attention](https://matx.com/research/sd_nsa) are relevant in working with long context tasks.
+- Slice-level scheduling [@cheng2025slicelevelschedulinghighthroughput] shows 315.8% improvements by treating speculation as a scheduling problem.
+- SpecDec++ [@huang2025specdecboostingspeculativedecoding] demonstrates 2.26× speedups with adaptive speculation that adjusts to rejection patterns.
+- Also SD for [Blockwise Sparse Attention](https://matx.com/research/sd_nsa) are relevant in working with long context tasks. See also @song2025prosparseintroducingenhancingintrinsic
 - Greedy verification algorithm is also suboptimal, especially with softmax instability.
 
 Especially for [[thoughts/MoE|mixture-of-experts]] models, SD remains largely unexplored.
 
-- Most work adapts general speculation to MoE: Speculative MoE [@li2025speculativemoecommunicationefficient], Exploiting inter-layer expert affinity [@yao2024240108383].
+- Most work adapts general speculation to MoE: Speculative MoE [@li2025speculativemoecommunicationefficient], Exploiting inter-layer expert affinity [@yao2024exploitinginterlayerexpertaffinity].
 
 I suspect whether there are opportunity for self-speculation (i.e LayerSkip for MoE) using expert activation patterns:
 

@@ -50,8 +50,26 @@ document.addEventListener("nav", () => {
     }
   }
 
+  // Expand all transcludes by default for slides
+  const expandAllTranscludes = () => {
+    const transcludes = deck.querySelectorAll<HTMLElement>(".transclude-collapsible")
+    for (const el of Array.from(transcludes)) {
+      el.classList.remove("is-collapsed")
+      const content = el.querySelector<HTMLElement>(".transclude-content")
+      if (content && content.style) {
+        content.style.gridTemplateRows = "1fr"
+      }
+      // clear any descendant inline grid-template-rows
+      const descendants = el.querySelectorAll<HTMLElement>(".transclude-content")
+      descendants.forEach((child) => {
+        if (child.style) child.style.gridTemplateRows = "1fr"
+      })
+    }
+  }
+
   parseHash()
   expandAllCallouts()
+  expandAllTranscludes()
   update()
 
   const keyEvent = (e: any) => {

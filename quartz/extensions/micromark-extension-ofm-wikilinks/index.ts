@@ -28,7 +28,7 @@ import { wikilinkToMarkdown } from "./toMarkdown"
 import { wikilinkFromMarkdown, isWikilink } from "./fromMarkdown"
 
 export { wikilink, wikilinkToMarkdown, wikilinkFromMarkdown, isWikilink }
-export type { Wikilink, FromMarkdownOptions } from "./fromMarkdown"
+export type { Wikilink, WikilinkParsed, FromMarkdownOptions } from "./fromMarkdown"
 
 export interface RemarkWikilinkOptions {
   /**
@@ -59,6 +59,9 @@ declare module "micromark-util-types" {
     wikilinkAnchorMarker: "wikilinkAnchorMarker"
     wikilinkAnchor: "wikilinkAnchor"
     wikilinkAnchorChunk: "wikilinkAnchorChunk"
+    wikilinkMetadataMarker: "wikilinkMetadataMarker"
+    wikilinkMetadata: "wikilinkMetadata"
+    wikilinkMetadataChunk: "wikilinkMetadataChunk"
     wikilinkAliasMarker: "wikilinkAliasMarker"
     wikilinkAlias: "wikilinkAlias"
     wikilinkAliasChunk: "wikilinkAliasChunk"
@@ -70,9 +73,11 @@ export function remarkWikilink(this: Processor<Root>, options: RemarkWikilinkOpt
 
   data.micromarkExtensions ??= []
   data.fromMarkdownExtensions ??= []
+  //@ts-ignore
   data.toMarkdownExtensions ??= []
 
   data.micromarkExtensions.push(wikilink())
   data.fromMarkdownExtensions.push(wikilinkFromMarkdown(options))
+  //@ts-ignore
   data.toMarkdownExtensions.push(wikilinkToMarkdown())
 }

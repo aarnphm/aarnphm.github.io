@@ -1,7 +1,13 @@
 import dis
 
-def compare_not_in(x, y) -> bool: return x not in y
-def compare_not_x_in(x, y) -> bool: return not x in y
+
+def compare_not_in(x, y) -> bool:
+  return x not in y
+
+
+def compare_not_x_in(x, y) -> bool:
+  return not x in y
+
 
 # Create sample data
 x = 5

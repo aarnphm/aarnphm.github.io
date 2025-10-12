@@ -4,8 +4,6 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 
 ## Development Commands
 
-**IMPORTANT**: Most of the cases if you need to verify build, make sure to check if port 8080 is available. If it is occupied, then do nothing, otherwise run `pnpm exec tsx quartz/script/dev.ts`. Chances are i'm running development build. Otherwise `pnpm bundle` would suffice.
-
 **Build and Development:**
 
 - `pnpm bundle` - Build for production (concurrency 8, bundleInfo, verbose)
@@ -38,6 +36,7 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 - **Additional Languages:** Python 3.11, Rust nightly, Go 1.23, C++21, CUDA 12.8+, CUTLASS 4.0, CuTeDSL Python.
 
 **Plugin System:**
+
 The site uses custom Quartz plugins (quartz/plugins/):
 
 - Academic citations with References.bib integration
@@ -50,6 +49,7 @@ The site uses custom Quartz plugins (quartz/plugins/):
 - Custom syntax highlighting (rose-pine themes)
 
 **Component Architecture:**
+
 React-like components in `quartz/components/` using Preact:
 
 - PascalCase.tsx naming (e.g., ExplorerNode.tsx)
@@ -77,13 +77,7 @@ React-like components in `quartz/components/` using Preact:
 
 - When parsing frontmatter, if there is an entry `claude`, make sure to also consider it for additional instructions of any given files
 - All math equation should be written with LaTeX, with KaTeX flavor
-- For block-form, it should be formatted with `$$` with new lines. For example:
-  ```markdown
-  $$
-  f(y)\ge f(x)+\langle\nabla f(x),y- x\rangle+\frac{\mu}{2}\|y- x\|^2
-  $$
-  ```
-- for inline `$\text{hello}$` should work
+- For block-form, it should be formatted with `$$` with new lines. For inline `$<content>$` will do
 
 **Academic References:**
 For arxiv papers, fetch BibTeX entries:
@@ -121,6 +115,7 @@ Then update `content/References.bib` and reference as `[@entryname]` in markdown
 - Go: Use gofmt conventions
 - C/C++: Modern C++21 standards
 - CUDA: Compatible with 12.8+ and Triton 3.4+
+- If you need to write any lean prof, do it under @content/provers/ and compile with lean4 accordingly.
 
 ## Testing and Quality Assurance
 

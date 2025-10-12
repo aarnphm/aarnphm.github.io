@@ -13,7 +13,7 @@ import {
   stripSlashes,
   sluggify,
   endsWith,
-} from "../path"
+} from "../../util/path"
 import "./types"
 import { Literal } from "unist"
 
@@ -21,6 +21,8 @@ export interface WikilinkParsed {
   raw: string
   target: string
   anchor?: string
+  metadata?: string
+  metadataParsed?: Record<string, any>
   alias?: string
   embed: boolean
 }
@@ -126,6 +128,7 @@ export function wikilinkFromMarkdown(options: FromMarkdownOptions = {}): Extensi
       wikilinkEmbedMarker: enterEmbedMarker,
       wikilinkTarget: enterTarget,
       wikilinkAnchor: enterAnchor,
+      wikilinkMetadata: enterMetadata,
       wikilinkAlias: enterAlias,
     },
     exit: {
@@ -136,6 +139,7 @@ export function wikilinkFromMarkdown(options: FromMarkdownOptions = {}): Extensi
       wikilinkAnchor: function (this: CompileContext, token: Token): undefined {
         return exitAnchor.call(this, token, obsidian)
       },
+      wikilinkMetadata: exitMetadata,
       wikilinkAlias: exitAlias,
     },
   }
@@ -269,11 +273,63 @@ function exitAlias(this: CompileContext): undefined {
 }
 
 /**
+ * enter metadata component.
+ * initializes metadata buffer.
+ */
+function enterMetadata(this: CompileContext): undefined {
+  this.buffer()
+  return undefined
+}
+
+/**
+ * parse JSON5-style metadata string.
+ * handles unquoted keys, trailing commas, single quotes, and other relaxed JSON syntax.
+ * @param raw raw metadata string without outer braces
+ * @returns parsed object or undefined if parsing fails
+ */
+function parseMetadata(raw: string): Record<string, any> | undefined {
+  try {
+    // try parsing as standard JSON first
+    return JSON.parse(`{${raw}}`)
+  } catch {
+    try {
+      // fallback: basic JSON5 parsing for common cases
+      // handle unquoted keys, single quotes, trailing commas
+      let normalized = raw
+        .replace(/(\w+):/g, '"$1":') // quote unquoted keys
+        .replace(/'/g, '"') // convert single quotes to double quotes
+        .replace(/,\s*([}\]])/g, "$1") // remove trailing commas
+      return JSON.parse(`{${normalized}}`)
+    } catch {
+      // parsing failed, return undefined
+      return undefined
+    }
+  }
+}
+
+/**
+ * exit metadata component.
+ * captures the raw metadata text from buffer.
+ * parses as JSON5 and stores both raw and parsed versions.
+ */
+function exitMetadata(this: CompileContext): undefined {
+  const metadataContent = this.resume()
+  const node = this.stack[this.stack.length - 1] as unknown as Wikilink
+  if (node.data?.wikilink) {
+    // store raw metadata including braces: "{key:value}"
+    node.data.wikilink.metadata = `{${metadataContent}}`
+    // parse and store parsed version
+    node.data.wikilink.metadataParsed = parseMetadata(metadataContent)
+  }
+  return undefined
+}
+
+/**
  * annotate regular link with hast properties.
  * converts `[[target]]`, `[[target|alias]]`, `[[target#anchor]]` to <a> elements.
  */
 function annotateRegularLink(node: Wikilink, wikilink: WikilinkParsed, url: string): void {
-  const { alias, target } = wikilink
+  const { alias, target, metadataParsed, metadata } = wikilink
 
   const fp = target.trim()
   const displayText = alias ?? fp
@@ -281,7 +337,14 @@ function annotateRegularLink(node: Wikilink, wikilink: WikilinkParsed, url: stri
   if (!node.data) node.data = { wikilink }
 
   node.data.hName = "a"
-  node.data.hProperties = { href: url }
+  node.data.hProperties = {
+    href: url,
+    ...(metadataParsed
+      ? { "data-metadata": JSON.stringify(metadataParsed) }
+      : metadata
+        ? { "data-metadata": metadata }
+        : {}),
+  }
   node.data.hChildren = [{ type: "text", value: displayText }]
 }
 
@@ -291,7 +354,7 @@ function annotateRegularLink(node: Wikilink, wikilink: WikilinkParsed, url: stri
  * supports figure/figcaption: `![[image.png|caption text|300x200]]`.
  */
 function annotateImageEmbed(node: Wikilink, wikilink: WikilinkParsed, url: string): void {
-  const { alias } = wikilink
+  const { alias, metadataParsed, metadata } = wikilink
 
   const parts = (alias ?? "").split("|").map((s) => s.trim())
   let caption = ""
@@ -320,6 +383,11 @@ function annotateImageEmbed(node: Wikilink, wikilink: WikilinkParsed, url: strin
     width,
     height,
     alt: caption,
+    ...(metadataParsed
+      ? { "data-metadata": JSON.stringify(metadataParsed) }
+      : metadata
+        ? { "data-metadata": metadata }
+        : {}),
   }
 }
 
@@ -328,6 +396,8 @@ function annotateImageEmbed(node: Wikilink, wikilink: WikilinkParsed, url: strin
  * converts `![[video.mp4]]` to <video> elements with controls.
  */
 function annotateVideoEmbed(node: Wikilink, wikilink: WikilinkParsed, url: string): void {
+  const { metadataParsed, metadata } = wikilink
+
   if (!node.data) node.data = { wikilink }
 
   node.data.hName = "video"
@@ -335,6 +405,11 @@ function annotateVideoEmbed(node: Wikilink, wikilink: WikilinkParsed, url: strin
     src: url,
     controls: true,
     loop: true,
+    ...(metadataParsed
+      ? { "data-metadata": JSON.stringify(metadataParsed) }
+      : metadata
+        ? { "data-metadata": metadata }
+        : {}),
   }
 }
 
@@ -343,12 +418,22 @@ function annotateVideoEmbed(node: Wikilink, wikilink: WikilinkParsed, url: strin
  * converts `![[audio.mp3]]` to <audio> elements with controls.
  */
 function annotateAudioEmbed(node: Wikilink, wikilink: WikilinkParsed, url: string): void {
+  const { alias, metadataParsed, metadata } = wikilink
+
   if (!node.data) node.data = { wikilink }
 
   node.data.hName = "audio"
   node.data.hProperties = {
     src: url,
     controls: true,
+    preload: "metadata",
+    "data-embed": "audio",
+    "data-embed-alias": alias ?? "",
+    ...(metadataParsed
+      ? { "data-metadata": JSON.stringify(metadataParsed) }
+      : metadata
+        ? { "data-metadata": metadata }
+        : {}),
   }
 }
 
@@ -357,12 +442,19 @@ function annotateAudioEmbed(node: Wikilink, wikilink: WikilinkParsed, url: strin
  * converts `![[document.pdf]]` to <iframe> elements.
  */
 function annotatePdfEmbed(node: Wikilink, wikilink: WikilinkParsed, url: string): void {
+  const { metadataParsed, metadata } = wikilink
+
   if (!node.data) node.data = { wikilink }
 
   node.data.hName = "iframe"
   node.data.hProperties = {
     src: url,
     class: "pdf",
+    ...(metadataParsed
+      ? { "data-metadata": JSON.stringify(metadataParsed) }
+      : metadata
+        ? { "data-metadata": metadata }
+        : {}),
   }
 }
 
@@ -376,7 +468,7 @@ function annotateTransclude(
   url: string,
   displayAnchor: string,
 ): void {
-  const { alias } = wikilink
+  const { alias, metadataParsed, metadata } = wikilink
   const block = displayAnchor
 
   if (!node.data) node.data = { wikilink }
@@ -388,6 +480,11 @@ function annotateTransclude(
     "data-url": url,
     "data-block": block,
     "data-embed-alias": alias ?? "",
+    ...(metadataParsed
+      ? { "data-metadata": JSON.stringify(metadataParsed) }
+      : metadata
+        ? { "data-metadata": metadata }
+        : {}),
   }
 
   node.data.hChildren = [

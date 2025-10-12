@@ -4,7 +4,7 @@ tags:
   - seed
   - ml
 date: "2024-02-05"
-modified: 2025-10-06 18:03:52 GMT-04:00
+modified: 2025-10-09 19:31:58 GMT-04:00
 title: Quantization
 ---
 
@@ -123,3 +123,50 @@ To preserve gradient integrity:
 ### GPTQ
 
 https://arxiv.org/abs/2210.17323
+
+## floating point
+
+IEEE 754 binary interchange format stores every floating-point scalar as a triple of sign, exponent, and fraction (mantissa) bits.
+
+> [!definition] components
+>
+> - `sign bit (s)`: 0 encodes positive, 1 encodes negative; contributes the factor $(-1)^s$.
+> - `exponent field (e)`: $k$-bit unsigned integer with bias $B = 2^{k-1}-1$ for binary formats; controls the power-of-two scaling.
+> - `fraction field (f)`: $m$-bit significand suffix. The leading 1 is implicit for normal numbers, making the significand $1.f$.
+
+| format     | total bits | sign bits | exponent bits | fraction bits | bias $B$ |
+| ---------- | ---------- | --------- | ------------- | ------------- | -------- |
+| `fp32`     | 32         | 1         | 8             | 23            | 127      |
+| `fp16`     | 16         | 1         | 5             | 10            | 15       |
+| `bfloat16` | 16         | 1         | 8             | 7             | 127      |
+| `fp8 e5m2` | 8          | 1         | 5             | 2             | 15       |
+| `fp8 e4m3` | 8          | 1         | 4             | 3             | 7        |
+
+for normal (non-zero, non-inf, non-NaN) encodings the value is
+
+$$
+x = (-1)^s \times \left(1 + \frac{f}{2^{m}}\right) \times 2^{(e - B)}.
+$$
+
+subnormal numbers have $e = 0$; the hidden leading 1 disappears and the exponent becomes $1-B$:
+
+$$
+x_{\text{sub}} = (-1)^s \times \left(\frac{f}{2^{m}}\right) \times 2^{1-B}.
+$$
+
+special patterns:
+
+- $e = 0$ and $f = 0$ encode signed zero.
+- $e = 2^k - 1$ and $f = 0$ encode $\pm \infty$.
+- $e = 2^k - 1$ and $f \neq 0$ encode NaNs (quiet NaNs usually set the top bit of $f$).
+
+> [!example] decoding `0x40490fdb` (`fp32`)
+>
+> - bits: `0` | `10000000` | `10010010000111111011011`
+> - $s = 0$, $e = 128$, $f = 0x490fdb = 4\,788\,187$
+> - unbiased exponent: $128 - 127 = 1$
+> - significand: $1 + \frac{4\,788\,187}{2^{23}} \approx 1.57079637$
+> - value: $(-1)^0 \times 1.57079637 \times 2^1 \approx 3.14159274$
+>   this recovers $\pi$ to the precision of `fp32`.
+
+rounding to the nearest even significand is mandated by ieee 754; packing a higher-precision result into `fp16` or `fp8` therefore requires first scaling the exponent (clamping if overflow), then rounding the fraction field to its shorter width. formats with more exponent bits (e.g., `bfloat16`) trade mantissa precision for a wider dynamic range, while formats with more fraction bits (e.g., `fp16`) provide finer granularity inside a smaller range.

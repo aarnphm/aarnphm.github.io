@@ -190,6 +190,7 @@ const config: QuartzConfig = {
             ".csv",
             ".webp",
             ".mp4",
+            ".lean",
             ".svg",
           ],
           exclude: [/\.(ignore\.pdf)$/, /400232791/],

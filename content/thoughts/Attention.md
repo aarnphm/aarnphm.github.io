@@ -7,7 +7,7 @@ tags:
 description: and posteriori information retrieval.
 date: "2024-02-07"
 abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
-modified: 2025-09-21 02:21:43 GMT-04:00
+modified: 2025-10-12 02:48:21 GMT-04:00
 title: Attention
 ---
 
@@ -47,16 +47,30 @@ $$
 
 Each head can specialise on a distinct relational pattern in the same context window.
 
+> [!diagram] head x kv layout
+>
+> ```
+> q ---- split ----> head0 ----> k0, v0
+>                \-> head1 ----> k1, v1
+>                    ...        ...
+>                \-> head(h-1) -> k(h-1), v(h-1)
+> concat(head outputs) -> w_o -> residual stream
+> kv cache holds {k_i, v_i} per head, totalling 2 x h x d_h floats each token
+> ```
+
 One may focus on positional offsets (e.g., "next token" dependencies) while another emphasises semantic alignment (e.g., subject ↔ predicate links).
 This diversity reduces the risk that a single head saturates and misses important cues, analogous to how [[thoughts/ensemble learning|ensembles]] provide robustness by blending multiple predictors.
 
 The concatenation and final projection $W^O$ then recombine the perspectives into the [[thoughts/Transformers|transformer]] residual stream.
 
-> [!tip]+ building intuition
-> Imagine each attention head as a separate spotlight scanning the same stage from a slightly different angle. None of the spotlights alone illuminates the full choreography, yet together they produce a richer, multi-view understanding of the performance.
-
-> [!motivation]+ why split the model into heads?
-> Each head learns a slightly different relational probe over the same sequence. One head might focus on syntactic structure, another on long-distance coreference. By projecting $Q$, $K$, and $V$ into lower dimensional spaces, we allow those probes to specialise without paying the quadratic cost of a single massive head. Empirically this improves data efficiency because the model can reuse a single context to answer multiple "questions" about it in parallel, rather than re-reading the sequence each time.
+> [!motivation]- why split the model into heads?
+>
+> Each head learns a slightly different relational probe over the same sequence. One head might focus on syntactic structure,
+> another on long-distance coreference.
+>
+> By projecting $Q$, $K$, and $V$ into lower dimensional spaces, we allow those probes to specialise without paying
+> the quadratic cost of a single massive head. Empirically this improves data efficiency because the model can
+> reuse a single context to answer multiple "questions" about it in parallel, rather than re-reading the sequence each time.
 
 > [!question]+ tasks to internalise multi-head behaviour (updated)
 >
@@ -127,17 +141,6 @@ The concatenation and final projection $W^O$ then recombine the perspectives int
 > - FLOPs (naive): $\Theta(L^2 d_m)$ per layer per sequence; choosing $h$ changes per-head tile sizes and kernel efficiency, not asymptotics.
 > - KV cache: per token per layer stores $K,V$ of size $2d_m$ (in bytes: $2d_m$ times dtype size). Changing $h$ does not change the sum dimension, but affects the layout and can impact IO-bound kernels in practice.
 
-> [!tip]- Minimal PyTorch MHA (for reproducing plots quickly)
->
-> ```python
-> import torch, torch.nn as nn
-> L, d_model, nhead = 64, 256, 8
-> mha = nn.MultiheadAttention(d_model, nhead, batch_first=True, bias=False)
-> x = torch.randn(1, L, d_model)
-> y, attn = mha(x, x, x, need_weights=True, average_attn_weights=False)
-> # attn shape: [1, nhead, L, L]; visualise per-head heatmaps
-> ```
-
 > [!todo]+ tasks to deepen multi-head understanding
 >
 > - Work through a two-token toy example where one head tracks positional offsets while another tracks part-of-speech, then visualise the resulting attention heatmaps.
@@ -146,13 +149,40 @@ The concatenation and final projection $W^O$ then recombine the perspectives int
 
 ## Group-Query Attention
 
-Group-Query Attention [@ainslie2023gqatraininggeneralizedmultiquery]
+@ainslie2023gqatraininggeneralizedmultiquery
 
 idea: reduce number of KV heads $n_k$ to a fraction $n_k^{'} = \frac{n_q}{k}$ of number of query heads $n_q$ (evenly dividing the query heads into $n_k$ groups with $r$ heads)
 
 This technique targets the decode-time bottleneck in autoregressive generation. During prefill we still benefit from many $Q$ heads to capture diverse patterns, but at decode time the key/value caches dominate GPU memory bandwidth. Sharing a smaller set of $K,V$ representations across multiple $Q$ heads keeps latency low and unlocks larger batch sizes without sacrificing the nuanced querying capacity. In other words, GQA trades a tiny amount of representational flexibility for a substantial improvement in cache locality.
 
 GQA keeps a rich set of query projections so that each decoding token can still ask a nuanced question, but it shares keys and values among groups of queries. The insight is that auto-regressive decoding is bottlenecked by memory bandwidth rather than compute—duplicating $K$ and $V$ per head is expensive, yet their content is often redundant because neighbouring heads tend to look at similar context tokens. By amortising $K$ and $V$ across a group, we trade a small loss in expressivity for a large win in cache locality and throughput on modern GPUs.
+
+Let $n_q$ be the number of query heads, $r$ the group size, and $g(i) = \lfloor i / r \rfloor$ the group index. Group-Query Attention keeps per-head query projections but shares the key/value projections within each group:
+
+$$
+\begin{aligned}
+\text{head}_i &= \operatorname{softmax}\!\left(\frac{Q W_{Q,i} (K W_{K,g(i)})^{\top}}{\sqrt{d_h}} + B_i\right)\, (V W_{V,g(i)}),\\
+n_k &= n_q / r,\quad W_{K,g}, W_{V,g} \in \mathbb{R}^{d_{\text{model}} \times d_h}.
+\end{aligned}
+$$
+
+During prefill we materialise all groups so gradients flow through distinct queries, but during decode the runtime reuses the $g(i)$th $K,V$ pair for every head inside the group. Bias term $B_i$ can encode rotary or [[thoughts/positional embeddings|positional]] adjustments per query head without duplicating the high-bandwidth value tensors.
+
+> [!math] grouped cache reuse
+> For each time step only $n_k$ key/value tiles are fetched from device memory, so the bandwidth term shrinks from $\Theta(h d_h)$ to $\Theta(n_k d_h)$. Choosing $r=4$ halves the cache loads compared with $h=8$ multi-head without sacrificing $Q$-space diversity, matching the decode speedups reported in [@ainslie2023gqatraininggeneralizedmultiquery].
+
+> [!diagram] head x kv layout
+>
+> ```
+> query heads:  h0  h1  h2  h3  h4  h5  h6  h7
+> grouping (r=2):
+>   group0 -> heads 0,1 -> shared k0, v0
+>   group1 -> heads 2,3 -> shared k1, v1
+>   group2 -> heads 4,5 -> shared k2, v2
+>   group3 -> heads 6,7 -> shared k3, v3
+> decode cache stores {k0..k3, v0..v3}; per-head queries stay independent
+> prefill can still materialise wider kv if needed for training
+> ```
 
 > [!motivation] decoding-first design pressure
 > During inference each new token only appends a single query but must read the entire cached key/value tensors. Grouping $Q$ heads while keeping fewer $K/V$ copies reduces the size of that cache and the amount of memory traffic per step, which is exactly the term that dominates latency for long-context models.
@@ -173,6 +203,44 @@ GQA keeps a rich set of query projections so that each decoding token can still 
 
 Tree Attention [@shyam2025treeattentiontopologyawaredecoding] derives an energy formulation of attention and evaluates the softmax reduction through a communication tree. Keys and values are sharded along the sequence dimension; each query reduces over shards in $\log p$ stages for $p$ devices, cutting communication steps relative to the linear pipeline used in RingAttention. The method stays exact and can reuse single-GPU kernels such as FlashAttention-2, yielding up to $4\times$ decoder speedups on Llama-scale models while lowering peak memory traffic.
 
+Let shard $u$ hold score block $S^{(u)} \in \mathbb{R}^{L_u \times L}$ and the corresponding $K^{(u)},V^{(u)}$. Each device computes local statistics
+
+$$
+\begin{aligned}
+m^{(0)}_{i,u} &= \max_j S^{(u)}_{i,j},\\
+z^{(0)}_{i,u} &= \sum_j \exp\big(S^{(u)}_{i,j} - m^{(0)}_{i,u}\big),\\
+y^{(0)}_{i,u} &= \sum_j \exp\big(S^{(u)}_{i,j} - m^{(0)}_{i,u}\big) V^{(u)}_j,
+\end{aligned}
+$$
+
+then the tree aggregator combines siblings $(a,b)$ by forming
+
+$$
+\begin{aligned}
+m^{(\ell)}_{i} &= \max\big(m^{(\ell-1)}_{i,a}, m^{(\ell-1)}_{i,b}\big),\\
+z^{(\ell)}_{i} &= z^{(\ell-1)}_{i,a} e^{m^{(\ell-1)}_{i,a}-m^{(\ell)}_{i}} + z^{(\ell-1)}_{i,b} e^{m^{(\ell-1)}_{i,b}-m^{(\ell)}_{i}},\\
+y^{(\ell)}_{i} &= y^{(\ell-1)}_{i,a} e^{m^{(\ell-1)}_{i,a}-m^{(\ell)}_{i}} + y^{(\ell-1)}_{i,b} e^{m^{(\ell-1)}_{i,b}-m^{(\ell)}_{i}}.
+\end{aligned}
+$$
+
+After $\log p$ levels, the root recovers the exact softmax output $y^{(\log p)}_i / z^{(\log p)}_i$ without ever materialising cross-shard scores. This mirrors the numerically stable online softmax used inside single-GPU kernels while aligning communication with hardware trees.
+
+> [!note] exact yet communication-aware
+> Because every stage rescales by the running maximum, no approximation error accumulates—the tree merely rearranges reductions so latency becomes $\Theta(\log p)$ rounds rather than $\Theta(p)$. The same reduction tree can overlap with pipelined GEMMs to hide latency on NVLink/IB fabrics.
+
+> [!diagram] head x kv layout
+>
+> ```
+> shards per device:
+>   device0 -> k[0], v[0]
+>   device1 -> k[1], v[1]
+>   device2 -> k[2], v[2]
+>   device3 -> k[3], v[3]
+> stage1 reductions: (0,1) and (2,3) compute head-wise partial softmax stats
+> stage2 root combines partials -> final attention weights -> value mix
+> each head sees the full context only after aggregating tree messages
+> ```
+
 > [!motivation] topology matches hardware
 > NVLink and InfiniBand fabrics already provide efficient tree collectives, so aggregating per-shard softmax statistics along that topology overlaps communication with compute instead of circulating full KV blocks around the ring.
 
@@ -188,6 +256,35 @@ Tree Attention [@shyam2025treeattentiontopologyawaredecoding] derives an energy 
 ## Sliding Window Attention
 
 Sliding window (or local) attention constrains each token to attend only to neighbours within a fixed radius $w$. The computational cost drops from $\mathcal{O}(L^2)$ to $\mathcal{O}(L \cdot w)$, which is crucial for extremely long sequences where full-context attention is prohibitive. Intuitively, this mimics how we read a long novel: we usually only need to relate a sentence to nearby sentences, occasionally jumping back to earlier chapters.
+
+Formally, define the binary mask
+
+$$
+M_{ij} = \begin{cases}
+0 & \text{if } |i-j| \le w\ \text{or } j \in G,\\
+-\infty & \text{otherwise},
+\end{cases}
+$$
+
+where $G$ indexes optional global tokens. A head at position $i$ then evaluates
+
+$$
+\text{head}_i = \operatorname{softmax}\!\left(\frac{Q_i W_Q (K W_K)^{\top}}{\sqrt{d_h}} + M_{i,:}\right) (V W_V).
+$$
+
+In implementation the KV cache is a circular buffer that keeps only the most recent $2w+|G|$ entries per head; evicted blocks can be recomputed from checkpoints if needed for evaluation.
+
+> [!example] dilated local blocks
+> Alternating between window size $w$ on even layers and a larger dilated window on odd layers increases the effective receptive field without storing full-range matrices. This mirrors Longformer/BigBird strategies and lets some layers specialise on short contexts while others periodically gather long-range evidence.
+
+> [!diagram] head x kv layout
+>
+> ```
+> timeline: ... | t-2 | t-1 | [t] | t+1 | t+2 | ...
+> q heads at step t read keys/values only inside [t-w, t+w]
+> kv cache keeps a rolling ring buffer of local blocks per head
+> optional global heads pin special tokens with separate kv slots
+> ```
 
 - Motivation: maximise throughput on long-context tasks where relevant information is clustered locally (e.g., speech, DNA sequences).
 - Intuition: local convolutions but with content-aware weighting rather than fixed kernels.
@@ -205,6 +302,31 @@ See also Longformer [@beltagy2020longformerlongdocumenttransformer] and BigBird 
 
 FlashAttention [@dao2022flashattentionfastmemoryefficientexact] reframes attention as a tiled matrix multiplication that keeps intermediate results in high-speed SRAM rather than slower GPU DRAM. The key insight is that recomputing softmax denominators on-the-fly avoids materialising the full attention matrix, drastically reducing memory traffic. As sequence lengths grow, attention becomes more IO-bound than FLOP-bound, so this optimisation yields both speedups and numerical stability (via online normalisation). See also FlashAttention‑2 [@dao2023flashattention2fasterattentionbetter] and FlashAttention‑3 [@shah2024flashattention3fastaccurateattention].
 
+FlashAttention partitions the logits $S = QK^{\top}/\sqrt{d_h}$ into $B_m \times B_n$ tiles. For each tile $t$ the kernel streams $Q_t$ and $K_t$ into SRAM, updates the running maxima $m$ and partition sums $l$, then accumulates the context contribution:
+
+$$
+\begin{aligned}
+m^{\text{new}}_i &= \max\big(m^{\text{old}}_i, \max_j S_{ij}^{(t)}\big),\\
+l^{\text{new}}_i &= e^{m^{\text{old}}_i - m^{\text{new}}_i} l^{\text{old}}_i + \sum_j e^{S_{ij}^{(t)} - m^{\text{new}}_i},\\
+O^{\text{new}}_i &= e^{m^{\text{old}}_i - m^{\text{new}}_i} O^{\text{old}}_i + \sum_j e^{S_{ij}^{(t)} - m^{\text{new}}_i} V^{(t)}_j.
+\end{aligned}
+$$
+
+Only the current tile's $K,V$ blocks ever leave global memory. After processing all tiles the output normalises as $O_i = O^{\text{new}}_i / l^{\text{new}}_i$, matching exact softmax attention while respecting SRAM capacity constraints.
+
+> [!tip] tuning tile shapes
+> Choosing $B_m,B_n$ to align with tensor-core fragment sizes (e.g., $64\times64$ for FP16) keeps the kernel compute-bound. FlashAttention-2 further overlaps tiles across heads, while FlashAttention-3 incorporates block-sparse layouts and asynchronous pipeline stages.
+
+> [!diagram] head x kv layout
+>
+> ```
+> dram kv cache -> stream tile(k, v) into sram for head h
+> q tile (b_m x d_h) x k tile (b_n x d_h) -> partial logits
+> on-chip softmax stats accumulate per head tile
+> partial context = stats x v tile -> write back to global memory
+> repeat over tiles until full sequence processed
+> ```
+
 - Motivation: eliminate memory bandwidth bottlenecks so that longer contexts fit on commodity GPUs.
 - Intuition: compute attention in blocks, never storing more than necessary—like reading a massive spreadsheet through a moving window rather than printing the entire sheet.
 - Extension: variants such as FlashAttention-2/3, xFormers, and Triton kernels specialise for [[thoughts/GPU programming|GPU]] architectures and sparse layouts.
@@ -218,6 +340,44 @@ FlashAttention [@dao2022flashattentionfastmemoryefficientexact] reframes attenti
 ## RadixAttention
 
 RadixAttention [@zheng2024sglangefficientexecutionstructured] maintains an LRU eviction policy to keep relevant [[thoughts/KV compression|KV cache]] entries for all requests within a [[thoughts/Radix tree|radix tree]], implemented in https://github.com/sgl-project/sglang and detailed in the SGLang paper and LMSYS blog (Jan 17, 2024).
+
+Every request inserts its prefix tokens $\pi = (t_1,\ldots,t_m)$ along the tree; each node stores a pointer to the KV page that realises that prefix. During decoding the runtime walks the tree to find the deepest cached prefix shared with the new suffix $\sigma$ and reuses the cached $K,V$ tensors before appending freshly computed blocks:
+
+$$
+\text{reuse}(\pi, \sigma) = \bigoplus_{j=1}^{m} \text{KV}(t_{1:j}) \;\Vert\; \bigoplus_{k=1}^{|\sigma|} \text{attend}(t_{1:m+k}).
+$$
+
+The LRU policy keeps the union of active prefixes resident on GPU while evicting the coldest leaf pages; evicted prefixes spill to host memory so they can be faulted back in if a later request revisits them.
+
+> [!example] request routing pseudo-code
+>
+> ```python
+> def serve(request):
+>     prefix, suffix = split_prefix_suffix(request.tokens)
+>     node = radix.longest_prefix(prefix)
+>     kv_pages = node.cached_kv()
+>     for token in suffix:
+>         logits, kv_new = transformer.step(token, kv_pages)
+>         kv_pages.push(kv_new)
+>     radix.touch(node)        # update lru state
+>     radix.insert(prefix+suffix, kv_pages)
+> ```
+>
+> Each insert/touch updates the LRU ordering so hot conversations stay resident while rarely used prefixes migrate to CPU or disk.
+
+> [!diagram] head x kv layout
+>
+> ```
+> root (empty)
+> |- chat_a prefix -> kv pages [block00, block01]*
+> |    |- turn1 -> hot -> gpu resident
+> |    `- turn2 -> warm -> eviction candidate
+> `- chat_b prefix -> kv pages [block10]
+>      `- turn1 -> fetched on demand
+> lru pointer walks leaves; drop page when no head references it
+> incoming query head follows prefix to reuse cached kv blocks
+> (*) starred nodes are pinned while active heads reference them
+> ```
 
 radix tree setup:
 
@@ -364,6 +524,16 @@ $$
 - $\mathrm{RoPE}(.)$ denotes operations for RoPE matrices, and $[;]$ denotes ==concatenation==
 - Note that only $\boxed{\textcolor{blue}{\mathbf{c}_t^{KV}}}, \boxed{\textcolor{blue}{\mathbf{k}_t^{R}}}$ needs to be cached
 
+> [!diagram] head x kv layout
+>
+> ```
+> h_t
+>  |- w^dkv -> c_t^{kv} ---+--> w^{uk} -> {k^c_head0, ..., k^c_head{n_h-1}}
+>  |                       +--> w^{uv} -> {v^c_head0, ..., v^c_head{n_h-1}}
+>  `- w^{kr}  -> k_t^{r} (rope branch per head)
+> cache stores {c_t^{kv}, k_t^{r}}; per-head kv is reconstructed on demand
+> ```
+
 > [!important] cached generations
 >
 > Both $\textcolor{blue}{\mathbf{c}_t^{KV}}$ and $\textcolor{blue}{\mathbf{k}_t^{R}}$ should be cached to reduce KV cache while maintaining performance with [[thoughts/Attention#Multi-head Attention|MHA]]
@@ -412,6 +582,15 @@ https://flashinfer.ai/2024/02/02/cascade-inference.html
 
 CascadeAttention builds a two-stage filter for attention scores. A cheap scorer (for example, a low-rank approximation or sparse lookup) first estimates which key blocks are likely to matter. Only those candidates are passed to the expensive exact attention, meaning most tokens never touch the quadratic computation. This mirrors cascade classifiers in computer vision: fast heuristics prune the search space so heavy models only run on promising regions.
 
+> [!diagram] head x kv layout
+>
+> ```text
+> coarse stage: kv tiles [b0, b1, b2, b3]
+> head scores -> keep {b1, b3}, drop {b0, b2}
+> fine stage runs exact attention on kept kv tiles only
+> final context concatenates surviving tiles -> w_o -> residual
+> ```
+
 > [!motivation]+ matching cost to usefulness
 > Long contexts often contain filler tokens. Spending equal compute on every position wastes FLOPs, so a cascade keeps throughput high by adapting compute to token importance.
 
@@ -427,6 +606,16 @@ RingAttention [@liu2023ringattentionblockwisetransformers] shards long contexts 
 
 RingAttention shards a long sequence across multiple devices and circulates key/value blocks in a logical ring. Each GPU holds only a slice of the cache, streams neighbouring slices just in time, and discards them after use. The ring topology overlaps communication with computation, so no single device ever needs the full context resident in memory.
 
+> [!diagram] head x kv layout
+>
+> ```text
+> step 0: device0 keeps slice k0,v0 and sends to device1
+> step 1: device1 mixes {k1,v1}+{k0,v0} for its heads, forwards k1,v1 to device2
+> ...
+> final step: each device has streamed every kv slice exactly once
+> per-head context accumulates as slices circulate; cache per device stays local
+> ```
+
 > [!motivation] hardware-aligned parallelism
 > Transformer memory demands grow with sequence length, but GPU memory per device is fixed. RingAttention trades redundant KV storage for bandwidth-efficient peer-to-peer communication, letting us scale to million-token contexts without out-of-memory errors.
 
@@ -440,6 +629,15 @@ RingAttention shards a long sequence across multiple devices and circulates key/
 
 RazorAttention [@tang2024razorattentionefficientkvcache] maintains a fixed-size KV cache by scoring tokens with a learned eviction policy. Instead of evicting whole prefixes (like radix trees) or oldest tokens (pure LRU), it "shaves" the least impactful tokens anywhere in the sequence. Importance scores come from lightweight predictors trained to approximate how much each token will contribute to future attention.
 
+> [!diagram] head x kv layout
+>
+> ```text
+> kv cache slots: [slot0][slot1][slot2][slot3]...
+> importance predictor -> scores s0, s1, s2, s3
+> lowest score slot is evicted; new token's k,v overwrite freed slot
+> heads reference surviving slots via index table; evicted kv vanish from softmax
+> ```
+
 > [!motivation] selective forgetting
 > Decoder-only models often attend mostly to recent or semantically salient tokens. By identifying and dropping low-utility KV entries, RazorAttention keeps cache usage bounded while preserving the signal that matters for prediction.
 
@@ -452,6 +650,15 @@ RazorAttention [@tang2024razorattentionefficientkvcache] maintains a fixed-size 
 ## Paged Attention
 
 Paged Attention [@kwon2023efficient]
+
+> [!diagram] head x kv layout
+>
+> ```text
+> kv stream split into blocks: b0 | b1 | b2 | ...
+> page table maps (sequence, block) -> gpu residency
+> hot blocks stay on device; cold blocks spill to host
+> head lookup: query -> page table -> fetch needed k/v blocks before compute
+> ```
 
 In conjunction with [[thoughts/Continuous batching|continuous batching]], implemented in [[thoughts/vllm|vLLM]]
 
@@ -537,6 +744,15 @@ See also: [[lectures/3/quantisation basics#multi-latent attention|MLA]] for arch
 First proposed in [[thoughts/MoE#Step3]]
 
 The idea is to approximate the dense attention matrix by factorising it into multiple low-rank products, each specialised for a subset of heads or positions. Instead of computing $QK^T$ directly, we learn bases $U_i V_i^T$ whose weighted sum reconstructs the attention pattern. This reduces quadratic cost to a series of matrix multiplications with much smaller inner dimensions.
+
+> [!diagram] head x kv layout
+>
+> ```text
+> per head q_h -> project onto shared bases {U_1,...,U_m}
+> keys -> project onto {V_1,...,V_m} stored as low-rank kv factors
+> score approx sum_i ( (q_h U_i) (V_i^T k) )
+> kv cache holds factor activations instead of full per-head tensors
+> ```
 
 > [!motivation] sharing structure across heads
 > Attention maps often lie near a union of low-dimensional subspaces (e.g., monotonic alignments, locality patterns). Factorisation captures those templates explicitly so the model reuses them instead of re-deriving them per head.

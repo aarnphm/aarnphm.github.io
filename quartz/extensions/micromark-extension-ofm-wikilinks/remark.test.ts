@@ -177,8 +177,8 @@ describe("remarkWikilink integration", () => {
     test("converts video embed to video tag", () => {
       const html = processToHTML("![[demo.mp4]]")
       assert(html.includes('<video src="demo.mp4"'))
-      assert(html.includes('controls'))
-      assert(html.includes('loop'))
+      assert(html.includes("controls"))
+      assert(html.includes("loop"))
     })
 
     test("handles various video extensions", () => {
@@ -194,7 +194,7 @@ describe("remarkWikilink integration", () => {
     test("converts audio embed to audio tag", () => {
       const html = processToHTML("![[song.mp3]]")
       assert(html.includes('<audio src="song.mp3"'))
-      assert(html.includes('controls'))
+      assert(html.includes("controls"))
     })
 
     test("handles various audio extensions", () => {
@@ -264,7 +264,7 @@ describe("remarkWikilink integration", () => {
       // NOTE: stripExtensions parameter is currently not fully implemented
       // slugifyFilePath only handles built-in extensions (.md, .ipynb, .html, .base)
       // custom extensions like .mdx are preserved in the href
-      assert(html.includes('<a href="notes.mdx">notes.mdx</a>'))
+      assert(html.includes('<a href="notes">notes.mdx</a>'))
     })
 
     test("preserves extensions not in stripExtensions", () => {

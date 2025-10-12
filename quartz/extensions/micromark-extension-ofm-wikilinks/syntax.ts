@@ -9,6 +9,7 @@
  * - with block ref: `[[target#^block-id]]`
  * - embeds: `![[target]]`
  * - combined: `[[target#anchor|alias]]`
+ * - (experimental) metadata support: `[[target#{collapsed: true}|alias]]`
  * - escaped pipes: `[[target\|with\|pipes|alias]]`
  * - escaped hashes: `[[target\#with\#hashes]]`
  *
@@ -22,6 +23,8 @@ import "./types"
 const codes = {
   exclamationMark: 33, // !
   numberSign: 35, // #
+  leftCurlyBrace: 123, // {
+  rightCurlyBrace: 125, // }
   backslash: 92, // \
   leftSquareBracket: 91, // [
   rightSquareBracket: 93, // ]
@@ -163,12 +166,15 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
   /**
    * inside target text, consuming characters.
    * handles escaping and stops at delimiters.
+   * checks for metadata marker `#{` after target.
    *
    * ```markdown
    * > | [[target#anchor]]
    *        ^^^^^^
    * > | [[file\|name|alias]]
    *        ^^^^^^^^^
+   * > | [[target#{metadata}]]
+   *        ^^^^^^
    * ```
    */
   function targetInside(code: Code): State | undefined {
@@ -179,7 +185,7 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
       return targetInside
     }
 
-    // unescaped hash → anchor
+    // unescaped hash → check for anchor or metadata
     if (code === codes.numberSign && !previousWasBackslash) {
       effects.exit("wikilinkTargetChunk")
       effects.exit("wikilinkTarget")
@@ -216,9 +222,12 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
 
   /**
    * anchor marker `#`.
+   * checks if it's metadata marker `#{` or regular anchor `#`.
    *
    * ```markdown
    * > | [[file#heading]]
+   *           ^
+   * > | [[file#{metadata}]]
    *           ^
    * ```
    */
@@ -229,8 +238,25 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
 
     effects.enter("wikilinkAnchorMarker")
     effects.consume(code)
+    return anchorMarkerDecide
+  }
+
+  /**
+   * decide if `#` starts metadata or anchor.
+   */
+  function anchorMarkerDecide(code: Code): State | undefined {
+    // if next char is {, this is metadata marker
+    if (code === codes.leftCurlyBrace) {
+      effects.exit("wikilinkAnchorMarker")
+      effects.enter("wikilinkMetadataMarker")
+      effects.consume(code) // consume {
+      effects.exit("wikilinkMetadataMarker")
+      return metadataStart
+    }
+
+    // otherwise, it's an anchor
     effects.exit("wikilinkAnchorMarker")
-    return anchorStart
+    return anchorStart(code)
   }
 
   /**
@@ -268,12 +294,15 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
   /**
    * inside anchor text.
    * allows multiple `#` for subheadings, stops at `|` or `]]`.
+   * checks for metadata marker `#{` after anchor content.
    *
    * ```markdown
    * > | [[file#heading#subheading|alias]]
    *            ^^^^^^^^^^^^^^^^^^^
    * > | [[file#^block-id]]
    *            ^^^^^^^^^
+   * > | [[file#heading#{metadata}]]
+   *            ^^^^^^^
    * ```
    */
   function anchorInside(code: Code): State | undefined {
@@ -282,6 +311,14 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
       effects.consume(code)
       previousWasBackslash = true
       return anchorInside
+    }
+
+    // unescaped hash → check for metadata or continue as subheading
+    if (code === codes.numberSign && !previousWasBackslash) {
+      effects.exit("wikilinkAnchorChunk")
+      effects.exit("wikilinkAnchor")
+      previousWasBackslash = false
+      return anchorOrMetadata(code)
     }
 
     // unescaped pipe → alias
@@ -309,6 +346,167 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
     effects.consume(code)
     previousWasBackslash = false
     return anchorInside
+  }
+
+  /**
+   * check if `#` after anchor is metadata marker `#{` or subheading `#`.
+   *
+   * ```markdown
+   * > | [[file#heading#{metadata}]]
+   *                    ^
+   * > | [[file#heading#subheading]]
+   *                    ^
+   * ```
+   */
+  function anchorOrMetadata(code: Code): State | undefined {
+    if (code !== codes.numberSign) {
+      return nok(code)
+    }
+
+    effects.consume(code) // consume #
+    return anchorOrMetadataDecide
+  }
+
+  /**
+   * decide if next char starts metadata `{` or continues as subheading.
+   */
+  function anchorOrMetadataDecide(code: Code): State | undefined {
+    // if next char is {, this is metadata marker
+    if (code === codes.leftCurlyBrace) {
+      effects.enter("wikilinkMetadataMarker")
+      effects.consume(code) // consume {
+      effects.exit("wikilinkMetadataMarker")
+      return metadataStart
+    }
+
+    // otherwise, it's a subheading - continue anchor parsing
+    effects.enter("wikilinkAnchor")
+    effects.enter("wikilinkAnchorChunk", { contentType: "string" })
+    return anchorInside(code)
+  }
+
+  /**
+   * start of metadata content after `#{`.
+   * can be empty, or contain nested braces.
+   *
+   * ```markdown
+   * > | [[target#{key:value}]]
+   *              ^
+   * > | [[target#{}]]
+   *              ^
+   * ```
+   */
+  function metadataStart(code: Code): State | undefined {
+    // empty metadata: #{}
+    if (code === codes.rightCurlyBrace) {
+      return metadataEnd(code)
+    }
+
+    // empty metadata followed by alias: #{}|alias
+    if (code === codes.verticalBar) {
+      return aliasMarker(code)
+    }
+
+    // empty metadata at end: #{}]]
+    if (code === codes.rightSquareBracket) {
+      return closeFirst(code)
+    }
+
+    // start metadata content
+    if (code !== null && code !== -5 && code !== -4 && code !== -3) {
+      effects.enter("wikilinkMetadata")
+      effects.enter("wikilinkMetadataChunk", { contentType: "string" })
+      return metadataInside(code, 1) // start with depth 1 (already consumed opening {)
+    }
+
+    return nok(code)
+  }
+
+  /**
+   * inside metadata content.
+   * tracks brace depth to handle nested structures like {a:{b:1}}.
+   * handles escaping of braces with backslash.
+   *
+   * ```markdown
+   * > | [[target#{key:value}]]
+   *              ^^^^^^^^^^
+   * > | [[target#{a:{b:1}}]]
+   *              ^^^^^^^^^
+   * ```
+   */
+  function metadataInside(code: Code, braceDepth: number): State | undefined {
+    // handle backslash escaping
+    if (code === codes.backslash && !previousWasBackslash) {
+      effects.consume(code)
+      previousWasBackslash = true
+      return (nextCode: Code) => metadataInside(nextCode, braceDepth)
+    }
+
+    // unescaped opening brace → increase depth
+    if (code === codes.leftCurlyBrace && !previousWasBackslash) {
+      effects.consume(code)
+      previousWasBackslash = false
+      return (nextCode: Code) => metadataInside(nextCode, braceDepth + 1)
+    }
+
+    // unescaped closing brace
+    if (code === codes.rightCurlyBrace && !previousWasBackslash) {
+      if (braceDepth === 1) {
+        // reached end of metadata
+        effects.exit("wikilinkMetadataChunk")
+        effects.exit("wikilinkMetadata")
+        previousWasBackslash = false
+        return metadataEnd(code)
+      }
+
+      // nested brace, continue consuming
+      effects.consume(code)
+      previousWasBackslash = false
+      return (nextCode: Code) => metadataInside(nextCode, braceDepth - 1)
+    }
+
+    // EOF or special codes → fail
+    if (code === null || code === -5 || code === -4 || code === -3) {
+      return nok(code)
+    }
+
+    // consume regular character
+    effects.consume(code)
+    previousWasBackslash = false
+    return (nextCode: Code) => metadataInside(nextCode, braceDepth)
+  }
+
+  /**
+   * after closing `}` of metadata.
+   * can be followed by alias or closing brackets.
+   *
+   * ```markdown
+   * > | [[target#{metadata}|alias]]
+   *                       ^
+   * > | [[target#{metadata}]]
+   *                       ^
+   * ```
+   */
+  function metadataEnd(code: Code): State | undefined {
+    if (code !== codes.rightCurlyBrace) {
+      return nok(code)
+    }
+
+    effects.consume(code) // consume closing }
+
+    // peek at next character
+    return (nextCode: Code) => {
+      // next could be alias or close
+      if (nextCode === codes.verticalBar) {
+        return aliasMarker(nextCode)
+      }
+
+      if (nextCode === codes.rightSquareBracket) {
+        return closeFirst(nextCode)
+      }
+
+      return nok(nextCode)
+    }
   }
 
   /**

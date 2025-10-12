@@ -55,9 +55,25 @@ export type WikilinkAliasMarker = "wikilinkAliasMarker"
 export type WikilinkAlias = "wikilinkAlias"
 
 /**
+ * metadata marker `#{` before metadata content.
+ */
+export type WikilinkMetadataMarker = "wikilinkMetadataMarker"
+
+/**
+ * metadata content inside braces.
+ * example: `{key:value}` in `[[target#{key:value}]]`
+ * stored as raw string for downstream parsing.
+ */
+export type WikilinkMetadata = "wikilinkMetadata"
+
+/**
  * text chunk inside components (used by micromark internals).
  */
-export type WikilinkChunk = "wikilinkTargetChunk" | "wikilinkAnchorChunk" | "wikilinkAliasChunk"
+export type WikilinkChunk =
+  | "wikilinkTargetChunk"
+  | "wikilinkAnchorChunk"
+  | "wikilinkMetadataChunk"
+  | "wikilinkAliasChunk"
 
 /**
  * union of all wikilink token types.
@@ -70,6 +86,8 @@ export type WikilinkTokenType =
   | WikilinkTarget
   | WikilinkAnchorMarker
   | WikilinkAnchor
+  | WikilinkMetadataMarker
+  | WikilinkMetadata
   | WikilinkAliasMarker
   | WikilinkAlias
   | WikilinkChunk

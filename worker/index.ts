@@ -592,7 +592,11 @@ export default {
       const rewritten = new URL(`/${slug}`, url)
       rewritten.searchParams.set("stackedNotes", btoa(slug).replace(/=+$/, ""))
       const newReq = new Request(rewritten.toString(), request)
-      return env.ASSETS.fetch(newReq)
+      const resp = await env.ASSETS.fetch(newReq)
+      return withHeaders(resp, {
+        "X-Frame-Options": null,
+        "Content-Security-Policy": "frame-ancestors 'self' *",
+      })
     }
 
     // permanent redirect d.aarnphm.xyz -> aarnphm.xyz/dating
@@ -801,7 +805,14 @@ export default {
       }
     }
 
-    return env.ASSETS.fetch(request)
+    const resp = await env.ASSETS.fetch(request)
+    if (shouldTreatAsDocument(url.pathname)) {
+      return withHeaders(resp, {
+        "X-Frame-Options": null,
+        "Content-Security-Policy": "frame-ancestors 'self' *",
+      })
+    }
+    return resp
   },
 } satisfies ExportedHandler<Env>
 

@@ -407,7 +407,7 @@ export async function fetchUsers() {
   }
 }
 
-async function fetchLinks() {
+async function fetchLinks(): Promise<CuriusResponse | undefined> {
   try {
     const resp = await fetch("/api/curius?query=links", fetchLinksHeaders)
     if (!resp.ok) {
@@ -417,21 +417,25 @@ async function fetchLinks() {
     if (data === undefined || data.links === undefined) {
       throw new Error("Failed to fetch links")
     }
-    return data.links
+    return data
   } catch (error) {
     console.error(error)
   }
 }
 
 export async function fetchCuriusLinks(): Promise<CuriusResponse> {
-  const [user, following, links, trails] = await Promise.all([
+  const [user, following, linkResp, trails] = await Promise.all([
     fetchUsers(),
     fetchFollowing(),
     fetchLinks(),
     fetchTrails(),
   ])
 
-  return { links, user, following, trails }
+  const links = linkResp?.links ?? []
+  const hasMore = typeof linkResp?.hasMore === "boolean" ? linkResp.hasMore : links.length > 0
+  const page = linkResp?.page ?? 0
+
+  return { links, user, following, trails, hasMore, page }
 }
 
 async function fetchTrailPages(trail: Trail): Promise<Link[]> {

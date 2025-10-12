@@ -13,7 +13,7 @@ socials:
   curius: /curius
   are.na: https://www.are.na/aaron-pham/channels
 date: "2024-10-24"
-modified: 2025-10-08 01:59:39 GMT-04:00
+modified: 2025-10-12 01:16:10 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -204,6 +204,14 @@ cssclasses:
 
 ## website
 
+- https://cuahsi.shinyapps.io/macrosheds/
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [fruit]
+- https://ita.toys/
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [fruit]
 - https://christophlocher.com/
   - [meta]:
     - date: 10/07/2025
@@ -530,6 +538,12 @@ cssclasses:
 
 ## people
 
+- https://cs.stanford.edu/~quocle/ -- Quoc V. Le
+  - [meta]:
+    - date: 10/11/2025
+    - tags: [ai, researcher]
+  - Google Brain, Research Fellow
+  - Original author of seq2seq.
 - https://abrandenberger.github.io/ -- Anna Brandenberger
   - [meta]:
     - date: 10/06/2025
@@ -738,7 +752,7 @@ cssclasses:
 - https://www.neelnanda.io/about -- Neel Nanda
   - [meta]:
     - date: 08/02/2025
-    - tags: [fruit]
+    - tags: [alignment, interpretability]
   - [[thoughts/mechanistic interpretability]], lead GDM applied interpretability team
 - https://rosszurowski.com/ -- Ross Zurowski
   - [meta]:
@@ -770,7 +784,7 @@ cssclasses:
 - https://turntrout.com/welcome -- Alex Turner
   - [meta]:
     - date: 08/03/2025
-    - tags: [fruit]
+    - tags: [fruit, interpretability]
   - [[thoughts/mechanistic interpretability|scalable alignment]] researcher
 - https://marijnhaverbeke.nl/blog -- Marijn Haverbeke
   - [meta]:
@@ -954,11 +968,27 @@ cssclasses:
 
 ## essay
 
+- https://clairebookworm.substack.com/p/i-think-about-it-all-the-time -- I think about it all the time
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [life]
+- https://chrislakin.blog/p/flaky-breakthroughs -- Flaky breakthrough
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [fruit]
+- https://www.lightspeedmagazine.com/fiction/state-change/ -- State change
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [fruit]
+- https://www.experimental-history.com/p/thank-you-for-being-annoying -- Thank you for beinrg annoying
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [fruit]
 - https://ellululu.substack.com/p/the-art-of-asking -- The art of asking
   - [meta]:
     - date: 10/07/2025
     - tags: [friendship]
-- https://christophlocher.com/notes/ethnographic-research-on-dynamicland -- Götz Bachmann’s Ethnographic Research on Dynamicland [**]
+- https://christophlocher.com/notes/ethnographic-research-on-dynamicland -- Götz Bachmann’s Ethnographic Research on Dynamicland [**] [--]
   - [meta]:
     - date: 10/07/2025
     - tags: [tool for thought]
@@ -1493,6 +1523,27 @@ cssclasses:
 
 ## [[thoughts/Machine learning]]
 
+- https://transformer-circuits.pub/2025/attention-qk/index.html -- Tracing Attention Computation Through Feature Interactions
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [interpretability]
+  - see also: [[thoughts/mechanistic interpretability#QK attributions]]
+- https://www.goodfire.ai/research/replicating-circuit-tracing-for-a-simple-mechanism -- Replicating Circuit Tracing for a Simple Known Mechanism
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [interpretability]
+- https://www.goodfire.ai/research/model-diff-amplification -- Discovering Undesired Rare Behaviors via Model Diff Amplification [**]
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [model diff, interpretability]
+- https://x.com/thesubhashk/status/1887138694546788556 -- Helix representation in LLMs for additions capabilities
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [math, llm]
+- https://www.goodfire.ai/blog/on-optimism-for-interpretability -- On Optimism for interpretability
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [interpretability]
 - https://leimao.github.io/blog/CuTe-Tilers/ -- CuTe megathread [**]
   - [meta]:
     - date: 10/07/2025
@@ -1530,7 +1581,7 @@ cssclasses:
 - https://www.neuronpedia.org/graph/info -- The Circuits Research Landscape: Results and Perspective, Aug 2025 [**]
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [fruit, interpretability]
   - [[thoughts/mechanistic interpretability]]
 - https://www.lesswrong.com/posts/L3aYFT4RDJYHbbsup/llms-can-learn-about-themselves-by-introspection -- LLMs can learn about themselves by introspection
   - [meta]:
@@ -1831,7 +1882,7 @@ cssclasses:
 - https://www.neuronpedia.org/graph/info -- The circuit analysis research landscape
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [fruit, interpretability]
   - [[thoughts/mechanistic interpretability#attribution graph]]
   - On Biology of LLMs
   - Futures and directions of interpretability [research](https://www.neuronpedia.org/graph/info#section-directions-for-future-work)
@@ -2233,6 +2284,19 @@ cssclasses:
 
 ## technology
 
+- https://en.wikipedia.org/wiki/Multiply%E2%80%93accumulate_operation -- Multiply–accumulate operation
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [fruit]
+  - Think of FMA, MMA in [[thoughts/GPU programming|GPU]]
+- https://www.anthropic.com/research/reasoning-models-dont-say-think -- Reasoning models don't always say what they think
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [fruit]
+  - [bentoml get deepseek-v2-lite-chat-pd-amd:wqveagffdwpsgv34meta]:
+    - date: 10/09/2025
+    - tags: [fruit]
+  - https://assets.anthropic.com/m/71876fabef0f0ed4/original/reasoning_models_paper.pdf
 - https://jasmi.news/p/32-notes-on-ai-and-writing -- 32 notes on AI and writing
   - [meta]:
     - date: 10/07/2025
@@ -2594,18 +2658,22 @@ cssclasses:
 
 ## design
 
+- https://galshir.com/
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [studio]
 - https://brunoarizio.com/
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [studio]
 - https://mushstudios.co/ -- Mush Studio
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [studio]
 - https://www.metalabel.com/ -- Metalabel
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [studio]
 - https://www.are.na/editorial/are-nas-new-web-client-sander-is-now-available-for-everyone -- Are.na's web client, Sander.
   - [meta]:
     - date: 08/03/2025
@@ -2645,6 +2713,14 @@ cssclasses:
 
 ## video
 
+- https://www.youtube.com/watch?v=kN6dtpMUoC0 -- So you are in love with [[thoughts/LLMs|ChatGPT]]
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [llm, ai, augmented love]
+- https://www.youtube.com/watch?v=voaQSiLJxeE -- Sugar spoon.
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [fruit]
 - https://www.youtube.com/watch?v=x_y691nZztE -- I did love you... [**]
   - [meta]:
     - date: 10/08/2025
@@ -2897,14 +2973,14 @@ cssclasses:
   - [meta]:
     - date: 05/23/2025
     - tags: [fruit]
-- https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvYXV0b2VuY29kZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvbGF0ZW50LXNwYWNl&stackedNotes=dGhvdWdodHMvcmVwcmVzZW50YXRpb25z&stackedNotes=dGhvdWdodHMvTkZB&stackedNotes=dGhvdWdodHMvREZB&stackedNotes=dGhvdWdodHMvQ29tcGlsZXI&stackedNotes=dGhvdWdodHMvTUxJUg&stackedNotes=bGVjdHVyZXMvMi93aHk&stackedNotes=dGhvdWdodHMvbm9ybQ&stackedNotes=bGVjdHVyZXMvNDExL25vdGVz&stackedNotes=dGhvdWdodHMvbGluZ3Vpc3RpYy1yZWxhdGl2aXR5&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=dGhvdWdodHMvcmVkdWN0aW9uaXNt&stackedNotes=dGhvdWdodHMvSW5uZXItcHJvZHVjdC1zcGFjZQ&stackedNotes=dGhvdWdodHMvRnJldWQ&stackedNotes=dGhvdWdodHMvaGVybWVuZXV0aWNz&stackedNotes=dGhvdWdodHMvbXVvbg&stackedNotes=dGhvdWdodHMvRXVsZXIncy1pZGVudGl0eQ&stackedNotes=dGhvdWdodHMvcGxheQ -- mech-interp trails
+- https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvYXV0b2VuY29kZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvbGF0ZW50LXNwYWNl&stackedNotes=dGhvdWdodHMvcmVwcmVzZW50YXRpb25z&stackedNotes=dGhvdWdodHMvTkZB&stackedNotes=dGhvdWdodHMvREZB&stackedNotes=dGhvdWdodHMvQ29tcGlsZXI&stackedNotes=dGhvdWdodHMvTUxJUg&stackedNotes=bGVjdHVyZXMvMi93aHk&stackedNotes=dGhvdWdodHMvbm9ybQ&stackedNotes=bGVjdHVyZXMvNDExL25vdGVz&stackedNotes=dGhvdWdodHMvbGluZ3Vpc3RpYy1yZWxhdGl2aXR5&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=dGhvdWdodHMvcmVkdWN0aW9uaXNt&stackedNotes=dGhvdWdodHMvSW5uZXItcHJvZHVjdC1zcGFjZQ&stackedNotes=dGhvdWdodHMvRnJldWQ&stackedNotes=dGhvdWdodHMvaGVybWVuZXV0aWNz&stackedNotes=dGhvdWdodHMvbXVvbg&stackedNotes=dGhvdWdodHMvRXVsZXIncy1pZGVudGl0eQ&stackedNotes=dGhvdWdodHMvcGxheQ -- mech-interp trails
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
-- https://notes.aarnphm.xyz/?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvSW50ZXJuZXQ&stackedNotes=dGhvdWdodHMvRGV0ZXJtaW5pc20&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9lbmdpbmVlci00YTAzL2xpdGVyYXR1cmUtcmV2aWV3&stackedNotes=cG9zdHMvY2hhdGdwdA&stackedNotes=dGhvdWdodHMvT0NJ&stackedNotes=dGhvdWdodHMvQ29udGVudC1hZGRyZXNzYWJsZS1zdG9yYWdl&stackedNotes=dGhvdWdodHMvYW50aHJvcGljLXNhZmV0eS1mZWxsb3c&stackedNotes=dGhvdWdodHMvTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvb3B0aW1pemF0aW9u&stackedNotes=dGhvdWdodHMvTExNcw&stackedNotes=dGhvdWdodHMvZXRoaWNz&stackedNotes=dGhvdWdodHMvYWVzdGhldGljLXZhbHVl&stackedNotes=dGhvdWdodHMvUGhpbG9zb3BoeS1hbmQtTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvZGlhbGVjdGljcw&stackedNotes=dGhvdWdodHMvcmVhc29u&stackedNotes=dGhvdWdodHMvQ2FtdXM&stackedNotes=cG9zdHMvMjAyNA&stackedNotes=cXVvdGVz&stackedNotes=dGhvdWdodHMvSGVsbWhvbHR6LWRlY29tcG9zaXRpb24&stackedNotes=dGhvdWdodHMvTW9udGUtQ2FybG8&stackedNotes=dGhvdWdodHMvQ2hvbGVza3ktZGVjb21wb3NpdGlvbg&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9zZndyLTRtbDMvQmlhcy1hbmQtaW50ZXJjZXB0&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=cG9zdHMvc3RydWN0dXJlZC1kZWNvZGluZw&stackedNotes=dGhvdWdodHMvVHJhbnNmb3JtZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvQ2F1Y2h5LW1vbWVudHVtLWVxdWF0aW9u&stackedNotes=dGhvdWdodHMvVGVuc29yLWZpZWxk&stackedNotes=dGhvdWdodHMvbWFuaWZvbGQ&stackedNotes=dGhvdWdodHMvUHJvZ3Jlc3NpdmUtZGlzY2xvc3VyZQ&stackedNotes=dGhvdWdodHMvR2lsZXMtRGVsZXV6ZQ&stackedNotes=dGhvdWdodHMvQXV0b3JlZ3Jlc3NpdmUtbW9kZWxz&stackedNotes=dGhvdWdodHMvTGxhbWEtMw&stackedNotes=dGhvdWdodHMvZGlzcGxhY2VtZW50&stackedNotes=dGhvdWdodHMvY29uc3RyYWluZWQtZGVjb2Rpbmc&stackedNotes=dGhvdWdodHMvUGFyZXRvLWRpc3RyaWJ1dGlvbg&stackedNotes=cG9zdHMvUXVlc3Rpb25zLWFib3V0LU1ldGFwaHlzaWNz&stackedNotes=dGhvdWdodHMvQWdlbmN5&stackedNotes=cG9zdHMvY29ycG9yYXRlLXBlcnNvbmhvb2Q&stackedNotes=dGhvdWdodHMvVmVyeS1TbGVuZGVyLURpZmZlcmVuY2Vz&stackedNotes=dGhvdWdodHMvQXJpc3RvdGxl&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ -- interesting trails
+    - tags: [interpretability]
+- https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvSW50ZXJuZXQ&stackedNotes=dGhvdWdodHMvRGV0ZXJtaW5pc20&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9lbmdpbmVlci00YTAzL2xpdGVyYXR1cmUtcmV2aWV3&stackedNotes=cG9zdHMvY2hhdGdwdA&stackedNotes=dGhvdWdodHMvT0NJ&stackedNotes=dGhvdWdodHMvQ29udGVudC1hZGRyZXNzYWJsZS1zdG9yYWdl&stackedNotes=dGhvdWdodHMvYW50aHJvcGljLXNhZmV0eS1mZWxsb3c&stackedNotes=dGhvdWdodHMvTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvb3B0aW1pemF0aW9u&stackedNotes=dGhvdWdodHMvTExNcw&stackedNotes=dGhvdWdodHMvZXRoaWNz&stackedNotes=dGhvdWdodHMvYWVzdGhldGljLXZhbHVl&stackedNotes=dGhvdWdodHMvUGhpbG9zb3BoeS1hbmQtTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvZGlhbGVjdGljcw&stackedNotes=dGhvdWdodHMvcmVhc29u&stackedNotes=dGhvdWdodHMvQ2FtdXM&stackedNotes=cG9zdHMvMjAyNA&stackedNotes=cXVvdGVz&stackedNotes=dGhvdWdodHMvSGVsbWhvbHR6LWRlY29tcG9zaXRpb24&stackedNotes=dGhvdWdodHMvTW9udGUtQ2FybG8&stackedNotes=dGhvdWdodHMvQ2hvbGVza3ktZGVjb21wb3NpdGlvbg&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9zZndyLTRtbDMvQmlhcy1hbmQtaW50ZXJjZXB0&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=cG9zdHMvc3RydWN0dXJlZC1kZWNvZGluZw&stackedNotes=dGhvdWdodHMvVHJhbnNmb3JtZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvQ2F1Y2h5LW1vbWVudHVtLWVxdWF0aW9u&stackedNotes=dGhvdWdodHMvVGVuc29yLWZpZWxk&stackedNotes=dGhvdWdodHMvbWFuaWZvbGQ&stackedNotes=dGhvdWdodHMvUHJvZ3Jlc3NpdmUtZGlzY2xvc3VyZQ&stackedNotes=dGhvdWdodHMvR2lsZXMtRGVsZXV6ZQ&stackedNotes=dGhvdWdodHMvQXV0b3JlZ3Jlc3NpdmUtbW9kZWxz&stackedNotes=dGhvdWdodHMvTGxhbWEtMw&stackedNotes=dGhvdWdodHMvZGlzcGxhY2VtZW50&stackedNotes=dGhvdWdodHMvY29uc3RyYWluZWQtZGVjb2Rpbmc&stackedNotes=dGhvdWdodHMvUGFyZXRvLWRpc3RyaWJ1dGlvbg&stackedNotes=cG9zdHMvUXVlc3Rpb25zLWFib3V0LU1ldGFwaHlzaWNz&stackedNotes=dGhvdWdodHMvQWdlbmN5&stackedNotes=cG9zdHMvY29ycG9yYXRlLXBlcnNvbmhvb2Q&stackedNotes=dGhvdWdodHMvVmVyeS1TbGVuZGVyLURpZmZlcmVuY2Vz&stackedNotes=dGhvdWdodHMvQXJpc3RvdGxl&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ -- interesting trails
   - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
+    - date: 09/02/2025
+    - tags: [fruit, philosophy]
 - https://www.doc.ic.ac.uk/~eedwards/compsys/float/#:~:text=Add%20the%20exponents%20to%20find,1.021%20%C3%97%20106 -- Floating points arithmetics
   - [meta]:
     - date: 07/04/2025
@@ -3084,6 +3160,20 @@ cssclasses:
 
 ## technical
 
+- https://le.qun.ch/en/blog/2024/12/25/libfabric-efa-0-intro/ -- Harnessing 3200 Gbps Network: A Journey with RDMA, EFA, and libfabric
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [networking]
+  - see also: https://github.com/abcdabcd987/libfabric-efa-demo
+  - https://github.com/ofiwg/libfabric/blob/main/fabtests/common/shared.c
+- https://www.youtube.com/watch?v=zZr54G7ec7A -- Formalizing a proof in Lean using Claude and o4
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [math]
+- https://github.com/Dao-AILab/gemm-cublas --GEMM cuBLAS
+  - [meta]:
+    - date: 10/11/2025
+    - tags: [machine learning, kernels]
 - http://www.fantasyjackpalance.com/fjp/sound/synth/synthdata/16-moog-minimoog.html -- Minimoog, synthesizer
   - [meta]:
     - date: 10/08/2025
@@ -3273,6 +3363,22 @@ cssclasses:
 
 ## [[tags/math]]
 
+- https://github.com/teorth/pfr -- formalization of the Polynomial Freiman Ruzsa conjecture
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [math]
+- https://www.youtube.com/watch?v=44hfoihYfJ0 -- Towards a Geometric Theory of Deep Learning [**]
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [fruit]
+- https://www.youtube.com/watch?v=f4NDXEQhBvo -- The shape of mathematics [**]
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [fruit]
+- https://www.youtube.com/watch?v=60X5M1FhmUc -- Michael Freedman | The Poincaré Conjecture and Mathematical Discovery
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [math]
 - https://userweb.ucs.louisiana.edu/~isb9112/dept/phil341/subsymbol/subsymbol.html -- wtf is a subsymbol?
   - [meta]:
     - date: 10/08/2025
@@ -3378,6 +3484,10 @@ cssclasses:
 
 ## papers
 
+- https://arxiv.org/abs/2506.20790v1
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [interpretability]
 - https://arxiv.org/abs/2505.12049
   - [meta]:
     - date: 10/08/2025
@@ -3520,7 +3630,32 @@ cssclasses:
   - [meta]:
     - date: 10/06/2025
     - tags: [fruit]
-- https://arxiv.org/pdf/2509.26537
+- https://arxiv.org/abs/2509.26537
   - [meta]:
     - date: 10/07/2025
     - tags: [kernel, interpretability]
+- https://arxiv.org/abs/2112.01898
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [math, llm]
+  - see also [[/tags/linalg]]
+- https://arxiv.org/abs/2211.00170
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [math, interpretability]
+- https://arxiv.org/abs/2012.14913 [**]
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [inference, interpretability]
+- https://arxiv.org/abs/2505.21487
+  - [meta]:
+    - date: 10/11/2025
+    - tags: [system, inference]
+
+## life
+
+- https://www.youtube.com/watch?v=OQUV6kEKwlk
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [life]
+  - Felix, also known as PewDiePie.

@@ -62,8 +62,8 @@ document.addEventListener("nav", async (e) => {
 
   // Store pagination state
   window.curiusState = {
-    currentPage: 0,
-    hasMore: resp.hasMore ?? false,
+    currentPage: resp.page ?? 0,
+    hasMore: typeof resp.hasMore === "boolean" ? resp.hasMore : linksData.length > 0,
   }
 
   // Update navigation buttons

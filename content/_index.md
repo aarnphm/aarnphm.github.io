@@ -8,7 +8,7 @@ tags:
   - fruit
 description: practicing the act of digital gardening.
 date: "2022-04-22"
-modified: 2025-10-07 23:08:58 GMT-04:00
+modified: 2025-10-12 00:48:38 GMT-04:00
 title: Aaron's notes
 ---
 
@@ -58,7 +58,7 @@ currently, I'm working at a [startup](https://bentoml.com) building [[/tags/ml]]
                                   * Cooking
                                     * Cooking is
                                     * my [[/tags/love]] language
-                                      * my love language, which I learn
+                                      * my [[/tags/love]] language, which I learn
                                       * from my mom.
                                         * from my mom. How one cooks their
                                         * eggs
@@ -76,8 +76,7 @@ currently, I'm working at a [startup](https://bentoml.com) building [[/tags/ml]]
   * on interpretability ([[thoughts/mechanistic interpretability|inner working]] of a neural network)
   * of large ML system.
     * of large [[thoughts/Machine learning|ML]] system (inference engine [[thoughts/optimization|optimization]]).
-
-  * On a higher level, I care
+  * <br /><br />On a higher level, I care
   * about building
     * about building [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|tools]]
     * that extend

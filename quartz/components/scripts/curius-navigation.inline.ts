@@ -37,24 +37,56 @@ async function loadPage(page: number) {
   return data
 }
 
-async function renderPage(page: number) {
+async function renderPage(page: number): Promise<boolean> {
   const fragment = document.getElementById("curius-fragments")
-  if (!fragment) return
+  if (!fragment) return false
 
-  const data = await loadPage(page)
-  if (!data || !data.links) return
+  let data: CuriusResponse
+  try {
+    data = await loadPage(page)
+  } catch (error) {
+    console.error(error)
+    return false
+  }
+
+  if (!data || !data.links) {
+    return false
+  }
 
   const linksData = data.links.filter((link: Link) => link.trails.length === 0)
+
+  if (linksData.length === 0) {
+    if (page === 0) {
+      removeAllChildren(fragment)
+      fragment.innerHTML = `<p>Échec de la récupération des liens.</p>`
+      window.curiusState = { currentPage: 0, hasMore: false }
+      updateNavigation()
+    } else {
+      const fetchText = document.getElementById("curius-fetching-text")
+      if (fetchText) {
+        fetchText.textContent = "Pas d'autres liens pour le moment"
+        fetchText.classList.toggle("active", true)
+        window.setTimeout(() => fetchText.classList.toggle("active", false), 1500)
+      }
+
+      const prevState = window.curiusState || { currentPage: 0, hasMore: false }
+      window.curiusState = { ...prevState, hasMore: false }
+      updateNavigation()
+    }
+
+    return false
+  }
+
   removeAllChildren(fragment)
   fragment.append(...linksData.map(createLinkEl))
 
-  // Update state
   window.curiusState = {
     currentPage: page,
-    hasMore: data.hasMore ?? false,
+    hasMore: typeof data.hasMore === "boolean" ? data.hasMore : linksData.length > 0,
   }
 
   updateNavigation()
+  return true
 }
 
 export function updateNavigation() {
@@ -62,7 +94,19 @@ export function updateNavigation() {
   const nextButton = document.getElementById("curius-next")
 
   if (!prevButton || !nextButton) return
+
+  const state = window.curiusState || { currentPage: 0, hasMore: true }
+  const canGoPrev = state.currentPage > 0
+  const canGoNext = state.hasMore !== false
+
+  prevButton.classList.toggle("disabled", !canGoPrev)
+  prevButton.setAttribute("aria-disabled", String(!canGoPrev))
+
+  nextButton.classList.toggle("disabled", !canGoNext)
+  nextButton.setAttribute("aria-disabled", String(!canGoNext))
 }
+
+let isNavigating = false
 
 document.addEventListener("nav", async (e) => {
   if (e.detail.url !== "curius") return
@@ -73,16 +117,37 @@ document.addEventListener("nav", async (e) => {
   if (!prevButton || !nextButton) return
 
   const onPrevClick = async () => {
-    const { currentPage } = window.curiusState || { currentPage: 0 }
-    if (currentPage > 0) {
+    if (isNavigating) return
+
+    const { currentPage = 0 } = window.curiusState || {}
+    if (currentPage <= 0) return
+
+    isNavigating = true
+    try {
       await renderPage(currentPage - 1)
+    } finally {
+      isNavigating = false
     }
   }
 
   const onNextClick = async () => {
-    const { currentPage, hasMore } = window.curiusState || { currentPage: 0, hasMore: false }
-    if (hasMore) {
-      await renderPage(currentPage + 1)
+    if (isNavigating) return
+
+    const state = window.curiusState || { currentPage: 0, hasMore: true }
+    if (state.hasMore === false) {
+      updateNavigation()
+      return
+    }
+
+    isNavigating = true
+    try {
+      const nextPage = (state.currentPage || 0) + 1
+      const loaded = await renderPage(nextPage)
+      if (!loaded) {
+        updateNavigation()
+      }
+    } finally {
+      isNavigating = false
     }
   }
 

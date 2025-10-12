@@ -3,9 +3,10 @@ id: bytecode-jit-readme
 tags:
   - seed
   - compilers
+  - folder
 description: educational JIT compiler implementations in Python
 date: "2025-10-05"
-modified: 2025-10-05 07:10:50 GMT-04:00
+modified: 2025-10-12 05:40:24 GMT-04:00
 title: python bytecode JIT/compiler
 ---
 
@@ -17,6 +18,8 @@ single-pass AST → C translation. 50-150ms compile, 20-80× runtime speedup.
 
 ```python
 jit = TinyCJIT()
+
+
 @jit(restype=None, argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int])
 def vector_add(a, b, out, n):
   for i in range(n):
@@ -29,6 +32,8 @@ multi-pass compilation through SSA IR. 200-500ms compile, enables optimizations 
 
 ```python
 compiler = IRCompiler(verbose=True, optimize=True)
+
+
 @compiler(restype=c_float, argtypes=[c_float, c_float])
 def add_mul(a, b):
   return (a + b) * 2.0
@@ -40,6 +45,8 @@ adaptive dispatch: complexity heuristic chooses TinyCJIT (simple) or IRCompiler 
 
 ```python
 jit = Compiler(mode='auto', complexity_threshold=10)
+
+
 @jit(restype=c_float, argtypes=[c_float, c_float])
 def compute(a, b):
   return a + b  # auto-selects TinyCJIT

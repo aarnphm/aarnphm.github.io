@@ -288,6 +288,7 @@ export async function handleStackedNotesRequest(
           "Content-Type": "text/html; charset=utf-8",
           "Cache-Control": "s-maxage=300, stale-while-revalidate=60",
           "X-Stacked-Cache": "hit",
+          "Content-Security-Policy": "frame-ancestors 'self' *",
         },
       })
     }
@@ -376,6 +377,7 @@ export async function handleStackedNotesRequest(
         "Content-Type": "text/html; charset=utf-8",
         "Cache-Control": "s-maxage=300, stale-while-revalidate=60",
         "X-Stacked-Cache": "miss",
+        "Content-Security-Policy": "frame-ancestors 'self' *",
       },
     })
   } catch (e) {

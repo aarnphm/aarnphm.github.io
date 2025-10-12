@@ -11,7 +11,7 @@ tags:
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-10-07 06:52:56 GMT-04:00
+modified: 2025-10-12 02:02:09 GMT-04:00
 noindex: true
 title: dating me.
 pageLayout: letter
@@ -119,7 +119,7 @@ I might not be good at something initially, but this modus operandi has allowed 
 
 > I know that the next section on my research interest can be a bit long, feel free to skip it [[dating#personal life.|to the next topic]]! Otherwise hopefully it captures topics I'm currently fascinated with (as of oct, 2025)
 
-![[research]]
+![[research#{collapsed: true}|research interests]]
 
 ---
 

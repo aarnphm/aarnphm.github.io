@@ -10,7 +10,10 @@ import {
   splitAnchor,
   stripSlashes,
 } from "./path"
-import { WikilinkParsed, Wikilink } from "./ofm-wikilink/fromMarkdown"
+import {
+  WikilinkParsed,
+  Wikilink,
+} from "../extensions/micromark-extension-ofm-wikilinks/fromMarkdown"
 
 // re-export WikilinkParsed for external consumers
 export type { WikilinkParsed, Wikilink }

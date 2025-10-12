@@ -7,7 +7,6 @@ interface ApiResponse {
   links?: Link[]
   following?: Following[]
   trails?: Trail[]
-  hasMore?: boolean
   page?: number
 }
 
@@ -29,11 +28,10 @@ async function queryLinks(page: number = 0): Promise<ApiResponse> {
     const d: any = await r.json()
     return {
       links: d.userSaved || [],
-      hasMore: d.hasMore ?? false,
       page,
     }
   } catch {
-    return { links: [], hasMore: false, page }
+    return { links: [], page }
   }
 }
 
@@ -57,7 +55,6 @@ async function queryTrails(page: number = 0, alias?: string): Promise<ApiRespons
       const d: any = await r.json()
       return {
         links: d.userSaved || [],
-        hasMore: d.hasMore ?? false,
         page,
       }
     }
@@ -67,7 +64,7 @@ async function queryTrails(page: number = 0, alias?: string): Promise<ApiRespons
     const d: any = await r.json()
     return { trails: d.trails || [] }
   } catch {
-    return hasAlias ? { links: [], hasMore: false, page } : { trails: [] }
+    return hasAlias ? { links: [], page } : { trails: [] }
   }
 }
 
@@ -121,7 +118,6 @@ export default async function handleCurius(request: Request): Promise<Response> 
           user: r1.user,
           links: r2.links,
           following: r3.following,
-          hasMore: r2.hasMore,
           trails: r4.trails,
         }
         break

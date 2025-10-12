@@ -3,8 +3,9 @@ id: movies
 comments: false
 tags:
   - evergreen
+description: a capsule of life
 date: "2024-02-07"
-modified: 2025-10-05 16:30:06 GMT-04:00
+modified: 2025-10-12 02:19:20 GMT-04:00
 title: movies.
 ---
 

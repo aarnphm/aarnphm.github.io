@@ -20,7 +20,7 @@
     "swarm": "pnpx tsx quartz/scripts/dev.ts",
     "cf:deploy": "pnpm check && pnpm dlx wrangler deploy",
     "check": "pnpm format && tsx quartz/scripts/convert.ts && pnpm dlx wrangler types && pnpm prettier . --check && tsc --noEmit && tsx --test",
-    "format": "pnpx bibtex-tidy --months --merge=combine --no-align --sort=type,year,eprint --duplicates=key,doi,citation --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,series,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields --blank-lines --modify content/References.bib && pnpm prettier . --write",
+    "format": "pnpx bibtex-tidy content/References.bib --months --merge=combine --no-align --sort=type,year,eprint --duplicates=key,doi,citation --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,series,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields --blank-lines --modify && pnpm prettier . --write",
     "profile": "0x -D prof quartz/bootstrap-cli.mjs build --concurrency=1"
   },
   "engines": {
@@ -47,13 +47,13 @@
     "@cloudflare/workers-oauth-provider": "^0.0.11",
     "@floating-ui/dom": "^1.7.4",
     "@huggingface/transformers": "^3.7.5",
-    "@modelcontextprotocol/sdk": "^1.19.1",
+    "@modelcontextprotocol/sdk": "^1.20.0",
     "@myriaddreamin/rehype-typst": "^0.6.0",
     "@myriaddreamin/typst-ts-node-compiler": "^0.6.0",
     "@myriaddreamin/typst.ts": "^0.6.0",
     "@napi-rs/simple-git": "^0.1.22",
     "@tweenjs/tween.js": "^25.0.0",
-    "agents": "^0.2.9",
+    "agents": "^0.2.13",
     "ansi-truncate": "^1.4.0",
     "async-mutex": "^0.5.0",
     "chokidar": "^4.0.3",
@@ -75,10 +75,10 @@
     "hast-util-to-text": "^4.0.2",
     "hast-util-whitespace": "^3.0.0",
     "hastscript": "^9.0.1",
-    "hono": "^4.9.10",
+    "hono": "^4.9.11",
     "is-absolute-url": "^5.0.0",
     "js-yaml": "^4.1.0",
-    "katex": "^0.16.23",
+    "katex": "^0.16.24",
     "lightningcss": "^1.30.2",
     "mdast-util-find-and-replace": "^3.0.2",
     "mdast-util-from-markdown": "^2.0.2",
@@ -87,9 +87,12 @@
     "mdast-util-to-hast": "^13.2.0",
     "mdast-util-to-markdown": "^2.1.2",
     "mdast-util-to-string": "^4.0.0",
+    "micromark-factory-space": "^2.0.1",
+    "micromark-util-character": "^2.1.1",
+    "micromark-util-symbol": "^2.0.1",
     "micromorph": "^0.4.5",
     "minimatch": "^10.0.3",
-    "motion": "^12.23.22",
+    "motion": "^12.23.24",
     "node-tikzjax": "^1.0.3",
     "octokit": "^5.0.3",
     "onnxruntime-web": "^1.23.0",
@@ -141,13 +144,12 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20251008.0",
+    "@cloudflare/workers-types": "^4.20251011.0",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
-    "@types/js-yaml": "^4.0.9",
     "@types/katex": "^0.16.7",
     "@types/mdast": "^4.0.4",
-    "@types/node": "^24.7.1",
+    "@types/node": "^24.7.2",
     "@types/pretty-time": "^1.1.5",
     "@types/source-map-support": "^0.5.10",
     "@types/unist": "^3.0.3",
@@ -166,13 +168,5 @@
     "typescript": "^5.9.3",
     "wrangler": "^4.42.2"
   },
-  "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e",
-  "pnpm": {
-    "peerDependencyRules": {
-      "allowedVersions": {
-        "use-sync-external-store>react": "^19.0.0",
-        "zod": "^3.22.0 || ^4.0.0"
-      }
-    }
-  }
+  "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
 }

@@ -12,8 +12,16 @@ import { BuildCtx } from "../../util/ctx"
 import { Node } from "unist"
 import { StaticResources } from "../../util/resources"
 import { QuartzPluginData, defaultProcessedContent } from "../vfile"
-import { ArenaChannel } from "../transformers/arena"
+import {
+  ArenaChannel,
+  ArenaBlock,
+  ArenaBlockSearchable,
+  ArenaChannelSearchable,
+  ArenaSearchIndex,
+} from "../transformers/arena"
 import { clone } from "../../util/clone"
+import { toHtml } from "hast-util-to-html"
+import { ElementContent } from "hast"
 
 async function processArenaIndex(
   ctx: BuildCtx,
@@ -104,6 +112,107 @@ async function processChannel(
   })
 }
 
+/**
+ * Convert ArenaBlock to searchable JSON format.
+ * Serializes ElementContent nodes to HTML strings for JSON compatibility.
+ */
+function serializeBlock(
+  block: ArenaBlock,
+  channelSlug: string,
+  channelName: string,
+  hasModalInDom: boolean,
+): ArenaBlockSearchable {
+  const searchable: ArenaBlockSearchable = {
+    id: block.id,
+    channelSlug,
+    channelName,
+    content: block.content,
+    highlighted: block.highlighted ?? false,
+    hasModalInDom,
+  }
+
+  if (block.title) searchable.title = block.title
+  if (block.url) searchable.url = block.url
+  if (block.snapshotKey) searchable.snapshotKey = block.snapshotKey
+  if (block.embedDisabled) searchable.embedDisabled = block.embedDisabled
+  if (block.embedHtml) searchable.embedHtml = block.embedHtml
+  if (block.metadata) searchable.metadata = block.metadata
+  if (block.internalSlug) searchable.internalSlug = block.internalSlug
+  if (block.internalHref) searchable.internalHref = block.internalHref
+  if (block.internalHash) searchable.internalHash = block.internalHash
+  if (block.tags) searchable.tags = block.tags
+
+  // Serialize ElementContent to HTML strings
+  if (block.titleHtmlNode) {
+    try {
+      searchable.titleHtml = toHtml(block.titleHtmlNode as ElementContent)
+    } catch {
+      // Fallback to title if serialization fails
+    }
+  }
+
+  if (block.htmlNode) {
+    try {
+      searchable.blockHtml = toHtml(block.htmlNode as ElementContent)
+    } catch {
+      // Fallback to content if serialization fails
+    }
+  }
+
+  // Recursively serialize sub-items
+  if (block.subItems && block.subItems.length > 0) {
+    searchable.subItems = block.subItems.map((subBlock) =>
+      serializeBlock(subBlock, channelSlug, channelName, false),
+    )
+  }
+
+  return searchable
+}
+
+/**
+ * Build complete search index from arena data.
+ * Tracks which blocks have prerendered modals in DOM (first 5 per channel).
+ */
+function buildSearchIndex(channels: ArenaChannel[]): ArenaSearchIndex {
+  const PREVIEW_BLOCK_LIMIT = 5
+
+  const blocks: ArenaBlockSearchable[] = []
+  const channelMetadata: ArenaChannelSearchable[] = []
+
+  for (const channel of channels) {
+    channelMetadata.push({
+      id: channel.id,
+      name: channel.name,
+      slug: channel.slug,
+      blockCount: channel.blocks.length,
+    })
+
+    channel.blocks.forEach((block, index) => {
+      // First 5 blocks per channel have prerendered modals in index page
+      const hasModalInDom = index < PREVIEW_BLOCK_LIMIT
+      blocks.push(serializeBlock(block, channel.slug, channel.name, hasModalInDom))
+    })
+  }
+
+  return {
+    version: "1.0.0",
+    blocks,
+    channels: channelMetadata,
+  }
+}
+
+async function emitSearchIndex(ctx: BuildCtx, searchIndex: ArenaSearchIndex) {
+  const slug = "static/arena-search" as FullSlug
+  const content = JSON.stringify(searchIndex)
+
+  return write({
+    ctx,
+    content,
+    slug,
+    ext: ".json",
+  })
+}
+
 export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
   const filteredHeader = sharedPageComponents.header.filter((component) => {
     const name = component.displayName || component.name || ""
@@ -152,6 +261,10 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
         for (const channel of file.data.arenaData.channels) {
           yield processChannel(ctx, channel, file.data, allFiles, channelOpts, resources)
         }
+
+        // Build and emit search index JSON after all channels are processed
+        const searchIndex = buildSearchIndex(file.data.arenaData.channels)
+        yield emitSearchIndex(ctx, searchIndex)
       }
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
@@ -176,6 +289,10 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
         for (const channel of file.data.arenaData.channels) {
           yield processChannel(ctx, channel, file.data, allFiles, channelOpts, resources)
         }
+
+        // Build and emit search index JSON after all channels are processed
+        const searchIndex = buildSearchIndex(file.data.arenaData.channels)
+        yield emitSearchIndex(ctx, searchIndex)
       }
     },
   }

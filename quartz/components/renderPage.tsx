@@ -34,6 +34,8 @@ import { h, s } from "hastscript"
 import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
 import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
 //@ts-ignore
+import transcludeScript from "./scripts/transclude.inline.ts"
+//@ts-ignore
 import curiusScript from "./scripts/curius.inline"
 //@ts-ignore
 import curiusFriendScript from "./scripts/curius-friends.inline"
@@ -478,6 +480,11 @@ export const pageResources = (
         script: `const semanticCfg = ${JSON.stringify(ctx.cfg?.configuration?.semanticSearch ?? {})}`,
       },
       {
+        script: transcludeScript,
+        loadTime: "afterDOMReady",
+        contentType: "inline",
+      },
+      {
         script: collapseHeaderScript,
         loadTime: "afterDOMReady",
         contentType: "inline",
@@ -542,8 +549,8 @@ export function transcludeFinal(
     url: string,
     description: string | null,
     title: boolean,
-  ): Element => {
-    if (!title) return {} as Element
+  ): Element | null => {
+    if (!title) return null
 
     const [parent, ...children] = url.split("/")
     const truncated = children.length > 2 ? `${parent}/.../${children[children.length - 1]}` : url
@@ -587,6 +594,57 @@ export function transcludeFinal(
     ])
   }
 
+  /**
+   * wrap transclude content in collapsible structure.
+   * creates a title bar with fold button and content area.
+   */
+  const wrapCollapsible = (
+    node: Element,
+    children: ElementContent[],
+    titleText: string,
+    collapsed: boolean,
+  ): void => {
+    const foldButton = h(
+      "span.transclude-fold",
+      {
+        role: "button",
+        type: "button",
+        ariaExpanded: !collapsed,
+        ariaLabel: "Toggle transclude visibility",
+      },
+      [
+        s(
+          "svg",
+          {
+            ...svgOptions,
+            fill: "none",
+            stroke: "currentColor",
+            strokeWidth: "2",
+            class: "fold-icon",
+          },
+          [s("use", { href: collapsed ? "#chevron-right" : "#chevron-down" })],
+        ),
+      ],
+    )
+
+    const titleEl = h(".transclude-title", [
+      foldButton,
+      h("span.transclude-title-text", [{ type: "text", value: titleText }]),
+    ])
+
+    const contentEl = h(".transclude-content", [h("div", children)])
+
+    // add collapsible classes to node
+    const classNames = (node.properties?.className ?? []) as string[]
+    classNames.push("transclude-collapsible")
+    if (collapsed) {
+      classNames.push("is-collapsed")
+    }
+    node.properties = { ...node.properties, className: classNames }
+
+    node.children = [titleEl, contentEl]
+  }
+
   // NOTE: process transcludes in componentData
   visit(root, { tagName: "blockquote" }, (node) => {
     const classNames = (node.properties?.className ?? []) as string[]
@@ -606,6 +664,17 @@ export function transcludeFinal(
       const page = allFiles.find((f) => f.slug === transcludeTarget)
       if (!page) {
         return
+      }
+
+      // parse metadata to check for collapsed flag
+      let transcludeMetadata: Record<string, any> | undefined
+      const rawMetadata = node.properties.dataMetadata as string | undefined
+      if (rawMetadata) {
+        try {
+          transcludeMetadata = JSON.parse(rawMetadata)
+        } catch {
+          // ignore parsing errors
+        }
       }
 
       let transcludePageOpts: TranscludeOptions
@@ -639,7 +708,18 @@ export function transcludeFinal(
               ]),
             )
           }
-          node.children = children
+
+          if (transcludeMetadata && "collapsed" in transcludeMetadata) {
+            const titleText = alias || `Block: ${blockRef}`
+            wrapCollapsible(
+              node,
+              children.filter((c) => c !== null) as ElementContent[],
+              titleText,
+              transcludeMetadata.collapsed,
+            )
+          } else {
+            node.children = children.filter((c) => c !== null) as ElementContent[]
+          }
         }
       } else if (blockRef?.startsWith("#") && page.htmlAst) {
         // header transclude
@@ -682,7 +762,14 @@ export function transcludeFinal(
             ]),
           )
         }
-        node.children = children
+
+        const validChildren = children.filter((c) => c !== null) as ElementContent[]
+        if (transcludeMetadata && "collapsed" in transcludeMetadata) {
+          const titleText = alias || page.frontmatter?.title || `Section: ${blockRef}`
+          wrapCollapsible(node, validChildren, titleText, transcludeMetadata.collapsed)
+        } else {
+          node.children = validChildren
+        }
 
         // support transcluding footnote and bib data
         let footnoteSection: Element | undefined = undefined
@@ -796,7 +883,7 @@ export function transcludeFinal(
                     }),
                 },
               ])
-            : ({} as ElementContent),
+            : null,
           ...(page.htmlAst.children as ElementContent[]).map((child) =>
             normalizeHastElement(child as Element, slug, transcludeTarget),
           ),
@@ -810,7 +897,13 @@ export function transcludeFinal(
           )
         }
 
-        node.children = children
+        const validChildren = children.filter((c) => c !== null) as ElementContent[]
+        if (transcludeMetadata && "collapsed" in transcludeMetadata) {
+          const titleText = alias || page.frontmatter?.title || page.slug || "Transclude"
+          wrapCollapsible(node, validChildren, titleText, transcludeMetadata.collapsed)
+        } else {
+          node.children = validChildren
+        }
       }
     }
   })

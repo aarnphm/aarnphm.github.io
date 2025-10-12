@@ -2,6 +2,7 @@
 @use "./variables.scss" as *;
 @use "./syntax.scss";
 @use "./callouts.scss";
+@use "./transcludes.scss";
 @use "./mixin.scss" as *;
 
 html,
@@ -750,6 +751,7 @@ body[data-is-base="true"] {
 
 .page-content {
   text-transform: lowercase;
+
   & article {
     & li:has(> input[type="checkbox"]) {
       position: relative;
@@ -792,10 +794,16 @@ body[data-is-base="true"] {
   }
 }
 
+.katex-html,
 .katex-display {
   display: initial !important;
   overflow-x: auto;
   overflow-y: hidden;
+  text-transform: none !important;
+
+  & > * {
+    text-transform: none !important;
+  }
 }
 
 iframe {

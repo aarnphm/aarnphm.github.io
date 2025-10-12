@@ -3,9 +3,10 @@ id: index
 tags:
   - seed
   - ml
+  - folder
 description: intuition for latent mapping
 date: "2025-09-07"
-modified: 2025-09-07 16:15:07 GMT-04:00
+modified: 2025-10-12 05:40:24 GMT-04:00
 noindex: true
 title: panoramic representations
 ---

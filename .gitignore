@@ -202,4 +202,5 @@ cmd.txt
 checkpoints
 .claude
 content/arena_hast.json
-docs/*.txt
+docs/
+letters

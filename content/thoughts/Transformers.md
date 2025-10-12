@@ -3,9 +3,9 @@ id: Transformers
 tags:
   - ml
   - technical
-description: and the backbone of the AI progress.
+description: and the backbone of the current language models/ai progress.
 date: "2024-02-07"
-modified: 2025-09-28 16:33:23 GMT-04:00
+modified: 2025-10-12 05:53:09 GMT-04:00
 title: Transformers
 ---
 
@@ -75,6 +75,10 @@ Either compute-bound (batch inference, saturated usage) or memory-bound (latency
 ![[thoughts/PD disaggregated serving#Prefill/Decode]]
 
 ![[thoughts/Speculative decoding]]
+
+### sampling
+
+i.e temperature, top-p, top-k
 
 ### KV
 

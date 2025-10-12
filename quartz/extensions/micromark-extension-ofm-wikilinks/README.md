@@ -560,7 +560,7 @@ comprehensive test suite in `index.test.ts` covers:
 run tests:
 
 ```bash
-pnpm exec tsx --test quartz/util/ofm-wikilink/index.test.ts
+pnpm exec tsx --test quartz/extensions/micromark-extension-ofm-wikilinks/index.test.ts
 ```
 
 ## design decisions

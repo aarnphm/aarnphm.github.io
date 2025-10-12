@@ -91,11 +91,16 @@ body[data-menu="true"] {
 
   .page-footer {
     margin-bottom: 0;
+    margin-top: 0;
   }
 
   @media all and ($desktop) {
     .menu {
       padding: 6rem 3rem;
+    }
+
+    footer {
+      padding: 0 !important;
     }
 
     h1,

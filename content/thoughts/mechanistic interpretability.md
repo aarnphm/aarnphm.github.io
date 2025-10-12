@@ -7,7 +7,7 @@ tags:
 description: and reverse engineering neural networks.
 date: "2024-10-30"
 abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
-modified: 2025-10-06 19:50:49 GMT-04:00
+modified: 2025-10-09 09:40:44 GMT-04:00
 aliases:
   - mechinterp
   - reveng neural net
@@ -99,6 +99,8 @@ $$
 > by steering existing learned representations of behaviors, CAA results in better out-of-distribution generalization than basic supervised finetuning of the entire model.
 
 ## superposition hypothesis
+
+see also: https://colab.research.google.com/github/anthropics/toy-models-of-superposition/blob/main/toy_models.ipynb
 
 > [!abstract]+ tl/dr
 >
@@ -220,6 +222,12 @@ Depicts influence of features on one another, allowing one to trace intermediate
 
 ## stochastic parameter decomposition
 
-https://github.com/goodfire-ai/spd 👀
+https://github.com/goodfire-ai/spd 👀, and https://arxiv.org/pdf/2506.20790, and https://www.goodfire.ai/research/stochastic-param-decomp
+
+## QK attributions
+
+https://transformer-circuits.pub/2025/attention-qk
+
+> describe attention head scores as a bilinear function of feature activations on the respective query and key positions.
 
 [^ref]

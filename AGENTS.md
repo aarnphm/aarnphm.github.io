@@ -4,8 +4,6 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 
 ## Context and Guidelines
 
-**IMPORTANT**: Most of the cases if you need to verify build, make sure to check if port 8080 is available. If it is occupied, then do nothing, otherwise run `pnpm exec tsx quartz/script/dev.ts`. Chances are i'm running development build. Otherwise `pnpm bundle` would suffice.
-
 **Build and Development**:
 
 - `pnpm bundle` - Build for production (concurrency 8, bundleInfo, verbose)

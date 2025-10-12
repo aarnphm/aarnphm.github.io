@@ -31,7 +31,7 @@ body[data-slug="index"] {
     }
 
     .side-col:not(.popover *) {
-      grid-column: 3/6;
+      grid-column: 3/-3;
     }
   }
 

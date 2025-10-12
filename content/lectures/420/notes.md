@@ -948,7 +948,7 @@ For matmul $C_{M\times N} = A_{M\times K} B_{K\times N}$:
 - Memory (naive): $(MK + KN + MN) \times 4$ bytes
 - Arithmetic intensity: $\frac{2MNK}{4(MK + KN + MN)}$
 
-For large $K$, this approaches $\frac{K}{2}$. With tiling, we can achieve much higher intensity by reusing data in shared memory.
+For large $K$, this approaches $\frac{MN}{2(M+N)}$ FLOPs per byte. With square tiles where $M=N$, this simplifies to $\frac{M}{4}$. Tiling achieves much higher intensity by reusing data in shared memory.
 
 > [!example] Memory hierarchy data flow [^data-flow]
 >

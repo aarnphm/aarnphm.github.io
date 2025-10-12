@@ -1,4 +1,4 @@
-import { fetchCanonical } from "./util"
+import { fetchCanonical, tokenizeTerm, highlight } from "./util"
 import { normalizeRelativeURLs } from "../../util/path"
 
 let currentBlockIndex = 0
@@ -328,7 +328,42 @@ function handleCopyButton(button: HTMLElement) {
   )
 }
 
-// Search functionality
+// Search functionality - JSON-based
+interface ArenaBlockSearchable {
+  id: string
+  channelSlug: string
+  channelName: string
+  content: string
+  title?: string
+  titleHtml?: string
+  blockHtml?: string
+  url?: string
+  highlighted: boolean
+  embedHtml?: string
+  metadata?: Record<string, string>
+  internalSlug?: string
+  internalHref?: string
+  internalHash?: string
+  tags?: string[]
+  subItems?: ArenaBlockSearchable[]
+  hasModalInDom: boolean
+  embedDisabled?: boolean
+  snapshotKey?: string
+}
+
+interface ArenaChannelSearchable {
+  id: string
+  name: string
+  slug: string
+  blockCount: number
+}
+
+interface ArenaSearchIndex {
+  version: string
+  blocks: ArenaBlockSearchable[]
+  channels: ArenaChannelSearchable[]
+}
+
 interface SearchIndexItem {
   blockId: string
   channelSlug?: string
@@ -336,60 +371,69 @@ interface SearchIndexItem {
   title: string
   content: string
   highlighted: boolean
-  element: HTMLElement
+  hasModalInDom: boolean
 }
 
 let searchIndex: SearchIndexItem[] = []
 let searchDebounceTimer: number | undefined
+let arenaSearchData: ArenaSearchIndex | null = null
 
-function buildSearchIndex(scope: "channel" | "index"): SearchIndexItem[] {
+// Fetch arena search index JSON
+async function fetchArenaSearchIndex(): Promise<ArenaSearchIndex | null> {
+  if (arenaSearchData) return arenaSearchData
+
+  try {
+    const response = await fetch("/static/arena-search.json")
+    if (!response.ok) {
+      console.warn(`Failed to fetch arena search index: ${response.status}`)
+      return null
+    }
+    arenaSearchData = (await response.json()) as ArenaSearchIndex
+    return arenaSearchData
+  } catch (error) {
+    console.error("Error fetching arena search index:", error)
+    return null
+  }
+}
+
+async function buildSearchIndex(scope: "channel" | "index"): Promise<SearchIndexItem[]> {
   const index: SearchIndexItem[] = []
 
   if (scope === "channel") {
-    // Search within channel blocks
-    const blocks = document.querySelectorAll<HTMLElement>(".arena-block[data-block-id]")
-    blocks.forEach((block) => {
-      const blockId = block.getAttribute("data-block-id")
-      if (!blockId) return
+    // For channel pages, fetch JSON and filter by current channel
+    const data = await fetchArenaSearchIndex()
+    if (!data) return index
 
-      const content = block.querySelector(".arena-block-content")
-      const title = content?.textContent?.trim() || ""
-      const highlighted = block.classList.contains("highlighted")
+    const currentSlug = document.body?.dataset.slug || ""
+    const channelSlug = currentSlug.replace(/^arena\//, "")
 
-      index.push({
-        blockId,
-        title,
-        content: title,
-        highlighted,
-        element: block,
-      })
-    })
-  } else {
-    // Search across all channels
-    const channelRows = document.querySelectorAll<HTMLElement>(".arena-channel-row")
-    channelRows.forEach((row) => {
-      const channelSlug = row.getAttribute("data-slug") || ""
-      const channelNameEl = row.querySelector(".arena-channel-row-header h2")
-      const channelName = channelNameEl?.textContent?.trim() || ""
-
-      const previewItems = row.querySelectorAll<HTMLElement>(".arena-channel-row-preview-item")
-      previewItems.forEach((item) => {
-        const blockId = item.getAttribute("data-block-id")
-        if (!blockId) return
-
-        const textEl = item.querySelector(".arena-channel-row-preview-text")
-        const title = textEl?.textContent?.trim() || ""
-        const highlighted = item.classList.contains("highlighted")
-
+    data.blocks
+      .filter((block) => block.channelSlug === channelSlug)
+      .forEach((block) => {
         index.push({
-          blockId,
-          channelSlug,
-          channelName,
-          title,
-          content: title,
-          highlighted,
-          element: item,
+          blockId: block.id,
+          channelSlug: block.channelSlug,
+          channelName: block.channelName,
+          title: block.title || block.content,
+          content: block.content,
+          highlighted: block.highlighted,
+          hasModalInDom: block.hasModalInDom,
         })
+      })
+  } else {
+    // For index page, use all blocks from JSON
+    const data = await fetchArenaSearchIndex()
+    if (!data) return index
+
+    data.blocks.forEach((block) => {
+      index.push({
+        blockId: block.id,
+        channelSlug: block.channelSlug,
+        channelName: block.channelName,
+        title: block.title || block.content,
+        content: block.content,
+        highlighted: block.highlighted,
+        hasModalInDom: block.hasModalInDom,
       })
     })
   }
@@ -401,26 +445,76 @@ function performSearch(query: string, index: SearchIndexItem[]): SearchIndexItem
   const lowerQuery = query.toLowerCase().trim()
   if (lowerQuery.length < 2) return []
 
-  return index
-    .filter((item) => {
-      const titleMatch = item.title.toLowerCase().includes(lowerQuery)
-      const contentMatch = item.content.toLowerCase().includes(lowerQuery)
-      return titleMatch || contentMatch
+  // Tokenize search query for better matching
+  const tokens = tokenizeTerm(lowerQuery)
+
+  // Score each item based on token matches
+  const scoredResults = index
+    .map((item) => {
+      const lowerTitle = item.title.toLowerCase()
+      const lowerContent = item.content.toLowerCase()
+
+      let score = 0
+      let titleMatchCount = 0
+      let contentMatchCount = 0
+
+      // Check each token
+      for (const token of tokens) {
+        const tokenLower = token.toLowerCase()
+
+        // Title matches are weighted higher
+        if (lowerTitle.includes(tokenLower)) {
+          titleMatchCount++
+          score += 10
+        }
+
+        // Content matches
+        if (lowerContent.includes(tokenLower)) {
+          contentMatchCount++
+          score += 5
+        }
+      }
+
+      // Boost for exact phrase match
+      if (lowerTitle.includes(lowerQuery)) {
+        score += 20
+      }
+      if (lowerContent.includes(lowerQuery)) {
+        score += 10
+      }
+
+      // Boost for highlighted items
+      if (item.highlighted) {
+        score += 3
+      }
+
+      // Must have at least one match
+      if (score === 0) return null
+
+      return { item, score, titleMatchCount, contentMatchCount }
     })
+    .filter((result): result is NonNullable<typeof result> => result !== null)
     .sort((a, b) => {
-      // Prioritize title matches over content matches
-      const aTitleMatch = a.title.toLowerCase().includes(lowerQuery)
-      const bTitleMatch = b.title.toLowerCase().includes(lowerQuery)
-      if (aTitleMatch && !bTitleMatch) return -1
-      if (!aTitleMatch && bTitleMatch) return 1
-      // Prioritize highlighted items
-      if (a.highlighted && !b.highlighted) return -1
-      if (!a.highlighted && b.highlighted) return 1
-      return 0
+      // Sort by score descending
+      if (b.score !== a.score) return b.score - a.score
+
+      // Tie-breaker: more title matches first
+      if (b.titleMatchCount !== a.titleMatchCount) {
+        return b.titleMatchCount - a.titleMatchCount
+      }
+
+      // Tie-breaker: more content matches
+      return b.contentMatchCount - a.contentMatchCount
     })
+
+  return scoredResults.map((result) => result.item)
 }
 
-function renderSearchResults(results: SearchIndexItem[], scope: "channel" | "index") {
+function renderSearchResults(
+  results: SearchIndexItem[],
+  scope: "channel" | "index",
+  searchQuery: string = "",
+) {
   const container = document.getElementById("arena-search-container")
   if (!container) return
 
@@ -448,11 +542,13 @@ function renderSearchResults(results: SearchIndexItem[], scope: "channel" | "ind
 
     const title = document.createElement("div")
     title.className = "arena-search-result-title"
-    title.textContent = result.title
+    // Highlight matches in title
+    title.innerHTML = searchQuery ? highlight(searchQuery, result.title) : result.title
 
     const content = document.createElement("div")
     content.className = "arena-search-result-content"
-    content.textContent = result.content
+    // Highlight matches in content with trimming to show context
+    content.innerHTML = searchQuery ? highlight(searchQuery, result.content, true) : result.content
 
     resultItem.appendChild(title)
     resultItem.appendChild(content)
@@ -598,7 +694,16 @@ document.addEventListener("nav", () => {
 
   if (searchInput) {
     const scope = searchInput.getAttribute("data-search-scope") as "channel" | "index"
-    searchIndex = buildSearchIndex(scope)
+
+    // Build search index asynchronously
+    buildSearchIndex(scope)
+      .then((index) => {
+        searchIndex = index
+      })
+      .catch((error) => {
+        console.error("Failed to build search index:", error)
+        searchIndex = []
+      })
 
     // Clear any previous listener
     if (searchDebounceTimer) {
@@ -618,7 +723,7 @@ document.addEventListener("nav", () => {
         }
 
         const results = performSearch(query, searchIndex)
-        renderSearchResults(results, scope)
+        renderSearchResults(results, scope, query)
         wireSearchResultsInteractions()
         resetActiveResultHighlight()
       }, 300)
@@ -642,6 +747,24 @@ document.addEventListener("nav", () => {
       }
 
       e.preventDefault()
+
+      // Check if this is a wikilink trail anchor - open in stacked notes
+      const isWikilinkTrail = internalLink.classList.contains("arena-wikilink-trail-anchor")
+
+      if (isWikilinkTrail && typeof window.stackedNotes !== "undefined") {
+        // Open in stacked notes view
+        try {
+          const destination = new URL(internalLink.href)
+          window.stackedNotes.push(destination)
+          // Keep modal open so user can see both arena block and note
+          return
+        } catch (err) {
+          console.error("Failed to open in stacked notes:", err)
+          // Fall through to regular navigation
+        }
+      }
+
+      // Regular internal link - close modal and navigate
       closeModal()
       try {
         const destination = new URL(internalLink.href)
@@ -737,7 +860,7 @@ document.addEventListener("nav", () => {
       return
     }
 
-    // Handle search result clicks
+    // Handle search result clicks with smart navigation based on hasModalInDom
     const searchResultItem = target.closest(".arena-search-result-item") as HTMLElement | null
     if (searchResultItem) {
       const blockId = searchResultItem.getAttribute("data-block-id")
@@ -747,21 +870,24 @@ document.addEventListener("nav", () => {
         e.preventDefault()
         clearSearchState({ blur: true })
 
-        // Check if modal data exists for this block
-        const modalData = document.getElementById(`arena-modal-data-${blockId}`)
+        // Find the result in search index to check hasModalInDom flag
+        const resultData = searchIndex.find((item) => item.blockId === blockId)
 
-        if (modalData) {
-          // Modal data exists, show it directly
+        if (resultData?.hasModalInDom) {
+          // Block has prerendered modal in DOM - show it instantly
           showModal(blockId)
         } else if (channelSlug) {
-          // No modal data, navigate to the channel page
+          // Block doesn't have modal in DOM - navigate to channel page
           const currentSlug = document.body?.dataset.slug || ""
-          if (!currentSlug.startsWith(channelSlug)) {
-            window.location.href = `/${channelSlug}`
-            return
+          const targetChannelSlug = `arena/${channelSlug}`
+
+          if (currentSlug === targetChannelSlug) {
+            // Already on the channel page - try to show modal
+            showModal(blockId)
+          } else {
+            // Navigate to channel page with hash to auto-open modal
+            window.location.href = `/${targetChannelSlug}#${blockId}`
           }
-          // If we're already on the channel page but no modal data, just show modal
-          showModal(blockId)
         } else {
           // Fallback: try to show modal anyway
           showModal(blockId)
