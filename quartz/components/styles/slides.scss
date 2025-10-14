@@ -76,3 +76,9 @@ nav#toc-vertical {
     font-size: 0.875rem;
   }
 }
+
+[data-slides="true"] {
+  .transclude-collapsible {
+    width: 100%;
+  }
+}

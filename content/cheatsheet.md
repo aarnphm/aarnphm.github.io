@@ -5,7 +5,7 @@ tags:
   - math
 description: A list of cheatsheet of whatever that fits with my workflow
 date: "2024-10-10"
-modified: 2025-10-08 03:48:57 GMT-04:00
+modified: 2025-10-13 07:28:38 GMT-04:00
 title: cheatsheet
 ---
 
@@ -31,6 +31,14 @@ $$
 
 ## words
 
-- Tomfoolering
-- Smitheeren
-- Bloviating
+- tomfoolering
+- smitheeren
+- bloviating
+- ostreperous
+- carthusian
+- vaudeville
+- firmament
+- nipper
+- aspersion
+- vim
+- sibilant

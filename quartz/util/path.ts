@@ -71,9 +71,6 @@ export function slugifyFilePath(fp: FilePath, excludeExt?: boolean): FullSlug {
     ext = ""
   }
 
-  // We have special handling of pdf
-  if (fp.endsWith(".pdf")) return fp as unknown as FullSlug
-
   let slug = sluggify(withoutFileExt)
 
   // treat _index as index

@@ -18,7 +18,7 @@ A modified/personal enhancement from bare Quartz
 
 some remark parsers for wikilinks, callouts, that supports general OFM compatibility
 
-see [ofm-wikilinks](./quartz/extensions/micromark-extension-ofm-wikilinks/) and [ofm-callouts](./quartz/extensions/micromark-extension-ofm-callouts/) for more information.
+see [ofm-wikilinks](../quartz/extensions/micromark-extension-ofm-wikilinks/) and [ofm-callouts](../quartz/extensions/micromark-extension-ofm-callouts/) for more information.
 
 ### [telescopic-text](https://github.com/jackyzha0/telescopic-text)
 

@@ -1,19 +1,18 @@
 ---
+socials:
+  curius: /curius
+  are.na: https://www.are.na/aaron-pham/channels
 id: are.na
-permalinks:
-  - /website
-  - /tweets
-  - /resources
+aliases:
+  - inspo
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-socials:
-  curius: /curius
-  are.na: https://www.are.na/aaron-pham/channels
+title: are.na
 date: "2024-10-24"
-modified: 2025-10-12 01:16:10 GMT-04:00
+modified: 2025-10-13 07:59:36 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -34,6 +33,10 @@ codex:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be consumed by quartz/plugins/emitters/arena.ts, and then ingested with quartz/components/pages/[ArenaIndex|ChannelContent].tsx
+permalinks:
+  - /website
+  - /tweets
+  - /resources
 claude:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -51,9 +54,6 @@ claude:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-aliases:
-  - inspo
-title: are.na
 cssclasses:
   - nolist
 ---
@@ -2711,8 +2711,28 @@ cssclasses:
     - date: 10/03/2025
     - tags: [fruit]
 
+## cooking
+
+- https://www.youtube.com/watch?v=_LVX03nJyVY -- Ratio in cooking [**]
+  - [meta]:
+    - date: 10/13/2025
+    - tags: [food]
+
 ## video
 
+- https://www.youtube.com/watch?v=KonFO7CpVfo -- AK-47: The Peoples' Weapon
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [horses]
+  - Another Horse bangers
+- https://www.youtube.com/watch?v=9euKCrTyMEc -- You’re Not Addicted to Content, You’re Starving for Information [**]
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [vlogbrothers]
+- https://www.youtube.com/watch?v=tWYxrowovts -- How Did The World Get So Ugly?
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [life, city, urban planning]
 - https://www.youtube.com/watch?v=kN6dtpMUoC0 -- So you are in love with [[thoughts/LLMs|ChatGPT]]
   - [meta]:
     - date: 10/12/2025

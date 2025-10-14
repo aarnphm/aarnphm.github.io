@@ -597,25 +597,6 @@ backward compatibility: existing code using regex-based parsing can migrate grad
 - [remark](https://github.com/remarkjs/remark) - markdown processor
 - [Obsidian internal links](https://help.obsidian.md/Linking+notes+and+files/Internal+links) - official documentation
 
-## files
-
-- `index.ts` - public API exports
-- `syntax.ts` - micromark tokenizer state machine
-- `fromMarkdown.ts` - mdast node creation from tokens
-- `toMarkdown.ts` - mdast to markdown serialization
-- `types.ts` - TypeScript type definitions and augmentations
-- `index.test.ts` - comprehensive test suite
-- `README.md` - this file
-
-## future work
-
-see `/Users/aarnphm/workspace/garden/docs/wikilink-parser-improvement.md` for planned improvements:
-
-- integration with OFM transformer (phase 2)
-- downstream plugin updates (phase 3)
-- advanced Obsidian features: folder notes, title-based linking, transclusion ranges (phase 4)
-- performance optimization and caching (phase 5)
-
 ## contribute
 
 contributions welcome. open issues for bugs or feature requests. pull requests should include tests and maintain existing code style.

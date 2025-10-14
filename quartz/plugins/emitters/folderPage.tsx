@@ -126,11 +126,13 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
 
       // Build folder set from all slugs (includes non-markdown files)
       const folders: Set<SimpleSlug> = new Set(
-        ctx.allSlugs.flatMap((slug) =>
-          _getFolders(slug as FullSlug).filter(
-            (folderName) => folderName !== "." && folderName !== "tags",
+        ctx.allSlugs
+          .filter((slug): slug is FullSlug => typeof slug === "string")
+          .flatMap((slug) =>
+            _getFolders(slug).filter(
+              (folderName) => folderName !== "." && folderName !== "tags",
+            ),
           ),
-        ),
       )
 
       const folderInfo = computeFolderInfo(folders, content, cfg.locale)
