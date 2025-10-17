@@ -13,7 +13,7 @@ description: structured generations in vLLM a la carte, or in general
 transclude:
   title: false
 date: "2024-11-18"
-modified: 2025-10-06 03:49:27 GMT-04:00
+modified: 2025-10-16 14:06:52 GMT-04:00
 title: structured outputs
 ---
 
@@ -24,6 +24,14 @@ Also known as fast-forward tokens, or forced tokens, or [ff-strings](https://git
 See also: [toktrie implementation in llguidance](https://github.com/guidance-ai/llguidance/blob/main/docs/toktrie.md)
 
 One can think about this as "[[thoughts/Speculative decoding|speculative decoding]] but with 100% acceptance rate."
+
+## async structured outputs
+
+see also: https://github.com/vllm-project/vllm/pull/26866
+
+- `SchedulerProc`
+- `WorkerProc`
+- `StandaloneProc` <==> Scheduler & Worker
 
 ## structural tags
 

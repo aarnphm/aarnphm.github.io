@@ -129,9 +129,7 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
         ctx.allSlugs
           .filter((slug): slug is FullSlug => typeof slug === "string")
           .flatMap((slug) =>
-            _getFolders(slug).filter(
-              (folderName) => folderName !== "." && folderName !== "tags",
-            ),
+            _getFolders(slug).filter((folderName) => folderName !== "." && folderName !== "tags"),
           ),
       )
 

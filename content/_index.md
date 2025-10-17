@@ -8,7 +8,7 @@ tags:
   - fruit
 description: practicing the act of digital gardening.
 date: "2022-04-22"
-modified: 2025-10-12 00:48:38 GMT-04:00
+modified: 2025-10-16 16:36:55 GMT-04:00
 title: Aaron's notes
 ---
 
@@ -48,11 +48,10 @@ currently, I'm working at a [startup](https://bentoml.com) building [[/tags/ml]]
                             * julienne
                               * allumette,
                                 * this [playlist](https://music.youtube.com/playlist?list=PLsRPzRsbp3lCxe4gXH4S4Zf38X_45Oj6N&si=Od99WbOnJlbB9NYJ)
-                                * on repeats<br /><br />
-                                  * on repeats, [[thoughts/atelier with friends|hosting]] functions.<br /><br />
-                                    * and [[thoughts/Scents|scents]].<br /><br />
-                                * Beige and
-                                * <span class="rose">rosé</span> are my two favourite
+                                * on repeats
+                                  * on repeats, [[thoughts/atelier with friends|hosting]] functions.
+                                    * and [[thoughts/Scents|scents]].
+                                * <br /><br /> Beige and <span class="rose">rosé</span> are my two favourite
                                 * colours.
                                   * colours.
                                   * Cooking

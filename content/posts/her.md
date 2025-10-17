@@ -3,14 +3,14 @@ id: her
 tags:
   - love
   - growth
-date: "2025-01-03"
 description: and confusion.
-modified: 2025-01-07 10:13:19 GMT-05:00
-noindex: true
+date: "2025-01-03"
 socials:
-  bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lf5wpveltc2z
-  substack: https://open.substack.com/pub/livingalone/p/her?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
   twitter: https://x.com/aarnphm_/status/1876647451886584297
+  substack: https://open.substack.com/pub/livingalone/p/her?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
+  bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lf5wpveltc2z
+modified: 2025-10-15 19:55:47 GMT-04:00
+noindex: true
 title: her.
 ---
 

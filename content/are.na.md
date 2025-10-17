@@ -1,18 +1,36 @@
 ---
-socials:
-  curius: /curius
-  are.na: https://www.are.na/aaron-pham/channels
 id: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /tweets
+  - /resources
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-title: are.na
+socials:
+  curius: /curius
+  are.na: https://www.are.na/aaron-pham/channels
 date: "2024-10-24"
-modified: 2025-10-13 07:59:36 GMT-04:00
+modified: 2025-10-16 20:42:15 GMT-04:00
+claude:
+  additional_context: |-
+    structure of "are.na.md" can be considered as following:
+    - <h2>: is considered a "channel", where we have a row full of items
+    - each list entry under a <h2> is considered as a "block".
+    - A block will have the following structure:
+      ```md
+      - <link> [separator:=--] <title>[optional] [**][optional]
+        - [meta]:
+          - <metadata>: <value>
+        - [...optional notes]
+      ```
+      where:
+      - `[**]` denotes this block is highlighted
+      - `[meta]` holds a yaml-markdown list of metadata for a given block
+      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
+    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -33,27 +51,9 @@ codex:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be consumed by quartz/plugins/emitters/arena.ts, and then ingested with quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-permalinks:
-  - /website
-  - /tweets
-  - /resources
-claude:
-  additional_context: |-
-    structure of "are.na.md" can be considered as following:
-    - <h2>: is considered a "channel", where we have a row full of items
-    - each list entry under a <h2> is considered as a "block".
-    - A block will have the following structure:
-      ```md
-      - <link> [separator:=--] <title>[optional] [**][optional]
-        - [meta]:
-          - <metadata>: <value>
-        - [...optional notes]
-      ```
-      where:
-      - `[**]` denotes this block is highlighted
-      - `[meta]` holds a yaml-markdown list of metadata for a given block
-      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
-    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
+aliases:
+  - inspo
+title: are.na
 cssclasses:
   - nolist
 ---
@@ -204,6 +204,19 @@ cssclasses:
 
 ## website
 
+- https://basecase.vc/lexiconic?view=list&sort=random&seed=1760566272204
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [etymology]
+  - words are cool
+- https://esemsc-ifc24.github.io
+  - [meta]:
+    - date: 10/15/2025
+    - tags: [interpretability]
+- https://smoothbrains.net/
+  - [meta]:
+    - date: 10/15/2025
+    - tags: [fruit]
 - https://cuahsi.shinyapps.io/macrosheds/
   - [meta]:
     - date: 10/09/2025
@@ -968,6 +981,10 @@ cssclasses:
 
 ## essay
 
+- https://geohot.github.io/blog/jekyll/update/2025/09/13/get-out-of-technology.html -- Get the fuck out of technology [**]
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [fruit]
 - https://clairebookworm.substack.com/p/i-think-about-it-all-the-time -- I think about it all the time
   - [meta]:
     - date: 10/12/2025
@@ -1521,7 +1538,7 @@ cssclasses:
   - By Andy Matuschak and Michael Nielsen
   - https://notation.app/n/d1VOwqGv5DbHdDLf
 
-## [[thoughts/Machine learning]]
+## Machine learning
 
 - https://transformer-circuits.pub/2025/attention-qk/index.html -- Tracing Attention Computation Through Feature Interactions
   - [meta]:
@@ -1919,10 +1936,6 @@ cssclasses:
   - [meta]:
     - date: 08/16/2025
     - tags: [fruit]
-- https://github.com/bytedance/flux -- fast communication-overlapping library for TP
-  - [meta]:
-    - date: 08/16/2025
-    - tags: [fruit]
 - https://github.com/xjdr-alt/llmri -- LLM varentropy versus. entropy plot
   - [meta]:
     - date: 08/16/2025
@@ -1948,7 +1961,7 @@ cssclasses:
   - [meta]:
     - date: 08/16/2025
     - tags: [fruit]
-- https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/ -- [[thoughts/Bayesian Neural Network]] [**]
+- https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/ -- [[thoughts/Bayesian Neural Network|Bayesian Neural Network]] [**]
   - [meta]:
     - date: 08/16/2025
     - tags: [fruit]
@@ -2443,7 +2456,7 @@ cssclasses:
     - date: 10/03/2025
     - tags: [fruit]
 
-## [[tags/philosophy]]
+## philosophy
 
 - https://www.youtube.com/watch?v=C7n7wfQOGaI -- The Philosophy of Spinoza & Leibniz - Bryan Magee & Anthony Quinton (1987)
   - [meta]:
@@ -2720,6 +2733,15 @@ cssclasses:
 
 ## video
 
+- https://www.youtube.com/watch?v=ayPMfopCe1g -- Randy Pausch's Last Lecture - Remastered [**]
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [fruit]
+- https://www.youtube.com/watch?v=zUO-aRHxF7U -- no wonder he became the most terrifying villain in film history [**]
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [acting]
+  - Christoph Waltz.
 - https://www.youtube.com/watch?v=KonFO7CpVfo -- AK-47: The Peoples' Weapon
   - [meta]:
     - date: 10/12/2025
@@ -3180,6 +3202,16 @@ cssclasses:
 
 ## technical
 
+- https://github.com/bytedance/flux -- bytedance/flux
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [communication, networking]
+  - A fast communication-overlapping library for tensor/expert parallelism on GPUs.
+  - COMET @ ByteDance
+- https://docs.google.com/presentation/d/1SN05JcQ5kFRCGMOyYST6PAQazOX27nSMDp8fT-h3DyU/edit?slide=id.g389b5f579df_0_581#slide=id.g389b5f579df_0_581 -- State of Open Reasoning Models
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [hf, reasoning]
 - https://le.qun.ch/en/blog/2024/12/25/libfabric-efa-0-intro/ -- Harnessing 3200 Gbps Network: A Journey with RDMA, EFA, and libfabric
   - [meta]:
     - date: 10/12/2025
@@ -3210,7 +3242,7 @@ cssclasses:
   - [meta]:
     - date: 10/06/2025
     - tags: [fruit]
-- https://henryhmko.github.io/posts/tpu/tpu.html -- [[thoughts/TPU]] Deep Dive [**]
+- https://henryhmko.github.io/posts/tpu/tpu.html -- [[thoughts/TPU|TPU]] Deep Dive [**]
   - [meta]:
     - date: 10/06/2025
     - tags: [asic]
@@ -3228,10 +3260,6 @@ cssclasses:
     - date: 10/05/2025
     - tags: [fruit]
   - See also [[thoughts/Compiler]]
-- https://github.com/bytedance/flux -- COMET @ ByteDance
-  - [meta]:
-    - date: 10/06/2025
-    - tags: [fruit]
 - https://en.wikipedia.org/wiki/L-system -- Lindenmayer system [**]
   - [meta]:
     - date: 10/05/2025
@@ -3244,7 +3272,7 @@ cssclasses:
   - [meta]:
     - date: 10/05/2025
     - tags: [fruit]
-- https://docs.tenstorrent.com/tt-mlir/ -- [[thoughts/Tenstorrent]] MLIR
+- https://docs.tenstorrent.com/tt-mlir/ -- [[thoughts/Tenstorrent|Tenstorrent]] MLIR
   - [meta]:
     - date: 10/05/2025
     - tags: [fruit]
@@ -3307,7 +3335,7 @@ cssclasses:
   - [meta]:
     - date: 10/02/2025
     - tags: [fruit]
-- [[thoughts/GPU programming]]
+- [[thoughts/GPU programming|GPU programming]] [**]
   - [meta]:
     - date: 10/02/2025
     - tags: [fruit]
@@ -3381,7 +3409,7 @@ cssclasses:
     - date: 10/04/2025
     - tags: [fruit]
 
-## [[tags/math]]
+## math
 
 - https://github.com/teorth/pfr -- formalization of the Polynomial Freiman Ruzsa conjecture
   - [meta]:
@@ -3504,6 +3532,18 @@ cssclasses:
 
 ## papers
 
+- https://arxiv.org/abs/2501.16975
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [fruit]
+- https://arxiv.org/abs/2008.00044
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [tcs, linear discrepancy]
+- https://arxiv.org/abs/2412.06464
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2506.20790v1
   - [meta]:
     - date: 10/09/2025

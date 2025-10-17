@@ -806,6 +806,13 @@ body[data-is-base="true"] {
   }
 }
 
+[data-rehype-pretty-code-figure] {
+  text-transform: none !important;
+  & > * {
+    text-transform: none !important;
+  }
+}
+
 iframe {
   border-radius: var(--border-radius);
   border: 1px solid var(--lightgray);

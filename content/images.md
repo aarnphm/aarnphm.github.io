@@ -86,6 +86,8 @@ title: images
 
 ![[thoughts/images/G2khUsZWEAAK6oC.webp]]
 
+![[thoughts/images/repeater.png]]
+
 ## authors
 
 ![[thoughts/images/joan-didion.webp|joan didion]]

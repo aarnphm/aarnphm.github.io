@@ -19,29 +19,16 @@ const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
 }
 
 const copyFile = async (argv: Argv, fp: FilePath) => {
-  const ext = path.extname(fp)
   const src = joinSegments(argv.directory, fp) as FilePath
-  const name = (slugifyFilePath(fp, true) + (ext.includes("pdf") ? "" : ext)) as FilePath
+
+  const name = slugifyFilePath(fp)
   const dest = joinSegments(argv.output, name) as FilePath
 
-  const srcStat = await fs.stat(src)
-  let shouldCopy = true
+  // ensure dir exists
+  const dir = path.dirname(dest) as FilePath
+  await fs.mkdir(dir, { recursive: true })
 
-  try {
-    const destStat = await fs.stat(dest)
-    // Only copy if source is newer thescapeHTML(toHtml(tree as Root, { allowDangerousHtml: true }))an destination
-    shouldCopy = srcStat.mtimeMs > destStat.mtimeMs
-  } catch {
-    // Destination doesn't exist, should copy
-    shouldCopy = true
-  }
-
-  if (shouldCopy) {
-    const dir = path.dirname(dest) as FilePath
-    await fs.mkdir(dir, { recursive: true })
-    await fs.copyFile(src, dest)
-  }
-
+  await fs.copyFile(src, dest)
   return dest
 }
 

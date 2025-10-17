@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-10-08 01:19:17 GMT-04:00
+modified: 2025-10-16 19:57:32 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -33,7 +33,7 @@ But no matter the medicinal virtues of being a true friend or sustaining a long 
 
 [[tags/love|Love]] is reverence, and worship, and glory, and the upward glance. Not a bandage for dirty sores. But they don't know it. Those who speak of love most promiscuously are the ones who've never felt it. They make some sort of feeble stew out of sympathy, compassion, contempt, and general indifference, and they call it love. Once you've felt what it means to love as you and I know it - total passion for the total height - you're incapable of anything less... -- Ayn Rand
 
-In another life, I would have really liked just doing laundry and taxes with you -- Ke Huy Quan ([[/movies#^eeao|Everything Everywhere All at Once]])
+In another life, I would have really liked just doing laundry and taxes with you -- Ke Huy Quan ([[movies/everything-everywhere-all-at-once|Everything Everywhere All at Once]])
 
 You don't know about real loss, because it only occurs when you [[posts/her|love]] something more than you love yourself. I doubt you've ever dared to love anybody that much -- Robin Williams ([[/movies#^gwh|Good Will Hunting]])
 

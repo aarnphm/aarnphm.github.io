@@ -933,11 +933,11 @@ export function transcludeFinal(
 
 export const TopLinks = {
   workshop: "/lectures",
-  livres: "/library",
+  livres: "/antilibrary",
   "are.na": "/arena",
   craft: "/thoughts/craft",
   home: "/thoughts/furnitures",
-  movies: "/movies",
+  movies: "/cinematheque",
 }
 
 type AliasLinkProp = {

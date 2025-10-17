@@ -167,10 +167,11 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
         const created = coalesceAliases(data, ["date", "created"])
         if (created) {
           data.created = created
-          data.modified ||= created // if modified is not set, use created
         }
         const modified = coalesceAliases(data, ["lastmod", "updated", "last-modified", "modified"])
         if (modified) data.modified = modified
+        data.modified ||= created // if modified is not set, use created
+
         const published = coalesceAliases(data, ["publishDate", "published", "date"])
         if (published) data.published = published
 

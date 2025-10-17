@@ -5,7 +5,7 @@ tags:
   - philosophy
 description: language games, pictures of states, proposition
 date: "2025-10-04"
-modified: 2025-10-05 22:32:57 GMT-04:00
+modified: 2025-10-16 20:25:59 GMT-04:00
 title: Wittgenstein
 ---
 
@@ -150,7 +150,7 @@ Russell thought logical truths were general truths about the world. Wittgenstein
 - **6.44** "not how the world is, is the mystical, but that it is"
 - **6.522** "there is indeed the inexpressible. this shows itself; it is the mystical"
 
-[[thoughts/ethics]], [[thoughts/aesthetics value|aesthetics]], metaphysics lie outside the world of facts. They cannot be stated in propositions but show themselves in how we experience the world-as-a-whole.
+[[thoughts/ethics]], [[thoughts/aesthetic value|aesthetics]], [[thoughts/Metaphysics|metaphysics]] lie outside the world of facts. They cannot be stated in propositions but show themselves in how we experience the world-as-a-whole.
 
 ### divergence from Russell
 

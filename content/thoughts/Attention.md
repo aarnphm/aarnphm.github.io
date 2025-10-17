@@ -5,9 +5,11 @@ tags:
   - llm
   - ml
 description: and posteriori information retrieval.
+transclude:
+  title: false
 date: "2024-02-07"
 abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
-modified: 2025-10-12 02:48:21 GMT-04:00
+modified: 2025-10-17 15:42:50 GMT-04:00
 title: Attention
 ---
 
@@ -541,20 +543,14 @@ $$
 > [!motivation] why latent compression matters
 > MLA recognises that most of the information inside $K$ and $V$ lies in a low-dimensional manifold. By learning shared latent codes ($\mathbf{c}_t^{KV}$ and $\mathbf{c}_t^{Q}$) and lightweight up-projections, the model keeps the expressivity of many heads without storing every head explicitly. This decouples compute (which stays similar) from memory footprint (which shrinks drastically), enabling deployment on GPUs with limited KV cache.
 
-> [!question]- MLA study plan
->
-> - [ ] Re-derive equations (1)–(9) starting from a standard attention layer and show how the compression matrices factorise the original weight tensors.
-> - [ ] Measure perplexity and cache usage on a long-context benchmark when toggling MLA on/off for the same base model.
-> - [ ] Investigate whether sharing $\mathbf{c}_t^{KV}$ across layers compounds errors or if independent latents per layer yield better stability.
-
 For attention ==queries==, we can perform the same operation:
 
 $$
 \begin{align}
-    \mathbf{c}_t^{Q} &= W^{DQ} \mathbf{h}_t, \tag{6} \\
-    [\mathbf{q}_{t,1}^{C}; \mathbf{q}_{t,2}^{C}; \dots; \mathbf{q}_{t, n_h}^{C}] &= \mathbf{q}_t^C = W^{UQ} \mathbf{c}_t^{Q}, \tag{7} \\
-    [\mathbf{q}_{t,1}^{R}; \mathbf{q}_{t,2}^{R}; \dots; \mathbf{q}_{t, n_h}^{R}] &= \mathrm{RoPE}(W^{QR} \mathbf{c}_t^Q), \tag{8} \\
-    \mathbf{q}_{i,t} &= [\mathbf{q}_{t,i}^{C}; \mathbf{q}_t^{R}], \tag{9}
+\mathbf{c}_t^{Q} &= W^{DQ} \mathbf{h}_t \\
+[\mathbf{q}_{t,1}^{C}; \mathbf{q}_{t,2}^{C}; \dots; \mathbf{q}_{t, n_h}^{C}] &= \mathbf{q}_t^C = W^{UQ} \mathbf{c}_t^{Q} \\
+[\mathbf{q}_{t,1}^{R}; \mathbf{q}_{t,2}^{R}; \dots; \mathbf{q}_{t, n_h}^{R}] &= \mathrm{RoPE}(W^{QR} \mathbf{c}_t^Q) \\
+\mathbf{q}_{i,t} &= [\mathbf{q}_{t,i}^{C}; \mathbf{q}_t^{R}]
 \end{align}
 $$
 

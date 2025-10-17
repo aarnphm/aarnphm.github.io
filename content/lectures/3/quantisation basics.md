@@ -6,7 +6,7 @@ tags:
   - seed
 description: and kv compression
 date: "2025-08-28"
-modified: 2025-09-16 12:14:03 GMT-04:00
+modified: 2025-10-17 15:47:04 GMT-04:00
 title: quantisation basics
 ---
 
@@ -49,30 +49,11 @@ $$CR=\frac{m}{T},\quad\text{memory saved}= (1-CR)\times100\%.$$
 
 #### multi-latent attention
 
-> [!note] Why this matters
-> KV memory is the dominant decode bottleneck. MQA/GQA reduce it by sharing keys/values across heads or groups but can lose head‑specific structure, hurting quality. MLA targets the same memory win while preserving head expressivity.
-
-Background and notation. With $n_h$ heads of width $d_h$ per layer:
+Background and notation [^mla]. With $n_h$ heads of width $d_h$ per layer:
 
 - MHA stores $K,V\in\mathbb{R}^{T\times n_h d_h}$ per token: per‑token cost $\approx 2 n_h d_h$.
 - GQA shares K/V within $n_g$ groups: cost $\approx 2 n_g d_h$ (with $n_g<n_h$).
 - MQA shares across all heads: cost $\approx 2 d_h$.
-
-Construction (MLA). Instead of storing per‑head K/V, MLA stores a compact per‑token latent $c_t\in\mathbb{R}^{d_c}$ and reconstructs per‑head tensors on demand via small decoders. A practical design splits “content” from “position” to handle RoPE cleanly:
-
-$$
-\begin{aligned}
-\text{(content branch)}\quad &c_t = W^{C} h_t,\\
-q^{C}_{t,i} &= W^{Q}_i c_t,\quad k^{C}_{t,i} = W^{K}_i c_t,\quad v^{C}_{t,i} = W^{V}_i c_t;\\[2pt]
-\text{(rotary branch)}\quad &q^{R}_{t,i} = \operatorname{RoPE}(W^{QR}_i h_t),\quad k^{R}_{t} = \operatorname{RoPE}(W^{KR} h_t).
-\end{aligned}
-$$
-
-Each head uses a concatenation of content and a small RoPE component:
-
-$$q_{t,i} = [q^{C}_{t,i};\, q^{R}_{t,i}],\quad k_{t,i} = [k^{C}_{t,i};\, k^{R}_{t}],\quad o_{t,i} = \sum_{j\le t} \operatorname{softmax}_j\!\Big(\tfrac{q_{t,i}^\top k_{j,i}}{\sqrt{d_h+d^{R}_h}}\Big) v^{C}_{j,i}.$$
-
-Here the cache holds only $c_t$ and $k^{R}_t$ per token. The small per‑head projections $W^Q_i,W^K_i,W^V_i$ are parameters, not cache.
 
 KV cost comparison (per layer, per token):
 
@@ -80,9 +61,25 @@ KV cost comparison (per layer, per token):
 
 Setting, e.g., $d_c=4 d_h$ and $d^{R}_h=\tfrac{1}{2}d_h$ yields a cache cost comparable to GQA with roughly $\sim 2.25$ groups, yet empirically tracks MHA quality on long‑context tasks. Reported results show KV size reductions of about 90%+ and multi‑× decode throughput on large models when combined with MoE and careful implementation.
 
-Why quality holds. The content latent $c_t$ preserves head‑specific structure via learned per‑head decoders $W^Q_i,W^K_i,W^V_i$, restoring diversity that MQA/GQA sacrifice. The separate RoPE branch avoids entangling position into the compressed content, which would otherwise force the latent to redundantly encode sinusoidal structure.
+The content latent $c_t$ preserves head‑specific structure via learned per‑head decoders $W^Q_i,W^K_i,W^V_i$, restoring diversity that MQA/GQA sacrifice. The separate RoPE branch avoids entangling position into the compressed content, which would otherwise force the latent to redundantly encode sinusoidal structure.
 
-Migration path. “MHA2MLA” style fine‑tuning converts existing MHA/GQA checkpoints into MLA with joint low‑rank initialisation and partial‑RoPE, achieving large KV reductions (≈90%+) with modest training cost.
+[^mla]: Construction of MLA
+
+    Instead of storing per‑head K/V, MLA stores a compact per‑token latent $c_t\in\mathbb{R}^{d_c}$ and reconstructs per‑head tensors on demand via small decoders. A practical design splits “content” from “position” to handle RoPE cleanly:
+
+    $$
+    \begin{aligned}
+    \text{(content branch)}\quad &c_t = W^{C} h_t,\\
+    q^{C}_{t,i} &= W^{Q}_i c_t,\quad k^{C}_{t,i} = W^{K}_i c_t,\quad v^{C}_{t,i} = W^{V}_i c_t;\\[2pt]
+    \text{(rotary branch)}\quad &q^{R}_{t,i} = \operatorname{RoPE}(W^{QR}_i h_t),\quad k^{R}_{t} = \operatorname{RoPE}(W^{KR} h_t).
+    \end{aligned}
+    $$
+
+    Each head uses a concatenation of content and a small RoPE component:
+
+    $$q_{t,i} = [q^{C}_{t,i};\, q^{R}_{t,i}],\quad k_{t,i} = [k^{C}_{t,i};\, k^{R}_{t}],\quad o_{t,i} = \sum_{j\le t} \operatorname{softmax}_j\!\Big(\tfrac{q_{t,i}^\top k_{j,i}}{\sqrt{d_h+d^{R}_h}}\Big) v^{C}_{j,i}.$$
+
+    Here the cache holds only $c_t$ and $k^{R}_t$ per token. The small per‑head projections $W^Q_i,W^K_i,W^V_i$ are parameters, not cache.
 
 ## distributed inference & kv-cache management
 

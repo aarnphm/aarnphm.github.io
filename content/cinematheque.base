@@ -1,0 +1,285 @@
+summaries:
+  missing: values.filter(value.isType("null")).length
+  watched: values.filter(value => status == "finished").length
+filters:
+  or:
+    - file.hasTag("movies")
+    - and:
+        - file.inFolder("movies")
+        - not:
+            - file.hasTag("evergreen", "meta")
+properties:
+  file.tags:
+    displayName: tags
+  note.director:
+    displayName: director
+  note.year:
+    displayName: year
+  note.rating:
+    displayName: rating
+  note.notes:
+    displayName: notes
+  note.category:
+    displayName: category
+  note.studio:
+    displayName: studio
+  note.runtime:
+    displayName: runtime
+  note.watched-date:
+    displayName: watched date
+views:
+  - type: table
+    name: all
+    groupBy:
+      property: year
+      direction: DESC
+    order:
+      - title
+      - file.name
+      - director
+      - status
+      - studio
+    sort:
+      - property: status
+        direction: DESC
+      - property: title
+        direction: ASC
+    columnSize:
+      note.title: 350
+      note.director: 200
+      note.studio: 193
+      note.year: 100
+  - type: table
+    name: to watch
+    filters:
+      and:
+        - status == "to-watch"
+    groupBy:
+      property: category
+      direction: ASC
+    order:
+      - title
+      - year
+      - director
+      - category
+      - studio
+      - file.tags
+    sort:
+      - property: year
+        direction: DESC
+      - property: title
+        direction: ASC
+    columnSize:
+      note.title: 350
+      note.year: 100
+      note.director: 200
+  - type: table
+    name: finished
+    filters:
+      and:
+        - status == "finished"
+    groupBy:
+      property: watched-date
+      direction: DESC
+    order:
+      - title
+      - year
+      - director
+      - rating
+      - watched-date
+      - category
+      - notes
+    sort:
+      - property: watched-date
+        direction: DESC
+      - property: rating
+        direction: DESC
+      - property: title
+        direction: ASC
+    columnSize:
+      note.title: 350
+      note.year: 100
+      note.director: 200
+      note.rating: 100
+  - type: table
+    name: by director
+    filters:
+      and:
+        - status == "finished"
+    groupBy:
+      property: director
+      direction: ASC
+    order:
+      - title
+      - year
+      - director
+      - rating
+      - category
+      - watched-date
+    sort:
+      - property: director
+        direction: ASC
+      - property: year
+        direction: DESC
+    columnSize:
+      note.title: 350
+      note.year: 100
+      note.rating: 100
+  - type: table
+    name: by year
+    filters:
+      and:
+        - status == "finished"
+    groupBy:
+      property: year
+      direction: DESC
+    order:
+      - title
+      - year
+      - director
+      - rating
+      - category
+    sort:
+      - property: year
+        direction: DESC
+      - property: rating
+        direction: DESC
+      - property: title
+        direction: ASC
+    columnSize:
+      note.title: 350
+      note.director: 200
+      note.rating: 100
+  - type: table
+    name: vintage
+    filters:
+      and:
+        - category == "vintage"
+    groupBy:
+      property: year
+      direction: ASC
+    order:
+      - title
+      - year
+      - director
+      - rating
+      - status
+    sort:
+      - property: year
+        direction: ASC
+      - property: title
+        direction: ASC
+    columnSize:
+      note.title: 350
+      note.year: 100
+      note.director: 200
+  - type: table
+    name: by studio
+    filters:
+      and:
+        - studio.containsAny("a24", "wes anderson", "christopher nolan", "martin scorsese")
+    groupBy:
+      property: studio
+      direction: ASC
+    order:
+      - title
+      - year
+      - director
+      - rating
+      - status
+      - watched-date
+    sort:
+      - property: studio
+        direction: ASC
+      - property: year
+        direction: DESC
+    columnSize:
+      note.title: 350
+      note.year: 100
+      note.director: 200
+  - type: table
+    name: highly rated
+    filters:
+      and:
+        - rating >= 8
+        - status == "finished"
+    groupBy:
+      property: rating
+      direction: DESC
+    order:
+      - title
+      - rating
+      - year
+      - director
+      - category
+      - watched-date
+    sort:
+      - property: rating
+        direction: DESC
+      - property: year
+        direction: DESC
+    columnSize:
+      note.title: 350
+      note.rating: 100
+      note.director: 200
+  - type: table
+    name: recent
+    filters:
+      and:
+        - watched-date >= "2024-01-01"
+    groupBy:
+      property: watched-date
+      direction: DESC
+    order:
+      - title
+      - watched-date
+      - rating
+      - year
+      - director
+      - category
+    sort:
+      - property: watched-date
+        direction: DESC
+      - property: rating
+        direction: DESC
+    columnSize:
+      note.title: 350
+      note.watched-date: 150
+      note.rating: 100
+  - type: list
+    name: quick list
+    groupBy:
+      property: category
+      direction: ASC
+    order:
+      - file.name
+      - director
+      - year
+      - status
+    sort:
+      - property: status
+        direction: ASC
+      - property: file.name
+        direction: ASC
+    nestedProperties: true
+  - type: cards
+    name: movie cards
+    groupBy:
+      property: year
+      direction: DESC
+    order:
+      - title
+      - year
+      - director
+      - rating
+      - category
+      - watched-date
+    sort:
+      - property: rating
+        direction: DESC
+      - property: watched-date
+        direction: DESC
+      - property: title
+        direction: ASC
+    cardSize: 320
+    image: note.poster
