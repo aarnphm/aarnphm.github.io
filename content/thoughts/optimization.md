@@ -4,7 +4,7 @@ tags:
   - ml
 description: A list of optimization functions that can be used in ML training to reduce loss, and more.
 date: "2024-10-31"
-modified: 2025-10-07 05:09:33 GMT-04:00
+modified: 2025-10-17 19:01:45 GMT-04:00
 title: ml optimization
 ---
 

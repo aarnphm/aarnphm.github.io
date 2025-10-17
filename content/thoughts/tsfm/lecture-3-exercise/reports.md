@@ -6,7 +6,7 @@ tags:
   - vllm
 description: and documentation of learning procedure.
 date: "2025-09-13"
-modified: 2025-09-15 18:00:42 GMT-04:00
+modified: 2025-10-17 19:45:43 GMT-04:00
 title: assignment three reports.
 ---
 
@@ -83,7 +83,7 @@ title: assignment three reports.
 
 - Background thread fills a bounded queue with precomputed batches to overlap
   data prep and compute.
-- Shapes: each queued item is a tuple (x, y) with x,y ∈ int64, (B, S). [^graph]
+- Shapes: each queued item is a tuple (x, y) with x,y $\in$ int64, (B, S). [^graph]
   ![[thoughts/images/graph-prefetcher.webp]]
 - Stop logic: sets an event, attempts a final put to unblock consumers, then joins the worker thread.
 

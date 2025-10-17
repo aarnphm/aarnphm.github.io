@@ -5,7 +5,7 @@ tags:
   - serving
 date: "2025-05-22"
 description: and llm-d
-modified: 2025-06-16 19:13:58 GMT-04:00
+modified: 2025-10-18 00:22:00 GMT-04:00
 title: distributed inference
 ---
 
@@ -19,7 +19,7 @@ one leader `StatefulSet` versus a workers `StatefulSet` per leader
 
 To be used with [[thoughts/vllm|vLLM]] or any other inference engine.
 
-Built on top of [IGW](https://gateway-api-inference-extension.sigs.k8s.io/)
+built on top of [igw](https://gateway-api-inference-extension.sigs.k8s.io/)
 
 ### roadmap.
 
@@ -32,6 +32,7 @@ or _well-lit path_
 1. P/D disagg serving
    - working implementation
    - Think of large MoE, R1 and serve with certain QPS
+   - see [[thoughts/PD disaggregated serving|p/d disaggregation]] for system design and runbook
 2. NS vs. EW KV Cache management
    NS Caching:
    - System resources

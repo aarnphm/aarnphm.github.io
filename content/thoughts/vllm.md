@@ -12,7 +12,7 @@ modified: 2025-09-06 19:26:36 GMT-04:00
 title: vLLM
 ---
 
-See also: [[thoughts/Attention#Paged Attention|Paged Attention]], [2024 in review](https://docs.google.com/presentation/d/1Z78ljqPIg7_KZ7ZAqKO4VDjKG-ytbkbZ/edit#slide=id.p1) [@kwon2023efficient]
+see also: [[thoughts/Attention#paged attention|paged attention]], [[thoughts/PD disaggregated serving|p/d disaggregation]], [2024 in review](https://docs.google.com/presentation/d/1Z78ljqPIg7_KZ7ZAqKO4VDjKG-ytbkbZ/edit#slide=id.p1) [@kwon2023efficient]
 
 ## KV-Compress
 

@@ -9,7 +9,7 @@ description: Deploying DeepSeek R1
 transclude:
   title: false
 date: "2025-10-17"
-modified: 2025-10-17 16:39:31 GMT-04:00
+modified: 2025-10-17 19:58:56 GMT-04:00
 title: supplement to 0.430
 ---
 
@@ -32,14 +32,14 @@ s/o: vLLM, newsystems
 
 ## agenda
 
-- [[#multi-latent attention]]
+- [[#multi-latent attention|multi-latent attention]]
   - [[#flashmla|FlashMLA]]
   - [[#native sparse attention|Native Sparse Attention (NSA)]]
   - [[#deepseek sparse attention|Deepseek Sparse Attention (DSA)]]
 - [[#deepgemm|DeepGEMM]]
 - [[#deepep|DeepEP]]
 - [[#eplb|EPLB (expert parallelism load balancer)]]
-- [[thoughts/PD disaggregated serving|Prefill/Decode Disaggregation]]
+- [[thoughts/PD disaggregated serving|Prefill\/Decode Disaggregation]]
 - [[#duo-batch overlap|duo-batch overlap]]
 
 ## standard attention memory
@@ -56,7 +56,7 @@ see also: [[thoughts/Attention]]
 
 ## multi-latent attention
 
-> compress K and V jointly into low-rank latent space. decompress on-the-fly during attention.
+> compress k and v jointly into a low‑rank latent space, cache only the latents, and reconstruct k/v on‑the‑fly during attention.
 
 **compression flow**:
 
@@ -70,27 +70,27 @@ see also: [[thoughts/Attention]]
     │     └──▶ V proj ──▶ 128 heads × 128 dim      │  ← and this
     └──────────────────────────────────────────────┘
 
-                    multi-latent attention
+                    multi-head latent attention
     ┌──────────────────────────────────────────────┐
     │  hidden(7168)                                │
     │     │                                        │
-    │     ├──▶ q_a(1536) ──▶ norm ──▶ q_b(24576)   │
+    │     ├──▶ q_a(·) ──▶ norm ──▶ q_b(·)          │
     │     │                                        │
-    │     └──▶ kv_a(576) ──▶ norm ──▶ kv_b(32768)  │  ← cache only 576!
+    │     └──▶ kv_a(r) ──▶ norm ──▶ kv_b(·)        │  ← cache only r « d
     │              │                               │
     │              └── latent representation       │
     └──────────────────────────────────────────────┘
 ```
 
-> KV cache reduced to 5-13% of original size. enables serving 100K+ context lengths on reasonable hardware.
+> kv cache typically reduces to ~5-7% of the dense baseline (512d latent vs ~14k full K/V per token, achieving ~28× compression), enabling long‑context serving on fewer gpus. see [@kimi2025openagentic].
 
-![[thoughts/Attention#Multi-head Latent Attention (MLA)]]
+![[thoughts/Attention#multi-head latent attention]]
 
 ## parallelism strategies (dp, ep, tp, pp)
 
-before we answer why TP doesn't work with MLA, let's understand the four ways to split a 671B model across GPUs.
+before discussing tp with mla, outline the four standard splits.
 
-**data parallelism (DP)**: replicate everything, split the data
+**data parallelism (dp)**: replicate everything, split the data ^dp
 
 ```
 ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐
@@ -101,15 +101,15 @@ before we answer why TP doesn't work with MLA, let's understand the four ways to
 └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘
       │              │              │              │
       └──────────────┴──────────────┴──────────────┘
-              gradient all-reduce (sync step)
+              all-gather (sync step)
 ```
 
-- memory per GPU: ~4P (params + gradients + optimizer states)
+- memory per GPU: ~4P
 - KV cache: full cache per GPU (each handles different requests)
-- communication: all-reduce gradients every step, $O(P)$ bandwidth
+- communication: all-gather, $O(P)$ bandwidth
 - scales perfectly for throughput, terrible for large models (deepseek-v3 won't fit)
 
-**tensor parallelism (TP)**: split weight matrices, synchronize activations
+**tensor parallelism (tp)**: split weight matrices, synchronize activations
 
 ```
 ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐
@@ -167,26 +167,18 @@ before we answer why TP doesn't work with MLA, let's understand the four ways to
 - challenge: pipeline bubbles (GPUs idle during ramp-up/ramp-down)
 - use microbatching to hide bubbles: split batch into chunks, overlap stages
 
-**deepseek-v3 uses hybrid: TP=1, EP=8, DP=8 on your 8xH200**
+training vs serving
 
-why this configuration?
+- k2 training uses pipeline parallelism (pp=16), expert parallelism (ep=16), and zero‑1 data parallelism, on h800 clusters. they avoid tp in training. [@kimi2025openagentic]
+- for serving, dp+ep is typically preferred with mla: naive tp across heads can duplicate the shared latent kv, which erodes mla’s memory savings. tp can still be used if you shard the latent itself (see below), but support varies by stack.
 
-| strategy | memory saved   | KV cache split    | communication                 | when to use                      |
-| -------- | -------------- | ----------------- | ----------------------------- | -------------------------------- |
-| DP       | none           | separate per GPU  | low (gradient sync once/step) | throughput, small models         |
-| TP       | $P/T$          | split by heads    | high (per layer sync)         | fits model, low latency critical |
-| EP       | $P_{expert}/E$ | full on each GPU  | medium (2× all-to-all/layer)  | MoE models, balanced experts     |
-| PP       | $P/L$          | partial per stage | medium (point-to-point)       | very large models, high latency  |
-
-the catch: TP requires duplicating KV cache when using GQA/MQA because heads share K/V. with MLA, that duplication defeats the compression. EP distributes experts cleanly, DP handles concurrent requests. PP adds too much latency for interactive serving. no TP or PP needed when MLA already shrunk your memory footprint 10×.
-
-## why can't we split TP?
+## what about tp with mla?
 
 ```bash
-... -dp 8 --enable-expert-parallel # <-- this part
+... --data-parallel-size 8 --enable-expert-parallel # <-- this part
 ```
 
-tensor parallelism works by splitting weight matrices across GPUs. for attention, you'd split the heads:
+tensor parallelism splits weight matrices across gpus. for attention, the naïve variant splits heads:
 
 ```
 standard attention with tp=8:
@@ -198,13 +190,31 @@ standard attention with tp=8:
      kv cache shards stay local; each gpu holds only its slice
 ```
 
-## the problem with MLA + TP
+## the pitfall and the workaround
 
-- compressed KV is shared across all heads
-- splitting heads would require duplicating compressed KV
-- defeats the entire purpose of compression
+- compressed latent kv is shared across heads
+- naïvely splitting heads duplicates the latent kv per tp shard
+- workaround: shard the latent itself and fuse reconstruction (aka tp‑latents); this keeps the kv memory linear in r and restores mla’s benefit. see e.g. [@tang2025tplatensorparallellatent]; k2 training still chose pp+ep. [@kimi2025openagentic]
 
-**on 8xH200**: if TP > num_kv_heads, you duplicate KV cache across GPUs. with MLA's low-rank representation, this duplication wastes the memory savings. better to use expert parallelism instead.
+on 8×h200 for serving, prefer dp plus ep, keeping tp=1 unless your runtime supports tp‑latents.
+
+## mla equations (compact)
+
+let $h_t \in \mathbb{R}^{d}$ be the hidden state at time $t$. mla projects to a shared latent $z_t \in \mathbb{R}^{r}$ for kv ($r \ll d$), then reconstructs per‑head keys/values from $z_t$:
+
+$$
+z_t = W_{kv,a} h_t \in \mathbb{R}^{r}, \quad
+K_t^{(i)} = W_{k,b}^{(i)} z_t, \quad
+V_t^{(i)} = W_{v,b}^{(i)} z_t, \quad i=1,\dots,H.
+$$
+
+queries can use a two‑step parameterization (shared + per‑head) but do not need to cache:
+
+$$
+Q_t^{(i)} = W_{q,b}^{(i)} \, \sigma( W_{q,a} h_t ).
+$$
+
+the kv cache stores $z_{1\ldots T}$ only, reducing memory roughly by a factor $\approx (r/d)$ (modulo heads and dtype). this matches the description used by k2 and deepseek mla variants. [@kimi2025openagentic]
 
 > [!reference]
 > [[lectures/430/vllm-toronto-2025.pdf|vllm toronto 2025]] notes call this the “router choke point”: once kv stays monolithic while experts roam, your dispatch fabric needs per-token crossbar paths and backpressure handling. rather than splitting kv, deepseek keeps kv cache attached to the router plane and only shards experts, which is why ep + mla works while tp fights the cache design.
@@ -236,7 +246,7 @@ router plane from toronto 2025 deck:
 
 decode kernel that treats mla like a first-class citizen instead of a retrofit.
 
-- **dependent launch chain**: `splitkv_mla → flash_mla_decode → combine` fire in one cuda graph so kv page slicing, latent matmul, and output stitch overlap without host syncs. this is the hopper-only fast path you toggle with `FLASHMLA_KERNEL_VER=2`.
+- **dependent launch chain**: `splitkv_mla → flash_mla_decode → combine` fire in one cuda graph so kv page slicing, latent matmul, and output stitch overlap without host syncs. this is the hopper-only fast path that activates automatically on H100/H200.
 - **seesaw tile scheduler**: alternates latent-projection tiles with expert-fusion tiles; default tile height 64 and warp swizzling keep tensor cores fed while async copies stream the next latent block.
 - **ping-pong shared memory**: paged kv cache binds to smem buffers so mma.sp instructions run on warm data; doc measured ~12% faster decode for 64k contexts on H200 vs generic path.
 
@@ -813,7 +823,7 @@ phy2log, log2phy, logcnt = eplb.rebalance_experts(weight, num_replicas, num_grou
 
 **prefill vs decode scheduling** (expanded):
 
-**prefill**:
+**prefill** (note: this was a research validation model at 27B params, not the production DeepSeek-V3 at 671B):
 
 ```
 characteristics:
@@ -1035,26 +1045,16 @@ vllm serve nvidia/DeepSeek-R1-0528-FP4-v2 \
   --port 8001
 ```
 
-**coordination layer**:
+**router**:
 
 ```python
 # simple router
 async def route_request(prompt: str, max_tokens: int):
-  if len(tokenize(prompt)) > 1024:  # long prompt
-    # send to prefill cluster
-    kv_cache = await prefill_cluster.process(prompt)
-    # transfer to decode cluster
-    return await decode_cluster.generate(kv_cache, max_tokens)
-  else:  # short prompt
-    # decode cluster handles both
-    return await decode_cluster.generate(prompt, max_tokens)
+  # send to prefill cluster
+  kv_cache = await prefill_cluster.process(prompt)
+  # transfer to decode cluster
+  return await decode_cluster.generate(kv_cache, max_tokens)
 ```
-
-**practical benefits on 8xH200**:
-
-- prefill throughput: ~10K tokens/s (4 GPUs, large batch)
-- decode latency: 35-45ms TPOT (4 GPUs, small batch)
-- vs unified: better than running 8 GPUs doing both (which averages to ~50-60ms TPOT)
 
 **when to use unified instead**:
 
@@ -1121,7 +1121,7 @@ stage 5: attention step 2
 
 practical recommendations for running deepseek-r1 on a single node.
 
-**configuration**:
+**configuration** (as of vLLM v0.7.1+, March 2025):
 
 ```bash
 VLLM_ALL2ALL_BACKEND=deepep_low_latency \
@@ -1133,7 +1133,8 @@ vllm serve deepseek-ai/DeepSeek-V3 \
   --enable-chunked-prefill \
   --max-num-batched-tokens 8192 \
   --max-model-len 32768 \
-  --dtype bfloat16
+  --dtype bfloat16 \
+  --trust-remote-code
 ```
 
 **what each flag does**:
@@ -1206,6 +1207,37 @@ knobs:
 3. **tune**: adjust batch sizes and memory settings
 4. **scale**: if need more capacity, move to multi-node with PD disaggregation
 
-## <|endoftext|>
+## references and resources
+
+- DeepSeek-V3 Technical Report: https://arxiv.org/abs/2412.19437
+- FlashMLA Repository: https://github.com/deepseek-ai/FlashMLA
+- vLLM Documentation: https://docs.vllm.ai/
+- vLLM DeepSeek Recipes: https://docs.vllm.ai/projects/recipes/en/latest/DeepSeek/
+- SGLang DeepSeek Usage: https://docs.sglang.ai/basic_usage/deepseek.html
+
+## model variants
+
+- **DeepSeek-V3** (Dec 2024): Base 671B model with MLA + DeepSeekMoE
+- **DeepSeek-R1** (Jan 2025): Reasoning model with RL training
+- **DeepSeek-V3.1** (Feb 2025): Improved version with optimizations
+- **DeepSeek-V3.2-Exp** (Sep 2025): Adds sparse attention (DSA) for long contexts
+
+each variant requires slightly different configuration in vLLM. check the recipes for specifics.
+
+## hardware requirements
+
+**minimum for V3 inference:**
+
+- 8×H100 (80GB) with NVLink
+- 8×H200 (141GB) recommended for long context
+- 16×A100 works but requires more careful tuning
+
+**optimal:**
+
+- Hopper architecture (H100/H200) for FlashMLA and DeepGEMM
+- Full NVLink topology (NV12 or NV18)
+- CUDA 12.3+ for all optimizations
+
+## `<|endoftext|>`
 
 Thank you for coming, you can find the slides at `https://workshop.aarnphm.xyz/430`

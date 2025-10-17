@@ -1,4 +1,7 @@
 ---
+socials:
+  curius: /curius
+  are.na: https://www.are.na/aaron-pham/channels
 id: are.na
 permalinks:
   - /website
@@ -9,28 +12,9 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-socials:
-  curius: /curius
-  are.na: https://www.are.na/aaron-pham/channels
+title: are.na
 date: "2024-10-24"
-modified: 2025-10-16 20:42:15 GMT-04:00
-claude:
-  additional_context: |-
-    structure of "are.na.md" can be considered as following:
-    - <h2>: is considered a "channel", where we have a row full of items
-    - each list entry under a <h2> is considered as a "block".
-    - A block will have the following structure:
-      ```md
-      - <link> [separator:=--] <title>[optional] [**][optional]
-        - [meta]:
-          - <metadata>: <value>
-        - [...optional notes]
-      ```
-      where:
-      - `[**]` denotes this block is highlighted
-      - `[meta]` holds a yaml-markdown list of metadata for a given block
-      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
-    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
+modified: 2025-10-17 19:28:17 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -53,7 +37,23 @@ codex:
     This will be consumed by quartz/plugins/emitters/arena.ts, and then ingested with quartz/components/pages/[ArenaIndex|ChannelContent].tsx
 aliases:
   - inspo
-title: are.na
+claude:
+  additional_context: |-
+    structure of "are.na.md" can be considered as following:
+    - <h2>: is considered a "channel", where we have a row full of items
+    - each list entry under a <h2> is considered as a "block".
+    - A block will have the following structure:
+      ```md
+      - <link> [separator:=--] <title>[optional] [**][optional]
+        - [meta]:
+          - <metadata>: <value>
+        - [...optional notes]
+      ```
+      where:
+      - `[**]` denotes this block is highlighted
+      - `[meta]` holds a yaml-markdown list of metadata for a given block
+      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
+    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
 cssclasses:
   - nolist
 ---
@@ -2297,6 +2297,10 @@ cssclasses:
 
 ## technology
 
+- https://bertdobbelaere.github.io/sorting_networks.html -- Smallest and fastest sorting networks for a given number of inputs [**]
+  - [meta]:
+    - date: 10/17/2025
+    - tags: [topology, network]
 - https://en.wikipedia.org/wiki/Multiply%E2%80%93accumulate_operation -- Multiply–accumulate operation
   - [meta]:
     - date: 10/09/2025
@@ -3202,6 +3206,11 @@ cssclasses:
 
 ## technical
 
+- https://github.com/modular/modular/blob/main/mojo/stdlib/stdlib/algorithm/_sorting_network.mojo
+  - [meta]:
+    - date: 10/17/2025
+    - tags: [fruit]
+  - see also: https://bertdobbelaere.github.io/sorting_networks.html
 - https://github.com/bytedance/flux -- bytedance/flux
   - [meta]:
     - date: 10/16/2025

@@ -1,69 +1,95 @@
 ---
 id: muon
 tags:
-  - seed
   - ml
-  - technical
-description: universal optimizer
-transclude:
-  title: false
-date: "2025-08-01"
-modified: 2025-08-01 15:18:12 GMT-04:00
-title: Muon
+  - optimization
+description: derivation sketch and practical notes for the muon optimizer
+date: "2025-10-17"
+modified: 2025-10-17 19:17:37 GMT-04:00
+title: muon
 ---
 
-https://x.com/kellerjordan0/status/1850995958697308307
+> [!important] tl;dr
+> muon targets scale‑invariant, stable steps at very large scale by taking a normalized (often preconditioned) gradient step whose size is proportional to the parameter norm, plus clipping to suppress rare spikes. see also [@liu2025muonscalablellmtraining],
+> https://jeremybernste.in/writing/deriving-muon, https://kellerjordan.github.io/posts/muon/, and https://github.com/KellerJordan/Muon.
+
+## goal
+
+keep the relative step size roughly constant across layers and scales. if $\theta$ is a parameter tensor and $g=\nabla_\theta L$, we want the update $\Delta\theta$ to satisfy
 
 $$
-W \leftarrow W - \upeta \times \sqrt{\frac{\text{fan-out}}{\text{fan-in}}} \times \text{NewtonSchulz}(\nabla_W \mathcal{L})
+\frac{\lVert \Delta\theta \rVert}{\lVert \theta \rVert} \approx \eta,\quad \text{independent of raw scale in }\theta.
 $$
 
-- $\upeta$ sets step size
-- $\text{fan-in}, \text{fan-out}$ denotes dimensions of weights matrix $W$
-- $\nabla_W \mathcal{L}$ is gradient of loss $\mathcal{L}$ wrt weights $W$
-- $\text{NewtonSchulz}$ is orthogonalization routine, follows Newton-Schulz [[thoughts/papers/2949484.pdf|matrix]] iterations
+this improves stability on trillion‑token training by avoiding steps that are too large for small‑norm tensors and too small for large‑norm tensors.
 
-```python
-# https://github.com/KellerJordan/Muon/blob/master/muon.py
-def zeropower_via_newtonschulz5(G, steps: int):
-  """
-  Newton-Schulz iteration to compute the zeroth power / orthogonalization of G.
-  We opt to use a quintic iteration whose coefficients are selected to maximize the slope at zero.
-  For the purpose of minimizing steps, it turns out to be empirically effective to keep increasing
-  the slope at zero even beyond the point where the iteration no longer converges all the way to one everywhere
-  on the interval.
+## derivation (trust‑region view)
 
-  This iteration therefore does not produce UV^T but rather something like US'V^T
-  where S' is diagonal with S_{ii}' ~ Uniform(0.5, 1.5), which turns out not to hurt model
-  performance at all relative to UV^T, where USV^T = G is the SVD.
-  """
-  assert (
-    G.ndim >= 2
-  )  # batched Muon implementation by @scottjmaddox, and put into practice in the record by @YouJiacheng
-  a, b, c = (3.4445, -4.7750, 2.0315)
-  X = G.bfloat16()
-  if G.size(-2) > G.size(-1):
-    X = X.mT
+solve a linearized step with a relative trust region per tensor:
 
-  # Ensure spectral norm is at most 1
-  X = X / (X.norm(dim=(-2, -1), keepdim=True) + 1e-7)
-  # Perform the NS iterations
-  for _ in range(steps):
-    A = X @ X.mT
-    B = b * A + c * A @ A  # quintic computation strategy adapted from suggestion by @jxbz, @leloykun, and @YouJiacheng
-    X = a * X + B @ X
+$$
+\min_{\Delta\theta}\; g^\top \Delta\theta\quad \text{s.t.}\quad \lVert \Delta\theta \rVert_\Sigma \le \eta\, \lVert \theta \rVert,
+$$
 
-  if G.size(-2) > G.size(-1):
-    X = X.mT
-  return X
+where $\lVert v \rVert_\Sigma = \sqrt{v^\top \Sigma v}$ and $\Sigma$ is a (possibly diagonal) preconditioner.
 
+- without preconditioning ($\Sigma=I$) the kkt solution is
 
-def muon_update(grad, momentum, beta=0.95, ns_steps=5, nesterov=True):
-  momentum.lerp_(grad, 1 - beta)
-  update = grad.lerp_(momentum, beta) if nesterov else momentum
-  if update.ndim == 4:  # for the case of conv filters
-    update = update.view(len(update), -1)
-  update = zeropower_via_newtonschulz5(update, steps=ns_steps)
-  update *= max(1, grad.size(-2) / grad.size(-1)) ** 0.5
-  return update
-```
+$$
+\Delta\theta = -\eta\, \lVert \theta \rVert\, \frac{g}{\lVert g \rVert}. \tag{1}
+$$
+
+- with preconditioning ($\Sigma\succ 0$), the solution becomes
+
+$$
+\Delta\theta = -\eta\, \lVert \theta \rVert\, \frac{\Sigma^{-1} g}{\sqrt{g^\top \Sigma^{-1} g}}. \tag{2}
+$$
+
+eq. (2) is the steepest‑descent direction under the $\Sigma$‑norm with a radius proportional to $\lVert\theta\rVert$. choosing $\Sigma$ as a running rms of $g$ (diagonal) connects to “preconditioned, normalized gradient” updates and approximates unit‑wise natural gradient.
+
+> [!note] invariance
+> rescaling $\theta \mapsto c\,\theta$ leaves the direction unchanged and only rescales the trust‑region radius by $\lVert c\theta\rVert = |c|\,\lVert\theta\rVert$, yielding a constant relative step (scale invariance).
+
+## clipping (muonclip) and attention safety (qk‑clip)
+
+in practice, clip the effective step multiplier to suppress heavy‑tail spikes. write eq. (2) as
+
+$$
+\alpha = \frac{\eta\, \lVert\theta\rVert}{\sqrt{g^\top \Sigma^{-1} g}+\varepsilon},\qquad \Delta\theta = -\alpha\, \Sigma^{-1} g. \tag{3}
+$$
+
+then apply
+
+$$
+\alpha \leftarrow \min(\alpha,\, \alpha_{\max}), \qquad \text{(muonclip)} \tag{4}
+$$
+
+with a small $\varepsilon$ for numerical safety. many large‑scale systems also bound attention logit scale with a separate qk‑clip (e.g., norm‑clip $\lVert q\rVert,\lVert k\rVert$ or clamp the dot‑product before softmax) to prevent rare softmax blow‑ups during long‑context training.
+
+## practical recipe
+
+for each weight tensor $\theta$ (excluding biases/layernorm scales):
+
+1. compute tensor norm $s_\theta = \lVert\theta\rVert_2$.
+2. compute preconditioned gradient $\tilde g = \Sigma^{-1} g$, with $\Sigma \approx \operatorname{diag}(\text{rms}(g)^2)$ or similar.
+3. compute normalized step size $\alpha = \eta s_\theta/(\lVert \tilde g \rVert_\Sigma + \varepsilon)$.
+4. clip $\alpha$ to $\alpha_{\max}$.
+5. update $\theta \leftarrow \theta - \alpha\, \tilde g$.
+6. apply decoupled weight decay if used: $\theta \leftarrow \theta - \eta\,\lambda\,\theta$.
+
+> [!tip] numerics
+> accumulate in fp32, use bf16/fp16 weights, and compute norms with safe reductions. when $s_\theta$ is tiny, blend toward adamw/sgd style steps to avoid stalling.
+
+## comparison
+
+- adamw: adapts per‑parameter with second moments, but step size still depends on raw scale; sensitive at trillion‑token regimes without careful clipping.
+- adafactor: memory‑efficient factorized moments; muon keeps memory low by avoiding dense moments and relies on normalized steps plus light preconditioning.
+- muon: normalized (often preconditioned) gradient with relative‑scale trust region; plays well with moe + mla systems where stability and steady throughput are crucial.
+
+see also
+
+- paper: [@liu2025muonscalablellmtraining].
+- derivation and intuition: https://jeremybernste.in/writing/deriving-muon
+- practical notes: https://kellerjordan.github.io/posts/muon/
+- reference implementation: https://github.com/KellerJordan/Muon
+- context: [[thoughts/MoE#kimi-k2|kimi‑k2]], [[thoughts/optimization#muon|optimization]]

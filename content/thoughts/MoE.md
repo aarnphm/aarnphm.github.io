@@ -6,11 +6,11 @@ tags:
   - serving
 description: Mixture of Expert
 date: "2025-08-13"
-modified: 2025-10-05 18:23:35 GMT-04:00
+modified: 2025-10-17 23:35:30 GMT-04:00
 title: MoE
 ---
 
-## Step3
+## step3
 
 https://arxiv.org/pdf/2507.19427
 
@@ -35,3 +35,32 @@ Proposes [[thoughts/Attention#Multi-Matrix Factorization Attention|MFA]] to redu
 | kv cache size (length = 32k)             | $1.02\times 10^9$    | $1.15\times 10^9$    | $3.15\times 10^9$    | $3.60\times 10^9$    | $4.30\times 10^9$    |
 | attention computation w/o linear (FLOPs) | $1.31\times 10^{11}$ | $5.89\times 10^{11}$ | $1.01\times 10^{11}$ | $5.80\times 10^{10}$ | $6.87\times 10^{10}$ |
 | arithmetic intensity                     | $128$                | $512$                | $32$                 | $16$                 | $16$                 |
+
+## kimi-k2
+
+> [!important] core facts from the k2 tech report
+> - total params ≈ 1.04t; activated ≈ 32.6b/token.
+> - moe with 384 experts (top‑8 routing + 1 shared expert).
+> - 61 transformer layers; hidden size 7168; 64 attention heads.
+> - pretrain on ~15.5t tokens; bf16 training. [@kimi2025openagentic]
+
+why muon / muonclip at scale
+
+- stability at trillions of tokens: k2 reports smooth loss across ~15.5t tokens using a muon‑based optimizer with clipping (muonclip and qk‑clip) to curb rare gradient/activation spikes while preserving convergence. see [@liu2025muonscalablellmtraining; @kimi2025openagentic].
+- throughput: clipping reduces outlier steps that would force smaller batches or conservative lr schedules at this scale.
+- memory + latency: moe yields sparse activation (≈32.6b active), and multi‑head latent attention (mla) shrinks kv cache to serve long contexts (≥128k) efficiently. training avoids tensor parallel by default; instead uses pipeline + expert parallel. [@kimi2025openagentic]
+
+training system
+
+- parallelism (train): pipeline parallelism 16, expert parallelism 16, and zero‑1 data parallelism on h800 clusters. [@kimi2025openagentic]
+
+evaluation snapshot
+
+- the paper reports strong coding/agentic results (e.g., swe‑bench and livecodebench) competitive with proprietary peers; see appendix of [@kimi2025openagentic] for exact numbers and setup details.
+
+> [!see-also] muon details
+> - derivation: https://jeremybernste.in/writing/deriving-muon
+> - practical notes: https://kellerjordan.github.io/posts/muon/
+> - reference implementation: https://github.com/KellerJordan/Muon
+> - optimizer discussion: [@liu2025muonscalablellmtraining]
+> - notes: [[thoughts/muon|muon]], [[thoughts/optimization#muon]]
