@@ -4,7 +4,7 @@ tags:
   - ml
 description: and inference go distributed
 date: "2025-06-16"
-modified: 2025-10-17 19:52:52 GMT-04:00
+modified: 2025-10-17 20:41:07 GMT-04:00
 title: p/d disaggregation
 ---
 
@@ -204,7 +204,7 @@ multi‑connector chain (nixl primary, file fallback):
 - monitor: in‑flight prefills, lookupbuffer depth, kv xfer bandwidth, decode tokens/s, eviction/oom in kv cache.
 - canaries: stage disagg behind a flag; keep a monolithic pool during rollout.
 
-## architecture (ascii)
+## architecture
 
 ```
            +-------------------+
@@ -239,171 +239,18 @@ multi‑connector chain (nixl primary, file fallback):
 > [!note] placement
 > place prefill and decode in the same rack/zone if using high‑bandwidth connectors (p2p, nixl). shared‑fs can span racks but adds latency variance.
 
-## kubernetes runbook (minimal)
-
-> [!important]
-> this is a thin skeleton to get started. adjust images, resources, and security contexts for your cluster. consult vllm versioned docs for flag changes. [@vllm-disagg-docs; @vllm-prodstack]
-
-1. namespace and storage (shared fs option)
-
-```yaml
-apiVersion: v1
-kind: Namespace
-metadata: { name: pd-disagg }
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata: { name: vllm-kv, namespace: pd-disagg }
-spec:
-  accessModes: [ReadWriteMany]
-  resources: { requests: { storage: 500Gi } }
-  storageClassName: nfs-rwx # or your rwx class
-```
-
-2. configmap for kv‑transfer config
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata: { name: kv-transfer, namespace: pd-disagg }
-data:
-  kv.json: |
-    {"kv_connector":"SharedStorageConnector","kv_role":"kv_both",
-     "kv_connector_extra_config": {"shared_storage_path":"/mnt/vllm-kv"}}
-```
-
-3. prefill deployment
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata: { name: vllm-prefill, namespace: pd-disagg }
-spec:
-  replicas: 2
-  selector: { matchLabels: { app: vllm-prefill } }
-  template:
-    metadata: { labels: { app: vllm-prefill } }
-    spec:
-      nodeSelector: { accelerator: nvidia }
-      containers:
-        - name: server
-          image: vllm/vllm:latest
-          args:
-            - serve
-            - $(MODEL)
-            - --max-model-len=32768
-            - --enable-chunked-prefill
-            - --kv-transfer-config-file=/config/kv.json
-          env:
-            - name: MODEL
-              value: deepseek-ai/DeepSeek-V3
-          volumeMounts:
-            - { name: kv, mountPath: /mnt/vllm-kv }
-            - { name: cfg, mountPath: /config }
-          resources:
-            limits:
-              nvidia.com/gpu: 1
-      volumes:
-        - name: kv
-          persistentVolumeClaim: { claimName: vllm-kv }
-        - name: cfg
-          configMap: { name: kv-transfer }
-```
-
-4. decode deployment
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata: { name: vllm-decode, namespace: pd-disagg }
-spec:
-  replicas: 4
-  selector: { matchLabels: { app: vllm-decode } }
-  template:
-    metadata: { labels: { app: vllm-decode } }
-    spec:
-      nodeSelector: { accelerator: nvidia }
-      containers:
-        - name: server
-          image: vllm/vllm:latest
-          args:
-            - serve
-            - $(MODEL)
-            - --max-model-len=32768
-            - --kv-transfer-config-file=/config/kv.json
-          env:
-            - name: MODEL
-              value: deepseek-ai/DeepSeek-V3
-          ports:
-            - { name: http, containerPort: 8000 }
-          volumeMounts:
-            - { name: kv, mountPath: /mnt/vllm-kv }
-            - { name: cfg, mountPath: /config }
-          resources:
-            limits:
-              nvidia.com/gpu: 1
-      volumes:
-        - name: kv
-          persistentVolumeClaim: { claimName: vllm-kv }
-        - name: cfg
-          configMap: { name: kv-transfer }
-```
-
-5. services
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata: { name: vllm-decode, namespace: pd-disagg }
-spec:
-  selector: { app: vllm-decode }
-  ports: [{ name: http, port: 80, targetPort: http }]
-```
-
-6. autoscaling (simple cpu hpa; replace with custom metrics if available)
-
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata: { name: vllm-prefill, namespace: pd-disagg }
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: vllm-prefill
-  minReplicas: 2
-  maxReplicas: 8
-  metrics:
-    - type: Resource
-      resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } }
----
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata: { name: vllm-decode, namespace: pd-disagg }
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: vllm-decode
-  minReplicas: 4
-  maxReplicas: 24
-  metrics:
-    - type: Resource
-      resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } }
-```
-
 > [!tip] switching to nixl/rdma
 > swap the configmap to `{"kv_connector":"LMCacheConnectorV1","kv_role":"kv_both"}` and deploy a nixl/lmcache endpoint; co‑locate pods for low‑latency paths.
 
 > [!security]
 > mount kv volumes read‑only on the decode tier when using shared fs; separate namespaces per environment; pin exact model shas to prevent version skew.
 
-## pitfalls and open problems
-
-- consistency: kv page layout/versioning must match across tiers/versions.
-- admission control: aggressive prefill can overwhelm decode; enforce queue limits/backpressure.
-- network: cross‑rack/az links can dominate ttft; keep prefill→decode traffic topology‑aware.
-- security: kv blobs may leak context; encrypt or isolate transfer paths.
+> [!important] pitfalls
+>
+> - consistency: kv page layout/versioning must match across tiers/versions.
+> - admission control: aggressive prefill can overwhelm decode; enforce queue limits/backpressure.
+> - network: cross‑rack/az links can dominate ttft; keep prefill→decode traffic topology‑aware.
+> - security: kv blobs may leak context; encrypt or isolate transfer paths.
 
 ## nixl and lmcache
 
@@ -430,11 +277,11 @@ lmcache (both roles):
 
 ```json
 {
-  "kv_connector":"LMCacheConnectorV1",
-  "kv_role":"kv_both",
-  "kv_connector_extra_config":{
-    "server_addr":"lmcache.svc:9090",
-    "namespace":"prod-a"
+  "kv_connector": "LMCacheConnectorV1",
+  "kv_role": "kv_both",
+  "kv_connector_extra_config": {
+    "server_addr": "lmcache.svc:9090",
+    "namespace": "prod-a"
   }
 }
 ```
@@ -443,11 +290,11 @@ nixl direct:
 
 ```json
 {
-  "kv_connector":"NixlConnector",
-  "kv_role":"kv_both",
-  "kv_connector_extra_config":{
-    "iface":"ib0",
-    "mtu":4096
+  "kv_connector": "NixlConnector",
+  "kv_role": "kv_both",
+  "kv_connector_extra_config": {
+    "iface": "ib0",
+    "mtu": 4096
   }
 }
 ```
@@ -466,3 +313,41 @@ nixl direct:
 
 > [!links]
 > vllm production‑stack and connector docs: [@vllm-prodstack; @vllm-disagg-docs]
+
+## rdma and nixl
+
+> [!important]
+> nixl rides on rdma (ib or rocev2) to move kv pages with low latency and high throughput. solid rdma hygiene matters more than almost any single model flag when p/d traffic crosses nodes.
+
+### rdma quick primer
+
+- transports: infiniband or rocev2 (rdma over converged ethernet v2).
+- queue pairs (qps): reliable connection (rc) is typical; unreliable datagram (ud) is rare for kv pages.
+- verbs: write (push), read (pull), send/recv (two‑sided). nixl/lmcache typically use write/read for zero‑copy paths.
+- memory registration: pin and register buffers; reuse mrs to avoid registration overhead.
+
+### cluster prerequisites
+
+- lossless-ish fabric: enable ecn; configure pfc only if strictly necessary (beware deadlocks). use dcqcn for rocev2.
+- mtu: use 4096 or 9000 on links and hosts consistently; mismatches tank performance.
+- nic firmware/driver: align across nodes; keep rdma-core up to date.
+- cpu isolation: reserve cores for irq handling; pin decode workers to remaining cores.
+- hugepages: back rdma buffers with hugepages where possible.
+
+### nixl‑specific tips
+
+- co‑locate nixl endpoints near decode pools (same rack/tor); prefer same nvlink island when possible.
+- shard traffic: by sequence id or kv page range to spread load across endpoints.
+- queue depth: size send/recv queues to keep links full but avoid hoarding; watch tail latency.
+- backpressure: if lookupbuffer depth grows, slow prefill admission or shed requests.
+
+### validation playbook
+
+- burn‑in: run rdma perftest (ib_read_bw/ib_write_bw) between candidate nodes; record p50/p99 and max throughput.
+- counters: check `ethtool -S`, `ibstat`, and nic vendor tools for pause frames, retransmits, congestion events.
+- end‑to‑end: measure ttft deltas with and without nixl; ensure improvements persist under realistic burst patterns.
+
+### failure handling
+
+- on link flaps or endpoint loss, allow decode to re‑run a short tail of prefill; retry connector after backoff.
+- keep strict mapping of model sha → kv namespace to prevent cross‑checkpoint kv mixing.

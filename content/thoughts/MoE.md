@@ -39,6 +39,7 @@ Proposes [[thoughts/Attention#Multi-Matrix Factorization Attention|MFA]] to redu
 ## kimi-k2
 
 > [!important] core facts from the k2 tech report
+>
 > - total params ≈ 1.04t; activated ≈ 32.6b/token.
 > - moe with 384 experts (top‑8 routing + 1 shared expert).
 > - 61 transformer layers; hidden size 7168; 64 attention heads.
@@ -59,6 +60,7 @@ evaluation snapshot
 - the paper reports strong coding/agentic results (e.g., swe‑bench and livecodebench) competitive with proprietary peers; see appendix of [@kimi2025openagentic] for exact numbers and setup details.
 
 > [!see-also] muon details
+>
 > - derivation: https://jeremybernste.in/writing/deriving-muon
 > - practical notes: https://kellerjordan.github.io/posts/muon/
 > - reference implementation: https://github.com/KellerJordan/Muon

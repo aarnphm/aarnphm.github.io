@@ -63,7 +63,7 @@ li.section-li {
     --grid-multiplier: 8;
 
     & > .note-grid {
-      column-gap: calc(var(--kern) * 2.5);
+      column-gap: calc(var(--kern) * 0.5);
       display: grid;
       grid-template-columns: calc(var(--kern) * var(--grid-multiplier)) 1fr;
       align-items: baseline;
