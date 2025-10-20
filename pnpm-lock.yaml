@@ -11,14 +11,14 @@ importers:
   .:
     dependencies:
       '@citation-js/core':
-        specifier: ^0.7.18
-        version: 0.7.18
+        specifier: ^0.7.21
+        version: 0.7.21
       '@citation-js/plugin-bibtex':
-        specifier: ^0.7.18
-        version: 0.7.18(@citation-js/core@0.7.18)
+        specifier: ^0.7.21
+        version: 0.7.21(@citation-js/core@0.7.21)
       '@citation-js/plugin-doi':
-        specifier: ^0.7.18
-        version: 0.7.18(@citation-js/core@0.7.18)
+        specifier: ^0.7.21
+        version: 0.7.21(@citation-js/core@0.7.21)
       '@clack/prompts':
         specifier: ^0.11.0
         version: 0.11.0
@@ -26,8 +26,8 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cloudflare/workers-oauth-provider':
-        specifier: ^0.0.11
-        version: 0.0.11
+        specifier: ^0.0.12
+        version: 0.0.12
       '@floating-ui/dom':
         specifier: ^1.7.4
         version: 1.7.4
@@ -54,7 +54,7 @@ importers:
         version: 25.0.0
       agents:
         specifier: ^0.2.14
-        version: 0.2.14(@cloudflare/workers-types@4.20251011.0)(react@19.1.1)(typescript@5.9.3)(viem@2.38.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))
+        version: 0.2.14(@cloudflare/workers-types@4.20251014.0)(react@19.1.1)(typescript@5.9.3)(viem@2.38.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))
       ansi-truncate:
         specifier: ^1.4.0
         version: 1.4.0
@@ -176,8 +176,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       octokit:
-        specifier: ^5.0.3
-        version: 5.0.3
+        specifier: ^5.0.4
+        version: 5.0.4
       onnxruntime-web:
         specifier: ^1.23.0
         version: 1.23.0
@@ -321,8 +321,8 @@ importers:
         version: 4.1.12
     devDependencies:
       '@cloudflare/workers-types':
-        specifier: ^4.20251011.0
-        version: 4.20251011.0
+        specifier: ^4.20251014.0
+        version: 4.20251014.0
       '@types/d3':
         specifier: ^7.4.3
         version: 7.4.3
@@ -336,8 +336,8 @@ importers:
         specifier: ^4.0.4
         version: 4.0.4
       '@types/node':
-        specifier: ^24.8.1
-        version: 24.8.1
+        specifier: ^24.9.0
+        version: 24.9.0
       '@types/pretty-time':
         specifier: ^1.1.5
         version: 1.1.5
@@ -354,8 +354,8 @@ importers:
         specifier: ^17.0.33
         version: 17.0.33
       '@typescript/native-preview':
-        specifier: 7.0.0-dev.20251017.1
-        version: 7.0.0-dev.20251017.1
+        specifier: 7.0.0-dev.20251019.1
+        version: 7.0.0-dev.20251019.1
       bibtex-tidy:
         specifier: ^1.14.0
         version: 1.14.0
@@ -388,7 +388,7 @@ importers:
         version: 5.9.3
       wrangler:
         specifier: ^4.43.0
-        version: 4.43.0(@cloudflare/workers-types@4.20251011.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        version: 4.43.0(@cloudflare/workers-types@4.20251014.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
 packages:
 
@@ -462,8 +462,8 @@ packages:
   '@chevrotain/utils@11.0.3':
     resolution: {integrity: sha512-YslZMgtJUyuMbZ+aKvfF3x1f5liK4mWNxghFRv7jqRR9C3R3fAOGTTKvxXDa2Y1s9zSbcpuO0cAxDYsc9SrXoQ==}
 
-  '@citation-js/core@0.7.18':
-    resolution: {integrity: sha512-EjLuZWA5156dIFGdF7OnyPyWFBW43B8Ckje6Sn/W2RFxHDu0oACvW4/6TNgWT80jhEA4bVFm7ahrZe9MJ2B2UQ==}
+  '@citation-js/core@0.7.21':
+    resolution: {integrity: sha512-Vobv2/Yfnn6C6BVO/pvj7madQ7Mfzl83/jAWwixbemGF6ZThhGMz8++FD9hWHyHXDMYuLGa6fK68c2VsolZmTA==}
     engines: {node: '>=16.0.0'}
 
   '@citation-js/date@0.5.1':
@@ -480,8 +480,8 @@ packages:
     peerDependencies:
       '@citation-js/core': ^0.7.0
 
-  '@citation-js/plugin-bibtex@0.7.18':
-    resolution: {integrity: sha512-TdsZSMpgpfcx2NMPu0KiulEoecllwT5EtRUzAJl2pDsdPD1tUqqbyj/NBi0l8fwNy1r7WwAqSFGiqGPjQWpFdg==}
+  '@citation-js/plugin-bibtex@0.7.21':
+    resolution: {integrity: sha512-O008pSsJgiYKn4+7gAWrbNpNdUH++aMeYmZaJ2oFQ8X1tcY5jNBxJcr0zZojNtUi5CVOaXXHQ0yIifoUhuF2Vg==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       '@citation-js/core': ^0.7.0
@@ -492,8 +492,8 @@ packages:
     peerDependencies:
       '@citation-js/core': ^0.7.0
 
-  '@citation-js/plugin-doi@0.7.18':
-    resolution: {integrity: sha512-7ccmhfJJSDUhUqpWxesLAp3m1P5dhnZ4QNMctwJnU41T9vKGF7MXPKqMONSvL5JDZ7o7iWQTj2BFhSmh0euQxw==}
+  '@citation-js/plugin-doi@0.7.21':
+    resolution: {integrity: sha512-KmViSt6CjfQS5dPHlHI6m6ahfshHUivSd8jQ0z5SvZCj2mKMH+t85tY57/880Xj9hVoXdRLmh53Uf0b+craNHA==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       '@citation-js/core': ^0.7.0
@@ -551,11 +551,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cloudflare/workers-oauth-provider@0.0.11':
-    resolution: {integrity: sha512-uarVcE1y/lf0y6iMFTwpJe8u6kpDP9CRZQTsGfCFonCEmH9n9b8k4ZmFpxI5g4XfoS7s9YHO0XcSRH8fgsjHWA==}
+  '@cloudflare/workers-oauth-provider@0.0.12':
+    resolution: {integrity: sha512-A/qTfCFusZBUcb/D62y610p9IcuZ3TBwmP1yYOUstroUIWfx1q0Y8NmbFN7++4ZWTHzVnFoyU6/iTIrC0lDqFA==}
 
-  '@cloudflare/workers-types@4.20251011.0':
-    resolution: {integrity: sha512-gQpih+pbq3sP4uXltUeCSbPgZxTNp2gQd8639SaIbQMwgA6oJNHLhIART1fWy6DQACngiRzDVULA2x0ohmkGTQ==}
+  '@cloudflare/workers-types@4.20251014.0':
+    resolution: {integrity: sha512-tEW98J/kOa0TdylIUOrLKRdwkUw0rvvYVlo+Ce0mqRH3c8kSoxLzUH9gfCvwLe0M89z1RkzFovSKAW2Nwtyn3w==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -1461,8 +1461,8 @@ packages:
     resolution: {integrity: sha512-iz6KzZ7u95Fzy9Nt2L8cG88lGRMr/qy1Q36ih/XVzMIlPDMYwaNLE/ENhqmIzgPrlNWiYJkwmveEetvxAgFBJw==}
     engines: {node: '>= 20'}
 
-  '@octokit/oauth-app@8.0.2':
-    resolution: {integrity: sha512-Oln8yKrDIDKnp49GUCSqda+XZyocmNapumjA0JdTpRfwMpmFMnh3bCOtSgb3X/kHfdtT7Q9ihFeN1djn58forg==}
+  '@octokit/oauth-app@8.0.3':
+    resolution: {integrity: sha512-jnAjvTsPepyUaMu9e69hYBuozEPgYqP4Z3UnpmvoIzHDpf8EXDGvTY1l1jK0RsZ194oRd+k6Hm13oRU8EoDFwg==}
     engines: {node: '>= 20'}
 
   '@octokit/oauth-authorization-url@8.0.0':
@@ -1472,9 +1472,6 @@ packages:
   '@octokit/oauth-methods@6.0.1':
     resolution: {integrity: sha512-xi6Iut3izMCFzXBJtxxJehxJmAKjE8iwj6L5+raPRwlTNKAbOOBJX7/Z8AF5apD4aXvc2skwIdOnC+CQ4QuA8Q==}
     engines: {node: '>= 20'}
-
-  '@octokit/openapi-types@25.1.0':
-    resolution: {integrity: sha512-idsIggNXUKkk0+BExUn1dQ92sfysJrje03Q0bv0e+KPLrvyqZF8MnBpFz8UNfYDwB3Ie7Z0TByjWfzxt7vseaA==}
 
   '@octokit/openapi-types@26.0.0':
     resolution: {integrity: sha512-7AtcfKtpo77j7Ts73b4OWhOZHTKo/gGY8bB3bNBQz4H+GRSWqx2yvj8TXRsbdTE0eRmYmXOEY66jM7mJ7LzfsA==}
@@ -1519,9 +1516,6 @@ packages:
   '@octokit/request@10.0.5':
     resolution: {integrity: sha512-TXnouHIYLtgDhKo+N6mXATnDBkV05VwbR0TtMWpgTHIoQdRQfCSzmy/LGqR1AbRMbijq/EckC/E3/ZNcU92NaQ==}
     engines: {node: '>= 20'}
-
-  '@octokit/types@14.1.0':
-    resolution: {integrity: sha512-1y6DgTy8Jomcpu33N+p5w58l6xyt55Ar2I91RPiIA0xCJBXyUAhXCcmZaDWSANiha7R9a6qJJ2CRomGPZ6f46g==}
 
   '@octokit/types@15.0.0':
     resolution: {integrity: sha512-8o6yDfmoGJUIeR9OfYU0/TUJTnMPG2r68+1yEdUeG2Fdqpj8Qetg0ziKIgcBm0RW/j29H41WP37CYCEhp6GoHQ==}
@@ -1732,8 +1726,8 @@ packages:
   '@tweenjs/tween.js@25.0.0':
     resolution: {integrity: sha512-XKLA6syeBUaPzx4j3qwMqzzq+V4uo72BnlbOjmuljLrRqdsd3qnzvZZoxvMHZ23ndsRS4aufU6JOZYpCbU6T1A==}
 
-  '@types/aws-lambda@8.10.155':
-    resolution: {integrity: sha512-wd1XgoL0gy/ybo7WozUKQBd+IOgUkdfG6uUGI0fQOTEq06FBFdO7tmPDSxgjkFkl8GlfApvk5TvqZlAl0g+Lbg==}
+  '@types/aws-lambda@8.10.156':
+    resolution: {integrity: sha512-LElQP+QliVWykC7OF8dNr04z++HJCMO2lF7k9HuKoSDARqhcjHq8MzbrRwujCSDeBHIlvaimbuY/tVZL36KXFQ==}
 
   '@types/css-font-loading-module@0.0.12':
     resolution: {integrity: sha512-x2tZZYkSxXqWvTDgveSynfjq/T2HyiZHXb00j/+gy19yp70PHCizM48XFdjBCWH7eHBD0R5i/pw9yMBP/BH5uA==}
@@ -1867,8 +1861,8 @@ packages:
   '@types/nlcst@2.0.3':
     resolution: {integrity: sha512-vSYNSDe6Ix3q+6Z7ri9lyWqgGhJTmzRjZRqyq15N0Z/1/UnVsno9G/N40NBijoYx2seFDIl0+B2mgAb9mezUCA==}
 
-  '@types/node@24.8.1':
-    resolution: {integrity: sha512-alv65KGRadQVfVcG69MuB4IzdYVpRwMG/mq8KWOaoOdyY617P5ivaDiMCGOFDWD2sAn5Q0mR3mRtUOgm99hL9Q==}
+  '@types/node@24.9.0':
+    resolution: {integrity: sha512-MKNwXh3seSK8WurXF7erHPJ2AONmMwkI7zAMrXZDPIru8jRqkk6rGDBVbw4mLwfqA+ZZliiDPg05JQ3uW66tKQ==}
 
   '@types/pretty-time@1.1.5':
     resolution: {integrity: sha512-5yl+BYwmnRWZb783W8YYoHXvPY8q/rp7ctHBVaGBB9RxlzGpHNJ72tGQMK7TrUSnxzl1dbDcBDuBCSbtfnSQGg==}
@@ -1897,43 +1891,43 @@ packages:
   '@types/yauzl@2.10.3':
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251017.1':
-    resolution: {integrity: sha512-P2Anvpgb1TOxP1jsPuJlde+ipkETWMfn0UGiydP8332ctq7dS/3cfUzM52PFiH5kx9zoa6vqv+IW1gaSUBPtmw==}
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251019.1':
+    resolution: {integrity: sha512-GecLPUXgaptUiBrpuLhKwsxsckJ/rBA1e9pY2HdFx+mIWze1FTUiXu0It6EcFbQ2IZCMke1WuZZz18Bo4lftwA==}
     cpu: [arm64]
     os: [darwin]
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20251017.1':
-    resolution: {integrity: sha512-9KW10N8eZZTvj2+egam0JxMo5ajO/QB8uuotiiepihl1q4Xi4ExNukWyg4+FhA56x4yMpABaIuvykKd099ubmA==}
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20251019.1':
+    resolution: {integrity: sha512-/XTRfbZW+BKvxC0XwoRp21UXdQOAEUwTf/T1OMs797HLfl1EbBiCp2UK+boYFwDw/5WP18i5bYEHkzx34wUTaA==}
     cpu: [x64]
     os: [darwin]
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20251017.1':
-    resolution: {integrity: sha512-0DOI/Fae+VP2otbmWpx0gxeTQABxDgZnDJbyptea43CCHGNnXttMufwegiHjs1Uv79fLX16jdhtBdTiROOZg0A==}
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20251019.1':
+    resolution: {integrity: sha512-wJR4FDSvOBqtNIZ3SxXk72LfMMPdx69VXpavSgoyZY9Xkf7Wr6uNpKTmwzX/fOjQBhpHo/6ctiSjB/t3uVKKSQ==}
     cpu: [arm64]
     os: [linux]
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20251017.1':
-    resolution: {integrity: sha512-Qed6PFwq9KxDydS+5Ov3YnuDzLO88HWyQtt7bnE2e7VJ6aW06pVNxjxgLLgZQpAlQV8TMAg2NtfonEDt+NPSBQ==}
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20251019.1':
+    resolution: {integrity: sha512-m0dBydey0T9ToLVbB1e4keK2hSLqJPOT5RMQH9plxibU89Ry4ueON6yGvJgO4La0LqVyk5RqLSkuHyLGFHmevA==}
     cpu: [arm]
     os: [linux]
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20251017.1':
-    resolution: {integrity: sha512-wN2T28rwlGLgfIPqG4e3cy2wPO4VuVTpBH127P8UsBRQYaAIiGAv1BM7gsRjlnXBmVUGOXQ8LsxFpI4Un/YB1A==}
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20251019.1':
+    resolution: {integrity: sha512-xS6qSkZEKw/kw95+K/1xe/3ivx+M8bu5rrySSi+lZmvk2Og19pTmvyW4ec9ojleoYGrU3E6oAcCI+mbcO+KVKg==}
     cpu: [x64]
     os: [linux]
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20251017.1':
-    resolution: {integrity: sha512-6phF6+qXp7im/ymFCsOPSkH83o0uL2wUUpAdg44YluuLmfh7DbT1D6UTg4uZYMYY25nElZ27fZIgFjzCSmJbbQ==}
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20251019.1':
+    resolution: {integrity: sha512-vJvkjZEN6GRH+Y3atQO5t8WGGjqgnHzwU0ZP+4oqYJl7G6sNiqRw23lHedZxZF6Iav+lE6SPMAhVbz97LlvkbQ==}
     cpu: [arm64]
     os: [win32]
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20251017.1':
-    resolution: {integrity: sha512-xvSSet89ZLiz+Z3nU227xQ/9/H7REukqSSPpaPBdu/+oUv07MQ993JwO69CG1katDMMEABfoJJ7D7EzQAi8iMw==}
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20251019.1':
+    resolution: {integrity: sha512-GMYGYxRHIX/+hFn7SGj9LMh4CLm90ZByGH4BvgKvwJGEctkYtOB6wXJUvQMo5koel7pDY1Yy3uChiexuG11biQ==}
     cpu: [x64]
     os: [win32]
 
-  '@typescript/native-preview@7.0.0-dev.20251017.1':
-    resolution: {integrity: sha512-awfunrvMGHxKdkqTRbcsrLQMaVkAAZWR0BrlOOJiy+JRnE/I/uhGBQ9oLvvUr1bGt4QnkXz3mybCdn2pFgSy5g==}
+  '@typescript/native-preview@7.0.0-dev.20251019.1':
+    resolution: {integrity: sha512-ytCPJouuNmJyGjZwSFg/v0Ugkn/52drU5HymW1p0l6dU+iHuTIaZSKfHFWETJxQVwyyYqNxxvC0QMxTDfwPlGQ==}
     hasBin: true
 
   '@ungap/structured-clone@1.3.0':
@@ -3661,8 +3655,8 @@ packages:
     resolution: {integrity: sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==}
     engines: {node: '>= 0.4'}
 
-  octokit@5.0.3:
-    resolution: {integrity: sha512-+bwYsAIRmYv30NTmBysPIlgH23ekVDriB07oRxlPIAH5PI0yTMSxg5i5Xy0OetcnZw+nk/caD4szD7a9YZ3QyQ==}
+  octokit@5.0.4:
+    resolution: {integrity: sha512-4n/mMoLQs2npBE+aTG5o4H+hZhFKu8aDqZFP/nmUNRUYrTpXpaqvX1ppK5eiCtQ+uP/8jI6vbdfCB2udlBgccA==}
     engines: {node: '>= 20'}
 
   ohash@2.0.11:
@@ -4508,8 +4502,8 @@ packages:
   unbzip2-stream@1.4.3:
     resolution: {integrity: sha512-mlExGW4w71ebDJviH16lQLtZS32VKqsSfk80GCfUlwT/4/hNRFsoscrF/c++9xinkMzECL1uL9DDwXqFWkruPg==}
 
-  undici-types@7.14.0:
-    resolution: {integrity: sha512-QQiYxHuyZ9gQUIrmPo3IA+hUl4KYk8uSA7cHrcKd/l3p1OTpZcM0Tbp9x7FAtXdAYhlasd60ncPpgu6ihG6TOA==}
+  undici-types@7.16.0:
+    resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
   undici@7.14.0:
     resolution: {integrity: sha512-Vqs8HTzjpQXZeXdpsfChQTlafcMQaaIwnGwLam1wudSSjlJeQ3bw1j+TLPePgrCnCpUXx7Ba5Pdpf5OBih62NQ==}
@@ -4877,7 +4871,7 @@ snapshots:
 
   '@chevrotain/utils@11.0.3': {}
 
-  '@citation-js/core@0.7.18':
+  '@citation-js/core@0.7.21':
     dependencies:
       '@citation-js/date': 0.5.1
       '@citation-js/name': 0.4.2
@@ -4890,28 +4884,28 @@ snapshots:
 
   '@citation-js/name@0.4.2': {}
 
-  '@citation-js/plugin-bibjson@0.7.18(@citation-js/core@0.7.18)':
+  '@citation-js/plugin-bibjson@0.7.18(@citation-js/core@0.7.21)':
     dependencies:
-      '@citation-js/core': 0.7.18
+      '@citation-js/core': 0.7.21
       '@citation-js/date': 0.5.1
       '@citation-js/name': 0.4.2
 
-  '@citation-js/plugin-bibtex@0.7.18(@citation-js/core@0.7.18)':
+  '@citation-js/plugin-bibtex@0.7.21(@citation-js/core@0.7.21)':
     dependencies:
-      '@citation-js/core': 0.7.18
+      '@citation-js/core': 0.7.21
       '@citation-js/date': 0.5.1
       '@citation-js/name': 0.4.2
       moo: 0.5.2
 
-  '@citation-js/plugin-csl@0.7.18(@citation-js/core@0.7.18)':
+  '@citation-js/plugin-csl@0.7.18(@citation-js/core@0.7.21)':
     dependencies:
-      '@citation-js/core': 0.7.18
+      '@citation-js/core': 0.7.21
       '@citation-js/date': 0.5.1
       citeproc: 2.4.63
 
-  '@citation-js/plugin-doi@0.7.18(@citation-js/core@0.7.18)':
+  '@citation-js/plugin-doi@0.7.21(@citation-js/core@0.7.21)':
     dependencies:
-      '@citation-js/core': 0.7.18
+      '@citation-js/core': 0.7.21
       '@citation-js/date': 0.5.1
 
   '@clack/core@0.5.0':
@@ -4964,9 +4958,9 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20251008.0':
     optional: true
 
-  '@cloudflare/workers-oauth-provider@0.0.11': {}
+  '@cloudflare/workers-oauth-provider@0.0.12': {}
 
-  '@cloudflare/workers-types@4.20251011.0': {}
+  '@cloudflare/workers-types@4.20251014.0': {}
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -5580,7 +5574,7 @@ snapshots:
       '@octokit/auth-app': 8.1.1
       '@octokit/auth-unauthenticated': 7.0.2
       '@octokit/core': 7.0.5
-      '@octokit/oauth-app': 8.0.2
+      '@octokit/oauth-app': 8.0.3
       '@octokit/plugin-paginate-rest': 13.2.0(@octokit/core@7.0.5)
       '@octokit/types': 15.0.0
       '@octokit/webhooks': 14.1.3
@@ -5647,7 +5641,7 @@ snapshots:
       '@octokit/types': 15.0.0
       universal-user-agent: 7.0.3
 
-  '@octokit/oauth-app@8.0.2':
+  '@octokit/oauth-app@8.0.3':
     dependencies:
       '@octokit/auth-oauth-app': 9.0.2
       '@octokit/auth-oauth-user': 6.0.1
@@ -5655,7 +5649,7 @@ snapshots:
       '@octokit/core': 7.0.5
       '@octokit/oauth-authorization-url': 8.0.0
       '@octokit/oauth-methods': 6.0.1
-      '@types/aws-lambda': 8.10.155
+      '@types/aws-lambda': 8.10.156
       universal-user-agent: 7.0.3
 
   '@octokit/oauth-authorization-url@8.0.0': {}
@@ -5666,8 +5660,6 @@ snapshots:
       '@octokit/request': 10.0.5
       '@octokit/request-error': 7.0.1
       '@octokit/types': 15.0.0
-
-  '@octokit/openapi-types@25.1.0': {}
 
   '@octokit/openapi-types@26.0.0': {}
 
@@ -5711,10 +5703,6 @@ snapshots:
       '@octokit/types': 15.0.0
       fast-content-type-parse: 3.0.0
       universal-user-agent: 7.0.3
-
-  '@octokit/types@14.1.0':
-    dependencies:
-      '@octokit/openapi-types': 25.1.0
 
   '@octokit/types@15.0.0':
     dependencies:
@@ -5924,7 +5912,7 @@ snapshots:
 
   '@tweenjs/tween.js@25.0.0': {}
 
-  '@types/aws-lambda@8.10.155': {}
+  '@types/aws-lambda@8.10.156': {}
 
   '@types/css-font-loading-module@0.0.12': {}
 
@@ -6079,9 +6067,9 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
 
-  '@types/node@24.8.1':
+  '@types/node@24.9.0':
     dependencies:
-      undici-types: 7.14.0
+      undici-types: 7.16.0
 
   '@types/pretty-time@1.1.5': {}
 
@@ -6098,7 +6086,7 @@ snapshots:
 
   '@types/ws@8.18.1':
     dependencies:
-      '@types/node': 24.8.1
+      '@types/node': 24.9.0
 
   '@types/yargs-parser@21.0.3': {}
 
@@ -6108,39 +6096,39 @@ snapshots:
 
   '@types/yauzl@2.10.3':
     dependencies:
-      '@types/node': 24.8.1
+      '@types/node': 24.9.0
     optional: true
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251017.1':
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251019.1':
     optional: true
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20251017.1':
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20251019.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20251017.1':
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20251019.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20251017.1':
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20251019.1':
     optional: true
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20251017.1':
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20251019.1':
     optional: true
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20251017.1':
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20251019.1':
     optional: true
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20251017.1':
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20251019.1':
     optional: true
 
-  '@typescript/native-preview@7.0.0-dev.20251017.1':
+  '@typescript/native-preview@7.0.0-dev.20251019.1':
     optionalDependencies:
-      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20251017.1
-      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20251017.1
-      '@typescript/native-preview-linux-arm': 7.0.0-dev.20251017.1
-      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20251017.1
-      '@typescript/native-preview-linux-x64': 7.0.0-dev.20251017.1
-      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20251017.1
-      '@typescript/native-preview-win32-x64': 7.0.0-dev.20251017.1
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20251019.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20251019.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20251019.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20251019.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20251019.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20251019.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20251019.1
 
   '@ungap/structured-clone@1.3.0': {}
 
@@ -6169,7 +6157,7 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  agents@0.2.14(@cloudflare/workers-types@4.20251011.0)(react@19.1.1)(typescript@5.9.3)(viem@2.38.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12)):
+  agents@0.2.14(@cloudflare/workers-types@4.20251014.0)(react@19.1.1)(typescript@5.9.3)(viem@2.38.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12)):
     dependencies:
       '@ai-sdk/openai': 2.0.48(zod@3.25.76)
       '@modelcontextprotocol/sdk': 1.20.1
@@ -6179,7 +6167,7 @@ snapshots:
       json-schema-to-typescript: 15.0.4
       mimetext: 3.0.27
       nanoid: 5.1.6
-      partyserver: 0.0.75(@cloudflare/workers-types@4.20251011.0)
+      partyserver: 0.0.75(@cloudflare/workers-types@4.20251014.0)
       partysocket: 1.1.6
       react: 19.1.1
       zod: 3.25.76
@@ -8243,18 +8231,18 @@ snapshots:
 
   object-keys@1.1.1: {}
 
-  octokit@5.0.3:
+  octokit@5.0.4:
     dependencies:
       '@octokit/app': 16.1.1
       '@octokit/core': 7.0.5
-      '@octokit/oauth-app': 8.0.2
+      '@octokit/oauth-app': 8.0.3
       '@octokit/plugin-paginate-graphql': 6.0.0(@octokit/core@7.0.5)
       '@octokit/plugin-paginate-rest': 13.2.0(@octokit/core@7.0.5)
       '@octokit/plugin-rest-endpoint-methods': 16.1.0(@octokit/core@7.0.5)
       '@octokit/plugin-retry': 8.0.2(@octokit/core@7.0.5)
       '@octokit/plugin-throttling': 11.0.2(@octokit/core@7.0.5)
       '@octokit/request-error': 7.0.1
-      '@octokit/types': 14.1.0
+      '@octokit/types': 15.0.0
       '@octokit/webhooks': 14.1.3
 
   ohash@2.0.11: {}
@@ -8375,9 +8363,9 @@ snapshots:
 
   parseurl@1.3.3: {}
 
-  partyserver@0.0.75(@cloudflare/workers-types@4.20251011.0):
+  partyserver@0.0.75(@cloudflare/workers-types@4.20251014.0):
     dependencies:
-      '@cloudflare/workers-types': 4.20251011.0
+      '@cloudflare/workers-types': 4.20251014.0
       nanoid: 5.1.6
 
   partysocket@1.1.6:
@@ -8481,7 +8469,7 @@ snapshots:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
-      '@types/node': 24.8.1
+      '@types/node': 24.9.0
       long: 5.3.2
 
   proxy-addr@2.0.7:
@@ -8570,12 +8558,12 @@ snapshots:
 
   rehype-citation@2.3.1:
     dependencies:
-      '@citation-js/core': 0.7.18
+      '@citation-js/core': 0.7.21
       '@citation-js/date': 0.5.1
       '@citation-js/name': 0.4.2
-      '@citation-js/plugin-bibjson': 0.7.18(@citation-js/core@0.7.18)
-      '@citation-js/plugin-bibtex': 0.7.18(@citation-js/core@0.7.18)
-      '@citation-js/plugin-csl': 0.7.18(@citation-js/core@0.7.18)
+      '@citation-js/plugin-bibjson': 0.7.18(@citation-js/core@0.7.21)
+      '@citation-js/plugin-bibtex': 0.7.21(@citation-js/core@0.7.21)
+      '@citation-js/plugin-csl': 0.7.18(@citation-js/core@0.7.21)
       citeproc: 2.4.63
       cross-fetch: 4.1.0
       hast-util-from-dom: 5.0.1
@@ -9353,7 +9341,7 @@ snapshots:
       buffer: 5.7.1
       through: 2.3.8
 
-  undici-types@7.14.0: {}
+  undici-types@7.16.0: {}
 
   undici@7.14.0: {}
 
@@ -9556,7 +9544,7 @@ snapshots:
 
   workerpool@9.3.4: {}
 
-  wrangler@4.43.0(@cloudflare/workers-types@4.20251011.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10):
+  wrangler@4.43.0(@cloudflare/workers-types@4.20251014.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.0
       '@cloudflare/unenv-preset': 2.7.7(unenv@2.0.0-rc.21)(workerd@1.20251008.0)
@@ -9567,7 +9555,7 @@ snapshots:
       unenv: 2.0.0-rc.21
       workerd: 1.20251008.0
     optionalDependencies:
-      '@cloudflare/workers-types': 4.20251011.0
+      '@cloudflare/workers-types': 4.20251014.0
       fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil
