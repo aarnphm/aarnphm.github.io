@@ -11,7 +11,7 @@ tags:
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-10-12 02:02:09 GMT-04:00
+modified: 2025-10-20 04:14:45 GMT-04:00
 noindex: true
 title: dating me.
 pageLayout: letter
@@ -36,7 +36,7 @@ I'm a [[thoughts/LLMs|software]] engineer working on language models, but do hav
 
 I'm a bit obsessive with my work, especially [[thoughts/Machine learning|machine learning]] model. It is all I think about these days, other than caring for my friends and people in my life ofc.
 
-Friends say I'm the 3am call who shows up.
+Friends say I'm the 3am call who shows up. My [love language](https://en.wikipedia.org/wiki/The_Five_Love_Languages) is physical touch.
 
 I moved continents at a young age, and learnt very early on that _solitude makes presence precious_.
 

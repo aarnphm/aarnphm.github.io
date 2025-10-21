@@ -974,6 +974,13 @@ img.inline-icons {
   }
 }
 
+.casesense {
+  text-transform: none !important;
+  & > * {
+    text-transform: none !important;
+  }
+}
+
 body[data-slug="influence"] {
   .byline,
   .page-footer {

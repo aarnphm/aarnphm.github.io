@@ -4,7 +4,7 @@ tags:
   - ml
 description: and inference go distributed
 date: "2025-06-16"
-modified: 2025-10-17 20:41:07 GMT-04:00
+modified: 2025-10-19 22:28:32 GMT-04:00
 title: p/d disaggregation
 ---
 
@@ -47,7 +47,7 @@ quick summary:
 
 - dedicated prefill tier and decode tier; kv blocks from prefill are transferred to decode. strongest isolation and elastic scaling; requires fast kv transport and careful routing.
 
-## state of the art (2024–2025)
+## wip
 
 - distserve (osdi’24): separates prefill/decode with online admission and kv sharing; reports up to 7.4× more requests or 12.6× tighter slo while meeting latency targets. [@distserve2024osdi]
 - vllm disaggregated prefilling: two‑instance design with connector/lookupbuffer; docs note it does not improve throughput but can control tail itl and tune ttft/itl independently. [@vllm-disagg-docs]
@@ -58,28 +58,13 @@ quick summary:
 - banaserve (2025): dynamic migration and learning‑based control under non‑stationary loads. [@banaserve2025]
 - spad (2025): hardware/software co‑design for disaggregated attention. [@spad2025]
 
-## how vllm does it (current design)
-
-- two instances: one prefill, one decode. prefill runs chunked prefill and emits kv pages; decode runs token loops.
-- kv transfer: a connector moves kv pages to a lookupbuffer on decode; kv must be page‑aligned (enable `--enable-chunked-prefill`). connectors supported include `SharedStorageConnector`, `LMCacheConnectorV1` (with nixl), `NixlConnector`, `P2pNcclConnector`, and `MultiConnector` (chain). [@vllm-disagg-docs; @vllm-prodstack]
-- routing: frontend assigns prompts to prefill and then redirects the handle to decode once kv is ready.
-- caveats from docs: not always higher throughput; ttft benefits depend on prompt/batch distribution. [@vllm-disagg-docs]
-
-> [!tip] deployment sketch
+> [!tip] deployment strategy
 >
 > - start prefill‑only vllm (bigger max batch, dp heavy, ep as needed)
 > - start decode‑only vllm (continuous batching, ep for moe, tune dp)
 > - enable kv transfer connector and verify fabric throughput/latency
 > - measure ttft/itl; tune prefill:decode worker ratio (e.g., 1:2, 1:3)
 > - keep a monolithic pool as safety net during ramp
-
-## tuning guidelines
-
-- kv bandwidth: ensure nvlink/pcie/fabric bandwidth can move kv pages without stalling decode; consider 200–400 gbps/node for multi‑node pools.
-- ratios: monitor ttft and token throughput, increasing prefill workers under long prompts and decode workers under short‑prompt traffic.
-- batching: keep continuous batching on decode; run larger prefill batches to amortize attention cost.
-- runtime features: pair with mla/flash kernels to shrink kv and reduce transfer volume. see [[thoughts/Attention#multi-head latent attention|mla]].
-- fallbacks: if kv transfer lags, allow decode to re‑run a small tail of prefill to hide jitter.
 
 ## deep‑dive: sizing, transport, and scheduling
 
@@ -94,19 +79,19 @@ let
 per‑request kv size (dense kv):
 
 $$
-\text{kv\_bytes} \approx 2 \cdot L \cdot H_{kv} \cdot L_p \cdot d_h \cdot b. \tag{1}
+\text{kv\_bytes} \approx 2 \cdot L \cdot H_{kv} \cdot L_p \cdot d_h \cdot b. \qquad \qquad \tag{1}
 $$
 
 with mla latents ($r \ll d_h$):
 
 $$
-\text{kv\_bytes}^{\text{mla}} \approx 2 \cdot L \cdot L_p \cdot r \cdot b. \tag{2}
+\text{kv\_bytes}^{\text{mla}} \approx 2 \cdot L \cdot L_p \cdot r \cdot b. \qquad \qquad \tag{2}
 $$
 
 prefill time scales roughly with $O(L_p)$ attention; decode scales with $O(L_o)$ and is often memory‑bound. to set prefill:decode worker ratio, estimate utilization targets:
 
 $$
-U_p = \frac{\lambda\, \mathbb{E}[S_p(L_p)]}{m_p},\qquad U_d = \frac{\lambda\, \mathbb{E}[S_d(L_o)]}{m_d}, \tag{3}
+U_p = \frac{\lambda\, \mathbb{E}[S_p(L_p)]}{m_p},\qquad U_d = \frac{\lambda\, \mathbb{E}[S_d(L_o)]}{m_d},\qquad \qquad \tag{3}
 $$
 
 for arrival rate $\lambda$, service times $S_p, S_d$, and worker counts $m_p, m_d$. pick $(m_p,m_d)$ to keep both utilizations below ~0.7 under your mix (headroom for bursts). distserve frames this as goodput optimization under ttft/tpot slos. [@distserve2024osdi]
@@ -122,10 +107,10 @@ for arrival rate $\lambda$, service times $S_p, S_d$, and worker counts $m_p, m_
 transfer time per request is approximately
 
 $$
-T_{xfer} \approx \frac{\text{kv\_bytes}}{B_{net}}, \tag{4}
+T_{\text{xfer}} \approx \frac{\text{kv\_bytes}}{B_{net}}\qquad \qquad \tag{4}
 $$
 
-where $B_{net}$ is end‑to‑end bandwidth between prefill and decode workers. for dp across racks, ensure $B_{net}$ is high enough so $T_{xfer}$ doesn’t dominate ttft; mla (eq. 2) can cut transfer volume 5–10×.
+where $B_{\text{net}}$ is end‑to‑end bandwidth between prefill and decode workers. for dp across racks, ensure $B_{\text{net}}$ is high enough so $T_{\text{xfer}}$ doesn’t dominate ttft; mla (eq. 2) can cut transfer volume 5–10×.
 
 ### compatibility and layout
 
@@ -145,9 +130,10 @@ where $B_{net}$ is end‑to‑end bandwidth between prefill and decode workers. 
 - partial kv: ensure atomicity on `insert`; consumers should never see partial blocks (vllm’s lookupbuffer `insert/drop_select` semantics). [@vllm-disagg-docs]
 - retries: on connector failure, either re‑run tail‑prefill on decode or replay prefill after backoff.
 
-## reference commands (vllm)
+## reference commands
 
 > [!note]
+>
 > exact flags evolve; consult docs/examples for your vllm version. the json shown below is the `--kv-transfer-config` payload. [@vllm-disagg-docs; @vllm-prodstack]
 
 prefill‑only instance (shared storage):
@@ -198,7 +184,7 @@ multi‑connector chain (nixl primary, file fallback):
 }'
 ```
 
-## ops checklist
+make sure:
 
 - define slos: ttft p95/p99 and itl p95; track goodput (fraction within slos). [@distserve2024osdi]
 - monitor: in‑flight prefills, lookupbuffer depth, kv xfer bandwidth, decode tokens/s, eviction/oom in kv cache.
@@ -212,10 +198,10 @@ multi‑connector chain (nixl primary, file fallback):
            +---------+---------+
                      |
                      v
-          +----------+----------+
-          |  prefill tier       |   (deployment/statefulset)
-          |  vllm --enable-chunked-prefill
-          +----------+----------+
+          +----------+----------------------+
+          |  prefill tier                   |   (deployment/statefulset)
+          |  vllm --enable-chunked-prefill  |
+          +----------+----------------------+
                      |
                      |  kv pages / latents
                      v
@@ -225,10 +211,10 @@ multi‑connector chain (nixl primary, file fallback):
        +-------------+--------------+
                      |
                      v
-          +----------+----------+
-          |  decode tier        |   (deployment/statefulset)
-          |  vllm continuous batching
-          +----------+----------+
+          +----------+-----------------+
+          |  decode tier               |   (deployment/statefulset)
+          |  vllm continuous batching  |
+          +----------+-----------------+
                      |
                      v
            +---------+---------+
@@ -271,34 +257,6 @@ multi‑connector chain (nixl primary, file fallback):
 
 co‑locate endpoints with decode pools (same rack/tor) to minimize cross‑rack hops; pin queue pairs to nic ports for bandwidth.
 
-### connector config examples
-
-lmcache (both roles):
-
-```json
-{
-  "kv_connector": "LMCacheConnectorV1",
-  "kv_role": "kv_both",
-  "kv_connector_extra_config": {
-    "server_addr": "lmcache.svc:9090",
-    "namespace": "prod-a"
-  }
-}
-```
-
-nixl direct:
-
-```json
-{
-  "kv_connector": "NixlConnector",
-  "kv_role": "kv_both",
-  "kv_connector_extra_config": {
-    "iface": "ib0",
-    "mtu": 4096
-  }
-}
-```
-
 ### sizing and tuning
 
 - register/pin memory for send/recv buffers; prefer hugepages where supported.
@@ -319,7 +277,7 @@ nixl direct:
 > [!important]
 > nixl rides on rdma (ib or rocev2) to move kv pages with low latency and high throughput. solid rdma hygiene matters more than almost any single model flag when p/d traffic crosses nodes.
 
-### rdma quick primer
+### rdma
 
 - transports: infiniband or rocev2 (rdma over converged ethernet v2).
 - queue pairs (qps): reliable connection (rc) is typical; unreliable datagram (ud) is rare for kv pages.
@@ -334,7 +292,7 @@ nixl direct:
 - cpu isolation: reserve cores for irq handling; pin decode workers to remaining cores.
 - hugepages: back rdma buffers with hugepages where possible.
 
-### nixl‑specific tips
+### nixl‑specific
 
 - co‑locate nixl endpoints near decode pools (same rack/tor); prefer same nvlink island when possible.
 - shard traffic: by sequence id or kv page range to spread load across endpoints.

@@ -1,20 +1,18 @@
 ---
-socials:
-  curius: /curius
-  are.na: https://www.are.na/aaron-pham/channels
 id: are.na
-permalinks:
-  - /website
-  - /tweets
-  - /resources
+aliases:
+  - inspo
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-title: are.na
+socials:
+  curius: /curius
+  are.na: https://www.are.na/aaron-pham/channels
 date: "2024-10-24"
-modified: 2025-10-17 19:28:17 GMT-04:00
+modified: 2025-10-21 03:52:06 GMT-04:00
+title: are.na
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -35,8 +33,10 @@ codex:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be consumed by quartz/plugins/emitters/arena.ts, and then ingested with quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /tweets
+  - /resources
 claude:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -204,6 +204,11 @@ cssclasses:
 
 ## website
 
+- https://radio.garden
+  - [meta]:
+    - date: 10/19/2025
+    - tags: [life]
+  - https://radio.garden/visit/toronto/vqzAr1BQ: Met Radio 1280 AM - CJTM
 - https://basecase.vc/lexiconic?view=list&sort=random&seed=1760566272204
   - [meta]:
     - date: 10/16/2025
@@ -981,6 +986,19 @@ cssclasses:
 
 ## essay
 
+- https://onegirlinfinitethoughts.substack.com/p/not-lost-not-found-becoming
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [fruit]
+- https://mkodama.org/content/suffering-focused/ -- Suffering-focused ethics
+  - [meta]:
+    - date: 10/18/2025
+    - tags: [ethics]
+  - see also [[thoughts/ethics]]
+- https://anthropic-principle.com/anthropic-bias/ -- Anthropic Bias [**]
+  - [meta]:
+    - date: 10/18/2025
+    - tags: [life, longtermism]
 - https://geohot.github.io/blog/jekyll/update/2025/09/13/get-out-of-technology.html -- Get the fuck out of technology [**]
   - [meta]:
     - date: 10/16/2025

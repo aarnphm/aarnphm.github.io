@@ -796,7 +796,6 @@ body[data-is-base="true"] {
 
 .katex-html,
 .katex-display {
-  display: initial !important;
   overflow-x: auto;
   overflow-y: hidden;
   text-transform: none !important;
@@ -804,6 +803,10 @@ body[data-is-base="true"] {
   & > * {
     text-transform: none !important;
   }
+}
+
+.katex-html {
+  display: initial !important;
 }
 
 code,

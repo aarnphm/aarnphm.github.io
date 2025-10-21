@@ -278,7 +278,7 @@ your 64k context just made attention compute 70-80% of total latency. most spars
 
 NSA solves both: natively trainable, hardware-aligned sparsity.
 
-![[thoughts/images/native-sparse-attention.png]]
+![[thoughts/images/native-sparse-attention.webp]]
 
 **three-branch architecture**:
 

@@ -18,8 +18,9 @@
     "prod": "NODE_ENV=production pnpm bundle",
     "test": "tsx --test",
     "swarm": "pnpx tsx quartz/scripts/dev.ts",
+    "convert": "tsx quartz/scripts/convert.ts",
     "cf:deploy": "pnpm check && pnpm dlx wrangler deploy",
-    "check": "pnpm format && tsx quartz/scripts/convert.ts && pnpm dlx wrangler types && pnpm prettier . --check && tsc --noEmit && tsx --test",
+    "check": "pnpm format && pnpm convert && pnpm dlx wrangler types && pnpm prettier . --check && tsc --noEmit && tsx --test",
     "format": "pnpx bibtex-tidy content/References.bib --months --merge=combine --no-align --sort=type,year,eprint --duplicates=key,doi,citation --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,series,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields --blank-lines --modify && pnpm prettier . --write",
     "profile": "0x -D prof quartz/bootstrap-cli.mjs build --concurrency=1"
   },

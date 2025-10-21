@@ -5,13 +5,19 @@ tags:
   - optimization
 description: derivation sketch and practical notes for the muon optimizer
 date: "2025-10-17"
-modified: 2025-10-17 19:17:37 GMT-04:00
+modified: 2025-10-18 09:25:16 GMT-04:00
 title: muon
 ---
 
 > [!important] tl;dr
 > muon targets scale‑invariant, stable steps at very large scale by taking a normalized (often preconditioned) gradient step whose size is proportional to the parameter norm, plus clipping to suppress rare spikes. see also [@liu2025muonscalablellmtraining],
-> https://jeremybernste.in/writing/deriving-muon, https://kellerjordan.github.io/posts/muon/, and https://github.com/KellerJordan/Muon.
+>
+> see also:
+>
+> - paper: [@liu2025muonscalablellmtraining].
+> - derivation and intuition: https://jeremybernste.in/writing/deriving-muon
+> - notes: https://kellerjordan.github.io/posts/muon/
+> - reference implementation: https://github.com/KellerJordan/Muon
 
 ## goal
 
@@ -36,13 +42,13 @@ where $\lVert v \rVert_\Sigma = \sqrt{v^\top \Sigma v}$ and $\Sigma$ is a (possi
 - without preconditioning ($\Sigma=I$) the kkt solution is
 
 $$
-\Delta\theta = -\eta\, \lVert \theta \rVert\, \frac{g}{\lVert g \rVert}. \tag{1}
+\Delta\theta = -\eta\, \lVert \theta \rVert\, \frac{g}{\lVert g \rVert} \qquad \tag{1}
 $$
 
 - with preconditioning ($\Sigma\succ 0$), the solution becomes
 
 $$
-\Delta\theta = -\eta\, \lVert \theta \rVert\, \frac{\Sigma^{-1} g}{\sqrt{g^\top \Sigma^{-1} g}}. \tag{2}
+\Delta\theta = -\eta\, \lVert \theta \rVert\, \frac{\Sigma^{-1} g}{\sqrt{g^\top \Sigma^{-1} g}} \qquad \tag{2}
 $$
 
 eq. (2) is the steepest‑descent direction under the $\Sigma$‑norm with a radius proportional to $\lVert\theta\rVert$. choosing $\Sigma$ as a running rms of $g$ (diagonal) connects to “preconditioned, normalized gradient” updates and approximates unit‑wise natural gradient.
@@ -55,13 +61,13 @@ eq. (2) is the steepest‑descent direction under the $\Sigma$‑norm with a rad
 in practice, clip the effective step multiplier to suppress heavy‑tail spikes. write eq. (2) as
 
 $$
-\alpha = \frac{\eta\, \lVert\theta\rVert}{\sqrt{g^\top \Sigma^{-1} g}+\varepsilon},\qquad \Delta\theta = -\alpha\, \Sigma^{-1} g. \tag{3}
+\alpha = \frac{\eta\, \lVert\theta\rVert}{\sqrt{g^\top \Sigma^{-1} g}+\varepsilon},\qquad \Delta\theta = -\alpha\, \Sigma^{-1} g \qquad \tag{3}
 $$
 
 then apply
 
 $$
-\alpha \leftarrow \min(\alpha,\, \alpha_{\max}), \qquad \text{(muonclip)} \tag{4}
+\alpha \leftarrow \min(\alpha,\, \alpha_{\max}), \qquad \text{(muonclip)} \qquad \tag{4}
 $$
 
 with a small $\varepsilon$ for numerical safety. many large‑scale systems also bound attention logit scale with a separate qk‑clip (e.g., norm‑clip $\lVert q\rVert,\lVert k\rVert$ or clamp the dot‑product before softmax) to prevent rare softmax blow‑ups during long‑context training.
@@ -85,11 +91,3 @@ for each weight tensor $\theta$ (excluding biases/layernorm scales):
 - adamw: adapts per‑parameter with second moments, but step size still depends on raw scale; sensitive at trillion‑token regimes without careful clipping.
 - adafactor: memory‑efficient factorized moments; muon keeps memory low by avoiding dense moments and relies on normalized steps plus light preconditioning.
 - muon: normalized (often preconditioned) gradient with relative‑scale trust region; plays well with moe + mla systems where stability and steady throughput are crucial.
-
-see also
-
-- paper: [@liu2025muonscalablellmtraining].
-- derivation and intuition: https://jeremybernste.in/writing/deriving-muon
-- practical notes: https://kellerjordan.github.io/posts/muon/
-- reference implementation: https://github.com/KellerJordan/Muon
-- context: [[thoughts/MoE#kimi-k2|kimi‑k2]], [[thoughts/optimization#muon|optimization]]

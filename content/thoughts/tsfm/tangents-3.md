@@ -3,7 +3,7 @@ id: tangents-3
 author: matej
 description: and primitives
 date: "2025-10-17"
-modified: 2025-10-17 20:44:44 GMT-04:00
+modified: 2025-10-18 09:33:17 GMT-04:00
 tags:
   - ml
   - tsfm
@@ -47,10 +47,10 @@ flops_per_tok = params_per_tok * 6
 
 ## communication primitives
 
-- reduce-scatter
-- all-gather
-- all-reduce
-- all2all
+- [[#reduce-scatter]]
+- [[#all-gather]]
+- [[#all-reduce]]
+- [[#all2all]]
 - nccl
 
 ### all-gather
@@ -113,7 +113,7 @@ $$
 \end{aligned}
 $$
 
-## reduce-scatter
+### reduce-scatter
 
 - sharded across devices, reduce and scatter the result
 - organize into a ring
@@ -176,6 +176,8 @@ $$
 $$
 
 ### all-reduce
+
+![[thoughts/images/all-reduce-meta.webp]]
 
 - naively, send device shard, reduce received shard
 - can be done in tree, ring
@@ -304,7 +306,7 @@ backward pass:
     4. discard gathered params
 ```
 
-![comparison between DDP and FSDP](https://engineering.fb.com/wp-content/uploads/2021/07/FSDP-Hero-FINAL-1.png)
+![[thoughts/images/comparison-ddp-fsdp.webp|comparison between DDP and FSDP]]
 
 memory savings: $\frac{\text{model\_size}}{N}$ where $N$ is number of workers
 
@@ -318,7 +320,10 @@ trick:
 
 ## Tensor Parallelism
 
-see also: [Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism](https://arxiv.org/abs/1909.08053), [How Meta trains large language models at scale](https://engineering.fb.com/2024/06/12/data-infrastructure/training-large-language-models-at-scale-meta/)
+see also:
+
+- https://arxiv.org/abs/1909.08053
+- [How Meta trains large language models at scale](https://engineering.fb.com/2024/06/12/data-infrastructure/training-large-language-models-at-scale-meta/)
 
 shards individual weight matrices across devices. reduces memory footprint while maintaining high compute efficiency with minimal communication overhead.
 
@@ -402,10 +407,10 @@ backward:
 communication: all-reduce on output in forward pass
 
 example (MLP second layer, attention output projection):
-    ┌────────┬────────┬────────┐
-    │  X_0   │  X_1   │  X_2   │  input partitioned
-    │[b,s,h/3│[b,s,h/3│[b,s,h/3│
-    └────────┴────────┴────────┘
+    ┌─────────┬─────────┬─────────┐
+    │  X_0    │  X_1    │  X_2    │  input partitioned
+    │[b,s,h/3]│[b,s,h/3]│[b,s,h/3]│
+    └─────────┴─────────┴─────────┘
          │         │         │
          ▼         ▼         ▼
     ┌────────┐ ┌────────┐ ┌────────┐
@@ -472,8 +477,6 @@ timeline:
 memory: $\frac{\text{model\_size}}{N}$ per device
 
 communication per layer: 1 all-reduce (either forward or backward, depending on column vs row)
-
-![Meta LLM training infrastructure](https://engineering.fb.com/wp-content/uploads/2024/06/Training-LLMs-at-Scale-Hero.png)
 
 ## Context Parallelism
 

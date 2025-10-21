@@ -86,7 +86,7 @@ title: images
 
 ![[thoughts/images/G2khUsZWEAAK6oC.webp]]
 
-![[thoughts/images/repeater.png]]
+![[thoughts/images/repeater.webp]]
 
 ## authors
 

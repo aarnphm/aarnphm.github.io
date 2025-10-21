@@ -34,11 +34,7 @@ async function convertMedia(contentDir: string) {
         case ".jpeg":
         case ".jpg":
           outputFile = mediaFile.replace(/\.(png|jpe?g)$/i, ".webp")
-          ffmpegCmd = `ffmpeg -i "${mediaFile}" -c:v libwebp -quality 90 -compression_level 6 "${outputFile}"`
-          break
-        case ".mp4":
-          outputFile = mediaFile.replace(/\.mp4$/, ".avif")
-          ffmpegCmd = `ffmpeg -i "${mediaFile}" -c:v libaom-av1 "${outputFile}"`
+          ffmpegCmd = `ffmpeg -y -i "${mediaFile}" -c:v libwebp -quality 90 -compression_level 6 "${outputFile}"`
           break
         default:
           continue
