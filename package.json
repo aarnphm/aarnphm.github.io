@@ -138,7 +138,7 @@
     "unist-util-select": "^5.1.0",
     "unist-util-visit": "^5.0.0",
     "vfile": "^6.0.3",
-    "workerpool": "^9.3.4",
+    "workerpool": "^10.0.0",
     "ws": "^8.18.3",
     "xml-formatter": "^3.6.7",
     "yargs": "^18.0.0",
@@ -167,7 +167,7 @@
     "ts-morph": "^27.0.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "wrangler": "^4.43.0"
+    "wrangler": "^4.44.0"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
 }
