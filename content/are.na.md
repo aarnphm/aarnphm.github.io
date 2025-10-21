@@ -1,4 +1,5 @@
 ---
+date: "2024-10-24"
 id: are.na
 aliases:
   - inspo
@@ -7,12 +8,11 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
+title: are.na
 socials:
   curius: /curius
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-10-21 03:52:06 GMT-04:00
-title: are.na
+modified: 2025-10-21 17:39:10 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -204,6 +204,11 @@ cssclasses:
 
 ## website
 
+- https://meodai.github.io/poline/ - Poline [**]
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [color]
+  - enigmatic color palette generation library
 - https://radio.garden
   - [meta]:
     - date: 10/19/2025
@@ -556,6 +561,11 @@ cssclasses:
 
 ## people
 
+- https://mattbrooks.xyz/ -- Matt Brooks
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [fruit]
+  - Lydia's friend
 - https://cs.stanford.edu/~quocle/ -- Quoc V. Le
   - [meta]:
     - date: 10/11/2025
@@ -986,6 +996,19 @@ cssclasses:
 
 ## essay
 
+- https://www.ameliahruby.com/blog/100-ways-to-share -- 100 ways to share your work + life off social media [**]
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [fruit]
+- https://www.cs.cmu.edu/~mblum/research/pdf/grad.html -- Advice to a Beginning Graduate Student
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [fruit]
+  - What is 4 R's of Graduate School? - Reading, aRithmetic, Research, and wRiting
+  - Reading
+  - Studying
+  - Thinking
+  - middle of PhD
 - https://onegirlinfinitethoughts.substack.com/p/not-lost-not-found-becoming
   - [meta]:
     - date: 10/21/2025
@@ -1558,6 +1581,10 @@ cssclasses:
 
 ## Machine learning
 
+- https://x.com/jkminder/status/1980290860261732560 -- Finetuning on narrow domains leaves traces behind. So can interpretability agents
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [interpretability]
 - https://transformer-circuits.pub/2025/attention-qk/index.html -- Tracing Attention Computation Through Feature Interactions
   - [meta]:
     - date: 10/09/2025
@@ -2755,6 +2782,10 @@ cssclasses:
 
 ## video
 
+- https://www.youtube.com/watch?v=-6HOdHEeosc&list=PLA3ZfaJiaf5xCQwC1c5sguPR1vmzT6Yiw -- Brandon Sanderson on Writing Science Fiction and Fantasy
+  - [meta]:
+    - date: 10/21/2025
+    - tags: [writing]
 - https://www.youtube.com/watch?v=ayPMfopCe1g -- Randy Pausch's Last Lecture - Remastered [**]
   - [meta]:
     - date: 10/16/2025
