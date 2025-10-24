@@ -296,7 +296,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 if (!skipIcons) {
                   if (linkTypes.isWikipedia) {
                     ctx.node.children.push(
-                      createIconElement("/static/favicons/wikipedia.avif", "Wikipedia"),
+                      createIconElement("/static/favicons/wikipedia.svg", "Wikipedia"),
                     )
                   } else if (linkTypes.isApexDomain && file.data.slug! !== "index") {
                     ctx.node.children.push(createIconElement("/static/icon.webp", "apex"))

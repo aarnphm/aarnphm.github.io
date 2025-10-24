@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-10-16 19:57:32 GMT-04:00
+modified: 2025-10-23 03:44:15 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -42,6 +42,8 @@ When you do something, do it 100%. When you work, work. When you laugh, laugh. W
 Life can only be understood backwards; but it must be lived forwards. -- Søren Kierkegaard
 
 I am full of the sky, and the sky is full of feeling -- [Jasmine](https://x.com/j_asminewang/status/1950598766136090904)
+
+Design is not just what it looks like and feels like. Design is how it works -- Steve Jobs
 
 ==The most personal is the most creative== -- Martin Scorsese
 

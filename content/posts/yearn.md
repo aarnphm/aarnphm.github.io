@@ -5,7 +5,9 @@ tags:
   - fruit
 description: on yearning.
 date: "2025-10-21"
-modified: 2025-10-21 05:37:40 GMT-04:00
+socials:
+  substack: https://livingalonealone.com/p/in-case-i-fall-for-you?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false
+modified: 2025-10-23 03:03:46 GMT-04:00
 title: in case i fall for you.
 cssclasses:
   - casesense

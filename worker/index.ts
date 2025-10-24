@@ -30,6 +30,8 @@ const AI_USER_AGENT_PATTERNS = [
   "perplexitybot",
   "petalbot",
   "velenpublicwebcrawler",
+  "chatgpt-user",
+  "oai-searchbot",
 ]
 const CONTENT_INDEX_CACHE_TTL = 60_000
 const SUBSTACK_PRECONNECT_REGEX =

@@ -1,7 +1,6 @@
 ---
 id: movies
 tags:
-  - movies
   - evergreen
   - meta
 description: a capsule of life

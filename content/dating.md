@@ -11,7 +11,7 @@ tags:
   - love
 description: just another fish in the sea.
 date: "2025-08-09"
-modified: 2025-10-20 04:14:45 GMT-04:00
+modified: 2025-10-23 01:48:05 GMT-04:00
 noindex: true
 title: dating me.
 pageLayout: letter
@@ -36,14 +36,13 @@ I'm a [[thoughts/LLMs|software]] engineer working on language models, but do hav
 
 I'm a bit obsessive with my work, especially [[thoughts/Machine learning|machine learning]] model. It is all I think about these days, other than caring for my friends and people in my life ofc.
 
-Friends say I'm the 3am call who shows up. My [love language](https://en.wikipedia.org/wiki/The_Five_Love_Languages) is physical touch.
+Friends say I'm the 3am call who shows up. My [love language](https://en.wikipedia.org/wiki/The_Five_Love_Languages) is physical touch. My Myers-Briggs is ENTJ-A, though it swings to INTJ-T a lot of times. You can also find the [[personality|personality report]] from Clearer Thinking's [Ultimate Personality Test](https://www.clearerthinking.org/tools/the-ultimate-personality-test)
 
 I moved continents at a young age, and learnt very early on that _solitude makes presence precious_.
 
 I like <span style="text-decoration: underline;">Rachmaninoff</span> and garage culture, and spending time delving into random rabbit-hole. I also practice "managed obsession" [^managed-obesssion]
 
-Looking for someone equally comfortable discussing Wittgenstein (or [[thoughts/Philosophy and Nietzsche|Nietzsche]]) over homemade pasta,
-high empathy, witty and sharp, non-avoidance attachment style, to plan spontaneous cabin escapes.
+Looking for someone equally comfortable discussing Wittgenstein (or [[thoughts/Philosophy and Nietzsche|Nietzsche]]) over homemade pasta, high empathy, witty and sharp, non-avoidance attachment style, to plan spontaneous cabin escapes.
 
 [^managed-obesssion]: more of a time-block allocation thingy. I spend around 15-30 mins a day working on something I care about deeply. Right now, it is [[thoughts/Tractatus|Tractatus Logico-Philosophicus]] by [[thoughts/Wittgenstein]]
 

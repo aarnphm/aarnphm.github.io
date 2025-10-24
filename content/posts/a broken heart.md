@@ -5,14 +5,14 @@ tags:
   - fiction
   - writing
 description: and being shattered into a million pieces, then picking oneself up.
+date: "2025-01-06"
 socials:
   facebook: https://www.facebook.com/share/19ghibetuE/
   twitter: https://x.com/aarnphm_/status/1877365322182705313
   substack: https://open.substack.com/pub/livingalone/p/the-mountain-in-topanga?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
-  bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lfcwbep7oc2q
   threads: https://www.threads.net/@aarnphm/post/DEm-K-MupOI?xmt=AQGzRHMdXH5DSfLXjFzaP7AaiQrOnZuBcssNa-ebWN5QLw
-date: "2025-01-06"
-modified: 2025-07-08 04:46:20 GMT-04:00
+  bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lfcwbep7oc2q
+modified: 2025-10-23 03:04:00 GMT-04:00
 title: the mountain in Topanga
 ---
 

@@ -1229,7 +1229,14 @@ export const CuriusFriends: QuartzComponent = (props: QuartzComponentProps) => {
   const { displayClass } = props
   return (
     <div class={classNames(displayClass, "curius-friends")}>
-      <h4 style={["font-size: initial", "margin-top: unset", "margin-bottom: 0.5rem"].join(";")}>
+      <h4
+        style={[
+          "font-size: initial",
+          "margin-top: unset",
+          "margin-bottom: 0.5rem",
+          "border-bottom: 1px solid var(--gray)",
+        ].join(";")}
+      >
         mes amis
       </h4>
       <ul class="overflow section-ul" id="friends-list" style="margin-top: unset" />

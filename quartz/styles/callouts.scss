@@ -130,6 +130,7 @@
 
     & > .callout-content {
       grid-template-rows: 0fr;
+      height: 0;
     }
   }
 }

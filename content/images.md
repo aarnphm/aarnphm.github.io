@@ -6,7 +6,7 @@ description: and all the things I found interesting on the internet.
 transclude:
   title: false
 date: "2025-01-06"
-modified: 2025-10-03 18:13:26 GMT-04:00
+modified: 2025-10-23 16:55:58 GMT-04:00
 title: images
 ---
 
@@ -84,9 +84,16 @@ title: images
 
 ![[thoughts/images/G2frRQ5XIAAPc58.webp|You can literally just change the field if you don't want so and so show up]]
 
-![[thoughts/images/G2khUsZWEAAK6oC.webp]]
+![[thoughts/images/G2khUsZWEAAK6oC.webp|cozy]]
 
-![[thoughts/images/repeater.webp]]
+![[thoughts/images/repeater.webp|taste]]
+
+![[thoughts/images/goat.webp]]
+![[thoughts/images/l plus ratio fr.webp]]
+
+![[thoughts/images/Gordon Pask conversation theory.webp|Gordon Pask's converstaion theory in cybernetics]]
+
+![[thoughts/images/ben horowitz on fear and beliefs.webp|On fear and self-belief]]
 
 ## authors
 

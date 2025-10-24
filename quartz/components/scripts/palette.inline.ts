@@ -160,6 +160,24 @@ document.addEventListener("nav", async (e) => {
       },
     },
     {
+      name: "curius",
+      auxInnerHtml: "<kbd>↵</kbd> links",
+      onClick: () => {
+        window.spaNavigate(
+          new URL(resolveRelative(currentSlug, "/curius" as FullSlug), window.location.toString()),
+        )
+      },
+    },
+    {
+      name: "are.na",
+      auxInnerHtml: "<kbd>↵</kbd> a rundown version of are.na",
+      onClick: () => {
+        window.spaNavigate(
+          new URL(resolveRelative(currentSlug, "/arena" as FullSlug), window.location.toString()),
+        )
+      },
+    },
+    {
       name: "dating me",
       auxInnerHtml: "<kbd>↵</kbd> as love",
       onClick: () => {
