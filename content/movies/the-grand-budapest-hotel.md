@@ -1,4 +1,5 @@
 ---
+
 id: "the-grand-budapest-hotel"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2014
 director: "Wes Anderson"
 category: "wes anderson"
 studio: "wes anderson"
-poster: "https://image.tmdb.org/t/p/original/eWdyYQreja6JGCzqHWXpWHDrrPo.jpg"
+poster: "[[movies/posters/the-grand-budapest-hotel.jpg]]"
 ---

@@ -7,12 +7,42 @@ filters:
         - file.inFolder("library")
         - not:
             - file.hasTag("evergreen", "meta")
+        - not:
+            - file.inFolder("library/posters")
 properties:
   file.tags:
     displayName: tags
   note.internal-notes:
     displayName: notebooks
 views:
+  - type: cards
+    name: book card
+    groupBy:
+      property: tags
+      direction: ASC
+    order:
+      - title
+      - category
+      - date
+      - status
+      - file.tags
+      - author
+      - subcategory
+      - internal-notes
+    sort:
+      - property: date
+        direction: ASC
+      - property: title
+        direction: ASC
+      - property: internal-notes
+        direction: ASC
+    summaries: {}
+    columnSize:
+      note.title: 401
+      note.date: 147
+      note.internal-notes: 125
+    cardSize: 320
+    image: note.posters
   - type: table
     name: philosophy
     filters:
@@ -128,31 +158,3 @@ views:
       - property: file.name
         direction: ASC
     nestedProperties: true
-  - type: cards
-    name: book card
-    filters:
-      and:
-        - category == "philosophy"
-    order:
-      - title
-      - category
-      - date
-      - status
-      - file.tags
-      - author
-      - subcategory
-      - internal-notes
-    sort:
-      - property: date
-        direction: ASC
-      - property: title
-        direction: ASC
-      - property: internal-notes
-        direction: ASC
-    summaries: {}
-    columnSize:
-      note.title: 401
-      note.date: 147
-      note.internal-notes: 125
-    cardSize: 320
-    image: note.images

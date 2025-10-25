@@ -933,10 +933,10 @@ export function transcludeFinal(
 
 export const TopLinks = {
   workshop: "/lectures",
-  livres: "/antilibrary",
-  "are.na": "/arena",
+  arena: "/arena",
+  stream: "/stream",
   craft: "/thoughts/craft",
-  home: "/thoughts/furnitures",
+  livres: "/antilibrary",
   movies: "/cinematheque",
 }
 

@@ -1,4 +1,5 @@
 ---
+
 id: "isle-of-dogs"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2018
 director: "Wes Anderson"
 category: "wes anderson"
 studio: "wes anderson"
-poster: "https://image.tmdb.org/t/p/original/c0nUX6Q1ZB0P2t1Jo6EeFSVnOGQ.jpg"
+poster: "[[movies/posters/isle-of-dogs.jpg]]"
 ---

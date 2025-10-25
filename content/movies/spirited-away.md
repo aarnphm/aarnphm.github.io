@@ -1,4 +1,5 @@
 ---
+
 id: "spirited-away"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2001
 director: "hayao miyazaki"
 category: "vintage"
 studio: "studio ghibli"
-poster: "https://image.tmdb.org/t/p/original/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg"
+poster: "[[movies/posters/spirited-away.jpg]]"
 ---

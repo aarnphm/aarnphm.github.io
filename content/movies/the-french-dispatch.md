@@ -1,4 +1,5 @@
 ---
+
 id: "the-french-dispatch"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2021
 director: "Wes Anderson"
 category: "wes anderson"
 studio: "wes anderson"
-poster: "https://image.tmdb.org/t/p/original/sg4xJaufDiQl7caFEskBtQXfD4x.jpg"
+poster: "[[movies/posters/the-french-dispatch.jpg]]"
 ---

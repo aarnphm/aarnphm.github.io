@@ -1,4 +1,5 @@
 ---
+
 id: "midnight-run"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 1988
 director: "Martin Brest"
 category: "vintage"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/vSJi04VXrYoWxMKLhqNpOBXlnWG.jpg"
+poster: "[[movies/posters/midnight-run.jpg]]"
 ---

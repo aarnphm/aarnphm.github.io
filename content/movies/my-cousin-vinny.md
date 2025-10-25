@@ -1,4 +1,5 @@
 ---
+
 id: "my-cousin-vinny"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 1992
 director: "Jonathan Lynn"
 category: "thriller"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/gCdCLZJEIEpRYHRANEPF0p7Zo5N.jpg"
+poster: "[[movies/posters/my-cousin-vinny.jpg]]"
 ---

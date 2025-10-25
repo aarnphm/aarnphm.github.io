@@ -1,4 +1,5 @@
 ---
+
 id: "groundhog-day"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 1993
 director: "harold ramis"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/gCgt1WARPZaXnq523ySQEUKinCs.jpg"
+poster: "[[movies/posters/groundhog-day.jpg]]"
 ---

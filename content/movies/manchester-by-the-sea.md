@@ -1,4 +1,5 @@
 ---
+
 id: "manchester-by-the-sea"
 status: "finished"
 tags:
@@ -10,7 +11,7 @@ year: 2016
 director: "Kenneth Lonergan"
 category: "general"
 studio: "amazon studios"
-poster: "https://image.tmdb.org/t/p/original/e8daDzP0vFOnGyKmve95Yv0D0io.jpg"
+poster: "[[movies/posters/manchester-by-the-sea.jpg]]"
 watched-date: "2024-02-15"
 rating: 8.6
 ---

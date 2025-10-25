@@ -1,4 +1,5 @@
 ---
+
 id: "the-end-of-the-tour"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 2015
 director: "James Ponsoldt"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/vXMp4qhzxFkpZcFNDcLHQfPLFGg.jpg"
+poster: "[[movies/posters/the-end-of-the-tour.jpg]]"
 ---

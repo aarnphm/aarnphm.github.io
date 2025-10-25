@@ -1,4 +1,5 @@
 ---
+
 id: "paterson"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 2016
 director: "Jim Jarmusch"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/s9PSZbfKmpDZXrMx4Y4xchBNTHq.jpg"
+poster: "[[movies/posters/paterson.jpg]]"
 ---

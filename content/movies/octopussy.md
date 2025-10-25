@@ -1,4 +1,5 @@
 ---
+
 id: "octopussy"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 1983
 director: "John Glen"
 category: "bond"
 studio: "bond"
-poster: "https://image.tmdb.org/t/p/original/vZvslp4bqQDJ0aJ6q4iqKVkKQYU.jpg"
+poster: "[[movies/posters/octopussy.webp]]"
 ---

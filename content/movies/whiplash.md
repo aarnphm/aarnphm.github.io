@@ -1,4 +1,5 @@
 ---
+
 id: "whiplash"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2014
 director: "Damien Chazelle"
 category: "thriller"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/7fn624j5lj3xTme2SgiLCeuedmO.jpg"
+poster: "[[movies/posters/whiplash.jpg]]"
 ---

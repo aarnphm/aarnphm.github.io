@@ -1,4 +1,5 @@
 ---
+
 id: "three-days-of-the-condor"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 1975
 director: "sydney pollack"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/wZXs9S8VcNCGJ3yY0z7PJGZvmN3.jpg"
+poster: "[[movies/posters/three-days-of-the-condor.jpg]]"
 ---

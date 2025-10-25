@@ -4,7 +4,7 @@ tags:
   - commerce4qa3
 description: chapter 1 and 2
 date: "2025-09-11"
-modified: 2025-10-24 02:36:32 GMT-04:00
+modified: 2025-10-24 08:42:54 GMT-04:00
 title: financial analysis
 ---
 

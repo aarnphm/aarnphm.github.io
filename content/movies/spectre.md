@@ -1,4 +1,5 @@
 ---
+
 id: "spectre"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2015
 director: "Sam Mendes"
 category: "bond"
 studio: "bond"
-poster: "https://image.tmdb.org/t/p/original/hE24GYddaxB9MVZl1CaiI86M3kp.jpg"
+poster: "[[movies/posters/spectre.jpg]]"
 ---

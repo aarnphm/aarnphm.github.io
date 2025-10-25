@@ -1,4 +1,5 @@
 ---
+
 status: recurring
 id: dune
 tags:
@@ -6,7 +7,7 @@ tags:
   - buster
   - denis-villeneuve
 studio: warner bros
-poster: https://image.tmdb.org/t/p/original/d5NXSklXo0qyIYkgV94XAgMIckC.jpg
+poster: "[[movies/posters/dune.jpg]]"
 date: "2024-02-07"
 modified: 2025-10-16 20:08:46 GMT-04:00
 year: 2021

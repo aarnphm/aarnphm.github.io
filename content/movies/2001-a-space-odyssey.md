@@ -6,10 +6,10 @@ tags:
   - movies
   - seed
 runtime: 139
-poster: https://image.tmdb.org/t/p/original/ve72VxNqjGM69Uky4WTo2bK6rfq.jpg
+poster: "[[movies/posters/2001-a-space-odyssey.jpg]]"
 date: "2024-02-07"
-modified: 2025-10-16 20:05:37 GMT-04:00
 year: 1968
+modified: 2025-10-24 15:15:23 GMT-04:00
 category: vintage
 director: Stanley Kubrick
 title: "2001: A Space Odyssey"

@@ -1,4 +1,5 @@
 ---
+
 id: "the-sting"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 1973
 director: "george roy hill"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/pBk9vF9Dp2wGjlbw0jFACn5GLJH.jpg"
+poster: "[[movies/posters/the-sting.jpg]]"
 ---

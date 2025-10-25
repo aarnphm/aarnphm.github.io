@@ -1,4 +1,5 @@
 ---
+
 status: finished
 id: flow
 modified: 2025-10-16 20:10:05 GMT-04:00
@@ -12,5 +13,5 @@ year: 2024
 director: Gints Zilbalodis
 rating: 8.1
 title: Flow
-poster: https://image.tmdb.org/t/p/original/dzMlGzV6V2WxdQ74aTLsw4jrEaI.jpg
+poster: "[[movies/posters/flow.jpg]]"
 ---

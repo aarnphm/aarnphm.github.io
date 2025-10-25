@@ -1,4 +1,5 @@
 ---
+
 id: "twin-peaks"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 1990
 director: "David Lynch"
 category: "general"
 studio: "abc"
-poster: "https://image.tmdb.org/t/p/original/lA9CNSdo50iQPZ8A2fyVpMvMLjf.jpg"
+poster: "[[movies/posters/twin-peaks.jpg]]"
 ---

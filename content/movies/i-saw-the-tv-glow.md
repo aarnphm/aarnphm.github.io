@@ -1,10 +1,11 @@
 ---
+
 status: to-watch
 id: i-saw-the-tv-glow
 tags:
   - seed
 studio: a24
-poster: https://image.tmdb.org/t/p/original/qP8JJpLcMHs4z5Sg6fMjBJhWuXE.jpg
+poster: "[[movies/posters/i-saw-the-tv-glow.jpg]]"
 date: "2024-02-07"
 modified: 2025-10-16 20:13:07 GMT-04:00
 year: 2024

@@ -1,4 +1,5 @@
 ---
+
 id: "under-the-silver-lake"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 2018
 director: "David Robert Mitchell"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/xSlMSJnYL3iGxZyMpe9KiboeSBu.jpg"
+poster: "[[movies/posters/under-the-silver-lake.jpg]]"
 ---

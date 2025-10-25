@@ -1,4 +1,5 @@
 ---
+
 id: "the-silence-of-the-lambs"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 1991
 director: "Jonathan Demme"
 category: "thriller"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg"
+poster: "[[movies/posters/the-silence-of-the-lambs.jpg]]"
 ---

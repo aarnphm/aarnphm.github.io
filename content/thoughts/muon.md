@@ -5,7 +5,7 @@ tags:
   - optimization
 description: derivation sketch and practical notes for the muon optimizer
 date: "2025-10-17"
-modified: 2025-10-18 09:25:16 GMT-04:00
+modified: 2025-10-24 09:05:28 GMT-04:00
 title: muon
 ---
 
@@ -18,6 +18,10 @@ title: muon
 > - derivation and intuition: https://jeremybernste.in/writing/deriving-muon
 > - notes: https://kellerjordan.github.io/posts/muon/
 > - reference implementation: https://github.com/KellerJordan/Muon
+
+## stiefel manifold
+
+see also: https://docs.modula.systems/algorithms/manifold/stiefel/
 
 ## goal
 
@@ -72,7 +76,7 @@ $$
 
 with a small $\varepsilon$ for numerical safety. many large‑scale systems also bound attention logit scale with a separate qk‑clip (e.g., norm‑clip $\lVert q\rVert,\lVert k\rVert$ or clamp the dot‑product before softmax) to prevent rare softmax blow‑ups during long‑context training.
 
-## practical recipe
+## notes
 
 for each weight tensor $\theta$ (excluding biases/layernorm scales):
 

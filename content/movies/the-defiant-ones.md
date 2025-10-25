@@ -1,4 +1,5 @@
 ---
+
 id: "the-defiant-ones"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 1958
 director: "Stanley Kramer"
 category: "vintage"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/fBURTG8i4SYyT4zYhLh6LGKEkFU.jpg"
+poster: "[[movies/posters/the-defiant-ones.jpg]]"
 ---

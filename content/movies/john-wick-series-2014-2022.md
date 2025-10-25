@@ -1,4 +1,5 @@
 ---
+
 id: "john-wick-series-2014-2022"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2014
 director: "Chad Stahelski"
 category: "buster"
 studio: "lionsgate"
-poster: "https://image.tmdb.org/t/p/original/fZPSd91yGE9fCcCe6OoQr6E3Bev.jpg"
+poster: "[[movies/posters/john-wick-series-2014-2022.jpg]]"
 ---

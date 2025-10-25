@@ -1,4 +1,5 @@
 ---
+
 id: "the-whale"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2023
 director: "Darren Aronofsky"
 category: "a24"
 studio: "a24"
-poster: "https://image.tmdb.org/t/p/original/jQ0gylJMxWSL490sy0RrPj1Lj7e.jpg"
+poster: "[[movies/posters/the-whale.jpg]]"
 ---

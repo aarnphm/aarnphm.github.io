@@ -1,4 +1,5 @@
 ---
+
 id: "the-brutalist"
 status: "finished"
 tags:
@@ -10,7 +11,7 @@ year: 2024
 director: "Brady Corbet"
 category: "general"
 studio: "a24"
-poster: "https://image.tmdb.org/t/p/original/853AqxQRLfHC8YSDI7jNiDqRcKo.jpg"
+poster: "[[movies/posters/the-brutalist.jpg]]"
 watched-date: "2024-11-25"
 rating: 8.2
 ---

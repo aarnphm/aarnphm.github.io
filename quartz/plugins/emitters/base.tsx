@@ -11,6 +11,7 @@ import {
   slugifyFilePath,
   simplifySlug,
   splitAnchor,
+  isAbsoluteURL,
 } from "../../util/path"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { Content, BaseViewSelector } from "../../components"
@@ -45,7 +46,7 @@ function getFileDisplayName(file?: QuartzPluginData): string | undefined {
   if (typeof title === "string" && title.length > 0) {
     return title
   }
-  const baseFromPath = getFileBaseName((file as any).filePath as string | undefined)
+  const baseFromPath = getFileBaseName(file.filePath as string | undefined)
   if (baseFromPath) {
     return baseFromPath
   }
@@ -227,7 +228,7 @@ function buildTableCell(
 ): any {
   const fallbackSlugSegment = file.slug?.split("/").pop() || ""
   const fallbackTitle =
-    getFileBaseName((file as any).filePath as string | undefined) ||
+    getFileBaseName(file.filePath as string | undefined) ||
     fallbackSlugSegment.replace(/\.[^/.]+$/, "").replace(/-/g, " ")
 
   if (column === "title" || column === "file.title" || column === "note.title") {
@@ -460,7 +461,7 @@ function buildList(
   currentSlug: FullSlug,
   _allFiles: QuartzPluginData[],
 ): any {
-  const nestedProperties = (view as any).nestedProperties === true
+  const nestedProperties = view.nestedProperties === true
 
   if (view.groupBy) {
     const groups = groupFiles(files, view.groupBy)
@@ -532,9 +533,9 @@ function buildCards(
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
 ): any {
-  const imageField = (view as any).image || "image"
+  const imageField = view.image || "image"
 
-  const cards = files.map((file) => {
+  const renderCard = (file: QuartzPluginData) => {
     const title = file.frontmatter?.title || file.slug?.split("/").pop() || ""
     const slug = (file.slug || "") as FullSlug
     const href = resolveRelative(currentSlug, slug)
@@ -542,27 +543,38 @@ function buildCards(
     // resolve image from frontmatter
     let imageUrl: string | undefined
     const imageValue = resolvePropertyValue(file, imageField, allFiles)
+    const toRelativeFromSlug = (target: string): string => {
+      // absolute external URL: keep as-is
+      if (isAbsoluteURL(target)) return target
+      // turn into a site slug and then into a relative URL
+      const imgSlug = slugifyFilePath(target as FilePath)
+      return resolveRelative(currentSlug, imgSlug)
+    }
+
     if (imageValue) {
       if (typeof imageValue === "string") {
-        // parse wikilink format like [[image.png]]
-        const wikilinkMatch = imageValue.match(/^\[\[(.+?)\]\]$/)
-        if (wikilinkMatch) {
-          const imagePath = wikilinkMatch[1]
-          imageUrl = slugifyFilePath(imagePath as FilePath)
+        // parse wikilink format like [[path|alias]]
+        const wl = imageValue.match(/^\[\[(.+?)\]\]$/)
+        if (wl) {
+          const inner = wl[1]
+          const { target } = splitTargetAndAlias(inner)
+          const { slug } = normalizeTargetSlug(target, currentSlug)
+          imageUrl = resolveRelative(currentSlug, slug)
         } else {
-          // assume it's a direct path
-          imageUrl = imageValue
+          imageUrl = toRelativeFromSlug(imageValue)
         }
       } else if (Array.isArray(imageValue) && imageValue.length > 0) {
         // take first image if it's an array
-        const firstImage = imageValue[0]
-        if (typeof firstImage === "string") {
-          const wikilinkMatch = firstImage.match(/^\[\[(.+?)\]\]$/)
-          if (wikilinkMatch) {
-            const imagePath = wikilinkMatch[1]
-            imageUrl = slugifyFilePath(imagePath as FilePath)
+        const first = imageValue[0]
+        if (typeof first === "string") {
+          const wl = first.match(/^\[\[(.+?)\]\]$/)
+          if (wl) {
+            const inner = wl[1]
+            const { target } = splitTargetAndAlias(inner)
+            const { slug } = normalizeTargetSlug(target, currentSlug)
+            imageUrl = resolveRelative(currentSlug, slug)
           } else {
-            imageUrl = firstImage
+            imageUrl = toRelativeFromSlug(first)
           }
         }
       }
@@ -626,9 +638,53 @@ function buildCards(
     cardChildren.push(h("div.base-card-content", contentChildren))
 
     return h("div.base-card", cardChildren)
-  })
+  }
 
-  return h("div.base-card-grid", cards)
+  // grouping support
+  const styleParts: string[] = []
+  if (typeof view.cardSize === "number" && view.cardSize > 0) {
+    styleParts.push(`--base-card-min: ${view.cardSize}px;`)
+  }
+  if (typeof view.cardAspect === "number" && view.cardAspect > 0) {
+    styleParts.push(`--base-card-aspect: ${view.cardAspect};`)
+  }
+  const varStyle = styleParts.length > 0 ? styleParts.join(" ") : undefined
+
+  if (view.groupBy) {
+    const groups = groupFiles(files, view.groupBy)
+    const groupElements: any[] = []
+
+    const groupSizes = view.groupSizes as Record<string, number> | undefined
+    const groupAspects = view.groupAspects as Record<string, number> | undefined
+
+    for (const [groupName, groupFiles] of groups) {
+      const cards = groupFiles.map((file) => renderCard(file))
+      let gridStyle: string | undefined
+      const parts: string[] = []
+      const size = groupSizes?.[groupName]
+      if (typeof size === "number" && size > 0) {
+        parts.push(`--base-card-min: ${size}px;`)
+      }
+      const aspect = groupAspects?.[groupName]
+      if (typeof aspect === "number" && aspect > 0) {
+        parts.push(`--base-card-aspect: ${aspect};`)
+      }
+      gridStyle = parts.length > 0 ? parts.join(" ") : undefined
+
+      groupElements.push(
+        h("div.base-card-group", [
+          h("h3.base-card-group-header", groupName),
+          h("div.base-card-grid", gridStyle ? { style: gridStyle } : {}, cards),
+        ]),
+      )
+    }
+
+    return h("div.base-card-container", varStyle ? { style: varStyle } : {}, groupElements)
+  }
+
+  // no grouping
+  const cards = files.map((file) => renderCard(file))
+  return h("div.base-card-grid", varStyle ? { style: varStyle } : {}, cards)
 }
 
 export const BaseViewPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {

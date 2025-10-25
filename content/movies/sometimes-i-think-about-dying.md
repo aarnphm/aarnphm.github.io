@@ -1,4 +1,5 @@
 ---
+
 id: "sometimes-i-think-about-dying"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 2023
 director: "Rachel Lambert"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/tzTXhKM76xb1wSvMlPXEOlRYwsS.jpg"
+poster: "[[movies/posters/sometimes-i-think-about-dying.jpg]]"
 ---

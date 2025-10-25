@@ -1,4 +1,5 @@
 ---
+
 id: "the-social-network"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2010
 director: "David Fincher"
 category: "buster"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/n0ybibhJtQ5icDqTp8eRytcIHJx.jpg"
+poster: "[[movies/posters/the-social-network.jpg]]"
 ---

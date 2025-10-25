@@ -1,4 +1,5 @@
 ---
+
 id: "the-tragedy-of-macbeth"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2021
 director: "Joel Coen"
 category: "a24"
 studio: "a24"
-poster: "https://image.tmdb.org/t/p/original/kMCD3qnj99dT6IVBqPV4i0C4HzV.jpg"
+poster: "[[movies/posters/the-tragedy-of-macbeth.jpg]]"
 ---

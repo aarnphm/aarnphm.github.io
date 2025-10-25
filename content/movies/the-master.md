@@ -1,10 +1,11 @@
 ---
+
 status: to-watch
 id: the-master
 tags:
   - seed
 studio: null
-poster: https://image.tmdb.org/t/p/original/a2ZJxbPexd7cRLLrPEPaRp3qPro.jpg
+poster: "[[movies/posters/the-master.jpg]]"
 date: "2024-02-07"
 modified: 2025-10-16 19:59:00 GMT-04:00
 year: 2012

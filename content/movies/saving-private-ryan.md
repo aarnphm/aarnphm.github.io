@@ -1,4 +1,5 @@
 ---
+
 id: "saving-private-ryan"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 1998
 director: "Steven Spielberg"
 category: "buster"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/uqx37cS8cpHg8U35f9U5IBlrCV3.jpg"
+poster: "[[movies/posters/saving-private-ryan.jpg]]"
 ---

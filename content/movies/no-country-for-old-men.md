@@ -1,4 +1,5 @@
 ---
+
 id: "no-country-for-old-men"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2007
 director: "Coen Brothers"
 category: "thriller"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/bj1v6YKF8yHqA489VFfnQvOJpnc.jpg"
+poster: "[[movies/posters/no-country-for-old-men.jpg]]"
 ---

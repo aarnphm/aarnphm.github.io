@@ -1,4 +1,5 @@
 ---
+
 id: "paris-texas"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 1984
 director: "Wim Wenders"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/7cZjM47ZYsqzR5uNXEIj6xCRCT5.jpg"
+poster: "[[movies/posters/paris-texas.jpg]]"
 ---

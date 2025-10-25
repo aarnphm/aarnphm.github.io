@@ -7,7 +7,7 @@ tags:
   - meta
 description: aesthetics, taste, or whatever you want to call it.
 date: "2025-10-06"
-modified: 2025-10-07 10:40:54 GMT-04:00
+modified: 2025-10-25 02:12:11 GMT-04:00
 title: antilibrary
 ---
 

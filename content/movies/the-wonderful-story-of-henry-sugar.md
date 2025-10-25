@@ -1,4 +1,5 @@
 ---
+
 id: "the-wonderful-story-of-henry-sugar"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2023
 director: "Wes Anderson"
 category: "short"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/fcFMd3HdyX9GTFvFN59ZvlaVejD.jpg"
+poster: "[[movies/posters/the-wonderful-story-of-henry-sugar.jpg]]"
 ---

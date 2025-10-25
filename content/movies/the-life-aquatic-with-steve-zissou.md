@@ -1,4 +1,5 @@
 ---
+
 id: "the-life-aquatic-with-steve-zissou"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2004
 director: "Wes Anderson"
 category: "wes anderson"
 studio: "wes anderson"
-poster: "https://image.tmdb.org/t/p/original/yhB2d90wupTJlbnRpz0RLGEhoZK.jpg"
+poster: "[[movies/posters/the-life-aquatic-with-steve-zissou.jpg]]"
 ---

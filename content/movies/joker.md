@@ -1,4 +1,5 @@
 ---
+
 id: "joker"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2019
 director: "Todd Phillips"
 category: "thriller"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg"
+poster: "[[movies/posters/joker.jpg]]"
 ---

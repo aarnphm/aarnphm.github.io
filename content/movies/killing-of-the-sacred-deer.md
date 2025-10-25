@@ -1,4 +1,5 @@
 ---
+
 id: "killing-of-the-sacred-deer"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 2017
 director: "Yorgos Lanthimos"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/2VmSs9wR2k2l4EITlwjwT52Lbag.jpg"
+poster: "[[movies/posters/killing-of-the-sacred-deer.jpg]]"
 ---

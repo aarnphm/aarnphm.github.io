@@ -1,4 +1,5 @@
 ---
+
 id: "la-chimera"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 2023
 director: "Alice Rohrwacher"
 category: "general"
 studio: "neon"
-poster: "https://image.tmdb.org/t/p/original/xqR0SXPIxNr5JjJKKxNK0YVqfLW.jpg"
+poster: "[[movies/posters/la-chimera.jpg]]"
 ---

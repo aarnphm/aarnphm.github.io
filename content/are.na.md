@@ -1,21 +1,4 @@
 ---
-claude:
-  additional_context: |-
-    structure of "are.na.md" can be considered as following:
-    - <h2>: is considered a "channel", where we have a row full of items
-    - each list entry under a <h2> is considered as a "block".
-    - A block will have the following structure:
-      ```md
-      - <link> [separator:=--] <title>[optional] [**][optional]
-        - [meta]:
-          - <metadata>: <value>
-        - [...optional notes]
-      ```
-      where:
-      - `[**]` denotes this block is highlighted
-      - `[meta]` holds a yaml-markdown list of metadata for a given block
-      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
-    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
 id: are.na
 aliases:
   - inspo
@@ -24,11 +7,12 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-date: "2024-10-24"
 socials:
   curius: /curius
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-24 02:36:23 GMT-04:00
+date: "2024-10-24"
+modified: 2025-10-24 15:49:15 GMT-04:00
+title: are.na
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -53,7 +37,23 @@ permalinks:
   - /website
   - /tweets
   - /resources
-title: are.na
+claude:
+  additional_context: |-
+    structure of "are.na.md" can be considered as following:
+    - <h2>: is considered a "channel", where we have a row full of items
+    - each list entry under a <h2> is considered as a "block".
+    - A block will have the following structure:
+      ```md
+      - <link> [separator:=--] <title>[optional] [**][optional]
+        - [meta]:
+          - <metadata>: <value>
+        - [...optional notes]
+      ```
+      where:
+      - `[**]` denotes this block is highlighted
+      - `[meta]` holds a yaml-markdown list of metadata for a given block
+      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
+    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
 cssclasses:
   - nolist
 ---
@@ -63,7 +63,7 @@ cssclasses:
 - https://www.lesswrong.com/posts/YABJKJ3v97k9sbxwg/what-money-cannot-buy -- What Money Cannot Buy
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [capitalism]
   - takes: yes, but then it enables a lot of things in life. fwiw it can buy you a lot of freedom of mind to pursue your passion (huge enabling of agency, though agency are largely self-implied)
 - https://sublimeinternet.substack.com/p/the-ai-debate-is-not-about-art-its -- The AI debate is about money
   - [meta]:
@@ -117,6 +117,17 @@ cssclasses:
 
 ## tweets
 
+- https://x.com/jeremyphoward/status/1980973242438570325 -- Learning math through the act of working through ML problems.
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [fruit]
+  - imitation learning
+  - see also: https://x.com/TacoCohen/status/1981278509663129912
+- https://x.com/joincolossus/status/1981323901192843612 -- Taste in Math
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [math]
+  - https://x.com/klyap_/status/1981529243189465163
 - https://x.com/thehonestlypod/status/1981063153459879954?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- make ChatGPT do what it is told
   - [meta]:
     - date: 10/24/2025
@@ -217,6 +228,16 @@ cssclasses:
 
 ## website
 
+- https://nof1.ai/ -- Alpha Arena
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [trading]
+  - idea for gpt-5, claude sonnet, gemini 2.5 pro, grok, deepseek and qwen3 max to trade
+  - baseline: $10k, real money, on given market.
+- https://annasgarden.vercel.app/ -- flower garden
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [digital garden, flower]
 - https://meodai.github.io/poline/ - Poline [**]
   - [meta]:
     - date: 10/21/2025
@@ -574,6 +595,17 @@ cssclasses:
 
 ## people
 
+- https://en.wikipedia.org/wiki/Max_Bense -- Max Bense
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [philosopher]
+  - existential rationalism
+  - mathematics in arts
+- https://masonjwang.com/ -- Mason Wang
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [tilde, interpretability]
+  - Previously CTO @ Tilde, Stanford Math
 - https://mattbrooks.xyz/ -- Matt Brooks
   - [meta]:
     - date: 10/21/2025
@@ -1009,6 +1041,23 @@ cssclasses:
 
 ## essay
 
+- https://amasad.me/keep-winning -- How to keep winning.
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [fruit]
+- https://masonjwang.com/writing/anhedonia -- anhedonia
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [fruit]
+  - lack of pleasure in activities
+- https://www.gyford.com/phil/writing/2025/10/15/1995-internet/ -- My First Months in Cyberspace
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [fruit]
+- https://nadia.xyz/climate-tribes -- Mapping out the tribes of climate [**]
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [fruit]
 - https://brianlovin.com/writing/how-to-give-a-great-product-design-portfolio-presentation -- How to give a great product design portfolio presentation
   - [meta]:
     - date: 10/23/2025
@@ -1613,6 +1662,30 @@ cssclasses:
 
 ## machine learning
 
+- https://github.com/NVlabs/QeRL -- NVlabs/QeRL
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [rl]
+- https://www.aleksagordic.com/blog/matmul -- Anatomy of high performance matmul kernels
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [fruit]
+  - https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/
+- https://maurice-weiler.gitlab.io/blog_post/cnn-book_1_equivariant_networks/ -- Equivariant neural networks  –  what, why and how ?
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [neural network, equivariant]
+  - see also: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Convolutional Neural Network|CNN]]
+- https://jameschen.io/jekyll/update/2024/02/12/mamba.html -- Mamba models
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [state-space models, s4]
+  - see also: [[thoughts/state-space models#Mamba]]
+- https://www.tilderesearch.com/vignettes/gram-space -- Gram-Space Manifold Muon
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [optimizer]
+  - see also: [[thoughts/muon]]
 - https://x.com/jkminder/status/1980290860261732560 -- Finetuning on narrow domains leaves traces behind. So can interpretability agents
   - [meta]:
     - date: 10/21/2025
@@ -1668,14 +1741,15 @@ cssclasses:
   - Diagraph sink
   - OpenAI: $\text{attention\_probs} = \operatorname{softmax}([\text{sink\_scalar}, a_{1},a_{2},\ldots,a_{t}])$
   - @barbero2025llmsattendtoken have shown that attention sinks serve as "pressure valves" preventing what researchers call "over-mixing"—a pathological state where deep models processing long sequences blur important distinctions between tokens.
-- https://github.com/IST-DASLab/FP-Quant -- Microscaling FP4 Quantisation
+- https://github.com/IST-DASLab/FP-Quant -- IST-DASLab/FP-Quant
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [quantisation]
+  - Microscaling FP4 Quantisation
 - https://www.neuronpedia.org/graph/info -- The Circuits Research Landscape: Results and Perspective, Aug 2025 [**]
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit, interpretability]
+    - tags: [interpretability]
   - [[thoughts/mechanistic interpretability]]
 - https://www.lesswrong.com/posts/L3aYFT4RDJYHbbsup/llms-can-learn-about-themselves-by-introspection -- LLMs can learn about themselves by introspection
   - [meta]:
@@ -1689,42 +1763,42 @@ cssclasses:
 - https://www.lesswrong.com/posts/3ghj8EuKzwD3MQR5G/an-introduction-to-representation-engineering-an-activation -- Representation Engineering, an activation-based paradigm for controlling [[thoughts/LLMs]]
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [interpretability]
 - https://www.thought-anchors.com/ -- Thought Anchors in LLM Reasoning Traces
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [interpretability, reasoning, grpo]
   - https://arxiv.org/abs/2506.19143
 - https://kipp.ly/transformer-inference-arithmetic/ -- Transformers Inference Arithmetics [**]
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [napkin, inference]
   - see also [[thoughts/Transformers#Inference]], [[thoughts/LLMs]]
 - https://www.youtube.com/watch?v=kLiwvnr4L80&t=868s -- Trends in Deep Learning, Bill Dally (NVIDIA)
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [argumentative, trend]
   - [[thoughts/GPU programming]], [[lectures/420/notes|NVIDIA architecture notes]]
 - https://x.com/thesephist/status/1895887696268288119 -- AI-centric interface design
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [design, interface]
 - https://x.com/ZayneSprague/status/1836784332704215519 -- To CoT or not to CoT
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [reasoning, interpretability]
 - https://x.com/simonw/status/1840438066974228912 -- NotebookLLM system prompt
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [prompting]
 - https://x.com/karpathy/status/1841536804073439268 -- Karpathy's at GPU MODE's IRL talk
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
-- https://x.com/stephen_wolfram/status/1826692234554875979 -- Explanation into ML
+    - tags: [systems, vllm]
+- https://x.com/stephen_wolfram/status/1826692234554875979 -- Deep-dive into ML
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [internal, ml]
 - https://x.com/sarahookr/status/1834294208821428571 -- inference-time not capture governance guardrails
   - [meta]:
     - date: 10/03/2025
@@ -1736,11 +1810,11 @@ cssclasses:
 - https://x.com/NeelNanda5/status/1850656772002120009 -- Neel's take on Anthropic's crosscoders
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [interpretability, argumentative]
 - https://x.com/AIatMeta/status/1851327605716435011 -- layer skip in self-speculative decoding
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [inference]
 - https://x.com/JungleSilicon/status/1866352582349750555 -- embedding visualisation from Midjourney
   - [meta]:
     - date: 10/03/2025
@@ -2138,6 +2212,10 @@ cssclasses:
 
 ## argumentative
 
+- https://www.overcomingbias.com/p/what-cost-varietyhtml -- What Cost Variety?
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [economic]
 - https://ourworldindata.org/global-inequality-opportunity-to-give -- Global inequality is huge — but so is the opportunity for people in high-income countries to support poor people
   - [meta]:
     - date: 10/24/2025
@@ -2850,6 +2928,10 @@ cssclasses:
 
 ## video
 
+- https://www.youtube.com/watch?v=UvPYVWGcMNQ -- Joan Didion reads "On Keeping a Notebook" with her own voice. [**]
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [essay]
 - https://www.youtube.com/watch?v=7dpyULOEbTU -- fear and fantasy
   - [meta]:
     - date: 10/23/2025
@@ -3675,6 +3757,10 @@ cssclasses:
 
 ## papers
 
+- https://arxiv.org/abs/2310.07177
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [fruit]
 - https://arxiv.org/abs/2501.16975
   - [meta]:
     - date: 10/16/2025

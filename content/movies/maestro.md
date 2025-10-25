@@ -1,4 +1,5 @@
 ---
+
 id: "maestro"
 status: "finished"
 tags:
@@ -10,7 +11,7 @@ year: 2023
 director: "Bradley Cooper"
 category: "general"
 studio: "netflix"
-poster: "https://image.tmdb.org/t/p/original/kNwaLALeFXe1gU83T0Kx8B1LkPU.jpg"
+poster: "[[movies/posters/maestro.jpg]]"
 watched-date: "2024-02-20"
 rating: 7.6
 ---

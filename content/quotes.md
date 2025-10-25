@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-10-23 03:44:15 GMT-04:00
+modified: 2025-10-24 07:09:27 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -130,6 +130,8 @@ There is no iron law that postulates that technology must benefit the many at th
 Every psychoanalytic treatment is an attempt at liberating repressed love which has found a meagre outlet in the compromise of a symptom -- [[thoughts/Freud|Sigmund Freud]]
 
 ## On drive.
+
+Intellectuals are cynical and cynics have never built a cathedral -- Henry Kissinger
 
 Life can be much broader when you discover one simple fact...==that everything around you was made up by people no smarter than you....== Once you learn that, you'll never be the same again.-- Steve Jobs ^life-jobs-smart
 

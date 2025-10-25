@@ -1,11 +1,12 @@
 ---
+
 status: finished
 id: anora
 tags:
   - movies
 category: general
 studio: neon
-poster: https://image.tmdb.org/t/p/original/hJQr4fBKpioMHMjI6YnQCTQzPVH.jpg
+poster: "[[movies/posters/anora.jpg]]"
 date: "2024-02-07"
 year: 2024
 modified: 2025-10-16 20:06:19 GMT-04:00

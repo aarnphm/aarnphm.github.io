@@ -1,4 +1,5 @@
 ---
+
 id: "rushmore"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 1998
 director: "Wes Anderson"
 category: "wes anderson"
 studio: "wes anderson"
-poster: "https://image.tmdb.org/t/p/original/z6yC2OcgVcgN6EUp2n8oXs1ztq3.jpg"
+poster: "[[movies/posters/rushmore.jpg]]"
 ---

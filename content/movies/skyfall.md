@@ -1,4 +1,5 @@
 ---
+
 id: "skyfall"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2012
 director: "Sam Mendes"
 category: "bond"
 studio: "bond"
-poster: "https://image.tmdb.org/t/p/original/aRcD8Rnn87cxH4ovEKZq8dxPTnG.jpg"
+poster: "[[movies/posters/skyfall.jpg]]"
 ---

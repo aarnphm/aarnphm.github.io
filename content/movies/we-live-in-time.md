@@ -1,4 +1,5 @@
 ---
+
 id: "we-live-in-time"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2024
 director: "John Crowley"
 category: "a24"
 studio: "a24"
-poster: "https://image.tmdb.org/t/p/original/hxALFRFYyDFGhN2KRV4yHWcqSF9.jpg"
+poster: "[[movies/posters/we-live-in-time.jpg]]"
 ---

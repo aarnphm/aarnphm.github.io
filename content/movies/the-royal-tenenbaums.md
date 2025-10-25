@@ -1,4 +1,5 @@
 ---
+
 id: "the-royal-tenenbaums"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2001
 director: "Wes Anderson"
 category: "wes anderson"
 studio: "wes anderson"
-poster: "https://image.tmdb.org/t/p/original/h4mWVJYJVfpA2W4AsWGRDUQ0BXI.jpg"
+poster: "[[movies/posters/the-royal-tenenbaums.jpg]]"
 ---

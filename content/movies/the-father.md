@@ -1,4 +1,5 @@
 ---
+
 id: "the-father"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 2020
 director: "Florian Zeller"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/pr3bEQ517uMb5loLvjFQi8uLAsp.jpg"
+poster: "[[movies/posters/the-father.jpg]]"
 ---

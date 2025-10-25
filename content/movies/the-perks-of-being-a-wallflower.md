@@ -1,4 +1,5 @@
 ---
+
 id: "the-perks-of-being-a-wallflower"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 2012
 director: "stephen chbosky"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/aKCvdFFF5n80P2VdS7d8YBwbCjh.jpg"
+poster: "[[movies/posters/the-perks-of-being-a-wallflower.jpg]]"
 ---

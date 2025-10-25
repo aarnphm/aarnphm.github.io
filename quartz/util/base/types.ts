@@ -25,6 +25,12 @@ export interface BaseView {
   groupBy?: string | BaseGroupBy
   limit?: number
   filters?: BaseFilter
+  // optional/custom view options (kept flexible for forward compatibility)
+  // common ones used in this repo:
+  image?: string
+  cardSize?: number
+  nestedProperties?: boolean
+  [key: string]: any
 }
 
 export interface BaseSortConfig {
@@ -652,7 +658,10 @@ export function parseViews(raw: any): BaseView[] {
       throw new Error("Each view must have 'type' and 'name' fields")
     }
 
-    return {
+    // Preserve any additional properties on the view (e.g., image, cardSize, nestedProperties)
+    // while normalizing the known/parsed fields.
+    const parsed: BaseView = {
+      ...v,
       type: v.type,
       name: v.name,
       order: v.order,
@@ -662,5 +671,7 @@ export function parseViews(raw: any): BaseView[] {
       limit: v.limit,
       filters: v.filters ? parseFilter(v.filters) : undefined,
     }
+
+    return parsed
   })
 }

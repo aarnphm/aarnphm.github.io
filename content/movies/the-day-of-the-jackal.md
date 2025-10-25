@@ -1,4 +1,5 @@
 ---
+
 status: "finished"
 id: "the-day-of-the-jackal"
 studio: "universal"
@@ -8,7 +9,7 @@ modified: "2025-10-16 16:43:59 GMT-04:00"
 year: 1973
 director: "Fred Zinnemann"
 title: "The Day of the Jackal"
-poster: "https://image.tmdb.org/t/p/original/14laMdI2rT02cydkiIB3wPxyVCy.jpg"
+poster: "[[movies/posters/the-day-of-the-jackal.jpg]]"
 ---
 
 There is also a remake series (2024) starring Eddie Redmayne. (very chill)

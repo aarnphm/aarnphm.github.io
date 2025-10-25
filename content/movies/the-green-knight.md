@@ -1,4 +1,5 @@
 ---
+
 id: "the-green-knight"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2021
 director: "David Lowery"
 category: "a24"
 studio: "a24"
-poster: "https://image.tmdb.org/t/p/original/if4hw3Ou5Sav9Em7WWHj66mnywp.jpg"
+poster: "[[movies/posters/the-green-knight.jpg]]"
 ---

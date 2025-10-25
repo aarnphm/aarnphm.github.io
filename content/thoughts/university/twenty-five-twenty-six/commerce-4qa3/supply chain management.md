@@ -3,7 +3,7 @@ id: supply chain management
 tags:
   - commerce4qa3
 date: "2025-10-09"
-modified: 2025-10-09 18:20:06 GMT-04:00
+modified: 2025-10-24 08:43:13 GMT-04:00
 noindex: true
 title: supply chain management
 ---

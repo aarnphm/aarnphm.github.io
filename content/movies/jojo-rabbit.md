@@ -1,4 +1,5 @@
 ---
+
 id: "jojo-rabbit"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2019
 director: "Taika Waititi"
 category: "comedy"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/7GsM4mtM0worCtIVeiQt28HieeN.jpg"
+poster: "[[movies/posters/jojo-rabbit.jpg]]"
 ---

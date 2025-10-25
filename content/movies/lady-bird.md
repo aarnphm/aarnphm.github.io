@@ -1,4 +1,5 @@
 ---
+
 id: "lady-bird"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2017
 director: "Greta Gerwig"
 category: "a24"
 studio: "a24"
-poster: "https://image.tmdb.org/t/p/original/iKjJFrMRTTrIL3pyF8pKr98rSB9.jpg"
+poster: "[[movies/posters/lady-bird.jpg]]"
 ---

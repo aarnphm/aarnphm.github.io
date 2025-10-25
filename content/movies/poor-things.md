@@ -1,4 +1,5 @@
 ---
+
 id: "poor-things"
 status: "finished"
 tags:
@@ -10,7 +11,7 @@ year: 2023
 director: "Yorgos Lanthimos"
 category: "general"
 studio: "searchlight"
-poster: "https://image.tmdb.org/t/p/original/kCGlIMHnOm8JPXq3rXM6c5wMxcT.jpg"
+poster: "[[movies/posters/poor-things.jpg]]"
 watched-date: "2024-03-15"
 rating: 7.9
 ---

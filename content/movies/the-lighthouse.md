@@ -1,4 +1,5 @@
 ---
+
 id: "the-lighthouse"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2019
 director: "Robert Eggers"
 category: "a24"
 studio: "a24"
-poster: "https://image.tmdb.org/t/p/original/3nk9UoepYmv1G9oP18q6JJCeYwN.jpg"
+poster: "[[movies/posters/the-lighthouse.jpg]]"
 ---

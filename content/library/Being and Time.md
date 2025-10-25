@@ -1,13 +1,14 @@
 ---
 status: current
 id: Being and Time
+author: Martin Heidegger
+subcategory: being
+category: philosophy
+date: "2025-10-06"
+modified: 2025-10-25 02:10:33 GMT-04:00
 tags:
   - philosophy
-subcategory: being
+posters: "[[library/posters/being-and-time.jpg]]"
 title: Being and Time
-date: 2025-10-06
-author: Martin Heidegger
-modified: 2025-10-07 00:45:20 GMT-04:00
-category: philosophy
 internal-notes: "[[thoughts/being#Heidegger's Being and Time]]"
 ---

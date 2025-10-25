@@ -1,13 +1,15 @@
 ---
 status: finished
 id: The Myth of Sisyphus
+author: Albert Camus
+subcategory: existentialism
+title: The Myth of Sisyphus
+date: "2022-08-21"
+year-finished: 2024
+modified: 2025-10-25 02:15:04 GMT-04:00
 tags:
   - philosophy
-title: The Myth of Sisyphus
-date: 2022-08-21
-author: Albert Camus
+posters: "[[library/posters/the-myth-of-sisyphus.jpg]]"
 category: philosophy
-subcategory: existentialism
-year-finished: 2024
 internal-notes: "[[thoughts/Camus#The Myth of Sisyphus]]"
 ---

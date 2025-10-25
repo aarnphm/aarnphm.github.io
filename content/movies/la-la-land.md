@@ -1,4 +1,5 @@
 ---
+
 id: "la-la-land"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2016
 director: "Damien Chazelle"
 category: "thriller"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg"
+poster: "[[movies/posters/la-la-land.jpg]]"
 ---

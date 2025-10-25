@@ -1,4 +1,5 @@
 ---
+
 id: "queer"
 status: "finished"
 tags:
@@ -10,7 +11,7 @@ year: 2024
 director: "Luca Guadagnino"
 category: "general"
 studio: "a24"
-poster: "https://image.tmdb.org/t/p/original/6d3xFOKkA04DpkfMdDBjL1NEmCP.jpg"
+poster: "[[movies/posters/queer.jpg]]"
 watched-date: "2024-11-30"
 rating: 7.3
 ---

@@ -4,14 +4,14 @@ id: Beyond Good and Evil
 subcategory: Nietzsche
 author: Friedrich Nietzsche
 year-finished: "-"
-title: Beyond Good and Evil
+category: philosophy
 date: "2025-08-13"
-modified: 2025-10-07 12:06:13 GMT-04:00
-images: "[[thoughts/images/bge.webp]]"
+modified: 2025-10-25 02:10:35 GMT-04:00
 tags:
   - philosophy
+posters: "[[library/posters/beyond-good-and-evil.jpg]]"
 description: what is good and evil, what is consider morally good and wrong.
-category: philosophy
+title: Beyond Good and Evil
 ---
 
 tl/dr: N critiques the herd mentality, rather he challenges the rigid moral bindings. We all know his attack against Christianity, in a similar fashion as we are observing in technical [[thoughts/Determinism|determinism]] [^advances]

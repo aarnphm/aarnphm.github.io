@@ -1,15 +1,16 @@
 ---
 status: finished
-title: Very Slender Differences
+id: Very Slender Differences
 subcategory: friendship
+author: Samuel Johnson
+description: An essay in The Idler
+title: Very Slender Differences
+date: "2025-01-01"
+year-finished: 2025
+modified: 2025-10-25 02:16:15 GMT-04:00
 tags:
   - fiction
-description: An essay in The Idler
-author: Samuel Johnson
-date: "2025-01-01"
-modified: 2025-10-07 07:32:50 GMT-04:00
-year-finished: 2025
-id: Very Slender Differences
+posters: "[[library/posters/very-slender-differences.jpg]]"
 category: fiction
 ---
 

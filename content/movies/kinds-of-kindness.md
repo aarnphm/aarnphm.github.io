@@ -1,4 +1,5 @@
 ---
+
 id: "kinds-of-kindness"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 2024
 director: "Yorgos Lanthimos"
 category: "general"
 studio: "searchlight"
-poster: "https://image.tmdb.org/t/p/original/8mmpltkcG9areafsQHXaURedno3.jpg"
+poster: "[[movies/posters/kinds-of-kindness.jpg]]"
 ---

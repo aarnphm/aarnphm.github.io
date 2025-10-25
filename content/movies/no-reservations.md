@@ -1,4 +1,5 @@
 ---
+
 id: "no-reservations"
 status: "finished"
 tags:
@@ -10,7 +11,7 @@ year: 2007
 director: "Scott Hicks"
 category: "general"
 studio: "warner bros"
-poster: "https://image.tmdb.org/t/p/original/seFQdKv3X7zNSZAJFKXdxVT9WuN.jpg"
+poster: "[[movies/posters/no-reservations.jpg]]"
 watched-date: "2024-01-15"
 rating: 6.6
 ---

@@ -1,4 +1,5 @@
 ---
+
 id: "shawshank-redemption"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 1994
 director: "Frank Darabont"
 category: "thriller"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg"
+poster: "[[movies/posters/shawshank-redemption.jpg]]"
 ---

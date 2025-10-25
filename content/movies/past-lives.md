@@ -1,4 +1,5 @@
 ---
+
 id: "past-lives"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2023
 director: "Celine Song"
 category: "a24"
 studio: "a24"
-poster: "https://image.tmdb.org/t/p/original/k3waqVXSnvCZWfJYNtgH9puPMNS.jpg"
+poster: "[[movies/posters/past-lives.webp]]"
 ---

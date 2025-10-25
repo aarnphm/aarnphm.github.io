@@ -4,7 +4,7 @@ tags:
   - ml
 description: A list of optimization functions that can be used in ML training to reduce loss, and more.
 date: "2024-10-31"
-modified: 2025-10-17 19:01:45 GMT-04:00
+modified: 2025-10-24 15:21:16 GMT-04:00
 title: ml optimization
 ---
 
@@ -290,13 +290,13 @@ tl/dr: if current gradient step is in same direction as previous step, then move
 >
 > _degree-$\textbf{t}$ polynomial in $\textbf{u}$_
 
-### Nesterov
+### nesterov
 
 ![[thoughts/Nesterov momentum]]
 
 ### RMSNorm
 
-see also [[thoughts/muon]], [@zhang2019rootmeansquarelayer]
+see also [@zhang2019rootmeansquarelayer]
 
 motivation: LayerNorm helps stabilize training
 
@@ -306,11 +306,13 @@ $$
 y_{i} = \frac{x_{i}}{\text{RMS}(x)} \times \gamma_{i} \text{ where } \text{RMS}(x) = \sqrt{\epsilon + \frac{1}{n} \sum_{i=1}^{n} x_i^2}
 $$
 
-### Modular Duality
+### modular duality
 
 @bernstein2024modulardualitydeeplearning
 
-### Muon
+https://docs.modula.systems/algorithms/newton-schulz/
+
+### muon
 
 ![[thoughts/muon]]
 

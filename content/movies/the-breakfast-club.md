@@ -1,4 +1,5 @@
 ---
+
 id: "the-breakfast-club"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 1985
 director: "John Hughes"
 category: "thriller"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/5BNkJEd32ENqYI2qMHZBhTpCxh3.jpg"
+poster: "[[movies/posters/the-breakfast-club.jpg]]"
 ---

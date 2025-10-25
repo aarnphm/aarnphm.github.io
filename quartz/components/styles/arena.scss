@@ -550,6 +550,10 @@ body[data-arena-subpage="true"] {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+
+    .byline {
+      grid-column: 5/8 !important;
+    }
   }
 
   .arena-modal-internal-preview {

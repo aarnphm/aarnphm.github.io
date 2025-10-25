@@ -1,4 +1,5 @@
 ---
+
 id: "intouchables"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2011
 director: "Éric Toledano & Olivier Nakache"
 category: "comedy"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/323BP0itpxTsO0skTwdnVmf7YC6.jpg"
+poster: "[[movies/posters/intouchables.webp]]"
 ---

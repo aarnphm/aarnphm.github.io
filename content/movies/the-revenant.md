@@ -1,4 +1,5 @@
 ---
+
 id: "the-revenant"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2015
 director: "Alejandro González Iñárritu"
 category: "thriller"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/tSaBkriE7TpbjFoQUFXuikoz0dF.jpg"
+poster: "[[movies/posters/the-revenant.jpg]]"
 ---

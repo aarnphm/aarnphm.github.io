@@ -1,4 +1,5 @@
 ---
+
 status: finished
 id: normal-people
 category: general
@@ -6,7 +7,7 @@ tags:
   - movies
   - shows
 studio: bbc
-poster: https://image.tmdb.org/t/p/original/A90vLMiwtcIGeS6FJPqrLvUhiGy.jpg
+poster: "[[movies/posters/normal-people.jpg]]"
 date: "2024-02-07"
 year: 2020
 modified: 2025-10-16 20:16:55 GMT-04:00

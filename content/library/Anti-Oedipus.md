@@ -1,16 +1,17 @@
 ---
 status: evergreen
-year-finished: "-"
 id: Anti-Oedipus
-tags:
-  - philosophy
 subcategory: hermeneutics
-title: Anti-Oedipus
-date: 2025-08-16
 author:
   - Gilles Deleuze
   - Félix Guattari
-modified: 2025-10-07 00:08:37 GMT-04:00
+year-finished: "-"
+title: Anti-Oedipus
+date: "2025-08-16"
+modified: 2025-10-25 02:10:18 GMT-04:00
+tags:
+  - philosophy
+posters: "[[library/posters/anti-oedipus.jpg]]"
 category: philosophy
 ---
 

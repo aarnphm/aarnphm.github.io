@@ -1,4 +1,5 @@
 ---
+
 id: "the-substance"
 status: "finished"
 tags:
@@ -10,7 +11,7 @@ year: 2024
 director: "Coralie Fargeat"
 category: "general"
 studio: "mubi"
-poster: "https://image.tmdb.org/t/p/original/lqoMzCcZYEFK729d6qzt349fB4o.jpg"
+poster: "[[movies/posters/the-substance.jpg]]"
 watched-date: "2024-10-15"
 rating: 7.8
 ---

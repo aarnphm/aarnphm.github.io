@@ -1,4 +1,5 @@
 ---
+
 id: "the-big-lebowski"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 1998
 director: "Coen Brothers"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/aUdEFsxcNlud6PKkKOJAIySu1CG.jpg"
+poster: "[[movies/posters/the-big-lebowski.jpg]]"
 ---

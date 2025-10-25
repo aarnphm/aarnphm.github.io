@@ -1,4 +1,5 @@
 ---
+
 status: recurring
 id: blade-runner-2048
 tags:
@@ -6,7 +7,7 @@ tags:
   - buster
   - denis-villeneuve
 studio: warner bros
-poster: https://image.tmdb.org/t/p/original/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg
+poster: "[[movies/posters/blade-runner-2048.jpg]]"
 date: "2024-02-07"
 modified: 2025-10-16 20:07:05 GMT-04:00
 year: 2017

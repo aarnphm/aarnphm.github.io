@@ -4,10 +4,10 @@ id: a-different-man
 tags:
   - movies
 studio: a24
-poster: https://image.tmdb.org/t/p/original/7PmHKT2Nqr8P66WJQR8yvxfHOWt.jpg
+poster: "[[movies/posters/a-different-man.jpg]]"
 date: "2024-02-07"
-modified: 2025-10-16 20:05:41 GMT-04:00
 year: 2024
+modified: 2025-10-24 16:41:09 GMT-04:00
 category: general
 director: Aaron Schimberg
 title: A Different Man

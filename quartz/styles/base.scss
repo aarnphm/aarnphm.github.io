@@ -45,6 +45,10 @@ body {
   --image-grid-fit: contain;
 }
 
+::view-transition {
+  pointer-events: none;
+}
+
 mark {
   background-color: var(--textHighlight);
   padding: 0 0.1rem;

@@ -1,4 +1,5 @@
 ---
+
 id: "the-intern"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2015
 director: "Nancy Meyers"
 category: "comedy"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/6FNFFz4JeFkcP2W6Xq0EDWIkeXl.jpg"
+poster: "[[movies/posters/the-intern.jpg]]"
 ---

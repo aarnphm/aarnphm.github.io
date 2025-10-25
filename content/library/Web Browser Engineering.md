@@ -1,15 +1,17 @@
 ---
 status: finished
 id: Web Browser Engineering
-tags:
-  - non-fiction
-title: Web Browser Engineering
-date: 2025-08-13
 author:
   - Pavel Panchekha
   - Chris Harrelson
-category: non-fiction
-year-finished: 2025
-external-url: https://browser.engineering/onepage.html
 subcategory: programming
+category: non-fiction
+date: "2025-08-13"
+external-url: https://browser.engineering/onepage.html
+year-finished: 2025
+modified: 2025-10-25 02:16:20 GMT-04:00
+tags:
+  - non-fiction
+posters: "[[library/posters/web-browser-engineering.jpg]]"
+title: Web Browser Engineering
 ---

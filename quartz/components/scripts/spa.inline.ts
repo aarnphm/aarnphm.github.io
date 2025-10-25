@@ -3,7 +3,7 @@ import { FullSlug, RelativeURL, getFullSlug, normalizeRelativeURLs } from "../..
 import { removeAllChildren, Dag, DagNode } from "./util"
 import { ContentDetails } from "../../plugins"
 import { formatDate } from "../Date"
-import { fetchCanonical } from "./util"
+import { fetchCanonical, startViewTransition } from "./util"
 import { Toast } from "./toast"
 
 // adapted from `micromorph`

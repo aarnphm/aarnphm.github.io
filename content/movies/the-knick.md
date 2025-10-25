@@ -1,4 +1,5 @@
 ---
+
 id: "the-knick"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2014
 director: "Steven Soderbergh"
 category: "shows"
 studio: "cinemax"
-poster: "https://image.tmdb.org/t/p/original/bsR5pBPaYRH17VdJknP0L4YFmOu.jpg"
+poster: "[[movies/posters/the-knick.jpg]]"
 ---

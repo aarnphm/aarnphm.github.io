@@ -1,4 +1,5 @@
 ---
+
 id: "love-other-drugs"
 status: "finished"
 tags:
@@ -10,7 +11,7 @@ year: 2010
 director: "Edward Zwick"
 category: "general"
 studio: "20th century fox"
-poster: "https://image.tmdb.org/t/p/original/yjQE3vUTXATcMl4QhRwD0O0zEDo.jpg"
+poster: "[[movies/posters/love-other-drugs.jpg]]"
 watched-date: "2024-02-25"
 rating: 6.7
 ---

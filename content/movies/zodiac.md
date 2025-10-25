@@ -1,4 +1,5 @@
 ---
+
 id: "zodiac"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 2007
 director: "david fincher"
 category: "general"
 studio: "david fincher"
-poster: "https://image.tmdb.org/t/p/original/zY4o1UkHGz7ZLrd6yx1KbPSmIT1.jpg"
+poster: "[[movies/posters/zodiac.jpg]]"
 ---

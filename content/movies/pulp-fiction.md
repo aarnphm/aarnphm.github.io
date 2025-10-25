@@ -1,4 +1,5 @@
 ---
+
 id: "pulp-fiction"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 1994
 director: "Quentin Tarantino"
 category: "vintage"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg"
+poster: "[[movies/posters/pulp-fiction.jpg]]"
 ---

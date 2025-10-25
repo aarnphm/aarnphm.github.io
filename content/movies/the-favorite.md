@@ -1,4 +1,5 @@
 ---
+
 id: "the-favorite"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 2018
 director: "Yorgos Lanthimos"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/cwBq0onfmeilU5xgqNNjJAMPfpw.jpg"
+poster: "[[movies/posters/the-favorite.jpg]]"
 ---

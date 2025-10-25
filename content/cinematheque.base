@@ -8,6 +8,8 @@ filters:
         - file.inFolder("movies")
         - not:
             - file.hasTag("evergreen", "meta")
+        - not:
+            - file.inFolder("movies/posters")
 properties:
   file.tags:
     displayName: tags
@@ -28,6 +30,27 @@ properties:
   note.watched-date:
     displayName: watched date
 views:
+  - type: cards
+    name: movie cards
+    groupBy:
+      property: year
+      direction: DESC
+    order:
+      - title
+      - year
+      - director
+      - rating
+      - category
+      - watched-date
+    sort:
+      - property: rating
+        direction: DESC
+      - property: watched-date
+        direction: DESC
+      - property: title
+        direction: ASC
+    cardSize: 320
+    image: note.poster
   - type: table
     name: all
     groupBy:
@@ -262,24 +285,3 @@ views:
       - property: file.name
         direction: ASC
     nestedProperties: true
-  - type: cards
-    name: movie cards
-    groupBy:
-      property: year
-      direction: DESC
-    order:
-      - title
-      - year
-      - director
-      - rating
-      - category
-      - watched-date
-    sort:
-      - property: rating
-        direction: DESC
-      - property: watched-date
-        direction: DESC
-      - property: title
-        direction: ASC
-    cardSize: 320
-    image: note.poster

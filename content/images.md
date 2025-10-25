@@ -95,6 +95,8 @@ title: images
 
 ![[thoughts/images/ben horowitz on fear and beliefs.webp|On fear and self-belief]]
 
+![[thoughts/images/political view.webp|gigachad politcal view]]
+
 ## authors
 
 ![[thoughts/images/joan-didion.webp|joan didion]]

@@ -1,4 +1,5 @@
 ---
+
 id: "nosferatu"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 2024
 director: "Robert Eggers"
 category: "general"
 studio: "focus features"
-poster: "https://image.tmdb.org/t/p/original/dHphMuwObWCYP1TrALpEevuPZe3.jpg"
+poster: "[[movies/posters/nosferatu.jpg]]"
 ---

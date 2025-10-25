@@ -1,4 +1,5 @@
 ---
+
 id: "moonrise-kingdom"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2012
 director: "Wes Anderson"
 category: "wes anderson"
 studio: "wes anderson"
-poster: "https://image.tmdb.org/t/p/original/1mQJ1t4i9jWGFSh3kYEbYnDJQmo.jpg"
+poster: "[[movies/posters/moonrise-kingdom.jpg]]"
 ---

@@ -1,4 +1,5 @@
 ---
+
 id: "the-banshees-of-inisherin"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2022
 director: "Martin McDonagh"
 category: "thriller"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/4yFG6cSPaCaPhyJ1vtGOtMD1lgh.jpg"
+poster: "[[movies/posters/the-banshees-of-inisherin.jpg]]"
 ---

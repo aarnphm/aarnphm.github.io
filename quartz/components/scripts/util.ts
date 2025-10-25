@@ -380,3 +380,12 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
 
   return sideInner
 }
+
+/**
+ * Wraps a DOM update in a View Transition if supported by the browser.
+ * Falls back to immediate execution if the API is unavailable.
+ * @param callback - The function containing DOM updates to animate
+ */
+export function startViewTransition(callback: () => void): void {
+  document.startViewTransition?.(() => callback()) ?? callback()
+}

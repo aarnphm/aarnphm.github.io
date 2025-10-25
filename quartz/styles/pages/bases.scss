@@ -163,9 +163,32 @@
 
 .base-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--base-card-min, 280px), 1fr));
   gap: 1.5rem;
   margin: 1.5rem 0;
+}
+
+// grouped cards container
+.base-card-container {
+  margin: 1.5rem 0;
+}
+
+.base-card-group {
+  margin-bottom: 2rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.base-card-group-header {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--darkgray);
+  border-bottom: 2px solid var(--gray);
+  padding-bottom: 0.25rem;
+  text-transform: capitalize;
 }
 
 .base-card {
@@ -186,7 +209,8 @@
   .base-card-image-link {
     display: block;
     width: 100%;
-    aspect-ratio: 3 / 2;
+    // proportional height based on width
+    aspect-ratio: var(--base-card-aspect, 2 / 3);
     overflow: hidden;
     background: var(--lightgray);
     position: relative;
@@ -196,6 +220,9 @@
       height: 100%;
       object-fit: cover;
       transition: transform 0.2s ease;
+      margin: 0 !important;
+      border-bottom-right-radius: 0px !important;
+      border-bottom-left-radius: 0px !important;
     }
 
     &:hover img.base-card-image {

@@ -1,4 +1,5 @@
 ---
+
 id: "notting-hill"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 1999
 director: "Roger Michell"
 category: "vintage"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/7VSVgxAvX4HKLfNMZaihzFCANJH.jpg"
+poster: "[[movies/posters/notting-hill.jpg]]"
 ---

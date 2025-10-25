@@ -1,4 +1,5 @@
 ---
+
 id: "vertigo"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 1958
 director: "Alfred Hitchcock"
 category: "general"
 studio: "paramount"
-poster: "https://image.tmdb.org/t/p/original/15uOEfWILFEosCcP6uTKifl9EJ6.jpg"
+poster: "[[movies/posters/vertigo.jpg]]"
 ---

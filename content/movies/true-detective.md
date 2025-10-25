@@ -1,4 +1,5 @@
 ---
+
 id: "true-detective"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2014
 director: "Cary Fukunaga"
 category: "shows"
 studio: "hbo"
-poster: "https://image.tmdb.org/t/p/original/cuV2O5ZyDLHSOWzg3nLVljp1ubw.jpg"
+poster: "[[movies/posters/true-detective.jpg]]"
 ---

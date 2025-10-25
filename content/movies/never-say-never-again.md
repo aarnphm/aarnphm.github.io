@@ -1,4 +1,5 @@
 ---
+
 id: "never-say-never-again"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 1983
 director: "Irvin Kershner"
 category: "bond"
 studio: "bond"
-poster: "https://image.tmdb.org/t/p/original/lHa6D3Uy7yFWPIX6BRKFBmIRg60.jpg"
+poster: "[[movies/posters/never-say-never-again.jpg]]"
 ---

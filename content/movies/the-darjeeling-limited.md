@@ -1,4 +1,5 @@
 ---
+
 id: "the-darjeeling-limited"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2007
 director: "Wes Anderson"
 category: "wes anderson"
 studio: "wes anderson"
-poster: "https://image.tmdb.org/t/p/original/fFTzXFGsJILPfvs5G1WL3xTDovn.jpg"
+poster: "[[movies/posters/the-darjeeling-limited.jpg]]"
 ---

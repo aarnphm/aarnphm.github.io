@@ -2,8 +2,9 @@
 id: Automatic Differentiation
 tags:
   - math
+description: techniques to evaluate partial derivative of a functions specified by CP.
 date: "2024-02-07"
-modified: "2024-10-31"
+modified: 2025-10-24 03:09:36 GMT-04:00
 title: Automatic Differentiation
 ---
 

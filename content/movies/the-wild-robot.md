@@ -1,4 +1,5 @@
 ---
+
 id: "the-wild-robot"
 status: "finished"
 tags:
@@ -10,7 +11,7 @@ year: 2024
 director: "Chris Sanders"
 category: "general"
 studio: "dreamworks"
-poster: "https://image.tmdb.org/t/p/original/wTnV3PCVW5O92JMrFvvrRcV39RU.jpg"
+poster: "[[movies/posters/the-wild-robot.jpg]]"
 watched-date: "2024-11-01"
 rating: 8.3
 ---

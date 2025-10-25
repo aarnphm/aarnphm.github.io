@@ -6,7 +6,7 @@ tags:
   - technical
 description: a method to speed up LLM decoding
 date: "2025-05-21"
-modified: 2025-10-06 08:22:53 GMT-04:00
+modified: 2025-10-24 09:10:10 GMT-04:00
 title: Speculative decoding
 ---
 
@@ -695,6 +695,10 @@ If we get an improvement for $\gamma$, we'd also get improvement for any $0 < \g
 [^proof-3-11]: Denote by $\hat{T}$ the number of arithmetic operations done by standard decoding per tokens, therefore [[thoughts/Speculative decoding#speculative sampling]] costs $\hat{T} \hat{c} \gamma + \hat{T}(\gamma +1)$ operations. Then divided by the expected tokens we got the desired results $\boxed{}$
 
 ---
+
+### blog post draft
+
+https://philkrav.com/posts/speculative/, @zhou2024distillspecimprovingspeculativedecoding
 
 ### proposal
 

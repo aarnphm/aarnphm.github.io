@@ -1,4 +1,5 @@
 ---
+
 id: "la-haine"
 status: "finished"
 tags:
@@ -10,7 +11,7 @@ year: 1995
 director: "Mathieu Kassovitz"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/kAAvW7zewXior26ySpMDPxdOLu2.jpg"
+poster: "[[movies/posters/la-haine.jpg]]"
 watched-date: "2024-02-10"
 rating: 8.1
 ---

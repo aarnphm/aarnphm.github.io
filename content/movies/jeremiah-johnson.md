@@ -1,4 +1,5 @@
 ---
+
 id: "jeremiah-johnson"
 status: "to-watch"
 tags:
@@ -10,5 +11,5 @@ year: 1972
 director: "sydney pollack"
 category: "general"
 studio: "general"
-poster: "https://image.tmdb.org/t/p/original/5h6UdqbzTCSm3DxnUDnYLCLeWAb.jpg"
+poster: "[[movies/posters/jeremiah-johnson.jpg]]"
 ---

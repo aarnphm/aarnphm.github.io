@@ -1,4 +1,5 @@
 ---
+
 id: "uncut-gems"
 status: "recurring"
 tags:
@@ -11,5 +12,5 @@ year: 2019
 director: "Safdie Brothers"
 category: "a24"
 studio: "a24"
-poster: "https://image.tmdb.org/t/p/original/6XN1vxHc7kUSqNWtaQKN45J5x2v.jpg"
+poster: "[[movies/posters/uncut-gems.jpg]]"
 ---
