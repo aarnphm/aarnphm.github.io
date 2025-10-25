@@ -1,5 +1,4 @@
 ---
-
 id: "zodiac"
 status: "to-watch"
 tags:

@@ -1,5 +1,4 @@
 ---
-
 id: "la-chimera"
 status: "to-watch"
 tags:

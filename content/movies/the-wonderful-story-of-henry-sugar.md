@@ -1,5 +1,4 @@
 ---
-
 id: "the-wonderful-story-of-henry-sugar"
 status: "recurring"
 tags:

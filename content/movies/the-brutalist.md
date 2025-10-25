@@ -1,5 +1,4 @@
 ---
-
 id: "the-brutalist"
 status: "finished"
 tags:

@@ -1060,3 +1060,41 @@ a.prefix-left-gap {
 #backlinks-label {
   margin-bottom: 1rem;
 }
+
+#slip {
+  border-left: unset;
+  border: 2px solid var(--iris);
+  position: relative;
+  background-color: var(--light);
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+
+  & > * {
+    padding: 0 2rem;
+  }
+
+  &::before {
+    content: "slip";
+    position: absolute;
+    top: -12px;
+    left: 12px;
+    background-color: var(--light);
+    color: var(--gray);
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border: 1px solid var(--dark);
+  }
+
+  &::after {
+    content: "";
+    background-image: url("/static/dotted.svg");
+    background-repeat: repeat;
+    z-index: -10;
+    top: 0.5rem;
+    left: 0.5rem;
+    right: -0.5rem;
+    bottom: -0.5rem;
+    position: absolute;
+  }
+}

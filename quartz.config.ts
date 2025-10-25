@@ -233,7 +233,7 @@ const config: QuartzConfig = {
       Plugin.PressKit(),
       Plugin.SlidesPage(),
       Plugin.ArenaPage(),
-      Plugin.BaseViewPage(),
+      Plugin.BasePage(),
     ],
   },
 }

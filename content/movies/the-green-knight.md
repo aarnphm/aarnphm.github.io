@@ -1,5 +1,4 @@
 ---
-
 id: "the-green-knight"
 status: "recurring"
 tags:

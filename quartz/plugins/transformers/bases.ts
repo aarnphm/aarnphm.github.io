@@ -47,7 +47,7 @@ export const ObsidianBases: QuartzTransformerPlugin<Partial<Options>> = (userOpt
                 properties: parsed.properties,
                 summaries: parsed.summaries,
               }
-              file.data.baseConfig = config
+              file.data.basesConfig = config
 
               // Create empty tree - emitter will build the actual table
               tree.children = []

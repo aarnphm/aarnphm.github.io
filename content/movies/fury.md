@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: fury
 tags:

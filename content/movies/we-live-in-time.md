@@ -1,5 +1,4 @@
 ---
-
 id: "we-live-in-time"
 status: "recurring"
 tags:

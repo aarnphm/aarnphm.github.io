@@ -1,5 +1,4 @@
 ---
-
 id: "no-reservations"
 status: "finished"
 tags:

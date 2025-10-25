@@ -1,7 +1,4 @@
 ---
-
-
-
 status: finished
 id: frances-ha
 modified: 2025-10-16 20:10:16 GMT-04:00

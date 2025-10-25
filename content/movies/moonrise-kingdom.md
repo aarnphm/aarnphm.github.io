@@ -1,5 +1,4 @@
 ---
-
 id: "moonrise-kingdom"
 status: "recurring"
 tags:

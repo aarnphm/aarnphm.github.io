@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: oppenheimer
 tags:

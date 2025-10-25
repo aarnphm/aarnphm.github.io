@@ -687,7 +687,7 @@ function buildCards(
   return h("div.base-card-grid", varStyle ? { style: varStyle } : {}, cards)
 }
 
-export const BaseViewPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
+export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
     ...defaultContentPageLayout,
@@ -709,13 +709,13 @@ export const BaseViewPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userO
 
       for (const [_tree, file] of content) {
         // Only process files marked as .base files
-        if (!file.data.bases) continue
+        if (!file.data.bases || !file.data.basesConfig) continue
 
-        const config = file.data.baseConfig as BaseFile
+        const config = file.data.basesConfig
         const baseSlug = file.data.slug!
 
         // Build view metadata for all views
-        const allViewsMetadata = config.views.map((v, idx) => {
+        const allViews = config.views.map((v, idx) => {
           if (idx === 0) {
             return {
               name: v.name,
@@ -736,13 +736,13 @@ export const BaseViewPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userO
         for (const [viewIndex, view] of config.views.entries()) {
           // Construct view slug
           // First view renders at base slug, others at base/slugified-viewname
-          let viewSlug: FullSlug
+          let slug: FullSlug
           if (viewIndex === 0) {
-            viewSlug = baseSlug
+            slug = baseSlug
           } else {
             // Slugify view name for URL-safe path
             const slugifiedName = slugifyFilePath((view.name + ".tmp") as FilePath, true)
-            viewSlug = joinSegments(baseSlug, slugifiedName) as FullSlug
+            slug = joinSegments(baseSlug, slugifiedName) as FullSlug
           }
 
           // Evaluate base-level filters first
@@ -760,68 +760,58 @@ export const BaseViewPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userO
           const limitedFiles = view.limit ? sortedFiles.slice(0, view.limit) : sortedFiles
 
           // Build view content based on type
-          let viewTree: Root
+          let tree: Root
           if (view.type === "table") {
-            const tableNode = buildTable(limitedFiles, view, viewSlug, allFiles, config.properties)
-            viewTree = { type: "root", children: [tableNode] }
+            const tableNode = buildTable(limitedFiles, view, slug, allFiles, config.properties)
+            tree = { type: "root", children: [tableNode] }
           } else if (view.type === "list") {
-            const listNode = buildList(limitedFiles, view, viewSlug, allFiles)
-            viewTree = { type: "root", children: [listNode] }
+            const listNode = buildList(limitedFiles, view, slug, allFiles)
+            tree = { type: "root", children: [listNode] }
           } else if (view.type === "card" || view.type === "cards") {
-            const cardsNode = buildCards(limitedFiles, view, viewSlug, allFiles)
-            viewTree = { type: "root", children: [cardsNode] }
+            const cardsNode = buildCards(limitedFiles, view, slug, allFiles)
+            tree = { type: "root", children: [cardsNode] }
           } else {
             console.warn(`[BaseViewPage] Unsupported view type: ${view.type}`)
             continue
           }
 
           // Create file data for this view
-          const viewFileData = { ...file.data }
-          viewFileData.slug = viewSlug
-          viewFileData.htmlAst = viewTree
-          if (viewFileData.frontmatter) {
-            viewFileData.frontmatter = {
-              ...viewFileData.frontmatter,
+          const fileData = { ...file.data }
+          fileData.slug = slug
+          fileData.htmlAst = tree
+          if (fileData.frontmatter) {
+            fileData.frontmatter = {
+              ...fileData.frontmatter,
               title: `${file.data.frontmatter?.title || baseSlug} - ${view.name}`,
-              pageLayout: viewFileData.frontmatter.pageLayout || "default",
+              pageLayout: fileData.frontmatter.pageLayout || "default",
             }
           }
 
           // Add base metadata for dropdown navigation
-          viewFileData.baseMeta = {
-            baseSlug,
-            currentView: view.name,
-            allViews: allViewsMetadata,
-          }
+          fileData.basesMetadata = { baseSlug, currentView: view.name, allViews }
 
           const cfg = ctx.cfg.configuration
-          const viewExternalResources = pageResources(pathToRoot(viewSlug), resources, ctx)
-          const viewComponentData: QuartzComponentProps = {
+          const externalResources = pageResources(pathToRoot(slug), resources, ctx)
+          const componentData: QuartzComponentProps = {
             ctx,
-            fileData: viewFileData,
-            externalResources: viewExternalResources,
+            fileData,
+            externalResources,
             cfg,
             children: [],
-            tree: viewTree,
+            tree,
             allFiles,
           }
-          const viewContent = renderPage(
-            ctx,
-            viewSlug,
-            viewComponentData,
-            opts,
-            viewExternalResources,
-            false,
-          )
+          const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
 
-          yield write({
-            ctx,
-            content: viewContent,
-            slug: viewSlug,
-            ext: ".html",
-          })
+          yield write({ ctx, content, slug, ext: ".html" })
         }
       }
     },
+  }
+}
+
+declare module "vfile" {
+  interface DataMap {
+    basesMetadata: BaseMetadata
   }
 }

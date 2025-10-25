@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: batman-begins
 tags:

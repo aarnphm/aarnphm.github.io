@@ -16,14 +16,14 @@ declare const fetchData: Promise<ContentIndex>
 declare const semanticCfg: import("./quartz/cfg").GlobalConfiguration["semanticSearch"]
 
 // base view metadata for dropdown navigation
-interface BaseViewMeta {
+interface BaseViewMetadata {
   name: string
-  type: "table" | "list" | "gallery" | "board" | "calendar"
+  type: "table" | "list" | "gallery" | "board" | "calendar" | "card" | "cards"
   slug: FullSlug
 }
 
-interface BaseMeta {
+interface BaseMetadata {
   baseSlug: FullSlug
   currentView: string
-  allViews: BaseViewMeta[]
+  allViews: BaseViewMetadata[]
 }

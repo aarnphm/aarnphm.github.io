@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: fantastic-mr-fox
 tags:

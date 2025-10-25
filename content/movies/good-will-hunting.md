@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: good-will-hunting
 tags:

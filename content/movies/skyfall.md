@@ -1,5 +1,4 @@
 ---
-
 id: "skyfall"
 status: "recurring"
 tags:

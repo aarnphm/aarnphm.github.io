@@ -1,5 +1,4 @@
 ---
-
 id: "spirited-away"
 status: "recurring"
 tags:

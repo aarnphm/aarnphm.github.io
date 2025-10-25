@@ -1,5 +1,4 @@
 ---
-
 status: finished
 id: civil-war
 modified: 2025-10-16 20:08:09 GMT-04:00

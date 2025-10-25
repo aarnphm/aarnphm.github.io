@@ -1,5 +1,4 @@
 ---
-
 id: "nosferatu"
 status: "to-watch"
 tags:

@@ -1,5 +1,4 @@
 ---
-
 id: "shawshank-redemption"
 status: "recurring"
 tags:

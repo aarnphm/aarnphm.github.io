@@ -1,5 +1,4 @@
 ---
-
 id: "jeremiah-johnson"
 status: "to-watch"
 tags:

@@ -35,6 +35,7 @@ import {
   isWikilink,
 } from "../../extensions/micromark-extension-ofm-wikilinks"
 import { escapeWikilinkForTable } from "../../util/wikilinks"
+import { BaseFile } from "../../util/base/types"
 
 export interface Options {
   comments: boolean
@@ -927,6 +928,6 @@ declare module "vfile" {
     blocks: Record<string, Element>
     htmlAst: HtmlRoot
     bases?: boolean
-    baseConfig?: any
+    basesConfig?: BaseFile
   }
 }

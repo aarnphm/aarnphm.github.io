@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: the-irishman
 tags:

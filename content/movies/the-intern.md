@@ -1,5 +1,4 @@
 ---
-
 id: "the-intern"
 status: "recurring"
 tags:

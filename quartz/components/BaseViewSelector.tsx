@@ -121,7 +121,7 @@ const viewTypeIcons: Record<string, any> = {
 }
 
 const BaseViewSelector: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
-  const baseMeta = (fileData as any).baseMeta as BaseMeta | undefined
+  const baseMeta = fileData.basesMetadata
 
   if (!baseMeta || !baseMeta.allViews || baseMeta.allViews.length <= 1) {
     return null

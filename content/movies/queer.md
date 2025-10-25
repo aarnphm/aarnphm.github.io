@@ -1,5 +1,4 @@
 ---
-
 id: "queer"
 status: "finished"
 tags:

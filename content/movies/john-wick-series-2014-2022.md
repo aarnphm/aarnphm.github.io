@@ -1,5 +1,4 @@
 ---
-
 id: "john-wick-series-2014-2022"
 status: "recurring"
 tags:

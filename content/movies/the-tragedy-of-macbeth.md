@@ -1,5 +1,4 @@
 ---
-
 id: "the-tragedy-of-macbeth"
 status: "recurring"
 tags:

@@ -1,5 +1,4 @@
 ---
-
 id: "the-silence-of-the-lambs"
 status: "recurring"
 tags:

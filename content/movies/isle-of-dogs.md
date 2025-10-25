@@ -1,5 +1,4 @@
 ---
-
 id: "isle-of-dogs"
 status: "recurring"
 tags:

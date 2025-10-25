@@ -1,5 +1,4 @@
 ---
-
 status: finished
 id: challenger
 modified: 2025-10-16 20:07:52 GMT-04:00

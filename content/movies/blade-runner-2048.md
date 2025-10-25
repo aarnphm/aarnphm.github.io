@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: blade-runner-2048
 tags:

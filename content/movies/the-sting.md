@@ -1,5 +1,4 @@
 ---
-
 id: "the-sting"
 status: "to-watch"
 tags:

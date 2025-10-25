@@ -1,5 +1,4 @@
 ---
-
 id: "the-french-dispatch"
 status: "recurring"
 tags:

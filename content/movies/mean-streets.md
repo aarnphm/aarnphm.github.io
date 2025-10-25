@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: mean-streets
 tags:

@@ -1,5 +1,4 @@
 ---
-
 id: "paris-texas"
 status: "to-watch"
 tags:

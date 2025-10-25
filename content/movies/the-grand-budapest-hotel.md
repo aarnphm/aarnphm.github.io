@@ -1,5 +1,4 @@
 ---
-
 id: "the-grand-budapest-hotel"
 status: "recurring"
 tags:

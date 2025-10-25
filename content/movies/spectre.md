@@ -1,5 +1,4 @@
 ---
-
 id: "spectre"
 status: "recurring"
 tags:

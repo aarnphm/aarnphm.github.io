@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: modern-love-2019-2021
 tags:

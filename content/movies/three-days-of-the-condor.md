@@ -1,5 +1,4 @@
 ---
-
 id: "three-days-of-the-condor"
 status: "to-watch"
 tags:

@@ -1,5 +1,4 @@
 ---
-
 id: "killing-of-the-sacred-deer"
 status: "to-watch"
 tags:

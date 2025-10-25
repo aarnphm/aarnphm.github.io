@@ -1,5 +1,4 @@
 ---
-
 id: "whiplash"
 status: "recurring"
 tags:

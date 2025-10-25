@@ -1,5 +1,4 @@
 ---
-
 id: "lady-bird"
 status: "recurring"
 tags:

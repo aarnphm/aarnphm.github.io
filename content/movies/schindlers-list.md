@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: schindlers-list
 tags:

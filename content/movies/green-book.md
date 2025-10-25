@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: green-book
 tags:

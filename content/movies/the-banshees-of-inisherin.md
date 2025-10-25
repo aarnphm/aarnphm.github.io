@@ -1,5 +1,4 @@
 ---
-
 id: "the-banshees-of-inisherin"
 status: "recurring"
 tags:

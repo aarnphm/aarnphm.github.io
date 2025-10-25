@@ -1,5 +1,4 @@
 ---
-
 status: finished
 id: normal-people
 category: general

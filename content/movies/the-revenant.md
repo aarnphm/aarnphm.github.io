@@ -1,5 +1,4 @@
 ---
-
 id: "the-revenant"
 status: "recurring"
 tags:

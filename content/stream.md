@@ -6,13 +6,17 @@ tags:
   - evergreen
 description: thoughts at the middle of the night.
 date: "2025-10-24"
-modified: 2025-10-24 13:23:02 GMT-04:00
+modified: 2025-10-25 14:59:02 GMT-04:00
 title: stream
 ---
 
-### 2025-10-24
+### how we talk about god
 
-I was thinking about how we talk about God.
+[meta]:
+  - date: 2025-10-24
+  - tags:
+    - theology
+    - life
 
 "God exists" – we say it like we're saying "the table exists." We use the same grammatical structure, same verb, same declaration of being, yet [[thoughts/Wittgenstein|Wittgensteinians]] would tell you these are performing different speech acts, i.e possessing different forms of life.
 
@@ -37,7 +41,7 @@ This isn't faith in the Kierkegaardian sense – there's no transcendent leap in
 
 Maybe that's what religious language is really expressing – not metaphysical claims but this fundamental human insistence on continuing. On treating temporary patterns as if they're eternal truths. On finding meaning in noise because meaning-making is what conscious matter does.
 
-The feeling of being held. Of mattering. Of not being alone. These persist even after you've dismantled the theological framework. They're built into the architecture of consciousness itself – this need for connection, for significance, for something beyond the merely material. Not because there's a God out there responding to you, but because you're the kind of system that generates these feelings when confronting its own existence.
+The [[/posts/feelings|feeling]] of being held. Of mattering. Of not being alone. These persist even after you've dismantled the theological framework. They're built into the architecture of consciousness itself – this need for connection, for significance, for something beyond the merely material. Not because there's a God out there responding to you, but because you're the kind of system that generates these feelings when confronting its own existence.
 
 Strip away providence and you're left with a _pattern-matching systems encountering randomness and desperately trying to read it as text_.
 
@@ -48,3 +52,5 @@ The grammar of theism gives us a vocabulary for these experiences. But the exper
 Not despite the void. Through it. Because of it.
 
 Generation without guarantee. Creation without cosmic permission. Love without eternal preservation.
+
+---

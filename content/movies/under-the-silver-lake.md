@@ -1,5 +1,4 @@
 ---
-
 id: "under-the-silver-lake"
 status: "to-watch"
 tags:

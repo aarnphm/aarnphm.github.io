@@ -1,5 +1,4 @@
 ---
-
 id: "jojo-rabbit"
 status: "recurring"
 tags:

@@ -1,5 +1,4 @@
 ---
-
 id: "the-breakfast-club"
 status: "recurring"
 tags:

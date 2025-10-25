@@ -9,7 +9,7 @@ tags:
   - "clippings"
 ---
 
-> a mechanical device used to determine the optimal[^optimal] location of a warehouse for distributing goods to a set of shops. 
+> a mechanical device used to determine the optimal[^optimal] location of a warehouse for distributing goods to a set of shops.
 
 [^optimal]: "Optimal" means minimizing the sum of **weighted distances** from shops to the warehouse.
 

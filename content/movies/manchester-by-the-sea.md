@@ -1,5 +1,4 @@
 ---
-
 id: "manchester-by-the-sea"
 status: "finished"
 tags:

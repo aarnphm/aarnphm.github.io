@@ -1,5 +1,4 @@
 ---
-
 status: "finished"
 id: "the-day-of-the-jackal"
 studio: "universal"

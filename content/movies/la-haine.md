@@ -1,5 +1,4 @@
 ---
-
 id: "la-haine"
 status: "finished"
 tags:

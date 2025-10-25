@@ -1,5 +1,4 @@
 ---
-
 id: "the-wild-robot"
 status: "finished"
 tags:

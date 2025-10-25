@@ -1,5 +1,4 @@
 ---
-
 id: "never-say-never-again"
 status: "recurring"
 tags:

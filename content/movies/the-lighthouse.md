@@ -1,5 +1,4 @@
 ---
-
 id: "the-lighthouse"
 status: "recurring"
 tags:

@@ -1,5 +1,4 @@
 ---
-
 id: "the-whale"
 status: "recurring"
 tags:

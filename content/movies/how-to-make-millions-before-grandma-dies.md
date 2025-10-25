@@ -1,5 +1,4 @@
 ---
-
 status: to-watch
 id: how-to-make-millions-before-grandma-ideaslettresdies
 tags:

@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: black-mirror
 tags:

@@ -1,5 +1,4 @@
 ---
-
 id: "true-detective"
 status: "recurring"
 tags:

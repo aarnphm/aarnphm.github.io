@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: the-wolf-of-wall-street
 tags:

@@ -1,5 +1,4 @@
 ---
-
 id: "sometimes-i-think-about-dying"
 status: "to-watch"
 tags:

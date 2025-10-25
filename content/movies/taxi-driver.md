@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: taxi-driver
 tags:

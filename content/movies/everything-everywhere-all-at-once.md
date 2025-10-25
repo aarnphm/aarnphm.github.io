@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: everything-everywhere-all-at-once
 tags:

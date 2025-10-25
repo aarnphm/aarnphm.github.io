@@ -1,5 +1,4 @@
 ---
-
 id: "past-lives"
 status: "recurring"
 tags:

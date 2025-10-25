@@ -1,5 +1,4 @@
 ---
-
 status: to-watch
 id: the-king-of-comedy
 tags:

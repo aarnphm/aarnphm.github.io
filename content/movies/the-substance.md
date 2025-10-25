@@ -1,5 +1,4 @@
 ---
-
 id: "the-substance"
 status: "finished"
 tags:

@@ -1,5 +1,4 @@
 ---
-
 id: "the-favorite"
 status: "to-watch"
 tags:

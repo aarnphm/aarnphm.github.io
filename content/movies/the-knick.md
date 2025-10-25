@@ -1,5 +1,4 @@
 ---
-
 id: "the-knick"
 status: "recurring"
 tags:

@@ -1,5 +1,4 @@
 ---
-
 id: "the-defiant-ones"
 status: "recurring"
 tags:

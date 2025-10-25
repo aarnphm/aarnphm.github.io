@@ -1,5 +1,4 @@
 ---
-
 id: "the-social-network"
 status: "recurring"
 tags:

@@ -1,5 +1,4 @@
 ---
-
 status: "to-watch"
 id: "one-battle-after-another"
 studio: "warner"

@@ -1,5 +1,4 @@
 ---
-
 id: "la-la-land"
 status: "recurring"
 tags:

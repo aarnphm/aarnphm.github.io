@@ -1,5 +1,4 @@
 ---
-
 id: "midnight-run"
 status: "recurring"
 tags:

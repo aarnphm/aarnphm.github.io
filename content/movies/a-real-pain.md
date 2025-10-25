@@ -1,5 +1,4 @@
 ---
-
 status: finished
 id: a-real-pain
 modified: 2025-10-16 20:05:46 GMT-04:00

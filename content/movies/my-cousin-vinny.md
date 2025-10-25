@@ -1,5 +1,4 @@
 ---
-
 id: "my-cousin-vinny"
 status: "recurring"
 tags:

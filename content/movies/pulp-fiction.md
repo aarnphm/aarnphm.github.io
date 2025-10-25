@@ -1,5 +1,4 @@
 ---
-
 id: "pulp-fiction"
 status: "recurring"
 tags:

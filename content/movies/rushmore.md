@@ -1,5 +1,4 @@
 ---
-
 id: "rushmore"
 status: "recurring"
 tags:

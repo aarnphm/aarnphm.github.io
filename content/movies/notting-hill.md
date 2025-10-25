@@ -1,5 +1,4 @@
 ---
-
 id: "notting-hill"
 status: "recurring"
 tags:

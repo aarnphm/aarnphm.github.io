@@ -19,3 +19,4 @@ worker-configuration.d.ts
 *.safetensors
 *.bin
 **/embeddings/*.json
+content/stream.md

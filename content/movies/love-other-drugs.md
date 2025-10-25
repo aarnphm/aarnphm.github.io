@@ -1,5 +1,4 @@
 ---
-
 id: "love-other-drugs"
 status: "finished"
 tags:

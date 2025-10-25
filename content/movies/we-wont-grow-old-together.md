@@ -1,5 +1,4 @@
 ---
-
 status: recurring
 id: we-wont-grow-old-together
 tags:

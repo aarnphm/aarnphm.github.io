@@ -1,5 +1,4 @@
 ---
-
 id: "no-country-for-old-men"
 status: "recurring"
 tags:

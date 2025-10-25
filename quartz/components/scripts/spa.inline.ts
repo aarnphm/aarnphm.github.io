@@ -897,31 +897,33 @@ async function navigate(url: URL, isBack: boolean = false) {
   html.body.appendChild(announcer)
 
   // morph body
-  micromorph(document.body, html.body)
+  startViewTransition(() => {
+    micromorph(document.body, html.body)
 
-  // scroll into place and add history
-  if (!isBack) {
-    if (url.hash) {
-      const el = document.getElementById(decodeURIComponent(url.hash.substring(1)))
-      el?.scrollIntoView()
-    } else {
-      window.scrollTo({ top: 0 })
+    // scroll into place and add history
+    if (!isBack) {
+      if (url.hash) {
+        const el = document.getElementById(decodeURIComponent(url.hash.substring(1)))
+        el?.scrollIntoView()
+      } else {
+        window.scrollTo({ top: 0 })
+      }
     }
-  }
 
-  // now, patch head, re-executing scripts
-  const elementsToRemove = document.head.querySelectorAll(":not([spa-preserve])")
-  elementsToRemove.forEach((el) => el.remove())
-  const elementsToAdd = html.head.querySelectorAll(":not([spa-preserve])")
-  elementsToAdd.forEach((el) => document.head.appendChild(el))
+    // now, patch head, re-executing scripts
+    const elementsToRemove = document.head.querySelectorAll(":not([spa-preserve])")
+    elementsToRemove.forEach((el) => el.remove())
+    const elementsToAdd = html.head.querySelectorAll(":not([spa-preserve])")
+    elementsToAdd.forEach((el) => document.head.appendChild(el))
 
-  // delay setting the url until now
-  // at this point everything is loaded so changing the url should resolve to the correct addresses
-  if (!isBack) {
-    history.pushState({}, "", url)
-  }
-  notifyNav(getFullSlug(window))
-  delete announcer.dataset.persist
+    // delay setting the url until now
+    // at this point everything is loaded so changing the url should resolve to the correct addresses
+    if (!isBack) {
+      history.pushState({}, "", url)
+    }
+    notifyNav(getFullSlug(window))
+    delete announcer.dataset.persist
+  })
 }
 
 window.spaNavigate = navigate
