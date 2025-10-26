@@ -1,8 +1,5 @@
 ---
-socials:
-  curius: /curius
-  are.na: https://www.are.na/aaron-pham/channels
-id: are.na
+title: are.na
 permalinks:
   - /website
   - /tweets
@@ -12,9 +9,12 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-title: are.na
+socials:
+  curius: /curius
+  are.na: https://www.are.na/aaron-pham/channels
 date: "2024-10-24"
-modified: 2025-10-26 16:29:27 GMT-04:00
+id: are.na
+modified: 2025-10-26 19:42:52 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -2932,6 +2932,18 @@ cssclasses:
 
 ## video
 
+- https://www.youtube.com/watch?v=x7vNEgUvMkI -- Maybe This is My Problem
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [vlogbrothers]
+- https://www.youtube.com/watch?v=dKmuCBFPY3g -- "the could have been" man
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [life, regrets]
+- https://www.youtube.com/watch?v=sSo2b4y5nnA -- How To Keep Living When You'd Rather Not [**]
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [absurd, suicide]
 - https://www.youtube.com/watch?v=FdDsnwp1e1o -- Why Marco Pierre White GAVE UP on Michelin
   - [meta]:
     - date: 10/26/2025

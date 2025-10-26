@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-10-26 03:17:32 GMT-04:00
+modified: 2025-10-26 19:42:17 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -16,6 +16,10 @@ socialDescription: A collection of quotes, wisdom, and advice.
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
 
 ## On life.
+
+The loneliest people are the kindest. The saddest people smile the brightest. The most damaged people are the wisest. All because they don't wish to see anyone else suffer the way they did. -- Jellal Fernandes
+
+The tragedy of life is not that it ends so soon, but that we wait so long to begin it. -- W. M. Lewis
 
 Love consists in this, that two solitudes protect and touch and greet each other. -- Rainer Maria Rilke
 

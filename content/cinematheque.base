@@ -32,15 +32,14 @@ properties:
 views:
   - type: cards
     name: gallery
-    groupBy:
-      property: year
-      direction: DESC
     order:
       - title
       - director
       - rating
       - year
     sort:
+      - property: year
+        direction: DESC
       - property: rating
         direction: DESC
       - property: watched-date
