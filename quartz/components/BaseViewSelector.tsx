@@ -144,7 +144,7 @@ const BaseViewSelector: QuartzComponent = ({ fileData, displayClass }: QuartzCom
           tabindex={0}
         >
           <span class="text-button-icon">{currentIcon}</span>
-          <span class="text-button-label">{currentViewName}</span>
+          <span class="text-button-label">{currentViewName?.toLowerCase()}</span>
           <span class="text-button-icon mod-aux">{icons.chevronsUpDown}</span>
         </span>
       </div>
@@ -177,7 +177,7 @@ const BaseViewSelector: QuartzComponent = ({ fileData, displayClass }: QuartzCom
                   >
                     <div class="bases-toolbar-menu-item-info">
                       <div class="bases-toolbar-menu-item-info-icon">{icon}</div>
-                      <div class="bases-toolbar-menu-item-name">{view.name}</div>
+                      <div class="bases-toolbar-menu-item-name">{view.name.toLowerCase()}</div>
                     </div>
                     <div class="clickable-icon bases-toolbar-menu-item-icon">
                       {icons.chevronRight}

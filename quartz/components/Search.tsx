@@ -22,7 +22,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
     return (
       <div class={classNames(displayClass, "search")}>
         {opts.includeButton && (
-          <span class="search-button" aria-label="Toggle search mode" tabindex={-1}>
+          <button type="button" class="search-button" aria-label="Toggle search mode" tabindex={-1}>
             <svg
               role="img"
               xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +36,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
                 <circle cx="8" cy="8" r="7" />
               </g>
             </svg>
-          </span>
+          </button>
         )}
         <search class="search-container">
           <form class="search-space">

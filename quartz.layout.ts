@@ -5,13 +5,13 @@ import * as Component from "./quartz/components"
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [
-    Component.StackedNotes(),
     Component.Breadcrumbs({
       rootName: "~",
       spacerSymbol: "/",
       showCurrentPage: true,
       trailingWindow: 1,
     }),
+    Component.StackedNotes(),
     Component.Image(),
     Component.Graph(),
     Component.Palette(),
@@ -43,8 +43,8 @@ export const defaultContentPageLayout: PageLayout = {
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [
-    Component.StackedNotes(),
     Component.Breadcrumbs({ rootName: "~", spacerSymbol: "/", trailingWindow: 1 }),
+    Component.StackedNotes(),
     Component.Image(),
     Component.Graph(),
     Component.Palette(),

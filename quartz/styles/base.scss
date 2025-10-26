@@ -174,7 +174,7 @@ header {
   align-items: center;
   gap: 0.6rem;
 
-  & > :last-child {
+  & > :nth-last-child(2) {
     margin-left: auto;
   }
 }

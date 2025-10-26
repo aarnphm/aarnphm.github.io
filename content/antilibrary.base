@@ -14,24 +14,18 @@ properties:
     displayName: tags
   note.internal-notes:
     displayName: notebooks
+  file.basename:
+    displayName: notes
 views:
   - type: cards
-    name: book card
-    groupBy:
-      property: tags
-      direction: ASC
+    name: gallery
     order:
-      - title
-      - category
-      - date
-      - status
-      - file.tags
-      - author
-      - subcategory
+      - file.basename
       - internal-notes
+      - category
     sort:
       - property: date
-        direction: ASC
+        direction: DESC
       - property: title
         direction: ASC
       - property: internal-notes

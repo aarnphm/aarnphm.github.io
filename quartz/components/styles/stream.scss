@@ -5,9 +5,11 @@
 [data-slug="stream"] {
   section[class~="header"] {
     border-bottom: 0;
-    height: 0;
     padding-bottom: 0;
-    visibility: hidden;
+  }
+
+  .main-col {
+    grid-column: 5/9;
   }
 
   .page-footer {
@@ -105,17 +107,6 @@
 
     p {
       margin: 0 0 1rem 0;
-    }
-
-    a {
-      color: var(--secondary);
-      text-decoration: underline;
-      text-decoration-color: color-mix(in srgb, var(--secondary) 30%, transparent);
-      text-underline-offset: 2px;
-
-      &:hover {
-        text-decoration-color: var(--secondary);
-      }
     }
 
     code {

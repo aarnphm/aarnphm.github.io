@@ -31,17 +31,15 @@ properties:
     displayName: watched date
 views:
   - type: cards
-    name: movie cards
+    name: gallery
     groupBy:
       property: year
       direction: DESC
     order:
       - title
-      - year
       - director
       - rating
-      - category
-      - watched-date
+      - year
     sort:
       - property: rating
         direction: DESC

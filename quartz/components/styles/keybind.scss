@@ -6,6 +6,7 @@
   min-width: fit-content;
   cursor: pointer;
   visibility: hidden;
+  width: 0;
 
   @media all and ($mobile) {
     display: none;
