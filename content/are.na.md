@@ -1,18 +1,20 @@
 ---
+socials:
+  curius: /curius
+  are.na: https://www.are.na/aaron-pham/channels
 id: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /tweets
+  - /resources
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-socials:
-  curius: /curius
-  are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-10-24 15:49:15 GMT-04:00
 title: are.na
+date: "2024-10-24"
+modified: 2025-10-26 16:29:27 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -33,10 +35,8 @@ codex:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be consumed by quartz/plugins/emitters/arena.ts, and then ingested with quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-permalinks:
-  - /website
-  - /tweets
-  - /resources
+aliases:
+  - inspo
 claude:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -1662,6 +1662,10 @@ cssclasses:
 
 ## machine learning
 
+- https://www.youtube.com/watch?v=1KRcs8XYUWo -- Sequence-to-sequence models: [[thoughts/Connectionist network|Connectionist]] Temporal Classification
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [models, seq2seq]
 - https://github.com/NVlabs/QeRL -- NVlabs/QeRL
   - [meta]:
     - date: 10/24/2025
@@ -2928,6 +2932,10 @@ cssclasses:
 
 ## video
 
+- https://www.youtube.com/watch?v=FdDsnwp1e1o -- Why Marco Pierre White GAVE UP on Michelin
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [cook]
 - https://www.youtube.com/watch?v=UvPYVWGcMNQ -- Joan Didion reads "On Keeping a Notebook" with her own voice. [**]
   - [meta]:
     - date: 10/24/2025

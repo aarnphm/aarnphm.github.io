@@ -6,14 +6,14 @@ tags:
   - evergreen
 description: thoughts at the middle of the night.
 date: "2025-10-24"
-modified: 2025-10-25 14:59:02 GMT-04:00
+modified: 2025-10-26 17:03:47 GMT-04:00
 title: stream
 ---
 
-### how we talk about god
+## how we talk about god
 
-[meta]:
-  - date: 2025-10-24
+- [meta]:
+  - date: 2025-10-24 01:23:00 GMT-04:00
   - tags:
     - theology
     - life
@@ -54,3 +54,12 @@ Not despite the void. Through it. Because of it.
 Generation without guarantee. Creation without cosmic permission. Love without eternal preservation.
 
 ---
+
+- [meta]:
+  - date: 2025-10-25 16:50:00 GMT-04:00
+  - tags:
+    - fruit
+
+The visceral feeling of returning to a place you once lived. Those familiar streets you'd walk daily without really noticing. The tiny brick that used to catch your shoe—gone now. New shops sprouting up, the decommissioned church turned taco spot. The coffee shop with its familiar faces, where you just walk by and smile at each other, no words needed. That bar you used to haunt.
+
+What gets me is seeing the old faces, the same constellation of people I used to orbit. Five months in my new Toronto apartment (which I love, truly), but it feels like years have passed. Time does this strange thing that warps around you when you leave. For me, whole epochs have unfolded. For them, Tuesday follows Monday follows Sunday. The uncanny valley of temporal perception: you've moved through time at different speeds, yet here you both are, occupying the same present moment.

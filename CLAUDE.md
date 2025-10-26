@@ -6,7 +6,7 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 
 **Build and Development:**
 
-- `pnpm bundle` - Build for production (concurrency 8, bundleInfo, verbose)
+- `pnpm dev` - Running dev script (you should run this in the background, if port 8080 is empty)
   - After this, run `fd --glob "*.[pdf|ddl]" public -x rm` to mae it compatible with `wrangler`
 - `pnpm cf:deploy` - Deploy to Cloudflare (runs check first)
 
@@ -129,3 +129,4 @@ Then update `content/References.bib` and reference as `[@entryname]` in markdown
 - Large binaries managed through Git LFS
 - Keep `public/` directory reproducible via `pnpm bundle`
 - Use `wrangler.toml` and Cloudflare secrets for Worker configuration
+- Please never run `pnpm bundle`. Just run `pnpm exec tsx quartz/scripts/dev.ts` instead

@@ -17,7 +17,7 @@ import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.
 import { Content, BaseViewSelector } from "../../components"
 import { write } from "./helpers"
 import { evaluateFilter, resolvePropertyValue } from "../../util/base/query"
-import { BaseFile, BaseView, BaseGroupBy } from "../../util/base/types"
+import { BaseView, BaseGroupBy } from "../../util/base/types"
 import { QuartzPluginData } from "../vfile"
 import { Root } from "hast"
 import { h } from "hastscript"

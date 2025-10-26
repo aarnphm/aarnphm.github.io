@@ -155,6 +155,7 @@ const config: QuartzConfig = {
       Plugin.LLM(),
       Plugin.Slides(),
       Plugin.Arena(),
+      Plugin.Stream(),
     ],
     filters: [Plugin.RemoveDrafts(), Plugin.RemovePrivate()],
     emitters: [
@@ -234,6 +235,7 @@ const config: QuartzConfig = {
       Plugin.SlidesPage(),
       Plugin.ArenaPage(),
       Plugin.BasePage(),
+      Plugin.StreamPage(),
     ],
   },
 }

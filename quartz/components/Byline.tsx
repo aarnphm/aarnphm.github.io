@@ -12,6 +12,7 @@ export default ((...components: QuartzComponent[]) => {
     )
   }
 
+  Byline.displayName = "Byline"
   Byline.css = Components.map((Inner) => Inner.css ?? "").join("\n")
   Byline.beforeDOMLoaded = Components.map((Inner) => Inner.beforeDOMLoaded ?? "").join("\n")
   Byline.afterDOMLoaded = Components.map((Inner) => Inner.afterDOMLoaded ?? "").join("\n")

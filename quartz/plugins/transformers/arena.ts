@@ -264,8 +264,7 @@ export const Arena: QuartzTransformerPlugin = () => {
       return [
         () => {
           return async (tree: MdastRoot, file) => {
-            const fileData = file.data as QuartzPluginData
-            if (fileData.slug !== "are.na") return
+            if (file.data.slug !== "are.na") return
 
             const slugger = new Slugger()
             let blockCounter = 0
@@ -604,8 +603,7 @@ export const Arena: QuartzTransformerPlugin = () => {
       return [
         () => {
           return (tree, file) => {
-            const fileData = file.data as QuartzPluginData
-            if (fileData.slug !== "are.na") return
+            if (file.data.slug !== "are.na") return
 
             const channels: ArenaChannel[] = []
             const channelById = new Map<string, ArenaChannel>()
@@ -640,12 +638,12 @@ export const Arena: QuartzTransformerPlugin = () => {
 
                     const parsed = parseWikilink(match[0])
                     const resolved =
-                      parsed && fileData.slug
-                        ? resolveWikilinkTarget(parsed, fileData.slug as FullSlug)
+                      parsed && file.data.slug
+                        ? resolveWikilinkTarget(parsed, file.data.slug as FullSlug)
                         : null
 
                     if (parsed && resolved) {
-                      const hrefBase = resolveRelative(fileData.slug!, resolved.slug)
+                      const hrefBase = resolveRelative(file.data.slug!, resolved.slug)
                       const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
                       results.push({
                         type: "element",
@@ -691,13 +689,13 @@ export const Arena: QuartzTransformerPlugin = () => {
                   const isExternal = externalLinkRegex.test(dest)
 
                   if (!isExternal && !dest.startsWith("#")) {
-                    dest = transformLink(fileData.slug!, dest, {
+                    dest = transformLink(file.data.slug!, dest, {
                       strategy: "absolute",
                       allSlugs: ctx.allSlugs,
                     })
                     const url = new URL(
                       dest,
-                      "https://base.com/" + stripSlashes(fileData.slug!, true),
+                      "https://base.com/" + stripSlashes(file.data.slug!, true),
                     )
                     let canonical = url.pathname
                     let [destCanonical] = splitAnchor(canonical)
@@ -1047,7 +1045,7 @@ export const Arena: QuartzTransformerPlugin = () => {
               }
             })
 
-            fileData.arenaData = { channels }
+            file.data.arenaData = { channels }
 
             if (ctx.argv.watch && ctx.argv.force) {
               try {
