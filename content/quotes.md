@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-10-27 00:28:16 GMT-04:00
+modified: 2025-10-27 09:34:30 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -17,7 +17,7 @@ socialDescription: A collection of quotes, wisdom, and advice.
 
 ## On life.
 
-I desire violently —and I wait -- Anaïs Nin, from _The Voice_
+I desire violently —and I wait -- Anaïs Nin, from _The Voice_ ^violent
 
 The loneliest people are the kindest. The saddest people smile the brightest. The most damaged people are the wisest. All because they don't wish to see anyone else suffer the way they did. -- Jellal Fernandes
 

@@ -14,6 +14,8 @@ interface Item extends DocumentData {
   id: number
   slug: FullSlug
   name: FilePath
+  title: string
+  content: string
   aliases: string[]
   target: string
   [key: string]: any
@@ -26,7 +28,15 @@ let index = new FlexSearch.Document<Item>({
     tag: "slug",
     index: [
       {
+        field: "title",
+        tokenize: "forward",
+      },
+      {
         field: "name",
+        tokenize: "forward",
+      },
+      {
+        field: "content",
         tokenize: "forward",
       },
       {
@@ -297,7 +307,10 @@ document.addEventListener("nav", async (e) => {
           id,
           slug,
           name: data[slug].fileName,
+          title: data[slug].title ?? "",
+          content: data[slug].content ?? "",
           aliases: data[slug].aliases,
+          target: "",
         })
       }
     })
@@ -317,7 +330,10 @@ document.addEventListener("nav", async (e) => {
           id,
           slug: slug as FullSlug,
           name: data[slug].fileName,
+          title: data[slug].title ?? "",
+          content: data[slug].content ?? "",
           aliases: data[slug].aliases,
+          target: "",
         })
 
         // Remove used slug to avoid duplicates
@@ -451,7 +467,7 @@ document.addEventListener("nav", async (e) => {
       searchResults = await index.searchAsync({
         query: currentSearchTerm,
         limit: numSearchResults,
-        index: ["name", "aliases"],
+        index: ["title", "name", "content", "aliases"],
       })
     } else {
       searchResults = await index.searchAsync({
@@ -472,7 +488,12 @@ document.addEventListener("nav", async (e) => {
 
     // order titles ahead of content
     if (actionType === "quick_open") {
-      const allIds: Set<number> = new Set([...getByField("name"), ...getByField("aliases")])
+      const allIds: Set<number> = new Set([
+        ...getByField("title"),
+        ...getByField("name"),
+        ...getByField("content"),
+        ...getByField("aliases"),
+      ])
       displayResults(
         //@ts-ignore
         [...allIds]
@@ -487,6 +508,8 @@ document.addEventListener("nav", async (e) => {
               id,
               slug,
               name: highlight(currentSearchTerm, data[slug].fileName) as FilePath,
+              title: data[slug].title ?? "",
+              content: data[slug].content ?? "",
               aliases: data[slug].aliases,
               target,
             }
@@ -623,8 +646,10 @@ async function fillDocument(data: ContentIndex, actions: Action[]) {
         id,
         slug: slug as FullSlug,
         name: fileData.fileName,
+        title: fileData.title ?? "",
+        content: fileData.content ?? "",
         aliases: fileData.aliases,
-        target: undefined,
+        target: "",
       }),
     )
   }
@@ -634,6 +659,8 @@ async function fillDocument(data: ContentIndex, actions: Action[]) {
         id,
         slug: "actions" as FullSlug,
         name: el.name as FilePath,
+        title: el.name,
+        content: "",
         aliases: [],
         target: el.auxInnerHtml,
       }),

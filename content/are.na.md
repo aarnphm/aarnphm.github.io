@@ -1,5 +1,4 @@
 ---
-date: "2024-10-24"
 id: are.na
 permalinks:
   - /website
@@ -15,7 +14,9 @@ socials:
   home: /
   curius: /curius
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-27 06:31:24 GMT-04:00
+cssclasses:
+  - nolist
+modified: 2025-10-27 09:30:50 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -55,8 +56,7 @@ claude:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-cssclasses:
-  - nolist
+date: "2024-10-24"
 ---
 
 ## discourse
@@ -233,6 +233,11 @@ cssclasses:
 
 ## website
 
+- https://www.printedmatter.org/catalog/62490/ -- Nostalgia [Third Edition]
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [web]
+  - by David Horvitz
 - https://ntrs.nasa.gov/search -- NTRS - NASA Technical Reports Server
   - [meta]:
     - date: 10/27/2025
@@ -3879,6 +3884,10 @@ cssclasses:
 
 ## papers
 
+- https://arxiv.org/abs/2510.13786
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [rl]
 - https://arxiv.org/abs/2504.13181
   - [meta]:
     - date: 10/27/2025

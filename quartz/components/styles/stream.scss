@@ -16,6 +16,12 @@
     grid-column: 5/9;
   }
 
+  @media all and ($mobile) {
+    .main-col {
+      grid-column: 3 / -3;
+    }
+  }
+
   .page-footer {
     display: none;
   }

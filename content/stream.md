@@ -6,7 +6,7 @@ tags:
   - evergreen
 description: a microblog within a blog, at the middle of the night.
 date: "2025-10-24"
-modified: 2025-10-27 07:40:00 GMT-04:00
+modified: 2025-10-27 09:35:50 GMT-04:00
 title: stream
 ---
 
@@ -66,7 +66,7 @@ What gets me is seeing the old faces, the same constellation of people I used to
 ---
 
 - [meta]:
-  - date: 2025-10-26 23:26:00 GMT-04:00
+  - date: 2025-10-25 23:26:00 GMT-04:00
   - tags:
     - llm
 
@@ -91,7 +91,7 @@ The frame requires that one assume worst case at every branch, assume maximum ca
 ---
 
 - [meta]:
-  - date: 2025-10-27 01:41:59 GMT-04:00
+  - date: 2025-10-26 01:41:59 GMT-04:00
   - tags:
     - life
 
@@ -103,11 +103,11 @@ The thought experiment acts as negative space, revealing attachment by what woul
 
 Sometimes I wonder how people move through life without touching this question. Not as criticism—maybe as envy. They wake up, make coffee, answer emails, plan for the rest of the days. Some would just sit on their phone all days, watching TikTok, brain-rotting their day aways. The whole apparatus of ordinary continuation functioning smoothly without requiring philosophical justification. Do they not feel the absurd pressing against their routines? Or have they found some accommodation I haven't, some way of living that doesn't demand this constant re-choosing?
 
-Because here's the strange thing: I wake up each day and do largely the same things. Write code, read papers, contribute my small piece to collective knowledge. Objectively pointless—heat death will erase it all. The universe doesn't need my work, my notes, my careful thinking through problems. And yet. The work feels necessary, locally. In the doing of it, in the conversation with the problem, in the incremental progress toward understanding something better than I did yesterday.
+The universe doesn't need my work, my notes, my careful thinking through problems. And yet. The work that I perform daily feels necessary, locally. In the doing of it, in the conversation with the problem, in the incremental progress toward understanding something better than I did yesterday.
 
-Pointless and fulfilling ==coexist==. I add my small value to society fully aware that society itself is temporary, that all accumulation eventually dissipates. But meaning doesn't require permanence. It emerges in the moment of engagement, in the quality of attention brought to the temporary.
+inaneness and fulfillment _perhaps_ ==coexist==. I add my small value to society fully aware that society itself is temporary, that all accumulation eventually dissipates. But meaning doesn't require permanence. It emerges in the moment of engagement, in the quality of attention brought to the temporary.
 
-This is the revolt Camus names: not finding meaning despite absurdity, but continuing *through* absurdity, eyes open to the absence of guarantee. My choice to live becomes deliberate rather than inherited. I remake it each time I examine the alternative. That ongoing renewal—choosing again, with the full weight of the question present—transforms continuation from default into stance.
+This is the revolt that Camus names: not finding meaning despite absurdity, but continuing *through* absurdity, eyes open to the absence of guarantee. That ongoing renewal—choosing again, with the full weight of the question present—transforms continuation from default into stance.
 
 While the abstraction remains philosophical—while I can hold the question at arm's length and examine it—this exercise sharpens clarity. But thought experiments have limits. When the question stops being theoretical, when it starts happening in my body rather than my mind, the rules change entirely. That's the moment to step outside, call someone, interrupt the pattern. The difference between contemplating the absurd and being crushed by it isn't subtle. One is [[/tags/philosophy]], the other is emergency.
 
@@ -118,4 +118,13 @@ While the abstraction remains philosophical—while I can hold the question at a
   - tags:
     - journal
 
-I find myself the most productive while procrastinate
+I find myself the most productive while procrastinating other tasks.
+
+---
+
+- [meta]:
+  - date: 2025-10-27 09:34:45 GMT-04:00
+  - tags:
+    - fruit
+
+![[quotes#^violent]]
