@@ -8,6 +8,10 @@
     padding-bottom: 0;
   }
 
+  .page-header {
+    padding-top: 0 !important;
+  }
+
   .main-col {
     grid-column: 5/9;
   }
@@ -19,7 +23,7 @@
 
 .stream {
   margin: 0 auto;
-  padding: 2rem 0;
+  padding: 1rem 0;
 
   .stream-feed {
     list-style: none;
@@ -27,7 +31,7 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: 1.2rem;
   }
 
   .stream-entry {

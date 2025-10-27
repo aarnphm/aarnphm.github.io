@@ -4,9 +4,13 @@ import style from "../styles/stream.scss"
 import script from "../scripts/stream.inline"
 import { renderStreamEntry } from "../stream/Entry"
 import { groupStreamEntries } from "../../util/stream"
+import StreamSearchConstructor from "../StreamSearch"
 
 export default (() => {
-  const StreamPage: QuartzComponent = ({ fileData }: QuartzComponentProps) => {
+  const StreamSearch = StreamSearchConstructor()
+
+  const StreamPage: QuartzComponent = (props: QuartzComponentProps) => {
+    const { fileData } = props
     if (!fileData.streamData || fileData.streamData.entries.length === 0) {
       return <article class="stream-empty main-col popover-hint">stream is empty.</article>
     }
@@ -32,6 +36,7 @@ export default (() => {
 
     return (
       <article class="stream main-col popover-hint" data-stream-canonical={canonicalPath}>
+        {!isDailyView && <StreamSearch {...props} />}
         <ol class="stream-feed">
           {entriesWithContext.map(({ entry, group }) =>
             renderStreamEntry(entry, fileData.filePath!, {

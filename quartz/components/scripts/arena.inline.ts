@@ -18,6 +18,8 @@ const substackEmbedCache = new Map<string, Promise<SubstackEmbedResponse>>()
 
 const MAPBOX_SCRIPT_SRC = "https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js"
 const MAPBOX_TOKEN_ENDPOINT = "/api/secrets?key=MAPBOX_API_KEY"
+const SUBSTACK_POST_REGEX = /^https?:\/\/[^/]+\/p\/[^/]+/i
+
 let mapboxTokenPromise: Promise<string | null> | null = null
 let mapboxReady: Promise<any | null> | null = null
 const mapInstances = new WeakMap<HTMLElement, any>()
@@ -527,8 +529,12 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
   let mainContentHtml = ""
   if (block.embedHtml) {
     mainContentHtml = block.embedHtml
-  } else if (block.coordinates) {
-    mainContentHtml = mapHtml
+  } else if (block.url && SUBSTACK_POST_REGEX.test(block.url)) {
+    mainContentHtml = `
+      <div class="arena-modal-embed arena-modal-embed-substack" data-substack-url="${block.url}">
+        <span class="arena-loading-spinner" role="status" aria-label="Loading Substack preview"></span>
+      </div>
+    `
   } else if (block.embedDisabled && block.url) {
     mainContentHtml = `
       <div class="arena-iframe-error">
@@ -598,6 +604,7 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
             `}
           </div>
         ` : ""}
+        ${mapHtml}
         <div class="arena-modal-main-content">
           ${mainContentHtml}
         </div>

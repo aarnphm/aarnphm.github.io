@@ -11,6 +11,7 @@ import { Node } from "unist"
 import { StaticResources } from "../../util/resources"
 import { QuartzPluginData } from "../vfile"
 import StreamPageComponent from "../../components/pages/StreamPage"
+import StreamSearchComponent from "../../components/StreamSearch"
 
 async function processStreamPage(
   ctx: BuildCtx,
@@ -64,11 +65,12 @@ export const StreamPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
 
   const { head: Head, header, beforeBody, pageBody, footer: Footer } = opts
   const Header = HeaderConstructor()
+  const StreamSearch = StreamSearchComponent()
 
   return {
     name: "StreamPage",
     getQuartzComponents() {
-      return [Head, Header, ...header, ...beforeBody, pageBody, Footer]
+      return [Head, Header, ...header, ...beforeBody, pageBody, Footer, StreamSearch]
     },
     async *emit(ctx, content, resources) {
       const allFiles = content.map((c) => c[1].data)
