@@ -244,10 +244,18 @@ export const Stream: QuartzTransformerPlugin = () => {
 
             // build final StreamData with IDs and sorted by timestamp
             const streamEntries: StreamEntry[] = entries.map((entry, idx) => {
+              const entryId = `stream-entry-${idx}`
+              for (const [contentIdx, contentNode] of entry.content.entries()) {
+                if (!isElement(contentNode)) continue
+                const data = (contentNode.data ??= {} as any) as Record<string, unknown>
+                data.streamEntryId = entryId
+                data.streamEntryContentIndex = contentIdx
+              }
+
               const { date, timestamp } = parseDateValue(entry.metadata.date)
 
               return {
-                id: `stream-entry-${idx}`,
+                id: entryId,
                 title: entry.title ? toString(entry.title) : undefined,
                 metadata: entry.metadata,
                 content: entry.content,

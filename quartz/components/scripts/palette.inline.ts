@@ -1,4 +1,4 @@
-import FlexSearch, { DefaultDocumentSearchResults, DocumentData } from "flexsearch"
+import FlexSearch, { DocumentData } from "flexsearch"
 import { FilePath, FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
 import {
   highlight,
@@ -462,38 +462,25 @@ document.addEventListener("nav", async (e) => {
   }
 
   async function querySearch(currentSearchTerm: string) {
-    let searchResults: DefaultDocumentSearchResults<Item>
     if (actionType === "quick_open") {
-      searchResults = await index.searchAsync({
+      const searchResults = await index.searchAsync({
         query: currentSearchTerm,
         limit: numSearchResults,
         index: ["title", "name", "content", "aliases"],
       })
-    } else {
-      searchResults = await index.searchAsync({
-        query: currentSearchTerm,
-        limit: Math.max(numSearchResults, 10000),
-        tag: { tags: "actions" },
-        index: ["name"],
-      })
-      for (let searchResult of searchResults) {
-        searchResult.result = searchResult.result.slice(0, numSearchResults)
+
+      const getByField = (field: string): number[] => {
+        const results = searchResults.filter((x) => x.field === field)
+        return results.length === 0 ? [] : ([...results[0].result] as number[])
       }
-    }
 
-    const getByField = (field: string): number[] => {
-      const results = searchResults.filter((x) => x.field === field)
-      return results.length === 0 ? [] : ([...results[0].result] as number[])
-    }
-
-    // order titles ahead of content
-    if (actionType === "quick_open") {
       const allIds: Set<number> = new Set([
         ...getByField("title"),
         ...getByField("name"),
         ...getByField("content"),
         ...getByField("aliases"),
       ])
+
       displayResults(
         //@ts-ignore
         [...allIds]
@@ -527,15 +514,22 @@ document.addEventListener("nav", async (e) => {
         currentSearchTerm,
       )
     } else {
+      // Search actions directly (simple string matching)
+      const query = currentSearchTerm.toLowerCase().trim()
+      const matchedActions = query
+        ? ACTS.filter(
+            (action) =>
+              action.name.toLowerCase().includes(query) ||
+              action.auxInnerHtml.toLowerCase().includes(query),
+          )
+        : ACTS
+
       getCommandItems(
-        [...new Set([...getByField("name")])]
-          .map((index) => ACTS[index - idDataMap.length])
-          .filter(Boolean)
-          .map(({ name, onClick, auxInnerHtml }) => ({
-            name: highlight(currentSearchTerm, name),
-            onClick,
-            auxInnerHtml,
-          })),
+        matchedActions.map(({ name, onClick, auxInnerHtml }) => ({
+          name: query ? highlight(currentSearchTerm, name) : name,
+          onClick,
+          auxInnerHtml,
+        })),
       )
     }
   }
@@ -633,10 +627,10 @@ document.addEventListener("nav", async (e) => {
   })
 
   registerEscapeHandler(container, hidePalette)
-  await fillDocument(data, ACTS)
+  await fillDocument(data)
 })
 
-async function fillDocument(data: ContentIndex, actions: Action[]) {
+async function fillDocument(data: ContentIndex) {
   let id = 0
   const promises = []
   for (const [slug, fileData] of Object.entries(data)) {
@@ -653,19 +647,7 @@ async function fillDocument(data: ContentIndex, actions: Action[]) {
       }),
     )
   }
-  for (const el of actions) {
-    promises.push(
-      index.addAsync(id++, {
-        id,
-        slug: "actions" as FullSlug,
-        name: el.name as FilePath,
-        title: el.name,
-        content: "",
-        aliases: [],
-        target: el.auxInnerHtml,
-      }),
-    )
-  }
+  // Actions are now searched directly, not indexed in FlexSearch
 
   return await Promise.all(promises)
 }

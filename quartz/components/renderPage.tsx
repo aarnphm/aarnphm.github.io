@@ -1318,6 +1318,7 @@ export function renderPage(
     }
   })
   componentData.tree = tree
+  updateStreamDataFromTree(tree, componentData)
   isFolderTag = isFolderTag ?? false
 
   if (slug === "index") {
@@ -1505,4 +1506,41 @@ export function renderPage(
       </html>,
     )
   )
+}
+
+function updateStreamDataFromTree(tree: Root, componentData: QuartzComponentProps): void {
+  const fileData = componentData.fileData
+  if (fileData.slug !== "stream") return
+
+  const streamData = fileData.streamData
+  if (!streamData) return
+
+  type StreamMarker = { node: ElementContent; index: number }
+  const nodeBuckets = new Map<string, StreamMarker[]>()
+
+  visit(tree, "element", (node: Element) => {
+    const data = node.data as Record<string, unknown> | undefined
+    if (!data) return
+
+    const entryId = data.streamEntryId
+    if (typeof entryId !== "string") return
+
+    const rawIndex = data.streamEntryContentIndex
+    const index = typeof rawIndex === "number" ? rawIndex : Number.POSITIVE_INFINITY
+
+    const bucket = nodeBuckets.get(entryId)
+    if (bucket) {
+      bucket.push({ node, index })
+    } else {
+      nodeBuckets.set(entryId, [{ node, index }])
+    }
+  })
+
+  for (const entry of streamData.entries) {
+    const bucket = nodeBuckets.get(entry.id)
+    if (!bucket || bucket.length === 0) continue
+
+    bucket.sort((a, b) => a.index - b.index)
+    entry.content = bucket.map(({ node }) => node)
+  }
 }
