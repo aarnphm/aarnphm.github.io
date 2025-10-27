@@ -8,15 +8,16 @@ tags:
   - evergreen
 description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
 date: "2022-01-25"
-modified: 2025-09-10 13:16:23 GMT-04:00
+modified: 2025-10-27 00:53:01 GMT-04:00
 title: ideas.
 ---
 
 ## lettres
 
-- love (wip)
+- [[thoughts/love]] (wip)
   - self-healing and love
-- growth after death
+  - selfish
+- growth after [[movies/How To Make Millions before Grandma Dies| death]]
 - education and pedagogical implications on next generations
 - recommendation system and word2vec
 - social interactions a la carte.

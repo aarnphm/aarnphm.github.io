@@ -7,10 +7,10 @@ tags:
   - technical
   - fruit
 description: choosing to give your full, continuously.
-date: "2025-10-04"
 socials:
   essay: https://aarnphm.xyz/posts/love
-modified: 2025-10-25 13:17:53 GMT-04:00
+date: "2025-10-04"
+modified: 2025-10-27 00:28:46 GMT-04:00
 noindex: true
 title: dilectio
 ---
@@ -57,7 +57,7 @@ Choosing to love is choosing _despite_ absence of guarantees. No reinforcement s
 
 The same reinforcement history produces different people because people aren't passive recipients—they interpret, resist, reframe. Love requires this active stance: you take responsibility for your interpretation, your commitment, your continued choice to stay.
 
-### hermeneutic practice
+### hermeneutic
 
 When you love someone, you choose to interpret them. Not once—continuously. You commit to staying in the [[thoughts/hermeneutics|hermeneutic circle]] even when understanding breaks down, even when they become strange to you.
 

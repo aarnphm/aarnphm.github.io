@@ -31,4 +31,3 @@ but eager, finally, to achieve expression as substance:
 it is not the earth I will miss,
 it is you I will miss.
 ```
-

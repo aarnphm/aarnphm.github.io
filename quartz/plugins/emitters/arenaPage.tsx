@@ -133,7 +133,6 @@ function serializeBlock(
 
   if (block.title) searchable.title = block.title
   if (block.url) searchable.url = block.url
-  if (block.snapshotKey) searchable.snapshotKey = block.snapshotKey
   if (block.embedDisabled) searchable.embedDisabled = block.embedDisabled
   if (block.embedHtml) searchable.embedHtml = block.embedHtml
   if (block.metadata) searchable.metadata = block.metadata

@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-10-26 19:42:17 GMT-04:00
+modified: 2025-10-27 00:28:16 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -16,6 +16,8 @@ socialDescription: A collection of quotes, wisdom, and advice.
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
 
 ## On life.
+
+I desire violently —and I wait -- Anaïs Nin, from _The Voice_
 
 The loneliest people are the kindest. The saddest people smile the brightest. The most damaged people are the wisest. All because they don't wish to see anyone else suffer the way they did. -- Jellal Fernandes
 
@@ -35,7 +37,7 @@ Sometimes, we [care] too much about potential, less on credentials -- K
 
 But no matter the medicinal virtues of being a true friend or sustaining a long close relationship with another, the ultimate touchstone of friendship is not improvement, neither of the self nor of the other, the ultimate touchstone is witness, the privilege of having ==been seen== by someone and the _equal privilege of being granted the sight of the essence_ of another, to have walked with them and to have believed in them, and sometimes just to have accompanied them for however brief a span, on a journey impossible to accomplish alone. —- David Whyte
 
-[[tags/love|Love]] is reverence, and worship, and glory, and the upward glance. Not a bandage for dirty sores. But they don't know it. Those who speak of love most promiscuously are the ones who've never felt it. They make some sort of feeble stew out of sympathy, compassion, contempt, and general indifference, and they call it love. Once you've felt what it means to love as you and I know it - total passion for the total height - you're incapable of anything less... -- Ayn Rand
+[[thoughts/love|Love]] is reverence, and worship, and glory, and the upward glance. Not a bandage for dirty sores. But they don't know it. Those who speak of love most promiscuously are the ones who've never felt it. They make some sort of feeble stew out of sympathy, compassion, contempt, and general indifference, and they call it love. Once you've felt what it means to love as you and I know it - total passion for the total height - you're incapable of anything less... -- Ayn Rand
 
 In another life, I would have really liked just doing laundry and taxes with you -- Ke Huy Quan ([[movies/everything-everywhere-all-at-once|Everything Everywhere All at Once]])
 

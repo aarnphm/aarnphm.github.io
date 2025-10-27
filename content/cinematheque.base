@@ -54,7 +54,6 @@ views:
       property: year
       direction: DESC
     order:
-      - title
       - file.name
       - director
       - status
@@ -65,10 +64,9 @@ views:
       - property: title
         direction: ASC
     columnSize:
-      note.title: 350
+      file.name: 369
       note.director: 200
       note.studio: 193
-      note.year: 100
   - type: table
     name: to watch
     filters:

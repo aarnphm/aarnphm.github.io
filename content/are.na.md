@@ -9,13 +9,12 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-title: are.na
 socials:
   curius: /curius
   are.na: https://www.are.na/aaron-pham/channels
-cssclasses:
-  - nolist
-modified: 2025-10-27 00:10:11 GMT-04:00
+date: "2024-10-24"
+modified: 2025-10-27 01:33:22 GMT-04:00
+title: are.na
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -55,7 +54,8 @@ claude:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-date: "2024-10-24"
+cssclasses:
+  - nolist
 ---
 
 ## discourse
@@ -232,7 +232,7 @@ date: "2024-10-24"
 
 ## website
 
-- https://nof1.ai/ -- Alpha Arena
+- https://nof1.ai/ -- Alpha Arena [**]
   - [meta]:
     - date: 10/24/2025
     - tags: [trading]
@@ -242,7 +242,7 @@ date: "2024-10-24"
   - [meta]:
     - date: 10/24/2025
     - tags: [digital garden, flower]
-- https://meodai.github.io/poline/ - Poline [**]
+- https://meodai.github.io/poline/ -- Poline [**]
   - [meta]:
     - date: 10/21/2025
     - tags: [color]
@@ -281,18 +281,6 @@ date: "2024-10-24"
   - [meta]:
     - date: 10/07/2025
     - tags: [utilitarian, hypertext]
-- https://justinjay.wang/
-  - [meta]:
-    - date: 10/07/2025
-    - tags: [utilitarian, hypertext]
-- https://felixdorner.de/
-  - [meta]:
-    - date: 10/06/2025
-    - tags: [fruit]
-- https://gerhard.xyz/
-  - [meta]:
-    - date: 10/06/2025
-    - tags: [fruit]
 - https://www.cosmos.so/public-work -- Public Work, Cosmos [**]
   - [meta]:
     - date: 10/06/2025
@@ -599,6 +587,18 @@ date: "2024-10-24"
 
 ## people
 
+- https://justinjay.wang/
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [utilitarian, hypertext]
+- https://felixdorner.de/
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [fruit]
+- https://gerhard.xyz/
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [fruit]
 - https://en.wikipedia.org/wiki/Max_Bense -- Max Bense
   - [meta]:
     - date: 10/24/2025
@@ -1643,11 +1643,11 @@ date: "2024-10-24"
 - https://selvaradov.net/select/ -- You can select as well as be selected
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [agency]
 - http://joschu.net/blog/opinionated-guide-ml-research.html -- An Opinionated Guide to ML Research [**]
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [research]
   - > _Honing Your Taste_: Your ability to choose the right problems to work on is even more important than your raw technical skill.
   - > 1. Read a lot of papers, and assess them critically. If possible, discuss them with others who have a deeper knowledge of the subject.
   - > 2. Work in a research group with other people working on similar topics. That way you can absorb their experiences as well as your own.
@@ -1660,12 +1660,18 @@ date: "2024-10-24"
 - https://numinous.productions/ttft/ -- How can we develop transformative tools for thought?
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [tool for thoughts]
   - By Andy Matuschak and Michael Nielsen
   - https://notation.app/n/d1VOwqGv5DbHdDLf
 
 ## machine learning
 
+- https://alignment.anthropic.com/2025/stress-testing-model-specs/ -- Stress-testing model specs reveals character differences among language models
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [alignment]
+  - > Models reveal their implicit value hierarchies in the value tradeoff scenarios we generate. By aggregating models’ decisions across our ‘high disagreement’ scenarios (the scenarios where responses vary the most across frontier models), we can identify clear patterns that distinguish different model families.
+  - @zhang2025stress
 - https://kyutai.org/next/codec-explainer -- Neural audio codecs: how to get audio into LLMs
   - [meta]:
     - date: 10/26/2025
@@ -1732,7 +1738,7 @@ date: "2024-10-24"
   - https://leimao.github.io/blog/CuTe-Blocked-Raked-Products/
   - https://leimao.github.io/blog/CuTe-Index-To-Coordinate/
   - https://leimao.github.io/blog/CUDA-Driver-Runtime-Load-Run-Kernel/
-- https://hanlab.mit.edu/blog/svdquant-nvfp4 -- SVDQuant Meets NVFP4: 4× Smaller and 3× Faster FLUX with 16-bit Quality on NVIDIA Blackwell GPUs
+- https://hanlab.mit.edu/blog/svdquant-nvfp4 -- SVDQuant Meets NVFP4: 4× Smaller and 3× Faster FLUX with 16-bit Quality on NVIDIA Blackwell GPUs [--]
   - [meta]:
     - date: 10/06/2025
     - tags: [inference, optimization]

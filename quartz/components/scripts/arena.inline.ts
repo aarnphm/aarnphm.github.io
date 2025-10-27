@@ -348,7 +348,6 @@ interface ArenaBlockSearchable {
   subItems?: ArenaBlockSearchable[]
   hasModalInDom: boolean
   embedDisabled?: boolean
-  snapshotKey?: string
 }
 
 interface ArenaChannelSearchable {

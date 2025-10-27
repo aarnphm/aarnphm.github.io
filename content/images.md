@@ -97,7 +97,7 @@ title: images
 
 ![[thoughts/images/political view.webp|gigachad politcal view]]
 
-![[thoughts/images/cute-dog.png|cute doggie]]
+![[thoughts/images/cute-dog.webp|cute doggie]]
 
 ## authors
 
