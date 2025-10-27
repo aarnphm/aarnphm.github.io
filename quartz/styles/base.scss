@@ -618,7 +618,7 @@ ol.overflow {
       --grid-left: 1fr;
     }
     .header-content {
-      grid-column: 4/-4;
+      grid-column: 4/10;
     }
   }
 }
@@ -716,6 +716,12 @@ ol.overflow {
 
 .full-col {
   grid-column: 4/-4;
+}
+
+[data-slug*="tags/"] {
+  .full-col {
+    grid-column: 4/10;
+  }
 }
 
 .left-col {

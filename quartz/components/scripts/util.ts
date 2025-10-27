@@ -387,5 +387,6 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
  * @param callback - The function containing DOM updates to animate
  */
 export function startViewTransition(callback: () => void): void {
-  document.startViewTransition?.(() => callback()) ?? callback()
+  // document.startViewTransition?.(() => callback()) ?? callback()
+  callback()
 }

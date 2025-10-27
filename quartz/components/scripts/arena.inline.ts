@@ -527,6 +527,8 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
   let mainContentHtml = ""
   if (block.embedHtml) {
     mainContentHtml = block.embedHtml
+  } else if (block.coordinates) {
+    mainContentHtml = mapHtml
   } else if (block.embedDisabled && block.url) {
     mainContentHtml = `
       <div class="arena-iframe-error">
@@ -562,8 +564,6 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
         <div class="arena-modal-internal-preview grid"></div>
       </div>
     `
-  } else if (block.coordinates) {
-    mainContentHtml = mapHtml
   } else {
     mainContentHtml = `<div class="arena-modal-placeholder">No preview available</div>`
   }

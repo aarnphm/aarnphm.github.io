@@ -10,9 +10,117 @@ import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 import { FullSlug, slugTag, resolveRelative } from "../../util/path"
 import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from "../../util/arena"
 import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
-import { buildYouTubeEmbed } from "../../util/youtube"
+import { buildYouTubeEmbed, type YouTubeEmbedSpec } from "../../util/youtube"
 
 const substackPostRegex = /^https?:\/\/[^/]+\/p\/[^/]+/i
+
+type ArenaModalMapProps = {
+  coordinates?: ArenaBlock["coordinates"]
+  title?: string
+}
+
+const ArenaModalMap = ({ coordinates, title }: ArenaModalMapProps) => {
+  if (!coordinates) {
+    return null
+  }
+
+  return (
+    <div class="arena-modal-map-wrapper">
+      <div
+        class="arena-modal-map"
+        data-map-lon={coordinates.lon.toString()}
+        data-map-lat={coordinates.lat.toString()}
+        data-map-title={title && title.length > 0 ? title : undefined}
+      />
+    </div>
+  )
+}
+
+type ArenaModalMainContentProps = {
+  block: ArenaBlock
+  embedHtml?: string
+  youtubeEmbed?: YouTubeEmbedSpec
+  isSubstackCandidate: boolean
+  targetUrl?: string
+  frameTitle: string
+  convertFromText: (html: string) => ComponentChild
+}
+
+const ArenaModalMainContent = ({
+  block,
+  embedHtml,
+  youtubeEmbed,
+  isSubstackCandidate,
+  targetUrl,
+  frameTitle,
+  convertFromText,
+}: ArenaModalMainContentProps) => {
+  let content: ComponentChild
+
+  if (embedHtml) {
+    content = convertFromText(embedHtml)
+  } else if (youtubeEmbed) {
+    content = (
+      <iframe
+        class={classNames(undefined, "arena-modal-iframe", "arena-modal-iframe-youtube")}
+        title={`YouTube embed: ${frameTitle}`}
+        loading="lazy"
+        data-block-id={block.id}
+        src={youtubeEmbed.src}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+        referrerPolicy="strict-origin-when-cross-origin"
+      />
+    )
+  } else if (isSubstackCandidate && block.url) {
+    content = (
+      <div class="arena-modal-embed arena-modal-embed-substack" data-substack-url={block.url}>
+        <span class="arena-loading-spinner" role="status" aria-label="Loading Substack preview" />
+      </div>
+    )
+  } else if (block.embedDisabled && targetUrl) {
+    content = (
+      <div class="arena-iframe-error">
+        <div class="arena-iframe-error-content">
+          <p>unable to embed content</p>
+          <a
+            href={targetUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="arena-iframe-error-link"
+          >
+            open in new tab →
+          </a>
+        </div>
+      </div>
+    )
+  } else if (targetUrl) {
+    content = (
+      <iframe
+        class="arena-modal-iframe"
+        title={`Embedded block: ${frameTitle}`}
+        loading="lazy"
+        data-block-id={block.id}
+        sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
+        src={targetUrl}
+      />
+    )
+  } else {
+    content = (
+      <div
+        class="arena-modal-internal-host"
+        data-block-id={block.id}
+        data-internal-slug={block.internalSlug}
+        data-internal-href={block.internalHref}
+        data-internal-hash={block.internalHash}
+      >
+        <div class="arena-modal-internal-preview grid" />
+      </div>
+    )
+  }
+
+  return <div class="arena-modal-main-content">{content}</div>
+}
 
 const rewriteArxivUrl = (rawUrl: string): string => {
   try {
@@ -346,79 +454,17 @@ export default (() => {
                   </div>
                 )}
                 {block.coordinates ? (
-                  <div class="arena-modal-map-wrapper">
-                    <div
-                      class="arena-modal-map"
-                      data-map-lon={block.coordinates.lon.toString()}
-                      data-map-lat={block.coordinates.lat.toString()}
-                      data-map-title={mapTitle || undefined}
-                    />
-                  </div>
+                  <ArenaModalMap coordinates={block.coordinates} title={mapTitle} />
                 ) : (
-                  <div class="arena-modal-main-content">
-                    {embedHtml ? (
-                      convertFromText(embedHtml as string)
-                    ) : youtubeEmbed ? (
-                      <iframe
-                        class={classNames(
-                          undefined,
-                          "arena-modal-iframe",
-                          "arena-modal-iframe-youtube",
-                        )}
-                        title={`YouTube embed: ${frameTitle}`}
-                        loading="lazy"
-                        data-block-id={block.id}
-                        src={youtubeEmbed.src}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowFullScreen
-                        referrerPolicy="strict-origin-when-cross-origin"
-                      />
-                    ) : isSubstackCandidate && block.url ? (
-                      <div
-                        class="arena-modal-embed arena-modal-embed-substack"
-                        data-substack-url={block.url}
-                      >
-                        <span
-                          class="arena-loading-spinner"
-                          role="status"
-                          aria-label="Loading Substack preview"
-                        />
-                      </div>
-                    ) : block.embedDisabled && targetUrl ? (
-                      <div class="arena-iframe-error">
-                        <div class="arena-iframe-error-content">
-                          <p>unable to embed content</p>
-                          <a
-                            href={targetUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="arena-iframe-error-link"
-                          >
-                            open in new tab →
-                          </a>
-                        </div>
-                      </div>
-                    ) : targetUrl ? (
-                      <iframe
-                        class="arena-modal-iframe"
-                        title={`Embedded block: ${frameTitle}`}
-                        loading="lazy"
-                        data-block-id={block.id}
-                        sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
-                        src={targetUrl}
-                      />
-                    ) : (
-                      <div
-                        class="arena-modal-internal-host"
-                        data-block-id={block.id}
-                        data-internal-slug={block.internalSlug}
-                        data-internal-href={block.internalHref}
-                        data-internal-hash={block.internalHash}
-                      >
-                        <div class="arena-modal-internal-preview grid" />
-                      </div>
-                    )}
-                  </div>
+                  <ArenaModalMainContent
+                    block={block}
+                    embedHtml={embedHtml}
+                    youtubeEmbed={youtubeEmbed}
+                    isSubstackCandidate={isSubstackCandidate}
+                    targetUrl={targetUrl}
+                    frameTitle={frameTitle}
+                    convertFromText={convertFromText}
+                  />
                 )}
               </div>
               <div class="arena-modal-sidebar">
