@@ -54,7 +54,6 @@
           padding: 0.5rem 1rem;
           font-weight: 600;
           color: var(--dark);
-          text-transform: capitalize;
         }
       }
     }
@@ -107,7 +106,6 @@
       color: var(--darkgray);
       border-bottom: 2px solid var(--gray);
       padding-bottom: 0.25rem;
-      text-transform: capitalize;
     }
   }
 }
@@ -161,6 +159,11 @@
   }
 }
 
+.base-list-meta-label {
+  font-weight: 600;
+  color: var(--darkgray);
+}
+
 .base-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--base-card-min, 280px), 1fr));
@@ -188,7 +191,6 @@
   color: var(--darkgray);
   border-bottom: 2px solid var(--gray);
   padding-bottom: 0.25rem;
-  text-transform: capitalize;
 }
 
 .base-card {
@@ -275,7 +277,6 @@
         .base-card-meta-label {
           color: var(--gray);
           font-weight: 500;
-          text-transform: capitalize;
           min-width: 80px;
           flex-shrink: 0;
         }

@@ -7,6 +7,16 @@
   }
 }
 
+html.arena-modal-open,
+body.arena-modal-open {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+body.arena-modal-open {
+  touch-action: none;
+}
+
 [data-slug*="arena"] {
   p.twitter-fallback,
   blockquote.twitter-tweet {

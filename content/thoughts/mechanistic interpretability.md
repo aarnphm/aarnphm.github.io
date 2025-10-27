@@ -23,7 +23,9 @@ To attack the _curse of dimensionality_, the question remains: _==how do we hope
 [^lesswrongarc]: good read from [Lawrence C](https://www.lesswrong.com/posts/6FkWnktH3mjMAxdRT/what-i-would-do-if-i-wasn-t-at-arc-evals#Ambitious_mechanistic_interpretability) for ambitious mech interp.
 
 ![[thoughts/sparse autoencoder]]
+
 ![[thoughts/sparse crosscoders]]
+
 ![[thoughts/Attribution parameter decomposition]]
 
 ## open problems

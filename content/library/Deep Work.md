@@ -1,14 +1,14 @@
 ---
-status: to-read
+status: finished
 id: Deep Work
 subcategory: productivity
-author: Cal Newport
-year-finished: 2024
-title: Deep Work
-date: "2024-12-23"
-modified: 2025-10-25 02:10:51 GMT-04:00
 tags:
   - non-fiction
+year-finished: 2024
+author: Cal Newport
+date: "2024-12-23"
+modified: 2025-10-27 10:47:57 GMT-04:00
+title: Deep Work
 posters: "[[library/posters/deep-work.jpg]]"
 category: non-fiction
 ---

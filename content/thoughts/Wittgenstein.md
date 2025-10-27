@@ -5,7 +5,7 @@ tags:
   - philosophy
 description: language games, pictures of states, proposition
 date: "2025-10-04"
-modified: 2025-10-16 20:25:59 GMT-04:00
+modified: 2025-10-27 10:37:19 GMT-04:00
 title: Wittgenstein
 ---
 
@@ -99,7 +99,7 @@ these non-logical axioms undermined the reduction of mathematics to pure logic. 
 
 ## early-Wittgenstein
 
-_a la [[thoughts/Tractatus]]_
+_a la [[library/Tractatus Logico-Philosophicus]]_
 
 the _Tractatus_ (1921) uses a hierarchical numbering system: seven main propositions (1-7) with decimal expansions (e.g., 2.1 comments on 2, 2.01 on 2.0). this structure mirrors logical atomism—complex propositions built from simpler ones, terminating in elementary propositions.
 

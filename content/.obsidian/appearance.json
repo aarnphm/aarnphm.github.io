@@ -4,7 +4,7 @@
   "interfaceFontFamily": "PP Neue Montreal,Berkeley Mono",
   "textFontFamily": "PP Neue Montreal,Berkeley Mono",
   "monospaceFontFamily": "Berkeley Mono",
-  "baseFontSize": 18,
+  "baseFontSize": null,
   "translucency": true,
   "showViewHeader": false,
   "enabledCssSnippets": [

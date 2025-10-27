@@ -1,6 +1,6 @@
 import { QuartzTransformerPlugin } from "../types"
 import { Root } from "mdast"
-import { parseFilter, parseViews, BaseFile } from "../../util/base/types"
+import { parseFilter, parseViews, BaseFile, PropertyConfig } from "../../util/base/types"
 import yaml from "js-yaml"
 
 export interface Options {
@@ -40,11 +40,45 @@ export const ObsidianBases: QuartzTransformerPlugin<Partial<Options>> = (userOpt
                 throw new Error("Invalid .base file format")
               }
 
+              const normalizeProperties = (
+                raw: unknown,
+              ): Record<string, PropertyConfig> | undefined => {
+                if (!raw || typeof raw !== "object") {
+                  return undefined
+                }
+
+                const normalized: Record<string, PropertyConfig> = {}
+
+                for (const [key, value] of Object.entries(raw)) {
+                  if (!value || typeof value !== "object") {
+                    continue
+                  }
+
+                  const propConfig = value as PropertyConfig
+                  normalized[key] = propConfig
+
+                  const withoutPrefix = key.replace(/^(?:note|file)\./, "")
+                  if (withoutPrefix !== key && !(withoutPrefix in normalized)) {
+                    normalized[withoutPrefix] = propConfig
+                  }
+
+                  const segments = withoutPrefix.split(".")
+                  const lastSegment = segments[segments.length - 1]
+                  if (lastSegment && !(lastSegment in normalized)) {
+                    normalized[lastSegment] = propConfig
+                  }
+                }
+
+                return Object.keys(normalized).length > 0 ? normalized : undefined
+              }
+
+              const properties = normalizeProperties(parsed.properties)
+
               // Store config in file.data - emitter will do actual filtering
               const config: BaseFile = {
                 filters: parseFilter(parsed.filters),
                 views: parseViews(parsed.views),
-                properties: parsed.properties,
+                properties,
                 summaries: parsed.summaries,
               }
               file.data.basesConfig = config

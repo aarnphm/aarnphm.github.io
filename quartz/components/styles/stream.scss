@@ -13,7 +13,8 @@
   }
 
   .main-col {
-    grid-column: 5/9;
+    grid-column-end: 9;
+    width: 100%;
   }
 
   @media all and ($mobile) {

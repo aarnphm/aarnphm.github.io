@@ -2,13 +2,17 @@
 id: Crossroads
 author: Louise Glück
 title: Crossroads
-date: "2025-10-26"
+date: 2025-10-26
 external-url: https://griffinpoetryprize.com/poem/crossroads-gluck
 modified: 2025-10-27 02:42:03 GMT-04:00
 tags:
   - poetry
 posters: "[[library/posters/crossroads.png]]"
 category: poetry
+by: Louise Glück
+status: finished
+year-finished: 2025
+subcategory: love
 ---
 
 ```poetry

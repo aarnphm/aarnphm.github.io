@@ -17,7 +17,7 @@ import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.
 import { Content, BaseViewSelector } from "../../components"
 import { write } from "./helpers"
 import { evaluateFilter, resolvePropertyValue } from "../../util/base/query"
-import { BaseView, BaseGroupBy } from "../../util/base/types"
+import { BaseView, BaseGroupBy, PropertyConfig } from "../../util/base/types"
 import { QuartzPluginData } from "../vfile"
 import { Root } from "hast"
 import { h } from "hastscript"
@@ -174,49 +174,58 @@ function renderInlineString(
   return nodes
 }
 
+function getPropertyDisplayName(
+  property: string,
+  properties?: Record<string, PropertyConfig>,
+): string {
+  const candidates: string[] = []
+
+  const addCandidate = (candidate: string | undefined) => {
+    if (!candidate) return
+    if (!candidates.includes(candidate)) {
+      candidates.push(candidate)
+    }
+  }
+
+  addCandidate(property)
+
+  const withoutPrefix = property.replace(/^(?:note|file)\./, "")
+  addCandidate(withoutPrefix)
+
+  if (!property.startsWith("note.")) {
+    addCandidate(`note.${property}`)
+  }
+  if (!property.startsWith("file.")) {
+    addCandidate(`file.${property}`)
+  }
+
+  addCandidate(withoutPrefix.split(".").pop())
+
+  for (const candidate of candidates) {
+    const displayName = properties?.[candidate]?.displayName
+    if (displayName && displayName.length > 0) {
+      return displayName
+    }
+  }
+
+  const base = withoutPrefix.length > 0 ? withoutPrefix : property
+  return base
+    .split(".")
+    .pop()!
+    .replace(/-/g, " ")
+    .replace(/_/g, " ")
+    .replace(/([A-Z])/g, " $1")
+    .trim()
+}
+
 // Helper functions for table building
 function buildTableHead(
   columns: string[],
-  properties?: Record<string, { displayName?: string }>,
+  properties?: Record<string, PropertyConfig>,
 ): any {
   return h(
     "tr",
-    columns.map((col) => {
-      // check if there's a custom display name in properties config
-      let displayName: string
-
-      // try exact match first (handles both simple and nested paths)
-      if (properties?.[col]?.displayName) {
-        displayName = properties[col].displayName!
-      } else {
-        // for nested properties like "seealso", check if it's the last segment
-        // of a longer path like "note.seealso"
-        const dotIndex = col.lastIndexOf(".")
-        if (dotIndex !== -1) {
-          const fullPath = col
-          // try matching the full path in properties config
-          if (properties?.[fullPath]?.displayName) {
-            displayName = properties[fullPath].displayName!
-          } else {
-            // fallback to auto-generated name from the last segment
-            const lastSegment = col.slice(dotIndex + 1)
-            displayName = lastSegment
-              .replace(/-/g, " ")
-              .replace(/([A-Z])/g, " $1")
-              .trim()
-          }
-        } else {
-          // fallback to auto-generated name
-          displayName = col
-            .replace("file.", "")
-            .replace("note.", "")
-            .replace(/-/g, " ")
-            .replace(/([A-Z])/g, " $1")
-            .trim()
-        }
-      }
-      return h("th", {}, displayName)
-    }),
+    columns.map((col) => h("th", {}, getPropertyDisplayName(col, properties))),
   )
 }
 
@@ -455,74 +464,158 @@ function buildTable(
 }
 
 // build list view
+function listValueToPlainText(value: any): string | undefined {
+  if (value === undefined || value === null) {
+    return undefined
+  }
+  if (Array.isArray(value)) {
+    const parts = value
+      .map((item) => listValueToPlainText(item))
+      .filter((part): part is string => Boolean(part && part.length > 0))
+    if (parts.length === 0) return undefined
+    return parts.join(", ")
+  }
+  if (value instanceof Date) {
+    return value.toISOString().split("T")[0]
+  }
+  if (typeof value === "string") {
+    const cleaned = value
+      .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, "$2")
+      .replace(/\[\[([^\]]+)\]\]/g, "$1")
+      .trim()
+    return cleaned.length > 0 ? cleaned : undefined
+  }
+  const stringified = String(value).trim()
+  return stringified.length > 0 ? stringified : undefined
+}
+
+function hasRenderableValue(value: any): boolean {
+  if (value === undefined || value === null) return false
+  if (Array.isArray(value)) {
+    return value.some((item) => hasRenderableValue(item))
+  }
+  if (value instanceof Date) return true
+  if (typeof value === "string") return value.trim().length > 0
+  return true
+}
+
+function renderPropertyValueNodes(
+  value: any,
+  currentSlug: FullSlug,
+  allFiles: QuartzPluginData[],
+): any[] {
+  if (value === undefined || value === null) return []
+  if (Array.isArray(value)) {
+    const nodes: any[] = []
+    value.forEach((item, idx) => {
+      nodes.push(...renderPropertyValueNodes(item, currentSlug, allFiles))
+      if (idx < value.length - 1) {
+        nodes.push(", ")
+      }
+    })
+    return nodes
+  }
+  if (value instanceof Date) {
+    return [value.toISOString().split("T")[0]]
+  }
+  if (typeof value === "string") {
+    return renderInlineString(value, currentSlug, allFiles)
+  }
+  return [String(value)]
+}
+
 function buildList(
   files: QuartzPluginData[],
   view: BaseView,
   currentSlug: FullSlug,
-  _allFiles: QuartzPluginData[],
+  allFiles: QuartzPluginData[],
+  properties?: Record<string, PropertyConfig>,
 ): any {
-  const nestedProperties = view.nestedProperties === true
+  const nestedProperties = view.nestedProperties === true || view.indentProperties === true
+  const order = Array.isArray(view.order) && view.order.length > 0 ? view.order : ["title"]
+  const [primaryProp, ...secondaryProps] = order
+
+  const renderListItem = (file: QuartzPluginData) => {
+    const slug = (file.slug || "") as FullSlug
+    const href = resolveRelative(currentSlug, slug)
+
+    const fallbackTitle =
+      getFileDisplayName(file) ?? fallbackNameFromSlug((file.slug || "") as FullSlug)
+
+    const primaryValue = primaryProp
+      ? resolvePropertyValue(file, primaryProp, allFiles)
+      : resolvePropertyValue(file, "title", allFiles)
+    const primaryText = listValueToPlainText(primaryValue) ?? fallbackTitle
+    const anchor = h("a.internal", { href, "data-slug": slug }, primaryText)
+
+    const seen = new Set<string>()
+    if (primaryProp) {
+      seen.add(primaryProp)
+    }
+
+    if (!nestedProperties) {
+      const rawSeparator = typeof view.separator === "string" ? view.separator : ","
+      const separator = rawSeparator.endsWith(" ") ? rawSeparator : `${rawSeparator} `
+      const inlineNodes: any[] = []
+
+      for (const propertyKey of secondaryProps) {
+        if (!propertyKey || seen.has(propertyKey)) continue
+        const value = resolvePropertyValue(file, propertyKey, allFiles)
+        if (!hasRenderableValue(value)) continue
+
+        const renderedValue = renderPropertyValueNodes(value, currentSlug, allFiles)
+        if (renderedValue.length === 0) continue
+
+        inlineNodes.push(separator)
+        inlineNodes.push(...renderedValue)
+        seen.add(propertyKey)
+      }
+
+      return inlineNodes.length > 0 ? h("li", [anchor, ...inlineNodes]) : h("li", [anchor])
+    }
+
+    const metadataItems: any[] = []
+
+    for (const propertyKey of secondaryProps) {
+      if (!propertyKey || seen.has(propertyKey)) continue
+      const value = resolvePropertyValue(file, propertyKey, allFiles)
+      if (!hasRenderableValue(value)) continue
+
+      const renderedValue = renderPropertyValueNodes(value, currentSlug, allFiles)
+      if (renderedValue.length === 0) continue
+
+      const label = getPropertyDisplayName(propertyKey, properties)
+      metadataItems.push(
+        h("li", [h("span.base-list-meta-label", `${label}: `), ...renderedValue]),
+      )
+      seen.add(propertyKey)
+    }
+
+    if (metadataItems.length === 0) {
+      return h("li", [anchor])
+    }
+
+    return h("li", [anchor, h("ul.base-list-nested", metadataItems)])
+  }
 
   if (view.groupBy) {
     const groups = groupFiles(files, view.groupBy)
     const groupElements: any[] = []
 
-    for (const [groupName, groupFiles] of groups) {
-      if (nestedProperties && groupFiles.length > 0) {
-        // nested mode: first item becomes parent, rest are children
-        const [firstFile, ...restFiles] = groupFiles
-        const firstTitle = firstFile.frontmatter?.title || firstFile.slug?.split("/").pop() || ""
-        const firstSlug = (firstFile.slug || "") as FullSlug
-        const firstHref = resolveRelative(currentSlug, firstSlug)
-
-        const nestedItems = restFiles.map((file) => {
-          const title = file.frontmatter?.title || file.slug?.split("/").pop() || ""
-          const slug = (file.slug || "") as FullSlug
-          const href = resolveRelative(currentSlug, slug)
-          return h("li", [h("a.internal", { href, "data-slug": slug }, title)])
-        })
-
-        // create parent item with optional nested children
-        const parentItem = h("li", [
-          h("a.internal", { href: firstHref, "data-slug": firstSlug }, firstTitle),
-          ...(nestedItems.length > 0 ? [h("ul.base-list-nested", nestedItems)] : []),
-        ])
-
-        groupElements.push(
-          h("div.base-list-group", [
-            h("h3.base-list-group-header", groupName),
-            h("ul.base-list", [parentItem]),
-          ]),
-        )
-      } else {
-        // standard flat grouping
-        const items = groupFiles.map((file) => {
-          const title = file.frontmatter?.title || file.slug?.split("/").pop() || ""
-          const slug = (file.slug || "") as FullSlug
-          const href = resolveRelative(currentSlug, slug)
-          return h("li", [h("a.internal", { href, "data-slug": slug }, title)])
-        })
-
-        groupElements.push(
-          h("div.base-list-group", [
-            h("h3.base-list-group-header", groupName),
-            h("ul.base-list", items),
-          ]),
-        )
-      }
+    for (const [groupName, groupedFiles] of groups) {
+      const items = groupedFiles.map((file) => renderListItem(file))
+      groupElements.push(
+        h("div.base-list-group", [
+          h("h3.base-list-group-header", groupName),
+          h("ul.base-list", items),
+        ]),
+      )
     }
 
     return h("div.base-list-container", groupElements)
   }
 
-  // no grouping
-  const items = files.map((file) => {
-    const title = file.frontmatter?.title || file.slug?.split("/").pop() || ""
-    const slug = (file.slug || "") as FullSlug
-    const href = resolveRelative(currentSlug, slug)
-    return h("li", [h("a.internal", { href, "data-slug": slug }, title)])
-  })
-
+  const items = files.map((file) => renderListItem(file))
   return h("ul.base-list", items)
 }
 
@@ -765,7 +858,7 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts)
             const tableNode = buildTable(limitedFiles, view, slug, allFiles, config.properties)
             tree = { type: "root", children: [tableNode] }
           } else if (view.type === "list") {
-            const listNode = buildList(limitedFiles, view, slug, allFiles)
+            const listNode = buildList(limitedFiles, view, slug, allFiles, config.properties)
             tree = { type: "root", children: [listNode] }
           } else if (view.type === "card" || view.type === "cards") {
             const cardsNode = buildCards(limitedFiles, view, slug, allFiles)

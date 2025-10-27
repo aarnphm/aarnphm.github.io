@@ -23,6 +23,36 @@ const SUBSTACK_POST_REGEX = /^https?:\/\/[^/]+\/p\/[^/]+/i
 let mapboxTokenPromise: Promise<string | null> | null = null
 let mapboxReady: Promise<any | null> | null = null
 const mapInstances = new WeakMap<HTMLElement, any>()
+let scrollLockState: { x: number; y: number } | null = null
+
+function lockPageScroll() {
+  if (scrollLockState) return
+  scrollLockState = { x: window.scrollX, y: window.scrollY }
+  document.documentElement.classList.add("arena-modal-open")
+  document.body.classList.add("arena-modal-open")
+  document.body.style.position = "fixed"
+  document.body.style.top = `-${scrollLockState.y}px`
+  document.body.style.left = "0"
+  document.body.style.right = "0"
+  document.body.style.width = "100%"
+  document.body.style.overflow = "hidden"
+}
+
+function unlockPageScroll() {
+  const state = scrollLockState
+  document.documentElement.classList.remove("arena-modal-open")
+  document.body.classList.remove("arena-modal-open")
+  document.body.style.position = ""
+  document.body.style.top = ""
+  document.body.style.left = ""
+  document.body.style.right = ""
+  document.body.style.width = ""
+  document.body.style.overflow = ""
+  scrollLockState = null
+  if (state) {
+    window.scrollTo(state.x, state.y)
+  }
+}
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (char) => {
@@ -679,7 +709,7 @@ async function showModal(blockId: string) {
 
   updateNavButtons()
   modal.classList.add("active")
-  document.body.style.overflow = "hidden"
+  lockPageScroll()
 }
 
 function closeModal() {
@@ -690,7 +720,7 @@ function closeModal() {
       cleanupMaps(modalBody)
     }
     modal.classList.remove("active")
-    document.body.style.overflow = ""
+    unlockPageScroll()
   }
 }
 

@@ -23,7 +23,6 @@ views:
       property: category
       direction: DESC
     order:
-      - file.basename
       - seealso
       - category
       - date
@@ -46,23 +45,20 @@ views:
   - type: table
     name: all
     groupBy:
-      property: author
-      direction: ASC
+      property: category
+      direction: DESC
     order:
       - title
-      - category
       - date
       - status
-      - file.tags
       - year-finished
       - subcategory
+      - seealso
     sort:
       - property: status
         direction: ASC
       - property: date
         direction: DESC
-      - property: category
-        direction: ASC
     columnSize:
       note.title: 401
       note.date: 147
@@ -119,20 +115,18 @@ views:
     name: wip
     filters:
       and:
-        - status != "finished"
+        - '!status.containsAny("finished", "evergreen")'
     groupBy:
       property: category
       direction: DESC
     order:
       - title
-      - category
       - date
-      - status
-      - file.tags
-      - author
-      - year-finished
       - subcategory
+      - author
     sort:
+      - property: author
+        direction: DESC
       - property: title
         direction: DESC
       - property: category
@@ -142,7 +136,7 @@ views:
     columnSize:
       note.title: 401
       note.date: 147
-      note.seealso: 125
+      note.author: 237
   - type: list
     name: dynalist
     groupBy:
@@ -150,11 +144,11 @@ views:
       direction: ASC
     order:
       - file.name
-      - description
-      - seealso
-      - file.backlinks
       - author
+      - seealso
     sort:
       - property: file.name
         direction: ASC
-    nestedProperties: true
+    markers: bullet
+    indentProperties: true
+    separator: ","

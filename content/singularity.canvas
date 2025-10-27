@@ -1,0 +1,9 @@
+{
+	"nodes":[
+		{"id":"f9cca7281bc244de","x":-900,"y":-1140,"width":250,"height":60,"type":"text","text":"How do we achieve superintelligence system?"},
+		{"id":"03e035c76b402cea","x":-460,"y":-960,"width":700,"height":640,"color":"2","type":"file","file":"thoughts/LLMs.md"}
+	],
+	"edges":[
+		{"id":"33ade076334b0d2c","fromNode":"f9cca7281bc244de","fromSide":"right","toNode":"03e035c76b402cea","toSide":"left"}
+	]
+}
