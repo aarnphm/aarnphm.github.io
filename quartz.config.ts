@@ -236,6 +236,7 @@ const config: QuartzConfig = {
       Plugin.ArenaPage(),
       Plugin.BasePage(),
       Plugin.StreamPage(),
+      Plugin.StreamIndex(),
     ],
   },
 }

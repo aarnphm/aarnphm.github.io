@@ -11,5 +11,5 @@ tags:
   - philosophy
 posters: "[[library/posters/civilisation-and-its-discontents.jpg]]"
 title: Civilisation and its Discontents
-internal-notes: "[[thoughts/Civilisation and its Discontents]]"
+seealso: "[[thoughts/Civilisation and its Discontents]]"
 ---

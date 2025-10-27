@@ -10,7 +10,7 @@ tags:
   - philosophy
 posters: "[[library/posters/tractatus-logico-philosophicus.jpg]]"
 title: Tractatus Logico-Philosophicus
-internal-notes: "[[thoughts/Tractatus]]"
+seealso: "[[thoughts/Tractatus]]"
 ---
 
 ![[thoughts/Tractatus#architectural skeleton|structure of TLP]]

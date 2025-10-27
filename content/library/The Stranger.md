@@ -11,5 +11,5 @@ tags:
   - fiction
 posters: "[[library/posters/the-stranger.jpg]]"
 title: The Stranger
-internal-notes: "[[thoughts/Camus]]"
+seealso: "[[thoughts/Camus]]"
 ---

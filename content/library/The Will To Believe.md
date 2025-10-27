@@ -10,5 +10,5 @@ tags:
   - philosophy
 posters: "[[library/posters/the-will-to-believe.jpg]]"
 title: The Will To Believe
-internal-notes: "[[thoughts/The Will To Believe]]"
+seealso: "[[thoughts/The Will To Believe]]"
 ---

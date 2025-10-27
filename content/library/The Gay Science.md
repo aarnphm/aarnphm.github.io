@@ -12,7 +12,7 @@ tags:
   - philosophy
 posters: "[[library/posters/the-gay-science.jpg]]"
 title: The Gay Science
-internal-notes: "[[thoughts/Philosophy and Nietzsche#The Gay Science]]"
+seealso: "[[thoughts/Philosophy and Nietzsche#The Gay Science]]"
 ---
 
 related: [[thoughts/Philosophy and Nietzsche]]

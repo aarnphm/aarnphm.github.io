@@ -1,20 +1,19 @@
 ---
+date: "2024-10-24"
 id: are.na
-permalinks:
-  - /website
-  - /tweets
-  - /resources
+aliases:
+  - inspo
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
+title: are.na
 socials:
+  home: /
   curius: /curius
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-modified: 2025-10-27 01:33:22 GMT-04:00
-title: are.na
+modified: 2025-10-27 03:37:45 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -35,8 +34,10 @@ codex:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be consumed by quartz/plugins/emitters/arena.ts, and then ingested with quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /tweets
+  - /resources
 claude:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -232,6 +233,14 @@ cssclasses:
 
 ## website
 
+- https://felixdorner.de/
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [fruit]
+- https://gerhard.xyz/
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [fruit]
 - https://nof1.ai/ -- Alpha Arena [**]
   - [meta]:
     - date: 10/24/2025
@@ -252,7 +261,7 @@ cssclasses:
     - date: 10/19/2025
     - tags: [life]
   - https://radio.garden/visit/toronto/vqzAr1BQ: Met Radio 1280 AM - CJTM
-- https://basecase.vc/lexiconic?view=list&sort=random&seed=1760566272204
+- https://basecase.vc/lexiconic?view=list&sort=random&seed=1760566272204 -- words [**]
   - [meta]:
     - date: 10/16/2025
     - tags: [etymology]
@@ -587,18 +596,15 @@ cssclasses:
 
 ## people
 
-- https://justinjay.wang/
+- https://en.wikipedia.org/wiki/Viktor_Frankl -- Viktor Frankl
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [humanistic psychology]
+  - Logotherapy was promoted as the third school of Viennese Psychotherapy, after those established by Sigmund Freud and Alfred Adler.
+- https://justinjay.wang/ -- Justin J. Wang
   - [meta]:
     - date: 10/07/2025
     - tags: [utilitarian, hypertext]
-- https://felixdorner.de/
-  - [meta]:
-    - date: 10/06/2025
-    - tags: [fruit]
-- https://gerhard.xyz/
-  - [meta]:
-    - date: 10/06/2025
-    - tags: [fruit]
 - https://en.wikipedia.org/wiki/Max_Bense -- Max Bense
   - [meta]:
     - date: 10/24/2025
@@ -1045,6 +1051,10 @@ cssclasses:
 
 ## essay
 
+- https://jennyclark.substack.com/p/prayer-for-the-girl-who-often-forgets -- prayer for the girl who often forgets that enough is enough
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [love]
 - https://amasad.me/keep-winning -- How to keep winning.
   - [meta]:
     - date: 10/24/2025
@@ -1666,6 +1676,19 @@ cssclasses:
 
 ## machine learning
 
+- https://www.anthropic.com/research/reasoning-models-dont-say-think -- Reasoning models don't always say what they think
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [interpretability]
+  - https://assets.anthropic.com/m/71876fabef0f0ed4/original/reasoning_models_paper.pdf
+- https://transformer-circuits.pub/2025/faithfulness-toy-model/index.html -- A Toy Model of Mechanistic (Un)Faithfulness
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [alignment]
+- https://alignment.anthropic.com/2025/subliminal-learning/ -- Subliminal Learning: Language models Transmit Behavioral Traits via Hidden Signals in Data
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [alignment]
 - https://alignment.anthropic.com/2025/stress-testing-model-specs/ -- Stress-testing model specs reveals character differences among language models
   - [meta]:
     - date: 10/27/2025
@@ -2488,6 +2511,10 @@ cssclasses:
 
 ## technology
 
+- https://samwho.dev/turing-machines -- Turing machines
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [computer science]
 - https://www.lesswrong.com/posts/qAdDzcBuDBLexb4fC/the-neglected-approaches-approach-ae-studio-s-alignment -- The 'Neglected Approaches' Approach: AE Studio's Alignment Agenda
   - [meta]:
     - date: 10/23/2025
@@ -2501,16 +2528,8 @@ cssclasses:
 - https://en.wikipedia.org/wiki/Multiply%E2%80%93accumulate_operation -- Multiply–accumulate operation
   - [meta]:
     - date: 10/09/2025
-    - tags: [fruit]
+    - tags: [mma, matrix]
   - Think of FMA, MMA in [[thoughts/GPU programming|GPU]]
-- https://www.anthropic.com/research/reasoning-models-dont-say-think -- Reasoning models don't always say what they think
-  - [meta]:
-    - date: 10/09/2025
-    - tags: [fruit]
-  - [bentoml get deepseek-v2-lite-chat-pd-amd:wqveagffdwpsgv34meta]:
-    - date: 10/09/2025
-    - tags: [fruit]
-  - https://assets.anthropic.com/m/71876fabef0f0ed4/original/reasoning_models_paper.pdf
 - https://jasmi.news/p/32-notes-on-ai-and-writing -- 32 notes on AI and writing
   - [meta]:
     - date: 10/07/2025
@@ -2784,6 +2803,21 @@ cssclasses:
 
 ## stream
 
+- https://www.modular.com/blog/democratizing-compute-part-1-deepseeks-impact-on-ai -- Democratizing AI Compute [**]
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [inference, mlsys]
+  - https://www.modular.com/blog/democratizing-compute-part-2-what-exactly-is-cuda
+  - https://www.modular.com/blog/democratizing-ai-compute-part-3-how-did-cuda-succeed
+  - https://www.modular.com/blog/democratizing-ai-compute-part-4-cuda-is-the-incumbent-but-is-it-any-good
+  - https://www.modular.com/blog/democratizing-ai-compute-part-5-what-about-cuda-c-alternatives
+  - https://www.modular.com/blog/democratizing-ai-compute-part-6-what-about-ai-compilers
+  - https://www.modular.com/blog/democratizing-ai-compute-part-7-what-about-triton-and-python-edsls
+  - https://www.modular.com/blog/democratizing-ai-compute-part-7-what-about-triton-and-python-edsls
+  - https://www.modular.com/blog/democratizing-ai-compute-part-8-what-about-the-mlir-compiler-infrastructure
+  - https://www.modular.com/blog/democratizing-ai-compute-part-9-why-do-hw-companies-struggle-to-build-ai-software
+  - https://www.modular.com/blog/modulars-bet-to-break-out-of-the-matrix-democratizing-ai-compute-part-10
+  - https://www.modular.com/blog/how-is-modular-democratizing-ai-compute
 - https://x.com/gwern/status/1981474735822082534 -- Gwern's css [**]
   - [meta]:
     - date: 10/23/2025
@@ -2791,18 +2825,18 @@ cssclasses:
 - https://notes.andymatuschak.org/Effective_system_design_requires_insights_drawn_from_serious_contexts_of_use -- Effective system design requires insights drawn from serious contexts of use
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [design, tool of thought]
 - https://wilderness.land/ -- wilderness.land
   - [meta]:
     - date: 10/02/2025
     - tags: [fruit]
-- https://jennyclark.substack.com/p/prayer-for-the-girl-who-often-forgets -- prayer for the girl who often forgets that enough is enough
-  - [meta]:
-    - date: 08/16/2025
-    - tags: [fruit]
 - https://stream.thesephist.com/ -- Linus's stream
   - [meta]:
     - date: 10/02/2025
+    - tags: [thoughts]
+- [[/stream|microblog within a blog within a digital garden]]
+  - [meta]:
+    - date: 10/27/2025
     - tags: [fruit]
 - [[/books|antilibrary]]
   - [meta]:
@@ -2943,6 +2977,10 @@ cssclasses:
   - [meta]:
     - date: 10/13/2025
     - tags: [food]
+- https://www.youtube.com/watch?v=ne5_nsvSjIU -- Date night idea
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [recipe]
 
 ## video
 
@@ -3670,10 +3708,14 @@ cssclasses:
 
 ## math
 
+- https://www.youtube.com/watch?v=oIhdrMh3UJw -- Symmetric Derivative and Generalized Pseudoderivative
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [linear algebra]
 - https://www.ma.imperial.ac.uk/~buzzard/maths/research/notes/sp2n.pdf -- Overconvergent Siegel Modular Symbols
   - [meta]:
     - date: 10/24/2025
-    - tags: [fruit]
+    - tags: [papers, modular form]
 - https://github.com/teorth/pfr -- formalization of the Polynomial Freiman Ruzsa conjecture
   - [meta]:
     - date: 10/12/2025
@@ -3681,7 +3723,7 @@ cssclasses:
 - https://www.youtube.com/watch?v=44hfoihYfJ0 -- Towards a Geometric Theory of Deep Learning [**]
   - [meta]:
     - date: 10/12/2025
-    - tags: [fruit]
+    - tags: [dl]
 - https://www.youtube.com/watch?v=f4NDXEQhBvo -- The shape of mathematics [**]
   - [meta]:
     - date: 10/12/2025
@@ -3976,7 +4018,7 @@ cssclasses:
   - [meta]:
     - date: 10/09/2025
     - tags: [math, interpretability]
-- https://arxiv.org/abs/2012.14913 [**]
+- https://arxiv.org/abs/2012.14913
   - [meta]:
     - date: 10/09/2025
     - tags: [inference, interpretability]

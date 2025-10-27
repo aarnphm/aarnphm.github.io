@@ -618,7 +618,7 @@ ol.overflow {
       --grid-left: 1fr;
     }
     .header-content {
-      grid-column: 4/10;
+      grid-column: 4/-4;
     }
   }
 }

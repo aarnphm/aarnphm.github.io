@@ -10,5 +10,5 @@ tags:
   - philosophy
 posters: "[[library/posters/being-and-time.jpg]]"
 title: Being and Time
-internal-notes: "[[thoughts/being#Heidegger's Being and Time]]"
+seealso: "[[thoughts/being#Heidegger's Being and Time]]"
 ---

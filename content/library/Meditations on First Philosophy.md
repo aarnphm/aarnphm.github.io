@@ -10,7 +10,7 @@ tags:
   - philosophy
 posters: "[[library/posters/meditations-on-first-philosophy.jpg]]"
 category: philosophy
-internal-notes: "[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Descartes]]"
+seealso: "[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Descartes]]"
 ---
 
 French edition.

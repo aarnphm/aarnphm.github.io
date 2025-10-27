@@ -11,5 +11,5 @@ tags:
   - non-fiction
 posters: "[[library/posters/pretentiousness.jpg]]"
 category: non-fiction
-internal-notes: "[[thoughts/fashion#pretentious.]]"
+seealso: "[[thoughts/fashion#pretentious.]]"
 ---

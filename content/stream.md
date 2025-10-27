@@ -6,7 +6,7 @@ tags:
   - evergreen
 description: a microblog within a blog, at the middle of the night.
 date: "2025-10-24"
-modified: 2025-10-26 23:59:33 GMT-04:00
+modified: 2025-10-27 02:20:55 GMT-04:00
 title: stream
 ---
 
@@ -76,7 +76,7 @@ Yudkowsky's full argument on eschatology isn't productive whatsoever. Feels a lo
 
 Yudkowsky's claim relies on [[thoughts/AGI|superintelligent]] optimizer + misaligned goals = human extinction. Not because it hates us. Because we're made of atoms it can use for something else. Nanotech grey goo. Designer pathogens. Trees that grow computer chips. All physically possible, therefore inevitable once you have sufficient optimization power.
 
-But intelligence in actual systems is jagged, domain-specific, constrained by architecture. AlphaFold is brilliant at protein folding and useless at everything else. GPT-4 can write code but can't reliably count letters. The jump from "good at prediction" to "can design novel molecular machinery from first principles" assumes transfer learning we haven't seen. These very much resembles the old GOFAI vs NFAI arguments. Maybe the argument here is to have a _composition of multiple domain-specific superintelligence systems_ that amplify our life.
+But intelligence in actual systems is jagged, domain-specific, constrained by architecture. AlphaFold is brilliant at protein folding and useless at everything else. [[thoughts/LLMs|GPT-4]] can write code but can't reliably count letters. The jump from "good at prediction" to "can design novel molecular machinery from first principles" assumes transfer learning we haven't seen. These very much resembles the old GOFAI vs NFAI arguments. Maybe the argument here is to have a _composition of multiple domain-specific superintelligence systems_ that amplify our life.
 
 The "foom" scenario requires explosive recursive self-improvement, which is obtuse. GPT-6 builds GPT-7, capabilities doubling weekly until godlike intelligence. Architecturally speaking, maybe we figure out something that scales with attention, but it has to be beyond just Transformers, maybe in conjunction with something like JEPA. The argument assumes breakthroughs on demand.
 
@@ -87,3 +87,20 @@ The frame requires that one assume worst case at every branch, assume maximum ca
 > don't build, don't experiment, don't iterate, because any mistake might be the last. That's **not** how we've solved any complex safety problem. Treating everyone who continues working as equivalent to cigarette executives isn't engaging with technical disagreements.
 
 [[thoughts/Alignment]] is hard. I do think that capabilities scales faster than safety. But the response can't be "stop everything and hope treaties hold." It has to be: build better systems, understand current systems deeply, develop alignment that might work. You need feedback loops. You need to learn from failures at scales where failure isn't extinction.
+
+---
+
+- [meta]:
+  - date: 2025-10-27 01:41:59 GMT-04:00
+  - tags:
+    - life
+
+[[thoughts/Camus]] keeps calling suicide the "one truly serious philosophical problem" because staring at the absurd is the only honest starting point. the argument for stepping off the stage is seductively clean: no more compromises, no more farce, just one decisive gesture, poof, gone from existence.
+
+follow it a little further and it folds in on itself. suicide is marketed as rebellion, but it is capitulation. the absurd is not a verdict, and suicide slams a period where a semicolon belongs. the leap from "life lacks ultimate meaning" to "therefore stop living" deletes all the middle work—the defiant breakfasts, the small care you put into cooking for someone, the grind of staying in the room where any meaning could still appear.
+
+riding that line of thought still matters. thinking about the topic push the absurd argument to exhaustion so you can hear what survives the pressure. the exercise loosens inherited scripts. it makes me count the moments i refuse to hand over to nothingness, the people i will not abandon to silence, the projects i want to watch fail and resurrect. contemplating the void sharpens what is not void.
+
+so i treat the temptation like a gym routine. narrate it, dismantle it, then shoulder the boulder again the way [[library/The Myth of Sisyphus|Sisyphus]] keeps on pushing the boulder. keeping the threat on the table means the choice to live stays live, deliberate, renewed. that ongoing choice is the revolt; that's the healthy part—choosing with eyes open, argument exhausted.
+
+if the abstraction ever collapses into something that hurts in the bones, that stops being [[/tags/philosophy]]. that's when i call someone, step outside, accept help. the thought experiment ends the moment it stops being an experiment.

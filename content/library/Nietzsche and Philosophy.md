@@ -12,7 +12,7 @@ tags:
 posters: "[[library/posters/nietzsche-and-philosophy.jpg]]"
 description: being and multiplicity
 title: Nietzsche and Philosophy
-internal-notes: "[[thoughts/Philosophy and Nietzsche]]"
+seealso: "[[thoughts/Philosophy and Nietzsche]]"
 ---
 
 _by [[thoughts/Giles Deleuze|Giles Deleuze]]_

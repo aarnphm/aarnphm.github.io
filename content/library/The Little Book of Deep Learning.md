@@ -12,5 +12,5 @@ tags:
   - non-fiction
 posters: "[[library/posters/the-little-book-of-deep-learning.jpg]]"
 title: The Little Book of Deep Learning
-internal-notes: "[[thoughts/deep learning]]"
+seealso: "[[thoughts/deep learning]]"
 ---

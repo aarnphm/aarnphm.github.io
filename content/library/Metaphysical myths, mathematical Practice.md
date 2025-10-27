@@ -10,5 +10,5 @@ tags:
   - philosophy
 posters: "[[library/posters/metaphysical-myths-mathematical-practice.jpg]]"
 category: philosophy
-internal-notes: "[[thoughts/Epistemology]]"
+seealso: "[[thoughts/Epistemology]]"
 ---

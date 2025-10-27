@@ -12,7 +12,7 @@ filters:
 properties:
   file.tags:
     displayName: tags
-  note.internal-notes:
+  note.seealso:
     displayName: notebooks
   file.basename:
     displayName: notes
@@ -24,7 +24,7 @@ views:
       direction: DESC
     order:
       - file.basename
-      - internal-notes
+      - seealso
       - category
       - date
     sort:
@@ -34,13 +34,13 @@ views:
         direction: ASC
       - property: category
         direction: ASC
-      - property: internal-notes
+      - property: seealso
         direction: ASC
     summaries: {}
     columnSize:
       note.title: 401
       note.date: 147
-      note.internal-notes: 125
+      note.seealso: 125
     cardSize: 320
     image: note.posters
   - type: table
@@ -66,7 +66,7 @@ views:
     columnSize:
       note.title: 401
       note.date: 147
-      note.internal-notes: 125
+      note.seealso: 125
   - type: table
     name: philosophy
     filters:
@@ -82,9 +82,9 @@ views:
       - author
       - subcategory
       - file.backlinks
-      - internal-notes
+      - seealso
     sort:
-      - property: internal-notes
+      - property: seealso
         direction: ASC
       - property: date
         direction: DESC
@@ -100,7 +100,7 @@ views:
     columnSize:
       note.title: 401
       note.date: 147
-      note.internal-notes: 125
+      note.seealso: 125
   - type: table
     name: top of mind
     filters:
@@ -142,7 +142,7 @@ views:
     columnSize:
       note.title: 401
       note.date: 147
-      note.internal-notes: 125
+      note.seealso: 125
   - type: list
     name: dynalist
     groupBy:
@@ -151,7 +151,7 @@ views:
     order:
       - file.name
       - description
-      - internal-notes
+      - seealso
       - file.backlinks
       - author
     sort:

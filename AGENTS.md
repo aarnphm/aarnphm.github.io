@@ -6,7 +6,7 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 
 **Build and Development**:
 
-- `pnpm bundle` - Build for production (concurrency 8, bundleInfo, verbose)
+- `pnpm dev` - run dev (concurrency 8, bundleInfo, verbose)
   - After this, run `fd --glob "*.[pdf|ddl]" public -x rm` to mae it compatible with `wrangler`
 - `pnpm prod` - Production build with NODE_ENV=production
 - `pnpm cf:deploy` - Deploy to Cloudflare (runs check first)

@@ -10,5 +10,5 @@ tags:
   - philosophy
 posters: "[[library/posters/the-world-as-will-and-representation.jpg]]"
 category: philosophy
-internal-notes: "[[thoughts/representations]]"
+seealso: "[[thoughts/representations]]"
 ---

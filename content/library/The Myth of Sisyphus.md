@@ -11,5 +11,5 @@ tags:
   - philosophy
 posters: "[[library/posters/the-myth-of-sisyphus.jpg]]"
 category: philosophy
-internal-notes: "[[thoughts/Camus#The Myth of Sisyphus]]"
+seealso: "[[thoughts/Camus#The Myth of Sisyphus]]"
 ---

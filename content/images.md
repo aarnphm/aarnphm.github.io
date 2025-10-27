@@ -99,6 +99,8 @@ title: images
 
 ![[thoughts/images/cute-dog.webp|cute doggie]]
 
+![[thoughts/images/motivations and incentives.webp|motivations versus incentives]]
+
 ## authors
 
 ![[thoughts/images/joan-didion.webp|joan didion]]

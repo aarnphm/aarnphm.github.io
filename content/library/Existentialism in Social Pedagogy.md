@@ -10,5 +10,5 @@ tags:
   - philosophy
 posters: "[[library/posters/existentialism-in-social-pedagogy.jpg]]"
 category: philosophy
-internal-notes: "[[thoughts/education]]"
+seealso: "[[thoughts/education]]"
 ---

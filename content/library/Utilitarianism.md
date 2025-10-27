@@ -10,5 +10,5 @@ tags:
   - philosophy
 posters: "[[library/posters/utilitarianism.jpg]]"
 title: Utilitarianism
-internal-notes: "[[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill]]"
+seealso: "[[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill]]"
 ---

@@ -11,5 +11,5 @@ tags:
   - philosophy
 posters: "[[library/posters/beyond-the-pleasure-principle.jpg]]"
 title: Beyond The Pleasure Principle
-internal-notes: "[[thoughts/Freud]]"
+seealso: "[[thoughts/Freud]]"
 ---

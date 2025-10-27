@@ -189,8 +189,8 @@ function buildTableHead(
       if (properties?.[col]?.displayName) {
         displayName = properties[col].displayName!
       } else {
-        // for nested properties like "internal-notes", check if it's the last segment
-        // of a longer path like "note.internal-notes"
+        // for nested properties like "seealso", check if it's the last segment
+        // of a longer path like "note.seealso"
         const dotIndex = col.lastIndexOf(".")
         if (dotIndex !== -1) {
           const fullPath = col

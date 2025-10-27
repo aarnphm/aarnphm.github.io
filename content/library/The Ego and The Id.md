@@ -11,5 +11,5 @@ tags:
   - philosophy
 posters: "[[library/posters/the-ego-and-the-id.jpg]]"
 title: The Ego and The Id
-internal-notes: "[[thoughts/Freud#The Ego and the Id]]"
+seealso: "[[thoughts/Freud#The Ego and the Id]]"
 ---
