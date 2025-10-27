@@ -136,6 +136,7 @@ function serializeBlock(
   if (block.embedDisabled) searchable.embedDisabled = block.embedDisabled
   if (block.embedHtml) searchable.embedHtml = block.embedHtml
   if (block.metadata) searchable.metadata = block.metadata
+  if (block.coordinates) searchable.coordinates = block.coordinates
   if (block.internalSlug) searchable.internalSlug = block.internalSlug
   if (block.internalHref) searchable.internalHref = block.internalHref
   if (block.internalHash) searchable.internalHash = block.internalHash
@@ -294,5 +295,14 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
         yield emitSearchIndex(ctx, searchIndex)
       }
     },
+    externalResources: () => ({
+      additionalHead: [
+        <link
+          href={"https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css"}
+          rel="stylesheet"
+        />,
+        <script src={"https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js"} defer />,
+      ],
+    }),
   }
 }

@@ -4,13 +4,7 @@ import { toString } from "hast-util-to-string"
 import Slugger from "github-slugger"
 import { externalLinkRegex } from "./ofm"
 import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
-import {
-  splitAnchor,
-  transformLink,
-  stripSlashes,
-  resolveRelative,
-  FullSlug,
-} from "../../util/path"
+import { splitAnchor, transformLink, stripSlashes, FullSlug } from "../../util/path"
 import { writeFileSync } from "node:fs"
 import { join } from "node:path"
 import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
@@ -27,6 +21,10 @@ export interface ArenaBlock {
   htmlNode?: ElementContent
   embedHtml?: string
   metadata?: Record<string, string>
+  coordinates?: {
+    lon: number
+    lat: number
+  }
   internalSlug?: string
   internalHref?: string
   internalHash?: string
@@ -85,6 +83,12 @@ export interface ArenaBlockSearchable {
 
   /** Key-value metadata pairs (accessed date, author, etc) */
   metadata?: Record<string, string>
+
+  /** Geographic coordinates for map rendering */
+  coordinates?: {
+    lon: number
+    lat: number
+  }
 
   /** Internal note slug reference if block links internally */
   internalSlug?: string
@@ -199,6 +203,30 @@ const cloneElementContent = <T extends ElementContent>(node: T): T => {
   return typeof structuredClone === "function"
     ? structuredClone(node)
     : (JSON.parse(JSON.stringify(node)) as T)
+}
+
+const COORDINATE_NUMBER_PATTERN = /-?\d+(?:\.\d+)?/g
+
+const parseCoordinateMetadata = (value: string): { lon: number; lat: number } | null => {
+  if (!value) return null
+
+  const matches = value.match(COORDINATE_NUMBER_PATTERN)
+  if (!matches || matches.length < 2) {
+    return null
+  }
+
+  const lon = Number.parseFloat(matches[0])
+  const lat = Number.parseFloat(matches[1])
+
+  if (!Number.isFinite(lon) || !Number.isFinite(lat)) {
+    return null
+  }
+
+  if (Math.abs(lat) > 90 || Math.abs(lon) > 180) {
+    return null
+  }
+
+  return { lon, lat }
 }
 
 const elementContainsAnchor = (node: ElementContent): boolean => {
@@ -473,7 +501,22 @@ export const Arena: QuartzTransformerPlugin = () => {
               if (nestedList) {
                 // check for metadata first
                 const meta = extractMetadataFromList(nestedList)
-                if (meta.metadata) block.metadata = meta.metadata
+                if (meta.metadata) {
+                  block.metadata = meta.metadata
+
+                  const coordValue = block.metadata?.coord
+                  if (coordValue) {
+                    const parsedCoords = parseCoordinateMetadata(coordValue)
+                    if (parsedCoords) {
+                      block.coordinates = parsedCoords
+                      delete block.metadata?.coord
+                    }
+                  }
+
+                  if (block.metadata && Object.keys(block.metadata).length === 0) {
+                    delete block.metadata
+                  }
+                }
                 if (meta.tags) block.tags = meta.tags
 
                 // remove meta list (first item) if it exists and was successfully parsed
@@ -540,14 +583,12 @@ export const Arena: QuartzTransformerPlugin = () => {
                     }
 
                     const parsed = parseWikilink(match[0])
-                    const resolved =
-                      parsed && file.data.slug
-                        ? resolveWikilinkTarget(parsed, file.data.slug as FullSlug)
-                        : null
+                    const resolved = parsed ? resolveWikilinkTarget(parsed, "" as FullSlug) : null
 
                     if (parsed && resolved) {
-                      const hrefBase = resolveRelative(file.data.slug!, resolved.slug)
-                      const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
+                      const href = (
+                        parsed.anchor ? `/${resolved.slug}${parsed.anchor}` : `/${resolved.slug}`
+                      ) as string
                       results.push({
                         type: "element",
                         tagName: "a",
@@ -642,12 +683,10 @@ export const Arena: QuartzTransformerPlugin = () => {
               const buildTitleNode = (li: Element): ElementContent | undefined => {
                 // Check if content is wrapped in <p>
                 let contentChildren: ElementContent[] = li.children as ElementContent[]
-                let hasPWrapper = false
 
                 for (const child of contentChildren) {
                   if (isElement(child) && child.tagName === "p") {
                     contentChildren = child.children as ElementContent[]
-                    hasPWrapper = true
                     break
                   }
                 }
@@ -667,10 +706,10 @@ export const Arena: QuartzTransformerPlugin = () => {
                   }
                 }
 
-                // extract title - can be text node OR second <a> element (wikilink)
+                // extract title - can be text node OR element, or mixed content
                 let titleText: string | undefined
-                let titleElement: Element | undefined
                 let foundSeparator = false
+                const titleElements: ElementContent[] = []
 
                 for (const child of contentChildren) {
                   if (isElement(child) && child.tagName === "ul") break
@@ -688,60 +727,42 @@ export const Arena: QuartzTransformerPlugin = () => {
                     if (match && match[1]) {
                       titleText = stripTrailingMarkers(match[1]).trim()
                       foundSeparator = true
-                      break
+                      continue
+                    }
+                    // Collect text nodes after separator
+                    if (foundSeparator && text.length > 0) {
+                      titleElements.push(child)
                     }
                   }
 
-                  // After finding separator, next <a> is the title (wikilink)
+                  // After finding separator, collect <a> elements (wikilinks)
                   if (
                     foundSeparator &&
                     isElement(child) &&
                     child.tagName === "a" &&
                     child !== linkElement
                   ) {
-                    titleElement = child
-                    break
+                    titleElements.push(child)
                   }
                 }
 
-                // if we have url and title (text or wikilink), create clean link structure
-                if (linkHref && (titleText || titleElement)) {
-                  const newLink: Element = {
-                    type: "element",
-                    tagName: "a",
-                    properties: {
-                      href: linkHref,
-                      className: linkElement?.properties?.className || ["external"],
-                      rel: linkElement?.properties?.rel,
-                    },
-                    children: titleText
-                      ? [{ type: "text", value: titleText }]
-                      : titleElement
-                        ? cloneElementContent(titleElement).children
-                        : [],
-                  }
-
-                  // preserve any other children from original link (like indicator hooks)
-                  if (linkElement?.children) {
-                    const hooks = linkElement.children.filter(
-                      (ch) =>
-                        isElement(ch) &&
-                        ch.tagName === "span" &&
-                        Array.isArray(ch.properties?.className) &&
-                        ch.properties.className.includes("indicator-hook"),
-                    )
-                    if (hooks.length > 0) {
-                      newLink.children = [hooks[0], ...newLink.children]
-                    }
-                  }
-
+                // Process title if we have url and title content
+                if (linkHref && (titleText || titleElements.length > 0)) {
                   const wrapper: Element = {
                     type: "element",
                     tagName: "span",
                     properties: {},
-                    children: [newLink],
+                    children: [],
                   }
 
+                  if (titleText) {
+                    wrapper.children.push({ type: "text", value: titleText })
+                  }
+
+                  // Add collected elements (text nodes and wikilinks)
+                  wrapper.children.push(...(titleElements as any[]))
+
+                  // Apply link processing to handle any wikilinks in text
                   return applyLinkProcessing(wrapper)
                 }
 

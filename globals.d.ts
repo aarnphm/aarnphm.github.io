@@ -25,5 +25,6 @@ export declare global {
       ready(f: (twttr: any) => void): void
     }
     mermaid: typeof import("mermaid/dist/mermaid").default
+    mapboxgl: any
   }
 }

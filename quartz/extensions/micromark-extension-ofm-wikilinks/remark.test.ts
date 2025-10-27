@@ -25,28 +25,13 @@ function processToHTML(
 ): string {
   const processor = unified()
     .use(remarkParse)
+    //@ts-ignore
     .use(remarkWikilink, options)
     .use(remarkRehype)
     .use(rehypeStringify)
 
   const result = processor.processSync(markdown)
   return result.toString()
-}
-
-/**
- * helper to extract AST after remarkWikilink processing.
- * used for inspecting node annotations before hast conversion.
- */
-function processToMdast(
-  markdown: string,
-  options?: {
-    obsidian?: boolean
-    stripExtensions?: string[]
-  },
-): Root {
-  const processor = unified().use(remarkParse).use(remarkWikilink, options)
-
-  return processor.parse(markdown) as Root
 }
 
 describe("remarkWikilink integration", () => {
@@ -405,6 +390,7 @@ describe("remarkWikilink integration", () => {
 
   describe("data.hName annotation verification", () => {
     test("regular link gets hName annotation", () => {
+      //@ts-ignore
       const processor = unified().use(remarkParse).use(remarkWikilink, { obsidian: true })
 
       const tree = processor.parse("[[test]]") as Root
@@ -418,6 +404,7 @@ describe("remarkWikilink integration", () => {
     })
 
     test("image embed gets hName annotation", () => {
+      //@ts-ignore
       const processor = unified().use(remarkParse).use(remarkWikilink, { obsidian: true })
 
       const tree = processor.parse("![[image.png]]") as Root
@@ -430,6 +417,7 @@ describe("remarkWikilink integration", () => {
     })
 
     test("transclude gets hName annotation", () => {
+      //@ts-ignore
       const processor = unified().use(remarkParse).use(remarkWikilink, { obsidian: true })
 
       const tree = processor.parse("![[notes#section]]") as Root
@@ -443,6 +431,7 @@ describe("remarkWikilink integration", () => {
     })
 
     test("absolute path gets hName annotation", () => {
+      //@ts-ignore
       const processor = unified().use(remarkParse).use(remarkWikilink, { obsidian: true })
 
       const tree = processor.parse("[[/tags/ml]]") as Root
@@ -459,6 +448,7 @@ describe("remarkWikilink integration", () => {
     })
 
     test("same-file anchor gets hName annotation", () => {
+      //@ts-ignore
       const processor = unified().use(remarkParse).use(remarkWikilink, { obsidian: true })
 
       const tree = processor.parse("[[#heading]]") as Root

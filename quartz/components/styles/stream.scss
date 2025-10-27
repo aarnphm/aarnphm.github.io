@@ -2,7 +2,6 @@
 @use "../../styles/variables.scss" as *;
 @use "../../styles/mixin.scss" as *;
 
-[data-slug*="on"],
 [data-slug*="stream"] {
   section[class~="header"] {
     border-bottom: 0;
@@ -10,7 +9,7 @@
   }
 
   .main-col {
-    grid-column: 5/9;
+    grid-column: 5/8;
   }
 
   .page-footer {

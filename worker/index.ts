@@ -544,6 +544,7 @@ type Env = {
   SESSION_SECRET: string
   PUBLIC_BASE_URL?: string
   STACKED_CACHE?: KVNamespace
+  MAPBOX_API_KEY?: string
 } & Cloudflare.Env
 
 export default {
@@ -718,6 +719,80 @@ export default {
       }
       case "/api/embed": {
         return handleEmbedRequest(request, apiHeaders, env)
+      }
+      case "/api/secrets": {
+        if (method !== "GET") {
+          return new Response("method not allowed", {
+            status: 405,
+            headers: { ...apiHeaders, "Cache-Control": "no-store", Allow: "GET" },
+          })
+        }
+
+        const key = url.searchParams.get("key") ?? ""
+        const allowList: Record<string, keyof Env> = {
+          MAPBOX_API_KEY: "MAPBOX_API_KEY",
+        }
+        const envKey = allowList[key]
+        if (!envKey) {
+          return new Response("not found", {
+            status: 404,
+            headers: { ...apiHeaders, "Cache-Control": "no-store" },
+          })
+        }
+
+        const base = new URL(resolveBaseUrl(env, request))
+        const originHeader = request.headers.get("Origin")
+        if (originHeader) {
+          try {
+            const originUrl = new URL(originHeader)
+            if (originUrl.origin !== base.origin) {
+              return new Response("forbidden", {
+                status: 403,
+                headers: { "Cache-Control": "no-store" },
+              })
+            }
+          } catch {
+            return new Response("forbidden", {
+              status: 403,
+              headers: { "Cache-Control": "no-store" },
+            })
+          }
+        }
+
+        const refererHeader = request.headers.get("Referer")
+        if (refererHeader) {
+          try {
+            const refererUrl = new URL(refererHeader)
+            if (refererUrl.origin !== base.origin) {
+              return new Response("forbidden", {
+                status: 403,
+                headers: { "Cache-Control": "no-store" },
+              })
+            }
+          } catch {
+            return new Response("forbidden", {
+              status: 403,
+              headers: { "Cache-Control": "no-store" },
+            })
+          }
+        }
+
+        const value = env[envKey] as string | undefined
+        if (typeof value !== "string" || value.length === 0) {
+          return new Response("not found", {
+            status: 404,
+            headers: { ...apiHeaders, "Cache-Control": "no-store" },
+          })
+        }
+
+        const headers = {
+          "Cache-Control": "no-store",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": base.origin,
+          "Access-Control-Allow-Credentials": "true",
+          Vary: "Origin",
+        }
+        return new Response(JSON.stringify({ value }), { status: 200, headers })
       }
     }
 

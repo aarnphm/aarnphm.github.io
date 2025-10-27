@@ -271,6 +271,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       return src
     },
     markdownPlugins(_ctx) {
+      //@ts-ignore
       const plugins: PluggableList = [[remarkWikilink, { obsidian: true }]]
 
       // regex replacements

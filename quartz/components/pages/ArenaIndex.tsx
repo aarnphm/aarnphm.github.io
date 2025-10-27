@@ -38,8 +38,7 @@ export default (() => {
         }
 
         const parsed = parseWikilink(match[0])
-        const resolved =
-          parsed && fileData.slug ? resolveWikilinkTarget(parsed, fileData.slug as FullSlug) : null
+        const resolved = parsed ? resolveWikilinkTarget(parsed, "" as FullSlug) : null
 
         if (parsed && resolved) {
           const hrefBase = resolveRelative(fileData.slug! as FullSlug, resolved.slug)

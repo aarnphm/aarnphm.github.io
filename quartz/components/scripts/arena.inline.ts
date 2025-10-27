@@ -16,6 +16,229 @@ type SubstackEmbedResponse = {
 const SUBSTACK_EMBED_ENDPOINT = `/api/embed`
 const substackEmbedCache = new Map<string, Promise<SubstackEmbedResponse>>()
 
+const MAPBOX_SCRIPT_SRC = "https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js"
+const MAPBOX_TOKEN_ENDPOINT = "/api/secrets?key=MAPBOX_API_KEY"
+let mapboxTokenPromise: Promise<string | null> | null = null
+let mapboxReady: Promise<any | null> | null = null
+const mapInstances = new WeakMap<HTMLElement, any>()
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case "&":
+        return "&amp;"
+      case "<":
+        return "&lt;"
+      case ">":
+        return "&gt;"
+      case '"':
+        return "&quot;"
+      case "'":
+        return "&#39;"
+      default:
+        return char
+    }
+  })
+}
+
+async function fetchMapboxToken(): Promise<string | null> {
+  try {
+    const response = await fetch(MAPBOX_TOKEN_ENDPOINT, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      credentials: "same-origin",
+    })
+    if (!response.ok) {
+      return null
+    }
+
+    const payload = (await response.json().catch(() => null)) as { value?: unknown } | null
+    if (!payload || typeof payload.value !== "string") {
+      return null
+    }
+
+    const token = payload.value.trim()
+    return token.length > 0 ? token : null
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
+async function getMapboxToken(): Promise<string | null> {
+  if (!mapboxTokenPromise) {
+    mapboxTokenPromise = fetchMapboxToken()
+  }
+
+  const token = await mapboxTokenPromise
+  if (!token) {
+    mapboxTokenPromise = Promise.resolve(null)
+  }
+  return token
+}
+
+async function loadMapboxLibrary(): Promise<any | null> {
+  const token = await getMapboxToken()
+  if (!token) return null
+
+  const applyToken = (mapboxgl: any | null) => {
+    if (mapboxgl && mapboxgl.Map) {
+      if (window.mapboxgl && window.mapboxgl.accessToken !== token) {
+        window.mapboxgl.accessToken = token
+      }
+      return mapboxgl
+    }
+    return null
+  }
+
+  const immediate = applyToken(window.mapboxgl ?? null)
+  if (immediate) {
+    return immediate
+  }
+
+  if (!mapboxReady) {
+    const script = document.querySelector<HTMLScriptElement>(`script[src="${MAPBOX_SCRIPT_SRC}"]`)
+    if (script) {
+      mapboxReady = new Promise((resolve) => {
+        const resolveWithMap = () => resolve(window.mapboxgl ?? null)
+        const state = (script as any).readyState as string | undefined
+        if (state === "complete" || state === "loaded") {
+          resolveWithMap()
+        } else {
+          script.addEventListener("load", resolveWithMap, { once: true })
+          script.addEventListener("error", () => resolve(null), { once: true })
+        }
+      })
+    } else {
+      mapboxReady = Promise.resolve(null)
+    }
+  }
+
+  const loaded = await mapboxReady
+  return applyToken(loaded)
+}
+
+function renderMapFallback(node: HTMLElement, message: string) {
+  node.dataset.mapStatus = "error"
+  node.classList.add("arena-map-error")
+  node.textContent = message
+}
+
+function cleanupMaps(root: HTMLElement) {
+  root
+    .querySelectorAll<HTMLElement>(".arena-modal-map[data-map-initialized]")
+    .forEach((node) => {
+      const map = mapInstances.get(node)
+      if (map) {
+        try {
+          map.remove()
+        } catch (error) {
+          console.error(error)
+        }
+        mapInstances.delete(node)
+      }
+      node.removeAttribute("data-map-initialized")
+      node.removeAttribute("data-map-status")
+      node.classList.remove("arena-map-error")
+      node.textContent = ""
+    })
+}
+
+function hydrateMapboxMaps(root: HTMLElement) {
+  const mapNodes = root.querySelectorAll<HTMLElement>(
+    ".arena-modal-map[data-map-lon][data-map-lat]",
+  )
+  if (mapNodes.length === 0) {
+    return
+  }
+
+  mapNodes.forEach((node) => {
+    if (node.dataset.mapInitialized === "1") return
+    node.dataset.mapStatus = "loading"
+    node.classList.remove("arena-map-error")
+    node.textContent = "loading map…"
+  })
+
+  loadMapboxLibrary()
+    .then((mapboxgl) => {
+      if (!mapboxgl) {
+        mapNodes.forEach((node) => renderMapFallback(node, "map unavailable"))
+        return
+      }
+
+      mapNodes.forEach((node) => {
+        if (!node.isConnected || node.dataset.mapInitialized === "1") {
+          return
+        }
+
+        const lon = Number.parseFloat(node.dataset.mapLon || "")
+        const lat = Number.parseFloat(node.dataset.mapLat || "")
+
+        if (!Number.isFinite(lon) || !Number.isFinite(lat)) {
+          renderMapFallback(node, "invalid location")
+          return
+        }
+
+        try {
+          const map = new mapboxgl.Map({
+            container: node,
+            style: "mapbox://styles/mapbox/streets-v12",
+            center: [lon, lat],
+            zoom: 15,
+            attributionControl: false,
+            cooperativeGestures: true,
+          })
+
+          mapInstances.set(node, map)
+          node.dataset.mapInitialized = "1"
+          node.dataset.mapStatus = "loading"
+
+          map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "top-right")
+          map.addControl(new mapboxgl.AttributionControl({ compact: true }), "bottom-right")
+
+          const marker = new mapboxgl.Marker({ color: "#222" }).setLngLat([lon, lat])
+          const title = node.dataset.mapTitle
+          if (title && title.trim().length > 0) {
+            const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false })
+            popup.setText(title)
+            marker.setPopup(popup)
+          }
+          marker.addTo(map)
+
+          map.once("load", () => {
+            node.dataset.mapStatus = "loaded"
+            node.classList.remove("arena-map-error")
+            try {
+              map.resize()
+            } catch (error) {
+              console.error(error)
+            }
+            if (title && marker.getPopup()) {
+              try {
+                marker.togglePopup()
+              } catch (error) {
+                console.error(error)
+              }
+            }
+          })
+
+          map.on("error", () => {
+            if (node.dataset.mapStatus !== "loaded") {
+              renderMapFallback(node, "map unavailable")
+            }
+          })
+        } catch (error) {
+          console.error(error)
+          renderMapFallback(node, "map unavailable")
+        }
+      })
+    })
+    .catch((error) => {
+      console.error(error)
+      mapNodes.forEach((node) => renderMapFallback(node, "map unavailable"))
+    })
+}
+
 function fetchSubstackEmbed(url: string): Promise<SubstackEmbedResponse> {
   let promise = substackEmbedCache.get(url)
   if (!promise) {
@@ -238,7 +461,7 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
   const metadataHtml: string[] = []
 
   if (block.metadata) {
-    const consumedKeys = new Set(["accessed", "accessed_date", "date", "tags", "tag"])
+    const consumedKeys = new Set(["accessed", "accessed_date", "date", "tags", "tag", "coord"])
     const entries = Object.entries(block.metadata)
       .filter(([key, value]) => {
         if (typeof value !== "string" || value.trim().length === 0) return false
@@ -287,6 +510,19 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
     </div>
   ` : ""
 
+  const mapTitle = block.title || block.content || block.url || ""
+  const mapHtml = block.coordinates
+    ? `
+        <div class="arena-modal-map-wrapper">
+          <div
+            class="arena-modal-map"
+            data-map-lon="${String(block.coordinates.lon)}"
+            data-map-lat="${String(block.coordinates.lat)}"${mapTitle.trim().length > 0 ? ` data-map-title="${escapeHtml(mapTitle)}"` : ""}
+          ></div>
+        </div>
+      `
+    : ""
+
   // Determine embed content
   let mainContentHtml = ""
   if (block.embedHtml) {
@@ -326,6 +562,8 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
         <div class="arena-modal-internal-preview grid"></div>
       </div>
     `
+  } else if (block.coordinates) {
+    mainContentHtml = mapHtml
   } else {
     mainContentHtml = `<div class="arena-modal-placeholder">No preview available</div>`
   }
@@ -396,6 +634,7 @@ async function showModal(blockId: string) {
     currentBlockIndex = parseInt(blockEl.getAttribute("data-block-index") || "0")
   }
 
+  cleanupMaps(modalBody)
   modalBody.innerHTML = ""
   const clonedContent = dataEl.cloneNode(true) as HTMLElement
   clonedContent.style.display = "block"
@@ -415,6 +654,7 @@ async function showModal(blockId: string) {
 
   hydrateSubstackEmbeds(modalBody)
   hydrateInternalHosts(modalBody)
+  hydrateMapboxMaps(modalBody)
 
   const sidebar = modalBody.querySelector(".arena-modal-sidebar") as HTMLElement | null
   const hasConnections = modalBody.querySelector(".arena-modal-connections") !== null
@@ -438,6 +678,10 @@ async function showModal(blockId: string) {
 function closeModal() {
   const modal = document.getElementById("arena-modal")
   if (modal) {
+    const modalBody = modal.querySelector(".arena-modal-body") as HTMLElement | null
+    if (modalBody) {
+      cleanupMaps(modalBody)
+    }
     modal.classList.remove("active")
     document.body.style.overflow = ""
   }
@@ -502,6 +746,10 @@ interface ArenaBlockSearchable {
   highlighted: boolean
   embedHtml?: string
   metadata?: Record<string, string>
+  coordinates?: {
+    lon: number
+    lat: number
+  }
   internalSlug?: string
   internalHref?: string
   internalHash?: string
@@ -702,16 +950,8 @@ function renderSearchResults(
 
     const title = document.createElement("div")
     title.className = "arena-search-result-title"
-    // Highlight matches in title
     title.innerHTML = searchQuery ? highlight(searchQuery, result.title) : result.title
-
-    const content = document.createElement("div")
-    content.className = "arena-search-result-content"
-    // Highlight matches in content with trimming to show context
-    content.innerHTML = searchQuery ? highlight(searchQuery, result.content, true) : result.content
-
     resultItem.appendChild(title)
-    resultItem.appendChild(content)
 
     if (scope === "index" && result.channelName) {
       const badge = document.createElement("span")
@@ -962,7 +1202,7 @@ document.addEventListener("nav", () => {
 
           if (isArxivUrl && blockData?.url) {
             // Only redirect if the block has no notes (description or content)
-            const hasNotes = !!(blockData.description || blockData.content)
+            const hasNotes = !!blockData.content
             if (!hasNotes) {
               window.open(blockData.url, '_blank', 'noopener,noreferrer')
               return
@@ -988,7 +1228,7 @@ document.addEventListener("nav", () => {
 
           if (isArxivUrl && blockData?.url) {
             // Only redirect if the block has no notes (description or content)
-            const hasNotes = !!(blockData.description || blockData.content)
+            const hasNotes = !!blockData.content
             if (!hasNotes) {
               e.preventDefault()
               window.open(blockData.url, '_blank', 'noopener,noreferrer')
@@ -1072,7 +1312,7 @@ document.addEventListener("nav", () => {
 
           if (isArxivUrl && blockData?.url) {
             // Only redirect if the block has no notes (description or content)
-            const hasNotes = !!(blockData.description || blockData.content)
+            const hasNotes = !!blockData.content
             if (!hasNotes) {
               window.open(blockData.url, '_blank', 'noopener,noreferrer')
               return

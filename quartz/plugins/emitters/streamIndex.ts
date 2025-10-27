@@ -12,6 +12,7 @@ import { render } from "preact-render-to-string"
 import type { QuartzPluginData } from "../vfile"
 import type { StaticResources } from "../../util/resources"
 import type { Node } from "unist"
+import type { VNode } from "preact"
 
 export const StreamIndex: QuartzEmitterPlugin = () => {
   const formatIsoAsYMD = (iso?: string | null): string | null => {
@@ -73,7 +74,7 @@ export const StreamIndex: QuartzEmitterPlugin = () => {
           group.entries.find((entry) => entry.date)?.date ??
           (group.timestamp ? new Date(group.timestamp).toISOString() : null)
 
-        const path = buildOnPath(isoSource) ?? null
+        const path = buildOnPath(isoSource!) ?? null
         const entries = group.entries.map((entry) => {
           const vnode = renderStreamEntry(entry, streamFile!.filePath!, {
             groupId: group.id,
@@ -84,7 +85,7 @@ export const StreamIndex: QuartzEmitterPlugin = () => {
 
           return {
             id: entry.id,
-            html: render(vnode),
+            html: render(vnode as VNode<any>),
             metadata: entry.metadata,
             isoDate: entry.date ?? group.isoDate ?? null,
             displayDate:
@@ -119,7 +120,7 @@ export const StreamIndex: QuartzEmitterPlugin = () => {
           group.entries.find((entry) => entry.date)?.date ??
           (group.timestamp ? new Date(group.timestamp).toISOString() : null)
 
-        const onPath = buildOnPath(isoSource)
+        const onPath = buildOnPath(isoSource!)
         if (!onPath) {
           continue
         }

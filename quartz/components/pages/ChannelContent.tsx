@@ -35,20 +35,12 @@ const rewriteArxivUrl = (rawUrl: string): string => {
     const remainder = rest.join("/")
     const suffix = `${parsed.search}${parsed.hash}`
 
-    if (normalizedHead === "pdf") {
-      return `https://ar5iv.org/pdf/${remainder}${suffix}`
-    }
-
-    if (normalizedHead === "html") {
-      return `https://ar5iv.org/html/${remainder}${suffix}`
-    }
-
-    if (normalizedHead === "abs") {
+    if (normalizedHead === "pdf" || normalizedHead === "html" || normalizedHead === "abs") {
       const sanitized = remainder.replace(/\.pdf$/i, "")
-      return `https://ar5iv.org/html/${sanitized}${suffix}`
+      return `https://www.alphaxiv.org/abs/${sanitized}${suffix}`
     }
 
-    return `https://ar5iv.org/${[head, ...rest].join("/")}${suffix}`
+    return `https://www.alphaxiv.org/abs/${[head, ...rest].join("/")}${suffix}`
   } catch {
     return rawUrl
   }
@@ -114,8 +106,7 @@ export default (() => {
         }
 
         const parsed = parseWikilink(match[0])
-        const resolved =
-          parsed && fileData.slug ? resolveWikilinkTarget(parsed, fileData.slug as FullSlug) : null
+        const resolved = parsed ? resolveWikilinkTarget(parsed, "" as FullSlug) : null
 
         if (parsed && resolved) {
           const hrefBase = resolveRelative(fileData.slug! as FullSlug, resolved.slug)
@@ -164,6 +155,7 @@ export default (() => {
       const displayUrl =
         block.url ??
         (block.internalSlug ? `https://${cfg.baseUrl}/${block.internalSlug}` : undefined)
+      const mapTitle = block.title ?? block.content ?? block.url ?? undefined
 
       const metadataEntries: Array<{ label: string; value: ComponentChild }> = []
 
@@ -179,7 +171,7 @@ export default (() => {
       }
 
       if (block.metadata) {
-        const consumedKeys = new Set(["accessed", "accessed_date", "date", "tags", "tag"])
+        const consumedKeys = new Set(["accessed", "accessed_date", "date", "tags", "tag", "coord"])
         const additionalEntries = Object.entries(block.metadata)
           .filter(([key, value]) => {
             if (typeof value !== "string" || value.trim().length === 0) return false
@@ -353,70 +345,81 @@ export default (() => {
                     )}
                   </div>
                 )}
-                <div class="arena-modal-main-content">
-                  {embedHtml ? (
-                    convertFromText(embedHtml as string)
-                  ) : youtubeEmbed ? (
-                    <iframe
-                      class={classNames(
-                        undefined,
-                        "arena-modal-iframe",
-                        "arena-modal-iframe-youtube",
-                      )}
-                      title={`YouTube embed: ${frameTitle}`}
-                      loading="lazy"
-                      data-block-id={block.id}
-                      src={youtubeEmbed.src}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                      referrerPolicy="strict-origin-when-cross-origin"
-                    />
-                  ) : isSubstackCandidate && block.url ? (
+                {block.coordinates ? (
+                  <div class="arena-modal-map-wrapper">
                     <div
-                      class="arena-modal-embed arena-modal-embed-substack"
-                      data-substack-url={block.url}
-                    >
-                      <span
-                        class="arena-loading-spinner"
-                        role="status"
-                        aria-label="Loading Substack preview"
+                      class="arena-modal-map"
+                      data-map-lon={block.coordinates.lon.toString()}
+                      data-map-lat={block.coordinates.lat.toString()}
+                      data-map-title={mapTitle || undefined}
+                    />
+                  </div>
+                ) : (
+                  <div class="arena-modal-main-content">
+                    {embedHtml ? (
+                      convertFromText(embedHtml as string)
+                    ) : youtubeEmbed ? (
+                      <iframe
+                        class={classNames(
+                          undefined,
+                          "arena-modal-iframe",
+                          "arena-modal-iframe-youtube",
+                        )}
+                        title={`YouTube embed: ${frameTitle}`}
+                        loading="lazy"
+                        data-block-id={block.id}
+                        src={youtubeEmbed.src}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        referrerPolicy="strict-origin-when-cross-origin"
                       />
-                    </div>
-                  ) : block.embedDisabled && targetUrl ? (
-                    <div class="arena-iframe-error">
-                      <div class="arena-iframe-error-content">
-                        <p>unable to embed content</p>
-                        <a
-                          href={targetUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="arena-iframe-error-link"
-                        >
-                          open in new tab →
-                        </a>
+                    ) : isSubstackCandidate && block.url ? (
+                      <div
+                        class="arena-modal-embed arena-modal-embed-substack"
+                        data-substack-url={block.url}
+                      >
+                        <span
+                          class="arena-loading-spinner"
+                          role="status"
+                          aria-label="Loading Substack preview"
+                        />
                       </div>
-                    </div>
-                  ) : targetUrl ? (
-                    <iframe
-                      class="arena-modal-iframe"
-                      title={`Embedded block: ${frameTitle}`}
-                      loading="lazy"
-                      data-block-id={block.id}
-                      sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
-                      src={targetUrl}
-                    />
-                  ) : (
-                    <div
-                      class="arena-modal-internal-host"
-                      data-block-id={block.id}
-                      data-internal-slug={block.internalSlug}
-                      data-internal-href={block.internalHref}
-                      data-internal-hash={block.internalHash}
-                    >
-                      <div class="arena-modal-internal-preview grid" />
-                    </div>
-                  )}
-                </div>
+                    ) : block.embedDisabled && targetUrl ? (
+                      <div class="arena-iframe-error">
+                        <div class="arena-iframe-error-content">
+                          <p>unable to embed content</p>
+                          <a
+                            href={targetUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="arena-iframe-error-link"
+                          >
+                            open in new tab →
+                          </a>
+                        </div>
+                      </div>
+                    ) : targetUrl ? (
+                      <iframe
+                        class="arena-modal-iframe"
+                        title={`Embedded block: ${frameTitle}`}
+                        loading="lazy"
+                        data-block-id={block.id}
+                        sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
+                        src={targetUrl}
+                      />
+                    ) : (
+                      <div
+                        class="arena-modal-internal-host"
+                        data-block-id={block.id}
+                        data-internal-slug={block.internalSlug}
+                        data-internal-href={block.internalHref}
+                        data-internal-hash={block.internalHash}
+                      >
+                        <div class="arena-modal-internal-preview grid" />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <div class="arena-modal-sidebar">
                 <div class="arena-modal-info">

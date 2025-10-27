@@ -20,7 +20,7 @@ async function llmText(ctx: BuildCtx, fileData: QuartzPluginData, reconstructed:
   const refs = slug !== "index" ? `${slug}.md` : "llms.txt"
 
   const reconstructedFrontmatter = {
-    ...(fileData.frontmatter ?? {}),
+    ...fileData.frontmatter,
     reconstructured: true,
     permalink: `https://${baseUrl}/${refs}`,
   }

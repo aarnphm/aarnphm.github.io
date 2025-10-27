@@ -69,11 +69,7 @@ export const renderStreamEntry = (
 
   const resolvedIsoDate = options.resolvedIsoDate ?? entry.date
   const formattedDate = showDate ? formatStreamDate(resolvedIsoDate) : null
-  const ariaLabel = formattedDate
-    ? options.groupSize > 1
-      ? `${formattedDate} — ${options.groupSize} updates`
-      : formattedDate
-    : undefined
+  const ariaLabel = formattedDate ? formattedDate : undefined
 
   const onPath = timestampAttr ? buildOnPath(resolvedIsoDate) : null
 

@@ -1,8 +1,10 @@
 ---
 date: "2024-10-24"
 id: are.na
-aliases:
-  - inspo
+permalinks:
+  - /website
+  - /tweets
+  - /resources
 tags:
   - technical
   - seed
@@ -13,7 +15,7 @@ socials:
   home: /
   curius: /curius
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-27 03:37:45 GMT-04:00
+modified: 2025-10-27 06:31:24 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -34,10 +36,8 @@ codex:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be consumed by quartz/plugins/emitters/arena.ts, and then ingested with quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-permalinks:
-  - /website
-  - /tweets
-  - /resources
+aliases:
+  - inspo
 claude:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -233,6 +233,10 @@ cssclasses:
 
 ## website
 
+- https://ntrs.nasa.gov/search -- NTRS - NASA Technical Reports Server
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [research]
 - https://felixdorner.de/
   - [meta]:
     - date: 10/06/2025
@@ -975,79 +979,108 @@ cssclasses:
 
 ## places
 
-- https://pika.mit.edu/ -- PIKA @ MIT
+- https://maps.app.goo.gl/8cZo64RZkG5R4n2T6 -- PIKA @ MIT
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [communal]
+    - coord: [-71.1107316, 42.3565554]
+  - https://pika.mit.edu/
 - https://maps.app.goo.gl/xx36MxJmbtx2pmH88 -- Rooms Coffee | 135 Ossington
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-79.4197269, 43.6472513]
 - https://maps.app.goo.gl/2XPzgLkTRUxQLQNa8 -- Rooms Coffee | 915 Dupont
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-79.4297616, 43.6700986]
 - https://maps.app.goo.gl/xF1CbAPUZy4E2YkV7 -- Rooms Coffee | 17 Baldwin
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-79.3953671, 43.6559416]
 - https://maps.app.goo.gl/EvYLaxoUAhqXejhj6 -- Alternity
   - [meta]:
     - date: 08/05/2025
     - tags: [fruit]
+    - coord: [-79.4030583, 43.667092]
 - https://maps.app.goo.gl/qsBcJ8dVfog1Mev87 -- Coco's neighborhood coffee shop
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-79.4157885, 43.651432]
 - https://maps.app.goo.gl/ubajUb5KrB9XgJTL7 -- Bevy @ TheCombine
   - [meta]:
     - date: 08/05/2025
     - tags: [fruit]
+    - coord: [-79.3888161, 43.6451208]
 - https://maps.app.goo.gl/vJY9DPf98uF5jTyk9 -- Isle of Coffee (Queen)
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-79.3515725, 43.658965]
 - https://maps.app.goo.gl/FGGHtR1rzxX8LTxSA -- Mofer Coffee on Queen
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-79.4175998, 43.6442662]
 - https://maps.app.goo.gl/6AdrB7FgTMoXgsUs5 -- Page One Coffee + Bar
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-79.3762526, 43.65792]
 - https://maps.app.goo.gl/noRrgPejGf4CYG556 -- 10 DEAN | Waverley
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-79.4002914, 43.6583573]
 - https://maps.app.goo.gl/gPjjBhKiaVG1KYtU7 -- Cafe Pamenar
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-79.4027094, 43.6566835]
 - https://maps.app.goo.gl/SMMTH1d1PSDTF7zcA -- Milky’s Cloud Room
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-79.407265, 43.6442978]
 - https://maps.app.goo.gl/vuXxq7aVDUG7jw7s8 -- Found Coffee on College
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-79.4026381, 43.6576525]
 - https://maps.app.goo.gl/6yrQaRN4fr1fDMFC6 -- Carbonic Coffee
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-79.393523, 43.655848]
 - https://maps.app.goo.gl/24Lth72sDeicpzco7 -- Nabulu Coffee
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-119.5015218, 43.7320823]
 - https://maps.app.goo.gl/UMuTjTkmKwN7cvTE6 -- Stakt Market
   - [meta]:
     - date: 08/05/2025
     - tags: [fruit]
+    - coord: [-79.4016875, 43.6408185]
 - https://maps.app.goo.gl/Ewq92uvU7EiAL5HF8 -- Loquat SF
   - [meta]:
     - date: 09/10/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
+    - coord: [-122.4225186, 37.7749123]
   - https://loquatsf.com/
+- https://maps.app.goo.gl/u6y6eV5fz7FvGzXg8 -- Bernhardt's
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [restaurant]
+    - coord: [-79.4271727, 43.647259]
+- https://maps.app.goo.gl/KNogvcLy3xhJsGgM7 -- Ratelier [**]
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [coffee shop]
+    - coord: [-79.4146086, 43.6456113]
 
 ## essay
 
@@ -1676,6 +1709,10 @@ cssclasses:
 
 ## machine learning
 
+- https://thenumb.at/Functions-are-Vectors/ -- Functions are vectors [**]
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [fruit]
 - https://www.anthropic.com/research/reasoning-models-dont-say-think -- Reasoning models don't always say what they think
   - [meta]:
     - date: 10/09/2025
@@ -2141,7 +2178,7 @@ cssclasses:
   - [meta]:
     - date: 10/07/2025
     - tags: [training, large scale]
-  - made by Cohere folks
+  - made by [Cohere](https://cohere.com/)
 - https://nanotron-ultrascale-playbook.static.hf.space/index.html -- The Ultra-Scale Playbook: Training LLMs on GPU Clusters [**]
   - [meta]:
     - date: 10/04/2025
@@ -2803,6 +2840,10 @@ cssclasses:
 
 ## stream
 
+- https://www.alphaxiv.org/ -- alphaxiv [**]
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [papers]
 - https://www.modular.com/blog/democratizing-compute-part-1-deepseeks-impact-on-ai -- Democratizing AI Compute [**]
   - [meta]:
     - date: 10/27/2025
@@ -3838,6 +3879,14 @@ cssclasses:
 
 ## papers
 
+- https://arxiv.org/abs/2504.13181
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [perception, embeddings]
+- https://arxiv.org/abs/2510.18234
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [ocr]
 - https://arxiv.org/abs/2405.15319
   - [meta]:
     - date: 10/27/2025
@@ -3845,7 +3894,7 @@ cssclasses:
 - https://arxiv.org/abs/2310.07177
   - [meta]:
     - date: 10/24/2025
-    - tags: [speculative decoding, inference]
+    - tags: [inference]
 - https://arxiv.org/abs/2501.16975
   - [meta]:
     - date: 10/16/2025
