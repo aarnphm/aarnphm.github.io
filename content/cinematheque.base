@@ -275,10 +275,11 @@ views:
       - file.name
       - director
       - year
-      - status
     sort:
-      - property: status
-        direction: ASC
       - property: file.name
+        direction: ASC
+      - property: year
+        direction: DESC
+      - property: status
         direction: ASC
     nestedProperties: true

@@ -1,5 +1,5 @@
 ---
-title: are.na
+id: are.na
 permalinks:
   - /website
   - /tweets
@@ -9,12 +9,13 @@ tags:
   - seed
   - evergreen
 description: My run-down version of are[dot]na
+title: are.na
 socials:
   curius: /curius
   are.na: https://www.are.na/aaron-pham/channels
-date: "2024-10-24"
-id: are.na
-modified: 2025-10-26 19:42:52 GMT-04:00
+cssclasses:
+  - nolist
+modified: 2025-10-27 00:10:11 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -54,8 +55,7 @@ claude:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-cssclasses:
-  - nolist
+date: "2024-10-24"
 ---
 
 ## discourse
@@ -117,6 +117,10 @@ cssclasses:
 
 ## tweets
 
+- https://x.com/CalumDouglas1/status/1982591934389784687 -- Working on new problems
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [research]
 - https://x.com/jeremyphoward/status/1980973242438570325 -- Learning math through the act of working through ML problems.
   - [meta]:
     - date: 10/24/2025
@@ -1662,6 +1666,10 @@ cssclasses:
 
 ## machine learning
 
+- https://kyutai.org/next/codec-explainer -- Neural audio codecs: how to get audio into LLMs
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [audio, llm]
 - https://www.youtube.com/watch?v=1KRcs8XYUWo -- Sequence-to-sequence models: [[thoughts/Connectionist network|Connectionist]] Temporal Classification
   - [meta]:
     - date: 10/26/2025
@@ -2932,6 +2940,11 @@ cssclasses:
 
 ## video
 
+- https://www.youtube.com/watch?v=H4_Tsjmqxak -- Husserl, Heidegger & Existentialism - Hubert Dreyfus & Bryan Magee (1987)
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [philosophy]
+  - books: [[library/Logical Investigations]]
 - https://www.youtube.com/watch?v=x7vNEgUvMkI -- Maybe This is My Problem
   - [meta]:
     - date: 10/26/2025
@@ -3777,14 +3790,18 @@ cssclasses:
 
 ## papers
 
+- https://arxiv.org/abs/2405.15319
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [pretraining]
 - https://arxiv.org/abs/2310.07177
   - [meta]:
     - date: 10/24/2025
-    - tags: [fruit]
+    - tags: [speculative decoding, inference]
 - https://arxiv.org/abs/2501.16975
   - [meta]:
     - date: 10/16/2025
-    - tags: [fruit]
+    - tags: [pretraining, bytes, representations]
 - https://arxiv.org/abs/2008.00044
   - [meta]:
     - date: 10/16/2025
@@ -3792,8 +3809,8 @@ cssclasses:
 - https://arxiv.org/abs/2412.06464
   - [meta]:
     - date: 10/16/2025
-    - tags: [fruit]
-- https://arxiv.org/abs/2506.20790v1
+    - tags: [hybrid attention, gated delta]
+- https://arxiv.org/abs/2506.20790
   - [meta]:
     - date: 10/09/2025
     - tags: [interpretability]
@@ -3808,11 +3825,11 @@ cssclasses:
 - https://www.cambridge.org/core/journals/behavioral-and-brain-sciences/article/abs/minds-brains-and-programs/DC644B47A4299C637C89772FACC2706A -- Mind, brains, programs
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [brain, intentionality]
 - https://arxiv.org/abs/1912.02279
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [cnn, vision]
 - https://arxiv.org/abs/2501.15225
   - [meta]:
     - date: 10/06/2025
@@ -3895,50 +3912,51 @@ cssclasses:
 - https://arxiv.org/abs/1910.02054
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [optimizer]
 - https://arxiv.org/abs/2506.19143
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [interpretability]
   - which thought trace matters?
 - https://arxiv.org/abs/2503.18292
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [system, inference]
 - https://arxiv.org/abs/2310.05209
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [inference, law]
 - https://arxiv.org/abs/2310.10537
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [data format, quantization]
+  - mxfp4 is pretty bad, better to use nvfp4 instead.
 - https://arxiv.org/abs/2104.09864
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [inference]
   - [[thoughts/RoPE]]
   - more popular methods: https://arxiv.org/abs/2309.00071
 - https://arxiv.org/abs/2508.06471
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [model, llm]
 - https://arxiv.org/abs/1112.0510
   - [meta]:
     - date: 08/12/2025
-    - tags: [fruit]
+    - tags: [tree, cs]
 - https://arxiv.org/abs/2504.02263
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [inference, moe, disaggregation]
 - https://arxiv.org/abs/2412.01784
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [interpretability]
 - https://arxiv.org/abs/2510.00184
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [arithmetics, llm]
 - https://arxiv.org/abs/2509.26537
   - [meta]:
     - date: 10/07/2025

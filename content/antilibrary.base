@@ -19,14 +19,20 @@ properties:
 views:
   - type: cards
     name: gallery
+    groupBy:
+      property: category
+      direction: DESC
     order:
       - file.basename
       - internal-notes
       - category
+      - date
     sort:
       - property: date
         direction: DESC
       - property: title
+        direction: ASC
+      - property: category
         direction: ASC
       - property: internal-notes
         direction: ASC
@@ -37,6 +43,30 @@ views:
       note.internal-notes: 125
     cardSize: 320
     image: note.posters
+  - type: table
+    name: all
+    groupBy:
+      property: author
+      direction: ASC
+    order:
+      - title
+      - category
+      - date
+      - status
+      - file.tags
+      - year-finished
+      - subcategory
+    sort:
+      - property: status
+        direction: ASC
+      - property: date
+        direction: DESC
+      - property: category
+        direction: ASC
+    columnSize:
+      note.title: 401
+      note.date: 147
+      note.internal-notes: 125
   - type: table
     name: philosophy
     filters:
@@ -109,30 +139,6 @@ views:
         direction: DESC
       - property: status
         direction: DESC
-    columnSize:
-      note.title: 401
-      note.date: 147
-      note.internal-notes: 125
-  - type: table
-    name: all
-    groupBy:
-      property: author
-      direction: ASC
-    order:
-      - title
-      - category
-      - date
-      - status
-      - file.tags
-      - year-finished
-      - subcategory
-    sort:
-      - property: status
-        direction: ASC
-      - property: date
-        direction: DESC
-      - property: category
-        direction: ASC
     columnSize:
       note.title: 401
       note.date: 147

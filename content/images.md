@@ -97,6 +97,8 @@ title: images
 
 ![[thoughts/images/political view.webp|gigachad politcal view]]
 
+![[thoughts/images/cute-dog.png|cute doggie]]
+
 ## authors
 
 ![[thoughts/images/joan-didion.webp|joan didion]]

@@ -1,18 +1,18 @@
 ---
 id: craft
-aliases:
-  - work
-  - portfolio
+comments: false
 tags:
   - evergreen
 description: and a celebration for the act of making.
 date: "2021-12-22"
-modified: 2025-10-01 16:26:17 GMT-04:00
-comments: false
+modified: 2025-10-26 23:47:57 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
   - /portfolio
+aliases:
+  - work
+  - portfolio
 title: craft.
 ---
 
@@ -117,14 +117,16 @@ You can find internal monologue under [[/posts/]] index.
         - [[lectures/411/notes|411. linear algebra]]
         - [[lectures/412/notes|412. linear algebra in transformers]]
       - [[lectures/420/notes|420. matmul and GPU quirks]]
+      - [[lectures/430/notes|430. Deploying DeepSeek R1]]
+      - [[lectures/440/notes|440. nanovllm]]
 - vLLM Toronto Meetup, 2025
 
 ## companies.
 
-https://x.com/aarnphm_/status/1844775079286120682
-
-> [!note]- funding
->
-> I'm looking for interests within Canada. Would love to [chat](mailto:contact@aarnphm.xyz)!
+- torontocompute
+  - https://x.com/aarnphm_/status/1844775079286120682
+  - > [!note]- funding
+    >
+    > I'm looking for interests within Canada. Would love to [chat](mailto:contact@aarnphm.xyz)!
 
 [^ref]

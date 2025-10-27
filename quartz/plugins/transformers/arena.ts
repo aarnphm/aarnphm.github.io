@@ -543,12 +543,12 @@ export const Arena: QuartzTransformerPlugin = () => {
               }
 
               if (node.type === "heading") {
-                const depth = (node as any).depth as number | undefined
+                const depth = node.depth as number | undefined
                 if (depth === 2) {
                   let name = toString(node).trim()
-                  const linkChild = (node as any).children?.find(
-                    (ch: any) => ch.type === "link",
-                  ) as Link | undefined
+                  const linkChild = node.children?.find((ch: any) => ch.type === "link") as
+                    | Link
+                    | undefined
                   if (linkChild && !/^https?:\/\//i.test(linkChild.url)) {
                     try {
                       const parts = decodeURI(linkChild.url).split("/")

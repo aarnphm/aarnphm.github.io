@@ -7,4 +7,5 @@ status: to-watch
 studio: Ascendant Films
 poster: "[[movies/posters/boiling-point.jpg]]"
 year: 2021
+category: thriller
 ---
