@@ -29,7 +29,7 @@ socials:
   home: /
   curius: /curius
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-29 03:10:42 GMT-04:00
+modified: 2025-10-29 04:34:23 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -1128,6 +1128,10 @@ cssclasses:
 
 ## essay
 
+- https://www.henrikkarlsson.xyz/p/wordless-thought -- When is it better to think without words?
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [writing]
 - https://www.brasstacks.blog/tyatd-uni/ -- Things You’re Allowed to Do: University Edition
   - [meta]:
     - date: 10/29/2025
@@ -1770,6 +1774,12 @@ cssclasses:
 
 ## machine learning
 
+- https://x.com/soumithchintala/status/1671272963532783618 -- battle of the frameworks [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [framework, tinygrad]
+  - transcript: https://www.latent.space/p/geohot
+  - https://x.com/__tinygrad__/status/1964037572503752910
 - https://www.youtube.com/watch?v=_KoUcwCoID4 -- 4 Philosophies of Interpretability
   - [meta]:
     - date: 10/29/2025
@@ -2820,23 +2830,26 @@ cssclasses:
 - https://www.youtube.com/watch?v=usxvyf3xqcQ -- Hubert Dreyfus - Dostoyevsky's The Brothers Karamazov [**]
   - [meta]:
     - date: 10/29/2025
-    - tags: [philosophy]
+    - tags: [existentialism]
+  - Lecture 8-15
+  - Lecture 1-7: [Kierkegaard's Fear and Trembling](https://www.youtube.com/watch?v=OjfzyqCewdo)
+  - Lecture 16-20: [Nietzsche's Twilight of the Idols & The Gay Science](https://www.youtube.com/watch?v=XdYLgH0bV9A)
 - https://www.youtube.com/watch?v=3_kdbJnCMwU&ab_channel=DavidBalcarras -- Bryan Magee - The Great Philosophers [**]
   - [meta]:
     - date: 10/02/2025
-    - tags: [philosophy]
+    - tags: [ethnography]
 - https://www.youtube.com/watch?v=nNEweeN32QI&ab_channel=PhilosophyOverdose -- Is God an Unnecessary Hypothesis, Peter van Inwagen, 2004 Calvin College
   - [meta]:
     - date: 08/02/2025
-    - tags: [philosophy]
+    - tags: [god]
 - https://www.youtube.com/watch?v=AHmKd2Cxpa4 -- The Philosophy of Locke & Berkeley - Bryan Magee & Michael Ayers (1987)
   - [meta]:
     - date: 10/29/2025
-    - tags: [philosophy]
+    - tags: [empiricism]
 - https://www.youtube.com/watch?v=H4_Tsjmqxak -- Husserl, Heidegger & Existentialism - Hubert Dreyfus & Bryan Magee (1987)
   - [meta]:
     - date: 10/26/2025
-    - tags: [philosophy]
+    - tags: [existentialism]
   - books: [[library/Logical Investigations]], [[library/Being and Time]]
 - https://www.youtube.com/watch?v=Oq4sjz38z5A -- Hubert Dreyfus discusses Heidegger & Merleau-Ponty [**]
   - [meta]:
@@ -2854,7 +2867,7 @@ cssclasses:
 - https://www.youtube.com/watch?v=llu7prGMDhk&ab_channel=JuliandeMedeiros -- Lacan/Žižek on how to find your dream: a step-by-step by step guide
   - [meta]:
     - date: 08/02/2025
-    - tags: [philosophy]
+    - tags: [dream, being]
 - https://en.wikipedia.org/wiki/Rugged_individualism -- Rugged individualism [**]
   - [meta]:
     - date: 10/29/2025
@@ -2867,7 +2880,7 @@ cssclasses:
 - https://www.youtube.com/watch?v=C7n7wfQOGaI -- The Philosophy of Spinoza & Leibniz - Bryan Magee & Anthony Quinton (1987)
   - [meta]:
     - date: 10/08/2025
-    - tags: [philosophy, rationalist]
+    - tags: [rationalist]
   - after Decartes, [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Sphinoza]]
 - https://caitlynrichardson.substack.com/p/can-intellectual-intimacy-replace -- can intellectual intimacy replace physical desire?
   - [meta]:
@@ -2880,7 +2893,7 @@ cssclasses:
 - https://www.aquantumofhope.com/ -- A Quantum of Hope
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [quantum]
 - https://www.lesswrong.com/posts/2HxAkCG7NWTrrn5R3/three-fallacies-of-teleology -- Three Fallacies of Teleology [**]
   - [meta]:
     - date: 10/06/2025
@@ -2985,6 +2998,12 @@ cssclasses:
 
 ## stream
 
+- https://hpmor.com/ -- Harry Potter and the Methods of Rationality [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [rationality]
+  - see also: https://www.fanfiction.net/s/5782108/1/Harry_Potter_and_the_Methods_of_Rationality
+  - https://hpmor.com/chapter/6: The Planning Fallacy
 - https://www.malaproject.com/menu/dinner [**]
   - [meta]:
     - date: 10/28/2025

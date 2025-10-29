@@ -1,9 +1,9 @@
 ---
-date: "2024-10-10"
 id: KV compression
-modified: 2025-10-29 02:15:26 GMT-04:00
 tags:
   - ml
+date: "2024-10-10"
+modified: 2025-10-29 04:33:58 GMT-04:00
 title: KV compression
 ---
 
@@ -16,6 +16,13 @@ More recent work aggregated attention from _limited observation windows_ [@li202
 uses top_k to find $k$-indices of attentions per head to preserve, and evict the not-so-important ones.
 
 Another techniques to work with KV is to offload to a central storage, to then reuse in other context.
+
+## KV-cache layout
+
+NHD/HND
+
+- `NHD` -> `(seq_len, num_heads, head_dim)`
+- `HND` -> `(num_heads, seq_len, head_dim)`
 
 ## idea.
 
