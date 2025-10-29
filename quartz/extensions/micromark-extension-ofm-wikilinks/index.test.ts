@@ -785,7 +785,7 @@ describe("micromark wikilink extension", () => {
         assert.strictEqual(wikilink.data?.wikilink.embed, true)
       })
 
-      test("handles malformed anchors with paths", () => {
+      test("handles anchors with path context (Obsidian format)", () => {
         const tree = parse("[[#thoughts/Epistemology epistemic humility]]", { obsidian: true })
         const wikilink = extractWikilink(tree)
 
@@ -793,6 +793,11 @@ describe("micromark wikilink extension", () => {
         assert.strictEqual(wikilink.data?.wikilink.target, "")
         // should extract "epistemic humility" from after the last /
         assert.strictEqual(wikilink.data?.wikilink.anchor, "#epistemic-humility")
+        assert.strictEqual(wikilink.data?.wikilink.anchorText, "epistemic humility")
+        // display text should be the original, not slugified
+        assert.deepStrictEqual(wikilink.data?.hChildren, [
+          { type: "text", value: "epistemic humility" },
+        ])
       })
     })
   })
@@ -1241,12 +1246,15 @@ describe("micromark wikilink extension", () => {
   })
 
   describe("anchor display text", () => {
-    test("uses anchor text as display when no alias", () => {
-      const tree = parse("[[page#heading]]", { obsidian: true })
+    test("uses original anchor text as display when no alias", () => {
+      const tree = parse("[[page#Section Title]]", { obsidian: true })
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, "wikilink node should exist")
-      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "heading" }])
+      assert.strictEqual(wikilink.data?.wikilink.anchor, "#section-title")
+      assert.strictEqual(wikilink.data?.wikilink.anchorText, "Section Title")
+      // display should be original, not slugified
+      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "Section Title" }])
     })
 
     test("uses anchor text for same-file reference", () => {
@@ -1256,6 +1264,7 @@ describe("micromark wikilink extension", () => {
       assert(wikilink, "wikilink node should exist")
       assert.strictEqual(wikilink.data?.wikilink.target, "")
       assert.strictEqual(wikilink.data?.wikilink.anchor, "#knowledge")
+      assert.strictEqual(wikilink.data?.wikilink.anchorText, "knowledge")
       assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "knowledge" }])
     })
 
@@ -1264,6 +1273,7 @@ describe("micromark wikilink extension", () => {
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, "wikilink node should exist")
+      assert.strictEqual(wikilink.data?.wikilink.anchorText, "block-id")
       assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "block-id" }])
     })
 

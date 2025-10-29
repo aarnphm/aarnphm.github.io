@@ -21,6 +21,7 @@ export interface WikilinkParsed {
   raw: string
   target: string
   anchor?: string
+  anchorText?: string // original un-slugified anchor text for display
   metadata?: string
   metadataParsed?: Record<string, any>
   alias?: string
@@ -258,6 +259,9 @@ function exitAnchor(this: CompileContext, _token: Token, obsidian: boolean = fal
       .replace(/\s+/g, " ")
       .trim()
 
+    // store original anchor text for display before slugification
+    node.data.wikilink.anchorText = cleanAnchor
+
     // apply slugification for consistency with heading IDs
     const slugifiedAnchor = obsidian ? slugAnchor(cleanAnchor) : cleanAnchor
 
@@ -346,15 +350,13 @@ function exitMetadata(this: CompileContext): undefined {
  * converts `[[target]]`, `[[target|alias]]`, `[[target#anchor]]` to <a> elements.
  */
 function annotateRegularLink(node: Wikilink, wikilink: WikilinkParsed, url: string): void {
-  const { alias, target, anchor, metadataParsed, metadata } = wikilink
+  const { alias, target, anchor, anchorText, metadataParsed, metadata } = wikilink
 
   const fp = target.trim()
   let displayText = alias ?? fp
 
-  // if no explicit alias and there's an anchor, use the anchor text as display
-  if (!alias && anchor) {
-    // strip leading # and optional ^
-    const anchorText = anchor.replace(/^#\^?/, "")
+  // if no explicit alias and there's an anchor, use the original anchor text as display
+  if (!alias && anchor && anchorText) {
     displayText = anchorText
   }
 

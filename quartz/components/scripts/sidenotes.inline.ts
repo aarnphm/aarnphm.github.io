@@ -83,11 +83,11 @@ class SidenoteManager {
   private initialize() {
     const sidenoteSpans = document.querySelectorAll<HTMLSpanElement>(".sidenote")
 
-    sidenoteSpans.forEach((sidenoteSpan) => {
-      const label = sidenoteSpan.querySelector<HTMLSpanElement>(".sidenote-label")
+    sidenoteSpans.forEach((span) => {
+      const label = span.querySelector<HTMLSpanElement>(".sidenote-label")
       if (!label) return
 
-      const dataContent = sidenoteSpan.getAttribute("data-content")
+      const dataContent = span.getAttribute("data-content")
       if (!dataContent) return
 
       // create content div
@@ -97,9 +97,9 @@ class SidenoteManager {
       content.style.display = "none"
 
       // insert after the sidenote span itself (not inside it)
-      sidenoteSpan.parentElement?.insertBefore(content, sidenoteSpan.nextSibling)
+      span.parentElement?.insertBefore(content, span.nextSibling)
 
-      this.sidenotes.push({ span: sidenoteSpan, label, content })
+      this.sidenotes.push({ span, label, content })
     })
   }
 
