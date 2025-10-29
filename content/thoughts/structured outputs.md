@@ -1,20 +1,20 @@
 ---
-id: structured outputs
 aliases:
   - structured decoding
   - guided decoding
   - structured outputs
   - constrained decoding
+date: "2024-11-18"
+description: structured generations in vLLM a la carte, or in general
+id: structured outputs
+modified: 2025-10-29 02:15:54 GMT-04:00
 tags:
   - ml
   - rfc
   - vllm
-description: structured generations in vLLM a la carte, or in general
+title: structured outputs
 transclude:
   title: false
-date: "2024-11-18"
-modified: 2025-10-16 14:06:52 GMT-04:00
-title: structured outputs
 ---
 
 ## jump-forward decoding

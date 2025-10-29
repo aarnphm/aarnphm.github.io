@@ -1,13 +1,13 @@
 ---
+date: "2025-10-05"
+description: building a JIT compiler in Python, from simple AST lowering to IR-based optimization
 id: python-bytecode-jit
+modified: 2025-10-29 02:15:48 GMT-04:00
 tags:
   - compilers
   - python
   - jit
   - bytecode
-description: building a JIT compiler in Python, from simple AST lowering to IR-based optimization
-date: "2025-10-05"
-modified: 2025-10-28 16:09:03 GMT-04:00
 title: simple JIT compiler
 ---
 

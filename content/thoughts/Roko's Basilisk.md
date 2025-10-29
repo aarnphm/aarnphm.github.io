@@ -1,11 +1,11 @@
 ---
+date: "2025-08-05"
+description: a thought experiment.
 id: Roko's Basilisk
+modified: 2025-10-29 02:15:34 GMT-04:00
 tags:
   - seed
-date: "2025-08-05"
-modified: 2025-08-05 21:09:34 GMT-04:00
 title: Roko's Basilisk
-description: a thought experiment.
 ---
 
 see also: https://www.lesswrong.com/w/rokos-basilisk

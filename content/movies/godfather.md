@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: vintage
+date: "2024-02-07"
+director: Francis Ford Coppola
 id: godfather
+modified: 2025-10-29 02:15:04 GMT-04:00
+poster: "[[movies/posters/godfather.jpg]]"
+status: recurring
+studio: paramount
 tags:
   - movies
   - vintage
-studio: paramount
-poster: "[[movies/posters/godfather.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:10:22 GMT-04:00
-year: 1972
-category: vintage
-director: Francis Ford Coppola
 title: Godfather
+year: 1972
 ---

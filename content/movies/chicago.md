@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: vintage
+date: "2024-02-07"
+director: Rob Marshall
 id: chicago
+modified: 2025-10-29 02:15:03 GMT-04:00
+poster: "[[movies/posters/chicago.jpg]]"
+status: recurring
+studio: miramax
 tags:
   - movies
   - vintage
-studio: miramax
-poster: "[[movies/posters/chicago.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:07:55 GMT-04:00
-year: 2002
-category: vintage
-director: Rob Marshall
 title: Chicago
+year: 2002
 ---

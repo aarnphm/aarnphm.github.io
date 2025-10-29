@@ -1,10 +1,10 @@
 ---
+date: "2025-08-19"
+description: measurement of civilization progress
 id: Kardashev scale
+modified: 2025-10-29 02:15:26 GMT-04:00
 tags:
   - seed
-description: measurement of civilization progress
-date: "2025-08-19"
-modified: 2025-08-19 18:53:10 GMT-04:00
 title: Kardashev scale
 ---
 

@@ -1,12 +1,12 @@
 ---
+date: "2025-01-22"
+description: and on emboddied experience.
+draft: true
 id: physical touch
+modified: 2025-10-29 02:15:12 GMT-04:00
 tags:
   - growth
   - love
-date: 2025-01-22
-description: and on emboddied experience.
-draft: true
-modified: 2025-01-28 01:09:47 GMT-05:00
 title: Green Books makes me want to write physical letters again.
 ---
 

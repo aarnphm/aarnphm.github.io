@@ -1,10 +1,10 @@
 ---
-id: finals
-tags:
-  - engineer4a03
 date: "2024-12-08"
 description: and exercise.
-modified: 2025-01-01 07:35:17 GMT-05:00
+id: finals
+modified: 2025-10-29 02:16:00 GMT-04:00
+tags:
+  - engineer4a03
 title: Ethics template a la carte
 ---
 

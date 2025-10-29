@@ -1,10 +1,10 @@
 ---
+date: "2024-04-03"
 id: latent space
+modified: 2025-10-29 02:15:48 GMT-04:00
 tags:
   - seed
   - ml
-date: "2024-04-03"
-modified: 2024-12-14 07:58:26 GMT-05:00
 title: latent space
 ---
 

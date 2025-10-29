@@ -1,13 +1,13 @@
 ---
+date: "2025-01-06"
+description: and all the things I found interesting on the internet.
 id: images
+modified: 2025-10-29 02:14:21 GMT-04:00
 tags:
   - seed
-description: and all the things I found interesting on the internet.
+title: images
 transclude:
   title: false
-date: "2025-01-06"
-modified: 2025-10-23 16:55:58 GMT-04:00
-title: images
 ---
 
 ![[thoughts/images/l-plus-ratio-naval-ai-calculator-tech.webp|Casual Naval ratioed anon]]

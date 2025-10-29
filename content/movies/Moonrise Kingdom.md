@@ -1,15 +1,15 @@
 ---
-id: "moonrise-kingdom"
-status: "recurring"
+category: wes anderson
+date: "2024-02-07"
+director: Wes Anderson
+id: moonrise-kingdom
+modified: 2025-10-29 02:14:53 GMT-04:00
+poster: "[[movies/posters/moonrise-kingdom.jpg]]"
+status: recurring
+studio: wes anderson
 tags:
   - movies
   - wes-anderson
-title: "Moonrise Kingdom"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Moonrise Kingdom
 year: 2012
-director: "Wes Anderson"
-category: "wes anderson"
-studio: "wes anderson"
-poster: "[[movies/posters/moonrise-kingdom.jpg]]"
 ---

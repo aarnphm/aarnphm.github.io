@@ -1,10 +1,10 @@
 ---
+date: "2024-01-09"
 id: index
+modified: 2025-10-29 02:15:47 GMT-04:00
 tags:
   - evergreen
   - fruit
-date: "2024-01-09"
-modified: 2025-08-04 11:14:33 GMT-04:00
 title: thoughts
 ---
 

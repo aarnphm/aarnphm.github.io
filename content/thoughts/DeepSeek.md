@@ -1,12 +1,12 @@
 ---
+date: "2025-01-25"
+description: and OSS AI ftw.
 id: DeepSeek
+modified: 2025-10-29 02:15:21 GMT-04:00
 tags:
   - ml
   - vllm
   - serving
-description: and OSS AI ftw.
-date: "2025-01-25"
-modified: 2025-10-05 18:34:24 GMT-04:00
 title: DeepSeek
 ---
 

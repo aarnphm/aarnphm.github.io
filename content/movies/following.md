@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: christopher nolan
+date: "2024-02-07"
+director: Christopher Nolan
 id: following
+modified: 2025-10-29 02:15:03 GMT-04:00
+poster: "[[movies/posters/following.jpg]]"
+status: recurring
+studio: christopher nolan
 tags:
   - movies
   - christopher-nolan
-studio: christopher nolan
-poster: "[[movies/posters/following.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:10:09 GMT-04:00
-year: 1998
-category: christopher nolan
-director: Christopher Nolan
 title: Following
+year: 1998
 ---

@@ -1,12 +1,12 @@
 ---
+date: "2025-09-26"
+description: linear algebra in transformers
 id: index
+modified: 2025-10-29 02:14:23 GMT-04:00
 tags:
   - seed
   - ml
   - linalg
-description: linear algebra in transformers
-date: "2025-09-26"
-modified: 2025-09-26 02:14:19 GMT-04:00
 title: 0[dot]412
 ---
 

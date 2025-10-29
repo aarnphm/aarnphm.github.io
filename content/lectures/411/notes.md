@@ -1,16 +1,16 @@
 ---
-slides: true
+date: "2025-09-12"
+description: linear algebra notes
 id: notes
+modified: 2025-10-29 02:14:24 GMT-04:00
+slides: true
 tags:
   - seed
   - workshop
   - linalg
-description: linear algebra notes
+title: supplement to 0.411
 transclude:
   title: false
-date: "2025-09-12"
-modified: 2025-09-26 10:46:57 GMT-04:00
-title: supplement to 0.411
 ---
 
 ## linear equation

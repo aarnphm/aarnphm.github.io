@@ -1,17 +1,17 @@
 ---
-status: finished
-id: Very Slender Differences
-subcategory: friendship
 author: Samuel Johnson
-description: An essay in The Idler
-title: Very Slender Differences
+category: fiction
 date: "2025-01-01"
-year-finished: 2025
-modified: 2025-10-25 02:16:15 GMT-04:00
+description: An essay in The Idler
+id: Very Slender Differences
+modified: 2025-10-29 02:14:44 GMT-04:00
+posters: "[[library/posters/very-slender-differences.jpg]]"
+status: finished
+subcategory: friendship
 tags:
   - fiction
-posters: "[[library/posters/very-slender-differences.jpg]]"
-category: fiction
+title: Very Slender Differences
+year-finished: 2025
 ---
 
 Life has no pleasure higher or nobler than that of [[thoughts/friendship]]. It is painful to consider that this sublime enjoyment may be impaired or destroyed by innumerable causes, and that there is no human possession of which the duration is less certain.

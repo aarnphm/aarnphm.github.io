@@ -1,10 +1,10 @@
 ---
-id: annotations
-tags:
-  - sfwr2fa3
 date: "2025-01-27"
 description: tutorial 1.
-modified: 2025-02-04 16:25:22 GMT-05:00
+id: annotations
+modified: 2025-10-29 02:16:00 GMT-04:00
+tags:
+  - sfwr2fa3
 title: annotations
 ---
 

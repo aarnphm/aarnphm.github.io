@@ -1,10 +1,10 @@
 ---
-id: intelligence
-tags:
-  - seed
 date: "2024-02-07"
 description: and our understanding of the environment.
-modified: 2025-01-26 11:36:57 GMT-05:00
+id: intelligence
+modified: 2025-10-29 02:15:47 GMT-04:00
+tags:
+  - seed
 title: Intelligence
 ---
 

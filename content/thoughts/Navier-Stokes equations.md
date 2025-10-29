@@ -1,11 +1,11 @@
 ---
+date: "2024-11-27"
+description: partial differential equations describing the motion of fluid substances. One of seven $1M problems in mathematics
 id: Navier-Stokes equations
+modified: 2025-10-29 02:15:30 GMT-04:00
 tags:
   - physics
   - fluid dynamics
-date: "2024-11-27"
-description: partial differential equations describing the motion of fluid substances. One of seven $1M problems in mathematics
-modified: "2024-11-27"
 title: Navier-Stokes equations
 ---
 

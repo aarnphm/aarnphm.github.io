@@ -1,12 +1,12 @@
 ---
+date: "2025-09-07"
+description: numpy go brr
 id: index
+modified: 2025-10-29 02:15:56 GMT-04:00
 tags:
   - seed
   - ml
   - tsfm
-description: numpy go brr
-date: "2025-09-07"
-modified: 2025-09-19 12:21:30 GMT-04:00
 title: linear backward implementation of gradient descent
 ---
 

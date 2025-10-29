@@ -1,8 +1,9 @@
 ---
+date: "2024-04-12"
 id: game theory
+modified: 2025-10-29 02:15:46 GMT-04:00
 tags:
   - seed
-date: "2024-04-12"
 title: game theory
 ---
 

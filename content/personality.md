@@ -1,15 +1,15 @@
 ---
-slides: true
+date: "2025-10-23"
+description: from Clearer Thinking.
 id: personality
+modified: 2025-10-29 02:15:07 GMT-04:00
+noindex: true
+pageLayout: letter
+slides: true
 tags:
   - evergreen
   - fruit
-description: from Clearer Thinking.
-date: "2025-10-23"
-modified: 2025-10-23 04:39:56 GMT-04:00
-noindex: true
 title: personality report
-pageLayout: letter
 ---
 
 This is the [Clearer Thinking Ultimate Personality Test](https://www.clearerthinking.org/tools/the-ultimate-personality-test). This is the generated report.

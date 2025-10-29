@@ -1,8 +1,9 @@
 ---
+date: "2024-02-07"
 id: observer-expectancy effect
+modified: 2025-10-29 02:15:51 GMT-04:00
 tags:
   - seed
-date: "2024-02-07"
 title: observer-expectancy effect
 ---
 

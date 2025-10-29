@@ -1,15 +1,15 @@
 ---
+date: "2025-02-21"
+description: for Stripe, but shouldn't affect general sites interaction
 id: privacy policy
+modified: 2025-10-29 02:15:14 GMT-04:00
+noindex: true
+pageLayout: technical
 permalinks:
   - /privacy
 tags:
   - evergreen
-description: for Stripe, but shouldn't affect general sites interaction
-date: "2025-02-21"
-modified: 2025-08-10 01:23:18 GMT-04:00
-noindex: true
 title: Privacy Policy
-pageLayout: technical
 ---
 
 **Effective date**: February 21, 2025

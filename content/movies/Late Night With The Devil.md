@@ -1,14 +1,14 @@
 ---
-status: to-watch
-id: late-night-with-the-devil
-tags:
-  - movies
-studio: general
 category: general
 date: "2024-02-07"
-modified: 2025-10-16 19:54:47 GMT-04:00
-year: 2024
 director: Cameron Cairnes, Colin Cairnes
-title: Late Night with The Devil
+id: late-night-with-the-devil
+modified: 2025-10-29 02:14:52 GMT-04:00
 poster: "[[movies/posters/late-night-with-the-devil.jpg]]"
+status: to-watch
+studio: general
+tags:
+  - movies
+title: Late Night with The Devil
+year: 2024
 ---

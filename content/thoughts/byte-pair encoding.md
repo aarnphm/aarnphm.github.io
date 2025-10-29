@@ -1,14 +1,14 @@
 ---
+created: "2025-09-11"
+date: "2025-09-11"
 description: Algorithm for encoding text strings by iteratively replacing most frequent character pairs with new symbols. Used in data compression and LLM tokenization.
 id: byte-pair encoding
+modified: 2025-10-29 02:15:42 GMT-04:00
+published: "2006-07-04"
+source: https://en.wikipedia.org/wiki/Byte-pair_encoding
 tags:
   - seed
   - clippings
-published: "2006-07-04"
-source: https://en.wikipedia.org/wiki/Byte-pair_encoding
-date: "2025-09-11"
-created: "2025-09-11"
-modified: 2025-09-17 03:00:14 GMT-04:00
 title: byte-pair encoding
 transclude:
   title: false

@@ -1,14 +1,14 @@
 ---
+date: "2025-09-05"
+description: 1/n of acceptance-rejection
 id: notes
+modified: 2025-10-29 02:14:23 GMT-04:00
 tags:
   - seed
   - workshop
-description: 1/n of acceptance-rejection
+title: supplement to 0.4
 transclude:
   title: false
-date: "2025-09-05"
-modified: 2025-09-15 11:00:39 GMT-04:00
-title: supplement to 0.4
 ---
 
 see also [[thoughts/Speculative decoding]], [[hinterland/specdec|indepedent research]]

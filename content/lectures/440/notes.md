@@ -1,15 +1,15 @@
 ---
-slides: true
+date: "2025-10-17"
+description: and building a nano inference engine
 id: notes
+modified: 2025-10-29 02:14:25 GMT-04:00
+slides: true
 tags:
   - seed
   - workshop
-description: and building a nano inference engine
+title: supplement to 0.440
 transclude:
   title: false
-date: "2025-10-17"
-modified: 2025-10-26 23:25:39 GMT-04:00
-title: supplement to 0.440
 ---
 
 see also: [[thoughts/vllm]], [[thoughts/LLMs]], [[thoughts/tsfm/inference-exercise|BYOIE]], [[thoughts/Transformers|Transformers]], [[thoughts/Attention|Attention]]

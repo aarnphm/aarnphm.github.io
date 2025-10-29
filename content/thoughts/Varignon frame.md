@@ -1,12 +1,15 @@
 ---
-title: "Varignon frame"
-source: "https://en.wikipedia.org/wiki/Varignon_frame"
-published: 2005-06-06
-created: 2025-10-24
-description: "Mechanical device for optimal warehouse location using weighted distances and equilibrium forces"
+created: "2025-10-24"
+date: "2025-10-29"
+description: Mechanical device for optimal warehouse location using weighted distances and equilibrium forces
+id: Varignon frame
+modified: 2025-10-29 02:15:37 GMT-04:00
+published: "2005-06-06"
+source: https://en.wikipedia.org/wiki/Varignon_frame
 tags:
-  - "seed"
-  - "clippings"
+  - seed
+  - clippings
+title: Varignon frame
 ---
 
 > a mechanical device used to determine the optimal[^optimal] location of a warehouse for distributing goods to a set of shops.

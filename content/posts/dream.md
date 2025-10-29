@@ -1,10 +1,10 @@
 ---
-id: dream
-tags:
-  - poem
 date: "2025-04-23"
 draft: true
-modified: 2025-05-06 22:16:20 GMT-04:00
+id: dream
+modified: 2025-10-29 02:15:10 GMT-04:00
+tags:
+  - poem
 title: dream
 ---
 

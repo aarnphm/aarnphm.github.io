@@ -1,11 +1,11 @@
 ---
+date: "2025-07-14"
+description: higher dimensional generalization of category, where composition of morphism is associative up to natural isomorphism
 id: bordism bicategories
+modified: 2025-10-29 02:15:42 GMT-04:00
 tags:
   - seed
   - math
-description: higher dimensional generalization of category, where composition of morphism is associative up to natural isomorphism
-date: "2025-07-14"
-modified: 2025-08-01 14:26:38 GMT-04:00
 title: bordism bicategories
 ---
 

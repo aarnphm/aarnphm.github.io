@@ -1,11 +1,11 @@
 ---
+date: "2025-10-04"
+description: language games, pictures of states, proposition
 id: Wittgenstein
+modified: 2025-10-29 02:15:39 GMT-04:00
 tags:
   - seed
   - philosophy
-description: language games, pictures of states, proposition
-date: "2025-10-04"
-modified: 2025-10-27 10:37:19 GMT-04:00
 title: Wittgenstein
 ---
 

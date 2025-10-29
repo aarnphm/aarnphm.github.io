@@ -1,11 +1,11 @@
 ---
+date: "2024-02-07"
+description: considered to be a study of action theory
 id: Agency
+modified: 2025-10-29 02:15:15 GMT-04:00
 tags:
   - seed
   - philosophy
-description: considered to be a study of action theory
-date: "2024-02-07"
-modified: 2025-10-07 18:24:46 GMT-04:00
 title: Agency
 ---
 

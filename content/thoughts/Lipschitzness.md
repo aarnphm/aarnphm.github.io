@@ -1,11 +1,11 @@
 ---
+date: "2025-08-21"
+description: continuity study
 id: Lipschitzness
+modified: 2025-10-29 02:15:27 GMT-04:00
 tags:
   - ml
   - math
-description: continuity study
-date: "2025-08-21"
-modified: 2025-09-19 18:16:36 GMT-04:00
 title: Lipschitzness
 ---
 

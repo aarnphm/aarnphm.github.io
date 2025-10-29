@@ -1,14 +1,14 @@
 ---
+date: "2025-05-07"
+description: unification of frontend parsers
 id: tool calling
+modified: 2025-10-29 02:15:54 GMT-04:00
+socials:
+  github: https://github.com/vllm-project/vllm/issues/17817
 tags:
   - ml
   - rfc
   - vllm
-description: unification of frontend parsers
-socials:
-  github: https://github.com/vllm-project/vllm/issues/17817
-date: "2025-05-07"
-modified: 2025-09-08 21:57:24 GMT-04:00
 title: tool calling
 transclude:
   title: false

@@ -1,16 +1,16 @@
 ---
+date: "2025-10-04"
+description: what neural networks are, ontologically speaking
 id: Connectionist network
+modified: 2025-10-29 02:15:19 GMT-04:00
+pageLayout: technical
+signature: with abundance of love and joy - Aaron
 tags:
   - philosophy
   - ml
   - stream
   - microblog
-description: what neural networks are, ontologically speaking
-signature: with abundance of love and joy - Aaron
-date: "2025-10-04"
-modified: 2025-10-04 21:17:10 GMT-04:00
 title: connectionist networks
-pageLayout: technical
 ---
 
 I've been thinking about connectionist networks lately (or for the past two years or so), and there's something deeply unsettling about how we talk about them. Not unsettling in a bad way—more like that productive discomfort you get when you realize the categories you've been using don't quite map onto reality.

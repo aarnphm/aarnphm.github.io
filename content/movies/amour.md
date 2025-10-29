@@ -1,14 +1,14 @@
 ---
-status: to-watch
+category: general
+date: "2024-02-07"
+director: Michael Haneke
 id: amour
+modified: 2025-10-29 02:15:02 GMT-04:00
+poster: "[[movies/posters/amour.jpg]]"
+status: to-watch
+studio: general
 tags:
   - movies
-studio: general
-poster: "[[movies/posters/amour.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:06:06 GMT-04:00
-year: 2012
-category: general
-director: Michael Haneke
 title: Amour
+year: 2012
 ---

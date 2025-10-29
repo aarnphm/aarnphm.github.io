@@ -1,10 +1,10 @@
 ---
+date: "2025-09-08"
+description: how to determine the health of a given stock
 id: Bollinger Bands
+modified: 2025-10-29 02:15:17 GMT-04:00
 tags:
   - seed
   - finance
-description: how to determine the health of a given stock
-date: "2025-09-08"
-modified: 2025-09-08 13:14:03 GMT-04:00
 title: Bollinger Bands
 ---

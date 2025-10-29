@@ -1,12 +1,12 @@
 ---
+date: "2025-08-06"
+description: and LMCache.
 id: KV offloading
+modified: 2025-10-29 02:15:26 GMT-04:00
 tags:
   - seed
   - ml
   - inference
-description: and LMCache.
-date: "2025-08-06"
-modified: 2025-08-25 11:28:06 GMT-04:00
 title: KV offloading
 ---
 

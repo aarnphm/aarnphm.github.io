@@ -1,9 +1,9 @@
 ---
+date: "2024-12-14"
 id: contrastive representation learning
+modified: 2025-10-29 02:15:42 GMT-04:00
 tags:
   - ml
-date: "2024-12-14"
-modified: 2024-12-14 08:11:13 GMT-05:00
 title: contrastive representation learning
 ---
 

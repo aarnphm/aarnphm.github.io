@@ -1,12 +1,12 @@
 ---
+date: "2025-08-19"
+description: capturing energy of a star
 id: Dyson sphere
+modified: 2025-10-29 02:15:21 GMT-04:00
+noindex: true
 tags:
   - seed
   - math
-description: capturing energy of a star
-date: "2025-08-19"
-modified: 2025-08-19 18:52:05 GMT-04:00
-noindex: true
 title: Dyson sphere
 ---
 

@@ -1,16 +1,16 @@
 ---
-slides: true
+date: "2025-10-17"
+description: Deploying DeepSeek R1
 id: notes
+modified: 2025-10-29 02:14:25 GMT-04:00
+slides: true
 tags:
   - seed
   - workshop
   - gpu
-description: Deploying DeepSeek R1
+title: supplement to 0.430
 transclude:
   title: false
-date: "2025-10-17"
-modified: 2025-10-17 19:58:56 GMT-04:00
-title: supplement to 0.430
 ---
 
 see also: [[thoughts/Attention#Multi-head Latent Attention]], [[thoughts/LLMs]], [[lectures/430/mla-rope-proofs|MLA proof]]

@@ -1,10 +1,10 @@
 ---
+date: "2024-02-05"
 id: quantization
+modified: 2025-10-29 02:15:52 GMT-04:00
 tags:
   - seed
   - ml
-date: "2024-02-05"
-modified: 2025-10-09 19:31:58 GMT-04:00
 title: Quantization
 ---
 

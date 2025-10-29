@@ -1,11 +1,11 @@
 ---
+date: "2025-05-22"
+description: and llm-d
 id: distributed inference
+modified: 2025-10-29 02:15:44 GMT-04:00
 tags:
   - llm
   - serving
-date: "2025-05-22"
-description: and llm-d
-modified: 2025-10-18 00:22:00 GMT-04:00
 title: distributed inference
 ---
 

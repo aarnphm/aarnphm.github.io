@@ -4,6 +4,7 @@ aliases:
   - dilectio
   - lyd
   - nb
+  - living
 tags:
   - evergreen
   - love
@@ -14,7 +15,7 @@ description: choosing to give your full, continuously.
 socials:
   essay: https://aarnphm.xyz/posts/love
 date: "2025-10-04"
-modified: 2025-10-28 21:24:06 GMT-04:00
+modified: 2025-10-29 03:18:23 GMT-04:00
 title: dilectio
 ---
 
@@ -42,7 +43,7 @@ bell hooks: love is action. [@hooks2000love] When you understand love as action,
 
 ## what it requires
 
-three things: [[#attention]], [[#choice]], and [[#epistemic humility]]
+three things: [[#attention]], [[#choice]], and [[#thoughts/Epistemology epistemic humility]]
 
 ### attention
 
@@ -50,21 +51,17 @@ three things: [[#attention]], [[#choice]], and [[#epistemic humility]]
 
 Not attention _to_ something you already understand, but attention that _constitutes_ understanding. You empty yourself, bracket instrumental concerns, become available to what they present.
 
-Attention is not [[thoughts/Will|will]]. {{sidenotes: Will tries to force understanding; attention waits for your understanding. Will imposes your framework; attention lets the framework shift. They might reorganize your whole way of seeing—if you let them.}} Iris Murdoch says that "moral life happens mostly in ongoing attention, not discrete choices". [@murdoch1970sovereignty] How you _think_ about someone, how you imagine them, what you notice and ignore—this is where love operates. Seeing someone clearly requires discipline, spiritual {{sidenotes<dropdown: true>[exercise.]: one can behaviorally comply (eye contact, nod, repeat back) while completely absent. attention resists third-person measurement. The gap between behavioral proxy and actual attention is everything.}} You practice interpreting charitably, checking projections, staying open to revision.
+Attention is not {{sidenotes[will.]: Will tries to force understanding; attention waits for your understanding. [[thoughts/Will|Will]] imposes your framework; attention _lets_ the framework shift. They might reorganize your whole way of seeing—if you let them}} [@murdoch1970sovereignty] says that "moral life happens mostly in ongoing attention, not discrete choices". How you _think_ about someone, how you imagine them, what you notice and ignore—this is where love operates. Seeing someone clearly requires discipline, spiritual {{sidenotes<dropdown: true>[exercise.]: one can behaviorally comply (eye contact, nod, repeat back) while completely absent. attention resists third-person measurement. The gap between behavioral proxy and actual attention is everything.}} You practice interpreting charitably, checking projections, staying open to revision.
 
 ### choice
 
-Sartre: you're "condemned to be free"—even when you claim "I had no choice," you chose to see it that way. [@sartre1943being] This isn't libertarian free will (uncaused choice from nowhere). It's _situated_ freedom: you're shaped by history, but you still decide how to respond.
-
-Choosing to love is choosing _despite_ absence of guarantees. No reinforcement schedule can make you do that. You do it because you decided it matters.
+@sartre1943being: you're "condemned to be free"—even when you claim "I had no choice," you chose to see it that way {{sidenotes: Choosing to love is choosing despite absence of guarantees. No reinforcement schedule can make you do that. You do it because you decided it matters}}. This isn't libertarian free will (uncaused choice from nowhere), rather _situated_ freedom: you're shaped by history, but you still decide how to respond.
 
 The same reinforcement history produces different people because people aren't passive recipients—they interpret, resist, reframe. Love requires this active stance: you take responsibility for your interpretation, your commitment, your continued choice to stay.
 
 ### [[thoughts/Epistemology|epistemic]] humility
 
-Hermeneutic humility: you might be wrong about them. Your current interpretation is provisional. Stay in the circle.
-
-This connects to self-knowledge: you need to know your own framework, your projections, your instrumental concerns—so you can bracket them. Authenticity requires recognizing when you're in bad faith, when you're using them instead of understanding them.
+This connects to self-{{sidenotes[knowledge:]: you might be wrong about them. Your current interpretation is provisional. Stay in the circle}} you need to know your own framework, your projections, your instrumental concerns—so you can bracket them. Authenticity requires recognizing when you're in bad faith, when you're using them instead of understanding them.
 
 Not claiming privileged access ("I know you better than you know yourself"). Not projecting your needs and calling it understanding. Not understanding _about_ them (facts, categories) instead of understanding _them_ (their horizon).
 
@@ -72,17 +69,11 @@ Not claiming privileged access ("I know you better than you know yourself"). Not
 
 ### [[thoughts/hermeneutics|hermeneutics]]
 
-When you love someone, you choose to interpret them. Not once—continuously. You commit to staying in the [[thoughts/hermeneutics|hermeneutic circle]] even when understanding breaks down, even when they become strange to you.
-
-"Giving someone your full" = giving them your interpretive attention. You make their horizon matter. You let their way of making sense affect how you make sense. You stay with difficulty instead of retreating to easy categories.
+When you love someone, you choose to interpret {{sidenotes[them.]: "Giving someone your full" = giving them your interpretive attention. You make their horizon matter. You let their way of making sense affect how you make sense. You stay with difficulty instead of retreating to easy categories}} Not once—continuously, rather you commit to staying in the [[thoughts/hermeneutics|hermeneutic circle]] even when understanding breaks down, even when they become strange to you.
 
 > understanding happens through _fusion of horizons_ (_Horizontverschmelzung_). [@gadamer1960truth]
 
-You bring your world, they bring theirs. Understanding emerges where they meet—not by one absorbing the other, but by creating shared space. This takes time. You can't speed-read a person.
-
-This is not naive interpretation (assuming you already understand). It's not instrumental interpretation (extracting what you need). It's _generous_ interpretation of ==giving benefit of doubt==, seeking their internal logic, refusing to reduce them to a type.
-
-Learning to see as they see, to care about what they care about, to inhabit their concerns without losing your own. [@fromm1956art]
+You bring your world, they bring theirs. Understanding emerges where they meet—not by one absorbing the other, but by creating shared space. This takes {{sidenotes<dropdown: true>[time.]: Learning to see as they see, to care about what they care about, to inhabit their concerns without losing your own. [@fromm1956art]}} You can't speed-read a {{sidenotes[person.]: This is not naive interpretation (assuming you already understand). It's not instrumental interpretation (extracting what you need). It's generous interpretation of giving benefit of doubt, seeking their internal logic, refusing to reduce them to a type}}
 
 When someone says "you don't understand me," they're right—understanding must be achieved, maintained, renewed. It's never automatic. [@hooks2000love]
 

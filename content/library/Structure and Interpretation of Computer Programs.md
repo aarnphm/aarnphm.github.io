@@ -1,16 +1,16 @@
 ---
-status: current
-id: Structure and Interpretation of Computer Programs
 author:
   - Harold Abelson
   - Gerald Jay Sussman
-subcategory: programming
-title: Structure and Interpretation of Computer Programs
+category: non-fiction
 date: "2025-10-06"
 external-url: https://web.mit.edu/6.001/6.037/sicp.pdf
-modified: 2025-10-25 02:13:55 GMT-04:00
+id: Structure and Interpretation of Computer Programs
+modified: 2025-10-29 02:14:36 GMT-04:00
+posters: "[[library/posters/structure-and-interpretation-of-computer-programs.jpg]]"
+status: current
+subcategory: programming
 tags:
   - non-fiction
-posters: "[[library/posters/structure-and-interpretation-of-computer-programs.jpg]]"
-category: non-fiction
+title: Structure and Interpretation of Computer Programs
 ---

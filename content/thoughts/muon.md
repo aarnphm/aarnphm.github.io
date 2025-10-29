@@ -1,11 +1,11 @@
 ---
+date: "2025-10-17"
+description: derivation sketch and practical notes for the muon optimizer
 id: muon
+modified: 2025-10-29 02:15:50 GMT-04:00
 tags:
   - ml
   - optimization
-description: derivation sketch and practical notes for the muon optimizer
-date: "2025-10-17"
-modified: 2025-10-24 09:05:28 GMT-04:00
 title: muon
 ---
 

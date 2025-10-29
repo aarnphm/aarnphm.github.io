@@ -1,14 +1,14 @@
 ---
-id: "the-end-of-the-tour"
-status: "to-watch"
+category: general
+date: "2024-02-07"
+director: James Ponsoldt
+id: the-end-of-the-tour
+modified: 2025-10-29 02:14:58 GMT-04:00
+poster: "[[movies/posters/the-end-of-the-tour.jpg]]"
+status: to-watch
+studio: general
 tags:
   - movies
-title: "The End of The Tour"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: The End of The Tour
 year: 2015
-director: "James Ponsoldt"
-category: "general"
-studio: "general"
-poster: "[[movies/posters/the-end-of-the-tour.jpg]]"
 ---

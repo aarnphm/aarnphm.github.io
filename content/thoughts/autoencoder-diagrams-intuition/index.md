@@ -1,15 +1,15 @@
 ---
+date: "2025-09-07"
+description: intuition for latent mapping
 id: index
+modified: 2025-10-29 02:15:41 GMT-04:00
+noindex: true
+pageLayout: L->ET|A
 tags:
   - seed
   - ml
   - folder
-description: intuition for latent mapping
-date: "2025-09-07"
-modified: 2025-10-28 16:23:11 GMT-04:00
-noindex: true
 title: panoramic representations
-pageLayout: L->ET|A
 ---
 
 Two complementary illustrations help convey both (i) what a “vanilla” autoencoder represents, and (ii) how it gets implemented as a neural network. Several versions of these files are included, in the [Portable Document Format (PDF)](https://en.wikipedia.org/wiki/PDF).

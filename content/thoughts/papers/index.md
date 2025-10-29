@@ -1,14 +1,14 @@
 ---
-id: index
 aliases:
   - research papers
-tags:
-  - folder
 date: "2024-01-20"
-modified: 2025-01-24 20:24:29 GMT-05:00
+id: index
+modified: 2025-10-29 02:15:51 GMT-04:00
 noindex: true
 permalinks:
   - /papers
+tags:
+  - folder
 title: papers.
 ---
 

@@ -1,16 +1,16 @@
 ---
+date: "2025-08-28"
+description: and more notes
+id: notes
+modified: 2025-10-29 02:14:23 GMT-04:00
 socials:
   youtube: https://youtu.be/DDLlOqQ46HE
-id: notes
 tags:
   - seed
   - workshop
-description: and more notes
+title: supplement to 0.3
 transclude:
   title: false
-date: "2025-08-28"
-modified: 2025-09-15 21:53:37 GMT-04:00
-title: supplement to 0.3
 ---
 
 see also [[lectures/3/quantisation basics]]

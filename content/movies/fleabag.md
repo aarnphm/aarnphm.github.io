@@ -1,14 +1,14 @@
 ---
-status: to-watch
+category: general
+date: "2024-02-07"
+director: Phoebe Waller-Bridge
 id: fleabag
+modified: 2025-10-29 02:15:03 GMT-04:00
+poster: "[[movies/posters/fleabag.jpg]]"
+status: to-watch
+studio: bbc
 tags:
   - movies
-studio: bbc
-poster: "[[movies/posters/fleabag.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:10:01 GMT-04:00
-year: 2016
-category: general
-director: Phoebe Waller-Bridge
 title: Fleabag
+year: 2016
 ---

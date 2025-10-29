@@ -1,11 +1,11 @@
 ---
+date: "2025-08-21"
+description: Entropy-regularized attention as a convex program; Fenchel–Young view, geometry, and verification insights.
 id: convexity
+modified: 2025-10-29 02:14:22 GMT-04:00
 tags:
   - seed
   - math
-description: Entropy-regularized attention as a convex program; Fenchel–Young view, geometry, and verification insights.
-date: "2025-08-21"
-modified: 2025-09-30 06:37:40 GMT-04:00
 title: convexity of attention
 ---
 

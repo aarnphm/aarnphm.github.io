@@ -1,10 +1,10 @@
 ---
+date: "2024-12-30"
+description: general theory of mathematical structures and its relations.
 id: category theory
+modified: 2025-10-29 02:15:42 GMT-04:00
 tags:
   - math
-description: general theory of mathematical structures and its relations.
-date: "2024-12-30"
-modified: 2025-10-05 22:34:19 GMT-04:00
 title: category theory
 ---
 

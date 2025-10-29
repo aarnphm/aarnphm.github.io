@@ -1,13 +1,13 @@
 ---
-id: Nicky
-tags:
-  - friend
 date: "2024-12-26"
 description: and there are certain peculiar difficulties about capturing my emotions for 2024, with you.
-modified: 2024-12-31 18:20:47 GMT-05:00
+id: Nicky
+modified: 2025-10-29 02:15:08 GMT-04:00
 noindex: true
 pageLayout: letter
 signature: with abundance of love and joy - Aaron
+tags:
+  - friend
 title: to nicole
 ---
 

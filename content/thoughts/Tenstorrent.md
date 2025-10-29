@@ -1,12 +1,12 @@
 ---
+date: "2025-10-05"
+description: RISC-V based AI accelerators with programmable architecture
 id: Tenstorrent
+modified: 2025-10-29 02:15:36 GMT-04:00
 tags:
   - ml
   - asic
   - hardware
-description: RISC-V based AI accelerators with programmable architecture
-date: "2025-10-05"
-modified: 2025-10-06 22:57:46 GMT-04:00
 title: Tenstorrent
 ---
 

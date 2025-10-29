@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Naked Lunch
 author: William S. Burroughs
-subcategory: hermeneutics
 category: philosophy
 date: "2025-09-18"
-modified: 2025-10-25 02:12:44 GMT-04:00
+id: Naked Lunch
+modified: 2025-10-29 02:14:33 GMT-04:00
+posters: "[[library/posters/naked-lunch.jpg]]"
+status: to-read
+subcategory: hermeneutics
 tags:
   - philosophy
-posters: "[[library/posters/naked-lunch.jpg]]"
 title: Naked Lunch
 ---

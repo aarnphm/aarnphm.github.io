@@ -1,14 +1,14 @@
 ---
-status: finished
-id: In Emergency, Break Glass
-subcategory: Nietzsche
 author: Nate Anderson
-year-finished: 2023
-title: "In Emergency, Break Glass: What Nietzsche Can Teach Us About Joyful Living in a Tech-Saturated World"
+category: philosophy
 date: "2025-10-07"
-modified: 2025-10-25 02:12:09 GMT-04:00
+id: In Emergency, Break Glass
+modified: 2025-10-29 02:14:31 GMT-04:00
+posters: "[[library/posters/in-emergency-break-glass.jpg]]"
+status: finished
+subcategory: Nietzsche
 tags:
   - philosophy
-posters: "[[library/posters/in-emergency-break-glass.jpg]]"
-category: philosophy
+title: "In Emergency, Break Glass: What Nietzsche Can Teach Us About Joyful Living in a Tech-Saturated World"
+year-finished: 2023
 ---

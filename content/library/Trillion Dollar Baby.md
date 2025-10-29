@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Trillion Dollar Baby
 author: Paul Cleary
-subcategory: life
 category: non-fiction
 date: "2025-10-07"
-modified: 2025-10-25 02:16:09 GMT-04:00
+id: Trillion Dollar Baby
+modified: 2025-10-29 02:14:43 GMT-04:00
+posters: "[[library/posters/trillion-dollar-baby.jpg]]"
+status: to-read
+subcategory: life
 tags:
   - non-fiction
-posters: "[[library/posters/trillion-dollar-baby.jpg]]"
 title: "Trillion Dollar Baby: How Norway Beat the Oil Giants and Won a Lasting Fortune"
 ---

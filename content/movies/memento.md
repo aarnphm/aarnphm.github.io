@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: christopher nolan
+date: "2024-02-07"
+director: Christopher Nolan
 id: memento
+modified: 2025-10-29 02:15:05 GMT-04:00
+poster: "[[movies/posters/memento.jpg]]"
+status: recurring
+studio: christopher nolan
 tags:
   - movies
   - christopher-nolan
-studio: christopher nolan
-poster: "[[movies/posters/memento.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:12:37 GMT-04:00
-year: 2000
-category: christopher nolan
-director: Christopher Nolan
 title: Memento
+year: 2000
 ---

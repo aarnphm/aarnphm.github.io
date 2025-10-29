@@ -1,14 +1,14 @@
 ---
-status: to-watch
+category: general
+date: "2024-02-07"
+director: Ole Christian Madsen
 id: flame-citron
+modified: 2025-10-29 02:14:50 GMT-04:00
+poster: "[[movies/posters/flame-citron.jpg]]"
+status: to-watch
+studio: general
 tags:
   - movies
-studio: general
-poster: "[[movies/posters/flame-citron.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:09:57 GMT-04:00
-year: 2008
-category: general
-director: Ole Christian Madsen
 title: Flame & Citron
+year: 2008
 ---

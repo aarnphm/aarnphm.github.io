@@ -1,10 +1,10 @@
 ---
-id: Cauchy momentum equation
-tags:
-  - physics
 date: "2024-11-27"
 description: and fluid dynamics.
-modified: "2024-11-27"
+id: Cauchy momentum equation
+modified: 2025-10-29 02:15:17 GMT-04:00
+tags:
+  - physics
 title: Cauchy momentum equation
 ---
 

@@ -1,10 +1,10 @@
 ---
+date: "2024-12-14"
+description: feature extraction from neural network
 id: autoencoders
+modified: 2025-10-29 02:15:41 GMT-04:00
 tags:
   - ml
-description: feature extraction from neural network
-date: "2024-12-14"
-modified: 2025-09-06 19:36:22 GMT-04:00
 title: autoencoders
 ---
 

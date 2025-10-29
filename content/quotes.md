@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-10-28 16:39:40 GMT-04:00
+modified: 2025-10-29 03:04:31 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -162,3 +162,5 @@ damn gurl are you lipschitz continuous because you look fine as hell -- [Yacine]
 ## phrases to live by
 
 joie de vivre -- exuberant enjoyment of life
+
+dithering -- quantized color on the web

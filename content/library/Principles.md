@@ -1,14 +1,14 @@
 ---
-status: finished
-id: Principles
-subcategory: money
 author: Ray Dalio
-year-finished: 2025
 category: non-fiction
 date: "2025-08-13"
-modified: 2025-10-25 02:13:21 GMT-04:00
+id: Principles
+modified: 2025-10-29 02:14:35 GMT-04:00
+posters: "[[library/posters/principles.jpg]]"
+status: finished
+subcategory: money
 tags:
   - non-fiction
-posters: "[[library/posters/principles.jpg]]"
 title: Principles
+year-finished: 2025
 ---

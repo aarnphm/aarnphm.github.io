@@ -1,14 +1,14 @@
 ---
+date: "2024-01-30"
+description: a branch of [[thoughts/Value|value]] theory concerning what makes things aesthetically good or valuable
 id: aesthetic value
+modified: 2025-10-29 02:15:39 GMT-04:00
+socials:
+  sep: https://plato.stanford.edu/entries/aesthetic-concept/
 tags:
   - philosophy
   - aesthetics
   - value-theory
-description: a branch of [[thoughts/Value|value]] theory concerning what makes things aesthetically good or valuable
-socials:
-  sep: https://plato.stanford.edu/entries/aesthetic-concept/
-date: "2024-01-30"
-modified: 2025-10-07 19:11:11 GMT-04:00
 title: aesthetic value
 ---
 

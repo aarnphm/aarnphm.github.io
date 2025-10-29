@@ -1,9 +1,9 @@
 ---
+date: "2024-01-20"
 id: monetary
+modified: 2025-10-29 02:15:50 GMT-04:00
 tags:
   - seed
-date: "2024-01-20"
-modified: "2024-11-27"
 title: Monetary
 ---
 

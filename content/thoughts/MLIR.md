@@ -1,12 +1,12 @@
 ---
+date: "2025-03-25"
+description: multi-level intermediate representation for compiler infrastructure
 id: MLIR
+modified: 2025-10-29 02:15:28 GMT-04:00
 tags:
   - ml
   - compilers
   - infrastructure
-description: multi-level intermediate representation for compiler infrastructure
-date: "2025-03-25"
-modified: 2025-10-06 07:01:09 GMT-04:00
 title: MLIR
 ---
 

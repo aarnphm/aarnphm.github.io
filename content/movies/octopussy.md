@@ -1,15 +1,15 @@
 ---
-id: "octopussy"
-status: "recurring"
+category: bond
+date: "2024-02-07"
+director: John Glen
+id: octopussy
+modified: 2025-10-29 02:15:05 GMT-04:00
+poster: "[[movies/posters/octopussy.webp]]"
+status: recurring
+studio: bond
 tags:
   - movies
   - bond
-title: "Octopussy"
-date: "2024-02-07"
-modified: "2025-10-16 16:43:59 GMT-04:00"
+title: Octopussy
 year: 1983
-director: "John Glen"
-category: "bond"
-studio: "bond"
-poster: "[[movies/posters/octopussy.webp]]"
 ---

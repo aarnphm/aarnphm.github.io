@@ -1,15 +1,15 @@
 ---
+created: "2025-09-17"
+date: "2025-09-17"
+description: Shorthand notation for tensor operations using repeated indices to imply summation
 id: einstein notation
+modified: 2025-10-29 02:15:45 GMT-04:00
+published: "2003-03-12"
+source: https://en.wikipedia.org/wiki/Einstein_notation
 tags:
   - seed
   - clippings
   - math
-published: "2003-03-12"
-source: https://en.wikipedia.org/wiki/Einstein_notation
-date: "2025-09-17"
-modified: 2025-09-17 02:59:27 GMT-04:00
-created: "2025-09-17"
-description: Shorthand notation for tensor operations using repeated indices to imply summation
 title: einstein notation
 ---
 

@@ -1,10 +1,10 @@
 ---
+date: "2025-10-04"
 id: Compositionality
+modified: 2025-10-29 02:15:19 GMT-04:00
 tags:
   - seed
   - philosophy
-date: "2025-10-04"
-modified: 2025-10-28 15:28:49 GMT-04:00
 title: Compositionality
 ---
 

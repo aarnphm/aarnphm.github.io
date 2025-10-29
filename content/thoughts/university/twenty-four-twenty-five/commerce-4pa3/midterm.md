@@ -1,10 +1,10 @@
 ---
+date: "2025-03-21"
+description: and midterms.
 id: midterm
+modified: 2025-10-29 02:15:59 GMT-04:00
 tags:
   - commerce4pa3
-date: 2025-03-21
-description: and midterms.
-modified: 2025-03-21 11:30:43 GMT-04:00
 title: Operations and strategy
 ---
 

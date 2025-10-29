@@ -1,12 +1,12 @@
 ---
+date: "2025-09-12"
+description: linear algebra
 id: index
+modified: 2025-10-29 02:14:23 GMT-04:00
 tags:
   - seed
   - ml
   - linalg
-description: linear algebra
-date: "2025-09-12"
-modified: 2025-09-17 02:33:50 GMT-04:00
 title: 0[dot]411
 ---
 

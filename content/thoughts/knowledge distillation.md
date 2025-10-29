@@ -1,10 +1,10 @@
 ---
-id: knowledge distillation
-tags:
-  - ml
 date: "2025-01-29"
 description: and improving smaller models performance through larger general systems.
-modified: 2025-01-29 06:05:59 GMT-05:00
+id: knowledge distillation
+modified: 2025-10-29 02:15:48 GMT-04:00
+tags:
+  - ml
 title: knowledge distillation
 ---
 

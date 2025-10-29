@@ -1,16 +1,16 @@
 ---
-status: to-read
-id: Meditations on First Philosophy
 author: René Descartes
-subcategory: Descartes
-title: Meditations on First Philosophy
+category: philosophy
 date: "2025-10-07"
-modified: 2025-10-25 02:12:34 GMT-04:00
+id: Meditations on First Philosophy
+modified: 2025-10-29 02:14:32 GMT-04:00
+posters: "[[library/posters/meditations-on-first-philosophy.jpg]]"
+seealso: "[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Descartes]]"
+status: to-read
+subcategory: Descartes
 tags:
   - philosophy
-posters: "[[library/posters/meditations-on-first-philosophy.jpg]]"
-category: philosophy
-seealso: "[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Descartes]]"
+title: Meditations on First Philosophy
 ---
 
 French edition.

@@ -1,15 +1,15 @@
 ---
-id: "rushmore"
-status: "recurring"
+category: wes anderson
+date: "2024-02-07"
+director: Wes Anderson
+id: rushmore
+modified: 2025-10-29 02:15:05 GMT-04:00
+poster: "[[movies/posters/rushmore.jpg]]"
+status: recurring
+studio: wes anderson
 tags:
   - movies
   - wes-anderson
-title: "Rushmore"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Rushmore
 year: 1998
-director: "Wes Anderson"
-category: "wes anderson"
-studio: "wes anderson"
-poster: "[[movies/posters/rushmore.jpg]]"
 ---

@@ -1,13 +1,13 @@
 ---
-status: current
-id: The Metaphysics of Morals
 author: Immanuel Kant
-subcategory: Kant
-title: The Metaphysics of Morals
+category: philosophy
 date: "2025-10-06"
-modified: 2025-10-25 02:15:00 GMT-04:00
+id: The Metaphysics of Morals
+modified: 2025-10-29 02:14:39 GMT-04:00
+posters: "[[library/posters/the-metaphysics-of-morals.jpg]]"
+status: current
+subcategory: Kant
 tags:
   - philosophy
-posters: "[[library/posters/the-metaphysics-of-morals.jpg]]"
-category: philosophy
+title: The Metaphysics of Morals
 ---

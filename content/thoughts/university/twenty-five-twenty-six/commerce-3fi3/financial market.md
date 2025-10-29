@@ -1,10 +1,10 @@
 ---
+date: "2025-09-08"
+description: week 1
 id: financial market
+modified: 2025-10-29 02:15:57 GMT-04:00
 tags:
   - commerce3fi3
-description: week 1
-date: "2025-09-08"
-modified: 2025-09-08 13:20:58 GMT-04:00
 title: financial market
 ---
 

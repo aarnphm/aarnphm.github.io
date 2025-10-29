@@ -1,12 +1,12 @@
 ---
+date: "2025-08-16"
 id: feelings
+modified: 2025-10-29 02:15:11 GMT-04:00
+pageLayout: letter-poem
 tags:
   - seed
   - poem
-date: "2025-08-16"
-modified: 2025-10-17 14:43:49 GMT-04:00
 title: making
-pageLayout: letter-poem
 ---
 
 ![[posts/images/becoming.ignore.png]]

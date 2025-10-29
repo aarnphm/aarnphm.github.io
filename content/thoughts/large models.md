@@ -1,11 +1,11 @@
 ---
-date: 2024-01-08
-description: "and compression of human knowledge"
-id: "large models"
-modified: "2025-07-04 20:50:53 GMT-04:00"
+date: "2024-01-08"
+description: and compression of human knowledge
+id: large models
+modified: 2025-10-29 02:15:48 GMT-04:00
 tags:
   - ml
-title: "Foundational models"
+title: Foundational models
 ---
 
 Popularized through [[thoughts/LLMs]], GPT-3 paper [@brown2020languagemodelsfewshotlearners]

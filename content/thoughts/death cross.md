@@ -1,15 +1,15 @@
 ---
+created: "2025-09-11"
+date: "2025-09-11"
+description: bearish chart pattern when short-term moving average drops below long-term moving average, often followed by above-average returns.
 id: death cross
+modified: 2025-10-29 02:15:43 GMT-04:00
+published: "2003-11-21"
+source: https://www.investopedia.com/terms/d/deathcross.asp
 tags:
   - seed
   - clippings
   - finance
-description: bearish chart pattern when short-term moving average drops below long-term moving average, often followed by above-average returns.
-source: https://www.investopedia.com/terms/d/deathcross.asp
-date: "2025-09-11"
-created: "2025-09-11"
-modified: 2025-09-11 16:08:18 GMT-04:00
-published: "2003-11-21"
 title: death cross
 ---
 

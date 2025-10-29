@@ -1,13 +1,13 @@
 ---
-id: anthropic safety fellow
-private: true
-description: and 2024.
-date: "2025-01-20"
 abstract: application for Anthropic Safety Fellow Batch 0.
-modified: 2025-09-28 20:50:18 GMT-04:00
+date: "2025-01-20"
+description: and 2024.
+id: anthropic safety fellow
+modified: 2025-10-29 02:15:40 GMT-04:00
+noindex: true
+private: true
 tags:
   - application
-noindex: true
 title: anthropic safety fellow
 ---
 

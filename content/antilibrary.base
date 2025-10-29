@@ -23,9 +23,9 @@ views:
       property: category
       direction: DESC
     order:
-      - seealso
       - category
       - date
+      - seealso
     sort:
       - property: date
         direction: DESC

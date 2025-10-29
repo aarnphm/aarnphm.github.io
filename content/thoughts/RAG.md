@@ -1,11 +1,11 @@
 ---
+date: "2024-02-07"
+description: and provide high-quality "sensors" to 'strong intelligence systems'.
 id: RAG
+modified: 2025-10-29 02:15:33 GMT-04:00
 tags:
   - technical
   - ml
-date: "2024-02-07"
-description: and provide high-quality "sensors" to 'strong intelligence systems'.
-modified: 2025-01-29 08:29:17 GMT-05:00
 title: RAG
 ---
 

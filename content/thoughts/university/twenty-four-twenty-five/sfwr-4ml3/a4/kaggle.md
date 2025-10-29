@@ -1,12 +1,12 @@
 ---
-date: 2024-12-03
+date: "2024-12-03"
 description: "CIFAR Challenge: Classify the World of Objects!"
 id: kaggle
-modified: "2025-07-04 20:47:58 GMT-04:00"
+modified: 2025-10-29 02:16:09 GMT-04:00
 tags:
   - sfwr4ml3
   - competition
-title: "CIFAR100 with CNN"
+title: CIFAR100 with CNN
 ---
 
 See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a4/Kaggle.ipynb|jupyter notebook]]

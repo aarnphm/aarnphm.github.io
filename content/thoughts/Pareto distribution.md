@@ -1,10 +1,10 @@
 ---
-id: Pareto distribution
-tags:
-  - math
 date: "2025-01-01"
 description: or "80-20 rule".
-modified: 2025-01-01 19:27:04 GMT-05:00
+id: Pareto distribution
+modified: 2025-10-29 02:15:32 GMT-04:00
+tags:
+  - math
 title: Pareto distribution
 ---
 

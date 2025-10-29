@@ -1,14 +1,14 @@
 ---
+created: "2025-09-18"
+date: "2025-09-18"
+description: Summary statistic of variability
 id: average absolute deviation
+modified: 2025-10-29 02:15:41 GMT-04:00
+published: "2003-10-18"
+source: https://en.wikipedia.org/wiki/Average_absolute_deviation
 tags:
   - seed
   - math
-description: Summary statistic of variability
-source: https://en.wikipedia.org/wiki/Average_absolute_deviation
-date: "2025-09-18"
-created: "2025-09-18"
-modified: 2025-10-04 04:29:42 GMT-04:00
-published: "2003-10-18"
 title: average absolute deviation
 ---
 

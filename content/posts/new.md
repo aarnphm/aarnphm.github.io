@@ -1,15 +1,15 @@
 ---
-id: new
 aliases:
   - hackathon
-tags:
-  - fruit
 date: "2024-09-30"
 description: And on perplexity of hackathon.
-modified: 2025-01-20 03:16:09 GMT-05:00
+id: new
+modified: 2025-10-29 02:15:12 GMT-04:00
 socials:
   substack: https://open.substack.com/pub/livingalone/p/i-saw-a-disstrack-dropped-at-a-hackathon?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
   twitter: https://x.com/aarnphm_/status/1841401912815464735
+tags:
+  - fruit
 title: I saw a disstrack dropped at a hackathon.
 ---
 

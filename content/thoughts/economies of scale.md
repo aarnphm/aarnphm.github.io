@@ -1,14 +1,15 @@
 ---
-title: "economies of scale"
-source: "https://en.wikipedia.org/wiki/Economies_of_scale"
-author:
-  - "[[Contributors to Wikimedia projects]]"
-published: 2002-01-21
-created: 2025-09-18
-description: "Cost advantages enterprises obtain through larger scale operations, reducing per-unit costs via efficiency"
+created: "2025-09-18"
+date: "2025-10-29"
+description: Cost advantages enterprises obtain through larger scale operations, reducing per-unit costs via efficiency
+id: economies of scale
+modified: 2025-10-29 02:48:23 GMT-04:00
+published: "2002-01-21"
+source: https://en.wikipedia.org/wiki/Economies_of_scale
 tags:
-  - "seed"
-  - "clippings"
+  - seed
+  - clippings
+title: economies of scale
 ---
 
 In microeconomics, **economies of scale** are the cost advantages that enterprises obtain due to their scale of operation, typically measured by the amount of output produced per unit of cost (production cost). A decrease in cost per unit of output enables an increase in scale—that is, increased production with lowered cost.

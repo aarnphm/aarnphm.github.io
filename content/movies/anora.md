@@ -1,16 +1,16 @@
 ---
-status: finished
+category: general
+date: "2024-02-07"
+director: Sean Baker
 id: anora
+modified: 2025-10-29 02:15:02 GMT-04:00
+poster: "[[movies/posters/anora.jpg]]"
+rating: 7.9
+status: finished
+studio: neon
 tags:
   - movies
-category: general
-studio: neon
-poster: "[[movies/posters/anora.jpg]]"
-date: "2024-02-07"
-year: 2024
-modified: 2025-10-16 20:06:19 GMT-04:00
-watched-date: "2024-11-15"
-director: Sean Baker
-rating: 7.9
 title: Anora
+watched-date: "2024-11-15"
+year: 2024
 ---

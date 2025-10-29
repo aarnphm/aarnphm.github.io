@@ -1,9 +1,9 @@
 ---
+date: "2024-01-24"
 id: Block Diagrams
+modified: 2025-10-29 02:16:20 GMT-04:00
 tags:
   - sfwr3dx4
-date: "2024-01-24"
-modified: 2024-12-18 01:49:34 GMT-05:00
 title: Block Diagrams
 ---
 

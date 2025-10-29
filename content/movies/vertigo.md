@@ -1,14 +1,14 @@
 ---
-id: "vertigo"
-status: "to-watch"
+category: general
+date: "2024-02-07"
+director: Alfred Hitchcock
+id: vertigo
+modified: 2025-10-29 02:15:06 GMT-04:00
+poster: "[[movies/posters/vertigo.jpg]]"
+status: to-watch
+studio: paramount
 tags:
   - movies
-title: "Vertigo"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Vertigo
 year: 1958
-director: "Alfred Hitchcock"
-category: "general"
-studio: "paramount"
-poster: "[[movies/posters/vertigo.jpg]]"
 ---

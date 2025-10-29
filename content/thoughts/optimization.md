@@ -1,10 +1,10 @@
 ---
+date: "2024-10-31"
+description: A list of optimization functions that can be used in ML training to reduce loss, and more.
 id: optimization
+modified: 2025-10-29 02:15:51 GMT-04:00
 tags:
   - ml
-description: A list of optimization functions that can be used in ML training to reduce loss, and more.
-date: "2024-10-31"
-modified: 2025-10-24 15:21:16 GMT-04:00
 title: ml optimization
 ---
 

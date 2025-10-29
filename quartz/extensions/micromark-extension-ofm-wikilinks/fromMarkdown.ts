@@ -215,6 +215,7 @@ function enterAnchor(this: CompileContext): undefined {
  *
  * when obsidian mode is enabled, implements Obsidian's nested heading behavior:
  * - "Parent#Child#Grandchild" → uses only "Grandchild"
+ * - "path/to/file heading text" → uses only "heading text" (implicit alias in anchors)
  * - applies slugification using github-slugger
  */
 function exitAnchor(this: CompileContext, _token: Token, obsidian: boolean = false): undefined {
@@ -227,7 +228,23 @@ function exitAnchor(this: CompileContext, _token: Token, obsidian: boolean = fal
     const blockMarker = isBlockRef ? "^" : ""
     let cleanAnchor = isBlockRef ? anchorText.slice(1) : anchorText
 
-    // obsidian-style anchor resolution
+    // handle Obsidian's implicit alias in anchors: "#path/to/file heading text"
+    // similar to target implicit alias, extract heading text after space following path
+    if (obsidian && cleanAnchor.includes("/") && cleanAnchor.includes(" ")) {
+      const lastSlash = cleanAnchor.lastIndexOf("/")
+      const afterSlash = cleanAnchor.substring(lastSlash + 1)
+      const spaceIndex = afterSlash.indexOf(" ")
+
+      if (spaceIndex >= 0) {
+        // extract the heading text part after the space
+        const headingText = afterSlash.substring(spaceIndex + 1).trim()
+        if (headingText) {
+          cleanAnchor = headingText
+        }
+      }
+    }
+
+    // obsidian-style nested heading resolution
     if (obsidian && cleanAnchor.includes("#")) {
       // take only the last segment after splitting by #
       const segments = cleanAnchor.split("#")
@@ -329,10 +346,17 @@ function exitMetadata(this: CompileContext): undefined {
  * converts `[[target]]`, `[[target|alias]]`, `[[target#anchor]]` to <a> elements.
  */
 function annotateRegularLink(node: Wikilink, wikilink: WikilinkParsed, url: string): void {
-  const { alias, target, metadataParsed, metadata } = wikilink
+  const { alias, target, anchor, metadataParsed, metadata } = wikilink
 
   const fp = target.trim()
-  const displayText = alias ?? fp
+  let displayText = alias ?? fp
+
+  // if no explicit alias and there's an anchor, use the anchor text as display
+  if (!alias && anchor) {
+    // strip leading # and optional ^
+    const anchorText = anchor.replace(/^#\^?/, "")
+    displayText = anchorText
+  }
 
   if (!node.data) node.data = { wikilink }
 
@@ -524,6 +548,26 @@ function exitWikilink(
 
       const wikilink = node.data.wikilink
       const { obsidian = true, stripExtensions = [] } = options
+
+      // handle implicit alias from space in target (Obsidian behavior)
+      // only extract from target, not from anchors
+      // if no explicit alias, has a target (not just anchor), and target contains a space after last /, split it
+      if (!wikilink.alias && wikilink.target && !wikilink.anchor && wikilink.target.includes(" ")) {
+        const lastSlash = wikilink.target.lastIndexOf("/")
+        const afterSlash = lastSlash >= 0 ? wikilink.target.substring(lastSlash + 1) : wikilink.target
+        const spaceIndex = afterSlash.indexOf(" ")
+
+        if (spaceIndex >= 0) {
+          // split: everything before space is path, everything after is display text
+          const pathPart = lastSlash >= 0
+            ? wikilink.target.substring(0, lastSlash + 1 + spaceIndex)
+            : wikilink.target.substring(0, spaceIndex)
+          const displayPart = afterSlash.substring(spaceIndex + 1).trim()
+
+          wikilink.target = pathPart
+          wikilink.alias = displayPart
+        }
+      }
 
       // only annotate nodes when obsidian mode is enabled
       if (obsidian) {

@@ -1,10 +1,10 @@
 ---
+date: "2024-10-10"
 id: index
+modified: 2025-10-29 02:16:22 GMT-04:00
 tags:
   - sfwr3dx4
   - university
-date: "2024-10-10"
-modified: "2024-10-10"
 title: Control System
 ---
 

@@ -1,11 +1,11 @@
 ---
+date: "2025-09-11"
+description: double exponential smoothing for forecasting
 id: Holt linear
+modified: 2025-10-29 02:15:24 GMT-04:00
 tags:
   - seed
   - math
-description: double exponential smoothing for forecasting
-date: "2025-09-11"
-modified: 2025-09-11 16:08:35 GMT-04:00
 title: Holt linear
 ---
 

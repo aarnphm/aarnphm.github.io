@@ -1,16 +1,16 @@
 ---
-id: tut1
 aliases:
   - linalg
+date: "2024-09-11"
+description: linear algebra a la carte.
+id: tut1
+modified: 2025-10-29 02:16:10 GMT-04:00
 tags:
   - sfwr4ml3
   - linalg
-description: linear algebra a la carte.
+title: linalg review
 transclude:
   title: false
-date: "2024-09-11"
-modified: 2025-08-28 19:27:22 GMT-04:00
-title: linalg review
 ---
 
 See also [matrix cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf)

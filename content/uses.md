@@ -1,11 +1,11 @@
 ---
-id: uses
 comments: false
+date: "2024-01-22"
+description: Includes the tools I use, workflow,  etc.
+id: uses
+modified: 2025-10-29 02:16:24 GMT-04:00
 tags:
   - technical
-description: Includes the tools I use, workflow,  etc.
-date: "2024-01-22"
-modified: 2025-08-10 03:09:18 GMT-04:00
 title: uses.
 ---
 

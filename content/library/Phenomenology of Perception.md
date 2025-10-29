@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Phenomenology of Perception
 author: Maurice Merleau-Ponty
-subcategory: hermeneutics
 category: philosophy
 date: "2025-10-07"
-modified: 2025-10-25 02:13:07 GMT-04:00
+id: Phenomenology of Perception
+modified: 2025-10-29 02:14:34 GMT-04:00
+posters: "[[library/posters/phenomenology-of-perception.jpg]]"
+status: to-read
+subcategory: hermeneutics
 tags:
   - philosophy
-posters: "[[library/posters/phenomenology-of-perception.jpg]]"
 title: Phenomenology of Perception
 ---

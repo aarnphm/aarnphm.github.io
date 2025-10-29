@@ -1,10 +1,10 @@
 ---
+date: "2025-01-31"
+description: on abundance
+draft: true
 id: abundance
+modified: 2025-10-29 02:15:10 GMT-04:00
 tags:
   - sapling
-description: on abundance
-date: "2025-01-31"
-modified: 2025-10-21 03:45:22 GMT-04:00
-draft: true
 title: cooking is probably the highest signal of wealth.
 ---

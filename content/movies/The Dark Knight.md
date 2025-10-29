@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: christopher nolan
+date: "2024-02-07"
+director: Christopher Nolan
 id: the-dark-knight
+modified: 2025-10-29 02:14:57 GMT-04:00
+poster: "[[movies/posters/the-dark-knight.jpg]]"
+status: recurring
+studio: christopher nolan
 tags:
   - movies
   - christopher-nolan
-studio: christopher nolan
-poster: "[[movies/posters/the-dark-knight.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:12:41 GMT-04:00
-year: 2008
-category: christopher nolan
-director: Christopher Nolan
 title: The Dark Knight
+year: 2008
 ---

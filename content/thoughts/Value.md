@@ -1,12 +1,12 @@
 ---
-id: Value
-tags:
-  - philosophy
+date: "2024-02-07"
 description: concerns about the goodness of all varieties
+id: Value
+modified: 2025-10-29 02:15:37 GMT-04:00
 socials:
   sep: https://plato.stanford.edu/entries/value-theory/
-date: "2024-02-07"
-modified: 2025-10-07 21:13:20 GMT-04:00
+tags:
+  - philosophy
 title: Value
 ---
 

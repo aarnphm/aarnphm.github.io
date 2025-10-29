@@ -1,11 +1,11 @@
 ---
+date: "2025-03-03"
+description: and designs.
 id: midterm
+modified: 2025-10-29 02:16:02 GMT-04:00
 tags:
   - sfwr3a04
   - midterm
-date: "2025-03-03"
-description: and designs.
-modified: 2025-04-17 05:11:40 GMT-04:00
 title: software architectures
 ---
 

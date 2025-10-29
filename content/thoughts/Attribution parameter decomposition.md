@@ -1,10 +1,10 @@
 ---
+date: "2025-01-29"
+description: and mechanisms of components.
 id: Attribution parameter decomposition
+modified: 2025-10-29 02:15:16 GMT-04:00
 tags:
   - interpretability
-description: and mechanisms of components.
-date: "2025-01-29"
-modified: 2025-10-06 04:00:26 GMT-04:00
 title: Attribution parameter decomposition
 ---
 

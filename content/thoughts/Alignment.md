@@ -1,10 +1,10 @@
 ---
+date: "2024-03-05"
+description: and safety-related topics
 id: Alignment
+modified: 2025-10-29 02:15:15 GMT-04:00
 tags:
   - ml
-description: and safety-related topics
-date: "2024-03-05"
-modified: 2025-10-05 22:13:31 GMT-04:00
 title: Alignment
 ---
 

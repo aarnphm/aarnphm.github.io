@@ -1,11 +1,11 @@
 ---
+date: "2023-11-30"
+description: the man that was most mistakenly understood
 id: Nietzsche
+modified: 2025-10-29 02:15:30 GMT-04:00
 tags:
   - philosophy
   - philos1aa3
-description: the man that was most mistakenly understood
-date: "2023-11-30"
-modified: 2025-10-04 16:46:02 GMT-04:00
 title: Nietzsche's Life
 ---
 

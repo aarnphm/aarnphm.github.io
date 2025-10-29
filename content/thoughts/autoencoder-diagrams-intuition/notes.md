@@ -1,12 +1,12 @@
 ---
+date: "2025-09-06"
+description: on visualisation
 id: notes
+modified: 2025-10-29 02:15:41 GMT-04:00
+noindex: true
 tags:
   - seed
   - ml
-description: on visualisation
-date: "2025-09-06"
-modified: 2025-10-15 04:14:07 GMT-04:00
-noindex: true
 title: intuition
 ---
 

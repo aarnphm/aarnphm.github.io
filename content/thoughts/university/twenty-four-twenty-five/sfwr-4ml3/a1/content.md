@@ -1,9 +1,9 @@
 ---
+date: "2024-10-07"
 id: content
+modified: 2025-10-29 02:16:08 GMT-04:00
 tags:
   - sfwr4ml3
-date: "2024-10-07"
-modified: "2024-10-07"
 title: Least Squared Regression
 ---
 

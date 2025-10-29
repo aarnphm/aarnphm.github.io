@@ -1,11 +1,11 @@
 ---
-id: capstone
-tags:
-  - philosophy
-date: 2025-04-19
+date: "2025-04-19"
 description: on nature of North-American pedagogy
 draft: true
-modified: 2025-04-21 00:51:27 GMT-04:00
+id: capstone
+modified: 2025-10-29 02:15:10 GMT-04:00
+tags:
+  - philosophy
 title: how to capstone
 ---
 

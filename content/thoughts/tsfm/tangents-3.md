@@ -1,9 +1,9 @@
 ---
-id: tangents-3
 author: matej
-description: and primitives
 date: "2025-10-17"
-modified: 2025-10-18 09:33:17 GMT-04:00
+description: and primitives
+id: tangents-3
+modified: 2025-10-29 02:15:57 GMT-04:00
 tags:
   - ml
   - tsfm

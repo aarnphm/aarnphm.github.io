@@ -1,9 +1,10 @@
 ---
+date: "2024-02-28"
 id: content
+modified: 2025-10-29 02:16:23 GMT-04:00
 tags:
   - sfwr3dx4
   - lab
-date: "2024-02-28"
 title: Voltage-controlled electromechanical systems
 ---
 

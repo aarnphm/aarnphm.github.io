@@ -1,11 +1,11 @@
 ---
+date: "2024-12-10"
+description: and an unstructured overview of patterns in machine learning
 id: finals
+modified: 2025-10-29 02:16:09 GMT-04:00
 tags:
   - sfwr4ml3
   - ml
-description: and an unstructured overview of patterns in machine learning
-date: "2024-12-10"
-modified: 2025-10-05 21:36:06 GMT-04:00
 title: basis to supervised learning
 ---
 

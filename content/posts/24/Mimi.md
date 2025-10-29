@@ -1,13 +1,13 @@
 ---
-id: Mimi
-tags:
-  - friend
 date: "2024-12-31"
 description: and a beginning of a long friendship
-modified: 2024-12-31 13:45:24 GMT-05:00
+id: Mimi
+modified: 2025-10-29 02:15:08 GMT-04:00
 noindex: true
 pageLayout: letter
 signature: with kinship and comradery - Aaron
+tags:
+  - friend
 title: to mimi and tuong an
 ---
 

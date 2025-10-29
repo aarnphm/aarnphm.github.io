@@ -1,10 +1,10 @@
 ---
+date: "2024-02-07"
+description: an ideology that somewhat contributes to an illogical world we live in.
 id: Behavirourism
+modified: 2025-10-29 02:15:17 GMT-04:00
 tags:
   - philosophy
-description: an ideology that somewhat contributes to an illogical world we live in.
-date: "2024-02-07"
-modified: 2025-10-04 00:54:38 GMT-04:00
 title: Behavirourism
 ---
 

@@ -1,14 +1,14 @@
 ---
-id: ideas
 aliases:
   - idea
   - backburners
+date: "2022-01-25"
+description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
+id: ideas
+modified: 2025-10-29 02:14:21 GMT-04:00
 tags:
   - technical
   - evergreen
-description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
-date: "2022-01-25"
-modified: 2025-10-27 00:53:01 GMT-04:00
 title: ideas.
 ---
 

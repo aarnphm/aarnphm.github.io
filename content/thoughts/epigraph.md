@@ -1,9 +1,9 @@
 ---
+date: "2024-12-10"
 id: epigraph
+modified: 2025-10-29 02:15:45 GMT-04:00
 tags:
   - math
-date: "2024-12-10"
-modified: 2024-12-10 23:12:52 GMT-05:00
 title: epigraph
 ---
 

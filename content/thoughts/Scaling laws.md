@@ -1,10 +1,10 @@
 ---
+date: "2025-09-15"
+description: empirical relationships linking model/data/compute to performance
 id: Scaling laws
+modified: 2025-10-29 02:15:34 GMT-04:00
 tags:
   - ml
-description: empirical relationships linking model/data/compute to performance
-date: "2025-09-15"
-modified: 2025-10-03 16:24:22 GMT-04:00
 title: scaling laws
 ---
 

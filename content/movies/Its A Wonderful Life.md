@@ -1,14 +1,14 @@
 ---
-status: to-watch
-id: its-a-wonderful-life
-tags:
-  - movies
-studio: rko
 category: general
 date: "2024-02-07"
-modified: 2025-10-16 16:42:43 GMT-04:00
-year: 1946
 director: Frank Capra
-title: It's a wonderful life
+id: its-a-wonderful-life
+modified: 2025-10-29 02:14:51 GMT-04:00
 poster: "[[movies/posters/its-a-wonderful-life.jpg]]"
+status: to-watch
+studio: rko
+tags:
+  - movies
+title: It's a wonderful life
+year: 1946
 ---

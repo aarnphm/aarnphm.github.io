@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: christopher nolan
+date: "2024-02-07"
+director: Christopher Nolan
 id: tenet
+modified: 2025-10-29 02:15:06 GMT-04:00
+poster: "[[movies/posters/tenet.jpg]]"
+status: recurring
+studio: christopher nolan
 tags:
   - movies
   - christopher-nolan
-studio: christopher nolan
-poster: "[[movies/posters/tenet.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:12:44 GMT-04:00
-year: 2020
-category: christopher nolan
-director: Christopher Nolan
 title: Tenet
+year: 2020
 ---

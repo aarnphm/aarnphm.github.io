@@ -1,10 +1,10 @@
 ---
+date: "2024-12-23"
+description: excerpt from the papers by Meta Research.
 id: Llama 3
+modified: 2025-10-29 02:15:27 GMT-04:00
 tags:
   - ml
-date: 2024-12-23
-description: excerpt from the papers by Meta Research.
-modified: 2025-03-11 15:16:18 GMT-04:00
 title: The Llama 3  Herd of Model
 ---
 

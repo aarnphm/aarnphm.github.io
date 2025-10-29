@@ -1,11 +1,11 @@
 ---
+date: "2025-09-15"
+description: outlines
 id: talks
+modified: 2025-10-29 02:14:23 GMT-04:00
 tags:
   - seed
   - linalg
-description: outlines
-date: "2025-09-15"
-modified: 2025-09-17 02:33:51 GMT-04:00
 title: speaker notes
 ---
 

@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Groundwork of the Metaphysics of Morals
 author: Immanuel Kant
-subcategory: Kant
 category: philosophy
 date: "2025-10-07"
-modified: 2025-10-25 02:12:03 GMT-04:00
+id: Groundwork of the Metaphysics of Morals
+modified: 2025-10-29 02:14:30 GMT-04:00
+posters: "[[library/posters/groundwork-of-the-metaphysics-of-morals.jpg]]"
+status: to-read
+subcategory: Kant
 tags:
   - philosophy
-posters: "[[library/posters/groundwork-of-the-metaphysics-of-morals.jpg]]"
 title: Groundwork of the Metaphysics of Morals
 ---

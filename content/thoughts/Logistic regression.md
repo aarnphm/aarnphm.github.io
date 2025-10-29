@@ -1,11 +1,11 @@
 ---
+date: "2024-12-14"
+description: despite the name, this is a classification model.
 id: Logistic regression
+modified: 2025-10-29 02:15:27 GMT-04:00
 tags:
   - sfwr4ml3
   - ml
-description: despite the name, this is a classification model.
-date: "2024-12-14"
-modified: 2025-09-16 00:00:51 GMT-04:00
 title: Logistic regression
 ---
 

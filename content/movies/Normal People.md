@@ -1,17 +1,17 @@
 ---
-status: finished
-id: normal-people
 category: general
+date: "2024-02-07"
+director: Lenny Abrahamson
+id: normal-people
+modified: 2025-10-29 02:14:54 GMT-04:00
+poster: "[[movies/posters/normal-people.jpg]]"
+rating: 8.5
+status: finished
+studio: bbc
 tags:
   - movies
   - shows
-studio: bbc
-poster: "[[movies/posters/normal-people.jpg]]"
-date: "2024-02-07"
-year: 2020
-modified: 2025-10-16 20:16:55 GMT-04:00
-watched-date: "2024-03-01"
-director: Lenny Abrahamson
-rating: 8.5
 title: Normal People
+watched-date: "2024-03-01"
+year: 2020
 ---

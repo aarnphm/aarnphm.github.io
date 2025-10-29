@@ -1,18 +1,18 @@
 ---
-status: finished
-year-finished: 2025
+author: Sylvia Plath
+category: poetry
+date: "2025-05-31"
+description: by Sylvia Plath
+external-url: https://www.poetryfoundation.org/poems/57419/the-applicant
 id: The Applicant
+modified: 2025-10-29 02:14:37 GMT-04:00
+posters: "[[library/posters/the-applicant.jpg]]"
+status: finished
+subcategory: love
 tags:
   - poetry
-subcategory: love
-author: Sylvia Plath
-date: "2025-05-31"
-external-url: https://www.poetryfoundation.org/poems/57419/the-applicant
-modified: 2025-10-26 22:50:11 GMT-04:00
-category: poetry
-posters: "[[library/posters/the-applicant.jpg]]"
 title: The Applicant
-description: by Sylvia Plath
+year-finished: 2025
 ---
 
 ```poetry

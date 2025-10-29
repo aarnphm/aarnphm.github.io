@@ -1,13 +1,13 @@
 ---
+date: "2025-10-03"
+description: the study of interpretation
 id: hermeneutics
+modified: 2025-10-29 02:15:46 GMT-04:00
+socials:
+  sep: https://plato.stanford.edu/entries/hermeneutics/
 tags:
   - seed
   - philosophy
-description: the study of interpretation
-socials:
-  sep: https://plato.stanford.edu/entries/hermeneutics/
-date: "2025-10-03"
-modified: 2025-10-28 17:49:03 GMT-04:00
 title: hermeneutics
 ---
 

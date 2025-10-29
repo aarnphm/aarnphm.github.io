@@ -1,11 +1,11 @@
 ---
+date: "2024-10-10"
+description: A list of cheatsheet of whatever that fits with my workflow
 id: cheatsheet
+modified: 2025-10-29 02:14:20 GMT-04:00
 tags:
   - evergreen
   - math
-description: A list of cheatsheet of whatever that fits with my workflow
-date: "2024-10-10"
-modified: 2025-10-13 07:28:38 GMT-04:00
 title: cheatsheet
 ---
 

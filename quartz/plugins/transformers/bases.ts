@@ -106,3 +106,10 @@ export const ObsidianBases: QuartzTransformerPlugin<Partial<Options>> = (userOpt
     },
   }
 }
+
+declare module "vfile" {
+  interface DataMap {
+    bases?: boolean
+    basesConfig?: BaseFile
+  }
+}

@@ -1,14 +1,16 @@
 ---
-status: "to-watch"
-id: "perfect-days"
-studio: "general"
-category: "general"
+category: general
 date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
-year: 2023
-director: "Wim Wenders"
-title: "Perfect Days"
+director: Wim Wenders
+id: perfect-days
+modified: 2025-10-29 02:14:55 GMT-04:00
 poster: "[[movies/posters/perfect-days.jpg]]"
+status: to-watch
+studio: general
+tags:
+  - seed
+title: Perfect Days
+year: 2023
 ---
 
 - How we might live in a noisy life?

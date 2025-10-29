@@ -1,9 +1,10 @@
 ---
+date: "2024-01-22"
 id: lenses
+modified: 2025-10-29 02:15:48 GMT-04:00
 tags:
   - seed
   - film
-date: "2024-01-22"
 title: Lenses
 ---
 

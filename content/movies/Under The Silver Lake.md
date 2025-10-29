@@ -1,14 +1,14 @@
 ---
-id: "under-the-silver-lake"
-status: "to-watch"
+category: general
+date: "2024-02-07"
+director: David Robert Mitchell
+id: under-the-silver-lake
+modified: 2025-10-29 02:15:02 GMT-04:00
+poster: "[[movies/posters/under-the-silver-lake.jpg]]"
+status: to-watch
+studio: general
 tags:
   - movies
-title: "Under The Silver Lake"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Under The Silver Lake
 year: 2018
-director: "David Robert Mitchell"
-category: "general"
-studio: "general"
-poster: "[[movies/posters/under-the-silver-lake.jpg]]"
 ---

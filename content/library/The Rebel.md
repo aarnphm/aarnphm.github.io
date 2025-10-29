@@ -1,16 +1,16 @@
 ---
-status: evergreen
-id: The Rebel
 author: Albert Camus
-subcategory: existentialism
 category: philosophy
 date: "2025-10-06"
-year-finished: "-"
-modified: 2025-10-25 02:15:21 GMT-04:00
+id: The Rebel
+modified: 2025-10-29 02:14:41 GMT-04:00
+posters: "[[library/posters/the-rebel.jpg]]"
+status: evergreen
+subcategory: existentialism
 tags:
   - philosophy
-posters: "[[library/posters/the-rebel.jpg]]"
 title: The Rebel
+year-finished: "-"
 ---
 
 related: [[thoughts/Camus]]

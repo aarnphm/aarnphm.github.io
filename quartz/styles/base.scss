@@ -671,7 +671,7 @@ ol.overflow {
     --grid-col-width: calc(var(--grid-center-width) / 9);
   }
   .header-content {
-    grid-column: 3/-1;
+    grid-column: 3/-3;
   }
 }
 
@@ -856,6 +856,10 @@ code,
   & > * {
     text-transform: none !important;
   }
+}
+
+[data-rehype-pretty-code-figure] {
+  margin-top: 1.2rem;
 }
 
 iframe {

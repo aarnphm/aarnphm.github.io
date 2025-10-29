@@ -1,12 +1,12 @@
 ---
+date: "2024-08-23"
+description: and 2024.
 id: joininteract
+modified: 2025-10-29 02:15:48 GMT-04:00
+noindex: true
 tags:
   - seed
   - application
-date: "2024-08-23"
-description: and 2024.
-modified: 2025-01-21 00:34:48 GMT-05:00
-noindex: true
 title: interact cohort
 ---
 

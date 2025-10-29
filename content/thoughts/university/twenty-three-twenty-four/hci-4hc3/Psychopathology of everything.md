@@ -1,8 +1,9 @@
 ---
+date: "2023-10-10"
 id: Psychopathology of everything
+modified: 2025-10-29 02:16:15 GMT-04:00
 tags:
   - sfwr4hc3
-date: "2023-10-10"
 title: Psychopathology of everything
 ---
 

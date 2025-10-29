@@ -1,10 +1,10 @@
 ---
-id: Euler's identity
-tags:
-  - math
 date: "2024-11-05"
 description: probably the most beautiful equation in all mathematics
-modified: 2025-01-17 08:16:16 GMT-05:00
+id: Euler's identity
+modified: 2025-10-29 02:15:22 GMT-04:00
+tags:
+  - math
 title: Euler's identity
 ---
 

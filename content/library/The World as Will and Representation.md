@@ -1,14 +1,14 @@
 ---
-status: to-read
-id: The World as Will and Representation
 author: Arthur Schopenhauer
-subcategory: nihilism
-title: The World as Will and Representation
+category: philosophy
 date: "2025-10-07"
-modified: 2025-10-25 02:15:57 GMT-04:00
+id: The World as Will and Representation
+modified: 2025-10-29 02:14:42 GMT-04:00
+posters: "[[library/posters/the-world-as-will-and-representation.jpg]]"
+seealso: "[[thoughts/representations]]"
+status: to-read
+subcategory: nihilism
 tags:
   - philosophy
-posters: "[[library/posters/the-world-as-will-and-representation.jpg]]"
-category: philosophy
-seealso: "[[thoughts/representations]]"
+title: The World as Will and Representation
 ---

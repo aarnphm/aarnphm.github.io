@@ -1,11 +1,11 @@
 ---
+date: "2025-08-20"
+description: finding local maxima/minima
 id: Lagrange multiplier
+modified: 2025-10-29 02:15:26 GMT-04:00
 tags:
   - math
   - optimization
-description: finding local maxima/minima
-date: "2025-08-20"
-modified: 2025-08-20 05:29:39 GMT-04:00
 title: Lagrange multiplier
 ---
 

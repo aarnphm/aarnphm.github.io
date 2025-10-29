@@ -1,10 +1,10 @@
 ---
+date: "2024-12-13"
+description: and some more annotations
 id: Relational Algebra
+modified: 2025-10-29 02:16:02 GMT-04:00
 tags:
   - sfwr3db3
-description: and some more annotations
-date: "2024-12-13"
-modified: 2025-08-24 07:37:22 GMT-04:00
 title: Relational Algebra
 ---
 

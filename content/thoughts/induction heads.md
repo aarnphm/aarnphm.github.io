@@ -1,14 +1,14 @@
 ---
+date: "2025-01-18"
+description: and mathematical framework of transformers
 id: induction heads
+modified: 2025-10-29 02:15:47 GMT-04:00
 tags:
   - interpretability
   - ml
-description: and mathematical framework of transformers
+title: induction heads
 transclude:
   title: false
-date: "2025-01-18"
-modified: 2025-10-04 17:51:31 GMT-04:00
-title: induction heads
 ---
 
 notes from [@elhage2021mathematical; @olsson2022context]

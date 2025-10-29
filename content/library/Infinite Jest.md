@@ -1,14 +1,14 @@
 ---
-status: finished
-id: Infinite Jest
-subcategory: life
 author: David Foster Wallace
-year-finished: 2022
-title: Infinite Jest
+category: fiction
 date: "2022-08-21"
-modified: 2025-10-25 02:12:14 GMT-04:00
+id: Infinite Jest
+modified: 2025-10-29 02:14:31 GMT-04:00
+posters: "[[library/posters/infinite-jest.jpg]]"
+status: finished
+subcategory: life
 tags:
   - fiction
-posters: "[[library/posters/infinite-jest.jpg]]"
-category: fiction
+title: Infinite Jest
+year-finished: 2022
 ---

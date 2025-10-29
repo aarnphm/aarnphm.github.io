@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: a24
+date: "2024-02-07"
+director: Kristoffer Borgli
 id: dream-scenario
+modified: 2025-10-29 02:14:48 GMT-04:00
+poster: "[[movies/posters/dream-scenario.jpg]]"
+status: recurring
+studio: a24
 tags:
   - movies
   - a24
-studio: a24
-poster: "[[movies/posters/dream-scenario.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:08:25 GMT-04:00
-year: 2023
-category: a24
-director: Kristoffer Borgli
 title: Dream Scenario
+year: 2023
 ---

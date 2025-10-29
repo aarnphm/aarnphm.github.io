@@ -1,15 +1,15 @@
 ---
-id: "the-breakfast-club"
-status: "recurring"
+category: thriller
+date: "2024-02-07"
+director: John Hughes
+id: the-breakfast-club
+modified: 2025-10-29 02:14:56 GMT-04:00
+poster: "[[movies/posters/the-breakfast-club.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - thriller
-title: "The Breakfast Club"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: The Breakfast Club
 year: 1985
-director: "John Hughes"
-category: "thriller"
-studio: "general"
-poster: "[[movies/posters/the-breakfast-club.jpg]]"
 ---

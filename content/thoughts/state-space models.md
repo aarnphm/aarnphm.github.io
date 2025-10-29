@@ -1,11 +1,11 @@
 ---
-date: 2024-02-07
-description: "structured state space sequence models"
-id: "state-space models"
-modified: "2025-07-04 20:46:57 GMT-04:00"
+date: "2024-02-07"
+description: structured state space sequence models
+id: state-space models
+modified: 2025-10-29 02:15:53 GMT-04:00
 tags:
   - ml
-title: "state-space models"
+title: state-space models
 ---
 
 https://arxiv.org/abs/2312.00752

@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: wes anderson
+date: "2024-02-07"
+director: Wes Anderson
 id: asteroid-city
+modified: 2025-10-29 02:14:46 GMT-04:00
+poster: "[[movies/posters/asteroid-city.jpg]]"
+status: recurring
+studio: wes anderson
 tags:
   - movies
   - wes-anderson
-studio: wes anderson
-poster: "[[movies/posters/asteroid-city.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:06:23 GMT-04:00
-year: 2023
-category: wes anderson
-director: Wes Anderson
 title: Asteroid City
+year: 2023
 ---

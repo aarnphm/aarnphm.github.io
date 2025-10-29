@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: vintage
+date: "2024-02-07"
+director: Steven Spielberg
 id: schindlers-list
+modified: 2025-10-29 02:14:55 GMT-04:00
+poster: "[[movies/posters/schindlers-list.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - vintage
-studio: general
-category: vintage
-date: "2024-02-07"
-modified: 2025-10-16 16:43:00 GMT-04:00
-year: 1993
-director: Steven Spielberg
 title: Schindler's List
-poster: "[[movies/posters/schindlers-list.jpg]]"
+year: 1993
 ---

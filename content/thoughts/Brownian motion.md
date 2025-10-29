@@ -1,11 +1,11 @@
 ---
+date: "2025-09-08"
+description: randomness
 id: Brownian motion
+modified: 2025-10-29 02:15:17 GMT-04:00
 tags:
   - seed
   - physics
-description: randomness
-date: "2025-09-08"
-modified: 2025-09-08 13:05:15 GMT-04:00
 title: Brownian motion
 ---
 

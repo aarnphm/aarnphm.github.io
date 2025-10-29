@@ -1,10 +1,10 @@
 ---
+date: "2025-03-03"
+description: and summary
 id: testing
+modified: 2025-10-29 02:16:05 GMT-04:00
 tags:
   - sfwr3s03
-date: 2025-03-03
-description: and summary
-modified: 2025-03-03 18:24:00 GMT-05:00
 title: Software Testing with LLM Survey
 ---
 

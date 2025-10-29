@@ -1,18 +1,18 @@
 ---
-status: evergreen
-id: The Gay Science
-subcategory: Nietzsche
 author: Friedrich Nietzsche
-pdf-path: "[[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf]]"
 category: philosophy
 date: "2025-08-13"
-year-finished: "-"
-modified: 2025-10-25 02:14:44 GMT-04:00
+id: The Gay Science
+modified: 2025-10-29 02:14:39 GMT-04:00
+pdf-path: "[[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf]]"
+posters: "[[library/posters/the-gay-science.jpg]]"
+seealso: "[[thoughts/Philosophy and Nietzsche#The Gay Science]]"
+status: evergreen
+subcategory: Nietzsche
 tags:
   - philosophy
-posters: "[[library/posters/the-gay-science.jpg]]"
 title: The Gay Science
-seealso: "[[thoughts/Philosophy and Nietzsche#The Gay Science]]"
+year-finished: "-"
 ---
 
 related: [[thoughts/Philosophy and Nietzsche]]

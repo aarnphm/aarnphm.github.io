@@ -1,14 +1,14 @@
 ---
-id: dundurn
-tags:
-  - menu
-description: atelier with friends deux  - orangeville
-date: "2024-03-23"
-menu: true
-modified: 2025-08-10 03:08:02 GMT-04:00
-title: dundurn.
 cssclasses:
   - menu
+date: "2024-03-23"
+description: atelier with friends deux  - orangeville
+id: dundurn
+menu: true
+modified: 2025-10-29 02:15:40 GMT-04:00
+tags:
+  - menu
+title: dundurn.
 ---
 
 ## ==entrée.==

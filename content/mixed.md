@@ -1,16 +1,16 @@
 ---
+cssclasses:
+  - nolist
+date: "2025-06-09"
+description: and a list of vinyl and music are on my mind for mixing.
 id: mixed
+modified: 2025-10-29 02:14:45 GMT-04:00
 tags:
   - music
   - evergreen
-description: and a list of vinyl and music are on my mind for mixing.
+title: mixed
 transclude:
   title: false
-date: "2025-06-09"
-modified: 2025-10-01 02:35:49 GMT-04:00
-title: mixed
-cssclasses:
-  - nolist
 ---
 
 ## digital

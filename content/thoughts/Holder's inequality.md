@@ -1,14 +1,14 @@
 ---
+created: "2025-09-19"
+date: "2025-09-19"
+description: "bounds dual pairings in \ell_p and integrable spaces"
 id: Holder's inequality
+modified: 2025-10-29 02:15:24 GMT-04:00
+source: synthesis
 tags:
   - seed
   - analysis
   - ml
-description: "bounds dual pairings in \ell_p and integrable spaces"
-source: synthesis
-date: "2025-09-19"
-created: "2025-09-19"
-modified: 2025-09-19 22:44:55 GMT-04:00
 title: Hölder's inequality
 ---
 

@@ -1,12 +1,12 @@
 ---
+date: "2025-10-24"
+description: a microblog within a blog, at the middle of the night.
 id: stream
+modified: 2025-10-29 02:15:14 GMT-04:00
 tags:
   - seed
   - fruit
   - evergreen
-description: a microblog within a blog, at the middle of the night.
-date: "2025-10-24"
-modified: 2025-10-28 16:38:34 GMT-04:00
 title: stream
 ---
 

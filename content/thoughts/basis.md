@@ -1,10 +1,10 @@
 ---
+date: "2025-08-20"
+description: a set of vectors as a linear combination of elements of B.
 id: basis
+modified: 2025-10-29 02:15:41 GMT-04:00
 tags:
   - math
-description: a set of vectors as a linear combination of elements of B.
-date: "2025-08-20"
-modified: 2025-08-20 17:02:08 GMT-04:00
 title: basis
 ---
 

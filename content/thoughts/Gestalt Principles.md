@@ -1,10 +1,10 @@
 ---
-id: Gestalt Principles
-tags:
-  - seed
 date: "2024-03-09"
 description: a design principle
-modified: 2025-01-31 22:46:55 GMT-05:00
+id: Gestalt Principles
+modified: 2025-10-29 02:15:23 GMT-04:00
+tags:
+  - seed
 title: Gestalt Principles
 ---
 

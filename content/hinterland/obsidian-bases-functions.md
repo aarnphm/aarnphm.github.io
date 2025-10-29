@@ -1,12 +1,12 @@
 ---
+date: "2025-10-07"
+draft: true
 id: obsidian-bases-functions
+modified: 2025-10-29 02:14:20 GMT-04:00
 tags:
   - documentation
   - bases
   - reference
-date: "2025-10-07"
-modified: 2025-10-07 10:44:20 GMT-04:00
-draft: true
 title: obsidian bases functions reference
 ---
 

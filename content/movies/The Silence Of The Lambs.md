@@ -1,15 +1,15 @@
 ---
-id: "the-silence-of-the-lambs"
-status: "recurring"
+category: thriller
+date: "2024-02-07"
+director: Jonathan Demme
+id: the-silence-of-the-lambs
+modified: 2025-10-29 02:14:59 GMT-04:00
+poster: "[[movies/posters/the-silence-of-the-lambs.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - thriller
-title: "The Silence of the Lambs"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: The Silence of the Lambs
 year: 1991
-director: "Jonathan Demme"
-category: "thriller"
-studio: "general"
-poster: "[[movies/posters/the-silence-of-the-lambs.jpg]]"
 ---

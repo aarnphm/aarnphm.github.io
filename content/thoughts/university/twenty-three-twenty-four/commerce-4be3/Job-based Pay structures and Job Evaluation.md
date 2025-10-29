@@ -1,9 +1,10 @@
 ---
+date: "2024-01-31"
 id: Job-based Pay structures and Job Evaluation
+modified: 2025-10-29 02:16:11 GMT-04:00
 tags:
   - commerce4be3
   - seed
-date: "2024-01-31"
 title: Job-based Pay structures and Job Evaluation
 ---
 

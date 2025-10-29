@@ -1,9 +1,9 @@
 ---
+date: "2024-10-21"
 id: Singular Value Decomposition
+modified: 2025-10-29 02:15:35 GMT-04:00
 tags:
   - ml
-date: "2024-10-21"
-modified: "2024-10-21"
 title: Singular Value Decomposition
 ---
 

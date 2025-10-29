@@ -1,10 +1,10 @@
 ---
+date: "2025-08-28"
+description: and all lectures
 id: index
+modified: 2025-10-29 02:15:56 GMT-04:00
 tags:
   - seed
   - folder
-description: and all lectures
-date: "2025-08-28"
-modified: 2025-09-03 10:52:48 GMT-04:00
 title: toronto school of foundational modeling
 ---

@@ -1,12 +1,12 @@
 ---
+date: "2024-10-04"
+draft: true
 id: goose friend
+modified: 2025-10-29 02:15:11 GMT-04:00
+socialDescription: on turning a year older.
 tags:
   - poetry
   - friend
-date: "2024-10-04"
-draft: true
-modified: 2025-03-22 15:19:29 GMT-04:00
-socialDescription: on turning a year older.
 title: goose friends.
 ---
 

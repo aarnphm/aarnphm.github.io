@@ -1,11 +1,11 @@
 ---
+date: "2024-03-07"
 id: index
+modified: 2025-10-29 02:15:40 GMT-04:00
 tags:
   - menu
   - evergreen
   - folder
-date: "2024-03-07"
-modified: 2025-10-12 05:40:22 GMT-04:00
 title: atelier with friends.
 ---
 

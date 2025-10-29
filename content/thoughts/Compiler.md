@@ -1,11 +1,11 @@
 ---
+date: "2024-10-07"
 id: Compiler
+modified: 2025-10-29 02:15:18 GMT-04:00
 tags:
   - seed
   - compilers
   - technical
-date: "2024-10-07"
-modified: 2025-10-05 04:45:37 GMT-04:00
 title: Compiler
 ---
 

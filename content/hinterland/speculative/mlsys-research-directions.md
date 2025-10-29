@@ -1,14 +1,14 @@
 ---
+date: "2025-10-06"
+draft: true
 id: mlsys-research-directions
+modified: 2025-10-29 02:14:20 GMT-04:00
 tags:
   - mlsys
   - inference
   - research
   - systems
-date: "2025-10-06"
-draft: true
-modified: 2025-10-06 03:48:32 GMT-04:00
-title: "MLSys Research Directions: Speculative Decoding, Disaggregation, and Long-Context Efficiency"
+title: survey notes
 ---
 
 comprehensive survey of current state-of-the-art and open research problems in efficient LLM serving, focusing on five key areas: disaggregated architectures, throughput optimization, KV cache research, MoE-specific acceleration, and long-context interpretability.

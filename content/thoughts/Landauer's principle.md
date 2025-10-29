@@ -1,15 +1,15 @@
 ---
+created: "2025-09-17"
+date: "2025-09-19"
+description: minimum energy required to erase one bit of information
 id: Landauer's principle
+modified: 2025-10-29 02:15:26 GMT-04:00
+published: "2005-11-08"
+source: https://en.wikipedia.org/wiki/Landauer%27s_principle
 tags:
   - seed
   - clippings
   - physics
-published: "2005-11-08"
-source: https://en.wikipedia.org/wiki/Landauer%27s_principle
-date: "2025-09-19"
-modified: 2025-09-19 23:48:07 GMT-04:00
-created: "2025-09-17"
-description: minimum energy required to erase one bit of information
 title: Landauer's principle
 ---
 

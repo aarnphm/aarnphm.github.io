@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: buster
+date: "2024-02-07"
+director: Mel Gibson
 id: hacksaw-ridge
+modified: 2025-10-29 02:14:51 GMT-04:00
+poster: "[[movies/posters/hacksaw-ridge.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - buster
-studio: general
-poster: "[[movies/posters/hacksaw-ridge.jpg]]"
-date: "2024-02-07"
-year: 2016
-modified: 2025-10-16 19:59:34 GMT-04:00
-category: buster
-director: Mel Gibson
 title: Hacksaw Ridge
+year: 2016
 ---

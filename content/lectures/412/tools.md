@@ -1,12 +1,12 @@
 ---
+date: "2025-09-26"
+description: helper scripts for lecture 0.412
 id: tools
+modified: 2025-10-29 02:14:24 GMT-04:00
 tags:
   - workshop
   - linalg
   - tooling
-description: helper scripts for lecture 0.412
-date: "2025-09-26"
-modified: 2025-09-27 18:04:15 GMT-04:00
 title: tools for 0.412
 ---
 

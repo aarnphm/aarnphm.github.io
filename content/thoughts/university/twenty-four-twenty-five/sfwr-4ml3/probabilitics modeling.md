@@ -1,9 +1,9 @@
 ---
+date: "2024-12-14"
 id: probabilitic modeling
+modified: 2025-10-29 02:16:10 GMT-04:00
 tags:
   - sfwr4ml3
-date: "2024-12-14"
-modified: 2025-09-10 14:10:58 GMT-04:00
 title: probabilitic modeling
 ---
 

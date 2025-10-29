@@ -1,16 +1,16 @@
 ---
+abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
+date: "2024-02-07"
+description: and posteriori information retrieval.
 id: Attention
+modified: 2025-10-29 02:15:16 GMT-04:00
 tags:
   - technical
   - llm
   - ml
-description: and posteriori information retrieval.
+title: Attention
 transclude:
   title: false
-date: "2024-02-07"
-abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
-modified: 2025-10-17 15:42:50 GMT-04:00
-title: Attention
 ---
 
 Attention operates on a sequence of query $Q$, key $K$ and value $V$ vector. Attention matrix of a sequence then computed as [@vaswani2023attentionneed]:

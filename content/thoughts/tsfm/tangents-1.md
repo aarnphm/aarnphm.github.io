@@ -1,12 +1,12 @@
 ---
+date: "2025-09-16"
+description: by Claire Cheng
 id: tangents-1
+modified: 2025-10-29 02:15:56 GMT-04:00
 tags:
   - ml
   - tangents
   - tsfm
-description: by Claire Cheng
-date: "2025-09-16"
-modified: 2025-09-16 20:01:13 GMT-04:00
 title: Humans of AI
 ---
 

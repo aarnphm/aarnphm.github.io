@@ -1,11 +1,11 @@
 ---
+date: "2025-01-15"
+description: and its origin.
 id: Internet
+modified: 2025-10-29 02:15:26 GMT-04:00
 tags:
   - sfwr4c03
   - networking
-date: "2025-01-15"
-description: and its origin.
-modified: 2025-01-31 06:56:55 GMT-05:00
 title: Internet
 ---
 

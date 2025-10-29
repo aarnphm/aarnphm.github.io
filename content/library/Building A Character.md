@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Building A Character
 author: Constantin Stanislavski
-subcategory: acting
 category: non-fiction
 date: "2025-08-13"
-modified: 2025-10-25 02:10:39 GMT-04:00
+id: Building A Character
+modified: 2025-10-29 02:14:27 GMT-04:00
+posters: "[[library/posters/building-a-character.jpg]]"
+status: to-read
+subcategory: acting
 tags:
   - non-fiction
-posters: "[[library/posters/building-a-character.jpg]]"
 title: Building A Character
 ---

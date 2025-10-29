@@ -1,14 +1,14 @@
 ---
-id: "the-favorite"
-status: "to-watch"
+category: general
+date: "2024-02-07"
+director: Yorgos Lanthimos
+id: the-favorite
+modified: 2025-10-29 02:14:58 GMT-04:00
+poster: "[[movies/posters/the-favorite.jpg]]"
+status: to-watch
+studio: general
 tags:
   - movies
-title: "The Favorite"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: The Favorite
 year: 2018
-director: "Yorgos Lanthimos"
-category: "general"
-studio: "general"
-poster: "[[movies/posters/the-favorite.jpg]]"
 ---

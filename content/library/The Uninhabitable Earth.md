@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: The Uninhabitable Earth
 author: David Wallace-Wells
-subcategory: life
 category: fiction
 date: "2025-10-07"
-modified: 2025-10-25 02:15:51 GMT-04:00
+id: The Uninhabitable Earth
+modified: 2025-10-29 02:14:42 GMT-04:00
+posters: "[[library/posters/the-uninhabitable-earth.jpg]]"
+status: to-read
+subcategory: life
 tags:
   - fiction
-posters: "[[library/posters/the-uninhabitable-earth.jpg]]"
 title: The Uninhabitable Earth
 ---

@@ -1,11 +1,11 @@
 ---
+date: "2025-09-30"
 id: index
+modified: 2025-10-29 02:14:25 GMT-04:00
 tags:
   - seed
   - ml
   - gpu
-date: "2025-09-30"
-modified: 2025-09-30 14:58:13 GMT-04:00
 title: CUDA programming examples
 ---
 

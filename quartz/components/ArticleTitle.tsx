@@ -1,10 +1,9 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
 import { resolveRelative, FullSlug } from "../util/path"
-import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../util/wikilinks"
+import { parseWikilink, resolveWikilinkTarget } from "../util/wikilinks"
 import { ArenaData, ArenaChannel } from "../plugins/transformers/arena"
 import { toArenaHeadingJsx } from "../util/arena"
-import type { JSX } from "preact"
 
 export default (() => (componentData: QuartzComponentProps) => {
   const { fileData, displayClass } = componentData
@@ -15,51 +14,27 @@ export default (() => (componentData: QuartzComponentProps) => {
 
   const renderDescription = (description: string | undefined) => {
     if (!description) {
-      return []
+      return null
     }
 
-    const nodes: (string | JSX.Element)[] = []
-    const regex = createWikilinkRegex()
-    let lastIndex = 0
-    let match: RegExpExecArray | null
-
-    while ((match = regex.exec(description)) !== null) {
-      const matchText = match[0]
-      const start = match.index
-
-      if (start > lastIndex) {
-        nodes.push(description.slice(lastIndex, start))
-      }
-
-      const parsed = parseWikilink(matchText)
-      const resolved = parsed ? resolveWikilinkTarget(parsed, slug as FullSlug) : null
-
-      if (parsed && resolved) {
-        const hrefBase = resolveRelative(slug as FullSlug, resolved.slug)
-        const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
-        nodes.push(
-          <a
-            href={href}
-            class="internal"
-            data-no-popover
-            data-slug={resolved.slug}
-            key={`${href}-${nodes.length}`}
-          >
-            {parsed.alias ?? parsed.target ?? matchText}
-          </a>,
-        )
-      } else {
-        nodes.push(parsed?.alias ?? parsed?.target ?? matchText)
-      }
-
-      lastIndex = regex.lastIndex
+    const parsed = parseWikilink(description)
+    if (!parsed) {
+      return description
     }
 
-    if (lastIndex < description.length) {
-      nodes.push(description.slice(lastIndex))
+    const resolved = resolveWikilinkTarget(parsed, slug as FullSlug)
+    if (!resolved) {
+      return parsed.alias ?? parsed.target ?? description
     }
 
-    return nodes.length > 0 ? nodes : [description]
+    const hrefBase = resolveRelative(slug as FullSlug, resolved.slug)
+    const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
+
+    return (
+      <a href={href} class="internal" data-no-popover data-slug={resolved.slug}>
+        {parsed.alias ?? parsed.target ?? description}
+      </a>
+    )
   }
 
   if (isArenaIndex) {

@@ -1,11 +1,11 @@
 ---
+date: "2021-10-10"
+description: and XLA. also known as auto differentiation.
 id: Autograd
+modified: 2025-10-29 02:15:16 GMT-04:00
 tags:
   - seed
   - ml
-date: "2021-10-10"
-description: and XLA. also known as auto differentiation.
-modified: 2025-01-31 22:22:52 GMT-05:00
 title: Autograd
 ---
 

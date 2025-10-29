@@ -1,11 +1,11 @@
 ---
+date: "2025-09-14"
+description: criterion for finding difference between input logits and targets.
 id: cross entropy
+modified: 2025-10-29 02:15:43 GMT-04:00
 tags:
   - ml
   - probability
-description: criterion for finding difference between input logits and targets.
-date: "2025-09-14"
-modified: 2025-09-15 23:47:49 GMT-04:00
 title: cross entropy
 ---
 

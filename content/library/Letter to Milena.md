@@ -1,14 +1,14 @@
 ---
-status: finished
-id: Letter to Milena
-subcategory: Kafka
 author: Franz Kafka
-year-finished: 2025
 category: fiction
 date: "2025-10-06"
-modified: 2025-10-25 02:12:24 GMT-04:00
+id: Letter to Milena
+modified: 2025-10-29 02:14:31 GMT-04:00
+posters: "[[library/posters/letter-to-milena.jpg]]"
+status: finished
+subcategory: Kafka
 tags:
   - fiction
-posters: "[[library/posters/letter-to-milena.jpg]]"
 title: Letter to Milena
+year-finished: 2025
 ---

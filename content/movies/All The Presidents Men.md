@@ -1,14 +1,14 @@
 ---
-status: to-watch
+category: general
+date: "2024-02-07"
+director: Alan J. Pakula
 id: all-the-presidents-men
+modified: 2025-10-29 02:14:45 GMT-04:00
+poster: "[[movies/posters/all-the-presidents-men.jpg]]"
+status: to-watch
+studio: warner bros
 tags:
   - movies
-studio: warner bros
-poster: "[[movies/posters/all-the-presidents-men.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:06:40 GMT-04:00
-year: 1976
-category: general
-director: Alan J. Pakula
 title: All the President's Men
+year: 1976
 ---

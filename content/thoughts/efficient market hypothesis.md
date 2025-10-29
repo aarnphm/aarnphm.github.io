@@ -1,10 +1,10 @@
 ---
+date: "2025-09-08"
 id: efficient market hypothesis
+modified: 2025-10-29 02:15:44 GMT-04:00
 tags:
   - seed
   - finance
-date: "2025-09-08"
-modified: 2025-09-08 13:44:51 GMT-04:00
 title: efficient market hypothesis
 ---
 

@@ -1,9 +1,9 @@
 ---
+date: "2024-02-02"
 id: Exoplanets
+modified: 2025-10-29 02:16:10 GMT-04:00
 tags:
   - astron2e03
-date: "2024-02-02"
-modified: "2024-11-20"
 title: Expolanets
 ---
 

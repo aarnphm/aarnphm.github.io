@@ -1,16 +1,16 @@
 ---
-id: "poor-things"
-status: "finished"
+category: general
+date: "2024-02-07"
+director: Yorgos Lanthimos
+id: poor-things
+modified: 2025-10-29 02:14:55 GMT-04:00
+poster: "[[movies/posters/poor-things.jpg]]"
+rating: 7.9
+status: finished
+studio: searchlight
 tags:
   - movies
-title: "Poor Things"
-date: "2024-02-07"
-modified: "2025-10-16 16:39:12 GMT-04:00"
-year: 2023
-director: "Yorgos Lanthimos"
-category: "general"
-studio: "searchlight"
-poster: "[[movies/posters/poor-things.jpg]]"
+title: Poor Things
 watched-date: "2024-03-15"
-rating: 7.9
+year: 2023
 ---

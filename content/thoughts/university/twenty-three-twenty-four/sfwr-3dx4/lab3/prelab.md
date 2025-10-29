@@ -1,9 +1,10 @@
 ---
+date: "2024-03-05"
 id: prelab
+modified: 2025-10-29 02:16:22 GMT-04:00
 tags:
   - sfwr3dx4
   - lab
-date: "2024-03-05"
 title: Root mean square
 ---
 

@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: thriller
+date: "2024-02-07"
+director: Denis Villeneuve
 id: dune-part-two
+modified: 2025-10-29 02:14:49 GMT-04:00
+poster: "[[movies/posters/dune-part-two.jpg]]"
+status: recurring
+studio: warner bros
 tags:
   - movies
   - thriller
-studio: warner bros
-poster: "[[movies/posters/dune-part-two.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:09:12 GMT-04:00
-year: 2024
-category: thriller
-director: Denis Villeneuve
 title: "Dune: Part Two"
+year: 2024
 ---

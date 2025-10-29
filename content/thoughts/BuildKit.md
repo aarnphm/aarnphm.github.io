@@ -1,9 +1,10 @@
 ---
+date: "2024-02-08"
 id: BuildKit
+modified: 2025-10-29 02:15:17 GMT-04:00
 tags:
   - seed
   - container
-date: "2024-02-08"
 title: BuildKit
 ---
 

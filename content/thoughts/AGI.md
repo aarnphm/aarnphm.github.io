@@ -1,9 +1,9 @@
 ---
+date: "2024-02-07"
 id: AGI
+modified: 2025-10-29 02:15:15 GMT-04:00
 tags:
   - seed
-date: "2024-02-07"
-modified: 2025-08-05 21:09:35 GMT-04:00
 title: AGI
 ---
 

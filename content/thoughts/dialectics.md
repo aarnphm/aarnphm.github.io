@@ -1,10 +1,10 @@
 ---
+date: "2024-02-07"
+description: often involves some sort of contradictory between opposing sides.
 id: dialectics
+modified: 2025-10-29 02:15:44 GMT-04:00
 tags:
   - philosophy
-description: often involves some sort of contradictory between opposing sides.
-date: "2024-02-07"
-modified: 2025-10-07 19:10:02 GMT-04:00
 title: dialectics
 ---
 

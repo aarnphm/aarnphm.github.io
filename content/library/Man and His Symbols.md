@@ -1,13 +1,13 @@
 ---
-status: current
-id: Man and His Symbols
 author: Carl G. Jung
-subcategory: psychology
-title: Man and His Symbols
+category: philosophy
 date: "2025-10-06"
-modified: 2025-10-25 02:12:30 GMT-04:00
+id: Man and His Symbols
+modified: 2025-10-29 02:14:32 GMT-04:00
+posters: "[[library/posters/man-and-his-symbols.jpg]]"
+status: current
+subcategory: psychology
 tags:
   - philosophy
-posters: "[[library/posters/man-and-his-symbols.jpg]]"
-category: philosophy
+title: Man and His Symbols
 ---

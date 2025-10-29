@@ -1,14 +1,14 @@
 ---
-status: finished
-id: The Second Sex
 author: Simone de Beauvoir
-subcategory: de Beauvoir
 category: philosophy
 date: "2025-10-06"
-year-finished: 2025
-modified: 2025-10-25 02:15:28 GMT-04:00
+id: The Second Sex
+modified: 2025-10-29 02:14:41 GMT-04:00
+posters: "[[library/posters/the-second-sex.jpg]]"
+status: finished
+subcategory: de Beauvoir
 tags:
   - philosophy
-posters: "[[library/posters/the-second-sex.jpg]]"
 title: The Second Sex
+year-finished: 2025
 ---

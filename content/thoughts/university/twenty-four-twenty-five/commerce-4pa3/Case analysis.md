@@ -1,10 +1,10 @@
 ---
-id: Case analysis
-tags:
-  - commerce4pa3
 date: "2025-01-15"
 description: and how to prep effectively
-modified: 2025-01-22 05:06:48 GMT-05:00
+id: Case analysis
+modified: 2025-10-29 02:15:58 GMT-04:00
+tags:
+  - commerce4pa3
 title: Case analysis
 ---
 

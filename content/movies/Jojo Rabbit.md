@@ -1,15 +1,15 @@
 ---
-id: "jojo-rabbit"
-status: "recurring"
+category: comedy
+date: "2024-02-07"
+director: Taika Waititi
+id: jojo-rabbit
+modified: 2025-10-29 02:14:51 GMT-04:00
+poster: "[[movies/posters/jojo-rabbit.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - comedy
-title: "Jojo Rabbit"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Jojo Rabbit
 year: 2019
-director: "Taika Waititi"
-category: "comedy"
-studio: "general"
-poster: "[[movies/posters/jojo-rabbit.jpg]]"
 ---

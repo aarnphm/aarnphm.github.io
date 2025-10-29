@@ -1,14 +1,14 @@
 ---
+date: "2024-11-04"
+description: a variations of autoencoders operate on features sparsity, also known as SAEs.
 id: sparse autoencoder
+modified: 2025-10-29 02:15:53 GMT-04:00
 tags:
   - ml
   - interpretability
-description: a variations of autoencoders operate on features sparsity, also known as SAEs.
+title: sparse autoencoder
 transclude:
   title: false
-date: "2024-11-04"
-modified: 2025-10-04 17:51:50 GMT-04:00
-title: sparse autoencoder
 ---
 
 see also: [landspace](https://docs.google.com/document/d/1lHvRXJsbi41bNGZ_znGN7DmlLXITXyWyISan7Qx2y6s/edit?tab=t.0#heading=h.j9b3g3x1o1z4)

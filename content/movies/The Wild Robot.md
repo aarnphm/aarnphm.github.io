@@ -1,16 +1,16 @@
 ---
-id: "the-wild-robot"
-status: "finished"
+category: general
+date: "2024-02-07"
+director: Chris Sanders
+id: the-wild-robot
+modified: 2025-10-29 02:15:00 GMT-04:00
+poster: "[[movies/posters/the-wild-robot.jpg]]"
+rating: 8.3
+status: finished
+studio: dreamworks
 tags:
   - movies
-title: "The Wild Robot"
-date: "2024-02-07"
-modified: "2025-10-16 16:39:12 GMT-04:00"
-year: 2024
-director: "Chris Sanders"
-category: "general"
-studio: "dreamworks"
-poster: "[[movies/posters/the-wild-robot.jpg]]"
+title: The Wild Robot
 watched-date: "2024-11-01"
-rating: 8.3
+year: 2024
 ---

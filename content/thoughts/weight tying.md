@@ -1,11 +1,11 @@
 ---
+date: "2025-09-19"
+description: reduce parameters size
 id: weight tying
+modified: 2025-10-29 02:16:24 GMT-04:00
 tags:
   - seed
   - ml
-description: reduce parameters size
-date: "2025-09-19"
-modified: 2025-09-24 23:19:33 GMT-04:00
 title: weight tying
 ---
 

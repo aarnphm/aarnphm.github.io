@@ -1,16 +1,16 @@
 ---
-id: "queer"
-status: "finished"
+category: general
+date: "2024-02-07"
+director: Luca Guadagnino
+id: queer
+modified: 2025-10-29 02:15:05 GMT-04:00
+poster: "[[movies/posters/queer.jpg]]"
+rating: 7.3
+status: finished
+studio: a24
 tags:
   - movies
-title: "Queer"
-date: "2024-02-07"
-modified: "2025-10-16 16:39:12 GMT-04:00"
-year: 2024
-director: "Luca Guadagnino"
-category: "general"
-studio: "a24"
-poster: "[[movies/posters/queer.jpg]]"
+title: Queer
 watched-date: "2024-11-30"
-rating: 7.3
+year: 2024
 ---

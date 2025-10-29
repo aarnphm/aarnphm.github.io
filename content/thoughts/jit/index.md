@@ -1,14 +1,14 @@
 ---
+date: "2025-10-05"
+description: educational JIT compiler implementations in Python
 id: bytecode-jit-readme
+modified: 2025-10-29 02:15:48 GMT-04:00
+pageLayout: L->ET|A
 tags:
   - seed
   - compilers
   - folder
-description: educational JIT compiler implementations in Python
-date: "2025-10-05"
-modified: 2025-10-28 16:09:08 GMT-04:00
 title: python JIT compiler
-pageLayout: L->ET|A
 ---
 
 three-tier JIT compiler demonstrating compilation strategies from simple to sophisticated. see [[thoughts/jit/python bytecode jit|python bytecode jit]] for detailed writeup.

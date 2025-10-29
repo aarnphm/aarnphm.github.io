@@ -1,8 +1,9 @@
 ---
+date: "2024-02-09"
 id: content
+modified: 2025-10-29 02:16:21 GMT-04:00
 tags:
   - sfwr3dx4
-date: "2024-02-09"
 title: Transfer functions of continuous-time systems
 ---
 

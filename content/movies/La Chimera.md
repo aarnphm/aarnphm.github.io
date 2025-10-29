@@ -1,14 +1,14 @@
 ---
-id: "la-chimera"
-status: "to-watch"
+category: general
+date: "2024-02-07"
+director: Alice Rohrwacher
+id: la-chimera
+modified: 2025-10-29 02:14:52 GMT-04:00
+poster: "[[movies/posters/la-chimera.jpg]]"
+status: to-watch
+studio: neon
 tags:
   - movies
-title: "La Chimera"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: La Chimera
 year: 2023
-director: "Alice Rohrwacher"
-category: "general"
-studio: "neon"
-poster: "[[movies/posters/la-chimera.jpg]]"
 ---

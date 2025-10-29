@@ -1,11 +1,11 @@
 ---
+date: "2024-11-11"
+description: tidbits from PyTorch
 id: PyTorch
+modified: 2025-10-29 02:15:33 GMT-04:00
 tags:
   - ml
   - framework
-description: tidbits from PyTorch
-date: "2024-11-11"
-modified: 2025-10-09 02:21:52 GMT-04:00
 title: PyTorch
 ---
 

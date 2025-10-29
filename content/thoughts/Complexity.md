@@ -1,9 +1,9 @@
 ---
+date: "2024-12-01"
 id: Complexity
+modified: 2025-10-29 02:15:19 GMT-04:00
 tags:
   - seed
-date: "2024-12-01"
-modified: "2024-12-01"
 title: Complexity
 ---
 

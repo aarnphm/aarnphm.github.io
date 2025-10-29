@@ -1,14 +1,14 @@
 ---
-status: to-watch
-id: singin-in-the-rain
-tags:
-  - movies
-studio: mgm
 category: general
 date: "2024-02-07"
-modified: 2025-10-16 16:44:03 GMT-04:00
-year: 1952
 director: Gene Kelly, Stanley Donen
-title: Singin' in the Rain
+id: singin-in-the-rain
+modified: 2025-10-29 02:14:55 GMT-04:00
 poster: "[[movies/posters/singin-in-the-rain.jpg]]"
+status: to-watch
+studio: mgm
+tags:
+  - movies
+title: Singin' in the Rain
+year: 1952
 ---

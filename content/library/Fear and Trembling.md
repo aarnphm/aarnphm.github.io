@@ -1,14 +1,14 @@
 ---
-status: finished
+author: Søren Kierkegaard
+category: philosophy
+date: "2022-08-21"
 id: Fear and Trembling
+modified: 2025-10-29 02:14:30 GMT-04:00
+posters: "[[library/posters/fear-and-trembling.jpg]]"
+status: finished
+subcategory: Kierkegaard
 tags:
   - philosophy
-subcategory: Kierkegaard
-date: "2022-08-21"
-year-finished: 2024
-author: Søren Kierkegaard
-modified: 2025-10-27 02:42:09 GMT-04:00
-category: philosophy
-posters: "[[library/posters/fear-and-trembling.jpg]]"
 title: Fear and Trembling
+year-finished: 2024
 ---

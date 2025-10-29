@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: shows
+date: "2024-02-07"
+director: Charlie Brooker
 id: black-mirror
+modified: 2025-10-29 02:14:46 GMT-04:00
+poster: "[[movies/posters/black-mirror.jpg]]"
+status: recurring
+studio: netflix
 tags:
   - movies
   - shows
-studio: netflix
-poster: "[[movies/posters/black-mirror.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:06:52 GMT-04:00
-year: 2011
-category: shows
-director: Charlie Brooker
 title: Black Mirror
+year: 2011
 ---

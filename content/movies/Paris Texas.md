@@ -1,14 +1,14 @@
 ---
-id: "paris-texas"
-status: "to-watch"
+category: general
+date: "2024-02-07"
+director: Wim Wenders
+id: paris-texas
+modified: 2025-10-29 02:14:54 GMT-04:00
+poster: "[[movies/posters/paris-texas.jpg]]"
+status: to-watch
+studio: general
 tags:
   - movies
-title: "Paris, Texas"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Paris, Texas
 year: 1984
-director: "Wim Wenders"
-category: "general"
-studio: "general"
-poster: "[[movies/posters/paris-texas.jpg]]"
 ---

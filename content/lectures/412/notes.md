@@ -1,16 +1,16 @@
 ---
-slides: true
+date: "2025-09-12"
+description: linear algebra applications for transformers
 id: notes
+modified: 2025-10-29 02:14:24 GMT-04:00
+slides: true
 tags:
   - seed
   - workshop
   - linalg
-description: linear algebra applications for transformers
+title: supplement to 0.412
 transclude:
   title: false
-date: "2025-09-12"
-modified: 2025-09-26 16:45:00 GMT-04:00
-title: supplement to 0.412
 ---
 
 see also: [[thoughts/Transformers]], [[thoughts/Attention]], [[thoughts/LLMs]], [[lectures/412/deep research|walkthrough]], [[lectures/412/tools]]

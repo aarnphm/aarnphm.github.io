@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: christopher nolan
+date: "2024-02-07"
+director: Christopher Nolan
 id: insomnia
+modified: 2025-10-29 02:15:04 GMT-04:00
+poster: "[[movies/posters/insomnia.jpg]]"
+status: recurring
+studio: christopher nolan
 tags:
   - movies
   - christopher-nolan
-studio: christopher nolan
-poster: "[[movies/posters/insomnia.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:12:46 GMT-04:00
-year: 2002
-category: christopher nolan
-director: Christopher Nolan
 title: Insomnia
+year: 2002
 ---

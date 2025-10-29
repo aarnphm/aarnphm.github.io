@@ -1,10 +1,11 @@
 ---
+date: "2023-11-05"
 id: Stoic
+modified: 2025-10-29 02:16:18 GMT-04:00
 tags:
   - philos1aa3
   - philosophy
 title: Stoic
-date: 2023-11-05
 ---
 
 ### Epictetus - Enchiridion

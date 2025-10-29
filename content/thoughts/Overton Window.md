@@ -1,10 +1,10 @@
 ---
-id: Overton Window
-tags:
-  - seed
 date: "2024-03-05"
 description: also known as window of discourse
-modified: 2025-01-28 02:39:24 GMT-05:00
+id: Overton Window
+modified: 2025-10-29 02:15:31 GMT-04:00
+tags:
+  - seed
 title: Overton Window
 ---
 

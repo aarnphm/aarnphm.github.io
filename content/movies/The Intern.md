@@ -1,15 +1,15 @@
 ---
-id: "the-intern"
-status: "recurring"
+category: comedy
+date: "2024-02-07"
+director: Nancy Meyers
+id: the-intern
+modified: 2025-10-29 02:14:58 GMT-04:00
+poster: "[[movies/posters/the-intern.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - comedy
-title: "The Intern"
-date: "2024-02-07"
-modified: "2025-10-16 16:43:59 GMT-04:00"
+title: The Intern
 year: 2015
-director: "Nancy Meyers"
-category: "comedy"
-studio: "general"
-poster: "[[movies/posters/the-intern.jpg]]"
 ---

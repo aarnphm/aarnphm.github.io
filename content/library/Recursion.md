@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Recursion
 author: Blake Crouch
-subcategory: life
 category: fiction
 date: "2025-03-05"
-modified: 2025-10-25 02:13:25 GMT-04:00
+id: Recursion
+modified: 2025-10-29 02:14:35 GMT-04:00
+posters: "[[library/posters/recursion.jpg]]"
+status: to-read
+subcategory: life
 tags:
   - fiction
-posters: "[[library/posters/recursion.jpg]]"
 title: Recursion
 ---

@@ -1,16 +1,16 @@
 ---
-id: "maestro"
-status: "finished"
+category: general
+date: "2024-02-07"
+director: Bradley Cooper
+id: maestro
+modified: 2025-10-29 02:15:05 GMT-04:00
+poster: "[[movies/posters/maestro.jpg]]"
+rating: 7.6
+status: finished
+studio: netflix
 tags:
   - movies
-title: "Maestro"
-date: "2024-02-07"
-modified: "2025-10-16 16:39:12 GMT-04:00"
-year: 2023
-director: "Bradley Cooper"
-category: "general"
-studio: "netflix"
-poster: "[[movies/posters/maestro.jpg]]"
+title: Maestro
 watched-date: "2024-02-20"
-rating: 7.6
+year: 2023
 ---

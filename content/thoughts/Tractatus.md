@@ -1,12 +1,12 @@
 ---
+date: "2025-10-04"
+description: Wittgenstein's picture theory of language and its uncanny resonance with modern LLM latent spaces
 id: Tractatus Logico-Philosophicus
+modified: 2025-10-29 02:15:37 GMT-04:00
 tags:
   - seed
   - philosophy
   - llm
-description: Wittgenstein's picture theory of language and its uncanny resonance with modern LLM latent spaces
-date: "2025-10-04"
-modified: 2025-10-08 03:35:09 GMT-04:00
 title: TLP
 ---
 

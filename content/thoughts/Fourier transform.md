@@ -1,10 +1,10 @@
 ---
-id: Fourier transform
-tags:
-  - math
 date: "2024-12-17"
 description: the idea of any complex signals can be decomposed into simplifer sin waves.
-modified: 2024-12-17 12:49:08 GMT-05:00
+id: Fourier transform
+modified: 2025-10-29 02:15:23 GMT-04:00
+tags:
+  - math
 title: Fourier transform
 ---
 

@@ -1,15 +1,15 @@
 ---
-id: "joker"
-status: "recurring"
+category: thriller
+date: "2024-02-07"
+director: Todd Phillips
+id: joker
+modified: 2025-10-29 02:15:05 GMT-04:00
+poster: "[[movies/posters/joker.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - thriller
-title: "Joker"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Joker
 year: 2019
-director: "Todd Phillips"
-category: "thriller"
-studio: "general"
-poster: "[[movies/posters/joker.jpg]]"
 ---

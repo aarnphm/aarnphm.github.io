@@ -1,14 +1,14 @@
 ---
-status: finished
-id: The Republic
 author: Plato
-subcategory: Plato
 category: philosophy
 date: "2022-08-21"
-year-finished: 2023
-modified: 2025-10-25 02:15:23 GMT-04:00
+id: The Republic
+modified: 2025-10-29 02:14:41 GMT-04:00
+posters: "[[library/posters/the-republic.jpg]]"
+status: finished
+subcategory: Plato
 tags:
   - philosophy
-posters: "[[library/posters/the-republic.jpg]]"
 title: The Republic
+year-finished: 2023
 ---

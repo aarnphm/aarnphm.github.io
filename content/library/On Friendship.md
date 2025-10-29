@@ -1,14 +1,14 @@
 ---
-status: finished
-id: On Friendship
-subcategory: love
 author: Michel de Montaigne
-year-finished: 2025
-title: On Friendship
+category: philosophy
 date: "2025-08-13"
-modified: 2025-10-25 02:12:57 GMT-04:00
+id: On Friendship
+modified: 2025-10-29 02:14:33 GMT-04:00
+posters: "[[library/posters/on-friendship.jpg]]"
+status: finished
+subcategory: love
 tags:
   - philosophy
-posters: "[[library/posters/on-friendship.jpg]]"
-category: philosophy
+title: On Friendship
+year-finished: 2025
 ---

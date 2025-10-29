@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: christopher nolan
+date: "2024-02-07"
+director: Christopher Nolan
 id: batman-begins
+modified: 2025-10-29 02:14:46 GMT-04:00
+poster: "[[movies/posters/batman-begins.jpg]]"
+status: recurring
+studio: christopher nolan
 tags:
   - movies
   - christopher-nolan
-studio: christopher nolan
-poster: "[[movies/posters/batman-begins.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:12:54 GMT-04:00
-year: 2005
-category: christopher nolan
-director: Christopher Nolan
 title: Batman Begins
+year: 2005
 ---

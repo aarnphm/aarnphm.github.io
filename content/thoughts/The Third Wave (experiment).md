@@ -1,14 +1,14 @@
 ---
+created: "2025-08-01"
+date: "2025-08-01"
+description: experimental social campaign, 1967
 id: The Third Wave (experiment)
+modified: 2025-10-29 02:15:36 GMT-04:00
+published: "2023-04-05"
+source: https://theanarchistlibrary.org/library/ron-jones-the-third-wave-1967-an-account
 tags:
   - seed
   - clippings
-description: experimental social campaign, 1967
-source: https://theanarchistlibrary.org/library/ron-jones-the-third-wave-1967-an-account
-date: "2025-08-01"
-created: "2025-08-01"
-modified: 2025-09-18 08:43:07 GMT-04:00
-published: "2023-04-05"
 title: The Third Wave
 ---
 

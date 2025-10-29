@@ -1,11 +1,11 @@
 ---
+date: "2025-07-04"
+description: what does home mean to you?
 id: furnitures
+modified: 2025-10-29 02:15:46 GMT-04:00
 tags:
   - evergreen
   - home
-description: what does home mean to you?
-date: "2025-07-04"
-modified: 2025-10-06 17:13:40 GMT-04:00
 title: furnitures
 ---
 

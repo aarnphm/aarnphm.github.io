@@ -1,15 +1,15 @@
 ---
+date: "2025-10-03"
+description: you are the one, that I want to show off to everyone I meet.
+draft: true
 id: Nicole
+modified: 2025-10-29 02:15:09 GMT-04:00
+noindex: true
+pageLayout: letter
+signature: i love you, as always - Aaron
 tags:
   - friend
-description: you are the one, that I want to show off to everyone I meet.
-signature: i love you, as always - Aaron
-date: "2025-10-03"
-modified: 2025-10-25 11:58:02 GMT-04:00
-draft: true
-noindex: true
 title: happy birthday nicky
-pageLayout: letter
 ---
 
 —>They do not scale. If a relationship comes with a Patreon tier list, it’s not friendship, it’s artisanal loneliness in monthly installments.

@@ -1,10 +1,10 @@
 ---
+date: "2024-12-10"
+description: and what is she descending from, really?
 id: gradient descent
+modified: 2025-10-29 02:15:46 GMT-04:00
 tags:
   - ml
-description: and what is she descending from, really?
-date: "2024-12-10"
-modified: 2025-08-28 19:06:32 GMT-04:00
 title: gradient descent
 ---
 

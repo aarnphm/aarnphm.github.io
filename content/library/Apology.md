@@ -1,14 +1,14 @@
 ---
-status: finished
-id: Apology
-subcategory: Plato
 author: Plato
-year-finished: 2023
-title: Apology
+category: philosophy
 date: "2022-08-21"
-modified: 2025-10-25 02:10:20 GMT-04:00
+id: Apology
+modified: 2025-10-29 02:14:26 GMT-04:00
+posters: "[[library/posters/apology.jpg]]"
+status: finished
+subcategory: Plato
 tags:
   - philosophy
-posters: "[[library/posters/apology.jpg]]"
-category: philosophy
+title: Apology
+year-finished: 2023
 ---

@@ -1,9 +1,9 @@
 ---
+date: "2024-10-10"
 id: KV compression
+modified: 2025-10-29 02:15:26 GMT-04:00
 tags:
   - ml
-date: "2024-10-10"
-modified: 2025-08-28 09:33:53 GMT-04:00
 title: KV compression
 ---
 

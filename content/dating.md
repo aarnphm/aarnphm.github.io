@@ -1,20 +1,20 @@
 ---
-slides: true
-id: dating
 aliases:
   - date
   - date-me
   - hinge
   - bumble
+date: "2025-08-09"
+description: just another fish in the sea.
+id: dating
+modified: 2025-10-29 02:14:20 GMT-04:00
+noindex: true
+pageLayout: letter
+slides: true
 tags:
   - evergreen
   - love
-description: just another fish in the sea.
-date: "2025-08-09"
-modified: 2025-10-23 01:48:05 GMT-04:00
-noindex: true
 title: dating me.
-pageLayout: letter
 ---
 
 This document doesn't represent the whole me, but it should give you a sense of the "non-tech" version of who I am and what I do in my downtime.

@@ -1,11 +1,11 @@
 ---
+date: "2024-01-09"
+description: and my livelihood.
 id: Expenses
+modified: 2025-10-29 02:15:22 GMT-04:00
+noindex: true
 tags:
   - evergreen
-description: and my livelihood.
-date: "2024-01-09"
-modified: 2025-08-24 13:09:37 GMT-04:00
-noindex: true
 title: Expenses
 ---
 

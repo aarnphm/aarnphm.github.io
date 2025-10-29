@@ -1,15 +1,15 @@
 ---
-id: "isle-of-dogs"
-status: "recurring"
+category: wes anderson
+date: "2024-02-07"
+director: Wes Anderson
+id: isle-of-dogs
+modified: 2025-10-29 02:14:51 GMT-04:00
+poster: "[[movies/posters/isle-of-dogs.jpg]]"
+status: recurring
+studio: wes anderson
 tags:
   - movies
   - wes-anderson
-title: "Isle of Dogs"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Isle of Dogs
 year: 2018
-director: "Wes Anderson"
-category: "wes anderson"
-studio: "wes anderson"
-poster: "[[movies/posters/isle-of-dogs.jpg]]"
 ---

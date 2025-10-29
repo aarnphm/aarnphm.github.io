@@ -1,16 +1,16 @@
 ---
+aliases:
+  - chat
+date: "2024-10-02"
 id: chatgpt
+modified: 2025-10-29 02:15:10 GMT-04:00
 permalinks:
   - /chatgpt
+socialDescription: And its implication on how we assess learning. an overview.
 tags:
   - engineer4a03
   - fruit
-date: "2024-10-02"
-modified: 2025-10-04 17:41:24 GMT-04:00
-aliases:
-  - chat
 title: On ChatGPT and its pedagogical consequences
-socialDescription: And its implication on how we assess learning. an overview.
 ---
 
 > [!question]-

@@ -1,11 +1,11 @@
 ---
+date: "2025-09-04"
+description: how machine read different modalities
 id: Tokenization
+modified: 2025-10-29 02:15:36 GMT-04:00
 tags:
   - seed
   - ml
-description: how machine read different modalities
-date: "2025-09-04"
-modified: 2025-09-11 16:08:53 GMT-04:00
 title: Tokenization
 ---
 

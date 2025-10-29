@@ -1,10 +1,10 @@
 ---
+date: "2025-09-08"
+description: and the bull market
 id: quantitative finance
+modified: 2025-10-29 02:15:52 GMT-04:00
 tags:
   - seed
-description: and the bull market
-date: "2025-09-08"
-modified: 2025-09-08 13:15:17 GMT-04:00
 title: quantitative finance
 ---
 

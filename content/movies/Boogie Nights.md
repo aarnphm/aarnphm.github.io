@@ -1,14 +1,14 @@
 ---
-status: to-watch
+category: general
+date: "2024-02-07"
+director: Paul Thomas Anderson
 id: boogie-nights
+modified: 2025-10-29 02:14:47 GMT-04:00
+poster: "[[movies/posters/boogie-nights.jpg]]"
+status: to-watch
+studio: Paul Thomas Anderson
 tags:
   - movies
-studio: Paul Thomas Anderson
-poster: "[[movies/posters/boogie-nights.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:07:23 GMT-04:00
-year: 1997
-category: general
-director: Paul Thomas Anderson
 title: Boogie Nights
+year: 1997
 ---

@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: life
+date: "2024-02-07"
+director: Peter Farrelly
 id: green-book
+modified: 2025-10-29 02:14:50 GMT-04:00
+poster: "[[movies/posters/green-book.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - growth
-studio: general
-poster: "[[movies/posters/green-book.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:32:43 GMT-04:00
-year: 2018
-category: life
-director: Peter Farrelly
 title: Green Book
+year: 2018
 ---

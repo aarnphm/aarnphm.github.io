@@ -1,14 +1,14 @@
 ---
-status: to-watch
+category: general
+date: "2024-02-07"
+director: Richard Linklater
 id: before-sunrise
+modified: 2025-10-29 02:14:46 GMT-04:00
+poster: "[[movies/posters/before-sunrise.jpg]]"
+status: to-watch
+studio: columbia pictures
 tags:
   - movies
-studio: columbia pictures
-poster: "[[movies/posters/before-sunrise.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:06:48 GMT-04:00
-year: 1995
-category: general
-director: Richard Linklater
 title: Before Sunrise
+year: 1995
 ---

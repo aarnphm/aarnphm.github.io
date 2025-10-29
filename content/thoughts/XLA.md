@@ -1,12 +1,12 @@
 ---
+date: "2022-12-23"
+description: or accelerated linear algebra
 id: XLA
+modified: 2025-10-29 02:15:38 GMT-04:00
 tags:
   - seed
   - ml
   - compilers
-description: or accelerated linear algebra
-date: "2022-12-23"
-modified: 2025-10-06 08:35:10 GMT-04:00
 title: XLA
 ---
 

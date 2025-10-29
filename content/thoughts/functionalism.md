@@ -1,16 +1,16 @@
 ---
-id: functionalism
-tags:
-  - seed
-  - philosophy
-published: "2003-03-05"
+created: "2025-10-01"
 date: "2025-10-01"
+description: Functional roles, computational hermeneutics, autopoietic critiques
+id: functionalism
+modified: 2025-10-29 02:15:45 GMT-04:00
+published: "2003-03-05"
 socials:
   sep: https://plato.stanford.edu/entries/functionalism/
   wikipedia: https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)
-modified: 2025-10-28 17:51:02 GMT-04:00
-created: "2025-10-01"
-description: Functional roles, computational hermeneutics, autopoietic critiques
+tags:
+  - seed
+  - philosophy
 title: functionalism
 ---
 

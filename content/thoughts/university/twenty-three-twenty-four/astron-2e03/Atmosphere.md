@@ -1,8 +1,9 @@
 ---
+date: "2024-03-07"
 id: Atmosphere
+modified: 2025-10-29 02:16:10 GMT-04:00
 tags:
   - astron2e03
-date: "2024-03-07"
 title: Atmospheric properties for exoplanets
 ---
 

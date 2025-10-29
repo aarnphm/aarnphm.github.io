@@ -1,14 +1,14 @@
 ---
+date: "2024-02-08"
+description: batching strategy for large scale inference deployment
 id: Continuous batching
+modified: 2025-10-29 02:15:19 GMT-04:00
 tags:
   - ml
   - seed
-description: batching strategy for large scale inference deployment
+title: Continuous batching
 transclude:
   title: false
-date: "2024-02-08"
-modified: 2025-09-30 05:59:53 GMT-04:00
-title: Continuous batching
 ---
 
 [@280922] solves the static batching to reduce cost and improve throughput by appending requests continuously into existing KV cache [^paper]

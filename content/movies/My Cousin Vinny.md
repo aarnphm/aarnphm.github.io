@@ -1,15 +1,15 @@
 ---
-id: "my-cousin-vinny"
-status: "recurring"
+category: thriller
+date: "2024-02-07"
+director: Jonathan Lynn
+id: my-cousin-vinny
+modified: 2025-10-29 02:14:54 GMT-04:00
+poster: "[[movies/posters/my-cousin-vinny.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - thriller
-title: "My Cousin Vinny"
-date: "2024-02-07"
-modified: "2025-10-16 16:43:59 GMT-04:00"
+title: My Cousin Vinny
 year: 1992
-director: "Jonathan Lynn"
-category: "thriller"
-studio: "general"
-poster: "[[movies/posters/my-cousin-vinny.jpg]]"
 ---

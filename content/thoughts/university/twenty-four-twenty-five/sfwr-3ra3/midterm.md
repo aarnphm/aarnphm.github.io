@@ -1,9 +1,9 @@
 ---
+date: "2024-10-21"
 id: midterm
+modified: 2025-10-29 02:16:04 GMT-04:00
 tags:
   - sfwr3ra3
-date: "2024-10-21"
-modified: 2024-12-19 04:04:10 GMT-05:00
 title: requirements notes
 ---
 

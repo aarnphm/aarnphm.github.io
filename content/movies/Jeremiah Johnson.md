@@ -1,14 +1,14 @@
 ---
-id: "jeremiah-johnson"
-status: "to-watch"
+category: general
+date: "2024-02-07"
+director: sydney pollack
+id: jeremiah-johnson
+modified: 2025-10-29 02:14:51 GMT-04:00
+poster: "[[movies/posters/jeremiah-johnson.jpg]]"
+status: to-watch
+studio: general
 tags:
   - movies
-title: "Jeremiah Johnson"
-date: "2024-02-07"
-modified: "2025-10-16 16:43:59 GMT-04:00"
+title: Jeremiah Johnson
 year: 1972
-director: "sydney pollack"
-category: "general"
-studio: "general"
-poster: "[[movies/posters/jeremiah-johnson.jpg]]"
 ---

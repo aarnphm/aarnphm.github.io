@@ -1,10 +1,10 @@
 ---
+date: "2024-01-14"
+description: locust of controls towards certain actions.
 id: Will
+modified: 2025-10-29 02:15:38 GMT-04:00
 tags:
   - philosophy
-description: locust of controls towards certain actions.
-date: "2024-01-14"
-modified: 2025-10-04 01:00:19 GMT-04:00
 title: Will
 ---
 

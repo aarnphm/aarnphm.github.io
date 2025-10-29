@@ -1,11 +1,11 @@
 ---
+date: "2024-02-07"
+description: and the backbone of the current language models/ai progress.
 id: Transformers
+modified: 2025-10-29 02:15:37 GMT-04:00
 tags:
   - ml
   - technical
-description: and the backbone of the current language models/ai progress.
-date: "2024-02-07"
-modified: 2025-10-12 05:53:09 GMT-04:00
 title: Transformers
 ---
 

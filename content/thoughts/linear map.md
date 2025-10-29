@@ -1,10 +1,10 @@
 ---
+date: "2025-08-28"
 id: linear map
+modified: 2025-10-29 02:15:49 GMT-04:00
 tags:
   - seed
   - linalg
-date: "2025-08-28"
-modified: 2025-09-16 12:00:00 GMT-04:00
 title: linear map
 ---
 

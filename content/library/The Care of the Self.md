@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: The Care of the Self
 author: Michel Foucault
-subcategory: love
 category: philosophy
 date: "2025-09-18"
-modified: 2025-10-25 02:14:12 GMT-04:00
+id: The Care of the Self
+modified: 2025-10-29 02:14:37 GMT-04:00
+posters: "[[library/posters/the-care-of-the-self.jpg]]"
+status: to-read
+subcategory: love
 tags:
   - philosophy
-posters: "[[library/posters/the-care-of-the-self.jpg]]"
 title: The Care of the Self
 ---

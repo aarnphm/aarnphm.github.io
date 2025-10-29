@@ -1,12 +1,12 @@
 ---
+date: "2025-08-21"
+description: motivations of attention
 id: why
+modified: 2025-10-29 02:14:22 GMT-04:00
 tags:
   - seed
   - ml
   - math
-description: motivations of attention
-date: "2025-08-21"
-modified: 2025-09-30 07:02:46 GMT-04:00
 title: why certain components in attention?
 ---
 

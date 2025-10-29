@@ -1,16 +1,16 @@
 ---
-status: finished
-id: The Little Book of Deep Learning
 author: François Fleuret
-subcategory: ml
 category: non-fiction
 date: "2022-08-21"
 external-url: https://fleuret.org/public/lbdl.pdf
-year-finished: 2024
-modified: 2025-10-25 02:14:50 GMT-04:00
+id: The Little Book of Deep Learning
+modified: 2025-10-29 02:14:39 GMT-04:00
+posters: "[[library/posters/the-little-book-of-deep-learning.jpg]]"
+seealso: "[[thoughts/deep learning]]"
+status: finished
+subcategory: ml
 tags:
   - non-fiction
-posters: "[[library/posters/the-little-book-of-deep-learning.jpg]]"
 title: The Little Book of Deep Learning
-seealso: "[[thoughts/deep learning]]"
+year-finished: 2024
 ---

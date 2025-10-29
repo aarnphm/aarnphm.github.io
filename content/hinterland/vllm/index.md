@@ -1,10 +1,10 @@
 ---
+date: "2025-09-08"
+description: everything related to vLLM
 id: index
+modified: 2025-10-29 02:14:20 GMT-04:00
 tags:
   - vllm
-description: everything related to vLLM
-date: "2025-09-08"
-modified: 2025-09-08 21:54:23 GMT-04:00
 title: vLLM engineering
 ---
 

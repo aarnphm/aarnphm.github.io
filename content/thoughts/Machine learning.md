@@ -1,11 +1,11 @@
 ---
+date: "2024-02-07"
+description: and learning machine
 id: Machine learning
+modified: 2025-10-29 02:15:28 GMT-04:00
 tags:
   - ml
   - sapling
-description: and learning machine
-date: "2024-02-07"
-modified: 2025-08-28 19:27:46 GMT-04:00
 title: Machine learning
 ---
 

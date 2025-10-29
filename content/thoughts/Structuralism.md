@@ -1,10 +1,10 @@
 ---
-id: Structuralism
-tags:
-  - philosophy
 date: "2025-06-12"
 description: and forms.
-modified: 2025-06-12 06:08:19 GMT-04:00
+id: Structuralism
+modified: 2025-10-29 02:15:35 GMT-04:00
+tags:
+  - philosophy
 title: Structuralism
 ---
 

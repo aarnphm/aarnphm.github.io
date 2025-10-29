@@ -1,16 +1,16 @@
 ---
+abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
+aliases:
+  - mechinterp
+  - reveng neural net
+date: "2024-10-30"
+description: and reverse engineering neural networks.
 id: mechanistic interpretability
+modified: 2025-10-29 02:15:50 GMT-04:00
 permalinks:
   - /mechinterp
 tags:
   - interpretability
-description: and reverse engineering neural networks.
-date: "2024-10-30"
-abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
-modified: 2025-10-09 09:40:44 GMT-04:00
-aliases:
-  - mechinterp
-  - reveng neural net
 title: mechanistic interpretability
 ---
 

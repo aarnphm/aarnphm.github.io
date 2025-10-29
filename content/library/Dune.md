@@ -1,16 +1,16 @@
 ---
-status: finished
-id: Dune
-subcategory: life
 author: Frank Herbert
-year-finished: 2022
 category: fiction
 date: "2025-10-07"
-modified: 2025-10-25 02:10:59 GMT-04:00
+id: Dune
+modified: 2025-10-29 02:14:29 GMT-04:00
+posters: "[[library/posters/dune.jpg]]"
+status: finished
+subcategory: life
 tags:
   - fiction
-posters: "[[library/posters/dune.jpg]]"
 title: Dune
+year-finished: 2022
 ---
 
 Dune series.

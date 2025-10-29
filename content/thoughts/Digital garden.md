@@ -1,10 +1,10 @@
 ---
+date: "2024-02-09"
 id: Digital garden
+modified: 2025-10-29 02:15:20 GMT-04:00
 tags:
   - seed
   - pattern
-date: "2024-02-09"
-modified: 2025-10-25 12:18:31 GMT-04:00
 title: Digital garden
 ---
 

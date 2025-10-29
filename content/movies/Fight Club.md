@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: buster
+date: "2024-02-07"
+director: David Fincher
 id: fight-club
+modified: 2025-10-29 02:14:50 GMT-04:00
+poster: "[[movies/posters/fight-club.jpg]]"
+status: recurring
+studio: 20th century fox
 tags:
   - movies
   - buster
-studio: 20th century fox
-poster: "[[movies/posters/fight-club.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:09:54 GMT-04:00
-year: 1999
-category: buster
-director: David Fincher
 title: Fight Club
+year: 1999
 ---

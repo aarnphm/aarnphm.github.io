@@ -1,11 +1,11 @@
 ---
+date: "2023-10-18"
+description: the state of being.
 id: play
+modified: 2025-10-29 02:15:51 GMT-04:00
 tags:
   - seed
   - philosophy
-description: the state of being.
-date: "2023-10-18"
-modified: 2025-10-07 18:25:34 GMT-04:00
 title: Play
 ---
 

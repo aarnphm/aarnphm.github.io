@@ -1,14 +1,14 @@
 ---
-status: finished
-id: The Subtle Art of Not Giving a Fuck
 author: Mark Manson
-subcategory: life
 category: non-fiction
 date: "2022-08-21"
-year-finished: 2023
-modified: 2025-10-25 02:15:37 GMT-04:00
+id: The Subtle Art of Not Giving a Fuck
+modified: 2025-10-29 02:14:41 GMT-04:00
+posters: "[[library/posters/the-subtle-art-of-not-giving-a-fuck.jpg]]"
+status: finished
+subcategory: life
 tags:
   - non-fiction
-posters: "[[library/posters/the-subtle-art-of-not-giving-a-fuck.jpg]]"
 title: The Subtle Art of Not Giving a Fuck
+year-finished: 2023
 ---

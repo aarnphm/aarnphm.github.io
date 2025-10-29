@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Come Home To Yourself
 author: Déjà Rae
-subcategory: love
 category: poetry
 date: "2022-08-21"
-modified: 2025-10-25 02:10:44 GMT-04:00
+id: Come Home To Yourself
+modified: 2025-10-29 02:14:27 GMT-04:00
+posters: "[[library/posters/come-home-to-yourself.jpg]]"
+status: to-read
+subcategory: love
 tags:
   - poetry
-posters: "[[library/posters/come-home-to-yourself.jpg]]"
 title: Come Home To Yourself
 ---

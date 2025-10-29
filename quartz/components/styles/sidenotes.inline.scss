@@ -1,90 +1,105 @@
 @use "../../styles/variables.scss" as *;
 
+$sidenote-accent: var(--tertiary);
+$sidenote-secondary: var(--secondary);
+$sidenote-surface: var(--light);
+$sidenote-surface-muted: var(--lightgray);
+$sidenote-border-color: var(--gray);
+$sidenote-width: 20rem;
+$sidenote-spacing: 1rem;
+$sidenote-border-radius: 0.2rem;
+$sidenote-transition:
+  border-color 0.2s ease,
+  background-color 0.2s ease;
+$sidenote-arrow-transition: transform 0.2s ease;
+$sidenote-inline-font-size: 0.9em;
+$sidenote-inline-font-size-mobile: 0.85em;
+$sidenote-code-font-size: 0.85em;
+$sidenote-offset: $sidenote-width + calc(2 * $sidenote-spacing);
+$sidenote-label-border-width: 0.2rem;
+$sidenote-content-border-width: 0.075rem;
+
+@mixin media-query($query) {
+  @media all and #{$query} {
+    @content;
+  }
+}
+
 .sidenote {
-  // hover states for entire sidenote container
+  cursor: pointer;
+
   &:hover {
-    .sidenote-label {
-      border-bottom-color: var(--tertiary);
+    .sidenote-label:not([data-auto]) {
+      border-bottom-color: $sidenote-accent;
       border-bottom-style: solid;
+      background-color: color-mix(in srgb, $sidenote-accent 10%, $sidenote-surface);
     }
 
-    .sidenote-content {
-      border-color: var(--tertiary);
-      background-color: color-mix(in srgb, var(--tertiary) 10%, var(--light));
+    ~ .sidenote-content {
+      border-color: $sidenote-accent;
+      border-style: dashed;
     }
   }
 }
 
-// label styling
 .sidenote-label {
-  border-bottom: 0.2rem dashed var(--tertiary);
+  border-bottom: $sidenote-label-border-width dashed $sidenote-accent;
   position: relative;
-  cursor: default;
-  color: var(--tertiary);
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease;
+  color: $sidenote-accent;
+  transition: $sidenote-transition;
 
-  // auto-generated indicators (no explicit label)
   &[data-auto] {
     border-bottom: none;
   }
 
-  // inline mode cursor
   &[data-inline] {
     cursor: pointer;
-
-    // show arrow only in inline mode
-    .sidenote-arrow {
-      opacity: 1;
-    }
   }
 
-  // rotate arrow when active
-  &.active .sidenote-arrow {
+  &.active .sidenote-arrow-down {
     transform: rotate(180deg);
   }
 }
 
-// SVG arrow styling
 .sidenote-arrow {
-  display: inline-block;
+  display: none;
   margin-left: 0.25em;
   vertical-align: middle;
-  color: var(--tertiary);
-  transition: transform 0.2s ease;
-  opacity: 0;
+  color: $sidenote-accent;
+  transition: $sidenote-arrow-transition;
   pointer-events: none;
+
+  &.sidenote-arrow-down {
+    width: 8px;
+    height: 5px;
+  }
 }
 
-.sidenotes {
-  grid-template-columns: 8/12;
+.sidenote-label[data-inline] .sidenote-arrow-down {
+  display: inline-block;
 }
 
-// content positioning
 .sidenote-content {
   display: none;
   position: absolute;
-  width: 20rem;
+  width: $sidenote-width;
   box-sizing: border-box;
-  border: 0.075rem solid var(--gray);
-  border-radius: 0.2rem;
+  border: $sidenote-content-border-width solid $sidenote-border-color;
+  border-radius: $sidenote-border-radius;
   margin-top: -1.5rem;
-  padding: 1rem;
-  background-color: var(--light);
+  padding: $sidenote-spacing;
+  background-color: $sidenote-surface;
   z-index: 10;
-  font-size: 0.9em;
+  font-size: $sidenote-inline-font-size;
   line-height: 1.5;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease;
+  transition: $sidenote-transition;
 
   &.sidenote-right {
-    right: calc(-1 * (20rem + 1rem));
+    right: -$sidenote-offset;
   }
 
   &.sidenote-left {
-    left: calc(-1 * (20rem + 1rem));
+    left: -$sidenote-offset;
   }
 
   &.sidenote-inline {
@@ -94,7 +109,6 @@
     margin-top: 0.5rem;
   }
 
-  // styling for content elements
   p {
     margin: 0.5rem 0;
 
@@ -108,19 +122,19 @@
   }
 
   a {
-    color: var(--secondary);
+    color: $sidenote-secondary;
     text-decoration: underline;
 
     &:hover {
-      color: var(--tertiary);
+      color: $sidenote-accent;
     }
   }
 
   code {
-    font-size: 0.85em;
+    font-size: $sidenote-code-font-size;
     padding: 0.1em 0.3em;
-    background-color: var(--lightgray);
-    border-radius: 0.2rem;
+    background-color: $sidenote-surface-muted;
+    border-radius: $sidenote-border-radius;
   }
 
   strong {
@@ -130,23 +144,43 @@
   em {
     font-style: italic;
   }
+
+  .sidenote-separator {
+    margin: 0.75rem 0;
+    border: none;
+    border-top: $sidenote-content-border-width solid $sidenote-border-color;
+  }
+
+  .sidenote-linked-notes {
+    margin-top: 0.5rem;
+    font-size: 0.9em;
+    color: $sidenote-secondary;
+    font-style: italic;
+
+    a {
+      color: $sidenote-secondary;
+      text-decoration: underline;
+
+      &:hover {
+        color: $sidenote-accent;
+      }
+    }
+  }
 }
 
-
-// responsive breakpoints
-@media all and ($tablet) {
+@include media-query($tablet) {
   .sidenote-content:not(.sidenote-inline) {
     display: none !important;
   }
 }
 
-@media all and ($mobile) {
+@include media-query($mobile) {
   .sidenote-content:not(.sidenote-inline) {
     display: none !important;
   }
 
   .sidenote-content.sidenote-inline {
     width: 100%;
-    font-size: 0.85em;
+    font-size: $sidenote-inline-font-size-mobile;
   }
 }

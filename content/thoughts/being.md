@@ -1,11 +1,11 @@
 ---
+date: "2024-06-12"
+description: en sein.
 id: being
+modified: 2025-10-29 02:15:41 GMT-04:00
 tags:
   - seed
   - philosophy
-description: en sein.
-date: "2024-06-12"
-modified: 2025-08-09 23:43:27 GMT-04:00
 title: being.
 ---
 

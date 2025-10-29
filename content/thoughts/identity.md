@@ -1,10 +1,10 @@
 ---
+date: "2024-02-19"
+description: on personal identity
 id: identity
+modified: 2025-10-29 02:15:47 GMT-04:00
 tags:
   - philosophy
-description: on personal identity
-date: "2024-02-19"
-modified: 2025-10-04 03:59:35 GMT-04:00
 title: type-identity theory
 ---
 

@@ -1,14 +1,14 @@
 ---
-status: to-read
-id: Existentialism in Social Pedagogy
 author: Søren Kierkegaard
-subcategory: Kierkegaard
-title: Existentialism in Social Pedagogy
+category: philosophy
 date: "2025-10-07"
-modified: 2025-10-25 02:11:10 GMT-04:00
+id: Existentialism in Social Pedagogy
+modified: 2025-10-29 02:14:29 GMT-04:00
+posters: "[[library/posters/existentialism-in-social-pedagogy.jpg]]"
+seealso: "[[thoughts/education]]"
+status: to-read
+subcategory: Kierkegaard
 tags:
   - philosophy
-posters: "[[library/posters/existentialism-in-social-pedagogy.jpg]]"
-category: philosophy
-seealso: "[[thoughts/education]]"
+title: Existentialism in Social Pedagogy
 ---

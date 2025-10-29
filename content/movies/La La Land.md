@@ -1,15 +1,15 @@
 ---
-id: "la-la-land"
-status: "recurring"
+category: thriller
+date: "2024-02-07"
+director: Damien Chazelle
+id: la-la-land
+modified: 2025-10-29 02:14:53 GMT-04:00
+poster: "[[movies/posters/la-la-land.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - thriller
-title: "La La Land"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: La La Land
 year: 2016
-director: "Damien Chazelle"
-category: "thriller"
-studio: "general"
-poster: "[[movies/posters/la-la-land.jpg]]"
 ---

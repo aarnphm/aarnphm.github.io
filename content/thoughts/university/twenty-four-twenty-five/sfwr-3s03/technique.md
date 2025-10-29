@@ -1,10 +1,10 @@
 ---
-id: technique
-tags:
-  - sfwr3s03
 date: "2025-01-14"
 description: and high-level strategies methods
-modified: 2025-01-14 16:02:43 GMT-05:00
+id: technique
+modified: 2025-10-29 02:16:05 GMT-04:00
+tags:
+  - sfwr3s03
 title: Testing techniques
 ---
 

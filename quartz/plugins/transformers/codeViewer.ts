@@ -1,12 +1,12 @@
 import { QuartzTransformerPlugin } from "../types"
-import { ReplaceFunction, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import { Code, Root } from "mdast"
 import { BuildCtx } from "../../util/ctx"
 import path from "path"
 import { FilePath } from "../../util/path"
 import { readFile } from "fs/promises"
-import { visit } from "unist-util-visit"
-import { createWikilinkRegex } from "../../util/wikilinks"
+import { visit, SKIP } from "unist-util-visit"
+import type { Wikilink } from "../../util/wikilinks"
+import type { Parent } from "unist"
 
 type Options = {
   /** File extensions to treat as code files (lowercase, with dot). */
@@ -18,6 +18,7 @@ const DEFAULT_EXTS = new Set<string>([
   ".rs",
   ".go",
   ".c",
+  ".cu",
   ".cc",
   ".cpp",
   ".h",
@@ -48,9 +49,6 @@ const DEFAULT_EXTS = new Set<string>([
   ".rb",
   ".php",
 ])
-
-// Same wikilink regex semantics as OFM; we only care about embed variant here
-const wikilinkRegex = createWikilinkRegex()
 
 function languageFromExt(ext: string): string | undefined {
   const e = ext.replace(/^\./, "").toLowerCase()
@@ -111,6 +109,8 @@ function languageFromExt(ext: string): string | undefined {
       return "ruby"
     case "php":
       return "php"
+    case "cu":
+      return "cuda"
     default:
       return e
   }
@@ -158,35 +158,38 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
       return [
         () => {
           return async (tree: Root, file) => {
-            // Step 1: Replace only embed wikilinks with placeholder code nodes
-            const replacements: [RegExp, string | ReplaceFunction][] = [
-              [
-                wikilinkRegex,
-                //@ts-ignore
-                (value: string, ...capture: string[]) => {
-                  const [rawFp] = capture
-                  const fp = (rawFp ?? "").trim()
-                  if (!value.startsWith("!")) return false
-                  const ext = path.extname(fp).toLowerCase()
-                  if (!ext || !exts.has(ext)) return false
-                  const lang = languageFromExt(ext)
-                  const base = path.posix.basename(fp)
-                  const node: Code = {
-                    type: "code",
-                    lang,
-                    meta: `title="${base}"`,
-                    value: "",
-                    // @ts-expect-error custom data field for later resolution
-                    data: { codeTranscludeTarget: fp },
-                  }
-                  return node
-                },
-              ],
-            ]
+            // Replace embed wikilink nodes with placeholder code blocks so later passes can hydrate
+            visit(tree, "wikilink", (node, index, parent) => {
+              if (index === undefined || !parent) return
+              const wikilinkNode = node as unknown as Wikilink
+              const data = wikilinkNode.data?.wikilink
+              if (!data?.embed) return
 
-            mdastFindReplace(tree, replacements)
+              const fp = (data.target ?? "").trim()
+              if (!fp) return
 
-            // Step 2: Resolve and populate code content
+              const ext = path.extname(fp).toLowerCase()
+              if (!ext || !exts.has(ext)) return
+
+              const lang = languageFromExt(ext)
+              const base = path.posix.basename(fp)
+              const codeNode: Code = {
+                type: "code",
+                lang,
+                meta: `title="${base}"`,
+                value: "",
+              }
+
+              const dataAny = codeNode as unknown as { data?: Record<string, any> }
+              dataAny.data = { ...(dataAny.data ?? {}), codeTranscludeTarget: fp }
+
+              const parentNode = parent as Parent
+              if (!parentNode.children) return
+              parentNode.children.splice(index, 1, codeNode)
+              return [SKIP, index]
+            })
+
+            // Resolve and populate code content
             const promises: Promise<void>[] = []
             visit(tree, "code", (node: Code) => {
               const dataAny = node as unknown as { data?: Record<string, any> }

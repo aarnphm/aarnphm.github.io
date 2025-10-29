@@ -1,9 +1,9 @@
 ---
+date: "2024-12-09"
 id: Convolutional Neural Network
+modified: 2025-10-29 02:16:08 GMT-04:00
 tags:
   - sfwr4ml3
-date: "2024-12-09"
-modified: 2024-12-14 07:43:34 GMT-05:00
 title: Convolutional Neural Network
 ---
 

@@ -1,10 +1,10 @@
 ---
-id: Memetics Theory
-tags:
-  - philosophy
 date: "2025-06-16"
 description: and cultural philosophy
-modified: 2025-06-16 19:26:40 GMT-04:00
+id: Memetics Theory
+modified: 2025-10-29 02:15:28 GMT-04:00
+tags:
+  - philosophy
 title: Memetics Theory
 ---
 

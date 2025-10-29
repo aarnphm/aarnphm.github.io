@@ -1,13 +1,13 @@
 ---
+date: "2025-09-10"
+description: 2/n some more notes on EAGLE and MTP
 id: notes
+modified: 2025-10-29 02:14:23 GMT-04:00
+socials:
+  youtube: https://youtu.be/sSdoETRQQHY
 tags:
   - seed
   - workshop
-description: 2/n some more notes on EAGLE and MTP
-date: "2025-09-10"
-socials:
-  youtube: https://youtu.be/sSdoETRQQHY
-modified: 2025-09-17 12:23:41 GMT-04:00
 title: supplement to 0.41
 transclude:
   title: false

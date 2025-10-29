@@ -1,18 +1,18 @@
 ---
+abstract: I want to think about my life as being RLHF by the people I surround myself with. As such, we populate our concept of the world around them. This is a list of people that inspire me to be my best-self at all times.
+aliases:
+  - thanks
+  - cool people
+comments: false
+date: "2024-01-23"
+description: a thank you letter.
 id: influence
+modified: 2025-10-29 02:14:22 GMT-04:00
 permalinks:
   - /thanks
 tags:
   - growth
   - love
-description: a thank you letter.
-date: "2024-01-23"
-aliases:
-  - thanks
-  - cool people
-abstract: I want to think about my life as being RLHF by the people I surround myself with. As such, we populate our concept of the world around them. This is a list of people that inspire me to be my best-self at all times.
-modified: 2025-10-01 17:11:09 GMT-04:00
-comments: false
 title: affecter.
 ---
 

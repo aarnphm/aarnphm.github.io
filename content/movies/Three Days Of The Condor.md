@@ -1,14 +1,14 @@
 ---
-id: "three-days-of-the-condor"
-status: "to-watch"
+category: general
+date: "2024-02-07"
+director: sydney pollack
+id: three-days-of-the-condor
+modified: 2025-10-29 02:15:01 GMT-04:00
+poster: "[[movies/posters/three-days-of-the-condor.jpg]]"
+status: to-watch
+studio: general
 tags:
   - movies
-title: "Three Days of the Condor"
-date: "2024-02-07"
-modified: "2025-10-16 16:43:59 GMT-04:00"
+title: Three Days of the Condor
 year: 1975
-director: "sydney pollack"
-category: "general"
-studio: "general"
-poster: "[[movies/posters/three-days-of-the-condor.jpg]]"
 ---

@@ -1,15 +1,15 @@
 ---
-id: "saving-private-ryan"
-status: "recurring"
+category: buster
+date: "2024-02-07"
+director: Steven Spielberg
+id: saving-private-ryan
+modified: 2025-10-29 02:14:56 GMT-04:00
+poster: "[[movies/posters/saving-private-ryan.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - buster
-title: "Saving Private Ryan"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Saving Private Ryan
 year: 1998
-director: "Steven Spielberg"
-category: "buster"
-studio: "general"
-poster: "[[movies/posters/saving-private-ryan.jpg]]"
 ---

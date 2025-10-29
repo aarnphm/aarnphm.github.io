@@ -1,10 +1,10 @@
 ---
+date: "2023-12-06"
 id: Equations
+modified: 2025-10-29 02:16:13 GMT-04:00
 tags:
   - fruit
   - swfr4x03
-date: "2023-12-06"
-modified: 2025-09-18 18:34:29 GMT-04:00
 title: ODEs, Polynomials approx., Linear Least Squares, and Errors
 ---
 

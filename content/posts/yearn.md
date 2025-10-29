@@ -1,16 +1,16 @@
 ---
+cssclasses:
+  - casesense
+date: "2025-10-21"
+description: on yearning.
 id: yearn
+modified: 2025-10-29 02:15:13 GMT-04:00
+socials:
+  substack: https://livingalonealone.com/p/in-case-i-fall-for-you?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false
 tags:
   - growth
   - fruit
-description: on yearning.
-date: "2025-10-21"
-socials:
-  substack: https://livingalonealone.com/p/in-case-i-fall-for-you?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false
-modified: 2025-10-23 03:03:46 GMT-04:00
 title: in case i fall for you.
-cssclasses:
-  - casesense
 ---
 
 if you're asleep, i hope this finds you drifting softly among the stars, dreaming about the life you want to live, feeling that quiet pull of what you long to do. i hope you find solace in the small things—how you know yourself best—and protect your peace, gently, against whatever currents try to pull you under.

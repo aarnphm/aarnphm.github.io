@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: The Phenomenology of Spirit
 author: G. W. F. Hegel
-subcategory: being
-title: The Phenomenology of Spirit
+category: philosophy
 date: "2025-09-18"
-modified: 2025-10-25 02:15:15 GMT-04:00
+id: The Phenomenology of Spirit
+modified: 2025-10-29 02:14:40 GMT-04:00
+posters: "[[library/posters/the-phenomenology-of-spirit.jpg]]"
+status: to-read
+subcategory: being
 tags:
   - philosophy
-posters: "[[library/posters/the-phenomenology-of-spirit.jpg]]"
-category: philosophy
+title: The Phenomenology of Spirit
 ---

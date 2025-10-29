@@ -1,15 +1,15 @@
 ---
-status: finished
-id: Pretentiousness
 author: Dan Fox
-subcategory: being
-title: "Pretentiousness: Why it Matters"
+category: non-fiction
 date: "2025-10-07"
-year-finished: 2023
-modified: 2025-10-25 02:13:19 GMT-04:00
+id: Pretentiousness
+modified: 2025-10-29 02:14:35 GMT-04:00
+posters: "[[library/posters/pretentiousness.jpg]]"
+seealso: "[[thoughts/fashion#pretentious.]]"
+status: finished
+subcategory: being
 tags:
   - non-fiction
-posters: "[[library/posters/pretentiousness.jpg]]"
-category: non-fiction
-seealso: "[[thoughts/fashion#pretentious.]]"
+title: "Pretentiousness: Why it Matters"
+year-finished: 2023
 ---

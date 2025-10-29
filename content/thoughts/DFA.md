@@ -1,10 +1,10 @@
 ---
+date: "2024-01-12"
 id: DFA
+modified: 2025-10-29 02:15:20 GMT-04:00
 tags:
   - sfwr2fa3
   - math
-date: "2024-01-12"
-modified: 2025-03-18 15:39:31 GMT-04:00
 title: Deterministic Finite Automata
 ---
 

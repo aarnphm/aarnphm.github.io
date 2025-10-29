@@ -1,13 +1,13 @@
 ---
-id: Simone
-tags:
-  - friend
 date: "2024-12-27"
 description: and a year of reconnection.
-modified: 2025-01-20 05:57:19 GMT-05:00
+id: Simone
+modified: 2025-10-29 02:15:08 GMT-04:00
 noindex: true
 pageLayout: letter
 signature: with warmth and friendship - Aaron.
+tags:
+  - friend
 title: to simone
 ---
 

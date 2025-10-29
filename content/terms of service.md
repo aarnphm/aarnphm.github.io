@@ -1,14 +1,14 @@
 ---
-id: terms of service
-tags:
-  - evergreen
 date: "2025-02-21"
 description: for Stripe, but shouldn't affect general sites interaction
-modified: 2025-02-21 15:29:59 GMT-05:00
+id: terms of service
+modified: 2025-10-29 02:15:15 GMT-04:00
 noindex: true
 pageLayout: technical
 permalinks:
   - /tos
+tags:
+  - evergreen
 title: Terms of Service
 ---
 

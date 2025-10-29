@@ -1,10 +1,10 @@
 ---
+date: "2024-01-11"
 id: deep learning
+modified: 2025-10-29 02:15:43 GMT-04:00
 tags:
   - ml
   - framework
-date: "2024-01-11"
-modified: 2025-01-20 02:59:01 GMT-05:00
 title: deep learning
 ---
 

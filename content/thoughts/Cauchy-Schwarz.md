@@ -1,10 +1,10 @@
 ---
-id: Cauchy-Schwarz
-tags:
-  - math
 date: "2024-11-05"
 description: useful for derive upper bounds, e.g when analysing the error or convergence rate of an algorithm
-modified: 2025-01-29 08:10:36 GMT-05:00
+id: Cauchy-Schwarz
+modified: 2025-10-29 02:15:17 GMT-04:00
+tags:
+  - math
 title: Cauchy-Schwarz
 ---
 

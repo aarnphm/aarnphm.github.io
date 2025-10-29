@@ -1,14 +1,14 @@
 ---
-status: finished
-id: On The Genealogy of Morals
-subcategory: Nietzsche
 author: Friedrich Nietzsche
-year-finished: 2025
-title: On The Genealogy of Morals
+category: philosophy
 date: "2025-08-13"
-modified: 2025-10-25 02:12:59 GMT-04:00
+id: On The Genealogy of Morals
+modified: 2025-10-29 02:14:34 GMT-04:00
+posters: "[[library/posters/on-the-genealogy-of-morals.jpg]]"
+status: finished
+subcategory: Nietzsche
 tags:
   - philosophy
-posters: "[[library/posters/on-the-genealogy-of-morals.jpg]]"
-category: philosophy
+title: On The Genealogy of Morals
+year-finished: 2025
 ---

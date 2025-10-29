@@ -1,15 +1,15 @@
 ---
-id: "whiplash"
-status: "recurring"
+category: thriller
+date: "2024-02-07"
+director: Damien Chazelle
+id: whiplash
+modified: 2025-10-29 02:15:06 GMT-04:00
+poster: "[[movies/posters/whiplash.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - thriller
-title: "Whiplash"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Whiplash
 year: 2014
-director: "Damien Chazelle"
-category: "thriller"
-studio: "general"
-poster: "[[movies/posters/whiplash.jpg]]"
 ---

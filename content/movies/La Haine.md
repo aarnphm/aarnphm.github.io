@@ -1,16 +1,16 @@
 ---
-id: "la-haine"
-status: "finished"
+category: general
+date: "2024-02-07"
+director: Mathieu Kassovitz
+id: la-haine
+modified: 2025-10-29 02:14:52 GMT-04:00
+poster: "[[movies/posters/la-haine.jpg]]"
+rating: 8.1
+status: finished
+studio: general
 tags:
   - movies
-title: "La Haine"
-date: "2024-02-07"
-modified: "2025-10-16 16:39:12 GMT-04:00"
-year: 1995
-director: "Mathieu Kassovitz"
-category: "general"
-studio: "general"
-poster: "[[movies/posters/la-haine.jpg]]"
+title: La Haine
 watched-date: "2024-02-10"
-rating: 8.1
+year: 1995
 ---

@@ -1,11 +1,11 @@
 ---
+date: "2024-04-15"
+description: review in 2023-2024
 id: finals
+modified: 2025-10-29 02:16:01 GMT-04:00
 tags:
   - sfwr2fa3
-date: 2024-04-15
-modified: 2025-04-24 16:13:41 GMT-04:00
 title: finals
-description: review in 2023-2024
 ---
 
 $$

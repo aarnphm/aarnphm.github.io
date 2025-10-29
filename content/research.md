@@ -1,14 +1,14 @@
 ---
+date: "2025-08-12"
+description: and my interests.
 id: research
+modified: 2025-10-29 02:15:14 GMT-04:00
 tags:
   - fruit
-description: and my interests.
+title: research
 transclude:
   dynalist: false
   title: false
-date: "2025-08-12"
-modified: 2025-10-11 23:05:42 GMT-04:00
-title: research
 ---
 
 I would like to do research at some point. I'm interested in [[thoughts/mechanistic interpretability|emergent properties]] in [[/tags/ml|ML]] system.

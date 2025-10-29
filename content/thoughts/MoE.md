@@ -1,12 +1,12 @@
 ---
+date: "2025-08-13"
+description: Mixture of Expert
 id: MoE
+modified: 2025-10-29 02:15:29 GMT-04:00
 tags:
   - seed
   - ml
   - serving
-description: Mixture of Expert
-date: "2025-08-13"
-modified: 2025-10-17 23:35:30 GMT-04:00
 title: MoE
 ---
 

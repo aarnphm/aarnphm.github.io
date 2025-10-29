@@ -1,15 +1,15 @@
 ---
-id: "the-defiant-ones"
-status: "recurring"
+category: vintage
+date: "2024-02-07"
+director: Stanley Kramer
+id: the-defiant-ones
+modified: 2025-10-29 02:14:57 GMT-04:00
+poster: "[[movies/posters/the-defiant-ones.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - vintage
-title: "The Defiant Ones"
-date: "2024-02-07"
-modified: "2025-10-16 16:43:59 GMT-04:00"
+title: The Defiant Ones
 year: 1958
-director: "Stanley Kramer"
-category: "vintage"
-studio: "general"
-poster: "[[movies/posters/the-defiant-ones.jpg]]"
 ---

@@ -1,11 +1,11 @@
 ---
+date: "2025-08-12"
+description: inference overview
 id: notes
+modified: 2025-10-29 02:14:22 GMT-04:00
 tags:
   - seed
   - workshop
-description: inference overview
-date: "2025-08-12"
-modified: 2025-09-11 18:13:56 GMT-04:00
 title: supplement to 0.1
 ---
 

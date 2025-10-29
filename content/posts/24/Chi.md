@@ -1,13 +1,13 @@
 ---
-id: Chi
-tags:
-  - friend
 date: "2024-12-27"
 description: an unexpected turn of events.
-modified: 2024-12-31 16:11:04 GMT-05:00
+id: Chi
+modified: 2025-10-29 02:15:07 GMT-04:00
 noindex: true
 pageLayout: letter
 signature: with love and prosperity - Aaron
+tags:
+  - friend
 title: to chi
 ---
 

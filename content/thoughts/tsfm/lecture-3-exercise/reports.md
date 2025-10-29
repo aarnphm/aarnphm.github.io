@@ -1,12 +1,12 @@
 ---
+date: "2025-09-13"
+description: and documentation of learning procedure.
 id: reports
+modified: 2025-10-29 02:15:56 GMT-04:00
 tags:
   - technical
   - ml
   - vllm
-description: and documentation of learning procedure.
-date: "2025-09-13"
-modified: 2025-10-17 19:45:43 GMT-04:00
 title: assignment three reports.
 ---
 

@@ -1,16 +1,16 @@
 ---
-status: to-read
-id: RISIBLES AMOURS
 author: Milan Kundera
-subcategory: being
 category: philosophy
 date: "2025-10-06"
-modified: 2025-10-25 02:13:38 GMT-04:00
+id: RISIBLES AMOURS
+modified: 2025-10-29 02:14:35 GMT-04:00
+posters: "[[library/posters/risibles-amours.jpg]]"
+status: to-read
+subcategory: being
 tags:
   - philosophy
-posters: "[[library/posters/risibles-amours.jpg]]"
-year-published: 1986
 title: RISIBLES AMOURS
+year-published: 1986
 ---
 
 French edition, 1986.

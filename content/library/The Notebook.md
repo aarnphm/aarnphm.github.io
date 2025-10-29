@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: The Notebook
 author: Roland Allen
-subcategory: progress
 category: non-fiction
 date: "2025-10-07"
-modified: 2025-10-25 02:15:08 GMT-04:00
+id: The Notebook
+modified: 2025-10-29 02:14:40 GMT-04:00
+posters: "[[library/posters/the-notebook.jpg]]"
+status: to-read
+subcategory: progress
 tags:
   - non-fiction
-posters: "[[library/posters/the-notebook.jpg]]"
 title: "The Notebook: A History of Thinking on Paper"
 ---

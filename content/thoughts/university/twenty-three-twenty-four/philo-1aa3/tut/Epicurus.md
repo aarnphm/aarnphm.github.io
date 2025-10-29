@@ -1,9 +1,10 @@
 ---
+date: "2023-09-11"
 id: Epicurus
+modified: 2025-10-29 02:16:17 GMT-04:00
 tags:
   - philos1aa3
 title: Epicurus's Hedonism and Materialism
-date: 2023-09-11
 ---
 
 # Materialism

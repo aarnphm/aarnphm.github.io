@@ -1,9 +1,9 @@
 ---
+date: "2025-09-15"
 id: affine transformation
+modified: 2025-10-29 02:15:39 GMT-04:00
 tags:
   - seed
-date: "2025-09-15"
-modified: 2025-09-15 15:55:00 GMT-04:00
 title: affine transformation
 ---
 

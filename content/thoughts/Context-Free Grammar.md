@@ -1,9 +1,9 @@
 ---
+date: "2025-04-22"
 id: Context-Free Grammar
+modified: 2025-10-29 02:15:19 GMT-04:00
 tags:
   - math
-date: 2025-04-22
-modified: 2025-04-24 16:13:41 GMT-04:00
 title: Context-Free Grammar
 ---
 

@@ -1,18 +1,18 @@
 ---
-id: Vietnamese poem
 aliases:
   - viet-poem
   - vietnam
-tags:
-  - seed
-  - poem
 date: "2024-11-18"
 description: dedicated to my roots, Vietnamese born.
+id: Vietnamese poem
 lang: vi-VN
-modified: "2024-11-18"
+modified: 2025-10-29 02:15:38 GMT-04:00
 noindex: true
 permalinks:
   - /vietnam
+tags:
+  - seed
+  - poem
 title: Vietnamese poem
 transclude:
   dynalist: false

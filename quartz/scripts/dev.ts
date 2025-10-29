@@ -103,7 +103,7 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
   if (force) {
     pnpmDevArgs.push("--force")
   }
-  const wranglerArgs = ["dlx", "wrangler", "dev", "--port", String(wranglerPort)]
+  const wranglerArgs = ["dlx", "wrangler", "dev", "--port", String(wranglerPort), "--live-reload"]
   const pnpmDevRetryLimit = retry ?? 2
   return {
     port: effectivePort,

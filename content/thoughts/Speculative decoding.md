@@ -1,12 +1,12 @@
 ---
+date: "2025-05-21"
+description: a method to speed up LLM decoding
 id: Speculative decoding
+modified: 2025-10-29 02:15:35 GMT-04:00
 tags:
   - ml
   - serving
   - technical
-description: a method to speed up LLM decoding
-date: "2025-05-21"
-modified: 2025-10-24 09:10:10 GMT-04:00
 title: Speculative decoding
 ---
 

@@ -1,14 +1,14 @@
 ---
-status: to-watch
+category: general
+date: "2024-02-07"
+director: Paul Thomas Anderson
 id: there-will-be-blood
+modified: 2025-10-29 02:15:01 GMT-04:00
+poster: "[[movies/posters/there-will-be-blood.jpg]]"
+status: to-watch
+studio: paul thomas anderson
 tags:
   - movies
-studio: paul thomas anderson
-poster: "[[movies/posters/there-will-be-blood.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 19:58:25 GMT-04:00
-year: 2007
-category: general
-director: Paul Thomas Anderson
 title: There Will Be Blood
+year: 2007
 ---

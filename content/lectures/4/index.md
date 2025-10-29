@@ -1,12 +1,12 @@
 ---
+created: "2025-09-05"
+date: "2025-09-05"
+description: Speculative decoding (1/n)
 id: index
+modified: 2025-10-29 02:14:23 GMT-04:00
 tags:
   - seed
   - ml
-description: Speculative decoding (1/n)
-date: "2025-09-05"
-created: "2025-09-05"
-modified: 2025-09-18 15:52:48 GMT-04:00
 title: 0[dot]4
 ---
 

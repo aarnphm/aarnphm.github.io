@@ -1,9 +1,9 @@
 ---
+date: "2025-10-04"
 id: Negation
+modified: 2025-10-29 02:15:30 GMT-04:00
 tags:
   - seed
   - philosophy
-date: "2025-10-04"
-modified: 2025-10-04 07:59:08 GMT-04:00
 title: Negation
 ---

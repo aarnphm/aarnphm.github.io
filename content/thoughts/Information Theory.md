@@ -1,10 +1,10 @@
 ---
-id: Information Theory
-tags:
-  - seed
 date: "2024-01-20"
 description: a la carte.
-modified: 2024-12-17 16:54:55 GMT-05:00
+id: Information Theory
+modified: 2025-10-29 02:15:25 GMT-04:00
+tags:
+  - seed
 title: Information Theory
 ---
 

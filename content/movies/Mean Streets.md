@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: martin scorsese
+date: "2024-02-07"
+director: Martin Scorsese
 id: mean-streets
+modified: 2025-10-29 02:14:53 GMT-04:00
+poster: "[[movies/posters/mean-streets.jpg]]"
+status: recurring
+studio: martin scorsese
 tags:
   - movies
   - martin-scorsese
-studio: martin scorsese
-poster: "[[movies/posters/mean-streets.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:11:22 GMT-04:00
-year: 1973
-category: martin scorsese
-director: Martin Scorsese
 title: Mean Streets
+year: 1973
 ---

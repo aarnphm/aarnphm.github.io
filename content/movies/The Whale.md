@@ -1,15 +1,15 @@
 ---
-id: "the-whale"
-status: "recurring"
+category: a24
+date: "2024-02-07"
+director: Darren Aronofsky
+id: the-whale
+modified: 2025-10-29 02:15:00 GMT-04:00
+poster: "[[movies/posters/the-whale.jpg]]"
+status: recurring
+studio: a24
 tags:
   - movies
   - a24
-title: "The Whale"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: The Whale
 year: 2023
-director: "Darren Aronofsky"
-category: "a24"
-studio: "a24"
-poster: "[[movies/posters/the-whale.jpg]]"
 ---

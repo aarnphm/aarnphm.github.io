@@ -1,14 +1,14 @@
 ---
-status: finished
-id: Symposium
-subcategory: Plato
 author: Plato
-year-finished: 2023
-title: Symposium
+category: philosophy
 date: "2022-08-21"
-modified: 2025-10-25 02:13:57 GMT-04:00
+id: Symposium
+modified: 2025-10-29 02:14:36 GMT-04:00
+posters: "[[library/posters/symposium.jpg]]"
+status: finished
+subcategory: Plato
 tags:
   - philosophy
-posters: "[[library/posters/symposium.jpg]]"
-category: philosophy
+title: Symposium
+year-finished: 2023
 ---

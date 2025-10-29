@@ -1,12 +1,12 @@
 ---
+date: "2025-09-04"
+description: This exercise focuses on understanding and optimizing a Byte Pair Encoding (BPE) tokenizer.
 id: index
+modified: 2025-10-29 02:15:56 GMT-04:00
 tags:
   - seed
   - ml
   - tsfm
-description: This exercise focuses on understanding and optimizing a Byte Pair Encoding (BPE) tokenizer.
-date: "2025-09-04"
-modified: 2025-09-19 12:21:20 GMT-04:00
 title: tokenization and computation
 ---
 

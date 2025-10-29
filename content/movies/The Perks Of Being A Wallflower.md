@@ -1,14 +1,14 @@
 ---
-id: "the-perks-of-being-a-wallflower"
-status: "to-watch"
+category: general
+date: "2024-02-07"
+director: stephen chbosky
+id: the-perks-of-being-a-wallflower
+modified: 2025-10-29 02:14:59 GMT-04:00
+poster: "[[movies/posters/the-perks-of-being-a-wallflower.jpg]]"
+status: to-watch
+studio: general
 tags:
   - movies
-title: "The Perks of Being a Wallflower"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: The Perks of Being a Wallflower
 year: 2012
-director: "stephen chbosky"
-category: "general"
-studio: "general"
-poster: "[[movies/posters/the-perks-of-being-a-wallflower.jpg]]"
 ---

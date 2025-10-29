@@ -1,16 +1,16 @@
 ---
-status: recurring
+category: vintage
+date: "2024-02-07"
+director: Martin Scorsese
 id: goodfellas
+modified: 2025-10-29 02:15:04 GMT-04:00
+poster: "[[movies/posters/goodfellas.jpg]]"
+status: recurring
+studio: warner bros
 tags:
   - movies
   - vintage
   - martin-scorsese
-studio: warner bros
-poster: "[[movies/posters/goodfellas.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:13:02 GMT-04:00
-year: 1990
-category: vintage
-director: Martin Scorsese
 title: Goodfellas
+year: 1990
 ---

@@ -1,9 +1,9 @@
 ---
+date: "2025-10-04"
+description: all templates-related files here
 id: index
+modified: 2025-10-29 02:15:15 GMT-04:00
 tags:
   - seed
-description: all templates-related files here
-date: "2025-10-04"
-modified: 2025-10-04 22:13:18 GMT-04:00
 title: templates
 ---

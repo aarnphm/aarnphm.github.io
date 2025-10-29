@@ -1,9 +1,9 @@
 ---
+date: "2024-09-09"
 id: Keys and Foreign Keys
+modified: 2025-10-29 02:16:02 GMT-04:00
 tags:
   - sfwr3db3
-date: "2024-09-09"
-modified: 2024-12-13 04:15:37 GMT-05:00
 title: Foreign Keys and Relational Models
 ---
 

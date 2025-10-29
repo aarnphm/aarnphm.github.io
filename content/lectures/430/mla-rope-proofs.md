@@ -1,10 +1,10 @@
 ---
+date: "2025-10-17"
 id: mla-rope-proofs
+modified: 2025-10-29 02:14:25 GMT-04:00
 tags:
   - ml
   - seed
-date: "2025-10-17"
-modified: 2025-10-17 16:05:41 GMT-04:00
 title: proof et al.
 ---
 

@@ -1,9 +1,9 @@
 ---
+date: "2024-12-14"
 id: Ramp loss
+modified: 2025-10-29 02:15:33 GMT-04:00
 tags:
   - ml
-date: "2024-12-14"
-modified: 2024-12-14 03:39:50 GMT-05:00
 title: Ramp loss
 ---
 

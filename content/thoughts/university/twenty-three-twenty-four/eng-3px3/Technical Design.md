@@ -1,8 +1,9 @@
 ---
+date: "2024-01-25"
 id: Technical Design
+modified: 2025-10-29 02:16:14 GMT-04:00
 tags:
   - eng3px3
-date: "2024-01-25"
 title: Technical Design
 ---
 

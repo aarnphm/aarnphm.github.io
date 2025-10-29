@@ -1,12 +1,12 @@
 ---
+date: "2025-10-23"
+description: and a simple inference engine loop
 id: index
+modified: 2025-10-29 02:15:56 GMT-04:00
 tags:
   - seed
   - ml
   - tsfm
-description: and a simple inference engine loop
-date: "2025-10-23"
-modified: 2025-10-23 20:24:23 GMT-04:00
 title: nanovllm
 ---
 

@@ -1,11 +1,11 @@
 ---
+date: "2025-08-07"
+description: scaling long-context generations
 id: RoPE
+modified: 2025-10-29 02:15:34 GMT-04:00
 tags:
   - ml
   - seed
-description: scaling long-context generations
-date: "2025-08-07"
-modified: 2025-08-12 11:53:32 GMT-04:00
 title: RoPE
 ---
 

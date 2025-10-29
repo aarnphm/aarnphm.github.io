@@ -1,15 +1,15 @@
 ---
-status: current
-id: Capitalism and Freedom
-subcategory: economic
 author: Milton Friedman
-description: how do we think about jobs and money
 category: non-fiction
 date: "2024-11-27"
-modified: 2025-10-25 02:10:41 GMT-04:00
+description: how do we think about jobs and money
+id: Capitalism and Freedom
+modified: 2025-10-29 02:14:27 GMT-04:00
+posters: "[[library/posters/capitalism-and-freedom.jpg]]"
+status: current
+subcategory: economic
 tags:
   - economic
-posters: "[[library/posters/capitalism-and-freedom.jpg]]"
 title: Capitalism and Freedom
 ---
 

@@ -1,11 +1,11 @@
 ---
+date: "2025-01-06"
+description: finance go brrr
 id: index
+modified: 2025-10-29 02:15:57 GMT-04:00
 tags:
   - university
   - commerce3fi3
-description: finance go brrr
-date: "2025-01-06"
-modified: 2025-09-08 12:02:35 GMT-04:00
 title: Market Trading with Options and Securities
 ---
 

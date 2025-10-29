@@ -1,10 +1,10 @@
 ---
+date: "2025-10-09"
 id: supply chain management
+modified: 2025-10-29 02:15:58 GMT-04:00
+noindex: true
 tags:
   - commerce4qa3
-date: "2025-10-09"
-modified: 2025-10-24 08:43:13 GMT-04:00
-noindex: true
 title: supply chain management
 ---
 

@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Sea of Tranquility
 author: Emily St. John Mandel
-subcategory: love
 category: fiction
 date: "2025-03-05"
-modified: 2025-10-25 02:13:47 GMT-04:00
+id: Sea of Tranquility
+modified: 2025-10-29 02:14:36 GMT-04:00
+posters: "[[library/posters/sea-of-tranquility.jpg]]"
+status: to-read
+subcategory: love
 tags:
   - fiction
-posters: "[[library/posters/sea-of-tranquility.jpg]]"
 title: Sea of Tranquility
 ---

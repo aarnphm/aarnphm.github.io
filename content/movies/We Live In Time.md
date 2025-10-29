@@ -1,15 +1,15 @@
 ---
-id: "we-live-in-time"
-status: "recurring"
+category: a24
+date: "2024-02-07"
+director: John Crowley
+id: we-live-in-time
+modified: 2025-10-29 02:15:02 GMT-04:00
+poster: "[[movies/posters/we-live-in-time.jpg]]"
+status: recurring
+studio: a24
 tags:
   - movies
   - a24
-title: "We Live In Time"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: We Live In Time
 year: 2024
-director: "John Crowley"
-category: "a24"
-studio: "a24"
-poster: "[[movies/posters/we-live-in-time.jpg]]"
 ---

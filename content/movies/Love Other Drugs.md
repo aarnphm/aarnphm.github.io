@@ -1,16 +1,16 @@
 ---
-id: "love-other-drugs"
-status: "finished"
+category: general
+date: "2024-02-07"
+director: Edward Zwick
+id: love-other-drugs
+modified: 2025-10-29 02:14:52 GMT-04:00
+poster: "[[movies/posters/love-other-drugs.jpg]]"
+rating: 6.7
+status: finished
+studio: 20th century fox
 tags:
   - movies
-title: "Love & Other Drugs"
-date: "2024-02-07"
-modified: "2025-10-16 16:39:12 GMT-04:00"
-year: 2010
-director: "Edward Zwick"
-category: "general"
-studio: "20th century fox"
-poster: "[[movies/posters/love-other-drugs.jpg]]"
+title: Love & Other Drugs
 watched-date: "2024-02-25"
-rating: 6.7
+year: 2010
 ---

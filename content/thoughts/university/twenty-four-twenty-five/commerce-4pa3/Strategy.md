@@ -1,10 +1,10 @@
 ---
-id: Strategy
-tags:
-  - commerce4pa3
 date: "2025-01-15"
 description: and competitive force shaping strategy
-modified: 2025-01-15 05:44:08 GMT-05:00
+id: Strategy
+modified: 2025-10-29 02:15:59 GMT-04:00
+tags:
+  - commerce4pa3
 title: Strategy
 ---
 

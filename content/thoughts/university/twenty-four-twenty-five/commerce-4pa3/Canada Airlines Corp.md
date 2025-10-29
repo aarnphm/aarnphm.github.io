@@ -1,10 +1,10 @@
 ---
-id: Canada Airlines Corp
-tags:
-  - commerce4pa3
 date: "2025-01-22"
 description: a case study.
-modified: 2025-03-21 06:33:50 GMT-04:00
+id: Canada Airlines Corp
+modified: 2025-10-29 02:15:58 GMT-04:00
+tags:
+  - commerce4pa3
 title: Canada Airlines Corp
 ---
 

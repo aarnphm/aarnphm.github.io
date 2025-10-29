@@ -1,11 +1,11 @@
 ---
+date: "2024-10-02"
+description: observations which are dependent on given Markov process.
 id: Hidden Markov model
+modified: 2025-10-29 02:15:24 GMT-04:00
 tags:
   - seed
   - ml
-date: "2024-10-02"
-description: observations which are dependent on given Markov process.
-modified: 2024-12-24 09:42:34 GMT-05:00
 title: Hidden Markov model
 ---
 

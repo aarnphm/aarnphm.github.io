@@ -1,15 +1,15 @@
 ---
-id: "midnight-run"
-status: "recurring"
+category: vintage
+date: "2024-02-07"
+director: Martin Brest
+id: midnight-run
+modified: 2025-10-29 02:14:54 GMT-04:00
+poster: "[[movies/posters/midnight-run.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - vintage
-title: "Midnight Run"
-date: "2024-02-07"
-modified: "2025-10-16 16:43:59 GMT-04:00"
+title: Midnight Run
 year: 1988
-director: "Martin Brest"
-category: "vintage"
-studio: "general"
-poster: "[[movies/posters/midnight-run.jpg]]"
 ---

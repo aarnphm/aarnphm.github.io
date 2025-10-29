@@ -1,16 +1,16 @@
 ---
-status: current
-id: Tractatus Logico-Philosophicus
 author: Ludwig Wittgenstein
-subcategory: Wittgenstein
 category: philosophy
 date: "2025-10-07"
-modified: 2025-10-25 02:16:07 GMT-04:00
+id: Tractatus Logico-Philosophicus
+modified: 2025-10-29 02:14:43 GMT-04:00
+posters: "[[library/posters/tractatus-logico-philosophicus.jpg]]"
+seealso: "[[thoughts/Tractatus]]"
+status: current
+subcategory: Wittgenstein
 tags:
   - philosophy
-posters: "[[library/posters/tractatus-logico-philosophicus.jpg]]"
 title: Tractatus Logico-Philosophicus
-seealso: "[[thoughts/Tractatus]]"
 ---
 
 ![[thoughts/Tractatus#architectural skeleton|structure of TLP]]

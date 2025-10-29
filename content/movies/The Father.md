@@ -1,14 +1,14 @@
 ---
-id: "the-father"
-status: "to-watch"
+category: general
+date: "2024-02-07"
+director: Florian Zeller
+id: the-father
+modified: 2025-10-29 02:14:57 GMT-04:00
+poster: "[[movies/posters/the-father.jpg]]"
+status: to-watch
+studio: general
 tags:
   - movies
-title: "The Father"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: The Father
 year: 2020
-director: "Florian Zeller"
-category: "general"
-studio: "general"
-poster: "[[movies/posters/the-father.jpg]]"
 ---

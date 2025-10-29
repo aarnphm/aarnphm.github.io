@@ -1,9 +1,10 @@
 ---
+date: "2024-03-25"
 id: attractor
+modified: 2025-10-29 02:15:41 GMT-04:00
 tags:
   - math
   - seed
-date: "2024-03-25"
 title: Attractor
 ---
 

@@ -1,15 +1,15 @@
 ---
-id: "never-say-never-again"
-status: "recurring"
+category: bond
+date: "2024-02-07"
+director: Irvin Kershner
+id: never-say-never-again
+modified: 2025-10-29 02:14:53 GMT-04:00
+poster: "[[movies/posters/never-say-never-again.jpg]]"
+status: recurring
+studio: bond
 tags:
   - movies
   - bond
-title: "Never Say Never Again"
-date: "2024-02-07"
-modified: "2025-10-16 16:43:59 GMT-04:00"
+title: Never Say Never Again
 year: 1983
-director: "Irvin Kershner"
-category: "bond"
-studio: "bond"
-poster: "[[movies/posters/never-say-never-again.jpg]]"
 ---

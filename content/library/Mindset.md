@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Mindset
 author: Dr. Carol S. Dweck
-subcategory: productivity
 category: non-fiction
 date: "2024-12-23"
-modified: 2025-10-25 02:12:43 GMT-04:00
+id: Mindset
+modified: 2025-10-29 02:14:32 GMT-04:00
+posters: "[[library/posters/mindset.jpg]]"
+status: to-read
+subcategory: productivity
 tags:
   - non-fiction
-posters: "[[library/posters/mindset.jpg]]"
 title: Mindset
 ---

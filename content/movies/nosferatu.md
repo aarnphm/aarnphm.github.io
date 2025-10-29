@@ -1,14 +1,14 @@
 ---
-id: "nosferatu"
-status: "to-watch"
+category: general
+date: "2024-02-07"
+director: Robert Eggers
+id: nosferatu
+modified: 2025-10-29 02:15:05 GMT-04:00
+poster: "[[movies/posters/nosferatu.jpg]]"
+status: to-watch
+studio: focus features
 tags:
   - movies
-title: "Nosferatu"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Nosferatu
 year: 2024
-director: "Robert Eggers"
-category: "general"
-studio: "focus features"
-poster: "[[movies/posters/nosferatu.jpg]]"
 ---

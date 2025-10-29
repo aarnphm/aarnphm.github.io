@@ -1,15 +1,15 @@
 ---
-id: orangeville
-lang: it-IT
-tags:
-  - menu
-description: atelier with friends uno - orangeville
-date: "2024-03-08"
-menu: true
-modified: 2025-08-10 03:08:21 GMT-04:00
-title: orangeville.
 cssclasses:
   - menu
+date: "2024-03-08"
+description: atelier with friends uno - orangeville
+id: orangeville
+lang: it-IT
+menu: true
+modified: 2025-10-29 02:15:40 GMT-04:00
+tags:
+  - menu
+title: orangeville.
 ---
 
 ## ==pasta.==

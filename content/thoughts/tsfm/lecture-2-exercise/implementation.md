@@ -1,12 +1,12 @@
 ---
+date: "2025-09-07"
+description: Python and Rust
 id: implementation
+modified: 2025-10-29 02:15:56 GMT-04:00
 tags:
   - seed
   - technical
   - ml
-description: Python and Rust
-date: "2025-09-07"
-modified: 2025-09-11 22:17:12 GMT-04:00
 title: implementation of tokenization
 ---
 

@@ -1,15 +1,15 @@
 ---
-id: "pulp-fiction"
-status: "recurring"
+category: vintage
+date: "2024-02-07"
+director: Quentin Tarantino
+id: pulp-fiction
+modified: 2025-10-29 02:14:55 GMT-04:00
+poster: "[[movies/posters/pulp-fiction.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - vintage
-title: "Pulp Fiction"
-date: "2024-02-07"
-modified: "2025-10-16 16:39:12 GMT-04:00"
+title: Pulp Fiction
 year: 1994
-director: "Quentin Tarantino"
-category: "vintage"
-studio: "general"
-poster: "[[movies/posters/pulp-fiction.jpg]]"
 ---

@@ -27,7 +27,7 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 - `worker/` - Cloudflare Worker TypeScript
 - `public/` - Build output directory
 
-**Key Technologies:**
+**Stack:**
 
 - **Static Site Generator:** Quartz 4.0 with extensive customization
 - **Runtime:** Node.js >= 22, pnpm 9 package manager
@@ -47,6 +47,7 @@ The site uses custom Quartz plugins (quartz/plugins/):
 - Twitter embeds
 - Slides generation
 - Custom syntax highlighting (rose-pine themes)
+- Custom sidenotes structured inspired by Tuffe CSS
 
 **Component Architecture:**
 
@@ -56,6 +57,7 @@ React-like components in `quartz/components/` using Preact:
 - Utilities use camelCase (e.g., path.ts, fileTrie.ts)
 - 2-space indentation, ES modules
 - If you are writing buttons, most case prefer `span[type="button"]` over button. But make sure to ask for confirmation.
+- Please never write a unist processor within `markdownPlugins` or `htmlPlugins` to avoid recursion of nested processor, and use existing parsing structurewe from Quartz.
 
 ## Content Guidelines
 

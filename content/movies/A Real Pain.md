@@ -1,16 +1,16 @@
 ---
-status: finished
+category: general
+date: "2024-02-07"
+director: Jesse Eisenberg
 id: a-real-pain
-modified: 2025-10-16 20:05:46 GMT-04:00
+modified: 2025-10-29 02:14:45 GMT-04:00
+poster: "[[movies/posters/a-real-pain.jpg]]"
+rating: 8
+status: finished
+studio: searchlight pictures
 tags:
   - movies
-studio: searchlight pictures
-poster: "[[movies/posters/a-real-pain.jpg]]"
-date: "2024-02-07"
+title: A Real Pain
 watched-date: "2024-11-20"
 year: 2024
-category: general
-director: Jesse Eisenberg
-rating: 8
-title: A Real Pain
 ---

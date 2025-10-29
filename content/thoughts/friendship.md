@@ -1,10 +1,10 @@
 ---
-id: friendship
-tags:
-  - seed
 comments: true
 date: "2024-06-22"
-modified: 2025-01-22 03:18:24 GMT-05:00
+id: friendship
+modified: 2025-10-29 02:15:45 GMT-04:00
+tags:
+  - seed
 title: friendship
 ---
 

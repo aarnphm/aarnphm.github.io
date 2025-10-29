@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Homage to Catalonia
 author: George Orwell
-subcategory: life
 category: fiction
 date: "2025-03-05"
-modified: 2025-10-25 02:12:07 GMT-04:00
+id: Homage to Catalonia
+modified: 2025-10-29 02:14:30 GMT-04:00
+posters: "[[library/posters/homage-to-catalonia.jpg]]"
+status: to-read
+subcategory: life
 tags:
   - fiction
-posters: "[[library/posters/homage-to-catalonia.jpg]]"
 title: Homage to Catalonia
 ---

@@ -1,14 +1,14 @@
 ---
-status: finished
-id: The Birth of Tragedy
-subcategory: Nietzsche
 author: Friedrich Nietzsche
-year-finished: 2024
 category: philosophy
 date: "2025-01-05"
-modified: 2025-10-25 02:14:08 GMT-04:00
+id: The Birth of Tragedy
+modified: 2025-10-29 02:14:37 GMT-04:00
+posters: "[[library/posters/the-birth-of-tragedy.jpg]]"
+status: finished
+subcategory: Nietzsche
 tags:
   - philosophy
-posters: "[[library/posters/the-birth-of-tragedy.jpg]]"
 title: The Birth of Tragedy
+year-finished: 2024
 ---

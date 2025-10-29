@@ -1,10 +1,10 @@
 ---
+date: "2024-10-02"
 id: Orwellian
+modified: 2025-10-29 02:15:31 GMT-04:00
 tags:
   - seed
   - philosophy
-date: "2024-10-02"
-modified: "2024-10-02"
 title: Orwellian
 ---
 

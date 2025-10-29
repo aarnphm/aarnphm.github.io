@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Hello Sleep
 author: Jade Wu
-subcategory: productivity
 category: non-fiction
 date: "2024-12-23"
-modified: 2025-10-25 02:12:05 GMT-04:00
+id: Hello Sleep
+modified: 2025-10-29 02:14:31 GMT-04:00
+posters: "[[library/posters/hello-sleep.jpg]]"
+status: to-read
+subcategory: productivity
 tags:
   - non-fiction
-posters: "[[library/posters/hello-sleep.jpg]]"
 title: Hello Sleep
 ---

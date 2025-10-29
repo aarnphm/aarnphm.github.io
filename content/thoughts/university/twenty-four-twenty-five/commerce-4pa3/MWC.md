@@ -1,15 +1,15 @@
 ---
-id: MWC
 aliases:
   - world congress
-tags:
-  - commerce4pa3
 date: "2025-02-06"
 description: and world congress
-modified: 2025-02-14 14:06:55 GMT-05:00
+id: MWC
+modified: 2025-10-29 02:15:59 GMT-04:00
 pageLayout: technical
 permalinks:
   - /mwc
+tags:
+  - commerce4pa3
 title: McMaster World Congress
 ---
 

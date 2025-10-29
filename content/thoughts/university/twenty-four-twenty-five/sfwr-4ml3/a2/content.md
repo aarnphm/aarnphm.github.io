@@ -1,10 +1,10 @@
 ---
-id: content
-tags:
-  - sfwr4ml3
 date: "2024-10-21"
 description: implementation of PCA on LFW and TNC datasets
-modified: "2024-10-21"
+id: content
+modified: 2025-10-29 02:16:09 GMT-04:00
+tags:
+  - sfwr4ml3
 title: PCA and Kernels, from scratch
 ---
 

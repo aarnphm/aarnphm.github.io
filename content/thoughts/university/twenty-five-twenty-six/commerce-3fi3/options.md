@@ -1,10 +1,10 @@
 ---
+date: "2025-10-27"
+description: fractional, vertical bull/bear spreads
 id: options
+modified: 2025-10-29 02:15:57 GMT-04:00
 tags:
   - commerce3fi3
-description: fractional, vertical bull/bear spreads
-date: "2025-10-27"
-modified: 2025-10-27 15:00:13 GMT-04:00
 title: options
 ---
 

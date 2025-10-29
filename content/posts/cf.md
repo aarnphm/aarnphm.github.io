@@ -1,14 +1,14 @@
 ---
+date: "2025-08-04"
+description: And maybe you should, or shouldn't.
 id: cf
+modified: 2025-10-29 02:15:10 GMT-04:00
+socials:
+  hackernews: https://news.ycombinator.com/item?id=44791222
+  twitter: https://x.com/aarnphm_/status/1952474293654413636
 tags:
   - seed
   - technical
-description: And maybe you should, or shouldn't.
-date: "2025-08-04"
-socials:
-  twitter: https://x.com/aarnphm_/status/1952474293654413636
-  hackernews: https://news.ycombinator.com/item?id=44791222
-modified: 2025-08-04 18:07:00 GMT-04:00
 title: Moving to Cloudflare
 ---
 

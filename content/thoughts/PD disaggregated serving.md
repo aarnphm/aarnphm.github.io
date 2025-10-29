@@ -1,10 +1,10 @@
 ---
+date: "2025-06-16"
+description: and inference go distributed
 id: pd disaggregated serving
+modified: 2025-10-29 02:15:31 GMT-04:00
 tags:
   - ml
-description: and inference go distributed
-date: "2025-06-16"
-modified: 2025-10-19 22:28:32 GMT-04:00
 title: p/d disaggregation
 ---
 

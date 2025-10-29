@@ -1,14 +1,14 @@
 ---
-status: to-read
-id: Utilitarianism
 author: John Stuart Mill
-subcategory: love
 category: philosophy
 date: "2025-10-07"
-modified: 2025-10-25 02:16:13 GMT-04:00
+id: Utilitarianism
+modified: 2025-10-29 02:14:43 GMT-04:00
+posters: "[[library/posters/utilitarianism.jpg]]"
+seealso: "[[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill]]"
+status: to-read
+subcategory: love
 tags:
   - philosophy
-posters: "[[library/posters/utilitarianism.jpg]]"
 title: Utilitarianism
-seealso: "[[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill]]"
 ---

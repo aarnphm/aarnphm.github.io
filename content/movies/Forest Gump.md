@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: vintage
+date: "2024-02-07"
+director: Robert Zemeckis
 id: forest-gump
+modified: 2025-10-29 02:14:50 GMT-04:00
+poster: "[[movies/posters/forest-gump.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - vintage
-studio: general
-poster: "[[movies/posters/forest-gump.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:10:13 GMT-04:00
-year: 1994
-category: vintage
-director: Robert Zemeckis
 title: Forest Gump
+year: 1994
 ---

@@ -1,11 +1,11 @@
 ---
+date: "2025-08-28"
+description: K, V and KVCache
 id: index
+modified: 2025-10-29 02:14:23 GMT-04:00
 tags:
   - seed
   - ml
-description: K, V and KVCache
-date: "2025-08-28"
-modified: 2025-10-01 16:54:25 GMT-04:00
 title: 0[dot]3
 ---
 

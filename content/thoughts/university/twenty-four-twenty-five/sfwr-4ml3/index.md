@@ -1,11 +1,11 @@
 ---
+date: "2024-09-10"
 id: index
+modified: 2025-10-29 02:16:09 GMT-04:00
 tags:
   - university
   - sfwr4ml3
   - ml
-date: "2024-09-10"
-modified: 2024-12-14 03:49:02 GMT-05:00
 title: Introduction to Machine Learning
 ---
 

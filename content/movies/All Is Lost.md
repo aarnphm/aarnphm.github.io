@@ -1,14 +1,14 @@
 ---
-status: to-watch
+category: general
+date: "2024-02-07"
+director: J.C. Chandor
 id: all-is-lost
+modified: 2025-10-29 02:14:45 GMT-04:00
+poster: "[[movies/posters/all-is-lost.jpg]]"
+status: to-watch
+studio: lionsgate
 tags:
   - movies
-studio: lionsgate
-poster: "[[movies/posters/all-is-lost.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:05:54 GMT-04:00
-year: 2013
-category: general
-director: J.C. Chandor
 title: All Is Lost
+year: 2013
 ---

@@ -1,9 +1,9 @@
 ---
+date: "2024-02-01"
 id: Optimization
+modified: 2025-10-29 02:16:13 GMT-04:00
 tags:
   - eng3px3
-date: "2024-02-01"
-modified: "2024-10-31"
 title: Economic Optimization
 ---
 

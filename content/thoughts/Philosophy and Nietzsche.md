@@ -1,11 +1,11 @@
 ---
+date: "2023-12-04"
+description: and Zarathustra.
 id: Philosophy and Nietzsche
+modified: 2025-10-29 02:15:32 GMT-04:00
 tags:
   - philosophy
   - seed
-description: and Zarathustra.
-date: "2023-12-04"
-modified: 2025-10-07 08:10:37 GMT-04:00
 title: Nietzschean
 ---
 

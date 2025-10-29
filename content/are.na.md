@@ -29,7 +29,7 @@ socials:
   home: /
   curius: /curius
   are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-28 21:49:10 GMT-04:00
+modified: 2025-10-29 03:10:42 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -122,10 +122,12 @@ cssclasses:
   - [meta]:
     - date: 10/28/2025
     - tags: [llm]
-- https://x.com/olive_jy_song/status/1983094612710568380 -- MiniMax M2 blogpost release
+- https://x.com/olive_jy_song/status/1983094612710568380 -- MiniMax M2 blogpost release [**]
   - [meta]:
     - date: 10/28/2025
     - tags: [model, agentic]
+  - https://x.com/zpysky1125/status/1983383094607347992
+  - https://www.zhihu.com/question/1965302088260104295/answer/1966810157473335067
 - https://x.com/CalumDouglas1/status/1982591934389784687 -- Working on new problems
   - [meta]:
     - date: 10/27/2025
@@ -241,6 +243,10 @@ cssclasses:
 
 ## website
 
+- https://themonolithproject.net/ -- The Monolith Project
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [interaction]
 - https://website-git-moodboard-maxime-heckels-projects.vercel.app/moodboard -- moodboard
   - [meta]:
     - date: 10/28/2025
@@ -625,7 +631,12 @@ cssclasses:
 
 ## people
 
-- https://website-git-moodboard-maxime-heckels-projects.vercel.app/ -- maxime heckels
+- https://www.floguo.com/ -- Flo Guo [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [designer, friend]
+  - dear friend.
+- https://website-git-moodboard-maxime-heckels-projects.vercel.app/ -- Maxime Heckels
   - [meta]:
     - date: 10/28/2025
     - tags: [portfolio]
@@ -1117,6 +1128,10 @@ cssclasses:
 
 ## essay
 
+- https://www.brasstacks.blog/tyatd-uni/ -- Things You’re Allowed to Do: University Edition
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [school]
 - https://rauno.me/craft/interaction-design -- Invisible Details of Interaction Design [**]
   - [meta]:
     - date: 10/28/2025
@@ -1755,6 +1770,11 @@ cssclasses:
 
 ## machine learning
 
+- https://www.youtube.com/watch?v=_KoUcwCoID4 -- 4 Philosophies of Interpretability
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [interpretability, alignment]
+  - i.e: Neel's incredibly speculative taxonomy of [[thoughts/mechanistic interpretability|interpretability]] research philosophy
 - https://www.doc.ic.ac.uk/~eedwards/compsys/float/#:~:text=Add%20the%20exponents%20to%20find,1.021%20%C3%97%20106 -- Floating points arithmetics
   - [meta]:
     - date: 07/04/2025
@@ -2350,8 +2370,16 @@ cssclasses:
   qk_scores_short.softmax(0)[0], qk_scores_long.softmax(0)[0]
   ```
 
-## argumentative
+## opinionated
 
+- https://www.visakanv.com/blog/flirting/ -- flirting is about signalling interest with plausible deniability
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [dating]
+- [[library/The AI Anarchies Book]]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [book, technology]
 - https://geohot.github.io/blog/jekyll/update/2025/09/13/get-out-of-technology.html -- Get the fuck out of technology [**]
   - [meta]:
     - date: 10/16/2025
@@ -2359,7 +2387,7 @@ cssclasses:
 - https://ai-2027.com/ -- AI 2027
   - [meta]:
     - date: 10/28/2025
-    - tags: [prediction]
+    - tags: [prediction, speculation]
 - https://www.overcomingbias.com/p/what-cost-varietyhtml -- What Cost Variety?
   - [meta]:
     - date: 10/24/2025
@@ -2789,6 +2817,48 @@ cssclasses:
 
 ## philosophy
 
+- https://www.youtube.com/watch?v=usxvyf3xqcQ -- Hubert Dreyfus - Dostoyevsky's The Brothers Karamazov [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [philosophy]
+- https://www.youtube.com/watch?v=3_kdbJnCMwU&ab_channel=DavidBalcarras -- Bryan Magee - The Great Philosophers [**]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [philosophy]
+- https://www.youtube.com/watch?v=nNEweeN32QI&ab_channel=PhilosophyOverdose -- Is God an Unnecessary Hypothesis, Peter van Inwagen, 2004 Calvin College
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [philosophy]
+- https://www.youtube.com/watch?v=AHmKd2Cxpa4 -- The Philosophy of Locke & Berkeley - Bryan Magee & Michael Ayers (1987)
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [philosophy]
+- https://www.youtube.com/watch?v=H4_Tsjmqxak -- Husserl, Heidegger & Existentialism - Hubert Dreyfus & Bryan Magee (1987)
+  - [meta]:
+    - date: 10/26/2025
+    - tags: [philosophy]
+  - books: [[library/Logical Investigations]], [[library/Being and Time]]
+- https://www.youtube.com/watch?v=Oq4sjz38z5A -- Hubert Dreyfus discusses Heidegger & Merleau-Ponty [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [brain, being]
+  - why does Heidegger even bother to think about this given that we all uses our brains to experience the world?
+  - Two inners:
+    - Cartesian view: the brain in our skulls, but we don't discuss it here.
+    - causal basis and there is a brain, but ==I don't experience my brain==. Yet, it is the plumping basis from what I work:
+      - Heidegger: don't have private experience, you only have experience against to the world
+      - Sartre: chasing the bus, attraction, experience, or the bus to be caught -> ego has disappeared -> ego as inner experience.
+      - private experience in going wrong, rather observing what is going wrong.
+    - Starts with Homer
+    - Heidegger are anti-Cartesian, feelings and things looks sad/attractive that it looks that way, but it actually doesn't appear that way. These are surject.
+- https://www.youtube.com/watch?v=llu7prGMDhk&ab_channel=JuliandeMedeiros -- Lacan/Žižek on how to find your dream: a step-by-step by step guide
+  - [meta]:
+    - date: 08/02/2025
+    - tags: [philosophy]
+- https://en.wikipedia.org/wiki/Rugged_individualism -- Rugged individualism [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [way of life]
 - https://journals.sagepub.com/doi/pdf/10.1177/0146167297234003 -- The Experimental Generation of Interpersonal Closeness: A Procedure and Some Preliminary Findings
   - [meta]:
     - date: 10/23/2025
@@ -2915,6 +2985,10 @@ cssclasses:
 
 ## stream
 
+- https://www.malaproject.com/menu/dinner [**]
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [menu]
 - https://www.alphaxiv.org/ -- alphaxiv [**]
   - [meta]:
     - date: 10/27/2025
@@ -3100,11 +3174,10 @@ cssclasses:
 
 ## video
 
-- https://www.youtube.com/watch?v=H4_Tsjmqxak -- Husserl, Heidegger & Existentialism - Hubert Dreyfus & Bryan Magee (1987)
+- https://www.youtube.com/watch?v=XCBqoisl_1M -- The Evil Design of Auschwitz
   - [meta]:
-    - date: 10/26/2025
-    - tags: [philosophy]
-  - books: [[library/Logical Investigations]]
+    - date: 10/29/2025
+    - tags: [history]
 - https://www.youtube.com/watch?v=x7vNEgUvMkI -- Maybe This is My Problem
   - [meta]:
     - date: 10/26/2025
@@ -3225,14 +3298,6 @@ cssclasses:
   - [meta]:
     - date: 07/29/2025
     - tags: [fruit]
-- https://www.youtube.com/watch?v=nNEweeN32QI&ab_channel=PhilosophyOverdose -- Is God an Unnecessary Hypothesis, Peter van Inwagen, 2004 Calvin College
-  - [meta]:
-    - date: 08/02/2025
-    - tags: [fruit]
-- https://www.youtube.com/watch?v=llu7prGMDhk&ab_channel=JuliandeMedeiros -- Lacan/Žižek on how to find your dream: a step-by-step by step guide
-  - [meta]:
-    - date: 08/02/2025
-    - tags: [fruit]
 - https://www.youtube.com/watch?v=X-D5FERQzU4&ab_channel=DeficitOwls -- Money Did Not Come From Barter - It Came From Blood Feuds
   - [meta]:
     - date: 08/02/2025
@@ -3264,14 +3329,6 @@ cssclasses:
 - https://www.youtube.com/watch?v=8--5LwHRhjk&ab_channel=InigoQuilez -- Painting Characters with Math
   - [meta]:
     - date: 08/16/2025
-    - tags: [fruit]
-- https://www.youtube.com/watch?v=3_kdbJnCMwU&ab_channel=DavidBalcarras -- Bryan Magee - The Great Philosophers [**]
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
-- https://www.youtube.com/watch?v=H4_Tsjmqxak&ab_channel=PhilosophyOverdose -- Husserl, Heidegger & Existentialism - Hubert Dreyfus & Bryan Magee (1987) [**]
-  - [meta]:
-    - date: 10/02/2025
     - tags: [fruit]
 - https://www.youtube.com/watch?v=sFux7pl6lf4&ab_channel=vlogbrothers -- Are Languages Alive?
   - [meta]:
@@ -3834,6 +3891,10 @@ cssclasses:
 
 ## math
 
+- https://www.youtube.com/watch?v=60X5M1FhmUc&t=164s -- Michael Freedman | The Poincaré Conjecture and Mathematical Discovery
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [topology]
 - https://www.youtube.com/watch?v=oIhdrMh3UJw -- Symmetric Derivative and Generalized Pseudoderivative
   - [meta]:
     - date: 10/27/2025

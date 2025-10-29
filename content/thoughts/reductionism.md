@@ -1,10 +1,10 @@
 ---
+date: "2024-02-07"
 id: reductionism
+modified: 2025-10-29 02:15:53 GMT-04:00
 tags:
   - seed
   - psychology
-date: "2024-02-07"
-modified: 2025-10-04 00:39:48 GMT-04:00
 title: reductionism
 ---
 

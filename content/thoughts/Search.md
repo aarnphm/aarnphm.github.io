@@ -1,11 +1,11 @@
 ---
+date: "2024-02-07"
+description: to go or look through (a place) carefully
 id: Search
+modified: 2025-10-29 02:15:35 GMT-04:00
 tags:
   - seed
   - technical
-description: to go or look through (a place) carefully
-date: "2024-02-07"
-modified: 2025-08-12 23:14:03 GMT-04:00
 title: Search
 ---
 

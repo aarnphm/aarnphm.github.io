@@ -1,10 +1,10 @@
 ---
+date: "2024-09-04"
 id: index
+modified: 2025-10-29 02:16:08 GMT-04:00
 tags:
   - university
   - sfwr4g06ab
-date: "2024-09-04"
-modified: 2025-05-30 20:59:57 GMT-04:00
 title: Software Enginering Capstone a la carte.
 ---
 

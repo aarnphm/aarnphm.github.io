@@ -1,10 +1,10 @@
 ---
+date: "2024-01-11"
+description: in information theory
 id: Entropy
+modified: 2025-10-29 02:15:21 GMT-04:00
 tags:
   - seed
-description: in information theory
-date: "2024-01-11"
-modified: 2025-09-10 09:45:55 GMT-04:00
 title: Entropy
 ---
 

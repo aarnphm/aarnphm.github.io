@@ -1,11 +1,11 @@
 ---
+date: "2024-02-07"
+description: a capsule of life
 id: movies
+modified: 2025-10-29 02:15:04 GMT-04:00
 tags:
   - evergreen
   - meta
-description: a capsule of life
-date: "2024-02-07"
-modified: 2025-10-25 11:53:59 GMT-04:00
 title: movies.
 ---
 

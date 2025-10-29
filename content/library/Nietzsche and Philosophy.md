@@ -1,18 +1,18 @@
 ---
-status: evergreen
-id: Nietzsche and Philosophy
-subcategory: Nietzsche
 author: Gilles Deleuze
-year-finished: "-"
 category: philosophy
 date: "2025-08-13"
-modified: 2025-10-25 02:12:46 GMT-04:00
+description: being and multiplicity
+id: Nietzsche and Philosophy
+modified: 2025-10-29 02:14:33 GMT-04:00
+posters: "[[library/posters/nietzsche-and-philosophy.jpg]]"
+seealso: "[[thoughts/Philosophy and Nietzsche]]"
+status: evergreen
+subcategory: Nietzsche
 tags:
   - philosophy
-posters: "[[library/posters/nietzsche-and-philosophy.jpg]]"
-description: being and multiplicity
 title: Nietzsche and Philosophy
-seealso: "[[thoughts/Philosophy and Nietzsche]]"
+year-finished: "-"
 ---
 
 _by [[thoughts/Giles Deleuze|Giles Deleuze]]_

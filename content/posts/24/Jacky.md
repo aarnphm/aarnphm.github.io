@@ -1,13 +1,13 @@
 ---
-id: Jacky
-tags:
-  - friend
 date: "2024-12-27"
 description: and a lens from a distant friend.
-modified: 2025-01-01 07:33:51 GMT-05:00
+id: Jacky
+modified: 2025-10-29 02:15:08 GMT-04:00
 noindex: true
 pageLayout: letter
 signature: with care and appreciation - Aaron
+tags:
+  - friend
 title: to jacky
 ---
 

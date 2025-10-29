@@ -1,8 +1,9 @@
 ---
+date: "2024-03-20"
 id: prelab
+modified: 2025-10-29 02:16:23 GMT-04:00
 tags:
   - sfwr3dx4
-date: "2024-03-20"
 title: Root locus and graphical analysis
 ---
 

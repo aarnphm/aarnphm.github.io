@@ -1,10 +1,10 @@
 ---
+date: "2025-09-18"
+description: chapter 7
 id: supply chain analytics and capacity growth
+modified: 2025-10-29 02:15:58 GMT-04:00
 tags:
   - commerce4qa3
-description: chapter 7
-date: "2025-09-18"
-modified: 2025-10-24 08:43:25 GMT-04:00
 title: supply chain analytics and capacity growth
 ---
 

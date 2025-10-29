@@ -1,10 +1,10 @@
 ---
+date: "2024-02-19"
+description: a hobby, and definition of personal taste.
 id: fashion
+modified: 2025-10-29 02:15:45 GMT-04:00
 tags:
   - seed
-description: a hobby, and definition of personal taste.
-date: "2024-02-19"
-modified: 2025-08-12 08:11:21 GMT-04:00
 title: fashion.
 ---
 

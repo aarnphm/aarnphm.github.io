@@ -34,7 +34,7 @@ export function createWikilinkRegex(flags: string = "g"): RegExp {
   return new RegExp(WIKILINK_PATTERN.source, normalizedFlags)
 }
 
-const singleWikilinkRegex = new RegExp(`^${WIKILINK_PATTERN.source}$`, "i")
+export const singleWikilinkRegex = new RegExp(`^${WIKILINK_PATTERN.source}$`, "i")
 
 export function parseWikilink(raw: string): WikilinkParsed | null {
   const trimmed = raw.trim()

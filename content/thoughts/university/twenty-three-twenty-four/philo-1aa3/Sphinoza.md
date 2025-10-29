@@ -1,11 +1,11 @@
 ---
+date: "2023-10-10"
+description: and moral philosophy, relationship with God.
 id: Sphinoza
+modified: 2025-10-29 02:16:17 GMT-04:00
 tags:
   - philos1aa3
   - philosophy
-date: "2023-10-10"
-description: and moral philosophy, relationship with God.
-modified: 2025-01-20 05:19:37 GMT-05:00
 title: Sphinoza
 ---
 

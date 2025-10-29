@@ -1,14 +1,14 @@
 ---
-status: to-watch
+category: general
+date: "2024-02-07"
+director: Aaron Schimberg
 id: a-different-man
+modified: 2025-10-29 02:14:45 GMT-04:00
+poster: "[[movies/posters/a-different-man.jpg]]"
+status: to-watch
+studio: a24
 tags:
   - movies
-studio: a24
-poster: "[[movies/posters/a-different-man.jpg]]"
-date: "2024-02-07"
-year: 2024
-modified: 2025-10-24 16:41:09 GMT-04:00
-category: general
-director: Aaron Schimberg
 title: A Different Man
+year: 2024
 ---

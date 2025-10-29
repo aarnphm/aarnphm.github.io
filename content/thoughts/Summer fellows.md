@@ -1,10 +1,10 @@
 ---
+date: "2025-03-28"
 id: Summer fellows
+modified: 2025-10-29 02:15:35 GMT-04:00
+noindex: true
 tags:
   - application
-date: "2025-03-28"
-modified: 2025-04-11 18:49:36 GMT-04:00
-noindex: true
 title: YC 25 Summer fellows
 ---
 

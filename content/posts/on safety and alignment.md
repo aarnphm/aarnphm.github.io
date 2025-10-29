@@ -1,12 +1,12 @@
 ---
-id: on safety and alignment
-tags:
-  - technical
 date: "2024-11-26"
 draft: true
-modified: 2025-01-24 20:24:41 GMT-05:00
+id: on safety and alignment
+modified: 2025-10-29 02:15:12 GMT-04:00
 permalinks:
   - /alignment
 socialDescription: on anthropology and how we build ml systems
+tags:
+  - technical
 title: What if we do need unsafe features to build better aligned systems?
 ---

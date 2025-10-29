@@ -1,9 +1,9 @@
 ---
+date: "2024-01-09"
 id: Frequency Domain
+modified: 2025-10-29 02:16:21 GMT-04:00
 tags:
   - sfwr3dx4
-date: "2024-01-09"
-modified: 2024-12-17 12:40:43 GMT-05:00
 title: Frequency Domain and a la carte.
 ---
 

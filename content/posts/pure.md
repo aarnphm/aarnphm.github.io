@@ -1,10 +1,10 @@
 ---
-id: pure
-tags:
-  - seed
 date: "2025-10-21"
 draft: true
-modified: 2025-10-21 04:03:40 GMT-04:00
+id: pure
+modified: 2025-10-29 02:15:12 GMT-04:00
+tags:
+  - seed
 title: pure
 ---
 

@@ -1,9 +1,10 @@
 ---
+date: "2023-09-12"
 id: System Image and Paradox of Technology
+modified: 2025-10-29 02:16:16 GMT-04:00
 tags:
   - swfr4hc3
 title: System Image and Paradox of Technology
-date: 2023-09-12
 ---
 
 [[thoughts/university/twenty-three-twenty-four/hci-4hc3/Psychopathology of everything#Fundamental principles of Interaction]] goes into the fundamentals of interaction when designing a product -> conceptual models

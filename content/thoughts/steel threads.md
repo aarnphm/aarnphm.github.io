@@ -1,9 +1,9 @@
 ---
+date: "2025-05-27"
 id: steel threads
+modified: 2025-10-29 02:15:53 GMT-04:00
 tags:
   - ml
-date: "2025-05-27"
-modified: 2025-05-31 10:07:32 GMT-04:00
 title: steel threads
 ---
 

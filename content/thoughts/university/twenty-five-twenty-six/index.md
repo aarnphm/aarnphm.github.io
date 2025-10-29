@@ -1,9 +1,9 @@
 ---
+date: "2025-09-04"
+description: and final year of school.
 id: index
+modified: 2025-10-29 02:15:58 GMT-04:00
 tags:
   - university
-description: and final year of school.
-date: "2025-09-04"
-modified: 2025-09-04 09:04:20 GMT-04:00
 title: twenty-five-twenty-six
 ---

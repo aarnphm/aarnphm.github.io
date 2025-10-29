@@ -1,18 +1,18 @@
 ---
+date: "2024-12-10"
+description: and vLLM integration with XGrammar
 id: structured decoding
+modified: 2025-10-29 02:15:13 GMT-04:00
+pageLayout: technical
+socials:
+  bentoml blog: https://bentoml.com/blog/structured-decoding-in-vllm-a-gentle-introduction
+  hackernews: https://news.ycombinator.com/item?id=42711051
+  official blog: https://blog.vllm.ai/2025/01/14/struct-decode-intro.html
+  twitter: https://x.com/vllm_project/status/1879979185474859303
 tags:
   - technical
   - serving
-description: and vLLM integration with XGrammar
-date: "2024-12-10"
-socials:
-  twitter: https://x.com/vllm_project/status/1879979185474859303
-  official blog: https://blog.vllm.ai/2025/01/14/struct-decode-intro.html
-  hackernews: https://news.ycombinator.com/item?id=42711051
-  bentoml blog: https://bentoml.com/blog/structured-decoding-in-vllm-a-gentle-introduction
-modified: 2025-10-04 17:41:39 GMT-04:00
 title: structured decoding, a guide for the impatient
-pageLayout: technical
 ---
 
 [[thoughts/structured outputs|tldr]]:

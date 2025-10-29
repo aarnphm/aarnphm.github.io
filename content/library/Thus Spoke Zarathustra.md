@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Thus Spoke Zarathustra
 author: Friedrich Nietzsche
-subcategory: Nietzsche
 category: philosophy
 date: "2025-10-07"
-modified: 2025-10-25 02:16:02 GMT-04:00
+id: Thus Spoke Zarathustra
+modified: 2025-10-29 02:14:43 GMT-04:00
+posters: "[[library/posters/thus-spoke-zarathustra.jpg]]"
+status: to-read
+subcategory: Nietzsche
 tags:
   - philosophy
-posters: "[[library/posters/thus-spoke-zarathustra.jpg]]"
 title: Thus Spoke Zarathustra
 ---

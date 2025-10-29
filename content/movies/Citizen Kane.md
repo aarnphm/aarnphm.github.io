@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: vintage
+date: "2024-02-07"
+director: Orson Welles
 id: citizen-kane
+modified: 2025-10-29 02:14:48 GMT-04:00
+poster: "[[movies/posters/citizen-kane.jpg]]"
+status: recurring
+studio: rko
 tags:
   - movies
   - vintage
-studio: rko
-poster: "[[movies/posters/citizen-kane.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:08:06 GMT-04:00
-year: 1941
-category: vintage
-director: Orson Welles
 title: Citizen Kane
+year: 1941
 ---

@@ -1,12 +1,12 @@
 ---
+date: "2023-11-16"
+description: On Aristotle's Metaphysics.
 id: Questions about Metaphysics
+modified: 2025-10-29 02:15:09 GMT-04:00
 tags:
   - philosophy
   - fruit
   - philos1aa3
-date: "2023-11-16"
-description: On Aristotle's Metaphysics.
-modified: 2025-01-07 15:57:06 GMT-05:00
 title: Questions about Metaphysics
 ---
 

@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: vintage
+date: "2024-02-07"
+director: Roman Polanski
 id: china-town
+modified: 2025-10-29 02:14:48 GMT-04:00
+poster: "[[movies/posters/china-town.jpg]]"
+status: recurring
+studio: paramount
 tags:
   - movies
   - vintage
-studio: paramount
-poster: "[[movies/posters/china-town.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:07:59 GMT-04:00
-year: 1974
-category: vintage
-director: Roman Polanski
 title: China Town
+year: 1974
 ---

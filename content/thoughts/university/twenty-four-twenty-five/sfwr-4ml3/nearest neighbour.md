@@ -1,10 +1,10 @@
 ---
+date: "2024-10-28"
 id: nearest neighbor
+modified: 2025-10-29 02:16:10 GMT-04:00
 tags:
   - sfwr4ml3
   - ml
-date: "2024-10-28"
-modified: "2024-10-28"
 title: nearest neighbour
 ---
 

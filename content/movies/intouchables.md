@@ -1,15 +1,15 @@
 ---
-id: "intouchables"
-status: "recurring"
+category: comedy
+date: "2024-02-07"
+director: Éric Toledano & Olivier Nakache
+id: intouchables
+modified: 2025-10-29 02:15:05 GMT-04:00
+poster: "[[movies/posters/intouchables.webp]]"
+status: recurring
+studio: general
 tags:
   - movies
   - comedy
-title: "Intouchables"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Intouchables
 year: 2011
-director: "Éric Toledano & Olivier Nakache"
-category: "comedy"
-studio: "general"
-poster: "[[movies/posters/intouchables.webp]]"
 ---

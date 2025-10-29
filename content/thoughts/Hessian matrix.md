@@ -1,10 +1,10 @@
 ---
+date: "2025-08-28"
+description: second partial derivatives of an objective function.
 id: Hessian matrix
+modified: 2025-10-29 02:15:24 GMT-04:00
 tags:
   - math
-description: second partial derivatives of an objective function.
-date: "2025-08-28"
-modified: 2025-08-30 22:51:34 GMT-04:00
 title: Hessian matrix
 ---
 

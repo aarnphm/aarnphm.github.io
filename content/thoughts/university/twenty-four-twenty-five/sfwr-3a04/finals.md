@@ -1,10 +1,10 @@
 ---
+date: "2025-04-17"
+description: And everything in between
 id: finals
+modified: 2025-10-29 02:16:02 GMT-04:00
 tags:
   - sfwr3a04
-date: 2025-04-17
-description: And everything in between
-modified: 2025-04-17 16:08:20 GMT-04:00
 title: Software Design 2
 ---
 

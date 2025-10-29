@@ -1,11 +1,11 @@
 ---
-date: 2025-07-07
-description: "and the man himself"
+date: "2025-07-07"
+description: and the man himself
 id: Feynman
-modified: "2025-07-07 06:30:08 GMT-04:00"
+modified: 2025-10-29 02:15:22 GMT-04:00
 tags:
   - seed
-title: "Richard Feynman"
+title: Richard Feynman
 ---
 
 ## His letter to his late wife, sixteen months after her death

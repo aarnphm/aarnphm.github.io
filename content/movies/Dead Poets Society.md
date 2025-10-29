@@ -1,16 +1,16 @@
 ---
-status: finished
+category: general
+date: "2024-02-07"
+director: Peter Weir
 id: dead-poets-society
-modified: 2025-10-16 20:08:15 GMT-04:00
+modified: 2025-10-29 02:14:48 GMT-04:00
+poster: "[[movies/posters/dead-poets-society.jpg]]"
+rating: 8.1
+status: finished
+studio: touchstone
 tags:
   - movies
-studio: touchstone
-poster: "[[movies/posters/dead-poets-society.jpg]]"
-date: "2024-02-07"
+title: Dead Poets Society
 watched-date: "2024-01-20"
 year: 1989
-category: general
-director: Peter Weir
-rating: 8.1
-title: Dead Poets Society
 ---

@@ -1,10 +1,10 @@
 ---
-id: desire
-tags:
-  - philosophy
 date: "2024-02-08"
 description: and maximising benefits.
-modified: 2025-01-01 07:28:27 GMT-05:00
+id: desire
+modified: 2025-10-29 02:15:43 GMT-04:00
+tags:
+  - philosophy
 title: desire
 ---
 

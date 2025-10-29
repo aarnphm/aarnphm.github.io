@@ -1,14 +1,14 @@
 ---
-status: finished
-id: Resistance, Rebellion, and Death
-subcategory: existentialism
 author: Albert Camus
-year-finished: 2025
-title: Resistance, Rebellion, and Death
+category: philosophy
 date: "2025-10-07"
-modified: 2025-10-25 02:13:40 GMT-04:00
+id: Resistance, Rebellion, and Death
+modified: 2025-10-29 02:14:36 GMT-04:00
+posters: "[[library/posters/resistance-rebellion-and-death.jpg]]"
+status: finished
+subcategory: existentialism
 tags:
   - philosophy
-posters: "[[library/posters/resistance-rebellion-and-death.jpg]]"
-category: philosophy
+title: Resistance, Rebellion, and Death
+year-finished: 2025
 ---

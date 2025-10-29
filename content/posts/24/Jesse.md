@@ -1,13 +1,13 @@
 ---
-id: Jesse
-tags:
-  - friend
 date: "2024-12-27"
 description: and an "uneventful" year.
-modified: 2024-12-31 06:12:12 GMT-05:00
+id: Jesse
+modified: 2025-10-29 02:15:08 GMT-04:00
 noindex: true
 pageLayout: letter
 signature: from a brother - Aaron
+tags:
+  - friend
 title: to jesse
 ---
 

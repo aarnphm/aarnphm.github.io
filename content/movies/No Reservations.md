@@ -1,16 +1,16 @@
 ---
-id: "no-reservations"
-status: "finished"
+category: general
+date: "2024-02-07"
+director: Scott Hicks
+id: no-reservations
+modified: 2025-10-29 02:14:54 GMT-04:00
+poster: "[[movies/posters/no-reservations.jpg]]"
+rating: 6.6
+status: finished
+studio: warner bros
 tags:
   - movies
-title: "No Reservations"
-date: "2024-02-07"
-modified: "2025-10-16 16:39:12 GMT-04:00"
-year: 2007
-director: "Scott Hicks"
-category: "general"
-studio: "warner bros"
-poster: "[[movies/posters/no-reservations.jpg]]"
+title: No Reservations
 watched-date: "2024-01-15"
-rating: 6.6
+year: 2007
 ---

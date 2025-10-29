@@ -1,14 +1,14 @@
 ---
+date: "2024-09-09"
+description: efficient LLM serving engine.
 id: vllm
+modified: 2025-10-29 02:16:23 GMT-04:00
 permalinks:
   - /vllm
 tags:
   - ml
   - serving
   - technical
-description: efficient LLM serving engine.
-date: "2024-09-09"
-modified: 2025-09-06 19:26:36 GMT-04:00
 title: vLLM
 ---
 

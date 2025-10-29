@@ -1,10 +1,10 @@
 ---
-id: Group Relative Policy Optimization
-tags:
-  - ml
 date: "2025-04-26"
 description: and RL.
-modified: 2025-05-31 10:06:50 GMT-04:00
+id: Group Relative Policy Optimization
+modified: 2025-10-29 02:15:23 GMT-04:00
+tags:
+  - ml
 title: Group Relative Policy Optimization
 ---
 

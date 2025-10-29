@@ -1,15 +1,15 @@
 ---
+date: "2025-07-13"
+description: and growing, friendship
+draft: true
 id: confusion
+modified: 2025-10-29 02:15:10 GMT-04:00
 tags:
   - love
   - friends
   - fiction
-description: and growing, friendship
-date: "2025-07-13"
-draft: true
-modified: 2025-07-15 10:12:07 GMT-04:00
-unlisted: true
 title: mistakes and masks
+unlisted: true
 ---
 
 I don't know where to begin. It is an emotion that I can't seem to describe. The act of putting up a pragmatic filter.

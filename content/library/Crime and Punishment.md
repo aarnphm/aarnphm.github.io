@@ -1,14 +1,14 @@
 ---
-status: finished
-id: Crime and Punishment
-subcategory: Dostoevsky
 author: Fyodor Dostoevsky
-year-finished: 2025
-title: Crime and Punishment
+category: fiction
 date: "2025-07-08"
-modified: 2025-10-25 02:10:47 GMT-04:00
+id: Crime and Punishment
+modified: 2025-10-29 02:14:28 GMT-04:00
+posters: "[[library/posters/crime-and-punishment.jpg]]"
+status: finished
+subcategory: Dostoevsky
 tags:
   - fiction
-posters: "[[library/posters/crime-and-punishment.jpg]]"
-category: fiction
+title: Crime and Punishment
+year-finished: 2025
 ---

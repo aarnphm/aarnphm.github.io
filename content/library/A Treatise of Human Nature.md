@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: A Treatise of Human Nature
 author: David Hume
-subcategory: empiricism
-title: A Treatise of Human Nature
+category: philosophy
 date: "2025-09-18"
-modified: 2025-10-25 02:10:16 GMT-04:00
+id: A Treatise of Human Nature
+modified: 2025-10-29 02:14:26 GMT-04:00
+posters: "[[library/posters/a-treatise-of-human-nature.jpg]]"
+status: to-read
+subcategory: empiricism
 tags:
   - philosophy
-posters: "[[library/posters/a-treatise-of-human-nature.jpg]]"
-category: philosophy
+title: A Treatise of Human Nature
 ---

@@ -1,9 +1,9 @@
 ---
+date: "2024-10-11"
 id: infinite poem
+modified: 2025-10-29 02:14:21 GMT-04:00
 tags:
   - seed
-date: "2024-10-11"
-modified: "2024-10-11"
 title: infinite poem
 ---
 

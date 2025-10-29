@@ -1,14 +1,14 @@
 ---
-status: to-watch
+category: love
+date: "2025-10-16"
+director: John Hubley
 id: Everybody Rides the Carousel
+modified: 2025-10-29 02:14:49 GMT-04:00
+poster: "[[movies/posters/Everybody Rides the Carousel.jpg]]"
+status: to-watch
+studio: hubley studios
 tags:
   - seed
-studio: hubley studios
-poster: "[[movies/posters/Everybody Rides the Carousel.jpg]]"
-date: "2025-10-16"
-modified: 2025-10-16 20:09:26 GMT-04:00
-year: 1976
-category: love
-director: John Hubley
 title: Everybody Rides the Carousel
+year: 1976
 ---

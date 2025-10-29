@@ -1,12 +1,12 @@
 ---
-id: Borealis
-tags:
-  - application
 abstract: application for RBC Borealis Let's SOLVE IT.
 date: "2025-01-25"
 description: make reading fun and enjoyable for ADHD patients.
-modified: 2025-01-26 19:03:00 GMT-05:00
+id: Borealis
+modified: 2025-10-29 02:15:18 GMT-04:00
 noindex: true
+tags:
+  - application
 title: Borealis
 ---
 

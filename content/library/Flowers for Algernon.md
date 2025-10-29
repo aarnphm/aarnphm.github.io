@@ -1,13 +1,13 @@
 ---
-status: to-read
+author: Daniel Keyes
+category: fiction
+date: "2025-10-16"
 id: Flowers for Algernon
+modified: 2025-10-29 02:14:29 GMT-04:00
+posters: "[[library/posters/flowers-for-algernon.jpg]]"
+status: to-read
+subcategory: life
 tags:
   - fiction
-subcategory: life
-author: Daniel Keyes
-date: "2025-10-16"
-modified: 2025-10-27 02:42:13 GMT-04:00
-category: fiction
-posters: "[[library/posters/flowers-for-algernon.jpg]]"
 title: Flowers for Algernon
 ---

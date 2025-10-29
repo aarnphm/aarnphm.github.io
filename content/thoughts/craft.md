@@ -1,18 +1,18 @@
 ---
-id: craft
+aliases:
+  - work
+  - portfolio
 comments: false
-tags:
-  - evergreen
-description: and a celebration for the act of making.
 date: "2021-12-22"
-modified: 2025-10-26 23:47:57 GMT-04:00
+description: and a celebration for the act of making.
+id: craft
+modified: 2025-10-29 02:15:42 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
   - /portfolio
-aliases:
-  - work
-  - portfolio
+tags:
+  - evergreen
 title: craft.
 ---
 

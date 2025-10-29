@@ -1,15 +1,15 @@
 ---
-status: finished
-id: Civilisation and its Discontents
-subcategory: Freud
 author: Sigmund Freud
-year-finished: 2023
 category: philosophy
 date: "2022-08-21"
-modified: 2025-10-25 02:10:43 GMT-04:00
+id: Civilisation and its Discontents
+modified: 2025-10-29 02:14:28 GMT-04:00
+posters: "[[library/posters/civilisation-and-its-discontents.jpg]]"
+seealso: "[[thoughts/Civilisation and its Discontents]]"
+status: finished
+subcategory: Freud
 tags:
   - philosophy
-posters: "[[library/posters/civilisation-and-its-discontents.jpg]]"
 title: Civilisation and its Discontents
-seealso: "[[thoughts/Civilisation and its Discontents]]"
+year-finished: 2023
 ---

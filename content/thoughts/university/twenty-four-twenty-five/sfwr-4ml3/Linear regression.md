@@ -1,9 +1,9 @@
 ---
+date: "2024-09-10"
 id: Linear regression
+modified: 2025-10-29 02:16:08 GMT-04:00
 tags:
   - sfwr4ml3
-date: "2024-09-10"
-modified: "2024-10-28"
 title: Linear regression
 ---
 

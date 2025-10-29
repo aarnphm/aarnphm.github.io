@@ -1,11 +1,11 @@
 ---
+date: "2024-01-30"
+description: well, here we go again.
 id: Turing-complete Transformers
+modified: 2025-10-29 02:15:37 GMT-04:00
 tags:
   - seed
   - ml
-date: "2024-01-30"
-description: well, here we go again.
-modified: 2025-01-28 01:59:51 GMT-05:00
 title: Turing-complete Transformers
 ---
 

@@ -1,14 +1,14 @@
 ---
+aliases:
+  - corporate responsibility
+date: "2024-11-19"
+description: and moral responsibilities of corporation.
 id: corporate personhood
 lang: en-US
+modified: 2025-10-29 02:15:10 GMT-04:00
 tags:
   - engineer4a03
   - fruit
-description: and moral responsibilities of corporation.
-date: "2024-11-19"
-modified: 2025-08-12 22:40:13 GMT-04:00
-aliases:
-  - corporate responsibility
 title: Of Corporations, Courts, Personhood, and Morality
 ---
 

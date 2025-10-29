@@ -1,14 +1,14 @@
 ---
-status: to-watch
+category: general
+date: "2024-02-07"
+director: Michel Gondry
 id: eternal-sunshine-of-the-spotless-mind
+modified: 2025-10-29 02:14:49 GMT-04:00
+poster: "[[movies/posters/eternal-sunshine-of-the-spotless-mind.jpg]]"
+status: to-watch
+studio: focus features
 tags:
   - movies
-studio: focus features
-poster: "[[movies/posters/eternal-sunshine-of-the-spotless-mind.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:09:22 GMT-04:00
-year: 2004
-category: general
-director: Michel Gondry
 title: Eternal Sunshine of the Spotless Mind
+year: 2004
 ---

@@ -1,9 +1,9 @@
 ---
+date: "2024-12-18"
 id: closed loop system
+modified: 2025-10-29 02:16:05 GMT-04:00
 tags:
   - sfwr4aa4
-date: "2024-12-18"
-modified: 2024-12-18 16:56:55 GMT-05:00
 title: closed loop system
 ---
 

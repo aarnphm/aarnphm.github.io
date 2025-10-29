@@ -1,12 +1,12 @@
 ---
-id: heideggerian AI
-tags:
-  - technical
-  - philosophy
 date: "2025-01-11"
 description: and Heideggerian AI.
 draft: true
-modified: 2025-01-26 16:02:36 GMT-05:00
+id: heideggerian AI
+modified: 2025-10-29 02:15:11 GMT-04:00
+tags:
+  - technical
+  - philosophy
 title: I saw a marching band at a hackathon for the first time.
 ---
 

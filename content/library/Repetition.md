@@ -1,13 +1,13 @@
 ---
-status: to-read
-id: Repetition
 author: Søren Kierkegaard
-subcategory: Kierkegaard
 category: philosophy
 date: "2025-09-18"
-modified: 2025-10-25 02:13:32 GMT-04:00
+id: Repetition
+modified: 2025-10-29 02:14:35 GMT-04:00
+posters: "[[library/posters/repetition.jpg]]"
+status: to-read
+subcategory: Kierkegaard
 tags:
   - philosophy
-posters: "[[library/posters/repetition.jpg]]"
 title: Repetition
 ---

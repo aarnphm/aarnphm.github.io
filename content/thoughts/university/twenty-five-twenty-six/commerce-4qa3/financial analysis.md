@@ -1,10 +1,10 @@
 ---
+date: "2025-09-11"
+description: chapter 1 and 2
 id: financial analysis
+modified: 2025-10-29 02:15:58 GMT-04:00
 tags:
   - commerce4qa3
-description: chapter 1 and 2
-date: "2025-09-11"
-modified: 2025-10-24 08:42:54 GMT-04:00
 title: financial analysis
 ---
 

@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: wes anderson
+date: "2024-02-07"
+director: Wes Anderson
 id: fantastic-mr-fox
+modified: 2025-10-29 02:14:50 GMT-04:00
+poster: "[[movies/posters/fantastic-mr-fox.jpg]]"
+status: recurring
+studio: wes anderson
 tags:
   - movies
   - wes-anderson
-studio: wes anderson
-poster: "[[movies/posters/fantastic-mr-fox.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:09:48 GMT-04:00
-year: 2009
-category: wes anderson
-director: Wes Anderson
 title: Fantastic Mr. Fox
+year: 2009
 ---

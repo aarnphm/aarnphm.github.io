@@ -1,11 +1,11 @@
 ---
+date: "2025-09-10"
+description: EAGLE-1/3 and MTP (2/n)
 id: index
+modified: 2025-10-29 02:14:23 GMT-04:00
 tags:
   - seed
   - ml
-description: EAGLE-1/3 and MTP (2/n)
-date: "2025-09-10"
-modified: 2025-09-12 18:42:50 GMT-04:00
 title: 0[dot]41
 ---
 

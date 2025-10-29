@@ -1,10 +1,10 @@
 ---
+date: "2024-02-25"
 id: personal computing
+modified: 2025-10-29 02:15:51 GMT-04:00
 tags:
   - seed
   - computing
-date: "2024-02-25"
-modified: 2024-12-14 06:57:04 GMT-05:00
 title: personal computing
 ---
 

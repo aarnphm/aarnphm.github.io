@@ -1,9 +1,9 @@
 ---
+date: "2024-10-22"
 id: midterm
+modified: 2025-10-29 02:16:06 GMT-04:00
 tags:
   - sfwr4aa4
-date: "2024-10-22"
-modified: 2024-12-16 11:27:43 GMT-05:00
 title: OS as real-time system
 ---
 

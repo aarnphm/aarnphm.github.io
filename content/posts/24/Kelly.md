@@ -1,13 +1,13 @@
 ---
-id: Kelly
-tags:
-  - friend
 date: "2024-12-31"
 description: and a view from a distant friend.
-modified: 2024-12-31 18:48:01 GMT-05:00
+id: Kelly
+modified: 2025-10-29 02:15:08 GMT-04:00
 noindex: true
 pageLayout: letter
 signature: with love and prosperity - Aaron
+tags:
+  - friend
 title: to kelly
 ---
 

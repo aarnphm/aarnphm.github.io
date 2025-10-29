@@ -1,16 +1,16 @@
 ---
-slides: true
+date: "2025-09-30"
+description: GPUs, CUTLASS, and CuTe
 id: notes
+modified: 2025-10-29 02:14:25 GMT-04:00
+slides: true
 tags:
   - seed
   - workshop
   - gpu
-description: GPUs, CUTLASS, and CuTe
+title: supplement to 0.420
 transclude:
   title: false
-date: "2025-09-30"
-modified: 2025-10-17 14:48:31 GMT-04:00
-title: supplement to 0.420
 ---
 
 see also: [[thoughts/GPU programming|GPU]], [[thoughts/XLA]], [[thoughts/LLMs]]

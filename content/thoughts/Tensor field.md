@@ -1,10 +1,10 @@
 ---
+date: "2024-11-27"
+description: a gentle introduction into tensor analysis
 id: Tensor field
+modified: 2025-10-29 02:15:36 GMT-04:00
 tags:
   - math
-description: a gentle introduction into tensor analysis
-date: "2024-11-27"
-modified: 2025-08-20 07:02:50 GMT-04:00
 title: Tensor field
 ---
 

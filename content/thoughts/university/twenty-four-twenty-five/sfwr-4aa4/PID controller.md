@@ -1,10 +1,10 @@
 ---
+date: "2024-12-18"
+description: proportional-integral-derivative
 id: PID controller
+modified: 2025-10-29 02:16:05 GMT-04:00
 tags:
   - sfwr4aa4
-description: proportional-integral-derivative
-date: "2024-12-18"
-modified: 2025-08-24 07:38:46 GMT-04:00
 title: PID controller
 ---
 

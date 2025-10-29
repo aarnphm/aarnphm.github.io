@@ -1,10 +1,10 @@
 ---
+date: "2023-10-10"
+description: Austrian neurologist and founder of psychoanalysis
 id: Freud
+modified: 2025-10-29 02:15:23 GMT-04:00
 tags:
   - philosophy
-description: Austrian neurologist and founder of psychoanalysis
-date: "2023-10-10"
-modified: 2025-10-04 04:01:16 GMT-04:00
 title: Sigmund Freud
 ---
 

@@ -1,10 +1,10 @@
 ---
+date: "2024-02-07"
+description: techniques to evaluate partial derivative of a functions specified by CP.
 id: Automatic Differentiation
+modified: 2025-10-29 02:15:16 GMT-04:00
 tags:
   - math
-description: techniques to evaluate partial derivative of a functions specified by CP.
-date: "2024-02-07"
-modified: 2025-10-24 03:09:36 GMT-04:00
 title: Automatic Differentiation
 ---
 

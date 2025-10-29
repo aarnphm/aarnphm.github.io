@@ -1,12 +1,12 @@
 ---
+date: "2025-09-19"
+description: and Modal examples
 id: index
+modified: 2025-10-29 02:15:56 GMT-04:00
 tags:
   - seed
   - ml
   - tsfm
-description: and Modal examples
-date: "2025-09-19"
-modified: 2025-10-23 19:41:49 GMT-04:00
 title: Scaled dot-product attention profiling
 ---
 

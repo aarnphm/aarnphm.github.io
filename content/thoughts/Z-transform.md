@@ -1,12 +1,12 @@
 ---
+date: "2024-12-18"
+description: think of Laplace transform, but for sampled data
 id: Z-transform
+modified: 2025-10-29 02:15:39 GMT-04:00
 tags:
   - math
   - sfwr4aa4
   - sfwr3dx4
-date: "2024-12-18"
-description: think of Laplace transform, but for sampled data
-modified: 2024-12-18 05:37:38 GMT-05:00
 title: Z-transform
 ---
 

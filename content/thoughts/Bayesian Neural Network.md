@@ -1,9 +1,9 @@
 ---
+date: "2025-03-22"
 id: Bayesian Neural Network
+modified: 2025-10-29 02:15:16 GMT-04:00
 tags:
   - ml
-date: "2025-03-22"
-modified: 2025-03-22 08:21:09 GMT-04:00
 title: Bayesian Neural Network
 ---
 

@@ -1,10 +1,10 @@
 ---
-id: finals
-tags:
-  - sfwr3s03
 date: "2025-04-13"
 description: and list of final notes for exams.
-modified: 2025-04-13 19:58:31 GMT-04:00
+id: finals
+modified: 2025-10-29 02:16:04 GMT-04:00
+tags:
+  - sfwr3s03
 title: Finals Testing a la carte
 ---
 

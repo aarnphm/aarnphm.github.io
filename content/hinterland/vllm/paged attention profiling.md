@@ -1,12 +1,12 @@
 ---
+date: "2025-10-03"
+description: items to test out cute kernels
 id: paged_attention_profiling
+modified: 2025-10-29 02:14:21 GMT-04:00
+noindex: true
 tags:
   - seed
   - vllm
-description: items to test out cute kernels
-date: "2025-10-03"
-modified: 2025-10-03 02:46:47 GMT-04:00
-noindex: true
 title: Paged Attention Profiling
 ---
 

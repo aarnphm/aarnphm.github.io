@@ -1,11 +1,11 @@
 ---
+date: "2025-10-17"
+description: anatomy of an inference engine
 id: index
+modified: 2025-10-29 02:14:25 GMT-04:00
 tags:
   - seed
   - ml
-description: anatomy of an inference engine
-date: "2025-10-17"
-modified: 2025-10-25 11:51:57 GMT-04:00
 title: 0[dot]440
 ---
 

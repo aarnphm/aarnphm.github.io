@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: christopher nolan
+date: "2024-02-07"
+director: Christopher Nolan
 id: oppenheimer
+modified: 2025-10-29 02:15:05 GMT-04:00
+poster: "[[movies/posters/oppenheimer.jpg]]"
+status: recurring
+studio: christopher nolan
 tags:
   - movies
   - christopher-nolan
-studio: christopher nolan
-poster: "[[movies/posters/oppenheimer.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:12:56 GMT-04:00
-year: 2023
-category: christopher nolan
-director: Christopher Nolan
 title: Oppenheimer
+year: 2023
 ---

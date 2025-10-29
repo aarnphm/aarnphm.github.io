@@ -1,10 +1,10 @@
 ---
-id: NFA
-tags:
-  - math
 date: "2024-01-30"
 description: via subset construction algorithm of DFA
-modified: 2025-04-22 07:25:41 GMT-04:00
+id: NFA
+modified: 2025-10-29 02:15:29 GMT-04:00
+tags:
+  - math
 title: non-deterministic finite automaton
 ---
 

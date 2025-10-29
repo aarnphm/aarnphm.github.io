@@ -1,16 +1,16 @@
 ---
-status: finished
+category: general
+date: "2024-02-07"
+director: Alex Garland
 id: civil-war
-modified: 2025-10-16 20:08:09 GMT-04:00
+modified: 2025-10-29 02:14:48 GMT-04:00
+poster: "[[movies/posters/civil-war.jpg]]"
+rating: 7.1
+status: finished
+studio: a24
 tags:
   - movies
-studio: a24
-poster: "[[movies/posters/civil-war.jpg]]"
-date: "2024-02-07"
+title: Civil War
 watched-date: "2024-05-10"
 year: 2024
-category: general
-director: Alex Garland
-rating: 7.1
-title: Civil War
 ---

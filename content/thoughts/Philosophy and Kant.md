@@ -1,11 +1,11 @@
 ---
+date: "2023-12-04"
+description: and moral philosophy
 id: Philosophy and Kant
+modified: 2025-10-29 02:15:32 GMT-04:00
 tags:
   - philosophy
   - seed
-description: and moral philosophy
-date: "2023-12-04"
-modified: 2025-10-04 16:46:27 GMT-04:00
 title: Philosophy and Kant
 ---
 

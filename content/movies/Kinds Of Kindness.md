@@ -1,14 +1,14 @@
 ---
-id: "kinds-of-kindness"
-status: "to-watch"
+category: general
+date: "2024-02-07"
+director: Yorgos Lanthimos
+id: kinds-of-kindness
+modified: 2025-10-29 02:14:52 GMT-04:00
+poster: "[[movies/posters/kinds-of-kindness.jpg]]"
+status: to-watch
+studio: searchlight
 tags:
   - movies
-title: "Kinds of Kindness"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Kinds of Kindness
 year: 2024
-director: "Yorgos Lanthimos"
-category: "general"
-studio: "searchlight"
-poster: "[[movies/posters/kinds-of-kindness.jpg]]"
 ---

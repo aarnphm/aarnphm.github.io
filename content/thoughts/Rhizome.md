@@ -1,9 +1,9 @@
 ---
+date: "2025-03-25"
 id: Rhizome
+modified: 2025-10-29 02:15:33 GMT-04:00
 tags:
   - seed
-date: "2025-03-25"
-modified: 2025-03-25 05:55:22 GMT-04:00
 title: Rhizome
 ---
 

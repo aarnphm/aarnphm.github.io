@@ -1,11 +1,11 @@
 ---
+date: "2024-09-26"
+description: some notes about entity-relationship models and foreign keys
 id: a1
+modified: 2025-10-29 02:16:03 GMT-04:00
 tags:
   - sfwr3db3
   - assignment
-date: "2024-09-26"
-description: some notes about entity-relationship models and foreign keys
-modified: "2024-09-27"
 title: E/R models and keys
 ---
 

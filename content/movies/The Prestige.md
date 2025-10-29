@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: christopher nolan
+date: "2024-02-07"
+director: Christopher Nolan
 id: the-prestige
+modified: 2025-10-29 02:14:59 GMT-04:00
+poster: "[[movies/posters/the-prestige.jpg]]"
+status: recurring
+studio: christopher nolan
 tags:
   - movies
   - christopher-nolan
-studio: christopher nolan
-poster: "[[movies/posters/the-prestige.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:12:49 GMT-04:00
-year: 2006
-category: christopher nolan
-director: Christopher Nolan
 title: The Prestige
+year: 2006
 ---

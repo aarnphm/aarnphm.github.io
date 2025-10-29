@@ -1,15 +1,15 @@
 ---
-status: recurring
+category: thriller
+date: "2024-02-07"
+director: David Ayer
 id: fury
+modified: 2025-10-29 02:15:03 GMT-04:00
+poster: "[[movies/posters/fury.jpg]]"
+status: recurring
+studio: general
 tags:
   - movies
   - thriller
-studio: general
-poster: "[[movies/posters/fury.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:10:19 GMT-04:00
-year: 2014
-category: thriller
-director: David Ayer
 title: Fury
+year: 2014
 ---

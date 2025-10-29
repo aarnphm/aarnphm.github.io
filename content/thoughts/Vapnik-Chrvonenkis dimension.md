@@ -1,10 +1,10 @@
 ---
+date: "2024-12-14"
 id: Vapnik-Chrvonenkis dimension
+modified: 2025-10-29 02:15:37 GMT-04:00
 tags:
   - math
   - ml
-date: "2024-12-14"
-modified: 2024-12-14 09:45:08 GMT-05:00
 title: Vapnik-Chrvonenkis dimension
 ---
 

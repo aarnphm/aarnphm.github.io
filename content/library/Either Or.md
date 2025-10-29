@@ -1,14 +1,14 @@
 ---
-status: finished
-id: Either Or
-subcategory: Kierkegaard
 author: Søren Kierkegaard
-year-finished: 2024
-title: Either/Or
+category: philosophy
 date: "2025-10-07"
-modified: 2025-10-25 02:11:06 GMT-04:00
+id: Either Or
+modified: 2025-10-29 02:14:29 GMT-04:00
+posters: "[[library/posters/either-or.jpg]]"
+status: finished
+subcategory: Kierkegaard
 tags:
   - philosophy
-posters: "[[library/posters/either-or.jpg]]"
-category: philosophy
+title: Either/Or
+year-finished: 2024
 ---

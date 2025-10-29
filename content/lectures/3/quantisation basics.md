@@ -1,13 +1,13 @@
 ---
+date: "2025-08-28"
+description: and kv compression
 id: quantisation basics
-transpile:
-  title: false
+modified: 2025-10-29 02:14:23 GMT-04:00
 tags:
   - seed
-description: and kv compression
-date: "2025-08-28"
-modified: 2025-10-17 15:47:04 GMT-04:00
 title: quantisation basics
+transpile:
+  title: false
 ---
 
 ### basics

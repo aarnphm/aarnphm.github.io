@@ -1,14 +1,14 @@
 ---
-status: to-watch
+category: general
+date: "2024-02-07"
+director: Andrew Haigh
 id: all-of-us-stranger
+modified: 2025-10-29 02:14:45 GMT-04:00
+poster: "[[movies/posters/all-of-us-stranger.jpg]]"
+status: to-watch
+studio: searchlight pictures
 tags:
   - movies
-studio: searchlight pictures
-poster: "[[movies/posters/all-of-us-stranger.jpg]]"
-date: "2024-02-07"
-modified: 2025-10-16 20:05:57 GMT-04:00
-year: 2023
-category: general
-director: Andrew Haigh
 title: All of Us Stranger
+year: 2023
 ---

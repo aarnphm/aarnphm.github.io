@@ -1,9 +1,10 @@
 ---
-id: Self Reflection
-tags:
-  - eng3px3
 date: "2024-02-12"
 draft: true
+id: Self Reflection
+modified: 2025-10-29 02:16:14 GMT-04:00
+tags:
+  - eng3px3
 title: Self Reflection
 ---
 

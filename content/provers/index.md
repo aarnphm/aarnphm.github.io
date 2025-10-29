@@ -1,9 +1,9 @@
 ---
+date: "2025-10-11"
 id: index
+modified: 2025-10-29 02:15:13 GMT-04:00
 tags:
   - math
-date: "2025-10-11"
-modified: 2025-10-11 23:51:52 GMT-04:00
 title: index
 ---
 

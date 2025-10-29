@@ -1,13 +1,13 @@
 ---
+date: "2023-11-30"
+description: and on Spinoza's Ethics.
 id: Questions about Spinoza
+modified: 2025-10-29 02:15:10 GMT-04:00
+socialDescription: On Spinoza's Ethics.
 tags:
   - philosophy
   - fruit
   - philos1aa3
-date: 2023-11-30
-description: and on Spinoza's Ethics.
-modified: 2025-02-01 10:02:46 GMT-05:00
-socialDescription: On Spinoza's Ethics.
 title: Questions about Spinoza
 ---
 

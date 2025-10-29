@@ -1,14 +1,14 @@
 ---
-id: _index
 aliases:
   - about
   - me
+date: "2022-04-22"
+description: practicing the act of digital gardening.
+id: _index
+modified: 2025-10-29 02:14:20 GMT-04:00
 tags:
   - evergreen
   - fruit
-description: practicing the act of digital gardening.
-date: "2022-04-22"
-modified: 2025-10-23 17:28:48 GMT-04:00
 title: Aaron's notes
 ---
 

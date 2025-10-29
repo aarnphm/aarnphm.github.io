@@ -1,11 +1,11 @@
 ---
+date: "2025-08-21"
+description: Self-attention from first principles with formal properties and efficient variants.
 id: attention
+modified: 2025-10-29 02:14:22 GMT-04:00
 tags:
   - seed
   - ml
-description: Self-attention from first principles with formal properties and efficient variants.
-date: "2025-08-21"
-modified: 2025-09-30 06:36:09 GMT-04:00
 title: attention primer
 ---
 
@@ -123,12 +123,12 @@ D.2 Nadaraya–Watson equivalence (LN). If $\|q\|=\|k_j\|=c$ (approx true after 
 
 D.3 Lipschitz bound for group replacement (GQA). With inverse-temperature $\lambda$, $\|\sigma(z+\delta z)-\sigma(z)\|_2 \le \lambda\,\|\delta z\|_2$. Insert $\delta z= q(K_g-K_i)^\top/\sqrt{d_h}$.
 
-## complexity summary (decode‑phase, per token)
-
-- MHA: read/write $K,V\in\mathbb{R}^{n\times(hd_h)}$ ⇒ HBM‑limited at long $n$.
-- GQA (G groups): memory $\sim 2G d_h$; bandwidth improves, approaching MQA when $G$ is small. [@ainslie2023gqatraininggeneralizedmultiquery]
-- MLA (latent $d_c$): memory $\sim d_c$; up‑projections absorbed into $W_Q,W_O$ at inference.
-- IO‑aware kernels: FlashAttention tiles Q/K/V and fuses softmax; exact attention with reduced HBM traffic. [@dao2022flashattentionfastmemoryefficientexact; @shah2024flashattention3fastaccurateattention]
+> [!note] summary
+>
+> - MHA: read/write $K,V\in\mathbb{R}^{n\times(hd_h)}$ ⇒ HBM‑limited at long $n$.
+> - GQA (G groups): memory $\sim 2G d_h$; bandwidth improves, approaching MQA when $G$ is small. [@ainslie2023gqatraininggeneralizedmultiquery]
+> - MLA (latent $d_c$): memory $\sim d_c$; up‑projections absorbed into $W_Q,W_O$ at inference.
+> - IO‑aware kernels: FlashAttention tiles Q/K/V and fuses softmax; exact attention with reduced HBM traffic. [@dao2022flashattentionfastmemoryefficientexact; @shah2024flashattention3fastaccurateattention]
 
 ## reference cuda kernels (single head, single batch)
 
@@ -136,98 +136,15 @@ Three kernels: scores $S=QK^\top/\sqrt{d}$, row‑softmax, and apply to values $
 
 ### Scores $S=QK^\top/\sqrt{d}$
 
-```cpp
-// qk_scores.cu
-#include <cuda_runtime.h>
-#include <cmath>
-
-__global__ void qk_scores_kernel(
-    const float* __restrict__ Q,  // [n, d]
-    const float* __restrict__ K,  // [n, d]
-    float* __restrict__ S,        // [n, n]
-    int n, int d, float inv_sqrt_d) {
-
-  int row = blockIdx.x * blockDim.x + threadIdx.x;  // query index i
-  int col = blockIdx.y * blockDim.y + threadIdx.y;  // key   index j
-  if (row >= n || col >= n) return;
-
-  const float* q = Q + row * d;
-  const float* k = K + col * d;
-
-  float acc = 0.f;
-  for (int t = 0; t < d; ++t) acc += q[t] * k[t];
-
-  S[row * n + col] = acc * inv_sqrt_d;
-}
-
-extern "C" void qk_scores(const float* Q, const float* K, float* S, int n, int d) {
-  dim3 block(16, 16);
-  dim3 grid((n + block.x - 1) / block.x, (n + block.y - 1) / block.y);
-  float inv_sqrt_d = 1.f / std::sqrtf((float)d);
-  qk_scores_kernel<<<grid, block>>>(Q, K, S, n, d, inv_sqrt_d);
-}
-```
+![[lectures/2/qk_scores.cu]]
 
 ### Row‑wise softmax (stable; in‑place on S)
 
-```cpp
-// row_softmax.cu
-#include <cuda_runtime.h>
-#include <float.h>
-#include <math.h>
-
-__global__ void row_softmax_kernel(float* __restrict__ S, int n) {
-  int i = blockIdx.x * blockDim.x + threadIdx.x;
-  if (i >= n) return;
-
-  float m = -FLT_MAX;
-  for (int j = 0; j < n; ++j) m = fmaxf(m, S[i*n + j]);
-
-  float sum = 0.f;
-  for (int j = 0; j < n; ++j) {
-    float e = expf(S[i*n + j] - m);
-    S[i*n + j] = e;
-    sum += e;
-  }
-
-  float inv = 1.f / fmaxf(sum, 1e-12f);
-  for (int j = 0; j < n; ++j) S[i*n + j] *= inv;
-}
-
-extern "C" void row_softmax(float* S, int n) {
-  int block = 256;
-  int grid  = (n + block - 1) / block;
-  row_softmax_kernel<<<grid, block>>>(S, n);
-}
-```
+![[lectures/2/row_softmax.cu]]
 
 ### Apply to values $O = S V$
 
-```cpp
-// apply_values.cu
-#include <cuda_runtime.h>
-
-__global__ void apply_values_kernel(
-    const float* __restrict__ S,  // [n, n]
-    const float* __restrict__ V,  // [n, d_v]
-    float* __restrict__ O,        // [n, d_v]
-    int n, int d_v) {
-
-  int i = blockIdx.x * blockDim.x + threadIdx.x;  // row in S / O
-  int t = blockIdx.y * blockDim.y + threadIdx.y;  // value dim
-  if (i >= n || t >= d_v) return;
-
-  float acc = 0.f;
-  for (int j = 0; j < n; ++j) acc += S[i*n + j] * V[j*d_v + t];
-  O[i*d_v + t] = acc;
-}
-
-extern "C" void apply_values(const float* S, const float* V, float* O, int n, int d_v) {
-  dim3 block(16, 16);
-  dim3 grid((n + block.x - 1) / block.x, (d_v + block.y - 1) / block.y);
-  apply_values_kernel<<<grid, block>>>(S, V, O, n, d_v);
-}
-```
+![[lectures/2/apply_values.cu]]
 
 Masked causal attention sets $S_{ij}=-\infty$ for $j>i$.
 
@@ -237,7 +154,7 @@ Two‑pass Triton kernel: (1) running row‑max/sum for softmax; (2) recompute t
 
 ![[lectures/2/attention_triton.py]]
 
-## Performance Notes
+## notes
 
 - IO‑aware tiling (FlashAttention): stream K/V tiles, maintain running $(m_i,\ell_i)$, avoid $n\times n$ intermediates. [@dao2022flashattentionfastmemoryefficientexact; @shah2024flashattention3fastaccurateattention]
 - KV paging + sharing: paged layouts with GQA/MQA/MLA reduce HBM traffic. [@ainslie2023gqatraininggeneralizedmultiquery; @shazeer2019fasttransformerdecodingwritehead]
@@ -246,7 +163,7 @@ Two‑pass Triton kernel: (1) running row‑max/sum for softmax; (2) recompute t
 
 ---
 
-## Appendix
+## appendix
 
 E.1 MHA as mixture of kernel smoothers. For head $i$, $\kappa_i(q,k)=\exp(\langle W_Q^i q, W_K^i k\rangle/\sqrt{d_h})$ and
 

@@ -1,15 +1,15 @@
 ---
-id: "spectre"
-status: "recurring"
+category: bond
+date: "2024-02-07"
+director: Sam Mendes
+id: spectre
+modified: 2025-10-29 02:15:06 GMT-04:00
+poster: "[[movies/posters/spectre.jpg]]"
+status: recurring
+studio: bond
 tags:
   - movies
   - bond
-title: "Spectre"
-date: "2024-02-07"
-modified: "2025-10-16 16:41:56 GMT-04:00"
+title: Spectre
 year: 2015
-director: "Sam Mendes"
-category: "bond"
-studio: "bond"
-poster: "[[movies/posters/spectre.jpg]]"
 ---

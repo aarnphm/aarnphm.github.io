@@ -1,10 +1,10 @@
 ---
+date: "2025-08-28"
+description: bottleneck in theory
 id: Information bottleneck method
+modified: 2025-10-29 02:15:25 GMT-04:00
 tags:
   - seed
-description: bottleneck in theory
-date: "2025-08-28"
-modified: 2025-08-28 10:53:55 GMT-04:00
 title: Information bottleneck method
 ---
 
