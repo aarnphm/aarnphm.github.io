@@ -87,17 +87,15 @@ class SidenoteManager {
       const label = span.querySelector<HTMLSpanElement>(".sidenote-label")
       if (!label) return
 
-      const dataContent = span.getAttribute("data-content")
-      if (!dataContent) return
+      const content = span.nextElementSibling as HTMLElement | null
+      if (!content || !content.classList.contains("sidenote-content")) return
 
-      // create content div
-      const content = document.createElement("div")
-      content.classList.add("sidenote-content")
-      content.innerHTML = dataContent
       content.style.display = "none"
+      content.setAttribute("aria-hidden", "true")
 
-      // insert after the sidenote span itself (not inside it)
-      span.parentElement?.insertBefore(content, span.nextSibling)
+      if (!label.hasAttribute("aria-controls") && content.id) {
+        label.setAttribute("aria-controls", content.id)
+      }
 
       this.sidenotes.push({ span, label, content })
     })

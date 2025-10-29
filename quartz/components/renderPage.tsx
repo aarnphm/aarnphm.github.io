@@ -1307,16 +1307,24 @@ export function renderPage(
 
   // NOTE: Finally, we dump out the data-references and data-footnotes down to page footer, if exists
   let retrieval: Set<Element> = new Set<Element>()
+  const toRemove: Array<{ parent: Element; index: number; node: Element }> = []
+
   visit(tree, { tagName: "section" }, (node, index, parent) => {
     if (node.properties?.dataReferences === "" || node.properties?.dataFootnotes === "") {
       const className = Array.isArray(node.properties.className)
         ? node.properties.className
         : (node.properties.className = [])
       className.push("main-col")
-      const els = new Set(parent?.children.splice(index!, 1)) as Set<Element>
-      retrieval = retrieval.union(els)
+      toRemove.push({ parent: parent as Element, index: index!, node })
+      retrieval.add(node)
     }
   })
+
+  // remove in reverse order to maintain correct indices
+  toRemove.sort((a, b) => b.index - a.index)
+  for (const { parent, index } of toRemove) {
+    parent.children.splice(index, 1)
+  }
   componentData.tree = tree
   updateStreamDataFromTree(tree, componentData)
   isFolderTag = isFolderTag ?? false

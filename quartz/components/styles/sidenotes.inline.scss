@@ -146,6 +146,7 @@ $sidenote-content-border-width: 0.075rem;
   }
 
   .sidenote-separator {
+    display: block;
     margin: 0.75rem 0;
     border: none;
     border-top: $sidenote-content-border-width solid $sidenote-border-color;

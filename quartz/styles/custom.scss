@@ -277,6 +277,9 @@ a {
     text-decoration: none;
     background: inherit;
     cursor: pointer;
+    &:hover {
+      color: var(--darkgray);
+    }
   }
 
   &[data-role="anchor"] {

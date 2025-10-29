@@ -7,7 +7,6 @@ import {
 } from "hast"
 import { visit } from "unist-util-visit"
 import { h } from "hastscript"
-import { toHtml } from "hast-util-to-html"
 import { toText } from "hast-util-to-text"
 import { BuildCtx } from "../../util/ctx"
 import { FullSlug, transformLink } from "../../util/path"
@@ -111,17 +110,17 @@ function extractSidenote(
   const { attrsText, labelText: rawLabel, contentNodes } = parsed
   const { attrs, internal } = parseAttributes(attrsText)
 
-  const contentHtml = serializeContent(contentNodes)
-  const internalHtml = renderInternalLinks(internal, file, ctx)
-  const combinedHtml = combineContent(contentHtml, internalHtml)
+  const internalNodes = renderInternalLinks(internal, file, ctx)
+  const combinedContent = [...contentNodes, ...internalNodes]
 
   const labelText = deriveLabel(rawLabel)
   const sidenoteId = nextId()
 
   const replacements = buildReplacementNodes(
+    file,
     labelText,
     attrs,
-    combinedHtml,
+    combinedContent,
     sidenoteId,
     collected.tailText,
   )
@@ -280,14 +279,12 @@ function parseAttributes(attrsText?: string): { attrs: Record<string, string>; i
   return { attrs, internal }
 }
 
-function serializeContent(nodes: HastContent[]): string {
-  if (nodes.length === 0) return ""
-  const root: HastRoot = { type: "root", children: nodes }
-  return toHtml(root, { allowDangerousHtml: true }).trim()
-}
-
-function renderInternalLinks(internalRaw: string | undefined, file: VFile, ctx: BuildCtx): string {
-  if (!internalRaw) return ""
+function renderInternalLinks(
+  internalRaw: string | undefined,
+  file: VFile,
+  ctx: BuildCtx,
+): HastContent[] {
+  if (!internalRaw) return []
 
   const links: HastContent[] = []
   const regex = createWikilinkRegex()
@@ -335,9 +332,12 @@ function renderInternalLinks(internalRaw: string | undefined, file: VFile, ctx: 
     links.push(link)
   }
 
-  if (links.length === 0) return ""
+  if (links.length === 0) return []
 
-  const separator = h("hr.sidenote-separator", { className: "sidenote-separator" })
+  const separator = h("span.sidenote-separator", {
+    className: "sidenote-separator",
+    role: "presentation",
+  })
   const interleaved: HastContent[] = []
   links.forEach((link, idx) => {
     if (idx > 0) {
@@ -346,15 +346,9 @@ function renderInternalLinks(internalRaw: string | undefined, file: VFile, ctx: 
     interleaved.push(link)
   })
 
-  const container = h("div.sidenote-linked-notes", ["linked notes: ", ...interleaved])
+  const container = h("span.sidenote-linked-notes", ["linked notes: ", ...interleaved])
 
-  return toHtml({ type: "root", children: [separator, container] }, { allowDangerousHtml: true })
-}
-
-function combineContent(contentHtml: string, internalHtml: string): string {
-  if (!internalHtml) return contentHtml
-  if (!contentHtml) return internalHtml
-  return `${contentHtml}${internalHtml}`
+  return [separator, container]
 }
 
 function deriveLabel(rawLabel: string): string {
@@ -375,12 +369,15 @@ function deriveLabel(rawLabel: string): string {
 }
 
 function buildReplacementNodes(
+  file: VFile,
   labelText: string,
   attrs: Record<string, string>,
-  combinedHtml: string,
+  combinedContent: HastContent[],
   sidenoteId: number,
   tailText: string,
 ): HastContent[] {
+  const baseId = buildSidenoteDomId(file, sidenoteId)
+
   const arrowDownSvg = h(
     "svg.sidenote-arrow.sidenote-arrow-down",
     {
@@ -399,16 +396,22 @@ function buildReplacementNodes(
   )
 
   const hasLabel = labelText.length > 0
+
+  const labelProps: Record<string, string> = {
+    id: `${baseId}-label`,
+    "aria-controls": `${baseId}-content`,
+  }
+
   const labelElement = h(
     "span.sidenote-label",
-    hasLabel ? {} : { "data-auto": "" },
+    hasLabel ? labelProps : { ...labelProps, "data-auto": "" },
     hasLabel
       ? [{ type: "text", value: labelText } as HastText, arrowDownSvg]
       : [{ type: "text", value: "▪" } as HastText, arrowDownSvg],
   )
 
   const dataAttrs: Record<string, string> = {
-    "data-content": combinedHtml,
+    id: baseId,
     "data-sidenote-id": String(sidenoteId),
   }
 
@@ -420,11 +423,29 @@ function buildReplacementNodes(
   }
 
   const sidenoteElement = h("span.sidenote", dataAttrs, [labelElement])
-  const replacements: HastContent[] = [sidenoteElement]
+  const contentProps: Record<string, string> = {
+    id: `${baseId}-content`,
+    "data-sidenote-id": String(sidenoteId),
+    "data-sidenote-for": baseId,
+    "aria-hidden": "true",
+  }
+
+  const contentChildren =
+    combinedContent.length > 0 ? combinedContent : ([{ type: "text", value: "" }] as HastContent[])
+
+  const contentElement = h("span.sidenote-content", contentProps, contentChildren)
+
+  const replacements: HastContent[] = [sidenoteElement, contentElement]
 
   if (tailText.length > 0) {
     replacements.push({ type: "text", value: tailText } as HastText)
   }
 
   return replacements
+}
+
+function buildSidenoteDomId(file: VFile, sidenoteId: number): string {
+  const rawSlug = (file.data.slug as string | undefined) ?? "note"
+  const sanitized = rawSlug.replace(/[^A-Za-z0-9_-]/g, "-")
+  return `sidenote-${sanitized}-${sidenoteId}`
 }
