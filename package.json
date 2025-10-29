@@ -169,7 +169,7 @@
     "ts-morph": "^27.0.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "wrangler": "^4.45.1"
+    "wrangler": "^4.45.2"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
 }
