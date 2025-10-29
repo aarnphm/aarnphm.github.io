@@ -1,21 +1,21 @@
 ---
-id: love
 aliases:
   - dilectio
   - lyd
   - nb
   - living
+date: "2025-10-04"
+description: choosing to give your full, continuously.
+id: love
+modified: 2025-10-29 09:25:58 GMT-04:00
+socials:
+  essay: https://aarnphm.xyz/posts/love
 tags:
   - evergreen
   - love
   - philosophy
   - technical
   - fruit
-description: choosing to give your full, continuously.
-socials:
-  essay: https://aarnphm.xyz/posts/love
-date: "2025-10-04"
-modified: 2025-10-29 03:33:22 GMT-04:00
 title: dilectio
 ---
 

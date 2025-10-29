@@ -45,6 +45,7 @@ interface SidenoteState {
   side?: "left" | "right"
   clickHandler?: (e: MouseEvent) => void
   keyHandler?: (e: KeyboardEvent) => void
+  inlineExpanded?: boolean
 }
 
 class SidenoteManager {
@@ -108,6 +109,9 @@ class SidenoteManager {
     this.sidenotes.forEach((state) => {
       const { span, label, content } = state
 
+      const currentExpanded = label.getAttribute("aria-expanded") === "true" || content.style.display === "block"
+      state.inlineExpanded = currentExpanded
+
       // remove inline mode attributes and handlers
       if (state.clickHandler) {
         label.removeEventListener("click", state.clickHandler)
@@ -132,6 +136,7 @@ class SidenoteManager {
       content.style.display = "none"
       content.style.position = ""
       content.classList.remove("sidenote-left", "sidenote-right", "sidenote-inline")
+      content.setAttribute("aria-hidden", "true")
     })
   }
 
@@ -189,6 +194,7 @@ class SidenoteManager {
     // apply positioning
     content.classList.add(`sidenote-${side}`)
     content.style.display = "block"
+    content.setAttribute("aria-hidden", "false")
 
     // update tracking
     const bottomPosition = topPosition + contentHeight
@@ -199,6 +205,7 @@ class SidenoteManager {
     }
 
     state.side = side
+    state.inlineExpanded = false
     return true
   }
 
@@ -212,7 +219,6 @@ class SidenoteManager {
     // set up interactivity
     label.setAttribute("role", "button")
     label.setAttribute("tabindex", "0")
-    label.setAttribute("aria-expanded", "false")
     label.setAttribute("aria-haspopup", "true")
     label.setAttribute("data-inline", "")
 
@@ -232,6 +238,8 @@ class SidenoteManager {
         span.classList.remove("active")
         label.classList.remove("active")
       }
+
+      state.inlineExpanded = newExpandedState
     }
 
     const onClick = (e: MouseEvent) => {
@@ -253,6 +261,21 @@ class SidenoteManager {
 
     label.addEventListener("click", onClick)
     label.addEventListener("keydown", onKeyDown)
+
+    const shouldExpand = state.inlineExpanded ?? false
+    if (shouldExpand) {
+      label.setAttribute("aria-expanded", "true")
+      content.style.display = "block"
+      content.setAttribute("aria-hidden", "false")
+      span.classList.add("active")
+      label.classList.add("active")
+    } else {
+      label.setAttribute("aria-expanded", "false")
+      content.style.display = "none"
+      content.setAttribute("aria-hidden", "true")
+      span.classList.remove("active")
+      label.classList.remove("active")
+    }
   }
 
   public layout() {

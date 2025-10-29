@@ -1104,3 +1104,14 @@ a.prefix-left-gap {
     content: "slip";
   }
 }
+
+[data-slides="true"],
+[data-slug*="posts/"] {
+  .search-button {
+    visibility: hidden;
+  }
+
+  section[class~="header"] {
+    position: static;
+  }
+}

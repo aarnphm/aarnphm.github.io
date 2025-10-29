@@ -67,6 +67,12 @@ export interface FromMarkdownOptions {
    * only applies when obsidian: true
    */
   stripExtensions?: string[]
+
+  /**
+   * function to check if a slug exists in the content index.
+   * used to validate implicit alias splitting.
+   */
+  hasSlug?: (slug: string) => boolean
 }
 
 /**
@@ -550,25 +556,47 @@ function exitWikilink(
       node.data.wikilink.raw = node.value
 
       const wikilink = node.data.wikilink
-      const { obsidian = true, stripExtensions = [] } = options
+      const { obsidian = true, stripExtensions = [], hasSlug } = options
 
       // handle implicit alias from space in target (Obsidian behavior)
       // only extract from target, not from anchors
       // if no explicit alias, has a target (not just anchor), and target contains a space after last /, split it
       if (!wikilink.alias && wikilink.target && !wikilink.anchor && wikilink.target.includes(" ")) {
         const lastSlash = wikilink.target.lastIndexOf("/")
-        const afterSlash = lastSlash >= 0 ? wikilink.target.substring(lastSlash + 1) : wikilink.target
+        const afterSlash =
+          lastSlash >= 0 ? wikilink.target.substring(lastSlash + 1) : wikilink.target
         const spaceIndex = afterSlash.indexOf(" ")
 
         if (spaceIndex >= 0) {
           // split: everything before space is path, everything after is display text
-          const pathPart = lastSlash >= 0
-            ? wikilink.target.substring(0, lastSlash + 1 + spaceIndex)
-            : wikilink.target.substring(0, spaceIndex)
+          const pathPart =
+            lastSlash >= 0
+              ? wikilink.target.substring(0, lastSlash + 1 + spaceIndex)
+              : wikilink.target.substring(0, spaceIndex)
           const displayPart = afterSlash.substring(spaceIndex + 1).trim()
 
-          wikilink.target = pathPart
-          wikilink.alias = displayPart
+          // only apply implicit alias if we can verify:
+          // - partial path (before space) exists as a file
+          // - full path (with space) doesn't exist
+          // this prevents breaking links like [[thoughts/Lebesgue measure]]
+          if (hasSlug) {
+            const fullPathSlug = slugifyFilePath(wikilink.target, stripExtensions)
+            const partialPathSlug = slugifyFilePath(pathPart, stripExtensions)
+
+            const fullPathExists = hasSlug(fullPathSlug)
+            const partialPathExists = hasSlug(partialPathSlug)
+
+            // only split if partial exists and full doesn't
+            if (partialPathExists && !fullPathExists) {
+              wikilink.target = pathPart
+              wikilink.alias = displayPart
+            }
+          } else {
+            // fallback: if no hasSlug function provided, apply the split
+            // (maintains backward compatibility)
+            wikilink.target = pathPart
+            wikilink.alias = displayPart
+          }
         }
       }
 

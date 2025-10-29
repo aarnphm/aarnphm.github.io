@@ -1,4 +1,6 @@
 ---
+aliases:
+  - inspo
 claude:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -16,20 +18,6 @@ claude:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-id: are.na
-aliases:
-  - inspo
-tags:
-  - technical
-  - seed
-  - evergreen
-description: My run-down version of are[dot]na
-date: "2024-10-24"
-socials:
-  home: /
-  curius: /curius
-  are.na: https://www.are.na/aaron-pham/channels
-modified: 2025-10-29 04:34:23 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -50,13 +38,25 @@ codex:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be consumed by quartz/plugins/emitters/arena.ts, and then ingested with quartz/components/pages/[ArenaIndex|ChannelContent].tsx
+cssclasses:
+  - nolist
+date: "2024-10-24"
+description: My run-down version of are[dot]na
+id: are.na
+modified: 2025-10-29 09:17:41 GMT-04:00
 permalinks:
   - /website
   - /tweets
   - /resources
+socials:
+  are.na: https://www.are.na/aaron-pham/channels
+  curius: /curius
+  home: /
+tags:
+  - technical
+  - seed
+  - evergreen
 title: are.na
-cssclasses:
-  - nolist
 ---
 
 ## discourse
@@ -631,6 +631,25 @@ cssclasses:
 
 ## people
 
+- https://www.katmh.com/ -- Kat Huang
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [design]
+  - software engineer at Notion
+- https://jocelynemurphy.github.io/ -- Joss Murphy
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [wygo]
+- https://cguti.xyz/ -- Carmen Gutierrez
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [hci, interface]
+  - A24 Films, interface and interaction design.
+- https://www.avisingh.org/publications -- Avi Singh's publications
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [research, ai]
+  - Gemini Thinking Team
 - https://www.floguo.com/ -- Flo Guo [**]
   - [meta]:
     - date: 10/29/2025
@@ -1128,6 +1147,32 @@ cssclasses:
 
 ## essay
 
+- https://lilianweng.github.io/posts/2025-05-01-thinking/ -- Why We Think?
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [ml, cot]
+- https://jamesyu.org/singular/ -- Singular
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [post capitalism, generative]
+  - Co-written with GPT-3
+  - Cool sidenotes implementations though.
+- https://www.gleech.org/nysound -- NY sounds
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [metropolitan, nyc]
+- https://milan.cvitkovic.net/writing/things_youre_allowed_to_do/ -- Things you're allowed to do
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [life, work]
+- https://maggieappleton.com/digital-anthropology -- A Brief Introduction to Digital Anthropology [**]
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [anthropology]
+- https://saffron.substack.com/p/something-divine-shook-me-by-the -- something divine shook me by the shoulders
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [god]
 - https://www.henrikkarlsson.xyz/p/wordless-thought -- When is it better to think without words?
   - [meta]:
     - date: 10/29/2025
@@ -2380,8 +2425,21 @@ cssclasses:
   qk_scores_short.softmax(0)[0], qk_scores_long.softmax(0)[0]
   ```
 
-## opinionated
+## opinions
 
+- https://johnpaulbrammer.substack.com/p/thoughts-on-the-dating-app-screenshot -- Thoughts on the [[/dating|Dating]] App Screenshot
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [surveillance]
+  - recreational surveillance
+- https://www.nytimes.com/2025/08/02/opinion/artificial-intelligence-enlightenment.html -- A.I. Is Shedding Enlightenment Values
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [ai, epistemology]
+- https://maggieappleton.com/ai-enlightenment -- A Treatise on AI Chatbots Undermining the Enlightenment
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [ai, llm]
 - https://www.visakanv.com/blog/flirting/ -- flirting is about signalling interest with plausible deniability
   - [meta]:
     - date: 10/29/2025
@@ -2882,10 +2940,13 @@ cssclasses:
     - date: 10/08/2025
     - tags: [rationalist]
   - after Decartes, [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Sphinoza]]
-- https://caitlynrichardson.substack.com/p/can-intellectual-intimacy-replace -- can intellectual intimacy replace physical desire?
+- https://caitlynrichardson.substack.com/p/can-intellectual-intimacy-replace -- can intellectual intimacy replace physical desire? [**]
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [love]
+  - > desire is not just a physical hunger but a hunger of the intellect, an unraveling of thought before an unraveling of the body. to be drawn into someone’s mind, to feel their thoughts press against your own, can be more intoxicating than any physical closeness.
+    >
+    > —Anaïs Nin
 - https://www.gleech.org/grids -- Preventing Side-effects in Gridworlds
   - [meta]:
     - date: 10/06/2025
@@ -3680,6 +3741,10 @@ cssclasses:
 
 ## technical
 
+- https://edwardtufte.github.io/tufte-css/ -- Tufte CSS
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [styling, web]
 - https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/
   - [meta]:
     - date: 10/28/2025

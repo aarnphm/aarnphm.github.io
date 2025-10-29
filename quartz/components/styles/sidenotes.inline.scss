@@ -11,7 +11,6 @@ $sidenote-border-radius: 0.2rem;
 $sidenote-transition:
   border-color 0.2s ease,
   background-color 0.2s ease;
-$sidenote-arrow-transition: transform 0.2s ease;
 $sidenote-inline-font-size: 0.9em;
 $sidenote-inline-font-size-mobile: 0.85em;
 $sidenote-code-font-size: 0.85em;
@@ -38,7 +37,17 @@ $sidenote-content-border-width: 0.075rem;
     ~ .sidenote-content {
       border-color: $sidenote-accent;
       border-style: dashed;
+      background-color: color-mix(in srgb, $sidenote-accent 10%, $sidenote-surface);
     }
+  }
+}
+
+.sidenote:has(+ .sidenote-content:hover),
+.sidenote:has(+ .sidenote-content:focus-within) {
+  .sidenote-label:not([data-auto]) {
+    border-bottom-color: $sidenote-accent;
+    border-bottom-style: solid;
+    background-color: color-mix(in srgb, $sidenote-accent 10%, $sidenote-surface);
   }
 }
 
@@ -66,7 +75,6 @@ $sidenote-content-border-width: 0.075rem;
   margin-left: 0.25em;
   vertical-align: middle;
   color: $sidenote-accent;
-  transition: $sidenote-arrow-transition;
   pointer-events: none;
 
   &.sidenote-arrow-down {
@@ -93,6 +101,13 @@ $sidenote-content-border-width: 0.075rem;
   font-size: $sidenote-inline-font-size;
   line-height: 1.5;
   transition: $sidenote-transition;
+
+  &:hover,
+  &:focus-within {
+    border-color: $sidenote-accent;
+    border-style: dashed;
+    background-color: color-mix(in srgb, $sidenote-accent 10%, $sidenote-surface);
+  }
 
   &.sidenote-right {
     right: -$sidenote-offset;

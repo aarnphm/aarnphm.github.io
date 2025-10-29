@@ -269,8 +269,11 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       return src
     },
-    markdownPlugins() {
+    markdownPlugins(ctx) {
       const plugins: PluggableList = []
+
+      const allSlugs = new Set(ctx?.allSlugs ?? [])
+      const hasSlug = (slug: string) => allSlugs.has(slug as any)
 
       // regex replacements
       plugins.push(() => {
@@ -365,7 +368,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       // wikilink visitor for experimental micromark parser
       plugins.push(
         //@ts-ignore
-        remarkWikilink,
+        [remarkWikilink, { hasSlug }],
         () => (tree: Root, file) => {
           visit(tree, "wikilink", (node: Wikilink, index, parent) => {
             if (!node.data?.wikilink || index === undefined || !parent) return

@@ -4,7 +4,7 @@ import { tokenizeTerm, encode } from "./util"
 interface StreamEntry {
   id: string
   html: string
-  metadata: any
+  metadata: unknown
   isoDate: string | null
   displayDate: string | null
 }
@@ -26,6 +26,36 @@ interface IndexedEntry {
   metadata: string
   isoDate: string
   displayDate: string
+  tags: string[]
+}
+
+function extractMetadata(raw: unknown): { tags: string[]; metadataString: string } {
+  let metadataObj: Record<string, unknown> = {}
+  let metadataString = "{}"
+
+  if (typeof raw === "string") {
+    metadataString = raw
+    try {
+      const parsed = JSON.parse(raw)
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        metadataObj = parsed as Record<string, unknown>
+      }
+    } catch {
+      metadataObj = {}
+    }
+  } else if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    metadataObj = raw as Record<string, unknown>
+    try {
+      metadataString = JSON.stringify(metadataObj)
+    } catch {
+      metadataString = "{}"
+    }
+  }
+
+  const rawTags = Array.isArray(metadataObj.tags) ? metadataObj.tags : []
+  const tags = rawTags.map((tag) => String(tag).trim()).filter((tag) => tag.length > 0)
+
+  return { tags, metadataString }
 }
 
 let searchIndex: any | null = null
@@ -49,7 +79,7 @@ async function buildSearchIndex() {
   if (isIndexBuilt) return
 
   try {
-    const response = await fetch("/stream-timestamps.jsonl")
+    const response = await fetch("/streams.jsonl")
     if (!response.ok) {
       console.error("[StreamSearch] Failed to load stream data:", response.statusText)
       return
@@ -66,14 +96,17 @@ async function buildSearchIndex() {
         const group: StreamGroup = JSON.parse(line)
 
         for (const entry of group.entries) {
+          const { tags, metadataString } = extractMetadata(entry.metadata)
+
           const indexedEntry: IndexedEntry = {
             id: entryIndex++,
             entryId: entry.id,
             groupId: group.groupId,
             content: stripHtml(entry.html),
-            metadata: JSON.stringify(entry.metadata || {}),
+            metadata: metadataString,
             isoDate: entry.isoDate || group.isoDate || "",
             displayDate: entry.displayDate || group.isoDate || "",
+            tags,
           }
           indexedEntries.push(indexedEntry)
         }
@@ -88,13 +121,21 @@ async function buildSearchIndex() {
       encode,
       document: {
         id: "id",
-        index: ["content", "metadata", "isoDate", "displayDate"],
+        index: ["content", "metadata", "isoDate", "displayDate", "tags"],
       },
     })
 
     // Add all entries to index
     for (const entry of indexedEntries) {
-      await searchIndex.addAsync(entry)
+      const tagsField = entry.tags
+        .flatMap((tag) => [tag, `#${tag}`])
+        .join(" ")
+        .trim()
+
+      await searchIndex.addAsync({
+        ...entry,
+        tags: tagsField,
+      })
     }
 
     isIndexBuilt = true
@@ -173,12 +214,24 @@ function highlightTextNodes(element: HTMLElement, searchTerm: string) {
  * Clear all highlights
  */
 function clearHighlights() {
-  const highlights = document.querySelectorAll(".stream-entry-content .search-highlight")
+  const highlights = document.querySelectorAll(".stream-entry .search-highlight")
   highlights.forEach((mark) => {
     const text = mark.textContent || ""
     const textNode = document.createTextNode(text)
     mark.parentNode?.replaceChild(textNode, mark)
   })
+}
+
+function parseTagTokens(query: string): string[] {
+  return Array.from(
+    new Set(
+      query
+        .trim()
+        .split(/\s+/)
+        .map((token) => (token.startsWith("#") ? token.slice(1) : ""))
+        .filter((token) => token.length > 0),
+    ),
+  )
 }
 
 /**
@@ -209,27 +262,59 @@ async function filterStreamEntries(query: string) {
     return
   }
 
-  try {
-    // Search across all indexed fields
-    const results = await searchIndex.searchAsync({
-      query: trimmedQuery,
-      limit: 500,
-      index: ["content", "metadata", "isoDate", "displayDate"],
-    })
+  const lowerQuery = trimmedQuery.toLowerCase()
+  const isTagQuery = lowerQuery.startsWith("#")
+  const tagTokens = isTagQuery ? parseTagTokens(lowerQuery) : []
+  const matchedEntryIds = new Set<string>()
+  let highlightTerm = trimmedQuery
 
-    // Collect all matching entry IDs
-    const matchedEntryIds = new Set<string>()
-    for (const fieldResult of Object.values(results)) {
-      if (fieldResult && (fieldResult as any).result) {
-        for (const id of (fieldResult as any).result) {
-          const entry = indexedEntries[Number(id)]
-          if (entry) {
-            matchedEntryIds.add(entry.entryId)
-          }
-        }
+  if (isTagQuery) {
+    if (tagTokens.length === 0) {
+      streamEntries.forEach((entry) => {
+        ;(entry as HTMLElement).style.display = ""
+      })
+      updateSearchStatus("type a tag name after '#'")
+      return
+    }
+
+    for (const entry of indexedEntries) {
+      const normalizedTags = entry.tags.map((tag) => tag.toLowerCase())
+      const matchesAll = tagTokens.every((token) =>
+        normalizedTags.some((entryTag) => entryTag.startsWith(token)),
+      )
+      if (matchesAll) {
+        matchedEntryIds.add(entry.entryId)
       }
     }
 
+    highlightTerm = tagTokens.join(" ")
+  } else {
+    try {
+      // Search across all indexed fields
+      const results = await searchIndex.searchAsync({
+        query: trimmedQuery,
+        limit: 500,
+        index: ["content", "metadata", "isoDate", "displayDate", "tags"],
+      })
+
+      for (const fieldResult of Object.values(results)) {
+        if (fieldResult && (fieldResult as any).result) {
+          for (const id of (fieldResult as any).result) {
+            const entry = indexedEntries[Number(id)]
+            if (entry) {
+              matchedEntryIds.add(entry.entryId)
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error("[StreamSearch] Search failed:", err)
+      updateSearchStatus("search error")
+      return
+    }
+  }
+
+  try {
     // Show/hide entries based on matches
     let visibleCount = 0
     streamEntries.forEach((entry) => {
@@ -239,8 +324,15 @@ async function filterStreamEntries(query: string) {
 
         // Highlight matches in content
         const contentEl = entry.querySelector(".stream-entry-content") as HTMLElement
-        if (contentEl) {
-          highlightTextNodes(contentEl, trimmedQuery)
+        if (contentEl && highlightTerm) {
+          highlightTextNodes(contentEl, highlightTerm)
+        }
+
+        if (isTagQuery && highlightTerm) {
+          const tagElements = entry.querySelectorAll(".stream-entry-tag")
+          tagElements.forEach((tagEl) => {
+            highlightTextNodes(tagEl as HTMLElement, highlightTerm)
+          })
         }
         visibleCount++
       } else {
@@ -248,13 +340,22 @@ async function filterStreamEntries(query: string) {
       }
     })
 
-    updateSearchStatus(
-      visibleCount > 0
-        ? `showing ${visibleCount} ${visibleCount === 1 ? "entry" : "entries"}`
-        : `no results for "${trimmedQuery}"`,
-    )
+    if (isTagQuery) {
+      const readableTags = tagTokens.map((tag) => `#${tag}`).join(" ")
+      updateSearchStatus(
+        visibleCount > 0
+          ? `showing ${visibleCount} ${visibleCount === 1 ? "entry" : "entries"} tagged ${readableTags}`
+          : `no entries tagged ${readableTags}`,
+      )
+    } else {
+      updateSearchStatus(
+        visibleCount > 0
+          ? `showing ${visibleCount} ${visibleCount === 1 ? "entry" : "entries"}`
+          : `no results for "${trimmedQuery}"`,
+      )
+    }
   } catch (err) {
-    console.error("[StreamSearch] Search failed:", err)
+    console.error("[StreamSearch] Failed to update stream entries:", err)
     updateSearchStatus("search error")
   }
 }
@@ -298,6 +399,24 @@ async function initStreamSearch() {
 
   if (!form || !searchInput) return
 
+  const focusShortcutHandler = (event: KeyboardEvent) => {
+    if (!event.metaKey || event.key !== ".") return
+
+    const target = event.target as Element | null
+    if (target) {
+      const tag = target.tagName?.toLowerCase()
+      if (tag === "input" || tag === "textarea" || (target as HTMLElement).isContentEditable) {
+        return
+      }
+    }
+
+    event.preventDefault()
+    searchInput.focus()
+    searchInput.select()
+  }
+
+  document.addEventListener("keydown", focusShortcutHandler)
+
   // Handle input changes with debounce
   const handleInput = () => {
     if (searchTimeout !== null) {
@@ -321,6 +440,7 @@ async function initStreamSearch() {
   window.addCleanup(() => {
     searchInput.removeEventListener("input", handleInput)
     form.removeEventListener("submit", handleSubmit)
+    document.removeEventListener("keydown", focusShortcutHandler)
     if (searchTimeout !== null) {
       window.clearTimeout(searchTimeout)
       searchTimeout = null

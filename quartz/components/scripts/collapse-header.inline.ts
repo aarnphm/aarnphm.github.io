@@ -38,8 +38,10 @@ function toggleHeader(evt: Event) {
   wrapper.classList.toggle("collapsed", isCollapsed)
   toggleButton.classList.toggle("collapsed", isCollapsed)
 
+  const slug = String(getFullSlug(window) ?? window.document.body.dataset.slug ?? "")
+
   localStorage.setItem(
-    `${getFullSlug(window).replace("/", "--")}-${toggleButton.id}`,
+    `${slug.replace("/", "--")}-${toggleButton.id}`,
     isCollapsed ? "false" : "true",
   )
 }
@@ -59,9 +61,9 @@ function setupHeaders() {
       )
       // setup once
       if (content) {
-        const savedState = localStorage.getItem(
-          `${getFullSlug(window).replace("/", "--")}-${button.id}`,
-        )
+        const slug = String(getFullSlug(window) ?? window.document.body.dataset.slug ?? "")
+
+        const savedState = localStorage.getItem(`${slug.replace("/", "--")}-${button.id}`)
         if (savedState) {
           setHeaderState(
             button as HTMLElement,

@@ -44,6 +44,24 @@ const SECONDARY_CHOICE_KEYS = [
   "z",
 ]
 
+function shouldIgnoreShortcutTarget(target: EventTarget | null): boolean {
+  let el: Element | null = target instanceof Element ? target : null
+  if (!el) {
+    const active = document.activeElement
+    el = active instanceof Element ? active : null
+  }
+
+  if (!el) return false
+
+  const tag = el.tagName.toLowerCase()
+  if (tag === "input" || tag === "textarea") return true
+  if ((el as HTMLElement).isContentEditable) return true
+  if (el.closest(".search .search-container")) return true
+  if (el.closest(".stream-search-container")) return true
+
+  return false
+}
+
 function extractHeadings(): HeadingInfo[] {
   const headingSelectors =
     ".page-content h2, .page-content h3, .page-content h4, .page-content h5, .page-content h6"
@@ -381,6 +399,7 @@ function handleKeyDown(e: KeyboardEvent) {
 function handleGlobalKeyDown(e: KeyboardEvent) {
   // Don't trigger if modal is already open
   if (isOpen) return
+  if (shouldIgnoreShortcutTarget(e.target)) return
 
   // Check for 'gh' sequence
   if (e.key === "g" && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -391,6 +410,11 @@ function handleGlobalKeyDown(e: KeyboardEvent) {
     }, 1000)
 
     const handleH = (e2: KeyboardEvent) => {
+      if (shouldIgnoreShortcutTarget(e2.target)) {
+        waitingForH = false
+        clearTimeout(timeout)
+        return
+      }
       if (waitingForH && e2.key === "h") {
         e2.preventDefault()
         clearTimeout(timeout)

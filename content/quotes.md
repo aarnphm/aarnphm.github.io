@@ -1,21 +1,23 @@
 ---
-id: quotes
 aliases:
   - advice
+date: "2024-01-23"
+id: quotes
+modified: 2025-10-29 08:36:02 GMT-04:00
+socialDescription: A collection of quotes, wisdom, and advice.
 tags:
   - evergreen
+title: conseil
 transclude:
   dynalist: false
   title: false
-date: "2024-01-23"
-modified: 2025-10-29 03:04:31 GMT-04:00
-title: advice.
-socialDescription: A collection of quotes, wisdom, and advice.
 ---
 
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
 
 ## On life.
+
+You're being judged by people who know less than you -- Marco Pierre White
 
 I desire violently —and I wait -- Anaïs Nin, from _The Voice_ ^violent
 
@@ -97,6 +99,14 @@ Notice that the quality of the AI output is mostly irrelevant for these points. 
 
 ## On perspectives.
 
+> “One should never so exhaust a subject that nothing is left for readers to do. The point is not to make them read, but to make them think.”
+>
+> —Baron de Montesquieu
+
+> “The most useful books are those that the readers write half of themselves.”
+>
+> —Voltaire
+
 Our capacity to deal with [[thoughts/Language|language]] is a complex, genetically-determined part of our biological endowment. It's a product of evolution, part of our nature. -- Noam Chomsky
 
 The falseness of an opinion is not for us any objection to it: it is here, perhaps, that our new [[thoughts/Language|language]] sounds most strangely. The question is, how far an opinion is life-furthering, life-preserving, species-preserving, perhaps species-rearing, and we are fundamentally inclined to maintain that the falsest opinions — that the renunciation of false opinions would be [a renunciation of life]. -- [[thoughts/Philosophy and Nietzsche|Friedrich Nietzsche]]
@@ -121,7 +131,7 @@ Like the generations of leaves, the lives of mortal men. Now the wind scatters t
 
 There is no iron law that postulates that technology must benefit the many at the expense of the few. And quite naturally, when large swaths of the populace are left behind by technological change, they are likely to resist it. -- Carl Benedikt Frey
 
-“If you have odd ways of conducting yourself or odd beliefs you need to lean into it because all the conventional advice wont work, it only works if you’re closer to the average” - [@mattchowx](https://x.com/mattchowx)
+“If you have odd ways of conducting yourself or odd beliefs you need to lean into it because all the conventional advice wont work, it only works if you’re closer to the average” -- [@mattchowx](https://x.com/mattchowx)
 
 Every psychoanalytic treatment is an attempt at liberating repressed love which has found a meagre outlet in the compromise of a symptom -- [[thoughts/Freud|Sigmund Freud]]
 
@@ -164,3 +174,9 @@ damn gurl are you lipschitz continuous because you look fine as hell -- [Yacine]
 joie de vivre -- exuberant enjoyment of life
 
 dithering -- quantized color on the web
+
+gastronomy -- art of choosing, cooking, and eating good food.
+
+la cuisine nouvelle -- characterized by lighter, more delicate dishes and an increased emphasis on presentation
+
+Haute cuisine -- meticulous preparation, elaborate presentation, and the use of high quality ingredients

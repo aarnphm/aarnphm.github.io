@@ -307,7 +307,9 @@ export function getOrCreateSidePanel(): HTMLDivElement {
   )
 
   if (!asidePanel) {
-    const pageContent = document.querySelector<HTMLDivElement>("section.page-content")
+    const pageContent = document.querySelector<HTMLDivElement>(
+      'main > div[class~="page-body-grid"]',
+    )
     if (!pageContent) {
       throw new Error("page-content section not found")
     }
@@ -321,11 +323,42 @@ export function getOrCreateSidePanel(): HTMLDivElement {
 }
 
 export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElement[]) {
-  const pageHeader = document.querySelector<HTMLDivElement>("main > section[class~='page-header']")
+  const pageHeader = document.querySelector<HTMLDivElement>(
+    "main > * > section[class~='page-header']",
+  )
   if (!asidePanel || !pageHeader) console.error("asidePanel must not be null")
 
   asidePanel.classList.add("active")
   removeAllChildren(asidePanel)
+
+  const updateSidepanelOffset = () => {
+    const headerSection = document.querySelector<HTMLElement>("main > section.header")
+    if (!headerSection) {
+      asidePanel.style.setProperty("--sidepanel-top-offset", "0px")
+      return
+    }
+
+    const headerRect = headerSection.getBoundingClientRect()
+    const stickyTop = parseFloat(getComputedStyle(headerSection).top || "0") || 0
+    const offset = Math.max(0, headerRect.height + stickyTop)
+    asidePanel.style.setProperty("--sidepanel-top-offset", `${offset}px`)
+  }
+
+  updateSidepanelOffset()
+
+  const handleResize = () => updateSidepanelOffset()
+  window.addEventListener("resize", handleResize)
+  window.addCleanup(() => window.removeEventListener("resize", handleResize))
+
+  let resizeObserver: ResizeObserver | null = null
+  if (typeof ResizeObserver !== "undefined") {
+    const headerSection = document.querySelector<HTMLElement>('main > * > section[class~="header"')
+    if (headerSection) {
+      resizeObserver = new ResizeObserver(() => updateSidepanelOffset())
+      resizeObserver.observe(headerSection)
+      window.addCleanup(() => resizeObserver?.disconnect())
+    }
+  }
 
   const header = document.createElement("div")
   header.classList.add("sidepanel-header", "all-col")
@@ -338,6 +371,10 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
   function onCloseClick() {
     removeAllChildren(asidePanel)
     asidePanel.classList.remove("active")
+    asidePanel.style.removeProperty("--sidepanel-top-offset")
+    window.removeEventListener("resize", handleResize)
+    resizeObserver?.disconnect()
+    resizeObserver = null
   }
   closeButton.addEventListener("click", onCloseClick)
   window.addCleanup(() => closeButton.removeEventListener("click", onCloseClick))
@@ -375,6 +412,5 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
  * @param callback - The function containing DOM updates to animate
  */
 export function startViewTransition(callback: () => void): void {
-  // document.startViewTransition?.(() => callback()) ?? callback()
-  callback()
+  document.startViewTransition?.(() => callback()) ?? callback()
 }

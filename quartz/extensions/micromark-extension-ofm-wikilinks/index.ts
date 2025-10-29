@@ -46,6 +46,13 @@ export interface RemarkWikilinkOptions {
    * only applies when obsidian: true
    */
   stripExtensions?: string[]
+
+  /**
+   * function to check if a slug exists in the content index.
+   * used to validate implicit alias splitting: only split "[[file text]]"
+   * if "file" exists but "file text" doesn't.
+   */
+  hasSlug?: (slug: string) => boolean
 }
 
 declare module "micromark-util-types" {

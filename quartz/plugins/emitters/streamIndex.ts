@@ -109,7 +109,7 @@ export const StreamIndex: QuartzEmitterPlugin = () => {
 
       yield write({
         ctx,
-        slug: "stream-timestamps" as FullSlug,
+        slug: "streams" as FullSlug,
         ext: ".jsonl",
         content: payload,
       })

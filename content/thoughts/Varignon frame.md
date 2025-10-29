@@ -3,11 +3,11 @@ created: "2025-10-24"
 date: "2025-10-29"
 description: Mechanical device for optimal warehouse location using weighted distances and equilibrium forces
 id: Varignon frame
-modified: 2025-10-29 02:15:37 GMT-04:00
+modified: 2025-10-29 07:24:25 GMT-04:00
 published: "2005-06-06"
 source: https://en.wikipedia.org/wiki/Varignon_frame
 tags:
-  - seed
+  - math
   - clippings
 title: Varignon frame
 ---
