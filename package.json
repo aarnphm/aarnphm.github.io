@@ -158,7 +158,7 @@
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.34",
-    "@typescript/native-preview": "7.0.0-dev.20251024.1",
+    "@typescript/native-preview": "7.0.0-dev.20251029.1",
     "bibtex-tidy": "^1.14.0",
     "esbuild": "^0.25.11",
     "mermaid": "^11.12.1",
