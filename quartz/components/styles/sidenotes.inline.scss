@@ -14,7 +14,7 @@ $sidenote-transition:
 $sidenote-inline-font-size: 0.9em;
 $sidenote-inline-font-size-mobile: 0.85em;
 $sidenote-code-font-size: 0.85em;
-$sidenote-offset: $sidenote-width + calc(2 * $sidenote-spacing);
+$sidenote-offset: $sidenote-width + calc(1.22 * $sidenote-spacing);
 $sidenote-label-border-width: 0.2rem;
 $sidenote-content-border-width: 0.075rem;
 

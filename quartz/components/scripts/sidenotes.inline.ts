@@ -5,6 +5,7 @@ const CONTENT_WIDTH = 35 // rem
 const SIDENOTE_WIDTH = 20 // rem
 const SPACING = 1 // rem
 const GAP = 1 // rem
+const MIN_DESKTOP_WIDTH = 1500 // px - minimum width for side-by-side sidenotes
 
 // convert rem to pixels
 function remToPx(rem: number): number {
@@ -26,8 +27,14 @@ function getViewportThresholds() {
 type LayoutMode = "double-sided" | "single-sided" | "inline"
 
 function getLayoutMode(): LayoutMode {
-  const thresholds = getViewportThresholds()
   const windowWidth = window.innerWidth
+
+  // enforce minimum desktop width for any side-by-side layout
+  if (windowWidth < MIN_DESKTOP_WIDTH) {
+    return "inline"
+  }
+
+  const thresholds = getViewportThresholds()
 
   if (windowWidth > thresholds.ultraWide) {
     return "double-sided"

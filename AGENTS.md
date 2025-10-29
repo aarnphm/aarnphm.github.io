@@ -34,6 +34,11 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
   - Always keep everything in lowercase.
   - files should be use [[wikilink]] and absolute internal-links when reference with based from @content
     - `content/hinterland` - Special projects
+  - If you think any sentences are more suitable as sidenotes, then use the following syntax:
+    ```markdown
+    {{sidenotes[<some_labels>]: <some_text_here>}}
+    ```
+    See @content/thoughts/love.md#L54 for example.
   - If there is a file that is not yet available, then it must be created.
   - Markdown files will be consumed with Obsidian.
     - Make sure to use callouts, embedded links accordingly. For example:

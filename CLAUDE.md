@@ -68,6 +68,11 @@ React-like components in `quartz/components/` using Preact:
 - All math equations in LaTeX format
 - Citations via `[@reference]` syntax linking to References.bib
 - All headings must be in lowercase.
+- If you think any sentences are more suitable as sidenotes, then use the following syntax:
+  ```markdown
+  {{sidenotes[<some_labels>]: <some_text_here>}}
+  ```
+  See @content/thoughts/love.md#L54 for example.
 - Make sure to use callouts, embedded links accordingly. For example:
 
   ```markdown
