@@ -1,46 +1,39 @@
 import { QuartzTransformerPlugin } from "../types"
+import {
+  Root as HastRoot,
+  Parent as HastParent,
+  RootContent as HastContent,
+  Text as HastText,
+} from "hast"
+import { visit } from "unist-util-visit"
 import { h } from "hastscript"
 import { toHtml } from "hast-util-to-html"
-import { toHast } from "mdast-util-to-hast"
-import { RootContent, Html, Root as MdastRoot, Text } from "mdast"
-import { toString } from "mdast-util-to-string"
-import isAbsoluteUrl from "is-absolute-url"
-import path from "path"
+import { toText } from "hast-util-to-text"
 import { BuildCtx } from "../../util/ctx"
-import { transformLink } from "../../util/path"
-import { Parent } from "unist"
-import { visit } from "unist-util-visit"
+import { FullSlug, transformLink } from "../../util/path"
+import {
+  createWikilinkRegex,
+  parseWikilink,
+  resolveWikilinkTarget,
+  singleWikilinkRegex as SINGLE_WIKILINK_REGEX,
+} from "../../util/wikilinks"
 import { VFile } from "vfile"
+import path from "path"
+import isAbsoluteUrl from "is-absolute-url"
 // @ts-ignore
 import script from "../../components/scripts/sidenotes.inline"
 import content from "../../components/styles/sidenotes.inline.scss"
-import {
-  createWikilinkRegex,
-  singleWikilinkRegex as SINGLE_WIKILINK_REGEX,
-} from "../../util/wikilinks"
 
 const SIDENOTE_PREFIX = "{{sidenotes"
 const SIDENOTE_SUFFIX = "}}"
 
-type ParentWithChildren = Parent & { children: RootContent[] }
-
-type Token = { kind: "text"; value: string } | { kind: "node"; node: RootContent }
-
-type ExtractResult = {
-  removalCount: number
-  replacements: RootContent[]
-}
-
-type CollectedTokens = {
-  tokens: Token[]
-  endIndex: number
-  tailText: string
-}
-
+type ParentWithChildren = HastParent & { children: HastContent[] }
+type Token = { kind: "text"; value: string } | { kind: "node"; node: HastContent }
+type CollectedTokens = { tokens: Token[]; endIndex: number; tailText: string }
 type ParsedTokens = {
   attrsText?: string
   labelText: string
-  contentNodes: RootContent[]
+  contentNodes: HastContent[]
 }
 
 export const Sidenotes: QuartzTransformerPlugin = () => {
@@ -52,47 +45,48 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
         css: [{ content, spaPreserve: true, inline: true }],
       }
     },
-    markdownPlugins(ctx) {
+    htmlPlugins(ctx) {
       return [
-        () => (tree: MdastRoot, file: VFile) => {
+        () => (tree: HastRoot, file: VFile) => {
           let counter = 0
 
           visit(tree, (node) => {
             if (!node || !("children" in node)) {
               return
             }
-
             processParent(node as ParentWithChildren)
           })
 
           function processParent(parent: ParentWithChildren) {
             for (let index = 0; index < parent.children.length; index++) {
               const child = parent.children[index]
-              if (child.type !== "text") {
-                continue
-              }
+              if (child.type !== "text") continue
 
-              const textNode = child as Text
-              let value = textNode.value
-              const markerIndex = value.indexOf(SIDENOTE_PREFIX)
-              if (markerIndex === -1) {
-                continue
-              }
+              const textNode = child as HastText
+              const markerIndex = textNode.value.indexOf(SIDENOTE_PREFIX)
+              if (markerIndex === -1) continue
 
               if (markerIndex > 0) {
-                const before: Text = { type: "text", value: value.slice(0, markerIndex) }
-                const after: Text = { type: "text", value: value.slice(markerIndex) }
+                const before: HastText = {
+                  type: "text",
+                  value: textNode.value.slice(0, markerIndex),
+                }
+                const after: HastText = { type: "text", value: textNode.value.slice(markerIndex) }
                 parent.children.splice(index, 1, before, after)
                 index++
               }
 
+              const current = parent.children[index] as HastText
+              current.value = current.value.slice(SIDENOTE_PREFIX.length)
+
               const extraction = extractSidenote(parent, index, file, ctx, () => ++counter)
-              if (!extraction) {
-                continue
-              }
+              if (!extraction) continue
 
               parent.children.splice(index, extraction.removalCount, ...extraction.replacements)
-              index += extraction.replacements.length - 1
+
+              const adjust =
+                extraction.replacements.length >= 2 ? extraction.replacements.length - 2 : 0
+              index += adjust
             }
           }
         },
@@ -107,42 +101,30 @@ function extractSidenote(
   file: VFile,
   ctx: BuildCtx,
   nextId: () => number,
-): ExtractResult | null {
+) {
   const collected = collectTokens(parent, startIndex)
-  if (!collected) {
-    return null
-  }
+  if (!collected) return null
 
   const parsed = parseTokens(collected.tokens)
-  if (!parsed) {
-    return null
-  }
+  if (!parsed) return null
 
   const { attrsText, labelText: rawLabel, contentNodes } = parsed
-
   const { attrs, internal } = parseAttributes(attrsText)
-  const contentHtml = contentNodesToHtml(contentNodes)
+
+  const contentHtml = serializeContent(contentNodes)
   const internalHtml = renderInternalLinks(internal, file, ctx)
-  const combinedHtml = internalHtml ? contentHtml + internalHtml : contentHtml
+  const combinedHtml = combineContent(contentHtml, internalHtml)
 
-  let labelText = rawLabel.trim()
-  const labelMatch = SINGLE_WIKILINK_REGEX.exec(labelText)
-  if (labelMatch) {
-    const target = (labelMatch[1] ?? "").trim()
-    const alias = labelMatch[3]?.trim()
-    labelText = alias || path.basename(target, path.extname(target)) || target
-  } else {
-    labelText = labelText.replace(/\[\[|\]\]/g, "").trim()
-  }
-  SINGLE_WIKILINK_REGEX.lastIndex = 0
-
+  const labelText = deriveLabel(rawLabel)
   const sidenoteId = nextId()
-  const sidenoteHtml = createSidenoteHtml(labelText, attrs, combinedHtml, sidenoteId)
 
-  const replacements: RootContent[] = [{ type: "html", value: sidenoteHtml } as Html]
-  if (collected.tailText.length > 0) {
-    replacements.push({ type: "text", value: collected.tailText })
-  }
+  const replacements = buildReplacementNodes(
+    labelText,
+    attrs,
+    combinedHtml,
+    sidenoteId,
+    collected.tailText,
+  )
 
   return {
     removalCount: collected.endIndex - startIndex + 1,
@@ -152,17 +134,6 @@ function extractSidenote(
 
 function collectTokens(parent: ParentWithChildren, startIndex: number): CollectedTokens | null {
   const tokens: Token[] = []
-
-  const startNode = parent.children[startIndex]
-  if (!startNode || startNode.type !== "text") {
-    return null
-  }
-
-  const startValue = (startNode as Text).value
-  if (!startValue.startsWith(SIDENOTE_PREFIX)) {
-    return null
-  }
-
   let tailText = ""
   let endIndex = startIndex
 
@@ -170,23 +141,19 @@ function collectTokens(parent: ParentWithChildren, startIndex: number): Collecte
     const node = parent.children[idx]
 
     if (node.type === "text") {
-      const value = (node as Text).value
-      let offset = idx === startIndex ? SIDENOTE_PREFIX.length : 0
+      let cursor = 0
+      const value = (node as HastText).value
 
-      if (offset > value.length) {
-        return null
-      }
-
-      while (offset <= value.length) {
-        const closeIndex = value.indexOf(SIDENOTE_SUFFIX, offset)
+      while (cursor <= value.length) {
+        const closeIndex = value.indexOf(SIDENOTE_SUFFIX, cursor)
         if (closeIndex === -1) {
-          const segment = value.slice(offset)
+          const segment = value.slice(cursor)
           if (segment.length > 0) {
             tokens.push({ kind: "text", value: segment })
           }
           break
         } else {
-          const segment = value.slice(offset, closeIndex)
+          const segment = value.slice(cursor, closeIndex)
           if (segment.length > 0) {
             tokens.push({ kind: "text", value: segment })
           }
@@ -206,16 +173,15 @@ function collectTokens(parent: ParentWithChildren, startIndex: number): Collecte
 }
 
 function parseTokens(tokens: Token[]): ParsedTokens | null {
-  if (tokens.length === 0) {
-    return null
-  }
+  if (tokens.length === 0) return null
 
   let state: "header" | "content" = "header"
   let inLabel = false
   let inAngle = false
+
   let attrsText = ""
-  const labelParts: string[] = []
-  const contentNodes: RootContent[] = []
+  let labelText = ""
+  const contentNodes: HastContent[] = []
 
   for (const token of tokens) {
     if (state === "header") {
@@ -230,59 +196,52 @@ function parseTokens(tokens: Token[]): ParsedTokens | null {
             index++
             continue
           }
-
           if (char === ">" && inAngle) {
             inAngle = false
             index++
             continue
           }
-
-          if (inAngle) {
-            attrsText += char
-            index++
-            continue
-          }
-
-          if (char === "[" && !inLabel) {
+          if (char === "[" && !inAngle && !inLabel) {
             inLabel = true
             index++
             continue
           }
-
           if (char === "]" && inLabel) {
             inLabel = false
             index++
             continue
           }
-
-          if (inLabel) {
-            labelParts.push(char)
+          if (inAngle) {
+            attrsText += char
             index++
             continue
           }
-
+          if (inLabel) {
+            labelText += char
+            index++
+            continue
+          }
           if (char === ":") {
             state = "content"
             const remainder = value.slice(index + 1)
             if (remainder.length > 0) {
-              contentNodes.push({ type: "text", value: remainder })
+              contentNodes.push({ type: "text", value: remainder } as HastText)
             }
             break
           }
-
           index++
         }
       } else {
         if (inLabel) {
-          labelParts.push(toString(token.node))
+          labelText += toText(token.node)
         } else if (inAngle) {
-          attrsText += toString(token.node)
+          attrsText += toText(token.node)
         }
       }
     } else {
       if (token.kind === "text") {
         if (token.value.length > 0) {
-          contentNodes.push({ type: "text", value: token.value })
+          contentNodes.push({ type: "text", value: token.value } as HastText)
         }
       } else {
         contentNodes.push(token.node)
@@ -290,21 +249,17 @@ function parseTokens(tokens: Token[]): ParsedTokens | null {
     }
   }
 
-  if (state !== "content") {
-    return null
-  }
+  if (state !== "content") return null
 
   return {
     attrsText: attrsText.trim() || undefined,
-    labelText: labelParts.join(""),
+    labelText: labelText.trim(),
     contentNodes,
   }
 }
 
 function parseAttributes(attrsText?: string): { attrs: Record<string, string>; internal?: string } {
-  if (!attrsText) {
-    return { attrs: {} }
-  }
+  if (!attrsText) return { attrs: {} }
 
   const attrs: Record<string, string> = {}
   let internal: string | undefined
@@ -325,59 +280,107 @@ function parseAttributes(attrsText?: string): { attrs: Record<string, string>; i
   return { attrs, internal }
 }
 
-function contentNodesToHtml(nodes: RootContent[]): string {
-  if (nodes.length === 0) {
-    return ""
-  }
-
-  const root: MdastRoot = { type: "root", children: nodes }
-  const hast = toHast(root, { allowDangerousHtml: true })
-  return toHtml(hast, { allowDangerousHtml: true })
+function serializeContent(nodes: HastContent[]): string {
+  if (nodes.length === 0) return ""
+  const root: HastRoot = { type: "root", children: nodes }
+  return toHtml(root, { allowDangerousHtml: true }).trim()
 }
 
 function renderInternalLinks(internalRaw: string | undefined, file: VFile, ctx: BuildCtx): string {
-  if (!internalRaw) {
-    return ""
-  }
+  if (!internalRaw) return ""
 
-  const links: string[] = []
-  let match: RegExpExecArray | null
+  const links: HastContent[] = []
   const regex = createWikilinkRegex()
+  let match: RegExpExecArray | null
 
   while ((match = regex.exec(internalRaw)) !== null) {
-    const target = (match[1] ?? "").trim()
-    if (!target) continue
-    const anchor = match[2] ? `#${match[2].trim()}` : ""
-    const alias = match[3]?.trim()
+    const parsed = parseWikilink(match[0])
+    if (!parsed) continue
 
-    let destination = `${target}${anchor}`
-    const ext = path.extname(destination).toLowerCase()
-    if (!isAbsoluteUrl(destination) && !ext.includes("pdf")) {
-      destination = transformLink(file.data.slug!, destination, {
+    const resolved = resolveWikilinkTarget(parsed, file.data.slug as FullSlug)
+    const anchor = parsed.anchor ?? ""
+    let destination = parsed.target + anchor
+    let dataSlug: string | undefined
+
+    if (resolved) {
+      dataSlug = resolved.slug
+      const destWithAnchor = `${resolved.slug}${anchor}`
+      destination = transformLink(file.data.slug as FullSlug, destWithAnchor, {
+        allSlugs: ctx.allSlugs,
+        strategy: "absolute",
+      })
+    } else if (!isAbsoluteUrl(destination)) {
+      destination = transformLink(file.data.slug as FullSlug, destination, {
         allSlugs: ctx.allSlugs,
         strategy: "absolute",
       })
     }
 
-    const display = alias || path.basename(target, path.extname(target)) || target
-    links.push(toHtml(h("a", { href: destination }, display)))
+    const display =
+      parsed.alias ||
+      path.basename(parsed.target, path.extname(parsed.target)) ||
+      parsed.target ||
+      "link"
+
+    const link = h(
+      "a",
+      {
+        href: destination,
+        className: ["internal"],
+        ...(dataSlug ? { "data-slug": dataSlug } : {}),
+      },
+      [h("span.indicator-hook"), display],
+    )
+
+    links.push(link)
   }
 
-  if (links.length === 0) {
-    return ""
-  }
+  if (links.length === 0) return ""
 
-  return `<hr class="sidenote-separator" /><div class="sidenote-linked-notes">linked notes: ${links.join(
-    ", ",
-  )}</div>`
+  const separator = h("hr.sidenote-separator", { className: "sidenote-separator" })
+  const interleaved: HastContent[] = []
+  links.forEach((link, idx) => {
+    if (idx > 0) {
+      interleaved.push({ type: "text", value: ", " } as HastText)
+    }
+    interleaved.push(link)
+  })
+
+  const container = h("div.sidenote-linked-notes", ["linked notes: ", ...interleaved])
+
+  return toHtml({ type: "root", children: [separator, container] }, { allowDangerousHtml: true })
 }
 
-function createSidenoteHtml(
+function combineContent(contentHtml: string, internalHtml: string): string {
+  if (!internalHtml) return contentHtml
+  if (!contentHtml) return internalHtml
+  return `${contentHtml}${internalHtml}`
+}
+
+function deriveLabel(rawLabel: string): string {
+  let labelText = rawLabel.trim()
+  if (!labelText) return ""
+
+  const wikilinkMatch = SINGLE_WIKILINK_REGEX.exec(labelText)
+  if (wikilinkMatch) {
+    const parsed = parseWikilink(wikilinkMatch[0])
+    if (parsed) {
+      labelText =
+        parsed.alias || path.basename(parsed.target, path.extname(parsed.target)) || parsed.target
+    }
+  }
+  SINGLE_WIKILINK_REGEX.lastIndex = 0
+
+  return labelText
+}
+
+function buildReplacementNodes(
   labelText: string,
   attrs: Record<string, string>,
-  contentHtml: string,
+  combinedHtml: string,
   sidenoteId: number,
-): string {
+  tailText: string,
+): HastContent[] {
   const arrowDownSvg = h(
     "svg.sidenote-arrow.sidenote-arrow-down",
     {
@@ -396,18 +399,17 @@ function createSidenoteHtml(
   )
 
   const hasLabel = labelText.length > 0
-
   const labelElement = h(
     "span.sidenote-label",
     hasLabel ? {} : { "data-auto": "" },
     hasLabel
-      ? [{ type: "text", value: labelText }, arrowDownSvg]
-      : [{ type: "text", value: "▪" }, arrowDownSvg],
+      ? [{ type: "text", value: labelText } as HastText, arrowDownSvg]
+      : [{ type: "text", value: "▪" } as HastText, arrowDownSvg],
   )
 
   const dataAttrs: Record<string, string> = {
-    "data-content": contentHtml,
-    "data-sidenote-id": sidenoteId.toString(),
+    "data-content": combinedHtml,
+    "data-sidenote-id": String(sidenoteId),
   }
 
   if (attrs.dropdown === "true" || attrs.inline === "true") {
@@ -417,7 +419,12 @@ function createSidenoteHtml(
     dataAttrs["data-allow-left"] = "false"
   }
 
-  return toHtml(h("span.sidenote", dataAttrs, [labelElement]), {
-    allowDangerousHtml: true,
-  })
+  const sidenoteElement = h("span.sidenote", dataAttrs, [labelElement])
+  const replacements: HastContent[] = [sidenoteElement]
+
+  if (tailText.length > 0) {
+    replacements.push({ type: "text", value: tailText } as HastText)
+  }
+
+  return replacements
 }

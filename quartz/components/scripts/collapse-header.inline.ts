@@ -1,4 +1,4 @@
-import { getFullSlug } from "../../util/path"
+// import { getFullSlug } from "../../util/path"
 import { getCollapsedState, setCollapsedState, setHeaderState } from "./util"
 
 type MaybeHTMLElement = HTMLElement | undefined
@@ -107,33 +107,33 @@ document.addEventListener("nav", setupHeaders)
 window.addEventListener("resize", setupHeaders)
 
 // Add overlay to section[class~="header"] once scrolling
-function setupHeaderOverlay() {
-  const header = document.querySelector('section[class~="header"]') as HTMLElement
-  if (!header || getFullSlug(window) === "index") return
-
-  function handleScroll() {
-    const asidePanel = document.querySelector<HTMLDivElement>(
-      "main > * > aside[class~='sidepanel-container']",
-    )
-    if (asidePanel && asidePanel.classList.contains("active")) return
-    // Add a 50px threshold
-    if (window.scrollY > 50) {
-      header.classList.add("overlay")
-    } else {
-      header.classList.remove("overlay")
-    }
-  }
-
-  // Initial check
-  handleScroll()
-
-  // Add scroll event listener
-  window.addEventListener("scroll", handleScroll)
-  if (window.addCleanup) {
-    window.addCleanup(() => window.removeEventListener("scroll", handleScroll))
-  }
-}
-
+// function setupHeaderOverlay() {
+//   const header = document.querySelector('section[class~="header"]') as HTMLElement
+//   if (!header || getFullSlug(window) === "index") return
+//
+//   function handleScroll() {
+//     const asidePanel = document.querySelector<HTMLDivElement>(
+//       "main > * > aside[class~='sidepanel-container']",
+//     )
+//     if (asidePanel && asidePanel.classList.contains("active")) return
+//     // Add a 50px threshold
+//     if (window.scrollY > 50) {
+//       header.classList.add("overlay")
+//     } else {
+//       header.classList.remove("overlay")
+//     }
+//   }
+//
+//   // Initial check
+//   handleScroll()
+//
+//   // Add scroll event listener
+//   window.addEventListener("scroll", handleScroll)
+//   if (window.addCleanup) {
+//     window.addCleanup(() => window.removeEventListener("scroll", handleScroll))
+//   }
+// }
+//
 // Initialize header overlay
 // document.addEventListener("nav", setupHeaderOverlay)
 // window.addEventListener("resize", setupHeaderOverlay)

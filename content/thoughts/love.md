@@ -15,7 +15,7 @@ description: choosing to give your full, continuously.
 socials:
   essay: https://aarnphm.xyz/posts/love
 date: "2025-10-04"
-modified: 2025-10-29 03:18:23 GMT-04:00
+modified: 2025-10-29 03:33:22 GMT-04:00
 title: dilectio
 ---
 
@@ -51,11 +51,11 @@ three things: [[#attention]], [[#choice]], and [[#thoughts/Epistemology epistemi
 
 Not attention _to_ something you already understand, but attention that _constitutes_ understanding. You empty yourself, bracket instrumental concerns, become available to what they present.
 
-Attention is not {{sidenotes[will.]: Will tries to force understanding; attention waits for your understanding. [[thoughts/Will|Will]] imposes your framework; attention _lets_ the framework shift. They might reorganize your whole way of seeing—if you let them}} [@murdoch1970sovereignty] says that "moral life happens mostly in ongoing attention, not discrete choices". How you _think_ about someone, how you imagine them, what you notice and ignore—this is where love operates. Seeing someone clearly requires discipline, spiritual {{sidenotes<dropdown: true>[exercise.]: one can behaviorally comply (eye contact, nod, repeat back) while completely absent. attention resists third-person measurement. The gap between behavioral proxy and actual attention is everything.}} You practice interpreting charitably, checking projections, staying open to revision.
+Attention is not {{sidenotes[will.]: Will tries to force understanding; attention waits for your understanding. [[thoughts/Will|Will]] imposes your framework; attention _lets_ the framework shift. They might reorganize your whole way of seeing—if you let them}} [@murdoch1970sovereignty] says that "moral life happens mostly in ongoing attention, not discrete choices". How you _think_ about someone, how you imagine them, what you notice and ignore—this is where love operates. Seeing someone clearly requires discipline, spiritual {{sidenotes[exercise.]: one can behaviorally comply (eye contact, nod, repeat back) while completely absent. attention resists third-person measurement. The gap between behavioral proxy and actual attention is everything.}} You practice interpreting charitably, checking projections, staying open to revision.
 
 ### choice
 
-@sartre1943being: you're "condemned to be free"—even when you claim "I had no choice," you chose to see it that way {{sidenotes: Choosing to love is choosing despite absence of guarantees. No reinforcement schedule can make you do that. You do it because you decided it matters}}. This isn't libertarian free will (uncaused choice from nowhere), rather _situated_ freedom: you're shaped by history, but you still decide how to respond.
+@sartre1943being: you're "condemned to be free"—even when you claim "I had no choice," you chose to {{sidenotes[see it that way.]: Choosing to love is choosing despite absence of guarantees. No reinforcement schedule can make you do that. You do it because you decided it matters}} This isn't libertarian free will (uncaused choice from nowhere), rather _situated_ freedom: you're shaped by history, but you still decide how to respond.
 
 The same reinforcement history produces different people because people aren't passive recipients—they interpret, resist, reframe. Love requires this active stance: you take responsibility for your interpretation, your commitment, your continued choice to stay.
 
@@ -73,7 +73,7 @@ When you love someone, you choose to interpret {{sidenotes[them.]: "Giving someo
 
 > understanding happens through _fusion of horizons_ (_Horizontverschmelzung_). [@gadamer1960truth]
 
-You bring your world, they bring theirs. Understanding emerges where they meet—not by one absorbing the other, but by creating shared space. This takes {{sidenotes<dropdown: true>[time.]: Learning to see as they see, to care about what they care about, to inhabit their concerns without losing your own. [@fromm1956art]}} You can't speed-read a {{sidenotes[person.]: This is not naive interpretation (assuming you already understand). It's not instrumental interpretation (extracting what you need). It's generous interpretation of giving benefit of doubt, seeking their internal logic, refusing to reduce them to a type}}
+You bring your world, they bring theirs. Understanding emerges where they meet—not by one absorbing the other, but by creating shared space. This takes {{sidenotes[time.]: Learning to see as they see, to care about what they care about, to inhabit their concerns without losing your own. [@fromm1956art]}} You can't speed-read a {{sidenotes[person.]: This is not naive interpretation (assuming you already understand). It's not instrumental interpretation (extracting what you need). It's generous interpretation of giving benefit of doubt, seeking their internal logic, refusing to reduce them to a type}}
 
 When someone says "you don't understand me," they're right—understanding must be achieved, maintained, renewed. It's never automatic. [@hooks2000love]
 
