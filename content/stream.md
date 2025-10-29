@@ -2,7 +2,7 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-10-29 05:21:50 GMT-04:00
+modified: 2025-10-29 06:25:43 GMT-04:00
 tags:
   - seed
   - fruit
@@ -184,4 +184,4 @@ I find myself the most productive while procrastinating other tasks.
 
 Late night work listening to Dreyfus' lectures hits like smoking a good joint on a Friday night.
 
-![[https://www.youtube-nocookie.com/embed/usxvyf3xqcQ?si=9Sv_qkvGfr9n6mfu]]
+![[https://youtu.be/usxvyf3xqcQ?si=wrria3i7tSqYvGQk]]

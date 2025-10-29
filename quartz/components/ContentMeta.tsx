@@ -92,7 +92,10 @@ export default (() => {
               type: "button",
               ariaLabel: "copy source",
               class: "clipboard-button",
-              "data-href": resolveRelative(fileData.slug!, (fileData.slug! + ".md") as FullSlug),
+              "data-href": resolveRelative(
+                fileData.slug!,
+                ((fileData.slug === "arena" ? "are.na" : fileData.slug!) + ".md") as FullSlug,
+              ),
             },
 
             h("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "copy-icon" }, [
