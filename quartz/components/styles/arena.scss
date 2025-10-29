@@ -244,6 +244,7 @@ body[data-arena-subpage="true"] {
 }
 
 .arena-channel-page {
+  view-transition-name: arena-channel;
   margin-bottom: 2rem !important;
 }
 
@@ -360,6 +361,7 @@ body[data-arena-subpage="true"] {
 }
 
 .arena-block-modal {
+  view-transition-name: arena-modal;
   @include containerPopover;
   top: 0px;
   left: 0px;

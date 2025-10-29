@@ -18,6 +18,11 @@ body {
   font-weight: $normalWeight;
 }
 
+html {
+  scroll-padding-top: 0;
+  overscroll-behavior: none;
+}
+
 body {
   margin: 0;
   box-sizing: border-box;
