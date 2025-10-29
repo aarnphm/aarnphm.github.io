@@ -31,7 +31,7 @@ function hydrateStreamInteractions() {
 
   const interactiveLinks = Array.from(
     el.querySelectorAll<HTMLAnchorElement>(
-      '.stream-entry-date[data-stream-link][data-stream-timestamp]',
+      ".stream-entry-date[data-stream-link][data-stream-timestamp]",
     ),
   )
 
@@ -69,7 +69,10 @@ function hydrateStreamInteractions() {
     lastAppliedPath = url.pathname
   }
 
-  const updateEntries = (targetTimestamp: string | null, opts: { updateHistory?: boolean } = {}) => {
+  const updateEntries = (
+    targetTimestamp: string | null,
+    opts: { updateHistory?: boolean } = {},
+  ) => {
     const { updateHistory = true } = opts
     activeTimestamp = targetTimestamp
 

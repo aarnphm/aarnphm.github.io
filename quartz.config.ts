@@ -97,6 +97,7 @@ const config: QuartzConfig = {
       Plugin.FrontMatter(),
       Plugin.CreatedModifiedDate({ priority: ["frontmatter", "filesystem"] }),
       Plugin.Aarnphm(),
+      Plugin.Sidenotes(),
       Plugin.Pseudocode(),
       Plugin.TikzJax({ showConsole: false }),
       Plugin.TelescopicText(),

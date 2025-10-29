@@ -219,10 +219,7 @@ function getPropertyDisplayName(
 }
 
 // Helper functions for table building
-function buildTableHead(
-  columns: string[],
-  properties?: Record<string, PropertyConfig>,
-): any {
+function buildTableHead(columns: string[], properties?: Record<string, PropertyConfig>): any {
   return h(
     "tr",
     columns.map((col) => h("th", {}, getPropertyDisplayName(col, properties))),
@@ -585,9 +582,7 @@ function buildList(
       if (renderedValue.length === 0) continue
 
       const label = getPropertyDisplayName(propertyKey, properties)
-      metadataItems.push(
-        h("li", [h("span.base-list-meta-label", `${label}: `), ...renderedValue]),
-      )
+      metadataItems.push(h("li", [h("span.base-list-meta-label", `${label}: `), ...renderedValue]))
       seen.add(propertyKey)
     }
 

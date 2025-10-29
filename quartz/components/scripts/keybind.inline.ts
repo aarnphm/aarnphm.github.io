@@ -199,9 +199,27 @@ document.addEventListener("nav", () => {
     )
   }
 
+  const isPaletteActive = () => {
+    const palette = document.getElementById("palette-container")
+    return palette?.classList.contains("active") ?? false
+  }
+
   // Track 'g' key for 'gg' sequence
   let waitingForSecondG = false
   let ggTimeout: number | null = null
+
+  const suppressPaletteBindings = (e: KeyboardEvent) => {
+    if (!isPaletteActive()) return
+    if (e.key !== "g" && e.key !== "h") return
+    waitingForSecondG = false
+    if (ggTimeout) {
+      clearTimeout(ggTimeout)
+      ggTimeout = null
+    }
+    e.stopImmediatePropagation()
+  }
+  document.addEventListener("keydown", suppressPaletteBindings, true)
+  window.addCleanup(() => document.removeEventListener("keydown", suppressPaletteBindings, true))
 
   // Link hints mode state
   let hintsActive = false
@@ -418,6 +436,7 @@ document.addEventListener("nav", () => {
   // Vim navigation handler
   function vimNavigationHandler(e: KeyboardEvent) {
     if (shouldIgnoreTarget(e.target)) return
+    if (isPaletteActive()) return
 
     // Handle hint mode
     if (hintsActive) {
@@ -497,6 +516,7 @@ document.addEventListener("nav", () => {
   // Ctrl-based scroll handler
   function ctrlScrollHandler(e: KeyboardEvent) {
     if (shouldIgnoreTarget(e.target)) return
+    if (isPaletteActive()) return
     if (!e.ctrlKey || e.metaKey) return
 
     const halfPage = window.innerHeight / 2

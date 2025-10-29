@@ -6,7 +6,7 @@ tags:
   - evergreen
 description: a microblog within a blog, at the middle of the night.
 date: "2025-10-24"
-modified: 2025-10-27 09:35:50 GMT-04:00
+modified: 2025-10-28 16:38:34 GMT-04:00
 title: stream
 ---
 
@@ -95,21 +95,23 @@ The frame requires that one assume worst case at every branch, assume maximum ca
   - tags:
     - life
 
-[[thoughts/Camus]] places suicide at the beginning of philosophical inquiry, not as solution but as the question to prove the absurdity of life. Once I've acknowledged the absurd—the gap between my need for meaning and the universe's indifference—why continue? The argument for ending it has an austere elegance: no more compromises with meaninglessness, no more participation in a game rigged against significance, just one clean negation.
+[[thoughts/Camus]] begins with suicide in [[library/The Myth of Sisyphus]], more or less a demonstration of how absurd life really is. He used suicide as a scape goat of people who don't have enough courage to deal with the hardship of life being thrown at them, and considered suicide as cowardice.
 
-I often think through suicide as philosophical exercise. It functions less as temptation than as clarification. Holding the option steady in my mind, not as crisis but as premise, I discover what I refuse to surrender. The mental movement goes: if I could leave, what makes me stay? And suddenly I'm cataloging specifics—not abstract "life is precious" but this conversation I want to have, that project I need to see through its next iteration, these people whose absence I cannot bear to inflict.
+I have exercised this thought _many times_, in the way one considers a standing appointment. Not with desire of actually doing the deeds or the fear of death, but rather a procedure to keep my mind sharp. The world offers no meaning, yet I require meaning, therefore, it doesn't seem reasonable to be alive.
 
-The thought experiment acts as negative space, revealing attachment by what would be lost. Inventory by subtraction. What survives when I push the absurd to its logical conclusion isn't grand meaning but particular commitments. Small, contingent, unjustifiable by cosmic standards. Yet binding.
+If I could leave, what makes me stay? When I actually sit with this question, as a real possibility, the answers surprise me. I want to see how this conversation with N resolves on Thursday. I'm still waiting for L to send that letter my way. There's a problem on my desk I'm halfway through understanding, and I need to know if my intuition about it is right. I think about my parents getting the phone call, my friends having to sort through my things, and something in me recoils not from death but from inflicting that particular grief.
 
-Sometimes I wonder how people move through life without touching this question. Not as criticism—maybe as envy. They wake up, make coffee, answer emails, plan for the rest of the days. Some would just sit on their phone all days, watching TikTok, brain-rotting their day aways. The whole apparatus of ordinary continuation functioning smoothly without requiring philosophical justification. Do they not feel the absurd pressing against their routines? Or have they found some accommodation I haven't, some way of living that doesn't demand this constant re-choosing?
+Turns out the results are mostly attachments. They are somewhat very small, specific to my life, but accumulate gradually.
 
-The universe doesn't need my work, my notes, my careful thinking through problems. And yet. The work that I perform daily feels necessary, locally. In the doing of it, in the conversation with the problem, in the incremental progress toward understanding something better than I did yesterday.
+I watch people in coffee shops, on trains, in office buildings. They seem to continue, mindlessly. Felt likes aimless drones just letting time pass through their body. Pour a cup of coffee, send that emails, making plan for next week. Perhaps they have solved something I have not. Perhaps they have simply never filed the paperwork for the question. It is possible everyone considers this and we have agreed, collectively, not to mention it. Like a standing meeting no one enjoys but everyone attends.
 
-inaneness and fulfillment _perhaps_ ==coexist==. I add my small value to society fully aware that society itself is temporary, that all accumulation eventually dissipates. But meaning doesn't require permanence. It emerges in the moment of engagement, in the quality of attention brought to the temporary.
+My work is not that special, my contributions to the collectives projects are temporary. Life won't change a lot if I disappear. Heat death will erase everything eventually. Still, I'm here though. Maybe because of a particular arrangement of attention and time, maybe because I still care enough, maybe the thought of striving another day for N, parents, L, J, C, S are good enough of a motivators to keep ones going.
 
-This is the revolt that Camus names: not finding meaning despite absurdity, but continuing *through* absurdity, eyes open to the absence of guarantee. That ongoing renewal—choosing again, with the full weight of the question present—transforms continuation from default into stance.
+> Meaning does not require permanence. This seems important but I am not certain why.
 
-While the abstraction remains philosophical—while I can hold the question at arm's length and examine it—this exercise sharpens clarity. But thought experiments have limits. When the question stops being theoretical, when it starts happening in my body rather than my mind, the rules change entirely. That's the moment to step outside, call someone, interrupt the pattern. The difference between contemplating the absurd and being crushed by it isn't subtle. One is [[/tags/philosophy]], the other is emergency.
+[[thoughts/Camus]]'s revolt: Continuing with full knowledge of the absurd. Choosing again each day, not from habit but from decision. I am not certain I achieve this. Most days feel like habit.
+
+The question becomes dangerous when it stops being theoretical. When it moves from mind to body. When the weight becomes physical rather than philosophical. Then one must interrupt the process. Call someone. Leave the room. The distinction is administrative: one is philosophy, the other is emergency. Emergency requires different procedures entirely.
 
 ---
 
@@ -128,3 +130,45 @@ I find myself the most productive while procrastinating other tasks.
     - fruit
 
 ![[quotes#^violent]]
+
+---
+
+- [meta]:
+  - date: 2025-10-27 15:01:07 GMT-04:00
+  - tags:
+    - life
+
+> "I wanted to eat life by the mouthful, to devour it, to be swallowed up in its dizzying vertigo, to be both actor and spectator, to possess and be possessed, to discover and to create, to make of my life a work of art."
+>
+> —Simone de Beauvoir, _Memoirs of a Dutiful Daughter (1958)_
+
+---
+
+- [meta]:
+  - date: 2025-10-28 16:15:23 GMT-04:00
+  - tags:
+    - writing
+
+> The reason I've spent so long establishing this rather obvious point <dfn>[that [[thoughts/writing]] helps you refine your thinking]</dfn> is that it leads to another that many people will find shocking. If writing down your ideas always makes them more precise and more complete, then no one who hasn't written about a topic has fully formed ideas about it. And someone who never writes has no fully formed ideas about anything nontrivial.
+>
+> It feels to them as if they do, especially if they're not in the habit of critically examining their own thinking. Ideas can feel complete. ==It's only when you try to put them into words that you discover they're not==. So if you never subject your ideas to that test, you'll not only never have fully formed ideas, but also never realize it.
+>
+> —Paul Graham, [Putting Ideas into Words](https://paulgraham.com/words.html)
+
+---
+
+- [meta]:
+  - date: 2025-10-28 16:38:29 GMT-04:00
+  - tags:
+    - math
+
+> ```poetry
+> "Try as you may,
+>
+> you just can't get away,
+>
+> from mathematics"
+>
+> ```
+>
+> —Tom Lehrer

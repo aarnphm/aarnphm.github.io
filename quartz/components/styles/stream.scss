@@ -6,6 +6,7 @@
   section[class~="header"] {
     border-bottom: 0;
     padding-bottom: 0;
+    position: static !important;
   }
 
   .page-header {

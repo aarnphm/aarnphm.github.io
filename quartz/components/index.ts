@@ -1,4 +1,3 @@
-import Sidenotes from "./Sidenotes"
 import StackedNotes from "./StackedNotes"
 import Recommendations from "./Recommendations"
 import Byline from "./Byline"
@@ -40,7 +39,6 @@ import BaseViewSelector from "./BaseViewSelector"
 
 export {
   Flex,
-  Sidenotes,
   Palette,
   Recommendations,
   StackedNotes,

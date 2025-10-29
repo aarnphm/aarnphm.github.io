@@ -5,7 +5,7 @@ tags:
   - workshop
 description: attention and math
 date: "2025-08-21"
-modified: 2025-09-14 23:13:57 GMT-04:00
+modified: 2025-10-28 21:18:06 GMT-04:00
 title: supplement to 0.2
 ---
 
@@ -16,6 +16,13 @@ supports:
 - [[lectures/2/convexity|convexity cases]]
 - [[thoughts/Attention]]
 - [[thoughts/mechanistic interpretability]]
+
+> [!note] tldr
+>
+> - Lagrange multipliers enforce equality constraints; at optimum $\nabla f$ lies in constraint span.
+> - KKT: feasibility, dual feasibility, complementary slackness, stationarity; Slater ⇒ necessary and sufficient.
+> - Entropy: concave; its negative is convex on the simplex; motivates entropic regularization in attention. [@blondel2020learningfenchelyounglosses]
+> - Variational softmax: $\operatorname{lse}(z)=\max_{p\in\Delta}\langle z,p\rangle+H(p)$ ⇒ $p=\mathrm{softmax}(z)$; temperature is a scale. [@gao2018propertiessoftmaxfunctionapplication; @blondel2019fenchelyoung]
 
 ```python title="lipschitz.py"
 import numpy as np
@@ -60,7 +67,7 @@ plt.savefig(svg_path)
 
 If $f$ is $L$‑Lipschitz, then $|f(x)-f(x_0)|\le L|x-x_0|$; geometrically, the graph lies within a double cone of slope $\pm L$ around $(x_0,f(x_0))$.
 
-## [[thoughts/Lagrange multiplier]]
+## [[thoughts/Lagrange multiplier|Lagrange multiplier]]
 
 Problem: $\min_x f(x)$ s.t. $h(x)=0$. Lagrangian $\mathcal L(x,\nu)=f(x)+\nu^\top h(x)$. Necessary condition (constraint qualification):
 
@@ -100,10 +107,3 @@ $$
 Maximizer $p=\mathrm{softmax}(z)$; with temperature $T$, use $z/T$ and scale $H$ by $T$. LSE is the convex conjugate of negative entropy (restricted to $\Delta$). [@gao2018propertiessoftmaxfunctionapplication; @blondel2019fenchelyoung]
 
 Proposition. For $\lambda=1/T$, $\nabla\mathrm{lse}_\lambda(z)=\mathrm{softmax}(\lambda z)$ and $\nabla^2\mathrm{lse}_\lambda(z)=\lambda(\operatorname{Diag}(p)-pp^\top)$. The Hessian is PSD and has operator norm $\le \lambda$ (softmax is Lipschitz with constant at most $\lambda$). Shift‑invariance: $J(z)\mathbf{1}=0$.
-
-Summary:
-
-- Lagrange multipliers enforce equality constraints; at optimum $\nabla f$ lies in constraint span.
-- KKT: feasibility, dual feasibility, complementary slackness, stationarity; Slater ⇒ necessary and sufficient.
-- Entropy: concave; its negative is convex on the simplex; motivates entropic regularization in attention. [@blondel2020learningfenchelyounglosses]
-- Variational softmax: $\operatorname{lse}(z)=\max_{p\in\Delta}\langle z,p\rangle+H(p)$ ⇒ $p=\mathrm{softmax}(z)$; temperature is a scale. [@gao2018propertiessoftmaxfunctionapplication; @blondel2019fenchelyoung]

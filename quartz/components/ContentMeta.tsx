@@ -76,7 +76,10 @@ export default (() => {
           h(
             "a",
             {
-              href: resolveRelative(fileData.slug!, (fileData.slug! + ".md") as FullSlug),
+              href: resolveRelative(
+                fileData.slug!,
+                ((fileData.slug === "arena" ? "are.na" : fileData.slug!) + ".md") as FullSlug,
+              ),
               target: "_blank",
               rel: "noopener noreferrer",
               class: "llm-source",

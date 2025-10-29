@@ -150,5 +150,50 @@ li.section-li {
   display: flex;
   flex-direction: column;
   padding-left: calc(var(--kern) * 2);
-  justify-content: space-between;
+}
+
+.folder-layout {
+  &--et-a {
+    display: grid;
+    grid-column: 4/10;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "list evergreen"
+      "article article";
+    gap: calc(var(--kern) * 3);
+
+    .folder-layout--list {
+      grid-area: list;
+    }
+
+    .folder-layout--evergreen {
+      grid-area: evergreen;
+      grid-column: auto;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--kern) * 2);
+    }
+
+    .folder-layout--article {
+      grid-area: article;
+      margin: 0;
+    }
+
+    .note-tags {
+      margin-top: calc(var(--kern) * 2);
+    }
+
+    @media all and ($mobile) {
+      display: block;
+
+      .folder-layout--list {
+        padding-right: 0;
+      }
+
+      .folder-layout--evergreen {
+        display: none;
+      }
+    }
+  }
 }

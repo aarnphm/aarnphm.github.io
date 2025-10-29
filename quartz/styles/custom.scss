@@ -273,8 +273,10 @@ li[id^="user-content-fn-"] {
 
 a {
   &[data-footnote-backref] {
+    font-family: "Berkeley Mono";
     text-decoration: none;
-    visibility: hidden;
+    background: inherit;
+    cursor: pointer;
   }
 
   &[data-role="anchor"] {
@@ -1057,7 +1059,7 @@ a.prefix-left-gap {
   margin-bottom: 1rem;
 }
 
-#slip {
+.slip {
   border-left: unset;
   border: 2px solid var(--iris);
   position: relative;
@@ -1070,7 +1072,7 @@ a.prefix-left-gap {
   }
 
   &::before {
-    content: "slip";
+    content: attr(data-title);
     position: absolute;
     top: -12px;
     left: 12px;
@@ -1092,5 +1094,10 @@ a.prefix-left-gap {
     right: -0.5rem;
     bottom: -0.5rem;
     position: absolute;
+  }
+
+  &:not([data-title])::before,
+  &[data-title=""]::before {
+    content: "slip";
   }
 }

@@ -1437,55 +1437,61 @@ export function renderPage(
                 <div class="stacked-notes-column" />
               </div>
             </section>
-            {beforeBody.length > 0 && (
+            <div
+              class={classNames(undefined, "all-col", "grid", "page-body-grid")}
+              style={{ flex: "1 1 auto" }}
+            >
+              {beforeBody.length > 0 && (
+                <section
+                  class={classNames(
+                    undefined,
+                    "page-header",
+                    "popover-hint",
+                    isArena ? "all-col" : "all-col grid",
+                  )}
+                >
+                  {beforeBody.map((BodyComponent) => (
+                    <BodyComponent {...componentData} />
+                  ))}
+                </section>
+              )}
               <section
                 class={classNames(
                   undefined,
-                  "page-header",
-                  "popover-hint",
-                  isArena ? "all-col" : "all-col grid",
+                  "page-content",
+                  slug === "index" ? "side-col" : isArena ? "all-col" : "grid all-col",
                 )}
               >
-                {beforeBody.map((BodyComponent) => (
-                  <BodyComponent {...componentData} />
-                ))}
+                {sidebar.length > 0 && (
+                  <aside class="aside-container left-col">
+                    {sidebar.map((BodyComponent) => (
+                      <BodyComponent {...componentData} />
+                    ))}
+                  </aside>
+                )}
+                <Content {...componentData} />
+                {!isSlides && !isArena && !isCurius && (
+                  <>
+                    <div id="wc-modal" class="wc-modal">
+                      <div class="wc-inner" />
+                    </div>
+                  </>
+                )}
+                <Headings {...componentData} />
               </section>
-            )}
-            <section
-              class={classNames(
-                undefined,
-                "page-content",
-                slug === "index" ? "side-col" : isArena ? "all-col" : "grid all-col",
+              {!isFolderTag && (
+                <section class="page-footer popover-hint grid all-col">
+                  {retrieval.size > 0 &&
+                    htmlToJsx(componentData.fileData.filePath!, {
+                      type: "root",
+                      children: [...retrieval],
+                    } as Node)}
+                  {afterBody.length > 0 &&
+                    afterBody.map((BodyComponent) => <BodyComponent {...componentData} />)}
+                  {slug !== "index" && <Footer {...componentData} />}
+                </section>
               )}
-              style={{ flex: "1 1 auto" }}
-            >
-              {sidebar.length > 0 && (
-                <aside class="aside-container left-col">
-                  {sidebar.map((BodyComponent) => (
-                    <BodyComponent {...componentData} />
-                  ))}
-                </aside>
-              )}
-              <Content {...componentData} />
-              {!isSlides && !isArena && !isCurius && (
-                <div id="wc-modal" class="wc-modal">
-                  <div class="wc-inner" />
-                </div>
-              )}
-              <Headings {...componentData} />
-            </section>
-            {!isFolderTag && (
-              <section class="page-footer popover-hint grid all-col">
-                {retrieval.size > 0 &&
-                  htmlToJsx(componentData.fileData.filePath!, {
-                    type: "root",
-                    children: [...retrieval],
-                  } as Node)}
-                {afterBody.length > 0 &&
-                  afterBody.map((BodyComponent) => <BodyComponent {...componentData} />)}
-                {slug !== "index" && <Footer {...componentData} />}
-              </section>
-            )}
+            </div>
             <QuartzIcon filePath={componentData.fileData.filePath!} />
           </main>
         </body>

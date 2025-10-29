@@ -4,10 +4,10 @@ tags:
   - seed
   - philosophy
 description: the study of interpretation
-date: "2025-10-03"
 socials:
   sep: https://plato.stanford.edu/entries/hermeneutics/
-modified: 2025-10-04 01:35:03 GMT-04:00
+date: "2025-10-03"
+modified: 2025-10-28 17:49:03 GMT-04:00
 title: hermeneutics
 ---
 
@@ -24,24 +24,6 @@ Understanding is not finding; it's making. You enter another's world not by obse
 Hermeneutics is the practice of interpretation. Not just text, but persons, practices, forms of life. The method: shuttle between part and whole until you achieve a working understanding. Never final, always provisional. [@gadamer1960truth]
 
 What does it mean to understand someone? Not to know facts about them—that's behavioral observation. To understand is to grasp _how_ they make sense of things, what distinctions matter to them, what possibilities they see. This requires entering their horizon of meaning.
-
-## fusion of horizons
-
-Gadamer: understanding happens through _fusion of horizons_ (_Horizontverschmelzung_). You bring your world, they bring theirs. Understanding emerges where they meet—not by one absorbing the other, but by creating shared space. [@gadamer1960truth]
-
-Your horizon is your range of vision: everything that can be seen from your standpoint, shaped by history, language, practice. To understand another is not to leave your horizon but to expand it. Their distinctions become available to you. The circle widens.
-
-This takes time. You can't speed-read a person. Deep reading is the model: return to difficult passages, sit with what resists you, let your categories be disrupted. [^book]
-
-[^book]: see also [@karlsson2025reading], highly recommend this posts from Henrik Karlsson
-
-## attention as interpretive practice
-
-Attention is not will. [[thoughts/Will]] tries to force understanding; attention waits. Will imposes your framework; attention lets the framework shift. The person you're attending to might reorganize your whole way of seeing—if you let them. [@weil1952gravity]
-
-Iris Murdoch: moral life happens mostly in ongoing attention, not discrete choices. How you think about someone, how you imagine them, what you notice and what you ignore—this is where love operates. [@murdoch1970sovereignty] To see someone clearly requires discipline, a kind of spiritual exercise. You practice interpreting them charitably, checking your projections, staying open to revision.
-
-This is hermeneutic humility: you might be wrong about them. Your current interpretation is provisional.
 
 ## ethical practice
 

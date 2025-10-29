@@ -3,7 +3,9 @@ id: NLP
 tags:
   - seed
   - ml
+description: a la natural language processing
 date: "2024-02-07"
+modified: 2025-10-28 16:48:12 GMT-04:00
 title: NLP
 ---
 

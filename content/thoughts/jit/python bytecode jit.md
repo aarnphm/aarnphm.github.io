@@ -7,7 +7,7 @@ tags:
   - bytecode
 description: building a JIT compiler in Python, from simple AST lowering to IR-based optimization
 date: "2025-10-05"
-modified: 2025-10-05 07:09:27 GMT-04:00
+modified: 2025-10-28 16:09:03 GMT-04:00
 title: simple JIT compiler
 ---
 
@@ -45,6 +45,7 @@ decorator usage:
 from ctypes import POINTER, c_float, c_int
 
 jit = TinyCJIT(verbose=True)
+
 
 @jit(restype=None, argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int])
 def vector_add(a, b, out, n):
@@ -124,6 +125,7 @@ decorator usage identical to TinyCJIT:
 ```python
 compiler = IRCompiler(verbose=True, optimize=True)
 
+
 @compiler(restype=c_float, argtypes=[c_float, c_float])
 def add_mul(a, b):
   tmp = a + b
@@ -186,9 +188,11 @@ threshold (default 10): complexity < 10 → TinyCJIT, ≥ 10 → IRCompiler.
 ```python
 jit = Compiler(mode='auto', verbose=True, complexity_threshold=10)
 
+
 @jit(restype=c_float, argtypes=[c_float, c_float])
 def simple_add(a, b):  # complexity ~2 → TinyCJIT
   return a + b
+
 
 @jit(restype=c_float, argtypes=[c_float, c_float])
 def complex_compute(a, b):  # complexity ~15 → IRCompiler

@@ -101,6 +101,8 @@ title: images
 
 ![[thoughts/images/motivations and incentives.webp|motivations versus incentives]]
 
+![[thoughts/images/alex de betak paris apartment.webp|alex de betak's paris apartment]]
+
 ## authors
 
 ![[thoughts/images/joan-didion.webp|joan didion]]

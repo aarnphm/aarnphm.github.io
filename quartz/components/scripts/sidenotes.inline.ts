@@ -1,143 +1,293 @@
-import { removeAllChildren, isInViewport, updatePosition, debounce } from "./util"
+import { debounce } from "./util"
 
-function checkSidenoteSpacing(current: HTMLElement, allSidenotes: NodeListOf<HTMLElement>) {
-  const currentRect = current.getBoundingClientRect()
-  const currentBottom = currentRect.top + currentRect.height
+// viewport calculation constants
+const CONTENT_WIDTH = 35 // rem
+const SIDENOTE_WIDTH = 20 // rem
+const SPACING = 1 // rem
+const GAP = 1 // rem
 
-  const sortedSidenotes = Array.from(allSidenotes).sort((a, b) => {
-    const aRect = a.getBoundingClientRect()
-    const bRect = b.getBoundingClientRect()
-    return aRect.top - bRect.top
-  })
+// convert rem to pixels
+function remToPx(rem: number): number {
+  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
+}
 
-  const currentIndex = sortedSidenotes.indexOf(current)
-  const nextSidenote = sortedSidenotes[currentIndex + 1]
+// calculate viewport thresholds
+function getViewportThresholds() {
+  const contentWidth = remToPx(CONTENT_WIDTH)
+  const sidenoteWidth = remToPx(SIDENOTE_WIDTH)
+  const spacing = remToPx(SPACING)
 
-  if (!nextSidenote) {
-    // No next sidenote, can expand
-    const inner = current.querySelector(".sidenote-inner") as HTMLElement
-    if (inner) inner.style.maxHeight = "unset"
-    return
-  }
-
-  const nextRect = nextSidenote.getBoundingClientRect()
-  const spacing = nextRect.top - currentBottom
-
-  const inner = current.querySelector(".sidenote-inner") as HTMLElement
-  if (inner && spacing > 30) {
-    inner.style.maxHeight = "unset"
+  return {
+    ultraWide: contentWidth + 2 * (sidenoteWidth + 2 * spacing),
+    medium: contentWidth + sidenoteWidth + 2 * spacing,
   }
 }
 
-function updateSidenotes() {
-  const articleContent = document.querySelector(".page-content") as HTMLElement
-  const sideContainer = document.querySelector(".sidenotes") as HTMLElement
-  if (!articleContent || !sideContainer) return
+type LayoutMode = "double-sided" | "single-sided" | "inline"
 
-  const sidenotes = sideContainer.querySelectorAll(".sidenote-element") as NodeListOf<HTMLElement>
+function getLayoutMode(): LayoutMode {
+  const thresholds = getViewportThresholds()
+  const windowWidth = window.innerWidth
 
-  for (const sidenote of sidenotes) {
-    const sideId = sidenote.id.replace("sidebar-", "")
-    const intextLink = articleContent.querySelector(`a[href="#${sideId}"]`) as HTMLElement
-    if (!intextLink) continue
+  if (windowWidth > thresholds.ultraWide) {
+    return "double-sided"
+  } else if (windowWidth > thresholds.medium) {
+    return "single-sided"
+  } else {
+    return "inline"
+  }
+}
 
-    let currentElement: HTMLElement | null = intextLink
-    let collapsedContent = null
-    while (currentElement && !collapsedContent) {
-      if (currentElement.classList.contains("collapsible-header-content")) {
-        collapsedContent = currentElement
-      } else if (
-        currentElement.tagName === "article" &&
-        currentElement.classList.contains("popover-hint")
-      ) {
-        break
+interface SidenoteState {
+  span: HTMLElement
+  label: HTMLElement
+  content: HTMLElement
+  side?: "left" | "right"
+  clickHandler?: (e: MouseEvent) => void
+  keyHandler?: (e: KeyboardEvent) => void
+}
+
+class SidenoteManager {
+  private sidenotes: SidenoteState[] = []
+  private lastBottomLeft = 0
+  private lastBottomRight = 0
+  private layoutMode: LayoutMode = "inline"
+
+  constructor() {
+    this.initialize()
+  }
+
+  private measureContentHeight(content: HTMLElement): number {
+    // temporarily display offscreen to measure
+    const originalDisplay = content.style.display
+    const originalVisibility = content.style.visibility
+    const originalPosition = content.style.position
+    const originalLeft = content.style.left
+
+    content.style.display = "block"
+    content.style.visibility = "hidden"
+    content.style.position = "absolute"
+    content.style.left = "-9999px"
+
+    const height = content.getBoundingClientRect().height
+
+    // restore
+    content.style.display = originalDisplay
+    content.style.visibility = originalVisibility
+    content.style.position = originalPosition
+    content.style.left = originalLeft
+
+    return height
+  }
+
+  private initialize() {
+    const sidenoteSpans = document.querySelectorAll<HTMLSpanElement>(".sidenote")
+
+    sidenoteSpans.forEach((sidenoteSpan) => {
+      const label = sidenoteSpan.querySelector<HTMLSpanElement>(".sidenote-label")
+      if (!label) return
+
+      const dataContent = sidenoteSpan.getAttribute("data-content")
+      if (!dataContent) return
+
+      // create content div
+      const content = document.createElement("div")
+      content.classList.add("sidenote-content")
+      content.innerHTML = dataContent
+      content.style.display = "none"
+
+      // insert after the sidenote span itself (not inside it)
+      sidenoteSpan.parentElement?.insertBefore(content, sidenoteSpan.nextSibling)
+
+      this.sidenotes.push({ span: sidenoteSpan, label, content })
+    })
+  }
+
+  private resetPositions() {
+    this.lastBottomLeft = 0
+    this.lastBottomRight = 0
+
+    this.sidenotes.forEach((state) => {
+      const { span, label, content } = state
+
+      // remove inline mode attributes and handlers
+      if (state.clickHandler) {
+        label.removeEventListener("click", state.clickHandler)
+        state.clickHandler = undefined
       }
-      currentElement = currentElement.parentElement
+      if (state.keyHandler) {
+        label.removeEventListener("keydown", state.keyHandler)
+        state.keyHandler = undefined
+      }
+
+      label.removeAttribute("role")
+      label.removeAttribute("tabindex")
+      label.removeAttribute("aria-expanded")
+      label.removeAttribute("aria-haspopup")
+      label.removeAttribute("data-inline")
+
+      // remove active classes
+      span.classList.remove("active")
+      label.classList.remove("active")
+
+      // reset content
+      content.style.display = "none"
+      content.style.position = ""
+      content.classList.remove("sidenote-left", "sidenote-right", "sidenote-inline")
+    })
+  }
+
+  private positionSidenoteSideBySide(
+    state: SidenoteState,
+    mode: "double-sided" | "single-sided",
+  ): boolean {
+    const { span, label, content } = state
+    const labelRect = label.getBoundingClientRect()
+
+    // measure content height accurately
+    const contentHeight = this.measureContentHeight(content)
+
+    // calculate vertical position
+    const scrollTop = window.scrollY || document.documentElement.scrollTop
+    const topPosition = labelRect.top + scrollTop
+
+    // check footer collision
+    const footer = document.querySelector("footer")
+    const footerTop = footer ? footer.getBoundingClientRect().top + scrollTop : Infinity
+
+    const wouldCollideWithFooter = topPosition + contentHeight > footerTop
+
+    if (wouldCollideWithFooter) {
+      return false // fall back to inline
     }
 
-    if (
-      (collapsedContent && collapsedContent.classList.contains("collapsed")) ||
-      !isInViewport(intextLink)
-    ) {
-      sidenote.classList.remove("in-view")
-      intextLink.classList.remove("active")
+    // check if left side is allowed
+    const allowLeft = span.getAttribute("data-allow-left") !== "false"
+
+    // determine side
+    let side: "left" | "right" = "right"
+
+    if (mode === "double-sided" && allowLeft) {
+      // alternate sides, but prefer side with more space
+      const rightSpace = topPosition - this.lastBottomRight
+      const leftSpace = topPosition - this.lastBottomLeft
+
+      if (rightSpace >= contentHeight + remToPx(GAP)) {
+        side = "right"
+      } else if (leftSpace >= contentHeight + remToPx(GAP)) {
+        side = "left"
+      } else {
+        return false // not enough space on either side
+      }
     } else {
-      sidenote.classList.add("in-view")
-      intextLink.classList.add("active")
-      updatePosition(intextLink, sidenote, sideContainer)
-      checkSidenoteSpacing(sidenote, sidenotes)
+      // single-sided mode or left not allowed: only use right
+      const rightSpace = topPosition - this.lastBottomRight
+      if (rightSpace < contentHeight + remToPx(GAP)) {
+        return false // not enough space
+      }
+      side = "right"
     }
-  }
-}
 
-function createSidenote(footnote: HTMLElement, footnoteId: string): HTMLLIElement {
-  const sidenote = document.createElement("li")
-  sidenote.classList.add("sidenote-element")
-  sidenote.style.position = "absolute"
-  sidenote.id = `sidebar-${footnoteId}`
-  sidenote.append(...(footnote.cloneNode(true) as HTMLElement).children)
+    // apply positioning
+    content.classList.add(`sidenote-${side}`)
+    content.style.display = "block"
 
-  // create inner child container
-  let innerContainer = sidenote.querySelector(".sidenote-inner")
-  if (!innerContainer) {
-    innerContainer = document.createElement("div") as HTMLDivElement
-    innerContainer.className = "sidenote-inner"
-    while (sidenote.firstChild) {
-      innerContainer.appendChild(sidenote.firstChild)
+    // update tracking
+    const bottomPosition = topPosition + contentHeight
+    if (side === "left") {
+      this.lastBottomLeft = bottomPosition
+    } else {
+      this.lastBottomRight = bottomPosition
     }
-    sidenote.appendChild(innerContainer)
+
+    state.side = side
+    return true
   }
 
-  return sidenote
+  private positionSidenoteInline(state: SidenoteState) {
+    const { span, label, content } = state
+
+    content.classList.add("sidenote-inline")
+    content.style.display = "none"
+    content.style.position = "static"
+
+    // set up interactivity
+    label.setAttribute("role", "button")
+    label.setAttribute("tabindex", "0")
+    label.setAttribute("aria-expanded", "false")
+    label.setAttribute("aria-haspopup", "true")
+    label.setAttribute("data-inline", "")
+
+    const toggle = () => {
+      const isExpanded = label.getAttribute("aria-expanded") === "true"
+      const newExpandedState = !isExpanded
+
+      content.style.display = newExpandedState ? "block" : "none"
+      label.setAttribute("aria-expanded", newExpandedState.toString())
+      content.setAttribute("aria-hidden", (!newExpandedState).toString())
+
+      // toggle active class based on expanded state
+      if (newExpandedState) {
+        span.classList.add("active")
+        label.classList.add("active")
+      } else {
+        span.classList.remove("active")
+        label.classList.remove("active")
+      }
+    }
+
+    const onClick = (e: MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      toggle()
+    }
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault()
+        toggle()
+      }
+    }
+
+    // store handlers for cleanup
+    state.clickHandler = onClick
+    state.keyHandler = onKeyDown
+
+    label.addEventListener("click", onClick)
+    label.addEventListener("keydown", onKeyDown)
+  }
+
+  public layout() {
+    this.layoutMode = getLayoutMode()
+    this.resetPositions()
+
+    this.sidenotes.forEach((state) => {
+      // check if sidenote is forced to be inline
+      const forceInline = state.span.getAttribute("data-force-inline") === "true"
+
+      if (this.layoutMode === "inline" || forceInline) {
+        this.positionSidenoteInline(state)
+      } else {
+        const success = this.positionSidenoteSideBySide(state, this.layoutMode)
+        if (!success) {
+          this.positionSidenoteInline(state)
+        }
+      }
+    })
+  }
 }
 
 document.addEventListener("nav", () => {
-  const articleContent = document.querySelector(".page-content > article") as HTMLElement
-  const footnoteSectionList = Array.from(
-    articleContent.querySelectorAll("section[data-footnotes] > ol"),
-  ) as HTMLOListElement[]
-  if (!articleContent) return
+  const manager = new SidenoteManager()
+  manager.layout()
 
-  const sideContainer = document.querySelector(".sidenotes") as HTMLElement
-  if (!sideContainer) return
+  const debouncedLayout = debounce(() => manager.layout(), 100)
 
-  removeAllChildren(sideContainer)
+  window.addEventListener("resize", debouncedLayout, { passive: true })
+  document.addEventListener("scroll", debouncedLayout, { passive: true })
 
-  const ol = document.createElement("ol")
-  sideContainer.appendChild(ol)
-
-  // If no footnote sections or we disable sidenotes in frontmatter, we still want the dashed lines
-  if (footnoteSectionList.length === 0 || sideContainer.dataset.disableNotes === "true") {
-    updateSidenotes()
-    return
-  }
-
-  const footnoteItems = footnoteSectionList.flatMap((ol) =>
-    Array.from(ol.querySelectorAll("li[id^='user-content-fn-']")),
-  ) as HTMLLIElement[]
-
-  for (const [i, footnote] of footnoteItems.entries()) {
-    const footnoteId = footnote.id
-    const intextLink = articleContent.querySelector(`a[href="#${footnoteId}"]`) as HTMLElement
-    if (!intextLink) continue
-    const sidenote = createSidenote(footnote, footnoteId)
-    sidenote.style.position = "absolute"
-    sidenote.dataset.count = `${i + 1}`
-    intextLink.innerHTML = `<span class="indicator-hook"></span>${i + 1}`
-    ol.appendChild(sidenote)
-  }
-
-  updateSidenotes()
-
-  // Update on scroll with debouncing
-  const debouncedUpdate = debounce(updateSidenotes, 2)
-
-  document.addEventListener("scroll", debouncedUpdate, { passive: true })
-  window.addEventListener("resize", debouncedUpdate, { passive: true })
-
-  // Cleanup
   window.addCleanup(() => {
-    document.removeEventListener("scroll", debouncedUpdate)
-    window.removeEventListener("resize", debouncedUpdate)
+    window.removeEventListener("resize", debouncedLayout)
+    document.removeEventListener("scroll", debouncedLayout)
   })
 })

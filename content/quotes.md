@@ -8,7 +8,7 @@ transclude:
   dynalist: false
   title: false
 date: "2024-01-23"
-modified: 2025-10-27 09:34:30 GMT-04:00
+modified: 2025-10-28 16:39:40 GMT-04:00
 title: advice.
 socialDescription: A collection of quotes, wisdom, and advice.
 ---
@@ -73,19 +73,9 @@ Life starts all over again when it gets crisp in the fall -- F. Scott Fitzgerald
 
 Another way to feel free is to meet someone who makes you think “if you love me I don’t care if everyone hates me” and actually have them love you back -- Ava
 
-![[are.na#^camus]]
-
-```poetry
-"Try as you may,
-
-you just can't get away,
-
-from mathematics"
-
-Tom Lehrer
-```
-
 in sf, people like their relationships like they like their AI projects: open source with unresolved merge conflicts -- someone on twitter.
+
+The misery and greatness of this world: it offers no truths, but only objects for love. Absurdity is king, but love saves us from it. -- [[thoughts/Camus|Albert Camus]] ^camus
 
 ## On bits and bytes.
 

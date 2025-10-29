@@ -13,7 +13,8 @@ import {
 import { Root } from "hast"
 import { htmlToJsx } from "../../util/jsx"
 import { QuartzPluginData } from "../../plugins/vfile"
-import EvergreenConstructor from "../Evergreen"
+import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from "../Evergreen"
+import { i18n } from "../../i18n"
 import { FileTrieNode } from "../../util/fileTrie"
 
 interface FolderContentOptions {
@@ -64,6 +65,36 @@ const defaultOptions: FolderContentOptions = {
   tags: [],
 }
 
+const Layout = {
+  default: "L->EAT",
+  etas: "L->ET|A",
+} as const
+
+type FolderLayout = (typeof Layout)[keyof typeof Layout]
+
+const parseFolderLayout = (input: unknown): FolderLayout => {
+  if (Array.isArray(input)) {
+    for (const candidate of input) {
+      const parsed = parseFolderLayout(candidate)
+      if (parsed !== Layout.default) {
+        return parsed
+      }
+    }
+    return Layout.default
+  }
+
+  if (typeof input !== "string") {
+    return Layout.default
+  }
+
+  const normalized = input.trim().toUpperCase()
+  if (normalized === Layout.etas) {
+    return Layout.etas
+  }
+
+  return Layout.default
+}
+
 export default ((opts?: Partial<FolderContentOptions>) => {
   const options: FolderContentOptions = { ...defaultOptions, ...opts }
 
@@ -80,6 +111,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const { lg, sm, tags } = options
   const PageList = PageListConstructor({ highlightTags: [...tags, "folder"] })
   const Evergreen = EvergreenConstructor({ lg, sm, tags })
+  const PermanentNotes = EvergreenPermanentNotes({ lg, sm, tags })
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props
@@ -255,8 +287,14 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       }
     }
 
+    const rawLayout = fileData.frontmatter?.["folderLayout"] ?? fileData.frontmatter?.["pageLayout"]
+    const layout = parseFolderLayout(rawLayout)
+
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
-    const classes = ["popover-hint", "notes-list", "side-col", ...cssClasses].join(" ")
+    const baseClassList = ["popover-hint", "notes-list", "side-col", ...cssClasses]
+    const baseListClass = baseClassList.join(" ")
+    const listClassName =
+      layout === Layout.etas ? `${baseListClass} folder-layout--list` : baseListClass
     const content =
       (tree as Root).children.length === 0
         ? fileData.description
@@ -270,9 +308,31 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       vaults: allFiles,
     }
 
+    if (layout === Layout.etas) {
+      return (
+        <div class="folder-layout folder-layout--et-a">
+          <section class={listClassName}>
+            <PageList {...listProps} />
+          </section>
+          <div class="notes-evergreen folder-layout--evergreen">
+            <PermanentNotes {...listProps} />
+            <AllTags {...listProps} opts />
+          </div>
+          <article class="folder-layout--article">
+            {content}
+            <p>
+              {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({
+                count: listProps.allFiles.length,
+              })}
+            </p>
+          </article>
+        </div>
+      )
+    }
+
     return (
       <>
-        <section class={classes}>
+        <section class={baseListClass}>
           <PageList {...listProps} />
         </section>
         <aside class="notes-evergreen">

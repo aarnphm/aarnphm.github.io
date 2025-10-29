@@ -113,8 +113,7 @@ button.desktop-explorer {
   overflow: hidden;
   overflow-y: auto;
   margin-top: 0.5rem;
-
-  & ul {
+  .folder-outer & ul {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -133,20 +132,24 @@ button.desktop-explorer {
   }
 
   .folder-outer {
+    visibility: collapse;
     display: grid;
     grid-template-rows: 0fr;
-    transition: grid-template-rows 0.3s ease-in-out;
-  }
+    transition-property: grid-template-rows, visibility;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in-out;
 
-  .folder-outer.open {
-    grid-template-rows: 1fr;
-  }
+    &.open {
+      visibility: visible;
+      grid-template-rows: 1fr;
+    }
 
-  .folder-outer > ul {
-    overflow: hidden;
-    margin-left: 6px;
-    padding-left: 0.8rem;
-    border-left: 1px solid var(--lightgray);
+    & > ul {
+      overflow: hidden;
+      margin-left: 6px;
+      padding-left: 0.8rem;
+      border-left: 1px solid var(--lightgray);
+    }
   }
 }
 

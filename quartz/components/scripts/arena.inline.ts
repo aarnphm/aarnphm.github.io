@@ -157,23 +157,21 @@ function renderMapFallback(node: HTMLElement, message: string) {
 }
 
 function cleanupMaps(root: HTMLElement) {
-  root
-    .querySelectorAll<HTMLElement>(".arena-modal-map[data-map-initialized]")
-    .forEach((node) => {
-      const map = mapInstances.get(node)
-      if (map) {
-        try {
-          map.remove()
-        } catch (error) {
-          console.error(error)
-        }
-        mapInstances.delete(node)
+  root.querySelectorAll<HTMLElement>(".arena-modal-map[data-map-initialized]").forEach((node) => {
+    const map = mapInstances.get(node)
+    if (map) {
+      try {
+        map.remove()
+      } catch (error) {
+        console.error(error)
       }
-      node.removeAttribute("data-map-initialized")
-      node.removeAttribute("data-map-status")
-      node.classList.remove("arena-map-error")
-      node.textContent = ""
-    })
+      mapInstances.delete(node)
+    }
+    node.removeAttribute("data-map-initialized")
+    node.removeAttribute("data-map-status")
+    node.classList.remove("arena-map-error")
+    node.textContent = ""
+  })
 }
 
 function hydrateMapboxMaps(root: HTMLElement) {
@@ -487,7 +485,9 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
   container.style.display = "none"
 
   // Build display URL
-  const displayUrl = block.url ?? (block.internalSlug ? `${window.location.origin}/${block.internalSlug}` : undefined)
+  const displayUrl =
+    block.url ??
+    (block.internalSlug ? `${window.location.origin}/${block.internalSlug}` : undefined)
 
   // Build metadata entries
   const metadataHtml: string[] = []
@@ -515,7 +515,7 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
 
   if (block.tags && block.tags.length > 0) {
     const tagsLabel = block.tags.length === 1 ? "tag" : "tags"
-    const tagsList = block.tags.map(tag => `<span class="tag-link">${tag}</span>`).join("")
+    const tagsList = block.tags.map((tag) => `<span class="tag-link">${tag}</span>`).join("")
     metadataHtml.push(`
       <div class="arena-meta-item">
         <span class="arena-meta-label">${tagsLabel}</span>
@@ -528,19 +528,25 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
 
   // Build sub-items (connections)
   const hasSubItems = block.subItems && block.subItems.length > 0
-  const subItemsHtml = hasSubItems ? `
+  const subItemsHtml = hasSubItems
+    ? `
     <div class="arena-modal-connections">
       <div class="arena-modal-connections-header">
         <span class="arena-modal-connections-title">notes</span>
         <span class="arena-modal-connections-count">${block.subItems!.length}</span>
       </div>
       <ul class="arena-modal-connections-list">
-        ${block.subItems!.map(subItem => `
+        ${block
+          .subItems!.map(
+            (subItem) => `
           <li>${subItem.blockHtml || subItem.titleHtml || subItem.title || subItem.content}</li>
-        `).join("")}
+        `,
+          )
+          .join("")}
       </ul>
     </div>
-  ` : ""
+  `
+    : ""
 
   const mapTitle = block.title || block.content || block.url || ""
   const mapHtml = block.coordinates
@@ -607,7 +613,9 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
   container.innerHTML = `
     <div class="arena-modal-layout">
       <div class="arena-modal-main">
-        ${displayUrl ? `
+        ${
+          displayUrl
+            ? `
           <div class="arena-modal-url-bar">
             <button type="button" class="arena-url-copy-button" data-url="${displayUrl}" role="button" tabIndex="0" aria-label="Copy URL to clipboard">
               <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="copy-icon">
@@ -620,20 +628,26 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
                 <use href="#github-check"/>
               </svg>
             </button>
-            ${block.url ? `
+            ${
+              block.url
+                ? `
               <a href="${block.url}" target="_blank" rel="noopener noreferrer" class="arena-modal-link">
                 <div class="arena-modal-link-text">${displayUrl}</div>
                 <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M12 13C12.5523 13 13 12.5523 13 12V3C13 2.44771 12.5523 2 12 2H3C2.44771 2 2 2.44771 2 3V6.5C2 6.77614 2.22386 7 2.5 7C2.77614 7 3 6.77614 3 6.5V3H12V12H8.5C8.22386 12 8 12.2239 8 12.5C8 12.7761 8.22386 13 8.5 13H12ZM9 6.5C9 6.5001 9 6.50021 9 6.50031V6.50035V9.5C9 9.77614 8.77614 10 8.5 10C8.22386 10 8 9.77614 8 9.5V7.70711L2.85355 12.8536C2.65829 13.0488 2.34171 13.0488 2.14645 12.8536C1.95118 12.6583 1.95118 12.3417 2.14645 12.1464L7.29289 7H5.5C5.22386 7 5 6.77614 5 6.5C5 6.22386 5.22386 6 5.5 6H8.5C8.56779 6 8.63244 6.01349 8.69139 6.03794C8.74949 6.06198 8.80398 6.09744 8.85143 6.14433C8.94251 6.23434 8.9992 6.35909 8.99999 6.49708L8.99999 6.49738" fill="currentColor"/>
                 </svg>
               </a>
-            ` : `
+            `
+                : `
               <span class="arena-modal-link">
                 <div class="arena-modal-link-text">${displayUrl}</div>
               </span>
-            `}
+            `
+            }
           </div>
-        ` : ""}
+        `
+            : ""
+        }
         ${mapHtml}
         <div class="arena-modal-main-content">
           ${mainContentHtml}
@@ -644,11 +658,15 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
           <h3 class="arena-modal-title">
             ${block.titleHtml || block.title || ""}
           </h3>
-          ${metadataHtml.length > 0 ? `
+          ${
+            metadataHtml.length > 0
+              ? `
             <div class="arena-modal-meta">
               ${metadataHtml.join("")}
             </div>
-          ` : ""}
+          `
+              : ""
+          }
         </div>
         ${subItemsHtml}
       </div>
@@ -1235,13 +1253,15 @@ document.addEventListener("nav", () => {
         // Check if this is an arxiv block without notes and redirect instead of opening modal
         if (arenaSearchData) {
           const blockData = arenaSearchData.blocks.find((b) => b.id === blockId)
-          const isArxivUrl = blockData?.url ? /^https?:\/\/(?:ar5iv\.(?:labs\.)?)?arxiv\.org\//i.test(blockData.url) : false
+          const isArxivUrl = blockData?.url
+            ? /^https?:\/\/(?:ar5iv\.(?:labs\.)?)?arxiv\.org\//i.test(blockData.url)
+            : false
 
           if (isArxivUrl && blockData?.url) {
             // Only redirect if the block has no notes (description or content)
             const hasNotes = !!blockData.content
             if (!hasNotes) {
-              window.open(blockData.url, '_blank', 'noopener,noreferrer')
+              window.open(blockData.url, "_blank", "noopener,noreferrer")
               return
             }
             // If it has notes, continue to show the modal (without embed)
@@ -1261,14 +1281,16 @@ document.addEventListener("nav", () => {
         // On channel pages: check if arxiv block without notes and redirect instead of modal
         if (blockId && arenaSearchData) {
           const blockData = arenaSearchData.blocks.find((b) => b.id === blockId)
-          const isArxivUrl = blockData?.url ? /^https?:\/\/(?:ar5iv\.(?:labs\.)?)?arxiv\.org\//i.test(blockData.url) : false
+          const isArxivUrl = blockData?.url
+            ? /^https?:\/\/(?:ar5iv\.(?:labs\.)?)?arxiv\.org\//i.test(blockData.url)
+            : false
 
           if (isArxivUrl && blockData?.url) {
             // Only redirect if the block has no notes (description or content)
             const hasNotes = !!blockData.content
             if (!hasNotes) {
               e.preventDefault()
-              window.open(blockData.url, '_blank', 'noopener,noreferrer')
+              window.open(blockData.url, "_blank", "noopener,noreferrer")
               return
             }
             // If it has notes, continue to show the modal (without embed)
@@ -1345,13 +1367,15 @@ document.addEventListener("nav", () => {
         // Check if this is an arxiv block without notes and redirect instead of opening modal
         if (arenaSearchData) {
           const blockData = arenaSearchData.blocks.find((b) => b.id === blockId)
-          const isArxivUrl = blockData?.url ? /^https?:\/\/(?:ar5iv\.(?:labs\.)?)?arxiv\.org\//i.test(blockData.url) : false
+          const isArxivUrl = blockData?.url
+            ? /^https?:\/\/(?:ar5iv\.(?:labs\.)?)?arxiv\.org\//i.test(blockData.url)
+            : false
 
           if (isArxivUrl && blockData?.url) {
             // Only redirect if the block has no notes (description or content)
             const hasNotes = !!blockData.content
             if (!hasNotes) {
-              window.open(blockData.url, '_blank', 'noopener,noreferrer')
+              window.open(blockData.url, "_blank", "noopener,noreferrer")
               return
             }
             // If it has notes, continue to show the modal (without embed)

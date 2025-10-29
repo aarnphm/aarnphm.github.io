@@ -6,8 +6,9 @@ tags:
   - folder
 description: educational JIT compiler implementations in Python
 date: "2025-10-05"
-modified: 2025-10-12 05:40:24 GMT-04:00
-title: python bytecode JIT/compiler
+modified: 2025-10-28 16:09:08 GMT-04:00
+title: python JIT compiler
+pageLayout: L->ET|A
 ---
 
 three-tier JIT compiler demonstrating compilation strategies from simple to sophisticated. see [[thoughts/jit/python bytecode jit|python bytecode jit]] for detailed writeup.

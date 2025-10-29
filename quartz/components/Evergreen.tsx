@@ -37,7 +37,7 @@ interface EvergreenNotes {
 
 const defaultOpts: EvergreenNotes = { lg: [], sm: [], tags: [] }
 
-const Notes = ((userOpts?: EvergreenNotes) =>
+export const EvergreenPermanentNotes = ((userOpts?: EvergreenNotes) =>
   ({ fileData, vaults }: Props) => {
     const opts = { ...defaultOpts, ...userOpts }
     const largeFiles = vaults!.filter((file) => opts.lg.includes(simplifySlug(file.slug!)))
@@ -106,8 +106,8 @@ const Notes = ((userOpts?: EvergreenNotes) =>
   }) satisfies QuartzComponentConstructor
 
 export default ((opts?: EvergreenNotes) => {
+  const Permanent = EvergreenPermanentNotes(opts)
   const Evergreen: QuartzComponent = (props: Props) => {
-    const Permanent = Notes(opts)
     const { cfg, allFiles, content } = props
     return (
       <div class="evergreen-content">

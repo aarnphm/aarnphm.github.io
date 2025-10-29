@@ -4,3 +4,9 @@
 
 [data-slug~="n-bday"] {
 }
+
+[data-slug*="posts/"] {
+  .search-button {
+    visibility: hidden;
+  }
+}

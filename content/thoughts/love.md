@@ -1,5 +1,9 @@
 ---
 id: love
+aliases:
+  - dilectio
+  - lyd
+  - nb
 tags:
   - evergreen
   - love
@@ -10,8 +14,7 @@ description: choosing to give your full, continuously.
 socials:
   essay: https://aarnphm.xyz/posts/love
 date: "2025-10-04"
-modified: 2025-10-27 00:28:46 GMT-04:00
-noindex: true
+modified: 2025-10-28 21:24:06 GMT-04:00
 title: dilectio
 ---
 
@@ -39,15 +42,15 @@ bell hooks: love is action. [@hooks2000love] When you understand love as action,
 
 ## what it requires
 
+three things: [[#attention]], [[#choice]], and [[#epistemic humility]]
+
 ### attention
 
-Simone Weil: "[[thoughts/Attention]] is the rarest and purest form of generosity." [@weil1952gravity] Not attention _to_ something you already understand, but attention that _constitutes_ understanding. You empty yourself, bracket instrumental concerns, become available to what they present.
+> "[[thoughts/Attention]] is the rarest and purest form of generosity." [@weil1952gravity]
 
-Attention is not [[thoughts/Will|will]]. Will tries to force understanding; attention waits. Will imposes your framework; attention lets the framework shift. They might reorganize your whole way of seeing—if you let them.
+Not attention _to_ something you already understand, but attention that _constitutes_ understanding. You empty yourself, bracket instrumental concerns, become available to what they present.
 
-Iris Murdoch: moral life happens mostly in ongoing attention, not discrete choices. [@murdoch1970sovereignty] How you _think_ about someone, how you imagine them, what you notice and ignore—this is where love operates. Seeing someone clearly requires discipline, spiritual exercise. You practice interpreting charitably, checking projections, staying open to revision.
-
-You can behaviorally comply (eye contact, nod, repeat back) while completely absent. Attention resists third-person measurement. The gap between behavioral proxy and actual attention is everything.
+Attention is not [[thoughts/Will|will]]. {{sidenotes: Will tries to force understanding; attention waits for your understanding. Will imposes your framework; attention lets the framework shift. They might reorganize your whole way of seeing—if you let them.}} Iris Murdoch says that "moral life happens mostly in ongoing attention, not discrete choices". [@murdoch1970sovereignty] How you _think_ about someone, how you imagine them, what you notice and ignore—this is where love operates. Seeing someone clearly requires discipline, spiritual {{sidenotes<dropdown: true>[exercise.]: one can behaviorally comply (eye contact, nod, repeat back) while completely absent. attention resists third-person measurement. The gap between behavioral proxy and actual attention is everything.}} You practice interpreting charitably, checking projections, staying open to revision.
 
 ### choice
 
@@ -56,20 +59,6 @@ Sartre: you're "condemned to be free"—even when you claim "I had no choice," y
 Choosing to love is choosing _despite_ absence of guarantees. No reinforcement schedule can make you do that. You do it because you decided it matters.
 
 The same reinforcement history produces different people because people aren't passive recipients—they interpret, resist, reframe. Love requires this active stance: you take responsibility for your interpretation, your commitment, your continued choice to stay.
-
-### hermeneutic
-
-When you love someone, you choose to interpret them. Not once—continuously. You commit to staying in the [[thoughts/hermeneutics|hermeneutic circle]] even when understanding breaks down, even when they become strange to you.
-
-"Giving someone your full" = giving them your interpretive attention. You make their horizon matter. You let their way of making sense affect how you make sense. You stay with difficulty instead of retreating to easy categories.
-
-Gadamer: understanding happens through _fusion of horizons_ (_Horizontverschmelzung_). [@gadamer1960truth] You bring your world, they bring theirs. Understanding emerges where they meet—not by one absorbing the other, but by creating shared space. This takes time. You can't speed-read a person.
-
-This is not naive interpretation (assuming you already understand). It's not instrumental interpretation (extracting what you need). It's _generous_ interpretation: giving benefit of doubt, seeking their internal logic, refusing to reduce them to a type.
-
-The activity is interpretive: learning to see as they see, to care about what they care about, to inhabit their concerns without losing your own. [@fromm1956art]
-
-When someone says "you don't understand me," they're right—understanding must be achieved, maintained, renewed. It's never automatic. [@hooks2000love]
 
 ### [[thoughts/Epistemology|epistemic]] humility
 
@@ -80,6 +69,26 @@ This connects to self-knowledge: you need to know your own framework, your proje
 Not claiming privileged access ("I know you better than you know yourself"). Not projecting your needs and calling it understanding. Not understanding _about_ them (facts, categories) instead of understanding _them_ (their horizon).
 
 > People change. Your fusion of horizons must be redone, continuously. This is why love is practice, not possession.
+
+### [[thoughts/hermeneutics|hermeneutics]]
+
+When you love someone, you choose to interpret them. Not once—continuously. You commit to staying in the [[thoughts/hermeneutics|hermeneutic circle]] even when understanding breaks down, even when they become strange to you.
+
+"Giving someone your full" = giving them your interpretive attention. You make their horizon matter. You let their way of making sense affect how you make sense. You stay with difficulty instead of retreating to easy categories.
+
+> understanding happens through _fusion of horizons_ (_Horizontverschmelzung_). [@gadamer1960truth]
+
+You bring your world, they bring theirs. Understanding emerges where they meet—not by one absorbing the other, but by creating shared space. This takes time. You can't speed-read a person.
+
+This is not naive interpretation (assuming you already understand). It's not instrumental interpretation (extracting what you need). It's _generous_ interpretation of ==giving benefit of doubt==, seeking their internal logic, refusing to reduce them to a type.
+
+Learning to see as they see, to care about what they care about, to inhabit their concerns without losing your own. [@fromm1956art]
+
+When someone says "you don't understand me," they're right—understanding must be achieved, maintained, renewed. It's never automatic. [@hooks2000love]
+
+This takes time. You can't speed-read a person. Deep reading is the model: return to difficult passages, sit with what resists you, let your categories be disrupted. [^book]
+
+[^book]: @karlsson2025reading, highly recommend this posts from Henrik Karlsson
 
 ## what it's not
 
@@ -95,7 +104,7 @@ Not: unconditional acceptance without judgment. (Love requires seeing clearly, w
 
 Not: assuming you understand automatically. (Understanding is work, achievement, discipline.)
 
-## ethics of love
+## [[thoughts/ethics|ethics]] of love
 
 ### care ethics
 
@@ -161,7 +170,7 @@ These are observable. But they're not stimulus-response. They're patterns of eng
 
 [[thoughts/Wittgenstein|Wittgensteinian]] lesson: criteria show what's going on without _being_ what's going on. You use behavior to recognize love, but love isn't identical to behavior.
 
-## connection to [[thoughts/functionalism|functionalism]]
+## towards [[thoughts/functionalism|functionalism]]
 
 Can functional role capture love? Maybe: love is ability to predict, to intervene appropriately, to maintain relationship under perturbations. Engineering criteria, not essence.
 
@@ -177,17 +186,39 @@ This works when you don't care about person—only their behavior. Advertising, 
 
 > [!important]
 >
-> You can't love someone you've reduced to function. Love requires attending to what resists compression.
+> You can't love someone you've reduced to function. Love requires attending to what resists [[thoughts/Compression|compression]].
+
+## thingspace
+
+see also: https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace
+
+> This is the benefit of viewing robins as points in space: You couldn't see the linear lineup as easily if you were just imagining the robins[^robin] as cute little wing-flapping creatures.
+
+[^robin]: A robin's DNA is a highly multidimensional variable, but you can still think of it as part of a robin's location in thingspace—millions of quaternary coordinates, one coordinate for each DNA base—or maybe a more sophisticated view that . The shape of the robin, and its color (surface reflectance), you can likewise think of as part of the robin's position in thingspace, even though they aren't single dimensions.
+
+> We can even imagine a configuration space with one or more dimensions for every distinct characteristic of an object, so that the position of an object's point in this space corresponds to all the information in the real object itself. Rather redundantly represented, too—dimensions would include the mass, the volume, and the density. [^radial]
+
+[^radial]: "Radial categories" are how cognitive psychologists describe the non-Aristotelian boundaries of words. The central "mother" conceives her child, gives birth to it, and supports it. Is an egg donor who never sees her child a mother? She is the "genetic mother". What about a woman who is implanted with a foreign embryo and bears it to term? She is a "surrogate mother". And the woman who raises a child that isn't hers genetically? Why, she's an "adoptive mother".
+
+> The Aristotelian syllogism would run, "Humans have ten fingers, Fred has nine fingers, therefore Fred is not a human" but the way we actually think is "Humans have ten fingers, Fred is a human, therefore Fred is a 'nine-fingered human'."
+
+We can think about the radial-ness of categories [^categories] in intensional terms, as described above—properties that are usually present, but optionally absent. If we thought about the intension of the word "mother", it might be like a distributed glow in thingspace, a glow whose intensity matches the degree to which that volume of thingspace matches the category "mother". The glow is concentrated in the center of genetics and birth and child-raising; the volume of egg donors would also glow, but less brightly.
+
+[^categories]: Or we can think about the radial-ness of categories extensionally. Suppose we mapped all the birds in the world into thingspace, using a distance metric that corresponds as well as possible to perceived similarity in humans: A robin is more similar to another robin, than either is similar to a pigeon, but robins and pigeons are all more similar to each other than either is to a penguin, etcetera.
+
+> This gives us yet another view of why words are not Aristotelian classes: the empirical clustered structure of the real universe is not so crystalline.
+
+A natural cluster, a group of things highly similar to each other, may have no set of necessary and sufficient properties—no set of characteristics that all group members have, and no non-members have.
+
+> When you draw a boundary around a group of extensional points empirically clustered in thingspace, you may find at least one exception to every simple intensional rule you can invent.
 
 ## questionaire
 
 see also: https://www.nytimes.com/2015/01/09/style/no-37-big-wedding-or-small.html, and the [research journal](https://journals.sagepub.com/doi/pdf/10.1177/0146167297234003)
 
-Task Slips for Closeness-Generating Procedure
+### closeness-generating procedure
 
-<div id="slip">
-
-Set I
+<div class="slip" data-title="set i">
 
 1. Given the choice of anyone in the world, whom would
    you want as a dinner guest?
@@ -212,9 +243,7 @@ Set I
 
 </div>
 
-<div id="slip">
-
-Set II
+<div class="slip" data-title="set ii">
 
 13. If a crystal ball could tell you the truth about yourself,
     your life, the future, or anything else, what would you
@@ -239,9 +268,7 @@ Set II
 
 </div>
 
-<div id="slip">
-
-Set III
+<div class="slip" data-title="set iii">
 
 25. Make 3 true "we" statements each. For instance "We are
     both in this room feeling..."
@@ -274,11 +301,9 @@ Set III
 
 </div>
 
-Task Slips for Small-Talk Condition in Study 1
+### small-talk condition in study 1
 
-<div id="slip">
-
-Set I
+<div class="slip" data-title="set i">
 
 1. When was the last time you walked for more than an
    hour? Describe where you went and what you saw.
@@ -302,9 +327,7 @@ Set I
 12. What gifts did you receive on your last birthday?
 </div>
 
-<div id="slip">
-
-Set II
+<div class="slip" data-title="set ii">
 
 13. Describe the last time you went to the zoо.
 14. Tell the names and ages of your family members, include grandparents, aunts and uncles, and where they
@@ -330,9 +353,7 @@ Set II
 
 </div>
 
-<div id="slip">
-
-Set III
+<div class="slip" data-title="set iii">
 
 25. Where did you go to high school? What was your high
     school like?
@@ -362,27 +383,3 @@ Set III
     happen when you were on stage?
 
 </div>
-
-## thingspace
-
-https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace
-
-> This is the benefit of viewing robins as points in space: You couldn't see the linear lineup as easily if you were just imagining the robins[^robin] as cute little wing-flapping creatures.
-
-[^robin]: A robin's DNA is a highly multidimensional variable, but you can still think of it as part of a robin's location in thingspace—millions of quaternary coordinates, one coordinate for each DNA base—or maybe a more sophisticated view that . The shape of the robin, and its color (surface reflectance), you can likewise think of as part of the robin's position in thingspace, even though they aren't single dimensions.
-
-> We can even imagine a configuration space with one or more dimensions for every distinct characteristic of an object, so that the position of an object's point in this space corresponds to all the information in the real object itself. Rather redundantly represented, too—dimensions would include the mass, the volume, and the density. [^radial]
-
-[^radial]: "Radial categories" are how cognitive psychologists describe the non-Aristotelian boundaries of words. The central "mother" conceives her child, gives birth to it, and supports it. Is an egg donor who never sees her child a mother? She is the "genetic mother". What about a woman who is implanted with a foreign embryo and bears it to term? She is a "surrogate mother". And the woman who raises a child that isn't hers genetically? Why, she's an "adoptive mother".
-
-> The Aristotelian syllogism would run, "Humans have ten fingers, Fred has nine fingers, therefore Fred is not a human" but the way we actually think is "Humans have ten fingers, Fred is a human, therefore Fred is a 'nine-fingered human'."
-
-We can think about the radial-ness of categories [^categories] in intensional terms, as described above—properties that are usually present, but optionally absent. If we thought about the intension of the word "mother", it might be like a distributed glow in thingspace, a glow whose intensity matches the degree to which that volume of thingspace matches the category "mother". The glow is concentrated in the center of genetics and birth and child-raising; the volume of egg donors would also glow, but less brightly.
-
-[^categories]: Or we can think about the radial-ness of categories extensionally. Suppose we mapped all the birds in the world into thingspace, using a distance metric that corresponds as well as possible to perceived similarity in humans: A robin is more similar to another robin, than either is similar to a pigeon, but robins and pigeons are all more similar to each other than either is to a penguin, etcetera.
-
-> This gives us yet another view of why words are not Aristotelian classes: the empirical clustered structure of the real universe is not so crystalline.
-
-A natural cluster, a group of things highly similar to each other, may have no set of necessary and sufficient properties—no set of characteristics that all group members have, and no non-members have.
-
-> When you draw a boundary around a group of extensional points empirically clustered in thingspace, you may find at least one exception to every simple intensional rule you can invent.

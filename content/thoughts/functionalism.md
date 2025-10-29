@@ -1,18 +1,20 @@
 ---
-description: Functional roles, computational hermeneutics, autopoietic critiques
 id: functionalism
 tags:
   - seed
   - philosophy
 published: "2003-03-05"
+date: "2025-10-01"
 socials:
   sep: https://plato.stanford.edu/entries/functionalism/
   wikipedia: https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)
-date: "2025-10-01"
+modified: 2025-10-28 17:51:02 GMT-04:00
 created: "2025-10-01"
-modified: 2025-10-04 03:36:38 GMT-04:00
+description: Functional roles, computational hermeneutics, autopoietic critiques
 title: functionalism
 ---
+
+see also: [[thoughts/identity]], [[thoughts/representations]], [[thoughts/emergent behaviour]]
 
 Mental states are job descriptions. Pain, belief, attention—each defined by what it does, not what it's made of. If something takes the right inputs, updates correctly, and produces the right outputs, it counts as that mental state. Neurons, transistors, code: irrelevant. [@levin2024functionalism] retains the explanatory bite of [[thoughts/identity|type-identity theory]] while preserving the empirical humility of [[thoughts/Behavirourism|behaviourism]], and it scales across nervous tissue, synthetic controllers, and commoditised inference engines like [[thoughts/LLMs]].
 
@@ -59,11 +61,11 @@ Energy and timing constraints challenge pure substrate independence: real comput
 ### objections
 
 - absent qualia: a system could have the right role without any feel at all; functional equivalence does not force phenomenality. [wiki](<https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)>)
-- inverted qualia: same role, different qualia mapping (your red = my green) with no functional difference; role underdetermines phenomenology. [@shoemaker1982invertedspectrum; wiki](<https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)>)
-- china brain: a nation-simulated controller could realize the role; does that entail consciousness? if not, role ≠ mind. [@block1978troublesfunctionalism; wiki](https://en.wikipedia.org/wiki/Chinese_room#The_Chinese_Nation_and_the_Chinese_Room)
-- chinese room: pure symbol-shuffling can pass functional tests without understanding; syntax isn’t semantics. [@searle1980minds; wiki](https://en.wikipedia.org/wiki/Chinese_room)
-- knowledge argument: mary learns a new fact (what-red-is-like) despite knowing all functional/physical facts; functional story is not complete. [@jackson1982epiphenomenalqualia; @jackson1986whatmary; wiki](https://en.wikipedia.org/wiki/Knowledge_argument)
-- zombies: functional duplicates without experience are conceivable; if metaphysically possible, functionalism misses something. [@chalmers1996consciousmind; wiki](https://en.wikipedia.org/wiki/Philosophical_zombie)
+- inverted qualia: same role, different qualia mapping (your red = my green) with no functional difference; role underdetermines phenomenology. [@shoemaker1982invertedspectrum] [wiki](<https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)>)
+- china brain: a nation-simulated controller could realize the role; does that entail consciousness? if not, role ≠ mind. [@block1978troublesfunctionalism] [wiki](https://en.wikipedia.org/wiki/Chinese_room#The_Chinese_Nation_and_the_Chinese_Room)
+- chinese room: pure symbol-shuffling can pass functional tests without understanding; syntax isn’t semantics. [@searle1980minds] [wiki](https://en.wikipedia.org/wiki/Chinese_room)
+- knowledge argument: mary learns a new fact (what-red-is-like) despite knowing all functional/physical facts; functional story is not complete. [@jackson1982epiphenomenalqualia; @jackson1986whatmary] [wiki](https://en.wikipedia.org/wiki/Knowledge_argument)
+- zombies: functional duplicates without experience are conceivable; if metaphysically possible, functionalism misses something. [@chalmers1996consciousmind] [wiki](https://en.wikipedia.org/wiki/Philosophical_zombie)
 - liberalism vs chauvinism: unrefined role specs risk over-inclusion (thermostats “believe”) or over-exclusion (alien silicon minds). [wiki](<https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)>)
 
 ### sep critiques
@@ -124,5 +126,3 @@ empirical/engineering handle:
   - constraints: energy/latency differ from biology; grounding requires counterfactual tests; no autopoietic closure (no self-model, no viability maintenance).
 
 > minds are control patterns, not materials. you can port them if error dynamics, update rules, and self-maintenance stay fixed. engineering thesis, not metaphysics. use when useful. [@levin2024functionalism; @friston2017computationalnosology]
-
-see also: [[thoughts/identity]], [[thoughts/representations]], [[thoughts/emergent behaviour]]

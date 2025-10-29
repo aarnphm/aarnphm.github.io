@@ -1,22 +1,35 @@
 ---
+claude:
+  additional_context: |-
+    structure of "are.na.md" can be considered as following:
+    - <h2>: is considered a "channel", where we have a row full of items
+    - each list entry under a <h2> is considered as a "block".
+    - A block will have the following structure:
+      ```md
+      - <link> [separator:=--] <title>[optional] [**][optional]
+        - [meta]:
+          - <metadata>: <value>
+        - [...optional notes]
+      ```
+      where:
+      - `[**]` denotes this block is highlighted
+      - `[meta]` holds a yaml-markdown list of metadata for a given block
+      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
+    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
 id: are.na
-permalinks:
-  - /website
-  - /tweets
-  - /resources
+aliases:
+  - inspo
 tags:
   - technical
   - seed
   - evergreen
 description: My run-down version of are[dot]na
-title: are.na
+date: "2024-10-24"
 socials:
   home: /
   curius: /curius
   are.na: https://www.are.na/aaron-pham/channels
-cssclasses:
-  - nolist
-modified: 2025-10-27 09:30:50 GMT-04:00
+modified: 2025-10-28 21:49:10 GMT-04:00
 codex:
   additional_context: |-
     structure of "are.na.md" can be considered as following:
@@ -37,26 +50,13 @@ codex:
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
     This will be consumed by quartz/plugins/emitters/arena.ts, and then ingested with quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-aliases:
-  - inspo
-claude:
-  additional_context: |-
-    structure of "are.na.md" can be considered as following:
-    - <h2>: is considered a "channel", where we have a row full of items
-    - each list entry under a <h2> is considered as a "block".
-    - A block will have the following structure:
-      ```md
-      - <link> [separator:=--] <title>[optional] [**][optional]
-        - [meta]:
-          - <metadata>: <value>
-        - [...optional notes]
-      ```
-      where:
-      - `[**]` denotes this block is highlighted
-      - `[meta]` holds a yaml-markdown list of metadata for a given block
-      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
-    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
-date: "2024-10-24"
+permalinks:
+  - /website
+  - /tweets
+  - /resources
+title: are.na
+cssclasses:
+  - nolist
 ---
 
 ## discourse
@@ -118,6 +118,14 @@ date: "2024-10-24"
 
 ## tweets
 
+- https://x.com/Zai_org/status/1982804366475063446 -- Glyph: Scaling Context Windows via Visual-Text Compression
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [llm]
+- https://x.com/olive_jy_song/status/1983094612710568380 -- MiniMax M2 blogpost release
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [model, agentic]
 - https://x.com/CalumDouglas1/status/1982591934389784687 -- Working on new problems
   - [meta]:
     - date: 10/27/2025
@@ -233,6 +241,18 @@ date: "2024-10-24"
 
 ## website
 
+- https://website-git-moodboard-maxime-heckels-projects.vercel.app/moodboard -- moodboard
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [creative]
+- https://sdsa.ai/
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [landing, terminal]
+- https://www.shaobo.co/
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [spatial, canvas, web]
 - https://www.printedmatter.org/catalog/62490/ -- Nostalgia [Third Edition]
   - [meta]:
     - date: 10/27/2025
@@ -605,6 +625,10 @@ date: "2024-10-24"
 
 ## people
 
+- https://website-git-moodboard-maxime-heckels-projects.vercel.app/ -- maxime heckels
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [portfolio]
 - https://en.wikipedia.org/wiki/Viktor_Frankl -- Viktor Frankl
   - [meta]:
     - date: 10/27/2025
@@ -620,6 +644,10 @@ date: "2024-10-24"
     - tags: [philosopher]
   - existential rationalism
   - mathematics in arts
+- https://kayleegeorge.github.io/ -- Kaylee George
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [engineer]
 - https://masonjwang.com/ -- Mason Wang
   - [meta]:
     - date: 10/24/2025
@@ -1089,6 +1117,22 @@ date: "2024-10-24"
 
 ## essay
 
+- https://rauno.me/craft/interaction-design -- Invisible Details of Interaction Design [**]
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [design]
+- http://www.wepsite.de/Kate_Fox,Humour_Rules.htm -- Humour rules
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [love]
+- https://sdan.io/blog/intelligence-arbitrage -- Intelligence arbitrage
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [ai]
+- https://joincolossus.com/article/the-amusement-park-for-engineers
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [build, engineering]
 - https://jennyclark.substack.com/p/prayer-for-the-girl-who-often-forgets -- prayer for the girl who often forgets that enough is enough
   - [meta]:
     - date: 10/27/2025
@@ -1096,20 +1140,20 @@ date: "2024-10-24"
 - https://amasad.me/keep-winning -- How to keep winning.
   - [meta]:
     - date: 10/24/2025
-    - tags: [fruit]
+    - tags: [determinism]
 - https://masonjwang.com/writing/anhedonia -- anhedonia
   - [meta]:
     - date: 10/24/2025
-    - tags: [fruit]
+    - tags: [love, joy]
   - lack of pleasure in activities
 - https://www.gyford.com/phil/writing/2025/10/15/1995-internet/ -- My First Months in Cyberspace
   - [meta]:
     - date: 10/24/2025
-    - tags: [fruit]
+    - tags: [reflection]
 - https://nadia.xyz/climate-tribes -- Mapping out the tribes of climate [**]
   - [meta]:
     - date: 10/24/2025
-    - tags: [fruit]
+    - tags: [maps]
 - https://brianlovin.com/writing/how-to-give-a-great-product-design-portfolio-presentation -- How to give a great product design portfolio presentation
   - [meta]:
     - date: 10/23/2025
@@ -1117,7 +1161,7 @@ date: "2024-10-24"
 - https://guzey.com/productivity/ -- Every productivity thought I've ever had, as concisely as possible
   - [meta]:
     - date: 10/23/2025
-    - tags: [fruit]
+    - tags: [hacks]
 - https://www.nytimes.com/2015/02/13/style/the-36-questions-on-the-way-to-love.html -- 36 Questions to fall in [[/tags/love]]
   - [meta]:
     - date: 10/23/2025
@@ -1128,15 +1172,15 @@ date: "2024-10-24"
 - https://itscertified.substack.com/p/radiochange -- Radio/Change
   - [meta]:
     - date: 10/23/2025
-    - tags: [fruit]
+    - tags: [life, love]
 - https://www.ameliahruby.com/blog/100-ways-to-share -- 100 ways to share your work + life off social media [**]
   - [meta]:
     - date: 10/21/2025
-    - tags: [fruit]
+    - tags: [creative, sharing, ring]
 - https://www.cs.cmu.edu/~mblum/research/pdf/grad.html -- Advice to a Beginning Graduate Student
   - [meta]:
     - date: 10/21/2025
-    - tags: [fruit]
+    - tags: [research]
   - What is 4 R's of Graduate School? - Reading, aRithmetic, Research, and wRiting
   - Reading
   - Studying
@@ -1145,7 +1189,7 @@ date: "2024-10-24"
 - https://onegirlinfinitethoughts.substack.com/p/not-lost-not-found-becoming
   - [meta]:
     - date: 10/21/2025
-    - tags: [fruit]
+    - tags: [becoming, love]
 - https://mkodama.org/content/suffering-focused/ -- Suffering-focused ethics
   - [meta]:
     - date: 10/18/2025
@@ -1155,10 +1199,6 @@ date: "2024-10-24"
   - [meta]:
     - date: 10/18/2025
     - tags: [life, longtermism]
-- https://geohot.github.io/blog/jekyll/update/2025/09/13/get-out-of-technology.html -- Get the fuck out of technology [**]
-  - [meta]:
-    - date: 10/16/2025
-    - tags: [fruit]
 - https://clairebookworm.substack.com/p/i-think-about-it-all-the-time -- I think about it all the time
   - [meta]:
     - date: 10/12/2025
@@ -1217,11 +1257,11 @@ date: "2024-10-24"
     - date: 10/05/2025
     - tags: [fruit]
   - i.e: the evolution of anisogamy
-- [[thoughts/papers/Augmenting Human Intellect, A Conceptual Framework - D.C Engelbart, 1962.pdf]] -- "Augmenting Human Intellect", Douglas Engelbart
+- [[thoughts/papers/Augmenting Human Intellect, A Conceptual Framework - D.C Engelbart, 1962.pdf]] -- "Augmenting Human Intellect", Douglas Engelbart [**]
   - [meta]:
-    - date: 05/15/2025
+    - date: 10/28/2025
     - tags: [fruit]
-  - source: https://www.dougengelbart.org/pubs/papers/scanned/Doug_Engelbart-AugmentingHumanIntellect.pdf
+  - source: https://www.dougengelbart.org/pubs/papers/scanned/Doug_Engelbart-AugmentingHumanIntellect.pdf, https://www.dougengelbart.org/pubs/augment-3906.html
 - https://www.cs.virginia.edu/~robins/YouAndYourResearch.html -- You and Your Research, Richard Hamming [**]
   - [meta]:
     - date: 10/05/2025
@@ -1285,10 +1325,11 @@ date: "2024-10-24"
   - [meta]:
     - date: 01/17/2025
     - tags: [fruit]
-- https://handwritten.blog/2022-10-01-hyperlinks-in-handwriting.html -- Handwritten blog
+- https://archive.ph/XsuTV -- Handwritten blog [**]
   - [meta]:
     - date: 01/17/2025
     - tags: [fruit]
+  - source: https://handwritten.blog/2022-10-01-hyperlinks-in-handwriting.html (dns problems)
 - https://www.muckrock.com/news/archives/2015/jul/21/nothing-indicate-nothing-indicate-subject-had-any-/ -- Paul Erdős, he is just a mathematician that really [[/tags/love|love]] math
   - [meta]:
     - date: 01/20/2025
@@ -1714,6 +1755,22 @@ date: "2024-10-24"
 
 ## machine learning
 
+- https://www.doc.ic.ac.uk/~eedwards/compsys/float/#:~:text=Add%20the%20exponents%20to%20find,1.021%20%C3%97%20106 -- Floating points arithmetics
+  - [meta]:
+    - date: 07/04/2025
+    - tags: [ml, cs]
+- https://github.com/triton-lang/triton/blob/a758c595ddb149381b7ee888982f1afbeb02823c/python/triton_kernels/triton_kernels/matmul_ogs_details/_matmul_ogs.py#L291 -- matmul_ogs for [[thoughts/quantization#mxfp4|mxfp4]]
+  - [meta]:
+    - date: 08/10/2025
+    - tags: [kernel]
+- https://thinkingmachines.ai/blog/on-policy-distillation/ -- On-Policy Distillation [**]
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [distillation, rl]
+- https://metr.org/blog/2024-11-22-evaluating-r-d-capabilities-of-llms/ -- Evaluating frontier AI R&D capabilities of language model agents against human experts
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [alignment]
 - https://thenumb.at/Functions-are-Vectors/ -- Functions are vectors [**]
   - [meta]:
     - date: 10/27/2025
@@ -2295,6 +2352,14 @@ date: "2024-10-24"
 
 ## argumentative
 
+- https://geohot.github.io/blog/jekyll/update/2025/09/13/get-out-of-technology.html -- Get the fuck out of technology [**]
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [technology]
+- https://ai-2027.com/ -- AI 2027
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [prediction]
 - https://www.overcomingbias.com/p/what-cost-varietyhtml -- What Cost Variety?
   - [meta]:
     - date: 10/24/2025
@@ -2551,8 +2616,12 @@ date: "2024-10-24"
     - date: 10/04/2025
     - tags: [fruit]
 
-## technology
+## computer science
 
+- https://blog.sdan.io/archon/ -- Teaching GPT-5 to use a Computer
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [gpt-5]
 - https://samwho.dev/turing-machines -- Turing machines
   - [meta]:
     - date: 10/27/2025
@@ -2724,6 +2793,7 @@ date: "2024-10-24"
   - [meta]:
     - date: 10/23/2025
     - tags: [love, deity]
+  - see also [[thoughts/papers/aron-et-al-1997-the-experimental-generation-of-interpersonal-closeness-a-procedure-and-some-preliminary-findings.pdf]]
 - https://www.youtube.com/watch?v=C7n7wfQOGaI -- The Philosophy of Spinoza & Leibniz - Bryan Magee & Anthony Quinton (1987)
   - [meta]:
     - date: 10/08/2025
@@ -2837,7 +2907,7 @@ date: "2024-10-24"
   - [[thoughts/Giles Deleuze]]: ventures outwards to realize these potentiality.
   - Commit someone who will inevitability fails us.
   - > unfolding of love sustains the form of life itself
-  - [[thoughts/Camus]]: "The misery and greatness of this world: it offers no truths, but only objects for love. Absurdity is king, but love saves us from it." ^camus
+  - ![[quotes#^camus]]
 - https://thedosagemakesitso.substack.com/p/worship-adoration-valence -- Worship. Adoration. Valence
   - [meta]:
     - date: 10/03/2025
@@ -3357,22 +3427,14 @@ date: "2024-10-24"
   - [meta]:
     - date: 09/02/2025
     - tags: [fruit, philosophy]
-- https://www.doc.ic.ac.uk/~eedwards/compsys/float/#:~:text=Add%20the%20exponents%20to%20find,1.021%20%C3%97%20106 -- Floating points arithmetics
+- https://www.unco.edu/campus-recreation/pdf/intramural-sports/spring20/running-pace-chart.pdf -- Running pace chart [**]
   - [meta]:
     - date: 07/04/2025
-    - tags: [fruit]
-- https://www.unco.edu/campus-recreation/pdf/intramural-sports/spring20/running-pace-chart.pdf -- Running pace chart
-  - [meta]:
-    - date: 07/04/2025
-    - tags: [fruit]
-- https://github.com/triton-lang/triton/blob/a758c595ddb149381b7ee888982f1afbeb02823c/python/triton_kernels/triton_kernels/matmul_ogs_details/_matmul_ogs.py#L291 -- matmul_ogs for [[thoughts/quantization#mxfp4|mxfp4]]
-  - [meta]:
-    - date: 08/10/2025
     - tags: [fruit]
 - https://notes.eatonphil.com/2025-08-09-what-even-is-distributed-systems.html -- What even is _distributed systems_
   - [meta]:
     - date: 08/10/2025
-    - tags: [fruit]
+    - tags: [lectures]
 - https://x.com/rsnous/status/1446211454378524692 -- "We do not lose texts because of catastrophic events that wipe out all copies of them. We lose texts because they stop being copied."
   - [meta]:
     - date: 08/28/2025
@@ -3384,97 +3446,103 @@ date: "2024-10-24"
 - https://mp.weixin.qq.com/s/pDmAXHcN7Iqc8sUKgJgGtg -- Shanghai vLLM meetup 2025
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [meetup]
 - https://dlsyscourse.org/lectures/ -- DLSys, CMU
   - [meta]:
     - date: 08/28/2025
-    - tags: [fruit]
+    - tags: [courses]
 - https://github.com/CppCon/CppCon2024 -- CppConf 2024
   - [meta]:
     - date: 09/06/2025
-    - tags: [fruit]
+    - tags: [conference]
 - https://www.britannica.com/topic/PARC-company -- Building PARC
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [essay]
   - i.e: personal computer, WYSIWYG
   - > The idea of “what you see is what you get” (WYSIWYG) would work on paper as well as the monitor. Unfortunately, at that time Xerox saw no point in innovating when their current technology worked so well.
-- https://www.compmotifs.com/ -- Science through Computation Initiative
-  - [meta]:
-    - date: 10/04/2025
-    - tags: [fruit]
 
 ## interfaces
 
 - https://x.com/_baku89/status/1848878071585378521 -- An interface defines the metric of search space
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [generative]
 - https://x.com/SomeHats/status/1577717329680601089 -- when yr not using a drawing
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [life]
   - (or u haven't added it to yr animation yet) it just hangs out at the bottom of the screen
 - https://x.com/hturan/status/1958590911920615635 -- exploring paths through latent space
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [generative, latent]
   - by interpolating between known embeddings
 
 ## fonts
 
+- https://pangrampangram.com/ -- Pangram Pangram Foundry [**]
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [foundry]
+- https://pangrampangram.com/products/bitmap-fonts -- Bitmap Font
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [fonts]
 - https://pangrampangram.com/products/neue-montreal -- PP Neue Montreal
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [modern]
+  - this [[/|site]] uses PP Neue Montreal
 - https://fontsource.org/ -- Fontsource
   - [meta]:
     - date: 08/02/2025
-    - tags: [fruit]
+    - tags: [foundry]
 - https://servermono.com/ -- Server Mono
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [mono, programming]
 - https://departuremono.com/ -- Departure Mono [**]
   - [meta]:
     - date: 08/28/2025
-    - tags: [fruit]
+    - tags: [mono, programming]
 - https://lettermatic.com/fonts/parclo-serif -- Parclo Serif
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [serif]
+  - this [[/|site]] uses Parclo as heading
 - https://www.daybreak.studio/writing/adaline-typography -- Adaline
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [sans]
 - https://weltkern.com/typefaces -- WELTKERN typefaces
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [sans]
 - https://fonderiebretagne.fr/ -- Bretagne Type foundry
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [foundry]
 - https://weltkern.com/typefaces/lausanne -- Lausanne
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [sans]
 - https://displaay.net/typeface/saans -- Displaay Saans
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [sans]
 - https://displaay.net/typeface/teodor -- Displaay Teodor
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [sans]
 - https://www.atipofoundry.com/ -- Atipo Foundry
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [foundry]
 - https://abetkaua.com/en/ -- Typeface Alphabet of the Ukrainian Identity
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [sans]
 
 ## lecture
 
@@ -3536,10 +3604,18 @@ date: "2024-10-24"
 
 ## technical
 
+- https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [ai, recursion]
+- https://thundergolfer.com/blog/aws-us-east-1-outage-oct20 -- AWS US-East 1 outage
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [fruit]
 - https://github.com/MoonshotAI/checkpoint-engine -- MoonshotAI/checkpoint-engine
   - [meta]:
     - date: 10/24/2025
-    - tags: [fruit]
+    - tags: [rl]
 - https://github.com/modular/modular/blob/main/mojo/stdlib/stdlib/algorithm/_sorting_network.mojo
   - [meta]:
     - date: 10/17/2025
@@ -3716,8 +3792,12 @@ date: "2024-10-24"
     - tags: [fruit]
   - see also [[thoughts/pdfs/Efficient Implementation of the Smalltalk-80 System.pdf]]
 
-## vc
+## funds
 
+- https://www.compmotifs.com/ -- Science through Computation Initiative
+  - [meta]:
+    - date: 10/04/2025
+    - tags: [fruit]
 - https://seldonlab.com/ -- Seldon Labs
   - [meta]:
     - date: 10/05/2025
@@ -3884,6 +3964,10 @@ date: "2024-10-24"
 
 ## papers
 
+- https://arxiv.org/abs/2404.03715
+  - [meta]:
+    - date: 10/28/2025
+    - tags: [rl, nash optimization]
 - https://arxiv.org/abs/2510.13786
   - [meta]:
     - date: 10/27/2025

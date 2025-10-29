@@ -1,0 +1,152 @@
+@use "../../styles/variables.scss" as *;
+
+.sidenote {
+  // hover states for entire sidenote container
+  &:hover {
+    .sidenote-label {
+      border-bottom-color: var(--tertiary);
+      border-bottom-style: solid;
+    }
+
+    .sidenote-content {
+      border-color: var(--tertiary);
+      background-color: color-mix(in srgb, var(--tertiary) 10%, var(--light));
+    }
+  }
+}
+
+// label styling
+.sidenote-label {
+  border-bottom: 0.2rem dashed var(--tertiary);
+  position: relative;
+  cursor: default;
+  color: var(--tertiary);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+
+  // auto-generated indicators (no explicit label)
+  &[data-auto] {
+    border-bottom: none;
+  }
+
+  // inline mode cursor
+  &[data-inline] {
+    cursor: pointer;
+
+    // show arrow only in inline mode
+    .sidenote-arrow {
+      opacity: 1;
+    }
+  }
+
+  // rotate arrow when active
+  &.active .sidenote-arrow {
+    transform: rotate(180deg);
+  }
+}
+
+// SVG arrow styling
+.sidenote-arrow {
+  display: inline-block;
+  margin-left: 0.25em;
+  vertical-align: middle;
+  color: var(--tertiary);
+  transition: transform 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidenotes {
+  grid-template-columns: 8/12;
+}
+
+// content positioning
+.sidenote-content {
+  display: none;
+  position: absolute;
+  width: 20rem;
+  box-sizing: border-box;
+  border: 0.075rem solid var(--gray);
+  border-radius: 0.2rem;
+  margin-top: -1.5rem;
+  padding: 1rem;
+  background-color: var(--light);
+  z-index: 10;
+  font-size: 0.9em;
+  line-height: 1.5;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+
+  &.sidenote-right {
+    right: calc(-1 * (20rem + 1rem));
+  }
+
+  &.sidenote-left {
+    left: calc(-1 * (20rem + 1rem));
+  }
+
+  &.sidenote-inline {
+    position: static;
+    width: 100%;
+    margin: 1rem 0;
+    margin-top: 0.5rem;
+  }
+
+  // styling for content elements
+  p {
+    margin: 0.5rem 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  a {
+    color: var(--secondary);
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--tertiary);
+    }
+  }
+
+  code {
+    font-size: 0.85em;
+    padding: 0.1em 0.3em;
+    background-color: var(--lightgray);
+    border-radius: 0.2rem;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+
+  em {
+    font-style: italic;
+  }
+}
+
+
+// responsive breakpoints
+@media all and ($tablet) {
+  .sidenote-content:not(.sidenote-inline) {
+    display: none !important;
+  }
+}
+
+@media all and ($mobile) {
+  .sidenote-content:not(.sidenote-inline) {
+    display: none !important;
+  }
+
+  .sidenote-content.sidenote-inline {
+    width: 100%;
+    font-size: 0.85em;
+  }
+}
