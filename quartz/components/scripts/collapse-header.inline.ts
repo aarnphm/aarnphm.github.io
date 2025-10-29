@@ -1,5 +1,5 @@
-// import { getFullSlug } from "../../util/path"
-import { getCollapsedState, setCollapsedState, setHeaderState } from "./util"
+import { setHeaderState } from "./util"
+import { getFullSlug } from "../../util/path"
 
 type MaybeHTMLElement = HTMLElement | undefined
 
@@ -38,19 +38,20 @@ function toggleHeader(evt: Event) {
   wrapper.classList.toggle("collapsed", isCollapsed)
   toggleButton.classList.toggle("collapsed", isCollapsed)
 
-  setCollapsedState(window, toggleButton.id, isCollapsed ? "false" : "true")
+  localStorage.setItem(
+    `${getFullSlug(window).replace("/", "--")}-${toggleButton.id}`,
+    isCollapsed ? "false" : "true",
+  )
 }
 
 function setupHeaders() {
   const collapsibleHeaders = document.querySelectorAll("section.collapsible-header")
 
   for (const header of collapsibleHeaders) {
-    const button = header.querySelector("span.toggle-button") as HTMLButtonElement
+    const button = header.querySelector<HTMLButtonElement>("span.toggle-button")
     if (button) {
       button.addEventListener("click", toggleHeader)
-      if (window.addCleanup) {
-        window.addCleanup(() => button.removeEventListener("click", toggleHeader))
-      }
+      window.addCleanup(() => button.removeEventListener("click", toggleHeader))
 
       // Apply saved state
       const content = document.querySelector<HTMLElement>(
@@ -58,7 +59,9 @@ function setupHeaders() {
       )
       // setup once
       if (content) {
-        const savedState = getCollapsedState(window, button.id)
+        const savedState = localStorage.getItem(
+          `${getFullSlug(window).replace("/", "--")}-${button.id}`,
+        )
         if (savedState) {
           setHeaderState(
             button as HTMLElement,
@@ -76,7 +79,9 @@ function setupHeaders() {
   const links = document.querySelectorAll("button.transclude-title-link") as NodeListOf<SVGElement>
   for (const link of links) {
     const parentEl = link.parentElement as HTMLElement
-    const href = parentEl.dataset.href as string
+    if (!parentEl || !parentEl.dataset.href) continue
+
+    const href = parentEl.dataset.href
 
     function onClick() {
       window.spaNavigate(new URL(href, window.location.toString()))
@@ -87,53 +92,8 @@ function setupHeaders() {
       window.addCleanup(() => link.removeEventListener("click", onClick))
     }
   }
-
-  const transcludedItem = document.querySelectorAll<HTMLElement>(
-    "article > section[data-footnotes], article > section[data-footnotes]",
-  )
-  if (transcludedItem.length > 0) {
-    const pageFooter = document.querySelector<HTMLElement>('section[class~="page-footer"]')
-
-    if (pageFooter) {
-      Array.from(transcludedItem).forEach((item) => {
-        pageFooter!.insertBefore(item, pageFooter!.firstChild)
-      })
-    }
-  }
 }
 
 // Set up initial state and handle navigation
 document.addEventListener("nav", setupHeaders)
 window.addEventListener("resize", setupHeaders)
-
-// Add overlay to section[class~="header"] once scrolling
-// function setupHeaderOverlay() {
-//   const header = document.querySelector('section[class~="header"]') as HTMLElement
-//   if (!header || getFullSlug(window) === "index") return
-//
-//   function handleScroll() {
-//     const asidePanel = document.querySelector<HTMLDivElement>(
-//       "main > * > aside[class~='sidepanel-container']",
-//     )
-//     if (asidePanel && asidePanel.classList.contains("active")) return
-//     // Add a 50px threshold
-//     if (window.scrollY > 50) {
-//       header.classList.add("overlay")
-//     } else {
-//       header.classList.remove("overlay")
-//     }
-//   }
-//
-//   // Initial check
-//   handleScroll()
-//
-//   // Add scroll event listener
-//   window.addEventListener("scroll", handleScroll)
-//   if (window.addCleanup) {
-//     window.addCleanup(() => window.removeEventListener("scroll", handleScroll))
-//   }
-// }
-//
-// Initialize header overlay
-// document.addEventListener("nav", setupHeaderOverlay)
-// window.addEventListener("resize", setupHeaderOverlay)

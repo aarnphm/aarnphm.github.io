@@ -2,7 +2,7 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-10-29 02:15:14 GMT-04:00
+modified: 2025-10-29 05:21:50 GMT-04:00
 tags:
   - seed
   - fruit
@@ -70,7 +70,9 @@ What gets me is seeing the old faces, the same constellation of people I used to
   - tags:
     - llm
 
-> Why Superhuman AI Would Kill Us All - [Eliezer Yudkowsky](https://www.youtube.com/watch?v=nRvAt4H7d7E)
+> Why Superhuman AI Would Kill Us All
+>
+> --[Eliezer Yudkowsky](https://www.youtube.com/watch?v=nRvAt4H7d7E)
 
 Yudkowsky's full argument on eschatology isn't productive whatsoever. Feels a lot more science fiction writing, where he claims that this systems will end up "wanting to do their stuff without wanting to take the pills that [we offer to] makes them to do stuff that we _wants_ them to do instead."
 
@@ -163,12 +165,23 @@ I find myself the most productive while procrastinating other tasks.
     - math
 
 > ```poetry
-> "Try as you may,
+> Try as you may,
 >
 > you just can't get away,
 >
-> from mathematics"
->
+> from mathematics
 > ```
 >
 > —Tom Lehrer
+
+---
+
+- [meta]:
+  - date: 2025-10-29 05:18:28 GMT-04:00
+  - tags:
+    - productivity
+    - philosophy
+
+Late night work listening to Dreyfus' lectures hits like smoking a good joint on a Friday night.
+
+![[https://www.youtube-nocookie.com/embed/usxvyf3xqcQ?si=9Sv_qkvGfr9n6mfu]]

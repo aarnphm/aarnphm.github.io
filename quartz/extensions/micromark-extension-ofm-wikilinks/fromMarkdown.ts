@@ -14,6 +14,7 @@ import {
   sluggify,
   endsWith,
 } from "../../util/path"
+import { buildYouTubeEmbed } from "../../util/youtube"
 import "./types"
 import { Literal } from "unist"
 
@@ -588,7 +589,22 @@ function exitWikilink(
           url = slugifyFilePath(targetPath, stripExtensions)
         }
         if (wikilink.embed) {
-          if (ext && isImageExtension(ext)) {
+          // check for youtube URLs first (before file extension checks)
+          const youtubeEmbed = buildYouTubeEmbed(targetPath)
+          if (youtubeEmbed) {
+            // create img tag with youtube URL as src
+            // downstream ofm.ts handler will convert to iframe
+            if (!node.data) node.data = { wikilink }
+            node.data.hName = "img"
+            node.data.hProperties = {
+              src: targetPath,
+              ...(wikilink.metadataParsed
+                ? { "data-metadata": JSON.stringify(wikilink.metadataParsed) }
+                : wikilink.metadata
+                  ? { "data-metadata": wikilink.metadata }
+                  : {}),
+            }
+          } else if (ext && isImageExtension(ext)) {
             annotateImageEmbed(node, wikilink, url)
           } else if (ext && isVideoExtension(ext)) {
             annotateVideoEmbed(node, wikilink, url)

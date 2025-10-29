@@ -97,6 +97,8 @@ Not: assuming you understand automatically. (Understanding is work, achievement,
 
 ## [[thoughts/ethics|ethics]] of love
 
+three axes: [[#care ethics|care]], [[#virtue ethics|virtue]], and [[#existentialist ethics|existentialism]]
+
 ### care ethics
 
 Carol Gilligan, Nel Noddings: ethics of care emphasizes particularity over universality, relational self over autonomous individual, context-sensitive responsiveness over abstract principles. [@gilligan1982different; @noddings1984caring]

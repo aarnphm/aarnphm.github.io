@@ -1,11 +1,11 @@
 ---
-date: "2023-07-29"
-description: a knowledge distillation and learning process
 id: writing
-modified: 2025-10-29 02:16:24 GMT-04:00
 tags:
   - sapling
   - evergreen
+description: a knowledge distillation and learning process
+date: "2023-07-29"
+modified: 2025-10-29 04:38:40 GMT-04:00
 title: Writing
 ---
 
@@ -15,7 +15,7 @@ title: Writing
 
 Writing is an exploration, an excavation of self and the world in this painfully intricate dance. It is a way to bridge the chasm between ideas, to extend a filament of one consciousness to others. It is an extension of self, a second brain, where bounded by constraining nets of syntax and grammar, providing grounds for freedom of expression and articulate one's interests and curiosity.
 
-> The thing I like about writing is that it’s quite literally *thinking*—a way for me access my own interiority and construct something from it. What I write is all mine, it’s a living thing, it’s an extension of me that wanders out into the world. It is desire turned inwards instead of outwards, focused instead of displaced. It’s a way to access self-knowledge and self-respect. (Ava on [how to avoid half-heartedness](https://www.avabear.xyz/p/how-to-avoid-half-heartedness)) ^ava-writing
+> The thing I like about writing is that it’s quite literally [_thinking_](https://www.henrikkarlsson.xyz/p/writing-to-think)—a way for me access my own interiority and construct something from it. What I write is all mine, it’s a living thing, it’s an extension of me that wanders out into the world. It is desire turned inwards instead of outwards, focused instead of displaced. It’s a way to access self-knowledge and self-respect. (Ava on [how to avoid half-heartedness](https://www.avabear.xyz/p/how-to-avoid-half-heartedness)) ^ava-writing
 
 The modality of [[thoughts/Language#representation.|text]] essentially creates a universal interface that allows individuals from diverse backgrounds and contexts to form intricate networks of thoughts.
 
@@ -87,7 +87,7 @@ _Excerpt from [A blog post is a very long and complex search query to find fasci
 
 > When writing in public, there is a common idea that you should make it *accessible*. This is a left over from mass media. Words addressed to a large and diverse set of people need to be simple and clear and free of jargon. It is valuable to write clearly of course, to a degree. Clear writing is clear thinking
 
-See also: [this](https://www.youtube.com/watch?v=FGqbUHOTog8&ab_channel=buildspace)
+See also: https://www.youtube.com/watch?v=FGqbUHOTog8&ab_channel=buildspace, and https://www.henrikkarlsson.xyz/p/writing-to-think
 
 ## protocol.
 

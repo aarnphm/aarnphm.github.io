@@ -14,6 +14,8 @@ _if you don't have pnpm, then install 😃_
 
 A modified/personal enhancement from bare Quartz
 
+Also to run this with `pnpm exec tsx quartz/scripts/dev.ts > /tmp/quartz-dev.log 2>&1 &`
+
 ### parser
 
 some remark parsers for wikilinks, callouts, that supports general OFM compatibility

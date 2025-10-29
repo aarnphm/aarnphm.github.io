@@ -124,18 +124,6 @@ export function updatePosition(ref: HTMLElement, child: HTMLElement, parent: HTM
   child.style.top = `${referencePosition}px`
 }
 
-export type CollapsedState = "true" | "false"
-
-const collapseId = (window: Window, id: string): string =>
-  `${getFullSlug(window).replace("/", "--")}-${id}`
-
-export function getCollapsedState(window: Window, id: string): CollapsedState | null {
-  return localStorage.getItem(collapseId(window, id)) as CollapsedState | null
-}
-export function setCollapsedState(window: Window, id: string, state: CollapsedState) {
-  localStorage.setItem(collapseId(window, id), state)
-}
-
 export function setHeaderState(
   button: HTMLElement,
   content: HTMLElement,
