@@ -45,7 +45,7 @@
     "@citation-js/plugin-doi": "^0.7.21",
     "@clack/prompts": "^0.11.0",
     "@cloudflare/puppeteer": "^1.0.4",
-    "@cloudflare/workers-oauth-provider": "^0.0.12",
+    "@cloudflare/workers-oauth-provider": "^0.0.13",
     "@floating-ui/dom": "^1.7.4",
     "@huggingface/transformers": "^3.7.6",
     "@modelcontextprotocol/sdk": "^1.20.2",
@@ -76,7 +76,7 @@
     "hast-util-to-text": "^4.0.2",
     "hast-util-whitespace": "^3.0.0",
     "hastscript": "^9.0.1",
-    "hono": "^4.10.3",
+    "hono": "^4.10.4",
     "is-absolute-url": "^5.0.0",
     "js-yaml": "^4.1.0",
     "katex": "^0.16.25",
@@ -158,7 +158,7 @@
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.34",
-    "@typescript/native-preview": "7.0.0-dev.20251029.1",
+    "@typescript/native-preview": "7.0.0-dev.20251030.1",
     "bibtex-tidy": "^1.14.0",
     "esbuild": "^0.25.11",
     "mermaid": "^11.12.1",
@@ -169,7 +169,7 @@
     "ts-morph": "^27.0.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "wrangler": "^4.45.2"
+    "wrangler": "^4.45.3"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
 }
