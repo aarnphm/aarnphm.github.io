@@ -382,9 +382,11 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
             }
           })
         },
-        // sidenote parser for {{sidenotes...}} syntax
-        remarkSidenote,
       )
+
+      // sidenote parser for {{sidenotes...}} syntax
+      //@ts-ignore
+      plugins.push(remarkSidenote)
 
       if (opts.callouts) {
         plugins.push(() => (tree: Root, _file) => {
