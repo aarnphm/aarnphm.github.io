@@ -43,7 +43,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-10-31 03:50:53 GMT-04:00
+modified: 2025-10-31 11:47:07 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1848,6 +1848,10 @@ title: are.na
 
 ## machine learning
 
+- https://x.com/kilian_maciej/status/1984180313598435756 -- do not re-normalize MoE router scores post topk if k=1
+  - [meta]:
+    - date: 10/31/2025
+    - tags: [moe, training]
 - https://huggingface.co/spaces/HuggingFaceTB/smol-training-playbook#introduction -- The Smol Training Playbook: The Secrets to Building World-Class LLMs
   - [meta]:
     - date: 10/31/2025
@@ -1856,6 +1860,7 @@ title: are.na
   - [meta]:
     - date: 10/30/2025
     - tags: [models, linear attention]
+  - https://www.zhihu.com/question/1967345030881584585/answer/1967730385816385407
   - vLLM PR: https://github.com/vllm-project/vllm/pull/27654, https://github.com/vllm-project/vllm/pull/27809
 - https://x.com/soumithchintala/status/1671272963532783618 -- battle of the frameworks [**]
   - [meta]:
