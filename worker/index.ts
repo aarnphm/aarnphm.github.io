@@ -426,6 +426,7 @@ type Env = {
   GITHUB_CLIENT_ID: string
   GITHUB_CLIENT_SECRET: string
   SESSION_SECRET: string
+  OAUTH_KV: KVNamespace
   PUBLIC_BASE_URL?: string
   STACKED_CACHE?: KVNamespace
   MAPBOX_API_KEY?: string
@@ -520,12 +521,10 @@ export default {
       case "/.well-known/oauth-protected-resource": {
         const base = resolveBaseUrl(env, request)
         const body = JSON.stringify({
-          resource: {
-            token_endpoint: `${base}/token`,
-            authorization_endpoint: `${base}/authorize`,
-            resource_url: `${base}/mcp`,
-            aliases: [{ name: "mcp", sse_url: `${base}/mcp`, token_url: `${base}/token` }],
-          },
+          resource: `${base}/mcp`,
+          authorization_servers: [base],
+          bearer_methods_supported: ["header"],
+          resource_documentation: `${base}/`,
         })
         return new Response(body, {
           headers: { "Content-Type": "application/json", ...apiHeaders },

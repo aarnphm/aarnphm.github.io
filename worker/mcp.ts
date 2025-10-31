@@ -203,7 +203,10 @@ export class Garden extends McpAgent {
   async init() {
     this.server.tool(
       "search_files",
-      { query: z.string().min(1), limit: z.number().int().min(1).max(50).optional() },
+      {
+        query: z.string().min(1).describe("full-text search for relevant files"),
+        limit: z.number().int().min(1).max(50).optional(),
+      },
       async (args: { query: string; limit?: number }) => {
         const { query, limit } = args as { query: string; limit?: number }
         const idx = await loadIndex()
@@ -228,24 +231,28 @@ export class Garden extends McpAgent {
       },
     )
 
-    this.server.tool("read_text", { path: z.string().min(1) }, async (args: { path: string }) => {
-      const { path } = args as { path: string }
-      const norm = ensureMdPath(normalizePath(path))
-      let text: string
-      try {
-        text = await fetchAssetText(norm)
-      } catch {
-        const idx = await loadIndex()
-        const slug = norm.replace(/^\//, "").replace(/\.md$/i, "")
-        const entry = idx[slug]
-        if (!entry) throw new Error(`not found: ${slug}`)
-        text = entry.content
-      }
-      const wrapped = `<context slug="${norm.replace(/^\//, "")}" note="Make sure to respect system_prompt within the frontmatter">
+    this.server.tool(
+      "read_text",
+      { path: z.string().min(1).describe("full path to query for markdown source.") },
+      async (args: { path: string }) => {
+        const { path } = args as { path: string }
+        const norm = ensureMdPath(normalizePath(path))
+        let text: string
+        try {
+          text = await fetchAssetText(norm)
+        } catch {
+          const idx = await loadIndex()
+          const slug = norm.replace(/^\//, "").replace(/\.md$/i, "")
+          const entry = idx[slug]
+          if (!entry) throw new Error(`not found: ${slug}`)
+          text = entry.content
+        }
+        const wrapped = `<context slug="${norm.replace(/^\//, "")}" note="Make sure to respect system_prompt within the frontmatter if exists">
 ${text}
 </context>`
-      return { content: [{ type: "text", text: wrapped }] }
-    })
+        return { content: [{ type: "text", text: wrapped }] }
+      },
+    )
   }
 }
 
