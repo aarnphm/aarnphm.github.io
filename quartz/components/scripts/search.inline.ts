@@ -584,6 +584,16 @@ async function setupSearch(
     itemTile.id = slug
     itemTile.href = resolveUrl(slug).toString()
 
+    // Detect special file types to control preview behavior
+    try {
+      const fileData = data[slug]
+      const fileName = (fileData?.fileName || slug || "").toLowerCase()
+      const isCanvas = fileName.includes(".canvas")
+      const isBases = fileName.includes(".bases")
+      if (isCanvas) itemTile.dataset.canvas = "true"
+      if (isBases) itemTile.dataset.bases = "true"
+    } catch {}
+
     if (isProtected) {
       itemTile.innerHTML = `<hgroup>
         <h3>${titleContent}</h3>
@@ -689,8 +699,8 @@ async function setupSearch(
     if (!searchLayout || !enablePreview || !el || !preview) return
     const slug = el.id as FullSlug
 
-    // For canvas and bases files, show metadata instead of rendering content
-    if (el.dataset.canvas !== "") {
+    // Only show metadata for canvas (.canvas) and bases (.bases) files
+    if (el.dataset.canvas === "true" || el.dataset.bases === "true") {
       const fileData = data[slug]
       previewInner = document.createElement("div")
       previewInner.classList.add("preview-inner")

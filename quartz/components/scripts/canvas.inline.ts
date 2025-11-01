@@ -115,7 +115,7 @@ async function renderCanvas(container: HTMLElement) {
     const defs = svg.append("defs")
     const pattern = defs
       .append("pattern")
-      .attr("id", `dots-${Math.random().toString(36).substr(2, 9)}`)
+      .attr("id", `dots-${Math.random().toString(36).substring(1, 10)}`)
       .attr("width", 20)
       .attr("height", 20)
       .attr("patternUnits", "userSpaceOnUse")
@@ -246,7 +246,10 @@ async function renderCanvas(container: HTMLElement) {
       .attr("marker-end", "url(#arrowhead)")
 
     // edge labels with background
-    const edgeLabel = edge.filter((d) => d.label).append("g").attr("class", "edge-label-group")
+    const edgeLabel = edge
+      .filter((d) => d.label)
+      .append("g")
+      .attr("class", "edge-label-group")
 
     edgeLabel
       .append("rect")
@@ -431,16 +434,26 @@ async function renderCanvas(container: HTMLElement) {
     // update positions
     function updatePositions() {
       // update regular nodes
-      node.attr("transform", (d) => `translate(${d.x - d.width / 2},${d.y - d.height / 2})`)
+      if (cfg.useManualPositions) {
+        node.attr("transform", (d) => `translate(${d.x},${d.y})`)
+      } else {
+        node.attr("transform", (d) => `translate(${d.x - d.width / 2},${d.y - d.height / 2})`)
+      }
 
-      // update group nodes
-      groupNode.attr("transform", (d) => `translate(${d.x - d.width / 2},${d.y - d.height / 2})`)
+      // update group nodes (always use top-left positioning from JSON Canvas spec)
+      groupNode.attr("transform", (d) => `translate(${d.x},${d.y})`)
 
       // update edges to connect to node boundaries with fluid cubic curves
       edge.select("path").attr("d", (d) => {
         // use JSON Canvas spec sides if specified, otherwise auto-determine
-        const p1 = getNodeEdgePoint(d.source, d.fromSide, d.target.x, d.target.y)
-        const p2 = getNodeEdgePoint(d.target, d.toSide, d.source.x, d.source.y)
+        // calculate center points for edge direction calculation
+        const sourceCenterX = d.source.x + d.source.width / 2
+        const sourceCenterY = d.source.y + d.source.height / 2
+        const targetCenterX = d.target.x + d.target.width / 2
+        const targetCenterY = d.target.y + d.target.height / 2
+
+        const p1 = getNodeEdgePoint(d.source, d.fromSide, targetCenterX, targetCenterY)
+        const p2 = getNodeEdgePoint(d.target, d.toSide, sourceCenterX, sourceCenterY)
 
         const dx = p2.x - p1.x
         const dy = p2.y - p1.y
@@ -463,8 +476,13 @@ async function renderCanvas(container: HTMLElement) {
 
       // update edge labels - position at bezier curve midpoint (t=0.5)
       edge.selectAll(".edge-label-group").attr("transform", (d) => {
-        const p1 = getNodeEdgePoint(d.source, d.fromSide, d.target.x, d.target.y)
-        const p2 = getNodeEdgePoint(d.target, d.toSide, d.source.x, d.source.y)
+        const sourceCenterX = d.source.x + d.source.width / 2
+        const sourceCenterY = d.source.y + d.source.height / 2
+        const targetCenterX = d.target.x + d.target.width / 2
+        const targetCenterY = d.target.y + d.target.height / 2
+
+        const p1 = getNodeEdgePoint(d.source, d.fromSide, targetCenterX, targetCenterY)
+        const p2 = getNodeEdgePoint(d.target, d.toSide, sourceCenterX, sourceCenterY)
 
         const dx = p2.x - p1.x
         const dy = p2.y - p1.y
@@ -697,8 +715,10 @@ function getNodeEdgePoint(
   targetX?: number,
   targetY?: number,
 ): { x: number; y: number } {
-  const cx = node.x
-  const cy = node.y
+  // node.x and node.y are top-left corner in manual positioning mode
+  // calculate center point for edge calculations
+  const cx = node.x + node.width / 2
+  const cy = node.y + node.height / 2
   const hw = node.width / 2
   const hh = node.height / 2
 

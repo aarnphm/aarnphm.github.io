@@ -93,6 +93,11 @@ export function parseJsonCanvas(json: JsonCanvas | string): JcastCanvas {
     ast.children.push(group)
   }
 
+  // phase 4: auto-resize groups to fit children
+  for (const group of groupMap.values()) {
+    resizeGroupToFitChildren(group, 40)
+  }
+
   // add edges to children
   for (const edge of edgeMap.values()) {
     ast.children.push(edge)
@@ -208,6 +213,41 @@ function computeBounds(nodes: JsonCanvasNode[]) {
   }
 
   return { minX, minY, maxX, maxY }
+}
+
+/**
+ * Auto-resize a group node to fit all its children with padding
+ */
+function resizeGroupToFitChildren(group: JcastCanvasGroup, padding: number = 40): void {
+  if (!group.children || group.children.length === 0) return
+
+  const childNodes = group.children.filter(
+    (node) => node.type === "canvasNode" || node.type === "canvasGroup",
+  )
+
+  if (childNodes.length === 0) return
+
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+
+  for (const child of childNodes) {
+    const childCanvas = (child as JcastCanvasNode | JcastCanvasGroup).data?.canvas
+    if (!childCanvas) continue
+
+    minX = Math.min(minX, childCanvas.x)
+    minY = Math.min(minY, childCanvas.y)
+    maxX = Math.max(maxX, childCanvas.x + childCanvas.width)
+    maxY = Math.max(maxY, childCanvas.y + childCanvas.height)
+  }
+
+  if (isFinite(minX) && isFinite(minY) && isFinite(maxX) && isFinite(maxY)) {
+    group.data.canvas!.x = minX - padding
+    group.data.canvas!.y = minY - padding
+    group.data.canvas!.width = maxX - minX + padding * 2
+    group.data.canvas!.height = maxY - minY + padding * 2
+  }
 }
 
 /**
