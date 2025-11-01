@@ -103,7 +103,7 @@ export function resolveWikilinkTarget(
 ): ResolvedWikilinkTarget | null {
   const baseSlug = stripSlashes(currentSlug)
 
-  if (link.target && isAbsoluteUrl(link.target)) {
+  if (link.target && isAbsoluteUrl(link.target, { httpOnly: false })) {
     return null
   }
 

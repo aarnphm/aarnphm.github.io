@@ -119,7 +119,7 @@ function renderInternalLinks(
           allSlugs: ctx.allSlugs,
           strategy: "absolute",
         })
-      } else if (!isAbsoluteUrl(destination)) {
+      } else if (!isAbsoluteUrl(destination, { httpOnly: false })) {
         destination = transformLink(file.data.slug as FullSlug, destination, {
           allSlugs: ctx.allSlugs,
           strategy: "absolute",

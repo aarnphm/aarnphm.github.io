@@ -151,7 +151,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isExternal:
                     opts.enableRawEmbed && ALLOWED_EXTENSIONS.includes(ext)
                       ? true
-                      : isAbsoluteUrl(dest) || hasProtocol,
+                      : isAbsoluteUrl(dest, { httpOnly: false }) || hasProtocol,
                   node,
                 }
 
@@ -262,7 +262,10 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
 
                 const handleCdnLinks = (ctx: LinkContext) => {
                   if (ctx.isExternal && opts.enableRawEmbed) {
-                    if (ALLOWED_EXTENSIONS.includes(ctx.ext) && !isAbsoluteUrl(ctx.dest)) {
+                    if (
+                      ALLOWED_EXTENSIONS.includes(ctx.ext) &&
+                      !isAbsoluteUrl(ctx.dest, { httpOnly: false })
+                    ) {
                       ctx.classes.push("cdn-links")
                       ctx.dest = ctx.node.properties.href =
                         `https://aarnphm.xyz/${ctx.dest}` as RelativeURL
@@ -383,7 +386,11 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 }
 
                 // don't process external links, protocol URLs, or intra-document anchors
-                const isInternal = !(isAbsoluteUrl(dest) || dest.startsWith("#") || hasProtocol)
+                const isInternal = !(
+                  isAbsoluteUrl(dest, { httpOnly: false }) ||
+                  dest.startsWith("#") ||
+                  hasProtocol
+                )
                 if (isInternal) {
                   if (ext.includes("pdf")) {
                     // we use CF middleware for fetch from Git LFS, for now
@@ -442,7 +449,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               (node) => {
                 if (opts.lazyLoad) node.properties.loading = "lazy"
 
-                if (!isAbsoluteUrl(node.properties.src)) {
+                if (!isAbsoluteUrl(node.properties.src, { httpOnly: false })) {
                   let dest = node.properties.src as RelativeURL
                   dest = node.properties.src = transformLink(
                     file.data.slug!,

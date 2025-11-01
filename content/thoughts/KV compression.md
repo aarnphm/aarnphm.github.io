@@ -1,9 +1,9 @@
 ---
+date: "2024-10-10"
 id: KV compression
+modified: 2025-11-01 05:28:14 GMT-04:00
 tags:
   - ml
-date: "2024-10-10"
-modified: 2025-10-29 04:33:58 GMT-04:00
 title: KV compression
 ---
 
@@ -11,7 +11,7 @@ see also: [github](https://github.com/October2001/Awesome-KV-Cache-Compression)
 
 TLDR: Most algorithm determine importance through aggregating attentions over observed queries [@zhang2023h2oheavyhitteroracleefficient; @liu2023scissorhandsexploitingpersistenceimportance]
 
-More recent work aggregated attention from _limited observation windows_ [@li2024snapkvllmknowslooking; @cai2024pyramidkvdynamickvcache]
+More recent work aggregated attention from _limited observation windows_ [@li2024snapkvllmknowslooking; @cai2025pyramidkvdynamickvcache]
 
 uses top_k to find $k$-indices of attentions per head to preserve, and evict the not-so-important ones.
 

@@ -337,7 +337,8 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
 
             let dest = fp + anchor
             const ext: string = path.extname(dest).toLowerCase()
-            if (isAbsoluteUrl(dest)) return { dest, alias: dest, dataSlug: dest }
+            if (isAbsoluteUrl(dest, { httpOnly: false }))
+              return { dest, alias: dest, dataSlug: dest }
 
             if (!ext.includes("pdf")) {
               dest = transformLink(file.data.slug!, dest, {
