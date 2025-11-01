@@ -36,8 +36,10 @@ import SlidesContent from "./SlidesContent"
 import HeadingsConstructor from "./Headings"
 import CodeCopy from "./CodeCopy"
 import BaseViewSelector from "./BaseViewSelector"
+import CanvasContainer from "./Canvas"
 
 export {
+  CanvasContainer,
   Flex,
   Palette,
   Recommendations,

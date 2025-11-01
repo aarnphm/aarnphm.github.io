@@ -1516,6 +1516,7 @@ export function renderPage(
   const isCurius = slug === "curius"
   const isArenaSubpage = slug.startsWith("arena/") && slug !== "arena"
   const isBase = componentData.fileData.bases ?? false
+  const isCanvas = componentData.fileData.filePath?.endsWith(".canvas") ?? false
 
   return (
     `<!DOCTYPE html>` +
@@ -1530,6 +1531,7 @@ export function renderPage(
           data-layout={pageLayout}
           data-is-folder-tag={isFolderTag}
           data-is-base={isBase}
+          data-is-canvas={isCanvas}
           data-arena-subpage={isArenaSubpage}
           data-protected={componentData.fileData.frontmatter?.protected ?? false}
         >

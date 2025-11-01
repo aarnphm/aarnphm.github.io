@@ -1,19 +1,40 @@
 {
 	"nodes":[
-		{"id":"f9cca7281bc244de","x":-1480,"y":-670,"width":250,"height":60,"type":"text","text":"How do we achieve hyperintelligence system?"},
-		{"id":"d0095be0e9ba6523","x":-1052,"y":-803,"width":250,"height":60,"type":"text","text":"modality"},
-		{"id":"3425ea09010406e2","x":-1102,"y":-431,"width":250,"height":60,"type":"text","text":"energy"},
-		{"id":"1a72eebc7d9a411f","x":-1071,"y":11,"width":400,"height":400,"type":"file","file":"thoughts/Kardashev scale.md"},
-		{"id":"946613288e683ff8","x":-1071,"y":-580,"width":250,"height":60,"type":"text","text":"self-recursion"},
-		{"id":"03e035c76b402cea","x":-180,"y":-1011,"width":700,"height":640,"color":"2","type":"file","file":"thoughts/LLMs.md"},
-		{"id":"43eece97dd7c7711","x":-131,"y":-1700,"width":603,"height":395,"type":"file","file":"thoughts/Autoregressive models.md"}
+		{"id":"54e9ba98f2cf522b","type":"group","x":-1720,"y":-3640,"width":2960,"height":2120,"label":"inference engine"},
+		{"id":"03e035c76b402cea","type":"file","file":"thoughts/LLMs.md","x":-676,"y":-1123,"width":868,"height":827,"color":"2"},
+		{"id":"43eece97dd7c7711","type":"file","file":"thoughts/Autoregressive models.md","x":741,"y":-869,"width":476,"height":320},
+		{"id":"946613288e683ff8","type":"text","text":"self recursion","x":-1320,"y":-550,"width":180,"height":60},
+		{"id":"d0095be0e9ba6523","type":"text","text":"modality","x":-1320,"y":-740,"width":125,"height":60},
+		{"id":"3425ea09010406e2","type":"text","text":"energy","x":-1320,"y":-356,"width":100,"height":60},
+		{"id":"1a72eebc7d9a411f","type":"file","file":"thoughts/Kardashev scale.md","x":-1460,"y":40,"width":381,"height":400},
+		{"id":"f9cca7281bc244de","type":"text","text":"How do we achieve hyperintelligence system?","x":-1820,"y":-580,"width":240,"height":120},
+		{"id":"8f0abc6186da2544","type":"file","file":"thoughts/vllm.md","x":-1681,"y":-3493,"width":590,"height":528},
+		{"id":"5f6ca05582db3f61","type":"file","file":"thoughts/PD disaggregated serving.md","x":-1602,"y":-2604,"width":511,"height":447},
+		{"id":"825f70d089fae9fe","type":"text","text":"capabilities\n\n- sampling\n- prefix caching\n- chunked prefill\n- duo-batch overlap\n- async scheduler\n- distributed","x":-800,"y":-3346,"width":246,"height":234},
+		{"id":"22ce2624ae663b44","type":"text","text":"distributed","x":-755,"y":-2889,"width":155,"height":50},
+		{"id":"77127b6dca77b8ee","type":"file","file":"thoughts/Speculative decoding.md","x":-9,"y":-3092,"width":590,"height":406},
+		{"id":"4b0a345798deed39","type":"file","file":"thoughts/KV offloading.md","x":90,"y":-2157,"width":393,"height":406},
+		{"id":"833a786f46795ca3","type":"file","file":"thoughts/KV compression.md","x":720,"y":-2157,"width":393,"height":406},
+		{"id":"6738ec78ff2ef7ad","type":"text","text":"sampling","x":-407,"y":-3260,"width":127,"height":50},
+		{"id":"e66ac6352bbe974e","type":"text","text":"KV disaggregation","x":-266,"y":-2510,"width":226,"height":50},
+		{"id":"798942b82ff10e26","type":"file","file":"thoughts/structured outputs.md","x":-9,"y":-3559,"width":590,"height":406}
 	],
 	"edges":[
 		{"id":"9419e0b62a6ea25a","fromNode":"f9cca7281bc244de","fromSide":"right","toNode":"d0095be0e9ba6523","toSide":"left"},
 		{"id":"19b75ce86a0fc570","fromNode":"f9cca7281bc244de","fromSide":"right","toNode":"946613288e683ff8","toSide":"left"},
 		{"id":"2ae9af02e378d291","fromNode":"f9cca7281bc244de","fromSide":"right","toNode":"3425ea09010406e2","toSide":"left"},
-		{"id":"f7d15e7934cc372b","fromNode":"3425ea09010406e2","fromSide":"bottom","toNode":"1a72eebc7d9a411f","toSide":"top","label":"at least type I civilization"},
-		{"id":"e87a77bc73f56dc4","fromNode":"43eece97dd7c7711","fromSide":"bottom","toNode":"03e035c76b402cea","toSide":"top","label":"autoregressive objectives"},
-		{"id":"1c25d22cce7afce9","fromNode":"d0095be0e9ba6523","fromSide":"right","toNode":"03e035c76b402cea","toSide":"left","label":"text"}
+		{"id":"f7d15e7934cc372b","fromNode":"3425ea09010406e2","fromSide":"bottom","toNode":"1a72eebc7d9a411f","toSide":"top","label":"type I civilization"},
+		{"id":"1c25d22cce7afce9","fromNode":"d0095be0e9ba6523","fromSide":"right","toNode":"03e035c76b402cea","toSide":"left","label":"text"},
+		{"id":"e5cee30f1c043a90","fromNode":"03e035c76b402cea","fromSide":"right","toNode":"43eece97dd7c7711","toSide":"left","label":"training objectives"},
+		{"id":"f1eaf5ce6e92ed94","fromNode":"8f0abc6186da2544","fromSide":"right","toNode":"825f70d089fae9fe","toSide":"left"},
+		{"id":"c60be30b7b8806cd","fromNode":"825f70d089fae9fe","fromSide":"right","toNode":"6738ec78ff2ef7ad","toSide":"left"},
+		{"id":"4c1e00feaa75363d","fromNode":"6738ec78ff2ef7ad","fromSide":"right","toNode":"798942b82ff10e26","toSide":"left","label":"constrained"},
+		{"id":"530361affada2a67","fromNode":"6738ec78ff2ef7ad","fromSide":"right","toNode":"77127b6dca77b8ee","toSide":"left","label":"speculation"},
+		{"id":"b658aeb33925147c","fromNode":"825f70d089fae9fe","fromSide":"bottom","toNode":"22ce2624ae663b44","toSide":"top"},
+		{"id":"4055652f0e39dd03","fromNode":"22ce2624ae663b44","fromSide":"bottom","toNode":"5f6ca05582db3f61","toSide":"top","label":"prefill/decode disaggregation"},
+		{"id":"e892ff47fc89ddb2","fromNode":"22ce2624ae663b44","fromSide":"bottom","toNode":"e66ac6352bbe974e","toSide":"top"},
+		{"id":"7d8ceb402502072c","fromNode":"e66ac6352bbe974e","fromSide":"bottom","toNode":"4b0a345798deed39","toSide":"top"},
+		{"id":"86fd32e6a33564c0","fromNode":"833a786f46795ca3","fromSide":"left","toNode":"4b0a345798deed39","toSide":"right","label":"compression"},
+		{"id":"da780c797c41f78e","fromNode":"54e9ba98f2cf522b","fromSide":"bottom","toNode":"03e035c76b402cea","toSide":"top","fromEnd":"arrow","label":"How can I run a model"}
 	]
 }

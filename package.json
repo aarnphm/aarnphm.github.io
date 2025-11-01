@@ -81,6 +81,7 @@
     "js-yaml": "^4.1.0",
     "katex": "^0.16.25",
     "lightningcss": "^1.30.2",
+    "marked": "^16.4.1",
     "mdast-util-find-and-replace": "^3.0.2",
     "mdast-util-from-markdown": "^2.0.2",
     "mdast-util-gfm": "^3.1.0",

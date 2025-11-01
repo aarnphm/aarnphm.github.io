@@ -688,6 +688,39 @@ async function setupSearch(
   async function displayPreview(el: HTMLElement | null) {
     if (!searchLayout || !enablePreview || !el || !preview) return
     const slug = el.id as FullSlug
+
+    // For canvas and bases files, show metadata instead of rendering content
+    if (el.dataset.canvas !== "") {
+      const fileData = data[slug]
+      previewInner = document.createElement("div")
+      previewInner.classList.add("preview-inner")
+
+      const metaContainer = document.createElement("div")
+      metaContainer.style.padding = "1rem"
+      metaContainer.style.color = "var(--gray)"
+      metaContainer.style.fontSize = "0.9rem"
+
+      const filePath = document.createElement("p")
+      filePath.innerHTML = `<strong>File:</strong> ${fileData?.fileName || slug}`
+      metaContainer.appendChild(filePath)
+
+      if (fileData?.description) {
+        const desc = document.createElement("p")
+        desc.innerHTML = `<strong>Description:</strong> ${fileData.description}`
+        metaContainer.appendChild(desc)
+      }
+
+      if (fileData?.tags && fileData.tags.length > 0) {
+        const tags = document.createElement("p")
+        tags.innerHTML = `<strong>Tags:</strong> ${fileData.tags.join(", ")}`
+        metaContainer.appendChild(tags)
+      }
+
+      previewInner.appendChild(metaContainer)
+      preview.replaceChildren(previewInner)
+      return
+    }
+
     const innerDiv = await fetchContent(slug).then((contents) =>
       contents.flatMap((el) => [...highlightHTML(currentSearchTerm, el as HTMLElement).children]),
     )

@@ -2,7 +2,7 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-10-30 03:39:26 GMT-04:00
+modified: 2025-10-31 18:24:42 GMT-04:00
 tags:
   - seed
   - fruit
@@ -200,3 +200,12 @@ Late night work listening to Dreyfus' lectures hits like smoking a good joint on
 > —Paul Graham, [The Best Essay](https://paulgraham.com/best.html)
 
 ![[thoughts/writing#as a journey for exploration]]
+
+---
+
+- [meta]:
+  - date: 2025-10-31 18:24:43 GMT-04:00
+  - tags:
+    - fruit
+
+Writing kernels sounds way more fun the whoring on the streets of Toronto. Happy Halloween 🎃 though.

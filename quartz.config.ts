@@ -112,6 +112,7 @@ const config: QuartzConfig = {
       }),
       Plugin.Citations({ bibliography: "./content/References.bib" }),
       Plugin.ObsidianBases(),
+      Plugin.JsonCanvas(),
       Plugin.ObsidianFlavoredMarkdown({ parseTags: false }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.CrawlLinks({
@@ -244,6 +245,7 @@ const config: QuartzConfig = {
       Plugin.BasePage(),
       Plugin.StreamPage(),
       Plugin.StreamIndex(),
+      Plugin.CanvasPage(),
     ],
   },
 }

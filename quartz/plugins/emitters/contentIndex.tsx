@@ -13,6 +13,7 @@ import {
   joinSegments,
   simplifySlug,
   sluggify,
+  slugifyFilePath,
 } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
 import { toHtml } from "hast-util-to-html"
@@ -22,6 +23,8 @@ import { QuartzPluginData } from "../vfile"
 import { version } from "../../../package.json"
 import { ReadTimeResults } from "reading-time"
 import { ArenaData } from "../transformers/arena"
+import { glob } from "../../util/glob"
+import { parseJsonCanvas } from "../transformers/jcast"
 
 export type ContentIndexMap = Map<FullSlug, ContentDetails>
 export type ContentLayout =
@@ -110,7 +113,12 @@ function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndexMap): string
 }
 
 function shouldIncludeInFeed(slug: FullSlug, content: ContentDetails): boolean {
-  if (slug.includes(".bases") || content.fileName.includes(".bases")) {
+  if (
+    slug.includes(".bases") ||
+    content.fileName.includes(".bases") ||
+    slug.includes(".canvas") ||
+    content.fileName.includes(".canvas")
+  ) {
     return false
   }
 
@@ -318,14 +326,19 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
           const sanitizedContent = sanitizeXml(file.data.text ?? "")
           const isProtected = file.data.frontmatter?.protected === true
 
+          const getFileName = () => {
+            const fullPath = file.data.filePath!
+            const relativePath = fullPath.substring(ctx.argv.directory.length + 1)
+            if (relativePath.endsWith(".bases")) return relativePath as FilePath
+            return relativePath.replace(".md", "") as FilePath
+          }
+
           linkIndex.set(slug, {
             slug,
             title: file.data.frontmatter?.title!,
             links,
             filePath: file.data.filePath!,
-            fileName: file.data
-              .filePath!.replace(".md", "")
-              .substring(ctx.argv.directory.length + 1) as FilePath,
+            fileName: getFileName(),
             tags: file.data.frontmatter?.tags ?? [],
             aliases: file.data.frontmatter?.aliases ?? [],
             content: isProtected ? "" : sanitizedContent,
@@ -367,6 +380,65 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
               }
             }
           }
+        }
+      }
+
+      // add canvas files to search index
+      const canvasFiles = await glob("**/*.canvas", ctx.argv.directory, [
+        ...ctx.cfg.configuration.ignorePatterns,
+      ])
+
+      for (const canvasFile of canvasFiles) {
+        try {
+          const src = joinSegments(ctx.argv.directory, canvasFile) as FilePath
+          const slug = slugifyFilePath(canvasFile as FilePath, true) as FullSlug
+
+          // skip if already in index (shouldn't happen, but be safe)
+          if (linkIndex.has(slug)) continue
+
+          const canvasContent = await fs.readFile(src, "utf-8")
+          const jcast = parseJsonCanvas(canvasContent)
+
+          // extract searchable content from canvas nodes
+          const textContent: string[] = []
+          const fileNodes: string[] = []
+          for (const [, node] of jcast.data.nodeMap) {
+            const canvasNode = node.data?.canvas
+            if (!canvasNode) continue
+
+            if (canvasNode.type === "text" && canvasNode.text) {
+              textContent.push(canvasNode.text)
+            } else if (canvasNode.type === "file" && canvasNode.file) {
+              fileNodes.push(canvasNode.file)
+            }
+          }
+
+          const title = path.basename(canvasFile, ".canvas")
+          const searchableContent = [
+            ...textContent,
+            ...fileNodes.map((f) => path.basename(f, ".md")),
+          ].join(" ")
+
+          linkIndex.set(slug, {
+            slug,
+            title,
+            links: [],
+            filePath: canvasFile as FilePath,
+            fileName: canvasFile as FilePath,
+            tags: ["canvas"],
+            aliases: [],
+            content: sanitizeXml(searchableContent),
+            richContent: "",
+            date: new Date(),
+            readingTime: {
+              minutes: 1,
+              words: searchableContent.split(/\s+/).length,
+            },
+            layout: "default",
+            description: `Canvas with ${jcast.data.nodeMap.size} nodes`,
+          })
+        } catch (error) {
+          console.error(`Failed to index canvas file ${canvasFile}:`, error)
         }
       }
 

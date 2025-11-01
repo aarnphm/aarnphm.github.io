@@ -7,7 +7,7 @@ aliases:
 date: "2024-11-18"
 description: structured generations in vLLM a la carte, or in general
 id: structured outputs
-modified: 2025-10-29 02:15:54 GMT-04:00
+modified: 2025-11-01 02:16:44 GMT-04:00
 tags:
   - ml
   - rfc
@@ -31,7 +31,7 @@ see also: https://github.com/vllm-project/vllm/pull/26866
 
 - `SchedulerProc`
 - `WorkerProc`
-- `StandaloneProc` <==> Scheduler & Worker
+- `StandaloneProc` <== Scheduler & Worker
 
 ## structural tags
 

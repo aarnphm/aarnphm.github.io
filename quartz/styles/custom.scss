@@ -1105,16 +1105,23 @@ a.prefix-left-gap {
   }
 }
 
+[data-is-canvas="true"],
 [data-layout="letter"],
 [data-layout="letter-poem"],
 [data-slug="index"],
 [data-slides="true"],
 [data-slug*="posts/"] {
+  .darkmode,
   .search-button {
     visibility: hidden !important;
   }
 
   section[class~="header"] {
     position: static;
+    border-bottom: 0;
+  }
+
+  .page-footer {
+    display: none;
   }
 }

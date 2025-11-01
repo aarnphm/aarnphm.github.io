@@ -43,7 +43,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-10-31 11:47:07 GMT-04:00
+modified: 2025-11-01 00:58:57 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1848,6 +1848,10 @@ title: are.na
 
 ## machine learning
 
+- https://gladia.netlify.app/publication/2025-mencattini-injective/ -- Language Models are Injective and Hence Invertible
+  - [meta]:
+    - date: 11/01/2025
+    - tags: [interpretability]
 - https://x.com/kilian_maciej/status/1984180313598435756 -- do not re-normalize MoE router scores post topk if k=1
   - [meta]:
     - date: 10/31/2025
@@ -3193,8 +3197,12 @@ title: are.na
     - date: 10/03/2025
     - tags: [fruit]
 
-## financial reports
+## fiduciary reports
 
+- https://quartr.com/insights/business-philosophy/collection-jeff-bezos-shareholder-letters -- Collection: Jeff Bezos Shareholder Letters
+  - [meta]:
+    - date: 11/01/2025
+    - tags: [shareholders, letters]
 - https://investors.palantir.com/news-details/2025/Palantir-Reports-Q2-2025-U-S--Comm-Revenue-Growth-of-93-YY-and-Revenue-Growth-of-48-YY-Guides-Q3-Revenue-to-50-YY-Raises-FY-2025-Revenue-Guidance-to-45-YY-and-U-S--Comm-Revenue-Guidance-to-85-YY-Crushing-Consensus-Expectations/ -- Palantir Q3 Earnings 2025 Reports
   - [meta]:
     - date: 08/05/2025
@@ -3992,45 +4000,49 @@ title: are.na
     - tags: [fruit]
   - see also [[thoughts/pdfs/Efficient Implementation of the Smalltalk-80 System.pdf]]
 
-## funds
+## firms
 
+- https://www.mto.com/ -- Munger, Tolles & Olson LLP
+  - [meta]:
+    - date: 10/29/2025
+    - tags: [lawyer]
 - https://www.compmotifs.com/ -- Science through Computation Initiative
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [alignment]
 - https://seldonlab.com/ -- Seldon Labs
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [alignment]
   - [[thoughts/AGI]] safe deployment
 - https://www.generalist.com/briefing/hummingbird-ventures -- The Best Venture Firm You've Never Heard Of
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [vc]
 - https://www.sequoiacap.com/ -- Sequoia Capital
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [vc]
 - https://www.luxcapital.com/ -- Lux Capital
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [vc]
 - https://www.accel.com/ -- Accel
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [vc]
 - https://lsvp.com/ -- Lightspeed
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [vc]
 - https://menlovc.com/ -- Menlo
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [vc]
 - https://basecase.vc/ -- basecase vc.
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [vc]
 
 ## math
 
