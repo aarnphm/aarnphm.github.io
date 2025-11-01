@@ -43,7 +43,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-01 00:58:57 GMT-04:00
+modified: 2025-11-01 05:33:31 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -3519,6 +3519,11 @@ title: are.na
 
 ## tools
 
+- https://www.youtube.com/watch?v=dmeRQN9z504 -- Why all learning tools fail?
+  - [meta]:
+    - date: 11/01/2025
+    - tags: [pedagogy, constituent]
+  - Andy Matuschak's conversation with Dwarkesh
 - https://padlet.com/discovering_literature/discovering-literature-articles-and-resources-british-librar-rz2uglgqvavwlscp -- Discovering Literature: articles and resources – British Library
   - [meta]:
     - date: 10/24/2025
