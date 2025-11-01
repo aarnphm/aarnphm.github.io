@@ -50,7 +50,7 @@ $canvas-accents: (
 
 // Mixins
 @mixin node-rect($fill, $stroke, $opacity: null, $dash: null) {
-  rect {
+  .node-bg {
     fill: $fill;
     stroke: $stroke;
     stroke-width: 2px;
@@ -61,6 +61,12 @@ $canvas-accents: (
       stroke-dasharray: $dash;
     }
     transition: stroke 0.2s ease;
+  }
+  .node-border-overlay {
+    stroke: $stroke;
+    @if $dash != null {
+      stroke-dasharray: $dash;
+    }
   }
 }
 
@@ -228,7 +234,22 @@ $canvas-accents: (
     cursor: grabbing;
   }
 
-  // groups are not draggable
+  &.is-focused {
+    .node-border-overlay {
+      stroke: var(--lime) !important;
+      stroke-width: 3px !important;
+    }
+
+    .node-content {
+      cursor: text;
+    }
+  }
+
+  &.node-file,
+  &.node-text {
+    cursor: pointer;
+  }
+
   &.node-group {
     cursor: default;
     &:active {
@@ -236,7 +257,6 @@ $canvas-accents: (
     }
   }
 
-  // Typed node styles
   @each $name, $cfg in $node-type-styles {
     &.node-#{$name} {
       @include node-rect(
@@ -259,6 +279,13 @@ $canvas-accents: (
   width: 100%;
   box-sizing: border-box;
   word-wrap: break-word;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .node-text {
@@ -267,11 +294,34 @@ $canvas-accents: (
   width: 100%;
   overflow: auto;
   @include md-body();
+
+  a {
+    pointer-events: all;
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .node-title-text {
-  pointer-events: none;
-  user-select: none;
+  fill: var(--lightgray);
+  font-weight: normal;
+  transition: fill 0.2s ease;
+  cursor: pointer;
+  pointer-events: all;
+
+  &:hover {
+    fill: var(--secondary);
+  }
+
+  &.node-title-center {
+    display: none;
+  }
 }
 
 .node-file-content {
@@ -280,6 +330,18 @@ $canvas-accents: (
   overflow-y: auto;
   overflow-x: hidden;
   @include md-body();
+
+  a {
+    pointer-events: all;
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .node-link {
@@ -296,13 +358,16 @@ $canvas-accents: (
 }
 
 .node-group-label {
-  color: var(--gray);
-  fill: var(--gray); // for SVG text elements
-  font-size: 1.1em;
-  font-weight: 600;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  fill: var(--lightgray);
+  font-weight: normal;
+  transition: fill 0.2s ease;
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+
+  &:hover {
+    fill: var(--secondary);
+  }
 }
 
 // Edges
@@ -367,6 +432,280 @@ $canvas-accents: (
   font-size: 1.1rem;
 }
 
+// Help modal
+.canvas-help-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  &.is-visible {
+    display: flex;
+  }
+}
+
+.canvas-help-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.canvas-help-content {
+  position: relative;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 450px;
+  width: 90%;
+  max-height: 70vh;
+  overflow: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}
+
+.canvas-help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--lightgray);
+
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--dark);
+  }
+}
+
+.canvas-help-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  color: var(--gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--lightgray);
+    color: var(--dark);
+  }
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.canvas-help-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.canvas-help-section {
+  h3 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--gray);
+    margin: 0 0 8px 0;
+  }
+}
+
+.canvas-help-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 0.85rem;
+  color: var(--dark);
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--lightgray);
+  }
+}
+
+.canvas-help-keys {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  font-size: 0.7rem;
+
+  kbd {
+    background: var(--lightgray);
+    border: 1px solid var(--gray);
+    border-radius: 2px;
+    padding: 2px 4px;
+    font-family: var(--codeFont);
+    font-size: 0.75em;
+    color: var(--dark);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
+    line-height: 1;
+  }
+}
+
+// Toolbar
+.canvas-controls {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.canvas-control-group {
+  display: flex;
+  flex-direction: column;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-s);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  pointer-events: all;
+  overflow: hidden;
+}
+
+.canvas-control-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 0;
+  background: var(--light);
+  border: none;
+  border-bottom: 1px solid var(--lightgray);
+  cursor: pointer;
+  color: var(--gray);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover:not(.is-disabled) {
+    background: var(--lightgray);
+    color: var(--dark);
+  }
+
+  &:active:not(.is-disabled) {
+    background: var(--gray);
+  }
+
+  &.is-active {
+    color: var(--secondary);
+  }
+
+  &.is-disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+  }
+
+  &[data-action="help"] svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+// Skeleton view (zoomed out)
+.canvas-skeleton-view {
+  .node-content {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .node-file-content {
+    display: none !important;
+  }
+
+  .node-text {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: var(--lightgray);
+    border-radius: 4px;
+    padding: 8px;
+    width: 80%;
+    height: 60%;
+
+    * {
+      display: none;
+    }
+  }
+
+  .node-link {
+    display: none !important;
+  }
+
+  .node .node-bg {
+    fill: var(--light) !important;
+    stroke: var(--gray) !important;
+    fill-opacity: 0.5 !important;
+  }
+
+  .node-group .node-bg {
+    fill-opacity: 0.2 !important;
+  }
+
+  .node-title-text {
+    &.node-title-top {
+      display: none !important;
+    }
+
+    &.node-title-center {
+      display: block !important;
+      font-weight: 600;
+      font-size: 16px;
+      fill: var(--dark);
+    }
+  }
+
+  .node-group-label {
+    display: block !important;
+  }
+
+  .edge path {
+    opacity: 0.3 !important;
+    stroke-width: 1px !important;
+  }
+
+  .edge-label-group {
+    display: block !important;
+    opacity: 0.6;
+  }
+
+  .edge-label {
+    font-size: 0.7rem;
+  }
+}
+
 // Responsive
 @media all and ($mobile) {
   .canvas-container,
@@ -407,10 +746,10 @@ $canvas-accents: (
   }
 
   .node-title-text {
-    fill: var(--lightgray);
+    fill: var(--gray);
 
     &:hover {
-      fill: var(--gray);
+      fill: var(--secondary);
     }
   }
 
@@ -428,7 +767,31 @@ $canvas-accents: (
     color: var(--light);
   }
   .node-group-label {
+    fill: var(--gray);
+
+    &:hover {
+      fill: var(--secondary);
+    }
+  }
+
+  .canvas-control-group {
+    background: var(--dark);
+    border-color: var(--darkgray);
+  }
+
+  .canvas-control-item {
+    background: var(--dark);
     color: var(--lightgray);
+    border-bottom-color: var(--darkgray);
+
+    &:hover:not(.is-disabled) {
+      background: var(--darkgray);
+      color: var(--light);
+    }
+
+    &:active:not(.is-disabled) {
+      background: var(--gray);
+    }
   }
   .canvas-tooltip {
     background: var(--dark);
@@ -439,12 +802,71 @@ $canvas-accents: (
     fill: var(--dark);
     stroke: var(--lightgray);
   }
+
+  .canvas-skeleton-view {
+    .node .node-bg {
+      fill: var(--dark) !important;
+      stroke: var(--lightgray) !important;
+    }
+
+    .node-text {
+      background: var(--darkgray);
+    }
+
+    .node-title-text.node-title-center {
+      fill: var(--light);
+    }
+  }
+
+  .canvas-help-content {
+    background: var(--dark);
+    border-color: var(--darkgray);
+
+    h2,
+    .canvas-help-row {
+      color: var(--light);
+    }
+
+    h3 {
+      color: var(--lightgray);
+    }
+
+    .canvas-help-close {
+      color: var(--lightgray);
+
+      &:hover {
+        background: var(--darkgray);
+        color: var(--light);
+      }
+    }
+
+    kbd {
+      background: var(--darkgray);
+      border-color: var(--gray);
+      color: var(--light);
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+    }
+
+    .canvas-help-row:not(:last-child) {
+      border-bottom-color: var(--darkgray);
+    }
+
+    .canvas-help-header {
+      border-bottom-color: var(--darkgray);
+    }
+  }
+
+  .canvas-help-backdrop {
+    background: rgba(0, 0, 0, 0.6);
+  }
 }
 
 // Accent borders by Obsidian canvas color id
 @each $id, $color in $canvas-accents {
-  .node[data-color="#{$id}"] rect,
-  .node-group[data-color="#{$id}"] rect {
+  .node[data-color="#{$id}"] .node-bg,
+  .node[data-color="#{$id}"] .node-border-overlay,
+  .node-group[data-color="#{$id}"] .node-bg,
+  .node-group[data-color="#{$id}"] .node-border-overlay {
     stroke: $color !important;
     stroke-width: 2px !important;
   }

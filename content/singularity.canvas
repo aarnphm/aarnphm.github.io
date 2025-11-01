@@ -9,15 +9,15 @@
 		{"id":"1a72eebc7d9a411f","type":"file","file":"thoughts/Kardashev scale.md","x":-1460,"y":40,"width":381,"height":400},
 		{"id":"f9cca7281bc244de","type":"text","text":"How do we achieve hyperintelligence system?","x":-1820,"y":-580,"width":240,"height":120},
 		{"id":"8f0abc6186da2544","type":"file","file":"thoughts/vllm.md","x":-1681,"y":-3493,"width":590,"height":528},
-		{"id":"5f6ca05582db3f61","type":"file","file":"thoughts/PD disaggregated serving.md","x":-1602,"y":-2604,"width":511,"height":447},
 		{"id":"825f70d089fae9fe","type":"text","text":"capabilities\n\n- sampling\n- prefix caching\n- chunked prefill\n- duo-batch overlap\n- async scheduler\n- distributed","x":-800,"y":-3346,"width":246,"height":234},
 		{"id":"22ce2624ae663b44","type":"text","text":"distributed","x":-755,"y":-2889,"width":155,"height":50},
 		{"id":"77127b6dca77b8ee","type":"file","file":"thoughts/Speculative decoding.md","x":-9,"y":-3092,"width":590,"height":406},
-		{"id":"4b0a345798deed39","type":"file","file":"thoughts/KV offloading.md","x":90,"y":-2157,"width":393,"height":406},
-		{"id":"833a786f46795ca3","type":"file","file":"thoughts/KV compression.md","x":720,"y":-2157,"width":393,"height":406},
-		{"id":"6738ec78ff2ef7ad","type":"text","text":"sampling","x":-407,"y":-3260,"width":127,"height":50},
 		{"id":"e66ac6352bbe974e","type":"text","text":"KV disaggregation","x":-266,"y":-2510,"width":226,"height":50},
-		{"id":"798942b82ff10e26","type":"file","file":"thoughts/structured outputs.md","x":-9,"y":-3559,"width":590,"height":406}
+		{"id":"798942b82ff10e26","type":"file","file":"thoughts/structured outputs.md","x":-9,"y":-3559,"width":590,"height":406},
+		{"id":"6738ec78ff2ef7ad","type":"text","text":"sampling","x":-407,"y":-3254,"width":127,"height":50},
+		{"id":"5f6ca05582db3f61","type":"file","file":"thoughts/PD disaggregated serving.md","x":-1681,"y":-2660,"width":511,"height":447},
+		{"id":"4b0a345798deed39","type":"file","file":"thoughts/KV offloading.md","x":40,"y":-2213,"width":393,"height":406},
+		{"id":"833a786f46795ca3","type":"file","file":"thoughts/KV compression.md","x":720,"y":-2213,"width":393,"height":406}
 	],
 	"edges":[
 		{"id":"9419e0b62a6ea25a","fromNode":"f9cca7281bc244de","fromSide":"right","toNode":"d0095be0e9ba6523","toSide":"left"},
@@ -35,6 +35,6 @@
 		{"id":"e892ff47fc89ddb2","fromNode":"22ce2624ae663b44","fromSide":"bottom","toNode":"e66ac6352bbe974e","toSide":"top"},
 		{"id":"7d8ceb402502072c","fromNode":"e66ac6352bbe974e","fromSide":"bottom","toNode":"4b0a345798deed39","toSide":"top"},
 		{"id":"86fd32e6a33564c0","fromNode":"833a786f46795ca3","fromSide":"left","toNode":"4b0a345798deed39","toSide":"right","label":"compression"},
-		{"id":"da780c797c41f78e","fromNode":"54e9ba98f2cf522b","fromSide":"bottom","toNode":"03e035c76b402cea","toSide":"top","fromEnd":"arrow","label":"How can I run a model"}
+		{"id":"da780c797c41f78e","fromNode":"54e9ba98f2cf522b","fromSide":"bottom","toNode":"03e035c76b402cea","toSide":"top","fromEnd":"arrow","label":"How can I run a model?"}
 	]
 }

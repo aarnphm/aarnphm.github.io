@@ -104,6 +104,99 @@ async function renderCanvas(container: HTMLElement) {
     const width = container.clientWidth || 800
     const height = container.clientHeight || 600
 
+    // create toolbar
+    const toolbar = document.createElement("div")
+    toolbar.className = "canvas-controls"
+    toolbar.innerHTML = `
+      <div class="canvas-control-group">
+        <button class="canvas-control-item" data-action="zoom-in" aria-label="Zoom in" title="Zoom in">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+        </button>
+        <button class="canvas-control-item" data-action="zoom-reset" aria-label="Reset zoom" title="Reset zoom">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
+        </button>
+        <button class="canvas-control-item" data-action="zoom-fit" aria-label="Zoom to fit" title="Zoom to fit">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+        </button>
+        <button class="canvas-control-item" data-action="zoom-out" aria-label="Zoom out" title="Zoom out">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path></svg>
+        </button>
+      </div>
+      <div class="canvas-control-group">
+        <button class="canvas-control-item" data-action="help" aria-label="Canvas help" title="Canvas help">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
+        </button>
+      </div>
+    `
+    container.appendChild(toolbar)
+
+    // create help modal
+    const helpModal = document.createElement("div")
+    helpModal.className = "canvas-help-modal"
+    helpModal.innerHTML = `
+      <div class="canvas-help-backdrop"></div>
+      <div class="canvas-help-content">
+        <div class="canvas-help-header">
+          <h2>Canvas help</h2>
+          <button class="canvas-help-close" aria-label="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+          </button>
+        </div>
+        <div class="canvas-help-body">
+          <div class="canvas-help-section">
+            <h3>pan</h3>
+            <div class="canvas-help-row">
+              <span>Pan vertically</span>
+              <span class="canvas-help-keys"><kbd>Scroll</kbd></span>
+            </div>
+            <div class="canvas-help-row">
+              <span>Pan horizontally</span>
+              <span class="canvas-help-keys"><kbd>Shift</kbd> <kbd>Scroll</kbd></span>
+            </div>
+          </div>
+          <div class="canvas-help-section">
+            <h3>zoom</h3>
+            <div class="canvas-help-row">
+              <span>Zoom</span>
+              <span class="canvas-help-keys"><kbd>⌘/Ctrl</kbd> <kbd>Scroll</kbd></span>
+            </div>
+            <div class="canvas-help-row">
+              <span>Zoom to fit</span>
+              <span class="canvas-help-keys"><kbd>Shift</kbd> <kbd>1</kbd></span>
+            </div>
+          </div>
+          <div class="canvas-help-section">
+            <h3>navigation</h3>
+            <div class="canvas-help-row">
+              <span>Focus node</span>
+              <span class="canvas-help-keys"><kbd>Click</kbd> on content</span>
+            </div>
+            <div class="canvas-help-row">
+              <span>Open node</span>
+              <span class="canvas-help-keys"><kbd>Click</kbd> outside content</span>
+            </div>
+            <div class="canvas-help-row">
+              <span>Open from content</span>
+              <span class="canvas-help-keys"><kbd>⌘/Ctrl</kbd> <kbd>Click</kbd></span>
+            </div>
+            <div class="canvas-help-row">
+              <span>Open in side panel</span>
+              <span class="canvas-help-keys"><kbd>Alt</kbd> <kbd>Click</kbd></span>
+            </div>
+            <div class="canvas-help-row">
+              <span>Scroll node content</span>
+              <span class="canvas-help-keys">Focus node, then <kbd>Scroll</kbd></span>
+            </div>
+            <div class="canvas-help-row">
+              <span>Defocus node</span>
+              <span class="canvas-help-keys"><kbd>Esc</kbd></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+    container.appendChild(helpModal)
+
     // create SVG
     const svg = select(container)
       .append("svg")
@@ -141,28 +234,216 @@ async function renderCanvas(container: HTMLElement) {
     const edgeGroup = g.append("g").attr("class", "edges")
     const nodeGroup = g.append("g").attr("class", "nodes")
 
+    // track focused node for scroll behavior
+    let focusedNode: SVGGElement | null = null
+
     // setup zoom
     let zoomBehavior: any = null
+    let currentScale = 1
+    let initialTransform = zoomIdentity
     if (cfg.zoom) {
       zoomBehavior = d3Zoom<SVGSVGElement, unknown>()
         .scaleExtent([0.1, 4])
         .filter((event: any) => {
-          // only allow zoom on shift+scroll, cmd+scroll, or ctrl+scroll
           if (event.type === "wheel") {
-            return event.shiftKey || event.metaKey || event.ctrlKey
+            if (event.metaKey || event.ctrlKey) {
+              return true
+            }
+            if (event.shiftKey) {
+              return false
+            }
+            return false
           }
-          // allow other zoom interactions (pinch, drag, etc)
           return !event.button
         })
         .on("zoom", (event) => {
           g.attr("transform", event.transform)
+          currentScale = event.transform.k
+
+          if (currentScale < 0.5) {
+            container.classList.add("canvas-skeleton-view")
+          } else {
+            container.classList.remove("canvas-skeleton-view")
+          }
         })
       svg.call(zoomBehavior as any)
     }
 
+    // custom scroll handler for panning
+    container.addEventListener(
+      "wheel",
+      (event) => {
+        const target = event.target as HTMLElement
+        if (focusedNode && target.closest(".node-content")) {
+          return
+        }
+
+        if (!event.metaKey && !event.ctrlKey) {
+          event.preventDefault()
+          event.stopPropagation()
+
+          const currentTransform = zoomBehavior
+            ? //@ts-ignore
+              svg.node().__zoom || zoomIdentity
+            : zoomIdentity
+
+          const deltaX = event.deltaX
+          const deltaY = event.deltaY
+          const panSpeed = 1
+
+          if (event.shiftKey) {
+            const scrollDelta = deltaX !== 0 ? deltaX : deltaY
+            const newTransform = currentTransform.translate(-scrollDelta * panSpeed, 0)
+            if (zoomBehavior) {
+              svg.call(zoomBehavior.transform, newTransform)
+            } else {
+              g.attr(
+                "transform",
+                `translate(${newTransform.x},${newTransform.y}) scale(${newTransform.k})`,
+              )
+            }
+          } else {
+            const newTransform = currentTransform.translate(0, -deltaY * panSpeed)
+            if (zoomBehavior) {
+              svg.call(zoomBehavior.transform, newTransform)
+            } else {
+              g.attr(
+                "transform",
+                `translate(${newTransform.x},${newTransform.y}) scale(${newTransform.k})`,
+              )
+            }
+          }
+        }
+      },
+      { passive: false },
+    )
+
+    // setup help modal
+    const helpBackdrop = helpModal.querySelector(".canvas-help-backdrop")
+    const helpClose = helpModal.querySelector(".canvas-help-close")
+
+    const showHelp = () => {
+      helpModal.classList.add("is-visible")
+    }
+
+    const hideHelp = () => {
+      helpModal.classList.remove("is-visible")
+    }
+
+    if (helpBackdrop) {
+      helpBackdrop.addEventListener("click", hideHelp)
+    }
+
+    if (helpClose) {
+      helpClose.addEventListener("click", hideHelp)
+    }
+
+    // setup toolbar controls
+    if (toolbar) {
+      toolbar.querySelectorAll("[data-action]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation()
+          const action = (btn as HTMLElement).getAttribute("data-action")
+
+          if (action === "help") {
+            showHelp()
+            return
+          }
+
+          if (!zoomBehavior) return
+
+          const boundsAttr = container.getAttribute("data-canvas-bounds")
+
+          switch (action) {
+            case "zoom-in":
+              svg.transition().duration(300).call(zoomBehavior.scaleBy, 1.3)
+              break
+            case "zoom-out":
+              svg.transition().duration(300).call(zoomBehavior.scaleBy, 0.7)
+              break
+            case "zoom-reset":
+              svg.transition().duration(300).call(zoomBehavior.transform, initialTransform)
+              break
+            case "zoom-fit":
+              if (boundsAttr) {
+                try {
+                  const b = JSON.parse(boundsAttr) as {
+                    minX: number
+                    minY: number
+                    maxX: number
+                    maxY: number
+                  }
+                  const contentW = Math.max(1, b.maxX - b.minX)
+                  const contentH = Math.max(1, b.maxY - b.minY)
+                  const padding = 40
+                  const kRaw = Math.min((width - padding) / contentW, (height - padding) / contentH)
+                  const k = Math.max(0.1, Math.min(4, kRaw))
+                  const cx = (b.minX + b.maxX) / 2
+                  const cy = (b.minY + b.maxY) / 2
+                  const tx = width / 2 - k * cx
+                  const ty = height / 2 - k * cy
+                  svg
+                    .transition()
+                    .duration(300)
+                    .call(zoomBehavior.transform, zoomIdentity.translate(tx, ty).scale(k))
+                } catch {}
+              }
+              break
+          }
+        })
+      })
+    }
+
+    // keyboard shortcuts
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        hideHelp()
+        if (focusedNode) {
+          focusedNode.classList.remove("is-focused")
+          focusedNode = null
+        }
+      }
+      if (event.shiftKey && event.key === "1") {
+        event.preventDefault()
+        const boundsAttr = container.getAttribute("data-canvas-bounds")
+        if (boundsAttr && zoomBehavior) {
+          try {
+            const b = JSON.parse(boundsAttr) as {
+              minX: number
+              minY: number
+              maxX: number
+              maxY: number
+            }
+            const contentW = Math.max(1, b.maxX - b.minX)
+            const contentH = Math.max(1, b.maxY - b.minY)
+            const padding = 40
+            const kRaw = Math.min((width - padding) / contentW, (height - padding) / contentH)
+            const k = Math.max(0.1, Math.min(4, kRaw))
+            const cx = (b.minX + b.maxX) / 2
+            const cy = (b.minY + b.maxY) / 2
+            const tx = width / 2 - k * cx
+            const ty = height / 2 - k * cy
+            svg
+              .transition()
+              .duration(300)
+              .call(zoomBehavior.transform, zoomIdentity.translate(tx, ty).scale(k))
+          } catch {}
+        }
+      }
+    }
+
+    document.addEventListener("keydown", handleKeydown)
+    registerEscapeHandler(container, () => {
+      hideHelp()
+      if (focusedNode) {
+        focusedNode.classList.remove("is-focused")
+        focusedNode = null
+      }
+    })
+
     // prepare data
     const nodes: NodeData[] = canvasData.nodes.map((n) => {
-      const meta = (metaMap && (metaMap as any)[n.id]) || {}
+      const meta = (metaMap && metaMap[n.id]) || {}
       return {
         ...n,
         // merge server-provided metadata without polluting raw JSON on disk
@@ -218,22 +499,42 @@ async function renderCanvas(container: HTMLElement) {
 
     groupNode
       .append("rect")
+      .attr("class", "node-bg")
       .attr("width", (d) => d.width)
       .attr("height", (d) => d.height)
       .attr("rx", 8)
       .attr("ry", 8)
 
     groupNode
+      .append("rect")
+      .attr("class", "node-border-overlay")
+      .attr("width", (d) => d.width)
+      .attr("height", (d) => d.height)
+      .attr("rx", 8)
+      .attr("ry", 8)
+      .attr("stroke", "var(--gray)")
+      .attr("stroke-width", 1.5)
+      .attr("fill", "none")
+      .attr("pointer-events", "none")
+
+    groupNode
       .append("text")
       .attr("class", "node-group-label")
-      .attr("x", (d) => d.width / 2)
-      .attr("y", 24)
-      .attr("text-anchor", "middle")
-      .attr("font-size", "14px")
-      .attr("font-weight", "600")
-      .style("text-transform", "uppercase")
-      .style("letter-spacing", "0.05em")
+      .attr("x", 12)
+      .attr("y", -8)
+      .attr("font-size", "12px")
       .text((d) => d.label || "Group")
+      .each(function (d: any) {
+        const maxWidth = d.width - 24
+        const textEl = this as SVGTextElement
+        let text = d.label || "Group"
+        textEl.textContent = text
+
+        while (textEl.getComputedTextLength() > maxWidth && text.length > 0) {
+          text = text.slice(0, -1)
+          textEl.textContent = text + "..."
+        }
+      })
 
     // render edges
     const edge = edgeGroup.selectAll("g.edge").data(links).join("g").attr("class", "edge")
@@ -257,8 +558,8 @@ async function renderCanvas(container: HTMLElement) {
       .attr("fill", "var(--light)")
       .attr("stroke", "var(--gray)")
       .attr("stroke-width", 1)
-      .attr("rx", 3)
-      .attr("ry", 3)
+      .attr("rx", 4)
+      .attr("ry", 4)
 
     edgeLabel
       .append("text")
@@ -294,6 +595,7 @@ async function renderCanvas(container: HTMLElement) {
     // node backgrounds
     node
       .append("rect")
+      .attr("class", "node-bg")
       .attr("width", (d) => d.width)
       .attr("height", (d) => d.height)
       .attr("rx", 8)
@@ -306,12 +608,10 @@ async function renderCanvas(container: HTMLElement) {
 
     fileNodes
       .append("text")
-      .attr("class", "node-title-text")
-      .attr("x", 6)
-      .attr("y", -6)
-      .attr("fill", "var(--gray)")
+      .attr("class", "node-title-text node-title-top")
+      .attr("x", 12)
+      .attr("y", -8)
       .attr("font-size", "12px")
-      .attr("font-weight", "bold")
       .text((d) => d.displayName || d.file || "")
       .each(function (d: any) {
         const maxWidth = d.width - 32
@@ -319,7 +619,28 @@ async function renderCanvas(container: HTMLElement) {
         let text = d.displayName || d.file || ""
         textEl.textContent = text
 
-        // truncate if too long
+        while (textEl.getComputedTextLength() > maxWidth && text.length > 0) {
+          text = text.slice(0, -1)
+          textEl.textContent = text + "..."
+        }
+      })
+
+    fileNodes
+      .append("text")
+      .attr("class", "node-title-text node-title-center")
+      .attr("x", (d) => d.width / 2)
+      .attr("y", (d) => d.height / 2)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("font-size", "16px")
+      .attr("font-weight", "600")
+      .text((d) => d.displayName || d.file || "")
+      .each(function (d: any) {
+        const maxWidth = d.width - 32
+        const textEl = this as SVGTextElement
+        let text = d.displayName || d.file || ""
+        textEl.textContent = text
+
         while (textEl.getComputedTextLength() > maxWidth && text.length > 0) {
           text = text.slice(0, -1)
           textEl.textContent = text + "..."
@@ -369,44 +690,98 @@ async function renderCanvas(container: HTMLElement) {
         link.style.width = "100%"
         link.style.height = "100%"
         link.style.opacity = "0"
-        link.style.pointerEvents = "none" // don’t block dragging
+        link.style.pointerEvents = "none"
         container.appendChild(link)
       })
 
-    // make nodes clickable for file/link types
+    // add border overlay (rendered on top of content)
     node
-      .filter((d) => d.type === "file" || d.type === "link")
-      .style("cursor", "pointer")
-      .on("click", (evt, d) => {
-        if (d.type === "file") {
-          // Alt+click: delegate to popover/side-panel behavior
-          if ((evt as MouseEvent).altKey) {
-            const link = (evt.currentTarget as SVGGElement).querySelector(
-              ".node-content a.canvas-popover-link",
-            ) as HTMLAnchorElement | null
-            if (link) {
-              link.dispatchEvent(
-                new MouseEvent("click", { altKey: true, bubbles: true, cancelable: true }),
-              )
-              return
+      .append("rect")
+      .attr("class", "node-border-overlay")
+      .attr("width", (d) => d.width)
+      .attr("height", (d) => d.height)
+      .attr("rx", 8)
+      .attr("ry", 8)
+      .attr("stroke", "var(--gray)")
+      .attr("stroke-width", 1.5)
+      .attr("fill", "none")
+      .attr("pointer-events", "none")
+
+    // add click handler to all nodes for focus tracking
+    node.on("click", (evt, d) => {
+      const clickEvent = evt as MouseEvent
+      clickEvent.stopPropagation()
+      const target = clickEvent.target as HTMLElement
+      const currentNode = evt.currentTarget as SVGGElement
+
+      if (target && target.closest("a:not(.canvas-popover-link)")) {
+        return
+      }
+
+      if (focusedNode && focusedNode !== currentNode) {
+        focusedNode.classList.remove("is-focused")
+      }
+
+      if (d.type === "file") {
+        const clickedOnContent = target.closest(".node-content")
+
+        if (clickEvent.altKey) {
+          const link = currentNode.querySelector(
+            ".node-content a.canvas-popover-link",
+          ) as HTMLAnchorElement | null
+          if (link) {
+            link.dispatchEvent(
+              new MouseEvent("click", { altKey: true, bubbles: true, cancelable: true }),
+            )
+            return
+          }
+        }
+
+        if (clickedOnContent) {
+          currentNode.classList.add("is-focused")
+          focusedNode = currentNode
+
+          if (clickEvent.metaKey || clickEvent.ctrlKey) {
+            const resolvedHref = d.resolvedHref
+            const resolvedSlug = d.resolvedSlug
+            const navPath = resolvedHref || resolvedSlug || d.file?.replace(/\.md$/, "")
+            if (navPath) {
+              const fullPath = navPath.startsWith("/") ? navPath : `/${navPath}`
+              window.spaNavigate(new URL(fullPath, window.location.origin))
             }
           }
-          // Prefer fully-resolved href (including anchors) if available
-          const resolvedHref = d.resolvedHref
-          const resolvedSlug = d.resolvedSlug
-          if (resolvedHref) {
-            window.location.href = `/${resolvedHref}`
-          } else if (resolvedSlug) {
-            window.location.href = `/${resolvedSlug}`
-          } else if (d.file) {
-            // fallback to old behavior
-            const htmlPath = d.file.replace(/\.md$/, "")
-            window.location.href = htmlPath
-          }
-        } else if (d.type === "link" && d.url) {
-          window.open(d.url, "_blank", "noopener,noreferrer")
+          return
         }
-      })
+
+        const resolvedHref = d.resolvedHref
+        const resolvedSlug = d.resolvedSlug
+        const navPath = resolvedHref || resolvedSlug || d.file?.replace(/\.md$/, "")
+        if (navPath) {
+          const fullPath = navPath.startsWith("/") ? navPath : `/${navPath}`
+          window.spaNavigate(new URL(fullPath, window.location.origin))
+        }
+      } else if (d.type === "text") {
+        currentNode.classList.add("is-focused")
+        focusedNode = currentNode
+      } else if (d.type === "link" && d.url) {
+        window.open(d.url, "_blank", "noopener,noreferrer")
+      }
+    })
+
+    // unfocus on background click
+    svg.on("click", (evt) => {
+      const target = evt.target as SVGElement
+      if (
+        target.tagName === "rect" ||
+        target.tagName === "svg" ||
+        target.classList.contains("canvas-background")
+      ) {
+        if (focusedNode) {
+          focusedNode.classList.remove("is-focused")
+          focusedNode = null
+        }
+      }
+    })
 
     // setup dragging
     if (cfg.drag) {
@@ -443,7 +818,7 @@ async function renderCanvas(container: HTMLElement) {
       // update group nodes (always use top-left positioning from JSON Canvas spec)
       groupNode.attr("transform", (d) => `translate(${d.x},${d.y})`)
 
-      // update edges to connect to node boundaries with fluid cubic curves
+      // update edges to connect to node boundaries with straight lines
       edge.select("path").attr("d", (d) => {
         // use JSON Canvas spec sides if specified, otherwise auto-determine
         // calculate center points for edge direction calculation
@@ -455,26 +830,11 @@ async function renderCanvas(container: HTMLElement) {
         const p1 = getNodeEdgePoint(d.source, d.fromSide, targetCenterX, targetCenterY)
         const p2 = getNodeEdgePoint(d.target, d.toSide, sourceCenterX, sourceCenterY)
 
-        const dx = p2.x - p1.x
-        const dy = p2.y - p1.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
-
-        // create fluid cubic bezier curve with two control points
-        // control point offset based on distance for natural flow
-        const offset = Math.min(dist * 0.3, 150)
-
-        // horizontal bias for smoother, more natural curves
-        const cp1x = p1.x + offset * (dx / dist)
-        const cp1y = p1.y + offset * 0.2
-
-        const cp2x = p2.x - offset * (dx / dist)
-        const cp2y = p2.y - offset * 0.2
-
-        // cubic bezier: M start C cp1 cp2 end
-        return `M ${p1.x} ${p1.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`
+        // straight line
+        return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`
       })
 
-      // update edge labels - position at bezier curve midpoint (t=0.5)
+      // update edge labels - position at line midpoint
       edge.selectAll(".edge-label-group").attr("transform", (d) => {
         const sourceCenterX = d.source.x + d.source.width / 2
         const sourceCenterY = d.source.y + d.source.height / 2
@@ -484,22 +844,9 @@ async function renderCanvas(container: HTMLElement) {
         const p1 = getNodeEdgePoint(d.source, d.fromSide, targetCenterX, targetCenterY)
         const p2 = getNodeEdgePoint(d.target, d.toSide, sourceCenterX, sourceCenterY)
 
-        const dx = p2.x - p1.x
-        const dy = p2.y - p1.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
-
-        const offset = Math.min(dist * 0.3, 150)
-
-        const cp1x = p1.x + offset * (dx / dist)
-        const cp1y = p1.y + offset * 0.2
-
-        const cp2x = p2.x - offset * (dx / dist)
-        const cp2y = p2.y - offset * 0.2
-
-        // cubic bezier at t=0.5: B(t) = (1-t)³·P0 + 3(1-t)²t·P1 + 3(1-t)t²·P2 + t³·P3
-        // at t=0.5: B(0.5) = 0.125·P0 + 0.375·P1 + 0.375·P2 + 0.125·P3
-        const mx = 0.125 * p1.x + 0.375 * cp1x + 0.375 * cp2x + 0.125 * p2.x
-        const my = 0.125 * p1.y + 0.375 * cp1y + 0.375 * cp2y + 0.125 * p2.y
+        // midpoint of straight line
+        const mx = (p1.x + p2.x) / 2
+        const my = (p1.y + p2.y) / 2
 
         return `translate(${mx},${my})`
       })
@@ -511,7 +858,7 @@ async function renderCanvas(container: HTMLElement) {
         const bg = group.querySelector("rect") as SVGRectElement
         if (text && bg) {
           const bbox = text.getBBox()
-          const padding = 4
+          const padding = 6
           bg.setAttribute("x", String(bbox.x - padding))
           bg.setAttribute("y", String(bbox.y - padding))
           bg.setAttribute("width", String(bbox.width + padding * 2))
@@ -535,7 +882,7 @@ async function renderCanvas(container: HTMLElement) {
         const bg = group.querySelector("rect") as SVGRectElement
         if (text && bg) {
           const bbox = text.getBBox()
-          const padding = 4
+          const padding = 6
           bg.setAttribute("x", String(bbox.x - padding))
           bg.setAttribute("y", String(bbox.y - padding))
           bg.setAttribute("width", String(bbox.width + padding * 2))
@@ -563,8 +910,9 @@ async function renderCanvas(container: HTMLElement) {
         const cy = (b.minY + b.maxY) / 2
         const tx = width / 2 - k * cx
         const ty = height / 2 - k * cy
+        initialTransform = zoomIdentity.translate(tx, ty).scale(k)
         if (zoomBehavior) {
-          svg.call(zoomBehavior.transform, zoomIdentity.translate(tx, ty).scale(k))
+          svg.call(zoomBehavior.transform, initialTransform)
         } else {
           g.attr("transform", `translate(${tx},${ty}) scale(${k})`)
         }
