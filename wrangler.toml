@@ -41,6 +41,10 @@ bucket_name = "sites"
 [browser]
 binding = "BROWSER"
 
+[ai]
+binding = "AI"
+remote = true
+
 [assets]
 directory = "./public/"
 binding = "ASSETS"

@@ -127,6 +127,19 @@
       display: inline-flex;
       align-items: baseline;
       gap: 3px;
+      flex-wrap: wrap;
+      max-width: 100%;
+
+      mjx-container,
+      .katex {
+        max-width: calc(100vw - 200px);
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+    }
+
+    .sidenote-content {
+      display: none !important;
     }
   }
 
@@ -140,6 +153,8 @@
     .collapsible-header-content {
       border-left: 1px solid var(--lightgray);
       padding-left: var(--padding-width);
+      overflow-x: auto;
+      overflow-y: hidden;
 
       h1,
       h2,
@@ -148,6 +163,8 @@
       h5,
       h6 {
         margin-top: 1rem;
+        overflow-wrap: break-word;
+        word-break: break-word;
       }
 
       .callout-content > p {

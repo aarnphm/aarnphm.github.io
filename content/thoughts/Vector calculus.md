@@ -2,7 +2,7 @@
 date: "2024-11-27"
 description: just enough vector calculus to be dangerous
 id: Vector calculus
-modified: 2025-10-29 02:15:37 GMT-04:00
+modified: 2025-11-01 06:03:40 GMT-04:00
 tags:
   - math
 title: Vector calculus

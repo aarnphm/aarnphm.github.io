@@ -78,24 +78,20 @@ function setupHeaders() {
     }
   }
 
-  const links = document.querySelectorAll("button.transclude-title-link") as NodeListOf<SVGElement>
+  const links = document.querySelectorAll("button.transclude-title-link")
   for (const link of links) {
     const parentEl = link.parentElement as HTMLElement
     if (!parentEl || !parentEl.dataset.href) continue
 
     const href = parentEl.dataset.href
-
-    function onClick() {
+    const onClick = () => {
       window.spaNavigate(new URL(href, window.location.toString()))
     }
 
     link.addEventListener("click", onClick)
-    if (window.addCleanup) {
-      window.addCleanup(() => link.removeEventListener("click", onClick))
-    }
+    window.addCleanup?.(() => link.removeEventListener("click", onClick))
   }
 }
 
-// Set up initial state and handle navigation
 document.addEventListener("nav", setupHeaders)
 window.addEventListener("resize", setupHeaders)

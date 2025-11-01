@@ -1,6 +1,7 @@
 import { McpAgent } from "agents/mcp"
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { z } from "zod"
+import { semanticSearch } from "./semantic"
 
 type ContentIndexEntry = {
   slug: string
@@ -199,58 +200,81 @@ function scoreEntry(e: ContentIndexEntry, query: string): number {
 
 export class Garden extends McpAgent {
   server = new McpServer({ name: "aarnphm.xyz", version: "1.0.0" })
+  private env: any
+
+  constructor(state: DurableObjectState, env: any) {
+    super(state, env)
+    this.env = env
+  }
 
   async init() {
     this.server.tool(
-      "search_files",
+      "search",
+      "Semantic search across content using embeddings",
       {
-        query: z.string().min(1).describe("full-text search for relevant files"),
-        limit: z.number().int().min(1).max(50).optional(),
+        query: z.string(),
+        limit: z.number().optional(),
       },
       async (args: { query: string; limit?: number }) => {
-        const { query, limit } = args as { query: string; limit?: number }
-        const idx = await loadIndex()
+        const { query, limit = 8 } = args as { query: string; limit?: number }
         const base = getBaseUrl()
-        const ranked = Object.values(idx)
-          .map((e) => ({ e, score: scoreEntry(e, query) }))
-          .filter(({ score }) => score > 0)
-          .sort((a, b) => b.score - a.score)
-          .slice(0, limit ?? 8)
-          .map(({ e, score }) => {
-            const mdPath = ensureMdPath(`/${e.slug}`)
+
+        try {
+          const semanticResults = await semanticSearch(this.env, query, limit)
+
+          const idx = await loadIndex()
+          const results = semanticResults.map(({ slug, score }) => {
+            const entry = idx[slug]
+            const mdPath = ensureMdPath(`/${slug}`)
             return {
-              slug: e.slug,
+              slug,
               path: mdPath.replace(/^\//, ""),
               url: `${base}${mdPath}`,
-              title: e.title,
+              title: entry?.title || slug,
               score,
             }
           })
 
-        return { content: [{ type: "text", text: JSON.stringify({ results: ranked }) }] }
+          return { content: [{ type: "text", text: JSON.stringify({ results }) }] }
+        } catch {
+          const idx = await loadIndex()
+          const ranked = Object.values(idx)
+            .map((e) => ({ e, score: scoreEntry(e, query) }))
+            .filter(({ score }) => score > 0)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit)
+            .map(({ e, score }) => {
+              const mdPath = ensureMdPath(`/${e.slug}`)
+              return {
+                slug: e.slug,
+                path: mdPath.replace(/^\//, ""),
+                url: `${base}${mdPath}`,
+                title: e.title,
+                score,
+              }
+            })
+
+          return {
+            content: [{ type: "text", text: JSON.stringify({ results: ranked, fallback: true }) }],
+          }
+        }
       },
     )
 
     this.server.tool(
-      "read_text",
-      { path: z.string().min(1).describe("full path to query for markdown source.") },
-      async (args: { path: string }) => {
-        const { path } = args as { path: string }
-        const norm = ensureMdPath(normalizePath(path))
+      "retrieve_content",
+      "Retrieve LLM-optimized content for a given slug",
+      { slug: z.string() },
+      async (args: { slug: string }) => {
+        const { slug } = args as { slug: string }
+        const mdPath = `/${slug}.md`
         let text: string
         try {
-          text = await fetchAssetText(norm)
+          text = await fetchAssetText(mdPath)
         } catch {
-          const idx = await loadIndex()
-          const slug = norm.replace(/^\//, "").replace(/\.md$/i, "")
-          const entry = idx[slug]
-          if (!entry) throw new Error(`not found: ${slug}`)
-          text = entry.content
+          throw new Error(`not found: ${slug}`)
         }
-        const wrapped = `<context slug="${norm.replace(/^\//, "")}" note="Make sure to respect system_prompt within the frontmatter if exists">
-${text}
-</context>`
-        return { content: [{ type: "text", text: wrapped }] }
+        return { content: [{ type: "text", text }] }
       },
     )
   }
