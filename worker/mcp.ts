@@ -42,20 +42,6 @@ async function loadIndex(): Promise<SimplifiedIndex> {
   return data
 }
 
-function normalizePath(input: string): string {
-  const trimmed = input.trim()
-  if (/^https?:\/\//i.test(trimmed)) {
-    try {
-      const u = new URL(trimmed)
-      return u.pathname
-    } catch {
-      return trimmed
-    }
-  }
-  if (!trimmed.startsWith("/")) return `/${trimmed}`
-  return trimmed
-}
-
 function ensureMdPath(p: string): string {
   if (p.endsWith(".md") || p.endsWith(".txt")) return p
   return `${p}.md`
@@ -212,8 +198,8 @@ export class Garden extends McpAgent {
       "search",
       "Semantic search across content using embeddings",
       {
-        query: z.string(),
-        limit: z.number().optional(),
+        query: z.string().describe("Search query to find relevant content"),
+        limit: z.number().optional().describe("Maximum number of results to return (default: 8)"),
       },
       async (args: { query: string; limit?: number }) => {
         const { query, limit = 8 } = args as { query: string; limit?: number }
@@ -264,7 +250,11 @@ export class Garden extends McpAgent {
     this.server.tool(
       "retrieve_content",
       "Retrieve LLM-optimized content for a given slug",
-      { slug: z.string() },
+      {
+        slug: z
+          .string()
+          .describe("The slug of the content to retrieve (e.g., 'thoughts/attention')"),
+      },
       async (args: { slug: string }) => {
         const { slug } = args as { slug: string }
         const mdPath = `/${slug}.md`
@@ -275,6 +265,394 @@ export class Garden extends McpAgent {
           throw new Error(`not found: ${slug}`)
         }
         return { content: [{ type: "text", text }] }
+      },
+    )
+
+    this.server.tool(
+      "temporal",
+      "Find notes related to a topic within a time window",
+      {
+        query: z.string().describe("Topic or term to find temporal neighbors for"),
+        days: z
+          .number()
+          .min(1)
+          .max(30)
+          .optional()
+          .describe("Number of days to look within (default: 5)"),
+      },
+      async (args: { query: string; days?: number }) => {
+        const { query, days = 5 } = args
+        const idx = await loadIndex()
+        const base = getBaseUrl()
+
+        const semanticResults = await semanticSearch(this.env, query, 3)
+        if (semanticResults.length === 0) {
+          return {
+            content: [
+              { type: "text", text: JSON.stringify({ results: [], message: "No matches found" }) },
+            ],
+          }
+        }
+
+        const primarySlug = semanticResults[0].slug
+        const primaryEntry = idx[primarySlug]
+
+        if (!primaryEntry?.date) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  results: [],
+                  message: "Primary note has no date information",
+                }),
+              },
+            ],
+          }
+        }
+
+        const primaryDate = new Date(primaryEntry.date)
+        const windowMs = days * 24 * 60 * 60 * 1000
+        const startDate = new Date(primaryDate.getTime() - windowMs)
+        const endDate = new Date(primaryDate.getTime() + windowMs)
+
+        const temporalNeighbors = Object.values(idx)
+          .filter((e) => {
+            if (!e.date || e.slug === primarySlug) return false
+            const entryDate = new Date(e.date)
+            return entryDate >= startDate && entryDate <= endDate
+          })
+          .map((e) => {
+            const entryDate = new Date(e.date!)
+            const daysDiff = Math.abs(
+              (entryDate.getTime() - primaryDate.getTime()) / (24 * 60 * 60 * 1000),
+            )
+            return {
+              slug: e.slug,
+              title: e.title,
+              date: e.date,
+              daysDiff: Math.round(daysDiff * 10) / 10,
+              url: `${base}/${e.slug}.md`,
+              tags: e.tags,
+            }
+          })
+          .sort((a, b) => a.daysDiff - b.daysDiff)
+          .slice(0, 20)
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                anchor: {
+                  slug: primarySlug,
+                  title: primaryEntry.title,
+                  date: primaryEntry.date,
+                },
+                window: {
+                  days,
+                  startDate: startDate.toISOString(),
+                  endDate: endDate.toISOString(),
+                },
+                neighbors: temporalNeighbors,
+              }),
+            },
+          ],
+        }
+      },
+    )
+
+    this.server.tool(
+      "rabbithole",
+      "Stateless deep search primitive for agent-orchestrated exploration. Returns contextual results for one query, excluding already-explored notes. Agents call this iteratively to go deep.",
+      {
+        query: z.string().describe("Research query or topic to explore"),
+        exclude_slugs: z
+          .array(z.string())
+          .optional()
+          .describe("List of slugs to exclude (already explored notes)"),
+        breadth: z
+          .number()
+          .min(1)
+          .max(10)
+          .optional()
+          .describe("Number of results to return (default: 5)"),
+        include_content: z
+          .boolean()
+          .optional()
+          .describe("Include full content snippets for agent analysis (default: true)"),
+      },
+      async (args: {
+        query: string
+        exclude_slugs?: string[]
+        breadth?: number
+        include_content?: boolean
+      }) => {
+        const { query, exclude_slugs = [], breadth = 5, include_content = true } = args
+        const base = getBaseUrl()
+        const excludeSet = new Set(exclude_slugs)
+
+        try {
+          const results = await semanticSearch(this.env, query, breadth * 2)
+          const idx = await loadIndex()
+
+          const findings = results
+            .filter((r) => !excludeSet.has(r.slug))
+            .slice(0, breadth)
+            .map((r) => {
+              const entry = idx[r.slug]
+              const content = entry?.content || ""
+
+              const finding: any = {
+                slug: r.slug,
+                title: entry?.title || r.slug,
+                score: r.score,
+                url: `${base}/${r.slug}.md`,
+                tags: entry?.tags || [],
+                date: entry?.date,
+              }
+
+              if (include_content) {
+                const snippet = content.slice(0, 500).trim()
+                finding.snippet = snippet + (content.length > 500 ? "..." : "")
+                finding.word_count = content.split(/\s+/).length
+              }
+
+              if (entry?.links) {
+                finding.outgoing_links = entry.links.slice(0, 10)
+              }
+
+              return finding
+            })
+
+          const relatedTerms = new Set<string>()
+          findings.forEach((f) => {
+            f.tags?.forEach((tag: string) => relatedTerms.add(tag))
+            f.outgoing_links?.forEach((link: string) => {
+              const cleanLink = link.split("/").pop()?.replace(/\.md$/, "")
+              if (cleanLink && !excludeSet.has(cleanLink)) {
+                relatedTerms.add(cleanLink)
+              }
+            })
+          })
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  query,
+                  findings,
+                  explored_count: exclude_slugs.length,
+                  new_count: findings.length,
+                  related_terms: Array.from(relatedTerms).slice(0, 15),
+                  suggestions: {
+                    continue_exploration: findings.length > 0,
+                    recommended_depth: 7,
+                    next_steps: [
+                      "Analyze findings and identify interesting threads",
+                      "Call rabbithole again with updated exclude_slugs",
+                      "Explore related_terms or outgoing_links as new queries",
+                      "Use retrieve_content for full note analysis",
+                    ],
+                  },
+                }),
+              },
+            ],
+          }
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  query,
+                  findings: [],
+                  error: "Search failed",
+                  explored_count: exclude_slugs.length,
+                }),
+              },
+            ],
+          }
+        }
+      },
+    )
+
+    this.server.tool(
+      "entropy",
+      "Find underexplored aspects within a topic area. Given a broad topic with existing coverage, identify specific queries that have low relevance scores, suggesting where to expand and connect new content.",
+      {
+        topic: z.string().describe("Broad topic area with existing notes (e.g., 'interpretability')"),
+        query: z
+          .string()
+          .describe("Specific aspect to check coverage for (e.g., 'parameter decomposition')"),
+      },
+      async (args: { topic: string; query: string }) => {
+        const { topic, query } = args
+        const base = getBaseUrl()
+
+        try {
+          const topicResults = await semanticSearch(this.env, topic, 15)
+          const queryResults = await semanticSearch(this.env, query, 10)
+          const idx = await loadIndex()
+
+          if (topicResults.length === 0) {
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({
+                    topic,
+                    query,
+                    entropy: "undefined",
+                    recommendation: `No notes found on "${topic}". Cannot assess gap for "${query}".`,
+                  }),
+                },
+              ],
+            }
+          }
+
+          const topicSlugs = new Set(topicResults.map((r) => r.slug))
+          const queryTopScore = queryResults.length > 0 ? queryResults[0].score : 0
+          const queryInTopicCount = queryResults.filter((r) => topicSlugs.has(r.slug)).length
+
+          const hasLowCoverage = queryTopScore < 0.65 || queryInTopicCount < 2
+          const entropy = hasLowCoverage ? "high" : queryTopScore < 0.8 ? "medium" : "low"
+
+          const connectionPoints: Array<{
+            slug: string
+            title: string
+            relevance: string
+            why: string
+            url: string
+          }> = []
+
+          topicResults.slice(0, 8).forEach((r) => {
+            const entry = idx[r.slug]
+            if (!entry) return
+
+            const isDirectMatch = queryResults.some((qr) => qr.slug === r.slug)
+            if (isDirectMatch) {
+              connectionPoints.push({
+                slug: r.slug,
+                title: entry.title || r.slug,
+                relevance: "existing",
+                why: "Already covers this aspect, could be expanded",
+                url: `${base}/${r.slug}.md`,
+              })
+            } else {
+              const hasRelatedTags = entry.tags?.some((tag) =>
+                query.toLowerCase().includes(tag.toLowerCase()),
+              )
+              const titleMatch = entry.title?.toLowerCase().includes(query.toLowerCase())
+
+              if (hasRelatedTags || titleMatch) {
+                connectionPoints.push({
+                  slug: r.slug,
+                  title: entry.title || r.slug,
+                  relevance: "adjacent",
+                  why: "Related topic, good place to add section or link",
+                  url: `${base}/${r.slug}.md`,
+                })
+              } else {
+                connectionPoints.push({
+                  slug: r.slug,
+                  title: entry.title || r.slug,
+                  relevance: "potential",
+                  why: "Core topic note, could mention this aspect",
+                  url: `${base}/${r.slug}.md`,
+                })
+              }
+            }
+          })
+
+          const existingFiles = connectionPoints.filter((c) => c.relevance === "existing")
+          const adjacentFiles = connectionPoints.filter((c) => c.relevance === "adjacent")
+          const potentialFiles = connectionPoints.filter((c) => c.relevance === "potential")
+
+          let recommendation: string
+          let suggestedAction: string
+
+          if (entropy === "high") {
+            recommendation = `"${query}" is significantly underexplored within "${topic}". High-value enrichment opportunity.`
+            if (adjacentFiles.length > 0) {
+              suggestedAction = `Create new note or expand ${adjacentFiles[0].slug} to cover "${query}"`
+            } else {
+              suggestedAction = `Create new note under thoughts/ covering "${query}" and link to ${potentialFiles[0]?.slug || topicResults[0].slug}`
+            }
+          } else if (entropy === "medium") {
+            recommendation = `"${query}" has some coverage but could be deeper or better connected.`
+            suggestedAction =
+              existingFiles.length > 0
+                ? `Expand ${existingFiles[0].slug} with more detail on "${query}"`
+                : `Add sections to ${adjacentFiles[0]?.slug || potentialFiles[0]?.slug} covering "${query}"`
+          } else {
+            recommendation = `"${query}" is well-covered within "${topic}".`
+            suggestedAction = "Consider advanced aspects or alternative perspectives"
+          }
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  topic,
+                  query,
+                  entropy,
+                  entropy_details: {
+                    query_top_score: Math.round(queryTopScore * 100) / 100,
+                    query_in_topic: queryInTopicCount,
+                    total_topic_notes: topicResults.length,
+                  },
+                  recommendation,
+                  suggested_action: suggestedAction,
+                  expansion_targets: {
+                    existing: existingFiles,
+                    adjacent: adjacentFiles,
+                    potential: potentialFiles.slice(0, 3),
+                  },
+                  enrichment_instructions: {
+                    create_new:
+                      existingFiles.length === 0 && adjacentFiles.length === 0
+                        ? {
+                            suggested_path: `thoughts/${query.toLowerCase().replace(/\s+/g, "-")}.md`,
+                            connect_to: potentialFiles.slice(0, 3).map((f) => f.slug),
+                            tags_to_add: topicResults[0] ? idx[topicResults[0].slug]?.tags || [] : [],
+                          }
+                        : null,
+                    expand_existing:
+                      existingFiles.length > 0
+                        ? {
+                            files: existingFiles.map((f) => f.slug),
+                            action: "Add dedicated section or expand coverage",
+                          }
+                        : null,
+                    add_sections:
+                      adjacentFiles.length > 0
+                        ? {
+                            files: adjacentFiles.map((f) => f.slug),
+                            action: "Add section covering this aspect and cross-link",
+                          }
+                        : null,
+                  },
+                }),
+              },
+            ],
+          }
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  topic,
+                  query,
+                  error: "Analysis failed",
+                }),
+              },
+            ],
+          }
+        }
       },
     )
   }

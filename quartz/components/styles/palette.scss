@@ -198,6 +198,14 @@ ul#helper {
     & > #space {
       width: 30%;
 
+      @media all and ($tablet) {
+        width: 75%;
+      }
+
+      @media all and ($mobile) {
+        width: 75%;
+      }
+
       @include containerInner;
       @include inputContainer;
       max-height: fit-content;

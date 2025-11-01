@@ -63,8 +63,7 @@ ${content}
 </agent>
 <document>
 ---
-${yaml.dump(mdFrontmatter, { lineWidth: -1, noRefs: true })}
----
+${yaml.dump(mdFrontmatter, { lineWidth: -1, noRefs: true })}---
 ${contentBase}
 </document>`,
     slug,

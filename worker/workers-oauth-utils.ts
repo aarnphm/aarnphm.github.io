@@ -281,20 +281,24 @@ export function renderApprovalDialog(request: Request, options: ApprovalDialogOp
 <title>${clientName} | Authorization Request</title>
 <style>
 :root {
-  --primary-color: #0070f3;
-  --error-color: #f44336;
-  --border-color: #e5e7eb;
-  --text-color: #333;
-  --background-color: #fff;
-  --card-shadow: 0 8px 36px 8px rgba(0, 0, 0, 0.1);
+  --light: rgb(255, 252, 240);
+  --lightgray: rgb(230, 228, 217);
+  --gray: rgb(183, 181, 172);
+  --darkgray: rgb(111, 110, 105);
+  --dark: rgb(16, 15, 15);
+  --iris: rgb(139, 126, 200);
+  --foam: rgb(67, 133, 190);
+  --highlight: rgb(218, 216, 206);
+  --card-shadow: 0 14px 50px rgba(27, 33, 48, 0.12), 0 10px 30px rgba(27, 33, 48, 0.16);
 }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "PP Neue Montreal", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.6;
-  color: var(--text-color);
-  background-color: #f9fafb;
+  color: var(--dark);
+  background-color: var(--light);
   margin: 0;
   padding: 0;
+  text-transform: lowercase;
 }
 .container {
   max-width: 600px;
@@ -303,52 +307,54 @@ body {
 }
 .precard {
   padding: 2rem;
-  text-align: center;
 }
 .card {
-  background-color: var(--background-color);
-  border-radius: 8px;
+  background-color: var(--light);
+  border-radius: 0px;
+  border: 1px solid var(--lightgray);
   box-shadow: var(--card-shadow);
   padding: 2rem;
 }
 .header {
   display: flex;
   align-items: center;
-  justify-content: center;
   margin-bottom: 1.5rem;
 }
 .logo {
   width: 48px;
   height: 48px;
   margin-right: 1rem;
-  border-radius: 8px;
+  border-radius: 0px;
   object-fit: contain;
 }
 .title {
   margin: 0;
   font-size: 1.3rem;
   font-weight: 400;
+  font-family: "Parclo Serif", serif;
 }
 .alert {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 400;
   margin: 1rem 0;
-  text-align: center;
+  font-family: "Parclo Serif", serif;
 }
 .description {
-  color: #555;
+  color: var(--darkgray);
 }
 .client-info {
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border: 1px solid var(--lightgray);
+  border-radius: 0px;
   padding: 1rem 1rem 0.5rem;
   margin-bottom: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 .client-name {
   font-weight: 600;
   font-size: 1.2rem;
   margin: 0 0 0.5rem 0;
+  font-family: "Parclo Serif", serif;
 }
 .client-detail {
   display: flex;
@@ -358,14 +364,20 @@ body {
 .detail-label {
   font-weight: 500;
   min-width: 120px;
+  color: var(--darkgray);
 }
 .detail-value {
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: "Berkeley Mono", ui-monospace, SFMono-Regular, SF Mono, Menlo, monospace;
   word-break: break-all;
+  color: var(--dark);
 }
 .detail-value a {
-  color: inherit;
+  color: var(--dark);
   text-decoration: underline;
+}
+.detail-value a:hover {
+  background: var(--dark);
+  color: var(--light);
 }
 .detail-value.small {
   font-size: 0.8em;
@@ -378,20 +390,30 @@ body {
 }
 .button {
   padding: 0.75rem 1.5rem;
-  border-radius: 6px;
+  border-radius: 0px;
   font-weight: 500;
   cursor: pointer;
   border: none;
   font-size: 1rem;
+  transition: all 0.2s ease;
 }
 .button-primary {
-  background-color: var(--primary-color);
-  color: white;
+  background-color: var(--dark);
+  color: var(--light);
+  border: 1px solid var(--dark);
+}
+.button-primary:hover {
+  background-color: var(--iris);
+  border-color: var(--iris);
 }
 .button-secondary {
   background-color: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-color);
+  border: 1px solid var(--lightgray);
+  color: var(--dark);
+}
+.button-secondary:hover {
+  background-color: var(--highlight);
+  border-color: var(--gray);
 }
 @media (max-width: 640px) {
   .container {
@@ -482,7 +504,7 @@ body {
           : ""
       }
     </div>
-    <p>This MCP Client is requesting to be authorized on ${serverName}. If you approve, you will be redirected to complete authentication.</p>
+    <p><strong>${clientName || "this MCP Client"}</strong> is requesting to be authorized on <em>${serverName}</em>. If you approve, you will be redirected to complete authentication.</p>
     <form method="post" action="${new URL(request.url).pathname}">
       <input type="hidden" name="state" value="${encodedState}">
       <input type="hidden" name="csrf_token" value="${csrfToken}">

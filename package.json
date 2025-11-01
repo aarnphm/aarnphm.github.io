@@ -54,7 +54,7 @@
     "@myriaddreamin/typst.ts": "^0.6.0",
     "@napi-rs/simple-git": "^0.1.22",
     "@tweenjs/tween.js": "^25.0.0",
-    "agents": "^0.2.19",
+    "agents": "^0.2.20",
     "ansi-truncate": "^1.4.0",
     "async-mutex": "^0.5.0",
     "chokidar": "^4.0.3",
@@ -144,7 +144,7 @@
     "ws": "^8.18.3",
     "xml-formatter": "^3.6.7",
     "yargs": "^18.0.0",
-    "zod": "^4.1.12"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20251014.0",

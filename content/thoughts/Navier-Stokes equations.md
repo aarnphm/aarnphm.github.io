@@ -2,7 +2,7 @@
 date: "2025-11-01"
 description: partial differential equations for fluid motion; includes weak and lax–milgram forms. one of seven $1m$ clay millennium problems in mathematics.
 id: navier-stokes equations
-modified: 2025-11-01 06:35:07 GMT-04:00
+modified: 2025-11-01 07:29:53 GMT-04:00
 tags:
   - physics
   - fluid dynamics
@@ -30,9 +30,11 @@ where
 - $p$ is the mechanical pressure,
 - $\boldsymbol\tau$ is the viscous stress.
 
-## assumptions on the cauchy stress (newtonian)
+## assumptions on the cauchy stress
 
-1. stress is {{sidenotes[galilean]: often stated in newtonian mechanics: newton's laws hold in any frame related by a galilean transformation}} {{sidenotes[invariant,]: implies the laws of motion are the same in all inertial frames of reference.}} i.e. it does not depend directly on velocity but on its spatial derivatives.
+_also known as newtonian_
+
+1. stress is {{sidenotes[galilean]: often stated in Newtonian mechanics: newton's laws hold in any frame related by a galilean transformation}} {{sidenotes[invariant,]: implies the laws of motion are the same in all inertial frames of reference.}} i.e. it does not depend directly on velocity but on its spatial derivatives.
 
    > [!important] rate-of-strain tensor
    >

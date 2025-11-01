@@ -77,9 +77,7 @@ class SemanticSearchEngine {
     this.manifest = (await res.json()) as Manifest
 
     if (this.manifest.vectors.dtype !== "fp32") {
-      throw new Error(
-        `unsupported embedding dtype '${this.manifest.vectors.dtype}', expected fp32`,
-      )
+      throw new Error(`unsupported embedding dtype '${this.manifest.vectors.dtype}', expected fp32`)
     }
 
     this.dims = this.manifest.dims
@@ -152,7 +150,12 @@ class SemanticSearchEngine {
   }
 
   private hnswSearch(query: Float32Array, k: number): SearchHit[] {
-    if (!this.manifest || !this.vectorsView || this.entryPoint < 0 || this.levelGraph.length === 0) {
+    if (
+      !this.manifest ||
+      !this.vectorsView ||
+      this.entryPoint < 0 ||
+      this.levelGraph.length === 0
+    ) {
       throw new Error("semantic graph not initialised")
     }
     const ef = Math.max(this.efDefault, k * 10)
@@ -216,7 +219,9 @@ class SemanticSearchEngine {
     return meta ? meta.parentSlug : slug
   }
 
-  private aggregateChunkResults(results: SearchHit[]): Map<string, { rrfScore: number; maxScore: number }> {
+  private aggregateChunkResults(
+    results: SearchHit[],
+  ): Map<string, { rrfScore: number; maxScore: number }> {
     const docChunks = new Map<string, Array<{ score: number }>>()
 
     results.forEach(({ id, score }) => {
@@ -247,7 +252,10 @@ class SemanticSearchEngine {
     return aggregated
   }
 
-  async search(queryEmbedding: number[], k: number): Promise<Array<{ slug: string; score: number }>> {
+  async search(
+    queryEmbedding: number[],
+    k: number,
+  ): Promise<Array<{ slug: string; score: number }>> {
     if (!this.vectorsView) {
       throw new Error("search engine not initialized")
     }
@@ -291,4 +299,3 @@ export async function semanticSearch(
   const engine = await getSearchEngine()
   return await engine.search(embeddingData, limit)
 }
-
