@@ -124,7 +124,7 @@ async function renderCanvas(container: HTMLElement) {
       </div>
       <div class="canvas-control-group">
         <button class="canvas-control-item" data-action="help" aria-label="Canvas help" title="Canvas help">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
         </button>
       </div>
     `
@@ -818,10 +818,8 @@ async function renderCanvas(container: HTMLElement) {
       // update group nodes (always use top-left positioning from JSON Canvas spec)
       groupNode.attr("transform", (d) => `translate(${d.x},${d.y})`)
 
-      // update edges to connect to node boundaries with straight lines
+      // update edges with straight segments then curves
       edge.select("path").attr("d", (d) => {
-        // use JSON Canvas spec sides if specified, otherwise auto-determine
-        // calculate center points for edge direction calculation
         const sourceCenterX = d.source.x + d.source.width / 2
         const sourceCenterY = d.source.y + d.source.height / 2
         const targetCenterX = d.target.x + d.target.width / 2
@@ -830,11 +828,22 @@ async function renderCanvas(container: HTMLElement) {
         const p1 = getNodeEdgePoint(d.source, d.fromSide, targetCenterX, targetCenterY)
         const p2 = getNodeEdgePoint(d.target, d.toSide, sourceCenterX, sourceCenterY)
 
-        // straight line
-        return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`
+        const straightLength = 20
+        const ext1 = getExtendedPoint(p1, straightLength)
+        const ext2 = getExtendedPoint(p2, straightLength)
+
+        const dx = ext2.x - ext1.x
+        const dy = ext2.y - ext1.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        const controlDist = Math.min(dist * 0.4, 100)
+
+        const cp1 = getControlPoint(ext1, p1.side, controlDist)
+        const cp2 = getControlPoint(ext2, p2.side, controlDist)
+
+        return `M ${p1.x} ${p1.y} L ${ext1.x} ${ext1.y} C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${ext2.x} ${ext2.y} L ${p2.x} ${p2.y}`
       })
 
-      // update edge labels - position at line midpoint
+      // update edge labels - position at curve midpoint
       edge.selectAll(".edge-label-group").attr("transform", (d) => {
         const sourceCenterX = d.source.x + d.source.width / 2
         const sourceCenterY = d.source.y + d.source.height / 2
@@ -844,9 +853,30 @@ async function renderCanvas(container: HTMLElement) {
         const p1 = getNodeEdgePoint(d.source, d.fromSide, targetCenterX, targetCenterY)
         const p2 = getNodeEdgePoint(d.target, d.toSide, sourceCenterX, sourceCenterY)
 
-        // midpoint of straight line
-        const mx = (p1.x + p2.x) / 2
-        const my = (p1.y + p2.y) / 2
+        const straightLength = 20
+        const ext1 = getExtendedPoint(p1, straightLength)
+        const ext2 = getExtendedPoint(p2, straightLength)
+
+        const dx = ext2.x - ext1.x
+        const dy = ext2.y - ext1.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        const controlDist = Math.min(dist * 0.4, 100)
+
+        const cp1 = getControlPoint(ext1, p1.side, controlDist)
+        const cp2 = getControlPoint(ext2, p2.side, controlDist)
+
+        const t = 0.5
+        const mt = 1 - t
+        const mx =
+          mt * mt * mt * ext1.x +
+          3 * mt * mt * t * cp1.x +
+          3 * mt * t * t * cp2.x +
+          t * t * t * ext2.x
+        const my =
+          mt * mt * mt * ext1.y +
+          3 * mt * mt * t * cp1.y +
+          3 * mt * t * t * cp2.y +
+          t * t * t * ext2.y
 
         return `translate(${mx},${my})`
       })
@@ -1062,47 +1092,78 @@ function getNodeEdgePoint(
   side?: string,
   targetX?: number,
   targetY?: number,
-): { x: number; y: number } {
-  // node.x and node.y are top-left corner in manual positioning mode
-  // calculate center point for edge calculations
+): { x: number; y: number; side: string } {
   const cx = node.x + node.width / 2
   const cy = node.y + node.height / 2
   const hw = node.width / 2
   const hh = node.height / 2
 
-  // if side is specified, use center of that side (JSON Canvas spec)
   if (side) {
     switch (side) {
       case "top":
-        return { x: cx, y: cy - hh }
+        return { x: cx, y: cy - hh, side: "top" }
       case "right":
-        return { x: cx + hw, y: cy }
+        return { x: cx + hw, y: cy, side: "right" }
       case "bottom":
-        return { x: cx, y: cy + hh }
+        return { x: cx, y: cy + hh, side: "bottom" }
       case "left":
-        return { x: cx - hw, y: cy }
+        return { x: cx - hw, y: cy, side: "left" }
     }
   }
 
-  // fallback: calculate intersection with rectangle border
   if (targetX !== undefined && targetY !== undefined) {
     const dx = targetX - cx
     const dy = targetY - cy
 
-    if (dx === 0 && dy === 0) return { x: cx, y: cy }
+    if (dx === 0 && dy === 0) return { x: cx, y: cy, side: "right" }
 
-    // find intersection with rectangle using parametric form
     const tx = Math.abs(dx) > 0 ? hw / Math.abs(dx) : Infinity
     const ty = Math.abs(dy) > 0 ? hh / Math.abs(dy) : Infinity
     const t = Math.min(tx, ty)
 
-    return {
-      x: cx + dx * t,
-      y: cy + dy * t,
-    }
+    const x = cx + dx * t
+    const y = cy + dy * t
+
+    let determinedSide = "right"
+    if (Math.abs(y - (cy - hh)) < 1) determinedSide = "top"
+    else if (Math.abs(y - (cy + hh)) < 1) determinedSide = "bottom"
+    else if (Math.abs(x - (cx - hw)) < 1) determinedSide = "left"
+    else if (Math.abs(x - (cx + hw)) < 1) determinedSide = "right"
+
+    return { x, y, side: determinedSide }
   }
 
-  return { x: cx, y: cy }
+  return { x: cx, y: cy, side: "right" }
+}
+
+function getExtendedPoint(point: { x: number; y: number; side: string }, length: number = 20) {
+  switch (point.side) {
+    case "top":
+      return { x: point.x, y: point.y - length }
+    case "right":
+      return { x: point.x + length, y: point.y }
+    case "bottom":
+      return { x: point.x, y: point.y + length }
+    case "left":
+      return { x: point.x - length, y: point.y }
+    default:
+      return { x: point.x, y: point.y }
+  }
+}
+
+function getControlPoint(extPoint: { x: number; y: number }, side: string, distance: number) {
+  switch (side) {
+    case "top":
+      return { x: extPoint.x, y: extPoint.y - distance }
+    case "right":
+      return { x: extPoint.x + distance, y: extPoint.y }
+    case "bottom":
+      return { x: extPoint.x, y: extPoint.y + distance }
+    case "left":
+      return { x: extPoint.x - distance, y: extPoint.y }
+    default:
+      return { x: extPoint.x, y: extPoint.y }
+  }
 }
 
 // initialize all canvases on the page
