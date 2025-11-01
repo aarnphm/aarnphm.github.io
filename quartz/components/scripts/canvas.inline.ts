@@ -236,6 +236,7 @@ async function renderCanvas(container: HTMLElement) {
 
     // track focused node for scroll behavior
     let focusedNode: SVGGElement | null = null
+    let isHelpOpen = false
 
     // setup zoom
     let zoomBehavior: any = null
@@ -245,6 +246,8 @@ async function renderCanvas(container: HTMLElement) {
       zoomBehavior = d3Zoom<SVGSVGElement, unknown>()
         .scaleExtent([0.1, 4])
         .filter((event: any) => {
+          if (isHelpOpen) return false
+
           if (event.type === "wheel") {
             if (event.metaKey || event.ctrlKey) {
               return true
@@ -273,6 +276,8 @@ async function renderCanvas(container: HTMLElement) {
     container.addEventListener(
       "wheel",
       (event) => {
+        if (isHelpOpen) return
+
         const target = event.target as HTMLElement
         if (focusedNode && target.closest(".node-content")) {
           return
@@ -324,10 +329,12 @@ async function renderCanvas(container: HTMLElement) {
 
     const showHelp = () => {
       helpModal.classList.add("is-visible")
+      isHelpOpen = true
     }
 
     const hideHelp = () => {
       helpModal.classList.remove("is-visible")
+      isHelpOpen = false
     }
 
     if (helpBackdrop) {

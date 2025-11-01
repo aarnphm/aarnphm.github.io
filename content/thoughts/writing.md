@@ -2,7 +2,7 @@
 date: "2023-07-29"
 description: a knowledge distillation and learning process
 id: writing
-modified: 2025-10-30 03:36:06 GMT-04:00
+modified: 2025-11-01 05:14:35 GMT-04:00
 tags:
   - sapling
   - evergreen
@@ -59,7 +59,7 @@ In this paradox lies the profound beauty and torment of writing. It's a ceaseles
 
 You don't need a complete thesis to begin writing. You just need an edge—a crack in consensus reality, a question about something others take for granted. The edge doesn't have to be momentous. Darwin wondered how all those different birds could be {{sidenotes[Darwin's finches]: On the Galápagos, Darwin collected what he thought were blackbirds, grosbeaks, and finches. Only later did John Gould point out they were all finches—an observation that became crucial to evolutionary theory.}}. That's it. That's the entire edge he started with.
 
-Most people think you need something important to say before you write. But importance emerges from exploration, not the other way around. The insignificant thread, pulled persistently, unravels paradigms. Einstein's edge was wondering what it would be like to ride alongside a light beam {{sidenotes[einstein-light]: He was sixteen when he had this thought experiment. It took him ten years to work out the implications—special relativity.}}. Not "I will revolutionize physics." Just a curious question about something everyone else accepted.
+Most people think you need something important to say before you write. But importance emerges from exploration, not the other way around. The insignificant thread, pulled persistently, unravels paradigms. Einstein's edge was wondering what it would be like to ride alongside a {{sidenotes[light beam.]: He was sixteen when he had this thought experiment. It took him ten years to work out the implications—special relativity.}} Not "I will revolutionize physics." Just a curious question about something everyone else accepted.
 
 This is why writing optimized for the reader's comprehension often fails to generate new ideas. When you write for clarity, you smooth over the rough edges where discovery happens. You explain away the gaps instead of exploring them. The reader gets a tidy package, but the writer learns nothing.
 
@@ -105,13 +105,13 @@ _Excerpt from [A blog post is a very long and complex search query to find fasci
 
 > When writing in public, there is a common idea that you should make it *accessible*. This is a left over from mass media. Words addressed to a large and diverse set of people need to be simple and clear and free of jargon. It is valuable to write clearly of course, to a degree. Clear writing is clear thinking
 
-But here's what Henrik understood that most people miss: specificity is signal, not noise. When you write for everyone, you write for no one {{sidenotes[everyone-no-one]: The paradox of accessibility—the more accessible you make your writing, the less likely it is to find the specific people who need it. It's like diluting a chemical signal until it's too weak to trigger any reaction.}}. The jargon, the peculiar references, the idiosyncratic obsessions—these aren't barriers to understanding. They're beacons for your people.
+But here's what Henrik understood that most people miss: specificity is signal, not noise. When you write for everyone, you write for {{sidenotes[no one]: The paradox of accessibility—the more accessible you make your writing, the less likely it is to find the specific people who need it. It's like diluting a chemical signal until it's too weak to trigger any reaction.}}. The jargon, the peculiar references, the idiosyncratic obsessions—these aren't barriers to understanding. They're beacons for your people.
 
-Think about it this way: writing optimized for maximum reach creates weak connections with many. Writing optimized for resonance creates strong connections with few. But those few become nodes in a network that amplifies and extends your thinking in ways you couldn't predict {{sidenotes[network-effects]: This is how obscure blogs sometimes have more influence than mainstream publications. The readership might be smaller, but the engagement depth creates cascading effects through the network.}}.
+Think about it this way: writing optimized for maximum reach creates weak connections with many. Writing optimized for resonance creates strong connections with few. But those few become nodes in a network that amplifies and extends your thinking in ways you couldn't predict {{sidenotes[network effects]: This is how obscure blogs sometimes have more influence than mainstream publications. The readership might be smaller, but the engagement depth creates cascading effects through the network.}}.
 
 The search query metaphor reveals something profound about the tension between writing-as-thinking and writing-as-communication. When you write to think, you're not broadcasting—you're sending out a highly specific signal to find others who are thinking along similar fault lines. The specificity isn't a bug; it's the entire point.
 
-I keep coming back to this idea: most writing advice assumes you already know what you want to say and just need help saying it better. But what if you don't know what you want to say? What if the writing is how you find out? Then accessibility becomes a kind of premature optimization {{sidenotes[premature-opt]: Donald Knuth famously said "premature optimization is the root of all evil" about programming. The same principle applies to writing—optimizing for readers before you've optimized for thinking is backwards.}}.
+I keep coming back to this idea: most writing advice assumes you already know what you want to say and just need help saying it better. But what if you don't know what you want to say? What if the writing is how you find out? Then accessibility becomes a kind of {{sidenotes[premature optimization ]: Donald Knuth famously said "premature optimization is the root of all evil" about programming. The same principle applies to writing—optimizing for readers before you've optimized for thinking is backwards.}}.
 
 See also: https://www.youtube.com/watch?v=FGqbUHOTog8&ab_channel=buildspace, and https://www.henrikkarlsson.xyz/p/writing-to-think
 

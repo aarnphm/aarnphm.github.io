@@ -2,7 +2,14 @@ import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
-import { FilePath, joinSegments, slugifyFilePath, pathToRoot, FullSlug } from "../../util/path"
+import {
+  FilePath,
+  joinSegments,
+  slugifyFilePath,
+  pathToRoot,
+  FullSlug,
+  simplifySlug,
+} from "../../util/path"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { Content } from "../../components"
 import { write } from "./helpers"
@@ -82,6 +89,13 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
             children: [canvasElement],
           }
 
+          const linkedSlugs: string[] = []
+          for (const [, node] of jcast.data.nodeMap) {
+            if (node.data?.resolved?.slug) {
+              linkedSlugs.push(simplifySlug(node.data.resolved.slug as FullSlug))
+            }
+          }
+
           const fileData: QuartzPluginData = {
             slug,
             frontmatter: {
@@ -92,6 +106,7 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
             htmlAst: tree,
             filePath: canvasFile as FilePath,
             text: "",
+            links: linkedSlugs,
           }
 
           const externalResources = pageResources(pathToRoot(slug), resources, ctx)
