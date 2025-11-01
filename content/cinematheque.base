@@ -240,30 +240,6 @@ views:
       note.title: 350
       note.rating: 100
       note.director: 200
-  - type: table
-    name: recent
-    filters:
-      and:
-        - watched-date >= "2024-01-01"
-    groupBy:
-      property: watched-date
-      direction: DESC
-    order:
-      - title
-      - watched-date
-      - rating
-      - year
-      - director
-      - category
-    sort:
-      - property: watched-date
-        direction: DESC
-      - property: rating
-        direction: DESC
-    columnSize:
-      note.title: 350
-      note.watched-date: 150
-      note.rating: 100
   - type: list
     name: quick list
     groupBy:

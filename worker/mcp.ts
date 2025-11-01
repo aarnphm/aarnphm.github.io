@@ -482,7 +482,9 @@ export class Garden extends McpAgent {
       "entropy",
       "Find underexplored aspects within a topic area. Given a broad topic with existing coverage, identify specific queries that have low relevance scores, suggesting where to expand and connect new content.",
       {
-        topic: z.string().describe("Broad topic area with existing notes (e.g., 'interpretability')"),
+        topic: z
+          .string()
+          .describe("Broad topic area with existing notes (e.g., 'interpretability')"),
         query: z
           .string()
           .describe("Specific aspect to check coverage for (e.g., 'parameter decomposition')"),
@@ -617,7 +619,9 @@ export class Garden extends McpAgent {
                         ? {
                             suggested_path: `thoughts/${query.toLowerCase().replace(/\s+/g, "-")}.md`,
                             connect_to: potentialFiles.slice(0, 3).map((f) => f.slug),
-                            tags_to_add: topicResults[0] ? idx[topicResults[0].slug]?.tags || [] : [],
+                            tags_to_add: topicResults[0]
+                              ? idx[topicResults[0].slug]?.tags || []
+                              : [],
                           }
                         : null,
                     expand_existing:

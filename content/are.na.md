@@ -43,7 +43,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-01 05:33:31 GMT-04:00
+modified: 2025-11-01 09:00:37 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -3244,7 +3244,7 @@ title: are.na
   - [meta]:
     - date: 10/09/2025
     - tags: [studio]
-- https://brunoarizio.com/
+- https://brunoarizio.com/ -- Bruno Arizio [--]
   - [meta]:
     - date: 10/06/2025
     - tags: [studio]

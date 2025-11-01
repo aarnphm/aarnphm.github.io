@@ -179,8 +179,6 @@ export interface JcastCanvasGroup extends JcastNode {
   children: JcastNode[] // Nodes contained in this group
 }
 
-// ===== Type Guards =====
-
 export function isJcastCanvas(node: unknown): node is JcastCanvas {
   return typeof node === "object" && node !== null && (node as JcastNode).type === "canvas"
 }
@@ -196,8 +194,6 @@ export function isJcastCanvasEdge(node: unknown): node is JcastCanvasEdge {
 export function isJcastCanvasGroup(node: unknown): node is JcastCanvasGroup {
   return typeof node === "object" && node !== null && (node as JcastNode).type === "canvasGroup"
 }
-
-// ===== Visitor Types =====
 
 /**
  * Visitor function type for jcast traversal
@@ -220,8 +216,6 @@ export type JcastGraphVisitor<T extends JcastNode = JcastNode> = (
   index?: number,
   parent?: Parent,
 ) => void | boolean | Promise<void | boolean>
-
-// ===== Builder Types =====
 
 /**
  * Builder options for creating canvas nodes
@@ -268,8 +262,6 @@ export interface EdgeBuilderOptions {
   color?: string
   label?: string
 }
-
-// ===== Layout Types =====
 
 export type LayoutAlgorithm = "force-directed" | "hierarchical" | "radial" | "manual"
 

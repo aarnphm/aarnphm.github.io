@@ -555,7 +555,7 @@ async function renderCanvas(container: HTMLElement) {
 
     // edge labels with background
     const edgeLabel = edge
-      .filter((d) => d.label)
+      .filter((d): d is LinkData & { label: string } => d !== null && d.label !== undefined)
       .append("g")
       .attr("class", "edge-label-group")
 

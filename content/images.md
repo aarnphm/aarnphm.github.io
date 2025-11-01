@@ -103,7 +103,7 @@ transclude:
 
 ![[thoughts/images/alex de betak paris apartment.webp|alex de betak's paris apartment]]
 
-![[thoughts/images/sub-worldmodels.webp]]
+![[thoughts/images/sub-worldmodels.webp|subagents world view]]
 
 ## authors
 

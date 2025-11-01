@@ -1,13 +1,13 @@
 ---
 date: "2025-11-01"
-description: partial differential equations for fluid motion; includes weak and lax–milgram forms. one of seven $1m$ clay millennium problems in mathematics.
+description: partial differential equations for fluid motion. one of seven millennium problems in mathematics.
 id: navier-stokes equations
-modified: 2025-11-01 07:29:53 GMT-04:00
+modified: 2025-11-01 07:54:24 GMT-04:00
 tags:
   - physics
   - fluid dynamics
   - math
-title: navier-stokes equations
+title: Navier-Stokes equations
 ---
 
 express momentum balance for newtonian fluids using conservation of mass.

@@ -23,9 +23,10 @@ export default (() => {
     const { fileData } = componentData
     const { htmlAst, filePath } = fileData
     const ast = clone(htmlAst) as Root
+    const visited = new Set<FullSlug>([fileData.slug!])
 
     // Apply transclusion for this page variant (no footnote/reference merging on slides)
-    const processed = transcludeFinal(ast, componentData, { dynalist: false })
+    const processed = transcludeFinal(ast, componentData, { visited }, { dynalist: false })
 
     // Re-resolve links so they are correct from <slug>/slides
     const origSlug = fileData.slug as FullSlug

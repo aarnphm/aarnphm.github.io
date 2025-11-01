@@ -83,7 +83,8 @@ export function toArenaJsx(
 ) {
   const adjusted = adjustArenaNode(node, currentSlug)
   const root: Root = { type: "root", children: [adjusted] }
-  const processed = transcludeFinal(root, componentData, { dynalist: false })
+  const visited = new Set<FullSlug>([currentSlug])
+  const processed = transcludeFinal(root, componentData, { visited }, { dynalist: false })
   return htmlToJsx(filePath as FilePath, processed)
 }
 
@@ -94,7 +95,8 @@ export function toArenaRoot(
 ): Root {
   const adjusted = adjustArenaNode(node, currentSlug)
   const root: Root = { type: "root", children: [adjusted] }
-  return transcludeFinal(root, componentData, { dynalist: false })
+  const visited = new Set<FullSlug>([currentSlug])
+  return transcludeFinal(root, componentData, { visited }, { dynalist: false })
 }
 
 export function toArenaHeadingJsx(
@@ -106,7 +108,8 @@ export function toArenaHeadingJsx(
 ) {
   const adjusted = adjustArenaNode(node, currentSlug, { rewriteFirstAnchorTo: channelSlug })
   const root: Root = { type: "root", children: [adjusted] }
-  const processed = transcludeFinal(root, componentData, { dynalist: false })
+  const visited = new Set<FullSlug>([currentSlug])
+  const processed = transcludeFinal(root, componentData, { visited }, { dynalist: false })
   return htmlToJsx(filePath as FilePath, processed)
 }
 
@@ -137,7 +140,8 @@ export function toArenaHeadingInlineJsx(
   const adjusted = adjustArenaNode(node, currentSlug, { rewriteFirstAnchorTo: channelSlug })
   stripAnchorsInPlace(adjusted)
   const root: Root = { type: "root", children: [adjusted] }
-  const processed = transcludeFinal(root, componentData, { dynalist: false })
+  const visited = new Set<FullSlug>([currentSlug])
+  const processed = transcludeFinal(root, componentData, { visited }, { dynalist: false })
   return htmlToJsx(filePath as FilePath, processed)
 }
 
@@ -151,7 +155,8 @@ export function fromHtmlStringToArenaJsx(
   root.children = root.children.map((ch) =>
     ch.type === "element" ? (adjustArenaNode(ch, currentSlug) as ElementContent) : ch,
   )
-  const processed = transcludeFinal(root, componentData, { dynalist: false })
+  const visited = new Set<FullSlug>([currentSlug])
+  const processed = transcludeFinal(root, componentData, { visited }, { dynalist: false })
   return htmlToJsx(filePath as FilePath, processed)
 }
 

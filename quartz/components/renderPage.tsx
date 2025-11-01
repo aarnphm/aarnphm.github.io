@@ -51,6 +51,7 @@ import CodeCopy from "./CodeCopy"
 import Darkmode from "./Darkmode"
 import { toHtml } from "hast-util-to-html"
 import crypto from "crypto"
+import { styleText } from "util"
 
 interface EncryptedPayload {
   ciphertext: string
@@ -563,6 +564,7 @@ interface TranscludeStats {
 export function transcludeFinal(
   root: Root,
   { cfg, allFiles, fileData }: QuartzComponentProps,
+  { visited }: { visited: Set<FullSlug> },
   userOpts?: Partial<TranscludeOptions>,
 ): Root {
   // NOTE: return early these cases, we probably don't want to transclude them anw
@@ -707,7 +709,31 @@ export function transcludeFinal(
         return
       }
       const [inner] = node.children as Element[]
-      const transcludeTarget = inner.properties["data-slug"] as FullSlug
+      const transcludeTarget = (inner.properties["data-slug"] ?? slug) as FullSlug
+      if (visited.has(transcludeTarget)) {
+        console.warn(
+          styleText(
+            "yellow",
+            `Warning: Skipping circular transclusion: ${slug} -> ${transcludeTarget}`,
+          ),
+        )
+        node.children = [
+          {
+            type: "element",
+            tagName: "p",
+            properties: { style: "color: var(--secondary);" },
+            children: [
+              {
+                type: "text",
+                value: `Circular transclusion detected: ${transcludeTarget}`,
+              },
+            ],
+          },
+        ]
+        return
+      }
+      visited.add(transcludeTarget)
+
       const page = allFiles.find((f) => f.slug === transcludeTarget)
       if (!page) {
         return
@@ -1348,9 +1374,10 @@ export function renderPage(
   // make a deep copy of the tree so we don't remove the transclusion references
   // for the file cached in contentMap in build.ts
   const root = clone(componentData.tree) as Root
+  const visited = new Set<FullSlug>([slug])
   // NOTE: set componentData.tree to the edited html that has transclusions rendered
 
-  let tree = transcludeFinal(root, componentData)
+  let tree = transcludeFinal(root, componentData, { visited })
 
   // Handle protected content encryption after all transformers run
   if (componentData.fileData.protectedPassword) {
