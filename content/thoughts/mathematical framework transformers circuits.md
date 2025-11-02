@@ -68,8 +68,23 @@ which is a data‑dependent low‑rank write into the residual stream. MLPs appl
 >
 > A circuit is a composed path of linear writes that implements a behavior (e.g., induction heads). Basis choices can make the path sparse and legible.
 
+## connections to modern interpretability
+
+This mathematical framework underpins recent advances in interpretability:
+
+- **[[thoughts/mechanistic interpretability#attribution graph|Attribution graphs]]**: Trace information flow through residual stream by analyzing how features compose across layers. The linear update view makes attribution well-defined when nonlinearities are frozen.
+
+- **[[thoughts/sparse crosscoders|Crosscoders]]**: Exploit residual stream's additive property to learn shared features across layers, resolving cross-layer superposition by treating adjacent layers as "almost parallel branches."
+
+- **[[thoughts/Attribution parameter decomposition|Parameter decomposition]]**: Decompose weight matrices as sums of mechanism-specific components, leveraging the framework's linear algebra structure to identify which parameters implement which computations.
+
+- **[[thoughts/circuit tracing|Circuit tracing]]**: Use [[thoughts/mechanistic interpretability#transcoders|transcoders]] as replacement models that maintain the residual stream structure while enabling interpretable feature analysis.
+
+The framework's emphasis on residual updates, privileged bases, and compositional structure provides the theoretical foundation for these empirical methods.
+
 ## takeaway
 
 - Residual update: $r\leftarrow r + \Delta_{\text{attn}} + \Delta_{\text{mlp}}$.
 - Logits: $\ell=U^\top r$; probabilities $\mathrm{softmax}(\ell)$.
 - Projection onto a feature $a$: $\operatorname{proj}_a(r)=\dfrac{a^\top r}{a^\top a}a$; feature activation is a dot product.
+- Framework enables: attribution graphs, crosscoders, parameter decomposition, circuit tracing.

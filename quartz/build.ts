@@ -1,7 +1,7 @@
 import sourceMapSupport from "source-map-support"
 import path from "path"
 import { PerfTimer } from "./util/perf"
-import { rm } from "fs/promises"
+import { rm, readdir } from "fs/promises"
 import { GlobbyFilterFunction, isGitIgnored } from "globby"
 import { parseMarkdown } from "./processors/parse"
 import { filterContent } from "./processors/filter"
@@ -42,6 +42,19 @@ type BuildData = {
   contentMap: ContentMap
   changesSinceLastBuild: Record<FilePath, ChangeEvent["type"]>
   lastBuildMs: number
+}
+
+async function clearDir(dir: string) {
+  let files
+  try {
+    files = await readdir(dir)
+  } catch {
+    return
+  }
+
+  for (const file of files) {
+    await rm(path.join(dir, file), { recursive: true, force: true })
+  }
 }
 
 async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
@@ -85,12 +98,14 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
 
   const release = await mut.acquire()
   perf.addEvent("clean")
-  await rm(output, { recursive: true, force: true })
+  await clearDir(output)
   console.log(`Removed \`${output}\` in ${perf.timeSince("clean")}`)
 
   perf.addEvent("glob")
   const allFiles = await glob("**/*.*", argv.directory, cfg.configuration.ignorePatterns)
-  const markdownPaths = allFiles.filter((fp) => fp.endsWith(".md") || fp.endsWith(".base")).sort()
+  const markdownPaths = allFiles
+    .filter((fp) => fp.endsWith(".md") || fp.endsWith(".base") || fp.endsWith(".canvas"))
+    .sort()
   console.log(
     `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince("glob")}`,
   )
@@ -218,7 +233,7 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
   const pathsToParse: FilePath[] = []
   for (const [fp, type] of Object.entries(changesSinceLastBuild)) {
     const ext = path.extname(fp)
-    if (type === "delete" || (ext !== ".md" && ext !== ".base")) continue
+    if (type === "delete" || (ext !== ".md" && ext !== ".base" && ext !== ".canvas")) continue
     const fullPath = joinSegments(argv.directory, toPosixPath(fp)) as FilePath
     pathsToParse.push(fullPath)
   }
@@ -243,7 +258,7 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
     // manually track non-markdown files as processed files only
     // contains markdown files
     const fileExt = path.extname(file)
-    if (change === "add" && fileExt !== ".md" && fileExt !== ".base") {
+    if (change === "add" && fileExt !== ".md" && fileExt !== ".base" && fileExt !== ".canvas") {
       contentMap.set(file as FilePath, {
         type: "other",
       })

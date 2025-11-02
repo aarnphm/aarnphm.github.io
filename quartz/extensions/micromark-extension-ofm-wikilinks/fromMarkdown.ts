@@ -446,12 +446,8 @@ function annotateVideoEmbed(node: Wikilink, wikilink: WikilinkData, url: string)
   }
 }
 
-/**
- * annotate audio embed with hast properties.
- * converts `![[audio.mp3]]` to <audio> elements with controls.
- */
 function annotateAudioEmbed(node: Wikilink, wikilink: WikilinkData, url: string): void {
-  const { alias, metadataParsed, metadata } = wikilink
+  const { metadataParsed, metadata } = wikilink
 
   if (!node.data) node.data = { wikilink }
 
@@ -459,9 +455,6 @@ function annotateAudioEmbed(node: Wikilink, wikilink: WikilinkData, url: string)
   node.data.hProperties = {
     src: url,
     controls: true,
-    preload: "metadata",
-    "data-embed": "audio",
-    "data-embed-alias": alias ?? "",
     ...(metadataParsed
       ? { "data-metadata": JSON.stringify(metadataParsed) }
       : metadata

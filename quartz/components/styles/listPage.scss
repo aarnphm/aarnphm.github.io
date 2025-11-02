@@ -153,6 +153,12 @@ li.section-li {
   padding-left: calc(var(--kern) * 2);
 }
 
+@media all and ($tablet) {
+  .notes-evergreen {
+    grid-column: 7/-3;
+  }
+}
+
 .folder-layout {
   &--et-a,
   &--a-l {

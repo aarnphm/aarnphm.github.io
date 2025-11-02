@@ -201,6 +201,8 @@ bentofile.yaml
 cmd.txt
 checkpoints
 .claude
+.gemini
+.cursor
 content/arena_hast.json
 docs/
 /scripts

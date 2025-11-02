@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-10-29 02:14:20 GMT-04:00
+modified: 2025-11-02 05:48:05 GMT-05:00
 noindex: true
 pageLayout: letter
 slides: true
@@ -211,7 +211,7 @@ cooking
 vinyl/[[movies|movies]]
 
 - I collect [[mixed#vinyl]] and produced throwaway tunes in my free time.
-  ![[posts/images/2023-flac-1.mp3]]
+  ![[posts/images/2023-flac-1.mp3|ID 1]]
 - Music is a huge part of my life—I honestly wouldn't be able to function without it.
 - I prefer classical orchestra, a mix of blues and jazz, 80s rock, and I have a deep appreciation for house and garage culture.
   - Rach 3, Rhapsody on Paganini

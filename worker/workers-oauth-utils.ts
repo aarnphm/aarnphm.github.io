@@ -298,7 +298,6 @@ body {
   background-color: var(--light);
   margin: 0;
   padding: 0;
-  text-transform: lowercase;
 }
 .container {
   max-width: 600px;

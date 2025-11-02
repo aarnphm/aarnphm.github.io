@@ -709,29 +709,7 @@ export function transcludeFinal(
         return
       }
       const [inner] = node.children as Element[]
-      const transcludeTarget = (inner.properties["data-slug"] ?? slug) as FullSlug
-      if (visited.has(transcludeTarget)) {
-        console.warn(
-          styleText(
-            "yellow",
-            `Warning: Skipping circular transclusion: ${slug} -> ${transcludeTarget}`,
-          ),
-        )
-        node.children = [
-          {
-            type: "element",
-            tagName: "p",
-            properties: { style: "color: var(--secondary);" },
-            children: [
-              {
-                type: "text",
-                value: `Circular transclusion detected: ${transcludeTarget}`,
-              },
-            ],
-          },
-        ]
-        return
-      }
+      const transcludeTarget = inner.properties["data-slug"] as FullSlug
       visited.add(transcludeTarget)
 
       const page = allFiles.find((f) => f.slug === transcludeTarget)

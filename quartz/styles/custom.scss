@@ -335,91 +335,6 @@ a {
   }
 }
 
-audio::-webkit-media-controls-panel {
-  background-color: var(--lightgray);
-}
-
-.audio-embed {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin: 1.5rem 0;
-  padding: 1rem;
-  border: 1px solid var(--lightgray);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--light) 92%, rgba(255, 255, 255, 0));
-
-  &__player {
-    display: flex;
-    align-items: center;
-
-    audio {
-      width: 100%;
-    }
-  }
-
-  &__caption {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    color: var(--gray);
-  }
-
-  &__title {
-    font-weight: 600;
-    color: var(--dark);
-  }
-
-  &__download {
-    align-self: flex-start;
-    font-size: 0.85rem;
-    padding: 0.25rem 0.6rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--tertiary) 16%, rgba(255, 255, 255, 0));
-    color: var(--dark);
-    text-decoration: none;
-    transition:
-      background 0.2s ease,
-      color 0.2s ease;
-
-    &:hover {
-      background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
-      color: var(--light);
-    }
-  }
-
-  &__meta {
-    display: grid;
-    gap: 0.25rem 0.75rem;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  &__meta-item {
-    display: flex;
-    gap: 0.25rem;
-    align-items: baseline;
-    color: var(--gray);
-  }
-
-  &__meta-key {
-    font-weight: 500;
-    color: var(--darkgray);
-    text-transform: lowercase;
-  }
-
-  &__meta-value {
-    color: var(--dark);
-  }
-
-  &__meta-text {
-    color: var(--gray);
-  }
-}
-
 blockquote[class="transclude"] {
   border-left-color: var(--tertiary);
   position: relative;
@@ -466,10 +381,6 @@ blockquote.twitter-tweet {
   padding-right: 0.2rem;
   position: relative;
   margin-right: 0.5rem !important;
-
-  &:not(:last-child) {
-    margin-bottom: 2rem;
-  }
 }
 
 p.text {
@@ -527,8 +438,6 @@ hr {
   width: 100%;
   height: 1px;
   margin: 2rem auto;
-  margin-top: calc(2em + 2vh);
-  margin-bottom: calc(2em + 2vh);
   display: block;
   border: 0;
   background: none;

@@ -18,6 +18,7 @@ import calloutScript from "../../components/scripts/callout.inline.ts"
 // @ts-ignore
 import mermaidScript from "../../components/scripts/mermaid.inline"
 import mermaidStyle from "../../components/styles/mermaid.inline.scss"
+// @ts-ignore
 import { pathToRoot, slugTag } from "../../util/path"
 import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
@@ -131,55 +132,6 @@ export const tableRegex = new RegExp(/^\|([^\n])+\|\n(\|)( ?:?-{3,}:? ?\|)+\n(\|
 
 // matches any wikilink, only used for escaping wikilinks inside tables
 export const tableWikilinkRegex = new RegExp(/(!?\[\[[^\]]*?\]\]|\[\^[^\]]*?\])/g)
-
-const isAudioEmbed = (node: Element): boolean =>
-  node.tagName === "audio" && node.properties?.["data-embed"] === "audio"
-
-const parseAudioMetadata = (raw: unknown): { entries?: [string, string][]; text?: string } => {
-  if (typeof raw !== "string") {
-    return {}
-  }
-
-  const trimmed = raw.trim()
-  if (!trimmed) {
-    return {}
-  }
-
-  try {
-    const parsed = JSON.parse(trimmed)
-    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-      const entries = Object.entries(parsed).map(([key, value]) => [
-        String(key),
-        value === undefined || value === null ? "" : String(value),
-      ]) as [string, string][]
-      return { entries }
-    }
-  } catch {
-    // fall through to relaxed parsing below
-  }
-
-  const cleaned = trimmed.replace(/^\{|\}$/g, "")
-  if (!cleaned) {
-    return {}
-  }
-
-  const entries: [string, string][] = []
-  for (const segment of cleaned.split(",")) {
-    const piece = segment.trim()
-    if (!piece) continue
-    const [rawKey, ...rawValueParts] = piece.split(":")
-    const key = rawKey?.trim() ?? ""
-    if (!key) continue
-    const value = rawValueParts.join(":").trim()
-    entries.push([key, value])
-  }
-
-  if (entries.length > 0) {
-    return { entries }
-  }
-
-  return { text: cleaned }
-}
 
 const highlightRegex = new RegExp(/==([^=]+)==/g)
 const commentRegex = new RegExp(/%%[\s\S]*?%%/g)
@@ -753,104 +705,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       }
 
       plugins.push(() => {
-        return (tree: HtmlRoot) => {
-          visit(tree, "element", (node: Element, index, parent) => {
-            if (!isAudioEmbed(node) || index === undefined || parent === undefined) return
-
-            if (
-              parent.type === "element" &&
-              (parent as Element).tagName === "figure" &&
-              (parent as Element).properties?.["data-embed"] === "audio"
-            ) {
-              return
-            }
-
-            const aliasRaw = node.properties?.["data-embed-alias"]
-            let alias = ""
-            if (typeof aliasRaw === "string") {
-              alias = aliasRaw.trim()
-            } else if (Array.isArray(aliasRaw)) {
-              alias = aliasRaw.join(" ").trim()
-            }
-
-            if (alias) {
-              node.properties = {
-                ...node.properties,
-                controls: true,
-                "aria-label": alias,
-              }
-            }
-
-            if (!node.properties?.preload) {
-              node.properties = {
-                ...node.properties,
-                preload: "metadata",
-              }
-            }
-
-            const srcProp = node.properties?.src
-            const src = typeof srcProp === "string" ? srcProp : undefined
-
-            const { entries, text } = parseAudioMetadata(node.properties?.["data-metadata"])
-
-            const captionChildren: Element[] = []
-
-            if (alias) {
-              captionChildren.push(h("span.audio-embed__title", alias))
-            }
-
-            if (src) {
-              captionChildren.push(
-                h(
-                  "a.audio-embed__download",
-                  {
-                    href: src,
-                    download: "",
-                    rel: "noopener",
-                  },
-                  "download",
-                ),
-              )
-            }
-
-            if (entries && entries.length > 0) {
-              captionChildren.push(
-                h(
-                  "ul.audio-embed__meta",
-                  entries.map(([key, value]) =>
-                    h("li.audio-embed__meta-item", [
-                      h("span.audio-embed__meta-key", `${key}`),
-                      h("span.audio-embed__meta-separator", ": "),
-                      h("span.audio-embed__meta-value", value),
-                    ]),
-                  ),
-                ),
-              )
-            } else if (text) {
-              captionChildren.push(h("span.audio-embed__meta-text", text))
-            }
-
-            const audioContainer = h("div.audio-embed__player", [node])
-            const figureChildren: Element[] = [audioContainer]
-
-            if (captionChildren.length > 0) {
-              figureChildren.push(h("figcaption.audio-embed__caption", captionChildren))
-            }
-
-            const wrapper = h("figure.audio-embed", { "data-embed": "audio" }, figureChildren)
-            if (alias) {
-              wrapper.properties = {
-                ...wrapper.properties,
-                "data-embed-alias": alias,
-              }
-            }
-
-            parent.children.splice(index, 1, wrapper)
-          })
-        }
-      })
-
-      plugins.push(() => {
         return (tree, file) => {
           const onlyImage = ({ children }: Element) =>
             children.every((child) => (child as Element).tagName === "img" || whitespace(child))
@@ -923,6 +777,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           inline: true,
         })
       }
+
 
       return { js, css }
     },

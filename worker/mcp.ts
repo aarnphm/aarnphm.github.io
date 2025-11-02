@@ -43,7 +43,7 @@ async function loadIndex(): Promise<SimplifiedIndex> {
 }
 
 function ensureMdPath(p: string): string {
-  if (p.endsWith(".md") || p.endsWith(".txt")) return p
+  if (p.endsWith(".md") || p.endsWith(".mdx") || p.endsWith(".txt")) return p
   return `${p}.md`
 }
 
@@ -771,8 +771,8 @@ Recommendations:
       "Iterative deep exploration workflow using rabbithole tool for comprehensive research on a topic",
       {
         initial_query: z.string().describe("Starting research query or topic"),
-        target_depth: z
-          .coerce.number()
+        target_depth: z.coerce
+          .number()
           .int()
           .min(3)
           .max(15)
@@ -861,8 +861,8 @@ Begin iteration 1.`,
       "Discover chronological connections and time-based patterns in notes related to a topic",
       {
         topic: z.string().describe("Topic to explore temporal connections for"),
-        time_window_days: z
-          .coerce.number()
+        time_window_days: z.coerce
+          .number()
           .int()
           .min(1)
           .max(30)

@@ -7,7 +7,7 @@ aliases:
 date: "2024-10-30"
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2025-10-29 02:15:50 GMT-04:00
+modified: 2025-11-02 17:28:18 GMT-05:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -26,11 +26,34 @@ To attack the _curse of dimensionality_, the question remains: _==how do we hope
 
 [^lesswrongarc]: good read from [Lawrence C](https://www.lesswrong.com/posts/6FkWnktH3mjMAxdRT/what-i-would-do-if-i-wasn-t-at-arc-evals#Ambitious_mechanistic_interpretability) for ambitious mech interp.
 
-![[thoughts/sparse autoencoder]]
+![[thoughts/sparse autoencoder#{collapsed: true}]]
 
-![[thoughts/sparse crosscoders]]
+![[thoughts/sparse crosscoders#{collapsed: true}]]
 
-![[thoughts/Attribution parameter decomposition]]
+![[thoughts/Attribution parameter decomposition#{collapsed: true}]]
+
+## transcoders
+
+Transcoders are variants of SAEs that reconstruct the output of a component given its input, rather than reconstructing activations from themselves [@paulo2025transcoders]. Unlike SAEs which encode and decode at a single layer, transcoders bridge layers by predicting downstream activations from upstream ones.
+
+comparing to SAEs:
+
+- Significantly more interpretable features - transcoders find features that better correspond to human-understandable concepts
+- Enable analysis of direct feature-feature interactions by bridging over nonlinearities
+- Form the basis for replacement models used in attribution graphs
+- Skip transcoders add affine skip connections, achieving lower reconstruction loss with no effect on interpretability
+
+> [!note] Cross-layer transcoders
+>
+> Each feature reads from the residual stream at one layer and contributes to outputs of all subsequent MLP layers. This greatly simplifies resulting circuits by:
+>
+> - Handling cross-layer superposition directly
+> - Allowing features to "jump" across many uninteresting identity circuit connections
+> - Matching underlying model outputs in ~50% of cases when substituting for MLPs
+
+Transcoders enable the linear attribution framework used in attribution graphs - by replacing MLP computations, they make feature interactions linear and attribution well-defined.
+
+see also: [[thoughts/circuit tracing]] for open-source tools using transcoders
 
 ## open problems
 
@@ -53,7 +76,7 @@ Application in the wild: [Goodfire](https://goodfire.ai/) and [Transluce](https:
 >
 > https://x.com/aarnphm_/status/1839016131321016380
 
-idea: treat SAEs as a logit bias, similar to [[thoughts/vllm#guided decoding]]
+idea: treat SAEs as a logit bias, similar to [[thoughts/structured outputs]]
 
 ## steering
 
@@ -224,11 +247,129 @@ See also: [writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mec
 
 see also [[thoughts/Attribution parameter decomposition]], [Circuit Tracing: Revealing Computational Graphs in Language Models](https://transformer-circuits.pub/2025/attribution-graphs/methods.html), [On the Biology of a Large Language Model](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)
 
-Depicts influence of features on one another, allowing one to trace intermediate steps the model uses to produce outputs. Think of autonomous path-finder for activations points, instead of using something like a [[thoughts/sparse crosscoders|replacement models]] to infer more interpretable features.
+Attribution graphs are computational graphs that reveal the mechanisms underlying model behaviors by tracing how features influence each other to produce outputs. They show the intermediate computational steps models use, providing a "path-finder" for activation flows.
+
+### methodology
+
+```jsx imports={MethodologyStep,MethodologyTree}
+<MethodologyTree
+  title="attribution graph pipeline"
+  description="Distil a transformer run into an interpretable circuit by training a sparse replacement model, freezing the residual context, and pruning the resulting feature graph."
+>
+  <MethodologyStep
+    title="train interpretable transcoders"
+    badge="replacement model"
+    summary="Swap SAEs for transcoders (ideally cross-layer) so features capture the computation the original MLP stack performs."
+    points={[
+      "Let features read from a single residual stream position and write into downstream MLP layers to bridge non-linear blocks.",
+      "Cross-layer transcoders handle superposition and drastically simplify resulting circuits.",
+      "Replacement models should closely reconstruct the base model to keep feature semantics stable.",
+    ]}
+  >
+    <MethodologyStep
+      title="prefer cross-layer variants"
+      summary="Allow features to jump across residual layers instead of following every identity connection."
+      points={[
+        "Reduces circuit depth by skipping uninformative residual additions.",
+        "Matches the underlying model's outputs in roughly half of substitution trials.",
+      ]}
+    />
+  </MethodologyStep>
+  <MethodologyStep
+    title="freeze attention patterns"
+    badge="context"
+    summary="Hold attention weights and normalization denominators fixed so attribution focuses on the induced MLP computation."
+    points={[
+      "Splits the problem into understanding behaviour with a fixed attention pattern and separately explaining why the model attends there.",
+      "Removes the largest non-linearities outside the replacement model.",
+    ]}
+  />
+  <MethodologyStep
+    title="make interactions linear"
+    badge="linearity"
+    summary="Design the setup so feature-to-feature effects are linear for the chosen input."
+    points={[
+      "Transcoder features replace the non-linear MLP while frozen attention removes the remaining activation-dependent terms.",
+      "Enables principled attribution because edges sum to the observed activation.",
+    ]}
+  />
+  <MethodologyStep
+    title="construct the feature graph"
+    badge="graph build"
+    summary="Represent every active feature, prompt token, reconstruction error, and output logit as a node."
+    points={[
+      "Edges store linear contributions; their weights sum to the downstream activation.",
+      "Multi-hop paths capture indirect mediation via other features.",
+    ]}
+  >
+    <MethodologyStep
+      title="encode nodes & edges"
+      summary="Annotate each node with activation magnitude and each edge with its linear effect."
+      points={[
+        "Token and embedding nodes anchor the computation back to the prompt.",
+        "Include reconstruction error nodes so the graph accounts for approximation mismatch.",
+      ]}
+    />
+  </MethodologyStep>
+  <MethodologyStep
+    title="prune for interpretability"
+    badge="sparsity"
+    summary="Select the smallest subgraph that explains the behaviour at the focus token."
+    points={[
+      "Rank nodes and edges by their marginal contribution to the output logits.",
+      "Keep sparse subgraphs so human inspection stays tractable.",
+    ]}
+  />
+  <MethodologyStep
+    title="validate with perturbations"
+    badge="verification"
+    summary="Check that the proposed circuit actually drives the behaviour."
+    points={[
+      "Ablate or rescale identified features and measure the effect on the model output.",
+      "Confirm the replacement model relies on the same mechanisms as the base model.",
+    ]}
+  />
+</MethodologyTree>
+```
+
+### parameter decomposition
+
+Attribution graphs and parameter decomposition are complementary views:
+
+- **Attribution graphs** answer "what computational steps happen?" - showing activation/feature-level flow of information through the model
+- **Parameter decomposition** answers "which parameters implement those steps?" - identifying which parameter components enable that computational flow
+
+Both address superposition by finding sparse decompositions, but at different abstraction levels: attribution graphs reveal activation flow, parameter decomposition reveals parameter implementation.
+
+### limitations
+
+- Missing attention circuits
+  - Because attention patterns are frozen, attribution graphs miss attention mechanisms - need separate QK attribution methods to understand how attention selects which features interact
+- Replacement model validity
+  - Replacement models may use different mechanisms than original models - requires careful validation via perturbation experiments
+- Graph pruning subjectivity
+  - Pruning introduces subjectivity in determining what's "important" - different pruning criteria may reveal different mechanisms
+- Single forward pass focus
+  - Current methods focus on single forward passes - understanding mechanism reusability across contexts needs more work
+
+### applications
+
+- Mechanism discovery
+  - Finding which computational steps models use for specific behaviors
+- Model editing
+  - Understanding which features/circuits to modify for targeted behavior changes
+- Anomaly detection
+  - Identifying when unexpected mechanisms activate (mechanistic anomaly detection)
+- Cross-model analysis
+  - Comparing how different models implement similar behaviors
+- Training analysis
+  - Tracking how mechanisms emerge during training
 
 ## stochastic parameter decomposition
 
-https://github.com/goodfire-ai/spd 👀, and https://arxiv.org/pdf/2506.20790, and https://www.goodfire.ai/research/stochastic-param-decomp
+@bushnaq2025stochasticparameterdecomposition improves upon [[thoughts/Attribution parameter decomposition|APD]] by being more scalable and robust to hyperparameters. SPD demonstrates decomposition on models slightly larger and more complex than was possible with APD, avoids parameter shrinkage issues, and better identifies ground truth mechanisms in toy models.
+
+see also: https://github.com/goodfire-ai/spd
 
 ## QK attributions
 

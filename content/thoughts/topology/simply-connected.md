@@ -15,6 +15,7 @@ title: simple connectivity
 a path-connected space $X$ is **simply connected** if $\pi_1(X) = \{e\}$ (trivial fundamental group).
 
 equivalently:
+
 - every loop in $X$ is homotopic to the constant loop
 - every continuous map $S^1 \to X$ extends to a continuous map $D^2 \to X$
 - the universal covering space $\tilde{X} \to X$ is trivial: $\tilde{X} = X$
@@ -42,6 +43,7 @@ poincaré conjectured the same for dimension 3: every closed, simply connected 3
 ### construction
 
 start with the trefoil knot $K \subset S^3$. perform $(p,q)$-surgery: remove tubular neighborhood $N(K) \cong S^1 \times D^2$, reglue via diffeomorphism $\phi: \partial(S^1 \times D^2) \to \partial(S^1 \times D^2)$ sending:
+
 - meridian $\{*\} \times \partial D^2$ to $p \cdot \text{longitude} + q \cdot \text{meridian}$
 
 for trefoil with $(5,2,2)$ surgery parameters, the result is the **poincaré homology sphere** $\Sigma^3$.
@@ -72,6 +74,7 @@ thus $\Sigma^3$ is a **homology 3-sphere**: $H_*(\Sigma^3) = H_*(S^3)$, but $\pi
 ### why this matters for poincaré
 
 the poincaré homology sphere proves that:
+
 1. $H_1 = 0$ doesn't imply $\pi_1 = 0$
 2. homological invariants alone can't characterize $S^3$
 3. the poincaré conjecture requires the stronger condition of simple connectivity
@@ -86,6 +89,7 @@ if poincaré had conjectured "every 3-manifold with $H_1=0$ is $S^3$", the poinc
 - **cell complexes**: any contractible space
 
 non-simply connected:
+
 - **torus**: $\pi_1(T^2) = \mathbb{Z} \times \mathbb{Z}$
 - **lens spaces**: $\pi_1(L(p,q)) = \mathbb{Z}/p\mathbb{Z}$
 - **$\mathbb{RP}^n$**: $\pi_1(\mathbb{RP}^n) = \mathbb{Z}/2\mathbb{Z}$ (2-fold cover is $S^n$)

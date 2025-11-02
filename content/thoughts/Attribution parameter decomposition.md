@@ -12,11 +12,15 @@ by [[thoughts/papers/Interpretability in Parameter Space- Minimizing Mechanistic
 
 see also: https://www.lesswrong.com/posts/EPefYWjuHNcNH4C7E/attribution-based-parameter-decomposition
 
-Goal:
+Parameter decomposition methods directly decompose neural network parameters into mechanistic components, operating in parameter space rather than activation space. This approach addresses limitations of activation-space methods like SAEs which suffer from reconstruction errors and don't explain feature geometry.
 
-- faithfulness: decomposition should identify a set of components that sum to parameters of the network
-- minimal: should use _as few components as possible_ to replicate the network's behaviour on training distribution
-- simple[^simple]: component shouldn't be ==computational expensive==
+### goals
+
+Parameter decomposition optimizes for three objectives:
+
+- **faithfulness**: decomposition should identify a set of components that sum to parameters of the network
+- **minimal**: should use _as few components as possible_ to replicate the network's behaviour on training distribution
+- **simple**[^simple]: component shouldn't be ==computational expensive==
 
 [^simple]: means they spans as few rank and as few layers as possible.
 
@@ -39,5 +43,61 @@ They refer to decomposing circuit as _mechanism_ [^alias], or "finding vector wi
 > [!important]
 >
 > We can determine which parameters are being used during a forward pass with attribution (given that most of them are redundant!)
+
+### attribution-based parameter decomposition (APD)
+
+APD decomposes the network parameter vector into a sum of parameter component vectors, minimizing the average description length of mechanisms used per data point across the training dataset.
+
+**Loss functions:**
+
+1. **Faithfulness loss**: $L_\text{faithfulness} = \text{MSE}(\theta^*, \sum_c P_c)$ where $\theta^*$ is original parameters and $P_c$ are component vectors. Ensures components sum to original parameters.
+
+2. **Minimality loss**: Uses top-k attribution selection:
+   - Run original model $f(x, \theta^*)$ and use gradient attributions to estimate attribution $A_c(x)$ of each parameter component to final output
+   - Use batch top-k to select $k$ components with highest attributions across batch
+   - Sum these top-k components to obtain new parameter vector $\kappa(x)$
+   - Perform second forward pass $f(x, \kappa(x))$ with these parameters
+   - Minimize $L_\text{minimality} = \text{MSE}(f(x, \theta^*), f(x, \kappa(x)))$ to match original outputs
+
+3. **Simplicity loss**: Minimize sum of ranks of all matrices in active components $\sum_l \text{rank}(P_{c,l})$ as proxy for description length. In practice uses Schatten quasi-norm (Lp norm of matrix singular values).
+
+These losses together minimize a proxy for total description length per data point of components with causal influence on network outputs.
+
+### stochastic parameter decomposition (SPD)
+
+@bushnaq2025stochastic improves APD by being more scalable and robust to hyperparameters, avoiding issues like parameter shrinkage and better identifying ground truth mechanisms in toy models. SPD bridges causal mediation analysis and network decomposition methods.
+
+see also: https://github.com/goodfire-ai/spd, https://arxiv.org/pdf/2506.20790, https://www.goodfire.ai/research/stochastic-param-decomp
+
+### theoretical foundations
+
+Parameter decomposition relies on **weight space linearity** - observations that neural networks often exhibit linear structure in parameter space. This enables decomposing parameters as sums of components. The approach exploits **sparsity** - most parameters are inactive most of the time, enabling decomposition into interpretable sparse components. This connects to information theory - minimizing description length via sparse, low-rank decompositions.
+
+### relationship to attribution graphs
+
+Parameter decomposition is complementary to [[thoughts/mechanistic interpretability#attribution graph|attribution graphs]]:
+
+- **Attribution graphs** show "what computational steps happen?" - activation/feature-level flow via [[thoughts/mechanistic interpretability#transcoders|transcoders]]
+- **Parameter decomposition** shows "which parameters implement those steps?" - parameter-level implementation
+
+Both address superposition by finding sparse decompositions, but at different abstraction levels. Together they provide a complete picture: attribution graphs reveal computational flow, parameter decomposition reveals implementation details.
+
+see also: [[thoughts/circuit tracing]] for practical tools, [[thoughts/mathematical framework transformers circuits]] for theoretical foundations
+
+### limitations and future work
+
+**Current limitations:**
+
+- APD is computationally expensive and hyperparameter-sensitive
+- Gradient attributions may not be accurate at scale - future work may use learned masks or integrated gradients
+- Top-k selection can cause mechanism mixing
+
+**Future directions:**
+
+- **Learned masks**: Replace gradient attributions with trained masks optimized along with components
+- **Two-stage decomposition**: First decompose into rank-1 components, then group into higher-rank mechanisms
+- **More efficient optimization**: Two-stage approach and better attribution methods
+- **Scaling to LLMs**: Apply to single layers initially, compare with SAE features
+- **Architecture extensions**: Adapt to transformers and CNNs with position-specific component activation
 
 ![[thoughts/images/apd.webp|Decomposition of parameters, or APD]]
