@@ -60,12 +60,6 @@
     transform: translateY(var(--translate-position));
   }
 
-  &.collapsed {
-    & .collapsed-dots {
-      display: block;
-    }
-  }
-
   & .toggle-button {
     background-color: transparent;
     text-align: left;
@@ -123,6 +117,10 @@
   }
 
   &.collapsed {
+    & .collapsed-dots {
+      display: block;
+    }
+
     :where(h1, h2, h3, h4, h5, h6):not(.popover *) {
       display: inline-flex;
       align-items: baseline;
@@ -153,8 +151,6 @@
     .collapsible-header-content {
       border-left: 1px solid var(--lightgray);
       padding-left: var(--padding-width);
-      overflow-x: auto;
-      overflow-y: hidden;
 
       h1,
       h2,
@@ -165,6 +161,14 @@
         margin-top: 1rem;
         overflow-wrap: break-word;
         word-break: break-word;
+        overflow-x: auto;
+      }
+
+      mjx-container,
+      .katex {
+        max-width: calc(100vw - 200px);
+        overflow-x: auto;
+        overflow-y: hidden;
       }
 
       .callout-content > p {
@@ -184,6 +188,13 @@
         overflow: hidden;
         padding-top: 0;
         padding-bottom: 0;
+
+        mjx-container,
+        .katex {
+          max-width: calc(100vw - 200px);
+          overflow-x: auto;
+          overflow-y: hidden;
+        }
       }
 
       .callout {

@@ -204,3 +204,8 @@ checkpoints
 content/arena_hast.json
 docs/
 /scripts
+*.log
+*.lock
+Thumbs.db
+dev
+go.sum

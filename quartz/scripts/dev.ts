@@ -12,7 +12,7 @@ const useColor = process.stdout.isTTY && process.stderr.isTTY
 const RESET = "\x1b[0m"
 const labelNames = {
   main: "main",
-  "pnpm:exec": "pnpm:exec",
+  quartz: "quartz",
   wrangler: "wrangler",
 } as const
 type Label = keyof typeof labelNames
@@ -240,8 +240,8 @@ function launchPnpmDev(): void {
   const attempt = runtimeConfig.pnpmDevRetryLimit - pnpmDevRetriesRemaining + 1
   pnpmDev = startProcess(
     runtimeConfig.pnpmDevArgs,
-    "pnpm:exec",
-    `starting pnpm:exec (attempt ${attempt}/${totalPnpmDevAttempts})`,
+    "quartz",
+    `starting quartz (attempt ${attempt}/${totalPnpmDevAttempts})`,
   )
   const child = pnpmDev
   child.on("exit", (code, signal) => handlePnpmDevExit(child, code, signal))
@@ -501,7 +501,7 @@ function labelColor(label: Label): string | null {
   switch (label) {
     case "main":
       return "\x1b[38;5;39m"
-    case "pnpm:exec":
+    case "quartz":
       return "\x1b[38;5;110m"
     case "wrangler":
       return "\x1b[38;5;214m"

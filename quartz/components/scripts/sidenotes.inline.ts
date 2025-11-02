@@ -303,13 +303,13 @@ class SidenoteManager {
     this.reset()
 
     this.sidenotes.forEach((state) => {
-      // check if sidenote is forced to be inline
       const forceInline = state.span.getAttribute("data-force-inline") === "true"
+      const isInsideCollapseHeader = state.span.closest("section.collapsible-header") !== null
 
-      if (this.layoutMode === "inline" || forceInline) {
+      if (this.layoutMode === "inline" || forceInline || !isInsideCollapseHeader) {
         this.positionInline(state)
       } else {
-        const success = this.positionSideToSide(state, this.layoutMode)
+        const success = this.positionSideToSide(state)
         if (!success) {
           this.positionInline(state)
         }

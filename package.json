@@ -12,12 +12,11 @@
     "url": "https://github.com/aarnphm/aarnphm.github.io.git"
   },
   "scripts": {
-    "dev": "pnpm exec tsx quartz/scripts/dev.ts",
     "bundle": "pnpm exec quartz/bootstrap-cli.mjs build --concurrency 4 --bundleInfo --verbose",
     "bundle:dev": "CF_PAGES=1 NODE_ENV=development pnpm bundle",
     "prod": "NODE_ENV=production pnpm bundle",
     "test": "tsx --test",
-    "swarm": "pnpx tsx quartz/scripts/dev.ts",
+    "swarm": "pnpm exec quartz/scripts/dev.ts",
     "convert": "tsx quartz/scripts/convert.ts",
     "cf:deploy": "pnpm check && pnpm dlx wrangler deploy",
     "check": "pnpm format && pnpm convert && pnpm dlx wrangler types && pnpm prettier . --check && tsc --noEmit && tsx --test",
@@ -148,6 +147,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20251014.0",
+    "@modelcontextprotocol/inspector": "^0.17.2",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",

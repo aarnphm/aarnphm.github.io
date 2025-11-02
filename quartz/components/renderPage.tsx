@@ -31,7 +31,7 @@ import type { TranscludeOptions } from "../plugins/transformers/frontmatter"
 import { QuartzPluginData } from "../plugins/vfile"
 import { h, s } from "hastscript"
 // @ts-ignore
-import collapseHeaderScript from "./scripts/collapse-header.inline.ts"
+import collapseHeaderScript from "./scripts/collapse-header.inline"
 import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
 //@ts-ignore
 import transcludeScript from "./scripts/transclude.inline.ts"
