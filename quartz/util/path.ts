@@ -59,7 +59,7 @@ export function sluggify(s: string): string {
         .replace(/\?/g, "")
         .replace(/#/g, ""),
     )
-    .join("/") // always use / as sep
+    .join("/")
     .replace(/\/$/, "")
 }
 

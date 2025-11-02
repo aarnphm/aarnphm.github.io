@@ -1109,8 +1109,7 @@ a.prefix-left-gap {
 [data-layout="letter"],
 [data-layout="letter-poem"],
 [data-slug="index"],
-[data-slides="true"],
-[data-slug*="posts/"] {
+[data-slides="true"] {
   .darkmode,
   .search-button {
     visibility: hidden !important;

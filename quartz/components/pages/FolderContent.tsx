@@ -9,6 +9,8 @@ import {
   FullSlug,
   slugifyFilePath,
   FilePath,
+  SimpleSlug,
+  sluggify,
 } from "../../util/path"
 import { Root } from "hast"
 import { htmlToJsx } from "../../util/jsx"
@@ -16,6 +18,7 @@ import { QuartzPluginData } from "../../plugins/vfile"
 import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from "../Evergreen"
 import { i18n } from "../../i18n"
 import { FileTrieNode } from "../../util/fileTrie"
+import { parseWikilink } from "../../util/wikilinks"
 
 interface FolderContentOptions {
   /**
@@ -99,6 +102,33 @@ const parseFolderLayout = (input: unknown): FolderLayout => {
   }
 }
 
+/**
+ * Normalize path entries to slugs, supporting both plain paths and wikilink syntax
+ * Examples:
+ *   - "thoughts/love" -> "thoughts/love"
+ *   - "thoughts/mechanistic interpretability" -> "thoughts/mechanistic-interpretability"
+ *   - "[[thoughts/love]]" -> "thoughts/love"
+ *   - "[[thoughts/love|Love]]" -> "thoughts/love"
+ *   - "[[thoughts/love#section]]" -> "thoughts/love"
+ */
+const normalizePath = (pathEntry: string): SimpleSlug => {
+  const trimmed = pathEntry.trim()
+
+  // Try parsing as wikilink first
+  const parsed = parseWikilink(trimmed)
+  if (parsed && parsed.target) {
+    // Use the target, ignore anchor and alias
+    // Slugify to convert spaces to dashes
+    const slugified = sluggify(parsed.target)
+    return simplifySlug(stripSlashes(slugified) as FullSlug)
+  }
+
+  // Fall back to treating as plain path
+  // Slugify to convert spaces to dashes (e.g., "mechanistic interpretability" -> "mechanistic-interpretability")
+  const slugified = sluggify(trimmed)
+  return simplifySlug(stripSlashes(slugified) as FullSlug)
+}
+
 export default ((opts?: Partial<FolderContentOptions>) => {
   const options: FolderContentOptions = { ...defaultOptions, ...opts }
 
@@ -112,7 +142,11 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const shouldIncludeFile = extensionFilterFn(options)
 
   // NOTE: we will always add the generated tags "folder" for better distinction
-  const { lg, sm, tags } = options
+  // Normalize lg/sm paths to support both plain paths and wikilink syntax
+  const { tags } = options
+  const lg = options.lg.map(normalizePath)
+  const sm = options.sm.map(normalizePath)
+
   const PageList = PageListConstructor({ highlightTags: [...tags, "folder"] })
   const Evergreen = EvergreenConstructor({ lg, sm, tags })
   const PermanentNotes = EvergreenPermanentNotes({ lg, sm, tags })
@@ -254,7 +288,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         // Only generate a synthetic folder entry if no explicit folder index exists
         if (!folderIndex) {
           entries.push({
-            // keep `.../index` so it’s treated as a folder in sorting
+            // keep `.../index` so it?s treated as a folder in sorting
             slug: subfolderSlugWithIndex as FullSlug,
             frontmatter: {
               title: sub.displayName || sub.slugSegment,
