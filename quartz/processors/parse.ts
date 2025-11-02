@@ -38,11 +38,11 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
   return (
     unified()
       // MD AST -> HTML AST
-      .use(remarkRehype, {
+      .use(remarkRehype as any, {
         allowDangerousHtml: true,
         handlers: {
           // Pass through sidenote nodes with their children converted to HAST
-          sidenote: (state, node: any) => {
+          sidenote: (state: any, node: any) => {
             const children = state.all(node)
             return {
               type: "element",
@@ -58,7 +58,9 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
         },
       })
       // HTML AST -> HTML AST transforms
-      .use(transformers.flatMap((plugin) => plugin.htmlPlugins?.(ctx) ?? []))
+      .use(
+        transformers.flatMap((plugin) => plugin.htmlPlugins?.(ctx) ?? []),
+      ) as unknown as QuartzHtmlProcessor
   )
 }
 

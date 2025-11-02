@@ -43,7 +43,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-01 09:00:37 GMT-04:00
+modified: 2025-11-02 17:43:27 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1160,6 +1160,10 @@ title: are.na
 
 ## essay
 
+- https://nintil.com/ -- nintil.com [**]
+  - [meta]:
+    - date: 11/02/2025
+    - tags: [evergreen, essays]
 - https://www.orwellfoundation.com/the-orwell-foundation/orwell/essays-and-other-works/politics-and-the-english-language/ -- Politics and the English Language
   - [meta]:
     - date: 10/31/2025

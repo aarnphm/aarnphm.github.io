@@ -17,6 +17,9 @@ import pseudoStyle from "../../components/styles/pseudocode.scss"
 import notFoundScript from "../../components/scripts/404.inline"
 import { BuildCtx } from "../../util/ctx"
 import { QuartzComponent } from "../../components/types"
+import type { QuartzMdxComponent } from "../../components/mdx/registry"
+import { getMdxComponents } from "../../components/mdx/registry"
+import "../../components/mdx"
 import { googleFontHref, joinStyles, processGoogleFonts } from "../../util/theme"
 import { Features, transform } from "lightningcss"
 import { transform as transpile, build as bundle } from "esbuild"
@@ -33,12 +36,15 @@ type ComponentResources = {
 }
 
 function getComponentResources(ctx: BuildCtx): ComponentResources {
-  const allComponents: Set<QuartzComponent> = new Set()
+  const allComponents: Set<QuartzComponent | QuartzMdxComponent> = new Set()
   for (const emitter of ctx.cfg.plugins.emitters) {
     const components = emitter.getQuartzComponents?.(ctx) ?? []
     for (const component of components) {
       allComponents.add(component)
     }
+  }
+  for (const component of getMdxComponents()) {
+    allComponents.add(component)
   }
 
   const componentResources = {

@@ -778,7 +778,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
         })
       }
 
-
       return { js, css }
     },
   }

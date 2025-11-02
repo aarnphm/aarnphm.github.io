@@ -277,31 +277,12 @@ svg.favorite-icon {
   ul[class="curius-item-tags"] {
     display: flex;
     padding-inline-start: 0px;
-    line-height: 1;
-    font-size: 0.5rem;
     margin-block-start: 0;
 
     & > li {
-      font-family: var(--codeFont);
-      color: rgb(119, 119, 119);
-      background-color: rgb(241, 241, 241);
-      line-height: 1.2;
-      align-items: center;
+      @include badgeCapsule();
+      margin-bottom: 0;
       margin-right: 5px;
-      text-transform: uppercase;
-      border-radius: 6px;
-      padding: 2px 4px;
-      display: inline;
-      cursor: pointer;
-      font-size: 10px;
-
-      &:hover {
-        background-color: rgb(222, 222, 222);
-      }
-
-      [saved-theme="dark"] & {
-        background-color: var(--highlight);
-      }
 
       & > a {
         color: inherit;

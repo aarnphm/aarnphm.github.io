@@ -7,7 +7,7 @@ aliases:
 date: "2024-10-30"
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2025-11-02 17:28:18 GMT-05:00
+modified: 2025-11-02 17:38:58 GMT-05:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -249,11 +249,9 @@ see also [[thoughts/Attribution parameter decomposition]], [Circuit Tracing: Rev
 
 Attribution graphs are computational graphs that reveal the mechanisms underlying model behaviors by tracing how features influence each other to produce outputs. They show the intermediate computational steps models use, providing a "path-finder" for activation flows.
 
-### methodology
-
 ```jsx imports={MethodologyStep,MethodologyTree}
 <MethodologyTree
-  title="attribution graph pipeline"
+  title="methodology"
   description="Distil a transformer run into an interpretable circuit by training a sparse replacement model, freezing the residual context, and pruning the resulting feature graph."
 >
   <MethodologyStep
