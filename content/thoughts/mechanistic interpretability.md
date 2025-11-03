@@ -7,7 +7,7 @@ aliases:
 date: "2024-10-30"
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2025-11-03 00:50:31 GMT-05:00
+modified: 2025-11-03 02:09:12 GMT-05:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -32,6 +32,19 @@ To attack the _curse of dimensionality_, the question remains: _==how do we hope
 
 ![[thoughts/Attribution parameter decomposition#{collapsed: true}]]
 
+## open problems
+
+_excerpt from_ @sharkey2025openproblemsmechanisticinterpretability
+
+- differentiate between "reverse engineering" versus "concept-based"
+  - reverse engineer:
+    - decomposition -> hypotheses -> validation
+      - Decomposition via dimensionality [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/principal component analysis|reduction]]
+  - drawbacks with [[thoughts/sparse autoencoder#sparse dictionary learning|SDL]]:
+    - SDL reconstruction error are way too high [@rajamanoharan2024improvingdictionarylearninggated{see section 2.3}]
+    - SDL assumes linear representation hypothesis against non-linear feature space.
+    - SDL leaves feature geometry unexplained ^geometry
+
 ## transcoders
 
 Transcoders are variants of SAEs that reconstruct the output of a component given its input, rather than reconstructing activations from themselves [@paulo2025transcodersbeatsparseautoencoders]. Unlike SAEs which encode and decode at a single layer, transcoders bridge layers by predicting downstream activations from upstream ones.
@@ -53,19 +66,6 @@ comparing to SAEs:
 Transcoders enable the linear attribution framework used in attribution graphs - by replacing MLP computations, they make feature interactions linear and attribution well-defined.
 
 see also: [[thoughts/circuit tracing]] for open-source tools using transcoders
-
-## open problems
-
-_excerpt from_ @sharkey2025openproblemsmechanisticinterpretability
-
-- differentiate between "reverse engineering" versus "concept-based"
-  - reverse engineer:
-    - decomposition -> hypotheses -> validation
-      - Decomposition via dimensionality [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/principal component analysis|reduction]]
-  - drawbacks with [[thoughts/sparse autoencoder#sparse dictionary learning|SDL]]:
-    - SDL reconstruction error are way too high [@rajamanoharan2024improvingdictionarylearninggated{see section 2.3}]
-    - SDL assumes linear representation hypothesis against non-linear feature space.
-    - SDL leaves feature geometry unexplained ^geometry
 
 ## inference
 
@@ -828,7 +828,7 @@ interpretable features.
 For feature [[thoughts/mechanistic interpretability#ablation]], we observe that manipulation of features activation can be strengthened or weakened
 to directly influence the model's outputs
 
-example: @panickssery2024steeringllama2contrastive uses [[thoughts/contrastive representation learning|contrastive activation additions]] to [steer](https://github.com/nrimsky/CAA) Llama 2
+@panickssery2024steeringllama2contrastive uses [[thoughts/contrastive representation learning|contrastive activation additions]] to [steer](https://github.com/nrimsky/CAA) Llama 2
 
 ### [[thoughts/contrastive representation learning|contrastive]] activation additions
 
@@ -868,14 +868,14 @@ This is plausible because:
 - almost _orthogonal vectors_
   - it's only possible to have $n$ orthogonal vectors in an $n$-dimensional space, it's possible to have $\exp (n)$ many "almost orthogonal" ($< \epsilon$ cosine similarity) vectors in {{sidenotes[high-dimensional spaces.]: See the [Johnson–Lindenstrauss lemma](https://en.wikipedia.org/wiki/Johnson%E2%80%93Lindenstrauss_lemma) for the mathematical foundation.}}
 - compressed sensing
-  - In general, if one projects a vector into a lower-dimensional space, one can't reconstruct the {{sidenotes[original vector.]: However, this changes if one knows that the original vector is sparse - in this case, it is often possible to recover the original vector.}}
+  - In general, if one projects a vector into a lower-dimensional space, one can't reconstruct the {{sidenotes<dropdown: true>[original vector.]: However, this changes if one knows that the original vector is sparse - in this case, it is often possible to recover the original vector.}}
 
 ### properties
 
 One can think in terms of _four progressively more strict properties_ that [[/tags/ml|neural network]] representations might have:
 
 - **Decomposability**:
-  - Neural network activations which are _decomposable_ can be {{sidenotes[decomposed]: This property is ultimately the most important — see the role of decomposition in defeating the curse of dimensionality.}} into features, the meaning of which is not dependent on the value of other features.
+  - Neural network activations which are _decomposable_ can be {{sidenotes<left: false>[decomposed]: This property is ultimately the most important — see the role of decomposition in defeating the curse of dimensionality.}} into features, the meaning of which is not dependent on the value of other features.
 - **Linearity**:
   - Features correspond to directions. Each feature $f_i$ has a corresponding representation direction $W_i$.
   - The presence of multiple features $f_1, f_2, \dots$ activating with values $x_{f_1}, x_{f_2}, \dots$ is represented by

@@ -8,8 +8,6 @@ $toggle-gap: 0rem;
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  margin: calc(1.35 * $baseMargin) 0;
 
   &:first-of-type {
     .collapse-line--before {
@@ -38,12 +36,6 @@ $toggle-gap: 0rem;
     height: 100%;
     background: color-mix(in srgb, var(--gray) 24%, transparent);
     border-radius: $connector-width;
-  }
-}
-
-.collapsible-header-spacer + .collapsible-header {
-  .collapse-line--before {
-    visibility: hidden;
   }
 }
 
@@ -99,7 +91,7 @@ $toggle-gap: 0rem;
     background: color-mix(in srgb, var(--gray) 24%, transparent);
     border-radius: $connector-width;
     flex: 1;
-    min-height: 0.35rem;
+    min-height: 1rem;
   }
 
   .collapse-node {
@@ -200,17 +192,16 @@ $toggle-gap: 0rem;
     display: grid;
     color: color-mix(in srgb, var(--gray) 75%, var(--dark) 25%);
 
+    & :last-child {
+      margin-bottom: 0 !important;
+    }
+
     ol,
     ul {
       margin: 0;
-      padding-left: 1rem;
 
       & > li {
         position: relative;
-
-        &::marker {
-          content: "✦";
-        }
       }
     }
 
@@ -220,9 +211,7 @@ $toggle-gap: 0rem;
 
     blockquote,
     p {
-      &:first-child {
-        margin-top: 0 !important;
-      }
+      margin-top: 0 !important;
     }
   }
 
@@ -243,27 +232,6 @@ $toggle-gap: 0rem;
 
     .collapse-title {
       color: color-mix(in srgb, var(--gray) 68%, var(--dark) 32%);
-    }
-  }
-}
-
-@media all and ($mobile) {
-  .collapsible-header {
-    .collapse-body {
-      column-gap: 0;
-    }
-
-    .collapse-body-content {
-      gap: 0.5rem;
-    }
-
-    .collapsible-header-content {
-      gap: 0.5rem;
-
-      ol,
-      ul {
-        padding-left: 0.8rem;
-      }
     }
   }
 }

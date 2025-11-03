@@ -2,7 +2,7 @@ import { debounce } from "./util"
 
 // viewport calculation constants
 const CONTENT_WIDTH = 35 // rem
-const SIDENOTE_WIDTH = 20 // rem
+const SIDENOTE_WIDTH = 16 // rem
 const SPACING = 1 // rem
 const GAP = 1 // rem
 const MIN_DESKTOP_WIDTH = 1500 // px - minimum width for side-by-side sidenotes
