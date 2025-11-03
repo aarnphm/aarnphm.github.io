@@ -10,12 +10,42 @@ import { formatDate, getDate } from "../components/Date"
 import readingTime from "reading-time"
 import { i18n } from "../i18n"
 import { styleText } from "util"
+import { parseWikilink, resolveWikilinkTarget } from "../util/wikilinks"
+import { render } from "preact-render-to-string"
+import { resolveRelative, FullSlug } from "../util/path"
+import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
+import { htmlToJsx } from "./jsx"
 
 const defaultHeaderWeight = [700]
 const defaultBodyWeight = [400]
 
 const headerFontLocal = joinSegments("static", "GT-Sectra-Display-Regular.woff")
 const bodyFontLocal = joinSegments("static", "GT-Sectra-Book.woff")
+
+export const renderDescription = (description: string | undefined, slug: string) => {
+  if (!description) {
+    return null
+  }
+
+  const parsed = parseWikilink(description)
+  if (!parsed) {
+    return description
+  }
+
+  const resolved = resolveWikilinkTarget(parsed, slug as FullSlug)
+  if (!resolved) {
+    return parsed.alias ?? parsed.target ?? description
+  }
+
+  const hrefBase = resolveRelative(slug as FullSlug, resolved.slug)
+  const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
+
+  return render(
+    <a href={href} class="internal" data-no-popover data-slug={resolved.slug}>
+      {parsed.alias ?? parsed.target ?? description}
+    </a>,
+  )
+}
 
 export async function getSatoriFonts(
   cfg: GlobalConfiguration,
@@ -278,7 +308,6 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
         fontFamily: bodyFont,
       }}
     >
-      {/* Header Section */}
       <div
         style={{
           display: "flex",
@@ -308,8 +337,6 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
           {cfg.baseUrl}
         </div>
       </div>
-
-      {/* Title Section */}
       <div
         style={{
           display: "flex",
@@ -335,8 +362,6 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
           {title}
         </h1>
       </div>
-
-      {/* Description Section */}
       <div
         style={{
           display: "flex",
@@ -356,11 +381,14 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
             textOverflow: "ellipsis",
           }}
         >
-          {description}
+          {htmlToJsx(
+            fileData.filePath!,
+            fromHtmlIsomorphic(renderDescription(description, fileData.slug!) ?? "", {
+              fragment: true,
+            }),
+          )}
         </p>
       </div>
-
-      {/* Footer with Metadata */}
       <div
         style={{
           display: "flex",
@@ -431,7 +459,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
                 display: "flex",
                 padding: "0.5rem 1rem",
                 backgroundColor: cfg.theme.colors[colorScheme].highlight,
-                color: cfg.theme.colors[colorScheme].secondary,
+                color: cfg.theme.colors[colorScheme].dark,
                 borderRadius: "10px",
                 fontSize: 24,
               }}

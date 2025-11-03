@@ -1,10 +1,9 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
 import { resolveRelative, FullSlug } from "../util/path"
-import { parseWikilink, resolveWikilinkTarget } from "../util/wikilinks"
 import { ArenaData, ArenaChannel } from "../plugins/transformers/arena"
 import { toArenaHeadingJsx } from "../util/arena"
-import { render } from "preact-render-to-string"
+import { renderDescription } from "../util/og"
 
 export default (() => (componentData: QuartzComponentProps) => {
   const { fileData, displayClass } = componentData
@@ -12,31 +11,6 @@ export default (() => (componentData: QuartzComponentProps) => {
   const slug = fileData.slug!
   const isArenaIndex = slug === "arena"
   const isArenaChannel = slug.startsWith("arena/") && slug !== "arena"
-
-  const renderDescription = (description: string | undefined) => {
-    if (!description) {
-      return null
-    }
-
-    const parsed = parseWikilink(description)
-    if (!parsed) {
-      return description
-    }
-
-    const resolved = resolveWikilinkTarget(parsed, slug as FullSlug)
-    if (!resolved) {
-      return parsed.alias ?? parsed.target ?? description
-    }
-
-    const hrefBase = resolveRelative(slug as FullSlug, resolved.slug)
-    const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
-
-    return render(
-      <a href={href} class="internal" data-no-popover data-slug={resolved.slug}>
-        {parsed.alias ?? parsed.target ?? description}
-      </a>,
-    )
-  }
 
   if (isArenaIndex) {
     const arenaData = fileData.arenaData as ArenaData | undefined
@@ -91,7 +65,7 @@ export default (() => (componentData: QuartzComponentProps) => {
         <h1 class="article-title">{title}</h1>
         <p
           class="description"
-          dangerouslySetInnerHTML={{ __html: renderDescription(fileData.description) ?? "" }}
+          dangerouslySetInnerHTML={{ __html: renderDescription(fileData.description, slug) ?? "" }}
         />
       </hgroup>
     )
