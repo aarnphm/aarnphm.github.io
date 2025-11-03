@@ -312,7 +312,11 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
           endHr,
         )
         if (stack.length > 0) {
-          stack[stack.length - 1].content.push(wrappedElement)
+          const parentContent = stack[stack.length - 1].content
+          if (parentContent.length > 0 && isCollapsibleHeader(parentContent[parentContent.length - 1])) {
+            parentContent.push(spacerElement())
+          }
+          parentContent.push(wrappedElement)
         } else {
           if (result.length > 0 && isCollapsibleHeader(result[result.length - 1])) {
             result.push(spacerElement())
@@ -333,7 +337,11 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
           false,
         )
         if (stack.length > 0) {
-          stack[stack.length - 1].content.push(wrappedElement)
+          const parentContent = stack[stack.length - 1].content
+          if (parentContent.length > 0 && isCollapsibleHeader(parentContent[parentContent.length - 1])) {
+            parentContent.push(spacerElement())
+          }
+          parentContent.push(wrappedElement)
         } else {
           if (result.length > 0 && isCollapsibleHeader(result[result.length - 1])) {
             result.push(spacerElement())
@@ -361,7 +369,11 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
       false,
     )
     if (stack.length > 0) {
-      stack[stack.length - 1].content.push(wrappedElement)
+      const parentContent = stack[stack.length - 1].content
+      if (parentContent.length > 0 && isCollapsibleHeader(parentContent[parentContent.length - 1])) {
+        parentContent.push(spacerElement())
+      }
+      parentContent.push(wrappedElement)
     } else {
       if (result.length > 0 && isCollapsibleHeader(result[result.length - 1])) {
         result.push(spacerElement())

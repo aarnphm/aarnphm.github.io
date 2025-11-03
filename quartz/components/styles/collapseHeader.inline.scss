@@ -193,14 +193,11 @@ $toggle-gap: 0rem;
   }
 
   .collapse-body-content {
-    display: grid;
-    gap: 0.65rem;
     min-width: 0;
   }
 
   .collapsible-header-content {
     display: grid;
-    gap: 0.65rem;
     color: color-mix(in srgb, var(--gray) 75%, var(--dark) 25%);
 
     ol,
@@ -223,8 +220,6 @@ $toggle-gap: 0rem;
 
     blockquote,
     p {
-      margin: 0;
-
       &:first-child {
         margin-top: 0 !important;
       }
