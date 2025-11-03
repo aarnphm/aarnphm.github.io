@@ -50,7 +50,13 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
               properties: {
                 className: ["sidenote-placeholder"],
                 dataType: "sidenote",
-                ...node.data,
+                sidenoteId: node.data?.sidenoteId,
+                baseId: node.data?.baseId,
+                forceInline: node.data?.forceInline,
+                allowLeft: node.data?.allowLeft,
+                allowRight: node.data?.allowRight,
+                label: node.data?.label,
+                internal: node.data?.internal,
               },
               children,
             }

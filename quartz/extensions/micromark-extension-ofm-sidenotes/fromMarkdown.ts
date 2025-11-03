@@ -71,7 +71,8 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
     if (!node || !node.data?.sidenoteParsed) return undefined
 
     const raw = this.sliceSerialize(token)
-    node.data.sidenoteParsed.properties = parseProperties(raw)
+    const parsed = parseProperties(raw)
+    node.data.sidenoteParsed.properties = parsed
     return undefined
   }
 

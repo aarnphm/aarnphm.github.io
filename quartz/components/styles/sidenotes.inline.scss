@@ -5,7 +5,7 @@ $sidenote-secondary: var(--secondary);
 $sidenote-surface: var(--light);
 $sidenote-surface-muted: var(--lightgray);
 $sidenote-border-color: var(--gray);
-$sidenote-width: 16rem;
+$sidenote-width: 17rem;
 $sidenote-spacing: 1rem;
 $sidenote-border-radius: 0.2rem;
 $sidenote-transition:
@@ -15,7 +15,7 @@ $sidenote-inline-font-size: 0.9em;
 $sidenote-inline-font-size-mobile: 0.85em;
 $sidenote-code-font-size: 0.85em;
 $sidenote-offset-right: $sidenote-width + calc(1 * $sidenote-spacing);
-$sidenote-offset-left: $sidenote-width + calc(1 * $sidenote-spacing);
+$sidenote-offset-left: $sidenote-width + calc(3 * $sidenote-spacing);
 $sidenote-label-border-width: 0.2rem;
 $sidenote-content-border-width: 0.075rem;
 
@@ -93,15 +93,15 @@ $sidenote-content-border-width: 0.075rem;
   position: absolute;
   width: $sidenote-width;
   box-sizing: border-box;
-  border: $sidenote-content-border-width solid $sidenote-border-color;
-  border-radius: $sidenote-border-radius;
-  margin-top: -1.5rem;
-  padding: $sidenote-spacing;
+  margin-top: -1.02rem;
   background-color: $sidenote-surface;
   z-index: 10;
-  font-size: $sidenote-inline-font-size;
   line-height: 1.5;
   transition: $sidenote-transition;
+  font-size: $sidenote-inline-font-size;
+  padding: $sidenote-spacing;
+  border: $sidenote-content-border-width solid $sidenote-border-color;
+  border-radius: $sidenote-border-radius;
 
   &:hover,
   &:focus-within {

@@ -41,10 +41,10 @@ nav#toc-vertical {
   flex-direction: column;
 
   position: fixed;
-  inset: 50% 0 0;
+  inset: 30% 0 0;
   cursor: pointer;
   z-index: 999;
-  max-width: calc(var(--indicator-position) * 1.2);
+  max-width: calc(var(--indicator-position) * 0.8);
 
   button.toc-item {
     display: inline-flex;

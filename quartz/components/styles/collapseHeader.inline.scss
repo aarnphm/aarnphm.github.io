@@ -196,20 +196,10 @@ $toggle-gap: 0rem;
       margin-bottom: 0 !important;
     }
 
-    ol,
-    ul {
-      margin: 0;
-
-      & > li {
-        position: relative;
-      }
-    }
-
     .callout-content > p {
       margin-bottom: 1em !important;
     }
 
-    blockquote,
     p {
       margin-top: 0 !important;
     }

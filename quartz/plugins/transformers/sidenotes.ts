@@ -37,13 +37,21 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
             const sidenoteId = ++counter
             const baseId = buildSidenoteDomId(file, sidenoteId)
 
+            // Extract property flags (HAST doesn't support nested objects)
+            const props = parsed.properties || {}
+            const forceInline = props.dropdown === "true" || props.inline === "true"
+            const allowLeft = props.left !== "false"
+            const allowRight = props.right !== "false"
+
             // Store metadata on node for HTML plugin to use
             if (!node.data) node.data = {}
             node.data.sidenoteId = sidenoteId
             node.data.baseId = baseId
-            node.data.properties = parsed.properties || {}
+            node.data.forceInline = forceInline
+            node.data.allowLeft = allowLeft
+            node.data.allowRight = allowRight
             node.data.label = parsed.label || ""
-            node.data.internal = parsed.properties?.internal
+            node.data.internal = props.internal
           })
         },
       ]
@@ -59,7 +67,9 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
 
                 const sidenoteId = node.properties.sidenoteId
                 const baseId = node.properties.baseId
-                const properties = node.properties.properties || {}
+                const forceInline = node.properties.forceInline === true
+                const allowLeft = node.properties.allowLeft !== false
+                const allowRight = node.properties.allowRight !== false
                 const label = node.properties.label || ""
                 const internalLinks = node.properties.internal as string[] | undefined
 
@@ -73,7 +83,9 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
 
                 const hastNodes = buildSidenoteHast(
                   labelText,
-                  properties,
+                  forceInline,
+                  allowLeft,
+                  allowRight,
                   combinedContent,
                   sidenoteId,
                   baseId,
@@ -184,7 +196,9 @@ function deriveLabel(rawLabel: string): string {
 
 function buildSidenoteHast(
   labelText: string,
-  properties: Record<string, string | string[]>,
+  forceInline: boolean,
+  allowLeft: boolean,
+  allowRight: boolean,
   combinedContent: ElementContent[],
   sidenoteId: number,
   baseId: string,
@@ -226,11 +240,14 @@ function buildSidenoteHast(
     "data-sidenote-id": String(sidenoteId),
   }
 
-  if (properties.dropdown === "true" || properties.inline === "true") {
+  if (forceInline) {
     dataAttrs["data-force-inline"] = "true"
   }
-  if (properties.left === "false") {
+  if (!allowLeft) {
     dataAttrs["data-allow-left"] = "false"
+  }
+  if (!allowRight) {
+    dataAttrs["data-allow-right"] = "false"
   }
 
   const sidenoteElement = h("span.sidenote", dataAttrs, [labelElement])

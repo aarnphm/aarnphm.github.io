@@ -7,7 +7,7 @@ aliases:
 date: "2024-10-30"
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2025-11-03 02:09:12 GMT-05:00
+modified: 2025-11-03 02:57:33 GMT-05:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -868,22 +868,21 @@ This is plausible because:
 - almost _orthogonal vectors_
   - it's only possible to have $n$ orthogonal vectors in an $n$-dimensional space, it's possible to have $\exp (n)$ many "almost orthogonal" ($< \epsilon$ cosine similarity) vectors in {{sidenotes[high-dimensional spaces.]: See the [Johnson–Lindenstrauss lemma](https://en.wikipedia.org/wiki/Johnson%E2%80%93Lindenstrauss_lemma) for the mathematical foundation.}}
 - compressed sensing
-  - In general, if one projects a vector into a lower-dimensional space, one can't reconstruct the {{sidenotes<dropdown: true>[original vector.]: However, this changes if one knows that the original vector is sparse - in this case, it is often possible to recover the original vector.}}
+  - In general, if one projects a vector into a lower-dimensional space, one can't reconstruct the {{sidenotes<inline: true>[original vector.]: However, this changes if one knows that the original vector is sparse - in this case, it is often possible to recover the original vector.}}
 
 ### properties
 
 One can think in terms of _four progressively more strict properties_ that [[/tags/ml|neural network]] representations might have:
 
 - **Decomposability**:
-  - Neural network activations which are _decomposable_ can be {{sidenotes<left: false>[decomposed]: This property is ultimately the most important — see the role of decomposition in defeating the curse of dimensionality.}} into features, the meaning of which is not dependent on the value of other features.
+  - Neural network activations which are _decomposable_ can be into features, the meaning of which is not dependent on the value of other features.
+  - This property is ultimately the most important — see the role of decomposition in defeating the curse of dimensionality.
 - **Linearity**:
   - Features correspond to directions. Each feature $f_i$ has a corresponding representation direction $W_i$.
   - The presence of multiple features $f_1, f_2, \dots$ activating with values $x_{f_1}, x_{f_2}, \dots$ is represented by
-
-  $$
+  - $$
     x_{f_1} W_{f_1} + x_{f_2} W_{f_2} + \dots.
-  $$
-
+    $$
 - **Superposition vs Non-Superposition**:
   - A linear representation exhibits superposition if $W^\top W$ is _not_ invertible.
   - If $W^\top W$ _is_ invertible, it does _not_ exhibit superposition.
@@ -1097,3 +1096,5 @@ https://transformer-circuits.pub/2025/attention-qk
 > describe attention head scores as a bilinear function of feature activations on the respective query and key positions.
 
 [^ref]
+
+# trigger rebuild

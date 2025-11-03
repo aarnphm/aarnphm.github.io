@@ -1,8 +1,7 @@
 import { debounce } from "./util"
 
 // viewport calculation constants
-const CONTENT_WIDTH = 35 // rem
-const SIDENOTE_WIDTH = 16 // rem
+const SIDENOTE_WIDTH = 17 // rem
 const SPACING = 1 // rem
 const GAP = 1 // rem
 const MIN_DESKTOP_WIDTH = 1500 // px - minimum width for side-by-side sidenotes
@@ -12,15 +11,22 @@ function remToPx(rem: number): number {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
 }
 
+// get actual content width from DOM
+function getContentWidth(): number {
+  const article = document.querySelector(".page-content > article")
+  if (!article) return remToPx(35) // fallback
+  return article.getBoundingClientRect().width
+}
+
 // calculate viewport thresholds
 function getViewportThresholds() {
-  const contentWidth = remToPx(CONTENT_WIDTH)
+  const contentWidth = getContentWidth()
   const sidenoteWidth = remToPx(SIDENOTE_WIDTH)
   const spacing = remToPx(SPACING)
 
   return {
-    ultraWide: contentWidth + 2 * (sidenoteWidth + 2 * spacing),
-    medium: contentWidth + sidenoteWidth + 2 * spacing,
+    ultraWide: contentWidth + 2 * (sidenoteWidth + 4 * spacing), // $sidenote-offset-right + $sidenote-offset-left
+    medium: contentWidth + sidenoteWidth + 4 * spacing,
   }
 }
 
@@ -180,19 +186,19 @@ class SidenoteManager {
 
     // determine side with priority: left → right → inline
     let side: "left" | "right" | null = null
-    const rightSpace = topPosition - this.lastBottomRight
     const leftSpace = topPosition - this.lastBottomLeft
+    const rightSpace = topPosition - this.lastBottomRight
 
-    // try left first (if allowed and has space)
+    // try left first (if allowed)
     if (allowLeft && leftSpace >= contentHeight + remToPx(GAP)) {
       side = "left"
     }
-    // try right second (if left didn't work, and right is available)
-    else if (!wouldOverlapSidepanel && rightSpace >= contentHeight + remToPx(GAP)) {
+    // if left doesn't work (or not allowed), try right
+    if (side === null && !wouldOverlapSidepanel && rightSpace >= contentHeight + remToPx(GAP)) {
       side = "right"
     }
     // neither side works
-    else {
+    if (side === null) {
       return false // fall back to inline
     }
 
@@ -304,9 +310,8 @@ class SidenoteManager {
 
     this.sidenotes.forEach((state) => {
       const forceInline = state.span.getAttribute("data-force-inline") === "true"
-      const isInsideCollapseHeader = state.span.closest("section.collapsible-header") !== null
 
-      if (this.layoutMode === "inline" || forceInline || !isInsideCollapseHeader) {
+      if (this.layoutMode === "inline" || forceInline) {
         this.positionInline(state)
       } else {
         const success = this.positionSideToSide(state)
