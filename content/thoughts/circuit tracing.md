@@ -2,11 +2,13 @@
 date: "2025-11-02"
 description: autonomous path-finding for causal influence in neural networks
 id: circuit tracing
-modified: 2025-11-03 04:31:00 GMT-05:00
+modified: 2025-11-03 05:02:07 GMT-05:00
 tags:
   - interpretability
   - ml
 title: circuit tracing
+transclude:
+  title: false
 ---
 
 > Methods for generating [[thoughts/mechanistic interpretability#attribution graph|attribution graphs]] that trace causal influence between features across layers in language models. Think of it as autonomous path-finding through the computational graph, revealing intermediate steps the model uses to produce outputs.

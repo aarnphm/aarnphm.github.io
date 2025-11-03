@@ -3,7 +3,7 @@ abstract: large language models will probably be the most important piece of tec
 date: "2024-02-07"
 description: a mathematical framework for intelligence
 id: LLMs
-modified: 2025-10-29 02:15:26 GMT-04:00
+modified: 2025-11-03 04:58:32 GMT-05:00
 tags:
   - sapling
   - ml
@@ -127,8 +127,6 @@ https://x.com/leonardtang_/status/1927396709870489634
 
 _outperform opus and gpt-4o_
 
----
-
-![[thoughts/mechanistic interpretability]]
+![[thoughts/mechanistic interpretability#{collapsed: true}]]
 
 [^ref]

@@ -2,7 +2,7 @@
 date: "2024-09-09"
 description: efficient LLM serving engine.
 id: vllm
-modified: 2025-10-29 02:16:23 GMT-04:00
+modified: 2025-11-03 05:03:10 GMT-05:00
 permalinks:
   - /vllm
 tags:
@@ -12,7 +12,7 @@ tags:
 title: vLLM
 ---
 
-see also: [[thoughts/Attention#paged attention|paged attention]], [[thoughts/PD disaggregated serving|p/d disaggregation]], [2024 in review](https://docs.google.com/presentation/d/1Z78ljqPIg7_KZ7ZAqKO4VDjKG-ytbkbZ/edit#slide=id.p1) [@kwon2023efficient]
+see also: [[thoughts/Attention#paged attention|paged attention]], [[thoughts/PD disaggregated serving|pd disaggregation]], [2024 in review](https://docs.google.com/presentation/d/1Z78ljqPIg7_KZ7ZAqKO4VDjKG-ytbkbZ/edit#slide=id.p1) [@kwon2023efficient]
 
 ## KV-Compress
 
