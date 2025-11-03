@@ -112,11 +112,13 @@ function headerElement(
   content: ElementContent[],
   idx: number,
   endHr: boolean,
+  hasNextLevelChild: boolean = false,
 ): Element {
   const buttonId = `collapsible-header-${node.properties?.id ?? idx}`
 
   const id = node.properties?.id ?? idx
   const rank = headingRank(node) as number
+
   const originalChildren = [...node.children]
 
   const anchorIndex = originalChildren.findIndex(
@@ -188,7 +190,7 @@ function headerElement(
           h("span.collapse-line.collapse-line--after"),
         ],
       ),
-      h("span.collapse-title", [
+      h("span.collapse-title", hasNextLevelChild ? { class: "has-next-level-child" } : {}, [
         ...headingContent,
         s("svg", { ...svgOptions, class: "collapsed-dots" }, [s("use", { href: "#triple-dots" })]),
         ...(anchorChild ? [anchorChild] : []),
@@ -278,7 +280,7 @@ function hrElement(): Element {
         },
         [h("span.collapse-line.collapse-line--hr")],
       ),
-      h("div.collapse-hr-line", [{ type: "text", value: "⁂" }]),
+      h("hr"),
     ],
   )
 }
@@ -312,6 +314,7 @@ interface StackElement {
   level: number
   element: Element
   content: ElementContent[]
+  hasNextLevelChild?: boolean
 }
 
 function processHeaders(nodes: ElementContent[]): ElementContent[] {
@@ -328,6 +331,7 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
           completedSection.content,
           0,
           endHr,
+          completedSection.hasNextLevelChild ?? false,
         )
         if (stack.length > 0) {
           const parentContent = stack[stack.length - 1].content
@@ -363,6 +367,7 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
           completedSection.content,
           0,
           false,
+          completedSection.hasNextLevelChild ?? false,
         )
         if (stack.length > 0) {
           const parentContent = stack[stack.length - 1].content
@@ -379,6 +384,10 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
           }
           result.push(wrappedElement)
         }
+      }
+
+      if (stack.length > 0 && stack[stack.length - 1].level === level - 1) {
+        stack[stack.length - 1].hasNextLevelChild = true
       }
 
       stack.push({ level, element: node as Element, content: [] })
@@ -398,6 +407,7 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
       completedSection.content,
       0,
       false,
+      completedSection.hasNextLevelChild ?? false,
     )
     if (stack.length > 0) {
       const parentContent = stack[stack.length - 1].content

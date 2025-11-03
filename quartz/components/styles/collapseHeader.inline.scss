@@ -1,6 +1,5 @@
 @use "../../styles/variables.scss" as *;
 
-$rail-width: 1.6rem;
 $connector-width: 1px;
 $toggle-gap: 0rem;
 
@@ -16,7 +15,7 @@ $toggle-gap: 0rem;
   align-items: center;
 
   .collapse-rail {
-    width: $rail-width;
+    width: var(--rail-width);
     height: 1rem;
     display: flex;
     flex-direction: column;
@@ -40,7 +39,7 @@ $toggle-gap: 0rem;
   gap: $toggle-gap;
 
   .collapse-rail {
-    width: $rail-width;
+    width: var(--rail-width);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -53,16 +52,6 @@ $toggle-gap: 0rem;
     height: 3rem;
     background: color-mix(in srgb, var(--gray) 24%, transparent);
     border-radius: $connector-width;
-  }
-
-  .collapse-hr-line {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    transform: translateX(calc(-#{$rail-width} / 2));
-    font-size: 1.2em;
   }
 }
 
@@ -82,7 +71,7 @@ $toggle-gap: 0rem;
 
   .collapse-toggle {
     display: grid;
-    grid-template-columns: $rail-width 1fr auto;
+    grid-template-columns: var(--rail-width) 1fr auto;
     align-items: center;
     gap: $toggle-gap;
     width: 100%;
@@ -96,7 +85,7 @@ $toggle-gap: 0rem;
   }
 
   .collapse-rail {
-    width: $rail-width;
+    width: var(--rail-width);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -150,6 +139,8 @@ $toggle-gap: 0rem;
     color: var(--dark);
     overflow: hidden;
     white-space: normal;
+    height: 100%;
+    align-items: center;
 
     & > * {
       min-width: 0;
@@ -202,7 +193,7 @@ $toggle-gap: 0rem;
 
   .collapse-body {
     display: grid;
-    grid-template-columns: $rail-width 1fr;
+    grid-template-columns: var(--rail-width) 1fr;
     column-gap: $toggle-gap;
     padding: 0;
   }

@@ -446,10 +446,17 @@ hr {
   &::after {
     content: "\2042";
     display: inline-block;
-    font-size: calc(0.8em + 0.2vw);
     letter-spacing: 1.25em;
     color: var(--dark);
     position: relative;
+
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transform: translateY(calc(-1 * var(--rail-width) / 2));
+    font-size: 1.2em;
   }
 }
 
