@@ -2,6 +2,9 @@ function handleToggleClick(event: Event) {
   const toggle = event.currentTarget as HTMLElement | null
   if (!toggle) return
 
+  const anchor = (event.target as HTMLElement | null)?.closest('a[data-role="anchor"]')
+  if (anchor) return
+
   event.stopPropagation()
 
   const section = toggle.closest<HTMLElement>("section.collapsible-header")

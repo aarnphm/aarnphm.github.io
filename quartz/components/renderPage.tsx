@@ -247,6 +247,33 @@ function headerElement(
   ])
 }
 
+function spacerElement(): Element {
+  return h(
+    "div.collapsible-header-spacer",
+    {
+      ariaHidden: true,
+    },
+    [
+      h(
+        "span.collapse-rail",
+        {
+          ariaHidden: true,
+        },
+        [h("span.collapse-line.collapse-line--spacer")],
+      ),
+    ],
+  )
+}
+
+function isCollapsibleHeader(node: ElementContent): boolean {
+  if (node.type !== "element") return false
+  const element = node as Element
+  if (element.tagName !== "section") return false
+  const classNames = element.properties?.className
+  const normalized = Array.isArray(classNames) ? classNames : classNames ? [classNames] : []
+  return normalized.includes("collapsible-header")
+}
+
 function shouldStopWrapping(node: ElementContent) {
   if (node.type === "element") {
     if (
@@ -276,7 +303,6 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
   for (const node of nodes) {
     if (shouldStopWrapping(node)) {
       const endHr = (node as Element).tagName === "hr"
-      // Close any open sections
       while (stack.length > 0) {
         const completedSection = stack.pop()!
         const wrappedElement = headerElement(
@@ -288,15 +314,16 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
         if (stack.length > 0) {
           stack[stack.length - 1].content.push(wrappedElement)
         } else {
+          if (result.length > 0 && isCollapsibleHeader(result[result.length - 1])) {
+            result.push(spacerElement())
+          }
           result.push(wrappedElement)
         }
       }
-      // Add the node to the result
       result.push(node)
     } else if (node.type === "element" && headingRank(node)) {
       const level = headingRank(node) as number
 
-      // Pop from stack until the top has level less than current
       while (stack.length > 0 && stack[stack.length - 1].level >= level) {
         const completedSection = stack.pop()!
         const wrappedElement = headerElement(
@@ -308,14 +335,15 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
         if (stack.length > 0) {
           stack[stack.length - 1].content.push(wrappedElement)
         } else {
+          if (result.length > 0 && isCollapsibleHeader(result[result.length - 1])) {
+            result.push(spacerElement())
+          }
           result.push(wrappedElement)
         }
       }
 
-      // Start a new section
       stack.push({ level, element: node as Element, content: [] })
     } else {
-      // Content node
       if (stack.length > 0) {
         stack[stack.length - 1].content.push(node)
       } else {
@@ -324,7 +352,6 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
     }
   }
 
-  // Close any remaining sections
   while (stack.length > 0) {
     const completedSection = stack.pop()!
     const wrappedElement = headerElement(
@@ -336,6 +363,9 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
     if (stack.length > 0) {
       stack[stack.length - 1].content.push(wrappedElement)
     } else {
+      if (result.length > 0 && isCollapsibleHeader(result[result.length - 1])) {
+        result.push(spacerElement())
+      }
       result.push(wrappedElement)
     }
   }

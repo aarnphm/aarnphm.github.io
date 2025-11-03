@@ -7,7 +7,7 @@ aliases:
 date: "2024-10-30"
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2025-11-02 23:32:18 GMT-05:00
+modified: 2025-11-03 00:27:53 GMT-05:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -105,58 +105,107 @@ setup(
 )
 ```
 
-**Core components:**
+Components:
 
-1. **SAERegistry** - Manages multiple SAE/CLT checkpoints per layer
-2. **ActivationInterceptor** - Hooks into attention/MLP outputs
-3. **FeatureCache** - Persistent batch caching for sparse representations
-4. **DriftMonitor** - Tracks feature activation distributions
-5. **SteeringController** - Applies feature-level interventions
+1. `SAERegistry` - Manages multiple SAE/CLT checkpoints per layer
+2. `ActivationInterceptor` - Hooks into attention/MLP outputs
+3. `FeatureCache` - Persistent batch caching for sparse representations
+4. `DriftMonitor` - Tracks feature activation distributions
+5. `SteeringController` - Applies feature-level interventions
 
 ### design: activation interception
 
 Hook into vLLM's model executor at attention output layer (pre-residual addition):
 
 ```python
-class ActivationInterceptor:
-  def __init__(self, sae_registry, target_modules):
-    self.registry = sae_registry
-    self.targets = target_modules  # e.g., ["attn_output", "mlp_output"]
-    self.intervention_cache = {}
+from typing import Callable, Optional
+from dataclasses import dataclass
 
-  def register_hooks(self, model):
-    """Register forward hooks on target modules"""
-    for layer_idx in range(model.config.num_hidden_layers):
-      if f'layer.{layer_idx}.attn' in self.targets:
-        self._register_attn_hook(model, layer_idx)
+@dataclass(frozen=True)
+class InterceptionConfig:
+  sae_registry: dict
+  target_modules: tuple[str, ...]
+  intervention_cache: dict
 
-  def _register_attn_hook(self, model, layer_idx):
-    def hook(module, input, output):
-      # output shape: (batch, seq_len, hidden_dim)
-      activations = output[0]  # residual stream contribution
+def create_interception_config(
+  sae_registry: dict, target_modules: list[str]
+) -> InterceptionConfig:
+  """Initialize interception configuration"""
+  return InterceptionConfig(
+    sae_registry=sae_registry,
+    target_modules=tuple(target_modules),
+    intervention_cache={},
+  )
 
-      # Get appropriate SAE (could be CLT, matryoshka, standard)
-      sae = self.registry.get_sae(layer_idx, 'attn')
+def get_sae_for_layer(registry: dict, layer_idx: int, module_type: str) -> Optional:
+  """Pure function to retrieve SAE from registry"""
+  return registry.get((layer_idx, module_type))
 
-      if sae is None:
-        return output
+def apply_steering(
+  sparse_features: torch.Tensor, interventions: dict, layer_idx: int
+) -> torch.Tensor:
+  """Apply steering interventions to sparse features"""
+  if layer_idx not in interventions:
+    return sparse_features
 
-      # Encode to sparse features
-      sparse_features = sae.encode(activations)
+  intervention = interventions[layer_idx]
+  return sparse_features + intervention.get('bias', 0) * intervention.get('scale', 1.0)
 
-      # Apply steering if configured
-      if self.registry.has_intervention(layer_idx):
-        sparse_features = self._apply_steering(sparse_features, layer_idx)
+def process_activations(
+  activations: torch.Tensor,
+  sae: Optional,
+  interventions: dict,
+  layer_idx: int,
+  drift_monitor: Callable,
+) -> torch.Tensor:
+  """Pure function pipeline for activation processing"""
+  if sae is None:
+    return activations
 
-      # Monitor for drift
-      self._update_drift_metrics(sparse_features, layer_idx)
+  # Encode to sparse features
+  sparse_features = sae.encode(activations)
 
-      # Decode back
-      reconstructed = sae.decode(sparse_features)
+  # Apply steering
+  sparse_features = apply_steering(sparse_features, interventions, layer_idx)
 
-      return (reconstructed,) + output[1:]
+  # Monitor for drift (side effect contained)
+  drift_monitor(sparse_features, layer_idx)
 
-    return model.layers[layer_idx].self_attn.register_forward_hook(hook)
+  # Decode back
+  return sae.decode(sparse_features)
+
+def create_attention_hook(
+  config: InterceptionConfig, layer_idx: int, drift_monitor: Callable
+) -> Callable:
+  """Higher-order function that creates a hook closure"""
+
+  def hook(module, input, output):
+    activations = output[0]
+
+    sae = get_sae_for_layer(config.sae_registry, layer_idx, 'attn')
+
+    reconstructed = process_activations(
+      activations, sae, config.intervention_cache, layer_idx, drift_monitor
+    )
+
+    return (reconstructed,) + output[1:]
+
+  return hook
+
+def register_hooks(config: InterceptionConfig, model, drift_monitor: Callable):
+  """Register forward hooks using functional composition"""
+  target_layers = [
+    idx
+    for idx in range(model.config.num_hidden_layers)
+    if f'layer.{idx}.attn' in config.target_modules
+  ]
+
+  return [
+    model.layers[idx].self_attn.register_forward_hook(
+      create_attention_hook(config, idx, drift_monitor)
+    )
+    for idx in target_layers
+  ]
 ```
 
 ### design: cross-layer transcoder support
@@ -164,33 +213,59 @@ class ActivationInterceptor:
 CLTs read from one layer and write to multiple downstream layers, requiring special handling:
 
 ```python
-class CrossLayerTranscoderManager:
-  def __init__(self, clt_checkpoint):
-    self.clt = load_clt(clt_checkpoint)
-    self.source_layer = clt_checkpoint.source_layer
-    self.target_layers = clt_checkpoint.target_layers
-    self.feature_cache = {}
+from typing import NamedTuple
 
-  def encode_source(self, activations, position_ids):
-    """Encode at source layer, cache for downstream use"""
-    sparse_features = self.clt.encode(activations)
+class CLTConfig(NamedTuple):
+  """Immutable configuration for cross-layer transcoder"""
+  clt: Any
+  source_layer: int
+  target_layers: tuple[int, ...]
 
-    # Cache by position for reuse
-    for pos in position_ids:
-      self.feature_cache[pos] = sparse_features[pos]
+def create_clt_config(clt_checkpoint) -> CLTConfig:
+  """Load and configure cross-layer transcoder"""
+  clt = load_clt(clt_checkpoint)
+  return CLTConfig(
+    clt=clt,
+    source_layer=clt_checkpoint.source_layer,
+    target_layers=tuple(clt_checkpoint.target_layers),
+  )
 
-    return sparse_features
+def encode_source_activations(
+  clt: Any, activations: torch.Tensor, position_ids: torch.Tensor
+) -> tuple[torch.Tensor, dict]:
+  """Encode at source layer, return features and position cache"""
+  sparse_features = clt.encode(activations)
 
-  def apply_to_target(self, layer_idx, position_ids):
-    """Apply cached features to target MLP layer"""
-    if layer_idx not in self.target_layers:
-      return None
+  # Build position cache
+  feature_cache = {pos.item(): sparse_features[idx] for idx, pos in enumerate(position_ids)}
 
-    # Retrieve cached features
-    cached = torch.stack([self.feature_cache[pos] for pos in position_ids])
+  return sparse_features, feature_cache
 
-    # Project to target layer
-    return self.clt.decode_to_layer(cached, layer_idx)
+def apply_cached_to_target(
+  clt: Any, feature_cache: dict, target_layers: tuple, layer_idx: int, position_ids: torch.Tensor
+) -> Optional[torch.Tensor]:
+  """Apply cached features to target MLP layer"""
+  if layer_idx not in target_layers:
+    return None
+
+  # Retrieve and stack cached features
+  cached = torch.stack([feature_cache[pos.item()] for pos in position_ids])
+
+  # Project to target layer
+  return clt.decode_to_layer(cached, layer_idx)
+
+def create_clt_pipeline(config: CLTConfig):
+  """Higher-order function returning encode/decode pipeline"""
+
+  def encode(activations: torch.Tensor, position_ids: torch.Tensor):
+    return encode_source_activations(config.clt, activations, position_ids)
+
+  def decode(feature_cache: dict, layer_idx: int, position_ids: torch.Tensor):
+    return apply_cached_to_target(
+      config.clt, feature_cache, config.target_layers, layer_idx, position_ids
+    )
+
+  return encode, decode
 ```
 
 ### design: matryoshka SAE support
@@ -198,44 +273,64 @@ class CrossLayerTranscoderManager:
 Matryoshka SAEs enable dynamic sparsity levels - use fewer features for simple tokens, more for complex:
 
 ```python
-class MatryoshkaSAE:
-  def __init__(self, checkpoint, sparsity_levels=[32, 64, 128, 256]):
-    self.encoder = checkpoint.encoder
-    self.decoders = {k: checkpoint.decoders[k] for k in sparsity_levels}
-    self.complexity_estimator = ComplexityEstimator()
+class MatryoshkaConfig(NamedTuple):
+  """Immutable configuration for matryoshka SAE"""
+  encoder: Any
+  decoders: dict[int, Any]
+  sparsity_levels: tuple[int, ...]
+  complexity_estimator: Callable
 
-  def adaptive_encode_decode(self, activations, token_ids):
-    """Select sparsity level per token based on complexity"""
-    # Estimate complexity (e.g., rare token = complex)
-    complexity = self.complexity_estimator(token_ids)
+def create_matryoshka_config(
+  checkpoint, sparsity_levels: list[int] = [32, 64, 128, 256]
+) -> MatryoshkaConfig:
+  """Initialize matryoshka SAE configuration"""
+  return MatryoshkaConfig(
+    encoder=checkpoint.encoder,
+    decoders={k: checkpoint.decoders[k] for k in sparsity_levels},
+    sparsity_levels=tuple(sparsity_levels),
+    complexity_estimator=ComplexityEstimator(),
+  )
 
-    # Encode once
-    all_features = self.encoder(activations)
+def select_sparsity_level(complexity_score: float, thresholds: tuple = (0.3, 0.6, 0.85)) -> int:
+  """Pure function mapping complexity to sparsity level"""
+  levels = [32, 64, 128, 256]
+  for i, threshold in enumerate(thresholds):
+    if complexity_score < threshold:
+      return levels[i]
+  return levels[-1]
 
-    # Decode with adaptive sparsity
-    reconstructed = []
-    for i, complexity_score in enumerate(complexity):
-      k = self._select_k(complexity_score)
+def create_sparse_features(all_features: torch.Tensor, k: int, idx: int) -> torch.Tensor:
+  """Create sparse representation via TopK selection"""
+  topk_vals, topk_idx = torch.topk(all_features[idx], k)
+  sparse = torch.zeros_like(all_features[idx])
+  sparse.scatter_(0, topk_idx, topk_vals)
+  return sparse
 
-      # TopK selection
-      topk_vals, topk_idx = torch.topk(all_features[i], k)
-      sparse = torch.zeros_like(all_features[i])
-      sparse.scatter_(0, topk_idx, topk_vals)
+def decode_with_sparsity(
+  sparse_features: torch.Tensor, decoders: dict, k: int
+) -> torch.Tensor:
+  """Decode sparse features with appropriate decoder"""
+  return decoders[k](sparse_features)
 
-      # Decode with appropriate decoder
-      reconstructed.append(self.decoders[k](sparse))
+def adaptive_encode_decode(
+  config: MatryoshkaConfig, activations: torch.Tensor, token_ids: torch.Tensor
+) -> torch.Tensor:
+  """Select sparsity level per token based on complexity"""
+  # Estimate complexity
+  complexity = config.complexity_estimator(token_ids)
 
-    return torch.stack(reconstructed)
+  # Encode once
+  all_features = config.encoder(activations)
 
-  def _select_k(self, complexity_score):
-    """Map complexity to sparsity level"""
-    if complexity_score < 0.3:
-      return 32
-    elif complexity_score < 0.6:
-      return 64
-    elif complexity_score < 0.85:
-      return 128
-    return 256
+  # Decode with adaptive sparsity via function composition
+  def process_token(idx: int, complexity_score: float) -> torch.Tensor:
+    k = select_sparsity_level(complexity_score)
+    sparse = create_sparse_features(all_features, k, idx)
+    return decode_with_sparsity(sparse, config.decoders, k)
+
+  reconstructed = [process_token(i, score) for i, score in enumerate(complexity)]
+
+  return torch.stack(reconstructed)
 ```
 
 ### design: feature drift monitoring
@@ -243,80 +338,130 @@ class MatryoshkaSAE:
 Track distributional shifts in feature activations over time:
 
 ```python
-class FeatureDriftMonitor:
-  def __init__(self, n_features, window_size=1000):
-    self.n_features = n_features
-    self.window = window_size
+class DriftState(NamedTuple):
+  """Immutable drift monitoring state"""
+  n_features: int
+  window_size: int
+  activation_counts: torch.Tensor
+  activation_means: torch.Tensor
+  activation_vars: torch.Tensor
+  baseline_counts: Optional[torch.Tensor]
+  baseline_means: Optional[torch.Tensor]
+  total_samples: int
 
-    # Running statistics
-    self.activation_counts = torch.zeros(n_features)
-    self.activation_means = torch.zeros(n_features)
-    self.activation_vars = torch.zeros(n_features)
+def create_drift_state(n_features: int, window_size: int = 1000) -> DriftState:
+  """Initialize drift monitoring state"""
+  return DriftState(
+    n_features=n_features,
+    window_size=window_size,
+    activation_counts=torch.zeros(n_features),
+    activation_means=torch.zeros(n_features),
+    activation_vars=torch.zeros(n_features),
+    baseline_counts=None,
+    baseline_means=None,
+    total_samples=0,
+  )
 
-    # Historical baselines
-    self.baseline_counts = None
-    self.baseline_means = None
+def update_welford_statistics(
+  state: DriftState, sparse_features: torch.Tensor
+) -> DriftState:
+  """Update running statistics using Welford's algorithm"""
+  active_mask = sparse_features != 0
+  new_counts = state.activation_counts + active_mask.sum(dim=0)
 
-    self.total_samples = 0
+  # Update means and variances
+  new_means = state.activation_means.clone()
+  new_vars = state.activation_vars.clone()
+  total = state.total_samples
 
-  def update(self, sparse_features):
-    """Update statistics with new batch"""
-    # sparse_features: (batch, n_features) with mostly zeros
-    active_mask = sparse_features != 0
+  for i in range(state.n_features):
+    active_values = sparse_features[:, i][active_mask[:, i]]
+    if len(active_values) > 0:
+      for val in active_values:
+        total += 1
+        delta = val - new_means[i]
+        new_means[i] += delta / total
+        delta2 = val - new_means[i]
+        new_vars[i] += delta * delta2
 
-    # Count activations
-    self.activation_counts += active_mask.sum(dim=0)
+  return state._replace(
+    activation_counts=new_counts,
+    activation_means=new_means,
+    activation_vars=new_vars,
+    total_samples=total,
+  )
 
-    # Update running mean/variance (Welford's algorithm)
-    for i in range(self.n_features):
-      active_values = sparse_features[:, i][active_mask[:, i]]
-      if len(active_values) > 0:
-        for val in active_values:
-          self.total_samples += 1
-          delta = val - self.activation_means[i]
-          self.activation_means[i] += delta / self.total_samples
-          delta2 = val - self.activation_means[i]
-          self.activation_vars[i] += delta * delta2
+def compute_kl_divergence(
+  freq_current: torch.Tensor, freq_baseline: torch.Tensor, epsilon: float = 1e-10
+) -> float:
+  """Pure function computing KL divergence between distributions"""
+  return torch.sum(
+    freq_current * torch.log(freq_current / (freq_baseline + epsilon) + epsilon)
+  ).item()
 
-    # Check for drift every window_size samples
-    if self.total_samples % self.window == 0:
-      self._check_drift()
+def detect_frequency_drift(
+  state: DriftState, threshold: float = 0.1
+) -> Optional[tuple[str, float]]:
+  """Detect frequency distribution drift"""
+  if state.baseline_counts is None:
+    return None
 
-  def _check_drift(self):
-    """Detect significant distributional shifts"""
-    if self.baseline_means is None:
-      # First window - establish baseline
-      self.baseline_counts = self.activation_counts.clone()
-      self.baseline_means = self.activation_means.clone()
-      return
+  freq_current = state.activation_counts / state.total_samples
+  freq_baseline = state.baseline_counts / state.baseline_counts.sum()
 
-    # Compare frequency shifts (which features are firing)
-    freq_current = self.activation_counts / self.total_samples
-    freq_baseline = self.baseline_counts / self.baseline_counts.sum()
+  kl_div = compute_kl_divergence(freq_current, freq_baseline)
 
-    # KL divergence for frequency drift
-    kl_div = torch.sum(
-      freq_current * torch.log(freq_current / (freq_baseline + 1e-10) + 1e-10)
+  return ('frequency_drift', kl_div) if kl_div > threshold else None
+
+def detect_mean_shift(
+  state: DriftState, threshold: float = 2.0
+) -> Optional[tuple[str, list]]:
+  """Detect significant mean shifts in feature activations"""
+  if state.baseline_means is None:
+    return None
+
+  mean_shifts = torch.abs(state.activation_means - state.baseline_means)
+  significant_shifts = mean_shifts > threshold
+
+  if significant_shifts.any():
+    drifted_features = torch.where(significant_shifts)[0].tolist()
+    return ('feature_shift', drifted_features)
+
+  return None
+
+def check_drift(state: DriftState, alert_fn: Callable) -> DriftState:
+  """Check for drift and emit alerts if detected"""
+  # First window - establish baseline
+  if state.baseline_counts is None:
+    return state._replace(
+      baseline_counts=state.activation_counts.clone(),
+      baseline_means=state.activation_means.clone(),
     )
 
-    # Mean shift detection (for active features)
-    mean_shifts = torch.abs(self.activation_means - self.baseline_means)
+  # Detect drifts
+  for drift_result in [detect_frequency_drift(state), detect_mean_shift(state)]:
+    if drift_result is not None:
+      drift_type, details = drift_result
+      alert_fn(drift_type, details)
 
-    # Alert on significant drift
-    if kl_div > 0.1:  # threshold
-      self._emit_alert('frequency_drift', kl_div.item())
+  return state
 
-    significant_shifts = mean_shifts > 2.0  # threshold
-    if significant_shifts.any():
-      drifted_features = torch.where(significant_shifts)[0]
-      self._emit_alert('feature_shift', drifted_features.tolist())
+def update_drift_monitor(
+  state: DriftState, sparse_features: torch.Tensor, alert_fn: Callable
+) -> DriftState:
+  """Update drift state with new batch and check for drift"""
+  # Update statistics
+  new_state = update_welford_statistics(state, sparse_features)
 
-  def _emit_alert(self, drift_type, details):
-    """Log or publish drift alert"""
-    # Could integrate with monitoring stack
-    logger.warning(
-      f'Feature drift detected: {drift_type}', extra={'details': details}
-    )
+  # Check for drift every window
+  if new_state.total_samples % new_state.window_size == 0:
+    new_state = check_drift(new_state, alert_fn)
+
+  return new_state
+
+def emit_drift_alert(drift_type: str, details) -> None:
+  """Pure side effect for drift alerts"""
+  logger.warning(f'Feature drift detected: {drift_type}', extra={'details': details})
 ```
 
 ### optimization: batched sparse operations
@@ -324,46 +469,45 @@ class FeatureDriftMonitor:
 Critical for <5% overhead - fuse TopK selection and reconstruction:
 
 ```python
-class OptimizedSAEKernel:
-  """Custom CUDA kernel for batched TopK + reconstruction"""
+@torch.compile(mode='max-autotune')
+def fused_topk_decode(
+  encoded: torch.Tensor, decoder_weights: torch.Tensor, k: int
+) -> torch.Tensor:
+  """
+  Fused operation:
+  1. TopK selection on encoded
+  2. Sparse matrix multiplication for decode
 
-  @staticmethod
-  @torch.compile(mode='max-autotune')
-  def fused_topk_decode(encoded, decoder_weights, k):
-    """
-    Fused operation:
-    1. TopK selection on encoded
-    2. Sparse matrix multiplication for decode
+  Args:
+      encoded: (batch, seq_len, n_features)
+      decoder_weights: (n_features, hidden_dim)
+      k: sparsity level
 
-    Args:
-        encoded: (batch, seq_len, n_features)
-        decoder_weights: (n_features, hidden_dim)
-        k: sparsity level
+  Returns:
+      reconstructed: (batch, seq_len, hidden_dim)
+  """
+  batch, seq_len, n_features = encoded.shape
 
-    Returns:
-        reconstructed: (batch, seq_len, hidden_dim)
-    """
-    batch, seq_len, n_features = encoded.shape
+  # TopK selection (batched)
+  topk_vals, topk_idx = torch.topk(encoded, k, dim=-1)
 
-    # TopK selection (batched)
-    topk_vals, topk_idx = torch.topk(encoded, k, dim=-1)
+  # Efficient sparse decode using gather
+  # Only multiply the k active features
+  selected_weights = decoder_weights[topk_idx]  # (batch, seq, k, hidden)
+  reconstructed = (topk_vals.unsqueeze(-1) * selected_weights).sum(dim=-2)
 
-    # Efficient sparse decode using gather
-    # Only multiply the k active features
-    selected_weights = decoder_weights[topk_idx]  # (batch, seq, k, hidden)
-    reconstructed = (topk_vals.unsqueeze(-1) * selected_weights).sum(dim=-2)
+  return reconstructed
 
-    return reconstructed
+def register_sae_custom_op():
+  """Register fused operation as vLLM custom operator"""
+  from vllm.model_executor.custom_op import CustomOP
 
-  @staticmethod
-  def register_custom_op():
-    """Register as vLLM custom operator"""
-    from vllm.model_executor.custom_op import CustomOP
+  @CustomOP.register_oot(name='sae_topk_decode')
+  class SAETopKDecode:
+    def forward(self, encoded, decoder, k):
+      return fused_topk_decode(encoded, decoder, k)
 
-    @CustomOP.register_oot(name='sae_topk_decode')
-    class SAETopKDecode:
-      def forward(self, encoded, decoder, k):
-        return OptimizedSAEKernel.fused_topk_decode(encoded, decoder, k)
+  return SAETopKDecode
 ```
 
 ### optimization: persistent caching
@@ -371,46 +515,92 @@ class OptimizedSAEKernel:
 Leverage vLLM v1's persistent batch technique for SAE state:
 
 ```python
-class SAEPersistentCache:
-  """Cache sparse features across decode steps"""
+class CacheState(NamedTuple):
+  """Immutable cache state snapshot"""
+  sparse_indices: torch.Tensor
+  sparse_values: torch.Tensor
+  position_map: dict[str, int]
 
-  def __init__(self, max_batch_size, max_seq_len, n_features):
-    # Pre-allocate buffers
-    self.sparse_indices = torch.zeros(
-      (max_batch_size, max_seq_len, 128),  # assume k=128
+class CacheConfig(NamedTuple):
+  """Cache configuration parameters"""
+  max_batch_size: int
+  max_seq_len: int
+  n_features: int
+  k: int = 128
+  dtype: torch.dtype = torch.float16
+  device: str = 'cuda'
+
+def create_cache_state(config: CacheConfig) -> CacheState:
+  """Initialize persistent cache state with pre-allocated buffers"""
+  return CacheState(
+    sparse_indices=torch.zeros(
+      (config.max_batch_size, config.max_seq_len, config.k),
       dtype=torch.int32,
-      device='cuda',
-    )
-    self.sparse_values = torch.zeros(
-      (max_batch_size, max_seq_len, 128), dtype=torch.float16, device='cuda'
-    )
-    self.position_map = {}  # track which positions are cached
+      device=config.device,
+    ),
+    sparse_values=torch.zeros(
+      (config.max_batch_size, config.max_seq_len, config.k),
+      dtype=config.dtype,
+      device=config.device,
+    ),
+    position_map={},
+  )
 
-  def update_diff(self, request_id, new_positions, sparse_features):
-    """Only update new token positions (incremental)"""
-    # Get existing cache position for this request
-    base_idx = self.position_map.get(request_id, 0)
+def extract_topk_features(
+  sparse_features: torch.Tensor, k: int = 128
+) -> tuple[torch.Tensor, torch.Tensor]:
+  """Extract TopK indices and values from sparse features"""
+  return torch.topk(sparse_features, k, dim=-1)
 
-    # Extract TopK from new features
-    topk_vals, topk_idx = torch.topk(sparse_features, 128, dim=-1)
+def update_cache_diff(
+  state: CacheState, request_id: str, new_positions: list, sparse_features: torch.Tensor
+) -> CacheState:
+  """Update cache with new token positions incrementally"""
+  # Get existing cache position
+  base_idx = state.position_map.get(request_id, 0)
 
-    # Write only new positions
-    n_new = len(new_positions)
-    self.sparse_indices[base_idx : base_idx + n_new] = topk_idx
-    self.sparse_values[base_idx : base_idx + n_new] = topk_vals
+  # Extract TopK from new features
+  topk_vals, topk_idx = extract_topk_features(sparse_features)
 
-    # Update position map
-    self.position_map[request_id] = base_idx + n_new
+  # Clone tensors for immutability
+  new_indices = state.sparse_indices.clone()
+  new_values = state.sparse_values.clone()
 
-  def reconstruct(self, request_id, decoder_weights):
-    """Reconstruct from cached sparse representation"""
-    positions = self.position_map[request_id]
-    indices = self.sparse_indices[:positions]
-    values = self.sparse_values[:positions]
+  # Write only new positions
+  n_new = len(new_positions)
+  new_indices[base_idx : base_idx + n_new] = topk_idx
+  new_values[base_idx : base_idx + n_new] = topk_vals
 
-    # Sparse decode
-    weights = decoder_weights[indices]
-    return (values.unsqueeze(-1) * weights).sum(dim=-2)
+  # Update position map
+  new_position_map = {**state.position_map, request_id: base_idx + n_new}
+
+  return CacheState(
+    sparse_indices=new_indices, sparse_values=new_values, position_map=new_position_map
+  )
+
+def reconstruct_from_cache(
+  state: CacheState, request_id: str, decoder_weights: torch.Tensor
+) -> torch.Tensor:
+  """Reconstruct activations from cached sparse representation"""
+  positions = state.position_map.get(request_id, 0)
+  indices = state.sparse_indices[:positions]
+  values = state.sparse_values[:positions]
+
+  # Sparse decode
+  weights = decoder_weights[indices]
+  return (values.unsqueeze(-1) * weights).sum(dim=-2)
+
+def create_cache_manager(config: CacheConfig):
+  """Higher-order function returning cache update/reconstruct pipeline"""
+  state_ref = [create_cache_state(config)]  # Mutable reference for closure
+
+  def update(request_id: str, new_positions: list, sparse_features: torch.Tensor):
+    state_ref[0] = update_cache_diff(state_ref[0], request_id, new_positions, sparse_features)
+
+  def reconstruct(request_id: str, decoder_weights: torch.Tensor) -> torch.Tensor:
+    return reconstruct_from_cache(state_ref[0], request_id, decoder_weights)
+
+  return update, reconstruct
 ```
 
 ### API design
@@ -473,27 +663,63 @@ drift_report = llm.sae_plugin.get_drift_report()
 Integration with production monitoring stacks:
 
 ```python
-class SAEMetricsExporter:
-  """Export SAE metrics to Prometheus/Datadog"""
+class MetricsConfig(NamedTuple):
+  """Metrics exporter configuration"""
+  port: int = 9090
+  dead_feature_threshold: float = 0.001
 
-  def __init__(self, drift_monitor, port=9090):
-    self.monitor = drift_monitor
-    self.metrics = {
-      'sae_feature_activations': Counter(),
-      'sae_drift_kl_divergence': Gauge(),
-      'sae_reconstruction_error': Histogram(),
-      'sae_latency_overhead': Histogram(),
-    }
+def create_metrics_registry():
+  """Initialize metrics collectors"""
+  return {
+    'sae_feature_activations': Counter(),
+    'sae_drift_kl_divergence': Gauge(),
+    'sae_reconstruction_error': Histogram(),
+    'sae_latency_overhead': Histogram(),
+  }
 
-  def export_metrics(self):
-    """Called periodically by vLLM metrics collector"""
-    return {
-      'feature_activation_rate': (
-        self.monitor.activation_counts / self.monitor.total_samples
-      ).tolist(),
-      'drift_kl': self.monitor.compute_kl_divergence(),
-      'dead_features': self.monitor.get_dead_features(threshold=0.001),
-    }
+def compute_activation_rate(drift_state: DriftState) -> list[float]:
+  """Pure function computing feature activation rates"""
+  if drift_state.total_samples == 0:
+    return torch.zeros(drift_state.n_features).tolist()
+  return (drift_state.activation_counts / drift_state.total_samples).tolist()
+
+def detect_dead_features(drift_state: DriftState, threshold: float = 0.001) -> list[int]:
+  """Identify features below activation threshold"""
+  activation_rate = drift_state.activation_counts / drift_state.total_samples
+  dead_mask = activation_rate < threshold
+  return torch.where(dead_mask)[0].tolist()
+
+def compute_current_kl_divergence(drift_state: DriftState) -> Optional[float]:
+  """Compute KL divergence from baseline if available"""
+  if drift_state.baseline_counts is None:
+    return None
+
+  freq_current = drift_state.activation_counts / drift_state.total_samples
+  freq_baseline = drift_state.baseline_counts / drift_state.baseline_counts.sum()
+
+  return compute_kl_divergence(freq_current, freq_baseline)
+
+def export_metrics(drift_state: DriftState, config: MetricsConfig) -> dict:
+  """Export current metrics snapshot"""
+  return {
+    'feature_activation_rate': compute_activation_rate(drift_state),
+    'drift_kl': compute_current_kl_divergence(drift_state),
+    'dead_features': detect_dead_features(drift_state, config.dead_feature_threshold),
+  }
+
+def create_metrics_exporter(config: MetricsConfig):
+  """Higher-order function creating metrics export pipeline"""
+  registry = create_metrics_registry()
+
+  def export(drift_state: DriftState) -> dict:
+    metrics = export_metrics(drift_state, config)
+
+    # Update registry
+    registry['sae_drift_kl_divergence'].set(metrics['drift_kl'] or 0.0)
+
+    return metrics
+
+  return export
 ```
 
 ### performance targets
