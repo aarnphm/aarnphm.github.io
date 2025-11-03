@@ -1,9 +1,9 @@
 ---
 created: "2025-10-29"
 date: "2025-10-29"
-description: Definition, properties, and examples of Lebesgue measure on $R^n$.
+description: Definition, properties, and examples of Lebesgue measure on $R^n$
 id: Lebesgue measure
-modified: 2025-10-29 07:24:24 GMT-04:00
+modified: 2025-11-03 05:21:22 GMT-05:00
 published: "2001-09-30"
 source: https://en.wikipedia.org/wiki/Lebesgue_measure
 tags:

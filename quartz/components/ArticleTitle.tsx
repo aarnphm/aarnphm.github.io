@@ -4,6 +4,7 @@ import { resolveRelative, FullSlug } from "../util/path"
 import { parseWikilink, resolveWikilinkTarget } from "../util/wikilinks"
 import { ArenaData, ArenaChannel } from "../plugins/transformers/arena"
 import { toArenaHeadingJsx } from "../util/arena"
+import { render } from "preact-render-to-string"
 
 export default (() => (componentData: QuartzComponentProps) => {
   const { fileData, displayClass } = componentData
@@ -30,10 +31,10 @@ export default (() => (componentData: QuartzComponentProps) => {
     const hrefBase = resolveRelative(slug as FullSlug, resolved.slug)
     const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
 
-    return (
+    return render(
       <a href={href} class="internal" data-no-popover data-slug={resolved.slug}>
         {parsed.alias ?? parsed.target ?? description}
-      </a>
+      </a>,
     )
   }
 
@@ -88,7 +89,10 @@ export default (() => (componentData: QuartzComponentProps) => {
     return (
       <hgroup class={classNames(displayClass, "title-col")} data-article-title>
         <h1 class="article-title">{title}</h1>
-        <p class="description">{renderDescription(fileData.description)}</p>
+        <p
+          class="description"
+          dangerouslySetInnerHTML={{ __html: renderDescription(fileData.description) ?? "" }}
+        />
       </hgroup>
     )
   }

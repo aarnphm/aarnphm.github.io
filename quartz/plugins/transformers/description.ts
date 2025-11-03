@@ -10,6 +10,8 @@ import {
   resolveWikilinkTarget,
 } from "../../util/wikilinks"
 import { simplifySlug, type FullSlug, type SimpleSlug } from "../../util/path"
+import katex from "katex"
+import type { KatexOptions } from "katex"
 
 export interface Options {
   descriptionLength: number
@@ -28,9 +30,41 @@ const urlRegex = new RegExp(
   "g",
 )
 
-/**
- * Convert wikilinks to HTML anchor tags while preserving LaTeX
- */
+const defaultKatexOptions: Omit<KatexOptions, "output"> = {
+  strict: true,
+  throwOnError: true,
+}
+
+function renderLatexInString(text: string, options: Omit<KatexOptions, "output"> = defaultKatexOptions): string {
+  let result = text
+
+  const blockMathRegex = /\$\$([\s\S]*?)\$\$/g
+  result = result.replace(blockMathRegex, (match, math) => {
+    try {
+      return katex.renderToString(math.trim(), {
+        ...options,
+        displayMode: true,
+      })
+    } catch (error) {
+      return match
+    }
+  })
+
+  const inlineMathRegex = /(?<!\$)\$([^$\n]+?)\$(?!\$)/g
+  result = result.replace(inlineMathRegex, (match, math) => {
+    try {
+      return katex.renderToString(math.trim(), {
+        ...options,
+        displayMode: false,
+      })
+    } catch (error) {
+      return match
+    }
+  })
+
+  return result
+}
+
 function processWikilinksToHtml(text: string, currentSlug: FullSlug): string {
   const wikilinks = extractWikilinks(text)
   let result = text
@@ -109,9 +143,9 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
                 : finalDesc
             }
 
-            // Process frontmatter description with wikilinks converted to HTML (LaTeX preserved)
+            // Process frontmatter description with wikilinks converted to HTML and LaTeX rendered
             let processedFrontMatterDesc = frontMatterDescription
-              ? processWikilinksToHtml(frontMatterDescription, currentSlug)
+              ? renderLatexInString(processWikilinksToHtml(frontMatterDescription, currentSlug))
               : undefined
 
             // For length calculation and truncation, use plain text
@@ -146,8 +180,8 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
                   descriptionLinks.add(simplifySlug(resolved.slug))
                 }
               }
-              // Convert wikilinks to HTML in abstract
-              abstractText = processWikilinksToHtml(abstractText, currentSlug)
+              // Convert wikilinks to HTML and render LaTeX in abstract
+              abstractText = renderLatexInString(processWikilinksToHtml(abstractText, currentSlug))
             }
 
             file.data.abstract = abstractText ?? processDescription(text)
