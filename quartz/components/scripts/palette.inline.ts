@@ -179,6 +179,18 @@ document.addEventListener("nav", async (e) => {
       },
     },
     {
+      name: "research",
+      auxInnerHtml: "<kbd>↵</kbd> a peak into my research interests",
+      onClick: () => {
+        window.spaNavigate(
+          new URL(
+            resolveRelative(currentSlug, "/research" as FullSlug),
+            window.location.toString(),
+          ),
+        )
+      },
+    },
+    {
       name: "are.na",
       auxInnerHtml: "<kbd>↵</kbd> a rundown version of are.na",
       onClick: () => {

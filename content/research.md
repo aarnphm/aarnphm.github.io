@@ -2,7 +2,7 @@
 date: "2025-08-12"
 description: and my interests.
 id: research
-modified: 2025-10-29 02:15:14 GMT-04:00
+modified: 2025-11-03 04:11:08 GMT-05:00
 tags:
   - fruit
 title: research

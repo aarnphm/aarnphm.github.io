@@ -2,17 +2,24 @@
 date: "2025-01-29"
 description: and mechanisms of components.
 id: Attribution parameter decomposition
-modified: 2025-10-29 02:15:16 GMT-04:00
+modified: 2025-11-03 03:53:40 GMT-05:00
 tags:
   - interpretability
 title: Attribution parameter decomposition
 ---
 
-by [[thoughts/papers/Interpretability in Parameter Space- Minimizing Mechanistic Description Length with Attribution-based Parameter Decomposition.pdf|Apollo Research]], [introduction](https://x.com/leedsharkey/status/1883904940558500282)
+from [[thoughts/papers/Interpretability in Parameter Space- Minimizing Mechanistic Description Length with Attribution-based Parameter Decomposition.pdf|Apollo Research's paper]], and [crosspost](https://www.lesswrong.com/posts/EPefYWjuHNcNH4C7E/attribution-based-parameter-decomposition)
 
-see also: https://www.lesswrong.com/posts/EPefYWjuHNcNH4C7E/attribution-based-parameter-decomposition
+https://x.com/leedsharkey/status/1883904940558500282
 
 Parameter decomposition methods directly decompose neural network parameters into mechanistic components, operating in parameter space rather than activation space. This approach addresses limitations of activation-space methods like SAEs which suffer from reconstruction errors and don't explain feature geometry.
+
+relies on **weight space linearity**:
+
+- observations that neural networks often exhibit linear structure in parameter space.
+- This enables decomposing parameters as sums of components.
+- The approach exploits **sparsity** - most parameters are inactive most of the time, enabling decomposition into interpretable sparse components.
+- This connects to [[thoughts/Information theory|information theory]] - minimizing description length via sparse, low-rank decompositions.
 
 ### goals
 
@@ -20,9 +27,7 @@ Parameter decomposition optimizes for three objectives:
 
 - **faithfulness**: decomposition should identify a set of components that sum to parameters of the network
 - **minimal**: should use _as few components as possible_ to replicate the network's behaviour on training distribution
-- **simple**[^simple]: component shouldn't be ==computational expensive==
-
-[^simple]: means they spans as few rank and as few layers as possible.
+- {{sidenotes[simple]: i.e they spans as few rank and as few layers as possible}}: component shouldn't be ==computational expensive==
 
 > @bussmann2024showing shows sparse dictionary learning ==does not== surface canonical units of [analysis](https://www.lesswrong.com/posts/TMAmHh4DdMr4nCSr5/showing-sae-latents-are-not-atomic-using-meta-saes) for interpretability and suffers from reconstruction errors, and leaves features geometry unexplained.
 
@@ -65,13 +70,9 @@ These losses together minimize a proxy for total description length per data poi
 
 ### stochastic parameter decomposition (SPD)
 
-@bushnaq2025stochastic improves APD by being more scalable and robust to hyperparameters, avoiding issues like parameter shrinkage and better identifying ground truth mechanisms in toy models. SPD bridges causal mediation analysis and network decomposition methods.
+@bushnaq2025stochasticparameterdecomposition improves APD by being more scalable and robust to hyperparameters, avoiding issues like parameter shrinkage and better identifying ground truth mechanisms in toy models. SPD bridges causal mediation analysis and network decomposition methods.
 
-see also: https://github.com/goodfire-ai/spd, https://arxiv.org/pdf/2506.20790, https://www.goodfire.ai/research/stochastic-param-decomp
-
-### theoretical foundations
-
-Parameter decomposition relies on **weight space linearity** - observations that neural networks often exhibit linear structure in parameter space. This enables decomposing parameters as sums of components. The approach exploits **sparsity** - most parameters are inactive most of the time, enabling decomposition into interpretable sparse components. This connects to information theory - minimizing description length via sparse, low-rank decompositions.
+see also: https://github.com/goodfire-ai/spd
 
 ### relationship to attribution graphs
 

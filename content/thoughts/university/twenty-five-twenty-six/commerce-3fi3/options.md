@@ -2,11 +2,15 @@
 date: "2025-10-27"
 description: fractional, vertical bull/bear spreads
 id: options
-modified: 2025-10-29 02:15:57 GMT-04:00
+modified: 2025-11-03 03:54:31 GMT-05:00
 tags:
   - commerce3fi3
-title: options
+title: options market
 ---
+
+## trading derivatives
+
+- leverage to hold a large position
 
 ## vertical spreads
 

@@ -43,7 +43,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-03 03:27:25 GMT-05:00
+modified: 2025-11-03 03:46:58 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -4078,6 +4078,10 @@ title: are.na
 
 ## math
 
+- https://www.youtube.com/watch?v=4Iejh8qTPJ4 -- Chris Skinner, The Birch--Swinnerton-Dyer Conjecture: a millennium prize problem at 25
+  - [meta]:
+    - date: 11/03/2025
+    - tags: [problem, conjecture]
 - https://www.youtube.com/watch?v=BaDxv5Z4LkU -- An update on [[thoughts/Navier-Stokes equations|Navier-Stokes]] Problem
   - [meta]:
     - date: 10/31/2025
