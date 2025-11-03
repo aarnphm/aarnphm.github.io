@@ -5,7 +5,7 @@ aliases:
 date: "2025-05-21"
 description: a method to speed up LLM decoding
 id: Speculative decoding
-modified: 2025-11-03 06:26:34 GMT-05:00
+modified: 2025-11-03 06:43:58 GMT-05:00
 tags:
   - ml
   - serving
@@ -429,7 +429,7 @@ Based on:
 
 [^greedy-and-non-greedy]: Note that we can't use `temperature=0` (i.e argmax sampling):
 
-    - Instead we allow some lenience before standardizing the distribution (accept token $x$ sampled from $M_q$ in case of $p(x) \le l \dot \max{p}$)
+    - Instead we allow some lenience before standardizing the distribution (accept token $x$ sampled from $M_q$ in case of $p(x) \le l \cdot \max{(p)}$)
     - In this case, then similar empirical increases to $\alpha$ to those of `temperature=1`
 
 [^lenience]:

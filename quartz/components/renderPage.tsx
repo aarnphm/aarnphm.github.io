@@ -610,7 +610,7 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
             dataFootnoteBackref: "",
             ariaLabel: "Back to content",
           },
-          `?${ordinal === 0 ? "" : ordinal + 1}`,
+          `↩︎${ordinal === 0 ? "" : ordinal + 1}`,
         ) as Element,
       )
     })
