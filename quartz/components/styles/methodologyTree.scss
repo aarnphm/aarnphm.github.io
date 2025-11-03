@@ -101,15 +101,6 @@ $mobile-marker-size: 1.7rem;
     font: inherit;
     -webkit-appearance: none;
     appearance: none;
-
-    &:focus-visible {
-      outline: 2px solid color-mix(in srgb, var(--iris) 45%, transparent);
-      outline-offset: 3px;
-    }
-
-    &:hover {
-      background: color-mix(in srgb, var(--gray) 12%, transparent);
-    }
   }
 
   .step-header {
@@ -220,6 +211,11 @@ $mobile-marker-size: 1.7rem;
     margin: 0;
     line-height: 1.6;
     color: color-mix(in srgb, var(--gray) 72%, var(--dark) 28%);
+  }
+
+  .step-summary {
+    font-size: 0.9em;
+    font-style: italic;
   }
 
   .step-highlight {

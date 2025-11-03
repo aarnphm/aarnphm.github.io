@@ -7,7 +7,7 @@ aliases:
 date: "2024-10-30"
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2025-11-02 17:38:58 GMT-05:00
+modified: 2025-11-02 23:32:18 GMT-05:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -34,14 +34,13 @@ To attack the _curse of dimensionality_, the question remains: _==how do we hope
 
 ## transcoders
 
-Transcoders are variants of SAEs that reconstruct the output of a component given its input, rather than reconstructing activations from themselves [@paulo2025transcoders]. Unlike SAEs which encode and decode at a single layer, transcoders bridge layers by predicting downstream activations from upstream ones.
+Transcoders are variants of SAEs that reconstruct the output of a component given its input, rather than reconstructing activations from themselves [@paulo2025transcodersbeatsparseautoencoders]. Unlike SAEs which encode and decode at a single layer, transcoders bridge layers by predicting downstream activations from upstream ones.
 
 comparing to SAEs:
 
 - Significantly more interpretable features - transcoders find features that better correspond to human-understandable concepts
 - Enable analysis of direct feature-feature interactions by bridging over nonlinearities
-- Form the basis for replacement models used in attribution graphs
-- Skip transcoders add affine skip connections, achieving lower reconstruction loss with no effect on interpretability
+- Form the basis for replacement models used in {{sidenotes[attribution graphs.]: Skip transcoders add affine skip connections, achieving lower reconstruction loss with no effect on interpretability.}}
 
 > [!note] Cross-layer transcoders
 >
@@ -57,7 +56,7 @@ see also: [[thoughts/circuit tracing]] for open-source tools using transcoders
 
 ## open problems
 
-@sharkey2025openproblemsmechanisticinterpretability
+_excerpt from_ @sharkey2025openproblemsmechanisticinterpretability
 
 - differentiate between "reverse engineering" versus "concept-based"
   - reverse engineer:
@@ -77,6 +76,453 @@ Application in the wild: [Goodfire](https://goodfire.ai/) and [Transluce](https:
 > https://x.com/aarnphm_/status/1839016131321016380
 
 idea: treat SAEs as a logit bias, similar to [[thoughts/structured outputs]]
+
+> [!abstract] proposal for [[thoughts/vLLM|vLLM]] plugin architecture to enable SAE-based steering and feature monitoring in production
+>
+> Design goals: <5% latency overhead, support for CLTs and matryoshka SAEs, feature drift detection, production-grade observability
+
+### motivation
+
+Current SAE deployments (Goodfire, Transluce) run as separate inference services, creating duplication and latency overhead. Integrating SAEs directly into vLLM's execution pipeline enables:
+
+- **Zero-copy activation access** - Direct manipulation of residual stream without serialization
+- **Batched processing** - Leverage vLLM's continuous batching for SAE operations
+- **Unified deployment** - Single service for base model + interpretability
+- **Production monitoring** - Real-time feature drift detection and steering validation
+
+more notes: [[thoughts/vLLM]], [[thoughts/sparse autoencoder]], [[thoughts/sparse crosscoders]]
+
+### architecture overview
+
+The plugin leverages vLLM v1's modular architecture and plugin system via Python entry points:
+
+```python title="setup.py"
+setup(
+  name='vllm-sae-plugin',
+  entry_points={
+    'vllm.general_plugins': ['register_sae = vllm_sae_plugin:register']
+  },
+)
+```
+
+**Core components:**
+
+1. **SAERegistry** - Manages multiple SAE/CLT checkpoints per layer
+2. **ActivationInterceptor** - Hooks into attention/MLP outputs
+3. **FeatureCache** - Persistent batch caching for sparse representations
+4. **DriftMonitor** - Tracks feature activation distributions
+5. **SteeringController** - Applies feature-level interventions
+
+### design: activation interception
+
+Hook into vLLM's model executor at attention output layer (pre-residual addition):
+
+```python
+class ActivationInterceptor:
+  def __init__(self, sae_registry, target_modules):
+    self.registry = sae_registry
+    self.targets = target_modules  # e.g., ["attn_output", "mlp_output"]
+    self.intervention_cache = {}
+
+  def register_hooks(self, model):
+    """Register forward hooks on target modules"""
+    for layer_idx in range(model.config.num_hidden_layers):
+      if f'layer.{layer_idx}.attn' in self.targets:
+        self._register_attn_hook(model, layer_idx)
+
+  def _register_attn_hook(self, model, layer_idx):
+    def hook(module, input, output):
+      # output shape: (batch, seq_len, hidden_dim)
+      activations = output[0]  # residual stream contribution
+
+      # Get appropriate SAE (could be CLT, matryoshka, standard)
+      sae = self.registry.get_sae(layer_idx, 'attn')
+
+      if sae is None:
+        return output
+
+      # Encode to sparse features
+      sparse_features = sae.encode(activations)
+
+      # Apply steering if configured
+      if self.registry.has_intervention(layer_idx):
+        sparse_features = self._apply_steering(sparse_features, layer_idx)
+
+      # Monitor for drift
+      self._update_drift_metrics(sparse_features, layer_idx)
+
+      # Decode back
+      reconstructed = sae.decode(sparse_features)
+
+      return (reconstructed,) + output[1:]
+
+    return model.layers[layer_idx].self_attn.register_forward_hook(hook)
+```
+
+### design: cross-layer transcoder support
+
+CLTs read from one layer and write to multiple downstream layers, requiring special handling:
+
+```python
+class CrossLayerTranscoderManager:
+  def __init__(self, clt_checkpoint):
+    self.clt = load_clt(clt_checkpoint)
+    self.source_layer = clt_checkpoint.source_layer
+    self.target_layers = clt_checkpoint.target_layers
+    self.feature_cache = {}
+
+  def encode_source(self, activations, position_ids):
+    """Encode at source layer, cache for downstream use"""
+    sparse_features = self.clt.encode(activations)
+
+    # Cache by position for reuse
+    for pos in position_ids:
+      self.feature_cache[pos] = sparse_features[pos]
+
+    return sparse_features
+
+  def apply_to_target(self, layer_idx, position_ids):
+    """Apply cached features to target MLP layer"""
+    if layer_idx not in self.target_layers:
+      return None
+
+    # Retrieve cached features
+    cached = torch.stack([self.feature_cache[pos] for pos in position_ids])
+
+    # Project to target layer
+    return self.clt.decode_to_layer(cached, layer_idx)
+```
+
+### design: matryoshka SAE support
+
+Matryoshka SAEs enable dynamic sparsity levels - use fewer features for simple tokens, more for complex:
+
+```python
+class MatryoshkaSAE:
+  def __init__(self, checkpoint, sparsity_levels=[32, 64, 128, 256]):
+    self.encoder = checkpoint.encoder
+    self.decoders = {k: checkpoint.decoders[k] for k in sparsity_levels}
+    self.complexity_estimator = ComplexityEstimator()
+
+  def adaptive_encode_decode(self, activations, token_ids):
+    """Select sparsity level per token based on complexity"""
+    # Estimate complexity (e.g., rare token = complex)
+    complexity = self.complexity_estimator(token_ids)
+
+    # Encode once
+    all_features = self.encoder(activations)
+
+    # Decode with adaptive sparsity
+    reconstructed = []
+    for i, complexity_score in enumerate(complexity):
+      k = self._select_k(complexity_score)
+
+      # TopK selection
+      topk_vals, topk_idx = torch.topk(all_features[i], k)
+      sparse = torch.zeros_like(all_features[i])
+      sparse.scatter_(0, topk_idx, topk_vals)
+
+      # Decode with appropriate decoder
+      reconstructed.append(self.decoders[k](sparse))
+
+    return torch.stack(reconstructed)
+
+  def _select_k(self, complexity_score):
+    """Map complexity to sparsity level"""
+    if complexity_score < 0.3:
+      return 32
+    elif complexity_score < 0.6:
+      return 64
+    elif complexity_score < 0.85:
+      return 128
+    return 256
+```
+
+### design: feature drift monitoring
+
+Track distributional shifts in feature activations over time:
+
+```python
+class FeatureDriftMonitor:
+  def __init__(self, n_features, window_size=1000):
+    self.n_features = n_features
+    self.window = window_size
+
+    # Running statistics
+    self.activation_counts = torch.zeros(n_features)
+    self.activation_means = torch.zeros(n_features)
+    self.activation_vars = torch.zeros(n_features)
+
+    # Historical baselines
+    self.baseline_counts = None
+    self.baseline_means = None
+
+    self.total_samples = 0
+
+  def update(self, sparse_features):
+    """Update statistics with new batch"""
+    # sparse_features: (batch, n_features) with mostly zeros
+    active_mask = sparse_features != 0
+
+    # Count activations
+    self.activation_counts += active_mask.sum(dim=0)
+
+    # Update running mean/variance (Welford's algorithm)
+    for i in range(self.n_features):
+      active_values = sparse_features[:, i][active_mask[:, i]]
+      if len(active_values) > 0:
+        for val in active_values:
+          self.total_samples += 1
+          delta = val - self.activation_means[i]
+          self.activation_means[i] += delta / self.total_samples
+          delta2 = val - self.activation_means[i]
+          self.activation_vars[i] += delta * delta2
+
+    # Check for drift every window_size samples
+    if self.total_samples % self.window == 0:
+      self._check_drift()
+
+  def _check_drift(self):
+    """Detect significant distributional shifts"""
+    if self.baseline_means is None:
+      # First window - establish baseline
+      self.baseline_counts = self.activation_counts.clone()
+      self.baseline_means = self.activation_means.clone()
+      return
+
+    # Compare frequency shifts (which features are firing)
+    freq_current = self.activation_counts / self.total_samples
+    freq_baseline = self.baseline_counts / self.baseline_counts.sum()
+
+    # KL divergence for frequency drift
+    kl_div = torch.sum(
+      freq_current * torch.log(freq_current / (freq_baseline + 1e-10) + 1e-10)
+    )
+
+    # Mean shift detection (for active features)
+    mean_shifts = torch.abs(self.activation_means - self.baseline_means)
+
+    # Alert on significant drift
+    if kl_div > 0.1:  # threshold
+      self._emit_alert('frequency_drift', kl_div.item())
+
+    significant_shifts = mean_shifts > 2.0  # threshold
+    if significant_shifts.any():
+      drifted_features = torch.where(significant_shifts)[0]
+      self._emit_alert('feature_shift', drifted_features.tolist())
+
+  def _emit_alert(self, drift_type, details):
+    """Log or publish drift alert"""
+    # Could integrate with monitoring stack
+    logger.warning(
+      f'Feature drift detected: {drift_type}', extra={'details': details}
+    )
+```
+
+### optimization: batched sparse operations
+
+Critical for <5% overhead - fuse TopK selection and reconstruction:
+
+```python
+class OptimizedSAEKernel:
+  """Custom CUDA kernel for batched TopK + reconstruction"""
+
+  @staticmethod
+  @torch.compile(mode='max-autotune')
+  def fused_topk_decode(encoded, decoder_weights, k):
+    """
+    Fused operation:
+    1. TopK selection on encoded
+    2. Sparse matrix multiplication for decode
+
+    Args:
+        encoded: (batch, seq_len, n_features)
+        decoder_weights: (n_features, hidden_dim)
+        k: sparsity level
+
+    Returns:
+        reconstructed: (batch, seq_len, hidden_dim)
+    """
+    batch, seq_len, n_features = encoded.shape
+
+    # TopK selection (batched)
+    topk_vals, topk_idx = torch.topk(encoded, k, dim=-1)
+
+    # Efficient sparse decode using gather
+    # Only multiply the k active features
+    selected_weights = decoder_weights[topk_idx]  # (batch, seq, k, hidden)
+    reconstructed = (topk_vals.unsqueeze(-1) * selected_weights).sum(dim=-2)
+
+    return reconstructed
+
+  @staticmethod
+  def register_custom_op():
+    """Register as vLLM custom operator"""
+    from vllm.model_executor.custom_op import CustomOP
+
+    @CustomOP.register_oot(name='sae_topk_decode')
+    class SAETopKDecode:
+      def forward(self, encoded, decoder, k):
+        return OptimizedSAEKernel.fused_topk_decode(encoded, decoder, k)
+```
+
+### optimization: persistent caching
+
+Leverage vLLM v1's persistent batch technique for SAE state:
+
+```python
+class SAEPersistentCache:
+  """Cache sparse features across decode steps"""
+
+  def __init__(self, max_batch_size, max_seq_len, n_features):
+    # Pre-allocate buffers
+    self.sparse_indices = torch.zeros(
+      (max_batch_size, max_seq_len, 128),  # assume k=128
+      dtype=torch.int32,
+      device='cuda',
+    )
+    self.sparse_values = torch.zeros(
+      (max_batch_size, max_seq_len, 128), dtype=torch.float16, device='cuda'
+    )
+    self.position_map = {}  # track which positions are cached
+
+  def update_diff(self, request_id, new_positions, sparse_features):
+    """Only update new token positions (incremental)"""
+    # Get existing cache position for this request
+    base_idx = self.position_map.get(request_id, 0)
+
+    # Extract TopK from new features
+    topk_vals, topk_idx = torch.topk(sparse_features, 128, dim=-1)
+
+    # Write only new positions
+    n_new = len(new_positions)
+    self.sparse_indices[base_idx : base_idx + n_new] = topk_idx
+    self.sparse_values[base_idx : base_idx + n_new] = topk_vals
+
+    # Update position map
+    self.position_map[request_id] = base_idx + n_new
+
+  def reconstruct(self, request_id, decoder_weights):
+    """Reconstruct from cached sparse representation"""
+    positions = self.position_map[request_id]
+    indices = self.sparse_indices[:positions]
+    values = self.sparse_values[:positions]
+
+    # Sparse decode
+    weights = decoder_weights[indices]
+    return (values.unsqueeze(-1) * weights).sum(dim=-2)
+```
+
+### API design
+
+Production-first configuration API:
+
+```python
+from vllm import LLM
+from vllm_sae_plugin import SAEConfig, SteeringVector
+
+# Initialize with SAE config
+llm = LLM(
+  model='meta-llama/Llama-3.2-3B',
+  sae_config=SAEConfig(
+    checkpoints={
+      'attn_15': 'path/to/clt_layer15.pt',  # CLT
+      'attn_20': 'path/to/matryoshka_layer20.pt',  # Matryoshka
+      'mlp_23': 'path/to/standard_sae_layer23.pt',  # Standard
+    },
+    target_modules=['attn_output'],  # Hook attention outputs
+    enable_drift_monitoring=True,
+    drift_window=1000,  # samples
+    cache_config={'max_cached_features': 100_000, 'eviction_policy': 'lru'},
+    optimization={
+      'use_custom_kernels': True,
+      'compile_mode': 'max-autotune',
+      'enable_persistent_cache': True,
+    },
+  ),
+)
+
+# Define steering intervention
+steering = SteeringVector(
+  layer=15,
+  features={
+    1337: 2.5,  # Amplify feature 1337 by 2.5x
+    4242: -1.0,  # Suppress feature 4242
+  },
+  mode='additive',  # or "multiplicative"
+)
+
+# Generate with steering
+outputs = llm.generate(
+  'The weather in California is', steering_vectors=[steering], temperature=0.7
+)
+
+# Access drift metrics
+drift_report = llm.sae_plugin.get_drift_report()
+# {
+#   "layer_15": {
+#     "kl_divergence": 0.03,
+#     "shifted_features": [128, 1337, 2048],
+#     "dead_features": [42, 99],
+#   }
+# }
+```
+
+### monitoring and observability
+
+Integration with production monitoring stacks:
+
+```python
+class SAEMetricsExporter:
+  """Export SAE metrics to Prometheus/Datadog"""
+
+  def __init__(self, drift_monitor, port=9090):
+    self.monitor = drift_monitor
+    self.metrics = {
+      'sae_feature_activations': Counter(),
+      'sae_drift_kl_divergence': Gauge(),
+      'sae_reconstruction_error': Histogram(),
+      'sae_latency_overhead': Histogram(),
+    }
+
+  def export_metrics(self):
+    """Called periodically by vLLM metrics collector"""
+    return {
+      'feature_activation_rate': (
+        self.monitor.activation_counts / self.monitor.total_samples
+      ).tolist(),
+      'drift_kl': self.monitor.compute_kl_divergence(),
+      'dead_features': self.monitor.get_dead_features(threshold=0.001),
+    }
+```
+
+### performance targets
+
+Based on vLLM v1 benchmarks and SAE overhead analysis:
+
+| Metric                  | Target            | Justification                                  |
+| ----------------------- | ----------------- | ---------------------------------------------- |
+| Latency overhead        | <5%               | Custom kernels + persistent caching            |
+| Memory overhead         | <10%              | Sparse representations, shared decoder weights |
+| Throughput impact       | <8%               | Batched operations, minimal serialization      |
+| Feature refresh rate    | >1000 Hz          | Real-time drift detection                      |
+| Max concurrent requests | Same as base vLLM | No batching constraints                        |
+
+**Optimization breakdown:**
+
+- Custom CUDA kernels for TopK: ~2% overhead
+- Fused decode operation: ~1.5% overhead
+- Persistent cache updates: ~0.5% overhead
+- Drift monitoring (async): ~1% overhead
+- **Total: ~5% end-to-end latency**
+
+### future extensions
+
+1. **Multi-SAE ensembles** - Run multiple SAEs per layer for robustness
+2. **Adaptive sparsity scheduling** - Vary k based on token importance
+3. **Feature attribution caching** - Pre-compute common steering vectors
+4. **Cross-request feature analysis** - Aggregate statistics across users
+5. **Online SAE finetuning** - Adapt to distribution shift automatically
 
 ## steering
 
@@ -131,37 +577,46 @@ $$
 
 see also: https://colab.research.google.com/github/anthropics/toy-models-of-superposition/blob/main/toy_models.ipynb
 
+a phenomena when a neural network represents _more_ than $n$ features in a $n$-dimensional space
+
 > [!abstract]+ tl/dr
 >
-> phenomena when a neural network represents _more_ than $n$ features in a $n$-dimensional space
-
 > Linear representation of neurons can represent more features than dimensions. As sparsity increases, model use
 > superposition to represent more [[thoughts/mechanistic interpretability#features]] than dimensions.
 >
 > neural networks “want to represent more features than they have neurons”.
 
-When features are sparsed, superposition allows compression beyond what linear model can do, at a cost of interference that requires non-linear filtering.
-
-reasoning: “noisy simulation”, where small neural networks exploit feature sparsity and properties of high-dimensional spaces to approximately simulate much larger much sparser neural networks
+When features are sparsed, superposition allows compression beyond what linear model can do, at a cost of interference that requires {{sidenotes<dropdown:true>[non-linear]: or "noisy simulation", where small neural networks exploit feature sparsity and properties of high-dimensional spaces to approximately simulate much larger much sparser neural networks}} filtering.
 
 In a sense, superposition is a form of **lossy [[thoughts/Compression|compression]]**
 
 This is plausible because:
 
-- Almost Orthogonal Vectors. Although it's only possible to have $n$ orthogonal vectors in an $n$-dimensional space, it's possible to have $\exp (n)$ many "almost orthogonal" ($< \epsilon$ cosine similarity) vectors in high-dimensional spaces. See the [Johnson–Lindenstrauss lemma](https://en.wikipedia.org/wiki/Johnson%E2%80%93Lindenstrauss_lemma).
-- Compressed sensing. In general, if one projects a vector into a lower-dimensional space, one can't reconstruct the original vector. However, this changes if one knows that the original vector is sparse. In this case, it is often possible to recover the original vector.
+- almost _orthogonal vectors_
+  - it's only possible to have $n$ orthogonal vectors in an $n$-dimensional space, it's possible to have $\exp (n)$ many "almost orthogonal" ($< \epsilon$ cosine similarity) vectors in {{sidenotes[high-dimensional spaces.]: See the [Johnson–Lindenstrauss lemma](https://en.wikipedia.org/wiki/Johnson%E2%80%93Lindenstrauss_lemma) for the mathematical foundation.}}
+- compressed sensing
+  - In general, if one projects a vector into a lower-dimensional space, one can't reconstruct the {{sidenotes[original vector.]: However, this changes if one knows that the original vector is sparse - in this case, it is often possible to recover the original vector.}}
 
-The ideas in this section might be thought of in terms of four progressively more strict properties that neural network representations might have.
+### properties
 
-- **Decomposability**: Neural network activations which are _decomposable_ can be decomposed into features, the meaning of which is not dependent on the value of other features. (This property is ultimately the most important — see the role of decomposition in defeating the curse of dimensionality.)
-- **Linearity**: Features correspond to directions. Each feature $f_i$ has a corresponding representation direction $W_i$. The presence of multiple features $f_1, f_2, \dots$ activating with values $x_{f_1}, x_{f_2}, \dots$ is represented by
+One can think in terms of _four progressively more strict properties_ that [[/tags/ml|neural network]] representations might have:
+
+- **Decomposability**:
+  - Neural network activations which are _decomposable_ can be {{sidenotes[decomposed]: This property is ultimately the most important — see the role of decomposition in defeating the curse of dimensionality.}} into features, the meaning of which is not dependent on the value of other features.
+- **Linearity**:
+  - Features correspond to directions. Each feature $f_i$ has a corresponding representation direction $W_i$.
+  - The presence of multiple features $f_1, f_2, \dots$ activating with values $x_{f_1}, x_{f_2}, \dots$ is represented by
 
   $$
     x_{f_1} W_{f_1} + x_{f_2} W_{f_2} + \dots.
   $$
 
-- **Superposition vs Non-Superposition**: A linear representation exhibits superposition if $W^\top W$ is _not_ invertible. If $W^\top W$ _is_ invertible, it does _not_ exhibit superposition.
-- **Basis-Aligned**: A representation is basis aligned if _all_ $W_i$ are one-hot basis vectors. A representation is partially basis aligned if _all_ $W_i$ are sparse. This requires a privileged basis.
+- **Superposition vs Non-Superposition**:
+  - A linear representation exhibits superposition if $W^\top W$ is _not_ invertible.
+  - If $W^\top W$ _is_ invertible, it does _not_ exhibit superposition.
+- **Basis-Aligned**:
+  - A representation is [[thoughts/basis]] aligned if _all_ $W_i$ are one-hot basis vectors.
+  - A representation is partially basis aligned if _all_ $W_i$ are sparse. This requires a privileged basis.
 
 The first two (decomposability and linearity) are properties we hypothesize to be widespread, while the latter (non-superposition and basis-aligned) are properties we believe only sometimes occur.
 
@@ -213,12 +668,7 @@ see also: @elhage2021mathematical
 
 ![[thoughts/images/residual-stream-illustration.webp|Residual stream illustration]]
 
-intuition: we can think of residual as highway networks, in a sense portrays linearity of the network [^residual-stream]
-
-[^residual-stream]:
-    Constructing models with a residual stream traces back to early work by the Schmidhuber group, such as highway networks [@srivastava2015highwaynetworks]  and LSTMs, which have found significant modern success in the more recent residual network architecture [@he2015deepresiduallearningimage].
-
-    In [[thoughts/Transformers]], the residual stream vectors are often called the "embedding." We prefer the residual stream terminology, both because it emphasizes the residual nature (which we believe to be important) and also because we believe the residual stream often dedicates subspaces to tokens other than the present token, breaking the intuitions the embedding terminology suggests.
+intuition: we can think of residual as highway networks, in a sense portrays linearity of the {{sidenotes[network]: Constructing models with a residual stream traces back to early work by the Schmidhuber group, such as highway networks and LSTMs, which have found significant modern success in the more recent residual network architecture. In transformers, the residual stream vectors are often called the "embedding" - we prefer the residual stream terminology because it emphasizes the residual nature and because the residual stream often dedicates subspaces to tokens other than the present token.}}
 
 residual stream $x_{0}$ has dimension $\mathit{(C,E)}$ where
 
@@ -341,10 +791,8 @@ Both address superposition by finding sparse decompositions, but at different ab
 
 ### limitations
 
-- Missing attention circuits
-  - Because attention patterns are frozen, attribution graphs miss attention mechanisms - need separate QK attribution methods to understand how attention selects which features interact
-- Replacement model validity
-  - Replacement models may use different mechanisms than original models - requires careful validation via perturbation experiments
+- Missing {{sidenotes[attention circuits]: Because attention patterns are frozen, attribution graphs miss attention mechanisms - need separate QK attribution methods to understand how attention selects which features interact.}}
+- Replacement {{sidenotes[model validity]: Replacement models may use different mechanisms than original models - requires careful validation via perturbation experiments.}}
 - Graph pruning subjectivity
   - Pruning introduces subjectivity in determining what's "important" - different pruning criteria may reveal different mechanisms
 - Single forward pass focus
@@ -365,7 +813,7 @@ Both address superposition by finding sparse decompositions, but at different ab
 
 ## stochastic parameter decomposition
 
-@bushnaq2025stochasticparameterdecomposition improves upon [[thoughts/Attribution parameter decomposition|APD]] by being more scalable and robust to hyperparameters. SPD demonstrates decomposition on models slightly larger and more complex than was possible with APD, avoids parameter shrinkage issues, and better identifies ground truth mechanisms in toy models.
+@bushnaq2025stochasticparameterdecomposition improves upon [[thoughts/Attribution parameter decomposition|APD]] by being more scalable and robust to {{sidenotes[hyperparameters.]: SPD demonstrates decomposition on models slightly larger and more complex than was possible with APD, avoids parameter shrinkage issues, and better identifies ground truth mechanisms in toy models.}}
 
 see also: https://github.com/goodfire-ai/spd
 

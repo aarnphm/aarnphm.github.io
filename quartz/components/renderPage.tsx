@@ -117,86 +117,130 @@ function headerElement(
   const buttonId = `collapsible-header-${node.properties?.id ?? idx}`
 
   const id = node.properties?.id ?? idx
-  // indicate whether the header is collapsed or not
-  const lastIdx = node.children.length > 0 ? node.children.length - 1 : 0
+  const rank = headingRank(node) as number
+  const originalChildren = [...node.children]
 
-  const icons = s("svg", { ...svgOptions, class: "collapsed-dots" }, [
-    s("use", { href: "#triple-dots" }),
-  ])
-  node.children.splice(lastIdx, 0, icons)
+  const anchorIndex = originalChildren.findIndex(
+    (child) => child.type === "element" && (child as Element).tagName === "a",
+  )
+  const anchorChild =
+    anchorIndex >= 0 ? (originalChildren.splice(anchorIndex, 1)[0] as ElementContent) : undefined
+
+  const headingContent = originalChildren.filter((child) => {
+    if (child.type !== "element") {
+      return true
+    }
+    const element = child as Element
+    const classes = element.properties?.className
+    const normalized = Array.isArray(classes) ? classes : classes ? [classes] : []
+    return !normalized.includes("toggle-button") && !normalized.includes("collapsed-dots")
+  })
+
+  const toggleButton = h(
+    `span.toggle-button.collapse-toggle#${buttonId}-toggle`,
+    {
+      role: "button",
+      ariaExpanded: true,
+      ariaLabel: "Toggle content visibility",
+      ariaControls: `${buttonId}-content`,
+      type: "button",
+      ["data-collapse-toggle"]: "",
+    },
+    [
+      h(
+        "span.collapse-rail",
+        {
+          ariaHidden: true,
+        },
+        [
+          h("span.collapse-line.collapse-line--before"),
+          h("button.toggle-icons", [
+            s(
+              "svg",
+              {
+                ...svgOptions,
+                fill: "var(--dark)",
+                stroke: "var(--dark)",
+                class: "circle-icon",
+              },
+              [s("use", { href: "#circle-icon" })],
+            ),
+            s(
+              "svg",
+              {
+                ...svgOptions,
+                fill: "var(--iris)",
+                stroke: "var(--iris)",
+                class: "expand-icon",
+              },
+              [s("use", { href: "#arrow-down" })],
+            ),
+            s(
+              "svg",
+              {
+                ...svgOptions,
+                fill: "var(--foam)",
+                stroke: "var(--foam)",
+                class: "collapse-icon",
+              },
+              [s("use", { href: "#arrow-up" })],
+            ),
+          ]),
+          h("span.collapse-line.collapse-line--after"),
+        ],
+      ),
+      h("span.collapse-title", [
+        ...headingContent,
+        s("svg", { ...svgOptions, class: "collapsed-dots" }, [s("use", { href: "#triple-dots" })]),
+        ...(anchorChild ? [anchorChild] : []),
+      ]),
+    ],
+  )
+
+  node.children = [toggleButton]
 
   let className = ["collapsible-header"]
   if (endHr) {
     className.push("end-hr")
   }
 
-  node.children = [
-    h(
-      `span.toggle-button#${buttonId}-toggle`,
-      {
-        role: "button",
-        ariaExpanded: true,
-        ariaLabel: "Toggle content visibility",
-        ariaControls: `${buttonId}-content`,
-        type: "button",
-      },
-      [
-        h(".toggle-icons", [
-          s(
-            "svg",
-            {
-              ...svgOptions,
-              fill: "var(--dark)",
-              stroke: "var(--dark)",
-              class: "circle-icon",
-            },
-            [s("use", { href: "#circle-icon" })],
-          ),
-          s(
-            "svg",
-            {
-              ...svgOptions,
-              fill: "var(--iris)",
-              stroke: "var(--iris)",
-              class: "expand-icon",
-            },
-            [s("use", { href: "#arrow-down" })],
-          ),
-          s(
-            "svg",
-            {
-              ...svgOptions,
-              fill: "var(--foam)",
-              stroke: "var(--foam)",
-              class: "collapse-icon",
-            },
-            [s("use", { href: "#arrow-up" })],
-          ),
-        ]),
-      ],
-    ),
-    ...node.children,
-  ]
-
-  const rank = headingRank(node) as number
-
   return h(`section.${className.join(".")}#${id}`, { "data-level": rank }, [
-    node,
     h(
-      ".collapsible-header-content-outer",
+      "div.collapse-shell.is-open",
       {
-        id: `${buttonId}-content`,
-        arialabelledby: buttonId,
+        ["data-collapse-shell"]: "",
+        ["data-initial-open"]: "true",
       },
       [
+        node,
         h(
-          ".collapsible-header-content",
+          "div.collapse-body",
           {
-            ["data-references"]: `${buttonId}-toggle`,
-            ["data-level"]: `${rank}`,
-            ["data-heading-id"]: node.properties.id, // HACK: This assumes that rehype-slug already runs this target
+            id: `${buttonId}-content`,
+            role: "region",
+            ariaLabelledby: `${buttonId}-toggle`,
+            ["data-collapse-body"]: "",
           },
-          content,
+          [
+            h(
+              "span.collapse-rail.collapse-rail--body",
+              {
+                ariaHidden: true,
+              },
+              [h("span.collapse-line.collapse-line--body")],
+            ),
+            h("div.collapse-body-content", [
+              h(
+                ".collapsible-header-content",
+                {
+                  ["data-references"]: `${buttonId}-toggle`,
+                  ["data-level"]: `${rank}`,
+                  ["data-heading-id"]: node.properties.id, // HACK: This assumes that rehype-slug already runs this target
+                },
+                content,
+              ),
+            ]),
+          ],
         ),
       ],
     ),

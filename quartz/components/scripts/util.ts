@@ -124,18 +124,6 @@ export function updatePosition(ref: HTMLElement, child: HTMLElement, parent: HTM
   child.style.top = `${referencePosition}px`
 }
 
-export function setHeaderState(
-  button: HTMLElement,
-  content: HTMLElement,
-  wrapper: HTMLElement,
-  collapsed: boolean,
-) {
-  button.setAttribute("aria-expanded", collapsed ? "false" : "true")
-  button.classList.toggle("collapsed", collapsed)
-  content.classList.toggle("collapsed", collapsed)
-  wrapper.classList.toggle("collapsed", collapsed)
-}
-
 export function closeReader(readerView: HTMLElement | null) {
   if (!readerView) return
   readerView.classList.remove("active")

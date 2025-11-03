@@ -16,9 +16,7 @@ minibpe = { path = "content/thoughts/tsfm/lecture-2-exercise" }
 minigpt = { path = "content/thoughts/tsfm/lecture-3-exercise" }
 
 [tool.uv.workspace]
-members = [
-    "content/hinterland/nanovllm",
-]
+members = ["content/hinterland/nanovllm"]
 
 [tool.hatch.version]
 source = "nodejs"
@@ -62,7 +60,7 @@ plugins = ["numpy.typing.mypy_plugin"]
 [tool.ruff]
 extend-include = ["*.ipynb"]
 preview = true
-line-length = 119
+line-length = 79
 indent-width = 2
 
 [tool.ruff.format]

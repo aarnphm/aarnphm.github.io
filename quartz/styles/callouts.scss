@@ -1,6 +1,12 @@
 @use "./variables.scss" as *;
 @use "sass:color";
 
+blockquote:not([class~="is-collapsed"]) {
+  & > .callout-content {
+    margin-bottom: 1rem;
+  }
+}
+
 .callout {
   border: 1px solid var(--border);
   background-color: var(--bg);

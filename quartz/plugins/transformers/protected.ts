@@ -1,8 +1,6 @@
 import crypto from "crypto"
 import { QuartzTransformerPlugin } from "../types"
 import { Root } from "hast"
-//@ts-ignore
-import script from "../../components/scripts/protected.inline"
 import content from "../../components/styles/protected.scss"
 
 interface EncryptedPayload {
@@ -87,13 +85,6 @@ export const Protected: QuartzTransformerPlugin = () => {
     ],
     externalResources() {
       return {
-        js: [
-          {
-            loadTime: "afterDOMReady",
-            contentType: "inline",
-            script,
-          },
-        ],
         css: [
           {
             content,

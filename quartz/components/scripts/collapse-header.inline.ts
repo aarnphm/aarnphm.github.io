@@ -1,97 +1,82 @@
-import { setHeaderState } from "./util"
-import { getFullSlug } from "../../util/path"
+function handleToggleClick(event: Event) {
+  const toggle = event.currentTarget as HTMLElement | null
+  if (!toggle) return
 
-type MaybeHTMLElement = HTMLElement | undefined
+  event.stopPropagation()
 
-function toggleHeader(evt: Event) {
-  const target = evt.target as MaybeHTMLElement
-  if (!target) return
+  const section = toggle.closest<HTMLElement>("section.collapsible-header")
+  if (!section) return
 
-  // Only proceed if we clicked on the toggle button or its children (svg, lines)
-  const toggleButton = target.closest(".toggle-button") as MaybeHTMLElement
-  if (!toggleButton) return
+  const shell = section.querySelector<HTMLElement>("[data-collapse-shell]")
+  if (!shell) return
 
-  // Check if we're inside a callout - if so, don't handle the event
-  if (target.parentElement!.classList.contains("callout")) return
+  shell.classList.toggle("is-open")
+  const isOpen = shell.classList.contains("is-open")
 
-  const headerId = toggleButton.id.replace("collapsible-header-", "").replace("-toggle", "")
-
-  const wrapper = document.querySelector(
-    `section.collapsible-header[id="${headerId}"]`,
-  ) as MaybeHTMLElement
-  if (!wrapper) return
-
-  evt.stopPropagation()
-
-  // Find content by data-references
-  const content = document.querySelector(
-    `.collapsible-header-content[data-references="${toggleButton.id}"]`,
-  ) as MaybeHTMLElement
-  if (!content) return
-
-  const isCollapsed = toggleButton.getAttribute("aria-expanded") === "true"
-
-  // Toggle current header
-  toggleButton.setAttribute("aria-expanded", isCollapsed ? "false" : "true")
-  content.style.maxHeight = isCollapsed ? "0px" : `${content.scrollHeight}px`
-  content.classList.toggle("collapsed", isCollapsed)
-  wrapper.classList.toggle("collapsed", isCollapsed)
-  toggleButton.classList.toggle("collapsed", isCollapsed)
-
-  const slug = String(getFullSlug(window) ?? window.document.body.dataset.slug ?? "")
+  toggle.setAttribute("aria-expanded", isOpen ? "true" : "false")
 
   localStorage.setItem(
-    `${slug.replace("/", "--")}-${toggleButton.id}`,
-    isCollapsed ? "false" : "true",
+    `${window.document.body.dataset.slug!.replace(/\//g, "--")}-${toggle.id}`,
+    isOpen ? "true" : "false",
   )
 }
 
-function setupHeaders() {
-  const collapsibleHeaders = document.querySelectorAll("section.collapsible-header")
+function handleToggleKeydown(event: KeyboardEvent) {
+  const key = event.key
+  if (key !== "Enter" && key !== " " && key !== "Spacebar") return
 
-  for (const header of collapsibleHeaders) {
-    const button = header.querySelector<HTMLButtonElement>("span.toggle-button")
-    if (button) {
-      button.addEventListener("click", toggleHeader)
-      window.addCleanup(() => button.removeEventListener("click", toggleHeader))
+  const toggle = event.currentTarget as HTMLElement | null
+  if (!toggle) return
 
-      // Apply saved state
-      const content = document.querySelector<HTMLElement>(
-        `.collapsible-header-content[data-references="${button.id}"]`,
-      )
-      // setup once
-      if (content) {
-        const slug = String(getFullSlug(window) ?? window.document.body.dataset.slug ?? "")
+  event.preventDefault()
+  toggle.click()
+}
 
-        const savedState = localStorage.getItem(`${slug.replace("/", "--")}-${button.id}`)
-        if (savedState) {
-          setHeaderState(
-            button as HTMLElement,
-            content,
-            header as HTMLElement,
-            savedState === "false",
-          )
-        }
-        const collapsed = content.classList.contains("collapsed")
-        content.style.maxHeight = collapsed ? `0px` : `inherit`
-      }
+function hydrateCollapsibleHeaders() {
+  document.querySelectorAll<HTMLElement>("section.collapsible-header").forEach((section) => {
+    const shell = section.querySelector<HTMLElement>("[data-collapse-shell]")
+    if (!shell) return
+
+    const toggle = section.querySelector<HTMLElement>("[data-collapse-toggle]")
+    if (!toggle) return
+
+    const initialOpen = shell.dataset.initialOpen !== "false"
+    const stored = localStorage.getItem(
+      `${window.document.body.dataset.slug!.replace(/\//g, "--")}-${toggle.id}`,
+    )
+    const isOpen = stored ? stored === "true" : initialOpen
+
+    if (isOpen) {
+      shell.classList.add("is-open")
+    } else {
+      shell.classList.remove("is-open")
     }
-  }
+    toggle.setAttribute("aria-expanded", isOpen ? "true" : "false")
 
-  const links = document.querySelectorAll("button.transclude-title-link")
-  for (const link of links) {
-    const parentEl = link.parentElement as HTMLElement
-    if (!parentEl || !parentEl.dataset.href) continue
-
-    const href = parentEl.dataset.href
-    const onClick = () => {
-      window.spaNavigate(new URL(href, window.location.toString()))
+    if (toggle.tabIndex === -1) {
+      toggle.tabIndex = 0
     }
 
-    link.addEventListener("click", onClick)
-    window.addCleanup?.(() => link.removeEventListener("click", onClick))
+    toggle.addEventListener("click", handleToggleClick)
+    toggle.addEventListener("keydown", handleToggleKeydown)
+    window.addCleanup?.(() => {
+      toggle.removeEventListener("click", handleToggleClick)
+      toggle.removeEventListener("keydown", handleToggleKeydown)
+    })
+  })
+
+  const transcludeButtons = document.querySelectorAll("button.transclude-title-link")
+  for (const button of transcludeButtons) {
+    const parent = button.parentElement as HTMLElement | null
+    if (!parent || !parent.dataset.href) continue
+
+    const href = parent.dataset.href
+    const navigate = () => window.spaNavigate(new URL(href, window.location.toString()))
+
+    button.addEventListener("click", navigate)
+    window.addCleanup?.(() => button.removeEventListener("click", navigate))
   }
 }
 
-document.addEventListener("nav", setupHeaders)
-window.addEventListener("resize", setupHeaders)
+document.addEventListener("nav", hydrateCollapsibleHeaders)
+window.addEventListener("resize", hydrateCollapsibleHeaders)

@@ -285,8 +285,7 @@ a {
   &[data-role="anchor"] {
     background-image: unset;
     background-color: unset;
-    margin-top: 0.2em;
-    margin: 0 0.3em;
+    margin-left: 0.35rem;
   }
 
   &:hover {
@@ -338,38 +337,38 @@ a {
 blockquote[class="transclude"] {
   border-left-color: var(--tertiary);
   position: relative;
+}
 
-  .transclude-ref {
+.transclude-ref {
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  border: 0px solid var(--lightgray);
+  border-bottom-width: 1px;
+  align-items: baseline;
+  justify-content: space-between;
+
+  & > ul.metadata {
+    list-style: none;
+    padding-left: 0;
     display: flex;
-    flex-direction: row;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
-    border: 0px solid var(--lightgray);
-    border-bottom-width: 1px;
-    align-items: baseline;
-    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0;
+  }
 
-    & > ul.metadata {
-      list-style: none;
-      padding-left: 0;
-      display: flex;
-      gap: 0.5rem;
-      margin: 0;
+  .transclude-title-link {
+    svg {
+      opacity: 0.35;
+      transition: opacity 0.2s ease;
+      color: var(--gray);
     }
 
-    .transclude-title-link {
+    &:hover {
       svg {
-        opacity: 0.35;
-        transition: opacity 0.2s ease;
-        color: var(--gray);
-      }
-
-      &:hover {
-        svg {
-          opacity: 1;
-          cursor: pointer;
-          color: var(--darkgray);
-        }
+        opacity: 1;
+        cursor: pointer;
+        color: var(--darkgray);
       }
     }
   }
@@ -533,7 +532,7 @@ body {
 }
 
 .page-footer {
-  padding-top: 0;
+  padding: 0;
   margin-top: 2rem;
   margin-bottom: 0;
   border-bottom-width: 0px;

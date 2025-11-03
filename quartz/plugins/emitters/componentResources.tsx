@@ -15,6 +15,8 @@ import pseudoScript from "../../components/scripts/clipboard-pseudo.inline"
 import pseudoStyle from "../../components/styles/pseudocode.scss"
 // @ts-ignore
 import notFoundScript from "../../components/scripts/404.inline"
+//@ts-ignore
+import protectedScript from "../../components/scripts/protected.inline"
 import { BuildCtx } from "../../util/ctx"
 import { QuartzComponent } from "../../components/types"
 import type { QuartzMdxComponent } from "../../components/mdx/registry"
@@ -97,7 +99,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
   }
 
   componentResources.css.push(clipboardStyle, pseudoStyle)
-  componentResources.afterDOMLoaded.push(clipboardScript, pseudoScript)
+  componentResources.afterDOMLoaded.push(clipboardScript, pseudoScript, protectedScript)
 
   if (cfg.analytics?.provider === "plausible") {
     const plausibleHost = cfg.analytics.host ?? "https://plausible.io"

@@ -3,7 +3,7 @@ aliases:
   - advice
 date: "2024-01-23"
 id: quotes
-modified: 2025-10-30 00:59:10 GMT-04:00
+modified: 2025-11-02 23:05:41 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 tags:
   - evergreen
@@ -17,6 +17,10 @@ transclude:
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
 
 ## On life.
+
+> The best gift you can give yourself is the gift of possibility.
+>
+> —Paul Newman
 
 > You're being judged by people who know less than you
 >

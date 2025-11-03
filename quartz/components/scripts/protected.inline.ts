@@ -89,6 +89,9 @@ const DECRYPTION_TTL = 30 * 60 * 1000
 })()
 
 document.addEventListener("nav", () => {
+  const isProtected = window.document.body.dataset.protected === "true"
+  if (!isProtected) return
+
   const protectedArticles = document.querySelectorAll('[data-protected="true"]')
 
   // Function to re-lock content after TTL

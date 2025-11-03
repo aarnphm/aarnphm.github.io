@@ -43,7 +43,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-02 17:43:27 GMT-05:00
+modified: 2025-11-02 23:07:26 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -644,6 +644,15 @@ title: are.na
 
 ## people
 
+- https://www.clairebookworm.com/ -- Claire Wang
+  - [meta]:
+    - date: 11/02/2025
+    - tags: [internet friend]
+- https://en.wikipedia.org/wiki/Aaron_Swartz -- Aaron Swartz
+  - [meta]:
+    - date: 11/02/2025
+    - tags: [web]
+  - RSS
 - https://www.katmh.com/ -- Kat Huang
   - [meta]:
     - date: 10/29/2025
@@ -1160,6 +1169,12 @@ title: are.na
 
 ## essay
 
+- https://archive.ph/iMdvd -- Some People Can’t See Mental Images. The Consequences Are Profound
+  - [meta]:
+    - date: 11/02/2025
+    - tags: [friend]
+  - > Aphantasics might skip over descriptive passages in books—since description aroused no images in their minds, they found it dull—or, because of such passages, avoid fiction altogether.
+  - > Hyperphantasia often seemed to function as an emotional amplifier in mental illness—heightening hypomania, worsening depression, causing intrusive traumatic imagery in P.T.S.D. to be more realistic and disturbing.
 - https://nintil.com/ -- nintil.com [**]
   - [meta]:
     - date: 11/02/2025
@@ -1990,11 +2005,11 @@ title: are.na
   - [meta]:
     - date: 10/06/2025
     - tags: [inference, optimization]
-- https://www.youtube.com/watch?v=i6Y2EelEC04 -- iris: First-Class Multi-GPU Programming Experience in Triton
+- https://www.youtube.com/watch?v=i6Y2EelEC04 -- iris: First-Class Multi-GPU Programming Experience in Triton [**]
   - [meta]:
     - date: 10/06/2025
     - tags: [compiler, gpu]
-  - AMD
+  - [[thoughts/GPU programming#AMD]]
 - https://thinkingmachines.ai/blog/lora/ -- LoRA Without Regret
   - [meta]:
     - date: 10/06/2025
@@ -2765,6 +2780,10 @@ title: are.na
 
 ## computer science
 
+- https://fab.cba.mit.edu/classes/MAS.863/ -- How To Make (almost) Anything [**]
+  - [meta]:
+    - date: 11/02/2025
+    - tags: [computer]
 - https://blog.sdan.io/archon/ -- Teaching GPT-5 to use a Computer
   - [meta]:
     - date: 10/28/2025
