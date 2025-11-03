@@ -43,7 +43,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-03 03:46:58 GMT-05:00
+modified: 2025-11-03 04:46:11 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1169,6 +1169,14 @@ title: are.na
 
 ## essay
 
+- https://nintil.com/longevity -- Longevity [**]
+  - [meta]:
+    - date: 11/03/2025
+    - tags: [philosophy, biology]
+- https://jsomers.net/i-should-have-loved-biology -- I should have loved biology
+  - [meta]:
+    - date: 11/03/2025
+    - tags: [biology, history]
 - https://archive.ph/iMdvd -- Some People Can’t See Mental Images. The Consequences Are Profound
   - [meta]:
     - date: 11/02/2025
