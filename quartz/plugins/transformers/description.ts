@@ -35,7 +35,10 @@ const defaultKatexOptions: Omit<KatexOptions, "output"> = {
   throwOnError: true,
 }
 
-function renderLatexInString(text: string, options: Omit<KatexOptions, "output"> = defaultKatexOptions): string {
+function renderLatexInString(
+  text: string,
+  options: Omit<KatexOptions, "output"> = defaultKatexOptions,
+): string {
   let result = text
 
   const blockMathRegex = /\$\$([\s\S]*?)\$\$/g

@@ -1,8 +1,11 @@
 ---
+aliases:
+  - specdec
+  - speculative
 date: "2025-05-21"
 description: a method to speed up LLM decoding
 id: Speculative decoding
-modified: 2025-10-29 02:15:35 GMT-04:00
+modified: 2025-11-03 05:53:25 GMT-05:00
 tags:
   - ml
   - serving
@@ -95,16 +98,20 @@ EAGLE address this by **inputs the token sequence from one time step ahead inclu
 
 ![[thoughts/images/eagle-figure-6-architecture.webp]]
 
-- ```python
-  [feature_seq, token_seq] # [bs, seq_len, hidden_dim], [bs, seq_len]
-  token_seq -> token_emb # [bs, seq_len] -> [bs, seq_len, hidden_dim]
-  fused_seq = feature_seq * token_emb # [bs, seq_len, 2 x hidden_dim]
-  ```
-  [^triton-fused-ops]
-- autoregressive_head:
-  - FC layer -> `reduce # [bs, seq_len, hidden_dim]`
-  - decoder layer -> `features`
-- using [[thoughts/Attention#TreeAttention|tree attention]] to generate a draft tree of depth $m$ and more than $m$ tokens for $m$ forward pass. [^tree-attention]
+```python
+[feature_seq, token_seq] # [bs, seq_len, hidden_dim], [bs, seq_len]
+token_seq -> token_emb # [bs, seq_len] -> [bs, seq_len, hidden_dim]
+fused_seq = feature_seq * token_emb # [bs, seq_len, 2 x hidden_dim]
+```
+
+[^triton-fused-ops]
+
+autoregressive_head:
+
+- FC layer -> `reduce # [bs, seq_len, hidden_dim]`
+- decoder layer -> `features`
+
+using [[thoughts/Attention#TreeAttention|tree attention]] to generate a draft tree of depth $m$ and more than $m$ tokens for $m$ forward pass. [^tree-attention]
 
 [^triton-fused-ops]: See https://github.com/vllm-project/vllm/pull/20078
 
@@ -204,7 +211,9 @@ _also known as Prompt Lookup Decoding (PLD)_, [HF's assisted generations](https:
 idea: to use string matching from prompt to generate candidate tokens, instead of using a draft-based models.
 
 ```python
-def find_candidate_pred_tokens(input_ids, max_ngram_size=3, num_pred_tokens=10):
+def find_candidate_pred_tokens(
+  input_ids, max_ngram_size=3, num_pred_tokens=10
+):
   input_length = input_ids.size(1)
 
   for ngram_size in range(max_ngram_size, 0, -1):
@@ -749,30 +758,45 @@ class SpeculatorForCausalLM(nn.Module):
 
     if cfg.tensor_parallel_size > 1:
       self.target.embed_tokens = VocabParallelEmbedding(
-        num_embeddings=cfg.vocab_size, embedding_dim=cfg.hidden_size, bias=False
+        num_embeddings=cfg.vocab_size,
+        embedding_dim=cfg.hidden_size,
+        bias=False,
       )
-      self.target.lm_head = ParallelLMHead(num_embeddings=cfg.vocab_size, embedding_dim=cfg.hidden_size, bias=True)
+      self.target.lm_head = ParallelLMHead(
+        num_embeddings=cfg.vocab_size, embedding_dim=cfg.hidden_size, bias=True
+      )
 
-    self.draft: SpeculatorDraftModel = draft_cls(base_cfg=cfg, target=self.target, algo=algo)
+    self.draft: SpeculatorDraftModel = draft_cls(
+      base_cfg=cfg, target=self.target, algo=algo
+    )
 
     # assumption: heterogeneous cache
     self.kv_cache_metadata = KVCacheMetadata(
-      target_layers=self.target.num_hidden_layers, draft_layers=self.draft.num_layers
+      target_layers=self.target.num_hidden_layers,
+      draft_layers=self.draft.num_layers,
     )
 
   @torch.inference_mode()
   def forward(self, input_ids, pos, stop_layer: int) -> torch.Tensor:
     outputs, hidden_states = self.target.forward(
-      input_ids, positions=pos, stop_layer=stop_layer, kv_cache=self.kv_cache_metadata.target
+      input_ids,
+      positions=pos,
+      stop_layer=stop_layer,
+      kv_cache=self.kv_cache_metadata.target,
     )
     return self.draft_step(hidden_states, outputs, pos)
 
   @torch.inference_mode()
   def draft_step(self, cur_hidden, new_token_embed, pos):
     h_draft = self.draft.forward(
-      cur_hidden=cur_hidden, new_embed=new_token_embed, pos=pos, kv_cache=self.kv_cache_metadata.draft
+      cur_hidden=cur_hidden,
+      new_embed=new_token_embed,
+      pos=pos,
+      kv_cache=self.kv_cache_metadata.draft,
     )
-    logits = self.draft.compute_logits(h_draft, vocab_parallel=self.target.lm_head)
+    logits = self.draft.compute_logits(
+      h_draft, vocab_parallel=self.target.lm_head
+    )
     return logits, h_draft
 ```
 
@@ -818,7 +842,9 @@ class Eagle3DraftModel(SpeculatorDraftModel):
 
     # reduced‑vocab head (author's design)
     self.draft_vocab = base_cfg.draft_vocab
-    self.small_head = nn.Linear(base_cfg.hidden_size, self.draft_vocab, bias=False)
+    self.small_head = nn.Linear(
+      base_cfg.hidden_size, self.draft_vocab, bias=False
+    )
 
     # mapping tensor (draft‑id → target‑id)
     self.id_map: torch.LongTensor = torch.load(cfg.draft_id_map)  # pre‑baked
@@ -831,7 +857,9 @@ class Eagle3DraftModel(SpeculatorDraftModel):
   def compute_logits(self, hidden_state, vocab_parallel):
     logits_small = self.small_head(hidden_state)  # (B, V_small)
     # sparse scatter into full sharded vocab
-    logits_full = torch.full_like(vocab_parallel.weight, float('-inf')).view(-1)
+    logits_full = torch.full_like(vocab_parallel.weight, float('-inf')).view(
+      -1
+    )
     logits_full[self.id_map] = logits_small.view(-1)
     return logits_full.view_as(logits_small)
 
@@ -842,7 +870,9 @@ class LlamaDraftLayerEagle3(nn.Module):
 
   def __init__(self, cfg):
     super().__init__()
-    self.qkv_proj = nn.Linear(cfg.hidden_size * 2, 3 * cfg.hidden_size, bias=False)  # 2× in‑dim
+    self.qkv_proj = nn.Linear(
+      cfg.hidden_size * 2, 3 * cfg.hidden_size, bias=False
+    )  # 2× in‑dim
     self.attn = LlamaAttention(cfg)
     self.mlp = LlamaMLP(cfg)
     self.norm1 = nn.RMSNorm(cfg.hidden_size, eps=cfg.rms_norm_eps)
@@ -959,11 +989,13 @@ class Eagle3DraftModel(PreTrainedModel, ABC):
 
     if attention_mask is not None:
       # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len]
-      expanded_attn_mask = _expand_mask(attention_mask, hidden_states.dtype, tgt_len=seq_length).to(
-        hidden_states.device
-      )
+      expanded_attn_mask = _expand_mask(
+        attention_mask, hidden_states.dtype, tgt_len=seq_length
+      ).to(hidden_states.device)
       combined_attention_mask = (
-        expanded_attn_mask if combined_attention_mask is None else expanded_attn_mask + combined_attention_mask
+        expanded_attn_mask
+        if combined_attention_mask is None
+        else expanded_attn_mask + combined_attention_mask
       )
     return combined_attention_mask
 
@@ -989,7 +1021,9 @@ class Eagle3DraftModel(PreTrainedModel, ABC):
     self.embed_tokens.weight.requires_grad = False
 
   @torch.no_grad()
-  def load_embedding(self, model_path: str, embedding_key: str = 'model.embed_tokens.weight') -> None:
+  def load_embedding(
+    self, model_path: str, embedding_key: str = 'model.embed_tokens.weight'
+  ) -> None:
     """
     Load the embedding of the draft model.
 
@@ -1005,7 +1039,9 @@ class Eagle3DraftModel(PreTrainedModel, ABC):
       if len(index_json_path) == 0:
         raise FileNotFoundError(f'No index.json file found in {model_path}')
       if len(index_json_path) > 1:
-        raise FileNotFoundError(f'Multiple index.json files found in {model_path}')
+        raise FileNotFoundError(
+          f'Multiple index.json files found in {model_path}'
+        )
       index_json_path = index_json_path[0]
 
       with open(index_json_path, 'r') as f:
@@ -1013,7 +1049,9 @@ class Eagle3DraftModel(PreTrainedModel, ABC):
       ckpt_file = index_json['weight_map'][embedding_key]
 
       if ckpt_file.endswith('.safetensors'):
-        with safe_open(os.path.join(model_path, ckpt_file), framework='pt') as f:
+        with safe_open(
+          os.path.join(model_path, ckpt_file), framework='pt'
+        ) as f:
           emb_tokens = f.get_tensor(embedding_key)
       else:
         state_dict = torch.load(os.path.join(model_path, ckpt_file))

@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-03 04:33:55 GMT-05:00
+modified: 2025-11-03 06:09:12 GMT-05:00
 noindex: true
 pageLayout: letter
 slides: true
@@ -50,6 +50,8 @@ five years plan: No kids, for now. I value my relationship with my female friend
 
 </div>
 
+---
+
 ## about me.
 
 Here is my friends' attestation of me:
@@ -87,6 +89,8 @@ Most people know me online as `aarnphm` /urn-fm/, but you can call me _Aaron_ (o
 
 I'm currently an [[thoughts/Transformers#inference.|inference]] optimization [[/|engineer]] at [bentoml](https://bentoml.com/), which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]], based in Toronto, Canada.
 
+---
+
 ## professional life.
 
 <figure class='float-right'>
@@ -115,6 +119,8 @@ I might not be good at something initially, but this modus operandi has allowed 
 > I know that the next section on my research interest can be a bit long, feel free to skip it [[dating#personal life.|to the next topic]]! Otherwise hopefully it captures topics I'm currently fascinated with (as of oct, 2025)
 
 ![[research#{collapsed: true}|research interests]]
+
+---
 
 ## personal life.
 
@@ -146,6 +152,8 @@ Part of me wishes that one day I'll be able to give each of them the time and en
 ![[thoughts/images/C8F817FA-8961-4287-8318-B45FCA5D7E67.webp|A scene in "Lost in Translation (2003)". I do sometimes, think about the time I wronged my friends. But it happened for a reason, and we learnt to grow from our mistakes.]]
 
 So, yes, I _care_. I care a lot about people, both in its abstract and physical form. I try my hardest to amplify those around me and give them space to grow and achieve what they want in _life_ (also another thing my dear mom taught me 🙂)
+
+---
 
 ## what i like doing.
 
@@ -259,6 +267,8 @@ photography
 </section>
 
 [^photography-portfolio]: One day I would clean-up and polish my photography portfolio.
+
+---
 
 ## compatibility.
 

@@ -51,7 +51,6 @@ import CodeCopy from "./CodeCopy"
 import Darkmode from "./Darkmode"
 import { toHtml } from "hast-util-to-html"
 import crypto from "crypto"
-import { styleText } from "util"
 
 interface EncryptedPayload {
   ciphertext: string
@@ -265,6 +264,25 @@ function spacerElement(): Element {
   )
 }
 
+function hrElement(): Element {
+  return h(
+    "div.collapsible-header-hr",
+    {
+      ariaHidden: true,
+    },
+    [
+      h(
+        "span.collapse-rail",
+        {
+          ariaHidden: true,
+        },
+        [h("span.collapse-line.collapse-line--hr")],
+      ),
+      h("div.collapse-hr-line", [{ type: "text", value: "⁂" }]),
+    ],
+  )
+}
+
 function isCollapsibleHeader(node: ElementContent): boolean {
   if (node.type !== "element") return false
   const element = node as Element
@@ -327,7 +345,14 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
           result.push(wrappedElement)
         }
       }
-      result.push(node)
+      if (endHr) {
+        if (result.length > 0 && isCollapsibleHeader(result[result.length - 1])) {
+          result.push(spacerElement())
+        }
+        result.push(hrElement())
+      } else {
+        result.push(node)
+      }
     } else if (node.type === "element" && headingRank(node)) {
       const level = headingRank(node) as number
 
@@ -575,7 +600,7 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
             dataFootnoteBackref: "",
             ariaLabel: "Back to content",
           },
-          `↩${ordinal === 0 ? "" : ordinal + 1}`,
+          `?${ordinal === 0 ? "" : ordinal + 1}`,
         ) as Element,
       )
     })
@@ -1203,12 +1228,12 @@ const HyperlinksComponent = ((props?: { children: JSX.Element[] }) => {
 const ElementComponent = (() => {
   const Content = ContentConstructor()
   const RecentNotes = NotesComponent({
-    header: "récentes",
+    header: "r?centes",
     slug: "thoughts/" as SimpleSlug,
     numLimits: 9,
   })
   const RecentPosts = NotesComponent({
-    header: "écriture",
+    header: "?criture",
     slug: "posts/" as SimpleSlug,
     numLimits: 6,
   })
@@ -1258,7 +1283,7 @@ const ElementComponent = (() => {
           </address>
         </section>,
         <section style={{ marginTop: "0.9em" }}>
-          <em>média</em>
+          <em>m?dia</em>
           <address class="clickable-container">
             <AliasLink newTab classes={["external"]} name="github" url="https://github.com/aarnphm">
               {githubIcon}

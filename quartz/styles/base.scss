@@ -815,8 +815,6 @@ body[data-is-base="true"] {
 }
 
 .page-content {
-  text-transform: lowercase;
-
   & article {
     & li:has(> input[type="checkbox"]) {
       position: relative;
