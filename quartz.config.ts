@@ -193,7 +193,6 @@ const config: QuartzConfig = {
             ".java",
             ".sql",
             ".js",
-            ".ipynb",
             ".json",
             ".csv",
             ".webp",
