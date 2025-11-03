@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-03 06:09:12 GMT-05:00
+modified: 2025-11-03 06:40:59 GMT-05:00
 noindex: true
 pageLayout: letter
 slides: true
@@ -49,8 +49,6 @@ Looking for someone equally comfortable discussing Wittgenstein (or [[thoughts/P
 five years plan: No kids, for now. I value my relationship with my female friends. I'm based in Toronto, but US-bound eventually.
 
 </div>
-
----
 
 ## about me.
 

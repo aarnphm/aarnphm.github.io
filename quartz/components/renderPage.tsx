@@ -1238,12 +1238,12 @@ const HyperlinksComponent = ((props?: { children: JSX.Element[] }) => {
 const ElementComponent = (() => {
   const Content = ContentConstructor()
   const RecentNotes = NotesComponent({
-    header: "r?centes",
+    header: "récentes",
     slug: "thoughts/" as SimpleSlug,
     numLimits: 9,
   })
   const RecentPosts = NotesComponent({
-    header: "?criture",
+    header: "écriture",
     slug: "posts/" as SimpleSlug,
     numLimits: 6,
   })
