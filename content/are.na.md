@@ -43,7 +43,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-02 23:07:26 GMT-05:00
+modified: 2025-11-03 03:27:25 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1867,6 +1867,10 @@ title: are.na
 
 ## machine learning
 
+- https://www.youtube.com/watch?v=d2QEtm71IEw -- Agents as Ordinary Software: Principled Engineering for Scale | Linus Lee, Thrive Capital
+  - [meta]:
+    - date: 11/03/2025
+    - tags: [agents]
 - https://gladia.netlify.app/publication/2025-mencattini-injective/ -- Language Models are Injective and Hence Invertible
   - [meta]:
     - date: 11/01/2025
