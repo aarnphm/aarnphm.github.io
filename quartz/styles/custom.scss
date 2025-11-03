@@ -436,7 +436,7 @@ section[data-footnotes] {
 hr {
   width: 100%;
   height: 1px;
-  margin: 0;
+  margin: 2rem 0;
   display: block;
   border: 0;
   background: none;
@@ -458,6 +458,10 @@ hr {
     transform: translateY(calc(-1 * var(--rail-width) / 2));
     font-size: 1.2em;
   }
+}
+
+.collapsible-header-hr hr {
+  margin: 0;
 }
 
 // ----- id customization -----

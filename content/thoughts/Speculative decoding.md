@@ -5,7 +5,7 @@ aliases:
 date: "2025-05-21"
 description: a method to speed up LLM decoding
 id: Speculative decoding
-modified: 2025-11-03 06:43:58 GMT-05:00
+modified: 2025-11-03 07:25:07 GMT-05:00
 tags:
   - ml
   - serving
@@ -99,13 +99,13 @@ EAGLE address this by **inputs the token sequence from one time step ahead inclu
 ![[thoughts/images/eagle-figure-6-architecture.webp]]
 
 - See https://github.com/vllm-project/vllm/pull/20078 for triton fused ops.
-  - ```python
-    [feature_seq, token_seq] # [bs, seq_len, hidden_dim], [bs, seq_len]
-    token_seq -> token_emb # [bs, seq_len] -> [bs, seq_len, hidden_dim]
-    fused_seq = feature_seq * token_emb # [bs, seq_len, 2 x hidden_dim]
-    ```
+  ```python
+  [feature_seq, token_seq] # [bs, seq_len, hidden_dim], [bs, seq_len]
+  token_seq -> token_emb # [bs, seq_len] -> [bs, seq_len, hidden_dim]
+  fused_seq = feature_seq * token_emb # [bs, seq_len, 2 x hidden_dim]
+  ```
 - autoregressive_head:
-  - FC layer -> `reduce # [bs, seq_len, hidden_dim]`
+  - FC layer -> `reduce # [bs, seq_len, hidden_dim]{:prolog}`
   - decoder layer -> `features`
 - using [[thoughts/Attention#TreeAttention|tree attention]] to generate a draft tree of depth $m$ and more than $m$ tokens for $m$ forward pass. [^tree-attention]
 

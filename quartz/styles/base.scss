@@ -491,9 +491,11 @@ code {
   border-radius: 0px;
   cursor: pointer;
 
-  &:hover {
-    background: var(--dark);
-    color: var(--light);
+  &:not([data-language]) {
+    &:hover {
+      background: var(--dark);
+      color: var(--light);
+    }
   }
 }
 
