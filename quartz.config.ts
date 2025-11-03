@@ -27,6 +27,7 @@ const configuration: GlobalConfiguration = {
     "**.pyc",
     "**.slx",
     "**.so",
+    "**/docs",
     "**/*400232791*",
     "__pycache__",
     ".mypy_cache",
