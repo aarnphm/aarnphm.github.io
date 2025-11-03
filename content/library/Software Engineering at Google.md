@@ -1,0 +1,16 @@
+---
+category: technology
+date: "2025-11-03"
+external-url: https://abseil.io/resources/swe-book/html/toc.html
+id: Software Engineering at Google
+modified: 2025-11-03 03:36:53 GMT-05:00
+posters: "[[library/posters/swe-books.jpeg]]"
+seealso: null
+status: to-read
+subcategory: software engineering
+tags:
+  - technical
+  - computing
+title: "Software Engineering at Google: Lessons Learned from Programming Over Time"
+year-finished: null
+---
