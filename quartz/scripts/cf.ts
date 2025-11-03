@@ -60,14 +60,12 @@ async function main() {
     } else {
       console.log("Fetching LFS objects for Markdown patterns from .gitattributes...")
       // Ensure the local repo has LFS enabled (no-op if already configured)
-      tryRun("git", ["lfs", "install", "--local"])
+      tryRun("git", ["lfs", "install"])
+      tryRun("git", ["lfs", "pull"])
       // Fetch only the required objects for these patterns to avoid 'content not local'
-      const include = patterns.join(",")
-      // Explicit empty exclude to override any global excludes
-      run("git", ["lfs", "fetch", "--include", include, "--exclude", ""])
       console.log("Checking out LFS-tracked Markdown files...")
-      // Checkout only the matched patterns
-      run("git", ["lfs", "checkout", "--", ...patterns])
+      tryRun("git", ["lfs", "checkout", "content/letters/"])
+      tryRun("git", ["lfs", "checkout", "content/posts/25/n-bday.md"])
     }
   } else {
     console.log("No LFS-tracked *.md patterns found in .gitattributes; skipping checkout.")
