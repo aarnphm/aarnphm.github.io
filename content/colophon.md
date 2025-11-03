@@ -3,7 +3,7 @@ date: "2024-12-10"
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2025-10-29 02:14:20 GMT-04:00
+modified: 2025-11-03 03:42:58 GMT-05:00
 socials:
   twitter: https://x.com/aarnphm_/status/1861550609834402129
 tags:
@@ -12,7 +12,7 @@ tags:
 title: colophon
 ---
 
-**[[/tags/technical|technical]]** -- a very heavily modified version of [Quartz](https://quartz.jzhao.xyz/), hosted with Cloudflare Workers, with support for arXiV file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[/index|text]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), more extensive grid layout support, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, some QOL for [[/feed.xml|rss]] feed, sidenotes [^sidepanel], modified [Flexoki](https://stephango.com/flexoki). I also host all of the LFS on Cloudflare R2, and have a middleware as a proxy client.
+**[[/tags/technical|technical]]** -- a very heavily modified version of [Quartz](https://quartz.jzhao.xyz/), hosted with Cloudflare Workers, with support for arXiV file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[/index|text]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), more extensive grid layout support, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, some QOL for [[/index.xml|rss]] feed, sidenotes, sidepanels [^sidepanel], modified [Flexoki](https://stephango.com/flexoki). I also host all of the LFS on Cloudflare R2, and have a middleware as a proxy client.
 
 [^sidepanel]: You can hold <kbd>alt+click</kbd> on any internal links to [popover](https://x.com/aarnphm_/status/1884954569341272345) a side panel 😃
 

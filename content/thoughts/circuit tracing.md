@@ -2,7 +2,7 @@
 date: "2025-11-02"
 description: autonomous path-finding for causal influence in neural networks
 id: circuit tracing
-modified: 2025-11-02 16:52:34 GMT-05:00
+modified: 2025-11-03 03:41:39 GMT-05:00
 tags:
   - interpretability
   - ml
@@ -31,7 +31,7 @@ Circuit tracing decomposes model computation into a directed graph where nodes a
 
 ## cross-model comparison
 
-Attribution graphs enable {{sidenotes[model diffing]: Particularly useful for measuring model drift across versions - if K2 and V3.1-Exp show divergent attribution graphs at layer 23 for the same prompt, you've found where training or architectural changes restructured computation. Clustering prompts by graph alignment score reveals the geometry of distributional differences.}} at the circuit level. Given two models $M_1, M_2$ (e.g., different training checkpoints or architectural variants), you can compare their computational strategies:[^model-diff]
+Attribution graphs enable {{sidenotes[model diffing]: Particularly useful for measuring model drift across versions.<br/><br/>if Kimi-K1 and Kimi-K2 show divergent attribution graphs at layer 23 for the same prompt, you've found where training or architectural changes restructured computation.<br/><br/>Clustering prompts by graph alignment score reveals the geometry of distributional differences.}} at the circuit level. Given two models $M_1, M_2$ (e.g., different training checkpoints or architectural variants), you can compare their computational strategies:[^model-diff]
 
 [^model-diff]: This connects to the broader question of whether neural networks converge to similar solutions (platonic representation hypothesis) or whether different training runs/architectures produce fundamentally different circuits. Attribution graphs give us a tool to measure this empirically.
 

@@ -313,7 +313,10 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
         )
         if (stack.length > 0) {
           const parentContent = stack[stack.length - 1].content
-          if (parentContent.length > 0 && isCollapsibleHeader(parentContent[parentContent.length - 1])) {
+          if (
+            parentContent.length > 0 &&
+            isCollapsibleHeader(parentContent[parentContent.length - 1])
+          ) {
             parentContent.push(spacerElement())
           }
           parentContent.push(wrappedElement)
@@ -338,7 +341,10 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
         )
         if (stack.length > 0) {
           const parentContent = stack[stack.length - 1].content
-          if (parentContent.length > 0 && isCollapsibleHeader(parentContent[parentContent.length - 1])) {
+          if (
+            parentContent.length > 0 &&
+            isCollapsibleHeader(parentContent[parentContent.length - 1])
+          ) {
             parentContent.push(spacerElement())
           }
           parentContent.push(wrappedElement)
@@ -370,7 +376,10 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
     )
     if (stack.length > 0) {
       const parentContent = stack[stack.length - 1].content
-      if (parentContent.length > 0 && isCollapsibleHeader(parentContent[parentContent.length - 1])) {
+      if (
+        parentContent.length > 0 &&
+        isCollapsibleHeader(parentContent[parentContent.length - 1])
+      ) {
         parentContent.push(spacerElement())
       }
       parentContent.push(wrappedElement)
@@ -1273,7 +1282,7 @@ const ElementComponent = (() => {
             >
               {bskyIcon}
             </AliasLink>
-            <AliasLink newTab name="rss" url="/feed.xml">
+            <AliasLink newTab name="rss" url="/index.xml">
               {rssIcon}
             </AliasLink>
           </address>
