@@ -296,8 +296,6 @@ import torch
 
 
 class MatryoshkaConfig(NamedTuple):
-  """Immutable configuration for matryoshka SAE"""
-
   encoder: Any
   decoders: dict[int, Any]
   sparsity_levels: tuple[int, ...]
@@ -307,7 +305,6 @@ class MatryoshkaConfig(NamedTuple):
 def create_matryoshka_config(
   checkpoint, sparsity_levels: list[int] | None = None
 ) -> MatryoshkaConfig:
-  """Initialize matryoshka SAE configuration"""
   if sparsity_levels is None:
     sparsity_levels = [32, 64, 128, 256]
 
@@ -322,7 +319,6 @@ def create_matryoshka_config(
 def select_sparsity_level(
   complexity_score: float, thresholds: tuple[float, ...] = (0.3, 0.6, 0.85)
 ) -> int:
-  """Pure function mapping complexity to sparsity level"""
   levels = [32, 64, 128, 256]
   for i, threshold in enumerate(thresholds):
     if complexity_score < threshold:
@@ -333,7 +329,6 @@ def select_sparsity_level(
 def create_sparse_features(
   all_features: torch.Tensor, k: int, idx: int
 ) -> torch.Tensor:
-  """Create sparse representation via TopK selection"""
   topk_vals, topk_idx = torch.topk(all_features[idx], k)
   sparse = torch.zeros_like(all_features[idx])
   sparse.scatter_(0, topk_idx, topk_vals)
@@ -343,21 +338,15 @@ def create_sparse_features(
 def decode_with_sparsity(
   sparse_features: torch.Tensor, decoders: dict[int, Any], k: int
 ) -> torch.Tensor:
-  """Decode sparse features with appropriate decoder"""
   return decoders[k](sparse_features)
 
 
 def adaptive_encode_decode(
   config: MatryoshkaConfig, activations: torch.Tensor, token_ids: torch.Tensor
 ) -> torch.Tensor:
-  """Select sparsity level per token based on complexity"""
-  # Estimate complexity
   complexity = config.complexity_estimator(token_ids)
-
-  # Encode once
   all_features = config.encoder(activations)
 
-  # Decode with adaptive sparsity via function composition
   def process_token(idx: int, complexity_score: float) -> torch.Tensor:
     k = select_sparsity_level(complexity_score)
     sparse = create_sparse_features(all_features, k, idx)
