@@ -8,7 +8,7 @@ import { QuartzConfig } from "../../cfg"
 
 const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
   // glob all non MD files in content folder and copy it over
-  const patterns = ["**/*.md", "**/*.base", ...cfg.configuration.ignorePatterns]
+  const patterns = ["**/*.md", "**/*.base", "**/*.ipynb", ...cfg.configuration.ignorePatterns]
 
   // Skip PDFs when running in Cloudflare Pages
   if (process.env.CF_PAGES === "1" || argv.watch) {
