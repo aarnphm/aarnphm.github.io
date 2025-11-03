@@ -7,7 +7,7 @@ aliases:
 date: "2024-10-30"
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2025-11-03 02:57:33 GMT-05:00
+modified: 2025-11-03 04:32:16 GMT-05:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -44,6 +44,8 @@ _excerpt from_ @sharkey2025openproblemsmechanisticinterpretability
     - SDL reconstruction error are way too high [@rajamanoharan2024improvingdictionarylearninggated{see section 2.3}]
     - SDL assumes linear representation hypothesis against non-linear feature space.
     - SDL leaves feature geometry unexplained ^geometry
+
+![[thoughts/circuit tracing#open problems]]
 
 ## transcoders
 
@@ -934,7 +936,7 @@ idea: deletes one activation of the network to see how performance on a task cha
 
 ## mathematical frameworks to transformers
 
-see also: @elhage2021mathematical
+see also: @elhage2021mathematical, [[thoughts/mathematical framework transformers circuits|notes]]
 
 ### residual stream
 

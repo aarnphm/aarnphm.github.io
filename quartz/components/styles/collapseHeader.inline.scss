@@ -189,7 +189,6 @@ $toggle-gap: 0rem;
   }
 
   .collapsible-header-content {
-    display: grid;
     color: color-mix(in srgb, var(--gray) 75%, var(--dark) 25%);
 
     & :last-child {

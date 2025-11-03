@@ -2,7 +2,7 @@
 date: "2025-11-02"
 description: autonomous path-finding for causal influence in neural networks
 id: circuit tracing
-modified: 2025-11-03 03:41:39 GMT-05:00
+modified: 2025-11-03 04:31:00 GMT-05:00
 tags:
   - interpretability
   - ml
@@ -17,23 +17,38 @@ Circuit tracing decomposes model computation into a directed graph where nodes a
 
 [^attribution-methods]: The core attribution method computes gradients of downstream feature activations with respect to upstream features, similar to integrated gradients but operating in feature space rather than input space. This gives edge weights $w_{ij} = \frac{\partial f_j}{\partial f_i}$ where $f_i, f_j$ are feature activations.
 
-1. **Feature extraction**: Train cross-layer transcoders $T^{(\ell)}: \mathbb{R}^{d_{\text{model}}} \to \mathbb{R}^{d_{\text{features}}}$ that decompose residual stream activations into sparse feature bases.[^transcoder-architecture] Unlike [[thoughts/sparse autoencoder|SAEs]] which operate within-layer, transcoders map between arbitrary layer pairs, enabling cross-layer feature tracking.
+1. **Feature extraction**:
+   - Train cross-layer transcoders $T^{(\ell)}: \mathbb{R}^{d_{\text{model}}} \to \mathbb{R}^{d_{\text{features}}}$ that decompose residual stream activations into sparse feature bases.[^transcoder-architecture]
+   - Unlike [[thoughts/sparse autoencoder|SAEs]] which operate within-layer, transcoders map between arbitrary layer pairs, enabling cross-layer feature tracking.
+2. **Attribution computation**:
+   - For each feature $f_j$ at layer $\ell$, compute attribution scores to upstream features $f_i$ at layer $\ell(k)$ via gradient-based methods.
+   - This produces a weighted directed graph $G = (V, E, w)$ where edge weights represent causal influence strength.
+3. **Graph pruning**:
+   - Apply threshold $\tau$ to edge weights, keeping only edges with $|w_{ij}| > \tau$.
+   - Pruning threshold trades off between graph interpretability (sparse is readable) and faithfulness (dense captures all interactions).[^pruning-problem]
+4. **Validation**:
+   - Verify discovered circuits via activation patching
+   - ablate identified features and measure impact on downstream behavior. A valid circuit should show predictable degradation when ablated.
 
-2. **Attribution computation**: For each feature $f_j$ at layer $\ell$, compute attribution scores to upstream features $f_i$ at layer $\ell - k$ via gradient-based methods. This produces a weighted directed graph $G = (V, E, w)$ where edge weights represent causal influence strength.
+[^transcoder-architecture]:
+    [[thoughts/mechanistic interpretability#transcoders|Transcoders]] typically use a standard autoencoder architecture with L1 sparsity penalty: $\mathcal{L} = \|x - D(E(x))\|^2 + \lambda \|E(x)\|_1$ where $E$ is encoder, $D$ is decoder.
 
-3. **Graph pruning**: Apply threshold $\tau$ to edge weights, keeping only edges with $|w_{ij}| > \tau$. The pruning threshold trades off between graph interpretability (sparse is readable) and faithfulness (dense captures all interactions).[^pruning-problem]
+    The key difference from SAEs is that input $x$ comes from layer $\ell$ while reconstruction target can be from layer $\ell'$, enabling feature tracking across the residual stream.
 
-4. **Validation**: Verify discovered circuits via activation patching - ablate identified features and measure impact on downstream behavior. A valid circuit should show predictable degradation when ablated.
+[^pruning-problem]: The pruning threshold $\tau$ is arbitrary and task-dependent.
 
-[^transcoder-architecture]: Transcoders typically use a standard autoencoder architecture with L1 sparsity penalty: $\mathcal{L} = \|x - D(E(x))\|^2 + \lambda \|E(x)\|_1$ where $E$ is encoder, $D$ is decoder. The key difference from SAEs is that input $x$ comes from layer $\ell$ while reconstruction target can be from layer $\ell'$, enabling feature tracking across the residual stream.
+    Too high and you miss important sparse interactions; too low and the graph becomes uninterpretable.
 
-[^pruning-problem]: The pruning threshold $\tau$ is arbitrary and task-dependent. Too high and you miss important sparse interactions; too low and the graph becomes uninterpretable. There's no principled method for setting $\tau$ - current practice is manual tuning based on graph complexity and downstream validation. This is a fundamental interpretability vs faithfulness tradeoff.
+    There's no principled method for setting $\tau$ - current practice is manual tuning based on graph complexity and downstream validation. This is a fundamental interpretability vs faithfulness tradeoff.
 
 ## cross-model comparison
 
 Attribution graphs enable {{sidenotes[model diffing]: Particularly useful for measuring model drift across versions.<br/><br/>if Kimi-K1 and Kimi-K2 show divergent attribution graphs at layer 23 for the same prompt, you've found where training or architectural changes restructured computation.<br/><br/>Clustering prompts by graph alignment score reveals the geometry of distributional differences.}} at the circuit level. Given two models $M_1, M_2$ (e.g., different training checkpoints or architectural variants), you can compare their computational strategies:[^model-diff]
 
-[^model-diff]: This connects to the broader question of whether neural networks converge to similar solutions (platonic representation hypothesis) or whether different training runs/architectures produce fundamentally different circuits. Attribution graphs give us a tool to measure this empirically.
+[^model-diff]:
+    This connects to the broader question of whether neural networks converge to similar solutions (platonic representation hypothesis) or whether different training runs/architectures produce fundamentally different circuits.
+
+    Attribution graphs give us a tool to measure this empirically.
 
 For a fixed prompt $p$, generate attribution graphs $G_1(p), G_2(p)$ and measure:
 
@@ -58,7 +73,7 @@ This reveals whether models are:
   - Gradient-based attribution assumes local linearity around activations
   - Breaks in saturated regions of nonlinearities
   - No ground truth for "correct" attributions
-  - Validation relies on behavioral experiments (patching) with their own methodological issues[^patching-validation]
+  - Validation relies on behavioral experiments (patching) with their own {{sidenotes[methodological issues]: Activation patching tests whether a circuit is _sufficient_ (does including it preserve behavior?) but not _necessary_ (could the model route around it?).<br/><br/>You need both ablation and patch-in experiments, plus distributional controls to handle out-of-distribution activations from patching.}}
 
 - Superposition and polysemanticity contaminate the graph
   - Polysemantic features (encode multiple concepts) $\to$ attribution edges conflate multiple causal pathways
@@ -84,11 +99,15 @@ This reveals whether models are:
   - Activation similarity is noisy; behavioral similarity is expensive
   - Shared transcoder dictionary approach assumes models _have_ alignable features[^alignment-problem]
 
-[^patching-validation]: Activation patching tests whether a circuit is _sufficient_ (does including it preserve behavior?) but not _necessary_ (could the model route around it?). You need both ablation and patch-in experiments, plus distributional controls to handle out-of-distribution activations from patching.
+[^atomic-features]: @bussmann2024showing demonstrates that SAE features are not atomic:
 
-[^atomic-features]: @bussmann2024showing demonstrates that SAE features are not atomic - you can train "meta-SAEs" on SAE features and find further structure. This suggests an infinite regress problem: at what level of decomposition do we stop? Attribution graphs inherit this problem from their feature dictionaries.
+    - you can train "meta-SAEs" on SAE features and find further structure.
+    - infinite regress problem: at what level of decomposition do we stop? Attribution graphs inherit this problem from their feature dictionaries.
 
-[^alignment-problem]: One approach is training a shared transcoder dictionary across both models, forcing features into a common basis. But this assumes the models _have_ alignable features - if they've learned fundamentally different decompositions, forced alignment may be misleading. See the injectivity question in cross-model comparison above.
+[^alignment-problem]:
+    One approach is training a shared transcoder dictionary across both models, forcing features into a common basis.
+
+    But this assumes the models _have_ alignable features: if they've learned fundamentally different decompositions, forced alignment may be misleading. See the injectivity question in cross-model comparison above.
 
 ## open problems
 

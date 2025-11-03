@@ -13,7 +13,7 @@
       > p:first-of-type:not(.popover *) {
         font-size: 22.2763px; // follows h3
         font-weight: $semiBoldWeight;
-        margin-top: 1rem;
+        margin-top: 1rem !important;
         font-family: var(--headerFont);
       }
 

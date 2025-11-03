@@ -543,8 +543,12 @@ img {
   max-width: 100%;
   width: 100%;
   border-radius: 5px;
-  margin: 1rem 0;
+  margin: 0;
   content-visibility: auto;
+}
+
+figure[data-img-w-caption] {
+  margin-bottom: 1.2rem;
 }
 
 p > img + em {
