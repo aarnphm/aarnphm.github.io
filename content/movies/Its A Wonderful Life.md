@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Frank Capra
 id: its-a-wonderful-life
 modified: 2025-10-29 02:14:51 GMT-04:00
-poster: "[[movies/posters/its-a-wonderful-life.jpg]]"
+posters: "[[movies/posters/its-a-wonderful-life.jpg]]"
 status: to-watch
 studio: rko
 tags:

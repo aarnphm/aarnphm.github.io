@@ -2,7 +2,7 @@
 date: "2025-01-06"
 description: and all the things I found interesting on the internet.
 id: images
-modified: 2025-10-29 02:14:21 GMT-04:00
+modified: 2025-11-04 04:16:42 GMT-05:00
 tags:
   - seed
 title: images
@@ -104,6 +104,8 @@ transclude:
 ![[thoughts/images/alex de betak paris apartment.webp|alex de betak's paris apartment]]
 
 ![[thoughts/images/sub-worldmodels.webp|subagents world view]]
+
+![[thoughts/images/books.webp|A list of books]]
 
 ## authors
 

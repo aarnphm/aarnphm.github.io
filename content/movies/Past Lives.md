@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Celine Song
 id: past-lives
 modified: 2025-10-29 02:14:54 GMT-04:00
-poster: "[[movies/posters/past-lives.webp]]"
+posters: "[[movies/posters/past-lives.webp]]"
 status: recurring
 studio: a24
 tags:

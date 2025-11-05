@@ -47,7 +47,7 @@ views:
       - property: title
         direction: ASC
     cardSize: 320
-    image: note.poster
+    image: note.posters
   - type: table
     name: all
     groupBy:

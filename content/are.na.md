@@ -43,7 +43,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-03 04:46:11 GMT-05:00
+modified: 2025-11-04 20:30:24 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -256,6 +256,11 @@ title: are.na
 
 ## website
 
+- https://nicky.day -- hpbd nicky!
+  - [meta]:
+    - date: 11/04/2025
+    - tags: [friend, love]
+  - web poetic
 - https://themonolithproject.net/ -- The Monolith Project
   - [meta]:
     - date: 10/29/2025
@@ -2505,6 +2510,12 @@ title: are.na
 
 ## opinions
 
+- https://andymasley.substack.com/p/individual-ai-use-is-not-bad-for -- Using ChatGPT is not bad for the environment [**]
+  - [meta]:
+    - date: 11/04/2025
+    - tags: [environment, llm]
+  - his replies: https://andymasley.substack.com/p/replies-to-criticisms-of-my-chatgpt
+  - see also: https://epoch.ai/gradient-updates/how-much-energy-does-chatgpt-use
 - https://johnpaulbrammer.substack.com/p/thoughts-on-the-dating-app-screenshot -- Thoughts on the [[/dating|Dating]] App Screenshot
   - [meta]:
     - date: 10/29/2025
@@ -2967,6 +2978,11 @@ title: are.na
 
 ## philosophy
 
+- https://www.youtube.com/watch?v=bH2EjxAn0Fk -- Empathy: philosophical debates and phenomenology
+  - [meta]:
+    - date: 11/04/2025
+    - tags: [empathy, rationalist]
+  - theory theory versus [[thoughts/hermeneutics]]
 - https://www.youtube.com/watch?v=usxvyf3xqcQ -- Hubert Dreyfus - Dostoyevsky's The Brothers Karamazov [**]
   - [meta]:
     - date: 10/29/2025
@@ -3330,6 +3346,11 @@ title: are.na
 
 ## cooking
 
+- https://grimgrains.com/site/lactofermentation.html -- Lactofermentation
+  - [meta]:
+    - date: 11/03/2025
+    - tags: [pickle]
+  - preserve any vegetable using salt, and the bacterium (lactobacillus) already present on the vegetables.
 - https://www.youtube.com/watch?v=_LVX03nJyVY -- Ratio in cooking [**]
   - [meta]:
     - date: 10/13/2025

@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: John Crowley
 id: we-live-in-time
 modified: 2025-10-29 02:15:02 GMT-04:00
-poster: "[[movies/posters/we-live-in-time.jpg]]"
+posters: "[[movies/posters/we-live-in-time.jpg]]"
 status: recurring
 studio: a24
 tags:

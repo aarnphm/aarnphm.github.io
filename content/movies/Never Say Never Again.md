@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Irvin Kershner
 id: never-say-never-again
 modified: 2025-10-29 02:14:53 GMT-04:00
-poster: "[[movies/posters/never-say-never-again.jpg]]"
+posters: "[[movies/posters/never-say-never-again.jpg]]"
 status: recurring
 studio: bond
 tags:

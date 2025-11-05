@@ -237,38 +237,9 @@ async function handleEmbedRequest(
   }
 
   try {
-    // KV-backed cache keyed by sha256(hex) of encodeURIComponent(url)
-    const encoded = encodeURIComponent(target.toString())
-    const key = `substack:${await sha256Hex(encoded)}`
-
-    // Try KV first
-    let cached: EmbedPayload | null = null
-    try {
-      const s = await env.SUBSTACK_CACHE.get(key)
-      if (s) cached = JSON.parse(s) as EmbedPayload
-    } catch {}
-
-    if (cached) {
-      const status = cached.type === "substack" ? 200 : 204
-      return new Response(JSON.stringify(cached), {
-        status,
-        headers: {
-          ...embedHeaders,
-          "Cache-Control": "s-maxage=1800, stale-while-revalidate=60",
-          "X-Substack-Cache": "hit",
-        },
-      })
-    }
-
     // Miss: fetch and populate KV
     const payload = await fetchSubstackMetadata(target)
     const status = payload.type === "substack" ? 200 : 204
-
-    // Store with TTL (7 days for substack payloads, 1 day for unknown)
-    try {
-      const ttl = payload.type === "substack" ? 60 * 60 * 24 * 7 : 60 * 60 * 24
-      await env.SUBSTACK_CACHE.put(key, JSON.stringify(payload), { expirationTtl: ttl })
-    } catch {}
 
     return new Response(JSON.stringify(payload), {
       status,

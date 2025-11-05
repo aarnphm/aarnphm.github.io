@@ -15,6 +15,10 @@ async function* processFile(ctx: BuildCtx, file: VFile) {
         : aliasTarget
     ) as FullSlug
 
+    if (simplifySlug(aliasTargetSlug) === ogSlug) {
+      continue
+    }
+
     const redirUrl = resolveRelative(aliasTargetSlug, ogSlug)
     yield write({
       ctx,

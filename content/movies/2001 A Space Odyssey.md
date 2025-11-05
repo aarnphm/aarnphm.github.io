@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Stanley Kubrick
 id: 2001-a-space-odyssey
 modified: 2025-10-29 09:38:13 GMT-04:00
-poster: "[[movies/posters/2001-a-space-odyssey.jpg]]"
+posters: "[[movies/posters/2001-a-space-odyssey.jpg]]"
 runtime: 139
 status: recurring
 studio: mgm

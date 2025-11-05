@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Maurice Pialat
 id: we-wont-grow-old-together
 modified: 2025-10-29 02:15:02 GMT-04:00
-poster: "[[movies/posters/we-wont-grow-old-together.jpg]]"
+posters: "[[movies/posters/we-wont-grow-old-together.jpg]]"
 status: recurring
 studio: general
 tags:

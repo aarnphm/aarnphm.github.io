@@ -361,8 +361,13 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
               return toHtml(target, { allowDangerousHtml: true })
             }
 
-            const transformations: Record<"poetry" | "quotes" | "sms", (node: Code) => string> = {
+            const transformations: Record<
+              "poetry" | "poem" | "quotes" | "sms",
+              (node: Code) => string
+            > = {
               poetry: (node: Code) =>
+                opts.code.poetry ? transformPoetry(createBaseElement(node), lang) : node.value,
+              poem: (node: Code) =>
                 opts.code.poetry ? transformPoetry(createBaseElement(node), lang) : node.value,
               quotes: (node: Code) =>
                 opts.code.quotes ? transformQuotes(createBaseElement(node)) : node.value,

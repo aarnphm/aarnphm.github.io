@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-03 06:40:59 GMT-05:00
+modified: 2025-11-04 18:25:22 GMT-05:00
 noindex: true
 pageLayout: letter
 slides: true
@@ -44,7 +44,7 @@ I like <span style="text-decoration: underline;">Rachmaninoff</span> and garage 
 
 Looking for someone equally comfortable discussing Wittgenstein (or [[thoughts/Philosophy and Nietzsche|Nietzsche]]) over homemade pasta, high empathy, witty and sharp, non-avoidance attachment style, to plan spontaneous cabin escapes.
 
-[^managed-obesssion]: more of a time-block allocation thingy. I spend around 15-30 mins a day working on something I care about deeply. Right now, it is [[thoughts/Tractatus|Tractatus Logico-Philosophicus]] by [[thoughts/Wittgenstein]]
+[^managed-obesssion]: more of a time-block allocation technique. This phrase is colloquially an extension of [spaced repetition](https://apps.ankiweb.net/). I spend around 15-30 mins a day working on something I care about deeply. Right now, it is [[thoughts/Tractatus|Tractatus Logico-Philosophicus]] by [[thoughts/Wittgenstein]], and building rhizomatic tooling.
 
 five years plan: No kids, for now. I value my relationship with my female friends. I'm based in Toronto, but US-bound eventually.
 
@@ -85,8 +85,6 @@ I want to build a farm one day, and a high believer in lab-grown meat [^lab-grow
 
 Most people know me online as `aarnphm` /urn-fm/, but you can call me _Aaron_ (or [a-a-ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
 
-I'm currently an [[thoughts/Transformers#inference.|inference]] optimization [[/|engineer]] at [bentoml](https://bentoml.com/), which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]], based in Toronto, Canada.
-
 ---
 
 ## professional life.
@@ -97,14 +95,15 @@ I'm currently an [[thoughts/Transformers#inference.|inference]] optimization [[/
 
 </figure>
 
+I'm currently an [[thoughts/Transformers#inference.|inference]] optimization [[/|engineer]] at [bentoml](https://bentoml.com/), which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]], based in Toronto, Canada.
+
 I'm rather attentive and assiduous in my [[thoughts/craft|work]]. I interned at the business analytics division of a bank back in 2018, doing behavioral analysis on customer usage patterns.
 This was my first real exposure to [supervised learning](https://en.wikipedia.org/wiki/Supervised_learning) and I was immediately hooked.
 
-I lacked the skills and knowledge at the time, but that didn't bother me much: I found the problem space fascinating and knew I would _try_ to solve it. Not because someone _asked me to_, but because _I wanted to_.
+I pretty much didn't know a thing back then, but that didn't bother me much: I found the problem space fascinating and knew I would _try_ to solve it. Not because someone _asked me to_, but because _I wanted to_. I'm definitely still have a ton to learn, but over time you tend to pick up skills and knowledge along the way.
 
 Early on, I noticed that most of [[thoughts/Machine learning|ML]]'s [technical debt](https://proceedings.neurips.cc/paper_files/paper/2015/file/86df7dcfd896fcaf2674f757a2463eba-Paper.pdf) comes down to scaling, which inherently is an _engineering_ problem.
-This led me to join my current startup, as a software engineer.
-The mission statement has shifted quite a bit since then, but the core remains the same: optimizing [[thoughts/LLMs|statistical models]] to be as fast and accessible as possible.
+This led me to join my current startup, as a software engineer. The mission statement has shifted quite a bit since then, but the core remains the same: optimizing [[thoughts/LLMs|statistical models]] to be as fast and accessible as possible.
 
 My approach to problems has stayed consistent since I learned arithmetic: ==don't quit, managed obsession [^obsession], and get your hands dirty== [^work].
 
@@ -130,9 +129,9 @@ I might not be good at something initially, but this modus operandi has allowed 
 
 That said, I care deeply about the well-being of the people around me. My [headspace](https://notes.aarnphm.xyz) has been occupied with a lot lately, but I always try to stay present and make time for the people in my life.
 
-This might be connected to something else, though—I moved abroad at 17 to study at a private all-boys boarding school in Vancouver, and I think that left me more anxious than I'd like to admit [^being-human].
+This might be connected to something else, though—I moved abroad at 17 to study at a private all-boys boarding school in Vancouver, and I think that left me a bit more anxious than I'd like to admit [^being-human].
 
-My mom says I was always shy growing up. These days I'm much more social, though I suppose the right word is _ambivert_: I'm comfortable in social settings, but I also deeply value my alone time.
+My mom says I was always shy growing up. These days I'm much more social, though I suppose the right word is _ambivert_: I'm comfortable in social settings, but I also treasure my alone time.
 
 [^being-human]: Regardless, this was life-changing, as it taught me a lot about [[thoughts/being]] _human_.
 
@@ -142,10 +141,7 @@ My mom says I was always shy growing up. These days I'm much more social, though
 One cannot be a friend to many people in the sense of having friendship of the perfect type with them, just as one cannot be in love with many people at once (for love is a sort of excess of feeling, and it is the nature of such only to be felt towards one person); and it is not easy for many people at the same time to please the same person very greatly, or perhaps even to be good in his eyes.
 ```
 
-I love my friends deeply—so much that I'd willingly take a bullet for any of them, at any moment.
-There are no ulterior motives here; everything I do comes from genuine intention.
-When I find something really cool and share it with someone, it's because they're the first person who comes to mind.
-Part of me wishes that one day I'll be able to give each of them the time and energy they truly deserve.
+I love my friends deeply—so much that I'd willingly take a bullet for any of them, at any moment. There are no ulterior motives here; everything I do comes from genuine intention. When I find something really cool and share it with someone, it's because they're the first person who comes to mind. Part of me wishes that one day I'll be able to give each of them the time and energy they truly deserve.
 
 ![[thoughts/images/C8F817FA-8961-4287-8318-B45FCA5D7E67.webp|A scene in "Lost in Translation (2003)". I do sometimes, think about the time I wronged my friends. But it happened for a reason, and we learnt to grow from our mistakes.]]
 
@@ -231,7 +227,7 @@ design
 - I follow Fashion Week quite extensively, especially NYFW and Milan Fashion Week
   - Collina Strada and Sandy Liang are a few favorites of mine lately.
 - I'm a bit of a horology nerd. Watches are generally good investment, and nice accessory, if you know your stuff.
-  > [!note]- my collection so far (by all means, this changes over time)
+  > [!note]- my collection so far
   >
   > ![[thoughts/images/A34D3063-8B5C-4784-BC8E-3C018662D9FC_1_105_c.webp]]
   > ![[thoughts/images/BB9BEC3A-AEFB-41B2-809A-4700E5C4AA15_1_105_c.webp]]

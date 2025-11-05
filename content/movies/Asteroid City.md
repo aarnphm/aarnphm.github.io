@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Wes Anderson
 id: asteroid-city
 modified: 2025-10-29 02:14:46 GMT-04:00
-poster: "[[movies/posters/asteroid-city.jpg]]"
+posters: "[[movies/posters/asteroid-city.jpg]]"
 status: recurring
 studio: wes anderson
 tags:

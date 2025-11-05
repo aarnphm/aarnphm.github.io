@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Alex Garland
 id: ex-machina
 modified: 2025-10-29 02:14:49 GMT-04:00
-poster: "[[movies/posters/ex-machina.jpg]]"
+posters: "[[movies/posters/ex-machina.jpg]]"
 status: recurring
 studio: a24
 tags:

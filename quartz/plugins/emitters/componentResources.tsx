@@ -17,6 +17,9 @@ import pseudoStyle from "../../components/styles/pseudocode.scss"
 import notFoundScript from "../../components/scripts/404.inline"
 //@ts-ignore
 import protectedScript from "../../components/scripts/protected.inline"
+//@ts-ignore
+import audioScript from "../../components/scripts/audio.inline"
+import audioStyle from "../../components/styles/audio.scss"
 import { BuildCtx } from "../../util/ctx"
 import { QuartzComponent } from "../../components/types"
 import type { QuartzMdxComponent } from "../../components/mdx/registry"
@@ -98,8 +101,13 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     componentResources.css.push(popoverStyle)
   }
 
-  componentResources.css.push(clipboardStyle, pseudoStyle)
-  componentResources.afterDOMLoaded.push(clipboardScript, pseudoScript, protectedScript)
+  componentResources.css.push(clipboardStyle, pseudoStyle, audioStyle)
+  componentResources.afterDOMLoaded.push(
+    clipboardScript,
+    pseudoScript,
+    protectedScript,
+    audioScript,
+  )
 
   if (cfg.analytics?.provider === "plausible") {
     const plausibleHost = cfg.analytics.host ?? "https://plausible.io"

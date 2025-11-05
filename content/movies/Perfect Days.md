@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Wim Wenders
 id: perfect-days
 modified: 2025-10-29 02:14:55 GMT-04:00
-poster: "[[movies/posters/perfect-days.jpg]]"
+posters: "[[movies/posters/perfect-days.jpg]]"
 status: to-watch
 studio: general
 tags:

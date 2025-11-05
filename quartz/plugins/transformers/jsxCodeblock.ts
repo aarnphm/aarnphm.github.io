@@ -180,7 +180,7 @@ export const JsxCodeblock: QuartzTransformerPlugin = () => {
 
             node.data ??= {}
             node.data.hProperties ??= {}
-            ;(node.data.hProperties as Record<string, string>)["data-jsx-block-id"] = id
+            node.data.hProperties["data-jsx-block-id"] = id
           })
         },
       ]

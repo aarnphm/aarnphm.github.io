@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Alfred Hitchcock
 id: vertigo
 modified: 2025-10-29 02:15:06 GMT-04:00
-poster: "[[movies/posters/vertigo.jpg]]"
+posters: "[[movies/posters/vertigo.jpg]]"
 status: to-watch
 studio: paramount
 tags:

@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Florian Zeller
 id: the-father
 modified: 2025-10-29 02:14:57 GMT-04:00
-poster: "[[movies/posters/the-father.jpg]]"
+posters: "[[movies/posters/the-father.jpg]]"
 status: to-watch
 studio: general
 tags:

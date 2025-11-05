@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Roger Michell
 id: notting-hill
 modified: 2025-10-29 02:14:54 GMT-04:00
-poster: "[[movies/posters/notting-hill.jpg]]"
+posters: "[[movies/posters/notting-hill.jpg]]"
 status: recurring
 studio: general
 tags:

@@ -2,7 +2,7 @@
 date: "2025-10-23"
 description: from Clearer Thinking.
 id: personality
-modified: 2025-10-29 02:15:07 GMT-04:00
+modified: 2025-11-04 06:28:25 GMT-05:00
 noindex: true
 pageLayout: letter
 slides: true
@@ -16,7 +16,7 @@ This is the [Clearer Thinking Ultimate Personality Test](https://www.clearerthin
 
 > [!note]- reflection
 >
-> somewhat resonate with this reports lol. Mostly with the fact that I'm pretty much on the rationalist camp. But also emotional lover boi type beat!
+> somewhat resonate with this reports lol. agree with most facts here, given that I consider myself a rationalist. But also emotional lover boi type beat!
 
 ## cluster
 

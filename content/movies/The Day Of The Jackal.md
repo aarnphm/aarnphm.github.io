@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Fred Zinnemann
 id: the-day-of-the-jackal
 modified: 2025-10-29 02:14:57 GMT-04:00
-poster: "[[movies/posters/the-day-of-the-jackal.jpg]]"
+posters: "[[movies/posters/the-day-of-the-jackal.jpg]]"
 status: finished
 studio: universal
 tags:

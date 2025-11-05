@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Christopher Nolan
 id: inception
 modified: 2025-10-29 02:15:04 GMT-04:00
-poster: "[[movies/posters/inception.jpg]]"
+posters: "[[movies/posters/inception.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:

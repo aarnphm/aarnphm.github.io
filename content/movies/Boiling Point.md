@@ -4,7 +4,7 @@ date: "2025-10-29"
 director: Philip Barantini
 id: Boiling Point
 modified: 2025-10-29 02:14:47 GMT-04:00
-poster: "[[movies/posters/boiling-point.jpg]]"
+posters: "[[movies/posters/boiling-point.jpg]]"
 status: to-watch
 studio: Ascendant Films
 tags:

@@ -6,7 +6,7 @@ comments: false
 date: "2021-12-22"
 description: and a celebration for the act of making.
 id: craft
-modified: 2025-10-29 02:15:42 GMT-04:00
+modified: 2025-11-04 04:00:57 GMT-05:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -23,6 +23,15 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
 ## writing.
 
 You can find internal monologue under [[/posts/]] index.
+
+## web poetics
+
+- bday-gifts, a collection of online artifacts I built in addition with some [[/posts|writing]] to celebrate my friends' birthday.
+  - a fun [self-replicating spacecraft](https://en.wikipedia.org/wiki/Self-replicating_spacecraft) game
+    - A hybrid of A\* and a BFS search for pathfinding algorithm.
+    - polyalphabetic cipher with deterministic reversible transformations includes a Fiestel network structure with MurmurHash3 mixing of 32-bit avalanche mixer
+    - Source: [Site](https://nicky.day/)
+      ![[thoughts/images/nb-day.webp]]
 
 ## open source.
 

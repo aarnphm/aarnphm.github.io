@@ -1,10 +1,11 @@
 ---
+claude:
+  session:
+    - 74bc2295-a1bb-44e8-9036-8de8aba14dc1
 date: "2024-11-03"
 description: and cross-layers observations. SAE is a special case of sparse crosscoders.
 id: sparse crosscoders
-modified: 2025-11-03 05:17:07 GMT-05:00
-session:
-  - 74bc2295-a1bb-44e8-9036-8de8aba14dc1
+modified: 2025-11-04 18:25:15 GMT-05:00
 tags:
   - ml
   - interpretability

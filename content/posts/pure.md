@@ -2,7 +2,7 @@
 date: "2025-10-21"
 draft: true
 id: pure
-modified: 2025-10-29 02:15:12 GMT-04:00
+modified: 2025-11-04 18:25:23 GMT-05:00
 tags:
   - seed
 title: pure
@@ -13,8 +13,6 @@ One thing I realised that I'm pretty much a workaholic, although I do have the c
 friendship is about giving enough [[thoughts/Attention|attention]]
 
 I preemptedly book a staycation during reading week, because why not do things more spontaneously if you can afford to do so?
-
-if you're asleep, i hope this finds you drifting softly among the stars, dreaming of the life you want to live, feeling that quiet pull of what you long to do. i hope you find solace in the small things—how you know yourself best—and protect your calmness, gently, against whatever currents try to pull you under.
 
 and if you're awake, half-caught between wanting and waiting, i hope you're kind to the way your mind spirals back to the same person, the same moment, the same what-if that sits in your chest like a stone you've learned to carry. there's something about yearning that makes you feel ridiculous and profound at once—like you're simultaneously the most cliché version of yourself and also touching something ancient, something everyone who has ever loved has felt, which is maybe why every generation writes the same songs about longing and thinks they've discovered it for the first time. you'll be making coffee and suddenly you're thinking about how they laugh—not the laugh itself but the specific way their shoulders move, the half-second before the sound arrives—or you're on the train and a stranger's cologne reminds you of them and your whole body remembers before your brain catches up, which is its own kind of knowledge, the somatic archive we carry of people we've lost or never fully had. it's exhausting, this double life you lead, where half of you is here doing the dishes and responding to emails and half is somewhere else entirely, with someone who may not even know the weight of the space they occupy in you, may not even remember that tuesday in september when they said something that changed the entire architecture of how you see yourself.
 

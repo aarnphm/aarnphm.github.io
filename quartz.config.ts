@@ -116,6 +116,7 @@ const config: QuartzConfig = {
       Plugin.ObsidianBases(),
       Plugin.JsonCanvas(),
       Plugin.ObsidianFlavoredMarkdown({ parseTags: false }),
+      Plugin.Audio(),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.CrawlLinks({
         markdownLinkResolution: "absolute",

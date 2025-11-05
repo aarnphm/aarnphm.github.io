@@ -58,6 +58,22 @@
   "/static/"
 );
 @include font-face("Playfair Display", "PlayfairDisplay.woff", "woff", normal, normal, "/static/");
+@include font-face(
+  "Departure Mono",
+  "DepartureMono-Regular.woff",
+  "woff",
+  normal,
+  normal,
+  "/static/"
+);
+@include font-face(
+  "Departure Mono",
+  "DepartureMono-Regular.woff2",
+  "woff2",
+  normal,
+  normal,
+  "/static/"
+);
 
 // fonts from KV (/fonts/)
 @include font-face("PP Neue Montreal", "PPNeueMontreal-Thin.woff2", "woff2", normal, 100);

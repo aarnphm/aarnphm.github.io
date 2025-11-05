@@ -4,7 +4,7 @@ date: "2024-02-07"
 director: Lenny Abrahamson
 id: normal-people
 modified: 2025-10-29 02:14:54 GMT-04:00
-poster: "[[movies/posters/normal-people.jpg]]"
+posters: "[[movies/posters/normal-people.jpg]]"
 rating: 8.5
 status: finished
 studio: bbc

@@ -3,7 +3,7 @@ aliases:
   - advice
 date: "2024-01-23"
 id: quotes
-modified: 2025-11-02 23:05:41 GMT-05:00
+modified: 2025-11-04 04:22:10 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 tags:
   - evergreen
@@ -21,6 +21,10 @@ transclude:
 > The best gift you can give yourself is the gift of possibility.
 >
 > —Paul Newman
+
+> Love requires attending to what resists [[thoughts/Compression|compression]], and this resistance scares me deeply.
+>
+> —yours truly
 
 > You're being judged by people who know less than you
 >

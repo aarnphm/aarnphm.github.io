@@ -20,6 +20,8 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 **Core Structure:**
 
 - `quartz/` - TypeScript source for CLI, plugins, and components, built on top of remark/rehype/unist, mdast,hast ecosystem and best practices
+  - For all `.inline.ts` script, make sure not to use any `const` argument, as it will get stripped with esbuild. Make sure that function and variables
+    should be replicated and become stateless. If we need persistent state, then use `localStorage` or `sessionStorage`.
 - `content/` - Markdown notes, academic papers, assets, library implementations, tool monorepo.
   - `content/hinterland` - Special projects
 - `worker/` - Cloudflare Worker TypeScript
