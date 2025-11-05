@@ -144,6 +144,12 @@ a {
       border-radius: 0;
       padding: 0;
     }
+
+    &.tag-link {
+      &::before {
+        content: "#";
+      }
+    }
   }
 
   &.external {

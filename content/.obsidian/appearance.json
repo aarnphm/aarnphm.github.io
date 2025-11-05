@@ -10,7 +10,7 @@
   "enabledCssSnippets": [
     "snippet"
   ],
-  "baseFontSizeAction": false,
+  "baseFontSizeAction": true,
   "theme": "system",
   "nativeMenus": true,
   "showRibbon": false

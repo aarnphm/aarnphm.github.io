@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-05 03:37:35 GMT-05:00
+modified: 2025-11-05 06:31:45 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -871,10 +871,10 @@ title: are.na
     - date: 07/04/2025
     - tags: [fruit]
   - Philosophy of the minds
-- https://plato.stanford.edu/entries/merleau-ponty/ -- Maurice Merleau-Ponty
+- https://plato.stanford.edu/entries/merleau-ponty/ -- Maurice Merleau-Ponty [**]
   - [meta]:
     - date: 07/04/2025
-    - tags: [fruit]
+    - tags: [philosopher]
   - Embodied cognition
 - https://en.wikipedia.org/wiki/John_Carmack -- John Carmack
   - [meta]:
@@ -1183,6 +1183,24 @@ title: are.na
 
 ## essay
 
+- https://alexanderobenauer.com/think/1/ -- The Interfaces With Which We Think
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [interfaces]
+  - #design
+- https://andymatuschak.org/hmwl/ -- How Might we learn? [**]
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [pedagogy, ai]
+  - how do we create a convivial learning experience, without cargo-culting others to learn?
+  - > learning doesn't really work, given that knowledge is not transferrable, and we also forgot half of it.
+  - implicit vs guided learning
+    - implicit: discovery, motivation, authenticity
+    - guided: fluency, cognition, scaffolds
+- https://press.asimov.com/articles/mitochondria -- Mitochondria Are Alive
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [biology]
 - https://nintil.com/longevity -- Longevity [**]
   - [meta]:
     - date: 11/03/2025
@@ -2993,6 +3011,10 @@ title: are.na
 
 ## philosophy
 
+- https://www.youtube.com/watch?v=WyofKBRpRqU -- Merleau-Ponty on the World of Perception & the World of Science (1948)
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [world perception]
 - https://www.youtube.com/watch?v=bH2EjxAn0Fk -- Empathy: philosophical debates and phenomenology
   - [meta]:
     - date: 11/04/2025

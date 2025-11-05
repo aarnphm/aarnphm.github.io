@@ -12,7 +12,7 @@
     "margin": "0",
     "downscalePercent": 100
   },
-  "tabSize": 2,
+  "tabSize": 4,
   "newFileLocation": "current",
   "newLinkFormat": "absolute",
   "newFileFolderPath": "thoughts",
@@ -20,9 +20,9 @@
   "showLineNumber": false,
   "readableLineLength": true,
   "strictLineBreaks": true,
-  "showInlineTitle": false,
+  "showInlineTitle": true,
   "rightToLeft": false,
-  "propertiesInDocument": "source",
+  "propertiesInDocument": "hidden",
   "livePreview": false,
   "foldHeading": true,
   "foldIndent": true,
@@ -39,5 +39,6 @@
     "library/posters/",
     "movies/posters/"
   ],
-  "uriCallbacks": true
+  "uriCallbacks": true,
+  "useTab": false
 }

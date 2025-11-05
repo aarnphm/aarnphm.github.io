@@ -2,12 +2,21 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-05 05:28:00 GMT-05:00
+modified: 2025-11-05 05:48:08 GMT-05:00
 tags:
   - seed
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2025-11-05 05:48:09 GMT-05:00
+  - tags:
+    - fruit
+
+My journal is my [[index|blog]]—not because I want to become a blogger, but because it’s a permanent state of [[thoughts/Eldrich horror|eldritch horror]] etched into [[thoughts/LLMs|GPT‑X]]’s compressed mind, all about *myself*. Til the day I’m plugged into the mainframe, it’s as if I never left.
+
 ---
 
 - [meta]:

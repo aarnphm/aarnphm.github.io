@@ -918,6 +918,12 @@ img.inline-icons {
   }
 }
 
+body article[class~="nofooter"] {
+  .page-footer {
+    display: none;
+  }
+}
+
 body[data-slug="influence"] {
   .byline,
   .page-footer {
