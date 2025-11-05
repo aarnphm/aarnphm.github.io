@@ -2,7 +2,7 @@
 date: "2025-10-17"
 description: and building a nano inference engine
 id: notes
-modified: 2025-11-05 16:49:16 GMT-05:00
+modified: 2025-11-05 18:18:45 GMT-05:00
 slides: true
 tags:
   - seed
@@ -188,7 +188,7 @@ logical blocks    physical blocks
 
 result: **95% memory efficiency**.
 
-![[thoughts/Attention#Paged Attention]]
+![[thoughts/Attention#Paged Attention#{collapsed: true}]]
 
 ## continuous batching
 
@@ -255,17 +255,14 @@ C_t1  [   ✗     ✗    ...   ✗     ✗    ...   ✓     ✓  ]
 ```
 time ->
 
-+---------+---------+---------+---------+---------+
-| step 0  | step 1  | step 2  | step 3  | step 4  |
-+---------+---------+---------+---------+---------+
-| a pre   | a dec   | a dec   | a dec   | a done  |
-| b wait  | b pre   | b dec   | b dec   | b dec   |
-| c wait  | c wait  | c pre   | c dec   | c dec   |
-| d wait  | d wait  | d wait  | d pre   | d dec   |
-+---------+---------+---------+---------+---------+
-legend: pre = prefill, dec = decode, done = completed request
+a: pre -----> dec -----> dec -----> dec -----> done
+b: wait ----> pre -----> dec -----> dec -----> dec
+c: wait ----> wait ----> pre -----> dec -----> dec
+d: wait ----> wait ----> wait ----> pre ----> dec
+          step 0    step 1    step 2    step 3    step 4
 
-GPU utilization: 100% every step (no idle time waiting for stragglers)
+legend: pre = prefill, dec = decode, done = completed request
+GPU utilization: 100% every step (no idle slots waiting for stragglers)
 ```
 
 ```mermaid
@@ -409,13 +406,14 @@ the key insight: `reshape_and_cache_flash` updates paged memory using slot_mappi
 
 ## vs other engines
 
-| engine       | throughput | integration | notes                            |
-| ------------ | ---------- | ----------- | -------------------------------- |
-| vLLM         | 2-4× HF    | moderate    | continuous batching              |
-| HuggingFace  | baseline   | excellent   | static batching limits           |
-| TGI          | 0.55× vLLM | good        | better HF ecosystem              |
-| TensorRT-LLM | similar    | complex     | lower latency if optimized       |
-| SGLang       | similar    | complex     | higher throughput in _1 example_ |
+| engine       | throughput | integration | notes                                                                             |
+| ------------ | ---------- | ----------- | --------------------------------------------------------------------------------- |
+| vLLM         | 2-4× HF    | moderate    | continuous batching + paged attention + structured outputs + speculative decoding |
+| HuggingFace  | baseline   | excellent   | static batching limits                                                            |
+| TGI          | 0.55× vLLM | good        | better HF ecosystem                                                               |
+| TensorRT-LLM | similar    | complex     | lower latency if optimized                                                        |
+| SGLang       | similar    | complex     | higher throughput in _1 example_                                                  |
+| nanovllm     | similar    | simple      | working on this, but simpler version of vllm                                      |
 
 ## features
 
@@ -463,21 +461,71 @@ with prefix caching: compute 5k tokens once, reuse the KV blocks
 
 **mechanism**:
 
-1. split prompts into 16-token chunks
-2. compute SHA-256 hash: `prev_hash + tokens + metadata`
-3. store in `cached_block_hash_to_block` dictionary
-4. on subsequent requests, linear search for matches
-5. reuse matching blocks with reference counting
+```
+step 1: split into 16-token blocks and compute hashes
+┌───────────────────────────────────────────────────────────────┐
+│ request 1: "system prompt (5k tokens)" + "query 1"            │
+│                                                               │
+│ block 0: [tok0...tok15]  → hash_0 = SHA256(tokens)            │
+│ block 1: [tok16...tok31] → hash_1 = SHA256(hash_0 + tokens)   │
+│ block 2: [tok32...tok47] → hash_2 = SHA256(hash_1 + tokens)   │
+│ ...                                                           │
+│ block N: [user query 1]  → hash_N = SHA256(hash_N-1 + tokens) │
+└───────────────────────────────────────────────────────────────┘
+
+step 2: store in cache
+cached_block_hash_to_block = {
+  hash_0 → physical_block_7  (ref_cnt=1)
+  hash_1 → physical_block_2  (ref_cnt=1)
+  hash_2 → physical_block_15 (ref_cnt=1)
+  ...
+}
+
+step 3: request 2 arrives with same prefix
+┌─────────────────────────────────────────────────────────┐
+│ request 2: "system prompt (5k tokens)" + "query 2"      │
+│                                                         │
+│ compute hashes for blocks 0, 1, 2, ... → MATCH!         │
+│                                                         │
+│ reuse: physical_block_7, physical_block_2, ...          │
+│        (increment ref_cnt to 2)                         │
+│                                                         │
+│ only compute NEW: [user query 2] → allocate new block   │
+└─────────────────────────────────────────────────────────┘
+```
+
+**hash computation** (chained for consistency):
 
 ```python
 hash_input = prev_block_hash + tokens + mm_hash + lora_id + cache_salt
 block_hash = sha256(hash_input)
+# chaining ensures different orders → different hashes
 ```
 
-pros:
+**visual example**:
 
+```
+request 1 (first):
+CPU: hash_0 → blk_7 ✓    GPU: [■■■■] blk_7  ← KVs computed
+     hash_1 → blk_2 ✓         [■■■■] blk_2  ← KVs computed
+     hash_2 → blk_15 ✓        [■■■■] blk_15 ← KVs computed
+     hash_3 → blk_4 ✓         [■■■■] blk_4  ← KVs computed
+
+request 2 (reuse):
+CPU: hash_0 → blk_7 (ref↑)  GPU: [■■■■] blk_7  ← REUSED!
+     hash_1 → blk_2 (ref↑)       [■■■■] blk_2  ← REUSED!
+     hash_2 → blk_15 (ref↑)      [■■■■] blk_15 ← REUSED!
+     hash_X → blk_9 ✓            [■■■■] blk_9  ← NEW (different query)
+
+computation saved: 75% (3 of 4 blocks reused)
+```
+
+**pros**:
+
+- **70% reduction** in computation for chat applications
 - 2-5× speedup for RAG systems with shared context
 - memory overhead: <1% for hash storage
+- automatic: works without any user intervention
 
 ## structured outputs
 
@@ -517,11 +565,81 @@ stateDiagram-v2
 
 **cost**: 15-20% throughput reduction vs unconstrained generation
 
+**batched implementation**:
+
+```
+example: batch = [request_A (JSON), request_B (unconstrained), request_C (regex)]
+
+step 1: create bitmask tensor
+┌────────────────────────────────────────────────────┐
+│ bitmask shape: [batch_size=3, vocab_size // 32]    │
+│                                                    │
+│ vocab_size = 32000 (example)                       │
+│ → need 32000 / 32 = 1000 integers per request      │
+└────────────────────────────────────────────────────┘
+
+step 2: fill bitmask per request
+┌─────────────────────────────────────────────────────┐
+│ request_A (JSON FSM):                               │
+│   current state: expect '{' or whitespace           │
+│   allowed tokens: [123, 32, 9, 10] ('{', ' ', ...)  │
+│                                                     │
+│   bitmask[0] = [0b...10010...00001]                 │
+│                  bit i = 1 if token_i allowed       │
+└─────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│ request_B (unconstrained):                          │
+│   all tokens allowed                                │
+│                                                     │
+│   bitmask[1] = [0b11111...11111]                    │
+│                  all bits set to 1                  │
+└─────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│ request_C (regex: [a-z]+):                          │
+│   current state: expect lowercase letter            │
+│   allowed tokens: [97, 98, ..., 122] ('a'-'z')      │
+│                                                     │
+│   bitmask[2] = [0b...specific pattern...]           │
+└─────────────────────────────────────────────────────┘
+
+step 3: apply mask to logits
+logits: [batch_size, vocab_size] = [3, 32000]
+
+for each request in batch:
+  expanded_mask = expand_bitmask(bitmask[i])  # [1000] → [32000]
+  logits[i] = where(expanded_mask == 1, logits[i], -inf)
+
+result:
+- request_A can only sample '{' or whitespace
+- request_B can sample anything
+- request_C can only sample 'a'-'z'
+```
+
+**with speculative decoding** (numspec=3):
+
+```
+additional complexity: each speculative token needs its own FSM state
+
+bitmask shape: [batch_size, numspec + 1, vocab_size // 32]
+               [3, 4, 1000]
+
+request_A:
+  position 0 (verified): bitmask[0][0] = state after last verified
+  position 1 (spec_1):   bitmask[0][1] = state if spec_1 accepted
+  position 2 (spec_2):   bitmask[0][2] = state if spec_1,2 accepted
+  position 3 (spec_3):   bitmask[0][3] = state if spec_1,2,3 accepted
+
+total bitmask memory: batch_size × (numspec + 1) × (vocab_size // 32) × 4 bytes
+                    = 3 × 4 × 1000 × 4 = 48KB (small overhead)
+```
+
 **implementation**:
 
-- Create a batched bitmask
-- fill in logits within the bitmask for the structured outputs requests (bitmask tensor of size `[batch_size, vocab_size // 32]`)
-- for structured outputs with speculative decoding, it creates `<num_specs> * bitmask`
+- create batched bitmask tensor `[batch_size, vocab_size // 32]`
+- XGrammar compiles FSM and fills bits based on current state
+- post-forward pass: expand and mask logits to `-∞`
+- post-sampling: advance FSM state with sampled token
+- with speculative decoding: maintain `numspec + 1` FSM states per request
 
 ## speculative decoding
 
@@ -536,6 +654,70 @@ step 2: large model verifies all 5 in parallel
 step 3: sample t4 from large model
 ```
 
+**KV cache allocation** (the clever part):
+
+vLLM allocates **numspec + 1** blocks in a speculative branch:
+
+```
+main KV cache (verified tokens):
+┌────────────────────────────────────┐
+│ [tok A] [tok B] [tok C] [tok D]    │ ← committed blocks
+└────────────────────────────────────┘
+                    │
+                    ├─ fork point
+                    ↓
+spec branch (numspec=3):
+┌───────────────────────────────────────┐
+│ [+1 block] [spec 1] [spec 2] [spec 3] │
+└───────────────────────────────────────┘
+   ↑         ↑        ↑        ↑
+   verified  draft    draft    draft
+```
+
+**why numspec + 1?**
+
+- **numspec blocks**: for speculative tokens from draft model
+- **+1 block**: for verified token, ensures forward progress even if all rejected
+
+**concrete example** (numspec=3):
+
+```
+step 1: allocate spec branch
+main:  [A][B][C][D] → blocks[0,1] (assume block_size=2)
+spec:  allocate 4 blocks → [blk_S0, blk_S1, blk_S2, blk_S3]
+
+step 2: draft generates [E', F', G']
+store KVs:
+  blk_S0: placeholder for verified token
+  blk_S1: KV for E'
+  blk_S2: KV for F'
+  blk_S3: KV for G'
+
+step 3: large model verifies in parallel
+case 1 - all accepted:
+  ┌─────────────────────────────────────┐
+  │ commit all 4 blocks to main         │
+  │ main: [A][B][C][D][E][F][G]         │
+  │ blocks: [0,1,S0,S1,S2]              │
+  └─────────────────────────────────────┘
+
+case 2 - partial (E' accepted, F' rejected):
+  ┌─────────────────────────────────────┐
+  │ commit blk_S0, blk_S1               │
+  │ free blk_S2, blk_S3                 │
+  │ sample correct F from large model   │
+  │ main: [A][B][C][D][E][F]            │
+  └─────────────────────────────────────┘
+
+case 3 - all rejected:
+  ┌─────────────────────────────────────┐
+  │ free blk_S1, blk_S2, blk_S3         │
+  │ use blk_S0 for verified token       │
+  │ main: [A][B][C][D][E_verified]      │
+  └─────────────────────────────────────┘
+  ↑ the +1 ensures we always make progress
+```
+
 **verification** (the interesting part):
 
 ```python
@@ -545,6 +727,35 @@ for i, (p_l, p_d) in enumerate(zip(large_probs, draft_probs)):
     accepted_tokens.append(draft_tokens[i])
   else:
     break  # reject and resample from large model
+```
+
+**reference counting**:
+
+```python
+class SpeculativeKVManager:
+  def allocate_spec_branch(self, seq_id, numspec):
+    blocks = []
+    for _ in range(numspec + 1):
+      blk = free_blocks.pop()
+      blk.ref_count = 1
+      blk.is_speculative = True
+      blocks.append(blk)
+    spec_blocks[seq_id] = blocks
+    return blocks
+
+  def commit_accepted(self, seq_id, num_accepted):
+    # move spec blocks to main sequence
+    for i in range(num_accepted):
+      spec_blocks[seq_id][i].is_speculative = False
+      verified_blocks[seq_id].append(spec_blocks[seq_id][i])
+
+  def free_rejected(self, seq_id, num_accepted, numspec):
+    # free remaining spec blocks
+    for i in range(num_accepted, numspec + 1):
+      blk = spec_blocks[seq_id][i]
+      blk.ref_count -= 1
+      if blk.ref_count == 0:
+        free_blocks.append(blk)
 ```
 
 > you always maintain the large model's distribution.
