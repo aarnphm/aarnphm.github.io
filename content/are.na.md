@@ -3299,10 +3299,11 @@ title: are.na
 
 ## poetry
 
-- https://chatgpt.com/share/68dda4b3-9f58-8006-afba-a190e02c606f -- Gwern's codual with GPT-5 and Sonnet 4.5 for evaluating poem's writing capabilities
+- https://gwern.net/blog/2025/silver-bird -- Gwern's codual with GPT-5 and Sonnet 4.5 for evaluating poem's writing capabilities
   - [meta]:
     - date: 11/05/2025
     - tags: [generative]
+  - https://chatgpt.com/share/68dda4b3-9f58-8006-afba-a190e02c606f
   - https://chatgpt.com/share/68e8421c-3af4-8006-bd67-5752869bfc0d
   - https://claude.ai/share/06aae665-2d53-4ed8-adf5-c998e4c0576a
   - https://claude.ai/share/4a895e3c-4b67-4020-a631-f1fe698354bf

@@ -128,7 +128,7 @@ export const JsonCanvas: QuartzTransformerPlugin<Partial<CanvasOptions>> = (user
             const canvasEmbeds: Array<{ node: Element; target: string; title?: string }> = []
 
             visit(tree, "element", (node: Element) => {
-              if (node.properties?.["data-canvas-embed"]) {
+              if (node.properties?.["data-canvas-embed"] === true) {
                 canvasEmbeds.push({
                   node,
                   target: node.properties["data-canvas-file"] as string,

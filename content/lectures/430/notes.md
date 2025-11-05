@@ -2,7 +2,7 @@
 date: "2025-10-17"
 description: Deploying DeepSeek R1
 id: notes
-modified: 2025-10-29 02:14:25 GMT-04:00
+modified: 2025-11-05 16:39:01 GMT-05:00
 slides: true
 tags:
   - seed
@@ -806,7 +806,9 @@ num_groups = 4  # expert groups (for hierarchical routing)
 num_nodes = 2
 num_gpus = 8  # per node
 
-phy2log, log2phy, logcnt = eplb.rebalance_experts(weight, num_replicas, num_groups, num_nodes, num_gpus)
+phy2log, log2phy, logcnt = eplb.rebalance_experts(
+  weight, num_replicas, num_groups, num_nodes, num_gpus
+)
 
 # phy2log: physical expert → logical expert IDs
 # shape: [256] (one entry per physical expert)
@@ -1240,4 +1242,4 @@ each variant requires slightly different configuration in vLLM. check the recipe
 
 ## `<|endoftext|>`
 
-Thank you for coming, you can find the slides at `https://workshop.aarnphm.xyz/430`
+Thank you for coming, you can find the slides at `https://workshop.aarnphm.xyz/430/notes/slides`

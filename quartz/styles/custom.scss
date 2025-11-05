@@ -918,15 +918,15 @@ img.inline-icons {
   }
 }
 
-body article[class~="nofooter"] {
+body[data-slug="posts/25/n-bday"],
+body[data-slug="influence"] {
   .page-footer {
     display: none;
   }
 }
 
 body[data-slug="influence"] {
-  .byline,
-  .page-footer {
+  .byline {
     display: none;
   }
 }
