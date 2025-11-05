@@ -1,16 +1,15 @@
 import { QuartzTransformerPlugin } from "../types"
 import { Element } from "hast"
 import { visit } from "unist-util-visit"
-import { parseJsonCanvas, serializeJcast } from "./jcast"
+import { parseJsonCanvas } from "./jcast"
 import { JcastCanvas, isJcastCanvasNode } from "./jcast/types"
 import { visitJcast } from "./jcast/visitor"
-import { slugifyFilePath, slugAnchor } from "../../util/path"
+import { slugifyFilePath, slugAnchor, FilePath } from "../../util/path"
 import { h } from "hastscript"
 import { BuildCtx } from "../../util/ctx"
 import { QuartzPluginData } from "../vfile"
 import fs from "fs/promises"
 import path from "path"
-import { toHtml } from "hast-util-to-html"
 import { glob } from "../../util/glob"
 
 export interface CanvasOptions {
@@ -55,14 +54,6 @@ async function writeCanvasAsset(
   const data = typeof payload === "string" ? payload : JSON.stringify(payload)
   await fs.writeFile(outputPath, data, "utf-8")
   return `/${relativePath}`
-}
-
-async function writeCanvasJsonAsset(
-  ctx: BuildCtx,
-  slug: string,
-  canvasJson: unknown,
-): Promise<string> {
-  return writeCanvasAsset(ctx, slug, ".json", canvasJson)
 }
 
 async function writeCanvasMetaAsset(
@@ -163,8 +154,6 @@ export const JsonCanvas: QuartzTransformerPlugin<Partial<CanvasOptions>> = (user
 
                 const canvasContent = await fs.readFile(canvasPath, "utf-8")
                 const jcast = await processCanvasFile(canvasContent, ctx, undefined)
-                const canvasJson = serializeJcast(jcast)
-                const jsonPath = await writeCanvasJsonAsset(ctx, slug, canvasJson)
                 const meta = collectCanvasMeta(jcast)
                 const metaPath = await writeCanvasMetaAsset(ctx, slug, meta)
 
@@ -183,7 +172,7 @@ export const JsonCanvas: QuartzTransformerPlugin<Partial<CanvasOptions>> = (user
                 node.tagName = "div"
                 node.properties = {
                   class: "canvas-embed-container",
-                  "data-canvas": jsonPath,
+                  "data-canvas": `${slug}.canvas`,
                   "data-meta": metaPath,
                   "data-cfg": JSON.stringify(embedConfig),
                   "data-canvas-bounds": JSON.stringify(jcast.data.bounds),
@@ -252,7 +241,7 @@ export async function processCanvasFile(
     }
 
     // convert to slug using same logic as wikilinks
-    const slug = slugifyFilePath(normalizedPath as any)
+    const slug = slugifyFilePath(normalizedPath as FilePath)
     const fileExists = ctx.allSlugs?.includes(slug)
 
     // extract display name (just the filename without extension)
@@ -261,17 +250,6 @@ export async function processCanvasFile(
     // find the actual file to get its description and content
     const targetFile = allFiles?.find((f) => f.slug === slug)
     const description = targetFile?.frontmatter?.description || ""
-
-    // extract content preview from the file
-    let contentHtml = ""
-    if (targetFile?.htmlAst) {
-      try {
-        // render the full HTML AST
-        contentHtml = toHtml(targetFile.htmlAst)
-      } catch (e) {
-        console.error(`Failed to render content for ${slug}:`, e)
-      }
-    }
 
     // Normalize subpath to an anchor Obsidian-style
     let resolvedAnchor = ""
@@ -307,7 +285,6 @@ export async function processCanvasFile(
         href: resolvedAnchor ? `${slug}${resolvedAnchor}` : slug,
         displayName,
         description,
-        content: contentHtml,
       }
     }
   })
@@ -330,11 +307,6 @@ export async function renderCanvasToHast(
 ): Promise<Element> {
   const { title } = options || {}
 
-  // serialize canvas data for client-side rendering
-  const canvasJson = serializeJcast(jcast)
-
-  const jsonPath = await writeCanvasJsonAsset(ctx, slug, canvasJson)
-
   // collect resolved metadata per node (do not mutate raw canvas JSON)
   const meta = collectCanvasMeta(jcast)
   const metaPath = await writeCanvasMetaAsset(ctx, slug, meta)
@@ -355,7 +327,7 @@ export async function renderCanvasToHast(
   const container = h(
     "div.canvas-container",
     {
-      "data-canvas": jsonPath,
+      "data-canvas": `${slug}.canvas`,
       "data-meta": metaPath,
       "data-cfg": JSON.stringify(defaultConfig),
       "data-canvas-bounds": JSON.stringify(jcast.data.bounds),

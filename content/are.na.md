@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-05 00:58:30 GMT-05:00
+modified: 2025-11-05 02:58:43 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1293,13 +1293,14 @@ title: are.na
   - [meta]:
     - date: 10/23/2025
     - tags: [hacks]
-- https://www.nytimes.com/2015/02/13/style/the-36-questions-on-the-way-to-love.html -- 36 Questions to fall in [[/tags/love]]
+- https://www.nytimes.com/2015/02/13/style/the-36-questions-on-the-way-to-love.html -- 36 Questions to fall in #love [**]
   - [meta]:
     - date: 10/23/2025
     - tags: [love]
   - https://www.nytimes.com/2015/01/11/style/modern-love-to-fall-in-love-with-anyone-do-this.html
   - https://journals.sagepub.com/doi/pdf/10.1177/0146167297234003
-  - [[posts/25/Nicole|her]]
+  - [[posts/her|her]]
+  - [[thoughts/love]]
 - https://itscertified.substack.com/p/radiochange -- Radio/Change
   - [meta]:
     - date: 10/23/2025

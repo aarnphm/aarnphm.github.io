@@ -1,4 +1,5 @@
 import { registerEscapeHandler, removeAllChildren, fetchCanonical } from "./util"
+import { normalizeRelativeURLs } from "../../util/path"
 import {
   forceSimulation,
   forceManyBody,
@@ -83,6 +84,8 @@ type LinkData = CanvasEdge & {
 }
 
 const jsonFetchCache = new Map<string, Promise<any>>()
+const filePreviewCache = new Map<string, Promise<string | null>>()
+const htmlParser = new DOMParser()
 
 function resolveToAbsoluteUrl(source: string): string {
   return new URL(source.trim(), window.location.href).toString()
@@ -117,9 +120,10 @@ async function renderCanvas(container: HTMLElement) {
     const metaUrl = metaAttr?.trim() ?? ""
 
     const dataPromise = fetchJson<CanvasData>(canvasUrl)
-    const metaPromise = metaUrl.length > 0
-      ? fetchJson<Record<string, any>>(metaUrl)
-      : Promise.resolve<Record<string, any>>({})
+    const metaPromise =
+      metaUrl.length > 0
+        ? fetchJson<Record<string, any>>(metaUrl)
+        : Promise.resolve<Record<string, any>>({})
 
     const [canvasData, metaMap] = await Promise.all([dataPromise, metaPromise])
     const cfg: CanvasConfig = cfgAttr ? JSON.parse(cfgAttr) : {}
@@ -735,7 +739,12 @@ async function renderCanvas(container: HTMLElement) {
           // parse markdown for text nodes
           return `<div class="node-text">${parseMarkdown(d.text || "")}</div>`
         } else if (d.type === "file") {
-          return `<div class="node-file-content">${d.content || (d.description ? escapeHtml(d.description) : "")}</div>`
+          const hasDescription =
+            typeof d.description === "string" && d.description.trim().length > 0
+          const fallbackSource = hasDescription ? d.description! : "Loading preview..."
+          const fallback = escapeHtml(fallbackSource)
+          const placeholderAttr = hasDescription ? "" : ' data-placeholder="true"'
+          return `<div class="node-file-content" data-loading="true"${placeholderAttr}>${fallback}</div>`
         } else if (d.type === "link") {
           return `<div class="node-link"><span class="link-icon">🔗</span> ${escapeHtml(
             d.url || "",
@@ -770,6 +779,15 @@ async function renderCanvas(container: HTMLElement) {
         link.style.opacity = "0"
         link.style.pointerEvents = "none"
         container.appendChild(link)
+      })
+
+    node
+      .filter((d) => d.type === "file")
+      .each(function (d: NodeData) {
+        const host = this as unknown as SVGGElement
+        const content = host.querySelector(".node-file-content") as HTMLElement | null
+        if (!content) return
+        hydrateFileNodeContent(content, d)
       })
 
     // add border overlay (rendered on top of content)
@@ -1155,6 +1173,130 @@ async function renderCanvas(container: HTMLElement) {
     container.innerHTML =
       '<div class="canvas-error">Failed to load canvas data. Check the console for details.</div>'
   }
+}
+
+async function hydrateFileNodeContent(container: HTMLElement, node: NodeData): Promise<void> {
+  container.dataset.loading = "true"
+
+  try {
+    const preview = await getFileNodePreview(node)
+    if (!preview) {
+      if (container.dataset.placeholder === "true" && container.isConnected) {
+        container.textContent = "Preview unavailable"
+        container.removeAttribute("data-placeholder")
+      }
+      return
+    }
+
+    if (!container.isConnected) return
+
+    container.innerHTML = preview
+    container.removeAttribute("data-placeholder")
+  } finally {
+    if (container.isConnected) {
+      container.dataset.loading = "false"
+    }
+  }
+}
+
+async function getFileNodePreview(node: NodeData): Promise<string | null> {
+  const targetUrl = resolveFileNodeUrl(node)
+  if (!targetUrl) return null
+
+  const cacheKey = targetUrl.toString()
+
+  const fetchCache = async () => {
+    try {
+      const response = await fetchCanonical(targetUrl).catch((error) => {
+        console.error("Canvas preview request failed:", error)
+        return null
+      })
+
+      if (!response || !response.ok) {
+        return null
+      }
+
+      const contentType = response.headers.get("Content-Type") ?? ""
+      if (!contentType.startsWith("text/html")) {
+        return null
+      }
+
+      const markup = await response.text()
+      const doc = htmlParser.parseFromString(markup, "text/html")
+      normalizeRelativeURLs(doc, targetUrl)
+
+      doc
+        .querySelectorAll('section[class~="page-footer"],section[class~="page-header"]')
+        .forEach((el) => el.remove())
+
+      doc.querySelectorAll("[id]").forEach((el) => {
+        const targetID = `canvas-${el.id}`
+        el.id = targetID
+      })
+
+      const hints = Array.from(
+        doc.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>,
+      )
+
+      if (hints.length > 0) {
+        return hints
+          .map((hint) => cleanCanvasPreviewElement(hint.cloneNode(true) as HTMLElement).outerHTML)
+          .join("")
+      }
+
+      const article = doc.querySelector("article")
+      if (!article) {
+        return null
+      }
+
+      const clone = article.cloneNode(true) as HTMLElement
+      cleanCanvasPreviewElement(clone)
+      return clone.innerHTML
+    } catch (error) {
+      console.error("Canvas preview parsing failed:", error)
+      return null
+    }
+  }
+  if (!filePreviewCache.has(cacheKey)) {
+    filePreviewCache.set(cacheKey, fetchCache())
+  }
+
+  return filePreviewCache.get(cacheKey)!
+}
+
+function resolveFileNodeUrl(node: NodeData): URL | null {
+  const base =
+    (typeof node.resolvedHref === "string" && node.resolvedHref.trim().length > 0
+      ? node.resolvedHref
+      : null) ??
+    (typeof node.resolvedSlug === "string" && node.resolvedSlug.trim().length > 0
+      ? node.resolvedSlug
+      : null) ??
+    (typeof node.file === "string" && node.file.trim().length > 0
+      ? node.file.replace(/\.md$/, "")
+      : null)
+
+  if (!base) return null
+
+  const [rawPath] = base.split("#")
+  const trimmed = rawPath.trim()
+  if (trimmed.length === 0) return null
+
+  const normalizedPath = trimmed.startsWith("/") ? trimmed : `/${trimmed}`
+  try {
+    return new URL(normalizedPath, window.location.origin)
+  } catch (error) {
+    console.error("Invalid canvas file node URL:", normalizedPath, error)
+    return null
+  }
+}
+
+function cleanCanvasPreviewElement<T extends HTMLElement>(element: T): T {
+  const removable = element.querySelectorAll<HTMLElement>(
+    "section[data-references], section[data-footnotes], [data-skip-preview], .telescopic-container",
+  )
+  removable.forEach((node) => node.remove())
+  return element
 }
 
 function escapeHtml(text: string): string {

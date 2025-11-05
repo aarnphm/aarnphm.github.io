@@ -4,8 +4,8 @@
   "interfaceFontFamily": "PP Neue Montreal,Berkeley Mono",
   "textFontFamily": "Berkeley Mono,PP Neue Montreal",
   "monospaceFontFamily": "Berkeley Mono",
-  "baseFontSize": 17,
-  "translucency": true,
+  "baseFontSize": 16,
+  "translucency": false,
   "showViewHeader": false,
   "enabledCssSnippets": [
     "snippet"
@@ -13,5 +13,5 @@
   "baseFontSizeAction": false,
   "theme": "system",
   "nativeMenus": true,
-  "showRibbon": true
+  "showRibbon": false
 }

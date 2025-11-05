@@ -1,8 +1,8 @@
 ---
 date: "2024-12-08"
-description: contact[at]aarnphm[dot]xyz
+description: zettelkasten, contact[at]aarnphm[dot]xyz
 id: notes
-modified: 2025-10-29 02:15:07 GMT-04:00
+modified: 2025-11-05 02:57:28 GMT-05:00
 tags:
   - seed
 title: procedural notes.
@@ -10,7 +10,7 @@ title: procedural notes.
 
 You have stumbled upon my working notes, as do to all paths of this [[thoughts/Digital garden|digital garden]]. This is pretty much inspired by [Andy's working notes](https://andymatuschak.org/)
 
-Much of these notes/writings are written for my own consumption, a sort of [[tags/evergreen]] notes.
+Much of these notes/writings are written for my own consumption, a sort of #evergreen notes.
 If any of these doesn't make sense for you, it is probably because I didn't write it for you.
 
 My only ask for https://notes.aarnphm.xyz is to treat the sites as it. Most of other functionalities can be found on the <a href="https://aarnphm.xyz" target="_blank">main site</a>
@@ -18,9 +18,9 @@ My only ask for https://notes.aarnphm.xyz is to treat the sites as it. Most of o
 You can start from some related [[/thoughts|topics]] that has been on my mind these days,
 or check out some [[thoughts/work|crafts]] I've been working on for the past while.
 
-If you are into machine learning, you might be interested in [[thoughts/mechanistic interpretability|interpretable ml]],
-or high performance [[thoughts/vllm|inference]] [[thoughts/LLMs|LLM engine]], or some [[/tags/math|math-related notes]], or a gentle introduction to [[thoughts/Attention|attention-mechanism]] in [[thoughts/Transformers|transformer]] model.
+You might be interested in [[thoughts/mechanistic interpretability|interpretable ml]],
+or high performance [[thoughts/vllm|inference]] [[thoughts/LLMs|LLM]] engine, or #math notes, or a gentle introduction to [[thoughts/Attention|attention mechanism]] in [[thoughts/Transformers|transformer]] model.
 
-There are also some [[/tags/philosophy|philosophical notes]] that I think about on a daily [[thoughts/Philosophy and Nietzsche|basis]].
+There are also #tags/philosophy notes that I think about quite often. I consider myself to be in the rationalist camp, but I'm relatively influenced by [[thoughts/Wittgenstein|Wittgenstein's writing]] as well as [[thoughts/Philosophy and Nietzsche|Friedrich Nietzsche]]
 
 :wave: you can reach out to me on [twitter](https://twitter.com/aarnphm_)

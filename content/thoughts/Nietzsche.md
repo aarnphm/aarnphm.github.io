@@ -2,7 +2,7 @@
 date: "2023-11-30"
 description: the man that was most mistakenly understood
 id: Nietzsche
-modified: 2025-10-29 02:15:30 GMT-04:00
+modified: 2025-11-05 02:13:33 GMT-05:00
 tags:
   - philosophy
   - philos1aa3
@@ -97,7 +97,7 @@ Decadent: arts and philosophy
 
 Arguments against morality: One rule for everything
 
-Judge everything by one rules: Morality reduces human to singularity
+Judge everything by one rules: Morality reduces human to [[singularity.canvas|singularity]]
 
 Object to Kant's Morals, but not [[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill|John Stuart Mill]]'s Utilitarianism
 

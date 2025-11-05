@@ -7,7 +7,7 @@ aliases:
 date: "2024-11-18"
 description: structured generations in vLLM a la carte, or in general
 id: structured outputs
-modified: 2025-11-01 02:16:44 GMT-04:00
+modified: 2025-11-05 02:49:55 GMT-05:00
 tags:
   - ml
   - rfc
@@ -39,11 +39,15 @@ See also: [docs](https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm
 
 ---
 
+## V1 Structured Outputs Compatibility
+
+> [!important]
+>
+> This is upstream since 0.8.0. This section serves as historical context. Please see https://docs.vllm.ai for latest information on async scheduler and structured outputs compatibility.
+
 see also [RFC](https://github.com/vllm-project/vllm/issues/11908)
 
 The following document describes and summarises existing works in vLLM to improve general guided decoding performance.
-
-## requirements
 
 - **V1 Tensor Parallelism** aware
   - PR: https://github.com/vllm-project/vllm/pull/9856
@@ -228,7 +232,10 @@ A way to adapt character regex to work with tokens in `outlines`:
 
 ```python
 import outlines.fsm as fsm
-from outlines.fsm.regex import make_deterministic_fsm, create_fsm_index_tokenizer
+from outlines.fsm.regex import (
+  make_deterministic_fsm,
+  create_fsm_index_tokenizer,
+)
 
 new_fsm, _ = make_deterministic_fsm(fsm)
 idx, _ = create_fsm_index_tokenizer(new_fsm, tokenizer)
@@ -257,7 +264,10 @@ stateDiagram-v2
 
 ```python
 idx_with_tokens = {
-  state: {tokenizer.tokenizer.decode([key]): value for key, value in transitions.items()}
+  state: {
+    tokenizer.tokenizer.decode([key]): value
+    for key, value in transitions.items()
+  }
   for state, transitions in idx.items()
 }
 ```

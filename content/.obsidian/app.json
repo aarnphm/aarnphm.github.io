@@ -4,7 +4,7 @@
   "showUnsupportedFiles": true,
   "spellcheck": false,
   "vimMode": true,
-  "promptDelete": false,
+  "promptDelete": true,
   "pdfExportSettings": {
     "includeName": false,
     "pageSize": "A4",
@@ -27,14 +27,17 @@
   "foldHeading": true,
   "foldIndent": true,
   "showIndentGuide": true,
-  "autoPairBrackets": false,
+  "autoPairBrackets": true,
   "smartIndentList": true,
   "defaultViewMode": "source",
   "autoPairMarkdown": true,
   "focusNewTab": false,
   "userIgnoreFilters": [
     "thoughts/scripts/",
-    "thoughts/atelier with friends/images/"
+    "thoughts/atelier with friends/images/",
+    "embeddings/",
+    "library/posters/",
+    "movies/posters/"
   ],
   "uriCallbacks": true
 }

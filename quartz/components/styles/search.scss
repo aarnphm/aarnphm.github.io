@@ -212,8 +212,6 @@
               align-items: center;
               justify-content: center;
               min-height: 160px;
-              text-transform: uppercase;
-              letter-spacing: 0.3em;
               font-weight: 600;
               color: var(--gray);
 
@@ -224,6 +222,7 @@
                 background: color-mix(in srgb, var(--lightgray) 65%, transparent);
                 backdrop-filter: blur(12px);
                 z-index: 0;
+                margin: 1rem;
               }
 
               .preview-redacted-label {

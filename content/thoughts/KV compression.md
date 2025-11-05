@@ -1,9 +1,11 @@
 ---
 date: "2024-10-10"
+description: "[[thoughts/Compression|compression]] of key-value in [[thoughts/Transformers]] model"
 id: KV compression
-modified: 2025-11-01 05:28:14 GMT-04:00
+modified: 2025-11-05 02:52:12 GMT-05:00
 tags:
   - ml
+  - llm
 title: KV compression
 ---
 
@@ -89,7 +91,9 @@ The idea is to have two stages:
 
 - clustering via pooling => frequent hit-rate attention
   ```python
-  attn_cache = pool1d(attn_weights_sum, kernel_size=kernel_size, padding=kernel_size // 2, stride=1)
+  attn_cache = pool1d(
+    attn_weights_sum, kernel_size=kernel_size, padding=kernel_size // 2, stride=1
+  )
   ```
 
 ## Ada-KV
