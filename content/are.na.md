@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-05 02:58:43 GMT-05:00
+modified: 2025-11-05 03:37:35 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -647,6 +647,12 @@ title: are.na
 
 ## people
 
+- https://en.wikipedia.org/wiki/Erich_Fromm -- Erich Fromm
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [psychologist]
+  - German-American social psychologist, psychoanalyst, sociologist, humanistic philosopher
+  - #love and #friend
 - https://plato.stanford.edu/entries/levinas/ -- Emmanuel Levinas
   - [meta]:
     - date: 11/04/2025
@@ -1243,10 +1249,12 @@ title: are.na
 - https://www.brasstacks.blog/tyatd-uni/ -- Things You’re Allowed to Do: University Edition [**]
   - [meta]:
     - date: 10/29/2025
-    - tags: [school]
+    - tags: [school, college]
   - see also:
     - https://web.archive.org/web/20231126160243/http://becomingeden.com/what-i-wish-i-knew-in-college/
-    - https://skunkledger.substack.com/p/escaping-high-school?ref=brasstacks.blog
+    - https://skunkledger.substack.com/p/escaping-high-school
+    - https://guzey.com/personal/college/
+    - https://web.archive.org/web/20231126160243/http://becomingeden.com/what-i-wish-i-knew-in-college/
 - https://rauno.me/craft/interaction-design -- Invisible Details of Interaction Design [**]
   - [meta]:
     - date: 10/28/2025
@@ -1409,8 +1417,8 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [fruit]
-  - > The philosophy underlying the essay is based on a famous quote attributed to [[thoughts/Aristotle]]: “We are what we repeatedly do. Excellence, then, is not an act but a habit.” Underlying all our habits are models (often unconscious) of how the world works.
-  - > [[/research|Research]] is, of course, only a part of life, and must be understood in relation to the rest of life
+  - > The #philosophy underlying the essay is based on a famous quote attributed to [[thoughts/Aristotle]]: “We are what we repeatedly do. Excellence, then, is not an act but a habit.” Underlying all our habits are models (often unconscious) of how the world works.
+  - > [[research|Research]] is, of course, only a part of life, and must be understood in relation to the rest of life
   - > Effective people are proactive and take personal responsibility for the events in their lives.
   - > They form a vision of how they want their life to be, and work toward achieving that vision.
   - > They identify problems in their lives, and work toward solutions to those problems.
@@ -3868,6 +3876,10 @@ title: are.na
 
 ## technical
 
+- https://www.tensortonic.com -- ML programming problems
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [competitive, programming]
 - https://jacko.io/async_intro.html -- Async Rust in three parts
   - [meta]:
     - date: 10/31/2025
@@ -4458,7 +4470,7 @@ title: are.na
   - [meta]:
     - date: 10/09/2025
     - tags: [math, llm]
-  - see also [[/tags/linalg]]
+  - see also #linalg
 - https://arxiv.org/abs/2211.00170
   - [meta]:
     - date: 10/09/2025

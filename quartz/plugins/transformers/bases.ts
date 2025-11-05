@@ -3,22 +3,10 @@ import { Root } from "mdast"
 import { parseFilter, parseViews, BaseFile, PropertyConfig } from "../../util/base/types"
 import yaml from "js-yaml"
 
-export interface Options {
-  enableBases: boolean
-}
-
-const defaultOptions: Options = {
-  enableBases: true,
-}
-
-export const ObsidianBases: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
-  const opts = { ...defaultOptions, ...userOpts }
-
+export const ObsidianBases: QuartzTransformerPlugin = () => {
   return {
     name: "ObsidianBases",
     markdownPlugins(_ctx) {
-      if (!opts.enableBases) return []
-
       return [
         () => {
           return async (tree: Root, file) => {

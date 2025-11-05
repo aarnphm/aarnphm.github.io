@@ -3,7 +3,7 @@ created: "2025-11-04"
 date: "2025-11-04"
 description: feistel-style block cipher skeletons, their mechanics, guarantees, and notable designs
 id: feistel cipher
-modified: 2025-11-04 22:00:42 GMT-05:00
+modified: 2025-11-05 03:40:35 GMT-05:00
 published: "2003-10-29"
 source: https://en.wikipedia.org/wiki/Feistel_cipher
 tags:
@@ -13,9 +13,13 @@ title: feistel cipher
 ---
 
 > [!summary] key idea
-> a feistel cipher (or luby–rackoff network) is a symmetric block cipher scaffold where encryption and decryption share the same round structure, differing only in the subkey order.
+> alias: _luby–rackoff block cipher_
+>
+> is a symmetric block cipher scaffold where encryption and decryption share the same round structure, differing only in the subkey order.
 
-feistel networks sit at the heart of many block ciphers that feed into [[thoughts/cryptography]]. the pattern emerged from horst feistel's work on ibm lucifer (1973) and reached wide deployment with the 1976 des standard. repeating identical rounds was a good match for hardware pipelines available at the time and still helps constant-time software today [@menezes2001handbook; @schneier1996applied; @stinson1995cryptography].
+emerged from Horst Feistel's work on IBM lucifer (1973) and reached wide deployment with the 1976 DES standard.
+
+repeating identical rounds was a good match for hardware pipelines available at the time and still helps constant-time software today [@menezes2001handbook; @schneier1996applied; @stinson1995cryptography].
 
 - encryption and decryption share almost all code, so implementations can reuse silicon or instruction-side logic.
 - the round function can be arbitrarily complex, since only its input/output size matters for invertibility.

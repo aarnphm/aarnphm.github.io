@@ -1,6 +1,3 @@
 {
-  "preview": true,
-  "graph": false,
-  "bookmarks": false,
-  "tab-header": false
+  "preview": true
 }

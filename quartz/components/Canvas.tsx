@@ -72,8 +72,7 @@ export default ((userOpts?: Partial<CanvasConfig>) => {
 
     if (!canvasData) return <></>
 
-    const dataValue =
-      typeof canvasData === "string" ? canvasData : JSON.stringify(canvasData)
+    const dataValue = typeof canvasData === "string" ? canvasData : JSON.stringify(canvasData)
     const metaValue =
       typeof fileData.frontmatter?.canvasMeta === "string"
         ? fileData.frontmatter.canvasMeta

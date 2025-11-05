@@ -244,7 +244,7 @@ document.addEventListener("nav", () => {
 
         document.dispatchEvent(
           new CustomEvent("content-decrypted", {
-            detail: { article, contentDiv },
+            detail: { article, content: contentDiv },
           }),
         )
       } catch (err) {

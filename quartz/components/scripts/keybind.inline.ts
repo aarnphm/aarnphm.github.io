@@ -63,10 +63,6 @@ type MapAction = string | (() => void)
 const _mapping: Map<string, MapAction> = new Map()
 _mapping.set("\\", "/")
 _mapping.set("j", "/curius")
-_mapping.set("i", () => {
-  const button = document.getElementById("stacked-note-toggle") as HTMLButtonElement
-  if (button) button.click()
-})
 
 const aliases: Record<string, { mac: string; def: string }> = {
   recherche: { mac: "/", def: "k" },
@@ -204,6 +200,9 @@ document.addEventListener("nav", () => {
     return palette?.classList.contains("active") ?? false
   }
 
+  // Character set used for link hint markers
+  const HINT_CHARS = "asdfghjklzxcvbnm"
+
   // Track 'g' key for 'gg' sequence
   let waitingForSecondG = false
   let ggTimeout: number | null = null
@@ -229,7 +228,7 @@ document.addEventListener("nav", () => {
 
   // Generate hint strings (up to 4 chars)
   function generateHints(count: number): string[] {
-    const chars = "asdfghjklzxcvbnm"
+    const chars = HINT_CHARS
     const hints: string[] = []
 
     if (count <= chars.length) {
@@ -447,7 +446,12 @@ document.addEventListener("nav", () => {
       }
 
       // Check if key is a hint character
-      if (e.key.length === 1 && e.key.match(/[asdfghjkl]/i) && !e.ctrlKey && !e.metaKey) {
+      if (
+        e.key.length === 1 &&
+        HINT_CHARS.includes(e.key.toLowerCase()) &&
+        !e.ctrlKey &&
+        !e.metaKey
+      ) {
         e.preventDefault()
         handleHintKey(e.key)
         return

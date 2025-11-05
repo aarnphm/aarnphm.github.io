@@ -81,6 +81,7 @@
 
   .is-collapsed & {
     padding-bottom: 0;
+    display: none;
   }
 
   & > div > :first-child {

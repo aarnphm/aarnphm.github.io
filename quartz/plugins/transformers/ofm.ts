@@ -8,7 +8,7 @@ import {
   Code,
   PhrasingContent,
 } from "mdast"
-import { Element, Literal, Root as HtmlRoot } from "hast"
+import { Element, Literal, Root as HtmlRoot, Parent, Properties } from "hast"
 import { ReplaceFunction, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import rehypeRaw from "rehype-raw"
 import { SKIP, visit } from "unist-util-visit"
@@ -17,9 +17,11 @@ import { CSSResource, JSResource } from "../../util/resources"
 import calloutScript from "../../components/scripts/callout.inline.ts"
 // @ts-ignore
 import mermaidScript from "../../components/scripts/mermaid.inline"
+//@ts-ignore
+import checkboxScript from "../../components/scripts/checkbox.inline"
 import mermaidStyle from "../../components/styles/mermaid.inline.scss"
 // @ts-ignore
-import { pathToRoot, slugTag } from "../../util/path"
+import { FullSlug, pathToRoot, slugTag } from "../../util/path"
 import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
 import { toString } from "mdast-util-to-string"
@@ -28,6 +30,8 @@ import { buildYouTubeEmbed } from "../../util/youtube"
 import { PluggableList } from "unified"
 import { h, s } from "hastscript"
 import { whitespace } from "hast-util-whitespace"
+import { phrasing } from "hast-util-phrasing"
+import { toText } from "hast-util-to-text"
 import { remove } from "unist-util-remove"
 import { svgOptions } from "../../components/svg"
 import {
@@ -47,6 +51,7 @@ export interface Options {
   parseTags: boolean
   parseArrows: boolean
   parseBlockReferences: boolean
+  enableCheckbox: boolean
   enableInHtmlEmbed: boolean
   enableYouTubeEmbed: boolean
   enableInlineFootnotes: boolean
@@ -62,6 +67,7 @@ const defaultOptions: Options = {
   parseTags: true,
   parseArrows: true,
   parseBlockReferences: true,
+  enableCheckbox: true,
   enableInHtmlEmbed: false,
   enableYouTubeEmbed: true,
   enableInlineFootnotes: true,
@@ -107,6 +113,54 @@ const arrowMapping: Record<string, string> = {
   "<--": "&lArr;",
   "<=": "&lArr;",
   "<==": "&lArr;",
+}
+
+const parseBooleanAttr = (value: unknown, fallback = false) => {
+  if (typeof value === "boolean") {
+    return value
+  }
+  if (typeof value === "string") {
+    return value === "" || value.toLowerCase() === "true" || value.toLowerCase() === "checked"
+  }
+  return fallback
+}
+
+const sanitizeForId = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-+)|(-+$)/g, "")
+
+const collectInlineLabel = (parent: Parent | undefined, startIndex: number | null | undefined) => {
+  if (!parent || typeof startIndex !== "number") {
+    return undefined
+  }
+
+  for (let i = startIndex + 1; i < parent.children.length; i++) {
+    const sibling = parent.children[i]
+    if (!sibling) {
+      break
+    }
+    if (sibling.type === "text") {
+      const trimmed = sibling.value.trim()
+      if (trimmed.length === 0) {
+        continue
+      }
+      return trimmed
+    }
+    if (phrasing(sibling)) {
+      const label = toText({ type: "root", children: [sibling] }).trim()
+      if (label.length > 0) {
+        return label
+      }
+      continue
+    }
+    if (sibling.type === "element" && sibling.tagName === "br") {
+      continue
+    }
+    break
+  }
+  return undefined
 }
 
 function canonicalizeCallout(calloutName: string): keyof typeof calloutMapping {
@@ -222,7 +276,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       const plugins: PluggableList = []
 
       const allSlugs = new Set(ctx?.allSlugs ?? [])
-      const hasSlug = (slug: string) => allSlugs.has(slug as any)
+      const hasSlug = (slug: string) => allSlugs.has(slug as FullSlug)
 
       // regex replacements
       plugins.push(() => {
@@ -465,7 +519,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               const isOnlyImages = node.children.every((child) => {
                 if (child.type === "image") return true
                 if (child.type === "text") return (child.value as string).trim() === ""
-                if (isWikilink(child as any)) return (child as any).data?.hName === "img"
+                if (isWikilink(child)) return (child as any).data?.hName === "img"
                 return false
               })
 
@@ -622,6 +676,92 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
         })
       }
 
+      if (opts.enableCheckbox) {
+        plugins.push(() => {
+          return (tree: HtmlRoot, file) => {
+            let checkboxCounter = 0
+            const slugValue =
+              typeof file?.data?.slug === "string" && file.data.slug.length > 0
+                ? sanitizeForId(file.data.slug)
+                : ""
+            const slug = slugValue.length > 0 ? slugValue : "global"
+            const checkboxPrefix = `ofm-checkbox-${slug}`
+
+            visit(tree, "element", (node, index, parent) => {
+              const typeProp = node.properties?.type
+              const inputType = typeof typeProp === "string" ? typeProp.toLowerCase() : typeProp
+
+              if (node.tagName !== "input" || inputType !== "checkbox") {
+                return
+              }
+
+              const properties: Properties = { ...(node.properties ?? {}) }
+
+              const existingId =
+                typeof properties.id === "string" && properties.id.trim().length > 0
+                  ? properties.id.trim()
+                  : undefined
+              const checkboxId = existingId ?? `${checkboxPrefix}-${checkboxCounter++}`
+
+              const classSet = new Set<string>()
+              const registerClass = (value: unknown) => {
+                if (typeof value === "string") {
+                  value
+                    .split(/\s+/)
+                    .filter(Boolean)
+                    .forEach((entry) => classSet.add(entry))
+                } else if (Array.isArray(value)) {
+                  value
+                    .flatMap((entry) =>
+                      typeof entry === "string" ? entry.split(/\s+/) : String(entry).split(/\s+/),
+                    )
+                    .filter(Boolean)
+                    .forEach((entry) => classSet.add(entry))
+                }
+              }
+
+              registerClass(properties.class)
+              registerClass((properties as Record<string, unknown>).className)
+              classSet.add("checkbox-toggle")
+
+              const name =
+                typeof properties.name === "string" && properties.name.trim().length > 0
+                  ? properties.name.trim()
+                  : checkboxId
+
+              const checked = parseBooleanAttr(properties.checked)
+              const disabled = parseBooleanAttr(properties.disabled, false)
+
+              node.properties = {
+                ...properties,
+                type: "checkbox",
+                id: checkboxId,
+                name,
+                checked,
+                disabled,
+                class: Array.from(classSet).join(" "),
+                className: Array.from(classSet),
+              }
+
+              if (node.properties["aria-label"] == null && parent) {
+                const parentNode = parent as Parent
+                const position =
+                  typeof index === "number"
+                    ? index
+                    : Array.isArray(parentNode.children)
+                      ? parentNode.children.indexOf(node)
+                      : -1
+                const label = position >= 0 ? collectInlineLabel(parentNode, position) : undefined
+                const finalLabel = label && label.length > 0 ? label : checkboxId
+                if (finalLabel.length > 0) {
+                  node.properties["aria-label"] = finalLabel
+                }
+              }
+            })
+          }
+        })
+      }
+
       if (opts.enableYouTubeEmbed) {
         const checkEmbed = ({ tagName, properties }: Element) =>
           tagName === "img" && Boolean(properties.src) && typeof properties.src === "string"
@@ -753,6 +893,14 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
     externalResources() {
       const js: JSResource[] = []
       const css: CSSResource[] = []
+
+      if (opts.enableCheckbox) {
+        js.push({
+          script: checkboxScript,
+          loadTime: "afterDOMReady",
+          contentType: "inline",
+        })
+      }
 
       if (opts.callouts) {
         js.push({

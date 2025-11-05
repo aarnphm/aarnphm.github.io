@@ -17,7 +17,6 @@ export const KeybindAlias = {
   "cmd+g": "graphique",
   "cmd+o": "opener",
   "cmd+p": "connector",
-  "cmd+i": "mode de notes",
   "cmd+'": "aide raccourcis",
   gh: "navigation des titres",
   D: "mode sombre/clair/système",

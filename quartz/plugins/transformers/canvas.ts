@@ -89,16 +89,16 @@ export const JsonCanvas: QuartzTransformerPlugin<Partial<CanvasOptions>> = (user
 
               if (!wikilink.target.endsWith(".canvas")) return
 
-              node.data = {
-                ...node.data,
-                hName: "div",
-                hProperties: {
-                  class: "canvas-embed",
-                  "data-canvas-file": wikilink.target,
-                  "data-canvas-anchor": wikilink.anchor,
-                  "data-canvas-title": wikilink.target,
-                },
+              const hProperties: Record<string, any> = {
+                "data-canvas-file": wikilink.target,
+                "data-canvas-anchor": wikilink.anchor,
+                "data-canvas-title": wikilink.target,
               }
+              if (wikilink.embed) {
+                hProperties["data-canvas-embed"] = true
+              }
+
+              node.data = { ...node.data, hName: "div", hProperties }
             })
           }
         },
@@ -128,7 +128,7 @@ export const JsonCanvas: QuartzTransformerPlugin<Partial<CanvasOptions>> = (user
             const canvasEmbeds: Array<{ node: Element; target: string; title?: string }> = []
 
             visit(tree, "element", (node: Element) => {
-              if (node.properties?.["data-canvas-file"]) {
+              if (node.properties?.["data-canvas-embed"]) {
                 canvasEmbeds.push({
                   node,
                   target: node.properties["data-canvas-file"] as string,
@@ -144,7 +144,7 @@ export const JsonCanvas: QuartzTransformerPlugin<Partial<CanvasOptions>> = (user
                   targetPath = targetPath + ".canvas"
                 }
 
-                const slug = slugifyFilePath(targetPath as any, true)
+                const slug = slugifyFilePath(targetPath as FilePath, true)
                 const canvasPath = canvasFileMap.get(slug)
 
                 if (!canvasPath) {

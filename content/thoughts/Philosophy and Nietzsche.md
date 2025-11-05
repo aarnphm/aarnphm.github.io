@@ -2,7 +2,7 @@
 date: "2023-12-04"
 description: and Zarathustra.
 id: Philosophy and Nietzsche
-modified: 2025-10-29 02:15:32 GMT-04:00
+modified: 2025-11-05 04:11:36 GMT-05:00
 tags:
   - philosophy
   - seed
@@ -13,11 +13,7 @@ See also: Nietzsche's [[thoughts/Nietzsche|Life]] and overall influence
 
 ![[library/Nietzsche and Philosophy]]
 
----
-
 ![[library/Beyond Good and Evil]]
-
----
 
 ## The Gay Science
 
@@ -30,13 +26,9 @@ Mentions the Death of God and start the introduction to the doctrine of eternal 
 > The original title was "la gayza scienza", and "gay" doesn't necessarily means homosexuality, rather flexible and joyful.
 > If word for word to be transcribed, it would meant The Joyful Science.
 
-- [ ] > [!note] aphorism 24
-
----
+- [ ] aphorism 24
 
 ## On Genealogy of Morals
-
----
 
 ## Thus Spoke Zarathustra
 

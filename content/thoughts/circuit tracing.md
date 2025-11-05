@@ -2,12 +2,13 @@
 date: "2025-11-02"
 description: autonomous path-finding for causal influence in neural networks
 id: circuit tracing
-modified: 2025-11-03 05:02:07 GMT-05:00
+modified: 2025-11-05 04:29:32 GMT-05:00
 tags:
   - interpretability
   - ml
 title: circuit tracing
 transclude:
+  headings: false
   title: false
 ---
 

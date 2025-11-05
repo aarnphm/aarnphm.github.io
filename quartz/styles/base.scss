@@ -830,8 +830,6 @@ body[data-is-base="true"] {
     & li:has(> input[type="checkbox"]) > input[type="checkbox"] {
       position: absolute;
       inset-inline-start: 0;
-      top: 0.35em;
-      margin-left: 2px !important;
     }
 
     & li:has(> input[type="checkbox"]:checked) {

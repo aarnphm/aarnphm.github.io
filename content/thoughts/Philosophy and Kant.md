@@ -1,12 +1,12 @@
 ---
 date: "2023-12-04"
-description: and moral philosophy
+description: and [[thoughts/moral]] philosophy
 id: Philosophy and Kant
-modified: 2025-10-29 02:15:32 GMT-04:00
+modified: 2025-11-05 03:05:18 GMT-05:00
 tags:
   - philosophy
   - seed
-title: Philosophy and Kant
+title: Kantian
 ---
 
 ### ontology framework.

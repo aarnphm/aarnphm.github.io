@@ -323,7 +323,7 @@ class SidenoteManager {
   }
 }
 
-document.addEventListener("nav", () => {
+function setupSidenotes() {
   const manager = new SidenoteManager()
   manager.layout()
 
@@ -372,4 +372,7 @@ document.addEventListener("nav", () => {
       observer.disconnect()
     }
   })
-})
+}
+
+document.addEventListener("nav", setupSidenotes)
+document.addEventListener("content-decrypted", setupSidenotes)

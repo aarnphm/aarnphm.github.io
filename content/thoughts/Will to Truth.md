@@ -1,9 +1,9 @@
 ---
 date: "2023-10-24"
+description: null
 id: Will to Truth
-modified: 2025-10-29 02:15:38 GMT-04:00
+modified: 2025-11-05 04:10:48 GMT-05:00
 tags:
-  - seed
   - philosophy
 title: Will to Truth
 ---

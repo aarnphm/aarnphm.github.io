@@ -569,9 +569,7 @@ document.addEventListener("nav", () => {
   setupPopoverLinks()
 })
 
-document.addEventListener("content-decrypted", ((e: CustomEvent) => {
-  const { contentDiv } = e.detail
-  if (contentDiv) {
-    setupPopoverLinks(contentDiv)
-  }
-}) as EventListener)
+document.addEventListener("content-decrypted", (e) => {
+  const { content } = e.detail
+  if (content) setupPopoverLinks(content)
+})

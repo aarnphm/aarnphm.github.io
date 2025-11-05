@@ -26,7 +26,7 @@
   "livePreview": false,
   "foldHeading": true,
   "foldIndent": true,
-  "showIndentGuide": true,
+  "showIndentGuide": false,
   "autoPairBrackets": true,
   "smartIndentList": true,
   "defaultViewMode": "source",

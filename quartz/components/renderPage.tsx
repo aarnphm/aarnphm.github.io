@@ -682,6 +682,7 @@ export const pageResources = (
 const defaultTranscludeOpts: TranscludeOptions = {
   dynalist: true,
   title: true,
+  headings: true,
   skipTranscludes: false,
 }
 
@@ -722,6 +723,23 @@ export function transcludeFinal(
 
   const { dynalist, skipTranscludes } = opts
   const isLanding = slug === "index"
+
+  const pruneLeadingHeading = (nodes: ElementContent[]): ElementContent[] => {
+    let removed = false
+    return nodes.filter((node) => {
+      if (
+        !removed &&
+        node &&
+        typeof node === "object" &&
+        (node as Element).type === "element" &&
+        headingRank(node as Element)
+      ) {
+        removed = true
+        return false
+      }
+      return true
+    })
+  }
 
   const anchor = (
     href: string,
@@ -871,7 +889,7 @@ export function transcludeFinal(
         stats.files.add(page.filePath!)
       }
 
-      const { title } = transcludePageOpts
+      const { title, headings } = transcludePageOpts
 
       let blockRef = node.properties.dataBlock as string | undefined
       if (blockRef?.startsWith("#^")) {
@@ -929,11 +947,15 @@ export function transcludeFinal(
 
         if (startIdx === undefined) return
 
+        const normalizedSection = (page.htmlAst.children.slice(startIdx, endIdx) as Element[]).map(
+          (child) => normalizeHastElement(child, slug, transcludeTarget) as ElementContent,
+        )
+
+        const sectionContent = headings ? normalizedSection : pruneLeadingHeading(normalizedSection)
+
         const children = [
           anchor(inner.properties?.href as string, url, alias, title),
-          ...(page.htmlAst.children.slice(startIdx, endIdx) as ElementContent[]).map((child) =>
-            normalizeHastElement(child as Element, slug, transcludeTarget),
-          ),
+          ...sectionContent,
         ]
 
         if (fileData.frontmatter?.pageLayout !== "reflection") {
@@ -1250,6 +1272,7 @@ const ElementComponent = (() => {
 
   const Element: QuartzComponent = (componentData: QuartzComponentProps) => {
     const svgToJsx = (hast: Element): JSX.Element =>
+      //@ts-ignore
       htmlToJsx(componentData.fileData.filePath!, hast)
 
     const rssIcon = svgToJsx(
@@ -1524,6 +1547,8 @@ export function renderPage(
                       placeholder: "enter password",
                       autocomplete: "off",
                       required: true,
+                      id: "protected-password-input",
+                      name: "password input for protected page",
                     }),
                     h("button.password-submit", { type: "submit" }, "unlock"),
                   ]),
