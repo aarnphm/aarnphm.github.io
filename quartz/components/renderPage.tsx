@@ -1293,7 +1293,7 @@ const ElementComponent = (() => {
           </address>
         </section>,
         <section style={{ marginTop: "0.9em" }}>
-          <em>m?dia</em>
+          <em>média</em>
           <address class="clickable-container">
             <AliasLink newTab classes={["external"]} name="github" url="https://github.com/aarnphm">
               {githubIcon}

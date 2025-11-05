@@ -306,6 +306,16 @@ $canvas-accents: (
   -ms-overflow-style: none;
 }
 
+.node-skeleton {
+  display: none;
+  pointer-events: none;
+
+  .node-skeleton-line {
+    fill: var(--lightgray);
+    opacity: 0.65;
+  }
+}
+
 .node-title-text {
   fill: var(--lightgray);
   font-weight: normal;
@@ -391,7 +401,7 @@ $canvas-accents: (
 
 .edge-label {
   fill: var(--gray);
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   pointer-events: none;
   user-select: none;
   font-weight: 500;
@@ -428,6 +438,17 @@ $canvas-accents: (
   height: 100%;
   color: var(--gray);
   font-size: 1.1rem;
+}
+
+.canvas-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 1rem;
+  color: var(--gray);
+  font-size: 1.1rem;
+  text-align: center;
 }
 
 // Help modal
@@ -644,18 +665,18 @@ $canvas-accents: (
     display: none !important;
   }
 
-  .node-text {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    background: var(--lightgray);
-    border-radius: 4px;
-    padding: 8px;
-    width: 80%;
-    height: 60%;
+  .node.node-text {
+    .node-content {
+      visibility: hidden;
+      pointer-events: none;
+    }
 
-    * {
-      display: none;
+    .node-skeleton {
+      display: block !important;
+
+      .node-skeleton-line {
+        opacity: 0.55;
+      }
     }
   }
 
@@ -701,7 +722,7 @@ $canvas-accents: (
   }
 
   .edge-label {
-    font-size: 0.7rem;
+    font-size: 2rem;
   }
 }
 
@@ -766,7 +787,7 @@ $canvas-accents: (
     color: var(--light);
   }
   .node-group-label {
-    fill: var(--gray);
+    fill: var(--darkgray);
 
     &:hover {
       fill: var(--secondary);
@@ -814,6 +835,13 @@ $canvas-accents: (
 
     .node-title-text.node-title-center {
       fill: var(--light);
+    }
+
+    .node.node-text .node-skeleton {
+      .node-skeleton-line {
+        fill: var(--gray);
+        opacity: 0.6;
+      }
     }
   }
 

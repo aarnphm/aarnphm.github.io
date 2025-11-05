@@ -9,6 +9,13 @@ body:has(.password-prompt-overlay[style*="display: flex"]) {
   position: relative;
   min-height: 50vh;
 
+  &:not(:has(.decrypted-content)) {
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    z-index: 99999;
+  }
+
   .password-prompt-overlay {
     position: fixed;
     top: 0;

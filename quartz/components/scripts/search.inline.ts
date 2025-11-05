@@ -595,6 +595,7 @@ async function setupSearch(
     } catch {}
 
     if (isProtected) {
+      itemTile.dataset.protected = "true"
       itemTile.innerHTML = `<hgroup>
         <h3>${titleContent}</h3>
         ${subscript}${htmlTags}
@@ -607,6 +608,7 @@ async function setupSearch(
         ${searchMode === "semantic" ? `<span class="result-likelihood" title="match likelihood">&nbsp;${percentLabel}</span>` : ""}
       </hgroup>`
     } else {
+      delete itemTile.dataset.protected
       itemTile.innerHTML = `<hgroup>
         <h3>${titleContent}</h3>
         ${subscript}${htmlTags}
@@ -727,6 +729,22 @@ async function setupSearch(
       }
 
       previewInner.appendChild(metaContainer)
+      preview.replaceChildren(previewInner)
+      return
+    }
+
+    const isProtected = el.dataset.protected === "true" || data[slug]?.protected === true
+    if (isProtected) {
+      previewInner = document.createElement("div")
+      previewInner.classList.add("preview-inner", "preview-redacted")
+
+      const blurLayer = document.createElement("div")
+      blurLayer.className = "preview-redacted-blur"
+      const label = document.createElement("span")
+      label.className = "preview-redacted-label"
+      label.textContent = "redacted"
+
+      previewInner.append(blurLayer, label)
       preview.replaceChildren(previewInner)
       return
     }

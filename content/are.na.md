@@ -2,8 +2,7 @@
 aliases:
   - inspo
 claude:
-  additional_context: |-
-    structure of "are.na.md" can be considered as following:
+  structure: |-
     - <h2>: is considered a "channel", where we have a row full of items
     - each list entry under a <h2> is considered as a "block".
     - A block will have the following structure:
@@ -17,10 +16,9 @@ claude:
       - `[**]` denotes this block is highlighted
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
-    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/[ArenaIndex|ChannelContent].tsx
+    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/ArenaIndex.tsx @quartz/components/pages/ChannelContent.tsx
 codex:
-  additional_context: |-
-    structure of "are.na.md" can be considered as following:
+  structure: |-
     - When I refer to <channel>, it is the H2 heading
     - When I refer to a <channel>, it is per list entry under a <channel>
     For example:
@@ -37,13 +35,13 @@ codex:
       - `[**]` denotes this block is highlighted
       - `[meta]` holds a yaml-markdown list of metadata for a given block
       - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
-    This will be consumed by quartz/plugins/emitters/arena.ts, and then ingested with quartz/components/pages/[ArenaIndex|ChannelContent].tsx
+    This will be handled by quartz/plugins/emitters/arena.ts, to the consumed with quartz/components/pages/ArenaIndex.tsx quartz/components/pages/ChannelContent.tsx
 cssclasses:
   - nolist
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-04 20:30:24 GMT-05:00
+modified: 2025-11-05 00:58:30 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -649,6 +647,11 @@ title: are.na
 
 ## people
 
+- https://plato.stanford.edu/entries/levinas/ -- Emmanuel Levinas
+  - [meta]:
+    - date: 11/04/2025
+    - tags: [philosopher]
+  - meta ethics, phenomenologist
 - https://www.clairebookworm.com/ -- Claire Wang
   - [meta]:
     - date: 11/02/2025
@@ -1237,10 +1240,13 @@ title: are.na
   - [meta]:
     - date: 10/29/2025
     - tags: [writing]
-- https://www.brasstacks.blog/tyatd-uni/ -- Things You’re Allowed to Do: University Edition
+- https://www.brasstacks.blog/tyatd-uni/ -- Things You’re Allowed to Do: University Edition [**]
   - [meta]:
     - date: 10/29/2025
     - tags: [school]
+  - see also:
+    - https://web.archive.org/web/20231126160243/http://becomingeden.com/what-i-wish-i-knew-in-college/
+    - https://skunkledger.substack.com/p/escaping-high-school?ref=brasstacks.blog
 - https://rauno.me/craft/interaction-design -- Invisible Details of Interaction Design [**]
   - [meta]:
     - date: 10/28/2025
@@ -3262,6 +3268,13 @@ title: are.na
 
 ## poetry
 
+- https://chatgpt.com/share/68dda4b3-9f58-8006-afba-a190e02c606f -- Gwern's codual with GPT-5 and Sonnet 4.5 for evaluating poem's writing capabilities
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [generative]
+  - https://chatgpt.com/share/68e8421c-3af4-8006-bd67-5752869bfc0d
+  - https://claude.ai/share/06aae665-2d53-4ed8-adf5-c998e4c0576a
+  - https://claude.ai/share/4a895e3c-4b67-4020-a631-f1fe698354bf
 - https://griffinpoetryprize.com/poem/crossroads-gluck -- Crossroads by Louise Glück
   - [meta]:
     - date: 10/23/2025
@@ -4107,6 +4120,10 @@ title: are.na
 
 ## math
 
+- https://www.youtube.com/watch?v=HpRi3OQtyLk -- Refined THH Over ku and Habiro Cohomology - Ferdinand Wagner
+  - [meta]:
+    - date: 11/04/2025
+    - tags: [topology]
 - https://www.youtube.com/watch?v=4Iejh8qTPJ4 -- Chris Skinner, The Birch--Swinnerton-Dyer Conjecture: a millennium prize problem at 25
   - [meta]:
     - date: 11/03/2025

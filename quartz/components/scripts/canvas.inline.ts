@@ -82,17 +82,47 @@ type LinkData = CanvasEdge & {
   target: NodeData
 }
 
+const jsonFetchCache = new Map<string, Promise<any>>()
+
+function resolveToAbsoluteUrl(source: string): string {
+  return new URL(source.trim(), window.location.href).toString()
+}
+
+async function fetchJson<T>(source: string): Promise<T> {
+  const absoluteUrl = resolveToAbsoluteUrl(source)
+
+  if (!jsonFetchCache.has(absoluteUrl)) {
+    const pending = fetch(absoluteUrl, { credentials: "same-origin" }).then((response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to load canvas data (${response.status})`)
+      }
+      return response.json()
+    })
+
+    jsonFetchCache.set(absoluteUrl, pending)
+  }
+
+  return jsonFetchCache.get(absoluteUrl)! as Promise<T>
+}
+
 async function renderCanvas(container: HTMLElement) {
   const dataAttr = container.getAttribute("data-canvas")
   const cfgAttr = container.getAttribute("data-cfg")
   const metaAttr = container.getAttribute("data-meta")
 
-  if (!dataAttr) return
+  if (!dataAttr || dataAttr.trim().length === 0) return
 
   try {
-    const canvasData: CanvasData = JSON.parse(dataAttr)
+    const canvasUrl = dataAttr.trim()
+    const metaUrl = metaAttr?.trim() ?? ""
+
+    const dataPromise = fetchJson<CanvasData>(canvasUrl)
+    const metaPromise = metaUrl.length > 0
+      ? fetchJson<Record<string, any>>(metaUrl)
+      : Promise.resolve<Record<string, any>>({})
+
+    const [canvasData, metaMap] = await Promise.all([dataPromise, metaPromise])
     const cfg: CanvasConfig = cfgAttr ? JSON.parse(cfgAttr) : {}
-    const metaMap: Record<string, any> = metaAttr ? JSON.parse(metaAttr) : {}
 
     if (!canvasData.nodes || canvasData.nodes.length === 0) {
       container.textContent = "Empty canvas"
@@ -529,7 +559,7 @@ async function renderCanvas(container: HTMLElement) {
       .attr("class", "node-group-label")
       .attr("x", 12)
       .attr("y", -8)
-      .attr("font-size", "12px")
+      .attr("font-size", "2rem")
       .text((d) => d.label || "Group")
       .each(function (d: any) {
         const maxWidth = d.width - 24
@@ -654,6 +684,45 @@ async function renderCanvas(container: HTMLElement) {
         }
       })
 
+    const textNodes = node.filter((d) => d.type === "text")
+
+    textNodes
+      .append("text")
+      .attr("class", "node-title-text node-title-center")
+      .attr("x", (d) => d.width / 2)
+      .attr("y", (d) => d.height / 2)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("font-size", "16px")
+      .attr("font-weight", "600")
+
+    textNodes.each(function (d: NodeData) {
+      const host = select(this)
+      const skeleton = host.append("g").attr("class", "node-skeleton")
+      const paddingX = 12
+      const paddingY = 16
+      const availableWidth = Math.max(12, d.width - paddingX * 2)
+      const lineHeight = 8
+      const lineGap = 6
+      const maxLines = Math.min(4, Math.floor((d.height - paddingY * 2) / (lineHeight + lineGap)))
+      const lineCount = Math.max(1, maxLines || 1)
+
+      skeleton.attr("transform", `translate(${paddingX}, ${paddingY})`)
+
+      for (let i = 0; i < lineCount; i++) {
+        const lineWidth = availableWidth * (1 - i * 0.12)
+        skeleton
+          .append("rect")
+          .attr("class", "node-skeleton-line")
+          .attr("x", 0)
+          .attr("y", i * (lineHeight + lineGap))
+          .attr("width", Math.max(24, lineWidth))
+          .attr("height", lineHeight)
+          .attr("rx", 4)
+          .attr("ry", 4)
+      }
+    })
+
     // node content
     node
       .append("foreignObject")
@@ -674,6 +743,8 @@ async function renderCanvas(container: HTMLElement) {
         }
         return ""
       })
+
+    textNodes.selectAll(".node-skeleton").raise()
 
     // add a hidden overlay anchor inside file nodes to reuse site-wide popover logic
     node
@@ -851,7 +922,7 @@ async function renderCanvas(container: HTMLElement) {
       })
 
       // update edge labels - position at curve midpoint
-      edge.selectAll(".edge-label-group").attr("transform", (d) => {
+      edge.selectAll(".edge-label-group").attr("transform", (d: any) => {
         const sourceCenterX = d.source.x + d.source.width / 2
         const sourceCenterY = d.source.y + d.source.height / 2
         const targetCenterX = d.target.x + d.target.width / 2
@@ -1081,7 +1152,8 @@ async function renderCanvas(container: HTMLElement) {
     }
   } catch (error) {
     console.error("Failed to render canvas:", error)
-    container.textContent = `Error rendering canvas: ${error}`
+    container.innerHTML =
+      '<div class="canvas-error">Failed to load canvas data. Check the console for details.</div>'
   }
 }
 

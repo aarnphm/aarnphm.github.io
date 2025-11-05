@@ -30,7 +30,7 @@ You can find internal monologue under [[/posts/]] index.
   - a fun [self-replicating spacecraft](https://en.wikipedia.org/wiki/Self-replicating_spacecraft) game
     - A hybrid of A\* and a BFS search for pathfinding algorithm.
     - polyalphabetic cipher with deterministic reversible transformations includes a Fiestel network structure with MurmurHash3 mixing of 32-bit avalanche mixer
-    - Source: [Site](https://nicky.day/)
+    - Source: [site but password protected](https://nicky.day/)
       ![[thoughts/images/nb-day.webp]]
 
 ## open source.

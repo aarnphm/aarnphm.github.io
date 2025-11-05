@@ -2,7 +2,7 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-10-31 18:24:42 GMT-04:00
+modified: 2025-11-04 23:34:49 GMT-05:00
 tags:
   - seed
   - fruit
@@ -164,15 +164,15 @@ I find myself the most productive while procrastinating other tasks.
   - tags:
     - math
 
-> ```poetry
-> Try as you may,
->
-> you just can't get away,
->
-> from mathematics
-> ```
->
-> —Tom Lehrer
+```sms
+Try as you may,
+
+you just can't get away,
+
+from mathematics
+
+—Tom Lehrer
+```
 
 ---
 
@@ -206,6 +206,15 @@ Late night work listening to Dreyfus' lectures hits like smoking a good joint on
 - [meta]:
   - date: 2025-10-31 18:24:43 GMT-04:00
   - tags:
-    - fruit
+    - life
 
 Writing kernels sounds way more fun the whoring on the streets of Toronto. Happy Halloween 🎃 though.
+
+---
+
+- [meta]:
+  - date: 2025-11-04 21:11:21 GMT-05:00
+  - tags:
+    - life
+
+I find myself using my mechanical keyboards less and less nowadays, using my laptop keyboard instead. This might have to do with the mode of focus the laptop keyboard puts me into—something about focusing on the work itself rather than the tools. Partially because of the wrist pain from long sessions of working at my desk 🐙

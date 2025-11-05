@@ -4,6 +4,67 @@ interface EncryptedPayload {
   iv: string
 }
 
+const unlockTimers = new Map<string, number>()
+
+const getLocalStorage = (): Storage | null => {
+  try {
+    if (typeof window === "undefined" || !("localStorage" in window)) {
+      return null
+    }
+    return window.localStorage
+  } catch {
+    return null
+  }
+}
+
+const unlockKey = (slug: string): string => `protected-until:${slug}`
+
+const readUnlockUntil = (slug: string): number | null => {
+  const storage = getLocalStorage()
+  if (!storage) return null
+
+  const raw = storage.getItem(unlockKey(slug))
+  if (!raw) return null
+
+  const unlockUntil = parseInt(raw, 10)
+  if (Number.isNaN(unlockUntil)) {
+    storage.removeItem(unlockKey(slug))
+    return null
+  }
+
+  return unlockUntil
+}
+
+const writeUnlockUntil = (slug: string, unlockUntil: number): void => {
+  const storage = getLocalStorage()
+  if (!storage) return
+
+  try {
+    storage.setItem(unlockKey(slug), unlockUntil.toString())
+  } catch {
+    // localStorage may be unavailable (private mode, quota, etc.)
+  }
+}
+
+const clearUnlockUntil = (slug: string): void => {
+  const storage = getLocalStorage()
+  if (!storage) return
+
+  try {
+    storage.removeItem(unlockKey(slug))
+  } catch {
+    // localStorage may be unavailable (private mode, quota, etc.)
+  }
+}
+
+const clearUnlockTimer = (slug: string): void => {
+  const timerId = unlockTimers.get(slug)
+  if (typeof timerId === "number") {
+    window.clearTimeout(timerId)
+    unlockTimers.delete(slug)
+  }
+}
+
 async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
   const encoder = new TextEncoder()
   const passwordKey = await crypto.subtle.importKey(
@@ -63,30 +124,34 @@ async function decryptContent(encryptedData: EncryptedPayload, password: string)
 // TTL for decrypted content in milliseconds (30 minutes)
 const DECRYPTION_TTL = 30 * 60 * 1000
 
-// Immediately hide overlay for pages with valid stored passwords to prevent flash
-;(() => {
-  const protectedArticles = document.querySelectorAll('[data-protected="true"]')
-  protectedArticles.forEach((article) => {
-    const slug = article.getAttribute("data-slug")
-    if (!slug) return
+function reLockContent(article: Element, slug: string): void {
+  const decryptedContent = article.querySelector(".decrypted-content")
+  if (decryptedContent) {
+    decryptedContent.remove()
+  }
 
-    const storedPassword = sessionStorage.getItem(`password:${slug}`)
-    const decryptedAtStr = sessionStorage.getItem(`decrypted-at:${slug}`)
+  const promptOverlay = article.querySelector<HTMLElement>(".password-prompt-overlay")
+  if (promptOverlay) {
+    promptOverlay.style.display = "flex"
+  }
 
-    if (storedPassword && decryptedAtStr) {
-      const decryptedAt = parseInt(decryptedAtStr, 10)
-      const elapsed = Date.now() - decryptedAt
+  const input = article.querySelector(".password-input") as HTMLInputElement
+  if (input) {
+    input.value = ""
+  }
 
-      // If password exists and TTL hasn't expired, hide overlay immediately
-      if (elapsed < DECRYPTION_TTL) {
-        const promptOverlay = article.querySelector<HTMLElement>(".password-prompt-overlay")
-        if (promptOverlay) {
-          promptOverlay.style.display = "none"
-        }
-      }
-    }
-  })
-})()
+  clearUnlockTimer(slug)
+  clearUnlockUntil(slug)
+}
+
+const scheduleReLock = (article: Element, slug: string, unlockUntil: number): void => {
+  clearUnlockTimer(slug)
+  const delay = Math.max(unlockUntil - Date.now(), 0)
+  const timerId = window.setTimeout(() => {
+    reLockContent(article, slug)
+  }, delay)
+  unlockTimers.set(slug, timerId)
+}
 
 document.addEventListener("nav", () => {
   const isProtected = window.document.body.dataset.protected === "true"
@@ -94,55 +159,39 @@ document.addEventListener("nav", () => {
 
   const protectedArticles = document.querySelectorAll('[data-protected="true"]')
 
-  // Function to re-lock content after TTL
-  const reLockContent = (article: Element, slug: string) => {
-    const decryptedContent = article.querySelector(".decrypted-content")
-    const promptOverlay = article.querySelector<HTMLElement>(".password-prompt-overlay")
-
-    // Remove decrypted content
-    if (decryptedContent) {
-      decryptedContent.remove()
-    }
-
-    // Show prompt overlay
-    if (promptOverlay) {
-      promptOverlay.style.display = "flex"
-    }
-
-    // Clear stored password and timestamp
-    sessionStorage.removeItem(`password:${slug}`)
-    sessionStorage.removeItem(`decrypted-at:${slug}`)
-
-    // Clear input and setup flag
-    const input = article.querySelector(".password-input") as HTMLInputElement
-    if (input) {
-      input.value = ""
-    }
-    article.removeAttribute("data-setup-complete")
-  }
-
   protectedArticles.forEach((article) => {
-    // Skip if already set up (prevents duplicate event listeners)
+    const slug = article.getAttribute("data-slug")
+
+    if (slug) {
+      const unlockUntil = readUnlockUntil(slug)
+      if (unlockUntil && unlockUntil > Date.now()) {
+        scheduleReLock(article, slug, unlockUntil)
+      } else {
+        clearUnlockUntil(slug)
+        clearUnlockTimer(slug)
+      }
+    }
+
     if (article.getAttribute("data-setup-complete") === "true") {
       return
     }
 
-    // Mark as set up
     article.setAttribute("data-setup-complete", "true")
     const form = article.querySelector(".password-form") as HTMLFormElement
     const input = article.querySelector(".password-input") as HTMLInputElement
     const errorEl = article.querySelector(".password-error") as HTMLElement
     const encryptedDataAttr = article.getAttribute("data-encrypted-content")
-    const slug = article.getAttribute("data-slug")
 
-    if (!form || !input || !encryptedDataAttr) return
+    if (!form || !input || !encryptedDataAttr || !slug) {
+      article.removeAttribute("data-setup-complete")
+      return
+    }
 
     let encryptedData: EncryptedPayload
     try {
       const decoded = decodeURIComponent(encryptedDataAttr)
       encryptedData = JSON.parse(decoded)
 
-      // Validate encrypted data structure
       if (
         !encryptedData ||
         typeof encryptedData !== "object" ||
@@ -161,16 +210,13 @@ document.addEventListener("nav", () => {
       return
     }
 
-    // Check if content is already decrypted (singleton check)
     const isDecrypted = () => article.querySelector(".decrypted-content") !== null
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault()
       const password = input.value.trim()
-
       if (!password) return
 
-      // If already decrypted, do nothing (singleton)
       if (isDecrypted()) {
         return
       }
@@ -180,26 +226,21 @@ document.addEventListener("nav", () => {
 
         const decryptedHtml = await decryptContent(encryptedData, password)
 
-        // Hide the password prompt overlay
         const promptOverlay = article.querySelector<HTMLDivElement>(".password-prompt-overlay")
         if (promptOverlay) promptOverlay.style.display = "none"
 
-        // Create and insert decrypted content with fade-in
         const contentDiv = document.createElement("div")
         contentDiv.className = "decrypted-content popover-hint"
         contentDiv.innerHTML = decryptedHtml
         article.appendChild(contentDiv)
 
-        // Store password and decryption timestamp
         if (slug) {
-          sessionStorage.setItem(`password:${slug}`, password)
-          sessionStorage.setItem(`decrypted-at:${slug}`, Date.now().toString())
-
-          // Set TTL timeout to re-lock
-          setTimeout(() => {
-            reLockContent(article, slug)
-          }, DECRYPTION_TTL)
+          const unlockUntil = Date.now() + DECRYPTION_TTL
+          writeUnlockUntil(slug, unlockUntil)
+          scheduleReLock(article, slug, unlockUntil)
         }
+
+        input.value = ""
 
         document.dispatchEvent(
           new CustomEvent("content-decrypted", {
@@ -213,40 +254,5 @@ document.addEventListener("nav", () => {
         input.focus()
       }
     })
-
-    // Auto-decrypt if password in session and within TTL
-    // This runs only once during initial setup
-    const storedPassword = sessionStorage.getItem(`password:${slug}`)
-    const decryptedAtStr = sessionStorage.getItem(`decrypted-at:${slug}`)
-
-    if (storedPassword && decryptedAtStr) {
-      const decryptedAt = parseInt(decryptedAtStr, 10)
-      const now = Date.now()
-      const elapsed = now - decryptedAt
-
-      // Check if TTL has expired
-      if (elapsed < DECRYPTION_TTL) {
-        if (form && input) {
-          // Wait for DOM to be fully ready before auto-decrypting
-          requestAnimationFrame(() => {
-            input.value = storedPassword
-            form.dispatchEvent(new Event("submit"))
-          })
-
-          // Set remaining TTL timeout
-          const remainingTTL = DECRYPTION_TTL - elapsed
-          setTimeout(() => {
-            const articleEl = document.querySelector(`[data-slug="${slug}"]`)
-            if (articleEl) {
-              reLockContent(articleEl, slug!)
-            }
-          }, remainingTTL)
-        }
-      } else {
-        // TTL expired, clear stored data
-        sessionStorage.removeItem(`password:${slug}`)
-        sessionStorage.removeItem(`decrypted-at:${slug}`)
-      }
-    }
   })
 })

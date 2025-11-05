@@ -42,6 +42,47 @@ const defaultOptions: CanvasOptions = {
   defaultHeight: 600,
 }
 
+async function writeCanvasAsset(
+  ctx: BuildCtx,
+  slug: string,
+  suffix: string,
+  payload: unknown,
+): Promise<string> {
+  const normalizedSlug = slug.replace(/\\/g, "/")
+  const relativePath = `${normalizedSlug}${suffix}`
+  const outputPath = path.join(ctx.argv.output, relativePath)
+  await fs.mkdir(path.dirname(outputPath), { recursive: true })
+  const data = typeof payload === "string" ? payload : JSON.stringify(payload)
+  await fs.writeFile(outputPath, data, "utf-8")
+  return `/${relativePath}`
+}
+
+async function writeCanvasJsonAsset(
+  ctx: BuildCtx,
+  slug: string,
+  canvasJson: unknown,
+): Promise<string> {
+  return writeCanvasAsset(ctx, slug, ".json", canvasJson)
+}
+
+async function writeCanvasMetaAsset(
+  ctx: BuildCtx,
+  slug: string,
+  meta: Record<string, any>,
+): Promise<string> {
+  return writeCanvasAsset(ctx, slug, ".meta.json", meta)
+}
+
+function collectCanvasMeta(jcast: JcastCanvas): Record<string, any> {
+  const meta: Record<string, any> = {}
+  for (const [id, node] of jcast.data.nodeMap) {
+    if (node.data?.resolved) {
+      meta[id] = node.data.resolved
+    }
+  }
+  return meta
+}
+
 export const JsonCanvas: QuartzTransformerPlugin<Partial<CanvasOptions>> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
 
@@ -123,13 +164,9 @@ export const JsonCanvas: QuartzTransformerPlugin<Partial<CanvasOptions>> = (user
                 const canvasContent = await fs.readFile(canvasPath, "utf-8")
                 const jcast = await processCanvasFile(canvasContent, ctx, undefined)
                 const canvasJson = serializeJcast(jcast)
-
-                const meta: Record<string, any> = {}
-                for (const [id, n] of jcast.data.nodeMap) {
-                  if (n.data?.resolved) {
-                    meta[id] = n.data.resolved
-                  }
-                }
+                const jsonPath = await writeCanvasJsonAsset(ctx, slug, canvasJson)
+                const meta = collectCanvasMeta(jcast)
+                const metaPath = await writeCanvasMetaAsset(ctx, slug, meta)
 
                 const embedConfig = {
                   drag: true,
@@ -146,8 +183,8 @@ export const JsonCanvas: QuartzTransformerPlugin<Partial<CanvasOptions>> = (user
                 node.tagName = "div"
                 node.properties = {
                   class: "canvas-embed-container",
-                  "data-canvas": JSON.stringify(canvasJson),
-                  "data-meta": JSON.stringify(meta),
+                  "data-canvas": jsonPath,
+                  "data-meta": metaPath,
                   "data-cfg": JSON.stringify(embedConfig),
                   "data-canvas-bounds": JSON.stringify(jcast.data.bounds),
                   "data-canvas-title": title || path.basename(canvasPath, ".canvas"),
@@ -281,26 +318,26 @@ export async function processCanvasFile(
 /**
  * Render jcast to hast element for embedding
  */
-export function renderCanvasToHast(
+export async function renderCanvasToHast(
+  ctx: BuildCtx,
+  slug: string,
   jcast: JcastCanvas,
   options?: {
     width?: number
     height?: number
     title?: string
   },
-): Element {
+): Promise<Element> {
   const { title } = options || {}
 
   // serialize canvas data for client-side rendering
   const canvasJson = serializeJcast(jcast)
 
+  const jsonPath = await writeCanvasJsonAsset(ctx, slug, canvasJson)
+
   // collect resolved metadata per node (do not mutate raw canvas JSON)
-  const meta: Record<string, any> = {}
-  for (const [id, node] of jcast.data.nodeMap) {
-    if (node.data?.resolved) {
-      meta[id] = node.data.resolved
-    }
-  }
+  const meta = collectCanvasMeta(jcast)
+  const metaPath = await writeCanvasMetaAsset(ctx, slug, meta)
 
   // default canvas configuration
   const defaultConfig = {
@@ -318,8 +355,8 @@ export function renderCanvasToHast(
   const container = h(
     "div.canvas-container",
     {
-      "data-canvas": JSON.stringify(canvasJson),
-      "data-meta": JSON.stringify(meta),
+      "data-canvas": jsonPath,
+      "data-meta": metaPath,
       "data-cfg": JSON.stringify(defaultConfig),
       "data-canvas-bounds": JSON.stringify(jcast.data.bounds),
       "data-canvas-title": title || "",

@@ -2,7 +2,7 @@
 date: "2024-12-17"
 description: also known as the superposition theorem.
 id: Kolmogorov-Arnold representation theorem
-modified: 2025-10-29 02:15:26 GMT-04:00
+modified: 2025-11-04 22:01:56 GMT-05:00
 tags:
   - math
 title: Kolmogorov–Arnold representation theorem
@@ -19,7 +19,5 @@ _every multivariate continuous function_ $f: [0,1]^n \to \mathbb{R}$ can be ==re
 > $$
 >
 > where $\phi_{q,p} : [0,1] \to \mathbb{R}$ and $\Phi_q: \mathbb{R} \to \mathbb{R}$
-
-## [[/tags/ml|machine learning]]
 
 See also [[thoughts/FFN#universal approximation theorem]]

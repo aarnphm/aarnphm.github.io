@@ -5,7 +5,7 @@ aliases:
 date: "2022-04-22"
 description: practicing the act of digital gardening.
 id: _index
-modified: 2025-10-29 02:14:20 GMT-04:00
+modified: 2025-11-04 22:01:07 GMT-05:00
 tags:
   - evergreen
   - fruit
@@ -14,7 +14,7 @@ title: Aaron's notes
 
 hi my name is aaron. I'm best reached via [twitter](https://twitter.com/aarnphm_) or [email](mailto:contact@aarnphm.xyz).
 
-currently, I'm working at a [startup](https://bentoml.com) building [[/tags/ml]] serving systems, where I mainly focus on [[thoughts/LLMs|LLM]] [[thoughts/vllm|inference engine]].
+currently, I'm working at a [startup](https://bentoml.com) building #ml serving systems, where I mainly focus on [[thoughts/LLMs|LLM]] [[thoughts/vllm|inference engine]].
 
 ```telescopic id="thoughts"
 * I try to be

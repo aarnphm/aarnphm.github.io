@@ -9,6 +9,7 @@ import {
   pathToRoot,
   FullSlug,
   simplifySlug,
+  SimpleSlug,
 } from "../../util/path"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { Content } from "../../components"
@@ -82,7 +83,9 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
 
           const title = path.basename(canvasFile, ".canvas")
 
-          const canvasElement = renderCanvasToHast(jcast, { width, height, title })
+          const canvasElement = await renderCanvasToHast(ctx, slug, jcast, { width, height, title })
+          const canvasDataPath = (canvasElement.properties?.["data-canvas"] as string) || undefined
+          const canvasMetaPath = (canvasElement.properties?.["data-meta"] as string) || undefined
 
           const tree: Root = {
             type: "root",
@@ -102,11 +105,13 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
               title,
               tags: ["canvas"],
               pageLayout: "default" as any,
+              ...(canvasDataPath ? { canvas: canvasDataPath } : {}),
+              ...(canvasMetaPath ? { canvasMeta: canvasMetaPath } : {}),
             },
             htmlAst: tree,
             filePath: canvasFile as FilePath,
             text: "",
-            links: linkedSlugs,
+            links: linkedSlugs as SimpleSlug[],
           }
 
           const externalResources = pageResources(pathToRoot(slug), resources, ctx)

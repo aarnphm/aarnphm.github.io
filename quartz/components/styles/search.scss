@@ -207,6 +207,31 @@
               display: none;
             }
 
+            &.preview-redacted {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              min-height: 160px;
+              text-transform: uppercase;
+              letter-spacing: 0.3em;
+              font-weight: 600;
+              color: var(--gray);
+
+              .preview-redacted-blur {
+                position: absolute;
+                inset: 0;
+                border-radius: 16px;
+                background: color-mix(in srgb, var(--lightgray) 65%, transparent);
+                backdrop-filter: blur(12px);
+                z-index: 0;
+              }
+
+              .preview-redacted-label {
+                position: relative;
+                z-index: 1;
+              }
+            }
+
             .grid {
               grid-template-columns: 1fr auto 1fr;
             }

@@ -2,7 +2,7 @@
 date: "2025-08-12"
 description: and my interests.
 id: research
-modified: 2025-11-03 04:11:08 GMT-05:00
+modified: 2025-11-04 22:01:29 GMT-05:00
 tags:
   - fruit
 title: research
@@ -11,7 +11,7 @@ transclude:
   title: false
 ---
 
-I would like to do research at some point. I'm interested in [[thoughts/mechanistic interpretability|emergent properties]] in [[/tags/ml|ML]] system.
+I would like to do research at some point. I'm interested in [[thoughts/mechanistic interpretability|emergent properties]] in #ml system.
 
 ## For non-ML folks
 

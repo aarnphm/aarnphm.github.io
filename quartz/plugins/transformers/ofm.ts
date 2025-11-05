@@ -49,10 +49,8 @@ export interface Options {
   parseBlockReferences: boolean
   enableInHtmlEmbed: boolean
   enableYouTubeEmbed: boolean
-  enableVideoEmbed: boolean
   enableInlineFootnotes: boolean
   enableImageGrid: boolean
-  enableBrokenWikilinks: boolean
 }
 
 const defaultOptions: Options = {
@@ -66,10 +64,8 @@ const defaultOptions: Options = {
   parseBlockReferences: true,
   enableInHtmlEmbed: false,
   enableYouTubeEmbed: true,
-  enableVideoEmbed: true,
   enableInlineFootnotes: true,
   enableImageGrid: true,
-  enableBrokenWikilinks: false,
 }
 
 const calloutMapping = {
@@ -278,7 +274,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                   url: base + `/tags/${tag}`,
                   data: {
                     hProperties: {
-                      className: ["tag-link"],
+                      className: ["tag-inline-link"],
                     },
                   },
                   children: [

@@ -4,4 +4,4 @@ description: everything related to machine learning, or statistics-adjacent topi
 title: machine learning
 ---
 
-Everything related to machine learning, or [[/tags/math|math-adjacent]] topics
+Everything related to machine learning, or #math adjacent topics

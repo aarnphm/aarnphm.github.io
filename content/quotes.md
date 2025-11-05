@@ -3,7 +3,7 @@ aliases:
   - advice
 date: "2024-01-23"
 id: quotes
-modified: 2025-11-04 04:22:10 GMT-05:00
+modified: 2025-11-04 22:10:17 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 tags:
   - evergreen
@@ -17,6 +17,10 @@ transclude:
 <!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
 
 ## On life.
+
+> If you love a flower, don't pick it up. Because if you pick it up it dies, and it ceases to be what you love. So, if you love a flower, let it be. Love is not about possession; love is about appreciation.
+>
+> —Osho
 
 > The best gift you can give yourself is the gift of possibility.
 >

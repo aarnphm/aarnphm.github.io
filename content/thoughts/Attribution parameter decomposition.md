@@ -2,7 +2,7 @@
 date: "2025-01-29"
 description: and mechanisms of components.
 id: Attribution parameter decomposition
-modified: 2025-11-03 03:53:40 GMT-05:00
+modified: 2025-11-05 01:24:38 GMT-05:00
 tags:
   - interpretability
 title: Attribution parameter decomposition
@@ -19,7 +19,7 @@ relies on **weight space linearity**:
 - observations that neural networks often exhibit linear structure in parameter space.
 - This enables decomposing parameters as sums of components.
 - The approach exploits **sparsity** - most parameters are inactive most of the time, enabling decomposition into interpretable sparse components.
-- This connects to [[thoughts/Information theory|information theory]] - minimizing description length via sparse, low-rank decompositions.
+- This connects to [[thoughts/Information Theory|information theory]] - minimizing description length via sparse, low-rank decompositions.
 
 ### goals
 

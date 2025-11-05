@@ -72,9 +72,25 @@ export default ((userOpts?: Partial<CanvasConfig>) => {
 
     if (!canvasData) return <></>
 
+    const dataValue =
+      typeof canvasData === "string" ? canvasData : JSON.stringify(canvasData)
+    const metaValue =
+      typeof fileData.frontmatter?.canvasMeta === "string"
+        ? fileData.frontmatter.canvasMeta
+        : undefined
+
+    const containerProps: Record<string, string> = {
+      "data-canvas": dataValue,
+      "data-cfg": cfg,
+    }
+
+    if (metaValue) {
+      containerProps["data-meta"] = metaValue
+    }
+
     return (
       <section class="canvas-component" data-canvas-title={fileData.frontmatter?.title}>
-        <div class="canvas-container" data-canvas={JSON.stringify(canvasData)} data-cfg={cfg} />
+        <div class="canvas-container" {...containerProps} />
       </section>
     )
   }
