@@ -6,7 +6,7 @@
   "monospaceFontFamily": "Berkeley Mono",
   "baseFontSize": 16,
   "translucency": false,
-  "showViewHeader": false,
+  "showViewHeader": true,
   "enabledCssSnippets": [
     "snippet"
   ],
