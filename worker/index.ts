@@ -440,7 +440,10 @@ export default {
       rewritten.searchParams.set("stackedNotes", btoa(slug).replace(/=+$/, ""))
       const newReq = new Request(rewritten.toString(), request)
       const resp = await env.ASSETS.fetch(newReq)
-      return withHeaders(resp, { "Access-Control-Allow-Origin": "*" })
+      return withHeaders(resp, {
+        "X-Frame-Options": null,
+        "Content-Security-Policy": "frame-ancestors 'self' *",
+      })
     }
 
     // permanent redirect d.aarnphm.xyz -> aarnphm.xyz/dating

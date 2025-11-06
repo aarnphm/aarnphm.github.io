@@ -44,6 +44,10 @@ remote = true
 pattern = "aarnphm.xyz"
 custom_domain = true
 
+[[routes]]
+pattern = "notes.aarnphm.xyz"
+custom_domain = true
+
 [assets]
 directory = "./public/"
 binding = "ASSETS"
