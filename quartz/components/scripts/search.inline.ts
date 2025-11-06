@@ -407,14 +407,21 @@ async function setupSearch(
   })
   let preview: HTMLDivElement | undefined = undefined
   let previewInner: HTMLDivElement | undefined = undefined
-  const results = document.createElement("div")
-  results.className = "results-container"
-  appendLayout(results)
+
+  let results = searchLayout.querySelector(".results-container") as HTMLDivElement
+  if (!results) {
+    results = document.createElement("div")
+    results.className = "results-container"
+    appendLayout(results)
+  }
 
   if (enablePreview) {
-    preview = document.createElement("div")
-    preview.className = "preview-container"
-    appendLayout(preview)
+    preview = searchLayout.querySelector(".preview-container") as HTMLDivElement
+    if (!preview) {
+      preview = document.createElement("div")
+      preview.className = "preview-container"
+      appendLayout(preview)
+    }
   }
 
   function hideSearch() {

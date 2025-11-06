@@ -877,7 +877,7 @@ window.stacked = stacked
 async function navigate(url: URL, isBack: boolean = false) {
   const stackedContainer = document.getElementById("stacked-notes-container")
   if (stackedContainer?.classList.contains("active")) {
-    return await stacked.navigate(url)
+    return await window.stacked.navigate(url)
   }
 
   startLoading()
