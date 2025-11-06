@@ -198,6 +198,14 @@ export default (() => {
     const sortedBlocks = [...channel.blocks].sort(
       (a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a),
     )
+    const channelViewPreferenceRaw = channel.metadata?.["view"] ?? channel.metadata?.["layout"]
+    const channelViewPreference =
+      typeof channelViewPreferenceRaw === "string"
+        ? channelViewPreferenceRaw.trim().toLowerCase()
+        : undefined
+    const defaultViewMode: "grid" | "list" =
+      channelViewPreference === "list" || channelViewPreference === "lists" ? "list" : "grid"
+    const isListDefault = defaultViewMode === "list"
 
     const jsxFromNode = (node?: ElementContent) =>
       node
@@ -591,7 +599,11 @@ export default (() => {
     }
 
     return (
-      <article class="arena-channel-page main-col" data-view-mode="grid">
+      <article
+        class="arena-channel-page main-col"
+        data-view-mode={defaultViewMode}
+        data-view-default={defaultViewMode}
+      >
         <div class="arena-channel-controls">
           <div class="arena-search">
             <input
@@ -624,9 +636,9 @@ export default (() => {
           <div class="arena-view-toggle" role="group" aria-label="Toggle channel layout">
             <button
               type="button"
-              class="arena-view-toggle-button active"
+              class={classNames("arena-view-toggle-button", !isListDefault ? "active" : undefined)}
               data-view-mode="grid"
-              aria-pressed="true"
+              aria-pressed={(!isListDefault).toString()}
             >
               <svg
                 width="16"
@@ -646,9 +658,9 @@ export default (() => {
             </button>
             <button
               type="button"
-              class="arena-view-toggle-button"
+              class={classNames("arena-view-toggle-button", isListDefault ? "active" : undefined)}
               data-view-mode="list"
-              aria-pressed="false"
+              aria-pressed={isListDefault.toString()}
             >
               <svg
                 width="16"
@@ -671,8 +683,8 @@ export default (() => {
         <div
           class="arena-channel-grid"
           id="arena-block-collection"
-          data-view-mode="grid"
-          data-view-default="grid"
+          data-view-mode={defaultViewMode}
+          data-view-default={defaultViewMode}
         >
           {sortedBlocks.map((block, idx) => renderBlock(block, idx))}
         </div>

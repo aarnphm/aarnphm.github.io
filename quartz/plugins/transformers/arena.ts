@@ -38,6 +38,8 @@ export interface ArenaChannel {
   slug: string
   blocks: ArenaBlock[]
   titleHtmlNode?: ElementContent
+  metadata?: Record<string, string>
+  tags?: string[]
 }
 
 export interface ArenaData {
@@ -919,6 +921,28 @@ export const Arena: QuartzTransformerPlugin = () => {
                 if (channels.length > 0) {
                   const currentChannel = channels[channels.length - 1]
                   const ulElement = node as Element
+
+                  const channelMeta = extractMetadataFromList(ulElement)
+                  if (channelMeta.metadata) {
+                    currentChannel.metadata = channelMeta.metadata
+                  }
+                  if (channelMeta.tags) {
+                    currentChannel.tags = channelMeta.tags
+                  }
+                  if (channelMeta.metadata || channelMeta.tags) {
+                    const firstItem = ulElement.children.find(isLi)
+                    if (firstItem) {
+                      const label = getFirstTextContent(firstItem).trim().toLowerCase()
+                      const metaMatch = label.match(/^\[meta\](?:\s*[:\-–—])?$/)
+                      if (metaMatch) {
+                        const metaIndex = ulElement.children.indexOf(firstItem)
+                        if (metaIndex !== -1) {
+                          ulElement.children.splice(metaIndex, 1)
+                        }
+                      }
+                    }
+                  }
+
                   for (const child of ulElement.children as ElementContent[]) {
                     if (isLi(child)) {
                       const block = parseBlock(child)
