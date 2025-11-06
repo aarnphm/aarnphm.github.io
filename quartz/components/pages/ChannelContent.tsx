@@ -195,6 +195,10 @@ export default (() => {
       return <article class="arena-content">Channel not found</article>
     }
 
+    const sortedBlocks = [...channel.blocks].sort(
+      (a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a),
+    )
+
     const jsxFromNode = (node?: ElementContent) =>
       node
         ? toArenaJsx(fileData.filePath!, node, fileData.slug! as FullSlug, componentData)
@@ -320,6 +324,9 @@ export default (() => {
         )
       }
 
+      const hasMetaPreview =
+        Boolean(accessed) || (block.tags && Array.isArray(block.tags) && block.tags.length > 0)
+
       return (
         <div
           key={block.id}
@@ -358,6 +365,44 @@ export default (() => {
                 ? jsxFromNode(block.titleHtmlNode)
                 : renderInlineText(block.title || block.content || "")}
             </div>
+            {hasMetaPreview && (
+              <div class="arena-block-meta">
+                {accessed ? (
+                  <span class="arena-block-meta-item">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="arena-block-meta-icon"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M7.5 1.6a5.9 5.9 0 1 0 0 11.8 5.9 5.9 0 0 0 0-11.8ZM2.4 7.5a5.1 5.1 0 1 1 10.2 0 5.1 5.1 0 0 1-10.2 0Zm5.6-3.4a.4.4 0 1 0-.8 0v3.2c0 .11.04.21.12.29l2.1 2.1a.4.4 0 0 0 .56-.56L8 7.07V4.1Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    {accessed.dateTime ? (
+                      <time dateTime={accessed.dateTime}>{accessed.display}</time>
+                    ) : (
+                      accessed.display
+                    )}
+                  </span>
+                ) : null}
+                {block.tags && block.tags.length > 0 ? (
+                  <span class="arena-block-meta-item arena-block-meta-tags">
+                    {block.tags.map((tag) => (
+                      <span class="tag-link" key={`${block.id}-tag-preview-${slugTag(tag)}`}>
+                        {tag}
+                      </span>
+                    ))}
+                  </span>
+                ) : null}
+              </div>
+            )}
           </div>
           <div
             class="arena-block-modal-data"
@@ -546,39 +591,90 @@ export default (() => {
     }
 
     return (
-      <article class="arena-channel-page main-col">
-        <div class="arena-search">
-          <input
-            type="text"
-            id="arena-search-bar"
-            class="arena-search-input"
-            placeholder="rechercher ce canal..."
-            data-search-scope="channel"
-            data-channel-slug={channel.slug}
-            aria-label="Rechercher ce canal"
-            aria-keyshortcuts="Meta+K Control+K"
-          />
-          <svg
-            class="arena-search-icon"
-            width="18"
-            height="18"
-            viewBox="0 0 15 15"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 6.5C10 8.433 8.433 10 6.5 10C4.567 10 3 8.433 3 6.5C3 4.567 4.567 3 6.5 3C8.433 3 10 4.567 10 6.5ZM9.30884 10.0159C8.53901 10.6318 7.56251 11 6.5 11C4.01472 11 2 8.98528 2 6.5C2 4.01472 4.01472 2 6.5 2C8.98528 2 11 4.01472 11 6.5C11 7.56251 10.6318 8.53901 10.0159 9.30884L12.8536 12.1464C13.0488 12.3417 13.0488 12.6583 12.8536 12.8536C12.6583 13.0488 12.3417 13.0488 12.1464 12.8536L9.30884 10.0159Z"
-              fill="currentColor"
-              fill-rule="evenodd"
-              clip-rule="evenodd"
+      <article class="arena-channel-page main-col" data-view-mode="grid">
+        <div class="arena-channel-controls">
+          <div class="arena-search">
+            <input
+              type="text"
+              id="arena-search-bar"
+              class="arena-search-input"
+              placeholder="rechercher ce canal..."
+              data-search-scope="channel"
+              data-channel-slug={channel.slug}
+              aria-label="Rechercher ce canal"
+              aria-keyshortcuts="Meta+K Control+K"
             />
-          </svg>
-          <div id="arena-search-container" class="arena-search-results" />
+            <svg
+              class="arena-search-icon"
+              width="18"
+              height="18"
+              viewBox="0 0 15 15"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 6.5C10 8.433 8.433 10 6.5 10C4.567 10 3 8.433 3 6.5C3 4.567 4.567 3 6.5 3C8.433 3 10 4.567 10 6.5ZM9.30884 10.0159C8.53901 10.6318 7.56251 11 6.5 11C4.01472 11 2 8.98528 2 6.5C2 4.01472 4.01472 2 6.5 2C8.98528 2 11 4.01472 11 6.5C11 7.56251 10.6318 8.53901 10.0159 9.30884L12.8536 12.1464C13.0488 12.3417 13.0488 12.6583 12.8536 12.8536C12.6583 13.0488 12.3417 13.0488 12.1464 12.8536L9.30884 10.0159Z"
+                fill="currentColor"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <div id="arena-search-container" class="arena-search-results" />
+          </div>
+          <div class="arena-view-toggle" role="group" aria-label="Toggle channel layout">
+            <button
+              type="button"
+              class="arena-view-toggle-button active"
+              data-view-mode="grid"
+              aria-pressed="true"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 15 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M1.5 3A1.5 1.5 0 0 1 3 1.5h2A1.5 1.5 0 0 1 6.5 3v2A1.5 1.5 0 0 1 5 6.5H3A1.5 1.5 0 0 1 1.5 5V3Zm1 0A.5.5 0 0 1 3 2.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V3ZM8.5 3A1.5 1.5 0 0 1 10 1.5h2A1.5 1.5 0 0 1 13.5 3v2A1.5 1.5 0 0 1 12 6.5h-2A1.5 1.5 0 0 1 8.5 5V3Zm1 0a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V3ZM1.5 10a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 6.5 10v2A1.5 1.5 0 0 1 5 13.5H3A1.5 1.5 0 0 1 1.5 12v-2Zm1 0a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5v-2ZM8.5 10A1.5 1.5 0 0 1 10 8.5h2a1.5 1.5 0 0 1 1.5 1.5v2a1.5 1.5 0 0 1-1.5 1.5h-2A1.5 1.5 0 0 1 8.5 12v-2Zm1 0a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="arena-view-toggle-button"
+              data-view-mode="list"
+              aria-pressed="false"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 15 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M2 4.25A.75.75 0 0 1 2.75 3.5h9.5a.75.75 0 0 1 0 1.5h-9.5A.75.75 0 0 1 2 4.25Zm0 3.5A.75.75 0 0 1 2.75 7h9.5a.75.75 0 0 1 0 1.5h-9.5A.75.75 0 0 1 2 7.75Zm.75 3.5a.75.75 0 0 0 0 1.5h9.5a.75.75 0 0 0 0-1.5h-9.5Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
-        <div class="arena-channel-grid">
-          {[...channel.blocks]
-            .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
-            .map((block, idx) => renderBlock(block, idx))}
+        <div
+          class="arena-channel-grid"
+          id="arena-block-collection"
+          data-view-mode="grid"
+          data-view-default="grid"
+        >
+          {sortedBlocks.map((block, idx) => renderBlock(block, idx))}
         </div>
 
         <div class="arena-block-modal" id="arena-modal">

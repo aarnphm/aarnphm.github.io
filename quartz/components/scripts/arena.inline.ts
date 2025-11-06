@@ -1034,6 +1034,40 @@ function closeSearchDropdown() {
 document.addEventListener("nav", () => {
   totalBlocks = document.querySelectorAll("[data-block-id][data-block-index]").length
 
+  const channelPage = document.querySelector<HTMLElement>(".arena-channel-page")
+  const blockCollection = document.getElementById("arena-block-collection") as HTMLElement | null
+  const viewToggleButtons = channelPage
+    ? Array.from(channelPage.querySelectorAll<HTMLButtonElement>(".arena-view-toggle-button"))
+    : []
+
+  type ArenaViewMode = "grid" | "list"
+
+  const applyViewMode = (mode: ArenaViewMode) => {
+    if (!channelPage || !blockCollection) return
+    const normalized: ArenaViewMode = mode === "list" ? "list" : "grid"
+    channelPage.dataset.viewMode = normalized
+    blockCollection.dataset.viewMode = normalized
+    viewToggleButtons.forEach((button) => {
+      const targetMode = (button.dataset.viewMode as ArenaViewMode) || "grid"
+      const isActive = targetMode === normalized
+      button.classList.toggle("active", isActive)
+      button.setAttribute("aria-pressed", isActive ? "true" : "false")
+    })
+    totalBlocks = channelPage.querySelectorAll("[data-block-id][data-block-index]").length
+  }
+
+  if (channelPage && blockCollection && viewToggleButtons.length > 0) {
+    const initialMode = (blockCollection.dataset.viewMode as ArenaViewMode | undefined) ?? "grid"
+    applyViewMode(initialMode)
+
+    viewToggleButtons.forEach((button) => {
+      const desiredMode = (button.dataset.viewMode as ArenaViewMode) || "grid"
+      const onToggleClick = () => applyViewMode(desiredMode)
+      button.addEventListener("click", onToggleClick)
+      window.addCleanup(() => button.removeEventListener("click", onToggleClick))
+    })
+  }
+
   // Build search index
   const searchInput = document.querySelector<HTMLInputElement>(".arena-search-input")
   let activeResultIndex: number | null = null

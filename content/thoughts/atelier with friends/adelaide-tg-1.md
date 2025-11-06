@@ -17,7 +17,7 @@ title: adelaide-tg
 
 ### dinde
 
-[[thoughts/atelier with friends/images/495335-C143-4F3F-8A8A-389444A8D9FE.png|demi-glace]], purée de carottes, pommes de terre rôties, choux de Bruxelles rôtis
+[[thoughts/atelier with friends/images/495335-C143-4F3F-8A8A-389444A8D9FE.webp|demi-glace]], purée de carottes, pommes de terre rôties, choux de Bruxelles rôtis
 
 ## ==dessert==
 

@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-06 03:38:22 GMT-05:00
+modified: 2025-11-06 07:06:36 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -118,6 +118,14 @@ title: are.na
 
 ## tweets
 
+- https://x.com/johannes_hage/status/1986326790697300462 -- PrimeRL was also rejected at NeurIPS
+  - [meta]:
+    - date: 11/07/2025
+    - tags: [llm]
+- https://x.com/ctnzr/status/1621937970239668224 -- TIL Megatron-LM paper was rejected
+  - [meta]:
+    - date: 11/07/2025
+    - tags: [llm]
 - https://x.com/mike64_t/status/1986232971230388370 -- ParaRNN debates and JAX implementations [**]
   - [meta]:
     - date: 11/05/2025
@@ -1915,6 +1923,15 @@ title: are.na
 
 ## machine learning
 
+- [meta]:
+  - view: list
+
+- https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/ -- AlphaEvolve [**]
+  - [meta]:
+    - date: 11/06/2025
+    - tags: [mathematics, llm]
+  - https://github.com/algorithmicsuperintelligence/openevolve, https://github.com/liugangcode/deepevolve
+  - https://arxiv.org/abs/2511.02864
 - https://www.youtube.com/watch?v=d2QEtm71IEw -- Agents as Ordinary Software: Principled Engineering for Scale | Linus Lee, Thrive Capital
   - [meta]:
     - date: 11/03/2025

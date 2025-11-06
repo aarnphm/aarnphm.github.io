@@ -12,7 +12,7 @@ title: Eldrich horror
 
 <figure class="float-right">
 
-![[thoughts/images/cthulhu lovecraft.png|1934 drawing by Lovecraft of Cthulhu]]
+![[thoughts/images/cthulhu lovecraft.webp|1934 drawing by Lovecraft of Cthulhu]]
 
 </figure>
 
