@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-06 01:50:01 GMT-05:00
+modified: 2025-11-06 03:38:22 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -3774,6 +3774,10 @@ title: are.na
 
 ## fonts
 
+- https://wehtt.am/fonts/ -- Fonts for a progressive future [**]
+  - [meta]:
+    - date: 11/06/2025
+    - tags: [free]
 - https://pangrampangram.com/ -- Pangram Pangram Foundry [**]
   - [meta]:
     - date: 10/28/2025

@@ -1,5 +1,11 @@
 import micromorph from "micromorph"
-import { FullSlug, RelativeURL, getFullSlug, normalizeRelativeURLs } from "../../util/path"
+import {
+  FullSlug,
+  RelativeURL,
+  getFullSlug,
+  normalizeRelativeURLs,
+  sluggify,
+} from "../../util/path"
 import { removeAllChildren, Dag, DagNode } from "./util"
 import { ContentDetails } from "../../plugins"
 import { formatDate } from "../Date"
@@ -370,6 +376,7 @@ class StackedNoteManager {
     const txt = await response.text()
     const html = p.parseFromString(txt, "text/html")
     normalizeRelativeURLs(html, url)
+    transformStreamInternalLinks(html)
 
     // check if the page is protected
     const protectedArticle = html.querySelector('article[data-protected="true"]')
@@ -458,6 +465,7 @@ class StackedNoteManager {
     const noteContent = document.createElement("div")
     noteContent.className = "stacked-content"
     noteContent.append(...contents)
+    transformStreamInternalLinks(noteContent)
 
     await this.loadData().then((allFiles) => {
       // NOTE: some pages are auto-generated, so we don't have access here in allFiles
@@ -481,6 +489,8 @@ class StackedNoteManager {
     const links = [...noteContent.getElementsByClassName("internal")] as HTMLAnchorElement[]
 
     for (const link of links) {
+      if ("noPopover" in link.dataset) continue
+
       const href = link.href
       const slug = link.dataset.slug as string
       if (this.dag.has(slug)) {
@@ -571,6 +581,7 @@ class StackedNoteManager {
     const slug = note.dataset.slug!
     const noteTitle = note.querySelector(".stacked-title") as HTMLDivElement
     const noteContent = note.querySelector(".stacked-content") as HTMLDivElement
+    transformStreamInternalLinks(noteContent)
 
     if (!noteTitle || !noteContent) {
       console.warn(`missing title or content for note ${slug}`)
@@ -591,6 +602,8 @@ class StackedNoteManager {
     const links = [...noteContent.getElementsByClassName("internal")] as HTMLAnchorElement[]
 
     for (const link of links) {
+      if ("noPopover" in link.dataset) continue
+
       const href = link.href
       const linkSlug = link.dataset.slug as string
 
@@ -871,6 +884,52 @@ class StackedNoteManager {
   }
 }
 
+const STREAM_HOSTNAME = "stream.aarnphm.xyz"
+const APEX_ORIGIN = "https://aarnphm.xyz"
+
+function isStreamHost() {
+  return typeof window !== "undefined" && window.location.hostname === STREAM_HOSTNAME
+}
+
+function normalizeStreamPath(raw: string): string | null {
+  if (!raw) return null
+  const trimmed = raw.trim()
+  if (trimmed === "") return "/"
+  if (trimmed.startsWith("#")) return null
+
+  try {
+    const parsed = new URL(trimmed, `https://${STREAM_HOSTNAME}`)
+    const hash = parsed.hash ?? ""
+    const search = parsed.search ?? ""
+    let pathname = parsed.pathname.replace(/^\/+/, "")
+    if (pathname === "") return `/${search}${hash}`
+    pathname = sluggify(pathname).toLowerCase()
+    const normalizedPath = `/${pathname}`
+    return `${normalizedPath}${search}${hash}`
+  } catch {
+    return null
+  }
+}
+
+function transformStreamInternalLinks(root: Document | Element) {
+  if (!isStreamHost()) return
+  const anchors = root.querySelectorAll<HTMLAnchorElement>("a.internal")
+  anchors.forEach((anchor) => {
+    if ("noPopover" in anchor.dataset) return
+
+    const preferred = anchor.dataset.slug ?? anchor.getAttribute("href") ?? ""
+    const normalizedPath = normalizeStreamPath(preferred)
+    if (!normalizedPath) return
+
+    const absoluteHref = `${APEX_ORIGIN}${normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`}`
+    if (anchor.getAttribute("href") !== absoluteHref) {
+      anchor.setAttribute("href", absoluteHref)
+    }
+    anchor.dataset.noPopover = "true"
+    anchor.dataset.routerIgnore = "true"
+  })
+}
+
 const stacked = new StackedNoteManager()
 window.stacked = stacked
 
@@ -908,6 +967,7 @@ async function navigate(url: URL, isBack: boolean = false) {
 
   const html = p.parseFromString(contents, "text/html")
   normalizeRelativeURLs(html, url)
+  transformStreamInternalLinks(html)
 
   let title = html.querySelector("title")?.textContent
   if (title) {
@@ -925,6 +985,7 @@ async function navigate(url: URL, isBack: boolean = false) {
   // morph body
   startViewTransition(() => {
     micromorph(document.body, html.body)
+    transformStreamInternalLinks(document)
 
     // scroll into place and add history
     if (!isBack) {
@@ -954,6 +1015,10 @@ async function navigate(url: URL, isBack: boolean = false) {
 
 window.spaNavigate = navigate
 window.notifyNav = notifyNav
+
+document.addEventListener("nav", () => {
+  transformStreamInternalLinks(document)
+})
 
 function createRouter() {
   if (typeof window !== "undefined") {
@@ -1036,23 +1101,6 @@ if (!customElements.get("route-announcer")) {
 // NOTE: navigate first if there are stackedNotes
 const baseUrl = new URL(document.location.toString())
 const stackedNotes = baseUrl.searchParams.get("stackedNotes")
-const container = document.getElementById("stacked-notes-container")
-
-// If there's a stackedNotes parameter and stacked mode isn't active, activate it
-if (stackedNotes && !container?.classList.contains("active")) {
-  const button = document.getElementById("stacked-note-toggle") as HTMLSpanElement
-  const header = document.getElementsByClassName("header")[0] as HTMLElement
-
-  button.setAttribute("aria-checked", "true")
-  container?.classList.add("active")
-  document.body.classList.add("stack-mode")
-  header.classList.add("grid", "all-col")
-
-  if (window.location.hash) {
-    window.history.pushState("", document.title, baseUrl.toString().split("#")[0])
-  }
-  window.stacked.navigate(baseUrl)
-}
 
 // remove elements on notes.aarnphm.xyz
 if (window.location.host === "notes.aarnphm.xyz") {

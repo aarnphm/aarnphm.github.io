@@ -446,20 +446,37 @@ export default {
       })
     }
 
-    // Internal rewrite for stream domain -> serve /stream documents and root assets
-    if (url.hostname === "stream.aarnphm.xyz") {
+    // Internal rewrite for stream domain -> dedupe /stream prefix and serve canonical content
+    if (url.hostname === "stream.aarnphm.xyz" && !url.pathname.startsWith("/fonts/")) {
+      const streamPrefix = "/stream"
+      let sanitizedPathname = url.pathname
+
+      if (sanitizedPathname === streamPrefix || sanitizedPathname === `${streamPrefix}/`) {
+        sanitizedPathname = "/"
+      } else if (sanitizedPathname.startsWith(`${streamPrefix}/`)) {
+        sanitizedPathname = sanitizedPathname.slice(streamPrefix.length) || "/"
+      }
+
+      if (sanitizedPathname !== url.pathname) {
+        const redirectUrl = new URL(url)
+        redirectUrl.pathname = sanitizedPathname
+        return Response.redirect(redirectUrl.toString(), 308)
+      }
+
+      const pathname = sanitizedPathname
+
       const base = new URL(resolveBaseUrl(env, request))
       if (base.hostname === url.hostname && base.hostname.startsWith("stream.")) {
         base.hostname = base.hostname.replace(/^stream\./, "")
       }
-      const isDocument = shouldTreatAsDocument(url.pathname)
-      const needsStreamPrefix = isDocument && !url.pathname.startsWith("/stream")
+      const isDocument = shouldTreatAsDocument(pathname)
+      const needsStreamPrefix = isDocument && !pathname.startsWith("/stream")
       const targetPath =
-        needsStreamPrefix && url.pathname !== "/"
-          ? `/stream${url.pathname}`
+        needsStreamPrefix && pathname !== "/"
+          ? `/stream${pathname}`
           : needsStreamPrefix
             ? "/stream"
-            : url.pathname
+            : pathname
       base.pathname = targetPath
       base.search = url.search
       base.hash = url.hash
